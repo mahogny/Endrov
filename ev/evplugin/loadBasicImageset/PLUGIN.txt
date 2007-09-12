@@ -1,0 +1,4 @@
+class Basic
+name Imageset importers for other basic formats
+author Johan Henriksson
+cite

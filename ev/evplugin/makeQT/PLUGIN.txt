@@ -1,0 +1,5 @@
+class MakeQTWindow
+name Make QT Movie
+author Johan Henriksson
+cite
+require macosx

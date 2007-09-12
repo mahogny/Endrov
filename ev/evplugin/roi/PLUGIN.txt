@@ -1,0 +1,4 @@
+class ROIManager
+name ROI
+author Johan Henriksson
+cite
