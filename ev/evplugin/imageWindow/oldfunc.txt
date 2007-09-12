@@ -1,0 +1,44 @@
+	/**
+	 * Convert screen coordinate to image coordinate (image scaled by binning)
+	 * @param sx Screen x coordinate
+	 * @return Image x coordinate
+	 */
+	public double s2ix(double sx)
+		{
+		return (sx-(getWidth()/2  + transX*zoom))/zoom;
+//		return (sx-(getWidth()/2  - w*zoom/2.0  + transX*zoom))/zoom;
+		}
+
+	/**
+	 * Convert screen coordinate to image coordinate (image scaled by binning)
+	 * @param sy Screen y coordinate
+	 * @return Image y coordinate
+	 */
+	public double s2iy(double sy)
+		{
+//		return (sy-(getHeight()/2.0  - h*zoom/2.0  + transY*zoom))/zoom;
+		return (sy-(getHeight()/2.0    + transY*zoom))/zoom;
+		}
+
+	/**
+	 * Convert image coordinate to screen coordinate (image scaled by binning)
+	 * @param ix Image x coordinate
+	 * @return Screen x coordinate
+	 */
+	public double i2sx(double ix)
+		{
+//		return getWidth()/2.0  - w*zoom/2.0  + transX*zoom + ix*zoom;
+		return getWidth()/2.0   + transX*zoom + ix*zoom;
+		}
+
+	/**
+	 * Convert image coordinate to screen coordinate (image scaled by binning)
+	 * @param iy Image y coordinate
+	 * @return Screen y coordinate
+	 */
+	public double i2sy(double iy)
+		{
+//		return getHeight()/2.0  - h*zoom/2.0  + transY*zoom + iy*zoom;
+		return getHeight()/2.0   + transY*zoom + iy*zoom;
+		}
+		

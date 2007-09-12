@@ -1,0 +1,4 @@
+class SliceSignalWindow
+name Slice/Signal
+author Johan Henriksson
+cite

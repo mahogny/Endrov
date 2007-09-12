@@ -1,0 +1,2 @@
+Main-Class: microdaemon.GUI
+Manifest-Version: 1.0

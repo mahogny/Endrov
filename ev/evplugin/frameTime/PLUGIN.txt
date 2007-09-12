@@ -1,0 +1,5 @@
+class FrameTimeWindow
+class FrameTime
+name Frame/Time
+author Johan Henriksson
+cite

@@ -1,0 +1,34 @@
+
+Simi biocell analysis
+======================================================================================
+can comment on keyframes. can change color on these. vertical name. color for nuclei (schemes and custom?).
+
+"undo" = return to last version = reload
+real undo also exists
+
+has collision manager instead of working with all branches at the same time.
+
+simi fates
+------------  
+- No fate
+A Abberant
+? Cell lost
+H Hypodermis
+U Muscle 
+N Neuron
+P Pharynx
+I Intestine
+D Death
+M Mitosis
+
+branch drag&drop
+----------------
+swap branches
+copy branch
+move branch
+add alternative branch
+merge branches
+======================================================================================
+
+
+alternative branch, guess this affects naming?

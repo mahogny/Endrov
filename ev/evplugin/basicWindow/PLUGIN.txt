@@ -1,0 +1,4 @@
+class BasicWindow
+name EV Basic Window
+author Johan Henriksson
+cite

@@ -1,0 +1,3 @@
+name EV
+author Johan Henriksson
+cite EViewer - A framework for spatio-temporal data, Johan Henriksson. Not yet published. 

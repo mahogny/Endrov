@@ -1,0 +1,4 @@
+class NucLineage
+name Nuclei model
+author Johan Henriksson
+cite

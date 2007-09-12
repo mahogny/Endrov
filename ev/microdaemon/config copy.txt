@@ -1,0 +1,12 @@
+#pathinput /Volumes/TBU_xeon01_500GB01/akram_daemoninput/
+#pathoutput /Volumes/TBU_xeon01_500GB01/akram_output/
+#pathconverted /Volumes/TBU_xeon01_500GB01/akram_done_delete/
+
+pathinput /Volumes/TBU_xeon01_500GB01/switzerland/
+pathoutput /Volumes/TBU_xeon01_500GB01/switzerland_out/
+pathconverted /Volumes/TBU_xeon01_500GB01/switzerland_conv/
+
+setmax GFP RFP
+compression DIC 95
+ostversion 2
+skipblackslices 1
