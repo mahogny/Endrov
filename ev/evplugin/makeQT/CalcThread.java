@@ -88,8 +88,8 @@ public final class CalcThread extends BatchThread
 					String file1=imload1.sourceName();
 					String file2=imload2.sourceName();
 
-					EV.printDebug("1: "+file1);
-					EV.printDebug("2: "+file2);
+					Log.printDebug("1: "+file1);
+					Log.printDebug("2: "+file2);
 					
 					//Made movie frame
 					File outfile=new File(movieTempDir,EV.pad(movieframe, 8)+".png");

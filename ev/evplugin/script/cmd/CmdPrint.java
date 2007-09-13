@@ -9,7 +9,7 @@ public class CmdPrint extends Command
 	public Exp exec(Vector<Exp> arg) throws Exception
 		{
 		Object e=Command.expVal(arg.get(1));
-		EV.printLog(""+e);
+		Log.printLog(""+e);
 		return null;
 		}
 	}

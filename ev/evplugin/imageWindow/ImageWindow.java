@@ -1,5 +1,7 @@
 package evplugin.imageWindow;
 
+
+
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -10,6 +12,7 @@ import evplugin.ev.*;
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.imageset.*;
+import evplugin.keyBinding.KeyBinding;
 import evplugin.metadata.Metadata;
 
 
@@ -27,6 +30,13 @@ public class ImageWindow extends BasicWindow
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 	public static final Vector<ImageWindowExtension> imageWindowExtensions=new Vector<ImageWindowExtension>();
+
+
+	public static final int KEY_STEP_BACK   =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
+	public static final int KEY_STEP_FORWARD=KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
+	public static final int KEY_STEP_UP     =KeyBinding.register(new KeyBinding("Image Window","Step up",'s'));
+	public static final int KEY_STEP_DOWN   =KeyBinding.register(new KeyBinding("Image Window","Step down",'w'));
+
 
 	public static void addImageWindowExtension(ImageWindowExtension e)
 		{
@@ -344,14 +354,15 @@ public class ImageWindow extends BasicWindow
 			temporarilyHideMarkings=true;
 			repaint();
 			}
-		else if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+		else if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
+//		else if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
 			ConsoleWindow.focusConsole(this, imagePanel);
 		else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
 			{
 			if(!(rec instanceof EmptyImageset))
 				{
 				rec.saveMeta();
-				EV.printLog("Saving "+rec.getMetadataName());
+				Log.printLog("Saving "+rec.getMetadataName());
 				}
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
@@ -359,7 +370,7 @@ public class ImageWindow extends BasicWindow
 			if(!(rec instanceof EmptyImageset))
 				{
 				Metadata.metadata.remove(rec);
-				EV.printLog("Closing "+rec.getMetadataName());
+				Log.printLog("Closing "+rec.getMetadataName());
 				}
 			BasicWindow.updateWindows();
 			}
@@ -395,13 +406,13 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void keyTyped(KeyEvent e)
 		{
-		if(e.getKeyChar()=='a')
+		if(KeyBinding.get(KEY_STEP_BACK).typed(e))
 			frameControl.stepBack();
-		else if(e.getKeyChar()=='d')
+		else if(KeyBinding.get(KEY_STEP_FORWARD).typed(e))
 			frameControl.stepForward();
-		else if(e.getKeyChar()=='s')
+		else if(KeyBinding.get(KEY_STEP_DOWN).typed(e))
 			frameControl.stepDown();
-		else if(e.getKeyChar()=='w')
+		else if(KeyBinding.get(KEY_STEP_UP).typed(e))
 			frameControl.stepUp();
 		}
 

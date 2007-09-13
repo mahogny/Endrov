@@ -35,7 +35,7 @@ public class ImageLoaderJubio implements ImageLoader
 			}
 		catch (Exception e)
 			{
-			EV.printError("Could not load image",e);
+			Log.printError("Could not load image",e);
 			return null;
 			}
 		}

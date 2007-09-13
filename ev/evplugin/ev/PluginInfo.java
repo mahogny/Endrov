@@ -73,7 +73,7 @@ public class PluginInfo
 				}
 			catch (IOException e) 
 				{
-				EV.printError("plugin read error", e);
+				Log.printError("plugin read error", e);
 				}
 			if(className.size()!=0)
 				exists=true;
@@ -88,7 +88,7 @@ public class PluginInfo
 		{
 		if(supported())
 			{
-			EV.printLog("Loading plugin "+classPath);
+			Log.printLog("Loading plugin "+classPath);
 			for(String cn:className)
 				{
 				try
@@ -110,7 +110,7 @@ public class PluginInfo
 				}
 			}
 		else
-			EV.printLog("Skipping plugin "+classPath+" as it is not supported");
+			Log.printLog("Skipping plugin "+classPath+" as it is not supported");
 		}
 	
 
@@ -150,7 +150,7 @@ public class PluginInfo
 					}
 				catch (IOException e) 
 					{  
-					EV.printError("plugin read error",e); 
+					Log.printError("plugin read error",e); 
 					}
 
 				}
@@ -178,11 +178,11 @@ public class PluginInfo
 					{
 					if(EV.isMac())
 						{
-						EV.printLog("Requires Mac OS X: Ok");
+						Log.printLog("Requires Mac OS X: Ok");
 						return true;
 						}
 					else
-						EV.printLog("Requires Mac OS X: No");
+						Log.printLog("Requires Mac OS X: No");
 					}
 				}
 			return false;

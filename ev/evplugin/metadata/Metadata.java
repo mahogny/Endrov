@@ -123,12 +123,12 @@ public abstract class Metadata
   			if(ext==null)
   				{
   				o=new MetaObjectUnknown(child);
-  				EV.printLog("Found unknown meta object of type "+child.getName());
+  				Log.printLog("Found unknown meta object of type "+child.getName());
   				}
   			else
   				{
   				o=ext.extractObjects(child);
-  				EV.printLog("Found meta object of type "+child.getName());
+  				Log.printLog("Found meta object of type "+child.getName());
 					}
   			String sid=child.getAttributeValue("id");
   			int id;

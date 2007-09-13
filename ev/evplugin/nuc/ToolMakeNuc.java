@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.SwingUtilities;
 
 import evplugin.basicWindow.*;
-import evplugin.ev.EV;
+import evplugin.ev.Log;
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
 
@@ -241,7 +241,7 @@ public class ToolMakeNuc implements ImageWindowTool
 			NucLineage.NucPos pos=new NucLineage.NucPos();
 			pos.x=x; pos.y=y; pos.z=z; pos.r=r;
 			parent.pos.put(firstFrame-1,pos);
-			EV.printLog("Made parent "+parentName);
+			Log.printLog("Made parent "+parentName);
 			
 			this.r.w.frameControl.setFrame(firstFrame-1);
 			BasicWindow.updateWindows();

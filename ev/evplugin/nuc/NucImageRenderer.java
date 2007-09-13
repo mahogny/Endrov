@@ -87,7 +87,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		{			
 		if(nuc==null)
 			{
-			EV.printError("nuc==null", null);
+			Log.printError("nuc==null", null);
 			return;
 			}
 		

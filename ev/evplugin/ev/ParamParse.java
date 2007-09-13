@@ -131,7 +131,7 @@ public class ParamParse
     	}
     catch (FileNotFoundException ex)
     	{
-    	EV.printError("File not found: "+aFile,null);
+    	Log.printError("File not found: "+aFile,null);
     	return null;
     	}
     catch (IOException ex)

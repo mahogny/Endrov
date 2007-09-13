@@ -22,11 +22,11 @@ public class CompleteBatch implements BatchListener
 	
 	public void batchLog(String s)
 		{
-		EV.printLog(s);
+		Log.printLog(s);
 		}
 	public void batchError(String s)
 		{
-		EV.printError(s,null);
+		Log.printError(s,null);
 		}
 	public void batchDone()
 		{

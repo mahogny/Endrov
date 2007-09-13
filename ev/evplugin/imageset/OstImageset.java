@@ -56,7 +56,7 @@ public class OstImageset extends Imageset
 
 		if(!isOst2)
 			{
-			EV.printLog("Renaming files to fit OST2");
+			Log.printLog("Renaming files to fit OST2");
 			renameOst1ToOst2(basedir);
 			buildDatabase();
 			}
@@ -88,7 +88,7 @@ public class OstImageset extends Imageset
 		File metaFile=new File(basepath,"rmd.xml");
 		isOst2=metaFile.exists();
 		imageset=basepath.getName();
-		EV.printLog("is OST2: "+isOst2);
+		Log.printLog("is OST2: "+isOst2);
 		if(basepath.exists())
 			{
 			//Load metadata
@@ -128,7 +128,7 @@ public class OstImageset extends Imageset
 						{
 						String fname=f.getName();
 						String channelName=fname.substring(fname.lastIndexOf('-')+1);
-						EV.printLog("Found channel: "+channelName);
+						Log.printLog("Found channel: "+channelName);
 						Channel c=new Channel(meta.getChannel(channelName));
 						c.scanFiles();
 						channelImages.put(channelName,c);
@@ -137,7 +137,7 @@ public class OstImageset extends Imageset
 				}
 			}
 		else
-			EV.printError("Error: Imageset base directory does not exist",null);
+			Log.printError("Error: Imageset base directory does not exist",null);
 		
 		}
 	
@@ -163,12 +163,12 @@ public class OstImageset extends Imageset
 			String line=in.readLine();
 			if(!line.equals("version1"))
 				{
-				EV.printLog("Image cache wrong version, ignoring");
+				Log.printLog("Image cache wrong version, ignoring");
 				return false;
 				}
 			else
 				{
-				EV.printLog("Loading imagelist cache");
+				Log.printLog("Loading imagelist cache");
 				
 				channelImages.clear();
 				int numChannels=Integer.parseInt(in.readLine());
@@ -277,7 +277,7 @@ public class OstImageset extends Imageset
 					}
 				}
 			w.close();
-			EV.printLog("Wrote cache file");
+			Log.printLog("Wrote cache file");
 			}
 		catch (IOException e)
 			{
@@ -353,7 +353,7 @@ public class OstImageset extends Imageset
 								}
 							catch (NumberFormatException e)
 								{
-								EV.printError("partname: "+partname+" filename "+f.getName()+" framenum "+framenum,e);
+								Log.printError("partname: "+partname+" filename "+f.getName()+" framenum "+framenum,e);
 								System.exit(1);
 								}
 							}
@@ -371,7 +371,7 @@ public class OstImageset extends Imageset
 		{
 		File basedir=new File(root);
 		
-		EV.printLog("Converting to OST2");
+		Log.printLog("Converting to OST2");
 		for(File channel:basedir.listFiles())
 			if(!channel.getName().endsWith("data") && channel.isDirectory())
 				{
@@ -385,7 +385,7 @@ public class OstImageset extends Imageset
 						File newFrame=new File(channel, frame.getName().substring(frame.getName().lastIndexOf('-')+1));
 						if(!frame.renameTo(newFrame))
 							{
-							EV.printError("Failed to rename "+frame.getAbsolutePath()+" to "+newFrame.getAbsolutePath(),null);
+							Log.printError("Failed to rename "+frame.getAbsolutePath()+" to "+newFrame.getAbsolutePath(),null);
 							return;
 							}
 						}
@@ -402,7 +402,7 @@ public class OstImageset extends Imageset
 								String slicename=slice.getName();
 								File newSlice=new File(frame, slicename.substring(slicename.lastIndexOf('-')+1));
 								if(!slice.renameTo(newSlice))
-									EV.printError("Failed to rename "+slice.getAbsolutePath()+" to "+newSlice.getAbsolutePath(),null);
+									Log.printError("Failed to rename "+slice.getAbsolutePath()+" to "+newSlice.getAbsolutePath(),null);
 								}
 							}
 						}
@@ -413,7 +413,7 @@ public class OstImageset extends Imageset
 						}
 					*/		
 				}
-		EV.printLog("Conversion done");
+		Log.printLog("Conversion done");
 		}
 	
 	/**
@@ -495,7 +495,7 @@ public class OstImageset extends Imageset
 					}
 				catch(Exception e)
 					{
-					EV.printError("Parse error in tag. Skipping "+arg.get(0), e);
+					Log.printError("Parse error in tag. Skipping "+arg.get(0), e);
 					}
 				}
 			}

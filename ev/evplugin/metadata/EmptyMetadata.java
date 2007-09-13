@@ -11,7 +11,7 @@ public class EmptyMetadata extends Metadata
 
 	public void saveMeta()
 		{
-		EV.printError("Error: trying to save Empty metadata",null);
+		Log.printError("Error: trying to save Empty metadata",null);
 		}
 
 	}

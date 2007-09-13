@@ -128,7 +128,7 @@ public final class CalcThread extends BatchThread
 					}
 				catch(Exception e)
 					{
-					EV.printError(null, e);
+					Log.printError(null, e);
 					}
 
 				//Go to next frame. End if there are no more frames.

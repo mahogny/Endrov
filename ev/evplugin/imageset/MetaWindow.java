@@ -455,7 +455,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 				}
 			catch (NumberFormatException e)
 				{
-				EV.printError("NF exception in fieldsToMeta",e);
+				Log.printError("NF exception in fieldsToMeta",e);
 				}
 			}
 		}

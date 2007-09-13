@@ -232,7 +232,7 @@ public class NucLineage extends MetaObject
 		{
 		removePosAfterEqual(parentName, frame);
 		Nuc n=nuc.get(parentName);
-		EV.printLog("divide:"+parentName);
+		Log.printLog("divide:"+parentName);
 		if(n!=null)
 			{
 			String c1n=getUniqueNucName();
@@ -387,7 +387,7 @@ public class NucLineage extends MetaObject
 					NucLineage.Nuc n=nuc.get(childName);
 					n.parent=parentName;
 					parent.child.add(childName);
-					EV.printLog("new PC, parent: "+parentName+"child: "+childName);
+					Log.printLog("new PC, parent: "+parentName+"child: "+childName);
 					}
 		metaObjectModified=true;
 		}
