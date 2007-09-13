@@ -5,6 +5,7 @@ import java.util.*;
 import javax.swing.*;
 
 import evplugin.ev.*;
+import evplugin.keyBinding.KeyBinding;
 
 
 //System.setOut(out)
@@ -21,6 +22,14 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0; //wtf
+
+	
+	/** The set of all extensions */
+	public static Vector<BasicWindowExtension> basicWindowExtensions=new Vector<BasicWindowExtension>();
+	
+	/** The set of all windows */
+	public static HashSet<BasicWindow> windowList=new HashSet<BasicWindow>();
+	
 	
 	public static void initPlugin() {}
 	static
@@ -41,13 +50,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 			});
 		}
 
-	
-	/** The set of all extensions */
-	public static Vector<BasicWindowExtension> basicWindowExtensions=new Vector<BasicWindowExtension>();
-	
-	/** The set of all windows */
-	public static HashSet<BasicWindow> windowList=new HashSet<BasicWindow>();
-	
+	public static final int KEY_GETCONSOLE=KeyBinding.register(new KeyBinding("Basic Window","Get console",KeyEvent.VK_ESCAPE, 0));
 	
 	/**
 	 * Add an extension of Basic Window

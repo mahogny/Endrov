@@ -149,7 +149,7 @@ public class AceTree
     	}
     catch(IOException e)
     	{
-    	EV.printError(null, e);
+    	Log.printError(null, e);
     	return null;
     	}
 		}

@@ -2,29 +2,26 @@ package evplugin.consoleWindow;
 
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
+import java.io.*;
+import java.util.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
+import evplugin.keyBinding.KeyBinding;
 import evplugin.script.*;
 
-import java.awt.event.ActionEvent;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Vector;
 
+/**
+ * Console Window. Provides a CLI in the GUI
+ * 
+ * @author Johan Henriksson
+ */
 public class ConsoleWindow extends BasicWindow implements ActionListener, FocusListener, KeyListener
 	{
-	public void keyPressed(KeyEvent e) {}
-	public void keyReleased(KeyEvent e) {}
-	public void keyTyped(KeyEvent e)
-		{
-		if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
-			commandLine.requestFocus();
-		}
-
-
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
 	public static void initPlugin() {}
@@ -41,8 +38,14 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 				}
 			public String savePersonalConfig(){return "";}
 			});
-
 		}
+	
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+	
+	
 	
 	/** Last component with focus remembered so this one can be refocused */
 	private Component lastFocusComponent=null;
@@ -51,6 +54,77 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 	//GUI components
 	private JTextArea history=new JTextArea();
 	private JTextFieldHistorized commandLine=new JTextFieldHistorized();
+
+	
+	
+	/**
+	 * Take new log events and put them in console history
+	 */
+	private Log consoleLog=new Log()
+		{
+		public void listenDebug(String s)
+			{
+			history.append(s);
+			history.append("\n");
+			}
+	
+		public void listenError(String s, Exception e)
+			{
+			if(s!=null)
+				{
+				history.append(s);
+				history.append("\n");
+				}
+			if(e!=null)
+				{
+				StringWriter sw=new StringWriter();
+				PrintWriter s2=new PrintWriter(sw);
+				e.printStackTrace(s2);
+				s2.flush();
+	
+				history.append("Exception message: ");
+				history.append("\n");
+				history.append(sw.toString());
+				}
+			}
+	
+		public void listenLog(String s)
+			{
+			history.append(s);
+			history.append("\n");
+			}
+		};
+
+		
+	/**
+	 * Remove log listener once window is closed. Otherwise the window cannot be eliminated.
+	 */
+	private WindowListener wlist=new WindowListener()
+		{
+		public void windowActivated(WindowEvent e){}
+		public void windowClosed(WindowEvent e)
+			{
+			Log.listeners.remove(consoleLog);
+			}
+		public void windowClosing(WindowEvent e){}
+		public void windowDeactivated(WindowEvent e){}
+		public void windowDeiconified(WindowEvent e){}
+		public void windowIconified(WindowEvent e){}
+		public void windowOpened(WindowEvent e){}
+		};
+
+	
+	public void keyPressed(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
+	public void keyTyped(KeyEvent e)
+		{
+		if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
+//		if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+			commandLine.requestFocus();
+		}
+	
+	
+	
 	
 	/**
 	 * Store down settings for window into personal config file
@@ -85,6 +159,11 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 		setLayout(new BorderLayout());
 		add(hs,BorderLayout.CENTER);
 		add(commandLine,BorderLayout.SOUTH);
+		
+		//Log handling
+		Log.listeners.add(consoleLog);
+		addWindowListener(wlist);
+		history.append(Log.memoryLog.get());
 		
 		//Window overall things
 		setTitle(EV.programName+" Console Window");

@@ -63,7 +63,7 @@ public class EV
 				}
 			}
 		else
-			EV.printLog("No personal config file");
+			Log.printLog("No personal config file");
 		}
 	
 	/**
@@ -76,7 +76,7 @@ public class EV
 		for(PersonalConfig pc:personalConfigLoaders.values())
 			s+=pc.savePersonalConfig();
 		
-		EV.printLog(s);
+		Log.printLog(s);
 		
 		Preferences prefs = Preferences.userNodeForPackage(EV.class);
 		prefs.put("vwbdata", s);
@@ -147,46 +147,6 @@ public class EV
 			{
 			e.printStackTrace();
 			}
-		}
-	
-	/**
-	 * Log normal/expected message
-	 */
-	public static void printLog(String s)
-		{
-		System.out.println(s);
-		}
-
-	/**
-	 * Log debugging information
-	 */
-	public static void printDebug(String s)
-		{
-		System.out.println(s);
-		}
-
-	/**
-	 * Log an error
-	 * @param s Human readable description, may be null
-	 * @param e Low-level error, may be null
-	 */
-	public static void printError(String s, Exception e)
-		{
-		if(s!=null)
-			System.out.println(s);
-		if(e!=null)
-			{
-			System.out.println("Exception message: "+e.getMessage());
-			e.printStackTrace();
-			}
-		
-		/*
-		StringWriter sw=new StringWriter();
-		PrintWriter s=new PrintWriter(sw);
-		e.printStackTrace(s);
-		s.flush();
-		JOptionPane.showMessageDialog(null, sw.toString());
-		*/
 		}
 	
 	/**

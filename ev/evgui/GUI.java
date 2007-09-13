@@ -4,6 +4,8 @@ package evgui;
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.imageWindow.*;
+import evplugin.keyBinding.KeyBinding;
+
 import java.io.*;
 
 /**
@@ -18,12 +20,15 @@ public class GUI
 	 */
 	public static void main(String[] args)
 		{
+		Log.listeners.add(new StdoutLog());
+
 		String javalib=System.getProperty("java.library.path");
 		File javalibfile=new File(javalib);
-		EV.printLog("Loading native libraries from "+javalibfile.getAbsolutePath());
+		Log.printLog("Loading native libraries from "+javalibfile.getAbsolutePath());
 		
 		try
 			{
+			KeyBinding.loadBindings(); //This is a semi-hack
 			EV.loadPlugins();
 			BasicWindowExitLast.integrate();
 			EV.loadPersonalConfig();		
@@ -35,7 +40,7 @@ public class GUI
 			}
 		catch (Exception e)
 			{
-			EV.printError("EVGUI", e);
+			Log.printError("EVGUI", e);
 			}
 		}
 	}

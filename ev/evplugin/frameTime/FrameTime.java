@@ -133,7 +133,7 @@ public class FrameTime extends MetaObject
 			}
 		catch (IOException e)
 			{
-			EV.printError("Error writing file",e);
+			Log.printError("Error writing file",e);
 			}
 		}
 		

@@ -70,7 +70,7 @@ public class ImageLoaderJAI implements ImageLoader
 					TIFFDecodeParam param = null;
 	        ImageDecoder dec = ImageCodec.createImageDecoder("tiff", s, param);
 
-	        EV.printDebug("Number of images in this TIFF: " + dec.getNumPages());
+	        Log.printDebug("Number of images in this TIFF: " + dec.getNumPages());
 
 	        Raster ir=dec.decodeAsRaster();
 	        BufferedImage bim=new BufferedImage(ir.getWidth(),ir.getHeight(),ir.getSampleModel().getDataType());
@@ -84,7 +84,7 @@ public class ImageLoaderJAI implements ImageLoader
 			}
 		catch(Exception e)
 			{
-			EV.printError("Failed to read image "+filename,e);
+			Log.printError("Failed to read image "+filename,e);
 			return null;
 			}
 		}

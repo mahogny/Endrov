@@ -55,12 +55,14 @@ public class ImagePanel extends JPanel
 				if(bufi==null)
 					throw new Exception();
 				ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
+				System.out.println("A "+System.currentTimeMillis());
 				bcfilter.filter(bufi,bufi);
+				//System.out.println("B "+System.currentTimeMillis());
 				}
 			}
 		catch(Exception e)
 			{
-			EV.printError("image failed to load"/*: "+filename*/,e);
+			Log.printError("image failed to load"/*: "+filename*/,e);
 			}
 		}
 	
@@ -88,7 +90,9 @@ public class ImagePanel extends JPanel
 			
 			g2.translate(tx,ty);
 			g2.scale(zoomBinning,zoomBinning);
+			//System.out.println("C "+System.currentTimeMillis());
 			g2.drawImage(bufi, null, 0, 0);
+			//System.out.println("D "+System.currentTimeMillis());
 			g2.scale(invZoomBinning,invZoomBinning);
 			g2.translate(-tx,-ty);
 			} 

@@ -31,7 +31,7 @@ public class ContrastBrightnessOp
 	public BufferedImage filter(BufferedImage src, BufferedImage dst)
 		{
 		if(f==null || src==null || dst==null)
-			EV.printError(""+(f==null)+" "+(src==null)+" "+(dst==null),null);
+			Log.printError(""+(f==null)+" "+(src==null)+" "+(dst==null),null);
 		return f.filter(src,dst);
 		}
 	

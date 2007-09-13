@@ -10,6 +10,7 @@ import javax.swing.event.*;
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.ev.*;
+import evplugin.keyBinding.KeyBinding;
 import evplugin.nuc.NucLineage;
 
 /**
@@ -228,7 +229,8 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void keyPressed(KeyEvent e)
 		{
-		if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+		if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
+		//if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
 			ConsoleWindow.focusConsole(this, view);
 		}
 	

@@ -115,11 +115,11 @@ public class ModelView extends GLCanvas
 				{
 				drawable.setGL(new DebugGL(drawable.getGL()));
 				GL gl = drawable.getGL();
-				EV.printLog("INIT GL IS: " + gl.getClass().getName());
-				EV.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
-				EV.printLog("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
-				EV.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
-				EV.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
+				Log.printLog("INIT GL IS: " + gl.getClass().getName());
+				Log.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
+				Log.printLog("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
+				Log.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
+				Log.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
 				}
 
 			//Get GL context

@@ -5,6 +5,7 @@ import evplugin.script.*;
 public class CmdMap extends Command
 	{
 	public int numArg()	{return 2;}
+	@SuppressWarnings("unchecked")
 	public Exp exec(Vector<Exp> arg) throws Exception
 		{
 		ExpApp func=Command.expApp(arg.get(1));
