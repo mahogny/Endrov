@@ -12,7 +12,7 @@ import evplugin.ev.*;
  * Adjust Frame-Time mapping
  * @author Johan Henriksson
  */
-public class WindowKeyBinding extends BasicWindow 
+public class WindowKeyBinding extends BasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 
@@ -27,18 +27,23 @@ public class WindowKeyBinding extends BasicWindow
 
 	private JPanel listPane=new JPanel();
 
+	private JButton bNewScriptBinding=new JButton("New script binding");
 	
 	/**
 	 * Make a new window at some specific location
 	 */
 	public WindowKeyBinding(int x, int y, int w, int h)
 		{				
-		setLayout(new BorderLayout());
 		
 		JPanel wholePane=new JPanel(new BorderLayout());
 		wholePane.add(listPane,BorderLayout.NORTH);
 		JScrollPane spane=new JScrollPane(wholePane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+		bNewScriptBinding.addActionListener(this);
+		
+		setLayout(new BorderLayout());
 		add(spane, BorderLayout.CENTER);
+		add(bNewScriptBinding, BorderLayout.SOUTH);
 
 		//Window overall things
 		setTitle(EV.programName+" Key Bindings");
@@ -49,6 +54,15 @@ public class WindowKeyBinding extends BasicWindow
 		fillList();
 		}
 
+	
+	public void actionPerformed(ActionEvent e)
+		{
+		if(e.getSource()==bNewScriptBinding)
+			{
+			ScriptBinding.list.add(new ScriptBinding());
+			fillList();
+			}
+		}
 
 	/**
 	 * Get a constraint for the layout
@@ -93,8 +107,9 @@ public class WindowKeyBinding extends BasicWindow
 			}
 		
 		//All script key bindings
-		for(final ScriptBinding b:ScriptBinding.list)
+		for(int i=0;i<ScriptBinding.list.size();i++)
 			{
+			final ScriptBinding b=ScriptBinding.list.get(i);
 			JButton field=new JButton(b.script);
 			if(b.script.equals(""))
 				field.setText(" ");
@@ -108,6 +123,7 @@ public class WindowKeyBinding extends BasicWindow
 					new SetKey(b.key);
 					}
 				});
+			final int icopy=i;
 			field.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
@@ -115,15 +131,19 @@ public class WindowKeyBinding extends BasicWindow
 					String newText=JOptionPane.showInputDialog(null, "Script code",b.script);
 					if(newText!=null)
 						{
-						b.script=newText;
+						if(newText.equals(""))
+							//Remove item
+							ScriptBinding.list.remove(icopy);
+						else
+							//Set script
+							b.script=newText;
 						fillList();
 						}
 					}
 				});
-			//TODO
 			y++;
-			
 			}
+
 		
 		setVisible(true);
 		repaint();
