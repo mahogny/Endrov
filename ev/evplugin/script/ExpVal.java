@@ -15,6 +15,18 @@ public class ExpVal extends Exp
 		}
 	public String toString()
 		{
-		return "Val:"+o;
+		if(o==null)
+			return "(null)";
+		else if(o instanceof String)
+			return "\""+o+"\"";
+		else if(o instanceof Integer)
+			return "int: "+o;
+		else if(o instanceof Double)
+			return "double: "+o;
+		else
+			{
+			return o.getClass().getName()+": "+o;
+			}
+//		return "Val:"+o;
 		}
 	}

@@ -6,8 +6,9 @@ import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
 
-import evplugin.basicWindow.BasicWindow;
+import evplugin.basicWindow.*;
 import evplugin.ev.*;
+import evplugin.metadata.cmd.*;
 import evplugin.script.*;
 
 public abstract class Metadata
@@ -19,18 +20,35 @@ public abstract class Metadata
 	public static void initPlugin() {}
 	static
 		{
-		Script.addCommand("xml", new CmdXML());
+		Script.addCommand("dxml", new CmdDXML());
+		Script.addCommand("dls", new CmdDLS());
+		Script.addCommand("dsel", new CmdDSEL());
+		Script.addCommand("dunl", new CmdDUNL());
 		BasicWindow.addBasicWindowExtension(new MetadataBasic());
 		}
 	
 	public static TreeMap<String,MetaObjectExtension> extensions=new TreeMap<String,MetaObjectExtension>();
 	public static Vector<Metadata> metadata=new Vector<Metadata>();
-	//better with a HashMap, let everything use indirect references?
+	
+	public static int selectedMetadataId=-1;
 	
 	public static void addMetadata(Metadata m)
 		{
 		metadata.add(m);
 		}
+
+	/**
+	 * Get currently selected metadata or null
+	 */
+	public static Metadata getSelectedMetadata()
+		{
+		if(selectedMetadataId>=0 && selectedMetadataId<metadata.size())
+			return metadata.get(selectedMetadataId);
+		else
+			return null;
+		}
+	
+	
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *

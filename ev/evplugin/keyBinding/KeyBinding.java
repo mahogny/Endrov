@@ -71,7 +71,12 @@ public class KeyBinding
 	public Character key; //unsure?
 	public Integer keyCode;
 	public int modifierEx;
+
+
 	
+	/**
+	 * Key binding for special call
+	 */
 	public KeyBinding(String plugin, String description, char key)
 		{
 		this.pluginName=plugin;
@@ -79,7 +84,11 @@ public class KeyBinding
 		this.key=key;
 		this.modifierEx=0;
 		}
+
 	
+	/**
+	 * Key binding for special call
+	 */
 	public KeyBinding(String plugin, String description, int keyCode, int modifierEx)
 		{
 		this.pluginName=plugin;
@@ -89,6 +98,9 @@ public class KeyBinding
 		}
 	
 		
+	/**
+	 * Has key been typed?
+	 */
 	public boolean typed(KeyEvent e)
 		{
 		if(key!=null)
@@ -101,6 +113,9 @@ public class KeyBinding
 		}
 	
 	
+	/**
+	 * Textual description of key
+	 */
 	public String keyDesc()
 		{
 		if(key!=null)

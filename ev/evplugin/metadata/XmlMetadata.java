@@ -22,6 +22,10 @@ public class XmlMetadata extends Metadata
 		else
 			return filename.getName();
 		}
+	public String toString()
+		{
+		return getMetadataName();
+		}
 
 	
 	public XmlMetadata()

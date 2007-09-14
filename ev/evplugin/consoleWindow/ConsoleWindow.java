@@ -190,7 +190,10 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 					{
 					//TODO: why is error not given back here?
 					Exp exp=Script.evalExp(cmd);
-					addHistory(""+exp+"\n");
+					if(exp==null)
+						addHistory("-\n");
+					else
+						addHistory(""+exp+"\n");
 					}
 				catch(Exception ex)
 					{
@@ -261,8 +264,8 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 	public static void focusConsole(JFrame frame, Component me)
 		{
 		ConsoleWindow c=getConsole();
-		c.toFront();
 		if(c==null) c=new ConsoleWindow();
+		c.toFront();
 		c.lastFocusComponent=me;
 		c.lastFocusFrame=frame;
 		c.commandLine.requestFocus();

@@ -11,4 +11,8 @@ public class EmptyImageset extends Imageset
 	public void buildDatabase(){}
 	public void saveMeta(){}
 	public File datadir(){return null;}
+	public String toString()
+		{
+		return getMetadataName();
+		}
 	}

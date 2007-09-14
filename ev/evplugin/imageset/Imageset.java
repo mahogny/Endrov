@@ -71,6 +71,10 @@ public abstract class Imageset extends Metadata
 		{
 		return imageset;
 		}
+	public String toString()
+		{
+		return getMetadataName();
+		}
 	
 	/**
 	 * Save metadata to some specific files; mostly for imageset internal use. Implementations of imagesets

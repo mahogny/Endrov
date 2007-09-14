@@ -9,7 +9,7 @@ import evplugin.script.*;
  * Open OST
  * @author Johan Henriksson
  */
-public class CmdOST extends Command
+public class CmdDOST extends Command
 	{
 	public int numArg()	{return 1;}
 	public Exp exec(Vector<Exp> arg) throws Exception
