@@ -13,6 +13,7 @@ import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.imageset.*;
 import evplugin.keyBinding.KeyBinding;
+import evplugin.keyBinding.ScriptBinding;
 import evplugin.metadata.Metadata;
 
 
@@ -34,8 +35,8 @@ public class ImageWindow extends BasicWindow
 
 	public static final int KEY_STEP_BACK   =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
 	public static final int KEY_STEP_FORWARD=KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
-	public static final int KEY_STEP_UP     =KeyBinding.register(new KeyBinding("Image Window","Step up",'s'));
-	public static final int KEY_STEP_DOWN   =KeyBinding.register(new KeyBinding("Image Window","Step down",'w'));
+	public static final int KEY_STEP_UP     =KeyBinding.register(new KeyBinding("Image Window","Step up",'w'));
+	public static final int KEY_STEP_DOWN   =KeyBinding.register(new KeyBinding("Image Window","Step down",'s'));
 
 
 	public static void addImageWindowExtension(ImageWindowExtension e)
@@ -348,37 +349,40 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void keyPressed(KeyEvent e)
 		{
-		Imageset rec=comboChannel.getImageset();
-		if(e.getKeyCode()==KeyEvent.VK_SPACE)
+		if(!ScriptBinding.runScriptKey(e))
 			{
-			temporarilyHideMarkings=true;
-			repaint();
-			}
-		else if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
-//		else if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
-			ConsoleWindow.focusConsole(this, imagePanel);
-		else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
-			{
-			if(!(rec instanceof EmptyImageset))
+			Imageset rec=comboChannel.getImageset();
+			if(e.getKeyCode()==KeyEvent.VK_SPACE)
 				{
-				rec.saveMeta();
-				Log.printLog("Saving "+rec.getMetadataName());
+				temporarilyHideMarkings=true;
+				repaint();
 				}
-			}
-		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
-			{
-			if(!(rec instanceof EmptyImageset))
+			else if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
+	//		else if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+				ConsoleWindow.focusConsole(this, imagePanel);
+			else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
 				{
-				Metadata.metadata.remove(rec);
-				Log.printLog("Closing "+rec.getMetadataName());
+				if(!(rec instanceof EmptyImageset))
+					{
+					rec.saveMeta();
+					Log.printLog("Saving "+rec.getMetadataName());
+					}
 				}
-			BasicWindow.updateWindows();
-			}
-		else
-			{
-			if(tool!=null)
-				tool.keyPressed(e);
-			keysHeld.add(e.getKeyCode());
+			else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
+				{
+				if(!(rec instanceof EmptyImageset))
+					{
+					Metadata.metadata.remove(rec);
+					Log.printLog("Closing "+rec.getMetadataName());
+					}
+				BasicWindow.updateWindows();
+				}
+			else
+				{
+				if(tool!=null)
+					tool.keyPressed(e);
+				keysHeld.add(e.getKeyCode());
+				}
 			}
 		}
 

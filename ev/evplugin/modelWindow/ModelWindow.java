@@ -11,6 +11,7 @@ import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.ev.*;
 import evplugin.keyBinding.KeyBinding;
+import evplugin.keyBinding.ScriptBinding;
 import evplugin.nuc.NucLineage;
 
 /**
@@ -229,9 +230,12 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void keyPressed(KeyEvent e)
 		{
-		if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
-		//if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
-			ConsoleWindow.focusConsole(this, view);
+		if(!ScriptBinding.runScriptKey(e))
+			{
+			if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
+			//if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+				ConsoleWindow.focusConsole(this, view);
+			}
 		}
 	
 	/*

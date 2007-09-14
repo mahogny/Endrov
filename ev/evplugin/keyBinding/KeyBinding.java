@@ -55,12 +55,12 @@ public class KeyBinding
 		{
 		//TODO
 		
-		
+	/*	
 		KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
 		KeyBinding.register(new KeyBinding("Image Window","Step forward",'e'));
 		KeyBinding.register(new KeyBinding("Image Window","Step up",'o'));
 		KeyBinding.register(new KeyBinding("Image Window","Step down",'ä'));
-
+*/
 		}
 	
 	/******************************************************************************************************
@@ -77,7 +77,7 @@ public class KeyBinding
 	/**
 	 * Key binding for special call
 	 */
-	public KeyBinding(String plugin, String description, char key)
+	public KeyBinding(String plugin, String description, Character key)
 		{
 		this.pluginName=plugin;
 		this.description=description;
@@ -93,6 +93,7 @@ public class KeyBinding
 		{
 		this.pluginName=plugin;
 		this.description=description;
+		this.key=null;
 		this.keyCode=keyCode;
 		this.modifierEx=modifierEx;
 		}
