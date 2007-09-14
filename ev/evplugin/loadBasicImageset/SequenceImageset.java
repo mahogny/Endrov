@@ -31,6 +31,12 @@ public class SequenceImageset extends Imageset
 		setup();
 		}
 
+	public String toString()
+		{
+		return getMetadataName();
+		}
+
+	
 	public File datadir(){return null;}
 
 	/**

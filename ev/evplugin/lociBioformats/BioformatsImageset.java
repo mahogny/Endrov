@@ -29,7 +29,7 @@ public class BioformatsImageset extends Imageset
 	static
 		{
 	
-		Script.addCommand("bioformat", new CmdBioformat());
+		Script.addCommand("dbio", new CmdDBIO());
 		
 		MetadataBasic.extensions.add(new MetadataExtension()
 			{

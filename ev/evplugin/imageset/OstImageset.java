@@ -32,12 +32,13 @@ public class OstImageset extends Imageset
 		this.imageset=(new File(basedir)).getName();
 		buildDatabase();
 		}
-	/*
-	public String metadataName()
+	
+	public String toString()
 		{
-		return 
+		return getMetadataName();
 		}
-		*/
+
+	
 
 	public File datadir()
 		{

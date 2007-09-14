@@ -28,7 +28,7 @@ public class ImagesetMeta extends MetaObject
 	public static void initPlugin() {}
 	static
 		{
-		Script.addCommand("ost", new CmdOST());
+		Script.addCommand("dost", new CmdDOST());
 		
 		MetadataBasic.extensions.add(new MetadataExtension()
 			{

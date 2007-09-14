@@ -1,15 +1,16 @@
-package evplugin.metadata;
+package evplugin.lociBioformats;
 import java.util.*;
 
 import evplugin.basicWindow.*;
 import evplugin.metadata.Metadata;
 import evplugin.script.*;
+import evplugin.imageset.*;
 
 /**
- * Open XML
+ * Open Bioformats
  * @author Johan Henriksson
  */
-public class CmdXML extends Command
+public class CmdDBIO extends Command
 	{
 	public int numArg()	{return 1;}
 	public Exp exec(Vector<Exp> arg) throws Exception
@@ -19,14 +20,15 @@ public class CmdXML extends Command
 			{
 			ExpVal v=(ExpVal)e;
 
-			Metadata m=new XmlMetadata(v.stringValue());
-			Metadata.metadata.add(m);
+			
+			Imageset rec=new BioformatsImageset(v.stringValue());
+			Metadata.metadata.add(rec);
 			
 			BasicWindow.updateWindows();
 			
 			//TODO: print error?
 			
-			return new ExpVal(m);
+			return new ExpVal(rec);
 			}
 		else
 			throw new Exception("Incompatible type");

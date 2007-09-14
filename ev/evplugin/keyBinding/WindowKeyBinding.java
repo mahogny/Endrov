@@ -53,11 +53,12 @@ public class WindowKeyBinding extends BasicWindow
 	/**
 	 * Get a constraint for the layout
 	 */
-	private GridBagConstraints gconstraint(int x, int y)
+	private GridBagConstraints gconstraint(int x, int y, int w)
 		{
 		GridBagConstraints c=new GridBagConstraints();
 		c.gridx=x;
 		c.gridy=y;
+		c.gridwidth=w;
 		c.fill=GridBagConstraints.HORIZONTAL;
 		c.weightx=1;
 		return c;
@@ -73,12 +74,14 @@ public class WindowKeyBinding extends BasicWindow
 		listPane.setLayout(new GridBagLayout());
 		
 		int y=0;
+		
+		//All special key bindings
 		for(final KeyBinding b:KeyBinding.bindings.values())
 			{
-			listPane.add(new JLabel(b.pluginName),gconstraint(0,y));
-			listPane.add(new JLabel(b.description),gconstraint(1,y));
+			listPane.add(new JLabel(b.pluginName),gconstraint(0,y,1));
+			listPane.add(new JLabel(b.description),gconstraint(1,y,1));
 			JButton key=new JButton(b.keyDesc());
-			listPane.add(key,gconstraint(2,y));
+			listPane.add(key,gconstraint(2,y,1));
 			key.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
@@ -88,6 +91,40 @@ public class WindowKeyBinding extends BasicWindow
 				});
 			y++;
 			}
+		
+		//All script key bindings
+		for(final ScriptBinding b:ScriptBinding.list)
+			{
+			JButton field=new JButton(b.script);
+			if(b.script.equals(""))
+				field.setText(" ");
+			listPane.add(field,gconstraint(0,y,2));
+			JButton key=new JButton(b.key.keyDesc());
+			listPane.add(key,gconstraint(2,y,1));
+			key.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					new SetKey(b.key);
+					}
+				});
+			field.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					String newText=JOptionPane.showInputDialog(null, "Script code",b.script);
+					if(newText!=null)
+						{
+						b.script=newText;
+						fillList();
+						}
+					}
+				});
+			//TODO
+			y++;
+			
+			}
+		
 		setVisible(true);
 		repaint();
 		}
@@ -109,6 +146,9 @@ public class WindowKeyBinding extends BasicWindow
 		}
 	
 	
+	/**
+	 * Set new key for key binding
+	 */
 	private class SetKey extends JDialog implements KeyListener
 		{
 		static final long serialVersionUID=0;
@@ -139,5 +179,6 @@ public class WindowKeyBinding extends BasicWindow
 		public void keyTyped(KeyEvent e){}
 		}
 	
+
 	
 	}
