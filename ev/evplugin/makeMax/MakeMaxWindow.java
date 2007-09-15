@@ -8,8 +8,11 @@ import evplugin.ev.*;
 import evplugin.imageset.*;
 import evplugin.metadata.*;
 import evplugin.basicWindow.*;
+import org.jdom.*;
 
 /**
+ * Make a channel by taking the max-value in every slice from anoher channel.
+ * 
  * @author Johan Henriksson
  */
 public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCombo.comboFilterMetadata
@@ -117,9 +120,8 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
-		return "";
 		}
 
 	

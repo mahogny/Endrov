@@ -1,14 +1,15 @@
 package evplugin.ev;
 
-//Personal config probably better as XML
-
 //can be useful to improve performance, not used right now -Dsun.java2d.opengl=true
 
 import java.util.*;
 import java.util.prefs.*;
 import java.io.*;
-
 import javax.swing.*;
+import org.jdom.*;
+import org.jdom.input.*;
+import org.jdom.output.*;
+
 
 /**
  * Support functions for the EV framework
@@ -37,30 +38,33 @@ public class EV
 	public static void loadPersonalConfig()
 		{
 		Preferences prefs = Preferences.userNodeForPackage (EV.class);
-		String s=prefs.get("vwbdata", null);
+		String s=prefs.get("evdata", null);
 		if(s!=null)
 			{
-			try
-				{
-				//Read settings from file
-				//These could actually be sent to the console instead. plugins can register new
-				//console commands and so add hooks for below
-				ParamParse p=new ParamParse(s);
-				while(p.hasData())
-					{
-					Vector<String> arg=p.nextData();
-					if(arg.size()!=0)
-						{
-						PersonalConfig loader=personalConfigLoaders.get(arg.get(0));
-						if(loader!=null)
-							loader.loadPersonalConfig(arg);
-						}
-					}
-				}
-			catch (Exception e)
-				{
-				e.printStackTrace();
-				}
+	    try 
+	    	{
+	  		SAXBuilder saxBuilder = new SAXBuilder();
+	  		Reader reader=new StringReader(s);
+	  		Document document = saxBuilder.build(reader);
+	  		Element element = document.getRootElement();
+
+	  		//Extract objects
+	  		List children=element.getChildren(); 
+	  		for(Object ochild:children)
+	  			{
+	  			Element child=(Element)ochild;
+	  			String id=child.getName();
+	  			PersonalConfig p=personalConfigLoaders.get(id);
+	  			if(p!=null)
+	  				p.loadPersonalConfig(child);
+	  			else
+	  				Log.printError("Could not find loader for id "+id,null);
+	  			}
+	    	} 
+	    catch (Exception e) 
+	    	{
+	    	e.printStackTrace();
+	    	} 
 			}
 		else
 			Log.printLog("No personal config file");
@@ -71,15 +75,30 @@ public class EV
 	 */
 	public static void savePersonalConfig()
 		{
-		String s="";
-		
+		Element root=new Element("ev");
+		Document document=new Document(root);
 		for(PersonalConfig pc:personalConfigLoaders.values())
-			s+=pc.savePersonalConfig();
-		
-		Log.printLog(s);
+			pc.savePersonalConfig(root);
+
+		String s="";
+		try 
+			{
+			Format format=Format.getPrettyFormat();
+			XMLOutputter outputter = new XMLOutputter(format);
+			StringWriter writer = new StringWriter();
+			outputter.output(document, writer);
+			writer.flush();
+			s=writer.toString();
+			} 
+		catch (java.io.IOException e) 
+			{
+			e.printStackTrace();
+			}
 		
 		Preferences prefs = Preferences.userNodeForPackage(EV.class);
-		prefs.put("vwbdata", s);
+		prefs.put("evdata", s);
+		if(EV.debugMode)
+			Log.printLog(s);
 		}
 
 	

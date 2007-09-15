@@ -6,8 +6,11 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.jdom.*;
+
 import evplugin.ev.*;
 import evplugin.basicWindow.*;
+import evplugin.consoleWindow.ConsoleWindow;
 import evplugin.metadata.*;
 import evplugin.nuc.*;
 
@@ -27,13 +30,22 @@ public class LineageWindow extends BasicWindow
 		BasicWindow.addBasicWindowExtension(new ExtBasic());
 		EV.personalConfigLoaders.put("lineagewindow",new PersonalConfig()
 			{
-			public void loadPersonalConfig(Vector<String> arg)
+			public void loadPersonalConfig(Element e)
 				{
-				new LineageWindow(
-						Integer.parseInt(arg.get(1)), Integer.parseInt(arg.get(2)),
-						Integer.parseInt(arg.get(3)),Integer.parseInt(arg.get(4)));
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new LineageWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
 				}
-			public String savePersonalConfig(){return "";}
+			public void savePersonalConfig(Element e){}
 			});
 		}
 	
@@ -167,10 +179,15 @@ public class LineageWindow extends BasicWindow
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
 		Rectangle r=getBounds();
-		return "lineagewindow "+r.x+" "+r.y+" "+r.width+" "+r.height+";";
+		Element e=new Element("lineagewindow");
+		e.setAttribute("x", ""+r.x);
+		e.setAttribute("y", ""+r.y);
+		e.setAttribute("w", ""+r.width);
+		e.setAttribute("h", ""+r.height);
+		root.addContent(e);
 		}
 
 	

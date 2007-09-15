@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
+import org.jdom.*;
 
 /**
  * Adjust Frame-Time mapping
@@ -152,9 +153,8 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
-		return "";
 		}
 	
 	/*
