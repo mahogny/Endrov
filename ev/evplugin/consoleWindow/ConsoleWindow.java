@@ -17,7 +17,7 @@ import evplugin.script.*;
  * 
  * @author Johan Henriksson
  */
-public class ConsoleWindow extends BasicWindow implements ActionListener, FocusListener, KeyListener
+public class ConsoleWindow extends BasicWindow implements ActionListener, KeyListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -107,7 +107,10 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 			Log.listeners.remove(consoleLog);
 			}
 		public void windowClosing(WindowEvent e){}
-		public void windowDeactivated(WindowEvent e){}
+		public void windowDeactivated(WindowEvent e)
+			{
+			lastFocusComponent=null;
+			}
 		public void windowDeiconified(WindowEvent e){}
 		public void windowIconified(WindowEvent e){}
 		public void windowOpened(WindowEvent e){}
@@ -154,6 +157,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 		commandLine.addActionListener(this);
 		history.addKeyListener(this);
 		addKeyListener(this);
+		
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
@@ -225,19 +229,6 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, FocusL
 			}
 		}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
-	 */
-	public void focusGained(FocusEvent e) {}
-
-	/**
-	 * Called when focus lost. Forget which object was last focused when this happens.
-	 */
-	public void focusLost(FocusEvent e)
-		{
-		lastFocusComponent=null;
-		}
 	
 	/*
 	 * (non-Javadoc)

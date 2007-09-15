@@ -6,7 +6,7 @@ import evplugin.metadata.Metadata;
 import evplugin.script.*;
 
 /**
- * List data
+ * List metadata
  * @author Johan Henriksson
  */
 public class CmdDLS extends Command

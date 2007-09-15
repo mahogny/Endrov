@@ -21,21 +21,25 @@ public abstract class Metadata
 	static
 		{
 		Script.addCommand("dxml", new CmdDXML());
-		Script.addCommand("dls", new CmdDLS());
+		Script.addCommand("dls",  new CmdDLS());
 		Script.addCommand("dsel", new CmdDSEL());
 		Script.addCommand("dunl", new CmdDUNL());
+		Script.addCommand("msel", new CmdMSEL());
+		Script.addCommand("mls",  new CmdMLS());
 		BasicWindow.addBasicWindowExtension(new MetadataBasic());
 		}
 	
 	public static TreeMap<String,MetaObjectExtension> extensions=new TreeMap<String,MetaObjectExtension>();
 	public static Vector<Metadata> metadata=new Vector<Metadata>();
-	
-	public static int selectedMetadataId=-1;
-	
+
 	public static void addMetadata(Metadata m)
 		{
 		metadata.add(m);
 		}
+
+	
+	
+	public static int selectedMetadataId=-1;
 
 	/**
 	 * Get currently selected metadata or null
@@ -60,6 +64,20 @@ public abstract class Metadata
 	/** Flag if the metadata container itself has been modified */
 	private boolean coreMetadataModified=false;
 
+	
+	public int selectedMetaobjectId=-1;
+
+	/**
+	 * Get currently selected metadata or null
+	 */
+	public MetaObject getSelectedMetaobject()
+		{
+		return metaObject.get(selectedMetaobjectId);
+		}
+
+	
+	
+	
 	/**
 	 * Get a name description of the metadata
 	 */
