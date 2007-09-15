@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import evplugin.ev.*;
 import evplugin.keyBinding.KeyBinding;
+import org.jdom.*;
 
 
 //System.setOut(out)
@@ -36,16 +37,14 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		{
 		EV.personalConfigLoaders.put("basicwindow",new PersonalConfig()
 			{
-			public void loadPersonalConfig(Vector<String> arg)
+			public void loadPersonalConfig(Element e)
 				{
 				}
-			public String savePersonalConfig()
+			public void savePersonalConfig(Element e)
 				{
 				//Settings for individual windows
-				String s="";
 				for(BasicWindow w:BasicWindow.windowList)
-					s+=w.windowPersonalSettings();
-				return s;
+					w.windowPersonalSettings(e);
 				}
 			});
 		}
@@ -316,7 +315,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 * Called to obtain personal settings for that window
 	 * @return Something to write in the personal settings
 	 */
-	public abstract String windowPersonalSettings();
+	public abstract void windowPersonalSettings(Element e);
 	
 	
 	

@@ -15,7 +15,7 @@ import evplugin.imageset.*;
 import evplugin.keyBinding.KeyBinding;
 import evplugin.keyBinding.ScriptBinding;
 import evplugin.metadata.Metadata;
-
+import org.jdom.*;
 
 /**
  * Image window - Displays nuclei, markers etc on top of image and allows new
@@ -51,15 +51,25 @@ public class ImageWindow extends BasicWindow
 		
 		EV.personalConfigLoaders.put("imagewindow",new PersonalConfig()
 			{
-			public void loadPersonalConfig(Vector<String> arg)
+			public void loadPersonalConfig(Element e)
 				{
-				ImageWindow w=new ImageWindow(
-						Integer.parseInt(arg.get(1)), Integer.parseInt(arg.get(2)),
-						Integer.parseInt(arg.get(3)),Integer.parseInt(arg.get(4)));
-				w.frameControl.setGroup(Integer.parseInt(arg.get(5)));
-				w.comboChannel.lastSelectChannel=arg.get(6).substring(1);
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					ImageWindow win=new ImageWindow(x,y,w,h);
+					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
+					win.comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
+				
 				}
-			public String savePersonalConfig(){return "";}
+			public void savePersonalConfig(Element e){}
 			});
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
@@ -75,10 +85,17 @@ public class ImageWindow extends BasicWindow
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
 		Rectangle r=getBounds();
-		return "imagewindow "+r.x+" "+r.y+" "+r.width+" "+r.height+" "+frameControl.getGroup()+" ."+comboChannel.lastSelectChannel+";";
+		Element e=new Element("imagewindow");
+		e.setAttribute("x", ""+r.x);
+		e.setAttribute("y", ""+r.y);
+		e.setAttribute("w", ""+r.width);
+		e.setAttribute("h", ""+r.height);
+		e.setAttribute("group", ""+frameControl.getGroup());
+		e.setAttribute("lastSelectChannel", comboChannel.lastSelectChannel);
+		root.addContent(e);
 		}
 
 	/******************************************************************************************************

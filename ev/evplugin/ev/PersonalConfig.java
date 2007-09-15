@@ -1,9 +1,11 @@
 package evplugin.ev;
 
-import java.util.Vector;
+//import java.util.Vector;
+import org.jdom.*;
+
 
 public interface PersonalConfig
 	{
-	public void loadPersonalConfig(Vector<String> arg);
-	public String savePersonalConfig();
+	public void loadPersonalConfig(Element root);
+	public void savePersonalConfig(Element root);
 	}

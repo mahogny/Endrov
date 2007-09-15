@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import evplugin.ev.*;
+import org.jdom.*;
 
 /**
  * @author Johan Henriksson
@@ -58,9 +59,8 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element e)
 		{
-		return "";
 		}
 
 	

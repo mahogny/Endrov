@@ -11,7 +11,7 @@ import javax.swing.event.*;
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.metadata.*;
-
+import org.jdom.*;
 
 /**
  * Meta data window for imageset
@@ -30,16 +30,42 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		BasicWindow.addBasicWindowExtension(new ImagesetBasic());
 		EV.personalConfigLoaders.put("lastImagesetPath",new PersonalConfig()
 			{
-			public void loadPersonalConfig(Vector<String> arg)
+			public void loadPersonalConfig(Element e)
 				{
-				Imageset.lastImagesetPath=arg.get(1);
+				Imageset.lastImagesetPath=e.getAttributeValue("path");
 				}
-			public String savePersonalConfig()
+			public void savePersonalConfig(Element root)
 				{
-				return "lastImagesetPath \""+Imageset.lastImagesetPath+"\";\n";
+				Element e=new Element("lastImagesetPath");
+				e.setAttribute("path",Imageset.lastImagesetPath);
+				root.addContent(e);
 				}
 			});
 
+		EV.personalConfigLoaders.put("imagesetmetawindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new MetaWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
+				
+				Imageset.lastImagesetPath=e.getAttributeValue("path");
+				}
+			public void savePersonalConfig(Element root)
+				{
+				}
+			});
+		
 		
 		MetadataBasic.extensions.add(new MetadataExtension()
 			{
@@ -137,11 +163,15 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
-		return "";
-//		Rectangle r=getBounds();
-//		return "imagesetmetawindow "+r.x+" "+r.y+" "+r.width+" "+r.height+";";
+		Rectangle r=getBounds();
+		Element e=new Element("imagesetmetawindow");
+		e.setAttribute("x", ""+r.x);
+		e.setAttribute("y", ""+r.y);
+		e.setAttribute("w", ""+r.width);
+		e.setAttribute("h", ""+r.height);
+		root.addContent(e);
 		}
 
 	

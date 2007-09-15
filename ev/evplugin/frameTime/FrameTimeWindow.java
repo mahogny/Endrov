@@ -16,9 +16,7 @@ import evplugin.ev.EV;
 import evplugin.imageWindow.*;
 import evplugin.metadata.MetaObject;
 import evplugin.metadata.Metadata;
-//import evplugin.sql.*;
-
-//import evplugin.metadata.*;
+import org.jdom.*;
 
 //TODO: auto-replicate down to metadata
 
@@ -60,9 +58,8 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
-		return "";
 		}
 
 	

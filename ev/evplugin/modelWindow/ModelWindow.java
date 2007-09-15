@@ -7,6 +7,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.jdom.*;
+
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.ev.*;
@@ -32,13 +34,22 @@ public class ModelWindow extends BasicWindow
 		BasicWindow.addBasicWindowExtension(new ModelWindowBasic());
 		EV.personalConfigLoaders.put("modelwindow",new PersonalConfig()
 			{
-			public void loadPersonalConfig(Vector<String> arg)
+			public void loadPersonalConfig(Element e)
 				{
-				new ModelWindow(
-						Integer.parseInt(arg.get(1)), Integer.parseInt(arg.get(2)),
-						Integer.parseInt(arg.get(3)),Integer.parseInt(arg.get(4)));
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new ModelWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
 				}
-			public String savePersonalConfig(){return "";}
+			public void savePersonalConfig(Element e){}
 			});
 		}
 	
@@ -164,10 +175,15 @@ public class ModelWindow extends BasicWindow
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
 		Rectangle r=getBounds();
-		return "modelwindow "+r.x+" "+r.y+" "+r.width+" "+r.height+";";
+		Element e=new Element("modelwindow");
+		e.setAttribute("x", ""+r.x);
+		e.setAttribute("y", ""+r.y);
+		e.setAttribute("w", ""+r.width);
+		e.setAttribute("h", ""+r.height);
+		root.addContent(e);
 		}
 
 	

@@ -1,4 +1,5 @@
 class KeyBinding
+class ScriptBinding
 name EV Key Bindings
 author Johan Henriksson
 cite

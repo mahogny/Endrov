@@ -3,7 +3,11 @@ package evplugin.keyBinding;
 import java.awt.event.*;
 import java.util.*;
 
+import org.jdom.*;
+
 import evplugin.basicWindow.BasicWindow;
+import evplugin.ev.EV;
+import evplugin.ev.PersonalConfig;
 
 /**
  * Handle key bindings
@@ -21,8 +25,60 @@ public class KeyBinding
 	static
 		{
 		BasicWindow.addBasicWindowExtension(new BasicKeyBinding());
+		
+		EV.personalConfigLoaders.put("keyBinding",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{register(readXML(e));}
+			public void savePersonalConfig(Element root)
+				{
+				for(KeyBinding b:bindings.values())
+					{
+					Element e=new Element("keyBinding");
+					b.writeXML(e);
+					root.addContent(e);
+					}
+				}
+			});
 		}
 
+	/**
+	 * Make a keybinding out of an XML element
+	 */
+	public static KeyBinding readXML(Element e)
+		{
+		try
+			{
+			String plugin=e.getAttributeValue("plugin");
+			String desc=e.getAttributeValue("desc");
+			int keyCode=e.getAttribute("keyCode").getIntValue();
+			int modifier=e.getAttribute("modifier").getIntValue();
+			KeyBinding b=new KeyBinding(plugin, desc, keyCode, modifier);
+			String cs=e.getAttributeValue("key");
+			if(cs!=null)
+				b.key=cs.charAt(0);
+			return b;
+			}
+		catch (DataConversionException e1)
+			{
+			e1.printStackTrace();
+			return null;
+			}
+		}
+
+	/**
+	 * Write keybinding info to an element
+	 */
+	public void writeXML(Element e)
+		{
+		e.setAttribute("plugin",pluginName);
+		e.setAttribute("desc",description);
+		e.setAttribute("keyCode",""+keyCode);
+		e.setAttribute("modifier",""+modifierEx);
+		if(key!=null)
+			e.setAttribute("key",""+key);
+		}
+	
 	
 	/**
 	 * Register key binding. If it already exists, then it will not be readded (this allows overriding)

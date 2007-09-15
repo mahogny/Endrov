@@ -4,12 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
-import java.util.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.keyBinding.KeyBinding;
 import evplugin.script.*;
+import org.jdom.*;
 
 
 /**
@@ -30,13 +30,22 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		BasicWindow.addBasicWindowExtension(new ConsoleBasic());
 		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
 			{
-			public void loadPersonalConfig(Vector<String> arg)
+			public void loadPersonalConfig(Element e)
 				{
-				new ConsoleWindow(
-						Integer.parseInt(arg.get(1)),Integer.parseInt(arg.get(2)),
-						Integer.parseInt(arg.get(3)),Integer.parseInt(arg.get(4)));
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new ConsoleWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
 				}
-			public String savePersonalConfig(){return "";}
+			public void savePersonalConfig(Element e){}
 			});
 		}
 	
@@ -132,10 +141,15 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
 		Rectangle r=getBounds();
-		return "consolewindow "+r.x+" "+r.y+" "+r.width+" "+r.height+";";
+		Element e=new Element("consolewindow");
+		e.setAttribute("x", ""+r.x);
+		e.setAttribute("y", ""+r.y);
+		e.setAttribute("w", ""+r.width);
+		e.setAttribute("h", ""+r.height);
+		root.addContent(e);
 		}
 
 	

@@ -11,6 +11,8 @@ import evplugin.imageset.*;
 import evplugin.metadata.Metadata;
 //import evplugin.sql.*;
 import evplugin.basicWindow.*;
+import org.jdom.*;
+
 
 /**
  * Tool for generating expression profiles, I(x,t), where x is the distance to posterior projected to major axis.
@@ -101,9 +103,8 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener, Me
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public String windowPersonalSettings()
+	public void windowPersonalSettings(Element root)
 		{
-		return "";
 		}
 
 	
