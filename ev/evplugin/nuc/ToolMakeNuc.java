@@ -68,7 +68,8 @@ public class ToolMakeNuc implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		if(SwingUtilities.isLeftMouseButton(e))
+		NucLineage lin=r.getLineage();
+		if(SwingUtilities.isLeftMouseButton(e) && lin!=null)
 			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 		}
 	
@@ -121,7 +122,7 @@ public class ToolMakeNuc implements ImageWindowTool
 				if(Math.abs(w.w2sx(pos.r)-w.w2sx(0))>8)
 					{
 					NucLineage.selectedNuclei.clear();
-					NucLineage.selectedNuclei.add(nucName);
+					NucLineage.selectedNuclei.add(new NucPair(lin,nucName));
 					BasicWindow.updateWindows();
 					}
 				}
@@ -168,9 +169,10 @@ public class ToolMakeNuc implements ImageWindowTool
 		
 		
 		int curFramei=(int)w.frameControl.getFrame();
-		NucLineage lin=getLineage();
+		NucLineage lin=NucLineage.currentHover.getLeft();//getLineage();
 		if(lin==null)
 			return;
+		
 		if(KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			{
 			//Translate or change radius
@@ -180,19 +182,19 @@ public class ToolMakeNuc implements ImageWindowTool
 		else if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			{
 			//Divide nucleus
-			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover);
+			NucLineage.Nuc n=NucLineage.currentHover.getLeft().nuc.get(NucLineage.currentHover.getRight());
 			if(n!=null && r.interpNuc.containsKey(NucLineage.currentHover))
 				{
-				lin.divide(NucLineage.currentHover, curFramei);
+				lin.divide(NucLineage.currentHover.getRight(), curFramei);
 				BasicWindow.updateWindows();
 				}
 			}
 		else if(KeyBinding.get(NucLineage.KEY_SETZ).typed(e))
 			{
 			//Bring nucleus to this Z
-			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover);
+			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.getRight());
 			
-			String useNuc=NucLineage.currentHover;
+			NucPair useNuc=NucLineage.currentHover;
 			if(useNuc.equals("") && NucLineage.selectedNuclei.size()==1)
 				{
 				//Take a selected nucleus instead
@@ -215,7 +217,7 @@ public class ToolMakeNuc implements ImageWindowTool
 		else if(KeyBinding.get(NucLineage.KEY_SETEND).typed(e))
 			{
 			//Set end frame of nucleus
-			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover);
+			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.getRight());
 			if(n!=null)
 				{
 				if(n.end!=null && n.end==curFramei)
@@ -224,7 +226,7 @@ public class ToolMakeNuc implements ImageWindowTool
 					{
 					n.end=curFramei;
 					//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
-					lin.removePosAfterEqual(NucLineage.currentHover, curFramei+1);
+					lin.removePosAfterEqual(NucLineage.currentHover.getRight(), curFramei+1);
 					}
 				BasicWindow.updateWindows();
 				}
@@ -238,8 +240,9 @@ public class ToolMakeNuc implements ImageWindowTool
 			double x=0,y=0,z=0,r=0;
 			int num=0;
 			int firstFrame=1000000;
-			for(String childName:NucLineage.selectedNuclei)
+			for(NucPair childPair:NucLineage.selectedNuclei)
 				{
+				String childName=childPair.getRight();
 				NucLineage.Nuc n=lin.nuc.get(childName);
 				NucLineage.NucPos pos=n.pos.get(n.pos.firstKey());
 				x+=pos.x;				y+=pos.y;				z+=pos.z;				r+=pos.r;
@@ -297,15 +300,16 @@ public class ToolMakeNuc implements ImageWindowTool
 	public void mouseExited(MouseEvent e)
 		{
 		//	Delete nucleus if one is held and translating
-		NucLineage lin=r.getLineage();
+		NucLineage lin=r.getModifyingLineage();
 		NucLineage.Nuc n=r.getModifyingNuc();
+		
 		if(lin!=null && n!=null && holdTranslate)
 			{
 			//nuc temporarily flashes back here. don't know why (used to?)
 			int framei=(int)w.frameControl.getFrame();
 			n.pos.remove(framei);
 			if(n.pos.size()==0)
-				lin.removeNuc(r.modifyingNucName);
+				lin.removeNuc(r.modifyingNucName.getRight());
 			}
 		r.modifyingNucName=null;
 		BasicWindow.updateWindows();

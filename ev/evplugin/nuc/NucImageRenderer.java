@@ -13,10 +13,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public ImageWindow w;
 	
 	/** Interpolated nuclei */
-	public Map<String, NucLineage.NucInterp> interpNuc=null;
+	public Map<NucPair, NucLineage.NucInterp> interpNuc=null;
 	
 	/** Nuclei currently being moved */
-	public String modifyingNucName=null;
+	public NucPair modifyingNucName=null;
 	
 	
 	public NucImageRenderer(ImageWindow w)
@@ -41,9 +41,9 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public void draw(Graphics g)
 		{
 		//Update hover
-		String lastHover=NucLineage.currentHover;			
+		NucPair lastHover=NucLineage.currentHover;			
 		if(w.mouseInWindow)
-			NucLineage.currentHover="";
+			NucLineage.currentHover=new NucPair();
 		
 		NucLineage lin=getLineage();
 		if(lin!=null)
@@ -52,7 +52,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			for(String nucName:interpNuc.keySet())
 				{
 				NucLineage.NucInterp nuc=interpNuc.get(nucName);
-				drawNuc(g,nucName,nuc);
+				drawNuc(g,new NucPair(lin,nucName),nuc);
 				}
 			}
 		if(!lastHover.equals(NucLineage.currentHover))
@@ -83,8 +83,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 	/**
 	 * Draw a single nucleus
 	 */
-	private void drawNuc(Graphics g, String nucName, NucLineage.NucInterp nuc)
+	private void drawNuc(Graphics g, NucPair nucPair, NucLineage.NucInterp nuc)
 		{			
+		String nucName=nucPair.getRight();
+		
 		if(nuc==null)
 			{
 			Log.printError("nuc==null", null);
@@ -101,7 +103,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			
 			//Pick color of nucleus
 			Color nucColor;
-			if(NucLineage.selectedNuclei.contains(nucName))
+			if(NucLineage.selectedNuclei.contains(nucPair))
 				nucColor=Color.RED;
 			else
 				nucColor=Color.BLUE;
@@ -142,11 +144,16 @@ public class NucImageRenderer implements ImageWindowRenderer
 			
 			//Update hover
 			if(w.mouseInWindow && (w.mouseCurX-sox)*(w.mouseCurX-sox) + (w.mouseCurY-soy)*(w.mouseCurY-soy)<sor*sor)
-				NucLineage.currentHover=nucName;
+				{
+				System.out.println("Hover "+nucPair);
+				NucLineage.currentHover=nucPair;
+				}
 			
 			//Draw name of nucleus. maybe do this last
-			if(NucLineage.currentHover.equals(nucName) || NucLineage.selectedNuclei.contains(nucName))
+			if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))
 				{
+				
+				
 				g.setColor(Color.RED);
 				g.drawString(nucName, 
 						(int)sox-g.getFontMetrics().stringWidth(nucName)/2, 
@@ -203,7 +210,15 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(modifyingNucName==null)
 			return null;
 		else
-			return getLineage().getNucCreate(modifyingNucName);
+			return modifyingNucName.getLeft().getNucCreate(modifyingNucName.getRight());
+		}
+	
+	public NucLineage getModifyingLineage()
+		{
+		if(modifyingNucName==null)
+			return null;
+		else
+			return modifyingNucName.getLeft();
 		}
 	
 	}

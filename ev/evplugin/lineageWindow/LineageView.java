@@ -69,7 +69,7 @@ public class LineageView extends JPanel
 		{
 		if(!NucLineage.selectedNuclei.isEmpty())
 			{
-			String nucName=NucLineage.selectedNuclei.iterator().next();
+			String nucName=NucLineage.selectedNuclei.iterator().next().getRight();
 			Internal internal=getNucinfo(nucName);
 			if(displayHorizontalTree)
 				{
@@ -343,9 +343,9 @@ public class LineageView extends JPanel
 
 		//Draw name of nucleus. Warn if something is wrong
 		if(nuc.end!=null && nuc.child.size()>0)
-			drawNucName(g, "!!! "+nucName, midr, endc);
+			drawNucName(g, "!!! ", new NucPair(lin, nucName), midr, endc);
 		else
-			drawNucName(g, nucName, midr, endc);
+			drawNucName(g, "", new NucPair(lin, nucName), midr, endc);
 		}
 
 	/**
@@ -398,13 +398,14 @@ public class LineageView extends JPanel
 	/**
 	 * Draw text name
 	 */
-	private void drawNucName(Graphics g, String nucName, int midr, int endc)
+	private void drawNucName(Graphics g, String prefix, NucPair nucPair, int midr, int endc)
 		{
+		String nucName=nucPair.getRight();
 		int fontHeight=g.getFontMetrics().getHeight();
-		int fontWidth=g.getFontMetrics().stringWidth(nucName);
+		int fontWidth=g.getFontMetrics().stringWidth(prefix+nucName);
 		int textc=endc+5;
 		Graphics2D g2=(Graphics2D)g;
-		if(NucLineage.selectedNuclei.contains(nucName))
+		if(NucLineage.selectedNuclei.contains(nucPair))
 			g2.setColor(Color.RED);
 		else
 			g2.setColor(Color.BLUE);
@@ -416,7 +417,7 @@ public class LineageView extends JPanel
 			g2.drawString(nucName, 0, 0);
 			g2.translate(-textc, -textr);
 			//Make it clickable
-			regionClickList.add(new ClickRegionName(nucName, textc, textr-3*fontHeight/4, fontWidth,fontHeight));
+			regionClickList.add(new ClickRegionName(prefix+nucName, textc, textr-3*fontHeight/4, fontWidth,fontHeight));
 			//g.drawRect(textc, textr-3*fontHeight/4, fontWidth,fontHeight);
 			}
 		else
@@ -429,7 +430,7 @@ public class LineageView extends JPanel
 			g2.rotate(-Math.PI/2);
 			g2.translate(-textr, -textc);
 			//Make it clickable
-			regionClickList.add(new ClickRegionName(nucName, textr-fontHeight/4, textc, fontHeight,fontWidth)); 
+			regionClickList.add(new ClickRegionName(prefix+nucName, textr-fontHeight/4, textc, fontHeight,fontWidth)); 
 			//g.drawRect(textr-fontHeight/4, textc, fontHeight,fontWidth);
 			}
 		}
@@ -583,7 +584,8 @@ public class LineageView extends JPanel
 			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
 		public void clickRegion(MouseEvent e)
 			{
-			NucLineage.mouseSelectNuc(nucname, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+			if(lin!=null)
+				NucLineage.mouseSelectNuc(new NucPair(lin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 			BasicWindow.updateWindows();
 			}
 		}
