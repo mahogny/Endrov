@@ -10,7 +10,6 @@ import org.jdom.*;
 
 import evplugin.ev.*;
 import evplugin.basicWindow.*;
-import evplugin.consoleWindow.ConsoleWindow;
 import evplugin.metadata.*;
 import evplugin.nuc.*;
 
@@ -210,18 +209,22 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miRename)
 			{
-			if(NucLineage.selectedNuclei.size()==1 && view.lin!=null) 
+			if(NucLineage.selectedNuclei.size()==1) 
 				{
-				String oldName=NucLineage.selectedNuclei.iterator().next();
-				String newName=JOptionPane.showInputDialog("New name",oldName);
-				if(newName!=null && !newName.equals(oldName))
+				NucPair nucPair=NucLineage.selectedNuclei.iterator().next();
+				if(nucPair!=null)
 					{
-					if(view.lin.nuc.containsKey(newName))
-						JOptionPane.showMessageDialog(this, "Nucleus already exists");
-					else
+					String oldName=nucPair.getRight();
+					String newName=JOptionPane.showInputDialog("New name",oldName);
+					if(!newName.equals(oldName))
 						{
-						view.lin.renameNucleus(oldName, newName);
-						BasicWindow.updateWindows();
+						if(nucPair.getLeft().nuc.containsKey(newName))
+							JOptionPane.showMessageDialog(this, "Nucleus already exists");
+						else
+							{
+							nucPair.getLeft().renameNucleus(oldName, newName);
+							BasicWindow.updateWindows();
+							}
 						}
 					}
 				}
@@ -230,12 +233,16 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miMerge)
 			{
-			if(!NucLineage.selectedNuclei.isEmpty() && view.lin!=null)
+			if(!NucLineage.selectedNuclei.isEmpty())
 				{
-				Iterator<String> nucit=NucLineage.selectedNuclei.iterator();
-				String target=nucit.next();
+				Iterator<NucPair> nucit=NucLineage.selectedNuclei.iterator();
+				NucPair target=nucit.next();
 				while(nucit.hasNext())
-					view.lin.mergeNuclei(nucit.next(), target);
+					{
+					NucPair source=nucit.next();
+					if(target.getLeft()==source.getLeft())
+						(target.getLeft()).mergeNuclei(source.getRight(), target.getRight());
+					}
 				BasicWindow.updateWindows();
 				}
 			else
@@ -243,18 +250,18 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miPC)
 			{
-			if(view.lin!=null)
-				view.lin.createParentChildSelected();
+			if(!NucLineage.selectedNuclei.isEmpty())
+				{
+				NucPair first=NucLineage.selectedNuclei.iterator().next();
+				first.getLeft().createParentChildSelected();
+				}
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==miUnparent)
 			{
-			if(view.lin!=null)
-				{
-				for(String nuc:NucLineage.selectedNuclei)
-					view.lin.removeParentReference(nuc);
-				BasicWindow.updateWindows();
-				}
+			for(Pair<NucLineage,String> nuc:NucLineage.selectedNuclei)
+				(nuc.getLeft()).removeParentReference(nuc.getRight());
+			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==miSwapChildren)
 			{
@@ -266,21 +273,22 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miFate)
 			{
-			if(view.lin!=null && NucLineage.selectedNuclei.size()==1)
-				new FateDialog(this, view.lin, NucLineage.selectedNuclei.iterator().next());
+			if(NucLineage.selectedNuclei.size()==1)
+				new FateDialog(this, NucLineage.selectedNuclei.iterator().next());
 			else
 				JOptionPane.showMessageDialog(this, "Select 1 nucleus first");
 			}
 		else if(e.getSource()==miEndFrame)
 			{
-			if(view.lin!=null && !NucLineage.selectedNuclei.isEmpty())
+			if(!NucLineage.selectedNuclei.isEmpty())
 				{
 				String ends=JOptionPane.showInputDialog("End frame or empty for none");
 				if(ends!=null)
 					{
-					for(String nucName:NucLineage.selectedNuclei)
+					for(NucPair nucPair:NucLineage.selectedNuclei)
 						{
-						NucLineage.Nuc n=view.lin.nuc.get(nucName);
+						String nucName=nucPair.getRight();
+						NucLineage.Nuc n=nucPair.getLeft().nuc.get(nucName);
 						if(n!=null)
 							{
 							if(ends.equals(""))
@@ -290,7 +298,7 @@ public class LineageWindow extends BasicWindow
 								int end=Integer.parseInt(ends);
 								n.end=end;
 								//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
-								view.lin.removePosAfterEqual(NucLineage.currentHover, end+1);
+								nucPair.getLeft().removePosAfterEqual(NucLineage.currentHover.getRight(), end+1);
 								}
 							}
 						}
@@ -300,15 +308,15 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miRemoveNucleus)
 			{
-			if(view.lin!=null && !NucLineage.selectedNuclei.isEmpty())
+			if(!NucLineage.selectedNuclei.isEmpty())
 				{
 				String nucNames="";
-				for(String nucName:NucLineage.selectedNuclei)
-					nucNames=nucNames+nucName+" ";
+				for(NucPair nucName:NucLineage.selectedNuclei)
+					nucNames=nucNames+nucName.getRight()+" ";
 				int option = JOptionPane.showConfirmDialog(null, "Really want to delete: "+nucNames, "Remove?", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION)
-					for(String nucName:NucLineage.selectedNuclei)
-						view.lin.removeNuc(nucName);
+					for(NucPair nucPair:NucLineage.selectedNuclei)
+						nucPair.getLeft().removeNuc(nucPair.getRight());
 				BasicWindow.updateWindows();
 				}
 			}

@@ -42,10 +42,14 @@ public class CmdNucs extends Command
 	
 	public void select(Exp e) throws Exception
 		{
-		if(select)
-			NucLineage.selectedNuclei.add(e.stringValue());
-		else
-			NucLineage.selectedNuclei.remove(e.stringValue());
+		NucLineage lin=NucLineage.getSelectedLineage();
+		if(lin!=null)
+			{
+			if(select)
+				NucLineage.selectedNuclei.add(new NucPair(lin,e.stringValue()));
+			else
+				NucLineage.selectedNuclei.remove(new NucPair(lin, e.stringValue()));
+			}
 		}
 	
 	}

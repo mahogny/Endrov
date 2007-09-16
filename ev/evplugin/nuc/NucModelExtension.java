@@ -21,8 +21,9 @@ public class NucModelExtension implements ModelWindowExtension
 	
 	public static class NucModelWindowHook implements ModelWindowHook
 		{
-		private final HashMap<Integer,String> selectColorMap=new HashMap<Integer,String>();
+		private final HashMap<Integer,NucPair> selectColorMap=new HashMap<Integer,NucPair>();
 		private Map<String, NucLineage.NucInterp> interpNuc=new HashMap<String, NucLineage.NucInterp>();
+		private NucLineage interpLin=null;
 		private final ModelWindow w;
 		
 		public NucModelWindowHook(ModelWindow w)
@@ -39,19 +40,28 @@ public class NucModelExtension implements ModelWindowExtension
 			
 			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
 			if(lin==null)
+				{
+				interpLin=null;
 				interpNuc.clear();
+				}
 			else
+				{
+				interpLin=lin;
 				interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				}
 				
 			//Render nuclei
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
-			for(String nucName:interpNuc.keySet())
+			if(interpLin!=null)
 				{
-				int rawcol=w.view.reserveSelectColor(this);
-				selectColorMap.put(rawcol, nucName);
-				w.view.setReserveColor(gl, rawcol);
-				renderNucSel(gl,nucName, interpNuc.get(nucName));
+				for(String nucName:interpNuc.keySet())
+					{
+					int rawcol=w.view.reserveSelectColor(this);
+					selectColorMap.put(rawcol, new NucPair(interpLin,nucName));
+					w.view.setReserveColor(gl, rawcol);
+					renderNucSel(gl,nucName, interpNuc.get(nucName));
+					}
 				}
 			}
 
@@ -63,11 +73,11 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			//Render nuc body
 			for(String nucName:interpNuc.keySet())
-				renderNuc(gl,nucName, interpNuc.get(nucName));
+				renderNuc(gl, new NucPair(interpLin, nucName), interpNuc.get(nucName));
 			
 			//Render nuclei text
 			for(String nucName:interpNuc.keySet())
-				renderNucLabel(gl,nucName, interpNuc.get(nucName));
+				renderNucLabel(gl,new NucPair(interpLin, nucName), interpNuc.get(nucName));
 			}
 
 		
@@ -122,8 +132,10 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render body of one nucleus
 		 */
-		private void renderNuc(GL gl, String nucName, NucLineage.NucInterp nuc)
+		private void renderNuc(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
+			String nucName=nucPair.getRight();
+			
 			//Visibility rule
 			if(nuc.frameBefore==null)
 				return;
@@ -142,7 +154,7 @@ public class NucModelExtension implements ModelWindowExtension
 
 	    //Decide color based on if the nucleus is selected
 			float lightDiffuse[];
-	    if(NucLineage.selectedNuclei.contains(nucName))
+	    if(NucLineage.selectedNuclei.contains(nucPair))
 	    	lightDiffuse=new float[]{1,0,1};
 	    else
 	    	lightDiffuse=new float[]{1,1,1};
@@ -180,8 +192,10 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render labe of one nucleus
 		 */
-		private void renderNucLabel(GL gl, String nucName, NucLineage.NucInterp nuc)
+		private void renderNucLabel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
+			String nucName=nucPair.getRight();
+			
 			//Visibility rule
 			if(nuc.frameBefore==null)
 				return;
@@ -196,9 +210,9 @@ public class NucModelExtension implements ModelWindowExtension
 
 			
 	    //Unrotate camera, then move a bit closer to the camera
-	    if(NucLineage.currentHover.equals(nucName) 
+	    if(NucLineage.currentHover.equals(nucPair) 
 	    		|| w.miShowAllNucNames.isSelected() 
-	    		|| (NucLineage.selectedNuclei.contains(nucName) && w.miShowSelectedNucNames.isSelected()))
+	    		|| (NucLineage.selectedNuclei.contains(nucPair) && w.miShowSelectedNucNames.isSelected()))
 	    	{
 	    	w.view.camera.unrotateGL(gl);
 	    

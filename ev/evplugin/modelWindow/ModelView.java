@@ -184,8 +184,8 @@ public class ModelView extends GLCanvas
 			if(mouseX>=0 && mouseY>=0)
 				{
 				//Update hover
-				String lastHover=NucLineage.currentHover;
-				NucLineage.currentHover="";
+				NucPair lastHover=NucLineage.currentHover;
+				NucLineage.currentHover=new NucPair();
 
 				//This could later be replaced by line-sphere intersection. it would be
 				//a bit more cpu-intensive but cheap gfx-wise

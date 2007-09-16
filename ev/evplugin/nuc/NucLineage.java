@@ -24,11 +24,11 @@ public class NucLineage extends MetaObject
 	private static final String metaType="nuclineage";
 
 	/** Currently hidden nuclei. currently no sample. needed? */
-	public static HashSet<String> hiddenNuclei=new HashSet<String>();
+	public static HashSet<NucPair> hiddenNuclei=new HashSet<NucPair>();
 	/** Currently selected nuclei. currently no sample. needed? */
-	public static HashSet<String> selectedNuclei=new HashSet<String>();
+	public static HashSet<NucPair> selectedNuclei=new HashSet<NucPair>();
 	
-	public static String currentHover="";
+	public static NucPair currentHover=new NucPair(null,"");
 
 	public static final int KEY_TRANSLATE=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Translate",'z'));
 	public static final int KEY_CHANGE_RADIUS=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Change radius",'c'));
@@ -128,24 +128,26 @@ public class NucLineage extends MetaObject
 	 * @param nucname Name of nucleus or "". never null.
 	 * @param shift True if shift-key held
 	 */
-	public static void mouseSelectNuc(String nucname, boolean shift)
+	public static void mouseSelectNuc(NucPair nucPair, boolean shift)
 		{
+		NucLineage lin=nucPair.getLeft();
+		String nucname=nucPair.getRight();
 		//Shift-key used to select multiple
 		if(shift)
 			{
 			if(!nucname.equals(""))
 				{
-				if(selectedNuclei.contains(nucname))
-					selectedNuclei.remove(nucname);
+				if(selectedNuclei.contains(nucPair))
+					selectedNuclei.remove(nucPair);
 				else
-					selectedNuclei.add(nucname);
+					selectedNuclei.add(new NucPair(lin,nucname));
 				}
 			}
 		else
 			{
 			selectedNuclei.clear();				
 			if(!nucname.equals(""))
-				selectedNuclei.add(nucname);
+				selectedNuclei.add(new NucPair(lin,nucname));
 			}
 		BasicWindow.updateWindows();
 		}
@@ -314,15 +316,15 @@ public class NucLineage extends MetaObject
 	/**
 	 * Get all interpolated nuclei
 	 */
-	public Map<String, NucInterp> getInterpNuc(double frame)
+	public Map<NucPair, NucInterp> getInterpNuc(double frame)
 		{
-		HashMap<String, NucInterp> nucs=new HashMap<String, NucInterp>();
+		HashMap<NucPair, NucInterp> nucs=new HashMap<NucPair, NucInterp>();
 		for(String nucName:nuc.keySet())
 			{
 			Nuc n=nuc.get(nucName);
 			NucInterp inter=n.interpolate(frame);
 			if(inter!=null)
-				nucs.put(nucName, inter);
+				nucs.put(new NucPair(this, nucName), inter);
 			}
 		return nucs;
 		}
@@ -372,14 +374,16 @@ public class NucLineage extends MetaObject
 	
 	/**
 	 * Create parent-children relation based on selected nuclei
+	 * FIXME should be static
 	 */
 	public void createParentChildSelected()
 		{
 		String parentName=null;
 		int parentFrame=0;
 		NucLineage.Nuc parent=null;
-		for(String childName:NucLineage.selectedNuclei)
+		for(NucPair childPair:NucLineage.selectedNuclei)
 			{
+			String childName=childPair.getRight();
 			NucLineage.Nuc n=nuc.get(childName);
 			int firstFrame=n.pos.firstKey();
 			if(parentName==null || firstFrame<parentFrame)
@@ -390,7 +394,9 @@ public class NucLineage extends MetaObject
 				}
 			}
 		if(parent!=null)
-			for(String childName:NucLineage.selectedNuclei)
+			for(NucPair childPair:NucLineage.selectedNuclei)
+				{
+				String childName=childPair.getRight();
 				if(!childName.equals(parentName))
 					{
 					NucLineage.Nuc n=nuc.get(childName);
@@ -398,6 +404,7 @@ public class NucLineage extends MetaObject
 					parent.child.add(childName);
 					Log.printLog("new PC, parent: "+parentName+"child: "+childName);
 					}
+				}
 		metaObjectModified=true;
 		}
 	
@@ -440,6 +447,28 @@ public class NucLineage extends MetaObject
 	/******************************************************************************************************
 	 *                               Instance NucPos                                                      *
 	 *****************************************************************************************************/
+
+	/**
+	 * Get select lineage object (console reference)
+	 */
+	public static NucLineage getSelectedLineage()
+		{
+		Metadata m=Metadata.getSelectedMetadata();
+		if(m!=null)
+			{
+			MetaObject ob=m.getSelectedMetaobject();
+			if(ob instanceof NucLineage)
+				return (NucLineage)ob;
+			else
+				{
+				for(MetaObject ob2:m.metaObject.values())
+					if(ob2 instanceof NucLineage)
+						return (NucLineage)ob2;
+				return null;
+				}
+			}
+		return null;
+		}
 
 	/**
 	 * Time point

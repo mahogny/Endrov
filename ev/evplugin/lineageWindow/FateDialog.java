@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import evplugin.basicWindow.BasicWindow;
+import evplugin.ev.Pair;
 import evplugin.nuc.*;
 
 /**
@@ -24,12 +25,12 @@ public class FateDialog extends JDialog implements ActionListener
 	private JButton bOk=new JButton("Ok");
 	private JButton bCancel=new JButton("Cancel");
 	
-	public FateDialog(Frame owner, NucLineage lin, String nucName)
+	public FateDialog(Frame owner, Pair<NucLineage,String> sel)
 		{
-		super(owner, "Set fate for "+nucName, true);
+		super(owner, "Set fate for "+sel.getRight(), true);
 
-		this.lin=lin;
-		this.nucName=nucName;
+		this.lin=sel.getLeft();
+		this.nucName=sel.getRight();
 
 		JPanel bp=new JPanel(new GridLayout(1,2));
 		bp.add(bOk);
