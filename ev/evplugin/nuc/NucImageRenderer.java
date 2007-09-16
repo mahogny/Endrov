@@ -49,10 +49,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(lin!=null)
 			{
 			interpNuc=lin.getInterpNuc(w.frameControl.getFrame());			//maybe move this one later
-			for(String nucName:interpNuc.keySet())
+			for(NucPair nucPair:interpNuc.keySet())
 				{
-				NucLineage.NucInterp nuc=interpNuc.get(nucName);
-				drawNuc(g,new NucPair(lin,nucName),nuc);
+				NucLineage.NucInterp nuc=interpNuc.get(nucPair);
+				drawNuc(g,nucPair,nuc);
 				}
 			}
 		if(!lastHover.equals(NucLineage.currentHover))
@@ -144,10 +144,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			
 			//Update hover
 			if(w.mouseInWindow && (w.mouseCurX-sox)*(w.mouseCurX-sox) + (w.mouseCurY-soy)*(w.mouseCurY-soy)<sor*sor)
-				{
-				System.out.println("Hover "+nucPair);
 				NucLineage.currentHover=nucPair;
-				}
 			
 			//Draw name of nucleus. maybe do this last
 			if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))

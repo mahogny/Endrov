@@ -22,8 +22,7 @@ public class NucModelExtension implements ModelWindowExtension
 	public static class NucModelWindowHook implements ModelWindowHook
 		{
 		private final HashMap<Integer,NucPair> selectColorMap=new HashMap<Integer,NucPair>();
-		private Map<String, NucLineage.NucInterp> interpNuc=new HashMap<String, NucLineage.NucInterp>();
-		private NucLineage interpLin=null;
+		private Map<NucPair, NucLineage.NucInterp> interpNuc=new HashMap<NucPair, NucLineage.NucInterp>();
 		private final ModelWindow w;
 		
 		public NucModelWindowHook(ModelWindow w)
@@ -40,28 +39,19 @@ public class NucModelExtension implements ModelWindowExtension
 			
 			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
 			if(lin==null)
-				{
-				interpLin=null;
 				interpNuc.clear();
-				}
 			else
-				{
-				interpLin=lin;
 				interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
-				}
 				
 			//Render nuclei
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
-			if(interpLin!=null)
+			for(NucPair nucPair:interpNuc.keySet())
 				{
-				for(String nucName:interpNuc.keySet())
-					{
-					int rawcol=w.view.reserveSelectColor(this);
-					selectColorMap.put(rawcol, new NucPair(interpLin,nucName));
-					w.view.setReserveColor(gl, rawcol);
-					renderNucSel(gl,nucName, interpNuc.get(nucName));
-					}
+				int rawcol=w.view.reserveSelectColor(this);
+				selectColorMap.put(rawcol, nucPair);
+				w.view.setReserveColor(gl, rawcol);
+				renderNucSel(gl,nucPair, interpNuc.get(nucPair));
 				}
 			}
 
@@ -72,12 +62,12 @@ public class NucModelExtension implements ModelWindowExtension
 		public void displayFinal(GL gl)
 			{
 			//Render nuc body
-			for(String nucName:interpNuc.keySet())
-				renderNuc(gl, new NucPair(interpLin, nucName), interpNuc.get(nucName));
+			for(NucPair nucPair:interpNuc.keySet())
+				renderNuc(gl, nucPair, interpNuc.get(nucPair));
 			
 			//Render nuclei text
-			for(String nucName:interpNuc.keySet())
-				renderNucLabel(gl,new NucPair(interpLin, nucName), interpNuc.get(nucName));
+			for(NucPair nucPair:interpNuc.keySet())
+				renderNucLabel(gl,nucPair, interpNuc.get(nucPair));
 			}
 
 		
@@ -194,7 +184,6 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		private void renderNucLabel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
-			String nucName=nucPair.getRight();
 			
 			//Visibility rule
 			if(nuc.frameBefore==null)
@@ -221,6 +210,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    	//it would look better if it was toward the camera *center*
 	    	//also consider setting size such that it does not vary with distance
 	    	//3d text at all? overlay rendering should be faster
+				String nucName=nucPair.getRight();
 	    	w.view.renderString(gl, w.view.renderer, (float)(0.005*nuc.pos.r), nucName);
 	    	}
 	    
@@ -232,7 +222,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render nucleus in the invisible selection channel
 		 */
-		private void renderNucSel(GL gl, String nucName, NucLineage.NucInterp nuc)
+		private void renderNucSel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{    
 			gl.glEnable(GL.GL_CULL_FACE);
 			
@@ -240,7 +230,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glPushMatrix();
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
 	  	//If visible cell
-	    if(!NucLineage.hiddenNuclei.contains(nucName))
+	    if(!NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
 	      int NUC_POINT_DIV=6;
 	      GLU glu=new GLU();
@@ -262,7 +252,7 @@ public class NucModelExtension implements ModelWindowExtension
 			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
 			if(lin!=null)
 				{
-				Map<String, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
 				if(interpNuc.size()!=0)
 					{
 					//Calculate center
@@ -292,7 +282,7 @@ public class NucModelExtension implements ModelWindowExtension
 			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
 			if(lin!=null)
 				{
-				Map<String, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
 				if(interpNuc.size()!=0)
 					{
 					//Calculate maximum radius
