@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
+import evplugin.keyBinding.KeyBinding;
 import evplugin.metadata.*;
 
 
@@ -18,7 +19,9 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 	private final ImageWindow w;
 	private final ShellImageRenderer r;
 	
-	
+	private boolean holdTranslate=false;
+	private boolean holdRotate=false;
+
 	
 	public ShellImageToolMakeShell(ImageWindow w, ShellImageRenderer r)
 		{
@@ -136,12 +139,12 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 		Shell shell=getCurrentShell();
 		if(shell!=null)
 			{
-			if(w.keysHeld.contains(KeyEvent.VK_C))
+			if(holdRotate)
 				{
 				//Rotate
 				shell.angle+=dy/80.0;
 				}
-			else if(w.keysHeld.contains(KeyEvent.VK_Z))
+			else if(holdTranslate)
 				{
 				//Translate
 				shell.midx+=w.scaleS2w(dx);
@@ -155,8 +158,13 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 	
 	public void keyPressed(KeyEvent e)
 		{
+		if(KeyBinding.get(Shell.KEY_TRANSLATE).typed(e))
+			holdTranslate=true;
+		if(KeyBinding.get(Shell.KEY_ROTATE).typed(e))
+			holdRotate=true;
+
 		Shell shell=getCurrentShell();
-		if(e.getKeyCode()==KeyEvent.VK_X && shell!=null)
+		if(KeyBinding.get(Shell.KEY_SETZ).typed(e) && shell!=null)
 			{
 			//Bring shell to this Z
 			shell.midz=w.s2wz(w.frameControl.getZ());
@@ -164,7 +172,13 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 			}
 		}
 
-	public void keyReleased(KeyEvent e) {}
+	public void keyReleased(KeyEvent e)
+		{
+		if(KeyBinding.get(Shell.KEY_TRANSLATE).typed(e))
+			holdTranslate=false;
+		if(KeyBinding.get(Shell.KEY_ROTATE).typed(e))
+			holdRotate=false;
+		}
 
 	
 	public void paintComponent(Graphics g)

@@ -4,6 +4,7 @@ import org.jdom.DataConversionException;
 import org.jdom.Element;
 
 import evplugin.imageWindow.*;
+import evplugin.keyBinding.KeyBinding;
 import evplugin.metadata.*;
 import evplugin.modelWindow.*;
 
@@ -17,6 +18,11 @@ public class Shell extends MetaObject
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	private static final String metaType="shell";
+	
+	public static final int KEY_TRANSLATE=KeyBinding.register(new KeyBinding("Shell","Translate",'z'));
+	public static final int KEY_SETZ=KeyBinding.register(new KeyBinding("Shell","Set Z",'x'));
+	public static final int KEY_ROTATE=KeyBinding.register(new KeyBinding("Shell","Rotate",'c'));
+
 	
 	public static void initPlugin() {}
 	static

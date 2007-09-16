@@ -5,6 +5,7 @@ import java.util.*;
 import evplugin.basicWindow.BasicWindow;
 import evplugin.imageWindow.ImageWindow;
 import evplugin.imageWindow.ImageWindowExtension;
+import evplugin.keyBinding.KeyBinding;
 import evplugin.metadata.*;
 import evplugin.modelWindow.ModelWindow;
 import evplugin.script.*;
@@ -29,6 +30,14 @@ public class NucLineage extends MetaObject
 	
 	public static String currentHover="";
 
+	public static final int KEY_TRANSLATE=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Translate",'z'));
+	public static final int KEY_CHANGE_RADIUS=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Change radius",'c'));
+	public static final int KEY_SETZ=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Set Z",'x'));
+	public static final int KEY_DIVIDENUC=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Divide nucleus",'v'));
+	public static final int KEY_SETEND=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Set end frame",'b'));
+	public static final int KEY_MAKEPARENT=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Make parent",'g'));
+	public static final int KEY_SETPARENT=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Associate parent",'p'));
+	
 	
 	public static void initPlugin() {}
 	static
