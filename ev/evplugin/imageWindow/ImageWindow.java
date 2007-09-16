@@ -497,8 +497,6 @@ public class ImageWindow extends BasicWindow
 		mouseCurX=e.getX();
 		mouseCurY=e.getY();
 		
-		
-		
 		//Handle tool specific feedback
 		if(tool!=null)
 			tool.mouseMoved(e,dx,dy);
@@ -544,8 +542,9 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e)
 		{
+		//Self-note: linux machine at home (mahogny) uses UNIT_SCROLL
 		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
-			sliderZoom.setValue(sliderZoom.getValue()+e.getUnitsToScroll()*2);
+			sliderZoom.setValue(sliderZoom.getValue()+e.getUnitsToScroll()*10);
 		else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
 			sliderZoom.setValue(sliderZoom.getValue()+e.getUnitsToScroll()*2);
 		}

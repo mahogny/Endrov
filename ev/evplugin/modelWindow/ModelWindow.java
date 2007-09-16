@@ -397,9 +397,10 @@ public class ModelWindow extends BasicWindow
 		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
 			{
 			if((e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK)!=0)
-				view.camera.rotateCamera(0, 0, e.getUnitsToScroll()/300.0);
+				//view.pan(0,0,e.getUnitsToScroll()/5.0);
+				view.camera.rotateCamera(0, 0, e.getUnitsToScroll()/20.0);
 			else
-				view.pan(0,0,e.getUnitsToScroll());
+				view.pan(0,0,e.getUnitsToScroll()*20.0);
 			dataChangedEvent();
 			}
 		}
