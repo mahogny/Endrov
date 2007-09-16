@@ -4,7 +4,6 @@ package evgui;
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.imageWindow.*;
-import evplugin.keyBinding.KeyBinding;
 
 import java.io.*;
 
@@ -28,7 +27,6 @@ public class GUI
 		
 		try
 			{
-			KeyBinding.loadBindings(); //This is a semi-hack
 			EV.loadPlugins();
 			BasicWindowExitLast.integrate();
 			EV.loadPersonalConfig();		
