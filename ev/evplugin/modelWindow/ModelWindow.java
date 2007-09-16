@@ -249,7 +249,6 @@ public class ModelWindow extends BasicWindow
 		if(!ScriptBinding.runScriptKey(e))
 			{
 			if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
-			//if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
 				ConsoleWindow.focusConsole(this, view);
 			}
 		}

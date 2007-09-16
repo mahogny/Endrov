@@ -33,10 +33,11 @@ public class ImageWindow extends BasicWindow
 	public static final Vector<ImageWindowExtension> imageWindowExtensions=new Vector<ImageWindowExtension>();
 
 
-	public static final int KEY_STEP_BACK   =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
-	public static final int KEY_STEP_FORWARD=KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
-	public static final int KEY_STEP_UP     =KeyBinding.register(new KeyBinding("Image Window","Step up",'w'));
-	public static final int KEY_STEP_DOWN   =KeyBinding.register(new KeyBinding("Image Window","Step down",'s'));
+	public static final int KEY_STEP_BACK    =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
+	public static final int KEY_STEP_FORWARD =KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
+	public static final int KEY_STEP_UP      =KeyBinding.register(new KeyBinding("Image Window","Step up",'w'));
+	public static final int KEY_STEP_DOWN    =KeyBinding.register(new KeyBinding("Image Window","Step down",'s'));
+	public static final int KEY_HIDE_MARKINGS=KeyBinding.register(new KeyBinding("Image Window","Hide markings",' '));
 
 
 	public static void addImageWindowExtension(ImageWindowExtension e)
@@ -155,8 +156,6 @@ public class ImageWindow extends BasicWindow
 	/** Flag if the mouse cursor currently is in the window */
 	public boolean mouseInWindow=false;
 
-	/** Keys which are held down */
-	public HashSet<Integer> keysHeld=new HashSet<Integer>();
 
 	
 	
@@ -359,6 +358,9 @@ public class ImageWindow extends BasicWindow
 			updateImagePanel();
 		}
 
+	
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * NOTE! new key events are generated when mouse is moved!!
@@ -369,13 +371,12 @@ public class ImageWindow extends BasicWindow
 		if(!ScriptBinding.runScriptKey(e))
 			{
 			Imageset rec=comboChannel.getImageset();
-			if(e.getKeyCode()==KeyEvent.VK_SPACE)
+			if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
 				{
 				temporarilyHideMarkings=true;
 				repaint();
 				}
 			else if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
-	//		else if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
 				ConsoleWindow.focusConsole(this, imagePanel);
 			else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
 				{
@@ -398,7 +399,6 @@ public class ImageWindow extends BasicWindow
 				{
 				if(tool!=null)
 					tool.keyPressed(e);
-				keysHeld.add(e.getKeyCode());
 				}
 			}
 		}
@@ -409,14 +409,13 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void keyReleased(KeyEvent e)
 		{
-		if(e.getKeyCode()==KeyEvent.VK_SPACE)
+		if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
 			{
 			temporarilyHideMarkings=false;
 			repaint();
 			}
 		else if(tool!=null)
 			tool.keyReleased(e);
-		keysHeld.remove(e.getKeyCode());
 		}
 
 	

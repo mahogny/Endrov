@@ -9,6 +9,7 @@ import evplugin.basicWindow.*;
 import evplugin.ev.Log;
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
+import evplugin.keyBinding.KeyBinding;
 
 /**
  * Make nuclei by dragging an area. Also move nuclei.
@@ -19,7 +20,10 @@ public class ToolMakeNuc implements ImageWindowTool
 	{
 	private boolean active=false;
 	private double x1,x2,y1,y2;
-	
+
+	private boolean holdTranslate=false;
+	private boolean holdRadius=false;
+
 	private final ImageWindow w;
 	private final NucImageRenderer r;
 	
@@ -133,13 +137,14 @@ public class ToolMakeNuc implements ImageWindowTool
 		NucLineage.NucPos pos=r.getModifyingNucPos();
 		if(pos!=null)
 			{
-			if(w.keysHeld.contains(KeyEvent.VK_Z))
+			if(holdTranslate)
 				{
 				//Translate
 				pos.x+=w.scaleS2w(dx);
 				pos.y+=w.scaleS2w(dy);
 				}
-			else if(w.keysHeld.contains(KeyEvent.VK_C))
+			//else if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)) //KEYBIND
+			else if(holdRadius)
 				{
 				//Change radius
 				pos.r+=w.scaleS2w(dy);
@@ -149,23 +154,30 @@ public class ToolMakeNuc implements ImageWindowTool
 			}
 		}
 
+	
 	/*
 	 * (non-Javadoc)
 	 * @see client.ImageWindow.Tool#keyPressed(java.awt.event.KeyEvent)
 	 */
 	public void keyPressed(KeyEvent e)
 		{
+		if(KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e))
+			holdTranslate=true;
+		if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
+			holdRadius=true;
+		
+		
 		int curFramei=(int)w.frameControl.getFrame();
 		NucLineage lin=getLineage();
 		if(lin==null)
 			return;
-		if(e.getKeyCode()==KeyEvent.VK_Z || e.getKeyCode()==KeyEvent.VK_C)
+		if(KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			{
 			//Translate or change radius
 			if(r.modifyingNucName==null && r.interpNuc.containsKey(NucLineage.currentHover)) //TODO: guarantee that every nucleus has 1 pos except during load
 				r.modifyingNucName=NucLineage.currentHover;
 			}
-		else if(e.getKeyCode()==KeyEvent.VK_V)
+		else if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			{
 			//Divide nucleus
 			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover);
@@ -175,7 +187,7 @@ public class ToolMakeNuc implements ImageWindowTool
 				BasicWindow.updateWindows();
 				}
 			}
-		else if(e.getKeyCode()==KeyEvent.VK_X)
+		else if(KeyBinding.get(NucLineage.KEY_SETZ).typed(e))
 			{
 			//Bring nucleus to this Z
 			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover);
@@ -200,7 +212,7 @@ public class ToolMakeNuc implements ImageWindowTool
 				r.commitModifyingNuc();
 				}
 			}
-		else if(e.getKeyCode()==KeyEvent.VK_B)
+		else if(KeyBinding.get(NucLineage.KEY_SETEND).typed(e))
 			{
 			//Set end frame of nucleus
 			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover);
@@ -217,7 +229,7 @@ public class ToolMakeNuc implements ImageWindowTool
 				BasicWindow.updateWindows();
 				}
 			}
-		else if(e.getKeyCode()==KeyEvent.VK_G)
+		else if(KeyBinding.get(NucLineage.KEY_MAKEPARENT).typed(e))
 			{
 			//Create parent for selected nucleus/nuclei
 			String parentName=lin.getUniqueNucName();
@@ -246,7 +258,7 @@ public class ToolMakeNuc implements ImageWindowTool
 			this.r.w.frameControl.setFrame(firstFrame-1);
 			BasicWindow.updateWindows();
 			}
-		else if(e.getKeyCode()==KeyEvent.VK_P)
+		else if(KeyBinding.get(NucLineage.KEY_SETPARENT).typed(e))
 			{
 			//Create parent-children relation
 			lin.createParentChildSelected();
@@ -273,7 +285,12 @@ public class ToolMakeNuc implements ImageWindowTool
 	
 	public void keyReleased(KeyEvent e)
 		{
-		if(e.getKeyCode()==KeyEvent.VK_Z || e.getKeyCode()==KeyEvent.VK_C)
+		if(KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e))
+			holdTranslate=false;
+		if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
+			holdRadius=false;
+		
+		if(KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			r.commitModifyingNuc();
 		}
 
@@ -282,7 +299,7 @@ public class ToolMakeNuc implements ImageWindowTool
 		//	Delete nucleus if one is held and translating
 		NucLineage lin=r.getLineage();
 		NucLineage.Nuc n=r.getModifyingNuc();
-		if(lin!=null && n!=null && w.keysHeld.contains(KeyEvent.VK_Z))
+		if(lin!=null && n!=null && holdTranslate)
 			{
 			//nuc temporarily flashes back here. don't know why (used to?)
 			int framei=(int)w.frameControl.getFrame();
