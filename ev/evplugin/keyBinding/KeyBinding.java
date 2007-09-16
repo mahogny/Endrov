@@ -29,7 +29,7 @@ public class KeyBinding
 		EV.personalConfigLoaders.put("keyBinding",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
-				{register(readXML(e));}
+				{register(readXML(e),true);}
 			public void savePersonalConfig(Element root)
 				{
 				for(KeyBinding b:bindings.values())
@@ -66,18 +66,6 @@ public class KeyBinding
 			}
 		}
 
-	/**
-	 * Write keybinding info to an element
-	 */
-	public void writeXML(Element e)
-		{
-		e.setAttribute("plugin",pluginName);
-		e.setAttribute("desc",description);
-		e.setAttribute("keyCode",""+keyCode);
-		e.setAttribute("modifier",""+modifierEx);
-		if(key!=null)
-			e.setAttribute("key",""+key);
-		}
 	
 	
 	/**
@@ -85,18 +73,29 @@ public class KeyBinding
 	 */
 	public static int register(KeyBinding b)
 		{
+		return register(b, false);
+		}
+	public static int register(KeyBinding b, boolean forceUpdate)
+		{
 		//Search for binding if it already exists
 		for(Integer id:bindings.keySet())
 			{
 			KeyBinding tb=bindings.get(id);
 			if(tb.pluginName.equals(b.pluginName) && tb.description.equals(b.description))
+				{
+				if(forceUpdate)
+					bindings.put(id, b);
 				return id;
+				}
 			}
 		//Generate new binding
 		nextId++;
 		bindings.put(nextId, b);
 		return nextId;
 		}
+	
+	
+	
 	
 	/**
 	 * Get a key binding
@@ -107,17 +106,6 @@ public class KeyBinding
 		}
 
 	
-	public static void loadBindings()
-		{
-		//TODO
-		
-	/*	
-		KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
-		KeyBinding.register(new KeyBinding("Image Window","Step forward",'e'));
-		KeyBinding.register(new KeyBinding("Image Window","Step up",'o'));
-		KeyBinding.register(new KeyBinding("Image Window","Step down",'ä'));
-*/
-		}
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -125,7 +113,7 @@ public class KeyBinding
 	
 	public final String pluginName, description;
 	public Character key; //unsure?
-	public Integer keyCode;
+	public int keyCode;
 	public int modifierEx;
 
 
@@ -152,6 +140,21 @@ public class KeyBinding
 		this.key=null;
 		this.keyCode=keyCode;
 		this.modifierEx=modifierEx;
+		}
+	
+	
+	
+	/**
+	 * Write keybinding info to an element
+	 */
+	public void writeXML(Element e)
+		{
+		e.setAttribute("plugin",pluginName);
+		e.setAttribute("desc",description);
+		e.setAttribute("keyCode",""+keyCode);
+		e.setAttribute("modifier",""+modifierEx);
+		if(key!=null)
+			e.setAttribute("key",""+key);
 		}
 	
 		
