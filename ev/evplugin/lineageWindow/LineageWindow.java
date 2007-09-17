@@ -251,10 +251,7 @@ public class LineageWindow extends BasicWindow
 		else if(e.getSource()==miPC)
 			{
 			if(!NucLineage.selectedNuclei.isEmpty())
-				{
-				NucPair first=NucLineage.selectedNuclei.iterator().next();
-				first.getLeft().createParentChildSelected();
-				}
+				NucLineage.createParentChildSelected();
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==miUnparent)

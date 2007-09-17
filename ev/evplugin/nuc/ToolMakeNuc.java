@@ -264,7 +264,7 @@ public class ToolMakeNuc implements ImageWindowTool
 		else if(KeyBinding.get(NucLineage.KEY_SETPARENT).typed(e))
 			{
 			//Create parent-children relation
-			lin.createParentChildSelected();
+			NucLineage.createParentChildSelected();
 			BasicWindow.updateWindows();
 			}
 		}
