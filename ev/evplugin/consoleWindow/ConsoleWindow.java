@@ -93,7 +93,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	
 				history.append("Exception message: ");
 				history.append("\n");
-				history.append(sw.toString());
+				history.append(sw. toString());
 				}
 			}
 	

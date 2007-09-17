@@ -1,7 +1,6 @@
 package evplugin.ev;
 
 import java.io.*;
-import evplugin.ev.*;
 
 //maybe it should be line oriented rather than size oriented?
 
@@ -49,7 +48,7 @@ public class MemoryLog extends Log
 			s2.flush();
 
 			past.append("Exception message: ").append("\n");
-			past.append(s2.toString());
+			past.append(sw.toString());
 			}
 		cut();
 		}

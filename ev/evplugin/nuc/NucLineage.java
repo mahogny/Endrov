@@ -46,6 +46,7 @@ public class NucLineage extends MetaObject
 		Script.addCommand("nua", new CmdNucs(false,true));
 		Script.addCommand("nud", new CmdNucs(false,true));
 		Script.addCommand("nuda", new CmdNucda());
+		Script.addCommand("nuren", new CmdNucren());
 //		Script.addCommand("nun", new CmdNucName());
 
 		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
@@ -166,6 +167,49 @@ public class NucLineage extends MetaObject
 			}
 		return null;
 		}
+	
+	
+	/**
+	 * Create parent-children relation based on selected nuclei
+	 */
+	public static void createParentChildSelected()
+		{
+		if(NucLineage.selectedNuclei.isEmpty())
+			return;
+		String parentName=null;
+		int parentFrame=0;
+		NucLineage.Nuc parent=null;
+		NucLineage lin=NucLineage.selectedNuclei.iterator().next().getLeft();
+		for(NucPair childPair:NucLineage.selectedNuclei)
+			if(childPair.getLeft()==lin)
+				{
+				
+				String childName=childPair.getRight();
+				NucLineage.Nuc n=lin.nuc.get(childName);
+				int firstFrame=n.pos.firstKey();
+				if(parentName==null || firstFrame<parentFrame)
+					{
+					parentFrame=firstFrame;
+					parentName=childName;
+					parent=n;
+					}
+				}
+		if(parent!=null)
+			for(NucPair childPair:NucLineage.selectedNuclei)
+				if(childPair.getLeft()==lin)
+					{
+					String childName=childPair.getRight();
+					if(!childName.equals(parentName))
+						{
+						NucLineage.Nuc n=lin.nuc.get(childName);
+						n.parent=parentName;
+						parent.child.add(childName);
+						Log.printLog("new PC, parent: "+parentName+"child: "+childName);
+						}
+					}
+		lin.metaObjectModified=true;
+		}
+
 	
 	/******************************************************************************************************
 	 *                               Instance NucLineage                                                  *
@@ -343,13 +387,19 @@ public class NucLineage extends MetaObject
 	/**
 	 * Rename nucleus
 	 */
-	public void renameNucleus(String oldName, String newName)
+	public boolean renameNucleus(String oldName, String newName)
 		{
 		Nuc n=nuc.get(oldName);
-		nuc.remove(oldName);
-		nuc.put(newName, n);
-		updateNameReference(oldName, newName);
-		metaObjectModified=true;
+		if(n==null || (nuc.get(newName)!=null && !oldName.equals(newName)))
+			return false;
+		else
+			{
+			nuc.remove(oldName);
+			nuc.put(newName, n);
+			updateNameReference(oldName, newName);
+			metaObjectModified=true;
+			return true;
+			}
 		}
 	
 	/**
@@ -372,41 +422,6 @@ public class NucLineage extends MetaObject
 		}
 
 	
-	/**
-	 * Create parent-children relation based on selected nuclei
-	 * FIXME should be static
-	 */
-	public void createParentChildSelected()
-		{
-		String parentName=null;
-		int parentFrame=0;
-		NucLineage.Nuc parent=null;
-		for(NucPair childPair:NucLineage.selectedNuclei)
-			{
-			String childName=childPair.getRight();
-			NucLineage.Nuc n=nuc.get(childName);
-			int firstFrame=n.pos.firstKey();
-			if(parentName==null || firstFrame<parentFrame)
-				{
-				parentFrame=firstFrame;
-				parentName=childName;
-				parent=n;
-				}
-			}
-		if(parent!=null)
-			for(NucPair childPair:NucLineage.selectedNuclei)
-				{
-				String childName=childPair.getRight();
-				if(!childName.equals(parentName))
-					{
-					NucLineage.Nuc n=nuc.get(childName);
-					n.parent=parentName;
-					parent.child.add(childName);
-					Log.printLog("new PC, parent: "+parentName+"child: "+childName);
-					}
-				}
-		metaObjectModified=true;
-		}
 	
 	
 	/**
