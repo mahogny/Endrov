@@ -14,25 +14,6 @@ import evplugin.metadata.*;
  */
 public abstract class Imageset extends Metadata
 	{
-	/******************************************************************************************************
-	 *                               Static                                                               *
-	 *****************************************************************************************************/
-	/** Remember last path used to load an imageset */
-	public static String lastImagesetPath="/Volumes/TBU_xeon01_data/johan_x1/daemonoutput/";
-
-	
-	
-	/******************************************************************************************************
-	 *                               Instance                                                             *
-	 *****************************************************************************************************/
-
-	/*
-	protected void finalize() throws Throwable 
-	{
-	super.finalize();
-	System.out.println("Finalizing imageset "+getMetadataName());
-	}*/
-
 	/** Name of imageset */
 	protected String imageset;
 	

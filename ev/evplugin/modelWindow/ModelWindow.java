@@ -103,10 +103,11 @@ public class ModelWindow extends BasicWindow
 			e.newModelWindow(this);
 		
 		//Listeners
-		view.addMouseListener(this);
+		
 		view.addMouseMotionListener(this);
-		view.addKeyListener(this);
+		view.addMouseListener(this);
 		view.addMouseWheelListener(this);
+		view.addKeyListener(this);
 		view.setFocusable(true);
 		setFocusable(true);
 		addKeyListener(this);
@@ -277,10 +278,6 @@ public class ModelWindow extends BasicWindow
 			frameControl.stepBack(0.2);
 		}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
-	 */
 	public void mouseClicked(MouseEvent e)
 		{
 		//Clicking a nucleus selects it
@@ -288,24 +285,8 @@ public class ModelWindow extends BasicWindow
 			{
 			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 			}
-		
-		
-		
 		}
 	
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
-	 */
-	public void mouseEntered(MouseEvent e)
-		{
-		}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
-	 */
 	public void mousePressed(MouseEvent e)
 		{
 		mouseLastX = e.getX();
@@ -313,29 +294,26 @@ public class ModelWindow extends BasicWindow
 		view.mouseX=mouseLastX;
 		view.mouseY=mouseLastY;
 		}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
-	 */
 	public void mouseReleased(MouseEvent e)
 		{
 		}
+
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
-	 */
+	public void mouseEntered(MouseEvent e)
+		{
+		}
 	public void mouseExited(MouseEvent e)
 		{
 		view.mouseX=-1;
 		view.mouseY=-1;
 		}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
-	 */
+	public void mouseMoved(MouseEvent e)
+		{
+		view.mouseX=e.getX();
+		view.mouseY=e.getY();
+		view.repaint();
+		}
 	public void mouseDragged(MouseEvent e)
 		{
 		final int dx=e.getX()-mouseLastX;
@@ -366,16 +344,6 @@ public class ModelWindow extends BasicWindow
 		view.mouseY=mouseLastY;
 		}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
-	 */
-	public void mouseMoved(MouseEvent e)
-		{
-		view.mouseX=e.getX();
-		view.mouseY=e.getY();
-		view.repaint();
-		}
 	
 	
 	/*

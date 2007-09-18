@@ -44,12 +44,12 @@ public class Basic //implements BasicWindowExtension
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(Imageset.lastImagesetPath));
+				    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	Imageset.lastImagesetPath=chooser.getSelectedFile().getParent();
+				    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
 				    	Metadata.addMetadata(new SequenceImageset(filename));
 				    	}
 						}
@@ -62,12 +62,12 @@ public class Basic //implements BasicWindowExtension
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(Imageset.lastImagesetPath));
+				    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	Imageset.lastImagesetPath=chooser.getSelectedFile().getParent();
+				    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
 				    	Metadata.addMetadata(new SequenceImageset(filename));
 				    	}
 						}
