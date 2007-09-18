@@ -35,6 +35,10 @@ public class ShellModelHook implements ModelWindowHook
 		//TODO
 		}
 	
+	public void displayInit(GL gl)
+		{
+		}
+	
 	public void displayFinal(GL gl)
 		{
 		Metadata metadata=w.view.getMetadata();

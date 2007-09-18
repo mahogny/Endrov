@@ -30,19 +30,28 @@ public class NucModelExtension implements ModelWindowExtension
 			this.w=w;
 			}
 		
+		
 		/**
-		 * Render for selection
+		 * Prepare for rendering
 		 */
-		public void displaySelect(GL gl)
+		public void displayInit(GL gl)
 			{
 			selectColorMap.clear();
-			
+
+			//Get lineage
 			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
 			if(lin==null)
 				interpNuc.clear();
 			else
 				interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
-				
+			}
+		
+		/**
+		 * Render for selection
+		 */
+		public void displaySelect(GL gl)
+			{
+							
 			//Render nuclei
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());

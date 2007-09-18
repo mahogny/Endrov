@@ -9,6 +9,7 @@ import evplugin.ev.*;
  */
 public interface ModelWindowHook
 	{
+	public void displayInit(GL gl);
 	public void displaySelect(GL gl);
 	public void select(int id);
 	public void displayFinal(GL gl);

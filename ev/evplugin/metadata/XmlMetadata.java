@@ -1,6 +1,7 @@
 package evplugin.metadata;
 
 import java.io.*;
+
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.jdom.Document;
@@ -46,10 +47,13 @@ public class XmlMetadata extends Metadata
 		JFileChooser fc=getFileChooser();
 		if(filename!=null)
 			fc.setSelectedFile(filename);
+		else
+			fc.setCurrentDirectory(new File(Metadata.lastDataPath));
 //			fc.setCurrentDirectory(filename.getParentFile());
 		int ret=fc.showSaveDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
+			Metadata.lastDataPath=fc.getSelectedFile().getParent();
 			filename=fc.getSelectedFile();
 			if(!filename.getName().endsWith(".xml"))
 				filename=new File(filename.getAbsolutePath()+".xml");
@@ -66,9 +70,11 @@ public class XmlMetadata extends Metadata
 	public static void loadMeta()
 		{
 		JFileChooser fc=getFileChooser();
+		fc.setCurrentDirectory(new File(Metadata.lastDataPath));
 		int ret=fc.showOpenDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
+			Metadata.lastDataPath=fc.getSelectedFile().getParent();
 			File filename=fc.getSelectedFile();
 			XmlMetadata m=new XmlMetadata(filename.getAbsolutePath());
 			Metadata.addMetadata(m);

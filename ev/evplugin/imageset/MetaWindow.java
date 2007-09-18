@@ -11,6 +11,7 @@ import javax.swing.event.*;
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.metadata.*;
+
 import org.jdom.*;
 
 /**
@@ -32,12 +33,12 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			{
 			public void loadPersonalConfig(Element e)
 				{
-				Imageset.lastImagesetPath=e.getAttributeValue("path");
+				Metadata.lastDataPath=e.getAttributeValue("path");
 				}
 			public void savePersonalConfig(Element root)
 				{
 				Element e=new Element("lastImagesetPath");
-				e.setAttribute("path",Imageset.lastImagesetPath);
+				e.setAttribute("path",Metadata.lastDataPath);
 				root.addContent(e);
 				}
 			});
@@ -59,7 +60,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					e1.printStackTrace();
 					}
 				
-				Imageset.lastImagesetPath=e.getAttributeValue("path");
+				Metadata.lastDataPath=e.getAttributeValue("path");
 				}
 			public void savePersonalConfig(Element root)
 				{
@@ -101,7 +102,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 									{
 									double quality=Double.parseDouble(qualitys);
 									JFileChooser chooser = new JFileChooser();
-									chooser.setCurrentDirectory(new File(Imageset.lastImagesetPath));
+									chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
 									int returnVal = chooser.showSaveDialog(null);
 									if(returnVal == JFileChooser.APPROVE_OPTION)
 										{

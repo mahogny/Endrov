@@ -71,6 +71,9 @@ public class ModelView extends GLCanvas
 		this.window=window;
 
 		addGLEventListener(glEventListener);
+		
+		
+		
 		}
 	
 	
@@ -111,7 +114,7 @@ public class ModelView extends GLCanvas
 		public void init(GLAutoDrawable drawable)
 			{
 			//Get debug info
-			if(EV.debugMode)
+//			if(EV.debugMode)
 				{
 				drawable.setGL(new DebugGL(drawable.getGL()));
 				GL gl = drawable.getGL();
@@ -121,7 +124,7 @@ public class ModelView extends GLCanvas
 				Log.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
 				Log.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
 				}
-
+			
 			//Get GL context
 			GL gl = drawable.getGL();
 
@@ -165,6 +168,11 @@ public class ModelView extends GLCanvas
 		 */
 		public void display(GLAutoDrawable drawable)
 			{
+			System.out.println("display!");
+		
+			System.out.println("center: xyz "+camera.center.x+" "+camera.center.y+" "+camera.center.z);
+
+			
 			//Store away unaffected matrix
 			GL gl = drawable.getGL();
 			gl.glPushMatrix();
@@ -176,10 +184,15 @@ public class ModelView extends GLCanvas
 			//Get camera into position
 			camera.transformGL(gl);
 			
+			
+			//Prepare render extensions
+			for(ModelWindowHook h:window.modelWindowHooks)
+				h.displayInit(gl);
+			
 			/////////////////////////////////
 			// Render for selection
 			/////////////////////////////////
-
+			
 			//Skip this step if mouse isn't even within the window
 			if(mouseX>=0 && mouseY>=0)
 				{
@@ -237,6 +250,7 @@ public class ModelView extends GLCanvas
 
 			//Restore unaffected matrix
 			gl.glPopMatrix();
+			System.out.println("display2!");
 			}
 		
 		};
