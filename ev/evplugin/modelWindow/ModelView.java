@@ -168,11 +168,6 @@ public class ModelView extends GLCanvas
 		 */
 		public void display(GLAutoDrawable drawable)
 			{
-			System.out.println("display!");
-		
-			System.out.println("center: xyz "+camera.center.x+" "+camera.center.y+" "+camera.center.z);
-
-			
 			//Store away unaffected matrix
 			GL gl = drawable.getGL();
 			gl.glPushMatrix();
@@ -250,7 +245,6 @@ public class ModelView extends GLCanvas
 
 			//Restore unaffected matrix
 			gl.glPopMatrix();
-			System.out.println("display2!");
 			}
 		
 		};
