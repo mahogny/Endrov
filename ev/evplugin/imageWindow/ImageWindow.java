@@ -56,15 +56,11 @@ public class ImageWindow extends BasicWindow
 				{
 				try
 					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					ImageWindow win=new ImageWindow(x,y,w,h);
+					ImageWindow win=new ImageWindow(BasicWindow.getXMLbounds(e));
 					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
 					win.comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
 					}
-				catch (DataConversionException e1)
+				catch (Exception e1)
 					{
 					e1.printStackTrace();
 					}
@@ -184,12 +180,13 @@ public class ImageWindow extends BasicWindow
 	 */
 	public ImageWindow()
 		{
-		this(0,25,800,650);
+		this(new Rectangle(0,25,800,650));
+//		this(0,25,800,650);
 		}
 	/**
 	 * Make a new window at some location
 	 */
-	public ImageWindow(int x, int y, int w, int h)
+	public ImageWindow(/*int x, int y, int w, int h*/ Rectangle bounds)
 		{
 		for(ImageWindowExtension e:imageWindowExtensions)
 			e.newImageWindow(this);
@@ -246,7 +243,8 @@ public class ImageWindow extends BasicWindow
 		frameControl.setChannel(getImageset(), comboChannel.getChannel());
 		frameControl.setFrame(0);
 		setVisible(true);
-		setBounds(x,y,w,h);
+		setBounds(bounds);
+//		setBounds(x,y,w,h);
 		}
 
 	/**

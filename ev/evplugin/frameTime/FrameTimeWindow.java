@@ -13,6 +13,7 @@ import org.jfree.chart.plot.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.EV;
+import evplugin.ev.PersonalConfig;
 import evplugin.imageWindow.*;
 import evplugin.metadata.MetaObject;
 import evplugin.metadata.Metadata;
@@ -40,6 +41,17 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 				w.imageWindowTools.add(new ToolSetFrametime(w));
 				}
 			});
+		
+		EV.personalConfigLoaders.put("frametimewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try	{new FrameTimeWindow(BasicWindow.getXMLbounds(e));}
+				catch (Exception e1) {e1.printStackTrace();}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		
 		}
 	
 	
@@ -47,19 +59,21 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	private JButton bAdd=new JButton("Add");
 	private JButton bApply=new JButton("Apply");
 	private JButton bRefresh=new JButton("Refresh");
-	private JButton bSaveText=new JButton("Save text");
 	
 	private JPanel datapart=new JPanel();
 	private XYSeries frametimeSeries=new XYSeries("FT");
 	private Vector<JSpinner[]> inputVector=new Vector<JSpinner[]>();
 	
-	private ObjectCombo objectCombo=new ObjectCombo(this, false);
+	private ObjectCombo objectCombo=new ObjectCombo(this, true);
 
 	/**
 	 * Store down settings for window into personal config file
 	 */
 	public void windowPersonalSettings(Element root)
 		{
+		Element e=new Element("frametimewindow");
+		setXMLbounds(e);
+		root.addContent(e);
 		}
 
 	
@@ -69,18 +83,17 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	 */
 	public FrameTimeWindow()
 		{
-		this(100,100,1000,600);
+		this(new Rectangle(100,100,1000,600));
 		}
 	
 	/**
 	 * Make a new window at some specific location
 	 */
-	public FrameTimeWindow(int x, int y, int w, int h)
+	public FrameTimeWindow(Rectangle bounds)
 		{				
 		bAdd.addActionListener(this);
 		bApply.addActionListener(this);
 		bRefresh.addActionListener(this);
-		bSaveText.addActionListener(this);
 		objectCombo.addActionListener(this);
 		
 		XYDataset xyDataset = new XYSeriesCollection(frametimeSeries);
@@ -99,7 +112,6 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		buttonpanel.add(bAdd);
 		buttonpanel.add(bApply);
 		buttonpanel.add(bRefresh);
-		buttonpanel.add(bSaveText);
 		datapanel.add(buttonpanel, BorderLayout.SOUTH);
 		datapanel.add(datapartscroll, BorderLayout.CENTER);
 		setLayout(new BorderLayout());
@@ -117,7 +129,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		setTitle(EV.programName+" Frame/Time");
 		pack();
 		setVisible(true);
-		setBounds(x,y,w,h);
+		setBounds(bounds);
 		}
 
 	/**
@@ -140,8 +152,6 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 				//Create a new Frame/Time metaobject
 				FrameTime ft=new FrameTime();
 				meta.addMetaObject(ft);
-				//TODO: select in combo as well?
-				BasicWindow.updateWindows();
 				}
 			});
 		return new ObjectCombo.Alternative[]{a};
@@ -155,14 +165,18 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	 */
 	public void addEntry(int frame, double time)
 		{
-		JSpinner field[]=new JSpinner[2];
-		SpinnerModel numModel1 =new SpinnerNumberModel(frame,-1, 100000000,  1  );
-		SpinnerModel numModel2 =new SpinnerNumberModel(time, 0.0,100000000.0,1.0);
-		field[0]=new JSpinner(numModel1);
-		field[1]=new JSpinner(numModel2);
-		inputVector.add(field);
-		field[0].addChangeListener(this);
-		field[1].addChangeListener(this);
+		FrameTime meta=(FrameTime)objectCombo.getObject();
+		if(meta!=null)
+			{
+			JSpinner field[]=new JSpinner[2];
+			SpinnerModel numModel1 =new SpinnerNumberModel(frame,-1, 100000000,  1  );
+			SpinnerModel numModel2 =new SpinnerNumberModel(time, 0.0,100000000.0,1.0);
+			field[0]=new JSpinner(numModel1);
+			field[1]=new JSpinner(numModel2);
+			inputVector.add(field);
+			field[0].addChangeListener(this);
+			field[1].addChangeListener(this);
+			}
 		}
 	
 	/**
@@ -171,17 +185,6 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	public void loadData()
 		{
 		inputVector.clear();
-		/*
-		DB db=DB.getCurrentDB();
-		if(db!=null)
-			{
-			FrameTime frametime=new FrameTime(db, DB.currentSample);
-			frametime.fromSql();
-			for(FrameTime.Pair p:frametime.list)
-				addEntry(p.frame, p.frametime);
-			}		
-		*/
-		
 		
 		FrameTime meta=(FrameTime)objectCombo.getObject();
 		if(meta!=null)
@@ -289,10 +292,10 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			saveData();
 			loadData();
 			}
-		else if(e.getSource()==bSaveText)
+	/*	else if(e.getSource()==bSaveText)
 			{
 			
-			}
+			}*/
 			
 		
 		}

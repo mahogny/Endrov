@@ -6,7 +6,7 @@ import java.io.*;
 
 import evplugin.ev.*;
 import evplugin.imageset.*;
-import evplugin.metadata.*;
+//import evplugin.metadata.*;
 import evplugin.shell.*;
 
 
@@ -16,29 +16,26 @@ import evplugin.shell.*;
 public final class CalcThread extends BatchThread
 	{
 	private final Imageset rec;
-//	private final DB db;
 	private final double stripevar;
 	private final int numstripes;
 	private final String channelName;
 	private final int startFrame;
 	private final int endFrame;
-//	private final String currentSample;
 	private final String signalfilename;	
+	private final Shell shell;
 	
-	
-	public CalcThread(Imageset rec,	/*DB db,*/
+	public CalcThread(Imageset rec,	Shell shell,
 										double stripevar, int numstripes,	String channelName,	
 										int startFrame,	int endFrame,	
-										/*String currentSample, */String signalfilename)
+										String signalfilename)
 		{
 		this.rec=rec;
-//		this.db=db;
+		this.shell=shell;
 		this.stripevar=stripevar;
 		this.numstripes=numstripes;
 		this.channelName=channelName;
 		this.startFrame=startFrame;
 		this.endFrame=endFrame;
-//		this.currentSample=currentSample;
 		this.signalfilename=signalfilename;
 		}
 	
@@ -47,9 +44,10 @@ public final class CalcThread extends BatchThread
 		return "Slice/Signal "+rec.getMetadataName();
 		}
 	
-	
-	//TODO: multiple shells!!!
-	
+	/**
+	 * Get *one* shell. remove if possible
+	 */
+	/*
 	public Shell getShell()
 		{
 		for(MetaObject ob:rec.metaObject.values())
@@ -57,6 +55,7 @@ public final class CalcThread extends BatchThread
 				return (Shell)ob;
 		return null;
 		}
+		*/
 	
 	public void run()
 		{
@@ -64,13 +63,17 @@ public final class CalcThread extends BatchThread
 				
     try
     	{
-    	Shell shell=getShell();
+    	/*
+    	//This is a lazy man version for batching. but is it really a good thing? remove this if possible
+    	if(shell==null)
+    		shell=getShell();
     	if(shell==null)
     		{
     		batchLog("No shell"); //batchError?
     		batchDone();
     		return;
     		}
+    		*/
 
   		BufferedWriter signalfile = new BufferedWriter(new FileWriter(signalfilename));
     	double[][] lengthmap=null;
