@@ -19,7 +19,8 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	private final comboFilterMetaObject filter;
 	
 	//Needed to unselect special alternatives after user selected them
-	private Metadata curMeta=new EmptyMetadata();
+//	private Metadata curMeta=new EmptyMetadata();
+	private Metadata curMeta=null; //BIG CHANGE
 	private Integer curId=null;
 
 	
@@ -63,17 +64,27 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		Alternative a=(Alternative)getSelectedItem();
 		if(a!=null)
 			{
+			//Check if this is still the old alternative. If so, ignore this event.
+			if(curMeta==a.meta && curId==a.id)
+				return;
+			
 			if(a.special==null)
 				{
 				//Remember selection unless it is a special alternative
 				curMeta=a.meta;
 				curId=a.id;
 				}
-			else
+			else if(a.listener!=null)
 				{
 				//Execute special action
+				disableActionListeners();
 				setSelection();
+				enableActionListeners();
+				
+				//System.out.println("+ "+getSelectedIndex());
+				
 				a.listener.actionPerformed(e);
+				BasicWindow.updateWindows();
 				}
 			}
 		}
@@ -96,25 +107,40 @@ public class ObjectCombo extends JComboBox implements ActionListener
 
 	private void setSelection()
 		{
+//		System.out.println("a "+getSelectedIndex());
 		//If this list does not allow that no imageset is selected then just take one
-		if(!addEmpty && curMeta instanceof EmptyMetadata && getItemCount()>0)
+		if(!addEmpty)
 			{
-			curMeta=((Alternative)getItemAt(0)).meta;
-			curId=null;
+			if(curMeta instanceof EmptyMetadata && getItemCount()>0)
+				{
+				curMeta=((Alternative)getItemAt(0)).meta;
+				curId=null;
+				}
+
+//			System.out.println("b "+getSelectedIndex());
+
+			//Make sure a channel is selected unless the imageset is empty
+			if((curId==null || (curMeta!=null && curMeta.getMetaObject(curId)==null)) && 
+					(curMeta!=null && !curMeta.metaObject.isEmpty()))
+				curId=curMeta.metaObject.keySet().iterator().next();
 			}
-		
-		//Make sure a channel is selected unless the imageset is empty
-		if((curId==null || (curMeta.getMetaObject(curId)==null)) && 
-				!curMeta.metaObject.isEmpty())
-			curId=curMeta.metaObject.keySet().iterator().next();
-		
+//		System.out.println("c "+getSelectedIndex()+ " "+curMeta);
+
 		//Reselect old item in list
-		for(int i=0;i<getItemCount();i++)
+		if(curMeta==null)
 			{
-			Alternative a=(Alternative)getItemAt(i);
-			if(a.meta==curMeta && a.id==curId)
-				setSelectedIndex(i);
+			if(getItemCount()>0)
+				setSelectedIndex(0);
 			}
+		else
+			for(int i=0;i<getItemCount();i++)
+				{
+				Alternative a=(Alternative)getItemAt(i);
+				if(a.meta==curMeta && a.id==curId)
+					setSelectedIndex(i);
+				}
+//		System.out.println("d "+getSelectedIndex());
+
 		}
 	
 	/**
@@ -167,13 +193,13 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	 * Get the selected imageset
 	 * @return Imageset or null
 	 */
-	public Metadata getImageset()
+	public Imageset getImageset()
 		{		
 		Alternative a=(Alternative)getSelectedItem();
 		if(a==null)
 			return new EmptyImageset();
 		else
-			return a.meta;
+			return (Imageset)a.meta;
 		}
 	
 
@@ -198,9 +224,15 @@ public class ObjectCombo extends JComboBox implements ActionListener
 			this.special=special;
 			this.listener=listener;
 			}
+		public boolean isEmpty()
+			{
+			return meta==null;
+			}
 		public String toString()
 			{
-			if(special==null)
+			if(isEmpty())
+				return "";
+			else if(special==null)
 				{
 				MetaObject o=meta.getMetaObject(id);
 				if(o==null)

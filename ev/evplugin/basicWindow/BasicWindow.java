@@ -1,6 +1,7 @@
 package evplugin.basicWindow;
 
 import java.awt.event.*;
+import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -88,6 +89,24 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	public static boolean holdModifier1(KeyEvent e)
 		{
 		return e.getModifiersEx()==KeyEvent.META_DOWN_MASK || e.getModifiersEx()==KeyEvent.CTRL_DOWN_MASK;
+		}
+	
+	public static Rectangle getXMLbounds(Element e) throws Exception
+		{
+		int x=e.getAttribute("x").getIntValue();
+		int y=e.getAttribute("y").getIntValue();
+		int w=e.getAttribute("w").getIntValue();
+		int h=e.getAttribute("h").getIntValue();
+		return new Rectangle(x,y,w,h);
+		}
+	
+	public void setXMLbounds(Element e)
+		{
+		Rectangle r=getBounds();
+		e.setAttribute("x", ""+r.x);
+		e.setAttribute("y", ""+r.y);
+		e.setAttribute("w", ""+r.width);
+		e.setAttribute("h", ""+r.height);
 		}
 	
 	/******************************************************************************************************

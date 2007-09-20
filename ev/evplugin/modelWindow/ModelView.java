@@ -114,7 +114,7 @@ public class ModelView extends GLCanvas
 		public void init(GLAutoDrawable drawable)
 			{
 			//Get debug info
-//			if(EV.debugMode)
+			if(EV.debugMode)
 				{
 				drawable.setGL(new DebugGL(drawable.getGL()));
 				GL gl = drawable.getGL();
