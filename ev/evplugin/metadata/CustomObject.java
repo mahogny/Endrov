@@ -2,15 +2,15 @@ package evplugin.metadata;
 import org.jdom.*;
 
 /**
- * Meta object of unknown type. Typically custom data or corresponding plugin is missing
+ * Meta object of unknown/custom type. Either real custom data or corresponding plugin is missing
  * @author Johan Henriksson
  */
-public class MetaObjectUnknown extends MetaObject
+public class CustomObject extends MetaObject
 	{
 	public final Element xml;
 	public final String metaType;
 	
-	public MetaObjectUnknown(Element xml)
+	public CustomObject(Element xml)
 		{
 		this.xml=xml;
 		metaType=xml.getName();

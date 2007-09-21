@@ -163,7 +163,7 @@ public abstract class Metadata
   			MetaObject o;
   			if(ext==null)
   				{
-  				o=new MetaObjectUnknown(child);
+  				o=new CustomObject(child);
   				Log.printLog("Found unknown meta object of type "+child.getName());
   				}
   			else

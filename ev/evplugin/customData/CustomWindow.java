@@ -1,15 +1,12 @@
 package evplugin.customData;
 
+
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
+import javax.swing.tree.*;
 import javax.swing.event.*;
 
-import java.util.*;
-import org.jfree.data.xy.*;
-import org.jfree.chart.*;
-import org.jfree.chart.plot.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
@@ -22,7 +19,8 @@ import org.jdom.*;
  * Adjust Frame-Time mapping
  * @author Johan Henriksson
  */
-public class CustomWindow extends BasicWindow implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject
+public class CustomWindow extends BasicWindow 
+implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, TreeSelectionListener, TableModelListener
 	{
 	static final long serialVersionUID=0;
 
@@ -43,15 +41,22 @@ public class CustomWindow extends BasicWindow implements ActionListener, ChangeL
 		
 		}
 	
-	
 	//GUI components
-	private JButton bAdd=new JButton("Add");
-	private JButton bApply=new JButton("Apply");
-	private JButton bRefresh=new JButton("Refresh");
-	
-	
 	private ObjectCombo objectCombo=new ObjectCombo(this, true);
-
+	private CustomTreeModel treeModel=new CustomTreeModel();
+	private JTree tree=new JTree(treeModel);
+	private JPanel treeFields=new JPanel();
+	
+	private CustomTableModel tableModel=new CustomTableModel();
+	private JTable table=new JTable(tableModel);
+	
+	private JButton btRemoveEntry=new JButton("Remove entry");
+	private JButton btInsertEntry=new JButton("Insert entry");
+	private JButton btRemoveColumn=new JButton("Remove column");
+	private JButton btInsertColumn=new JButton("Insert column");
+	
+	
+	
 	/**
 	 * Store down settings for window into personal config file
 	 */
@@ -78,19 +83,38 @@ public class CustomWindow extends BasicWindow implements ActionListener, ChangeL
 	public CustomWindow(Rectangle bounds)
 		{		
 		objectCombo.addActionListener(this);
+		tree.addTreeSelectionListener(this);
 
-		JPanel treePanel=new JPanel();
-		JPanel tablePanel=new JPanel();
+		btInsertColumn.addActionListener(this);
+		btRemoveColumn.addActionListener(this);
+		btInsertEntry.addActionListener(this);
+		btRemoveEntry.addActionListener(this);
 		
+		JScrollPane treeScroll=new JScrollPane(tree);
+		JPanel treePanel=new JPanel(new BorderLayout());
+		treePanel.add(treeScroll,BorderLayout.CENTER);
+		treePanel.add(treeFields,BorderLayout.SOUTH);
+
+		
+		JPanel tablePanel=new JPanel(new BorderLayout());
+		JScrollPane tableScroll=new JScrollPane(table);
+		JPanel tableBottom=new JPanel(new GridLayout(1,4));
+		tableBottom.add(btInsertEntry);
+		tableBottom.add(btRemoveEntry);
+		tableBottom.add(btInsertColumn);
+		tableBottom.add(btRemoveColumn);
+		tablePanel.add(tableScroll,BorderLayout.CENTER);
+		tablePanel.add(tableBottom,BorderLayout.SOUTH);
+		
+		setLayout(new BorderLayout());
 		JTabbedPane tabs=new JTabbedPane();
 		tabs.addTab("Tree", treePanel);
 		tabs.addTab("Table", tablePanel);
-		
-		setLayout(new BorderLayout());
-		add(tabs, BorderLayout.CENTER);
 		add(objectCombo, BorderLayout.NORTH);
+		add(tabs, BorderLayout.CENTER);
 		
-		loadData();
+		//Update GUI
+		fillTreeAttributesPane((CustomTreeElement)treeModel.getRoot());
 		
 		//Window overall things
 		setTitle(EV.programName+" Custom Data");
@@ -104,7 +128,7 @@ public class CustomWindow extends BasicWindow implements ActionListener, ChangeL
 	 */
 	public boolean comboFilterMetaObjectCallback(MetaObject ob)
 		{
-		return ob instanceof MetaObjectUnknown;
+		return ob instanceof CustomObject;
 		}
 	/**
 	 * Add special options for the combo box
@@ -115,62 +139,133 @@ public class CustomWindow extends BasicWindow implements ActionListener, ChangeL
 		}
 
 	
-	
-	
 	/**
-	 * Load data 
+	 * Callback: selection in tree changed
 	 */
-	public void loadData()
+	public void valueChanged(TreeSelectionEvent e2)
 		{
-//		inputVector.clear();
-		
-		MetaObjectUnknown meta=(MetaObjectUnknown)objectCombo.getObject();
-		if(meta!=null)
-			;
-//			for(Pair p:meta.list)
-//				addEntry(p.frame, p.frametime);
-		
-		fillDatapart();
-		}
-	
-	
-	
-	/**
-	 * Save data 
-	 */
-	public void saveData()
-		{
-		//should save even exist?
-		MetaObjectUnknown meta=(MetaObjectUnknown)objectCombo.getObject();
-		if(meta!=null)
+		TreePath p=tree.getSelectionPath();
+		if(p==null)
 			{
-//			meta.list.clear();
-			
-//			for(int i=0;i<inputVector.size();i++)
-	//			meta.add((Integer)inputVector.get(i)[0].getValue(), (Double)inputVector.get(i)[1].getValue());
-			meta.metaObjectModified=true;
+			fillTreeAttributesPane(null);
+			tableModel.setRoot(objectCombo.getObject(), null);
+			}
+		else
+			{
+			CustomTreeElement e=(CustomTreeElement)p.getLastPathComponent();
+			fillTreeAttributesPane(e);
+			tableModel.setRoot(objectCombo.getObject(), e.e);
 			}
 		}
-	
 
+	
 	/**
-	 * Regenerate UI
+	 * Update GUI: attribute pane for tree
 	 */
-	public void fillDatapart()
+	public void fillTreeAttributesPane(final CustomTreeElement e)
 		{
-		/*
-		datapart.removeAll();
-		datapart.setLayout(new GridLayout(1+inputVector.size(),2));
-		datapart.add(new JLabel("Frame"));
-		datapart.add(new JLabel("Time"));
-		for(int i=0;i<inputVector.size();i++)
+		treeFields.removeAll();
+		if(e!=null && e.e!=null)
 			{
-			datapart.add(inputVector.get(i)[0]);
-			datapart.add(inputVector.get(i)[1]);
+			java.util.List attr=e.e.getAttributes();
+			treeFields.setLayout(new GridLayout(attr.size()+2,1));
+			
+			//The value
+			//what about trimming?
+			JPanel p2=new JPanel(new BorderLayout());
+			JTextField cf=new JTextField(e.e.getText());
+			p2.add(new JLabel("Value:"));
+			p2.add(cf,BorderLayout.CENTER);
+			treeFields.add(cf);
+			
+			//Every attribute
+			for(Object o:attr)
+				{
+				final Attribute a=(Attribute)o;
+				JPanel p=new JPanel(new BorderLayout());
+				p.add(new JLabel(a.getName()+":"),BorderLayout.WEST);
+				JTextField tf=new JTextField(a.getValue());
+				p.add(tf,BorderLayout.CENTER);
+				JButton bremove=new JButton("X");
+				p.add(bremove, BorderLayout.EAST);
+				treeFields.add(p);
+				
+				bremove.addActionListener(new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e2)
+						{
+						TreePath p=e.getPath();
+						e.e.removeAttribute(a.getName());
+						treeModel.updateElement(e);
+						tree.setSelectionPath(p);    //should not be needed
+						}
+					});
+				}
+
+			
+			//Buttons below
+			JPanel p3=new JPanel(new GridLayout(1,3));
+			JButton bNewField=new JButton("Add field");
+			JButton bNewChild=new JButton("Add child");
+			JButton bRemove=new JButton("Remove element");
+			p3.add(bNewChild);
+			p3.add(bNewField);
+			p3.add(bRemove);
+			treeFields.add(p3);
+			
+			bNewChild.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e2)
+					{
+					String name=JOptionPane.showInputDialog("Name of child");
+					if(name!=null)
+						{
+						TreePath p=e.getPath();
+						treeModel.addChild(e, new Element(name));
+						tree.setSelectionPath(p);    //should not be needed
+						objectCombo.getObject().metaObjectModified=true;
+						}
+					}
+				});
+				
+			bNewField.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e2)
+					{
+					String name=JOptionPane.showInputDialog("Name of field");
+					if(name!=null)
+						{
+						e.e.setAttribute(name, "");
+						TreePath p=e.getPath();
+						treeModel.updateElement(e);
+						tree.setSelectionPath(p);    //should not be needed
+						objectCombo.getObject().metaObjectModified=true;
+						}
+					}
+				});
+			
+			bRemove.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e2)
+					{
+					CustomTreeElement parent=e.parent;
+					if(parent!=null)
+						{
+						parent.e.removeContent(e.e);
+						treeModel.emitAllChanged();
+						tree.setSelectionPath(parent.getPath());
+						objectCombo.getObject().metaObjectModified=true;
+						}
+					}
+				});
+			
 			}
-			*/
 		setVisible(true);
 		}
+	
+	
+	
+	
 	
 	
 	/*
@@ -181,21 +276,31 @@ public class CustomWindow extends BasicWindow implements ActionListener, ChangeL
 		{
 		if(e.getSource()==objectCombo)
 			{
-			loadData();
+			treeModel.setMetaObject((CustomObject)objectCombo.getObject());
+			
 			}
-		if(e.getSource()==bAdd)
+		else if(e.getSource()==btInsertEntry)
+			{
+			//TODO
+			
+			}
+		else if(e.getSource()==btRemoveEntry)
+			{
+			int row=table.getSelectedRow();
+			if(row!=-1)
+				tableModel.removeRow(row);
+			}
+		else if(e.getSource()==btInsertColumn)
 			{
 			
-			fillDatapart();
+			
+			//TODO
 			}
-		else if(e.getSource()==bRefresh)
+		else if(e.getSource()==btRemoveColumn)
 			{
-			loadData();
-			}
-		else if(e.getSource()==bApply)
-			{
-			saveData();
-			loadData();
+			int col=table.getSelectedColumn();
+			if(col!=-1)
+				tableModel.removeColumn(col);
 			}
 		
 		}
@@ -218,7 +323,27 @@ public class CustomWindow extends BasicWindow implements ActionListener, ChangeL
 	public void dataChangedEvent()
 		{
 		objectCombo.updateObjectList();
-		loadData();
+		//copy list
+		fillTreeAttributesPane((CustomTreeElement)treeModel.getRoot());
+		}
+
+
+
+	public void tableChanged(TableModelEvent e)
+		{
+		if(e.getType()==TableModelEvent.INSERT)
+			{
+			
+			}
+		else if(e.getType()==TableModelEvent.DELETE)
+			{
+			
+			}
+		else if(e.getType()==TableModelEvent.UPDATE)
+			{
+			
+			}
+		//TODO: update tree
 		}
 	
 	
