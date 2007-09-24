@@ -1,0 +1,9 @@
+#temporary stuff to study embryo rotation
+#1 command: make rotation object. replace existing
+#util to collect all rotation objects into one matlab readable file
+#matlab code to analyze
+
+#class CustomWindow
+name Embryo rotation
+author Johan Henriksson
+cite
