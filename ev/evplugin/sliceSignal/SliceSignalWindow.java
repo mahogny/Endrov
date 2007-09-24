@@ -62,9 +62,13 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 		{
 		return ob instanceof Shell;
 		}
-	public Alternative[] comboAddAlternative(ObjectCombo combo, Metadata meta)
+	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, Metadata meta)
 		{
 		return new Alternative[]{};
+		}
+	public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)
+		{
+		return new ObjectCombo.Alternative[]{};
 		}
 	
 	/**

@@ -16,7 +16,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 
 	private final boolean addEmpty;
 	private ActionListener saveListeners[]=null;
-	private final comboFilterMetaObject filter;
+	private final comboFilterMetaObject filterObject;
 	
 	//Needed to unselect special alternatives after user selected them
 //	private Metadata curMeta=new EmptyMetadata();
@@ -48,10 +48,10 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	/**
 	 * Construct new channel combo, needs access to global data
 	 */
-	public ObjectCombo(comboFilterMetaObject filter, boolean addEmptyChannel)
+	public ObjectCombo(comboFilterMetaObject filterObject, boolean addEmptyChannel)
 		{
 		this.addEmpty=addEmptyChannel;
-		this.filter=filter;
+		this.filterObject=filterObject;
 		addActionListener(this);
 		
 		
@@ -155,9 +155,9 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		for(Metadata thisMeta:Metadata.metadata)
 			{
 			for(int id:thisMeta.metaObject.keySet())
-				if(filter.comboFilterMetaObjectCallback(thisMeta.getMetaObject(id)))
+				if(filterObject.comboFilterMetaObjectCallback(thisMeta.getMetaObject(id)))
 					addItem(new Alternative(thisMeta,id, null, null));
-			for(Alternative a:filter.comboAddAlternative(this, thisMeta))
+			for(Alternative a:filterObject.comboAddObjectAlternative(this, thisMeta))
 				addItem(a);
 			}
 		}
@@ -208,7 +208,8 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	public static interface comboFilterMetaObject
 		{
 		public boolean comboFilterMetaObjectCallback(MetaObject ob);
-		public Alternative[] comboAddAlternative(ObjectCombo combo, Metadata meta);
+		public Alternative[] comboAddObjectAlternative(ObjectCombo combo, Metadata meta);
+		public Alternative[] comboAddAlternative(ObjectCombo combo);
 		}
 	
 	public static class Alternative
@@ -231,7 +232,12 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		public String toString()
 			{
 			if(isEmpty())
-				return "";
+				{
+				if(special!=null)
+					return special;
+				else
+					return "";
+				}
 			else if(special==null)
 				{
 				MetaObject o=meta.getMetaObject(id);

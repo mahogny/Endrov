@@ -143,7 +143,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	/**
 	 * Add special options for the combo box
 	 */
-	public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo, final Metadata meta)
+	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final Metadata meta)
 		{
 		ObjectCombo.Alternative a=new ObjectCombo.Alternative(meta, null, "<Create frame/time>",new ActionListener()
 			{
@@ -155,6 +155,13 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 				}
 			});
 		return new ObjectCombo.Alternative[]{a};
+		}
+	/**
+	 * Add special options for the combo box
+	 */
+	public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)
+		{
+		return new ObjectCombo.Alternative[]{};
 		}
 
 	
