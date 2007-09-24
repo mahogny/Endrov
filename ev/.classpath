@@ -20,5 +20,8 @@
 	<classpathentry kind="lib" path="libs/saxpath.jar"/>
 	<classpathentry kind="lib" path="libs/mac/jogl.jar"/>
 	<classpathentry kind="lib" path="libs/mac/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/poi-scratchpad-3.0.1-FINAL-20070705.jar"/>
+	<classpathentry kind="lib" path="libs/poi-contrib-3.0.1-FINAL-20070705.jar"/>
+	<classpathentry kind="lib" path="libs/poi-3.0.1-FINAL-20070705.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

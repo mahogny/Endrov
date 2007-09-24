@@ -3,15 +3,20 @@ package evplugin.customData;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
+import javax.swing.filechooser.FileFilter;
 
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.metadata.*;
+
 import org.jdom.*;
+
 
 //TODO: auto-replicate down to metadata
 
@@ -50,11 +55,12 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 	private CustomTableModel tableModel=new CustomTableModel();
 	private JTable table=new JTable(tableModel);
 	
-	private JButton btRemoveEntry=new JButton("Remove entry");
-	private JButton btInsertEntry=new JButton("Insert entry");
+	private JButton btRemoveEntry=new JButton("Remove row");
+	private JButton btInsertEntry=new JButton("Insert row");
 	private JButton btRemoveColumn=new JButton("Remove column");
 	private JButton btInsertColumn=new JButton("Insert column");
 	
+	private JButton bImport=new JButton("Import");
 	
 	
 	/**
@@ -89,12 +95,17 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		btRemoveColumn.addActionListener(this);
 		btInsertEntry.addActionListener(this);
 		btRemoveEntry.addActionListener(this);
+		bImport.addActionListener(this);
 		
 		JScrollPane treeScroll=new JScrollPane(tree);
 		JPanel treePanel=new JPanel(new BorderLayout());
 		treePanel.add(treeScroll,BorderLayout.CENTER);
 		treePanel.add(treeFields,BorderLayout.SOUTH);
 
+
+		JPanel upper=new JPanel(new GridLayout(1,2));
+		upper.add(objectCombo);
+		upper.add(bImport);
 		
 		JPanel tablePanel=new JPanel(new BorderLayout());
 		JScrollPane tableScroll=new JScrollPane(table);
@@ -110,7 +121,9 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		JTabbedPane tabs=new JTabbedPane();
 		tabs.addTab("Tree", treePanel);
 		tabs.addTab("Table", tablePanel);
-		add(objectCombo, BorderLayout.NORTH);
+		
+		
+		add(upper, BorderLayout.NORTH);
 		add(tabs, BorderLayout.CENTER);
 		
 		//Update GUI
@@ -131,9 +144,28 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		return ob instanceof CustomObject;
 		}
 	/**
+	 * Add special options for the combo box, every object
+	 */
+	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final Metadata meta)
+		{
+		ObjectCombo.Alternative a=new ObjectCombo.Alternative(meta, null, "<New object>", new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				String type=JOptionPane.showInputDialog("Type of new object");
+				if(type!=null)
+					{
+					meta.addMetaObject(new CustomObject(new Element(type)));
+					BasicWindow.updateWindows();
+					}
+				}
+			});
+		return new ObjectCombo.Alternative[]{a};
+		}
+	/**
 	 * Add special options for the combo box
 	 */
-	public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo, final Metadata meta)
+	public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)
 		{
 		return new ObjectCombo.Alternative[]{};
 		}
@@ -281,8 +313,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 			}
 		else if(e.getSource()==btInsertEntry)
 			{
-			//TODO
-			
+			tableModel.insertRow();
 			}
 		else if(e.getSource()==btRemoveEntry)
 			{
@@ -292,9 +323,9 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 			}
 		else if(e.getSource()==btInsertColumn)
 			{
-			
-			
-			//TODO
+			String name=JOptionPane.showInputDialog("Name of column");
+			if(name!=null)
+				tableModel.insertCol(name);
 			}
 		else if(e.getSource()==btRemoveColumn)
 			{
@@ -302,9 +333,71 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 			if(col!=-1)
 				tableModel.removeColumn(col);
 			}
-		
+		else if(e.getSource()==bImport)
+			{
+			JFileChooser fc=getFileChooser();
+			fc.setCurrentDirectory(new File(Metadata.lastDataPath));
+			int ret=fc.showOpenDialog(null);
+			if(ret==JFileChooser.APPROVE_OPTION)
+				{
+				Metadata.lastDataPath=fc.getSelectedFile().getParent();
+				File filename=fc.getSelectedFile();
+				
+				String elementName=JOptionPane.showInputDialog("Name of new elements");
+				if(elementName==null || elementName.equals(""))
+					return;
+				
+				try
+					{
+					if(filename.getName().endsWith(".xml"))
+						{
+						//TODO
+						}
+					else
+						{
+						ImportTable imp=new ImportTable();
+						if(filename.getName().endsWith(".csv"))
+							imp.importCSV(filename.getAbsolutePath(), ',', '\"');
+						else
+							imp.importExcel(filename.getAbsolutePath());
+
+						//imp.show();
+						//A preview might be nice?
+						
+						imp.intoXML(tableModel.getRoot(), elementName);
+						}
+					treeModel.emitAllChanged();
+					tableModel.fireTableStructureChanged();
+					}
+				catch (Exception e1)
+					{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					}
+				}			
+			
+			}
 		}
 	
+	/**
+	 * Get a file chooser for import
+	 */
+	private static JFileChooser getFileChooser()
+		{
+		JFileChooser fc=new JFileChooser();
+		fc.setFileFilter(new FileFilter()
+			{
+			public boolean accept(File f)
+				{
+				return f.getName().toLowerCase().endsWith(".xml") || f.getName().toLowerCase().endsWith(".xls") || f.getName().toLowerCase().endsWith(".csv");
+				}
+			public String getDescription()
+				{
+				return "XML and table files (.xml/.xls/.csv)";
+				}
+			});
+		return fc;
+		}
 	
 	/*
 	 * (non-Javadoc)

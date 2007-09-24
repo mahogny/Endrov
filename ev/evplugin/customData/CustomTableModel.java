@@ -9,7 +9,7 @@ import javax.swing.table.*;
 
 
 /**
- * 
+ * Table interface to an XML-node
  * @author Johan Henriksson
  */
 public class CustomTableModel extends AbstractTableModel
@@ -17,6 +17,7 @@ public class CustomTableModel extends AbstractTableModel
 	static final long serialVersionUID=0; 
 	
 	public Vector<String> columnList=new Vector<String>();
+	private String elementName="";
 	private Element tableRoot=new Element("a");
 	private MetaObject ob;
 	
@@ -31,6 +32,10 @@ public class CustomTableModel extends AbstractTableModel
 		fireTableStructureChanged();
 		}
 	
+	public Element getRoot()
+		{
+		return tableRoot;
+		}
 	
 	public void collectColumns()
 		{
@@ -40,6 +45,7 @@ public class CustomTableModel extends AbstractTableModel
 			{
 			System.out.println("root "+tableRoot.getName());
 			Element e=(Element)ch.get(0);
+			elementName=e.getName();
 			for(Object o:e.getChildren())
 				{
 				Element ae=(Element)o;
@@ -79,6 +85,7 @@ public class CustomTableModel extends AbstractTableModel
 			if(ce.getName().equals(column))
 				return ce;
 			}
+		System.out.println("Warning: element not found");
 		return new Element("foo");
 		}
 
@@ -98,6 +105,44 @@ public class CustomTableModel extends AbstractTableModel
 		fireTableCellUpdated(row, col);
 		}
 
+	
+	public void insertCol(String name)
+		{
+		for(Object o:tableRoot.getChildren())
+			{
+			Element e=(Element)o;
+			e.addContent(new Element(name));
+			}
+		collectColumns();
+		fireTableStructureChanged();
+		}
+
+	
+	//Insert empty row. If row is -1, then append
+	public void insertRow()
+		{
+		Element e=new Element(elementName);
+		for(String s:columnList)
+			e.addContent(new Element(s));
+		int row=tableRoot.getChildren().size()-1;
+		
+//		tableRoot.addContent(e);
+
+		if(row==-1)
+			row=tableRoot.getChildren().size();
+		Vector<Object> list=new Vector<Object>();
+		for(Object o:tableRoot.removeContent())
+			list.add(o);
+		list.add(row, e);
+		for(Object o:list)
+			tableRoot.addContent((Content)o);
+//		tableRoot.addContent(list);
+		
+		//fireTableStructureChanged();
+//		fireTableRowsUpdated(row, row+1);
+		fireTableRowsInserted(row, row+1);
+		}
+	
 	public void removeRow(int row)
 		{
 		Vector<Object> list=new Vector<Object>();

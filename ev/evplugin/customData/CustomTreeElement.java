@@ -4,6 +4,10 @@ import javax.swing.tree.*;
 import org.jdom.*;
 import java.util.*;
 
+/**
+ * Holder of an XML-node in the tree
+ * @author Johan Henriksson
+ */
 public class CustomTreeElement
 	{
 	public Element e;

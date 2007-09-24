@@ -16,7 +16,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 
 	private final boolean addEmpty;
 	private ActionListener saveListeners[]=null;
-	private final comboFilterMetadata filter;
+	private final comboFilterMetadata filterMeta;
 	
 	//Needed to unselect special alternatives after user selected them
 	private Metadata curMeta=new EmptyMetadata();
@@ -49,7 +49,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 	public MetaCombo(comboFilterMetadata filter, boolean addEmptyChannel)
 		{
 		this.addEmpty=addEmptyChannel;
-		this.filter=filter;
+		this.filterMeta=filter;
 		addActionListener(this);
 		updateList();
 		}
@@ -115,7 +115,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 			addItem(new Alternative(null));
 		//Add other metadata
 		for(Metadata thisMeta:Metadata.metadata)
-			if(filter==null || filter.comboFilterMetadataCallback(thisMeta))
+			if(filterMeta==null || filterMeta.comboFilterMetadataCallback(thisMeta))
 				addItem(new Alternative(thisMeta));
 		}
 	
