@@ -3,7 +3,7 @@
 #util to collect all rotation objects into one matlab readable file
 #matlab code to analyze
 
-#class CustomWindow
+class CmdEmbrot
 name Embryo rotation
 author Johan Henriksson
 cite

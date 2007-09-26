@@ -15,7 +15,7 @@ import evplugin.ev.*;
  * Meta object: Nuclei and a lineage
  * @author Johan Henriksson
  */
-public class NucLineage extends MetaObject
+public class NucLineage extends MetaObject implements Cloneable
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -216,6 +216,18 @@ public class NucLineage extends MetaObject
 	 *****************************************************************************************************/
 	
 	public HashMap<String, Nuc> nuc=new HashMap<String, Nuc>();
+
+	/**
+	 * Make a deep copy
+	 */
+	public Object clone()
+		{
+		NucLineage lin=new NucLineage();
+		for(String nkey:nuc.keySet())
+			lin.nuc.put(nkey, (Nuc)nuc.get(nkey).clone());
+		return lin;
+		}
+	
 	
 	/**
 	 * Description of this metatype 
@@ -533,13 +545,26 @@ public class NucLineage extends MetaObject
 	/**
 	 * One nucleus
 	 */
-	public class Nuc
+	public class Nuc implements Cloneable
 		{
 		public final TreeSet<String> child=new TreeSet<String>();
 		public String parent=null;
 		public final TreeMap<Integer, NucPos> pos=new TreeMap<Integer, NucPos>();
 		public Integer end;
 		public String fate="";
+		
+		/** Make a deep copy */
+		public Object clone()
+			{
+			Nuc n=new Nuc();
+			n.child.addAll(child);
+			n.parent=parent;
+			n.end=end;
+			n.fate=fate;
+			for(int i:pos.keySet())
+				n.pos.put(i, new NucPos(pos.get(i)));
+			return n;
+			}
 		
 		/** Get frame <= */
 		public Integer getBefore(int frame)
