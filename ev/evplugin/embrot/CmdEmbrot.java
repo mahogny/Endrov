@@ -1,4 +1,5 @@
 package evplugin.embrot;
+import java.io.*;
 import java.util.*;
 import org.jdom.*;
 
@@ -7,6 +8,7 @@ import evplugin.script.*;
 import evplugin.metadata.*;
 import evplugin.nuc.*;
 import evplugin.ev.*;
+import evplugin.imageset.Imageset;
 
 /**
  * Calculate embryo rotation
@@ -63,8 +65,39 @@ public class CmdEmbrot extends Command
 		return null;
 		}
 	
+	public static void dumprot(Imageset rec)
+		{
+		
+		for(MetaObject ob:rec.metaObject.values())
+			if(ob instanceof NucLineage)
+				{
+				NucLineage lin=(NucLineage)ob;
+
+				//Make a deep copy
+				NucLineage linrot=(NucLineage)lin.clone();
+
+				Element e=new Element("embrot");
+
+				//Rotate embryo to standard position
+				try
+					{
+					rotate(linrot,e);
+					
+					saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, lin);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+		
+
+		
+		
+		}
 	
-	public void rotate(NucLineage lin, Element e)
+	
+	public static void rotate(NucLineage lin, Element e) throws Exception
 		{
 		//Put posterior in center
 		NucLineage.NucPos postp=lin.nuc.get("post").pos.get(lin.nuc.get("post").pos.firstKey());
@@ -137,6 +170,37 @@ public class CmdEmbrot extends Command
 		e.addContent(exy);
 		e.addContent(exz);
 		e.addContent(elen);
+		}
+	
+	
+	public static void saveFile(String filename, Imageset rec, NucLineage lin)
+		{
+		try
+			{
+			BufferedWriter fp = new BufferedWriter(new FileWriter(filename));
+			System.out.println(">> "+filename);
+			
+			for(String nucName:lin.nuc.keySet())
+				{
+				NucLineage.Nuc n=lin.nuc.get(nucName);
+				for(int frame:n.pos.keySet())
+					{
+					NucLineage.NucPos p=n.pos.get(frame);
+					fp.write(""+rec.getMetadataName()+"\t"+nucName+"\t"+  frame+" "+p.x+"\t"+p.y+"\t"+p.z+"\n");
+					}
+				}
+			fp.close();
+			}
+		catch (IOException e)
+			{
+			Log.printError("Error writing file",e);
+			}
+		
+		
+		
+		
+		
+		
 		}
 	
 	}
