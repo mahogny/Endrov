@@ -61,46 +61,38 @@ public class QuickTime_Writer implements StdQTConstants
 	
 	public static void writeMovie(String path, int codecType, int codecQuality, int rate) throws QTException, IOException 
 		{
+		//Calculate size of output
 		int finalWidth=0;
 		int finalHeight=0;
-		int frames=0;
-		int timeScale = TIME_SCALE; // 100 units per second
+		int timeScale = TIME_SCALE; //units per second
 		
-		
-		QTFile movFile = new QTFile (new File(path));
+		//Prepare making a movie
+		QTFile movFile = new QTFile(new File(path));
 		Movie movie = Movie.createMovieFile(movFile, kMoviePlayer, createMovieFileDeleteCurFile|createMovieFileDontCreateResFile);
-
 		Track videoTrack = movie.addTrack (finalWidth, finalHeight, 0);
 		VideoMedia videoMedia = new VideoMedia(videoTrack, timeScale);
 		videoMedia.beginEdits();
-		
 		ImageDescription imgDesc2 = new ImageDescription(QDConstants.k32ARGBPixelFormat);
 		imgDesc2.setWidth(finalWidth);
 		imgDesc2.setHeight(finalHeight);
-		
 		QDGraphics gw = new QDGraphics(imgDesc2, 0);
 		QDRect bounds = new QDRect (0, 0, finalWidth, finalHeight);
-		
 		int rawImageSize = QTImage.getMaxCompressionSize(gw, bounds, gw.getPixMap().getPixelSize(), codecQuality, codecType, CodecComponent.anyCodec);
-
-		QTHandle imageHandle = new QTHandle (rawImageSize, true);
+		QTHandle imageHandle = new QTHandle(rawImageSize, true);
 		imageHandle.lock();
 		RawEncodedImage compressedImage = RawEncodedImage.fromQTHandle(imageHandle);
-		
 		CSequence seq = new CSequence(gw, bounds, gw.getPixMap().getPixelSize(), codecType, CodecComponent.bestFidelityCodec, 
 				codecQuality, codecQuality, KEY_FRAME_RATE, null, 0);
 		ImageDescription imgDesc = seq.getDescription();
 		
+		//Encode every frame
 		int[] pixelsNativeOrder = null;
-		for (int frame=1; frame<=frames; frame++)
+		for(;;)
 			{
-		//processor
-	
-	//		ImageProcessor ip = stack.getProcessor(frame);
-//			ip = ip.convertToRGB();
+			//Get image
+			...
 			
-			
-			//Get image pixels
+			//Extract image pixels
 			BufferedImage im=new BufferedImage(0,0,0);//todo
 			int pixels[] = new int[im.getWidth()*im.getHeight()];
 			im.getRaster().getSamples(0,0,im.getWidth(),im.getHeight(),0,pixels);
@@ -135,7 +127,7 @@ public class QuickTime_Writer implements StdQTConstants
 			videoMedia.addSample (imageHandle, 0, cfInfo.getDataSize(), rate, imgDesc, 1, syncSample?0:mediaSampleNotSync);
 			}
 		
-		//Done with frames. Finish up movie making
+		//Finish up movie making
 		videoMedia.endEdits();
 		videoTrack.insertMedia (0, 0, videoMedia.getDuration(), 1);
 		OpenMovieFile omf = OpenMovieFile.asWrite (movFile);
