@@ -87,10 +87,10 @@ public class QuickTime_Writer implements StdQTConstants
 		
 		//Encode every frame
 		int[] pixelsNativeOrder = null;
-		for(;;)
+//		for(;;)
 			{
 			//Get image
-			...
+		//	...
 			
 			//Extract image pixels
 			BufferedImage im=new BufferedImage(0,0,0);//todo

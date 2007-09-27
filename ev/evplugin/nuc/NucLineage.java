@@ -547,10 +547,15 @@ public class NucLineage extends MetaObject implements Cloneable
 	 */
 	public class Nuc implements Cloneable
 		{
+		/** Name of children */
 		public final TreeSet<String> child=new TreeSet<String>();
+		/** Name of parent */
 		public String parent=null;
+		/** Key frames */
 		public final TreeMap<Integer, NucPos> pos=new TreeMap<Integer, NucPos>();
+		/** Final frame of existence */
 		public Integer end;
+		/** Fate of nucleus */
 		public String fate="";
 		
 		/** Make a deep copy */

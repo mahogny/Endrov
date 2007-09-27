@@ -1,4 +1,4 @@
-package microdaemon;
+package OSTdaemon;
 //todo: need to harmonize settings file?
 
 import java.awt.image.*;
@@ -18,7 +18,7 @@ import evplugin.jubio.*;
 
 //make max: duplicate whatever branch
 
-public class Microdaemon extends Thread
+public class OSTdaemon extends Thread
 	{
 	public String pathInput;
 	public String pathConverted;
@@ -51,7 +51,7 @@ public class Microdaemon extends Thread
 	 * Create daemon
 	 * @param listener Listener for log events. Can be null.
 	 */
-	public Microdaemon(DaemonListener listener)
+	public OSTdaemon(DaemonListener listener)
 		{
 		daemonListener=listener;
 		}

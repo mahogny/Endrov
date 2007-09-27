@@ -1,12 +1,10 @@
 package util;
+
+import evplugin.ev.*;
+import evplugin.imageset.*;
+import evplugin.makeQT.*;
+
 import java.io.File;
-
-import evplugin.ev.BatchThread;
-import evplugin.ev.CompleteBatch;
-import evplugin.ev.EV;
-import evplugin.imageset.OstImageset;
-import evplugin.makeQT.CalcThread;
-
 
 /**
  * Go through all imagesets in a directory and run the MakeQT plugin

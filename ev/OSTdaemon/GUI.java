@@ -1,4 +1,4 @@
-package microdaemon;
+package OSTdaemon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,6 +6,10 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 
+/**
+ * GUI for the daemon
+ * @author Johan Henriksson
+ */
 public class GUI extends JFrame implements ActionListener, WindowListener, DaemonListener
 	{
 	static final long serialVersionUID=0;
@@ -15,7 +19,7 @@ public class GUI extends JFrame implements ActionListener, WindowListener, Daemo
 	JButton bConfig=new JButton("Read config");
 	JButton bStartstop=new JButton("Start");
 
-	Microdaemon daemon=new Microdaemon(this);
+	OSTdaemon daemon=new OSTdaemon(this);
 
 	/** Set to true when program should exit after daemon has quit */
 	private boolean toQuit=false;
@@ -24,7 +28,7 @@ public class GUI extends JFrame implements ActionListener, WindowListener, Daemo
 	
 	public GUI(String daemonConfig)
 		{
-		setTitle("µDaemon");
+		setTitle("OST Daemon");
 		setLayout(new BorderLayout());
 		
 		JScrollPane sp=new JScrollPane(logPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -66,8 +70,8 @@ public class GUI extends JFrame implements ActionListener, WindowListener, Daemo
     int hour = cal.get(Calendar.HOUR_OF_DAY);
     int min = cal.get(Calendar.MINUTE);
     int sec = cal.get(Calendar.SECOND);
-		String date=""+year+Microdaemon.pad(month,2)+Microdaemon.pad(day,2)+" "+
-			Microdaemon.pad(hour,2)+":"+Microdaemon.pad(min,2)+":"+Microdaemon.pad(sec,2);
+		String date=""+year+OSTdaemon.pad(month,2)+OSTdaemon.pad(day,2)+" "+
+			OSTdaemon.pad(hour,2)+":"+OSTdaemon.pad(min,2)+":"+OSTdaemon.pad(sec,2);
     
 		String newText=date+": "+s+"\n"+logPanel.getText();
 		if(newText.length()>textLen)
@@ -175,7 +179,7 @@ public class GUI extends JFrame implements ActionListener, WindowListener, Daemo
 	 */
 	public static void main(String[] arg)
 		{
-		String daemonConfig="microdaemon/config.txt";
+		String daemonConfig="OSTdaemon/config.txt";
 		if(arg.length>0)
 			daemonConfig=arg[0];
 		new GUI(daemonConfig);

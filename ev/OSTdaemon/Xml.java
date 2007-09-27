@@ -1,4 +1,4 @@
-package microdaemon;
+package OSTdaemon;
 
 import java.io.*;
 import org.jdom.*;
