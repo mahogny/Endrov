@@ -8,6 +8,7 @@ import evplugin.imageset.*;
 
 /**
  * The thread for doing calculations
+ * OLD CLASS. SEVERAL MAGNETUDES SLOWER AND REQUIRES EXTERNAL PROGRAMS.
  */
 public final class CalcThreadOld extends BatchThread
 	{
@@ -81,8 +82,8 @@ public final class CalcThreadOld extends BatchThread
 				int z2=ch2.closestZ(frame2, z);
 				
 				//Load image
-				ImageLoader imload1=ch1.getImageLoader(frame1, z1);
-				ImageLoader imload2=ch2.getImageLoader(frame2, z2);
+				EvImage imload1=ch1.getImageLoader(frame1, z1);
+				EvImage imload2=ch2.getImageLoader(frame2, z2);
 				if(imload1!=null && imload2!=null)
 					{
 					String file1=imload1.sourceName();

@@ -8,8 +8,8 @@ import java.util.*;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.*;
-import evplugin.imageset.ImageLoader;
-import evplugin.imageset.ImageLoaderJAI;
+import evplugin.imageset.EvImage;
+import evplugin.imageset.EvImageJAI;
 import evplugin.imageset.Imageset;
 
 public class NamebasedImageset extends Imageset
@@ -256,15 +256,15 @@ public class NamebasedImageset extends Imageset
 
 						//Get a place to put EV. Create holders if needed
 						ChannelImages ch=getChannel(channelName);
-						TreeMap<Integer, ImageLoader> loaders=ch.imageLoader.get(frame);
+						TreeMap<Integer, EvImage> loaders=ch.imageLoader.get(frame);
 						if(loaders==null)
 							{
-							loaders=new TreeMap<Integer, ImageLoader>();
+							loaders=new TreeMap<Integer, EvImage>();
 							ch.imageLoader.put(frame, loaders);
 							}
 						
 						//Plug EV
-						loaders.put(slice, new ImageLoaderJAI(f.getAbsolutePath()));
+						loaders.put(slice, new EvImageJAI(f.getAbsolutePath()));
 						rebuildLog+=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
 						}
 					else

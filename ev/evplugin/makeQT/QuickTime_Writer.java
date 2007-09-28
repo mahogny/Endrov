@@ -101,7 +101,7 @@ public class QuickTime_Writer implements StdQTConstants
 			RawEncodedImage pixelData = gw.getPixMap().getPixelData();
 			int intsPerRow = pixelData.getRowBytes()/4;
 			if (pixelsNativeOrder==null) 
-				pixelsNativeOrder = new int[pixels.length];
+				pixelsNativeOrder = new int[intsPerRow*finalHeight];
 			if (EndianOrder.isNativeLittleEndian()) 
 				{
 				int offset1, offset2;

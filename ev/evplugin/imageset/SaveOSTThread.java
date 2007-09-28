@@ -87,7 +87,7 @@ public class SaveOSTThread extends BatchThread
 					{
 					File framePath=new File(channelPath, EV.pad(frame,8));
 					framePath.mkdir();
-					TreeMap<Integer, ImageLoader> slices=channel.imageLoader.get(frame);
+					TreeMap<Integer, EvImage> slices=channel.imageLoader.get(frame);
 					for(int slice:slices.keySet())
 						{
 						//Check for premature stop
@@ -99,7 +99,7 @@ public class SaveOSTThread extends BatchThread
 
 						//Save image
 						batchLog(channel.getMeta().name+"/"+frame+"/"+slice);
-						ImageLoader loader=slices.get(slice);
+						EvImage loader=slices.get(slice);
 						BufferedImage im=loader.loadImage();
 						File toFile=new File(framePath, EV.pad(slice,8));
 						saveImage(im, toFile, (float)quality);

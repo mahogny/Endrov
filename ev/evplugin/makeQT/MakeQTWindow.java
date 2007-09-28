@@ -2,6 +2,7 @@ package evplugin.makeQT;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
 //import java.awt.image.*;
 import javax.swing.*;
 
@@ -28,7 +29,8 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 	
 	//GUI components
 	private JButton bStart=new JButton("Start");
-	private ChannelCombo channelCombo;
+	private Vector<ChannelCombo> channelCombo=new Vector<ChannelCombo>();
+	private int numChannelCombo=4;
 	
 	private SpinnerModel startModel  =new SpinnerNumberModel(0,0,1000000,1);
 	private JSpinner spinnerStart    =new JSpinner(startModel);
@@ -38,7 +40,10 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 	
 	private SpinnerModel zModel =new SpinnerNumberModel(35,0,1000000,1);
 	private JSpinner spinnerZ   =new JSpinner(zModel);
-		
+
+	private SpinnerModel wModel =new SpinnerNumberModel(336,0,1000000,1);
+	private JSpinner spinnerW   =new JSpinner(wModel);
+
 	private MetaCombo metaCombo=new MetaCombo(this, false);
 	public boolean comboFilterMetadataCallback(Metadata meta)
 		{
@@ -59,8 +64,12 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 	 */
 	public MakeQTWindow(int x, int y, int w, int h)
 		{
-		channelCombo=new ChannelCombo((Imageset)metaCombo.getMeta(),true);
-		channelCombo.addActionListener(this);
+		for(int i=0;i<numChannelCombo;i++)
+			{
+			ChannelCombo c=new ChannelCombo((Imageset)metaCombo.getMeta(),true);
+			c.addActionListener(this);
+			channelCombo.add(c);
+			}
 		metaCombo.addActionListener(this);
 		bStart.addActionListener(this);
 		
@@ -78,11 +87,17 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 		
 		bottom.add(new JLabel("Z:"));
 		bottom.add(spinnerZ);		
-		
-		bottom.add(new JLabel("Channel: "));
-		bottom.add(channelCombo);
-		bottom.add(new JLabel(""));		
-		bottom.add(new JLabel(""));		
+
+		bottom.add(new JLabel("Width:"));
+		bottom.add(spinnerW);		
+
+		for(int i=0;i<channelCombo.size();i++)
+			{
+			bottom.add(new JLabel("Channel "+i+": "));
+			bottom.add(channelCombo.get(i));
+			}
+//		bottom.add(new JLabel(""));		
+//		bottom.add(new JLabel(""));		
 		bottom.add(new JLabel(""));		
 		bottom.add(bStart);
 		
@@ -111,18 +126,24 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 		{
 		if(e.getSource()==metaCombo)
 			{
-			channelCombo.setImageset(metaCombo.getImageset());
+			for(ChannelCombo c:channelCombo)
+				c.setImageset(metaCombo.getImageset());
 			}
 		else if(e.getSource()==bStart)
 			{
-			if(channelCombo.getChannel().equals("") || metaCombo.getMeta()==null)
+			if(/*channelCombo.getChannel().equals("") ||*/ metaCombo.getMeta()==null)
 				{
-				JOptionPane.showMessageDialog(null, "No channel/imageset selected");
+				JOptionPane.showMessageDialog(null, "No imageset selected");
 				}
 			else
-				{			
+				{		
+				Vector<String> channelNames=new Vector<String>();
+				for(ChannelCombo c:channelCombo)
+					if(!c.getChannel().equals(""))
+						channelNames.add(c.getChannel());
+					
 				BatchThread thread=new CalcThread(metaCombo.getImageset(), 
-						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), (Integer)spinnerZ.getValue());
+						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), (Integer)spinnerZ.getValue(), channelNames, (Integer)spinnerW.getValue());
 				new BatchWindow(thread);
 				}
 			}
@@ -136,7 +157,8 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 	public void dataChangedEvent()
 		{
 		metaCombo.updateList();
-		channelCombo.setImageset(metaCombo.getImageset());
+		for(ChannelCombo c:channelCombo)
+			c.setImageset(metaCombo.getImageset());
 		}
 	
 	

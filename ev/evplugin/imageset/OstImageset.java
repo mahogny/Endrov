@@ -187,10 +187,10 @@ public class OstImageset extends Imageset
 						{
 						int frame=Integer.parseInt(in.readLine());
 						int numSlice=Integer.parseInt(in.readLine());
-						TreeMap<Integer,ImageLoader> loaderset=c.imageLoader.get(frame);
+						TreeMap<Integer,EvImage> loaderset=c.imageLoader.get(frame);
 						if(loaderset==null)
 							{
-							loaderset=new TreeMap<Integer,ImageLoader>();
+							loaderset=new TreeMap<Integer,EvImage>();
 							c.imageLoader.put(frame, loaderset);
 							}
 						
@@ -204,7 +204,7 @@ public class OstImageset extends Imageset
 								}
 							int slice=Integer.parseInt(s);
 							
-							loaderset.put(slice, new ImageLoaderJAI(buildImagePath(channelName, frame, slice, ext).getAbsolutePath()));
+							loaderset.put(slice, new EvImageJAI(buildImagePath(channelName, frame, slice, ext).getAbsolutePath()));
 							}
 						}
 					}
@@ -260,7 +260,7 @@ public class OstImageset extends Imageset
 					w.write(""+c.imageLoader.get(frame).size()+"\n");
 					for(int slice:c.imageLoader.get(frame).keySet())
 						{
-						ImageLoader loader=c.getImageLoader(frame, slice);
+						EvImage loader=c.getImageLoader(frame, slice);
 						File imagefile=new File(loader.sourceName());
 						String filename=imagefile.getName();
 						String ext="";
@@ -333,7 +333,7 @@ public class OstImageset extends Imageset
 						framenum=Integer.parseInt(sframenum);
 						}
 					
-					TreeMap<Integer,ImageLoader> loaderset=new TreeMap<Integer,ImageLoader>();
+					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
 					File[] slicefiles=framedir.listFiles();
 					for(File f:slicefiles)
 						{
@@ -350,7 +350,7 @@ public class OstImageset extends Imageset
 							try
 								{
 								int slicenum=Integer.parseInt(partname);
-								loaderset.put(slicenum, new ImageLoaderJAI(f.getAbsolutePath()));
+								loaderset.put(slicenum, new EvImageJAI(f.getAbsolutePath()));
 								}
 							catch (NumberFormatException e)
 								{
