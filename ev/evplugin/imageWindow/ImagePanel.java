@@ -15,7 +15,7 @@ import evplugin.ev.*;
  */
 public class ImagePanel extends JPanel
 	{
-	public ImageLoader imageLoader=null;
+	public EvImage imageLoader=null;
 	public double contrast=1;
 	public double brightness=0;
 	public double zoom=1;

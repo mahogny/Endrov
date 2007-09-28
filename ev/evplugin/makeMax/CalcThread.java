@@ -87,7 +87,7 @@ public final class CalcThread extends BatchThread
 								}
 	
 							//Load image
-							ImageLoader imload=chfrom.getImageLoader(curframe, z);
+							EvImage imload=chfrom.getImageLoader(curframe, z);
 							if(imload==null)
 								break;
 							BufferedImage bufi=imload.loadImage();

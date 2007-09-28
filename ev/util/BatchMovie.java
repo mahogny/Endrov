@@ -4,6 +4,7 @@ import evplugin.ev.*;
 import evplugin.imageset.*;
 import evplugin.makeQT.*;
 
+import java.util.*;
 import java.io.File;
 
 /**
@@ -17,7 +18,10 @@ public class BatchMovie
 		{
 		System.out.println("Converting imageset "+file.getPath());
 		OstImageset ost=new OstImageset(file.getPath());
-		BatchThread c=new CalcThread(ost, 0, 1000000, 35);
+		Vector<String> channelNames=new Vector<String>();
+		channelNames.add("GFPmax");
+		channelNames.add("DIC");
+		BatchThread c=new CalcThread(ost, 0, 1000000, 35, channelNames, 336);
 		new CompleteBatch(c);
 		}
 	

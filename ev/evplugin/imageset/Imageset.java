@@ -93,10 +93,39 @@ public abstract class Imageset extends Metadata
 			}
 		
 		/** Image loaders */
-		public TreeMap<Integer, TreeMap<Integer, ImageLoader>> imageLoader=new TreeMap<Integer, TreeMap<Integer, ImageLoader>>();
+		public TreeMap<Integer, TreeMap<Integer, EvImage>> imageLoader=new TreeMap<Integer, TreeMap<Integer, EvImage>>();
+		
+		/** List of modified images */
+		public HashMap<Integer,HashSet<Integer>> modifiedImages=new HashMap<Integer,HashSet<Integer>>();
 		
 		
-		public ImageLoader getImageLoader(int frame, int z)
+		/**
+		 * Get write-access to an image. This will mark the image as modified.
+		 */
+		public EvWritableImage getWritableImage(int frame, int z)
+			{
+			EvImage loader=getImageLoader(frame, z);
+			if(loader==null)
+				return null;
+			else if(loader instanceof EvWritableImage)
+				{
+				HashSet<Integer> slices=modifiedImages.get(frame);
+				if(slices==null)
+					{
+					slices=new HashSet<Integer>();
+					modifiedImages.put(frame, slices);
+					}
+				slices.add(z);
+				return (EvWritableImage)loader;
+				}
+			else
+				return new EvWritableImage(loader.sourceName(), loader.loadImage());
+			}
+		
+		/**
+		 * Get read-access to an image
+		 */
+		public EvImage getImageLoader(int frame, int z)
 			{
 			try
 				{
@@ -149,8 +178,8 @@ public abstract class Imageset extends Metadata
 				return frame;
 			else
 				{
-				SortedMap<Integer, TreeMap<Integer,ImageLoader>> before=imageLoader.headMap(frame);
-				SortedMap<Integer, TreeMap<Integer,ImageLoader>> after=imageLoader.tailMap(frame);
+				SortedMap<Integer, TreeMap<Integer,EvImage>> before=imageLoader.headMap(frame);
+				SortedMap<Integer, TreeMap<Integer,EvImage>> after=imageLoader.tailMap(frame);
 				if(before.size()==0)
 					return imageLoader.firstKey();
 				else if(after.size()==0)
@@ -176,7 +205,7 @@ public abstract class Imageset extends Metadata
 		 */
 		public int closestFrameBefore(int frame)
 			{
-			SortedMap<Integer, TreeMap<Integer,ImageLoader>> before=imageLoader.headMap(frame); 
+			SortedMap<Integer, TreeMap<Integer,EvImage>> before=imageLoader.headMap(frame); 
 			if(before.size()==0)
 				return frame;
 			else
@@ -189,7 +218,7 @@ public abstract class Imageset extends Metadata
 		 */
 		public int closestFrameAfter(int frame)
 			{
-			SortedMap<Integer, TreeMap<Integer,ImageLoader>> after=imageLoader.tailMap(frame+1);
+			SortedMap<Integer, TreeMap<Integer,EvImage>> after=imageLoader.tailMap(frame+1);
 			if(after.size()==0)
 				return frame;
 			else
@@ -205,13 +234,13 @@ public abstract class Imageset extends Metadata
 		 */
 		public int closestZ(int frame, int z)
 			{
-			TreeMap<Integer,ImageLoader> slices=imageLoader.get(frame);
+			TreeMap<Integer,EvImage> slices=imageLoader.get(frame);
 			if(slices==null || slices.size()==0)
 				return z;
 			else
 				{
-				SortedMap<Integer,ImageLoader> before=slices.headMap(z);
-				SortedMap<Integer,ImageLoader> after=slices.tailMap(z);
+				SortedMap<Integer,EvImage> before=slices.headMap(z);
+				SortedMap<Integer,EvImage> after=slices.tailMap(z);
 				if(before.size()==0)
 					return after.firstKey();
 				else if(after.size()==0)
@@ -238,12 +267,12 @@ public abstract class Imageset extends Metadata
 		 */
 		public int closestZAbove(int frame, int z)
 			{
-			TreeMap<Integer,ImageLoader> slices=imageLoader.get(frame);
+			TreeMap<Integer,EvImage> slices=imageLoader.get(frame);
 			if(slices==null)
 				return z;
 			else
 				{
-				SortedMap<Integer,ImageLoader> after=slices.tailMap(z+1);
+				SortedMap<Integer,EvImage> after=slices.tailMap(z+1);
 				if(after.size()==0)
 					return z;
 				else
@@ -259,12 +288,12 @@ public abstract class Imageset extends Metadata
 		 */
 		public int closestZBelow(int frame, int z)
 			{
-			TreeMap<Integer, ImageLoader> slices=imageLoader.get(frame);
+			TreeMap<Integer, EvImage> slices=imageLoader.get(frame);
 			if(slices==null)
 				return z;
 			else
 				{
-				SortedMap<Integer, ImageLoader> before=slices.headMap(z);
+				SortedMap<Integer, EvImage> before=slices.headMap(z);
 				if(before.size()==0)
 					return z;
 				else

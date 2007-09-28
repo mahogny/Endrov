@@ -12,7 +12,7 @@ import evplugin.ev.*;
  * Loader of images from single slice images using JAI
  * @author Johan Henriksson
  */
-public class ImageLoaderJAI implements ImageLoader
+public class EvImageJAI implements EvImage
 	{
 	private String filename;
 	private int slice;
@@ -20,7 +20,7 @@ public class ImageLoaderJAI implements ImageLoader
 	/**
 	 * Load a single-slice image
 	 */
-	public ImageLoaderJAI(String filename)
+	public EvImageJAI(String filename)
 		{
 		this.filename=filename;
 		this.slice=-1;
@@ -29,7 +29,7 @@ public class ImageLoaderJAI implements ImageLoader
 	/**
 	 * Load a slice in a stack
 	 */
-	public ImageLoaderJAI(String filename, int slice)
+	public EvImageJAI(String filename, int slice)
 		{
 		this.filename=filename;
 		this.slice=slice;

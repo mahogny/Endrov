@@ -83,7 +83,7 @@ public class CmdEmbrot extends Command
 					{
 					rotate(linrot,e);
 					
-					saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, lin);
+					saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, linrot);
 					}
 				catch (Exception e1)
 					{

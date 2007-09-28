@@ -9,7 +9,7 @@ import java.util.*;
 import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.*;
 import evplugin.imageset.*;
-import evplugin.jubio.ImageLoaderJubio;
+import evplugin.jubio.EvImageJubio;
 
 public class SequenceImageset extends Imageset
 	{	
@@ -285,9 +285,9 @@ public class SequenceImageset extends Imageset
 						return;
 					else
 						{
-						TreeMap<Integer, ImageLoader> loaders=new TreeMap<Integer, ImageLoader>();
+						TreeMap<Integer, EvImage> loaders=new TreeMap<Integer, EvImage>();
 						for(int i=0;i<numSlices;i+=skipSlices)
-							loaders.put(i, new ImageLoaderJubio(f.getAbsolutePath(),i));
+							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
 						ChannelImages ch=getChannel(channelName);
 						ch.imageLoader.put(frame, loaders);
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";

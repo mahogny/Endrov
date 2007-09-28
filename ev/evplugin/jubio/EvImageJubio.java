@@ -2,19 +2,19 @@ package evplugin.jubio;
 
 import java.awt.image.*;
 
-import evplugin.imageset.ImageLoader;
+import evplugin.imageset.EvImage;
 import evplugin.ev.*;
 /**
  * An imageloader using Jubio
  * @author Johan Henriksson
  */
-public class ImageLoaderJubio implements ImageLoader
+public class EvImageJubio implements EvImage
 	{
 	private String filename;
 	private int slice;
 
 	
-	public ImageLoaderJubio(String filename, int slice)
+	public EvImageJubio(String filename, int slice)
 		{
 		this.filename=filename;
 		this.slice=slice;

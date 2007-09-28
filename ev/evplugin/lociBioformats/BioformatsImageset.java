@@ -171,7 +171,7 @@ public class BioformatsImageset extends Imageset
 				channelImages.put(channelName,c);
 				for(int framenum=0;framenum<numt;framenum++)
 					{
-					TreeMap<Integer,ImageLoader> loaderset=new TreeMap<Integer,ImageLoader>();
+					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
 					for(int slicenum=0;slicenum<numz;slicenum++)
 						{
 						int effC=0;
@@ -195,7 +195,7 @@ public class BioformatsImageset extends Imageset
 				Channel c=new Channel(meta.getChannel(channelName));
 				for(int framenum=0;framenum<numt;framenum++)
 					{
-					TreeMap<Integer,ImageLoader> loaderset=new TreeMap<Integer,ImageLoader>();
+					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
 					for(int slicenum=0;slicenum<numz;slicenum++)
 						{
 						//System.out.println(" "+slicenum+" "+channelnum+" "+framenum);

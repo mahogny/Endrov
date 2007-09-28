@@ -7,7 +7,7 @@ import java.awt.image.*;
  * Interface to any form of image loader
  * @author Johan Henriksson
  */
-public interface ImageLoader
+public interface EvImage
 	{
 	public BufferedImage loadImage();
 	
