@@ -16,8 +16,10 @@ public class BatchMax
 		{
 		System.out.println("Imageset "+file.getPath());
 		OstImageset ost=new OstImageset(file.getPath());
-		BatchThread c=new CalcThread(ost, 0, 1000000, "GFP",0.99);
+//		BatchThread c=new CalcThread(ost, 0, 1000000, "GFP",0.99);		
+		BatchThread c=new CalcThread(ost, 0, 1000000, "GFP");
 		new CompleteBatch(c);
+		//TODO. need to save 
 		}
 	
 	/**

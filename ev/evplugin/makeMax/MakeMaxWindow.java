@@ -59,8 +59,8 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	private SpinnerModel endModel    =new SpinnerNumberModel(100000,0,1000000,1);
 	private JSpinner spinnerEnd      =new JSpinner(endModel);
 
-	private SpinnerModel qualityModel    =new SpinnerNumberModel(0.99,0.0,1.0,0.01);
-	private JSpinner spinnerQuality      =new JSpinner(qualityModel);
+//	private SpinnerModel qualityModel    =new SpinnerNumberModel(0.99,0.0,1.0,0.01);
+//	private JSpinner spinnerQuality      =new JSpinner(qualityModel);
 
 	
 	private MetaCombo metaCombo=new MetaCombo(this, false);
@@ -104,8 +104,10 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 
 		bottom.add(new JLabel(""));
 		bottom.add(new JLabel(""));
-		bottom.add(new JLabel("Quality: "));
-		bottom.add(spinnerQuality);
+		bottom.add(new JLabel(""));
+		bottom.add(new JLabel(""));
+//		bottom.add(new JLabel("Quality: "));
+//		bottom.add(spinnerQuality);
 		bottom.add(new JLabel(""));
 		bottom.add(bStart);
 		
@@ -145,8 +147,11 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 			else
 				{
 				CalcThread thread=new CalcThread(metaCombo.getImageset(), 
+						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannel()/*,
+						(Double)spinnerQuality.getValue()*/);
+				/*CalcThread thread=new CalcThread(metaCombo.getImageset(), 
 						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannel(),
-						(Double)spinnerQuality.getValue());
+						(Double)spinnerQuality.getValue());*/
 				new BatchWindow(thread);
 				}
 			}

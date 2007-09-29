@@ -1,6 +1,7 @@
-package evplugin.imageset;
+package evplugin.imageset.ui;
 
 import evplugin.basicWindow.*;
+
 import java.awt.event.*;
 import javax.swing.*;
 

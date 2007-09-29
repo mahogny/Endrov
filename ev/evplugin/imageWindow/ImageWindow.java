@@ -133,6 +133,7 @@ public class ImageWindow extends BasicWindow
 	public final ChannelCombo comboChannel=new ChannelCombo(null,false);
 	
 	private JMenu menuImageWindow=new JMenu("ImageWindow");
+	public JMenu menuImage=new JMenu("Image");
 	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
 	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
 	private final JMenuItem miReset=new JMenuItem("Reset view");
@@ -233,6 +234,7 @@ public class ImageWindow extends BasicWindow
 		add(bottom,BorderLayout.SOUTH);
 
 		addMenubar(menuImageWindow);
+		addMenubar(menuImage);
 		buildMenu();
 		
 		//Window overall things
@@ -240,7 +242,7 @@ public class ImageWindow extends BasicWindow
 		comboChannel.updateChannelList();
 		pack();
 		updateImagePanel();
-		frameControl.setChannel(getImageset(), comboChannel.getChannel());
+		frameControl.setChannel(getImageset(), getCurrentChannelName());
 		frameControl.setFrame(0);
 		setVisible(true);
 		setBounds(bounds);
@@ -253,6 +255,7 @@ public class ImageWindow extends BasicWindow
 	private void buildMenu()
 		{
 		BasicWindow.tearDownMenu(menuImageWindow);
+		//BasicWindow.tearDownMenu(menuImage);
 		miReset.addActionListener(this);
 		miMiddleSlice.addActionListener(this);
 		miZoomToFit.addActionListener(this);
@@ -301,11 +304,16 @@ public class ImageWindow extends BasicWindow
 					menuImageWindow.add(mit);
 					}
 				}
+		
+		
 		}
 	
 
 	
-
+	public String getCurrentChannelName()
+		{
+		return comboChannel.getChannel();
+		}
 
 	
 	/*
@@ -314,7 +322,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		frameControl.setChannel(getImageset(), comboChannel.getChannel());
+		frameControl.setChannel(getImageset(), getCurrentChannelName());
 		
 		if(e.getSource()==miReset)
 			{
@@ -324,7 +332,7 @@ public class ImageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miMiddleSlice)
 			{
-			Imageset.ChannelImages ch=getImageset().getChannel(comboChannel.getChannel());
+			Imageset.ChannelImages ch=getImageset().getChannel(getCurrentChannelName());
 			if(ch!=null)
 				{
 				int curFrame=ch.closestFrame((int)frameControl.getFrame());
@@ -573,7 +581,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public Imageset.ChannelImages getSelectedChannel()
 		{
-		String channelName=comboChannel.getChannel();
+		String channelName=getCurrentChannelName();
 		if(channelName!=null && getImageset().getChannel(channelName)!=null)
 			return getImageset().getChannel(channelName);
 		else
@@ -640,7 +648,7 @@ public class ImageWindow extends BasicWindow
 		for(ImageWindowRenderer r:imageWindowRenderers)
 			r.dataChangedEvent();
 		comboChannel.updateChannelList();
-		frameControl.setChannel(getImageset(), comboChannel.getChannel());//hm. does not cause cascade?
+		frameControl.setChannel(getImageset(), getCurrentChannelName());//hm. does not cause cascade?
 		buildMenu();
 		updateImagePanel();
 		}

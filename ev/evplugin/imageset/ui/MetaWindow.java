@@ -1,4 +1,4 @@
-package evplugin.imageset;
+package evplugin.imageset.ui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,6 +10,10 @@ import javax.swing.event.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
+import evplugin.imageset.Imageset;
+import evplugin.imageset.ImagesetMeta;
+import evplugin.imageset.OstImageset;
+import evplugin.imageset.SaveOSTThread;
 import evplugin.metadata.*;
 
 import org.jdom.*;

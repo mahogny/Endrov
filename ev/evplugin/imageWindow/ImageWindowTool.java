@@ -1,9 +1,11 @@
 package evplugin.imageWindow;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 //either send down variables or add accessors to imagewindow
+
 
 public interface ImageWindowTool
 	{
@@ -20,5 +22,4 @@ public interface ImageWindowTool
 	public void keyPressed(KeyEvent e);
 	public void keyReleased(KeyEvent e);
 	public void mouseExited(MouseEvent e);
-
 	}
