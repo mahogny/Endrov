@@ -140,6 +140,9 @@ public class ChannelCombo extends JComboBox
 		}
 
 	
+	/**
+	 * Fill up list with channels
+	 */
 	private void buildList(Imageset curImageset)
 		{
 		removeAllItems();

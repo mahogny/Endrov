@@ -8,7 +8,7 @@ import evplugin.ev.*;
  * An imageloader using Jubio
  * @author Johan Henriksson
  */
-public class EvImageJubio implements EvImage
+public class EvImageJubio extends EvImage
 	{
 	private String filename;
 	private int slice;

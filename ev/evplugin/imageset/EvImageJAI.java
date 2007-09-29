@@ -12,7 +12,7 @@ import evplugin.ev.*;
  * Loader of images from single slice images using JAI
  * @author Johan Henriksson
  */
-public class EvImageJAI implements EvImage
+public class EvImageJAI extends EvImage
 	{
 	private String filename;
 	private int slice;

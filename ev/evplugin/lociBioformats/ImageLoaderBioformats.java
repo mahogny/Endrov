@@ -14,7 +14,7 @@ import loci.formats.*;
  * 
  * @author Johan Henriksson (binding only)
  */
-public class ImageLoaderBioformats implements EvImage
+public class ImageLoaderBioformats extends EvImage
 	{
 	private int id;
 	private Integer subid;

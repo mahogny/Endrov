@@ -93,7 +93,7 @@ public class PluginInfo
 				{
 				try
 					{
-					Class foo=ClassLoader.getSystemClassLoader().loadClass(classPath+"."+cn);
+					Class<?> foo=ClassLoader.getSystemClassLoader().loadClass(classPath+"."+cn);
 					Method m=foo.getDeclaredMethod("initPlugin", new Class[]{});
 					m.invoke(foo, new Object[]{});
 					}

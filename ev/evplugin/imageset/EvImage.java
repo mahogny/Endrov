@@ -7,12 +7,12 @@ import java.awt.image.*;
  * Interface to any form of image loader
  * @author Johan Henriksson
  */
-public interface EvImage
+public abstract class EvImage
 	{
-	public BufferedImage loadImage();
+	public abstract BufferedImage loadImage();
 	
 	/**
 	 * Source of image; path to file if it is a single slice. Best used sparingly.
 	 */
-	public String sourceName();
+	public abstract String sourceName();
 	}

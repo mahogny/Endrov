@@ -9,7 +9,7 @@ import org.jdom.*;
 import evplugin.metadata.*;
 
 /**
- * Interface to one VWB Recording ie the set of images
+ * Interface to one imageset + metadata
  * @author Johan Henriksson
  */
 public abstract class Imageset extends Metadata
@@ -20,7 +20,7 @@ public abstract class Imageset extends Metadata
 	/** List of all channels belonging to this imageset */
 	public HashMap<String,ChannelImages> channelImages=new HashMap<String,ChannelImages>();
 	
-	/** Meta object belonging to the imageset. Never null */
+	/** Meta object belonging to the imageset. Never null. Referenced elsewhere, do not change pointer */
 	public ImagesetMeta meta=new ImagesetMeta();
 
 	
@@ -35,7 +35,16 @@ public abstract class Imageset extends Metadata
 	 */
 	public abstract File datadir();
 
-	
+
+	public String getMetadataName()
+		{
+		return imageset;
+		}
+	public String toString()
+		{
+		return getMetadataName();
+		}
+
 	
 	/**
 	 * Quick access to channels
@@ -48,14 +57,32 @@ public abstract class Imageset extends Metadata
 		}
 	
 	
-	public String getMetadataName()
+	/**
+	 * Create a channel if it doesn't exist
+	 * 
+	 */
+	public ChannelImages createChannel(String ch)
 		{
-		return imageset;
+		ChannelImages im=channelImages.get(ch);
+		if(im==null)
+			{
+			ImagesetMeta.Channel m=meta.getChannel(ch);
+			im=new ChannelImages(m);
+			channelImages.put(ch, im);
+			}
+		return im;
 		}
-	public String toString()
+	
+	
+	/**
+	 * Remove channel images and metadata
+	 */
+	public void removeChannel(String ch)
 		{
-		return getMetadataName();
+		channelImages.remove(ch);
+		meta.channel.remove(ch);
 		}
+	
 	
 	/**
 	 * Save metadata to some specific files; mostly for imageset internal use. Implementations of imagesets
@@ -83,22 +110,30 @@ public abstract class Imageset extends Metadata
 		{
 		/** Private copy to channel specific meta data in meta */
 		private ImagesetMeta.Channel meta;
-		
-		/**
-		 * Get channel specific meta data
-		 */
-		public ImagesetMeta.Channel getMeta()
-			{
-			return meta;
-			}
-		
+				
 		/** Image loaders */
 		public TreeMap<Integer, TreeMap<Integer, EvImage>> imageLoader=new TreeMap<Integer, TreeMap<Integer, EvImage>>();
-		
+
+		/** List of deleted images. EvWritableImage's should not be put in this list */
+		public TreeMap<Integer, TreeMap<Integer, EvImage>> deletedImages=new TreeMap<Integer, TreeMap<Integer, EvImage>>();
+
 		/** List of modified images */
 		public HashMap<Integer,HashSet<Integer>> modifiedImages=new HashMap<Integer,HashSet<Integer>>();
 		
 		
+		/**
+		 * Create a new channel
+		 */
+		public ChannelImages(ImagesetMeta.Channel channelName)
+			{
+			meta=channelName;
+			}
+		
+
+		/****************************************************************************************/
+		/******************************* Image data *********************************************/
+		/****************************************************************************************/
+
 		/**
 		 * Get write-access to an image. This will mark the image as modified.
 		 */
@@ -106,7 +141,11 @@ public abstract class Imageset extends Metadata
 			{
 			EvImage loader=getImageLoader(frame, z);
 			if(loader==null)
-				return null;
+				{
+				EvWritableImage im=new EvWritableImage("", null);
+				setImageLoader(frame, z, im);
+				return im;
+				}
 			else if(loader instanceof EvWritableImage)
 				{
 				HashSet<Integer> slices=modifiedImages.get(frame);
@@ -119,7 +158,12 @@ public abstract class Imageset extends Metadata
 				return (EvWritableImage)loader;
 				}
 			else
-				return new EvWritableImage(loader.sourceName(), loader.loadImage());
+				{
+				//save the old one
+				EvWritableImage im=new EvWritableImage(loader.sourceName(), loader.loadImage());
+				setImageLoader(frame, z, im);
+				return im;
+				}
 			}
 		
 		/**
@@ -135,9 +179,37 @@ public abstract class Imageset extends Metadata
 				{
 				return null;
 				}
-			//new ImageLoaderJAI(imageLoader(frame,z));
+			}
+
+		/**
+		 * TODO. who uses it?
+		 */
+		public void setImageLoader(int frame, int z, EvImage im)
+			{
+			TreeMap<Integer, EvImage> frames=imageLoader.get(frame);
+			if(frames==null)
+				{
+				frames=new TreeMap<Integer, EvImage>();
+				imageLoader.put(frame, frames);
+				}
+			frames.put(z, im);
 			}
 		
+
+		
+		/****************************************************************************************/
+		/******************************* Meta data **********************************************/
+		/****************************************************************************************/
+
+		
+		/**
+		 * Get channel specific meta data
+		 */
+		public ImagesetMeta.Channel getMeta()
+			{
+			return meta;
+			}
+
 		
 		/**
 		 * Get property assigned to a frame
@@ -153,17 +225,11 @@ public abstract class Imageset extends Metadata
 			return framedata.get(prop);
 			}
 		
-		/**
-		 * Create a new channel
-		 * @param cn Name of channel
-		 */
-		public ChannelImages(ImagesetMeta.Channel cn)
-			{
-			meta=cn;
-			}
-
-
 		
+
+		/****************************************************************************************/
+		/******************************* Find frames/z ******************************************/
+		/****************************************************************************************/
 		
 		
 		

@@ -1,4 +1,4 @@
-class MetaWindow
+class ui.MetaWindow
 class ImagesetMeta
 name Imageset
 author Johan Henriksson

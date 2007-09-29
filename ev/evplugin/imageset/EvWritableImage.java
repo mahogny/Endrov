@@ -7,7 +7,7 @@ import java.awt.image.*;
  * Loader of images from single slice images using JAI
  * @author Johan Henriksson
  */
-public class EvWritableImage implements EvImage
+public class EvWritableImage extends EvImage
 	{
 	private String filename;
 	private BufferedImage im;
@@ -30,11 +30,21 @@ public class EvWritableImage implements EvImage
 
 	
 	/**
-	 * Load the image
+	 * Load the image (internally just pass it)
 	 */
 	public BufferedImage loadImage()
 		{
 		return im;
 		}
+	
+	/**
+	 * Set image
+	 */
+	public void setImage(BufferedImage im)
+		{
+		this.im=im;
+		}
+	
+	
 	}
 

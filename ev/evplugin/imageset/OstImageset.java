@@ -295,6 +295,8 @@ public class OstImageset extends Imageset
 		}
 	
 	
+	///// this custom channel is messing up more than helping //////////
+	
 	/**
 	 * OST channel - contains methods for building frame database
 	 */

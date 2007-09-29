@@ -13,6 +13,8 @@ import javax.swing.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
+import evplugin.imageWindow.*;
+import evplugin.imageset.ui.ImagesetImageExtension;
 import evplugin.metadata.*;
 import evplugin.script.*;
 
@@ -29,6 +31,8 @@ public class ImagesetMeta extends MetaObject
 	static
 		{
 		Script.addCommand("dost", new CmdDOST());
+		
+		ImageWindow.addImageWindowExtension(new ImagesetImageExtension());
 		
 		MetadataBasic.extensions.add(new MetadataExtension()
 			{
