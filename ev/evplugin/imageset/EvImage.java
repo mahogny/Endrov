@@ -12,8 +12,8 @@ public abstract class EvImage
 	/**
 	 * In-memory image. Set to null if there is none.
 	 */
-	private BufferedImage im=null;
-	
+	protected BufferedImage im=null;
+		
 	/**
 	 * Get AWT representation of image. This should be as fast as it can be, but since AWT has limitations, data might be lost.
 	 * It is the choice for rendering or if AWT is guaranteed to be able to handle the image.
@@ -26,6 +26,11 @@ public abstract class EvImage
 			return im;
 		}
 	
+	
+	public boolean modified()
+		{
+		return im!=null;
+		}
 	
 	/**
 	 * Modify image by setting a new image in this container. AWT format: Only use this format if no data will be lost.

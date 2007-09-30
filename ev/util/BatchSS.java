@@ -4,7 +4,6 @@ import java.util.*;
 import java.io.File;
 
 import evplugin.ev.*;
-import evplugin.imageset.*;
 import evplugin.imagesetOST.OstImageset;
 import evplugin.metadata.*;
 import evplugin.shell.*;

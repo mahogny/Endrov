@@ -3,9 +3,6 @@ package evplugin.imageset;
 import java.io.*;
 import java.util.*;
 import org.jdom.*;
-
-//import evplugin.basicWindow.*;
-//import evplugin.imageWindow.*;
 import evplugin.metadata.*;
 
 /**
@@ -60,7 +57,6 @@ public abstract class Imageset extends Metadata
 	
 	/**
 	 * Create a channel if it doesn't exist
-	 * 
 	 */
 	public ChannelImages createChannel(String ch)
 		{
@@ -68,12 +64,13 @@ public abstract class Imageset extends Metadata
 		if(im==null)
 			{
 			ImagesetMeta.Channel m=meta.getChannel(ch);
-			im=new ChannelImages(m);
+			im=internalMakeChannel(m);// new ChannelImages(m);
 			channelImages.put(ch, im);
 			}
 		return im;
 		}
-	
+
+	protected abstract ChannelImages internalMakeChannel(ImagesetMeta.Channel ch);
 	
 	/**
 	 * Remove channel images and metadata
@@ -110,7 +107,7 @@ public abstract class Imageset extends Metadata
 	/**
 	 * Images for one channel
 	 */
-	public class ChannelImages
+	public abstract class ChannelImages
 		{
 		/** Private copy to channel specific meta data in meta */
 		private ImagesetMeta.Channel meta;
@@ -118,13 +115,6 @@ public abstract class Imageset extends Metadata
 		/** Image loaders */
 		public TreeMap<Integer, TreeMap<Integer, EvImage>> imageLoader=new TreeMap<Integer, TreeMap<Integer, EvImage>>();
 
-		/** List of deleted images. EvWritableImage's should not be put in this list */
-		public TreeMap<Integer, TreeMap<Integer, EvImage>> deletedImages=new TreeMap<Integer, TreeMap<Integer, EvImage>>();
-
-		/** List of modified images */
-		public HashMap<Integer,HashSet<Integer>> modifiedImages=new HashMap<Integer,HashSet<Integer>>();
-		
-		
 		/**
 		 * Create a new channel
 		 */
@@ -174,7 +164,7 @@ public abstract class Imageset extends Metadata
 		*/
 		
 		/**
-		 * Get read-access to an image
+		 * Get access to an image
 		 */
 		public EvImage getImageLoader(int frame, int z)
 			{
@@ -187,7 +177,31 @@ public abstract class Imageset extends Metadata
 				return null;
 				}
 			}
+		
+		/**
+		 * Get or create an image
+		 */
+		public EvImage createImageLoader(int frame, int z)
+			{
+			EvImage im=getImageLoader(frame, z);
+			if(im!=null)
+				return im;
+			else
+				{
+				TreeMap<Integer, EvImage> frames=imageLoader.get(frame);
+				if(frames==null)
+					{
+					frames=new TreeMap<Integer, EvImage>();
+					imageLoader.put(frame, frames);
+					}
+				im=internalMakeLoader(frame, z);
+				frames.put(z, im);
+				return im;
+				}
+			}
 
+		protected abstract EvImage internalMakeLoader(int frame, int z);
+		
 		/**
 		 * TODO. who uses it? Need be abstract so the correct type can be created.
 		 */

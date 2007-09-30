@@ -1,9 +1,14 @@
 package evplugin.imageset;
 
 import javax.imageio.ImageIO;
+
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import com.sun.media.jai.codec.*;
-import java.io.File;
+import java.io.*;
 import java.awt.image.*;
+
 import evplugin.ev.*;
 
 //static int getNumDirectories(SeekableStream stream)
@@ -100,5 +105,47 @@ public class EvImageJAI extends EvImage
 			return null;
 			}
 		}
+	
+	
+	//A lot of work is needed here....
+	public void saveImage() throws Exception
+		{
+		saveImage(im, new File(filename), 99);
+		}
+	
+	
+	/**
+	 * Save an image to disk
+	 */
+	private static void saveImage(BufferedImage im, File toFile, float quality) throws Exception
+		{
+		String fileEnding=getFileEnding(toFile.getName());
+		if(fileEnding.equals("jpg") || fileEnding.equals("jpeg"))
+			{
+	    FileOutputStream toStream = new FileOutputStream(toFile); 
+	    JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(toStream); 
+	    JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(im); 
+	    param.setQuality(quality, false); 
+	    encoder.setJPEGEncodeParam(param); 
+	    encoder.encode(im); 
+			}
+		else
+			{
+			ImageIO.write(im, fileEnding, toFile);
+			}
+		}
+	
+	
+	
+	/**
+	 * Get file extension
+	 */
+	private static String getFileEnding(String s)
+		{
+		String fileEnding=s;
+		fileEnding=fileEnding.substring(fileEnding.lastIndexOf('.')+1);
+		return fileEnding;
+		}
+	
 	}
 

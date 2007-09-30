@@ -6,11 +6,9 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 
-import evplugin.basicWindow.BasicWindow;
+import evplugin.basicWindow.*;
 import evplugin.ev.*;
-import evplugin.imageset.EvImage;
-import evplugin.imageset.EvImageJAI;
-import evplugin.imageset.Imageset;
+import evplugin.imageset.*;
 
 public class NamebasedImageset extends Imageset
 	{	
@@ -64,11 +62,12 @@ public class NamebasedImageset extends Imageset
 	
 	/**
 	 * Get a channel or create it if it does not exist
+	 * TODO RENAME, OVERRIDES A METHOD IN A STUPID WAY
 	 */
 	public Imageset.ChannelImages getChannel(String ch)
 		{
 		if(!channelImages.containsKey(ch))
-			channelImages.put(ch, new Imageset.ChannelImages(meta.channel.get(ch)));
+			channelImages.put(ch, internalMakeChannel(meta.channel.get(ch)));
 		return channelImages.get(ch);
 		}
 	
@@ -316,5 +315,23 @@ public class NamebasedImageset extends Imageset
 	
 	
 	
-
+	
+	
+	
+	
+	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
+		{
+		return new Channel(ch);
+		}
+	public class Channel extends Imageset.ChannelImages
+		{
+		public Channel(ImagesetMeta.Channel channelName)
+			{
+			super(channelName);
+			}
+		protected EvImage internalMakeLoader(int frame, int z)
+			{
+			return new EvImageJAI("");
+			}
+		}
 	}

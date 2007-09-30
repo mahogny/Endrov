@@ -1,8 +1,7 @@
 package util;
 
 import evplugin.ev.*;
-import evplugin.imageset.*;
-import evplugin.imagesetOST.OstImageset;
+import evplugin.imagesetOST.*;
 import evplugin.makeQT.*;
 
 import java.util.*;

@@ -76,7 +76,7 @@ public final class CalcThreadOld extends BatchThread
 					{
 					int[][] maxim=null;
 
-					File outfile=ost.buildImagePath(channel+"max", curframe, 0, "");
+					File outfile=null;  /*to stop a complaint*/  //ost.buildImagePath(channel+"max", curframe, 0, "");
 	//				File outfile2=ost.buildImagePath(channel+"max", curframe, 0, ".jpg");
 //					if(!outfile2.exists())
 						for(;;)
