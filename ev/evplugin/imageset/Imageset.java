@@ -160,7 +160,7 @@ public abstract class Imageset extends Metadata
 			else
 				{
 				//save the old one
-				EvWritableImage im=new EvWritableImage(loader.sourceName(), loader.loadImage());
+				EvWritableImage im=new EvWritableImage(loader.sourceName(), loader.getJavaImage());
 				setImageLoader(frame, z, im);
 				return im;
 				}

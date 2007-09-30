@@ -100,7 +100,7 @@ public class SaveOSTThread extends BatchThread
 						//Save image
 						batchLog(channel.getMeta().name+"/"+frame+"/"+slice);
 						EvImage loader=slices.get(slice);
-						BufferedImage im=loader.loadImage();
+						BufferedImage im=loader.getJavaImage();
 						File toFile=new File(framePath, EV.pad(slice,8));
 						saveImage(im, toFile, (float)quality);
 						}
