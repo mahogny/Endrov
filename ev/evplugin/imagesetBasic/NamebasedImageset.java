@@ -1,4 +1,4 @@
-package evplugin.loadBasicImageset;
+package evplugin.imagesetBasic;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -8,10 +8,11 @@ import java.util.*;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.*;
-import evplugin.imageset.*;
-import evplugin.jubio.EvImageJubio;
+import evplugin.imageset.EvImage;
+import evplugin.imageset.EvImageJAI;
+import evplugin.imageset.Imageset;
 
-public class SequenceImageset extends Imageset
+public class NamebasedImageset extends Imageset
 	{	
 	/** Path to imageset */
 	private String basedir;
@@ -24,7 +25,7 @@ public class SequenceImageset extends Imageset
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
 	 * @param basedir
 	 */
-	public SequenceImageset(String basedir)
+	public NamebasedImageset(String basedir)
 		{
 		this.basedir=basedir;
 		this.imageset=(new File(basedir)).getName();
@@ -35,7 +36,7 @@ public class SequenceImageset extends Imageset
 		{
 		return getMetadataName();
 		}
-
+	
 	
 	public File datadir(){return null;}
 
@@ -44,7 +45,7 @@ public class SequenceImageset extends Imageset
 	 */
 	public void buildDatabase()
 		{
-		new SequenceDatabaseBuilder();
+		new NamebasedDatabaseBuilder();
 		BasicWindow.updateWindows();
 		}
 	
@@ -89,7 +90,7 @@ public class SequenceImageset extends Imageset
 		
 		public FileConvention()
 			{
-			setTitle(EV.programName+" Sequence Import File Conventions: "+imageset);
+			setTitle(EV.programName+" Name based Import File Conventions: "+imageset);
 			
 			//GridBox might be better
 			
@@ -101,11 +102,11 @@ public class SequenceImageset extends Imageset
 			
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));
-
+			
 			eSequence.setText(fileConvention);
 			eChannels.setText(channelList);
 
-			input1.add(new JLabel("Sequence:"));			input1.add(eSequence);
+			input1.add(new JLabel("Name:"));				input1.add(eSequence);
 			input2.add(new JLabel("Channels:"));			input2.add(eChannels);
 			
 			JPanel bp=new JPanel(new GridLayout(1,2));
@@ -123,8 +124,6 @@ public class SequenceImageset extends Imageset
 			
 			bRebuild.addActionListener(this);
 			bSyntax.addActionListener(this);
-			
-			
 			
 			pack();
 			setBounds(0, 100, 1000, 400);
@@ -147,29 +146,24 @@ public class SequenceImageset extends Imageset
 			}
 		}
 	
-
-	
 	
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-
+	
 	/**
-	 * Class for building database from sequences. Has to be a class because java has immutable primitives
+	 * Class for building database. Has to be a class because java has immutable primitives
 	 */
-	private class SequenceDatabaseBuilder
+	private class NamebasedDatabaseBuilder
 		{
 		File[] fileList;
-		Vector<String> channelVector=new Vector<String>();
 		int currentFile=0;
-		int frame=0;
-		int stringpos=0;
-		int numSlices=0;
 		
-		public SequenceDatabaseBuilder()
+		public NamebasedDatabaseBuilder()
 			{
+			Vector<String> channelVector=new Vector<String>();
 			try
 				{
 				rebuildLog="";				
@@ -194,8 +188,90 @@ public class SequenceImageset extends Imageset
 						channelImages.remove(ch.getMeta().name);
 					}
 				
+				
 				//Go through list of files
-				build(true);
+				File f;
+				while((f=nextFile())!=null)
+					{
+					String filename=f.getName();
+					int i=0;
+					int j=0;
+					int channelNum=0;
+					int slice=0;
+					int frame=0;
+					while(i<fileConvention.length())
+						{
+						if(j==filename.length())
+							break;
+						if(fileConvention.charAt(i)=='%')
+							{
+							char type=fileConvention.charAt(i+1);
+							i+=2;
+							if(type=='%')
+								j++;
+							else
+								{
+								String params=parseInt(filename.substring(j));
+								if(params.equals(""))
+									{
+									JOptionPane.showMessageDialog(null, "Not matching "+filename+" Missing parameter "+type+", filename pos"+j);
+									return;
+									}
+								else
+									{
+									j+=params.length();
+									int parami=Integer.parseInt(params);
+									if(type=='C')
+										channelNum=parami;
+									else if(type=='F')
+										frame=parami;
+									else if(type=='Z')
+										slice=parami;
+									else if(type=='#')
+										;
+									else
+										{
+										JOptionPane.showMessageDialog(null, "Unknown parameter: "+type);
+										return;
+										}
+									}
+								}
+							}
+						else if(fileConvention.charAt(i)==filename.charAt(j))
+							{
+							i++;
+							j++;
+							}
+						else
+							{
+							JOptionPane.showMessageDialog(null, "Not matching: "+filename+" rulepos "+i+" namepos "+j);
+							return;
+							}
+						}
+					
+					//If everything was matched, continue
+					if(j==filename.length())
+						{
+						String channelName=channelVector.get(channelNum);
+
+						//Get a place to put EV. Create holders if needed
+						ChannelImages ch=getChannel(channelName);
+						TreeMap<Integer, EvImage> loaders=ch.imageLoader.get(frame);
+						if(loaders==null)
+							{
+							loaders=new TreeMap<Integer, EvImage>();
+							ch.imageLoader.put(frame, loaders);
+							}
+						
+						//Plug EV
+						loaders.put(slice, new EvImageJAI(f.getAbsolutePath()));
+						rebuildLog+=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
+						}
+					else
+						JOptionPane.showMessageDialog(null, "Not matching: "+filename+" Premature end of filename");
+					}
+				
+				
 				}
 			catch (Exception e)
 				{
@@ -205,116 +281,18 @@ public class SequenceImageset extends Imageset
 			}
 	
 		
-		
-		/** Main parser */
-		private void build(boolean toplevel) throws Exception
-			{
-			if(stringpos==fileConvention.length())
-				{
-				if(!toplevel)
-					throw new Exception("Missing )");
-				}
-			else
-				{
-				char firstChar=fileConvention.charAt(stringpos);
-				if(firstChar=='r')
-					{
-					stringpos++; //r
-					int numRepeat=parseInt();
-					//EV.printDebug("r"+numRepeat);
-					stringpos++; //(
-					int savedStringPos=stringpos;
-					for(int i=0;i<numRepeat;i++)
-						{
-						stringpos=savedStringPos;
-						build(false);
-						}
-					stringpos++; //)
-					build(toplevel);
-					}
-				else if(firstChar==',')
-					{
-					stringpos++;
-					build(toplevel);
-					}
-				else if(firstChar==')')
-					return;
-				else if(firstChar=='n')
-					{
-					//Number of slices
-					stringpos++;
-					numSlices=parseInt();
-					build(toplevel);
-					}
-				else if(firstChar=='s')
-					{
-					//Stack of images
-					stringpos++; //s
-
-					int channelNum=0;
-					int skipSlices=1;
-					int frameForward=0;
-
-					while(stringpos<fileConvention.length())// && fileConvention.charAt(stringpos)!=',' && fileConvention.charAt(stringpos)!=')')
-						{
-						if(stringpos>=fileConvention.length())
-							break;
-						int paramchar=fileConvention.charAt(stringpos);
-						if(paramchar=='c')
-							{
-							stringpos++;
-							channelNum=parseInt();
-							}
-						else if(paramchar=='k')
-							{
-							stringpos++;
-							skipSlices=parseInt();
-							}
-						else if(paramchar=='i')
-							{
-							stringpos++;
-							frameForward=parseInt();
-							}
-						else
-							break; //Cannot identify more parameters
-						}
-					
-					String channelName=channelVector.get(channelNum);
-					File f=nextFile();
-					if(f==null)
-						return;
-					else
-						{
-						TreeMap<Integer, EvImage> loaders=new TreeMap<Integer, EvImage>();
-						for(int i=0;i<numSlices;i+=skipSlices)
-							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
-						ChannelImages ch=getChannel(channelName);
-						ch.imageLoader.put(frame, loaders);
-						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
-						}
-					frame+=frameForward;
-					
-					build(toplevel);
-					}
-				else
-					throw new Exception("Could not parse: "+firstChar);
-				}
-			}
-
-		
 
 		/** Get the next int */
-		private int parseInt() throws Exception
+		private String parseInt(String s)
 			{
 			String part="";
-			while("1234567890".indexOf(fileConvention.charAt(stringpos))>=0)
+			int stringpos=0;
+			while("1234567890".indexOf(s.charAt(stringpos))>=0)
 				{
-				part=part+fileConvention.charAt(stringpos);
+				part=part+s.charAt(stringpos);
 				stringpos++;
 				}
-			if(part=="")
-				throw new Exception("Integer expected");
-			return Integer.parseInt(part);
+			return part;
 			}
 		
 		/** Get the next file to assign frame/slice */
@@ -334,5 +312,9 @@ public class SequenceImageset extends Imageset
 			}
 		
 		}
+	
+	
+	
+	
 
 	}

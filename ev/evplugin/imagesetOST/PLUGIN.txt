@@ -1,0 +1,4 @@
+class OstImageset
+name OST Imageset
+author Johan Henriksson
+cite

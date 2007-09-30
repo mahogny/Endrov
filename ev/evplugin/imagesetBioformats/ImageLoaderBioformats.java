@@ -1,4 +1,4 @@
-package evplugin.lociBioformats;
+package evplugin.imagesetBioformats;
 
 import java.awt.image.*;
 

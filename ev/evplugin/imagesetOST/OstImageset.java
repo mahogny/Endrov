@@ -1,20 +1,117 @@
-package evplugin.imageset;
+package evplugin.imagesetOST;
 
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.event.*;
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
-//import org.jdom.*;
-//import org.jdom.input.*;
+
 import evplugin.ev.*;
+import evplugin.basicWindow.*;
+import evplugin.imageset.*;
+import evplugin.metadata.*;
+import evplugin.script.*;
 
 
 /**
- * Support for the native VWB file format
+ * Support for the native OST file format
  * @author Johan Henriksson
  */
 public class OstImageset extends Imageset
 	{
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
 	
+	public static void initPlugin() {}
+	static
+		{
+		Script.addCommand("dost", new CmdDOST());
+		
+		MetadataBasic.extensions.add(new MetadataExtension()
+			{
+			public void buildOpen(JMenu menu)
+				{
+				final JMenuItem miLoadVWBImageset=new JMenuItem("Load OST imageset");
+				menu.add(miLoadVWBImageset);
+				final JMenuItem miLoadVWBImagesetPath=new JMenuItem("Load OST imageset by path");
+				menu.add(miLoadVWBImagesetPath);
+				
+				ActionListener listener=new ActionListener()
+					{
+					/**
+					 * Show dialog for opening a new native imageset
+					 */
+					public void actionPerformed(ActionEvent e)
+						{
+						if(e.getSource()==miLoadVWBImageset)
+							{
+							JFileChooser chooser = new JFileChooser();
+					    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
+					    int returnVal = chooser.showOpenDialog(null); //null=window
+					    if(returnVal == JFileChooser.APPROVE_OPTION)
+					    	{
+					    	String filename=chooser.getSelectedFile().getAbsolutePath();
+					    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
+					    	load(filename);
+					    	}
+							}
+						else if(e.getSource()==miLoadVWBImagesetPath)
+							{
+							String clipboardString=null;
+							try
+								{
+								clipboardString=(String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+								}
+							catch(Exception e2)
+								{
+								System.out.println("Failed to get text from clipboard");
+								}
+							if(clipboardString==null)
+								clipboardString="";
+							String fileName=JOptionPane.showInputDialog("Path",clipboardString);
+							if(fileName!=null)
+								load(fileName);
+							}
+						}
+
+
+					public void load(String filename)
+						{
+			    	//dialog doesn't really show, but better than nothing
+			    	JFrame loadingWindow=new JFrame(EV.programName); 
+			    	loadingWindow.setLayout(new GridLayout(1,1));
+			    	loadingWindow.add(new JLabel("Loading imageset"));
+			    	loadingWindow.pack();
+			    	loadingWindow.setBounds(200, 200, 300, 50);
+			    	loadingWindow.setVisible(true);
+			    	loadingWindow.repaint();
+			    	
+
+			
+			 //   	Metadata.metadata.add(new EmptyImageset());
+			    	Metadata.metadata.add(new OstImageset(filename));
+			    	BasicWindow.updateWindows();
+			    	loadingWindow.dispose();
+						}
+					
+					};
+				miLoadVWBImageset.addActionListener(listener);
+				miLoadVWBImagesetPath.addActionListener(listener);
+				}
+			public void buildSave(JMenu menu, Metadata meta)
+				{
+				}
+			});
+		}
+
 	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+
 	
 	/** Path to imageset */
 	public String basedir;
@@ -261,7 +358,7 @@ public class OstImageset extends Imageset
 					for(int slice:c.imageLoader.get(frame).keySet())
 						{
 						EvImage loader=c.getImageLoader(frame, slice);
-						File imagefile=new File(loader.sourceName());
+						File imagefile=new File(((EvImageJAI)loader).jaiFileName());
 						String filename=imagefile.getName();
 						String ext="";
 						if(filename.indexOf('.')!=-1)

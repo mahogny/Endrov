@@ -1,4 +1,4 @@
-package evplugin.imageset.ui;
+package evplugin.imageset;
 
 import java.awt.event.*;
 import javax.swing.*;

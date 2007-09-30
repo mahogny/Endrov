@@ -1,4 +1,4 @@
-package evplugin.lociBioformats;
+package evplugin.imagesetBioformats;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -35,7 +35,7 @@ public class BioformatsImageset extends Imageset
 			{
 			public void buildOpen(JMenu menu)
 				{
-				final JMenuItem miLoadBioformats=new JMenuItem("Load other imageset (Bioformats)");
+				final JMenuItem miLoadBioformats=new JMenuItem("Load Bioformats imageset");
 				menu.add(miLoadBioformats);
 				
 				ActionListener listener=new ActionListener()

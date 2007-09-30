@@ -3,6 +3,7 @@ import java.io.File;
 
 import evplugin.ev.EV;
 import evplugin.imageset.*;
+import evplugin.imagesetOST.OstImageset;
 
 /**
  * Run through all imagesets in a folder and generate imagecache.txt in them

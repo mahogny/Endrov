@@ -20,6 +20,7 @@ public abstract class Imageset extends Metadata
 	/** List of all channels belonging to this imageset */
 	public HashMap<String,ChannelImages> channelImages=new HashMap<String,ChannelImages>();
 	
+	
 	/** Meta object belonging to the imageset. Never null. Referenced elsewhere, do not change pointer */
 	public ImagesetMeta meta=new ImagesetMeta();
 
@@ -102,6 +103,9 @@ public abstract class Imageset extends Metadata
 		writeXmlData(document, outfile);
 		}
 	
+	
+	
+	
 
 	/**
 	 * Images for one channel
@@ -137,6 +141,7 @@ public abstract class Imageset extends Metadata
 		/**
 		 * Get write-access to an image. This will mark the image as modified.
 		 */
+		/*
 		public EvWritableImage getWritableImage(int frame, int z)
 			{
 			EvImage loader=getImageLoader(frame, z);
@@ -165,6 +170,8 @@ public abstract class Imageset extends Metadata
 				return im;
 				}
 			}
+
+		*/
 		
 		/**
 		 * Get read-access to an image
@@ -182,8 +189,9 @@ public abstract class Imageset extends Metadata
 			}
 
 		/**
-		 * TODO. who uses it?
+		 * TODO. who uses it? Need be abstract so the correct type can be created.
 		 */
+		/*
 		public void setImageLoader(int frame, int z, EvImage im)
 			{
 			TreeMap<Integer, EvImage> frames=imageLoader.get(frame);
@@ -194,7 +202,7 @@ public abstract class Imageset extends Metadata
 				}
 			frames.put(z, im);
 			}
-		
+		*/
 
 		
 		/****************************************************************************************/

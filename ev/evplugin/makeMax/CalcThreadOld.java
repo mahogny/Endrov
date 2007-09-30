@@ -7,6 +7,8 @@ import java.io.*;
 import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.*;
 import evplugin.imageset.*;
+import evplugin.imagesetOST.OstImageset;
+
 import java.awt.image.*;
 import javax.imageio.*;
 

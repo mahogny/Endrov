@@ -1,16 +1,16 @@
-package evplugin.lociBioformats;
+package evplugin.imagesetOST;
 import java.util.*;
 
 import evplugin.basicWindow.*;
+import evplugin.imageset.Imageset;
 import evplugin.metadata.Metadata;
 import evplugin.script.*;
-import evplugin.imageset.*;
 
 /**
- * Open Bioformats
+ * Open OST
  * @author Johan Henriksson
  */
-public class CmdDBIO extends Command
+public class CmdDOST extends Command
 	{
 	public int numArg()	{return 1;}
 	public Exp exec(Vector<Exp> arg) throws Exception
@@ -20,8 +20,7 @@ public class CmdDBIO extends Command
 			{
 			ExpVal v=(ExpVal)e;
 
-			
-			Imageset rec=new BioformatsImageset(v.stringValue());
+			Imageset rec=new OstImageset(v.stringValue());
 			Metadata.metadata.add(rec);
 			
 			BasicWindow.updateWindows();
