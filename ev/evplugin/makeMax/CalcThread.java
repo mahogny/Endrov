@@ -2,7 +2,7 @@ package evplugin.makeMax;
 
 //need to update batch script
 
-import evplugin.basicWindow.BasicWindow;
+import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.imageset.*;
 import java.awt.image.*;
