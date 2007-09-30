@@ -247,7 +247,7 @@ public final class CalcThread extends BatchThread
 						return;
 						}
 					else
-						mc.add(new MovieChannel(imload.loadImage(), cName));
+						mc.add(new MovieChannel(imload.getJavaImage(), cName));
 					}
 				if(allImloadOk)
 					{
@@ -297,7 +297,9 @@ public final class CalcThread extends BatchThread
 		}
 
 	
-	
+	/**
+	 * Put channels together
+	 */
 	private BufferedImage combine(Vector<MovieChannel> mc, int frame)
 		{
 		//Need renormalization TODO

@@ -1,4 +1,4 @@
-package evplugin.loadBasicImageset;
+package evplugin.imagesetBasic;
 
 //import evplugin.basicWindow.*;
 //import evplugin.imageset.*;

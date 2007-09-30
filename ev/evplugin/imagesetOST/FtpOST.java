@@ -1,4 +1,4 @@
-package evplugin.imageset;
+package evplugin.imagesetOST;
 
 //JSR 203
 //JAVA 7 will have a VFS, making parts of this code obsolete. do not make any bigger modifications as it will have to be redone anyway.

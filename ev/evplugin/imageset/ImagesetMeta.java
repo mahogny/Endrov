@@ -1,210 +1,122 @@
 package evplugin.imageset;
 
 import org.jdom.*;
-
-import java.awt.GridLayout;
-import java.io.File;
 import java.util.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
-
-
-import evplugin.basicWindow.*;
-import evplugin.ev.*;
 import evplugin.imageWindow.*;
-import evplugin.imageset.ui.ImagesetImageExtension;
 import evplugin.metadata.*;
-import evplugin.script.*;
 
 public class ImagesetMeta extends MetaObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	
-	
 	private static final String metaType="imageset";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Script.addCommand("dost", new CmdDOST());
-		
 		ImageWindow.addImageWindowExtension(new ImagesetImageExtension());
-		
-		MetadataBasic.extensions.add(new MetadataExtension()
+		Metadata.extensions.put(metaType,new ImagesetMetaObjectExtension());
+		}
+
+	
+	/******************************************************************************************************
+	 *            Class: XML Reader and writer of this type of meta object                                *
+	 *****************************************************************************************************/
+	
+	public static class ImagesetMetaObjectExtension implements MetaObjectExtension
+		{
+		public MetaObject extractObjects(Element e)
 			{
-			public void buildOpen(JMenu menu)
-				{
-				final JMenuItem miLoadVWBImageset=new JMenuItem("Load OST imageset");
-				menu.add(miLoadVWBImageset);
-				final JMenuItem miLoadVWBImagesetPath=new JMenuItem("Load OST imageset by path");
-				menu.add(miLoadVWBImagesetPath);
-				
-				ActionListener listener=new ActionListener()
-					{
-					/**
-					 * Show dialog for opening a new native imageset
-					 */
-					public void actionPerformed(ActionEvent e)
-						{
-						if(e.getSource()==miLoadVWBImageset)
-							{
-							JFileChooser chooser = new JFileChooser();
-					    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
-					    int returnVal = chooser.showOpenDialog(null); //null=window
-					    if(returnVal == JFileChooser.APPROVE_OPTION)
-					    	{
-					    	String filename=chooser.getSelectedFile().getAbsolutePath();
-					    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
-					    	load(filename);
-					    	}
-							}
-						else if(e.getSource()==miLoadVWBImagesetPath)
-							{
-							String clipboardString=null;
-							try
-								{
-								clipboardString=(String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-								}
-							catch(Exception e2)
-								{
-								System.out.println("Failed to get text from clipboard");
-								}
-							if(clipboardString==null)
-								clipboardString="";
-							String fileName=JOptionPane.showInputDialog("Path",clipboardString);
-							if(fileName!=null)
-								load(fileName);
-							}
-						}
-
-
-					public void load(String filename)
-						{
-			    	//doesn't really show, but better than nothing
-			    	JFrame loadingWindow=new JFrame(EV.programName); 
-			    	loadingWindow.setLayout(new GridLayout(1,1));
-			    	loadingWindow.add(new JLabel("Loading imageset"));
-			    	loadingWindow.pack();
-			    	loadingWindow.setBounds(200, 200, 300, 50);
-			    	loadingWindow.setVisible(true);
-			    	loadingWindow.repaint();
-			    	
-
+			ImagesetMeta meta=new ImagesetMeta();
 			
-			 //   	Metadata.metadata.add(new EmptyImageset());
-			    	Metadata.metadata.add(new OstImageset(filename));
-			    	BasicWindow.updateWindows();
-			    	loadingWindow.dispose();
-						}
-					
-					};
-				miLoadVWBImageset.addActionListener(listener);
-				miLoadVWBImagesetPath.addActionListener(listener);
-				}
-			public void buildSave(JMenu menu, Metadata meta)
+			for(Object oi:e.getChildren())
 				{
+				Element i=(Element)oi;
+				
+				if(i.getName().equals("timestep"))
+					meta.metaTimestep=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resX"))
+					meta.resX=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resY"))
+					meta.resY=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resZ"))
+					meta.resZ=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("NA"))
+					meta.metaNA=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("objective"))
+					meta.metaObjective=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("optivar"))
+					meta.metaOptivar=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("campix"))
+					meta.metaCampix=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("slicespacing"))
+					meta.metaSlicespacing=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("sample"))
+					meta.metaSample=i.getValue();
+				else if(i.getName().equals("description"))
+					meta.metaDescript=i.getValue();
+				else if(i.getName().equals("channel"))
+					{
+					ImagesetMeta.Channel ch=extractChannel(meta, i);
+					meta.channel.put(ch.name, ch);
+					}
+				else if(i.getName().equals("frame"))
+					extractFrame(meta.metaFrame, i);
+				else
+					meta.metaOther.put(i.getName(), i.getValue());
 				}
-			});
+			
+			return meta;
+			}
 		
-		Metadata.extensions.put(metaType,new MetaObjectExtension()
+		/**
+		 * Extract channel XML data
+		 */
+		public ImagesetMeta.Channel extractChannel(ImagesetMeta data, Element e)
 			{
-			public MetaObject extractObjects(Element e)
+			ImagesetMeta.Channel ch=new ImagesetMeta.Channel();
+			ch.name=e.getAttributeValue("name");
+			
+			for(Object oi:e.getChildren())
 				{
-				ImagesetMeta meta=new ImagesetMeta();
+				Element i=(Element)oi;
 				
-				for(Object oi:e.getChildren())
-					{
-					Element i=(Element)oi;
-					
-					if(i.getName().equals("timestep"))
-						meta.metaTimestep=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("resX"))
-						meta.resX=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("resY"))
-						meta.resY=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("resZ"))
-						meta.resZ=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("NA"))
-						meta.metaNA=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("objective"))
-						meta.metaObjective=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("optivar"))
-						meta.metaOptivar=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("campix"))
-						meta.metaCampix=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("slicespacing"))
-						meta.metaSlicespacing=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("sample"))
-						meta.metaSample=i.getValue();
-					else if(i.getName().equals("description"))
-						meta.metaDescript=i.getValue();
-					else if(i.getName().equals("channel"))
-						{
-						ImagesetMeta.Channel ch=extractChannel(meta, i);
-						meta.channel.put(ch.name, ch);
-						}
-					else if(i.getName().equals("frame"))
-						extractFrame(meta.metaFrame, i);
-					else
-						meta.metaOther.put(i.getName(), i.getValue());
-					}
-				
-				return meta;
+				if(i.getName().equals("dispX"))
+					ch.dispX=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("dispY"))
+					ch.dispY=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("binning"))
+					ch.chBinning=Integer.parseInt(i.getValue());
+				else if(i.getName().equals("frame"))
+					extractFrame(ch.metaFrame, i);
+				else
+					ch.metaOther.put(i.getName(), i.getValue());
 				}
 			
-			/**
-			 * Extract channel XML data
-			 */
-			public ImagesetMeta.Channel extractChannel(ImagesetMeta data, Element e)
+			return ch;
+			}
+		
+		/**
+		 * Get frame metadata
+		 */
+		public void extractFrame(HashMap<Integer,HashMap<String,String>> metaFrame, Element e)
+			{
+			int fid=Integer.parseInt(e.getAttributeValue("frame"));
+			for(Object oi:e.getChildren())
 				{
-				ImagesetMeta.Channel ch=new ImagesetMeta.Channel();
-				ch.name=e.getAttributeValue("name");
-				
-				for(Object oi:e.getChildren())
+				Element i=(Element)oi;
+				HashMap<String,String> frame=metaFrame.get(fid);
+				if(frame==null)
 					{
-					Element i=(Element)oi;
-					
-					if(i.getName().equals("dispX"))
-						ch.dispX=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("dispY"))
-						ch.dispY=Double.parseDouble(i.getValue());
-					else if(i.getName().equals("binning"))
-						ch.chBinning=Integer.parseInt(i.getValue());
-					else if(i.getName().equals("frame"))
-						extractFrame(ch.metaFrame, i);
-					else
-						ch.metaOther.put(i.getName(), i.getValue());
+					frame=new HashMap<String,String>();
+					metaFrame.put(fid, frame);
 					}
-				
-				return ch;
+				frame.put(i.getName(), i.getValue());
 				}
 			
-			/**
-			 * Get frame metadata
-			 */
-			public void extractFrame(HashMap<Integer,HashMap<String,String>> metaFrame, Element e)
-				{
-				int fid=Integer.parseInt(e.getAttributeValue("frame"));
-				for(Object oi:e.getChildren())
-					{
-					Element i=(Element)oi;
-					HashMap<String,String> frame=metaFrame.get(fid);
-					if(frame==null)
-						{
-						frame=new HashMap<String,String>();
-						metaFrame.put(fid, frame);
-						}
-					frame.put(i.getName(), i.getValue());
-					}
-				
-				}
-			
-			});
+			}
+		
 		}
 
 	

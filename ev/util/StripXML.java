@@ -2,6 +2,8 @@ package util;
 
 import evplugin.ev.EV;
 import evplugin.imageset.*;
+import evplugin.imagesetOST.OstImageset;
+
 import java.util.*;
 
 public class StripXML

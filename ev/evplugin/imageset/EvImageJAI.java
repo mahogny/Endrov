@@ -35,15 +35,27 @@ public class EvImageJAI extends EvImage
 		this.slice=slice;
 		}
 
-	
-	public String sourceName()
+	/**
+	 * Get name of file
+	 */
+	public String jaiFileName()
 		{
+		return filename;
+		/*
 		if(slice==-1)
 			return filename;
 		else
 			return filename+":"+slice;
+			*/
 		}
 
+	/**
+	 * Get slice number of -1 if it is the entire file
+	 */
+	public int jaiSlice()
+		{
+		return slice;
+		}
 	
 	/**
 	 * Load the image
