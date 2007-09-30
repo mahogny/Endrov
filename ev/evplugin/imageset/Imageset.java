@@ -127,41 +127,6 @@ public abstract class Imageset extends Metadata
 		/****************************************************************************************/
 		/******************************* Image data *********************************************/
 		/****************************************************************************************/
-
-		/**
-		 * Get write-access to an image. This will mark the image as modified.
-		 */
-		/*
-		public EvWritableImage getWritableImage(int frame, int z)
-			{
-			EvImage loader=getImageLoader(frame, z);
-			if(loader==null)
-				{
-				EvWritableImage im=new EvWritableImage("", null);
-				setImageLoader(frame, z, im);
-				return im;
-				}
-			else if(loader instanceof EvWritableImage)
-				{
-				HashSet<Integer> slices=modifiedImages.get(frame);
-				if(slices==null)
-					{
-					slices=new HashSet<Integer>();
-					modifiedImages.put(frame, slices);
-					}
-				slices.add(z);
-				return (EvWritableImage)loader;
-				}
-			else
-				{
-				//save the old one
-				EvWritableImage im=new EvWritableImage(loader.sourceName(), loader.getJavaImage());
-				setImageLoader(frame, z, im);
-				return im;
-				}
-			}
-
-		*/
 		
 		/**
 		 * Get access to an image
@@ -202,22 +167,7 @@ public abstract class Imageset extends Metadata
 
 		protected abstract EvImage internalMakeLoader(int frame, int z);
 		
-		/**
-		 * TODO. who uses it? Need be abstract so the correct type can be created.
-		 */
-		/*
-		public void setImageLoader(int frame, int z, EvImage im)
-			{
-			TreeMap<Integer, EvImage> frames=imageLoader.get(frame);
-			if(frames==null)
-				{
-				frames=new TreeMap<Integer, EvImage>();
-				imageLoader.put(frame, frames);
-				}
-			frames.put(z, im);
-			}
-		*/
-
+	
 		
 		/****************************************************************************************/
 		/******************************* Meta data **********************************************/
