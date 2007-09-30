@@ -32,7 +32,7 @@ public class EvWritableImage extends EvImage
 	/**
 	 * Load the image (internally just pass it)
 	 */
-	public BufferedImage loadImage()
+	public BufferedImage loadJavaImage()
 		{
 		return im;
 		}

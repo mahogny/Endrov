@@ -9,10 +9,16 @@ import java.awt.image.*;
  */
 public abstract class EvImage
 	{
-	public abstract BufferedImage loadImage();
+	public BufferedImage getJavaImage()
+		{
+		return loadJavaImage();
+		}
+	
+	public abstract BufferedImage loadJavaImage();
 	
 	/**
 	 * Source of image; path to file if it is a single slice. Best used sparingly.
 	 */
-	public abstract String sourceName();
+	//only used by OST imageset. ELIMINATE
+	//public abstract String sourceName();
 	}

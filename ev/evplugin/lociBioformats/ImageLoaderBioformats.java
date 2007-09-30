@@ -40,7 +40,7 @@ public class ImageLoaderBioformats extends EvImage
 	/**
 	 * Load the image
 	 */
-	public BufferedImage loadImage()
+	public BufferedImage loadJavaImage()
 		{
 		try
 			{

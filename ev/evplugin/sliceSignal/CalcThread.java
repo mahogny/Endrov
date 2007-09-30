@@ -116,7 +116,7 @@ public final class CalcThread extends BatchThread
   						EvImage imload=ch.getImageLoader(curframe, z);
       				if(imload!=null)
     						{
-    						BufferedImage bufi=imload.loadImage();
+    						BufferedImage bufi=imload.getJavaImage();
     						if(bufi!=null)
     							{
     							Raster r=bufi.getData();

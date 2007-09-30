@@ -51,7 +51,7 @@ public class ImagePanel extends JPanel
 			//Load image if this has not already been done
 			if(bufi==null && imageLoader!=null)
 				{
-				bufi=imageLoader.loadImage();
+				bufi=imageLoader.getJavaImage();
 				if(bufi==null)
 					throw new Exception();
 				ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);

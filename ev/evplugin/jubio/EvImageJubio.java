@@ -26,7 +26,7 @@ public class EvImageJubio extends EvImage
 		}
 
 	
-	public BufferedImage loadImage()
+	public BufferedImage loadJavaImage()
 		{
 		try
 			{
