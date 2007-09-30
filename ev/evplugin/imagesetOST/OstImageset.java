@@ -77,9 +77,12 @@ public class OstImageset extends Imageset
 							}
 						}
 
-
+					/**
+					 * Load OST imageset
+					 */
 					public void load(String filename)
 						{
+						//Show loading dialog
 			    	//dialog doesn't really show, but better than nothing
 			    	JFrame loadingWindow=new JFrame(EV.programName); 
 			    	loadingWindow.setLayout(new GridLayout(1,1));
@@ -88,11 +91,12 @@ public class OstImageset extends Imageset
 			    	loadingWindow.setBounds(200, 200, 300, 50);
 			    	loadingWindow.setVisible(true);
 			    	loadingWindow.repaint();
-			    	
-
 			
-			 //   	Metadata.metadata.add(new EmptyImageset());
-			    	Metadata.metadata.add(new OstImageset(filename));
+			    	//Load imageset and add to list
+			    	try {Metadata.metadata.add(new OstImageset(filename));}
+						catch (Exception e){}
+						
+						//Close down dialog, update windows
 			    	BasicWindow.updateWindows();
 			    	loadingWindow.dispose();
 						}
@@ -111,13 +115,13 @@ public class OstImageset extends Imageset
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
+	
+	/** List of images that existed when it was loaded. This will be used to save the image as some channels and files need be deleted */
+	public HashMap<String,ChannelImages> ostLoadedImages=new HashMap<String,ChannelImages>();
 
 	
 	/** Path to imageset */
 	public String basedir;
-
-	/** Is the imageset OST2? */
-	public boolean isOst2;
 	
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
@@ -130,13 +134,18 @@ public class OstImageset extends Imageset
 		buildDatabase();
 		}
 	
+	/**
+	 * Get name description of this metadata
+	 */
 	public String toString()
 		{
 		return getMetadataName();
 		}
 
 	
-
+	/**
+	 * Get directory for this imageset where any datafiles can be stored
+	 */
 	public File datadir()
 		{
 		File datadir=new File(basedir,getMetadataName()+"-data");
@@ -151,31 +160,143 @@ public class OstImageset extends Imageset
 	public void saveMeta()
 		{
 		saveMeta(new File(basedir,"rmd.xml"));
-
-		if(!isOst2)
-			{
-			Log.printLog("Renaming files to fit OST2");
-			renameOst1ToOst2(basedir);
-			buildDatabase();
-			}
+		saveImages();
 		
 		//Update date of datadir to have it backuped
 		touchRecursive(datadir(), System.currentTimeMillis());
 		
-		//TODO: save images here too
 		setMetadataModified(false);
 		}
 	
+
+	/**
+	 * Save images in this imageset
+	 *
+	 */
+	private void saveImages()
+		{
+		try
+			{
+			//NOTE: keyset for the maps is linked internally. This means this set should NOT directly be messed with but we make a copy.
+
+			//Removed channels: Delete those directories.
+			HashSet<String> removedChanNames=new HashSet<String>(ostLoadedImages.keySet());
+			removedChanNames.removeAll(channelImages.keySet());
+			for(String s:removedChanNames)
+				{
+				System.out.println("rc: "+s);
+				deleteRecursive(buildChannelPath(s));
+				}
+			
+			//New channels: Create directories
+			HashSet<String> newChanNames=new HashSet<String>(channelImages.keySet());
+			newChanNames.remove(ostLoadedImages.keySet());
+			for(String s:newChanNames)
+				{
+				System.out.println("nc: "+s);
+				buildChannelPath(s).mkdirs();
+				}
+
+			//Go through all channels
+			for(String channelName:channelImages.keySet())
+				{
+				Channel newCh=(Channel)getChannel(channelName);
+				Channel oldCh=(Channel)ostLoadedImages.get(channelName);
+
+				if(oldCh!=null)
+					{
+					//Removed frames: delete directories
+					HashSet<Integer> removedFrames=new HashSet<Integer>(oldCh.imageLoader.keySet());
+					removedFrames.removeAll(newCh.imageLoader.keySet());
+					for(Integer frame:removedFrames)
+						{
+						System.out.println("rf: "+frame);
+						deleteRecursive(buildFramePath(channelName, frame));
+						}
+					
+					//New frames: create directories
+					HashSet<Integer> newFrames=new HashSet<Integer>(newCh.imageLoader.keySet());
+					newFrames.removeAll(oldCh.imageLoader.keySet());
+					for(Integer frame:newFrames)
+						{
+						System.out.println("cf: "+frame);
+						buildFramePath(channelName, frame).mkdir();
+						}
+					}
+				else
+					{
+					//All frames are new: create directories
+					for(Integer frame:newCh.imageLoader.keySet())
+						{
+						System.out.println("cf: "+frame);
+						buildFramePath(channelName, frame).mkdir();
+						}
+					}
+				
+				//Go through frames
+				for(int frame:newCh.imageLoader.keySet())
+					{
+					TreeMap<Integer, EvImage> newSlices=newCh.imageLoader.get(frame);
+					TreeMap<Integer, EvImage> oldSlices=null;
+					if(oldCh!=null)
+						oldSlices=oldCh.imageLoader.get(frame);
+					
+					//Removed slices: delete files
+					if(oldSlices!=null)
+						{
+						HashSet<Integer> removedImages=new HashSet<Integer>(oldSlices.keySet());
+						removedImages.removeAll(newSlices.keySet());
+						for(int z:removedImages)
+							{
+							System.out.println("rz: "+z);
+							EvImageJAI im=(EvImageJAI)oldSlices.get(z);
+							File zdir=new File(im.jaiFileName());
+							deleteRecursive(zdir);
+							}
+						}
+					
+					//Go through slices
+					for(int z:newSlices.keySet())
+						{
+						EvImageJAI newIm=(EvImageJAI)newSlices.get(z);
+						if(newIm.modified())
+							{
+							//Delete old image - it might have a different file extension
+							if(oldSlices!=null)
+								{
+								EvImageJAI oldIm=(EvImageJAI)oldSlices.get(z);
+								if(oldIm!=null)
+									(new File(oldIm.jaiFileName())).delete();
+								}
+							//Save new image
+							newIm.saveImage();
+							}
+						}
+					}
+				}
+			
+			
+			//Remember new state
+			replicateLoadedFiles();
+			saveDatabaseCache();
+			}
+		catch (Exception e)
+			{
+			Log.printError("Error saving OST", e);
+			}
+		}
+
 	
 	/**
-	 * Show setup
+	 * Delete recursively. 
 	 */
-	/*
-	public void setup()
+	public static void deleteRecursive(File f) throws IOException
 		{
-		JOptionPane.showMessageDialog(null, "No setup for this imageset format");
+		if(f.isDirectory())
+			for(File c:f.listFiles())
+				deleteRecursive(c);
+		f.delete();
 		}
-	*/
 	
 	/**
 	 * Scan recording for channels and build a file database
@@ -184,39 +305,20 @@ public class OstImageset extends Imageset
 		{
 		File basepath=new File(basedir);
 		File metaFile=new File(basepath,"rmd.xml");
-		isOst2=metaFile.exists();
+		if(!metaFile.exists())
+			System.out.printf("AAIEEE NO METAFILE?? this might mean this is in the OST1 format which has been removed");
 		imageset=basepath.getName();
-		Log.printLog("is OST2: "+isOst2);
 		if(basepath.exists())
 			{
 			//Load metadata
-			if(isOst2)
-				{
-				loadXmlMetadata(metaFile.getPath());
-				for(int oi:metaObject.keySet())
-					if(metaObject.get(oi) instanceof ImagesetMeta)
-						{
-						meta=(ImagesetMeta)metaObject.get(oi);
-						metaObject.remove(oi);
-						break;
-						}
-				}
-			else
-				{
-				meta=new ImagesetMeta();
-				File[] dirfiles=basepath.listFiles();
-				for(File f:dirfiles)
-					if(f.isDirectory() && !f.getName().startsWith(".") && !f.getName().endsWith("-data"))
-						{
-						String fname=f.getName();
-						String channelName=fname.substring(fname.lastIndexOf('-')+1);
-						ImagesetMeta.Channel mc=meta.getChannel(channelName);
-						File chandir=new File(basepath,imageset+"-"+channelName);
-						File metafile=new File(chandir,"rmd.txt");
-						OstImageset.readVWBMeta(meta, mc, metafile.getPath());
-						}
-				}
-
+			loadXmlMetadata(metaFile.getPath());
+			for(int oi:metaObject.keySet())
+				if(metaObject.get(oi) instanceof ImagesetMeta)
+					{
+					meta=(ImagesetMeta)metaObject.get(oi);
+					metaObject.remove(oi);
+					break;
+					}
 			if(!loadDatabaseCache())
 				{
 				//Check which files exist
@@ -236,17 +338,46 @@ public class OstImageset extends Imageset
 			}
 		else
 			Log.printError("Error: Imageset base directory does not exist",null);
-		
+		replicateLoadedFiles();
 		}
+	
+	
+	/**
+	 * Make a copy of current list of loaders to ostLoadedImages. Meta is set to null in this copy.
+	 */
+	private void replicateLoadedFiles()
+		{
+		ostLoadedImages.clear();
+		for(String channelName:channelImages.keySet())
+			{
+			Imageset.ChannelImages oldCh=getChannel(channelName);
+			Imageset.ChannelImages newCh=new Channel(null);
+			ostLoadedImages.put(channelName, newCh);
+			for(int frame:oldCh.imageLoader.keySet())
+				{
+				TreeMap<Integer, EvImage> oldFrames=oldCh.imageLoader.get(frame);
+				TreeMap<Integer, EvImage> newFrames=new TreeMap<Integer, EvImage>();
+				newCh.imageLoader.put(frame, newFrames);
+				for(int z:oldFrames.keySet())
+					{
+					EvImageJAI oldIm=(EvImageJAI)oldFrames.get(z);
+					EvImageJAI newIm=new EvImageJAI(oldIm.jaiFileName(), oldIm.jaiSlice());
+					newFrames.put(z, newIm);
+					}
+				}
+			}
+		}
+	
 	
 	/**
 	 * Get the name of the database cache file
 	 */
 	private File getDatabaseCacheFile()
 		{
-//		return new File(basedir,"imagecache.xml");
 		return new File(basedir,"imagecache.txt");
 		}
+	
+	
 	
 	/**
 	 * Load database from cache. Return if it succeeded
@@ -319,19 +450,46 @@ public class OstImageset extends Imageset
 			}
 		}
 	
+
+
+	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
+		{
+		return new Channel(ch);
+		}
+		
+	
+	
+
+	
+	/** Internal: piece together a path to a channel */
+	private File buildChannelPath(String channelName)
+		{
+		return new File(basedir,imageset+"-"+channelName);
+		}
+	/** Internal: piece together a path to a frame */
+	public File buildFramePath(String channelName, int frame)
+		{
+		return new File(buildChannelPath(channelName), EV.pad(frame,8));
+		}
+	/** Internal: piece together a path to an image */
 	public File buildImagePath(String channelName, int frame, int slice, String ext)
 		{
-		if(isOst2)
-			{
-			File frameDir=new File(new File(basedir,getMetadataName()+"-"+channelName), EV.pad(frame,8));
-			return new File(frameDir,EV.pad(slice, 8)+ext);
-			}
-		else
-			{
-			File frameDir=new File(new File(basedir,getMetadataName()+"-"+channelName), channelName+"-"+EV.pad(frame,8));
-			return new File(frameDir,channelName+"-"+EV.pad(frame,8)+"-"+EV.pad(slice, 8)+ext);
-			}
+		return new File(buildFramePath(channelName, frame),EV.pad(slice, 8)+ext);
 		}
+	
+	
+	
+	/**
+	 * Invalidate database cache (=deletes cache file)
+	 */
+	public void invalidateDatabaseCache()
+		{
+		getDatabaseCacheFile().delete();
+		}
+	
+	
+	
+
 	
 	
 	/**
@@ -383,16 +541,19 @@ public class OstImageset extends Imageset
 			}
 		}
 	
-	/**
-	 * Invalidate database cache (=deletes cache file)
-	 */
-	public void invalidateDatabaseCache()
-		{
-		getDatabaseCacheFile().delete();
-		}
+
+	
+	
 	
 	
 	///// this custom channel is messing up more than helping //////////
+	///// this custom channel is messing up more than helping //////////
+	///// this custom channel is messing up more than helping //////////
+	///// this custom channel is messing up more than helping //////////
+	///// this custom channel is messing up more than helping //////////
+	///// this custom channel is messing up more than helping //////////
+	///// this custom channel is messing up more than helping //////////
+
 	
 	/**
 	 * OST channel - contains methods for building frame database
@@ -404,11 +565,7 @@ public class OstImageset extends Imageset
 			super(channelName);
 			}
 		
-		/** Get directory for channel */
-		private String channelDir()
-			{
-			return basedir+"/"+imageset+"-"+getMeta().name+"/";
-			}
+	
 		
 		/**
 		 * Scan all files for this channel and build a database
@@ -417,20 +574,12 @@ public class OstImageset extends Imageset
 			{
 			imageLoader.clear();
 			
-			File chandir=new File(channelDir());
+			File chandir=buildChannelPath(getMeta().name);
 			File[] framedirs=chandir.listFiles();
 			for(File framedir:framedirs)
 				if(framedir.isDirectory() && !framedir.getName().startsWith("."))
 					{
-					int framenum;
-					if(isOst2)
-						framenum=Integer.parseInt(framedir.getName());
-					else
-						{
-						String sframenum=framedir.getName();
-						sframenum=sframenum.substring(sframenum.lastIndexOf('-')+1);
-						framenum=Integer.parseInt(sframenum);
-						}
+					int framenum=Integer.parseInt(framedir.getName());
 					
 					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
 					File[] slicefiles=framedir.listFiles();
@@ -439,13 +588,7 @@ public class OstImageset extends Imageset
 						String partname=f.getName();
 						if(!partname.startsWith("."))
 							{
-							if(isOst2)
-								partname=partname.substring(0,partname.lastIndexOf('.'));
-							else
-								{
-								partname=partname.substring(0,partname.lastIndexOf('.'));
-								partname=partname.substring(partname.lastIndexOf('-')+1);
-								}
+							partname=partname.substring(0,partname.lastIndexOf('.'));
 							try
 								{
 								int slicenum=Integer.parseInt(partname);
@@ -461,145 +604,13 @@ public class OstImageset extends Imageset
 					imageLoader.put(framenum, loaderset);
 					}
 			}
-		}
-	
-	
-	/**
-	 * Convert files OST1 to OST2. Does not delete the old rmd.txt
-	 */
-	public static void renameOst1ToOst2(String root)
-		{
-		File basedir=new File(root);
-		
-		Log.printLog("Converting to OST2");
-		for(File channel:basedir.listFiles())
-			if(!channel.getName().endsWith("data") && channel.isDirectory())
-				{
-				String channelName=channel.getName();
-				channelName=channelName.substring(channelName.lastIndexOf('-')+1);
-				
-				//Rename all frames
-				for(File frame:channel.listFiles())
-					if(frame.isDirectory())
-						{
-						File newFrame=new File(channel, frame.getName().substring(frame.getName().lastIndexOf('-')+1));
-						if(!frame.renameTo(newFrame))
-							{
-							Log.printError("Failed to rename "+frame.getAbsolutePath()+" to "+newFrame.getAbsolutePath(),null);
-							return;
-							}
-						}
-				
-				//For all frames
-				for(File frame:channel.listFiles())
-					if(frame.isDirectory())
-						{
-						//Rename slices
-						for(File slice:frame.listFiles())
-							{
-							if(slice.getName().startsWith(channelName))
-								{
-								String slicename=slice.getName();
-								File newSlice=new File(frame, slicename.substring(slicename.lastIndexOf('-')+1));
-								if(!slice.renameTo(newSlice))
-									Log.printError("Failed to rename "+slice.getAbsolutePath()+" to "+newSlice.getAbsolutePath(),null);
-								}
-							}
-						}
-				/*
-					else if(frame.getName().equals("rmd.txt"))
-						{
-						frame.delete();
-						}
-					*/		
-				}
-		Log.printLog("Conversion done");
-		}
-	
-	/**
-	 * Read corresponding meta data for this channel.
-	 * Only meant for loading OST1.
-	 */
-	public static void readVWBMeta(ImagesetMeta meta, ImagesetMeta.Channel ch, String metaFilename)
-		{
-		Vector<String> framemeta=new Vector<String>();
-		int framecol=0;
-		String chOther="";
-		
-		ParamParse p=new ParamParse(new File(metaFilename));
-		while(p.hasData())
+
+		protected EvImage internalMakeLoader(int frame, int z)
 			{
-			Vector<String> arg=p.nextData();
-			if(arg.size()!=0)
-				{
-				try
-					{
-					if(arg.get(0).equals("binning"))
-						ch.chBinning=Integer.parseInt(arg.get(1));
-					else if(arg.get(0).equals("resx"))
-						meta.resX=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("resy"))
-						meta.resY=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("resz"))
-						meta.resZ=Double.parseDouble(arg.get(1));
-				
-					else if(arg.get(0).equals("NA"))
-						meta.metaNA=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("objective"))
-						meta.metaObjective=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("optivar"))
-						meta.metaOptivar=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("campix"))
-						meta.metaCampix=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("slicespacing"))
-						meta.metaSlicespacing=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("timestep"))
-						meta.metaTimestep=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("sample"))
-						meta.metaSample=arg.get(1);
-					else if(arg.get(0).equals("descript"))
-						meta.metaDescript=arg.get(1);
-					else if(arg.get(0).equals("dispx"))
-						ch.dispX=Double.parseDouble(arg.get(1));
-					else if(arg.get(0).equals("dispy"))
-						ch.dispY=Double.parseDouble(arg.get(1));					
-					else if(arg.get(0).equals("framemeta"))
-						{
-						framemeta.clear();
-						for(int i=1;i<arg.size();i++)
-							{
-							framemeta.add(arg.get(i));
-							if(arg.get(i).equals("frame"))
-								framecol=i-1;
-							}
-						meta.metaFrame.clear();
-						}
-					else if(arg.get(0).equals("framedata"))
-						{
-						Vector<String> data=new Vector<String>();
-						int frame=Integer.parseInt(arg.get(framecol+1));
-						for(int i=1;i<arg.size();i++)
-							data.add(arg.get(i));
-						
-						for(int i=0;i<data.size();i++)
-							if(i!=framecol)
-								ch.getMetaFrame(frame).put(framemeta.get(i),data.get(i));
-						}
-					else
-						{
-						chOther+=arg.get(0);
-						for(int i=1;i<arg.size();i++)
-							chOther+=" \""+arg.get(i)+"\"";
-						chOther+=";\n";
-						}
-					}
-				catch(Exception e)
-					{
-					Log.printError("Parse error in tag. Skipping "+arg.get(0), e);
-					}
-				}
+			return new EvImageJAI(buildImagePath(getMeta().name, frame, z, ".png").getAbsolutePath()); //png?
 			}
-		meta.getChannel(ch.name).metaOther.put("evother",chOther);
+		
 		}
+	
 	}
 

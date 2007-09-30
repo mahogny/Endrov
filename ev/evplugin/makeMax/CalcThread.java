@@ -115,7 +115,7 @@ public final class CalcThread extends BatchThread
 					//Write out max image
 					if(maxim!=null)
 						{
-						EvImage toim=chto.getImageLoader(curframe, z);
+						EvImage toim=chto.createImageLoader(curframe, 0);
 						toim.setImage(makeBI(maxim));
 						BasicWindow.updateWindows();
 						}

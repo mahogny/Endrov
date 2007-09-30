@@ -24,7 +24,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Make Max Channel (experimental, will reload imageset. only for OST)");
+			JMenuItem mi=new JMenuItem("Make Max Channel");
 			mi.addActionListener(this);
 			w.addMenuBatch(mi);
 			}

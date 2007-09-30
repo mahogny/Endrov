@@ -213,18 +213,32 @@ public class BioformatsImageset extends Imageset
 		mc.chBinning=1;
 		
 		}
+
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Channel - contains methods for building frame database
 	 */
+	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
+		{
+		return new Channel(ch);
+		}
 	public class Channel extends Imageset.ChannelImages
 		{
 		public Channel(ImagesetMeta.Channel channelName)
 			{
 			super(channelName);
 			}
+		protected EvImage internalMakeLoader(int frame, int z)
+			{
+			return new EvImageJAI("");
+			}
 		}
-	
 	
 	}
 

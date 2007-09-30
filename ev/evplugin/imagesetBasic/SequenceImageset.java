@@ -9,8 +9,12 @@ import java.util.*;
 import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.*;
 import evplugin.imageset.*;
-//import evplugin.jubio.EvImageJubio;
 
+
+/**
+ * 
+ * @author Johan Henriksson
+ */
 public class SequenceImageset extends Imageset
 	{	
 	/** Path to imageset */
@@ -63,11 +67,12 @@ public class SequenceImageset extends Imageset
 	
 	/**
 	 * Get a channel or create it if it does not exist
+	 * TODO RENAME, OVERRIDES A METHOD IN A STUPID WAY
 	 */
 	public Imageset.ChannelImages getChannel(String ch)
 		{
 		if(!channelImages.containsKey(ch))
-			channelImages.put(ch, new Imageset.ChannelImages(meta.channel.get(ch)));
+			channelImages.put(ch, internalMakeChannel(meta.channel.get(ch)));
 		return channelImages.get(ch);
 		}
 	
@@ -336,4 +341,25 @@ public class SequenceImageset extends Imageset
 		
 		}
 
+	
+	
+	
+	
+	
+	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
+		{
+		return new Channel(ch);
+		}
+	public class Channel extends Imageset.ChannelImages
+		{
+		public Channel(ImagesetMeta.Channel channelName)
+			{
+			super(channelName);
+			}
+		protected EvImage internalMakeLoader(int frame, int z)
+			{
+			return new EvImageJAI("");
+			}
+		}
+	
 	}
