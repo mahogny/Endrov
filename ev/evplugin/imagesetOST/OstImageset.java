@@ -49,7 +49,8 @@ public class OstImageset extends Imageset
 							{
 							JFileChooser chooser = new JFileChooser();
 					    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
+					    if(Metadata.lastDataPath!=null)
+					    	chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
 					    int returnVal = chooser.showOpenDialog(null); //null=window
 					    if(returnVal == JFileChooser.APPROVE_OPTION)
 					    	{
@@ -169,12 +170,15 @@ public class OstImageset extends Imageset
 		}
 	
 
+	
+	
 	/**
 	 * Save images in this imageset
 	 *
 	 */
 	private void saveImages()
 		{
+		boolean deleteOk=false;
 		try
 			{
 			//NOTE: keyset for the maps is linked internally. This means this set should NOT directly be messed with but we make a copy.
@@ -185,7 +189,7 @@ public class OstImageset extends Imageset
 			for(String s:removedChanNames)
 				{
 				System.out.println("rc: "+s);
-				deleteRecursive(buildChannelPath(s));
+				deleteOk=deleteRecursive(buildChannelPath(s),deleteOk);
 				}
 			
 			//New channels: Create directories
@@ -211,7 +215,7 @@ public class OstImageset extends Imageset
 					for(Integer frame:removedFrames)
 						{
 						System.out.println("rf: "+frame);
-						deleteRecursive(buildFramePath(channelName, frame));
+						deleteOk=deleteRecursive(buildFramePath(channelName, frame),deleteOk);
 						}
 					
 					//New frames: create directories
@@ -251,7 +255,7 @@ public class OstImageset extends Imageset
 							System.out.println("rz: "+z);
 							EvImageJAI im=(EvImageJAI)oldSlices.get(z);
 							File zdir=new File(im.jaiFileName());
-							deleteRecursive(zdir);
+							deleteOk=deleteRecursive(zdir,deleteOk);
 							}
 						}
 					
@@ -266,7 +270,11 @@ public class OstImageset extends Imageset
 								{
 								EvImageJAI oldIm=(EvImageJAI)oldSlices.get(z);
 								if(oldIm!=null)
-									(new File(oldIm.jaiFileName())).delete();
+									{
+									deleteOk=dialogDelete(deleteOk);
+									if(deleteOk)
+										(new File(oldIm.jaiFileName())).delete();
+									}
 								}
 							//Save new image
 							newIm.saveImage();
@@ -286,16 +294,28 @@ public class OstImageset extends Imageset
 			}
 		}
 
+
+	public static boolean dialogDelete(boolean ok)
+		{
+		if(!ok)
+			ok=JOptionPane.showConfirmDialog(null, "OST needs deletion. Do you really want to proceed? (keep a backup ready)")==JOptionPane.YES_OPTION;
+		return ok;
+		}
 	
 	/**
 	 * Delete recursively. 
 	 */
-	public static void deleteRecursive(File f) throws IOException
+	public static boolean deleteRecursive(File f, boolean ok) throws IOException
 		{
-		if(f.isDirectory())
-			for(File c:f.listFiles())
-				deleteRecursive(c);
-		f.delete();
+		ok=dialogDelete(ok);
+		if(ok)
+			{
+			if(f.isDirectory())
+				for(File c:f.listFiles())
+					deleteRecursive(c, ok);
+			f.delete();
+			}
+		return ok;	
 		}
 	
 	/**

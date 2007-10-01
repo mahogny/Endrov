@@ -70,6 +70,13 @@ public class EV
 			Log.printLog("No personal config file");
 		}
 	
+	
+	public static void resetPersonalConfig()
+		{
+		Preferences prefs = Preferences.userNodeForPackage(EV.class);
+		prefs.remove("evdata");
+		}
+	
 	/**
 	 * Save personal config file
 	 */
