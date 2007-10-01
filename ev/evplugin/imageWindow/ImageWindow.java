@@ -115,7 +115,7 @@ public class ImageWindow extends BasicWindow
 		public void paintComponent(Graphics g)
 			{
 			super.paintComponent(g);
-			if(!hideAllMarkings())
+			if(!hideAllMarkings() && miShowOverlay.isSelected())
 				{
 				for(ImageWindowRenderer r:imageWindowRenderers)
 					r.draw(g);
@@ -138,6 +138,7 @@ public class ImageWindow extends BasicWindow
 	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
 	private final JMenuItem miReset=new JMenuItem("Reset view");
 	private final JMenuItem miMiddleSlice=new JMenuItem("Go to middle slice");
+	private final JCheckBoxMenuItem miShowOverlay=new JCheckBoxMenuItem("Show overlay",true);
 
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastDragX=0, mouseLastDragY=0;
@@ -205,7 +206,8 @@ public class ImageWindow extends BasicWindow
 		sliderBrightness.addChangeListener(this);
 		sliderZoom.addChangeListener(this);
 		comboChannel.addActionListener(this);
-
+		miShowOverlay.addChangeListener(this);
+		
 		//Piece GUI together
 		JPanel bottom=new JPanel(new GridLayout(2,1,0,0));
 		JPanel bottom2=new JPanel(new GridLayout(1,4));
@@ -246,7 +248,6 @@ public class ImageWindow extends BasicWindow
 		frameControl.setFrame(0);
 		setVisible(true);
 		setBounds(bounds);
-//		setBounds(x,y,w,h);
 		}
 
 	/**
@@ -266,6 +267,7 @@ public class ImageWindow extends BasicWindow
 		menuImageWindow.add(miReset);
 		menuImageWindow.add(miMiddleSlice);
 		menuImageWindow.add(miZoomToFit);
+		menuImageWindow.add(miShowOverlay);
 		
 		menuImageWindow.addSeparator();
 		menuImageWindow.add(miToolNone);
