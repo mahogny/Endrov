@@ -298,7 +298,7 @@ public class OstImageset extends Imageset
 	public static boolean dialogDelete(boolean ok)
 		{
 		if(!ok)
-			ok=JOptionPane.showConfirmDialog(null, "OST needs deletion. Do you really want to proceed? (keep a backup ready)")==JOptionPane.YES_OPTION;
+			ok=JOptionPane.showConfirmDialog(null, "OST needs deletion. Do you really want to proceed? (keep a backup ready)","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION;
 		return ok;
 		}
 	

@@ -149,12 +149,16 @@ public class NucImageRenderer implements ImageWindowRenderer
 			//Draw name of nucleus. maybe do this last
 			if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))
 				{
-				
-				
 				g.setColor(Color.RED);
+				/*
 				g.drawString(nucName, 
 						(int)sox-g.getFontMetrics().stringWidth(nucName)/2, 
 						(int)soy+g.getFontMetrics().getHeight()/2);
+				*/
+				g.drawString(nucName, (int)sox-g.getFontMetrics().stringWidth(nucName)/2, (int)soy-2);
+				int crossSize=5;
+				g.drawLine((int)sox-crossSize, (int)soy, (int)sox+crossSize, (int)soy);
+				g.drawLine((int)sox, (int)soy, (int)sox, (int)soy+crossSize);
 				}
 			}
 
