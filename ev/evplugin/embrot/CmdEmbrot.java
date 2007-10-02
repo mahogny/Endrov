@@ -8,7 +8,6 @@ import evplugin.script.*;
 import evplugin.metadata.*;
 import evplugin.nuc.*;
 import evplugin.ev.*;
-import evplugin.imageset.Imageset;
 
 /**
  * Calculate embryo rotation
@@ -65,7 +64,7 @@ public class CmdEmbrot extends Command
 		return null;
 		}
 	
-	public static void dumprot(Imageset rec)
+	public static void dumprot(String name, Metadata rec)
 		{
 		
 		for(MetaObject ob:rec.metaObject.values())
@@ -83,8 +82,11 @@ public class CmdEmbrot extends Command
 					{
 					rotate(linrot,e);
 					
+					
+					
+					
 //					saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, linrot);
-					saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, lin);
+					saveFile(name,(new File(new File("/Volumes/TBU_xeon01_500GB01/embrot"),name+".coord")).getAbsolutePath(), rec, lin);
 					}
 				catch (Exception e1)
 					{
@@ -174,7 +176,7 @@ public class CmdEmbrot extends Command
 		}
 	
 	
-	public static void saveFile(String filename, Imageset rec, NucLineage lin)
+	public static void saveFile(String name, String filename, Metadata rec, NucLineage lin)
 		{
 		try
 			{
@@ -187,7 +189,7 @@ public class CmdEmbrot extends Command
 				for(int frame:n.pos.keySet())
 					{
 					NucLineage.NucPos p=n.pos.get(frame);
-					fp.write(""+rec.getMetadataName()+"\t"+nucName+"\t"+  frame+" "+p.x+"\t"+p.y+"\t"+p.z+"\n");
+					fp.write(""+name+"\t"+nucName+"\t"+  frame+" "+p.x+"\t"+p.y+"\t"+p.z+"\n");
 					}
 				}
 			fp.close();

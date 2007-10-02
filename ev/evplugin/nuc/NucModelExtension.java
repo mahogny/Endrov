@@ -5,6 +5,7 @@ import java.util.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import evplugin.modelWindow.*;
+import evplugin.nuc.NucLineage.NucInterp;
 import evplugin.ev.*;
 
 
@@ -72,7 +73,23 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			//Render nuc body
 			for(NucPair nucPair:interpNuc.keySet())
+				{
 				renderNuc(gl, nucPair, interpNuc.get(nucPair));
+				
+				//Draw connecting line
+				if(nucPair.getRight().equals(NucLineage.connectNuc[0]))
+					for(NucPair nucPair2:interpNuc.keySet())
+						if(nucPair2.getRight().equals(NucLineage.connectNuc[1]))
+							{
+							NucInterp n=interpNuc.get(nucPair);
+							NucInterp m=interpNuc.get(nucPair2);
+							gl.glBegin(GL.GL_LINES);
+							gl.glColor3d(1, 1, 1);
+							gl.glVertex3d(n.pos.x,n.pos.y,n.pos.z);
+							gl.glVertex3d(m.pos.x,m.pos.y,m.pos.z);
+							gl.glEnd();
+							}
+				}
 			
 			//Render nuclei text
 			for(NucPair nucPair:interpNuc.keySet())
