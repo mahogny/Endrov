@@ -38,6 +38,8 @@ public class NucLineage extends MetaObject implements Cloneable
 	public static final int KEY_MAKEPARENT=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Make parent",'g'));
 	public static final int KEY_SETPARENT=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Associate parent",'p'));
 	
+	//A generalization would be nice
+	public static final String[] connectNuc=new String[]{"post","ant"};
 	
 	public static void initPlugin() {}
 	static

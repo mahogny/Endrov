@@ -2,8 +2,7 @@ package util;
 
 import evplugin.ev.*;
 import evplugin.embrot.*;
-import evplugin.imageset.*;
-import evplugin.imagesetOST.OstImageset;
+import evplugin.metadata.*;
 
 import java.io.*;
 
@@ -16,8 +15,9 @@ public class BatchRot
 	public static void extractRot(File file)
 		{
 //		System.out.println("")
-		Imageset rec=new OstImageset(file.getAbsolutePath());
-		CmdEmbrot.dumprot(rec);
+		Metadata rec=new XmlMetadata(new File(file,"rmd.xml").getAbsolutePath());
+		//Imageset rec=new OstImageset(file.getAbsolutePath());
+		CmdEmbrot.dumprot(file.getName(), rec);
 		}
 	
 	/**
