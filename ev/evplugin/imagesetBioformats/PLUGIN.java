@@ -1,16 +1,16 @@
-package evplugin.consoleWindow;
+package evplugin.imagesetBioformats;
 import evplugin.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Console Window";
+		return "LOCI Bioformats";
 		}
 
 	public String getAuthor()
 		{
-		return "Johan Henriksson";
+		return "Johan Henriksson (only library binding)";
 		}
 	
 	public boolean systemSupported()
@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ConsoleWindow.class};
+		return new Class[]{BioformatsImageset.class};
 		}
 	}

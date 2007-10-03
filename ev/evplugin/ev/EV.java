@@ -145,6 +145,14 @@ public class EV
 		{
 		return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
 		}
+	
+	/**
+	 * Check if the system is running Windows
+	 */
+	public static boolean isWindows()
+		{
+		return System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1;
+		}
 
 	/**
 	 * Format a number to a certain number of digits

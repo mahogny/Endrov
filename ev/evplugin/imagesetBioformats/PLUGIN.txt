@@ -1,4 +1,0 @@
-class BioformatsImageset
-name LOCI Bioformats
-author Johan Henriksson
-cite

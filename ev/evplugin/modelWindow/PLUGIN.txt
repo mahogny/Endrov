@@ -1,4 +1,0 @@
-class ModelWindow
-name Model Window
-author Johan Henriksson
-cite

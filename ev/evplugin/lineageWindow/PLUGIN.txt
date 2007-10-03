@@ -1,4 +1,0 @@
-class LineageWindow
-name Lineage window
-author Johan Henriksson
-cite

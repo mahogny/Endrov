@@ -1,3 +1,0 @@
-class AceTree
-name AceTree Import
-author Johan Henriksson

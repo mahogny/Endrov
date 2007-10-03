@@ -1,11 +1,11 @@
-package evplugin.consoleWindow;
+package evplugin.imageWindow;
 import evplugin.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Console Window";
+		return "Image Window";
 		}
 
 	public String getAuthor()
@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ConsoleWindow.class};
+		return new Class[]{ImageWindow.class};
 		}
 	}

@@ -33,21 +33,16 @@ public class PluginInfo
 		{
 		this.filename=filename;
 		pdef=null;
-		
 		try
 			{
 			String classPath=(new File(filename)).getAbsolutePath().
 			substring(-1+(new File(".")).getAbsolutePath().length()).replace('/', '.').replace('\\','.');
-
 			Class<?> theClass=Class.forName(classPath+".PLUGIN");
-			
 			Constructor constr=theClass.getConstructor(new Class<?>[]{});
-			
 			pdef=(PluginDef)constr.newInstance(new Object[]{});
 			}
 		catch (Exception e)
 			{
-			Log.printError("Failed to load plugin from "+filename, null);
 			}
 		}
 	
@@ -57,40 +52,39 @@ public class PluginInfo
 	 */
 	public void load()
 		{
-		if(exists() && pdef.systemSupported())
+		if(exists())
 			{
-			Log.printLog("Loading plugin "+pdef.getPluginName());
-			for(Class<?> foo:pdef.initPlugin())
+			if(pdef.systemSupported())
 				{
-				try
+				Log.printLog("Loading plugin "+pdef.getPluginName());
+				for(Class<?> foo:pdef.getInitClasses())
 					{
-					Method m=foo.getDeclaredMethod("initPlugin", new Class[]{});
-					m.invoke(foo, new Object[]{});
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Could not load EV; plugin "+pdef.getPluginName()+" broken");
+					try
+						{
+						Method m=foo.getDeclaredMethod("initPlugin", new Class[]{});
+						m.invoke(foo, new Object[]{});
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Could not load EV; plugin "+pdef.getPluginName()+" broken");
+						}
 					}
 				}
+			else
+				Log.printLog("Skipping unsupported plugin "+pdef.getPluginName());
 			}
-		else
-			Log.printLog("Skipping plugin "+filename+" as it is not supported/not working");
 		}
 	
 
-	/**
-	 * Load the documentation
-	 */
-	public void loadDoc()
-		{
-		
-				
-		}
+
 	
 	public String toString()
 		{
-		return filename;
+		if(pdef!=null)
+			return pdef.getPluginName();
+		else
+			return filename;
 		}
 	
 

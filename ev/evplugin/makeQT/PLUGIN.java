@@ -1,11 +1,11 @@
-package evplugin.consoleWindow;
-import evplugin.ev.PluginDef;
+package evplugin.makeQT;
+import evplugin.ev.*;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Console Window";
+		return "Make QuickTime Movies";
 		}
 
 	public String getAuthor()
@@ -15,7 +15,7 @@ public class PLUGIN extends PluginDef
 	
 	public boolean systemSupported()
 		{
-		return true;
+		return EV.isMac() || EV.isWindows();
 		}
 	
 	public String cite()
@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ConsoleWindow.class};
+		return new Class[]{MakeQTWindow.class};
 		}
 	}

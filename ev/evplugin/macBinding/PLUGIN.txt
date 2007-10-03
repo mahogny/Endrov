@@ -1,5 +1,0 @@
-class OSXAdapter
-name Mac Bindings
-author Johan Henriksson
-cite
-require macosx

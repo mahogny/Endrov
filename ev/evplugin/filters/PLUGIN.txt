@@ -1,4 +1,0 @@
-#class Filters
-name Filters
-author Johan Henriksson
-cite
