@@ -1,5 +1,0 @@
-class MetaWindow
-class ImagesetMeta
-name Imageset
-author Johan Henriksson
-cite

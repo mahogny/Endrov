@@ -1,4 +1,0 @@
-class MakeMaxWindow
-name Make Max-channel
-author Johan Henriksson
-cite

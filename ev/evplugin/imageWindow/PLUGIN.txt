@@ -1,4 +1,0 @@
-class ImageWindow
-name Image Window
-author Johan Henriksson
-cite

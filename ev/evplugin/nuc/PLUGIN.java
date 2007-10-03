@@ -1,11 +1,11 @@
-package evplugin.consoleWindow;
+package evplugin.nuc;
 import evplugin.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Console Window";
+		return "Nucleus/Lineage";
 		}
 
 	public String getAuthor()
@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ConsoleWindow.class};
+		return new Class[]{NucLineage.class};
 		}
 	}

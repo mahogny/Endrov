@@ -1,4 +1,0 @@
-class Shell
-name Shell model
-author Johan Henriksson
-cite

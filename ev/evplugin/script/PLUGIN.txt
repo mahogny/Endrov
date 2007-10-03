@@ -1,4 +1,0 @@
-class Script
-name EV Script
-author Johan Henriksson
-cite

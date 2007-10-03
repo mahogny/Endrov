@@ -1,3 +1,0 @@
-class PluginWindow
-name Plugin Window
-author Johan Henriksson

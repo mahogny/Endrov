@@ -1,4 +1,0 @@
-class CustomWindow
-name Custom data
-author Johan Henriksson
-cite

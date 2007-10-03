@@ -1,4 +1,0 @@
-class ConsoleWindow
-name EV ConsoleWindow
-author Johan Henriksson
-cite
