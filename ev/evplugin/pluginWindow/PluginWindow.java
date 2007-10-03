@@ -135,6 +135,7 @@ public class PluginWindow extends BasicWindow
 
 	public void showPlugin(PluginInfo plugin)
 		{
+		/*
 		String misc="";
 		misc+="Name:\n"+plugin.name+"\n\n";
 		misc+="Author:\n"+plugin.author+"\n\n";
@@ -143,6 +144,7 @@ public class PluginWindow extends BasicWindow
 		miscArea.setText(misc);
 		plugin.loadDoc();
 		docArea.setText(plugin.doc);
+		*/
 		}
 
 	

@@ -10,6 +10,7 @@ import javax.swing.*;
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.imageset.*;
+import evplugin.jubio.EvImageJAI;
 import evplugin.metadata.*;
 import evplugin.script.Script;
 

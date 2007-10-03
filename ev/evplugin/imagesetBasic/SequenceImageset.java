@@ -9,6 +9,7 @@ import java.util.*;
 import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.*;
 import evplugin.imageset.*;
+import evplugin.jubio.EvImageJAI;
 
 
 /**

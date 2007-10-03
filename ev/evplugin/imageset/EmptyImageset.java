@@ -2,6 +2,8 @@ package evplugin.imageset;
 
 import java.io.File;
 
+import evplugin.jubio.EvImageJAI;
+
 
 public class EmptyImageset extends Imageset
 	{

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Add to browser  application/x-java-jnlp-file JNLP  in mime.types   -->
 
-<jnlp spec="1.0+" codebase="http://java.sun.com/docs/books/tutorialJWS/deployment/webstart/examples/"  href="ev.jnlp">
+<!-- <jnlp spec="1.0+" codebase="file:///home/mahogny/javaproj/ev/javawebstart" href="test.jnlp"> -->
+<jnlp spec="1.0+">
    <information>
       <title>EV</title>
       <vendor>Johan Henriksson, TBU Group, KI</vendor>
@@ -12,9 +13,8 @@
       <offline-allowed/>
    </information>
    <resources>     
-   	<jar href="Notepad.jar"/>
+   	<jar href="file:///home/mahogny/javaproj/ev/test.jar"/>
 	<j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-	<extension href="https://jogl.dev.java.net/webstart/jogl.jnlp" name="jogl"/>
    </resources>
-   <application-desc main-class="Notepad"/>
+   <application-desc main-class="javawebstart.sub.Test"/>
 </jnlp>
