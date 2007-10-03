@@ -21,6 +21,7 @@ Maybe later, special syntax:
 
 if Boolean then a else a
 
+a;b;c...? = execute a,b, return
 
 -------
 

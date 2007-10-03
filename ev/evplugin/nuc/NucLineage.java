@@ -49,6 +49,7 @@ public class NucLineage extends MetaObject implements Cloneable
 		Script.addCommand("nud", new CmdNucs(false,true));
 		Script.addCommand("nuda", new CmdNucda());
 		Script.addCommand("nuren", new CmdNucren());
+		Script.addCommand("nusnap", new CmdNucsnap());
 //		Script.addCommand("nun", new CmdNucName());
 
 		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
