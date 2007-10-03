@@ -1,4 +1,4 @@
-package evplugin.imageset;
+package evplugin.jubio;
 
 import javax.imageio.ImageIO;
 
@@ -10,6 +10,7 @@ import java.io.*;
 import java.awt.image.*;
 
 import evplugin.ev.*;
+import evplugin.imageset.EvImage;
 
 //static int getNumDirectories(SeekableStream stream)
 
