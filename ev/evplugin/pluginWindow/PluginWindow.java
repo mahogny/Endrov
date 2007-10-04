@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
+
 import org.jdom.*;
 
 
@@ -85,7 +86,7 @@ public class PluginWindow extends BasicWindow
 	 */
 	public PluginWindow(int x, int y, int w, int h)
 		{				
-		plugins=EV.getPluginList();
+		plugins=PluginInfo.getPluginList();
 
 		list.setListData(plugins);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

@@ -70,7 +70,9 @@ public class EV
 			Log.printLog("No personal config file");
 		}
 	
-	
+	/**
+	 * Wipe out record in the java registry
+	 */
 	public static void resetPersonalConfig()
 		{
 		Preferences prefs = Preferences.userNodeForPackage(EV.class);
@@ -110,23 +112,24 @@ public class EV
 
 	
 	/**
-	 * Get a list of all plugins
+	 * Save plugin list to file. This is 
 	 */
-	public static Vector<PluginInfo> getPluginList()
+	public static void savePluginList()
 		{
-		final Vector<PluginInfo> p=new Vector<PluginInfo>();
-		File pluginDir=new File("evplugin");
-		if(!pluginDir.exists())
-			JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");
-		else
-			for(File subdir:pluginDir.listFiles())
-				{
-				String plugin="evplugin/"+subdir.getName();
-				PluginInfo pi=new PluginInfo(plugin);
-				if(pi.exists())
-					p.add(pi);
-				}
-		return p;
+		if(!PluginInfo.storedInJar())
+	    try
+	    	{
+	      FileOutputStream out = new FileOutputStream(new File(new File("evplugin","ev"),"pluginlist.txt"));
+	      PrintStream p = new PrintStream( out );
+	    	for(PluginInfo pi:PluginInfo.getPluginList())
+	    		p.println(pi.filename);
+	    	p.close();
+	    	out.close();
+	    	}
+	    catch (Exception e)
+	    	{
+	    	System.err.println ("Error writing to file");
+	    	}
 		}
 	
 	/**
@@ -134,7 +137,7 @@ public class EV
 	 */
 	public static void loadPlugins()
 		{
-		for(PluginInfo pi:getPluginList())
+		for(PluginInfo pi:PluginInfo.getPluginList())
 			pi.load();
 		}
 	
