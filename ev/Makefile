@@ -19,3 +19,8 @@ uploaddoc:
 linecount:
 	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt
 
+webstart:
+#	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*/*class
+#	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/* evplugin/*/* evplugin/*/*/*
+	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/cmd/*class evplugin/*/parser/*class evplugin/ev/pluginlist.txt
+	du -hc ev.jar

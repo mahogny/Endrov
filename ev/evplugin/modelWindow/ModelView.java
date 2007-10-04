@@ -51,7 +51,7 @@ public class ModelView extends GLCanvas
 	
 	public TextRenderer renderer;
 
-	public boolean showGrid=false; //move?
+	public boolean showGrid=false;
 	
 	
 	

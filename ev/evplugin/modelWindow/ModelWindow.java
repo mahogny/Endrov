@@ -42,9 +42,10 @@ public class ModelWindow extends BasicWindow
 					int y=e.getAttribute("y").getIntValue();
 					int w=e.getAttribute("w").getIntValue();
 					int h=e.getAttribute("h").getIntValue();
-					new ModelWindow(x,y,w,h);
+					ModelWindow m=new ModelWindow(x,y,w,h);
+					m.miShowGrid.setSelected(e.getAttribute("showGrid").getBooleanValue());
 					}
-				catch (DataConversionException e1)
+				catch (Exception e1)
 					{
 					e1.printStackTrace();
 					}
@@ -162,7 +163,8 @@ public class ModelWindow extends BasicWindow
 		buttonCenter.addActionListener(this);
 		metaCombo.addActionListener(this);
 		
-		
+		//View settings
+		view.showGrid=miShowGrid.isSelected();
 		
 		//Window overall things
 		setTitle(EV.programName+" Model Window");
@@ -184,6 +186,7 @@ public class ModelWindow extends BasicWindow
 		e.setAttribute("y", ""+r.y);
 		e.setAttribute("w", ""+r.width);
 		e.setAttribute("h", ""+r.height);
+		e.setAttribute("showGrid",""+miShowGrid.isSelected());
 		root.addContent(e);
 		}
 

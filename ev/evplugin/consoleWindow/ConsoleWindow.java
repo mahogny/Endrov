@@ -3,6 +3,9 @@ package evplugin.consoleWindow;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.io.*;
 
 import evplugin.basicWindow.*;
@@ -17,7 +20,7 @@ import org.jdom.*;
  * 
  * @author Johan Henriksson
  */
-public class ConsoleWindow extends BasicWindow implements ActionListener, KeyListener
+public class ConsoleWindow extends BasicWindow implements ActionListener, KeyListener, ChangeListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -63,8 +66,8 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	//GUI components
 	private JTextArea history=new JTextArea();
 	private JTextFieldHistorized commandLine=new JTextFieldHistorized();
-
-	
+	private JMenu consoleMenu=new JMenu("Console");
+	private JMenuItem miShowTraces=new JMenu("Show traces",false);
 	
 	/**
 	 * Take new log events and put them in console history
@@ -171,7 +174,11 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		commandLine.addActionListener(this);
 		history.addKeyListener(this);
 		addKeyListener(this);
-		
+		miShowTraces.addChangeListener(this);
+	
+		//Menu
+		addMenubar(consoleMenu);
+		consoleMenu.add(miShowTraces);
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
@@ -215,11 +222,16 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 					}
 				catch(Exception ex)
 					{
-					StringWriter sw=new StringWriter();
-					PrintWriter pw=new PrintWriter(sw);
-					ex.printStackTrace(pw);
-					pw.flush();
-					addHistory(ex.getMessage()+"\n"+sw.toString());
+					if(miShowTraces.isSelected())
+						{
+						StringWriter sw=new StringWriter();
+						PrintWriter pw=new PrintWriter(sw);
+						ex.printStackTrace(pw);
+						pw.flush();
+						addHistory(ex.getMessage()+"\n"+sw.toString());
+						}
+					else
+						addHistory(ex.getMessage()+"\n");
 					}
 				}
 			returnFocus();
@@ -288,6 +300,11 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 			if(w instanceof ConsoleWindow)
 				return (ConsoleWindow)w;
 		return null;
+		}
+	
+	
+	public void stateChanged(ChangeEvent arg0)
+		{
 		}
 	
 	

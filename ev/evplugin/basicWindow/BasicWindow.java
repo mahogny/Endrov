@@ -156,6 +156,8 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 					}
 				}
 
+			if(e.getSource()==miSavePluginList)  EV.savePluginList();
+
 			if(e.getSource()==miWebHome)      BrowserControl.displayURL(EV.website+"WelcomePage");
 			if(e.getSource()==miWebUser)      BrowserControl.displayURL(EV.website+"UserDocs");
 			if(e.getSource()==miWebDeveloper) BrowserControl.displayURL(EV.website+"DevDocs");
@@ -166,11 +168,13 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		
 	private JMenuBar menubar=new JMenuBar();
 	private JMenu menuFile=new JMenu("EV");
+	private JMenu menuMaintenance=new JMenu("Maintenance");
 	private JMenu menuWindow=new JMenu("Window");
 	private JMenu menuBatch=new JMenu("Batch");
 	private JMenu menuInfo=new JMenu("Info");
 	private JMenuItem miGC=new JMenuItem("Run GC");
 	private JMenuItem miResetPC=new JMenuItem("Reset personal config");
+	private JMenuItem miSavePluginList=new JMenuItem("Save plugin list");
 	private JMenuItem miQuit=new JMenuItem("Exit");
 
 	private JMenuItem miAbout=new JMenuItem("About");
@@ -255,8 +259,10 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		addMenubar(menuWindow);
 		addMenubar(menuBatch);	
 		menuFile.add(menuInfo);
-		menuFile.add(miGC);
-		menuFile.add(miResetPC);
+		menuFile.add(menuMaintenance);
+		menuMaintenance.add(miGC);
+		menuMaintenance.add(miResetPC);
+		menuMaintenance.add(miSavePluginList);
 		menuFile.add(miQuit);
 		
 		menuInfo.add(miAbout);
@@ -272,6 +278,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		miQuit.addActionListener(listener);
 		miResetPC.addActionListener(listener);
 		miGC.addActionListener(listener);
+		miSavePluginList.addActionListener(listener);
 		
 		miAbout.addActionListener(listener);
 		miWebHome.addActionListener(listener);

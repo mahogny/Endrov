@@ -7,6 +7,7 @@ import javax.swing.event.*;
 import java.util.*;
 
 import evplugin.basicWindow.FrameControl;
+import evplugin.imageWindow.FrameControlImage;
 
 
 
@@ -30,12 +31,19 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/** Component to tell that frame has changed */
 	private ChangeListener listener;
 	
-	private JButton buttonStepBack=new JButton("<");
-	private JButton buttonStepForward=new JButton(">");
-	private JButton buttonBeginning=new JButton("|<");
-	private JButton buttonEnd=new JButton(">|");
-	private JButton buttonPlayBack=new JButton("<P");
-	private JButton buttonPlayForward=new JButton("P>");
+	private static ImageIcon iconFramePrev=new ImageIcon(FrameControlImage.class.getResource("buttonFramePrev.png"));
+	private static ImageIcon iconFrameNext=new ImageIcon(FrameControlImage.class.getResource("buttonFrameNext.png"));
+	private static ImageIcon iconFrameFirst=new ImageIcon(FrameControlImage.class.getResource("buttonFrameFirst.png"));
+	private static ImageIcon iconFrameLast=new ImageIcon(FrameControlImage.class.getResource("buttonFrameLast.png"));
+	private static ImageIcon iconPlayBackward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayBackward.png"));
+	private static ImageIcon iconPlayForward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayForward.png"));
+	
+	private JButton buttonStepBack=new JButton(iconFramePrev);
+	private JButton buttonStepForward=new JButton(iconFrameNext);
+	private JButton buttonPlayBack=new JButton(iconPlayBackward);
+	private JButton buttonPlayForward=new JButton(iconPlayForward);
+	private JButton buttonBeginning=new JButton(iconFrameFirst);
+	private JButton buttonEnd=new JButton(iconFrameLast);
 
 	private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);

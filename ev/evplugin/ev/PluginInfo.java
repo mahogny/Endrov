@@ -3,6 +3,9 @@ package evplugin.ev;
 
 import java.io.*;
 import java.lang.reflect.*;
+import java.net.URL;
+import java.util.Vector;
+
 import javax.swing.*;
 
 
@@ -12,7 +15,7 @@ import javax.swing.*;
  */
 public class PluginInfo
 	{
-	private String filename;
+	public String filename;
 	public PluginDef pdef=null;
 	
 
@@ -85,6 +88,53 @@ public class PluginInfo
 			return pdef.getPluginName();
 		else
 			return filename;
+		}
+
+	/**
+	 * Get a list of all plugins
+	 */
+	public static Vector<PluginInfo> getPluginList()
+		{
+		final Vector<PluginInfo> p=new Vector<PluginInfo>();
+		if(storedInJar())
+			{
+			try
+				{
+				InputStream input = EV.class.getResourceAsStream("pluginlist.txt");
+				BufferedReader br = new BufferedReader(new InputStreamReader(input));
+				String strLine;
+				while ((strLine = br.readLine()) != null)
+					p.add(new PluginInfo(strLine));
+				}
+			catch (Exception e)
+				{
+				JOptionPane.showMessageDialog(null, "Applet does not have a plugin listing");
+				}
+			}
+		else
+			{
+			File pluginDir=new File("evplugin");
+			if(!pluginDir.exists())
+				JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");
+			else
+				for(File subdir:pluginDir.listFiles())
+					{
+					String plugin="evplugin/"+subdir.getName();
+					PluginInfo pi=new PluginInfo(plugin);
+					if(pi.exists())
+						p.add(pi);
+					}
+			}
+		return p;
+		}
+
+	/**
+	 * Check if EV is stored in a JAR-file
+	 */
+	public static boolean storedInJar()
+		{
+		URL url=EV.class.getResource("pluginlist.txt");
+		return url!=null && url.toString().indexOf(".jar!")!=-1;
 		}
 	
 

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Add to browser  application/x-java-jnlp-file JNLP  in mime.types   -->
 
-<jnlp spec="1.0+" codebase="http://java.sun.com/docs/books/tutorialJWS/deployment/webstart/examples/"  href="ev.jnlp">
+<jnlp spec="1.0+">
    <information>
       <title>EV</title>
       <vendor>Johan Henriksson, TBU Group, KI</vendor>
       <description>EV</description>
       <homepage href="http://celegans.sh.se"/>
-      <description kind="short">ClickMeApp uses 3 custom classes plus several
-       standard ones</description>
+      <description kind="short">EV</description>
       <offline-allowed/>
    </information>
-   <resources>     
-   	<jar href="Notepad.jar"/>
+   <resources>
+   	<jar href="file:///Users/tbudev3/newcode/ev/ev.jar"/>
 	<j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-	<extension href="https://jogl.dev.java.net/webstart/jogl.jnlp" name="jogl"/>
+
+
+<!--	<extension href="https://jogl.dev.java.net/webstart/jogl.jnlp" name="jogl"/> -->
    </resources>
-   <application-desc main-class="Notepad"/>
+   <application-desc main-class="evgui.Test"/>
 </jnlp>
