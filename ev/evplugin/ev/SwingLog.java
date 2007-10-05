@@ -1,20 +1,23 @@
 package evplugin.ev;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
+import javax.swing.JOptionPane;
 
 /**
  * Log listener: Print to console
  * 
  * @author Johan Henriksson
  */
-public class StdoutLog extends Log
+public class SwingLog extends Log
 	{
 	/**
 	 * Log debugging information
 	 */
 	public void listenDebug(String s)
 		{
-		System.out.println(s);
+		JOptionPane.showMessageDialog(null, s);
 		}
 
 	/**
@@ -25,11 +28,14 @@ public class StdoutLog extends Log
 	public void listenError(String s, Exception e)
 		{
 		if(s!=null)
-			System.out.println(s);
+			JOptionPane.showMessageDialog(null, s);
 		if(e!=null)
 			{
-			System.out.println("Exception message: "+e.getMessage());
-			e.printStackTrace();
+			StringWriter sw=new StringWriter();
+			PrintWriter s2=new PrintWriter(sw);
+			e.printStackTrace(s2);
+			s2.flush();
+			JOptionPane.showMessageDialog(null, e.getMessage()+sw.toString());
 			}
 		}
 
@@ -38,7 +44,7 @@ public class StdoutLog extends Log
 	 */
 	public void listenLog(String s)
 		{
-		System.out.println(s);
+		JOptionPane.showMessageDialog(null, s);
 		}
 	
 	}

@@ -7,6 +7,9 @@ import evplugin.imageWindow.*;
 
 import java.io.*;
 
+//http://lopica.sourceforge.net/faq.html#nosandbox
+//System.setSecurityManager(null)
+
 /**
  * Start graphical user interface
  * @author Johan Henriksson
@@ -21,9 +24,17 @@ public class GUI
 		{
 		Log.listeners.add(new StdoutLog());
 
-		String javalib=System.getProperty("java.library.path");
-		File javalibfile=new File(javalib);
-		Log.printLog("Loading native libraries from "+javalibfile.getAbsolutePath());
+		//Log.listeners.add(new SwingLog());
+
+		//A window showing initialization could be useful here
+		
+		
+		//if(!PluginInfo.storedInJar())
+			{
+			String javalib=System.getProperty("java.library.path");
+			File javalibfile=new File(javalib);
+			Log.printLog("Loading native libraries from "+javalibfile.getAbsolutePath());
+			}
 		
 		try
 			{
