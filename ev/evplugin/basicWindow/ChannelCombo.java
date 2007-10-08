@@ -159,10 +159,11 @@ public class ChannelCombo extends JComboBox
 			//Add other metadata
 			for(Metadata thisMeta:Metadata.metadata)
 				{
-				System.out.println("m "+thisMeta.getMetadataName());  //called WAY to often? TODO
+				//System.out.println("m "+thisMeta.getMetadataName());  //called WAY to often? TODO
+				
 				if(thisMeta instanceof Imageset)
 					{
-					System.out.println("mm "+thisMeta.getMetadataName());
+					//System.out.println("mm "+thisMeta.getMetadataName()); //TODO
 					Imageset im=(Imageset)thisMeta;
 					for(String channel:im.channelImages.keySet())
 						addItem(new Alternative(im,channel));

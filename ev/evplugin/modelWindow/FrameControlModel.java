@@ -37,6 +37,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private static ImageIcon iconFrameLast=new ImageIcon(FrameControlImage.class.getResource("buttonFrameLast.png"));
 	private static ImageIcon iconPlayBackward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayBackward.png"));
 	private static ImageIcon iconPlayForward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayForward.png"));
+	private static ImageIcon iconPlayStop=new ImageIcon(FrameControlImage.class.getResource("buttonPlayStop.png"));
 	
 	private JButton buttonStepBack=new JButton(iconFramePrev);
 	private JButton buttonStepForward=new JButton(iconFrameNext);
@@ -100,19 +101,6 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		
 		//Find a unique group ID		
 		spinnerGroup.setValue(FrameControl.getUniqueGroup());
-		
-		//Build list of play buttons
-		/*
-		JPanel playPanel=new JPanel(new GridLayout(1,7,0,0));
-		playPanel.add(buttonBeginning);
-		playPanel.add(buttonEnd);
-		playPanel.add(buttonStepBack);
-		playPanel.add(buttonStepForward);
-		playPanel.add(speedCombo);
-		playPanel.add(buttonPlayBack);
-		playPanel.add(buttonPlayForward);
-		add(playPanel);
-*/		
 
 		add(buttonBeginning,playButtonConstraint(0));
 		add(buttonEnd,playButtonConstraint(1));
@@ -216,14 +204,14 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			playingForward=forward;
 			timer=new javax.swing.Timer(dt, this);
 			timer.start();
-			buttonPlayForward.setText("[]");
-			buttonPlayBack.setText("[]");
+			buttonPlayForward.setIcon(iconPlayStop);
+			buttonPlayBack.setIcon(iconPlayStop);
 			}
 		else
 			{
 			timer=null;
-			buttonPlayForward.setText("P>");
-			buttonPlayBack.setText("<P");
+			buttonPlayForward.setIcon(iconPlayForward);
+			buttonPlayBack.setIcon(iconPlayBackward);
 			}
 		}
 	
