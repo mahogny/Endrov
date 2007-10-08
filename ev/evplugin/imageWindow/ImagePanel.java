@@ -57,7 +57,9 @@ public class ImagePanel extends JPanel
 				ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
 				//System.out.println("A "+System.currentTimeMillis());
 				//TODO
-				bcfilter.filter(bufi,bufi);
+				BufferedImage bufo=new BufferedImage(bufi.getWidth(), bufi.getHeight(), bufi.getType());
+				bcfilter.filter(bufi,bufo);
+				bufi=bufo;
 				//System.out.println("B "+System.currentTimeMillis());
 				}
 			}
