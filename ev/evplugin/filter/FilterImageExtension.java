@@ -1,31 +1,32 @@
-package evplugin.imageset;
+package evplugin.filter;
 
-import java.awt.event.*;
 import javax.swing.*;
-
-
-
-import evplugin.basicWindow.BasicWindow;
+import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
 
-public class ImagesetImageExtension implements ImageWindowExtension
+public class FilterImageExtension implements ImageWindowExtension
 	{
-	
-	
+
 	public void newImageWindow(final ImageWindow w)
 		{
-		final JMenu miRemove=new JMenu("Remove");
-		final JMenuItem miRemoveChannel=new JMenuItem("Channel");
-		final JMenuItem miRemoveFrame=new JMenuItem("Frame");
-		final JMenuItem miRemoveSlice=new JMenuItem("Slice");
+		JMenu miOnImageset=new JMenu("On imageset");
+		JMenu miOnChannel=new JMenu("On channel");
+		JMenu miOnFrame=new JMenu("On frame");
+		JMenu miOnSlice=new JMenu("On slice");
+		JMenu miOnROI=new JMenu("On ROI");
+		//final JMenuItem miRemoveChannel=new JMenuItem("Channel");
+		
 		
 		//Create menus
-		BasicWindow.addMenuItemSorted(w.menuImage, miRemove);
-		BasicWindow.addMenuItemSorted(miRemove, miRemoveChannel);
-		BasicWindow.addMenuItemSorted(miRemove, miRemoveFrame);
-		BasicWindow.addMenuItemSorted(miRemove, miRemoveSlice);
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnImageset);
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnChannel);
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnFrame);
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnSlice);
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnROI);
+//		BasicWindow.addMenuItemSorted(miRemove, miRemoveSlice);
 		
 		//The listener
+		/*
 		ActionListener listener=new ActionListener()
 			{
 			public void actionPerformed(ActionEvent e)
@@ -64,7 +65,6 @@ public class ImagesetImageExtension implements ImageWindowExtension
 					}
 				
 				
-				
 				}	
 			};
 		
@@ -73,6 +73,7 @@ public class ImagesetImageExtension implements ImageWindowExtension
 		miRemoveChannel.addActionListener(listener);
 		miRemoveFrame.addActionListener(listener);
 		miRemoveSlice.addActionListener(listener);
+				*/
 		}
 
 	

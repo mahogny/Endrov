@@ -169,7 +169,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	private JMenuBar menubar=new JMenuBar();
 	private JMenu menuFile=new JMenu("EV");
 	private JMenu menuMaintenance=new JMenu("Maintenance");
-	private JMenu menuWindow=new JMenu("Window");
+	private JMenu menuWindows=new JMenu("Windows");
 	private JMenu menuBatch=new JMenu("Batch");
 	private JMenu menuInfo=new JMenu("Info");
 	private JMenuItem miGC=new JMenuItem("Run GC");
@@ -189,7 +189,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 */
 	public void addMenuWindow(JMenuItem ni)
 		{
-		addMenuItemSorted(menuWindow, ni);
+		addMenuItemSorted(menuWindows, ni);
 		}
 
 	/**
@@ -256,7 +256,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		
 		//Menu structure	
 		addMenubar(menuFile);
-		addMenubar(menuWindow);
+		addMenubar(menuWindows);
 		addMenubar(menuBatch);	
 		menuFile.add(menuInfo);
 		menuFile.add(menuMaintenance);

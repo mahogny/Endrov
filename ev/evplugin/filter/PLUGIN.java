@@ -1,11 +1,11 @@
-package evplugin.imageset;
+package evplugin.filter;
 import evplugin.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Imageset system";
+		return "Filter system";
 		}
 
 	public String getAuthor()
@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{MetaWindow.class,ImagesetMeta.class};
+		return new Class[]{FilterMeta.class};
 		}
 	}
