@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://mira.areta.org/~mahogny/mediawiki-1.11.0/download/">
+<jnlp spec="1.0+" codebase="http://celegans.sh.se/download/webstart/">
    <information>
       <title>EV</title>
       <vendor>Johan Henriksson, TBU Group, KI</vendor>
@@ -39,7 +39,7 @@
 
     <extension href="http://download.java.net/media/jai/webstart/release/jai-1.1.3-latest.jnlp"/>
     <extension href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp"/>
-	<extension href="https://jogl.dev.java.net/webstart/jogl.jnlp" name="jogl"/>
+    <extension href="https://jogl.dev.java.net/webstart/jogl.jnlp" name="jogl"/>
 	
    </resources>
    <application-desc main-class="evgui.GUI"/>

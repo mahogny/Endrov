@@ -39,6 +39,9 @@ public class ImageWindow extends BasicWindow
 	public static final int KEY_STEP_DOWN    =KeyBinding.register(new KeyBinding("Image Window","Step down",'s'));
 	public static final int KEY_HIDE_MARKINGS=KeyBinding.register(new KeyBinding("Image Window","Hide markings",' '));
 
+	private static ImageIcon iconLabelZoom=new ImageIcon(FrameControlImage.class.getResource("labelZoom.png"));
+	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
+	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
 
 	public static void addImageWindowExtension(ImageWindowExtension e)
 		{
@@ -215,17 +218,17 @@ public class ImageWindow extends BasicWindow
 		bottom.add(bottom2);
 
 		JPanel contrastPanel=new JPanel(new BorderLayout());
-		contrastPanel.add(new JLabel("C: "), BorderLayout.WEST);
+		contrastPanel.add(new JLabel(iconLabelContrast), BorderLayout.WEST);
 		contrastPanel.add(sliderContrast,BorderLayout.CENTER);
 		bottom2.add(contrastPanel);
 
 		JPanel brightnessPanel=new JPanel(new BorderLayout());
-		brightnessPanel.add(new JLabel("B: "), BorderLayout.WEST);
+		brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
 		brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
 		bottom2.add(brightnessPanel);
 
 		JPanel zoomPanel=new JPanel(new BorderLayout());
-		zoomPanel.add(new JLabel("Zoom"), BorderLayout.WEST);
+		zoomPanel.add(new JLabel(iconLabelZoom), BorderLayout.WEST);
 		zoomPanel.add(sliderZoom,BorderLayout.CENTER);
 		bottom2.add(zoomPanel);
 
@@ -243,11 +246,11 @@ public class ImageWindow extends BasicWindow
 		setTitle(EV.programName+" Image Window");
 		comboChannel.updateChannelList();
 		pack();
-		updateImagePanel();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());
 		frameControl.setFrame(0);
 		setVisible(true);
 		setBounds(bounds);
+		updateImagePanel();
 		}
 
 	/**
@@ -595,6 +598,8 @@ public class ImageWindow extends BasicWindow
 	/** Keep track of last imageset for re-centering purposes */
 	private Imageset lastImagesetRecenter=null;
 	
+	//WeakHashMap<Imageset, Object> viewedImageset=new WeakHashMap<Imageset, Object>();
+	
 	/**
 	 * Take current settings of sliders and apply it to image
 	 */
@@ -605,8 +610,6 @@ public class ImageWindow extends BasicWindow
 		imagePanel.contrast=Math.pow(2,sliderContrast.getValue()/1000.0);
 		imagePanel.zoom=getZoom();
 		imagePanel.binning=1;
-		int z=frameControl.getZ();
-		double frame=frameControl.getFrame();		
 		imagePanel.imageLoader=null;
 
 		//Check if recenter needed
@@ -614,14 +617,15 @@ public class ImageWindow extends BasicWindow
 		Imageset rec=comboChannel.getImageset();
 		if(rec!=lastImagesetRecenter)
 			{
-			lastImagesetRecenter=rec;
 			zoomToFit=true;
+			lastImagesetRecenter=rec;
+			frameControl.stepForward();
 			}
 
 		Imageset.ChannelImages ch=getSelectedChannel();
 		if(ch!=null)
 			{
-			imagePanel.imageLoader=ch.getImageLoader((int)frame, z);
+			imagePanel.imageLoader=ch.getImageLoader((int)frameControl.getFrame(), frameControl.getZ());
 			imagePanel.binning=ch.getMeta().chBinning;
 			imagePanel.dispX=ch.getMeta().dispX;
 			imagePanel.dispY=ch.getMeta().dispY;

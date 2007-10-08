@@ -1,6 +1,7 @@
 package evplugin.imageset;
 
 import java.awt.image.*;
+import java.lang.ref.SoftReference;
 
 
 /**
@@ -14,6 +15,13 @@ public abstract class EvImage
 	 */
 	protected BufferedImage im=null;
 		
+	
+	/**
+	 * Cache: pointer to loaded image
+	 */
+	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
+	
+	
 	/**
 	 * Get AWT representation of image. This should be as fast as it can be, but since AWT has limitations, data might be lost.
 	 * It is the choice for rendering or if AWT is guaranteed to be able to handle the image.
@@ -21,7 +29,15 @@ public abstract class EvImage
 	public BufferedImage getJavaImage()
 		{
 		if(im==null)
-			return loadJavaImage();
+			{
+			BufferedImage loaded=cachedImage.get();
+			if(loaded==null)
+				{
+				loaded=loadJavaImage();
+				cachedImage=new SoftReference<BufferedImage>(loaded);
+				}
+			return loaded;
+			}
 		else
 			return im;
 		}
@@ -38,6 +54,7 @@ public abstract class EvImage
 	public void setImage(BufferedImage im)
 		{
 		this.im=im;
+		cachedImage=new SoftReference<BufferedImage>(null);
 		}
 	
 	/**
