@@ -7,67 +7,8 @@ Other New tools:
 
 ----------
 
-EV
-	Windows
-		Tile
-		Cascade
-		Show all
-	*Advanced
-	*	Run GC
-	*	Reset PC
-View
-	LUT
-		...presets...
-		invert
-		edit
-		brightness/contrast
-	Apply LUT
-	... need to think how this fits in...
-
-	*Reset view
-	*to mid slice
-	*zoom to fit
-	*overlay enabled
+LUT: this should be a filter
 	
-ROI
-	new
-		rect
-		box
-		ellipse
-		ellipsoid
-		point
-		segmented lines
-		wand
-
-		watershed
-
-	modify
-		complex hull
-		grow selection
-		shrink selection
-		rotate
-
-		select all
-		invert selection
-		select none
-	composite
-		union
-		intersection
-		difference
-		group
-	convert
-		make mask
-	Analyze
-		Volume
-		Area
-		Count
-	cut
-	copy
-	copy to system
-
-	clear
-	clear outside
-	fill
 
 image
 	print
@@ -76,10 +17,6 @@ image
 	crop
 	rotate
 	set color depth
-
-	*remove channel
-	*remove slice
-	*remove stack
 
 	draw
 		pencil
