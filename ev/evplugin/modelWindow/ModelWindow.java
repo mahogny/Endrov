@@ -43,7 +43,8 @@ public class ModelWindow extends BasicWindow
 					int w=e.getAttribute("w").getIntValue();
 					int h=e.getAttribute("h").getIntValue();
 					ModelWindow m=new ModelWindow(x,y,w,h);
-					m.miShowGrid.setSelected(e.getAttribute("showGrid").getBooleanValue());
+					m.setShowGrid(e.getAttribute("showGrid").getBooleanValue());
+					m.frameControl.setGroup(e.getAttribute("group").getIntValue());
 					}
 				catch (Exception e1)
 					{
@@ -61,6 +62,8 @@ public class ModelWindow extends BasicWindow
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+
+	
 	private int mouseLastX, mouseLastY;
 	
 	public final Vector<ModelWindowHook> modelWindowHooks=new Vector<ModelWindowHook>();
@@ -82,7 +85,7 @@ public class ModelWindow extends BasicWindow
 
 	public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Show all nuc names"); //move
 	public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Show names of select nuc"); //move
-	public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid",true); 
+	public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid"); 
 
 	/**
 	 * Make a new window at default location
@@ -164,7 +167,7 @@ public class ModelWindow extends BasicWindow
 		metaCombo.addActionListener(this);
 		
 		//View settings
-		view.showGrid=miShowGrid.isSelected();
+		setShowGrid(true);
 		
 		//Window overall things
 		setTitle(EV.programName+" Model Window");
@@ -173,6 +176,16 @@ public class ModelWindow extends BasicWindow
 		setBounds(x,y,w,h);
 		view.showGrid=miShowGrid.isSelected();
 		}
+	
+	/**
+	 * View setting: display grid?
+	 */
+	public void setShowGrid(boolean b)
+		{
+		miShowGrid.setSelected(b);
+		view.showGrid=b;
+		}
+	
 	
 	
 	/**
@@ -187,6 +200,7 @@ public class ModelWindow extends BasicWindow
 		e.setAttribute("w", ""+r.width);
 		e.setAttribute("h", ""+r.height);
 		e.setAttribute("showGrid",""+miShowGrid.isSelected());
+		e.setAttribute("group",""+frameControl.getGroup());
 		root.addContent(e);
 		}
 
