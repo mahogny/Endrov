@@ -1,7 +1,7 @@
 package evplugin.filter;
 
 import org.jdom.*;
-//import java.util.*;
+import java.util.*;
 import evplugin.imageWindow.*;
 import evplugin.metadata.*;
 
@@ -20,11 +20,15 @@ public abstract class FilterMeta extends MetaObject
 	 *****************************************************************************************************/
 	//private static final String metaType="filter";
 	
+	public static TreeMap<String,FilterInfo> filterInfo=new TreeMap<String,FilterInfo>();
+	
 	public static void initPlugin() {}
 	static
 		{
 		ImageWindow.addImageWindowExtension(new FilterImageExtension());
 //		Metadata.extensions.put(metaType,new ImagesetMetaObjectExtension());
+		
+		
 		}
 	
 	public String getMetaTypeDesc()
@@ -39,6 +43,10 @@ public abstract class FilterMeta extends MetaObject
 		}
 
 	
+	public static void addFilter(FilterInfo fi)
+		{
+		FilterMeta.filterInfo.put(fi.getName(),fi);
+		}
 	
 	
 	/******************************************************************************************************
