@@ -25,6 +25,8 @@ public abstract class EvImage
 	/**
 	 * Get AWT representation of image. This should be as fast as it can be, but since AWT has limitations, data might be lost.
 	 * It is the choice for rendering or if AWT is guaranteed to be able to handle the image.
+	 * 
+	 * This image is read-only unless it is again set to be the AWT image of this EVImage. (best-practice?)
 	 */
 	public BufferedImage getJavaImage()
 		{

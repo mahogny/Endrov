@@ -25,71 +25,15 @@ image
 		flood fill
 		eraser
 
-	Add noise
-		Salt & pepper
-                Binomial
-		Exponential
-		Gamma
-		Gaussian
-		Poisson
-		Uniform
-
-
-	Transform
-		FFT
-		Inverse FFT
-		Convolve
-		Deconvolve
-		Radon
-		DCT
-
-	filter
-		IJ smooth
-		IJ sharpen
-		IJ find edges
-		IJ enhance contrast
-
-
-		low-pass filter
-		high-pass filter
-		butterworth filter
-		custom linear filter
-		median filter
-		mean filter
-
-		threshold
-
 	Derive (analyze?)
 		Histogram
-
-		gaussian
-		gradient
-		Laplacian
-		Hessian
-		Canny
 		eigenvalues??
 		statistics??
-
 		3d+t color distribution plot
-
-	invert
 
 	Operations
 		Binary
 			...morphological operations... 2d/3d etc
-			erode
-			dilate
-			close
-			open
-			custom
-			
-			outline
-			skeletonize
-			fill holes
-
-			make distance map
-
-			set repeat
 		Grayscale
 			...generalized morpho... 2d/3d etc
 		Math

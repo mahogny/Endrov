@@ -79,10 +79,6 @@ public class RectROI extends ROI
 		return new EmptyLineIterator();
 		}
 	
-	public PixelIterator getPixelIterator(String channel, int frame, int z)
-		{
-		return new LineToPixelIterator(getLineIterator(channel,frame,z));
-		}
 
 	
 	
