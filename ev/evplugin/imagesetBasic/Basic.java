@@ -24,8 +24,8 @@ public class Basic //implements BasicWindowExtension
 				{
 				final JMenuItem miLoadSequenceImageset=new JMenuItem("Load sequence imageset");
 				final JMenuItem miLoadNamebasedImageset=new JMenuItem("Load namebased imageset");
-				menu.add(miLoadSequenceImageset);
-				menu.add(miLoadNamebasedImageset);
+				addMetamenu(menu,miLoadSequenceImageset);
+				addMetamenu(menu,miLoadNamebasedImageset);
 				
 				ActionListener listener=new ActionListener()
 					{

@@ -1,8 +1,12 @@
 package evplugin.roi;
 
 import javax.swing.*;
+import java.awt.event.*;
 import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
+import evplugin.imageset.*;
+
+import evplugin.roi.primitive.*;
 
 /*
 	cut
@@ -33,12 +37,19 @@ public class ROIImageExtension implements ImageWindowExtension
 		JMenu miModify=new JMenu("Modify");
 		JMenu miComposite=new JMenu("Composite");
 		JMenu miAnalyze=new JMenu("Analyze");
-
+		
 		BasicWindow.addMenuItemSorted(miROI, miNew);
 		BasicWindow.addMenuItemSorted(miROI, miModify);
 		BasicWindow.addMenuItemSorted(miROI, miAnalyze);
 		BasicWindow.addMenuItemSorted(miROI, miComposite);
 
+		//ROI Window
+		JMenuItem miROIWindow=new JMenuItem("ROI Window...");
+		miROI.add(miROIWindow);
+		miROIWindow.addActionListener(new ActionListener()
+			{public void actionPerformed(ActionEvent e){new WindowROI();}});
+		
+		
 		//New
 		JMenuItem miNewRect=new JMenuItem("Box");
 		JMenuItem miNewEllipse=new JMenuItem("Ellipse");
@@ -88,9 +99,23 @@ public class ROIImageExtension implements ImageWindowExtension
 		
 		
 		
+		//The listener
+		ActionListener listenerRect=new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				ROI roi=new BoxROI();
+				Imageset rec=w.getImageset();
+				rec.addMetaObject(roi);
+				BasicWindow.updateWindows();
+				roi.openEditWindow();
+				}
+			};
+		miNewRect.addActionListener(listenerRect);
+		
+		
 //		BasicWindow.addMenuItemSorted(miRemove, miRemoveSlice);
 		
-		//The listener
 		/*
 		ActionListener listener=new ActionListener()
 			{

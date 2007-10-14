@@ -1,5 +1,7 @@
 package evplugin.shell;
 
+import javax.swing.JMenu;
+
 import org.jdom.DataConversionException;
 import org.jdom.Element;
 
@@ -116,5 +118,11 @@ public class Shell extends MetaObject
 		{
 		return "Shell";
 		}
+	
+	/** Additions to the object-specific menu */
+	public void buildMetamenu(JMenu menu)
+		{
+		}
+
 	
 	}

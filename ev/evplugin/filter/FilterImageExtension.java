@@ -3,17 +3,21 @@ package evplugin.filter;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
+
 import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
+import evplugin.metadata.*;
 import evplugin.imageset.*;
+import evplugin.roi.*;
 
 /**
- * Extend ImageWindow with filter options
+ * ImageWindow extension: Filter menus
+ * 
  * @author Johan Henriksson
  */
 public class FilterImageExtension implements ImageWindowExtension
 	{
-	private static abstract class BindListener
+	public static abstract class BindListener
 		{
 		public abstract void bind(FilterInfo fi, JMenuItem mi);
 		}
@@ -41,11 +45,41 @@ public class FilterImageExtension implements ImageWindowExtension
 					{
 					public void actionPerformed(ActionEvent e)
 						{
-						//		Imageset rec=w.getImageset();
-						Imageset.ChannelImages ch=w.getSelectedChannel();
-						EvImage im=ch.getImageLoader((int)w.frameControl.getFrame(), w.frameControl.getZ());
-						fi.filterROI().applyImage(im);
-						BasicWindow.updateWindows();
+						Imageset rec=w.getImageset();
+						
+						for(MetaObject ob:rec.metaObject.values())
+							if(ob instanceof ROI)
+								{
+								ROI roi=(ROI)ob;
+								
+								
+								for(String chan:roi.getChannels(rec))
+									for(int frame:roi.getFrames(rec, chan))
+										for(int z:roi.getSlice(rec, chan, frame))
+											{
+											System.out.println("- "+chan+"/"+frame+"/"+z);
+											
+											
+											fi.filterROI().applyImage(rec, chan, frame, z, roi);
+											}
+								
+								/*
+										Imageset.ChannelImages ch=w.getSelectedChannel();
+										EvImage im=ch.getImageLoader((int)w.frameControl.getFrame(), w.frameControl.getZ());
+								fi.filterROI().applyImage(im);
+								*/
+								
+								/*
+								String chan=w.getSelectedChannel().getMeta().name;
+								int frame=(int)w.frameControl.getFrame();
+								int z=w.frameControl.getZ();
+								System.out.println("+ "+chan+" "+frame+" "+z);
+								fi.filterROI().applyImage(rec,chan, frame, z, roi);
+								*/
+								BasicWindow.updateWindows();
+								}
+						
+								
 						}
 					});
 				}
@@ -99,7 +133,7 @@ public class FilterImageExtension implements ImageWindowExtension
 	/**
 	 * Fill a filter menu with all entries
 	 */
-	private void fillFilters(JMenu menu, BindListener bl)
+	public void fillFilters(JMenu menu, BindListener bl)
 		{
 		HashMap<String, JMenu> categories=new HashMap<String, JMenu>();
 		for(FilterInfo fi:FilterMeta.filterInfo.values())

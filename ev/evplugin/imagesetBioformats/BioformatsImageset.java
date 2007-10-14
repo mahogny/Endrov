@@ -37,7 +37,7 @@ public class BioformatsImageset extends Imageset
 			public void buildOpen(JMenu menu)
 				{
 				final JMenuItem miLoadBioformats=new JMenuItem("Load Bioformats imageset");
-				menu.add(miLoadBioformats);
+				addMetamenu(menu,miLoadBioformats);
 				
 				ActionListener listener=new ActionListener()
 					{

@@ -109,6 +109,48 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		e.setAttribute("h", ""+r.height);
 		}
 	
+	
+
+	/**
+	 * Add menu item to a menu, put it in alphabetical order
+	 * @param menu
+	 * @param ni
+	 */
+	public static void addMenuItemSorted(JMenu menu, JMenuItem ni)
+		{
+		String thisText=ni.getText().toLowerCase();
+		for(int i=0;i<menu.getItemCount();i++)
+			{
+			JMenuItem nj=(JMenuItem)menu.getItem(i);
+			if(thisText.compareTo(nj.getText().toLowerCase())<0)
+				{
+				menu.add(ni, i);
+				return;
+				}			
+			}
+		menu.add(ni);
+		}
+
+	/**
+	 * Add menu to a menubar, put in alphabetical order
+	 */
+	public static void addMenuSorted(JMenuBar menu, JMenu ni, int startPos)
+		{
+		String thisText=ni.getText().toLowerCase();
+		for(int i=startPos;i<menu.getMenuCount();i++)
+			{
+			JMenuItem nj=(JMenuItem)menu.getMenu(i);
+			if(thisText.compareTo(nj.getText().toLowerCase())<0)
+				{
+				menu.add(ni, i);
+				return;
+				}			
+			}
+		menu.add(ni);
+		}
+	
+	
+	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
@@ -210,44 +252,6 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		addMenuSorted(menubar, ni, 1);
 		}
 
-	/**
-	 * Add menu item to a menu, put it in alphabetical order
-	 * @param menu
-	 * @param ni
-	 */
-	public static void addMenuItemSorted(JMenu menu, JMenuItem ni)
-		{
-		String thisText=ni.getText();
-		for(int i=0;i<menu.getItemCount();i++)
-			{
-			JMenuItem nj=(JMenuItem)menu.getItem(i);
-			if(thisText.compareTo(nj.getText())<0)
-				{
-				menu.add(ni, i);
-				return;
-				}			
-			}
-		menu.add(ni);
-		}
-
-	/**
-	 * Add menu to a menubar, put in alphabetical order
-	 */
-	public static void addMenuSorted(JMenuBar menu, JMenu ni, int startPos)
-		{
-		String thisText=ni.getText();
-		for(int i=startPos;i<menu.getMenuCount();i++)
-			{
-			JMenuItem nj=(JMenuItem)menu.getMenu(i);
-			if(thisText.compareTo(nj.getText())<0)
-				{
-				menu.add(ni, i);
-				return;
-				}			
-			}
-		menu.add(ni);
-		}
-	
 
 	/**
 	 * Set up basic menus

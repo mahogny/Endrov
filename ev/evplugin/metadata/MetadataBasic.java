@@ -5,17 +5,18 @@ import java.util.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.*;
-//import evplugin.ev.EV;
-//import evplugin.script.Script;
 
 /**
  * Extension to BasicWindow
+ * 
  * @author Johan Henriksson
  */
 public class MetadataBasic implements BasicWindowExtension
 	{
 	
 	public static Vector<MetadataExtension> extensions=new Vector<MetadataExtension>();
+	
+	
 	
 	public void newBasicWindow(BasicWindow w)
 		{
@@ -25,7 +26,7 @@ public class MetadataBasic implements BasicWindowExtension
 		{
 		private JMenu mData=new JMenu("Data");
 		private JMenuItem miNew=new JMenuItem("New XML");
-		private JMenuItem miOpen=new JMenuItem("Read from XML");
+		private JMenuItem miOpen=new JMenuItem("Load from XML");
 		
 		public void createMenus(BasicWindow w)
 			{
@@ -55,8 +56,8 @@ public class MetadataBasic implements BasicWindowExtension
 			{
 			BasicWindow.tearDownMenu(mData);
 			
-			mData.add(miNew);
-			mData.add(miOpen);			
+			BasicWindow.addMenuItemSorted(mData, miNew);
+			BasicWindow.addMenuItemSorted(mData, miOpen);			
 			miNew.addActionListener(this);
 			miOpen.addActionListener(this);
 			for(MetadataExtension e:extensions)
@@ -122,6 +123,8 @@ public class MetadataBasic implements BasicWindowExtension
 
 					JMenuItem miRemoveOb=new JMenuItem("Remove");
 					obmenu.add(miRemoveOb);
+					
+					ob.buildMetamenu(obmenu);
 					
 					//Menu item listener: object/Remove
 					ActionListener obListenerRemove=new ActionListener()

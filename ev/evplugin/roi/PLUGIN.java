@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ROIMeta.class};
+		return new Class[]{ROI.class,WindowROI.class};
 		}
 	}
