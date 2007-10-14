@@ -2,6 +2,9 @@ package evplugin.nuc;
 
 import org.jdom.*;
 import java.util.*;
+
+import javax.swing.JMenu;
+
 import evplugin.basicWindow.BasicWindow;
 import evplugin.imageWindow.ImageWindow;
 import evplugin.imageWindow.ImageWindowExtension;
@@ -126,6 +129,12 @@ public class NucLineage extends MetaObject implements Cloneable
 			});
 		}
 
+	/** Additions to the object-specific menu */
+	public void buildMetamenu(JMenu menu)
+		{
+		}
+
+	
 	
 	/**
 	 * Selection of nuclei by mouse and keyboard

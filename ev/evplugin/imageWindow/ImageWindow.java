@@ -246,8 +246,8 @@ public class ImageWindow extends BasicWindow
 		pack();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());
 		frameControl.setFrame(0);
-		setVisible(true);
 		setBounds(bounds);
+		setVisible(true);
 		updateImagePanel();
 		}
 

@@ -2,10 +2,8 @@ package evplugin.filter;
 
 //import java.awt.image.BufferedImage;
 
-import evplugin.imageset.EvImage;
-
-//import evplugin.imageset.*;
-//import evplugin.roi.*;
+import evplugin.imageset.*;
+import evplugin.roi.*;
 
 /**
  * Filter that works on ROI level. This includes an "image level" since it is so easy to just cut out a ROI
@@ -30,7 +28,9 @@ public abstract class FilterROI extends FilterMeta //make FilterRoiDefault
 		}
 	*/
 
+	public abstract void applyImage(Imageset rec, String channel, int frame, int z, ROI roi);
 	public abstract void applyImage(EvImage im);
+//	public abstract void applyImage(EvImage im, ROI roi);
 
 //	public abstract void applyImage(BufferedImage im);
 	

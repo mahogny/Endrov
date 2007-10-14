@@ -35,9 +35,10 @@ public class OstImageset extends Imageset
 			public void buildOpen(JMenu menu)
 				{
 				final JMenuItem miLoadVWBImageset=new JMenuItem("Load OST imageset");
-				menu.add(miLoadVWBImageset);
+				addMetamenu(menu, miLoadVWBImageset);
 				final JMenuItem miLoadVWBImagesetPath=new JMenuItem("Load OST imageset by path");
-				menu.add(miLoadVWBImagesetPath);
+				addMetamenu(menu, miLoadVWBImagesetPath);
+
 				
 				ActionListener listener=new ActionListener()
 					{

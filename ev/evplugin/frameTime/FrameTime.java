@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.JMenu;
+
 import evplugin.metadata.*;
 import evplugin.ev.*;
 
@@ -74,6 +76,11 @@ public class FrameTime extends MetaObject
 		}
 	
 
+	public void buildMetamenu(JMenu menu)
+		{
+		}
+
+	
 	/**
 	 * Add new frame/frametime to this object
 	 */

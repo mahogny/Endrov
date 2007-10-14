@@ -2,8 +2,16 @@ package evplugin.metadata;
 
 import javax.swing.*;
 
-public interface MetadataExtension
+import evplugin.basicWindow.BasicWindow;
+
+
+public abstract class MetadataExtension
 	{
-	public void buildOpen(JMenu menu);
-	public void buildSave(JMenu menu, Metadata meta);
+	public void addMetamenu(JMenu menu, JMenuItem mi)
+		{
+		BasicWindow.addMenuItemSorted(menu, mi);
+		}
+	
+	public abstract void buildOpen(JMenu menu);
+	public abstract void buildSave(JMenu menu, Metadata meta);
 	}

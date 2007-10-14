@@ -1,4 +1,6 @@
 package evplugin.metadata;
+
+import javax.swing.*;
 import org.jdom.*;
 
 /**
@@ -26,5 +28,10 @@ public class CustomObject extends MetaObject
 		e.setName(xml.getName());
 		for(Object o:xml.getChildren())
 			xml.addContent((Element)o); //potential need for clone
+		}
+	
+	
+	public void buildMetamenu(JMenu menu)
+		{
 		}
 	}

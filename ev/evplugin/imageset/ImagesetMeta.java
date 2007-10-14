@@ -2,6 +2,9 @@ package evplugin.imageset;
 
 import org.jdom.*;
 import java.util.*;
+
+import javax.swing.JMenu;
+
 import evplugin.imageWindow.*;
 import evplugin.metadata.*;
 
@@ -209,6 +212,11 @@ public class ImagesetMeta extends MetaObject
 	public String getMetaTypeDesc()
 		{
 		return metaType;
+		}
+
+	/** Additions to the object-specific menu */
+	public void buildMetamenu(JMenu menu)
+		{
 		}
 
 	

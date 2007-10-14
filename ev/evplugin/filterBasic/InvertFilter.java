@@ -24,14 +24,33 @@ public class InvertFilter extends FilterROI
 		}
 	
 //highest level. should we have a standard implementation here?	
-	public void applyImage(EvImage evim, ROI roi)
+//	public void applyImage(EvImage evim, ROI roi)
+	public void applyImage(Imageset rec, String channel, int frame, int z, ROI roi)
 		{
+		EvImage evim=rec.getChannel(channel).getImageLoader(frame,z);
+		
+		
 		//standard implementation
 		BufferedImage i=evim.getJavaImage();
 		BufferedImage i2=new BufferedImage(i.getWidth(),i.getHeight(),i.getType());
-		applyImage(i2);
+		applyImage(i,i2);
+		
+		LineIterator it=roi.getLineIterator(rec, channel, frame, z);
+		WritableRaster rin=i2.getRaster();
+		WritableRaster rout=i.getRaster();
+		while(it.next())
+			{
+			int w=it.endX-it.startX;
+			int[] pix=new int[w];
+			rin.getSamples(it.startX, it.y, w, 1, 0, pix);
+			rout.setSamples(it.startX, it.y, w, 1, 0, pix);
+//			System.out.println("z "+it.startX+" "+it.endX+" "+it.y+" "+w);
+			}
+		
+		//batching
+		
 		//Later: transfer back using ROI
-		evim.setImage(i2);
+		evim.setImage(i);
 		}
 
 //on entire image. could have a standard implementation of this one too.	
@@ -41,7 +60,7 @@ public class InvertFilter extends FilterROI
 		BufferedImage i=evim.getJavaImage();
 		evim.setImage(i);
 
-		applyImage(i);
+		applyImage(i,i);
 		
 		
 		/////for standard implementation
@@ -52,18 +71,19 @@ public class InvertFilter extends FilterROI
 		}
 
 	
-	public void applyImage(BufferedImage i)
+	public void applyImage(BufferedImage in, BufferedImage out)
 		{
-		WritableRaster r=i.getRaster();
+		WritableRaster rin=in.getRaster();
+		WritableRaster rout=out.getRaster();
 
-		int width=r.getWidth();
+		int width=rin.getWidth();
 		int[] pix=new int[width];
-		for(int ah=0;ah<r.getHeight();ah++)
+		for(int ah=0;ah<rin.getHeight();ah++)
 			{
-			r.getSamples(0, ah, width, 1, 0, pix);
+			rin.getSamples(0, ah, width, 1, 0, pix);
 			for(int aw=0;aw<width;aw++)
 				pix[aw]=255-pix[aw];
-			r.setSamples(0, ah, width, 1, 0, pix);
+			rout.setSamples(0, ah, width, 1, 0, pix);
 			}
 		}
 	

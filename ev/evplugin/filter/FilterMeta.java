@@ -2,6 +2,9 @@ package evplugin.filter;
 
 import org.jdom.*;
 import java.util.*;
+
+import javax.swing.JMenu;
+
 import evplugin.imageWindow.*;
 import evplugin.metadata.*;
 
@@ -40,6 +43,11 @@ public abstract class FilterMeta extends MetaObject
 		{
 		//This is just awful. let every filter implement?
 		e.setName("filter");
+		}
+
+	/** Additions to the object-specific menu */
+	public void buildMetamenu(JMenu menu)
+		{
 		}
 
 	
