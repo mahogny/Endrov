@@ -25,7 +25,7 @@ public abstract class ROI extends MetaObject
 	public static void initPlugin() {}
 	static
 		{
-		ImageWindow.addImageWindowExtension(new ROIImageExtension());
+		ImageWindow.addImageWindowExtension(new ImageExtensionROI());
 //		Metadata.extensions.put(metaType,new ImagesetMetaObjectExtension());
 		}
 
@@ -36,7 +36,22 @@ public abstract class ROI extends MetaObject
 	 */
 	public static final TreeSet<SelectedROI> selected=new TreeSet<SelectedROI>();
 
+	/******************************************************************************************************
+	 *            Class: Handle in image window                                                           *
+	 *****************************************************************************************************/
 	
+	/**
+	 * One handle for a ROI: marks a part of a ROI (in image window).
+	 * The user can then drag this in (x,y) to resize the selection.
+	 * @author Johan Henriksson
+	 */
+	public static interface Handle
+		{
+		public double getX();
+		public double getY();
+		public void setX(double x);
+		public void setY(double y);
+		}
 	
 	/******************************************************************************************************
 	 *            Class: XML Reader and writer of this type of meta object                                *
@@ -114,6 +129,8 @@ public abstract class ROI extends MetaObject
 	public abstract Set<Integer> getFrames(Imageset rec, String channel);
 	public abstract Set<Integer> getSlice(Imageset rec, String channel, int frame);
 
+	public abstract Handle[] getHandles();
 	
+	public abstract boolean imageInRange(String channel, double frame, int z);
 	public abstract LineIterator getLineIterator(Imageset rec, String channel, int frame, int z);
 	}

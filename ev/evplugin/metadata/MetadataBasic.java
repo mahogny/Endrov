@@ -26,7 +26,7 @@ public class MetadataBasic implements BasicWindowExtension
 		{
 		private JMenu mData=new JMenu("Data");
 		private JMenuItem miNew=new JMenuItem("New XML");
-		private JMenuItem miOpen=new JMenuItem("Load from XML");
+		private JMenuItem miOpen=new JMenuItem("Load XML");
 		
 		public void createMenus(BasicWindow w)
 			{

@@ -8,6 +8,7 @@ import javax.swing.event.*;
 import org.jdom.*;
 
 import evplugin.roi.*;
+import evplugin.basicWindow.BasicWindow;
 import evplugin.imageset.*;
 
 /**
@@ -116,19 +117,24 @@ public class BoxROI extends ROI
 	/**
 	 * Check if a channel is included in the ROI
 	 */
-	public boolean channelInRange(String channel)
+	private boolean channelInRange(String channel)
 		{
 		return regionChannels.isEmpty() || 
 		       regionChannels.contains(channel);
 		}
 	
 
+	public boolean imageInRange(String channel, double frame, int z)
+		{
+		return channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
+		}
+	
 	/**
 	 * Get iterator over one image
 	 */
 	public LineIterator getLineIterator(final Imageset rec, final String channel, final int frame, final int z)
 		{
-		if(channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z))
+		if(imageInRange(channel, frame, z))
 			{
 			//todo: check if there is something here
 			EvImage im=rec.getChannel(channel).getImageLoader(frame, z);
@@ -199,7 +205,7 @@ public class BoxROI extends ROI
 		
 		public SpanWidget(String name, Span span)
 			{
-			cSpan=new JCheckBox(name);
+			cSpan=new JCheckBox(name,!span.all);
 			this.span=span;
 			spinnerS.setText(""+span.start);
 			spinnerE.setText(""+span.end);
@@ -219,6 +225,7 @@ public class BoxROI extends ROI
 				span.all=!cSpan.isSelected();
 				span.start=Double.parseDouble(spinnerS.getText());
 				span.end  =Double.parseDouble(spinnerE.getText());
+				BasicWindow.updateWindows();
 				}
 			catch (NumberFormatException e){}
 			}
@@ -263,7 +270,7 @@ public class BoxROI extends ROI
 				for(String s:regionChannels)
 					System.out.print(" "+s);
 				System.out.println("");
-				
+				BasicWindow.updateWindows();
 				}
 			});
 		
@@ -281,5 +288,51 @@ public class BoxROI extends ROI
 		}
 	
 	
+	public class BoxHandle implements Handle
+		{
+		private final boolean isStartX, isStartY;
+		public BoxHandle(Span sx, boolean isStartX, boolean isStartY)
+			{
+			this.isStartX=isStartX;
+			this.isStartY=isStartY;
+			}
+		
+		//TODO: what about "all"?
+		
+		public double getX()
+			{
+			if(isStartX) return regionX.start;
+			else return regionX.end;
+			}
+
+		public double getY()
+			{
+			if(isStartY) return regionY.start;
+			else return regionY.end;
+			}
+
+		public void setX(double x)
+			{
+			if(isStartX) regionX.start=x;
+			else regionX.end=x;
+			}
+
+		public void setY(double y)
+			{
+			if(isStartY) regionY.start=y;
+			else regionY.end=y;
+			}
+		}
 	
+	/**
+	 * Get handles for corners
+	 */
+	public Handle[] getHandles()
+		{
+		//button in x,y window: place in middle?
+		//imagewindow temporary tools: like create box etc
+		
+		return new Handle[]{};
+		}
+		
 	}
