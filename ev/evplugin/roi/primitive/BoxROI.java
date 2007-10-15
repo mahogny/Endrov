@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import org.jdom.Element;
+import org.jdom.*;
 
 import evplugin.roi.*;
 import evplugin.imageset.*;
@@ -190,12 +190,10 @@ public class BoxROI extends ROI
 	
 	
 	
-	private class SpanWidget 
+	private class SpanWidget implements ActionListener, DocumentListener
 		{
-		public SpinnerModel ms  =new SpinnerNumberModel(0.0, -1000000.0, 100000.0, 1.0);
-		public SpinnerModel me  =new SpinnerNumberModel(0.0, -1000000.0, 100000.0, 1.0);
-		public JSpinner spinnerS=new JSpinner(ms);
-		public JSpinner spinnerE=new JSpinner(me);
+		public JTextField spinnerS=new JTextField();
+		public JTextField spinnerE=new JTextField();
 		public final JCheckBox cSpan;
 		public final Span span;
 		
@@ -203,14 +201,26 @@ public class BoxROI extends ROI
 			{
 			cSpan=new JCheckBox(name);
 			this.span=span;
+			spinnerS.setText(""+span.start);
+			spinnerE.setText(""+span.end);
+			spinnerS.getDocument().addDocumentListener(this);
+			spinnerE.getDocument().addDocumentListener(this);
+			cSpan.addActionListener(this);
 			}
 
+		public void actionPerformed(ActionEvent e){apply();}
+		public void changedUpdate(DocumentEvent e){apply();}
+		public void insertUpdate(DocumentEvent e){apply();}
+		public void removeUpdate(DocumentEvent e){apply();}
 		public void apply()
 			{
-			span.all=!cSpan.isSelected();
-			span.start=(Double)spinnerS.getValue();
-			span.end=  (Double)spinnerE.getValue();
-			System.out.println("mod! "+span.all+" "+span.start+" "+span.end);
+			try
+				{
+				span.all=!cSpan.isSelected();
+				span.start=Double.parseDouble(spinnerS.getText());
+				span.end  =Double.parseDouble(spinnerE.getText());
+				}
+			catch (NumberFormatException e){}
 			}
 		}
 	
@@ -218,7 +228,7 @@ public class BoxROI extends ROI
 	/**
 	 * Get widget for editing this ROI
 	 */
-	public JPanel getWidget()
+	public JPanel getROIWidget()
 		{
 		final SpanWidget spans[]={
 				new SpanWidget("<= Frame <",regionFrames),
@@ -237,17 +247,19 @@ public class BoxROI extends ROI
 				outc=outc+s+",";
 			}
 		final JTextField fChannels=new JTextField(outc);
-		JButton bApply=new JButton("Apply");
-		bApply.addActionListener(new ActionListener()
+		fChannels.getDocument().addDocumentListener(new DocumentListener()
 			{
-			public void actionPerformed(ActionEvent e)
+			public void changedUpdate(DocumentEvent e){apply();}
+			public void insertUpdate(DocumentEvent e){apply();}
+			public void removeUpdate(DocumentEvent e){apply();}
+			public void apply()
 				{
 				for(SpanWidget w:spans)
 					w.apply();
 				StringTokenizer tok=new StringTokenizer(fChannels.getText(),",");
 				regionChannels.clear();
 				while(tok.hasMoreTokens())
-					regionChannels.add(tok.nextToken());
+					regionChannels.add(tok.nextToken().trim());
 				for(String s:regionChannels)
 					System.out.print(" "+s);
 				System.out.println("");
@@ -255,18 +267,16 @@ public class BoxROI extends ROI
 				}
 			});
 		
-		
+		//Put widgets together
 		pane.add(new JLabel("Channels"));
 		pane.add(fChannels);
-		pane.add(bApply);
-		
+		pane.add(new JLabel(""));
 		for(SpanWidget s:spans)
 			{
 			pane.add(s.spinnerS);
 			pane.add(s.cSpan);
 			pane.add(s.spinnerE);
 			}
-		
 		return pane;
 		}
 	
