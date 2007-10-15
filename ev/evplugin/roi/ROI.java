@@ -84,7 +84,7 @@ public abstract class ROI extends MetaObject
 	public void openEditWindow()
 		{
 		JFrame frame=new JFrame(EV.programName+" Edit "+getMetaTypeDesc());
-		frame.add(getWidget());
+		frame.add(getROIWidget());
 		frame.pack();
 		frame.setVisible(true);
 		}
@@ -104,7 +104,7 @@ public abstract class ROI extends MetaObject
 	public abstract String getROIDesc();
 	
 	/** Get a widget to edit the parameters of this ROI */
-	public abstract JPanel getWidget();
+	public abstract JPanel getROIWidget();
 	
 	
 	
