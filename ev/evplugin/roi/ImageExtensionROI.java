@@ -5,7 +5,6 @@ import java.awt.event.*;
 import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
-
 import evplugin.roi.primitive.*;
 
 /*
@@ -19,7 +18,7 @@ import evplugin.roi.primitive.*;
 	*/
 
 
-public class ROIImageExtension implements ImageWindowExtension
+public class ImageExtensionROI implements ImageWindowExtension
 	{
 		
 	public void newImageWindow(final ImageWindow w)
@@ -164,6 +163,13 @@ public class ROIImageExtension implements ImageWindowExtension
 		miRemoveFrame.addActionListener(listener);
 		miRemoveSlice.addActionListener(listener);
 				*/
+		
+		
+
+		
+		ImageRendererROI r=new ImageRendererROI(w);
+//		w.imageWindowTools.add(new ToolMakeNuc(w,r));
+		w.imageWindowRenderers.add(r);
 		}
 
 	
