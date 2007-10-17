@@ -168,8 +168,8 @@ public class ImageExtensionROI implements ImageWindowExtension
 
 		
 		ImageRendererROI r=new ImageRendererROI(w);
-//		w.imageWindowTools.add(new ToolMakeNuc(w,r));
 		w.imageWindowRenderers.add(r);
+		w.imageWindowTools.add(new ImageToolROI(w,r));
 		}
 
 	

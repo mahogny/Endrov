@@ -3,15 +3,18 @@ package evplugin.roi;
 import java.awt.*;
 import java.util.*;
 
-import evplugin.basicWindow.*;
+//import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
 import evplugin.metadata.*;
 import evplugin.roi.primitive.BoxROI;
-import evplugin.ev.*;
+//import evplugin.ev.*;
 
 public class ImageRendererROI implements ImageWindowRenderer
 	{
+	public static final int HANDLESIZE=3;
+
 	public ImageWindow w;
+	public TreeMap<ROI, TreeMap<String,ROI.Handle>> handleList=new TreeMap<ROI, TreeMap<String,ROI.Handle>>();
 	
 	
 	public ImageRendererROI(ImageWindow w)
@@ -33,18 +36,14 @@ public class ImageRendererROI implements ImageWindowRenderer
 	
 	public void dataChangedEvent()
 		{
-		/*
-		NucLineage lin=getLineage();
-		if(lin!=null)
-			interpNuc=lin.getInterpNuc(w.frameControl.getFrame());			//maybe move this one later
-			*/
 		}
 
 
 	private void drawROI(Graphics g, ROI roi)
 		{
 //		Graphics2D g2=(Graphics2D)g;
-		
+		handleList.clear();
+
 		double frame=w.frameControl.getFrame();
 		int z=w.frameControl.getZ();
 		String channel=w.getCurrentChannelName();
@@ -75,6 +74,18 @@ public class ImageRendererROI implements ImageWindowRenderer
 				g.drawRect(x1, y1, x2-x1, y2-y1);
 				
 				//w.w2sx(nuc.pos.x);
+				}
+
+			//Draw handles
+			TreeMap<String,ROI.Handle> roimap=new TreeMap<String,ROI.Handle>();
+			handleList.put(roi,roimap);
+			for(ROI.Handle h:roi.getHandles())
+				{
+				roimap.put(h.getID(),h);
+				int x=(int)h.getX();
+				int y=(int)h.getY();
+				g.setColor(Color.CYAN);
+				g.drawRect(x-HANDLESIZE, y-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
 				}
 			
 			}

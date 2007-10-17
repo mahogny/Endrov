@@ -2,7 +2,7 @@ package evplugin.imageset;
 
 import java.awt.image.*;
 import java.lang.ref.SoftReference;
-
+import javax.vecmath.*;
 
 /**
  * Interface to any form of image loader
@@ -63,4 +63,11 @@ public abstract class EvImage
 	 * Load image from disk.
 	 */
 	protected abstract BufferedImage loadJavaImage();
+	
+	
+	
+	public abstract Vector2d transformWorldImage(Vector2d c);
+	public abstract Vector2d transformImageWorld(Vector2d c);
+	public abstract Vector2d scaleWorldImage(Vector2d d);
+	public abstract Vector2d scaleImageWorld(Vector2d d);
 	}

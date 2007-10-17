@@ -1,6 +1,8 @@
 package evplugin.imagesetBasic;
 
 import javax.swing.*;
+import javax.vecmath.Vector2d;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
@@ -294,7 +296,7 @@ public class SequenceImageset extends Imageset
 						TreeMap<Integer, EvImage> loaders=new TreeMap<Integer, EvImage>();
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
-							loaders.put(i, new EvImageJAI(f.getAbsolutePath(),i));
+							loaders.put(i, new EvImageSimple(f.getAbsolutePath(),i));
 						ChannelImages ch=getChannel(channelName);
 						ch.imageLoader.put(frame, loaders);
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
@@ -344,7 +346,18 @@ public class SequenceImageset extends Imageset
 
 	
 	
-	
+	private static class EvImageSimple extends EvImageJAI
+		{
+		public EvImageSimple(String name)
+			{
+			super(name);
+			}
+		public Vector2d transformWorldImage(Vector2d c){return new Vector2d(c);}		
+		public Vector2d transformImageWorld(Vector2d c){return new Vector2d(c);}
+		public Vector2d scaleWorldImage(Vector2d d){return new Vector2d(d);}
+		public Vector2d scaleImageWorld(Vector2d d){return new Vector2d(d);}
+		}
+
 	
 	
 	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
@@ -359,7 +372,7 @@ public class SequenceImageset extends Imageset
 			}
 		protected EvImage internalMakeLoader(int frame, int z)
 			{
-			return new EvImageJAI("");
+			return new EvImageSimple("");
 			}
 		}
 	

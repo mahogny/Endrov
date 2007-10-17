@@ -47,6 +47,7 @@ public abstract class ROI extends MetaObject
 	 */
 	public static interface Handle
 		{
+		public String getID();
 		public double getX();
 		public double getY();
 		public void setX(double x);

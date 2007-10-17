@@ -1,6 +1,7 @@
 package evplugin.jubio;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Vector2d;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
@@ -18,7 +19,7 @@ import evplugin.imageset.EvImage;
  * Loader of images from single slice images using JAI
  * @author Johan Henriksson
  */
-public class EvImageJAI extends EvImage
+public abstract class EvImageJAI extends EvImage
 	{
 	private String filename;
 	private int slice;
@@ -147,6 +148,7 @@ public class EvImageJAI extends EvImage
 		fileEnding=fileEnding.substring(fileEnding.lastIndexOf('.')+1);
 		return fileEnding;
 		}
+	
 	
 	}
 
