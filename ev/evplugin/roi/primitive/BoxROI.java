@@ -54,7 +54,7 @@ public class BoxROI extends ROI
 	
 	public TreeSet<String> regionChannels=new TreeSet<String>(); //Empty=all
 	public Span regionFrames=new Span();
-	public Span regionX=new Span(50,200);
+	public Span regionX=new Span();
 	public Span regionY=new Span();
 	public Span regionZ=new Span();
 	
@@ -291,13 +291,20 @@ public class BoxROI extends ROI
 	public class BoxHandle implements Handle
 		{
 		private final boolean isStartX, isStartY;
-		public BoxHandle(Span sx, boolean isStartX, boolean isStartY)
+		private final String id;
+		public BoxHandle(String id, boolean isStartX, boolean isStartY)
 			{
+			this.id=id;
 			this.isStartX=isStartX;
 			this.isStartY=isStartY;
 			}
 		
 		//TODO: what about "all"?
+		
+		public String getID()
+			{
+			return id;
+			}
 		
 		public double getX()
 			{
@@ -331,8 +338,9 @@ public class BoxROI extends ROI
 		{
 		//button in x,y window: place in middle?
 		//imagewindow temporary tools: like create box etc
-		
-		return new Handle[]{};
+		return new Handle[]{
+				new BoxHandle("1",false,false),new BoxHandle("2",true,false), 
+				new BoxHandle("3",false,true), new BoxHandle("4",true,true)};
 		}
 		
 	}

@@ -1,9 +1,13 @@
 package evplugin.imagesetOST;
 
+//note: renaming channel will require all EvImageOST to be renamed as well
+
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.vecmath.Vector2d;
+
 import java.io.*;
 import java.util.*;
 
@@ -255,7 +259,7 @@ public class OstImageset extends Imageset
 						for(int z:removedImages)
 							{
 							System.out.println("rz: "+z);
-							EvImageJAI im=(EvImageJAI)oldSlices.get(z);
+							Channel.EvImageOST im=(Channel.EvImageOST)oldSlices.get(z);
 							File zdir=new File(im.jaiFileName());
 							deleteOk=deleteRecursive(zdir,deleteOk);
 							}
@@ -264,13 +268,13 @@ public class OstImageset extends Imageset
 					//Go through slices
 					for(int z:newSlices.keySet())
 						{
-						EvImageJAI newIm=(EvImageJAI)newSlices.get(z);
+						Channel.EvImageOST newIm=(Channel.EvImageOST)newSlices.get(z);
 						if(newIm.modified())
 							{
 							//Delete old image - it might have a different file extension
 							if(oldSlices!=null)
 								{
-								EvImageJAI oldIm=(EvImageJAI)oldSlices.get(z);
+								Channel.EvImageOST oldIm=(Channel.EvImageOST)oldSlices.get(z);
 								if(oldIm!=null)
 									{
 									deleteOk=dialogDelete(deleteOk);
@@ -382,8 +386,8 @@ public class OstImageset extends Imageset
 				newCh.imageLoader.put(frame, newFrames);
 				for(int z:oldFrames.keySet())
 					{
-					EvImageJAI oldIm=(EvImageJAI)oldFrames.get(z);
-					EvImageJAI newIm=new EvImageJAI(oldIm.jaiFileName(), oldIm.jaiSlice());
+					Channel.EvImageOST oldIm=(Channel.EvImageOST)oldFrames.get(z);
+					Channel.EvImageOST newIm=((Channel)newCh).newEvImage(oldIm.jaiFileName());
 					newFrames.put(z, newIm);
 					}
 				}
@@ -454,7 +458,7 @@ public class OstImageset extends Imageset
 								}
 							int slice=Integer.parseInt(s);
 							
-							loaderset.put(slice, new EvImageJAI(buildImagePath(channelName, frame, slice, ext).getAbsolutePath()));
+							loaderset.put(slice, ((Channel)c).newEvImage(buildImagePath(channelName, frame, slice, ext).getAbsolutePath()));
 							}
 						}
 					}
@@ -614,7 +618,7 @@ public class OstImageset extends Imageset
 							try
 								{
 								int slicenum=Integer.parseInt(partname);
-								loaderset.put(slicenum, new EvImageJAI(f.getAbsolutePath()));
+								loaderset.put(slicenum, newEvImage(f.getAbsolutePath()));
 								}
 							catch (NumberFormatException e)
 								{
@@ -629,10 +633,47 @@ public class OstImageset extends Imageset
 
 		protected EvImage internalMakeLoader(int frame, int z)
 			{
-			return new EvImageJAI(buildImagePath(getMeta().name, frame, z, ".png").getAbsolutePath()); //png?
+			return newEvImage(buildImagePath(getMeta().name, frame, z, ".png").getAbsolutePath()); //png?
 			}
 		
+		
+		public EvImageOST newEvImage(String filename)
+			{
+			return new EvImageOST(getMeta().name, filename);
+			}
+		
+		
+		private class EvImageOST extends EvImageJAI
+			{
+			public String channel;
+			public EvImageOST(String channel, String filename)
+				{
+				super(filename);
+				this.channel=channel;
+				}
+			public Vector2d transformWorldImage(Vector2d c)
+				{
+				
+				////////////////////////////TODO
+				return new Vector2d(c);
+				}
+			public Vector2d transformImageWorld(Vector2d c)
+				{
+				return new Vector2d(c);
+				}
+			public Vector2d scaleWorldImage(Vector2d d)
+				{
+				return new Vector2d(d);
+				}
+			public Vector2d scaleImageWorld(Vector2d d)
+				{
+				return new Vector2d(d);
+				}
+			}
 		}
+	
+	
+	
 	
 	}
 

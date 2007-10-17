@@ -1,6 +1,8 @@
 package evplugin.imagesetBasic;
 
 import javax.swing.*;
+import javax.vecmath.Vector2d;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
@@ -264,7 +266,7 @@ public class NamebasedImageset extends Imageset
 							}
 						
 						//Plug EV
-						loaders.put(slice, new EvImageJAI(f.getAbsolutePath()));
+						loaders.put(slice, new EvImageSimple(f.getAbsolutePath()));
 						rebuildLog+=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
 						}
 					else
@@ -316,7 +318,17 @@ public class NamebasedImageset extends Imageset
 	
 	
 	
-	
+	private static class EvImageSimple extends EvImageJAI
+		{
+		public EvImageSimple(String name)
+			{
+			super(name);
+			}
+		public Vector2d transformWorldImage(Vector2d c){return new Vector2d(c);}		
+		public Vector2d transformImageWorld(Vector2d c){return new Vector2d(c);}
+		public Vector2d scaleWorldImage(Vector2d d){return new Vector2d(d);}
+		public Vector2d scaleImageWorld(Vector2d d){return new Vector2d(d);}
+		}
 	
 	
 	
@@ -332,7 +344,7 @@ public class NamebasedImageset extends Imageset
 			}
 		protected EvImage internalMakeLoader(int frame, int z)
 			{
-			return new EvImageJAI("");
+			return new EvImageSimple("");
 			}
 		}
 	}
