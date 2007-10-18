@@ -4,17 +4,15 @@ package evplugin.roi;
 //import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
-
 import org.jdom.Element;
 
 import evplugin.imageWindow.ImageWindow;
 import evplugin.imageset.*;
-import evplugin.metadata.*;
+import evplugin.data.*;
 import evplugin.ev.*;
 
-public abstract class ROI extends MetaObject
+public abstract class ROI extends EvObject
 	{
 	
 	/******************************************************************************************************
@@ -58,9 +56,9 @@ public abstract class ROI extends MetaObject
 	 *            Class: XML Reader and writer of this type of meta object                                *
 	 *****************************************************************************************************/
 	
-	public static class ImagesetMetaObjectExtension implements MetaObjectExtension
+	public static class ImagesetMetaObjectExtension implements EvObjectType
 		{
-		public MetaObject extractObjects(Element e)
+		public EvObject extractObjects(Element e)
 			{
 			return null;
 			}

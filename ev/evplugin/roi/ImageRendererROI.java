@@ -4,8 +4,8 @@ import java.awt.*;
 import java.util.*;
 
 //import evplugin.basicWindow.*;
+import evplugin.data.*;
 import evplugin.imageWindow.*;
-import evplugin.metadata.*;
 import evplugin.roi.primitive.BoxROI;
 //import evplugin.ev.*;
 
@@ -28,7 +28,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 	 */
 	public void draw(Graphics g)
 		{
-		for(MetaObject ob:w.getImageset().metaObject.values())
+		for(EvObject ob:w.getImageset().metaObject.values())
 			if(ob instanceof ROI)
 				drawROI(g, (ROI)ob);
 		}

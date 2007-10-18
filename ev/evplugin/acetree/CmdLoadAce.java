@@ -2,9 +2,9 @@ package evplugin.acetree;
 import java.util.*;
 
 import evplugin.basicWindow.*;
-import evplugin.metadata.MetaObject;
-import evplugin.metadata.Metadata;
-import evplugin.metadata.XmlMetadata;
+import evplugin.data.EvObject;
+import evplugin.data.EvData;
+import evplugin.data.EvDataXML;
 import evplugin.script.*;
 
 /**
@@ -24,11 +24,11 @@ public class CmdLoadAce extends Command
 			AceTree a=new AceTree();
 			if(a.load(v.stringValue()))
 				{
-				Metadata m=new XmlMetadata();
-				MetaObject ob=a.getMeta();
+				EvData m=new EvDataXML();
+				EvObject ob=a.getMeta();
 				m.addMetaObject(ob);
 				
-				Metadata.metadata.add(m);
+				EvData.metadata.add(m);
 				
 				BasicWindow.updateWindows();
 				return new ExpVal(m); //really m?

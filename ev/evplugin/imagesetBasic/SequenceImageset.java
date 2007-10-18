@@ -296,7 +296,7 @@ public class SequenceImageset extends Imageset
 						TreeMap<Integer, EvImage> loaders=new TreeMap<Integer, EvImage>();
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
-							loaders.put(i, new EvImageSimple(f.getAbsolutePath(),i));
+							loaders.put(i, new EvImageSimple(channelName, f.getAbsolutePath(),i));
 						ChannelImages ch=getChannel(channelName);
 						ch.imageLoader.put(frame, loaders);
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
@@ -345,18 +345,34 @@ public class SequenceImageset extends Imageset
 		}
 
 	
-	
-	private static class EvImageSimple extends EvImageJAI
+	///////////////////// TODO REPLACE
+	private class EvImageSimple extends EvImageJAI
+	{
+	public String channel;
+	public EvImageSimple(String channel, String name)
 		{
-		public EvImageSimple(String name)
-			{
-			super(name);
-			}
-		public Vector2d transformWorldImage(Vector2d c){return new Vector2d(c);}		
-		public Vector2d transformImageWorld(Vector2d c){return new Vector2d(c);}
-		public Vector2d scaleWorldImage(Vector2d d){return new Vector2d(d);}
-		public Vector2d scaleImageWorld(Vector2d d){return new Vector2d(d);}
+		super(name);
+		this.channel=channel;
 		}
+	public EvImageSimple(String channel, String name, int z)
+		{
+		super(name,z);
+		this.channel=channel;
+		}
+	public Vector2d transformWorldImage(Vector2d c)
+		{
+		ImagesetMeta.Channel chanMeta=meta.getChannel(channel);
+		
+		
+		
+		
+		return new Vector2d(c);
+		}		
+	public Vector2d transformImageWorld(Vector2d c){return new Vector2d(c);}
+	public Vector2d scaleWorldImage(Vector2d d){return new Vector2d(d);}
+	public Vector2d scaleImageWorld(Vector2d d){return new Vector2d(d);}
+	}
+
 
 	
 	
@@ -372,7 +388,7 @@ public class SequenceImageset extends Imageset
 			}
 		protected EvImage internalMakeLoader(int frame, int z)
 			{
-			return new EvImageSimple("");
+			return new EvImageSimple(getMeta().name,"");
 			}
 		}
 	

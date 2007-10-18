@@ -5,7 +5,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import org.jdom.*;
 
-import evplugin.metadata.*;
+import evplugin.data.*;
 
 /**
  * Tree model showing the XML of a custom meta object

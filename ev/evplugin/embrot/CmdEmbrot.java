@@ -5,8 +5,8 @@ import org.jdom.*;
 
 import evplugin.basicWindow.*;
 import evplugin.script.*;
-import evplugin.metadata.*;
 import evplugin.nuc.*;
+import evplugin.data.*;
 import evplugin.ev.*;
 
 /**
@@ -44,7 +44,7 @@ public class CmdEmbrot extends Command
 			
 			
 			
-			Metadata.getSelectedMetadata().addMetaObject(embrot);
+			EvData.getSelectedMetadata().addMetaObject(embrot);
 			//Metadata.getSelectedMetadata().addMetaObject(linrot);
 			
 			//Rotate
@@ -64,10 +64,10 @@ public class CmdEmbrot extends Command
 		return null;
 		}
 	
-	public static void dumprot(String name, Metadata rec)
+	public static void dumprot(String name, EvData rec)
 		{
 		
-		for(MetaObject ob:rec.metaObject.values())
+		for(EvObject ob:rec.metaObject.values())
 			if(ob instanceof NucLineage)
 				{
 				NucLineage lin=(NucLineage)ob;
@@ -176,7 +176,7 @@ public class CmdEmbrot extends Command
 		}
 	
 	
-	public static void saveFile(String name, String filename, Metadata rec, NucLineage lin)
+	public static void saveFile(String name, String filename, EvData rec, NucLineage lin)
 		{
 		try
 			{

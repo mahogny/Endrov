@@ -6,13 +6,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import evplugin.data.EvData;
 import evplugin.ev.*;
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.imageset.*;
 import evplugin.keyBinding.KeyBinding;
 import evplugin.keyBinding.ScriptBinding;
-import evplugin.metadata.Metadata;
 import org.jdom.*;
 
 /**
@@ -399,7 +399,7 @@ public class ImageWindow extends BasicWindow
 				{
 				if(!(rec instanceof EmptyImageset))
 					{
-					Metadata.metadata.remove(rec);
+					EvData.metadata.remove(rec);
 					Log.printLog("Closing "+rec.getMetadataName());
 					}
 				BasicWindow.updateWindows();

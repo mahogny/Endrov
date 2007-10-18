@@ -12,11 +12,11 @@ import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.EvObject;
+import evplugin.data.EvData;
 import evplugin.ev.EV;
 import evplugin.ev.PersonalConfig;
 import evplugin.imageWindow.*;
-import evplugin.metadata.MetaObject;
-import evplugin.metadata.Metadata;
 import org.jdom.*;
 
 //TODO: auto-replicate down to metadata
@@ -135,7 +135,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	/**
 	 * For combo box - which meta objects to list
 	 */
-	public boolean comboFilterMetaObjectCallback(MetaObject ob)
+	public boolean comboFilterMetaObjectCallback(EvObject ob)
 		{
 		return ob instanceof FrameTime;
 		}
@@ -143,7 +143,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	/**
 	 * Add special options for the combo box
 	 */
-	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final Metadata meta)
+	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final EvData meta)
 		{
 		ObjectCombo.Alternative a=new ObjectCombo.Alternative(meta, null, "<Create frame/time>",new ActionListener()
 			{

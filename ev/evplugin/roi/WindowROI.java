@@ -4,9 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import evplugin.data.*;
 import evplugin.ev.*;
 //import evplugin.imageset.*;
-import evplugin.metadata.*;
 import evplugin.basicWindow.*;
 import org.jdom.*;
 
@@ -59,7 +59,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 
 	
 	private MetaCombo metaCombo=new MetaCombo(this, false);
-	public boolean comboFilterMetadataCallback(Metadata meta)
+	public boolean comboFilterMetadataCallback(EvData meta)
 		{
 		return true;
 		}

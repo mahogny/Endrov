@@ -2,9 +2,9 @@ package evplugin.shell;
 
 import javax.media.opengl.GL;
 
+import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.modelWindow.*;
-import evplugin.metadata.*;
 
 public class ShellModelHook implements ModelWindowHook
 	{
@@ -41,9 +41,9 @@ public class ShellModelHook implements ModelWindowHook
 	
 	public void displayFinal(GL gl)
 		{
-		Metadata metadata=w.view.getMetadata();
+		EvData metadata=w.view.getMetadata();
 		if(metadata!=null)
-			for(MetaObject ob:metadata.metaObject.values())
+			for(EvObject ob:metadata.metaObject.values())
 				{
 				if(ob instanceof Shell)
 					renderShell(gl, (Shell)ob);

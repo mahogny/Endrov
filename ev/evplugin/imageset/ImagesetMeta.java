@@ -2,13 +2,12 @@ package evplugin.imageset;
 
 import org.jdom.*;
 import java.util.*;
+import javax.swing.*;
 
-import javax.swing.JMenu;
-
+import evplugin.data.*;
 import evplugin.imageWindow.*;
-import evplugin.metadata.*;
 
-public class ImagesetMeta extends MetaObject
+public class ImagesetMeta extends EvObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -19,17 +18,18 @@ public class ImagesetMeta extends MetaObject
 	static
 		{
 		ImageWindow.addImageWindowExtension(new ImagesetImageExtension());
-		Metadata.extensions.put(metaType,new ImagesetMetaObjectExtension());
+		EvData.extensions.put(metaType,new ImagesetMetaObjectExtension());
+		
+		
 		}
 
-	
 	/******************************************************************************************************
 	 *            Class: XML Reader and writer of this type of meta object                                *
 	 *****************************************************************************************************/
 	
-	public static class ImagesetMetaObjectExtension implements MetaObjectExtension
+	public static class ImagesetMetaObjectExtension implements EvObjectType
 		{
-		public MetaObject extractObjects(Element e)
+		public EvObject extractObjects(Element e)
 			{
 			ImagesetMeta meta=new ImagesetMeta();
 			
@@ -306,6 +306,7 @@ public class ImagesetMeta extends MetaObject
 		
 		}
 	
+
 	/**
 	 * Save down frame data
 	 */

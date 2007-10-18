@@ -1,8 +1,8 @@
-package evplugin.metadata.cmd;
+package evplugin.data.cmd;
 import java.util.*;
 
+import evplugin.data.EvData;
 import evplugin.ev.Log;
-import evplugin.metadata.Metadata;
 import evplugin.script.*;
 
 /**
@@ -14,7 +14,7 @@ public class CmdMSEL extends Command
 	public int numArg()	{return 1;}
 	public Exp exec(Vector<Exp> arg) throws Exception
 		{
-		Metadata m=Metadata.getSelectedMetadata();
+		EvData m=EvData.getSelectedMetadata();
 		Exp e=arg.get(1);
 		if(e instanceof ExpVal && ((ExpVal)e).o instanceof Integer)
 			{

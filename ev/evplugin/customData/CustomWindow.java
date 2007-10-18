@@ -12,8 +12,8 @@ import javax.swing.filechooser.FileFilter;
 
 
 import evplugin.basicWindow.*;
+import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.metadata.*;
 
 import org.jdom.*;
 
@@ -139,14 +139,14 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 	/**
 	 * For combo box - which meta objects to list
 	 */
-	public boolean comboFilterMetaObjectCallback(MetaObject ob)
+	public boolean comboFilterMetaObjectCallback(EvObject ob)
 		{
 		return ob instanceof CustomObject;
 		}
 	/**
 	 * Add special options for the combo box, every object
 	 */
-	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final Metadata meta)
+	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final EvData meta)
 		{
 		ObjectCombo.Alternative a=new ObjectCombo.Alternative(meta, null, "<New object>", new ActionListener()
 			{
@@ -336,11 +336,11 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		else if(e.getSource()==bImport)
 			{
 			JFileChooser fc=getFileChooser();
-			fc.setCurrentDirectory(new File(Metadata.lastDataPath));
+			fc.setCurrentDirectory(new File(EvData.lastDataPath));
 			int ret=fc.showOpenDialog(null);
 			if(ret==JFileChooser.APPROVE_OPTION)
 				{
-				Metadata.lastDataPath=fc.getSelectedFile().getParent();
+				EvData.lastDataPath=fc.getSelectedFile().getParent();
 				File filename=fc.getSelectedFile();
 				
 				String elementName=JOptionPane.showInputDialog("Name of new elements");

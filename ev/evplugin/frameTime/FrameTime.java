@@ -7,7 +7,7 @@ import java.util.Vector;
 
 import javax.swing.JMenu;
 
-import evplugin.metadata.*;
+import evplugin.data.*;
 import evplugin.ev.*;
 
 import org.jdom.*;
@@ -15,7 +15,7 @@ import org.jdom.*;
 //import javax.swing.*;
 //this will replace FrameTime later on
 
-public class FrameTime extends MetaObject
+public class FrameTime extends EvObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -28,9 +28,9 @@ public class FrameTime extends MetaObject
 	public static void initPlugin() {}
 	static
 		{
-		Metadata.extensions.put(metaType,new MetaObjectExtension()
+		EvData.extensions.put(metaType,new EvObjectType()
 			{
-			public MetaObject extractObjects(Element e)
+			public EvObject extractObjects(Element e)
 				{
 				FrameTime meta=new FrameTime();
 				

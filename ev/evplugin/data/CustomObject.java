@@ -1,4 +1,4 @@
-package evplugin.metadata;
+package evplugin.data;
 
 import javax.swing.*;
 import org.jdom.*;
@@ -7,7 +7,7 @@ import org.jdom.*;
  * Meta object of unknown/custom type. Either real custom data or corresponding plugin is missing
  * @author Johan Henriksson
  */
-public class CustomObject extends MetaObject
+public class CustomObject extends EvObject
 	{
 	public final Element xml;
 	public final String metaType;

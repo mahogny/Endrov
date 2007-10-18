@@ -11,11 +11,11 @@ import javax.vecmath.Vector2d;
 import java.io.*;
 import java.util.*;
 
+import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.basicWindow.*;
 import evplugin.imageset.*;
 import evplugin.jubio.EvImageJAI;
-import evplugin.metadata.*;
 import evplugin.script.*;
 
 
@@ -34,7 +34,7 @@ public class OstImageset extends Imageset
 		{
 		Script.addCommand("dost", new CmdDOST());
 		
-		MetadataBasic.extensions.add(new MetadataExtension()
+		EvDataBasic.extensions.add(new DataMenuExtension()
 			{
 			public void buildOpen(JMenu menu)
 				{
@@ -55,13 +55,13 @@ public class OstImageset extends Imageset
 							{
 							JFileChooser chooser = new JFileChooser();
 					    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					    if(Metadata.lastDataPath!=null)
-					    	chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
+					    if(EvData.lastDataPath!=null)
+					    	chooser.setCurrentDirectory(new File(EvData.lastDataPath));
 					    int returnVal = chooser.showOpenDialog(null); //null=window
 					    if(returnVal == JFileChooser.APPROVE_OPTION)
 					    	{
 					    	String filename=chooser.getSelectedFile().getAbsolutePath();
-					    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
+					    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
 					    	load(filename);
 					    	}
 							}
@@ -100,7 +100,7 @@ public class OstImageset extends Imageset
 			    	loadingWindow.repaint();
 			
 			    	//Load imageset and add to list
-			    	try {Metadata.metadata.add(new OstImageset(filename));}
+			    	try {EvData.metadata.add(new OstImageset(filename));}
 						catch (Exception e){}
 						
 						//Close down dialog, update windows
@@ -112,7 +112,7 @@ public class OstImageset extends Imageset
 				miLoadVWBImageset.addActionListener(listener);
 				miLoadVWBImagesetPath.addActionListener(listener);
 				}
-			public void buildSave(JMenu menu, Metadata meta)
+			public void buildSave(JMenu menu, EvData meta)
 				{
 				}
 			});

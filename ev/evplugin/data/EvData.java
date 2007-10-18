@@ -1,4 +1,4 @@
-package evplugin.metadata;
+package evplugin.data;
 
 import java.util.*;
 import java.io.*;
@@ -7,11 +7,11 @@ import org.jdom.input.*;
 import org.jdom.output.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.cmd.*;
 import evplugin.ev.*;
-import evplugin.metadata.cmd.*;
 import evplugin.script.*;
 
-public abstract class Metadata
+public abstract class EvData
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -26,13 +26,13 @@ public abstract class Metadata
 		Script.addCommand("dunl", new CmdDUNL());
 		Script.addCommand("msel", new CmdMSEL());
 		Script.addCommand("mls",  new CmdMLS());
-		BasicWindow.addBasicWindowExtension(new MetadataBasic());
+		BasicWindow.addBasicWindowExtension(new EvDataBasic());
 		}
 	
-	public static TreeMap<String,MetaObjectExtension> extensions=new TreeMap<String,MetaObjectExtension>();
-	public static Vector<Metadata> metadata=new Vector<Metadata>();
+	public static TreeMap<String,EvObjectType> extensions=new TreeMap<String,EvObjectType>();
+	public static Vector<EvData> metadata=new Vector<EvData>();
 
-	public static void addMetadata(Metadata m)
+	public static void addMetadata(EvData m)
 		{
 		metadata.add(m);
 		}
@@ -44,7 +44,7 @@ public abstract class Metadata
 	/**
 	 * Get currently selected metadata or null
 	 */
-	public static Metadata getSelectedMetadata()
+	public static EvData getSelectedMetadata()
 		{
 		if(selectedMetadataId>=0 && selectedMetadataId<metadata.size())
 			return metadata.get(selectedMetadataId);
@@ -59,7 +59,7 @@ public abstract class Metadata
 	 *****************************************************************************************************/
 
 	/** All meta objects */
-	public HashMap<Integer,MetaObject> metaObject=new HashMap<Integer,MetaObject>();
+	public HashMap<Integer,EvObject> metaObject=new HashMap<Integer,EvObject>();
 
 	/** Flag if the metadata container itself has been modified */
 	private boolean coreMetadataModified=false;
@@ -75,7 +75,7 @@ public abstract class Metadata
 	/**
 	 * Get currently selected metadata or null
 	 */
-	public MetaObject getSelectedMetaobject()
+	public EvObject getSelectedMetaobject()
 		{
 		return metaObject.get(selectedMetaobjectId);
 		}
@@ -104,7 +104,7 @@ public abstract class Metadata
 		else
 			{
 			coreMetadataModified=false;
-			for(MetaObject ob:metaObject.values())
+			for(EvObject ob:metaObject.values())
 				ob.metaObjectModified=false;
 			}
 		}
@@ -115,7 +115,7 @@ public abstract class Metadata
 	public boolean isMetadataModified()
 		{
 		boolean modified=coreMetadataModified;
-		for(MetaObject ob:metaObject.values())
+		for(EvObject ob:metaObject.values())
 			modified|=ob.metaObjectModified;
 		return modified;
 		}
@@ -123,7 +123,7 @@ public abstract class Metadata
 	/**
 	 * Get a meta object by ID
 	 */
-	public MetaObject getMetaObject(int i)
+	public EvObject getMetaObject(int i)
 		{
 		return metaObject.get(i);
 		}
@@ -131,7 +131,7 @@ public abstract class Metadata
 	/**
 	 * Put a meta object into the collection
 	 */
-	public void addMetaObject(MetaObject o)
+	public void addMetaObject(EvObject o)
 		{
 		int i=1;
 		while(metaObject.get(i)!=null)
@@ -159,8 +159,8 @@ public abstract class Metadata
   		for(Object ochild:children)
   			{
   			Element child=(Element)ochild;
-  			MetaObjectExtension ext=extensions.get(child.getName());
-  			MetaObject o;
+  			EvObjectType ext=extensions.get(child.getName());
+  			EvObject o;
   			if(ext==null)
   				{
   				o=new CustomObject(child);
@@ -196,7 +196,7 @@ public abstract class Metadata
 		Document doc = new Document(ostElement);
 		for(int id:metaObject.keySet())
 			{
-			MetaObject o=metaObject.get(id);
+			EvObject o=metaObject.get(id);
 			Element el=new Element("TEMPNAME");
 			el.setAttribute("id",""+id);
 			o.saveMetadata(el);

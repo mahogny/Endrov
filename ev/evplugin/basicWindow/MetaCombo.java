@@ -3,8 +3,8 @@ package evplugin.basicWindow;
 import java.awt.event.*;
 import javax.swing.*;
 
+import evplugin.data.*;
 import evplugin.imageset.*;
-import evplugin.metadata.*;
 
 /**
  * A combobox with all channels
@@ -19,7 +19,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 	private final comboFilterMetadata filterMeta;
 	
 	//Needed to unselect special alternatives after user selected them
-	private Metadata curMeta=new EmptyMetadata();
+	private EvData curMeta=new EvDataEmpty();
 
 	
 	
@@ -93,7 +93,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 	private void setSelection()
 		{
 		//If this list does not allow that no imageset is selected then just take one
-		if(!addEmpty && curMeta instanceof EmptyMetadata && getItemCount()>0)
+		if(!addEmpty && curMeta instanceof EvDataEmpty && getItemCount()>0)
 			curMeta=((Alternative)getItemAt(0)).meta;
 		
 		//Reselect old item in list
@@ -114,7 +114,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 		if(addEmpty)
 			addItem(new Alternative(null));
 		//Add other metadata
-		for(Metadata thisMeta:Metadata.metadata)
+		for(EvData thisMeta:EvData.metadata)
 			if(filterMeta==null || filterMeta.comboFilterMetadataCallback(thisMeta))
 				addItem(new Alternative(thisMeta));
 		}
@@ -125,7 +125,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 	 * Get a pointer directly to the meta object
 	 * @return Object or null
 	 */
-	public Metadata getMeta()
+	public EvData getMeta()
 		{
 		Alternative a=(Alternative)getSelectedItem();
 		if(a==null)
@@ -140,7 +140,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 	 */
 	public Imageset getImageset()
 		{		
-		Metadata rec=getImagesetNull();
+		EvData rec=getImagesetNull();
 		if(rec==null)
 			return new EmptyImageset();
 		else
@@ -163,13 +163,13 @@ public class MetaCombo extends JComboBox implements ActionListener
 	
 	public static interface comboFilterMetadata
 		{
-		public boolean comboFilterMetadataCallback(Metadata meta);
+		public boolean comboFilterMetadataCallback(EvData meta);
 		}
 	
 	public static class Alternative
 		{
-		public final Metadata meta;
-		public Alternative(Metadata meta)
+		public final EvData meta;
+		public Alternative(EvData meta)
 			{
 			this.meta=meta;
 			}

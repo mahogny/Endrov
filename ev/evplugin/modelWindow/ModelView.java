@@ -11,9 +11,9 @@ import javax.media.opengl.glu.*;
 import com.sun.opengl.util.j2d.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.nuc.*;
-import evplugin.metadata.*;
 
 
 //NEED GLJPanel
@@ -56,8 +56,8 @@ public class ModelView extends GLCanvas
 	
 	
 	/** Get metadata. Never returns null */
-	Metadata meta=new EmptyMetadata();
-	public Metadata getMetadata()
+	EvData meta=new EvDataEmpty();
+	public EvData getMetadata()
 		{
 		return meta;
 		}

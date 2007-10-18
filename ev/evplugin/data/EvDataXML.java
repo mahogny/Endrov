@@ -1,4 +1,4 @@
-package evplugin.metadata;
+package evplugin.data;
 
 import java.io.*;
 
@@ -12,7 +12,7 @@ import evplugin.basicWindow.BasicWindow;
  * Metadata stored in an ordinary XML-file
  * @author Johan Henriksson
  */
-public class XmlMetadata extends Metadata
+public class EvDataXML extends EvData
 	{
 	public File filename=null;
 	
@@ -29,11 +29,11 @@ public class XmlMetadata extends Metadata
 		}
 
 	
-	public XmlMetadata()
+	public EvDataXML()
 		{
 		}
 	
-	public XmlMetadata(String filename)
+	public EvDataXML(String filename)
 		{
 		loadXmlMetadata(filename);
 		this.filename=new File(filename);
@@ -48,12 +48,12 @@ public class XmlMetadata extends Metadata
 		if(filename!=null)
 			fc.setSelectedFile(filename);
 		else
-			fc.setCurrentDirectory(new File(Metadata.lastDataPath));
+			fc.setCurrentDirectory(new File(EvData.lastDataPath));
 //			fc.setCurrentDirectory(filename.getParentFile());
 		int ret=fc.showSaveDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			Metadata.lastDataPath=fc.getSelectedFile().getParent();
+			EvData.lastDataPath=fc.getSelectedFile().getParent();
 			filename=fc.getSelectedFile();
 			if(!filename.getName().endsWith(".xml"))
 				filename=new File(filename.getAbsolutePath()+".xml");
@@ -70,14 +70,14 @@ public class XmlMetadata extends Metadata
 	public static void loadMeta()
 		{
 		JFileChooser fc=getFileChooser();
-		fc.setCurrentDirectory(new File(Metadata.lastDataPath));
+		fc.setCurrentDirectory(new File(EvData.lastDataPath));
 		int ret=fc.showOpenDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			Metadata.lastDataPath=fc.getSelectedFile().getParent();
+			EvData.lastDataPath=fc.getSelectedFile().getParent();
 			File filename=fc.getSelectedFile();
-			XmlMetadata m=new XmlMetadata(filename.getAbsolutePath());
-			Metadata.addMetadata(m);
+			EvDataXML m=new EvDataXML(filename.getAbsolutePath());
+			EvData.addMetadata(m);
 			BasicWindow.updateWindows();
 			}
 		}

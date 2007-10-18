@@ -1,9 +1,9 @@
-package evplugin.metadata.cmd;
+package evplugin.data.cmd;
 import java.util.*;
 
 import evplugin.basicWindow.*;
-import evplugin.metadata.Metadata;
-import evplugin.metadata.XmlMetadata;
+import evplugin.data.EvData;
+import evplugin.data.EvDataXML;
 import evplugin.script.*;
 
 /**
@@ -20,8 +20,8 @@ public class CmdDXML extends Command
 			{
 			ExpVal v=(ExpVal)e;
 
-			Metadata m=new XmlMetadata(v.stringValue());
-			Metadata.metadata.add(m);
+			EvData m=new EvDataXML(v.stringValue());
+			EvData.metadata.add(m);
 			
 			BasicWindow.updateWindows();
 			

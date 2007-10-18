@@ -9,10 +9,10 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.imagesetOST.OstImageset;
 import evplugin.imagesetOST.SaveOSTThread;
-import evplugin.metadata.*;
 
 import org.jdom.*;
 
@@ -30,17 +30,45 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	public static void initPlugin() {}
 	static
 		{
-		BasicWindow.addBasicWindowExtension(new ImagesetBasic());
+		/******************************************************************************************************
+		 *                               BasicWindow extension                                                *
+		 *****************************************************************************************************/
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(final BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new BasicWindowHook()
+					{
+					public void createMenus(BasicWindow w)
+						{
+						JMenuItem miImagesetMeta=new JMenuItem("Imageset Meta");
+						w.addMenuWindow(miImagesetMeta);
+						miImagesetMeta.addActionListener(new ActionListener()
+							{public void actionPerformed(ActionEvent e){new MetaWindow();}});
+						buildMenu(w);
+						}
+
+					public void buildMenu(BasicWindow w)
+						{
+						}
+					});
+				}
+			});
+		
+
+		/******************************************************************************************************
+		 *                               Personal Config                                                      *
+		 *****************************************************************************************************/
 		EV.personalConfigLoaders.put("lastImagesetPath",new PersonalConfig()
 			{
 			public void loadPersonalConfig(Element e)
 				{
-				Metadata.lastDataPath=e.getAttributeValue("path");
+				EvData.lastDataPath=e.getAttributeValue("path");
 				}
 			public void savePersonalConfig(Element root)
 				{
 				Element e=new Element("lastImagesetPath");
-				e.setAttribute("path",Metadata.lastDataPath);
+				e.setAttribute("path",EvData.lastDataPath);
 				root.addContent(e);
 				}
 			});
@@ -62,7 +90,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					e1.printStackTrace();
 					}
 				
-				Metadata.lastDataPath=e.getAttributeValue("path");
+				EvData.lastDataPath=e.getAttributeValue("path");
 				}
 			public void savePersonalConfig(Element root)
 				{
@@ -70,13 +98,16 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			});
 		
 		
-		MetadataBasic.extensions.add(new MetadataExtension()
+		/******************************************************************************************************
+		 *                               Data menu extension                                                  *
+		 *****************************************************************************************************/
+		EvDataBasic.extensions.add(new DataMenuExtension()
 			{
 			public void buildOpen(JMenu menu)
 				{
 				
 				}
-			public void buildSave(JMenu menu, final Metadata meta)
+			public void buildSave(JMenu menu, final EvData meta)
 				{
 				if(meta instanceof OstImageset)
 					{
@@ -104,7 +135,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 									{
 									double quality=Double.parseDouble(qualitys);
 									JFileChooser chooser = new JFileChooser();
-									chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
+									chooser.setCurrentDirectory(new File(EvData.lastDataPath));
 									int returnVal = chooser.showSaveDialog(null);
 									if(returnVal == JFileChooser.APPROVE_OPTION)
 										{
@@ -133,7 +164,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	
 	
 	private MetaCombo metaCombo=new MetaCombo(this, false);
-	public boolean comboFilterMetadataCallback(Metadata meta)
+	public boolean comboFilterMetadataCallback(EvData meta)
 		{
 		return meta instanceof Imageset;
 		}

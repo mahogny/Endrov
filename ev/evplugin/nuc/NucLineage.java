@@ -9,16 +9,16 @@ import evplugin.basicWindow.BasicWindow;
 import evplugin.imageWindow.ImageWindow;
 import evplugin.imageWindow.ImageWindowExtension;
 import evplugin.keyBinding.KeyBinding;
-import evplugin.metadata.*;
 import evplugin.modelWindow.ModelWindow;
 import evplugin.script.*;
+import evplugin.data.*;
 import evplugin.ev.*;
 
 /**
  * Meta object: Nuclei and a lineage
  * @author Johan Henriksson
  */
-public class NucLineage extends MetaObject implements Cloneable
+public class NucLineage extends EvObject implements Cloneable
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -57,9 +57,9 @@ public class NucLineage extends MetaObject implements Cloneable
 
 		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
 		
-		Metadata.extensions.put(metaType,new MetaObjectExtension()
+		EvData.extensions.put(metaType,new EvObjectType()
 			{
-			public MetaObject extractObjects(Element e)
+			public EvObject extractObjects(Element e)
 				{
 				NucLineage meta=new NucLineage();
 				try
@@ -169,11 +169,11 @@ public class NucLineage extends MetaObject implements Cloneable
 	/**
 	 * Get _one_ lineage object or null. Maybe remove/refine later 
 	 */
-	public static NucLineage getOneLineage(Metadata meta)
+	public static NucLineage getOneLineage(EvData meta)
 		{
 		if(meta!=null)
 			{
-			for(MetaObject ob:meta.metaObject.values())
+			for(EvObject ob:meta.metaObject.values())
 				if(ob instanceof NucLineage)
 					return (NucLineage)ob;
 			}
@@ -492,15 +492,15 @@ public class NucLineage extends MetaObject implements Cloneable
 	 */
 	public static NucLineage getSelectedLineage()
 		{
-		Metadata m=Metadata.getSelectedMetadata();
+		EvData m=EvData.getSelectedMetadata();
 		if(m!=null)
 			{
-			MetaObject ob=m.getSelectedMetaobject();
+			EvObject ob=m.getSelectedMetaobject();
 			if(ob instanceof NucLineage)
 				return (NucLineage)ob;
 			else
 				{
-				for(MetaObject ob2:m.metaObject.values())
+				for(EvObject ob2:m.metaObject.values())
 					if(ob2 instanceof NucLineage)
 						return (NucLineage)ob2;
 				return null;

@@ -5,9 +5,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.imageset.*;
-import evplugin.metadata.*;
 //import evplugin.sql.*;
 import evplugin.basicWindow.*;
 import evplugin.basicWindow.ObjectCombo.Alternative;
@@ -58,11 +58,11 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 		}
 		*/
 
-	public boolean comboFilterMetaObjectCallback(MetaObject ob)
+	public boolean comboFilterMetaObjectCallback(EvObject ob)
 		{
 		return ob instanceof Shell;
 		}
-	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, Metadata meta)
+	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, EvData meta)
 		{
 		return new Alternative[]{};
 		}

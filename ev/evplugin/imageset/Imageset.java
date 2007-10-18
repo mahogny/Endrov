@@ -3,13 +3,14 @@ package evplugin.imageset;
 import java.io.*;
 import java.util.*;
 import org.jdom.*;
-import evplugin.metadata.*;
+
+import evplugin.data.*;
 
 /**
  * Interface to one imageset + metadata
  * @author Johan Henriksson
  */
-public abstract class Imageset extends Metadata
+public abstract class Imageset extends EvData
 	{
 	/** Name of imageset */
 	protected String imageset;

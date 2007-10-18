@@ -3,9 +3,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
+import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.imagesetOST.*;
-import evplugin.metadata.*;
 import evplugin.nuc.*;
 import java.util.*;
 
@@ -39,7 +39,7 @@ public class BatchRot2
 		System.out.println("Imageset "+file.getPath());
 		OstImageset ost=new OstImageset(file.getPath());
 
-		for(MetaObject ob:ost.metaObject.values())
+		for(EvObject ob:ost.metaObject.values())
 			if(ob instanceof NucLineage)
 				{
 				File outname=new File(dataDir+file.getName()+".txt");
