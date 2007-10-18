@@ -2,7 +2,6 @@ package evplugin.imageset;
 
 import java.awt.image.*;
 import java.lang.ref.SoftReference;
-import javax.vecmath.*;
 
 /**
  * Interface to any form of image loader
@@ -44,7 +43,9 @@ public abstract class EvImage
 			return im;
 		}
 	
-	
+	/**
+	 * Check if this memory has been modified since it was loaded into memory
+	 */
 	public boolean modified()
 		{
 		return im!=null;
@@ -66,8 +67,24 @@ public abstract class EvImage
 	
 	
 	
-	public abstract Vector2d transformWorldImage(Vector2d c);
-	public abstract Vector2d transformImageWorld(Vector2d c);
-	public abstract Vector2d scaleWorldImage(Vector2d d);
-	public abstract Vector2d scaleImageWorld(Vector2d d);
+	public double transformImageWorldX(double c){return (c*getBinning()+getDispX())/getResX();}
+	public double transformImageWorldY(double c){return (c*getBinning()+getDispY())/getResY();}			
+	public double transformWorldImageX(double c){return (c*getResX()-getDispX())/getBinning();}
+	public double transformWorldImageY(double c){return (c*getResY()-getDispY())/getBinning();}
+	
+	
+	
+	public double scaleImageWorldX(double c){return c/(getResX()/getBinning());}
+	public double scaleImageWorldY(double c){return c/(getResY()/getBinning());}
+	public double scaleWorldImageX(double c){return c*getResX()/getBinning();}
+	public double scaleWorldImageY(double c){return c*getResY()/getBinning();}
+	
+	//how about a Z-transform too?
+
+	public abstract int getBinning();
+	public abstract double getDispX();
+	public abstract double getDispY();
+	public abstract double getResX();
+	public abstract double getResY();
+	
 	}

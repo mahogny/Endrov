@@ -7,8 +7,12 @@ import java.util.*;
 import evplugin.data.*;
 import evplugin.imageWindow.*;
 import evplugin.roi.primitive.BoxROI;
-//import evplugin.ev.*;
 
+/**
+ * Render ROI in Image Window
+ * 
+ * @author Johan Henriksson
+ */
 public class ImageRendererROI implements ImageWindowRenderer
 	{
 	public static final int HANDLESIZE=3;
@@ -41,7 +45,6 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 	private void drawROI(Graphics g, ROI roi)
 		{
-//		Graphics2D g2=(Graphics2D)g;
 		handleList.clear();
 
 		double frame=w.frameControl.getFrame();
@@ -56,24 +59,19 @@ public class ImageRendererROI implements ImageWindowRenderer
 			
 				int x1=-1,y1=-1,x2=100000,y2=100000;
 				
-				
 				if(!box.regionX.all)
 					{
-					x1=(int)box.regionX.start;
-					x2=(int)box.regionX.end;
+					x1=(int)w.w2sx(box.regionX.start);
+					x2=(int)w.w2sx(box.regionX.end);
 					}
-
 				if(!box.regionY.all)
 					{
-					y1=(int)box.regionY.start;
-					y2=(int)box.regionY.end;
+					y1=(int)w.w2sy(box.regionY.start);
+					y2=(int)w.w2sy(box.regionY.end);
 					}
-
 				
 				g.setColor(Color.WHITE);
 				g.drawRect(x1, y1, x2-x1, y2-y1);
-				
-				//w.w2sx(nuc.pos.x);
 				}
 
 			//Draw handles
@@ -82,8 +80,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 			for(ROI.Handle h:roi.getHandles())
 				{
 				roimap.put(h.getID(),h);
-				int x=(int)h.getX();
-				int y=(int)h.getY();
+				int x=(int)w.w2sx(h.getX());
+				int y=(int)w.w2sy(h.getY());
 				g.setColor(Color.CYAN);
 				g.drawRect(x-HANDLESIZE, y-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
 				}
@@ -94,85 +92,6 @@ public class ImageRendererROI implements ImageWindowRenderer
 		}
 
 	
-/*
-	private void drawNuc(Graphics g, NucPair nucPair, NucLineage.NucInterp nuc)
-		{			
-		String nucName=nucPair.getRight();
-		
-		if(nuc==null)
-			{
-			Log.printError("nuc==null", null);
-			return;
-			}
-		
-		//Z projection and visibility check
-		double sor=projectSphere(nuc.pos.r, nuc.pos.z);
-		if(sor>=0)
-			{
-			//Coordinate transformation
-			double sox=w.w2sx(nuc.pos.x);
-			double soy=w.w2sy(nuc.pos.y);
-			
-			//Pick color of nucleus
-			Color nucColor;
-			if(NucLineage.selectedNuclei.contains(nucPair))
-				nucColor=Color.RED;
-			else
-				nucColor=Color.BLUE;
-			
-			//Draw the nucleus
-			g.setColor(nucColor);
-			if(nuc.frameBefore==null)
-				{
-				if(!nuc.hasParent)
-					{
-					//As this nucleus does not really exist here, it is drawn with stippled line
-					for(int i=0;i<360/2;i+=2)
-						g.drawArc((int)(sox-sor),(int)(soy-sor),(int)(2*sor),(int)(2*sor), i*20, 20);
-					}
-				}
-			else
-				{
-				//Normal nucleus
-				g.drawOval((int)(sox-sor),(int)(soy-sor),(int)(2*sor),(int)(2*sor));
-				}
-			
-			
-			//Mark keyframe
-			if(nuc.isKeyFrame(w.frameControl.getFrame()))
-				{
-				g.drawLine((int)(sox-sor-1), (int)(soy), (int)(sox-sor+1), (int)(soy));
-				g.drawLine((int)(sox+sor-1), (int)(soy), (int)(sox+sor+1), (int)(soy));					
-				}
-			
-			//Mark endframe
-			if(nuc.isEnd)
-				{
-				g.setColor(Color.BLACK);
-				double f=Math.sqrt(1.0/2.0);
-				g.drawLine((int)(sox-sor*f), (int)(soy-sor*f), (int)(sox+sor*f), (int)(soy+sor*f));
-				g.drawLine((int)(sox-sor*f), (int)(soy+sor*f), (int)(sox+sor*f), (int)(soy-sor*f));
-				}
-			
-			//Update hover
-			if(w.mouseInWindow && (w.mouseCurX-sox)*(w.mouseCurX-sox) + (w.mouseCurY-soy)*(w.mouseCurY-soy)<sor*sor)
-				NucLineage.currentHover=nucPair;
-			
-			//Draw name of nucleus. maybe do this last
-			if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))
-				{
-				g.setColor(Color.RED);
-
-				g.drawString(nucName, (int)sox-g.getFontMetrics().stringWidth(nucName)/2, (int)soy-2);
-				int crossSize=5;
-				g.drawLine((int)sox-crossSize, (int)soy, (int)sox+crossSize, (int)soy);
-				g.drawLine((int)sox, (int)soy, (int)sox, (int)soy+crossSize);
-				}
-			}
-
-		}
-	
-	*/
 	
 	
 	}

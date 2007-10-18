@@ -1,13 +1,12 @@
 package evplugin.roi;
 
 
-//import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import org.jdom.Element;
 
-import evplugin.imageWindow.ImageWindow;
+import evplugin.imageWindow.*;
 import evplugin.imageset.*;
 import evplugin.data.*;
 import evplugin.ev.*;

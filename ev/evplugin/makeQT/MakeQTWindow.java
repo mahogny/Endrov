@@ -8,7 +8,7 @@ import javax.swing.*;
 
 import evplugin.ev.*;
 import evplugin.imageset.*;
-import evplugin.metadata.Metadata;
+import evplugin.data.*;
 import evplugin.basicWindow.*;
 import org.jdom.*;
 
@@ -45,7 +45,7 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 	private JSpinner spinnerW   =new JSpinner(wModel);
 
 	private MetaCombo metaCombo=new MetaCombo(this, false);
-	public boolean comboFilterMetadataCallback(Metadata meta)
+	public boolean comboFilterMetadataCallback(EvData meta)
 		{
 		return meta instanceof Imageset;
 		}

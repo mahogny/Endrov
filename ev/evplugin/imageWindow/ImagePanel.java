@@ -15,13 +15,11 @@ import evplugin.ev.*;
  */
 public class ImagePanel extends JPanel
 	{
-	public EvImage imageLoader=null;
+	public EvImage image=null;
 	public double contrast=1;
 	public double brightness=0;
 	public double zoom=1;
-	public int binning=1;
 	public double transX=0, transY=0;
-	public double dispX=0, dispY=0;
 	
 	private BufferedImage bufi=null;
 	
@@ -45,13 +43,13 @@ public class ImagePanel extends JPanel
 		{
 		try
 			{
-			if(imageLoader==null)
+			if(image==null)
 				bufi=null;
 			
 			//Load image if this has not already been done
-			if(bufi==null && imageLoader!=null)
+			if(bufi==null && image!=null)
 				{
-				bufi=imageLoader.getJavaImage();
+				bufi=image.getJavaImage();
 				if(bufi==null)
 					throw new Exception();
 				ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
@@ -80,22 +78,17 @@ public class ImagePanel extends JPanel
 		
 		loadImage();
 		
-
 		if(bufi!=null)
 			{
 			//Calculate translation and zoom of image
-			double tx=i2sx(dispX);
-			double ty=i2sy(dispY);
-			double zoomBinning=zoom*binning;
+			double tx=i2sx(image.getDispX());
+			double ty=i2sy(image.getDispY());
+			double zoomBinning=zoom*image.getBinning();
 			double invZoomBinning=1.0/zoomBinning;
 
-			//TODO: readd centering, maybe not here?
-			
 			g2.translate(tx,ty);
 			g2.scale(zoomBinning,zoomBinning);
-			//System.out.println("C "+System.currentTimeMillis());
 			g2.drawImage(bufi, null, 0, 0);
-			//System.out.println("D "+System.currentTimeMillis());
 			g2.scale(invZoomBinning,invZoomBinning);
 			g2.translate(-tx,-ty);
 			} 
@@ -104,7 +97,7 @@ public class ImagePanel extends JPanel
 	/**
 	 * Pan by a certain ammount
 	 * @param dx Mouse movement X in pixels
-	 * @param dy Mouse movement X in pixels
+	 * @param dy Mouse movement Y in pixels
 	 */
 	public void pan(double dx, double dy)
 		{
@@ -112,65 +105,15 @@ public class ImagePanel extends JPanel
 		transY+=(double)dy/zoom;
 		}
 
-	/**
-	 * Convert screen coordinate to image coordinate (image scaled by binning)
-	 * @param sx Screen x coordinate
-	 * @return Image x coordinate
-	 */
-	public double s2ix(double sx)
-		{
-		/*
-		int w=bufi.getWidth()*binning;
-		int h=bufi.getHeight()*binning;
-		return (sx-(getWidth()/2  - w*zoom/2.0  + transX))/zoom;
-		*/
-		return (sx-getWidth()/2)/zoom  - transX; //fixed
-		}
+	/** Convert screen coordinate to image coordinate (image scaled by binning) */
+	public double s2ix(double sx){return (sx-getWidth() /2.0)/zoom  - transX;}
+	/** Convert screen coordinate to image coordinate (image scaled by binning) */
+	public double s2iy(double sy){return (sy-getHeight()/2.0)/zoom  - transY;}
 
-	/**
-	 * Convert screen coordinate to image coordinate (image scaled by binning)
-	 * @param sy Screen y coordinate
-	 * @return Image y coordinate
-	 */
-	public double s2iy(double sy)
-		{
-		/*
-		int w=bufi.getWidth()*binning;
-		int h=bufi.getHeight()*binning;
-		return (sy-(getHeight()/2.0  - h*zoom/2.0  + transY))/zoom;
-		*/
-		return (sy-getHeight()/2.0)/zoom    - transY; //fixed
-		}
-
-	/**
-	 * Convert image coordinate to screen coordinate (image scaled by binning)
-	 * @param ix Image x coordinate
-	 * @return Screen x coordinate
-	 */
-	public double i2sx(double ix)
-		{
-		/*
-		int w=bufi.getWidth()*binning;
-		int h=bufi.getHeight()*binning;
-		return getWidth()/2.0  - w*zoom/2.0  + transX*zoom + ix*zoom;
-		*/
-		return getWidth()/2.0   + transX*zoom + ix*zoom;
-		}
-
-	/**
-	 * Convert image coordinate to screen coordinate (image scaled by binning)
-	 * @param iy Image y coordinate
-	 * @return Screen y coordinate
-	 */
-	public double i2sy(double iy)
-		{
-		/*
-		int w=bufi.getWidth()*binning;
-		int h=bufi.getHeight()*binning;
-		return getHeight()/2.0  - h*zoom/2.0  + transY*zoom + iy*zoom;
-		*/
-		return getHeight()/2.0   + transY*zoom + iy*zoom;
-		}
+	/** Convert image coordinate to screen coordinate (image scaled by binning) */
+	public double i2sx(double ix){return getWidth()/2.0   + (transX + ix)*zoom;}
+	/** Convert image coordinate to screen coordinate (image scaled by binning) */
+	public double i2sy(double iy){return getHeight()/2.0  + transY*zoom + iy*zoom;}
 		
 
 	/**
@@ -181,8 +124,8 @@ public class ImagePanel extends JPanel
 		loadImage();
 		if(bufi!=null)
 			{
-			int w=bufi.getWidth()*binning;
-			int h=bufi.getHeight()*binning;
+			int w=bufi.getWidth()*image.getBinning();
+			int h=bufi.getHeight()*image.getBinning();
 						
 			//Adjust zoom
 			double zoom1=getWidth()/(double)w;
@@ -193,8 +136,8 @@ public class ImagePanel extends JPanel
 				zoom=zoom2;
 			
 			//Place camera in the middle
-			transX=-w/2-dispX;
-			transY=-h/2-dispY;
+			transX=-w/2-image.getDispX();
+			transY=-h/2-image.getDispY();
 			
 			repaint();
 			}

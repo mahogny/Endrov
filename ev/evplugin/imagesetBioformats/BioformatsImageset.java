@@ -6,13 +6,11 @@ import java.io.*;
 import java.util.*;
 
 import javax.swing.*;
-import javax.vecmath.Vector2d;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.imageset.*;
-import evplugin.jubio.EvImageJAI;
-import evplugin.metadata.*;
+import evplugin.data.*;
 import evplugin.script.Script;
 
 import loci.formats.*;
@@ -33,7 +31,7 @@ public class BioformatsImageset extends Imageset
 	
 		Script.addCommand("dbio", new CmdDBIO());
 		
-		MetadataBasic.extensions.add(new MetadataExtension()
+		EvDataBasic.extensions.add(new DataMenuExtension()
 			{
 			public void buildOpen(JMenu menu)
 				{
@@ -51,12 +49,12 @@ public class BioformatsImageset extends Imageset
 							{
 							JFileChooser chooser = new JFileChooser();
 					    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
+					    chooser.setCurrentDirectory(new File(EvData.lastDataPath));
 					    int returnVal = chooser.showOpenDialog(null); //null=window
 					    if(returnVal == JFileChooser.APPROVE_OPTION)
 					    	{
 					    	String filename=chooser.getSelectedFile().getAbsolutePath();
-					    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
+					    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
 					    	load(filename);
 					    	}
 							}
@@ -75,7 +73,7 @@ public class BioformatsImageset extends Imageset
 			    	
 			    	try
 							{
-							Metadata.metadata.add(new BioformatsImageset(filename));
+							EvData.metadata.add(new BioformatsImageset(filename));
 							}
 						catch (Exception e)
 							{
@@ -88,7 +86,7 @@ public class BioformatsImageset extends Imageset
 					};
 				miLoadBioformats.addActionListener(listener);
 				}
-			public void buildSave(JMenu menu, Metadata meta)
+			public void buildSave(JMenu menu, EvData meta)
 				{
 				}
 			});
@@ -178,7 +176,7 @@ public class BioformatsImageset extends Imageset
 						{
 						int effC=0;
 						//System.out.println(" "+slicenum+" "+channelnum+" "+framenum);
-						loaderset.put(slicenum, new ImageLoaderBioformats(imageReader,imageReader.getIndex(slicenum, effC, framenum), channelnum, ""));
+						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, effC, framenum), channelnum, ""));
 						}
 					c.imageLoader.put(framenum, loaderset);
 					}
@@ -201,7 +199,7 @@ public class BioformatsImageset extends Imageset
 					for(int slicenum=0;slicenum<numz;slicenum++)
 						{
 						//System.out.println(" "+slicenum+" "+channelnum+" "+framenum);
-						loaderset.put(slicenum, new ImageLoaderBioformats(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), null, ""));
+						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), null, ""));
 						}
 					c.imageLoader.put(framenum, loaderset);
 					}
@@ -217,20 +215,6 @@ public class BioformatsImageset extends Imageset
 		}
 
 	
-	
-	
-	private static class EvImageSimple extends EvImageJAI
-		{
-		public EvImageSimple(String name)
-			{
-			super(name);
-			}
-		public Vector2d transformWorldImage(Vector2d c){return new Vector2d(c);}		
-		public Vector2d transformImageWorld(Vector2d c){return new Vector2d(c);}
-		public Vector2d scaleWorldImage(Vector2d d){return new Vector2d(d);}
-		public Vector2d scaleImageWorld(Vector2d d){return new Vector2d(d);}
-		}
-
 	
 	
 	
@@ -249,8 +233,27 @@ public class BioformatsImageset extends Imageset
 			}
 		protected EvImage internalMakeLoader(int frame, int z)
 			{
-			return new EvImageSimple("");
+			return new EvImageExt(null,0,0,"");
 			}
+		
+		
+		public EvImageExt newImage(IFormatReader imageReader, int id, Integer subid, String sourceName)
+			{
+			return new EvImageExt(imageReader,id,subid,sourceName);
+			}
+		
+		private class EvImageExt extends EvImageBioformats
+			{
+			public EvImageExt(IFormatReader imageReader, int id, Integer subid, String sourceName){super(imageReader,id,subid,sourceName);}
+	
+			public int getBinning(){return getMeta().chBinning;}
+			public double getDispX(){return getMeta().dispX;}
+			public double getDispY(){return getMeta().dispY;}
+			public double getResX(){return meta.resX;}
+			public double getResY(){return meta.resY;}
+			}
+		
+		
 		}
 	
 	}

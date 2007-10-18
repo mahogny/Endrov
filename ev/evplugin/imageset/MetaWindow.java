@@ -323,11 +323,11 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		add3Fast(p, new JLabel("Sample"),            commonSample,          new JLabel(""),          cury++);
 	//	add3Fast(p, new JLabel(""), , new JLabel(""),0);
 		
-		JPanel p1=makeResolutionStrip("Calculated resolution", commonCalcResX, commonCalcResY, commonCalcResZ);
+		JPanel p1=makeResolutionStrip("Calculated resolution [px/um]", commonCalcResX, commonCalcResY, commonCalcResZ);
 		p.add(p1, new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));		
-		JPanel p2=makeResolutionStrip("Override of resolution", commonManResX, commonManResY, commonManResZ);
+		JPanel p2=makeResolutionStrip("Override of resolution [px/um]", commonManResX, commonManResY, commonManResZ);
 		p.add(p2, new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
-		JPanel p3=makeResolutionStrip("Final resolution", commonResX, commonResY, commonResZ);
+		JPanel p3=makeResolutionStrip("Final resolution [px/um]", commonResX, commonResY, commonResZ);
 		p.add(p3, new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 		p.add(new JLabel("Description"),
 				new GridBagConstraints(0,cury++,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
@@ -361,7 +361,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			updatingFields=true;
 			Imageset rec=metaCombo.getImageset();
 			
-			double calcResX=rec.meta.metaObjective*rec.meta.metaOptivar/rec.meta.metaCampix;
+			double calcResX=rec.meta.metaObjective*rec.meta.metaOptivar/rec.meta.metaCampix; //[]*[]/[um/px]
 			double calcResY=calcResX;
 			double calcResZ=1.0/rec.meta.metaSlicespacing;
 			commonCalcResX.setText(""+calcResX);

@@ -14,7 +14,7 @@ import loci.formats.*;
  * 
  * @author Johan Henriksson (binding only)
  */
-public class ImageLoaderBioformats extends EvImage
+public abstract class EvImageBioformats extends EvImage
 	{
 	private int id;
 	private Integer subid;
@@ -22,7 +22,7 @@ public class ImageLoaderBioformats extends EvImage
 	private String sourceName;
 
 	
-	public ImageLoaderBioformats(IFormatReader imageReader, int id, Integer subid, String sourceName)
+	public EvImageBioformats(IFormatReader imageReader, int id, Integer subid, String sourceName)
 		{
 		this.imageReader=imageReader;
 		this.id=id;

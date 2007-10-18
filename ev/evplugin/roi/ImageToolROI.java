@@ -45,11 +45,6 @@ public class ImageToolROI implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		/*
-		NucLineage lin=r.getLineage();
-		if(SwingUtilities.isLeftMouseButton(e) && lin!=null)
-			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
-			*/
 		}
 	
 	public void mouseDragged(MouseEvent e, int dx, int dy)
@@ -59,19 +54,17 @@ public class ImageToolROI implements ImageWindowTool
 			for(ROI.Handle h:currentROI.getHandles())
 				if(h.getID().equals(currentHandle))
 					{
-					h.setX(h.getX()+dx);
-					h.setY(h.getY()+dy);
+					h.setX(w.s2wx(e.getX()));
+					h.setY(w.s2wy(e.getY()));
 					w.updateImagePanel();
 					return;
 					}
-//			x2=w.s2wx(e.getX());
-//			y2=w.s2wy(e.getY());
 			}
 		}
 	
-	private boolean mouseOverHandle(MouseEvent e, int x, int y)
+	private boolean mouseOverHandle(MouseEvent e, ROI.Handle h)
 		{
-		return Math.abs(e.getX()-x)<ImageRendererROI.HANDLESIZE && Math.abs(e.getY()-y)<ImageRendererROI.HANDLESIZE;
+		return Math.abs(w.w2sx(h.getX())-e.getX())<ImageRendererROI.HANDLESIZE && Math.abs(w.w2sy(h.getY())-e.getY())<ImageRendererROI.HANDLESIZE;
 		}
 	
 	public void mousePressed(MouseEvent e)
@@ -82,9 +75,7 @@ public class ImageToolROI implements ImageWindowTool
 			for(Map.Entry<ROI, TreeMap<String,ROI.Handle>> re:r.handleList.entrySet())
 				for(Map.Entry<String, ROI.Handle> rh:re.getValue().entrySet())
 					{
-					int x=(int)rh.getValue().getX();
-					int y=(int)rh.getValue().getY();
-					if(mouseOverHandle(e, x, y))
+					if(mouseOverHandle(e, rh.getValue()))
 						{
 						active=true;
 						currentHandle=rh.getKey();

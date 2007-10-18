@@ -44,8 +44,47 @@ public class BoxROI extends ROI
 			{
 			y++;
 			return y<endY;
-			//Ignoring boundaries for now
 			}	
+		}
+	
+	/******************************************************************************************************
+	 *                               Handle                                                               *
+	 *****************************************************************************************************/
+	public class BoxHandle implements Handle
+		{
+		private final boolean isStartX, isStartY;
+		private final String id;
+		public BoxHandle(String id, boolean isStartX, boolean isStartY)
+			{
+			this.id=id;
+			this.isStartX=isStartX;
+			this.isStartY=isStartY;
+			}
+		//TODO: what about "all"?
+		public String getID()
+			{
+			return id;
+			}
+		public double getX()
+			{
+			if(isStartX) return regionX.start;
+			else return regionX.end;
+			}
+		public double getY()
+			{
+			if(isStartY) return regionY.start;
+			else return regionY.end;
+			}
+		public void setX(double x)
+			{
+			if(isStartX) regionX.start=x;
+			else regionX.end=x;
+			}
+		public void setY(double y)
+			{
+			if(isStartY) regionY.start=y;
+			else regionY.end=y;
+			}
 		}
 	
 	/******************************************************************************************************
@@ -145,33 +184,34 @@ public class BoxROI extends ROI
 			it.endX=im.getJavaImage().getWidth();
 			it.endY=im.getJavaImage().getHeight();
 			it.y=0;
-			
-			//Correct boundaries based on span
+
+			//Correct for span
 			if(!regionX.all)
 				{
-				if(it.startX<regionX.start)
-					it.startX=(int)regionX.start; //todo: change coordinates
-				if(it.endX>regionX.end)
-					it.endX=(int)regionX.end;
-				
-				//todo: other coords
+				int rXstart=(int)im.transformWorldImageX(regionX.start);
+				int rXend=(int)im.transformWorldImageX(regionX.end);
+				if(it.startX<rXstart)	it.startX=rXstart;
+				if(it.endX>rXend) it.endX=rXend;
 				}
-
 			if(!regionY.all)
 				{
-				if(it.y<regionY.start)
-					it.y=(int)regionY.start; //todo: change coordinates
-				if(it.endY>regionY.end)
-					it.endY=(int)regionY.end;
-				
-				//todo: other coords
+				int rYstart=(int)im.transformWorldImageY(regionY.start);
+				int rYend=(int)im.transformWorldImageY(regionY.end);
+				if(it.y<rYstart)	it.y=rYstart;
+				if(it.endY>rYend) it.endY=rYend;
 				}
-
-			//todo: sanity check
 			
-			//One line before when starting to work
-			it.y--;
-			return it;
+//		System.out.println("xxx "+it.startX+" "+it.endX+" "+it.y+" "+it.endY);
+			
+			//Sanity check
+			if(it.y>it.endY || it.startX>it.endX)
+				return new EmptyLineIterator();
+			else
+				{
+				//Go one line before when starting to work
+				it.y--;
+				return it;
+				}
 			}
 				
 		return new EmptyLineIterator();
@@ -288,48 +328,8 @@ public class BoxROI extends ROI
 		}
 	
 	
-	public class BoxHandle implements Handle
-		{
-		private final boolean isStartX, isStartY;
-		private final String id;
-		public BoxHandle(String id, boolean isStartX, boolean isStartY)
-			{
-			this.id=id;
-			this.isStartX=isStartX;
-			this.isStartY=isStartY;
-			}
-		
-		//TODO: what about "all"?
-		
-		public String getID()
-			{
-			return id;
-			}
-		
-		public double getX()
-			{
-			if(isStartX) return regionX.start;
-			else return regionX.end;
-			}
+	
 
-		public double getY()
-			{
-			if(isStartY) return regionY.start;
-			else return regionY.end;
-			}
-
-		public void setX(double x)
-			{
-			if(isStartX) regionX.start=x;
-			else regionX.end=x;
-			}
-
-		public void setY(double y)
-			{
-			if(isStartY) regionY.start=y;
-			else regionY.end=y;
-			}
-		}
 	
 	/**
 	 * Get handles for corners
