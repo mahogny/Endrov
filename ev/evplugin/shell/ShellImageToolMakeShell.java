@@ -5,9 +5,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.*;
 import evplugin.imageWindow.*;
 import evplugin.keyBinding.KeyBinding;
-import evplugin.metadata.*;
 
 
 /**
@@ -63,7 +63,7 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 		double wy=w.s2wy(my);
 		double wz=w.s2wz(w.frameControl.getZ());
 		
-		for(MetaObject ob:w.getImageset().metaObject.values())
+		for(EvObject ob:w.getImageset().metaObject.values())
 			if(ob instanceof Shell)
 				{
 				Shell shell=(Shell)ob;

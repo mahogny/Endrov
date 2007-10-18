@@ -4,8 +4,8 @@ import java.util.*;
 import java.awt.*;
 import java.awt.geom.*;
 
+import evplugin.data.*;
 import evplugin.imageWindow.*;
-import evplugin.metadata.*;
 
 /**
  * Render shells in image window
@@ -36,7 +36,7 @@ public class ShellImageRenderer implements ImageWindowRenderer
 	public Vector<Shell> getShells()
 		{
 		Vector<Shell> list=new Vector<Shell>();
-		for(MetaObject ob:w.getImageset().metaObject.values())
+		for(EvObject ob:w.getImageset().metaObject.values())
 			if(ob instanceof Shell)
 				list.add((Shell)ob);
 		return list;

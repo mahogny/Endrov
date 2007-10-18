@@ -3,8 +3,8 @@ package evplugin.basicWindow;
 import java.awt.event.*;
 import javax.swing.*;
 
+import evplugin.data.*;
 import evplugin.imageset.*;
-import evplugin.metadata.*;
 
 /**
  * A combobox with all channels
@@ -157,7 +157,7 @@ public class ChannelCombo extends JComboBox
 		else
 			{
 			//Add other metadata
-			for(Metadata thisMeta:Metadata.metadata)
+			for(EvData thisMeta:EvData.metadata)
 				{
 				//System.out.println("m "+thisMeta.getMetadataName());  //called WAY to often? TODO
 				

@@ -5,7 +5,7 @@ import java.util.*;
 
 import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
-import evplugin.metadata.*;
+import evplugin.data.*;
 import evplugin.ev.*;
 
 public class NucImageRenderer implements ImageWindowRenderer
@@ -29,7 +29,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	 */
 	public NucLineage getLineage()
 		{
-		for(MetaObject ob:w.getImageset().metaObject.values())
+		for(EvObject ob:w.getImageset().metaObject.values())
 			if(ob instanceof NucLineage)
 				return (NucLineage)ob;
 		return null;

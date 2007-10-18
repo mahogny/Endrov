@@ -7,11 +7,11 @@ import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
 
 import evplugin.basicWindow.BasicWindow;
+import evplugin.data.*;
 import evplugin.imageWindow.ImageWindow;
 import evplugin.imageWindow.ImageWindowTool;
 //import evplugin.sql.DB;
 import evplugin.imageset.*;
-import evplugin.metadata.*;
 
 /**
  * 
@@ -44,7 +44,7 @@ public class ToolSetFrametime implements ImageWindowTool
 		if(frametimes!=null /*&& db!=null*/)
 			{
 			Imageset rec=w.comboChannel.getImageset();
-			for(MetaObject o:rec.metaObject.values())
+			for(EvObject o:rec.metaObject.values())
 				if(o instanceof FrameTime)
 					{
 					FrameTime f=(FrameTime)o;

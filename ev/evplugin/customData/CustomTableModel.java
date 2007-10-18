@@ -3,7 +3,7 @@ package evplugin.customData;
 import java.util.*;
 import org.jdom.*;
 
-import evplugin.metadata.MetaObject;
+import evplugin.data.EvObject;
 
 import javax.swing.table.*;
 
@@ -19,9 +19,9 @@ public class CustomTableModel extends AbstractTableModel
 	public Vector<String> columnList=new Vector<String>();
 	private String elementName="";
 	private Element tableRoot=new Element("a");
-	private MetaObject ob;
+	private EvObject ob;
 	
-	public void setRoot(MetaObject ob, Element e)
+	public void setRoot(EvObject ob, Element e)
 		{
 		this.ob=ob;
 		if(e==null)

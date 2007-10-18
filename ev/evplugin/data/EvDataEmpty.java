@@ -1,8 +1,8 @@
-package evplugin.metadata;
+package evplugin.data;
 
 import evplugin.ev.*;
 
-public class EmptyMetadata extends Metadata
+public class EvDataEmpty extends EvData
 	{
 	public String getMetadataName()
 		{

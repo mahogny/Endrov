@@ -5,8 +5,8 @@ import java.util.*;
 
 import javax.swing.JMenu;
 
+import evplugin.data.*;
 import evplugin.imageWindow.*;
-import evplugin.metadata.*;
 
 
 //Filter = not such a good name? ImageOperators?
@@ -16,7 +16,7 @@ import evplugin.metadata.*;
  * 
  * @author Johan Henriksson
  */
-public abstract class FilterMeta extends MetaObject
+public abstract class FilterMeta extends EvObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *

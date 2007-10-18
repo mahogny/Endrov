@@ -5,8 +5,8 @@ import javax.swing.*;
 import java.util.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.*;
 import evplugin.imageWindow.*;
-import evplugin.metadata.*;
 import evplugin.imageset.*;
 import evplugin.roi.*;
 
@@ -47,7 +47,7 @@ public class FilterImageExtension implements ImageWindowExtension
 						{
 						Imageset rec=w.getImageset();
 						
-						for(MetaObject ob:rec.metaObject.values())
+						for(EvObject ob:rec.metaObject.values())
 							if(ob instanceof ROI)
 								{
 								ROI roi=(ROI)ob;

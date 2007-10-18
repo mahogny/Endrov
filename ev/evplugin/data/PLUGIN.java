@@ -1,4 +1,4 @@
-package evplugin.metadata;
+package evplugin.data;
 import evplugin.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{Metadata.class};
+		return new Class[]{EvData.class};
 		}
 	}

@@ -3,9 +3,9 @@ package util;
 import java.util.*;
 import java.io.File;
 
+import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.imagesetOST.OstImageset;
-import evplugin.metadata.*;
 import evplugin.shell.*;
 import evplugin.sliceSignal.*;
 
@@ -15,10 +15,10 @@ import evplugin.sliceSignal.*;
  */
 public class BatchSS
 	{
-	public static Vector<Shell> getShell(Metadata rec)
+	public static Vector<Shell> getShell(EvData rec)
 		{
 		Vector<Shell> out=new Vector<Shell>();
-		for(MetaObject ob:rec.metaObject.values())
+		for(EvObject ob:rec.metaObject.values())
 			if(ob instanceof Shell)
 				out.add((Shell)ob);
 		return out;

@@ -1,9 +1,9 @@
-package evplugin.metadata;
+package evplugin.data;
 
 import javax.swing.*;
 import org.jdom.*;
 
-public abstract class MetaObject
+public abstract class EvObject
 	{
 	public boolean metaObjectModified=false;
 	public abstract void saveMetadata(Element e);

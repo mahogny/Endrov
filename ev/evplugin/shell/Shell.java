@@ -5,16 +5,16 @@ import javax.swing.JMenu;
 import org.jdom.DataConversionException;
 import org.jdom.Element;
 
+import evplugin.data.*;
 import evplugin.imageWindow.*;
 import evplugin.keyBinding.KeyBinding;
-import evplugin.metadata.*;
 import evplugin.modelWindow.*;
 
 /**
  * Shell metadata
  * @author Johan Henriksson
  */
-public class Shell extends MetaObject
+public class Shell extends EvObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -47,9 +47,9 @@ public class Shell extends MetaObject
 				}
 			});
 		
-		Metadata.extensions.put(metaType,new MetaObjectExtension()
+		EvData.extensions.put(metaType,new EvObjectType()
 			{
-			public MetaObject extractObjects(Element e)
+			public EvObject extractObjects(Element e)
 				{
 				Shell shell=new Shell();
 				try

@@ -3,8 +3,8 @@ package evplugin.basicWindow;
 import java.awt.event.*;
 import javax.swing.*;
 
+import evplugin.data.*;
 import evplugin.imageset.*;
-import evplugin.metadata.*;
 
 /**
  * A combobox with all channels
@@ -20,7 +20,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	
 	//Needed to unselect special alternatives after user selected them
 //	private Metadata curMeta=new EmptyMetadata();
-	private Metadata curMeta=null; //BIG CHANGE
+	private EvData curMeta=null; //BIG CHANGE
 	private Integer curId=null;
 
 	
@@ -111,7 +111,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		//If this list does not allow that no imageset is selected then just take one
 		if(!addEmpty)
 			{
-			if(curMeta instanceof EmptyMetadata && getItemCount()>0)
+			if(curMeta instanceof EvDataEmpty && getItemCount()>0)
 				{
 				curMeta=((Alternative)getItemAt(0)).meta;
 				curId=null;
@@ -152,7 +152,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		if(addEmpty)
 			addItem(new Alternative(null,0, null, null));
 		//Add other metadata
-		for(Metadata thisMeta:Metadata.metadata)
+		for(EvData thisMeta:EvData.metadata)
 			{
 			for(int id:thisMeta.metaObject.keySet())
 				if(filterObject.comboFilterMetaObjectCallback(thisMeta.getMetaObject(id)))
@@ -180,7 +180,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	 * Get a pointer directly to the meta object
 	 * @return Object or null
 	 */
-	public MetaObject getObject()
+	public EvObject getObject()
 		{
 		Alternative a=(Alternative)getSelectedItem();
 		if(a==null || a.meta==null || a.id==null)
@@ -207,18 +207,18 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	
 	public static interface comboFilterMetaObject
 		{
-		public boolean comboFilterMetaObjectCallback(MetaObject ob);
-		public Alternative[] comboAddObjectAlternative(ObjectCombo combo, Metadata meta);
+		public boolean comboFilterMetaObjectCallback(EvObject ob);
+		public Alternative[] comboAddObjectAlternative(ObjectCombo combo, EvData meta);
 		public Alternative[] comboAddAlternative(ObjectCombo combo);
 		}
 	
 	public static class Alternative
 		{
-		public final Metadata meta;
+		public final EvData meta;
 		public final Integer id;
 		public final String special;
 		public final ActionListener listener;
-		public Alternative(Metadata meta, Integer id, String special, ActionListener listener)
+		public Alternative(EvData meta, Integer id, String special, ActionListener listener)
 			{
 			this.meta=meta;
 			this.id=id;
@@ -240,7 +240,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 				}
 			else if(special==null)
 				{
-				MetaObject o=meta.getMetaObject(id);
+				EvObject o=meta.getMetaObject(id);
 				if(o==null)
 					return meta.getMetadataName()+": "+id;
 				else

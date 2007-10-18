@@ -1,9 +1,9 @@
-package evplugin.metadata.cmd;
+package evplugin.data.cmd;
 import java.util.*;
 
 
+import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.metadata.*;
 import evplugin.script.*;
 
 /**
@@ -16,12 +16,12 @@ public class CmdMLS extends Command
 	public int numArg()	{return 0;}
 	public Exp exec(Vector<Exp> arg) throws Exception
 		{
-		Metadata m=Metadata.getSelectedMetadata();
+		EvData m=EvData.getSelectedMetadata();
 		if(m!=null)
 			{
 			for(int i:m.metaObject.keySet())
 				{
-				MetaObject ob=m.metaObject.get(i);
+				EvObject ob=m.metaObject.get(i);
 				Log.printLog(""+i+": "+ob.getMetaTypeDesc());
 				}
 			}

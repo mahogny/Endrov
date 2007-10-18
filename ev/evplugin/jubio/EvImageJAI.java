@@ -1,7 +1,7 @@
 package evplugin.jubio;
 
 import javax.imageio.ImageIO;
-import javax.vecmath.Vector2d;
+//import javax.vecmath.Vector2d;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;

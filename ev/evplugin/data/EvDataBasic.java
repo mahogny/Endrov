@@ -1,4 +1,4 @@
-package evplugin.metadata;
+package evplugin.data;
 
 import java.awt.event.*;
 import java.util.*;
@@ -11,10 +11,10 @@ import evplugin.basicWindow.*;
  * 
  * @author Johan Henriksson
  */
-public class MetadataBasic implements BasicWindowExtension
+public class EvDataBasic implements BasicWindowExtension
 	{
 	
-	public static Vector<MetadataExtension> extensions=new Vector<MetadataExtension>();
+	public static Vector<DataMenuExtension> extensions=new Vector<DataMenuExtension>();
 	
 	
 	
@@ -38,12 +38,12 @@ public class MetadataBasic implements BasicWindowExtension
 			{
 			if(e.getSource()==miNew)
 				{
-				Metadata.addMetadata(new XmlMetadata());
+				EvData.addMetadata(new EvDataXML());
 				BasicWindow.updateWindows();
 				}
 			else if(e.getSource()==miOpen)
 				{
-				XmlMetadata.loadMeta();
+				EvDataXML.loadMeta();
 				}
 			}
 
@@ -60,12 +60,12 @@ public class MetadataBasic implements BasicWindowExtension
 			BasicWindow.addMenuItemSorted(mData, miOpen);			
 			miNew.addActionListener(this);
 			miOpen.addActionListener(this);
-			for(MetadataExtension e:extensions)
+			for(DataMenuExtension e:extensions)
 				e.buildOpen(mData);
 			mData.addSeparator();
 			
 			//List all global Metadata
-			for(final Metadata thisMeta:Metadata.metadata)
+			for(final EvData thisMeta:EvData.metadata)
 				{
 				JMenu menuMetadata=new JMenu(thisMeta.getMetadataName());
 				mData.add(menuMetadata);
@@ -75,7 +75,7 @@ public class MetadataBasic implements BasicWindowExtension
 				menuMetadata.add(miUnload);
 				menuMetadata.add(miSave);
 				
-				for(MetadataExtension e:extensions)
+				for(DataMenuExtension e:extensions)
 					e.buildSave(menuMetadata, thisMeta);
 				menuMetadata.addSeparator();
 				
@@ -96,7 +96,7 @@ public class MetadataBasic implements BasicWindowExtension
 							else if (option == JOptionPane.CANCEL_OPTION)
 								return;
 							}
-						Metadata.metadata.remove(thisMeta);
+						EvData.metadata.remove(thisMeta);
 						BasicWindow.updateWindows();
 						System.gc();
 						}
@@ -117,7 +117,7 @@ public class MetadataBasic implements BasicWindowExtension
 				
 				for(final int obId:thisMeta.metaObject.keySet())
 					{
-					final MetaObject ob=thisMeta.metaObject.get(obId); //might become problematic?
+					final EvObject ob=thisMeta.metaObject.get(obId); //might become problematic?
 					JMenu obmenu=new JMenu(""+obId+": "+ob.getMetaTypeDesc());
 					menuMetadata.add(obmenu);
 
