@@ -2,7 +2,7 @@ package evplugin.imagesetBioformats;
 import java.util.*;
 
 import evplugin.basicWindow.*;
-import evplugin.metadata.Metadata;
+import evplugin.data.*;
 import evplugin.script.*;
 import evplugin.imageset.*;
 
@@ -22,7 +22,7 @@ public class CmdDBIO extends Command
 
 			
 			Imageset rec=new BioformatsImageset(v.stringValue());
-			Metadata.metadata.add(rec);
+			EvData.metadata.add(rec);
 			
 			BasicWindow.updateWindows();
 			

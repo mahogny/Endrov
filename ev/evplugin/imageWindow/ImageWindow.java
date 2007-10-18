@@ -11,8 +11,7 @@ import evplugin.ev.*;
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.imageset.*;
-import evplugin.keyBinding.KeyBinding;
-import evplugin.keyBinding.ScriptBinding;
+import evplugin.keyBinding.*;
 import org.jdom.*;
 
 /**
@@ -61,11 +60,7 @@ public class ImageWindow extends BasicWindow
 					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
 					win.comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
 					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				
+				catch (Exception e1){e1.printStackTrace();}
 				}
 			public void savePersonalConfig(Element e){}
 			});
@@ -184,12 +179,11 @@ public class ImageWindow extends BasicWindow
 	public ImageWindow()
 		{
 		this(new Rectangle(0,25,800,650));
-//		this(0,25,800,650);
 		}
 	/**
-	 * Make a new window at some location
+	 * Make a new window at given location
 	 */
-	public ImageWindow(/*int x, int y, int w, int h*/ Rectangle bounds)
+	public ImageWindow(Rectangle bounds)
 		{
 		for(ImageWindowExtension e:imageWindowExtensions)
 			e.newImageWindow(this);
@@ -312,7 +306,9 @@ public class ImageWindow extends BasicWindow
 		}
 	
 
-	
+	/**
+	 * Get name of currently viewed channel
+	 */
 	public String getCurrentChannelName()
 		{
 		return comboChannel.getChannel();
@@ -491,10 +487,8 @@ public class ImageWindow extends BasicWindow
 		if(tool!=null)
 			tool.mouseExited(e);
 		}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
+	/**
+	 * Callback: Mouse moved
 	 */
 	public void mouseMoved(MouseEvent e)
 		{
@@ -513,9 +507,8 @@ public class ImageWindow extends BasicWindow
 		//Need to update currentHover so always repaint.
 		imagePanel.repaint();
 		}
-
-	/*
-	 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
+	/**
+	 * Callback: mouse dragged
 	 */
 	public void mouseDragged(MouseEvent e)
 		{
@@ -596,8 +589,6 @@ public class ImageWindow extends BasicWindow
 	/** Keep track of last imageset for re-centering purposes */
 	private Imageset lastImagesetRecenter=null;
 	
-	//WeakHashMap<Imageset, Object> viewedImageset=new WeakHashMap<Imageset, Object>();
-	
 	/**
 	 * Take current settings of sliders and apply it to image
 	 */
@@ -607,8 +598,7 @@ public class ImageWindow extends BasicWindow
 		imagePanel.brightness=sliderBrightness.getValue();
 		imagePanel.contrast=Math.pow(2,sliderContrast.getValue()/1000.0);
 		imagePanel.zoom=getZoom();
-		imagePanel.binning=1;
-		imagePanel.imageLoader=null;
+		imagePanel.image=null;
 
 		//Check if recenter needed
 		boolean zoomToFit=false;
@@ -622,13 +612,8 @@ public class ImageWindow extends BasicWindow
 
 		Imageset.ChannelImages ch=getSelectedChannel();
 		if(ch!=null)
-			{
-			imagePanel.imageLoader=ch.getImageLoader((int)frameControl.getFrame(), frameControl.getZ());
-			imagePanel.binning=ch.getMeta().chBinning;
-			imagePanel.dispX=ch.getMeta().dispX;
-			imagePanel.dispY=ch.getMeta().dispY;
-			}
-
+			imagePanel.image=ch.getImageLoader((int)frameControl.getFrame(), frameControl.getZ());
+		
 		//Show new image
 		imagePanel.update();
 

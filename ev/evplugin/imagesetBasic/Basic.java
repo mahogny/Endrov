@@ -2,7 +2,7 @@ package evplugin.imagesetBasic;
 
 //import evplugin.basicWindow.*;
 //import evplugin.imageset.*;
-import evplugin.metadata.*;
+import evplugin.data.*;
 
 import java.io.File;
 import java.awt.event.*;
@@ -17,7 +17,7 @@ public class Basic //implements BasicWindowExtension
 		{
 	//	BasicWindow.addBasicWindowExtension(new Basic());
 		
-		MetadataBasic.extensions.add(new MetadataExtension()
+		EvDataBasic.extensions.add(new DataMenuExtension()
 			{
 
 			public void buildOpen(JMenu menu)
@@ -44,13 +44,13 @@ public class Basic //implements BasicWindowExtension
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
+				    chooser.setCurrentDirectory(new File(EvData.lastDataPath));
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
-				    	Metadata.addMetadata(new SequenceImageset(filename));
+				    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
+				    	EvData.addMetadata(new SequenceImageset(filename));
 				    	}
 						}
 					
@@ -62,13 +62,13 @@ public class Basic //implements BasicWindowExtension
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(Metadata.lastDataPath));
+				    chooser.setCurrentDirectory(new File(EvData.lastDataPath));
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	Metadata.lastDataPath=chooser.getSelectedFile().getParent();
-				    	Metadata.addMetadata(new SequenceImageset(filename));
+				    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
+				    	EvData.addMetadata(new SequenceImageset(filename));
 				    	}
 						}
 					};
@@ -77,7 +77,7 @@ public class Basic //implements BasicWindowExtension
 				miLoadSequenceImageset.addActionListener(listener);
 				}
 			
-			public void buildSave(JMenu menu, final Metadata meta)
+			public void buildSave(JMenu menu, final EvData meta)
 				{
 				if(meta instanceof NamebasedImageset)
 					{

@@ -1,9 +1,6 @@
 package evplugin.imageset;
 
 import java.io.File;
-
-import javax.vecmath.Vector2d;
-
 import evplugin.jubio.EvImageJAI;
 
 
@@ -48,21 +45,35 @@ public class EmptyImageset extends Imageset
 			super(name);
 			}
 		
-		public Vector2d transformWorldImage(Vector2d c)
+		
+		public double transformWorldImageX(double c){return c;}
+		public double transformWorldImageY(double c){return c;}
+		public double transformImageWorldX(double c){return c;}
+		public double transformImageWorldY(double c){return c;}
+		public double scaleWorldImageX(double d){return d;}
+		public double scaleWorldImageY(double d){return d;}
+		public double scaleImageWorldX(double d){return d;}
+		public double scaleImageWorldY(double d){return d;}
+		
+		public int getBinning()
 			{
-			return new Vector2d(c);
+			return 1;
 			}
-		public Vector2d transformImageWorld(Vector2d c)
+		public double getDispX()
 			{
-			return new Vector2d(c);
+			return 0;
 			}
-		public Vector2d scaleWorldImage(Vector2d d)
+		public double getDispY()
 			{
-			return new Vector2d(d);
+			return 0;
 			}
-		public Vector2d scaleImageWorld(Vector2d d)
+		public double getResX()
 			{
-			return new Vector2d(d);
+			return 1;
+			}
+		public double getResY()
+			{
+			return 1;
 			}
 		}
 	

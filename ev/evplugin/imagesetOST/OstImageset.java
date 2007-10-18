@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.vecmath.Vector2d;
 
 import java.io.*;
 import java.util.*;
@@ -639,36 +638,19 @@ public class OstImageset extends Imageset
 		
 		public EvImageOST newEvImage(String filename)
 			{
-			return new EvImageOST(getMeta().name, filename);
+			return new EvImageOST(filename);
 			}
 		
 		
 		private class EvImageOST extends EvImageJAI
 			{
-			public String channel;
-			public EvImageOST(String channel, String filename)
-				{
-				super(filename);
-				this.channel=channel;
-				}
-			public Vector2d transformWorldImage(Vector2d c)
-				{
-				
-				////////////////////////////TODO
-				return new Vector2d(c);
-				}
-			public Vector2d transformImageWorld(Vector2d c)
-				{
-				return new Vector2d(c);
-				}
-			public Vector2d scaleWorldImage(Vector2d d)
-				{
-				return new Vector2d(d);
-				}
-			public Vector2d scaleImageWorld(Vector2d d)
-				{
-				return new Vector2d(d);
-				}
+			public EvImageOST(String filename){super(filename);}
+
+			public int getBinning(){return getMeta().chBinning;}
+			public double getDispX(){return getMeta().dispX;}
+			public double getDispY(){return getMeta().dispY;}
+			public double getResX(){return meta.resX;}
+			public double getResY(){return meta.resY;}
 			}
 		}
 	
