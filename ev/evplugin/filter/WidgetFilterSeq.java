@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import evplugin.basicWindow.BasicWindow;
 import evplugin.filter.FilterImageExtension.*;
 
 /**
@@ -26,7 +27,7 @@ public class WidgetFilterSeq extends JPanel
 	
 	public WidgetFilterSeq()
 		{
-		buildMenu();
+//buildMenu();
 		setLayout(new GridLayout(1,1));
 		add(scroll);
 		buildList();
@@ -47,26 +48,39 @@ public class WidgetFilterSeq extends JPanel
 	/**
 	 * Build menu for adding filters
 	 */
-	public JMenu buildMenu()
+	public void buildMenu(JMenu mAdd)
 		{
-		JMenu mAdd=new JMenu("Add");
-		FilterImageExtension.fillFilters(mAdd, new BindListener()
+		mAdd.removeAll();
+		BindListener b=new BindListener()
 			{
-			public void bind(final FilterInfo fi, JMenuItem mi)
+			public void bind(final Object fi, JMenuItem mi)
 				{
 				mi.addActionListener(new ActionListener()
 					{
 					public void actionPerformed(ActionEvent e)
 						{
-						FilterROI firoi=fi.filterROI();
-						filterseq.sequence.add(firoi);
-						buildList();
-						
+						if(filterseq!=null)
+							{
+							if(fi instanceof FilterInfo)
+								{
+								Filter firoi=((FilterInfo)fi).filterROI();
+								filterseq.sequence.add(firoi);
+								}
+							else if(fi!=filterseq)
+								{
+								FilterSeq fs=(FilterSeq)fi;
+								for(Filter firoi:fs.sequence)
+									filterseq.sequence.add(firoi);
+								}
+							buildList();
+							}
 						}
 					});
 				}
-			});
-		return mAdd;
+			};
+
+		FilterImageExtension.fillFilters(mAdd, b);
+		FilterImageExtension.fillFilterSeq(mAdd, b);
 		}
 	
 	/**
@@ -119,6 +133,7 @@ public class WidgetFilterSeq extends JPanel
 								Filter from=filterseq.sequence.get(currentPos);
 								filterseq.sequence.remove(currentPos);
 								filterseq.sequence.add(currentPos+1, from);
+								BasicWindow.updateWindows();
 								buildList();
 								}
 							}

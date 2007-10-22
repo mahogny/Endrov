@@ -1,8 +1,8 @@
 package evplugin.ev;
 
 import java.io.*;
-import java.awt.*;
-import java.net.*;
+//import java.awt.*;
+//import java.net.*;
 
 /*
  * Note - you must include the url type -- either "http://" or
@@ -26,6 +26,8 @@ public class BrowserControl
 				Runtime.getRuntime().exec(WIN_PATH + " " + WIN_FLAG + " " + url);
 			else
 				{
+				//TODO JAVA6
+				/*
 				if(java.awt.Desktop.isDesktopSupported())
 					{
 					System.out.println("Desktop supported!");
@@ -38,7 +40,7 @@ public class BrowserControl
 						e.printStackTrace();
 						}
 					}
-				else
+				else*/
 					{
 					//Fallback
 				

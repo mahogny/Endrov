@@ -30,7 +30,7 @@ public class EvMutableDouble extends Number
 
 	public double doubleValue()
 		{
-		return (byte)d;
+		return d;
 		}
 
 	public float floatValue()

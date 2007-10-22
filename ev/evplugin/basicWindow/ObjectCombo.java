@@ -48,9 +48,9 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	/**
 	 * Construct new channel combo, needs access to global data
 	 */
-	public ObjectCombo(comboFilterMetaObject filterObject, boolean addEmptyChannel)
+	public ObjectCombo(comboFilterMetaObject filterObject, boolean addEmpty)
 		{
-		this.addEmpty=addEmptyChannel;
+		this.addEmpty=addEmpty;
 		this.filterObject=filterObject;
 		addActionListener(this);
 		

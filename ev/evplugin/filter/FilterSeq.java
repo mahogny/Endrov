@@ -97,6 +97,17 @@ public class FilterSeq extends EvObject
 	
 	//for entire channel etc, make a temporary roi. right now, might not be the way later
 	
+	public FilterSeq()
+		{
+		}
+	
+	public FilterSeq(Filter[] fl)
+		{
+		for(Filter f:fl)
+			sequence.add(f);
+		}
+	
+	
 	public void apply(Imageset rec, ROI roi)
 		{
 		

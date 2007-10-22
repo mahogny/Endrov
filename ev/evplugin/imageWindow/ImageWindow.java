@@ -80,12 +80,8 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void windowPersonalSettings(Element root)
 		{
-		Rectangle r=getBounds();
 		Element e=new Element("imagewindow");
-		e.setAttribute("x", ""+r.x);
-		e.setAttribute("y", ""+r.y);
-		e.setAttribute("w", ""+r.width);
-		e.setAttribute("h", ""+r.height);
+		setXMLbounds(e);
 		e.setAttribute("group", ""+frameControl.getGroup());
 		e.setAttribute("lastSelectChannel", comboChannel.lastSelectChannel);
 		root.addContent(e);
