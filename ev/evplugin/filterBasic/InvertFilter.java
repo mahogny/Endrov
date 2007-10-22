@@ -1,75 +1,55 @@
 package evplugin.filterBasic;
 
 import java.awt.image.*;
+
+import javax.swing.JComponent;
+
+import org.jdom.Element;
+
 import evplugin.filter.*;
-import evplugin.imageset.*;
-import evplugin.roi.*;
 
 /**
  * Filter: invert image, c'=255-c
+ * 
  * @author Johan Henriksson
  */
-public class InvertFilter extends FilterROI
+public class InvertFilter extends FilterSlice
 	{
+	private static String filterName="Invert";
+	private static String filterCategory="Transform";
+	
 	public static void initPlugin() {}
 	static
 		{
-		FilterMeta.addFilter(new FilterInfo()
+		Filter.addFilter(new FilterInfo()
 			{
-			public String getCategory(){return "Transform";}
-			public String getName(){return "Invert";}
+			public String getCategory(){return filterCategory;}
+			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new InvertFilter();}
+			public Filter readXML(Element e)
+				{
+				InvertFilter f=new InvertFilter();
+				return f;
+				}
 			});
 		}
+
+	public String getFilterName()
+		{
+		return filterName;
+		}
 	
-//highest level. should we have a standard implementation here?	
-//	public void applyImage(EvImage evim, ROI roi)
-	public void applyImage(Imageset rec, String channel, int frame, int z, ROI roi)
+	
+	public JComponent getFilterWidget()
 		{
-		EvImage evim=rec.getChannel(channel).getImageLoader(frame,z);
-		
-		
-		//standard implementation
-		BufferedImage i=evim.getJavaImage();
-		BufferedImage i2=new BufferedImage(i.getWidth(),i.getHeight(),i.getType());
-		applyImage(i,i2);
-		
-		LineIterator it=roi.getLineIterator(rec, channel, frame, z);
-		WritableRaster rin=i2.getRaster();
-		WritableRaster rout=i.getRaster();
-		while(it.next())
-			{
-			int w=it.endX-it.startX;
-			int[] pix=new int[w];
-			rin.getSamples(it.startX, it.y, w, 1, 0, pix);
-			rout.setSamples(it.startX, it.y, w, 1, 0, pix);
-//			System.out.println("z "+it.startX+" "+it.endX+" "+it.y+" "+w);
-			}
-		
-		//batching
-		
-		//Later: transfer back using ROI
-		evim.setImage(i);
+		return null;
 		}
 
-//on entire image. could have a standard implementation of this one too.	
-	public void applyImage(EvImage evim)
+	public void saveMetadata(Element e)
 		{
-		
-		BufferedImage i=evim.getJavaImage();
-		evim.setImage(i);
-
-		applyImage(i,i);
-		
-		
-		/////for standard implementation
-		//copy original
-		//call above with ROI covering everything
-		//mix original and filtered
-		//return
+		setFilterXmlHead(e, filterName);
 		}
-
 	
 	public void applyImage(BufferedImage in, BufferedImage out)
 		{
@@ -86,12 +66,4 @@ public class InvertFilter extends FilterROI
 			rout.setSamples(0, ah, width, 1, 0, pix);
 			}
 		}
-	
-	
-	public void applyLine(EvImage im, LineIterator it)
-		{
-		
-		}
-	
-	
 	}

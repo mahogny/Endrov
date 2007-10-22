@@ -1,6 +1,5 @@
 package evplugin.roi;
 
-
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -11,6 +10,11 @@ import evplugin.imageset.*;
 import evplugin.data.*;
 import evplugin.ev.*;
 
+/**
+ * ROI (Region Of Interest), selects a region on channel X frames X x,y,z (5D)
+ * 
+ * @author Johan Henriksson
+ */
 public abstract class ROI extends EvObject
 	{
 	
@@ -130,5 +134,6 @@ public abstract class ROI extends EvObject
 	public abstract Handle[] getHandles();
 	
 	public abstract boolean imageInRange(String channel, double frame, int z);
-	public abstract LineIterator getLineIterator(Imageset rec, String channel, int frame, int z);
+	public abstract LineIterator getLineIterator(EvImage im, String channel, int frame, int z);
+	
 	}

@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{FilterMeta.class};
+		return new Class[]{Filter.class, WindowFilterSeq.class};
 		}
 	}

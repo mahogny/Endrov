@@ -4,12 +4,12 @@ package evplugin.ev;
 
 import java.util.*;
 import java.util.prefs.*;
+import java.awt.Desktop;
 import java.io.*;
 import javax.swing.*;
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
-
 
 /**
  * Support functions for the EV framework
@@ -26,10 +26,21 @@ public class EV
 
 	public static HashMap<String,PersonalConfig> personalConfigLoaders=new HashMap<String,PersonalConfig>();
 
+	private static boolean useHomedirConfig=false;
+	
 	static
 		{
 		//This option is not needed on mac but anyway.
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+		}
+	
+	
+	/**
+	 * Get name of config file in case it is stored as an individual file
+	 */
+	private static String getConfigName()
+		{
+		return System.getenv("HOME")+"/.ev.xml";
 		}
 	
 	/**
@@ -37,8 +48,36 @@ public class EV
 	 */
 	public static void loadPersonalConfig()
 		{
+		getConfigName();
 		Preferences prefs = Preferences.userNodeForPackage (EV.class);
 		String s=prefs.get("evdata", null);
+		if(s==null)
+			{
+			File configFile=new File(getConfigName());
+			if(configFile.exists())
+				{
+				s="";
+		    try
+					{
+					DataInputStream in = new DataInputStream(new FileInputStream(configFile));
+					    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+					String strLine;
+					while ((strLine = br.readLine()) != null)   
+					  s+=strLine;
+					in.close();
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				
+				
+				System.out.println("Loading config file from home directory");
+				useHomedirConfig=true;
+				}
+			}
+		
+		
 		if(s!=null)
 			{
 	    try 
@@ -104,8 +143,25 @@ public class EV
 			e.printStackTrace();
 			}
 		
-		Preferences prefs = Preferences.userNodeForPackage(EV.class);
-		prefs.put("evdata", s);
+		if(useHomedirConfig)
+			{
+			try
+				{
+				BufferedWriter bufferedwriter = new BufferedWriter(new FileWriter(getConfigName()));
+				bufferedwriter.write(s);
+				bufferedwriter.close();
+				}
+			catch (IOException e)
+				{
+				e.printStackTrace();
+				}
+			}
+		else
+			{		
+			Preferences prefs = Preferences.userNodeForPackage(EV.class);
+			prefs.put("evdata", s);
+			}
+		
 		if(EV.debugMode)
 			Log.printLog(s);
 		}
@@ -178,7 +234,12 @@ public class EV
 			if(EV.isMac())
 				Runtime.getRuntime().exec(new String[]{"/usr/bin/open",f.getAbsolutePath()});
 			else
-				JOptionPane.showMessageDialog(null, "Feature only supported on Mac right now");
+				{
+				if(Desktop.isDesktopSupported())
+					Desktop.getDesktop().open(f);
+				else
+					JOptionPane.showMessageDialog(null, "Feature not supported on this platform");
+				}
 			}
 		catch (IOException e)
 			{
