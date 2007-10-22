@@ -66,8 +66,8 @@ public class NoisePepperAndSalt extends FilterSlice
 		{
 		JPanel pane=new JPanel(new GridLayout(2,2));
 		
-		final JNumericFieldMutableDouble npwhite=new JNumericFieldMutableDouble(pwhite);
-		final JNumericFieldMutableDouble npblack=new JNumericFieldMutableDouble(pblack);
+		JNumericFieldMutableDouble npwhite=new JNumericFieldMutableDouble(pwhite);
+		JNumericFieldMutableDouble npblack=new JNumericFieldMutableDouble(pblack);
 		
 		pane.add(new JLabel("P[white]:"));
 		pane.add(npwhite);

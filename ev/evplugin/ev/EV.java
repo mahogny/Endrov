@@ -4,7 +4,7 @@ package evplugin.ev;
 
 import java.util.*;
 import java.util.prefs.*;
-import java.awt.Desktop;
+//import java.awt.Desktop;
 import java.io.*;
 import javax.swing.*;
 import org.jdom.*;
@@ -235,9 +235,11 @@ public class EV
 				Runtime.getRuntime().exec(new String[]{"/usr/bin/open",f.getAbsolutePath()});
 			else
 				{
+				//TODO JAVA6
+				/*
 				if(Desktop.isDesktopSupported())
 					Desktop.getDesktop().open(f);
-				else
+				else*/
 					JOptionPane.showMessageDialog(null, "Feature not supported on this platform");
 				}
 			}

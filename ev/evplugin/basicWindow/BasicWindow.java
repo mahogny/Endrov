@@ -91,6 +91,9 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		return e.getModifiersEx()==KeyEvent.META_DOWN_MASK || e.getModifiersEx()==KeyEvent.CTRL_DOWN_MASK;
 		}
 	
+	/**
+	 * Get bounds of window from XML element
+	 */
 	public static Rectangle getXMLbounds(Element e) throws Exception
 		{
 		int x=e.getAttribute("x").getIntValue();
@@ -100,6 +103,9 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		return new Rectangle(x,y,w,h);
 		}
 	
+	/**
+	 * Store bounds of this window into XML element
+	 */
 	public void setXMLbounds(Element e)
 		{
 		Rectangle r=getBounds();

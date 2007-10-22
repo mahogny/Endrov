@@ -31,8 +31,7 @@ public class BatchRot
 
 		
 		if(arg.length==0)
-			arg=new String[]{"/Volumes/TBU_xeon01_500GB01/final_recordings/","/Volumes/TBU_xeon01_500GB01/daemon/output/","/Volumes/TBU_xeon01_500GB01/daemonoutput_mirror/",
-					"/Volumes/TBU_xeon01_500GB01/4D_recordings_until_070909/"};
+			arg=new String[]{"/Volumes/TBU_xeon01_500GB01/ost4dgood/","/Volumes/TBU_xeon01_500GB02/ost4dgood/"};
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
 				if(file.isDirectory())
