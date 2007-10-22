@@ -3,7 +3,7 @@ package evplugin.filter;
 import org.jdom.*;
 import java.util.*;
 
-import javax.swing.JMenu;
+import javax.swing.*;
 
 import evplugin.data.*;
 import evplugin.imageWindow.*;
@@ -16,12 +16,12 @@ import evplugin.imageWindow.*;
  * 
  * @author Johan Henriksson
  */
-public abstract class FilterMeta extends EvObject
+public abstract class Filter extends EvObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	//private static final String metaType="filter";
+	private static final String metaType="filter";
 	
 	public static TreeMap<String,FilterInfo> filterInfo=new TreeMap<String,FilterInfo>();
 	
@@ -29,22 +29,22 @@ public abstract class FilterMeta extends EvObject
 	static
 		{
 		ImageWindow.addImageWindowExtension(new FilterImageExtension());
-//		Metadata.extensions.put(metaType,new ImagesetMetaObjectExtension());
-		
-		
+		EvData.extensions.put(metaType,new FilterObjectType());
 		}
 	
 	public String getMetaTypeDesc()
 		{
-		//Can/Should be overriden?
-		return "Filter";
+		return "Filter ("+getFilterName()+")";
 		}
-	public void saveMetadata(Element e)
-		{
-		//This is just awful. let every filter implement?
-		e.setName("filter");
-		}
+	
 
+	public static void setFilterXmlHead(Element e, String filterName)
+		{
+		e.setName(metaType);
+		e.setAttribute("filtername", filterName);
+		}
+	
+	
 	/** Additions to the object-specific menu */
 	public void buildMetamenu(JMenu menu)
 		{
@@ -53,7 +53,7 @@ public abstract class FilterMeta extends EvObject
 	
 	public static void addFilter(FilterInfo fi)
 		{
-		FilterMeta.filterInfo.put(fi.getName(),fi);
+		Filter.filterInfo.put(fi.getName(),fi);
 		}
 	
 	
@@ -61,24 +61,27 @@ public abstract class FilterMeta extends EvObject
 	 *            Class: XML Reader and writer of this type of meta object                                *
 	 *****************************************************************************************************/
 	
-	/*
-	public static class ImagesetMetaObjectExtension implements MetaObjectExtension
+	public static class FilterObjectType implements EvObjectType
 		{
-		public MetaObject extractObjects(Element e)
+		public EvObject extractObjects(Element e)
 			{
-			FilterMeta meta=new FilterMeta();
-	
-			
-			return meta;
+			return extractFilterXML(e);
 			}
-	
-		
 		}
-		*/
-
+	public static EvObject extractFilterXML(Element e)
+		{
+		String filterName=e.getAttributeValue("filtername");
+		return filterInfo.get(filterName).readXML(e);
+		}
+	
+	
+	//Save is to be defined for each filter itself
 	
 	/******************************************************************************************************
 	 *                               Filter                                                               *
 	 *****************************************************************************************************/
 
+	
+	public abstract JComponent getFilterWidget();
+	public abstract String getFilterName();
 	}

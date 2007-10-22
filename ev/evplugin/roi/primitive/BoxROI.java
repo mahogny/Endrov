@@ -31,6 +31,12 @@ public class BoxROI extends ROI
 			{
 			return all || (x>=start && x<end);
 			}
+		public void set(double start, double end)
+			{
+			all=false;
+			this.start=start;
+			this.end=end;
+			}
 		}
 	
 
@@ -171,13 +177,10 @@ public class BoxROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(final Imageset rec, final String channel, final int frame, final int z)
+	public LineIterator getLineIterator(EvImage im, final String channel, final int frame, final int z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
-			//todo: check if there is something here
-			EvImage im=rec.getChannel(channel).getImageLoader(frame, z);
-
 			//Initial boundary: cover entire image
 			RectLineIterator it=new RectLineIterator();
 			it.startX=0;
@@ -200,8 +203,6 @@ public class BoxROI extends ROI
 				if(it.y<rYstart)	it.y=rYstart;
 				if(it.endY>rYend) it.endY=rYend;
 				}
-			
-//		System.out.println("xxx "+it.startX+" "+it.endX+" "+it.y+" "+it.endY);
 			
 			//Sanity check
 			if(it.y>it.endY || it.startX>it.endX)

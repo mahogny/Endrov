@@ -103,66 +103,28 @@ public class ImageExtensionROI implements ImageWindowExtension
 			{
 			public void actionPerformed(ActionEvent e)
 				{
-				ROI roi=new BoxROI();
+				//Create a Box-ROI
+				BoxROI roi=new BoxROI();
+				roi.regionChannels.add(w.getCurrentChannelName());
+				double curFrame=w.frameControl.getFrame();
+				double curZ=w.frameControl.getZ();
+				roi.regionFrames.set(curFrame,curFrame+1);
+				roi.regionZ.set(curZ, curZ+1);
+				
+				
+				//In common for all type of ROI:s
+				//Add ROI to data
 				Imageset rec=w.getImageset();
 				rec.addMetaObject(roi);
 				BasicWindow.updateWindows();
 				roi.openEditWindow();
+				
+				
+				
 				}
 			};
 		miNewRect.addActionListener(listenerRect);
 		
-		
-//		BasicWindow.addMenuItemSorted(miRemove, miRemoveSlice);
-		
-		/*
-		ActionListener listener=new ActionListener()
-			{
-			public void actionPerformed(ActionEvent e)
-				{
-				if(e.getSource()==miRemoveChannel)
-					{
-					String ch=w.getCurrentChannelName();
-					if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-						{
-						w.getImageset().removeChannel(ch);
-						BasicWindow.updateWindows();
-						}
-					}
-				else if(e.getSource()==miRemoveFrame)
-					{
-					String ch=w.getCurrentChannelName();
-					int frame=(int)w.frameControl.getFrame();
-					
-					if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+", frame "+frame+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-						{
-						w.getImageset().getChannel(ch).imageLoader.remove(frame);
-						BasicWindow.updateWindows();
-						}
-					}
-				else if(e.getSource()==miRemoveSlice)
-					{
-					String ch=w.getCurrentChannelName();
-					int frame=(int)w.frameControl.getFrame();
-					int z=w.frameControl.getZ();
-					
-					if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+", frame "+frame+", slice "+z+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-						{
-						w.getImageset().getChannel(ch).imageLoader.get(frame).remove(z);
-						BasicWindow.updateWindows();
-						}
-					}
-				
-				
-				}	
-			};
-		
-
-		//Add listeners
-		miRemoveChannel.addActionListener(listener);
-		miRemoveFrame.addActionListener(listener);
-		miRemoveSlice.addActionListener(listener);
-				*/
 		
 		
 

@@ -1,6 +1,8 @@
 package evplugin.ev;
 
 import java.io.*;
+import java.awt.*;
+import java.net.*;
 
 /*
  * Note - you must include the url type -- either "http://" or
@@ -24,24 +26,39 @@ public class BrowserControl
 				Runtime.getRuntime().exec(WIN_PATH + " " + WIN_FLAG + " " + url);
 			else
 				{
-				// Under Unix, Netscape has to be running for the "-remote"
-				// command to work.  So, we try sending the command and
-				// check for an exit value.  If the exit command is 0,
-				// it worked, otherwise we need to start the browser.
-				// cmd = 'netscape -remote openURL(http://www.javaworld.com)'
-				Process p = Runtime.getRuntime().exec(UNIX_PATH + " " + UNIX_FLAG + "(" + url + ")");
-				try
+				if(java.awt.Desktop.isDesktopSupported())
 					{
-					// wait for exit code -- if it's 0, command worked,
-					// otherwise we need to start the browser up.
-					int exitCode = p.waitFor();
-					if (exitCode != 0)
-						Runtime.getRuntime().exec(UNIX_PATH + " "  + url);
+					System.out.println("Desktop supported!");
+					try
+						{
+						Desktop.getDesktop().browse(new URI(url));
+						}
+					catch (URISyntaxException e)
+						{
+						e.printStackTrace();
+						}
 					}
-				catch(InterruptedException x)
+				else
 					{
-					System.err.println("Error bringing up browser");
-					System.err.println("Caught: " + x);
+					//Fallback
+				
+					// cmd = 'netscape -remote openURL(http://www.javaworld.com)'
+					String cmd=UNIX_PATH + " " + UNIX_FLAG +" "+ url;
+					System.out.println(cmd);
+					Process p = Runtime.getRuntime().exec(cmd);
+					try
+						{
+						// wait for exit code -- if it's 0, command worked,
+						// otherwise we need to start the browser up.
+						int exitCode = p.waitFor();
+						if (exitCode != 0)
+							Runtime.getRuntime().exec(UNIX_PATH + " " + url);
+						}
+					catch(InterruptedException x)
+						{
+						System.err.println("Error bringing up browser");
+						System.err.println("Caught: " + x);
+						}
 					}
 				}
 			}
@@ -85,7 +102,7 @@ public class BrowserControl
 	// The flag to display a url.
 	private static final String WIN_FLAG = "url.dll,FileProtocolHandler";
 	// The default browser under unix.
-	private static final String UNIX_PATH = "netscape";
+	private static final String UNIX_PATH = "firefox";
 	// The flag to display a url.
-	private static final String UNIX_FLAG = "-remote openURL";
+	private static final String UNIX_FLAG = "-new-tab";
 	}

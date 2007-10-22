@@ -1,16 +1,14 @@
 package evplugin.ev;
 
-
 import java.io.*;
 import java.lang.reflect.*;
-import java.net.URL;
-import java.util.Vector;
-
+import java.net.*;
+import java.util.*;
 import javax.swing.*;
 
-
 /**
- * Plugin loader
+ * Load plugins. Every plugin is located in evplugin/.../ and has a PLUGIN.java describing how to load it.
+ * 
  * @author Johan Henriksson
  */
 public class PluginInfo
