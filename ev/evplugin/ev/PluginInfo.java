@@ -68,7 +68,8 @@ public class PluginInfo
 					catch (Exception e)
 						{
 						e.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Could not load EV; plugin "+pdef.getPluginName()+" broken");
+						JOptionPane.showMessageDialog(null, "Could not load EV; plugin "+pdef.getPluginName()+" broken\n"+
+								MemoryLog.logPrintString(e));
 						}
 					}
 				}
