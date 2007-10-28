@@ -28,6 +28,8 @@ public class GUI
 
 		//A window showing initialization could be useful here
 		
+		SplashScreen ss=new SplashScreen();
+		
 		
 		//if(!PluginInfo.storedInJar())
 			{
@@ -46,6 +48,7 @@ public class GUI
 				//Make sure at least one window is open
 				new ImageWindow();
 				}
+			ss.dispose();
 			}
 		catch (Exception e)
 			{

@@ -32,6 +32,18 @@ public class MemoryLog extends Log
 		}
 
 	/**
+	 * Take an exception and print the error to a string
+	 */
+	public static String logPrintString(Exception e)
+		{
+		StringWriter sw=new StringWriter();
+		PrintWriter s2=new PrintWriter(sw);
+		e.printStackTrace(s2);
+		s2.flush();
+		return sw.toString();
+		}
+	
+	/**
 	 * Log an error
 	 * @param s Human readable description, may be null
 	 * @param e Low-level error, may be null
@@ -42,13 +54,8 @@ public class MemoryLog extends Log
 			past.append(s).append("\n");
 		if(e!=null)
 			{
-			StringWriter sw=new StringWriter();
-			PrintWriter s2=new PrintWriter(sw);
-			e.printStackTrace(s2);
-			s2.flush();
-
 			past.append("Exception message: ").append("\n");
-			past.append(sw.toString());
+			past.append(logPrintString(e));
 			}
 		cut();
 		}

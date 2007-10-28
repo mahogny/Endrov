@@ -6,8 +6,6 @@ import javax.swing.*;
 
 import evplugin.data.*;
 import evplugin.ev.*;
-//import evplugin.filter.FilterImageExtension.BindListener;
-//import evplugin.imageset.*;
 import evplugin.basicWindow.*;
 import evplugin.basicWindow.ObjectCombo.Alternative;
 
@@ -123,7 +121,6 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 		add(wFilterSeq,BorderLayout.CENTER);
 		addMenubar(mAdd);
 		wFilterSeq.buildMenu(mAdd);
-//		buildMenu(mAdd, getFilterSequence());
 				
 		//Window overall things
 		setTitle(EV.programName+" Filter Sequence");

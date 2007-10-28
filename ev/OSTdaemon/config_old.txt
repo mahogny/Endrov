@@ -1,0 +1,12 @@
+#pathinput /Volumes/TBU_xeon01_500GB01/daemon/input
+#pathconverted /Volumes/TBU_xeon01_500GB01/daemon/candelete
+
+pathinput /Volumes/ZeissRec128GB/4ddaemon
+pathconverted /Volumes/ZeissRec128GB/4ddaemon_converted
+
+pathoutput /Volumes/TBU_xeon01_500GB01/daemon/output
+
+setmax GFP RFP
+compression DIC 80
+ostversion 2
+skipblackslices 1
