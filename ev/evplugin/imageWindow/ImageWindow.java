@@ -39,6 +39,8 @@ public class ImageWindow extends BasicWindow
 	private static ImageIcon iconLabelZoom=new ImageIcon(FrameControlImage.class.getResource("labelZoom.png"));
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
+	private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
+	private static ImageIcon iconLabelFS=new ImageIcon(FrameControlImage.class.getResource("labelFS.png"));
 
 	public static void addImageWindowExtension(ImageWindowExtension e)
 		{
@@ -120,10 +122,12 @@ public class ImageWindow extends BasicWindow
 	// Other GUI components
 	private final JSlider sliderContrast=new JSlider(-500,500,0);
 	private final JSlider sliderBrightness=new JSlider(-100,100,0);
-	private final JSlider sliderZoom=new JSlider(-10000,10000,-1000); //2^n	
+	private final JSlider sliderZoom=new JSlider(JSlider.VERTICAL, -10000,10000,-1000); //2^n	
 	public final FrameControlImage frameControl=new FrameControlImage(this);
 	public final ChannelCombo comboChannel=new ChannelCombo(null,false);
 	
+	private final JPanel bottomPanel=new JPanel();
+
 	private JMenu menuImageWindow=new JMenu("ImageWindow");
 	public JMenu menuImage=new JMenu("Image");
 	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
@@ -132,6 +136,8 @@ public class ImageWindow extends BasicWindow
 	private final JMenuItem miMiddleSlice=new JMenuItem("Go to middle slice");
 	private final JCheckBoxMenuItem miShowOverlay=new JCheckBoxMenuItem("Show overlay",true);
 
+	private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
+	
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastDragX=0, mouseLastDragY=0;
 	/** Last coordinate of the mouse pointer. Used to detect moving distance. For event technical reasons,
@@ -168,6 +174,33 @@ public class ImageWindow extends BasicWindow
 	/** Scale world to screen vector */
 	public double scaleW2s(double w) {return w*getImageset().meta.resY*getZoom();}
 
+	
+	private class ChannelWidget extends JPanel
+		{
+		static final long serialVersionUID=0;
+		public ChannelWidget()
+			{
+			setLayout(new GridLayout(1,4));
+			
+			JPanel contrastPanel=new JPanel(new BorderLayout());
+			contrastPanel.add(new JLabel(iconLabelContrast), BorderLayout.WEST);
+			contrastPanel.add(sliderContrast,BorderLayout.CENTER);
+			add(contrastPanel);
+
+			JPanel brightnessPanel=new JPanel(new BorderLayout());
+			brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
+			brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
+			add(brightnessPanel);
+
+			JButton bFilterSequence=new JButton(iconLabelFS);
+
+			JPanel right=new JPanel(new BorderLayout());
+			right.add(comboChannel,BorderLayout.CENTER);
+			right.add(bFilterSequence,BorderLayout.WEST);
+			
+			add(right);
+			}
+		}
 		
 	/**
 	 * Make new window at default location
@@ -200,32 +233,32 @@ public class ImageWindow extends BasicWindow
 		miShowOverlay.addChangeListener(this);
 		
 		//Piece GUI together
-		JPanel bottom=new JPanel(new GridLayout(2,1,0,0));
-		JPanel bottom2=new JPanel(new GridLayout(1,4));
-		bottom.add(frameControl);
-		bottom.add(bottom2);
+		JPanel bottomRight=new JPanel(new GridLayout(1,2));
+		bottomRight.add(bShow3colors);
+		
+		
+		JPanel bottom1=new JPanel(new BorderLayout());
+		bottom1.add(frameControl,BorderLayout.CENTER);
+		bottom1.add(bottomRight,BorderLayout.EAST);
 
-		JPanel contrastPanel=new JPanel(new BorderLayout());
-		contrastPanel.add(new JLabel(iconLabelContrast), BorderLayout.WEST);
-		contrastPanel.add(sliderContrast,BorderLayout.CENTER);
-		bottom2.add(contrastPanel);
+		ChannelWidget chWidget=new ChannelWidget();
 
-		JPanel brightnessPanel=new JPanel(new BorderLayout());
-		brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
-		brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
-		bottom2.add(brightnessPanel);
-
+		
 		JPanel zoomPanel=new JPanel(new BorderLayout());
-		zoomPanel.add(new JLabel(iconLabelZoom), BorderLayout.WEST);
+		zoomPanel.add(new JLabel(iconLabelZoom), BorderLayout.NORTH);
 		zoomPanel.add(sliderZoom,BorderLayout.CENTER);
-		bottom2.add(zoomPanel);
-
-		bottom2.add(comboChannel);
+		
+		bottomPanel.setLayout(new GridLayout(2,1,0,0));
+		bottomPanel.add(bottom1);
+		bottomPanel.add(chWidget);
 
 		setLayout(new BorderLayout());
 		add(imagePanel,BorderLayout.CENTER);
-		add(bottom,BorderLayout.SOUTH);
+		add(bottomPanel,BorderLayout.SOUTH);
+		add(zoomPanel,BorderLayout.EAST);
 
+
+		
 		addMenubar(menuImageWindow);
 		addMenubar(menuImage);
 		buildMenu();
