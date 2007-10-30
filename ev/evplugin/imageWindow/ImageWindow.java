@@ -37,6 +37,7 @@ public class ImageWindow extends BasicWindow
 	public static final int KEY_HIDE_MARKINGS=KeyBinding.register(new KeyBinding("Image Window","Hide markings",' '));
 
 	private static ImageIcon iconLabelZoom=new ImageIcon(FrameControlImage.class.getResource("labelZoom.png"));
+	private static ImageIcon iconLabelRotate=new ImageIcon(FrameControlImage.class.getResource("labelRotate.png"));
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
 	private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
@@ -123,6 +124,11 @@ public class ImageWindow extends BasicWindow
 	private final JSlider sliderContrast=new JSlider(-500,500,0);
 	private final JSlider sliderBrightness=new JSlider(-100,100,0);
 	private final JSlider sliderZoom=new JSlider(JSlider.VERTICAL, -10000,10000,-1000); //2^n	
+	private final JSlider sliderRotate=new JSlider(JSlider.VERTICAL, -10000,10000,0); //2^n	
+	private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
+	
+	private ButtonGroup rChannelGroup=new ButtonGroup();
+	Vector<ChannelWidget> channelWidget=new Vector<ChannelWidget>();
 	public final FrameControlImage frameControl=new FrameControlImage(this);
 	public final ChannelCombo comboChannel=new ChannelCombo(null,false);
 	
@@ -136,7 +142,10 @@ public class ImageWindow extends BasicWindow
 	private final JMenuItem miMiddleSlice=new JMenuItem("Go to middle slice");
 	private final JCheckBoxMenuItem miShowOverlay=new JCheckBoxMenuItem("Show overlay",true);
 
-	private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
+	
+	
+
+	
 	
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastDragX=0, mouseLastDragY=0;
@@ -178,27 +187,33 @@ public class ImageWindow extends BasicWindow
 	private class ChannelWidget extends JPanel
 		{
 		static final long serialVersionUID=0;
+		
+		JRadioButton rSelect=new JRadioButton();
+		
 		public ChannelWidget()
 			{
 			setLayout(new GridLayout(1,4));
+		
+			
 			
 			JPanel contrastPanel=new JPanel(new BorderLayout());
 			contrastPanel.add(new JLabel(iconLabelContrast), BorderLayout.WEST);
 			contrastPanel.add(sliderContrast,BorderLayout.CENTER);
-			add(contrastPanel);
 
 			JPanel brightnessPanel=new JPanel(new BorderLayout());
 			brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
 			brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
-			add(brightnessPanel);
 
 			JButton bFilterSequence=new JButton(iconLabelFS);
 
-			JPanel right=new JPanel(new BorderLayout());
-			right.add(comboChannel,BorderLayout.CENTER);
-			right.add(bFilterSequence,BorderLayout.WEST);
+			JPanel left=new JPanel(new BorderLayout());
+			left.add(rSelect,BorderLayout.WEST);
+			left.add(comboChannel,BorderLayout.CENTER);
+			left.add(bFilterSequence,BorderLayout.EAST);
 			
-			add(right);
+			add(left);
+			add(contrastPanel);
+			add(brightnessPanel);
 			}
 		}
 		
@@ -241,21 +256,37 @@ public class ImageWindow extends BasicWindow
 		bottom1.add(frameControl,BorderLayout.CENTER);
 		bottom1.add(bottomRight,BorderLayout.EAST);
 
+		//Build list of channel widgets
 		ChannelWidget chWidget=new ChannelWidget();
-
+		rChannelGroup.add(chWidget.rSelect);
+		channelWidget.add(chWidget);
+		//TODO: what about removing old ones?
+		
+		
+		
+		
 		
 		JPanel zoomPanel=new JPanel(new BorderLayout());
 		zoomPanel.add(new JLabel(iconLabelZoom), BorderLayout.NORTH);
 		zoomPanel.add(sliderZoom,BorderLayout.CENTER);
 		
-		bottomPanel.setLayout(new GridLayout(2,1,0,0));
+		JPanel rotatePanel=new JPanel(new BorderLayout());
+		rotatePanel.add(new JLabel(iconLabelRotate), BorderLayout.NORTH);
+		rotatePanel.add(sliderRotate,BorderLayout.CENTER);
+		
+		bottomPanel.setLayout(new GridLayout(1+channelWidget.size(),1,0,0));
 		bottomPanel.add(bottom1);
-		bottomPanel.add(chWidget);
+		for(ChannelWidget w:channelWidget)
+			bottomPanel.add(w);
 
+		JPanel rightPanel=new JPanel(new GridLayout(2,1));
+		rightPanel.add(zoomPanel);
+		rightPanel.add(rotatePanel);
+		
 		setLayout(new BorderLayout());
 		add(imagePanel,BorderLayout.CENTER);
 		add(bottomPanel,BorderLayout.SOUTH);
-		add(zoomPanel,BorderLayout.EAST);
+		add(rightPanel,BorderLayout.EAST);
 
 
 		
