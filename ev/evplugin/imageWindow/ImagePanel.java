@@ -183,7 +183,8 @@ public class ImagePanel extends JPanel
 				if(s==null)
 					s=new int[getWidth()*getHeight()];
 				tb2.getRaster().getSamples(0, 0, getWidth(), getHeight(), 0, s);
-				tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i, s);
+//				tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i, s);
+				tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i	, s);
 				}
 			g.drawImage(tb,0,0,null);
 			}
