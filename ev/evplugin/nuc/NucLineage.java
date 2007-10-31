@@ -138,7 +138,7 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	/**
 	 * Selection of nuclei by mouse and keyboard
-	 * @param nucname Name of nucleus or "". never null.
+	 * @param nucPair Which nucleus, never null
 	 * @param shift True if shift-key held
 	 */
 	public static void mouseSelectNuc(NucPair nucPair, boolean shift)

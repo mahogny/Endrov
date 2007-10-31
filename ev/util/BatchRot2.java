@@ -75,7 +75,7 @@ public class BatchRot2
 	
 	/**
 	 * Entry point
-	 * @param args Command line arguments
+	 * @param arg Command line arguments
 	 */
 	public static void main(String[] arg)
 		{

@@ -1,0 +1,107 @@
+
+			BufferedImage tb=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
+			
+			
+			
+			ImagePanelImage im=images.get(i);
+			BufferedImage tb2=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+			Graphics2D g2=(Graphics2D)tb2.getGraphics();
+			im.paintComponent(g2, this);
+			TIME 31
+			not affected by rotation
+			
+			
+			im.paintComponent(g, this);
+			TIME 29
+			
+			
+			ImagePanelImage im=images.get(i);
+			BufferedImage tb2=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2=(Graphics2D)tb2.getGraphics();
+			im.paintComponent(g2, this);
+			TIME 95
+			
+			
+			
+			int s[]=new int[getWidth()*getHeight()];
+			tb2.getRaster().getSamples(0, 0, getWidth(), getHeight(), 0, s);
+			tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i, s);
+			TIME 83
+			
+			
+				if(s==null)
+				s=new int[getWidth()*getHeight()];
+			tb2.getRaster().getSamples(0, 0, getWidth(), getHeight(), 0, s);
+			tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i, s);
+			TIME 83
+			
+			
+			
+			g.drawImage(tb,0,0,null);
+			TIME 8
+			
+			
+			with composite: done on final image.
+			TIME 82 for one
+			
+			
+			
+			
+			
+			
+			
+			
+			first working composite
+			ma 219
+ma 217
+ma 218
+ma 215
+ma 225
+ma 380
+ma 240
+ma 326
+ma 247
+ma 248
+ma 357
+ma 242
+ma 243
+ma 250
+ma 329
+ma 236
+ma 239
+ma 233
+ma 232
+
+
+
+	second composite, only one loop. fewer ops
+			ma 715
+ma 502
+ma 506
+ma 744
+ma 733
+ma 732
+ma 736
+			
+			
+			third, two loops
+			ma 385
+ma 354
+ma 167
+ma 183
+ma 211
+ma 255
+ma 197
+ma 190
+ma 189
+ma 189
+ma 356
+ma 217
+ma 222
+ma 341
+ma 203
+ma 221
+ma 221
+			
+			
+			

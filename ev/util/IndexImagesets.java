@@ -21,7 +21,7 @@ public class IndexImagesets
 	
 	/**
 	 * Entry point
-	 * @param args Command line arguments
+	 * @param arg Command line arguments
 	 */
 	public static void main(String[] arg)
 		{

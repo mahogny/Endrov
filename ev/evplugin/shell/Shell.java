@@ -82,16 +82,7 @@ public class Shell extends EvObject
 	public double angle;        //This is the rotation of the shell around z axis
 	public double angleinside; //This is the rotation of the embryo inside shell around major axis
 	
-	/**
-	 * Check if shell exists. this function will disappear
-	 * @return
-	 */
-	public boolean exists()
-		{
-		return major!=0 || minor!=0;
-		}
 	
-
 	/**
 	 * Save to XML
 	 */

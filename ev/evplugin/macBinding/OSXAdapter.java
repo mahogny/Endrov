@@ -80,8 +80,6 @@ public class OSXAdapter extends ApplicationAdapter
 	 * The main entry-point for this functionality.  This is the only method
 	 * that needs to be called at runtime, and it can easily be done using
 	 * reflection
-	 * 
-	 * @param inApp Window to register
 	 */
 	public static void registerMacOSXApplication() 
 		{
