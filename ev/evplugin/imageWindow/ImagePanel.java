@@ -1,12 +1,14 @@
 package evplugin.imageWindow;
 
+import java.util.*;
 import java.awt.image.*;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import javax.swing.*;
 
 import evplugin.imageset.*;
 import evplugin.ev.*;
+
+//TODO: only reload images if they really have been changed
 
 /**
  * Fast image viewer with various filters. Very raw implementation, meant to be extended.
@@ -15,24 +17,129 @@ import evplugin.ev.*;
  */
 public class ImagePanel extends JPanel
 	{
-	public EvImage image=null;
-	public double contrast=1;
-	public double brightness=0;
-	public double zoom=1;
-	public double transX=0, transY=0;
-	
-	private BufferedImage bufi=null;
-	
 	static final long serialVersionUID=0; //wtf
+	public Vector<ImagePanelImage> images=new Vector<ImagePanelImage>();
+	public double zoom=1;
+	public double rotation=0;
+	public double transX=0, transY=0;
+
+	
+	/**
+	 * One image to be drawn in the panel
+	 */
+	public static class ImagePanelImage
+		{
+		public EvImage image=null;
+		public double contrast=1;
+		public double brightness=0;
+		private BufferedImage bufi=null;
+		
+		public void update()
+			{
+			bufi=null;
+			}
+
+		/**
+		 * Load image into memory
+		 */
+		private void loadImage()
+			{
+			try
+				{
+				if(image==null)
+					bufi=null;
+				else
+					{
+					//Load image if this has not already been done
+					if(bufi==null)
+						{
+						bufi=image.getJavaImage();
+						if(bufi==null)
+							throw new Exception();
+						ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
+						BufferedImage bufo=new BufferedImage(bufi.getWidth(), bufi.getHeight(), bufi.getType());
+						bcfilter.filter(bufi,bufo);
+						bufi=bufo;
+						
+						//System.out.println("t"+bufi.getType()+" "+BufferedImage.TYPE_INT_RGB+" "+BufferedImage.TYPE_3BYTE_BGR+" "+BufferedImage.TYPE_BYTE_GRAY);
+						}
+					}
+				}
+			catch(Exception e)
+				{
+				Log.printError("image failed to load",e);
+				}
+			}
+		
+		
+		/**
+		 * Zoom image to fit panel
+		 */
+		public void zoomToFit(ImagePanel p)
+			{
+			loadImage();
+			if(bufi!=null)
+				{
+				int w=bufi.getWidth()*image.getBinning();
+				int h=bufi.getHeight()*image.getBinning();
+							
+				//Adjust zoom
+				double zoom1=p.getWidth()/(double)w;
+				double zoom2=p.getHeight()/(double)h;
+				if(zoom1<zoom2)
+					p.zoom=zoom1;
+				else
+					p.zoom=zoom2;
+				
+				//Place camera in the middle
+				p.transX=-w/2-image.getDispX();
+				p.transY=-h/2-image.getDispY();
+				}
+			}
+		
+		
+		public void paintComponent(Graphics g, ImagePanel p, Integer b)
+			{
+			Graphics2D g2 = (Graphics2D)g; 			
+			if(bufi!=null)
+				{
+				//Calculate translation and zoom of image
+				double tx=p.i2sx(image.getDispX());
+				double ty=p.i2sy(image.getDispY());
+				double zoomBinning=p.zoom*image.getBinning();
+				double invZoomBinning=1.0/zoomBinning;
+
+				g2.translate(tx,ty);
+				g2.scale(zoomBinning,zoomBinning);
+				g2.rotate(p.rotation);
+				
+				
+				Composite origComp=g2.getComposite();
+				if(b!=null)
+					g2.setComposite(new CompositeColor(b));
+				
+				g2.drawImage(bufi, null, 0, 0);
+				
+				g2.setComposite(origComp);
+				
+				
+				g2.rotate(-p.rotation);
+				g2.scale(invZoomBinning,invZoomBinning);
+				g2.translate(-tx,-ty);
+				} 
+			}
+		
+		}
 	
 		
 	/**
-	 * Tell that variables has been updated and redraw is needed
+	 * Tell that images need be reloaded from disk.
+	 * Better register callbacks from images instead
 	 */
-	public void update()
+	public void invalidateImages()
 		{
-		bufi=null;
-		repaint();
+		for(ImagePanelImage im:images)
+			im.update();
 		}
 	
 	/**
@@ -41,30 +148,8 @@ public class ImagePanel extends JPanel
 	 */
 	private void loadImage()
 		{
-		try
-			{
-			if(image==null)
-				bufi=null;
-			
-			//Load image if this has not already been done
-			if(bufi==null && image!=null)
-				{
-				bufi=image.getJavaImage();
-				if(bufi==null)
-					throw new Exception();
-				ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
-				//System.out.println("A "+System.currentTimeMillis());
-				//TODO
-				BufferedImage bufo=new BufferedImage(bufi.getWidth(), bufi.getHeight(), bufi.getType());
-				bcfilter.filter(bufi,bufo);
-				bufi=bufo;
-				//System.out.println("B "+System.currentTimeMillis());
-				}
-			}
-		catch(Exception e)
-			{
-			Log.printError("image failed to load"/*: "+filename*/,e);
-			}
+		for(ImagePanelImage im:images)
+			im.loadImage();
 		}
 	
 	/*
@@ -74,24 +159,35 @@ public class ImagePanel extends JPanel
 	public void paintComponent(Graphics g)
 		{
 		g.fillRect(0,0,getWidth(),getHeight());
-		Graphics2D g2 = (Graphics2D)g; 
-		
 		loadImage();
-		
-		if(bufi!=null)
+//		long ma=System.currentTimeMillis();
+		if(images.size()==1)
+			images.get(0).paintComponent(g, this, null);
+		else
 			{
-			//Calculate translation and zoom of image
-			double tx=i2sx(image.getDispX());
-			double ty=i2sy(image.getDispY());
-			double zoomBinning=zoom*image.getBinning();
-			double invZoomBinning=1.0/zoomBinning;
-
-			g2.translate(tx,ty);
-			g2.scale(zoomBinning,zoomBinning);
-			g2.drawImage(bufi, null, 0, 0);
-			g2.scale(invZoomBinning,invZoomBinning);
-			g2.translate(-tx,-ty);
-			} 
+			/*
+			//With composite
+			for(int i=0;i<3 && i<images.size();i++)
+				images.get(i).paintComponent(g, this,i);
+			 */
+				
+			BufferedImage tb=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
+			int s[]=null;
+			for(int i=0;i<3 && i<images.size();i++)
+				{
+				ImagePanelImage im=images.get(i);
+				BufferedImage tb2=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+				Graphics2D g2=(Graphics2D)tb2.getGraphics();
+				im.paintComponent(g2, this, null);
+				
+				if(s==null)
+					s=new int[getWidth()*getHeight()];
+				tb2.getRaster().getSamples(0, 0, getWidth(), getHeight(), 0, s);
+				tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i, s);
+				}
+			g.drawImage(tb,0,0,null);
+			}
+//		System.out.println("ma "+(System.currentTimeMillis()-ma));
 		}
 
 	/**
@@ -122,25 +218,9 @@ public class ImagePanel extends JPanel
 	public void zoomToFit()
 		{
 		loadImage();
-		if(bufi!=null)
-			{
-			int w=bufi.getWidth()*image.getBinning();
-			int h=bufi.getHeight()*image.getBinning();
-						
-			//Adjust zoom
-			double zoom1=getWidth()/(double)w;
-			double zoom2=getHeight()/(double)h;
-			if(zoom1<zoom2)
-				zoom=zoom1;
-			else
-				zoom=zoom2;
-			
-			//Place camera in the middle
-			transX=-w/2-image.getDispX();
-			transY=-h/2-image.getDispY();
-			
-			repaint();
-			}
+		if(images.size()>0)
+			images.get(0).zoomToFit(this);
+		repaint();
 		}
 	}
 

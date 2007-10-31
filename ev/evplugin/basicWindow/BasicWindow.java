@@ -363,8 +363,8 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	public abstract void dataChangedEvent();
 
 	/**
-	 * Called to obtain personal settings for that window
-	 * @return Something to write in the personal settings
+	 * Called to obtain personal settings for that window. Function has to create new elements and add them
+	 * to the given element.
 	 */
 	public abstract void windowPersonalSettings(Element e);
 	
