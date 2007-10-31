@@ -67,7 +67,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	private JTextArea history=new JTextArea();
 	private JTextFieldHistorized commandLine=new JTextFieldHistorized();
 	private JMenu consoleMenu=new JMenu("Console");
-	private JMenuItem miShowTraces=new JMenu("Show traces",false);
+	private JMenuItem miShowTraces=new JCheckBoxMenuItem("Show traces",false);
 	
 	/**
 	 * Take new log events and put them in console history

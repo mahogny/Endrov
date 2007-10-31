@@ -430,9 +430,15 @@ public class ImageWindow extends BasicWindow
 		{
 		sliderZoom.setValue((int)(1000*Math.log(zoom)/Math.log(2)));
 		}
+	/** Get rotation of image, in radians */
 	public double getRotation()
 		{
 		return sliderRotate.getValue()*2.0*Math.PI/10000.0;
+		}
+	/** Set rotation of image, in radians */
+	public void setRotation(double angle)
+		{
+		sliderRotate.setValue((int)(angle*10000.0/(Math.PI*2.0)));
 		}
 	/** Check if overlay should be hidden */
 	public boolean overlayHidden()
@@ -487,7 +493,13 @@ public class ImageWindow extends BasicWindow
 				ImagePanel.ImagePanelImage pi=new ImagePanel.ImagePanelImage();
 				pi.brightness=channelWidget.get(i).sliderBrightness.getValue();
 				pi.contrast=Math.pow(2,channelWidget.get(i).sliderContrast.getValue()/1000.0);
-				pi.image=ch.getImageLoader((int)frameControl.getFrame(), frameControl.getZ());
+				
+				int frame=(int)frameControl.getFrame();
+				int z=frameControl.getZ();
+				frame=ch.closestFrame(frame);
+				z=ch.closestZ(frame, z);
+				
+				pi.image=ch.getImageLoader(frame,z);
 				imagePanel.images.add(pi);
 				}
 			}
@@ -574,6 +586,7 @@ public class ImageWindow extends BasicWindow
 				w.sliderBrightness.setValue(0);
 				w.sliderContrast.setValue(0);
 				}
+			setRotation(0);
 			updateImagePanel();
 			}
 		else if(e.getSource()==miMiddleSlice)
