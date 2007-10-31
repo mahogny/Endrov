@@ -118,7 +118,7 @@ public class NucLineage extends EvObject implements Cloneable
 				return meta;
 				}
 			});
-		ImageWindow.imageWindowExtensions.add(new ImageWindowExtension()
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
 			public void newImageWindow(ImageWindow w)
 				{

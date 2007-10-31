@@ -14,7 +14,7 @@ import evplugin.imageWindow.ImageWindowTool;
 import evplugin.imageset.*;
 
 /**
- * 
+ * Image Window Tool: Associate time with current frame
  * @author Johan Henriksson
  */
 public class ToolSetFrametime implements ImageWindowTool
@@ -39,20 +39,17 @@ public class ToolSetFrametime implements ImageWindowTool
 		}
 	public void mouseClicked(MouseEvent e)
 		{
-		String frametimes=JOptionPane.showInputDialog("What is the current frametime?");
-		//DB db=DB.getCurrentDB();
-		if(frametimes!=null /*&& db!=null*/)
+		String frametimes=JOptionPane.showInputDialog("What is the current time?");
+		if(frametimes!=null)
 			{
-			Imageset rec=w.comboChannel.getImageset();
+			Imageset rec=w.getImageset();
 			for(EvObject o:rec.metaObject.values())
 				if(o instanceof FrameTime)
 					{
 					FrameTime f=(FrameTime)o;
 					double frametime=Double.parseDouble(frametimes);
-//					FrameTime f=new FrameTime(db, DB.currentSample);
 					f.add((int)w.frameControl.getFrame(), frametime);
 					BasicWindow.updateWindows();
-	//				f.appendSql();
 					}
 			}
 		}
