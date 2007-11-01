@@ -126,7 +126,7 @@ public class ChannelCombo extends JComboBox
 			if(a.imageset==curImageset && a.channel.equals(curChannel))
 				{
 				setSelectedIndex(i);
-				System.out.println("sel "+i);
+				//System.out.println("sel "+i);
 				}
 			}
 		enableActionListeners();

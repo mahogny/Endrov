@@ -1,13 +1,11 @@
 package evplugin.imagesetBioformats;
 
+import java.awt.*;
 import java.awt.image.*;
-
-
-
+import loci.formats.*;
 
 import evplugin.imageset.*;
 
-import loci.formats.*;
 
 /**
  * Loader of images using LOCI Bioformats
@@ -51,17 +49,30 @@ public abstract class EvImageBioformats extends EvImage
 				int w=i.getWidth();
 				int h=i.getHeight();
 				
+				/*
 				BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-
 				WritableRaster rastin=i.getRaster();
 				WritableRaster rastout=im.getRaster();
+				int[] pixels=new int[w*h];
+				rastin.getSamples(0, 0, w, h, subid, pixels);				
+				rastout.setSamples(0, 0, w, h, 0, pixels);				
+				 */
+				/*
 				int[] pixin=new int[3*w*h];
 				int[] pixout=new int[w*h];
 				rastin.getPixels(0, 0, w, h, pixin);				
 				for(int j=0;j<w*h;j++)
 					pixout[j]=pixin[j*3+subid];
 				rastout.setPixels(0, 0, w, h, pixout);				
+				*/
+				
 
+				BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+				float matrix[][]={{0,0,0}};
+				matrix[0][subid]=1;
+				RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));
+				op.filter(i.getRaster(), im.getRaster());
+				
 				return im;
 				}
 				

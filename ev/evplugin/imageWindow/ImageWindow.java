@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.vecmath.*;
+
+import org.jdom.*;
 
 import evplugin.data.EvData;
 import evplugin.ev.*;
@@ -12,7 +15,6 @@ import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.imageset.*;
 import evplugin.keyBinding.*;
-import org.jdom.*;
 
 /**
  * Image window - Displays imageset with overlays. Data can be edited with tools, filters can be applied.
@@ -433,12 +435,12 @@ public class ImageWindow extends BasicWindow
 	/** Get rotation of image, in radians */
 	public double getRotation()
 		{
-		return sliderRotate.getValue()*2.0*Math.PI/10000.0;
+		return sliderRotate.getValue()*Math.PI/10000.0;
 		}
 	/** Set rotation of image, in radians */
 	public void setRotation(double angle)
 		{
-		sliderRotate.setValue((int)(angle*10000.0/(Math.PI*2.0)));
+		sliderRotate.setValue((int)(angle*10000.0/Math.PI));
 		}
 	/** Check if overlay should be hidden */
 	public boolean overlayHidden()
@@ -452,24 +454,37 @@ public class ImageWindow extends BasicWindow
 	
 	
 	/** Convert world to screen X coordinate */
-	public double w2sx(double x) {return imagePanel.i2sx(x*getImageset().meta.resX);}
+//	public double w2sx(double x) {return imagePanel.i2sx(x*getImageset().meta.resX);}
 	/** Convert world to screen Y coordinate */
-	public double w2sy(double y) {return imagePanel.i2sy(y*getImageset().meta.resY);}
-	/** Convert world to screen Z coordinate */
-	public double w2sz(double z) {return z*getImageset().meta.resZ;}
+//	public double w2sy(double y) {return imagePanel.i2sy(y*getImageset().meta.resY);}
 	/** Convert screen to world X coordinate */
-	public double s2wx(double sx) {return imagePanel.s2ix(sx)/(double)getImageset().meta.resX;}
+//	public double s2wx(double sx) {return imagePanel.s2ix(sx)/(double)getImageset().meta.resX;}
 	/** Convert world to screen Y coordinate */
-	public double s2wy(double sy) {return imagePanel.s2iy(sy)/(double)getImageset().meta.resY;}
-	/** Convert world to screen Z coordinate */
-	public double s2wz(double sz) {return sz/(double)getImageset().meta.resZ;} //need a zoom?
+	//public double s2wy(double sy) {return imagePanel.s2iy(sy)/(double)getImageset().meta.resY;}
 	/** Scale screen vector to world vector */
 	public double scaleS2w(double s) {return s/(getImageset().meta.resY*getZoom());}
 	/** Scale world to screen vector */
 	public double scaleW2s(double w) {return w*getImageset().meta.resY*getZoom();}
 
 	
-	
+	//New functions, should replace the ones above at some point
+
+	/** Transform world coordinate to screen coordinate */
+	public Vector2d transformW2S(Vector2d u)
+		{
+		return imagePanel.transformI2S(new Vector2d(u.x*getImageset().meta.resX,u.y*getImageset().meta.resY));
+		}
+	/** Transform screen coordinate to world coordinate */
+	public Vector2d transformS2W(Vector2d u)
+		{
+		Vector2d v=imagePanel.transformS2I(u);
+		return new Vector2d(v.x/getImageset().meta.resX, v.y/getImageset().meta.resY);
+		}
+	/** Convert world to screen Z coordinate */
+	public double w2sz(double z) {return z*getImageset().meta.resZ;}
+	/** Convert world to screen Z coordinate */
+	public double s2wz(double sz) {return sz/(double)getImageset().meta.resZ;} 
+
 	
 	/**
 	 * Take current settings of sliders and apply it to image
@@ -510,11 +525,36 @@ public class ImageWindow extends BasicWindow
 
 
 	
+	
+	public void transformOverlay(Graphics2D g)
+		{
+		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
+		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
+		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
+		g.translate(trans.x,trans.y);
+		g.scale(zoomBinningX,zoomBinningY);
+		g.rotate(imagePanel.rotation);
+		}
+	public void untransformOverlay(Graphics2D g)
+		{
+		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
+		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
+		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
+		g.rotate(-imagePanel.rotation);
+		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
+		g.translate(-trans.x,-trans.y);
+		}
+	
 	/**
 	 * Update, but assume images are still ok
 	 */
 	public void updateImagePanelNoInvalidate()
 		{		
+		
+//		try			{			throw new Exception("");			}
+//		catch (Exception e)			{			e.printStackTrace();			}
+		
+		
 		//Copy settings into image panel
 		imagePanel.rotation=getRotation();
 		imagePanel.zoom=getZoom();
@@ -657,6 +697,14 @@ public class ImageWindow extends BasicWindow
 					Log.printLog("Closing "+rec.getMetadataName());
 					}
 				BasicWindow.updateWindows();
+				}
+			else if(e.getKeyCode()==KeyEvent.VK_0)
+				{
+				updateImagePanel();
+				}
+			else if(e.getKeyCode()==KeyEvent.VK_9)
+				{
+				updateImagePanelNoInvalidate();
 				}
 			else
 				{

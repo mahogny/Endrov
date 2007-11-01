@@ -2,8 +2,8 @@ package evplugin.nuc;
 
 import java.awt.*;
 import java.awt.event.*;
-
-import javax.swing.SwingUtilities;
+import javax.vecmath.*;
+import javax.swing.*;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.Log;
@@ -77,8 +77,11 @@ public class ToolMakeNuc implements ImageWindowTool
 		{
 		if(active)
 			{
-			x2=w.s2wx(e.getX());
-			y2=w.s2wy(e.getY());
+			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			x2=v.x;
+			y2=v.y;
+//			x2=w.s2wx(e.getX());
+	//		y2=w.s2wy(e.getY());
 			w.updateImagePanel();
 			}
 		}
@@ -89,8 +92,11 @@ public class ToolMakeNuc implements ImageWindowTool
 			{
 			//Start making a nucleus
 			active=true;
-			x1=w.s2wx(e.getX());
-			y1=w.s2wy(e.getY());
+			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			x2=v.x;
+			y2=v.y;
+//			x1=w.s2wx(e.getX());
+//			y1=w.s2wy(e.getY());
 			x2=x1;
 			y2=y1;
 			}
@@ -119,7 +125,11 @@ public class ToolMakeNuc implements ImageWindowTool
 				pos.z=w.s2wz(w.frameControl.getZ());
 				pos.r=Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))/2;
 				
-				if(Math.abs(w.w2sx(pos.r)-w.w2sx(0))>8)
+				Vector2d so1=w.transformW2S(new Vector2d(pos.r,0));
+				Vector2d so2=w.transformW2S(new Vector2d(0,0));
+
+				if(Math.abs(so1.x-so2.x)>8)
+//				if(Math.abs(w.w2sx(pos.r)-w.w2sx(0))>8)
 					{
 					NucLineage.selectedNuclei.clear();
 					NucLineage.selectedNuclei.add(new NucPair(lin,nucName));
@@ -278,10 +288,11 @@ public class ToolMakeNuc implements ImageWindowTool
 			double midx=(x2+x1)/2;
 			double midy=(y2+y1)/2;
 			double r=Math.sqrt((x1-midx)*(x1-midx)+(y1-midy)*(y1-midy));
-			double omidx=w.w2sx(midx);
-			double omidy=w.w2sy(midy);
+			Vector2d omid=w.transformW2S(new Vector2d(midx,midy));
+//			double omidx=w.w2sx(midx);
+//			double omidy=w.w2sy(midy);
 			double or=w.scaleW2s(r);
-			g.drawOval((int)(omidx-or),(int)(omidy-or),(int)(or*2),(int)(or*2));
+			g.drawOval((int)(omid.x-or),(int)(omid.y-or),(int)(or*2),(int)(or*2));
 			}
 		}
 

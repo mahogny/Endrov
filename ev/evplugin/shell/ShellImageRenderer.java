@@ -3,6 +3,7 @@ package evplugin.shell;
 import java.util.*;
 import java.awt.*;
 import java.awt.geom.*;
+import javax.vecmath.*;
 
 import evplugin.data.*;
 import evplugin.imageWindow.*;
@@ -58,15 +59,16 @@ public class ShellImageRenderer implements ImageWindowRenderer
 			double pshortaxis=projectSphere(s.minor, s.midz);
 			
 			//Coordinate transformation
-			double sox=w.w2sx(s.midx);
-			double soy=w.w2sy(s.midy);
+			Vector2d so=w.transformW2S(new Vector2d(s.midx,s.midy)); //TODO: ellipse fails rotation
+	//		double sox=w.w2sx(s.midx);
+	//		double soy=w.w2sy(s.midy);
 			
 			double polarrad=10;
 			
-			g2.rotate(s.angle,sox,soy);
-			g2.draw(new Ellipse2D.Double((double)(sox-plongaxis),(double)(soy-pshortaxis),(double)(2*plongaxis),(double)(2*pshortaxis)));
-			g2.draw(new Ellipse2D.Double((double)(sox+plongaxis-polarrad),(double)(soy-polarrad),polarrad*2, polarrad*2));
-			g2.rotate(-s.angle,sox,soy);
+			g2.rotate(s.angle,so.x,so.y);
+			g2.draw(new Ellipse2D.Double((double)(so.x-plongaxis),(double)(so.y-pshortaxis),(double)(2*plongaxis),(double)(2*pshortaxis)));
+			g2.draw(new Ellipse2D.Double((double)(so.x+plongaxis-polarrad),(double)(so.y-polarrad),polarrad*2, polarrad*2));
+			g2.rotate(-s.angle,so.x,so.y);
 			
 		//	System.out.println("# "+sox+" "+soy);
 			

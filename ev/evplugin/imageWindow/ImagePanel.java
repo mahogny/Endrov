@@ -4,11 +4,11 @@ import java.util.*;
 import java.awt.image.*;
 import java.awt.*;
 import javax.swing.*;
+import javax.vecmath.Vector2d;
 
 import evplugin.imageset.*;
 import evplugin.ev.*;
 
-//TODO: only reload images if they really have been changed
 
 /**
  * Fast image viewer with various filters. Very raw implementation, meant to be extended.
@@ -104,34 +104,34 @@ public class ImagePanel extends JPanel
 			if(bufi!=null)
 				{
 				//Calculate translation and zoom of image
-				double tx=p.i2sx(image.getDispX());
-				double ty=p.i2sy(image.getDispY());
+				Vector2d trans=p.transformI2S(new Vector2d(image.getDispX(), image.getDispY()));
 				double zoomBinning=p.zoom*image.getBinning();
 				double invZoomBinning=1.0/zoomBinning;
 
-				g2.translate(tx,ty);
+				g2.translate(trans.x,trans.y);
 				g2.scale(zoomBinning,zoomBinning);
 				g2.rotate(p.rotation);
 				
-				
-				Composite origComp=g2.getComposite();
 				if(b!=null)
+					{
+					Composite origComp=g2.getComposite();
 					g2.setComposite(new CompositeColor(b));
-				
-				g2.drawImage(bufi, null, 0, 0);
-				
-				g2.setComposite(origComp);
-				
+					g2.drawImage(bufi, null, 0, 0);
+					g2.setComposite(origComp);
+					}
+				else
+					g2.drawImage(bufi, null, 0, 0);
 				
 				g2.rotate(-p.rotation);
 				g2.scale(invZoomBinning,invZoomBinning);
-				g2.translate(-tx,-ty);
+				g2.translate(-trans.x,-trans.y);
 				} 
 			}
 		
 		}
 	
 		
+	
 	/**
 	 * Tell that images need be reloaded from disk.
 	 * Better register callbacks from images instead
@@ -152,43 +152,58 @@ public class ImagePanel extends JPanel
 			im.loadImage();
 		}
 	
+	
+	//Temporary drawing surfaces. Creation seems rather expensive so these are cached
+	private BufferedImage temporaryTotal=null;
+	private BufferedImage temporaryPart=null;
+	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
 	public void paintComponent(Graphics g)
 		{
-		g.fillRect(0,0,getWidth(),getHeight());
-		loadImage();
 //		long ma=System.currentTimeMillis();
+		
+		loadImage();
 		if(images.size()==1)
+			{
+			g.setColor(Color.BLACK);
+			g.fillRect(0,0,getWidth(),getHeight());
 			images.get(0).paintComponent(g, this, null);
+			}
 		else
 			{
-			/*
+			
 			//With composite
-			for(int i=0;i<3 && i<images.size();i++)
-				images.get(i).paintComponent(g, this,i);
-			 */
-				
-			BufferedImage tb=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
+			//for(int i=0;i<3 && i<images.size();i++)
+			//	images.get(i).paintComponent(g, this,i);
+			 
+			if(temporaryTotal==null || temporaryTotal.getWidth()!=getWidth() || temporaryTotal.getHeight()!=getHeight())
+				temporaryTotal=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
 			int s[]=null;
 			for(int i=0;i<3 && i<images.size();i++)
 				{
-				ImagePanelImage im=images.get(i);
-				BufferedImage tb2=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_BYTE_GRAY);
-				Graphics2D g2=(Graphics2D)tb2.getGraphics();
-				im.paintComponent(g2, this, null);
-				
+				if(temporaryPart==null || temporaryPart.getWidth()!=getWidth() || temporaryPart.getHeight()!=getHeight())
+					temporaryPart=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_BYTE_GRAY);
 				if(s==null)
 					s=new int[getWidth()*getHeight()];
-				tb2.getRaster().getSamples(0, 0, getWidth(), getHeight(), 0, s);
-//				tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i, s);
-				tb.getRaster().setSamples(0, 0, getWidth(), getHeight(), i	, s);
+				
+				temporaryPart.createGraphics().fillRect(0,0,getWidth(),getHeight());
+
+				
+				ImagePanelImage im=images.get(i);
+				Graphics2D g2=(Graphics2D)temporaryPart.getGraphics();
+				im.paintComponent(g2, this, null);
+				
+				temporaryPart.getRaster().getSamples(0, 0, getWidth(), getHeight(), 0, s);
+				temporaryTotal.getRaster().setSamples(0, 0, getWidth(), getHeight(), i	, s);
 				}
-			g.drawImage(tb,0,0,null);
+			g.drawImage(temporaryTotal,0,0,null);
 			}
-//		System.out.println("ma "+(System.currentTimeMillis()-ma));
+			
+	//	System.out.println("   "+(System.currentTimeMillis()-ma));
+		
 		}
 
 	/**
@@ -202,17 +217,35 @@ public class ImagePanel extends JPanel
 		transY+=(double)dy/zoom;
 		}
 
-	/** Convert screen coordinate to image coordinate (image scaled by binning) */
-	public double s2ix(double sx){return (sx-getWidth() /2.0)/zoom  - transX;}
-	/** Convert screen coordinate to image coordinate (image scaled by binning) */
-	public double s2iy(double sy){return (sy-getHeight()/2.0)/zoom  - transY;}
 
+	
 	/** Convert image coordinate to screen coordinate (image scaled by binning) */
-	public double i2sx(double ix){return getWidth()/2.0   + (transX + ix)*zoom;}
-	/** Convert image coordinate to screen coordinate (image scaled by binning) */
-	public double i2sy(double iy){return getHeight()/2.0  + transY*zoom + iy*zoom;}
-		
-
+	public Vector2d transformI2S(Vector2d u) //ok
+		{
+		Vector2d v=new Vector2d(u);
+		Matrix2d rotmat=new Matrix2d();
+		rotmat.rot(rotation);
+		rotmat.transform(v);
+		v.add(new Vector2d(transX,transY));
+		v.scale(zoom);
+		v.add(new Vector2d(getWidth()/2.0, getHeight()/2.0));
+		return v;
+		}
+	
+	/** Convert screen coordinate to image coordinate (image scaled by binning) */
+	public Vector2d transformS2I(Vector2d u)
+		{
+		Vector2d v=new Vector2d(u);
+		Matrix2d rotmat=new Matrix2d();
+		rotmat.rot(-rotation);
+		v.add(new Vector2d(-getWidth()/2.0, -getHeight()/2.0));
+		v.scale(1.0/zoom);
+		v.add(new Vector2d(-transX,-transY));
+		rotmat.transform(v);
+		return v;
+		}
+	
+	
 	/**
 	 * Zoom image to fit panel
 	 */

@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import javax.vecmath.*;
 
 import evplugin.imageWindow.*;
 
@@ -54,8 +55,12 @@ public class ImageToolROI implements ImageWindowTool
 			for(ROI.Handle h:currentROI.getHandles())
 				if(h.getID().equals(currentHandle))
 					{
-					h.setX(w.s2wx(e.getX()));
-					h.setY(w.s2wy(e.getY()));
+					Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+					h.setX(v.x);
+					h.setY(v.y);
+					
+//					h.setX(w.s2wx(e.getX()));
+	//				h.setY(w.s2wy(e.getY()));
 					w.updateImagePanel();
 					return;
 					}
@@ -64,7 +69,9 @@ public class ImageToolROI implements ImageWindowTool
 	
 	private boolean mouseOverHandle(MouseEvent e, ROI.Handle h)
 		{
-		return Math.abs(w.w2sx(h.getX())-e.getX())<ImageRendererROI.HANDLESIZE && Math.abs(w.w2sy(h.getY())-e.getY())<ImageRendererROI.HANDLESIZE;
+		Vector2d so=w.transformW2S(new Vector2d(h.getX(),h.getY()));
+		return Math.abs(so.x-e.getX())<ImageRendererROI.HANDLESIZE && Math.abs(so.y-e.getY())<ImageRendererROI.HANDLESIZE;
+//		return Math.abs(w.w2sx(h.getX())-e.getX())<ImageRendererROI.HANDLESIZE && Math.abs(w.w2sy(h.getY())-e.getY())<ImageRendererROI.HANDLESIZE;
 		}
 	
 	public void mousePressed(MouseEvent e)
