@@ -518,7 +518,7 @@ public class ImageWindow extends BasicWindow
 
 
 	
-	
+	//are these useful?
 	public void transformOverlay(Graphics2D g)
 		{
 		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
