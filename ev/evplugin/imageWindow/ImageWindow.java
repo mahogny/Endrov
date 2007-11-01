@@ -452,16 +452,9 @@ public class ImageWindow extends BasicWindow
 
 
 	
-	
-	/** Convert world to screen X coordinate */
-//	public double w2sx(double x) {return imagePanel.i2sx(x*getImageset().meta.resX);}
-	/** Convert world to screen Y coordinate */
-//	public double w2sy(double y) {return imagePanel.i2sy(y*getImageset().meta.resY);}
-	/** Convert screen to world X coordinate */
-//	public double s2wx(double sx) {return imagePanel.s2ix(sx)/(double)getImageset().meta.resX;}
-	/** Convert world to screen Y coordinate */
-	//public double s2wy(double sy) {return imagePanel.s2iy(sy)/(double)getImageset().meta.resY;}
-	/** Scale screen vector to world vector */
+
+	/** Scale screen vector to world vector 
+	 * */
 	public double scaleS2w(double s) {return s/(getImageset().meta.resY*getZoom());}
 	/** Scale world to screen vector */
 	public double scaleW2s(double w) {return w*getImageset().meta.resY*getZoom();}
