@@ -181,6 +181,12 @@ public class ImagePanel extends JPanel
 			 
 			if(temporaryTotal==null || temporaryTotal.getWidth()!=getWidth() || temporaryTotal.getHeight()!=getHeight())
 				temporaryTotal=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
+			if(images.size()<3)
+				{
+				Graphics temporaryTotalG=temporaryTotal.createGraphics();
+				temporaryTotalG.setColor(Color.BLACK);
+				temporaryTotalG.fillRect(0,0,getWidth(),getHeight());
+				}
 			int s[]=null;
 			for(int i=0;i<3 && i<images.size();i++)
 				{
@@ -189,7 +195,9 @@ public class ImagePanel extends JPanel
 				if(s==null)
 					s=new int[getWidth()*getHeight()];
 				
-				temporaryPart.createGraphics().fillRect(0,0,getWidth(),getHeight());
+				Graphics temporaryPartG=temporaryPart.createGraphics();
+				temporaryPartG.setColor(Color.BLACK);
+				temporaryPartG.fillRect(0,0,getWidth(),getHeight());
 
 				
 				ImagePanelImage im=images.get(i);
