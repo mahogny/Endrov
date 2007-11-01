@@ -105,3 +105,39 @@ ma 221
 			
 			
 			
+			orig bioformats
+			ma 605
+			
+			
+			with colorbandop
+ma 480
+ma 330
+ma 483
+ma 310
+ma 502
+ma 311
+			about the same speed but a bit more? for setsample			
+			
+			
+			
+			
+			
+			after optimize creation of buffers
+			ma 324
+ma 184
+ma 336
+ma 163
+ma 324
+ma 169
+ma 333
+ma 178
+ma 356
+			before
+			ma 402
+ma 481
+ma 182
+ma 368
+ma 380
+ma 213
+ma 381
+ma 361

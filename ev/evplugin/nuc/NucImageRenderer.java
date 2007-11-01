@@ -2,6 +2,7 @@ package evplugin.nuc;
 
 import java.awt.*;
 import java.util.*;
+import javax.vecmath.*;
 
 import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
@@ -98,8 +99,9 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(sor>=0)
 			{
 			//Coordinate transformation
-			double sox=w.w2sx(nuc.pos.x);
-			double soy=w.w2sy(nuc.pos.y);
+			Vector2d so=w.transformW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
+//			double sox=w.w2sx(nuc.pos.x);
+	//		double soy=w.w2sy(nuc.pos.y);
 			
 			//Pick color of nucleus
 			Color nucColor;
@@ -116,21 +118,21 @@ public class NucImageRenderer implements ImageWindowRenderer
 					{
 					//As this nucleus does not really exist here, it is drawn with stippled line
 					for(int i=0;i<360/2;i+=2)
-						g.drawArc((int)(sox-sor),(int)(soy-sor),(int)(2*sor),(int)(2*sor), i*20, 20);
+						g.drawArc((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor), i*20, 20);
 					}
 				}
 			else
 				{
 				//Normal nucleus
-				g.drawOval((int)(sox-sor),(int)(soy-sor),(int)(2*sor),(int)(2*sor));
+				g.drawOval((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor));
 				}
 			
 			
 			//Mark keyframe
 			if(nuc.isKeyFrame(w.frameControl.getFrame()))
 				{
-				g.drawLine((int)(sox-sor-1), (int)(soy), (int)(sox-sor+1), (int)(soy));
-				g.drawLine((int)(sox+sor-1), (int)(soy), (int)(sox+sor+1), (int)(soy));					
+				g.drawLine((int)(so.x-sor-1), (int)(so.y), (int)(so.x-sor+1), (int)(so.y));
+				g.drawLine((int)(so.x+sor-1), (int)(so.y), (int)(so.x+sor+1), (int)(so.y));					
 				}
 			
 			//Mark endframe
@@ -138,12 +140,12 @@ public class NucImageRenderer implements ImageWindowRenderer
 				{
 				g.setColor(Color.BLACK);
 				double f=Math.sqrt(1.0/2.0);
-				g.drawLine((int)(sox-sor*f), (int)(soy-sor*f), (int)(sox+sor*f), (int)(soy+sor*f));
-				g.drawLine((int)(sox-sor*f), (int)(soy+sor*f), (int)(sox+sor*f), (int)(soy-sor*f));
+				g.drawLine((int)(so.x-sor*f), (int)(so.y-sor*f), (int)(so.x+sor*f), (int)(so.y+sor*f));
+				g.drawLine((int)(so.x-sor*f), (int)(so.y+sor*f), (int)(so.x+sor*f), (int)(so.y-sor*f));
 				}
 			
 			//Update hover
-			if(w.mouseInWindow && (w.mouseCurX-sox)*(w.mouseCurX-sox) + (w.mouseCurY-soy)*(w.mouseCurY-soy)<sor*sor)
+			if(w.mouseInWindow && (w.mouseCurX-so.x)*(w.mouseCurX-so.x) + (w.mouseCurY-so.y)*(w.mouseCurY-so.y)<sor*sor)
 				NucLineage.currentHover=nucPair;
 			
 			//Draw name of nucleus. maybe do this last
@@ -155,10 +157,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 						(int)sox-g.getFontMetrics().stringWidth(nucName)/2, 
 						(int)soy+g.getFontMetrics().getHeight()/2);
 				*/
-				g.drawString(nucName, (int)sox-g.getFontMetrics().stringWidth(nucName)/2, (int)soy-2);
+				g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
 				int crossSize=5;
-				g.drawLine((int)sox-crossSize, (int)soy, (int)sox+crossSize, (int)soy);
-				g.drawLine((int)sox, (int)soy, (int)sox, (int)soy+crossSize);
+				g.drawLine((int)so.x-crossSize, (int)so.y, (int)so.x+crossSize, (int)so.y);
+				g.drawLine((int)so.x, (int)so.y, (int)so.x, (int)so.y+crossSize);
 				}
 			}
 

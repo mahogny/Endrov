@@ -3,6 +3,7 @@ package evplugin.shell;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.vecmath.Vector2d;
 
 import evplugin.basicWindow.*;
 import evplugin.data.*;
@@ -59,8 +60,14 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 	 */
 	private void updateCurrentShell(int mx, int my, boolean acceptNull)
 		{
-		double wx=w.s2wx(mx);
-		double wy=w.s2wy(my);
+		Vector2d v=w.transformS2W(new Vector2d(mx,my));
+
+		
+		double wx=v.x;
+		double wy=v.y;
+//		double wx=w.s2wx(mx);
+	//	double wy=w.s2wy(my);
+		
 		double wz=w.s2wz(w.frameControl.getZ());
 		
 		for(EvObject ob:w.getImageset().metaObject.values())
@@ -114,8 +121,13 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 					{				
 					//Create new shell
 					shell=new Shell();
-					shell.midx=w.s2wx(e.getX());
-					shell.midy=w.s2wy(e.getY());
+					
+					Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+
+					shell.midx=v.x;
+					shell.midy=v.y;
+//					shell.midx=w.s2wx(e.getX());
+	//				shell.midy=w.s2wy(e.getY());
 					shell.midz=w.s2wz(w.frameControl.getZ());
 					shell.major=w.scaleS2w(80);
 					shell.minor=w.scaleS2w(50);
