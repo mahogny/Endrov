@@ -99,6 +99,11 @@ public class ImageRendererROI implements ImageWindowRenderer
 				}
 			
 			}
+		else if(roi instanceof CompoundROI)
+			{
+			for(ROI subroi:((CompoundROI)roi).subRoi)
+				drawROI(g,subroi);
+			}
 		
 		
 		}
