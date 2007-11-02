@@ -101,7 +101,10 @@ public abstract class ROI extends EvObject
 	public void openEditWindow()
 		{
 		JFrame frame=new JFrame(EV.programName+" Edit "+getMetaTypeDesc());
-		frame.add(getROIWidget());
+		JComponent c=getROIWidget();
+		if(c==null)
+			c=new JLabel("There are no options");
+		frame.add(c);
 		frame.pack();
 		frame.setVisible(true);
 		}

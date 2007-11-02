@@ -50,28 +50,25 @@ public class ImageExtensionROI implements ImageWindowExtension
 		
 		
 		//New
-		JMenuItem miNewRect=new JMenuItem("Box");
-		JMenuItem miNewEllipse=new JMenuItem("Ellipse");
-//		JMenuItem miNewRect=new JMenuItem("Ellipsoid");
-		JMenuItem miNewPoint=new JMenuItem("Point");
-		JMenuItem miNewLinesegment=new JMenuItem("Line segment");
-		JMenuItem miNewWand=new JMenuItem("Wand");
+		final JMenuItem miNewRect=new JMenuItem("Box");
+		final JMenuItem miNewEllipse=new JMenuItem("Ellipse (not impl)");
+		final JMenuItem miNewPoint=new JMenuItem("Point (not impl)");
+		final JMenuItem miNewLinesegment=new JMenuItem("Line segment (not impl)");
+		final JMenuItem miNewWand=new JMenuItem("Wand (not impl)");
 //		JMenuItem miNewWatershed=new JMenuItem("Watershed");
-		JMenuItem miNewAll=new JMenuItem("Everything");
 
 		BasicWindow.addMenuItemSorted(miNew, miNewRect);
 		BasicWindow.addMenuItemSorted(miNew, miNewEllipse);
 		BasicWindow.addMenuItemSorted(miNew, miNewPoint);
 		BasicWindow.addMenuItemSorted(miNew, miNewLinesegment);
 		BasicWindow.addMenuItemSorted(miNew, miNewWand);
-		BasicWindow.addMenuItemSorted(miNew, miNewAll);
 		
 		//Modify
-		JMenuItem miModConvexhull=new JMenuItem("Convex hull");
-		JMenuItem miModGrow=new JMenuItem("Grow");
-		JMenuItem miModShrink=new JMenuItem("Shrink");
-		JMenuItem miModRotate=new JMenuItem("Rotate");
-		JMenuItem miModInvert=new JMenuItem("Invert");
+		final JMenuItem miModConvexhull=new JMenuItem("Convex hull (not impl)");
+		final JMenuItem miModGrow=new JMenuItem("Grow (not impl)");
+		final JMenuItem miModShrink=new JMenuItem("Shrink (not impl)");
+		final JMenuItem miModRotate=new JMenuItem("Rotate (not impl)");
+		final JMenuItem miModInvert=new JMenuItem("Invert (not impl)");
 
 		BasicWindow.addMenuItemSorted(miModify, miModConvexhull);
 		BasicWindow.addMenuItemSorted(miModify, miModGrow);
@@ -80,10 +77,10 @@ public class ImageExtensionROI implements ImageWindowExtension
 		BasicWindow.addMenuItemSorted(miModify, miModInvert);
 
 		//Composite
-		JMenuItem miCompUnion=new JMenuItem("Union");
-		JMenuItem miCompIntersection=new JMenuItem("Intersection");
-		JMenuItem miCompDifference=new JMenuItem("Difference");
-		JMenuItem miCompGroup=new JMenuItem("Group");
+		final JMenuItem miCompUnion=new JMenuItem("Union (not impl)");
+		final JMenuItem miCompIntersection=new JMenuItem("Intersection (not impl)");
+		final JMenuItem miCompDifference=new JMenuItem("Difference (not impl)");
+		final JMenuItem miCompGroup=new JMenuItem("Group (not impl)");
 
 		BasicWindow.addMenuItemSorted(miComposite, miCompUnion);
 		BasicWindow.addMenuItemSorted(miComposite, miCompIntersection);
@@ -91,39 +88,50 @@ public class ImageExtensionROI implements ImageWindowExtension
 		BasicWindow.addMenuItemSorted(miComposite, miCompGroup);
 		
 		//Analyze
-		JMenuItem miAnaVolume=new JMenuItem("Calculate volume");
-		JMenuItem miAnaArea=new JMenuItem("Calculate area");
+		JMenuItem miAnaVolume=new JMenuItem("Calculate volume (not impl)");
+		JMenuItem miAnaArea=new JMenuItem("Calculate area (not impl)");
 		BasicWindow.addMenuItemSorted(miAnalyze, miAnaVolume);
 		BasicWindow.addMenuItemSorted(miAnalyze, miAnaArea);
 		
 		
 		
 		//The listener
-		ActionListener listenerRect=new ActionListener()
+		ActionListener listener=new ActionListener()
 			{
 			public void actionPerformed(ActionEvent e)
 				{
-				//Create a Box-ROI
-				BoxROI roi=new BoxROI();
-				roi.regionChannels.add(w.getCurrentChannelName());
-				double curFrame=w.frameControl.getFrame();
-				double curZ=w.frameControl.getZ();
-				roi.regionFrames.set(curFrame,curFrame+1);
-				roi.regionZ.set(curZ, curZ+1);
+				if(e.getSource()==miNewRect)
+					{
+					//Create a Box-ROI
+					BoxROI roi=new BoxROI();
+					roi.regionChannels.add(w.getCurrentChannelName());
+					double curFrame=w.frameControl.getFrame();
+					double curZ=w.frameControl.getZ();
+					roi.regionFrames.set(curFrame,curFrame+1);
+					roi.regionZ.set(curZ, curZ+1);
+					addROI(roi);
+					}
+				else if(e.getSource()==miCompUnion)
+					{
+					UnionROI roi=new UnionROI();
+					addROI(roi);
+					}
 				
 				
-				//In common for all type of ROI:s
+				
+				}
+			
+			public void addROI(ROI roi)
+				{
 				//Add ROI to data
 				Imageset rec=w.getImageset();
 				rec.addMetaObject(roi);
 				BasicWindow.updateWindows();
 				roi.openEditWindow();
-				
-				
-				
 				}
 			};
-		miNewRect.addActionListener(listenerRect);
+		miNewRect.addActionListener(listener);
+		miCompUnion.addActionListener(listener);
 		
 		
 		
