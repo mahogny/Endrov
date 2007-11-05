@@ -12,6 +12,7 @@ import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
 import evplugin.roi.*;
+import evplugin.roi.primitive.*;
 import evplugin.data.*;
 import evplugin.ev.*;
 
@@ -180,11 +181,11 @@ public class FilterImageExtension implements ImageWindowExtension
 					public void actionPerformed(ActionEvent e)
 						{
 						Imageset rec=w.getImageset();
-
-						InternalROI roi=new InternalROI();
-						roi.chosenChannel=w.getCurrentChannelName();
-						roi.chosenFrame=w.frameControl.getFrame();
-						roi.chosenZ=w.frameControl.getZ();
+						
+						BoxROI roi=new BoxROI();
+						roi.regionChannels.add(w.getCurrentChannelName());
+						roi.regionFrames.set(w.frameControl.getFrame());
+						roi.regionZ.set(w.frameControl.getZ());
 						
 						//this just killed the need for a single image to be applied? or?
 						//maybe try to use optimized call after all
@@ -210,9 +211,9 @@ public class FilterImageExtension implements ImageWindowExtension
 						{
 						Imageset rec=w.getImageset();
 
-						InternalROI roi=new InternalROI();
-						roi.chosenChannel=w.getCurrentChannelName();
-						roi.chosenFrame=w.frameControl.getFrame();
+						BoxROI roi=new BoxROI();
+						roi.regionChannels.add(w.getCurrentChannelName());
+						roi.regionFrames.set(w.frameControl.getFrame());
 						
 						if(fi instanceof FilterInfo)
 							new FilterDialog(((FilterInfo)fi).filterROI(), rec, roi);
@@ -234,8 +235,8 @@ public class FilterImageExtension implements ImageWindowExtension
 						{
 						Imageset rec=w.getImageset();
 
-						InternalROI roi=new InternalROI();
-						roi.chosenChannel=w.getCurrentChannelName();
+						BoxROI roi=new BoxROI();
+						roi.regionChannels.add(w.getCurrentChannelName());
 						
 						if(fi instanceof FilterInfo)
 							new FilterDialog(((FilterInfo)fi).filterROI(), rec, roi);
@@ -257,7 +258,7 @@ public class FilterImageExtension implements ImageWindowExtension
 						{
 						Imageset rec=w.getImageset();
 
-						InternalROI roi=new InternalROI();
+						BoxROI roi=new BoxROI();
 						
 						if(fi instanceof FilterInfo)
 							new FilterDialog(((FilterInfo)fi).filterROI(), rec, roi);
