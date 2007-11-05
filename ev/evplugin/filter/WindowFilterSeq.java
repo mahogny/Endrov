@@ -34,7 +34,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 			}
 		public void actionPerformed(ActionEvent e) 
 			{
-			new WindowFilterSeq();
+			new WindowFilterSeq(null);
 			}
 		public void buildMenu(BasicWindow w){}
 		}
@@ -59,7 +59,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 				{
 				try
 					{
-					new WindowFilterSeq(BasicWindow.getXMLbounds(e));
+					new WindowFilterSeq(BasicWindow.getXMLbounds(e),null);
 					}
 				catch (Exception e1){e1.printStackTrace();}
 				}
@@ -77,8 +77,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	private ObjectCombo objectCombo=new ObjectCombo(this, true);
 	private WidgetFilterSeq wFilterSeq=new WidgetFilterSeq();
 	private JMenu mAdd=new JMenu("Add");
-	
-	
+		
 	public Alternative[] comboAddAlternative(ObjectCombo combo)
 		{
 		return new Alternative[]{};
@@ -100,24 +99,31 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 		return ob instanceof FilterSeq;
 		}
 
+	
+	
+	
 	/**
 	 * Make a new window at default location
 	 */
-	public WindowFilterSeq()
+	public WindowFilterSeq(FilterSeq seq)
 		{
-		this(new Rectangle(600,300,500,400));
+		this(new Rectangle(600,300,500,400), seq);
 		}
 	
 	/**
 	 * Make a new window at some specific location
 	 */
-	public WindowFilterSeq(Rectangle bounds)
+	public WindowFilterSeq(Rectangle bounds, FilterSeq seq)
 		{
-		objectCombo.addActionListener(this);
-		
 		//Put GUI together
 		setLayout(new BorderLayout());
-		add(objectCombo,BorderLayout.NORTH);
+		if(seq==null)
+			{
+			objectCombo.addActionListener(this);
+			add(objectCombo,BorderLayout.NORTH);
+			}
+		else
+			wFilterSeq.setFilterSeq(seq);
 		add(wFilterSeq,BorderLayout.CENTER);
 		addMenubar(mAdd);
 		wFilterSeq.buildMenu(mAdd);

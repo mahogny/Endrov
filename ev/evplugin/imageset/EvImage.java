@@ -13,13 +13,11 @@ public abstract class EvImage
 	 * In-memory image. Set to null if there is none.
 	 */
 	protected BufferedImage im=null;
-		
 	
 	/**
 	 * Cache: pointer to loaded image
 	 */
 	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
-	
 	
 	/**
 	 * Get AWT representation of image. This should be as fast as it can be, but since AWT has limitations, data might be lost.
@@ -66,6 +64,13 @@ public abstract class EvImage
 	protected abstract BufferedImage loadJavaImage();
 	
 	
+	/**
+	 * Get a copy of this image that is legal to modify
+	 */
+	public EvImage getWritableCopy()
+		{
+		return new EvImageCopy(this);
+		}
 	
 	public double transformImageWorldX(double c){return (c*getBinning()+getDispX())/getResX();}
 	public double transformImageWorldY(double c){return (c*getBinning()+getDispY())/getResY();}			
@@ -87,4 +92,6 @@ public abstract class EvImage
 	public abstract double getResX();
 	public abstract double getResY();
 	
+	
+
 	}
