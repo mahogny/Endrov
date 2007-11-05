@@ -65,12 +65,14 @@ public class WidgetFilterSeq extends JPanel
 								{
 								Filter firoi=((FilterInfo)fi).filterROI();
 								filterseq.sequence.add(firoi);
+								BasicWindow.updateWindows();
 								}
 							else if(fi!=filterseq)
 								{
 								FilterSeq fs=(FilterSeq)fi;
 								for(Filter firoi:fs.sequence)
 									filterseq.sequence.add(firoi);
+								BasicWindow.updateWindows();
 								}
 							buildList();
 							}
