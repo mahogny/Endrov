@@ -37,6 +37,10 @@ public class BoxROI extends ROI
 			this.start=start;
 			this.end=end;
 			}
+		public void set(double start)
+			{
+			set(start,start+1);
+			}
 		}
 	
 
@@ -103,6 +107,13 @@ public class BoxROI extends ROI
 	public Span regionY=new Span();
 	public Span regionZ=new Span();
 	
+
+	/**
+	 * Create a box ROI with default: select everything
+	 */
+	public BoxROI()
+		{
+		}
 	
 	
 	public String getROIDesc()
@@ -223,7 +234,7 @@ public class BoxROI extends ROI
 	
 	public void saveMetadata(Element e)
 		{
-		e.setName("ROI rect");
+		e.setName("ROI box");
 		
 		}
 	
