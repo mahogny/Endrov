@@ -142,6 +142,7 @@ public class WidgetFilterSeq extends JPanel
 						else if(e.getSource()==bDelete)
 							{
 							filterseq.sequence.remove(currentPos);
+							BasicWindow.updateWindows();
 							buildList();
 							}
 						}
