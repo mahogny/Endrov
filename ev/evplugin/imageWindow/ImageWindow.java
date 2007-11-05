@@ -15,6 +15,7 @@ import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.imageset.*;
 import evplugin.keyBinding.*;
+import evplugin.filter.*;
 
 /**
  * Image window - Displays imageset with overlays. Data can be edited with tools, filters can be applied.
@@ -127,7 +128,9 @@ public class ImageWindow extends BasicWindow
 		public final ChannelCombo comboChannel=new ChannelCombo(null,false);
 		public final JSlider sliderContrast=new JSlider(-500,500,0);
 		public final JSlider sliderBrightness=new JSlider(-100,100,0);
+		public final JButton bFilterSequence=new JButton(iconLabelFS);
 
+		public FilterSeq filterSeq=new FilterSeq();
 		
 		public ChannelWidget()
 			{
@@ -141,7 +144,6 @@ public class ImageWindow extends BasicWindow
 			brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
 			brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
 
-			JButton bFilterSequence=new JButton(iconLabelFS);
 
 			JPanel left=new JPanel(new BorderLayout());
 			left.add(rSelect,BorderLayout.WEST);
@@ -155,6 +157,7 @@ public class ImageWindow extends BasicWindow
 			sliderContrast.addChangeListener(this);
 			sliderBrightness.addChangeListener(this);
 			comboChannel.addActionListener(this);
+			bFilterSequence.addActionListener(this);
 			}
 		
 		public void actionPerformed(ActionEvent e)
@@ -165,6 +168,10 @@ public class ImageWindow extends BasicWindow
 				{
 				frameControl.setAll(frameControl.getFrame(), frameControl.getZ());
 				updateImagePanel();
+				}
+			else if(e.getSource()==bFilterSequence)
+				{
+				new WindowFilterSeq(filterSeq);
 				}
 			else
 				updateImagePanel();
@@ -479,6 +486,29 @@ public class ImageWindow extends BasicWindow
 	public double s2wz(double sz) {return sz/(double)getImageset().meta.resZ;} 
 
 	
+	
+
+	
+	//are these useful?
+	public void transformOverlay(Graphics2D g)
+		{
+		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
+		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
+		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
+		g.translate(trans.x,trans.y);
+		g.scale(zoomBinningX,zoomBinningY);
+		g.rotate(imagePanel.rotation);
+		}
+	public void untransformOverlay(Graphics2D g)
+		{
+		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
+		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
+		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
+		g.rotate(-imagePanel.rotation);
+		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
+		g.translate(-trans.x,-trans.y);
+		}
+	
 	/**
 	 * Take current settings of sliders and apply it to image
 	 */
@@ -508,6 +538,10 @@ public class ImageWindow extends BasicWindow
 				z=ch.closestZ(frame, z);
 				
 				pi.image=ch.getImageLoader(frame,z);
+				FilterSeq fseq=channelWidget.get(i).filterSeq;
+				if(!fseq.isIdentity())
+					pi.image=fseq.applyReturnImage(pi.image);
+				
 				imagePanel.images.add(pi);
 				}
 			}
@@ -517,26 +551,6 @@ public class ImageWindow extends BasicWindow
 		}
 
 
-	
-	//are these useful?
-	public void transformOverlay(Graphics2D g)
-		{
-		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
-		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
-		g.translate(trans.x,trans.y);
-		g.scale(zoomBinningX,zoomBinningY);
-		g.rotate(imagePanel.rotation);
-		}
-	public void untransformOverlay(Graphics2D g)
-		{
-		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
-		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
-		g.rotate(-imagePanel.rotation);
-		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
-		g.translate(-trans.x,-trans.y);
-		}
 	
 	/**
 	 * Update, but assume images are still ok

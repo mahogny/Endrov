@@ -48,7 +48,7 @@ public class NoisePoisson extends FilterSlice
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	public EvMutableDouble lambda=new EvMutableDouble(0.04);
+	public EvMutableDouble lambda=new EvMutableDouble(5);
 	
 	public String getFilterName()
 		{

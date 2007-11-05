@@ -161,5 +161,25 @@ public class FilterSeq extends EvObject
 		BasicWindow.updateWindows();
 		}
 	
+	/**
+	 * Apply sequence, but do not modify source; return modified image
+	 */
+	public EvImage applyReturnImage(EvImage evim)
+		{
+		evim=evim.getWritableCopy();
+		for(Filter fi:sequence)
+			{
+			FilterROI firoi=(FilterROI)fi;
+			firoi.applyImage(evim);
+			}
+		return evim;
+		}
 	
+	/**
+	 * Check if this filter does nothing
+	 */
+	public boolean isIdentity()
+		{
+		return sequence.isEmpty();
+		}
 	}
