@@ -39,7 +39,7 @@ public abstract class FilterSlice extends FilterROI
 			rout.setSamples(it.startX, it.y, w, 1, 0, pix);
 //			System.out.println("z "+it.startX+" "+it.endX+" "+it.y+" "+w);
 			}
-		evim.setImage(i);
+		evim.setImage(i); //was i
 		}
 	
 	

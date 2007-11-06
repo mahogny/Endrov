@@ -126,7 +126,7 @@ public class ImageWindow extends BasicWindow
 		
 		public final JRadioButton rSelect=new JRadioButton();
 		public final ChannelCombo comboChannel=new ChannelCombo(null,false);
-		public final JSlider sliderContrast=new JSlider(-1000,1000,0);
+		public final JSlider sliderContrast=new JSlider(-4000,4000,0);
 		public final JSlider sliderBrightness=new JSlider(-100,100,0);
 		public final JButton bFilterSequence=new JButton(iconLabelFS);
 

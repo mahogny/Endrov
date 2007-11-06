@@ -73,7 +73,9 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+	private boolean isTemporaryWindow;
 	
+
 	private ObjectCombo objectCombo=new ObjectCombo(this, true);
 	private WidgetFilterSeq wFilterSeq=new WidgetFilterSeq();
 	private JMenu mAdd=new JMenu("Add");
@@ -115,6 +117,8 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	 */
 	public WindowFilterSeq(Rectangle bounds, FilterSeq seq)
 		{
+		isTemporaryWindow=seq==null;
+		
 		//Put GUI together
 		setLayout(new BorderLayout());
 		if(seq==null)
@@ -142,9 +146,12 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	 */
 	public void windowPersonalSettings(Element root)
 		{
-		Element e=new Element("filterseqwindow");
-		setXMLbounds(e);
-		root.addContent(e);
+		if(!isTemporaryWindow)
+			{
+			Element e=new Element("filterseqwindow");
+			setXMLbounds(e);
+			root.addContent(e);
+			}
 		}
 
 	/**

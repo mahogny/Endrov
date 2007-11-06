@@ -189,19 +189,26 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		{
 		public void actionPerformed(ActionEvent e) 
 			{
-			if(e.getSource()==miQuit)         dialogQuit();
-			if(e.getSource()==miGC)
+			if(e.getSource()==miQuit)         
+				dialogQuit();
+			else if(e.getSource()==miGC)
 				{
 				System.out.println("Running GC");
 				System.gc();
 				}
-			if(e.getSource()==miResetPC)
+			else if(e.getSource()==miResetPC)
 				{
 				if(JOptionPane.showConfirmDialog(null, "Do you really want to reset config? This requires a restart of EV.", "EV", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 					{
 					EV.resetPersonalConfig();
 					System.exit(0);
 					}
+				}
+			else if(e.getSource()==miToggleSplash)
+				{
+				boolean b=!SplashScreen.isSplashEnabled();
+				SplashScreen.setSplashEnabled(b);
+				JOptionPane.showMessageDialog(null, "Show splash screen: "+b);
 				}
 
 			if(e.getSource()==miSavePluginList)  EV.savePluginList();
@@ -224,6 +231,8 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	private JMenuItem miGC=new JMenuItem("Run GC");
 	private JMenuItem miResetPC=new JMenuItem("Reset personal config");
 	private JMenuItem miSavePluginList=new JMenuItem("Save plugin list");
+	private JMenuItem miToggleSplash=new JMenuItem("Toggle splash screen");
+	
 	private JMenuItem miQuit=new JMenuItem("Exit");
 
 	private JMenuItem miAbout=new JMenuItem("About");
@@ -275,6 +284,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		menuMaintenance.add(miGC);
 		menuMaintenance.add(miResetPC);
 		menuMaintenance.add(miSavePluginList);
+		menuMaintenance.add(miToggleSplash);
 		menuFile.add(miQuit);
 		
 		menuInfo.add(miAbout);
@@ -292,6 +302,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		miResetPC.addActionListener(listener);
 		miGC.addActionListener(listener);
 		miSavePluginList.addActionListener(listener);
+		miToggleSplash.addActionListener(listener);
 		
 		miAbout.addActionListener(listener);
 		miWebHome.addActionListener(listener);

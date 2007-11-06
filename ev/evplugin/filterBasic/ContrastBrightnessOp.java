@@ -1,4 +1,4 @@
-package evplugin.imageWindow;
+package evplugin.filterBasic;
 
 import java.awt.image.*;
 import evplugin.ev.*;
