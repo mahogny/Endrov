@@ -174,7 +174,6 @@ Color [top]
 
 
 Filters [top]
-     Real Convolver
      LoG Filtering
      Background Subtraction and Normalization
      Byte Swapper
@@ -206,8 +205,6 @@ Filters [top]
 ===============================================================================
 
 Graphics [top]
-     QuickTime Movie Player
-     Random Ovals
      Reduce size using averaging
      Image Layering Toolbox
      Contour Plotter

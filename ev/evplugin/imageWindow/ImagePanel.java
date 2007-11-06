@@ -8,6 +8,7 @@ import javax.vecmath.Vector2d;
 
 import evplugin.imageset.*;
 import evplugin.ev.*;
+import evplugin.filterBasic.ContrastBrightnessOp;
 
 
 /**
