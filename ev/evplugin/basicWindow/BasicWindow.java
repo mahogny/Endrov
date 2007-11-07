@@ -3,6 +3,8 @@ package evplugin.basicWindow;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import evplugin.ev.*;
@@ -331,14 +333,20 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 */
 	public static void dialogSysInfo()
 		{
+		String[] wf=ImageIO.getWriterFormatNames();
+		String jaiformats="JAI supports extensions:";
+		for(String s:wf)
+			jaiformats+=" "+s;
+		
 		Runtime rt=Runtime.getRuntime();
 		String text=
 			"Available processors: "+rt.availableProcessors()+"\n"+
 			"Total memory used: "+(rt.totalMemory()/1024/1024)+" MiB\n"+
 			"Free memory (in JVM): "+(rt.freeMemory()/1024/1024)+" MiB\n"+
 			"Memory left: "+((rt.maxMemory()-rt.totalMemory())/1024/1024)+" MiB\n"+
-			"Max memory available for Java: "+(rt.maxMemory()/1024/1024)+" MiB";
-		JOptionPane.showMessageDialog(null, text);
+			"Max memory available for Java: "+(rt.maxMemory()/1024/1024)+" MiB\n"+
+			jaiformats;
+		JOptionPane.showMessageDialog(null, text);		
 		}
 	
 	

@@ -116,7 +116,7 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 			{
 			if(shell==null)
 				{
-				int option = JOptionPane.showConfirmDialog(null, "EV Shell", "Want to create new shell?", JOptionPane.YES_NO_OPTION);
+				int option = JOptionPane.showConfirmDialog(null, "Want to create new shell?", "EV Shell", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION)
 					{				
 					//Create new shell
