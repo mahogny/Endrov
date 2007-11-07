@@ -18,10 +18,10 @@ public class BatchMovie
 		{
 		System.out.println("Converting imageset "+file.getPath());
 		OstImageset ost=new OstImageset(file.getPath());
-		Vector<String> channelNames=new Vector<String>();
-		channelNames.add("GFPmax");
-		channelNames.add("DIC");
-		BatchThread c=new CalcThread(ost, 0, 1000000, 35, channelNames, 336);
+		Vector<CalcThread.MovieChannel> channelNames=new Vector<CalcThread.MovieChannel>();
+		channelNames.add(new CalcThread.MovieChannel("GFPmax",false));
+		channelNames.add(new CalcThread.MovieChannel("DIC",true));
+		BatchThread c=new CalcThread(ost, 0, 1000000, 35, channelNames, 336, "h.264 (MPEG-4)", "High"); 
 		new CompleteBatch(c);
 		}
 	

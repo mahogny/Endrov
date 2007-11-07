@@ -4,15 +4,6 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.geom.*;
 import java.io.*;
-
-import quicktime.*;
-import quicktime.io.*;
-import quicktime.qd.*;
-import quicktime.std.*;
-import quicktime.std.image.*;
-import quicktime.std.movies.*;
-import quicktime.std.movies.media.*;
-import quicktime.util.*;
 import java.util.*;
 
 import evplugin.ev.*;
@@ -30,16 +21,32 @@ public final class CalcThread extends BatchThread
 	private final int z;
 
 	private final int oneW;
-	private final Vector<String> channelNames;
+	private final Vector<MovieChannel> channels;
+	private final String inputCodec;
+	private final String inputQuality;
 	
-	public CalcThread(Imageset rec, int startFrame, int endFrame, int z, Vector<String> channelNames, int oneW)
+	
+	public static class MovieChannel
+		{
+		public final String name;
+		public final boolean equalize;
+		public MovieChannel(String nane, boolean equalize)
+			{
+			this.name=nane;
+			this.equalize=equalize;
+			}
+		}
+	
+	public CalcThread(Imageset rec, int startFrame, int endFrame, int z, Vector<MovieChannel> channelNames, int oneW, String codec, String quality)
 		{
 		this.rec=rec;
 		this.startFrame=startFrame;
 		this.endFrame=endFrame;
 		this.z=z;
-		this.channelNames=channelNames;
+		this.channels=channelNames;
 		this.oneW=oneW;
+		inputCodec=codec;
+		inputQuality=quality;
 		}
 	
 	public String getBatchName()
@@ -48,138 +55,6 @@ public final class CalcThread extends BatchThread
 		}
 	
 	
-	
-	
-	
-	/**
-	 * Interface to quicktime. Encapsulates all shitty commands.
-	 */
-	private class MovieMaker implements StdQTConstants
-		{
-		static final int KEY_FRAME_RATE = 30;
-		static final int TIME_SCALE = 600;
-		
-		public final String[] codecs = {"Cinepak", "Animation", "H.263", "Sorenson", "Sorenson 3", "MPEG-4"};
-		public final int[] codecTypes = {kCinepakCodecType, kAnimationCodecType, kH263CodecType, kSorensonCodecType, 0x53565133, 0x6d703476};
-		
-		private final String[] qualityStrings = {"Low", "Normal", "High", "Maximum"};
-		private final int[] qualityConstants = {codecLowQuality, codecNormalQuality, codecHighQuality, codecMaxQuality};
-
-		private final RawEncodedImage compressedImage;
-		private final ImageDescription imgDesc;
-		private final Movie movie;
-		private final VideoMedia videoMedia;
-		private final Track videoTrack;
-		private final QTFile movFile;
-		private final QDGraphics gw;
-		private final CSequence seq;
-		private final QDRect bounds;
-		private final QTHandle imageHandle;
-		private int[] pixelsNativeOrder = null;
-		
-		private final int finalWidth;
-		private final int finalHeight;
-		private final int rate;
-		private int codecType = kSorensonCodecType;
-		private int codecQuality = codecNormalQuality;
-		private int timeScale = TIME_SCALE; //units per second
-		
-		/**
-		 * Start making a movie
-		 */
-		public MovieMaker(String path, int finalWidth, int finalHeight, String codec, String quality) throws Exception
-			{
-			this.finalWidth=finalWidth;
-			this.finalHeight=finalHeight;
-
-			//Choose codec from string description
-			for (int i=0; i<codecs.length; i++) 
-				if (codec.equals(codecs[i]))
-					codecType = codecTypes[i];
-			for (int i=0; i<qualityStrings.length; i++) 
-				if (quality.equals(qualityStrings[i]))
-					codecQuality = qualityConstants[i];
-			
-			double fps = 7.0;
-			//if (fps<0.1) fps = 0.1;
-			//if (fps>100.0) fps = 100.0;
-			rate = (int)(TIME_SCALE/fps);
-			
-			//Prepare making a movie
-			QTSession.open();
-			movFile = new QTFile(new File(path));
-			movie = Movie.createMovieFile(movFile, kMoviePlayer, createMovieFileDeleteCurFile|createMovieFileDontCreateResFile);
-			videoTrack = movie.addTrack (finalWidth, finalHeight, 0);
-			videoMedia = new VideoMedia(videoTrack, timeScale);
-			videoMedia.beginEdits();
-			ImageDescription imgDesc2 = new ImageDescription(QDConstants.k32ARGBPixelFormat); //Packed into one java int
-			imgDesc2.setWidth(finalWidth);
-			imgDesc2.setHeight(finalHeight);
-			gw = new QDGraphics(imgDesc2, 0);
-			bounds = new QDRect (0, 0, finalWidth, finalHeight);
-			int rawImageSize = QTImage.getMaxCompressionSize(gw, bounds, gw.getPixMap().getPixelSize(), codecQuality, codecType, CodecComponent.anyCodec);
-			imageHandle = new QTHandle(rawImageSize, true);
-			imageHandle.lock();
-			compressedImage = RawEncodedImage.fromQTHandle(imageHandle);
-			seq = new CSequence(gw, bounds, gw.getPixMap().getPixelSize(), codecType, CodecComponent.bestFidelityCodec, 
-					codecQuality, codecQuality, KEY_FRAME_RATE, null, 0);
-			imgDesc = seq.getDescription();
-			}
-		
-		/**
-		 * Finish up movie making
-		 */
-		public void done() throws Exception
-			{
-			videoMedia.endEdits();
-			videoTrack.insertMedia (0, 0, videoMedia.getDuration(), 1);
-			OpenMovieFile omf = OpenMovieFile.asWrite (movFile);
-			movie.addResource(omf, movieInDataForkResID, movFile.getName());
-			}
-		
-		/**
-		 * Encode another frame
-		 */
-		public void addFrame(BufferedImage im) throws Exception
-			{
-			
-			//Extract image pixels
-			int pixels[] = new int[im.getWidth()*im.getHeight()];
-			im.getRaster().getSamples(0,0,im.getWidth(),im.getHeight(),0,pixels);
-			for(int i=0;i<pixels.length;i++)
-				pixels[i]=pixels[i] | (pixels[i]<<8) | (pixels[i]<<16); //Packed pixel format
-
-			//Fix byte order. Put pixels in pixelData.
-			RawEncodedImage pixelData = gw.getPixMap().getPixelData();
-			int intsPerRow = pixelData.getRowBytes()/4;
-			if (pixelsNativeOrder==null) 
-				pixelsNativeOrder = new int[intsPerRow*finalHeight];
-			if (EndianOrder.isNativeLittleEndian()) 
-				{
-				//System.out.println("Native little endian");
-				int offset1, offset2;
-				for (int y=0; y<finalHeight; y++) 
-					{
-					offset1 = y*finalWidth;
-					offset2 = y*intsPerRow;
-					for (int x=0; x<finalWidth; x++)
-						pixelsNativeOrder[offset2++] = EndianOrder.flipBigEndianToNative32(pixels[offset1++]);
-					}
-				} 
-			else
-				{
-				//System.out.println("Not native little endian");
-				for (int i=0; i<finalHeight; i++)
-					System.arraycopy(pixels, i*finalWidth, pixelsNativeOrder, i*intsPerRow, finalWidth);
-				}
-			pixelData.copyFromArray(0, pixelsNativeOrder, 0, intsPerRow*finalHeight);
-
-			//Add information about frame
-			CompressedFrameInfo cfInfo = seq.compressFrame (gw, bounds, codecFlagUpdatePrevious, compressedImage);
-			boolean syncSample = cfInfo.getSimilarity()==0; // see developer.apple.com/qa/qtmcc/qtmcc20.html
-			videoMedia.addSample (imageHandle, 0, cfInfo.getDataSize(), rate, imgDesc, 1, syncSample?0:mediaSampleNotSync);
-			}
-		}
 
 	
 	/**
@@ -190,10 +65,10 @@ public final class CalcThread extends BatchThread
 		try
 			{
 			//Check that channel list is ok
-			if(channelNames.isEmpty())
+			if(channels.isEmpty())
 				throw new Exception("Missing channels");
-			for(String s:channelNames)
-				if(rec.getChannel(s)==null)
+			for(MovieChannel s:channels)
+				if(rec.getChannel(s.name)==null)
 					throw new Exception("Missing channels");
 			
 			//Decide name of movie file
@@ -203,9 +78,9 @@ public final class CalcThread extends BatchThread
 				batchDone();
 				return;
 				}
-			String lastpart=rec.getMetadataName()+"-"+channelNames.get(0);
-			for(int i=1;i<channelNames.size();i++)
-				lastpart+="_"+channelNames.get(i);
+			String lastpart=rec.getMetadataName()+"-"+channels.get(0).name;
+			for(int i=1;i<channels.size();i++)
+				lastpart+="_"+channels.get(i).name;
 			File moviePath=new File(rec.datadir(),lastpart+".mov");
 			//moviePath=new File("/tmp/out.mov");
 			if(moviePath.exists())
@@ -216,10 +91,10 @@ public final class CalcThread extends BatchThread
 				}
 
 			//Quicktime movie to be made
-			MovieMaker movieMaker=null;
+			QTMovieMaker movieMaker=null;
 			
 			//For all frames
-			int curframe=rec.getChannel(channelNames.get(0)).closestFrame(startFrame);
+			int curframe=rec.getChannel(channels.get(0).name).closestFrame(startFrame);
 			while(curframe<=endFrame)
 				{
 				//Check for premature stop
@@ -233,11 +108,11 @@ public final class CalcThread extends BatchThread
 				batchLog(""+curframe);
 
 				//Fetch all images
-				Vector<MovieChannel> mc=new Vector<MovieChannel>();
+				Vector<MovieChannelImage> mc=new Vector<MovieChannelImage>();
 				boolean allImloadOk=true;
-				for(String cName:channelNames)
+				for(MovieChannel cName:channels)
 					{
-					Imageset.ChannelImages ch=rec.getChannel(cName);
+					Imageset.ChannelImages ch=rec.getChannel(cName.name);
 					int frame=ch.closestFrame(curframe);
 					int tz=ch.closestZ(frame, z);
 					EvImage imload=ch.getImageLoader(frame, tz);
@@ -247,7 +122,7 @@ public final class CalcThread extends BatchThread
 						return;
 						}
 					else
-						mc.add(new MovieChannel(imload.getJavaImage(), cName));
+						mc.add(new MovieChannelImage(imload.getJavaImage(), cName.name, cName.equalize));
 					}
 				if(allImloadOk)
 					{
@@ -256,14 +131,14 @@ public final class CalcThread extends BatchThread
 
 					//Start making movie when size of channels known
 					if(movieMaker==null)
-						movieMaker=new MovieMaker(moviePath.getAbsolutePath(), c.getWidth(), c.getHeight(), "", "");
+						movieMaker=new QTMovieMaker(moviePath.getAbsolutePath(), c.getWidth(), c.getHeight(), inputCodec, inputQuality);
 
 					//Encode frame
 					movieMaker.addFrame(c);
 					}
 
 				//Go to next frame. End if there are no more frames.
-				int newcurframe=rec.getChannel(channelNames.get(0)).closestFrameAfter(curframe);
+				int newcurframe=rec.getChannel(channels.get(0).name).closestFrameAfter(curframe);
 				if(newcurframe==curframe)
 					break;
 				curframe=newcurframe;
@@ -272,7 +147,8 @@ public final class CalcThread extends BatchThread
 			//Finish encoding
 			if(movieMaker!=null)
 				movieMaker.done();
-			
+			else
+				System.out.println("No movie maker to destroy");
 			//Normal exit
 			batchLog("Done");
 			}
@@ -285,14 +161,15 @@ public final class CalcThread extends BatchThread
 		}
     
 	
-	private class MovieChannel
+	private class MovieChannelImage
 		{
 		public BufferedImage im;
 		public String name;
 		public double scale;
-		public MovieChannel(BufferedImage im, String name)
+		public boolean equalize;
+		public MovieChannelImage(BufferedImage im, String name, boolean equalize)
 			{
-			this.im=im; this.name=name;
+			this.im=im; this.name=name; this.equalize=equalize;
 			}
 		}
 
@@ -300,11 +177,10 @@ public final class CalcThread extends BatchThread
 	/**
 	 * Put channels together
 	 */
-	private BufferedImage combine(Vector<MovieChannel> mc, int frame)
+	private BufferedImage combine(Vector<MovieChannelImage> mc, int frame)
 		{
-		//Need renormalization TODO
 		int h=0;
-		for(MovieChannel ch:mc)
+		for(MovieChannelImage ch:mc)
 			{
 			ch.scale=oneW/(double)ch.im.getWidth();
 			int th=(int)(ch.im.getHeight()*ch.scale);
@@ -320,7 +196,10 @@ public final class CalcThread extends BatchThread
 		Graphics2D g=(Graphics2D)c.getGraphics();
 		for(int i=0;i<mc.size();i++)
 			{
-			MovieChannel ch=mc.get(i);
+			MovieChannelImage ch=mc.get(i);
+
+			if(ch.equalize)
+				ch.im=equalize(ch.im);
 			
 			AffineTransform trans=new AffineTransform();
 			trans.translate(oneW*i, 0);
@@ -336,7 +215,43 @@ public final class CalcThread extends BatchThread
 		
 		return c;
 		}
+
 	
-	
+	/**
+	 * Equalize gray scale image
+	 */
+	public BufferedImage equalize(BufferedImage source)
+		{
+		int[] pcount=new int[256];
+		Raster raster=source.getRaster();
+		int[] pixels=new int[raster.getWidth()];
+		int max=1;
+		for(int y=0;y<raster.getHeight();y++)
+			{
+			raster.getSamples(0, y, raster.getWidth(), 1, 0, pixels);
+			for(int p:pixels)
+				pcount[p]++;
+			}
+
+		int nump=(int)(raster.getWidth()*raster.getHeight()*0.01);
+		for(max=255;max>=1 & nump>0;max--)
+			nump-=pcount[max];
+		max++;
+		
+		short[] table = new short[256];
+		for (int i = 0; i < 256; i++)
+			{
+			table[i] = (short) (i*255/max);
+			if(table[i]>255)
+				table[i]=255;
+			}
+		BufferedImage dest = new BufferedImage(source.getWidth(),source.getHeight(),source.getType());
+		LookupTable look = new ShortLookupTable(0,table);
+		BufferedImageOp buff = new LookupOp(look,null);
+		buff.filter(source, dest);
+		return dest;
+		}
+
+
     
 	}

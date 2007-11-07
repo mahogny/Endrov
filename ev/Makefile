@@ -22,7 +22,7 @@ linecount:
 webstart:
 #	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*/*class
 #	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/* evplugin/*/* evplugin/*/*/*
-	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/*/parser/*class evplugin/ev/pluginlist.txt
+	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*class evplugin/ev/pluginlist.txt
 	jarsigner -keystore myKeys ev.jar jdc
 	du -hc ev.jar
 

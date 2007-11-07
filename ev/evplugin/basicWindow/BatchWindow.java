@@ -45,7 +45,7 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 		bottom.add(bStop);
 		
 		//Window overall things
-		setTitle(EV.programName+" Batch"+ thread.getBatchName());
+		setTitle(EV.programName+" Batch "+ thread.getBatchName());
 		pack();
 		setBounds(x,y,w,h);
 		setVisible(true);

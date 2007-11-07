@@ -7,7 +7,6 @@ import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.data.*;
-import evplugin.imageWindow.*;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.roi.*;
@@ -32,7 +31,6 @@ public class FilterSeq extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		ImageWindow.addImageWindowExtension(new FilterImageExtension());
 		EvData.extensions.put(metaType,new FilterSeqObjectType());
 		}
 	

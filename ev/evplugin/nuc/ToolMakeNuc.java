@@ -80,8 +80,6 @@ public class ToolMakeNuc implements ImageWindowTool
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
 			x2=v.x;
 			y2=v.y;
-//			x2=w.s2wx(e.getX());
-	//		y2=w.s2wy(e.getY());
 			w.updateImagePanel();
 			}
 		}
@@ -93,12 +91,8 @@ public class ToolMakeNuc implements ImageWindowTool
 			//Start making a nucleus
 			active=true;
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
-			x2=v.x;
-			y2=v.y;
-//			x1=w.s2wx(e.getX());
-//			y1=w.s2wy(e.getY());
-			x2=x1;
-			y2=y1;
+			x1=x2=v.x;
+			y1=y2=v.y;
 			}
 		else if(SwingUtilities.isRightMouseButton(e))//changed
 			{
