@@ -208,8 +208,8 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 				}
 			else if(e.getSource()==miToggleSplash)
 				{
-				boolean b=!SplashScreen.isSplashEnabled();
-				SplashScreen.setSplashEnabled(b);
+				boolean b=!EvSplashScreen.isSplashEnabled();
+				EvSplashScreen.setSplashEnabled(b);
 				JOptionPane.showMessageDialog(null, "Show splash screen: "+b);
 				}
 

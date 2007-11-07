@@ -28,9 +28,9 @@ public class GUI
 
 		//A window showing initialization could be useful here
 		
-		SplashScreen ss=null;
-		if(SplashScreen.isSplashEnabled())
-			ss=new SplashScreen();
+		EvSplashScreen ss=null;
+		if(EvSplashScreen.isSplashEnabled())
+			ss=new EvSplashScreen();
 		
 		
 		//if(!PluginInfo.storedInJar())

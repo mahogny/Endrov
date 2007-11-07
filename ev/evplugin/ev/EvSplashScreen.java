@@ -6,10 +6,10 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 
 
-public class SplashScreen extends JFrame
+public class EvSplashScreen extends JFrame
 	{
 	static final long serialVersionUID=0;
-	private static ImageIcon iconSplash=new ImageIcon(SplashScreen.class.getResource("splash.png"));
+	private static ImageIcon iconSplash=new ImageIcon(EvSplashScreen.class.getResource("splash.png"));
 	
 	public static boolean isSplashEnabled()
 		{
@@ -24,7 +24,7 @@ public class SplashScreen extends JFrame
 		}
 	
 	
-	public SplashScreen()
+	public EvSplashScreen()
 		{
 		add(new JLabel(iconSplash), BorderLayout.CENTER);
 		add(new JLabel("Version "+EV.version), BorderLayout.SOUTH);
