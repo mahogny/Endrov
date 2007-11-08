@@ -41,11 +41,11 @@ public class BatchMovie
 					"/Volumes/TBU_xeon01_500GB01/ost3dfailed/",
 					"/Volumes/TBU_xeon01_500GB01/ost3dgood/",
 					"/Volumes/TBU_xeon01_500GB01/ost4dfailed/",
-					"/Volumes/TBU_xeon01_500GB01/ost4dgood",
+					"/Volumes/TBU_xeon01_500GB01/ost4dgood/",
 					"/Volumes/TBU_xeon01_500GB02/ost3dfailed/",
 					"/Volumes/TBU_xeon01_500GB02/ost3dgood/",
 					"/Volumes/TBU_xeon01_500GB02/ost4dfailed/",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/"
 					
 		};
 		for(String s:arg)
