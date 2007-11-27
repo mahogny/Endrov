@@ -22,6 +22,7 @@ public class Script
 		addCommand("quit", new CmdExit());
 		addCommand("print", new CmdPrint());
 		addCommand("map", new CmdMap());
+		addCommand("askstring", new CmdAskString());
 		
 		addCommand("+", new CmdPlus());
 		addCommand("-", new CmdMinus());

@@ -82,7 +82,9 @@ public final class CalcThread extends BatchThread
 			for(int i=1;i<channels.size();i++)
 				lastpart+="_"+channels.get(i).name;
 			File moviePath=new File(rec.datadir(),lastpart+".mov");
-			//moviePath=new File("/tmp/out.mov");
+			
+			System.out.println(" "+moviePath);
+			
 			if(moviePath.exists())
 				{
 				batchLog("Skipping. Movie already exists");
@@ -117,12 +119,15 @@ public final class CalcThread extends BatchThread
 					int tz=ch.closestZ(frame, z);
 					EvImage imload=ch.getImageLoader(frame, tz);
 					if(imload==null)
-						{
 						allImloadOk=false;
-						return;
-						}
 					else
-						mc.add(new MovieChannelImage(imload.getJavaImage(), cName.name, cName.equalize));
+						{
+						BufferedImage ji=imload.getJavaImage();
+						if(ji==null)
+							allImloadOk=false;
+						else
+							mc.add(new MovieChannelImage(ji, cName.name, cName.equalize));
+						}
 					}
 				if(allImloadOk)
 					{
@@ -136,6 +141,8 @@ public final class CalcThread extends BatchThread
 					//Encode frame
 					movieMaker.addFrame(c);
 					}
+				else
+					batchError("Failure: not all images could be collected");
 
 				//Go to next frame. End if there are no more frames.
 				int newcurframe=rec.getChannel(channels.get(0).name).closestFrameAfter(curframe);

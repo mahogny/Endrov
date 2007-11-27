@@ -20,7 +20,7 @@ public abstract class EvData
 	public static void initPlugin() {}
 	static
 		{
-		Script.addCommand("dxml", new CmdDXML());
+		Script.addCommand("loadostxml", new CmdLoadOSTXML());
 		Script.addCommand("dls",  new CmdDLS());
 		Script.addCommand("dsel", new CmdDSEL());
 		Script.addCommand("dunl", new CmdDUNL());
