@@ -150,7 +150,7 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		private void renderNuc(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
-			String nucName=nucPair.getRight();
+			//String nucName=nucPair.getRight();
 			
 			//Visibility rule
 			if(nuc.frameBefore==null)
@@ -183,9 +183,10 @@ public class NucModelExtension implements ModelWindowExtension
 	    int NUC_HIDE_DIV=6;
 	    //int NUC_POINT_DIV=6;
 	    
-	    if(NucLineage.hiddenNuclei.contains(nucName))
+	    if(NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
 	    	//Hidden cell
+	    	gl.glColor3d(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
 	      glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
 	      glu.gluSphere(q,nuc.pos.r,NUC_HIDE_DIV,NUC_HIDE_DIV);
 	    	}
@@ -193,11 +194,14 @@ public class NucModelExtension implements ModelWindowExtension
 	    	{
 	    	//Visible cell
 	      gl.glEnable(GL.GL_LIGHTING);
+	      gl.glColor3d(1,1,1);
 	    	glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
 	      gl.glDisable(GL.GL_LIGHTING);
-	      gl.glScalef(-1,-1,-1);
 	      if(false)//w->slab1->value()!=-5000)
-	       glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
+	      	{
+		      gl.glScalef(-1,-1,-1);
+	      	glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
+	      	}
 	    	}
 	    glu.gluDeleteQuadric(q);
 	    

@@ -31,7 +31,7 @@ public class OstImageset extends Imageset
 	public static void initPlugin() {}
 	static
 		{
-		Script.addCommand("dost", new CmdDOST());
+		Script.addCommand("loadost", new CmdLoadOST());
 		
 		EvDataBasic.extensions.add(new DataMenuExtension()
 			{
@@ -344,6 +344,7 @@ public class OstImageset extends Imageset
 					metaObject.remove(oi);
 					break;
 					}
+
 			if(!loadDatabaseCache())
 				{
 				//Check which files exist
@@ -424,6 +425,8 @@ public class OstImageset extends Imageset
 				{
 				Log.printLog("Loading imagelist cache");
 				
+				long currentTime=System.currentTimeMillis();
+				
 				channelImages.clear();
 				int numChannels=Integer.parseInt(in.readLine());
 				for(int i=0;i<numChannels;i++)
@@ -447,6 +450,8 @@ public class OstImageset extends Imageset
 							c.imageLoader.put(frame, loaderset);
 							}
 						
+						//A sorted linked list would make set generation linear time
+						
 						for(int k=0;k<numSlice;k++)
 							{
 							String s=in.readLine();
@@ -456,11 +461,13 @@ public class OstImageset extends Imageset
 								s=in.readLine();
 								}
 							int slice=Integer.parseInt(s);
-							
 							loaderset.put(slice, ((Channel)c).newEvImage(buildImagePath(channelName, frame, slice, ext).getAbsolutePath()));
 							}
 						}
 					}
+				
+				System.out.println(" timeC "+(System.currentTimeMillis()-currentTime));
+				
 				return true;
 				}
 			}

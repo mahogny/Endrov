@@ -1,16 +1,16 @@
-package evplugin.imagesetOST;
+package evplugin.data.cmd;
 import java.util.*;
 
 import evplugin.basicWindow.*;
 import evplugin.data.EvData;
-import evplugin.imageset.Imageset;
+import evplugin.data.EvDataXML;
 import evplugin.script.*;
 
 /**
- * Open OST
+ * Open XML
  * @author Johan Henriksson
  */
-public class CmdDOST extends Command
+public class CmdLoadOSTXML extends Command
 	{
 	public int numArg()	{return 1;}
 	public Exp exec(Vector<Exp> arg) throws Exception
@@ -20,14 +20,14 @@ public class CmdDOST extends Command
 			{
 			ExpVal v=(ExpVal)e;
 
-			Imageset rec=new OstImageset(v.stringValue());
-			EvData.metadata.add(rec);
+			EvData m=new EvDataXML(v.stringValue());
+			EvData.metadata.add(m);
 			
 			BasicWindow.updateWindows();
 			
 			//TODO: print error?
 			
-			return new ExpVal(rec);
+			return new ExpVal(m);
 			}
 		else
 			throw new Exception("Incompatible type");

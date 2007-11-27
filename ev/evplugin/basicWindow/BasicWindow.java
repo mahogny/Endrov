@@ -221,6 +221,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 			if(e.getSource()==miWebPlugins)   BrowserControl.displayURL(EV.website+"Plugins");
 			if(e.getSource()==miAbout)        dialogAbout();
 			if(e.getSource()==miSysInfo)      dialogSysInfo();
+			if(e.getSource()==miSaveConfig)   EV.savePersonalConfig();
 			}
 		};
 		
@@ -243,6 +244,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	private JMenuItem miWebDeveloper=new JMenuItem("Developer Guide");
 	private JMenuItem miWebPlugins=new JMenuItem("Plugins");
 	private JMenuItem miSysInfo=new JMenuItem("System Info");
+	private JMenuItem miSaveConfig=new JMenuItem("Save config now");
 
 	
 	/**
@@ -287,6 +289,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		menuMaintenance.add(miResetPC);
 		menuMaintenance.add(miSavePluginList);
 		menuMaintenance.add(miToggleSplash);
+		menuMaintenance.add(miSaveConfig);
 		menuFile.add(miQuit);
 		
 		menuInfo.add(miAbout);
@@ -312,6 +315,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		miWebDeveloper.addActionListener(listener);
 		miWebPlugins.addActionListener(listener);
 		miSysInfo.addActionListener(listener);
+		miSaveConfig.addActionListener(listener);
 		}
 	
 	

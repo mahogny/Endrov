@@ -63,6 +63,9 @@ public class QTMovieMaker implements StdQTConstants
 	private final int keyFrameRate = 30;
 	
 	
+	private File tempFile;
+	private File finalFile;
+	
 	/**
 	 * Start making a movie
 	 */
@@ -82,7 +85,12 @@ public class QTMovieMaker implements StdQTConstants
 		//Prepare making a movie
 		CodecComponent cc=CodecComponent.bestFidelityCodec;
 		QTSession.open();
-		movFile = new QTFile(new File(path));
+		System.out.println("Target movie file: "+path);
+		
+		finalFile=new File(path);
+		tempFile=new File(finalFile.getParentFile(),"_temp.mov");
+		
+		movFile = new QTFile(tempFile);
 		movie = Movie.createMovieFile(movFile, kMoviePlayer, createMovieFileDeleteCurFile|createMovieFileDontCreateResFile);
 		videoTrack = movie.addTrack (finalWidth, finalHeight, 0);//w,h,z
 		videoMedia = new VideoMedia(videoTrack, timeScale);
@@ -116,6 +124,8 @@ public class QTMovieMaker implements StdQTConstants
 		OpenMovieFile omf = OpenMovieFile.asWrite(movFile);
 		movie.addResource(omf, movieInDataForkResID, movFile.getName());
 		omf.close(); //my addition, fixes bug on the net
+		
+		tempFile.renameTo(finalFile);
 		
 		System.out.println("done movie");
 		}

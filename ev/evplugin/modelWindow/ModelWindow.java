@@ -85,6 +85,10 @@ public class ModelWindow extends BasicWindow
 
 	public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Show all nuc names"); //move
 	public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Show names of select nuc"); //move
+	public JMenuItem miShowSelectedNuc=new JMenuItem("Show all selected nucleii"); //move
+	public JMenuItem miHideSelectedNuc=new JMenuItem("Hide all selected nucleii"); //move
+	
+	
 	public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid"); 
 
 	/**
@@ -124,8 +128,12 @@ public class ModelWindow extends BasicWindow
 		miView.add(miViewBottom);
 		miView.add(miViewLeft);
 		miView.add(miViewRight);
+
 		menuModel.add(miShowAllNucNames);
 		menuModel.add(miShowSelectedNucNames);
+		menuModel.add(miShowSelectedNuc);
+		menuModel.add(miHideSelectedNuc);
+		
 		menuModel.add(miShowGrid);
 		
 		
@@ -138,6 +146,9 @@ public class ModelWindow extends BasicWindow
 		miViewRight.addActionListener(this);
 		
 		miShowAllNucNames.addActionListener(this);
+		miShowSelectedNuc.addActionListener(this);
+		miHideSelectedNuc.addActionListener(this);
+
 		miShowGrid.addActionListener(this);
 		
 		//Put GUI together
@@ -232,6 +243,20 @@ public class ModelWindow extends BasicWindow
 			setPresetView(+Math.PI/2, 0, 0);
 		else if(e.getSource()==miViewBottom)
 			setPresetView(-Math.PI/2, 0, 0);
+		else if(e.getSource()==miShowSelectedNuc)
+			{
+			for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
+				NucLineage.hiddenNuclei.remove(p);
+			view.repaint();
+			//totally misplaced
+			}
+		else if(e.getSource()==miHideSelectedNuc)
+			{
+			for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
+				NucLineage.hiddenNuclei.add(p);
+			view.repaint();
+			//totally misplaced
+			}
 		else if(e.getSource()==miShowAllNucNames)
 			{
 			view.repaint();

@@ -20,6 +20,14 @@ public abstract class EvImage
 	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
 	
 	/**
+	 * Remove cached image. Can be called whenever.
+	 */
+	public void clearCachedImage()
+		{
+		cachedImage.clear();
+		}
+	
+	/**
 	 * Get AWT representation of image. This should be as fast as it can be, but since AWT has limitations, data might be lost.
 	 * It is the choice for rendering or if AWT is guaranteed to be able to handle the image.
 	 * 
@@ -29,6 +37,7 @@ public abstract class EvImage
 		{
 		if(im==null)
 			{
+			CacheImages.addToCache(this);
 			BufferedImage loaded=cachedImage.get();
 			if(loaded==null)
 				{
