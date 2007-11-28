@@ -135,15 +135,6 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		}
 	
 
-	/**
-	 * Called when frame control is destroyed
-	 * TODO: call manually on window close. GC probably has problem with it
-	 */
-	public void finalize()
-		{
-		//Remove this control from global list of controls
-		FrameControl.remove(this);
-		}
 
 	
 	private void addChangeListener()

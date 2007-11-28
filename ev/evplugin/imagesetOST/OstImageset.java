@@ -439,6 +439,9 @@ public class OstImageset extends Imageset
 						c=new Channel(meta.getChannel(channelName));
 						channelImages.put(channelName,c);
 						}
+					
+					String channeldirName=buildChannelPath(channelName).getAbsolutePath();
+					
 					for(int j=0;j<numFrame;j++)
 						{
 						int frame=Integer.parseInt(in.readLine());
@@ -446,11 +449,19 @@ public class OstImageset extends Imageset
 						TreeMap<Integer,EvImage> loaderset=c.imageLoader.get(frame);
 						if(loaderset==null)
 							{
+							//A sorted linked list would make set generation linear time
 							loaderset=new TreeMap<Integer,EvImage>();
 							c.imageLoader.put(frame, loaderset);
 							}
 						
-						//A sorted linked list would make set generation linear time
+						
+						//Generate name of frame directory, optimized. windows support?
+//						String framedirName=buildFramePath(channelName, frame).getAbsolutePath()+File.pathSeparatorChar;
+						StringBuffer framedirName=new StringBuffer(channeldirName);
+						framedirName.append('/');
+						EV.pad(frame, 8, framedirName);
+						framedirName.append('/');
+						
 						
 						for(int k=0;k<numSlice;k++)
 							{
@@ -461,7 +472,17 @@ public class OstImageset extends Imageset
 								s=in.readLine();
 								}
 							int slice=Integer.parseInt(s);
-							loaderset.put(slice, ((Channel)c).newEvImage(buildImagePath(channelName, frame, slice, ext).getAbsolutePath()));
+
+							//Generate name of image file, optimized
+							StringBuffer imagefilename=new StringBuffer(framedirName);
+							EV.pad(slice, 8, imagefilename);
+							imagefilename.append(ext);
+							
+							
+							//loaderset.put(slice, ((Channel)c).newEvImage(buildImagePath(parentchannelName, frame, slice, ext).getAbsolutePath()));
+							//String imagefilename=framedirName+EV.pad(slice, 8)+ext;
+							
+							loaderset.put(slice, ((Channel)c).newEvImage(imagefilename.toString()));
 							}
 						}
 					}
@@ -506,7 +527,14 @@ public class OstImageset extends Imageset
 	/** Internal: piece together a path to an image */
 	public File buildImagePath(String channelName, int frame, int slice, String ext)
 		{
-		return new File(buildFramePath(channelName, frame),EV.pad(slice, 8)+ext);
+		return buildImagePath(buildFramePath(channelName, frame), slice, ext);
+		}
+	/** Internal: piece together a path to an image */
+	public File buildImagePath(File parent, int slice, String ext)
+		{
+//		File.pathSeparatorChar
+//		EV.pad(slice, 8)+ext
+		return new File(parent,EV.pad(slice, 8)+ext);
 		}
 	
 	
