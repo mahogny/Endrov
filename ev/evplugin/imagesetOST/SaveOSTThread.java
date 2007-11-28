@@ -86,7 +86,7 @@ public class SaveOSTThread extends BatchThread
 //				int doneFrames=0;
 				for(int frame:channel.imageLoader.keySet())
 					{
-					File framePath=new File(channelPath, EV.pad(frame,8));
+					File framePath=new File(channelPath, EV.pad(frame,8).toString());
 					framePath.mkdir();
 					TreeMap<Integer, EvImage> slices=channel.imageLoader.get(frame);
 					for(int slice:slices.keySet())

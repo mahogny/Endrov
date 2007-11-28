@@ -18,8 +18,10 @@ public class FrameControl
 		}
 
 	/** List of all framecontrols. Used if grouped */
-	private static HashSet<FrameControl.Synch> controls=new HashSet<FrameControl.Synch>();
-
+//	private static HashSet<FrameControl.Synch> controls=new HashSet<FrameControl.Synch>();
+	private static WeakHashMap<FrameControl.Synch, Object> controls=new WeakHashMap<FrameControl.Synch, Object>();
+	
+	
 	/**
 	 * Called whenever there are new settings. These are then transfered to all other
 	 * frame controls within the same group.
@@ -30,7 +32,7 @@ public class FrameControl
 		double frame=synch.getFrame();
 		Integer z=synch.getZ();
 		
-		for(FrameControl.Synch c:FrameControl.controls)
+		for(FrameControl.Synch c:FrameControl.controls.keySet())
 			if(c.getGroup()==group && c!=synch)
 				c.replicate(frame, z);
 		}
@@ -40,7 +42,7 @@ public class FrameControl
 	 */
 	private static boolean groupUsed(int id)
 		{
-		for(FrameControl.Synch c:FrameControl.controls)
+		for(FrameControl.Synch c:FrameControl.controls.keySet())
 			if(c.getGroup()==id)
 				return true;
 		return false;
@@ -70,7 +72,7 @@ public class FrameControl
 	 */
 	public static void add(FrameControl.Synch s)
 		{
-		controls.add(s);
+		controls.put(s,null);
 		}
 	
 	}

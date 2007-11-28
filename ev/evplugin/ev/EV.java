@@ -214,17 +214,63 @@ public class EV
 		}
 
 	/**
-	 * Format a number to a certain number of digits
+	 * Format a number to a certain number of digits.
 	 * @param n The number
 	 * @param len The length of the final string
 	 */
 	public static String pad(int n, int len)
 		{
-		String s=""+n;
-		while(s.length()<len)
-			s="0"+s;
-		return s;
+		String s=Integer.toString(n);
+		String topad="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+		int slen=s.length();
+		len-=slen;
+		if(slen<=0)
+			return s;
+		else if(len<100)
+			return topad.substring(0,len)+s;
+		else
+			{
+			StringBuffer sb=new StringBuffer(slen+len+10);
+			while(len>0)
+				{
+				sb.append('0');
+				len--;
+				}
+			sb.append(s);
+			return sb.toString();
+			}
 		}
+	
+	/**
+	 * Format a number to a certain number of digits. Append to existing buffer.
+	 * @param n The number
+	 * @param len The length of the final string
+	 */
+	public static void pad(int n, int len, StringBuffer sb)
+		{
+		String s=Integer.toString(n);
+		String topad="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+		int slen=s.length();
+		len-=slen;
+		if(slen<=0)
+			sb.append(s);
+		else if(len<100)
+			{
+			sb.append(topad.substring(0,len));
+			sb.append(s);
+			}
+		else
+			{
+			while(len>0)
+				{
+				sb.append('0');
+				len--;
+				}
+			sb.append(s);
+			}
+		}
+	
+	
 
 	
 	public static void openExternal(File f)

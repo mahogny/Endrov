@@ -145,15 +145,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		spinnerGroup.removeChangeListener(this);
 		}
 	
-	/**
-	 * Called when frame control is destroyed
-	 * TODO: call manually on window close
-	 */
-	public void finalize()
-		{
-		//Remove this control from global list of controls
-		FrameControl.remove(this);
-		}
+	
 
 	
 	/**

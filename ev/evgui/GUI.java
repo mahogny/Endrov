@@ -57,5 +57,8 @@ public class GUI
 			{
 			Log.printError("EVGUI", e);
 			}
+		
+		//Help memory debugging; remove dead objects
+		System.gc();
 		}
 	}
