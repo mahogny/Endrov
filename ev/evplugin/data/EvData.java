@@ -51,7 +51,13 @@ public abstract class EvData
 		else
 			return null;
 		}
-	
+
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
+	/** Remember last path used to load an imageset */
+	public static String lastDataPath="/Volumes/TBU_xeon01_data/johan_x1/daemonoutput/";
+
 	
 	
 	/******************************************************************************************************
@@ -66,11 +72,6 @@ public abstract class EvData
 
 	
 	public int selectedMetaobjectId=-1;
-	/******************************************************************************************************
-	 *                               Static                                                               *
-	 *****************************************************************************************************/
-	/** Remember last path used to load an imageset */
-	public static String lastDataPath="/Volumes/TBU_xeon01_data/johan_x1/daemonoutput/";
 
 	/**
 	 * Get currently selected metadata or null

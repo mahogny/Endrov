@@ -102,9 +102,11 @@ public abstract class EvImage
 	public abstract double getResX();
 	public abstract double getResY();
 	
+	/*
 	public void finalize()
 		{
 		System.out.println("Removing image "+this);
 		}
+		*/
 
 	}

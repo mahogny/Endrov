@@ -1,6 +1,7 @@
 package evplugin.imageset;
 
 import java.util.*;
+import java.lang.ref.*;
 
 /**
  * Very simple image cache. Linear complexity in size, optimized for small sizes.
@@ -10,17 +11,31 @@ import java.util.*;
 public class CacheImages
 	{
 	private static int qsize=5;
-	private static LinkedList<EvImage> queue=new LinkedList<EvImage>();
+	private static LinkedList<WeakReference<EvImage>> queue=new LinkedList<WeakReference<EvImage>>();
 	
 	public static void addToCache(EvImage im)
 		{
-		queue.remove(im);
-		queue.addLast(im);
+		WeakReference<EvImage> ref=null;
+		
+		//Find and remove this image from list
+		for(WeakReference<EvImage> r:queue)
+			{
+			if(r.get()==im)
+				{
+				ref=r;
+				break;
+				}
+			}
+		queue.remove(ref);
+		
+//		queue.remove(im);
+		queue.addLast(new WeakReference<EvImage>(im));
 		
 		if(queue.size()>qsize)
 			{
-			EvImage last=queue.poll();
-			last.clearCachedImage();
+			EvImage last=queue.poll().get();
+			if(last!=null)
+				last.clearCachedImage();
 			}
 		}
 	

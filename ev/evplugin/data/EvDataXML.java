@@ -39,6 +39,8 @@ public class EvDataXML extends EvData
 		this.filename=new File(filename);
 		}
 	
+
+	
 	/**
 	 * Save metadata. Will present a dialog. Is this a good idea really?
 	 */
