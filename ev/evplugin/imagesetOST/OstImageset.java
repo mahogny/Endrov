@@ -410,6 +410,9 @@ public class OstImageset extends Imageset
 	 */
 	public boolean loadDatabaseCache()
 		{
+		boolean first=true;
+		
+		
 		try
 			{
 			String ext="";
@@ -482,7 +485,16 @@ public class OstImageset extends Imageset
 							//loaderset.put(slice, ((Channel)c).newEvImage(buildImagePath(parentchannelName, frame, slice, ext).getAbsolutePath()));
 							//String imagefilename=framedirName+EV.pad(slice, 8)+ext;
 							
-							loaderset.put(slice, ((Channel)c).newEvImage(imagefilename.toString()));
+							EvImage evim=((Channel)c).newEvImage(imagefilename.toString());
+							
+							loaderset.put(slice, evim);
+							
+							if(first)
+								{
+								evim.getJavaImage();
+								first=false;
+								}
+							
 							}
 						}
 					}
@@ -690,7 +702,10 @@ public class OstImageset extends Imageset
 		}
 	
 	
-	
+	public void finalize()
+		{
+		System.out.println("finalize ost");
+		}
 	
 	}
 
