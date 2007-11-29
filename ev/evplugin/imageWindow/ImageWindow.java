@@ -840,5 +840,15 @@ public class ImageWindow extends BasicWindow
 		else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
 			sliderZoom.setValue(sliderZoom.getValue()+e.getUnitsToScroll()*2);
 		}
+
+	
+	
+	
+	public void finalize()
+		{
+		System.out.println("removing image window");
+		}
+		
 	
 	}
+

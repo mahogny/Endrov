@@ -1,7 +1,7 @@
 package evplugin.imageset;
 
 import java.awt.image.*;
-import java.lang.ref.SoftReference;
+import java.lang.ref.*;
 
 /**
  * Interface to any form of image loader
@@ -105,7 +105,7 @@ public abstract class EvImage
 	/*
 	public void finalize()
 		{
-		System.out.println("Removing image "+this);
+		System.out.println("Removing image");
 		}
 		*/
 
