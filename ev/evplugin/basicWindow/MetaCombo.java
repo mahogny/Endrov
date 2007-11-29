@@ -63,7 +63,9 @@ public class MetaCombo extends JComboBox implements ActionListener
 //			if(a.special==null)
 				{
 				//Remember selection unless it is a special alternative
+				
 				curMeta=a.meta;
+				
 				}/*
 			else
 				{
@@ -93,16 +95,21 @@ public class MetaCombo extends JComboBox implements ActionListener
 	private void setSelection()
 		{
 		//If this list does not allow that no imageset is selected then just take one
-		if(!addEmpty && curMeta instanceof EvDataEmpty && getItemCount()>0)
-			curMeta=((Alternative)getItemAt(0)).meta;
-		
-		//Reselect old item in list
-		for(int i=0;i<getItemCount();i++)
+		if(getItemCount()>0)
 			{
-			Alternative a=(Alternative)getItemAt(i);
-			if(a.meta==curMeta)
-				setSelectedIndex(i);
+			if(!addEmpty && curMeta instanceof EvDataEmpty)
+				curMeta=((Alternative)getItemAt(0)).meta;
+			
+			//Reselect old item in list
+			for(int i=0;i<getItemCount();i++)
+				{
+				Alternative a=(Alternative)getItemAt(i);
+				if(a.meta==curMeta)
+					setSelectedIndex(i);
+				}
 			}
+		else
+			curMeta=new EvDataEmpty();
 		}
 	
 	/**
