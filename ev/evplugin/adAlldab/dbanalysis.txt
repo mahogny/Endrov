@@ -1,0 +1,76 @@
+MS access
+------------------------------------------------------
+
+* tables, queries, forms, reports, macros, modules
+
+query~filter
+
+field properties
+----------------
+size
+format
+input mask
+caption
+default value
+validation rule
+validation text
+required
+allow zero length
+indexed
+unicode compression
+
+
+relatonships
+------------
+
+standard
+
+
+
+form wizard
+-----------
+
+
+custom forms
+------------
+oriented about data source = query/table
+special form for searches
+
+
+label, button, frame, toggle, option, check, combo, list, picture, tabs, line, subform, etc
+
+charts?
+
+reports
+-------
+
+automatically grab data and put it together
+
+
+
+
+
+
+*************************************************************************************************************
+
+can learn from PDB-systems. matrixOne?
+
+* procedure for dataflow. accept/reject etc
+* roles
+* users
+
+
+
+*************************************************************************************************************
+
+File maker
+
+able to run apple script
+shell commands?
+
+jurgen:
+want to check for existence of files
+and call programs and get return values
+
+
+

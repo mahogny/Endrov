@@ -107,7 +107,19 @@ public class ObjectCombo extends JComboBox implements ActionListener
 
 	private void setSelection()
 		{
-//		System.out.println("a "+getSelectedIndex());
+		//Make sure curmeta exists, otherwise get rid of it. This speeds up GC
+		boolean curmetaok=curMeta instanceof EvDataEmpty;
+		for(int i=0;i<getItemCount();i++)
+			{
+			Alternative a=(Alternative)getItemAt(i);
+			if(a.meta==curMeta)
+				curmetaok=true;
+			}
+		if(!curmetaok)
+			curMeta=null;
+		
+		
+		
 		//If this list does not allow that no imageset is selected then just take one
 		if(!addEmpty)
 			{
@@ -117,14 +129,11 @@ public class ObjectCombo extends JComboBox implements ActionListener
 				curId=null;
 				}
 
-//			System.out.println("b "+getSelectedIndex());
-
 			//Make sure a channel is selected unless the imageset is empty
 			if((curId==null || (curMeta!=null && curMeta.getMetaObject(curId)==null)) && 
 					(curMeta!=null && !curMeta.metaObject.isEmpty()))
 				curId=curMeta.metaObject.keySet().iterator().next();
 			}
-//		System.out.println("c "+getSelectedIndex()+ " "+curMeta);
 
 		//Reselect old item in list
 		if(curMeta==null)
@@ -139,8 +148,6 @@ public class ObjectCombo extends JComboBox implements ActionListener
 				if(a.meta==curMeta && a.id==curId)
 					setSelectedIndex(i);
 				}
-//		System.out.println("d "+getSelectedIndex());
-
 		}
 	
 	/**
