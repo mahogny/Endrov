@@ -12,9 +12,6 @@ import evplugin.keyBinding.KeyBinding;
 import org.jdom.*;
 
 
-//System.setOut(out)
-
-
 /**
  * Any window in the application inherits this class.
  * 
@@ -25,15 +22,14 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	static final long serialVersionUID=0; //wtf
+	static final long serialVersionUID=0; 
 
 	
 	/** The set of all extensions */
 	public static Vector<BasicWindowExtension> basicWindowExtensions=new Vector<BasicWindowExtension>();
 	
 	/** The set of all windows */
-	public static HashSet<BasicWindow> windowList=new HashSet<BasicWindow>();
-	
+	private static HashSet<BasicWindow> windowList=new HashSet<BasicWindow>();
 	
 	public static void initPlugin() {}
 	static
@@ -53,6 +49,13 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		}
 
 	public static final int KEY_GETCONSOLE=KeyBinding.register(new KeyBinding("Basic Window","Get console",KeyEvent.VK_ESCAPE, 0));
+	
+	/** Get the set of all windows, not to be modified */
+	public static Set<BasicWindow> getWindowList()
+		{
+		return windowList;
+		}
+
 	
 	/**
 	 * Add an extension of Basic Window
@@ -156,6 +159,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 			}
 		menu.add(ni);
 		}
+	
 	
 	
 	
@@ -369,6 +373,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		}
 
 	
+	
 	public void windowClosing(WindowEvent e) {}
 	public void windowActivated(WindowEvent arg0)	{}
 	public void windowDeactivated(WindowEvent arg0)	{}
@@ -379,6 +384,8 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		{
 		BasicWindow.windowList.remove(this);
 		}
+	
+	
 	
 	/**
 	 * Called whenever EV has changed

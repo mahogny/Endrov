@@ -45,7 +45,7 @@ public class GUI
 			EV.loadPlugins();
 			BasicWindowExitLast.integrate();
 			EV.loadPersonalConfig();		
-			if(BasicWindow.windowList.size()==0)
+			if(BasicWindow.getWindowList().size()==0)
 				{
 				//Make sure at least one window is open
 				new ImageWindow();

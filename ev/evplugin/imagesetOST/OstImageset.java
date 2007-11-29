@@ -410,7 +410,7 @@ public class OstImageset extends Imageset
 	 */
 	public boolean loadDatabaseCache()
 		{
-		boolean first=true;
+//		boolean first=true;
 		
 		
 		try
@@ -489,11 +489,13 @@ public class OstImageset extends Imageset
 							
 							loaderset.put(slice, evim);
 							
+							/*
 							if(first)
 								{
 								evim.getJavaImage();
 								first=false;
 								}
+								*/
 							
 							}
 						}
@@ -698,6 +700,13 @@ public class OstImageset extends Imageset
 			public double getDispY(){return getMeta().dispY;}
 			public double getResX(){return meta.resX;}
 			public double getResY(){return meta.resY;}
+			
+			/*
+			public void finalize()
+				{
+				System.out.println("Removing ostimage ");
+				}
+				*/
 			}
 		}
 	

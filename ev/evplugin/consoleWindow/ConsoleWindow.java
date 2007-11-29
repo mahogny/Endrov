@@ -2,6 +2,7 @@ package evplugin.consoleWindow;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.ref.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -60,8 +61,8 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	
 	
 	/** Last component with focus remembered so this one can be refocused */
-	private Component lastFocusComponent=null;
-	private JFrame lastFocusFrame=null;
+	private WeakReference<Component> lastFocusComponent=null;
+	private WeakReference<JFrame> lastFocusFrame=null;
 	
 	//GUI components
 	private JTextArea history=new JTextArea();
@@ -121,7 +122,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		public void windowClosing(WindowEvent e){}
 		public void windowDeactivated(WindowEvent e)
 			{
-			lastFocusComponent=null;
+			lastFocusComponent=new WeakReference<Component>(null);
 			}
 		public void windowDeiconified(WindowEvent e){}
 		public void windowIconified(WindowEvent e){}
@@ -247,11 +248,17 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 */
 	public void returnFocus()
 		{
-		if(lastFocusComponent!=null)
+		Component c=lastFocusComponent.get();
+		JFrame f=lastFocusFrame.get();
+		if(c!=null)
 			{
-			lastFocusComponent.requestFocus();
-			lastFocusComponent=null;
-			lastFocusFrame.toFront();
+			c.requestFocus();
+			lastFocusComponent=new WeakReference<Component>(null);
+			if(f!=null)
+				{
+				f.toFront();
+				System.out.println("tofront");
+				}
 			}
 		}
 
@@ -283,8 +290,8 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		ConsoleWindow c=getConsole();
 		if(c==null) c=new ConsoleWindow();
 		c.toFront();
-		c.lastFocusComponent=me;
-		c.lastFocusFrame=frame;
+		c.lastFocusComponent=new WeakReference<Component>(me);
+		c.lastFocusFrame=new WeakReference<JFrame>(frame);
 		c.commandLine.requestFocus();
 		}
 
@@ -296,7 +303,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 */
 	public static ConsoleWindow getConsole()
 		{
-		for(BasicWindow w:BasicWindow.windowList)
+		for(BasicWindow w:BasicWindow.getWindowList())
 			if(w instanceof ConsoleWindow)
 				return (ConsoleWindow)w;
 		return null;
@@ -307,5 +314,9 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		{
 		}
 	
+	public void finalize()
+		{
+		System.out.println("removing console window");
+		}
 	
 	}

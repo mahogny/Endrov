@@ -135,6 +135,7 @@ public class SequenceImageset extends Imageset
 			pack();
 			setBounds(0, 100, 1000, 400);
 			setVisible(true);
+			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 			}
 		
 		

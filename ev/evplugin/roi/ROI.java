@@ -107,6 +107,7 @@ public abstract class ROI extends EvObject
 		frame.add(c);
 		frame.pack();
 		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		}
 	
 	//name of ROI? = name of metaobject?

@@ -35,7 +35,7 @@ public class BasicWindowExitLast implements BasicWindowExtension
 			public void windowOpened(WindowEvent arg0) {}
 			public void windowClosing(WindowEvent e)
 				{
-				if(BasicWindow.windowList.size()==1)
+				if(BasicWindow.getWindowList().size()==1)
 					BasicWindow.dialogQuit();
 				else
 					w.dispose();

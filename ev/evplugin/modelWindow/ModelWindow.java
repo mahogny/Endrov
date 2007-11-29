@@ -432,4 +432,9 @@ public class ModelWindow extends BasicWindow
 		}
 	
 
+	public void finalize()
+		{
+		System.out.println("removing model window");
+		}
+	
 	}
