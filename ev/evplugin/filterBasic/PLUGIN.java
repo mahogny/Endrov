@@ -30,6 +30,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{InvertFilter.class, NoisePepperAndSalt.class, NoisePoisson.class,ContrastBrightnessFilter.class, Convolve2DFilter.class, Laplace2DFilter.class};
+		return new Class[]{InvertFilter.class, NoisePepperAndSalt.class, NoisePoisson.class,ContrastBrightnessFilter.class, Convolve2DFilter.class, Laplace2DFilter.class,
+				EqualizeHistogram.class};
 		}
 	}

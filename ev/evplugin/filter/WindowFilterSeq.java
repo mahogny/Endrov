@@ -117,7 +117,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	 */
 	public WindowFilterSeq(Rectangle bounds, FilterSeq seq)
 		{
-		isTemporaryWindow=seq==null;
+		isTemporaryWindow=seq!=null; //changed
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
