@@ -635,7 +635,7 @@ public class NucLineage extends EvObject implements Cloneable
 				for(String cName:child)
 					{
 					NucLineage.Nuc c=nuc.get(cName);
-					if(c.pos.firstKey()>lastFrame)
+					if(c.pos.firstKey()<lastFrame)  //changed
 						lastFrame=c.pos.firstKey();
 					}
 				return lastFrame;
