@@ -83,10 +83,10 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miViewLeft=new JMenuItem("Left");
 	private JMenuItem miViewRight=new JMenuItem("Right");
 
-	public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Show all nuc names"); //move
-	public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Show names of select nuc"); //move
-	public JMenuItem miShowSelectedNuc=new JMenuItem("Show all selected nucleii"); //move
-	public JMenuItem miHideSelectedNuc=new JMenuItem("Hide all selected nucleii"); //move
+	public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Show all nuclei names"); //move
+	public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Show names of selected nuclei"); //move
+	public JMenuItem miShowSelectedNuc=new JMenuItem("Show all selected nuclei"); //move
+	public JMenuItem miHideSelectedNuc=new JMenuItem("Hide all selected nuclei"); //move
 	
 	
 	public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid"); 
