@@ -1,0 +1,44 @@
+wormbase        acedb, gff, ...
+reactome.org    mysql
+Hope strain db  filemaker
+gramene         mysql, ...
+worm image something   mysql
+
+ensemble
+
+
+
+lincoln stein seem involved in:
+--------------------------------------
+# Reactome, a database of biological pathways
+# Generic genome browser
+# Gramene database of comparative grain genomics
+# Wormbase, the database of C. elegans
+# The Human HapMap Database
+# The Generic Model Organism Database Project
+# Reverse Genetics in Maize
+# Distributed Sequence Annotation System
+# Arabidopsis Insertion Tagging Database 
+likes perl!
+started DAS: http://stein.cshl.org/das/
+
+
+
+http://www.gmod.org/
+GMOD is the Generic Model Organism Database Toolkit, a collection of software tools for creating and managing genome-scale biological databases. You can use it to create a small laboratory database of genome annotations, or a large web-accessible community database. GMOD tools are in use at FlyBase, WormBase, SGD, BeeBase and many other large and small community databases.
+
+very mysql/perl/apache oriented
+
+http://www.biomart.org/
+(CSHL, ebi)
+perl and java access
+mysql, oracle, postgres
+can download things
+
+
+CSHL wormbase people
+--------------------
+Payan Canaran (canaran@cshl.edu)
+Todd Harris (harris@cshl.edu) - CSHL project manager; website development and administration
+Will Spooner (whs@ebi.ac.uk)
+Lincoln Stein (lstein@cshl.edu) 
