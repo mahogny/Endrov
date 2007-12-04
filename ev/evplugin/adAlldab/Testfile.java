@@ -13,7 +13,8 @@ public class Testfile
 		StringBuffer seq=new StringBuffer();
 		for(int i=0;i<10000;i++)
 			seq.append(seq2);		
-		String sf=seq.toString();
+		//String sf=
+			seq.toString();
 
 	/*	
 		try
