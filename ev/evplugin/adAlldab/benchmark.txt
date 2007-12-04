@@ -1,0 +1,96 @@
+http://archives.postgresql.org/pgsql-sql/2002-04/msg00318.php
+
+ALTER.... SET STORAGE EXTERNAL
+
+
+db.runUpdate("" +
+					"DELETE FROM teststring;");
+			db.runUpdate(
+					"INSERT INTO teststring VALUES ('ce','ahfafhaslhsdlkfhwelkrhslfkhsdlfkshdflksdhflskdfhsldkfhjsdflkshdf',null);"); ****
+			int seqlen=10;
+			int seqstart=5;
+			int numloop=1000;
+			long starttime=System.currentTimeMillis();
+			String qtext="SELECT substring(seq from "+seqstart+" for "+seqlen+") FROM teststring;";
+			for(int i=0;i<numloop;i++)
+				{
+				ResultSet rs=db.runQuery(qtext);
+				while(rs.next())
+					{
+					//String s=
+					rs.getString(1);
+					//System.out.println(s);
+					}
+				}
+			long endtime=System.currentTimeMillis();
+			
+
+on XEON to sargas
+
+
+100 chars
+			
+10 chars from 5:  852/1000 ms  
+whole:            772/1000 ms 
+
+------------------------------------------------------------------------------------------------------------------------
+
+1000chars
+
+10 chars from 5:  853/1000 ms  
+whole:            1158/1000 ms
+
+------------------------------------------------------------------------------------------------------------------------
+
+10 000 ch
+10 chars from 5:  938/1000 ms
+whole:            2305/1000 ms 
+
+------------------------------------------------------------------------------------------------------------------------
+
+100 000 ch        
+
+10 chars from 5:  1839/1000 ms
+whole:            17147/1000 ms
+
+------------------------------------------------------------------------------------------------------------------------
+
+1 000 000 ch
+
+10 chars from 5:  10478/1000 ms
+10 chars from 100 000:  28666/1000 ms
+
+------------------------------------------------------------------------------------------------------------------------
+
+1 000 000 ch
+EXTERNAL STORAGE
+
+10 chars from 100 000:  19938/1000 ms
+
+
+
+=======================================================================================================================
+
+	int seqlen=10;
+			int seqstart=100000;
+
+Direct from memory, xeon.
+			
+32/1000000  ms
+
+=======================================================================================================================
+
+	int seqlen=10;
+			int seqstart=100000;
+
+From random access file, xeon.
+4939/1000000
+=4.939/1000
+
+time for creation of storage array minimal
+
+=======================================================================================================================
+
+
+
+
