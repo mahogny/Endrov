@@ -27,9 +27,6 @@ public class DB
 	 */
 	//public HashMap<String,Integer> sample_up=new HashMap<String,Integer>();
 	
-	
-//	private String sqlAutoincrement="PRIMARY KEY AUTOINCREMENT";
-	private String sqlKeyAutoincrement="INTEGER PRIMARY KEY AUTOINCREMENT";
 	/** All databases */
 	public static HashMap<String,DB> databases=new HashMap<String,DB>();
 
@@ -81,7 +78,6 @@ public class DB
 	 */
 	public boolean connectPostgres(String location, String user, String password)
 		{
-		sqlKeyAutoincrement="SERIAL PRIMARY KEY";
 		boolean status=connectCustom("org.postgresql.Driver", "jdbc:postgresql:"+location, user, password);
 		id="PGSQL://"+user+":"+password+"@"+location;
 		return status;
@@ -97,7 +93,6 @@ public class DB
 	 */
 	public boolean connectMySQL(String location, String user, String password)
 		{
-		sqlKeyAutoincrement="INTEGER PRIMARY KEY AUTO_INCREMENT";
 		boolean status=connectCustom("com.mysql.jdbc.Driver", "jdbc:mysql:"+location, user, password);
 		id="MySQL://"+user+":"+password+"@"+location;
 		return status;
@@ -113,7 +108,6 @@ public class DB
 	 */
 	public boolean connectSQLite(String filename)
 		{
-		sqlKeyAutoincrement="INTEGER PRIMARY KEY AUTOINCREMENT";
 		boolean status=connectCustom("org.sqlite.JDBC", "jdbc:sqlite:"+filename, "","");
 		id="SQLite://"+filename;
 		return status;
@@ -239,132 +233,6 @@ public class DB
 	 */
 	public void createNewTables()
 		{
-		//TODO autoincrement
-		try
-			{
-			Statement stmt = createStatement();
-			/*********************************
-			Information about this database. It is easier to read for example version information
-			from a table than to use rather non-standardized commands for table information etc
-			*/
-			stmt.addBatch(
-				"CREATE TABLE vwb_db ("+
-				"    propname VARCHAR(64) PRIMARY KEY,"+
-				"    propval  TEXT NOT NULL"+
-				");");			
-			/*********************************
-			Nucleus general information
-			*/
-			String vwb_sampleinfo=
-				" CREATE TABLE vwb_sampleinfo ("+
-		    "     sampleid          "+sqlKeyAutoincrement+","+ //had AUTOINCREMENT in sqlite. SERIAL in postgresql
-		    "     sample_upcount    INTEGER NOT NULL,"+
-		    "     shell_x           REAL    NOT NULL,"+ //Set all shell param to 0 if it doesn't exist
-		    "     shell_y           REAL    NOT NULL,"+
-		    "     shell_z           REAL    NOT NULL,"+
-		    "     shell_angle       REAL    NOT NULL,"+
-		    "     shell_angleinside REAL    NOT NULL,"+
-		    "     shell_major       REAL    NOT NULL,"+
-		    "     shell_minor       REAL    NOT NULL,"+
-		    "     sample_author     VARCHAR(1024) NOT NULL,"+
-		    "     sample            VARCHAR(1024) NOT NULL UNIQUE,"+
-		    " 	  sample_imageset   VARCHAR(1024) NOT NULL"+
-				");";
-			stmt.addBatch(vwb_sampleinfo);
-			/*********************************
-			Overall information about a sample.
-			* Sample might not correspond to imageset name; scenario: multiple people
-			  lineage the same thing independently and wish to compare. this requires one sample id each.
-			* upcount is used in case multiple people are working on the same set.
-			  after every atomic operation this variable is incremented by 1 in
-			  database and in memory. if variable mismatches then client must
-			  reload data. this variable should periodically be checked.
-			* imageset obviously refers to which imageset was used. for convenience,
-			  full path might work, but it is strategically better to just have the last
-			  part of the name in case files are relocated (two groups have the set etc).
-			*/
-			String vwb_nuc=
-				" CREATE TABLE vwb_nuc ("+
-				" 		sampleid INTEGER NOT NULL,"+
-				" 		nucid   INTEGER NOT NULL,"+
-				" 		nucend  INTEGER,"+
-				" 		nucname VARCHAR(1024) NOT NULL,"+
-				" 		PRIMARY KEY(nucid),"+
-				" 		FOREIGN KEY(sampleid) REFERENCES vwb_sampleinfo(sampleid) ON UPDATE CASCADE ON DELETE CASCADE"+
-				" 		);";
-			stmt.addBatch(vwb_nuc);
-			/*********************************
-			This is one coordinate for some nuclei.
-			Nothing special
-			*/
-			String vwb_nuccoord=
-				" CREATE TABLE vwb_nuccoord ("+
-		    "     nucid    INTEGER NOT NULL,"+
-		    "     frame    INTEGER NOT NULL,"+
-		    "     nucx REAL   NOT NULL,"+
-		    "     nucy REAL   NOT NULL,"+
-		    "     nucz REAL   NOT NULL,"+
-		    "     nucr REAL   NOT NULL,"+
-		    "     PRIMARY KEY(nucid, frame),"+
-		    "     FOREIGN KEY(nucid) REFERENCES vwb_nuc(nucid) ON UPDATE CASCADE ON DELETE CASCADE"+
-				");";
-			stmt.addBatch(vwb_nuccoord);
-			/*********************************
-			Lineage - which nuclei are parents and children
-			*/
-			String vwb_lineage=
-				" CREATE TABLE vwb_lineage ("+
-		    "     parentid INTEGER NOT NULL,"+
-		    "     childid  INTEGER NOT NULL,"+
-		    "     PRIMARY KEY(parentid,childid),"+
-		    "     FOREIGN KEY(parentid) REFERENCES vwb_nuc(nucid) ON UPDATE CASCADE ON DELETE CASCADE,"+
-		    "     FOREIGN KEY(childid)  REFERENCES vwb_nuc(nucid) ON UPDATE CASCADE ON DELETE CASCADE"+
-				");";
-			stmt.addBatch(vwb_lineage);
-			/*********************************
-			Frametime - The map between frame and time
-			*/
-			stmt.addBatch(
-				" CREATE TABLE vwb_frametime ("+
-		    "     sampleid  INTEGER NOT NULL,"+
-		    "     frame     INTEGER NOT NULL,"+
-		    "     frametime REAL   NOT NULL,"+
-		    "     PRIMARY KEY(sampleid, frame, frametime),"+
-		    "     FOREIGN KEY(sampleid) REFERENCES vwb_sampleinfo(sampleid) ON UPDATE CASCADE ON DELETE CASCADE"+
-				");");
-			/** The master view of nuclei */
-			stmt.addBatch(
-				" CREATE VIEW vwb_nucview AS"+
-				" SELECT * FROM vwb_nuc NATURAL JOIN vwb_nuccoord NATURAL JOIN vwb_sampleinfo;");
-			/** Nuclei that form roots of lineage trees */
-			/** note. this one isn't used anymore iirc */
-			stmt.addBatch(
-				" CREATE VIEW vwb_lineage_root AS"+
-				" SELECT parentid as nucid FROM vwb_lineage"+
-				" WHERE NOT parentid IN (SELECT childid FROM vwb_lineage AS a);");			
-			/** Helps keeping track of when some child begins */   
-			/** maybe replace with lineageview */
-			stmt.addBatch(
-				" CREATE VIEW vwb_childframeafter AS"+
-				" SELECT parentid as nucid, childid, childframe FROM"+
-				" ((SELECT nucid as childid, frame as childframe FROM vwb_nuccoord) AS foo"+
-				" NATURAL JOIN"+
-				" vwb_lineage);");			
-			/** Nuclei without parents */
-			stmt.addBatch(
-				" CREATE VIEW vwb_orphans AS"+
-				" SELECT nucid, nucname FROM vwb_nuc AS nuc"+
-				" WHERE NOT EXISTS( SELECT * FROM vwb_lineage AS lin WHERE nuc.nucid=lin.childid);");
-
-			stmt.executeBatch();
-			setDatabaseVersion(latestMajorVersion,latestMinorVersion);
-			System.out.println("Tables created in database");
-			}
-		catch (Exception e)
-			{
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-			}
 		}
 
 
@@ -392,6 +260,7 @@ public class DB
 	 */
 	public boolean readDatabaseVersion()
 		{
+		//TODO
 		try
 			{
 			Statement stmt = createStatement();
@@ -417,6 +286,7 @@ public class DB
 	 */
 	public void setDatabaseVersion(int major, int minor)
 		{
+		//TODO
 		try
 			{
 			Statement stmt = createStatement();
@@ -434,45 +304,6 @@ public class DB
 	
 	
 	
-	
-	/**
-	 * Create a frame for a nucleus. The function will make sure to remove any prior frame as to update the value
-	 * @param sample Sample name
-	 * @param nucname Name of nucleus
-	 * @param frame Frame
-	 * @param x x coordinate
-	 * @param y y coordinate
-	 * @param z z coordinate
-	 * @param r radius
-	 */
-	/*
-	public void makeNucFrame(String sample, String nucname, int frame, double x, double y, double z, double r)
-		{
-		String delexp=
-			" DELETE FROM vwb_nuccoord WHERE frame="+frame+" AND"+
-			" EXISTS (SELECT * FROM vwb_nucview"+
-			" WHERE vwb_nucview.nucid=vwb_nuccoord.nucid"+
-			" AND sample='"+sample+"' AND nucname='"+nucname+"')";		
-		String insexp=
-			" INSERT INTO vwb_nuccoord"+
-			" SELECT nucid, "+frame+" as frame, "+x+" as nucx, "+y+" as nucy, "+z+" as nucz, "+r+" as nucr FROM"+
-			" (SELECT * FROM"+
-			" vwb_nuc NATURAL JOIN vwb_sampleinfo"+
-			" WHERE sample='"+sample+"' AND nucname='"+nucname+"')";
-		try
-			{
-			Statement stmt = createStatement();
-			stmt.addBatch(delexp);
-			stmt.addBatch(insexp);
-			stmt.executeBatch();
-			}
-		catch (Exception e)
-			{
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-			}
-		}
-	*/
 	
 	/**
 	 * Quick access to the database object

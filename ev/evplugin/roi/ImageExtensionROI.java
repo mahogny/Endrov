@@ -111,6 +111,17 @@ public class ImageExtensionROI implements ImageWindowExtension
 					roi.regionZ.set(curZ, curZ+1);
 					addROI(roi);
 					}
+				if(e.getSource()==miNewEllipse)
+					{
+					//Create a Ellipse-ROI
+					EllipseROI roi=new EllipseROI();
+					roi.regionChannels.add(w.getCurrentChannelName());
+					double curFrame=w.frameControl.getFrame();
+					double curZ=w.frameControl.getZ();
+					roi.regionFrames.set(curFrame,curFrame+1);
+					roi.regionZ.set(curZ, curZ+1);
+					addROI(roi);
+					}
 				else if(e.getSource()==miCompUnion)
 					{
 					UnionROI roi=new UnionROI();
@@ -131,6 +142,7 @@ public class ImageExtensionROI implements ImageWindowExtension
 				}
 			};
 		miNewRect.addActionListener(listener);
+		miNewEllipse.addActionListener(listener);
 		miCompUnion.addActionListener(listener);
 		
 		

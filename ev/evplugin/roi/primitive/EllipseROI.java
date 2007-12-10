@@ -12,11 +12,11 @@ import evplugin.basicWindow.BasicWindow;
 import evplugin.imageset.*;
 
 /**
- * Rectangle, Box, or higher dimension
+ * Ellipse, flat
  * 
  * @author Johan Henriksson
  */
-public class BoxROI extends ROI
+public class EllipseROI extends ROI
 	{
 	/******************************************************************************************************
 	 *                               Range class                                                          *
@@ -47,12 +47,16 @@ public class BoxROI extends ROI
 	/******************************************************************************************************
 	 *                               Iterator                                                             *
 	 *****************************************************************************************************/
-	private static class RectLineIterator extends LineIterator
+	private class ThisLineIterator extends LineIterator
 		{
+		int maxX;
 		int endY;
 		public boolean next()
 			{
 			y++;
+			
+			
+			
 			return y<endY;
 			}	
 		}
@@ -60,11 +64,11 @@ public class BoxROI extends ROI
 	/******************************************************************************************************
 	 *                               Handle                                                               *
 	 *****************************************************************************************************/
-	public class BoxHandle implements Handle
+	public class ThisHandle implements Handle
 		{
 		private final boolean isStartX, isStartY;
 		private final String id;
-		public BoxHandle(String id, boolean isStartX, boolean isStartY)
+		public ThisHandle(String id, boolean isStartX, boolean isStartY)
 			{
 			this.id=id;
 			this.isStartX=isStartX;
@@ -108,14 +112,14 @@ public class BoxROI extends ROI
 	/**
 	 * Create a box ROI with default: select everything
 	 */
-	public BoxROI()
+	public EllipseROI()
 		{
 		}
 	
 	
 	public String getROIDesc()
 		{
-		return "Box";
+		return "Ellipse";
 		}
 	
 	
@@ -190,27 +194,22 @@ public class BoxROI extends ROI
 		if(imageInRange(channel, frame, z))
 			{
 			//Initial boundary: cover entire image
-			RectLineIterator it=new RectLineIterator();
+			ThisLineIterator it=new ThisLineIterator();
 			it.startX=0;
-			it.endX=im.getJavaImage().getWidth();
+			it.maxX=im.getJavaImage().getWidth();
 			it.endY=im.getJavaImage().getHeight();
 			it.y=0;
 
 			//Correct for span
-			if(!regionX.all)
-				{
-				int rXstart=(int)im.transformWorldImageX(regionX.start);
-				int rXend=(int)im.transformWorldImageX(regionX.end);
-				if(it.startX<rXstart)	it.startX=rXstart;
-				if(it.endX>rXend) it.endX=rXend;
-				}
-			if(!regionY.all)
-				{
-				int rYstart=(int)im.transformWorldImageY(regionY.start);
-				int rYend=(int)im.transformWorldImageY(regionY.end);
-				if(it.y<rYstart)	it.y=rYstart;
-				if(it.endY>rYend) it.endY=rYend;
-				}
+			int rXstart=(int)im.transformWorldImageX(regionX.start);
+			int rXend=(int)im.transformWorldImageX(regionX.end);
+			if(it.startX<rXstart)	it.startX=rXstart;
+			if(it.maxX>rXend) it.maxX=rXend;
+			
+			int rYstart=(int)im.transformWorldImageY(regionY.start);
+			int rYend=(int)im.transformWorldImageY(regionY.end);
+			if(it.y<rYstart)	it.y=rYstart;
+			if(it.endY>rYend) it.endY=rYend;
 			
 			//Sanity check
 			if(it.y>it.endY || it.startX>it.endX)
@@ -231,7 +230,7 @@ public class BoxROI extends ROI
 	
 	public void saveMetadata(Element e)
 		{
-		e.setName("ROI box");
+		e.setName("ROI ellipse");
 		
 		}
 	
@@ -249,18 +248,23 @@ public class BoxROI extends ROI
 		{
 		public JTextField spinnerS=new JTextField();
 		public JTextField spinnerE=new JTextField();
-		public final JCheckBox cSpan;
+		public final JComponent cSpan;
 		public final Span span;
 		
-		public SpanWidget(String name, Span span)
+		public SpanWidget(String name, Span span, boolean canSetAll)
 			{
-			cSpan=new JCheckBox(name,!span.all);
+			if(canSetAll)
+				{
+				cSpan=new JCheckBox(name,!span.all);
+				((JCheckBox)cSpan).addActionListener(this);
+				}
+			else
+				cSpan=new JLabel(name);
 			this.span=span;
 			spinnerS.setText(""+span.start);
 			spinnerE.setText(""+span.end);
 			spinnerS.getDocument().addDocumentListener(this);
 			spinnerE.getDocument().addDocumentListener(this);
-			cSpan.addActionListener(this);
 			}
 
 		public void actionPerformed(ActionEvent e){apply();}
@@ -271,7 +275,8 @@ public class BoxROI extends ROI
 			{
 			try
 				{
-				span.all=!cSpan.isSelected();
+				if(cSpan instanceof JCheckBox)
+					span.all=!((JCheckBox)cSpan).isSelected();
 				span.start=Double.parseDouble(spinnerS.getText());
 				span.end  =Double.parseDouble(spinnerE.getText());
 				BasicWindow.updateWindows();
@@ -287,10 +292,10 @@ public class BoxROI extends ROI
 	public JPanel getROIWidget()
 		{
 		final SpanWidget spans[]={
-				new SpanWidget("<= Frame <",regionFrames),
-				new SpanWidget("<= X <",regionX),
-				new SpanWidget("<= Y <",regionY),
-				new SpanWidget("<= Z <",regionZ)};	
+				new SpanWidget("<= Frame <",regionFrames, true),
+				new SpanWidget("<= X <",regionX, false),
+				new SpanWidget("<= Y <",regionY, false),
+				new SpanWidget("<= Z <",regionZ, true)};	
 		JPanel pane=new JPanel(new GridLayout(spans.length+1,3));
 
 		//Channel list
@@ -345,14 +350,7 @@ public class BoxROI extends ROI
 	 */
 	public Handle[] getHandles()
 		{
-		//button in x,y window: place in middle?
-		//imagewindow temporary tools: like create box etc
-		if(regionX.all && regionY.all)
-			return new Handle[]{};
-		else
-			return new Handle[]{
-					new BoxHandle("1",false,false),new BoxHandle("2",true,false), 
-					new BoxHandle("3",false,true), new BoxHandle("4",true,true)};
+		return new Handle[]{new ThisHandle("1",false,false), new ThisHandle("4",true,true)};
 		}
 		
 	}

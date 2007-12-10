@@ -632,12 +632,17 @@ public class NucLineage extends EvObject implements Cloneable
 			else
 				{
 				int lastFrame=pos.lastKey();
+				Integer cfirstFrame=null;
 				for(String cName:child)
 					{
 					NucLineage.Nuc c=nuc.get(cName);
-					if(c.pos.firstKey()<lastFrame)  //changed
-						lastFrame=c.pos.firstKey();
+					if(cfirstFrame==null || cfirstFrame>c.pos.firstKey())
+						cfirstFrame=c.pos.firstKey();
 					}
+				if(cfirstFrame!=null && cfirstFrame>lastFrame)
+					lastFrame=cfirstFrame;
+//				if(c.pos.firstKey()>lastFrame)  //changed
+//					lastFrame=c.pos.firstKey();
 				return lastFrame;
 				}
 			}
