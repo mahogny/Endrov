@@ -51,8 +51,7 @@ public abstract class ROI extends EvObject
 		public String getID();
 		public double getX();
 		public double getY();
-		public void setX(double x);
-		public void setY(double y);
+		public void setPos(double x, double y);
 		}
 	
 	/******************************************************************************************************

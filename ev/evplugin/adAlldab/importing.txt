@@ -1,0 +1,74 @@
+====================Docs==========================
+http://www.wormbase.org/wiki/index.php/GFF2_features
+http://www.sanger.ac.uk/Software/formats/GFF/GFF_Spec.shtml
+
+http://thehardslog.blogspot.com/2006/03/serial-types-in-postgresql-views-using.html
+
+
+
+
+====================Importing============= 
+
+These are imported into indexable flatfiles using ImportFasta:
+
+ftp.wormbase.org/pub/wormbase/genomes/elegans/sequences/dna/elegans.WS183.dna.fa.gz   into celegans/dna/
+ftp.wormbase.org/pub/wormbase/genomes/elegans/sequences/mrna/elegans-mrna.WS183.fa.gz   into celegans/mrna/
+ftp.wormbase.org/pub/wormbase/genomes/elegans/sequences/ncrna/wormrna183.tar.gz , then ?,  into celegans/ncrna/
+
+Genome annotation in 
+
+
+
+=======================Left to import===================
+//To import: GO/. Example:
+WBGene00000001 aap-1 (Y110A7A.10)
+	Molecular_function: protein kinase binding (GO:0019901)
+	Cellular_component: cell (GO:0005623)
+	Biological_process: dauer larval development (GO:0040024)
+	Biological_process: determination of adult life span (GO:0008340)
+	Biological_process: insulin receptor signaling pathway (GO:0008286)
+	Biological_process: intracellular signaling cascade (GO:0007242)
+
+to import: functional_description/. Example:
+WBGene00000065	act-3	T04C12.4	act-3 encodes an invertebrate actin, highly similar to ACT-1, ACT-2, and ACT-4, that functions in body wall muscle; act-3 functions with two other action isoforms, act-1 and act-2, to control cytoplasmic microfilament function in the early embryo.	act-3 encodes an invertebrate actin, highly similar to ACT-1, ACT-2, and ACT-4, that functions in body wall muscle; act-3 functions with two other action isoforms, act-1 and act-2, to control cytoplasmic microfilament function in the early embryo.	none available
+
+/Volumes/TBU_xeon01_500GB02/userdata/biodb/celegans/wormpep183.tar.gz  NO IDEA YET
+
+
+
+
+====================Redundant data============= 
+confirmed_genes/
+gff2/links.gff (contains the lengths of the chromosomes as metadata. All start at 1)
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+====================gff2============= 
+
+==features==
+exon, intron, coding_exon, inverted_repeat, protein_match, nucleotide_match, RNAi_reagent, translated_nucleotide_match,
+EST_match, SAGE_tag, expressed_sequence_match, repeat_region, SAGE_tag_genomic_unique
+
+==attributes==
+
+Genbank "AC199162"  http://www.ncbi.nlm.nih.gov/sites/entrez?db=nuccore&cmd=search&term=AC199162   ce cosmid  in CoreNucleotide
+ 
+Sequence "I"        chromosome I
+
+
+
+
+for BLAT_EST_OTHER, wublastx:?
+Target "Protein:SW:Q8KA15" 132 265
+Target "Motif:PALTTAA1_CE" 1 596
+Target "Sequence:RST3_377111" 420 443
+
+
+
+
+

@@ -8,6 +8,7 @@ import javax.vecmath.*;
 import evplugin.data.*;
 import evplugin.imageWindow.*;
 import evplugin.roi.primitive.BoxROI;
+import evplugin.roi.primitive.EllipseROI;
 
 /**
  * Render ROI in Image Window
@@ -44,7 +45,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 		}
 
 
-	private void drawROI(Graphics g, ROI roi)
+	private void drawROI(Graphics g, ROI roiUncast)
 		{
 		handleList.clear();
 
@@ -52,57 +53,68 @@ public class ImageRendererROI implements ImageWindowRenderer
 		int z=w.frameControl.getZ();
 		String channel=w.getCurrentChannelName();
 		
-		if(roi.imageInRange(channel, frame, z))
+		if(roiUncast.imageInRange(channel, frame, z))
 			{
-			if(roi instanceof BoxROI)
+			g.setColor(Color.WHITE);
+			if(roiUncast instanceof BoxROI)
 				{
-				BoxROI box=(BoxROI)roi;
-			
+				BoxROI roi=(BoxROI)roiUncast;
 				double x1=-1000,y1=-1000,x2=1000,y2=1000;
-				if(!box.regionX.all)
+				if(!roi.regionX.all)
 					{
-					x1=box.regionX.start;
-					x2=box.regionX.end;
+					x1=roi.regionX.start;
+					x2=roi.regionX.end;
 					}
-				if(!box.regionY.all)
+				if(!roi.regionY.all)
 					{
-					y1=box.regionY.start;
-					y2=box.regionY.end;
+					y1=roi.regionY.start;
+					y2=roi.regionY.end;
 					}
 				Vector2d ul=w.transformW2S(new Vector2d(x1,y1));
 				Vector2d ll=w.transformW2S(new Vector2d(x1,y2));
 				Vector2d ur=w.transformW2S(new Vector2d(x2,y1));
 				Vector2d lr=w.transformW2S(new Vector2d(x2,y2));
 				
-				g.setColor(Color.WHITE);
 				g.drawLine((int)ul.x, (int)ul.y, (int)ll.x, (int)ll.y);
 				g.drawLine((int)ur.x, (int)ur.y, (int)lr.x, (int)lr.y);
 				g.drawLine((int)ul.x, (int)ul.y, (int)ur.x, (int)ur.y);
 				g.drawLine((int)ll.x, (int)ll.y, (int)lr.x, (int)lr.y);
 				}
-
-			//Draw handles
-			TreeMap<String,ROI.Handle> roimap=new TreeMap<String,ROI.Handle>();
-			handleList.put(roi,roimap);
-			for(ROI.Handle h:roi.getHandles())
+			else if(roiUncast instanceof EllipseROI)
 				{
-				roimap.put(h.getID(),h);
-				Vector2d xy=w.transformW2S(new Vector2d(h.getX(), h.getY()));
-				g.setColor(Color.CYAN);
-				g.drawRect((int)xy.x-HANDLESIZE, (int)xy.y-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
-				//pixels huge. rather, there is a need for a general transform function. Scaling functions has to disappear
-				/*
+				System.out.println("foo");
+				EllipseROI roi=(EllipseROI)roiUncast;
+				
+				Vector2d ul=w.transformW2S(new Vector2d(roi.regionX.start,roi.regionY.start));
+				Vector2d lr=w.transformW2S(new Vector2d(roi.regionX.end,roi.regionY.end));
+				
+				g.drawOval((int)ul.x, (int)ul.y, (int)(lr.x-ul.x), (int)(lr.y-ul.y));
+				}
+			else if(roiUncast instanceof CompoundROI)
+				{
+				for(ROI subroi:((CompoundROI)roiUncast).subRoi)
+					drawROI(g,subroi);
+				}
+			}
+		
+		
+		
+		//Draw handles
+		TreeMap<String,ROI.Handle> roimap=new TreeMap<String,ROI.Handle>();
+		handleList.put(roiUncast,roimap);
+		for(ROI.Handle h:roiUncast.getHandles())
+			{
+			roimap.put(h.getID(),h);
+			Vector2d xy=w.transformW2S(new Vector2d(h.getX(), h.getY()));
+			g.setColor(Color.CYAN);
+			g.drawRect((int)xy.x-HANDLESIZE, (int)xy.y-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
+			//pixels huge. rather, there is a need for a general transform function. Scaling functions has to disappear
+			/*
 				w.transformOverlay((Graphics2D)g);		
 				g.drawRect((int)h.getX()-HANDLESIZE, (int)h.getY()-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
 				w.untransformOverlay((Graphics2D)g);		
-				*/
-				}
+			 */
 			
-			}
-		else if(roi instanceof CompoundROI)
-			{
-			for(ROI subroi:((CompoundROI)roi).subRoi)
-				drawROI(g,subroi);
 			}
 		
 		

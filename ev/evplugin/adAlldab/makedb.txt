@@ -1,0 +1,58 @@
+drop table seqannot cascade;
+drop table seqannotSeq cascade;
+drop table seqannotSource cascade;
+drop table seqannotFeature cascade;
+
+CREATE TABLE seqannotSeq (
+		seqid SERIAL PRIMARY KEY,
+		seqname TEXT
+);
+
+CREATE TABLE seqannotSource (
+		sourceid SERIAL PRIMARY KEY,
+		source TEXT
+);
+
+CREATE TABLE seqannotFeature (
+		featureid SERIAL PRIMARY KEY,
+		feature TEXT
+);
+
+CREATE TABLE seqannot (
+		annotid INTEGER PRIMARY KEY NOT NULL,
+		startpos INTEGER NOT NULL,
+		endpos INTEGER NOT NULL,
+		seqid INTEGER REFERENCES     seqannotSeq,
+		sourceid INTEGER REFERENCES  seqannotSource,
+		featureid INTEGER REFERENCES seqannotFeature,
+		seqdesc TEXT NOT NULL
+		);
+
+		
+
+
+		
+CREATE INDEX startposindex ON seqannot USING btree (startpos);
+CREATE INDEX endposindex ON seqannot USING btree (endpos);
+CREATE INDEX annotidindex ON seqannotattr USING btree (annotid);
+
+select * from (select * from seqannotattr natural join seqannot natural join limit 1000) as foo order by attr;
+
+select * from seqannot where startpos>1000 and endpos<2000;
+
+select annotid, source, feature, startpos, endpos from (select * from (select * from seqannot where startpos>1000 and endpos<1700) as foo natural join seqannotSource natural join seqannotFeature) bar;
+select annotid, source, feature, startpos, endpos,attr from (select * from (select * from seqannot where startpos>1000 and endpos<1700) as foo natural join seqannotSource natural join seqannotFeature natural join seqannotattr) bar;
+select annotid, source, feature, startpos, endpos, attr from (select * from (select * from seqannot where startpos>1000 and endpos<1700) as foo natural join seqannotSource natural join seqannotFeature natural join seqannotattr) bar order by startpos;
+select annotid, source, feature, startpos, endpos, seqdesc, attr from (select * from (select * from seqannot where startpos>1000 and endpos<1700) as foo natural join seqannotSource natural join seqannotFeature natural join seqannotattr) bar order by startpos;
+
+
+select annotid, source, feature, startpos, endpos, seqdesc, attr from (select * from (select * from seqannot) as foo natural join seqannotSource natural join seqannotFeature natural join seqannotattr) bar order by startpos;
+
+
+		
+drop table seqannotattr cascade;
+CREATE TABLE seqannotattr (		
+		attrid SERIAL PRIMARY KEY,
+		annotid INTEGER REFERENCES seqannot,
+		attr TEXT NOT NULL
+		);

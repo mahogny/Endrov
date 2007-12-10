@@ -56,8 +56,7 @@ public class ImageToolROI implements ImageWindowTool
 				if(h.getID().equals(currentHandle))
 					{
 					Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
-					h.setX(v.x);
-					h.setY(v.y);
+					h.setPos(v.x,v.y);
 					
 //					h.setX(w.s2wx(e.getX()));
 	//				h.setY(w.s2wy(e.getY()));
