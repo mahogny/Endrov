@@ -6,6 +6,7 @@ import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
 import evplugin.roi.primitive.*;
+import evplugin.roi.window.WindowROI;
 
 /*
 	cut
@@ -51,7 +52,7 @@ public class ImageExtensionROI implements ImageWindowExtension
 		
 		//New
 		final JMenuItem miNewRect=new JMenuItem("Box");
-		final JMenuItem miNewEllipse=new JMenuItem("Ellipse (not impl)");
+		final JMenuItem miNewEllipse=new JMenuItem("Ellipse");
 		final JMenuItem miNewPoint=new JMenuItem("Point (not impl)");
 		final JMenuItem miNewLinesegment=new JMenuItem("Line segment (not impl)");
 		final JMenuItem miNewWand=new JMenuItem("Wand (not impl)");

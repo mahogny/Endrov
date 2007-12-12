@@ -11,5 +11,10 @@ public abstract class CompoundROI extends ROI
 	{
 	public Vector<ROI> subRoi=new Vector<ROI>();
 	
+	public Vector<ROI> getSubRoi()
+		{
+		return subRoi;
+		}
+	
 //function to write/read all children as xml	
 	}

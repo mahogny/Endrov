@@ -355,4 +355,9 @@ public class BoxROI extends ROI
 					new BoxHandle("3",false,true), new BoxHandle("4",true,true)};
 		}
 		
+	
+	public Vector<ROI> getSubRoi()
+		{
+		return new Vector<ROI>();
+		}
 	}

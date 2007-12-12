@@ -1,5 +1,6 @@
 package evplugin.roi;
 import evplugin.ev.PluginDef;
+import evplugin.roi.window.WindowROI;
 
 public class PLUGIN extends PluginDef
 	{
