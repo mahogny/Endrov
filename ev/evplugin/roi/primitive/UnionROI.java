@@ -1,6 +1,7 @@
 package evplugin.roi.primitive;
 
 import java.util.*;
+
 import javax.swing.*;
 import org.jdom.*;
 
@@ -45,7 +46,6 @@ public class UnionROI extends CompoundROI
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
-
 	
 	
 	public String getROIDesc()
@@ -130,14 +130,22 @@ public class UnionROI extends CompoundROI
 	/**
 	 * Get handles for corners
 	 */
-	public Handle[] getHandles()
+	public Handle[] getHandles() //should make a set instead, or linked list
 		{
 		LinkedList<Handle> h=new LinkedList<Handle>();
 		for(ROI roi:subRoi)
 			for(Handle th:roi.getHandles())
 				h.add(th);
-		return (Handle[])h.toArray();
+//	return (Handle[])h.toArray();
+		Handle[] hh=new Handle[h.size()];
+		int i=0;
+		for(Handle th:h)
+			{
+			hh[i]=th;
+			i++;
+			}
+		return hh;
 		}
-		
+
 	
 	}

@@ -30,12 +30,13 @@ public abstract class ROI extends EvObject
 //		Metadata.extensions.put(metaType,new ImagesetMetaObjectExtension());
 		}
 
-
+	
 
 	/**
 	 * Set of all selected ROI:s
 	 */
-	public static final TreeSet<SelectedROI> selected=new TreeSet<SelectedROI>();
+//	public static final TreeSet<SelectedROI> selected=new TreeSet<SelectedROI>(); //Or just ROI?
+	public static final TreeSet<ROI> selected=new TreeSet<ROI>(); //Or just ROI?
 
 	/******************************************************************************************************
 	 *            Class: Handle in image window                                                           *
@@ -139,4 +140,5 @@ public abstract class ROI extends EvObject
 	public abstract boolean imageInRange(String channel, double frame, int z);
 	public abstract LineIterator getLineIterator(EvImage im, String channel, int frame, int z);
 	
+	public abstract Vector<ROI> getSubRoi();
 	}

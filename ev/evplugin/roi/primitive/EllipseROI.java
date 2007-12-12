@@ -51,12 +51,17 @@ public class EllipseROI extends ROI
 		{
 		int maxX;
 		int endY;
+		double midx, midy, rx, ry; //bitmap coord
 		public boolean next()
 			{
 			y++;
-			
-			
-			
+			double dy=y-midy;
+			double is=1.0-dy*dy/(ry*ry);
+			double s=is<0 ? 0 : rx*Math.sqrt(is);
+			startX=(int)(midx-s);
+			endX=(int)(midx+s);
+			if(startX<0)  startX=0;
+			if(endX>maxX) endX=maxX;
 			return y<endY;
 			}	
 		}
@@ -201,15 +206,19 @@ public class EllipseROI extends ROI
 			it.y=0;
 
 			//Correct for span
-			int rXstart=(int)im.transformWorldImageX(regionX.start);
 			int rXend=(int)im.transformWorldImageX(regionX.end);
-			if(it.startX<rXstart)	it.startX=rXstart;
 			if(it.maxX>rXend) it.maxX=rXend;
 			
 			int rYstart=(int)im.transformWorldImageY(regionY.start);
-			int rYend=(int)im.transformWorldImageY(regionY.end);
+			int rYend=(int)im.transformWorldImageY(regionY.end)+1;
 			if(it.y<rYstart)	it.y=rYstart;
 			if(it.endY>rYend) it.endY=rYend;
+			
+			it.midx=(im.transformWorldImageX(regionX.start)+im.transformWorldImageX(regionX.end))/2.0;
+			it.midy=(im.transformWorldImageY(regionY.start)+im.transformWorldImageY(regionY.end))/2.0;
+			it.rx=(im.transformWorldImageX(regionX.end)-im.transformWorldImageX(regionX.start))/2.0;
+			it.ry=(im.transformWorldImageY(regionY.end)-im.transformWorldImageY(regionY.start))/2.0;
+			
 			
 			//Sanity check
 			if(it.y>it.endY || it.startX>it.endX)
@@ -353,4 +362,9 @@ public class EllipseROI extends ROI
 		return new Handle[]{new ThisHandle("1",false,false), new ThisHandle("4",true,true)};
 		}
 		
+	
+	public Vector<ROI> getSubRoi()
+		{
+		return new Vector<ROI>();
+		}
 	}

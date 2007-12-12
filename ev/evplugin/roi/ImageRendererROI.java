@@ -82,7 +82,6 @@ public class ImageRendererROI implements ImageWindowRenderer
 				}
 			else if(roiUncast instanceof EllipseROI)
 				{
-				System.out.println("foo");
 				EllipseROI roi=(EllipseROI)roiUncast;
 				
 				Vector2d ul=w.transformW2S(new Vector2d(roi.regionX.start,roi.regionY.start));
