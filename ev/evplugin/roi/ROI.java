@@ -36,7 +36,8 @@ public abstract class ROI extends EvObject
 	 * Set of all selected ROI:s
 	 */
 //	public static final TreeSet<SelectedROI> selected=new TreeSet<SelectedROI>(); //Or just ROI?
-	public static final TreeSet<ROI> selected=new TreeSet<ROI>(); //Or just ROI?
+	public static final HashSet<ROI> selected=new HashSet<ROI>(); //Or just ROI?
+//	public static final TreeSet<EvObject> selected=new TreeSet<EvObject>(); //Or just ROI?
 
 	/******************************************************************************************************
 	 *            Class: Handle in image window                                                           *

@@ -78,7 +78,7 @@ public class ImageToolROI implements ImageWindowTool
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			//Which handle?
-			for(Map.Entry<ROI, TreeMap<String,ROI.Handle>> re:r.handleList.entrySet())
+			for(Map.Entry<ROI, Map<String,ROI.Handle>> re:r.handleList.entrySet())
 				for(Map.Entry<String, ROI.Handle> rh:re.getValue().entrySet())
 					{
 					if(mouseOverHandle(e, rh.getValue()))

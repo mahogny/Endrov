@@ -49,12 +49,15 @@ public class BoxROI extends ROI
 	 *****************************************************************************************************/
 	private static class RectLineIterator extends LineIterator
 		{
+		int startX, endX;
 		int endY;
 		public boolean next()
 			{
+			ranges.clear();
+			ranges.add(new LineRange(startX,endX));
 			y++;
 			return y<endY;
-			}	
+			}
 		}
 	
 	/******************************************************************************************************

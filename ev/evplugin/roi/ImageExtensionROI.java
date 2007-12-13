@@ -78,8 +78,8 @@ public class ImageExtensionROI implements ImageWindowExtension
 		BasicWindow.addMenuItemSorted(miModify, miModInvert);
 
 		//Composite
-		final JMenuItem miCompUnion=new JMenuItem("Union (not impl)");
-		final JMenuItem miCompIntersection=new JMenuItem("Intersection (not impl)");
+		final JMenuItem miCompUnion=new JMenuItem("Union");
+		final JMenuItem miCompIntersection=new JMenuItem("Intersection");
 		final JMenuItem miCompDifference=new JMenuItem("Difference (not impl)");
 		final JMenuItem miCompGroup=new JMenuItem("Group (not impl)");
 
@@ -128,7 +128,12 @@ public class ImageExtensionROI implements ImageWindowExtension
 					UnionROI roi=new UnionROI();
 					addROI(roi);
 					}
-				
+				else if(e.getSource()==miCompIntersection)
+					{
+					ROI roi=new IntersectROI();
+					addROI(roi);
+					}
+				//add selected ROIs
 				
 				
 				}
@@ -144,7 +149,10 @@ public class ImageExtensionROI implements ImageWindowExtension
 			};
 		miNewRect.addActionListener(listener);
 		miNewEllipse.addActionListener(listener);
+
 		miCompUnion.addActionListener(listener);
+		miCompIntersection.addActionListener(listener);
+		miCompDifference.addActionListener(listener);
 		
 		
 		
