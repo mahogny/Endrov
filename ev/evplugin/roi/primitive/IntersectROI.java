@@ -8,111 +8,33 @@ import org.jdom.*;
 import evplugin.imageset.*;
 import evplugin.roi.*;
 
-public class UnionROI extends CompoundROI
+public class IntersectROI extends CompoundROI
 	{
 	
 
 	/******************************************************************************************************
 	 *                               Iterator                                                             *
 	 *****************************************************************************************************/
-	private class UnionLineIterator extends LineIterator
+	private class ThisLineIterator extends LineIterator
 		{
 		final String channel;
 		final int frame,z;
-//		boolean hasNextA, hasNextB;
-//		private LineIterator ita;
-//		private LineIterator itb;
-
-		private OneIt ita, itb;
-		
-		private class OneIt
-			{
-			public OneIt(LineIterator it)
-				{
-				this.it=it;
-				it.next();
-				}
-			public void next()
-				{
-				hasNext=it.next();
-				}
-			public void step()
-				{
-				ranges=it.ranges;
-				y=it.y;
-//				z=it.z;
-				next();   //bad! interfers with range
-				}
-			public boolean hasNext;
-			public LineIterator it;
-			}
-		
-		public UnionLineIterator(EvImage im, LineIterator ita, LineIterator itb, String channel, int frame, int z)
+		Vector<LineIterator> its=new Vector<LineIterator>();
+		public ThisLineIterator(EvImage im, String channel, int frame, int z)
 			{
 			this.channel=channel;
 			this.frame=frame;
 			this.z=z;
-			this.ita=new OneIt(ita);
-			this.itb=new OneIt(itb);
-
-			//Get all started
-			ita.next();
-			itb.next();
+			
+			for(ROI roi:subRoi)
+				its.add(roi.getLineIterator(im, channel, frame, z));
 			}
 		
 		
+		//int endY;
 		public boolean next()
 			{
-			if(!ita.hasNext)
-				if(!itb.hasNext)
-					return false;
-				else
-					{
-					//itb
-					return true;
-					}
-			else
-				if(!itb.hasNext)
-					{
-					//ita
-					return true;
-					}
-				else
-					{
-					;//both
-					return true;
-					}
-				
-			
-
-			/*
-			
-				if(hasNextB && ita.y>itb.y)
-					{
-					ranges.clear();
-					ranges.addAll(itb.ranges);
-					y=itb.y;
-					z=itb.z;
-					hasNextB=itb.next();
-					}
-				else if(ita.y<itb.y)
-					{
-					ranges.clear();
-					ranges.addAll(ita.ranges);
-					y=ita.y;
-					z=ita.z;
-					hasNextA=ita.next();
-					}
-				else //equal y. Merge
-					{
-					
-					}
-						
-				
-				}
-			
-				*/
-			
+			return false;
 //			y++;
 	//		return y<endY;
 			}	
@@ -128,7 +50,7 @@ public class UnionROI extends CompoundROI
 	
 	public String getROIDesc()
 		{
-		return "Union";
+		return "Intersection";
 		}
 	
 	
@@ -182,13 +104,8 @@ public class UnionROI extends CompoundROI
 	 */
 	public LineIterator getLineIterator(EvImage im, final String channel, final int frame, final int z)
 		{
-		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
-			{
-			LineIterator li=subRoi.get(0).getLineIterator(im, channel, frame, z);
-			for(int i=1;i<subRoi.size();i++)
-				li=new UnionLineIterator(im, subRoi.get(i).getLineIterator(im, channel, frame, z), li, channel, frame, z);
-			return li;
-			}
+		if(imageInRange(channel, frame, z))
+			return new ThisLineIterator(im, channel, frame, z);
 		else
 			return new EmptyLineIterator();
 		}
@@ -196,7 +113,7 @@ public class UnionROI extends CompoundROI
 	
 	public void saveMetadata(Element e)
 		{
-		e.setName("ROI union");
+		e.setName("ROI intersection");
 		
 		}
 	

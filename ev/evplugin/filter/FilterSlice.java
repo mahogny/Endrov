@@ -33,11 +33,14 @@ public abstract class FilterSlice extends FilterROI
 		WritableRaster rout=i.getRaster();
 		while(it.next())
 			{
-			int w=it.endX-it.startX;
-			int[] pix=new int[w];
-			rin.getSamples(it.startX, it.y, w, 1, 0, pix);
-			rout.setSamples(it.startX, it.y, w, 1, 0, pix);
-//			System.out.println("z "+it.startX+" "+it.endX+" "+it.y+" "+w);
+			for(LineIterator.LineRange lr:it.ranges)
+				{
+				int w=lr.end-lr.start;
+				int[] pix=new int[w];
+				rin.getSamples(lr.start, it.y, w, 1, 0, pix);
+				rout.setSamples(lr.start, it.y, w, 1, 0, pix);
+//				System.out.println("z "+it.startX+" "+it.endX+" "+it.y+" "+w);
+				}
 			}
 		evim.setImage(i); //was i
 		}

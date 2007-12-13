@@ -5,7 +5,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 
 import evplugin.data.*;
-import evplugin.roi.ROI;
+//import evplugin.roi.ROI;
 
 /**
  * Tree model showing the XML of a custom meta object
@@ -16,9 +16,6 @@ public class ROITreeModel implements TreeModel
 	HashSet<TreeModelListener> listener=new HashSet<TreeModelListener>();
 	private EvData meta=null;
 
-	
-	
-	
 	public void setMetaObject(EvData o)
 		{
 		meta=o;
@@ -89,12 +86,13 @@ public class ROITreeModel implements TreeModel
 			l.treeStructureChanged(new TreeModelEvent(this, new Object[]{getRoot()}));
 		}
 	
+	/*
 	public void addChild(ROITreeElement e, ROI ne)
 		{
 //TODO
 		//		e.e.addContent(ne);
 		emitAllChanged();
-		}
+		}*/
 	
 	public void updateElement(ROITreeElement e)
 		{

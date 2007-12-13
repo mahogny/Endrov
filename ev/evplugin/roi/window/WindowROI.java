@@ -10,8 +10,7 @@ import java.util.*;
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.roi.*;
-import evplugin.roi.primitive.BoxROI;
-import evplugin.roi.primitive.UnionROI;
+import evplugin.roi.primitive.*;
 //import evplugin.imageset.*;
 import evplugin.basicWindow.*;
 import org.jdom.*;
@@ -71,7 +70,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	private JButton bNewIntersect=new JButton(iconIntersect);
 	private JButton bNewSub=new JButton(iconSub);
 	private JButton bNewUnion=new JButton(iconUnion);
-	private JButton bNewDelete=new JButton(iconDelete);
+	private JButton bDelete=new JButton(iconDelete);
 	
 	
 	private MetaCombo metaCombo=new MetaCombo(this, false);
@@ -97,9 +96,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 * Make a new window at some specific location
 	 */
 	public WindowROI(int x, int y, int w, int h)
-		{
-		metaCombo.addActionListener(this);
-		
+		{		
 		//Put GUI together
 		setLayout(new BorderLayout());
 	
@@ -112,22 +109,21 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		bottom.add(bNewIntersect);
 		bottom.add(bNewSub);
 		bottom.add(bNewUnion);
-		bottom.add(bNewDelete);
+		bottom.add(bDelete);
 		
-		
+		bNewDiff.addActionListener(this);
+		bNewIntersect.addActionListener(this);
+		bNewSub.addActionListener(this);
 		bNewUnion.addActionListener(this);
-		
-		//bottom.add(new JLabel("Start frame:"));
-		
+		bDelete.addActionListener(this);
 		tree.addTreeSelectionListener(this);
-		
-		//A tree is probably suitable here
-		
+		metaCombo.addActionListener(this);
 		
 		//Window overall things
 		setTitle(EV.programName+" ROI");
 		pack();
 		setBounds(x,y,w,h);
+		dataChangedEvent();
 		setVisible(true);
 		}
 	
@@ -150,20 +146,10 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 				{
 				Object o=tp.getLastPathComponent();
 				ROITreeElement to=(ROITreeElement)o;
-				System.out.println(" "+o.toString());
 				if(to.e instanceof ROI)
 					ROI.selected.add((ROI)to.e);
-			//	if(o instanceof ROI)
-				//	ROI.selected.add(o);
 				}
-		System.out.println("Selected1: "+ROI.selected.size());
 		BasicWindow.updateWindows(this);
-		System.out.println("Selected2: "+ROI.selected.size());
-			
-	//		ROITreeElement e=
-			
-		ROI.selected.contains(new BoxROI());
-		ROI.selected.contains(new UnionROI());
 		}
 	
 	
@@ -179,7 +165,9 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 			///channelCombo.setImageset(metaCombo.getImageset());
 			}
 		else if(e.getSource()==bNewUnion)
-			makeUnion();
+			makeCompoundROI(new UnionROI());
+		else if(e.getSource()==bNewIntersect)
+			makeCompoundROI(new IntersectROI());
 		}
 	
 	
@@ -194,60 +182,62 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		}
 	
 	
-	public void makeUnion()
+
+	private void makeCompoundROI(CompoundROI croi)
 		{
 		EvData data=metaCombo.getMeta();
 		if(data!=null)
 			{
-			System.out.println("Selected: "+ROI.selected.size());
-			for(ROI roi:ROI.selected)
-				System.out.println("- "+roi.getROIDesc());
 			Set<ROI> rois=collectRecursiveROI(data);
-			System.out.println("Coll: "+rois.size());
-
-			UnionROI union=new UnionROI();
-			data.addMetaObject(union);
-
-			
+			data.addMetaObject(croi);
 			for(ROI roi:rois)
-				union.subRoi.add(roi);
+				croi.subRoi.add(roi);
 			BasicWindow.updateWindows();
-			
 			}
 		}
 	
 	
-	
-	public Set<ROI> collectRecursiveROI(Object parent)
+	/**
+	 * Remove all selected ROIs recursively from their parents and return them
+	 */
+	private Set<ROI> collectRecursiveROI(Object parent)
 		{
 		HashSet<ROI> hs=new HashSet<ROI>();
 		if(parent instanceof EvData)
 			{
 			EvData data=(EvData)parent;
-			for(EvObject ob:data.metaObject.values())
+			Set<Integer> toremove=new HashSet<Integer>();
+			for(int key:data.metaObject.keySet())
+				{
+				EvObject ob=data.metaObject.get(key);
 				if(ob instanceof ROI)
 					{
 					if(ROI.selected.contains((ROI)ob))
 						{
-						ROI.selected.remove((ROI)ob);
+						toremove.add(key);
 						hs.add((ROI)ob);
 						}
 					else
 						hs.addAll(collectRecursiveROI(ob));
 					}
+				}
+			for(int key:toremove)
+				data.metaObject.remove(key);
 			}
 		else if(parent instanceof CompoundROI)
 			{
+			Set<ROI> toremove=new HashSet<ROI>();
 			for(ROI roi:((CompoundROI)parent).subRoi)
 				{
 				if(ROI.selected.contains(roi))
 					{
-					ROI.selected.remove(roi);
+					toremove.add(roi);
 					hs.add((ROI)roi);
 					}
 				else
 					hs.addAll(collectRecursiveROI(roi));
 				}
+			((CompoundROI)parent).subRoi.removeAll(toremove);
 			}
 		return hs;
 		}

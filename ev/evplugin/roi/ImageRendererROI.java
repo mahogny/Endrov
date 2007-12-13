@@ -20,7 +20,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 	public static final int HANDLESIZE=3;
 
 	public ImageWindow w;
-	public TreeMap<ROI, TreeMap<String,ROI.Handle>> handleList=new TreeMap<ROI, TreeMap<String,ROI.Handle>>();
+	public Map<ROI, Map<String,ROI.Handle>> handleList=new HashMap<ROI, Map<String,ROI.Handle>>();
 	
 	
 	public ImageRendererROI(ImageWindow w)
@@ -99,7 +99,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 		
 		
 		//Draw handles
-		TreeMap<String,ROI.Handle> roimap=new TreeMap<String,ROI.Handle>();
+		HashMap<String,ROI.Handle> roimap=new HashMap<String,ROI.Handle>();
 		handleList.put(roiUncast,roimap);
 		for(ROI.Handle h:roiUncast.getHandles())
 			{

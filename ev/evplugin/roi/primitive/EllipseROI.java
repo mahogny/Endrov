@@ -50,19 +50,22 @@ public class EllipseROI extends ROI
 	private class ThisLineIterator extends LineIterator
 		{
 		int maxX;
-		int endY;
+		int maxY;
 		double midx, midy, rx, ry; //bitmap coord
 		public boolean next()
 			{
-			y++;
 			double dy=y-midy;
 			double is=1.0-dy*dy/(ry*ry);
 			double s=is<0 ? 0 : rx*Math.sqrt(is);
-			startX=(int)(midx-s);
-			endX=(int)(midx+s);
+			int startX=(int)(midx-s);
+			int endX=(int)(midx+s);
 			if(startX<0)  startX=0;
 			if(endX>maxX) endX=maxX;
-			return y<endY;
+			
+			ranges.clear();
+			ranges.add(new LineRange(startX,endX));
+			y++;
+			return y<maxY;
 			}	
 		}
 	
@@ -200,9 +203,8 @@ public class EllipseROI extends ROI
 			{
 			//Initial boundary: cover entire image
 			ThisLineIterator it=new ThisLineIterator();
-			it.startX=0;
 			it.maxX=im.getJavaImage().getWidth();
-			it.endY=im.getJavaImage().getHeight();
+			it.maxY=im.getJavaImage().getHeight();
 			it.y=0;
 
 			//Correct for span
@@ -212,7 +214,7 @@ public class EllipseROI extends ROI
 			int rYstart=(int)im.transformWorldImageY(regionY.start);
 			int rYend=(int)im.transformWorldImageY(regionY.end)+1;
 			if(it.y<rYstart)	it.y=rYstart;
-			if(it.endY>rYend) it.endY=rYend;
+			if(it.maxY>rYend) it.maxY=rYend;
 			
 			it.midx=(im.transformWorldImageX(regionX.start)+im.transformWorldImageX(regionX.end))/2.0;
 			it.midy=(im.transformWorldImageY(regionY.start)+im.transformWorldImageY(regionY.end))/2.0;
@@ -221,7 +223,7 @@ public class EllipseROI extends ROI
 			
 			
 			//Sanity check
-			if(it.y>it.endY || it.startX>it.endX)
+			if(it.y>it.maxY)
 				return new EmptyLineIterator();
 			else
 				{
