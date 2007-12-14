@@ -7,6 +7,7 @@ public abstract class LineIterator
 	{
 	public int y,z;
 	
+	//new elements must be generated for every next
 	public LinkedList<LineRange> ranges=new LinkedList<LineRange>();
 	
 	public abstract boolean next();

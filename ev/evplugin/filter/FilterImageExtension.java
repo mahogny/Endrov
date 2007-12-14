@@ -156,16 +156,21 @@ public class FilterImageExtension implements ImageWindowExtension
 					public void actionPerformed(ActionEvent e)
 						{
 						Imageset rec=w.getImageset();
-						ROI roi=null;
+//						ROI roi=null;
 						
+						for(ROI roi:ROI.selected)
+							{
+							if(fi instanceof FilterInfo)
+								new FilterDialog(((FilterInfo)fi).filterROI(), rec, roi);
+							else
+								new FilterDialog((FilterSeq)fi, rec, roi);
+							
+							}
+	/*					
 						for(EvObject ob:rec.metaObject.values())
 							if(ob instanceof ROI)
 								roi=(ROI)ob;
-
-						if(fi instanceof FilterInfo)
-							new FilterDialog(((FilterInfo)fi).filterROI(), rec, roi);
-						else
-							new FilterDialog((FilterSeq)fi, rec, roi);
+*/
 						}
 					});
 				}
