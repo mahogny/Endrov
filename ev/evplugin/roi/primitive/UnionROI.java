@@ -27,6 +27,10 @@ public class UnionROI extends CompoundROI
 		
 		private class OneIt
 			{
+			public LinkedList<LineRange> ranges;
+			public int y;
+			public boolean hasNext;
+			public LineIterator it;
 			public OneIt(LineIterator it)
 				{
 				this.it=it;
@@ -38,13 +42,12 @@ public class UnionROI extends CompoundROI
 				}
 			public void step()
 				{
-				ranges=it.ranges;
+				ranges=(LinkedList<LineRange>)it.ranges.clone();
+				System.out.println("% "+ranges.size());
 				y=it.y;
 //				z=it.z;
 				next();   //bad! interfers with range
 				}
-			public boolean hasNext;
-			public LineIterator it;
 			}
 		
 		public UnionLineIterator(EvImage im, LineIterator ita, LineIterator itb, String channel, int frame, int z)
@@ -56,7 +59,7 @@ public class UnionROI extends CompoundROI
 			this.itb=new OneIt(itb);
 
 			//Get all started
-			ita.next();
+			ita.next(); //eek. the ones lower down will be next:ed multiple times
 			itb.next();
 			}
 		
@@ -68,53 +71,33 @@ public class UnionROI extends CompoundROI
 					return false;
 				else
 					{
-					//itb
-					return true;
+					itb.step();
+					return itb.hasNext;
 					}
 			else
 				if(!itb.hasNext)
 					{
-					//ita
-					return true;
+					ita.step();
+					return ita.hasNext;
 					}
 				else
 					{
-					;//both
-					return true;
-					}
-				
-			
-
-			/*
-			
-				if(hasNextB && ita.y>itb.y)
-					{
-					ranges.clear();
-					ranges.addAll(itb.ranges);
-					y=itb.y;
-					z=itb.z;
-					hasNextB=itb.next();
-					}
-				else if(ita.y<itb.y)
-					{
-					ranges.clear();
-					ranges.addAll(ita.ranges);
-					y=ita.y;
-					z=ita.z;
-					hasNextA=ita.next();
-					}
-				else //equal y. Merge
-					{
-					
-					}
+					if(ita.y<itb.y)
+						ita.step();
+					else if(ita.y>itb.y)
+						itb.step();
+					else //equal
+						{
 						
-				
-				}
-			
-				*/
-			
-//			y++;
-	//		return y<endY;
+						//todo
+						
+						ita.step();
+						itb.step();
+
+						
+						}
+					return ita.hasNext || itb.hasNext;
+					}
 			}	
 		}
 	
@@ -186,7 +169,7 @@ public class UnionROI extends CompoundROI
 			{
 			LineIterator li=subRoi.get(0).getLineIterator(im, channel, frame, z);
 			for(int i=1;i<subRoi.size();i++)
-				li=new UnionLineIterator(im, subRoi.get(i).getLineIterator(im, channel, frame, z), li, channel, frame, z);
+				li=new DebugLineIterator(new UnionLineIterator(im, subRoi.get(i).getLineIterator(im, channel, frame, z), li, channel, frame, z));
 			return li;
 			}
 		else
