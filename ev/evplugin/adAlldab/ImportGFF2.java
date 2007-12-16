@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  * 
  * @author Johan Henriksson
  */
-public class ImportGFFChromo
+public class ImportGFF2
 	{
 	public static class GffRecord
 		{

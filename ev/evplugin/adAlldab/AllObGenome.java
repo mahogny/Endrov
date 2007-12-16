@@ -1,6 +1,11 @@
 package evplugin.adAlldab;
 
-public class AllObGenome
+
+/**
+ * Alldab object: genome
+ * 
+ * @author Johan Henriksson
+ */public class AllObGenome
 	{
 //extends AllOb
 	

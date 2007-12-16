@@ -1,4 +1,4 @@
-package evplugin.adAlldab;
+package evplugin.adAlldab.oldOrTest;
 
 import java.io.*;
 import java.util.*;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * 
  * @author Johan Henriksson
  */
-public class ImportGFFCheckBad
+public class ImportGFFCheckBad2
 	{
 	
 	public static interface GffRecordHandler
@@ -27,6 +27,70 @@ public class ImportGFFCheckBad
 		return inp[0];
 		}
 	
+	
+	
+	
+	public static class Annotation
+	{
+	public int annotid;
+	public String source;
+	public String feature;
+	public int startpos;
+	public int endpos;
+	public String seqdesc;
+	
+	public String toString()
+		{
+		return "annotid:"+annotid+" source:"+source+" feature:"+feature+" start:"+startpos+" end:"+endpos+" desc:"+seqdesc;
+		}
+	
+	//can be improved
+	public boolean getAttributes() 
+		{
+		LinkedList<String> attr=new LinkedList<String>();
+		
+//		StringReader reader=new StringReader(seqdesc);
+		
+		StringBuffer curs=new StringBuffer();
+		boolean inCite=false;
+
+		for(char c:seqdesc.toCharArray())
+			{
+			if(c=='"')
+				{
+				inCite=!inCite;
+				curs.append(c);
+				}
+			else if(c==';' && !inCite)
+				{
+				String s=curs.toString().trim();
+				if(s.length()!=0)
+					attr.add(s);
+				curs=new StringBuffer();
+				}
+			else
+				curs.append(c);
+			}
+		if(inCite)
+			{
+			System.out.println(seqdesc);
+			return true;
+			}
+		else
+			{
+			String s=curs.toString().trim();
+			if(s.length()!=0)
+				attr.add(s);
+			curs=new StringBuffer();
+			}			
+		return false;
+		}
+	
+	//Can potentially query for additional information on-the-fly if not all columns are asked for. This lazy approach
+	//is slower if all data is wanted but can be faster if only a sparse set is needed.
+	}
+	
+	
 	public static void importGFF(File infile, GffRecordHandler h) throws IOException
 		{
 		BufferedReader input = new BufferedReader(new FileReader(infile));
@@ -40,22 +104,11 @@ public class ImportGFFCheckBad
 				Integer.parseInt(inp[3]);
 				Integer.parseInt(inp[4]);
 
-				int cnt=0;
-				for(int i=0;i<inp[8].length();i++)
-					if(inp[8].charAt(i)=='\"')
-						cnt++;
-				if(cnt%2!=0)
-					System.out.println("\" mismatch : "+ line);
-
-				StringTokenizer sta=new StringTokenizer(inp[8],";"); // "; "
-				while(sta.hasMoreTokens())
-					{
-					String at=sta.nextToken().trim();
-
-					if(at.equals(""))
-						System.out.println("Empty attribute (has weird ;) : "+ line);
-						
-					}
+				
+				Annotation ann=new Annotation();
+				ann.seqdesc=inp[8];
+				if(ann.getAttributes())
+					System.out.println(line);
 
 				}
 			catch (Exception e)

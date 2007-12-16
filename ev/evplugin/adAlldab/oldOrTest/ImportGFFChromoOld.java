@@ -1,9 +1,11 @@
-package evplugin.adAlldab;
+package evplugin.adAlldab.oldOrTest;
 
 import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import evplugin.adAlldab.DB;
 
 //to import: repeats , gene_IDs, gene_interpolated_map_positions, genetic_interactions, swissprot_mappings
 
