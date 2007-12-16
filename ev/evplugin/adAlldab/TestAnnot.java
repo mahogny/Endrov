@@ -19,7 +19,11 @@ public class TestAnnot
 			Map<Integer,Annotation> sas=sa.getRange(0, 1100);
 
 			for(SeqAnnot.Annotation a: sas.values())
+				{
 				System.out.println(a);
+				for(String s:a.getAttributes())
+					System.out.println("** "+s);
+				}
 			
 			
 			}
