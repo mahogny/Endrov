@@ -1,12 +1,14 @@
-package evplugin.adAlldab;
+package evplugin.adAlldab.oldOrTest;
 
 import java.sql.ResultSet;
+
+import evplugin.adAlldab.DB;
 
 //import java.sql.Statement;
 
 //http://www.postgresql.org/docs/8.2/interactive/functions-string.html
 
-public class Testsql
+public class BenchmarkSQL
 	{
 	public static void main(String[] arg)
 		{

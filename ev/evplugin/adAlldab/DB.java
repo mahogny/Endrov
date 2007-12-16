@@ -7,6 +7,10 @@ import java.util.*;
 import javax.swing.*;
 
 
+/**
+ * SQL interface, need updating
+ * @author Johan Henriksson
+ */
 public class DB
 	{	
 	/******************************************************************************************************

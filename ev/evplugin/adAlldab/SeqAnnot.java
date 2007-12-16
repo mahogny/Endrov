@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 
 /**
- * 
+ * Sequence Annotation Interface
  * @author Johan Henriksson
  */
 public class SeqAnnot

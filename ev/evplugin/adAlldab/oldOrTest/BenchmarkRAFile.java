@@ -1,8 +1,8 @@
-package evplugin.adAlldab;
+package evplugin.adAlldab.oldOrTest;
 
 import java.io.*;
 
-public class Testfile
+public class BenchmarkRAFile
 	{
 
 	public static void main(String[] args)
