@@ -34,57 +34,47 @@ public class SeqAnnot
 			return "annotid:"+annotid+" source:"+source+" feature:"+feature+" start:"+startpos+" end:"+endpos+" desc:"+seqdesc;
 			}
 		
+		//can be improved? only parses. doesn't try to understand the data. up to the viewer?
+		public LinkedList<String> getAttributes() 
+			{
+			LinkedList<String> attr=new LinkedList<String>();
+			StringBuffer curs=new StringBuffer();
+			boolean inCite=false;
+			for(char c:seqdesc.toCharArray())
+				{
+				if(c=='"')
+					{
+					inCite=!inCite;
+					curs.append(c);
+					}
+				else if(c==';' && !inCite)
+					{
+					String s=curs.toString().trim();
+					if(s.length()!=0)
+						attr.add(s);
+					curs=new StringBuffer();
+					}
+				else
+					curs.append(c);
+				}
+			if(inCite)
+				System.out.println("--parse error--"); //only one record fails in wormbase GFF
+			else
+				{
+				String s=curs.toString().trim();
+				if(s.length()!=0)
+					attr.add(s);
+				curs=new StringBuffer();
+				}			
+			
+			return attr;
+			}
+		
 		//Can potentially query for additional information on-the-fly if not all columns are asked for. This lazy approach
 		//is slower if all data is wanted but can be faster if only a sparse set is needed.
 		}
 	
-	/*
-	public static class AnnotationSet
-		{
-		private ResultSet rs;
-		public AnnotationSet(ResultSet rs)
-			{
-			this.rs=rs;
-			}
-		public Annotation next()
-			{
-			try
-				{
-				if(rs.next())
-					{
-					Annotation a=new Annotation();
-					
-					return a;
-					}
-				else
-					return null;
-				}
-			catch (SQLException e)
-				{
-				e.printStackTrace();
-				return null;
-				}
-			}
-		}
-	public AnnotationSet getRange(int start, int stop)
-		{
-		//Or generate a map right away?
-		try
-			{
-			psSeqannotattr.setInt(1, stop);
-			psSeqannotattr.setInt(2, start);
-			ResultSet rs=psSeqannotattr.executeQuery();
-			return new AnnotationSet(rs);
-			}
-		catch (SQLException e)
-			{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-			}
-
-		}
-	*/
+	
 	public Map<Integer,Annotation> getRange(int start, int stop)
 		{
 		HashMap<Integer,Annotation> m=new HashMap<Integer,Annotation>();
@@ -110,7 +100,6 @@ public class SeqAnnot
 			}
 		catch (SQLException e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 			}
