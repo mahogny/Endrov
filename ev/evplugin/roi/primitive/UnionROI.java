@@ -27,7 +27,7 @@ public class UnionROI extends CompoundROI
 		
 		private class OneIt
 			{
-			public LinkedList<LineRange> ranges;
+			public LinkedList<LineRange> ranges=new LinkedList<LineRange>();
 			public int y;
 			public boolean hasNext;
 			public LineIterator it;
@@ -42,7 +42,9 @@ public class UnionROI extends CompoundROI
 				}
 			public void step()
 				{
-				ranges=(LinkedList<LineRange>)it.ranges.clone();
+				ranges.clear();
+				ranges.addAll(it.ranges);
+//				ranges=(LinkedList<LineRange>)(LinkedList/*<LineRange>*/)it.ranges.clone();
 				System.out.println("% "+ranges.size());
 				y=it.y;
 //				z=it.z;

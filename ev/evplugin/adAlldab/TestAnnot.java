@@ -16,15 +16,17 @@ public class TestAnnot
 			
 			SeqAnnot sa=new SeqAnnot(db);
 			
-			Map<Integer,Annotation> sas=sa.getRange(0, 1100);
-
+			long startTime=System.currentTimeMillis();
+			Map<Integer,Annotation> sas=sa.getRange(0, 110);
+			System.out.println(": "+(System.currentTimeMillis()-startTime));
+/*
 			for(SeqAnnot.Annotation a: sas.values())
 				{
 				System.out.println(a);
 				for(String s:a.getAttributes())
 					System.out.println("** "+s);
 				}
-			
+			*/
 			
 			}
 		catch (SQLException e)
@@ -32,7 +34,6 @@ public class TestAnnot
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
-		
 		
 		
 		}
