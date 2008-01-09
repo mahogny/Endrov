@@ -1,5 +1,6 @@
 package evplugin.roi;
 import evplugin.ev.PluginDef;
+import evplugin.roi.primitive.BoxROI;
 import evplugin.roi.window.WindowROI;
 
 public class PLUGIN extends PluginDef
@@ -31,6 +32,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ROI.class,WindowROI.class};
+		return new Class[]{ROI.class,WindowROI.class,
+				BoxROI.class};
 		}
 	}

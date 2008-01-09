@@ -9,6 +9,11 @@ import org.jdom.*;
 
 import evplugin.roi.*;
 import evplugin.basicWindow.BasicWindow;
+import evplugin.data.EvData;
+import evplugin.data.EvObject;
+import evplugin.data.EvObjectType;
+import evplugin.frameTime.FrameTime;
+import evplugin.frameTime.Pair;
 import evplugin.imageset.*;
 
 /**
@@ -18,6 +23,58 @@ import evplugin.imageset.*;
  */
 public class BoxROI extends ROI
 	{
+	private static final String metaType="ROI Box";
+	public static void initPlugin() {}
+	static
+		{
+		EvData.extensions.put(metaType,new EvObjectType()
+			{
+			public EvObject extractObjects(Element e)
+				{
+				BoxROI meta=new BoxROI();
+				
+				/*
+				for(Object oframetime:e.getChildren())
+					{
+					Element e2=(Element)oframetime;
+					int frame=Integer.parseInt(e2.getAttribute("frame").getValue());
+					double frametime=Double.parseDouble(e2.getAttribute("frame").getValue());
+					meta.list.add(new Pair(frame,frametime));
+					}
+					*/
+				
+				return meta;
+				}
+			});
+		}
+	
+	public void saveMetadata(Element e)
+		{
+		e.setName(metaType);
+		saveRange(e, regionFrames, "f");
+		saveRange(e, regionX, "x");
+		saveRange(e, regionY, "y");
+		saveRange(e, regionZ, "z");
+		if(!regionChannels.isEmpty())
+			{
+			for(String s:regionChannels)
+				{
+				Element f=new Element("channel");
+				f.addContent(s);
+				e.addContent(f);
+				}
+			}
+		}
+	private void saveRange(Element e, Span s, String a)
+		{
+		if(!s.all)
+			{
+			e.setAttribute(a+"start", Double.toString(s.start));
+			e.setAttribute(a+"end", Double.toString(s.end));
+			}
+		}
+	
+	
 	/******************************************************************************************************
 	 *                               Range class                                                          *
 	 *****************************************************************************************************/
@@ -230,13 +287,6 @@ public class BoxROI extends ROI
 		}
 	
 
-	
-	
-	public void saveMetadata(Element e)
-		{
-		e.setName("ROI box");
-		
-		}
 	
 	//ImageIterator?
 	

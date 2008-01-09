@@ -21,7 +21,7 @@ public abstract class ROI extends EvObject
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	private static final String metaType="ROI";
+	//private static final String metaType="ROI";
 	
 	public static void initPlugin() {}
 	static
@@ -77,12 +77,6 @@ public abstract class ROI extends EvObject
 	/******************************************************************************************************
 	 *                               Instance                                                                 *
 	 *****************************************************************************************************/
-
-
-	public void saveMetadata(Element e)
-		{
-		e.setName(metaType);
-		}
 
 
 	/**

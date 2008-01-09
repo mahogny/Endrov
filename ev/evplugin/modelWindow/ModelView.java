@@ -5,9 +5,12 @@ import java.awt.geom.*;
 import java.awt.Font;
 import java.nio.*;
 
+//import javax.media.j3d.Texture;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 
+
+//import com.sun.opengl.util.Screenshot;
 import com.sun.opengl.util.j2d.*;
 
 import evplugin.basicWindow.*;
@@ -29,29 +32,28 @@ public class ModelView extends GLCanvas
 	{
 	public static final long serialVersionUID=0;
 	
+	
 	/** Common data */
 	private ModelWindow window;
 
 	/** Camera coordinates */
 	public Camera camera=new Camera();
-	
+	private final double FOV=45.0/180.0*Math.PI;	
 	/** Current frame */
 	public double frame=0;
 	
-	private final double FOV=45.0/180.0*Math.PI;
 
 	/** Size of the grid in um */
 	public double gridsize=1;//private TODO
-	
 	/** Scaling factor for panning */
 	public double panspeed=1; //private TODO
+	public boolean showGrid=false; 
+
 	
 	/** Current mouse coordinate */
-	public int mouseX=-1, mouseY=-1;
-	
+	public int mouseX=-1, mouseY=-1;	
 	public TextRenderer renderer;
 
-	public boolean showGrid=false;
 	
 	
 	
@@ -104,6 +106,7 @@ public class ModelView extends GLCanvas
 		byte colB=(byte)((selectColorNum>>16));
 		gl.glColor3ub(colR,colG,colB);
 		}
+	
 	
 	
 	private GLEventListener glEventListener=new GLEventListener()
@@ -239,14 +242,18 @@ public class ModelView extends GLCanvas
 			//Render extensions
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.displayFinal(gl);
+
+			slices.render(gl,frame);
 			
+			//adjust scale for next time
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.adjustScale();
-
+			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
 			}
-		
+
+		StackSlices slices=new StackSlices();
 		};
 	
 	
