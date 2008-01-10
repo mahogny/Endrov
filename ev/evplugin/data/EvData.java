@@ -156,7 +156,7 @@ public abstract class EvData
   		Element element = document.getRootElement();
 
   		//Extract objects
-  		List children=element.getChildren(); //TODO parameterize
+  		List<?> children=element.getChildren(); //TODO parameterize
   		for(Object ochild:children)
   			{
   			Element child=(Element)ochild;

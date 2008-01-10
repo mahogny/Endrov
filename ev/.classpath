@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|evplugin/macBinding/|evplugin/script/parser/" kind="src" path=""/>
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|evplugin/macBinding/|evplugin/jubio/|evplugin/makeQT/|evplugin/script/parser/|util/BatchExtractAP.java" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/junit.jar"/>
-	<classpathentry kind="lib" path="libs/jsch-0.1.34.jar"/>
-	<classpathentry kind="lib" path="libs/jfreechart-1.0.5.jar"/>
-	<classpathentry kind="lib" path="libs/jdom.jar"/>
-	<classpathentry kind="lib" path="libs/jcommon-1.0.9.jar"/>
-	<classpathentry kind="lib" path="libs/jaxen-jdom.jar"/>
-	<classpathentry kind="lib" path="libs/jaxen-core.jar"/>
-	<classpathentry kind="lib" path="libs/itext-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/linux/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/linux/jai_codec.jar"/>
+	<classpathentry kind="lib" path="libs/linux/jai_core.jar"/>
+	<classpathentry kind="lib" path="libs/linux/jogl.jar"/>
+	<classpathentry kind="lib" path="libs/linux/mlibwrapper_jai.jar"/>
 	<classpathentry kind="lib" path="libs/gnujaxp.jar"/>
-	<classpathentry kind="lib" path="libs/bio-formats.jar"/>
-	<classpathentry kind="lib" path="libs/xml-apis.jar"/>
-	<classpathentry kind="lib" path="libs/xerces.jar"/>
-	<classpathentry kind="lib" path="libs/xalan.jar"/>
-	<classpathentry kind="lib" path="libs/vecmath.jar"/>
-	<classpathentry kind="lib" path="libs/servlet.jar"/>
+	<classpathentry kind="lib" path="libs/itext-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/jaxen-core.jar"/>
+	<classpathentry kind="lib" path="libs/jaxen-jdom.jar"/>
+	<classpathentry kind="lib" path="libs/jcommon-1.0.9.jar"/>
+	<classpathentry kind="lib" path="libs/jdom.jar"/>
+	<classpathentry kind="lib" path="libs/jfreechart-1.0.5.jar"/>
+	<classpathentry kind="lib" path="libs/jsch-0.1.34.jar"/>
+	<classpathentry kind="lib" path="libs/junit.jar"/>
 	<classpathentry kind="lib" path="libs/saxpath.jar"/>
-	<classpathentry kind="lib" path="libs/mac/jogl.jar"/>
-	<classpathentry kind="lib" path="libs/mac/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="libs/poi-scratchpad-3.0.1-FINAL-20070705.jar"/>
-	<classpathentry kind="lib" path="libs/poi-contrib-3.0.1-FINAL-20070705.jar"/>
+	<classpathentry kind="lib" path="libs/servlet.jar"/>
+	<classpathentry kind="lib" path="libs/vecmath.jar"/>
+	<classpathentry kind="lib" path="libs/xalan.jar"/>
+	<classpathentry kind="lib" path="libs/xerces.jar"/>
+	<classpathentry kind="lib" path="libs/xml-apis.jar"/>
 	<classpathentry kind="lib" path="libs/poi-3.0.1-FINAL-20070705.jar"/>
-	<classpathentry kind="lib" path="libs/mac/postgresql-8.2-505.jdbc3.jar"/>
+	<classpathentry kind="lib" path="libs/poi-contrib-3.0.1-FINAL-20070705.jar"/>
+	<classpathentry kind="lib" path="libs/poi-scratchpad-3.0.1-FINAL-20070705.jar"/>
+	<classpathentry kind="lib" path="libs/bio-formats.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

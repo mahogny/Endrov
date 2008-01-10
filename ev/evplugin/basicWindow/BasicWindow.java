@@ -168,7 +168,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 *****************************************************************************************************/
 
 	/** Hooks for all extensions */
-	public HashMap<Class,BasicWindowHook> basicWindowExtensionHook=new HashMap<Class,BasicWindowHook>();
+	public HashMap<Class<?>,BasicWindowHook> basicWindowExtensionHook=new HashMap<Class<?>,BasicWindowHook>();
 
 	
 	/**

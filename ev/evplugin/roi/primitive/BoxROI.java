@@ -9,9 +9,7 @@ import org.jdom.*;
 
 import evplugin.roi.*;
 import evplugin.basicWindow.BasicWindow;
-import evplugin.data.EvData;
-import evplugin.data.EvObject;
-import evplugin.data.EvObjectType;
+import evplugin.data.*;
 import evplugin.imageset.*;
 
 /**
@@ -30,17 +28,11 @@ public class BoxROI extends ROI
 			public EvObject extractObjects(Element e)
 				{
 				BoxROI meta=new BoxROI();
-				
-				/*
-				for(Object oframetime:e.getChildren())
-					{
-					Element e2=(Element)oframetime;
-					int frame=Integer.parseInt(e2.getAttribute("frame").getValue());
-					double frametime=Double.parseDouble(e2.getAttribute("frame").getValue());
-					meta.list.add(new Pair(frame,frametime));
-					}
-					*/
-				
+				meta.regionFrames.loadRange(e,"f");
+				meta.regionX.loadRange(e,"x");
+				meta.regionY.loadRange(e,"y");
+				meta.regionZ.loadRange(e,"z");
+				meta.regionChannels.loadRange(e, "channel");
 				return meta;
 				}
 			});
@@ -49,56 +41,14 @@ public class BoxROI extends ROI
 	public void saveMetadata(Element e)
 		{
 		e.setName(metaType);
-		saveRange(e, regionFrames, "f");
-		saveRange(e, regionX, "x");
-		saveRange(e, regionY, "y");
-		saveRange(e, regionZ, "z");
-		if(!regionChannels.isEmpty())
-			{
-			for(String s:regionChannels)
-				{
-				Element f=new Element("channel");
-				f.addContent(s);
-				e.addContent(f);
-				}
-			}
-		}
-	private void saveRange(Element e, Span s, String a)
-		{
-		if(!s.all)
-			{
-			e.setAttribute(a+"start", Double.toString(s.start));
-			e.setAttribute(a+"end", Double.toString(s.end));
-			}
+		regionFrames.saveRange(e, "f");
+		regionX.saveRange(e, "x");
+		regionY.saveRange(e, "y");
+		regionZ.saveRange(e, "z");
+		regionChannels.saveRange(e, "channel");
 		}
 	
 	
-	/******************************************************************************************************
-	 *                               Range class                                                          *
-	 *****************************************************************************************************/
-	public static class Span
-		{
-		public Span(){all=true;}
-		public Span(double start, double end){this.start=start;this.end=end;all=false;}
-		public boolean all;
-		public double start, end;
-		public boolean inRange(double x)
-			{
-			return all || (x>=start && x<end);
-			}
-		public void set(double start, double end)
-			{
-			all=false;
-			this.start=start;
-			this.end=end;
-			}
-		public void set(double start)
-			{
-			set(start,start+1);
-			}
-		}
-	
-
 	/******************************************************************************************************
 	 *                               Iterator                                                             *
 	 *****************************************************************************************************/
@@ -156,11 +106,11 @@ public class BoxROI extends ROI
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
-	public TreeSet<String> regionChannels=new TreeSet<String>(); //Empty=all
-	public Span regionFrames=new Span();
-	public Span regionX=new Span();
-	public Span regionY=new Span();
-	public Span regionZ=new Span();
+	public ROI.SpanChannels regionChannels=new ROI.SpanChannels();
+	public ROI.SpanNumeric regionFrames=new ROI.SpanNumeric();
+	public ROI.SpanNumeric regionX=new ROI.SpanNumeric();
+	public ROI.SpanNumeric regionY=new ROI.SpanNumeric();
+	public ROI.SpanNumeric regionZ=new ROI.SpanNumeric();
 	
 
 	/**
@@ -185,7 +135,7 @@ public class BoxROI extends ROI
 		{
 		TreeSet<String> c=new TreeSet<String>();
 		for(String s:rec.channelImages.keySet())
-			if(channelInRange(s))
+			if(regionChannels.channelInRange(s))
 				c.add(s);
 		return c;
 		}
@@ -225,19 +175,12 @@ public class BoxROI extends ROI
 		return c;
 		}
 	
-	/**
-	 * Check if a channel is included in the ROI
-	 */
-	private boolean channelInRange(String channel)
-		{
-		return regionChannels.isEmpty() || 
-		       regionChannels.contains(channel);
-		}
+	
 	
 
 	public boolean imageInRange(String channel, double frame, int z)
 		{
-		return channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
+		return regionChannels.channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
 		}
 	
 	/**
@@ -301,9 +244,9 @@ public class BoxROI extends ROI
 		public JTextField spinnerS=new JTextField();
 		public JTextField spinnerE=new JTextField();
 		public final JCheckBox cSpan;
-		public final Span span;
+		public final ROI.SpanNumeric span;
 		
-		public SpanWidget(String name, Span span)
+		public SpanWidget(String name, ROI.SpanNumeric span)
 			{
 			cSpan=new JCheckBox(name,!span.all);
 			this.span=span;

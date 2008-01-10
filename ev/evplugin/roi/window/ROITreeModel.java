@@ -51,7 +51,7 @@ public class ROITreeModel implements TreeModel
 			return -1;
 		ROITreeElement e=(ROITreeElement)arg0;
 		ROITreeElement e2=(ROITreeElement)arg1;
-		List list=e.getChildren();
+		List<?> list=e.getChildren();
 		for(int i=0;i<list.size();i++)
 			if(list.get(i)==e2)
 				return i;

@@ -199,7 +199,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		treeFields.removeAll();
 		if(e!=null && e.e!=null)
 			{
-			java.util.List attr=e.e.getAttributes();
+			java.util.List<?> attr=e.e.getAttributes();
 			treeFields.setLayout(new GridLayout(attr.size()+2,1));
 			
 			//The value

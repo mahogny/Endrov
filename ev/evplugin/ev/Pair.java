@@ -34,7 +34,7 @@ public class Pair<L, R>
 		if (!(o instanceof Pair))
 			return false;
 
-		final Pair<?, ?> other = (Pair) o;
+		final Pair<?, ?> other = (Pair<?, ?>) o;
 		return equal(getLeft(), other.getLeft()) && equal(getRight(), other.getRight());
 		}
 
