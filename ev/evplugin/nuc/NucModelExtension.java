@@ -6,6 +6,7 @@ import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import evplugin.modelWindow.*;
 import evplugin.nuc.NucLineage.NucInterp;
+import evplugin.data.EvObject;
 import evplugin.ev.*;
 
 
@@ -31,6 +32,12 @@ public class NucModelExtension implements ModelWindowExtension
 			this.w=w;
 			}
 		
+		
+		public boolean canRender(EvObject ob)
+			{
+			return ob instanceof NucLineage;
+			}
+
 		
 		/**
 		 * Prepare for rendering

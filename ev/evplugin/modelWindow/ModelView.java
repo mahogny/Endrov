@@ -240,10 +240,10 @@ public class ModelView extends GLCanvas
 
 			
 			//Render extensions
-			for(ModelWindowHook h:window.modelWindowHooks)
+			for(ModelWindowHook h:window.modelWindowHooks) //todo: order of rendering
 				h.displayFinal(gl);
 
-			slices.render(gl,frame);
+			slices.render(gl,camera, frame);
 			
 			//adjust scale for next time
 			for(ModelWindowHook h:window.modelWindowHooks)
@@ -299,7 +299,7 @@ public class ModelView extends GLCanvas
 	
 	/**
 	 * Render scale
-	 * TODO
+	 * TODO faster
 	 */
 	public void renderRuler(GL gl, double gsize)
 		{

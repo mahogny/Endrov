@@ -12,8 +12,6 @@ import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvData;
 import evplugin.data.EvObject;
 import evplugin.data.EvObjectType;
-import evplugin.frameTime.FrameTime;
-import evplugin.frameTime.Pair;
 import evplugin.imageset.*;
 
 /**
