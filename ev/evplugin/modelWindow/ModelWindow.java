@@ -12,8 +12,8 @@ import org.jdom.*;
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.ev.*;
-import evplugin.keyBinding.KeyBinding;
-import evplugin.keyBinding.ScriptBinding;
+import evplugin.imageset.EmptyImageset;
+import evplugin.keyBinding.*;
 import evplugin.nuc.NucLineage;
 
 /**
@@ -91,6 +91,29 @@ public class ModelWindow extends BasicWindow
 	
 	public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid"); 
 
+	
+	
+	private static class OneImageChannel extends JPanel
+		{
+		static final long serialVersionUID=0;
+		private static ImageIcon iconLabelFS=new ImageIcon(ModelWindow.class.getResource("labelFS.png"));
+		JButton bFs=new JButton(iconLabelFS);
+		ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
+		
+		public OneImageChannel(String name)
+			{
+			setLayout(new BorderLayout());
+			add(new JLabel(name),BorderLayout.WEST);
+			add(channelCombo,BorderLayout.CENTER);
+			add(bFs,BorderLayout.EAST);
+			}
+		
+		
+		}
+	
+	
+	
+	
 	/**
 	 * Make a new window at default location
 	 */
@@ -150,15 +173,19 @@ public class ModelWindow extends BasicWindow
 		miHideSelectedNuc.addActionListener(this);
 
 		miShowGrid.addActionListener(this);
-		
+
+		buttonCenter.addActionListener(this);
+		metaCombo.addActionListener(this);
+
 		//Put GUI together
 		setLayout(new BorderLayout());
 		add(view,BorderLayout.CENTER);
-		
-		JPanel bottom=new JPanel(new GridBagLayout());
-		add(bottom,BorderLayout.SOUTH);
 
-		
+		JPanel bottomTotal=new JPanel(new GridLayout(2,1));
+		add(bottomTotal,BorderLayout.SOUTH);
+
+		JPanel bottomMain=new JPanel(new GridBagLayout());
+		bottomTotal.add(bottomMain);
 		GridBagConstraints constrFrame=new GridBagConstraints();
 		constrFrame.gridx=0;
 		constrFrame.weightx=1;
@@ -169,13 +196,20 @@ public class ModelWindow extends BasicWindow
 		GridBagConstraints constrCombo=new GridBagConstraints();
 		constrCombo.gridx=2;
 		constrFrame.weightx=3;
+		bottomMain.add(frameControl,constrFrame);
+		bottomMain.add(buttonCenter,constrCenter);
+		bottomMain.add(metaCombo,constrCombo);
+
 		
-		bottom.add(frameControl,constrFrame);
-		bottom.add(buttonCenter,constrCenter);
-		bottom.add(metaCombo,constrCombo);
+		JPanel bottomChannels=new JPanel(new GridLayout(1,3));
+		bottomTotal.add(bottomChannels);
 		
-		buttonCenter.addActionListener(this);
-		metaCombo.addActionListener(this);
+		OneImageChannel icR=new OneImageChannel("R");
+		OneImageChannel icG=new OneImageChannel("G");
+		OneImageChannel icB=new OneImageChannel("B");
+		bottomChannels.add(icR);
+		bottomChannels.add(icG);
+		bottomChannels.add(icB);
 		
 		//View settings
 		setShowGrid(true);

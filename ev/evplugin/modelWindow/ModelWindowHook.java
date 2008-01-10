@@ -1,6 +1,8 @@
 package evplugin.modelWindow;
 
 import javax.media.opengl.*;
+
+import evplugin.data.EvObject;
 import evplugin.ev.*;
 
 /**
@@ -9,6 +11,8 @@ import evplugin.ev.*;
  */
 public interface ModelWindowHook
 	{
+	public boolean canRender(EvObject ob);
+	
 	public void displayInit(GL gl);
 	public void displaySelect(GL gl);
 	public void select(int id);

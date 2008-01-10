@@ -2,9 +2,8 @@ package evplugin.modelWindow;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.util.TreeMap;
+import java.util.*;
 import javax.media.opengl.*;
-
 import com.sun.opengl.util.texture.*;
 
 import evplugin.data.*;
@@ -15,21 +14,23 @@ import evplugin.imageset.*;
  * @author Johan Henriksson
  */
 public class StackSlices
-	{
+	{	
+	int lastframe;
+	double resZ;
+	TreeMap<Double,OneSlice> texSlices=null;
 	
 	private static class OneSlice
 		{
 		int w, h;
+		double z;
 		double resX,resY;
 		Texture tex;
 		}
 	
-	int lastframe;
-	double resZ;
-	TreeMap<Integer,OneSlice> texSlices=null;
 	
-	
-	
+	/**
+	 * Dispose stack
+	 */
 	public void clean()
 		{
 		if(texSlices!=null)
@@ -39,9 +40,18 @@ public class StackSlices
 		}
 	
 	
+	
+	/**
+	 * Load stack into memory
+	 */
 	public void build(double frame)
 		{
-		String channelName="DIC";
+//		GLContext glc=view.getContext();
+		//glc.makeCurrent(); 
+		//GL gl=glc.getGL();
+		// ... glc.release();
+		
+		String channelName="GFP";
 		if(!EvData.metadata.isEmpty() && EvData.metadata.get(0) instanceof Imageset)
 			{
 			Imageset im=(Imageset)EvData.metadata.get(0);
@@ -53,7 +63,7 @@ public class StackSlices
 				if(texSlices==null || cframe!=lastframe)
 					{
 					clean();
-					texSlices=new TreeMap<Integer,OneSlice>();
+					texSlices=new TreeMap<Double,OneSlice>();
 					
 					System.out.println("loading");
 					lastframe=cframe;
@@ -73,18 +83,19 @@ public class StackSlices
 								OneSlice os=new OneSlice();
 								EvImage evim=slices.get(i);
 								
-								BufferedImage bim=evim.getJavaImage(); //1-2 sec tot
+								BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
 								
 								os.w=bim.getWidth();
 								os.h=bim.getHeight();
 								os.resX=evim.getResX()/evim.getBinning(); //px/um
 								os.resY=evim.getResY()/evim.getBinning();
+								os.z=i/resZ;
 								
 								int bw=bestSize(os.w);
-								os.resX*=os.w/(double)bw;
+								os.resX/=os.w/(double)bw;
 								os.w=bw;
 								int bh=bestSize(os.h);
-								os.resY*=os.h/(double)bh;
+								os.resY/=os.h/(double)bh;
 								os.h=bh;
 								
 								//Load bitmap, scale down
@@ -94,8 +105,9 @@ public class StackSlices
 								g.drawImage(bim,0,0,Color.BLACK,null);
 								bim=sim;
 
+								
 								os.tex=TextureIO.newTexture(bim,false);
-								texSlices.put(i,os);
+								texSlices.put(os.z,os);
 								}
 							}
 					
@@ -106,23 +118,31 @@ public class StackSlices
 		else
 			clean();
 		}
-	
-	public static int bestSize(int s)
+
+	/**
+	 * Round to best 2^
+	 */
+	private static int bestSize(int s)
 		{
-		if(s>380)
-			return 512;
-		else if(s>192)
-			return 256;
-		else if(s>96)
-			return 128;
-		else
-			return s;
+//		return 128;
+		
+		if(s>380) return 512;
+		else if(s>192) return 256;
+		else if(s>96) return 128;
+		else if(s>48) return 64;
+		else if(s>24) return 32;
+		else if(s>12) return 16;
+		else if(s>6) return 8;
+		else return 4;
+		
 		}
 	
 	
-	//todo: render order
-	
-	public void render(GL gl, double frame)
+
+	/**
+	 * Render entire stack
+	 */
+	public void render(GL gl, Camera cam, double frame)
 		{
 		build(frame);
 		if(texSlices!=null)
@@ -132,36 +152,54 @@ public class StackSlices
 			gl.glEnable(GL.GL_BLEND);
 			gl.glDepthMask(false);
 			gl.glDisable(GL.GL_CULL_FACE);
-			
-			for(int i:texSlices.keySet())
-				{
-				OneSlice os=texSlices.get(i);
-				
-				//Select texture
-				os.tex.enable();
-				os.tex.bind();
-				
-				//Find size and position
-				double z=i/resZ;
-				double w=os.w/os.resX;
-				double h=os.h/os.resY;
-				TextureCoords tc=os.tex.getImageTexCoords();
-				
-				gl.glBegin(GL.GL_QUADS);
-				gl.glColor3d(1, 1, 1);
-//				gl.glColor4d(1, 1, 1, 0.2);
-				gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, z); //check
-				gl.glTexCoord2f(tc.right(),tc.top());    gl.glVertex3d(w, 0, z);
-				gl.glTexCoord2f(tc.right(),tc.bottom()); gl.glVertex3d(w, h, z);
-				gl.glTexCoord2f(tc.left(), tc.bottom()); gl.glVertex3d(0, h, z);
-				gl.glEnd();
 
-				os.tex.disable();
-				}
+			//Sort planes, O(n) since pre-ordered
+			SortedMap<Double,OneSlice> frontMap=texSlices.headMap(cam.pos.z);
+			SortedMap<Double,OneSlice> backMap=texSlices.tailMap(cam.pos.z);
+			LinkedList<OneSlice> frontList=new LinkedList<OneSlice>();
+			LinkedList<OneSlice> backList=new LinkedList<OneSlice>();
+			frontList.addAll(frontMap.values());
+			for(OneSlice os:backMap.values())
+				backList.addFirst(os);
+			
+			render(gl, frontList);
+			render(gl, backList);
+			
 			gl.glDisable(GL.GL_BLEND);
 			gl.glDepthMask(true);
 			gl.glEnable(GL.GL_CULL_FACE);
 			}
+		}
+	
+	/**
+	 * Render list of slices
+	 */
+	public void render(GL gl, LinkedList<OneSlice> list)
+		{
+		for(OneSlice os:list)
+			{
+			//Select texture
+			os.tex.enable();
+			os.tex.bind();
+			
+			
+			//Find size and position
+			double w=os.w/os.resX;
+			double h=os.h/os.resY;
+			TextureCoords tc=os.tex.getImageTexCoords();
+			
+			gl.glBegin(GL.GL_QUADS);
+			gl.glColor3d(1, 1, 1);
+//			gl.glColor4d(1, 1, 1, 0.2);
+			gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, os.z); //check
+			gl.glTexCoord2f(tc.right(),tc.top());    gl.glVertex3d(w, 0, os.z);
+			gl.glTexCoord2f(tc.right(),tc.bottom()); gl.glVertex3d(w, h, os.z);
+			gl.glTexCoord2f(tc.left(), tc.bottom()); gl.glVertex3d(0, h, os.z);
+			gl.glEnd();
+
+			os.tex.disable();
+			}
+		
 		}
 	
 	/*

@@ -15,6 +15,11 @@ public class ShellModelHook implements ModelWindowHook
 		this.w=w;
 		}
 	
+	public boolean canRender(EvObject ob)
+		{
+		return ob instanceof Shell;
+		}
+	
 	public void displaySelect(GL gl) {}
 	public void select(int pixelid) {}
 
