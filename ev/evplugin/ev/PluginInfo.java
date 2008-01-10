@@ -39,7 +39,7 @@ public class PluginInfo
 			String classPath=(new File(filename)).getAbsolutePath().
 			substring(-1+(new File(".")).getAbsolutePath().length()).replace('/', '.').replace('\\','.');
 			Class<?> theClass=Class.forName(classPath+".PLUGIN");
-			Constructor constr=theClass.getConstructor(new Class<?>[]{});
+			Constructor<?> constr=theClass.getConstructor(new Class<?>[]{});
 			pdef=(PluginDef)constr.newInstance(new Object[]{});
 			}
 		catch (Exception e)

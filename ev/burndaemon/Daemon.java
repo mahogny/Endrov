@@ -57,12 +57,12 @@ public class Daemon extends Thread
 	/**
 	 * Files sorted by size
 	 */
-	public static class FileSortable implements Comparable
+	public static class FileSortable implements Comparable<FileSortable>
 		{
 		public File f;
 		public int size;
 		
-		public int compareTo(Object o)
+		public int compareTo(FileSortable o)
 			{
 			FileSortable oo=(FileSortable)o;
 			if(size<oo.size)

@@ -9,6 +9,9 @@ import org.jdom.*;
 
 import evplugin.roi.*;
 import evplugin.basicWindow.BasicWindow;
+import evplugin.data.EvData;
+import evplugin.data.EvObject;
+import evplugin.data.EvObjectType;
 import evplugin.imageset.*;
 
 /**
@@ -18,29 +21,33 @@ import evplugin.imageset.*;
  */
 public class EllipseROI extends ROI
 	{
-	/******************************************************************************************************
-	 *                               Range class                                                          *
-	 *****************************************************************************************************/
-	public static class Span
+	private static final String metaType="ROI Ellipse";
+	public static void initPlugin() {}
+	static
 		{
-		public Span(){all=true;}
-		public Span(double start, double end){this.start=start;this.end=end;all=false;}
-		public boolean all;
-		public double start, end;
-		public boolean inRange(double x)
+		EvData.extensions.put(metaType,new EvObjectType()
 			{
-			return all || (x>=start && x<end);
-			}
-		public void set(double start, double end)
-			{
-			all=false;
-			this.start=start;
-			this.end=end;
-			}
-		public void set(double start)
-			{
-			set(start,start+1);
-			}
+			public EvObject extractObjects(Element e)
+				{
+				BoxROI meta=new BoxROI();
+				meta.regionFrames.loadRange(e,"f");
+				meta.regionX.loadRange(e,"x");
+				meta.regionY.loadRange(e,"y");
+				meta.regionZ.loadRange(e,"z");
+				meta.regionChannels.loadRange(e, "channel");
+				return meta;
+				}
+			});
+		}
+	
+	public void saveMetadata(Element e)
+		{
+		e.setName(metaType);
+		regionFrames.saveRange(e, "f");
+		regionX.saveRange(e, "x");
+		regionY.saveRange(e, "y");
+		regionZ.saveRange(e, "z");
+		regionChannels.saveRange(e, "channel");
 		}
 	
 
@@ -110,11 +117,11 @@ public class EllipseROI extends ROI
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
-	public TreeSet<String> regionChannels=new TreeSet<String>(); //Empty=all
-	public Span regionFrames=new Span();
-	public Span regionX=new Span();
-	public Span regionY=new Span();
-	public Span regionZ=new Span();
+	public ROI.SpanChannels regionChannels=new ROI.SpanChannels();
+	public SpanNumeric regionFrames=new SpanNumeric();
+	public SpanNumeric regionX=new SpanNumeric();
+	public SpanNumeric regionY=new SpanNumeric();
+	public SpanNumeric regionZ=new SpanNumeric();
 	
 
 	/**
@@ -139,7 +146,7 @@ public class EllipseROI extends ROI
 		{
 		TreeSet<String> c=new TreeSet<String>();
 		for(String s:rec.channelImages.keySet())
-			if(channelInRange(s))
+			if(regionChannels.channelInRange(s))
 				c.add(s);
 		return c;
 		}
@@ -179,19 +186,11 @@ public class EllipseROI extends ROI
 		return c;
 		}
 	
-	/**
-	 * Check if a channel is included in the ROI
-	 */
-	private boolean channelInRange(String channel)
-		{
-		return regionChannels.isEmpty() || 
-		       regionChannels.contains(channel);
-		}
 	
 
 	public boolean imageInRange(String channel, double frame, int z)
 		{
-		return channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
+		return regionChannels.channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
 		}
 	
 	/**
@@ -238,13 +237,6 @@ public class EllipseROI extends ROI
 	
 
 	
-	
-	public void saveMetadata(Element e)
-		{
-		e.setName("ROI ellipse");
-		
-		}
-	
 	//ImageIterator?
 	
 	//get iterator: image + line iterator or pixel iterator or entire image?
@@ -260,9 +252,9 @@ public class EllipseROI extends ROI
 		public JTextField spinnerS=new JTextField();
 		public JTextField spinnerE=new JTextField();
 		public final JComponent cSpan;
-		public final Span span;
+		public final SpanNumeric span;
 		
-		public SpanWidget(String name, Span span, boolean canSetAll)
+		public SpanWidget(String name, SpanNumeric span, boolean canSetAll)
 			{
 			if(canSetAll)
 				{

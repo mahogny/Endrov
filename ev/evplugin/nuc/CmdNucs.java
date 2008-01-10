@@ -29,7 +29,7 @@ public class CmdNucs extends Command
 			{
 			ExpVal v=(ExpVal)e;
 			if(v.o instanceof Vector)
-				for(Object o:(Vector)v.o) //TODO vector should be parameterized
+				for(Object o:(Vector<?>)v.o)
 					select((Exp)o);
 			else
 				select(e);

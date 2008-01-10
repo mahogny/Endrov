@@ -54,7 +54,7 @@ public class CustomTreeModel implements TreeModel
 			return -1;
 		CustomTreeElement e=(CustomTreeElement)arg0;
 		CustomTreeElement e2=(CustomTreeElement)arg1;
-		List list=e.e.getChildren();
+		List<?> list=e.e.getChildren();
 		for(int i=0;i<list.size();i++)
 			if(list.get(i)==e2)
 				return i;

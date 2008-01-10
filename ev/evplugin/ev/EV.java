@@ -88,7 +88,7 @@ public class EV
 	  		Element element = document.getRootElement();
 
 	  		//Extract objects
-	  		List children=element.getChildren(); 
+	  		List<?> children=element.getChildren(); 
 	  		for(Object ochild:children)
 	  			{
 	  			Element child=(Element)ochild;

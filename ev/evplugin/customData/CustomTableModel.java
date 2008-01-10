@@ -40,7 +40,7 @@ public class CustomTableModel extends AbstractTableModel
 	public void collectColumns()
 		{
 		columnList.clear();
-		List ch=tableRoot.getChildren();
+		List<?> ch=tableRoot.getChildren();
 		if(ch.size()>0)
 			{
 			System.out.println("root "+tableRoot.getName());

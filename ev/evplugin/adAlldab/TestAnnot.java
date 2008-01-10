@@ -1,9 +1,9 @@
 package evplugin.adAlldab;
 
 import java.sql.SQLException;
-import java.util.Map;
+//import java.util.Map;
 
-import evplugin.adAlldab.SeqAnnot.Annotation;
+//import evplugin.adAlldab.SeqAnnot.Annotation;
 
 public class TestAnnot
 	{
@@ -17,7 +17,8 @@ public class TestAnnot
 			SeqAnnot sa=new SeqAnnot(db);
 			
 			long startTime=System.currentTimeMillis();
-			Map<Integer,Annotation> sas=sa.getRange(0, 110);
+			//Map<Integer,Annotation> sas=
+			sa.getRange(0, 110);
 			System.out.println(": "+(System.currentTimeMillis()-startTime));
 /*
 			for(SeqAnnot.Annotation a: sas.values())
