@@ -127,6 +127,7 @@ public abstract class ROI extends EvObject
 	public static class SpanNumeric
 		{
 		public SpanNumeric(){all=true;}
+		public SpanNumeric(boolean initialAll){all=initialAll;}
 		public SpanNumeric(double start, double end){this.start=start;this.end=end;all=false;}
 		public boolean all;
 		public double start, end;

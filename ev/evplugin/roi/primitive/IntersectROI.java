@@ -10,6 +10,7 @@ import evplugin.roi.*;
 
 public class IntersectROI extends CompoundROI
 	{
+	public static void initPlugin() {}
 	
 
 	/******************************************************************************************************
