@@ -21,7 +21,7 @@ import evplugin.imageset.*;
  */
 public class EllipseROI extends ROI
 	{
-	private static final String metaType="ROI Ellipse";
+	private static final String metaType="ROI_Ellipse";
 	public static void initPlugin() {}
 	static
 		{
@@ -29,7 +29,7 @@ public class EllipseROI extends ROI
 			{
 			public EvObject extractObjects(Element e)
 				{
-				BoxROI meta=new BoxROI();
+				EllipseROI meta=new EllipseROI();
 				meta.regionFrames.loadRange(e,"f");
 				meta.regionX.loadRange(e,"x");
 				meta.regionY.loadRange(e,"y");
@@ -119,8 +119,8 @@ public class EllipseROI extends ROI
 	
 	public ROI.SpanChannels regionChannels=new ROI.SpanChannels();
 	public SpanNumeric regionFrames=new SpanNumeric();
-	public SpanNumeric regionX=new SpanNumeric();
-	public SpanNumeric regionY=new SpanNumeric();
+	public SpanNumeric regionX=new SpanNumeric(false);
+	public SpanNumeric regionY=new SpanNumeric(false);
 	public SpanNumeric regionZ=new SpanNumeric();
 	
 

@@ -10,7 +10,8 @@ import evplugin.roi.*;
 
 public class UnionROI extends CompoundROI
 	{
-	
+	public static void initPlugin() {}
+
 
 	/******************************************************************************************************
 	 *                               Iterator                                                             *

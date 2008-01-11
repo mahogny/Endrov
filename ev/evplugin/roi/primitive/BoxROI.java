@@ -19,7 +19,7 @@ import evplugin.imageset.*;
  */
 public class BoxROI extends ROI
 	{
-	private static final String metaType="ROI Box";
+	private static final String metaType="ROI_Box";
 	public static void initPlugin() {}
 	static
 		{
