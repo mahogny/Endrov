@@ -3,10 +3,8 @@ package evplugin.modelWindow;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.event.*;
-
 import org.jdom.*;
 
 import evplugin.basicWindow.*;
@@ -43,8 +41,10 @@ public class ModelWindow extends BasicWindow
 					int w=e.getAttribute("w").getIntValue();
 					int h=e.getAttribute("h").getIntValue();
 					ModelWindow m=new ModelWindow(x,y,w,h);
-					m.setShowGrid(e.getAttribute("showGrid").getBooleanValue());
 					m.frameControl.setGroup(e.getAttribute("group").getIntValue());
+					
+					for(ModelWindowHook hook:m.modelWindowHooks)
+						hook.readPersonalConfig(e);
 					}
 				catch (Exception e1)
 					{
@@ -66,14 +66,14 @@ public class ModelWindow extends BasicWindow
 	
 	private int mouseLastX, mouseLastY;
 	
-	public final Vector<ModelWindowHook> modelWindowHooks=new Vector<ModelWindowHook>();
+	public final Vector<ModelWindowHook> modelWindowHooks=new Vector<ModelWindowHook>();	
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
 	public final MetaCombo metaCombo=new MetaCombo(null,false);
 	public JButton buttonCenter=new JButton("Center");
 	
-	private JMenu menuModel=new JMenu("ModelWindow");
+	public JMenu menuModel=new JMenu("ModelWindow");
 	
 	private JMenu miView=new JMenu("Default views");
 	private JMenuItem miViewFront=new JMenuItem("Front");
@@ -83,13 +83,9 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miViewLeft=new JMenuItem("Left");
 	private JMenuItem miViewRight=new JMenuItem("Right");
 
-	public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Show all nuclei names"); //move
-	public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Show names of selected nuclei"); //move
-	public JMenuItem miShowSelectedNuc=new JMenuItem("Show all selected nuclei"); //move
-	public JMenuItem miHideSelectedNuc=new JMenuItem("Hide all selected nuclei"); //move
+
 	
 	
-	public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid"); 
 
 	
 	
@@ -129,12 +125,12 @@ public class ModelWindow extends BasicWindow
 		{
 		view=new ModelView(this);
 		frameControl=new FrameControlModel(this);
-		
+
+		//Add hooks
 		for(ModelWindowExtension e:modelWindowExtensions)
 			e.newModelWindow(this);
 		
-		//Listeners
-		
+		//Listeners		
 		view.addMouseMotionListener(this);
 		view.addMouseListener(this);
 		view.addMouseWheelListener(this);
@@ -151,15 +147,6 @@ public class ModelWindow extends BasicWindow
 		miView.add(miViewBottom);
 		miView.add(miViewLeft);
 		miView.add(miViewRight);
-
-		menuModel.add(miShowAllNucNames);
-		menuModel.add(miShowSelectedNucNames);
-		menuModel.add(miShowSelectedNuc);
-		menuModel.add(miHideSelectedNuc);
-		
-		menuModel.add(miShowGrid);
-		
-		
 		
 		miViewTop.addActionListener(this);
 		miViewLeft.addActionListener(this);
@@ -167,13 +154,6 @@ public class ModelWindow extends BasicWindow
 		miViewBack.addActionListener(this);
 		miViewBottom.addActionListener(this);
 		miViewRight.addActionListener(this);
-		
-		miShowAllNucNames.addActionListener(this);
-		miShowSelectedNuc.addActionListener(this);
-		miHideSelectedNuc.addActionListener(this);
-
-		miShowGrid.addActionListener(this);
-
 		buttonCenter.addActionListener(this);
 		metaCombo.addActionListener(this);
 
@@ -200,7 +180,6 @@ public class ModelWindow extends BasicWindow
 		bottomMain.add(buttonCenter,constrCenter);
 		bottomMain.add(metaCombo,constrCombo);
 
-		
 		JPanel bottomChannels=new JPanel(new GridLayout(1,3));
 		bottomTotal.add(bottomChannels);
 		
@@ -211,25 +190,13 @@ public class ModelWindow extends BasicWindow
 		bottomChannels.add(icG);
 		bottomChannels.add(icB);
 		
-		//View settings
-		setShowGrid(true);
-		
 		//Window overall things
 		setTitle(EV.programName+" Model Window");
 		pack();
 		setVisible(true);
 		setBounds(x,y,w,h);
-		view.showGrid=miShowGrid.isSelected();
 		}
 	
-	/**
-	 * View setting: display grid?
-	 */
-	public void setShowGrid(boolean b)
-		{
-		miShowGrid.setSelected(b);
-		view.showGrid=b;
-		}
 	
 	
 	
@@ -244,8 +211,11 @@ public class ModelWindow extends BasicWindow
 		e.setAttribute("y", ""+r.y);
 		e.setAttribute("w", ""+r.width);
 		e.setAttribute("h", ""+r.height);
-		e.setAttribute("showGrid",""+miShowGrid.isSelected());
 		e.setAttribute("group",""+frameControl.getGroup());
+		
+		for(ModelWindowHook hook:modelWindowHooks)
+			hook.savePersonalConfig(e);
+
 		root.addContent(e);
 		}
 
@@ -277,35 +247,6 @@ public class ModelWindow extends BasicWindow
 			setPresetView(+Math.PI/2, 0, 0);
 		else if(e.getSource()==miViewBottom)
 			setPresetView(-Math.PI/2, 0, 0);
-		else if(e.getSource()==miShowSelectedNuc)
-			{
-			for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
-				NucLineage.hiddenNuclei.remove(p);
-			view.repaint();
-			//totally misplaced
-			}
-		else if(e.getSource()==miHideSelectedNuc)
-			{
-			for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
-				NucLineage.hiddenNuclei.add(p);
-			view.repaint();
-			//totally misplaced
-			}
-		else if(e.getSource()==miShowAllNucNames)
-			{
-			view.repaint();
-			//totally misplaced
-			}
-		else if(e.getSource()==miShowSelectedNucNames)
-			{
-			view.repaint();
-			//totally misplaced
-			}
-		else if(e.getSource()==miShowGrid)
-			{
-			view.showGrid=miShowGrid.isSelected();
-			repaint();
-			}
 		}
 	
 	/**

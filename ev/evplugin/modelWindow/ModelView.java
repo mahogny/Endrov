@@ -43,11 +43,8 @@ public class ModelView extends GLCanvas
 	public double frame=0;
 	
 
-	/** Size of the grid in um */
-	public double gridsize=1;//private TODO
 	/** Scaling factor for panning */
 	public double panspeed=1; //private TODO
-	public boolean showGrid=false; 
 
 	
 	/** Current mouse coordinate */
@@ -234,10 +231,6 @@ public class ModelView extends GLCanvas
 			//Clear buffers
 			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-			//Render support graphics
-			if(showGrid)
-				renderGrid(gl);
-
 			
 			//Render extensions
 			for(ModelWindowHook h:window.modelWindowHooks) //todo: order of rendering
@@ -248,96 +241,20 @@ public class ModelView extends GLCanvas
 			//adjust scale for next time
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.adjustScale();
+			slices.adjustScale(window);
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
 			}
 
-		StackSlices slices=new StackSlices();
-		};
-	
-	
-	
-	/**
-	 * Render all grid planes
-	 */
-	private void renderGrid(GL gl)
-		{
-		boolean ruler=false;
-		gl.glPushMatrix(); 
-		gl.glRotatef(90,0,1,0); 
-		gl.glRotatef(90,1,0,0); 
-		gl.glColor3d(0.4,0,0); 
-		renderGridPlane(gl,gridsize); 
-		if(ruler)
-			{
-			gl.glColor3d(1,1,1); 
-			renderRuler(gl,gridsize);
-			}
-		gl.glPopMatrix();
-
-		gl.glColor3d(0,0.4,0);  
-		renderGridPlane(gl,gridsize); 
-		if(ruler)
-			{
-			gl.glColor3d(1,1,1); 
-			renderRuler(gl,gridsize);
-			}
 		
-		gl.glPushMatrix(); 
-		gl.glRotatef(90,0,0,1); 
-		gl.glRotatef(90,1,0,0); 
-		gl.glColor3d(0,0,0.4); 
-		renderGridPlane(gl,gridsize); 
-		if(ruler)
-			{
-			gl.glColor3d(1,1,1); 
-			renderRuler(gl,gridsize);
-			}
-		gl.glPopMatrix();
-		}
+		};
+	StackSlices slices=new StackSlices();
 	
-	/**
-	 * Render scale
-	 * TODO faster
-	 */
-	public void renderRuler(GL gl, double gsize)
-		{
-		int gnum=10;
-		for(int i=-gnum;i<=gnum;i++)
-			if(i!=0)
-				{
-				gl.glPushMatrix();
-				gl.glTranslated(0, i*gsize, 0);
-				renderString(gl, renderer, 0.02f, ""+i*gsize);
-				gl.glPopMatrix();
-				}
-		}
+		
 	
-	/**
-	 * Render one grid plane
-	 */
-	private void renderGridPlane(GL gl, double gsize)
-		{
-		int gnum=10;
-		gl.glBegin(GL.GL_LINES);
-		for(int i=-gnum;i<=gnum;i++)
-			{
-			gl.glVertex3d(0,-gsize*gnum, i*gsize);
-			gl.glVertex3d(0, gsize*gnum, i*gsize);
-			gl.glVertex3d(0,i*gsize, -gsize*gnum);
-			gl.glVertex3d(0,i*gsize,  gsize*gnum);
-			}
-		gl.glEnd();/*
-		gl.glLineWidth(5);
-		gl.glBegin(GL.GL_LINES);
-			{
-			gl.glVertex3d(0,0,0);
-			gl.glVertex3d(0,gsize*gnum,0);
-			}
-		gl.glEnd();
-		gl.glLineWidth(1);*/
-		}
+	
+	
 	
 	
 	
@@ -355,6 +272,9 @@ public class ModelView extends GLCanvas
 			if(newcenter!=null)
 				center.add(newcenter);
 			}
+		Vector3D slicecenter=slices.autoCenterMid(); //todo factor out
+		if(slicecenter!=null)
+			center.add(slicecenter);
 
 		//If centers were available, continue
 		if(!center.isEmpty())
@@ -362,7 +282,7 @@ public class ModelView extends GLCanvas
 			Vector3D mid=new Vector3D(0,0,0);
 			for(Vector3D v:center)
 				mid=mid.add(v);
-			mid.mul(1.0/center.size());
+			mid=mid.mul(1.0/center.size());
 			
 			//Figure out required distance
 			double dist=0;

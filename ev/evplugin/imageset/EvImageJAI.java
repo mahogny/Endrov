@@ -1,6 +1,6 @@
 package evplugin.imageset;
 
-import javax.imageio.ImageIO;
+import javax.imageio.*;
 //import javax.vecmath.Vector2d;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -75,9 +75,29 @@ public abstract class EvImageJAI extends EvImage
 				return null;
 			else
 				{
-				if(slice==-1)
+				String fname=file.getName();
+				fname=fname.substring(fname.lastIndexOf(".")+1);
+				if(slice==-1 && (fname.equals("tif") || fname.equals("tiff"))) //ImageIO failed on a .tif
+					{
+					SeekableStream s = new FileSeekableStream(file);
+					TIFFDecodeParam param = null;
+	        ImageDecoder dec = ImageCodec.createImageDecoder("tiff", s, param);
+
+//	        Log.printDebug("Number of images in this TIFF: " + dec.getNumPages());
+//        System.out.println("w"+ir.getWidth()+" h"+ir.getHeight()+" b"+ir.getSampleModel().getNumBands());
+
+	        Raster ir=dec.decodeAsRaster();
+	        int type=ir.getSampleModel().getDataType();
+	        if(type==0) type=BufferedImage.TYPE_BYTE_GRAY;//?
+	        BufferedImage bim=new BufferedImage(ir.getWidth(),ir.getHeight(),type);
+	        WritableRaster wr=bim.getRaster();
+	        wr.setRect(ir);
+	        return bim;
+					}
+				else if(slice==-1)
 					{
 					//Single-slice image
+					System.out.println(".. "+ImageIO.read(file)+" "+file.getAbsolutePath());
 					return ImageIO.read(file);
 					}
 				else

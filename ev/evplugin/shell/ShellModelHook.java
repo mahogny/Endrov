@@ -2,6 +2,8 @@ package evplugin.shell;
 
 import javax.media.opengl.GL;
 
+import org.jdom.Element;
+
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.modelWindow.*;
@@ -14,6 +16,10 @@ public class ShellModelHook implements ModelWindowHook
 		{
 		this.w=w;
 		}
+	
+	public void readPersonalConfig(Element e){}
+	public void savePersonalConfig(Element e){}
+
 	
 	public boolean canRender(EvObject ob)
 		{

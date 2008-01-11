@@ -4,9 +4,11 @@ import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
 import javax.media.opengl.*;
+
 import com.sun.opengl.util.texture.*;
 
 import evplugin.data.*;
+import evplugin.ev.Vector3D;
 import evplugin.imageset.*;
 
 /**
@@ -40,6 +42,7 @@ public class StackSlices
 		}
 	
 	
+	int skipForward=1;
 	
 	/**
 	 * Load stack into memory
@@ -77,7 +80,7 @@ public class StackSlices
 						for(int i:slices.keySet())
 							{
 							skipcount++;
-							if(skipcount>=1)
+							if(skipcount>=skipForward)
 								{
 								skipcount=0;
 								OneSlice os=new OneSlice();
@@ -91,10 +94,10 @@ public class StackSlices
 								os.resY=evim.getResY()/evim.getBinning();
 								os.z=i/resZ;
 								
-								int bw=bestSize(os.w);
+								int bw=suitablePower2(os.w);
 								os.resX/=os.w/(double)bw;
 								os.w=bw;
-								int bh=bestSize(os.h);
+								int bh=suitablePower2(os.h);
 								os.resY/=os.h/(double)bh;
 								os.h=bh;
 								
@@ -122,10 +125,9 @@ public class StackSlices
 	/**
 	 * Round to best 2^
 	 */
-	private static int bestSize(int s)
+	private static int suitablePower2(int s)
 		{
 //		return 128;
-		
 		if(s>380) return 512;
 		else if(s>192) return 256;
 		else if(s>96) return 128;
@@ -134,7 +136,6 @@ public class StackSlices
 		else if(s>12) return 16;
 		else if(s>6) return 8;
 		else return 4;
-		
 		}
 	
 	
@@ -211,4 +212,73 @@ public class StackSlices
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGB8, w, h, 0, GL.GL_RED, GL.GL_BYTE, b);
 		}
 	*/
+	
+	
+	public void adjustScale(ModelWindow w)
+		{
+		if(texSlices!=null && !texSlices.isEmpty())
+			{
+			OneSlice os=texSlices.get(texSlices.firstKey());
+			double width=os.w/os.resX;
+			
+			//pan speed
+			w.view.panspeed=width/1000.0;
+			
+			//Select grid size
+			double g=Math.pow(10, (int)Math.log10(width));
+			if(g<1) g=1;
+			ModelWindowGrid.setGridSize(w,g);
+			}
+		
+		}
+	
+	
+	/**
+	 * Give suitable center of all objects
+	 */
+	public Vector3D autoCenterMid()
+		{
+		if(texSlices!=null && !texSlices.isEmpty())
+			{
+			OneSlice os=texSlices.get(texSlices.firstKey());
+			double width=os.w/os.resX;
+			double height=os.h/os.resY;
+			return new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0);
+			}
+		else
+			return null;
+		}
+	
+	
+	/**
+	 * Given a middle position, figure out radius required to fit objects
+	 */
+	public Double autoCenterRadius(Vector3D mid, double FOV)
+		{
+		if(texSlices!=null && !texSlices.isEmpty())
+			{
+			OneSlice os=texSlices.get(texSlices.firstKey());
+			double width=os.w/os.resX;
+			double height=os.h/os.resY;
+			
+			double[] list={Math.abs(0-mid.x),Math.abs(0-mid.y),Math.abs(texSlices.firstKey()-mid.z), 
+					Math.abs(width-mid.x), Math.abs(height-mid.y), Math.abs(texSlices.lastKey()-mid.z)};
+			double max=list[0];
+			for(double d:list)
+				if(d>max)
+					max=d;
+			
+			//Find how far away the camera has to be. really have FOV in here?
+			return max/Math.sin(FOV);
+			}
+		else
+			return null;
+		}
+	
+	
+	
+	
+	
+	
+	
 	}

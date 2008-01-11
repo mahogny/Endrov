@@ -1,9 +1,11 @@
 package evplugin.modelWindow;
 
 import javax.media.opengl.*;
+import org.jdom.*;
 
 import evplugin.data.EvObject;
 import evplugin.ev.*;
+
 
 /**
  * 
@@ -11,6 +13,9 @@ import evplugin.ev.*;
  */
 public interface ModelWindowHook
 	{
+	public void readPersonalConfig(Element e);
+	public void savePersonalConfig(Element e);
+	
 	public boolean canRender(EvObject ob);
 	
 	public void displayInit(GL gl);
