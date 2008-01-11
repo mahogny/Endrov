@@ -26,7 +26,7 @@ fi
 
 ### Command to run java
 runjava=\
-$javaexe' -cp .:'$libdir'postgresql-8.2-505.jdbc3.jar:'$libdir'gluegen-rt.jar:'$libdir'jogl.jar:'$libdir'sqlitejdbc-v033-native.jar:'\
+$javaexe' -cp .:'$libdir'postgresql-8.2-505.jdbc3.jar:'$libdir'gluegen-rt.jar:'$libdir'jogl.jar:'$libdir'jai_codec.jar:'$libdir'jai_core.jar:'$libdir'mlibwrapper_jai.jar:'\
 'libs/jcommon-1.0.9.jar:libs/jfreechart-1.0.5.jar:libs/servlet.jar:libs/gnujaxp.jar:libs/itext-2.0.1.jar:libs/vecmath.jar:'\
 'libs/junit.jar:libs/gnujaxp.jar:libs/jdom.jar:libs/jaxen-core.jar:libs/jaxen-jdom.jar:libs/saxpath.jar:libs/xalan.jar:libs/xerces.jar:libs/xml-apis.jar:libs/bio-formats.jar'
 
