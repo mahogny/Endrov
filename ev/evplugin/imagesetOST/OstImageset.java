@@ -14,7 +14,6 @@ import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.basicWindow.*;
 import evplugin.imageset.*;
-import evplugin.jubio.EvImageJAI;
 import evplugin.script.*;
 
 

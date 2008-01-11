@@ -9,7 +9,6 @@ import java.util.*;
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
 import evplugin.imageset.*;
-import evplugin.jubio.EvImageJAI;
 
 public class NamebasedImageset extends Imageset
 	{	
