@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ModelWindow.class};
+		return new Class[]{ModelWindow.class,ModelWindowGrid.class};
 		}
 	}

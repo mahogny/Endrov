@@ -488,14 +488,6 @@ public class OstImageset extends Imageset
 							
 							loaderset.put(slice, evim);
 							
-							/*
-							if(first)
-								{
-								evim.getJavaImage();
-								first=false;
-								}
-								*/
-							
 							}
 						}
 					}

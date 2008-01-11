@@ -1,9 +1,13 @@
 package evplugin.nuc;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
-
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
+import javax.swing.*;
+import org.jdom.Element;
+
 import evplugin.modelWindow.*;
 import evplugin.nuc.NucLineage.NucInterp;
 import evplugin.data.EvObject;
@@ -21,17 +25,57 @@ public class NucModelExtension implements ModelWindowExtension
 		w.modelWindowHooks.add(new NucModelWindowHook(w));
 		}
 	
-	public static class NucModelWindowHook implements ModelWindowHook
+	public static class NucModelWindowHook implements ModelWindowHook, ActionListener
 		{
 		private final HashMap<Integer,NucPair> selectColorMap=new HashMap<Integer,NucPair>();
 		private Map<NucPair, NucLineage.NucInterp> interpNuc=new HashMap<NucPair, NucLineage.NucInterp>();
 		private final ModelWindow w;
 		
+		
+		public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Names: Show all");
+		public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Names: Show for selected");
+		public JMenuItem miShowSelectedNuc=new JMenuItem("Nuclei: Unhide selected"); 
+		public JMenuItem miHideSelectedNuc=new JMenuItem("Nuclei: Hide selected"); 
+		
 		public NucModelWindowHook(ModelWindow w)
 			{
 			this.w=w;
+			
+			JMenu miNuc=new JMenu("Nuclei/Lineage");
+			
+			miNuc.add(miShowAllNucNames);
+			miNuc.add(miShowSelectedNucNames);
+			miNuc.add(miShowSelectedNuc);
+			miNuc.add(miHideSelectedNuc);
+			w.menuModel.add(miNuc);
+			
+			miShowAllNucNames.addActionListener(this);
+			miShowSelectedNuc.addActionListener(this);
+			miHideSelectedNuc.addActionListener(this);
 			}
 		
+		public void readPersonalConfig(Element e){}
+		public void savePersonalConfig(Element e){}
+		
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==miShowSelectedNuc)
+				{
+				for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
+					NucLineage.hiddenNuclei.remove(p);
+				w.view.repaint();
+				}
+			else if(e.getSource()==miHideSelectedNuc)
+				{
+				for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
+					NucLineage.hiddenNuclei.add(p);
+				w.view.repaint();
+				}
+			else if(e.getSource()==miShowAllNucNames)
+				w.view.repaint();
+			else if(e.getSource()==miShowSelectedNucNames)
+				w.view.repaint();
+			}
 		
 		public boolean canRender(EvObject ob)
 			{
@@ -144,9 +188,9 @@ public class NucModelExtension implements ModelWindowExtension
 				w.view.panspeed=dist/1000.0;
 				
 				//Select grid size
-				w.view.gridsize=Math.pow(10, (int)Math.log10(dist));
-				if(w.view.gridsize<1)
-					w.view.gridsize=1;
+				double g=Math.pow(10, (int)Math.log10(dist));
+				if(g<1) g=1;
+				ModelWindowGrid.setGridSize(w,g);
 				}
 			}
 
@@ -237,8 +281,8 @@ public class NucModelExtension implements ModelWindowExtension
 			
 	    //Unrotate camera, then move a bit closer to the camera
 	    if(NucLineage.currentHover.equals(nucPair) 
-	    		|| w.miShowAllNucNames.isSelected() 
-	    		|| (NucLineage.selectedNuclei.contains(nucPair) && w.miShowSelectedNucNames.isSelected()))
+	    		|| miShowAllNucNames.isSelected() 
+	    		|| (NucLineage.selectedNuclei.contains(nucPair) && miShowSelectedNucNames.isSelected()))
 	    	{
 	    	w.view.camera.unrotateGL(gl);
 	    
