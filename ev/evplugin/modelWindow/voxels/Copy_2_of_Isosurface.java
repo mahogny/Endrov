@@ -3,9 +3,10 @@ package evplugin.modelWindow.voxels;
 import java.util.*;
 import java.util.Map.Entry;
 
+import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
-public class Isosurface
+public class Copy_2_of_Isosurface
 	{
 	
 	
@@ -358,7 +359,7 @@ public class Isosurface
 	/**
 	 * Generates the isosurface from the scalar field contained in the buffer ptScalarField[]. 
 	 */
-	void generateSurface(float[] ptScalarField, float tIsoLevel, int nCellsX, int nCellsY, int nCellsZ, float fCellLengthX, float fCellLengthY, float fCellLengthZ)
+	void generateSurface(GL gl, float[] ptScalarField, float tIsoLevel, int nCellsX, int nCellsY, int nCellsZ, float fCellLengthX, float fCellLengthY, float fCellLengthZ)
 		{
 		deleteSurface();
 	
@@ -490,18 +491,43 @@ public class Isosurface
 								m_i2pt3idVertices.put(id,pt);
 								}
 
+						
+						if(z<1)
 						for (int i = 0; m_triTable[tableIndex][i] != -1; i += 3) 
 							{
 							TRIANGLE triangle=new TRIANGLE();
 							triangle.p0 = getEdgeID(x, y, z, m_triTable[tableIndex][i]);
 							triangle.p1 = getEdgeID(x, y, z, m_triTable[tableIndex][i+1]);
 							triangle.p2 = getEdgeID(x, y, z, m_triTable[tableIndex][i+2]);
+							System.out.println("point: "+triangle.p0+" "+triangle.p1+" "+triangle.p2);
 							m_trivecTriangles.add(triangle);
 							}
 						}
 					}
 	
+		/*
+		for(TRIANGLE tri:m_trivecTriangles)
+			{
+			gl.glBegin(GL.GL_LINE_LOOP);
+			gl.glVertex3f(m_i2pt3idVertices.get(tri.p0).x, m_i2pt3idVertices.get(tri.p0).y, m_i2pt3idVertices.get(tri.p0).z);
+			gl.glVertex3f(m_i2pt3idVertices.get(tri.p1).x, m_i2pt3idVertices.get(tri.p1).y, m_i2pt3idVertices.get(tri.p1).z);
+			gl.glVertex3f(m_i2pt3idVertices.get(tri.p2).x, m_i2pt3idVertices.get(tri.p2).y, m_i2pt3idVertices.get(tri.p2).z);
+			gl.glEnd();
+			}
+		*/
+		
 		renameVerticesAndTriangles();
+		
+		for (int i = 0; i < m_piTriangleIndices.length; i+=3) 
+			{
+			gl.glBegin(GL.GL_LINE_LOOP);
+			gl.glVertex3f(m_ppt3dVertices[m_piTriangleIndices[i]].x,  m_ppt3dVertices[m_piTriangleIndices[i]].y,  m_ppt3dVertices[m_piTriangleIndices[i]].z);
+			gl.glVertex3f(m_ppt3dVertices[m_piTriangleIndices[i+1]].x,  m_ppt3dVertices[m_piTriangleIndices[i+1]].y,  m_ppt3dVertices[m_piTriangleIndices[i+1]].z);
+			gl.glVertex3f(m_ppt3dVertices[m_piTriangleIndices[i+2]].x,  m_ppt3dVertices[m_piTriangleIndices[i+2]].y,  m_ppt3dVertices[m_piTriangleIndices[i+2]].z);
+			gl.glEnd();
+			}
+		
+		
 		calculateNormals();
 		m_bValidSurface = true;
 		}
@@ -720,6 +746,46 @@ public class Isosurface
 	
 		m_i2pt3idVertices.clear();
 		m_trivecTriangles.clear();
+		
+		
+		/*
+		// Rename vertices.
+		
+		for(POINT3DID p:m_i2pt3idVertices.values())
+			{
+			p.newID=nextID;
+			nextID++;
+			}
+	
+		// Now rename triangles.
+		for(TRIANGLE tri:m_trivecTriangles)
+			{
+			tri.p0 = m_i2pt3idVertices.get(tri.p0).newID;
+			tri.p1 = m_i2pt3idVertices.get(tri.p1).newID;
+			tri.p2 = m_i2pt3idVertices.get(tri.p2).newID;
+			}
+	
+		// Copy all the vertices and triangles into two arrays so that they
+		// can be efficiently accessed.
+		// Copy vertices.
+		m_ppt3dVertices = new Vector3f[m_i2pt3idVertices.size()];
+		for(POINT3DID p:m_i2pt3idVertices.values())
+			m_ppt3dVertices[p.newID]=new Vector3f(p.x,p.y,p.z);
+		
+		
+		// Copy vertex indices which make triangles.
+		Iterator<TRIANGLE> vecIterator=m_trivecTriangles.iterator();
+		m_piTriangleIndices = new int[m_trivecTriangles.size()*3];
+		for (int i = 0; i < m_trivecTriangles.size(); i++) 
+			{
+			TRIANGLE tri=vecIterator.next();
+			m_piTriangleIndices[i*3] = tri.p0;
+			m_piTriangleIndices[i*3+1] = tri.p1;
+			m_piTriangleIndices[i*3+2] = tri.p2;
+			}
+	
+		m_i2pt3idVertices.clear();
+		m_trivecTriangles.clear();*/
 		}
 	
 	
@@ -728,34 +794,29 @@ public class Isosurface
 	 */
 	private void calculateNormals()
 		{
-		m_pvec3dNormals = new Vector3f[m_piTriangleIndices.length/3];
+		m_pvec3dNormals = new Vector3f[m_piTriangleIndices.length];
 	
 		// Set all normals to 0
 		for(int i=0;i<m_pvec3dNormals.length;i++)
 			m_pvec3dNormals[i]=new Vector3f();
 	
 		// Calculate normals.
-		for(int i = 0; i < m_piTriangleIndices.length; i+=3) 
+		for(int i = 0; i < m_piTriangleIndices.length/3; i++) 
 			{
-			int id0 = m_piTriangleIndices[i];
-			int id1 = m_piTriangleIndices[i+1];
-			int id2 = m_piTriangleIndices[i+2];
-			Vector3f vec1=new Vector3f(
-					m_ppt3dVertices[id1].x - m_ppt3dVertices[id0].x,
+			Vector3f vec1, vec2, normal;
+			int id0, id1, id2;
+			id0 = m_piTriangleIndices[i*3];
+			id1 = m_piTriangleIndices[i*3+1];
+			id2 = m_piTriangleIndices[i*3+2];
+			vec1=new Vector3f(m_ppt3dVertices[id1].x - m_ppt3dVertices[id0].x,
 					m_ppt3dVertices[id1].y - m_ppt3dVertices[id0].y,
 					m_ppt3dVertices[id1].z - m_ppt3dVertices[id0].z);
-			Vector3f vec2=new Vector3f(
-					m_ppt3dVertices[id2].x - m_ppt3dVertices[id0].x,
+			vec2=new Vector3f(m_ppt3dVertices[id2].x - m_ppt3dVertices[id0].x,
 					m_ppt3dVertices[id2].y - m_ppt3dVertices[id0].y,
 					m_ppt3dVertices[id2].z - m_ppt3dVertices[id0].z);
-/*			Vector3f normal=new Vector3f(
-					vec1.z*vec2.y - vec1.y*vec2.z,
+			normal=new Vector3f(vec1.z*vec2.y - vec1.y*vec2.z,
 					vec1.x*vec2.z - vec1.z*vec2.x,
-					vec1.y*vec2.x - vec1.x*vec2.y);*/
-			Vector3f normal=new Vector3f(
-					vec2.z*vec1.y - vec2.y*vec1.z,
-					vec2.x*vec1.z - vec2.z*vec1.x,
-					vec2.y*vec1.x - vec2.x*vec1.y);
+					vec1.y*vec2.x - vec1.x*vec2.y);
 			m_pvec3dNormals[id0].add(normal);
 			m_pvec3dNormals[id1].add(normal);
 			m_pvec3dNormals[id2].add(normal);

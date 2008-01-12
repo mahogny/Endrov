@@ -1,11 +1,9 @@
 package evplugin.modelWindow.voxels;
 
 import java.util.*;
-import java.util.Map.Entry;
-
 import javax.vecmath.Vector3f;
 
-public class Isosurface
+public class CopyOfIsosurface
 	{
 	
 	
@@ -45,7 +43,7 @@ public class Isosurface
 				0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0
 		};
 	
-	private static int[][] m_triTable = //can remove -1, check length instead
+	private static int[][] m_triTable =
 		{
 					{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 					{0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -322,12 +320,15 @@ public class Isosurface
 	
 	//The vertices which make up the isosurface.
 	public Vector3f[] m_ppt3dVertices;
+	private int m_nVertices;
 		
 	//The indices of the vertices which make up the triangles.
 	public int[] m_piTriangleIndices; 
+	private int m_nTriangles;
 	
 	//The normals.
 	public Vector3f[] m_pvec3dNormals;
+	private int m_nNormals;
 	
 	
 	//List of POINT3Ds which form the isosurface.
@@ -382,7 +383,8 @@ public class Isosurface
 			for (int y = 0; y < m_nCellsY; y++)
 				for (int x = 0; x < m_nCellsX; x++) 
 					{
-					// Calculate table lookup index from those vertices which are below the isolevel.
+					// Calculate table lookup index from those
+					// vertices which are below the isolevel.
 					int tableIndex = 0;
 					if (m_ptScalarField[z*nPointsInSlice + y*nPointsInXDirection + x] < m_tIsoLevel)
 						tableIndex |= 1;
@@ -401,7 +403,8 @@ public class Isosurface
 					if (m_ptScalarField[(z+1)*nPointsInSlice + y*nPointsInXDirection + (x+1)] < m_tIsoLevel)
 						tableIndex |= 128;
 	
-					// Now create a triangulation of the isosurface in this cell
+					// Now create a triangulation of the isosurface in this
+					// cell.
 					if (m_edgeTable[tableIndex] != 0) 
 						{
 						if ((m_edgeTable[tableIndex] & 8) != 0) 
@@ -489,13 +492,17 @@ public class Isosurface
 								int id = getEdgeID(x, y, z, 5);
 								m_i2pt3idVertices.put(id,pt);
 								}
-
+	
 						for (int i = 0; m_triTable[tableIndex][i] != -1; i += 3) 
 							{
 							TRIANGLE triangle=new TRIANGLE();
-							triangle.p0 = getEdgeID(x, y, z, m_triTable[tableIndex][i]);
-							triangle.p1 = getEdgeID(x, y, z, m_triTable[tableIndex][i+1]);
-							triangle.p2 = getEdgeID(x, y, z, m_triTable[tableIndex][i+2]);
+							int pointID0, pointID1, pointID2;
+							pointID0 = getEdgeID(x, y, z, m_triTable[tableIndex][i]);
+							pointID1 = getEdgeID(x, y, z, m_triTable[tableIndex][i+1]);
+							pointID2 = getEdgeID(x, y, z, m_triTable[tableIndex][i+2]);
+							triangle.p0 = pointID0;
+							triangle.p1 = pointID1;
+							triangle.p2 = pointID2;
 							m_trivecTriangles.add(triangle);
 							}
 						}
@@ -662,7 +669,9 @@ public class Isosurface
 		int nPointsInSlice = nPointsInXDirection*(m_nCellsY + 1);
 		float val1 = m_ptScalarField[v1z*nPointsInSlice + v1y*nPointsInXDirection + v1x];
 		float val2 = m_ptScalarField[v2z*nPointsInSlice + v2y*nPointsInXDirection + v2x];
-		return interpolate(x1, y1, z1, x2, y2, z2, val1, val2);
+		POINT3DID intersection = interpolate(x1, y1, z1, x2, y2, z2, val1, val2);
+	
+		return intersection;
 		}
 	
 	
@@ -671,11 +680,14 @@ public class Isosurface
 	 */
 	private POINT3DID interpolate(float fX1, float fY1, float fZ1, float fX2, float fY2, float fZ2, float tVal1, float tVal2)
 		{
-		float mu = (m_tIsoLevel - tVal1)/(tVal2 - tVal1);
 		POINT3DID interpolation=new POINT3DID();
+		float mu;
+	
+		mu = (float)((m_tIsoLevel - tVal1))/(tVal2 - tVal1);
 		interpolation.x = fX1 + mu*(fX2 - fX1);
 		interpolation.y = fY1 + mu*(fY2 - fY1);
 		interpolation.z = fZ1 + mu*(fZ2 - fZ1);
+	
 		return interpolation;
 		}
 	
@@ -685,34 +697,42 @@ public class Isosurface
 	private void renameVerticesAndTriangles()
 		{
 		int nextID = 0;
-
-		
-		//newID better made a local array. move to final array directly
-		HashMap<Integer,Integer> fromto=new HashMap<Integer,Integer>();
-		m_ppt3dVertices = new Vector3f[m_i2pt3idVertices.size()];
-		for(Entry<Integer,POINT3DID> p:m_i2pt3idVertices.entrySet())
+	
+		// Rename vertices.
+		for(POINT3DID p:m_i2pt3idVertices.values())
 			{
-			fromto.put(p.getKey(),nextID);
-			POINT3DID pp=p.getValue();
-			m_ppt3dVertices[nextID]=new Vector3f(pp.x,pp.y,pp.z);
-			
+			p.newID=nextID;
 			nextID++;
 			}
-		
-		
+	
+		// Now rename triangles.
+		for(TRIANGLE tri:m_trivecTriangles)
+			{
+			tri.p0 = m_i2pt3idVertices.get(tri.p0).newID;
+			tri.p1 = m_i2pt3idVertices.get(tri.p1).newID;
+			tri.p2 = m_i2pt3idVertices.get(tri.p2).newID;
+			}
+	
+		// Copy all the vertices and triangles into two arrays so that they
+		// can be efficiently accessed.
+		// Copy vertices.
+		//mapIterator = m_i2pt3idVertices.begin();
+		Iterator<POINT3DID> mapIterator=m_i2pt3idVertices.values().iterator();
+		m_nVertices = m_i2pt3idVertices.size();
+		m_ppt3dVertices = new Vector3f[m_nVertices];
+		for (int i = 0; i < m_nVertices; i++) 
+			{
+			POINT3DID p=mapIterator.next();
+			m_ppt3dVertices[i]=new Vector3f(p.x,p.y,p.z);
+			}
 		// Copy vertex indices which make triangles.
 		Iterator<TRIANGLE> vecIterator=m_trivecTriangles.iterator();
-		m_piTriangleIndices = new int[m_trivecTriangles.size()*3];
-		for (int i = 0; i < m_trivecTriangles.size(); i++) 
+		//vecIterator = m_trivecTriangles.begin();
+		m_nTriangles = m_trivecTriangles.size();
+		m_piTriangleIndices = new int[m_nTriangles*3];
+		for (int i = 0; i < m_nTriangles; i++) 
 			{
 			TRIANGLE tri=vecIterator.next();
-			
-			//rename triangle
-			tri.p0 = fromto.get(tri.p0);
-			tri.p1 = fromto.get(tri.p1);
-			tri.p2 = fromto.get(tri.p2);
-			
-			//copy
 			m_piTriangleIndices[i*3] = tri.p0;
 			m_piTriangleIndices[i*3+1] = tri.p1;
 			m_piTriangleIndices[i*3+2] = tri.p2;
@@ -728,34 +748,30 @@ public class Isosurface
 	 */
 	private void calculateNormals()
 		{
-		m_pvec3dNormals = new Vector3f[m_piTriangleIndices.length/3];
+		m_nNormals = m_nVertices;
+		m_pvec3dNormals = new Vector3f[m_nNormals];
 	
 		// Set all normals to 0
-		for(int i=0;i<m_pvec3dNormals.length;i++)
+		for(int i=0;i<m_nNormals;i++)
 			m_pvec3dNormals[i]=new Vector3f();
 	
 		// Calculate normals.
-		for(int i = 0; i < m_piTriangleIndices.length; i+=3) 
+		for(int i = 0; i < m_nTriangles; i++) 
 			{
-			int id0 = m_piTriangleIndices[i];
-			int id1 = m_piTriangleIndices[i+1];
-			int id2 = m_piTriangleIndices[i+2];
-			Vector3f vec1=new Vector3f(
-					m_ppt3dVertices[id1].x - m_ppt3dVertices[id0].x,
+			Vector3f vec1, vec2, normal;
+			int id0, id1, id2;
+			id0 = m_piTriangleIndices[i*3];
+			id1 = m_piTriangleIndices[i*3+1];
+			id2 = m_piTriangleIndices[i*3+2];
+			vec1=new Vector3f(m_ppt3dVertices[id1].x - m_ppt3dVertices[id0].x,
 					m_ppt3dVertices[id1].y - m_ppt3dVertices[id0].y,
 					m_ppt3dVertices[id1].z - m_ppt3dVertices[id0].z);
-			Vector3f vec2=new Vector3f(
-					m_ppt3dVertices[id2].x - m_ppt3dVertices[id0].x,
+			vec2=new Vector3f(m_ppt3dVertices[id2].x - m_ppt3dVertices[id0].x,
 					m_ppt3dVertices[id2].y - m_ppt3dVertices[id0].y,
 					m_ppt3dVertices[id2].z - m_ppt3dVertices[id0].z);
-/*			Vector3f normal=new Vector3f(
-					vec1.z*vec2.y - vec1.y*vec2.z,
+			normal=new Vector3f(vec1.z*vec2.y - vec1.y*vec2.z,
 					vec1.x*vec2.z - vec1.z*vec2.x,
-					vec1.y*vec2.x - vec1.x*vec2.y);*/
-			Vector3f normal=new Vector3f(
-					vec2.z*vec1.y - vec2.y*vec1.z,
-					vec2.x*vec1.z - vec2.z*vec1.x,
-					vec2.y*vec1.x - vec2.x*vec1.y);
+					vec1.y*vec2.x - vec1.x*vec2.y);
 			m_pvec3dNormals[id0].add(normal);
 			m_pvec3dNormals[id1].add(normal);
 			m_pvec3dNormals[id2].add(normal);
@@ -765,5 +781,10 @@ public class Isosurface
 		for(Vector3f n:m_pvec3dNormals)
 			n.normalize();
 		}
-		
+	
+	
+	
+	
+	
+	
 	}
