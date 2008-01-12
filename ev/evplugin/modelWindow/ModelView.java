@@ -16,6 +16,7 @@ import com.sun.opengl.util.j2d.*;
 import evplugin.basicWindow.*;
 import evplugin.data.*;
 import evplugin.ev.*;
+import evplugin.modelWindow.voxels.*;
 import evplugin.nuc.*;
 
 
@@ -235,7 +236,8 @@ public class ModelView extends GLCanvas
 			//Render extensions
 			for(ModelWindowHook h:window.modelWindowHooks) //todo: order of rendering
 				h.displayFinal(gl);
-
+			
+			isosurf.render(gl);  
 			slices.render(gl,camera, frame);
 			
 			//adjust scale for next time
@@ -251,7 +253,7 @@ public class ModelView extends GLCanvas
 		};
 	StackSlices slices=new StackSlices();
 	
-		
+	Isotest isosurf=new Isotest();
 	
 	
 	

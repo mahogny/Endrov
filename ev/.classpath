@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|evplugin/macBinding/|evplugin/makeQT/|evplugin/script/parser/|util/BatchExtractAP.java|evplugin/jubio/" kind="src" path=""/>
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|evplugin/macBinding/|evplugin/makeQT/|evplugin/script/parser/|util/BatchExtractAP.java|evplugin/jubio/|evplugin/modelWindow/voxels/CopyOfIsotest.java" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/linux/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="libs/linux/jai_codec.jar"/>
