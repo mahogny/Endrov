@@ -1,0 +1,16 @@
+X1
+
+/*
+						if((x==m_nCellsX - 1) && (y==m_nCellsY - 1) && (theEdge & 1024) != 0)
+							{
+							POINT3DID pt = calculateIntersection(x, y, z, 10);
+							int id = getEdgeID(x, y, z, 10);
+							m_i2pt3idVertices.put(id,pt);
+							}
+						if((x==m_nCellsX - 1) && (z==m_nCellsZ - 1) && (theEdge & 64) != 0)
+							{
+							POINT3DID pt = calculateIntersection(x, y, z, 6);
+							int id = getEdgeID(x, y, z, 6);
+							m_i2pt3idVertices.put(id,pt);
+							}
+							*/

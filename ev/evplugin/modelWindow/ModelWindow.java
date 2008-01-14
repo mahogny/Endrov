@@ -157,12 +157,11 @@ public class ModelWindow extends BasicWindow
 		buttonCenter.addActionListener(this);
 		metaCombo.addActionListener(this);
 
+	
+		
 		//Put GUI together
-		setLayout(new BorderLayout());
-		add(view,BorderLayout.CENTER);
 
 		JPanel bottomTotal=new JPanel(new GridLayout(2,1));
-		add(bottomTotal,BorderLayout.SOUTH);
 
 		JPanel bottomMain=new JPanel(new GridBagLayout());
 		bottomTotal.add(bottomMain);
@@ -190,13 +189,68 @@ public class ModelWindow extends BasicWindow
 		bottomChannels.add(icG);
 		bottomChannels.add(icB);
 		
+		JPanel allpane=new JPanel(new BorderLayout());
+		JScrollPane toolPanel=new JScrollPane(allpane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		//leftPanel.setMinimumSize(new Dimension(0,0));
+		addstuff(allpane);
+		
+		
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, view, toolPanel);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setContinuousLayout(true);
+
+		setLayout(new BorderLayout());
+		add(splitPane,BorderLayout.CENTER);
+		add(bottomTotal,BorderLayout.SOUTH);
+
+		
 		//Window overall things
 		setTitle(EV.programName+" Model Window");
 		pack();
+		splitPane.setDividerLocation(1.0);
 		setVisible(true);
 		setBounds(x,y,w,h);
 		}
 	
+	
+	public void addstuff(JPanel allpane)
+		{
+		JPanel p=new JPanel(new GridLayout(2,1));
+		
+		allpane.add(p,BorderLayout.NORTH);
+		
+		
+		JButton addIsolevel=new JButton("Add isolevel");
+		
+		
+		JPanel q=new JPanel();
+		
+		SpinnerModel transModel;
+		JSpinner transSpinner;
+		SpinnerModel cutoffModel;
+		JSpinner cutoffSpinner;
+
+		transModel=new SpinnerNumberModel((double)100.0,(double)0.0,(double)100.0,(double)25.0);
+		transSpinner=new JSpinner(transModel);
+
+		cutoffModel=new SpinnerNumberModel((double)50.0,(double)0.0,(double)100.0,(double)10.0);
+		cutoffSpinner=new JSpinner(cutoffModel);
+
+		q.add(new JLabel("Trans:"));
+		q.add(transSpinner);
+		q.add(new JLabel("Cut-off:"));
+		q.add(cutoffSpinner);
+		
+		p.add(addIsolevel);
+		p.add(q);
+		
+		
+		
+		
+
+		
+		}
 	
 	
 	
@@ -336,14 +390,15 @@ public class ModelWindow extends BasicWindow
 		final int dx=e.getX()-mouseLastX;
 		final int dy=e.getY()-mouseLastY;
 
-		if((e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK)!=0)
+		if((e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK)!=0 ||
+				SwingUtilities.isMiddleMouseButton(e))
 			{
-			//TODO: left=also move center
+			//TODO: also move center
 			view.pan(-dx,+dy,0);
 			}
 		else if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0)
 			{
-			//TODO: left=also move center
+			//TODO: also move center
 			view.pan(0,0,dy);
 			}
 		else
