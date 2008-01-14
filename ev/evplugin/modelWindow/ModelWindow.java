@@ -84,6 +84,7 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miViewRight=new JMenuItem("Right");
 
 
+	JPanel toolbarPanel=new JPanel(new GridBagLayout());
 	
 	
 
@@ -106,7 +107,6 @@ public class ModelWindow extends BasicWindow
 		
 		
 		}
-	
 	
 	
 	
@@ -189,17 +189,18 @@ public class ModelWindow extends BasicWindow
 		bottomChannels.add(icG);
 		bottomChannels.add(icB);
 		
-		JPanel allpane=new JPanel(new BorderLayout());
-		JScrollPane toolPanel=new JScrollPane(allpane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		//leftPanel.setMinimumSize(new Dimension(0,0));
-		addstuff(allpane);
-		
-		
+		JPanel inToolpane=new JPanel(new BorderLayout());
+		inToolpane.add(toolbarPanel,BorderLayout.NORTH);
+		JScrollPane toolPanel=new JScrollPane(inToolpane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		toolPanel.setMinimumSize(new Dimension(250,20));
+		toolPanel.setMaximumSize(new Dimension(250,20));
+		updateToolbar();
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, view, toolPanel);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setContinuousLayout(true);
-
+		splitPane.setResizeWeight(1);
+		
 		setLayout(new BorderLayout());
 		add(splitPane,BorderLayout.CENTER);
 		add(bottomTotal,BorderLayout.SOUTH);
@@ -208,48 +209,80 @@ public class ModelWindow extends BasicWindow
 		//Window overall things
 		setTitle(EV.programName+" Model Window");
 		pack();
-		splitPane.setDividerLocation(1.0);
 		setVisible(true);
 		setBounds(x,y,w,h);
 		}
 	
 	
-	public void addstuff(JPanel allpane)
+	public Vector<JComponent> toolbarItems=new Vector<JComponent>();
+	
+	/**
+	 * Clear toolbar and readd items
+	 */
+	public void updateToolbar()
 		{
-		JPanel p=new JPanel(new GridLayout(2,1));
-		
-		allpane.add(p,BorderLayout.NORTH);
-		
-		
+		toolbarItems.clear(); //temp
+		addIsoLayer(); //temp
+		toolbarPanel.removeAll();
+		int count=0;
+		for(JComponent c:toolbarItems)
+			{
+			GridBagConstraints cr=new GridBagConstraints();	cr.gridy=count;	cr.fill=GridBagConstraints.HORIZONTAL;
+			toolbarPanel.add(c,cr);
+			count++;
+			}
+		toolbarPanel.revalidate();
+		}
+
+
+	/**
+	 * Add all isolayers
+	 *
+	 */
+	public void addIsoLayer()
+		{
 		JButton addIsolevel=new JButton("Add isolevel");
+		toolbarItems.add(addIsolevel);
+		addOneIsolayer();
+		}
+	
+	/**
+	 * Add a single isolayer
+	 */
+	public void addOneIsolayer()
+		{
+		JSpinner transSpinner=new JSpinner(new SpinnerNumberModel((double)100.0,(double)0.0,(double)100.0,(double)25.0));
+		JSpinner cutoffSpinner=new JSpinner(new SpinnerNumberModel((double)50.0,(double)0.0,(double)100.0,(double)10.0));
+		JSpinner cutoff2Spinner=new JSpinner(new SpinnerNumberModel((double)50.0,(double)0.0,(double)100.0,(double)10.0));
+		JSpinner numplaneSpinner=new JSpinner(new SpinnerNumberModel((int)0,(double)0,(double)99,(double)1));
+		JSpinner blurxySpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)10.0,(int)1));
 		
+		ChannelCombo chanCombo=new ChannelCombo(null,true);
+		JPanel q1=new JPanel(new GridLayout(1,2));
+		q1.add(withLabel("Trans:",transSpinner));
+		q1.add(withLabel("Cut-off:",cutoffSpinner));
+		JPanel q2=new JPanel(new GridLayout(1,2));
+		q2.add(chanCombo);
+		q2.add(withLabel("#Pl:",numplaneSpinner));
+		JPanel q3=new JPanel(new GridLayout(1,2));
+		q3.add(withLabel("Cut-off2:",cutoff2Spinner));
+		q3.add(withLabel("BlurX:",blurxySpinner));
 		
-		JPanel q=new JPanel();
-		
-		SpinnerModel transModel;
-		JSpinner transSpinner;
-		SpinnerModel cutoffModel;
-		JSpinner cutoffSpinner;
-
-		transModel=new SpinnerNumberModel((double)100.0,(double)0.0,(double)100.0,(double)25.0);
-		transSpinner=new JSpinner(transModel);
-
-		cutoffModel=new SpinnerNumberModel((double)50.0,(double)0.0,(double)100.0,(double)10.0);
-		cutoffSpinner=new JSpinner(cutoffModel);
-
-		q.add(new JLabel("Trans:"));
-		q.add(transSpinner);
-		q.add(new JLabel("Cut-off:"));
-		q.add(cutoffSpinner);
-		
-		p.add(addIsolevel);
-		p.add(q);
-		
-		
-		
-		
-
-		
+		JPanel pForIso=new JPanel(new GridLayout(3,1));
+		pForIso.setBorder(BorderFactory.createEtchedBorder());
+		pForIso.add(q2);
+		pForIso.add(q3);
+		pForIso.add(q1);
+		toolbarItems.add(pForIso);
+		}
+	
+	
+	public JComponent withLabel(String text, JComponent right)
+		{
+		JPanel p=new JPanel(new BorderLayout());
+		p.add(new JLabel(text),BorderLayout.WEST);
+		p.add(right,BorderLayout.CENTER);
+		return p;
 		}
 	
 	
