@@ -1,4 +1,4 @@
-package evplugin.modelWindow.voxels;
+package evplugin.modelWindow.isosurf;
 
 import java.nio.*;
 

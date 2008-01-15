@@ -1,5 +1,7 @@
 package evplugin.modelWindow;
 import evplugin.ev.PluginDef;
+import evplugin.modelWindow.isosurf.*;
+import evplugin.modelWindow.voxel.VoxelExtension;
 
 public class PLUGIN extends PluginDef
 	{
@@ -30,6 +32,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ModelWindow.class,ModelWindowGrid.class};
+		return new Class[]{ModelWindow.class,ModelWindowGrid.class,IsosurfaceExtension.class,VoxelExtension.class};
 		}
 	}
