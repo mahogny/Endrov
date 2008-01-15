@@ -33,6 +33,10 @@ public class FilterSeq extends EvObject
 		{
 		EvData.extensions.put(metaType,new FilterSeqObjectType());
 		}
+
+	
+	private static ImageIcon iconLabelFS=new ImageIcon(FilterSeq.class.getResource("labelFS.png"));
+	public static ImageIcon getIconFilterSeq(){return iconLabelFS;}
 	
 	public String getMetaTypeDesc()
 		{

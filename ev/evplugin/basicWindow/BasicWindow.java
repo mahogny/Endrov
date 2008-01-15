@@ -24,6 +24,12 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0; 
 
+	private static ImageIcon iconButtonDelete=new ImageIcon(BasicWindow.class.getResource("buttonDelete.png"));
+	public static ImageIcon getIconDelete(){return iconButtonDelete;}
+	private static ImageIcon iconButtonDown=new ImageIcon(BasicWindow.class.getResource("buttonDown.png"));
+	public static ImageIcon getIconDown(){return iconButtonDown;}
+	private static ImageIcon iconButtonUp=new ImageIcon(BasicWindow.class.getResource("buttonUp.png"));
+	public static ImageIcon getIconUp(){return iconButtonUp;}
 	
 	/** The set of all extensions */
 	public static Vector<BasicWindowExtension> basicWindowExtensions=new Vector<BasicWindowExtension>();
