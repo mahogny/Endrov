@@ -18,9 +18,6 @@ public class WidgetFilterSeq extends JPanel
 	
 	private FilterSeq filterseq=null;	
 	
-	private static ImageIcon iconButtonUp    =new ImageIcon(WidgetFilterSeq.class.getResource("buttonUp.png"));
-	private static ImageIcon iconButtonDown  =new ImageIcon(WidgetFilterSeq.class.getResource("buttonDown.png"));
-	private static ImageIcon iconButtonDelete=new ImageIcon(WidgetFilterSeq.class.getResource("buttonDelete.png"));
 	
 	JPanel inScroll=new JPanel(new BorderLayout());
 	public JScrollPane scroll=new JScrollPane(inScroll,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);	
@@ -110,9 +107,9 @@ public class WidgetFilterSeq extends JPanel
 				titledPanel.add(fc);
 				
 				//Buttons
-				final JButton bUp=new JButton(iconButtonUp);
-				final JButton bDown=new JButton(iconButtonDown);
-				final JButton bDelete=new JButton(iconButtonDelete);
+				final JButton bUp=new JButton(BasicWindow.getIconUp());
+				final JButton bDown=new JButton(BasicWindow.getIconDown());
+				final JButton bDelete=new JButton(BasicWindow.getIconDelete());
 
 				ActionListener listener=new ActionListener()
 					{

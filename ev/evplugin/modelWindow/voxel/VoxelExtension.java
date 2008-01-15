@@ -13,6 +13,7 @@ import org.jdom.Element;
 import evplugin.basicWindow.ChannelCombo;
 import evplugin.data.*;
 import evplugin.ev.*;
+import evplugin.filter.FilterSeq;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.*;
@@ -31,7 +32,6 @@ import evplugin.modelWindow.*;
 public class VoxelExtension implements ModelWindowExtension
 	{
 	public static void initPlugin() {}
-	private static ImageIcon iconLabelFS=new ImageIcon(ModelWindow.class.getResource("labelFS.png"));
 	static
 		{
 		ModelWindow.modelWindowExtensions.add(new VoxelExtension());
@@ -150,7 +150,7 @@ public class VoxelExtension implements ModelWindowExtension
 		private class OneImageChannel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
-			JButton bFs=new JButton(iconLabelFS);
+			JButton bFs=new JButton(FilterSeq.getIconFilterSeq());
 			ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
 			Color color;
 			

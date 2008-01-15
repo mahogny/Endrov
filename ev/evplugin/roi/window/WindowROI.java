@@ -60,7 +60,6 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	private static ImageIcon iconIntersect=new ImageIcon(WindowROI.class.getResource("iconIntersect.png"));
 	private static ImageIcon iconSub=new ImageIcon(WindowROI.class.getResource("iconSub.png"));
 	private static ImageIcon iconUnion=new ImageIcon(WindowROI.class.getResource("iconUnion.png"));
-	private static ImageIcon iconDelete=new ImageIcon(WindowROI.class.getResource("iconDelete.png"));
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -70,7 +69,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	private JButton bNewIntersect=new JButton(iconIntersect);
 	private JButton bNewSub=new JButton(iconSub);
 	private JButton bNewUnion=new JButton(iconUnion);
-	private JButton bDelete=new JButton(iconDelete);
+	private JButton bDelete=new JButton(getIconDelete());
 	
 	
 	private MetaCombo metaCombo=new MetaCombo(this, false);

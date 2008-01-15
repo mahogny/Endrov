@@ -43,7 +43,6 @@ public class ImageWindow extends BasicWindow
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
 	private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
-	private static ImageIcon iconLabelFS=new ImageIcon(FrameControlImage.class.getResource("labelFS.png"));
 	
 	public static void initPlugin() {}
 	static
@@ -128,7 +127,7 @@ public class ImageWindow extends BasicWindow
 		public final ChannelCombo comboChannel=new ChannelCombo(null,false);
 		public final JSlider sliderContrast=new JSlider(-4000,4000,0);
 		public final JSlider sliderBrightness=new JSlider(-100,100,0);
-		public final JButton bFilterSequence=new JButton(iconLabelFS);
+		public final JButton bFilterSequence=new JButton(FilterSeq.getIconFilterSeq());
 
 		public FilterSeq filterSeq=new FilterSeq();
 		
