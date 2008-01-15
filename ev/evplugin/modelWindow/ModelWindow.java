@@ -10,7 +10,6 @@ import org.jdom.*;
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
 import evplugin.ev.*;
-import evplugin.imageset.EmptyImageset;
 import evplugin.keyBinding.*;
 import evplugin.nuc.NucLineage;
 
@@ -67,6 +66,11 @@ public class ModelWindow extends BasicWindow
 	private int mouseLastX, mouseLastY;
 	
 	public final Vector<ModelWindowHook> modelWindowHooks=new Vector<ModelWindowHook>();	
+	public final Vector<JComponent> sidepanelItems=new Vector<JComponent>();
+	private final JPanel sidePanel=new JPanel(new GridBagLayout());
+	public final Vector<JComponent> bottompanelItems=new Vector<JComponent>();
+	private final JPanel bottomPanel=new JPanel(new GridBagLayout());
+	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
@@ -84,31 +88,9 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miViewRight=new JMenuItem("Right");
 
 
-	JPanel toolbarPanel=new JPanel(new GridBagLayout());
 	
 	
 
-	
-	
-	private static class OneImageChannel extends JPanel
-		{
-		static final long serialVersionUID=0;
-		private static ImageIcon iconLabelFS=new ImageIcon(ModelWindow.class.getResource("labelFS.png"));
-		JButton bFs=new JButton(iconLabelFS);
-		ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
-		
-		public OneImageChannel(String name)
-			{
-			setLayout(new BorderLayout());
-			add(new JLabel(name),BorderLayout.WEST);
-			add(channelCombo,BorderLayout.CENTER);
-			add(bFs,BorderLayout.EAST);
-			}
-		
-		
-		}
-	
-	
 	
 	/**
 	 * Make a new window at default location
@@ -160,11 +142,9 @@ public class ModelWindow extends BasicWindow
 	
 		
 		//Put GUI together
+		//JPanel bottomTotal=new JPanel(new GridLayout(2,1));
 
-		JPanel bottomTotal=new JPanel(new GridLayout(2,1));
-
-		JPanel bottomMain=new JPanel(new GridBagLayout());
-		bottomTotal.add(bottomMain);
+		
 		GridBagConstraints constrFrame=new GridBagConstraints();
 		constrFrame.gridx=0;
 		constrFrame.weightx=1;
@@ -179,32 +159,29 @@ public class ModelWindow extends BasicWindow
 		bottomMain.add(buttonCenter,constrCenter);
 		bottomMain.add(metaCombo,constrCombo);
 
-		JPanel bottomChannels=new JPanel(new GridLayout(1,3));
-		bottomTotal.add(bottomChannels);
 		
-		OneImageChannel icR=new OneImageChannel("R");
-		OneImageChannel icG=new OneImageChannel("G");
-		OneImageChannel icB=new OneImageChannel("B");
-		bottomChannels.add(icR);
-		bottomChannels.add(icG);
-		bottomChannels.add(icB);
+		
 		
 		JPanel inToolpane=new JPanel(new BorderLayout());
-		inToolpane.add(toolbarPanel,BorderLayout.NORTH);
+		inToolpane.setMinimumSize(new Dimension(250,20));
+		inToolpane.setMaximumSize(new Dimension(250,20));
+		inToolpane.add(sidePanel,BorderLayout.NORTH);
 		JScrollPane toolPanel=new JScrollPane(inToolpane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
 		toolPanel.setMinimumSize(new Dimension(250,20));
 		toolPanel.setMaximumSize(new Dimension(250,20));
-		updateToolbar();
+		updateToolPanels();
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, view, toolPanel);
 		splitPane.setOneTouchExpandable(true);
-		splitPane.setContinuousLayout(true);
+		//splitPane.setContinuousLayout(true);
 		splitPane.setResizeWeight(1);
 		
 		setLayout(new BorderLayout());
 		add(splitPane,BorderLayout.CENTER);
-		add(bottomTotal,BorderLayout.SOUTH);
+		add(bottomPanel,BorderLayout.SOUTH);
 
+		updateToolPanels();
 		
 		//Window overall things
 		setTitle(EV.programName+" Model Window");
@@ -214,76 +191,44 @@ public class ModelWindow extends BasicWindow
 		}
 	
 	
-	public Vector<JComponent> toolbarItems=new Vector<JComponent>();
 	
 	/**
-	 * Clear toolbar and readd items
+	 * Clear tool panels and readd items
 	 */
-	public void updateToolbar()
+	public void updateToolPanels()
 		{
-		toolbarItems.clear(); //temp
-		addIsoLayer(); //temp
-		toolbarPanel.removeAll();
-		int count=0;
-		for(JComponent c:toolbarItems)
+		sidepanelItems.clear();
+		bottompanelItems.clear();
+		bottompanelItems.add(bottomMain);
+		for(ModelWindowHook h:modelWindowHooks)
+			h.fillModelWindomMenus();
+		
+		int counta=0;
+		sidePanel.removeAll();
+		for(JComponent c:sidepanelItems)
 			{
-			GridBagConstraints cr=new GridBagConstraints();	cr.gridy=count;	cr.fill=GridBagConstraints.HORIZONTAL;
-			toolbarPanel.add(c,cr);
-			count++;
+			GridBagConstraints cr=new GridBagConstraints();	cr.gridy=counta;	cr.fill=GridBagConstraints.HORIZONTAL;
+			cr.weightx=1;
+			sidePanel.add(c,cr);
+			counta++;
 			}
-		toolbarPanel.revalidate();
+		int countb=0;
+		bottomPanel.removeAll();
+		for(JComponent c:bottompanelItems)
+			{
+			GridBagConstraints cr=new GridBagConstraints();	cr.gridy=countb;	cr.fill=GridBagConstraints.HORIZONTAL;
+			cr.weightx=1;
+			bottomPanel.add(c,cr);
+			countb++;
+			}
+		sidePanel.revalidate();
+		bottomPanel.revalidate();
 		}
+	
 
 
-	/**
-	 * Add all isolayers
-	 *
-	 */
-	public void addIsoLayer()
-		{
-		JButton addIsolevel=new JButton("Add isolevel");
-		toolbarItems.add(addIsolevel);
-		addOneIsolayer();
-		}
+
 	
-	/**
-	 * Add a single isolayer
-	 */
-	public void addOneIsolayer()
-		{
-		JSpinner transSpinner=new JSpinner(new SpinnerNumberModel((double)100.0,(double)0.0,(double)100.0,(double)25.0));
-		JSpinner cutoffSpinner=new JSpinner(new SpinnerNumberModel((double)50.0,(double)0.0,(double)100.0,(double)10.0));
-		JSpinner cutoff2Spinner=new JSpinner(new SpinnerNumberModel((double)50.0,(double)0.0,(double)100.0,(double)10.0));
-		JSpinner numplaneSpinner=new JSpinner(new SpinnerNumberModel((int)0,(double)0,(double)99,(double)1));
-		JSpinner blurxySpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)10.0,(int)1));
-		
-		ChannelCombo chanCombo=new ChannelCombo(null,true);
-		JPanel q1=new JPanel(new GridLayout(1,2));
-		q1.add(withLabel("Trans:",transSpinner));
-		q1.add(withLabel("Cut-off:",cutoffSpinner));
-		JPanel q2=new JPanel(new GridLayout(1,2));
-		q2.add(chanCombo);
-		q2.add(withLabel("#Pl:",numplaneSpinner));
-		JPanel q3=new JPanel(new GridLayout(1,2));
-		q3.add(withLabel("Cut-off2:",cutoff2Spinner));
-		q3.add(withLabel("BlurX:",blurxySpinner));
-		
-		JPanel pForIso=new JPanel(new GridLayout(3,1));
-		pForIso.setBorder(BorderFactory.createEtchedBorder());
-		pForIso.add(q2);
-		pForIso.add(q3);
-		pForIso.add(q1);
-		toolbarItems.add(pForIso);
-		}
-	
-	
-	public JComponent withLabel(String text, JComponent right)
-		{
-		JPanel p=new JPanel(new BorderLayout());
-		p.add(new JLabel(text),BorderLayout.WEST);
-		p.add(right,BorderLayout.CENTER);
-		return p;
-		}
 	
 	
 	
@@ -426,13 +371,11 @@ public class ModelWindow extends BasicWindow
 		if((e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK)!=0 ||
 				SwingUtilities.isMiddleMouseButton(e))
 			{
-			//TODO: also move center
-			view.pan(-dx,+dy,0);
+			view.pan(-dx,+dy,0,true);
 			}
 		else if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0)
 			{
-			//TODO: also move center
-			view.pan(0,0,dy);
+			view.pan(0,0,dy,false);
 			}
 		else
 			{
@@ -473,7 +416,7 @@ public class ModelWindow extends BasicWindow
 				//view.pan(0,0,e.getUnitsToScroll()/5.0);
 				view.camera.rotateCamera(0, 0, e.getUnitsToScroll()/20.0);
 			else
-				view.pan(0,0,e.getUnitsToScroll()*20.0);
+				view.pan(0,0,e.getUnitsToScroll()*20.0,(e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 			dataChangedEvent();
 			}
 		}

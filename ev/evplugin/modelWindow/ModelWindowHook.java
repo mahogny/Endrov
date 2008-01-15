@@ -25,6 +25,8 @@ public interface ModelWindowHook
 
 	public void adjustScale();
 	
+	public void fillModelWindomMenus();
+	
 	public Vector3D autoCenterMid();
 	public Double autoCenterRadius(Vector3D mid, double FOV);
 	}

@@ -25,11 +25,28 @@ public class Camera
 		mat.setIdentity();
 		}
 	
+	public Vector3d transformedVector(double x, double y, double z)
+		{
+		Vector3d v=new Vector3d();
+		Vector3d vfront=new Vector3d(0,0,z);
+		Vector3d vup=new Vector3d(0,y,0);
+		Vector3d vright=new Vector3d(x,0,0);
+		mat.transform(vfront);
+		mat.transform(vup);
+		mat.transform(vright);
+		v.add(vfront);
+		v.add(vup);
+		v.add(vright);
+		return v;
+		}
+	
 	/**
 	 * Move camera relative to camera coordinate system
 	 */
 	public void moveCamera(double x, double y, double z)
 		{
+		pos.add(transformedVector(x, y, z));
+		/*
 		Vector3d vfront=new Vector3d(0,0,z);
 		Vector3d vup=new Vector3d(0,y,0);
 		Vector3d vright=new Vector3d(x,0,0);
@@ -38,7 +55,7 @@ public class Camera
 		mat.transform(vright);
 		pos.add(vfront);
 		pos.add(vup);
-		pos.add(vright);
+		pos.add(vright);*/
 		}
 	
 	/**

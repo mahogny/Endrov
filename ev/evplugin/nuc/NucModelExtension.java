@@ -31,6 +31,7 @@ public class NucModelExtension implements ModelWindowExtension
 		private Map<NucPair, NucLineage.NucInterp> interpNuc=new HashMap<NucPair, NucLineage.NucInterp>();
 		private final ModelWindow w;
 		
+		public void fillModelWindomMenus(){}
 		
 		public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Names: Show all");
 		public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Names: Show for selected");
@@ -226,8 +227,8 @@ public class NucModelExtension implements ModelWindowExtension
 	    else
 	    	lightDiffuse=new float[]{1,1,1};
 			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
-			gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   // Setup The Ambient Light
-	    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   // Setup The Diffuse Light
+			gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
+	    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
 			gl.glEnable(GL.GL_LIGHT0);    
 	    	
 	    int NUC_SHOW_DIV=12;

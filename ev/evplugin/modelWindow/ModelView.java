@@ -8,6 +8,7 @@ import java.nio.*;
 //import javax.media.j3d.Texture;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
+import javax.vecmath.Vector3d;
 
 
 //import com.sun.opengl.util.Screenshot;
@@ -16,7 +17,6 @@ import com.sun.opengl.util.j2d.*;
 import evplugin.basicWindow.*;
 import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.modelWindow.voxels.*;
 import evplugin.nuc.*;
 
 
@@ -237,13 +237,9 @@ public class ModelView extends GLCanvas
 			for(ModelWindowHook h:window.modelWindowHooks) //todo: order of rendering
 				h.displayFinal(gl);
 			
-			isosurf.render(gl);  
-			slices.render(gl,camera, frame);
-			
 			//adjust scale for next time
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.adjustScale();
-			slices.adjustScale(window);
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
@@ -251,12 +247,8 @@ public class ModelView extends GLCanvas
 
 		
 		};
-	StackSlices slices=new StackSlices();
 	
-	Isotest isosurf=new Isotest();
-	
-	
-	
+
 	
 	
 	
@@ -274,9 +266,6 @@ public class ModelView extends GLCanvas
 			if(newcenter!=null)
 				center.add(newcenter);
 			}
-		Vector3D slicecenter=slices.autoCenterMid(); //todo factor out
-		if(slicecenter!=null)
-			center.add(slicecenter);
 
 		//If centers were available, continue
 		if(!center.isEmpty())
@@ -319,8 +308,15 @@ public class ModelView extends GLCanvas
 	 * Pan by a vector, world coordinates. 
 	 * This vector is scaled depending on the size of the model.
 	 */
-	public void pan(double dx, double dy, double dz)
+	public void pan(double dx, double dy, double dz, boolean moveCenter)
 		{
+		if(moveCenter)
+			{
+			Vector3d v=camera.transformedVector(dx*panspeed, dy*panspeed, dz*panspeed);
+			camera.pos.add(v);
+			camera.center.add(v);
+			}
+		else
 		camera.moveCamera(dx*panspeed, dy*panspeed, dz*panspeed);
 		}
 	

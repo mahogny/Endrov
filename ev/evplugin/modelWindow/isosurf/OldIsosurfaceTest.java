@@ -1,4 +1,4 @@
-package evplugin.modelWindow.voxels;
+package evplugin.modelWindow.isosurf;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
@@ -20,8 +20,15 @@ import evplugin.imageset.Imageset;
 //http://www.java-tips.org/other-api-tips/jogl/vertex-buffer-objects-nehe-tutorial-jogl-port-2.html
 
 
-public class Isotest
+public class OldIsosurfaceTest 
 	{
+	
+	
+	
+	
+	
+	
+	
 	
 	/////fix publics in isosurface. make inner class
 	
