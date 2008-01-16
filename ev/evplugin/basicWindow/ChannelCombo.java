@@ -63,8 +63,10 @@ public class ChannelCombo extends JComboBox
 		{
 		imagesetExternal=rec;
 		
-		Imageset curImageset=getImageset();
-		buildList(curImageset);
+		//Imageset curImageset=getImageset();
+		//buildList(curImageset); //used to be this 20070115
+		
+		updateChannelList();
 		}
 	
 	private class Alternative

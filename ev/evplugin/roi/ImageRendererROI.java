@@ -34,6 +34,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 	 */
 	public void draw(Graphics g)
 		{
+		handleList.clear();
 		for(EvObject ob:w.getImageset().metaObject.values())
 			if(ob instanceof ROI)
 				drawROI(g, (ROI)ob);
@@ -47,8 +48,6 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 	private void drawROI(Graphics g, ROI roiUncast)
 		{
-		handleList.clear();
-
 		double frame=w.frameControl.getFrame();
 		int z=w.frameControl.getZ();
 		String channel=w.getCurrentChannelName();

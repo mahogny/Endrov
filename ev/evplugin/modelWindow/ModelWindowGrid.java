@@ -74,6 +74,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 		public void displaySelect(GL gl){}
 		public void select(int id){}
 		public void fillModelWindomMenus(){}
+		public void datachangedEvent(){}
 
 		
 		/**

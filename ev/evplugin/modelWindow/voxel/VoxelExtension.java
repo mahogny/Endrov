@@ -90,7 +90,13 @@ public class VoxelExtension implements ModelWindowExtension
 			return this.w.frameControl.getFrame();
 			}
 
-		
+		public void datachangedEvent()
+			{
+			Imageset im=w.metaCombo.getImageset();
+			icR.channelCombo.setImageset(im);
+			icG.channelCombo.setImageset(im);
+			icB.channelCombo.setImageset(im);
+			}
 		
 		public void displayFinal(GL gl)
 			{
@@ -103,17 +109,13 @@ public class VoxelExtension implements ModelWindowExtension
 			double frame=getFrame();
 			if(slices.needBuild(frame))
 				{
-				Imageset curim=null;
-				EvData evdata=w.metaCombo.getMeta();
-				if(evdata!=null && evdata instanceof Imageset)
-					curim=(Imageset)evdata;
-				
+/*				Imageset curim=w.metaCombo.getImageset();
 				if(icR.channelCombo.getImageset()!=curim)
 					{
 					icR.channelCombo.setImageset(curim);
 					icG.channelCombo.setImageset(curim);
 					icB.channelCombo.setImageset(curim);
-					}
+					}*/
 				
 				HashMap<ChannelImages, StackSlices.ChannelSelection> chsel=new HashMap<ChannelImages, StackSlices.ChannelSelection>(); 
 				for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
@@ -170,7 +172,7 @@ public class VoxelExtension implements ModelWindowExtension
 				//TODO: when filter seq updated, a signal should be sent back
 				lastSlices=slices;
 				slices=new StackSlices();
-				
+
 				w.repaint();
 				}
 			

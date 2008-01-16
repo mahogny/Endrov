@@ -11,6 +11,7 @@ import javax.swing.event.*;
 
 import org.jdom.Element;
 
+import evplugin.basicWindow.BasicWindow;
 import evplugin.basicWindow.ChannelCombo;
 import evplugin.data.*;
 import evplugin.ev.*;
@@ -51,20 +52,46 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			this.w=w;
 			addIsolevel.addActionListener(this);
 			}
+		
+		private Isosurface getOnedamnsurface()
+			{
+			for(ToolIsolayer f:isolayers)
+				if(!f.surfaces.isEmpty())
+					for(IsosurfaceRenderer r:f.surfaces.values().iterator().next())
+						if(r.iso.isSurfaceValid())
+							return r.iso;
+			return null;
+			}
+		
 		public void adjustScale()
 			{
+			Isosurface iso=getOnedamnsurface();
+			if(iso!=null)
+				iso.adjustScale(w);
 			}
 		public Vector3D autoCenterMid()
 			{
-			return null;
+			Isosurface iso=getOnedamnsurface();
+			if(iso!=null)
+				return iso.autoCenterMid();
+			else
+				return null;
 			}
-		public Double autoCenterRadius(Vector3D mid, double FOV){return null;}
+		public Double autoCenterRadius(Vector3D mid, double FOV)
+			{
+			Isosurface iso=getOnedamnsurface();
+			if(iso!=null)
+				return iso.autoCenterRadius(mid, FOV);
+			else
+				return null;
+			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
 		public void select(int id){}
+		public void datachangedEvent(){}
 		public void fillModelWindomMenus()
 			{
 			w.sidepanelItems.add(addIsolevel);
@@ -120,13 +147,13 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			private JSpinner numplaneSpinner=new JSpinner(new SpinnerNumberModel((int)1,(int)0,(int)99,(int)1));
 			private JSpinner blurxySpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)10.0,(int)1));
 			private ChannelCombo chanCombo=new ChannelCombo(null,true);
-			private JButton bDelete=new JButton("X");
+			private JButton bDelete=new JButton(BasicWindow.getIconDelete());
 			private JComboBox comboColor=new JComboBox(new MyColor[]{
-					new MyColor("Red",Color.RED),
-					new MyColor("Green",Color.GREEN),
-					new MyColor("Blue",Color.BLUE),
-					new MyColor("Yellow",Color.YELLOW),
-					new MyColor("Cyan",Color.CYAN),
+					new MyColor("Red",new Color(128,0,0)),
+					new MyColor("Green",new Color(0,128,0)),
+					new MyColor("Blue",new Color(0,0,128)),
+					new MyColor("Yellow",new Color(128,128,0)),
+					new MyColor("Cyan",new Color(0,128,128)),
 					new MyColor("L.Gray",Color.LIGHT_GRAY),
 					new MyColor("Gray",Color.GRAY),
 					new MyColor("D.Gray",Color.DARK_GRAY)
