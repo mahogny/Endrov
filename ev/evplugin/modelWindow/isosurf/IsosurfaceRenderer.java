@@ -24,7 +24,7 @@ import evplugin.imageset.Imageset;
  */
 public class IsosurfaceRenderer
 	{
-	Isosurface iso=new Isosurface();
+	public Isosurface iso=new Isosurface();
 	FloatBuffer vertb;
 	FloatBuffer vertn;
 	IntBuffer indb;
@@ -138,13 +138,19 @@ public class IsosurfaceRenderer
 		//Render surface
 		if(vertb!=null)
 			{
-			float lightDiffuse[]=new float[]{red, green, blue, trans};
-			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
+			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS); //bother to refine?
+			
+			float lightDiffuse[]=new float[]{1f, 1f, 1f, 0};
+			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0 }; 
 			gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
-	    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
+	    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);
+	    //GL_LIGHT_MODEL_TWO_SIDE false right now
 			
+			boolean doTransparent=trans<0.99;
+	    
 			
-	    if(trans<0.99)
+	    
+	    if(doTransparent)
 	    	{
 	    	//NEHE does additive instead
 	    	
@@ -152,6 +158,10 @@ public class IsosurfaceRenderer
 				gl.glEnable(GL.GL_BLEND);
 				gl.glDepthMask(false);
 				gl.glDisable(GL.GL_CULL_FACE);
+				
+				gl.glColorMaterial ( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE ) ;
+				gl.glEnable ( GL.GL_COLOR_MATERIAL ) ;
+				
 	    	}
 				
 	    
@@ -163,20 +173,24 @@ public class IsosurfaceRenderer
 			gl.glDisable(GL.GL_CULL_FACE);
 			gl.glEnable(GL.GL_LIGHTING);
 			gl.glEnable(GL.GL_LIGHT0);
-			gl.glColor4f(1,1,1,trans);
+			gl.glEnable ( GL.GL_COLOR_MATERIAL ) ;
+			gl.glColor4f(red,green,blue,trans);
 
+			
 			gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertb);
 			gl.glNormalPointer(GL.GL_FLOAT, 0, vertn);
 			gl.glDrawElements(GL.GL_TRIANGLES, indb.remaining(), GL.GL_UNSIGNED_INT, indb);
 
+/*
 			gl.glDisable(GL.GL_LIGHT0);
 			gl.glDisable(GL.GL_LIGHTING);
 			gl.glEnable(GL.GL_CULL_FACE);
+			gl.glDisable( GL.GL_COLOR_MATERIAL ) ;
 			gl.glDisableClientState( GL.GL_VERTEX_ARRAY );
 			gl.glDisableClientState( GL.GL_NORMAL_ARRAY );
 			
 			
-	    if(trans<0.99)
+	    if(doTransparent)
 	    	{
 	    	gl.glDisable(GL.GL_BLEND);
 				gl.glDepthMask(true);
@@ -186,7 +200,9 @@ public class IsosurfaceRenderer
 				//Can draw an additional time, but just write to Z-buffer. dunno what is best
 				
 	    	}
+	    	*/
 			}
+		gl.glPopAttrib();
 		}
 	
 	}

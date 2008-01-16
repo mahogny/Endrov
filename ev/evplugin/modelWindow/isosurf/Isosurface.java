@@ -5,6 +5,10 @@ import java.util.Map.Entry;
 
 import javax.vecmath.Vector3f;
 
+import evplugin.ev.Vector3D;
+import evplugin.modelWindow.ModelWindow;
+import evplugin.modelWindow.ModelWindowGrid;
+
 public class Isosurface
 	{
 	
@@ -532,6 +536,7 @@ public class Isosurface
 		calculateNormals();
 		m_bValidSurface = true;
 		ptScalarField = null;
+		maxUpdated=false;
 		}
 	
 	
@@ -702,7 +707,7 @@ public class Isosurface
 		{
 		int nextID = 0;
 
-		
+	
 		//newID better made a local array. move to final array directly
 		HashMap<Integer,Integer> fromto=new HashMap<Integer,Integer>();
 		vertices = new Vector3f[ivertices.size()];
@@ -711,7 +716,6 @@ public class Isosurface
 			fromto.put(p.getKey(),nextID);
 			POINT3DID pp=p.getValue();
 			vertices[nextID]=new Vector3f(pp.x,pp.y,pp.z);
-			
 			nextID++;
 			}
 		
@@ -783,4 +787,85 @@ public class Isosurface
 			n.normalize();
 		}
 		
+	private boolean maxUpdated=false;
+	private float maxX,maxY,maxZ,minX,minY,minZ;
+	private boolean updateScale()
+		{
+		if(isSurfaceValid())
+			{
+			if(vertices.length==0)
+				return false;
+			if(!maxUpdated)
+				{
+				maxUpdated=true;
+				maxX=maxY=maxZ=0;
+				minX=minY=minZ=Float.MAX_VALUE;
+				for(Vector3f pp:vertices)
+					{
+					if(pp.x>maxX) maxX=pp.x;
+					if(pp.y>maxY) maxY=pp.y;
+					if(pp.z>maxZ) maxZ=pp.z;
+					if(pp.x<minX) minX=pp.x;
+					if(pp.y<minY) minY=pp.y;
+					if(pp.z<minZ) minZ=pp.z;
+					}
+				
+				}
+			return true;
+			}
+		else
+			return false;
+		}
+	
+	public void adjustScale(ModelWindow w)
+		{
+		if(updateScale())
+			{
+			//pan speed
+			w.view.panspeed=(maxX-minX)/1000.0;
+
+			//Select grid size
+			double g=Math.pow(10, (int)Math.log10(maxX));
+			if(g<1) g=1;
+			ModelWindowGrid.setGridSize(w,g);
+			}
+		
+		}
+	
+	
+	/**
+	 * Give suitable center of all objects
+	 */
+	public Vector3D autoCenterMid()
+		{
+		if(isSurfaceValid())
+			{
+			return new Vector3D((maxX+minX)/2,(maxY+minY)/2,(maxZ+minZ)/2);
+			}
+		else
+			return null;
+		}
+	
+	
+	/**
+	 * Given a middle position, figure out radius required to fit objects
+	 */
+	public Double autoCenterRadius(Vector3D mid, double FOV)
+		{
+		if(isSurfaceValid())
+			{
+			double[] list={Math.abs(minX-mid.x),Math.abs(minY-mid.y),Math.abs(minZ-mid.z),
+					Math.abs(maxX-mid.x), Math.abs(maxY-mid.y), Math.abs(maxZ-mid.z)};
+			double max=list[0];
+			for(double d:list)
+				if(d>max)
+					max=d;
+			//Find how far away the camera has to be. really have FOV in here?
+			return max/Math.sin(FOV);
+			}
+		else
+			return null;
+		}
+	
+	
 	}

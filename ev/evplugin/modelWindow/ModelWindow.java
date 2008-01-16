@@ -182,6 +182,7 @@ public class ModelWindow extends BasicWindow
 		add(bottomPanel,BorderLayout.SOUTH);
 
 		updateToolPanels();
+		dataChangedEvent();
 		
 		//Window overall things
 		setTitle(EV.programName+" Model Window");
@@ -430,6 +431,8 @@ public class ModelWindow extends BasicWindow
 		{
 		metaCombo.updateList();
 		view.meta=metaCombo.getMeta();
+		for(ModelWindowHook h:modelWindowHooks)
+			h.datachangedEvent();
 		if(frameControl!=null && view!=null)
 			{
 			view.frame=frameControl.getFrame();

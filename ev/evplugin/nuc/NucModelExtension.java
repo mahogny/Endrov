@@ -57,6 +57,7 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
+		public void datachangedEvent(){}
 		
 		public void actionPerformed(ActionEvent e)
 			{

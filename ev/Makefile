@@ -17,7 +17,7 @@ uploaddoc:
 	scp -r ../javadoc mahogny@celegans.sh.se:~/Sites/
 
 linecount:
-	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt
+	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt evplugin/modelWindow/isosurf/*.java evplugin/modelWindow/voxel/*.java evplugin/roi/primitive/*.java evplugin/roi/window/*.java
 
 webstart:
 #	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*/*class

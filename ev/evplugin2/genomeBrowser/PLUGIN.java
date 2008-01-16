@@ -1,4 +1,4 @@
-package evplugin.genomeBrowser;
+package evplugin2.genomeBrowser;
 import evplugin.ev.PluginDef;
 
 public class PLUGIN extends PluginDef

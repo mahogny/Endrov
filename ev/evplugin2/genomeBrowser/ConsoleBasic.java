@@ -1,4 +1,4 @@
-package evplugin.genomeBrowser;
+package evplugin2.genomeBrowser;
 
 import java.awt.event.*;
 import javax.swing.*;
