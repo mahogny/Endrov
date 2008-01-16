@@ -48,6 +48,8 @@ public class LineageWindow extends BasicWindow
 			});
 		}
 	
+	
+	
 	private JSlider sliderFrameDist=new JSlider(1,200,100); 
 	private JButton buttonGoRoot=new JButton("Go to root");
 	private JButton buttonGoSelected=new JButton("Go to selected");
@@ -151,6 +153,10 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miFoldAll);
 		menuLineage.add(miUnfoldAll);
 		
+		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
+		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
+		miRemoveNucleus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+		
 		miRename.addActionListener(this);
 		miMerge.addActionListener(this);
 		miPC.addActionListener(this);
@@ -210,27 +216,7 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miRename)
 			{
-			if(NucLineage.selectedNuclei.size()==1) 
-				{
-				NucPair nucPair=NucLineage.selectedNuclei.iterator().next();
-				if(nucPair!=null)
-					{
-					String oldName=nucPair.getRight();
-					String newName=JOptionPane.showInputDialog("New name",oldName);
-					if(!newName.equals(oldName))
-						{
-						if(nucPair.getLeft().nuc.containsKey(newName))
-							JOptionPane.showMessageDialog(this, "Nucleus already exists");
-						else
-							{
-							nucPair.getLeft().renameNucleus(oldName, newName);
-							BasicWindow.updateWindows();
-							}
-						}
-					}
-				}
-			else
-				JOptionPane.showMessageDialog(this, "Select 1 nucleus");
+			RenameDialog.run(this);
 			}
 		else if(e.getSource()==miMerge)
 			{
@@ -335,6 +321,8 @@ public class LineageWindow extends BasicWindow
 		}
 	
 
+	
+	
 	
 	/*
 	 * (non-Javadoc)
