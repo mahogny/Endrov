@@ -13,6 +13,7 @@ import evplugin.roi.*;
 import evplugin.roi.primitive.*;
 //import evplugin.imageset.*;
 import evplugin.basicWindow.*;
+
 import org.jdom.*;
 
 /**
@@ -23,6 +24,8 @@ import org.jdom.*;
 public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.comboFilterMetadata, TreeSelectionListener
 	{
 	static final long serialVersionUID=0;
+	
+	
 	
 
 	/******************************************************************************************************
@@ -60,6 +63,19 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	private static ImageIcon iconIntersect=new ImageIcon(WindowROI.class.getResource("iconIntersect.png"));
 	private static ImageIcon iconSub=new ImageIcon(WindowROI.class.getResource("iconSub.png"));
 	private static ImageIcon iconUnion=new ImageIcon(WindowROI.class.getResource("iconUnion.png"));
+
+	
+	/**
+	 * Get current ROI window or open one
+	 */
+	public static WindowROI getRoiWindow()
+		{
+		for(BasicWindow w:BasicWindow.getWindowList())
+			if(w instanceof WindowROI)
+				return (WindowROI)w;
+		return new WindowROI();
+		}
+	
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *

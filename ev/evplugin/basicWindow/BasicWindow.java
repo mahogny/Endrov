@@ -34,7 +34,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	/** The set of all extensions */
 	public static Vector<BasicWindowExtension> basicWindowExtensions=new Vector<BasicWindowExtension>();
 	
-	/** The set of all windows */
+	/** The set of all windows. Cannot be weak, GC time not guaranteed but this is critical to figure out when the program is to close */
 	private static HashSet<BasicWindow> windowList=new HashSet<BasicWindow>();
 	
 	public static void initPlugin() {}
