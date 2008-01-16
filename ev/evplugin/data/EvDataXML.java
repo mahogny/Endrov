@@ -71,6 +71,16 @@ public class EvDataXML extends EvData
 	 */
 	public static void loadMeta()
 		{
+		EvDataXML m=loadReturnMeta();
+		if(m!=null)
+			{
+			EvData.addMetadata(m);
+			BasicWindow.updateWindows();
+			}
+		}
+	
+	public static EvDataXML loadReturnMeta()
+		{
 		JFileChooser fc=getFileChooser();
 		fc.setCurrentDirectory(new File(EvData.lastDataPath));
 		int ret=fc.showOpenDialog(null);
@@ -79,9 +89,10 @@ public class EvDataXML extends EvData
 			EvData.lastDataPath=fc.getSelectedFile().getParent();
 			File filename=fc.getSelectedFile();
 			EvDataXML m=new EvDataXML(filename.getAbsolutePath());
-			EvData.addMetadata(m);
-			BasicWindow.updateWindows();
+			return m;
 			}
+		else
+			return null;
 		}
 	
 	
