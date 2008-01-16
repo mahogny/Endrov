@@ -64,12 +64,21 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			public void loadPersonalConfig(Element e)
 				{
 				EvData.lastDataPath=e.getAttributeValue("path");
+				if(EvData.lastDataPath==null)
+					EvData.lastDataPath="";
 				}
 			public void savePersonalConfig(Element root)
 				{
-				Element e=new Element("lastImagesetPath");
-				e.setAttribute("path",EvData.lastDataPath);
-				root.addContent(e);
+				try
+					{
+					Element e=new Element("lastImagesetPath");
+					e.setAttribute("path",EvData.lastDataPath);
+					root.addContent(e);
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
 				}
 			});
 
@@ -85,7 +94,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					int h=e.getAttribute("h").getIntValue();
 					new MetaWindow(x,y,w,h);
 					}
-				catch (DataConversionException e1)
+				catch (Exception e1)
 					{
 					e1.printStackTrace();
 					}

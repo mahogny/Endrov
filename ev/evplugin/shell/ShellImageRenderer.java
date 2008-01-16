@@ -65,10 +65,13 @@ public class ShellImageRenderer implements ImageWindowRenderer
 			
 			double polarrad=10;
 			
-			g2.rotate(s.angle,so.x,so.y);
+			double angle=s.angle+w.getRotation();
+			
+			
+			g2.rotate(angle,so.x,so.y);
 			g2.draw(new Ellipse2D.Double((double)(so.x-plongaxis),(double)(so.y-pshortaxis),(double)(2*plongaxis),(double)(2*pshortaxis)));
 			g2.draw(new Ellipse2D.Double((double)(so.x+plongaxis-polarrad),(double)(so.y-polarrad),polarrad*2, polarrad*2));
-			g2.rotate(-s.angle,so.x,so.y);
+			g2.rotate(-angle,so.x,so.y);
 			
 		//	System.out.println("# "+sox+" "+soy);
 			

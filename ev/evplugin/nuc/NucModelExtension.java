@@ -3,6 +3,7 @@ package evplugin.nuc;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.swing.*;
@@ -28,7 +29,7 @@ public class NucModelExtension implements ModelWindowExtension
 	public static class NucModelWindowHook implements ModelWindowHook, ActionListener
 		{
 		private final HashMap<Integer,NucPair> selectColorMap=new HashMap<Integer,NucPair>();
-		private Map<NucPair, NucLineage.NucInterp> interpNuc=new HashMap<NucPair, NucLineage.NucInterp>();
+		private Vector<Map<NucPair, NucLineage.NucInterp>> interpNuc=new Vector<Map<NucPair, NucLineage.NucInterp>>();
 		private final ModelWindow w;
 		
 		public void fillModelWindomMenus(){}
@@ -85,6 +86,16 @@ public class NucModelExtension implements ModelWindowExtension
 			}
 
 		
+		public Collection<NucLineage> getLineages()
+			{
+			Vector<NucLineage> v=new Vector<NucLineage>();
+			for(NucLineage lin:NucLineage.getLineages(w.metaCombo.getMeta()))
+				if(w.showObject(lin))
+					v.add(lin);
+			return v;
+			//return NucLineage.getLineages(w.metaCombo.getMeta());
+			}
+		
 		/**
 		 * Prepare for rendering
 		 */
@@ -92,12 +103,17 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			selectColorMap.clear();
 
+			interpNuc.clear();
+			for(NucLineage lin:getLineages())
+				interpNuc.add(lin.getInterpNuc(w.frameControl.getFrame()));
+
+			
 			//Get lineage
-			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
+/*			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
 			if(lin==null)
 				interpNuc.clear();
 			else
-				interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				interpNuc=lin.getInterpNuc(w.frameControl.getFrame());*/
 			}
 		
 		/**
@@ -109,13 +125,14 @@ public class NucModelExtension implements ModelWindowExtension
 			//Render nuclei
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
-			for(NucPair nucPair:interpNuc.keySet())
-				{
-				int rawcol=w.view.reserveSelectColor(this);
-				selectColorMap.put(rawcol, nucPair);
-				w.view.setReserveColor(gl, rawcol);
-				renderNucSel(gl,nucPair, interpNuc.get(nucPair));
-				}
+			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
+				for(NucPair nucPair:inter.keySet())
+					{
+					int rawcol=w.view.reserveSelectColor(this);
+					selectColorMap.put(rawcol, nucPair);
+					w.view.setReserveColor(gl, rawcol);
+					renderNucSel(gl,nucPair, inter.get(nucPair));
+					}
 			}
 
 		
@@ -125,28 +142,31 @@ public class NucModelExtension implements ModelWindowExtension
 		public void displayFinal(GL gl)
 			{
 			//Render nuc body
-			for(NucPair nucPair:interpNuc.keySet())
+			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
-				renderNuc(gl, nucPair, interpNuc.get(nucPair));
-				
-				//Draw connecting line
-				if(nucPair.getRight().equals(NucLineage.connectNuc[0]))
-					for(NucPair nucPair2:interpNuc.keySet())
-						if(nucPair2.getRight().equals(NucLineage.connectNuc[1]))
-							{
-							NucInterp n=interpNuc.get(nucPair);
-							NucInterp m=interpNuc.get(nucPair2);
-							gl.glBegin(GL.GL_LINES);
-							gl.glColor3d(1, 1, 1);
-							gl.glVertex3d(n.pos.x,n.pos.y,n.pos.z);
-							gl.glVertex3d(m.pos.x,m.pos.y,m.pos.z);
-							gl.glEnd();
-							}
-				}
+				for(NucPair nucPair:inter.keySet())
+					{
+					renderNuc(gl, nucPair, inter.get(nucPair));
+					
+					//Draw connecting line
+					if(nucPair.getRight().equals(NucLineage.connectNuc[0]))
+						for(NucPair nucPair2:inter.keySet())
+							if(nucPair2.getRight().equals(NucLineage.connectNuc[1]))
+								{
+								NucInterp n=inter.get(nucPair);
+								NucInterp m=inter.get(nucPair2);
+								gl.glBegin(GL.GL_LINES);
+								gl.glColor3d(1, 1, 1);
+								gl.glVertex3d(n.pos.x,n.pos.y,n.pos.z);
+								gl.glVertex3d(m.pos.x,m.pos.y,m.pos.z);
+								gl.glEnd();
+								}
+					}
 			
-			//Render nuclei text
-			for(NucPair nucPair:interpNuc.keySet())
-				renderNucLabel(gl,nucPair, interpNuc.get(nucPair));
+				//Render nuclei text
+				for(NucPair nucPair:inter.keySet())
+					renderNucLabel(gl,nucPair, inter.get(nucPair));
+				}
 			}
 
 		
@@ -170,15 +190,16 @@ public class NucModelExtension implements ModelWindowExtension
 				double minx= 1000000,miny= 1000000,minz= 1000000;
 
 				//Calculate bounds
-				for(NucLineage.NucInterp nuc:interpNuc.values())
-					{
-					if(maxx<nuc.pos.x) maxx=nuc.pos.x;
-					if(maxy<nuc.pos.y) maxy=nuc.pos.y;
-					if(maxz<nuc.pos.z) maxz=nuc.pos.z;
-					if(minx>nuc.pos.x) minx=nuc.pos.x;
-					if(miny>nuc.pos.y) miny=nuc.pos.y;
-					if(minz>nuc.pos.z) minz=nuc.pos.z;
-					}
+				for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
+					for(NucLineage.NucInterp nuc:inter.values())
+						{
+						if(maxx<nuc.pos.x) maxx=nuc.pos.x;
+						if(maxy<nuc.pos.y) maxy=nuc.pos.y;
+						if(maxz<nuc.pos.z) maxz=nuc.pos.z;
+						if(minx>nuc.pos.x) minx=nuc.pos.x;
+						if(miny>nuc.pos.y) miny=nuc.pos.y;
+						if(minz>nuc.pos.z) minz=nuc.pos.z;
+						}
 				double dx=maxx-minx;
 				double dy=maxy-miny;
 				double dz=maxz-minz;
@@ -332,8 +353,11 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public Vector3D autoCenterMid()
 			{
-			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
-			if(lin!=null)
+//			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
+			for(NucLineage lin:getLineages())
+			//for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc) 
+				//TODO: only one considered
+	//		if(lin!=null)
 				{
 				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
 				if(interpNuc.size()!=0)
@@ -362,8 +386,9 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public Double autoCenterRadius(Vector3D mid, double FOV)
 			{
-			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
-			if(lin!=null)
+//			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
+//			if(lin!=null)
+			for(NucLineage lin:getLineages()) //TODO: only one considered
 				{
 				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
 				if(interpNuc.size()!=0)

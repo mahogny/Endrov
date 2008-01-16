@@ -2,6 +2,8 @@ package evplugin.nuc;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Collection;
+
 import javax.vecmath.*;
 import javax.swing.*;
 
@@ -52,7 +54,7 @@ public class ToolMakeNuc implements ImageWindowTool
 	/**
 	 * Get a lineage. Create lineage if there is none and this is possible
 	 */
-	private NucLineage getLineage()
+/*	private NucLineage getLineage()
 		{
 		NucLineage lin=r.getLineage();
 		if(lin==null)
@@ -63,13 +65,26 @@ public class ToolMakeNuc implements ImageWindowTool
 			}
 		else
 			return lin;
+		}*/
+	
+	
+	private Collection<NucLineage> getLineages()
+		{
+		Collection<NucLineage> lins=r.getVisibleLineages();
+		if(lins.isEmpty())
+			{
+			Imageset rec=w.getImageset();
+			rec.addMetaObject(new NucLineage());
+			return r.getVisibleLineages();
+			}
+		else
+			return lins;
 		}
 	
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		NucLineage lin=r.getLineage();
-		if(SwingUtilities.isLeftMouseButton(e) && lin!=null)
+		if(SwingUtilities.isLeftMouseButton(e) && !r.getVisibleLineages().isEmpty())
 			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 		}
 	
@@ -107,7 +122,13 @@ public class ToolMakeNuc implements ImageWindowTool
 		if(SwingUtilities.isLeftMouseButton(e) && active)//changed
 			{
 			//Make a nucleus if mouse has been dragged
-			NucLineage lin=getLineage();
+//			NucLineage lin=getLineage();
+			Collection<NucLineage> lins=getLineages();
+			//TODO proper multiselection
+			NucLineage lin=null;
+			if(!lins.isEmpty())
+				lin=lins.iterator().next();
+			
 			if(x1!=x2 && y1!=y2 && lin!=null && r.modifyingNucName==null)
 				{
 				//New name for this nucleus => null

@@ -26,7 +26,7 @@ import evplugin.modelWindow.ModelWindowGrid;
  */
 public class StackSlices
 	{	
-	int lastframe; 
+	double lastframe; 
 	double resZ;
 	TreeMap<Double,Vector<OneSlice>> texSlices=null;
 	private final int skipForward=1; //later maybe allow this to change
@@ -87,7 +87,7 @@ public class StackSlices
 	
 	
 				System.out.println("loading");
-				lastframe=cframe;
+				lastframe=frame;
 				resZ=chsel.im.meta.resZ;
 	
 	

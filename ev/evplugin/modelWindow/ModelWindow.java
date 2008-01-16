@@ -9,6 +9,7 @@ import org.jdom.*;
 
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
+import evplugin.data.EvObject;
 import evplugin.ev.*;
 import evplugin.keyBinding.*;
 import evplugin.nuc.NucLineage;
@@ -87,8 +88,15 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miViewLeft=new JMenuItem("Left");
 	private JMenuItem miViewRight=new JMenuItem("Right");
 
-
+	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
 	
+	/**
+	 * Is an object supposed to be visible?
+	 */
+	public boolean showObject(EvObject ob)
+		{
+		return objectDisplayList.toDisplay(ob);
+		}
 	
 
 	
@@ -120,6 +128,7 @@ public class ModelWindow extends BasicWindow
 		view.setFocusable(true);
 		setFocusable(true);
 		addKeyListener(this);
+		objectDisplayList.addChangeListener(this);
 
 		addMenubar(menuModel);
 		menuModel.add(miView);
@@ -213,6 +222,9 @@ public class ModelWindow extends BasicWindow
 			sidePanel.add(c,cr);
 			counta++;
 			}
+		GridBagConstraints cg=new GridBagConstraints();	cg.gridy=counta;	cg.fill=GridBagConstraints.HORIZONTAL;	cg.weightx=1;
+		sidePanel.add(objectDisplayList,cg);
+		
 		int countb=0;
 		bottomPanel.removeAll();
 		for(JComponent c:bottompanelItems)
@@ -431,6 +443,8 @@ public class ModelWindow extends BasicWindow
 		{
 		metaCombo.updateList();
 		view.meta=metaCombo.getMeta();
+		objectDisplayList.setData(metaCombo.getMeta());
+		objectDisplayList.updateList();
 		for(ModelWindowHook h:modelWindowHooks)
 			h.datachangedEvent();
 		if(frameControl!=null && view!=null)

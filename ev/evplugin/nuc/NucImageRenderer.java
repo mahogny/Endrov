@@ -6,7 +6,6 @@ import javax.vecmath.*;
 
 import evplugin.basicWindow.*;
 import evplugin.imageWindow.*;
-import evplugin.data.*;
 import evplugin.ev.*;
 
 public class NucImageRenderer implements ImageWindowRenderer
@@ -28,6 +27,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	/**
 	 * Get the lineage object from window
 	 */
+	/*
 	public NucLineage getLineage()
 		{
 		for(EvObject ob:w.getImageset().metaObject.values())
@@ -35,6 +35,14 @@ public class NucImageRenderer implements ImageWindowRenderer
 				return (NucLineage)ob;
 		return null;
 		}
+		*/
+	
+	public Collection<NucLineage> getVisibleLineages()
+		{
+		//TODO: pick out
+		return NucLineage.getLineages(w.getImageset());
+		}
+	
 
 	/**
 	 * Render nuclei
@@ -45,7 +53,8 @@ public class NucImageRenderer implements ImageWindowRenderer
 		NucPair lastHover=NucLineage.currentHover;			
 		if(w.mouseInWindow)
 			NucLineage.currentHover=new NucPair();
-		
+	
+		/*
 		NucLineage lin=getLineage();
 		if(lin!=null)
 			{
@@ -56,6 +65,18 @@ public class NucImageRenderer implements ImageWindowRenderer
 				drawNuc(g,nucPair,nuc);
 				}
 			}
+*/
+		
+		for(NucLineage lin:getVisibleLineages())
+			{
+			interpNuc=lin.getInterpNuc(w.frameControl.getFrame());			//maybe move this one later
+			for(NucPair nucPair:interpNuc.keySet())
+				{
+				NucLineage.NucInterp nuc=interpNuc.get(nucPair);
+				drawNuc(g,nucPair,nuc);
+				}
+			}
+		
 		if(!lastHover.equals(NucLineage.currentHover))
 			BasicWindow.updateWindows(w);
 		}
@@ -63,11 +84,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 	
 	public void dataChangedEvent()
 		{
-		/*
-		NucLineage lin=getLineage();
-		if(lin!=null)
-			interpNuc=lin.getInterpNuc(w.frameControl.getFrame());			//maybe move this one later
-			*/
 		}
 
 	
@@ -100,8 +116,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 			{
 			//Coordinate transformation
 			Vector2d so=w.transformW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
-//			double sox=w.w2sx(nuc.pos.x);
-	//		double soy=w.w2sy(nuc.pos.y);
 			
 			//Pick color of nucleus
 			Color nucColor;
@@ -152,11 +166,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 			if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))
 				{
 				g.setColor(Color.RED);
-				/*
-				g.drawString(nucName, 
-						(int)sox-g.getFontMetrics().stringWidth(nucName)/2, 
-						(int)soy+g.getFontMetrics().getHeight()/2);
-				*/
 				g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
 				int crossSize=5;
 				g.drawLine((int)so.x-crossSize, (int)so.y, (int)so.x+crossSize, (int)so.y);

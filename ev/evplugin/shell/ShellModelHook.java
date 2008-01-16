@@ -1,5 +1,8 @@
 package evplugin.shell;
 
+import java.util.Collection;
+import java.util.Vector;
+
 import javax.media.opengl.GL;
 
 import org.jdom.Element;
@@ -52,28 +55,29 @@ public class ShellModelHook implements ModelWindowHook
 		{
 		}
 	
-	public void displayFinal(GL gl)
+	
+	public Collection<Shell> getVisibleShell()
 		{
-		EvData metadata=w.view.getMetadata();
+		Vector<Shell> v=new Vector<Shell>();
+		EvData metadata=w.metaCombo.getMeta();
 		if(metadata!=null)
-			for(EvObject ob:metadata.metaObject.values())
-				{
+			{
+			for(EvObject ob:metadata.metaObject.values()) //TODO: special command that already filters based on canRender would be nice
 				if(ob instanceof Shell)
-					renderShell(gl, (Shell)ob);
-				}
+					if(w.showObject(ob))
+						v.add((Shell)ob);
+			}
 		else
 			if(EV.debugMode)
 				System.out.println("No meta");
+		return v;
 		}
 	
-	
-	/**
-	 * Render shell
-	 */
-	private void renderShell(GL gl, Shell shell)
+	public void displayFinal(GL gl)
 		{
-		//Check if shell really exists
-		if(shell!=null && (shell.midx!=0 || shell.midy!=0 || shell.midz!=0))
+		//Check if shell really exists. OUTDATED?
+//	if(shell!=null && (shell.midx!=0 || shell.midy!=0 || shell.midz!=0))
+		for(Shell shell:getVisibleShell())
 			{
 			gl.glPushMatrix();
 			
@@ -95,7 +99,9 @@ public class ShellModelHook implements ModelWindowHook
 			
 			gl.glPopMatrix();
 			}
+		
 		}
+
 	
 	/**
 	 * Render an ellipse on xy-plane

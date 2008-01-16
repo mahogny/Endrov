@@ -164,25 +164,27 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			
 			public ToolIsolayer()
 				{
+				JPanel q2=new JPanel(new GridLayout(1,2));
+				q2.add(withLabel("#Pl:",numplaneSpinner));
+				q2.add(withLabel("Cut-off2:",cutoff2Spinner));
 				JPanel q1=new JPanel(new GridLayout(1,2));
 				q1.add(withLabel("Trans:",transSpinner));
 				q1.add(withLabel("Cut-off:",cutoffSpinner));
-				JPanel q2=new JPanel(new GridLayout(1,2));
-				q2.add(chanCombo);
-				q2.add(withLabel("#Pl:",numplaneSpinner));
-				JPanel q3=new JPanel(new GridLayout(1,2));
-				q3.add(withLabel("Cut-off2:",cutoff2Spinner));
-				q3.add(withLabel("BlurX:",blurxySpinner));
-				JPanel q4=new JPanel(new GridLayout(1,2));
-				q4.add(comboColor);
-				q4.add(bDelete);
+				JPanel q3in=new JPanel(new GridLayout(1,2));
+				JPanel q3=new JPanel(new BorderLayout());
+				q3in.add(withLabel("BlurX:",blurxySpinner));
+				q3in.add(comboColor);
+				q3.add(q3in,BorderLayout.CENTER);
+				q3.add(bDelete,BorderLayout.EAST);
+				//JPanel q4=new JPanel(new GridLayout(1,3));
 				
 				setLayout(new GridLayout(4,1));
 				setBorder(BorderFactory.createEtchedBorder());
+				add(chanCombo);
 				add(q2);
-				add(q3);
 				add(q1);
-				add(q4);
+				add(q3);
+				//add(q4);
 				
 				transSpinner.addChangeListener(this);
 				cutoffSpinner.addChangeListener(this);

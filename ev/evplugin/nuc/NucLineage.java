@@ -171,6 +171,7 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Get _one_ lineage object or null. Maybe remove/refine later 
 	 */
+	/*
 	public static NucLineage getOneLineage(EvData meta)
 		{
 		if(meta!=null)
@@ -180,6 +181,20 @@ public class NucLineage extends EvObject implements Cloneable
 					return (NucLineage)ob;
 			}
 		return null;
+		}
+	*/
+	public static Collection<NucLineage> getLineages(EvData meta)
+		{
+		if(meta==null)
+			return new Vector<NucLineage>();
+		else
+			{
+			Vector<NucLineage> set=new Vector<NucLineage>();
+			for(EvObject ob:meta.metaObject.values())
+				if(ob instanceof NucLineage)
+					set.add((NucLineage)ob);
+			return set;
+			}
 		}
 	
 	
