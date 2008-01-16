@@ -17,14 +17,17 @@ uploaddoc:
 	scp -r ../javadoc mahogny@celegans.sh.se:~/Sites/
 
 linecount:
-	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt evplugin/modelWindow/isosurf/*.java evplugin/modelWindow/voxel/*.java evplugin/roi/primitive/*.java evplugin/roi/window/*.java
+	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt evplugin/*/cmd/*.java evplugin/roi/primitive/*.java evplugin/roi/window/*.java evplugin/modelWindow/isosurf/*.java evplugin/modelWindow/voxel/*.java
 
 webstart:
 #	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*/*class
 #	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/* evplugin/*/* evplugin/*/*/*
-	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*class evplugin/ev/pluginlist.txt
-	jarsigner -keystore myKeys ev.jar jdc
+	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*class evplugin/modelWindow/isosurf/*.class evplugin/modelWindow/voxel/*.class \
+							evplugin/ev/pluginlist.txt
+	jarsigner -keystore myKeys ev.jar mykey
 	du -hc ev.jar
+
+
 
 #keytool -genkey -keystore myKeys -alias jdc
 
