@@ -5,7 +5,6 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 
 import evplugin.data.*;
-//import evplugin.roi.ROI;
 
 /**
  * Tree model showing the XML of a custom meta object
@@ -16,6 +15,9 @@ public class ROITreeModel implements TreeModel
 	HashSet<TreeModelListener> listener=new HashSet<TreeModelListener>();
 	private EvData meta=null;
 
+	public WeakHashMap<Object, ROITreeElement> allElements=new WeakHashMap<Object, ROITreeElement>(); 
+	
+	
 	public void setMetaObject(EvData o)
 		{
 		meta=o;
@@ -32,17 +34,30 @@ public class ROITreeModel implements TreeModel
 		}
 
 	
-	
-	public Object getChild(Object arg0, int arg1)
+
+	private ROITreeElement getCreate(Object e, ROITreeElement parent)
 		{
-		ROITreeElement e=(ROITreeElement)arg0;
-		return new ROITreeElement(e.getChildren().get(arg1), e);
+		//System.out.println("getcreate e:"+e+" p:"+parent);
+		ROITreeElement o=allElements.get(e);
+		if(o==null)
+			{
+			o=new ROITreeElement(this,e, parent);
+			allElements.put(e,o);
+			}
+		return o;
+		}
+	
+	
+	public Object getChild(Object parento, int childnum)
+		{
+		ROITreeElement parent=(ROITreeElement)parento;
+		return getCreate(parent.getROIChildren().get(childnum), parent);
 		}
 
 	public int getChildCount(Object arg0)
 		{
 		ROITreeElement e=(ROITreeElement)arg0;
-		return e.getChildren().size();
+		return e.getROIChildren().size();
 		}
 
 	public int getIndexOfChild(Object arg0, Object arg1)
@@ -51,7 +66,7 @@ public class ROITreeModel implements TreeModel
 			return -1;
 		ROITreeElement e=(ROITreeElement)arg0;
 		ROITreeElement e2=(ROITreeElement)arg1;
-		List<?> list=e.getChildren();
+		List<?> list=e.getROIChildren();
 		for(int i=0;i<list.size();i++)
 			if(list.get(i)==e2)
 				return i;
@@ -61,24 +76,20 @@ public class ROITreeModel implements TreeModel
 	public Object getRoot()
 		{
 		if(meta==null)
-			return new ROITreeElement(null,null);
+			return new ROITreeElement(null, null,null);
 		else
-			return new ROITreeElement(meta, null);
+			return getCreate(meta,null);
 		}
 
-	public boolean isLeaf(Object arg0)
+	public boolean isLeaf(Object o)
 		{
-		ROITreeElement e=(ROITreeElement)arg0;
+		ROITreeElement e=(ROITreeElement)o;
 		return e.isLeaf();
 		}
 
 
-	public void valueForPathChanged(TreePath arg0, Object arg1)
-		{
-		//When item changed. Not supported.
-		}
-
-	
+	/** When item changed. Not supported. */
+	public void valueForPathChanged(TreePath arg0, Object arg1){}
 	
 	public void emitAllChanged()
 		{
@@ -86,19 +97,10 @@ public class ROITreeModel implements TreeModel
 			l.treeStructureChanged(new TreeModelEvent(this, new Object[]{getRoot()}));
 		}
 	
-	/*
-	public void addChild(ROITreeElement e, ROI ne)
-		{
-//TODO
-		//		e.e.addContent(ne);
-		emitAllChanged();
-		}*/
-	
 	public void updateElement(ROITreeElement e)
 		{
 		for(TreeModelListener l:listener)
 			l.treeNodesChanged(new TreeModelEvent(this, e.getPath()));
-		
 		emitAllChanged();
 		}
 	}

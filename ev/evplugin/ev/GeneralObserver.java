@@ -3,20 +3,22 @@ package evplugin.ev;
 import java.util.*;
 
 /**
- * General observer pattern
+ * Class that broadcast an event to several listeners 
  * 
  * @author Johan Henriksson
  * @param <E> Observer
  */
-public class GeneralObserver<E> implements Iterable<E>
+public class GeneralObserver<E> 
 	{
 	private WeakHashMap<E, Object> weak=new WeakHashMap<E, Object>();
 	private HashSet<E> strong=new HashSet<E>();
 
+	
+	
 	/**
 	 * Add a listener as strong (reference will keep it in memory)
 	 */
-	public synchronized void addStrong(E e)
+	public synchronized void addStrongListener(E e)
 		{
 		strong.add(e);
 		}
@@ -24,7 +26,7 @@ public class GeneralObserver<E> implements Iterable<E>
 	/**
 	 * Add a listener as weak (reference will not stop listener from being GC:d)
 	 */
-	public synchronized void addWeak(E e)
+	public synchronized void addWeakListener(E e)
 		{
 		weak.put(e,null);
 		}
@@ -41,12 +43,12 @@ public class GeneralObserver<E> implements Iterable<E>
 	/**
 	 * Iterate through listeners
 	 */
-	public synchronized Iterator<E> iterator()
+	public synchronized Set<E> getListeners()
 		{
 		Set<E> s=weak.keySet();
 		s.addAll(strong);
 		//this should be a copy which is important; it cannot be modified during iteration.
-		return s.iterator();
+		return s;
 		}
 	
 	}
