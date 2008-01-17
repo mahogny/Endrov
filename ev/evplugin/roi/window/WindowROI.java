@@ -7,6 +7,7 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import java.util.*;
 
+import evplugin.consoleWindow.ConsoleWindow;
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.roi.*;
@@ -87,6 +88,8 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	private JButton bNewUnion=new JButton(iconUnion);
 	private JButton bDelete=new JButton(getIconDelete());
 	
+	private JPanel upperPanel=new JPanel(new GridLayout(2,1));
+
 	
 	private MetaCombo metaCombo=new MetaCombo(this, false);
 	public boolean comboFilterMetadataCallback(EvData meta)
@@ -104,7 +107,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 */
 	public WindowROI()
 		{
-		this(600,300,500,300);
+		this(600,200,400,500);
 		}
 	
 	/**
@@ -112,20 +115,13 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 */
 	public WindowROI(int x, int y, int w, int h)
 		{		
-		//Put GUI together
-		setLayout(new BorderLayout());
-	
-		JPanel bottom=new JPanel(/*new GridLayout(1,4)*/);
-		add(metaCombo,BorderLayout.NORTH);
-		add(tree, BorderLayout.CENTER);
-		add(bottom, BorderLayout.SOUTH);
-
-		bottom.add(bNewDiff);
-		bottom.add(bNewIntersect);
-		bottom.add(bNewSub);
-		bottom.add(bNewUnion);
-		bottom.add(bDelete);
-		
+		//Put GUI together		
+		JPanel bp=new JPanel(new GridLayout(1,5));
+		bp.add(bNewDiff);
+		bp.add(bNewIntersect);
+		bp.add(bNewSub);
+		bp.add(bNewUnion);
+		bp.add(bDelete);
 		bNewDiff.addActionListener(this);
 		bNewIntersect.addActionListener(this);
 		bNewSub.addActionListener(this);
@@ -133,6 +129,11 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		bDelete.addActionListener(this);
 		tree.addTreeSelectionListener(this);
 		metaCombo.addActionListener(this);
+
+		upperPanel.add(metaCombo);
+		upperPanel.add(bp);
+		
+		setEditROI(null);
 		
 		//Window overall things
 		setTitle(EV.programName+" ROI");
@@ -141,6 +142,9 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		dataChangedEvent();
 		setVisible(true);
 		}
+	
+	
+	
 	
 	/**
 	 * Store down settings for window into personal config file
@@ -256,5 +260,63 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 			}
 		return hs;
 		}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Insert ROI component to edit.
+	 * Should one allow several to be open?
+	 */
+	private void setEditROI(ROI roi)
+		{
+		Container c=getContentPane();
+		
+		c.setLayout(new BorderLayout());
+		c.removeAll();
+		c.add(upperPanel, BorderLayout.NORTH);
+		c.add(tree, BorderLayout.CENTER);
+		
+		if(roi!=null)
+			{
+			JPanel editpanel=new JPanel(new GridLayout(1,1));
+			editpanel.setBorder(BorderFactory.createTitledBorder("Edit "+roi.getMetaTypeDesc()));
+			JComponent d=roi.getROIWidget();
+			c.add(editpanel,BorderLayout.SOUTH);
+			if(d==null)
+				d=new JLabel("There are no options");
+			editpanel.add(d);
+			}
+		c.validate();
+		}
+
+	
+
+	
+	/**
+	 * Bring up ROI window, unselect everything but this ROI, and start editing.
+	 */
+	public static void editROI(ROI roi)
+		{
+		//TODO: select
+		WindowROI w=getRoiWindow();
+		w.setEditROI(roi);
+		System.out.println("editroi"+roi);
+		}
+	
+	/*
+	 * 		JFrame frame=new JFrame(EV.programName+" Edit "+getMetaTypeDesc());
+		JComponent c=getROIWidget();
+		if(c==null)
+			c=new JLabel("There are no options");
+		frame.add(c);
+		frame.pack();
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+	 */
 	
 	}

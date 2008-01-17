@@ -3,6 +3,7 @@ package evplugin.roi.primitive;
 import java.util.*;
 
 import javax.swing.*;
+
 import org.jdom.*;
 
 import evplugin.imageset.*;
@@ -122,7 +123,7 @@ public class IntersectROI extends CompoundROI
 	/**
 	 * Get widget for editing this ROI
 	 */
-	public JPanel getROIWidget()
+	public JComponent getROIWidget()
 		{
 		return null;//There are no options
 		}
