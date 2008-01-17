@@ -51,16 +51,17 @@ public class Slice3DExtension implements ModelWindowExtension
 			}
 		
 		
-		public void adjustScale()
+		public Collection<Double> adjustScale()
 			{
+			return Collections.emptySet(); //TODO
 			}
-		public Vector3D autoCenterMid()
+		public Collection<Vector3D> autoCenterMid()
 			{
-			return null;
+			return Collections.emptySet(); //TODO
 			}
-		public Double autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
 			{
-			return null;
+			return Collections.emptySet(); //TODO
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}

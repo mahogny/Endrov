@@ -1,6 +1,9 @@
 package evplugin.modelWindow;
 
 import java.awt.event.*;
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.media.opengl.GL;
 import javax.swing.*;
 import org.jdom.*;
@@ -66,9 +69,9 @@ public class ModelWindowGrid implements ModelWindowExtension
 			}
 			
 			
-		public void adjustScale(){}
-		public Vector3D autoCenterMid(){return null;}
-		public Double autoCenterRadius(Vector3D mid, double FOV){return null;}
+		public Collection<Double> adjustScale(){return Collections.emptySet();}
+		public Collection<Vector3D> autoCenterMid(){return Collections.emptySet();}
+		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV){return Collections.emptySet();}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}

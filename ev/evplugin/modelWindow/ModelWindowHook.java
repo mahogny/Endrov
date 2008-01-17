@@ -1,5 +1,7 @@
 package evplugin.modelWindow;
 
+import java.util.Collection;
+
 import javax.media.opengl.*;
 import org.jdom.*;
 
@@ -23,12 +25,12 @@ public interface ModelWindowHook
 	public void select(int id);
 	public void displayFinal(GL gl);
 
-	public void adjustScale();
 	
 	public void fillModelWindomMenus();
 	
-	public Vector3D autoCenterMid();
-	public Double autoCenterRadius(Vector3D mid, double FOV);
+	public Collection<Double> adjustScale();
+	public Collection<Vector3D> autoCenterMid();
+	public Collection<Double> autoCenterRadius(Vector3D mid, double FOV);
 	
 	public void datachangedEvent();
 	}

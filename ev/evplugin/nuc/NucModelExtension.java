@@ -170,7 +170,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Adjust the scale
 		 */
-		public void adjustScale()
+		public Collection<Double> adjustScale()
 			{
 			int count=0;
 			for(Map<NucPair, NucLineage.NucInterp> i:interpNuc)
@@ -198,14 +198,18 @@ public class NucModelExtension implements ModelWindowExtension
 				if(dist<dy) dist=dy;
 				if(dist<dz) dist=dz;
 
+				return Collections.singleton((Double)dist);
+				/*
 				//Select pan speed
 				w.view.panspeed=dist/1000.0;
 				
 				//Select grid size
 				double g=Math.pow(10, (int)Math.log10(dist));
 				if(g<1) g=1;
-				ModelWindowGrid.setGridSize(w,g);
+				ModelWindowGrid.setGridSize(w,g);*/
 				}
+			else
+				return Collections.emptySet();
 			}
 
 		
@@ -339,7 +343,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Give suitable center of all objects
 		 */
-		public Vector3D autoCenterMid()
+		public Collection<Vector3D> autoCenterMid()
 			{
 			//Calculate center
 			double meanx=0, meany=0, meanz=0;
@@ -356,13 +360,13 @@ public class NucModelExtension implements ModelWindowExtension
 					}
 				}
 			if(num==0)
-				return null;
+				return Collections.emptySet();
 			else
 				{
 				meanx/=num;
 				meany/=num;
 				meanz/=num;
-				return new Vector3D(meanx,meany,meanz);
+				return Collections.singleton(new Vector3D(meanx,meany,meanz));
 				}
 			}
 		
@@ -370,7 +374,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Given a middle position, figure out radius required to fit objects
 		 */
-		public Double autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
 			{
 			//Calculate maximum radius
 			double maxr=0;
@@ -394,9 +398,9 @@ public class NucModelExtension implements ModelWindowExtension
 				}
 			//Find how far away the camera has to be
 			if(any)
-				return maxr/Math.sin(FOV);
+				return Collections.singleton((Double)maxr/Math.sin(FOV));
 			else
-				return null;
+				return Collections.emptySet();
 			}
 		
 		};

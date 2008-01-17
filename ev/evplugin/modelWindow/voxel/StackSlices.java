@@ -3,6 +3,7 @@ package evplugin.modelWindow.voxel;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
+
 import javax.media.opengl.*;
 import com.sun.opengl.util.texture.*;
 
@@ -11,7 +12,6 @@ import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
-import evplugin.modelWindow.ModelWindowGrid;
 
 //if one ever wish to build it in the background:
 //GLContext glc=view.getContext();
@@ -237,39 +237,42 @@ public class StackSlices
 	
 	
 	
-	public void adjustScale(ModelWindow w)
+	public Collection<Double> adjustScale(ModelWindow w)
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
 			double width=os.w/os.resX;
 			
+			return Collections.singleton(width);
+/*			
 			//pan speed
 			w.view.panspeed=width/1000.0;
 			
 			//Select grid size
 			double g=Math.pow(10, (int)Math.log10(width));
 			if(g<1) g=1;
-			ModelWindowGrid.setGridSize(w,g);
+			ModelWindowGrid.setGridSize(w,g);*/
 			}
-		
+		else
+			return Collections.emptySet();
 		}
 	
 	
 	/**
 	 * Give suitable center of all objects
 	 */
-	public Vector3D autoCenterMid()
+	public Collection<Vector3D> autoCenterMid()
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
 			double width=os.w/os.resX;
 			double height=os.h/os.resY;
-			return new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0);
+			return Collections.singleton(new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0));
 			}
 		else
-			return null;
+			return Collections.emptySet();
 		}
 	
 	

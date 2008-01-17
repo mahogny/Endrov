@@ -1,6 +1,7 @@
 package evplugin.shell;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Vector;
 
 import javax.media.opengl.GL;
@@ -34,21 +35,22 @@ public class ShellModelHook implements ModelWindowHook
 	public void displaySelect(GL gl) {}
 	public void select(int pixelid) {}
 
-	public Vector3D autoCenterMid()
+	public Collection<Vector3D> autoCenterMid()
 		{
 		//TODO
-		return null;
+		return Collections.emptySet();
 		}
-	public Double autoCenterRadius(Vector3D mid, double FOV)
+	public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
 		{
 		//TODO
-		return null;
+		return Collections.emptySet();
 		}
 
 	
-	public void adjustScale()
+	public Collection<Double> adjustScale()
 		{
 		//TODO
+		return Collections.emptySet();
 		}
 	
 	public void displayInit(GL gl)
