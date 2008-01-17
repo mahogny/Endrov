@@ -6,16 +6,14 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import java.util.*;
+import org.jdom.*;
 
-import evplugin.consoleWindow.ConsoleWindow;
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.roi.*;
 import evplugin.roi.primitive.*;
-//import evplugin.imageset.*;
 import evplugin.basicWindow.*;
 
-import org.jdom.*;
 
 /**
  * ROI Window - Display all ROIs
@@ -306,17 +304,5 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		w.setEditROI(roi);
 		System.out.println("editroi"+roi);
 		}
-	
-	/*
-	 * 		JFrame frame=new JFrame(EV.programName+" Edit "+getMetaTypeDesc());
-		JComponent c=getROIWidget();
-		if(c==null)
-			c=new JLabel("There are no options");
-		frame.add(c);
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-	 */
 	
 	}
