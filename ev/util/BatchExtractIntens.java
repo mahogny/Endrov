@@ -93,7 +93,7 @@ public static void calcAP(File file)
 							double[] pix=new double[3];	
 							r.getPixel(co, ro, pix);
 							double p = pix[0];											
-							if (p>=30) // empirically determined threshold (background)
+							if (p>=50) // empirically determined threshold (background)
 								{
 								totalintens+=p;
 								pixCounter++;
