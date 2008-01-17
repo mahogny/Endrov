@@ -172,7 +172,10 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public void adjustScale()
 			{
-			if(interpNuc.size()>=2)
+			int count=0;
+			for(Map<NucPair, NucLineage.NucInterp> i:interpNuc)
+				count+=i.size();
+			if(count>=2)
 				{
 				double maxx=-1000000,maxy=-1000000,maxz=-1000000;
 				double minx= 1000000,miny= 1000000,minz= 1000000;

@@ -77,7 +77,13 @@ public class OstImageset extends Imageset
 								clipboardString="";
 							String fileName=JOptionPane.showInputDialog("Path",clipboardString);
 							if(fileName!=null)
-								load(fileName);
+								{
+								File thefile=new File(fileName);
+								if(thefile.exists())
+									load(fileName);
+								else
+									JOptionPane.showMessageDialog(null, "Path does not exist");
+								}
 							}
 						}
 
