@@ -64,7 +64,7 @@ public abstract class Imageset extends EvData
 		ChannelImages im=channelImages.get(ch);
 		if(im==null)
 			{
-			ImagesetMeta.Channel m=meta.getChannel(ch);
+			ImagesetMeta.Channel m=meta.getCreateChannelMeta(ch);
 			im=internalMakeChannel(m);// new ChannelImages(m);
 			channelImages.put(ch, im);
 			}
@@ -79,7 +79,7 @@ public abstract class Imageset extends EvData
 	public void removeChannel(String ch)
 		{
 		channelImages.remove(ch);
-		meta.channel.remove(ch);
+		meta.channelMeta.remove(ch);
 		}
 	
 	

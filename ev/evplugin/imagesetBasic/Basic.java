@@ -34,7 +34,7 @@ public class Basic //implements BasicWindowExtension
 						if(e.getSource()==miLoadSequenceImageset)
 							dialogSequenceLoadImageset();
 						else if(e.getSource()==miLoadNamebasedImageset)
-								dialogNamebasedLoadImageset();
+							dialogNamebasedLoadImageset();
 						}
 					
 					/**
@@ -44,12 +44,12 @@ public class Basic //implements BasicWindowExtension
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(EvData.lastDataPath));
+				    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
+				    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
 				    	EvData.addMetadata(new SequenceImageset(filename));
 				    	}
 						}
@@ -62,13 +62,13 @@ public class Basic //implements BasicWindowExtension
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(EvData.lastDataPath));
+				    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
-				    	EvData.addMetadata(new SequenceImageset(filename));
+				    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
+				    	EvData.addMetadata(new NamebasedImageset(filename));
 				    	}
 						}
 					};

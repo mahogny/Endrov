@@ -12,15 +12,8 @@ import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.ModelWindow;
 import evplugin.modelWindow.ModelWindowGrid;
 
-//if one ever wish to build it in the background:
-//GLContext glc=view.getContext();
-//glc.makeCurrent(); 
-//GL gl=glc.getGL();
-// ... glc.release();
-
-
 /**
- * Render stack as several textured slices
+ * Render one slice in 3d
  * @author Johan Henriksson
  */
 public class Slice3D
@@ -93,7 +86,7 @@ public class Slice3D
 			resY=evim.getResY()/evim.getBinning();
 			resZ=im.meta.resZ;
 
-			//Load bitmap, scale down
+			//Load bitmap, scale down. Not needed, little data.
 			/*
 			int bw=suitablePower2(w);
 			resX/=w/(double)bw;
@@ -223,11 +216,6 @@ public class Slice3D
 		else
 			return null;
 		}
-	
-	
-	
-	
-	
 	
 	
 	}

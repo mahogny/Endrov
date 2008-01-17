@@ -53,13 +53,12 @@ public class OstImageset extends Imageset
 							{
 							JFileChooser chooser = new JFileChooser();
 					    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					    if(EvData.lastDataPath!=null)
-					    	chooser.setCurrentDirectory(new File(EvData.lastDataPath));
+				    	chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
 					    int returnVal = chooser.showOpenDialog(null); //null=window
 					    if(returnVal == JFileChooser.APPROVE_OPTION)
 					    	{
 					    	String filename=chooser.getSelectedFile().getAbsolutePath();
-					    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
+					    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
 					    	load(filename);
 					    	}
 							}
@@ -354,7 +353,7 @@ public class OstImageset extends Imageset
 						String fname=f.getName();
 						String channelName=fname.substring(fname.lastIndexOf('-')+1);
 						Log.printLog("Found channel: "+channelName);
-						Channel c=new Channel(meta.getChannel(channelName));
+						Channel c=new Channel(meta.getCreateChannelMeta(channelName));
 						c.scanFiles();
 						channelImages.put(channelName,c);
 						}
@@ -438,7 +437,7 @@ public class OstImageset extends Imageset
 					ChannelImages c=getChannel(channelName);
 					if(c==null)
 						{
-						c=new Channel(meta.getChannel(channelName));
+						c=new Channel(meta.getCreateChannelMeta(channelName));
 						channelImages.put(channelName,c);
 						}
 					

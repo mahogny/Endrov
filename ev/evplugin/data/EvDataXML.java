@@ -50,12 +50,12 @@ public class EvDataXML extends EvData
 		if(filename!=null)
 			fc.setSelectedFile(filename);
 		else
-			fc.setCurrentDirectory(new File(EvData.lastDataPath));
+			fc.setCurrentDirectory(new File(EvData.getLastDataPath()));
 //			fc.setCurrentDirectory(filename.getParentFile());
 		int ret=fc.showSaveDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			EvData.lastDataPath=fc.getSelectedFile().getParent();
+			EvData.setLastDataPath(fc.getSelectedFile().getParent());
 			filename=fc.getSelectedFile();
 			if(!filename.getName().endsWith(".xml"))
 				filename=new File(filename.getAbsolutePath()+".xml");
@@ -82,11 +82,11 @@ public class EvDataXML extends EvData
 	public static EvDataXML loadReturnMeta()
 		{
 		JFileChooser fc=getFileChooser();
-		fc.setCurrentDirectory(new File(EvData.lastDataPath));
+		fc.setCurrentDirectory(new File(EvData.getLastDataPath()));
 		int ret=fc.showOpenDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			EvData.lastDataPath=fc.getSelectedFile().getParent();
+			EvData.setLastDataPath(fc.getSelectedFile().getParent());
 			File filename=fc.getSelectedFile();
 			EvDataXML m=new EvDataXML(filename.getAbsolutePath());
 			return m;
