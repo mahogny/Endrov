@@ -142,7 +142,7 @@ public class NamebasedImageset extends Imageset
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==bSyntax)
-				BrowserControl.displayURL(EV.website+"/index.php/Plugin_ImagesetBasic");
+				BrowserControl.displayURL(EV.website+"Plugin_ImagesetBasic");
 			else if(e.getSource()==bRebuild)
 				{
 				fileConvention=eSequence.getText();

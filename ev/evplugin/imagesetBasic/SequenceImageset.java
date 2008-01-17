@@ -12,6 +12,8 @@ import evplugin.ev.*;
 import evplugin.imageset.*;
 
 
+//bug: new does not halt code.
+
 /**
  * 
  * @author Johan Henriksson
@@ -152,7 +154,7 @@ public class SequenceImageset extends Imageset
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==bSyntax)
-				BrowserControl.displayURL(EV.website+"DocsEVconvert");
+				BrowserControl.displayURL(EV.website+"Plugin_ImagesetBasic");
 			else if(e.getSource()==bRebuild)
 				{
 				fileConvention=eSequence.getText();
