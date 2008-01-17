@@ -3,6 +3,8 @@ package evplugin.modelWindow.voxel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import javax.media.opengl.*;
@@ -48,7 +50,7 @@ public class VoxelExtension implements ModelWindowExtension
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
 		private StackSlices slices=new StackSlices();
-		private StackSlices lastSlices=null; //to be removed
+		private StackSlices lastSlices=null; //to be removed TODO, can we pile up too many?
 
 		private OneImageChannel icR=new OneImageChannel("R", Color.RED);
 		private OneImageChannel icG=new OneImageChannel("G", Color.GREEN);
@@ -63,15 +65,15 @@ public class VoxelExtension implements ModelWindowExtension
 			totalPanel.add(icG);
 			totalPanel.add(icB);
 			}
-		public void adjustScale()
+		public Collection<Double> adjustScale()
 			{
-			slices.adjustScale(w);
+			return slices.adjustScale(w);
 			}
-		public Vector3D autoCenterMid()
+		public Collection<Vector3D> autoCenterMid()
 			{
 			return slices.autoCenterMid();
 			}
-		public Double autoCenterRadius(Vector3D mid, double FOV){return null;}
+		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV){return Collections.emptySet();}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}

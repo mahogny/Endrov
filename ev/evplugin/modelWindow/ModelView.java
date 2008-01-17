@@ -238,8 +238,20 @@ public class ModelView extends GLCanvas
 				h.displayFinal(gl);
 			
 			//adjust scale for next time
+			//TODO: should take all into account somehow. average?
 			for(ModelWindowHook h:window.modelWindowHooks)
-				h.adjustScale();
+				{
+				for(double dist:h.adjustScale())
+					{
+					//Select pan speed
+					panspeed=dist/1000.0;
+					
+					//Select grid size
+					double g=Math.pow(10, (int)Math.log10(dist));
+					if(g<1) g=1;
+					ModelWindowGrid.setGridSize(window,g);
+					}
+				}
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
@@ -261,11 +273,8 @@ public class ModelView extends GLCanvas
 
 		//Find centers of everything
 		for(ModelWindowHook h:window.modelWindowHooks)
-			{
-			Vector3D newcenter=h.autoCenterMid();
-			if(newcenter!=null)
+			for(Vector3D newcenter:h.autoCenterMid())
 				center.add(newcenter);
-			}
 
 		//If centers were available, continue
 		if(!center.isEmpty())
@@ -279,9 +288,9 @@ public class ModelView extends GLCanvas
 			double dist=0;
 			for(ModelWindowHook h:window.modelWindowHooks)
 				{
-				Double newDist=h.autoCenterRadius(mid,FOV);
-				if(newDist!=null && dist<newDist)
-					dist=newDist;
+				for(Double newDist:h.autoCenterRadius(mid,FOV))
+					if(dist<newDist)
+						dist=newDist;
 				}
 			//Avoid divison by zero at least
 			if(dist==0)

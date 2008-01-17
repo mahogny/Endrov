@@ -54,37 +54,67 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			addIsolevel.addActionListener(this);
 			}
 		
-		private Isosurface getOnedamnsurface()
+		private Collection<Isosurface> getOnedamnsurface()
 			{
+			Vector<Isosurface> iso=new Vector<Isosurface>();
 			for(ToolIsolayer f:isolayers)
 				if(!f.surfaces.isEmpty())
+					{
+					/*
 					for(IsosurfaceRenderer r:f.surfaces.values().iterator().next())
 						if(r.iso.isSurfaceValid())
 							return r.iso;
-			return null;
+					*/
+					Vector<IsosurfaceRenderer> vr=f.surfaces.values().iterator().next();
+					if(vr!=null)
+						{
+						IsosurfaceRenderer r=f.surfaces.values().iterator().next().iterator().next();
+						if(r!=null && r.iso.isSurfaceValid())
+							iso.add(r.iso);
+						//				return r.iso;
+						}
+					}
+			return iso;
+//			return null;
 			}
 		
-		public void adjustScale()
+		public Collection<Double> adjustScale()
 			{
-			Isosurface iso=getOnedamnsurface();
-			if(iso!=null)
-				iso.adjustScale(w);
+			Collection<Isosurface> iso=getOnedamnsurface();
+			Vector<Double> scale=new Vector<Double>();
+			for(Isosurface s:iso)
+				scale.addAll(s.adjustScale(w));
+			return scale;
+//			if(iso!=null)
+	//			iso.adjustScale(w);
 			}
-		public Vector3D autoCenterMid()
+		public Collection<Vector3D> autoCenterMid()
 			{
+			Collection<Isosurface> iso=getOnedamnsurface();
+			Vector<Vector3D> scale=new Vector<Vector3D>();
+			for(Isosurface s:iso)
+				scale.add(s.autoCenterMid());
+			return scale;
+			/*
 			Isosurface iso=getOnedamnsurface();
 			if(iso!=null)
 				return iso.autoCenterMid();
 			else
-				return null;
+				return null;*/
 			}
-		public Double autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
 			{
+			Collection<Isosurface> iso=getOnedamnsurface();
+			Vector<Double> scale=new Vector<Double>();
+			for(Isosurface s:iso)
+				scale.add(s.autoCenterRadius(mid, FOV));
+			return scale;
+			/*
 			Isosurface iso=getOnedamnsurface();
 			if(iso!=null)
 				return iso.autoCenterRadius(mid, FOV);
 			else
-				return null;
+				return null;*/
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}

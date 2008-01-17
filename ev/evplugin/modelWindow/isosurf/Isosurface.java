@@ -7,7 +7,6 @@ import javax.vecmath.Vector3f;
 
 import evplugin.ev.Vector3D;
 import evplugin.modelWindow.ModelWindow;
-import evplugin.modelWindow.ModelWindowGrid;
 
 public class Isosurface
 	{
@@ -817,10 +816,12 @@ public class Isosurface
 			return false;
 		}
 	
-	public void adjustScale(ModelWindow w)
+	public Collection<Double> adjustScale(ModelWindow w)
 		{
 		if(updateScale())
 			{
+			return Collections.singleton((double)(maxX-minX));
+			/*
 			//pan speed
 			w.view.panspeed=(maxX-minX)/1000.0;
 
@@ -828,8 +829,10 @@ public class Isosurface
 			double g=Math.pow(10, (int)Math.log10(maxX));
 			if(g<1) g=1;
 			ModelWindowGrid.setGridSize(w,g);
+			*/
 			}
-		
+		else
+			return Collections.emptySet();
 		}
 	
 	
