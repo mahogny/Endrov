@@ -6,6 +6,7 @@ import javax.vecmath.*;
 
 //import evplugin.basicWindow.*;
 import evplugin.data.*;
+import evplugin.ev.SimpleObserver;
 import evplugin.imageWindow.*;
 import evplugin.roi.primitive.BoxROI;
 import evplugin.roi.primitive.EllipseROI;
@@ -19,13 +20,17 @@ public class ImageRendererROI implements ImageWindowRenderer
 	{
 	public static final int HANDLESIZE=3;
 
-	public ImageWindow w;
+	private final ImageWindow w;
 	public Map<ROI, Map<String,ROI.Handle>> handleList=new HashMap<ROI, Map<String,ROI.Handle>>();
 	
+	SimpleObserver.Listener listenSelelection=new SimpleObserver.Listener()
+		{public void observerEvent(){w.updateImagePanel();}};
 	
-	public ImageRendererROI(ImageWindow w)
+	public ImageRendererROI(final ImageWindow w)
 		{
 		this.w=w;
+		
+		ROI.selectionChanged.addWeakListener(listenSelelection);
 		}
 
 
@@ -54,7 +59,10 @@ public class ImageRendererROI implements ImageWindowRenderer
 		
 		if(roiUncast.imageInRange(channel, frame, z))
 			{
-			g.setColor(Color.WHITE);
+			if(ROI.isSelected(roiUncast))
+				g.setColor(Color.MAGENTA);
+			else
+				g.setColor(Color.WHITE);
 			if(roiUncast instanceof BoxROI)
 				{
 				BoxROI roi=(BoxROI)roiUncast;

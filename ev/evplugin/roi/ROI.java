@@ -2,15 +2,13 @@ package evplugin.roi;
 
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
-
 import org.jdom.Element;
 
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
-import evplugin.roi.window.WindowROI;
 import evplugin.data.*;
+import evplugin.ev.SimpleObserver;
 
 /**
  * ROI (Region Of Interest), selects a region on channel X frames X x,y,z (5D)
@@ -36,8 +34,26 @@ public abstract class ROI extends EvObject
 	/**
 	 * Set of all selected ROI:s
 	 */
-	public static final HashSet<ROI> selected=new HashSet<ROI>();
-
+	private static final HashSet<ROI> selected=new HashSet<ROI>();
+	public static final SimpleObserver selectionChanged=new SimpleObserver();
+	
+	public static Collection<ROI> getSelected()
+		{
+		return Collections.unmodifiableCollection(selected);
+		}
+	public static boolean isSelected(ROI roi)
+		{
+		return selected.contains(roi);
+		}
+	public static void setSelected(Collection<ROI> newsel)
+		{
+		selected.clear();
+		selected.addAll(newsel);
+		selectionChanged.emit();
+//		BasicWindow.updateWindows(null); //to remove TODO
+		}
+	
+	
 	/******************************************************************************************************
 	 *            Class: Handle in image window                                                           *
 	 *****************************************************************************************************/
@@ -76,7 +92,10 @@ public abstract class ROI extends EvObject
 	 */
 	public void openEditWindow()
 		{
-		WindowROI.editROI(this);
+		Vector<ROI> v=new Vector<ROI>();
+		v.add(this);
+		ROI.setSelected(v);
+		System.out.println("editroi"+this);
 		}
 	
 	//name of ROI? = name of metaobject?

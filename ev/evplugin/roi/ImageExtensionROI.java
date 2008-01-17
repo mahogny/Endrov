@@ -47,7 +47,10 @@ public class ImageExtensionROI implements ImageWindowExtension
 		JMenuItem miROIWindow=new JMenuItem("ROI Window...");
 		miROI.add(miROIWindow);
 		miROIWindow.addActionListener(new ActionListener()
-			{public void actionPerformed(ActionEvent e){new WindowROI();}});
+			{public void actionPerformed(ActionEvent e){
+			WindowROI.getRoiWindow();
+			//new WindowROI();
+			}});
 		
 		
 		//New

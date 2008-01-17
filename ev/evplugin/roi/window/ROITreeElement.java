@@ -1,33 +1,36 @@
 package evplugin.roi.window;
 
+import java.util.*;
 import javax.swing.tree.*;
-
 
 import evplugin.data.*;
 import evplugin.roi.ROI;
 
-import java.util.*;
 
 /**
- * Holder of an XML-node in the tree
+ * Holder of ROIs in a tree
  * @author Johan Henriksson
  */
 public class ROITreeElement
 	{
-	public Object e; //ROI or EvData
+	public Object e; //a ROI or EvData
 	final public ROITreeElement parent;
 	
-	public ROITreeElement(Object e, ROITreeElement parent)
+	public ROITreeElement(ROITreeModel model, Object e, ROITreeElement parent)
 		{
 		this.e=e;
 		this.parent=parent;
+		if(model!=null)
+			model.allElements.put(e,this);
 		}
 	
+	/**
+	 * Get path to this element
+	 */
 	public TreePath getPath()
 		{
 		Vector<Object> path=new Vector<Object>();
 		ROITreeElement e=this;
-		
 		while(e!=null)
 			{
 			path.add(0,e);
@@ -36,8 +39,10 @@ public class ROITreeElement
 		return new TreePath(path.toArray());
 		}
 
-	
-	public Vector<ROI> getChildren()
+	/**
+	 * Get all children ROIs
+	 */
+	public Vector<ROI> getROIChildren()
 		{
 		if(e==null)
 			return new Vector<ROI>();
@@ -54,11 +59,28 @@ public class ROITreeElement
 			}
 		}
 	
+	/**
+	 * Get ROI if it is a ROI, otherwise null
+	 */
+	public ROI getROI()
+		{
+		if(e!=null && e instanceof ROI)
+			return (ROI)e;
+		else
+			return null;
+		}
+
+	/**
+	 * Are there ROIs in this container? should it always return true if it is a container?
+	 */
 	public boolean isLeaf()
 		{
-		return getChildren().isEmpty();
+		return getROIChildren().isEmpty();
 		}
-	
+
+	/**
+	 * Description in tree
+	 */
 	public String toString()
 		{
 		if(e==null)
