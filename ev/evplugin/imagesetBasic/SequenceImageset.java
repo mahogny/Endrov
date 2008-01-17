@@ -1,6 +1,7 @@
 package evplugin.imagesetBasic;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
@@ -72,7 +73,7 @@ public class SequenceImageset extends Imageset
 	public Imageset.ChannelImages getChannel(String ch)
 		{
 		if(!channelImages.containsKey(ch))
-			channelImages.put(ch, internalMakeChannel(meta.channel.get(ch)));
+			channelImages.put(ch, internalMakeChannel(meta.channelMeta.get(ch)));
 		return channelImages.get(ch);
 		}
 	
@@ -92,6 +93,17 @@ public class SequenceImageset extends Imageset
 		private JTextArea eLog=new JTextArea();
 		
 		
+		/**
+		 * Embed control with a label
+		 */
+		private JComponent withLabel(String text, JComponent right)
+			{
+			JPanel p=new JPanel(new BorderLayout());
+			p.add(new JLabel(text),BorderLayout.WEST);
+			p.add(right,BorderLayout.CENTER);
+			return p;
+			}
+		
 		public FileConvention()
 			{
 			setTitle(EV.programName+" Sequence Import File Conventions: "+imageset);
@@ -99,10 +111,10 @@ public class SequenceImageset extends Imageset
 			//GridBox might be better
 			
 			JPanel input=new JPanel(new GridLayout(2,1));
-			JPanel input1=new JPanel();
-			JPanel input2=new JPanel();
-			input.add(input1);
-			input.add(input2);
+			input.add(withLabel("Sequence:",eSequence));
+			input.add(withLabel("Channels:", eChannels));
+			
+			
 			
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));
@@ -110,8 +122,6 @@ public class SequenceImageset extends Imageset
 			eSequence.setText(fileConvention);
 			eChannels.setText(channelList);
 
-			input1.add(new JLabel("Sequence:"));			input1.add(eSequence);
-			input2.add(new JLabel("Channels:"));			input2.add(eChannels);
 			
 			JPanel bp=new JPanel(new GridLayout(1,2));
 			bp.add(bRebuild);
@@ -306,7 +316,14 @@ public class SequenceImageset extends Imageset
 					build(toplevel);
 					}
 				else
-					throw new Exception("Could not parse: "+firstChar);
+					{
+					fileConvention.charAt(stringpos);
+					
+					String firstPart=fileConvention.substring(0,stringpos);
+					String lastPart=fileConvention.substring(stringpos+1);
+					
+					throw new Exception("Could not parse: "+firstPart+" >>>"+firstChar+"<<< "+lastPart);
+					}
 				}
 			}
 

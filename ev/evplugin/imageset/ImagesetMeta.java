@@ -62,7 +62,7 @@ public class ImagesetMeta extends EvObject
 				else if(i.getName().equals("channel"))
 					{
 					ImagesetMeta.Channel ch=extractChannel(meta, i);
-					meta.channel.put(ch.name, ch);
+					meta.channelMeta.put(ch.name, ch);
 					}
 				else if(i.getName().equals("frame"))
 					extractFrame(meta.metaFrame, i);
@@ -207,7 +207,7 @@ public class ImagesetMeta extends EvObject
 	public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
 	
 	/** Channel specific data */
-	public HashMap<String,Channel> channel=new HashMap<String,Channel>();
+	public HashMap<String,Channel> channelMeta=new HashMap<String,Channel>();
 
 	public String getMetaTypeDesc()
 		{
@@ -254,14 +254,14 @@ public class ImagesetMeta extends EvObject
 	/**
 	 * Get a channel. Creates structure if it does not exist.
 	 */
-	public Channel getChannel(String ch)
+	public Channel getCreateChannelMeta(String ch)
 		{
-		Channel c=channel.get(ch);
+		Channel c=channelMeta.get(ch);
 		if(c==null)
 			{
 			c=new Channel();
 			c.name=ch;
-			channel.put(ch,c);
+			channelMeta.put(ch,c);
 			}
 		return c;
 		}
@@ -290,7 +290,7 @@ public class ImagesetMeta extends EvObject
 		saveFrameMetadata(metaFrame, e);
 		
 		//Channels
-		for(Channel ch:channel.values())
+		for(Channel ch:channelMeta.values())
 			{
 			Element elOstChannel=new Element("channel");
 			elOstChannel.setAttribute("name", ch.name);

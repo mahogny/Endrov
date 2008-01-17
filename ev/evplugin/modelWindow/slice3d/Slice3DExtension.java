@@ -152,9 +152,6 @@ public class Slice3DExtension implements ModelWindowExtension
 				stateChanged(null);
 				}
 
-
-
-
 			/**
 			 * Embed control with a label
 			 */

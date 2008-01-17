@@ -1,6 +1,7 @@
 package evplugin.imagesetBasic;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
@@ -17,7 +18,6 @@ public class NamebasedImageset extends Imageset
 	
 	private String fileConvention="";
 	private String channelList="";
-	private String rebuildLog="";
 	
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
@@ -43,7 +43,8 @@ public class NamebasedImageset extends Imageset
 	 */
 	public void buildDatabase()
 		{
-		new NamebasedDatabaseBuilder();
+		NamebasedDatabaseBuilder b=new NamebasedDatabaseBuilder();
+		b.run();
 		BasicWindow.updateWindows();
 		}
 	
@@ -64,10 +65,10 @@ public class NamebasedImageset extends Imageset
 	 * Get a channel or create it if it does not exist
 	 * TODO RENAME, OVERRIDES A METHOD IN A STUPID WAY
 	 */
-	public Imageset.ChannelImages getChannel(String ch)
+	public Imageset.ChannelImages getCreateChannel(String ch)
 		{
 		if(!channelImages.containsKey(ch))
-			channelImages.put(ch, internalMakeChannel(meta.channel.get(ch)));
+			channelImages.put(ch, internalMakeChannel(meta.channelMeta.get(ch)));
 		return channelImages.get(ch);
 		}
 	
@@ -87,26 +88,32 @@ public class NamebasedImageset extends Imageset
 		private JTextArea eLog=new JTextArea();
 		
 		
+		/**
+		 * Embed control with a label
+		 */
+		private JComponent withLabel(String text, JComponent right)
+			{
+			JPanel p=new JPanel(new BorderLayout());
+			p.add(new JLabel(text),BorderLayout.WEST);
+			p.add(right,BorderLayout.CENTER);
+			return p;
+			}
+		
+		
+		
 		public FileConvention()
 			{
 			setTitle(EV.programName+" Name based Import File Conventions: "+imageset);
 			
-			//GridBox might be better
-			
 			JPanel input=new JPanel(new GridLayout(2,1));
-			JPanel input1=new JPanel();
-			JPanel input2=new JPanel();
-			input.add(input1);
-			input.add(input2);
+			input.add(withLabel("Name:",eSequence));
+			input.add(withLabel("Channels:",eChannels));
 			
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));
 			
 			eSequence.setText(fileConvention);
 			eChannels.setText(channelList);
-
-			input1.add(new JLabel("Name:"));				input1.add(eSequence);
-			input2.add(new JLabel("Channels:"));			input2.add(eChannels);
 			
 			JPanel bp=new JPanel(new GridLayout(1,2));
 			bp.add(bRebuild);
@@ -135,13 +142,15 @@ public class NamebasedImageset extends Imageset
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==bSyntax)
-				BrowserControl.displayURL(EV.website+"DocsEVconvert");
+				BrowserControl.displayURL(EV.website+"/index.php/Plugin_ImagesetBasic");
 			else if(e.getSource()==bRebuild)
 				{
 				fileConvention=eSequence.getText();
 				channelList=eChannels.getText();
-				buildDatabase();
-				eLog.setText(rebuildLog);
+				NamebasedDatabaseBuilder b=new NamebasedDatabaseBuilder();
+				b.run();
+				eLog.setText(b.rebuildLog);
+				BasicWindow.updateWindows();
 				}
 			}
 		}
@@ -160,8 +169,10 @@ public class NamebasedImageset extends Imageset
 		{
 		File[] fileList;
 		int currentFile=0;
+		private String rebuildLog="";
 		
-		public NamebasedDatabaseBuilder()
+		
+		public void run()
 			{
 			Vector<String> channelVector=new Vector<String>();
 			try
@@ -175,6 +186,11 @@ public class NamebasedImageset extends Imageset
 				StringTokenizer ctok=new StringTokenizer(channelList,",");
 				while(ctok.hasMoreTokens())
 					channelVector.add(ctok.nextToken());
+				
+				//Remove/add meta corresponding to channels. why needed? TODO //20080117
+				for(String cname:channelVector)
+					meta.getCreateChannelMeta(cname);
+				
 				
 				//Clear up old database
 				for(ChannelImages ch:channelImages.values())
@@ -252,10 +268,12 @@ public class NamebasedImageset extends Imageset
 					//If everything was matched, continue
 					if(j==filename.length())
 						{
+						if(channelNum>=channelVector.size())
+							throw new Exception("No channel for index "+channelNum);
 						String channelName=channelVector.get(channelNum);
 
-						//Get a place to put EV. Create holders if needed
-						ChannelImages ch=getChannel(channelName);
+						//Get a place to put EVimage. Create holders if needed
+						ChannelImages ch=getCreateChannel(channelName);
 						TreeMap<Integer, EvImage> loaders=ch.imageLoader.get(frame);
 						if(loaders==null)
 							{
@@ -263,9 +281,11 @@ public class NamebasedImageset extends Imageset
 							ch.imageLoader.put(frame, loaders);
 							}
 						
-						//Plug EV
+						//Plug EVimage
 						loaders.put(slice, ((Channel)ch).newImage(f.getAbsolutePath()));
-						rebuildLog+=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
+						String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
+						System.out.println(newLogEntry);
+						rebuildLog+=newLogEntry;
 						}
 					else
 						JOptionPane.showMessageDialog(null, "Not matching: "+filename+" Premature end of filename");

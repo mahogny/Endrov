@@ -63,16 +63,14 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			{
 			public void loadPersonalConfig(Element e)
 				{
-				EvData.lastDataPath=e.getAttributeValue("path");
-				if(EvData.lastDataPath==null)
-					EvData.lastDataPath="";
+				EvData.setLastDataPath(e.getAttributeValue("path"));
 				}
 			public void savePersonalConfig(Element root)
 				{
 				try
 					{
 					Element e=new Element("lastImagesetPath");
-					e.setAttribute("path",EvData.lastDataPath);
+					e.setAttribute("path",EvData.getLastDataPath());
 					root.addContent(e);
 					}
 				catch (Exception e)
@@ -99,7 +97,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					e1.printStackTrace();
 					}
 				
-				EvData.lastDataPath=e.getAttributeValue("path");
+				EvData.setLastDataPath(e.getAttributeValue("path"));
 				}
 			public void savePersonalConfig(Element root)
 				{
@@ -144,7 +142,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 									{
 									double quality=Double.parseDouble(qualitys);
 									JFileChooser chooser = new JFileChooser();
-									chooser.setCurrentDirectory(new File(EvData.lastDataPath));
+									chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
 									int returnVal = chooser.showSaveDialog(null);
 									if(returnVal == JFileChooser.APPROVE_OPTION)
 										{
@@ -296,13 +294,16 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			
 			//Add channel tabs
 			for(String channelName:rec.channelImages.keySet())
+				{
+				System.out.println("meta123: "+channelName);
 				tabs.add(channelName, new ChannelTab(this,rec.getChannel(channelName)));
+				}
 			if(currentIndex>=0 && currentIndex<tabs.getComponentCount())
 				tabs.setSelectedIndex(currentIndex);
 			
 			for(ChannelTab t:channels)
 				{
-				ImagesetMeta.Channel cm=rec.meta.channel.get(t.channelName);
+				ImagesetMeta.Channel cm=rec.meta.channelMeta.get(t.channelName);
 				t.iDispX.setText(""+cm.dispX);
 				t.iDispY.setText(""+cm.dispY);			
 				t.iBinning.setText(""+cm.chBinning);
@@ -515,7 +516,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 				
 				for(ChannelTab t:channels)
 					{
-					ImagesetMeta.Channel ch=rec.meta.channel.get(t.channelName);
+					ImagesetMeta.Channel ch=rec.meta.channelMeta.get(t.channelName);
 					
 					ch.dispX=Double.parseDouble(t.iDispX.getText());
 					ch.dispY=Double.parseDouble(t.iDispY.getText());

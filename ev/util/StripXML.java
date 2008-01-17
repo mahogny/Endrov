@@ -20,9 +20,9 @@ public class StripXML
 
 		String filename="/Volumes/TBU_xeon01_500GB01/x";
 		OstImageset rec=new OstImageset(filename);
-		for(String chan:rec.meta.channel.keySet())
+		for(String chan:rec.meta.channelMeta.keySet())
 			{
-			ImagesetMeta.Channel m=rec.meta.channel.get(chan);
+			ImagesetMeta.Channel m=rec.meta.channelMeta.get(chan);
 			Vector<Integer> bah=new Vector<Integer>();
 			for(int frame:m.metaFrame.keySet())
 				if(frame<2500 || frame>3005)

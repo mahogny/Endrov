@@ -93,7 +93,6 @@ public class NucModelExtension implements ModelWindowExtension
 				if(w.showObject(lin))
 					v.add(lin);
 			return v;
-			//return NucLineage.getLineages(w.metaCombo.getMeta());
 			}
 		
 		/**
@@ -106,14 +105,6 @@ public class NucModelExtension implements ModelWindowExtension
 			interpNuc.clear();
 			for(NucLineage lin:getLineages())
 				interpNuc.add(lin.getInterpNuc(w.frameControl.getFrame()));
-
-			
-			//Get lineage
-/*			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
-			if(lin==null)
-				interpNuc.clear();
-			else
-				interpNuc=lin.getInterpNuc(w.frameControl.getFrame());*/
 			}
 		
 		/**
@@ -121,8 +112,6 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public void displaySelect(GL gl)
 			{
-							
-			//Render nuclei
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
@@ -134,7 +123,6 @@ public class NucModelExtension implements ModelWindowExtension
 					renderNucSel(gl,nucPair, inter.get(nucPair));
 					}
 			}
-
 		
 		/**
 		 * Render graphics
@@ -224,8 +212,6 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		private void renderNuc(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
-			//String nucName=nucPair.getRight();
-			
 			//Visibility rule
 			if(nuc.frameBefore==null)
 				return;
@@ -288,7 +274,6 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		private void renderNucLabel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
-			
 			//Visibility rule
 			if(nuc.frameBefore==null)
 				return;
@@ -353,31 +338,29 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public Vector3D autoCenterMid()
 			{
-//			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
+			//Calculate center
+			double meanx=0, meany=0, meanz=0;
+			int num=0;
 			for(NucLineage lin:getLineages())
-			//for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc) 
-				//TODO: only one considered
-	//		if(lin!=null)
 				{
 				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
-				if(interpNuc.size()!=0)
+				num+=interpNuc.size();
+				for(NucLineage.NucInterp nuc:interpNuc.values()) //what about non-existing ones?
 					{
-					//Calculate center
-					double meanx=0, meany=0, meanz=0;
-					for(NucLineage.NucInterp nuc:interpNuc.values()) //what about non-existing ones?
-						{
-						meanx+=nuc.pos.x;
-						meany+=nuc.pos.y;
-						meanz+=nuc.pos.z;
-						}
-					double num=interpNuc.size();
-					meanx/=num;
-					meany/=num;
-					meanz/=num;
-					return new Vector3D(meanx,meany,meanz);
+					meanx+=nuc.pos.x;
+					meany+=nuc.pos.y;
+					meanz+=nuc.pos.z;
 					}
 				}
-			return null;
+			if(num==0)
+				return null;
+			else
+				{
+				meanx/=num;
+				meany/=num;
+				meanz/=num;
+				return new Vector3D(meanx,meany,meanz);
+				}
 			}
 		
 		
@@ -386,32 +369,31 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public Double autoCenterRadius(Vector3D mid, double FOV)
 			{
-//			NucLineage lin=NucLineage.getOneLineage(w.view.getMetadata());
-//			if(lin!=null)
-			for(NucLineage lin:getLineages()) //TODO: only one considered
+			//Calculate maximum radius
+			double maxr=0;
+			boolean any=false;
+			for(NucLineage lin:getLineages())
 				{
 				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
-				if(interpNuc.size()!=0)
+				any=true;
+				for(NucLineage.NucInterp nuc:interpNuc.values())
 					{
-					//Calculate maximum radius
-					double maxr=0;
-					for(NucLineage.NucInterp nuc:interpNuc.values())
-						{
-						double dx=nuc.pos.x-mid.x;
-						double dy=nuc.pos.y-mid.y;
-						double dz=nuc.pos.z-mid.z;
-						double r=Math.sqrt(dx*dx+dy*dy+dz*dz)+nuc.pos.r;
-						if(maxr<r)
-							maxr=r;
-						}
-					if(EV.debugMode)
-						System.out.println("center radius from nuc: "+(maxr/Math.sin(FOV)));
-					
-					//Find how far away the camera has to be
-					return maxr/Math.sin(FOV);
+					double dx=nuc.pos.x-mid.x;
+					double dy=nuc.pos.y-mid.y;
+					double dz=nuc.pos.z-mid.z;
+					double r=Math.sqrt(dx*dx+dy*dy+dz*dz)+nuc.pos.r;
+					if(maxr<r)
+						maxr=r;
 					}
+				if(EV.debugMode)
+					System.out.println("center radius from nuc: "+(maxr/Math.sin(FOV)));
+
 				}
-			return null;
+			//Find how far away the camera has to be
+			if(any)
+				return maxr/Math.sin(FOV);
+			else
+				return null;
 			}
 		
 		};

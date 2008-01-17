@@ -49,12 +49,12 @@ public class BioformatsImageset extends Imageset
 							{
 							JFileChooser chooser = new JFileChooser();
 					    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					    chooser.setCurrentDirectory(new File(EvData.lastDataPath));
+					    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
 					    int returnVal = chooser.showOpenDialog(null); //null=window
 					    if(returnVal == JFileChooser.APPROVE_OPTION)
 					    	{
 					    	String filename=chooser.getSelectedFile().getAbsolutePath();
-					    	EvData.lastDataPath=chooser.getSelectedFile().getParent();
+					    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
 					    	load(filename);
 					    	}
 							}
@@ -163,11 +163,11 @@ public class BioformatsImageset extends Imageset
 			for(int channelnum=0;channelnum<numc;channelnum++)
 				{
 				String channelName="ch"+channelnum;
-				ImagesetMeta.Channel mc=meta.getChannel(channelName);
+				ImagesetMeta.Channel mc=meta.getCreateChannelMeta(channelName);
 				loadMeta(mc);
 	
 				//Fill up with image loaders
-				Channel c=new Channel(meta.getChannel(channelName));
+				Channel c=new Channel(meta.getCreateChannelMeta(channelName));
 				channelImages.put(channelName,c);
 				for(int framenum=0;framenum<numt;framenum++)
 					{
@@ -188,11 +188,11 @@ public class BioformatsImageset extends Imageset
 			for(int channelnum=0;channelnum<numc;channelnum++)
 				{
 				String channelName="ch"+channelnum;
-				ImagesetMeta.Channel mc=meta.getChannel(channelName);
+				ImagesetMeta.Channel mc=meta.getCreateChannelMeta(channelName);
 				loadMeta(mc);
 	
 				//Fill up with image loaders
-				Channel c=new Channel(meta.getChannel(channelName));
+				Channel c=new Channel(meta.getCreateChannelMeta(channelName));
 				for(int framenum=0;framenum<numt;framenum++)
 					{
 					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();

@@ -336,11 +336,11 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		else if(e.getSource()==bImport)
 			{
 			JFileChooser fc=getFileChooser();
-			fc.setCurrentDirectory(new File(EvData.lastDataPath));
+			fc.setCurrentDirectory(new File(EvData.getLastDataPath()));
 			int ret=fc.showOpenDialog(null);
 			if(ret==JFileChooser.APPROVE_OPTION)
 				{
-				EvData.lastDataPath=fc.getSelectedFile().getParent();
+				EvData.setLastDataPath(fc.getSelectedFile().getParent());
 				File filename=fc.getSelectedFile();
 				
 				String elementName=JOptionPane.showInputDialog("Name of new elements");
