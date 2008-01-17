@@ -52,6 +52,7 @@ public class NucLineage extends EvObject implements Cloneable
 		Script.addCommand("nud", new CmdNucs(false,true));
 		Script.addCommand("nuda", new CmdNucda());
 		Script.addCommand("nuren", new CmdNucren());
+		Script.addCommand("nurend", new CmdNucrend());
 		Script.addCommand("nusnap", new CmdNucsnap());
 		Script.addCommand("nuhide", new CmdNuchide());
 		Script.addCommand("nushow", new CmdNucshow());

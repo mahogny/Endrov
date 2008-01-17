@@ -101,7 +101,7 @@ public class VoxelExtension implements ModelWindowExtension
 		public void displayFinal(GL gl)
 			{
 			//Remove prior data
-			if(lastSlices!=null)
+			if(lastSlices!=null)    //TODO: make list. potential memory leak
 				lastSlices.clean(gl);
 			lastSlices=null;
 			
