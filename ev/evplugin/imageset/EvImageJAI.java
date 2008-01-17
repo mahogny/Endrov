@@ -97,7 +97,7 @@ public abstract class EvImageJAI extends EvImage
 				else if(slice==-1)
 					{
 					//Single-slice image
-					System.out.println(".. "+ImageIO.read(file)+" "+file.getAbsolutePath());
+//					System.out.println(".. "+ImageIO.read(file)+" "+file.getAbsolutePath());
 					return ImageIO.read(file);
 					}
 				else
