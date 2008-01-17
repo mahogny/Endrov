@@ -78,7 +78,7 @@ public class StackSlices
 			clean(gl);
 			texSlices=new TreeMap<Double,Vector<OneSlice>>();
 
-			long t=System.currentTimeMillis();
+	//		long t=System.currentTimeMillis();
 	
 			for(ChannelSelection chsel:channels)
 				{
@@ -141,7 +141,7 @@ public class StackSlices
 						}
 	
 				}
-			System.out.println("loading ok:"+(System.currentTimeMillis()-t));
+//			System.out.println("voxels loading ok:"+(System.currentTimeMillis()-t));
 			}
 		}
 	

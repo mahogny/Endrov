@@ -13,6 +13,7 @@ import org.jdom.Element;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.basicWindow.ChannelCombo;
+import evplugin.basicWindow.ColorCombo;
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.imageset.*;
@@ -121,21 +122,6 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				ti.render(gl);
 			}
 		
-
-		private class MyColor
-			{
-			String name;
-			Color c;
-			public MyColor(String name, Color c)
-				{
-				this.name=name;
-				this.c=c;
-				}
-			public String toString()
-				{
-				return name;
-				}
-			}
 		
 		
 		private class ToolIsolayer extends JPanel implements ChangeListener, ActionListener
@@ -148,17 +134,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			private JSpinner blurxySpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)10.0,(int)1));
 			private ChannelCombo chanCombo=new ChannelCombo(null,true);
 			private JButton bDelete=new JButton(BasicWindow.getIconDelete());
-			private JComboBox comboColor=new JComboBox(new MyColor[]{
-					new MyColor("Red",new Color(128,0,0)),
-					new MyColor("Green",new Color(0,128,0)),
-					new MyColor("Blue",new Color(0,0,128)),
-					new MyColor("Yellow",new Color(128,128,0)),
-					new MyColor("Cyan",new Color(0,128,128)),
-					new MyColor("L.Gray",Color.LIGHT_GRAY),
-					new MyColor("Gray",Color.GRAY),
-					new MyColor("D.Gray",Color.DARK_GRAY)
-					});
-			
+			private ColorCombo colorCombo=new ColorCombo();
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
 			private HashMap<Integer,Vector<IsosurfaceRenderer>> surfaces=new HashMap<Integer,Vector<IsosurfaceRenderer>>(); 
 			
@@ -173,7 +149,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				JPanel q3in=new JPanel(new GridLayout(1,2));
 				JPanel q3=new JPanel(new BorderLayout());
 				q3in.add(withLabel("BlurX:",blurxySpinner));
-				q3in.add(comboColor);
+				q3in.add(colorCombo);
 				q3.add(q3in,BorderLayout.CENTER);
 				q3.add(bDelete,BorderLayout.EAST);
 				//JPanel q4=new JPanel(new GridLayout(1,3));
@@ -270,10 +246,10 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						}
 					
 					//Finally render
-					MyColor col=(MyColor)comboColor.getSelectedItem();
+					Color col=colorCombo.getColor();
 					double trans=(Double)transSpinner.getModel().getValue();
 					for(IsosurfaceRenderer rr:r)
-						rr.render(gl,col.c.getRed()/255.0f, col.c.getGreen()/255.0f, col.c.getBlue()/255.0f, (float)trans/100.0f);
+						rr.render(gl,col.getRed()/255.0f, col.getGreen()/255.0f, col.getBlue()/255.0f, (float)trans/100.0f);
 					}
 				}
 			

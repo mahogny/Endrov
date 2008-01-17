@@ -2,6 +2,8 @@ package evplugin.imageWindow;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
+
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -9,8 +11,6 @@ import evplugin.basicWindow.FrameControl;
 import evplugin.imageset.Imageset;
 
 
-
-//todo: spinners are based on integer. low precision?
 
 /**
  * Common control to change which frame is to be displayed
@@ -30,6 +30,12 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	/** Component to tell that frame has changed */
 	private final ChangeListener listener;
 	
+	/** Which channel this control refers to */
+	private String channel=null;
+	private Imageset imageset;
+	//New version: will never be null unless imageset is null
+	
+	
 	private static ImageIcon iconFramePrev=new ImageIcon(FrameControlImage.class.getResource("buttonFramePrev.png"));
 	private static ImageIcon iconFrameNext=new ImageIcon(FrameControlImage.class.getResource("buttonFrameNext.png"));
 	private static ImageIcon iconFrameFirst=new ImageIcon(FrameControlImage.class.getResource("buttonFrameFirst.png"));
@@ -45,22 +51,80 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	private JButton buttonBeginning=new JButton(iconFrameFirst);
 	private JButton buttonEnd=new JButton(iconFrameLast);
 
-	private SpinnerModel zModel    =new SpinnerNumberModel(0,0,999,1);
-	private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
-	private JSpinner spinnerZ    =new JSpinner(zModel);
+	private JSpinner spinnerZ;
 	private JSpinner spinnerFrame;
 	private JSpinner spinnerGroup=new JSpinner(groupModel);
-
 	private JCheckBox checkGroupSlice=new JCheckBox("");
-	
-	
-	
-	/** Which channel this control refers to */
-	private String channel=null;
-	private Imageset imageset;
-	//New version: will never be null unless imageset is null
-	
+
+	/** Frame spinner behaviour */
+	private SpinnerModel frameModel=new SpinnerModel()
+		{
+		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
+		public void addChangeListener(ChangeListener e){listeners.add(e);}
+		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
+		public int frame;
+		public Object getNextValue()
+			{
+			Integer i=nextFrame();
+			if(i==null)	return frame;	else return i;
+			}
+		public Object getPreviousValue()
+			{
+			Integer i=lastFrame();
+			if(i==null)	return frame;	else return i;
+			}
+		public Object getValue(){return frame;}
+		public void setValue(Object e)
+			{
+			frame=(Integer)e;
+			for(ChangeListener li:listeners)
+				li.stateChanged(new ChangeEvent(this));
+			}
+		};
+		
+	/** Z spinner behaviour */
+	private SpinnerModel zModel=new SpinnerModel()
+		{
+		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
+		public void addChangeListener(ChangeListener e){listeners.add(e);}
+		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
+		public int z;
+		public Object getNextValue()
+			{
+			Integer i=nextUp();
+			if(i==null)	return z;	else return i;
+			}
+		public Object getPreviousValue()
+			{
+			Integer i=nextDown();
+			if(i==null)	return z;	else return i;
+			}
+		public Object getValue(){return z;}
+		public void setValue(Object e)
+			{
+			z=(Integer)e;
+			for(ChangeListener li:listeners)
+				li.stateChanged(new ChangeEvent(this));
+			}
+		};		
+
+	/** Editor for integer spinners */	
+	private static class IntegerEditor extends JTextField
+		{
+		static final long serialVersionUID=0;
+		public IntegerEditor(final JSpinner sp)
+			{
+			addActionListener(new ActionListener()
+				{public void actionPerformed(ActionEvent e){sp.getModel().setValue(Integer.parseInt(getText()));}});
+			sp.getModel().addChangeListener(new ChangeListener()
+				{public void stateChanged(ChangeEvent e){setText(""+(Integer)sp.getModel().getValue());}});
+			setText(""+(int)(Integer)sp.getModel().getValue());
+			}
+		}
+		
+		
+		
 	public void setChannel(Imageset imageset, String channel)
 		{
 		this.imageset=imageset;
@@ -96,6 +160,12 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		playPanel.add(buttonPlayBack);
 		playPanel.add(buttonPlayForward);
 		
+		spinnerFrame=new JSpinner(frameModel);
+		spinnerFrame.setEditor(new IntegerEditor(spinnerFrame));
+		spinnerZ=new JSpinner(zModel);
+		spinnerZ.setEditor(new IntegerEditor(spinnerZ));
+
+		
 		//Build other controls and merge
 		JPanel zPanel=new JPanel(new BorderLayout());
 		zPanel.add(new JLabel("Z:"), BorderLayout.WEST);
@@ -103,8 +173,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		zPanel.add(checkGroupSlice, BorderLayout.EAST);
 		
 		JPanel fPanel=new JPanel(new BorderLayout());
-		frameModel=new SpinnerNumberModel((double)0.0,(double)0.0,(double)10000.0,(double)1);
-		spinnerFrame=new JSpinner(frameModel);
+				
 		fPanel.add(new JLabel("Frame:"), BorderLayout.WEST);
 		fPanel.add(spinnerFrame, BorderLayout.CENTER);
 		
@@ -227,34 +296,65 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	 */
 	public void stepForward()
 		{
-		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).closestFrameAfter((int)getFrame()));
+		Integer i=nextFrame();
+		if(i!=null) setFrame((int)i);
 		}
+	private Integer nextFrame()
+		{
+		if(channel!=null && getImageset().getChannel(channel)!=null)
+			return getImageset().getChannel(channel).closestFrameAfter((int)getFrame());
+		else
+			return null;
+		}
+	
+	
+	
 	/**
 	 * Move to last existing frame
 	 */
 	public void stepBack()
 		{
-		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).closestFrameBefore((int)getFrame()));
+		Integer i=lastFrame();
+		if(i!=null) setFrame((int)i);
 		}
+	private Integer lastFrame()
+		{
+		if(channel!=null && getImageset().getChannel(channel)!=null)
+			return getImageset().getChannel(channel).closestFrameBefore((int)getFrame());
+		else
+			return null;
+		}
+	
 	/**
 	 * Move to slice above
 	 */
 	public void stepUp()
 		{
+		Integer i=nextUp();
+		if(i!=null) setZ((int)i);
+		}
+	private Integer nextUp()
+		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setZ(getImageset().getChannel(channel).closestZBelow((int)getFrame(),getZ()));
+			return getImageset().getChannel(channel).closestZBelow((int)getFrame(),getZ());
+		else
+			return null;
 		}
 	/**
 	 * Move to slice below
 	 */
 	public void stepDown()
 		{
-		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setZ(getImageset().getChannel(channel).closestZAbove((int)getFrame(),getZ()));
+		Integer i=nextDown();
+		if(i!=null) setZ((int)i);
 		}
-	
+	private Integer nextDown()
+		{
+		if(channel!=null && getImageset().getChannel(channel)!=null)
+			return getImageset().getChannel(channel).closestZAbove((int)getFrame(),getZ());
+		else
+			return null;
+		}
 	
 	/**
 	 * Handle spinners
@@ -278,7 +378,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			z=getImageset().getChannel(channel).closestZ((int)frame, z);
 			}
 		removeChangeListener();
-		spinnerFrame.setValue((double)frame);
+		spinnerFrame.setValue((int)frame);
 		spinnerZ.setValue(z);
 		addChangeListener();
 		listener.stateChanged(new ChangeEvent(this));
@@ -298,7 +398,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			z=getImageset().getChannel(channel).closestZ((int)frame, z);
 			}
 		removeChangeListener();
-		spinnerFrame.setValue((double)frame);
+		spinnerFrame.setValue((int)frame);
 		if(checkGroupSlice.isSelected())
 			spinnerZ.setValue(z);
 		addChangeListener();
@@ -327,7 +427,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	/** Get current frame */
 	public double getFrame()
 		{
-		return (Double)spinnerFrame.getValue();
+		return (Integer)spinnerFrame.getValue();
 		}
 
 	/** Set current frame */

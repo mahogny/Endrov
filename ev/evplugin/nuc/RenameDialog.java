@@ -1,4 +1,4 @@
-package evplugin.lineageWindow;
+package evplugin.nuc;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,7 +10,6 @@ import javax.swing.*;
 import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvDataXML;
 import evplugin.data.EvObject;
-import evplugin.nuc.*;
 
 /**
  * Dialog to rename a nucleus
