@@ -4,12 +4,13 @@ import java.awt.event.*;
 import java.util.*;
 
 import javax.swing.*;
+
 import org.jdom.Element;
 
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
+import evplugin.roi.window.WindowROI;
 import evplugin.data.*;
-import evplugin.ev.*;
 
 /**
  * ROI (Region Of Interest), selects a region on channel X frames X x,y,z (5D)
@@ -75,14 +76,7 @@ public abstract class ROI extends EvObject
 	 */
 	public void openEditWindow()
 		{
-		JFrame frame=new JFrame(EV.programName+" Edit "+getMetaTypeDesc());
-		JComponent c=getROIWidget();
-		if(c==null)
-			c=new JLabel("There are no options");
-		frame.add(c);
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		WindowROI.editROI(this);
 		}
 	
 	//name of ROI? = name of metaobject?
@@ -100,7 +94,7 @@ public abstract class ROI extends EvObject
 	public abstract String getROIDesc();
 	
 	/** Get a widget to edit the parameters of this ROI */
-	public abstract JPanel getROIWidget();
+	public abstract JComponent getROIWidget();
 	
 	
 	

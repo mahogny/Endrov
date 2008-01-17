@@ -278,7 +278,7 @@ public class BoxROI extends ROI
 	/**
 	 * Get widget for editing this ROI
 	 */
-	public JPanel getROIWidget()
+	public JComponent getROIWidget()
 		{
 		final SpanWidget spans[]={
 				new SpanWidget("<= Frame <",regionFrames),
