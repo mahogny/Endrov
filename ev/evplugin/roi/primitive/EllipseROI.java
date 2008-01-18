@@ -8,7 +8,6 @@ import javax.swing.event.*;
 import org.jdom.*;
 
 import evplugin.roi.*;
-import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvData;
 import evplugin.data.EvObject;
 import evplugin.data.EvObjectType;
@@ -282,7 +281,8 @@ public class EllipseROI extends ROI
 					span.all=!((JCheckBox)cSpan).isSelected();
 				span.start=Double.parseDouble(spinnerS.getText());
 				span.end  =Double.parseDouble(spinnerE.getText());
-				BasicWindow.updateWindows();
+				ROI.roiParamChanged.emit();
+//				BasicWindow.updateWindows();
 				}
 			catch (NumberFormatException e){}
 			}
@@ -327,7 +327,8 @@ public class EllipseROI extends ROI
 				for(String s:regionChannels)
 					System.out.print(" "+s);
 				System.out.println("");
-				BasicWindow.updateWindows();
+				ROI.roiParamChanged.emit();
+//				BasicWindow.updateWindows();
 				}
 			});
 		

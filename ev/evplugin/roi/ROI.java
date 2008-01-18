@@ -7,6 +7,7 @@ import org.jdom.Element;
 
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
+import evplugin.roi.window.WindowROI;
 import evplugin.data.*;
 import evplugin.ev.SimpleObserver;
 
@@ -29,6 +30,7 @@ public abstract class ROI extends EvObject
 		ImageWindow.addImageWindowExtension(new ImageExtensionROI());
 		}
 
+	
 	
 
 	/**
@@ -76,6 +78,11 @@ public abstract class ROI extends EvObject
 	 *                               Instance                                                                 *
 	 *****************************************************************************************************/
 
+	
+	public static final SimpleObserver roiParamChanged=new SimpleObserver();
+	public static final SimpleObserver roiStructChanged=new SimpleObserver();
+
+	
 	/**
 	 * Add options for ROI metaobject to metaobject menu
 	 */
@@ -87,6 +94,8 @@ public abstract class ROI extends EvObject
 			{public void actionPerformed(ActionEvent e){openEditWindow();}});
 		}
 
+	//TODO: move below to roi window
+	
 	/**
 	 * Open window allowing settings for ROI to be changed
 	 */
@@ -94,8 +103,9 @@ public abstract class ROI extends EvObject
 		{
 		Vector<ROI> v=new Vector<ROI>();
 		v.add(this);
+		WindowROI.getRoiWindow();
 		ROI.setSelected(v);
-		System.out.println("editroi"+this);
+		System.out.println("editroi "+this);
 		}
 	
 	//name of ROI? = name of metaobject?

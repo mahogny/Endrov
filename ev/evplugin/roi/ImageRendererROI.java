@@ -31,6 +31,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 		this.w=w;
 		
 		ROI.selectionChanged.addWeakListener(listenSelelection);
+		ROI.roiParamChanged.addWeakListener(listenSelelection);
+		ROI.roiStructChanged.addWeakListener(listenSelelection);
 		}
 
 
