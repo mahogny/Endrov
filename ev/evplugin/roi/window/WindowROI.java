@@ -186,7 +186,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 */
 	public void valueChanged(TreeSelectionEvent e)
 		{
-		//System.out.println("valuechanged");
+		System.out.println("valuechanged");
 		HashSet<ROI> selected=new HashSet<ROI>();
 		TreePath[] selection=tree.getSelectionPaths();
 		if(selection!=null)
@@ -206,7 +206,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	
 	public void treeCollapsed(TreeExpansionEvent e)
 		{
-		//System.out.println("collapsed");
+		System.out.println("collapsed");
 		TreePath path=e.getPath();
 		ROITreeElement parent=(ROITreeElement)path.getLastPathComponent();
 		int numc=treeModel.getChildCount(parent);
@@ -220,7 +220,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		}
 	public void treeExpanded(TreeExpansionEvent e)
 		{
-		//System.out.println("expanded");
+		System.out.println("expanded");
 		TreePath path=e.getPath();
 		ROITreeElement parent=(ROITreeElement)path.getLastPathComponent();
 		removeTreeListeners();
@@ -240,7 +240,6 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		TreePath path=e.getPath();
 		ROITreeElement parent=(ROITreeElement)path.getLastPathComponent();
 		int numc=treeModel.getChildCount(parent);
-		//System.out.println("#child "+numc);
 		for(int i=0;i<numc;i++)
 			{
 			ROITreeElement child=(ROITreeElement)treeModel.getChild(parent, i);
@@ -281,7 +280,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 */
 	public void dataChangedEvent()
 		{
-		//System.out.println("all changed");
+		System.out.println("all changed");
 		metaCombo.updateList();
 		treeModel.setMetaObject(metaCombo.getMeta());
 		treeModel.emitAllChanged(); //overkill?

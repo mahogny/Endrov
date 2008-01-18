@@ -114,6 +114,10 @@ public class ImageExtensionROI implements ImageWindowExtension
 					roi.regionFrames.set(curFrame,curFrame+1);
 					roi.regionZ.set(curZ, curZ+1);
 					addROI(roi);
+					
+					
+					//TODO
+					roi.openEditWindow();
 					}
 				if(e.getSource()==miNewEllipse)
 					{
@@ -125,16 +129,25 @@ public class ImageExtensionROI implements ImageWindowExtension
 					roi.regionFrames.set(curFrame,curFrame+1);
 					roi.regionZ.set(curZ, curZ+1);
 					addROI(roi);
+					
+					//TODO
+					roi.openEditWindow();
 					}
 				else if(e.getSource()==miCompUnion)
 					{
 					UnionROI roi=new UnionROI();
 					addROI(roi);
+					
+					//TODO
+					roi.openEditWindow();
 					}
 				else if(e.getSource()==miCompIntersection)
 					{
 					ROI roi=new IntersectROI();
 					addROI(roi);
+					
+					//TODO
+					roi.openEditWindow();
 					}
 				//add selected ROIs
 				

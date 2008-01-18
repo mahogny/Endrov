@@ -8,7 +8,6 @@ import javax.swing.event.*;
 import org.jdom.*;
 
 import evplugin.roi.*;
-import evplugin.basicWindow.BasicWindow;
 import evplugin.data.*;
 import evplugin.imageset.*;
 
@@ -268,7 +267,8 @@ public class BoxROI extends ROI
 				span.all=!cSpan.isSelected();
 				span.start=Double.parseDouble(spinnerS.getText());
 				span.end  =Double.parseDouble(spinnerE.getText());
-				BasicWindow.updateWindows();
+				ROI.roiParamChanged.emit();
+//				BasicWindow.updateWindows();
 				}
 			catch (NumberFormatException e){}
 			}
@@ -313,7 +313,8 @@ public class BoxROI extends ROI
 				for(String s:regionChannels)
 					System.out.print(" "+s);
 				System.out.println("");
-				BasicWindow.updateWindows();
+				ROI.roiParamChanged.emit();
+//				BasicWindow.updateWindows();
 				}
 			});
 		
