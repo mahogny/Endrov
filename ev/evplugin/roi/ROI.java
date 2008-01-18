@@ -1,8 +1,14 @@
 package evplugin.roi;
 
+import java.awt.EventQueue;
 import java.awt.event.*;
+import java.lang.ref.WeakReference;
 import java.util.*;
+
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import org.jdom.Element;
 
 import evplugin.imageWindow.*;
@@ -51,7 +57,7 @@ public abstract class ROI extends EvObject
 		{
 		selected.clear();
 		selected.addAll(newsel);
-		selectionChanged.emit();
+		selectionChanged.emit(null);
 //		BasicWindow.updateWindows(null); //to remove TODO
 		}
 	
@@ -191,6 +197,70 @@ public abstract class ROI extends EvObject
 			}
 		}
 
+	
+	
+	/**
+	 * Widget to edit a numeric span
+	 */
+	public static class SpanNumericWidget implements ActionListener, DocumentListener, SimpleObserver.Listener
+		{
+		public final JTextField spinnerS=new JTextField();
+		public final JTextField spinnerE=new JTextField();
+		public final JComponent cSpan;
+		public final SpanNumeric span;
+		private final WeakReference<SpanNumericWidget> tthis=new WeakReference<SpanNumericWidget>(this);
+		
+		/** ROI updated */
+		public void observerEvent(Object src)
+			{
+			if(src!=this)
+				{
+				EventQueue.invokeLater(new Runnable(){public void run() {
+					spinnerS.getDocument().removeDocumentListener(tthis.get());
+					spinnerE.getDocument().removeDocumentListener(tthis.get());
+					String start=""+span.start;
+					String end=""+span.end;
+					if(!spinnerS.getText().equals(start)) spinnerS.setText(""+span.start);
+					if(!spinnerE.getText().equals(end)) spinnerE.setText(""+span.end);
+					spinnerS.getDocument().addDocumentListener(tthis.get());
+					spinnerE.getDocument().addDocumentListener(tthis.get());
+					}});
+				}
+			}
+	
+		public SpanNumericWidget(String name, SpanNumeric span, boolean canSetAll)
+			{
+			if(canSetAll)
+				{
+				cSpan=new JCheckBox(name,!span.all);
+				((JCheckBox)cSpan).addActionListener(this);
+				}
+			else
+				cSpan=new JLabel(name);
+			this.span=span;
+			observerEvent(null);
+			roiParamChanged.addWeakListener(this);
+			}
+	
+		public void actionPerformed(ActionEvent e){apply();}
+		public void changedUpdate(DocumentEvent e){apply();}
+		public void insertUpdate(DocumentEvent e){apply();}
+		public void removeUpdate(DocumentEvent e){apply();}
+		public void apply()
+			{
+			try
+				{
+				if(cSpan instanceof JCheckBox)
+					span.all=!((JCheckBox)cSpan).isSelected();
+				span.start=Double.parseDouble(spinnerS.getText());
+				span.end  =Double.parseDouble(spinnerE.getText());
+				roiParamChanged.emit(tthis.get());
+				}
+			catch (NumberFormatException e){}
+			}
+		}
+
+	
 
 	/******************************************************************************************************
 	 *                               Span class: channels                                                 *
@@ -245,5 +315,66 @@ public abstract class ROI extends EvObject
 			c.add(channel);
 			}
 		}
+
+
+	/**
+	 * Widget to edit channel span
+	 */
+	public static class SpanChannelsWidget extends JTextField implements ActionListener, DocumentListener, SimpleObserver.Listener
+		{
+		public static final long serialVersionUID=0;
+		private final WeakReference<SpanChannelsWidget> tthis=new WeakReference<SpanChannelsWidget>(this);
+		//private final JTextField fChannels=new JTextField();
+		private ROI.SpanChannels span=new ROI.SpanChannels();
+		
+		/** ROI updated */
+		public void observerEvent(Object src)
+			{
+			if(src!=this)
+				{
+				EventQueue.invokeLater(new Runnable(){public void run() {
+				/*fChannels.*/getDocument().removeDocumentListener(tthis.get());
+	
+				String outc="";
+				for(String s:span)
+					{
+					if(outc.equals(""))
+						outc=outc+s;
+					else
+						outc=outc+s+",";
+					}
+	
+				if(!getText().equals(outc)) setText(outc);
+				getDocument().addDocumentListener(tthis.get());
+				}});
+				}
+			}
+	
+		public SpanChannelsWidget(SpanChannels span)
+			{
+			this.span=span;
+			observerEvent(null);
+			roiParamChanged.addWeakListener(this);
+			}
+	
+		public void actionPerformed(ActionEvent e){apply();}
+		public void changedUpdate(DocumentEvent e){apply();}
+		public void insertUpdate(DocumentEvent e){apply();}
+		public void removeUpdate(DocumentEvent e){apply();}
+		public void apply()
+			{
+			try
+				{
+				StringTokenizer tok=new StringTokenizer(/*fChannels.*/getText(),",");
+				span.clear();
+				while(tok.hasMoreTokens())
+					span.add(tok.nextToken().trim());
+				ROI.roiParamChanged.emit(this);
+				}
+			catch (NumberFormatException e){}
+			}
+		}
+		
+	
 
 	}

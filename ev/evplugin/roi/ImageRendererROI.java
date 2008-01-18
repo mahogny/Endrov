@@ -24,7 +24,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 	public Map<ROI, Map<String,ROI.Handle>> handleList=new HashMap<ROI, Map<String,ROI.Handle>>();
 	
 	SimpleObserver.Listener listenSelelection=new SimpleObserver.Listener()
-		{public void observerEvent(){w.updateImagePanel();}};
+		{public void observerEvent(Object src){w.updateImagePanel();}};
 	
 	public ImageRendererROI(final ImageWindow w)
 		{

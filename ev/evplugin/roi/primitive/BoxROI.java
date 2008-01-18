@@ -2,9 +2,7 @@ package evplugin.roi.primitive;
 
 import java.util.*;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import org.jdom.*;
 
 import evplugin.roi.*;
@@ -98,6 +96,7 @@ public class BoxROI extends ROI
 			else regionX.end=x;
 			if(isStartY) regionY.start=y;
 			else regionY.end=y;
+			ROI.roiParamChanged.emit(null);
 			}
 		}
 	
@@ -236,93 +235,24 @@ public class BoxROI extends ROI
 	
 	
 	
-	
-	
-	private class SpanWidget implements ActionListener, DocumentListener
-		{
-		public JTextField spinnerS=new JTextField();
-		public JTextField spinnerE=new JTextField();
-		public final JCheckBox cSpan;
-		public final ROI.SpanNumeric span;
-		
-		public SpanWidget(String name, ROI.SpanNumeric span)
-			{
-			cSpan=new JCheckBox(name,!span.all);
-			this.span=span;
-			spinnerS.setText(""+span.start);
-			spinnerE.setText(""+span.end);
-			spinnerS.getDocument().addDocumentListener(this);
-			spinnerE.getDocument().addDocumentListener(this);
-			cSpan.addActionListener(this);
-			}
-
-		public void actionPerformed(ActionEvent e){apply();}
-		public void changedUpdate(DocumentEvent e){apply();}
-		public void insertUpdate(DocumentEvent e){apply();}
-		public void removeUpdate(DocumentEvent e){apply();}
-		public void apply()
-			{
-			try
-				{
-				span.all=!cSpan.isSelected();
-				span.start=Double.parseDouble(spinnerS.getText());
-				span.end  =Double.parseDouble(spinnerE.getText());
-				ROI.roiParamChanged.emit();
-//				BasicWindow.updateWindows();
-				}
-			catch (NumberFormatException e){}
-			}
-		}
-	
-	
 	/**
 	 * Get widget for editing this ROI
 	 */
 	public JComponent getROIWidget()
 		{
-		final SpanWidget spans[]={
-				new SpanWidget("<= Frame <",regionFrames),
-				new SpanWidget("<= X <",regionX),
-				new SpanWidget("<= Y <",regionY),
-				new SpanWidget("<= Z <",regionZ)};	
-		JPanel pane=new JPanel(new GridLayout(spans.length+1,3));
-
-		//Channel list
-		String outc="";
-		for(String s:regionChannels)
-			{
-			if(outc.equals(""))
-				outc=outc+s;
-			else
-				outc=outc+s+",";
-			}
-		final JTextField fChannels=new JTextField(outc);
-		fChannels.getDocument().addDocumentListener(new DocumentListener()
-			{
-			public void changedUpdate(DocumentEvent e){apply();}
-			public void insertUpdate(DocumentEvent e){apply();}
-			public void removeUpdate(DocumentEvent e){apply();}
-			public void apply()
-				{
-				for(SpanWidget w:spans)
-					w.apply();
-				StringTokenizer tok=new StringTokenizer(fChannels.getText(),",");
-				regionChannels.clear();
-				while(tok.hasMoreTokens())
-					regionChannels.add(tok.nextToken().trim());
-				for(String s:regionChannels)
-					System.out.print(" "+s);
-				System.out.println("");
-				ROI.roiParamChanged.emit();
-//				BasicWindow.updateWindows();
-				}
-			});
-		
+		final SpanNumericWidget spans[]={
+				new SpanNumericWidget("<= Frame <",regionFrames,true),
+				new SpanNumericWidget("<= X <",regionX,true),
+				new SpanNumericWidget("<= Y <",regionY,true),
+				new SpanNumericWidget("<= Z <",regionZ,true)};	
+		final SpanChannelsWidget spanChannel=new SpanChannelsWidget(regionChannels);
+		final JPanel pane=new JPanel(new GridLayout(spans.length+1,3));
+				
 		//Put widgets together
 		pane.add(new JLabel("Channels"));
-		pane.add(fChannels);
+		pane.add(spanChannel);
 		pane.add(new JLabel(""));
-		for(SpanWidget s:spans)
+		for(SpanNumericWidget s:spans)
 			{
 			pane.add(s.spinnerS);
 			pane.add(s.cSpan);
