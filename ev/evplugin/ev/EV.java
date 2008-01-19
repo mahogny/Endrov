@@ -19,7 +19,7 @@ import org.jdom.output.*;
 public class EV
 	{
 	public static final String version="2.5.0 CVS";
-	public static final String website="http://celegans.sh.se/index.php/";
+	public static final String website="http://www.endrov.net/index.php/";
 	public static final boolean debugMode=false;
 	public static final String programName="EV";
 	public static boolean confirmQuit=true;
