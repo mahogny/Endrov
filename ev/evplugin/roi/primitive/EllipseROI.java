@@ -35,6 +35,14 @@ public class EllipseROI extends ROI
 				return meta;
 				}
 			});
+		
+		ROI.addType(new ROIType()
+			{
+			public boolean canPlace(){return true;}
+			public boolean isCompound(){return false;}
+			public String name(){return "Ellipse";};
+			public ROI makeInstance(){return new EllipseROI();}
+			});
 		}
 	
 	public void saveMetadata(Element e)
@@ -279,7 +287,15 @@ public class EllipseROI extends ROI
 	 */
 	public Handle[] getHandles()
 		{
-		return new Handle[]{new ThisHandle("1",false,false), new ThisHandle("4",true,true)};
+		return new Handle[]{getPlacementHandle1(), getPlacementHandle2()};
+		}
+	public Handle getPlacementHandle1(){return new ThisHandle("1",false,false);}
+	public Handle getPlacementHandle2(){return new ThisHandle("4",true,true);}	
+	public void initPlacement(String chan, double frame, double z)
+		{
+		regionChannels.add(chan);
+		regionFrames.set(frame,frame+1);
+		regionZ.set(z, z+1);
 		}
 		
 	

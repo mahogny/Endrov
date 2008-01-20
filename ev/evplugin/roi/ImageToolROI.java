@@ -22,6 +22,7 @@ public class ImageToolROI implements ImageWindowTool
 	private final ImageWindow w;
 	private final ImageRendererROI r;
 	
+	public void unselected() {}
 	
 	public ImageToolROI(ImageWindow w, ImageRendererROI r)
 		{
@@ -35,7 +36,7 @@ public class ImageToolROI implements ImageWindowTool
 		}
 	public String toolCaption()
 		{
-		return "ROI/Define";
+		return "ROI/Edit";
 		}
 	public boolean enabled()
 		{

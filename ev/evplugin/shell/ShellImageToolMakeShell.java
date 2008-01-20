@@ -23,6 +23,7 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 	private boolean holdTranslate=false;
 	private boolean holdRotate=false;
 
+	public void unselected() {}
 	
 	public ShellImageToolMakeShell(ImageWindow w, ShellImageRenderer r)
 		{

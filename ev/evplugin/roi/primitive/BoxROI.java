@@ -9,6 +9,19 @@ import evplugin.roi.*;
 import evplugin.data.*;
 import evplugin.imageset.*;
 
+
+
+
+
+//ImageIterator?
+
+//get iterator: image + line iterator or pixel iterator or entire image?
+//which channels, frames, slices are affected?
+
+
+
+
+
 /**
  * Rectangle, Box, or higher dimension
  * 
@@ -33,7 +46,20 @@ public class BoxROI extends ROI
 				return meta;
 				}
 			});
+		
+		ROI.addType(new ROIType()
+			{
+			public boolean canPlace(){return true;}
+			public boolean isCompound(){return false;}
+			public String name(){return "Box";};
+			public ROI makeInstance(){return new BoxROI();}
+			});
+		
+		
 		}
+	
+	
+	
 	
 	public void saveMetadata(Element e)
 		{
@@ -226,15 +252,6 @@ public class BoxROI extends ROI
 		}
 	
 
-	
-	//ImageIterator?
-	
-	//get iterator: image + line iterator or pixel iterator or entire image?
-	//which channels, frames, slices are affected?
-	
-	
-	
-	
 	/**
 	 * Get widget for editing this ROI
 	 */
@@ -276,10 +293,20 @@ public class BoxROI extends ROI
 			return new Handle[]{};
 		else
 			return new Handle[]{
-					new BoxHandle("1",false,false),new BoxHandle("2",true,false), 
-					new BoxHandle("3",false,true), new BoxHandle("4",true,true)};
+					getPlacementHandle1(),new BoxHandle("2",true,false), 
+					new BoxHandle("3",false,true), getPlacementHandle2()};
 		}
-		
+	public Handle getPlacementHandle1(){return new BoxHandle("1",false,false);}
+	public Handle getPlacementHandle2(){return new BoxHandle("4",true,true);}		
+	public void initPlacement(String chan, double frame, double z)
+		{
+		regionX.all=false;
+		regionY.all=false;
+		regionChannels.add(chan);
+		regionFrames.set(frame);
+		regionZ.set(z);
+		}
+	
 	
 	public Vector<ROI> getSubRoi()
 		{

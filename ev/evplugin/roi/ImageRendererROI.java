@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.*;
 import javax.vecmath.*;
 
-//import evplugin.basicWindow.*;
 import evplugin.data.*;
 import evplugin.ev.SimpleObserver;
 import evplugin.imageWindow.*;
@@ -26,6 +25,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 	SimpleObserver.Listener listenSelelection=new SimpleObserver.Listener()
 		{public void observerEvent(Object src){w.updateImagePanel();}};
 	
+	public ROI drawROI=null;
+		
 	public ImageRendererROI(final ImageWindow w)
 		{
 		this.w=w;
@@ -45,6 +46,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 		for(EvObject ob:w.getImageset().metaObject.values())
 			if(ob instanceof ROI)
 				drawROI(g, (ROI)ob);
+		if(drawROI!=null)
+			drawROI(g, drawROI);
 		}
 	
 	

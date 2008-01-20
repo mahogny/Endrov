@@ -101,7 +101,7 @@ public class ToolMakeNuc implements ImageWindowTool
 	
 	public void mousePressed(MouseEvent e)
 		{
-		if(SwingUtilities.isLeftMouseButton(e))//changed
+		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			//Start making a nucleus
 			active=true;
@@ -109,7 +109,7 @@ public class ToolMakeNuc implements ImageWindowTool
 			x1=x2=v.x;
 			y1=y2=v.y;
 			}
-		else if(SwingUtilities.isRightMouseButton(e))//changed
+		else if(SwingUtilities.isRightMouseButton(e))
 			{
 			//Cancel making nucleus
 			active=false;
@@ -342,4 +342,5 @@ public class ToolMakeNuc implements ImageWindowTool
 		}
 
 	
+	public void unselected() {}
 	}

@@ -81,6 +81,21 @@ public abstract class ROI extends EvObject
 	
 	
 	/******************************************************************************************************
+	 *            Class: Information about a ROI type                                                     *
+	 *****************************************************************************************************/
+	public static interface ROIType
+		{
+		public boolean canPlace();
+		public boolean isCompound();
+		public String name();
+		public ROI makeInstance();
+		}
+	
+	private static TreeMap<String, ROIType> types=new TreeMap<String, ROIType>();
+	public static void addType(ROIType rt){types.put(rt.name(),rt);}
+	public static Collection<ROIType> getTypes(){return types.values();}
+	
+	/******************************************************************************************************
 	 *                               Instance                                                                 *
 	 *****************************************************************************************************/
 
@@ -140,6 +155,11 @@ public abstract class ROI extends EvObject
 	public abstract Set<Integer> getSlice(Imageset rec, String channel, int frame);
 
 	public abstract Handle[] getHandles();
+	
+	//only interesting for placeable ROIs
+	public abstract Handle getPlacementHandle1();
+	public abstract Handle getPlacementHandle2();
+	public abstract void initPlacement(String chan, double frame, double z);
 	
 	public abstract boolean imageInRange(String channel, double frame, int z);
 	public abstract LineIterator getLineIterator(EvImage im, String channel, int frame, int z);
