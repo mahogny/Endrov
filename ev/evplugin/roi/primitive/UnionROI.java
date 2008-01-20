@@ -1,17 +1,29 @@
 package evplugin.roi.primitive;
 
 import java.util.*;
-
 import javax.swing.*;
-
 import org.jdom.*;
 
 import evplugin.imageset.*;
 import evplugin.roi.*;
 
+/**
+ * ROI: set theoretic union of other ROIs
+ * @author Johan Henriksson
+ */
 public class UnionROI extends CompoundROI
 	{
-	public static void initPlugin() {}
+	public static void initPlugin()
+		{
+		
+		ROI.addType(new ROIType()
+			{
+			public boolean canPlace(){return false;}
+			public boolean isCompound(){return true;}
+			public String name(){return "Union";};
+			public ROI makeInstance(){return new UnionROI();}
+			});
+		}
 
 
 	/******************************************************************************************************
@@ -216,6 +228,8 @@ public class UnionROI extends CompoundROI
 			}
 		return hh;
 		}
-
+	public Handle getPlacementHandle1(){return null;}
+	public Handle getPlacementHandle2(){return null;}
+	public void initPlacement(String chan, double frame, double z){}
 	
 	}

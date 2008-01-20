@@ -62,6 +62,6 @@ public class ToolSetFrametime implements ImageWindowTool
 	public void keyPressed(KeyEvent e) {}
 	public void keyReleased(KeyEvent e) {}
 	public void paintComponent(Graphics g) {}
-		
+	public void unselected() {}
 
 	}

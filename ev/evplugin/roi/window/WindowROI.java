@@ -288,66 +288,16 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		}
 	
 	
+	
+
 
 	private void makeCompoundROI(CompoundROI croi)
 		{
 		EvData data=metaCombo.getMeta();
 		if(data!=null)
-			{
-			Set<ROI> rois=collectRecursiveROI(data);
-			data.addMetaObject(croi);
-			for(ROI roi:rois)
-				croi.subRoi.add(roi);
-			BasicWindow.updateWindows();
-			}
+			CompoundROI.makeCompoundROI(data,croi);
 		}
-	
-	
-	/**
-	 * Remove all selected ROIs recursively from their parents and return them
-	 */
-	private Set<ROI> collectRecursiveROI(Object parent)
-		{
-		HashSet<ROI> hs=new HashSet<ROI>();
-		if(parent instanceof EvData)
-			{
-			EvData data=(EvData)parent;
-			Set<Integer> toremove=new HashSet<Integer>();
-			for(int key:data.metaObject.keySet())
-				{
-				EvObject ob=data.metaObject.get(key);
-				if(ob instanceof ROI)
-					{
-					if(ROI.isSelected((ROI)ob))
-						{
-						toremove.add(key);
-						hs.add((ROI)ob);
-						}
-					else
-						hs.addAll(collectRecursiveROI(ob));
-					}
-				}
-			for(int key:toremove)
-				data.metaObject.remove(key);
-			}
-		else if(parent instanceof CompoundROI)
-			{
-			Set<ROI> toremove=new HashSet<ROI>();
-			for(ROI roi:((CompoundROI)parent).subRoi)
-				{
-				if(ROI.isSelected(roi))
-					{
-					toremove.add(roi);
-					hs.add((ROI)roi);
-					}
-				else
-					hs.addAll(collectRecursiveROI(roi));
-				}
-			((CompoundROI)parent).subRoi.removeAll(toremove);
-			}
-		return hs;
-		}
-	
+
 	
 	
 	/**
@@ -379,11 +329,5 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		c.validate();
 		}
 
-	
-
-	
-	
-	
-	
 	
 	}

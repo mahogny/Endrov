@@ -190,6 +190,14 @@ public class ImageWindow extends BasicWindow
 	/** Currently selected tool */
 	private ImageWindowTool tool;
 
+	public void setTool(ImageWindowTool tool)
+		{
+		if(this.tool!=null)
+			this.tool.unselected();
+		this.tool=tool;  
+		buildMenu();
+		}
+	
 	/** Hide all markings for now; to quickly show without overlay */
 	private boolean temporarilyHideMarkings=false;
 
@@ -347,7 +355,6 @@ public class ImageWindow extends BasicWindow
 	private void buildMenu()
 		{
 		BasicWindow.tearDownMenu(menuImageWindow);
-		//BasicWindow.tearDownMenu(menuImage);
 		miReset.addActionListener(this);
 		miMiddleSlice.addActionListener(this);
 		miZoomToFit.addActionListener(this);
@@ -363,7 +370,7 @@ public class ImageWindow extends BasicWindow
 		menuImageWindow.addSeparator();
 		menuImageWindow.add(miToolNone);
 		miToolNone.setSelected(tool==null);
-		
+				
 		for(final ImageWindowTool t:imageWindowTools)
 			if(t==null)
 				menuImageWindow.addSeparator();
@@ -378,8 +385,7 @@ public class ImageWindow extends BasicWindow
 						{
 						public void actionPerformed(ActionEvent e)
 							{
-							tool=t;
-							buildMenu();
+							setTool(t);
 							}
 						});
 					menuImageWindow.add(mit);
@@ -397,7 +403,15 @@ public class ImageWindow extends BasicWindow
 					menuImageWindow.add(mit);
 					}
 				}
-		
+	
+		//List custom tool as well
+		if(!imageWindowTools.contains(tool) && !miToolNone.isSelected())
+			{
+			final JCheckBoxMenuItem mit=new JCheckBoxMenuItem(tool.toolCaption());
+			mit.setEnabled(false);
+			mit.setSelected(true);
+			menuImageWindow.add(mit);
+			}
 		
 		}
 	
@@ -656,10 +670,7 @@ public class ImageWindow extends BasicWindow
 			setZoom(imagePanel.zoom);
 			}
 		else if(e.getSource()==miToolNone)
-			{
-			tool=null;
-			buildMenu();
-			}
+			setTool(null);
 		else if(e.getSource()==bShow3colors)
 			{
 			setShow3Color(bShow3colors.isSelected());

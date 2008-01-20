@@ -148,6 +148,7 @@ public class IntersectROI extends CompoundROI
 			}
 		return hh;
 		}
-
-	
+	public Handle getPlacementHandle1(){return null;}
+	public Handle getPlacementHandle2(){return null;}
+	public void initPlacement(String chan, double frame, double z){}
 	}

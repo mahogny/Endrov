@@ -12,6 +12,7 @@ public interface ImageWindowTool
 	public boolean isToggleable();
 	public String toolCaption();
 	public boolean enabled();
+	public void unselected();
 	
 	public void mouseClicked(MouseEvent e);
 	public void mousePressed(MouseEvent e);
