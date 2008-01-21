@@ -21,7 +21,13 @@ import evplugin.ev.*;
  */
 public class NucModelExtension implements ModelWindowExtension
 	{
-	public void newModelWindow(ModelWindow w)
+  private static int NUC_SHOW_DIV=15;
+  private static int NUC_HIDE_DIV=6;
+
+//  private static int NUC_SHOW_DIV=12;
+//  private static int NUC_HIDE_DIV=6;
+
+  public void newModelWindow(ModelWindow w)
 		{
 		w.modelWindowHooks.add(new NucModelWindowHook(w));
 		}
@@ -33,6 +39,12 @@ public class NucModelExtension implements ModelWindowExtension
 		private final ModelWindow w;
 		
 		public void fillModelWindomMenus(){}
+		
+		private boolean madeDisplayLists=false;
+		private int displayListVisibleSphere;
+		private int displayListHiddenSphere;
+		private int displayListSelectSphere;
+
 		
 		public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Names: Show all");
 		public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Names: Show for selected");
@@ -129,11 +141,36 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public void displayFinal(GL gl)
 			{
-			//Render nuc body
+			//Generate vertex lists for spheres
+			if(!madeDisplayLists)
+				{
+				madeDisplayLists=true;
+				GLU glu=new GLU();
+				GLUquadric q=glu.gluNewQuadric();
+				
+				displayListVisibleSphere = gl.glGenLists(1);
+				gl.glNewList(displayListVisibleSphere, GL.GL_COMPILE);
+				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
+				gl.glEndList();
+								
+				displayListHiddenSphere = gl.glGenLists(1);
+				gl.glNewList(displayListSelectSphere, GL.GL_COMPILE);
+				glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
+				gl.glEndList();
+				
+				displayListSelectSphere = gl.glGenLists(1);
+				glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
+				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
+				gl.glEndList();
+				
+				glu.gluDeleteQuadric(q);
+				}
+			
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
 				for(NucPair nucPair:inter.keySet())
 					{
+					//Render nuc body
 					renderNuc(gl, nucPair, inter.get(nucPair));
 					
 					//Draw connecting line
@@ -197,16 +234,7 @@ public class NucModelExtension implements ModelWindowExtension
 				double dist=dx;
 				if(dist<dy) dist=dy;
 				if(dist<dz) dist=dz;
-
 				return Collections.singleton((Double)dist);
-				/*
-				//Select pan speed
-				w.view.panspeed=dist/1000.0;
-				
-				//Select grid size
-				double g=Math.pow(10, (int)Math.log10(dist));
-				if(g<1) g=1;
-				ModelWindowGrid.setGridSize(w,g);*/
 				}
 			else
 				return Collections.emptySet();
@@ -232,8 +260,8 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
 			
 			//Draw nucleus
-	    GLU glu=new GLU();
-	    GLUquadric q=glu.gluNewQuadric(); 
+//	    GLU glu=new GLU();
+	//    GLUquadric q=glu.gluNewQuadric(); 
 
 	    //Decide color based on if the nucleus is selected
 			float lightDiffuse[];
@@ -246,36 +274,56 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
 			gl.glEnable(GL.GL_LIGHT0);    
 	    	
-	    int NUC_SHOW_DIV=12;
-	    int NUC_HIDE_DIV=6;
 	    //int NUC_POINT_DIV=6;
 	    
 	    if(NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
 	    	//Hidden cell
 	    	gl.glColor3d(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
-	      glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
+	    	drawHiddenSphere(gl, nuc.pos.r);
+/*	      glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
 	      glu.gluSphere(q,nuc.pos.r,NUC_HIDE_DIV,NUC_HIDE_DIV);
+	      glu.gluDeleteQuadric(q);*/
 	    	}
 	    else
 	    	{
 	    	//Visible cell
 	      gl.glEnable(GL.GL_LIGHTING);
 	      gl.glColor3d(1,1,1);
-	    	glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
+	      
+	    	drawVisibleSphere(gl, nuc.pos.r);
+	    	//glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
+	    	
 	      gl.glDisable(GL.GL_LIGHTING);
 	      if(false)//w->slab1->value()!=-5000)
 	      	{
 		      gl.glScalef(-1,-1,-1);
-	      	glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
+		      drawVisibleSphere(gl, nuc.pos.r);
+//	      	glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
 	      	}
 	    	}
-	    glu.gluDeleteQuadric(q);
+//	    glu.gluDeleteQuadric(q);
 	    
 	    //Go back to world coordinates
 	    gl.glPopMatrix();
 			}
 
+		private void drawVisibleSphere(GL gl, double r)
+			{
+    	double ir=1.0/r;
+			gl.glScaled(r,r,r);
+    	gl.glCallList(displayListVisibleSphere);
+    	gl.glScaled(ir,ir,ir);
+			}
+		
+		private void drawHiddenSphere(GL gl, double r)
+			{
+    	double ir=1.0/r;
+			gl.glScaled(r,r,r);
+    	gl.glCallList(displayListSelectSphere);
+    	gl.glScaled(ir,ir,ir);
+			}
+		
 		/**
 		 * Render labe of one nucleus
 		 */

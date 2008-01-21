@@ -106,7 +106,7 @@ public class Slice3DExtension implements ModelWindowExtension
 		private class ToolIsolayer extends JPanel implements ChangeListener, ActionListener
 			{
 			static final long serialVersionUID=0;
-			private JSpinner zplaneSpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)999.0,(int)1));
+			private JSpinner zplaneSpinner=new JSpinner(new SpinnerNumberModel((int)0.0,(int)-99.0,(int)999.0,(int)1));
 			private ChannelCombo chanCombo=new ChannelCombo(null,true);
 			private JButton bDelete=new JButton(BasicWindow.getIconDelete());
 			private JCheckBox zProject=new JCheckBox("@Z=0");
@@ -139,7 +139,8 @@ public class Slice3DExtension implements ModelWindowExtension
 			public void stateChanged(ChangeEvent arg0)
 				{
 				slice.rebuild();
-				w.repaint();
+				w.view.repaint();
+//				w.repaint();
 				}
 
 
