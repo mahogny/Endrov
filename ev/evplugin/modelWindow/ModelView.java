@@ -355,6 +355,8 @@ public class ModelView extends GLCanvas
 		float h = (float) bounds.getHeight();
 		renderer.draw3D(text, w / -2.0f * textScaleFactor, h / -2.0f * textScaleFactor, 0, textScaleFactor);
 		
+		//// OPTIMIZATION: would it be faster if I fixed scalefactor and scaled in GL?
+		
 		renderer.end3DRendering();
 		gl.glEnable(GL.GL_CULL_FACE);
 		}
