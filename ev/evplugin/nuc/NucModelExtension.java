@@ -22,6 +22,7 @@ import evplugin.ev.*;
 public class NucModelExtension implements ModelWindowExtension
 	{
   private static int NUC_SHOW_DIV=15;
+  private static int NUC_SELECT_DIV=6;
   private static int NUC_HIDE_DIV=6;
 
 //  private static int NUC_SHOW_DIV=12;
@@ -40,10 +41,6 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public void fillModelWindomMenus(){}
 		
-		private boolean madeDisplayLists=false;
-		private int displayListVisibleSphere;
-		private int displayListHiddenSphere;
-		private int displayListSelectSphere;
 
 		
 		public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Names: Show all");
@@ -141,30 +138,7 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public void displayFinal(GL gl)
 			{
-			//Generate vertex lists for spheres
-			if(!madeDisplayLists)
-				{
-				madeDisplayLists=true;
-				GLU glu=new GLU();
-				GLUquadric q=glu.gluNewQuadric();
-				
-				displayListVisibleSphere = gl.glGenLists(1);
-				gl.glNewList(displayListVisibleSphere, GL.GL_COMPILE);
-				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
-				gl.glEndList();
-								
-				displayListHiddenSphere = gl.glGenLists(1);
-				gl.glNewList(displayListSelectSphere, GL.GL_COMPILE);
-				glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
-				gl.glEndList();
-				
-				displayListSelectSphere = gl.glGenLists(1);
-				glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
-				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
-				gl.glEndList();
-				
-				glu.gluDeleteQuadric(q);
-				}
+			initDrawSphere(gl);
 			
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
@@ -281,6 +255,9 @@ public class NucModelExtension implements ModelWindowExtension
 	    	//Hidden cell
 	    	gl.glColor3d(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
 	    	drawHiddenSphere(gl, nuc.pos.r);
+	    	
+
+	    	
 /*	      glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
 	      glu.gluSphere(q,nuc.pos.r,NUC_HIDE_DIV,NUC_HIDE_DIV);
 	      glu.gluDeleteQuadric(q);*/
@@ -292,6 +269,8 @@ public class NucModelExtension implements ModelWindowExtension
 	      gl.glColor3d(1,1,1);
 	      
 	    	drawVisibleSphere(gl, nuc.pos.r);
+	    	
+	    	
 	    	//glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
 	    	
 	      gl.glDisable(GL.GL_LIGHTING);
@@ -308,6 +287,46 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glPopMatrix();
 			}
 
+		
+		
+		/**
+		 * Generate vertex lists for spheres
+		 */
+		private void initDrawSphere(GL gl)
+			{
+			if(!madeDisplayLists)
+				{
+				madeDisplayLists=true;
+				GLU glu=new GLU();
+				GLUquadric q=glu.gluNewQuadric();
+				
+				displayListVisibleSphere = gl.glGenLists(1);
+				gl.glNewList(displayListVisibleSphere, GL.GL_COMPILE);
+				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
+				gl.glEndList();
+												
+				displayListSelectSphere = gl.glGenLists(1);
+				gl.glNewList(displayListSelectSphere, GL.GL_COMPILE);
+				glu.gluSphere(q,1.0,NUC_SELECT_DIV,NUC_SELECT_DIV);
+				gl.glEndList();
+
+				glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
+				displayListHiddenSphere = gl.glGenLists(1);
+				gl.glNewList(displayListHiddenSphere, GL.GL_COMPILE);
+				glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
+				gl.glEndList();
+				
+				
+
+				glu.gluDeleteQuadric(q);
+				}
+			}
+		private boolean madeDisplayLists=false;
+		private int displayListVisibleSphere;
+		private int displayListHiddenSphere;
+		private int displayListSelectSphere;
+		
+		
 		private void drawVisibleSphere(GL gl, double r)
 			{
     	double ir=1.0/r;
@@ -320,9 +339,18 @@ public class NucModelExtension implements ModelWindowExtension
 			{
     	double ir=1.0/r;
 			gl.glScaled(r,r,r);
+    	gl.glCallList(displayListHiddenSphere);
+    	gl.glScaled(ir,ir,ir);
+			}
+		
+		public void drawSelectSphere(GL gl, double r)
+			{
+    	double ir=1.0/r;
+			gl.glScaled(r,r,r);
     	gl.glCallList(displayListSelectSphere);
     	gl.glScaled(ir,ir,ir);
 			}
+		
 		
 		/**
 		 * Render labe of one nucleus
@@ -376,11 +404,11 @@ public class NucModelExtension implements ModelWindowExtension
 	  	//If visible cell
 	    if(!NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
-	      int NUC_POINT_DIV=6;
-	      GLU glu=new GLU();
+	    	drawSelectSphere(gl, nuc.pos.r);   //why does this not work?
+	      /*GLU glu=new GLU();
 	      GLUquadric q=glu.gluNewQuadric(); 
-	    	glu.gluSphere(q,nuc.pos.r,NUC_POINT_DIV,NUC_POINT_DIV);
-	      glu.gluDeleteQuadric(q);
+	    	glu.gluSphere(q,nuc.pos.r,NUC_SELECT_DIV,NUC_SELECT_DIV);
+	      glu.gluDeleteQuadric(q);*/
 	    	}    
 	    //Go back to world coordinates
 	    gl.glPopMatrix();

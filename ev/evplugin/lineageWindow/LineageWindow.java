@@ -33,13 +33,10 @@ public class LineageWindow extends BasicWindow
 				{
 				try
 					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new LineageWindow(x,y,w,h);
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					new LineageWindow(r);
 					}
-				catch (DataConversionException e1)
+				catch(Exception e1)
 					{
 					e1.printStackTrace();
 					}
@@ -95,7 +92,7 @@ public class LineageWindow extends BasicWindow
 	 */
 	public LineageWindow()
 		{
-		this(0,25,800,650);
+		this(new Rectangle(0,25,800,650));
 		}
 	
 	
@@ -103,7 +100,7 @@ public class LineageWindow extends BasicWindow
 	/**
 	 * Make a new window at some location
 	 */
-	public LineageWindow(int x, int y, int w, int h)
+	public LineageWindow(Rectangle bounds)
 		{
 		view=new LineageView();
 		
@@ -174,10 +171,11 @@ public class LineageWindow extends BasicWindow
 		//Window overall things
 		setTitle(EV.programName+" Lineage Window");
 		pack();
-		setBounds(x,y,w,h);
+		setBounds(bounds);
 		setVisible(true);
 
 		stateChanged(null);
+		dataChangedEvent();
 		}
 	
 
@@ -187,12 +185,8 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void windowPersonalSettings(Element root)
 		{
-		Rectangle r=getBounds();
 		Element e=new Element("lineagewindow");
-		e.setAttribute("x", ""+r.x);
-		e.setAttribute("y", ""+r.y);
-		e.setAttribute("w", ""+r.width);
-		e.setAttribute("h", ""+r.height);
+		setXMLbounds(e);
 		root.addContent(e);
 		}
 

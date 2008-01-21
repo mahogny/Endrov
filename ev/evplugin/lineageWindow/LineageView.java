@@ -9,6 +9,7 @@ import evplugin.basicWindow.BasicWindow;
 import evplugin.nuc.*;
 
 //TODO: kill internal which are not in use, especially roots
+//can use weak references! make a WeakTreeMap and stop using strings?
 
 /**
  * The lineage view is so specific to the view that there is no point in separating it.
@@ -52,14 +53,8 @@ public class LineageView extends JPanel
 				allMinFrame=nuc.pos.firstKey();
 			}
 		if(allMinFrame!=null)
-			{
 			goFrame(allMinFrame);
-			/*
-			camC=(allMinFrame-5)*frameDist;
-			camB=0;
-			repaint();
-			*/
-			}
+//		System.out.println(": "+lin+" "+allMinFrame);
 		}
 
 	/**
