@@ -155,6 +155,7 @@ public class Slice3D
 
 			tex.disable();
 			
+			gl.glPopAttrib();
 			}
 		}
 	
