@@ -4,7 +4,8 @@ pathconverted /Volumes/ZeissRec128GB/4ddaemon_converted
 pathoutput /Volumes/TBU_xeon01_500GB02/daemon/output
 
 setmax GFP RFP
-old compression DIC 80
-compression DIC 100
+compression DIC 80
+old compression DIC 100
 ostversion 2
 skipblackslices 1
+skipwhiteslices 1
