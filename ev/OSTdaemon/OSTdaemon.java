@@ -36,6 +36,7 @@ public class OSTdaemon extends Thread
 	private boolean isRunning;
 	
 	private boolean skipBlackSlices=false;
+	private boolean skipWhiteSlices=false;
 
 	/** Shut down whenever possible */
 	public void shutDown() {shutDown=true;}
@@ -153,6 +154,12 @@ public class OSTdaemon extends Thread
     			String s=tok.nextToken();
     			skipBlackSlices=Integer.parseInt(s)==1;
     			log("Skip black slices: "+skipBlackSlices);
+    			}
+    		else if(cmd.equals("skipwhiteslices"))
+    			{
+    			String s=tok.nextToken();
+    			skipWhiteSlices=Integer.parseInt(s)==1;
+    			log("Skip white slices: "+skipWhiteSlices);
     			}
     		else if(cmd.equals("setmax"))
     			{
@@ -417,6 +424,13 @@ public class OSTdaemon extends Thread
 		double p=r.getSampleDouble(0, 0, 0);
 		return p<0.01;
 		}
+	public static boolean isWhite(BufferedImage im)
+		{
+		WritableRaster r=im.getRaster();
+		double p=r.getSampleDouble(0, 0, 0);
+//		log("p: "+p);
+		return p>254.99;
+		}
 	
 	/**
 	 * Convert an image stack: imageset-channel-frame.*
@@ -446,7 +460,8 @@ public class OSTdaemon extends Thread
 			for(int i=0;i<numz;i++)
 				{
 				BufferedImage im=jubio.getBufferedImage(i);
-				if(skipBlackSlices && !isBlack(im))
+				if(!(skipBlackSlices && isBlack(im)) && !(skipWhiteSlices && isWhite(im)))
+//				if(skipBlackSlices && !isBlack(im))
 					{				
 					File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, i);
 					saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
