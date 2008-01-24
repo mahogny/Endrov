@@ -152,6 +152,24 @@ public abstract class EvData
 		}
 	
 	/**
+	 * Remove an object via the pointer
+	 */
+	public void removeMetaObjectByValue(EvObject ob)
+		{
+		Integer id=null;
+		for(Map.Entry<Integer, EvObject> entry:metaObject.entrySet())
+			if(entry.getValue()==ob)
+				{
+				id=entry.getKey();
+				break;
+				}
+		if(id!=null)
+			metaObject.remove(id);
+		}
+	
+	
+	
+	/**
 	 * Load metadata from XML-file
 	 * @param filename Name of file
 	 */
