@@ -80,12 +80,10 @@ public class ToolMakeImageAnnot implements ImageWindowTool
 					}
 				//Edit text
 				String newtext=JOptionPane.showInputDialog(null, "Enter text", a.text);
-				if(newtext!=null || a.text.equals(""))
-					{
+				if(newtext!=null)
 					a.text=newtext;
-					if(a.text.equals(""))
-						data.removeMetaObjectByValue(a);
-					}
+				if(a.text.equals(""))
+					data.removeMetaObjectByValue(a);
 				w.updateImagePanel();
 				}
 			}
