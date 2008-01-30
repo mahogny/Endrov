@@ -12,10 +12,11 @@ import java.awt.image.*;
 //import javax.vecmath.*;
 
 /**
- * Go through all imagesets in a directory and run the MakeQT plugin
+ * Go through all imagesets in a directory and
+ * extract a compressed voxel set for each embryo based on cell coordinates 
  * @author Johan Henriksson
  */
-public class BatchExtractNormalizeAP
+public class BatchExtractNormalizeDVAP
 {
 
 public static void calcAP(File file)
@@ -25,8 +26,8 @@ public static void calcAP(File file)
 		System.out.println("current Imageset "+file.getPath());
 		String currentpath = file.getPath();
 		System.out.println("current imageset: "+currentpath);
-		if (0==0) // all imagesets
-		//if (currentpath.equals("/Volumes/TBU_xeon01_500GB01/ost4dgood/BC10721070809")) // only deal with this test image set
+		//if (0==0) // all imagesets
+		if (currentpath.equals("/Volumes/TBU_xeon01_500GB01/ost4dgood/BC12759070823")) // only deal with this test image set
 			{	
 			System.out.println("imageset found, executing...");
 
@@ -36,10 +37,10 @@ public static void calcAP(File file)
 			String currentostname = ost.toString();
 			System.out.println("current imageset: " + currentostname);
 			//String currentostDescription = ost.description.toString();
-                       	double timeStep = 1;
-                       	timeStep = ost.meta.metaTimestep;
-                        System.out.println("time step: " + timeStep + " seconds");
-			
+			double timeStep = 1;
+			timeStep = ost.meta.metaTimestep;
+			System.out.println("time step: " + timeStep + " seconds");
+
 			for(EvObject evob:ost.metaObject.values()) // go through all objects in XML file
 				{
 				//System.out.println("timestep = "+ ost.metaObject.metaTimestep);
@@ -75,7 +76,7 @@ public static void calcAP(File file)
 					
 						BufferedWriter outFile;
 
-						File outFilePath=new File(ost.datadir(),"timeRotatedGFP.txt");
+						File outFilePath=new File(ost.datadir(),"DVtimeRotatedGFP.txt");
 						outFile = new BufferedWriter( new FileWriter(outFilePath) );
 
 						//scaling to write doubles into file:
@@ -179,12 +180,7 @@ public static void calcAP(File file)
 								// pick the closest frame to the time point of this image
 								NucLineage.NucPos antpos =getpos(lin, "ant",  frame);
 								NucLineage.NucPos postpos=getpos(lin, "post", frame);
-								
-								//debugging: print coordinates
-								//System.out.println("postpos.x=" + postpos.x + " antpos.x=" + antpos.x);
-								//System.out.println("postpos.y=" + postpos.y + " antpos.y=" + antpos.y);
-								//System.out.println("postpos.z=" + postpos.z + " antpos.z=" + antpos.z);
-								
+
 								//double APTransX=antpos.x;
 								//double APTransY=antpos.y;
 								//double APTransZ=antpos.z;
@@ -526,10 +522,10 @@ public static void calcAP(File file)
 								}
 							catch (RuntimeException e)
 								{
+								// catches defective frame errors
 								e.printStackTrace();
 								}
 							}
-			
 							outFile.flush();
 							outFile.close();
 							
