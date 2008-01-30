@@ -19,7 +19,7 @@ import org.jdom.Element;
  * Go through all imagesets in a directory and run the MakeQT plugin
  * @author Johan Henriksson
  */
-public class BatchExtractIntens
+public class ExtractIntensNileRed
 {
 
 public static void calcAP(File file, int fileNumber)
@@ -30,7 +30,7 @@ public static void calcAP(File file, int fileNumber)
 		String currentpath = file.getPath();
 		System.out.println("current imageset: "+currentpath);
 		//if (0==0) // all imagesets
-		//if (currentpath.contains("NRed")) // only deal with these image sets
+		if (currentpath.contains("PON")) // only deal with these image sets
 			{	
 			System.out.println("imageset found, executing...");
 
@@ -47,16 +47,16 @@ public static void calcAP(File file, int fileNumber)
 
 			
 			
-			Imageset.ChannelImages ch=ost.channelImages.get("RFP");
+			Imageset.ChannelImages ch=ost.channelImages.get("NR");
 			TreeMap<Integer, TreeMap<Integer, EvImage>> images=ch.imageLoader;
 
 			//create an output file in the data directory
 			BufferedWriter outFile;
-			File outFilePath=new File(ost.datadir(),"RFPintensTable.txt");
+			File outFilePath=new File(ost.datadir(),"intensTable.txt");
 			outFile = new BufferedWriter( new FileWriter(outFilePath) );
 
 			BufferedWriter intermedFile;
-			File outFilePath2=new File(ost.datadir(),"RFP_rvalue.txt");
+			File outFilePath2=new File(ost.datadir(),"rvalue.txt");
 			intermedFile = new BufferedWriter(new FileWriter(outFilePath2));
 			
 			//outFile.write("# imageset: " + currentostname + "\n");
@@ -236,7 +236,8 @@ public static void main(String[] arg)
 				//"/Volumes/TBU_xeon01_500GB01/ost3dfailed/",
 				//"/Volumes/TBU_xeon01_500GB01/ost3dgood/",
 				//"/Volumes/TBU_xeon01_500GB01/ost4dgood/",
-				"/Volumes/TBU_xeon01_500GB02/daemon/output/"
+				//"/Volumes/TBU_xeon01_500GB02/daemon/output/"
+				"/Volumes/TBU_xeon01_500GB02/userdata/jurgen_x1/PON_N2_08_01_21/"
 
 	};
 	int fileNumber = 0;
