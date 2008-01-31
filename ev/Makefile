@@ -17,13 +17,14 @@ uploaddoc:
 	scp -r ../javadoc mahogny@celegans.sh.se:~/Sites/
 
 linecount:
-	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt evplugin/*/cmd/*.java evplugin/roi/primitive/*.java evplugin/roi/window/*.java evplugin/modelWindow/isosurf/*.java evplugin/modelWindow/voxel/*.java
+	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt evplugin/*/cmd/*.java evplugin/roi/primitive/*.java evplugin/roi/window/*.java \
+	evplugin/modelWindow/isosurf/*.java evplugin/modelWindow/voxel/*.java evplugin/modelWindow/slice3d/*.java
 
 jnlp:
 #	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*/*class
 #	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/* evplugin/*/* evplugin/*/*/*
 	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*.class evplugin/roi/window/*.class \
-			evplugin/modelWindow/isosurf/*.class evplugin/modelWindow/voxel/*.class \
+			evplugin/modelWindow/isosurf/*.class evplugin/modelWindow/voxel/*.class evplugin/modelWindow/slice3d/*.class \
 			evplugin/*/*.png evplugin/roi/window/*.png \
 			evplugin/ev/pluginlist.txt
 	jarsigner -keystore myKeys ev.jar jdc
