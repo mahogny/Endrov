@@ -1,7 +1,6 @@
 package evplugin.roi.primitive;
 
 import java.util.*;
-
 import javax.swing.*;
 
 import org.jdom.*;
@@ -12,24 +11,28 @@ import evplugin.data.EvObjectType;
 import evplugin.imageset.*;
 import evplugin.roi.*;
 
+
+
 //TODO: restrict region better
 
+
 /**
- * ROI: set theoretic intersection of other ROIs
+ * ROI: set theoretic symmetric difference of other ROIs
  * @author Johan Henriksson
  */
-public class IntersectROI extends CompoundROI
+public class DiffROI extends CompoundROI
 	{
-	private static final String metaType="ROI_Intersection";
-	private static final String metaDesc="Intersection";
-	private static ImageIcon icon=new ImageIcon(IntersectROI.class.getResource("iconIntersect.png"));
+	private static final String metaType="ROI_Difference";
+	private static final String metaDesc="Difference";
+	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconDiff.png"));
+
 	public static void initPlugin()
 		{
 		EvData.extensions.put(metaType,new EvObjectType()
 			{
 			public EvObject extractObjects(Element e)
 				{
-				IntersectROI meta=new IntersectROI();
+				DiffROI meta=new DiffROI();
 				meta.loadCompoundMetadata(e);
 				return meta;
 				}
@@ -37,10 +40,11 @@ public class IntersectROI extends CompoundROI
 		
 		ROI.addType(new ROIType()
 			{
+
 			public boolean canPlace(){return false;}
 			public boolean isCompound(){return true;}
 			public String name(){return metaDesc;};
-			public ROI makeInstance(){return new IntersectROI();}
+			public ROI makeInstance(){return new DiffROI();}
 			public ImageIcon getIcon(){return icon;}
 			});
 		}
@@ -102,26 +106,28 @@ public class IntersectROI extends CompoundROI
 				else
 					{
 					//Only B left
-					return false;
+					itb.copyRange();
+					return true;
 					}
 			else
 				if(!itb.hasNext)
 					{
 					//Only A left
-					return false;
+					ita.copyRange();
+					return true;
 					}
 				else
 					{
 					if(ita.oneItY<itb.oneItY)
 						//A is lagging
 						{
-						ita.next();
+						ita.copyRange();
 						return true;
 						}
 					else if(ita.oneItY>itb.oneItY)
 						//B is lagging
 						{
-						itb.next();
+						itb.copyRange();
 						return true;
 						}
 					else //A and B has next, and on the same row. need to merge
@@ -140,21 +146,26 @@ public class IntersectROI extends CompoundROI
 								{
 								if(ra.end<rb.start)
 									{
+									ranges.add(ra);
 									ra=null;
 									ra=itala.next();
 									}
 								else if(rb.end<ra.start)
 									{
+									ranges.add(rb);
 									rb=null;
 									rb=italb.next();
 									}
 								else
 									{
-									int left=ra.start;
-									int right=ra.end;
-									if(left<rb.start) left=rb.start;
-									if(right>rb.end)  right=rb.end;
-									ranges.add(new LineRange(left,right));
+									if(ra.start<rb.start)
+										ranges.add(new LineRange(ra.start,rb.start));
+									else
+										ranges.add(new LineRange(rb.start,ra.start));
+									if(ra.end<rb.end)
+										ranges.add(new LineRange(ra.end,rb.end));
+									else
+										ranges.add(new LineRange(rb.end,ra.end));
 									ra=null;
 									rb=null;
 									ra=itala.next();
@@ -164,6 +175,10 @@ public class IntersectROI extends CompoundROI
 							}
 						catch (NoSuchElementException e)
 							{
+							if(ra!=null) ranges.add(ra);
+							if(rb!=null) ranges.add(rb);
+							addRest(ranges, itala);
+							addRest(ranges, italb);
 							}
 						
 						y=ita.oneItY;
@@ -275,4 +290,8 @@ public class IntersectROI extends CompoundROI
 	public Handle getPlacementHandle1(){return null;}
 	public Handle getPlacementHandle2(){return null;}
 	public void initPlacement(String chan, double frame, double z){}
+	
+	
+	
+	
 	}

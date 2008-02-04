@@ -85,10 +85,15 @@ public abstract class ROI extends EvObject
 	 *****************************************************************************************************/
 	public static interface ROIType
 		{
+		/** Can be made by dragging two points in image window */
 		public boolean canPlace();
+		/** Instance is subclass of CompoundROI */
 		public boolean isCompound();
 		public String name();
+		/** Create an instance of this ROI */
 		public ROI makeInstance();
+		/** Icon, can be null */
+		public ImageIcon getIcon();
 		}
 	
 	private static TreeMap<String, ROIType> types=new TreeMap<String, ROIType>();

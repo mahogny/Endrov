@@ -1,8 +1,10 @@
 package evplugin.roi;
 import evplugin.ev.PluginDef;
 import evplugin.roi.primitive.BoxROI;
+import evplugin.roi.primitive.DiffROI;
 import evplugin.roi.primitive.EllipseROI;
 import evplugin.roi.primitive.IntersectROI;
+import evplugin.roi.primitive.SubtractROI;
 import evplugin.roi.primitive.UnionROI;
 import evplugin.roi.window.WindowROI;
 
@@ -36,6 +38,6 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{ROI.class,WindowROI.class,
-				BoxROI.class, EllipseROI.class,IntersectROI.class,UnionROI.class};
+				BoxROI.class, EllipseROI.class,IntersectROI.class,UnionROI.class,DiffROI.class,SubtractROI.class};
 		}
 	}

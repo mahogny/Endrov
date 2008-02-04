@@ -2,6 +2,7 @@ package evplugin.roi.window;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
@@ -11,7 +12,6 @@ import org.jdom.*;
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.roi.*;
-import evplugin.roi.primitive.*;
 import evplugin.basicWindow.*;
 
 
@@ -20,7 +20,7 @@ import evplugin.basicWindow.*;
 
 
 /**
- * ROI Window - Display all ROIs
+ * ROI Window - List and edit all ROIs
  * 
  * @author Johan Henriksson
  */
@@ -42,7 +42,6 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		public void actionPerformed(ActionEvent e) 
 			{
 			WindowROI.getRoiWindow();
-			//new WindowROI();
 			}
 		public void buildMenu(BasicWindow w){}
 		}
@@ -59,11 +58,6 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 				}
 			});
 		}
-	
-	private static ImageIcon iconDiff=new ImageIcon(WindowROI.class.getResource("iconDiff.png"));
-	private static ImageIcon iconIntersect=new ImageIcon(WindowROI.class.getResource("iconIntersect.png"));
-	private static ImageIcon iconSub=new ImageIcon(WindowROI.class.getResource("iconSub.png"));
-	private static ImageIcon iconUnion=new ImageIcon(WindowROI.class.getResource("iconUnion.png"));
 
 	
 	/**
@@ -82,10 +76,6 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	private JButton bNewDiff=new JButton(iconDiff);
-	private JButton bNewIntersect=new JButton(iconIntersect);
-	private JButton bNewSub=new JButton(iconSub);
-	private JButton bNewUnion=new JButton(iconUnion);
 	private JButton bDelete=new JButton(getIconDelete());
 	private JPanel upperPanel=new JPanel(new GridLayout(2,1));
 	private MetaCombo metaCombo=new MetaCombo(this, false);
@@ -123,12 +113,26 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		{		
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
+		
+		Vector<JButton> newButtons=new Vector<JButton>();
+		for(final ROI.ROIType rt:ROI.getTypes())
+			{
+			if(rt.isCompound() && rt.getIcon()!=null)
+				{
+				JButton button=new JButton(rt.getIcon());
+				button.addActionListener(new ActionListener()
+					{public void actionPerformed(ActionEvent e)
+						{
+						makeCompoundROI((CompoundROI)rt.makeInstance());
+						}});
+				newButtons.add(button);
+				}
+			}
+		
 		//Put GUI together		
-		JPanel bp=new JPanel(new GridLayout(1,5));
-		bp.add(bNewDiff);
-		bp.add(bNewIntersect);
-		bp.add(bNewSub);
-		bp.add(bNewUnion);
+		JPanel bp=new JPanel(new GridLayout(1,1+newButtons.size()));
+		for(JButton b:newButtons)
+			bp.add(b);
 		bp.add(bDelete);
 
 		upperPanel.add(metaCombo);
@@ -142,10 +146,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		addTreeListeners();
 		ROI.selectionChanged.addWeakListener(listenSelection);
 		
-		bNewDiff.addActionListener(this);
-		bNewIntersect.addActionListener(this);
-		bNewSub.addActionListener(this);
-		bNewUnion.addActionListener(this);
+
 		bDelete.addActionListener(this);
 		metaCombo.addActionListener(this);
 
@@ -267,10 +268,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 			treeModel.setMetaObject(metaCombo.getMeta());
 			///channelCombo.setImageset(metaCombo.getImageset());
 			}
-		else if(e.getSource()==bNewUnion)
-			makeCompoundROI(new UnionROI());
-		else if(e.getSource()==bNewIntersect)
-			makeCompoundROI(new IntersectROI());
+		
 		}
 	
 	

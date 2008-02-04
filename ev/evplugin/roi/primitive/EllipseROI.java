@@ -3,6 +3,7 @@ package evplugin.roi.primitive;
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
+
 import org.jdom.*;
 
 import evplugin.roi.*;
@@ -19,6 +20,7 @@ import evplugin.imageset.*;
 public class EllipseROI extends ROI
 	{
 	private static final String metaType="ROI_Ellipse";
+	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconEllipse.png"));
 	public static void initPlugin() {}
 	static
 		{
@@ -42,6 +44,7 @@ public class EllipseROI extends ROI
 			public boolean isCompound(){return false;}
 			public String name(){return "Ellipse";};
 			public ROI makeInstance(){return new EllipseROI();}
+			public ImageIcon getIcon(){return icon;}
 			});
 		}
 	
@@ -289,8 +292,8 @@ public class EllipseROI extends ROI
 		{
 		return new Handle[]{getPlacementHandle1(), getPlacementHandle2()};
 		}
-	public Handle getPlacementHandle1(){return new ThisHandle("1",false,false);}
-	public Handle getPlacementHandle2(){return new ThisHandle("4",true,true);}	
+	public Handle getPlacementHandle1(){return new ThisHandle("4",true,true);}	
+	public Handle getPlacementHandle2(){return new ThisHandle("1",false,false);}
 	public void initPlacement(String chan, double frame, double z)
 		{
 		regionChannels.add(chan);

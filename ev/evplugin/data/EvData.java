@@ -218,6 +218,34 @@ public abstract class EvData
 
 	
 	/**
+	 * Get all child-objects from XML
+	 * TODO: What about object id?
+	 */
+	public static Vector<EvObject> getChildObXML(Element element)
+		{
+		Vector<EvObject> obs=new Vector<EvObject>();
+		List<?> children=element.getChildren(); 
+		for(Object ochild:children)
+			{
+			Element child=(Element)ochild;
+			EvObjectType ext=extensions.get(child.getName());
+			EvObject o;
+			if(ext==null)
+				{
+				o=new CustomObject(child);
+				Log.printLog("Found unknown meta object of type "+child.getName());
+				}
+			else
+				{
+				o=ext.extractObjects(child);
+				Log.printLog("Found meta object of type "+child.getName());
+				}
+			obs.add(o);
+			}
+		return obs;
+		}
+	
+	/**
 	 * Put all meta objects into an XML document
 	 */
 	public Document saveXmlMetadata() //root name
