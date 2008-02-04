@@ -29,7 +29,7 @@ public static void calcAP(File file, int fileNumber)
 		//System.out.println("current Imageset "+file.getPath());
 		String currentpath = file.getPath();
 		System.out.println("current imageset: "+currentpath);
-		//if (0==0) // all imagesets
+		if (0==0) // all imagesets
 		//if (currentpath.contains("NRed")) // only deal with these image sets
 			{	
 			System.out.println("imageset found, executing...");
