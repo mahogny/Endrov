@@ -48,7 +48,11 @@ public class ImageExtensionROI implements ImageWindowExtension
 			{
 			if(rt.canPlace() && !rt.isCompound())
 				{
-				JMenuItem miNewROIthis=new JMenuItem(rt.name());
+				JMenuItem miNewROIthis;
+				if(rt.getIcon()==null)
+					miNewROIthis=new JMenuItem(rt.name());
+				else
+					miNewROIthis=new JMenuItem(rt.name(),rt.getIcon());
 				miNewROIthis.addActionListener(new ActionListener()
 					{public void actionPerformed(ActionEvent e){w.setTool(new ToolDragCreateROI(w,rt.makeInstance()));}});
 				BasicWindow.addMenuItemSorted(miNew, miNewROIthis);
@@ -60,7 +64,11 @@ public class ImageExtensionROI implements ImageWindowExtension
 			{
 			if(rt.isCompound())
 				{
-				JMenuItem miNewROIthis=new JMenuItem(rt.name());
+				JMenuItem miNewROIthis;
+				if(rt.getIcon()==null)
+					miNewROIthis=new JMenuItem(rt.name());
+				else
+					miNewROIthis=new JMenuItem(rt.name(),rt.getIcon());
 				miNewROIthis.addActionListener(new ActionListener()
 					{public void actionPerformed(ActionEvent e)
 						{

@@ -3,6 +3,8 @@ package evplugin.modelWindow;
 import evplugin.basicWindow.*;
 
 import java.awt.event.*;
+
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 /**
@@ -11,6 +13,7 @@ import javax.swing.JMenuItem;
  */
 public class ModelWindowBasic implements BasicWindowExtension
 	{
+	private static ImageIcon iconWindow=new ImageIcon(ModelWindowBasic.class.getResource("iconWindow.png"));
 	public void newBasicWindow(BasicWindow w)
 		{
 		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
@@ -19,7 +22,7 @@ public class ModelWindowBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Model");
+			JMenuItem mi=new JMenuItem("Model",iconWindow);
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

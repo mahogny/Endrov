@@ -5,9 +5,11 @@ package evplugin.roi;
 public class DebugLineIterator extends LineIterator
 	{
 	LineIterator it;
-	public DebugLineIterator(LineIterator it)
+	String name;
+	public DebugLineIterator(String name,LineIterator it)
 		{
 		this.it=it;
+		this.name=name;
 		System.out.println("debug iterator");
 		}
 	
@@ -18,10 +20,10 @@ public class DebugLineIterator extends LineIterator
 		z=it.z;
 		ranges=it.ranges;
 		
-		System.out.println("y:"+y+" z:"+z);
+		System.out.println(name+" y:"+y+" z:"+z);
 		for(LineRange r:ranges)
-			System.out.println(" "+r.start+"#"+r.end);
-		System.out.println(" toreturn:"+ret);
+			System.out.println(name+"  "+r.start+"#"+r.end);
+		System.out.println(name+" toreturn:"+ret);
 		
 		return ret;
 		}

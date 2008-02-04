@@ -1,7 +1,6 @@
 package evplugin.roi.primitive;
 
 import java.util.*;
-
 import javax.swing.*;
 
 import org.jdom.*;
@@ -12,24 +11,25 @@ import evplugin.data.EvObjectType;
 import evplugin.imageset.*;
 import evplugin.roi.*;
 
-//TODO: restrict region better
+
+//TODO: restrict interval better
 
 /**
- * ROI: set theoretic intersection of other ROIs
+ * ROI: set theoretic union of other ROIs
  * @author Johan Henriksson
  */
-public class IntersectROI extends CompoundROI
+public class SubtractROI extends CompoundROI
 	{
-	private static final String metaType="ROI_Intersection";
-	private static final String metaDesc="Intersection";
-	private static ImageIcon icon=new ImageIcon(IntersectROI.class.getResource("iconIntersect.png"));
+	private static final String metaType="ROI_Subtract";
+	private static final String metaDesc="Subtract";
+	private static ImageIcon icon=new ImageIcon(SubtractROI.class.getResource("iconSub.png"));
 	public static void initPlugin()
 		{
 		EvData.extensions.put(metaType,new EvObjectType()
 			{
 			public EvObject extractObjects(Element e)
 				{
-				IntersectROI meta=new IntersectROI();
+				SubtractROI meta=new SubtractROI();
 				meta.loadCompoundMetadata(e);
 				return meta;
 				}
@@ -40,7 +40,7 @@ public class IntersectROI extends CompoundROI
 			public boolean canPlace(){return false;}
 			public boolean isCompound(){return true;}
 			public String name(){return metaDesc;};
-			public ROI makeInstance(){return new IntersectROI();}
+			public ROI makeInstance(){return new SubtractROI();}
 			public ImageIcon getIcon(){return icon;}
 			});
 		}
@@ -108,14 +108,15 @@ public class IntersectROI extends CompoundROI
 				if(!itb.hasNext)
 					{
 					//Only A left
-					return false;
+					ita.copyRange();
+					return true;
 					}
 				else
 					{
 					if(ita.oneItY<itb.oneItY)
 						//A is lagging
 						{
-						ita.next();
+						ita.copyRange();
 						return true;
 						}
 					else if(ita.oneItY>itb.oneItY)
@@ -140,21 +141,22 @@ public class IntersectROI extends CompoundROI
 								{
 								if(ra.end<rb.start)
 									{
+									ranges.add(ra);
 									ra=null;
 									ra=itala.next();
 									}
 								else if(rb.end<ra.start)
 									{
+									ranges.add(rb);
 									rb=null;
 									rb=italb.next();
 									}
 								else
 									{
-									int left=ra.start;
-									int right=ra.end;
-									if(left<rb.start) left=rb.start;
-									if(right>rb.end)  right=rb.end;
-									ranges.add(new LineRange(left,right));
+									if(ra.start<rb.start)
+										ranges.add(new LineRange(ra.start,rb.start));
+									if(ra.end>rb.end)
+										ranges.add(new LineRange(rb.end,ra.end));
 									ra=null;
 									rb=null;
 									ra=itala.next();
@@ -164,6 +166,10 @@ public class IntersectROI extends CompoundROI
 							}
 						catch (NoSuchElementException e)
 							{
+							if(ra!=null) ranges.add(ra);
+							if(rb!=null) ranges.add(rb);
+							addRest(ranges, itala);
+							addRest(ranges, italb);
 							}
 						
 						y=ita.oneItY;
@@ -241,10 +247,14 @@ public class IntersectROI extends CompoundROI
 		{
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
-			LineIterator li=subRoi.get(0).getLineIterator(im, channel, frame, z);
-			for(int i=1;i<subRoi.size();i++)
-				li=new ThisLineIterator(im, subRoi.get(i).getLineIterator(im, channel, frame, z), li, channel, frame, z);
-			return li;
+			if(subRoi.size()>=2)
+				return new ThisLineIterator(im,
+						subRoi.get(0).getLineIterator(im, channel, frame, z),
+						subRoi.get(1).getLineIterator(im, channel, frame, z),channel,frame,z);
+			else if(subRoi.size()==1)
+				return subRoi.get(0).getLineIterator(im, channel, frame, z);
+			else
+				return new EmptyLineIterator();
 			}
 		else
 			return new EmptyLineIterator();
@@ -275,4 +285,8 @@ public class IntersectROI extends CompoundROI
 	public Handle getPlacementHandle1(){return null;}
 	public Handle getPlacementHandle2(){return null;}
 	public void initPlacement(String chan, double frame, double z){}
+	
+	
+	
+	
 	}

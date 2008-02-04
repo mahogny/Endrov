@@ -12,6 +12,7 @@ import evplugin.basicWindow.*;
  */
 public class ConsoleBasic implements BasicWindowExtension
 	{
+//	private static ImageIcon iconWindow=new ImageIcon(class.getResource("iconWindow.png"));
 	public void newBasicWindow(BasicWindow w)
 		{
 		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
@@ -20,7 +21,7 @@ public class ConsoleBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Console");
+			JMenuItem mi=new JMenuItem("Console",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

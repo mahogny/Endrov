@@ -3,6 +3,7 @@ package evplugin.roi.primitive;
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
+
 import org.jdom.*;
 
 import evplugin.roi.*;
@@ -30,6 +31,7 @@ import evplugin.imageset.*;
 public class BoxROI extends ROI
 	{
 	private static final String metaType="ROI_Box";
+	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconBox.png"));
 	public static void initPlugin() {}
 	static
 		{
@@ -53,6 +55,7 @@ public class BoxROI extends ROI
 			public boolean isCompound(){return false;}
 			public String name(){return "Box";};
 			public ROI makeInstance(){return new BoxROI();}
+			public ImageIcon getIcon(){return icon;}
 			});
 		
 		
@@ -84,6 +87,7 @@ public class BoxROI extends ROI
 			ranges.clear();
 			ranges.add(new LineRange(startX,endX));
 			y++;
+//			System.out.println("boxit: "+startX+" "+endX+" "+y+" "+endY+"    y "+y+ "size "+ranges.size());
 			return y<endY;
 			}
 		}
@@ -217,9 +221,9 @@ public class BoxROI extends ROI
 			//Initial boundary: cover entire image
 			RectLineIterator it=new RectLineIterator();
 			it.startX=0;
+			it.y=0;
 			it.endX=im.getJavaImage().getWidth();
 			it.endY=im.getJavaImage().getHeight();
-			it.y=0;
 
 			//Correct for span
 			if(!regionX.all)
@@ -237,6 +241,8 @@ public class BoxROI extends ROI
 				if(it.endY>rYend) it.endY=rYend;
 				}
 			
+//			System.out.println("newit: "+it.startX+" "+it.endX+" "+it.y+" "+it.endY+"");
+			
 			//Sanity check
 			if(it.y>it.endY || it.startX>it.endX)
 				return new EmptyLineIterator();
@@ -247,8 +253,8 @@ public class BoxROI extends ROI
 				return it;
 				}
 			}
-				
-		return new EmptyLineIterator();
+		else
+			return new EmptyLineIterator();
 		}
 	
 
@@ -296,8 +302,8 @@ public class BoxROI extends ROI
 					getPlacementHandle1(),new BoxHandle("2",true,false), 
 					new BoxHandle("3",false,true), getPlacementHandle2()};
 		}
-	public Handle getPlacementHandle1(){return new BoxHandle("1",false,false);}
-	public Handle getPlacementHandle2(){return new BoxHandle("4",true,true);}		
+	public Handle getPlacementHandle1(){return new BoxHandle("4",true,true);}		
+	public Handle getPlacementHandle2(){return new BoxHandle("1",false,false);}
 	public void initPlacement(String chan, double frame, double z)
 		{
 		regionX.all=false;
