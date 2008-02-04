@@ -3,6 +3,7 @@ package util;
 import evplugin.ev.*;
 import evplugin.imagesetOST.*;
 import evplugin.nuc.*;
+import evplugin.nuc.NucLineage.NucInterp;
 import evplugin.data.*;
 import evplugin.imageset.*;
 
@@ -557,6 +558,16 @@ public static NucLineage.NucPos getpos(NucLineage lin, String name, int frame)
 	else
 		pos=hm.get(nuc.pos.lastKey());
 	return pos;
+	}
+
+
+public static NucLineage.NucPos getIntPos(NucLineage lin, String name, double frame)
+	{
+	Map<NucPair, NucInterp> i=lin.getInterpNuc(frame);	
+	for(NucPair p:i.keySet())
+		if(p.getRight().equals(name))
+			return i.get(p).pos;
+	return null;
 	}
 
 
