@@ -268,6 +268,8 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 			treeModel.setMetaObject(metaCombo.getMeta());
 			///channelCombo.setImageset(metaCombo.getImageset());
 			}
+		else if(e.getSource()==bDelete)
+			ROI.deleteSelected();
 		
 		}
 	

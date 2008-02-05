@@ -31,6 +31,10 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	private static ImageIcon iconButtonUp=new ImageIcon(BasicWindow.class.getResource("buttonUp.png"));
 	public static ImageIcon getIconUp(){return iconButtonUp;}
 	
+	private static ImageIcon iconMenuMaint=new ImageIcon(BasicWindow.class.getResource("iconMenuMaint.png"));
+	private static ImageIcon iconMenuInfo=new ImageIcon(BasicWindow.class.getResource("iconMenuInfo.png"));
+	private static ImageIcon iconMenuQuit=new ImageIcon(BasicWindow.class.getResource("iconMenuQuit.png"));
+	
 	/** The set of all extensions */
 	public static Vector<BasicWindowExtension> basicWindowExtensions=new Vector<BasicWindowExtension>();
 	
@@ -246,7 +250,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	private JMenuItem miSavePluginList=new JMenuItem("Save plugin list");
 	private JMenuItem miToggleSplash=new JMenuItem("Toggle splash screen");
 	
-	private JMenuItem miQuit=new JMenuItem("Exit");
+	private JMenuItem miQuit=new JMenuItem("Exit",iconMenuQuit);
 
 	private JMenuItem miAbout=new JMenuItem("About");
 	private JMenuItem miWebHome=new JMenuItem(EV.programName+" Home");

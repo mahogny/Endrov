@@ -14,6 +14,7 @@ import org.jdom.Element;
 import evplugin.imageWindow.*;
 import evplugin.imageset.*;
 import evplugin.roi.window.WindowROI;
+import evplugin.basicWindow.BasicWindow;
 import evplugin.data.*;
 import evplugin.ev.SimpleObserver;
 
@@ -58,8 +59,36 @@ public abstract class ROI extends EvObject
 		selected.clear();
 		selected.addAll(newsel);
 		selectionChanged.emit(null);
-//		BasicWindow.updateWindows(null); //to remove TODO
 		}
+	
+	
+	public static void deleteSelected()
+		{
+		for(EvData data:EvData.metadata)
+			{
+			for(EvObject ob:data.metaObject.values())
+				if(ob instanceof CompoundROI)
+					deleteSelected((CompoundROI)ob);
+			for(ROI roi:selected)
+				data.removeMetaObjectByValue(roi);
+			}
+		selected.clear();
+//		selectionChanged.emit(null);
+		BasicWindow.updateWindows(null); //to remove TODO
+		}
+	
+	//maybe all objects should have a parent assigned
+	
+	private static void deleteSelected(CompoundROI from)
+		{
+		for(ROI child:from.subRoi)
+			if(child instanceof CompoundROI)
+				deleteSelected((CompoundROI)child);
+		for(ROI roi:selected)
+			from.subRoi.remove(roi);
+		}
+	
+	
 	
 	
 	/******************************************************************************************************
