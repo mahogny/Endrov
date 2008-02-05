@@ -28,7 +28,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Filter Sequence");
+			JMenuItem mi=new JMenuItem("Filter Sequence",new ImageIcon(getClass().getResource("labelFS.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

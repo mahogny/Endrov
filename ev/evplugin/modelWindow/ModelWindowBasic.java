@@ -13,7 +13,6 @@ import javax.swing.JMenuItem;
  */
 public class ModelWindowBasic implements BasicWindowExtension
 	{
-	private static ImageIcon iconWindow=new ImageIcon(ModelWindowBasic.class.getResource("iconWindow.png"));
 	public void newBasicWindow(BasicWindow w)
 		{
 		w.basicWindowExtensionHook.put(this.getClass(),new Hook());
@@ -22,7 +21,7 @@ public class ModelWindowBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Model",iconWindow);
+			JMenuItem mi=new JMenuItem("Model",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

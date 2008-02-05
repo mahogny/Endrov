@@ -3,6 +3,8 @@ package evplugin.pluginWindow;
 import evplugin.basicWindow.*;
 
 import java.awt.event.*;
+
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 /**
@@ -19,7 +21,7 @@ public class PluginWindowBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Plugins");
+			JMenuItem mi=new JMenuItem("Plugins",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

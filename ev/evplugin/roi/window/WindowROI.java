@@ -35,7 +35,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("ROI");
+			JMenuItem mi=new JMenuItem("ROI",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}
