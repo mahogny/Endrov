@@ -41,7 +41,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					{
 					public void createMenus(BasicWindow w)
 						{
-						JMenuItem miImagesetMeta=new JMenuItem("Imageset Meta");
+						JMenuItem miImagesetMeta=new JMenuItem("Imageset Meta",new ImageIcon(getClass().getResource("iconMetaWindow.png")));
 						w.addMenuWindow(miImagesetMeta);
 						miImagesetMeta.addActionListener(new ActionListener()
 							{public void actionPerformed(ActionEvent e){new MetaWindow();}});

@@ -3,6 +3,8 @@ package evplugin.customData;
 import evplugin.basicWindow.*;
 
 import java.awt.event.*;
+
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 /**
@@ -19,7 +21,7 @@ public class CustomBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Custom Data");
+			JMenuItem mi=new JMenuItem("Custom Data",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

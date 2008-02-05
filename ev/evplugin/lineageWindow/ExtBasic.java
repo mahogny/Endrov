@@ -4,6 +4,7 @@ import evplugin.basicWindow.*;
 
 import java.awt.event.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 
@@ -22,7 +23,7 @@ public class ExtBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Lineage");
+			JMenuItem mi=new JMenuItem("Lineage",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

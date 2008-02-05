@@ -3,6 +3,8 @@ package evplugin.keyBinding;
 import evplugin.basicWindow.*;
 
 import java.awt.event.*;
+
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 /**
@@ -19,7 +21,7 @@ public class BasicKeyBinding implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Key Bindings");
+			JMenuItem mi=new JMenuItem("Key Bindings",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}
