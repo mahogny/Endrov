@@ -20,15 +20,15 @@ import java.awt.image.*;
 public class BatchExtractNormalizeDVAP
 {
 
-public static void calcAP(File file)
+public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter htmlfile)
 	{
 	try
 		{
 		System.out.println("current Imageset "+file.getPath());
 		String currentpath = file.getPath();
 		System.out.println("current imageset: "+currentpath);
-		//if (0==0) // all imagesets
-		if (currentpath.equals("/Volumes/TBU_xeon01_500GB01/ost4dgood/BC12759070823")) // only deal with this test image set
+		if (0==0) // all imagesets
+		//if (currentpath.equals("/Volumes/TBU_xeon01_500GB01/ost4dgood/BC12759070823")) // only deal with this test image set
 			{	
 			System.out.println("imageset found, executing...");
 
@@ -84,9 +84,12 @@ public static void calcAP(File file)
 						//create an output file in the data directory
 
 						BufferedWriter outFile;
-
 						File outFilePath=new File(ost.datadir(),"DVtimeRotatedGFP.txt");
 						outFile = new BufferedWriter( new FileWriter(outFilePath) );
+						
+						BufferedWriter angleFile;
+						File angleFilePath=new File(ost.datadir(),"rotationAngleTableNotMod.txt");
+						angleFile = new BufferedWriter(new FileWriter(angleFilePath));
 
 						//scaling to write doubles into file:
 						int scaleX = 25;
@@ -157,7 +160,7 @@ public static void calcAP(File file)
 						for(int frame:images.keySet())
 							{
 							TreeMap<Integer, EvImage> zs=images.get(frame);
-
+							System.out.printf("\n********* frame "+frame+" ***********\n");
 							try
 								{
 								//get exposure
@@ -213,7 +216,7 @@ public static void calcAP(File file)
 								System.out.println(" shellup: "+shellup.x+", "+shellup.y+", "+shellup.z);
 								System.out.println(" shelldown: "+shelldown.x+", "+shelldown.y+", "+shelldown.z);
 								System.out.println(" EMS:  "+EMSpos.x+", "+EMSpos.y+", "+EMSpos.z);
-								System.out.println(" Ep:   "+Epos.x+", "+Epos.y+", "+Epos.z);
+								System.out.println(" E:   "+Epos.x+", "+Epos.y+", "+Epos.z);
 								System.out.println(" Ep:   "+Eppos.x+", "+Eppos.y+", "+Eppos.z);
 								System.out.println(" venc: "+vencpos.x+", "+vencpos.y+", "+vencpos.z);
 
@@ -274,6 +277,31 @@ public static void calcAP(File file)
 								double cosAPonXYtoXZ = Math.cos(angleAPonXYtoXZ);
 								double sinAPonXYtoXZ = Math.sin(angleAPonXYtoXZ);
 
+								
+
+								//calculate AntPost distance;
+								double apdiffX = antpos.x-postpos.x;
+								double apdiffY = antpos.y-postpos.y;
+								double apdiffZ = antpos.z-postpos.z;
+								double antpost = Math.sqrt(apdiffX*apdiffX+apdiffY*apdiffY+apdiffZ*apdiffZ);
+								System.out.println("AntPost: "+antpost);
+
+								// mis-termed variable: should not be "radius", rather diameter
+								double middiffX = shellmid1.x-shellmid2.y;
+								double middiffY = shellmid1.y-shellmid2.y;
+								double middiffZ = shellmid1.z-shellmid2.z;
+								double eggsmallradius = Math.sqrt(middiffX*middiffX+middiffY*middiffY+middiffZ*middiffZ);
+								//System.out.println("eggsmallradius: "+eggsmallradius);
+
+								//get the up-down distance as well, compare the the mid diameter (for internal control)
+
+								double middiffUDX = shellup.x-shellup.y;
+								double middiffUDY = shellup.y-shellup.y;
+								double middiffUDZ = shellup.z-shellup.z;
+								double eggsmallradiusUD = Math.sqrt(middiffUDX*middiffUDX+middiffUDY*middiffUDY+middiffUDZ*middiffUDZ);
+								System.out.println("eggsmallradius mid="+eggsmallradius+" ud="+eggsmallradiusUD);
+								
+								
 								// rotate remaining coordinates accordingly
 
 								int markers=0; // 0 additional coordinates
@@ -333,6 +361,8 @@ public static void calcAP(File file)
 								coordLastKey[markers]=vencNucLastKey;
 								markers++;
 
+								double currentEmbRotAngle=0;
+								String currentVentralMarker="";
 								for (int mc=0;mc<markers;mc++)
 									{
 
@@ -352,13 +382,24 @@ public static void calcAP(File file)
 									rotCoordZ[mc]=                                                 oldRotCoordZ;
 
 									System.out.println(coordName[mc]+": "+rotCoordX[mc]+", "+ ", "+rotCoordY[mc]+", "+rotCoordZ[mc]);
-									if (mc>0)
-										//if ((frame >= coordFirstKey[mc] && frame < coordFirstKey[mc+1]))
-											{
-											double currentEmbRotAngle=Math.acos(Math.abs(rotCoordY[0]*rotCoordY[mc]+rotCoordZ[0]*rotCoordZ[mc])/(Math.sqrt(rotCoordY[0]*rotCoordY[0]+rotCoordZ[0]*rotCoordZ[0])*Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc])))/Math.PI*180;
-											System.out.println("current rotation angle: "+currentEmbRotAngle);
-											}
+									if (Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc])>eggsmallradius/2/4)
+										if (mc>0)
+											if (rotCoordX[0] !=  rotCoordX[mc] && rotCoordY[0] !=  rotCoordY[mc] && rotCoordZ[0] !=  rotCoordZ[mc])
+												{
+												System.out.println("current "+coordName[mc] + "-first: "+coordFirstKey[mc]+", -last: "+coordLastKey[mc]);
+												if (frame >= coordFirstKey[mc])
+													{
+													//currentEmbRotAngle=Math.acos(Math.abs(rotCoordY[0]*rotCoordY[mc]+rotCoordZ[0]*rotCoordZ[mc])/(Math.sqrt(rotCoordY[0]*rotCoordY[0]+rotCoordZ[0]*rotCoordZ[0])*Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc])))/Math.PI*180;
+													// using atan2 instead to get direction of rotation atan2(y1,z1)-atan2(y2,z2)
+													currentEmbRotAngle=Math.atan2(rotCoordY[0],rotCoordZ[0])-Math.atan2(rotCoordY[mc],rotCoordZ[mc])/Math.PI*180;
+
+													currentVentralMarker=coordName[mc];
+													}
+												}
 									}
+								System.out.println("frame "+frame+" current_ rotation angle "+coordName[0]+", "+currentVentralMarker+" : "+currentEmbRotAngle);
+								angleFile.write(currentVentralMarker+"\t"+frame+"\t"+currentEmbRotAngle+"\n");
+								
 
 								// project the rotated embryonic rotation reference coordinates on to ZY pane by ignoring the X coordinate
 								// determine the angle relative to the ventralRefPos => index 0 for rotated coordinates
@@ -366,27 +407,6 @@ public static void calcAP(File file)
 
 
 
-								//calculate AntPost distance;
-								double apdiffX = antpos.x-postpos.x;
-								double apdiffY = antpos.y-postpos.y;
-								double apdiffZ = antpos.z-postpos.z;
-								double antpost = Math.sqrt(apdiffX*apdiffX+apdiffY*apdiffY+apdiffZ*apdiffZ);
-								System.out.println("AntPost: "+antpost);
-
-
-								double middiffX = shellmid1.x-shellmid2.y;
-								double middiffY = shellmid1.y-shellmid2.y;
-								double middiffZ = shellmid1.z-shellmid2.z;
-								double eggsmallradius = Math.sqrt(middiffX*middiffX+middiffY*middiffY+middiffZ*middiffZ);
-								//System.out.println("eggsmallradius: "+eggsmallradius);
-
-								//get the up-down distance as well, compare the the mid diameter (for internal control)
-
-								double middiffUDX = shellup.x-shellup.y;
-								double middiffUDY = shellup.y-shellup.y;
-								double middiffUDZ = shellup.z-shellup.z;
-								double eggsmallradiusUD = Math.sqrt(middiffUDX*middiffUDX+middiffUDY*middiffUDY+middiffUDZ*middiffUDZ);
-								System.out.println("eggsmallradius mid="+eggsmallradius+" ud="+eggsmallradiusUD);
 
 
 								//if (0==1){ // TODO: this is to temporally remove image analysis
@@ -588,6 +608,7 @@ public static void calcAP(File file)
 										}
 									outFile.write("*\n");
 									outFile.flush(); //force write
+
 									}								
 								}}
 							catch (RuntimeException e)
@@ -599,10 +620,16 @@ public static void calcAP(File file)
 							}
 						outFile.flush();
 						outFile.close();
-
+						angleFile.close();
 						System.out.println(" timeX "+(System.currentTimeMillis()-currentTime));
 						System.out.println("AP done");
 						frameCounter++;
+						
+						gnufile.write("set output \'"+ost.datadir()+"/"+currentostname+"-angles.png\'\n");
+						gnufile.write("set title \'"+currentostname+" rotation angle (degrees)\'\n");
+						gnufile.write("set yrange [-180:180]\n");
+						gnufile.write("plot \'"+ost.datadir()+"/rotationAngleTableNotMod.txt\' using 2:3 with lines\n");
+						htmlfile.write("<img src=\""+ost.datadir()+"/"+currentostname+"-angles.png\" width=\"320\" heigth=\"240\">\n");
 						}
 					}
 				}
@@ -666,13 +693,37 @@ public static void main(String[] arg)
 				"/Volumes/TBU_xeon01_500GB02/ost4dgood/"
 
 	};
-	for(String s:arg)
-		for(File file:(new File(s)).listFiles())
-			if(file.isDirectory())
-				{
-				long currentTime=System.currentTimeMillis();
-				calcAP(file);
-				System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
-				}
+	
+	
+	try
+		{
+		BufferedWriter gnuplotFile;
+		File gnuplotFilePath=new File("gnuplotrotationangle.txt");
+		gnuplotFile = new BufferedWriter(new FileWriter(gnuplotFilePath));
+		gnuplotFile.write("set terminal png\n");
+		
+		BufferedWriter htmlGnuplotFile;
+		File htmlGnuplotFilePath=new File("htmlGnuplotrotationangle.htm");
+		htmlGnuplotFile = new BufferedWriter(new FileWriter(htmlGnuplotFilePath));
+		htmlGnuplotFile.write("<html><body>\n");
+		
+		for(String s:arg)
+			for(File file:(new File(s)).listFiles())
+				if(file.isDirectory())
+					{
+					long currentTime=System.currentTimeMillis();
+					calcAP(file, gnuplotFile, htmlGnuplotFile);
+					System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
+					}
+		gnuplotFile.close();
+		htmlGnuplotFile.write("\n</body></html>");
+		htmlGnuplotFile.close();
+		}
+	catch (IOException e)
+		{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		}
 	}
+
 }
