@@ -1,8 +1,5 @@
-package util;
+package util2;
 
-import evplugin.data.CustomObject;
-import evplugin.data.EvData;
-import evplugin.data.EvObject;
 import evplugin.ev.*;
 import evplugin.imagesetOST.*;
 //import evplugin.nuc.*;
@@ -13,7 +10,6 @@ import java.util.*;
 import java.io.*;
 import java.awt.image.*;
 //import javax.vecmath.*;
-import org.jdom.Element;
 
 /**
  * Go through all imagesets in a directory and run the MakeQT plugin
@@ -94,7 +90,7 @@ public static void calcAP(File file, int fileNumber)
 					r=bufi.getData();
 					int w=bufi.getWidth();
 					int h=bufi.getHeight();
-					int s=zs.lastKey()+1; //stack Z
+					//int s=zs.lastKey()+1; //stack Z
 					//loop through every pixel of this image
 
 					for (int co=0;co<w;co++)
