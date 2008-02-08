@@ -7,7 +7,7 @@ import evplugin.makeMax.CalcThread;
 
 
 /**
- * Go through all imagesets in a directory and run the MakeQT plugin
+ * Go through all imagesets in a directory and create a max channel for GFP
  * @author Johan Henriksson
  */
 public class BatchMax

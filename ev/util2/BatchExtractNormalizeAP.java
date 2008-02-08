@@ -1,4 +1,4 @@
-package util;
+package util2;
 
 import evplugin.ev.*;
 import evplugin.imagesetOST.*;
@@ -133,9 +133,9 @@ public static void calcAP(File file)
 						double rawIntens[][][][] = new double [scaleX][scaleY][scaleZ][allframes];
 						double rawExptime[] = new double [allframes];
 						double rawFrame[] = new double[allframes];
-						double normIntens[][][][] = new double [scaleX][scaleY][scaleZ][allframes];
-						double normExptime[] = new double [allframes];
-						double normFrame[] = new double[allframes];
+						//double normIntens[][][][] = new double [scaleX][scaleY][scaleZ][allframes];
+						//double normExptime[] = new double [allframes];
+						//double normFrame[] = new double[allframes];
 						
 						int frameCounter = 0;
 						

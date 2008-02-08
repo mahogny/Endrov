@@ -1,9 +1,8 @@
-package util;
+package util2;
 
 import evplugin.ev.*;
 import evplugin.imagesetOST.*;
 import evplugin.nuc.*;
-import evplugin.nuc.NucLineage.NucInterp;
 import evplugin.data.*;
 import evplugin.imageset.*;
 
@@ -159,9 +158,9 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 						double rawExptime[] = new double [allframes];
 						double rawFrame[] = new double[allframes];
 
-						double normIntens[][][][] = new double [scaleX][scaleY][scaleZ][allframes];
-						double normExptime[] = new double [allframes];
-						double normFrame[] = new double[allframes];
+						//double normIntens[][][][] = new double [scaleX][scaleY][scaleZ][allframes];
+						//double normExptime[] = new double [allframes];
+						//double normFrame[] = new double[allframes];
 
 						int frameCounter = 0;
 
@@ -210,8 +209,8 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								NucLineage.NucPos postpos = getIntPos(lin, "post", frame);
 								NucLineage.NucPos shellmid1 = getIntPos(lin, "shellmid1",  frame);
 								NucLineage.NucPos shellmid2 = getIntPos(lin, "shellmid2", frame);
-								NucLineage.NucPos shellup = getIntPos(lin, "shellup", frame);
-								NucLineage.NucPos shelldown = getIntPos(lin, "shelldown", frame);
+								//NucLineage.NucPos shellup = getIntPos(lin, "shellup", frame);
+								//NucLineage.NucPos shelldown = getIntPos(lin, "shelldown", frame);
 								NucLineage.NucPos EMSpos = getIntPos(lin,"EMS",frame);
 								NucLineage.NucPos Epos = getIntPos(lin,"E",frame);									
 								NucLineage.NucPos Eppos = getIntPos(lin,"Ep",frame);
@@ -303,11 +302,13 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 
 								//get the up-down distance as well, compare the the mid diameter (for internal control)
 
+								/*
 								double middiffUDX = shellup.x-shellup.y;
 								double middiffUDY = shellup.y-shellup.y;
 								double middiffUDZ = shellup.z-shellup.z;
 								double eggsmallradiusUD = Math.sqrt(middiffUDX*middiffUDX+middiffUDY*middiffUDY+middiffUDZ*middiffUDZ);
-//								System.out.println("eggsmallradius mid="+eggsmallradius+" ud="+eggsmallradiusUD);
+*/
+								//								System.out.println("eggsmallradius mid="+eggsmallradius+" ud="+eggsmallradiusUD);
 								
 								
 								// rotate remaining coordinates accordingly
