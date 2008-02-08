@@ -653,8 +653,8 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 						htmlfile.write("<img src=\""+ost.datadir()+"/"+currentostname+"-angles.png\" width=\"320\" heigth=\"240\">\n");
 						// collect rotation angle average at the end of gastrulation and correlate with ventral enclosure
 						double averageRotationAngle = rotationAngle[0]/rotationNumber[0]-rotationAngle[1]/rotationNumber[1];
-						rotfile.write(currentostname+"\t"+recordingNumber+"\t"+averageRotationAngle+"\n");
-						recordingNumber++;
+						rotfile.write(recordingNumber+"\t"+averageRotationAngle+"\n");
+						//recordingNumber++;
 						}
 					}
 				}
@@ -736,6 +736,10 @@ public static void main(String[] arg)
 		File rotationStatisticsFilePath=new File("rotationStatistics.txt");
 		rotationStatisticsFile = new BufferedWriter(new FileWriter(rotationStatisticsFilePath));
 		
+		BufferedWriter rotationStatisticsTranslationFile;
+		File rotationStatisticsTranslationFilePath=new File("rotationStatisticsTranslation.txt");
+		rotationStatisticsTranslationFile = new BufferedWriter(new FileWriter(rotationStatisticsTranslationFilePath));
+		
 		int evaluatedRecording = 0;
 		
 		for(String s:arg)
@@ -744,6 +748,8 @@ public static void main(String[] arg)
 					{
 					long currentTime=System.currentTimeMillis();
 					calcAP(file, gnuplotFile, htmlGnuplotFile, rotationStatisticsFile, evaluatedRecording);
+					rotationStatisticsTranslationFile.write(evaluatedRecording+"\t"+file+"\n");
+					evaluatedRecording++;
 					System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
 					}
 		gnuplotFile.close();
