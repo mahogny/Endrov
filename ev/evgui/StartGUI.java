@@ -91,7 +91,8 @@ public class StartGUI
 		{
 		File p=new File(dir);
 		for(File sub:p.listFiles())
-			if(sub.isFile() && sub.getName().endsWith(".jar"))
+			if(sub.isFile() && 
+					(sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
 				v.add(dir+"/"+sub.getName());
 		}
 	
