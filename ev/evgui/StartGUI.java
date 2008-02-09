@@ -19,6 +19,7 @@ public class StartGUI
 		{
 		String javaver=System.getProperty("java.specification.version");
 		String OS=System.getProperty("os.name");
+		String cpsep=":";
 		
 		int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
 		int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
@@ -49,11 +50,12 @@ public class StartGUI
 				else if(OS.startsWith("Windows"))
 					{
 					libdir="libs/windows";
+					cpsep=";";
 					}
 				else //Assume linux or equivalent
 					{
 					libdir="libs/linux";
-					Runtime.getRuntime().exec("export LD_LIBRARY_PATH=libs/linux");
+					runprint("export LD_LIBRARY_PATH=libs/linux");
 					}
 				
 				//Collect jarfiles
@@ -62,9 +64,9 @@ public class StartGUI
 				collectJars(jarfiles, libdir);
 				String jarstring="-cp .";
 				if(mainjar!=null)
-					jarstring+=":"+mainjar;
+					jarstring+=cpsep+mainjar;
 				for(String s:jarfiles)
-					jarstring+=":"+s;
+					jarstring+=cpsep+s;
 				
 				//Execute command
 				String cmd=javaexe+
@@ -73,8 +75,7 @@ public class StartGUI
 				" -Djava.library.path="+libdir+
 				" "+entrypoint;
 				
-				System.out.println(cmd);
-				Runtime.getRuntime().exec(cmd);
+				runprint(cmd);
 				}
 			catch (IOException e)
 				{
@@ -92,6 +93,19 @@ public class StartGUI
 		for(File sub:p.listFiles())
 			if(sub.isFile() && sub.getName().endsWith(".jar"))
 				v.add(dir+"/"+sub.getName());
+		}
+	
+	private static void runprint(String cmd) throws IOException
+		{
+		System.out.println(cmd);
+		Process p=Runtime.getRuntime().exec(cmd);
+		BufferedReader in=new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String input;
+		while(((input=in.readLine())!=null))
+			{
+			System.out.println(input);
+			
+			}
 		}
 	
 	}
