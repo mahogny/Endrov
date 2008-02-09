@@ -17,19 +17,20 @@ linecount:
 	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt evplugin/*/cmd/*.java evplugin/roi/primitive/*.java evplugin/roi/window/*.java \
 	evplugin/modelWindow/isosurf/*.java evplugin/modelWindow/voxel/*.java evplugin/modelWindow/slice3d/*.java
 
-jnlp:
+starters:
 	jar cfvm startOSTdaemon.jar evgui/MANIFEST.STARTOST evgui/StartOSTdaemon.class OSTdaemon/*.class
 	jar cfvm startEndrov.jar evgui/MANIFEST.STARTGUI evgui/StartGUI.class
+	du -hc start*.jar
 
-	jar cfvm ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*.class evplugin/roi/window/*.class \
+jnlp:
+	jar cfvm ../ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*.class evplugin/roi/window/*.class \
 			evplugin/modelWindow/isosurf/*.class evplugin/modelWindow/voxel/*.class evplugin/modelWindow/slice3d/*.class \
 			evplugin/*/*.png evplugin/roi/window/*.png evplugin/roi/primitive/*.png \
 			evplugin/ev/pluginlist.txt
-	jarsigner -keystore myKeys ev.jar jdc
-	du -hc *.jar
-
-uploadjnlp:
-	scp ev.jar tbuadmin@celegans.sh.se:~/MAMPsite/download/webstart/
+	jarsigner -keystore myKeys ../ev.jar jdc
+	du -hc ../ev.jar
+	scp ../ev.jar tbuadmin@celegans.sh.se:~/MAMPsite/download/webstart/
+	rm ../ev.jar
 
 
 #keytool -genkey -keystore myKeys -alias jdc

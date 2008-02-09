@@ -1,6 +1,5 @@
-New windows: ROI, Voxels, 3d Surface plot
+New windows: 3d Surface plot
 Other New tools:
-	annotate image/arrow tool
 	image angle
 	image distance
 	color picker
@@ -15,7 +14,6 @@ image
 
 	info?
 	crop
-	rotate
 	set color depth
 
 	draw
@@ -46,7 +44,6 @@ image window
 other new features:
 	load movies mpg etc?
 features that can be skipped?
-	num threads
 	selection.fit spline
 	selection.fit elipse
 	selection.make band
