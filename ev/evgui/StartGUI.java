@@ -12,10 +12,10 @@ public class StartGUI
 	{
 	public static void main(String[] args)
 		{
-		run("ev.jar",args);
+		run(args);
 		}
 	
-	public static void run(String mainjar, String[] args)
+	public static void run(String[] args)
 		{
 		String javaver=System.getProperty("java.specification.version");
 		String OS=System.getProperty("os.name");
@@ -63,8 +63,6 @@ public class StartGUI
 				collectJars(jarfiles, "libs");
 				collectJars(jarfiles, libdir);
 				String jarstring="-cp .";
-				if(mainjar!=null)
-					jarstring+=cpsep+mainjar;
 				for(String s:jarfiles)
 					jarstring+=cpsep+s;
 				

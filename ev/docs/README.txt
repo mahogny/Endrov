@@ -13,11 +13,11 @@ later turned into a general purpose image analysis program.
 User Guide
 --------------------------------------------------------------------
 For the sake of keeping things up to date, refer to our website for any documentation.
-http://celegans.sh.se
+http://www.endrov.net
 
 Contact
 --------------------------------------------------------------------
 Primary maintainer:
   Johan Henriksson
-  Karolinska Institutet/Södertörns högskola
+  Karolinska Institutet/Södertörn college
   johan.henriksson@ki.se
