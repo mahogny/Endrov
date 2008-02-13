@@ -89,6 +89,12 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 						BufferedWriter angleFile;
 						File angleFilePath=new File(ost.datadir(),"rotationAngleTableNotMod.txt");
 						angleFile = new BufferedWriter(new FileWriter(angleFilePath));
+						
+						BufferedWriter distanceFile;
+						File distanceFilePath=new File(ost.datadir(),"distanceToAP.txt");
+						distanceFile = new BufferedWriter(new FileWriter(distanceFilePath));
+						
+						
 						double[] rotationAngle=new double[3]; // statistics of rotation angle
 						double[] rotationNumber=new double[3];
 						for (int v=0;v<3;v++)
@@ -163,6 +169,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 						//double normFrame[] = new double[allframes];
 
 						int frameCounter = 0;
+						double lastDistanceToAP = -1;
 
 						for(int frame:images.keySet())
 							{
@@ -371,6 +378,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								markers++;
 
 								double currentEmbRotAngle=0;
+								double currentDistanceToAP=-1;
 								String currentVentralMarker="";
 								for (int mc=0;mc<markers;mc++)
 									{
@@ -403,6 +411,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 													//currentEmbRotAngle=Math.atan2(rotCoordY[0],rotCoordZ[0])-Math.atan2(rotCoordY[mc],rotCoordZ[mc])/Math.PI*180;
 													currentEmbRotAngle=Math.atan2(rotCoordY[mc],rotCoordZ[mc])/Math.PI*180;
 													currentVentralMarker=coordName[mc];
+													currentDistanceToAP = Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc]);
 													}
 												}
 									}
@@ -420,6 +429,12 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								
 								System.out.println("frame "+frame+" current_ rotation angle "+coordName[0]+", "+currentVentralMarker+" : "+currentEmbRotAngle);
 								angleFile.write(currentVentralMarker+"\t"+frame+"\t"+currentEmbRotAngle+"\n");
+								if (currentVentralMarker != "venc")
+									if (lastDistanceToAP != currentDistanceToAP && currentDistanceToAP >=0)
+										{
+										distanceFile.write(frame+"\t"+currentDistanceToAP+"\n");
+										lastDistanceToAP = currentDistanceToAP;
+										}
 								
 
 								// project the rotated embryonic rotation reference coordinates on to ZY pane by ignoring the X coordinate
@@ -636,24 +651,33 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								{
 								// catches defective frame errors
 								e.printStackTrace();
+								System.out.println("Java_error: "+e);
 								}
 							//} //TODO: remove to activate image analysis 
 							}
 						outFile.flush();
 						outFile.close();
 						angleFile.close();
+						distanceFile.close();
 						System.out.println(" timeX "+(System.currentTimeMillis()-currentTime));
 						System.out.println("AP done");
 						frameCounter++;
 						
 						gnufile.write("set output \'"+ost.datadir()+"/"+currentostname+"-angles.png\'\n");
 						gnufile.write("set title \'"+currentostname+" rotation angle (degrees)\'\n");
+						gnufile.write("set xrange [*:*]\n");
 						gnufile.write("set yrange [-180:180]\n");
 						gnufile.write("plot \'"+ost.datadir()+"/rotationAngleTableNotMod.txt\' using 2:3 with lines\n");
+						gnufile.write("set output \'"+ost.datadir()+"/"+currentostname+"-APdist.png\'\n");
+						gnufile.write("set title \'"+currentostname+" distance to center (micrometer)\'\n");
+						gnufile.write("set xrange [*:*]\n");
+						gnufile.write("set yrange [*:*]\n");
+						gnufile.write("plot \'"+ost.datadir()+"/distanceToAP.txt\' using 1:2 with lines\n");
 						htmlfile.write("<img src=\""+ost.datadir()+"/"+currentostname+"-angles.png\" width=\"320\" heigth=\"240\">\n");
+						htmlfile.write("<img src=\""+ost.datadir()+"/"+currentostname+"-APdist.png\" width=\"320\" heigth=\"240\">\n");
 						// collect rotation angle average at the end of gastrulation and correlate with ventral enclosure
 						double averageRotationAngle = rotationAngle[0]/rotationNumber[0]-rotationAngle[1]/rotationNumber[1];
-						rotfile.write(recordingNumber+"\t"+averageRotationAngle+"\n");
+						rotfile.write(currentpath+"\t"+recordingNumber+"\t"+averageRotationAngle+"\n");
 						//recordingNumber++;
 						}
 					}
@@ -738,7 +762,7 @@ public static void main(String[] arg)
 		
 		BufferedWriter rotationStatisticsTranslationFile;
 		File rotationStatisticsTranslationFilePath=new File("rotationStatisticsTranslation.txt");
-		rotationStatisticsTranslationFile = new BufferedWriter(new FileWriter(rotationStatisticsTranslationFilePath));
+		rotationStatisticsTranslationFile = new BufferedWriter(new FileWriter(rotationStatisticsTranslationFilePath));	
 		
 		int evaluatedRecording = 0;
 		
