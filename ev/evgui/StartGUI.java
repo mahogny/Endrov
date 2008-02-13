@@ -31,16 +31,9 @@ public class StartGUI
 				String libdir="";
 				String javaexe="java";
 				String memstring="-Xmx700M";
-				String entrypoint="evgui.GUI";
-							
-				//Run something else?
-				if(args.length>0)
-					{
-					entrypoint="";
-					for(String s:args)
-						entrypoint+=" "+s;
-					}
-				
+				//String entrypoint="";
+				ProcessBuilder pb=new ProcessBuilder("");
+											
 				//Detect OS
 				if(OS.equals("Mac OS X"))
 					{
@@ -55,25 +48,40 @@ public class StartGUI
 				else //Assume linux or equivalent
 					{
 					libdir="libs/linux";
-					runprint("export LD_LIBRARY_PATH=libs/linux");
+					pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
 					}
 				
 				//Collect jarfiles
 				Vector<String> jarfiles=new Vector<String>();
 				collectJars(jarfiles, "libs");
 				collectJars(jarfiles, libdir);
-				String jarstring="-cp .";
+				String jarstring=".";
 				for(String s:jarfiles)
 					jarstring+=cpsep+s;
 				
-				//Execute command
-				String cmd=javaexe+
-				" "+jarstring+
-				" "+memstring+
-				" -Djava.library.path="+libdir+
-				" "+entrypoint;
+				//Generate command
+				LinkedList<String> cmdarg=new LinkedList<String>();
+				cmdarg.add(javaexe);
+				cmdarg.add("-cp");
+				cmdarg.add(jarstring);
+				cmdarg.add(memstring);
+				cmdarg.add("-Djava.library.path="+libdir);
+
+				//What to run? additional arguments?
+				if(args.length>0)
+					for(String s:args)
+						cmdarg.add(s);
+				else
+					cmdarg.add("evgui.GUI");
 				
-				runprint(cmd);
+				//Run process
+				pb.command(cmdarg);
+				Process p=pb.start();
+				InputStreamReader isr = new InputStreamReader(p.getInputStream());
+        BufferedReader br = new BufferedReader(isr);
+        String line;
+        while ( (line = br.readLine()) != null)
+        	System.out.println(line);    
 				}
 			catch (IOException e)
 				{
@@ -93,20 +101,8 @@ public class StartGUI
 					(sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
 				v.add(dir+"/"+sub.getName());
 		}
-	
-	private static void runprint(String cmd) throws IOException
-		{
-		System.out.println(cmd);
-		Process p=Runtime.getRuntime().exec(cmd);
-		BufferedReader in=new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String input;
-		while(((input=in.readLine())!=null))
-			{
-			System.out.println(input);
-			
-			}
-		}
-	
+
+
 	}
 
 /*
