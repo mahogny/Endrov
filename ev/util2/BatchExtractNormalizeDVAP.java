@@ -19,8 +19,9 @@ import java.awt.image.*;
 public class BatchExtractNormalizeDVAP
 {
 
-public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter htmlfile, BufferedWriter rotfile, int recordingNumber)
+public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter htmlfile, BufferedWriter rotfile, BufferedWriter omitted, int recordingNumber)
 	{
+	String PathForErrorFile = file.getPath();
 	try
 		{
 		//System.out.println("current Imageset "+file.getPath());
@@ -652,6 +653,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								// catches defective frame errors
 								e.printStackTrace();
 								System.out.println("Java_error: "+e);
+								omitted.write(currentpath + "\terror "+e+"\n");
 								}
 							//} //TODO: remove to activate image analysis 
 							}
@@ -685,11 +687,21 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 			}
 		else
 			System.out.println("skipping");
+			omitted.write(currentpath + "\tskipped\n");
 		}
 	catch (Exception e)
 		{
 		// TODO Auto-generated catch block
 		e.printStackTrace();
+		try
+			{
+			omitted.write(PathForErrorFile + "\terror2 "+e+"\n");
+			}
+		catch (IOException e1)
+			{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			}
 		}
 	}
 
@@ -739,7 +751,8 @@ public static void main(String[] arg)
 				/*					"/Volumes/TBU_xeon01_500GB01/ost3dfailed/",
 						"/Volumes/TBU_xeon01_500GB01/ost3dgood/",*/
 				"/Volumes/TBU_xeon01_500GB01/ost4dgood/",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/"
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/",
+				"/Volumes/TBU_xeon01_500GB02/daemon/output/"
 
 	};
 	
@@ -764,6 +777,10 @@ public static void main(String[] arg)
 		File rotationStatisticsTranslationFilePath=new File("rotationStatisticsTranslation.txt");
 		rotationStatisticsTranslationFile = new BufferedWriter(new FileWriter(rotationStatisticsTranslationFilePath));	
 		
+		BufferedWriter omittedFile;
+		File omittedFilePath=new File("omittedRecordings.txt");
+		omittedFile = new BufferedWriter(new FileWriter(omittedFilePath));	
+		
 		int evaluatedRecording = 0;
 		
 		for(String s:arg)
@@ -771,7 +788,7 @@ public static void main(String[] arg)
 				if(file.isDirectory())
 					{
 					long currentTime=System.currentTimeMillis();
-					calcAP(file, gnuplotFile, htmlGnuplotFile, rotationStatisticsFile, evaluatedRecording);
+					calcAP(file, gnuplotFile, htmlGnuplotFile, rotationStatisticsFile, omittedFile, evaluatedRecording);
 					rotationStatisticsTranslationFile.write(evaluatedRecording+"\t"+file+"\n");
 					evaluatedRecording++;
 					System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
@@ -780,6 +797,7 @@ public static void main(String[] arg)
 		htmlGnuplotFile.write("\n</body></html>");
 		htmlGnuplotFile.close();
 		rotationStatisticsFile.close();
+		omittedFile.close();
 		}
 	catch (IOException e)
 		{
