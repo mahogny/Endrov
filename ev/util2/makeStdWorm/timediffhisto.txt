@@ -1,0 +1,1 @@
+variance in frame, outliers removed: 187 (stddev 13.7)
