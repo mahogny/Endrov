@@ -1,0 +1,199 @@
+AB 1000 994 
+ABa 1076 1075 
+ABal 1166 1169 
+ABala 1279 
+ABalaa 1423 
+ABalaaa 1598 
+ABalaaaa 1814 
+ABalaaap 1801 
+ABalaap 1603 
+ABalaapa 1819 
+ABalaapp 1810 
+ABalap 1423 
+ABalapa 1594 
+ABalapaa 1792 
+ABalapap 1792 
+ABalapp 1598 
+ABalappa 1814 
+ABalappp 1778 
+ABalp 1279 
+ABalpa 1423 
+ABalpaa 1589 
+ABalpaaa 1814 
+ABalpaap 1769 
+ABalpap 1589 
+ABalpapa 1783 
+ABalpapp 1769 
+ABalpp 1423 
+ABalppa 1589 
+ABalppp 1585 
+ABar 1171 1165 
+ABara 1274 1255 
+ABaraa 1423 1426 
+ABaraaa 1589 1592 
+ABaraap 1589 1583 
+ABaraapa 1783 1786 
+ABaraapp 1778 1772 
+ABarap 1423 1421 
+ABarapa 1594 
+ABarapaa 1796 
+ABarapaaa 2057 
+ABarapaap 2021 
+ABarapap 1783 
+ABarapapa 2026 
+ABarapapp 1999 
+ABarapp 1589 
+ABarp 1274 1268 
+ABarpa 1423 1448 
+ABarpaa 1585 
+ABarpap 1580 
+ABarpp 1423 1435 
+ABarppa 1594 1588 
+ABarppp 1585 1453 
+ABp 1076 1079 
+ABpl 1171 1174 
+ABpla 1274 1268 
+ABplaa 1405 1408 
+ABplaaa 1571 1579 
+ABplaaaa 1777 
+ABplaaap 1777 
+ABplaap 1571 1565 
+ABplaapa 1763 
+ABplaapaa 2006 
+ABplaapap 2024 
+ABplaapp 1750 
+ABplaappa 2042 
+ABplaappp 1984 
+ABplap 1405 1421 
+ABplapa 1567 
+ABplapp 1567 
+ABplp 1274 1268 
+ABplpa 1405 1421 
+ABplpaa 1589 1579 
+ABplpaaa 1777 
+ABplpaap 1772 
+ABplpap 1580 1570 
+ABplpapa 1781 
+ABplpapp 1768 
+ABplpp 1405 1426 
+ABplppa 1571 1597 
+ABplppp 1580 1583 
+ABpr 1162 1165 
+ABpra 1270 1268 
+ABpraa 1418 1417 
+ABpraaa 1585 1583 
+ABpraap 1576 1579 
+ABprap 1418 1412 
+ABprapa 1585 1561 
+ABprapp 1594 1574 
+ABprappa 1781 
+ABprappp 1817 
+ABprp 1274 1273 
+ABprpa 1418 1426 
+ABprpaa 1594 1588 
+ABprpap 1589 1583 
+ABprpapa 1786 
+ABprpapp 1772 
+ABprpp 1418 1426 
+ABprppa 1607 
+ABprppp 1589 
+C 1220 1214 
+Ca 1369 1367 
+Caa 1531 1547 
+Caaa 1729 
+Caaaa 1972 
+Caaap 1949 
+Caap 1558 
+Cap 1558 1579 
+Capa 1760 1867 
+Capaa 2110 
+Capap 2069 
+Capp 1783 1831 
+Cp 1369 1376 
+Cpa 1531 
+Cpaa 1724 
+Cpaaa 1967 
+Cpaap 1949 
+Cpap 1729 
+Cpp 1553 
+Cppa 1783 
+Cppp 1837 
+D 1711 1489 
+Da 1727 
+Daa 1988 
+Dap 1961 
+Dp 1754 
+Dpp 1988 
+E 1207 1205 
+EMS 1099 1088 
+Ea 1427 1430 
+Eal 1666 1682 
+Eala 2026 2024 
+Ealp 1981 2056 
+Ear 1684 1687 
+Eara 2039 2056 
+Earp 2048 2069 
+Ep 1441 1448 
+Epl 1679 1705 
+Epla 1999 2074 
+Eplp 2008 2123 
+Epr 1675 1691 
+Epra 2071 2087 
+Eprp 2125 2119 
+MS 1198 1196 
+MSa 1328 1318 
+MSaa 1472 1480 
+MSaaa 1643 1646 
+MSaaaa 1823 1831 
+MSaaap 1832 1840 
+MSaap 1646 
+MSaapa 1823 1822 
+MSaapaa 2008 2047 
+MSaapap 2035 2101 
+MSaapp 1864 1880 
+MSap 1472 1489 
+MSapa 1652 1664 
+MSapaa 1873 1880 
+MSapap 1877 1885 
+MSapp 1648 1664 
+MSappa 1916 
+MSappp 1912 
+MSp 1324 1318 
+MSpa 1472 
+MSpaa 1648 1651 
+MSpaaa 1832 1844 
+MSpaaaa 2062 2065 
+MSpaaap 2071 2065 
+MSpaap 1877 1867 
+MSpaapa 2129 
+MSpaapp 2003 
+MSpap 1652 1642 
+MSpapa 1837 1826 
+MSpapaa 2044 2033 
+MSpapap 2017 2056 
+MSpapp 1882 1858 
+MSpappa 2291 2218 
+MSpappp 2224 2209 
+MSpp 1486 1480 
+MSppa 1666 1664 
+MSppaa 1877 1853 
+MSppap 1868 1853 
+MSppp 1670 1655 
+MSpppa 1858 
+MSpppp 1880 
+Msaap 1639 
+Msappa 1909 
+Msappp 1891 
+P1 1004 994 
+P2 1117 1111 
+P3 1256 1273 
+P4 1612 1691 
+Z2? 2044 
+Z3? 1936 
+ant 1000 985 
+post 1000 985 
+shelldown 1000 985 
+shellmid1 1000 985 
+shellmid2 1000 985 
+shellup 1000 985 
+venc 2489 
