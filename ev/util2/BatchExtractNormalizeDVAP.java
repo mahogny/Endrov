@@ -103,7 +103,6 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 							rotationAngle[v]=0;
 							rotationNumber[v]=0;
 							}
-						
 
 						//scaling to write doubles into file:
 						int scaleX = 25;
@@ -291,8 +290,6 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								double sinAPXY = Math.sin(angleAPXY);
 								double cosAPonXYtoXZ = Math.cos(angleAPonXYtoXZ);
 								double sinAPonXYtoXZ = Math.sin(angleAPonXYtoXZ);
-
-								
 
 								//calculate AntPost distance;
 								double apdiffX = antpos.x-postpos.x;
@@ -751,8 +748,8 @@ public static void main(String[] arg)
 				/*					"/Volumes/TBU_xeon01_500GB01/ost3dfailed/",
 						"/Volumes/TBU_xeon01_500GB01/ost3dgood/",*/
 				"/Volumes/TBU_xeon01_500GB01/ost4dgood/",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/",
-				"/Volumes/TBU_xeon01_500GB02/daemon/output/"
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/"
+				//"/Volumes/TBU_xeon01_500GB02/daemon/output/"
 
 	};
 	
