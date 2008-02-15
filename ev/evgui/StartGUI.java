@@ -37,7 +37,7 @@ public class StartGUI
 				//Detect OS
 				if(OS.equals("Mac OS X"))
 					{
-					javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
+//					javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
 					libdir="libs/mac";
 					}
 				else if(OS.startsWith("Windows"))
