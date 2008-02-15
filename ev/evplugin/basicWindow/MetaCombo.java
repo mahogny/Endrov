@@ -162,7 +162,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 	public Imageset getImagesetNull()
 		{
 		Alternative a=(Alternative)getSelectedItem();
-		if(a==null)
+		if(a==null || !(a.meta instanceof Imageset))
 			return null;
 		else
 			return (Imageset)a.meta;

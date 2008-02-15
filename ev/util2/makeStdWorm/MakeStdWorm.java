@@ -1,9 +1,13 @@
 package util2.makeStdWorm;
 
 import java.util.*;
+
+import javax.vecmath.Vector3d;
+
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.nuc.NucLineage;
+import evplugin.nuc.NucPair;
 
 
 public class MakeStdWorm
@@ -44,10 +48,10 @@ public class MakeStdWorm
 			nucNames.addAll(lin.nuc.keySet());
 
 		//How much to shift each recording?
-		NucLineage shiftRefLin=lins.get(lins.firstKey());
+		NucLineage refLin=lins.get(lins.firstKey());
 		HashMap<NucLineage, Integer> linShift=new HashMap<NucLineage, Integer>();
 		for(NucLineage lin:lins.values())
-			if(lin==shiftRefLin)
+			if(lin==refLin)
 				linShift.put(lin, 0);
 			else
 				{
@@ -56,9 +60,9 @@ public class MakeStdWorm
 				
 				for(String n:lin.nuc.keySet())
 					{
-					if(shiftRefLin.nuc.containsKey(n))
+					if(refLin.nuc.containsKey(n))
 						{
-						int s=lin.nuc.get(n).pos.firstKey()-shiftRefLin.nuc.get(n).pos.firstKey();
+						int s=lin.nuc.get(n).pos.firstKey()-refLin.nuc.get(n).pos.firstKey();
 						shifttot+=s;
 						numshift++;
 						}
@@ -110,9 +114,122 @@ public class MakeStdWorm
 		System.out.println("avg "+avg);
 		*/
 		
+		//Remove all :-nucs from all lineages
+		for(NucLineage lin:lins.values())
+			{
+			TreeSet<String> nucstocopynot=new TreeSet<String>();
+			for(String n:lin.nuc.keySet())
+				if(n.startsWith(":"))
+					nucstocopynot.add(n);
+			for(String n:nucstocopynot)
+				lin.removeNuc(n);
+			}
 		
+		//Merge nuclei
+		for(NucLineage lin:lins.values())
+			if(lin!=refLin)
+				{
+				//Which nuc to add. note: case sensitive
+				TreeSet<String> nucstocopy=new TreeSet<String>();
+				nucstocopy.addAll(lin.nuc.keySet());
+				nucstocopy.removeAll(refLin.nuc.keySet());
+				
+				//Add tree structure
+				for(String n:nucstocopy)
+					{
+					System.out.println("Adding nucleus: "+n);
+					refLin.getNucCreate(n);
+					NucLineage.Nuc orig=lin.nuc.get(n);
+					refLin.nuc.get(n).child.addAll(refLin.nuc.get(n).child);
+					refLin.nuc.get(n).parent=orig.parent;
+					}
+				for(String n:nucstocopy)
+					{
+					NucLineage.Nuc orig=lin.nuc.get(n);
+					refLin.createParentChild(orig.parent, n);
+					}
+				for(String n:nucstocopy)
+					{
+					NucLineage.Nuc nuc=refLin.nuc.get(n);
+					if(nuc.parent!=null && !refLin.nuc.containsKey(nuc.parent))
+						nuc.parent=null;
+					HashSet<String> cs=new HashSet<String>(nuc.child);
+					for(String c:cs)
+						if(!refLin.nuc.containsKey(c))
+							nuc.child.remove(c);
+					}
+			
+				//Add key frames
+				HashSet<Integer> framestocopy=new HashSet<Integer>(); //Not shifted
+				for(String n:nucstocopy)
+					{
+					NucLineage.Nuc nuc=lin.nuc.get(n);
+					framestocopy.addAll(nuc.pos.keySet());
+					}
+				for(Integer framei:framestocopy)
+					{
+					//Interpolate frame
+					int refframe=framei-linShift.get(refLin)+linShift.get(lin);
+					//System.out.println("refframe "+refframe);
+					Map<NucPair,NucLineage.NucInterp> refi=refLin.getInterpNuc(refframe);
+					Map<NucPair,NucLineage.NucInterp> lini=lin.getInterpNuc(framei);
+					
+					//Which nucs are in common?
+					HashSet<String> nucrefi=new HashSet<String>();
+					HashSet<String> nuclini=new HashSet<String>();
+					for(NucPair p:refi.keySet())
+						nucrefi.add(p.getRight());
+					for(NucPair p:lini.keySet())
+						nuclini.add(p.getRight());
+					nucrefi.retainAll(nuclini);
+					
+					//Get the best fit
+					BestFit bf=new BestFit();
+					Vector<String> bfNames=new Vector<String>();
+					for(String n:nucrefi)
+						{
+						NucLineage.NucPos refpos=refi.get(new NucPair(refLin,n)).pos;
+						NucLineage.NucPos linpos=lini.get(new NucPair(lin,n)).pos;
+						bf.goalpoint.add(new Vector3d(refpos.x,refpos.y,refpos.z));
+						bf.newpoint.add(new Vector3d(linpos.x,linpos.y,linpos.z));
+						bfNames.add(n);
+						}
+					bf.iterate();
+					
+					//Copy positions
+					for(String n:nucstocopy)
+						{
+						NucLineage.Nuc linnuc=lin.nuc.get(n);
+						if(linnuc.pos.containsKey(framei))
+							{
+							NucLineage.Nuc refnuc=refLin.nuc.get(n);
+							NucLineage.NucPos pos=new NucLineage.NucPos();
+							
+//							Vector3d bfpos=bf.getTransformed().get(bfNames.indexOf(n));
+							NucLineage.NucPos origpos=linnuc.pos.get(framei);
+							Vector3d bfpos=bf.transform(new Vector3d(origpos.x,origpos.y,origpos.z));
+							//getTransformed().get(bfNames.indexOf(n));
+							pos.x=bfpos.x;
+							pos.y=bfpos.y;
+							pos.z=bfpos.z;
+							pos.r=origpos.r*bf.getScale();
+							refnuc.pos.put(refframe, pos);
+//							refnuc.pos.put(refframe, linnuc.pos.get(framei));
+							}
+						}
+					
+					}
+				
+				//Remove key frames that overlap with the parent
+				
+				}
+		
+		//Save reference
+		EvDataXML output=new EvDataXML("/Volumes/TBU_xeon01_500GB02/ostxml/stdcelegans.xml");
+		output.metaObject.clear();
+		output.addMetaObject(refLin); //assuming it doesn't use a parent pointer
+		output.saveMeta();
 		}
-	
 	
 	
 

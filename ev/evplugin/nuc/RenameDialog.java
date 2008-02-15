@@ -57,9 +57,9 @@ public class RenameDialog extends JDialog implements ActionListener
 		up.add(inputName);
 		
 		JPanel bp=new JPanel(new GridLayout(1,3));
-		bp.add(bLoad);
 		bp.add(bOk);
 		bp.add(bCancel);
+		bp.add(bLoad);
 		
 		setLayout(new GridLayout(2,1));
 		add(up);

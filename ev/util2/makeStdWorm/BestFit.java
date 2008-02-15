@@ -44,6 +44,20 @@ public class BestFit
 		}
 	
 	
+	public Vector3d transform(Vector3d v)
+		{
+		Matrix3d rotx=rotx(x[4-1]);
+		Matrix3d roty=roty(x[5-1]);
+		Matrix3d rotz=rotz(x[6-1]);
+		Matrix3d rotxp=rotxp(x[4-1]);
+		Matrix3d rotyp=rotyp(x[5-1]);
+		Matrix3d rotzp=rotzp(x[6-1]);
+		Vector3d trans=new Vector3d(x[1-1],x[2-1],x[3-1]);
+		double scale=getScale();
+		return transform(rotx, roty, rotz, rotxp, rotyp, rotzp, trans, scale, v, -1);
+		}
+	
+	
 	public void iterate(int n)
 		{
 		for(int i=0;i<n;i++)
