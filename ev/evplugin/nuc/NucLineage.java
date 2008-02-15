@@ -186,7 +186,24 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 		}
 	
-	
+	/**
+	 * Create parent-children relation based on selected nuclei
+	 */
+	public void createParentChild(String parent, String child)
+		{
+		Nuc parentn=nuc.get(parent);
+		Nuc childn=nuc.get(child);
+		if(parentn!=null && childn!=null)
+			{
+			if(childn.parent!=null)
+				nuc.get(childn.parent).child.remove(child);
+			childn.parent=parent;
+			parentn.child.add(child);
+			}
+		metaObjectModified=true;
+		}
+		
+		
 	/**
 	 * Create parent-children relation based on selected nuclei
 	 */
@@ -366,7 +383,11 @@ public class NucLineage extends EvObject implements Cloneable
 		//Can also just do parent. but this will automatically fix problems if there is a glitch
 		nuc.remove(nucName);
 		for(Nuc n:nuc.values())
+			{
 			n.child.remove(nucName);
+			if(n.parent!=null && n.parent.equals(nucName))
+				n.parent=null;
+			}
 		metaObjectModified=true;
 		}
 	
@@ -668,6 +689,11 @@ public class NucLineage extends EvObject implements Cloneable
 		 */
 		public NucInterp interpolate(double frame)
 			{
+			//If there are no frames, abort early. This is only to get interpolation working
+			//while the set is being edited.
+			if(pos.isEmpty())
+				return null;
+			
 			Integer frameBefore=getBefore((int)frame);
 			Integer frameAfter=getAfter((int)Math.ceil(frame));
 			
@@ -683,7 +709,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(parent!=null)
 				{
 				Nuc p=nuc.get(parent);
-				if(p.pos.lastKey()>=frame)
+				if(p.pos.isEmpty() || p.pos.lastKey()>=frame)
 					return null;
 				}
 			
