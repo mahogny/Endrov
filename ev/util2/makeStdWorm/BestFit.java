@@ -21,18 +21,24 @@ public class BestFit
 	public double getRy(){return x[5-1];}
 	public double getRz(){return x[6-1];}
 	public double getScale(){return x[7-1];}
+
 	
+	public void clear()
+		{
+		goalpoint.clear();
+		newpoint.clear();
+		}
 	
 	public Vector<Vector3d> getTransformed()
 		{
 		Vector<Vector3d> transformed=new Vector<Vector3d>();
-		Matrix3d rotx=rotx(x[4-1]);
-		Matrix3d roty=roty(x[5-1]);
-		Matrix3d rotz=rotz(x[6-1]);
-		Matrix3d rotxp=rotxp(x[4-1]);
-		Matrix3d rotyp=rotyp(x[5-1]);
-		Matrix3d rotzp=rotzp(x[6-1]);
-		Vector3d trans=new Vector3d(x[1-1],x[2-1],x[3-1]);
+		Matrix3d rotx=rotx(getRx());
+		Matrix3d roty=roty(getRy());
+		Matrix3d rotz=rotz(getRz());
+		Matrix3d rotxp=rotxp(getRx());
+		Matrix3d rotyp=rotyp(getRy());
+		Matrix3d rotzp=rotzp(getRz());
+		Vector3d trans=new Vector3d(getTx(),getTy(),getTz());
 		double scale=x[7-1];
 		for(int i=0;i<newpoint.size();i++)
 			{
@@ -46,33 +52,38 @@ public class BestFit
 	
 	public Vector3d transform(Vector3d v)
 		{
-		Matrix3d rotx=rotx(x[4-1]);
-		Matrix3d roty=roty(x[5-1]);
-		Matrix3d rotz=rotz(x[6-1]);
-		Matrix3d rotxp=rotxp(x[4-1]);
-		Matrix3d rotyp=rotyp(x[5-1]);
-		Matrix3d rotzp=rotzp(x[6-1]);
-		Vector3d trans=new Vector3d(x[1-1],x[2-1],x[3-1]);
+		Matrix3d rotx=rotx(getRx());
+		Matrix3d roty=roty(getRy());
+		Matrix3d rotz=rotz(getRz());
+		Matrix3d rotxp=rotxp(getRx());
+		Matrix3d rotyp=rotyp(getRy());
+		Matrix3d rotzp=rotzp(getRz());
+		Vector3d trans=new Vector3d(getTx(),getTy(),getTz());
 		double scale=getScale();
 		return transform(rotx, roty, rotz, rotxp, rotyp, rotzp, trans, scale, v, -1);
 		}
 	
 	
-	public void iterate(int n)
+	public void iterate(int minit, int maxit, double okEps)
 		{
-		for(int i=0;i<n;i++)
-			iterate();
+		for(int i=0;i<maxit;i++)
+			{
+			doOneIteration();
+			if(i>minit && eps<okEps)
+				break;
+			}
+//		System.exit(0);
 		}
 	
-	public void iterate()
+	public void doOneIteration()
 		{
-		Matrix3d rotx=rotx(x[4-1]);
-		Matrix3d roty=roty(x[5-1]);
-		Matrix3d rotz=rotz(x[6-1]);
-		Matrix3d rotxp=rotxp(x[4-1]);
-		Matrix3d rotyp=rotyp(x[5-1]);
-		Matrix3d rotzp=rotzp(x[6-1]);
-		Vector3d trans=new Vector3d(x[1-1],x[2-1],x[3-1]);
+		Matrix3d rotx=rotx(getRx());
+		Matrix3d roty=roty(getRy());
+		Matrix3d rotz=rotz(getRz());
+		Matrix3d rotxp=rotxp(getRx());
+		Matrix3d rotyp=rotyp(getRy());
+		Matrix3d rotzp=rotzp(getRz());
+		Vector3d trans=new Vector3d(getTx(),getTy(),getTz());
 		double scale=x[7-1];
 		double dx[]=new double[7];		
 		eps=0;
@@ -93,13 +104,27 @@ public class BestFit
 				dx[j-1]+=2*dtrans.dot(diff);
 				}
 			}
+		eps/=newpoint.size();
 
-		double lambda=0.1;
+		double lambdaT=0.1;
+		double lambdaR=0.0001;
+		double lambdaS=0.0001;
+		for(int i=0;i<3;i++)
+			dx[i]*=lambdaT/newpoint.size();
+		for(int i=3;i<6;i++)
+			dx[i]*=lambdaR/newpoint.size();
+		for(int i=6;i<7;i++)
+			dx[i]*=lambdaS/newpoint.size();
+		
 		for(int i=0;i<7;i++)
-			x[i]-=lambda*dx[i];
+			x[i]-=dx[i];
 
-		if(x[7-1]<0) //Something needed. negative scale not acceptable
-			x[7-1]=0.0001;
+		//Restrict values
+		if(x[7-1]<0.01)
+			x[7-1]=0.01;
+		if(x[7-1]>100)
+			x[7-1]=100;
+		x[7-1]=1;
 		
 //		System.out.println("eps: "+eps+"  scale: "+x[7-1]+"    rot   "+x[4-1]+" "+x[5-1]+" "+x[6-1]+"    trans "+x[1-1]+" "+x[2-1]+" "+x[3-1]);
 //		System.out.println("diff: scale: "+dx[7-1]+"    rot   "+dx[4-1]+" "+dx[5-1]+" "+dx[6-1]+"    trans "+dx[1-1]+" "+dx[2-1]+" "+dx[3-1]);
