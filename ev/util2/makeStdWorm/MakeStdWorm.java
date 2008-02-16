@@ -17,6 +17,9 @@ public class MakeStdWorm
 		{
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
+
+		BestFit bf=new BestFit();
+		boolean bfFirstTime=true;
 		
 		//Load all worms to standardize from
 		String[] wnlist={
@@ -119,7 +122,7 @@ public class MakeStdWorm
 			{
 			TreeSet<String> nucstocopynot=new TreeSet<String>();
 			for(String n:lin.nuc.keySet())
-				if(n.startsWith(":"))
+				if(n.startsWith(":") || n.startsWith("shell") || n.equals("ant") || n.equals("post"))
 					nucstocopynot.add(n);
 			for(String n:nucstocopynot)
 				lin.removeNuc(n);
@@ -161,7 +164,8 @@ public class MakeStdWorm
 			
 				//Add key frames
 				HashSet<Integer> framestocopy=new HashSet<Integer>(); //Not shifted
-				for(String n:nucstocopy)
+//				for(String n:nucstocopy)
+				for(String n:lin.nuc.keySet())
 					{
 					NucLineage.Nuc nuc=lin.nuc.get(n);
 					framestocopy.addAll(nuc.pos.keySet());
@@ -184,8 +188,8 @@ public class MakeStdWorm
 					nucrefi.retainAll(nuclini);
 					
 					//Get the best fit
-					BestFit bf=new BestFit();
 					Vector<String> bfNames=new Vector<String>();
+					bf.clear();
 					for(String n:nucrefi)
 						{
 						NucLineage.NucPos refpos=refi.get(new NucPair(refLin,n)).pos;
@@ -194,8 +198,20 @@ public class MakeStdWorm
 						bf.newpoint.add(new Vector3d(linpos.x,linpos.y,linpos.z));
 						bfNames.add(n);
 						}
-					bf.iterate();
 					
+					if(bfFirstTime)
+						{
+						bf.iterate(100,50000,0);
+//						bf.iterate(100,5000,0);
+						bfFirstTime=false;
+						}
+					
+					
+					bf.iterate(100,1000,30);
+					System.out.println(""+framei+" "+refi.size()+" "+lini.size()+" "+bf.goalpoint.size()+" "+bf.eps+"     "+
+							bf.getTx()+" "+bf.getTy()+" "+bf.getTz()+" "+bf.getRx()+" "+bf.getRy()+" "+bf.getRz()+" "+bf.getScale());
+					
+					/*
 					//Copy positions
 					for(String n:nucstocopy)
 						{
@@ -205,22 +221,45 @@ public class MakeStdWorm
 							NucLineage.Nuc refnuc=refLin.nuc.get(n);
 							NucLineage.NucPos pos=new NucLineage.NucPos();
 							
-//							Vector3d bfpos=bf.getTransformed().get(bfNames.indexOf(n));
 							NucLineage.NucPos origpos=linnuc.pos.get(framei);
 							Vector3d bfpos=bf.transform(new Vector3d(origpos.x,origpos.y,origpos.z));
-							//getTransformed().get(bfNames.indexOf(n));
 							pos.x=bfpos.x;
 							pos.y=bfpos.y;
 							pos.z=bfpos.z;
 							pos.r=origpos.r*bf.getScale();
+							
 							refnuc.pos.put(refframe, pos);
-//							refnuc.pos.put(refframe, linnuc.pos.get(framei));
+							}
+						
+						}
+*/
+
+					//Update orig
+					for(String n:lin.nuc.keySet())
+						{
+						NucLineage.Nuc linnuc=lin.nuc.get(n);
+						
+						NucLineage.NucInterp ni=lini.get(new NucPair(lin,n));
+						if(ni!=null)
+							{
+							NucLineage.NucPos ipos=ni.pos;
+							
+							Vector3d bfpos=bf.transform(new Vector3d(ipos.x,ipos.y,ipos.z));
+							ipos.x=bfpos.x;
+							ipos.y=bfpos.y;
+							ipos.z=bfpos.z;
+							ipos.r=ipos.r*bf.getScale();
+							linnuc.pos.put(framei, ipos);
 							}
 						}
+					
 					
 					}
 				
 				//Remove key frames that overlap with the parent
+				
+				
+				
 				
 				}
 		
@@ -228,6 +267,12 @@ public class MakeStdWorm
 		EvDataXML output=new EvDataXML("/Volumes/TBU_xeon01_500GB02/ostxml/stdcelegans.xml");
 		output.metaObject.clear();
 		output.addMetaObject(refLin); //assuming it doesn't use a parent pointer
+		
+		for(NucLineage lin:lins.values())
+			if(lin!=refLin)
+				output.addMetaObject(lin);
+		
+		
 		output.saveMeta();
 		}
 	
