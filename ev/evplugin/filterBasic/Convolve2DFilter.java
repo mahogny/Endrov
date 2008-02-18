@@ -1,6 +1,8 @@
 package evplugin.filterBasic;
 
 //import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.image.*;
 
 import javax.swing.*;
@@ -102,6 +104,7 @@ public class Convolve2DFilter extends FilterSlice
 	public int kernelWidth=1;
 	float[] kernel=new float[]{1};
 
+	EvMutableDouble[] kernelm=new EvMutableDouble[]{};
 	
 	public String getFilterName()
 		{
@@ -118,21 +121,41 @@ public class Convolve2DFilter extends FilterSlice
 	
 	public JComponent getFilterWidget()
 		{
-		return null; //TODO
-		/*	
-		JPanel pane=new JPanel(new GridLayout(2,2));
-		JNumericFieldMutableDouble npwhite=new JNumericFieldMutableDouble(pwhite);
-		JNumericFieldMutableDouble npblack=new JNumericFieldMutableDouble(pblack);
+		kernelm=new EvMutableDouble[9];
+		kernelWidth=3;
 		
-		pane.add(new JLabel("P[white]:"));
-		pane.add(npwhite);
-		pane.add(new JLabel("P[black]:"));
-		pane.add(npblack);
+		
+		
+		int h=kernel.length/kernelWidth;
+		JPanel gpanel=new JPanel(new GridLayout(h,kernelWidth));
+		for(int y=0;y<h;y++)
+			for(int x=0;x<kernelWidth;x++)
+				{
+				kernelm[y*kernelWidth+x]=new EvMutableDouble(0);
+				JNumericFieldMutableDouble nc=new JNumericFieldMutableDouble(kernelm[y*kernelWidth+x],observer,this);
+				gpanel.add(nc);
+				}
+
+		JSpinner xs=new JSpinner(new SpinnerNumberModel(1,1,128,1));
+		JSpinner ys=new JSpinner(new SpinnerNumberModel(1,1,128,1));
+
+		
+		JPanel spanell=new JPanel(new GridLayout(2,1));
+		JPanel spanelr=new JPanel(new GridLayout(2,1));
+		spanell.add(new JLabel("#X:"));
+		spanell.add(new JLabel("#Y:"));
+		spanelr.add(xs);
+		spanelr.add(ys);
+		JPanel spanel=new JPanel(new BorderLayout());
+		spanel.add(spanell,BorderLayout.WEST);
+		spanel.add(spanelr,BorderLayout.EAST);
+
+		System.out.println("hej");
+		
+		JPanel pane=new JPanel(new BorderLayout());
+		pane.add(gpanel, BorderLayout.WEST);
+		pane.add(spanel, BorderLayout.EAST);
 		return pane;
-*/
-	
-	 
-	 
 		}
 
 	

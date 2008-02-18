@@ -68,9 +68,9 @@ public class ContrastBrightnessFilter extends FilterSlice
 		{
 		JPanel pane=new JPanel(new GridLayout(3,2));
 		
-		JNumericFieldMutableDouble npwhite=new JNumericFieldMutableDouble(pcontrast);
-		JNumericFieldMutableDouble npblack=new JNumericFieldMutableDouble(pbrightness);
-		JCheckBoxMutableBoolean nauto=new JCheckBoxMutableBoolean("", pauto);
+		JNumericFieldMutableDouble npwhite=new JNumericFieldMutableDouble(pcontrast, observer, this);
+		JNumericFieldMutableDouble npblack=new JNumericFieldMutableDouble(pbrightness, observer, this);
+		JCheckBoxMutableBoolean nauto=new JCheckBoxMutableBoolean("", pauto, observer, this);
 		
 		pane.add(new JLabel("Contrast:"));
 		pane.add(npwhite);

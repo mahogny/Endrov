@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
+import evplugin.ev.SimpleObserver;
 import evplugin.filter.FilterImageExtension.*;
 
 /**
@@ -12,13 +13,13 @@ import evplugin.filter.FilterImageExtension.*;
  * 
  * @author Johan Henriksson
  */
-public class WidgetFilterSeq extends JPanel
+public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 	{
 	static final long serialVersionUID=0;
 	
 	private FilterSeq filterseq=null;	
 	
-	
+
 	JPanel inScroll=new JPanel(new BorderLayout());
 	public JScrollPane scroll=new JScrollPane(inScroll,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);	
 	
@@ -33,7 +34,15 @@ public class WidgetFilterSeq extends JPanel
 	
 	public void setFilterSeq(FilterSeq m)
 		{
+		if(filterseq!=null)
+			filterseq.observer.remove(this);
 		filterseq=m;
+		if(filterseq!=null)
+			filterseq.observer.addWeakListener(this);
+		buildList();
+		}
+	public void observerEvent(Object o)
+		{
 		buildList();
 		}
 	
@@ -61,15 +70,14 @@ public class WidgetFilterSeq extends JPanel
 							if(fi instanceof FilterInfo)
 								{
 								Filter firoi=((FilterInfo)fi).filterROI();
-								filterseq.sequence.add(firoi);
-								BasicWindow.updateWindows();
+								filterseq.addFilter(firoi);
+//								BasicWindow.updateWindows();  //TODO: delete
 								}
 							else if(fi!=filterseq)
 								{
 								FilterSeq fs=(FilterSeq)fi;
-								for(Filter firoi:fs.sequence)
-									filterseq.sequence.add(firoi);
-								BasicWindow.updateWindows();
+								filterseq.addFilter(fs);
+//								BasicWindow.updateWindows();  //TODO: delete
 								}
 							buildList();
 							}
@@ -92,10 +100,10 @@ public class WidgetFilterSeq extends JPanel
 			{
 			JPanel inScroll2=new JPanel(new GridBagLayout());
 			inScroll.add(inScroll2,BorderLayout.NORTH);
-			for(int pos=0;pos<filterseq.sequence.size();pos++)
+			for(int pos=0;pos<filterseq.getNumFilters();pos++)
 				{
 				final int currentPos=pos;
-				Filter f=filterseq.sequence.get(pos);
+				Filter f=filterseq.getFilter(pos);
 				
 				JComponent fc=f.getFilterWidget();
 				if(fc==null)
@@ -117,30 +125,21 @@ public class WidgetFilterSeq extends JPanel
 						{
 						if(e.getSource()==bUp)
 							{
-							if(currentPos>0)
-								{
-								Filter from=filterseq.sequence.get(currentPos);
-								filterseq.sequence.remove(currentPos);
-								filterseq.sequence.add(currentPos-1, from);
-								buildList();
-								}
+							filterseq.moveUp(currentPos);
+	//						BasicWindow.updateWindows();   //TODO: delete
+//							buildList();
 							}
 						else if(e.getSource()==bDown)
 							{
-							if(currentPos<filterseq.sequence.size()-1)
-								{
-								Filter from=filterseq.sequence.get(currentPos);
-								filterseq.sequence.remove(currentPos);
-								filterseq.sequence.add(currentPos+1, from);
-								BasicWindow.updateWindows();
-								buildList();
-								}
+							filterseq.moveDown(currentPos);
+	//						BasicWindow.updateWindows();    //TODO: delete
+		//					buildList();
 							}
 						else if(e.getSource()==bDelete)
 							{
-							filterseq.sequence.remove(currentPos);
-							BasicWindow.updateWindows();
-							buildList();
+							filterseq.delete(currentPos);
+		//					BasicWindow.updateWindows();   //TODO: delete
+	//						buildList();   //TODO: can be deleted if window listens to changes
 							}
 						}
 					};				

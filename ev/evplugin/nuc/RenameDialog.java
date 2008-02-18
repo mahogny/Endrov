@@ -1,10 +1,7 @@
 package evplugin.nuc;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
+import java.awt.event.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
@@ -68,7 +65,7 @@ public class RenameDialog extends JDialog implements ActionListener
 		bLoad.addActionListener(this);
 		bOk.addActionListener(this);
 		bCancel.addActionListener(this);
-		
+
 		pack();
 		setLocationRelativeTo(frame);
 		setVisible(true);
@@ -92,7 +89,7 @@ public class RenameDialog extends JDialog implements ActionListener
 						}
 				}
 			}
-		else if(e.getSource()==bOk)
+		else if(e.getSource()==bOk || e.getSource()==inputName)
 			{
 			String newName=(String)inputName.getSelectedItem();
 			if(!newName.equals(""))
@@ -118,6 +115,7 @@ public class RenameDialog extends JDialog implements ActionListener
 	 */
 	private void fillCombo()
 		{
+		inputName.removeActionListener(this);
 		String current=(String)inputName.getSelectedItem();
 		NucLineage.Nuc parent=oldLineage.nuc.get(oldName);
 		inputName.removeAllItems();
@@ -129,6 +127,7 @@ public class RenameDialog extends JDialog implements ActionListener
 					inputName.addItem(s);
 			}
 		inputName.setSelectedItem(current);
+		inputName.addActionListener(this);
 		}
 
 	/**

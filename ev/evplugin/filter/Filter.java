@@ -6,6 +6,7 @@ import java.util.*;
 import javax.swing.*;
 
 import evplugin.data.*;
+import evplugin.ev.SimpleObserver;
 import evplugin.imageWindow.*;
 
 
@@ -81,6 +82,8 @@ public abstract class Filter extends EvObject
 	 *                               Filter                                                               *
 	 *****************************************************************************************************/
 
+	public final SimpleObserver observer=new SimpleObserver();
+	
 	
 	public abstract JComponent getFilterWidget();
 	public abstract String getFilterName();

@@ -325,6 +325,7 @@ public class LineageWindow extends BasicWindow
 	public void mouseClicked(MouseEvent e)
 		{
 		view.clickRegion(e);
+		view.requestFocus();
 		}
 	
 	

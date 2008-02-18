@@ -66,7 +66,7 @@ public class NoisePoisson extends FilterSlice
 		{
 		JPanel pane=new JPanel(new GridLayout(1,2));
 		
-		final JNumericFieldMutableDouble nlambda=new JNumericFieldMutableDouble(lambda);
+		final JNumericFieldMutableDouble nlambda=new JNumericFieldMutableDouble(lambda, observer, this);
 		
 		pane.add(new JLabel("Lambda:"));
 		pane.add(nlambda);
