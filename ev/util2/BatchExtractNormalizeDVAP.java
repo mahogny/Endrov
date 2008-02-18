@@ -78,7 +78,9 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 
 						NucLineage.NucPos ventralRefPos = getIntPos(lin,"E",ENucLastKey);
 
-						Imageset.ChannelImages ch=ost.channelImages.get("GFP");
+						
+//						Imageset.ChannelImages ch=ost.channelImages.get("GFP");
+						Imageset.ChannelImages ch=ost.channelImages.get("DIC");
 						TreeMap<Integer, TreeMap<Integer, EvImage>> images=ch.imageLoader;
 
 						//create an output file in the data directory
