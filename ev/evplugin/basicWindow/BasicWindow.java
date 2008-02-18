@@ -79,6 +79,8 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 * Tell all windows to update except where the signal came from.
 	 * This is needed to avoid nasty infinite recursion if signal
 	 * is emitted during rendering.
+	 * 
+	 * DEPRECATED!
 	 */	
 	public static void updateWindows(BasicWindow from)
 		{
@@ -94,7 +96,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 		}
 
 	/**
-	 * Tell all windows to update
+	 * Tell all windows to update. DO NOT USE! DEPRECATED!
 	 */	
 	public static void updateWindows()
 		{

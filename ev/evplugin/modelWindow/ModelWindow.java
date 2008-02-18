@@ -347,6 +347,8 @@ public class ModelWindow extends BasicWindow
 			{
 			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 			}
+//		else if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isMiddleMouseButton(e))
+		view.requestFocus();
 		}
 	
 	public void mousePressed(MouseEvent e)

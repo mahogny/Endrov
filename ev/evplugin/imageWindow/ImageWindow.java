@@ -129,7 +129,10 @@ public class ImageWindow extends BasicWindow
 		public final JSlider sliderBrightness=new JSlider(-100,100,0);
 		public final JButton bFilterSequence=new JButton(FilterSeq.getIconFilterSeq());
 
-		public FilterSeq filterSeq=new FilterSeq();
+		public final FilterSeq filterSeq=new FilterSeq();
+		private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
+			{public void observerEvent(Object o){dataChangedEvent();}};
+		
 		
 		public ChannelWidget()
 			{
@@ -157,6 +160,8 @@ public class ImageWindow extends BasicWindow
 			sliderBrightness.addChangeListener(this);
 			comboChannel.addActionListener(this);
 			bFilterSequence.addActionListener(this);
+			
+			filterSeq.observer.addWeakListener(filterSeqObserver);
 			}
 		
 		public void actionPerformed(ActionEvent e)
@@ -628,6 +633,12 @@ public class ImageWindow extends BasicWindow
 		}	
 	
 	
+/**
+ * 
+ * 
+ * call on filterseq callback
+	public void dataChangedEvent()
+ */	
 	
 	
 	
@@ -764,6 +775,8 @@ public class ImageWindow extends BasicWindow
 		{
 		if(tool!=null)
 			tool.mouseClicked(e);
+//		if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isMiddleMouseButton(e))
+		imagePanel.requestFocus();
 		}
 	/**
 	 * Callback: Mouse button pressed
