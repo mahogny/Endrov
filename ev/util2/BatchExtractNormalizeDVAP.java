@@ -19,23 +19,27 @@ import java.awt.image.*;
 public class BatchExtractNormalizeDVAP
 {
 
-public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter htmlfile, BufferedWriter rotfile, BufferedWriter omitted, int recordingNumber)
+public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter htmlfile, BufferedWriter rotfile, 
+		BufferedWriter omitted, BufferedWriter nucleiRadii, BufferedWriter travelDistance,
+		int recordingNumber,
+		double lastPositionX, double lastPositionY, double lastPositionZ, boolean lastPositionSet)
 	{
+	int verbosity = 0;
 	String PathForErrorFile = file.getPath();
 	try
 		{
 		//System.out.println("current Imageset "+file.getPath());
 		String currentpath = file.getPath();
+		OstImageset ost=new OstImageset(file.getPath());
+		String currentostname = ost.toString();
+
 		System.out.println("current imageset: "+currentpath);
 		if (0==0) // all imagesets
-		//if (currentpath.equals("/Volumes/TBU_xeon01_500GB01/ost4dgood/BC12759070823")) // only deal with this test image set
+			//if (currentpath.equals("/Volumes/TBU_xeon01_500GB01/ost4dgood/BC12759070823")) // only deal with this test image set
 			{	
 			System.out.println("imageset found, executing...");
 
 			long currentTime=System.currentTimeMillis();
-			OstImageset ost=new OstImageset(file.getPath());
-
-			String currentostname = ost.toString();
 			//System.out.println("current imageset: " + currentostname);
 			//String currentostDescription = ost.description.toString();
 			double timeStep = 1;
@@ -78,7 +82,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 
 						NucLineage.NucPos ventralRefPos = getIntPos(lin,"E",ENucLastKey);
 
-						
+
 //						Imageset.ChannelImages ch=ost.channelImages.get("GFP");
 						Imageset.ChannelImages ch=ost.channelImages.get("DIC");
 						TreeMap<Integer, TreeMap<Integer, EvImage>> images=ch.imageLoader;
@@ -88,16 +92,16 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 						BufferedWriter outFile;
 						File outFilePath=new File(ost.datadir(),"DVtimeRotatedGFP.txt");
 						outFile = new BufferedWriter( new FileWriter(outFilePath) );
-						
+
 						BufferedWriter angleFile;
 						File angleFilePath=new File(ost.datadir(),"rotationAngleTableNotMod.txt");
 						angleFile = new BufferedWriter(new FileWriter(angleFilePath));
-						
+
 						BufferedWriter distanceFile;
 						File distanceFilePath=new File(ost.datadir(),"distanceToAP.txt");
 						distanceFile = new BufferedWriter(new FileWriter(distanceFilePath));
-						
-						
+
+
 						double[] rotationAngle=new double[3]; // statistics of rotation angle
 						double[] rotationNumber=new double[3];
 						for (int v=0;v<3;v++)
@@ -160,7 +164,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 
 						int allframes = images.size(); //determine the number of frames
 
-						System.out.println(" scaleX: "+scaleX+" scaleY: "+scaleX+" scaleZ: "+scaleX + " allframes: "+allframes);
+						if (verbosity > 0) System.out.println(" scaleX: "+scaleX+" scaleY: "+scaleX+" scaleZ: "+scaleX + " allframes: "+allframes);
 
 						double rawIntens[][][][] = new double [scaleX][scaleY][scaleZ][allframes];
 						double rawExptime[] = new double [allframes];
@@ -172,11 +176,12 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 
 						int frameCounter = 0;
 						double lastDistanceToAP = -1;
+						double lastRadius = -1;
 
 						for(int frame:images.keySet())
 							{
 							TreeMap<Integer, EvImage> zs=images.get(frame);
-							System.out.printf("\n********* frame "+frame+" ***********\n");
+							if (verbosity > 1) System.out.printf("\n********* frame "+frame+" ***********\n");
 							try
 								{
 								//get exposure
@@ -185,7 +190,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								if(exptimes!=null)
 									exptime=Double.parseDouble(exptimes); // convert to double
 								else
-									System.out.println("No exposure time for frame "+frame);
+									if (verbosity > 1) System.out.println("No exposure time for frame "+frame);
 
 
 								//read a pixel
@@ -225,17 +230,19 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								NucLineage.NucPos Eppos = getIntPos(lin,"Ep",frame);
 								NucLineage.NucPos vencpos = getIntPos(lin,"venc",frame);
 
-//								System.out.println(" ant:  "+antpos.x+", "+antpos.y+", "+antpos.z);
-//								System.out.println(" post: "+postpos.x+", "+postpos.y+", "+postpos.z);
-//								System.out.println(" shellmid1: "+shellmid1.x+", "+shellmid1.y+", "+shellmid1.z);
-//								System.out.println(" shellmid2: "+shellmid1.x+", "+shellmid1.y+", "+shellmid1.z);
-//								System.out.println(" shellup: "+shellup.x+", "+shellup.y+", "+shellup.z);
-//								System.out.println(" shelldown: "+shelldown.x+", "+shelldown.y+", "+shelldown.z);
-//								System.out.println(" EMS:  "+EMSpos.x+", "+EMSpos.y+", "+EMSpos.z);
-//								System.out.println(" E:   "+Epos.x+", "+Epos.y+", "+Epos.z);
-//								System.out.println(" Ep:   "+Eppos.x+", "+Eppos.y+", "+Eppos.z);
-//								System.out.println(" venc: "+vencpos.x+", "+vencpos.y+", "+vencpos.z);
-
+								if (verbosity > 2) 
+									{
+									System.out.println(" ant:  "+antpos.x+", "+antpos.y+", "+antpos.z);
+									System.out.println(" post: "+postpos.x+", "+postpos.y+", "+postpos.z);
+									System.out.println(" shellmid1: "+shellmid1.x+", "+shellmid1.y+", "+shellmid1.z);
+									System.out.println(" shellmid2: "+shellmid1.x+", "+shellmid1.y+", "+shellmid1.z);
+									//System.out.println(" shellup: "+shellup.x+", "+shellup.y+", "+shellup.z);
+									//System.out.println(" shelldown: "+shelldown.x+", "+shelldown.y+", "+shelldown.z);
+									System.out.println(" EMS:  "+EMSpos.x+", "+EMSpos.y+", "+EMSpos.z);
+									System.out.println(" E:   "+Epos.x+", "+Epos.y+", "+Epos.z);
+									System.out.println(" Ep:   "+Eppos.x+", "+Eppos.y+", "+Eppos.z);
+									System.out.println(" venc: "+vencpos.x+", "+vencpos.y+", "+vencpos.z);
+									}
 
 								//NucLineage.NucPos antpos =getpos(lin, "ant",  frame);
 								//NucLineage.NucPos postpos=getpos(lin, "post", frame);
@@ -314,10 +321,10 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								double middiffUDY = shellup.y-shellup.y;
 								double middiffUDZ = shellup.z-shellup.z;
 								double eggsmallradiusUD = Math.sqrt(middiffUDX*middiffUDX+middiffUDY*middiffUDY+middiffUDZ*middiffUDZ);
-*/
+								 */
 								//								System.out.println("eggsmallradius mid="+eggsmallradius+" ud="+eggsmallradiusUD);
-								
-								
+
+
 								// rotate remaining coordinates accordingly
 
 								int markers=0; // 0 additional coordinates
@@ -328,12 +335,15 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								double[] coordY = new double[numberOfMarkers];
 								double[] coordZ = new double[numberOfMarkers];
 
+								double[] coordR = new double[numberOfMarkers];
+								
 								double[] coordFirstKey = new double[numberOfMarkers];
 								double[] coordLastKey = new double[numberOfMarkers];
 
 								double[] rotCoordX = new double[numberOfMarkers];
 								double[] rotCoordY = new double[numberOfMarkers];
 								double[] rotCoordZ = new double[numberOfMarkers];
+								
 
 								//add additional marker cells here, if it works, move our the ventral reference position
 
@@ -351,6 +361,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								coordZ[markers]=EMSpos.z;
 								coordFirstKey[markers]=EMSNucFirstKey;
 								coordLastKey[markers]=EMSNucLastKey;
+								coordR[markers]=EMSpos.r;
 								markers++;
 
 								coordName[markers]= "E";
@@ -359,6 +370,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								coordZ[markers]=Epos.z;
 								coordFirstKey[markers]=ENucFirstKey;
 								coordLastKey[markers]=ENucLastKey;
+								coordR[markers]=Epos.r;
 								markers++;
 
 								coordName[markers]= "Ep";
@@ -367,6 +379,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								coordZ[markers]=Eppos.z;
 								coordFirstKey[markers]=EpNucFirstKey;
 								coordLastKey[markers]=EpNucLastKey;
+								coordR[markers]=Eppos.r;
 								markers++;
 
 								coordName[markers]= "venc";
@@ -375,11 +388,14 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								coordZ[markers]=vencpos.z;
 								coordFirstKey[markers]=vencNucFirstKey;
 								coordLastKey[markers]=vencNucLastKey;
+								coordR[markers]=vencpos.r;
 								markers++;
 
 								double currentEmbRotAngle=0;
 								double currentDistanceToAP=-1;
 								String currentVentralMarker="";
+								double currentRadius=-1;
+								
 								for (int mc=0;mc<markers;mc++)
 									{
 
@@ -398,24 +414,28 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 									rotCoordY[mc]=sinAPonXYtoXZ*oldRotCoordX+cosAPonXYtoXZ*oldRotCoordY;
 									rotCoordZ[mc]=                                                 oldRotCoordZ;
 
-									System.out.println(coordName[mc]+": "+rotCoordX[mc]+", "+ ", "+rotCoordY[mc]+", "+rotCoordZ[mc]);
+									if (verbosity > 1) System.out.println(coordName[mc]+": "+rotCoordX[mc]+", "+ ", "+rotCoordY[mc]+", "+rotCoordZ[mc]);
+									
+									//*********** continue here, extract the E coordinate! for tracking 
+									
 									if (Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc])>eggsmallradius/2/4)
 										if (mc>0)
 											//if (rotCoordX[0] !=  rotCoordX[mc] && rotCoordY[0] !=  rotCoordY[mc] && rotCoordZ[0] !=  rotCoordZ[mc])
+											{
+											if (verbosity > 1) System.out.println("current "+coordName[mc] + "-first: "+coordFirstKey[mc]+", -last: "+coordLastKey[mc]);
+											if (frame >= coordFirstKey[mc])
 												{
-												System.out.println("current "+coordName[mc] + "-first: "+coordFirstKey[mc]+", -last: "+coordLastKey[mc]);
-												if (frame >= coordFirstKey[mc])
-													{
-													//currentEmbRotAngle=Math.acos(Math.abs(rotCoordY[0]*rotCoordY[mc]+rotCoordZ[0]*rotCoordZ[mc])/(Math.sqrt(rotCoordY[0]*rotCoordY[0]+rotCoordZ[0]*rotCoordZ[0])*Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc])))/Math.PI*180;
-													// using atan2 instead to get direction of rotation atan2(y1,z1)-atan2(y2,z2)
-													//currentEmbRotAngle=Math.atan2(rotCoordY[0],rotCoordZ[0])-Math.atan2(rotCoordY[mc],rotCoordZ[mc])/Math.PI*180;
-													currentEmbRotAngle=Math.atan2(rotCoordY[mc],rotCoordZ[mc])/Math.PI*180;
-													currentVentralMarker=coordName[mc];
-													currentDistanceToAP = Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc]);
-													}
+												//currentEmbRotAngle=Math.acos(Math.abs(rotCoordY[0]*rotCoordY[mc]+rotCoordZ[0]*rotCoordZ[mc])/(Math.sqrt(rotCoordY[0]*rotCoordY[0]+rotCoordZ[0]*rotCoordZ[0])*Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc])))/Math.PI*180;
+												// using atan2 instead to get direction of rotation atan2(y1,z1)-atan2(y2,z2)
+												//currentEmbRotAngle=Math.atan2(rotCoordY[0],rotCoordZ[0])-Math.atan2(rotCoordY[mc],rotCoordZ[mc])/Math.PI*180;
+												currentEmbRotAngle=Math.atan2(rotCoordY[mc],rotCoordZ[mc])/Math.PI*180;
+												currentVentralMarker=coordName[mc];
+												currentDistanceToAP = Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc]);
+												currentRadius = coordR[mc];
 												}
+											}
 									}
-								
+
 								//collect rotation statistics
 								int rotationTime=0;
 								if (currentVentralMarker.contains("E"))
@@ -424,10 +444,10 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 									rotationTime=1;
 								rotationAngle[rotationTime]+=currentEmbRotAngle;
 								rotationNumber[rotationTime]++;
-									
-								
-								
-								System.out.println("frame "+frame+" current_ rotation angle "+coordName[0]+", "+currentVentralMarker+" : "+currentEmbRotAngle);
+
+
+
+								if (verbosity > 1) System.out.println("frame "+frame+" current_ rotation angle "+coordName[0]+", "+currentVentralMarker+" : "+currentEmbRotAngle);
 								angleFile.write(currentVentralMarker+"\t"+frame+"\t"+currentEmbRotAngle+"\n");
 								if (currentVentralMarker != "venc")
 									if (lastDistanceToAP != currentDistanceToAP && currentDistanceToAP >=0)
@@ -435,15 +455,24 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 										distanceFile.write(frame+"\t"+currentDistanceToAP+"\n");
 										lastDistanceToAP = currentDistanceToAP;
 										}
-								
+								if (currentRadius != lastRadius)
+								{
+									int cellLabel = 0;
+									if (currentVentralMarker == "EMS")
+										cellLabel = 1;
+									else if (currentVentralMarker == "E")
+										cellLabel = 2;
+									else if (currentVentralMarker == "Ep")
+										cellLabel = 3;
 
+									nucleiRadii.write(recordingNumber+"\t"+cellLabel+"\t"+frame+"\t"+currentRadius+"\n");
+									lastRadius = currentRadius;
+									
+								}
+								
+								
 								// project the rotated embryonic rotation reference coordinates on to ZY pane by ignoring the X coordinate
 								// determine the angle relative to the ventralRefPos => index 0 for rotated coordinates
-
-
-
-
-
 
 								//if (0==1){ // TODO: this is to temporally remove image analysis
 
@@ -485,17 +514,17 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 											postpos.x!= oldPostPosX ||
 											postpos.y!= oldPostPosY ||
 											postpos.z!= oldPostPosZ){
-											
+
 											oldAntPosX = antpos.x;
 											oldAntPosY = antpos.y;
 											oldAntPosZ = antpos.z;
-											
+
 											oldPostPosX = postpos.x;
 											oldPostPosY = postpos.y;
 											oldPostPosZ = postpos.z; 
-											
+
 											updateall = true;
-											
+
 									}
 									boolean allocated=false;
 									double rotPixX=0;
@@ -513,7 +542,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 										int h=bufi.getHeight();
 										int s=zs.lastKey()+1; //stack Z
 										//check whether the mask needs an update
-										
+
 										if(!allocated && updateall)
 											{
 											goodpix = new boolean [s][h][w];
@@ -523,7 +552,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 											allocated=true;
 											//System.out.println("allocating mask");
 											}
-										
+
 										//loop through every pixel of this image
 										//transform the coordinate of this pixel to real
 										if (updateall)
@@ -533,19 +562,19 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 											for (int co=0;co<w;co++)
 												for (int ro=0;ro<h;ro++)
 													{
-													
+
 													//get real world coordinate for this pixel
 													//and translate pixel
 													double transPixX=evim.transformImageWorldX(co)-antpos.x;
 													double transPixY=evim.transformImageWorldY(ro)-antpos.y;
 													double transPixZ=z/ost.meta.resZ-antpos.z;
 													//rotate around Y axis
-													
+
 													//just for testing, rotate postpos again
 													//transPixX=postpos.x-antpos.x;
 													//transPixY=postpos.y-antpos.y;
 													//transPixZ=postpos.z-antpos.z;
-													
+
 													rotPixX= cosAPXY*transPixX+           sinAPXY*transPixZ;
 													rotPixY=                    transPixY;
 													rotPixZ=-sinAPXY*transPixX+           cosAPXY*transPixZ;
@@ -564,14 +593,14 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 															{
 															//adjust mask to export these pixels
 															goodpix[z][ro][co] = true;
-//														write to proper position in intensity map
+//															write to proper position in intensity map
 															int saveX = (int) Math.round(rotPixX / scalefactorX);
 															int saveY = (int) Math.round(rotPixY / scalefactorX + scaleX/2);
 															int saveZ = (int) Math.round(rotPixZ / scalefactorX + scaleX/2);
-															
+
 															//System.out.println("rotPixXYZ: "+rotPixX+ ", " +rotPixY+ ", " + rotPixZ );
 															//System.out.println("saveXYZ: "+saveX+ ", " +saveY+ ", " +saveZ );
-															
+
 															if (saveX < 0)
 																saveX = 0;
 															if (saveY < 0)
@@ -584,7 +613,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 																saveY = scaleY-1;
 															if (saveZ >= scaleZ)
 																saveZ = scaleZ-1;
-															
+
 															goodpixcoordX[z][ro][co] = saveX;
 															goodpixcoordY[z][ro][co] = saveY;
 															goodpixcoordZ[z][ro][co] = saveZ;
@@ -602,15 +631,15 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 													double[] pix=new double[3];
 													r.getPixel(co, ro, pix);
 													double p = pix[0];
-													
+
 													intens[goodpixcoordZ[z][ro][co]][goodpixcoordY[z][ro][co]][goodpixcoordX[z][ro][co]] += p;
 													pixelsfound[goodpixcoordZ[z][ro][co]][goodpixcoordY[z][ro][co]][goodpixcoordX[z][ro][co]]++;
 													totalintens+=p;
 													}
 												}
 										}
-									System.out.println(totalpixels+ " pixels found in frame "+ frame);
-									System.out.println("frame: " +frame + " average: " + (totalintens / totalpixels) * exptime);
+									if (verbosity > 1) System.out.println(totalpixels+ " pixels found in frame "+ frame);
+									if (verbosity > 1) System.out.println("frame: " +frame + " average: " + (totalintens / totalpixels) * exptime);
 									outFile.write("frame\n");
 									outFile.write(""+frame+"\n");
 									outFile.write("exptime\n");
@@ -621,7 +650,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 											{
 											for (int xi=0;xi<scaleX;xi++)
 												{
-												
+
 												String localintensity;
 												if (pixelsfound[zi][yi][xi] > 0)
 													{
@@ -633,11 +662,11 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 													localintensity = "0";
 													rawIntens[xi][yi][zi][frameCounter] = 0;
 													}
-												
+
 												outFile.write(""+localintensity+"\t");
 												rawExptime[frameCounter] = exptime;
 												rawFrame[frameCounter] = frame;
-												
+
 												}
 											outFile.write("\n");
 											}
@@ -652,7 +681,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								// catches defective frame errors
 								e.printStackTrace();
 								System.out.println("Java_error: "+e);
-								omitted.write(currentpath + "\terror "+e+"\n");
+								omitted.write(currentostname + "\terror "+e+"\n");
 								}
 							//} //TODO: remove to activate image analysis 
 							}
@@ -660,10 +689,10 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 						outFile.close();
 						angleFile.close();
 						distanceFile.close();
-						System.out.println(" timeX "+(System.currentTimeMillis()-currentTime));
-						System.out.println("AP done");
+						if (verbosity > 1) System.out.println(" timeX "+(System.currentTimeMillis()-currentTime));
+						if (verbosity > 1) System.out.println("AP done");
 						frameCounter++;
-						
+
 						gnufile.write("set output \'"+ost.datadir()+"/"+currentostname+"-angles.png\'\n");
 						gnufile.write("set title \'"+currentostname+" rotation angle (degrees)\'\n");
 						gnufile.write("set xrange [*:*]\n");
@@ -679,14 +708,16 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 						// collect rotation angle average at the end of gastrulation and correlate with ventral enclosure
 						double averageRotationAngle = rotationAngle[0]/rotationNumber[0]-rotationAngle[1]/rotationNumber[1];
 						rotfile.write(currentpath+"\t"+recordingNumber+"\t"+averageRotationAngle+"\n");
+						omitted.write(currentostname + "\tsuccesfully analyzed\n");
 						//recordingNumber++;
-						}
+						}else
+							{
+							if (verbosity > 1) System.out.println("skipping");
+							omitted.write(currentostname + "\tskipped\n");
+							}
 					}
 				}
-			}
-		else
-			System.out.println("skipping");
-			omitted.write(currentpath + "\tskipped\n");
+			}	
 		}
 	catch (Exception e)
 		{
@@ -754,40 +785,54 @@ public static void main(String[] arg)
 				//"/Volumes/TBU_xeon01_500GB02/daemon/output/"
 
 	};
-	
-	
+
+
 	try
 		{
 		BufferedWriter gnuplotFile;
 		File gnuplotFilePath=new File("gnuplotrotationangle.txt");
 		gnuplotFile = new BufferedWriter(new FileWriter(gnuplotFilePath));
 		gnuplotFile.write("set terminal png\n");
-		
+
 		BufferedWriter htmlGnuplotFile;
 		File htmlGnuplotFilePath=new File("htmlGnuplotrotationangle.htm");
 		htmlGnuplotFile = new BufferedWriter(new FileWriter(htmlGnuplotFilePath));
 		htmlGnuplotFile.write("<html><body>\n");
-		
+
 		BufferedWriter rotationStatisticsFile;
 		File rotationStatisticsFilePath=new File("rotationStatistics.txt");
 		rotationStatisticsFile = new BufferedWriter(new FileWriter(rotationStatisticsFilePath));
-		
+
 		BufferedWriter rotationStatisticsTranslationFile;
 		File rotationStatisticsTranslationFilePath=new File("rotationStatisticsTranslation.txt");
 		rotationStatisticsTranslationFile = new BufferedWriter(new FileWriter(rotationStatisticsTranslationFilePath));	
-		
+
 		BufferedWriter omittedFile;
 		File omittedFilePath=new File("omittedRecordings.txt");
 		omittedFile = new BufferedWriter(new FileWriter(omittedFilePath));	
+
+		BufferedWriter nucleiRadiiFile;
+		File nucleiRadiiFilePath=new File("nucleiRadii.txt");
+		nucleiRadiiFile = new BufferedWriter(new FileWriter(nucleiRadiiFilePath));	
+		
+		BufferedWriter travelDistanceFile;
+		File travelDistanceFilePath=new File("travelDistance.txt");
+		travelDistanceFile = new BufferedWriter(new FileWriter(travelDistanceFilePath));	
+		double lastPositionX=0;
+		double lastPositionY=0;
+		double lastPositionZ=0;
+		boolean lastPositionSet = false;
 		
 		int evaluatedRecording = 0;
-		
+
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
 				if(file.isDirectory())
 					{
 					long currentTime=System.currentTimeMillis();
-					calcAP(file, gnuplotFile, htmlGnuplotFile, rotationStatisticsFile, omittedFile, evaluatedRecording);
+					calcAP(file, gnuplotFile, htmlGnuplotFile, rotationStatisticsFile, omittedFile, nucleiRadiiFile, travelDistanceFile,
+							evaluatedRecording, 
+							lastPositionX, lastPositionY, lastPositionZ, lastPositionSet);
 					rotationStatisticsTranslationFile.write(evaluatedRecording+"\t"+file+"\n");
 					evaluatedRecording++;
 					System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
@@ -797,6 +842,8 @@ public static void main(String[] arg)
 		htmlGnuplotFile.close();
 		rotationStatisticsFile.close();
 		omittedFile.close();
+		nucleiRadiiFile.close();
+		travelDistanceFile.close();
 		}
 	catch (IOException e)
 		{
