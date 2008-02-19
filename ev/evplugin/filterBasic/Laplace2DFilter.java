@@ -62,14 +62,13 @@ public class Laplace2DFilter extends Convolve2DFilter
 	
 	public void applyImage(BufferedImage in, BufferedImage out)
 		{
-		kernelWidth=3;
 		//http://de.wikipedia.org/wiki/Laplace-Operator
 		//Variants exist, support them as well
-		kernel=new float[]{
+		setKernel(new ConvolutionKernel("Laplace2D",3,new float[]{
 				0, 1, 0,
 				1,-4, 1,
 				0, 1, 0
-				};
+				}));
 		super.applyImage(in,out);
 		}
 	}
