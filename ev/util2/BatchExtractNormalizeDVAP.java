@@ -11,6 +11,7 @@ import java.io.*;
 import java.awt.image.*;
 //import javax.vecmath.*;
 
+
 /**
  * Go through all imagesets in a directory and
  * extract a compressed voxel set for each embryo based on cell coordinates 
@@ -20,11 +21,11 @@ public class BatchExtractNormalizeDVAP
 {
 
 public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter htmlfile, BufferedWriter rotfile, 
-		BufferedWriter omitted, BufferedWriter nucleiRadii, BufferedWriter travelDistance,
-		int recordingNumber,
+		BufferedWriter omitted, BufferedWriter nucleiRadii, BufferedWriter travelDistance, int recordingNumber,
 		double lastPositionX, double lastPositionY, double lastPositionZ, boolean lastPositionSet)
 	{
 	int verbosity = 0;
+	
 	String PathForErrorFile = file.getPath();
 	try
 		{
@@ -38,7 +39,14 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 			//if (currentpath.equals("/Volumes/TBU_xeon01_500GB01/ost4dgood/BC12759070823")) // only deal with this test image set
 			{	
 			System.out.println("imageset found, executing...");
-
+			
+			BufferedReader inRecordingID;
+			File inRecordingIDFilePath=new File(ost.datadir(),"tburecserial.txt");
+			inRecordingID = new BufferedReader( new FileReader(inRecordingIDFilePath));
+			recordingNumber = Integer.parseInt(inRecordingID.readLine());
+			if (verbosity == 0) System.out.println("recordingnumber " + recordingNumber);
+			inRecordingID.close();
+			
 			long currentTime=System.currentTimeMillis();
 			//System.out.println("current imageset: " + currentostname);
 			//String currentostDescription = ost.description.toString();
@@ -244,6 +252,55 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 									System.out.println(" venc: "+vencpos.x+", "+vencpos.y+", "+vencpos.z);
 									}
 
+
+								// check which cell should be analyzed
+								double currentPositionX=0;
+								double currentPositionY=0;
+								double currentPositionZ=0;
+								double currentTravel;
+								int cellLabel = 0;
+								if (frame >= EMSNucFirstKey && frame <=EMSNucLastKey)
+									{	
+									cellLabel = 1;
+									currentPositionX=EMSpos.x;
+									currentPositionY=EMSpos.y;
+									currentPositionZ=EMSpos.z;
+									}
+								else if (frame >= ENucFirstKey && frame <=ENucLastKey)
+									{
+									cellLabel = 2;
+									currentPositionX=Epos.x;
+									currentPositionY=Epos.y;
+									currentPositionZ=Epos.z;
+									}
+								else if (frame >= EpNucFirstKey && frame <=EpNucLastKey)
+									{
+									cellLabel = 3;
+									currentPositionX=Eppos.x;
+									currentPositionY=Eppos.y;
+									currentPositionZ=Eppos.z;
+									}
+
+								if (lastPositionSet == false && lastPositionX == 0 && lastPositionY == 0 && lastPositionZ == 0)
+									{
+									lastPositionSet = true;
+									lastPositionX = currentPositionX;
+									lastPositionY = currentPositionY;
+									lastPositionZ = currentPositionZ;
+									}
+								else if (cellLabel > 0 && currentPositionX != lastPositionX && currentPositionY != lastPositionY && currentPositionZ != lastPositionZ)
+									{
+									double distX = currentPositionX-lastPositionX;
+									double distY = currentPositionY-lastPositionY;
+									double distZ = currentPositionZ-lastPositionZ;
+									currentTravel = Math.sqrt(distX*distX+distY*distY*distZ*distZ);
+									lastPositionX = currentPositionX;
+									lastPositionY = currentPositionY;
+									lastPositionZ = currentPositionZ;
+
+									travelDistance.write(recordingNumber+"\t"+cellLabel+"\t"+frame+"\t"+currentTravel+"\t"+currentPositionX+"\t"+currentPositionY+"\t"+currentPositionZ+"\n");
+									}
+								
 								//NucLineage.NucPos antpos =getpos(lin, "ant",  frame);
 								//NucLineage.NucPos postpos=getpos(lin, "post", frame);
 
@@ -395,6 +452,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								double currentDistanceToAP=-1;
 								String currentVentralMarker="";
 								double currentRadius=-1;
+
 								
 								for (int mc=0;mc<markers;mc++)
 									{
@@ -416,8 +474,6 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 
 									if (verbosity > 1) System.out.println(coordName[mc]+": "+rotCoordX[mc]+", "+ ", "+rotCoordY[mc]+", "+rotCoordZ[mc]);
 									
-									//*********** continue here, extract the E coordinate! for tracking 
-									
 									if (Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc])>eggsmallradius/2/4)
 										if (mc>0)
 											//if (rotCoordX[0] !=  rotCoordX[mc] && rotCoordY[0] !=  rotCoordY[mc] && rotCoordZ[0] !=  rotCoordZ[mc])
@@ -432,9 +488,14 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 												currentVentralMarker=coordName[mc];
 												currentDistanceToAP = Math.sqrt(rotCoordY[mc]*rotCoordY[mc]+rotCoordZ[mc]*rotCoordZ[mc]);
 												currentRadius = coordR[mc];
+											
 												}
 											}
 									}
+								
+								//write E lineage travel distance to file
+								
+
 
 								//collect rotation statistics
 								int rotationTime=0;
@@ -457,7 +518,7 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 										}
 								if (currentRadius != lastRadius)
 								{
-									int cellLabel = 0;
+									cellLabel = 0;
 									if (currentVentralMarker == "EMS")
 										cellLabel = 1;
 									else if (currentVentralMarker == "E")
@@ -834,8 +895,8 @@ public static void main(String[] arg)
 							evaluatedRecording, 
 							lastPositionX, lastPositionY, lastPositionZ, lastPositionSet);
 					rotationStatisticsTranslationFile.write(evaluatedRecording+"\t"+file+"\n");
-					evaluatedRecording++;
-					System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
+					//evaluatedRecording++;
+					//System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
 					}
 		gnuplotFile.close();
 		htmlGnuplotFile.write("\n</body></html>");
