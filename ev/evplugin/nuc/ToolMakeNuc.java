@@ -50,24 +50,6 @@ public class ToolMakeNuc implements ImageWindowTool
 
 	
 	
-	
-	/**
-	 * Get a lineage. Create lineage if there is none and this is possible
-	 */
-/*	private NucLineage getLineage()
-		{
-		NucLineage lin=r.getLineage();
-		if(lin==null)
-			{
-			Imageset rec=w.getImageset();
-			rec.addMetaObject(new NucLineage());
-			return r.getLineage();
-			}
-		else
-			return lin;
-		}*/
-	
-	
 	private Collection<NucLineage> getLineages()
 		{
 		Collection<NucLineage> lins=r.getVisibleLineages();

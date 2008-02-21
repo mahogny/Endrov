@@ -699,46 +699,46 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void keyPressed(KeyEvent e)
 		{
-		if(!ScriptBinding.runScriptKey(e))
+	//	if(!ScriptBinding.runScriptKey(e))
 			{
-			Imageset rec=getImageset();
-			if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
+		Imageset rec=getImageset();
+		if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
+			{
+			temporarilyHideMarkings=true;
+			repaint();
+			}
+		else if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
+			ConsoleWindow.focusConsole(this, imagePanel);
+		else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
+			{
+			if(!(rec instanceof EmptyImageset))
 				{
-				temporarilyHideMarkings=true;
-				repaint();
+				rec.saveMeta();
+				Log.printLog("Saving "+rec.getMetadataName());
 				}
-			else if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
-				ConsoleWindow.focusConsole(this, imagePanel);
-			else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
+			}
+		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
+			{
+			if(!(rec instanceof EmptyImageset))
 				{
-				if(!(rec instanceof EmptyImageset))
-					{
-					rec.saveMeta();
-					Log.printLog("Saving "+rec.getMetadataName());
-					}
+				EvData.metadata.remove(rec);
+				Log.printLog("Closing "+rec.getMetadataName());
 				}
-			else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
-				{
-				if(!(rec instanceof EmptyImageset))
-					{
-					EvData.metadata.remove(rec);
-					Log.printLog("Closing "+rec.getMetadataName());
-					}
-				BasicWindow.updateWindows();
-				}
-			else if(e.getKeyCode()==KeyEvent.VK_0)
-				{
-				updateImagePanel();
-				}
-			else if(e.getKeyCode()==KeyEvent.VK_9)
-				{
-				updateImagePanelNoInvalidate();
-				}
-			else
-				{
-				if(tool!=null)
-					tool.keyPressed(e);
-				}
+			BasicWindow.updateWindows();
+			}
+		else if(e.getKeyCode()==KeyEvent.VK_0)
+			{
+			updateImagePanel();
+			}
+		else if(e.getKeyCode()==KeyEvent.VK_9)
+			{
+			updateImagePanelNoInvalidate();
+			}
+		else
+			{
+			if(tool!=null)
+				tool.keyPressed(e);
+			}
 			}
 		}
 	/**
@@ -746,6 +746,8 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void keyReleased(KeyEvent e)
 		{
+		if(!ScriptBinding.runScriptKey(e))
+			{
 		if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
 			{
 			temporarilyHideMarkings=false;
@@ -753,6 +755,7 @@ public class ImageWindow extends BasicWindow
 			}
 		else if(tool!=null)
 			tool.keyReleased(e);
+			}
 		}
 	/**
 	 * Callback: Keyboard key typed (key down and up again)

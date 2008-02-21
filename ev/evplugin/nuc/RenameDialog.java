@@ -88,8 +88,8 @@ public class RenameDialog extends JDialog implements ActionListener
 						return;
 						}
 				}
-			}
-		else if(e.getSource()==bOk || e.getSource()==inputName)
+			} //or comboBoxEdited
+		else if(e.getSource()==bOk || (e.getSource()==inputName && e.getActionCommand().equals("comboBoxChanged")))
 			{
 			String newName=(String)inputName.getSelectedItem();
 			if(!newName.equals(""))
@@ -99,11 +99,11 @@ public class RenameDialog extends JDialog implements ActionListener
 				else
 					{
 					oldLineage.renameNucleus(oldName, newName);
+					dispose();
 					BasicWindow.updateWindows();
 					}
-				dispose();
 				}
-			}
+			}			
 		else if(e.getSource()==bCancel)
 			dispose();
 		}
