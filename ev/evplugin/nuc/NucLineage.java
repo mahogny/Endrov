@@ -366,9 +366,22 @@ public class NucLineage extends EvObject implements Cloneable
 		Nuc n=nuc.get(nucName);
 		if(n!=null)
 			{
+//			SortedMap<Integer, NucPos> pos=n.pos.headMap(frame);
+			Vector<Integer> todel=new Vector<Integer>();
+			
+			
+			/*
 			for(int f:n.pos.keySet())
 				if(f>=frame)
 					n.pos.remove(f);
+			*/
+			for(int f:n.pos.keySet())
+				if(f>=frame)
+					todel.add(f);
+			for(int f:todel)
+				n.pos.remove(f);
+
+			
 			if(n.pos.isEmpty())
 				removeNuc(nucName);
 			}
@@ -591,7 +604,7 @@ public class NucLineage extends EvObject implements Cloneable
 		/** Name of parent */
 		public String parent=null;
 		/** Key frames */
-		public final TreeMap<Integer, NucPos> pos=new TreeMap<Integer, NucPos>();
+		public final SortedMap<Integer, NucPos> pos=new TreeMap<Integer, NucPos>();
 		/** Final frame of existence */
 		public Integer end;
 		/** Fate of nucleus */

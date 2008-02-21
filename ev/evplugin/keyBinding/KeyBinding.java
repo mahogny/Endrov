@@ -179,13 +179,13 @@ public class KeyBinding
 	public String keyDesc()
 		{
 		if(key!=null)
-			return ""+key;
+			return (""+key).toLowerCase();
 		else
 			{
 			String r=KeyEvent.getKeyModifiersText(modifierEx);
 			if(!r.equals(""))
 				r=r+"+";
-			return r+KeyEvent.getKeyText(keyCode);
+			return (r+KeyEvent.getKeyText(keyCode)).toLowerCase();
 			}
 		}
 	

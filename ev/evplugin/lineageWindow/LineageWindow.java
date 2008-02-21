@@ -81,6 +81,7 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miEndFrame=new JMenuItem("Set end frame");
 	public JMenuItem miRemoveNucleus=new JMenuItem("Remove nucleus");
 	public JMenuItem miExportImage=new JMenuItem("Export Image*");
+	public JMenuItem miSelectChildren=new JMenuItem("Select children");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
 	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
 
@@ -149,6 +150,7 @@ public class LineageWindow extends BasicWindow
 		menuLineage.addSeparator();
 		menuLineage.add(miFoldAll);
 		menuLineage.add(miUnfoldAll);
+		menuLineage.add(miSelectChildren);
 		
 		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
 		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
@@ -167,6 +169,7 @@ public class LineageWindow extends BasicWindow
 		miShowKeyFrames.addActionListener(this);
 		miFoldAll.addActionListener(this);
 		miUnfoldAll.addActionListener(this);
+		miSelectChildren.addActionListener(this);
 		
 		//Window overall things
 		setTitle(EV.programName+" Lineage Window");
@@ -312,10 +315,26 @@ public class LineageWindow extends BasicWindow
 			view.unfoldAll();
 		else if(e.getSource()==miFoldAll)
 			view.foldAll();
+		else if(e.getSource()==miSelectChildren)
+			{
+			Set<NucPair> parents=new HashSet<NucPair>(NucLineage.selectedNuclei);
+			for(NucPair p:parents)
+				recursiveSelect(p.getLeft(), p.getRight());
+			BasicWindow.updateWindows();
+			}
 		}
 	
 
-	
+	/**
+	 * Recursively select children
+	 */
+	public static void recursiveSelect(NucLineage lin, String nucName)
+		{
+		NucLineage.Nuc nuc=lin.nuc.get(nucName);
+		NucLineage.selectedNuclei.add(new NucPair(lin, nucName));
+		for(String childName:nuc.child)
+			recursiveSelect(lin, childName);
+		}
 	
 	
 	/*
