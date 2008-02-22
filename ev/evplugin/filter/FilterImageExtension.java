@@ -109,7 +109,7 @@ public class FilterImageExtension implements ImageWindowExtension
 			add(bApply, BorderLayout.SOUTH);
 			
 			pack();
-			setBounds(100,100,300,400);
+			setBounds(100,100,400,400);
 			setVisible(true);
 			}
 		

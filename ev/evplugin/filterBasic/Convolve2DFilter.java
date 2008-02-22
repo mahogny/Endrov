@@ -3,6 +3,8 @@ package evplugin.filterBasic;
 //import java.awt.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.*;
 
 import javax.swing.*;
@@ -43,8 +45,7 @@ public class Convolve2DFilter extends FilterSlice
 			public Filter readXML(Element e)
 				{
 				Convolve2DFilter f=new Convolve2DFilter();
-				f.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
-		//		f.pblack.setValue(Double.parseDouble(e.getAttributeValue("pblack")));
+				f.currentKernel.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
 				return f;
 				}
 			});
@@ -56,6 +57,7 @@ public class Convolve2DFilter extends FilterSlice
 		public String name;
 		public int width;
 		public float[] filter;
+		public boolean normalize=true;
 		
 		public ConvolutionKernel(){}
 			{
@@ -63,28 +65,34 @@ public class Convolve2DFilter extends FilterSlice
 			width=1;
 			filter=new float[]{1};
 			}
-		public ConvolutionKernel(String name, int width, float[] filter)
+		public ConvolutionKernel(String name, boolean normalize, int width, float[] filter)
 			{
 			this.name=name;
 			this.width=width;
 			this.filter=filter;
+			this.normalize=normalize;
+			}
+		public String toString()
+			{
+			return name;
 			}
 		}
 	
 	public static ConvolutionKernel makeSharpen(int k)
 		{
-		return new ConvolutionKernel("Sharpen"+k+" 2D", 3, new float[]{-k, -k, -k,		-k,8*k+1, -k,		-k, -k, -k});
+		return new ConvolutionKernel("Sharpen"+k+" 2D", true, 3, new float[]{-k, -k, -k,		-k,8*k+1, -k,		-k, -k, -k});
 		}
 	
 
 	
 	public static ConvolutionKernel[] premadeKernels=new ConvolutionKernel[]{
-			new ConvolutionKernel("Laplace4 2D", 3, new float[]{0, 1, 0,		1,-4, 1,		0, 1, 0}),
-			new ConvolutionKernel("Laplace8 2D", 3, new float[]{1, 1, 1,		1,-8, 1,		1, 1, 1}),
-			new ConvolutionKernel("Laplace X", 3, new float[]{1,-2, 1}),
-			new ConvolutionKernel("Laplace Y", 1, new float[]{1,		-2,		1}),
-			new ConvolutionKernel("SobelX 2D", 3, new float[]{1, 0,-1,		2, 0,-2,		1, 0,-1}),
-			new ConvolutionKernel("SobelY 2D", 3, new float[]{1, 2, 1,		0, 0, 0,		-1,-2,-1}),
+			new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}),
+			new ConvolutionKernel("Laplace4 2D", false, 3, new float[]{0, 1, 0,		1,-4, 1,		0, 1, 0}),
+			new ConvolutionKernel("Laplace8 2D", false, 3, new float[]{1, 1, 1,		1,-8, 1,		1, 1, 1}),
+			new ConvolutionKernel("Laplace X", false, 3, new float[]{1,-2, 1}),
+			new ConvolutionKernel("Laplace Y", false, 1, new float[]{1,		-2,		1}),
+			new ConvolutionKernel("SobelX 2D", false, 3, new float[]{1, 0,-1,		2, 0,-2,		1, 0,-1}),
+			new ConvolutionKernel("SobelY 2D", false, 3, new float[]{1, 2, 1,		0, 0, 0,		-1,-2,-1}),
 			makeSharpen(1),
 			makeSharpen(2),
 			makeSharpen(3),
@@ -105,26 +113,38 @@ public class Convolve2DFilter extends FilterSlice
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	protected int kernelWidth;
-	private EvMutableDouble[] kernelm=new EvMutableDouble[]{};
-	private EvMutableInteger repeats=new EvMutableInteger(1);
-	private EvMutableBoolean normalize=new EvMutableBoolean(false);
+	private class CurrentKernel
+		{
+		public int kernelWidth=1;
+		public EvMutableDouble[] kernelm=new EvMutableDouble[]{};
+		public EvMutableInteger repeats=new EvMutableInteger(1);
+		public EvMutableBoolean normalize=new EvMutableBoolean(false);
+		}
+	public CurrentKernel currentKernel=new CurrentKernel();
 	
 	public Convolve2DFilter()
 		{
-		setKernel(new ConvolutionKernel("Identity", 1, new float[]{1}));
-		setKernel(new ConvolutionKernel("SobelY 2D", 3, new float[]{
+		setKernel(new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}));
+/*		setKernel(new ConvolutionKernel("SobelY 2D", false, 3, new float[]{
 					 1, 2, 1,
 					 0, 0, 0,
-					-1,-2,-1}));
+					-1,-2,-1}));*/
 		}
 	
+	/**
+	 * Set ker
+	 * @param k
+	 */
 	public void setKernel(ConvolutionKernel k)
 		{
-		kernelWidth=k.width;
-		kernelm=new EvMutableDouble[k.filter.length];
+		currentKernel.kernelWidth=k.width;
+		currentKernel.kernelm=new EvMutableDouble[k.filter.length];
 		for(int i=0;i<k.filter.length;i++)
-			kernelm[i]=new EvMutableDouble(k.filter[i]);
+			currentKernel.kernelm[i]=new EvMutableDouble(k.filter[i]);
+		currentKernel.normalize.setValue(k.normalize);
+		int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
+		System.out.println("dim2 "+currentKernel.kernelWidth+" "+h);
+		observer.emit(this);
 		}
 	
 	
@@ -137,92 +157,134 @@ public class Convolve2DFilter extends FilterSlice
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterName);
-		e.setAttribute("w",""+kernelWidth);
+		e.setAttribute("w",""+currentKernel.kernelWidth);
 		//TODO
 		}
 
-	
+	/**
+	 * Set the new size of the kernel, fill with 0's as needed
+	 */
 	public void resizeKernel(int nw, int nh)
 		{
 		EvMutableDouble[] kernel2=new EvMutableDouble[nw*nh];
-		int oldh=kernelm.length/kernelWidth;
-		int oldw=kernelWidth;
-		kernelWidth=nw;
+		int oldh=currentKernel.kernelm.length/currentKernel.kernelWidth;
+		int oldw=currentKernel.kernelWidth;
+		currentKernel.kernelWidth=nw;
 		for(int ay=0;ay<nh;ay++)
 			for(int ax=0;ax<nw;ax++)
 				{
 				if(ay<oldh && ax<oldw)
-					kernel2[ay*kernelWidth+ax]=kernelm[ay*oldw+ax];
+					kernel2[ay*currentKernel.kernelWidth+ax]=currentKernel.kernelm[ay*oldw+ax];
 				else
-					kernel2[ay*kernelWidth+ax]=new EvMutableDouble(0);
+					kernel2[ay*currentKernel.kernelWidth+ax]=new EvMutableDouble(0);
 				}
-		kernelm=kernel2;
+		currentKernel.kernelm=kernel2;
 		}
 	
 	
 	
-	private class ConvolvePanel extends JPanel implements ChangeListener
+	private class ConvolvePanel extends JPanel implements ChangeListener, ActionListener
 		{
 		static final long serialVersionUID=0;
 		
-		JPanel spanel=new JPanel(new BorderLayout());
-		JSpinner xs=new JSpinner(new SpinnerNumberModel(1,1,128,1));
-		JSpinner ys=new JSpinner(new SpinnerNumberModel(1,1,128,1));
+		private Filter thisfilter;
 		
-		public JPanel makeLeftPanel()
+		private JComboBox kernelCombo=new JComboBox(premadeKernels);
+		private JPanel spanel=new JPanel(new BorderLayout());
+		private JSpinner xs=new JSpinner(new SpinnerNumberModel(1,1,128,1));
+		private JSpinner ys=new JSpinner(new SpinnerNumberModel(1,1,128,1));
+		private JPanel leftPanel=new JPanel();
+		
+		public /*JPanel*/ void makeLeftPanel()
 			{
-			int h=kernelm.length/kernelWidth;
-			JPanel gpanel=new JPanel(new GridLayout(h,kernelWidth));
+			leftPanel.removeAll();
+			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
+			leftPanel.setLayout(new GridLayout(h,currentKernel.kernelWidth));
+			System.out.println("dim "+currentKernel.kernelWidth+" "+h);
+//			JPanel gpanel=new JPanel(new GridLayout(h,kernelWidth));
 			for(int y=0;y<h;y++)
-				for(int x=0;x<kernelWidth;x++)
+				for(int x=0;x<currentKernel.kernelWidth;x++)
 					{
-					JNumericFieldMutableDouble nc=new JNumericFieldMutableDouble(kernelm[y*kernelWidth+x],observer,this);
-					gpanel.add(nc);
+					JNumericFieldMutableDouble nc=new JNumericFieldMutableDouble(currentKernel.kernelm[y*currentKernel.kernelWidth+x],observer,this);
+					leftPanel.add(nc);
 					}
-			return gpanel;
+//			return gpanel;
+			leftPanel.revalidate();
 			}
 		
-		Filter thisfilter;
 		public ConvolvePanel(Filter thisfilter)
 			{
 			this.thisfilter=thisfilter;
-			int h=kernelm.length/kernelWidth;
-			JNumericFieldMutableInteger nrepeats=new JNumericFieldMutableInteger(repeats,observer,this);
-			JCheckBoxMutableBoolean nnormalize=new JCheckBoxMutableBoolean("",normalize,observer,this);
+			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
+			JNumericFieldMutableInteger nrepeats=new JNumericFieldMutableInteger(currentKernel.repeats,observer,this);
+			JCheckBoxMutableBoolean nnormalize=new JCheckBoxMutableBoolean("",currentKernel.normalize,observer,this);
 			
-			xs.setValue(kernelWidth);
+			xs.setValue(currentKernel.kernelWidth);
 			ys.setValue(h);
 			xs.addChangeListener(this);
 			ys.addChangeListener(this);
 			
-			JPanel spanell=new JPanel(new GridLayout(4,1));
-			JPanel spanelr=new JPanel(new GridLayout(4,1));
-			spanell.add(new JLabel("#X:"));
-			spanell.add(new JLabel("#Y:"));
-			spanell.add(new JLabel("Repeats:"));
-			spanell.add(new JLabel("Normalize:"));
-			spanelr.add(xs);
-			spanelr.add(ys);
-			spanelr.add(nrepeats);
-			spanelr.add(nnormalize);
+
 			
-			spanel.add(spanell,BorderLayout.WEST);
-			spanel.add(spanelr,BorderLayout.EAST);
+			kernelCombo.setEditable(true);
+			kernelCombo.addActionListener(this);
+
+			
+			JPanel lefttot=new JPanel(new GridLayout(4,1));
+			JPanel panelxy=new JPanel(new GridLayout(1,2));
+			panelxy.add(labelc("#X:",xs));
+			panelxy.add(labelc("#Y:",ys));
+			lefttot.add(panelxy);
+			lefttot.add(labelc("Repeats:",nrepeats));
+			lefttot.add(labelc("Normalize:",nnormalize));
+			lefttot.add(kernelCombo);
+			spanel.add(lefttot,BorderLayout.NORTH);
+			
+			
+			add(spanel, BorderLayout.EAST); //n
 
 			setLayout(new BorderLayout());
-			add(makeLeftPanel(), BorderLayout.WEST);
+			makeLeftPanel();
+			add(leftPanel, BorderLayout.WEST);
+			//add(makeLeftPanel(), BorderLayout.WEST);
 			add(spanel, BorderLayout.EAST);
 			}
 
+		public JPanel labelc(String s, JComponent c)
+			{
+			JPanel p=new JPanel(new BorderLayout());
+			p.add(new JLabel(s),BorderLayout.WEST);
+			p.add(c,BorderLayout.CENTER);
+			return p;
+			}
+		
 		public void stateChanged(ChangeEvent e)
 			{
-			removeAll();
+//			removeAll();
+	//		if(leftPanel!=null)
+//				remove(leftPanel);
 			resizeKernel((Integer)xs.getValue(), (Integer)ys.getValue());
-			add(makeLeftPanel(), BorderLayout.WEST);
-			add(spanel, BorderLayout.EAST);
-			revalidate();
+//			if(e.getSource()==currentKernel.)
+			makeLeftPanel();
+//			add(leftPanel, BorderLayout.WEST);
+//			revalidate();
 			observer.emit(thisfilter);
 			}
+
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==kernelCombo && e.getActionCommand().equals("comboBoxChanged"))
+				{
+				ConvolutionKernel sel=(ConvolutionKernel)kernelCombo.getSelectedItem();
+				setKernel(sel);
+				stateChanged(null);
+				kernelCombo.removeActionListener(this);
+				kernelCombo.setSelectedItem(sel);
+				kernelCombo.addActionListener(this);
+				}
+			}
+		
+		
 		}
 	
 	
@@ -236,25 +298,25 @@ public class Convolve2DFilter extends FilterSlice
 	
 	public void applyImage(BufferedImage in, BufferedImage out)
 		{
-		int repeatsv=repeats.getValue();
+		int repeatsv=currentKernel.repeats.getValue();
 		
 		//Prepare kernel
-		float[] kernelf=new float[kernelm.length];
-		for(int i=0;i<kernelm.length;i++)
-			kernelf[i]=(float)kernelm[i].getValue();
+		float[] kernelf=new float[currentKernel.kernelm.length];
+		for(int i=0;i<currentKernel.kernelm.length;i++)
+			kernelf[i]=(float)currentKernel.kernelm[i].getValue();
 		float kernelsum=0;
-		if(normalize.getValue())
+		if(currentKernel.normalize.getValue())
 			{
 			for(float f:kernelf)
 				kernelsum+=f;
 			if(Math.abs(kernelsum)>0.0001) //Have to deal with FP precision problems
 				{
-				for(int i=0;i<kernelm.length;i++)
+				for(int i=0;i<currentKernel.kernelm.length;i++)
 					kernelf[i]/=kernelsum;
 				}
 			}
-		int h=kernelm.length/kernelWidth;
-		int w=kernelWidth;
+		int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
+		int w=currentKernel.kernelWidth;
 		
 		//Ugly hack, uninteresting case
 		if(repeatsv==0)
