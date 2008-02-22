@@ -50,7 +50,7 @@ public class Laplace2DFilter extends Convolve2DFilter
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterName);
-		e.setAttribute("w",""+kernelWidth);
+		e.setAttribute("w",""+currentKernel.kernelWidth);
 		}
 	
 	public JComponent getFilterWidget()
@@ -64,7 +64,7 @@ public class Laplace2DFilter extends Convolve2DFilter
 		{
 		//http://de.wikipedia.org/wiki/Laplace-Operator
 		//Variants exist, support them as well
-		setKernel(new ConvolutionKernel("Laplace2D",3,new float[]{
+		setKernel(new ConvolutionKernel("Laplace2D",false, 3,new float[]{
 				0, 1, 0,
 				1,-4, 1,
 				0, 1, 0

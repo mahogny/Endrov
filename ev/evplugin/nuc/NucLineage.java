@@ -366,9 +366,7 @@ public class NucLineage extends EvObject implements Cloneable
 		Nuc n=nuc.get(nucName);
 		if(n!=null)
 			{
-//			SortedMap<Integer, NucPos> pos=n.pos.headMap(frame);
 			Vector<Integer> todel=new Vector<Integer>();
-			
 			
 			/*
 			for(int f:n.pos.keySet())
