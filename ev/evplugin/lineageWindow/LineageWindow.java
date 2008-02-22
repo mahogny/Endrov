@@ -48,9 +48,8 @@ public class LineageWindow extends BasicWindow
 	
 	
 	private JSlider sliderFrameDist=new JSlider(1,200,100); 
-	private JButton buttonGoRoot=new JButton("Go to root");
-	private JButton buttonGoSelected=new JButton("Go to selected");
-	private JButton buttonRotate=new JButton("Rotate");
+	private JButton buttonGoRoot=new JButton("=> root");
+	private JButton buttonGoSelected=new JButton("=> selected");
 	private LineageView view;
 	private FrameControlLineage frameControl=new FrameControlLineage(new ChangeListener()
 		{
@@ -72,16 +71,17 @@ public class LineageWindow extends BasicWindow
 	
 	
 	public JMenu menuLineage=new JMenu("Lineage");
-	public JMenuItem miRename=new JMenuItem("Rename nucleus");
+	public JMenuItem miRename=new JMenuItem("Rename nucleus...");
 	public JMenuItem miMerge=new JMenuItem("Merge nuclei");
 	public JMenuItem miPC=new JMenuItem("Associate parent");
 	public JMenuItem miUnparent=new JMenuItem("Unassociate from parent");
 	public JMenuItem miSwapChildren=new JMenuItem("Swap children names*");
 	public JMenuItem miFate=new JMenuItem("Set fate");
-	public JMenuItem miEndFrame=new JMenuItem("Set end frame");
+	public JMenuItem miEndFrame=new JMenuItem("Set end frame...");
 	public JMenuItem miRemoveNucleus=new JMenuItem("Remove nucleus");
 	public JMenuItem miExportImage=new JMenuItem("Export Image*");
 	public JMenuItem miSelectChildren=new JMenuItem("Select children");
+	public JMenuItem miRotate=new JMenuItem("Rotate tree");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
 	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
 
@@ -111,27 +111,33 @@ public class LineageWindow extends BasicWindow
 		view.addMouseWheelListener(this);
 		buttonGoRoot.addActionListener(this);
 		buttonGoSelected.addActionListener(this);
-		buttonRotate.addActionListener(this);
 		sliderFrameDist.addChangeListener(this);
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
 		add(view,BorderLayout.CENTER);
 		
-		JPanel bottom=new JPanel();
+		JPanel bottom = new JPanel(new GridBagLayout());
 		add(bottom,BorderLayout.SOUTH);
 		
-		JPanel frameDistPanel=new JPanel(new BorderLayout());
-		bottom.add(new JLabel("Z:"), BorderLayout.WEST);
-		bottom.add(sliderFrameDist, BorderLayout.CENTER);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 0;
+		c.gridx = 0;
 		
-		
-		bottom.add(objectCombo);
-		bottom.add(frameControl);
-		bottom.add(buttonGoRoot);
-		bottom.add(buttonGoSelected);
-		bottom.add(buttonRotate);
-		bottom.add(frameDistPanel);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		bottom.add(objectCombo,c);
+		c.gridx++;
+		c.weightx=1;
+		bottom.add(sliderFrameDist,c);
+		c.gridx++;
+		c.weightx=0;
+		c.fill = 0;
+		bottom.add(frameControl,c);
+		c.gridx++;
+		bottom.add(buttonGoRoot,c);
+		c.gridx++;
+		bottom.add(buttonGoSelected,c);
+		c.gridx++;
 		
 		addMenubar(menuLineage);
 		menuLineage.add(miRename);
@@ -147,6 +153,7 @@ public class LineageWindow extends BasicWindow
 		menuLineage.addSeparator();
 		menuLineage.add(miShowFrameLines);
 		menuLineage.add(miShowKeyFrames);
+		menuLineage.add(miRotate);
 		menuLineage.addSeparator();
 		menuLineage.add(miFoldAll);
 		menuLineage.add(miUnfoldAll);
@@ -170,6 +177,7 @@ public class LineageWindow extends BasicWindow
 		miFoldAll.addActionListener(this);
 		miUnfoldAll.addActionListener(this);
 		miSelectChildren.addActionListener(this);
+		miRotate.addActionListener(this);
 		
 		//Window overall things
 		setTitle(EV.programName+" Lineage Window");
@@ -206,7 +214,7 @@ public class LineageWindow extends BasicWindow
 			view.goRoot();
 		else if(e.getSource()==buttonGoSelected)
 			view.goSelected();
-		else if(e.getSource()==buttonRotate)
+		else if(e.getSource()==miRotate)
 			{
 			view.displayHorizontalTree=!view.displayHorizontalTree;
 			view.repaint();

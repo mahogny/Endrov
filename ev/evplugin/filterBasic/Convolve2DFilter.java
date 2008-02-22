@@ -94,8 +94,8 @@ public class Convolve2DFilter extends FilterSlice
 	
 	//http://en.wikipedia.org/wiki/Sobel_operator
 	//emboss filters not implemented: http://www.gamedev.net/reference/programming/features/imageproc/page2.asp
-	
-	//Gaussian
+	//kuwahara TODO http://www.qi.tnw.tudelft.nl/Courses/FIP/noframes/fip-Smoothin.html
+	//Gaussian TODO
 	//repeat convolution?
 	//category
 	//IJ filters
