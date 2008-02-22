@@ -177,16 +177,16 @@ public class ToolMakeNuc implements ImageWindowTool
 		
 		int curFramei=(int)w.frameControl.getFrame();
 		NucLineage lin=NucLineage.currentHover.getLeft();//getLineage();
-		if(lin==null)
-			return;
+//		if(lin==null)
+//			return;
 		
-		if(KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
+		if(lin!=null && (KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)))
 			{
 			//Translate or change radius
 			if(r.modifyingNucName==null && r.interpNuc.containsKey(NucLineage.currentHover)) //TODO: guarantee that every nucleus has 1 pos except during load
 				r.modifyingNucName=NucLineage.currentHover;
 			}
-		else if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
+		else if(lin!=null && KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			{
 			//Divide nucleus
 			NucLineage.Nuc n=NucLineage.currentHover.getLeft().nuc.get(NucLineage.currentHover.getRight());
@@ -199,21 +199,24 @@ public class ToolMakeNuc implements ImageWindowTool
 		else if(KeyBinding.get(NucLineage.KEY_SETZ).typed(e))
 			{
 			//Bring nucleus to this Z
-			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.getRight());
-			
 			NucPair useNuc=NucLineage.currentHover;
-			if(useNuc.equals("") && NucLineage.selectedNuclei.size()==1)
+
+
+			if(useNuc.getLeft()==null)
 				{
-				//Take a selected nucleus instead
-				useNuc=NucLineage.selectedNuclei.iterator().next();
+				System.out.println("foo");
+				if(NucLineage.selectedNuclei.size()==1)
+					useNuc=NucLineage.selectedNuclei.iterator().next();
 				}
+			
+			NucLineage.Nuc n=null;
+			if(useNuc.getLeft()!=null)
+				n=useNuc.getLeft().nuc.get(useNuc.getRight());
 			
 			if(n!=null && r.interpNuc.containsKey(useNuc))
 				{
-				NucLineage.NucInterp inter=r.interpNuc.get(NucLineage.currentHover);
+				NucLineage.NucInterp inter=r.interpNuc.get(useNuc);
 				NucLineage.NucPos pos=n.getPosCreate(curFramei); 
-				//Maybe this function should interpolate whenever possible. would give better separation
-//				n.pos.put(curFramei,pos);
 				pos.x=inter.pos.x;
 				pos.y=inter.pos.y;
 				pos.z=w.s2wz(w.frameControl.getZ());
@@ -221,7 +224,7 @@ public class ToolMakeNuc implements ImageWindowTool
 				r.commitModifyingNuc();
 				}
 			}
-		else if(KeyBinding.get(NucLineage.KEY_SETEND).typed(e))
+		else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETEND).typed(e))
 			{
 			//Set end frame of nucleus
 			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.getRight());
@@ -238,7 +241,7 @@ public class ToolMakeNuc implements ImageWindowTool
 				BasicWindow.updateWindows();
 				}
 			}
-		else if(KeyBinding.get(NucLineage.KEY_MAKEPARENT).typed(e))
+		else if(lin!=null && KeyBinding.get(NucLineage.KEY_MAKEPARENT).typed(e))
 			{
 			//Create parent for selected nucleus/nuclei
 			String parentName=lin.getUniqueNucName();
@@ -268,7 +271,7 @@ public class ToolMakeNuc implements ImageWindowTool
 			this.r.w.frameControl.setFrame(firstFrame-1);
 			BasicWindow.updateWindows();
 			}
-		else if(KeyBinding.get(NucLineage.KEY_SETPARENT).typed(e))
+		else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETPARENT).typed(e))
 			{
 			//Create parent-children relation
 			NucLineage.createParentChildSelected();
