@@ -55,7 +55,7 @@ public class BinMorph2DFilter extends FilterSlice
 		
 		public MorphKernel(){}
 			{
-			name="Custom convolution";
+			name="[] 1x1";
 			width=1;
 			filter=new boolean[]{true};
 			}
@@ -116,7 +116,7 @@ public class BinMorph2DFilter extends FilterSlice
 	
 	public BinMorph2DFilter()
 		{
-		setKernel(new MorphKernel("[] 3x3", 3, new boolean[]{true,true,true, true,true,true, true,true,true}));
+		setKernel(new MorphKernel());
 		}
 	
 	/**
