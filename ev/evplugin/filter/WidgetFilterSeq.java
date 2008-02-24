@@ -43,7 +43,9 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 		}
 	public void observerEvent(Object o)
 		{
-		buildList();
+	//	buildList();
+		//TODO bugs. need do something more clever?
+		
 		}
 	
 	public FilterSeq getFilterSeq()

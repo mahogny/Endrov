@@ -1,15 +1,10 @@
 package evplugin.filterBasic;
 
-//import java.awt.*;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.*;
-
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.event.*;
 
 import org.jdom.Element;
 
@@ -17,22 +12,21 @@ import evplugin.ev.*;
 import evplugin.filter.*;
 
 
-//better put derivates in here directly
 
 /**
- * Filter: Convolve in 2D
+ * Filter: Binary morphology operations in 2D
  * 
  * @author Johan Henriksson
  */
-public class Convolve2DFilter extends FilterSlice
+public class BinMorph2DFilter extends FilterSlice
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
-	private static String filterMeta="Convolve2D";
-	private static String filterName="Convolve 2D";
-	private static String filterCategory="Mathematical";
+	private static String filterMeta="BinaryMorphology2D";
+	private static String filterName="Binary Morphology 2D";
+	private static String filterCategory="Morphology";
 
 	public static void initPlugin() {}
 	static
@@ -42,10 +36,10 @@ public class Convolve2DFilter extends FilterSlice
 			public String getCategory(){return filterCategory;}
 			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
-			public FilterROI filterROI(){return new Convolve2DFilter();}
+			public FilterROI filterROI(){return new BinMorph2DFilter();}
 			public Filter readXML(Element e)
 				{
-				Convolve2DFilter f=new Convolve2DFilter();
+				BinMorph2DFilter f=new BinMorph2DFilter();
 				f.currentKernel.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
 				return f;
 				}
@@ -53,25 +47,23 @@ public class Convolve2DFilter extends FilterSlice
 		}
 	
 	
-	public static class ConvolutionKernel
+	public static class MorphKernel
 		{
 		public String name;
 		public int width;
-		public float[] filter;
-		public boolean normalize=true;
+		public boolean[] filter;
 		
-		public ConvolutionKernel(){}
+		public MorphKernel(){}
 			{
 			name="Custom convolution";
 			width=1;
-			filter=new float[]{1};
+			filter=new boolean[]{true};
 			}
-		public ConvolutionKernel(String name, boolean normalize, int width, float[] filter)
+		public MorphKernel(String name, int width, boolean[] filter)
 			{
 			this.name=name;
 			this.width=width;
 			this.filter=filter;
-			this.normalize=normalize;
 			}
 		public String toString()
 			{
@@ -88,37 +80,26 @@ public class Convolve2DFilter extends FilterSlice
 			}
 		}
 	
-	public static ConvolutionKernel makeSharpen(float k)
-		{
-		return new ConvolutionKernel("Sharpen"+k+" 2D", true, 3, new float[]{-k, -k, -k,		-k,8*k+1, -k,		-k, -k, -k});
-		}
 	
 
 	
-	public static ConvolutionKernel[] premadeKernels=new ConvolutionKernel[]{
-			new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}),
-			new ConvolutionKernel("Mean 3x3", true, 3, new float[]{1,1,1, 1,1,1, 1,1,1}),
-			new ConvolutionKernel("Gaussian 3x3 2D", true, 3, new float[]{1, 2, 1,		2, 4, 2,		1, 2, 1}),
-			new ConvolutionKernel("Laplace4 2D", false, 3, new float[]{0, 1, 0,		1,-4, 1,		0, 1, 0}),
-			new ConvolutionKernel("Laplace8 2D", false, 3, new float[]{1, 1, 1,		1,-8, 1,		1, 1, 1}),
-			new ConvolutionKernel("Laplace X", false, 3, new float[]{1,-2, 1}),
-			new ConvolutionKernel("Laplace Y", false, 1, new float[]{1,		-2,		1}),
-			new ConvolutionKernel("SobelX 2D", false, 3, new float[]{1, 0,-1,		2, 0,-2,		1, 0,-1}),
-			new ConvolutionKernel("SobelY 2D", false, 3, new float[]{1, 2, 1,		0, 0, 0,		-1,-2,-1}),
-			makeSharpen(1),
-			makeSharpen(2),
-			makeSharpen(3),
+	public static MorphKernel[] premadeKernels=new MorphKernel[]{
+			new MorphKernel("[] 1x1", 1, new boolean[]{true}),
+			new MorphKernel("[] 2x2", 1, new boolean[]{true,true, true,true}),
+			new MorphKernel("[] 3x3", 3, new boolean[]{true,true,true, true,true,true, true,true,true}),
+			new MorphKernel("+  3x3", 3, new boolean[]{false,true,false, true,true,true, false,true,false})
 	};
 	
 	
+	//http://en.wikipedia.org/wiki/Mathematical_morphology
+	//Binary:
+	//Erosion
+	//Dilation
+	//Opening
+	//Closing
 	
-	//http://en.wikipedia.org/wiki/Sobel_operator
-	//emboss filters not implemented: http://www.gamedev.net/reference/programming/features/imageproc/page2.asp
-	//kuwahara TODO http://www.qi.tnw.tudelft.nl/Courses/FIP/noframes/fip-Smoothin.html
-	//Gaussian TODO
-	//category
-	//IJ filters
-	//http://de.wikipedia.org/wiki/Laplace-Operator
+	//unary:
+	//Skeletonize?
 	
 	
 	/******************************************************************************************************
@@ -128,28 +109,26 @@ public class Convolve2DFilter extends FilterSlice
 	private class CurrentKernel
 		{
 		public int kernelWidth=1;
-		public EvMutableDouble[] kernelm=new EvMutableDouble[]{};
+		public EvMutableBoolean[] kernelm=new EvMutableBoolean[]{};
 		public EvMutableInteger repeats=new EvMutableInteger(1);
-		public EvMutableBoolean normalize=new EvMutableBoolean(false);
 		}
 	public CurrentKernel currentKernel=new CurrentKernel();
 	
-	public Convolve2DFilter()
+	public BinMorph2DFilter()
 		{
-		setKernel(new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}));
+		setKernel(new MorphKernel("[] 3x3", 3, new boolean[]{true,true,true, true,true,true, true,true,true}));
 		}
 	
 	/**
-	 * Set ker
+	 * Set kernel
 	 * @param k
 	 */
-	public void setKernel(ConvolutionKernel k)
+	public void setKernel(MorphKernel k)
 		{
 		currentKernel.kernelWidth=k.width;
-		currentKernel.kernelm=new EvMutableDouble[k.filter.length];
+		currentKernel.kernelm=new EvMutableBoolean[k.filter.length];
 		for(int i=0;i<k.filter.length;i++)
-			currentKernel.kernelm[i]=new EvMutableDouble(k.filter[i]);
-		currentKernel.normalize.setValue(k.normalize);
+			currentKernel.kernelm[i]=new EvMutableBoolean(k.filter[i]);
 		int h=getKernelHeight();
 		System.out.println("dim2 "+currentKernel.kernelWidth+" "+h);
 		observer.emit(this);
@@ -162,6 +141,10 @@ public class Convolve2DFilter extends FilterSlice
 			return 0;
 		else 
 			return currentKernel.kernelm.length/currentKernel.kernelWidth;
+		}
+	public int getKernelWidth()
+		{
+		return currentKernel.kernelWidth;
 		}
 	
 	
@@ -183,7 +166,7 @@ public class Convolve2DFilter extends FilterSlice
 		int oldw=currentKernel.kernelWidth;
 		if(oldw!=nw || oldh!=nh)
 			{
-			EvMutableDouble[] kernel2=new EvMutableDouble[nw*nh];
+			EvMutableBoolean[] kernel2=new EvMutableBoolean[nw*nh];
 			currentKernel.kernelWidth=nw;
 			for(int ay=0;ay<nh;ay++)
 				for(int ax=0;ax<nw;ax++)
@@ -191,7 +174,7 @@ public class Convolve2DFilter extends FilterSlice
 					if(ay<oldh && ax<oldw)
 						kernel2[ay*currentKernel.kernelWidth+ax]=currentKernel.kernelm[ay*oldw+ax];
 					else
-						kernel2[ay*currentKernel.kernelWidth+ax]=new EvMutableDouble(0);
+						kernel2[ay*currentKernel.kernelWidth+ax]=new EvMutableBoolean(false);
 					}
 			currentKernel.kernelm=kernel2;
 			System.out.println("dim3 "+nw+" "+nh);
@@ -218,7 +201,7 @@ public class Convolve2DFilter extends FilterSlice
 		
 		public void makeLeftPanel()
 			{
-			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
+			int h=getKernelHeight();//currentKernel.kernelm.length/currentKernel.kernelWidth;
 
 			if(leftPanelY!=h || leftPanelX!=currentKernel.kernelWidth)
 				{
@@ -231,7 +214,7 @@ public class Convolve2DFilter extends FilterSlice
 				for(int y=0;y<h;y++)
 					for(int x=0;x<currentKernel.kernelWidth;x++)
 						{
-						JNumericFieldMutableDouble nc=new JNumericFieldMutableDouble(currentKernel.kernelm[y*currentKernel.kernelWidth+x],observer,this);
+						JCheckBoxMutableBoolean nc=new JCheckBoxMutableBoolean("",currentKernel.kernelm[y*currentKernel.kernelWidth+x],observer,this);
 						leftPanel.add(nc);
 						}
 				leftPanel.revalidate();
@@ -242,12 +225,11 @@ public class Convolve2DFilter extends FilterSlice
 		public ConvolvePanel(Filter thisfilter)
 			{
 			this.thisfilter=thisfilter;
-			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
+			//int h=getHeight();//currentKernel.kernelm.length/currentKernel.kernelWidth;
 			JNumericFieldMutableInteger nrepeats=new JNumericFieldMutableInteger(currentKernel.repeats,observer,this);
-			JCheckBoxMutableBoolean nnormalize=new JCheckBoxMutableBoolean("",currentKernel.normalize,observer,this);
 			
-			xs.setValue(currentKernel.kernelWidth);
-			ys.setValue(h);
+			xs.setValue(getKernelWidth());
+			ys.setValue(getKernelHeight());
 			xs.addChangeListener(this);
 			ys.addChangeListener(this);
 			
@@ -257,13 +239,12 @@ public class Convolve2DFilter extends FilterSlice
 			kernelCombo.addActionListener(this);
 
 			
-			JPanel lefttot=new JPanel(new GridLayout(4,1));
+			JPanel lefttot=new JPanel(new GridLayout(3,1));
 			JPanel panelxy=new JPanel(new GridLayout(1,2));
 			panelxy.add(EvSwingTools.withLabel("#X:",xs));
 			panelxy.add(EvSwingTools.withLabel("#Y:",ys));
 			lefttot.add(panelxy);
 			lefttot.add(EvSwingTools.withLabel("Repeats:",nrepeats));
-			lefttot.add(EvSwingTools.withLabel("Normalize:",nnormalize));
 			lefttot.add(kernelCombo);
 			spanel.add(lefttot,BorderLayout.NORTH);
 			
@@ -292,7 +273,7 @@ public class Convolve2DFilter extends FilterSlice
 			System.out.println("D "+leftPanelY+" %"+" "+leftPanelX+" "+currentKernel.kernelWidth);
 			if(e.getSource()==kernelCombo && e.getActionCommand().equals("comboBoxChanged"))
 				{
-				ConvolutionKernel sel=(ConvolutionKernel)kernelCombo.getSelectedItem();
+				MorphKernel sel=(MorphKernel)kernelCombo.getSelectedItem();
 				setKernel(sel);
 				stateChanged(null);
 				kernelCombo.removeActionListener(this);
@@ -314,45 +295,8 @@ public class Convolve2DFilter extends FilterSlice
 	
 	public void applyImage(BufferedImage in, BufferedImage out)
 		{
-		int repeatsv=currentKernel.repeats.getValue();
+		//int repeatsv=currentKernel.repeats.getValue();
 		
-		//Prepare kernel
-		float[] kernelf=new float[currentKernel.kernelm.length];
-		for(int i=0;i<currentKernel.kernelm.length;i++)
-			kernelf[i]=(float)currentKernel.kernelm[i].getValue();
-		float kernelsum=0;
-		if(currentKernel.normalize.getValue())
-			{
-			for(float f:kernelf)
-				kernelsum+=f;
-			if(Math.abs(kernelsum)>0.0001) //Have to deal with FP precision problems
-				{
-				for(int i=0;i<currentKernel.kernelm.length;i++)
-					kernelf[i]/=kernelsum;
-				}
-			}
-		int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
-		int w=currentKernel.kernelWidth;
-		
-		//Ugly hack, uninteresting case
-		if(repeatsv==0)
-			{
-			kernelf=new float[]{1};
-			w=h=1;
-			}
-		
-		ConvolveOp filter=new ConvolveOp(new Kernel(w,h,kernelf));
-
-
-		//Convolve
-		for(int i=0;i<repeatsv;i++)
-			{
-			//Copy source. Responsible for making a copy if entire image is being changed (as in=out)
-			WritableRaster raster = in.copyData(null);
-			in=new BufferedImage(in.getColorModel(), raster, in.isAlphaPremultiplied(), null);
-			filter.filter(in,out);
-			in=out;
-			}
 		
 		}
 	}
