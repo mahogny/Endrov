@@ -1,24 +1,28 @@
 package evplugin.filterBasic;
 
+import java.awt.GridLayout;
 import java.awt.image.*;
 import javax.swing.*;
 
+import org.jdom.DataConversionException;
 import org.jdom.Element;
 
+import evplugin.ev.*;
 import evplugin.filter.*;
 
 /**
- * Filter: Laplace in 2D
+ * Filter: Sharpen in 2D
  * 
  * @author Johan Henriksson
  */
-public class Laplace2DFilter extends Convolve2DFilter
+public class Sharpen2DFilter extends FilterSlice
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	private static String filterName="Laplace 2D";
-	private static String filterCategory="Mathematical";
+	private static String filterMeta="Sharpen2D";
+	private static String filterName="Sharpen 2D";
+	private static String filterCategory="Enhance";
 
 	public static void initPlugin() {}
 	static
@@ -28,10 +32,18 @@ public class Laplace2DFilter extends Convolve2DFilter
 			public String getCategory(){return filterCategory;}
 			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
-			public FilterROI filterROI(){return new Laplace2DFilter();}
+			public FilterROI filterROI(){return new Sharpen2DFilter();}
 			public Filter readXML(Element e)
 				{
-				Laplace2DFilter f=new Laplace2DFilter();
+				Sharpen2DFilter f=new Sharpen2DFilter();
+				try
+					{
+					f.flevel.setValue(e.getAttribute("level").getIntValue());
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
 				return f;
 				}
 			});
@@ -41,34 +53,32 @@ public class Laplace2DFilter extends Convolve2DFilter
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
+
+	public EvMutableDouble flevel=new EvMutableDouble(1);
 	
-	public String getFilterName()
-		{
-		return filterName;
-		}
+	
+	public String getFilterName(){return filterName;}
+	
+
 	
 	public void saveMetadata(Element e)
 		{
-		setFilterXmlHead(e, filterName);
-		e.setAttribute("w",""+currentKernel.kernelWidth);
+		setFilterXmlHead(e, filterMeta);
+		e.setAttribute("level",""+flevel.getValue());
 		}
 	
 	public JComponent getFilterWidget()
 		{
-		return null;
+		JPanel p=new JPanel(new GridLayout(1,1));
+		JNumericFieldMutableDouble nlevel=new JNumericFieldMutableDouble(flevel,observer,this);
+		p.add(EvSwingTools.withLabel("Level:",nlevel));
+		return p;
 		}
 
-	//or make a function to return the kernel?
-	
 	public void applyImage(BufferedImage in, BufferedImage out)
 		{
-		//http://de.wikipedia.org/wiki/Laplace-Operator
-		//Variants exist, support them as well
-		setKernel(new ConvolutionKernel("Laplace2D",false, 3,new float[]{
-				0, 1, 0,
-				1,-4, 1,
-				0, 1, 0
-				}));
-		super.applyImage(in,out);
+		Convolve2DFilter cf=new Convolve2DFilter();
+		cf.setKernel(Convolve2DFilter.makeSharpen((float)flevel.getValue()));
+		cf.applyImage(in,out);
 		}
 	}
