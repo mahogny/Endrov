@@ -54,6 +54,7 @@ public class StartGUI
 				//Collect jarfiles
 				Vector<String> jarfiles=new Vector<String>();
 				collectJars(jarfiles, "libs");
+				collectJars(jarfiles, "libs/ome");
 				collectJars(jarfiles, libdir);
 				String jarstring=".";
 				for(String s:jarfiles)

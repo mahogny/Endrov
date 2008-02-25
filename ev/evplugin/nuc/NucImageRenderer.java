@@ -24,18 +24,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		this.w=w;
 		}
 
-	/**
-	 * Get the lineage object from window
-	 */
-	/*
-	public NucLineage getLineage()
-		{
-		for(EvObject ob:w.getImageset().metaObject.values())
-			if(ob instanceof NucLineage)
-				return (NucLineage)ob;
-		return null;
-		}
-		*/
+
 	
 	public Collection<NucLineage> getVisibleLineages()
 		{
@@ -54,18 +43,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(w.mouseInWindow)
 			NucLineage.currentHover=new NucPair();
 	
-		/*
-		NucLineage lin=getLineage();
-		if(lin!=null)
-			{
-			interpNuc=lin.getInterpNuc(w.frameControl.getFrame());			//maybe move this one later
-			for(NucPair nucPair:interpNuc.keySet())
-				{
-				NucLineage.NucInterp nuc=interpNuc.get(nucPair);
-				drawNuc(g,nucPair,nuc);
-				}
-			}
-*/
 		
 		for(NucLineage lin:getVisibleLineages())
 			{
@@ -124,8 +101,9 @@ public class NucImageRenderer implements ImageWindowRenderer
 			else
 				nucColor=Color.BLUE;
 			
-			//Draw the nucleus
+			//Draw the nucleus and check if it is visible
 			g.setColor(nucColor);
+			boolean isVisible=false;
 			if(nuc.frameBefore==null)
 				{
 				if(!nuc.hasParent)
@@ -133,43 +111,48 @@ public class NucImageRenderer implements ImageWindowRenderer
 					//As this nucleus does not really exist here, it is drawn with stippled line
 					for(int i=0;i<360/2;i+=2)
 						g.drawArc((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor), i*20, 20);
+					isVisible=true;
 					}
 				}
 			else
 				{
 				//Normal nucleus
 				g.drawOval((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor));
+				isVisible=true;
 				}
 			
-			
-			//Mark keyframe
-			if(nuc.isKeyFrame(w.frameControl.getFrame()))
+			//If it is visible then draw more things
+			if(isVisible)
 				{
-				g.drawLine((int)(so.x-sor-1), (int)(so.y), (int)(so.x-sor+1), (int)(so.y));
-				g.drawLine((int)(so.x+sor-1), (int)(so.y), (int)(so.x+sor+1), (int)(so.y));					
-				}
-			
-			//Mark endframe
-			if(nuc.isEnd)
-				{
-				g.setColor(Color.BLACK);
-				double f=Math.sqrt(1.0/2.0);
-				g.drawLine((int)(so.x-sor*f), (int)(so.y-sor*f), (int)(so.x+sor*f), (int)(so.y+sor*f));
-				g.drawLine((int)(so.x-sor*f), (int)(so.y+sor*f), (int)(so.x+sor*f), (int)(so.y-sor*f));
-				}
-			
-			//Update hover
-			if(w.mouseInWindow && (w.mouseCurX-so.x)*(w.mouseCurX-so.x) + (w.mouseCurY-so.y)*(w.mouseCurY-so.y)<sor*sor)
-				NucLineage.currentHover=nucPair;
-			
-			//Draw name of nucleus. maybe do this last
-			if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))
-				{
-				g.setColor(Color.RED);
-				g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
-				int crossSize=5;
-				g.drawLine((int)so.x-crossSize, (int)so.y, (int)so.x+crossSize, (int)so.y);
-				g.drawLine((int)so.x, (int)so.y, (int)so.x, (int)so.y+crossSize);
+				//Mark keyframe
+				if(nuc.isKeyFrame(w.frameControl.getFrame()))
+					{
+					g.drawLine((int)(so.x-sor-1), (int)(so.y), (int)(so.x-sor+1), (int)(so.y));
+					g.drawLine((int)(so.x+sor-1), (int)(so.y), (int)(so.x+sor+1), (int)(so.y));					
+					}
+				
+				//Mark endframe
+				if(nuc.isEnd)
+					{
+					g.setColor(Color.BLACK);
+					double f=Math.sqrt(1.0/2.0);
+					g.drawLine((int)(so.x-sor*f), (int)(so.y-sor*f), (int)(so.x+sor*f), (int)(so.y+sor*f));
+					g.drawLine((int)(so.x-sor*f), (int)(so.y+sor*f), (int)(so.x+sor*f), (int)(so.y-sor*f));
+					}
+				
+				//Update hover
+				if(w.mouseInWindow && (w.mouseCurX-so.x)*(w.mouseCurX-so.x) + (w.mouseCurY-so.y)*(w.mouseCurY-so.y)<sor*sor)
+					NucLineage.currentHover=nucPair;
+				
+				//Draw name of nucleus. maybe do this last
+				if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))
+					{
+					g.setColor(Color.RED);
+					g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
+					int crossSize=5;
+					g.drawLine((int)so.x-crossSize, (int)so.y, (int)so.x+crossSize, (int)so.y);
+					g.drawLine((int)so.x, (int)so.y, (int)so.x, (int)so.y+crossSize);
+					}
 				}
 			}
 

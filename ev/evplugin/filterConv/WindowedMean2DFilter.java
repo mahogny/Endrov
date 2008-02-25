@@ -3,13 +3,10 @@ package evplugin.filterConv;
 import java.awt.GridLayout;
 import java.awt.image.*;
 import javax.swing.*;
-
-import org.jdom.DataConversionException;
-import org.jdom.Element;
+import org.jdom.*;
 
 import evplugin.ev.*;
 import evplugin.filter.*;
-import evplugin.filterConv.Convolve2DFilter.ConvolutionKernel;
 
 /**
  * Filter: Laplace in 2D

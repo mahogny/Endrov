@@ -2,7 +2,5 @@ vecmath.jar is one of several files in java3d. it is taken from 1.5.1 windows ve
 there aren't really guarantees that it will not use JNI but distributing the entire
 binary set is a pain the ass, hence I only took the jar. 
 
+gnujaxp.jar removed.
 
-Linux:
-
--Xmx700M -Djava.library.path=libs/linux

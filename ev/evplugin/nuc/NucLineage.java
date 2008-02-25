@@ -4,6 +4,7 @@ import org.jdom.*;
 import java.util.*;
 
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.imageWindow.ImageWindow;
@@ -210,11 +211,15 @@ public class NucLineage extends EvObject implements Cloneable
 	public static void createParentChildSelected()
 		{
 		if(NucLineage.selectedNuclei.isEmpty())
+			{
+			JOptionPane.showMessageDialog(null, "No nuclei selected");
 			return;
+			}
 		String parentName=null;
 		int parentFrame=0;
 		NucLineage.Nuc parent=null;
 		NucLineage lin=NucLineage.selectedNuclei.iterator().next().getLeft();
+		//Decide which is the parent
 		for(NucPair childPair:NucLineage.selectedNuclei)
 			if(childPair.getLeft()==lin)
 				{
@@ -229,7 +234,10 @@ public class NucLineage extends EvObject implements Cloneable
 					parent=n;
 					}
 				}
-		if(parent!=null)
+		boolean assignedChild=false;
+		if(parent==null)
+			JOptionPane.showMessageDialog(null, "Could not decide on a parent");
+		else
 			for(NucPair childPair:NucLineage.selectedNuclei)
 				if(childPair.getLeft()==lin)
 					{
@@ -240,8 +248,11 @@ public class NucLineage extends EvObject implements Cloneable
 						n.parent=parentName;
 						parent.child.add(childName);
 						Log.printLog("new PC, parent: "+parentName+"child: "+childName);
+						assignedChild=true;
 						}
 					}
+		if(!assignedChild)
+			JOptionPane.showMessageDialog(null, "Found no children to assign to parent");
 		lin.metaObjectModified=true;
 		}
 
@@ -471,6 +482,7 @@ public class NucLineage extends EvObject implements Cloneable
 		{
 		Nuc ns=nuc.get(sourceName);
 		Nuc nt=nuc.get(targetName);
+		ns.end=null;
 		nuc.remove(targetName);
 		for(int frame:nt.pos.keySet())
 			{
@@ -720,7 +732,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(parent!=null)
 				{
 				Nuc p=nuc.get(parent);
-				if(p.pos.isEmpty() || p.pos.lastKey()>=frame)
+				if(p.pos.isEmpty() || p.pos.lastKey()>frame)  //was p.pos.lastKey()>=frame
 					return null;
 				}
 			

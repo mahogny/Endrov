@@ -9,7 +9,6 @@ import org.jdom.Element;
 
 import evplugin.ev.*;
 import evplugin.filter.*;
-import evplugin.filterConv.Convolve2DFilter.ConvolutionKernel;
 
 /**
  * Filter: Gaussian in 2D
