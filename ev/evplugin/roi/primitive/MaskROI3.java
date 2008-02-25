@@ -45,14 +45,14 @@ public class MaskROI3 extends ROI
 	/******************************************************************************************************
 	 *                               Iterator                                                             *
 	 *****************************************************************************************************/
-	private class ThisLineIterator extends LineIterator
+/*	private class ThisLineIterator extends LineIterator
 		{
 		public boolean next()
 			{
 			// TODO Auto-generated method stub
 			return false;
 			}
-		}
+		}*/
 	
 	
 	/******************************************************************************************************

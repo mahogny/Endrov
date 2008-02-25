@@ -95,18 +95,16 @@ public class Test
      * (Hibernate Query Language) statements, and instead, an
      * existing interface like ome.api.IPojos can be used.
      */ 
-    //java.util.Set<Long> ids = new java.util.HashSet<Long>(java.util.Arrays.asList(1L,2L,3L));
+    java.util.Set<Long> ids = new java.util.HashSet<Long>(java.util.Arrays.asList(1L,2L,3L));
     ome.api.IPojos pojos = sf.getPojosService();
-    //java.util.Set<ome.model.containers.Category> contHi = pojos.loadContainerHierarchy(ome.model.containers.Category.class, ids, null);
+    java.util.Set<ome.model.containers.Category> contHi = pojos.loadContainerHierarchy(ome.model.containers.Category.class, ids, null);
+    for(ome.model.containers.Category i:contHi)
+    	System.out.println(" "+i.getClass().toString()+ " " +i);
 
     
     Set<ome.model.core.Image> userImages=pojos.getUserImages(Collections.EMPTY_MAP);
-    
-    
     for(ome.model.core.Image i:userImages)
-    	{
     	System.out.println(" "+i.getClass().toString()+ " " +i);
-    	}
     
     
 //    Set<ome.model.core.Image> set=pojos.getImages(ome.model.containers., arg1, arg2)

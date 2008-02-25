@@ -1,7 +1,5 @@
 package evplugin.imagesetOME;
 
-import java.util.Collections;
-import java.util.Set;
 
 
 //http://trac.openmicroscopy.org.uk/omero/wiki/OmeroClientLibrary

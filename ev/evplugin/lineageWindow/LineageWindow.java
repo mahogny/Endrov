@@ -34,7 +34,8 @@ public class LineageWindow extends BasicWindow
 				try
 					{
 					Rectangle r=BasicWindow.getXMLbounds(e);
-					new LineageWindow(r);
+					LineageWindow w=new LineageWindow(r);
+					w.frameControl.setGroup(e.getAttribute("group").getIntValue());
 					}
 				catch(Exception e1)
 					{
@@ -198,6 +199,7 @@ public class LineageWindow extends BasicWindow
 		{
 		Element e=new Element("lineagewindow");
 		setXMLbounds(e);
+		e.setAttribute("group",""+frameControl.getGroup());
 		root.addContent(e);
 		}
 
@@ -229,16 +231,31 @@ public class LineageWindow extends BasicWindow
 				{
 				Iterator<NucPair> nucit=NucLineage.selectedNuclei.iterator();
 				NucPair target=nucit.next();
+				NucLineage theLineage=target.getLeft();
+//				Vector<String> nucToMerge=new Vector<String>();
+//				nucToMerge.add(target.getRight());
+//				String suggestName=target.getRight();
 				while(nucit.hasNext())
 					{
 					NucPair source=nucit.next();
-					if(target.getLeft()==source.getLeft())
-						(target.getLeft()).mergeNuclei(source.getRight(), target.getRight());
+					if(theLineage==source.getLeft())
+						{
+//						nucToMerge.add(source.getRight());
+						if(!target.getRight().startsWith(":"))
+							{
+							NucPair temp=target;
+							target=source;
+							source=temp;
+							}
+						target.getLeft().mergeNuclei(source.getRight(), target.getRight());
+						}
 					}
+//				suggestName=JOptionPane.showInputDialog("Give name of merged nucleus:", suggestName);
+//				if(suggestName)
 				BasicWindow.updateWindows();
 				}
 			else
-				JOptionPane.showMessageDialog(this, "Select nuclei & have lineage object");
+				JOptionPane.showMessageDialog(this, "Must select nuclei first");
 			}
 		else if(e.getSource()==miPC)
 			{
