@@ -13,7 +13,7 @@ import evplugin.ev.*;
 import evplugin.filter.*;
 
 /**
- * Filter: invert image, c'=255-c
+ * Filter: add noise according to poisson distribution
  * 
  * @author Johan Henriksson
  */
@@ -76,7 +76,7 @@ public class NoisePoisson extends FilterSlice
 
 	
 	
-	public int nextPoisson(Random r, double lambda) 
+	private int nextPoisson(Random r, double lambda) 
 		{
 		double elambda = Math.exp(-1*lambda);
 		double product = 1;
@@ -88,15 +88,6 @@ public class NoisePoisson extends FilterSlice
 			result = count;
 			count++; // keep result one behind
 			}
-		return result;
-		}
-
-	public double nextExponential(Random r, double b) 
-		{
-		double randx;
-		double result;
-		randx = r.nextDouble();
-		result = -1*b*Math.log(randx);
 		return result;
 		}
 

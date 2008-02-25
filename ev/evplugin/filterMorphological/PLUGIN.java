@@ -1,12 +1,12 @@
-package evplugin.filterBasic;
+package evplugin.filterMorphological;
 import evplugin.ev.PluginDef;
-
+import evplugin.filterMorphological.BinMorph2DFilter;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Basic filters";
+		return "Morphological filters";
 		}
 
 	public String getAuthor()
@@ -32,12 +32,7 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				InvertFilter.class, 
-				NoisePepperAndSalt.class, 
-				NoisePoisson.class,
-				NoiseExponential.class,
-				ContrastBrightnessFilter.class, 
-				EqualizeHistogram.class
+				BinMorph2DFilter.class
 				};
 		}
 	}

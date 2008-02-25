@@ -1,4 +1,4 @@
-package evplugin.filterBasic;
+package evplugin.filterConv;
 
 import java.awt.GridLayout;
 import java.awt.image.*;

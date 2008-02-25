@@ -1,23 +1,29 @@
 package evplugin.filterBasic;
 
+import java.awt.*;
 import java.awt.image.*;
 import javax.swing.*;
+
 import org.jdom.Element;
 
+import java.util.*;
+
+
+import evplugin.ev.*;
 import evplugin.filter.*;
 
 /**
- * Filter: Increase image contrast by totally inverting histogram CDF
+ * Filter: add noise according to exponential distribution
  * 
  * @author Johan Henriksson
  */
-public class EqualizeHistogram extends FilterSlice
+public class NoiseExponential extends FilterSlice
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	private static String filterName="Histogram Equalize";
-	private static String filterCategory="Enhance";
+	private static String filterName="Exponential";
+	private static String filterCategory="Noise";
 
 	public static void initPlugin() {}
 	static
@@ -27,10 +33,11 @@ public class EqualizeHistogram extends FilterSlice
 			public String getCategory(){return filterCategory;}
 			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
-			public FilterROI filterROI(){return new EqualizeHistogram();}
+			public FilterROI filterROI(){return new NoiseExponential();}
 			public Filter readXML(Element e)
 				{
-				EqualizeHistogram f=new EqualizeHistogram();
+				NoiseExponential f=new NoiseExponential();
+				f.lambda.setValue(Double.parseDouble(e.getAttributeValue("lambda")));
 				return f;
 				}
 			});
@@ -41,6 +48,7 @@ public class EqualizeHistogram extends FilterSlice
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+	public EvMutableDouble lambda=new EvMutableDouble(5);
 	
 	public String getFilterName()
 		{
@@ -50,68 +58,58 @@ public class EqualizeHistogram extends FilterSlice
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterName);
+		e.setAttribute("lambda",""+lambda);
 		}
 
 	
 	public JComponent getFilterWidget()
 		{
-		return null;
+		JPanel pane=new JPanel(new GridLayout(1,2));
+		
+		final JNumericFieldMutableDouble nlambda=new JNumericFieldMutableDouble(lambda, observer, this);
+		
+		pane.add(new JLabel("Lambda:"));
+		pane.add(nlambda);
+
+		return pane;
 		}
 
 	
-	public byte[] makeLookup(BufferedImage in)
+
+	private double nextExponential(Random r, double b) 
+		{
+		double randx;
+		double result;
+		randx = r.nextDouble();
+		result = -1*b*Math.log(randx);
+		return result;
+		}
+
+	
+	
+	
+	public void applyImage(BufferedImage in, BufferedImage out)
 		{
 		WritableRaster rin=in.getRaster();
+		WritableRaster rout=out.getRaster();
+		Random rand=new Random();
 		
-		//Count each color
-		int[] colorcount=new int[256];
-		int totalCount=rin.getWidth()*rin.getHeight();
+		
+		double lambda=this.lambda.doubleValue();
+		
 		int width=rin.getWidth();
 		int[] pix=new int[width];
 		for(int ah=0;ah<rin.getHeight();ah++)
 			{
 			rin.getSamples(0, ah, width, 1, 0, pix);
 			for(int aw=0;aw<width;aw++)
-				colorcount[pix[aw]]++;
+				{
+				double r=nextExponential(rand, lambda);
+				pix[aw]+=r;
+				if(pix[aw]>255)
+					pix[aw]=255;
+				}
+			rout.setSamples(0, ah, width, 1, 0, pix);
 			}
-		
-		int lowerLimit=0;
-//		int lowerLimit=130;
-		
-		//Eliminate lower part
-		int lowerCount=0;
-		for(int i=0;i<lowerLimit;i++)
-			{
-			lowerCount+=colorcount[i];
-			colorcount[i]=0;
-			}
-		totalCount-=lowerCount;
-		
-		//Cumulative sum. Do separate from renormalization for precision
-		for(int i=1;i<256;i++)
-			colorcount[i]+=colorcount[i-1];
-
-		//Normalize
-		byte[] b=new byte[256];
-		if(totalCount!=0)
-			for(int i=0;i<256;i++)
-				b[i]=(byte)Math.round(255.0*colorcount[i]/(double)totalCount);
-		/*
-		for(int i=0;i<256;i++)
-			System.out.print(" "+b[i]);
-		System.out.println("");
-		*/
-		return b;
 		}
-	
-	public void applyImage(BufferedImage in, BufferedImage out)
-		{
-		ByteLookupTable table=new ByteLookupTable(0,makeLookup(in));
-		LookupOp bcfilter=new LookupOp(table,null);
-		bcfilter.filter(in,out);
-		//makeLookup(out);
-		}
-	
-	
-	
 	}

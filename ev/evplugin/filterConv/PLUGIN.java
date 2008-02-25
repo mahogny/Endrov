@@ -1,12 +1,15 @@
-package evplugin.filterBasic;
+package evplugin.filterConv;
 import evplugin.ev.PluginDef;
-
+import evplugin.filterConv.Convolve2DFilter;
+import evplugin.filterConv.Gaussian2DFilter;
+import evplugin.filterConv.Sharpen2DFilter;
+import evplugin.filterConv.WindowedMean2DFilter;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Basic filters";
+		return "Convolving filters";
 		}
 
 	public String getAuthor()
@@ -31,13 +34,11 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{
-				InvertFilter.class, 
-				NoisePepperAndSalt.class, 
-				NoisePoisson.class,
-				NoiseExponential.class,
-				ContrastBrightnessFilter.class, 
-				EqualizeHistogram.class
+		return new Class[]{ 
+				Convolve2DFilter.class, 
+				WindowedMean2DFilter.class, 
+				Sharpen2DFilter.class,
+				Gaussian2DFilter.class
 				};
 		}
 	}
