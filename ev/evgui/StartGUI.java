@@ -54,7 +54,8 @@ public class StartGUI
 				//Collect jarfiles
 				Vector<String> jarfiles=new Vector<String>();
 				collectJars(jarfiles, "libs");
-				collectJars(jarfiles, "libs/ome");
+				//collectJars(jarfiles, "libs/ome");
+				//collectJars(jarfiles, "libs/ParallelColt/lib");
 				collectJars(jarfiles, libdir);
 				String jarstring=".";
 				for(String s:jarfiles)
@@ -101,6 +102,8 @@ public class StartGUI
 			if(sub.isFile() && 
 					(sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
 				v.add(dir+"/"+sub.getName());
+			else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
+				collectJars(v,sub.getAbsolutePath());
 		}
 
 
