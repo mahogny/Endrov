@@ -1,8 +1,9 @@
-package evplugin.filterBasic;
+package evplugin.filterMorphological;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -81,6 +82,24 @@ public class BinMorph2DFilter extends FilterSlice
 		}
 	
 	
+	//gray-scale transformation. draw function to lookup with (linear).
+	
+	//Order Statistics filtering: median, minimum, maximum special cases
+	
+	//Canny edge detector p.92
+	
+	//Dilation (+)  11.9
+	//Erosion (-)
+	//open: X ( ) B = (X-B)+B
+	//closed: X (#) B = (X+B)-B
+	
+	//hit-or-miss: X (x) B := {b_1 <= X and b_2 <= X^c}, have to implement another filter? 
+	//thin:  X (/) B = X\(X (x) B)
+	//thick: X (.) B = X U (X (x) B) 
+	
+	//http://www.google.com/url?sa=t&ct=res&cd=1&url=http%3A%2F%2Fetrij.etri.re.kr%2FCyber%2Fservlet%2FGetFile%3Ffileid%3DSPF-1134112698124&ei=jb3BR5TMFZSiwgHTs638DA&usg=AFQjCNEOEkWiHPJscIUktu6arZNt-R8YuA&sig2=PtzlUyTYVcYb3757PYWBhw
+	
+	//only make a quick implementation for now?
 
 	
 	public static MorphKernel[] premadeKernels=new MorphKernel[]{
@@ -100,6 +119,11 @@ public class BinMorph2DFilter extends FilterSlice
 	
 	//unary:
 	//Skeletonize?
+	
+
+	
+	
+	
 	
 	
 	/******************************************************************************************************

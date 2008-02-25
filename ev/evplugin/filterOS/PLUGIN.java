@@ -1,12 +1,11 @@
-package evplugin.filterBasic;
+package evplugin.filterOS;
 import evplugin.ev.PluginDef;
-
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Basic filters";
+		return "Order Statistics Filters";
 		}
 
 	public String getAuthor()
@@ -32,12 +31,7 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				InvertFilter.class, 
-				NoisePepperAndSalt.class, 
-				NoisePoisson.class,
-				NoiseExponential.class,
-				ContrastBrightnessFilter.class, 
-				EqualizeHistogram.class
+				
 				};
 		}
 	}

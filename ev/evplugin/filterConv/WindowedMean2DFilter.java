@@ -1,4 +1,4 @@
-package evplugin.filterBasic;
+package evplugin.filterConv;
 
 import java.awt.GridLayout;
 import java.awt.image.*;
@@ -9,19 +9,20 @@ import org.jdom.Element;
 
 import evplugin.ev.*;
 import evplugin.filter.*;
+import evplugin.filterConv.Convolve2DFilter.ConvolutionKernel;
 
 /**
- * Filter: Gaussian in 2D
+ * Filter: Laplace in 2D
  * 
  * @author Johan Henriksson
  */
-public class Gaussian2DFilter extends FilterSlice
+public class WindowedMean2DFilter extends FilterSlice
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	private static String filterMeta="Gaussian2D";
-	private static String filterName="Gaussian 2D";
+	private static String filterMeta="WindowedMean2D";
+	private static String filterName="Windowed Mean 2D";
 	private static String filterCategory="Mathematical";
 
 	public static void initPlugin() {}
@@ -32,13 +33,14 @@ public class Gaussian2DFilter extends FilterSlice
 			public String getCategory(){return filterCategory;}
 			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
-			public FilterROI filterROI(){return new Gaussian2DFilter();}
+			public FilterROI filterROI(){return new WindowedMean2DFilter();}
 			public Filter readXML(Element e)
 				{
-				Gaussian2DFilter f=new Gaussian2DFilter();
+				WindowedMean2DFilter f=new WindowedMean2DFilter();
 				try
 					{
-					f.flevel.setValue(e.getAttribute("level").getIntValue());
+					f.fwidth.setValue(e.getAttribute("w").getIntValue());
+					f.fheight.setValue(e.getAttribute("h").getIntValue());
 					}
 				catch (DataConversionException e1)
 					{
@@ -54,7 +56,8 @@ public class Gaussian2DFilter extends FilterSlice
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	public EvMutableDouble flevel=new EvMutableDouble(1);
+	public EvMutableInteger fwidth=new EvMutableInteger(1);
+	public EvMutableInteger fheight=new EvMutableInteger(1);
 	
 	public String getFilterName(){return filterName;}
 	
@@ -63,14 +66,17 @@ public class Gaussian2DFilter extends FilterSlice
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);
-		e.setAttribute("level",""+flevel.getValue());
+		e.setAttribute("w",""+fwidth.getValue());
+		e.setAttribute("h",""+fheight.getValue());
 		}
 	
 	public JComponent getFilterWidget()
 		{
-		JPanel p=new JPanel(new GridLayout(1,1));
-		JNumericFieldMutableDouble nlevel=new JNumericFieldMutableDouble(flevel,observer,this);
-		p.add(EvSwingTools.withLabel("sigma (pixels):",nlevel));
+		JPanel p=new JPanel(new GridLayout(1,2));
+		JNumericFieldMutableInteger nwidth=new JNumericFieldMutableInteger(fwidth,observer,this);
+		JNumericFieldMutableInteger nheight=new JNumericFieldMutableInteger(fheight,observer,this);
+		p.add(EvSwingTools.withLabel("Width:",nwidth));
+		p.add(EvSwingTools.withLabel("Height:",nheight));
 		return p;
 		}
 
@@ -81,27 +87,13 @@ public class Gaussian2DFilter extends FilterSlice
 		//http://de.wikipedia.org/wiki/Laplace-Operator
 		//Variants exist, support them as well
 		
-		double sigma=flevel.getValue();
-		if(sigma!=0) //in=out right?
-			{
-			double sigma2=sigma*sigma;
-			int w=(int)Math.ceil(sigma);
-			int aw=2*w+1;
-			
-			float[] f=new float[aw*aw];
-			for(int x=-w;x<=w;x++)
-				for(int y=-w;y<=w;y++)
-					{
-					double r2=x*x+y*y;
-					f[aw*(y+w)+w+x]=(float)Math.exp(-r2/sigma2);
-					}
-			
-			//TODO: replace with two separable filters
-			
-			Convolve2DFilter cf=new Convolve2DFilter();
-			Convolve2DFilter.ConvolutionKernel kernel=new Convolve2DFilter.ConvolutionKernel(filterName,true, aw,f);
-			cf.setKernel(kernel);
-			cf.applyImage(in,out);
-			}
+		int w=fwidth.getValue(), h=fheight.getValue();
+		float[] f=new float[w*h];
+		for(int i=0;i<f.length;i++)
+			f[i]=1;
+		
+		Convolve2DFilter cf=new Convolve2DFilter();
+		cf.setKernel(new Convolve2DFilter.ConvolutionKernel(filterName,true, w,f));
+		cf.applyImage(in,out);
 		}
 	}

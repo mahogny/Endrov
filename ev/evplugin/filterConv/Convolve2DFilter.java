@@ -1,4 +1,4 @@
-package evplugin.filterBasic;
+package evplugin.filterConv;
 
 //import java.awt.*;
 import java.awt.BorderLayout;
@@ -94,6 +94,7 @@ public class Convolve2DFilter extends FilterSlice
 		}
 	
 
+
 	
 	public static ConvolutionKernel[] premadeKernels=new ConvolutionKernel[]{
 			new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}),
@@ -103,8 +104,15 @@ public class Convolve2DFilter extends FilterSlice
 			new ConvolutionKernel("Laplace8 2D", false, 3, new float[]{1, 1, 1,		1,-8, 1,		1, 1, 1}),
 			new ConvolutionKernel("Laplace X", false, 3, new float[]{1,-2, 1}),
 			new ConvolutionKernel("Laplace Y", false, 1, new float[]{1,		-2,		1}),
+			new ConvolutionKernel("PrewittX 2D",  false, 3, new float[]{1, 0,-1,		1, 0,-1,		1, 0,-1}),
+			new ConvolutionKernel("PrewittY 2D",  false, 3, new float[]{1, 1, 1,		0, 0, 0,		-1,-1,-1}),
+			new ConvolutionKernel("PrewittXY 2D", false, 3, new float[]{0, 1, 1,		-1, 0, 1,		-1,-1,0}),//(4.47)
 			new ConvolutionKernel("SobelX 2D", false, 3, new float[]{1, 0,-1,		2, 0,-2,		1, 0,-1}),
 			new ConvolutionKernel("SobelY 2D", false, 3, new float[]{1, 2, 1,		0, 0, 0,		-1,-2,-1}),
+			new ConvolutionKernel("RobinsonX 2D", false, 3, new float[]{1, -1,-1,		1, 2,-1,		1, -1,-1}),
+			new ConvolutionKernel("RobinsonY 2D", false, 3, new float[]{-1, -1,-1,		-1, 2,-1,		1, 1,1}),//(4.50)
+			//Kirsch operator 4.51 TODO
+			//Laplacian of gaussian 4.54 TODO
 			makeSharpen(1),
 			makeSharpen(2),
 			makeSharpen(3),
