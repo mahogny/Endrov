@@ -83,7 +83,8 @@ public class StartGUI
         BufferedReader br = new BufferedReader(isr);
         String line;
         while ( (line = br.readLine()) != null)
-        	System.out.println(line);    
+        	System.out.println(line);
+        	    
 				}
 			catch (IOException e)
 				{
@@ -95,15 +96,23 @@ public class StartGUI
 			JOptionPane.showMessageDialog(null, "Your version of Java is too old. At least 1.5 required");
 		}
 	
+	/**
+	 * Get all jars and add them with path to vector. Recurses when it finds a directory
+	 * ending with _inc
+	 */
 	private static void collectJars(Vector<String> v,String dir)
 		{
 		File p=new File(dir);
 		for(File sub:p.listFiles())
-			if(sub.isFile() && 
-					(sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
+			{
+			if(sub.isFile() && (sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
+				{
 				v.add(dir+"/"+sub.getName());
+				System.out.println("Adding java library: "+sub.getName());
+				}
 			else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
 				collectJars(v,sub.getAbsolutePath());
+			}
 		}
 
 
