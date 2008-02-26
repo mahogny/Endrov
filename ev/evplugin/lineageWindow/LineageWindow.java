@@ -188,6 +188,9 @@ public class LineageWindow extends BasicWindow
 
 		stateChanged(null);
 		dataChangedEvent();
+		
+		
+		
 		}
 	
 
@@ -203,6 +206,15 @@ public class LineageWindow extends BasicWindow
 		root.addContent(e);
 		}
 
+	
+	private NucLineage getLineage()
+		{
+		EvObject ob=objectCombo.getObject();
+		if(ob instanceof NucLineage)
+			return (NucLineage)ob;
+		else
+			return null;
+		}
 	
 
 	
@@ -370,6 +382,8 @@ public class LineageWindow extends BasicWindow
 		{
 		view.clickRegion(e);
 		view.requestFocus();
+		if(SwingUtilities.isRightMouseButton(e))
+			showPopup(e);
 		}
 	
 	
@@ -389,6 +403,64 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void mouseReleased(MouseEvent e)
 		{
+		}
+	
+	
+	/**
+	 * Open popup menu on right-click
+	 */
+	private void showPopup(MouseEvent e) 
+		{
+		JPopupMenu popup = new JPopupMenu();
+		
+		final int hoverFrame=view.getFrameFromCursor(e.getX(), e.getY());
+		popup.add(new JMenuItem("--Frame: "+hoverFrame));
+		JMenuItem miGoToFrame=new JMenuItem("Go to frame");
+		popup.add(miGoToFrame);
+		
+		miGoToFrame.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				frameControl.setFrame(hoverFrame);
+				}
+			});
+		
+		
+		final LineageView.KeyFramePos kf=view.getKeyFrame(e.getX(), e.getY());
+		if(kf!=null)
+			{
+			popup.addSeparator();
+			popup.add(new JMenuItem("--Keyframe: "+kf.nuc+"/"+kf.frame));
+			JMenuItem miDelKF=new JMenuItem("Delete keyframe");
+			popup.add(miDelKF);
+			
+			miDelKF.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					NucLineage lin=getLineage();
+					if(lin!=null)
+						{
+						NucLineage.Nuc nuc=lin.nuc.get(kf.nuc);
+						nuc.pos.remove(kf.frame);
+						if(nuc.pos.isEmpty())
+							lin.removeNuc(kf.nuc);
+						BasicWindow.updateWindows();
+						}
+					}
+				});
+			
+			}
+		
+		//		menuItem.addActionListener(this);
+//		menuItem.addActionListener(this);
+
+		
+		
+		
+
+		popup.show(e.getComponent(),e.getX(), e.getY());
 		}
 	
 	

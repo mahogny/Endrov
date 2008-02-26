@@ -15,10 +15,19 @@ import evplugin.nuc.*;
  * The lineage view is so specific to the view that there is no point in separating it.
  * @author Johan Henriksson
  */
-public class LineageView extends JPanel
+public class LineageView extends JPanel 
 	{
 	static final long serialVersionUID=0;
 
+
+	public static class KeyFramePos
+		{
+		public int x, y, frame;
+		public String nuc;
+		}
+	
+	////////////////////////////////////////////////////////////////
+	
 	public int camB, camC;
 	private int frameDist=5;
 	public double currentFrame=0;
@@ -33,11 +42,13 @@ public class LineageView extends JPanel
 	
 	/** Size of expander icon */
 	private static int expanderSize=4;
+	/** Size of key frame icon */
+	private final int keyFrameSize=2;
 	
+	private LinkedList<KeyFramePos> drawnKeyFrames=new LinkedList<KeyFramePos>();
 	
+		
 	
-	
-
 	/**
 	 * Go to the first frame at which there is a nucleus
 	 */
@@ -171,6 +182,7 @@ public class LineageView extends JPanel
 		{
 		//Redo list of clickable regions
 		regionClickList.clear();
+		drawnKeyFrames.clear();
 		
 		//Fill background
 		g.setColor(Color.WHITE);
@@ -209,6 +221,7 @@ public class LineageView extends JPanel
 	public void removeUnusedInternal()
 		{
 		//TODO. clean-up not really needed.
+		//Could use weak references, clean-up automatic
 		}
 	
 	/**
@@ -295,7 +308,6 @@ public class LineageView extends JPanel
 		internal.lastB=midr;
 		
 		//Draw keyframes
-		final int keyFrameSize=2;
 		if(showKeyFrames && midr>-keyFrameSize && midr<getMaxVisibleR()+keyFrameSize)
 			{
 			g.setColor(Color.RED);
@@ -303,9 +315,11 @@ public class LineageView extends JPanel
 				{
 				int y=f2c(frame);
 				if(displayHorizontalTree)
-					g.drawOval(y-keyFrameSize, midr-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
+					drawKeyFrame(g,y, midr, nucName, frame);
+		//			g.drawOval(y-keyFrameSize, midr-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
 				else
-					g.drawOval(midr-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
+					drawKeyFrame(g,midr, y, nucName, frame);
+///					g.drawOval(midr-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
 				}
 			}
 		
@@ -343,22 +357,73 @@ public class LineageView extends JPanel
 			drawNucName(g, "", new NucPair(lin, nucName), midr, endc);
 		}
 
+	
+	public int getFrameFromCursor(int x, int y)
+		{
+		if(displayHorizontalTree)
+			return c2f(x);
+		else
+			return c2f(y);
+		}
+	
+	
 	/**
-	 * Get maximum visible c-value
+	 * Draw key frame icon
 	 */
-	public int getMaxVisibleC()
+	private void drawKeyFrame(Graphics g, int x, int y, String nuc, int frame)
+		{
+		g.drawOval(x-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
+		KeyFramePos f=new KeyFramePos();
+		f.frame=frame;
+		f.x=x;
+		f.y=y;
+		f.nuc=nuc;
+		drawnKeyFrames.add(f);
+		}
+	
+	/**
+	 * Get key frame closest to given position
+	 */
+	public KeyFramePos getKeyFrame(int x, int y)
+		{
+		KeyFramePos nearest=null;
+		int nearestDist2=0;
+		for(KeyFramePos f:drawnKeyFrames)
+			{
+			int dx=f.x-x, dy=f.y-y;
+			int dist2=dx*dx+dy*dy;
+			if(nearest==null || dist2<nearestDist2)
+				{
+				nearestDist2=dist2;
+				nearest=f;
+				}
+			}
+		if(nearestDist2<10*10)
+			return nearest;
+		else
+			return null;
+		}
+	
+
+	
+	
+	/**
+	 * Get maximum visible c-value. WHY IS IT NOT USED?
+	 */
+	/*
+	private int getMaxVisibleC()
 		{
 		if(displayHorizontalTree)
 			return getWidth();
 		else
 			return getHeight();
-		}
+		}*/
 
 	
 	/**
 	 * Get maximum visible r-value
 	 */
-	public int getMaxVisibleR()
+	private int getMaxVisibleR()
 		{
 		if(displayHorizontalTree)
 			return getHeight();
@@ -388,6 +453,13 @@ public class LineageView extends JPanel
 		return f*frameDist-camC;
 		}
 	
+	/**
+	 * Convert coordinate to frame position
+	 */
+	private int c2f(int c)
+		{
+		return (c+camC)/frameDist;
+		}
 	
 	
 	/**

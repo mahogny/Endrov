@@ -1,4 +1,4 @@
-package evplugin.filterBasic;
+package evplugin.filterTransform;
 import evplugin.ev.PluginDef;
 
 
@@ -6,7 +6,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Basic filters";
+		return "Transform filters";
 		}
 
 	public String getAuthor()
@@ -32,11 +32,7 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				NoisePepperAndSalt.class, 
-				NoisePoisson.class,
-				NoiseExponential.class,
-				ContrastBrightnessFilter.class, 
-				EqualizeHistogram.class
+				InvertFilter.class, 
 				};
 		}
 	}
