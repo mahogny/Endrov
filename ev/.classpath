@@ -41,5 +41,7 @@
 	<classpathentry kind="lib" path="libs/linux/jai_core.jar"/>
 	<classpathentry kind="lib" path="libs/linux/jogl.jar"/>
 	<classpathentry kind="lib" path="libs/linux/mlibwrapper_jai.jar"/>
+	<classpathentry kind="lib" path="libs/ee_/activation.jar"/>
+	<classpathentry kind="lib" path="libs/ee_/mail-1.4.1.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

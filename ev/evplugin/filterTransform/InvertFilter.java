@@ -1,4 +1,4 @@
-package evplugin.filterBasic;
+package evplugin.filterTransform;
 
 import java.awt.image.*;
 
