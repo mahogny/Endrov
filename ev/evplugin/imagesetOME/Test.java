@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 
 
+
 //http://trac.openmicroscopy.org.uk/omero/wiki/OmeroClientLibrary
 
 //http://warlock.openmicroscopy.org.uk:5555/job/OMERO/javadoc/
@@ -20,57 +21,31 @@ public class Test
 		String password="wuermli";
 		String serverName="localhost";
 		int serverPort=1099;
-		String datasetName="baz";
+		String datasetName="foodata";
 		
 		//Connect to server
 		ome.system.Login login = new ome.system.Login(username,password);
     ome.system.Server server = new ome.system.Server(serverName,serverPort);
     ome.system.ServiceFactory sf = new ome.system.ServiceFactory(server,login); //()=use local.properties
     
-  
-
+    
     ome.api.IUpdate update = sf.getUpdateService();
     long userUID = sf.getAdminService().getEventContext().getCurrentUserId();
 
     
-    /*
-     * The counterpart to IUpdate is IQuery, which is the basis
-     * for all read operations on an OMERO database. The classes under ome.parameters
-     * help to build arbitrarily complex queries. 
-     */
-    
-    
-    /*
+    //The counterpart to IUpdate is IQuery, which is the basis
+    //for all read operations on an OMERO database. The classes under ome.parameters
+    //help to build arbitrarily complex queries. 
     ome.api.IQuery query = sf.getQueryService();
     ome.parameters.Filter filter = new ome.parameters.Filter().owner(userUID);
-    java.util.List<ome.model.containers.Project> list = query.findAll(ome.model.containers.Project.class, filter);
-*/
     
-    
-    /*
-     * The returned entities from queries will have un-"fetched"
-     * items, that is, items not specifically mentioned in the query,
-     * nulled (in the case of collections) or "unloaded" (in the case
-     * of entities).  
-     */
-    
-    /*
-    for (ome.model.containers.Project project : list) {
-        // datasetLinks was nulled.
-        assert project.sizeOfDatasetLinks() < 0;
-    }
-*/
-    /*
-     * If you'd like to work with that collection, it is necessary
-     * to request it in your query. (Here we are also querying the
-     * Dataset instances to prevent a security violation. See:
-     * https://trac.openmicroscopy.org.uk/omero/ticket/663
-     */
-    
-    /*
+    // If you'd like to work with that collection, it is necessary
+    // to request it in your query. (Here we are also querying the
+    // Dataset instances to prevent a security violation. See:
+    // https://trac.openmicroscopy.org.uk/omero/ticket/663
     ome.parameters.Parameters params = new ome.parameters.Parameters(filter); 
     params.addId(userUID);
-    list = 
+    java.util.List<ome.model.containers.Project> list = 
         query.findAllByQuery("select p from Project p" +
                              " left outer join fetch p.datasetLinks l"+
                              " left outer join fetch l.child d"+
@@ -80,16 +55,17 @@ public class Test
 
     ome.model.containers.Dataset dataset = new ome.model.containers.Dataset();
     dataset.setName(datasetName);
-    for (ome.model.containers.Project project : list) {
-        assert project.sizeOfDatasetLinks() > -1;
-        project.linkDataset(dataset);
-        project = update.saveAndReturnObject(project);
-        assert project.sizeOfDatasetLinks() > 0;
-    }
+    for (ome.model.containers.Project project : list)
+    	{
+    	project.linkDataset(dataset);
+    	System.out.println("pname: "+project.getName());
+    	project = update.saveAndReturnObject(project);
+    	
+    	
+    	
+    	}
 
-
-*/
-
+    
     /*
      * It is often not necessary to manually write the HQL
      * (Hibernate Query Language) statements, and instead, an
@@ -98,11 +74,16 @@ public class Test
     java.util.Set<Long> ids = new java.util.HashSet<Long>(java.util.Arrays.asList(1L,2L,3L));
     ome.api.IPojos pojos = sf.getPojosService();
     java.util.Set<ome.model.containers.Category> contHi = pojos.loadContainerHierarchy(ome.model.containers.Category.class, ids, null);
+    System.out.println("conthi");
     for(ome.model.containers.Category i:contHi)
     	System.out.println(" "+i.getClass().toString()+ " " +i);
 
+    System.out.println("conti");
     
-    Set<ome.model.core.Image> userImages=pojos.getUserImages(Collections.EMPTY_MAP);
+    
+    ome.parameters.Parameters params2 = new ome.parameters.Parameters(filter); 
+    
+    Set<ome.model.core.Image> userImages=pojos.getUserImages();
     for(ome.model.core.Image i:userImages)
     	System.out.println(" "+i.getClass().toString()+ " " +i);
     
@@ -112,9 +93,6 @@ public class Test
 //	  myImages = 
 //	  sf.getQueryService().findAllByQuery("select i from Image i where i.details.owner.id = :id",params);
 		}
-	
-	
-	
 	
 	
 	
