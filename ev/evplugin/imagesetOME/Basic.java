@@ -39,9 +39,10 @@ public class Basic
 						}
 					});
 				
-				//Logout: only shown when logged in
+				//The rest is only shown when logged in
 				if(omesession!=null)
 					{
+					//Log out
 					JMenuItem miLogout=new JMenuItem("Logout");
 					miOME.add(miLogout);
 					miLogout.addActionListener(new ActionListener()
@@ -52,13 +53,23 @@ public class Basic
 							BasicWindow.updateWindows();
 							}
 						});
+					
+					//List projects
+					for(ome.model.containers.Project p:omesession.getProjectList())
+						{
+						final JMenu miProject=new JMenu(""+p.getName());
+						miOME.add(miProject);
+						
+						//List datasets
+						for(ome.model.containers.Dataset ds:omesession.getDatasets(p))
+							{
+							final JMenu miDS=new JMenu(""+ds.getName());
+							miProject.add(miDS);
+							}
+						
+						
+						}
 					}
-				
-				
-				
-				
-				
-				
 				}
 			
 			public void buildSave(JMenu menu, final EvData meta)
