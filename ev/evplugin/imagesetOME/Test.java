@@ -83,10 +83,11 @@ public class Test
     
     ome.parameters.Parameters params2 = new ome.parameters.Parameters(filter); 
     
+    /*
     Set<ome.model.core.Image> userImages=pojos.getUserImages();
     for(ome.model.core.Image i:userImages)
     	System.out.println(" "+i.getClass().toString()+ " " +i);
-    
+    */
     
 //    Set<ome.model.core.Image> set=pojos.getImages(ome.model.containers., arg1, arg2)
 
