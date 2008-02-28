@@ -83,6 +83,7 @@ public abstract class Filter extends EvObject
 	 *****************************************************************************************************/
 
 	public final SimpleObserver observer=new SimpleObserver();
+	public final SimpleObserver observerGUI=new SimpleObserver(); //sender should be the widget needing update?
 	
 	
 	public abstract JComponent getFilterWidget();

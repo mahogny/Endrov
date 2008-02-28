@@ -2,6 +2,8 @@ package evplugin.filter;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
+
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
@@ -35,15 +37,20 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 	public void setFilterSeq(FilterSeq m)
 		{
 		if(filterseq!=null)
-			filterseq.observer.remove(this);
+			filterseq.observerGUI.remove(this);
 		filterseq=m;
 		if(filterseq!=null)
-			filterseq.observer.addWeakListener(this);
+			filterseq.observerGUI.addWeakListener(this);
 		buildList();
 		}
 	public void observerEvent(Object o)
 		{
-	//	buildList();
+		//Is the widget in this list? in that case, do nothing.
+		if(!filterWidgets.contains(o))
+			{
+			System.out.println("buildlist "+o);
+			buildList();
+			}
 		//TODO bugs. need do something more clever?
 		
 		}
@@ -95,9 +102,11 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 	/**
 	 * Build GUI list of all filters
 	 */
+	private Vector<JComponent> filterWidgets=new Vector<JComponent>();
 	public void buildList()
 		{
 		inScroll.removeAll();		
+		filterWidgets.clear();
 		if(filterseq!=null)
 			{
 			JPanel inScroll2=new JPanel(new GridBagLayout());
@@ -110,7 +119,8 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 				JComponent fc=f.getFilterWidget();
 				if(fc==null)
 					fc=new JLabel("No parameters");
-				
+				else
+					filterWidgets.add(fc);
 				
 				JPanel titledPanel=new JPanel(new GridLayout(1,1));				
 				titledPanel.setBorder(BorderFactory.createTitledBorder(f.getFilterName()));
