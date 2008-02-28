@@ -93,6 +93,7 @@ public class FilterSeq extends EvObject
 	private Vector<Filter> sequence=new Vector<Filter>();
 
 	public final SimpleObserver observer=new SimpleObserver();
+	public final SimpleObserver observerGUI=new SimpleObserver();
 	
 	//What about copying to a different target?
 	
@@ -102,7 +103,9 @@ public class FilterSeq extends EvObject
 	
 	private SimpleObserver.Listener listener=new SimpleObserver.Listener()
 		{public void observerEvent(Object o){observer.emit(o);}};
-	
+	private SimpleObserver.Listener listenerGUI=new SimpleObserver.Listener()
+		{public void observerEvent(Object o){observerGUI.emit(o);}};
+		
 	public FilterSeq()
 		{
 		}
@@ -113,6 +116,7 @@ public class FilterSeq extends EvObject
 			{
 			sequence.add(f);
 			f.observer.addWeakListener(listener);
+			f.observerGUI.addWeakListener(listenerGUI);
 			}
 		}
 
@@ -124,6 +128,8 @@ public class FilterSeq extends EvObject
 		sequence.add(f);
 		f.observer.addWeakListener(listener);
 		observer.emit(this);
+		f.observerGUI.addWeakListener(listenerGUI);
+		observerGUI.emit(this);
 		}
 	/**
 	 * Append all filters from a filter sequence
@@ -134,8 +140,10 @@ public class FilterSeq extends EvObject
 			{
 			sequence.add(f);
 			f.observer.addWeakListener(listener);
+			f.observerGUI.addWeakListener(listenerGUI);
 			}
 		observer.emit(this);
+		observerGUI.emit(this);
 		}
 	/**
 	 * Move filter at position i up (=earlier in chain)
@@ -149,6 +157,7 @@ public class FilterSeq extends EvObject
 			sequence.remove(i);
 			sequence.add(i-1, from);
 			observer.emit(this);
+			observerGUI.emit(this);
 			}
 		}
 	
@@ -163,6 +172,7 @@ public class FilterSeq extends EvObject
 			sequence.remove(i);
 			sequence.add(i+1, from);
 			observer.emit(this);
+			observerGUI.emit(this);
 			}
 		}
 	
@@ -176,6 +186,7 @@ public class FilterSeq extends EvObject
 			sequence.get(i).observer.remove(listener);
 			sequence.remove(i);
 			observer.emit(this);
+			observerGUI.emit(this);
 			}
 		}
 	

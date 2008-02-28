@@ -223,12 +223,15 @@ public class Convolve2DFilter extends FilterSlice
 		
 		private int leftPanelX=-1;
 		private int leftPanelY=-1;
+
 		
-		public void makeLeftPanel()
+		//this way is not really good. should make it remember name of combo and remove updateforsure
+		public void makeLeftPanel(boolean updateforsure)
 			{
 			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
 
-			if(leftPanelY!=h || leftPanelX!=currentKernel.kernelWidth)
+			boolean changedSize=leftPanelY!=h || leftPanelX!=currentKernel.kernelWidth;
+			if(changedSize || updateforsure)
 				{
 				System.out.println("A "+leftPanelY+" "+h+" "+leftPanelX+" "+currentKernel.kernelWidth+" "+spanel);
 				leftPanelX=currentKernel.kernelWidth;
@@ -279,7 +282,7 @@ public class Convolve2DFilter extends FilterSlice
 			add(spanel, BorderLayout.EAST); //n
 
 			setLayout(new BorderLayout());
-			makeLeftPanel();
+			makeLeftPanel(false);
 			System.out.println("first "+leftPanelY+" "+leftPanelX+" ");
 			add(leftPanel, BorderLayout.WEST);
 			//add(makeLeftPanel(), BorderLayout.WEST);
@@ -291,8 +294,9 @@ public class Convolve2DFilter extends FilterSlice
 		public void stateChanged(ChangeEvent e)
 			{
 			resizeKernel((Integer)xs.getValue(), (Integer)ys.getValue());
-			makeLeftPanel();
+			makeLeftPanel(false);
 			observer.emit(thisfilter);
+			observerGUI.emit(this);
 			}
 
 		public void actionPerformed(ActionEvent e)
@@ -303,9 +307,7 @@ public class Convolve2DFilter extends FilterSlice
 				ConvolutionKernel sel=(ConvolutionKernel)kernelCombo.getSelectedItem();
 				setKernel(sel);
 				stateChanged(null);
-				kernelCombo.removeActionListener(this);
-				kernelCombo.setSelectedItem(sel);
-				kernelCombo.addActionListener(this);
+				makeLeftPanel(true);
 				}
 			}
 		
