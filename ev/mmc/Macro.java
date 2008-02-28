@@ -1,15 +1,14 @@
 package mmc;
 
-import java.awt.*;
 import java.awt.event.*;
 
 /**
  * Control application by sending virtual key presses and mouse movements
  * @author Johan Henriksson
  */
-public class Macro
+public abstract class Macro
 	{
-	public Robot robot;
+
 	
 	//not sure if this is right
 	public final static int MOUSE_LEFT=InputEvent.BUTTON1_MASK;
@@ -19,28 +18,11 @@ public class Macro
 	
 	
 	
-	public Macro()
-		{
-		try
-			{
-			robot=new Robot();
-			}
-		catch (AWTException e)
-			{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			}
-		}
 	
 	
 	
 	/** Click with given buttons at location */
-	public void mouseClick(int x, int y, int buttons)
-		{
-		robot.mouseMove(x, y);
-		robot.mousePress(buttons);
-		robot.mouseRelease(buttons);
-		}
+	public abstract void mouseClick(int x, int y, int buttons);
 	
 	/**
 	 * Type a string
@@ -129,19 +111,14 @@ public class Macro
 	public void keyUp(){keyType(KeyEvent.VK_UP,false);}
 	public void keyRight(){keyType(KeyEvent.VK_RIGHT,false);}
 	public void keyLeft(){keyType(KeyEvent.VK_LEFT,false);}
+	public void keyTab(){keyType(KeyEvent.VK_TAB,false);}
+	public void keyHome(){keyType(KeyEvent.VK_HOME,false);}
+	public void keyEnd(){keyType(KeyEvent.VK_END,false);}
 	
 	/**
 	 * Type a key
 	 */
-	public void keyType(int keycode, boolean shift)
-		{
-		if(shift)
-			robot.keyPress(KeyEvent.VK_SHIFT);
-		robot.keyPress(keycode);
-		robot.keyRelease(keycode);
-		if(shift)
-			robot.keyRelease(KeyEvent.VK_SHIFT);
-		}
+	public abstract void keyType(int keycode, boolean shift);
 	
 	/**
 	 * Wait for a given number of milliseconds
@@ -159,20 +136,7 @@ public class Macro
 			}
 		}
 	
-	
-	
-	public static void main(String[] arg)
-		{
-		Macro macro=new Macro();
-		//macro.mouseClick(300, 200, Macro.MOUSE_RIGHT);
-		
-		macro.keyType("foobarTest");
-		macro.keyUp();macro.keyUp();macro.keyUp();
-		
-		
-		
-		
-		}
+	public abstract String getClipboard();
 	
 	
 	}
