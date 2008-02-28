@@ -124,13 +124,17 @@ public class Macro
 			
 			}
 		}
+
+	public void keyDown(){keyType(KeyEvent.VK_DOWN,false);}
+	public void keyUp(){keyType(KeyEvent.VK_UP,false);}
+	public void keyRight(){keyType(KeyEvent.VK_RIGHT,false);}
+	public void keyLeft(){keyType(KeyEvent.VK_LEFT,false);}
 	
 	/**
 	 * Type a key
 	 */
 	public void keyType(int keycode, boolean shift)
 		{
-//		System.out.println(" "+key.getKeyChar()+" "+key.getKeyCode()+" "+key.getModifiers()+" "+KeyEvent.VK_F);
 		if(shift)
 			robot.keyPress(KeyEvent.VK_SHIFT);
 		robot.keyPress(keycode);
@@ -163,7 +167,7 @@ public class Macro
 		//macro.mouseClick(300, 200, Macro.MOUSE_RIGHT);
 		
 		macro.keyType("foobarTest");
-		
+		macro.keyUp();macro.keyUp();macro.keyUp();
 		
 		
 		
