@@ -1,7 +1,5 @@
 package evplugin.imagesetOME;
 
-import java.util.Collections;
-import java.util.Set;
 
 
 
@@ -79,9 +77,6 @@ public class Test
     	System.out.println(" "+i.getClass().toString()+ " " +i);
 
     System.out.println("conti");
-    
-    
-    ome.parameters.Parameters params2 = new ome.parameters.Parameters(filter); 
     
     /*
     Set<ome.model.core.Image> userImages=pojos.getUserImages();

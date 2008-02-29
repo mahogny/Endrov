@@ -59,15 +59,29 @@ public class Basic
 						{
 						final JMenu miProject=new JMenu(""+p.getName());
 						miOME.add(miProject);
-						
 						//List datasets
 						for(ome.model.containers.Dataset ds:omesession.getDatasets(p))
 							{
 							final JMenu miDS=new JMenu(""+ds.getName());
 							miProject.add(miDS);
+							//List images
+							for(final ome.model.core.Image im:omesession.getImages(ds))
+								{
+								final JMenuItem miLoadImageset=new JMenuItem(""+im.getName());
+								miDS.add(miLoadImageset);
+								miLoadImageset.addActionListener(new ActionListener()
+									{
+									public void actionPerformed(ActionEvent e)
+										{
+										new OMEImageset(omesession, im);
+										
+										BasicWindow.updateWindows();
+										}
+									});
+								
+								
+								}
 							}
-						
-						
 						}
 					}
 				}

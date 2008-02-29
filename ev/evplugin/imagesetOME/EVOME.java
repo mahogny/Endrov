@@ -4,12 +4,13 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import ome.api.*;
-import ome.model.core.Pixels;
+import ome.model.core.Image;
 import ome.parameters.Parameters;
 
 //http://warlock.openmicroscopy.org.uk:5555/job/OMERO/javadoc/
 //http://trac.openmicroscopy.org.uk/omero/wiki/OmeroClientLibrary
-//
+
+//http://cvs.openmicroscopy.org.uk/svn/omero/tags/omero-2.5/components/common/src/ome/model/
 
 //goldmine:
 //http://warlock.openmicroscopy.org.uk:5555/job/OMERO/ws/trunk/components/importer/src/ome/formats/OMEROMetadataStore.java/*view*/
@@ -51,6 +52,8 @@ public class EVOME
       exp = iQuery.findByString(ome.model.meta.Experimenter.class, "omeName", d.dbUser);
       
 			userUID = sf.getAdminService().getEventContext().getCurrentUserId();
+			
+			
 			
 			return true;
 			}
@@ -99,17 +102,32 @@ public class EVOME
 		 return list;
 		 }
 
+	 /**
+		 * GPL. Get the list of images for a dataset
+		 */
+		 public List<ome.model.core.Image> getImages(ome.model.containers.Dataset ds)
+			 {
+			 List<ome.model.core.Image> list = iQuery.findAllByQuery(
+					 "from Image where id in "+
+					 "(select link.child.id from DatasetImageLink link where "+
+					 "link.parent.id = :id)", new Parameters().addId(ds.getId()));
+			 return list;
+			 }
+	 
+	 
+	 //http://cvs.openmicroscopy.org.uk/svn/omero/tags/omero-3.0-alpha/components/common/src/ome/
 	
-	 public List<ome.model.containers.Dataset> getDatasets(ome.model.containers.Dataset ds)
-	 {
-	 List<ome.model.containers.Dataset> list = iQuery.findAllByQuery(
-			 "from Pixels where id in "+
-			 "(select link.child.id from DatasetPixelsLink link where "+
-			 "link.parent.id = :id)", new Parameters().addId(ds.getId()));
-	 return list;
-	 }
-	
-	
+
+	 /*
+	 public List<ome.model.core.Image> getImages()
+		 {
+		 List<ome.model.core.Image> list=iQuery.findAllByQuery(
+				"select i from Image i " +
+		 		"where i.details.owner.id = :id", new Parameters().addId(userUID));
+		 return list;
+		 }*/
+
+	 
 	/**
 	 * GPL. Retrieves the dimensions in microns of the specified pixels set.
 	 */
@@ -124,6 +142,7 @@ public class EVOME
 	/**
 	 * GPL. Get pixel data
 	 */
+	 /*
 	ome.model.core.Pixels getPixels(long pixelsID)
 		{
 		return (ome.model.core.Pixels) iQuery.findByQuery(
@@ -133,14 +152,14 @@ public class EVOME
 				"where p.id = :id",
 				new Parameters().addId(new Long(pixelsID)));
 		}
-	
+	*/
 
 	/**
 	 * GPL. Get channel information for pixel data
 	 */
-	List<ome.model.core.Channel> getChannelsData(long pixelsID)
+	List/*<ome.model.core.Channel>*/ getChannelsData(long pixelsID)
 		{
-		ome.model.core.Pixels pixs = (ome.model.core.Pixels) iQuery.findByQuery(
+		ome.model.core.Pixels pixs = iQuery.findByQuery(
 				"select p from Pixels as p " +
 				"left outer join fetch p.pixelsType as pt " +
 				"left outer join fetch p.channels as c " +
@@ -151,7 +170,14 @@ public class EVOME
 		return pixs.getChannels();
 		}
 	
-	
+	ome.model.core.LogicalChannel getLogicalChannel(ome.model.core.Channel ch)
+		{
+		return (ome.model.core.LogicalChannel) iQuery.findByQuery(
+				"select p from LogicalChannel as p " +
+				"left outer join fetch p.name " +
+				"where p.id = :id",
+				new Parameters().addId(ch.getLogicalChannel().getId()));
+		}
 	
 	
 	
@@ -169,22 +195,16 @@ public class EVOME
 	 * @return See above.
 	 * 
 	 * 
-	 * need to know bytes per pixel
+	 * need to know bytes per pixel. Was synchronized
 	 * 
 	 */
-	synchronized byte[] getPlane(long pixelsID, int z, int t, int c)
+	byte[] getPlane(long pixelsID, int z, int t, int c)
 		{
 		RawPixelsStore pservice = sf.createRawPixelsStore();
 		pservice.setPixelsId(pixelsID);
 		return pservice.getPlane(z, c, t);
 		}
 
-	
-	/** hack, find no other function. or always 1? */
-	public int numBytesPerPixel(byte[] b, Pixels p)
-		{
-		return b.length/(p.getSizeX()*p.getSizeY());
-		}
 	
 	
 	
@@ -201,8 +221,37 @@ public class EVOME
 	
 	
 	
+	/**
+	 * Get pixel data
+	 */
+	public List<ome.model.core.Pixels> getPixels()
+		{
+		List<ome.model.core.Pixels> list=iQuery.findAllByQuery(
+				"select p from Pixels as p " +
+				"left outer join fetch p.pixelsType as pt " +
+				"left outer join fetch p.pixelsDimensions " +
+//				"where p.id = :id",
+				"where p.details.owner.id = :id",
+				new Parameters().addId(new Long(userUID)));
+		return list;
+		}
 	
+	//http://trac.openmicroscopy.org.uk/omero/ticket/857
 	
-	
+	/**
+	 * Get pixel data
+	 */
+	public List<ome.model.core.Pixels> getPixels(Image image)
+		{
+		long imageid=image.getId();
+		List<ome.model.core.Pixels> list=iQuery.findAllByQuery(
+				"select p from Pixels as p " +
+				"left outer join fetch p.channels as c " +
+				"left outer join fetch p.pixelsType as pt " +
+				"left outer join fetch p.pixelsDimensions " +
+				"where p.image.id = :id",
+				new Parameters().addId(imageid));
+		return list;
+		}
 	
 	}
