@@ -73,7 +73,7 @@ public class Basic
 									{
 									public void actionPerformed(ActionEvent e)
 										{
-										new OMEImageset(omesession, im);
+										EvData.metadata.add(new OMEImageset(omesession, im));
 										
 										BasicWindow.updateWindows();
 										}

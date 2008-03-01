@@ -35,6 +35,9 @@ public class OMEImageset extends Imageset
 		{
 		this.omesession=omesession;
 		this.omeimage=omeimage;
+		imageset=omeimage.getName();
+		if(imageset.indexOf('/')>=0)
+			imageset=imageset.substring(imageset.lastIndexOf('/')+1);
 		buildDatabase();
 		}
 	
@@ -82,7 +85,6 @@ public class OMEImageset extends Imageset
 		
 		ome.model.core.Pixels pixel=pixlist.iterator().next();
 		
-	//	List/*<ome.model.core.Channel>*/ ;
 		
 		System.out.println("building imageset");
 		/*
@@ -98,7 +100,6 @@ public class OMEImageset extends Imageset
 			channelImages.put(channelName,c);
 			}
 		*/
-		
 		
 		int numc=pixel.getSizeC();
 		for(int c=0;c<numc;c++)
@@ -122,31 +123,6 @@ public class OMEImageset extends Imageset
 	
 	
 
-	
-	
-	
-	/**
-	 * Invalidate database cache (=deletes cache file)
-	 */
-	public void invalidateDatabaseCache()
-		{
-		}
-	
-	
-	
-
-	
-	
-	/**
-	 * Save database as a cache file
-	 */
-	public void saveDatabaseCache()
-		{
-		
-		}
-	
-
-	
 	
 	
 	
@@ -177,57 +153,15 @@ public class OMEImageset extends Imageset
 		public void scanFiles(ome.model.core.Pixels pixel, int chnum)
 			{
 			imageLoader.clear();
-//			int numc=pixel.getSizeC();
 			int numframe=pixel.getSizeT();
 			int numz=pixel.getSizeZ();
-			
 			for(int frame=0;frame<numframe;frame++)
 				{
 				TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
-				
 				for(int z=0;z<numz;z++)
-					{
-					
-					
 					loaderset.put(z, newEvImage(pixel, z, frame, chnum));
-					}
 				imageLoader.put(frame, loaderset);
 				}
-			
-			
-			/*
-			
-			
-			File chandir=buildChannelPath(getMeta().name);
-			File[] framedirs=chandir.listFiles();
-			for(File framedir:framedirs)
-				if(framedir.isDirectory() && !framedir.getName().startsWith("."))
-					{
-					int framenum=Integer.parseInt(framedir.getName());
-					
-					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
-					File[] slicefiles=framedir.listFiles();
-					for(File f:slicefiles)
-						{
-						String partname=f.getName();
-						if(!partname.startsWith("."))
-							{
-							partname=partname.substring(0,partname.lastIndexOf('.'));
-							try
-								{
-								int slicenum=Integer.parseInt(partname);
-								loaderset.put(slicenum, newEvImage(f.getAbsolutePath()));
-								}
-							catch (NumberFormatException e)
-								{
-								Log.printError("partname: "+partname+" filename "+f.getName()+" framenum "+framenum,e);
-								System.exit(1);
-								}
-							}
-						}
-					imageLoader.put(framenum, loaderset);
-					}
-			*/
 			}
 
 		protected EvImage internalMakeLoader(int frame, int z)
@@ -250,7 +184,9 @@ public class OMEImageset extends Imageset
 			long pixelid;
 			public EvImageOME(ome.model.core.Pixels pixel, int z, int t, int c)
 				{
-				this.z=z;this.c=c;this.t=t;
+				this.z=z;
+				this.t=t;
+				this.c=c;
 				w=pixel.getSizeX();
 				h=pixel.getSizeY();
 				pixelid=pixel.getId();
@@ -263,19 +199,16 @@ public class OMEImageset extends Imageset
 			public double getResY(){return meta.resY;}
 			protected BufferedImage loadJavaImage()
 				{
-				
 				BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 				WritableRaster r=im.getRaster();
-				double pixel[]=new double[3];
-
 				byte[] b=omesession.getPlane(pixelid, z, t, c);
-				for(int x=0;x<w;x++)
-					for(int y=0;y<h;y++)
-						{
-						pixel[c]=b[y*w+x]; //TODO pixelsize
-						r.setPixel(x, y, pixel);
-						}
-				
+				int[] strip=new int[w];
+				for(int y=0;y<h;y++)
+					{
+					for(int x=0;x<w;x++)
+						strip[x]=b[y*w+x];
+					r.setPixels(0, y, w, 1, strip);
+					}
 				return im;
 				}
 		
@@ -285,7 +218,7 @@ public class OMEImageset extends Imageset
 	
 	public void finalize()
 		{
-		System.out.println("finalize ost");
+		System.out.println("finalize ome");
 		}
 	
 	}
