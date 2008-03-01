@@ -10,18 +10,20 @@ import org.jdom.Element;
 import evplugin.ev.*;
 import evplugin.filter.*;
 
+//http://homepages.inf.ed.ac.uk/rbf/HIPR2/log.htm
+
 /**
- * Filter: Gaussian in 2D
+ * Filter: Laplacian of Gaussian in 2D
  * 
  * @author Johan Henriksson
  */
-public class Gaussian2DFilter extends FilterSlice
+public class LaplacianOfGaussian2DFilter extends FilterSlice
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	private static String filterMeta="Gaussian2D";
-	private static String filterName="Gaussian 2D";
+	private static String filterMeta="LoG2D";
+	private static String filterName="LoG 2D";
 	private static String filterCategory="Mathematical";
 
 	public static void initPlugin() {}
@@ -32,10 +34,10 @@ public class Gaussian2DFilter extends FilterSlice
 			public String getCategory(){return filterCategory;}
 			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
-			public FilterROI filterROI(){return new Gaussian2DFilter();}
+			public FilterROI filterROI(){return new LaplacianOfGaussian2DFilter();}
 			public Filter readXML(Element e)
 				{
-				Gaussian2DFilter f=new Gaussian2DFilter();
+				LaplacianOfGaussian2DFilter f=new LaplacianOfGaussian2DFilter();
 				try
 					{
 					f.flevel.setValue(e.getAttribute("level").getIntValue());
@@ -85,28 +87,25 @@ public class Gaussian2DFilter extends FilterSlice
 		if(sigma!=0) //in=out right?
 			{
 			double sigma2=sigma*sigma;
+			double sigma22=sigma*sigma*2.0;
 			int w=(int)Math.ceil(sigma);
 			int aw=2*w+1;
+			
+			double front=1.0/(sigma2*sigma2*Math.PI);
 			
 			float[] f=new float[aw*aw];
 			for(int x=-w;x<=w;x++)
 				for(int y=-w;y<=w;y++)
 					{
 					double r2=x*x+y*y;
-					f[aw*(y+w)+w+x]=(float)Math.exp(-r2/(sigma2*2.0));
+					f[aw*(y+w)+w+x]=(float)(front*(1.0-r2/sigma22)*Math.exp(-r2/sigma22));
 					}
 			
 			//TODO: replace with two separable filters
 			
 			Convolve2DFilter cf=new Convolve2DFilter();
-			Convolve2DFilter.ConvolutionKernel kernel=new Convolve2DFilter.ConvolutionKernel(filterName,true, aw,f);
+			Convolve2DFilter.ConvolutionKernel kernel=new Convolve2DFilter.ConvolutionKernel(filterName,false, aw,f);
 			cf.setKernel(kernel);
-			cf.applyImage(in,out);
-			}
-		else
-			{
-			Convolve2DFilter cf=new Convolve2DFilter();
-			cf.setKernel(Convolve2DFilter.kernelLaplace8);
 			cf.applyImage(in,out);
 			}
 		}

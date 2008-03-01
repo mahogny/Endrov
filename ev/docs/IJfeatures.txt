@@ -168,13 +168,15 @@ Color [top]
 
 ===============================================================================
 
+     Kuwahara Filter
+     X_Shifter (correct pixel mismatch of confocal images) [new]
+     De-interlace
+     LoG Filtering
+     Auto Gamma (gamma correction)     
 
 
 Filters [top]
-     LoG Filtering
      Background Subtraction and Normalization
-     Byte Swapper
-     De-interlace
      Kalman Filter
      Dual-Energy Algorithm
      Anisotropic Diffusion
@@ -187,17 +189,15 @@ Filters [top]
      Haar Wavelet Filter and Adaptive Median Filter
      'A trous' Wavelet Filter
      MultiThresholder (Isodata, Entropy, Otsu, Mixture Modeling)
-     Kuwahara Filter
      Granulometric Filtering
      Windowed-Sinc Filter (low pass time series filter)
      Anisotropic Diffusion 2D (edge-preserving noise reduction)
-     Auto Gamma (gamma correction)
      Linearize Gel Data
      Correct X Shift of Confocal Images
      Multi Otsu Threshold
      Spectral Unmixing of Bioluminescence Signals
-     Lipschitz Filter
-     X_Shifter (correct pixel mismatch of confocal images) [new]
+     Lipschitz Filter //http://rsb.info.nih.gov/ij/plugins/lipschitz/
+     
 
 ===============================================================================
 
@@ -229,22 +229,18 @@ Stacks [top]
      MultiTracker
      Time Stamper
      Stack Builder
-     Hypervolume (4D Stack) Shuffler
      Stack Inserter
      Stack Normalizer
      Stack Focuser (extended depth of field)
-     HyperVolume (4D Stack) Browser
      Substack Maker
      Hypervolume Opener
      RGB Zprojector
-     Volume Viewer/3D-Slicer [Updated]
      Concatenate Images or Stacks [Updated]
 
 ===============================================================================
 
 Utilities [top]
      Straighten Curved Objects
-     Drag and Drop
      Combine Images to Create Mosaic
      Adjust Window and Level
      Joel Time Stamper
@@ -286,7 +282,6 @@ More Sites with Plugins [top]
      TransformJ (Geometric Transformations up to 4D)
        Affine, Crop, Embed, Mirror, Rotate, Scale, Shift, Turn
      NeuronJ (Neurite Tracing and Quantification)
-     LOCI Bio-Formats library (Reads microscopy file formats) [new]
      ImageJ Documentation Wiki [new]
        Align_4, Align_RGB_planes, Align_Slice
        Fourier Shape Analysis
@@ -327,7 +322,6 @@ More Sites with Plugins [top]
      Inhomogen Isotropic Diffusion 2D Filter [new]
      Introduction to Astronomical Image Processing using ImageJ [new]
      Chemotaxis and Migration Tool [new]
-     View5D (interactively display datasets with up to 5 dimensions) [new]
      RoiPushTool (edit area selections using circular brush) [new]
      WindowLevelTool (adjust window/level by dragging the mouse) [new]
      SplineDeformationGenerator (cubic B-spline deformations) [new]

@@ -2,18 +2,11 @@ package evplugin.imagesetOME;
 
 //note: renaming channel will require all EvImageOST to be renamed as well
 
-
-//BandCombineOp for merging channels
-
-import java.awt.RenderingHints;
-import java.awt.image.BandCombineOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.RasterOp;
+import java.awt.image.*;
 import java.io.*;
 import java.util.List;
 import java.util.TreeMap;
 
-import evplugin.ev.*;
 import evplugin.imageset.*;
 
 
@@ -272,21 +265,18 @@ public class OMEImageset extends Imageset
 				{
 				
 				BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-				float matrix[][]={{0,0,0}};
-				matrix[0][c]=1;
-				RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));
-				
+				WritableRaster r=im.getRaster();
+				double pixel[]=new double[3];
+
 				byte[] b=omesession.getPlane(pixelid, z, t, c);
-				
-				
-				//TODO
-				
-				op.filter(i.getRaster(), im.getRaster());
+				for(int x=0;x<w;x++)
+					for(int y=0;y<h;y++)
+						{
+						pixel[c]=b[y*w+x]; //TODO pixelsize
+						r.setPixel(x, y, pixel);
+						}
 				
 				return im;
-				
-				
-				return null;
 				}
 		
 			}

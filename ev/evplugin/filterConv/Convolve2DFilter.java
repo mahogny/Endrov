@@ -95,13 +95,14 @@ public class Convolve2DFilter extends FilterSlice
 	
 
 
+	public static ConvolutionKernel kernelLaplace8 = new ConvolutionKernel("Laplace8 2D", false, 3, new float[]{1, 1, 1,		1,-8, 1,		1, 1, 1});
 	
 	public static ConvolutionKernel[] premadeKernels=new ConvolutionKernel[]{
 			new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}),
 			new ConvolutionKernel("Mean 3x3", true, 3, new float[]{1,1,1, 1,1,1, 1,1,1}),
 			new ConvolutionKernel("Gaussian 3x3 2D", true, 3, new float[]{1, 2, 1,		2, 4, 2,		1, 2, 1}),
 			new ConvolutionKernel("Laplace4 2D", false, 3, new float[]{0, 1, 0,		1,-4, 1,		0, 1, 0}),
-			new ConvolutionKernel("Laplace8 2D", false, 3, new float[]{1, 1, 1,		1,-8, 1,		1, 1, 1}),
+			kernelLaplace8,
 			new ConvolutionKernel("Laplace X", false, 3, new float[]{1,-2, 1}),
 			new ConvolutionKernel("Laplace Y", false, 1, new float[]{1,		-2,		1}),
 			new ConvolutionKernel("PrewittX 2D",  false, 3, new float[]{1, 0,-1,		1, 0,-1,		1, 0,-1}),
