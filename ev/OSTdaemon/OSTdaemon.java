@@ -47,6 +47,13 @@ public class OSTdaemon extends Thread
 	
 	private DaemonListener daemonListener;
 	
+	/** Parsed name of incoming file */
+	private static class Incoming
+		{
+		public String filename;
+		public String cmd="";
+		public Map<String,String> param=new HashMap<String, String>();
+		}
 	
 	/**
 	 * Create daemon
@@ -57,21 +64,18 @@ public class OSTdaemon extends Thread
 		daemonListener=listener;
 		}
 	
-	/**
-	 * Add to log
-	 */
+	/** Log ordinary message */
 	public void log(String s)
 		{
 		if(daemonListener!=null)
 			daemonListener.daemonLog(s);
 		}
-	
+	/** Log error */
 	public void error(String s, Exception e)
 		{
 		if(daemonListener!=null)
 			daemonListener.daemonError(s,e);
 		}
-	
 	
 	/**
 	 * Update configuration
@@ -183,7 +187,38 @@ public class OSTdaemon extends Thread
     	}
 		}
 	
+	
 
+	/** Get compression level for a channel in 0-100. Defaults to 100. */
+	public int getCompressionLevel(String channel)
+		{
+		if(compressionLevel.containsKey(channel))
+			return compressionLevel.get(channel);
+		else
+			return 100;
+		}
+
+	/** Get output format. */
+	public String getOutputFormat(String channel)
+		{
+		if(outputFormat.containsKey(channel))
+			return outputFormat.get(channel);
+		else if(getCompressionLevel(channel)<100)
+			return "jpg";
+		else
+			return "png";
+		}
+	
+
+	
+
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////// Relics //////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
 
 	/**
 	 * OST1 input
@@ -413,24 +448,10 @@ public class OSTdaemon extends Thread
 			}
 		
 		moveToConverted(from);
-		
-		
 		}
 	
 	
-	public static boolean isBlack(BufferedImage im)
-		{
-		WritableRaster r=im.getRaster();
-		double p=r.getSampleDouble(0, 0, 0);
-		return p<0.01;
-		}
-	public static boolean isWhite(BufferedImage im)
-		{
-		WritableRaster r=im.getRaster();
-		double p=r.getSampleDouble(0, 0, 0);
-//		log("p: "+p);
-		return p>254.99;
-		}
+
 	
 	/**
 	 * Convert an image stack: imageset-channel-frame.*
@@ -460,7 +481,7 @@ public class OSTdaemon extends Thread
 			for(int i=0;i<numz;i++)
 				{
 				BufferedImage im=jubio.getBufferedImage(i);
-				if(!(skipBlackSlices && isBlack(im)) && !(skipWhiteSlices && isWhite(im)))
+				if(!(skipBlackSlices && isBlackSlice(im)) && !(skipWhiteSlices && isWhiteSlice(im)))
 //				if(skipBlackSlices && !isBlack(im))
 					{				
 					File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, i);
@@ -494,14 +515,7 @@ public class OSTdaemon extends Thread
 	 */
 	private File outputImageName(String argImageset, String argChannel, String ext, int argStack, int slice)
 		{
-		if(ostVersion==1)
-			{
-			File toDir = new File(pathOutput+"/"+argImageset+"/"+argImageset+"-"+argChannel+"/"+argChannel+"-"+pad(argStack,8));
-			toDir.mkdirs();
-			File toFile = new File(toDir, argChannel+"-"+pad(argStack,8)+"-"+pad(slice,8)+"."+ext); 
-			return toFile;
-			}
-		else if(ostVersion==2)
+		if(ostVersion==2)
 			{
 			File toDir = new File(pathOutput+"/"+argImageset+"/"+argImageset+"-"+argChannel+"/"+pad(argStack,8));
 			toDir.mkdirs();
@@ -512,15 +526,6 @@ public class OSTdaemon extends Thread
 			return null;
 		}
 	
-	/**
-	 * Get file extension
-	 */
-	private static String getFileEnding(String s)
-		{
-		String fileEnding=s;
-		fileEnding=fileEnding.substring(fileEnding.lastIndexOf('.')+1);
-		return fileEnding;
-		}
 	
 	/**
 	 * Save an image to disk
@@ -543,25 +548,7 @@ public class OSTdaemon extends Thread
 			}
 		}
 	
-	/**
-	 * Move a file to the converted-path
-	 */
-	public void moveToConverted(File from)
-		{
-		if(deleteInput)
-			{
-			from.delete();
-			log("Deleted converted "+from.getAbsolutePath());
-			}
-		else
-			{
-			File to=new File(pathConverted+"/"+from.getName());
-			if(from.renameTo(to))
-				log("Moved "+from.getAbsolutePath()+" to "+to.getAbsolutePath());
-			else
-				log("Failed to move "+from.getAbsolutePath()+" to "+to.getAbsolutePath());
-			}
-		}
+
 
 	/**
 	 * Check if file is an image
@@ -588,6 +575,73 @@ public class OSTdaemon extends Thread
 		return numdash==2;
 		}
 	
+	
+	
+	
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////// New functions ///////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	
+
+	/** Get file ending	 */
+	private static String getFileEnding(String s)
+		{
+		return s.substring(s.lastIndexOf('.')+1);
+		}
+
+	/** Remove the file ending of a string */
+	public static String chopFileEnding(String s)
+		{
+		int pos=s.lastIndexOf('.');
+		if(pos>=0)
+			return s.substring(0,pos);
+		else
+			return s;
+		}
+
+	
+	
+	/**
+	 * Move a file to the converted-path or delete if this is the setting
+	 */
+	public void moveToConverted(File from)
+		{
+		if(deleteInput)
+			{
+			from.delete();
+			log("Deleted converted "+from.getAbsolutePath());
+			}
+		else
+			{
+			File to=new File(pathConverted+"/"+from.getName());
+			if(from.renameTo(to))
+				log("Moved "+from.getAbsolutePath()+" to "+to.getAbsolutePath());
+			else
+				log("Failed to move "+from.getAbsolutePath()+" to "+to.getAbsolutePath());
+			}
+		}
+	
+	
+	public static boolean isBlackSlice(BufferedImage im)
+		{
+		WritableRaster r=im.getRaster();
+		double p=r.getSampleDouble(0, 0, 0);
+		return p<0.01;
+		}
+	public static boolean isWhiteSlice(BufferedImage im)
+		{
+		WritableRaster r=im.getRaster();
+		double p=r.getSampleDouble(0, 0, 0);
+		return p>254.99;
+		}
+	
+	
+	
+	
+	
+	
 	/**
 	 * Pause while "shut down"
 	 */
@@ -604,6 +658,57 @@ public class OSTdaemon extends Thread
 			log("Started");
 			}
 		}
+	
+	
+	
+
+	/**
+	 * Parse incoming arguments and invoke the right method
+	 * @param file
+	 */
+	public void dealWithFile(File file)
+		{
+		Incoming inc=new Incoming();
+		String inp=file.getName().substring(1);
+		inc.filename=inp.substring(inp.indexOf("--")+2);
+		inp=inp.substring(0,inp.indexOf("--"));
+		StringTokenizer tok=new StringTokenizer(inp,"-");
+		System.out.println(inc.filename);
+		if(tok.hasMoreElements())
+			inc.cmd=tok.nextToken().toLowerCase();
+		while(tok.hasMoreElements())
+			{
+			String te=tok.nextToken();
+			if(te.indexOf('_')>=0)
+				{
+				String attr=te.substring(0,te.indexOf('_'));
+				String value=te.substring(te.indexOf('_')+1);
+				System.out.println(attr+" - "+value);
+				inc.param.put(attr, value);
+				}
+			else
+				inc.param.put(te, null);
+			}
+		
+		
+		if(inc.cmd.equals("image"))
+			{
+			
+			}
+		else if(inc.cmd.equals("data"))
+			{
+			
+			}
+		else if(inc.cmd.equals("newxml"))
+			{
+			
+			}
+		else if(inc.cmd.equals("incxml"))
+			{
+			
+			}
+		}
+	
 	
 	/**
 	 * The main function of the thread
@@ -626,7 +731,9 @@ public class OSTdaemon extends Thread
 					if(!file.getName().startsWith("."))
 						{
 						log(filename);
-						if(filename.equals("settings"))
+						if(filename.startsWith("-"))
+							dealWithFile(file);
+						else if(filename.equals("settings"))
 							readConfig(file.getAbsolutePath());
 						else if(filename.endsWith(".rmd"))
 							readMeta1(file);
@@ -659,28 +766,6 @@ public class OSTdaemon extends Thread
 
 	
 	/**
-	 * Get compression level for a channel in 0-100. Defaults to 100.
-	 */
-	public int getCompressionLevel(String channel)
-		{
-		if(compressionLevel.containsKey(channel))
-			return compressionLevel.get(channel);
-		else
-			return 100;
-		}
-
-	/**
-	 * Get output format. Defaults to jpg.
-	 */
-	public String getOutputFormat(String channel)
-		{
-		if(outputFormat.containsKey(channel))
-			return outputFormat.get(channel);
-		else
-			return "jpg";
-		}
-	
-	/**
 	 * Pad an integer up to # digits
 	 */
 	public static String pad(int i, int pad)
@@ -701,21 +786,6 @@ public class OSTdaemon extends Thread
 		sourceChannel.transferTo(0, sourceChannel.size(), destinationChannel);
 		sourceChannel.close();
 		destinationChannel.close();
-		}
-
-	/**
-	 * Remove the file ending of a string
-	 */
-	public static String chopFileEnding(String s)
-		{
-		int pos=s.lastIndexOf('.');
-		if(pos>=0)
-			{
-			s=s.substring(0,pos);
-			return s;
-			}
-		else
-			return s;
 		}
 
 	
