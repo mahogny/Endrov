@@ -162,7 +162,7 @@ public class Client implements MouseListener, MouseMotionListener, MouseWheelLis
 			while (keepRunning)
 				{
 				try
-					{			
+					{
 					ImageIcon i = (ImageIcon)in.readObject(); //there is no compression!
 					f.updateScreen(i);
 					System.out.println(""+System.currentTimeMillis()+" get image");

@@ -492,6 +492,7 @@ public class NucLineage extends EvObject implements Cloneable
 		for(String child:nt.child)
 			ns.child.add(child);
 		updateNameReference(targetName,sourceName);
+		ns.child.remove(sourceName);
 		metaObjectModified=true;
 		}
 

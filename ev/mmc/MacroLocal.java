@@ -1,12 +1,23 @@
 package mmc;
 
-import java.awt.AWTException;
-import java.awt.Robot;
+import java.awt.*;
+import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
+
+/**
+ * Macro on the local computer
+ * @author Johan Henriksson
+ *
+ */
 public class MacroLocal extends Macro
 	{
 	public Robot robot;
+	private final int WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
+	private final int HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
+	private final Rectangle screenRect = new Rectangle(0, 0, WIDTH, HEIGHT);
+	
 	
 	public MacroLocal()
 		{
@@ -16,7 +27,6 @@ public class MacroLocal extends Macro
 			}
 		catch (AWTException e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		}
@@ -49,7 +59,30 @@ public class MacroLocal extends Macro
 	
 	public String getClipboard()
 		{
-		return "";
+		try
+			{
+			return (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+			}
+		catch(Exception e2)
+			{
+			System.out.println("Failed to get text from clipboard");
+			return "<fail>";
+			}
+		}
+	
+	
+	public void setClipboard(String s)
+		{
+		StringSelection sel=new StringSelection(s);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+		}
+	
+	
+	public BufferedImage getScreenshot()
+		{
+		BufferedImage i = robot.createScreenCapture(screenRect);
+//		Image image = i.getScaledInstance(WIDTH/Constants.SCALE_AMOUNT, HEIGHT/Constants.SCALE_AMOUNT, Image.SCALE_SMOOTH);
+		return i;
 		}
 	
 	
