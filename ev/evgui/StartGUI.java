@@ -57,7 +57,7 @@ public class StartGUI
 				//collectJars(jarfiles, "libs/ome");
 				//collectJars(jarfiles, "libs/ParallelColt/lib");
 				collectJars(jarfiles, libdir);
-				String jarstring=".";
+				String jarstring=new File(".").getAbsolutePath();
 				for(String s:jarfiles)
 					jarstring+=cpsep+s;
 				
@@ -76,6 +76,22 @@ public class StartGUI
 				else
 					cmdarg.add("evgui.GUI");
 				
+				
+				if(args.length>0 && args[args.length-1].equals("-macstarter"))
+					{
+					StringTokenizer t=new StringTokenizer(jarstring,":");
+					File dot=new File(".");
+					int dotlen=dot.getAbsolutePath().length()-1;
+					String tot="";
+					while(t.hasMoreTokens())
+						{
+						String s=t.nextToken();
+						if(!tot.equals(""))tot=tot+":";
+						tot=tot+"$APP_PACKAGE/../"+s.substring(dotlen);
+						}
+					System.out.println(tot);
+					}
+				
 				//Run process
 				pb.command(cmdarg);
 				Process p=pb.start();
@@ -84,6 +100,15 @@ public class StartGUI
         String line;
         while ( (line = br.readLine()) != null)
         	System.out.println(line);
+				try
+					{
+					p.waitFor();
+					}
+				catch (InterruptedException e)
+					{
+					e.printStackTrace();
+					}
+				System.out.println("Process exited");
         	    
 				}
 			catch (IOException e)
@@ -107,8 +132,10 @@ public class StartGUI
 			{
 			if(sub.isFile() && (sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
 				{
-				v.add(dir+"/"+sub.getName());
-				System.out.println("Adding java library: "+sub.getName());
+				String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
+				v.add(toadd);
+//				v.add(sub.getAbsolutePath());
+				System.out.println("Adding java library: "+toadd);
 				}
 			else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
 				collectJars(v,sub.getAbsolutePath());

@@ -434,6 +434,8 @@ public class LineageWindow extends BasicWindow
 			popup.add(new JMenuItem("--Keyframe: "+kf.nuc+"/"+kf.frame));
 			JMenuItem miDelKF=new JMenuItem("Delete keyframe");
 			popup.add(miDelKF);
+			JMenuItem miSplit=new JMenuItem("Split here");
+			popup.add(miSplit);
 			
 			miDelKF.addActionListener(new ActionListener()
 				{
@@ -450,7 +452,37 @@ public class LineageWindow extends BasicWindow
 						}
 					}
 				});
-			
+
+			miSplit.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					NucLineage lin=getLineage();
+					if(lin!=null)
+						{
+						NucLineage.Nuc nuc=lin.nuc.get(kf.nuc);
+						
+						if(!nuc.pos.tailMap(kf.frame).isEmpty())
+							{
+							String newname=lin.getUniqueNucName();
+							NucLineage.Nuc newnuc=lin.getNucCreate(newname);
+							newnuc.pos.putAll(nuc.pos.tailMap(kf.frame));
+							for(int key:newnuc.pos.keySet())
+								nuc.pos.remove(key);
+							
+							newnuc.child.addAll(nuc.child);
+							nuc.child.clear();
+							for(String cn:newnuc.child)
+								lin.nuc.get(cn).parent=newname;
+							
+							newnuc.parent=kf.nuc;
+							nuc.child.add(newname);
+							BasicWindow.updateWindows();
+							}
+						}
+					}
+				});
+
 			}
 		
 		//		menuItem.addActionListener(this);

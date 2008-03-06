@@ -1,6 +1,7 @@
 package mmc;
 
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 
 /**
  * Control application by sending virtual key presses and mouse movements
@@ -18,11 +19,16 @@ public abstract class Macro
 	
 	
 	
-	
-	
-	
 	/** Click with given buttons at location */
 	public abstract void mouseClick(int x, int y, int buttons);
+	/** Type a key */
+	public abstract void keyType(int keycode, boolean shift);
+	/** Get contents from clipboard */
+	public abstract String getClipboard();
+	/** Set contents in clibboard */
+	public abstract void setClipboard(String s);
+	
+	public abstract BufferedImage getScreenshot();
 	
 	/**
 	 * Type a string
@@ -115,11 +121,7 @@ public abstract class Macro
 	public void keyHome(){keyType(KeyEvent.VK_HOME,false);}
 	public void keyEnd(){keyType(KeyEvent.VK_END,false);}
 	
-	/**
-	 * Type a key
-	 */
-	public abstract void keyType(int keycode, boolean shift);
-	
+
 	/**
 	 * Wait for a given number of milliseconds
 	 */
@@ -135,8 +137,6 @@ public abstract class Macro
 			e.printStackTrace();
 			}
 		}
-	
-	public abstract String getClipboard();
 	
 	
 	}
