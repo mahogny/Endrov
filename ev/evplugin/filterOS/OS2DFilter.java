@@ -1,8 +1,9 @@
-package evplugin.filterMorphological;
+package evplugin.filterOS;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import org.jdom.Element;
@@ -10,22 +11,20 @@ import org.jdom.Element;
 import evplugin.ev.*;
 import evplugin.filter.*;
 
-
-
 /**
- * Filter: Binary morphology operations in 2D
+ * Filter: Order statistics operations in 2D
  * 
  * @author Johan Henriksson
  */
-public class BinMorph2DFilter extends FilterSlice
+public class OS2DFilter extends FilterSlice
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
-	private static String filterMeta="BinaryMorphology2D";
-	private static String filterName="Binary Morphology 2D";
-	private static String filterCategory="Morphology";
+	private static String filterMeta="OrderStatistics2D";
+	private static String filterName="Order Statistics 2D";
+	private static String filterCategory="Order Statistics";
 
 	public static void initPlugin() {}
 	static
@@ -35,10 +34,10 @@ public class BinMorph2DFilter extends FilterSlice
 			public String getCategory(){return filterCategory;}
 			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
-			public FilterROI filterROI(){return new BinMorph2DFilter();}
+			public FilterROI filterROI(){return new OS2DFilter();}
 			public Filter readXML(Element e)
 				{
-				BinMorph2DFilter f=new BinMorph2DFilter();
+				OS2DFilter f=new OS2DFilter();
 				f.currentKernel.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
 				return f;
 				}
@@ -97,39 +96,10 @@ public class BinMorph2DFilter extends FilterSlice
 	};
 	
 	
-	
-	
-	//gray-scale transformation. draw function to lookup with (linear).
-	
-	//Order Statistics filtering: median, minimum, maximum special cases
-	
-	//Canny edge detector p.92
-	
-	//Dilation (+)  11.9
-	//Erosion (-)
-	//open: X ( ) B = (X-B)+B
-	//closed: X (#) B = (X+B)-B
-	
-	//hit-or-miss: X (x) B := {b_1 <= X and b_2 <= X^c}, have to implement another filter? 
-	//thin:  X (/) B = X\(X (x) B)
-	//thick: X (.) B = X U (X (x) B) 
-	
-	//http://www.google.com/url?sa=t&ct=res&cd=1&url=http%3A%2F%2Fetrij.etri.re.kr%2FCyber%2Fservlet%2FGetFile%3Ffileid%3DSPF-1134112698124&ei=jb3BR5TMFZSiwgHTs638DA&usg=AFQjCNEOEkWiHPJscIUktu6arZNt-R8YuA&sig2=PtzlUyTYVcYb3757PYWBhw
-	
-	//only make a quick implementation for now?
+	/******************************************************************************************************
+	 *                               Operations                                                           *
+	 *****************************************************************************************************/
 
-	
-	
-	//http://en.wikipedia.org/wiki/Mathematical_morphology
-	//Binary:
-	//Erosion
-	//Dilation
-	//Opening
-	//Closing
-	
-	//unary:
-	//Skeletonize?
-	
 
 	
 	
@@ -155,12 +125,10 @@ public class BinMorph2DFilter extends FilterSlice
 			int h=getKernelHeight();
 			if(leftPanelY!=h || leftPanelX!=currentKernel.kernelWidth)
 				{
-				System.out.println("A "+leftPanelY+" "+h+" "+leftPanelX+" "+currentKernel.kernelWidth+" "+spanel);
 				leftPanelX=currentKernel.kernelWidth;
 				leftPanelY=h;
 				leftPanel.removeAll();
 				leftPanel.setLayout(new GridLayout(h,currentKernel.kernelWidth));
-				System.out.println("dim "+currentKernel.kernelWidth+" "+h);
 				ButtonGroup bg=new ButtonGroup();
 				for(int y=0;y<h;y++)
 					for(int x=0;x<currentKernel.kernelWidth;x++)
@@ -181,6 +149,7 @@ public class BinMorph2DFilter extends FilterSlice
 								{
 								currentKernel.midx=finalx;
 								currentKernel.midy=finaly;
+								observer.emit(this);
 								}
 						});
 						}
@@ -293,8 +262,6 @@ public class BinMorph2DFilter extends FilterSlice
 			currentKernel.kernelm=kernel2;
 			if(currentKernel.midx>=nw)currentKernel.midx=nw-1;
 			if(currentKernel.midy>=nh)currentKernel.midy=nh-1;
-			
-			System.out.println("dim3 "+nw+" "+nh);
 			observer.emit(this);
 			}
 		}
@@ -312,7 +279,7 @@ public class BinMorph2DFilter extends FilterSlice
 	
 
 	
-	public BinMorph2DFilter()
+	public OS2DFilter()
 		{
 		setKernel(kernel3x3);
 		}
@@ -332,10 +299,89 @@ public class BinMorph2DFilter extends FilterSlice
 		}
 	
 	
+	
+	public static class RelPos
+		{
+		int x,y;
+		}
+	
 	public void applyImage(BufferedImage in, BufferedImage out)
 		{
-		//int repeatsv=currentKernel.repeats.getValue();
-		
-		
+		int repeatsv=currentKernel.repeats.getValue();
+		int w=out.getWidth();
+		int h=out.getHeight();
+
+		//Where to get relative pixels from
+		java.util.List<RelPos> pos=new LinkedList<RelPos>();
+		int minrx=0,maxrx=0,minry=0,maxry=0;
+		/*			int possize=0;
+			for(int y=0;y<getKernelHeight();y++)
+				for(int x=0;x<getKernelHeight();x++)
+					if(currentKernel.kernelm[y*getKernelWidth()+x].getValue())
+						possize++;
+			int posid=0;
+			int[] posxy=new int[possize*2];*/
+		for(int y=0;y<getKernelHeight();y++)
+			for(int x=0;x<getKernelHeight();x++)
+				if(currentKernel.kernelm[y*getKernelWidth()+x].getValue())
+					{
+					RelPos rp=new RelPos();
+					rp.x=x-currentKernel.midx;
+					rp.y=y-currentKernel.midy;
+					if(rp.x<minrx)minrx=rp.x;
+					if(rp.x>maxrx)maxrx=rp.x;
+					if(rp.y<minry)minry=rp.y;
+					if(rp.y>maxry)maxry=rp.y;
+					pos.add(rp);
+					/*						posxy[posid  ]=rp.x;
+						posxy[posid+1]=rp.y;
+						posid+=2;*/
+					}
+		int[] pixels=new int[pos.size()];
+		int take=pixels.length/2;
+		if(take>=pixels.length)
+			take=pixels.length-1;
+
+		for(int currepeat=0;currepeat<repeatsv;currepeat++)
+			{
+
+
+			//Apply filter
+			if(pos.size()>0)
+				{
+				WritableRaster inr=in.getRaster();
+				WritableRaster outr=out.getRaster();
+
+				int[][] inarr=new int[h][w];
+				for(int y=0;y<h;y++)
+					inr.getSamples(0, y, w, 1, 0, inarr[y]);
+				int[] outarr=new int[w];
+
+				for(int y=-minry;y<h-maxry;y++)
+					{
+					for(int x=-minrx;x<w-maxrx;x++)
+						{
+						//Collect pixels
+						int i=0;
+						for(RelPos rp:pos)
+							//for(int i=0;i<possize;i++)
+							{
+							int rx=x+rp.x;
+							int ry=y+rp.y;
+							//int rx=x+posxy[2*i];
+							//int ry=y+posxy[2*i+1];
+							pixels[i]=inarr[ry][rx];
+							i++;
+							}
+						//Stats, apply
+						Arrays.sort(pixels);
+						int newval=pixels[take];
+						outarr[x]=newval;
+						}
+					outr.setSamples(0, y, w, 1, 0, outarr);
+					}
+				}
+			in=out;
+			}
 		}
 	}
