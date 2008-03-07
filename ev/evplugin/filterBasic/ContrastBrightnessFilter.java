@@ -21,6 +21,7 @@ public class ContrastBrightnessFilter extends FilterSlice
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	private static String filterName="Contrast & Brightness";
+	private static String filterMeta="ContrastBrightness";
 	private static String filterCategory="Enhance";
 
 	public static void initPlugin() {}
@@ -58,7 +59,7 @@ public class ContrastBrightnessFilter extends FilterSlice
 	
 	public void saveMetadata(Element e)
 		{
-		setFilterXmlHead(e, filterName);
+		setFilterXmlHead(e, filterMeta);
 		e.setAttribute("pwhite",""+pcontrast);
 		e.setAttribute("pblack",""+pbrightness);
 		}

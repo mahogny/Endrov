@@ -1,5 +1,6 @@
 package evplugin.imagesetOME;
 
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -157,7 +158,7 @@ public class EVOME
 	/**
 	 * GPL. Get channel information for pixel data
 	 */
-	List/*<ome.model.core.Channel>*/ getChannelsData(long pixelsID)
+	List<ome.model.core.Channel> getChannelsData(long pixelsID)
 		{
 		ome.model.core.Pixels pixs = iQuery.findByQuery(
 				"select p from Pixels as p " +
@@ -167,7 +168,10 @@ public class EVOME
 				"left outer join fetch c.logicalChannel as lc " +
 				"left outer join fetch c.statsInfo where p.id = :id",
 				new Parameters().addId(new Long(pixelsID)));
-		return pixs.getChannels();
+		LinkedList<ome.model.core.Channel> clist=new LinkedList<ome.model.core.Channel>();
+		for(Object o:pixs.getChannels())
+			clist.add((ome.model.core.Channel)o);
+		return clist;//		return pixs.getChannels();
 		}
 	
 	ome.model.core.LogicalChannel getLogicalChannel(ome.model.core.Channel ch)
