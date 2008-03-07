@@ -8,7 +8,6 @@ Other New tools:
 
 LUT: this should be a filter
 	
-
 image
 	print
 
@@ -29,18 +28,6 @@ image
 		statistics??
 		3d+t color distribution plot
 
-	Operations
-		Binary
-			...morphological operations... 2d/3d etc
-		Grayscale
-			...generalized morpho... 2d/3d etc
-		Math
-			...somehow generalize how these are applied. console optimal here of course...
-
-
-image window
-	disable interpolation
-
 other new features:
 	load movies mpg etc?
 features that can be skipped?
@@ -49,10 +36,7 @@ features that can be skipped?
 	selection.make band
 
 	Jython, Ruby integration
-
 	shadows?
-
-	storing personal config on a proxy server
 
 !!
 * somehow get out profiles, spatial and in time
@@ -66,7 +50,6 @@ features that can be skipped?
      Filtered list of plugins worth converting/rewriting
 ===============================================================================
 ImageJ Acquisition [top]
-     Hamamatsu Orca 12-bit Camera
      Shading Corrector
      QuickTime Capture [Updated]
      TWAIN
@@ -91,11 +74,6 @@ ImageJ Acquisition [top]
      xlimaging.us: XLi megapixel USB 2.0 cameras (Windows only) [new] 
 ===============================================================================
 
-
-
-
-
-
 ImageJ Analysis [top]
      Autocorrelation
      MRI t2 calculations
@@ -107,12 +85,10 @@ ImageJ Analysis [top]
      Modulation Transfer Function
      Draw line or point grids [Updated]
      Moment Calculator
-     Batch Statistics
      Cell Counter
      Oval Profile Plot
      Color Comparison
      Radial Profile Plot
-     Microscope Scale
      MRI Analysis Calculator
      Sync Measure 3D
      Hough Circles
@@ -122,7 +98,6 @@ ImageJ Analysis [top]
      Colocalization
      Granulometry
      Texture Analysis
-     Named Measurements
      Cell Outliner
      Grid Cycloid Arc
      RGB Profiler
@@ -158,8 +133,6 @@ Color [top]
      RGB Recolor
      LUT Lister
      Color Counter
-     RGB Gray Stack Merge
-     Color Chooser
      RGB Measure
      3D Color Inspector/Color Histogram
      RGB Measure Plus
@@ -169,11 +142,7 @@ Color [top]
 ===============================================================================
 
      Kuwahara Filter
-     X_Shifter (correct pixel mismatch of confocal images) [new]
-     De-interlace
-     LoG Filtering
      Auto Gamma (gamma correction)     
-
 
 Filters [top]
      Background Subtraction and Normalization
@@ -193,7 +162,6 @@ Filters [top]
      Windowed-Sinc Filter (low pass time series filter)
      Anisotropic Diffusion 2D (edge-preserving noise reduction)
      Linearize Gel Data
-     Correct X Shift of Confocal Images
      Multi Otsu Threshold
      Spectral Unmixing of Bioluminescence Signals
      Lipschitz Filter //http://rsb.info.nih.gov/ij/plugins/lipschitz/
@@ -207,15 +175,11 @@ Graphics [top]
      Contour Plotter
      Dynamic Profiler
      Z-Axis Profiler
-     Dotted and Dashed Lines
      Radial Grid
-     Interactive 3D Surface Plots [Updated]
-     Fractal Generator [Updated]
      Diffusion Limited Aggregate Models
      Fractal Growth Models
 
 ===============================================================================
-
 
 Stacks [top]
      Object Tracker
@@ -225,15 +189,12 @@ Stacks [top]
      Stack Combiner
      Stack Histogram
      Stack Maker
-     Slice Remover
      MultiTracker
      Time Stamper
-     Stack Builder
      Stack Inserter
      Stack Normalizer
      Stack Focuser (extended depth of field)
      Substack Maker
-     Hypervolume Opener
      RGB Zprojector
      Concatenate Images or Stacks [Updated]
 
@@ -246,15 +207,10 @@ Utilities [top]
      Joel Time Stamper
      Query DICOM Header
      Calculate Fura-2 (calcium) Ratios
-     Benchmarks
      Stitch BLISS Tile Images
-     Command Line Macros
      Anaglyph (creates stereo images)
      Cairn Optosplit Image Splitter
-     Action Bar (a customizable tool bar)
      ROI Brush Tool
-     ROI Adjust Tool [new]
-
 
 ===============================================================================
 
@@ -272,10 +228,9 @@ More Sites with Plugins [top]
        Fractal Count, Map Fractal Count, Susan Filtering,
        operators, dilation, erosion, 4- and 8-connected particle analysis
        color thresholding
-       Dispose All Windows, Interfile Encoder/Decoder, Lookup Tables
        Align Stacks, Orthogonal Views (axial, coronal, and sagital)
        Clustering, Texture Synthesus, 3D Toolkit, Half-Median
-       RGB to CIE L*a*b*, Multiband Sobel edges, VTK Examples
+       RGB to CIE L*a*b*, Multiband Sobel edges
        DCRaw (digital camera raw images), ImageJ for Zaurus PDA
        MultiTracker2, RGB Stack Merge2, ICS Opener, Optical Insights
        Running Z Projector, Binner, QED Swap
@@ -304,11 +259,9 @@ More Sites with Plugins [top]
      Find Colocalized Pixels in RGB Channels
      Measure Total Above Thresholded Area in a Stack
      StackReg (recursive alignment [registration] of stacks)
-     LargeMontage (creates a montage from image files)
      Power and log transforms, contrast stretching, spatial filtering
      SpotTracker (particle tracking over noisy image sequences)
      Visible Human Preprocessing Toolkit
-     Multiple Image Processor (batch process images)
      DStretch (digital enhancement of pictographs) [new]
      SplineSnake (segmentation using active contour) [new]
      MIJ (interfacing ImageJ and Matlab) [new]
@@ -323,6 +276,5 @@ More Sites with Plugins [top]
      Introduction to Astronomical Image Processing using ImageJ [new]
      Chemotaxis and Migration Tool [new]
      RoiPushTool (edit area selections using circular brush) [new]
-     WindowLevelTool (adjust window/level by dragging the mouse) [new]
      SplineDeformationGenerator (cubic B-spline deformations) [new]
      Azimuthal Average [new]

@@ -36,7 +36,9 @@ public class PLUGIN extends PluginDef
 				NoisePoisson.class,
 				NoiseExponential.class,
 				ContrastBrightnessFilter.class, 
-				EqualizeHistogram.class
+				EqualizeHistogram.class,
+				DeinterlaceFilter.class,
+				ConfocalXShiftFilter.class
 				};
 		}
 	}

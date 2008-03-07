@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 /**
  * Macro over network: running on microscope side
  * java -jar startEndrov.jar mmc.MacroRemoteServer
+ * 
  * @author Johan Henriksson
  */
 public class MacroRemoteServer implements Runnable
