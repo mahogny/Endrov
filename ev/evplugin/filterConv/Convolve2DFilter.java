@@ -1,16 +1,11 @@
 package evplugin.filterConv;
 
-//import java.awt.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.*;
-
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
+import javax.swing.event.*;
 import org.jdom.Element;
 
 import evplugin.ev.*;
@@ -128,6 +123,117 @@ public class Convolve2DFilter extends FilterSlice
 	//category
 	//IJ filters
 	//http://de.wikipedia.org/wiki/Laplace-Operator
+
+	
+	/******************************************************************************************************
+	 *                               Filter widget                                                        *
+	 *****************************************************************************************************/
+
+
+	
+	
+	private class ConvolvePanel extends JPanel implements ChangeListener, ActionListener
+		{
+		static final long serialVersionUID=0;
+		
+		private Filter thisfilter;
+		private JComboBox kernelCombo=new JComboBox(premadeKernels);
+		private JPanel spanel=new JPanel(new BorderLayout());
+		private JSpinner xs=new JSpinner(new SpinnerNumberModel(1,1,128,1));
+		private JSpinner ys=new JSpinner(new SpinnerNumberModel(1,1,128,1));
+		private JPanel leftPanel=new JPanel();
+		
+		private int leftPanelX=-1;
+		private int leftPanelY=-1;
+		
+		//this way is not really good. should make it remember name of combo and remove updateforsure
+		public void makeLeftPanel(boolean updateforsure)
+			{
+			int h=getKernelHeight();//currentKernel.kernelm.length/currentKernel.kernelWidth;
+
+			boolean changedSize=leftPanelY!=h || leftPanelX!=currentKernel.kernelWidth;
+			if(changedSize || updateforsure)
+				{
+				leftPanelX=currentKernel.kernelWidth;
+				leftPanelY=h;
+				leftPanel.removeAll();
+				leftPanel.setLayout(new GridLayout(h,currentKernel.kernelWidth));
+				for(int y=0;y<h;y++)
+					for(int x=0;x<currentKernel.kernelWidth;x++)
+						{
+						JNumericFieldMutableDouble nc=new JNumericFieldMutableDouble(currentKernel.kernelm[y*currentKernel.kernelWidth+x],observer,this);
+						leftPanel.add(nc);
+						}
+				leftPanel.revalidate();
+				}
+			}
+		
+		public void updateSizeControl()
+			{
+			xs.removeChangeListener(this);
+			ys.removeChangeListener(this);
+			xs.setValue(getKernelWidth());
+			ys.setValue(getKernelHeight());
+			xs.addChangeListener(this);
+			ys.addChangeListener(this);
+			}
+		
+		public ConvolvePanel(Filter thisfilter)
+			{
+			this.thisfilter=thisfilter;
+			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
+			JNumericFieldMutableInteger nrepeats=new JNumericFieldMutableInteger(currentKernel.repeats,observer,this);
+			JCheckBoxMutableBoolean nnormalize=new JCheckBoxMutableBoolean("",currentKernel.normalize,observer,this);
+			
+			xs.setValue(currentKernel.kernelWidth);
+			ys.setValue(h);
+			xs.addChangeListener(this);
+			ys.addChangeListener(this);
+			
+			kernelCombo.setEditable(true);
+			kernelCombo.addActionListener(this);
+
+			
+			JPanel lefttot=new JPanel(new GridLayout(4,1));
+			JPanel panelxy=new JPanel(new GridLayout(1,2));
+			panelxy.add(EvSwingTools.withLabel("#X:",xs));
+			panelxy.add(EvSwingTools.withLabel("#Y:",ys));
+			lefttot.add(panelxy);
+			lefttot.add(EvSwingTools.withLabel("Repeats:",nrepeats));
+			lefttot.add(EvSwingTools.withLabel("Normalize:",nnormalize));
+			lefttot.add(kernelCombo);
+			spanel.add(lefttot,BorderLayout.NORTH);
+			
+			add(spanel, BorderLayout.EAST);
+
+			setLayout(new BorderLayout());
+			makeLeftPanel(false);
+			add(leftPanel, BorderLayout.WEST);
+			add(spanel, BorderLayout.EAST);
+			}
+
+		public void stateChanged(ChangeEvent e)
+			{
+			resizeKernel((Integer)xs.getValue(), (Integer)ys.getValue());
+			makeLeftPanel(false);
+			observer.emit(thisfilter);
+			observerGUI.emit(this);
+			}
+
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==kernelCombo && e.getActionCommand().equals("comboBoxChanged"))
+				{
+				ConvolutionKernel sel=(ConvolutionKernel)kernelCombo.getSelectedItem();
+				setKernel(sel);
+				leftPanelX=-1;
+				updateSizeControl();
+				makeLeftPanel(true);
+				}
+			}
+		}
+	
+	
 	
 	
 	/******************************************************************************************************
@@ -143,15 +249,7 @@ public class Convolve2DFilter extends FilterSlice
 		}
 	public CurrentKernel currentKernel=new CurrentKernel();
 	
-	public Convolve2DFilter()
-		{
-		setKernel(new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}));
-		}
-	
-	/**
-	 * Set ker
-	 * @param k
-	 */
+	/** Set current kernel */
 	public void setKernel(ConvolutionKernel k)
 		{
 		currentKernel.kernelWidth=k.width;
@@ -159,33 +257,10 @@ public class Convolve2DFilter extends FilterSlice
 		for(int i=0;i<k.filter.length;i++)
 			currentKernel.kernelm[i]=new EvMutableDouble(k.filter[i]);
 		currentKernel.normalize.setValue(k.normalize);
-		int h=getKernelHeight();
-		System.out.println("dim2 "+currentKernel.kernelWidth+" "+h);
 		observer.emit(this);
 		}
-	
-	//TODO: use this one more
-	public int getKernelHeight()
-		{
-		if(currentKernel.kernelWidth==0)
-			return 0;
-		else 
-			return currentKernel.kernelm.length/currentKernel.kernelWidth;
-		}
-	
-	
-	public String getFilterName(){return filterName;}
-	
-	public void saveMetadata(Element e)
-		{
-		setFilterXmlHead(e, filterMeta);
-		e.setAttribute("w",""+currentKernel.kernelWidth);
-		//TODO
-		}
 
-	/**
-	 * Set the new size of the kernel, fill with 0's as needed
-	 */
+	/** Set the new size of the kernel, fill with 0's as needed */
 	public void resizeKernel(int nw, int nh)
 		{
 		int oldh=currentKernel.kernelm.length/currentKernel.kernelWidth;
@@ -203,117 +278,37 @@ public class Convolve2DFilter extends FilterSlice
 						kernel2[ay*currentKernel.kernelWidth+ax]=new EvMutableDouble(0);
 					}
 			currentKernel.kernelm=kernel2;
-			System.out.println("dim3 "+nw+" "+nh);
 			observer.emit(this);
 			}
 		}
-	
-	
-	
-	private class ConvolvePanel extends JPanel implements ChangeListener, ActionListener
+	/** Get height of current kernel */
+	public int getKernelHeight()
 		{
-		static final long serialVersionUID=0;
-		
-		private Filter thisfilter;
-		
-		private JComboBox kernelCombo=new JComboBox(premadeKernels);
-		private JPanel spanel=new JPanel(new BorderLayout());
-		private JSpinner xs=new JSpinner(new SpinnerNumberModel(1,1,128,1));
-		private JSpinner ys=new JSpinner(new SpinnerNumberModel(1,1,128,1));
-		private JPanel leftPanel=new JPanel();
-		
-		private int leftPanelX=-1;
-		private int leftPanelY=-1;
-
-		
-		//this way is not really good. should make it remember name of combo and remove updateforsure
-		public void makeLeftPanel(boolean updateforsure)
-			{
-			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
-
-			boolean changedSize=leftPanelY!=h || leftPanelX!=currentKernel.kernelWidth;
-			if(changedSize || updateforsure)
-				{
-				System.out.println("A "+leftPanelY+" "+h+" "+leftPanelX+" "+currentKernel.kernelWidth+" "+spanel);
-				leftPanelX=currentKernel.kernelWidth;
-				leftPanelY=h;
-				leftPanel.removeAll();
-				leftPanel.setLayout(new GridLayout(h,currentKernel.kernelWidth));
-				System.out.println("dim "+currentKernel.kernelWidth+" "+h);
-				for(int y=0;y<h;y++)
-					for(int x=0;x<currentKernel.kernelWidth;x++)
-						{
-						JNumericFieldMutableDouble nc=new JNumericFieldMutableDouble(currentKernel.kernelm[y*currentKernel.kernelWidth+x],observer,this);
-						leftPanel.add(nc);
-						}
-				leftPanel.revalidate();
-				}
-			
-			}
-		
-		public ConvolvePanel(Filter thisfilter)
-			{
-			this.thisfilter=thisfilter;
-			int h=currentKernel.kernelm.length/currentKernel.kernelWidth;
-			JNumericFieldMutableInteger nrepeats=new JNumericFieldMutableInteger(currentKernel.repeats,observer,this);
-			JCheckBoxMutableBoolean nnormalize=new JCheckBoxMutableBoolean("",currentKernel.normalize,observer,this);
-			
-			xs.setValue(currentKernel.kernelWidth);
-			ys.setValue(h);
-			xs.addChangeListener(this);
-			ys.addChangeListener(this);
-			
-
-			
-			kernelCombo.setEditable(true);
-			kernelCombo.addActionListener(this);
-
-			
-			JPanel lefttot=new JPanel(new GridLayout(4,1));
-			JPanel panelxy=new JPanel(new GridLayout(1,2));
-			panelxy.add(EvSwingTools.withLabel("#X:",xs));
-			panelxy.add(EvSwingTools.withLabel("#Y:",ys));
-			lefttot.add(panelxy);
-			lefttot.add(EvSwingTools.withLabel("Repeats:",nrepeats));
-			lefttot.add(EvSwingTools.withLabel("Normalize:",nnormalize));
-			lefttot.add(kernelCombo);
-			spanel.add(lefttot,BorderLayout.NORTH);
-			
-			
-			add(spanel, BorderLayout.EAST); //n
-
-			setLayout(new BorderLayout());
-			makeLeftPanel(false);
-			System.out.println("first "+leftPanelY+" "+leftPanelX+" ");
-			add(leftPanel, BorderLayout.WEST);
-			//add(makeLeftPanel(), BorderLayout.WEST);
-			add(spanel, BorderLayout.EAST);
-			}
-
-		
-		
-		public void stateChanged(ChangeEvent e)
-			{
-			resizeKernel((Integer)xs.getValue(), (Integer)ys.getValue());
-			makeLeftPanel(false);
-			observer.emit(thisfilter);
-			observerGUI.emit(this);
-			}
-
-		public void actionPerformed(ActionEvent e)
-			{
-			System.out.println("D "+leftPanelY+" %"+" "+leftPanelX+" "+currentKernel.kernelWidth);
-			if(e.getSource()==kernelCombo && e.getActionCommand().equals("comboBoxChanged"))
-				{
-				ConvolutionKernel sel=(ConvolutionKernel)kernelCombo.getSelectedItem();
-				setKernel(sel);
-				stateChanged(null);
-				makeLeftPanel(true);
-				}
-			}
-		
-		
+		return currentKernel.kernelWidth==0 ? 0 : currentKernel.kernelm.length/currentKernel.kernelWidth;
 		}
+	/** Get width of current kernel */
+	public int getKernelWidth()
+		{
+		return currentKernel.kernelWidth;
+		}
+	
+
+	
+	
+	public Convolve2DFilter()
+		{
+		setKernel(new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}));
+		}
+	
+	public String getFilterName(){return filterName;}
+	
+	public void saveMetadata(Element e)
+		{
+		setFilterXmlHead(e, filterMeta);
+		e.setAttribute("w",""+currentKernel.kernelWidth);
+		//TODO
+		}
+
 	
 	public JComponent getFilterWidget()
 		{
