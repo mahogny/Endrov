@@ -238,7 +238,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/**
 	 * Get settings from another synchronized control
 	 */
-	public void replicate(double frame, Integer z)
+	public void replicate(double frame, Double z)
 		{
 		removeChangeListener();
 		spinnerFrame.setValue((double)frame);
@@ -275,7 +275,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		}
 	
 	/** Current slice/Z */
-	public Integer getZ()
+	public Double getModelZ()
 		{
 		return null;
 		}

@@ -12,9 +12,11 @@ public class FrameControl
 		{
 		public int getGroup();
 		public double getFrame();
-		public Integer getZ();
+//		public Integer getZ(); //slice #
+		public Double getModelZ(); //model coord Z
 		
-		public void replicate(double frame, Integer slice);
+//		public void replicate(double frame, Integer slice);
+		public void replicate(double frame, Double slice); //model coord
 		}
 
 	/** List of all framecontrols. Used if grouped */
@@ -30,7 +32,7 @@ public class FrameControl
 		{
 		int group=synch.getGroup();
 		double frame=synch.getFrame();
-		Integer z=synch.getZ();
+		Double z=synch.getModelZ();
 		
 		for(FrameControl.Synch c:FrameControl.controls.keySet())
 			if(c.getGroup()==group && c!=synch)

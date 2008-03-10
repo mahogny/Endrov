@@ -380,8 +380,8 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void mouseClicked(MouseEvent e)
 		{
-		view.clickRegion(e);
 		view.requestFocus();
+		view.clickRegion(e);
 		if(SwingUtilities.isRightMouseButton(e))
 			showPopup(e);
 		}
@@ -432,10 +432,30 @@ public class LineageWindow extends BasicWindow
 			{
 			popup.addSeparator();
 			popup.add(new JMenuItem("--Keyframe: "+kf.nuc+"/"+kf.frame));
+			JMenuItem miGotoFZ=new JMenuItem("Go to frame and z");
+			popup.add(miGotoFZ);
+			popup.addSeparator();
 			JMenuItem miDelKF=new JMenuItem("Delete keyframe");
 			popup.add(miDelKF);
 			JMenuItem miSplit=new JMenuItem("Split here");
 			popup.add(miSplit);
+			
+			miGotoFZ.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					NucLineage lin=getLineage();
+					if(lin!=null)
+						{
+						NucLineage.NucInterp inter=lin.nuc.get(kf.nuc).interpolate(hoverFrame);
+						frameControl.setFrameZ(hoverFrame, inter.pos.z);
+						}
+					
+					
+					}
+				});
+
+			
 			
 			miDelKF.addActionListener(new ActionListener()
 				{
