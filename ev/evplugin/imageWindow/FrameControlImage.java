@@ -385,22 +385,30 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		FrameControl.replicateSettings(this);
 		}
 	
+	
+	/** Convert world to screen Z coordinate. REPLICATED CODE, BAD! */
+	public double w2sz(double z) {return z*getImageset().meta.resZ;}
+	/** Convert world to screen Z coordinate. REPLICATED CODE, BAD! */
+	public double s2wz(double sz) {return sz/(double)getImageset().meta.resZ;} 
+	
 	/**
 	 * Get settings from another synchronized control
 	 */
-	public void replicate(double frame, Integer z)
+	public void replicate(double frame, Double z)
 		{
 		if(z==null)
-			z=getZ();
+			z=getModelZ();
+		int slicenum=(int)Math.round(w2sz(z));
+		
 		if(channel!=null && getImageset().getChannel(channel)!=null)
 			{
 			frame=getImageset().getChannel(channel).closestFrame((int)frame);
-			z=getImageset().getChannel(channel).closestZ((int)frame, z);
+			slicenum=getImageset().getChannel(channel).closestZ((int)frame, slicenum);
 			}
 		removeChangeListener();
 		spinnerFrame.setValue((int)frame);
 		if(checkGroupSlice.isSelected())
-			spinnerZ.setValue(z);
+			spinnerZ.setValue(slicenum);
 		addChangeListener();
 		listener.stateChanged(new ChangeEvent(this));
 		}
@@ -441,9 +449,21 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		{
 		return (Integer)spinnerZ.getValue();
 		}
+	public Double getModelZ()
+		{
+		return s2wz((Integer)spinnerZ.getValue());
+		}
+	
+	
 	
 	/** Set current slice/Z */
 	public void setZ(int z)
+		{
+		setAll(getFrame(), z);
+		}
+	
+	/** Set current slice/Z */
+	public void setModelZ(int z)
 		{
 		setAll(getFrame(), z);
 		}

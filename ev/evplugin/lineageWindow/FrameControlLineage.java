@@ -25,6 +25,7 @@ public class FrameControlLineage extends JPanel implements FrameControl.Synch
 	private JSpinner spinnerGroup=new JSpinner(groupModel);
 	
 	private double frame;
+	private Double z=null;
 	
 
 	/**
@@ -52,7 +53,7 @@ public class FrameControlLineage extends JPanel implements FrameControl.Synch
 	/**
 	 * Get settings from another synchronized control
 	 */
-	public void replicate(double frame, Integer z)
+	public void replicate(double frame, Double z)
 		{
 		this.frame=frame;
 		listener.stateChanged(new ChangeEvent(this));
@@ -87,8 +88,18 @@ public class FrameControlLineage extends JPanel implements FrameControl.Synch
 		}
 	
 	/** Current slice/Z */
-	public Integer getZ()
+	public Double getModelZ()
 		{
-		return null;
+		return z;
+		}
+	
+	/** Set current z */
+	public void setFrameZ(double frame, double z)
+		{
+		this.frame=frame;
+		this.z=z;
+		listener.stateChanged(new ChangeEvent(this));
+		FrameControl.replicateSettings(this);
+		this.z=null;
 		}
 	}

@@ -627,7 +627,8 @@ public class LineageView extends JPanel
 				r.clickRegion(e);
 				return;
 				}
-		NucLineage.selectedNuclei.clear();
+		if(SwingUtilities.isLeftMouseButton(e))
+			NucLineage.selectedNuclei.clear();
 		BasicWindow.updateWindows();
 		//repaint();
 		}
@@ -651,7 +652,7 @@ public class LineageView extends JPanel
 			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
 		public void clickRegion(MouseEvent e)
 			{
-			if(lin!=null)
+			if(lin!=null && SwingUtilities.isLeftMouseButton(e))
 				NucLineage.mouseSelectNuc(new NucPair(lin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 			BasicWindow.updateWindows();
 			}
