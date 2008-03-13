@@ -21,4 +21,6 @@ rm -Rf .cvsignore */.cvsignore */*/.cvsignore */*/*/.cvsignore */*/*/*/.cvsignor
 rm -Rf .project .classpath .metadata .settings
 
 #compress
+cd ..
 zip -r $name $name
+rm -Rf $name
