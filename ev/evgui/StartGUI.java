@@ -19,10 +19,17 @@ public class StartGUI
 		{
 		String javaver=System.getProperty("java.specification.version");
 		String OS=System.getProperty("os.name");
+		String arch=System.getProperty("os.arch");
 		String cpsep=":";
 		
+		System.out.println("This system runs OS:"+OS+" with java:"+javaver+" on arch:"+arch);
 		int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
 		int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
+		
+		boolean hasSpecifiedLibdir=false;
+		for(String s:args)
+			if(s.startsWith("-Djava.library.path="))
+				hasSpecifiedLibdir=true;
 		
 		if(vermajor>1 || (vermajor==1 && verminor>=5))
 			{
@@ -47,16 +54,15 @@ public class StartGUI
 					}
 				else //Assume linux or equivalent
 					{
-					libdir="libs/linux";
+					libdir="libs/linux2";
 					pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
 					}
 				
 				//Collect jarfiles
 				Vector<String> jarfiles=new Vector<String>();
 				collectJars(jarfiles, "libs");
-				//collectJars(jarfiles, "libs/ome");
-				//collectJars(jarfiles, "libs/ParallelColt/lib");
-				collectJars(jarfiles, libdir);
+				if(!libdir.equals(""))
+					collectJars(jarfiles, libdir);
 				String jarstring=new File(".").getAbsolutePath();
 				for(String s:jarfiles)
 					jarstring+=cpsep+s;
@@ -67,7 +73,8 @@ public class StartGUI
 				cmdarg.add("-cp");
 				cmdarg.add(jarstring);
 				cmdarg.add(memstring);
-				cmdarg.add("-Djava.library.path="+libdir);
+				if(!libdir.equals("") && !hasSpecifiedLibdir)
+					cmdarg.add("-Djava.library.path="+libdir);
 
 				//What to run? additional arguments?
 				if(args.length>0)
@@ -94,9 +101,33 @@ public class StartGUI
 				
 				//Run process
 				pb.command(cmdarg);
-				Process p=pb.start();
-				InputStreamReader isr = new InputStreamReader(p.getInputStream());
-        BufferedReader br = new BufferedReader(isr);
+				String totalCmd="";
+				for(String s:pb.command())
+					totalCmd+=s+" ";
+				System.out.println(totalCmd);
+				final Process p=pb.start();
+
+				//Pass on errors
+				new Thread()
+					{
+					public synchronized void run()
+						{
+						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+		        String line;
+		        try
+							{
+							while ( (line = br.readLine()) != null)
+								System.err.println(line);
+							}
+						catch (IOException e)
+							{
+							e.printStackTrace();
+							}
+						}
+					}.start();
+				
+				//Pass on output
+        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String line;
         while ( (line = br.readLine()) != null)
         	System.out.println(line);
@@ -120,6 +151,8 @@ public class StartGUI
 		else
 			JOptionPane.showMessageDialog(null, "Your version of Java is too old. At least 1.5 required");
 		}
+	
+	
 	
 	/**
 	 * Get all jars and add them with path to vector. Recurses when it finds a directory
