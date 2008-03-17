@@ -56,7 +56,7 @@ public class LineageWindow extends BasicWindow
 		{
 		public void stateChanged(ChangeEvent e)
 			{
-			view.goFrame((int)frameControl.getFrame());
+			view.setFrame((int)frameControl.getFrame());
 			}
 		});
 	

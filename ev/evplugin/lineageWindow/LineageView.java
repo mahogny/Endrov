@@ -25,7 +25,11 @@ public class LineageView extends JPanel
 		public int x, y, frame;
 		public String nuc;
 		}
-	
+
+	private static Color frameLineColor=new Color(220,220,220);
+	private static Color curFrameLineColor=new Color(150,150,150);
+	private static Color frameStringColor=new Color(100,100,100);
+
 	////////////////////////////////////////////////////////////////
 	
 	public int camB, camC;
@@ -64,7 +68,7 @@ public class LineageView extends JPanel
 				allMinFrame=nuc.pos.firstKey();
 			}
 		if(allMinFrame!=null)
-			goFrame(allMinFrame);
+			setFrame(allMinFrame);
 //		System.out.println(": "+lin+" "+allMinFrame);
 		}
 
@@ -133,7 +137,7 @@ public class LineageView extends JPanel
 	/**
 	 * Move camera to show some frame
 	 */
-	public void goFrame(int frame)
+	public void setFrame(int frame)
 		{
 		camC=frame*frameDist;
 		if(displayHorizontalTree)
@@ -142,6 +146,15 @@ public class LineageView extends JPanel
 			camC-=getHeight()/2;
 		repaint();
 		}
+	
+	public int getFrame()
+		{
+		if(displayHorizontalTree)
+			return (camC+getWidth()/2)/frameDist;
+		else
+			return (camC+getHeight()/2)/frameDist;
+		}
+	
 	
 	/**
 	 * Get all root nuclei
@@ -232,8 +245,6 @@ public class LineageView extends JPanel
 		{
 		if(showFrameLines)
 			{
-			Color frameLineColor=new Color(220,220,220);
-			Color frameStringColor=new Color(100,100,100);
 			int frameLineSkip=20/frameDist;
 			if(frameLineSkip<1)
 				frameLineSkip=1;
@@ -255,6 +266,8 @@ public class LineageView extends JPanel
 					g2.rotate(-Math.PI/2);
 					g2.translate(-x, -5);
 					}
+				g.setColor(curFrameLineColor);
+				g.drawLine(getWidth()/2, 0, getWidth()/2, getHeight());
 				}
 			else
 				{
@@ -266,6 +279,8 @@ public class LineageView extends JPanel
 					g.setColor(frameStringColor);
 					g.drawString(""+i, 5, y); 
 					}		
+				g.setColor(curFrameLineColor);
+				g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2);
 				}
 			}
 		}
