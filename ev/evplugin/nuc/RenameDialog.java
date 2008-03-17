@@ -2,11 +2,13 @@ package evplugin.nuc;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvDataXML;
 import evplugin.data.EvObject;
+
 
 /**
  * Dialog to rename a nucleus
@@ -18,11 +20,11 @@ public class RenameDialog extends JDialog implements ActionListener
 
 	public static NucLineage templateLineage=null;
 
-	private final JComboBox inputName;
-	private JButton bLoad=new JButton("Load template");
-	private JButton bOk=new JButton("Ok");
-	private JButton bCancel=new JButton("Cancel");
-	private Frame frame;
+	private final JComboBox inputName=new JComboBox();
+	private final JButton bLoad=new JButton("Load template");
+	private final JButton bOk=new JButton("Ok");
+	private final JButton bCancel=new JButton("Cancel");
+	private final Frame frame;
 	
 	private final NucLineage oldLineage;
 	private final String oldName;
@@ -43,7 +45,6 @@ public class RenameDialog extends JDialog implements ActionListener
 		setRootPane(rootPane);
 		
 		//String oldName=pair.getRight();
-		inputName=new JComboBox();
 		inputName.setEditable(true);
 		inputName.setSelectedItem(oldName);
 
@@ -71,12 +72,13 @@ public class RenameDialog extends JDialog implements ActionListener
 		setVisible(true);
 		}
 	
-	
+	private Timer timer=null; //Hate.
 	
 	public void actionPerformed(ActionEvent e)
 		{
 		if(e.getSource()==bLoad)
 			{
+			timer=null;
 			EvDataXML data=EvDataXML.loadReturnMeta();
 			if(data!=null)
 				{
@@ -88,27 +90,40 @@ public class RenameDialog extends JDialog implements ActionListener
 						return;
 						}
 				}
-			} //or comboBoxEdited
-		else if(e.getSource()==bOk || (e.getSource()==inputName && e.getActionCommand().equals("comboBoxChanged")))
+			}
+		else if(e.getSource()==inputName && e.getActionCommand().equals("comboBoxChanged"))
 			{
-			String newName=(String)inputName.getSelectedItem();
-			if(!newName.equals(""))
-				{
-				if(oldLineage.nuc.containsKey(newName))
-					JOptionPane.showMessageDialog(frame, "Nucleus already exists");
-				else
-					{
-					oldLineage.renameNucleus(oldName, newName);
-					dispose();
-					BasicWindow.updateWindows();
-					}
-				}
-			}			
+			timer=new Timer(100,this);
+			timer.setRepeats(false);
+			timer.start();
+			}
+		else if(e.getSource()==bOk || e.getSource()==timer)
+			clickOk();
 		else if(e.getSource()==bCancel)
+			{
+			timer=null;
 			dispose();
+			}
 		}
 
 
+	private void clickOk()
+		{
+		timer=null;
+		String newName=(String)inputName.getSelectedItem();
+		if(!newName.equals(""))
+			{
+			if(oldLineage.nuc.containsKey(newName))
+				JOptionPane.showMessageDialog(frame, "Nucleus already exists");
+			else
+				{
+				oldLineage.renameNucleus(oldName, newName);
+				dispose();
+				BasicWindow.updateWindows();
+				}
+			}
+		}			
+	
 
 	/**
 	 * Fill in list of alternatives
