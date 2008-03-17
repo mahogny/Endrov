@@ -43,9 +43,32 @@ public class BestFitLength
 //		System.out.println("diff: scale: "+dx[7-1]+"    rot   "+dx[4-1]+" "+dx[5-1]+" "+dx[6-1]+"    trans "+dx[1-1]+" "+dx[2-1]+" "+dx[3-1]);
 		}
 	
+	private Vector3d total2(
+			String iName, String jName, String diffName)
+		{
+		NucStatsOne ni=nuc.get(iName);
+		Double len=ni.avlenthisframe.get(jName);
+		if(len==null)
+			return new Vector3d();
+		else
+			{
+			NucStatsOne nj=nuc.get(jName);
+	
+			Vector3d xi=new Vector3d(ni.curpos);
+			xi.sub(nj.curpos);
+			double inner=xi.length()-len;
+			
+			
+			
+			
+			
+			return inner*inner; //TODO: weight
+			}
+		}
+			
 	
 	
-	private double total(
+	private double total2(
 			String iName, String jName, 
 			String diffName, int diffCoord)
 		{
