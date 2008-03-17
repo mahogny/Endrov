@@ -6,7 +6,7 @@ import static java.lang.Math.*;
 
 
 
-public class BestFit
+public class BestFitRotTransScale
 	{
 	double x[]=new double[]{0,0,0, 0,0,0, 1}; //tx ty tz   rx ry rz  s
 	
@@ -22,6 +22,16 @@ public class BestFit
 	public double getRz(){return x[6-1];}
 	public double getScale(){return x[7-1];}
 
+
+	public BestFitRotTransScale()
+		{
+		}
+	public BestFitRotTransScale(BestFitRotTransScale bf)
+		{
+		for(int i=0;i<x.length;i++)
+			x[i]=bf.x[i];
+		}
+	
 	
 	public void clear()
 		{
@@ -124,7 +134,7 @@ public class BestFit
 			x[7-1]=0.01;
 		if(x[7-1]>100)
 			x[7-1]=100;
-		x[7-1]=1;
+		x[7-1]=1; //fix scale
 		
 //		System.out.println("eps: "+eps+"  scale: "+x[7-1]+"    rot   "+x[4-1]+" "+x[5-1]+" "+x[6-1]+"    trans "+x[1-1]+" "+x[2-1]+" "+x[3-1]);
 //		System.out.println("diff: scale: "+dx[7-1]+"    rot   "+dx[4-1]+" "+dx[5-1]+" "+dx[6-1]+"    trans "+dx[1-1]+" "+dx[2-1]+" "+dx[3-1]);

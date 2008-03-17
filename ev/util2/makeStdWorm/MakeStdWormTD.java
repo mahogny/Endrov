@@ -9,10 +9,53 @@ import evplugin.ev.*;
 import evplugin.nuc.NucLineage;
 import evplugin.nuc.NucPair;
 
+//change: try to find best matching time
 
-public class MakeStdWorm
+public class MakeStdWormTD
 	{
 
+	
+	
+	public static void fill(BestFitRotTransScale bf, NucLineage refLin, NucLineage lin, int refframe, int framei)
+		{
+		Map<NucPair,NucLineage.NucInterp> refi=refLin.getInterpNuc(refframe);
+		Map<NucPair,NucLineage.NucInterp> lini=lin.getInterpNuc(framei);
+		
+		//Which nucs are in common?
+		HashSet<String> nucrefi=new HashSet<String>();
+		HashSet<String> nuclini=new HashSet<String>();
+		for(NucPair p:refi.keySet())
+			nucrefi.add(p.getRight());
+		for(NucPair p:lini.keySet())
+			nuclini.add(p.getRight());
+		nucrefi.retainAll(nuclini);
+		
+		//Get the best fit
+		Vector<String> bfNames=new Vector<String>();
+		bf.clear();
+		for(String n:nucrefi)
+			{
+			NucLineage.NucPos refpos=refi.get(new NucPair(refLin,n)).pos;
+			NucLineage.NucPos linpos=lini.get(new NucPair(lin,n)).pos;
+			bf.goalpoint.add(new Vector3d(refpos.x,refpos.y,refpos.z));
+			bf.newpoint.add(new Vector3d(linpos.x,linpos.y,linpos.z));
+			bfNames.add(n);
+			}
+		
+		
+		for(String n:nucrefi)
+			{
+			NucLineage.NucPos refpos=refi.get(new NucPair(refLin,n)).pos;
+			NucLineage.NucPos linpos=lini.get(new NucPair(lin,n)).pos;
+			bf.goalpoint.add(new Vector3d(refpos.x,refpos.y,refpos.z));
+			bf.newpoint.add(new Vector3d(linpos.x,linpos.y,linpos.z));
+			bfNames.add(n);
+			}
+		}
+	
+	
+	
+	
 	public static void main(String[] args)
 		{
 		Log.listeners.add(new StdoutLog());
@@ -174,67 +217,56 @@ public class MakeStdWorm
 					{
 					//Interpolate frame
 					int refframe=framei-linShift.get(refLin)+linShift.get(lin);
-					//System.out.println("refframe "+refframe);
-					Map<NucPair,NucLineage.NucInterp> refi=refLin.getInterpNuc(refframe);
-					Map<NucPair,NucLineage.NucInterp> lini=lin.getInterpNuc(framei);
-					
-					//Which nucs are in common?
-					HashSet<String> nucrefi=new HashSet<String>();
-					HashSet<String> nuclini=new HashSet<String>();
-					for(NucPair p:refi.keySet())
-						nucrefi.add(p.getRight());
-					for(NucPair p:lini.keySet())
-						nuclini.add(p.getRight());
-					nucrefi.retainAll(nuclini);
-					
-					//Get the best fit
-					Vector<String> bfNames=new Vector<String>();
-					bf.clear();
-					for(String n:nucrefi)
+
+					Integer dfmin=null;
+					double dfminval=0;
+					BestFitRotTransScale bfthismin=null;
+					for(int df=-30;df<30;df+=2)
 						{
-						NucLineage.NucPos refpos=refi.get(new NucPair(refLin,n)).pos;
-						NucLineage.NucPos linpos=lini.get(new NucPair(lin,n)).pos;
-						bf.goalpoint.add(new Vector3d(refpos.x,refpos.y,refpos.z));
-						bf.newpoint.add(new Vector3d(linpos.x,linpos.y,linpos.z));
-						bfNames.add(n);
+						BestFitRotTransScale bfthis=new BestFitRotTransScale(bf);
+						
+						fill(bfthis, refLin, lin, refframe+df, framei);
+//						Map<NucPair,NucLineage.NucInterp> lini=lin.getInterpNuc(framei);
+
+						//add to eps for missing nuc
+						
+						bfthis.iterate(100,1000,30);
+//						System.out.println("df "+df+" eps "+bfthis.eps);
+						
+						if(dfmin==null || bfthis.eps<dfminval)
+							{
+							dfmin=df;
+							dfminval=bfthis.eps;
+							bfthismin=bfthis;
+							}
 						}
 					
+	//				System.out.println("---------------------------------------");
+					System.out.println("dfmin "+ dfmin);
+					bf=bfthismin;
+					
+					
+					
+	/*				
 					if(bfFirstTime)
 						{
 						bf.iterate(100,50000,0);
 //						bf.iterate(100,5000,0);
-						bfFirstTime=false;
 						}
 					
-					
-					bf.iterate(100,1000,30);
-					System.out.println(""+framei+" "+refi.size()+" "+lini.size()+" "+bf.goalpoint.size()+" "+bf.eps+"     "+
-							bf.getTx()+" "+bf.getTy()+" "+bf.getTz()+" "+bf.getRx()+" "+bf.getRy()+" "+bf.getRz()+" "+bf.getScale());
-					
-					/*
-					//Copy positions
-					for(String n:nucstocopy)
-						{
-						NucLineage.Nuc linnuc=lin.nuc.get(n);
-						if(linnuc.pos.containsKey(framei))
-							{
-							NucLineage.Nuc refnuc=refLin.nuc.get(n);
-							NucLineage.NucPos pos=new NucLineage.NucPos();
-							
-							NucLineage.NucPos origpos=linnuc.pos.get(framei);
-							Vector3d bfpos=bf.transform(new Vector3d(origpos.x,origpos.y,origpos.z));
-							pos.x=bfpos.x;
-							pos.y=bfpos.y;
-							pos.z=bfpos.z;
-							pos.r=origpos.r*bf.getScale();
-							
-							refnuc.pos.put(refframe, pos);
-							}
-						
-						}
+					bfFirstTime=false;
 */
+					
+					
+//					System.out.println(""+framei+" "+refi.size()+" "+lini.size()+" "+bf.goalpoint.size()+" "+bf.eps+"     "+
+	//						bf.getTx()+" "+bf.getTy()+" "+bf.getTz()+" "+bf.getRx()+" "+bf.getRy()+" "+bf.getRz()+" "+bf.getScale());
+		
+					
+					
+	
 
 					//Update orig
+					/*
 					for(String n:lin.nuc.keySet())
 						{
 						NucLineage.Nuc linnuc=lin.nuc.get(n);
@@ -252,7 +284,7 @@ public class MakeStdWorm
 							linnuc.pos.put(framei, ipos);
 							}
 						}
-					
+*/					
 					
 					}
 				
