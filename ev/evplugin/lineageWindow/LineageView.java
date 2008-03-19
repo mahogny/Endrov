@@ -30,6 +30,29 @@ public class LineageView extends JPanel
 	private static Color curFrameLineColor=new Color(150,150,150);
 	private static Color frameStringColor=new Color(100,100,100);
 
+	/** Cached information about nuclei */
+	private class DrawCache
+		{
+		TreeMap<String, Internal> nucInternal=new TreeMap<String, Internal>();
+		}
+
+	
+	private WeakHashMap<NucLineage, DrawCache> drawCache=new WeakHashMap<NucLineage, DrawCache>();
+
+	
+	private DrawCache getDrawCache()
+		{
+		return getDrawCache(lin);
+		}
+	
+	private DrawCache getDrawCache(NucLineage lin)
+		{
+		DrawCache dc=drawCache.get(lin);
+		if(dc==null)
+			drawCache.put(lin, dc=new DrawCache());
+		return dc;
+		}
+	
 	////////////////////////////////////////////////////////////////
 	
 	public int camB, camC;
@@ -41,8 +64,8 @@ public class LineageView extends JPanel
 	public boolean showFrameLines=true;
 	public boolean showKeyFrames=true;
 	
-	/** Cached information about nuclei */
-	TreeMap<String, Internal> nucInternal=new TreeMap<String, Internal>();
+	
+	
 	
 	/** Size of expander icon */
 	private static int expanderSize=4;
@@ -301,7 +324,7 @@ public class LineageView extends JPanel
 			//This is a hack in my opinion. Better if it can be found during tree structure planner
 			//but this is more flexible right now. will give some artifacts
 			System.out.println(nucName+" not found while drawing. bug!!!?");
-			nucInternal.remove(nucName);
+			getDrawCache().nucInternal.remove(nucName);
 			return;
 			}
 		
@@ -344,7 +367,7 @@ public class LineageView extends JPanel
 			for(String cName:nuc.child)
 				{
 				NucLineage.Nuc c=lin.nuc.get(cName);
-				Internal cInternal=nucInternal.get(cName);
+				Internal cInternal=getDrawCache().nucInternal.get(cName);
 				//Draw connecting line
 				g.setColor(Color.BLACK);
 				if(displayHorizontalTree)
@@ -582,7 +605,7 @@ public class LineageView extends JPanel
 				int fromleft=0;
 				for(String cName:nuc.child)
 					{
-					Internal cInternal=nucInternal.get(cName);
+					Internal cInternal=getDrawCache().nucInternal.get(cName);
 					cInternal.centerDisplacement=fromleft+cInternal.sizer/2-totw/2;
 					fromleft+=cInternal.sizer;
 					}
@@ -618,11 +641,11 @@ public class LineageView extends JPanel
 	 */
 	public Internal getNucinfo(String nuc)
 		{
-		Internal i=nucInternal.get(nuc);
+		Internal i=getDrawCache().nucInternal.get(nuc);
 		if(i==null)
 			{
 			i=new Internal();
-			nucInternal.put(nuc, i);
+			getDrawCache().nucInternal.put(nuc, i);
 			}
 		return i;
 		}

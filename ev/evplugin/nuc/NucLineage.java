@@ -5,6 +5,7 @@ import java.util.*;
 
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
+import javax.vecmath.Vector3d;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.imageWindow.ImageWindow;
@@ -574,6 +575,16 @@ public class NucLineage extends EvObject implements Cloneable
 			y=p.y;
 			z=p.z;
 			r=p.r;
+			}
+		public Vector3d getPosCopy()
+			{
+			return new Vector3d(x,y,z);
+			}
+		public void setPosCopy(Vector3d v)
+			{
+			x=v.x;
+			y=v.y;
+			z=v.z;
 			}
 		}
 	
