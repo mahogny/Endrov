@@ -62,7 +62,7 @@ public class MakeStdWormTD
 		EV.loadPlugins();
 
 		BestFitRotTransScale bf=new BestFitRotTransScale();
-		boolean bfFirstTime=true;
+//		boolean bfFirstTime=true;
 		
 		//Load all worms to standardize from
 		String[] wnlist={

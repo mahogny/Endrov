@@ -1,29 +1,48 @@
 package util2.makeStdWormDist;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.Map.Entry;
-
 import javax.vecmath.Vector3d;
-
 import evplugin.nuc.NucLineage;
+import evplugin.nuc.NucLineage.NucPos;
+
+
 
 public class NucStats
 	{
 
 	public TreeMap<String, NucStatsOne> nuc=new TreeMap<String,NucStatsOne>();
 	
+	/**
+	 * Neighbour
+	 */
+	public class Neigh implements Comparable
+		{
+		public String name;
+		public double weight;
+		public double dist;
+		public double distVar;
+		
+		public int compareTo(Object o)
+			{
+			Neigh other=(Neigh)o;
+			if(dist<other.dist)				return -1;
+			else if(dist>other.dist)	return 1;
+			else return 0;
+			}
+		}
+
 	
 	
+	/**
+	 * Stats about one nuc
+	 */
 	public class NucStatsOne
 		{
 		//Stats
 		public List<Integer> lifetime=new LinkedList<Integer>();
-		public Map<Integer, Map<String,List<Double>>> distance=new TreeMap<Integer, Map<String,List<Double>>>(); //frame rel start, nuc, length
-		public Map<Integer, List<Double>> radius=new TreeMap<Integer, List<Double>>();
+		public SortedMap<Integer, Map<String,List<Double>>> distance=new TreeMap<Integer, Map<String,List<Double>>>(); //frame rel start, nuc, length
+		public SortedMap<Integer, List<Double>> radius=new TreeMap<Integer, List<Double>>();
 		
 		//Derived
 		public int lifeStart;
@@ -31,24 +50,78 @@ public class NucStats
 		public String parent;
 		public Map<Integer, List<NucLineage.NucPos>> derivedPos=new TreeMap<Integer, List<NucLineage.NucPos>>();
 		
-		Map<String, Double> avlenthisframe=new HashMap<String, Double>();
-		Vector3d curpos=new Vector3d(Math.random(),Math.random(),Math.random());
+		//Used in BestFitLength
+		public Vector3d curpos=null;
+		public Vector3d df=new Vector3d();
+		public TreeSet<Neigh> neigh=new TreeSet<Neigh>();
 		
 		
-		public void calcAvDist(int frame)
+		public boolean existAt(int frame)
 			{
-			avlenthisframe.clear();
-			
-			Map<String,List<Double>> thisdistances=distance.get(frame-lifeStart);
-			for(String t:thisdistances.keySet())
-				{
-				double dist=0;
-				for(Double d:thisdistances.get(t))
-					dist+=d;
-				dist/=thisdistances.get(t).size();
-				avlenthisframe.put(t, dist);
-				}
+			return lifeStart<=frame && frame<lifeEnd;
 			}
+		
+		
+		/**
+		 * Decide on average distances, weights and which neighbours to consider
+		 */
+		public void findNeigh(int frame)
+			{
+			Map<String,List<Double>> thisdistances=distance.get(frame-lifeStart);
+			neigh.clear();
+			if(thisdistances==null)
+				System.out.println("<<<<no distances!!!>>>>");
+			else
+				for(String t:thisdistances.keySet())
+					if(nuc.containsKey(t) && nuc.get(t).existAt(frame))
+						{
+						double meanDist=0;
+						double y2sum=0;
+						int sampleSize=thisdistances.get(t).size();
+						for(Double d:thisdistances.get(t))
+							{
+							meanDist+=d;
+							y2sum+=d*d;
+							}
+						meanDist/=sampleSize;
+						
+						double s2;
+						if(sampleSize>1)
+							s2=y2sum/(sampleSize-1.0) - meanDist*meanDist*sampleSize/(sampleSize-1.0);
+						else
+							s2=10; //what about those very unknown ones? loss of information?
+						if(s2<0.1)
+							s2=0.1;
+							
+						Neigh n=new Neigh();
+						n.name=t;
+						n.dist=meanDist;
+						n.distVar=s2;
+						neigh.add(n);
+						
+	//					System.out.println(" variance "+n.distVar+" toward "+n.name+ " dist "+n.dist+" -- "+y2sum+" "+meanDist);
+						}
+			
+			//Set weights
+			
+			//Weights based on variance
+			double totalS2=0;
+			for(Neigh n:neigh)
+				totalS2+=1.0/Math.sqrt(n.distVar);
+			for(Neigh n:neigh)
+				{
+				n.weight=1.0/Math.sqrt(n.distVar)/totalS2;
+//				System.out.println("weight "+totalS2);
+				}
+			
+			
+			//Uniform weights
+//			for(Neigh n:neigh)
+//				n.weight=1.0/neigh.size();
+			}
+
+		
+		
 		
 		
 		public void addRadius(int frame, double rs)
@@ -76,6 +149,16 @@ public class NucStats
 			return lifeEnd-lifeStart;
 			}
 		
+		public int toGlobalFrame(int frame)
+			{
+			return frame+lifeStart;
+			}
+		public int toLocalFrame(int frame)
+			{
+			return frame-lifeStart;
+			}
+		
+		
 		public double interpolTime(int start, int end, int frame)
 			{
 //			System.out.println(" "+getLifeLen()+" "+start+" "+end+" "+(start+frame*(end-start)/(double)getLifeLen()));
@@ -101,7 +184,7 @@ public class NucStats
 		if(n.parent==null)
 			n.lifeStart=0;
 		else
-			n.lifeStart=nuc.get(n.parent).lifeStart+nuc.get(n.parent).lifeEnd;
+			n.lifeStart=/*nuc.get(n.parent).lifeStart+*/nuc.get(n.parent).lifeEnd;
 		
 		int len=0;
 		for(int l:n.lifetime)
@@ -134,7 +217,7 @@ public class NucStats
 		{
 		Map<String, NucStatsOne> m=new TreeMap<String, NucStatsOne>();
 		for(Entry<String, NucStatsOne> e:nuc.entrySet())
-			if(e.getValue().lifeStart<=frame && e.getValue().lifeEnd>=frame)
+			if(e.getValue().existAt(frame) && e.getValue().distance.get(frame)!=null)
 				m.put(e.getKey(), e.getValue());
 		return m;
 		}
@@ -148,4 +231,81 @@ public class NucStats
 		return f;
 		}
 	
+	public int minFrame()
+		{
+		Integer f=null;
+		for(Entry<String, NucStatsOne> e:nuc.entrySet())
+			if(f==null || e.getValue().lifeStart<f)
+				f=e.getValue().lifeStart;
+		return f;
+		}
+	
+
+	/**
+	 * Set up tree in XML
+	 */
+	public NucLineage generateXMLtree()
+		{
+		NucLineage lin=new NucLineage();
+		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
+			lin.getNucCreate(e.getKey());
+		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
+			if(e.getValue().parent!=null)
+				lin.createParentChild(e.getValue().parent, e.getKey());
+		return lin;
+		}
+	
+	/**
+	 * Initalize coordinates before running iteration for one frame
+	 */
+	public void prepareCoord(NucLineage lin, int frame)
+		{
+		//Inititalize coords
+		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
+			{
+			if(e.getValue().existAt(frame) && e.getValue().curpos==null /*&& !e.getValue().neigh.isEmpty()*/)
+				{
+				e.getValue().curpos=new Vector3d();
+				if(e.getValue().parent!=null)
+					{
+					NucStatsOne parentone=nuc.get(e.getValue().parent);
+					if(parentone.curpos!=null)
+						e.getValue().curpos=new Vector3d(parentone.curpos);
+					}
+				double s=1;
+				e.getValue().curpos.add(new Vector3d(s*Math.random(),s*Math.random(),s*Math.random()));
+				}
+			//TODO: get coord from parent
+			}
+		}
+	
+	/**
+	 * Put coords into XML data
+	 */
+	public void writeCoord(NucLineage lin, int frame)
+		{
+		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
+			if(e.getValue().curpos!=null && e.getValue().existAt(frame) && !e.getValue().neigh.isEmpty())
+				{
+				NucLineage.Nuc nuc=lin.nuc.get(e.getKey());
+				NucPos pos=nuc.getPosCreate(frame);
+				
+				pos.x=e.getValue().curpos.x;
+				pos.y=e.getValue().curpos.y;
+				pos.z=e.getValue().curpos.z;
+
+				int relframe=frame-e.getValue().lifeStart;
+				double radius=0;
+				List<Double> radiusList=e.getValue().radius.get(relframe);
+				if(radiusList==null)
+					radiusList=e.getValue().radius.get(e.getValue().radius.lastKey()); //hack, should it even exist this long?
+//				System.out.println("relframe "+relframe +" "+e.getValue().radius.lastKey());
+				for(double d:radiusList)
+					radius+=d;
+				radius/=radiusList.size();
+				pos.r=radius;
+				}
+		}
+	
 	}
+
