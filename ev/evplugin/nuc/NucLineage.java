@@ -696,7 +696,11 @@ public class NucLineage extends EvObject implements Cloneable
 				for(String cName:child)
 					{
 					NucLineage.Nuc c=nuc.get(cName);
-					if(cfirstFrame==null || cfirstFrame>c.pos.firstKey())
+					if(c.pos.isEmpty())
+						{
+						System.out.println("Error: no positions for "+cName);
+						}
+					else if(cfirstFrame==null || cfirstFrame>c.pos.firstKey())
 						cfirstFrame=c.pos.firstKey();
 					}
 				if(cfirstFrame!=null && cfirstFrame>lastFrame)

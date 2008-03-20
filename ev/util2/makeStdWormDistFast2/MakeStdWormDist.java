@@ -1,4 +1,4 @@
-package util2.makeStdWormDist;
+package util2.makeStdWormDistFast2;
 
 import java.util.*;
 
@@ -12,7 +12,7 @@ import evplugin.nuc.NucPair;
 import evplugin.nuc.NucLineage.NucInterp;
 
 
-import util2.makeStdWormDist.NucStats.NucStatsOne;
+import util2.makeStdWormDistFast2.NucStats.NucStatsOne;
 
 //Do not use rigid transforms, use point dist.
 
@@ -139,6 +139,107 @@ public class MakeStdWormDist
 		
 		
 		
+		//////////////////////////////////////////////////////////////////////////////
+		
+		int maxframe=nucstats.maxFrame();
+		int minframe=nucstats.minFrame();
+		for(int globalframe=minframe;globalframe<maxframe;globalframe++)
+			{
+			
+			
+			
+			
+
+
+			System.out.println("--- collecting stats and merging");
+
+			for(Map.Entry<String, NucStatsOne> e:nucstats.nuc.entrySet())
+				{
+				NucStatsOne one=e.getValue();
+				String thisNucName=e.getKey();
+				int modlifelen=one.lifeEnd-one.lifeStart;
+				
+				
+				//check if it exists now
+				
+				
+				for(int frame=0;frame<modlifelen;frame++)
+					{
+
+					List<Double> radiusList=new LinkedList<Double>();
+					List<Vector3d> collectedPos=new LinkedList<Vector3d>();
+
+
+					for(NucLineage lin:lins.values())
+						{
+						NucLineage.Nuc nuc=lin.nuc.get(thisNucName);
+
+
+						int start=nuc.pos.firstKey();
+						int end=nuc.lastFrame()+1;
+
+						//				Interpolate
+						double iframe=one.interpolTime(start, end, frame);
+						Map<NucPair, NucInterp> inter=lin.getInterpNuc(iframe);
+						NucInterp thisi=inter.get(new NucPair(lin,thisNucName));
+
+						if(thisi!=null)
+							{
+							radiusList.add(thisi.pos.r);
+							if(normalizedLin.contains(lin))
+								collectedPos.add(thisi.pos.getPosCopy());
+
+							//Get distances
+							for(NucPair otherpair:inter.keySet())
+								if(!otherpair.getRight().equals(thisNucName))
+									{
+									String othernucname=otherpair.getRight();
+									NucStats.NucStatsOne otherOne=nucstats.get(othernucname);
+									NucInterp otheri=inter.get(otherpair);
+
+									Vector3d diff=thisi.pos.getPosCopy();
+									diff.sub(otheri.pos.getPosCopy());
+									double dist=diff.length();
+
+
+									one.addDistance(othernucname, dist);
+
+									//distance problem!  TODO. gotta make this symmetry 
+//									otherOne.addDistance(otherOne.toLocalFrame(one.toGlobalFrame(frame)), thisnucname, dist); //to make it symmetric
+									}
+							}
+						else
+							System.out.println(" missing thisi "+thisnucname+ " "+frame);
+						}
+
+
+
+					}
+
+
+				double radius=0;
+				for(double d:radiusList)
+					radius+=d;
+				radius/=radiusList.size();
+
+
+
+
+				}
+
+
+
+
+			
+			}
+		
+		
+		
+		
+		
+		
+		///////////////////////////////// old //////////////////////////////////////
+		
 		//Collect distances and radii
 		System.out.println("--- collect spatial statistics");
 		for(NucLineage lin:lins.values())
@@ -188,10 +289,7 @@ public class MakeStdWormDist
 									Vector3d diff=thisi.pos.getPosCopy();
 									diff.sub(otheri.pos.getPosCopy());
 									double dist=diff.length();
-/*									double dx=thisi.pos.x-otheri.pos.x;
-									double dy=thisi.pos.y-otheri.pos.y;
-									double dz=thisi.pos.z-otheri.pos.z;
-									double dist=Math.sqrt(dx*dx + dy*dy + dz*dz);*/
+
 			
 									one.addDistance(frame, othernucname, dist);
 									otherOne.addDistance(otherOne.toLocalFrame(one.toGlobalFrame(frame)), thisnucname, dist); //to make it symmetric
@@ -290,10 +388,7 @@ public class MakeStdWormDist
 //					System.out.println(name+"--"+one.collectedPos.keySet());
 
 				}
-			
-/*			double minEps=1e-4;
-			bf.iterate(500, 1000, minEps);
-*/
+
 			
 			
 			//Here one could use the other fit TODO
@@ -311,6 +406,16 @@ public class MakeStdWormDist
 		
 		
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//Save reference
 		EvDataXML output=new EvDataXML("/Volumes/TBU_xeon01_500GB02/ostxml/stdcelegansNew.xml");
 		output.metaObject.clear();
@@ -319,6 +424,25 @@ public class MakeStdWormDist
 		
 		
 		}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 
 	
@@ -332,7 +456,6 @@ public class MakeStdWormDist
 				pos.setPosCopy(v);
 				}
 		}
-	
 	public static void center(NucLineage lin)
 		{
 		NucLineage.Nuc nucABa=lin.nuc.get("ABa");
@@ -346,11 +469,6 @@ public class MakeStdWormDist
 				pos.setPosCopy(v);
 				}
 		}
-	
-	
-	
-	
-	
 	public static double rotate1(NucLineage lin)
 		{
 		NucLineage.Nuc nucABa=lin.nuc.get("ABa");

@@ -1,4 +1,4 @@
-package util2.makeStdWormDist;
+package util2.makeStdWormDist2;
 
 import java.util.*;
 
@@ -12,7 +12,7 @@ import evplugin.nuc.NucPair;
 import evplugin.nuc.NucLineage.NucInterp;
 
 
-import util2.makeStdWormDist.NucStats.NucStatsOne;
+import util2.makeStdWormDist2.NucStats.NucStatsOne;
 
 //Do not use rigid transforms, use point dist.
 
@@ -20,14 +20,13 @@ public class MakeStdWormDist
 	{
 	
 	public static boolean allTime=true;
+	public static boolean showNeigh=false;
+	public static int NUMTRY=0;
 
 	public static void main(String[] args)
 		{
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
-
-		
-		
 		
 		//Load all worms to standardize from
 		String[] wnlist={
@@ -136,16 +135,12 @@ public class MakeStdWormDist
 		for(NucLineage lin:lins.values())
 			output2.addMetaObject(lin);
 		output2.saveMeta();
-		
-		
+
 		
 		//Collect distances and radii
 		System.out.println("--- collect spatial statistics");
 		for(NucLineage lin:lins.values())
 			{
-			
-			//scales badly. interpolate over all?
-			
 			for(String thisnucname:lin.nuc.keySet())
 				{
 				System.out.println("Adding lengths for "+lin+"/"+thisnucname);
@@ -155,12 +150,8 @@ public class MakeStdWormDist
 					NucLineage.Nuc nuc=lin.nuc.get(thisnucname);
 	
 					int start=nuc.pos.firstKey();
-					int end=nuc.pos.lastKey()+1; //trouble: what if children already exist?
-
-					
-					//or use nuc.lastFrame() TODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
-					
-					
+//					int end=nuc.pos.lastKey()+1; //trouble: what if children already exist?
+					int end=nuc.lastFrame();
 					
 					
 					int modlifelen=one.lifeEnd-one.lifeStart;
@@ -192,7 +183,6 @@ public class MakeStdWormDist
 									double dy=thisi.pos.y-otheri.pos.y;
 									double dz=thisi.pos.z-otheri.pos.z;
 									double dist=Math.sqrt(dx*dx + dy*dy + dz*dz);*/
-			
 									one.addDistance(frame, othernucname, dist);
 									otherOne.addDistance(otherOne.toLocalFrame(one.toGlobalFrame(frame)), thisnucname, dist); //to make it symmetric
 									}
@@ -228,29 +218,27 @@ public class MakeStdWormDist
 			for(String s:curnuc.keySet())
 				{
 				NucStatsOne one=nucstats.get(s);
-//				System.out.println("findn "+s);
 				one.findNeigh(frame);
 				
-				
-				System.out.print(""+s+":: ");
-				for(NucStats.Neigh n:one.neigh)
-					System.out.print(""+n.name+":"+n.dist+" ");
-				System.out.println();
-				
+				if(showNeigh)
+					{
+					System.out.print(""+s+":: ");
+					for(NucStats.Neigh n:one.neigh)
+						System.out.print(""+n.name+":"+n.dist+" ");
+					System.out.println();
+					}
 				}
 			
 			nucstats.prepareCoord(refLin, frame);
-	
-			
+
+
+			//Iterate and randomize guesses, pick the best
 			Map<String, Vector3d> bestpos=new HashMap<String, Vector3d>();
 			Double besteps=null;
-			
-			int NUMTRY=1;
 			for(int numtry=0;numtry<NUMTRY;numtry++)
 				{
 				double minEps=1e-4;
 				bf.iterate(500, 1000, minEps);
-			
 				
 				if(besteps==null || bf.eps<besteps)
 					{
@@ -264,17 +252,20 @@ public class MakeStdWormDist
 				for(NucStatsOne one:nucstats.nuc.values())
 					one.curpos=new Vector3d(Math.random(),Math.random(),Math.random());
 				}
-			
-			//restore
-			for(String name:nucstats.nuc.keySet())
-				nucstats.nuc.get(name).curpos=bestpos.get(name);
-			bf.eps=besteps;
+			//Take the best
+			if(besteps!=null)
+				{
+				for(String name:nucstats.nuc.keySet())
+					nucstats.nuc.get(name).curpos=bestpos.get(name);
+				bf.eps=besteps;
+				}
+			else
+				bf.eps=0;
 			
 			//Get position by averaging over normalized sets
 			for(String name:nucstats.nuc.keySet())
 				{
 				NucStatsOne one=nucstats.nuc.get(name);
-				//if(one.collectedPos.get(frame))
 				one.curpos=bestpos.get(name);
 				
 				List<Vector3d> poshere=one.collectedPos.get(one.toLocalFrame(frame));
@@ -286,8 +277,6 @@ public class MakeStdWormDist
 					v.scale(1.0/poshere.size());
 					one.curpos=v;
 					}
-//				else
-//					System.out.println(name+"--"+one.collectedPos.keySet());
 
 				}
 			
@@ -300,9 +289,7 @@ public class MakeStdWormDist
 			
 			//Write out coordinates
 			nucstats.writeCoord(refLin, frame);
-			
-			
-			
+
 			
 			System.out.println("frame: "+frame+"   eps: "+bf.eps);
 			}
@@ -316,8 +303,6 @@ public class MakeStdWormDist
 		output.metaObject.clear();
 		output.addMetaObject(refLin);
 		output.saveMeta();
-		
-		
 		}
 	
 

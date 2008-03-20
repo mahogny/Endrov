@@ -113,6 +113,7 @@ public class LineageWindow extends BasicWindow
 		buttonGoRoot.addActionListener(this);
 		buttonGoSelected.addActionListener(this);
 		sliderFrameDist.addChangeListener(this);
+		objectCombo.addActionListener(this);
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
@@ -359,6 +360,12 @@ public class LineageWindow extends BasicWindow
 				recursiveSelect(p.getLeft(), p.getRight());
 			BasicWindow.updateWindows();
 			}
+		else if(e.getSource()==objectCombo)
+			{
+			System.out.println("objectcombo");
+			view.currentLin=(NucLineage)objectCombo.getObject();
+			repaint();
+			}
 		}
 	
 
@@ -570,7 +577,7 @@ public class LineageWindow extends BasicWindow
 		{
 		objectCombo.updateObjectList();
 		view.currentFrame=frameControl.getFrame();
-		view.lin=(NucLineage)objectCombo.getObject();
+		view.currentLin=(NucLineage)objectCombo.getObject();
 		repaint();
 		}
 	
