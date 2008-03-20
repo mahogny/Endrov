@@ -16,16 +16,15 @@ public class NucStats
 	/**
 	 * Neighbour
 	 */
-	public class Neigh implements Comparable
+	public class Neigh implements Comparable<Neigh>
 		{
 		public String name;
 		public double weight;
 		public double dist;
 		public double distVar;
 		
-		public int compareTo(Object o)
+		public int compareTo(Neigh other)
 			{
-			Neigh other=(Neigh)o;
 			if(dist<other.dist)				return -1;
 			else if(dist>other.dist)	return 1;
 			else return 0;
@@ -43,6 +42,7 @@ public class NucStats
 		public List<Integer> lifetime=new LinkedList<Integer>();
 		public SortedMap<Integer, Map<String,List<Double>>> distance=new TreeMap<Integer, Map<String,List<Double>>>(); //frame rel start, nuc, length
 		public SortedMap<Integer, List<Double>> radius=new TreeMap<Integer, List<Double>>();
+		public SortedMap<Integer, List<Vector3d>> collectedPos=new TreeMap<Integer, List<Vector3d>>();
 		
 		//Derived
 		public int lifeStart;
@@ -130,6 +130,13 @@ public class NucStats
 			if(rl==null)
 				radius.put(frame, rl=new LinkedList<Double>());
 			rl.add(rs);
+			}
+		public void addCollPos(int frame, Vector3d pos)
+			{
+			List<Vector3d> rl=collectedPos.get(frame);
+			if(rl==null)
+				collectedPos.put(frame, rl=new LinkedList<Vector3d>());
+			rl.add(pos);
 			}
 		
 		public void addDistance(int frame, String nuc, double dist)

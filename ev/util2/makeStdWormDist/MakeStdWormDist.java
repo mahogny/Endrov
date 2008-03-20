@@ -88,6 +88,33 @@ public class MakeStdWormDist
 			}
 		nucstats.deriveLifetime();
 
+
+		//Collect average positions
+		double avsize=0;
+		Set<NucLineage> normalizedLin=new HashSet<NucLineage>();
+		for(NucLineage lin:lins.values())
+			{
+			//These define the normalized coord sys
+			if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
+					lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2"))
+				{
+				normalizedLin.add(lin);
+				center(lin);
+				avsize+=rotateXY(lin);
+				rotateXZ(lin);
+				rotateYZ(lin);
+				}
+			}
+		avsize/=normalizedLin.size();
+		for(NucLineage lin:normalizedLin)
+			{
+			Matrix3d m=new Matrix3d();
+			m.setIdentity();
+			m.mul(avsize);
+			applyMat(lin, m);
+			
+			//Finally get average nuc positions
+			}
 		
 		//Collect distances and radii
 		for(NucLineage lin:lins.values())
@@ -115,6 +142,8 @@ public class MakeStdWormDist
 							{
 						
 							one.addRadius(frame, thisi.pos.r);
+							if(normalizedLin.contains(lin))
+								one.addCollPos(frame, thisi.pos.getPosCopy());
 							
 							//Get distances
 							for(NucPair otherpair:inter.keySet())
@@ -140,35 +169,6 @@ public class MakeStdWormDist
 				}
 			}
 
-		//Collect average positions
-		double avsize=0;
-		Set<NucLineage> normalizedLin=new HashSet<NucLineage>();
-		for(NucLineage lin:lins.values())
-			{
-			//These define the normalized coord sys
-			if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-					lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2"))
-				{
-				normalizedLin.add(lin);
-				//TODO
-				avsize+=rotateXY(lin);
-				
-				rotateXZ(lin);
-				rotateYZ(lin);
-				
-				
-				}
-			}
-		avsize/=normalizedLin.size();
-		for(NucLineage lin:normalizedLin)
-			{
-			Matrix3d m=new Matrix3d();
-			m.setIdentity();
-			m.mul(avsize);
-			applyMat(lin, m);
-			
-			//Finally get average nuc positions
-			}
 		
 		//Write tree to XML
 		NucLineage refLin=nucstats.generateXMLtree();
@@ -233,6 +233,19 @@ public class MakeStdWormDist
 				nucstats.nuc.get(name).curpos=bestpos.get(name);
 			bf.eps=besteps;
 			
+			//Get position by averaging over normalized sets
+			for(String name:nucstats.nuc.keySet())
+				{
+				NucStatsOne one=nucstats.nuc.get(name);
+				//if(one.collectedPos.get(frame))
+				one.curpos=bestpos.get(name);
+				
+				Vector3d v=new Vector3d();
+				for(Vector3d u:one.collectedPos.get(frame))
+					u.add(v);
+				v.scale(1.0/one.collectedPos.get(frame).size());
+				one.curpos=v;
+				}
 			
 /*			double minEps=1e-4;
 			bf.iterate(500, 1000, minEps);
@@ -259,6 +272,14 @@ public class MakeStdWormDist
 		output.metaObject.clear();
 		output.addMetaObject(refLin);
 		output.saveMeta();
+		
+		
+		//Safe normalized lineages
+		EvDataXML output2=new EvDataXML("/Volumes/TBU_xeon01_500GB02/ostxml/normalize.xml");
+		output2.metaObject.clear();
+		for(NucLineage lin:lins.values())
+			output2.addMetaObject(lin);
+		output2.saveMeta();
 		}
 	
 
@@ -271,6 +292,22 @@ public class MakeStdWormDist
 				{
 				Vector3d v=pos.getPosCopy();
 				m.transform(v);
+				pos.setPosCopy(v);
+				}
+			}
+		}
+	
+	public static void center(NucLineage lin)
+		{
+		NucLineage.Nuc nucABa=lin.nuc.get("ABa");
+		NucLineage.NucPos posABa=nucABa.pos.get(nucABa.pos.lastKey());
+		Vector3d sub=posABa.getPosCopy();
+		for(NucLineage.Nuc nuc:lin.nuc.values())
+			{
+			for(NucLineage.NucPos pos:nuc.pos.values())
+				{
+				Vector3d v=pos.getPosCopy();
+				v.sub(sub);
 				pos.setPosCopy(v);
 				}
 			}
