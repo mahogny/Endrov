@@ -41,7 +41,7 @@ public class LineageView extends JPanel
 	////////////////////////////////////////////////////////////////
 	
 	public int camVY, camVX;
-	private int frameDist=5;
+	private double frameDist=5;
 	public double currentFrame=0;
 	public boolean displayHorizontalTree=true;
 	public NucLineage currentLin=null;
@@ -213,14 +213,25 @@ public class LineageView extends JPanel
 			return c2f(y);
 		}
 	
+	/** Convert frame position to coordinate */
+	private int f2c(int f)
+		{
+		return (int)(f*frameDist-camVX);
+		}
+	
+	/** Convert coordinate to frame position */
+	private int c2f(int c)
+		{
+		return (int)((c+camVX)/frameDist);
+		}
 	
 	/**
 	 * Change the frame distance but keep the camera reasonably fixed
 	 * @param s New frame distance, >=1
 	 */
-	public void setFrameDist(int s)
+	public void setFrameDist(double s)
 		{
-		if(s<1)	s=1; //Not allowed to happen, quick fix
+		if(s<0.1)	s=0.1; //Not allowed to happen, quick fix
 		int h=getVirtualWidth()/2;
 		double curmid=(camVX+h)/frameDist;
 		frameDist=s;
@@ -233,13 +244,13 @@ public class LineageView extends JPanel
 	 */
 	public void setFrame(int frame)
 		{
-		camVX=frame*frameDist-getVirtualWidth()/2;
+		camVX=(int)(frame*frameDist-getVirtualWidth()/2);
 		repaint();
 		}
 	
 	public int getFrame()
 		{
-		return (camVX+getVirtualWidth()/2)/frameDist;
+		return (int)((camVX+getVirtualWidth()/2)/frameDist);
 		}
 	
 	
@@ -350,24 +361,26 @@ public class LineageView extends JPanel
 		{
 		if(showFrameLines)
 			{
-			int frameLineSkip=20/frameDist;
+			double frameLineSkip=(int)(20/frameDist);
 			if(frameLineSkip<1)
 				frameLineSkip=1;
-			int starti=camVX/frameDist;
-			while(starti%frameLineSkip!=0)
-				starti--;
+			double starti=camVX/frameDist;
+//			while(starti%frameLineSkip!=0)
+//				starti--;
+			starti=((int)(starti/frameLineSkip))*frameLineSkip;
+			
 			
 			Graphics2D g2=(Graphics2D)g;
-			for(int i=starti;i<getVirtualWidth()/frameDist+1+frameLineSkip+camVX/frameDist;i+=frameLineSkip)
+			for(double i=starti;i<getVirtualWidth()/frameDist+1+frameLineSkip+camVX/frameDist;i+=frameLineSkip)
 				{
-				int x=i*frameDist-camVX;
+				int x=(int)(i*frameDist-camVX);
 				g.setColor(frameLineColor);
 				g.drawLine(x, 0, x, getVirtualHeight());
 				g.setColor(frameStringColor);
 				int y=getVirtualHeight()-5;//5
 				g2.translate(x, y);
 				g2.rotate(-Math.PI/2);
-				g.drawString(""+i, 0, 0);
+				g.drawString(""+(int)i, 0, 0);
 				g2.rotate(Math.PI/2);
 				g2.translate(-x, -y);
 				}
@@ -468,21 +481,6 @@ public class LineageView extends JPanel
 		}
 	
 	
-	/**
-	 * Convert frame position to coordinate
-	 */
-	private int f2c(int f)
-		{
-		return f*frameDist-camVX;
-		}
-	
-	/**
-	 * Convert coordinate to frame position
-	 */
-	private int c2f(int c)
-		{
-		return (c+camVX)/frameDist;
-		}
 	
 	
 	/**

@@ -48,7 +48,7 @@ public class LineageWindow extends BasicWindow
 	
 	
 	
-	private JSlider sliderFrameDist=new JSlider(1,200,100); 
+	private JSlider sliderFrameDist=new JSlider(-20000,31000,0); 
 	private JButton buttonGoRoot=new JButton("=> root");
 	private JButton buttonGoSelected=new JButton("=> selected");
 	private LineageView view;
@@ -551,9 +551,9 @@ public class LineageWindow extends BasicWindow
 	public void mouseWheelMoved(MouseWheelEvent e)
 		{
 		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
-			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll());
+			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
 		else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
-			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll());
+			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
 		view.repaint();
 		}
 
@@ -564,7 +564,7 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void stateChanged(ChangeEvent e)
 		{
-		view.setFrameDist(sliderFrameDist.getValue()/10);
+		view.setFrameDist(Math.pow(10.0,sliderFrameDist.getValue()/30000.0));
 		repaint();
 		}
 
