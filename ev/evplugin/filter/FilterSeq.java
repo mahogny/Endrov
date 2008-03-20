@@ -37,6 +37,11 @@ public class FilterSeq extends EvObject
 	
 	private static ImageIcon iconLabelFS=new ImageIcon(FilterSeq.class.getResource("labelFS.png"));
 	public static ImageIcon getIconFilterSeq(){return iconLabelFS;}
+	public static JButton createFilterSeqButton()
+		{
+		return new JButton(FilterSeq.getIconFilterSeq());
+		}
+	
 	
 	public String getMetaTypeDesc()
 		{

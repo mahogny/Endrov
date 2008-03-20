@@ -1,6 +1,9 @@
 package util;
 
 import evplugin.ev.*;
+import evplugin.filter.FilterSeq;
+import evplugin.filter.FilterSlice;
+import evplugin.filterBasic.ContrastBrightnessFilter;
 import evplugin.imagesetOST.*;
 import evplugin.makeQT.*;
 
@@ -21,12 +24,18 @@ public class BatchMovie
 		OstImageset ost=new OstImageset(file.getPath());
 		System.out.println(" timeX "+(System.currentTimeMillis()-currentTime));
 		
+		FilterSeq fsNull=new FilterSeq();
+		FilterSeq fsDIC=new FilterSeq();
+		
+		FilterSlice filterCB=new ContrastBrightnessFilter();
+		fsDIC.addFilter(filterCB);
+		
 		Vector<CalcThread.MovieChannel> channelNames=new Vector<CalcThread.MovieChannel>();
 		if(ost.channelImages.containsKey("GFPmax"))
-			channelNames.add(new CalcThread.MovieChannel("GFPmax",false));
+			channelNames.add(new CalcThread.MovieChannel("GFPmax",fsNull));
 		if(ost.channelImages.containsKey("RFPmax"))
-			channelNames.add(new CalcThread.MovieChannel("RFPmax",false));
-		channelNames.add(new CalcThread.MovieChannel("DIC",true));
+			channelNames.add(new CalcThread.MovieChannel("RFPmax",fsNull));
+		channelNames.add(new CalcThread.MovieChannel("DIC",fsDIC));
 		System.out.println("Now making movie");
 		BatchThread c=new CalcThread(ost, 0, 1000000, 35, channelNames, 336, "h.264 (MPEG-4)", "High"); 
 		new CompleteBatch(c); //bad to have everything in constructor

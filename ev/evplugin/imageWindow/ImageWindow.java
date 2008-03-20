@@ -127,7 +127,7 @@ public class ImageWindow extends BasicWindow
 		public final ChannelCombo comboChannel=new ChannelCombo(null,false);
 		public final JSlider sliderContrast=new JSlider(-4000,4000,0);
 		public final JSlider sliderBrightness=new JSlider(-100,100,0);
-		public final JButton bFilterSequence=new JButton(FilterSeq.getIconFilterSeq());
+		public final JButton bFilterSequence=FilterSeq.createFilterSeqButton();
 
 		public final FilterSeq filterSeq=new FilterSeq();
 		private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()

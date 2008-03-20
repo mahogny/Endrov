@@ -154,7 +154,7 @@ public class VoxelExtension implements ModelWindowExtension
 		private class OneImageChannel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
-			JButton bFs=new JButton(FilterSeq.getIconFilterSeq());
+			JButton bFs=FilterSeq.createFilterSeqButton();
 			ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
 			Color color;
 			
