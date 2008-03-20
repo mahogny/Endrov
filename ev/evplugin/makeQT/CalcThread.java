@@ -7,11 +7,12 @@ import java.io.*;
 import java.util.*;
 
 import evplugin.ev.*;
+import evplugin.filter.FilterSeq;
 import evplugin.imageset.*;
 
 
 /**
- * The thread for doing calculations
+ * Thread: Encode a quicktime movie
  */
 public final class CalcThread extends BatchThread 
 	{
@@ -29,11 +30,11 @@ public final class CalcThread extends BatchThread
 	public static class MovieChannel
 		{
 		public final String name;
-		public final boolean equalize;
-		public MovieChannel(String nane, boolean equalize)
+		public final FilterSeq fs;
+		public MovieChannel(String nane, FilterSeq fs)
 			{
 			this.name=nane;
-			this.equalize=equalize;
+			this.fs=fs;
 			}
 		}
 	
@@ -122,11 +123,12 @@ public final class CalcThread extends BatchThread
 						allImloadOk=false;
 					else
 						{
+						imload=cName.fs.applyReturnImage(imload);
 						BufferedImage ji=imload.getJavaImage();
 						if(ji==null)
 							allImloadOk=false;
 						else
-							mc.add(new MovieChannelImage(ji, cName.name, cName.equalize));
+							mc.add(new MovieChannelImage(ji, cName.name));
 						}
 					}
 				if(allImloadOk)
@@ -173,10 +175,9 @@ public final class CalcThread extends BatchThread
 		public BufferedImage im;
 		public String name;
 		public double scale;
-		public boolean equalize;
-		public MovieChannelImage(BufferedImage im, String name, boolean equalize)
+		public MovieChannelImage(BufferedImage im, String name)
 			{
-			this.im=im; this.name=name; this.equalize=equalize;
+			this.im=im; this.name=name; 
 			}
 		}
 
@@ -204,9 +205,6 @@ public final class CalcThread extends BatchThread
 		for(int i=0;i<mc.size();i++)
 			{
 			MovieChannelImage ch=mc.get(i);
-
-			if(ch.equalize)
-				ch.im=equalize(ch.im);
 			
 			AffineTransform trans=new AffineTransform();
 			trans.translate(oneW*i, 0);
@@ -223,41 +221,7 @@ public final class CalcThread extends BatchThread
 		return c;
 		}
 
-	
-	/**
-	 * Equalize gray scale image
-	 */
-	public BufferedImage equalize(BufferedImage source)
-		{
-		int[] pcount=new int[256];
-		Raster raster=source.getRaster();
-		int[] pixels=new int[raster.getWidth()];
-		int max=1;
-		for(int y=0;y<raster.getHeight();y++)
-			{
-			raster.getSamples(0, y, raster.getWidth(), 1, 0, pixels);
-			for(int p:pixels)
-				pcount[p]++;
-			}
 
-		int nump=(int)(raster.getWidth()*raster.getHeight()*0.01);
-		for(max=255;max>=1 & nump>0;max--)
-			nump-=pcount[max];
-		max++;
-		
-		short[] table = new short[256];
-		for (int i = 0; i < 256; i++)
-			{
-			table[i] = (short) (i*255/max);
-			if(table[i]>255)
-				table[i]=255;
-			}
-		BufferedImage dest = new BufferedImage(source.getWidth(),source.getHeight(),source.getType());
-		LookupTable look = new ShortLookupTable(0,table);
-		BufferedImageOp buff = new LookupOp(look,null);
-		buff.filter(source, dest);
-		return dest;
-		}
 
 
     

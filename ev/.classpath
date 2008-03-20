@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|evplugin/macBinding/|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/makeQT/|evplugin/script/parser/|util2/makeStdWormDistFast2/" kind="src" path=""/>
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|evplugin/macBinding/|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/xml_inc/itext-2.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/jaxen-core.jar"/>

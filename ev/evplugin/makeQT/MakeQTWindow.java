@@ -7,6 +7,8 @@ import java.util.Vector;
 import javax.swing.*;
 
 import evplugin.ev.*;
+import evplugin.filter.FilterSeq;
+import evplugin.filter.WindowFilterSeq;
 import evplugin.imageset.*;
 import evplugin.data.*;
 import evplugin.basicWindow.*;
@@ -31,7 +33,7 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 	//GUI components
 	private JButton bStart=new JButton("Start");
 	private Vector<ChannelCombo> channelCombo=new Vector<ChannelCombo>();
-	private Vector<JCheckBox> equalizeToggle=new Vector<JCheckBox>();
+	private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
 	
 	private SpinnerModel startModel =new SpinnerNumberModel(0,0,1000000,1);
 	private JSpinner spinnerStart   =new JSpinner(startModel);
@@ -75,50 +77,69 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 			c.addActionListener(this);
 			channelCombo.add(c);
 			
-			JCheckBox e=new JCheckBox("Equalize");
-			equalizeToggle.add(e);
+			filterSeq.add(new FilterSeq());
 			}
 		metaCombo.addActionListener(this);
 		bStart.addActionListener(this);
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
-	
-		JPanel midp=new JPanel(new GridLayout(2,6));
-		JPanel bottom=new JPanel(new GridLayout(channelCombo.size()+1,1));
-		add(metaCombo,BorderLayout.NORTH);
-		add(midp, BorderLayout.CENTER);
-		add(bottom,BorderLayout.SOUTH);
+		JPanel totalLeft=new JPanel(new BorderLayout());
+		JPanel totalCenter=new JPanel();
+		add(totalLeft,BorderLayout.WEST);
+		add(totalCenter,BorderLayout.CENTER);
 		
-		midp.add(new JLabel("Start frame:"));
-		midp.add(spinnerStart);
-		midp.add(new JLabel("End frame:"));
-		midp.add(spinnerEnd);
-		midp.add(new JLabel("Z:"));
-		midp.add(spinnerZ);		
+		
+		JPanel framesPanel=new JPanel(new GridLayout(3,1));
+		JPanel encPanel=new JPanel(new GridLayout(3,1));
+		totalLeft.add(framesPanel,BorderLayout.NORTH);
+		totalLeft.add(encPanel,BorderLayout.SOUTH);
 
-		midp.add(new JLabel("Width:"));
-		midp.add(spinnerW);		
-		midp.add(new JLabel("Codec:"));
-		midp.add(codecCombo);
-		midp.add(new JLabel("Quality:"));
-		midp.add(qualityCombo);
+		framesPanel.add(EvSwingTools.withLabel("From:", spinnerStart));
+		framesPanel.add(EvSwingTools.withLabel("To:", spinnerEnd));
+		framesPanel.add(EvSwingTools.withLabel("Z:", spinnerZ));
+		framesPanel.setBorder(BorderFactory.createTitledBorder("Range"));
 		
+		encPanel.add(EvSwingTools.withLabel("Width:", spinnerW));
+		encPanel.add(EvSwingTools.withLabel("Codec:", codecCombo));
+		encPanel.add(EvSwingTools.withLabel("Quality:", qualityCombo));
+		encPanel.setBorder(BorderFactory.createTitledBorder("Encoding"));
+		
+		JPanel channelPanel=new JPanel(new GridLayout(channelCombo.size()+1,1));
+		totalCenter.add(channelPanel,BorderLayout.NORTH);
+		channelPanel.add(metaCombo);
 		for(int i=0;i<channelCombo.size();i++)
 			{
-			JPanel cp=new JPanel(new GridLayout(1,2));
-			cp.add(new JLabel("Channel "+i+": "));
-			cp.add(channelCombo.get(i));
-			cp.add(equalizeToggle.get(i));
-			bottom.add(cp);
+			JPanel cp = new JPanel(new GridBagLayout());
+			
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridy = 0;c.gridx = 0;
+			cp.add(new JLabel("Ch "+i+": "),c);
+			c.gridx++;
+			JButton bFS=FilterSeq.createFilterSeqButton();
+			final int fi=i;
+			bFS.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e)
+					{
+					new WindowFilterSeq(filterSeq.get(fi));
+					}
+			});
+			cp.add(bFS,c);
+			c.gridx++;
+			c.weightx=1;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			cp.add(channelCombo.get(i),c);
+//			cp.add(equalizeToggle.get(i));
+			channelPanel.add(cp);
 			}
-		bottom.add(bStart);
+		
+		add(bStart,BorderLayout.SOUTH);
 		
 		
 		//Window overall things
-		setTitle(EV.programName+" Make QT Movie ");
+		setTitle(EV.programName+" Make QT Movie");
 		pack();
-		setBounds(x,y,w,h);
+		setLocation(x, y);//		setBounds(x,y,w,h);
 		setVisible(true);
 		}
 	
@@ -141,6 +162,7 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 			{
 			for(ChannelCombo c:channelCombo)
 				c.setImageset(metaCombo.getImageset());
+			pack();
 			}
 		else if(e.getSource()==bStart)
 			{
@@ -153,7 +175,7 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 				Vector<CalcThread.MovieChannel> channelNames=new Vector<CalcThread.MovieChannel>();
 				for(int i=0;i<channelCombo.size();i++)
 					if(!channelCombo.get(i).getChannel().equals(""))
-						channelNames.add(new CalcThread.MovieChannel(channelCombo.get(i).getChannel(), equalizeToggle.get(i).isSelected()));
+						channelNames.add(new CalcThread.MovieChannel(channelCombo.get(i).getChannel(), filterSeq.get(i)));
 					
 				BatchThread thread=new CalcThread(metaCombo.getImageset(), 
 						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), (Integer)spinnerZ.getValue(), channelNames, (Integer)spinnerW.getValue(),
