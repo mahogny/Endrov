@@ -1,4 +1,4 @@
-package util2.makeStdWormDist;
+package util2.makeStdWormDist2;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -32,6 +32,27 @@ public class NucStats
 		}
 
 	
+	public static class StatDouble
+		{
+		private double x=0;
+		private double x2=0;
+		private int count=0;
+		public void count(double x)
+			{
+			this.x+=x;
+			this.x2+=x*x;
+			count++;
+			}
+		public double getMean()
+			{
+			return x/count;
+			}
+		public double getVar()
+			{
+			double mean=getMean();
+			return x2/(count-1.0) - mean*mean*count/(count-1.0);
+			}
+		}
 	
 	/**
 	 * Stats about one nuc
@@ -40,8 +61,9 @@ public class NucStats
 		{
 		//Stats
 		public List<Integer> lifetime=new LinkedList<Integer>();
-		public SortedMap<Integer, Map<String,List<Double>>> distance=new TreeMap<Integer, Map<String,List<Double>>>(); //frame rel start, nuc, length
-		public SortedMap<Integer, List<Double>> radius=new TreeMap<Integer, List<Double>>();
+		public SortedMap<Integer, Map<String,StatDouble>> distance=new TreeMap<Integer, Map<String,StatDouble>>(); //frame rel start, nuc, length
+		public SortedMap<Integer, StatDouble> radius=new TreeMap<Integer, StatDouble>();
+		
 		public SortedMap<Integer, List<Vector3d>> collectedPos=new TreeMap<Integer, List<Vector3d>>();
 		
 		//Derived
@@ -67,7 +89,7 @@ public class NucStats
 		 */
 		public void findNeigh(int frame)
 			{
-			Map<String,List<Double>> thisdistances=distance.get(frame-lifeStart);
+			Map<String,StatDouble> thisdistances=distance.get(frame-lifeStart);
 			neigh.clear();
 			if(thisdistances==null)
 				System.out.println("<<<<no distances!!!>>>>");
@@ -75,21 +97,8 @@ public class NucStats
 				for(String t:thisdistances.keySet())
 					if(nuc.containsKey(t) && nuc.get(t).existAt(frame))
 						{
-						double meanDist=0;
-						double y2sum=0;
-						int sampleSize=thisdistances.get(t).size();
-						for(Double d:thisdistances.get(t))
-							{
-							meanDist+=d;
-							y2sum+=d*d;
-							}
-						meanDist/=sampleSize;
-						
-						double s2;
-						if(sampleSize>1)
-							s2=y2sum/(sampleSize-1.0) - meanDist*meanDist*sampleSize/(sampleSize-1.0);
-						else
-							s2=10; //what about those very unknown ones? loss of information?
+						double meanDist=thisdistances.get(t).getMean();
+						double s2=thisdistances.get(t).getVar();
 						if(s2<0.1)
 							s2=0.1;
 							
@@ -126,10 +135,10 @@ public class NucStats
 		
 		public void addRadius(int frame, double rs)
 			{
-			List<Double> rl=radius.get(frame);
+			StatDouble rl=radius.get(frame);
 			if(rl==null)
-				radius.put(frame, rl=new LinkedList<Double>());
-			rl.add(rs);
+				radius.put(frame, rl=new StatDouble());
+			rl.count(rs);
 			}
 		public void addCollPos(int frame, Vector3d pos)
 			{
@@ -141,14 +150,14 @@ public class NucStats
 		
 		public void addDistance(int frame, String nuc, double dist)
 			{
-			Map<String,List<Double>> rl=distance.get(frame);
+			Map<String,StatDouble> rl=distance.get(frame);
 			if(rl==null)
-				distance.put(frame, rl=new TreeMap<String,List<Double>>());
+				distance.put(frame, rl=new TreeMap<String,StatDouble>());
 			
-			List<Double> foo=distance.get(frame).get(nuc);
+			StatDouble foo=distance.get(frame).get(nuc);
 			if(foo==null)
-				distance.get(frame).put(nuc, foo=new LinkedList<Double>());
-			foo.add(dist);
+				distance.get(frame).put(nuc, foo=new StatDouble());
+			foo.count(dist);
 			}
 		
 		public int getLifeLen()
@@ -305,15 +314,10 @@ public class NucStats
 				pos.z=e.getValue().curpos.z;
 
 				int relframe=frame-e.getValue().lifeStart;
-				double radius=0;
-				List<Double> radiusList=e.getValue().radius.get(relframe);
+				StatDouble radiusList=e.getValue().radius.get(relframe);
 				if(radiusList==null)
 					radiusList=e.getValue().radius.get(e.getValue().radius.lastKey()); //hack, should it even exist this long?
-//				System.out.println("relframe "+relframe +" "+e.getValue().radius.lastKey());
-				for(double d:radiusList)
-					radius+=d;
-				radius/=radiusList.size();
-				pos.r=radius;
+				pos.r=radiusList.getMean();
 				}
 		}
 	

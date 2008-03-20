@@ -1,4 +1,4 @@
-package util2.makeStdWormDist;
+package util2.makeStdWormDistFast2;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -40,15 +40,14 @@ public class NucStats
 		{
 		//Stats
 		public List<Integer> lifetime=new LinkedList<Integer>();
-		public SortedMap<Integer, Map<String,List<Double>>> distance=new TreeMap<Integer, Map<String,List<Double>>>(); //frame rel start, nuc, length
-		public SortedMap<Integer, List<Double>> radius=new TreeMap<Integer, List<Double>>();
-		public SortedMap<Integer, List<Vector3d>> collectedPos=new TreeMap<Integer, List<Vector3d>>();
+		public Map<String,List<Double>> distance=new TreeMap<String,List<Double>>(); //frame rel start, nuc, length
+
 		
 		//Derived
 		public int lifeStart;
 		public int lifeEnd;
 		public String parent;
-		public Map<Integer, List<NucLineage.NucPos>> derivedPos=new TreeMap<Integer, List<NucLineage.NucPos>>();
+//		public Map<Integer, List<NucLineage.NucPos>> derivedPos=new TreeMap<Integer, List<NucLineage.NucPos>>();
 		
 		//Used in BestFitLength
 		public Vector3d curpos=null;
@@ -67,7 +66,7 @@ public class NucStats
 		 */
 		public void findNeigh(int frame)
 			{
-			Map<String,List<Double>> thisdistances=distance.get(frame-lifeStart);
+			Map<String,List<Double>> thisdistances=distance;
 			neigh.clear();
 			if(thisdistances==null)
 				System.out.println("<<<<no distances!!!>>>>");
@@ -122,32 +121,11 @@ public class NucStats
 
 		
 		
-		
-		
-		public void addRadius(int frame, double rs)
+		public void addDistance(String nuc, double dist)
 			{
-			List<Double> rl=radius.get(frame);
-			if(rl==null)
-				radius.put(frame, rl=new LinkedList<Double>());
-			rl.add(rs);
-			}
-		public void addCollPos(int frame, Vector3d pos)
-			{
-			List<Vector3d> rl=collectedPos.get(frame);
-			if(rl==null)
-				collectedPos.put(frame, rl=new LinkedList<Vector3d>());
-			rl.add(pos);
-			}
-		
-		public void addDistance(int frame, String nuc, double dist)
-			{
-			Map<String,List<Double>> rl=distance.get(frame);
-			if(rl==null)
-				distance.put(frame, rl=new TreeMap<String,List<Double>>());
-			
-			List<Double> foo=distance.get(frame).get(nuc);
+			List<Double> foo=distance.get(nuc);
 			if(foo==null)
-				distance.get(frame).put(nuc, foo=new LinkedList<Double>());
+				distance.put(nuc, foo=new LinkedList<Double>());
 			foo.add(dist);
 			}
 		
@@ -304,17 +282,17 @@ public class NucStats
 				pos.y=e.getValue().curpos.y;
 				pos.z=e.getValue().curpos.z;
 
-				int relframe=frame-e.getValue().lifeStart;
-				double radius=0;
-				List<Double> radiusList=e.getValue().radius.get(relframe);
-				if(radiusList==null)
-					radiusList=e.getValue().radius.get(e.getValue().radius.lastKey()); //hack, should it even exist this long?
-//				System.out.println("relframe "+relframe +" "+e.getValue().radius.lastKey());
-				for(double d:radiusList)
-					radius+=d;
-				radius/=radiusList.size();
 				pos.r=radius;
 				}
+		}
+	
+	
+	public void cleanStats()
+		{
+		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
+			{
+			e.getValue().distance.clear();
+			}
 		}
 	
 	}

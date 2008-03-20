@@ -18,33 +18,53 @@ import evplugin.nuc.*;
 public class LineageView extends JPanel 
 	{
 	static final long serialVersionUID=0;
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// Settings ////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 
+	private static final Color frameLineColor=new Color(220,220,220);
+	private static final Color curFrameLineColor=new Color(150,150,150);
+	private static final Color frameStringColor=new Color(100,100,100);
+	
+	/** Size of expander icon */
+	private static final int expanderSize=4;
+	/** Size of key frame icon */
+	private static final int keyFrameSize=2;
+	
+	
+	
 
-	public static class KeyFramePos
-		{
-		public int x, y, frame;
-		public String nuc;
-		}
-
-	private static Color frameLineColor=new Color(220,220,220);
-	private static Color curFrameLineColor=new Color(150,150,150);
-	private static Color frameStringColor=new Color(100,100,100);
-
+	////////////////////////////////////////////////////////////////
+	
+	public int camB, camC;
+	private int frameDist=5;
+	public double currentFrame=0;
+	public boolean displayHorizontalTree=true;
+	public NucLineage currentLin=null;
+	
+	public boolean showFrameLines=true;
+	public boolean showKeyFrames=true;
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// Cached tree /////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	private WeakHashMap<NucLineage, DrawCache> drawCache=new WeakHashMap<NucLineage, DrawCache>();
+	
 	/** Cached information about nuclei */
 	private class DrawCache
 		{
 		TreeMap<String, Internal> nucInternal=new TreeMap<String, Internal>();
 		}
 
-	
-	private WeakHashMap<NucLineage, DrawCache> drawCache=new WeakHashMap<NucLineage, DrawCache>();
-
-	
+	/** Get draw cache for currently selected lineage */
 	private DrawCache getDrawCache()
 		{
-		return getDrawCache(lin);
+		return getDrawCache(currentLin);
 		}
 	
+	/** Get draw cache for a lineage */
 	private DrawCache getDrawCache(NucLineage lin)
 		{
 		DrawCache dc=drawCache.get(lin);
@@ -53,46 +73,85 @@ public class LineageView extends JPanel
 		return dc;
 		}
 	
-	////////////////////////////////////////////////////////////////
 	
-	public int camB, camC;
-	private int frameDist=5;
-	public double currentFrame=0;
-	public boolean displayHorizontalTree=true;
-	public NucLineage lin=null;
-	
-	public boolean showFrameLines=true;
-	public boolean showKeyFrames=true;
-	
-	
-	
-	
-	/** Size of expander icon */
-	private static int expanderSize=4;
-	/** Size of key frame icon */
-	private final int keyFrameSize=2;
-	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// Cached keyframes ////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 	private LinkedList<KeyFramePos> drawnKeyFrames=new LinkedList<KeyFramePos>();
+
+	public static class KeyFramePos
+		{
+		public int x, y, frame;
+		public String nuc;
+		}
+	
+	
+
+	/**
+	 * Draw key frame icon
+	 */
+	private void drawKeyFrame(Graphics g, int x, int y, String nuc, int frame)
+		{
+		g.drawOval(x-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
+		KeyFramePos f=new KeyFramePos();
+		f.frame=frame;
+		f.x=x;
+		f.y=y;
+		f.nuc=nuc;
+		drawnKeyFrames.add(f);
+		}
+	
+	/**
+	 * Get key frame closest to given position
+	 */
+	public KeyFramePos getKeyFrame(int x, int y)
+		{
+		KeyFramePos nearest=null;
+		int nearestDist2=0;
+		for(KeyFramePos f:drawnKeyFrames)
+			{
+			int dx=f.x-x, dy=f.y-y;
+			int dist2=dx*dx+dy*dy;
+			if(nearest==null || dist2<nearestDist2)
+				{
+				nearestDist2=dist2;
+				nearest=f;
+				}
+			}
+		if(nearestDist2<10*10)
+			return nearest;
+		else
+			return null;
+		}
 	
 		
 	
+	
+	
+  /////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// The rest ////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	
 	/**
-	 * Go to the first frame at which there is a nucleus
+	 * Go to the first root
 	 */
 	public void goRoot()
 		{	
 		Integer allMinFrame=null;
-		
-		Vector<String> roots=getRootNuc();
+		Set<String> roots=getRootNuc();
+		String rootName=null;
 		for(String nucName:roots)
 			{
-			NucLineage.Nuc nuc=lin.nuc.get(nucName);
+			NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 			if(allMinFrame==null || nuc.pos.firstKey()<allMinFrame)
+				{
 				allMinFrame=nuc.pos.firstKey();
+				rootName=nucName;
+				}
 			}
 		if(allMinFrame!=null)
-			setFrame(allMinFrame);
-//		System.out.println(": "+lin+" "+allMinFrame);
+			goInternalNuc(getNucinfo(rootName));
+//			setFrame(allMinFrame);
 		}
 
 	/**
@@ -104,18 +163,22 @@ public class LineageView extends JPanel
 			{
 			String nucName=NucLineage.selectedNuclei.iterator().next().getRight();
 			Internal internal=getNucinfo(nucName);
-			if(displayHorizontalTree)
-				{
-				camB+=internal.lastB-getHeight()/2;
-				camC+=internal.lastC-getWidth()/2;
-				}
-			else
-				{
-				camB+=internal.lastB-getWidth()/2;
-				camC+=internal.lastC-getWidth()/2;
-				}
-			repaint();
+			goInternalNuc(internal);
 			}
+		}
+	private void goInternalNuc(Internal internal)
+		{
+		if(displayHorizontalTree)
+			{
+			camB+=internal.lastB-getHeight()/2;
+			camC+=internal.lastC-getWidth()/2;
+			}
+		else
+			{
+			camB+=internal.lastB-getWidth()/2;
+			camC+=internal.lastC-getWidth()/2;
+			}
+		repaint();
 		}
 	
 	/**
@@ -182,12 +245,12 @@ public class LineageView extends JPanel
 	/**
 	 * Get all root nuclei
 	 */
-	private Vector<String> getRootNuc()
+	private SortedSet<String> getRootNuc()
 		{
-		Vector<String> list=new Vector<String>();
-		if(lin!=null)
-			for(String nucName:lin.nuc.keySet())
-				if(lin.nuc.get(nucName).parent==null)
+		SortedSet<String> list=new TreeSet<String>();
+		if(currentLin!=null)
+			for(String nucName:currentLin.nuc.keySet())
+				if(currentLin.nuc.get(nucName).parent==null)
 					list.add(nucName);
 		return list;
 		}
@@ -195,17 +258,17 @@ public class LineageView extends JPanel
 	
 	public void foldAll()
 		{
-		Vector<String> roots=getRootNuc();
+		Set<String> roots=getRootNuc();
 		for(String nucName:roots)
-		recursiveExpand(nucName, false);
+			recursiveExpand(nucName, false);
 		repaint();
 		}
 
 	public void unfoldAll()
 		{
-		Vector<String> roots=getRootNuc();
+		Set<String> roots=getRootNuc();
 		for(String nucName:roots)
-		recursiveExpand(nucName, true);
+			recursiveExpand(nucName, true);
 		repaint();
 		}
 
@@ -231,7 +294,7 @@ public class LineageView extends JPanel
 		removeUnusedInternal();
 
 		//Update tree structure
-		Vector<String> roots=getRootNuc();
+		Set<String> roots=getRootNuc();
 		for(String nucName:roots)
 			updateTreeFormat(g,nucName);
 		
@@ -318,7 +381,7 @@ public class LineageView extends JPanel
 	 */
 	private void drawTree(Graphics g, String nucName, int midr)
 		{
-		NucLineage.Nuc nuc=lin.nuc.get(nucName);
+		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 		if(nuc==null)
 			{
 			//This is a hack in my opinion. Better if it can be found during tree structure planner
@@ -328,7 +391,11 @@ public class LineageView extends JPanel
 			return;
 			}
 		
-		
+		if(nuc.pos.isEmpty())
+			{
+			System.out.println("Error: no positions for "+nucName);
+			return;
+			}
 		Internal internal=getNucinfo(nucName);
 		int firstFrame=nuc.pos.firstKey();
 		int startc=f2c(firstFrame);
@@ -366,16 +433,19 @@ public class LineageView extends JPanel
 			{
 			for(String cName:nuc.child)
 				{
-				NucLineage.Nuc c=lin.nuc.get(cName);
-				Internal cInternal=getDrawCache().nucInternal.get(cName);
-				//Draw connecting line
-				g.setColor(Color.BLACK);
-				if(displayHorizontalTree)
-					g.drawLine(endc,midr,f2c(c.pos.firstKey()),midr+cInternal.centerDisplacement);
-				else
-					g.drawLine(midr,endc,midr+cInternal.centerDisplacement,f2c(c.pos.firstKey()));
-				//Recurse down
-				drawTree(g,cName, midr+cInternal.centerDisplacement);
+				NucLineage.Nuc c=currentLin.nuc.get(cName);
+				if(!c.pos.isEmpty())
+					{
+					Internal cInternal=getDrawCache().nucInternal.get(cName);
+					//Draw connecting line
+					g.setColor(Color.BLACK);
+					if(displayHorizontalTree)
+						g.drawLine(endc,midr,f2c(c.pos.firstKey()),midr+cInternal.centerDisplacement);
+					else
+						g.drawLine(midr,endc,midr+cInternal.centerDisplacement,f2c(c.pos.firstKey()));
+					//Recurse down
+					drawTree(g,cName, midr+cInternal.centerDisplacement);
+					}
 				}
 			}
 		
@@ -390,9 +460,9 @@ public class LineageView extends JPanel
 
 		//Draw name of nucleus. Warn if something is wrong
 		if(nuc.end!=null && nuc.child.size()>0)
-			drawNucName(g, "!!! ", new NucPair(lin, nucName), midr, endc);
+			drawNucName(g, "!!! ", new NucPair(currentLin, nucName), midr, endc);
 		else
-			drawNucName(g, "", new NucPair(lin, nucName), midr, endc);
+			drawNucName(g, "", new NucPair(currentLin, nucName), midr, endc);
 		}
 
 	
@@ -405,58 +475,8 @@ public class LineageView extends JPanel
 		}
 	
 	
-	/**
-	 * Draw key frame icon
-	 */
-	private void drawKeyFrame(Graphics g, int x, int y, String nuc, int frame)
-		{
-		g.drawOval(x-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
-		KeyFramePos f=new KeyFramePos();
-		f.frame=frame;
-		f.x=x;
-		f.y=y;
-		f.nuc=nuc;
-		drawnKeyFrames.add(f);
-		}
-	
-	/**
-	 * Get key frame closest to given position
-	 */
-	public KeyFramePos getKeyFrame(int x, int y)
-		{
-		KeyFramePos nearest=null;
-		int nearestDist2=0;
-		for(KeyFramePos f:drawnKeyFrames)
-			{
-			int dx=f.x-x, dy=f.y-y;
-			int dist2=dx*dx+dy*dy;
-			if(nearest==null || dist2<nearestDist2)
-				{
-				nearestDist2=dist2;
-				nearest=f;
-				}
-			}
-		if(nearestDist2<10*10)
-			return nearest;
-		else
-			return null;
-		}
-	
 
 	
-	
-	/**
-	 * Get maximum visible c-value. WHY IS IT NOT USED?
-	 */
-	/*
-	private int getMaxVisibleC()
-		{
-		if(displayHorizontalTree)
-			return getWidth();
-		else
-			return getHeight();
-		}*/
-
 	
 	/**
 	 * Get maximum visible r-value
@@ -571,7 +591,7 @@ public class LineageView extends JPanel
 	private void updateTreeFormat(Graphics g, String nucName)
 		{		
 		Internal internal=getNucinfo(nucName);
-		NucLineage.Nuc nuc=lin.nuc.get(nucName);
+		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 
 		//Total width of children. 0 if none expanded
 		int totw=0;
@@ -620,7 +640,10 @@ public class LineageView extends JPanel
 		}
 	
 	
-	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// Tree pos ////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+
 	
 	/**
 	 * Cached information about nuclei
@@ -668,7 +691,6 @@ public class LineageView extends JPanel
 		if(SwingUtilities.isLeftMouseButton(e))
 			NucLineage.selectedNuclei.clear();
 		BasicWindow.updateWindows();
-		//repaint();
 		}
 
 	/**
@@ -690,8 +712,8 @@ public class LineageView extends JPanel
 			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
 		public void clickRegion(MouseEvent e)
 			{
-			if(lin!=null && SwingUtilities.isLeftMouseButton(e))
-				NucLineage.mouseSelectNuc(new NucPair(lin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+			if(currentLin!=null && SwingUtilities.isLeftMouseButton(e))
+				NucLineage.mouseSelectNuc(new NucPair(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 			BasicWindow.updateWindows();
 			}
 		}
@@ -721,11 +743,11 @@ public class LineageView extends JPanel
 	 */
 	public void recursiveExpand(String nucName, boolean expand)
 		{
-		if(lin!=null)
+		if(currentLin!=null)
 			{
 			Internal internal=getNucinfo(nucName);
 			internal.expanded=expand;
-			NucLineage.Nuc nuc=lin.nuc.get(nucName);
+			NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 			for(String childName:nuc.child)
 				recursiveExpand(childName, expand);
 			}
