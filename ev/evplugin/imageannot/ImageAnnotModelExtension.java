@@ -53,7 +53,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 		
 		public Collection<ImageAnnot> getAnnot()
 			{
-			Vector<ImageAnnot> v=new Vector<ImageAnnot>();
+			List<ImageAnnot> v=new LinkedList<ImageAnnot>();
 			for(ImageAnnot lin:ImageAnnot.getObjects(w.metaCombo.getMeta()))
 				if(w.showObject(lin))
 					v.add(lin);

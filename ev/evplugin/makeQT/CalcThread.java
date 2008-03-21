@@ -22,7 +22,7 @@ public final class CalcThread extends BatchThread
 	private final int z;
 
 	private final int oneW;
-	private final Vector<MovieChannel> channels;
+	private final List<MovieChannel> channels;
 	private final String inputCodec;
 	private final String inputQuality;
 	
@@ -38,7 +38,7 @@ public final class CalcThread extends BatchThread
 			}
 		}
 	
-	public CalcThread(Imageset rec, int startFrame, int endFrame, int z, Vector<MovieChannel> channelNames, int oneW, String codec, String quality)
+	public CalcThread(Imageset rec, int startFrame, int endFrame, int z, List<MovieChannel> channelNames, int oneW, String codec, String quality)
 		{
 		this.rec=rec;
 		this.startFrame=startFrame;

@@ -3,6 +3,8 @@ package evplugin.filterMorphological;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -19,8 +21,7 @@ public class RLEImage
 		int start, stop;
 		}
 
-	//vector is not optimal. linked list is a better alternative?
-	private HashMap<Integer,Vector<RLEstrip>> strips=new HashMap<Integer, Vector<RLEstrip>>();
+	private HashMap<Integer,List<RLEstrip>> strips=new HashMap<Integer, List<RLEstrip>>();
 	
 	public RLEImage(){}
 
@@ -63,7 +64,7 @@ public class RLEImage
 	
 	private void readStrip(int[] pix, int y, int width, int centerx)
 		{
-		Vector<RLEstrip> line=new Vector<RLEstrip>();
+		List<RLEstrip> line=new LinkedList<RLEstrip>();
 		strips.put(y,line);
 		for(int x=0;x<width;)
 			{
@@ -85,12 +86,12 @@ public class RLEImage
 	public RLEImage dilate(RLEImage s)
 		{
 		RLEImage tot=new RLEImage();
-		for(Map.Entry<Integer, Vector<RLEstrip>> zstrip:strips.entrySet())
+		for(Map.Entry<Integer, List<RLEstrip>> zstrip:strips.entrySet())
 			{
-			for(Map.Entry<Integer, Vector<RLEstrip>> sstrip:s.strips.entrySet())
+			for(Map.Entry<Integer, List<RLEstrip>> sstrip:s.strips.entrySet())
 				{
 				int yd=zstrip.getKey()+sstrip.getKey();
-				Vector<RLEstrip> newstrips=tot.strips.get(yd);
+				List<RLEstrip> newstrips=tot.strips.get(yd);
 				if(newstrips==null)
 					tot.strips.put(yd, newstrips=new Vector<RLEstrip>());
 				for(RLEstrip zs:zstrip.getValue())
@@ -105,7 +106,7 @@ public class RLEImage
 			}
 		return tot;
 		}
-	private void insert(Vector<RLEstrip> strip, RLEstrip s)
+	private void insert(List<RLEstrip> strip, RLEstrip s)
 		{
 		strip.add(s); //should be optimized, sorted insert & replace. then use linked list.
 		}

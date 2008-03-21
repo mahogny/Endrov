@@ -13,7 +13,7 @@ public class JTextFieldHistorized extends JTextField implements KeyListener
 	static final long serialVersionUID=0;
 	
 	/** List of past commands */
-	Vector<String> history=new Vector<String>();
+	public Vector<String> history=new Vector<String>();
 	
 	/** Current position in history or -1 */
 	private int ch=-1;
