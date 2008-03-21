@@ -14,7 +14,7 @@ import evplugin.data.*;
  */
 public abstract class CompoundROI extends ROI
 	{
-	public Vector<ROI> subRoi=new Vector<ROI>();
+	protected Vector<ROI> subRoi=new Vector<ROI>();
 	
 	public Vector<ROI> getSubRoi()
 		{

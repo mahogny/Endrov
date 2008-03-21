@@ -92,9 +92,9 @@ public class PluginInfo
 	/**
 	 * Get a list of all plugins
 	 */
-	public static Vector<PluginInfo> getPluginList()
+	public static List<PluginInfo> getPluginList()
 		{
-		final Vector<PluginInfo> p=new Vector<PluginInfo>();
+		final List<PluginInfo> p=new LinkedList<PluginInfo>();
 		if(storedInJar())
 			{
 			try

@@ -12,7 +12,7 @@ import org.jdom.Element;
  */
 public class ImportTable
 	{
-	public Vector<Vector<String>> rows=new Vector<Vector<String>>();
+	public List<List<String>> rows=new LinkedList<List<String>>();
 	
 
 	/**
@@ -29,7 +29,7 @@ public class ImportTable
 			LinkedList<Character> ll=new LinkedList<Character>();
 			for(char c:line.toCharArray())
 				ll.add(c);
-			Vector<String> row=new Vector<String>();
+			List<String> row=new LinkedList<String>();
 			rows.add(row);
 			
 			//For every column
@@ -93,7 +93,7 @@ public class ImportTable
 		for(int rowi=0;sheet.getRow(rowi)!=null;rowi++)
 			{
 			HSSFRow row = sheet.getRow(rowi);
-			Vector<String> a=new Vector<String>();
+			List<String> a=new LinkedList<String>();
 
 			for(int coli=0;row.getCell((short)coli)!=null;coli++)
 				{
@@ -108,10 +108,10 @@ public class ImportTable
 		}
 	
 	
-	public Vector<String> getColumnNames()
+	public List<String> getColumnNames()
 		{
 		if(rows.size()==0)
-			return new Vector<String>();
+			return new LinkedList<String>();
 		else
 			return rows.get(0);
 		}
@@ -120,7 +120,7 @@ public class ImportTable
 	public void show()
 		{
 		System.out.println("---start---");
-		for(Vector<String> r:rows)
+		for(List<String> r:rows)
 			{
 			for(String s:r)
 				System.out.print(s+"\t");
@@ -137,7 +137,7 @@ public class ImportTable
 			Element e2=new Element(elementName);
 			e.addContent(e2);
 			
-			Vector<String> row=rows.get(r);
+			List<String> row=rows.get(r);
 			for(int c=0;c<getColumnNames().size();c++)
 				{
 				Element ea=new Element(getColumnNames().get(c));

@@ -86,7 +86,8 @@ public class PluginWindow extends BasicWindow
 	 */
 	public PluginWindow(int x, int y, int w, int h)
 		{				
-		plugins=PluginInfo.getPluginList();
+		plugins=new Vector<PluginInfo>();
+		plugins.addAll(PluginInfo.getPluginList());
 
 		list.setListData(plugins);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

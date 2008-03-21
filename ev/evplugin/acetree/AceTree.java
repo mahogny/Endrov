@@ -31,7 +31,7 @@ public class AceTree
 
 	
 	
-	public final Vector<Vector<ARec>> afile=new Vector<Vector<ARec>>();
+	public final List<Vector<ARec>> afile=new LinkedList<Vector<ARec>>();
 	
 	public double xy_res=0.09, z_res=1.00;
 	public double frametime=1.0/60.0; //TODO: import it
@@ -75,11 +75,7 @@ public class AceTree
 
 		//Convert positions and find parents
 		for(int frame=0;frame<afile.size();frame++)
-			{
-			Vector<ARec> fi=afile.get(frame);
-			
-			for(ARec line:fi)
-				{
+			for(ARec line:afile.get(frame))
 				if(!line.nucName.startsWith("Nuc") && !line.nucName.equals("nill")) //Filter for what is imported
 					{
 					NucLineage.Nuc nuc=lin.getNucCreate(line.nucName);
@@ -96,8 +92,6 @@ public class AceTree
 							nuc.parent=aparent.nucName;
 						}
 					}
-				}
-			}
 		
 		//Associate children with parents
 		for(String nucName:lin.nuc.keySet())

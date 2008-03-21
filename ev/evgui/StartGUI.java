@@ -59,7 +59,7 @@ public class StartGUI
 					}
 				
 				//Collect jarfiles
-				Vector<String> jarfiles=new Vector<String>();
+				List<String> jarfiles=new LinkedList<String>();
 				collectJars(jarfiles, "libs");
 				if(!libdir.equals(""))
 					collectJars(jarfiles, libdir);
@@ -158,7 +158,7 @@ public class StartGUI
 	 * Get all jars and add them with path to vector. Recurses when it finds a directory
 	 * ending with _inc
 	 */
-	private static void collectJars(Vector<String> v,String dir)
+	private static void collectJars(List<String> v,String dir)
 		{
 		File p=new File(dir);
 		for(File sub:p.listFiles())

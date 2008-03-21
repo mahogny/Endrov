@@ -101,7 +101,7 @@ public class NucLineage extends EvObject implements Cloneable
 								String expName=pose.getAttributeValue("name");
 								NucExp exp=new NucExp();
 								n.exp.put(expName, exp);
-								for(Element expe:EV.castIterableElement(nuce.getChildren()))
+								for(Element expe:EV.castIterableElement(pose.getChildren()))
 									{
 									int frame=expe.getAttribute("f").getIntValue();
 									double level=expe.getAttribute("l").getDoubleValue();
@@ -344,6 +344,21 @@ public class NucLineage extends EvObject implements Cloneable
 				childe.setAttribute("name", child);
 				nuce.addContent(childe);
 				}
+			
+			for(Map.Entry<String, NucExp> entry:n.exp.entrySet())
+				{
+				Element childe=new Element("exp");
+				childe.setAttribute("name", entry.getKey());
+				nuce.addContent(childe);
+				for(Map.Entry<Integer, Double> ve:entry.getValue().level.entrySet())
+					{
+					Element value=new Element("v");
+					value.setAttribute("f",""+ve.getKey());
+					value.setAttribute("l",""+ve.getValue());
+					childe.addContent(value);
+					}
+				}
+			
 			}
 		}
 	
@@ -355,10 +370,7 @@ public class NucLineage extends EvObject implements Cloneable
 		{
 		Nuc n=nuc.get(name);
 		if(n==null)
-			{
-			n=new Nuc();
-			nuc.put(name,n);
-			}
+			nuc.put(name,n=new Nuc());
 		return n;
 		}
 	
@@ -404,7 +416,7 @@ public class NucLineage extends EvObject implements Cloneable
 		Nuc n=nuc.get(nucName);
 		if(n!=null)
 			{
-			Vector<Integer> todel=new Vector<Integer>();
+			List<Integer> todel=new LinkedList<Integer>();
 			
 			for(int f:n.pos.keySet())
 				if(f>=frame)
@@ -432,22 +444,6 @@ public class NucLineage extends EvObject implements Cloneable
 				n.parent=null;
 			}
 		metaObjectModified=true;
-		}
-	
-	
-	/**
-	 * Set a nucpos entry for a nucleus/frame
-	 * IS IT USED?
-	 */
-	public void commitNucPos(String nucName, int frame, NucPos pos)
-		{
-		Nuc n=getNucCreate(nucName);
-		n.pos.put(frame,new NucPos(pos));
-		metaObjectModified=true;
-		}
-	public void commitNucPos(String nucName, int frame, NucInterp pos)
-		{
-		commitNucPos(nucName, frame, pos.pos);
 		}
 	
 
@@ -505,13 +501,12 @@ public class NucLineage extends EvObject implements Cloneable
 		Nuc nt=nuc.get(targetName);
 		ns.end=null;
 		nuc.remove(targetName);
-		for(int frame:nt.pos.keySet())
-			{
-			NucPos pos=nt.pos.get(frame);
-			ns.pos.put(frame,pos);
-			}
-		for(String child:nt.child)
-			ns.child.add(child);
+//		for(int frame:nt.pos.keySet())
+//			ns.pos.put(frame,nt.pos.get(frame));
+		ns.pos.putAll(nt.pos);
+//		for(String child:nt.child)
+//			ns.child.add(child);
+		ns.child.addAll(nt.child);
 		updateNameReference(targetName,sourceName);
 		ns.child.remove(sourceName);
 		metaObjectModified=true;
@@ -563,7 +558,7 @@ public class NucLineage extends EvObject implements Cloneable
 	 *****************************************************************************************************/
 
 	/**
-	 * Time point
+	 * Position key frame
 	 */
 	public static class NucPos
 		{

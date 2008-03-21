@@ -21,7 +21,7 @@ public class CustomTreeElement
 	
 	public TreePath getPath()
 		{
-		Vector<Object> path=new Vector<Object>();
+		List<Object> path=new LinkedList<Object>();
 		CustomTreeElement e=this;
 		
 		while(e!=null)

@@ -5,7 +5,6 @@ import java.util.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
@@ -40,7 +39,7 @@ public class LineageView extends JPanel
 
 	////////////////////////////////////////////////////////////////
 	
-	public int camVY, camVX;
+	public double camVY, camVX;
 	private double frameDist=5;
 	public double currentFrame=0;
 	public boolean displayHorizontalTree=true;
@@ -134,16 +133,31 @@ public class LineageView extends JPanel
 	/////////////////////////// The rest ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 	
-	
+	/** Get width of view as if horizontal */
 	private int getVirtualWidth()
 		{
 		return displayHorizontalTree ? getWidth() : getHeight();
 		}
+	/** Get height of view as if horizontal */
 	private int getVirtualHeight()
 		{
 		return displayHorizontalTree ? getHeight() : getWidth();
 		}
-	
+	/** Get frame from screen x,y coordinate */
+	public int getFrameFromCursor(int x, int y)
+		{
+		return displayHorizontalTree ? c2f(x) : c2f(y);
+		}
+	/** Convert frame position to coordinate */
+	private int f2c(int f)
+		{
+		return (int)(f*frameDist-camVX);
+		}	
+	/** Convert coordinate to frame position */
+	private int c2f(int c)
+		{
+		return (int)((c+camVX)/frameDist);
+		}
 	
 	/**
 	 * Go to the first root
@@ -202,55 +216,31 @@ public class LineageView extends JPanel
 			}
 		}
 	
-	/**
-	 * Get frame from screen x,y coordinate
-	 */
-	public int getFrameFromCursor(int x, int y)
-		{
-		if(displayHorizontalTree)
-			return c2f(x);
-		else
-			return c2f(y);
-		}
-	
-	/** Convert frame position to coordinate */
-	private int f2c(int f)
-		{
-		return (int)(f*frameDist-camVX);
-		}
-	
-	/** Convert coordinate to frame position */
-	private int c2f(int c)
-		{
-		return (int)((c+camVX)/frameDist);
-		}
+
 	
 	/**
-	 * Change the frame distance but keep the camera reasonably fixed
-	 * @param s New frame distance, >=1
+	 * Change the frame distance without moving camera
 	 */
 	public void setFrameDist(double s)
 		{
 		if(s<0.1)	s=0.1; //Not allowed to happen, quick fix
-		int h=getVirtualWidth()/2;
+		double h=getVirtualWidth()/2;
 		double curmid=(camVX+h)/frameDist;
 		frameDist=s;
-		camVX=(int)(curmid*frameDist-h);
+		camVX=curmid*frameDist-h;
 		}
 	
 	
-	/**
-	 * Move camera to show some frame
-	 */
-	public void setFrame(int frame)
+	/** Move camera to show some frame */
+	public void setFrame(double frame)
 		{
-		camVX=(int)(frame*frameDist-getVirtualWidth()/2);
+		camVX=frame*frameDist-getVirtualWidth()/2;
 		repaint();
 		}
-	
-	public int getFrame()
+	/** Get frame camera currently looks at */
+	public double getFrame()
 		{
-		return (int)((camVX+getVirtualWidth()/2)/frameDist);
+		return (camVX+getVirtualWidth()/2)/frameDist;
 		}
 	
 	
@@ -267,27 +257,24 @@ public class LineageView extends JPanel
 		return list;
 		}
 	
-	
+	/** Fold all trees */
 	public void foldAll()
 		{
-		Set<String> roots=getRootNuc();
-		for(String nucName:roots)
+		for(String nucName:getRootNuc())
 			recursiveExpand(nucName, false);
 		repaint();
 		}
-
+	/** Unfold all trees */
 	public void unfoldAll()
 		{
-		Set<String> roots=getRootNuc();
-		for(String nucName:roots)
+		for(String nucName:getRootNuc())
 			recursiveExpand(nucName, true);
 		repaint();
 		}
 
 	
 	/**
-	 * Draw the component
-	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+	 * Draw everything
 	 */
 	public void paintComponent(Graphics g)
 		{
@@ -313,25 +300,19 @@ public class LineageView extends JPanel
 		//Draw frame lines
 		drawFrameLines(h);
 
-		//Clean up
-		removeUnusedInternal();
-
 		//Update tree structure
-		Set<String> roots=getRootNuc();
-		for(String nucName:roots)
+		removeUnusedInternal();
+		for(String nucName:getRootNuc())
 			updateTreeFormat(h,nucName);
 		
 		//Draw all trees
 		int displacement=0;
 		boolean first=true;
-		
-		
-		
-		for(String nucName:roots)
+		for(String nucName:getRootNuc())
 			{
 			Internal nuc=getNucinfo(nucName);
 			if(first)	first=false; else displacement+=nuc.sizer/2; //I don't like this layout really
-			drawTree(h, nucName,displacement+getVirtualHeight()/2-camVY); 
+			drawTree(h, nucName,(int)(displacement+getVirtualHeight()/2-camVY)); 
 			displacement+=nuc.sizer/2; //maybe really half this and half next?
 			}
 
@@ -365,10 +346,7 @@ public class LineageView extends JPanel
 			if(frameLineSkip<1)
 				frameLineSkip=1;
 			double starti=camVX/frameDist;
-//			while(starti%frameLineSkip!=0)
-//				starti--;
 			starti=((int)(starti/frameLineSkip))*frameLineSkip;
-			
 			
 			Graphics2D g2=(Graphics2D)g;
 			for(double i=starti;i<getVirtualWidth()/frameDist+1+frameLineSkip+camVX/frameDist;i+=frameLineSkip)
@@ -389,8 +367,43 @@ public class LineageView extends JPanel
 			}
 		}
 	
-	
-	
+	/**
+	 * Draw expression profile
+	 */
+	private void drawExpression(Graphics g, String nucName, int midr, NucLineage.Nuc nuc)
+		{
+		for(Map.Entry<String, NucLineage.NucExp> e:nuc.exp.entrySet())
+			{
+			double scale=0.5;
+
+			boolean hasLastCoord=false;
+			int lastX=0, lastY=0;
+
+			g.setColor(e.getValue().color);
+			for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())
+				{
+				int y=(int)(-ve.getValue()*scale+midr);
+				int x=f2c(ve.getKey());
+				
+				if(hasLastCoord)
+					{
+					g.drawLine(lastX, lastY, x, y);
+					g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
+					}
+				
+				int r=1;
+				g.drawRect(x-r, y-r, 2*r, 2*r);
+				
+				hasLastCoord=true;
+				lastX=x;
+				lastY=y;
+				}
+			
+			
+			}
+		
+		
+		}
 	
 	/**
 	 * Recursive function to draw a tree
@@ -417,6 +430,9 @@ public class LineageView extends JPanel
 		int firstFrame=nuc.pos.firstKey();
 		int startc=f2c(firstFrame);
 		int endc=f2c(nuc.lastFrame());
+		
+		//Draw expression
+		drawExpression(g,nucName,midr,nuc);
 		
 		//Draw line spanning frames
 		g.setColor(Color.BLACK);
@@ -509,7 +525,6 @@ public class LineageView extends JPanel
 	
 	/**
 	 * Draw the [+] and [-] symbol
-	 * @param g Graphics context
 	 * @param nucname Name of corresponding nucleus
 	 * @param x Mid x coordinate
 	 * @param y Mid y coordinate
@@ -557,14 +572,6 @@ public class LineageView extends JPanel
 				{
 				Internal cInternal=getNucinfo(nuc.child.first());
 				cInternal.centerDisplacement=10;
-				}
-			else if(nuc.child.size()==2 && false) //why did I set this to false?
-				{
-				//Divide evenly. this does not work properly with multitrees
-				Internal cInternal1=getNucinfo(nuc.child.first());
-				Internal cInternal2=getNucinfo(nuc.child.last());
-				cInternal1.centerDisplacement=-totw/2;
-				cInternal2.centerDisplacement=+totw/2;
 				}
 			else
 				{
