@@ -3,7 +3,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.imagesetOST.*;
 import evplugin.nuc.*;
@@ -39,8 +38,7 @@ public class BatchRot2
 		System.out.println("Imageset "+file.getPath());
 		OstImageset ost=new OstImageset(file.getPath());
 
-		for(EvObject ob:ost.metaObject.values())
-			if(ob instanceof NucLineage)
+		for(NucLineage lin:ost.getObjects(NucLineage.class))
 				{
 				File outname=new File(dataDir+file.getName()+".txt");
 				//if(!outname.exists())
@@ -48,7 +46,6 @@ public class BatchRot2
 					boolean hasContent=false;
 					try
 						{
-						NucLineage lin=(NucLineage)ob;
 						BufferedWriter fp = new BufferedWriter(new FileWriter(outname));
 						for(String nucName:lin.nuc.keySet())
 							if(id.containsKey(nucName))

@@ -344,8 +344,8 @@ public static void calcAP(File file, BufferedWriter gnufile, BufferedWriter html
 								rotPostY=Math.sin(angleAPonXYtoXZ)*oldRotPostX+Math.cos(angleAPonXYtoXZ)*oldRotPostY;
 								rotPostZ=                                                                              oldRotPostZ;
 
-//								System.out.println("angleAPXY   = "+angleAPXY+"r = "+angleAPXY/(Math.PI/2)*90+"¡");
-//								System.out.println("angleAPXYXZ = "+angleAPonXYtoXZ+"r = "+angleAPonXYtoXZ/(Math.PI/2)*90+"¡");
+//								System.out.println("angleAPXY   = "+angleAPXY+"r = "+angleAPXY/(Math.PI/2)*90+"ï¿½");
+//								System.out.println("angleAPXYXZ = "+angleAPonXYtoXZ+"r = "+angleAPonXYtoXZ/(Math.PI/2)*90+"ï¿½");
 //								System.out.println("oldrotPost= "+oldRotPostX+","+oldRotPostY+","+oldRotPostZ+" at frame "+frame);
 //								System.out.println("rotPost  = "+rotPostX+","+rotPostY+","+rotPostZ+" at frame "+frame);
 
@@ -812,7 +812,7 @@ public static NucLineage.NucPos getpos(NucLineage lin, String name, int frame)
 
 public static NucLineage.NucPos getIntPos(NucLineage lin, String name, double frame)
 	{
-	NucLineage.NucInterp i=lin.nuc.get(name).interpolate(frame);
+	NucLineage.NucInterp i=lin.nuc.get(name).interpolatePos(frame);
 	if(i!=null)
 		return i.pos;
 	else

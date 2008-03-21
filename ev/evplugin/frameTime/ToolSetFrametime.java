@@ -3,14 +3,10 @@ package evplugin.frameTime;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JOptionPane;
 
 import evplugin.basicWindow.BasicWindow;
-import evplugin.data.*;
-import evplugin.imageWindow.ImageWindow;
-import evplugin.imageWindow.ImageWindowTool;
-//import evplugin.sql.DB;
+import evplugin.imageWindow.*;
 import evplugin.imageset.*;
 
 /**
@@ -43,14 +39,12 @@ public class ToolSetFrametime implements ImageWindowTool
 		if(frametimes!=null)
 			{
 			Imageset rec=w.getImageset();
-			for(EvObject o:rec.metaObject.values())
-				if(o instanceof FrameTime)
-					{
-					FrameTime f=(FrameTime)o;
-					double frametime=Double.parseDouble(frametimes);
-					f.add((int)w.frameControl.getFrame(), frametime);
-					BasicWindow.updateWindows();
-					}
+			for(FrameTime f:rec.getObjects(FrameTime.class))
+				{
+				double frametime=Double.parseDouble(frametimes);
+				f.add((int)w.frameControl.getFrame(), frametime);
+				BasicWindow.updateWindows();
+				}
 			}
 		}
 	

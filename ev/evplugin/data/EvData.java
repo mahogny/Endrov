@@ -11,6 +11,10 @@ import evplugin.data.cmd.*;
 import evplugin.ev.*;
 import evplugin.script.*;
 
+/**
+ * Container of data for EV
+ * @author Johan Henriksson
+ */
 public abstract class EvData
 	{
 	/******************************************************************************************************
@@ -92,7 +96,29 @@ public abstract class EvData
 		return metaObject.get(selectedMetaobjectId);
 		}
 
+	/**
+	 * Get all objects of a certain type
+	 */
+	@SuppressWarnings("unchecked") public <E> List<E> getObjects(Class<E> cl)
+		{
+		LinkedList<E> ll=new LinkedList<E>();
+		for(EvObject ob2:metaObject.values())
+			if(ob2.getClass() == cl)
+				ll.add((E)ob2);
+		return ll;
+		}
 	
+	/**
+	 * Get all ID and objects of a certain type
+	 */
+	@SuppressWarnings("unchecked") public <E> Map<Integer, E> getIdObjects(Class<E> cl)
+		{
+		HashMap<Integer, E> map=new HashMap<Integer, E>();
+		for(Map.Entry<Integer, EvObject> e:metaObject.entrySet())
+			if(e.getValue().getClass()==cl)
+				map.put(e.getKey(),(E)e.getValue());
+		return map;
+		}
 	
 	
 	/**
@@ -185,10 +211,8 @@ public abstract class EvData
   		Element element = document.getRootElement();
 
   		//Extract objects
-  		List<?> children=element.getChildren(); //TODO parameterize
-  		for(Object ochild:children)
+  		for(Element child:EV.castIterableElement(element.getChildren()))
   			{
-  			Element child=(Element)ochild;
   			EvObjectType ext=extensions.get(child.getName());
   			EvObject o;
   			if(ext==null)
@@ -224,10 +248,8 @@ public abstract class EvData
 	public static Vector<EvObject> getChildObXML(Element element)
 		{
 		Vector<EvObject> obs=new Vector<EvObject>();
-		List<?> children=element.getChildren(); 
-		for(Object ochild:children)
+		for(Element child:EV.castIterableElement(element.getChildren()))
 			{
-			Element child=(Element)ochild;
 			EvObjectType ext=extensions.get(child.getName());
 			EvObject o;
 			if(ext==null)

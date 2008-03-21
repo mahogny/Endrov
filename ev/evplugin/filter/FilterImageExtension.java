@@ -58,18 +58,12 @@ public class FilterImageExtension implements ImageWindowExtension
 		JMenu mSeq=new JMenu("Filter sequence");
 		menu.add(mSeq);
 		for(EvData data:EvData.metadata)
-			{
-			for(int id:data.metaObject.keySet())
+			for(Map.Entry<Integer, FilterSeq> e:data.getIdObjects(FilterSeq.class).entrySet())
 				{
-				EvObject ob=data.metaObject.get(id);
-				if(ob instanceof FilterSeq)
-					{
-					JMenuItem mi=new JMenuItem(data.getMetadataName()+" "+id);
-					mSeq.add(mi);
-					bl.bind((FilterSeq)ob, mi);
-					}
+				JMenuItem mi=new JMenuItem(data.getMetadataName()+" "+e.getKey());
+				mSeq.add(mi);
+				bl.bind(e.getValue(), mi);
 				}
-			}
 		}	
 	
 	public static class FilterDialog extends BasicWindow implements ActionListener

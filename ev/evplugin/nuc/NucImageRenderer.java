@@ -191,7 +191,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			int framei=(int)w.frameControl.getFrame();
 			if(n.pos.get(framei)==null)
 				{
-				NucLineage.NucInterp inter=n.interpolate(framei);
+				NucLineage.NucInterp inter=n.interpolatePos(framei);
 				n.pos.put(framei, new NucLineage.NucPos(inter.pos));
 				//apoptotic info
 				}

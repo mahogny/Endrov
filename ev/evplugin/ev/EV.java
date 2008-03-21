@@ -303,4 +303,42 @@ public class EV
   	EV.savePersonalConfig();
   	System.exit(0);
 		}
+	
+	
+
+	/**
+	 * Cast iterable to whatever type
+	 */
+	public static<E> Iterable<E> castIterable(Class<E> cl, final Iterable<?> o)
+		{
+		return new Iterable<E>(){
+			public Iterator<E> iterator(){
+				return new Iterator<E>(){
+					Iterator<?> it=o.iterator();
+					public boolean hasNext(){return it.hasNext();}
+					@SuppressWarnings("all") public E next(){return (E)it.next();}
+					public void remove(){it.remove();}
+				};
+			}
+		};
+		}
+	
+	/**
+	 * Cast iterable to whatever type
+	 */
+	public static Iterable<Element> castIterableElement(final Iterable<?> o)
+		{
+		return new Iterable<Element>(){
+			public Iterator<Element> iterator(){
+				return new Iterator<Element>(){
+					Iterator<?> it=o.iterator();
+					public boolean hasNext(){return it.hasNext();}
+					@SuppressWarnings("all") public Element next(){return (Element)it.next();}
+					public void remove(){it.remove();}
+				};
+			}
+		};
+		}
+
+	
 	}

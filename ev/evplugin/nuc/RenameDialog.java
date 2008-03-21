@@ -1,13 +1,15 @@
 package evplugin.nuc;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.*;
+import java.util.List;
 
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvDataXML;
-import evplugin.data.EvObject;
 
 
 /**
@@ -82,13 +84,13 @@ public class RenameDialog extends JDialog implements ActionListener
 			EvDataXML data=EvDataXML.loadReturnMeta();
 			if(data!=null)
 				{
-				for(EvObject ob:data.metaObject.values())
-					if(ob instanceof NucLineage)
-						{
-						templateLineage=(NucLineage)ob;
-						fillCombo();
-						return;
-						}
+				List<NucLineage> lins=data.getObjects(NucLineage.class);
+				if(!lins.isEmpty())
+					{
+					templateLineage=lins.get(0);
+					fillCombo();
+					return;
+					}
 				}
 			}
 		else if(e.getSource()==inputName && e.getActionCommand().equals("comboBoxChanged"))

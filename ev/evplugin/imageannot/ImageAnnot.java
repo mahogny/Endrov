@@ -72,13 +72,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 		if(meta==null)
 			return new Vector<ImageAnnot>();
 		else
-			{
-			Vector<ImageAnnot> set=new Vector<ImageAnnot>();
-			for(EvObject ob:meta.metaObject.values())
-				if(ob instanceof ImageAnnot)
-					set.add((ImageAnnot)ob);
-			return set;
-			}
+			return meta.getObjects(ImageAnnot.class);
 		}
 	
 	

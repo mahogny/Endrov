@@ -124,7 +124,7 @@ public class BestFitLength
 	/**
 	 * get error
 	 */
-	private double totalEps(double lambda)
+	public double totalEps(double lambda)
 		{
 		double eps=0;
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())

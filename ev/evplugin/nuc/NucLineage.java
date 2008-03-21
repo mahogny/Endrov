@@ -17,7 +17,7 @@ import evplugin.data.*;
 import evplugin.ev.*;
 
 /**
- * Meta object: Nuclei and a lineage
+ * Meta object: Nuclei, a lineage and expression info
  * @author Johan Henriksson
  */
 public class NucLineage extends EvObject implements Cloneable
@@ -69,18 +69,16 @@ public class NucLineage extends EvObject implements Cloneable
 				NucLineage meta=new NucLineage();
 				try
 					{
-					for(Object oc:e.getChildren())
+					for(Element nuce:EV.castIterableElement(e.getChildren()))
 						{
-						Element nuce=(Element)oc;
 						String nucName=nuce.getAttributeValue("name");
 						String ends=nuce.getAttributeValue("end");
 						Nuc n=meta.getNucCreate(nucName);
 						if(ends!=null)
 							n.end=Integer.parseInt(ends);
 
-						for(Object oc2:nuce.getChildren())
+						for(Element pose:EV.castIterableElement(nuce.getChildren()))
 							{
-							Element pose=(Element)oc2;
 							if(pose.getName().equals("pos"))
 								{
 								int frame=pose.getAttribute("f").getIntValue();
@@ -88,11 +86,8 @@ public class NucLineage extends EvObject implements Cloneable
 								double posy=pose.getAttribute("y").getDoubleValue();
 								double posz=pose.getAttribute("z").getDoubleValue();
 								double posr=pose.getAttribute("r").getDoubleValue();
-								//apoptotic info here
 								NucPos pos=new NucPos();
-								pos.x=posx;
-								pos.y=posy;
-								pos.z=posz;
+								pos.setPosCopy(new Vector3d(posx,posy,posz));
 								pos.r=posr;
 								n.pos.put(frame, pos);
 								}
@@ -100,6 +95,18 @@ public class NucLineage extends EvObject implements Cloneable
 								{
 								String child=pose.getAttributeValue("name");
 								n.child.add(child);
+								}
+							else if(pose.getName().equals("exp"))
+								{
+								String expName=pose.getAttributeValue("name");
+								NucExp exp=new NucExp();
+								n.exp.put(expName, exp);
+								for(Element expe:EV.castIterableElement(nuce.getChildren()))
+									{
+									int frame=expe.getAttribute("f").getIntValue();
+									double level=expe.getAttribute("l").getDoubleValue();
+									exp.level.put(frame, level);
+									}
 								}
 							}
 						}
@@ -179,14 +186,34 @@ public class NucLineage extends EvObject implements Cloneable
 		if(meta==null)
 			return new Vector<NucLineage>();
 		else
-			{
-			Vector<NucLineage> set=new Vector<NucLineage>();
-			for(EvObject ob:meta.metaObject.values())
-				if(ob instanceof NucLineage)
-					set.add((NucLineage)ob);
-			return set;
-			}
+			return meta.getObjects(NucLineage.class);
 		}
+
+	
+
+	/**
+	 * Get select lineage object (console reference)
+	 */
+	public static NucLineage getSelectedLineage()
+		{
+		EvData m=EvData.getSelectedMetadata();
+		if(m!=null)
+			{
+			EvObject ob=m.getSelectedMetaobject();
+			if(ob instanceof NucLineage)
+				return (NucLineage)ob;
+			else
+				{
+				List<NucLineage> l=m.getObjects(NucLineage.class);
+				if(l.isEmpty())
+					return null;
+				else
+					return l.get(0);
+				}
+			}
+		return null;
+		}
+
 	
 	/**
 	 * Create parent-children relation based on selected nuclei
@@ -309,7 +336,6 @@ public class NucLineage extends EvObject implements Cloneable
 				pose.setAttribute("y", ""+pos.y);
 				pose.setAttribute("z", ""+pos.z);
 				pose.setAttribute("r", ""+pos.r);
-				//apoptotic info
 				}
 
 			for(String child:n.child)
@@ -380,17 +406,11 @@ public class NucLineage extends EvObject implements Cloneable
 			{
 			Vector<Integer> todel=new Vector<Integer>();
 			
-			/*
-			for(int f:n.pos.keySet())
-				if(f>=frame)
-					n.pos.remove(f);
-			*/
 			for(int f:n.pos.keySet())
 				if(f>=frame)
 					todel.add(f);
 			for(int f:todel)
 				n.pos.remove(f);
-
 			
 			if(n.pos.isEmpty())
 				removeNuc(nucName);
@@ -440,7 +460,7 @@ public class NucLineage extends EvObject implements Cloneable
 		for(String nucName:nuc.keySet())
 			{
 			Nuc n=nuc.get(nucName);
-			NucInterp inter=n.interpolate(frame);
+			NucInterp inter=n.interpolatePos(frame);
 			if(inter!=null)
 				nucs.put(new NucPair(this, nucName), inter);
 			}
@@ -535,45 +555,23 @@ public class NucLineage extends EvObject implements Cloneable
 		metaObjectModified=true;
 		}
 	
-	/******************************************************************************************************
-	 *                               Instance NucPos                                                      *
-	 *****************************************************************************************************/
+	
 
-	/**
-	 * Get select lineage object (console reference)
-	 */
-	public static NucLineage getSelectedLineage()
-		{
-		EvData m=EvData.getSelectedMetadata();
-		if(m!=null)
-			{
-			EvObject ob=m.getSelectedMetaobject();
-			if(ob instanceof NucLineage)
-				return (NucLineage)ob;
-			else
-				{
-				for(EvObject ob2:m.metaObject.values())
-					if(ob2 instanceof NucLineage)
-						return (NucLineage)ob2;
-				return null;
-				}
-			}
-		return null;
-		}
+	
+	/******************************************************************************************************
+	 *                               Class NucPos                                                         *
+	 *****************************************************************************************************/
 
 	/**
 	 * Time point
 	 */
 	public static class NucPos
 		{
-		public double x,y,z,r; //constructor
-		//apoptotic info
+		public double x,y,z,r;
 		public NucPos(){}
 		public NucPos(NucPos p)
 			{
-			x=p.x;
-			y=p.y;
-			z=p.z;
+			setPosCopy(p.getPosCopy());
 			r=p.r;
 			}
 		public Vector3d getPosCopy()
@@ -589,7 +587,7 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 	
 	/******************************************************************************************************
-	 *                               Instance NucInterp                                                   *
+	 *                               Class NucInterp                                                      *
 	 *****************************************************************************************************/
 
 	/**
@@ -610,10 +608,30 @@ public class NucLineage extends EvObject implements Cloneable
 		boolean isEnd;
 		boolean hasParent;
 		}
+
+	/******************************************************************************************************
+	 *                               Class NucExp                                                         *
+	 *****************************************************************************************************/
+
+	public static class NucExp implements Cloneable
+		{
+		public SortedMap<Integer,Double> level=new TreeMap<Integer, Double>();
+		public java.awt.Color color=java.awt.Color.RED; //Not stored to disk, but kept here so the color is the same in all windows
+		
+		/** Make a deep copy */
+		public Object clone()
+			{
+			NucExp exp=new NucExp();
+			for(Map.Entry<Integer, Double> e:level.entrySet())
+				exp.level.put(e.getKey(),e.getValue());
+			exp.color=color;
+			return exp;
+			}
+		}
 	
 	
 	/******************************************************************************************************
-	 *                               Instance Nuc                                                         *
+	 *                               Class Nuc                                                            *
 	 *****************************************************************************************************/
 
 	/**
@@ -625,8 +643,13 @@ public class NucLineage extends EvObject implements Cloneable
 		public final TreeSet<String> child=new TreeSet<String>();
 		/** Name of parent */
 		public String parent=null;
-		/** Key frames */
+		/** Pos key frames */
 		public final SortedMap<Integer, NucPos> pos=new TreeMap<Integer, NucPos>();
+		/** Expression key frames */
+		public final SortedMap<String, NucExp> exp=new TreeMap<String, NucExp>();
+		
+		//idea: reserve x,y,z,r as special keywords, use expression system for all interpol?
+		
 		/** Final frame of existence */
 		public Integer end;
 		/** Fate of nucleus */
@@ -642,11 +665,13 @@ public class NucLineage extends EvObject implements Cloneable
 			n.fate=fate;
 			for(int i:pos.keySet())
 				n.pos.put(i, new NucPos(pos.get(i)));
+			for(Map.Entry<String, NucExp> e:exp.entrySet())
+				n.exp.put(e.getKey(), (NucExp)e.getValue().clone());
 			return n;
 			}
 		
-		/** Get frame <= */
-		public Integer getBefore(int frame)
+		/** Get position frame <= */
+		public Integer getPosFrameBefore(int frame)
 			{
 			NucPos exact=pos.get(frame);
 			if(exact!=null)
@@ -658,8 +683,8 @@ public class NucLineage extends EvObject implements Cloneable
 				return part.lastKey();
 			}
 		
-		/** Get frame >= */
-		public Integer getAfter(int frame)
+		/** Get position frame >= */
+		public Integer getPosFrameAfter(int frame)
 			{
 			SortedMap<Integer, NucPos> part=pos.tailMap(frame); 
 			if(part.size()==0)
@@ -668,7 +693,7 @@ public class NucLineage extends EvObject implements Cloneable
 				return part.firstKey();
 			} 
 		
-		/** Get pos, create if it does not exist */
+		/** Get position, create if it does not exist */
 		public NucPos getPosCreate(int frame)
 			{
 			NucPos npos=pos.get(frame);
@@ -705,11 +730,11 @@ public class NucLineage extends EvObject implements Cloneable
 					}
 				if(cfirstFrame!=null && cfirstFrame>lastFrame)
 					lastFrame=cfirstFrame;
-//				if(c.pos.firstKey()>lastFrame)  //changed
-//					lastFrame=c.pos.firstKey();
 				return lastFrame;
 				}
 			}
+		
+		
 		
 		private NucInterp posToInterpol(int frame, Integer frameBefore, Integer frameAfter)
 			{
@@ -726,15 +751,15 @@ public class NucLineage extends EvObject implements Cloneable
 		/**
 		 * Interpolate frame information
 		 */
-		public NucInterp interpolate(double frame)
+		public NucInterp interpolatePos(double frame)
 			{
 			//If there are no frames, abort early. This is only to get interpolation working
 			//while the set is being edited.
 			if(pos.isEmpty())
 				return null;
 			
-			Integer frameBefore=getBefore((int)frame);
-			Integer frameAfter=getAfter((int)Math.ceil(frame));
+			Integer frameBefore=getPosFrameBefore((int)frame);
+			Integer frameAfter=getPosFrameAfter((int)Math.ceil(frame));
 			
 			//This nucleus only continues until there is a child
 			for(String childName:child)
@@ -748,7 +773,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(parent!=null)
 				{
 				Nuc p=nuc.get(parent);
-				if(p.pos.isEmpty() || p.pos.lastKey()>frame)  //was p.pos.lastKey()>=frame
+				if(p.pos.isEmpty() || p.pos.lastKey()>frame)
 					return null;
 				}
 			
