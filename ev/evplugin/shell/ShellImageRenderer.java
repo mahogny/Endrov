@@ -1,11 +1,10 @@
 package evplugin.shell;
 
-import java.util.*;
+import java.util.List;
 import java.awt.*;
 import java.awt.geom.*;
 import javax.vecmath.*;
 
-import evplugin.data.*;
 import evplugin.imageWindow.*;
 
 /**
@@ -34,13 +33,9 @@ public class ShellImageRenderer implements ImageWindowRenderer
 		}
 
 	
-	public Vector<Shell> getShells()
+	public List<Shell> getShells()
 		{
-		Vector<Shell> list=new Vector<Shell>();
-		for(EvObject ob:w.getImageset().metaObject.values())
-			if(ob instanceof Shell)
-				list.add((Shell)ob);
-		return list;
+		return w.getImageset().getObjects(Shell.class);
 		}
 	
 
@@ -50,32 +45,22 @@ public class ShellImageRenderer implements ImageWindowRenderer
 	 */
 	private void drawShell(Graphics g, Shell s)
 		{
-//		if(s.exists())
-			{
-			Graphics2D g2=(Graphics2D)g;
-			g.setColor(Color.GREEN);
-			
-			double plongaxis=projectSphere(s.major, s.midz);
-			double pshortaxis=projectSphere(s.minor, s.midz);
-			
-			//Coordinate transformation
-			Vector2d so=w.transformW2S(new Vector2d(s.midx,s.midy)); //TODO: ellipse fails rotation
-	//		double sox=w.w2sx(s.midx);
-	//		double soy=w.w2sy(s.midy);
-			
-			double polarrad=10;
-			
-			double angle=s.angle+w.getRotation();
-			
-			
-			g2.rotate(angle,so.x,so.y);
-			g2.draw(new Ellipse2D.Double((double)(so.x-plongaxis),(double)(so.y-pshortaxis),(double)(2*plongaxis),(double)(2*pshortaxis)));
-			g2.draw(new Ellipse2D.Double((double)(so.x+plongaxis-polarrad),(double)(so.y-polarrad),polarrad*2, polarrad*2));
-			g2.rotate(-angle,so.x,so.y);
-			
-		//	System.out.println("# "+sox+" "+soy);
-			
-			}
+		Graphics2D g2=(Graphics2D)g;
+		g.setColor(Color.GREEN);
+
+		double plongaxis=projectSphere(s.major, s.midz);
+		double pshortaxis=projectSphere(s.minor, s.midz);
+
+		//Coordinate transformation
+		Vector2d so=w.transformW2S(new Vector2d(s.midx,s.midy)); //TODO: ellipse fails rotation
+
+		double polarrad=10;
+		double angle=s.angle+w.getRotation();
+
+		g2.rotate(angle,so.x,so.y);
+		g2.draw(new Ellipse2D.Double((double)(so.x-plongaxis),(double)(so.y-pshortaxis),(double)(2*plongaxis),(double)(2*pshortaxis)));
+		g2.draw(new Ellipse2D.Double((double)(so.x+plongaxis-polarrad),(double)(so.y-polarrad),polarrad*2, polarrad*2));
+		g2.rotate(-angle,so.x,so.y);
 		}
 	
 	

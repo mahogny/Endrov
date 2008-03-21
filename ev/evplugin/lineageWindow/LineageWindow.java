@@ -454,7 +454,7 @@ public class LineageWindow extends BasicWindow
 					NucLineage lin=getLineage();
 					if(lin!=null)
 						{
-						NucLineage.NucInterp inter=lin.nuc.get(kf.nuc).interpolate(hoverFrame);
+						NucLineage.NucInterp inter=lin.nuc.get(kf.nuc).interpolatePos(hoverFrame);
 						frameControl.setFrameZ(hoverFrame, inter.pos.z);
 						}
 					

@@ -50,13 +50,6 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 
 	private ObjectCombo metaCombo=new ObjectCombo(this, false);
 
-	/*
-	private MetaCombo metaCombo=new MetaCombo(this, false);
-	public boolean comboFilterMetadataCallback(Metadata meta)
-		{
-		return meta instanceof Imageset;
-		}
-		*/
 
 	public boolean comboFilterMetaObjectCallback(EvObject ob)
 		{

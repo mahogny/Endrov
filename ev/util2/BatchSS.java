@@ -15,13 +15,9 @@ import evplugin.sliceSignal.*;
  */
 public class BatchSS
 	{
-	public static Vector<Shell> getShell(EvData rec)
+	public static List<Shell> getShell(EvData rec)
 		{
-		Vector<Shell> out=new Vector<Shell>();
-		for(EvObject ob:rec.metaObject.values())
-			if(ob instanceof Shell)
-				out.add((Shell)ob);
-		return out;
+		return rec.getObjects(Shell.class);
 		}
 	
 	public static void makeGraph(File file)
@@ -35,7 +31,7 @@ public class BatchSS
 		int numStripes=50;
 		String channel="GFP";
 		
-		Vector<Shell> shells=getShell(ost);
+		List<Shell> shells=getShell(ost);
 		for(int i=0;i<shells.size();i++)
 			{
 			File outfile=new File(ost.datadir(),ost.getMetadataName()+"-"+numStripes+"sl"+svar+"v."+i+".ss.txt");

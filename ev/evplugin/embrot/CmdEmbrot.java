@@ -67,32 +67,30 @@ public class CmdEmbrot extends Command
 	public static void dumprot(String name, EvData rec)
 		{
 		
-		for(EvObject ob:rec.metaObject.values())
-			if(ob instanceof NucLineage)
+		for(NucLineage lin:rec.getObjects(NucLineage.class))
+			{
+
+			//Make a deep copy
+			NucLineage linrot=(NucLineage)lin.clone();
+
+			Element e=new Element("embrot");
+
+			//Rotate embryo to standard position
+			try
 				{
-				NucLineage lin=(NucLineage)ob;
+				rotate(linrot,e);
 
-				//Make a deep copy
-				NucLineage linrot=(NucLineage)lin.clone();
 
-				Element e=new Element("embrot");
 
-				//Rotate embryo to standard position
-				try
-					{
-					rotate(linrot,e);
-					
-					
-					
-					
-//					saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, linrot);
-					saveFile(name,(new File(new File("/Volumes/TBU_xeon01_500GB02/userdata/embrot"),name+".coord")).getAbsolutePath(), rec, lin);
-					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
+
+//				saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, linrot);
+				saveFile(name,(new File(new File("/Volumes/TBU_xeon01_500GB02/userdata/embrot"),name+".coord")).getAbsolutePath(), rec, lin);
 				}
+			catch (Exception e1)
+				{
+				e1.printStackTrace();
+				}
+			}
 		
 
 		

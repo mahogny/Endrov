@@ -44,37 +44,12 @@ public final class CalcThread extends BatchThread
 		return "Slice/Signal "+rec.getMetadataName();
 		}
 	
-	/**
-	 * Get *one* shell. remove if possible
-	 */
-	/*
-	public Shell getShell()
-		{
-		for(MetaObject ob:rec.metaObject.values())
-			if(ob instanceof Shell)
-				return (Shell)ob;
-		return null;
-		}
-		*/
-	
 	public void run()
 		{
 		double exptime=1;
 				
     try
     	{
-    	/*
-    	//This is a lazy man version for batching. but is it really a good thing? remove this if possible
-    	if(shell==null)
-    		shell=getShell();
-    	if(shell==null)
-    		{
-    		batchLog("No shell"); //batchError?
-    		batchDone();
-    		return;
-    		}
-    		*/
-
   		BufferedWriter signalfile = new BufferedWriter(new FileWriter(signalfilename));
     	double[][] lengthmap=null;
     	//can make this static if we first localize one frame
