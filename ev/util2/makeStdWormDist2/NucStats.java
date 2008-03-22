@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.vecmath.Vector3d;
 import evplugin.nuc.NucLineage;
+import evplugin.nuc.NucLineage.NucExp;
 import evplugin.nuc.NucLineage.NucPos;
 
 
@@ -37,6 +38,10 @@ public class NucStats
 		private double x=0;
 		private double x2=0;
 		private int count=0;
+		public void clear()
+			{
+			x=x2=count=0;
+			}
 		public void count(double x)
 			{
 			this.x+=x;
@@ -51,6 +56,10 @@ public class NucStats
 			{
 			double mean=getMean();
 			return x2/(count-1.0) - mean*mean*count/(count-1.0);
+			}
+		public int getCount()
+			{
+			return count;
 			}
 		}
 	
@@ -76,7 +85,7 @@ public class NucStats
 		public Vector3d curpos=null;
 		public Vector3d df=new Vector3d();
 		public TreeSet<Neigh> neigh=new TreeSet<Neigh>();
-		
+		public StatDouble[] curposAvg=new StatDouble[]{new StatDouble(),new StatDouble(),new StatDouble()};
 		
 		public boolean existAt(int frame)
 			{
@@ -309,15 +318,23 @@ public class NucStats
 				NucLineage.Nuc nuc=lin.nuc.get(e.getKey());
 				NucPos pos=nuc.getPosCreate(frame);
 				
-				pos.x=e.getValue().curpos.x;
-				pos.y=e.getValue().curpos.y;
-				pos.z=e.getValue().curpos.z;
+				NucStatsOne one=e.getValue();
+				pos.x=one.curpos.x;
+				pos.y=one.curpos.y;
+				pos.z=one.curpos.z;
 
 				int relframe=frame-e.getValue().lifeStart;
 				StatDouble radiusList=e.getValue().radius.get(relframe);
 				if(radiusList==null)
 					radiusList=e.getValue().radius.get(e.getValue().radius.lastKey()); //hack, should it even exist this long?
 				pos.r=radiusList.getMean();
+				
+				if(one.curposAvg[0].getCount()>1)
+					{
+					NucExp expVar=nuc.getExpCreate("posvar");
+					double var=one.curposAvg[0].getVar()+one.curposAvg[1].getVar()+one.curposAvg[2].getVar();
+					expVar.level.put(frame, var);
+					}
 				}
 		}
 	

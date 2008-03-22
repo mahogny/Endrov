@@ -49,6 +49,7 @@ public class LineageWindow extends BasicWindow
 	
 	
 	private JSlider sliderFrameDist=new JSlider(-20000,31000,0); 
+	private JSlider sliderBranchScale=new JSlider(JSlider.VERTICAL, -2000,2000,0); 
 	private JButton buttonGoRoot=new JButton("=> root");
 	private JButton buttonGoSelected=new JButton("=> selected");
 	private LineageView view;
@@ -113,6 +114,7 @@ public class LineageWindow extends BasicWindow
 		buttonGoRoot.addActionListener(this);
 		buttonGoSelected.addActionListener(this);
 		sliderFrameDist.addChangeListener(this);
+		sliderBranchScale.addChangeListener(this);
 		objectCombo.addActionListener(this);
 		
 		//Put GUI together
@@ -121,6 +123,8 @@ public class LineageWindow extends BasicWindow
 		
 		JPanel bottom = new JPanel(new GridBagLayout());
 		add(bottom,BorderLayout.SOUTH);
+
+		add(sliderBranchScale,BorderLayout.EAST);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
@@ -565,6 +569,7 @@ public class LineageWindow extends BasicWindow
 	public void stateChanged(ChangeEvent e)
 		{
 		view.setFrameDist(Math.pow(10.0,sliderFrameDist.getValue()/30000.0));
+		view.setBranchScale(Math.pow(10.0,sliderBranchScale.getValue()/30000.0));
 		repaint();
 		}
 

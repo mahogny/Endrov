@@ -271,11 +271,21 @@ public class MakeStdWormDist
 				List<Vector3d> poshere=one.collectedPos.get(one.toLocalFrame(frame));
 				if(poshere!=null && !poshere.isEmpty())
 					{
-					Vector3d v=new Vector3d();
+//					one.curposAvg
+	//				Vector3d v=new Vector3d();
+					one.curposAvg[0].clear();
+					one.curposAvg[1].clear();
+					one.curposAvg[2].clear();
 					for(Vector3d u:poshere)
-						v.add(u);
-					v.scale(1.0/poshere.size());
-					one.curpos=v;
+						{
+//						v.add(u);
+						one.curposAvg[0].count(u.x);
+						one.curposAvg[1].count(u.y);
+						one.curposAvg[2].count(u.z);
+						}
+//					v.scale(1.0/poshere.size());
+//					one.curpos=v;
+					one.curpos=new Vector3d(one.curposAvg[0].getMean(), one.curposAvg[1].getMean(), one.curposAvg[2].getMean());
 					}
 
 				}

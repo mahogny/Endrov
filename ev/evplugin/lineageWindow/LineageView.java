@@ -41,6 +41,7 @@ public class LineageView extends JPanel
 	
 	public double camVY, camVX;
 	private double frameDist=5;
+	private double branchScale=1;
 	public double currentFrame=0;
 	public boolean displayHorizontalTree=true;
 	public NucLineage currentLin=null;
@@ -170,7 +171,7 @@ public class LineageView extends JPanel
 		for(String nucName:roots)
 			{
 			NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
-			if(allMinFrame==null || nuc.pos.firstKey()<allMinFrame)
+			if((allMinFrame==null || nuc.pos.firstKey()<allMinFrame) && !nuc.pos.isEmpty())
 				{
 				allMinFrame=nuc.pos.firstKey();
 				rootName=nucName;
@@ -194,8 +195,8 @@ public class LineageView extends JPanel
 		}
 	private void goInternalNuc(Internal internal)
 		{
-		camVY+=internal.lastB-getVirtualHeight()/2;
-		camVX+=internal.lastC-getVirtualWidth()/2;
+		camVY+=internal.lastVY-getVirtualHeight()/2;
+		camVX+=internal.lastVXstart-getVirtualWidth()/2;
 		repaint();
 		}
 	
@@ -219,17 +220,28 @@ public class LineageView extends JPanel
 
 	
 	/**
-	 * Change the frame distance without moving camera
+	 * Change the frame distance (*VX) without moving camera
 	 */
 	public void setFrameDist(double s)
 		{
 		if(s<0.1)	s=0.1; //Not allowed to happen, quick fix
-		double h=getVirtualWidth()/2;
+		double h=getVirtualWidth()/2.0;
 		double curmid=(camVX+h)/frameDist;
 		frameDist=s;
 		camVX=curmid*frameDist-h;
 		}
 	
+	/**
+	 * Change branch scale (*VY) without moving camera
+	 */
+	public void setBranchScale(double s)
+		{
+		//TODO WRONG FORMULA?
+		double h=getVirtualHeight()/2.0;
+		double curmid=(camVY+h)/branchScale;
+		branchScale=s;
+		camVY=curmid*branchScale-h;
+		}
 	
 	/** Move camera to show some frame */
 	public void setFrame(double frame)
@@ -374,7 +386,7 @@ public class LineageView extends JPanel
 		{
 		for(Map.Entry<String, NucLineage.NucExp> e:nuc.exp.entrySet())
 			{
-			double scale=0.5;
+			double scale=0.2;
 
 			boolean hasLastCoord=false;
 			int lastX=0, lastY=0;
@@ -411,6 +423,7 @@ public class LineageView extends JPanel
 	 */
 	private void drawTree(Graphics g, String nucName, int midr)
 		{
+		int childNoPosBranchLength=30;
 		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 		if(nuc==null)
 			{
@@ -421,15 +434,47 @@ public class LineageView extends JPanel
 			return;
 			}
 		
-		if(nuc.pos.isEmpty())
+/*		if(nuc.pos.isEmpty())
 			{
 			System.out.println("Error: no positions for "+nucName);
 			return;
-			}
+			}*/
 		Internal internal=getNucinfo(nucName);
-		int firstFrame=nuc.pos.firstKey();
-		int startc=f2c(firstFrame);
-		int endc=f2c(nuc.lastFrame());
+
+		String namePrefix="";
+		if(nuc.end!=null && nuc.child.size()>0)
+			namePrefix="!!! ";
+		
+		//If there are no keyframes then this gotta be handled somehow. it shouldn't happen
+		//but cope with it as well as possible
+//		int firstFrame=nuc.pos.firstKey();
+//		int lastFrame=nuc.lastFrame();
+		int startc;//=f2c(firstFrame);
+		int endc;//=f2c(lastFrame);
+		if(nuc.pos.isEmpty())
+			{
+			startc=0;
+			if(nuc.parent!=null)
+				{
+				Internal pInternal=getNucinfo(nuc.parent);
+//				firstFrame
+				startc=pInternal.lastVXend+childNoPosBranchLength;
+				System.out.println("warn: no coord");
+				namePrefix="!!! ";
+				}
+			endc=startc;
+			}
+		else
+			{
+			int firstFrame=nuc.pos.firstKey();
+			int lastFrame=nuc.lastFrame();
+			startc=f2c(firstFrame);
+			endc=f2c(lastFrame);
+			}
+		
+		
+		
+		
 		
 		//Draw expression
 		drawExpression(g,nucName,midr,nuc);
@@ -439,8 +484,9 @@ public class LineageView extends JPanel
 		g.drawLine(startc, midr, endc, midr);
 		if(nuc.end!=null && nuc.child.size()==0)
 			drawNucEnd(g, f2c(nuc.end), midr);
-		internal.lastC=startc;
-		internal.lastB=midr;
+		internal.lastVXstart=startc;
+		internal.lastVXend=endc;
+		internal.lastVY=midr;
 		
 		//Draw keyframes
 		if(showKeyFrames && midr>-keyFrameSize && midr<getVirtualHeight()+keyFrameSize)
@@ -456,12 +502,14 @@ public class LineageView extends JPanel
 			for(String cName:nuc.child)
 				{
 				NucLineage.Nuc c=currentLin.nuc.get(cName);
-				if(!c.pos.isEmpty())
 					{
 					Internal cInternal=getDrawCache().nucInternal.get(cName);
 					//Draw connecting line
 					g.setColor(Color.BLACK);
-					g.drawLine(endc,midr,f2c(c.pos.firstKey()),midr+cInternal.centerDisplacement);
+					if(!c.pos.isEmpty())
+						g.drawLine(endc,midr,f2c(c.pos.firstKey()),midr+cInternal.centerDisplacement);
+					else
+						g.drawLine(endc,midr,endc+childNoPosBranchLength,midr+cInternal.centerDisplacement);
 					//Recurse down
 					drawTree(g,cName, midr+cInternal.centerDisplacement);
 					}
@@ -473,10 +521,11 @@ public class LineageView extends JPanel
 			drawExpanderSymbol(g,nucName, endc,midr,internal.expanded);
 
 		//Draw name of nucleus. Warn if something is wrong
-		if(nuc.end!=null && nuc.child.size()>0)
+	/*	if(nuc.end!=null && nuc.child.size()>0)
 			drawNucName(g, "!!! ", new NucPair(currentLin, nucName), midr, endc);
 		else
-			drawNucName(g, "", new NucPair(currentLin, nucName), midr, endc);
+			drawNucName(g, "", new NucPair(currentLin, nucName), midr, endc);*/
+		drawNucName(g, namePrefix, new NucPair(currentLin, nucName), midr, endc);
 		}
 
 	
@@ -590,6 +639,9 @@ public class LineageView extends JPanel
 		int fontHeight=g.getFontMetrics().getHeight()*2;
 		if(internal.sizer<fontHeight)
 			internal.sizer=fontHeight;
+		
+		//Scale
+		internal.sizer*=branchScale;
 		}
 	
 	
@@ -606,7 +658,7 @@ public class LineageView extends JPanel
 		public boolean expanded=true;
 		public int sizer=0;
 		public int centerDisplacement=0;
-		public int lastB, lastC;
+		public int lastVY, lastVXstart, lastVXend;
 		}
 
 	

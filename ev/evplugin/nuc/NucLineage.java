@@ -701,6 +701,15 @@ public class NucLineage extends EvObject implements Cloneable
 			return npos;
 			}
 
+		/** Get expression level, create if it does not exist */
+		public NucExp getExpCreate(String n)
+			{
+			NucExp e=exp.get(n);
+			if(e==null)
+				exp.put(n, e=new NucExp());
+			return e;
+			}
+		
 		
 		/**
 		 * Get the last frame accounting for end
