@@ -22,32 +22,39 @@ public class LineageView extends JPanel
 	static final long serialVersionUID=0;
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// Settings ////////////////////////////////////////////////
+	/////////////////////////// Hard Settings ///////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	private static final Color frameLineColor=new Color(220,220,220);
 	private static final Color curFrameLineColor=new Color(150,150,150);
 	private static final Color frameStringColor=new Color(100,100,100);
-	
+
+	/** Size of dot on expression profile */
+	private static final int expDotSize=1;
 	/** Size of expander icon */
 	private static final int expanderSize=4;
 	/** Size of key frame icon */
 	private static final int keyFrameSize=2;
 	
-	
-	
 
-	////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// State //((((((((/////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 	
+	public NucLineage currentLin=null;
+
 	public double camVY, camVX;
+//	public double currentFrame=0;
+	
 	private double frameDist=5;
 	private double branchScale=1;
-	public double currentFrame=0;
-	public boolean displayHorizontalTree=true;
-	public NucLineage currentLin=null;
-	public boolean showFrameLines=true;
-	public boolean showKeyFrames=true;
 	
+	public boolean showHorizontalTree=true;	
+	public boolean showFrameLines=true;
+	public boolean showKeyFrames=true;	
+	public boolean showExpLine=true;
+	public boolean showExpSolid=true;
+	public boolean showExpDot=true;
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Cached tree /////////////////////////////////////////////
@@ -137,17 +144,17 @@ public class LineageView extends JPanel
 	/** Get width of view as if horizontal */
 	private int getVirtualWidth()
 		{
-		return displayHorizontalTree ? getWidth() : getHeight();
+		return showHorizontalTree ? getWidth() : getHeight();
 		}
 	/** Get height of view as if horizontal */
 	private int getVirtualHeight()
 		{
-		return displayHorizontalTree ? getHeight() : getWidth();
+		return showHorizontalTree ? getHeight() : getWidth();
 		}
 	/** Get frame from screen x,y coordinate */
 	public int getFrameFromCursor(int x, int y)
 		{
-		return displayHorizontalTree ? c2f(x) : c2f(y);
+		return showHorizontalTree ? c2f(x) : c2f(y);
 		}
 	/** Convert frame position to coordinate */
 	private int f2c(int f)
@@ -205,7 +212,7 @@ public class LineageView extends JPanel
 	 */
 	public void pan(int dx, int dy)
 		{
-		if(displayHorizontalTree)
+		if(showHorizontalTree)
 			{
 			camVX-=dx;
 			camVY-=dy;
@@ -293,7 +300,7 @@ public class LineageView extends JPanel
 		//Rotate image, part 1
 		Graphics h;
 		BufferedImage bim=null;
-		if(displayHorizontalTree)
+		if(showHorizontalTree)
 			h=g;
 		else
 			{
@@ -348,7 +355,7 @@ public class LineageView extends JPanel
 		}
 	
 	/**
-	 * Draw the frame lines in the background
+	 * Draw the lines for frames, in the background
 	 */
 	public void drawFrameLines(Graphics g)
 		{
@@ -361,21 +368,24 @@ public class LineageView extends JPanel
 			starti=((int)(starti/frameLineSkip))*frameLineSkip;
 			
 			Graphics2D g2=(Graphics2D)g;
-			for(double i=starti;i<getVirtualWidth()/frameDist+1+frameLineSkip+camVX/frameDist;i+=frameLineSkip)
+			double endi=getVirtualWidth()/frameDist+1+frameLineSkip+camVX/frameDist;
+			int height=getVirtualHeight();
+			int textY=height-5;//5
+			for(double i=starti;i<endi;i+=frameLineSkip)
 				{
 				int x=(int)(i*frameDist-camVX);
 				g.setColor(frameLineColor);
-				g.drawLine(x, 0, x, getVirtualHeight());
+				g.drawLine(x, 0, x, height);
 				g.setColor(frameStringColor);
-				int y=getVirtualHeight()-5;//5
-				g2.translate(x, y);
+				g2.translate(x, textY);
 				g2.rotate(-Math.PI/2);
 				g.drawString(""+(int)i, 0, 0);
 				g2.rotate(Math.PI/2);
-				g2.translate(-x, -y);
+				g2.translate(-x, -textY);
 				}
 			g.setColor(curFrameLineColor);
-			g.drawLine(getVirtualWidth()/2, 0, getVirtualWidth()/2, getVirtualHeight());
+			int curFrameX=getVirtualWidth()/2;
+			g.drawLine(curFrameX, 0, curFrameX, height);
 			}
 		}
 	
@@ -384,37 +394,42 @@ public class LineageView extends JPanel
 	 */
 	private void drawExpression(Graphics g, String nucName, int midr, NucLineage.Nuc nuc)
 		{
-		for(Map.Entry<String, NucLineage.NucExp> e:nuc.exp.entrySet())
-			{
-			double scale=0.2;
-
-			boolean hasLastCoord=false;
-			int lastX=0, lastY=0;
-
-			g.setColor(e.getValue().color);
-			for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())
-				{
-				int y=(int)(-ve.getValue()*scale+midr);
-				int x=f2c(ve.getKey());
-				
-				if(hasLastCoord)
+		if(showExpDot || showExpSolid || showExpLine)
+			for(Map.Entry<String, NucLineage.NucExp> e:nuc.exp.entrySet())
+				if(!e.getValue().level.isEmpty())
 					{
-					g.drawLine(lastX, lastY, x, y);
-					g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
+					double expScale=0.2;
+		
+		
+					//Only draw if potentially visible
+					int minframe=e.getValue().level.firstKey();
+					int maxframe=e.getValue().level.lastKey();
+					boolean visible=midr>=0 && maxframe>=0 && minframe<getVirtualWidth() &&
+													midr-e.getValue().getMaxExpLevel()*expScale<getVirtualHeight();
+					if(visible)
+						{
+						g.setColor(e.getValue().color);
+						boolean hasLastCoord=false;
+						int lastX=0, lastY=0;
+						for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())
+							{
+							int y=(int)(-ve.getValue()*expScale+midr);
+							int x=f2c(ve.getKey());
+							if(hasLastCoord)
+								{
+								if(showExpLine)
+									g.drawLine(lastX, lastY, x, y);
+								if(showExpSolid)
+									g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
+								}
+							if(showExpDot)
+								g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
+							hasLastCoord=true;
+							lastX=x;
+							lastY=y;
+							}
+						}
 					}
-				
-				int r=1;
-				g.drawRect(x-r, y-r, 2*r, 2*r);
-				
-				hasLastCoord=true;
-				lastX=x;
-				lastY=y;
-				}
-			
-			
-			}
-		
-		
 		}
 	
 	/**
@@ -434,11 +449,6 @@ public class LineageView extends JPanel
 			return;
 			}
 		
-/*		if(nuc.pos.isEmpty())
-			{
-			System.out.println("Error: no positions for "+nucName);
-			return;
-			}*/
 		Internal internal=getNucinfo(nucName);
 
 		String namePrefix="";
@@ -447,17 +457,14 @@ public class LineageView extends JPanel
 		
 		//If there are no keyframes then this gotta be handled somehow. it shouldn't happen
 		//but cope with it as well as possible
-//		int firstFrame=nuc.pos.firstKey();
-//		int lastFrame=nuc.lastFrame();
-		int startc;//=f2c(firstFrame);
-		int endc;//=f2c(lastFrame);
+		int startc;
+		int endc;
 		if(nuc.pos.isEmpty())
 			{
 			startc=0;
 			if(nuc.parent!=null)
 				{
 				Internal pInternal=getNucinfo(nuc.parent);
-//				firstFrame
 				startc=pInternal.lastVXend+childNoPosBranchLength;
 				System.out.println("warn: no coord");
 				namePrefix="!!! ";
@@ -472,10 +479,6 @@ public class LineageView extends JPanel
 			endc=f2c(lastFrame);
 			}
 		
-		
-		
-		
-		
 		//Draw expression
 		drawExpression(g,nucName,midr,nuc);
 		
@@ -489,11 +492,22 @@ public class LineageView extends JPanel
 		internal.lastVY=midr;
 		
 		//Draw keyframes
-		if(showKeyFrames && midr>-keyFrameSize && midr<getVirtualHeight()+keyFrameSize)
+		int virtualWidth=getVirtualWidth();
+		if(showKeyFrames && midr>-keyFrameSize && midr<getVirtualHeight()+keyFrameSize &&
+				endc>=-keyFrameSize && startc<=virtualWidth+keyFrameSize)
 			{
 			g.setColor(Color.RED);
-			for(int frame:nuc.pos.keySet())
-				drawKeyFrame(g,f2c(frame), midr, nucName, frame);
+			//Test for complete visibility first, makes clipping cheap
+			if(startc>=-keyFrameSize && endc<virtualWidth+keyFrameSize)
+				for(int frame:nuc.pos.keySet())
+					drawKeyFrame(g,f2c(frame), midr, nucName, frame);
+			else
+				for(int frame:nuc.pos.keySet())
+					{
+					int x=f2c(frame); //This might be slower than just drawing though
+					if(x>-keyFrameSize && x<virtualWidth+keyFrameSize)
+						drawKeyFrame(g,x, midr, nucName, frame);
+					}
 			}
 		
 		//Draw children
@@ -587,7 +601,7 @@ public class LineageView extends JPanel
 		g.setColor(Color.BLACK);
 		g.drawRect(x-expanderSize, y-expanderSize, 2*expanderSize, 2*expanderSize);		
 		g.drawLine(x-expanderSize, y, x+expanderSize,y);
-		if(expanded)
+		if(!expanded)
 			g.drawLine(x, y+expanderSize, x,y-expanderSize);
 		//Make it clickable
 		regionClickList.add(new ClickRegionExpander(nucname, x-expanderSize, y-expanderSize, 2*expanderSize,2*expanderSize));
@@ -688,7 +702,7 @@ public class LineageView extends JPanel
 	public void clickRegion(MouseEvent e)
 		{
 		int mousex,mousey;
-		if(displayHorizontalTree)
+		if(showHorizontalTree)
 			{
 			mousex=e.getX();
 			mousey=e.getY();
