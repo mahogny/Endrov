@@ -289,9 +289,10 @@ public class NucStats
 	public void prepareCoord(NucLineage lin, int frame)
 		{
 		//Inititalize coords
+		//Children get coords from parents with some perturbation
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
 			{
-			if(e.getValue().existAt(frame) && e.getValue().curpos==null /*&& !e.getValue().neigh.isEmpty()*/)
+			if(e.getValue().existAt(frame) && e.getValue().curpos==null)
 				{
 				e.getValue().curpos=new Vector3d();
 				if(e.getValue().parent!=null)
@@ -303,7 +304,6 @@ public class NucStats
 				double s=1;
 				e.getValue().curpos.add(new Vector3d(s*Math.random(),s*Math.random(),s*Math.random()));
 				}
-			//TODO: get coord from parent
 			}
 		}
 	
@@ -312,8 +312,11 @@ public class NucStats
 	 */
 	public void writeCoord(NucLineage lin, int frame)
 		{
+		
+		//TODO: save even when there is no neighbour?
+		
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
-			if(e.getValue().curpos!=null && e.getValue().existAt(frame) && !e.getValue().neigh.isEmpty())
+			if(e.getValue().curpos!=null && e.getValue().existAt(frame) /*&& !e.getValue().neigh.isEmpty()*/)
 				{
 				NucLineage.Nuc nuc=lin.nuc.get(e.getKey());
 				NucPos pos=nuc.getPosCreate(frame);

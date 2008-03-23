@@ -622,6 +622,15 @@ public class NucLineage extends EvObject implements Cloneable
 			exp.color=color;
 			return exp;
 			}
+		
+		public Double getMaxExpLevel()
+			{
+			Double max=null;
+			for(Double d:level.values())
+				if(max==null || max>d)
+					max=d;
+			return max;
+			}
 		}
 	
 	

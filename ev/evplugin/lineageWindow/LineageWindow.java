@@ -86,7 +86,12 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miRotate=new JMenuItem("Rotate tree");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
 	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
-
+	
+	public JCheckBoxMenuItem miShowExpDot=new JCheckBoxMenuItem("Show level dots",false);
+	public JRadioButtonMenuItem miShowExpLine=new JRadioButtonMenuItem("Show level line",true);
+	public JRadioButtonMenuItem miShowExpSolid=new JRadioButtonMenuItem("Show level filled",false);
+	
+	
 	public JMenuItem miFoldAll=new JMenuItem("Fold all");
 	public JMenuItem miUnfoldAll=new JMenuItem("Unfold all");
 
@@ -116,6 +121,14 @@ public class LineageWindow extends BasicWindow
 		sliderFrameDist.addChangeListener(this);
 		sliderBranchScale.addChangeListener(this);
 		objectCombo.addActionListener(this);
+		miShowExpDot.addActionListener(this);
+		miShowExpLine.addActionListener(this);
+		miShowExpSolid.addActionListener(this);
+		
+		ButtonGroup expGroup=new ButtonGroup();
+		expGroup.add(miShowExpLine);
+		expGroup.add(miShowExpSolid);
+		updateShowExp();
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
@@ -159,7 +172,11 @@ public class LineageWindow extends BasicWindow
 		menuLineage.addSeparator();
 		menuLineage.add(miShowFrameLines);
 		menuLineage.add(miShowKeyFrames);
+		menuLineage.add(miShowExpDot);
+		menuLineage.add(miShowExpLine);
+		menuLineage.add(miShowExpSolid);
 		menuLineage.add(miRotate);
+		
 		menuLineage.addSeparator();
 		menuLineage.add(miFoldAll);
 		menuLineage.add(miUnfoldAll);
@@ -235,7 +252,7 @@ public class LineageWindow extends BasicWindow
 			view.goSelected();
 		else if(e.getSource()==miRotate)
 			{
-			view.displayHorizontalTree=!view.displayHorizontalTree;
+			view.showHorizontalTree=!view.showHorizontalTree;
 			view.repaint();
 			}
 		else if(e.getSource()==miRename)
@@ -370,6 +387,25 @@ public class LineageWindow extends BasicWindow
 			view.currentLin=(NucLineage)objectCombo.getObject();
 			repaint();
 			}
+		else if(e.getSource()==miShowExpDot)
+			{
+			updateShowExp();
+			repaint();
+			}
+		else if(e.getSource()==miShowExpLine || e.getSource()==miShowExpSolid)
+			{
+			updateShowExp();
+			repaint();
+			}
+			
+			
+		}
+	
+	public void updateShowExp()
+		{
+		view.showExpDot=miShowExpDot.isSelected();
+		view.showExpLine=miShowExpLine.isSelected();
+		view.showExpSolid=miShowExpSolid.isSelected();
 		}
 	
 
@@ -581,7 +617,7 @@ public class LineageWindow extends BasicWindow
 	public void dataChangedEvent()
 		{
 		objectCombo.updateObjectList();
-		view.currentFrame=frameControl.getFrame();
+//		view.currentFrame=frameControl.getFrame();
 		view.currentLin=(NucLineage)objectCombo.getObject();
 		repaint();
 		}

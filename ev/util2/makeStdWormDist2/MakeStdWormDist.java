@@ -21,6 +21,7 @@ public class MakeStdWormDist
 	
 	public static boolean allTime=true;
 	public static boolean showNeigh=false;
+	public static boolean saveNormalized=false;
 	public static int NUMTRY=0;
 
 	public static void main(String[] args)
@@ -118,6 +119,8 @@ public class MakeStdWormDist
 				rotate2(lin);
 				rotate3(lin);
 				}
+			else
+				System.out.println("one lin is not ok");
 			}
 		avsize/=normalizedLin.size();
 		System.out.println("avsize: "+avsize);
@@ -130,12 +133,14 @@ public class MakeStdWormDist
 			}
 		
 		//Save normalized lineages
-		EvDataXML output2=new EvDataXML("/Volumes/TBU_xeon01_500GB02/ostxml/normalize.xml");
-		output2.metaObject.clear();
-		for(NucLineage lin:lins.values())
-			output2.addMetaObject(lin);
-		output2.saveMeta();
-
+		if(saveNormalized)
+			{
+			EvDataXML output2=new EvDataXML("/Volumes/TBU_xeon01_500GB02/ostxml/normalize.xml");
+			output2.metaObject.clear();
+			for(NucLineage lin:lins.values())
+				output2.addMetaObject(lin);
+			output2.saveMeta();
+			}
 		
 		//Collect distances and radii
 		System.out.println("--- collect spatial statistics");
@@ -149,16 +154,14 @@ public class MakeStdWormDist
 					{
 					NucLineage.Nuc nuc=lin.nuc.get(thisnucname);
 	
-					int start=nuc.pos.firstKey();
-//					int end=nuc.pos.lastKey()+1; //trouble: what if children already exist?
-					int end=nuc.lastFrame();
+					int startFrame=nuc.pos.firstKey();
+					int endFrame=nuc.lastFrame();
 					
-					
-					int modlifelen=one.lifeEnd-one.lifeStart;
-					for(int frame=0;frame<modlifelen;frame++)
+					int modelLifeLength=one.lifeEnd-one.lifeStart;
+					for(int frame=0;frame<modelLifeLength;frame++)
 						{
 						//Interpolate
-						double iframe=one.interpolTime(start, end, frame);
+						double iframe=one.interpolTime(startFrame, endFrame, frame);
 						Map<NucPair, NucInterp> inter=lin.getInterpNuc(iframe);
 						NucInterp thisi=inter.get(new NucPair(lin,thisnucname));
 	
@@ -169,23 +172,20 @@ public class MakeStdWormDist
 								one.addCollPos(frame, thisi.pos.getPosCopy());
 							
 							//Get distances
-							for(NucPair otherpair:inter.keySet())
-								if(!otherpair.getRight().equals(thisnucname))
-									{
-									String othernucname=otherpair.getRight();
-									NucStats.NucStatsOne otherOne=nucstats.get(othernucname);
-									NucInterp otheri=inter.get(otherpair);
-			
-									Vector3d diff=thisi.pos.getPosCopy();
-									diff.sub(otheri.pos.getPosCopy());
-									double dist=diff.length();
-/*									double dx=thisi.pos.x-otheri.pos.x;
-									double dy=thisi.pos.y-otheri.pos.y;
-									double dz=thisi.pos.z-otheri.pos.z;
-									double dist=Math.sqrt(dx*dx + dy*dy + dz*dz);*/
-									one.addDistance(frame, othernucname, dist);
-									otherOne.addDistance(otherOne.toLocalFrame(one.toGlobalFrame(frame)), thisnucname, dist); //to make it symmetric
-									}
+							if(NUMTRY>0)
+								for(NucPair otherpair:inter.keySet())
+									if(!otherpair.getRight().equals(thisnucname))
+										{
+										String othernucname=otherpair.getRight();
+										NucStats.NucStatsOne otherOne=nucstats.get(othernucname);
+										NucInterp otheri=inter.get(otherpair);
+	
+										Vector3d diff=thisi.pos.getPosCopy();
+										diff.sub(otheri.pos.getPosCopy());
+										double dist=diff.length();
+										one.addDistance(frame, othernucname, dist);
+										otherOne.addDistance(otherOne.toLocalFrame(one.toGlobalFrame(frame)), thisnucname, dist); //to make it symmetric
+										}
 							}
 						else
 							System.out.println(" missing thisi "+thisnucname+ " "+frame);
@@ -200,13 +200,13 @@ public class MakeStdWormDist
 		
 		
 		
-		System.out.println("--- fitting");
 		
 		//Fit coordinates
 		int maxframe=nucstats.maxFrame();
 		int minframe=nucstats.minFrame();
 //		minframe=200;
 //		maxframe=100;
+		System.out.println("--- fitting, from "+minframe+" to "+maxframe);
 		for(int frame=minframe;frame<maxframe;frame++)
 			{
 			Map<String, NucStatsOne> curnuc=nucstats.getAtFrame(frame);
@@ -235,7 +235,7 @@ public class MakeStdWormDist
 			//Iterate and randomize guesses, pick the best
 			Map<String, Vector3d> bestpos=new HashMap<String, Vector3d>();
 			Double besteps=null;
-			for(int numtry=0;numtry<NUMTRY;numtry++)
+			for(int curTry=0;curTry<NUMTRY;curTry++)
 				{
 				double minEps=1e-4;
 				bf.iterate(500, 1000, minEps);
