@@ -25,9 +25,6 @@ public class NucModelExtension implements ModelWindowExtension
   private static int NUC_SELECT_DIV=6;
   private static int NUC_HIDE_DIV=6;
 
-//  private static int NUC_SHOW_DIV=12;
-//  private static int NUC_HIDE_DIV=6;
-
   public void newModelWindow(ModelWindow w)
 		{
 		w.modelWindowHooks.add(new NucModelWindowHook(w));
@@ -232,10 +229,6 @@ public class NucModelExtension implements ModelWindowExtension
 	    
 			//Move to cell center = local coordinate
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
-			
-			//Draw nucleus
-//	    GLU glu=new GLU();
-	//    GLUquadric q=glu.gluNewQuadric(); 
 
 	    //Decide color based on if the nucleus is selected
 			float lightDiffuse[];
@@ -248,19 +241,11 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
 			gl.glEnable(GL.GL_LIGHT0);    
 	    	
-	    //int NUC_POINT_DIV=6;
-	    
 	    if(NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
 	    	//Hidden cell
 	    	gl.glColor3d(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
 	    	drawHiddenSphere(gl, nuc.pos.r);
-	    	
-
-	    	
-/*	      glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
-	      glu.gluSphere(q,nuc.pos.r,NUC_HIDE_DIV,NUC_HIDE_DIV);
-	      glu.gluDeleteQuadric(q);*/
 	    	}
 	    else
 	    	{
@@ -270,18 +255,13 @@ public class NucModelExtension implements ModelWindowExtension
 	      
 	    	drawVisibleSphere(gl, nuc.pos.r);
 	    	
-	    	
-	    	//glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
-	    	
 	      gl.glDisable(GL.GL_LIGHTING);
 	      if(false)//w->slab1->value()!=-5000)
 	      	{
 		      gl.glScalef(-1,-1,-1);
 		      drawVisibleSphere(gl, nuc.pos.r);
-//	      	glu.gluSphere(q,nuc.pos.r,NUC_SHOW_DIV,NUC_SHOW_DIV);
 	      	}
 	    	}
-//	    glu.gluDeleteQuadric(q);
 	    
 	    //Go back to world coordinates
 	    gl.glPopMatrix();
@@ -403,13 +383,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
 	  	//If visible cell
 	    if(!NucLineage.hiddenNuclei.contains(nucPair))
-	    	{
-	    	drawSelectSphere(gl, nuc.pos.r);   //why does this not work?
-	      /*GLU glu=new GLU();
-	      GLUquadric q=glu.gluNewQuadric(); 
-	    	glu.gluSphere(q,nuc.pos.r,NUC_SELECT_DIV,NUC_SELECT_DIV);
-	      glu.gluDeleteQuadric(q);*/
-	    	}    
+	    	drawSelectSphere(gl, nuc.pos.r);
 	    //Go back to world coordinates
 	    gl.glPopMatrix();
 			}

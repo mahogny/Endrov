@@ -405,7 +405,7 @@ public class LineageView extends JPanel
 					int minframe=e.getValue().level.firstKey();
 					int maxframe=e.getValue().level.lastKey();
 					boolean visible=midr>=0 && maxframe>=0 && minframe<getVirtualWidth() &&
-													midr-e.getValue().getMaxExpLevel()*expScale<getVirtualHeight();
+													midr-e.getValue().getMaxLevel()*expScale<getVirtualHeight();
 					if(visible)
 						{
 						g.setColor(e.getValue().color);

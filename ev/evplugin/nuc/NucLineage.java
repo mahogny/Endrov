@@ -1,11 +1,10 @@
 package evplugin.nuc;
 
-import org.jdom.*;
 import java.util.*;
-
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.vecmath.Vector3d;
+import org.jdom.*;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.imageWindow.ImageWindow;
@@ -613,7 +612,9 @@ public class NucLineage extends EvObject implements Cloneable
 		public SortedMap<Integer,Double> level=new TreeMap<Integer, Double>();
 		public java.awt.Color color=java.awt.Color.RED; //Not stored to disk, but kept here so the color is the same in all windows
 		
-		/** Make a deep copy */
+		/**
+		 * Make a deep copy 
+		 */
 		public Object clone()
 			{
 			NucExp exp=new NucExp();
@@ -622,8 +623,11 @@ public class NucLineage extends EvObject implements Cloneable
 			exp.color=color;
 			return exp;
 			}
-		
-		public Double getMaxExpLevel()
+
+		/**
+		 * Get highest level for any frame
+		 */
+		public Double getMaxLevel()
 			{
 			Double max=null;
 			for(Double d:level.values())
@@ -631,6 +635,30 @@ public class NucLineage extends EvObject implements Cloneable
 					max=d;
 			return max;
 			}
+
+		/**
+		 * Interpolate level for a certain frame
+		 */
+		public Double interpolateLevel(double frame)
+			{
+			if(frame<level.firstKey())
+				return level.get(level.firstKey());
+			else if(frame>level.lastKey())
+				return level.get(level.lastKey());
+			else
+				{
+				SortedMap<Integer,Double> hlevel=level.headMap((int)frame);
+				SortedMap<Integer,Double> tlevel=level.tailMap((int)frame);
+				int frameBefore=hlevel.lastKey();
+				int frameAfter=tlevel.firstKey();
+				double levelBefore=hlevel.get(frameBefore);
+				double levelAfter=tlevel.get(frameAfter);
+				double s=(frame-frameBefore)/(frameAfter-frameBefore);
+				return levelAfter*s+levelBefore*(1-s);
+				}
+			}
+		
+		
 		}
 	
 	
