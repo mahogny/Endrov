@@ -82,7 +82,7 @@ public class VoxelExtension implements ModelWindowExtension
 		public void select(int id){}
 		public void fillModelWindomMenus()
 			{
-			w.bottompanelItems.add(totalPanel);
+			w.bottomPanelItems.add(totalPanel);
 			}
 
 	

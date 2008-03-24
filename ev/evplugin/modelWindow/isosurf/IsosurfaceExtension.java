@@ -125,9 +125,9 @@ public class IsosurfaceExtension implements ModelWindowExtension
 		public void datachangedEvent(){}
 		public void fillModelWindomMenus()
 			{
-			w.sidepanelItems.add(addIsolevel);
+			w.sidePanelItems.add(addIsolevel);
 			for(ToolIsolayer ti:isolayers)
-				w.sidepanelItems.add(ti);
+				w.sidePanelItems.add(ti);
 			}
 
 		
