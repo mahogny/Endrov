@@ -45,6 +45,8 @@ public class ModelWindow extends BasicWindow
 					
 					for(ModelWindowHook hook:m.modelWindowHooks)
 						hook.readPersonalConfig(e);
+
+					m.sidePanelSplitPane.setPanelVisible(e.getAttribute("sidePanelVisible").getBooleanValue());
 					}
 				catch (Exception e1)
 					{
@@ -67,16 +69,17 @@ public class ModelWindow extends BasicWindow
 	private int mouseLastX, mouseLastY;
 	
 	public final Vector<ModelWindowHook> modelWindowHooks=new Vector<ModelWindowHook>();	
-	public final Vector<JComponent> sidepanelItems=new Vector<JComponent>();
+	public final Vector<JComponent> sidePanelItems=new Vector<JComponent>();
 	private final JPanel sidePanel=new JPanel(new GridBagLayout());
-	public final Vector<JComponent> bottompanelItems=new Vector<JComponent>();
+	public final Vector<JComponent> bottomPanelItems=new Vector<JComponent>();
 	private final JPanel bottomPanel=new JPanel(new GridBagLayout());
 	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
 	public final MetaCombo metaCombo=new MetaCombo(null,false);
-	public JButton buttonCenter=new JButton("Center");
+	private final JButton buttonCenter=new JButton("Center");
+	private final EvHidableSidePane sidePanelSplitPane;
 	
 	public JMenu menuModel=new JMenu("ModelWindow");
 	
@@ -181,13 +184,11 @@ public class ModelWindow extends BasicWindow
 		toolPanel.setMaximumSize(new Dimension(250,20));
 		updateToolPanels();
 		
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, view, toolPanel);
-		splitPane.setOneTouchExpandable(true);
-		//splitPane.setContinuousLayout(true);
-		splitPane.setResizeWeight(1);
+		
+		sidePanelSplitPane = new EvHidableSidePane(view, toolPanel, true);
 		
 		setLayout(new BorderLayout());
-		add(splitPane,BorderLayout.CENTER);
+		add(sidePanelSplitPane,BorderLayout.CENTER);
 		add(bottomPanel,BorderLayout.SOUTH);
 
 		updateToolPanels();
@@ -207,15 +208,15 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void updateToolPanels()
 		{
-		sidepanelItems.clear();
-		bottompanelItems.clear();
-		bottompanelItems.add(bottomMain);
+		sidePanelItems.clear();
+		bottomPanelItems.clear();
+		bottomPanelItems.add(bottomMain);
 		for(ModelWindowHook h:modelWindowHooks)
 			h.fillModelWindomMenus();
 		
 		int counta=0;
 		sidePanel.removeAll();
-		for(JComponent c:sidepanelItems)
+		for(JComponent c:sidePanelItems)
 			{
 			GridBagConstraints cr=new GridBagConstraints();	cr.gridy=counta;	cr.fill=GridBagConstraints.HORIZONTAL;
 			cr.weightx=1;
@@ -227,7 +228,7 @@ public class ModelWindow extends BasicWindow
 		
 		int countb=0;
 		bottomPanel.removeAll();
-		for(JComponent c:bottompanelItems)
+		for(JComponent c:bottomPanelItems)
 			{
 			GridBagConstraints cr=new GridBagConstraints();	cr.gridy=countb;	cr.fill=GridBagConstraints.HORIZONTAL;
 			cr.weightx=1;
@@ -257,10 +258,11 @@ public class ModelWindow extends BasicWindow
 		e.setAttribute("w", ""+r.width);
 		e.setAttribute("h", ""+r.height);
 		e.setAttribute("group",""+frameControl.getGroup());
+		e.setAttribute("sidePanelVisible",""+sidePanelSplitPane.getPanelVisible());
 		
 		for(ModelWindowHook hook:modelWindowHooks)
 			hook.savePersonalConfig(e);
-
+		
 		root.addContent(e);
 		}
 
