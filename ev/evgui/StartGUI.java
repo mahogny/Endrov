@@ -54,7 +54,7 @@ public class StartGUI
 					}
 				else //Assume linux or equivalent
 					{
-					libdir="libs/linux2";
+					libdir="libs/linux";
 					pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
 					}
 				
