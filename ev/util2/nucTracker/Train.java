@@ -19,51 +19,7 @@ import evplugin.ev.StdoutLog;
 public class Train
 	{
 
-	public static BufferedImage findCrap(BufferedImage im)
-		{
-		BufferedImage subim=new BufferedImage(im.getWidth(), im.getHeight(), im.getType());
-		
-		int[] pix=new int[3];
-		WritableRaster rim=im.getRaster();
-		WritableRaster sim=subim.getRaster();
-		
-		int avg=0;
-		int[][] a=new int[im.getHeight()][im.getWidth()];
-		for(int y=0;y<im.getHeight();y++)
-			for(int x=0;x<im.getWidth();x++)
-				{
-				rim.getPixel(x, y, pix);
-				a[y][x]=pix[0];
-				avg+=pix[0];
-				}
-		avg/=(im.getWidth()*im.getHeight());
 
-		pix[0]=0;
-		pix[1]=0;
-		pix[2]=0;
-//		for(int y=1;y<im.getHeight()-1;y++)
-//			for(int x=1;x<im.getWidth()-1;x++)
-		for(int y=0;y<im.getHeight();y++)
-			for(int x=0;x<im.getWidth();x++)
-				{/*
-				int p=
-				a[y][x+1]+a[y][x-1]+
-				a[y+1][x]+a[y-1][x]+
-				a[y+1][x+1]+a[y-1][x-1]+
-				a[y+1][x-1]-a[y-1][x+1]-8*a[y][x];
-				*/
-				int p=Math.abs(a[y][x]-avg);
-				
-				pix[0]=p;
-				sim.setPixel(x, y, pix);
-				}
-		
-		
-		return subim;
-		}
-	
-	
-	
 	/**
 	 * @author tbudev3
 	 */
@@ -71,7 +27,8 @@ public class Train
 		{
 		
 		int w, h;
-		public boolean isTrue;
+		public double valueY;
+		public double weightD;
 		
 		public int[][] cumim;
 
@@ -102,30 +59,8 @@ public class Train
 						cumim[y][x]+=cumim[y-1][x];
 					}
 				}
-/*			
-			for(int x=1;x<w;x++)
-				{
-				r.getPixel(x, 0, pix);
-				cumim[0][x]=pix[0]+cumim[0][x-1];
-				}
-			for(int y=1;y<h;y++)
-				{
-				r.getPixel(0, y, pix);
-				cumim[y][0]=pix[0]+cumim[y-1][0];
-				}
-			for(int y=1;y<h;y++)
-				{
-				r.getPixel(0, 0, pix);
-				int sum=pix[0];
-				for(int x=1;x<w;x++)
-					{
-					r.getPixel(x, 0, pix);
-					cumim[y][x]=pix[0]+cumim[y-1][x]+cumim[0][x-1];
-					}
-				}
-*/
 			
-		
+/*		
 			for(int y=0;y<h;y++)
 				{
 				for(int x=0;x<w;x++)
@@ -133,7 +68,7 @@ public class Train
 				System.out.println();
 				}
 			System.out.println();
-			
+		*/	
 			}
 
 		//x2>x1, y2>y1
@@ -148,58 +83,34 @@ public class Train
 	
 	
 	
+	
+	
 	private static List<TImage> images=new LinkedList<TImage>();
 	
 	
-	public static void readIm(File dir, int cnt, boolean isTrue)
-		{
-		
-		
-		try
-			{
-			for(File f:dir.listFiles())
-				if(f.getName().endsWith("png"))
-					{
-					TImage tim=new TImage();
-					tim.isTrue=isTrue;
-					images.add(tim);
-	
-					tim.createCumIm(findCrap(ImageIO.read(f)));
-					
-//					ImageIO.write(findCrap(ImageIO.read(f)),"png",
-//							new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/nucdic/foo"+f.getName()));
-					
-					cnt--;
-					if(cnt==0)
-						return;
-					}
-			}
-		catch (IOException e)
-			{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			}
-		
-		}
-	
-	
+
+	/**
+	 * Entry point
+	 */
 	public static void main(String[] args)
 		{
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
-		File trueDir=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/nucdic/true/");
-		File falseDir=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/nucdic/false/");
+		File trueDir=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/traintrack/nucdic/true/");
+		File falseDir=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/traintrack/nucdic/false/");
 	
+		int numread=3000;
+		
 		System.out.println("reading images");
-		readIm(trueDir, 10, true);
-//		readIm(falseDir, 10, false);
+		readIm(trueDir, numread, 1);
+		readIm(falseDir, numread, -1);
 		System.out.println("reading images done");
 		
 
-		TImage tim=images.get(0);
+		//TImage tim=images.get(0);
 		
-	
+	/*
 		for(int i=0;i<1000;i++)
 			{
 			int x1=(int)(Math.random()*tim.w);
@@ -211,10 +122,164 @@ public class Train
 			
 			}
 		System.out.println("sum done");
+		*/
+		
+		//Initialize weights
+		for(TImage im:images)
+			im.weightD=1.0/images.size();
 		
 		
-
+		for(int t=0;t<1;t++)
+			{
+			System.out.println("iteration "+t);
+			
+			for(int s=5;s<15;s++)
+				{
+				System.out.println("S "+s);
+			int numCorrect=0;
+			int falseneg=0;
+			for(TImage tim:images)
+				{
+				if(evalImage(tim,s))
+					{
+					numCorrect++;
+					}
+				else
+					if(tim.valueY>0)
+						falseneg++;
+				}
+			
+				double pCorrect=(numCorrect/(double)images.size());
+				double pFalseNeg=(falseneg/(double)images.size());
+				System.out.println("correct "+pCorrect+" falseneg "+pFalseNeg+" "+pCorrect/pFalseNeg);
+			
+				}
+			
+			
+			
+			
+			//Update weights, and normalize
+			double Dsum=0;
+			for(TImage im:images)
+				{
+				double htxi=0;
+				im.weightD*=Math.exp(-im.valueY*htxi);
+				Dsum+=im.weightD;
+				}
+			for(TImage im:images)
+				im.weightD/=Dsum;
+			}
+		
+		
+		
+		
+		
 		}		
 		
+	
+	public static boolean evalImage(TImage tim, int s)
+		{
+		int a=tim.getSum(10-1, 10-1, 30-1, 30-1);
+		int b=tim.getSum(0, 0, 40-1, 40-1);
+//		int c=(b*20*20-a*40*40);
+		double c=(double)(b-a)/(40*40-2*s*2*s)-(double)a/(2*s*2*s);
+		
+//		System.out.println(""+tim.valueY+" "+a+" "+b+"    "+c);
+		
+		boolean d=c>0;
+		
+		double th=0;
+		
+		if(d && tim.valueY>th)
+			return true;
+		else if(!d && tim.valueY<th)
+			return true;
+		else
+			return false;
+		}
+	
+
+	//should intensity be rescaled as well?
+	
+	/**
+	 * Find variatiob by abs(a[y][x]-avg)
+	 */
+	public static BufferedImage findVariation(BufferedImage im)
+		{
+		BufferedImage subim=new BufferedImage(im.getWidth(), im.getHeight(), im.getType());
+		
+		int[] pix=new int[3];
+		WritableRaster rim=im.getRaster();
+		WritableRaster sim=subim.getRaster();
+		
+		int avg=0;
+		int[][] a=new int[im.getHeight()][im.getWidth()];
+		for(int y=0;y<im.getHeight();y++)
+			for(int x=0;x<im.getWidth();x++)
+				{
+				rim.getPixel(x, y, pix);
+				a[y][x]=pix[0];
+				avg+=pix[0];
+				}
+		avg/=(im.getWidth()*im.getHeight());
+
+		pix[0]=0;
+		pix[1]=0;
+		pix[2]=0;
+		for(int y=0;y<im.getHeight();y++)
+			for(int x=0;x<im.getWidth();x++)
+				{
+				pix[0]=Math.abs(a[y][x]-avg);
+				sim.setPixel(x, y, pix);
+				}
+		return subim;
+		}
+	
+	/**
+	 * Make all images the same size
+	 */
+	public static BufferedImage rescale(BufferedImage im)
+		{
+		int nw=40, nh=40;
+		BufferedImage subim=new BufferedImage(nw,nh, im.getType());
+		subim.getGraphics().drawImage(im, 0, 0, nw, nh, 0, 0, im.getWidth(), im.getHeight(), null);
+		return subim;
+		}
+	
+	
+	/**
+	 * Read images from directory
+	 */
+	public static void readIm(File dir, int cnt, double valueY)
+		{
+		try
+			{
+			for(File f:dir.listFiles())
+				if(f.getName().endsWith("png"))
+					{
+					TImage tim=new TImage();
+					tim.valueY=valueY;
+					images.add(tim);
+					BufferedImage im=rescale(findVariation(ImageIO.read(f)));
+					tim.createCumIm(im);
+					/*
+					ImageIO.write(im,"png",
+							new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/nucdic/foo"+f.getName()));
+					*/
+					cnt--;
+					if(cnt==0)
+						return;
+					}
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		
+		}
+	
+	
+	
+	
 	
 	}
