@@ -6,8 +6,13 @@ import java.io.*;
 import java.util.*;
 import java.nio.channels.*;
 import com.sun.image.codec.jpeg.*; 
+import com.sun.media.jai.codec.FileSeekableStream;
+import com.sun.media.jai.codec.ImageCodec;
+import com.sun.media.jai.codec.ImageDecoder;
+import com.sun.media.jai.codec.SeekableStream;
+import com.sun.media.jai.codec.TIFFDecodeParam;
+
 import javax.imageio.*;
-//import javax.swing.*;
 
 import org.jdom.*;
 
@@ -20,7 +25,7 @@ import evplugin.jubio.*;
 
 public class OSTdaemon extends Thread
 	{
-	public String pathInput;
+	public String pathInput=".";
 	public String pathConverted;
 	public String pathOutput;
 	
@@ -408,6 +413,38 @@ public class OSTdaemon extends Thread
 	
 
 	/**
+	 * ImageIO does not understand TIF. This helps.
+	 */
+	public BufferedImage readSliceHelper(File from)
+		{
+		try
+			{
+			if((from.getName().endsWith(".tif") || from.getName().endsWith(".tiff"))) //ImageIO failed on a .tif
+				{
+				SeekableStream s = new FileSeekableStream(from);
+				TIFFDecodeParam param = null;
+			  ImageDecoder dec = ImageCodec.createImageDecoder("tiff", s, param);
+
+			  Raster ir=dec.decodeAsRaster();
+			  int type=ir.getSampleModel().getDataType();
+			  if(type==0) type=BufferedImage.TYPE_BYTE_GRAY;//?
+			  BufferedImage bim=new BufferedImage(ir.getWidth(),ir.getHeight(),type);
+			  WritableRaster wr=bim.getRaster();
+			  wr.setRect(ir);
+			  return bim;
+				}
+			else
+				return ImageIO.read(from);
+			}
+		catch (IOException e)
+			{
+			System.out.println(e.getMessage());
+			return null;
+			}
+		
+		}
+
+	/**
 	 * Convert an image slice: imageset-channel-frame-slice.*
 	 */
 	public void convertSlice(File from)
@@ -431,15 +468,22 @@ public class OSTdaemon extends Thread
 		try
 			{
 			//Convert slice
-			BufferedImage im=ImageIO.read(from);
-			
-			File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, argSlice);
-			saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
-			
-			//Make a maximum slice too
-			if(makeMaxChannel.contains(argChannel))
+			BufferedImage im=readSliceHelper(from);
+			if(im==null)
 				{
-				log("Max not supported for slices yet");
+				error("Could not read "+from, null);
+				return;
+				}
+			else
+				{
+				File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, argSlice);
+				saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
+				
+				//Make a maximum slice too
+				if(makeMaxChannel.contains(argChannel))
+					{
+					log("Max not supported for slices yet");
+					}
 				}
 			}
 		catch (Exception e)
@@ -720,42 +764,54 @@ public class OSTdaemon extends Thread
 			{
 			shutDownLoop();
 
-			//Scan directory
-			File dir=new File(pathInput);
-			for(File file:dir.listFiles())
+			try
 				{
-				shutDownLoop();
-				if(file.exists())
+				//Scan directory
+				File dir=new File(pathInput);
+				if(!dir.exists())
 					{
-					String filename=file.getName();
-					if(!file.getName().startsWith("."))
-						{
-						log(filename);
-						if(filename.startsWith("-"))
-							dealWithFile(file);
-						else if(filename.equals("settings"))
-							readConfig(file.getAbsolutePath());
-						else if(filename.endsWith(".rmd"))
-							readMeta1(file);
-						else if(filename.endsWith("-new.xml"))
-							copyMeta2(file);
-						else if(filename.endsWith(".xml"))
-							readMeta2(file);
-						else if(filename.indexOf("-data-")>=0)
-							copyExtra(file);
-						else if(isImageFile(filename))
-							{
-							if(isStack(filename))
-								convertStack(file);
-							else
-								convertSlice(file);						
-							}
-						else
-							log("File does not match rules: "+filename);
-						}
+					dir=new File(".");
+					log("ERROR: input directory does not exist");
 					}
-				else
-					System.out.println("Main loop: Could not find file: "+file.getAbsolutePath()+" (probably removed by user)");
+				for(File file:dir.listFiles())
+					{
+					shutDownLoop();
+					if(file.exists())
+						{
+						String filename=file.getName();
+						if(!file.getName().startsWith("."))
+							{
+							log(filename);
+							if(filename.startsWith("-"))
+								dealWithFile(file);
+							else if(filename.equals("settings"))
+								readConfig(file.getAbsolutePath());
+							else if(filename.endsWith(".rmd"))
+								readMeta1(file);
+							else if(filename.endsWith("-new.xml"))
+								copyMeta2(file);
+							else if(filename.endsWith(".xml"))
+								readMeta2(file);
+							else if(filename.indexOf("-data-")>=0)
+								copyExtra(file);
+							else if(isImageFile(filename))
+								{
+								if(isStack(filename))
+									convertStack(file);
+								else
+									convertSlice(file);						
+								}
+							else
+								log("File does not match rules: "+filename);
+							}
+						}
+					else
+						System.out.println("Main loop: Could not find file: "+file.getAbsolutePath()+" (probably removed by user)");
+					}
+				}
+			catch (RuntimeException e)
+				{
+				daemonListener.daemonError("Internal error", e);
 				}
 
 			//Wait a bit until next scan, otherwise the program will waste cpu

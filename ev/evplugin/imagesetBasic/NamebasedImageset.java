@@ -208,88 +208,7 @@ public class NamebasedImageset extends Imageset
 				//Go through list of files
 				File f;
 				while((f=nextFile())!=null)
-					{
-					String filename=f.getName();
-					int i=0;
-					int j=0;
-					int channelNum=0;
-					int slice=0;
-					int frame=0;
-					while(i<fileConvention.length())
-						{
-						if(j==filename.length())
-							break;
-						if(fileConvention.charAt(i)=='%')
-							{
-							char type=fileConvention.charAt(i+1);
-							i+=2;
-							if(type=='%')
-								j++;
-							else
-								{
-								String params=parseInt(filename.substring(j));
-								if(params.equals(""))
-									{
-									JOptionPane.showMessageDialog(null, "Not matching "+filename+" Missing parameter "+type+", filename pos"+j);
-									return;
-									}
-								else
-									{
-									j+=params.length();
-									int parami=Integer.parseInt(params);
-									if(type=='C')
-										channelNum=parami;
-									else if(type=='F')
-										frame=parami;
-									else if(type=='Z')
-										slice=parami;
-									else if(type=='#')
-										;
-									else
-										{
-										JOptionPane.showMessageDialog(null, "Unknown parameter: "+type);
-										return;
-										}
-									}
-								}
-							}
-						else if(fileConvention.charAt(i)==filename.charAt(j))
-							{
-							i++;
-							j++;
-							}
-						else
-							{
-							JOptionPane.showMessageDialog(null, "Not matching: "+filename+" rulepos "+i+" namepos "+j);
-							return;
-							}
-						}
-					
-					//If everything was matched, continue
-					if(j==filename.length())
-						{
-						if(channelNum>=channelVector.size())
-							throw new Exception("No channel for index "+channelNum);
-						String channelName=channelVector.get(channelNum);
-
-						//Get a place to put EVimage. Create holders if needed
-						ChannelImages ch=getCreateChannel(channelName);
-						TreeMap<Integer, EvImage> loaders=ch.imageLoader.get(frame);
-						if(loaders==null)
-							{
-							loaders=new TreeMap<Integer, EvImage>();
-							ch.imageLoader.put(frame, loaders);
-							}
-						
-						//Plug EVimage
-						loaders.put(slice, ((Channel)ch).newImage(f.getAbsolutePath()));
-						String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
-						System.out.println(newLogEntry);
-						rebuildLog+=newLogEntry;
-						}
-					else
-						JOptionPane.showMessageDialog(null, "Not matching: "+filename+" Premature end of filename");
-					}
+					buildAddFile(f,channelVector);
 				
 				
 				}
@@ -300,6 +219,98 @@ public class NamebasedImageset extends Imageset
 				}
 			}
 	
+		private void buildAddFile(File f, Vector<String> channelVector) throws Exception
+			{
+			
+			String filename=f.getName();
+			int i=0;
+			int j=0;
+			int channelNum=0;
+			int slice=0;
+			int frame=0;
+			while(i<fileConvention.length())
+				{
+				if(j==filename.length())
+					break;
+				if(fileConvention.charAt(i)=='%')
+					{
+					char type=fileConvention.charAt(i+1);
+					i+=2;
+					if(type=='%')
+						j++;
+					else
+						{
+						String params=parseInt(filename.substring(j));
+						if(params.equals(""))
+							{
+							rebuildLog+="Not matching "+filename+" Missing parameter "+type+", filename pos"+j+"\n";
+//							JOptionPane.showMessageDialog(null, "Not matching "+filename+" Missing parameter "+type+", filename pos"+j);
+							return;
+							}
+						else
+							{
+							j+=params.length();
+							int parami=Integer.parseInt(params);
+							if(type=='C')
+								channelNum=parami;
+							else if(type=='F')
+								frame=parami;
+							else if(type=='Z')
+								slice=parami;
+							else if(type=='#')
+								;
+							else
+								{
+								rebuildLog+="Unknown parameter: "+type+"\n";
+//								JOptionPane.showMessageDialog(null, "Unknown parameter: "+type);
+								return;
+								}
+							}
+						}
+					}
+				else if(fileConvention.charAt(i)==filename.charAt(j))
+					{
+					i++;
+					j++;
+					}
+				else
+					{
+					rebuildLog+="Not matching: "+filename+" rulepos "+i+" namepos "+j+"\n";
+//					JOptionPane.showMessageDialog(null, "Not matching: "+filename+" rulepos "+i+" namepos "+j);
+					return;
+					}
+				}
+			
+			//If everything was matched, continue
+			if(j==filename.length())
+				{
+				if(channelNum>=channelVector.size())
+					throw new Exception("No channel for index "+channelNum);
+				String channelName=channelVector.get(channelNum);
+
+				//Get a place to put EVimage. Create holders if needed
+				ChannelImages ch=getCreateChannel(channelName);
+				TreeMap<Integer, EvImage> loaders=ch.imageLoader.get(frame);
+				if(loaders==null)
+					{
+					loaders=new TreeMap<Integer, EvImage>();
+					ch.imageLoader.put(frame, loaders);
+					}
+				
+				//Plug EVimage
+				loaders.put(slice, ((Channel)ch).newImage(f.getAbsolutePath()));
+				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
+				System.out.println(newLogEntry);
+				rebuildLog+=newLogEntry;
+				}
+			else
+				{
+				rebuildLog+="Not matching: "+filename+" Premature end of filename\n";
+//				JOptionPane.showMessageDialog(null, "Not matching: "+filename+" Premature end of filename");
+				}
+
+			}
+		
 		
 
 		/** Get the next int */

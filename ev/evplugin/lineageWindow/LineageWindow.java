@@ -88,8 +88,10 @@ public class LineageWindow extends BasicWindow
 	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
 	
 	public JCheckBoxMenuItem miShowExpDot=new JCheckBoxMenuItem("Show level dots",false);
-	public JRadioButtonMenuItem miShowExpLine=new JRadioButtonMenuItem("Show level line",true);
-	public JRadioButtonMenuItem miShowExpSolid=new JRadioButtonMenuItem("Show level filled",false);
+	public JMenu miShowExp=new JMenu("Level display");
+	public JRadioButtonMenuItem miShowExpNone=new JRadioButtonMenuItem("Off",false);
+	public JRadioButtonMenuItem miShowExpLine=new JRadioButtonMenuItem("Line",true);
+	public JRadioButtonMenuItem miShowExpSolid=new JRadioButtonMenuItem("Filled",false);
 	
 	
 	public JMenuItem miFoldAll=new JMenuItem("Fold all");
@@ -124,10 +126,12 @@ public class LineageWindow extends BasicWindow
 		miShowExpDot.addActionListener(this);
 		miShowExpLine.addActionListener(this);
 		miShowExpSolid.addActionListener(this);
+		miShowExpNone.addActionListener(this);
 		
 		ButtonGroup expGroup=new ButtonGroup();
 		expGroup.add(miShowExpLine);
 		expGroup.add(miShowExpSolid);
+		expGroup.add(miShowExpNone);
 		updateShowExp();
 		
 		//Put GUI together
@@ -173,9 +177,12 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miShowFrameLines);
 		menuLineage.add(miShowKeyFrames);
 		menuLineage.add(miShowExpDot);
-		menuLineage.add(miShowExpLine);
-		menuLineage.add(miShowExpSolid);
+		menuLineage.add(miShowExp);
 		menuLineage.add(miRotate);
+		
+		miShowExp.add(miShowExpNone);
+		miShowExp.add(miShowExpLine);
+		miShowExp.add(miShowExpSolid);
 		
 		menuLineage.addSeparator();
 		menuLineage.add(miFoldAll);
@@ -392,7 +399,7 @@ public class LineageWindow extends BasicWindow
 			updateShowExp();
 			repaint();
 			}
-		else if(e.getSource()==miShowExpLine || e.getSource()==miShowExpSolid)
+		else if(e.getSource()==miShowExpLine || e.getSource()==miShowExpSolid || e.getSource()==miShowExpNone)
 			{
 			updateShowExp();
 			repaint();
