@@ -404,7 +404,7 @@ public class LineageView extends JPanel
 					//Only draw if potentially visible
 					int minframe=e.getValue().level.firstKey();
 					int maxframe=e.getValue().level.lastKey();
-					boolean visible=midr>=0 && maxframe>=0 && minframe<getVirtualWidth() &&
+					boolean visible=midr>=0 && f2c(maxframe)>=0 && f2c(minframe)<getVirtualWidth() &&
 													midr-e.getValue().getMaxLevel()*expScale<getVirtualHeight();
 					if(visible)
 						{

@@ -104,8 +104,11 @@ public class GUI extends JFrame implements ActionListener, WindowListener, Daemo
 			total=total+e.getMessage()+"\n"+sw.toString();
 			}
 		daemonLog(total);
-		System.out.println(e.getMessage());
-		e.printStackTrace();
+		if(e!=null)
+			{
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			}
 		}
 
 
