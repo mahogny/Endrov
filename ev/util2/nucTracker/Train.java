@@ -28,7 +28,8 @@ public class Train
 	private static List<TImage> images=new LinkedList<TImage>();
 	
 	private static int standardSize=40;
-	
+	public static int meanWindowSize=60;
+	//note training set not prescaled
 
 	/**
 	 * Entry point
@@ -38,8 +39,8 @@ public class Train
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
-		File trueDir=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/traintrack/nucdic/true/");
-		File falseDir=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/traintrack/nucdic/false/");
+		File trueDir =new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/images/true/");
+		File falseDir=new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/images/false/");
 	
 		int numread=300;
 		
@@ -73,7 +74,7 @@ public class Train
 		try
 			{
 			BufferedWriter outfile = new BufferedWriter(new FileWriter(
-					"/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/traintrack/nucdic/4.txt"));
+					"/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/4.txt"));
 			
 			
 			for(int t=0;t<1;t++)
@@ -206,15 +207,14 @@ public class Train
 					
 					BufferedImage im=ImageIO.read(f);
 					
-					im=rescale(TImage.findVariation(im));
+					im=rescale(TImage.findVariation(im,meanWindowSize));
 					tim.createCumIm(im);
 					
 					
 					
-					/*
 					ImageIO.write(im,"png",
-							new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/nucdic/foo"+f.getName()));
-					*/
+							new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/images/transformed/"+valueY+"_"+f.getName()));
+					
 					cnt--;
 					if(cnt==0)
 						return;

@@ -60,7 +60,11 @@ public class TImage
 	//x2>x1, y2>y1
 	public int getSum(int x1, int y1, int x2, int y2)
 		{
-		return cumim[y2][x2]+cumim[y1][x1]-(cumim[y1][x2]+cumim[y2][x1]);
+		int p11=y1>=0 && x1>=0 ? cumim[y1][x1] : 0;
+		int p12=y1>=0 ? cumim[y1][x2] : 0;
+		int p21=x1>=0 ? cumim[y2][x1] : 0;
+		int p22=cumim[y2][x2];
+		return p22+p11-(p12+p21);
 		}
 	
 	
@@ -69,7 +73,7 @@ public class TImage
 	/**
 	 * Find variatiob by abs(a[y][x]-avg)
 	 */
-	public static BufferedImage findVariation(BufferedImage im)
+	public static BufferedImage findVariation(BufferedImage im, Integer windowSize)
 		{
 		BufferedImage subim=new BufferedImage(im.getWidth(), im.getHeight(), im.getType());
 		
@@ -88,13 +92,36 @@ public class TImage
 				}
 		avg/=(im.getWidth()*im.getHeight());
 
+		TImage avgImage=new TImage();
+		if(windowSize!=null)
+			avgImage.createCumIm(im);
+
 		pix[0]=0;
 		pix[1]=0;
 		pix[2]=0;
-		for(int y=0;y<im.getHeight();y++)
-			for(int x=0;x<im.getWidth();x++)
+		int w=im.getWidth();
+		int h=im.getHeight();
+		for(int y=0;y<h;y++)
+			for(int x=0;x<w;x++)
 				{
-				pix[0]=Math.abs(a[y][x]-avg);
+				int thisAvg=avg;
+				
+				if(windowSize!=null)
+					{
+					int minx=x-windowSize;
+					int maxx=x+windowSize;
+					int miny=y-windowSize;
+					int maxy=y+windowSize;
+		//			if(minx<-1) minx=-1;
+		//			if(miny<-1) miny=-1;
+					if(minx<0) minx=0;
+					if(miny<0) miny=0;
+					if(maxx>=w) maxx=w-1;
+					if(maxy>=h) maxy=h-1;
+					thisAvg=avgImage.getSum(minx-1, miny-1, maxx, maxy);
+					thisAvg/=(maxx-minx+1)*(maxy-miny+1);
+					}
+				pix[0]=Math.abs(a[y][x]-thisAvg);
 				sim.setPixel(x, y, pix);
 				}
 		return subim;

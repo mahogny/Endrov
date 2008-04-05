@@ -74,7 +74,7 @@ public class Test
 					
 					EvImage im=ost.getChannel("DIC").getImageLoader(frame, z);
 					BufferedImage jim=im.getJavaImage();
-					jim=TImage.findVariation(jim);
+					jim=TImage.findVariation(jim,Train.meanWindowSize);
 					TImage tim=new TImage();
 					tim.createCumIm(jim);
 					tim.valueY=1;
