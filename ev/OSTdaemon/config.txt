@@ -1,11 +1,12 @@
 pathinput /Volumes/ZeissRec128GB/4ddaemon
 pathconverted /Volumes/ZeissRec128GB/4ddaemon_converted
+pathoutput /Volumes/TBU_main03/daemon/output
 
 #pathinput /Volumes/TBU_iomega_700GB/daemon/input
 #pathconverted /Volumes/TBU_iomega_700GB/daemon/converted
 
 
-pathoutput /Volumes/TBU_iomega_700GB/daemon/output
+#pathoutput /Volumes/TBU_iomega_700GB/daemon/output
 
 setmax GFP RFP NR RFPFIXED
 compression DIC 90 
