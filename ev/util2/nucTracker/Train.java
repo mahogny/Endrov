@@ -80,34 +80,47 @@ public class Train
 			for(int t=0;t<1;t++)
 				{
 				System.out.println("iteration "+t);
+			
+				
+				//Automatic ///////////////////////////
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				//Manually programed //////////////////
 				
 //			for(int s=5;s<15;s++)
 					{
-				int numCorrect=0;
-				int falseneg=0;
-				for(TImage tim:images)
-					{
-					int a=tim.getSum(standardSize/4-1, standardSize/4-1, 
-							(standardSize-standardSize/4)-1, (standardSize-standardSize/4)-1);
-					int b=tim.getSum(0, 0, standardSize-1, standardSize-1)-a;
-					
-					
-					outfile.write(""+a/(20.0*20.0)+" "+b/(40.0*40.0-20.0*20.0)+" "+tim.valueY+"\n");
-					
-					
-					if(evalImageCorrect(tim,standardSize,0,0))
+					int numCorrect=0;
+					int falseneg=0;
+					for(TImage tim:images)
 						{
-						numCorrect++;
+						int a=tim.getSum(standardSize/4-1, standardSize/4-1, 
+								(standardSize-standardSize/4)-1, (standardSize-standardSize/4)-1);
+						int b=tim.getSum(0, 0, standardSize-1, standardSize-1)-a;
+
+
+						outfile.write(""+a/(20.0*20.0)+" "+b/(40.0*40.0-20.0*20.0)+" "+tim.valueY+"\n");
+
+
+						if(evalImageCorrect(tim,standardSize,0,0))
+							{
+							numCorrect++;
+							}
+						else
+							if(tim.valueY>0)
+								falseneg++;
 						}
-					else
-						if(tim.valueY>0)
-							falseneg++;
-					}
-				
+
 					double pCorrect=(numCorrect/(double)images.size());
 					double pFalseNeg=(falseneg/(double)images.size());
 					System.out.println("correct "+pCorrect+" falseneg "+pFalseNeg+" "+pCorrect/pFalseNeg);
-				
+
 					}
 				
 				
