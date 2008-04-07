@@ -4,10 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
-import evplugin.data.EvData;
 import evplugin.ev.*;
 import evplugin.imagesetBioformats.BioformatsImageset;
 import evplugin.imagesetOST.SaveOSTThread;
@@ -67,27 +63,7 @@ public class Main
 		
 		if(args.length==0)
 			{
-			
-			
-			JFileChooser chooser = new JFileChooser();
-	    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-	    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
-	    int returnVal = chooser.showOpenDialog(null);
-	    if(returnVal == JFileChooser.APPROVE_OPTION)
-	    	{
-	    	File filename=chooser.getSelectedFile();
-	    	
-				System.out.println("Starting Endrov");
-				Log.listeners.add(new StdoutLog());
-				EV.loadPlugins();
-				System.out.println();
-				
-				if(convert(filename))
-					JOptionPane.showMessageDialog(null, "Successfully converted");
-				else
-					JOptionPane.showMessageDialog(null, "Failed to convert");
-	    	}
-			
+			new GUI();
 			}
 		else
 			{
@@ -136,11 +112,11 @@ public class Main
 				}
 			else
 				{
-				System.out.println("Starting Endrov");
+/*				System.out.println("Starting Endrov");
 				Log.listeners.add(new StdoutLog());
 				EV.loadPlugins();
 				System.out.println();
-				
+	*/			
 				for(File infile:infiles)
 					convert(infile);
 				}

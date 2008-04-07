@@ -110,7 +110,7 @@ public class BioformatsImageset extends Imageset
 	public String basedir;
 
 	
-	IFormatReader imageReader=null;
+	public IFormatReader imageReader=null;
 	
 	/**
 	 * Open a new recording
@@ -155,10 +155,18 @@ public class BioformatsImageset extends Imageset
 		int numc=imageReader.getSizeC();
 		
 
+
 		System.out.println("# XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
+		for(Map.Entry<Object, Object> e:(Set<Map.Entry>)imageReader.getMetadata().entrySet())
+			System.out.println("> "+e.getKey()+" "+e.getValue());
+		//imageReader.getMetadataValue(e.getValue()));
+		
 		
 		meta=new ImagesetMeta();
 
+
+		
+		
 		channelImages.clear();
 		if(imageReader.isRGB())
 			{
