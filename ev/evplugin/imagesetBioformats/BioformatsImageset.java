@@ -157,11 +157,16 @@ public class BioformatsImageset extends Imageset
 
 
 		System.out.println("# XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
-		for(Map.Entry<Object, Object> e:(Set<Map.Entry>)imageReader.getMetadata().entrySet())
+		for(Object o:(Set)imageReader.getMetadata().entrySet())
+			{
+			Map.Entry e=(Map.Entry)o;
 			System.out.println("> "+e.getKey()+" "+e.getValue());
+			}
 		//imageReader.getMetadataValue(e.getValue()));
 		
-		
+//		VoxelSizeZ
+	//  Y, X
+		//
 		meta=new ImagesetMeta();
 
 
