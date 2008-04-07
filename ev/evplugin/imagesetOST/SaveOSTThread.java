@@ -18,7 +18,7 @@ public class SaveOSTThread extends BatchThread
 	{
 	private final Imageset rec;
 	private final String imagesetFilename;
-	private final double quality;
+	
 	
 	/**
 	 * Create calculation
@@ -26,11 +26,10 @@ public class SaveOSTThread extends BatchThread
 	 * @param filename Path where images will be stored (includes imageset name)
 	 * @param quality Between 0 and 1 (1 for lossless)
 	 */
-	public SaveOSTThread(Imageset rec, String filename, double quality)
+	public SaveOSTThread(Imageset rec, String filename)
 		{
 		this.rec=rec;
 		this.imagesetFilename=filename;
-		this.quality=quality;
 		}
 	
 	public String getBatchName()
@@ -41,7 +40,7 @@ public class SaveOSTThread extends BatchThread
 	/**
 	 * Save an image to disk
 	 */
-	private void saveImage(BufferedImage im, File toFile, float quality) throws Exception
+	private void saveImage(BufferedImage im, File toFile, int quality) throws Exception
 		{
 		if(quality<1)
 			{
@@ -49,7 +48,7 @@ public class SaveOSTThread extends BatchThread
 	    FileOutputStream toStream = new FileOutputStream(toFile); 
 	    JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(toStream); 
 	    JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(im); 
-	    param.setQuality(quality, false); 
+	    param.setQuality((float)(quality/100.0), false); 
 	    encoder.setJPEGEncodeParam(param); 
 	    encoder.encode(im); 
 			}
@@ -82,8 +81,6 @@ public class SaveOSTThread extends BatchThread
 				File channelPath=new File(imagesetPath, imageset+"-"+channel.getMeta().name);
 				channelPath.mkdir();
 								
-//				int numFrames=channel.imageLoader.size();
-//				int doneFrames=0;
 				for(int frame:channel.imageLoader.keySet())
 					{
 					File framePath=new File(channelPath, EV.pad(frame,8).toString());
@@ -103,7 +100,7 @@ public class SaveOSTThread extends BatchThread
 						EvImage loader=slices.get(slice);
 						BufferedImage im=loader.getJavaImage();
 						File toFile=new File(framePath, EV.pad(slice,8));
-						saveImage(im, toFile, (float)quality);
+						saveImage(im, toFile, channel.getMeta().compression);
 						}
 					}
 				}

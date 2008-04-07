@@ -10,6 +10,10 @@ import javax.swing.*;
  */
 public class StartGUI
 	{
+	public static boolean printCommand=false;
+	public static boolean printJavaLib=false;
+	
+	
 	public static void main(String[] args)
 		{
 		run(args);
@@ -93,7 +97,8 @@ public class StartGUI
 					while(t.hasMoreTokens())
 						{
 						String s=t.nextToken();
-						if(!tot.equals(""))tot=tot+":";
+						if(!tot.equals(""))
+							tot=tot+":";
 						tot=tot+"$APP_PACKAGE/../"+s.substring(dotlen);
 						}
 					System.out.println(tot);
@@ -101,10 +106,13 @@ public class StartGUI
 				
 				//Run process
 				pb.command(cmdarg);
-				String totalCmd="";
-				for(String s:pb.command())
-					totalCmd+=s+" ";
-				System.out.println(totalCmd);
+				if(printCommand)
+					{
+					String totalCmd="";
+					for(String s:pb.command())
+						totalCmd+=s+" ";
+					System.out.println(totalCmd);
+					}
 				final Process p=pb.start();
 
 				//Pass on errors
@@ -168,7 +176,8 @@ public class StartGUI
 				String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
 				v.add(toadd);
 //				v.add(sub.getAbsolutePath());
-				System.out.println("Adding java library: "+toadd);
+				if(printJavaLib)
+					System.out.println("Adding java library: "+toadd);
 				}
 			else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
 				collectJars(v,sub.getAbsolutePath());

@@ -91,6 +91,8 @@ public class ImagesetMeta extends EvObject
 					ch.dispY=Double.parseDouble(i.getValue());
 				else if(i.getName().equals("binning"))
 					ch.chBinning=Integer.parseInt(i.getValue());
+				else if(i.getName().equals("compression"))
+					ch.compression=Integer.parseInt(i.getValue());
 				else if(i.getName().equals("frame"))
 					extractFrame(ch.metaFrame, i);
 				else
@@ -139,6 +141,9 @@ public class ImagesetMeta extends EvObject
 		
 		/** Displacement */
 		public double dispX=0, dispY=0;
+		
+		/** Comppression 0-100, 100=lossless, what compression to apply to new images */
+		public int compression=100;
 		
 		/** Other */
 		public HashMap<String,String> metaOther=new HashMap<String,String>();
@@ -299,6 +304,7 @@ public class ImagesetMeta extends EvObject
 			elOstChannel.addContent(new Element("binning").addContent(""+ch.chBinning));
 			elOstChannel.addContent(new Element("dispX").addContent(""+ch.dispX));
 			elOstChannel.addContent(new Element("dispY").addContent(""+ch.dispY));
+			elOstChannel.addContent(new Element("comression").addContent(""+ch.compression));
 			for(String key:ch.metaOther.keySet())
 				elOstChannel.addContent(new Element(key).addContent(""+ch.metaOther.get(key)));
 			saveFrameMetadata(ch.metaFrame, elOstChannel);
