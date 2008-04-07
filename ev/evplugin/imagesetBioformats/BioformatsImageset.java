@@ -46,42 +46,9 @@ public class BioformatsImageset extends Imageset
 					public void actionPerformed(ActionEvent e)
 						{
 						if(e.getSource()==miLoadBioformats)
-							{
-							JFileChooser chooser = new JFileChooser();
-					    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
-					    int returnVal = chooser.showOpenDialog(null); //null=window
-					    if(returnVal == JFileChooser.APPROVE_OPTION)
-					    	{
-					    	String filename=chooser.getSelectedFile().getAbsolutePath();
-					    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
-					    	load(filename);
-					    	}
-							}
+							dialogOpenBioformats();
 						}
 
-					public void load(String filename)
-						{
-			    	//doesn't really show, but better than nothing
-			    	JFrame loadingWindow=new JFrame(EV.programName); 
-			    	loadingWindow.setLayout(new GridLayout(1,1));
-			    	loadingWindow.add(new JLabel("Loading imageset"));
-			    	loadingWindow.pack();
-			    	loadingWindow.setBounds(200, 200, 300, 50);
-			    	loadingWindow.setVisible(true);
-			    	loadingWindow.repaint();
-			    	
-			    	try
-							{
-							EvData.metadata.add(new BioformatsImageset(filename));
-							}
-						catch (Exception e)
-							{
-							evplugin.ev.Log.printError("bioformats", e);
-							}
-			    	BasicWindow.updateWindows();
-			    	loadingWindow.dispose();
-						}
 					
 					};
 				miLoadBioformats.addActionListener(listener);
@@ -90,11 +57,47 @@ public class BioformatsImageset extends Imageset
 				{
 				}
 			});
-		
-		
-		
 		}
 	
+	/**
+	 * Open a dialog to open a bioformats imageset
+	 */
+	public static void dialogOpenBioformats()
+		{
+		JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
+    int returnVal = chooser.showOpenDialog(null); //null=window
+    if(returnVal == JFileChooser.APPROVE_OPTION)
+    	{
+    	String filename=chooser.getSelectedFile().getAbsolutePath();
+    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
+    	
+
+    	
+    	//doesn't really show, but better than nothing
+    	JFrame loadingWindow=new JFrame(EV.programName); 
+    	loadingWindow.setLayout(new GridLayout(1,1));
+    	loadingWindow.add(new JLabel("Loading imageset"));
+    	loadingWindow.pack();
+    	loadingWindow.setBounds(200, 200, 300, 50);
+    	loadingWindow.setVisible(true);
+    	loadingWindow.repaint();
+    	
+    	try
+				{
+				EvData.metadata.add(new BioformatsImageset(filename));
+				}
+			catch (Exception e2)
+				{
+				evplugin.ev.Log.printError("bioformats", e2);
+				}
+    	BasicWindow.updateWindows();
+    	loadingWindow.dispose();
+
+    	
+    	}
+		}
 	
 	
 	/******************************************************************************************************

@@ -2,19 +2,17 @@ package evplugin.imageset;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
+import org.jdom.*;
 
 import evplugin.basicWindow.*;
 import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.imagesetOST.OstImageset;
-import evplugin.imagesetOST.SaveOSTThread;
+import evplugin.imagesetOST.*;
 
-import org.jdom.*;
 
 /**
  * Meta data window for imageset
@@ -86,11 +84,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 				{
 				try
 					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new MetaWindow(x,y,w,h);
+					Rectangle rect=getXMLbounds(e);
+					new MetaWindow(rect);
 					}
 				catch (Exception e1)
 					{
@@ -137,19 +132,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 								}
 							else if(e.getSource()==miExportOST)
 								{
-								String qualitys=JOptionPane.showInputDialog("Quality between 0 and 1? 1 for png (lossless), 0.99 for very high quality jpg (lossy)");
-								if(qualitys!=null)
-									{
-									double quality=Double.parseDouble(qualitys);
-									JFileChooser chooser = new JFileChooser();
-									chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
-									int returnVal = chooser.showSaveDialog(null);
-									if(returnVal == JFileChooser.APPROVE_OPTION)
-										{
-										BatchThread thread=new SaveOSTThread((Imageset)meta, chooser.getSelectedFile().getAbsolutePath(),quality);
-										new BatchWindow(thread);
-										}
-									}
+								//Should maybe be registered instead?
+								new SaveOSTDialog((Imageset)meta);
 								}
 							}
 						};
@@ -206,12 +190,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	 */
 	public void windowPersonalSettings(Element root)
 		{
-		Rectangle r=getBounds();
 		Element e=new Element("imagesetmetawindow");
-		e.setAttribute("x", ""+r.x);
-		e.setAttribute("y", ""+r.y);
-		e.setAttribute("w", ""+r.width);
-		e.setAttribute("h", ""+r.height);
+		setXMLbounds(e);
 		root.addContent(e);
 		}
 
@@ -221,13 +201,13 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	 */
 	public MetaWindow()
 		{
-		this(100,200,700,600);
+		this(new Rectangle(100,100,500,500));
 		}
 	
 	/**
 	 * Make a new window at some specific location
 	 */
-	public MetaWindow(int x, int y, int w, int h)
+	public MetaWindow(Rectangle rect)
 		{
 		//Listeners
 		metaCombo.addActionListener(this);
@@ -257,7 +237,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		setTitle(EV.programName+" Imageset Meta Window");
 		pack();
 		setVisible(true);
-		setBounds(x,y,w,h);
+		setBounds(rect);
 		}
 	
 	
@@ -307,6 +287,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 				t.iDispX.setText(""+cm.dispX);
 				t.iDispY.setText(""+cm.dispY);			
 				t.iBinning.setText(""+cm.chBinning);
+				t.iCompression.setText(""+cm.compression);
 				t.iOther.setText(cm.metaOther.get("evother"));
 				}
 			}
@@ -339,12 +320,10 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		p.add(p2, new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 		JPanel p3=makeResolutionStrip("Final resolution [px/um]", commonResX, commonResY, commonResZ);
 		p.add(p3, new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
-		p.add(new JLabel("Description"),
-				new GridBagConstraints(0,cury++,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
+		p.add(new JLabel("Description"),new GridBagConstraints(0,cury++,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 		
 		JScrollPane scrollPane = new JScrollPane(commonDescript, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		p.add(scrollPane,
-				new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
+		p.add(scrollPane,	new GridBagConstraints(0,cury++,3,1,1,1,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 
 		commonSlicespacing.setPreferredSize(new Dimension(400,22));
 		scrollPane.setPreferredSize(new Dimension(0,100));
@@ -418,6 +397,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		public JTextField iDispX=new JTextField();
 		public JTextField iDispY=new JTextField();
 		public JTextField iBinning=new JTextField();
+		public JTextField iCompression=new JTextField();
 		public JTextArea iOther=new JTextArea();
 		
 		public ChannelTab(MetaWindow w, Imageset.ChannelImages c)
@@ -433,12 +413,14 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			add3Fast(this, new JLabel("Displacement X"), iDispX,   new JLabel("[px]"),cury++);
 			add3Fast(this, new JLabel("Displacement Y"), iDispY,   new JLabel("[px]"),cury++);
 			add3Fast(this, new JLabel("Binning"),        iBinning, new JLabel("[x]"), cury++);
+			add3Fast(this, new JLabel("Compression"),    iCompression, new JLabel("[0-100]"), cury++);
 			Insets ins=new Insets(0, 0, 0, 0);
-			add(scrollPane, new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
+			add(scrollPane, new GridBagConstraints(0,cury++,3,1,1,1,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 			
 			iDispX.getDocument().addDocumentListener(w);
 			iDispY.getDocument().addDocumentListener(w);
 			iBinning.getDocument().addDocumentListener(w);
+			iCompression.getDocument().addDocumentListener(w);
 			iOther.getDocument().addDocumentListener(w);
 			}
 		
@@ -453,7 +435,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		{
 		Insets ins=new Insets(0, 0, 0, 0);
 		c.add(in1, new GridBagConstraints(0,y,1,1,0,0,GridBagConstraints.EAST,GridBagConstraints.NONE,ins,0,0));
-		c.add(in2, new GridBagConstraints(1,y,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
+		c.add(in2, new GridBagConstraints(1,y,1,1,1,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
 		c.add(in3, new GridBagConstraints(2,y,1,1,0,0,GridBagConstraints.WEST,GridBagConstraints.NONE,ins,0,0));
 		}
 	
@@ -468,9 +450,9 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		p.add(new JLabel("X:"), new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.NONE,ins,0,0));
 		p.add(new JLabel("Y:"), new GridBagConstraints(2,0,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.NONE,ins,0,0));
 		p.add(new JLabel("Z:"), new GridBagConstraints(4,0,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.NONE,ins,0,0));
-		p.add(x, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
-		p.add(y, new GridBagConstraints(3,0,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
-		p.add(z, new GridBagConstraints(5,0,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
+		p.add(x, new GridBagConstraints(1,0,1,1,1,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
+		p.add(y, new GridBagConstraints(3,0,1,1,1,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
+		p.add(z, new GridBagConstraints(5,0,1,1,1,0,GridBagConstraints.CENTER,GridBagConstraints.HORIZONTAL,ins,0,0));
 		x.setPreferredSize(new Dimension(200,22));
 		y.setPreferredSize(new Dimension(200,22));
 		z.setPreferredSize(new Dimension(200,22));
@@ -521,6 +503,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					ch.dispX=Double.parseDouble(t.iDispX.getText());
 					ch.dispY=Double.parseDouble(t.iDispY.getText());
 					ch.chBinning=Integer.parseInt(t.iBinning.getText());
+					ch.compression=Integer.parseInt(t.iCompression.getText());
 					ch.metaOther.put("evother",t.iOther.getText());
 					}
 				
