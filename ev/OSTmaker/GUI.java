@@ -198,6 +198,40 @@ public class GUI extends JFrame implements ActionListener
 		validate();
 		}
 	
+	
+	public void startConversion()
+		{
+		Vector<ToImport> newImportList=importList;
+		importList=new Vector<ToImport>();
+		for(ToImport toim:newImportList)
+			{
+			String outfilename=toim.file.getName();
+			if(outfilename.indexOf(".")!=-1)
+				{
+				outfilename=outfilename.substring(0,outfilename.lastIndexOf(".")-1);
+				File outfile=new File(toim.file.getParentFile(),outfilename);
+				
+				BioformatsImageset inim=toim.im;
+				
+				//Set compression
+				for(String chname:inim.channelImages.keySet())
+					if(chancomp.containsKey(chname))
+						inim.meta.channelMeta.get(chname).compression=chancomp.get(chname);
+				
+				//the save system could now be replaced by writable OST imagesets.
+				//problem though: lack a system to set compression rates, write locks are in, rather ugly in general
+				System.out.println("Saving to: "+outfile);
+				new CompleteBatch(new SaveOSTThread(inim, outfile.getAbsolutePath()));
+				importList.remove(toim);
+				}
+			else
+				JOptionPane.showMessageDialog(null, "Cannot handle "+toim.file+": no file ending");
+			}
+		updateFileList();
+		JOptionPane.showMessageDialog(null, "Finished importing data");
+		}
+	
+	
 	/**
 	 * Handle actions
 	 */
@@ -205,34 +239,7 @@ public class GUI extends JFrame implements ActionListener
 		{
 		if(e.getSource()==bGo)
 			{
-			Vector<ToImport> newImportList=importList;
-			importList=new Vector<ToImport>();
-			for(ToImport toim:newImportList)
-				{
-				String outfilename=toim.file.getName();
-				if(outfilename.indexOf(".")!=-1)
-					{
-					outfilename=outfilename.substring(0,outfilename.lastIndexOf(".")-1);
-					File outfile=new File(toim.file.getParentFile(),outfilename);
-					
-					BioformatsImageset inim=toim.im;
-					
-					//Set compression
-					for(String chname:inim.channelImages.keySet())
-						if(chancomp.containsKey(chname))
-							inim.meta.channelMeta.get(chname).compression=chancomp.get(chname);
-					
-					//the save system could now be replaced by writable OST imagesets.
-					//problem though: lack a system to set compression rates, write locks are in, rather ugly in general
-					System.out.println("Saving to: "+outfile);
-					new CompleteBatch(new SaveOSTThread(inim, outfile.getAbsolutePath()));
-					importList.remove(toim);
-					}
-				else
-					JOptionPane.showMessageDialog(null, "Cannot handle "+toim.file+": no file ending");
-				}
-			updateFileList();
-			JOptionPane.showMessageDialog(null, "Finished importing data");
+			startConversion();
 			}
 		else if(e.getSource()==bAdd)
 			{
