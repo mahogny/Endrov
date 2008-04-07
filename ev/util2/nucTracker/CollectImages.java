@@ -18,7 +18,7 @@ import evplugin.nuc.NucLineage;
 public class CollectImages
 	{
 	
-	public static boolean doTrue=false;
+	public static boolean doTrue=true;
 
 	public static NucLineage getLin(Imageset ost)
 		{
@@ -38,26 +38,44 @@ public class CollectImages
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
+//		String channelName="DIC";
+		String channelName="RFP";
 		
-		File outputDIC;
+		
+		File outputDir;
 		if(doTrue)
-			outputDIC=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/nucdic/true/");
+			outputDir=new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/"+channelName+"/images/true/");
 		else
-			outputDIC=new File("/Volumes/TBU_xeon01_500GB02/userdata/henriksson/current/nucdic/false/");
+			outputDir=new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/"+channelName+"/images/false/");
 		
-		
+		int startFrame=0;
+		int endFrame=100000000;
 		
 		//Load all worms
-		String[] wnlist={
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071114",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071115",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071116",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071117",
-//				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071118",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2164_080118",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2142_071129",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2greenLED080206"
-				}; 
+		String[] wnlist;
+		
+		if(channelName.equals("DIC"))
+			wnlist=new String[]{
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071114",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071115",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071116",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071117",
+//					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071118",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2greenLED080206",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2164_080118",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2142_071129",
+		}; 
+		else
+			{
+			wnlist=new String[]{
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2164_080118",
+					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2142_071129",
+			};
+			startFrame=1500;
+			endFrame=2000;
+			}
+		
+		
 		Vector<Imageset> worms=new Vector<Imageset>();
 		for(String s:wnlist)
 			{
@@ -84,36 +102,38 @@ public class CollectImages
 						for(Map.Entry<Integer, NucLineage.NucPos> e:nuc.pos.entrySet())
 							{
 							int frame=e.getKey();
-							NucLineage.NucPos pos=e.getValue();
-							
-							frame=ost.getChannel("DIC").closestFrame(frame);
-							int z=ost.getChannel("DIC").closestZ(frame, (int)Math.round(pos.z*ost.meta.resZ));
-							EvImage im=ost.getChannel("DIC").getImageLoader(frame, z);
-							
-							int midx=(int)im.transformWorldImageX(pos.x);
-							int midy=(int)im.transformWorldImageY(pos.y);
-							int r=(int)im.scaleWorldImageX(pos.r);
-							int rr=r+20;
-
-							if(!doTrue)
+							if(frame>=startFrame && frame<=endFrame)
 								{
-								double ang=Math.random()*2*Math.PI;
-								midx+=Math.cos(ang)*r*2;
-								midy+=Math.sin(ang)*r*2;
+								NucLineage.NucPos pos=e.getValue();
+								
+								frame=ost.getChannel(channelName).closestFrame(frame);
+								int z=ost.getChannel(channelName).closestZ(frame, (int)Math.round(pos.z*ost.meta.resZ));
+								EvImage im=ost.getChannel(channelName).getImageLoader(frame, z);
+								
+								int midx=(int)im.transformWorldImageX(pos.x);
+								int midy=(int)im.transformWorldImageY(pos.y);
+								int r=(int)im.scaleWorldImageX(pos.r);
+								int rr=r+20;
+	
+								if(!doTrue)
+									{
+									double ang=Math.random()*2*Math.PI;
+									midx+=Math.cos(ang)*r*2;
+									midy+=Math.sin(ang)*r*2;
+									}
+								
+								BufferedImage jim=im.getJavaImage();
+								BufferedImage subim=new BufferedImage(2*rr, 2*rr, jim.getType());
+								
+								int ulx=midx-rr;
+								int uly=midy-rr;
+								subim.getGraphics().drawImage(jim, 0, 0, 2*rr, 2*rr, ulx, uly, ulx+2*rr, uly+2*rr, null);
+								
+								
+								File file = new File(outputDir,""+id+".png");
+								id++;
+				        ImageIO.write(subim, "png", file);
 								}
-							
-							BufferedImage jim=im.getJavaImage();
-							BufferedImage subim=new BufferedImage(2*rr, 2*rr, jim.getType());
-							
-							int ulx=midx-rr;
-							int uly=midy-rr;
-							subim.getGraphics().drawImage(jim, 0, 0, 2*rr, 2*rr, ulx, uly, ulx+2*rr, uly+2*rr, null);
-							
-							
-							File file = new File(outputDIC,""+id+".png");
-							id++;
-			        ImageIO.write(subim, "png", file);
-							
 							
 							}
 					}
