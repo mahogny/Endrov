@@ -1,6 +1,13 @@
 package evplugin.imagesetOST;
 
+import java.io.File;
+
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+
+import evplugin.basicWindow.BatchWindow;
+import evplugin.data.EvData;
+import evplugin.ev.BatchThread;
 import evplugin.imageset.Imageset;
 
 /**
@@ -13,9 +20,14 @@ public class SaveOSTDialog extends JFrame
 	
 	public SaveOSTDialog(Imageset rec)
 		{
-		
-		
-		
+		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
+		int returnVal = chooser.showSaveDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+			{
+			BatchThread thread=new SaveOSTThread(rec, chooser.getSelectedFile().getAbsolutePath());
+			new BatchWindow(thread);
+			}
 		}
 	
 	

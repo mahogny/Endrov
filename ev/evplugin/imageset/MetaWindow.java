@@ -116,7 +116,6 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					final Imageset rec=(Imageset)meta;
 					final JMenuItem miOpenDatadir=new JMenuItem("Open data directory");
 					final JMenuItem miReload=new JMenuItem("Reload");
-					final JMenuItem miExportOST=new JMenuItem("Export to OST");
 					ActionListener listener=new ActionListener()
 						{
 						public void actionPerformed(ActionEvent e)
@@ -130,18 +129,29 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 								ost.buildDatabase();
 								BasicWindow.updateWindows();
 								}
-							else if(e.getSource()==miExportOST)
+							}
+						};
+					miOpenDatadir.addActionListener(listener);
+					miReload.addActionListener(listener);
+					menu.add(miOpenDatadir);					
+					menu.add(miReload);					
+					}
+				else if(meta instanceof Imageset)
+					{
+//					final Imageset rec=(Imageset)meta;
+					final JMenuItem miExportOST=new JMenuItem("Export to OST");
+					ActionListener listener=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							if(e.getSource()==miExportOST)
 								{
 								//Should maybe be registered instead?
 								new SaveOSTDialog((Imageset)meta);
 								}
 							}
 						};
-					miOpenDatadir.addActionListener(listener);
-					miReload.addActionListener(listener);
 					miExportOST.addActionListener(listener);
-					menu.add(miOpenDatadir);					
-					menu.add(miReload);					
 					menu.add(miExportOST);
 					}
 				}
