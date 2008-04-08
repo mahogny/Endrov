@@ -156,74 +156,52 @@ public class BioformatsImageset extends Imageset
 		
 
 
+		//Read meta data
 		System.out.println("# XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
 		for(Object o:(Set)imageReader.getMetadata().entrySet())
 			{
 			Map.Entry e=(Map.Entry)o;
 			System.out.println("> "+e.getKey()+" "+e.getValue());
 			}
-		//imageReader.getMetadataValue(e.getValue()));
-		
-//		VoxelSizeZ
-	//  Y, X
-		//
+
 		meta=new ImagesetMeta();
-
-
+		meta.resX=1;
+		meta.resY=1;
+		meta.resZ=1;
+		if(imageReader.getMetadataValue("VoxelSizeX")!=null)
+			meta.resX=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6;
+		if(imageReader.getMetadataValue("VoxelSizeY")!=null)
+			meta.resY=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6;
+		if(imageReader.getMetadataValue("VoxelSizeZ")!=null)
+			meta.resZ=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6;
 		
-		
+		//Enlist images
 		channelImages.clear();
-		if(imageReader.isRGB())
+		for(int channelnum=0;channelnum<numc;channelnum++)
 			{
-			/////////////// One fat RGB //////////////////////
-			for(int channelnum=0;channelnum<numc;channelnum++)
+			String channelName="ch"+channelnum;
+			ImagesetMeta.Channel mc=meta.getCreateChannelMeta(channelName);
+			loadMeta(mc);
+
+			//Fill up with image loaders
+			Channel c=new Channel(meta.getCreateChannelMeta(channelName));
+			channelImages.put(channelName,c);
+			for(int framenum=0;framenum<numt;framenum++)
 				{
-				String channelName="ch"+channelnum;
-				ImagesetMeta.Channel mc=meta.getCreateChannelMeta(channelName);
-				loadMeta(mc);
-	
-				//Fill up with image loaders
-				Channel c=new Channel(meta.getCreateChannelMeta(channelName));
-				channelImages.put(channelName,c);
-				for(int framenum=0;framenum<numt;framenum++)
+				TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
+				for(int slicenum=0;slicenum<numz;slicenum++)
 					{
-					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
-					for(int slicenum=0;slicenum<numz;slicenum++)
-						{
-						int effC=0;
-						//System.out.println(" "+slicenum+" "+channelnum+" "+framenum);
-						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, effC, framenum), channelnum, ""));
-						}
-					c.imageLoader.put(framenum, loaderset);
-					}
-				}
-			}
-		else
-			{
-			/////////////// Individual gray-scale images //////////////////////
-			for(int channelnum=0;channelnum<numc;channelnum++)
-				{
-				String channelName="ch"+channelnum;
-				ImagesetMeta.Channel mc=meta.getCreateChannelMeta(channelName);
-				loadMeta(mc);
-	
-				//Fill up with image loaders
-				Channel c=new Channel(meta.getCreateChannelMeta(channelName));
-				for(int framenum=0;framenum<numt;framenum++)
-					{
-					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
-					for(int slicenum=0;slicenum<numz;slicenum++)
-						{
-						//System.out.println(" "+slicenum+" "+channelnum+" "+framenum);
+					if(imageReader.isRGB())
+						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, 0, framenum), channelnum, ""));
+//						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), channelnum, ""));
+					else
 						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), null, ""));
-						}
-					c.imageLoader.put(framenum, loaderset);
 					}
+				c.imageLoader.put(framenum, loaderset);
 				}
 			}
 		}
 
-	
 	private void loadMeta(ImagesetMeta.Channel mc)
 		{
 		mc.chBinning=1;

@@ -26,7 +26,7 @@ public class Main
 			String outfilename=infile.getName();
 			if(outfilename.indexOf(".")!=-1)
 				{
-				outfilename=outfilename.substring(0,outfilename.lastIndexOf(".")-1);
+				outfilename=outfilename.substring(0,outfilename.lastIndexOf("."));
 				File outfile=new File(infile.getParentFile(),outfilename);
 				
 				System.out.println("Loading imageset "+infile.getAbsolutePath());

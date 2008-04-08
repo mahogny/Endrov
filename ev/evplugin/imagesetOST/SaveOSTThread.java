@@ -42,7 +42,7 @@ public class SaveOSTThread extends BatchThread
 	 */
 	private void saveImage(BufferedImage im, File toFile, int quality) throws Exception
 		{
-		if(quality<1)
+		if(quality<100)
 			{
 			toFile=new File(toFile.getAbsoluteFile()+".jpg");
 	    FileOutputStream toStream = new FileOutputStream(toFile); 
@@ -54,8 +54,25 @@ public class SaveOSTThread extends BatchThread
 			}
 		else
 			{
+			try
+				{
 			toFile=new File(toFile.getAbsoluteFile()+".png");
 			ImageIO.write(im, "png", toFile);
+	//		System.out.println("save "+im+" "+im.getWidth()+" "+im.getHeight()+" "+im.getRaster().getNumBands());
+//			System.exit(1);
+			
+			//Leica
+			//save BufferedImage@4c7a98: type = 0 ColorModel: #pixelBits = 8 numComponents = 4 color space = java.awt.color.ICC_ColorSpace@4a96a transparency = 3 has alpha = true isAlphaPre = false sun.awt.image.SunWritableRaster@e920f 256 256 1
+
+			
+				}
+			catch (Exception e)
+				{
+				// TODO Auto-generated catch block
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+				}
+			
 			}
 		}
 	

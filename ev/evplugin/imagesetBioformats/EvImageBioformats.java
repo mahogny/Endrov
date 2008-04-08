@@ -44,6 +44,14 @@ public abstract class EvImageBioformats extends EvImage
 			{
 			BufferedImage i=imageReader.openImage(id);
 			
+			//System.out.println(""+i+" "+i.getWidth());
+			
+			//This hack fixes Leica
+			if(subid==null)
+				subid=0;
+			else
+				System.out.println("subid "+subid);
+			
 			if(subid!=null)
 				{
 				int w=i.getWidth();
@@ -68,7 +76,15 @@ public abstract class EvImageBioformats extends EvImage
 				
 
 				BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+				
 				float matrix[][]={{0,0,0}};
+				if(i.getRaster().getNumBands()==1)
+					matrix=new float[][]{{0/*,0*/}};
+				else if(i.getRaster().getNumBands()==2)
+					matrix=new float[][]{{0,0/*,0*/}};
+				else if(i.getRaster().getNumBands()==3)
+					matrix=new float[][]{{0,0,0/*,0*/}};
+				
 				matrix[0][subid]=1;
 				RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));
 				op.filter(i.getRaster(), im.getRaster());
