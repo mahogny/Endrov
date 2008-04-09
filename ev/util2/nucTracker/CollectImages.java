@@ -18,7 +18,7 @@ import evplugin.nuc.NucLineage;
 public class CollectImages
 	{
 	
-	public static boolean doTrue=true;
+	public static boolean doTrue=false;
 
 	public static NucLineage getLin(Imageset ost)
 		{
@@ -56,20 +56,20 @@ public class CollectImages
 		
 		if(channelName.equals("DIC"))
 			wnlist=new String[]{
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071114",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071115",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071116",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071117",
-//					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071118",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2greenLED080206",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2164_080118",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2142_071129",
+					"/Volumes/TBU_main02/ost4dgood/N2_071114",
+					"/Volumes/TBU_main02/ost4dgood/N2_071115",
+					"/Volumes/TBU_main02/ost4dgood/N2_071116",
+					"/Volumes/TBU_main02/ost4dgood/N2_071117",
+//					"/Volumes/TBU_main02/ost4dgood/N2_071118",
+					"/Volumes/TBU_main02/ost4dgood/N2greenLED080206",
+					"/Volumes/TBU_main02/ost4dgood/TB2164_080118",
+					"/Volumes/TBU_main02/ost4dgood/TB2142_071129",
 		}; 
 		else
 			{
 			wnlist=new String[]{
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2164_080118",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2142_071129",
+					"/Volumes/TBU_main02/ost4dgood/TB2164_080118",
+					"/Volumes/TBU_main02/ost4dgood/TB2142_071129",
 			};
 			startFrame=1500;
 			endFrame=2000;
@@ -113,7 +113,8 @@ public class CollectImages
 								int midx=(int)im.transformWorldImageX(pos.x);
 								int midy=(int)im.transformWorldImageY(pos.y);
 								int r=(int)im.scaleWorldImageX(pos.r);
-								int rr=r+20;
+//								int rr=r+20;
+								int rr=(int)(r*2);
 	
 								if(!doTrue)
 									{
