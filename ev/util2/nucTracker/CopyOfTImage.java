@@ -8,7 +8,7 @@ import java.awt.image.WritableRaster;
  * @author tbudev3
  *
  */
-public class TImage
+public class CopyOfTImage
 	{
 
 
@@ -28,24 +28,21 @@ public class TImage
 		{
 		w=bim.getWidth();
 		h=bim.getHeight();
-		cumim=new int[h+1][w+1];
+		cumim=new int[h][w];
 		
 		WritableRaster r=bim.getRaster();
 		
 		int[] pix=new int[3];
-		for(int x=0;x<w+1;x++)
-			cumim[0][x]=0;
-		
 		for(int y=0;y<h;y++)
 			{
 			int sum=0;
-			cumim[y+1][0]=0;
 			for(int x=0;x<w;x++)
 				{
 				r.getPixel(x, y, pix);
 				sum+=pix[0];
-				cumim[y+1][x+1]=sum;
-				cumim[y+1][x+1]+=cumim[y][x+1];
+				cumim[y][x]=sum;
+				if(y>0)
+					cumim[y][x]+=cumim[y-1][x];
 				}
 			}
 		
@@ -63,9 +60,9 @@ public class TImage
 	//x2>x1, y2>y1
 	public int getSum(int x1, int y1, int x2, int y2)
 		{
-		int p11=cumim[y1][x1];
-		int p12=cumim[y1][x2];
-		int p21=cumim[y2][x1];
+		int p11=y1>=0 && x1>=0 ? cumim[y1][x1] : 0;
+		int p12=y1>=0 ? cumim[y1][x2] : 0;
+		int p21=x1>=0 ? cumim[y2][x1] : 0;
 		int p22=cumim[y2][x2];
 		return p22+p11-(p12+p21);
 		}
@@ -95,7 +92,7 @@ public class TImage
 				}
 		avg/=(im.getWidth()*im.getHeight());
 
-		TImage avgImage=new TImage();
+		CopyOfTImage avgImage=new CopyOfTImage();
 		if(windowSize!=null)
 			avgImage.createCumIm(im);
 
@@ -119,12 +116,10 @@ public class TImage
 		//			if(miny<-1) miny=-1;
 					if(minx<0) minx=0;
 					if(miny<0) miny=0;
-					if(maxx>w) maxx=w;
-					if(maxy>h) maxy=h;
-					thisAvg=avgImage.getSum(minx, miny, maxx, maxy); //+1 on max?
-//					thisAvg=avgImage.getSum(minx-1, miny-1, maxx, maxy);
-//					thisAvg/=(maxx-minx+1)*(maxy-miny+1);
-					thisAvg/=(maxx-minx)*(maxy-miny);
+					if(maxx>=w) maxx=w-1;
+					if(maxy>=h) maxy=h-1;
+					thisAvg=avgImage.getSum(minx-1, miny-1, maxx, maxy);
+					thisAvg/=(maxx-minx+1)*(maxy-miny+1);
 					}
 				pix[0]=Math.abs(a[y][x]-thisAvg);
 				sim.setPixel(x, y, pix);
