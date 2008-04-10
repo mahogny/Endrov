@@ -890,7 +890,7 @@ public static void main(String[] arg)
 			for(File file:(new File(s)).listFiles())
 				if(file.isDirectory())
 					{
-					long currentTime=System.currentTimeMillis();
+					//long currentTime=System.currentTimeMillis();
 					calcAP(file, gnuplotFile, htmlGnuplotFile, rotationStatisticsFile, omittedFile, nucleiRadiiFile, travelDistanceFile,
 							evaluatedRecording, 
 							lastPositionX, lastPositionY, lastPositionZ, lastPositionSet);
