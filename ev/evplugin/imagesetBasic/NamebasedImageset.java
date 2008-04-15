@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import evplugin.basicWindow.*;
 import evplugin.ev.*;
@@ -191,8 +192,8 @@ public class NamebasedImageset extends Imageset
 				for(String cname:channelVector)
 					meta.getCreateChannelMeta(cname);
 				
-				
 				//Clear up old database
+				List<String> channelsToRemove=new LinkedList<String>(); 
 				for(ChannelImages ch:channelImages.values())
 					{
 					ch.imageLoader.clear();
@@ -201,16 +202,15 @@ public class NamebasedImageset extends Imageset
 						if(channelName.equals(ch.getMeta().name))
 							exists=true;
 					if(!exists)
-						channelImages.remove(ch.getMeta().name);
+						channelsToRemove.add(ch.getMeta().name);
 					}
-				
+				for(String s:channelsToRemove)
+					channelImages.remove(s);
 				
 				//Go through list of files
 				File f;
 				while((f=nextFile())!=null)
 					buildAddFile(f,channelVector);
-				
-				
 				}
 			catch (Exception e)
 				{
@@ -285,7 +285,8 @@ public class NamebasedImageset extends Imageset
 			if(j==filename.length())
 				{
 				if(channelNum>=channelVector.size())
-					throw new Exception("No channel for index "+channelNum);
+					throw new Exception("No channel for index "+channelNum+". Note that channels start counting from 0.\n"
+							+"If your channels start from 1 then give the first channel 0 an arbitrary name, it will not be used.");
 				String channelName=channelVector.get(channelNum);
 
 				//Get a place to put EVimage. Create holders if needed

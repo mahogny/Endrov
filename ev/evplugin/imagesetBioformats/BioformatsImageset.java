@@ -146,7 +146,7 @@ public class BioformatsImageset extends Imageset
 	/**
 	 * Scan recording for channels and build a file database
 	 */
-	public void buildDatabase()
+	@SuppressWarnings("unchecked") public void buildDatabase()
 		{
 		int numx=imageReader.getSizeX();
 		int numy=imageReader.getSizeY();
@@ -155,7 +155,7 @@ public class BioformatsImageset extends Imageset
 		int numc=imageReader.getSizeC();
 		
 
-
+		
 		//Read meta data
 		System.out.println("# XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
 		for(Object o:(Set)imageReader.getMetadata().entrySet())
