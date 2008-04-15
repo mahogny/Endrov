@@ -812,9 +812,9 @@ public static NucLineage.NucPos getpos(NucLineage lin, String name, int frame)
 
 public static NucLineage.NucPos getIntPos(NucLineage lin, String name, double frame)
 	{
-	/*
 	//NucLineage.NucInterp i=lin.nuc.get(name).interpolatePos(frame);
 	//080410: interpolation does not work anymore 
+	/*
 	
 	if(i!=null)
 		return i.pos;
