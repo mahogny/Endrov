@@ -787,7 +787,7 @@ public static NucLineage.NucPos getpos(NucLineage lin, String name, int frame)
 
 public static NucLineage.NucPos getIntPos(NucLineage lin, String name, double frame)
 	{
-	NucLineage.NucInterp i=lin.nuc.get(name).interpolate(frame);
+	NucLineage.NucInterp i=lin.nuc.get(name).interpolatePos(frame);
 	if(i!=null)
 		return i.pos;
 	else
