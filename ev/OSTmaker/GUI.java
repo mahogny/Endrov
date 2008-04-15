@@ -67,12 +67,13 @@ public class GUI extends JFrame implements ActionListener
 	
 	/**
 	 * Handle drag and drop of files to JList
+	 * 
 	 */
 	private class FSTransfer extends TransferHandler 
 		{
 		static final long serialVersionUID=0;
 		
-		public boolean importData(JComponent comp, Transferable t) 
+		@SuppressWarnings("unchecked") public boolean importData(JComponent comp, Transferable t) 
 			{
 			if (!(comp instanceof JList) || !t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) 
 				return false;
@@ -83,7 +84,6 @@ public class GUI extends JFrame implements ActionListener
 				ReadingThread rt=new ReadingThread();
 				while (i.hasNext()) 
 					rt.files.add((File)i.next());
-//					addFile((File)i.next());
 				new Thread(rt).start();
 				return true;
 				}
@@ -308,6 +308,7 @@ public class GUI extends JFrame implements ActionListener
 				importThread.stop();
 				setStopImportThread();
 				bGo.setText("Go");
+				//@SuppressWarnings("deprecation")
 				bGo.setEnabled(true);
 				labelStatus.setText("");*/
 				}
