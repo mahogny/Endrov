@@ -19,3 +19,4 @@ Sample Frame
 
 so: getJImage need a friend that returns raw data. I take this would be the next-gen interface.
 
+ost=evplugin.imagesetOST.OstImageset('/Volumes/TBU_main02/ost4dgood/TB2161_071120');

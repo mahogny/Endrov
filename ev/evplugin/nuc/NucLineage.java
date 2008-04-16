@@ -1,12 +1,16 @@
 package evplugin.nuc;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.vecmath.Vector3d;
 import org.jdom.*;
 
 import evplugin.basicWindow.BasicWindow;
+import evplugin.basicWindow.EvColor;
 import evplugin.imageWindow.ImageWindow;
 import evplugin.imageWindow.ImageWindowExtension;
 import evplugin.keyBinding.KeyBinding;
@@ -559,6 +563,29 @@ public class NucLineage extends EvObject implements Cloneable
 	/******************************************************************************************************
 	 *                               Class NucPos                                                         *
 	 *****************************************************************************************************/
+
+	public static JMenu makeSetColorMenu()
+	{
+	JMenu m=new JMenu("Set color");
+	
+	for(final EvColor c:EvColor.colorList)
+		{
+		JMenuItem mi=new JMenuItem(c.name);
+		mi.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0)
+				{
+				for(NucPair p:selectedNuclei)
+					p.getLeft().nuc.get(p.getRight()).colorNuc=c.c;
+				BasicWindow.updateWindows();
+				}
+		});
+		m.add(mi);
+		}
+	return m;
+	}
+
+
+
 
 	/**
 	 * Position key frame
