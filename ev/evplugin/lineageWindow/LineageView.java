@@ -408,7 +408,7 @@ public class LineageView extends JPanel
 													midr-e.getValue().getMaxLevel()*expScale<getVirtualHeight();
 					if(visible)
 						{
-						g.setColor(e.getValue().color);
+						g.setColor(e.getValue().expColor);
 						boolean hasLastCoord=false;
 						int lastX=0, lastY=0;
 						for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())

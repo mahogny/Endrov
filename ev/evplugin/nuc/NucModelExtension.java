@@ -136,6 +136,7 @@ public class NucModelExtension implements ModelWindowExtension
 		public void displayFinal(GL gl)
 			{
 			initDrawSphere(gl);
+			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
 			
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
@@ -163,6 +164,7 @@ public class NucModelExtension implements ModelWindowExtension
 				for(NucPair nucPair:inter.keySet())
 					renderNucLabel(gl,nucPair, inter.get(nucPair));
 				}
+			gl.glPopAttrib();
 			}
 
 		
@@ -232,17 +234,20 @@ public class NucModelExtension implements ModelWindowExtension
 
 	    //Decide color based on if the nucleus is selected
 			float lightDiffuse[];
-	    if(NucLineage.selectedNuclei.contains(nucPair))
-	    	lightDiffuse=new float[]{1,0,1};
+			if(nuc.colorNuc!=null)
+	    	lightDiffuse=new float[]{nuc.colorNuc.getRed()/255.0f,nuc.colorNuc.getGreen()/255.0f,nuc.colorNuc.getBlue()/255.0f};
 	    else
 	    	lightDiffuse=new float[]{1,1,1};
-			float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0.0f };
+			float lightAmbient[] = { lightDiffuse[0]*0.3f, lightDiffuse[1]*0.3f, lightDiffuse[2]*0.3f, 0.0f };
 			gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
 	    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
 			gl.glEnable(GL.GL_LIGHT0);    
 	    	
 	    if(NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
+		    if(NucLineage.selectedNuclei.contains(nucPair))
+		    	lightDiffuse=new float[]{1,0,1};
+		    
 	    	//Hidden cell
 	    	gl.glColor3d(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
 	    	drawHiddenSphere(gl, nuc.pos.r);
@@ -250,22 +255,13 @@ public class NucModelExtension implements ModelWindowExtension
 	    else
 	    	{
 	    	//Visible cell
-	      gl.glEnable(GL.GL_LIGHTING);
-	      gl.glColor3d(1,1,1);
-	      
-	    	drawVisibleSphere(gl, nuc.pos.r);
-	    	
-	      gl.glDisable(GL.GL_LIGHTING);
-	      if(false)//w->slab1->value()!=-5000)
-	      	{
-		      gl.glScalef(-1,-1,-1);
-		      drawVisibleSphere(gl, nuc.pos.r);
-	      	}
+	    	drawVisibleSphere(gl, nuc.pos.r, NucLineage.selectedNuclei.contains(nucPair));
 	    	}
 	    
 	    //Go back to world coordinates
 	    gl.glPopMatrix();
 			}
+
 
 		
 		
@@ -283,21 +279,21 @@ public class NucModelExtension implements ModelWindowExtension
 				displayListVisibleSphere = gl.glGenLists(1);
 				gl.glNewList(displayListVisibleSphere, GL.GL_COMPILE);
 				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
+				//drawSphereSolid(gl, 1.0, NUC_SHOW_DIV,NUC_SHOW_DIV);
 				gl.glEndList();
-												
+				
 				displayListSelectSphere = gl.glGenLists(1);
 				gl.glNewList(displayListSelectSphere, GL.GL_COMPILE);
 				glu.gluSphere(q,1.0,NUC_SELECT_DIV,NUC_SELECT_DIV);
 				gl.glEndList();
 
 				glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
+				
 				displayListHiddenSphere = gl.glGenLists(1);
 				gl.glNewList(displayListHiddenSphere, GL.GL_COMPILE);
 				glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
 				gl.glEndList();
 				
-				
-
 				glu.gluDeleteQuadric(q);
 				}
 			}
@@ -307,14 +303,31 @@ public class NucModelExtension implements ModelWindowExtension
 		private int displayListSelectSphere;
 		
 		
-		private void drawVisibleSphere(GL gl, double r)
+		private void drawVisibleSphere(GL gl, double r, boolean selected)
 			{
     	double ir=1.0/r;
 			gl.glScaled(r,r,r);
+			
+			if(selected)
+				{
+	    	gl.glColor3d(1,0,1);
+				gl.glLineWidth(5);
+				gl.glPolygonMode(GL.GL_BACK, GL.GL_LINE);
+				gl.glCullFace(GL.GL_FRONT);
+				gl.glDepthFunc(GL.GL_LEQUAL);
+	    	gl.glCallList(displayListVisibleSphere);
+				gl.glCullFace(GL.GL_BACK);
+				gl.glDepthFunc(GL.GL_LESS);
+				gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
+				}
+			
+      gl.glEnable(GL.GL_LIGHTING);
+    	gl.glColor3d(1,1,1);
     	gl.glCallList(displayListVisibleSphere);
+      gl.glDisable(GL.GL_LIGHTING);
+
     	gl.glScaled(ir,ir,ir);
 			}
-		
 		private void drawHiddenSphere(GL gl, double r)
 			{
     	double ir=1.0/r;

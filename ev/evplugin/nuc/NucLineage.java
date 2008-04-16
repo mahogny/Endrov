@@ -290,6 +290,10 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	public HashMap<String, Nuc> nuc=new HashMap<String, Nuc>();
 
+	
+	
+	
+	
 	/**
 	 * Make a deep copy
 	 */
@@ -592,6 +596,7 @@ public class NucLineage extends EvObject implements Cloneable
 		public NucPos pos;
 		public Integer frameBefore;
 		public Integer frameAfter;
+		public java.awt.Color colorNuc;
 		public boolean isKeyFrame(double frame)
 			{
 			//double vs int ==. probably a bad idea
@@ -610,7 +615,8 @@ public class NucLineage extends EvObject implements Cloneable
 	public static class NucExp implements Cloneable
 		{
 		public SortedMap<Integer,Double> level=new TreeMap<Integer, Double>();
-		public java.awt.Color color=java.awt.Color.RED; //Not stored to disk, but kept here so the color is the same in all windows
+		public java.awt.Color expColor=java.awt.Color.RED; //Not stored to disk, but kept here so the color is the same in all windows
+		
 		
 		/**
 		 * Make a deep copy 
@@ -620,7 +626,7 @@ public class NucLineage extends EvObject implements Cloneable
 			NucExp exp=new NucExp();
 			for(Map.Entry<Integer, Double> e:level.entrySet())
 				exp.level.put(e.getKey(),e.getValue());
-			exp.color=color;
+			exp.expColor=expColor;
 			return exp;
 			}
 
@@ -679,6 +685,9 @@ public class NucLineage extends EvObject implements Cloneable
 		public final SortedMap<Integer, NucPos> pos=new TreeMap<Integer, NucPos>();
 		/** Expression key frames */
 		public final SortedMap<String, NucExp> exp=new TreeMap<String, NucExp>();
+		/** Color for nuc */
+		public java.awt.Color colorNuc=null; //Not stored to disk, but kept here so the color is the same in all windows
+
 		
 		//idea: reserve x,y,z,r as special keywords, use expression system for all interpol?
 		
@@ -785,6 +794,7 @@ public class NucLineage extends EvObject implements Cloneable
 			inter.frameBefore=frameBefore;
 			inter.isEnd = end!=null && (int)frame==(int)end;
 			inter.hasParent=parent!=null;
+			inter.colorNuc=colorNuc;
 			return inter;
 			}
 		
@@ -851,6 +861,7 @@ public class NucLineage extends EvObject implements Cloneable
 				inter.frameBefore=frameBefore;
 				inter.frameAfter=frameAfter;
 				inter.hasParent=parent!=null;
+				inter.colorNuc=colorNuc;
 				return inter;
 				}
 			}
