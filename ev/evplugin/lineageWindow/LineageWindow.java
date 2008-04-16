@@ -93,26 +93,11 @@ public class LineageWindow extends BasicWindow
 	public JRadioButtonMenuItem miShowExpLine=new JRadioButtonMenuItem("Line",true);
 	public JRadioButtonMenuItem miShowExpSolid=new JRadioButtonMenuItem("Filled",false);
 	
-	public JMenu miSetColor=new JMenu("Set color");
+	
 	
 	public JMenuItem miFoldAll=new JMenuItem("Fold all");
 	public JMenuItem miUnfoldAll=new JMenuItem("Unfold all");
 
-	
-	private static JMenuItem makeSetColorMenu(String name, final Color col)
-		{
-		JMenuItem mi=new JMenuItem(name);
-		mi.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0)
-				{
-				for(NucPair p:NucLineage.selectedNuclei)
-					p.getLeft().nuc.get(p.getRight()).colorNuc=col;
-				BasicWindow.updateWindows();
-				}
-		});
-		return mi;
-		}
-	
 	
 	/**
 	 * Make window with standard geometry
@@ -188,7 +173,7 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miFate);
 		menuLineage.add(miEndFrame);
 		menuLineage.add(miRemoveNucleus);
-		menuLineage.add(miSetColor);
+		menuLineage.add(NucLineage.makeSetColorMenu());
 		menuLineage.addSeparator();
 		menuLineage.add(miExportImage);
 		menuLineage.addSeparator();
@@ -206,12 +191,6 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miFoldAll);
 		menuLineage.add(miUnfoldAll);
 		menuLineage.add(miSelectChildren);
-		
-		miSetColor.add(makeSetColorMenu("Red",Color.RED));
-		miSetColor.add(makeSetColorMenu("Green",Color.GREEN));
-		miSetColor.add(makeSetColorMenu("Blue",Color.BLUE));
-		miSetColor.add(makeSetColorMenu("Cyan",Color.CYAN));
-		miSetColor.add(makeSetColorMenu("Yellow",Color.YELLOW));
 		
 		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
 		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));

@@ -99,9 +99,10 @@ public class ModelView extends GLCanvas
 		//Currently makes strong assumption of at least 24-bit colors.
 		//it might bug out by signedness. need to be checked.
 		//GL_BYTE could be used instead.
-		byte colR=(byte)((selectColorNum    ) & 0xFF);
-		byte colG=(byte)((selectColorNum>>8 ) & 0xFF);
-		byte colB=(byte)((selectColorNum>>16));
+		byte colR=(byte)((selectColorNum    ) & 0x7F);
+		byte colG=(byte)((selectColorNum>>7 ) & 0x7F);
+		byte colB=(byte)((selectColorNum>>14));
+//		System.out.println("out "+selectColorNum+" "+colR+" "+colG+" "+colB);
 		gl.glColor3ub(colR,colG,colB);
 		}
 	
@@ -211,10 +212,10 @@ public class ModelView extends GLCanvas
 				ByteBuffer rpix=ByteBuffer.allocate(3);
 				gl.glReadPixels(mouseX,getHeight()-mouseY,1,1,GL.GL_RGB, GL.GL_UNSIGNED_BYTE, rpix);
 				int colR=rpix.get(0);
-				int colG=(((int)rpix.get(1))<<8);
-				int colB=(((int)rpix.get(2))<<16);
+				int colG=rpix.get(1)<<7;
+				int colB=rpix.get(2)<<14;
 				int pixelid=colR + colG + colB;
-				//EV.printDebug("curhover "+colR+" "+colG+" "+colB+" %% "+mouseX+" "+mouseY+" && "+pixelid);
+//				System.out.println("curhover "+colR+" "+colG+" "+colB+" %% "+mouseX+" "+mouseY+" && "+pixelid);
 
 				//Update hover
 				if(selectColorExtensionMap.containsKey(pixelid))

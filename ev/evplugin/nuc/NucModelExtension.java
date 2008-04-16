@@ -51,6 +51,7 @@ public class NucModelExtension implements ModelWindowExtension
 			
 			JMenu miNuc=new JMenu("Nuclei/Lineage");
 			
+			miNuc.add(NucLineage.makeSetColorMenu());
 			miNuc.add(miShowAllNucNames);
 			miNuc.add(miShowSelectedNucNames);
 			miNuc.add(miShowSelectedNuc);
