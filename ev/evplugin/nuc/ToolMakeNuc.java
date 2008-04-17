@@ -2,7 +2,9 @@ package evplugin.nuc;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Collection;
+import java.lang.ref.WeakReference;
+import java.util.Map;
+//import java.util.Collection;
 
 import javax.vecmath.*;
 import javax.swing.*;
@@ -10,7 +12,8 @@ import javax.swing.*;
 import evplugin.basicWindow.*;
 import evplugin.ev.Log;
 import evplugin.imageWindow.*;
-import evplugin.imageset.*;
+import evplugin.imageset.Imageset;
+//import evplugin.imageset.*;
 import evplugin.keyBinding.KeyBinding;
 
 /**
@@ -18,7 +21,7 @@ import evplugin.keyBinding.KeyBinding;
  *
  * @author Johan Henriksson
  */
-public class ToolMakeNuc implements ImageWindowTool
+public class ToolMakeNuc implements ImageWindowTool, ActionListener
 	{
 	private boolean active=false;
 	private double x1,x2,y1,y2;
@@ -29,12 +32,19 @@ public class ToolMakeNuc implements ImageWindowTool
 	private final ImageWindow w;
 	private final NucImageRenderer r;
 	
-	public ToolMakeNuc(ImageWindow w, NucImageRenderer r)
+	//private Integer editingID=null;
+	private WeakReference<NucLineage> editingLin=new WeakReference<NucLineage>(null);
+	
+	
+	public ToolMakeNuc(final ImageWindow w, NucImageRenderer r)
 		{
 		this.w=w;
 		this.r=r;
 		}
 	
+	
+	
+	/*
 	public boolean isToggleable()
 		{
 		return true;
@@ -47,9 +57,52 @@ public class ToolMakeNuc implements ImageWindowTool
 		{
 		return true;
 		}
+		*/
+
+	public JMenuItem getMenuItem()
+		{
+		JMenu menu=new JMenu("Nucleus");
+		Imageset ims=w.getImageset();
+		final WeakReference<Imageset > wims=new WeakReference<Imageset>(ims);
+		if(ims!=null)
+			for(Map.Entry<Integer, NucLineage> e:ims.getIdObjects(NucLineage.class).entrySet())
+				{
+				JMenuItem miEdit=new JMenuItem("Edit "+e.getKey());
+				miEdit.setActionCommand(""+e.getKey());
+				miEdit.addActionListener(this);
+				menu.add(miEdit);
+				}
+		JMenuItem miNew=new JMenuItem("New lineage");
+		final ToolMakeNuc This=this;
+		miNew.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				NucLineage lin=new NucLineage();
+				wims.get().addMetaObject(lin);
+				editingLin=new WeakReference<NucLineage>(lin);
+				w.setTool(This);
+				}
+		});
+		menu.add(miNew);
+		return menu;
+		}
+	public void actionPerformed(ActionEvent e)
+		{
+		int id=Integer.parseInt(e.getActionCommand());
+		editingLin=new WeakReference<NucLineage>((NucLineage)w.getImageset().getMetaObject(id));
+		w.setTool(this);
+		}
+	
+	public void unselected()
+		{
+		editingLin=new WeakReference<NucLineage>(null); //not really needed
+		}
+
+
 
 	
 	
+	/*
 	private Collection<NucLineage> getLineages()
 		{
 		Collection<NucLineage> lins=r.getVisibleLineages();
@@ -62,6 +115,7 @@ public class ToolMakeNuc implements ImageWindowTool
 		else
 			return lins;
 		}
+		*/
 	
 	
 	public void mouseClicked(MouseEvent e)
@@ -99,17 +153,19 @@ public class ToolMakeNuc implements ImageWindowTool
 			}
 		}
 
+	//need to make lin somewhere
+	
 	public void mouseReleased(MouseEvent e)
 		{
-		if(SwingUtilities.isLeftMouseButton(e) && active)//changed
+		if(SwingUtilities.isLeftMouseButton(e) && active)
 			{
 			//Make a nucleus if mouse has been dragged
-//			NucLineage lin=getLineage();
-			Collection<NucLineage> lins=getLineages();
-			//TODO proper multiselection
-			NucLineage lin=null;
+			
+			/*NucLineage lin=null;
+//			Collection<NucLineage> lins=getLineages();
 			if(!lins.isEmpty())
-				lin=lins.iterator().next();
+				lin=lins.iterator().next();*/
+			NucLineage lin=editingLin.get();
 			
 			if(x1!=x2 && y1!=y2 && lin!=null && r.modifyingNucName==null)
 				{
@@ -174,11 +230,8 @@ public class ToolMakeNuc implements ImageWindowTool
 		if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			holdRadius=true;
 		
-		
 		int curFramei=(int)w.frameControl.getFrame();
-		NucLineage lin=NucLineage.currentHover.getLeft();//getLineage();
-//		if(lin==null)
-//			return;
+		NucLineage lin=NucLineage.currentHover.getLeft();
 		
 		if(lin!=null && (KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)))
 			{
@@ -327,5 +380,4 @@ public class ToolMakeNuc implements ImageWindowTool
 		}
 
 	
-	public void unselected() {}
 	}

@@ -4,14 +4,19 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JMenuItem;
+
 //either send down variables or add accessors to imagewindow
 
 
 public interface ImageWindowTool
 	{
+	public JMenuItem getMenuItem();
+	
+	/*
 	public boolean isToggleable();
 	public String toolCaption();
-	public boolean enabled();
+	public boolean enabled();*/
 	public void unselected();
 	
 	public void mouseClicked(MouseEvent e);

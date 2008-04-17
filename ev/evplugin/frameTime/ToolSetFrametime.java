@@ -1,8 +1,12 @@
 package evplugin.frameTime;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import evplugin.basicWindow.BasicWindow;
@@ -21,6 +25,7 @@ public class ToolSetFrametime implements ImageWindowTool
 		this.w=w;
 		}
 	
+	/*
 	public boolean isToggleable()
 		{
 		return false;
@@ -33,6 +38,16 @@ public class ToolSetFrametime implements ImageWindowTool
 		{
 		return true;
 		}
+		*/
+	public JMenuItem getMenuItem()
+		{
+		JMenuItem mi=new JMenuItem("Frametime/Set current");
+		mi.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){mouseClicked(null);}
+		});
+		return mi;
+		}
+	
 	public void mouseClicked(MouseEvent e)
 		{
 		String frametimes=JOptionPane.showInputDialog("What is the current time?");

@@ -202,6 +202,10 @@ public class ImageWindow extends BasicWindow
 		this.tool=tool;  
 		buildMenu();
 		}
+	public ImageWindowTool getTool()
+		{
+		return tool;
+		}
 	
 	/** Hide all markings for now; to quickly show without overlay */
 	private boolean temporarilyHideMarkings=false;
@@ -381,6 +385,9 @@ public class ImageWindow extends BasicWindow
 				menuImageWindow.addSeparator();
 			else
 				{
+				
+				menuImageWindow.add(t.getMenuItem());
+				/*
 				if(t.isToggleable())
 					{
 					final JCheckBoxMenuItem mit=new JCheckBoxMenuItem(t.toolCaption());
@@ -407,15 +414,18 @@ public class ImageWindow extends BasicWindow
 						});
 					menuImageWindow.add(mit);
 					}
+				*/
 				}
 	
 		//List custom tool as well
 		if(!imageWindowTools.contains(tool) && !miToolNone.isSelected())
 			{
+			menuImageWindow.add(tool.getMenuItem());
+			/*
 			final JCheckBoxMenuItem mit=new JCheckBoxMenuItem(tool.toolCaption());
 			mit.setEnabled(false);
 			mit.setSelected(true);
-			menuImageWindow.add(mit);
+			menuImageWindow.add(mit);*/
 			}
 		
 		}

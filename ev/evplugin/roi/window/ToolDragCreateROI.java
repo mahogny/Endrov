@@ -1,9 +1,13 @@
 package evplugin.roi.window;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 
@@ -33,6 +37,7 @@ public class ToolDragCreateROI implements ImageWindowTool
 		this.roi=roi;
 		}
 	
+	/*
 	public boolean isToggleable()
 		{
 		return true;
@@ -44,6 +49,16 @@ public class ToolDragCreateROI implements ImageWindowTool
 	public boolean enabled()
 		{
 		return true;
+		}*/
+	public JMenuItem getMenuItem()
+		{
+		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Placing ROI");
+		mi.setSelected(w.getTool()==this);
+		final ImageWindowTool This=this;
+		mi.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){w.setTool(This);}
+		});
+		return mi;
 		}
 	
 	
