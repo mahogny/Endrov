@@ -169,12 +169,13 @@ public abstract class EvData
 	/**
 	 * Put a meta object into the collection
 	 */
-	public void addMetaObject(EvObject o)
+	public int addMetaObject(EvObject o)
 		{
 		int i=1;
 		while(metaObject.get(i)!=null)
 			i++;
 		metaObject.put(i, o);
+		return i;
 		}
 	
 	/**

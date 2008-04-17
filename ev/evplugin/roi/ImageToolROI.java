@@ -29,7 +29,7 @@ public class ImageToolROI implements ImageWindowTool
 		this.w=w;
 		this.r=r;
 		}
-	
+	/*
 	public boolean isToggleable()
 		{
 		return true;
@@ -42,7 +42,17 @@ public class ImageToolROI implements ImageWindowTool
 		{
 		return true;
 		}
-
+*/
+	public JMenuItem getMenuItem()
+		{
+		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("ROI/Edit");
+		mi.setSelected(w.getTool()==this);
+		final ImageWindowTool This=this;
+		mi.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){w.setTool(This);}
+		});
+		return mi;
+		}
 	
 	
 	public void mouseClicked(MouseEvent e)

@@ -2,6 +2,7 @@ package evplugin.shell;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.vecmath.Vector2d;
 
@@ -30,7 +31,7 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 		this.w=w;
 		this.r=r;
 		}
-	
+	/*
 	public boolean isToggleable()
 		{
 		return true;
@@ -43,6 +44,17 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 	public boolean enabled()
 		{
 		return true;
+		}
+		*/
+	public JMenuItem getMenuItem()
+		{
+		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Shell/Define");
+		mi.setSelected(w.getTool()==this);
+		final ImageWindowTool This=this;
+		mi.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){w.setTool(This);}
+		});
+		return mi;
 		}
 
 	

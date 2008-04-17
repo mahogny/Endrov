@@ -28,10 +28,21 @@ public class ToolMakeImageAnnot implements ImageWindowTool
 		this.r=r;
 		}
 	
+	/*
 	public boolean isToggleable(){return true;}
 	public String toolCaption(){return "Annotate Image";}
-	public boolean enabled(){return true;}
+	public boolean enabled(){return true;}*/
 
+	public JMenuItem getMenuItem()
+		{
+		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Annotate Image");
+		mi.setSelected(w.getTool()==this);
+		final ImageWindowTool This=this;
+		mi.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){w.setTool(This);}
+		});
+		return mi;
+		}
 	
 	
 	private Collection<ImageAnnot> getAnnots()
