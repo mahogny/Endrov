@@ -564,25 +564,38 @@ public class NucLineage extends EvObject implements Cloneable
 	 *                               Class NucPos                                                         *
 	 *****************************************************************************************************/
 
+	/**
+	 * Generate a menu for setting color on nuclei
+	 */
 	public static JMenu makeSetColorMenu()
-	{
-	JMenu m=new JMenu("Set color");
-	
-	for(final EvColor c:EvColor.colorList)
 		{
-		JMenuItem mi=new JMenuItem(c.name);
-		mi.addActionListener(new ActionListener(){
+		JMenu m=new JMenu("Set color");
+		
+		JMenuItem mir=new JMenuItem("<Remove>");
+		mir.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0)
 				{
 				for(NucPair p:selectedNuclei)
-					p.getLeft().nuc.get(p.getRight()).colorNuc=c.c;
+					p.getLeft().nuc.get(p.getRight()).colorNuc=null;
 				BasicWindow.updateWindows();
 				}
 		});
-		m.add(mi);
+		m.add(mir);
+		for(final EvColor c:EvColor.colorList)
+			{
+			JMenuItem mi=new JMenuItem(c.name);
+			mi.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent arg0)
+					{
+					for(NucPair p:selectedNuclei)
+						p.getLeft().nuc.get(p.getRight()).colorNuc=c.c;
+					BasicWindow.updateWindows();
+					}
+			});
+			m.add(mi);
+			}
+		return m;
 		}
-	return m;
-	}
 
 
 

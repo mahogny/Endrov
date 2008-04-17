@@ -363,6 +363,8 @@ public class ImageWindow extends BasicWindow
 	 */
 	private void buildMenu()
 		{
+//		System.out.println("build menu");
+
 		BasicWindow.tearDownMenu(menuImageWindow);
 		miReset.addActionListener(this);
 		miMiddleSlice.addActionListener(this);
@@ -384,49 +386,11 @@ public class ImageWindow extends BasicWindow
 			if(t==null)
 				menuImageWindow.addSeparator();
 			else
-				{
-				
 				menuImageWindow.add(t.getMenuItem());
-				/*
-				if(t.isToggleable())
-					{
-					final JCheckBoxMenuItem mit=new JCheckBoxMenuItem(t.toolCaption());
-					mit.setEnabled(t.enabled());
-					mit.setSelected(tool==t);
-					mit.addActionListener(new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{
-							setTool(t);
-							}
-						});
-					menuImageWindow.add(mit);
-					}
-				else
-					{
-					final JMenuItem mit=new JMenuItem(t.toolCaption());
-					mit.addActionListener(new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{
-							t.mouseClicked(null);
-							}
-						});
-					menuImageWindow.add(mit);
-					}
-				*/
-				}
 	
 		//List custom tool as well
 		if(!imageWindowTools.contains(tool) && !miToolNone.isSelected())
-			{
 			menuImageWindow.add(tool.getMenuItem());
-			/*
-			final JCheckBoxMenuItem mit=new JCheckBoxMenuItem(tool.toolCaption());
-			mit.setEnabled(false);
-			mit.setSelected(true);
-			menuImageWindow.add(mit);*/
-			}
 		
 		}
 	
