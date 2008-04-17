@@ -32,9 +32,11 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 	private final ImageWindow w;
 	private final NucImageRenderer r;
 	
-	//private Integer editingID=null;
 	private WeakReference<NucLineage> editingLin=new WeakReference<NucLineage>(null);
-	
+	private void setEditLin(NucLineage lin)
+		{
+		editingLin=new WeakReference<NucLineage>(lin);
+		}
 	
 	public ToolMakeNuc(final ImageWindow w, NucImageRenderer r)
 		{
@@ -43,32 +45,22 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 		}
 	
 	
-	
-	/*
-	public boolean isToggleable()
-		{
-		return true;
-		}
-	public String toolCaption()
-		{
-		return "Nucleus/Define";
-		}
-	public boolean enabled()
-		{
-		return true;
-		}
-		*/
 
 	public JMenuItem getMenuItem()
 		{
 		JMenu menu=new JMenu("Nucleus");
+		
+		JMenu setColor=NucLineage.makeSetColorMenu();
+		menu.add(setColor);
+		
 		Imageset ims=w.getImageset();
-		final WeakReference<Imageset > wims=new WeakReference<Imageset>(ims);
+		final WeakReference<Imageset> wims=new WeakReference<Imageset>(ims);
 		if(ims!=null)
 			for(Map.Entry<Integer, NucLineage> e:ims.getIdObjects(NucLineage.class).entrySet())
 				{
-				JMenuItem miEdit=new JMenuItem("Edit "+e.getKey());
+				JCheckBoxMenuItem miEdit=new JCheckBoxMenuItem("Edit "+e.getKey());
 				miEdit.setActionCommand(""+e.getKey());
+				miEdit.setSelected(editingLin.get()==e.getValue());
 				miEdit.addActionListener(this);
 				menu.add(miEdit);
 				}
@@ -79,7 +71,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 				{
 				NucLineage lin=new NucLineage();
 				wims.get().addMetaObject(lin);
-				editingLin=new WeakReference<NucLineage>(lin);
+				setEditLin(lin);
 				w.setTool(This);
 				}
 		});
@@ -89,33 +81,14 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 	public void actionPerformed(ActionEvent e)
 		{
 		int id=Integer.parseInt(e.getActionCommand());
-		editingLin=new WeakReference<NucLineage>((NucLineage)w.getImageset().getMetaObject(id));
+		setEditLin((NucLineage)w.getImageset().getMetaObject(id));
 		w.setTool(this);
 		}
 	
 	public void unselected()
 		{
-		editingLin=new WeakReference<NucLineage>(null); //not really needed
 		}
 
-
-
-	
-	
-	/*
-	private Collection<NucLineage> getLineages()
-		{
-		Collection<NucLineage> lins=r.getVisibleLineages();
-		if(lins.isEmpty())
-			{
-			Imageset rec=w.getImageset();
-			rec.addMetaObject(new NucLineage());
-			return r.getVisibleLineages();
-			}
-		else
-			return lins;
-		}
-		*/
 	
 	
 	public void mouseClicked(MouseEvent e)
@@ -166,6 +139,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			if(!lins.isEmpty())
 				lin=lins.iterator().next();*/
 			NucLineage lin=editingLin.get();
+			System.out.println("release "+lin);
 			
 			if(x1!=x2 && y1!=y2 && lin!=null && r.modifyingNucName==null)
 				{
