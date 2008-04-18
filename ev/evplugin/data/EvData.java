@@ -21,6 +21,7 @@ public abstract class EvData
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
+	
 	public static void initPlugin() {}
 	static
 		{

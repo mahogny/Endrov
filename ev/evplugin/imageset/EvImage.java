@@ -51,6 +51,25 @@ public abstract class EvImage
 		}
 	
 	/**
+	 * Get array representation of image.
+	 * In the next-gen EV imaging API this will be the central function but at the moment
+	 * the AWT interface is faster.
+	 */
+	public double[][] getArrayImage()
+		{
+		BufferedImage bim=getJavaImage();
+		int w=bim.getWidth();
+		int h=bim.getHeight();
+		double[][] aim=new double[h][w];
+		Raster r=bim.getRaster();
+		for(int i=0;i<h;i++)
+			r.getSamples(0, i, w, 1, 0, aim[i]);
+		
+		//I get 0-255. wtf? 0-1 better
+		return aim;
+		}
+	
+	/**
 	 * Check if this memory has been modified since it was loaded into memory
 	 */
 	public boolean modified()

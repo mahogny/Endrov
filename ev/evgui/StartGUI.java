@@ -16,61 +16,69 @@ public class StartGUI
 	
 	public static void main(String[] args)
 		{
-		run(args);
+		new StartGUI().run(args);
 		}
 	
-	public static void run(String[] args)
+	
+	private String javaver=System.getProperty("java.specification.version");
+	private String OS=System.getProperty("os.name");
+	private String arch=System.getProperty("os.arch");
+	public int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
+	public int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
+	public List<String> jarfiles=new LinkedList<String>();
+	private String cpsep=":";
+	private String libdir="";
+	private String javaexe="java";
+	private String memstring="-Xmx700M";
+	ProcessBuilder pb=new ProcessBuilder("");
+	String jarstring=new File(".").getAbsolutePath();
+
+
+	public void collectSystemInfo(String path)
 		{
-		String javaver=System.getProperty("java.specification.version");
-		String OS=System.getProperty("os.name");
-		String arch=System.getProperty("os.arch");
-		String cpsep=":";
+		//Detect OS
+		if(OS.equals("Mac OS X"))
+			{
+//			javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
+			libdir=path+"libs/mac";
+			}
+		else if(OS.startsWith("Windows"))
+			{
+			libdir=path+"libs/windows";
+			cpsep=";";
+			}
+		else //Assume linux or equivalent
+			{
+			libdir=path+"libs/linux";
+			pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
+			}
+
+		//Collect jarfiles
+		collectJars(jarfiles, path+"libs");
+		if(!libdir.equals(""))
+			collectJars(jarfiles, libdir);
+		for(String s:jarfiles)
+			jarstring+=cpsep+s;
+		}
+	
+	
+	public void run(String[] args)
+		{
+		collectSystemInfo("");
 		
 		System.out.println("This system runs OS:"+OS+" with java:"+javaver+" on arch:"+arch);
-		int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
-		int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
 		
 		boolean hasSpecifiedLibdir=false;
 		for(String s:args)
 			if(s.startsWith("-Djava.library.path="))
 				hasSpecifiedLibdir=true;
-		
+
+
 		if(vermajor>1 || (vermajor==1 && verminor>=5))
 			{
 			try
 				{
-				String libdir="";
-				String javaexe="java";
-				String memstring="-Xmx700M";
-				//String entrypoint="";
-				ProcessBuilder pb=new ProcessBuilder("");
-											
-				//Detect OS
-				if(OS.equals("Mac OS X"))
-					{
-//					javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
-					libdir="libs/mac";
-					}
-				else if(OS.startsWith("Windows"))
-					{
-					libdir="libs/windows";
-					cpsep=";";
-					}
-				else //Assume linux or equivalent
-					{
-					libdir="libs/linux";
-					pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
-					}
-				
-				//Collect jarfiles
-				List<String> jarfiles=new LinkedList<String>();
-				collectJars(jarfiles, "libs");
-				if(!libdir.equals(""))
-					collectJars(jarfiles, libdir);
-				String jarstring=new File(".").getAbsolutePath();
-				for(String s:jarfiles)
-					jarstring+=cpsep+s;
-				
+
 				//Generate command
 				LinkedList<String> cmdarg=new LinkedList<String>();
 				cmdarg.add(javaexe);
@@ -86,8 +94,8 @@ public class StartGUI
 						cmdarg.add(s);
 				else
 					cmdarg.add("evgui.GUI");
-				
-				
+
+
 				if(args.length>0 && args[args.length-1].equals("-macstarter"))
 					{
 					StringTokenizer t=new StringTokenizer(jarstring,":");
@@ -103,7 +111,7 @@ public class StartGUI
 						}
 					System.out.println(tot);
 					}
-				
+
 				//Run process
 				pb.command(cmdarg);
 				if(printCommand)
@@ -121,8 +129,8 @@ public class StartGUI
 					public synchronized void run()
 						{
 						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-		        String line;
-		        try
+						String line;
+						try
 							{
 							while ( (line = br.readLine()) != null)
 								System.err.println(line);
@@ -133,22 +141,22 @@ public class StartGUI
 							}
 						}
 					}.start();
-				
-				//Pass on output
-        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line;
-        while ( (line = br.readLine()) != null)
-        	System.out.println(line);
-				try
-					{
-					p.waitFor();
-					}
-				catch (InterruptedException e)
-					{
-					e.printStackTrace();
-					}
-				System.out.println("Process exited");
-        	    
+
+					//Pass on output
+					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+					String line;
+					while ( (line = br.readLine()) != null)
+						System.out.println(line);
+					try
+						{
+						p.waitFor();
+						}
+					catch (InterruptedException e)
+						{
+						e.printStackTrace();
+						}
+					System.out.println("Process exited");
+
 				}
 			catch (IOException e)
 				{
@@ -159,7 +167,7 @@ public class StartGUI
 		else
 			JOptionPane.showMessageDialog(null, "Your version of Java is too old. At least 1.5 required");
 		}
-	
+
 	
 	
 	/**
