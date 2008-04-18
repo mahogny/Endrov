@@ -8,6 +8,6 @@ public class StartOSTdaemon
 	{
 	public static void main(String[] args)
 		{
-		StartGUI.run(new String[]{"OSTdaemon.GUI"});
+		new StartGUI().run(new String[]{"OSTdaemon.GUI"});
 		}
 	}
