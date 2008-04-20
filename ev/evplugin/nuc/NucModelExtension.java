@@ -42,9 +42,13 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Names: Show all");
 		public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Names: Show for selected");
+		
 		public JMenuItem miShowSelectedNuc=new JMenuItem("Nuclei: Unhide selected"); 
 		public JMenuItem miHideSelectedNuc=new JMenuItem("Nuclei: Hide selected"); 
-		
+
+		public JCheckBoxMenuItem miShowTraceSel=new JCheckBoxMenuItem("Traces: Show for selected"); 
+		public JCheckBoxMenuItem miShowTraceCur=new JCheckBoxMenuItem("Traces: Show for current"); 
+
 		public NucModelWindowHook(ModelWindow w)
 			{
 			this.w=w;
@@ -56,11 +60,15 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miShowSelectedNucNames);
 			miNuc.add(miShowSelectedNuc);
 			miNuc.add(miHideSelectedNuc);
+			miNuc.add(miShowTraceSel);
+			miNuc.add(miShowTraceCur);
 			w.menuModel.add(miNuc);
 			
 			miShowAllNucNames.addActionListener(this);
 			miShowSelectedNuc.addActionListener(this);
 			miHideSelectedNuc.addActionListener(this);
+			miShowTraceSel.addActionListener(this);
+			miShowTraceCur.addActionListener(this);
 			}
 		
 		public void readPersonalConfig(Element e){}
@@ -73,17 +81,17 @@ public class NucModelExtension implements ModelWindowExtension
 				{
 				for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
 					NucLineage.hiddenNuclei.remove(p);
-				w.view.repaint();
+		//		w.view.repaint();
 				}
 			else if(e.getSource()==miHideSelectedNuc)
 				{
 				for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
 					NucLineage.hiddenNuclei.add(p);
-				w.view.repaint();
+	//			w.view.repaint();
 				}
-			else if(e.getSource()==miShowAllNucNames)
-				w.view.repaint();
-			else if(e.getSource()==miShowSelectedNucNames)
+//			else if(e.getSource()==miShowAllNucNames)
+//				w.view.repaint();
+//			else if(e.getSource()==miShowSelectedNucNames)
 				w.view.repaint();
 			}
 		
@@ -132,6 +140,18 @@ public class NucModelExtension implements ModelWindowExtension
 			}
 		
 		/**
+		 * Render movement trace of nuc
+		 */
+		private void renderTrace(GL gl, NucLineage.Nuc nuc)
+			{
+			gl.glBegin(GL.GL_LINE_STRIP);
+			gl.glColor3d(1, 1, 1);
+			for(NucLineage.NucPos pos:nuc.pos.values())
+				gl.glVertex3d(pos.x,pos.y,pos.z);
+			gl.glEnd();
+			}
+		
+		/**
 		 * Render graphics
 		 */
 		public void displayFinal(GL gl)
@@ -139,12 +159,21 @@ public class NucModelExtension implements ModelWindowExtension
 			initDrawSphere(gl);
 			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
 			
+			boolean traceCur=miShowTraceCur.isSelected();
+			boolean traceSel=miShowTraceSel.isSelected();
+			
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
 				for(NucPair nucPair:inter.keySet())
 					{
 					//Render nuc body
 					renderNuc(gl, nucPair, inter.get(nucPair));
+					
+					if(traceCur && !traceSel)
+						{
+						NucLineage.Nuc nuc=nucPair.getLeft().nuc.get(nucPair.getRight());
+						renderTrace(gl,nuc);
+						}
 					
 					//Draw connecting line
 					if(nucPair.getRight().equals(NucLineage.connectNuc[0]))
@@ -165,6 +194,46 @@ public class NucModelExtension implements ModelWindowExtension
 				for(NucPair nucPair:inter.keySet())
 					renderNucLabel(gl,nucPair, inter.get(nucPair));
 				}
+			
+			if(traceSel)
+				for(NucPair pair:NucLineage.selectedNuclei)
+					{
+					NucLineage.Nuc nuc=pair.getLeft().nuc.get(pair.getRight());
+					renderTrace(gl,nuc);
+					}
+			
+			//Cell divisions
+			double curFrame=w.frameControl.getFrame();
+			gl.glLineWidth(3);
+			for(NucLineage lin:getLineages())
+				{
+				for(NucLineage.Nuc nuc:lin.nuc.values())
+					if(!nuc.pos.isEmpty() && nuc.parent!=null)
+						{
+						int tframe=nuc.pos.firstKey();
+						NucLineage.Nuc pnuc=lin.nuc.get(nuc.parent);
+						if(!pnuc.pos.isEmpty())
+							{
+							int pframe=pnuc.pos.lastKey();
+							System.out.println("prediv "+pframe+" "+tframe);
+							if(curFrame>=pframe && curFrame<=tframe)
+								{
+								NucLineage.NucPos npos=nuc.pos.get(tframe);
+								NucLineage.NucPos ppos=pnuc.pos.get(pframe);
+
+								System.out.println("div!");
+								
+								gl.glBegin(GL.GL_LINES);
+								gl.glColor3d(1, 1, 0);
+								gl.glVertex3d(npos.x,npos.y,npos.z);
+								gl.glVertex3d(ppos.x,ppos.y,ppos.z);
+								gl.glEnd();
+								}
+							}
+						}
+				}
+			gl.glLineWidth(1);
+			
 			gl.glPopAttrib();
 			}
 
@@ -320,6 +389,7 @@ public class NucModelExtension implements ModelWindowExtension
 				gl.glCullFace(GL.GL_BACK);
 				gl.glDepthFunc(GL.GL_LESS);
 				gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
+				gl.glLineWidth(1);
 				}
 			
       gl.glEnable(GL.GL_LIGHTING);
