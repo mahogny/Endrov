@@ -83,6 +83,7 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miRemoveNucleus=new JMenuItem("Remove nucleus");
 	public JMenuItem miExportImage=new JMenuItem("Export Image*");
 	public JMenuItem miSelectChildren=new JMenuItem("Select children");
+	public JMenuItem miSelectParents=new JMenuItem("Select parents");
 	public JMenuItem miRotate=new JMenuItem("Rotate tree");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
 	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
@@ -190,7 +191,9 @@ public class LineageWindow extends BasicWindow
 		menuLineage.addSeparator();
 		menuLineage.add(miFoldAll);
 		menuLineage.add(miUnfoldAll);
+		menuLineage.addSeparator();
 		menuLineage.add(miSelectChildren);
+		menuLineage.add(miSelectParents);
 		
 		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
 		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
@@ -210,6 +213,7 @@ public class LineageWindow extends BasicWindow
 		miFoldAll.addActionListener(this);
 		miUnfoldAll.addActionListener(this);
 		miSelectChildren.addActionListener(this);
+		miSelectParents.addActionListener(this);
 		miRotate.addActionListener(this);
 		
 		//Window overall things
@@ -388,7 +392,14 @@ public class LineageWindow extends BasicWindow
 			{
 			Set<NucPair> parents=new HashSet<NucPair>(NucLineage.selectedNuclei);
 			for(NucPair p:parents)
-				recursiveSelect(p.getLeft(), p.getRight());
+				recursiveSelectChildren(p.getLeft(), p.getRight());
+			BasicWindow.updateWindows();
+			}
+		else if(e.getSource()==miSelectParents)
+			{
+			Set<NucPair> children=new HashSet<NucPair>(NucLineage.selectedNuclei);
+			for(NucPair p:children)
+				recursiveSelectParent(p.getLeft(), p.getRight());
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==objectCombo)
@@ -422,14 +433,26 @@ public class LineageWindow extends BasicWindow
 	/**
 	 * Recursively select children
 	 */
-	public static void recursiveSelect(NucLineage lin, String nucName)
+	public static void recursiveSelectChildren(NucLineage lin, String nucName)
 		{
 		NucLineage.Nuc nuc=lin.nuc.get(nucName);
 		NucLineage.selectedNuclei.add(new NucPair(lin, nucName));
 		for(String childName:nuc.child)
-			recursiveSelect(lin, childName);
+			recursiveSelectChildren(lin, childName);
 		}
 	
+	/**
+	 * Recursively select parent
+	 */
+	public static void recursiveSelectParent(NucLineage lin, String nucName)
+		{
+		String pname=lin.nuc.get(nucName).parent;
+		if(pname!=null)
+			{
+			NucLineage.selectedNuclei.add(new NucPair(lin, pname));
+			recursiveSelectParent(lin, pname);
+			}
+		}
 	
 	/*
 	 * (non-Javadoc)
