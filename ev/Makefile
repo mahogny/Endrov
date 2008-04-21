@@ -23,6 +23,10 @@ starters:
 	jar cfvm startEndrov.jar evgui/MANIFEST.STARTGUI evgui/StartGUI.class
 	du -hc start*.jar
 
+applet:
+	jar cfv evapplet/applet.jar evapplet/*.class
+	jarsigner -keystore myKeys evapplet/applet.jar jdc
+
 jnlp:
 	jar cfvm ../ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*.class evplugin/roi/window/*.class \
 			evplugin/modelWindow/isosurf/*.class evplugin/modelWindow/voxel/*.class evplugin/modelWindow/slice3d/*.class \
