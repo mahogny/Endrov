@@ -126,10 +126,10 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		loadData();
 		
 		//Window overall things
-		setTitle(EV.programName+" Frame/Time");
-		pack();
-		setVisible(true);
-		setBounds(bounds);
+		setTitleEvWindow("Frame/Time");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(bounds);
 		}
 
 	/**
@@ -270,7 +270,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			datapart.add(inputVector.get(i)[0]);
 			datapart.add(inputVector.get(i)[1]);
 			}
-		setVisible(true);
+		setVisibleEvWindow(true);
 		}
 	
 	

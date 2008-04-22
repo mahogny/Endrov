@@ -244,10 +244,10 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		readFromMetadata();
 		
 		//Show
-		setTitle(EV.programName+" Imageset Meta Window");
-		pack();
-		setVisible(true);
-		setBounds(rect);
+		setTitleEvWindow("Imageset Meta Window");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(rect);
 		}
 	
 	

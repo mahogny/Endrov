@@ -130,10 +130,10 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		fillTreeAttributesPane((CustomTreeElement)treeModel.getRoot());
 		
 		//Window overall things
-		setTitle(EV.programName+" Custom Data");
-		pack();
-		setVisible(true);
-		setBounds(bounds);
+		setTitleEvWindow("Custom Data");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(bounds);
 		}
 
 	/**
@@ -292,7 +292,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 				});
 			
 			}
-		setVisible(true);
+		setVisibleEvWindow(true);
 		}
 	
 	

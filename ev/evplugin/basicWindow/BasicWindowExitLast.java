@@ -38,14 +38,15 @@ public class BasicWindowExitLast implements BasicWindowExtension
 				if(BasicWindow.getWindowList().size()==1)
 					BasicWindow.dialogQuit();
 				else
-					w.dispose();
+					w.evw.dispose();
+//					w.dispose();
 				}
 			};
 
 		public void createMenus(BasicWindow w)
 			{
 			this.w=w;
-			w.addWindowListener(windowListener);
+			w.evw.addWindowListener(windowListener);
 			}
 		
 		public void actionPerformed(ActionEvent e) 

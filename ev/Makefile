@@ -25,15 +25,18 @@ starters:
 
 applet:
 	jar cfv evapplet/applet.jar evapplet/*.class
-	jarsigner -keystore myKeys evapplet/applet.jar jdc
+	#jarsigner -keystore myKeys evapplet/applet.jar jdc
+	#keytool -export -keystore myKeys -alias jdc -file evapplet/johanhenriksson.cer
 
-jnlp:
+totaljar:
 	jar cfvm ../ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*.class evplugin/roi/window/*.class \
 			evplugin/modelWindow/isosurf/*.class evplugin/modelWindow/voxel/*.class evplugin/modelWindow/slice3d/*.class \
 			evplugin/*/*.png evplugin/roi/window/*.png evplugin/roi/primitive/*.png \
 			evplugin/ev/pluginlist.txt
 	jarsigner -keystore myKeys ../ev.jar jdc
 	du -hc ../ev.jar
+
+jnlp:	totaljar
 	scp ../ev.jar tbuadmin@celegans.sh.se:~/MAMPsite/download/webstart/
 	rm ../ev.jar
 

@@ -120,10 +120,10 @@ public class PluginWindow extends BasicWindow
   	left.add(new JScrollPane(miscArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 
   	//Window overall things
-  	setTitle(EV.programName+" Plugins");
-  	pack();
-  	setVisible(true);
-  	setBounds(x,y,w,h);
+  	setTitleEvWindow("Plugins");
+  	packEvWindow();
+  	setVisibleEvWindow(true);
+  	setBoundsEvWindow(x,y,w,h);
 		}
 
 

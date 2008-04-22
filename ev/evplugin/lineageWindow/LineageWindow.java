@@ -217,10 +217,10 @@ public class LineageWindow extends BasicWindow
 		miRotate.addActionListener(this);
 		
 		//Window overall things
-		setTitle(EV.programName+" Lineage Window");
-		pack();
-		setBounds(bounds);
-		setVisible(true);
+		setTitleEvWindow("Lineage Window");
+		packEvWindow();
+		setBoundsEvWindow(bounds);
+		setVisibleEvWindow(true);
 
 		stateChanged(null);
 		dataChangedEvent();
@@ -271,7 +271,8 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miRename)
 			{
-			RenameDialog.run(this);
+//			RenameDialog.run(evw);
+			RenameDialog.run(null);
 			}
 		else if(e.getSource()==miMerge)
 			{
@@ -328,7 +329,8 @@ public class LineageWindow extends BasicWindow
 		else if(e.getSource()==miFate)
 			{
 			if(NucLineage.selectedNuclei.size()==1)
-				new FateDialog(this, NucLineage.selectedNuclei.iterator().next());
+//				new FateDialog(evw, NucLineage.selectedNuclei.iterator().next()); need Frame
+				new FateDialog(null, NucLineage.selectedNuclei.iterator().next());
 			else
 				JOptionPane.showMessageDialog(this, "Select 1 nucleus first");
 			}

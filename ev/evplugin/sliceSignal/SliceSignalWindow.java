@@ -106,10 +106,10 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 		
 		
 		//Window overall things
-		setTitle(EV.programName+" Slice/Signal");
-		pack();
-		setBounds(x,y,w,h);
-		setVisible(true);
+		setTitleEvWindow("Slice/Signal");
+		packEvWindow();
+		setBoundsEvWindow(x,y,w,h);
+		setVisibleEvWindow(true);
 		}
 	
 	/**

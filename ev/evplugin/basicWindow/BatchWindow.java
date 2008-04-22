@@ -45,10 +45,10 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 		bottom.add(bStop);
 		
 		//Window overall things
-		setTitle(EV.programName+" Batch "+ thread.getBatchName());
-		pack();
-		setBounds(x,y,w,h);
-		setVisible(true);
+		setTitleEvWindow("Batch "+ thread.getBatchName());
+		packEvWindow();
+		setBoundsEvWindow(x,y,w,h);
+		setVisibleEvWindow(true);
 
 		//Start job
 		this.thread=thread;
@@ -72,7 +72,7 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 	public void actionPerformed(ActionEvent e)
 		{
 		if(bStop.getText().equals("Done"))
-			dispose();
+			disposeEvWindow();
 		else
 			thread.die=true;
 		}

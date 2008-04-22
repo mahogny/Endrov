@@ -195,10 +195,10 @@ public class ModelWindow extends BasicWindow
 		dataChangedEvent();
 		
 		//Window overall things
-		setTitle(EV.programName+" Model Window");
-		pack();
-		setVisible(true);
-		setBounds(x,y,w,h);
+		setTitleEvWindow("Model Window");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(x,y,w,h);
 		}
 	
 	

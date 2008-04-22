@@ -113,10 +113,10 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 		
 		
 		//Window overall things
-		setTitle(EV.programName+" Make Max Channel");
-		pack();
-		setBounds(x,y,w,h);
-		setVisible(true);
+		setTitleEvWindow("Make Max Channel");
+		packEvWindow();
+		setBoundsEvWindow(x,y,w,h);
+		setVisibleEvWindow(true);
 		}
 	
 	/**

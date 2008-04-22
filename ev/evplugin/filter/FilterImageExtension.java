@@ -89,7 +89,7 @@ public class FilterImageExtension implements ImageWindowExtension
 			this.roi=roi;
 						
 			setLayout(new BorderLayout());
-			setTitle(EV.programName+" Apply filter");
+			setTitleEvWindow("Apply filter");
 			
 			JButton bApply=new JButton("Apply");
 			bApply.addActionListener(this);			
@@ -102,9 +102,9 @@ public class FilterImageExtension implements ImageWindowExtension
 			add(wfilter, BorderLayout.CENTER);
 			add(bApply, BorderLayout.SOUTH);
 			
-			pack();
-			setBounds(100,100,400,400);
-			setVisible(true);
+			packEvWindow();
+			setBoundsEvWindow(100,100,400,400);
+			setVisibleEvWindow(true);
 			}
 		
 		public void actionPerformed(ActionEvent e)

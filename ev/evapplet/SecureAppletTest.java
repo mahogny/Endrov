@@ -1,9 +1,13 @@
 package evapplet;
 
 import javax.swing.JApplet;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 //http://java.sun.com/sfaq/
+
+//requires signing or to be run locally
 
 /*
  *     *  applets loaded via the file system are allowed to read and write files
@@ -17,15 +21,21 @@ import javax.swing.JTextField;
 
 //<param name=file value="/etc/inet/hosts">
 
-public class AppletTest extends JApplet
+public class SecureAppletTest extends JApplet
 	{
 	static final long serialVersionUID=0; 
 	
 	//Called when this applet is loaded into the browser.
 	public void init()
 		{
+		
+		JFrame frame=new JFrame();
+		frame.setSize(100, 100);
+		frame.setVisible(true);
+		
 		JTextField fi=new JTextField();
 		getContentPane().add(fi);
+		JOptionPane.showMessageDialog(null, "hello");
 		
 		}
 	

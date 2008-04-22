@@ -153,11 +153,11 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		updateLayout();
 		
 		//Window overall things
-		setTitle(EV.programName+" ROI");
-		pack();
-		setBounds(x,y,w,h);
+		setTitleEvWindow("ROI");
+		packEvWindow();
+		setBoundsEvWindow(x,y,w,h);
 	//	dataChangedEvent();
-		setVisible(true);
+		setVisibleEvWindow(true);
 		}
 	
 	private void addTreeListeners()
@@ -306,12 +306,10 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 */
 	private void updateLayout()
 		{
-		Container c=getContentPane();
-		
-		c.setLayout(new BorderLayout());
-		c.removeAll();
-		c.add(upperPanel, BorderLayout.NORTH);
-		c.add(tree, BorderLayout.CENTER);
+		setLayout(new BorderLayout());
+		removeAll();
+		add(upperPanel, BorderLayout.NORTH);
+		add(tree, BorderLayout.CENTER);
 		
 		Collection<ROI> rois=ROI.getSelected();
 		if(rois.size()==1)
@@ -321,12 +319,12 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 			JPanel editpanel=new JPanel(new GridLayout(1,1));
 			editpanel.setBorder(BorderFactory.createTitledBorder("Edit "+roi.getMetaTypeDesc()));
 			JComponent d=roi.getROIWidget();
-			c.add(editpanel,BorderLayout.SOUTH);
+			add(editpanel,BorderLayout.SOUTH);
 			if(d==null)
 				d=new JLabel("There are no options");
 			editpanel.add(d);
 			}
-		c.validate();
+		validate();
 		}
 
 	

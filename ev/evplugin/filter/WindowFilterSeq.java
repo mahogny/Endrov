@@ -133,10 +133,10 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 		wFilterSeq.buildMenu(mAdd);
 				
 		//Window overall things
-		setTitle(EV.programName+" Filter Sequence");
-		pack();
-		setBounds(bounds);
-		setVisible(true);
+		setTitleEvWindow("Filter Sequence");
+		packEvWindow();
+		setBoundsEvWindow(bounds);
+		setVisibleEvWindow(true);
 		}
 	
 	
