@@ -121,10 +121,10 @@ public class ImageCalcWindow extends BasicWindow implements ActionListener, Meta
 		
 		
 		//Window overall things
-		setTitle(EV.programName+" Image Calculator");
-		pack();
-		setBounds(x,y,w,h);
-		setVisible(true);
+		setTitleEvWindow("Image Calculator");
+		packEvWindow();
+		setBoundsEvWindow(x,y,w,h);
+		setVisibleEvWindow(true);
 		}
 	
 	/**

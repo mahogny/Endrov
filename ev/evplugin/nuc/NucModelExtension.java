@@ -215,13 +215,13 @@ public class NucModelExtension implements ModelWindowExtension
 						if(!pnuc.pos.isEmpty())
 							{
 							int pframe=pnuc.pos.lastKey();
-							System.out.println("prediv "+pframe+" "+tframe);
+//							System.out.println("prediv "+pframe+" "+tframe);
 							if(curFrame>=pframe && curFrame<=tframe)
 								{
 								NucLineage.NucPos npos=nuc.pos.get(tframe);
 								NucLineage.NucPos ppos=pnuc.pos.get(pframe);
 
-								System.out.println("div!");
+//								System.out.println("div!");
 								
 								gl.glBegin(GL.GL_LINES);
 								gl.glColor3d(1, 1, 0);

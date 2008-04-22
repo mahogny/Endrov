@@ -17,7 +17,7 @@ import org.jdom.*;
  * 
  * @author Johan Henriksson
  */
-public abstract class BasicWindow extends JFrame implements WindowListener
+public abstract class BasicWindow extends JPanel 
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -39,7 +39,14 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	public static Vector<BasicWindowExtension> basicWindowExtensions=new Vector<BasicWindowExtension>();
 	
 	/** The set of all windows. Cannot be weak, GC time not guaranteed but this is critical to figure out when the program is to close */
-	private static HashSet<BasicWindow> windowList=new HashSet<BasicWindow>();
+	public static HashSet<BasicWindow> windowList=new HashSet<BasicWindow>();
+	
+	/** Manager for creating windows */
+	public static EvWindowManagerMaker windowManager=new EvWindowManagerFree.Manager();
+	public interface EvWindowManagerMaker
+		{
+		public EvWindowManager createWindow(BasicWindow bw);
+		}
 	
 	public static void initPlugin() {}
 	static
@@ -125,7 +132,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 */
 	public void setXMLbounds(Element e)
 		{
-		Rectangle r=getBounds();
+		Rectangle r=evw.getBounds();
 		e.setAttribute("x", ""+r.x);
 		e.setAttribute("y", ""+r.y);
 		e.setAttribute("w", ""+r.width);
@@ -178,7 +185,41 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-
+	
+	public EvWindowManager evw=windowManager.createWindow(this);
+	
+	public void packEvWindow()
+		{
+		evw.pack();
+		}
+	public void setBoundsEvWindow(Rectangle r)
+		{
+		evw.setBounds(r);
+		}
+	public void setBoundsEvWindow(int x, int y, int width, int height)
+		{
+		evw.setBounds(new Rectangle(x, y, width, height));
+		}
+	public Rectangle getBounds()
+		{
+		return evw.getBounds();
+		}
+	public void setTitleEvWindow(String title)
+		{
+		evw.setTitle(title);
+		}
+	public void setVisibleEvWindow(boolean b)
+		{
+		evw.setVisible(true);
+		}
+	public void disposeEvWindow()
+		{
+		evw.dispose();
+		}
+	//setfocusable
+	//addkeylistener
+	
+	
 	/** Hooks for all extensions */
 	public HashMap<Class<?>,BasicWindowHook> basicWindowExtensionHook=new HashMap<Class<?>,BasicWindowHook>();
 
@@ -194,9 +235,6 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 			e.newBasicWindow(this);
 
 		createMenus();
-		
-		addWindowListener(this);
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		}
 	
 
@@ -291,7 +329,7 @@ public abstract class BasicWindow extends JFrame implements WindowListener
 	 */
 	public void createMenus()
 		{
-		setJMenuBar(menubar);		
+		evw.setJMenuBar(menubar);		
 		
 		//Menu structure	
 		addMenubar(menuFile);
@@ -380,18 +418,6 @@ public abstract class BasicWindow extends JFrame implements WindowListener
     	EV.quit();
 		}
 
-	
-	
-	public void windowClosing(WindowEvent e) {}
-	public void windowActivated(WindowEvent arg0)	{}
-	public void windowDeactivated(WindowEvent arg0)	{}
-	public void windowDeiconified(WindowEvent arg0)	{}
-	public void windowIconified(WindowEvent arg0) {}
-	public void windowOpened(WindowEvent arg0) {}
-	public void windowClosed(WindowEvent arg0)
-		{
-		BasicWindow.windowList.remove(this);
-		}
 	
 	
 	

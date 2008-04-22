@@ -11,10 +11,10 @@ import java.io.*;
 //System.setSecurityManager(null)
 
 /**
- * Start graphical user interface
+ * Start graphical user interface, free-floating windows
  * @author Johan Henriksson
  */
-public class GUI
+public class FreeGUI
 	{
 	/**
 	 * Entry point

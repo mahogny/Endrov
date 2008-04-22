@@ -62,7 +62,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	
 	/** Last component with focus remembered so this one can be refocused */
 	private WeakReference<Component> lastFocusComponent=null;
-	private WeakReference<JFrame> lastFocusFrame=null;
+	private WeakReference<BasicWindow> lastFocusFrame=null;
 	
 	//GUI components
 	private JTextArea history=new JTextArea();
@@ -188,14 +188,14 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		
 		//Log handling
 		Log.listeners.add(consoleLog);
-		addWindowListener(wlist);
+		evw.addWindowListener(wlist);
 		history.append(Log.memoryLog.get());
 		
 		//Window overall things
-		setTitle(EV.programName+" Console Window");
-		pack();
-		setBounds(x,y,w,h);
-		setVisible(true);
+		setTitleEvWindow("Console Window");
+		packEvWindow();
+		setBoundsEvWindow(x,y,w,h);
+		setVisibleEvWindow(true);
 		}
 	
 	
@@ -249,14 +249,14 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public void returnFocus()
 		{
 		Component c=lastFocusComponent.get();
-		JFrame f=lastFocusFrame.get();
+		BasicWindow f=lastFocusFrame.get();
 		if(c!=null)
 			{
 			c.requestFocus();
 			lastFocusComponent=new WeakReference<Component>(null);
 			if(f!=null)
 				{
-				f.toFront();
+				f.evw.toFront();
 				System.out.println("tofront");
 				}
 			}
@@ -285,13 +285,13 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 * Give focus to console
 	 * @param me Component with current focus
 	 */
-	public static void focusConsole(JFrame frame, Component me)
+	public static void focusConsole(BasicWindow frame, Component me)
 		{
 		ConsoleWindow c=getConsole();
 		if(c==null) c=new ConsoleWindow();
-		c.toFront();
+		c.evw.toFront();
 		c.lastFocusComponent=new WeakReference<Component>(me);
-		c.lastFocusFrame=new WeakReference<JFrame>(frame);
+		c.lastFocusFrame=new WeakReference<BasicWindow>(frame);
 		c.commandLine.requestFocus();
 		}
 

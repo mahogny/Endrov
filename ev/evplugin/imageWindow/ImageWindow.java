@@ -319,14 +319,14 @@ public class ImageWindow extends BasicWindow
 		buildMenu();
 		
 		//Window overall things
-		setTitle(EV.programName+" Image Window");
+		setTitleEvWindow("Image Window");
 		for(ChannelWidget w:channelWidget)
 			w.comboChannel.updateChannelList();
-		pack();
+		packEvWindow();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());
 		frameControl.setFrame(0);
-		setBounds(bounds);
-		setVisible(true);
+		setBoundsEvWindow(bounds);
+		setVisibleEvWindow(true);
 		updateImagePanel();
 		}
 
@@ -579,7 +579,7 @@ public class ImageWindow extends BasicWindow
 			
 		//Update window title
 		String title=EV.programName+" Image Window - "+getImageset().getMetadataName();
-		setTitle(title);
+		setTitleEvWindow(title);
 		}
 	
 	

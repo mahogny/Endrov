@@ -47,10 +47,10 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		add(bNewScriptBinding, BorderLayout.SOUTH);
 
 		//Window overall things
-		setTitle(EV.programName+" Key Bindings");
-		pack();
-		setVisible(true);
-		setBounds(x,y,w,h);
+		setTitleEvWindow("Key Bindings");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(x,y,w,h);
 
 		fillList();
 		}
@@ -146,7 +146,7 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 			}
 
 		
-		setVisible(true);
+		setVisibleEvWindow(true);
 		repaint();
 		}
 	
