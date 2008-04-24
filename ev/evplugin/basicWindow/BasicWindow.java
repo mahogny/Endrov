@@ -200,6 +200,10 @@ public abstract class BasicWindow extends JPanel
 		{
 		evw.setBounds(new Rectangle(x, y, width, height));
 		}
+	public void setLocationEvWindow(int x, int y)
+		{
+		evw.setLocation(x, y);
+		}
 	public Rectangle getBounds()
 		{
 		return evw.getBounds();

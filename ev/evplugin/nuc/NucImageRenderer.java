@@ -13,8 +13,8 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public ImageWindow w;
 	
 	/** Interpolated nuclei */
-	public Map<NucPair, NucLineage.NucInterp> interpNuc=null;
-	
+	public Map<NucPair, NucLineage.NucInterp> interpNuc=new HashMap<NucPair, NucLineage.NucInterp>();
+
 	/** Nuclei currently being moved */
 	public NucPair modifyingNucName=null;
 	
@@ -43,15 +43,16 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(w.mouseInWindow)
 			NucLineage.currentHover=new NucPair();
 	
-		
+		interpNuc.clear();
 		for(NucLineage lin:getVisibleLineages())
 			{
-			interpNuc=lin.getInterpNuc(w.frameControl.getFrame());			//maybe move this one later
-			for(NucPair nucPair:interpNuc.keySet())
-				{
-				NucLineage.NucInterp nuc=interpNuc.get(nucPair);
-				drawNuc(g,nucPair,nuc);
-				}
+			Map<NucPair, NucLineage.NucInterp> interpNucPart=lin.getInterpNuc(w.frameControl.getFrame());
+			interpNuc.putAll(interpNucPart);
+			}
+		for(NucPair nucPair:interpNuc.keySet())
+			{
+			NucLineage.NucInterp nuc=interpNuc.get(nucPair);
+			drawNuc(g,nucPair,nuc);
 			}
 		
 		if(!lastHover.equals(NucLineage.currentHover))

@@ -16,9 +16,17 @@ import java.io.File;
  */
 public class BatchMovie
 	{
+	public static boolean first=true;
+	public static String getchdesc()
+		{
+		String s=first?"<channel/> (<frame/>)" : "<channel/>";
+		first=false;
+		return s;
+		}
 	
 	public static void makeMovie(File file)
 		{
+		first=true;
 		System.out.println("Imageset "+file.getPath());
 		long currentTime=System.currentTimeMillis();
 		OstImageset ost=new OstImageset(file.getPath());
@@ -32,10 +40,10 @@ public class BatchMovie
 		
 		Vector<CalcThread.MovieChannel> channelNames=new Vector<CalcThread.MovieChannel>();
 		if(ost.channelImages.containsKey("GFPmax"))
-			channelNames.add(new CalcThread.MovieChannel("GFPmax",fsNull));
+			channelNames.add(new CalcThread.MovieChannel("GFPmax",fsNull,getchdesc()));
 		if(ost.channelImages.containsKey("RFPmax"))
-			channelNames.add(new CalcThread.MovieChannel("RFPmax",fsNull));
-		channelNames.add(new CalcThread.MovieChannel("DIC",fsDIC));
+			channelNames.add(new CalcThread.MovieChannel("RFPmax",fsNull,getchdesc()));
+		channelNames.add(new CalcThread.MovieChannel("DIC",fsDIC,getchdesc()));
 		System.out.println("Now making movie");
 		BatchThread c=new CalcThread(ost, 0, 1000000, 35, channelNames, 336, "h.264 (MPEG-4)", "High"); 
 		new CompleteBatch(c); //bad to have everything in constructor

@@ -6,7 +6,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.*;
-import evplugin.ev.*;
 import org.jdom.*;
 
 /**

@@ -139,7 +139,6 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			if(!lins.isEmpty())
 				lin=lins.iterator().next();*/
 			NucLineage lin=editingLin.get();
-			System.out.println("release "+lin);
 			
 			if(x1!=x2 && y1!=y2 && lin!=null && r.modifyingNucName==null)
 				{
@@ -227,7 +226,6 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			{
 			//Bring nucleus to this Z
 			NucPair useNuc=NucLineage.currentHover;
-
 
 			if(useNuc.getLeft()==null)
 				{

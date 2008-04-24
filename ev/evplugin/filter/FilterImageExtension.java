@@ -14,7 +14,6 @@ import evplugin.imageset.*;
 import evplugin.roi.*;
 import evplugin.roi.primitive.*;
 import evplugin.data.*;
-import evplugin.ev.*;
 
 /**
  * ImageWindow extension: Filter menus

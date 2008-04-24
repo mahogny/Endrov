@@ -5,7 +5,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import evplugin.data.*;
-import evplugin.ev.*;
 import evplugin.imageset.*;
 import evplugin.basicWindow.*;
 import org.jdom.*;

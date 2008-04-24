@@ -92,7 +92,7 @@ public class PluginInfo
 	/**
 	 * Get a list of all plugins
 	 */
-	public static List<PluginInfo> getPluginList()
+	public static List<PluginInfo> getPluginList(File root)
 		{
 		final List<PluginInfo> p=new LinkedList<PluginInfo>();
 		if(storedInJar())
@@ -112,7 +112,7 @@ public class PluginInfo
 			}
 		else
 			{
-			File pluginDir=new File("evplugin");
+			File pluginDir=new File(root,"evplugin");
 			if(!pluginDir.exists())
 				JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");
 			else
