@@ -55,6 +55,9 @@ public class EvWindowManagerMDI extends JPanel implements /*WindowListener,*/ Ev
 	public void toFront()
 		{
 		}
+	public void setLocation(int x, int y)
+		{
+		}
 
 	public static JFrame totalFrame=new JFrame(EV.programName+" foo");
 	public static JPanel totalPane=new JPanel();

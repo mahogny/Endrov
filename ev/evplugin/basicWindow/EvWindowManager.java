@@ -17,6 +17,7 @@ public interface EvWindowManager
 	public void toFront();
 	public void setVisible(boolean b);
 	public void setBounds(Rectangle r);
+	public void setLocation(int x, int y);
 	public void setTitle(String title);
 	public Rectangle getBounds();
 	}

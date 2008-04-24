@@ -167,17 +167,22 @@ public class EV
 		}
 
 	
+	
 	/**
 	 * Save plugin list to file. This is 
 	 */
 	public static void savePluginList()
+		{
+		savePluginList(new File("."));
+		}
+	public static void savePluginList(File root)
 		{
 		if(!PluginInfo.storedInJar())
 	    try
 	    	{
 	      FileOutputStream out = new FileOutputStream(new File(new File("evplugin","ev"),"pluginlist.txt"));
 	      PrintStream p = new PrintStream( out );
-	    	for(PluginInfo pi:PluginInfo.getPluginList())
+	    	for(PluginInfo pi:PluginInfo.getPluginList(root))
 	    		p.println(pi.filename);
 	    	p.close();
 	    	out.close();
@@ -193,7 +198,11 @@ public class EV
 	 */
 	public static void loadPlugins()
 		{
-		for(PluginInfo pi:PluginInfo.getPluginList())
+		loadPlugins(new File("."));
+		}
+	public static void loadPlugins(File root)
+		{
+		for(PluginInfo pi:PluginInfo.getPluginList(root))
 			pi.load();
 		}
 	

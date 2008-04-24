@@ -5,6 +5,7 @@ import java.awt.image.*;
 import java.awt.geom.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import evplugin.ev.*;
 import evplugin.filter.FilterSeq;
@@ -22,7 +23,7 @@ public final class CalcThread extends BatchThread
 	private final int z;
 
 	private final int oneW;
-	private final List<MovieChannel> channels;
+	private final java.util.List<MovieChannel> channels;
 	private final String inputCodec;
 	private final String inputQuality;
 	
@@ -31,10 +32,12 @@ public final class CalcThread extends BatchThread
 		{
 		public final String name;
 		public final FilterSeq fs;
-		public MovieChannel(String nane, FilterSeq fs)
+		public final MovieDescString desc;
+		public MovieChannel(String nane, FilterSeq fs, String desc)
 			{
 			this.name=nane;
 			this.fs=fs;
+			this.desc=new MovieDescString(desc);
 			}
 		}
 	
@@ -212,10 +215,15 @@ public final class CalcThread extends BatchThread
 			g.drawImage(ch.im, trans, null);
 			
 			g.setColor(Color.WHITE);
+			
+			g.drawString(
+			channels.get(i).desc.decode(rec, channels.get(i).name,frame),
+			 oneW*i, h-1);
+			/*
 			if(i==0)
 				g.drawString(ch.name+" ("+frame+")", oneW*i, h-1);
 			else
-				g.drawString(ch.name, oneW*i, h-1);
+				g.drawString(ch.name, oneW*i, h-1);*/
 			}
 		
 		return c;
