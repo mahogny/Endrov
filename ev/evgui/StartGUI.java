@@ -93,7 +93,7 @@ public class StartGUI
 					for(String s:args)
 						cmdarg.add(s);
 				else
-					cmdarg.add("evgui.FreeGUI");
+					cmdarg.add("evgui.MW");
 
 
 				if(args.length>0 && args[args.length-1].equals("-macstarter"))

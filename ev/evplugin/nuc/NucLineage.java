@@ -126,6 +126,8 @@ public class NucLineage extends EvObject implements Cloneable
 					for(String childName:parent.child)
 						{
 						Nuc child=meta.nuc.get(childName);
+						if(child==null)
+							Log.printError("Missing child: "+childName, null);
 						child.parent=parentName;
 						}
 					}

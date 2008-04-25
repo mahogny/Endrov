@@ -31,7 +31,7 @@
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
-		<string>evgui.GUI</string>
+		<string>evgui.MW</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.awt.Antialiasing</key>

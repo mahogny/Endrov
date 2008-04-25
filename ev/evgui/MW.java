@@ -11,11 +11,10 @@ import java.io.*;
 //System.setSecurityManager(null)
 
 /**
- * Start graphical user interface, one big window using MDI.
- * Experimental, totally unsupported
+ * Start graphical user interface, free-floating windows
  * @author Johan Henriksson
  */
-public class TotalGUI
+public class MW
 	{
 	/**
 	 * Entry point
@@ -25,9 +24,14 @@ public class TotalGUI
 		{
 		Log.listeners.add(new StdoutLog());
 
+		//Log.listeners.add(new SwingLog());
+
+		//A window showing initialization could be useful here
+		
 		EvSplashScreen ss=null;
 		if(EvSplashScreen.isSplashEnabled())
 			ss=new EvSplashScreen();
+		
 		
 		//if(!PluginInfo.storedInJar())
 			{
@@ -39,8 +43,7 @@ public class TotalGUI
 		try
 			{
 			EV.loadPlugins();
-			BasicWindow.windowManager=new EvWindowManagerMDI.Manager();
-//			BasicWindowExitLast.integrate();
+			BasicWindowExitLast.integrate();
 			EV.loadPersonalConfig();		
 			if(BasicWindow.getWindowList().size()==0)
 				{
