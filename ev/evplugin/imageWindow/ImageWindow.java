@@ -578,8 +578,7 @@ public class ImageWindow extends BasicWindow
 			}
 			
 		//Update window title
-		String title=EV.programName+" Image Window - "+getImageset().getMetadataName();
-		setTitleEvWindow(title);
+		setTitleEvWindow("Image Window - "+getImageset().getMetadataName());
 		}
 	
 	
