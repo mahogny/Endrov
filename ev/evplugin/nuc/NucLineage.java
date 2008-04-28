@@ -555,6 +555,13 @@ public class NucLineage extends EvObject implements Cloneable
 				on.child.remove(oldName);
 				on.child.add(newName);
 				}
+			
+			NucPair oldref=new NucPair(this,oldName);
+			if(selectedNuclei.contains(oldref))
+				{
+				selectedNuclei.remove(oldref);
+				selectedNuclei.add(new NucPair(this,newName));
+				}
 			}
 		metaObjectModified=true;
 		}
