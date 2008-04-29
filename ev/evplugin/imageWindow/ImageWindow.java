@@ -44,6 +44,8 @@ public class ImageWindow extends BasicWindow
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
 	private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
 	
+	public static int snapDistance=5;
+	
 	public static void initPlugin() {}
 	static
 		{
@@ -472,13 +474,11 @@ public class ImageWindow extends BasicWindow
 		Vector2d v=imagePanel.transformS2I(u);
 		return new Vector2d(v.x/getImageset().meta.resX, v.y/getImageset().meta.resY);
 		}
+	
 	/** Convert world to screen Z coordinate */
 	public double w2sz(double z) {return z*getImageset().meta.resZ;}
 	/** Convert world to screen Z coordinate */
 	public double s2wz(double sz) {return sz/(double)getImageset().meta.resZ;} 
-
-	
-	
 
 	
 	//are these useful?
