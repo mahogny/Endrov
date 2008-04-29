@@ -34,10 +34,10 @@ public class RenameDialog extends JDialog implements ActionListener
 	
 	private RenameDialog(Frame frame, NucPair pair)
 		{
-		super(frame,"EV Rename Nucleus: "+pair.getRight(),false);
+		super(frame,"EV Rename Nucleus: "+pair.snd(),false);
 		this.frame=frame;
-		oldLineage=pair.getLeft();
-		oldName=pair.getRight();
+		oldLineage=pair.fst();
+		oldName=pair.snd();
 
 		//Make ESC quit the window
 		JRootPane rootPane = new JRootPane();

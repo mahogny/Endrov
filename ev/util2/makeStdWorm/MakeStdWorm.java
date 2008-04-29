@@ -182,9 +182,9 @@ public class MakeStdWorm
 					HashSet<String> nucrefi=new HashSet<String>();
 					HashSet<String> nuclini=new HashSet<String>();
 					for(NucPair p:refi.keySet())
-						nucrefi.add(p.getRight());
+						nucrefi.add(p.snd());
 					for(NucPair p:lini.keySet())
-						nuclini.add(p.getRight());
+						nuclini.add(p.snd());
 					nucrefi.retainAll(nuclini);
 					
 					//Get the best fit

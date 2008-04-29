@@ -280,23 +280,23 @@ public class LineageWindow extends BasicWindow
 				{
 				Iterator<NucPair> nucit=NucLineage.selectedNuclei.iterator();
 				NucPair target=nucit.next();
-				NucLineage theLineage=target.getLeft();
+				NucLineage theLineage=target.fst();
 //				Vector<String> nucToMerge=new Vector<String>();
 //				nucToMerge.add(target.getRight());
 //				String suggestName=target.getRight();
 				while(nucit.hasNext())
 					{
 					NucPair source=nucit.next();
-					if(theLineage==source.getLeft())
+					if(theLineage==source.fst())
 						{
 //						nucToMerge.add(source.getRight());
-						if(!target.getRight().startsWith(":"))
+						if(!target.snd().startsWith(":"))
 							{
 							NucPair temp=target;
 							target=source;
 							source=temp;
 							}
-						target.getLeft().mergeNuclei(source.getRight(), target.getRight());
+						target.fst().mergeNuclei(source.snd(), target.snd());
 						}
 					}
 //				suggestName=JOptionPane.showInputDialog("Give name of merged nucleus:", suggestName);
@@ -314,8 +314,8 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miUnparent)
 			{
-			for(Pair<NucLineage,String> nuc:NucLineage.selectedNuclei)
-				(nuc.getLeft()).removeParentReference(nuc.getRight());
+			for(Tuple<NucLineage,String> nuc:NucLineage.selectedNuclei)
+				(nuc.fst()).removeParentReference(nuc.snd());
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==miSwapChildren)
@@ -343,8 +343,8 @@ public class LineageWindow extends BasicWindow
 					{
 					for(NucPair nucPair:NucLineage.selectedNuclei)
 						{
-						String nucName=nucPair.getRight();
-						NucLineage.Nuc n=nucPair.getLeft().nuc.get(nucName);
+						String nucName=nucPair.snd();
+						NucLineage.Nuc n=nucPair.fst().nuc.get(nucName);
 						if(n!=null)
 							{
 							if(ends.equals(""))
@@ -354,7 +354,7 @@ public class LineageWindow extends BasicWindow
 								int end=Integer.parseInt(ends);
 								n.end=end;
 								//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
-								nucPair.getLeft().removePosAfterEqual(NucLineage.currentHover.getRight(), end+1);
+								nucPair.fst().removePosAfterEqual(NucLineage.currentHover.snd(), end+1);
 								}
 							}
 						}
@@ -368,11 +368,11 @@ public class LineageWindow extends BasicWindow
 				{
 				String nucNames="";
 				for(NucPair nucName:NucLineage.selectedNuclei)
-					nucNames=nucNames+nucName.getRight()+" ";
+					nucNames=nucNames+nucName.snd()+" ";
 				int option = JOptionPane.showConfirmDialog(null, "Really want to delete: "+nucNames, "Remove?", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION)
 					for(NucPair nucPair:NucLineage.selectedNuclei)
-						nucPair.getLeft().removeNuc(nucPair.getRight());
+						nucPair.fst().removeNuc(nucPair.snd());
 				BasicWindow.updateWindows();
 				}
 			}
@@ -394,14 +394,14 @@ public class LineageWindow extends BasicWindow
 			{
 			Set<NucPair> parents=new HashSet<NucPair>(NucLineage.selectedNuclei);
 			for(NucPair p:parents)
-				recursiveSelectChildren(p.getLeft(), p.getRight());
+				recursiveSelectChildren(p.fst(), p.snd());
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==miSelectParents)
 			{
 			Set<NucPair> children=new HashSet<NucPair>(NucLineage.selectedNuclei);
 			for(NucPair p:children)
-				recursiveSelectParent(p.getLeft(), p.getRight());
+				recursiveSelectParent(p.fst(), p.snd());
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==objectCombo)

@@ -179,9 +179,9 @@ public class MakeStdWormDist
 							
 							//Get distances
 							for(NucPair otherpair:inter.keySet())
-								if(!otherpair.getRight().equals(thisnucname))
+								if(!otherpair.snd().equals(thisnucname))
 									{
-									String othernucname=otherpair.getRight();
+									String othernucname=otherpair.snd();
 									NucStats.NucStatsOne otherOne=nucstats.get(othernucname);
 									NucInterp otheri=inter.get(otherpair);
 			

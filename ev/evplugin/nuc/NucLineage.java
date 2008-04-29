@@ -160,8 +160,8 @@ public class NucLineage extends EvObject implements Cloneable
 	 */
 	public static void mouseSelectNuc(NucPair nucPair, boolean shift)
 		{
-		NucLineage lin=nucPair.getLeft();
-		String nucname=nucPair.getRight();
+		NucLineage lin=nucPair.fst();
+		String nucname=nucPair.snd();
 		//Shift-key used to select multiple
 		if(shift)
 			{
@@ -251,13 +251,13 @@ public class NucLineage extends EvObject implements Cloneable
 		String parentName=null;
 		int parentFrame=0;
 		NucLineage.Nuc parent=null;
-		NucLineage lin=NucLineage.selectedNuclei.iterator().next().getLeft();
+		NucLineage lin=NucLineage.selectedNuclei.iterator().next().fst();
 		//Decide which is the parent
 		for(NucPair childPair:NucLineage.selectedNuclei)
-			if(childPair.getLeft()==lin)
+			if(childPair.fst()==lin)
 				{
 				
-				String childName=childPair.getRight();
+				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);
 				int firstFrame=n.pos.firstKey();
 				if(parentName==null || firstFrame<parentFrame)
@@ -272,9 +272,9 @@ public class NucLineage extends EvObject implements Cloneable
 			JOptionPane.showMessageDialog(null, "Could not decide on a parent");
 		else
 			for(NucPair childPair:NucLineage.selectedNuclei)
-				if(childPair.getLeft()==lin)
+				if(childPair.fst()==lin)
 					{
-					String childName=childPair.getRight();
+					String childName=childPair.snd();
 					if(!childName.equals(parentName))
 						{
 						NucLineage.Nuc n=lin.nuc.get(childName);
@@ -585,7 +585,7 @@ public class NucLineage extends EvObject implements Cloneable
 			public void actionPerformed(ActionEvent arg0)
 				{
 				for(NucPair p:selectedNuclei)
-					p.getLeft().nuc.get(p.getRight()).colorNuc=null;
+					p.fst().nuc.get(p.snd()).colorNuc=null;
 				BasicWindow.updateWindows();
 				}
 		});
@@ -597,7 +597,7 @@ public class NucLineage extends EvObject implements Cloneable
 				public void actionPerformed(ActionEvent arg0)
 					{
 					for(NucPair p:selectedNuclei)
-						p.getLeft().nuc.get(p.getRight()).colorNuc=c.c;
+						p.fst().nuc.get(p.snd()).colorNuc=c.c;
 					BasicWindow.updateWindows();
 					}
 			});
