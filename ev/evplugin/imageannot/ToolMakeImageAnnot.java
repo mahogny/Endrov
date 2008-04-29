@@ -60,7 +60,7 @@ public class ToolMakeImageAnnot implements ImageWindowTool
 		for(ImageAnnot a:ann)
 			{
 			double dist=(a.pos.x-v.x)*(a.pos.x-v.x) + (a.pos.y-v.y)*(a.pos.y-v.y);
-			if(cdist<dist || closest==null)
+			if(cdist>dist || closest==null)
 				{
 				cdist=dist;
 				closest=a;
