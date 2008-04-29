@@ -195,7 +195,7 @@ public class LineageView extends JPanel
 		{
 		if(!NucLineage.selectedNuclei.isEmpty())
 			{
-			String nucName=NucLineage.selectedNuclei.iterator().next().getRight();
+			String nucName=NucLineage.selectedNuclei.iterator().next().snd();
 			Internal internal=getNucinfo(nucName);
 			goInternalNuc(internal);
 			}
@@ -567,7 +567,7 @@ public class LineageView extends JPanel
 	 */
 	private void drawNucName(Graphics g, String prefix, NucPair nucPair, int midr, int endc)
 		{
-		String nucName=nucPair.getRight();
+		String nucName=nucPair.snd();
 		int fontHeight=g.getFontMetrics().getHeight();
 		int fontWidth=g.getFontMetrics().stringWidth(prefix+nucName);
 		int textc=endc+5;

@@ -204,7 +204,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			holdRadius=true;
 		
 		int curFramei=(int)w.frameControl.getFrame();
-		NucLineage lin=NucLineage.currentHover.getLeft();
+		NucLineage lin=NucLineage.currentHover.fst();
 		
 		if(lin!=null && (KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)))
 			{
@@ -215,10 +215,10 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 		else if(lin!=null && KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			{
 			//Divide nucleus
-			NucLineage.Nuc n=NucLineage.currentHover.getLeft().nuc.get(NucLineage.currentHover.getRight());
+			NucLineage.Nuc n=NucLineage.currentHover.fst().nuc.get(NucLineage.currentHover.snd());
 			if(n!=null && r.interpNuc.containsKey(NucLineage.currentHover))
 				{
-				lin.divide(NucLineage.currentHover.getRight(), curFramei);
+				lin.divide(NucLineage.currentHover.snd(), curFramei);
 				BasicWindow.updateWindows();
 				}
 			}
@@ -227,7 +227,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			//Bring nucleus to this Z
 			NucPair useNuc=NucLineage.currentHover;
 
-			if(useNuc.getLeft()==null)
+			if(useNuc.fst()==null)
 				{
 				System.out.println("foo");
 				if(NucLineage.selectedNuclei.size()==1)
@@ -235,8 +235,8 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 				}
 			
 			NucLineage.Nuc n=null;
-			if(useNuc.getLeft()!=null)
-				n=useNuc.getLeft().nuc.get(useNuc.getRight());
+			if(useNuc.fst()!=null)
+				n=useNuc.fst().nuc.get(useNuc.snd());
 			
 			if(n!=null && r.interpNuc.containsKey(useNuc))
 				{
@@ -252,7 +252,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 		else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETEND).typed(e))
 			{
 			//Set end frame of nucleus
-			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.getRight());
+			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.snd());
 			if(n!=null)
 				{
 				if(n.end!=null && n.end==curFramei)
@@ -261,7 +261,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 					{
 					n.end=curFramei;
 					//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
-					lin.removePosAfterEqual(NucLineage.currentHover.getRight(), curFramei+1);
+					lin.removePosAfterEqual(NucLineage.currentHover.snd(), curFramei+1);
 					}
 				BasicWindow.updateWindows();
 				}
@@ -277,7 +277,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			int firstFrame=1000000;
 			for(NucPair childPair:NucLineage.selectedNuclei)
 				{
-				String childName=childPair.getRight();
+				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);
 				NucLineage.NucPos pos=n.pos.get(n.pos.firstKey());
 				x+=pos.x;				y+=pos.y;				z+=pos.z;				r+=pos.r;
@@ -345,7 +345,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			int framei=(int)w.frameControl.getFrame();
 			n.pos.remove(framei);
 			if(n.pos.size()==0)
-				lin.removeNuc(r.modifyingNucName.getRight());
+				lin.removeNuc(r.modifyingNucName.snd());
 			}
 		r.modifyingNucName=null;
 		BasicWindow.updateWindows();

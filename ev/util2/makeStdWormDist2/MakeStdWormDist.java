@@ -1,5 +1,6 @@
 package util2.makeStdWormDist2;
 
+import java.io.File;
 import java.util.*;
 
 import javax.vecmath.Matrix3d;
@@ -29,39 +30,52 @@ public class MakeStdWormDist
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
+		String outputName="/Volumes/TBU_main02/ostxml/stdcelegansNew.xml";
+		
 		//Load all worms to standardize from
-		String[] wnlist={
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071114/rmd.xml",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071115/rmd.xml",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071116/rmd.xml",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071117/rmd.xml",
-//				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071118/rmd.xml",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2164_080118/rmd.xml",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2142_071129/rmd.xml",
-				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2greenLED080206/rmd.xml"
-				}; 
+/*		String[] wnlist={
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071114",
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071115",
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071116",
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071117",
+//				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2_071118",
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2164_080118",
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/TB2142_071129",
+				"/Volumes/TBU_xeon01_500GB02/ost4dgood/N2greenLED080206"
+				}; */
 		Vector<EvData> worms=new Vector<EvData>();
 		TreeMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
-		for(String s:wnlist)
+		
+		String[] dirs={"/Volumes/TBU_main01/ost4dgood","/Volumes/TBU_main02/ost4dgood","/Volumes/TBU_main03/ost4dgood"};
+		for(String dir:dirs)
 			{
-			EvData ost=new EvDataXML(s);
-			worms.add(ost);
-			for(EvObject evob:ost.metaObject.values())
-				{
-				if(evob instanceof NucLineage)
+			for(File f:new File(dir).listFiles())
+				if(!f.getName().startsWith("."))
 					{
-					NucLineage lin=(NucLineage)evob;
-					if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-							lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'"))
+					String s=f.getPath();
+					EvData ost=new EvDataXML(s+"/rmd.xml");
+					worms.add(ost);
+					for(EvObject evob:ost.metaObject.values())
 						{
-						lins.put(s, lin);
-						System.out.println("ok:"+s);
+						if(evob instanceof NucLineage)
+							{
+							NucLineage lin=(NucLineage)evob;
+							if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
+									lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
+									(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
+									(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
+								{
+								lins.put(s, lin);
+								System.out.println("ok:"+s);
+								}
+	//						else
+	//							System.out.println("not ok:"+s);
+							}
 						}
-					else
-						System.out.println("not ok:"+s);
-					}
+				
 				}
 			}
+		
 
 		//Get names of nuclei
 		TreeSet<String> nucNames=new TreeSet<String>();
@@ -174,9 +188,9 @@ public class MakeStdWormDist
 							//Get distances
 							if(NUMTRY>0)
 								for(NucPair otherpair:inter.keySet())
-									if(!otherpair.getRight().equals(thisnucname))
+									if(!otherpair.snd().equals(thisnucname))
 										{
-										String othernucname=otherpair.getRight();
+										String othernucname=otherpair.snd();
 										NucStats.NucStatsOne otherOne=nucstats.get(othernucname);
 										NucInterp otheri=inter.get(otherpair);
 	
@@ -309,7 +323,7 @@ public class MakeStdWormDist
 		
 		
 		//Save reference
-		EvDataXML output=new EvDataXML("/Volumes/TBU_xeon01_500GB02/ostxml/stdcelegansNew.xml");
+		EvDataXML output=new EvDataXML(outputName);
 		output.metaObject.clear();
 		output.addMetaObject(refLin);
 		output.saveMeta();

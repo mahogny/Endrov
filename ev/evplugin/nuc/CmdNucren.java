@@ -21,8 +21,8 @@ public class CmdNucren extends Command
 			if(NucLineage.selectedNuclei.size()==1)
 				{
 				NucPair nucPair=NucLineage.selectedNuclei.iterator().next();
-				NucLineage lin=nucPair.getLeft();
-				if(!lin.renameNucleus(nucPair.getRight(), newName))
+				NucLineage lin=nucPair.fst();
+				if(!lin.renameNucleus(nucPair.snd(), newName))
 					throw new Exception("Failed to rename");
 				NucLineage.selectedNuclei.remove(nucPair);
 				NucLineage.selectedNuclei.add(new NucPair(lin,newName));

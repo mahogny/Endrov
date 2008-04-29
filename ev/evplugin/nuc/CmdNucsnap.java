@@ -18,8 +18,8 @@ public class CmdNucsnap extends Command
 		{
 		for(NucPair nucPair:NucLineage.selectedNuclei)
 			{
-			NucLineage lin=nucPair.getLeft();
-			NucLineage.Nuc n=lin.nuc.get(nucPair.getRight());
+			NucLineage lin=nucPair.fst();
+			NucLineage.Nuc n=lin.nuc.get(nucPair.snd());
 			
 			NucLineage.NucPos pos=n.pos.get(n.pos.firstKey());
 			

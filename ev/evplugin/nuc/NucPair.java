@@ -1,10 +1,10 @@
 package evplugin.nuc;
 
-import evplugin.ev.Pair;
+import evplugin.ev.Tuple;
 
 //Maybe a bad class. just use the normal pair? otherwise get rid of pair, and left and right?
 
-public class NucPair extends Pair<NucLineage,String>
+public class NucPair extends Tuple<NucLineage,String>
 	{
 	public NucPair(NucLineage lin, String nuc)
 		{
@@ -18,7 +18,7 @@ public class NucPair extends Pair<NucLineage,String>
 	
 	public String toString()
 		{
-		return ""+getLeft()+":"+getRight();
+		return ""+fst()+":"+snd();
 		}
 	
 	public int hashCode()

@@ -171,14 +171,14 @@ public class NucModelExtension implements ModelWindowExtension
 					
 					if(traceCur && !traceSel)
 						{
-						NucLineage.Nuc nuc=nucPair.getLeft().nuc.get(nucPair.getRight());
+						NucLineage.Nuc nuc=nucPair.fst().nuc.get(nucPair.snd());
 						renderTrace(gl,nuc);
 						}
 					
 					//Draw connecting line
-					if(nucPair.getRight().equals(NucLineage.connectNuc[0]))
+					if(nucPair.snd().equals(NucLineage.connectNuc[0]))
 						for(NucPair nucPair2:inter.keySet())
-							if(nucPair2.getRight().equals(NucLineage.connectNuc[1]))
+							if(nucPair2.snd().equals(NucLineage.connectNuc[1]))
 								{
 								NucInterp n=inter.get(nucPair);
 								NucInterp m=inter.get(nucPair2);
@@ -198,7 +198,7 @@ public class NucModelExtension implements ModelWindowExtension
 			if(traceSel)
 				for(NucPair pair:NucLineage.selectedNuclei)
 					{
-					NucLineage.Nuc nuc=pair.getLeft().nuc.get(pair.getRight());
+					NucLineage.Nuc nuc=pair.fst().nuc.get(pair.snd());
 					renderTrace(gl,nuc);
 					}
 			
@@ -446,7 +446,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    	//it would look better if it was toward the camera *center*
 	    	//also consider setting size such that it does not vary with distance
 	    	//3d text at all? overlay rendering should be faster
-				String nucName=nucPair.getRight();
+				String nucName=nucPair.snd();
 	    	w.view.renderString(gl, w.view.renderer, (float)(0.005*nuc.pos.r), nucName);
 	    	}
 	    

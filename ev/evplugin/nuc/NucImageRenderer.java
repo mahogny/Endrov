@@ -80,7 +80,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	 */
 	private void drawNuc(Graphics g, NucPair nucPair, NucLineage.NucInterp nuc)
 		{			
-		String nucName=nucPair.getRight();
+		String nucName=nucPair.snd();
 		
 		if(nuc==null)
 			{
@@ -206,7 +206,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(modifyingNucName==null)
 			return null;
 		else
-			return modifyingNucName.getLeft().getNucCreate(modifyingNucName.getRight());
+			return modifyingNucName.fst().getNucCreate(modifyingNucName.snd());
 		}
 	
 	public NucLineage getModifyingLineage()
@@ -214,7 +214,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(modifyingNucName==null)
 			return null;
 		else
-			return modifyingNucName.getLeft();
+			return modifyingNucName.fst();
 		}
 	
 	}

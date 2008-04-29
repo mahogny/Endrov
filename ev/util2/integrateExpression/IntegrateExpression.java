@@ -102,7 +102,7 @@ public class IntegrateExpression
 //					if(e.getKey().getRight().equals("ABarappaa"))
 					//	if(e.getKey().getRight().equals("AB"))
 					{
-					String nucName=e.getKey().getRight();
+					String nucName=e.getKey().snd();
 					NucLineage.NucPos pos=e.getValue().pos;
 
 					double pr=projectSphere(pos.r, pos.z, imageZw);
