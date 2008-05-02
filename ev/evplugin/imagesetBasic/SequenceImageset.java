@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.*;
 
 import evplugin.basicWindow.BasicWindow;
+import evplugin.data.RecentReference;
 import evplugin.ev.*;
 import evplugin.imageset.*;
 
@@ -58,6 +59,11 @@ public class SequenceImageset extends Imageset
 	
 	public void saveMeta()
 		{
+		}
+	
+	public RecentReference getRecentEntry()
+		{
+		return null;
 		}
 	
 	/**

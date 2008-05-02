@@ -1,6 +1,9 @@
 package evplugin.data;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
+import java.io.File;
 import java.util.*;
 import javax.swing.*;
 
@@ -11,12 +14,9 @@ import evplugin.basicWindow.*;
  * 
  * @author Johan Henriksson
  */
-public class EvDataBasic implements BasicWindowExtension
+public class EvDataMenu implements BasicWindowExtension
 	{
-	
 	public static Vector<DataMenuExtension> extensions=new Vector<DataMenuExtension>();
-	
-	
 	
 	public void newBasicWindow(BasicWindow w)
 		{
@@ -26,7 +26,12 @@ public class EvDataBasic implements BasicWindowExtension
 		{
 		private JMenu mData=new JMenu("Data");
 		private JMenuItem miNew=new JMenuItem("New XML");
-		private JMenuItem miOpen=new JMenuItem("Load XML");
+		private JMenu mRecent=new JMenu("Recent Files");
+
+		private JMenuItem miOpenFile=new JMenuItem("Load File");
+		private JMenuItem miOpenFilePath=new JMenuItem("Load File by Path");
+
+		
 		
 		public void createMenus(BasicWindow w)
 			{
@@ -41,28 +46,66 @@ public class EvDataBasic implements BasicWindowExtension
 				EvData.addMetadata(new EvDataXML());
 				BasicWindow.updateWindows();
 				}
-			else if(e.getSource()==miOpen)
-				{
-				EvDataXML.loadMeta();
-				}
+			else if(e.getSource()==miOpenFile)
+				EvData.registerOpenedData(EvData.loadFile());
+			else if(e.getSource()==miOpenFilePath)
+				loadByPath();
 			}
 
 		
-	
+		public void loadByPath()
+			{
+			String clipboardString=null;
+			try
+				{
+				clipboardString=(String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+				}
+			catch(Exception e2)
+				{
+				System.out.println("Failed to get text from clipboard");
+				}
+			if(clipboardString==null)
+				clipboardString="";
+			String fileName=JOptionPane.showInputDialog("Path",clipboardString);
+			if(fileName!=null)
+				{
+				File thefile=new File(fileName);
+				if(thefile.exists())
+					EvData.registerOpenedData(EvData.loadFile(thefile));
+				else
+					JOptionPane.showMessageDialog(null, "Path does not exist");
+				}
+			}
 		
 		
 		
 		public void buildMenu(BasicWindow w)
 			{
+			BasicWindow.tearDownMenu(mRecent);
 			BasicWindow.tearDownMenu(mData);
 			
 			BasicWindow.addMenuItemSorted(mData, miNew);
-			BasicWindow.addMenuItemSorted(mData, miOpen);			
+			BasicWindow.addMenuItemSorted(mData, miOpenFile);			
+			BasicWindow.addMenuItemSorted(mData, miOpenFilePath);			
+			BasicWindow.addMenuItemSorted(mData, mRecent);			
+			
 			miNew.addActionListener(this);
-			miOpen.addActionListener(this);
+			miOpenFile.addActionListener(this);
+			miOpenFilePath.addActionListener(this);
 			for(DataMenuExtension e:extensions)
 				e.buildOpen(mData);
 			mData.addSeparator();
+			
+			//List recent entries
+			for(final RecentReference rref:EvData.recentlyLoadedFiles)
+				{
+				JMenuItem mi=new JMenuItem(rref.descName+" ("+rref.url+")");
+				mRecent.add(mi);
+				mi.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e)
+						{EvData.registerOpenedData(EvData.loadFile(new File(rref.url)));}
+					});
+				}
 			
 			//List all global Metadata
 			for(final EvData thisMeta:EvData.metadata)

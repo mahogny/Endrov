@@ -9,7 +9,7 @@ import java.util.List;
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
-import evplugin.data.EvDataXML;
+import evplugin.data.EvData;
 
 
 /**
@@ -81,7 +81,7 @@ public class RenameDialog extends JDialog implements ActionListener
 		if(e.getSource()==bLoad)
 			{
 			timer=null;
-			EvDataXML data=EvDataXML.loadReturnMeta();
+			EvData data=EvData.loadFile();
 			if(data!=null)
 				{
 				List<NucLineage> lins=data.getObjects(NucLineage.class);

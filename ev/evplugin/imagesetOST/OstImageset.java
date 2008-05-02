@@ -2,9 +2,6 @@ package evplugin.imagesetOST;
 
 //note: renaming channel will require all EvImageOST to be renamed as well
 
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 import java.io.*;
@@ -12,7 +9,6 @@ import java.util.*;
 
 import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.basicWindow.*;
 import evplugin.imageset.*;
 import evplugin.script.*;
 
@@ -32,7 +28,23 @@ public class OstImageset extends Imageset
 		{
 		Script.addCommand("loadost", new CmdLoadOST());
 		
-		EvDataBasic.extensions.add(new DataMenuExtension()
+		supportFileFormats.add(new EvDataSupport(){
+			public Integer supports(File file)
+				{
+				if(file.isDirectory())
+					for(File f:file.listFiles())
+						if(f.isFile() && f.getName().equals("rmd.xml"))
+							return 10;
+				return null;
+				}
+			public EvData load(File file) throws Exception
+				{
+				return new OstImageset(file.getAbsolutePath());
+				}
+		});
+		
+/*		
+		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
 			public void buildOpen(JMenu menu)
 				{
@@ -44,9 +56,6 @@ public class OstImageset extends Imageset
 				
 				ActionListener listener=new ActionListener()
 					{
-					/**
-					 * Show dialog for opening a new native imageset
-					 */
 					public void actionPerformed(ActionEvent e)
 						{
 						if(e.getSource()==miLoadVWBImageset)
@@ -87,9 +96,6 @@ public class OstImageset extends Imageset
 							}
 						}
 
-					/**
-					 * Load OST imageset
-					 */
 					public void load(String filename)
 						{
 						//Show loading dialog
@@ -119,6 +125,8 @@ public class OstImageset extends Imageset
 				{
 				}
 			});
+			*/
+		
 		}
 
 	
@@ -712,5 +720,10 @@ public class OstImageset extends Imageset
 		System.out.println("finalize ost");
 		}
 	
+	
+	public RecentReference getRecentEntry()
+		{
+		return new RecentReference(getMetadataName(), basedir);
+		}
 	}
 

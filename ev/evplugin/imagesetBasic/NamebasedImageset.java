@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.List;
 
 import evplugin.basicWindow.*;
+import evplugin.data.RecentReference;
 import evplugin.ev.*;
 import evplugin.imageset.*;
 
@@ -52,6 +53,11 @@ public class NamebasedImageset extends Imageset
 	
 	public void saveMeta()
 		{
+		}
+	
+	public RecentReference getRecentEntry()
+		{
+		return null;
 		}
 	
 	/**

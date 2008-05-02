@@ -1,14 +1,8 @@
 package evplugin.imagesetBioformats;
 
-import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-import javax.swing.*;
-
-import evplugin.basicWindow.*;
-import evplugin.ev.*;
 import evplugin.imageset.*;
 import evplugin.data.*;
 import evplugin.script.Script;
@@ -31,7 +25,19 @@ public class BioformatsImageset extends Imageset
 	
 		Script.addCommand("dbio", new CmdDBIO());
 		
-		EvDataBasic.extensions.add(new DataMenuExtension()
+		supportFileFormats.add(new EvDataSupport(){
+			public Integer supports(File file)
+				{
+				return file.isFile() ? 100 : null; //Low priority; need to find a way to check extensions
+				}
+			public EvData load(File file) throws Exception
+				{
+				return new BioformatsImageset(file.getAbsolutePath());
+				}
+		});
+		
+		/*
+		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
 			public void buildOpen(JMenu menu)
 				{
@@ -40,9 +46,6 @@ public class BioformatsImageset extends Imageset
 				
 				ActionListener listener=new ActionListener()
 					{
-					/**
-					 * Show dialog for opening a new native imageset
-					 */
 					public void actionPerformed(ActionEvent e)
 						{
 						if(e.getSource()==miLoadBioformats)
@@ -56,12 +59,13 @@ public class BioformatsImageset extends Imageset
 			public void buildSave(JMenu menu, EvData meta)
 				{
 				}
-			});
+			});*/
 		}
 	
 	/**
 	 * Open a dialog to open a bioformats imageset
 	 */
+	/*
 	public static void dialogOpenBioformats()
 		{
 		JFileChooser chooser = new JFileChooser();
@@ -98,7 +102,7 @@ public class BioformatsImageset extends Imageset
     	
     	}
 		}
-	
+	*/
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -248,6 +252,11 @@ public class BioformatsImageset extends Imageset
 			}
 		
 		
+		}
+	
+	public RecentReference getRecentEntry()
+		{
+		return new RecentReference(getMetadataName(), basedir);
 		}
 	
 	}

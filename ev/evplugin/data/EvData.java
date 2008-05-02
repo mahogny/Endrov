@@ -2,6 +2,9 @@ package evplugin.data;
 
 import java.util.*;
 import java.io.*;
+
+import javax.swing.JFileChooser;
+
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
@@ -21,6 +24,8 @@ public abstract class EvData
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
+	public static Vector<EvDataSupport> supportFileFormats=new Vector<EvDataSupport>();
+	
 	
 	public static void initPlugin() {}
 	static
@@ -31,7 +36,51 @@ public abstract class EvData
 		Script.addCommand("dunl", new CmdDUNL());
 		Script.addCommand("msel", new CmdMSEL());
 		Script.addCommand("mls",  new CmdMLS());
-		BasicWindow.addBasicWindowExtension(new EvDataBasic());
+		
+		//OST XML-support
+		supportFileFormats.add(new EvDataSupport(){
+			public Integer supports(File file)
+				{
+				return file.isFile() && file.getName().endsWith(".xml") ? 10 : null;
+				}
+			public EvData load(File file) throws Exception
+				{
+				return new EvDataXML(file.getAbsolutePath());
+				}
+		});
+		
+		//Store recent entries in personal config
+		EV.personalConfigLoaders.put("recentlyLoaded",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				RecentReference rref=new RecentReference(e.getAttributeValue("desc"),e.getAttributeValue("url"));
+				recentlyLoadedFiles.add(rref);
+				BasicWindow.updateWindows(); //Semi-ugly. Done many times.
+				}
+			public void savePersonalConfig(Element root)
+				{
+				try
+					{
+					for(RecentReference rref:EvData.recentlyLoadedFiles)
+						{
+						Element e=new Element("recentlyLoaded");
+						e.setAttribute("desc",rref.descName);
+						e.setAttribute("url",rref.url);
+						root.addContent(e);
+						}
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				}
+			});
+		
+		BasicWindow.addBasicWindowExtension(new EvDataMenu());
+//		BasicWindow.updateWindows();
+		//maybe update on new extension?
+		//priorities on update? windows should really go last. then the updateWindows call here is solved.
 		}
 	
 	public static TreeMap<String,EvObjectType> extensions=new TreeMap<String,EvObjectType>();
@@ -74,6 +123,103 @@ public abstract class EvData
 		if(s!=null)
 			lastDataPath=s;
 		}
+	
+	
+	public static Vector<RecentReference> recentlyLoadedFiles=new Vector<RecentReference>();
+
+	/** 
+	 * Register data file in GUI 
+	 */
+	public static void registerOpenedData(EvData data)
+		{
+		if(data!=null)
+			{
+			EvData.addMetadata(data);
+			RecentReference rref=data.getRecentEntry();
+			if(rref!=null)
+				{
+				boolean isAdded=false;
+				for(RecentReference rref2:recentlyLoadedFiles)
+					if(rref2.url.equals(rref.url))
+						isAdded=true;
+				if(!isAdded)
+					{
+					recentlyLoadedFiles.add(0,rref);
+					while(recentlyLoadedFiles.size()>10)
+						recentlyLoadedFiles.remove(recentlyLoadedFiles.size()-1);
+					}
+				}
+			BasicWindow.updateWindows();
+			}
+		}
+	
+	/**
+	 * Load file by path
+	 */
+	public static EvData loadFile(File file)
+		{
+		EvDataSupport thes=null;
+		int lowest=0;
+		for(EvDataSupport s:EvData.supportFileFormats)
+			{
+			Integer sup=s.supports(file);
+			if(sup!=null && (thes==null || lowest>sup))
+				{
+				thes=s;
+				lowest=sup;
+				}
+			}
+		if(thes!=null)
+			{
+			try
+				{
+				EvData data=thes.load(file);
+				if(data!=null)
+					return data;
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				return null;
+				}
+			}
+		return null;
+		}
+	
+	/**
+	 * Load file by open dialog
+	 */
+	public static EvData loadFile()
+		{
+		JFileChooser fc=new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fc.setFileFilter(new javax.swing.filechooser.FileFilter()
+			{
+			public boolean accept(File f)
+				{
+				if(f.isDirectory())
+					return true;
+				for(EvDataSupport s:EvData.supportFileFormats)
+					if(s.supports(f)!=null)
+						return true;
+				return false;
+				}
+			public String getDescription()
+				{
+				return "Data Files and Imagesets";
+				}
+			});
+		fc.setCurrentDirectory(new File(EvData.getLastDataPath()));
+		int ret=fc.showOpenDialog(null);
+		if(ret==JFileChooser.APPROVE_OPTION)
+			{
+			EvData.setLastDataPath(fc.getSelectedFile().getParent());
+			File filename=fc.getSelectedFile();
+			return loadFile(filename);
+			}
+		return null;
+		}
+
 	
 	
 	/******************************************************************************************************
@@ -122,15 +268,6 @@ public abstract class EvData
 		}
 	
 	
-	/**
-	 * Get a name description of the metadata
-	 */
-	public abstract String getMetadataName();
-	
-	/**
-	 * Save metadata
-	 */
-	public abstract void saveMeta();
 	
 	
 	/**
@@ -318,5 +455,25 @@ public abstract class EvData
 		if(parent!=null)
 			touchRecursive(parent,timestamp);
 		}
+
 	
+	/******************************************************************************************************
+	 *                               Abstract Instance                                                    *
+	 *****************************************************************************************************/
+
+
+	/**
+	 * Get a name description of the metadata
+	 */
+	public abstract String getMetadataName();
+	
+	/**
+	 * Save metadata
+	 */
+	public abstract void saveMeta();
+
+	/**
+	 * Get entry for Load Recent or null if not possible
+	 */
+	public abstract RecentReference getRecentEntry();
 	}

@@ -6,7 +6,6 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.jdom.Document;
 
-import evplugin.basicWindow.BasicWindow;
 
 /**
  * Metadata stored in an ordinary XML-file
@@ -69,6 +68,7 @@ public class EvDataXML extends EvData
 	/**
 	 * Load metadata by showing open dialog
 	 */
+	/*
 	public static void loadMeta()
 		{
 		EvDataXML m=loadReturnMeta();
@@ -95,6 +95,7 @@ public class EvDataXML extends EvData
 			return null;
 		}
 	
+	*/
 	
 	
 	public static JFileChooser getFileChooser()
@@ -114,4 +115,9 @@ public class EvDataXML extends EvData
 		return fc;
 		}
 	
+	
+	public RecentReference getRecentEntry()
+		{
+		return new RecentReference(getMetadataName(), filename.getAbsolutePath());
+		}
 	}

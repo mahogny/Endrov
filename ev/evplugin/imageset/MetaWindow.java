@@ -103,7 +103,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		/******************************************************************************************************
 		 *                               Data menu extension                                                  *
 		 *****************************************************************************************************/
-		EvDataBasic.extensions.add(new DataMenuExtension()
+		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
 			public void buildOpen(JMenu menu)
 				{

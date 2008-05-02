@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.List;
 import java.util.TreeMap;
 
+import evplugin.data.RecentReference;
 import evplugin.imageset.*;
 
 
@@ -66,7 +67,10 @@ public class OMEImageset extends Imageset
 		{
 		}
 	
-	
+	public RecentReference getRecentEntry()
+		{
+		return null;
+		}
 	
 	
 	/**
