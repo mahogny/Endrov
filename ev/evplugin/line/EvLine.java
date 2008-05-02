@@ -90,6 +90,37 @@ public class EvLine extends EvObject implements Cloneable
 	
 	public Vector<Vector3d> pos=new Vector<Vector3d>();
 	
+	/**
+	 * Calculate length of each segment
+	 */
+	public List<Double> getSegmentDistances()
+		{
+		List<Double> distances=new LinkedList<Double>();
+		for(int i=1;i<pos.size();i++)
+			{
+			Vector3d p=new Vector3d(pos.get(i-1));
+			p.sub(pos.get(i));
+			double len=p.length();
+			distances.add(len);
+			}
+		return distances;
+		}
+
+	/**
+	 * Calculate total length
+	 */
+	public double getTotalDistance()
+		{
+		double totalDist=0;
+		for(int i=1;i<pos.size();i++)
+			{
+			Vector3d p=new Vector3d(pos.get(i-1));
+			p.sub(pos.get(i));
+			double len=p.length();
+			totalDist+=len;
+			}
+		return totalDist;
+		}
 	
 	
 	/**

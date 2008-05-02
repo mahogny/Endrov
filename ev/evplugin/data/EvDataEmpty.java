@@ -14,4 +14,8 @@ public class EvDataEmpty extends EvData
 		Log.printError("Error: trying to save Empty metadata",null);
 		}
 
+	public RecentReference getRecentEntry()
+		{
+		return null;
+		}
 	}

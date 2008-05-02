@@ -17,7 +17,7 @@ public class Basic //implements BasicWindowExtension
 		{
 	//	BasicWindow.addBasicWindowExtension(new Basic());
 		
-		EvDataBasic.extensions.add(new DataMenuExtension()
+		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
 
 			public void buildOpen(JMenu menu)

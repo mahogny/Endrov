@@ -132,18 +132,13 @@ public class ToolMakeLine implements ImageWindowTool
 	
 	public void printDistances(EvLine line)
 		{
-		double totalDist=0;
 		StringBuffer distances=new StringBuffer();
-		for(int i=1;i<line.pos.size();i++)
+		for(double d:line.getSegmentDistances())
 			{
-			Vector3d p=new Vector3d(line.pos.get(i-1));
-			p.sub(line.pos.get(i));
-			double len=p.length();
-			distances.append(Double.toString(len));
+			distances.append(Double.toString(d));
 			distances.append(" ");
-			totalDist+=len;
 			}
-		Log.printLog("Length [um]: "+totalDist+ " ( "+distances+")");
+		Log.printLog("Length [um]: "+line.getTotalDistance()+ " ( "+distances+")");
 		}
 	
 	public void mouseDragged(MouseEvent e, int dx, int dy)

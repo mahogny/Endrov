@@ -14,7 +14,7 @@ public class Basic
 	public static void initPlugin() {}
 	static
 		{
-		EvDataBasic.extensions.add(new DataMenuExtension()
+		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
 
 			public void buildOpen(JMenu menu)

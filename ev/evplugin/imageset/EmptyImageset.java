@@ -2,6 +2,8 @@ package evplugin.imageset;
 
 import java.io.File;
 
+import evplugin.data.RecentReference;
+
 
 public class EmptyImageset extends Imageset
 	{
@@ -76,5 +78,8 @@ public class EmptyImageset extends Imageset
 			}
 		}
 	
-	
+	public RecentReference getRecentEntry()
+		{
+		return null;
+		}
 	}
