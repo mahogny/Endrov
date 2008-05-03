@@ -6,51 +6,22 @@
 	<string>true</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>129</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>****</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>xml</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>OST XML</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>TEXT</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>NSDocumentClass</key>
-			<string>MyDocument</string>
-		</dict>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>JavaApplicationStub</string>
 	<key>CFBundleGetInfoString</key>
-	<string>http://www.endrov.net</string>
+	<string>http://celegans.sh.se</string>
 	<key>CFBundleIconFile</key>
-	<string>ImageJ.icns</string>
+	<string>umicon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>evgui</string>
+	<string>OSTmaker</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>EVGUI</string>
+	<string>OSTmaker</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
-	<string>EV</string>
+	<string>OSTmaker</string>
 	<key>CFBundleVersion</key>
 	<string>10.2</string>
 	<key>Java</key>
@@ -60,7 +31,7 @@
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
-		<string>evgui.MW</string>
+		<string>OSTmaker.Main</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.awt.Antialiasing</key>
@@ -79,7 +50,7 @@
 			<string>true</string>
 		</dict>
 		<key>VMOptions</key>
-		<string>-Xms32m -Xmx700m -Djava.library.path=libs/mac</string>
+		<string>-Xms32m -Xmx1500m -Djava.library.path=libs/mac</string>
 	</dict>
 </dict>
 </plist>
