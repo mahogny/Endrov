@@ -1,0 +1,61 @@
+Frequently Asked Questions
+
+Q1. What is the point of this collection of functions?
+
+A1. These are functions which I have often found necessary for
+basic image processing. By implementing them as MEX functions they
+are *much* faster than M-file equivalents. This means that you
+have the convenience of MATLAB with the speed of C.
+
+Q2. The demo file KFtoolsdemo.m gives an error. What should I do?
+
+A2. The MEX files must be compiled before they can be used. The
+M-file mexKFtools.m will do this for you. Run it first. Also
+ensure that the functions are all in MATLAB's path.
+
+Q3. What is watershed segmentation? The help does not give enough
+information.
+
+A3. Try a web search for "watershed segmentation". Also see if you
+can get hold of the following journal article:  L. Vincent and P.
+Soille. Watersheds in digital spaces: An efficient algorithm based
+on immersion simulations in IEEE Transactions on Pattern Analysis
+and Machine Intelligence, 13(6):583-598, 1991.
+
+Q4. What is the point of the function getboundarymex?
+
+A4. It is often far more efficient to measure shape features etc.
+from a binary object in polygon format (list of pixel corner
+coordinates) than as an image of pixels.
+
+Q5. The functions bndread and bndwrite don't work with my data.
+What's wrong?
+
+A5. These functions are only intended to work with data in the
+format of the output from the getboundarymex function. This
+assumes that the centres of pixels have integer coordinates. This
+means that the corners have coordinates of n+0.5 where n is an
+integer.
+
+Q6. How and what would I use these functions for?
+
+A6. At the moment, the best way to find out is to examine the
+KFtoolsDemo.m script.
+
+Q7. I have not set up the MATLAB path for KFtools. What should I
+do?
+
+A7. From the MATLAB command window go to [file] [set path] and
+then set up the path to include the KFtools files. You must do
+this.
+
+Q8. I don't have the imshow function. Where do I get it?
+
+Q9. The imshow function is part of the image processing toolbox.
+The latest version of KFtools should work without it. Get it at
+http://www.dip.ee.uct.ac.za/~kforbes/KFtools/KFtools.html
+
+
+
+
+

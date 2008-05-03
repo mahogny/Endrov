@@ -136,12 +136,22 @@ public class BioformatsImageset extends Imageset
 
 	public File datadir()
 		{
-		return new File("");
+		return new File(basedir).getParentFile();
 		}
 
+	/**
+	 * This plugin saves metadata into FILENAME.ostxml. This function constructs the name
+	 */
+	private File getMetaFile()
+		{
+		File fname=new File(basedir);
+		return new File(fname.getParent(),fname.getName()+".ostxml");
+		}
 	
 	public void saveMeta()
 		{
+		saveMeta(getMetaFile());
+		setMetadataModified(false);
 		}
 	
 	
@@ -160,14 +170,13 @@ public class BioformatsImageset extends Imageset
 		
 
 		
-		//Read meta data
+		//Read meta data from original imageset
 		System.out.println("# XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
 		for(Object o:(Set)imageReader.getMetadata().entrySet())
 			{
 			Map.Entry e=(Map.Entry)o;
 			System.out.println("> "+e.getKey()+" "+e.getValue());
 			}
-
 		meta=new ImagesetMeta();
 		meta.resX=1;
 		meta.resY=1;
@@ -178,6 +187,22 @@ public class BioformatsImageset extends Imageset
 			meta.resY=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6;
 		if(imageReader.getMetadataValue("VoxelSizeZ")!=null)
 			meta.resZ=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6;
+
+		//Load metadata from added OSTXML-file
+		File metaFile=getMetaFile();
+		if(metaFile.exists())
+			{
+			//Load metadata
+			loadXmlMetadata(metaFile.getPath());
+			for(int oi:metaObject.keySet())
+				if(metaObject.get(oi) instanceof ImagesetMeta)
+					{
+					meta=(ImagesetMeta)metaObject.get(oi);
+					metaObject.remove(oi);
+					break;
+					}
+			}
+		
 		
 		//Enlist images
 		channelImages.clear();

@@ -92,15 +92,22 @@ public class EvLineModelExtension implements ModelWindowExtension
 			//Save world coordinate
 			gl.glPushMatrix();
 
+			
 			gl.glColor3d(0, 1.0, 0);
 			if(ia.pos.size()>1)
 				{
-				gl.glBegin(GL.GL_LINES);
-				gl.glVertex3d(ia.pos.get(0).x,ia.pos.get(0).y,ia.pos.get(0).z);
-				for(int i=1;i<ia.pos.size();i++)
-					gl.glVertex3d(ia.pos.get(i).x,ia.pos.get(i).y,ia.pos.get(i).z);
-				gl.glEnd();
+				int curFrame=(int)w.frameControl.getFrame();
+				
+				if(ia.pos.get(0).w==curFrame)
+					{
+					gl.glBegin(GL.GL_LINES);
+					gl.glVertex3d(ia.pos.get(0).x,ia.pos.get(0).y,ia.pos.get(0).z);
+					for(int i=1;i<ia.pos.size();i++)
+						gl.glVertex3d(ia.pos.get(i).x,ia.pos.get(i).y,ia.pos.get(i).z);
+					gl.glEnd();
+					}
 				}
+			
 			
 			//Go back to world coordinates
 			gl.glPopMatrix();

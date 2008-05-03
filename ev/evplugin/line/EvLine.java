@@ -5,7 +5,7 @@ import org.jdom.*;
 import java.util.*;
 
 import javax.swing.JMenu;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
 
 import evplugin.imageWindow.ImageWindow;
 import evplugin.imageWindow.ImageWindowExtension;
@@ -42,7 +42,7 @@ public class EvLine extends EvObject implements Cloneable
 					for(Object ee:e.getChildren())
 						{
 						Element el=(Element)ee;
-						Vector3d pos=new Vector3d();
+						Vector4d pos=new Vector4d();
 						pos.x=el.getAttribute("x").getDoubleValue();
 						pos.y=el.getAttribute("y").getDoubleValue();
 						pos.z=el.getAttribute("z").getDoubleValue();
@@ -88,7 +88,8 @@ public class EvLine extends EvObject implements Cloneable
 	 *                               Instance NucLineage                                                  *
 	 *****************************************************************************************************/
 	
-	public Vector<Vector3d> pos=new Vector<Vector3d>();
+	/** Positions, in space and time (w) */
+	public Vector<Vector4d> pos=new Vector<Vector4d>();
 	
 	/**
 	 * Calculate length of each segment
@@ -98,7 +99,7 @@ public class EvLine extends EvObject implements Cloneable
 		List<Double> distances=new LinkedList<Double>();
 		for(int i=1;i<pos.size();i++)
 			{
-			Vector3d p=new Vector3d(pos.get(i-1));
+			Vector4d p=new Vector4d(pos.get(i-1));
 			p.sub(pos.get(i));
 			double len=p.length();
 			distances.add(len);
@@ -114,9 +115,12 @@ public class EvLine extends EvObject implements Cloneable
 		double totalDist=0;
 		for(int i=1;i<pos.size();i++)
 			{
-			Vector3d p=new Vector3d(pos.get(i-1));
+			Vector4d p=new Vector4d(pos.get(i-1));
 			p.sub(pos.get(i));
-			double len=p.length();
+			double dx=p.x*p.x;
+			double dy=p.y*p.y;
+			double dz=p.z*p.z;
+			double len=Math.sqrt(dx+dy+dz);
 			totalDist+=len;
 			}
 		return totalDist;
@@ -138,7 +142,7 @@ public class EvLine extends EvObject implements Cloneable
 		{
 		e.setName(metaType);
 
-		for(Vector3d p:pos)
+		for(Vector4d p:pos)
 			{
 			Element ee=new Element("pos");
 			ee.setAttribute("x", ""+p.x);

@@ -41,7 +41,8 @@ public abstract class EvData
 		supportFileFormats.add(new EvDataSupport(){
 			public Integer supports(File file)
 				{
-				return file.isFile() && file.getName().endsWith(".xml") ? 10 : null;
+				return file.isFile() && (file.getName().endsWith(".xml") ||
+						file.getName().endsWith(".ostxml")) ? 10 : null;
 				}
 			public EvData load(File file) throws Exception
 				{

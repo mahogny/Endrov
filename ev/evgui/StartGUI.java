@@ -21,8 +21,8 @@ public class StartGUI
 	
 	
 	private String javaver=System.getProperty("java.specification.version");
-	private String OS=System.getProperty("os.name");
-	private String arch=System.getProperty("os.arch");
+	private String OS=System.getProperty("os.name").toLowerCase();
+	private String arch=System.getProperty("os.arch").toLowerCase();
 	public int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
 	public int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
 	public List<String> jarfiles=new LinkedList<String>();
@@ -37,20 +37,36 @@ public class StartGUI
 	public void collectSystemInfo(String path)
 		{
 		//Detect OS
-		if(OS.equals("Mac OS X"))
+		if(OS.equals("mac os x"))
 			{
 //			javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
 			libdir=path+"libs/mac";
 			}
-		else if(OS.startsWith("Windows"))
+		else if(OS.startsWith("windows"))
 			{
 			libdir=path+"libs/windows";
 			cpsep=";";
 			}
-		else //Assume linux or equivalent
+		else if(OS.startsWith("linux"))
 			{
-			libdir=path+"libs/linux";
-			pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
+			if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
+				{
+				libdir=path+"libs/linuxPPC";
+				pb.environment().put("LD_LIBRARY_PATH", "libs/linuxPPC");
+				}
+			else //Assume some sort of x86
+				{
+				libdir=path+"libs/linux";
+				pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
+				}
+			}
+		else
+			{
+			JOptionPane.showMessageDialog(null, 
+					"Your OS + CPU combination is not supported at this moment. We would be happy if you got in\n" +
+					"touch so we can support for your platform. If you want to do it yourself it is easy: Get\n" +
+					"libraries for your platform (JAI and JOGL), edit evgui/StartGUI.java and recompile.");
+			System.exit(1);
 			}
 
 		//Collect jarfiles
