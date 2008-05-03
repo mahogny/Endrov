@@ -118,9 +118,8 @@ public class FilterImageExtension implements ImageWindowExtension
 			wfilter.buildMenu(mAdd);
 			}
 
-		public void windowPersonalSettings(Element e)
-			{
-			}
+		public void windowPersonalSettings(Element e){}
+		public void loadedFile(EvData data){}
 		}
 	
 	

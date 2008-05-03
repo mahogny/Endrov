@@ -440,6 +440,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		}
 	
 	
-	
+	public void loadedFile(EvData data){}
+
 	
 	}

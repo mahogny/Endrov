@@ -10,6 +10,7 @@ import javax.swing.event.ChangeListener;
 import java.io.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.EvData;
 import evplugin.ev.*;
 import evplugin.keyBinding.KeyBinding;
 import evplugin.script.*;
@@ -319,4 +320,6 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		System.out.println("removing console window");
 		}
 	
+	public void loadedFile(EvData data){}
+
 	}

@@ -7,6 +7,7 @@ import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import evplugin.data.EvData;
 import evplugin.ev.*;
 import evplugin.keyBinding.KeyBinding;
 import org.jdom.*;
@@ -179,6 +180,37 @@ public abstract class BasicWindow extends JPanel
 		menu.add(ni);
 		}
 	
+
+	
+	/**
+	 * Totally rip a menu apart, recursively. Action listeners are removed in a safe way which guarantees GC can proceed
+	 */
+	public static void tearDownMenu(JMenu menu)
+		{
+		Vector<JMenuItem> componentsToRemove=new Vector<JMenuItem>();
+		for(int i=0;i<menu.getItemCount();i++)
+			componentsToRemove.add(menu.getItem(i));
+		for(JMenuItem c:componentsToRemove)
+			if(c==null)
+				;//Separator
+			else if(c instanceof JMenu)
+				tearDownMenu((JMenu)c);
+			else
+				for(ActionListener l:c.getActionListeners())
+					c.removeActionListener(l);
+		menu.removeAll();
+		}
+
+
+	/**
+	 * Broadcast that a file has been loaded
+	 */
+	public static void updateLoadedFile(EvData d)
+		{
+		for(BasicWindow w:windowList)
+			w.loadedFile(d);
+		}
+
 	
 	
 	
@@ -425,6 +457,15 @@ public abstract class BasicWindow extends JPanel
 	
 	
 	
+	
+	
+	/******************************************************************************************************
+	 *                               Abstract Instance                                                    *
+	 *****************************************************************************************************/
+
+	
+	
+	
 	/**
 	 * Called whenever EV has changed
 	 */
@@ -436,24 +477,11 @@ public abstract class BasicWindow extends JPanel
 	 */
 	public abstract void windowPersonalSettings(Element e);
 	
-	
-	
+
 	/**
-	 * Totally rip a menu apart, recursively. Action listeners are removed in a safe way which guarantees GC can proceed
+	 * Called when a file has just been loaded and should be displayed in all windows
 	 */
-	public static void tearDownMenu(JMenu menu)
-		{
-		Vector<JMenuItem> componentsToRemove=new Vector<JMenuItem>();
-		for(int i=0;i<menu.getItemCount();i++)
-			componentsToRemove.add(menu.getItem(i));
-		for(JMenuItem c:componentsToRemove)
-			if(c==null)
-				;//Separator
-			else if(c instanceof JMenu)
-				tearDownMenu((JMenu)c);
-			else
-				for(ActionListener l:c.getActionListeners())
-					c.removeActionListener(l);
-		menu.removeAll();
-		}
+	public abstract void loadedFile(EvData data);
+	
+	
 	}

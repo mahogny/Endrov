@@ -3,6 +3,8 @@ package evplugin.basicWindow;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import evplugin.data.EvData;
 import evplugin.ev.*;
 import org.jdom.*;
 
@@ -100,6 +102,6 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 		lCurFrame.setText(s);
 		}
 	
-	
+	public void loadedFile(EvData data){}
 	
 	}

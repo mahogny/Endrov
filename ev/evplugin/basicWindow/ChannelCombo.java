@@ -59,15 +59,17 @@ public class ChannelCombo extends JComboBox
 		}
 	
 
-	public void setImageset(Imageset rec)
+	public void setExternalImageset(Imageset rec)
 		{
 		imagesetExternal=rec;
-		
-		//Imageset curImageset=getImageset();
-		//buildList(curImageset); //used to be this 20070115
-		
 		updateChannelList();
 		}
+	
+	public void setImageset(Imageset rec)
+		{
+		updateChannelList(rec,null);
+		}
+	
 	
 	private class Alternative
 		{
@@ -88,30 +90,26 @@ public class ChannelCombo extends JComboBox
 		}
 
 	
+	public void updateChannelList()
+		{
+		updateChannelList(null,null);
+		}
+	
 	/**
 	 * Update the combobox with channels from the record
 	 */
-	public void updateChannelList()
+	public void updateChannelList(Imageset curImageset, String curChannel)
 		{
+		if(curImageset==null)
+			curImageset=getImageset();
+		if(curChannel==null)
+			curChannel=getChannel();
 		//Remember what is selected in the list right now
-		Imageset curImageset=getImageset();
-		String curChannel=getChannel();
 		Imageset lastImageset=curImageset;
 		String lastChannel=curChannel;
 		
 		disableActionListeners();
-		buildList(curImageset);
-		
-		/*&& !(curImageset instanceof EmptyImageset)*/
-		/*
-		//If this list does not allow that no imageset is selected then just take one
-		if(!addEmptyChannel  && getItemCount()>0)
-			{
-			curImageset=((Alternative)getItemAt(0)).imageset;
-			curChannel=lastSelectChannel;
-			System.out.println("setcurchannel "+lastSelectChannel);
-			}
-			*/
+		buildList();
 		
 		//Make sure a channel is selected unless the imageset is empty
 		if((curChannel==null || (!curChannel.equals("") && curImageset.getChannel(curChannel)==null)) && 
@@ -145,7 +143,7 @@ public class ChannelCombo extends JComboBox
 	/**
 	 * Fill up list with channels
 	 */
-	private void buildList(Imageset curImageset)
+	private void buildList()
 		{
 		removeAllItems();
 		if(addEmptyChannel)

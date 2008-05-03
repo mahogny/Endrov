@@ -143,8 +143,8 @@ public class ImageCalcWindow extends BasicWindow implements ActionListener, Meta
 		{
 		if(e.getSource()==metaCombo)
 			{
-			channel1Combo.setImageset(metaCombo.getImageset());
-			channel2Combo.setImageset(metaCombo.getImageset());
+			channel1Combo.setExternalImageset(metaCombo.getImageset());
+			channel2Combo.setExternalImageset(metaCombo.getImageset());
 			}
 		else if(e.getSource()==bStart)
 			{
@@ -177,9 +177,10 @@ public class ImageCalcWindow extends BasicWindow implements ActionListener, Meta
 	public void dataChangedEvent()
 		{
 		metaCombo.updateList();
-		channel1Combo.setImageset(metaCombo.getImageset());
-		channel2Combo.setImageset(metaCombo.getImageset());
+		channel1Combo.setExternalImageset(metaCombo.getImageset());
+		channel2Combo.setExternalImageset(metaCombo.getImageset());
 		}
 	
-	
+	public void loadedFile(EvData data){}
+
 	}

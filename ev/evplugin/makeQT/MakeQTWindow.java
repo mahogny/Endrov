@@ -174,7 +174,7 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 		if(e.getSource()==metaCombo)
 			{
 			for(ChannelCombo c:channelCombo)
-				c.setImageset(metaCombo.getImageset());
+				c.setExternalImageset(metaCombo.getImageset());
 			packEvWindow();
 			}
 		else if(e.getSource()==bStart)
@@ -218,10 +218,11 @@ public class MakeQTWindow extends BasicWindow implements ActionListener, MetaCom
 		{
 		metaCombo.updateList();
 		for(ChannelCombo c:channelCombo)
-			c.setImageset(metaCombo.getImageset());
+			c.setExternalImageset(metaCombo.getImageset());
 		}
 	
 	
-	
+	public void loadedFile(EvData data){}
+
 	
 	}

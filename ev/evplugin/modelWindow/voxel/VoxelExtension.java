@@ -95,9 +95,9 @@ public class VoxelExtension implements ModelWindowExtension
 		public void datachangedEvent()
 			{
 			Imageset im=w.metaCombo.getImageset();
-			icR.channelCombo.setImageset(im);
-			icG.channelCombo.setImageset(im);
-			icB.channelCombo.setImageset(im);
+			icR.channelCombo.setExternalImageset(im);
+			icG.channelCombo.setExternalImageset(im);
+			icB.channelCombo.setExternalImageset(im);
 			}
 		
 		public void displayFinal(GL gl)

@@ -3,6 +3,7 @@ package evplugin.ev;
 //can be useful to improve performance, not used right now: -Dsun.java2d.opengl=true
 
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.prefs.*;
 //import java.awt.Desktop;
 import java.io.*;
@@ -18,7 +19,7 @@ import org.jdom.output.*;
  */
 public class EV
 	{
-	public static final String version="2.8.0";
+	public static final String version="2.9.0";
 	public static final String website="http://www.endrov.net/index.php/";
 	public static final boolean debugMode=false;
 	public static final String programName="EV";
@@ -34,6 +35,26 @@ public class EV
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		}
 	
+	
+	private static Semaphore hasStartedUp=new Semaphore(0);
+	
+	/** Check if the application has started up. It has when all plugins have been loaded */
+	public static void waitUntilStartedUp()
+		{
+		try
+			{
+			hasStartedUp.acquire();
+			hasStartedUp.release();
+			}
+		catch (InterruptedException e){}
+		}
+	
+	/** Set that the application has started up */
+	public static void setHasStartedUp()
+		{
+		hasStartedUp.release();
+		}
+
 	
 	/**
 	 * Get name of config file in case it is stored as an individual file
