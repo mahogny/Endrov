@@ -129,7 +129,7 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 		{
 		if(e.getSource()==metaCombo)
 			{
-			channelCombo.setImageset(metaCombo.getImageset());
+			channelCombo.setExternalImageset(metaCombo.getImageset());
 			System.out.println("metacombo");
 			}
 		else if(e.getSource()==bStart)
@@ -170,11 +170,12 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 	public void dataChangedEvent()
 		{
 		metaCombo.updateObjectList();
-		channelCombo.setImageset(metaCombo.getImageset());
+		channelCombo.setExternalImageset(metaCombo.getImageset());
 		}
 
 	
-	
+	public void loadedFile(EvData data){}
+
 	
 	
 	}

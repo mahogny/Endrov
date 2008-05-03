@@ -841,6 +841,12 @@ public class ImageWindow extends BasicWindow
 		}
 
 	
+	public void loadedFile(EvData data)
+		{
+		if(data instanceof Imageset)
+			getCurrentChannelWidget().comboChannel.setImageset((Imageset)data);
+		}
+
 	
 	
 	public void finalize()

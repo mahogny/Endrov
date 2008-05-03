@@ -135,7 +135,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 		{
 		if(e.getSource()==metaCombo)
 			{
-			channelCombo.setImageset(metaCombo.getImageset());
+			channelCombo.setExternalImageset(metaCombo.getImageset());
 			}
 		else if(e.getSource()==bStart)
 			{
@@ -164,8 +164,9 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	public void dataChangedEvent()
 		{
 		metaCombo.updateList();
-		channelCombo.setImageset(metaCombo.getImageset());
+		channelCombo.setExternalImageset(metaCombo.getImageset());
 		}
 	
-	
+	public void loadedFile(EvData data){}
+
 	}

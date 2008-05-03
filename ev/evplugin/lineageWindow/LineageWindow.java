@@ -661,4 +661,7 @@ public class LineageWindow extends BasicWindow
 	public void mouseMoved(MouseEvent e) {}
 	public void mouseExited(MouseEvent e)	{}
 	public void mouseEntered(MouseEvent e) {}
+	
+
+	public void loadedFile(EvData data)	{}
 	}

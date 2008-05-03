@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.util.Vector;
 
 import evplugin.basicWindow.*;
+import evplugin.data.EvData;
 import evplugin.ev.*;
 
 import org.jdom.*;
@@ -151,5 +152,6 @@ public class PluginWindow extends BasicWindow
 		*/
 		}
 
-	
+	public void loadedFile(EvData data){}
+
 	}

@@ -142,6 +142,15 @@ public class MetaCombo extends JComboBox implements ActionListener
 		}
 	
 	/**
+	 * Set selected metadata
+	 */
+	public void setMeta(EvData data)
+		{
+		curMeta=data;
+		buildList();
+		}
+	
+	/**
 	 * Get the selected imageset
 	 * @return Some imageset, never null
 	 */

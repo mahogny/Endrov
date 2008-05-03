@@ -9,6 +9,7 @@ import org.jdom.*;
 
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
+import evplugin.data.EvData;
 import evplugin.data.EvObject;
 import evplugin.ev.*;
 import evplugin.keyBinding.*;
@@ -459,6 +460,12 @@ public class ModelWindow extends BasicWindow
 		}
 	
 
+
+	public void loadedFile(EvData data)
+		{
+		metaCombo.setMeta(data);
+		}
+	
 	public void finalize()
 		{
 		System.out.println("removing model window");

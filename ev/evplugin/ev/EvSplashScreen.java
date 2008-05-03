@@ -6,7 +6,7 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 
 
-public class EvSplashScreen extends JFrame
+public class EvSplashScreen extends JFrame 
 	{
 	static final long serialVersionUID=0;
 	private static ImageIcon iconSplash=new ImageIcon(EvSplashScreen.class.getResource("splash.png"));
@@ -23,11 +23,32 @@ public class EvSplashScreen extends JFrame
 		prefs.put("evsplash", ""+b);
 		}
 	
+	private JLabel logLabel=new JLabel("");
+	
+	private Log log=new Log(){
+		public void listenDebug(String s)
+			{
+			logLabel.setText(s);
+			}
+		public void listenError(String s, Exception e)
+			{
+			logLabel.setText(s);
+			}
+		public void listenLog(String s)
+			{
+			logLabel.setText(s);
+			}
+	};
 	
 	public EvSplashScreen()
 		{
 		add(new JLabel(iconSplash), BorderLayout.CENTER);
-		add(new JLabel("Version "+EV.version), BorderLayout.SOUTH);
+		
+		JPanel p=new JPanel(new GridLayout(2,1));
+		p.add(new JLabel("Version "+EV.version));
+		p.add(logLabel);
+		
+		add(p, BorderLayout.SOUTH);
 				
 		setUndecorated(true);
 		pack();
@@ -35,6 +56,16 @@ public class EvSplashScreen extends JFrame
 		
 		setVisible(true);
 		toFront();
+		
+		Log.listeners.add(log);
 		}
+	
+	public void disableLog()
+		{
+		Log.listeners.remove(log);
+		}
+	
+	
+	
 	
 	}

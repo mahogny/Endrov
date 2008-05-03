@@ -178,5 +178,6 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 		wFilterSeq.buildMenu(mAdd);
 		}
 	
-	
+	public void loadedFile(EvData data){}
+
 	}

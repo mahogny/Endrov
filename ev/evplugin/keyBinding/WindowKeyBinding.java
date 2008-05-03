@@ -6,6 +6,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.*;
+import evplugin.data.EvData;
+
 import org.jdom.*;
 
 /**
@@ -163,7 +165,9 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 	public void dataChangedEvent()
 		{
 		}
-	
+
+	public void loadedFile(EvData data){}
+
 	
 	/**
 	 * Set new key for key binding
