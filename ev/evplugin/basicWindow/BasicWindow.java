@@ -1,7 +1,14 @@
 package evplugin.basicWindow;
 
+import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
-import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -11,6 +18,7 @@ import evplugin.data.EvData;
 import evplugin.ev.*;
 import evplugin.keyBinding.KeyBinding;
 import org.jdom.*;
+
 
 
 /**
@@ -211,6 +219,101 @@ public abstract class BasicWindow extends JPanel
 			w.loadedFile(d);
 		}
 
+	/******************************************************************************************************
+	 *                               Static: DnD utils                                                    *
+	 *****************************************************************************************************/
+
+	public static void attachDragAndDrop(JComponent c)
+		{
+//		c.getClass().getMethod("setDragEnabled", parameterTypes)
+		if(c instanceof JList)
+			((JList)c).setDragEnabled(false);
+    c.setTransferHandler(new FSTransfer());
+		}
+	
+	@SuppressWarnings("unchecked") public static List<File> transferableToFileList(Transferable t)
+		{
+		try
+			{
+			List<File> files=new LinkedList<File>();
+			if(t.isDataFlavorSupported(DataFlavor.stringFlavor))
+				{
+				String data = (String)t.getTransferData(DataFlavor.stringFlavor);
+				BufferedReader buf=new BufferedReader(new StringReader(data));
+				String line;
+				while((line=buf.readLine())!=null)
+					{
+					if(line.startsWith("file:/"))
+						{
+						line=line.substring("file:/".length());
+						files.add(new File(line));
+						}
+					else
+						System.out.println("Not sure how to read: "+line);
+					}
+				return files;
+				}
+			else if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+				{
+				List data = (List)t.getTransferData(DataFlavor.javaFileListFlavor);
+				Iterator i = data.iterator();
+				while (i.hasNext()) 
+					files.add((File)i.next());
+				return files;
+				}
+			return null;
+			}
+		catch (UnsupportedFlavorException e)
+			{
+			e.printStackTrace();
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		return null;
+		}
+		
+	
+	/**
+	 * Handle drag and drop of files to JList
+	 */
+	private static class FSTransfer extends TransferHandler 
+		{
+		static final long serialVersionUID=0;
+		public boolean importData(JComponent comp, Transferable t) 
+			{
+			final List<File> files=transferableToFileList(t);
+			if(files!=null)
+				{
+				new Runnable() { 
+				public void run()
+					{ 
+					EV.waitUntilStartedUp();
+					for(File f:files)
+						{
+						EvData d=EvData.loadFile(f);
+						if(d==null)
+							JOptionPane.showMessageDialog(null, "Failed to open "+f);
+						else
+							{
+							EvData.registerOpenedData(d);
+							BasicWindow.updateLoadedFile(d);
+							}
+						}
+					}}.run(); 
+				return true;
+				}
+			else
+				return false;
+			}
+		public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) 
+			{
+			return true;
+			}
+		}
+
+	
 	
 	
 	

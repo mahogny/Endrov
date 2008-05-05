@@ -34,7 +34,7 @@ public class MW
 			{
 			try
 				{
-				Class c=Class.forName("evplugin.macBinding.OSXAdapter");
+				Class<?> c=Class.forName("evplugin.macBinding.OSXAdapter");
 				Method m=c.getDeclaredMethod("registerMacOSXApplication", new Class[]{});
 				m.invoke(null, new Object[]{});
 				System.out.println("invoked");

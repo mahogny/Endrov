@@ -46,6 +46,7 @@ public class EvLine extends EvObject implements Cloneable
 						pos.x=el.getAttribute("x").getDoubleValue();
 						pos.y=el.getAttribute("y").getDoubleValue();
 						pos.z=el.getAttribute("z").getDoubleValue();
+						pos.w=el.getAttribute("frame").getDoubleValue();
 						meta.pos.add(pos);
 						}
 					}
@@ -148,6 +149,7 @@ public class EvLine extends EvObject implements Cloneable
 			ee.setAttribute("x", ""+p.x);
 			ee.setAttribute("y", ""+p.y);
 			ee.setAttribute("z", ""+p.z);
+			ee.setAttribute("frame", ""+p.w);
 			e.addContent(ee);
 			}
 		}
