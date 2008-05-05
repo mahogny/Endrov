@@ -165,6 +165,7 @@ public class ToolMakeLine implements ImageWindowTool
 			
 			BasicWindow.updateWindows();
 			editing=false;
+			a.ob.metaObjectModified=true;
 			}
 		else
 			{
@@ -188,6 +189,7 @@ public class ToolMakeLine implements ImageWindowTool
 				activeAnnot.ob.pos.remove(activeAnnot.i);
 				activeAnnot=null;
 				}
+			activeAnnot.ob.metaObjectModified=true;
 			}
 		BasicWindow.updateWindows();
 		}
@@ -195,6 +197,7 @@ public class ToolMakeLine implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
+			activeAnnot.ob.metaObjectModified=true;
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
 			activeAnnot.ob.pos.get(activeAnnot.i).x=v.x;
 			activeAnnot.ob.pos.get(activeAnnot.i).y=v.y;
@@ -229,7 +232,16 @@ public class ToolMakeLine implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		if(toolMode==MULTISEGMENT)
+		}	
+	public void mousePressed(MouseEvent e)
+		{
+		if(toolMode==SINGLESEGMENT || toolMode==FREEHAND)
+			{
+			if(SwingUtilities.isLeftMouseButton(e))
+				makeFirstPoint(e);
+			}
+		else if(toolMode==MULTISEGMENT)
+			{
 			if(SwingUtilities.isLeftMouseButton(e))
 				{
 				if(activeAnnot==null)
@@ -240,13 +252,8 @@ public class ToolMakeLine implements ImageWindowTool
 				else
 					makeNextPoint();
 				}
-		mouseHasMoved=false;
-		}	
-	public void mousePressed(MouseEvent e)
-		{
-		if(toolMode==SINGLESEGMENT || toolMode==FREEHAND)
-			if(SwingUtilities.isLeftMouseButton(e))
-				makeFirstPoint(e);
+			}
+		mouseHasMoved=false;			
 		}
 	public void mouseDragged(MouseEvent e, int dx, int dy)
 		{
