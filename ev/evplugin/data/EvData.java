@@ -111,7 +111,7 @@ public abstract class EvData
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	/** Remember last path used to load an imageset */
-	private static String lastDataPath="/Volumes/TBU_xeon01_data/johan_x1/daemonoutput/";
+	private static String lastDataPath="/";
 	public static String getLastDataPath()
 		{
 		if(lastDataPath==null)
