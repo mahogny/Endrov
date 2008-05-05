@@ -320,6 +320,8 @@ public class ImageWindow extends BasicWindow
 		addMenubar(menuImage);
 		buildMenu();
 		
+		attachDragAndDrop(imagePanel);
+		
 		//Window overall things
 		setTitleEvWindow("Image Window");
 		for(ChannelWidget w:channelWidget)

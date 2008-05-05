@@ -4,16 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 import javax.swing.*;
 import javax.swing.Timer;
 
+import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvData;
 import evplugin.ev.CompleteBatch;
 import evplugin.ev.EvSwingTools;
@@ -73,29 +72,19 @@ public class GUI extends JFrame implements ActionListener
 		{
 		static final long serialVersionUID=0;
 		
-		@SuppressWarnings("unchecked") public boolean importData(JComponent comp, Transferable t) 
+		public boolean importData(JComponent comp, Transferable t) 
 			{
-			if (!(comp instanceof JList) || !t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) 
-				return false;
-			try 
+			List<File> files=BasicWindow.transferableToFileList(t);
+			
+			if(files!=null)
 				{
-				List data = (List)t.getTransferData(DataFlavor.javaFileListFlavor);
-				Iterator i = data.iterator();
 				ReadingThread rt=new ReadingThread();
-				while (i.hasNext()) 
-					rt.files.add((File)i.next());
+				rt.files.addAll(files);
 				new Thread(rt).start();
 				return true;
 				}
-			catch (UnsupportedFlavorException ufe) 
-				{
-				System.err.println("Ack! we should not be here.\nBad Flavor.");
-				}
-			catch (IOException ioe) 
-				{
-				System.out.println("Something failed during import:\n" + ioe);
-				}
-			return false;
+			else
+				return false;
 			}
 	
 		public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) 

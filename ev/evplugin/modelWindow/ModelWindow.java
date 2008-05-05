@@ -195,6 +195,8 @@ public class ModelWindow extends BasicWindow
 		updateToolPanels();
 		dataChangedEvent();
 		
+//		attachDragAndDrop(this); //TODO EXPERIMENTAL! FIX LINUX BEFORE RELEASE!
+		
 		//Window overall things
 		setTitleEvWindow("Model Window");
 		packEvWindow();
