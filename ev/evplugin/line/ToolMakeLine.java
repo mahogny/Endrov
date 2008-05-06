@@ -305,7 +305,8 @@ public class ToolMakeLine implements ImageWindowTool
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot.ob);
 			activeAnnot=null;
-			w.updateImagePanel();
+			BasicWindow.updateWindows();
+//			w.updateImagePanel();
 			}
 		}
 
