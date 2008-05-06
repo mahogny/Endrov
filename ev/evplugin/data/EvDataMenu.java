@@ -109,6 +109,69 @@ public class EvDataMenu implements BasicWindowExtension
 					});
 				}
 			
+			
+			
+			//Special entry: For all
+			if(!EvData.metadata.isEmpty())
+				{
+				JMenu menuMetadata=new JMenu("For All Data");
+				mData.add(menuMetadata);
+				mData.addSeparator();
+				
+				JMenuItem miUnload=new JMenuItem("Unload");
+				JMenuItem miSave=new JMenuItem("Save");
+				menuMetadata.add(miUnload);
+				menuMetadata.add(miSave);
+				
+				//// Menu item Listener: Unload
+				ActionListener metaListenerUnload=new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						boolean anyMod=false;
+						for(EvData thisMeta:EvData.metadata)
+							if(thisMeta.isMetadataModified())
+								anyMod=true;
+
+						int option=!anyMod ? JOptionPane.YES_OPTION : JOptionPane.showConfirmDialog(null, 
+								"Metadata has been modified. Save before closing all?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+						if (option==JOptionPane.YES_OPTION)
+							{
+							for(EvData thisMeta:EvData.metadata)
+								{
+								thisMeta.saveMeta();
+								thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+								}
+							EvData.metadata.clear();
+							BasicWindow.updateWindows();
+							System.gc();
+							}
+						else if (option == JOptionPane.CANCEL_OPTION)
+							return;
+						}
+					};
+				miUnload.addActionListener(metaListenerUnload);
+
+				
+				//// Menu item Listener: Save
+				ActionListener metaListenerSave=new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						for(EvData thisMeta:EvData.metadata)
+							{
+							thisMeta.saveMeta();
+							thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+							}
+						}
+					};
+				miSave.addActionListener(metaListenerSave);
+				
+				}
+			
+			
+			
 			//List all global Metadata
 			for(final EvData thisMeta:EvData.metadata)
 				{
@@ -189,6 +252,8 @@ public class EvDataMenu implements BasicWindowExtension
 					miRemoveOb.addActionListener(obListenerRemove);
 					}
 				}
+
+			
 			}
 		}
 	}

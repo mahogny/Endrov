@@ -2,6 +2,9 @@ package evplugin.matlab;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Map;
 
 import evgui.StartGUI;
@@ -37,4 +40,24 @@ public class EvMatlab
 			ia[i]=ci[i];
 		return ia;
 		}
+	
+	public ClassLoader instanceGetClassLoader(String urlpath)
+		{
+		return getClassLoader(urlpath);
+		}
+	public static ClassLoader getClassLoader(String urlpath)
+		{
+		try
+			{
+			return new URLClassLoader(new URL[]{new URL(urlpath)});
+			}
+		catch (MalformedURLException e)
+			{
+			e.printStackTrace();
+			return null;
+			}
+		}
+	
+	//can one generate static-private binding? different class loader, auto-generate code.
+	
 	}
