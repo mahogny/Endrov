@@ -81,7 +81,7 @@ public class RenameDialog extends JDialog implements ActionListener
 		if(e.getSource()==bLoad)
 			{
 			timer=null;
-			EvData data=EvData.loadFile();
+			EvData data=EvData.loadFileDialog(null);
 			if(data!=null)
 				{
 				List<NucLineage> lins=data.getObjects(NucLineage.class);

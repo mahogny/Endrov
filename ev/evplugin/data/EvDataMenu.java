@@ -49,7 +49,22 @@ public class EvDataMenu implements BasicWindowExtension
 				BasicWindow.updateWindows();
 				}
 			else if(e.getSource()==miOpenFile)
-				EvData.registerOpenedData(EvData.loadFile());
+				{
+				new Thread(){
+					public void run()
+						{
+						LoadProgressDialog loadDialog=new LoadProgressDialog(1);
+						final EvData data=EvData.loadFileDialog(loadDialog);
+						SwingUtilities.invokeLater(new Runnable(){
+							public void run()
+								{
+								EvData.registerOpenedData(data);
+								}
+						});
+						loadDialog.dispose();
+						}
+				}.start();
+				}
 			else if(e.getSource()==miOpenFilePath)
 				loadByPath();
 			}
@@ -71,9 +86,25 @@ public class EvDataMenu implements BasicWindowExtension
 			String fileName=JOptionPane.showInputDialog("Path",clipboardString);
 			if(fileName!=null)
 				{
-				File thefile=new File(fileName);
+				final File thefile=new File(fileName);
 				if(thefile.exists())
-					EvData.registerOpenedData(EvData.loadFile(thefile));
+					{
+					new Thread(){
+					public void run()
+						{
+						LoadProgressDialog loadDialog=new LoadProgressDialog(1);
+						final EvData data=EvData.loadFile(thefile,loadDialog);
+						SwingUtilities.invokeLater(new Runnable(){
+						public void run()
+							{
+							EvData.registerOpenedData(data);
+							}
+						});
+						loadDialog.dispose();
+						}
+					}.start();
+//					EvData.registerOpenedData(EvData.loadFile(thefile));
+					}
 				else
 					JOptionPane.showMessageDialog(null, "Path does not exist");
 				}
