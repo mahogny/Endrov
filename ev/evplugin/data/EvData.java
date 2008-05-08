@@ -108,7 +108,7 @@ public abstract class EvData
 		}
 
 	/******************************************************************************************************
-	 *                               Static                                                               *
+	 *                               Static: Loading                                                      *
 	 *****************************************************************************************************/
 	/** Remember last path used to load an imageset */
 	private static String lastDataPath="/";
@@ -153,11 +153,25 @@ public abstract class EvData
 			BasicWindow.updateWindows();
 			}
 		}
+
 	
+	public interface LoadFileCallback
+		{
+		public void loadFileStatus(double proc, String text);
+		}
+
 	/**
 	 * Load file by path
 	 */
 	public static EvData loadFile(File file)
+		{
+		return loadFile(file,null);
+		}
+	
+	/**
+	 * Load file by path, receive feedback on process
+	 */
+	public static EvData loadFile(File file, LoadFileCallback cb)
 		{
 		EvDataSupport thes=null;
 		int lowest=0;
@@ -175,6 +189,8 @@ public abstract class EvData
 			try
 				{
 				EvData data=thes.load(file);
+				if(cb!=null)
+					cb.loadFileStatus(0, "Loading "+file.getName());
 				if(data!=null)
 					return data;
 				}
@@ -186,11 +202,12 @@ public abstract class EvData
 			}
 		return null;
 		}
+
 	
 	/**
 	 * Load file by open dialog
 	 */
-	public static EvData loadFile()
+	public static EvData loadFileDialog(LoadFileCallback cb)
 		{
 		/*
 		System.setProperty("apple.awt.fileDialogForDirectories", "true");
@@ -245,10 +262,11 @@ public abstract class EvData
 			{
 			EvData.setLastDataPath(fc.getSelectedFile().getParent());
 			File filename=fc.getSelectedFile();
+			if(cb!=null)
+				cb.loadFileStatus(0, "Loading "+filename.getName());
 			return loadFile(filename);
 			}
 		return null;
-		
 		}
 
 	
@@ -258,7 +276,7 @@ public abstract class EvData
 	 *****************************************************************************************************/
 
 	/** All meta objects */
-	public HashMap<Integer,EvObject> metaObject=new HashMap<Integer,EvObject>();
+	public TreeMap<Integer,EvObject> metaObject=new TreeMap<Integer,EvObject>();
 
 	/** Flag if the metadata container itself has been modified */
 	private boolean coreMetadataModified=false;
@@ -289,9 +307,9 @@ public abstract class EvData
 	/**
 	 * Get all ID and objects of a certain type
 	 */
-	@SuppressWarnings("unchecked") public <E> Map<Integer, E> getIdObjects(Class<E> cl)
+	@SuppressWarnings("unchecked") public <E> SortedMap<Integer, E> getIdObjects(Class<E> cl)
 		{
-		HashMap<Integer, E> map=new HashMap<Integer, E>();
+		TreeMap<Integer, E> map=new TreeMap<Integer, E>();
 		for(Map.Entry<Integer, EvObject> e:metaObject.entrySet())
 			if(e.getValue().getClass()==cl)
 				map.put(e.getKey(),(E)e.getValue());

@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import evplugin.data.EvData;
+import evplugin.data.LoadProgressDialog;
 import evplugin.ev.*;
 import evplugin.keyBinding.KeyBinding;
 import org.jdom.*;
@@ -286,22 +287,33 @@ public abstract class BasicWindow extends JPanel
 			final List<File> files=transferableToFileList(t);
 			if(files!=null)
 				{
-				new Runnable() { 
+				new Thread() { 
 				public void run()
 					{ 
 					EV.waitUntilStartedUp();
+					LoadProgressDialog loadDialog=new LoadProgressDialog(files.size());
+					final List<EvData> dlist=new LinkedList<EvData>();
+					int i=0;
 					for(File f:files)
 						{
+						loadDialog.setCurFile(i);
+						loadDialog.loadFileStatus(0, "Loading "+f);
 						EvData d=EvData.loadFile(f);
 						if(d==null)
 							JOptionPane.showMessageDialog(null, "Failed to open "+f);
 						else
-							{
-							EvData.registerOpenedData(d);
-							BasicWindow.updateLoadedFile(d);
-							}
+							dlist.add(d);
+						i++;
 						}
-					}}.run(); 
+					SwingUtilities.invokeLater(new Runnable(){
+					public void run()
+						{
+						for(EvData d:dlist)
+							EvData.registerOpenedData(d);
+						}
+					});
+					loadDialog.dispose();
+					}}.start(); 
 				return true;
 				}
 			else
