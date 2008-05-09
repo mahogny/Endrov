@@ -54,7 +54,9 @@ public class NucImageRenderer implements ImageWindowRenderer
 			NucLineage.NucInterp nuc=interpNuc.get(nucPair);
 			drawNuc(g,nucPair,nuc);
 			}
-		
+
+//		System.out.println("render nucs "+interpNuc.size());
+
 		if(!lastHover.equals(NucLineage.currentHover))
 			BasicWindow.updateWindows(w);
 		}

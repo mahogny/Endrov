@@ -4,12 +4,15 @@ import java.awt.*;
 import java.awt.event.*;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.vecmath.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvData;
+import evplugin.data.EvObject;
+import evplugin.ev.EV;
 import evplugin.ev.Log;
 import evplugin.imageWindow.*;
 
@@ -105,9 +108,43 @@ public class ToolMakeLine implements ImageWindowTool
 		}
 	
 	
+	private void renameObjectDialog(EvData data, String obId)
+		{
+		String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Rename object", 
+				JOptionPane.QUESTION_MESSAGE, null, null, obId);
+		//Maybe use weak reference?
+		if(newId!=null)
+			{
+			EvObject ob=data.metaObject.remove(obId);
+			if(ob!=null)
+				data.metaObject.put(newId, ob);
+			BasicWindow.updateWindows();
+			}
+		}
+	
+	private void renameObjectDialog(EvData data, EvObject obVal)
+		{
+		String key=null;
+		for(Map.Entry<String, EvObject> e:data.metaObject.entrySet())
+			if(e.getValue()==obVal)
+				key=e.getKey();
+		if(key!=null)
+			renameObjectDialog(data, key);
+		}
+	
+	private void lineIsDone()
+		{
+		if(activeAnnot!=null)
+			{
+			EvData data=w.getImageset();
+			renameObjectDialog(data, activeAnnot.ob);
+			activeAnnot=null;
+			}
+		}
 	
 	private Hover getHoverAnnot(MouseEvent e)
 		{
+		int curFrame=(int)w.frameControl.getFrame();
 		Collection<EvLine> ann=getAnnots();
 		EvLine closest=null;
 		int closesti=0;
@@ -119,15 +156,15 @@ public class ToolMakeLine implements ImageWindowTool
 				double dx=a.pos.get(i).x-v.x;
 				double dy=a.pos.get(i).y-v.y;
 				double dist=dx*dx + dy*dy;
-				if(cdist>dist || closest==null)
+				if((cdist>dist || closest==null) && curFrame==a.pos.get(i).w)
 					{
 					cdist=dist;
 					closest=a;
 					closesti=i;
 					}
 				}
-		double sdist=w.scaleW2s(cdist);
-		if(closest!=null && sdist<ImageWindow.snapDistance*ImageWindow.snapDistance)
+		double sdist=w.scaleW2s(Math.sqrt(cdist));
+		if(closest!=null && sdist<ImageWindow.snapDistance)
 			{
 			Hover h=new Hover();
 			h.ob=closest;
@@ -180,18 +217,20 @@ public class ToolMakeLine implements ImageWindowTool
 			activeAnnot=null;
 		else
 			{
-			Vector4d newpos=new Vector4d(activeAnnot.ob.pos.get(activeAnnot.i));
-			activeAnnot.ob.pos.add(newpos);
-			activeAnnot.i++;
-			if(!mouseHasMoved)
+			if(mouseHasMoved)
 	//		if(activeAnnot.ob.pos.get(activeAnnot.i).equals(activeAnnot.ob.pos.get(activeAnnot.i-1)))
 				{
-				activeAnnot.ob.pos.remove(activeAnnot.i);
-				activeAnnot=null;
+				Vector4d newpos=new Vector4d(activeAnnot.ob.pos.get(activeAnnot.i));
+				activeAnnot.ob.pos.add(newpos);
+				activeAnnot.i++;
+//				activeAnnot.ob.pos.remove(activeAnnot.i);
+	//			activeAnnot=null;
+				activeAnnot.ob.metaObjectModified=true;
 				}
-			activeAnnot.ob.metaObjectModified=true;
+//			else
 			}
-		BasicWindow.updateWindows();
+		w.updateImagePanel(); //more than this. emit. 
+//		BasicWindow.updateWindows(); //caused mouse exit all the time?
 		}
 	private void moveLastPoint(MouseEvent e)
 		{
@@ -249,8 +288,11 @@ public class ToolMakeLine implements ImageWindowTool
 					makeFirstPoint(e);
 					moveLastPoint(e);
 					}
-				else
+				else if(mouseHasMoved)
 					makeNextPoint();
+				else
+					lineIsDone();
+//					activeAnnot=null;
 				}
 			}
 		mouseHasMoved=false;			
@@ -259,8 +301,9 @@ public class ToolMakeLine implements ImageWindowTool
 		{
 		if(toolMode==SINGLESEGMENT)
 			moveLastPoint(e);
-		else if(toolMode==FREEHAND && !editing)
+		else if(toolMode==FREEHAND && !editing && activeAnnot!=null)
 			{
+			mouseHasMoved=true;
 			moveLastPoint(e);
 			EvLine line=activeAnnot.ob;
 			if(line.pos.size()>=2)
@@ -268,6 +311,7 @@ public class ToolMakeLine implements ImageWindowTool
 				Vector4d a=new Vector4d(line.pos.get(line.pos.size()-1));
 				a.sub(line.pos.get(line.pos.size()-2));
 				a.w=0;
+//				System.out.println(" "+line.pos.size()+" "+w.scaleW2s(a.length()));
 				if(w.scaleW2s(a.length())>3)
 					makeNextPoint();
 				}
@@ -278,8 +322,10 @@ public class ToolMakeLine implements ImageWindowTool
 		if(toolMode==SINGLESEGMENT || toolMode==FREEHAND)
 			if(SwingUtilities.isLeftMouseButton(e) && activeAnnot!=null)
 				{
+				System.out.println("released");
 				printDistances(activeAnnot.ob);
-				activeAnnot=null;
+				lineIsDone();
+//				activeAnnot=null;
 				BasicWindow.updateWindows();
 				}
 		}
@@ -299,11 +345,14 @@ public class ToolMakeLine implements ImageWindowTool
 
 	public void mouseExited(MouseEvent e)
 		{
+		//hack: confirm that it really is outside
+//		if(e.getX()<0 ||Êe.getY()<0 || e.getX()>=w.
 		if(activeAnnot!=null)
 			{
 			EvData data=w.getImageset();
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot.ob);
+			System.out.println("mouse exited "+e.getX()+" "+e.getY());
 			activeAnnot=null;
 			BasicWindow.updateWindows();
 //			w.updateImagePanel();

@@ -21,7 +21,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	//Needed to unselect special alternatives after user selected them
 //	private Metadata curMeta=new EmptyMetadata();
 	private EvData curMeta=null; //BIG CHANGE
-	private Integer curId=null;
+	private String curId=null;
 
 	
 	
@@ -65,7 +65,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		if(a!=null)
 			{
 			//Check if this is still the old alternative. If so, ignore this event.
-			if(curMeta==a.meta && curId==a.id)
+			if(curMeta==a.meta && curId.equals(a.id))
 				return;
 			
 			if(a.special==null)
@@ -145,7 +145,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 			for(int i=0;i<getItemCount();i++)
 				{
 				Alternative a=(Alternative)getItemAt(i);
-				if(a.meta==curMeta && a.id==curId)
+				if(a.meta==curMeta && a.id.equals(curId))
 					setSelectedIndex(i);
 				}
 		}
@@ -157,11 +157,11 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		{
 		removeAllItems();
 		if(addEmpty)
-			addItem(new Alternative(null,0, null, null));
+			addItem(new Alternative(null,null, null, null));
 		//Add other metadata
 		for(EvData thisMeta:EvData.metadata)
 			{
-			for(int id:thisMeta.metaObject.keySet())
+			for(String id:thisMeta.metaObject.keySet())
 				if(filterObject.comboFilterMetaObjectCallback(thisMeta.getMetaObject(id)))
 					addItem(new Alternative(thisMeta,id, null, null));
 			for(Alternative a:filterObject.comboAddObjectAlternative(this, thisMeta))
@@ -174,7 +174,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	 * Get the selected channel
 	 * @return Channel or null
 	 */
-	public Integer getObjectID()
+	public String getObjectID()
 		{
 		Alternative a=(Alternative)getSelectedItem();
 		if(a==null)
@@ -222,10 +222,10 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	public static class Alternative
 		{
 		public final EvData meta;
-		public final Integer id;
+		public final String id;
 		public final String special;
 		public final ActionListener listener;
-		public Alternative(EvData meta, Integer id, String special, ActionListener listener)
+		public Alternative(EvData meta, String id, String special, ActionListener listener)
 			{
 			this.meta=meta;
 			this.id=id;

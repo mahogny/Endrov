@@ -57,7 +57,7 @@ public class FilterImageExtension implements ImageWindowExtension
 		JMenu mSeq=new JMenu("Filter sequence");
 		menu.add(mSeq);
 		for(EvData data:EvData.metadata)
-			for(Map.Entry<Integer, FilterSeq> e:data.getIdObjects(FilterSeq.class).entrySet())
+			for(Map.Entry<String, FilterSeq> e:data.getIdObjects(FilterSeq.class).entrySet())
 				{
 				JMenuItem mi=new JMenuItem(data.getMetadataName()+" "+e.getKey());
 				mSeq.add(mi);

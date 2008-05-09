@@ -7,9 +7,8 @@ ei=entries.iterator;
 i=1;
 while ei.hasNext
     ke=ei.next;
-    out(i).keystr=num2str(ke.getKey);
-    out(i).keynum=ke.getKey;
-%    out(i).keynum=str2num(ke.getKey);
+    out(i).keystr=ke.getKey;          %num2str(ke.getKey);
+    out(i).keynum=str2num(ke.getKey); %ke.getKey;
     out(i).value=ke.getValue;
     i=i+1;
 end

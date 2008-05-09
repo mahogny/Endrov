@@ -276,7 +276,7 @@ public abstract class EvData
 	 *****************************************************************************************************/
 
 	/** All meta objects */
-	public TreeMap<Integer,EvObject> metaObject=new TreeMap<Integer,EvObject>();
+	public TreeMap<String,EvObject> metaObject=new TreeMap<String,EvObject>();
 
 	/** Flag if the metadata container itself has been modified */
 	private boolean coreMetadataModified=false;
@@ -307,10 +307,10 @@ public abstract class EvData
 	/**
 	 * Get all ID and objects of a certain type
 	 */
-	@SuppressWarnings("unchecked") public <E> SortedMap<Integer, E> getIdObjects(Class<E> cl)
+	@SuppressWarnings("unchecked") public <E> SortedMap<String, E> getIdObjects(Class<E> cl)
 		{
-		TreeMap<Integer, E> map=new TreeMap<Integer, E>();
-		for(Map.Entry<Integer, EvObject> e:metaObject.entrySet())
+		TreeMap<String, E> map=new TreeMap<String, E>();
+		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
 			if(e.getValue().getClass()==cl)
 				map.put(e.getKey(),(E)e.getValue());
 		return map;
@@ -348,7 +348,7 @@ public abstract class EvData
 	/**
 	 * Get a meta object by ID
 	 */
-	public EvObject getMetaObject(int i)
+	public EvObject getMetaObject(String i)
 		{
 		return metaObject.get(i);
 		}
@@ -359,9 +359,9 @@ public abstract class EvData
 	public int addMetaObject(EvObject o)
 		{
 		int i=1;
-		while(metaObject.get(i)!=null)
+		while(metaObject.get(Integer.toString(i))!=null)
 			i++;
-		metaObject.put(i, o);
+		metaObject.put(Integer.toString(i), o);
 		return i;
 		}
 	
@@ -370,8 +370,8 @@ public abstract class EvData
 	 */
 	public void removeMetaObjectByValue(EvObject ob)
 		{
-		Integer id=null;
-		for(Map.Entry<Integer, EvObject> entry:metaObject.entrySet())
+		String id=null;
+		for(Map.Entry<String, EvObject> entry:metaObject.entrySet())
 			if(entry.getValue()==ob)
 				{
 				id=entry.getKey();
@@ -414,11 +414,13 @@ public abstract class EvData
   				Log.printLog("Found meta object of type "+child.getName());
 					}
   			String sid=child.getAttributeValue("id");
-  			int id;
-  			if(sid==null) //This is only needed for imagesets without the EV extended attributes
-  				id=-1;
+  			String id;
+  			if(sid==null) 
+  				//This is only needed for imagesets without the EV extended attributes
+  				//should maybe grab a free one (detect)
+  				id=""+-1;
   			else
-  				id=Integer.parseInt(sid);
+  				id=sid;
  				metaObject.put(id, o);
   			}
     	} 
@@ -462,7 +464,7 @@ public abstract class EvData
 		{
 		Element ostElement=new Element("ost");
 		Document doc = new Document(ostElement);
-		for(int id:metaObject.keySet())
+		for(String id:metaObject.keySet())
 			{
 			EvObject o=metaObject.get(id);
 			Element el=new Element("TEMPNAME");
