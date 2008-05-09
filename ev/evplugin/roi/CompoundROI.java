@@ -43,8 +43,8 @@ public abstract class CompoundROI extends ROI
 		if(parent instanceof EvData)
 			{
 			EvData data=(EvData)parent;
-			Set<Integer> toremove=new HashSet<Integer>();
-			for(int key:data.metaObject.keySet())
+			Set<String> toremove=new HashSet<String>();
+			for(String key:data.metaObject.keySet())
 				{
 				EvObject ob=data.metaObject.get(key);
 				if(ob instanceof ROI)
@@ -58,7 +58,7 @@ public abstract class CompoundROI extends ROI
 						hs.addAll(collectRecursiveROI(ob));
 					}
 				}
-			for(int key:toremove)
+			for(String key:toremove)
 				data.metaObject.remove(key);
 			}
 		else if(parent instanceof CompoundROI)

@@ -9,6 +9,7 @@ import java.util.*;
 import javax.swing.*;
 
 import evplugin.basicWindow.*;
+import evplugin.ev.EV;
 
 /**
  * Extension to BasicWindow
@@ -254,14 +255,16 @@ public class EvDataMenu implements BasicWindowExtension
 				miSave.addActionListener(metaListenerSave);
 				
 				
-				for(final int obId:thisMeta.metaObject.keySet())
+				for(final String obId:thisMeta.metaObject.keySet())
 					{
 					final EvObject ob=thisMeta.metaObject.get(obId); //might become problematic?
 					JMenu obmenu=new JMenu(""+obId+": "+ob.getMetaTypeDesc());
 					menuMetadata.add(obmenu);
 
-					JMenuItem miRemoveOb=new JMenuItem("Remove");
+					JMenuItem miRemoveOb=new JMenuItem("Delete");
 					obmenu.add(miRemoveOb);
+					JMenuItem miRenameOb=new JMenuItem("Rename");
+					obmenu.add(miRenameOb);
 					
 					ob.buildMetamenu(obmenu);
 					
@@ -281,6 +284,26 @@ public class EvDataMenu implements BasicWindowExtension
 							}
 						};
 					miRemoveOb.addActionListener(obListenerRemove);
+					
+					//Menu item listener: object/Rename
+					ActionListener obListenerRename=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Rename object", 
+									JOptionPane.QUESTION_MESSAGE, null, null, obId);
+							//Maybe use weak reference?
+							if(newId!=null)
+								{
+								EvObject ob=thisMeta.metaObject.remove(obId);
+								if(ob!=null)
+									thisMeta.metaObject.put(newId, ob);
+								BasicWindow.updateWindows();
+								}
+							}
+						};
+					miRenameOb.addActionListener(obListenerRename);
+					
 					}
 				}
 

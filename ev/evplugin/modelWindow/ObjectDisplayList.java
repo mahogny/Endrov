@@ -64,7 +64,7 @@ public class ObjectDisplayList extends JPanel
 		if(d!=null && !d.metaObject.isEmpty())
 			{
 			int countb=0;
-			for(Map.Entry<Integer, EvObject> entry:d.metaObject.entrySet())
+			for(Map.Entry<String, EvObject> entry:d.metaObject.entrySet())
 				{
 				final EvObject thisObject=entry.getValue();
 				JCheckBox cb=new JCheckBox(""+entry.getKey()+" "+thisObject.getMetaTypeDesc(),toDisplay(thisObject));

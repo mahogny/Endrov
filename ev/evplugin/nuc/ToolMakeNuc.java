@@ -56,10 +56,10 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 		Imageset ims=w.getImageset();
 		final WeakReference<Imageset> wims=new WeakReference<Imageset>(ims);
 		if(ims!=null)
-			for(Map.Entry<Integer, NucLineage> e:ims.getIdObjects(NucLineage.class).entrySet())
+			for(Map.Entry<String, NucLineage> e:ims.getIdObjects(NucLineage.class).entrySet())
 				{
 				JCheckBoxMenuItem miEdit=new JCheckBoxMenuItem("Edit "+e.getKey());
-				miEdit.setActionCommand(""+e.getKey());
+				miEdit.setActionCommand(e.getKey());
 				miEdit.setSelected(editingLin.get()==e.getValue());
 				miEdit.addActionListener(this);
 				menu.add(miEdit);
@@ -80,7 +80,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 		}
 	public void actionPerformed(ActionEvent e)
 		{
-		int id=Integer.parseInt(e.getActionCommand());
+		String id=e.getActionCommand();
 		setEditLin((NucLineage)w.getImageset().getMetaObject(id));
 		w.setTool(this);
 		}

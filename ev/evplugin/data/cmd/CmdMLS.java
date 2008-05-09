@@ -19,10 +19,10 @@ public class CmdMLS extends Command
 		EvData m=EvData.getSelectedMetadata();
 		if(m!=null)
 			{
-			for(int i:m.metaObject.keySet())
+			for(String i:m.metaObject.keySet())
 				{
 				EvObject ob=m.metaObject.get(i);
-				Log.printLog(""+i+": "+ob.getMetaTypeDesc());
+				Log.printLog(i+": "+ob.getMetaTypeDesc());
 				}
 			}
 		else
