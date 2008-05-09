@@ -77,12 +77,24 @@ for z=1:length(zs)
     
 end
 
+%Windowed filter z-direction
+%im2(:,:,1)=im(:,:,1);
+%im2(:,:,length(zs)+2)=im(:,:,length(zs));
+for z=1:length(zs)
+    imA=im(:,:,max(z-1,1));
+    imC=im(:,:,min(z+1,length(zs)));
+    imB=im(:,:,z);
+    imny(:,:,z)=(imA+imB+imC)/3;
+end
+im=imny;
+clear imny;
+
+
 %smooth ptile for better z-control. could fit a line!
 theA=[(1:length(ptile))', (1:length(ptile))'.*0+1];
 theX=theA\ptile';
 ptile2=(1:length(zs))*theX(1)+theX(2);
 %ptile2=ptile; %to disable smoothing
-
 for z=1:length(zs)
     z
     
@@ -201,9 +213,10 @@ end
 loader=newclassloader;
 cl=loader.loadClass('util2.rfpTrack.Cluster').newInstance;
 zscale=10;
-maximas2=maximas(st:end,:);
+%maximas2=maximas(st:end,:);
+maximas2=maximas;
 maximas2(:,3)=maximas2(:,3)*zscale;
-maximas2=cl.cluster(maximas2); %need to scale z
+maximas2=cl.cluster(maximas2) %need to scale z
 
 distlist=cl.distances.keySet.toArray;
 for i=1:length(distlist)
