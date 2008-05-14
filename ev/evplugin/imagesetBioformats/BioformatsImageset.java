@@ -182,11 +182,11 @@ public class BioformatsImageset extends Imageset
 		meta.resY=1;
 		meta.resZ=1;
 		if(imageReader.getMetadataValue("VoxelSizeX")!=null)
-			meta.resX=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6;
+			meta.resX=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeY")!=null)
-			meta.resY=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6;
+			meta.resY=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeZ")!=null)
-			meta.resZ=Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6;
+			meta.resZ=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6);
 
 		//Load metadata from added OSTXML-file
 		File metaFile=getMetaFile();

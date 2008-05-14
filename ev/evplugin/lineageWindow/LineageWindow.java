@@ -84,6 +84,8 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miExportImage=new JMenuItem("Export Image*");
 	public JMenuItem miSelectChildren=new JMenuItem("Select children");
 	public JMenuItem miSelectParents=new JMenuItem("Select parents");
+	public JMenuItem miSelectAll=new JMenuItem("Select all");
+	
 	public JMenuItem miRotate=new JMenuItem("Rotate tree");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
 	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
@@ -130,6 +132,23 @@ public class LineageWindow extends BasicWindow
 		miShowExpLine.addActionListener(this);
 		miShowExpSolid.addActionListener(this);
 		miShowExpNone.addActionListener(this);
+		miRename.addActionListener(this);
+		miMerge.addActionListener(this);
+		miPC.addActionListener(this);
+		miUnparent.addActionListener(this);
+		miSwapChildren.addActionListener(this);
+		miExportImage.addActionListener(this);
+		miFate.addActionListener(this);
+		miEndFrame.addActionListener(this);
+		miRemoveNucleus.addActionListener(this);
+		miShowFrameLines.addActionListener(this);
+		miShowKeyFrames.addActionListener(this);
+		miFoldAll.addActionListener(this);
+		miUnfoldAll.addActionListener(this);
+		miSelectChildren.addActionListener(this);
+		miSelectParents.addActionListener(this);
+		miSelectAll.addActionListener(this);
+		miRotate.addActionListener(this);
 		
 		ButtonGroup expGroup=new ButtonGroup();
 		expGroup.add(miShowExpLine);
@@ -194,27 +213,12 @@ public class LineageWindow extends BasicWindow
 		menuLineage.addSeparator();
 		menuLineage.add(miSelectChildren);
 		menuLineage.add(miSelectParents);
+		menuLineage.add(miSelectAll);
 		
 		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
 		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
 		miRemoveNucleus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 		
-		miRename.addActionListener(this);
-		miMerge.addActionListener(this);
-		miPC.addActionListener(this);
-		miUnparent.addActionListener(this);
-		miSwapChildren.addActionListener(this);
-		miExportImage.addActionListener(this);
-		miFate.addActionListener(this);
-		miEndFrame.addActionListener(this);
-		miRemoveNucleus.addActionListener(this);
-		miShowFrameLines.addActionListener(this);
-		miShowKeyFrames.addActionListener(this);
-		miFoldAll.addActionListener(this);
-		miUnfoldAll.addActionListener(this);
-		miSelectChildren.addActionListener(this);
-		miSelectParents.addActionListener(this);
-		miRotate.addActionListener(this);
 		
 		//Window overall things
 		setTitleEvWindow("Lineage Window");
@@ -404,6 +408,12 @@ public class LineageWindow extends BasicWindow
 				recursiveSelectParent(p.fst(), p.snd());
 			BasicWindow.updateWindows();
 			}
+		else if(e.getSource()==miSelectAll)
+			{
+			if(view.currentLin!=null)
+				selectAll(view.currentLin);
+			BasicWindow.updateWindows();
+			}
 		else if(e.getSource()==objectCombo)
 			{
 			System.out.println("objectcombo");
@@ -454,6 +464,12 @@ public class LineageWindow extends BasicWindow
 			NucLineage.selectedNuclei.add(new NucPair(lin, pname));
 			recursiveSelectParent(lin, pname);
 			}
+		}
+
+	private static void selectAll(NucLineage lin)
+		{
+		for(String s:lin.nuc.keySet())
+			NucLineage.selectedNuclei.add(new NucPair(lin,s));
 		}
 	
 	/*

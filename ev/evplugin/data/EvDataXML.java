@@ -56,8 +56,8 @@ public class EvDataXML extends EvData
 			{
 			EvData.setLastDataPath(fc.getSelectedFile().getParent());
 			filename=fc.getSelectedFile();
-			if(!filename.getName().endsWith(".xml"))
-				filename=new File(filename.getAbsolutePath()+".xml");
+			if(!filename.getName().endsWith(".xml") && !filename.getName().endsWith(".ostxml"))
+				filename=new File(filename.getAbsolutePath()+".ostxml");
 			Document document=saveXmlMetadata();
 			writeXmlData(document, filename);
 			setMetadataModified(false);
@@ -105,11 +105,11 @@ public class EvDataXML extends EvData
 			{
 			public boolean accept(File f)
 				{
-				return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
+				return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml") || f.getName().toLowerCase().endsWith(".ostxml");
 				}
 			public String getDescription()
 				{
-				return "OST .xml files";
+				return "OST3 .ostxml & OST2 .xml files";
 				}
 			});
 		return fc;
