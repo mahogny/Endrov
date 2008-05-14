@@ -8,28 +8,28 @@ import javax.vecmath.Vector3d;
 
 import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.imageset.Imageset;
 import evplugin.nuc.NucLineage;
 import evplugin.nuc.NucPair;
 import evplugin.nuc.NucLineage.NucInterp;
 
 
-import util2.makeStdWormDist4.NucStats.NucStatsOne;
-
 //Do not use rigid transforms, use point dist.
 
 //in fitting all to one: possible to store individual rots, average, invert on assembly and hope it cancels
 
+/**
+ * Assemble c.e model
+ * @author Johan Henriksson
+ */
 public class MakeStdWormDist4
 	{
-	
-	public static boolean allTime=true;
 	public static boolean showNeigh=false;
 	public static boolean saveNormalized=true;
 	public static int NUMTRY=0;
 
 	public static Vector<EvData> worms=new Vector<EvData>();
 	public static SortedMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
+	public static NucStats nucstats=new NucStats();
 
 	
 	public static void loadAllNuc()
@@ -40,7 +40,6 @@ public class MakeStdWormDist4
 			for(File f:new File(dir).listFiles())
 				if(!f.getName().startsWith("."))
 					{
-//					String s=f.getPath();
 					String s=f.getName();
 					EvData ost=new EvDataXML(f.getPath()+"/rmd.xml");
 					worms.add(ost);
@@ -57,8 +56,6 @@ public class MakeStdWormDist4
 								lins.put(s, lin);
 								System.out.println("ok:"+s);
 								}
-	//						else
-	//							System.out.println("not ok:"+s);
 							}
 						}
 				
@@ -104,10 +101,11 @@ public class MakeStdWormDist4
 		
 		}
 	
-	
+	/**
+	 * Copy lineage tree: all names and PC relations. no coordinates
+	 */
 	public static NucLineage copyTree(NucLineage lin)
 		{
-		//Normalize lineages in terms of time
 		NucLineage newlin=new NucLineage();
 			
 		for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
@@ -122,10 +120,12 @@ public class MakeStdWormDist4
 		}
 	
 	
+	/**
+	 * Normalize lineages in terms of size and rotation
+	 */
 	public static TreeMap<String, NucLineage> normalizeRot(SortedMap<String, NucLineage> lins)
 		{
-		//Normalize lineages in terms of size and rotation
-		System.out.println("--- normalize rigidbody");
+		System.out.println("--- normalize rigidbody ---");
 		double avsize=0;
 		TreeMap<String, NucLineage> newLins=new TreeMap<String, NucLineage>();
 		for(Map.Entry<String, NucLineage> le:lins.entrySet())
@@ -172,10 +172,12 @@ public class MakeStdWormDist4
 	
 	
 	
-	
+	/**
+	 * Normalize lineages in terms of time.
+	 * The duration and start of a cell will match the reference 
+	 */
 	public static SortedMap<String, NucLineage> normalizeT(SortedMap<String, NucLineage> lins)
 		{
-		//Normalize lineages in terms of time
 		System.out.println("--- normalize T");
 		TreeMap<String, NucLineage> newLins=new TreeMap<String, NucLineage>();
 		for(Map.Entry<String, NucLineage> le:lins.entrySet())
@@ -209,7 +211,9 @@ public class MakeStdWormDist4
 		return newLins;
 		}
 	
-	
+	/**
+	 * Set end frame of all cells without children to last frame. This stops them from occuring in interpolations.
+	 */
 	public static void endAllCells(SortedMap<String, NucLineage> lins)
 		{
 		//End all nuc without children for clarity
@@ -219,6 +223,9 @@ public class MakeStdWormDist4
 					nuc.end=nuc.pos.lastKey();
 		}
 	
+	/**
+	 * Get names of nuclei that appear in an interpolated frame
+	 */
 	public static SortedSet<String> interpNucNames(Map<NucPair, NucLineage.NucInterp> inter)
 		{
 		TreeSet<String> names=new TreeSet<String>();
@@ -227,8 +234,9 @@ public class MakeStdWormDist4
 		return names;
 		}
 
-	public static NucStats nucstats=new NucStats();
-
+	/**
+	 * Given all loaded lineages, figure out average life span of cells and collect the total lineage tree.
+	 */
 	public static void assembleTree()
 		{
 		//Collect tree
@@ -247,24 +255,23 @@ public class MakeStdWormDist4
 				
 				int start=nuc.pos.firstKey();
 				int end=nuc.pos.lastKey();
-				if(start<1500 || allTime) //For testing
-					{
-					NucStats.NucStatsOne one=nucstats.get(nucname);
-					if(nuc.parent!=null)
-						one.parent=nuc.parent;
+				NucStats.NucStatsOne one=nucstats.get(nucname);
+				if(nuc.parent!=null)
+					one.parent=nuc.parent;
 
-					//Should only add life time of this cell if it has children, otherwise there is no
-					//guarantee that the length is correct.
-					if(!nuc.child.isEmpty())
-						one.lifetime.add(end-start+1);
-					}
+				//Should only add life time of this cell if it has children, otherwise there is no
+				//guarantee that the length is correct.
+				if(!nuc.child.isEmpty())
+					one.lifetime.add(end-start+1);
 				}
 			}
 		nucstats.deriveLifetime();
 		}
 
 	
-	
+	/**
+	 * Helper for rigid transform fitter: write transformed coordinates to a lineage object
+	 */
 	public static void writeRigidFitCoord(NucLineage newlin, BestFitRotTransScale bf, Map<NucPair, NucLineage.NucInterp> cRef, int curframe)
 		{
 		bf.newpoint.clear();
@@ -281,6 +288,9 @@ public class MakeStdWormDist4
 			}
 		}
 	
+	/**
+	 * Find the last keyframe ever mentioned in a lineage object
+	 */
 	public static int lastFrameOfLineage(NucLineage lin)
 		{
 		Integer maxframe=null;
@@ -292,6 +302,9 @@ public class MakeStdWormDist4
 		return maxframe;
 		}
 	
+	/**
+	 * Find the first keyframe ever mentioned in a lineage object
+	 */
 	public static int firstFrameOfLineage(NucLineage lin)
 		{
 		Integer minframe=null;
@@ -304,7 +317,9 @@ public class MakeStdWormDist4
 		}
 	
 	
-	
+	/**
+	 * Fit nuclei objects to one reference nuclei using rigid body transformations
+	 */
 	public static void rigidFitOverTime()
 		{
 		//Choose one lineage for rotation reference
@@ -386,133 +401,12 @@ public class MakeStdWormDist4
 	
 	
 	
-	
-	public static void main(String[] args)
-		{
-		Log.listeners.add(new StdoutLog());
-		EV.loadPlugins();
-		
-		String outputName="/Volumes/TBU_main02/ostxml/model/stdcelegansNew.ostxml";
-		
-		loadSelected();
-
-		//Get names of nuclei
-		TreeSet<String> nucNames=new TreeSet<String>();
-		for(NucLineage lin:lins.values())
-			nucNames.addAll(lin.nuc.keySet());
-		
-		//Remove all :-nucs from all lineages, as well as just crap
-		for(NucLineage lin:lins.values())
-			{
-			TreeSet<String> nucstocopynot=new TreeSet<String>();
-			for(String n:lin.nuc.keySet())
-				if(n.startsWith(":") || 
-						n.startsWith("shell") || n.equals("ant") || n.equals("post") || 
-						n.equals("venc") || n.equals("germline") ||n.equals("2ftail") ||
-						n.equals("P") || n.indexOf('?')>=0 || n.indexOf('_')>=0)
-					nucstocopynot.add(n);
-			for(String n:nucstocopynot)
-				lin.removeNuc(n);
-			}
-		
-		
-		assembleTree();
 
 
-		lins=normalizeRot(lins);
-		lins=normalizeT(lins);
-		endAllCells(lins); //Important for later interpolation, not just visualization
-		
-		rigidFitOverTime();
-
-		endAllCells(lins);
-		
-		
-		
-		
-
-		//Write tree to XML
-		NucLineage combinedLin=nucstats.generateXMLtree();
-
-		
-		
-		
-		
-		//Collect distances and radii
-		//TODO: all are now the same time!
-		System.out.println("--- collect spatial statistics");
-
-		for(int curframe=nucstats.minFrame();curframe<nucstats.maxFrame();curframe++)
-			{
-			if(curframe%100==0)
-				System.out.println(curframe);
-			for(NucLineage lin:lins.values())
-				{
-				Map<NucPair, NucInterp> inter=lin.getInterpNuc(curframe);
-				for(Map.Entry<NucPair, NucInterp> ie:inter.entrySet())
-					{
-					String thisnucname=ie.getKey().snd();
-					NucInterp ni=ie.getValue();
-					
-					NucStats.NucStatsOne one=nucstats.nuc.get(thisnucname);
-					if(one!=null)
-						{
-						one.addRadius(curframe, ni.pos.r);
-						one.addCollPos(curframe, ni.pos.getPosCopy());
-	/*				
-					//Get distances
-					if(NUMTRY>0)
-						for(NucPair otherpair:inter.keySet())
-							if(!otherpair.snd().equals(thisnucname))
-								{
-								String othernucname=otherpair.snd();
-								NucStats.NucStatsOne otherOne=nucstats.get(othernucname);
-								NucInterp otheri=inter.get(otherpair);
-
-								Vector3d diff=thisi.pos.getPosCopy();
-								diff.sub(otheri.pos.getPosCopy());
-								double dist=diff.length();
-								one.addDistance(frame, othernucname, dist);
-								otherOne.addDistance(otherOne.toLocalFrame(one.toGlobalFrame(frame)), thisnucname, dist); //to make it symmetric
-								}
-*/
-						}
-					else
-						System.out.println("no one  for "+thisnucname);
-					}
-				}
-			}
-		
-		fitting(combinedLin);
-
-		
-		//Save normalized lineages
-		if(saveNormalized)
-			{
-			EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize.ostxml");
-			output2.metaObject.clear();
-			for(Map.Entry<String, NucLineage> e:lins.entrySet())
-				output2.metaObject.put(e.getKey(),e.getValue());
-			output2.metaObject.put("model", combinedLin);
-			output2.saveMeta();
-			}
-		
-	
-		//Save reference
-		EvDataXML output=new EvDataXML(outputName);
-		output.metaObject.clear();
-		output.addMetaObject(combinedLin);
-		output.saveMeta();
-		
-		
-		}
-
-	
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	/*
-	public static void fitting(NucLineage refLin)
+	/**
+	 * Assemble model using averaging
+	 */
+	public static void assembleModel(NucLineage refLin)
 		{
 		//Fit coordinates
 		int maxframe=nucstats.maxFrame();
@@ -522,95 +416,16 @@ public class MakeStdWormDist4
 			{
 			if(frame%100==0)
 				System.out.println(frame);
-			Map<String, NucStatsOne> curnuc=nucstats.getAtFrame(frame);
-//			System.out.println("num ent "+curnuc.size());
-			
-			
-			BestFitLength bf=new BestFitLength();
-			bf.nuc=curnuc;
-			for(String s:curnuc.keySet())
-				{
-				NucStatsOne one=nucstats.get(s);
-				one.findNeigh(frame);
-				
-				if(showNeigh)
-					{
-					System.out.print(""+s+":: ");
-					for(NucStats.Neigh n:one.neigh)
-						System.out.print(""+n.name+":"+n.dist+" ");
-					System.out.println();
-					}
-				}
 
-			//This guesses current coordinates. children get coordinates from their parent with a small perturbation
-			//to avoid numerical issues
-			nucstats.prepareCoord(refLin, frame);
-			
-			//Guess: Get position by averaging over normalized sets
-			for(String name:nucstats.nuc.keySet())
-				{
-				NucStatsOne one=nucstats.nuc.get(name);
-				List<Vector3d> poshere=one.collectedPos.get(one.toLocalFrame(frame));
-				if(poshere!=null && !poshere.isEmpty())
-					{
-					one.curposAvg[0].clear();
-					one.curposAvg[1].clear();
-					one.curposAvg[2].clear();
-					for(Vector3d u:poshere)
-						{
-						one.curposAvg[0].count(u.x);
-						one.curposAvg[1].count(u.y);
-						one.curposAvg[2].count(u.z);
-						}
-					one.curpos=new Vector3d(one.curposAvg[0].getMean(), one.curposAvg[1].getMean(), one.curposAvg[2].getMean());
-					}
-				}
-			
-			//Optimize guess
-			if(NUMTRY==1)
-				{
-				double minEps=1e-4;
-				bf.iterate(500, 1000, minEps);
-				for(String name:nucstats.nuc.keySet())
-					if(nucstats.nuc.get(name).curpos!=null)
-						nucstats.nuc.get(name).curpos=new Vector3d(nucstats.nuc.get(name).curpos);
-				}
-				
-			
-			//Write out coordinates
-			nucstats.writeCoord(refLin, frame);
-
-			
-//			System.out.println("frame: "+frame+"   eps: "+bf.eps);
-			}
-		
-		
-		}
-	*/
-	
-	
-	
-	
-	public static void fitting(NucLineage refLin)
-		{
-		//Fit coordinates
-		int maxframe=nucstats.maxFrame();
-		int minframe=nucstats.minFrame();
-		System.out.println("--- fitting, from "+minframe+" to "+maxframe);
-		for(int frame=minframe;frame<maxframe;frame++)
-			{
-			if(frame%100==0)
-				System.out.println(frame);
-			
 //			Map<String, NucStatsOne> curnuc=nucstats.getAtFrame(frame);
 //			System.out.println("num ent "+curnuc.size());
-			
+
 			for(Map.Entry<String, NucStats.NucStatsOne> onee:nucstats.nuc.entrySet())
 				{
 				NucStats.NucStatsOne one=onee.getValue();
 				if(onee.getValue().existAt(frame))
 					{
-					
+
 					List<Vector3d> poshere=one.collectedPos.get(frame);
 					if(poshere!=null && !poshere.isEmpty())
 						{
@@ -627,19 +442,19 @@ public class MakeStdWormDist4
 						}
 					else
 						System.out.println("isempty "+onee.getKey()+" @ "+frame);
-					
+
 					}
 				else
 					one.curpos=null;
 				}
 			nucstats.writeCoord(refLin, frame);			
-			
+
 			/*
 			for(String s:curnuc.keySet())
 				{
 				NucStatsOne one=nucstats.get(s);
 				one.findNeigh(frame);
-				
+
 				if(showNeigh)
 					{
 					System.out.print(""+s+":: ");
@@ -652,8 +467,8 @@ public class MakeStdWormDist4
 			//This guesses current coordinates. children get coordinates from their parent with a small perturbation
 			//to avoid numerical issues
 //			nucstats.prepareCoord(refLin, frame);
-			
-			
+
+
 			/*
 			//Guess: Get position by averaging over normalized sets
 			for(String name:nucstats.nuc.keySet())
@@ -674,20 +489,23 @@ public class MakeStdWormDist4
 					one.curpos=new Vector3d(one.curposAvg[0].getMean(), one.curposAvg[1].getMean(), one.curposAvg[2].getMean());
 					}
 				}
-			
-				
-			
+
+
+
 			//Write out coordinates
 			nucstats.writeCoord(refLin, frame);
-			*/
+			 */
 
 			}
-		
-		
+
+
 		}
+
+
+
+
 	
-	
-	
+
 	
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -791,8 +609,209 @@ public class MakeStdWormDist4
 	
 	
 	
+	
+	
+	/**
+	 * Entry point
+	 */
+	public static void main(String[] args)
+		{
+		Log.listeners.add(new StdoutLog());
+		EV.loadPlugins();
+		
+		String outputName="/Volumes/TBU_main02/ostxml/model/stdcelegansNew.ostxml";
+		
+		loadSelected();
+
+		//Get names of nuclei
+		TreeSet<String> nucNames=new TreeSet<String>();
+		for(NucLineage lin:lins.values())
+			nucNames.addAll(lin.nuc.keySet());
+		
+		//Remove all :-nucs from all lineages, as well as just crap
+		for(NucLineage lin:lins.values())
+			{
+			TreeSet<String> nucstocopynot=new TreeSet<String>();
+			for(String n:lin.nuc.keySet())
+				if(n.startsWith(":") || 
+						n.startsWith("shell") || n.equals("ant") || n.equals("post") || 
+						n.equals("venc") || n.equals("germline") ||n.equals("2ftail") ||
+						n.equals("P") || n.indexOf('?')>=0 || n.indexOf('_')>=0)
+					nucstocopynot.add(n);
+			for(String n:nucstocopynot)
+				lin.removeNuc(n);
+			}
+		
+		
+		assembleTree();
+
+
+		lins=normalizeRot(lins);
+		lins=normalizeT(lins);
+		endAllCells(lins); //Important for later interpolation, not just visualization
+		
+		rigidFitOverTime();
+
+		endAllCells(lins);
+		
+
+		//Write tree to XML
+		NucLineage combinedLin=nucstats.generateXMLtree();
+		
+		
+		//Collect distances and radii
+		//TODO: all are now the same time!
+		System.out.println("--- collect spatial statistics");
+
+		for(int curframe=nucstats.minFrame();curframe<nucstats.maxFrame();curframe++)
+			{
+			if(curframe%100==0)
+				System.out.println(curframe);
+			for(NucLineage lin:lins.values())
+				{
+				Map<NucPair, NucInterp> inter=lin.getInterpNuc(curframe);
+				for(Map.Entry<NucPair, NucInterp> ie:inter.entrySet())
+					{
+					String thisnucname=ie.getKey().snd();
+					NucInterp ni=ie.getValue();
+					
+					NucStats.NucStatsOne one=nucstats.nuc.get(thisnucname);
+					if(one!=null)
+						{
+						one.addRadius(curframe, ni.pos.r);
+						one.addCollPos(curframe, ni.pos.getPosCopy());
+	/*				
+					//Get distances
+					if(NUMTRY>0)
+						for(NucPair otherpair:inter.keySet())
+							if(!otherpair.snd().equals(thisnucname))
+								{
+								String othernucname=otherpair.snd();
+								NucStats.NucStatsOne otherOne=nucstats.get(othernucname);
+								NucInterp otheri=inter.get(otherpair);
+
+								Vector3d diff=thisi.pos.getPosCopy();
+								diff.sub(otheri.pos.getPosCopy());
+								double dist=diff.length();
+								one.addDistance(frame, othernucname, dist);
+								otherOne.addDistance(otherOne.toLocalFrame(one.toGlobalFrame(frame)), thisnucname, dist); //to make it symmetric
+								}
+*/
+						}
+					else
+						System.out.println("no one  for "+thisnucname);
+					}
+				}
+			}
+		
+		assembleModel(combinedLin);
+
+		
+		//Save normalized lineages
+		if(saveNormalized)
+			{
+			EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize.ostxml");
+			output2.metaObject.clear();
+			for(Map.Entry<String, NucLineage> e:lins.entrySet())
+				output2.metaObject.put(e.getKey(),e.getValue());
+			output2.metaObject.put("model", combinedLin);
+			output2.saveMeta();
+			}
+		
+	
+		//Save reference
+		EvDataXML output=new EvDataXML(outputName);
+		output.metaObject.clear();
+		output.addMetaObject(combinedLin);
+		output.saveMeta();
+		
+		
+		}
+
+	}
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/*
+	public static void fitting(NucLineage refLin)
+		{
+		//Fit coordinates
+		int maxframe=nucstats.maxFrame();
+		int minframe=nucstats.minFrame();
+		System.out.println("--- fitting, from "+minframe+" to "+maxframe);
+		for(int frame=minframe;frame<maxframe;frame++)
+			{
+			if(frame%100==0)
+				System.out.println(frame);
+			Map<String, NucStatsOne> curnuc=nucstats.getAtFrame(frame);
+//			System.out.println("num ent "+curnuc.size());
+			
+			
+			BestFitLength bf=new BestFitLength();
+			bf.nuc=curnuc;
+			for(String s:curnuc.keySet())
+				{
+				NucStatsOne one=nucstats.get(s);
+				one.findNeigh(frame);
+				
+				if(showNeigh)
+					{
+					System.out.print(""+s+":: ");
+					for(NucStats.Neigh n:one.neigh)
+						System.out.print(""+n.name+":"+n.dist+" ");
+					System.out.println();
+					}
+				}
+
+			//This guesses current coordinates. children get coordinates from their parent with a small perturbation
+			//to avoid numerical issues
+			nucstats.prepareCoord(refLin, frame);
+			
+			//Guess: Get position by averaging over normalized sets
+			for(String name:nucstats.nuc.keySet())
+				{
+				NucStatsOne one=nucstats.nuc.get(name);
+				List<Vector3d> poshere=one.collectedPos.get(one.toLocalFrame(frame));
+				if(poshere!=null && !poshere.isEmpty())
+					{
+					one.curposAvg[0].clear();
+					one.curposAvg[1].clear();
+					one.curposAvg[2].clear();
+					for(Vector3d u:poshere)
+						{
+						one.curposAvg[0].count(u.x);
+						one.curposAvg[1].count(u.y);
+						one.curposAvg[2].count(u.z);
+						}
+					one.curpos=new Vector3d(one.curposAvg[0].getMean(), one.curposAvg[1].getMean(), one.curposAvg[2].getMean());
+					}
+				}
+			
+			//Optimize guess
+			if(NUMTRY==1)
+				{
+				double minEps=1e-4;
+				bf.iterate(500, 1000, minEps);
+				for(String name:nucstats.nuc.keySet())
+					if(nucstats.nuc.get(name).curpos!=null)
+						nucstats.nuc.get(name).curpos=new Vector3d(nucstats.nuc.get(name).curpos);
+				}
+				
+			
+			//Write out coordinates
+			nucstats.writeCoord(refLin, frame);
+
+			
+//			System.out.println("frame: "+frame+"   eps: "+bf.eps);
+			}
+		
+		
+		}
+	*/
+	
+	
+	
 			
 	
 	
-
-	}
