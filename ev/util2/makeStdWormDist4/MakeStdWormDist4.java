@@ -197,11 +197,13 @@ public class MakeStdWormDist4
 					thisDur=one.getLifeLen();
 				else
 					thisDur=nuc.lastFrame()-nuc.pos.firstKey();
+				double oneLifeLen=one.getLifeLen();
 				//potential trouble if no child and thisdur wrong
 				for(int frame:e.getValue().pos.keySet())
 					{
 					//This is the optimal place to take different timesteps into account
-					int newFrame=(int)(one.lifeStart+one.getLifeLen()*(frame-thisFirstFrame)/thisDur);
+					int newFrame=(int)(one.lifeStart+oneLifeLen*(frame-thisFirstFrame)/thisDur);
+					System.out.println("> "+e.getKey()+" "+one.lifeStart+" "+frame+" -> "+newFrame+" // "+one.lifeEnd);
 					
 					NucLineage.NucPos pos=nuc.pos.get(frame);
 					newnuc.pos.put(newFrame, new NucLineage.NucPos(pos));
@@ -330,7 +332,7 @@ public class MakeStdWormDist4
 		
 		System.out.println("--- rigid fit ---");
 		//Fit all to reference
-		lins=Parallel.mapTreeValues(lins, new Parallel.FuncAB<NucLineage, NucLineage>(){
+		lins=EvParallel.fmapValues(lins, new EvParallel.FuncAB<NucLineage, NucLineage>(){
 			public NucLineage func(NucLineage lin)
 				{
 				if(lin==refLin)
@@ -649,10 +651,21 @@ public class MakeStdWormDist4
 		lins=normalizeRot(lins);
 		lins=normalizeT(lins);
 		endAllCells(lins); //Important for later interpolation, not just visualization
-		
 		rigidFitOverTime();
-
 		endAllCells(lins);
+
+
+		//temp
+		/*
+		if(saveNormalized)
+			{
+			EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize.ostxml");
+			output2.metaObject.clear();
+			for(Map.Entry<String, NucLineage> e:lins.entrySet())
+				output2.metaObject.put(e.getKey(),e.getValue());
+			output2.saveMeta();
+			}
+		*/
 		
 
 		//Write tree to XML

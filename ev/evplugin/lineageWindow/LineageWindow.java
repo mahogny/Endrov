@@ -84,7 +84,8 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miExportImage=new JMenuItem("Export Image*");
 	public JMenuItem miSelectChildren=new JMenuItem("Select children");
 	public JMenuItem miSelectParents=new JMenuItem("Select parents");
-	public JMenuItem miSelectAll=new JMenuItem("Select all");
+	public JMenuItem miSelectAll=new JMenuItem("Select all in this lineage");
+	public JMenuItem miSelectAllName=new JMenuItem("Select all w/ the same name");
 	
 	public JMenuItem miRotate=new JMenuItem("Rotate tree");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
@@ -148,6 +149,7 @@ public class LineageWindow extends BasicWindow
 		miSelectChildren.addActionListener(this);
 		miSelectParents.addActionListener(this);
 		miSelectAll.addActionListener(this);
+		miSelectAllName.addActionListener(this);
 		miRotate.addActionListener(this);
 		
 		ButtonGroup expGroup=new ButtonGroup();
@@ -214,6 +216,7 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miSelectChildren);
 		menuLineage.add(miSelectParents);
 		menuLineage.add(miSelectAll);
+		menuLineage.add(miSelectAllName);
 		
 		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
 		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
@@ -412,6 +415,18 @@ public class LineageWindow extends BasicWindow
 			{
 			if(view.currentLin!=null)
 				selectAll(view.currentLin);
+			BasicWindow.updateWindows();
+			}
+		else if(e.getSource()==miSelectAllName)
+			{
+			HashSet<String> names=new HashSet<String>();
+			for(NucPair p:NucLineage.selectedNuclei)
+				names.add(p.snd());
+			for(EvData data:EvData.metadata)
+				for(NucLineage lin:data.getObjects(NucLineage.class))
+					for(String n:names)
+						if(lin.nuc.containsKey(n))
+							NucLineage.selectedNuclei.add(new NucPair(lin,n));
 			BasicWindow.updateWindows();
 			}
 		else if(e.getSource()==objectCombo)
@@ -656,7 +671,8 @@ public class LineageWindow extends BasicWindow
 	public void stateChanged(ChangeEvent e)
 		{
 		view.setFrameDist(Math.pow(10.0,sliderFrameDist.getValue()/30000.0));
-		view.setBranchScale(Math.pow(10.0,sliderBranchScale.getValue()/30000.0));
+		//view.setBranchScale(Math.pow(10.0,sliderBranchScale.getValue()/30000.0));
+		view.expScale=Math.pow(10.0,sliderBranchScale.getValue()/3000.0);
 		repaint();
 		}
 
