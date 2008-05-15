@@ -366,8 +366,8 @@ public class NucStats
 				pos.y=one.curpos.y;
 				pos.z=one.curpos.z;
 
-				int relframe=frame-e.getValue().lifeStart;
-				StatDouble radiusList=e.getValue().radius.get(relframe);
+//				int relframe=frame-e.getValue().lifeStart;
+				StatDouble radiusList=e.getValue().radius.get(frame); //was relframe
 				if(radiusList==null)
 					{
 					if(e.getValue().radius.isEmpty())

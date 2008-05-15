@@ -48,6 +48,8 @@ public class LineageView extends JPanel
 	
 	private double frameDist=5;
 	private double branchScale=1;
+
+	public double expScale=1;
 	
 	public boolean showHorizontalTree=true;	
 	public boolean showFrameLines=true;
@@ -249,6 +251,8 @@ public class LineageView extends JPanel
 		branchScale=s;
 		camVY=curmid*branchScale-h;
 		}
+
+
 	
 	/** Move camera to show some frame */
 	public void setFrame(double frame)
@@ -398,7 +402,7 @@ public class LineageView extends JPanel
 			for(Map.Entry<String, NucLineage.NucExp> e:nuc.exp.entrySet())
 				if(!e.getValue().level.isEmpty())
 					{
-					double expScale=0.2;
+//					double expScale=0.2;
 		
 		
 					//Only draw if potentially visible

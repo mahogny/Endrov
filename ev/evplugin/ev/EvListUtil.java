@@ -1,4 +1,4 @@
-package util2.makeStdWormDist4;
+package evplugin.ev;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import evplugin.ev.Tuple;
-
+/**
+ * Util functions for lists
+ * @author Johan Henriksson
+ */
 public class EvListUtil
 	{
 

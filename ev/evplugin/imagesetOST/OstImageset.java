@@ -32,9 +32,14 @@ public class OstImageset extends Imageset
 			public Integer supports(File file)
 				{
 				if(file.isDirectory())
-					for(File f:file.listFiles())
-						if(f.isFile() && f.getName().equals("rmd.xml"))
-							return 10;
+					{
+					if(file.getName().endsWith(".ost")) //OST3+
+						return 10;
+					else //OST2
+						for(File f:file.listFiles())
+							if(f.isFile() && (f.getName().equals("rmd.xml") || f.getName().equals("rmd.ostxml")))
+								return 10;
+					}
 				return null;
 				}
 			public EvData load(File file) throws Exception
@@ -140,7 +145,7 @@ public class OstImageset extends Imageset
 	
 	/** Path to imageset */
 	public String basedir;
-	
+
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
 	 * @param basedir
@@ -148,9 +153,50 @@ public class OstImageset extends Imageset
 	public OstImageset(String basedir)
 		{
 		this.basedir=basedir;
-		this.imageset=(new File(basedir)).getName();
+		convert23();
 		buildDatabase();
 		}
+	
+	/**
+	 * Convert OST2 -> OST3
+	 */
+	public void convert23()
+		{
+		String ostname=new File(basedir).getName();
+		if(ostname.endsWith(".ost"))
+			ostname=ostname.substring(0,ostname.length()-".ost".length());
+		File rmdfile=new File(basedir,"rmd.xml");
+		if(rmdfile.exists())
+			{
+			System.out.println("Detected OST2.x. Updating to 3");
+			
+			//Rename rmd
+			rmdfile.renameTo(new File(basedir,"rmd.ostxml"));
+			
+			//Rename channels
+			for(File child:new File(basedir).listFiles())
+				{
+				String n=child.getName();
+				if(child.isDirectory() && n.startsWith(ostname))
+					{
+					n=n.substring((ostname+"-").length());
+					File newname=new File(basedir,n);
+					child.renameTo(newname);
+					}
+				}
+			
+			//Add .ost to directory
+			//Fails because it is normally locked
+			/*
+			File newbasedir=new File(new File(basedir).getParentFile(),ostname+".ost");
+			new File(basedir).renameTo(newbasedir);
+			basedir=newbasedir.toString();
+			*/
+			}
+		
+		
+		}
+	
 	
 	/**
 	 * Get name description of this metadata
@@ -166,7 +212,8 @@ public class OstImageset extends Imageset
 	 */
 	public File datadir()
 		{
-		File datadir=new File(basedir,getMetadataName()+"-data");
+//		File datadir=new File(basedir,getMetadataName()+"-data");
+		File datadir=new File(basedir,"data");
 		datadir.mkdirs();
 		return datadir;
 		}
@@ -177,7 +224,8 @@ public class OstImageset extends Imageset
 	 */
 	public void saveMeta()
 		{
-		saveMeta(new File(basedir,"rmd.xml"));
+		saveMeta(new File(basedir,"rmd.ostxml"));
+//		saveMeta(new File(basedir,"rmd.xml"));
 		saveImages();
 		
 		//Update date of datadir to have it backuped
@@ -341,10 +389,16 @@ public class OstImageset extends Imageset
 	public void buildDatabase()
 		{
 		File basepath=new File(basedir);
-		File metaFile=new File(basepath,"rmd.xml");
+		File metaFile=new File(basepath,"rmd.ostxml");
+//		File metaFile=new File(basepath,"rmd.xml");
 		if(!metaFile.exists())
 			System.out.printf("AAIEEE NO METAFILE?? this might mean this is in the OST1 format which has been removed");
+
+		//Get descriptive name of imageset
 		imageset=basepath.getName();
+		if(imageset.endsWith(".ost"))
+			imageset=imageset.substring(0,imageset.length()-".ost".length());
+		
 		if(basepath.exists())
 			{
 			//Load metadata
@@ -362,10 +416,12 @@ public class OstImageset extends Imageset
 				//Check which files exist
 				File[] dirfiles=basepath.listFiles();
 				for(File f:dirfiles)
-					if(f.isDirectory() && !f.getName().startsWith(".") && !f.getName().endsWith("-data"))
+					if(f.isDirectory() && !f.getName().startsWith(".") && !f.getName().equals("data"))
+//						if(f.isDirectory() && !f.getName().startsWith(".") && !f.getName().endsWith("-data"))
 						{
 						String fname=f.getName();
-						String channelName=fname.substring(fname.lastIndexOf('-')+1);
+						String channelName=fname;
+//						String channelName=fname.substring(fname.lastIndexOf('-')+1);
 						Log.printLog("Found channel: "+channelName);
 						Channel c=new Channel(meta.getCreateChannelMeta(channelName));
 						c.scanFiles();
@@ -535,7 +591,8 @@ public class OstImageset extends Imageset
 	/** Internal: piece together a path to a channel */
 	private File buildChannelPath(String channelName)
 		{
-		return new File(basedir,imageset+"-"+channelName);
+//		return new File(basedir,imageset+"-"+channelName);
+		return new File(basedir,channelName);
 		}
 	/** Internal: piece together a path to a frame */
 	public File buildFramePath(String channelName, int frame)

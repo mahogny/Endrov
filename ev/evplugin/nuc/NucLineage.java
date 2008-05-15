@@ -582,7 +582,7 @@ public class NucLineage extends EvObject implements Cloneable
 		
 		JMenuItem mir=new JMenuItem("<Remove>");
 		mir.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0)
+			public void actionPerformed(ActionEvent e)
 				{
 				for(NucPair p:selectedNuclei)
 					p.fst().nuc.get(p.snd()).colorNuc=null;
@@ -594,7 +594,7 @@ public class NucLineage extends EvObject implements Cloneable
 			{
 			JMenuItem mi=new JMenuItem(c.name);
 			mi.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent arg0)
+				public void actionPerformed(ActionEvent e)
 					{
 					for(NucPair p:selectedNuclei)
 						p.fst().nuc.get(p.snd()).colorNuc=c.c;
@@ -603,6 +603,20 @@ public class NucLineage extends EvObject implements Cloneable
 			});
 			m.add(mi);
 			}
+		JMenuItem mirb=new JMenuItem("<Rainbow>");
+		mirb.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				for(NucPair p:selectedNuclei)
+					{
+					
+					int pi=Math.abs(p.snd().hashCode())%EvColor.colorList.length;
+					p.fst().nuc.get(p.snd()).colorNuc=EvColor.colorList[pi].c;
+					}
+				BasicWindow.updateWindows();
+				}
+		});
+		m.add(mirb);
 		return m;
 		}
 

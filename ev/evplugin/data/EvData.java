@@ -381,6 +381,8 @@ public abstract class EvData
 			metaObject.remove(id);
 		}
 	
+	/** Version of metadata */
+	String metadataVersion="<undefined>";
 	
 	
 	/**
@@ -398,6 +400,9 @@ public abstract class EvData
   		document = saxBuilder.build(fileInputStream);
   		Element element = document.getRootElement();
 
+  		if(element.getAttribute("version")!=null)
+  			metadataVersion=element.getAttributeValue("version");
+  		
   		//Extract objects
   		for(Element child:EV.castIterableElement(element.getChildren()))
   			{
