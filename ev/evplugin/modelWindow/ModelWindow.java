@@ -76,6 +76,8 @@ public class ModelWindow extends BasicWindow
 	private final JPanel bottomPanel=new JPanel(new GridBagLayout());
 	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
+	public JProgressBar progress=new JProgressBar(0,1000);
+	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
 	public final MetaCombo metaCombo=new MetaCombo(null,false);
@@ -214,6 +216,7 @@ public class ModelWindow extends BasicWindow
 		sidePanelItems.clear();
 		bottomPanelItems.clear();
 		bottomPanelItems.add(bottomMain);
+		bottomPanelItems.add(progress); //Since it belongs to voxel, maybe keep it there?
 		for(ModelWindowHook h:modelWindowHooks)
 			h.fillModelWindomMenus();
 		
@@ -238,6 +241,8 @@ public class ModelWindow extends BasicWindow
 			bottomPanel.add(c,cr);
 			countb++;
 			}
+		
+		
 		sidePanel.revalidate();
 		bottomPanel.revalidate();
 		}

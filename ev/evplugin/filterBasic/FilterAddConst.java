@@ -1,6 +1,6 @@
 package evplugin.filterBasic;
 
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.image.*;
 import javax.swing.*;
 
@@ -10,18 +10,18 @@ import evplugin.ev.*;
 import evplugin.filter.*;
 
 /**
- * Filter: invert image, c'=255-c
+ * Filter: add a constant
  * 
  * @author Johan Henriksson
  */
-public class NoisePepperAndSalt extends FilterSlice
+public class FilterAddConst extends FilterSlice
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	private static String filterName="Salt and Pepper";
-	private static String filterMeta="SaltandPepper";
-	private static String filterCategory="Noise";
+	private static String filterName="Add Constant";
+	private static String filterMeta="AddConstant";
+	private static String filterCategory="Mathematical";
 
 	public static void initPlugin() {}
 	static
@@ -31,12 +31,11 @@ public class NoisePepperAndSalt extends FilterSlice
 			public String getCategory(){return filterCategory;}
 			public String getName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
-			public FilterROI filterROI(){return new NoisePepperAndSalt();}
+			public FilterROI filterROI(){return new FilterAddConst();}
 			public Filter readXML(Element e)
 				{
-				NoisePepperAndSalt f=new NoisePepperAndSalt();
-				f.pwhite.setValue(Double.parseDouble(e.getAttributeValue("pwhite")));
-				f.pblack.setValue(Double.parseDouble(e.getAttributeValue("pblack")));
+				FilterAddConst f=new FilterAddConst();
+				f.value.setValue(Double.parseDouble(e.getAttributeValue("value")));
 				return f;
 				}
 			});
@@ -47,8 +46,7 @@ public class NoisePepperAndSalt extends FilterSlice
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	public EvMutableDouble pwhite=new EvMutableDouble(0.04);
-	public EvMutableDouble pblack=new EvMutableDouble(0.04);
+	public EvMutableDouble value=new EvMutableDouble(0);
 	
 	public String getFilterName()
 		{
@@ -58,22 +56,18 @@ public class NoisePepperAndSalt extends FilterSlice
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);
-		e.setAttribute("pwhite",""+pwhite);
-		e.setAttribute("pblack",""+pblack);
+		e.setAttribute("value",""+value);
 		}
 
 	
 	public JComponent getFilterWidget()
 		{
-		JPanel pane=new JPanel(new GridLayout(2,2));
+		JPanel pane=new JPanel(new GridLayout(1,2));
 		
-		JNumericFieldMutableDouble npwhite=new JNumericFieldMutableDouble(pwhite, observer, this);
-		JNumericFieldMutableDouble npblack=new JNumericFieldMutableDouble(pblack, observer, this);
+		final JNumericFieldMutableDouble nlambda=new JNumericFieldMutableDouble(value, observer, this);
 		
-		pane.add(new JLabel("P[white]:"));
-		pane.add(npwhite);
-		pane.add(new JLabel("P[black]:"));
-		pane.add(npblack);
+		pane.add(new JLabel("Value:"));
+		pane.add(nlambda);
 
 		return pane;
 		}
@@ -81,13 +75,13 @@ public class NoisePepperAndSalt extends FilterSlice
 	
 	
 	
+	
 	public void applyImage(BufferedImage in, BufferedImage out)
 		{
 		WritableRaster rin=in.getRaster();
 		WritableRaster rout=out.getRaster();
-
-		double pwhite=this.pwhite.doubleValue();
-		double pwhiteblack=pwhite+pblack.doubleValue();
+		
+		double nvalue=this.value.doubleValue();
 		
 		int width=rin.getWidth();
 		int[] pix=new int[width];
@@ -96,12 +90,12 @@ public class NoisePepperAndSalt extends FilterSlice
 			rin.getSamples(0, ah, width, 1, 0, pix);
 			for(int aw=0;aw<width;aw++)
 				{
-				double r=Math.random();
-				if(r<pwhite)
+				pix[aw]+=nvalue;
+				if(pix[aw]>255)
 					pix[aw]=255;
-				else if(r<pwhiteblack)
+				if(pix[aw]<0)
 					pix[aw]=0;
-				
+				//What about double value images?
 				}
 			rout.setSamples(0, ah, width, 1, 0, pix);
 			}

@@ -16,6 +16,7 @@ import evplugin.basicWindow.ChannelCombo;
 import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.filter.FilterSeq;
+import evplugin.filter.WindowFilterSeq;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.*;
@@ -49,8 +50,8 @@ public class VoxelExtension implements ModelWindowExtension
 		{
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
-		private StackSlices slices=new StackSlices();
-		private StackSlices lastSlices=null; //to be removed TODO, can we pile up too many?
+		private Stack2D slices=new Stack2D();
+		private Stack2D lastSlices=null; //to be removed TODO, can we pile up too many?
 
 		private OneImageChannel icR=new OneImageChannel("R", Color.RED);
 		private OneImageChannel icG=new OneImageChannel("G", Color.GREEN);
@@ -100,51 +101,67 @@ public class VoxelExtension implements ModelWindowExtension
 			icB.channelCombo.setExternalImageset(im);
 			}
 		
+		
+		
+		
+		
+		
+		
+		
+		
 		public void displayFinal(GL gl)
 			{
 			//Remove prior data
-			if(lastSlices!=null)    //TODO: make list. potential memory leak
+			if(lastSlices!=null)    //TODO: make variable into list. potential memory leak
 				lastSlices.clean(gl);
 			lastSlices=null;
+
+			double frame=getFrame();
 			
 			//Build list of which channels should be rendered
-			double frame=getFrame();
-			if(slices.needBuild(frame))
+			if(slices.needSettings(frame))
 				{
-/*				Imageset curim=w.metaCombo.getImageset();
-				if(icR.channelCombo.getImageset()!=curim)
-					{
-					icR.channelCombo.setImageset(curim);
-					icG.channelCombo.setImageset(curim);
-					icB.channelCombo.setImageset(curim);
-					}*/
+//				System.out.println("needsettings");
+				slices.lastframe=frame;
 				
-				HashMap<ChannelImages, StackSlices.ChannelSelection> chsel=new HashMap<ChannelImages, StackSlices.ChannelSelection>(); 
+				//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
+				HashMap<ChannelImages, Stack2D.ChannelSelection> chsel=new HashMap<ChannelImages, Stack2D.ChannelSelection>(); 
 				for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
 					{
 					Imageset im=oc.channelCombo.getImageset();
 					ChannelImages chim=im.getChannel(oc.channelCombo.getChannel());
 					if(chim!=null)
 						{
-						StackSlices.ChannelSelection sel=chsel.get(chim);
+						Stack2D.ChannelSelection sel=chsel.get(chim);
 						if(sel==null)
 							{
-							sel=new StackSlices.ChannelSelection();
+							sel=new Stack2D.ChannelSelection();
 							chsel.put(chim, sel);
-							sel.im=im;
-							sel.ch=chim;
 							}
+						sel.im=im;
+						sel.ch=chim;
+						sel.filterSeq=oc.filterSeq;
 						sel.color=new Color(
 								sel.color.getRed()+oc.color.getRed(),
 								sel.color.getGreen()+oc.color.getGreen(),
 								sel.color.getBlue()+oc.color.getBlue());
 						}
 					}
-				slices.build(gl, frame, chsel.values());
+				
+				//Start build thread
+				slices.startBuildThread(frame, chsel, w);
 				}
-			
-			//Render
-			slices.render(gl,w.view.camera);
+			else
+				{
+//				System.out.println("render");
+				//Render
+				if(slices.needLoadGL)
+					{
+					slices.loadGL(gl);
+					slices.needLoadGL=false;
+					}
+				slices.render(gl,w.view.camera);
+				}
 			}
 		
 
@@ -157,6 +174,7 @@ public class VoxelExtension implements ModelWindowExtension
 			JButton bFs=FilterSeq.createFilterSeqButton();
 			ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
 			Color color;
+			FilterSeq filterSeq=new FilterSeq();
 			
 			public OneImageChannel(String name,Color color)
 				{
@@ -166,16 +184,36 @@ public class VoxelExtension implements ModelWindowExtension
 				add(channelCombo,BorderLayout.CENTER);
 				add(bFs,BorderLayout.EAST);
 				channelCombo.addActionListener(this);
+				bFs.addActionListener(this);
+				filterSeq.observer.addWeakListener(filterSeqObserver);
 				}
 			
+			private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
+				{public void observerEvent(Object o){stackChanged();}};
 			
-			public void actionPerformed(ActionEvent e)
+			private void stackChanged()
 				{
 				//TODO: when filter seq updated, a signal should be sent back
+				if(slices!=null)
+					slices.stopBuildThread();
 				lastSlices=slices;
-				slices=new StackSlices();
-
+				slices=new Stack2D(); //Preferably disk data should be cached
+//				System.out.println("stack changed");
 				w.repaint();
+				}
+				
+			public void actionPerformed(ActionEvent e)
+				{
+				if(e.getSource()==channelCombo)
+					{
+					stackChanged();
+					}
+				else if(e.getSource()==bFs)
+					{
+					new WindowFilterSeq(filterSeq);
+					
+					
+					}
 				}
 			
 			

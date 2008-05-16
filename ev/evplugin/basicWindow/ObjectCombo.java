@@ -65,7 +65,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		if(a!=null)
 			{
 			//Check if this is still the old alternative. If so, ignore this event.
-			if(curMeta==a.meta && curId.equals(a.id))
+			if(curMeta==a.meta && (curId!=null && a.id!=null && curId.equals(a.id))) //added stuff so equals does not die 080516
 				return;
 			
 			if(a.special==null)
