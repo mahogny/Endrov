@@ -117,7 +117,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	 */
 	public WindowFilterSeq(Rectangle bounds, FilterSeq seq)
 		{
-		isTemporaryWindow=seq!=null; //changed
+		isTemporaryWindow=seq!=null; //Changed
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
@@ -127,7 +127,10 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 			add(objectCombo,BorderLayout.NORTH);
 			}
 		else
+			{
 			wFilterSeq.setFilterSeq(seq);
+		//	objectCombo=null;
+			}
 		add(wFilterSeq,BorderLayout.CENTER);
 		addMenubar(mAdd);
 		wFilterSeq.buildMenu(mAdd);
@@ -174,6 +177,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	
 	public void dataChangedEvent()
 		{
+//		if(objectCombo!=null)
 		objectCombo.updateObjectList();
 		wFilterSeq.buildMenu(mAdd);
 		}

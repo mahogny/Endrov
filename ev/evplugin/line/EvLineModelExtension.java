@@ -98,11 +98,10 @@ public class EvLineModelExtension implements ModelWindowExtension
 				{
 				int curFrame=(int)w.frameControl.getFrame();
 				
-				if(ia.pos.get(0).w==curFrame)
+				if(ia.pos.get(0).w==curFrame && ia.pos.size()>1)
 					{
-					gl.glBegin(GL.GL_LINES);
-					gl.glVertex3d(ia.pos.get(0).x,ia.pos.get(0).y,ia.pos.get(0).z);
-					for(int i=1;i<ia.pos.size();i++)
+					gl.glBegin(GL.GL_LINE_STRIP);
+					for(int i=0;i<ia.pos.size();i++)
 						gl.glVertex3d(ia.pos.get(i).x,ia.pos.get(i).y,ia.pos.get(i).z);
 					gl.glEnd();
 					}

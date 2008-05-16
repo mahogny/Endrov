@@ -38,7 +38,8 @@ public class PLUGIN extends PluginDef
 				ContrastBrightnessFilter.class, 
 				EqualizeHistogram.class,
 				DeinterlaceFilter.class,
-				ConfocalXShiftFilter.class
+				ConfocalXShiftFilter.class,
+				FilterAddConst.class
 				};
 		}
 	}

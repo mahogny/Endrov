@@ -3,7 +3,6 @@ package evplugin.modelWindow.voxel;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
-
 import javax.media.opengl.*;
 import com.sun.opengl.util.texture.*;
 
@@ -12,21 +11,19 @@ import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
+import evplugin.modelWindow.ModelWindowGrid;
 
-//if one ever wish to build it in the background:
-//GLContext glc=view.getContext();
-//glc.makeCurrent(); 
-//GL gl=glc.getGL();
-// ... glc.release();
-
+//take isosurf. upload using http://www.felixgers.de/teaching/jogl/texture3D.html
+//tricky is to find surfaces to draw
 
 /**
- * Render stack as several textured slices
+ * Render stack as several textured slices, 3D texture-version
+ * TODO
  * @author Johan Henriksson
  */
-public class StackSlices
+public class Stack3D
 	{	
-	double lastframe; 
+	int lastframe; 
 	double resZ;
 	TreeMap<Double,Vector<OneSlice>> texSlices=null;
 	private final int skipForward=1; //later maybe allow this to change
@@ -78,7 +75,7 @@ public class StackSlices
 			clean(gl);
 			texSlices=new TreeMap<Double,Vector<OneSlice>>();
 
-	//		long t=System.currentTimeMillis();
+			long t=System.currentTimeMillis();
 	
 			for(ChannelSelection chsel:channels)
 				{
@@ -87,7 +84,7 @@ public class StackSlices
 	
 	
 				System.out.println("loading");
-				lastframe=frame;
+				lastframe=cframe;
 				resZ=chsel.im.meta.resZ;
 	
 	
@@ -141,7 +138,7 @@ public class StackSlices
 						}
 	
 				}
-//			System.out.println("voxels loading ok:"+(System.currentTimeMillis()-t));
+			System.out.println("loading ok:"+(System.currentTimeMillis()-t));
 			}
 		}
 	
@@ -237,42 +234,39 @@ public class StackSlices
 	
 	
 	
-	public Collection<Double> adjustScale(ModelWindow w)
+	public void adjustScale(ModelWindow w)
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
 			double width=os.w/os.resX;
 			
-			return Collections.singleton(width);
-/*			
 			//pan speed
 			w.view.panspeed=width/1000.0;
 			
 			//Select grid size
 			double g=Math.pow(10, (int)Math.log10(width));
 			if(g<1) g=1;
-			ModelWindowGrid.setGridSize(w,g);*/
+			ModelWindowGrid.setGridSize(w,g);
 			}
-		else
-			return Collections.emptySet();
+		
 		}
 	
 	
 	/**
 	 * Give suitable center of all objects
 	 */
-	public Collection<Vector3D> autoCenterMid()
+	public Vector3D autoCenterMid()
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
 			double width=os.w/os.resX;
 			double height=os.h/os.resY;
-			return Collections.singleton(new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0));
+			return new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0);
 			}
 		else
-			return Collections.emptySet();
+			return null;
 		}
 	
 	
