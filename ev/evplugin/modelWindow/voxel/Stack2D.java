@@ -303,6 +303,35 @@ public class Stack2D
 					os.tex.enable();
 					os.tex.bind();
 					
+					//gl.GL_MAX_3D_TEXTURE_SIZE
+					//gl.GL_MAX_TEXTURE_UNITS
+					
+					
+					/**
+					 * 
+					 * JOGL http://www.felixgers.de/teaching/jogl/texture3D.html
+					 * 
+					 * unsigned int texname;
+glGenTextures(1, &texname);
+glBindTexture(GL_TEXTURE_3D, texname);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB8, WIDTH, HEIGHT, DEPTH, 0, GL_RGB, 
+             GL_UNSIGNED_BYTE, texels);
+             
+             power of 2 in x,y,z
+             
+             
+             GL_MAX_TEXTURE_SIZE,
+This is only an estimate
+    glTexImage2D(GL_PROXY_TEXTURE_2D, level, internalFormat, width, height, border, format, type, NULL); 
+Note the pixels parameter is NULL, because OpenGL doesn't load texel data when the target parameter is GL_PROXY_TEXTURE_2D. Instead, OpenGL merely considers whether it can accommodate a texture of the specified size and description. If the specified texture can't be accommodated, the width and height texture values will be set to zero. After making a texture proxy call, you'll want to query these values as follows:
+    GLint width; glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width); if (width==0) { cannot use } 
+             
+					 */
 					
 					//Find size and position
 					double w=os.w/os.resX;
