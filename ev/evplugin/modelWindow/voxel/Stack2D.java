@@ -24,6 +24,10 @@ import evplugin.modelWindow.ModelWindow;
 //GL gl=glc.getGL();
 // ... glc.release();
 
+/*
+uploading texture in BG
+http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
+*/
 
 /**
  * Render stack as several textured slices
