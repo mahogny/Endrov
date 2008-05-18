@@ -26,6 +26,12 @@ import evplugin.modelWindow.ModelWindow;
 //GL gl=glc.getGL();
 // ... glc.release();
 
+/**
+ * Benchmark: to upload to card
+ * 512x512 bufferedimage 2720ms 
+ * 512x512 texturerenderer 740ms 
+ */
+
 /*
 uploading texture in BG
 http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
