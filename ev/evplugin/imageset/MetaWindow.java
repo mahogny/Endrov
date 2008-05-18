@@ -370,6 +370,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			if(commonCalcResX.getText().equals(commonManResX.getText()))	commonManResX.setText("");
 			if(commonCalcResY.getText().equals(commonManResY.getText()))	commonManResY.setText("");
 			if(commonCalcResZ.getText().equals(commonManResZ.getText()))	commonManResZ.setText("");
+			//java.lang.IllegalStateException: above TODO
 			double manResX=parseDoubleOr0(commonManResX.getText());
 			double manResY=parseDoubleOr0(commonManResY.getText());
 			double manResZ=parseDoubleOr0(commonManResZ.getText());
