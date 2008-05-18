@@ -35,7 +35,7 @@ http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
  * Render stack as several textured slices
  * @author Johan Henriksson
  */
-public class Stack2D
+public class CopyOfStack2D
 	{	
 	Double lastframe=null; 
 	double resZ;
@@ -49,7 +49,6 @@ public class Stack2D
 		int w, h;
 		double z;
 		double resX,resY;
-		TextureRenderer rend;
 		Texture tex;
 		Color color;
 		}
@@ -102,10 +101,7 @@ public class Stack2D
 		if(texSlices!=null)
 			for(Vector<OneSlice> osv:texSlices.values())
 				for(OneSlice os:osv)
-					{
 					os.tex.dispose();
-					os.rend.dispose();
-					}
 					//os.tex.dispose(gl);
 		texSlices=null;
 		}
@@ -119,7 +115,7 @@ public class Stack2D
 		}
 	
 	
-	public void startBuildThread(double frame, HashMap<ChannelImages, Stack2D.ChannelSelection> chsel,ModelWindow w)
+	public void startBuildThread(double frame, HashMap<ChannelImages, CopyOfStack2D.ChannelSelection> chsel,ModelWindow w)
 		{
 		stopBuildThread();
 		buildThread=new BuildThread(frame, chsel, w);
@@ -135,10 +131,10 @@ public class Stack2D
 	public class BuildThread extends Thread
 		{
 		private double frame;
-		private HashMap<ChannelImages, Stack2D.ChannelSelection> chsel;
+		private HashMap<ChannelImages, CopyOfStack2D.ChannelSelection> chsel;
 		public boolean stop=false;
 		private ModelWindow w;
-		public BuildThread(double frame, HashMap<ChannelImages, Stack2D.ChannelSelection> chsel,ModelWindow w)
+		public BuildThread(double frame, HashMap<ChannelImages, CopyOfStack2D.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
@@ -181,8 +177,7 @@ public class Stack2D
 							EvImage evim=slices.get(i);
 							if(!chsel.filterSeq.isIdentity())
 								evim=chsel.filterSeq.applyReturnImage(evim);
-//							Tuple<BufferedImage,OneSlice> proc=processImage(evim, i, chsel);
-							Tuple<TextureRenderer,OneSlice> proc=processImage(evim, i, chsel);
+							Tuple<BufferedImage,OneSlice> proc=processImage(evim, i, chsel);
 							procList.add(proc);
 							}
 						}
@@ -196,8 +191,7 @@ public class Stack2D
 	
 	
 
-//	public Tuple<BufferedImage,OneSlice> processImage(EvImage evim, int z, ChannelSelection chsel)
-	public Tuple<TextureRenderer,OneSlice> processImage(EvImage evim, int z, ChannelSelection chsel)
+	public Tuple<BufferedImage,OneSlice> processImage(EvImage evim, int z, ChannelSelection chsel)
 		{
 		BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
 		OneSlice os=new OneSlice();
@@ -217,44 +211,44 @@ public class Stack2D
 		os.h=bh;
 
 		//Load bitmap, scale down
-		TextureRenderer rend=TextureRenderer.createAlphaOnlyRenderer(os.w, os.h);
-		Graphics2D g=rend.createGraphics();
-		
-		
-//		BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType());
-//		Graphics2D g=(Graphics2D)sim.getGraphics();
+		BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType());
+		Graphics2D g=(Graphics2D)sim.getGraphics();
 		g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
 		g.drawImage(bim,0,0,Color.BLACK,null);
+		bim=sim;
 		
 		
-		////Here is where to try the new texturerenderer
+		//Here is where to try the new texturerenderer
 		
 		
 		
-//		return new Tuple<BufferedImage, OneSlice>(sim,os);
-		return new Tuple<TextureRenderer, OneSlice>(rend,os);
+		return new Tuple<BufferedImage, OneSlice>(bim,os);
 		}
 	
 	
-	public void addSlice(GL gl, List<Tuple<TextureRenderer,OneSlice>> procList)
-//	public void addSlice(GL gl, List<Tuple<BufferedImage,OneSlice>> procList)
+	public void addSlice(GL gl, List<Tuple<BufferedImage,OneSlice>> procList)
 		{
 		clean(gl);
 		texSlices=new TreeMap<Double,Vector<OneSlice>>();
-//		for(Tuple<BufferedImage,OneSlice> proc:procList)
-		for(Tuple<TextureRenderer,OneSlice> proc:procList)
+		for(Tuple<BufferedImage,OneSlice> proc:procList)
 			{
 			OneSlice os=proc.snd();
-//			os.tex=TextureIO.newTexture(proc.fst(),false);
-			os.tex=proc.fst().getTexture();
+			BufferedImage bim=proc.fst();
+	
+
+			
+			//Put the texture into list
+			os.tex=TextureIO.newTexture(bim,false);
+
+			
+
 			
 			Vector<OneSlice> texSlicesV=getTexSlicesFrame(os.z);
 			texSlicesV.add(os);
 			}
 		}
 	
-//	LinkedList<Tuple<BufferedImage,OneSlice>> procList=new LinkedList<Tuple<BufferedImage,OneSlice>>();
-	LinkedList<Tuple<TextureRenderer,OneSlice>> procList=new LinkedList<Tuple<TextureRenderer,OneSlice>>();
+	LinkedList<Tuple<BufferedImage,OneSlice>> procList=new LinkedList<Tuple<BufferedImage,OneSlice>>();
 	public void loadGL(GL gl/*,double frame, Collection<ChannelSelection> channels*/)
 		{
 		System.out.println("uploading to GL");

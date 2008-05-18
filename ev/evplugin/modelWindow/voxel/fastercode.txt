@@ -1,0 +1,50 @@
+/*			
+		// Create the TextureRenderer and render into it using Java 2D
+	    TextureRenderer renderer = TextureRenderer(w, h, true);
+	    Graphics2D g2 = renderer.createGraphics();
+	    g2.setColor(...);
+	    g2.fill(...);
+	    // and so on...
+	    g2.dispose();
+	    renderer.sync(0, 0, w, h);
+
+	    // Now use it as you would any other OpenGL texture
+	    Texture tex = renderer.getTexture();
+	    ...
+*/
+			
+			
+			
+			
+			
+			/*
+			//new////////////////
+			int bufname[]=new int[1];
+			gl.glGenBuffers(1, bufname, 0);
+			gl.glBindBuffer(GL.GL_PIXEL_UNPACK_BUFFER, bufname[0]); //BindBuffer(UNPACK, foo)
+			
+			
+			 
+			int width=256, height=256;
+			int size=width*height;
+			gl.glBufferData(GL.GL_PIXEL_UNPACK_BUFFER, size, null, GL.GL_STREAM_DRAW); //Allocate buffer  //gl.glBufferData(UNPACK, size, null, STREAM_DRAW)
+			ByteBuffer b = gl.glMapBuffer(GL.GL_PIXEL_UNPACK_BUFFER, GL.GL_WRITE_ONLY);
+			
+			int i=0;
+			for(int y=0;y<height;y++)
+				for(int x=0;x<width;x++)
+					{
+					i=(i+1)%2;
+					b.put((byte)(i*128));
+					}
+			
+			//b.put(otherbuffer)
+			//TODO write data
+
+			
+			gl.glUnmapBuffer(GL.GL_PIXEL_UNPACK_BUFFER);//			UnmapBuffer(UNPACK)
+			gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, 1, width, height, 0, GL.GL_ALPHA, GL.GL_BYTE,bufname[0]);
+			//void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid * pixels); 
+			//http://objectmix.com/graphics/136360-implementing-directx-style-texture-creation-locking-unlocking.html
+			//end new ///////////////////////////////////
+			*/			

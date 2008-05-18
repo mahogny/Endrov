@@ -165,22 +165,22 @@ public class EvDataMenu implements BasicWindowExtension
 							if(thisMeta.isMetadataModified())
 								anyMod=true;
 
-						int option=!anyMod ? JOptionPane.YES_OPTION : JOptionPane.showConfirmDialog(null, 
+						int option=!anyMod ? JOptionPane.NO_OPTION : JOptionPane.showConfirmDialog(null, 
 								"Metadata has been modified. Save before closing all?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
-
-						if (option==JOptionPane.YES_OPTION)
+						if (option == JOptionPane.CANCEL_OPTION)
+							return;
+						else
 							{
-							for(EvData thisMeta:EvData.metadata)
-								{
-								thisMeta.saveMeta();
-								thisMeta.setMetadataModified(false);//this might be wrong if save not supported
-								}
+							if (option==JOptionPane.YES_OPTION)
+								for(EvData thisMeta:EvData.metadata)
+									{
+									thisMeta.saveMeta();
+									thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+									}
 							EvData.metadata.clear();
 							BasicWindow.updateWindows();
 							System.gc();
 							}
-						else if (option == JOptionPane.CANCEL_OPTION)
-							return;
 						}
 					};
 				miUnload.addActionListener(metaListenerUnload);
