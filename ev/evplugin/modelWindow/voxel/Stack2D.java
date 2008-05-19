@@ -2,7 +2,6 @@ package evplugin.modelWindow.voxel;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
 
