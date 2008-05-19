@@ -50,8 +50,8 @@ public class VoxelExtension implements ModelWindowExtension
 		{
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
-		private Stack2D slices=new Stack2D();
-		private Stack2D lastSlices=null; //to be removed TODO, can we pile up too many?
+		private Stack3D slices=new Stack3D();
+		private Stack3D lastSlices=null; //to be removed TODO, can we pile up too many?
 
 		private OneImageChannel icR=new OneImageChannel("R", Color.RED);
 		private OneImageChannel icG=new OneImageChannel("G", Color.GREEN);
@@ -125,17 +125,17 @@ public class VoxelExtension implements ModelWindowExtension
 				slices.lastframe=frame;
 				
 				//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
-				HashMap<ChannelImages, Stack2D.ChannelSelection> chsel=new HashMap<ChannelImages, Stack2D.ChannelSelection>(); 
+				HashMap<ChannelImages, Stack3D.ChannelSelection> chsel=new HashMap<ChannelImages, Stack3D.ChannelSelection>(); 
 				for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
 					{
 					Imageset im=oc.channelCombo.getImageset();
 					ChannelImages chim=im.getChannel(oc.channelCombo.getChannel());
 					if(chim!=null)
 						{
-						Stack2D.ChannelSelection sel=chsel.get(chim);
+						Stack3D.ChannelSelection sel=chsel.get(chim);
 						if(sel==null)
 							{
-							sel=new Stack2D.ChannelSelection();
+							sel=new Stack3D.ChannelSelection();
 							chsel.put(chim, sel);
 							}
 						sel.im=im;
@@ -197,7 +197,7 @@ public class VoxelExtension implements ModelWindowExtension
 				if(slices!=null)
 					slices.stopBuildThread();
 				lastSlices=slices;
-				slices=new Stack2D(); //Preferably disk data should be cached
+				slices=new Stack3D(); //Preferably disk data should be cached
 //				System.out.println("stack changed");
 				w.repaint();
 				}

@@ -9,8 +9,6 @@ import java.util.List;
 import javax.media.opengl.*;
 import javax.swing.SwingUtilities;
 
-import com.sun.opengl.util.j2d.TextureRenderer;
-import com.sun.opengl.util.texture.*;
 
 import evplugin.ev.Tuple;
 import evplugin.ev.Vector3D;
@@ -26,16 +24,49 @@ import evplugin.modelWindow.ModelWindow;
 //GL gl=glc.getGL();
 // ... glc.release();
 
+
 /**
- * Benchmark: to upload to card
- * 512x512 bufferedimage 2720ms 
- * 512x512 texturerenderer 740ms 
+ * should allow multiple texture units to be used, cut texture transfer rate when sorting
  */
 
 /*
 uploading texture in BG
 http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
 */
+
+
+					
+					//gl.GL_MAX_3D_TEXTURE_SIZE
+					//gl.GL_MAX_TEXTURE_UNITS
+					
+					
+					/**
+					 * 
+					 * JOGL http://www.felixgers.de/teaching/jogl/texture3D.html
+					 * 
+					 * unsigned int texname;
+glGenTextures(1, &texname);
+glBindTexture(GL_TEXTURE_3D, texname);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB8, WIDTH, HEIGHT, DEPTH, 0, GL_RGB, 
+             GL_UNSIGNED_BYTE, texels);
+             
+             power of 2 in x,y,z
+             
+             */ 
+             /*
+             GL_MAX_TEXTURE_SIZE,
+This is only an estimate
+    glTexImage2D(GL_PROXY_TEXTURE_2D, level, internalFormat, width, height, border, format, type, NULL); 
+Note the pixels parameter is NULL, because OpenGL doesn't load texel data when the target parameter is GL_PROXY_TEXTURE_2D. Instead, OpenGL merely considers whether it can accommodate a texture of the specified size and description. If the specified texture can't be accommodated, the width and height texture values will be set to zero. After making a texture proxy call, you'll want to query these values as follows:
+    GLint width; glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width); if (width==0) { cannot use } 
+             
+					 */
+
 
 /**
  * Render stack using 3d texture
@@ -52,24 +83,68 @@ public class Stack3D
 	
 	private static class OneSlice
 		{
-		int w, h;
-		double z;
+		int w, h, d; //new variable d
+		double z; //start-z
 		double resX,resY;
-		TextureRenderer rend;
-		Texture tex;
+		Texture tex; //could be multiple textures, interleaved
 		Color color;
 		}
 	
-	/*
+	
 	private static class Texture
 		{
-		int id;
+		public int id;
+		public ByteBuffer b=null;
+		public int width, height, depth;
+		public synchronized void allocate(int width, int height, int depth)
+			{
+			if(b==null)
+				{
+				b=ByteBuffer.allocate(width*height*depth);
+				this.width=width;
+				this.height=height;
+				this.depth=depth;
+				//b.pu
+				}
+			}
+		public void upload(GL gl)
+			{
+			int ids[]=new int[1];
+			gl.glGenTextures(1, ids, 1);
+			id=ids[0];
+			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
+			/*
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+*/
+			gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b);
+			}
 		public void dispose(GL gl)
 			{
 			int texlist[]={id};
 			gl.glDeleteTextures(1, texlist, 0);
 			}
-		}*/
+		
+		public void enable()
+			{
+			}
+		public void disable()
+			{
+			}
+		
+		public void bind(GL gl)
+			{
+			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
+			}
+		
+		public float left(){return 0;}
+		public float right(){return 1;}
+		public float top(){return 0;}
+		public float bottom(){return 1;}
+		}
 	
 	public static class ChannelSelection
 		{
@@ -108,11 +183,7 @@ public class Stack3D
 		if(texSlices!=null)
 			for(Vector<OneSlice> osv:texSlices.values())
 				for(OneSlice os:osv)
-					{
-					os.tex.dispose();
-					os.rend.dispose();
-					}
-					//os.tex.dispose(gl);
+					os.tex.dispose(gl);
 		texSlices=null;
 		}
 	
@@ -164,8 +235,14 @@ public class Stack3D
 				//Common resolution for all channels
 				resZ=chsel.im.meta.resZ;
 
+
 				//For every Z
 				TreeMap<Integer,EvImage> slices=chsel.ch.imageLoader.get(cframe);
+				int numz=slices.size();
+				Texture texture=new Texture();
+				OneSlice os=null;
+				os.tex=texture;
+				
 				int skipcount=0;
 				if(slices!=null)
 					for(int i:slices.keySet())
@@ -187,9 +264,53 @@ public class Stack3D
 							EvImage evim=slices.get(i);
 							if(!chsel.filterSeq.isIdentity())
 								evim=chsel.filterSeq.applyReturnImage(evim);
-//							Tuple<BufferedImage,OneSlice> proc=processImage(evim, i, chsel);
-							Tuple<TextureRenderer,OneSlice> proc=processImage(evim, i, chsel);
-							procList.add(proc);
+							
+							
+							////////////////
+							
+							BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
+							
+							if(os==null)
+								{
+								os=new OneSlice();
+								os.w=bim.getWidth();
+								os.h=bim.getHeight();
+								os.resX=evim.getResX()/evim.getBinning(); //px/um
+								os.resY=evim.getResY()/evim.getBinning();
+								//os.z=z/resZ;
+								os.z=0;
+								os.color=chsel.color;
+								texture.allocate(os.w, os.h, numz);
+								}
+							
+							
+
+							int bw=suitablePower2(os.w);
+							os.resX/=os.w/(double)bw;
+							os.w=bw;
+							int bh=suitablePower2(os.h);
+							os.resY/=os.h/(double)bh;
+							os.h=bh;
+
+							//Load bitmap, scale down
+							BufferedImage sim=new BufferedImage(os.w,os.h,BufferedImage.TYPE_BYTE_GRAY); 
+//							BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType()); //change type to byte or something? float better internally?
+							Graphics2D g=(Graphics2D)sim.getGraphics();
+							g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
+							g.drawImage(bim,0,0,Color.BLACK,null);
+							
+							//Convert to something suitable for texture upload?
+							
+							DataBufferByte buf=(DataBufferByte)sim.getRaster().getDataBuffer();
+							////
+							
+							//use sim
+							
+							
+							
+							//Tuple<BufferedImage,OneSlice> proc=processImage(evim, i, chsel);
+							processImage(evim, i, chsel, texture, os); //TODO
+							//procList.add(proc);
 							}
 						}
 				curchannum++;
@@ -202,65 +323,37 @@ public class Stack3D
 	
 	
 
-//	public Tuple<BufferedImage,OneSlice> processImage(EvImage evim, int z, ChannelSelection chsel)
-	public Tuple<TextureRenderer,OneSlice> processImage(EvImage evim, int z, ChannelSelection chsel)
-		{
-		BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
-		OneSlice os=new OneSlice();
-		
-		os.w=bim.getWidth();
-		os.h=bim.getHeight();
-		os.resX=evim.getResX()/evim.getBinning(); //px/um
-		os.resY=evim.getResY()/evim.getBinning();
-		os.z=z/resZ;
-		os.color=chsel.color;
-
-		int bw=suitablePower2(os.w);
-		os.resX/=os.w/(double)bw;
-		os.w=bw;
-		int bh=suitablePower2(os.h);
-		os.resY/=os.h/(double)bh;
-		os.h=bh;
-
-		//Load bitmap, scale down
-		TextureRenderer rend=TextureRenderer.createAlphaOnlyRenderer(os.w, os.h);
-		Graphics2D g=rend.createGraphics();
-		
-		
-//		BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType());
-//		Graphics2D g=(Graphics2D)sim.getGraphics();
-		g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
-		g.drawImage(bim,0,0,Color.BLACK,null);
-		
-		
-		////Here is where to try the new texturerenderer
-		
-		
-		
-//		return new Tuple<BufferedImage, OneSlice>(sim,os);
-		return new Tuple<TextureRenderer, OneSlice>(rend,os);
-		}
 	
-	
-	public void addSlice(GL gl, List<Tuple<TextureRenderer,OneSlice>> procList)
-//	public void addSlice(GL gl, List<Tuple<BufferedImage,OneSlice>> procList)
+	public void addSlice(GL gl, List<Tuple<BufferedImage,OneSlice>> procList)
 		{
+		//int po=gl.glCreateProgramObjectARB()
+		//int a=gl.glCreateShaderObjectARB(GL.GL_VERTEX_SHADER_ARB);
+		//int my_fragment_shader = gl.glCreateShaderObjectARB(GL.GL_FRAGMENT_SHADER_ARB);
+		//gl.glShaderSourceARB(arg0, arg1, arg2, arg3, arg4)
+		//gl.glCompileShaderARB(arg0)
+		//gl.glAttachObjectARB(po, my_vertex_shader);
+		//gl.glLinkProgramARB(po);
+		//gl.glUseProgramObjectARB(po);
+/*		void glDeleteObjectARB(GLhandleARB object)
+		glGetInfoLogARB(GLhandleARB object, GLsizei maxLenght, GLsizei *length, GLcharARB *infoLog)
+glUseProgramObjectARB(my_program);
+int my_vec3_location = glGetUniformLocationARB(my_program, “my_3d_vector”);
+glUniform3fARB(my_vec3_location, 1.0f, 4.0f, 3.0f);
+http://nehe.gamedev.net/data/articles/article.asp?article=21 */
+		
 		clean(gl);
 		texSlices=new TreeMap<Double,Vector<OneSlice>>();
-//		for(Tuple<BufferedImage,OneSlice> proc:procList)
-		for(Tuple<TextureRenderer,OneSlice> proc:procList)
+		for(Tuple<BufferedImage,OneSlice> proc:procList)
 			{
 			OneSlice os=proc.snd();
 //			os.tex=TextureIO.newTexture(proc.fst(),false);
-			os.tex=proc.fst().getTexture();
 			
 			Vector<OneSlice> texSlicesV=getTexSlicesFrame(os.z);
 			texSlicesV.add(os);
 			}
 		}
 	
-//	LinkedList<Tuple<BufferedImage,OneSlice>> procList=new LinkedList<Tuple<BufferedImage,OneSlice>>();
-	LinkedList<Tuple<TextureRenderer,OneSlice>> procList=new LinkedList<Tuple<TextureRenderer,OneSlice>>();
+	LinkedList<Tuple<BufferedImage,OneSlice>> procList=new LinkedList<Tuple<BufferedImage,OneSlice>>();
 	public void loadGL(GL gl/*,double frame, Collection<ChannelSelection> channels*/)
 		{
 		System.out.println("uploading to GL");
@@ -297,24 +390,48 @@ public class Stack3D
 		{
 		if(isBuilt())
 			{
-//			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
-			gl.glEnable(GL.GL_BLEND);
+//			gl.glEnable(GL.GL_BLEND); //disabled temp
 			gl.glDepthMask(false);
 			gl.glDisable(GL.GL_CULL_FACE);
+			gl.glEnable(GL.GL_TEXTURE);
+			
+			
+			for(Vector<OneSlice> osv:texSlices.values())
+				{
+				for(OneSlice os:osv)
+					{
+					//Select texture
+					os.tex.enable();
+					os.tex.bind(gl); //NOOPs
 
-			//Sort planes, O(n) since pre-ordered
-			SortedMap<Double,Vector<OneSlice>> frontMap=texSlices.headMap(cam.pos.z);
-			SortedMap<Double,Vector<OneSlice>> backMap=texSlices.tailMap(cam.pos.z);
-			LinkedList<Vector<OneSlice>> frontList=new LinkedList<Vector<OneSlice>>();
-			LinkedList<Vector<OneSlice>> backList=new LinkedList<Vector<OneSlice>>();
-			frontList.addAll(frontMap.values());
-			for(Vector<OneSlice> os:backMap.values())
-				backList.addFirst(os);
-			
-			render(gl, frontList);
-			render(gl, backList);
-			
+					//Find size and position
+					double w=os.w/os.resX;
+					double h=os.h/os.resY;
+
+					gl.glBegin(GL.GL_QUADS);
+					gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
+
+					for(int i=0;i<10;i++)
+						{
+						float tz=i/10.0f;
+						float posz=i; //+os.z
+
+						gl.glTexCoord3f(os.tex.left(), os.tex.top(), tz);	  gl.glVertex3d(0, 0, posz); 
+						gl.glTexCoord3f(os.tex.right(),os.tex.top(), tz);    gl.glVertex3d(w, 0, posz);
+						gl.glTexCoord3f(os.tex.right(),os.tex.bottom(), tz); gl.glVertex3d(w, h, posz);
+						gl.glTexCoord3f(os.tex.left(), os.tex.bottom(), tz); gl.glVertex3d(0, h, posz);
+						gl.glEnd();
+						}		
+					os.tex.disable();
+					}
+				}
+
+
+
+
+
+			gl.glDisable(GL.GL_TEXTURE);
 			gl.glDisable(GL.GL_BLEND);
 			gl.glDepthMask(true);
 			gl.glEnable(GL.GL_CULL_FACE);
@@ -327,73 +444,7 @@ public class Stack3D
 		return texSlices!=null;
 		}
 
-	/**
-	 * Render list of slices
-	 */
-	public void render(GL gl, LinkedList<Vector<OneSlice>> list)
-		{
-		if(isBuilt())
-			{
-			for(Vector<OneSlice> osv:list)
-				{
-				for(OneSlice os:osv)
-					{
-				
-					//Select texture
-					os.tex.enable();
-					os.tex.bind();
-					
-					//gl.GL_MAX_3D_TEXTURE_SIZE
-					//gl.GL_MAX_TEXTURE_UNITS
-					
-					
-					/**
-					 * 
-					 * JOGL http://www.felixgers.de/teaching/jogl/texture3D.html
-					 * 
-					 * unsigned int texname;
-glGenTextures(1, &texname);
-glBindTexture(GL_TEXTURE_3D, texname);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB8, WIDTH, HEIGHT, DEPTH, 0, GL_RGB, 
-             GL_UNSIGNED_BYTE, texels);
-             
-             power of 2 in x,y,z
-             
-             
-             GL_MAX_TEXTURE_SIZE,
-This is only an estimate
-    glTexImage2D(GL_PROXY_TEXTURE_2D, level, internalFormat, width, height, border, format, type, NULL); 
-Note the pixels parameter is NULL, because OpenGL doesn't load texel data when the target parameter is GL_PROXY_TEXTURE_2D. Instead, OpenGL merely considers whether it can accommodate a texture of the specified size and description. If the specified texture can't be accommodated, the width and height texture values will be set to zero. After making a texture proxy call, you'll want to query these values as follows:
-    GLint width; glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width); if (width==0) { cannot use } 
-             
-					 */
-					
-					//Find size and position
-					double w=os.w/os.resX;
-					double h=os.h/os.resY;
-					TextureCoords tc=os.tex.getImageTexCoords();
-					
-					gl.glBegin(GL.GL_QUADS);
-					//gl.glColor3d(1, 1, 1);
-					gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
-					
-		//			gl.glColor4d(1, 1, 1, 0.2);
-					gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, os.z); //check
-					gl.glTexCoord2f(tc.right(),tc.top());    gl.glVertex3d(w, 0, os.z);
-					gl.glTexCoord2f(tc.right(),tc.bottom()); gl.glVertex3d(w, h, os.z);
-					gl.glTexCoord2f(tc.left(), tc.bottom()); gl.glVertex3d(0, h, os.z);
-					gl.glEnd();
-		
-					os.tex.disable();
-					}
-				}
-			}
-		}
+	
 	
 	
 	
