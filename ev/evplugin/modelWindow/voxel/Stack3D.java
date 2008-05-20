@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.List;
 
 import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
 import javax.swing.SwingUtilities;
 
 
@@ -18,54 +19,6 @@ import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
 
-//if one ever wish to build it in the background:
-//GLContext glc=view.getContext();
-//glc.makeCurrent(); 
-//GL gl=glc.getGL();
-// ... glc.release();
-
-
-/**
- * should allow multiple texture units to be used, cut texture transfer rate when sorting
- */
-
-/*
-uploading texture in BG
-http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
-*/
-
-
-					
-					//gl.GL_MAX_3D_TEXTURE_SIZE
-					//gl.GL_MAX_TEXTURE_UNITS
-					
-					
-					/**
-					 * 
-					 * JOGL http://www.felixgers.de/teaching/jogl/texture3D.html
-					 * 
-					 * unsigned int texname;
-glGenTextures(1, &texname);
-glBindTexture(GL_TEXTURE_3D, texname);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB8, WIDTH, HEIGHT, DEPTH, 0, GL_RGB, 
-             GL_UNSIGNED_BYTE, texels);
-             
-             power of 2 in x,y,z
-             
-             */ 
-             /*
-             GL_MAX_TEXTURE_SIZE,
-This is only an estimate
-    glTexImage2D(GL_PROXY_TEXTURE_2D, level, internalFormat, width, height, border, format, type, NULL); 
-Note the pixels parameter is NULL, because OpenGL doesn't load texel data when the target parameter is GL_PROXY_TEXTURE_2D. Instead, OpenGL merely considers whether it can accommodate a texture of the specified size and description. If the specified texture can't be accommodated, the width and height texture values will be set to zero. After making a texture proxy call, you'll want to query these values as follows:
-    GLint width; glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width); if (width==0) { cannot use } 
-             
-					 */
 
 
 /**
@@ -76,7 +29,8 @@ public class Stack3D
 	{	
 	Double lastframe=null; 
 	double resZ;
-	private TreeMap<Double,Vector<OneSlice>> texSlices=null;
+	//private TreeMap<Double,Vector<OneSlice>> texSlices=null;
+	private TreeMap<Double,Vector<OneSlice>> texSlices=new TreeMap<Double,Vector<OneSlice>>();
 	private final int skipForward=1; //later maybe allow this to change
 	public boolean needLoadGL=false;
 	
@@ -84,8 +38,8 @@ public class Stack3D
 	private static class OneSlice
 		{
 		int w, h, d; //new variable d
-		double z; //start-z
-		double resX,resY;
+		//double posZ; //start-z
+		double resX,resY,resZ;
 		Texture tex; //could be multiple textures, interleaved
 		Color color;
 		}
@@ -109,18 +63,61 @@ public class Stack3D
 			}
 		public void upload(GL gl)
 			{
+			System.out.println("size "+width+height+depth);
+			//depth=64; //temp
+			
+			
+			//b=ByteBuffer.allocate(width*height*depth);
+			b.rewind();
+			for(int k=0;k<depth;k++)
+				for(int j=0;j<height;j++)
+					for(int i=0;i<width;i++)
+						{
+						//if(i>2 && j>2 && i<10 && j<10)
+						if((i>2 && j>2 && i<10 && j<10) || (i>500 && j>500 && i<510 && j<510))
+							b.put((byte)128);
+						else
+							b.get();
+//							b.put((byte)0);
+						//b.put((byte)(((i+j+k)/5)%128));
+						}
+			
+			gl.glEnable( GL.GL_TEXTURE_3D ); //does it have to be on here?
+
+			System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
+
+			
+			System.out.println(""+width+" "+height+" "+depth+" "+b.position()+" "+b.remaining());
 			int ids[]=new int[1];
-			gl.glGenTextures(1, ids, 1);
+			gl.glGenTextures(1, ids, 0);
 			id=ids[0];
-			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
-			/*
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-*/
-			gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b);
+			bind(gl);
+//			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
+
+			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+			
+			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
+			
+//			gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b);
+System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
+
+			gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, 
+					width, height, depth, 0, 
+					GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b.rewind());
+/*			gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, 
+					width, height, depth, 0, 
+					GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b.rewind());*/
+			//gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_RGB, 
+					//width, height, depth, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, b.rewind());
+			
+			
+			System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
+			
+			gl.glDisable( GL.GL_TEXTURE_3D );
+
 			}
 		public void dispose(GL gl)
 			{
@@ -223,6 +220,7 @@ glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 			}
 		public void run()
 			{
+			
 			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
 			
 			//im cache safety issues
@@ -238,10 +236,11 @@ glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
 				//For every Z
 				TreeMap<Integer,EvImage> slices=chsel.ch.imageLoader.get(cframe);
-				int numz=slices.size();
 				Texture texture=new Texture();
 				OneSlice os=null;
-				os.tex=texture;
+				
+				
+				int picpos=0;
 				
 				int skipcount=0;
 				if(slices!=null)
@@ -273,24 +272,33 @@ glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 							if(os==null)
 								{
 								os=new OneSlice();
+								os.tex=texture;
 								os.w=bim.getWidth();
 								os.h=bim.getHeight();
+								os.d=suitablePower2(slices.size());
+
+								int bw=suitablePower2(os.w);
+								os.resX/=os.w/(double)bw;
+								os.w=bw;
+								int bh=suitablePower2(os.h);
+								os.resY/=os.h/(double)bh;
+								os.h=bh;
+
+
+								System.out.println("osd "+os.d);
 								os.resX=evim.getResX()/evim.getBinning(); //px/um
 								os.resY=evim.getResY()/evim.getBinning();
-								//os.z=z/resZ;
-								os.z=0;
+								os.resZ=chsel.im.meta.resZ;
+								
+								//TODO: compensate resZ by   (slices.lastKey()-slices.firstEntry())/slices.size() 
+								//TODO: check slice2d if correct there
+								
 								os.color=chsel.color;
-								texture.allocate(os.w, os.h, numz);
+								texture.allocate(os.w, os.h, os.d);
 								}
 							
 							
 
-							int bw=suitablePower2(os.w);
-							os.resX/=os.w/(double)bw;
-							os.w=bw;
-							int bh=suitablePower2(os.h);
-							os.resY/=os.h/(double)bh;
-							os.h=bh;
 
 							//Load bitmap, scale down
 							BufferedImage sim=new BufferedImage(os.w,os.h,BufferedImage.TYPE_BYTE_GRAY); 
@@ -300,19 +308,33 @@ glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 							g.drawImage(bim,0,0,Color.BLACK,null);
 							
 							//Convert to something suitable for texture upload?
-							
 							DataBufferByte buf=(DataBufferByte)sim.getRaster().getDataBuffer();
-							////
+							//texture.b.put(buf.getData());
+							
+								Raster ras=sim.getRaster();
+								for(int ay=0;ay<os.h;ay++)
+									for(int ax=0;ax<os.w;ax++)
+										{
+										int pix[]=new int[3];
+										ras.getPixel(ax, ay, pix);
+										//texture.b.put((byte)ras.getSample(ax, ay, 0));
+										texture.b.put((byte)pix[0]);
+										}
+				
 							
 							//use sim
 							
+//							break; //only one plane
 							
-							
-							//Tuple<BufferedImage,OneSlice> proc=processImage(evim, i, chsel);
-							processImage(evim, i, chsel, texture, os); //TODO
-							//procList.add(proc);
 							}
 						}
+				
+				//Add black frames up to power of 2
+				int pixToWrite=os.w*os.h*os.d-texture.b.position();
+				texture.b.put(new byte[pixToWrite], 0, 0);
+				
+				getTexSlicesFrame(frame).add(os);
+				
 				curchannum++;
 				}
 
@@ -324,41 +346,23 @@ glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	
 
 	
-	public void addSlice(GL gl, List<Tuple<BufferedImage,OneSlice>> procList)
-		{
-		//int po=gl.glCreateProgramObjectARB()
-		//int a=gl.glCreateShaderObjectARB(GL.GL_VERTEX_SHADER_ARB);
-		//int my_fragment_shader = gl.glCreateShaderObjectARB(GL.GL_FRAGMENT_SHADER_ARB);
-		//gl.glShaderSourceARB(arg0, arg1, arg2, arg3, arg4)
-		//gl.glCompileShaderARB(arg0)
-		//gl.glAttachObjectARB(po, my_vertex_shader);
-		//gl.glLinkProgramARB(po);
-		//gl.glUseProgramObjectARB(po);
-/*		void glDeleteObjectARB(GLhandleARB object)
-		glGetInfoLogARB(GLhandleARB object, GLsizei maxLenght, GLsizei *length, GLcharARB *infoLog)
-glUseProgramObjectARB(my_program);
-int my_vec3_location = glGetUniformLocationARB(my_program, “my_3d_vector”);
-glUniform3fARB(my_vec3_location, 1.0f, 4.0f, 3.0f);
-http://nehe.gamedev.net/data/articles/article.asp?article=21 */
-		
-		clean(gl);
-		texSlices=new TreeMap<Double,Vector<OneSlice>>();
-		for(Tuple<BufferedImage,OneSlice> proc:procList)
-			{
-			OneSlice os=proc.snd();
-//			os.tex=TextureIO.newTexture(proc.fst(),false);
-			
-			Vector<OneSlice> texSlicesV=getTexSlicesFrame(os.z);
-			texSlicesV.add(os);
-			}
-		}
+	
 	
 	LinkedList<Tuple<BufferedImage,OneSlice>> procList=new LinkedList<Tuple<BufferedImage,OneSlice>>();
 	public void loadGL(GL gl/*,double frame, Collection<ChannelSelection> channels*/)
 		{
+		//clean(gl); //need to clean somewhere
 		System.out.println("uploading to GL");
 		long t=System.currentTimeMillis();
-		addSlice(gl,procList);
+		
+//		for(getTexSlicesFrame(frame))
+		if(texSlices!=null)
+			for(Vector<OneSlice> osv:texSlices.values()) //TODO: replace
+				for(OneSlice os:osv)
+					{
+					os.tex.upload(gl);
+					}
+		
 		System.out.println("voxels loading ok:"+(System.currentTimeMillis()-t));
 		}
 	
@@ -369,7 +373,7 @@ http://nehe.gamedev.net/data/articles/article.asp?article=21 */
 	private static int suitablePower2(int s)
 		{
 		//An option to restrict max texture size would be good
-//		if(true)return 256;
+		if(true)return 256;
 		
 		if(s>380) return 512;
 		else if(s>192) return 256;
@@ -390,12 +394,13 @@ http://nehe.gamedev.net/data/articles/article.asp?article=21 */
 		{
 		if(isBuilt())
 			{
-			gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
-//			gl.glEnable(GL.GL_BLEND); //disabled temp
+			//gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR); //used before, makes no sense with alpha
+			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			gl.glEnable(GL.GL_BLEND); //disabled temp
 			gl.glDepthMask(false);
 			gl.glDisable(GL.GL_CULL_FACE);
-			gl.glEnable(GL.GL_TEXTURE);
-			
+			gl.glEnable(GL.GL_TEXTURE_3D);
+
 			
 			for(Vector<OneSlice> osv:texSlices.values())
 				{
@@ -408,21 +413,24 @@ http://nehe.gamedev.net/data/articles/article.asp?article=21 */
 					//Find size and position
 					double w=os.w/os.resX;
 					double h=os.h/os.resY;
+					double d=os.d/os.resZ;
 
-					gl.glBegin(GL.GL_QUADS);
-					gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
-
-					for(int i=0;i<10;i++)
+					for(float i=0;i<1.0;i+=0.005)
+					//float i=0.5f;
 						{
-						float tz=i/10.0f;
-						float posz=i; //+os.z
+						float tz=i;
+						float posz=(float)(i*d);
 
-						gl.glTexCoord3f(os.tex.left(), os.tex.top(), tz);	  gl.glVertex3d(0, 0, posz); 
-						gl.glTexCoord3f(os.tex.right(),os.tex.top(), tz);    gl.glVertex3d(w, 0, posz);
+						gl.glBegin(GL.GL_QUADS);
+						gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
+						gl.glTexCoord3f(os.tex.left(), os.tex.top(),    tz); gl.glVertex3d(0, 0, posz); 
+						gl.glTexCoord3f(os.tex.right(),os.tex.top(),    tz); gl.glVertex3d(w, 0, posz);
 						gl.glTexCoord3f(os.tex.right(),os.tex.bottom(), tz); gl.glVertex3d(w, h, posz);
 						gl.glTexCoord3f(os.tex.left(), os.tex.bottom(), tz); gl.glVertex3d(0, h, posz);
 						gl.glEnd();
 						}		
+						
+
 					os.tex.disable();
 					}
 				}
@@ -430,8 +438,7 @@ http://nehe.gamedev.net/data/articles/article.asp?article=21 */
 
 
 
-
-			gl.glDisable(GL.GL_TEXTURE);
+			gl.glDisable(GL.GL_TEXTURE_3D);
 			gl.glDisable(GL.GL_BLEND);
 			gl.glDepthMask(true);
 			gl.glEnable(GL.GL_CULL_FACE);
