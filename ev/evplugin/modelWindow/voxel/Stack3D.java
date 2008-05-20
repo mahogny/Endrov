@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.List;
 
 import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
@@ -111,10 +112,6 @@ public class Stack3D
 			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
 			}
 		
-		public float left(){return 0;}
-		public float right(){return 1;}
-		public float top(){return 0;}
-		public float bottom(){return 1;}
 		}
 	
 	public static class ChannelSelection
@@ -391,10 +388,10 @@ public class Stack3D
 			{
 			//gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR); //used before, makes no sense with alpha
 			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-//			gl.glEnable(GL.GL_BLEND); //disabled temp
+			gl.glEnable(GL.GL_BLEND); //disabled temp
 			gl.glDepthMask(false);
 			gl.glDisable(GL.GL_CULL_FACE);
-//			gl.glEnable(GL.GL_TEXTURE_3D);
+			gl.glEnable(GL.GL_TEXTURE_3D);
 
 			
 			for(Vector<OneSlice> osv:texSlices.values())
@@ -557,6 +554,23 @@ public class Stack3D
 		p[1]=v;
 		return p;
 		}
+
+	/**
+	 * Used to find special cases of cube cuttings
+	 */
+	private static class UnclassifiedPoint implements Comparable<UnclassifiedPoint>
+		{
+		int id;
+		//Vector2d p;
+		double angle;
+		public int compareTo(UnclassifiedPoint o)
+			{
+			if(angle<o.angle)				return -1;
+			else if(angle>o.angle)	return 1;
+			else										return 0;
+			}
+		public String toString(){return ""+id;}
+		}
 	
 	private void renderPlane(GL gl, Camera cam, OneSlice os)
 		{
@@ -571,7 +585,7 @@ public class Stack3D
 
 //		for(float i=0;i<1.0;i+=0.005)
 		//float i=0.2f;
-		for(double q=0;q<os.realh*4;q+=os.realh/10)
+		for(double q=0;q<os.realh*4;q+=os.realh/20)
 			{
 
 //			Plane p=new Plane(1,0,0,os.realw);
@@ -594,27 +608,91 @@ public class Stack3D
 			
 			switch(activelist)
 				{
-				case 3168: //110001100000  ok?
+				/*
+				case 3168: //110001100000  ok
+				case 3172: //110001100100  ok
+				case 1092:
+					points=new Vector3d[]{}; //temp
 					break;
-				case 3172: //110001100100
+				
+				case 3002: // 8 points!
 					break;
+					
 				case 912: //fel
 				case 2730: //fel
+					points=new Vector3d[]{}; break; //temp
+				
+				case -1:
+				
 					points=invertOrder(compactPoint(points, numv));
-				break;
+					break;
 				case 3002: //8 wtf
 					break;
+				*/	
+					
+				default:
+					//Non-considered case. Generate what the code should look like
+					if(numv>=3)
+						{
+						//Find a center position not overlapping
+						Vector3d center=new Vector3d();
+						for(Vector3d v:compactPoint(points, numv))
+							center.add(v);
+						center.scale(1.0/numv);
+
+						//Get normal
+						Vector3d normal=new Vector3d(p.A,p.B,p.C);
+						normal.normalize();
+						
+						//Project points
+						List<UnclassifiedPoint> ups=new ArrayList<UnclassifiedPoint>();
+						for(int ap=0;ap<points.length;ap++)
+							if(points[ap]!=null)
+								{
+								UnclassifiedPoint up=new UnclassifiedPoint();
+								up.id=ap;
+								Vector3d v=new Vector3d(points[ap]);
+								v.sub(center);
+								Vector3d w=new Vector3d(normal);
+								w.scale(v.dot(normal));
+								v.sub(w);
+								up.angle=Math.atan2(v.y, v.x); //This *will* explode in some instances. and if could solve
+								//ups.put(up.angle,up);
+								ups.add(up);
+								}
+						Collections.sort(ups);
+						
+						//Make final list: Clean up duplicates.
+						List<Vector3d> newpoints=new LinkedList<Vector3d>();
+						List<Integer> newindex=new LinkedList<Integer>();
+						for(UnclassifiedPoint up:ups)
+							if(newpoints.size()==0 || !points[up.id].equals(newpoints.get(newpoints.size()-1)))
+								{
+								newindex.add(up.id);
+								newpoints.add(points[up.id]);
+								}
+						points=new Vector3d[newpoints.size()];
+						int ap=0;
+						for(Vector3d v:newpoints)
+							points[ap++]=v;
+						//System.out.println(ups);
+						System.out.println(""+activelist+": "+newindex);
+						}
+					else
+						{
+						points=new Vector3d[]{};
+						}
+				
 				}
 			
-			System.out.println("points: "+activelist+ " // "+numv);
 			
-			gl.glBegin(GL.GL_LINE_LOOP);
-//			gl.glBegin(GL.GL_POLYGON);
-			gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
+//			gl.glBegin(GL.GL_LINE_LOOP);
+		gl.glBegin(GL.GL_POLYGON);
+		gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
 			for(Vector3d po:points)
 				if(po!=null)
 					{
-					System.out.println(po);
+//					System.out.println(po);
 					point(gl, os, po.x, po.y, po.z);
 					}
 			
