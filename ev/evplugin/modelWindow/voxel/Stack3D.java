@@ -68,21 +68,23 @@ public class Stack3D
 			System.out.println("size "+width+height+depth);
 			
 			//b=ByteBuffer.allocate(width*height*depth);
-			b.rewind();
+/*			b.rewind();
 			for(int k=0;k<depth;k++)
 				for(int j=0;j<height;j++)
-					for(int i=0;i<width;i++)
+					for(int i=0;i<width;i++)*/
 						/*
 						if((i>2 && j>2 && i<10 && j<10) || (i>500 && j>500 && i<510 && j<510))
 							b.put((byte)128);
 						else
 							b.get();
 							*/
+						/*
 						if((i>10 && j>10 && i<510 && j<510))
 							b.put((byte)128);
 						else
 							b.put((byte)5);
-			
+			*/
+						
 			int ids[]=new int[1];
 			gl.glGenTextures(1, ids, 0);
 			id=ids[0];
@@ -547,13 +549,7 @@ public class Stack3D
 				}
 		return np;
 		}
-	private Vector3d[] invertOrder(Vector3d[] p)
-		{
-		Vector3d v=p[0];
-		p[0]=p[1];
-		p[1]=v;
-		return p;
-		}
+	
 
 	/**
 	 * Used to find special cases of cube cuttings
@@ -653,6 +649,7 @@ public class Stack3D
 								up.id=ap;
 								Vector3d v=new Vector3d(points[ap]);
 								v.sub(center);
+								//Actually realize this step is useless except for centering. remove?
 								Vector3d w=new Vector3d(normal);
 								w.scale(v.dot(normal));
 								v.sub(w);
