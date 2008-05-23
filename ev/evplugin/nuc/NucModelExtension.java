@@ -48,6 +48,8 @@ public class NucModelExtension implements ModelWindowExtension
 
 		public JCheckBoxMenuItem miShowTraceSel=new JCheckBoxMenuItem("Traces: Show for selected"); 
 		public JCheckBoxMenuItem miShowTraceCur=new JCheckBoxMenuItem("Traces: Show for current"); 
+		
+		public JCheckBoxMenuItem miShowDiv=new JCheckBoxMenuItem("Show division lines", true); 
 
 		public NucModelWindowHook(ModelWindow w)
 			{
@@ -62,6 +64,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miHideSelectedNuc);
 			miNuc.add(miShowTraceSel);
 			miNuc.add(miShowTraceCur);
+			miNuc.add(miShowDiv);
 			w.menuModel.add(miNuc);
 			
 			miShowAllNucNames.addActionListener(this);
@@ -69,6 +72,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miHideSelectedNuc.addActionListener(this);
 			miShowTraceSel.addActionListener(this);
 			miShowTraceCur.addActionListener(this);
+			miShowDiv.addActionListener(this);
 			}
 		
 		public void readPersonalConfig(Element e){}
@@ -203,37 +207,39 @@ public class NucModelExtension implements ModelWindowExtension
 					}
 			
 			//Cell divisions
-			double curFrame=w.frameControl.getFrame();
-			gl.glLineWidth(3);
-			for(NucLineage lin:getLineages())
+			if(miShowDiv.isSelected())
 				{
-				for(NucLineage.Nuc nuc:lin.nuc.values())
-					if(!nuc.pos.isEmpty() && nuc.parent!=null)
-						{
-						int tframe=nuc.pos.firstKey();
-						NucLineage.Nuc pnuc=lin.nuc.get(nuc.parent);
-						if(!pnuc.pos.isEmpty())
+				double curFrame=w.frameControl.getFrame();
+				gl.glLineWidth(3);
+				for(NucLineage lin:getLineages())
+					{
+					for(NucLineage.Nuc nuc:lin.nuc.values())
+						if(!nuc.pos.isEmpty() && nuc.parent!=null)
 							{
-							int pframe=pnuc.pos.lastKey();
-//							System.out.println("prediv "+pframe+" "+tframe);
-							if(curFrame>=pframe && curFrame<=tframe)
+							int tframe=nuc.pos.firstKey();
+							NucLineage.Nuc pnuc=lin.nuc.get(nuc.parent);
+							if(!pnuc.pos.isEmpty())
 								{
-								NucLineage.NucPos npos=nuc.pos.get(tframe);
-								NucLineage.NucPos ppos=pnuc.pos.get(pframe);
-
-//								System.out.println("div!");
-								
-								gl.glBegin(GL.GL_LINES);
-								gl.glColor3d(1, 1, 0);
-								gl.glVertex3d(npos.x,npos.y,npos.z);
-								gl.glVertex3d(ppos.x,ppos.y,ppos.z);
-								gl.glEnd();
+								int pframe=pnuc.pos.lastKey();
+	//							System.out.println("prediv "+pframe+" "+tframe);
+								if(curFrame>=pframe && curFrame<=tframe)
+									{
+									NucLineage.NucPos npos=nuc.pos.get(tframe);
+									NucLineage.NucPos ppos=pnuc.pos.get(pframe);
+	
+	//								System.out.println("div!");
+									
+									gl.glBegin(GL.GL_LINES);
+									gl.glColor3d(1, 1, 0);
+									gl.glVertex3d(npos.x,npos.y,npos.z);
+									gl.glVertex3d(ppos.x,ppos.y,ppos.z);
+									gl.glEnd();
+									}
 								}
 							}
-						}
+					}
+				gl.glLineWidth(1);
 				}
-			gl.glLineWidth(1);
-			
 			gl.glPopAttrib();
 			}
 
