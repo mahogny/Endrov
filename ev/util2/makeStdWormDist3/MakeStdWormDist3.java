@@ -8,7 +8,6 @@ import javax.vecmath.Vector3d;
 
 import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.imageset.Imageset;
 import evplugin.nuc.NucLineage;
 import evplugin.nuc.NucPair;
 import evplugin.nuc.NucLineage.NucInterp;
