@@ -11,46 +11,61 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector3d;
 
-
 import evplugin.ev.Tuple;
 import evplugin.ev.Vector3D;
-import evplugin.filter.FilterSeq;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
 
 
+//int[] planes=new int[1];		gl.glGetIntegerv(GL.GL_MAX_CLIP_PLANES, planes, 0);		System.out.println("planes "+planes[0]);
+//6 planes on NVidia macpro
+
+//TODO: split up over z to waste less space
+//TODO: integrate transparency sorting in modw
+//TODO: NPOT mode?
+
 
 /**
  * Render stack using 3d texture
  * @author Johan Henriksson
  */
-public class Stack3D
+public class Stack3D implements StackInterface
 	{	
-	Double lastframe=null; 
-	double resZ;
-	//private TreeMap<Double,Vector<OneSlice>> texSlices=null;
-	private TreeMap<Double,Vector<OneSlice>> texSlices=new TreeMap<Double,Vector<OneSlice>>();
+	//Currently the code does not bother with which frame it is.
+	//and it might be worth delegating this to voxelextension
+	public Double lastframe=null;
+	private TreeMap<Double,Vector<VoxelStack>> texSlices=new TreeMap<Double,Vector<VoxelStack>>();
+	private List<VoxelStack> disposableStacks=new LinkedList<VoxelStack>(); //Data to be removed. Not currently in use.
 	private final int skipForward=1; //later maybe allow this to change
-	public boolean needLoadGL=false;
+	private boolean needLoadGL=false;
+	
+	private static final boolean drawLinePlanes=false; //For debugging
 	
 	
-	private static class OneSlice
+
+	
+	
+	/**
+	 * One voxel stack
+	 */
+	private static class VoxelStack
 		{
-		int w, h, d; //size in pixels
-		//double posZ; //start-z
-		double resX,resY,resZ;
-		Texture tex; //could be multiple textures, interleaved
-		Color color;
-		
-		double realw, realh, reald; //size in um
+		public int w, h, d; //size in pixels
+		//need starting position
+		public double resX,resY,resZ;
+		public Texture3D tex; //could be multiple textures, interleaved
+		public Color color;
+		public double realw, realh, reald; //size [um]
 		}
 	
-	//Maybe merge oneslice & texture? somehow
-	private static class Texture
+	/**
+	 * Class to upload and manage 3D textures
+	 */
+	private static class Texture3D
 		{
-		public int id;
+		public Integer id;
 		public ByteBuffer b=null;
 		public int width, height, depth;
 		public synchronized void allocate(int width, int height, int depth)
@@ -63,78 +78,54 @@ public class Stack3D
 				this.depth=depth;
 				}
 			}
+		/** Upload texture to GL. can be called multiple times, action is only taken first time */
 		public void upload(GL gl)
 			{
-			System.out.println("size "+width+height+depth);
-			
-			//b=ByteBuffer.allocate(width*height*depth);
-/*			b.rewind();
-			for(int k=0;k<depth;k++)
-				for(int j=0;j<height;j++)
-					for(int i=0;i<width;i++)*/
-						/*
-						if((i>2 && j>2 && i<10 && j<10) || (i>500 && j>500 && i<510 && j<510))
-							b.put((byte)128);
-						else
-							b.get();
-							*/
-						/*
-						if((i>10 && j>10 && i<510 && j<510))
-							b.put((byte)128);
-						else
-							b.put((byte)5);
-			*/
-						
-			int ids[]=new int[1];
-			gl.glGenTextures(1, ids, 0);
-			id=ids[0];
-			bind(gl);
-
-			gl.glEnable( GL.GL_TEXTURE_3D ); //does it have to be on here?
-			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
-			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
-			gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
-//			gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b);
-			gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b.rewind());
-			System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
-			gl.glDisable( GL.GL_TEXTURE_3D );
-
+			if(id==null)
+				{
+				System.out.println("size "+width+height+depth);
+							
+				int ids[]=new int[1];
+				gl.glGenTextures(1, ids, 0);
+				id=ids[0];
+				bind(gl);
+	
+				gl.glEnable( GL.GL_TEXTURE_3D ); //does it have to be on here?
+				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
+				//gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b);
+				gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b.rewind());
+				System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
+				gl.glDisable( GL.GL_TEXTURE_3D );
+				}
 			}
 		public void dispose(GL gl)
 			{
 			int texlist[]={id};
 			gl.glDeleteTextures(1, texlist, 0);
 			}
-		
-		
 		public void bind(GL gl)
 			{
+			//TODO
+			//here we can do all the multitexturing stuff! clever caching should be enough that different stack
+			//renderers need not know about each other
 			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
 			}
-		
 		}
-	
-	public static class ChannelSelection
-		{
-		Imageset im;
-		ChannelImages ch;
-		FilterSeq filterSeq;
-		Color color=new Color(0,0,0);
-		}
-	
 	
 	/**
 	 * Get or create slices for one z. Has to be synchronized
 	 */ 
-	private synchronized Vector<OneSlice> getTexSlicesFrame(double z)
+	private synchronized Vector<VoxelStack> getTexSlicesFrame(double z)
 		{
 		//Put texture into list
-		Vector<OneSlice> texSlicesV=texSlices.get(z);
+		Vector<VoxelStack> texSlicesV=texSlices.get(z);
 		if(texSlicesV==null)
 			{
-			texSlicesV=new Vector<OneSlice>();
+			texSlicesV=new Vector<VoxelStack>();
 			texSlices.put(z, texSlicesV);
 			}
 		return texSlicesV;
@@ -143,30 +134,42 @@ public class Stack3D
 		
 	
 	
-	
-	
 	/**
-	 * Dispose stack. Need GL context, forced by parameter.
+	 * Dispose all stacks. Need GL context, forced by parameter.
 	 */
 	public void clean(GL gl)
 		{
-		if(texSlices!=null)
-			for(Vector<OneSlice> osv:texSlices.values())
-				for(OneSlice os:osv)
-					os.tex.dispose(gl);
-		texSlices=null;
+		for(Vector<VoxelStack> osv:texSlices.values())
+			for(VoxelStack os:osv)
+				os.tex.dispose(gl);
+		texSlices.clear();
+		cleanDisposable(gl);
 		}
 	
 	
-
+	/**
+	 * Dispose useless stacks. Need GL context, forced by parameter.
+	 */
+	public void cleanDisposable(GL gl)
+		{
+		for(VoxelStack os:disposableStacks)
+			os.tex.dispose(gl);
+		disposableStacks.clear();
+		}
+	
+	
+	public void setLastFrame(double frame)
+		{
+		lastframe=frame;
+		}
 	
 	public boolean needSettings(double frame)
 		{
-		return lastframe==null || frame!=lastframe;// || !isBuilt();
+		return lastframe==null || frame!=lastframe;
 		}
 	
 	
-	public void startBuildThread(double frame, HashMap<ChannelImages, Stack3D.ChannelSelection> chsel,ModelWindow w)
+	public void startBuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 		{
 		stopBuildThread();
 		buildThread=new BuildThread(frame, chsel, w);
@@ -182,10 +185,10 @@ public class Stack3D
 	public class BuildThread extends Thread
 		{
 		private double frame;
-		private HashMap<ChannelImages, Stack3D.ChannelSelection> chsel;
+		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
 		private ModelWindow w;
-		public BuildThread(double frame, HashMap<ChannelImages, Stack3D.ChannelSelection> chsel,ModelWindow w)
+		public BuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
@@ -193,26 +196,19 @@ public class Stack3D
 			}
 		public void run()
 			{
-			
 			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
 			
 			//im. cache safety issues
-			Collection<ChannelSelection> channels=chsel.values();
+			Collection<VoxelExtension.ChannelSelection> channels=chsel.values();
 			procList.clear();
 			int curchannum=0;
-			for(ChannelSelection chsel:channels)
+			for(VoxelExtension.ChannelSelection chsel:channels)
 				{
-				int cframe=chsel.ch.closestFrame((int)Math.round(frame));
-				//Common resolution for all channels
-				resZ=chsel.im.meta.resZ;
-
-
 				//For every Z
+				int cframe=chsel.ch.closestFrame((int)Math.round(frame));
 				TreeMap<Integer,EvImage> slices=chsel.ch.imageLoader.get(cframe);
-				Texture texture=new Texture();
-				OneSlice os=null;
-				
-				
+				Texture3D texture=new Texture3D();
+				VoxelStack os=null;
 				
 				int skipcount=0;
 				if(slices!=null)
@@ -221,28 +217,28 @@ public class Stack3D
 						if(stop)
 							{
 							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
-							return; //Just stop thread if needed
+							return; //Allow to just stop thread if needed
 							}
 						skipcount++;
 						if(skipcount>=skipForward)
 							{
+							skipcount=0;
 							final int progressSlices=i*1000/(channels.size()*slices.size());
 							final int progressChan=1000*curchannum/channels.size();
 							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(progressSlices+progressChan);}});
 							
-							skipcount=0;
+							//Apply filter if needed
 							EvImage evim=slices.get(i);
 							if(!chsel.filterSeq.isIdentity())
 								evim=chsel.filterSeq.applyReturnImage(evim);
 							
+							//Get image for this plane
+							BufferedImage bim=evim.getJavaImage();
 							
-							////////////////
-							
-							BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
-							
+							//Set up slice if not done yet
 							if(os==null)
 								{
-								os=new OneSlice();
+								os=new VoxelStack();
 								os.tex=texture;
 								os.w=bim.getWidth();
 								os.h=bim.getHeight();
@@ -255,8 +251,6 @@ public class Stack3D
 								os.resY/=os.h/(double)bh;
 								os.h=bh;
 
-
-								System.out.println("osd "+os.d);
 								os.resX=evim.getResX()/evim.getBinning(); //[px/um]
 								os.resY=evim.getResY()/evim.getBinning();
 								os.resZ=chsel.im.meta.resZ;
@@ -274,34 +268,30 @@ public class Stack3D
 								os.realh=os.h/os.resY;
 								os.reald=os.d/os.resZ;
 								}
-							
-							
 
 
 							//Load bitmap, scale down
 							BufferedImage sim=new BufferedImage(os.w,os.h,BufferedImage.TYPE_BYTE_GRAY); 
-//							BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType()); //change type to byte or something? float better internally?
+							//BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType()); //change type to byte or something? float better internally?
 							Graphics2D g=(Graphics2D)sim.getGraphics();
 							g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
 							g.drawImage(bim,0,0,Color.BLACK,null);
-							
+
 							//Convert to something suitable for texture upload?
 							//DataBufferByte buf=(DataBufferByte)sim.getRaster().getDataBuffer();
 							//texture.b.put(buf.getData());
-							
+
 							//theoretically slower but can be made safer
-								Raster ras=sim.getRaster();
-								for(int ay=0;ay<os.h;ay++)
-									for(int ax=0;ax<os.w;ax++)
-										{
-										int pix[]=new int[3];
-										ras.getPixel(ax, ay, pix);
-										//texture.b.put((byte)ras.getSample(ax, ay, 0));
-										texture.b.put((byte)pix[0]);
-										}
-							
-							
-							
+							Raster ras=sim.getRaster();
+							for(int ay=0;ay<os.h;ay++)
+								for(int ax=0;ax<os.w;ax++)
+									{
+									int pix[]=new int[3];
+									ras.getPixel(ax, ay, pix);
+									//texture.b.put((byte)ras.getSample(ax, ay, 0));
+									texture.b.put((byte)pix[0]);
+									}
+
 							}
 						}
 				
@@ -324,57 +314,25 @@ public class Stack3D
 	
 	
 	
-	LinkedList<Tuple<BufferedImage,OneSlice>> procList=new LinkedList<Tuple<BufferedImage,OneSlice>>();
-	public void loadGL(GL gl/*,double frame, Collection<ChannelSelection> channels*/)
+	LinkedList<Tuple<BufferedImage,VoxelStack>> procList=new LinkedList<Tuple<BufferedImage,VoxelStack>>();
+	public void loadGL(GL gl)
 		{
-		//clean(gl); //need to clean somewhere
-		System.out.println("uploading to GL");
-		long t=System.currentTimeMillis();
-		
-//		for(getTexSlicesFrame(frame))
-		if(texSlices!=null)
-			for(Vector<OneSlice> osv:texSlices.values()) //TODO: replace
-				for(OneSlice os:osv)
-					{
+		cleanDisposable(gl);
+		if(needLoadGL)
+			{
+			needLoadGL=false;
+			System.out.println("uploading to GL");
+			long t=System.currentTimeMillis();
+			
+			//Since upload can be called after the real upload call, just loop through everything
+			for(Vector<VoxelStack> osv:texSlices.values()) 
+				for(VoxelStack os:osv)
 					os.tex.upload(gl);
-					}
-		
-		System.out.println("voxels loading ok:"+(System.currentTimeMillis()-t));
+			
+			System.out.println("voxels loading ok:"+(System.currentTimeMillis()-t));
+			}
 		}
 	
-	
-	/**
-	 * Round to best 2^
-	 */
-	private static int suitablePower2(int s)
-		{
-		//An option to restrict max texture size would be good
-		if(s>256) return 512;
-		else if(s>192) return 256;
-		else if(s>96) return 128;
-		else if(s>48) return 64;
-		else if(s>24) return 32;
-		else if(s>12) return 16;
-		else if(s>6) return 8;
-		else return 4;
-		}
-	
-	/**
-	 * Ceil to 2^
-	 */
-	private static int ceilPower2(int s)
-		{
-		//TODO: also larger sizes
-		if(s>512) return 1024;
-		else if(s>256) return 512;
-		else if(s>256) return 256;
-		else if(s>64) return 128;
-		else if(s>32) return 64;
-		else if(s>16) return 32;
-		else if(s>8) return 16;
-		else if(s>4) return 8;
-		else return 4;
-		}
 	
 	
 	/**
@@ -382,53 +340,26 @@ public class Stack3D
 	 */
 	public void render(GL gl, Camera cam)
 		{
-		//int[] planes=new int[1];		gl.glGetIntegerv(GL.GL_MAX_CLIP_PLANES, planes, 0);		System.out.println("planes "+planes[0]);
-		//6 planes on NVidia macpro
-		
-		
 		if(isBuilt())
 			{
 			//gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR); //used before, makes no sense with alpha
 			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-			gl.glEnable(GL.GL_BLEND); //disabled temp
 			gl.glDepthMask(false);
 			gl.glDisable(GL.GL_CULL_FACE);
-			gl.glEnable(GL.GL_TEXTURE_3D);
-
-			
-			for(Vector<OneSlice> osv:texSlices.values())
+			if(!drawLinePlanes)
 				{
-				for(OneSlice os:osv)
+				gl.glEnable(GL.GL_TEXTURE_3D);
+				gl.glEnable(GL.GL_BLEND);
+				}
+			
+			for(Vector<VoxelStack> osv:texSlices.values())
+				{
+				for(VoxelStack os:osv)
 					{
-					//Select texture
 					os.tex.bind(gl);
-/*
-					//Render all planes
-					//for(float i=0;i<1.0;i+=0.005)
-					float i=0.2f;
-						{
-						float tz=i;
-						float posz=(float)(i*os.reald);
-
-						gl.glBegin(GL.GL_QUADS);
-						gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
-						gl.glTexCoord3f(0, 0, tz); gl.glVertex3d(0,        0,        posz); 
-						gl.glTexCoord3f(1, 0, tz); gl.glVertex3d(os.realw, 0,        posz);
-						gl.glTexCoord3f(1, 1, tz); gl.glVertex3d(os.realw, os.realh, posz);
-						gl.glTexCoord3f(0, 1, tz); gl.glVertex3d(0,        os.realh, posz);
-						gl.glEnd();
-						}		
-						*/
-					System.out.println("=====================================");
-					System.out.println("=====================================");
-					System.out.println("=====================================");
-					System.out.println("=====================================");
-					renderPlane(gl, cam, os);
+					renderVoxelStack(gl, cam, os);
 					}
 				}
-
-
-
 
 			gl.glDisable(GL.GL_TEXTURE_3D);
 			gl.glDisable(GL.GL_BLEND);
@@ -437,282 +368,7 @@ public class Stack3D
 			}
 		}
 
-	private static class Plane
-		{
-		public Plane(){}
-		public Plane(double A, double B, double C, double D){this.A=A;this.B=B;this.C=C;this.D=D;}
-		//Ax+By+Cz=D
-		double A, B, C, D; 
-		}
 
-	//Lines over z
-	private static Vector3d intersectPlane1(Plane p, OneSlice os)
-		{
-		if(p.C==0) return null;
-		double z=p.D/p.C;
-		if(z<0 || z>os.reald) return null;
-		return new Vector3d(0,0,z);
-		}
-	private static Vector3d intersectPlane2(Plane p, OneSlice os)
-		{
-		if(p.C==0) return null;
-		double z=(p.D-p.A*os.realw)/p.C;
-		if(z<0 || z>os.reald) return null;
-		return new Vector3d(os.realw,0,z);
-		}
-	private static Vector3d intersectPlane3(Plane p, OneSlice os)
-		{
-		if(p.C==0) return null;
-		double z=(p.D-p.B*os.realh)/p.C;
-		if(z<0 || z>os.reald) return null;
-		return new Vector3d(0,os.realh,z);
-		}
-	private static Vector3d intersectPlane4(Plane p, OneSlice os)
-		{
-		if(p.C==0) return null;
-		double z=(p.D-p.A*os.realw-p.B*os.realh)/p.C;
-		if(z<0 || z>os.reald) return null;
-		return new Vector3d(os.realw,os.realh,z);
-		}
-	
-	//Lines over y
-	private static Vector3d intersectPlane5(Plane p, OneSlice os)
-		{
-		if(p.B==0) return null;
-		double y=(p.D)/p.B;
-		if(y<0 || y>os.realh) return null;
-		return new Vector3d(0,y,0);
-		}
-	private static Vector3d intersectPlane6(Plane p, OneSlice os)
-		{
-		if(p.B==0) return null;
-		double y=(p.D-p.A*os.realw)/p.B;
-		if(y<0 || y>os.realh) return null;
-		return new Vector3d(os.realw,y,0);
-		}
-	private static Vector3d intersectPlane7(Plane p, OneSlice os)
-		{
-		if(p.B==0) return null;
-		double y=(p.D-p.C*os.reald)/p.B;
-		if(y<0 || y>os.realh) return null;
-		return new Vector3d(0,y,os.reald);
-		}
-	private static Vector3d intersectPlane8(Plane p, OneSlice os)
-		{
-		if(p.B==0) return null;
-		double y=(p.D-p.A*os.realw-p.C*os.reald)/p.B;
-		if(y<0 || y>os.realh) return null;
-		return new Vector3d(os.realw,y,os.reald);
-		}
-
-	//Lines over z
-	private static Vector3d intersectPlane9(Plane p, OneSlice os)
-		{
-		if(p.A==0) return null;
-		double x=(p.D)/p.A;
-		if(x<0 || x>os.realw) return null;
-		return new Vector3d(x, 0,0);
-		}
-	private static Vector3d intersectPlane10(Plane p, OneSlice os)
-		{
-		if(p.A==0) return null;
-		double x=(p.D-p.C*os.reald)/p.A;
-		if(x<0 || x>os.realw) return null;
-		return new Vector3d(x, 0,os.reald);
-		}
-	private static Vector3d intersectPlane11(Plane p, OneSlice os)
-		{
-		if(p.A==0) return null;
-		double x=(p.D-p.B*os.realh)/p.A;
-		if(x<0 || x>os.realw) return null;
-		return new Vector3d(x, os.realh,0);
-		}
-	private static Vector3d intersectPlane12(Plane p, OneSlice os)
-		{
-		if(p.A==0) return null;
-		double x=(p.D-p.B*os.realh-p.C*os.reald)/p.A;
-		if(x<0 || x>os.realw) return null;
-		return new Vector3d(x, os.realh,os.reald);
-		}
-	
-	
-
-	private Vector3d[] compactPoint(Vector3d[] p, int numv)
-		{
-		int i=0;
-		Vector3d[] np=new Vector3d[numv];
-		for(Vector3d v:p)
-			if(v!=null)
-				{
-				np[i]=v;
-				i++;
-				}
-		return np;
-		}
-	
-
-	/**
-	 * Used to find special cases of cube cuttings
-	 */
-	private static class UnclassifiedPoint implements Comparable<UnclassifiedPoint>
-		{
-		int id;
-		//Vector2d p;
-		double angle;
-		public int compareTo(UnclassifiedPoint o)
-			{
-			if(angle<o.angle)				return -1;
-			else if(angle>o.angle)	return 1;
-			else										return 0;
-			}
-		public String toString(){return ""+id;}
-		}
-	
-	private void renderPlane(GL gl, Camera cam, OneSlice os)
-		{
-		
-		//Figure out how large a polygon would have to be to cut the cube for sure
-		double neededSize=os.realw;
-		if(os.realh>neededSize)
-			neededSize=os.realh;
-		if(os.reald>neededSize)
-			neededSize=os.reald;
-		neededSize*=20; //Arbitrary value, just be sure it is big
-
-//		for(float i=0;i<1.0;i+=0.005)
-		//float i=0.2f;
-		for(double q=0;q<os.realh*4;q+=os.realh/20)
-			{
-
-//			Plane p=new Plane(1,0,0,os.realw);
-//			Plane p=new Plane(0,1,0,os.realh);
-//			Plane p=new Plane(0,0,1,os.reald);
-			Plane p=new Plane(1,1,1,q);
-			
-			Vector3d[] points=new Vector3d[]{
-					intersectPlane1(p, os), intersectPlane2(p, os), intersectPlane4(p, os), intersectPlane3(p, os),
-					intersectPlane5(p, os), intersectPlane6(p, os), intersectPlane8(p, os), intersectPlane7(p, os),
-					intersectPlane9(p, os), intersectPlane10(p, os), intersectPlane12(p, os), intersectPlane11(p, os)};
-			int activelist=0;
-			int numv=0;
-			for(int ai=0;ai<12;ai++)
-				if(points[ai]!=null)
-					{
-					activelist+=1<<ai;
-					numv++;
-					}
-			
-			switch(activelist)
-				{
-				/*
-				case 3168: //110001100000  ok
-				case 3172: //110001100100  ok
-				case 1092:
-					points=new Vector3d[]{}; //temp
-					break;
-				
-				case 3002: // 8 points!
-					break;
-					
-				case 912: //fel
-				case 2730: //fel
-					points=new Vector3d[]{}; break; //temp
-				
-				case -1:
-				
-					points=invertOrder(compactPoint(points, numv));
-					break;
-				case 3002: //8 wtf
-					break;
-				*/	
-					
-				default:
-					//Non-considered case. Generate what the code should look like
-					if(numv>=3)
-						{
-						//Find a center position not overlapping
-						Vector3d center=new Vector3d();
-						for(Vector3d v:compactPoint(points, numv))
-							center.add(v);
-						center.scale(1.0/numv);
-
-						//Get normal
-						Vector3d normal=new Vector3d(p.A,p.B,p.C);
-						normal.normalize();
-						
-						//Project points
-						List<UnclassifiedPoint> ups=new ArrayList<UnclassifiedPoint>();
-						for(int ap=0;ap<points.length;ap++)
-							if(points[ap]!=null)
-								{
-								UnclassifiedPoint up=new UnclassifiedPoint();
-								up.id=ap;
-								Vector3d v=new Vector3d(points[ap]);
-								v.sub(center);
-								//Actually realize this step is useless except for centering. remove?
-								Vector3d w=new Vector3d(normal);
-								w.scale(v.dot(normal));
-								v.sub(w);
-								up.angle=Math.atan2(v.y, v.x); //This *will* explode in some instances. and if could solve
-								//ups.put(up.angle,up);
-								ups.add(up);
-								}
-						Collections.sort(ups);
-						
-						//Make final list: Clean up duplicates.
-						List<Vector3d> newpoints=new LinkedList<Vector3d>();
-						List<Integer> newindex=new LinkedList<Integer>();
-						for(UnclassifiedPoint up:ups)
-							if(newpoints.size()==0 || !points[up.id].equals(newpoints.get(newpoints.size()-1)))
-								{
-								newindex.add(up.id);
-								newpoints.add(points[up.id]);
-								}
-						points=new Vector3d[newpoints.size()];
-						int ap=0;
-						for(Vector3d v:newpoints)
-							points[ap++]=v;
-						//System.out.println(ups);
-						System.out.println(""+activelist+": "+newindex);
-						}
-					else
-						{
-						points=new Vector3d[]{};
-						}
-				
-				}
-			
-			
-//			gl.glBegin(GL.GL_LINE_LOOP);
-		gl.glBegin(GL.GL_POLYGON);
-		gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
-			for(Vector3d po:points)
-				if(po!=null)
-					{
-//					System.out.println(po);
-					point(gl, os, po.x, po.y, po.z);
-					}
-			
-			/*
-			point(gl,os,0,0,posz);
-			point(gl,os,neededSize,0,posz);
-			point(gl,os,neededSize,neededSize,posz);
-			*/
-/*			point(gl,os,0,0,posz);
-			point(gl,os,os.realw,0,posz);
-			point(gl,os,os.realw,os.realh,posz);*/
-			gl.glEnd();
-			}
-		}
-	
-	private void point(GL gl, OneSlice os, double x, double y, double z) //spatial coordinates
-		{
-		gl.glTexCoord3f((float)x/(float)os.realw, (float)y/(float)os.realh, (float)z/(float)os.reald); gl.glVertex3d(x,y,z);
-		}
-
-	
-	
-	
 	
 	
 	
@@ -724,14 +380,15 @@ public class Stack3D
 	
 	
 	
-	
+	/**
+	 * Return suitable scale of model for navigation purposes
+	 */
 	public Collection<Double> adjustScale(ModelWindow w)
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
-			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
-			double width=os.w/os.resX;
-			
+			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
+			double width=os.realw;
 			return Collections.singleton(width);
 			}
 		else
@@ -746,7 +403,7 @@ public class Stack3D
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
-			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
+			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			double width=os.w/os.resX;
 			double height=os.h/os.resY;
 			return Collections.singleton(new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0));
@@ -763,7 +420,7 @@ public class Stack3D
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
-			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
+			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			double width=os.w/os.resX;
 			double height=os.h/os.resY;
 			
@@ -782,9 +439,417 @@ public class Stack3D
 		}
 	
 	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// Plane rendering ///////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/** List of new special cases */
+	private TreeMap<Integer, String> newcases=new TreeMap<Integer, String>();
+	
+	/**
+	 * Internal class representing a plane using affine form: Ax+By+Cz=D 
+	 */
+	private static class Plane
+		{
+		public Plane(double A, double B, double C, double D){this.A=A;this.B=B;this.C=C;this.D=D;}
+		public double A, B, C, D; 
+		}
+
+	//Lines over z
+	private static Vector3d intersectPlane1(Plane p, VoxelStack os)
+		{
+		if(p.C==0) return null;
+		double z=p.D/p.C;
+		if(z<0 || z>os.reald) return null;
+		return new Vector3d(0,0,z);
+		}
+	private static Vector3d intersectPlane2(Plane p, VoxelStack os)
+		{
+		if(p.C==0) return null;
+		double z=(p.D-p.A*os.realw)/p.C;
+		if(z<0 || z>os.reald) return null;
+		return new Vector3d(os.realw,0,z);
+		}
+	private static Vector3d intersectPlane3(Plane p, VoxelStack os)
+		{
+		if(p.C==0) return null;
+		double z=(p.D-p.B*os.realh)/p.C;
+		if(z<0 || z>os.reald) return null;
+		return new Vector3d(0,os.realh,z);
+		}
+	private static Vector3d intersectPlane4(Plane p, VoxelStack os)
+		{
+		if(p.C==0) return null;
+		double z=(p.D-p.A*os.realw-p.B*os.realh)/p.C;
+		if(z<0 || z>os.reald) return null;
+		return new Vector3d(os.realw,os.realh,z);
+		}
+	
+	//Lines over y
+	private static Vector3d intersectPlane5(Plane p, VoxelStack os)
+		{
+		if(p.B==0) return null;
+		double y=(p.D)/p.B;
+		if(y<0 || y>os.realh) return null;
+		return new Vector3d(0,y,0);
+		}
+	private static Vector3d intersectPlane6(Plane p, VoxelStack os)
+		{
+		if(p.B==0) return null;
+		double y=(p.D-p.A*os.realw)/p.B;
+		if(y<0 || y>os.realh) return null;
+		return new Vector3d(os.realw,y,0);
+		}
+	private static Vector3d intersectPlane7(Plane p, VoxelStack os)
+		{
+		if(p.B==0) return null;
+		double y=(p.D-p.C*os.reald)/p.B;
+		if(y<0 || y>os.realh) return null;
+		return new Vector3d(0,y,os.reald);
+		}
+	private static Vector3d intersectPlane8(Plane p, VoxelStack os)
+		{
+		if(p.B==0) return null;
+		double y=(p.D-p.A*os.realw-p.C*os.reald)/p.B;
+		if(y<0 || y>os.realh) return null;
+		return new Vector3d(os.realw,y,os.reald);
+		}
+
+	//Lines over z
+	private static Vector3d intersectPlane9(Plane p, VoxelStack os)
+		{
+		if(p.A==0) return null;
+		double x=(p.D)/p.A;
+		if(x<0 || x>os.realw) return null;
+		return new Vector3d(x, 0,0);
+		}
+	private static Vector3d intersectPlane10(Plane p, VoxelStack os)
+		{
+		if(p.A==0) return null;
+		double x=(p.D-p.C*os.reald)/p.A;
+		if(x<0 || x>os.realw) return null;
+		return new Vector3d(x, 0,os.reald);
+		}
+	private static Vector3d intersectPlane11(Plane p, VoxelStack os)
+		{
+		if(p.A==0) return null;
+		double x=(p.D-p.B*os.realh)/p.A;
+		if(x<0 || x>os.realw) return null;
+		return new Vector3d(x, os.realh,0);
+		}
+	private static Vector3d intersectPlane12(Plane p, VoxelStack os)
+		{
+		if(p.A==0) return null;
+		double x=(p.D-p.B*os.realh-p.C*os.reald)/p.A;
+		if(x<0 || x>os.realw) return null;
+		return new Vector3d(x, os.realh,os.reald);
+		}
+	
+	
+	/**
+	 * Keep only non-null vectors
+	 */
+	private Vector3d[] compactPoint(Vector3d[] p, int numv)
+		{
+		int i=0;
+		Vector3d[] np=new Vector3d[numv];
+		for(Vector3d v:p)
+			if(v!=null)
+				{
+				np[i]=v;
+				i++;
+				}
+		return np;
+		}
+	
+
+	/**
+	 * Internal class used to find special cases of cube cuts
+	 */
+	private static class UnclassifiedPoint implements Comparable<UnclassifiedPoint>
+		{
+		public int id;
+		public double angle;
+		public int compareTo(UnclassifiedPoint o)
+			{
+			if(angle<o.angle)				return -1;
+			else if(angle>o.angle)	return 1;
+			else										return 0;
+			}
+		public String toString(){return ""+id;}
+		}
+
+	/**
+	 * Draw point. Spatial coordinates given. Generates texture coordinates
+	 */
+	private void point(GL gl, VoxelStack os, double x, double y, double z) 
+		{
+		gl.glTexCoord3f((float)x/(float)os.realw, (float)y/(float)os.realh, (float)z/(float)os.reald); gl.glVertex3d(x,y,z);
+		}
+
+	
+	/**
+	 * Render the place through one voxel stack given plane
+	 */
+	private void renderPlane(GL gl, Camera cam, VoxelStack os, Plane p)
+		{
+		Vector3d[] points=new Vector3d[]{
+				intersectPlane1(p, os), intersectPlane2(p, os), intersectPlane4(p, os), intersectPlane3(p, os),
+				intersectPlane5(p, os), intersectPlane6(p, os), intersectPlane8(p, os), intersectPlane7(p, os),
+				intersectPlane9(p, os), intersectPlane10(p, os), intersectPlane12(p, os), intersectPlane11(p, os)};
+		int activelist=0;
+		int numv=0;
+		for(int ai=0;ai<12;ai++)
+			if(points[ai]!=null)
+				{
+				activelist+=1<<ai;
+				numv++;
+				}
+		
+		switch(activelist)
+			{
+			//Auto-generated special cases. Can be removed, the default will handle everything.
+			//22ms average time -> 0 to 2 average time
+			case 0: points=new Vector3d[]{}; break;
+			case 4: points=new Vector3d[]{}; break;
+			case 15: points=new Vector3d[]{points[0],points[1],points[2],points[3]}; break;
+			case 32: points=new Vector3d[]{}; break;
+			case 34: points=new Vector3d[]{}; break;
+			case 36: points=new Vector3d[]{}; break;
+			case 51: points=new Vector3d[]{points[4],points[0],points[1],points[5]}; break;
+			case 60: points=new Vector3d[]{points[5],points[2],points[3],points[4]}; break;
+			case 64: points=new Vector3d[]{}; break;
+			case 66: points=new Vector3d[]{}; break;
+			case 68: points=new Vector3d[]{}; break;
+			case 128: points=new Vector3d[]{}; break;
+			case 195: points=new Vector3d[]{points[0],points[1],points[6],points[7]}; break;
+			case 204: points=new Vector3d[]{points[7],points[6],points[2],points[3]}; break;
+			case 240: points=new Vector3d[]{points[4],points[7],points[6],points[5]}; break;
+			case 273: points=new Vector3d[]{points[0],points[8],points[4]}; break;
+			case 286: points=new Vector3d[]{points[4],points[8],points[1],points[2],points[3]}; break;
+			case 290: points=new Vector3d[]{points[8],points[1],points[5]}; break;
+			case 301: points=new Vector3d[]{points[0],points[8],points[5],points[2],points[3]}; break;
+			case 466: points=new Vector3d[]{points[8],points[1],points[6],points[7],points[4]}; break;
+			case 481: points=new Vector3d[]{points[7],points[0],points[8],points[5],points[6]}; break;
+			case 512: points=new Vector3d[]{}; break;
+			case 578: points=new Vector3d[]{points[9],points[1],points[6]}; break;
+			case 589: points=new Vector3d[]{points[0],points[9],points[6],points[2],points[3]}; break;
+			case 625: points=new Vector3d[]{points[4],points[0],points[9],points[6],points[5]}; break;
+			case 641: points=new Vector3d[]{points[0],points[9],points[7]}; break;
+			case 654: points=new Vector3d[]{points[7],points[9],points[1],points[2],points[3]}; break;
+			case 690: points=new Vector3d[]{points[9],points[1],points[5],points[4],points[7]}; break;
+			case 864: points=new Vector3d[]{points[8],points[9],points[6],points[5]}; break;
+			case 912: points=new Vector3d[]{points[8],points[9],points[7],points[4]}; break;
+			case 1024: points=new Vector3d[]{}; break;
+			case 1028: points=new Vector3d[]{}; break;
+			case 1032: points=new Vector3d[]{}; break;
+			case 1088: points=new Vector3d[]{}; break;
+			case 1092: points=new Vector3d[]{points[6],points[2],points[10]}; break;
+			case 1099: points=new Vector3d[]{points[0],points[1],points[6],points[10],points[3]}; break;
+			case 1144: points=new Vector3d[]{points[5],points[6],points[10],points[3],points[4]}; break;
+			case 1159: points=new Vector3d[]{points[7],points[0],points[1],points[2],points[10]}; break;
+			case 1160: points=new Vector3d[]{points[10],points[3],points[7]}; break;
+			case 1204: points=new Vector3d[]{points[7],points[4],points[5],points[2],points[10]}; break;
+			case 1370: points=new Vector3d[]{points[4],points[8],points[1],points[6],points[10],points[3]}; break;
+			case 1445: points=new Vector3d[]{points[7],points[0],points[8],points[5],points[2],points[10]}; break;
+			case 1542: points=new Vector3d[]{points[9],points[1],points[2],points[10]}; break;
+			case 1545: points=new Vector3d[]{points[0],points[9],points[10],points[3]}; break;
+			case 1816: points=new Vector3d[]{points[8],points[9],points[10],points[3],points[4]}; break;
+			case 1828: points=new Vector3d[]{points[9],points[8],points[5],points[2],points[10]}; break;
+			case 2048: points=new Vector3d[]{}; break;
+			case 2052: points=new Vector3d[]{}; break;
+			case 2056: points=new Vector3d[]{}; break;
+			case 2071: points=new Vector3d[]{points[4],points[0],points[1],points[2],points[11]}; break;
+			case 2072: points=new Vector3d[]{points[4],points[11],points[3]}; break;
+			case 2080: points=new Vector3d[]{}; break;
+			case 2084: points=new Vector3d[]{}; break;
+			case 2091: points=new Vector3d[]{points[0],points[1],points[5],points[11],points[3]}; break;
+			case 2260: points=new Vector3d[]{points[4],points[7],points[6],points[2],points[11]}; break;
+			case 2280: points=new Vector3d[]{points[6],points[5],points[11],points[3],points[7]}; break;
+			case 2310: points=new Vector3d[]{points[8],points[1],points[2],points[11]}; break;
+			case 2313: points=new Vector3d[]{points[0],points[8],points[11],points[3]}; break;
+			case 2645: points=new Vector3d[]{points[4],points[0],points[9],points[6],points[2],points[11]}; break;
+			case 2730: points=new Vector3d[]{points[7],points[9],points[1],points[5],points[11],points[3]}; break;
+			case 2884: points=new Vector3d[]{points[8],points[9],points[6],points[2],points[11]}; break;
+			case 2952: points=new Vector3d[]{points[9],points[8],points[11],points[3],points[7]}; break;
+			case 3168: points=new Vector3d[]{points[5],points[6],points[10],points[11]}; break;
+			case 3216: points=new Vector3d[]{points[4],points[7],points[10],points[11]}; break;
+			case 3394: points=new Vector3d[]{points[8],points[1],points[6],points[10],points[11]}; break;
+			case 3457: points=new Vector3d[]{points[0],points[8],points[11],points[10],points[7]}; break;
+			case 3601: points=new Vector3d[]{points[4],points[0],points[9],points[10],points[11]}; break;
+			case 3618: points=new Vector3d[]{points[9],points[1],points[5],points[11],points[10]}; break;
+			case 3840: points=new Vector3d[]{points[8],points[9],points[10],points[11]}; break;
+
+				
+			default:
+				//Non-considered case. Generate what the code should look like
+				//Find a center position not overlapping
+				Vector3d center=new Vector3d();
+				for(Vector3d v:compactPoint(points, numv))
+					center.add(v);
+				center.scale(1.0/numv);
+
+				//Get normal
+				Vector3d normal=new Vector3d(p.A,p.B,p.C);
+				normal.normalize();
+
+				//Project points
+				List<UnclassifiedPoint> ups=new ArrayList<UnclassifiedPoint>();
+				for(int ap=0;ap<points.length;ap++)
+					if(points[ap]!=null)
+						{
+						UnclassifiedPoint up=new UnclassifiedPoint();
+						up.id=ap;
+						Vector3d v=new Vector3d(points[ap]);
+						v.sub(center);
+						up.angle=Math.atan2(v.y, v.x); //This *will* explode in some instances. and an if could solve
+						ups.add(up);
+						}
+				Collections.sort(ups);
+
+				//Make final list: Clean up duplicates.
+				List<Vector3d> newpoints=new LinkedList<Vector3d>();
+				List<Integer> newindex=new LinkedList<Integer>();
+				for(UnclassifiedPoint up:ups)
+					if(newpoints.size()==0 || !points[up.id].equals(newpoints.get(newpoints.size()-1)))
+						{
+						newindex.add(up.id);
+						newpoints.add(points[up.id]);
+						}
+				points=new Vector3d[newpoints.size()];
+				int ap=0;
+				for(Vector3d v:newpoints)
+					points[ap++]=v;
+				if(points.length>=3)
+					{
+					String out="case "+activelist+": points=new Vector3d[]{";
+					boolean first=true;
+					for(UnclassifiedPoint up:ups)
+						{
+						if(!first)
+							out+=",";
+						first=false;
+						out+="points["+up.id+"]";
+						}
+					out+="}; break;";
+					newcases.put(activelist,out);
+					}
+				else
+					{
+					points=new Vector3d[]{};
+					String out="case "+activelist+": points=new Vector3d[]{}; break;";
+					newcases.put(activelist,out);
+					}
+			}
+	
+		//Draw polygon
+		if(drawLinePlanes)
+			gl.glBegin(GL.GL_LINE_LOOP);
+		else
+			gl.glBegin(GL.GL_POLYGON);
+		gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
+		for(Vector3d po:points)
+			point(gl, os, po.x, po.y, po.z);
+		gl.glEnd();
+		}
+	
+	/**
+	 * Render all planes through a voxel stack
+	 */
+	private void renderVoxelStack(GL gl, Camera cam, VoxelStack os)
+		{
+		//Get direction of camera as vector
+		Vector3d camv=cam.transformedVector(0, 0, 1);
+	
+		//Figure out interval for q
+		double boxCornerDistances[]=new double[]{
+				new Vector3d(0,0,0).dot(camv),
+				new Vector3d(os.realw,0,0).dot(camv),
+				new Vector3d(os.realw,os.realh,0).dot(camv),
+				new Vector3d(0,os.realh,0).dot(camv),
+				new Vector3d(0,0,os.reald).dot(camv),
+				new Vector3d(os.realw,0,os.reald).dot(camv),
+				new Vector3d(os.realw,os.realh,os.reald).dot(camv),
+				new Vector3d(0,os.realh,os.reald).dot(camv)
+		};
+		double minBoxCornerDistances=boxCornerDistances[0],	maxBoxCornerDistances=boxCornerDistances[0];
+		for(double d:boxCornerDistances)
+			{
+			if(d<minBoxCornerDistances) minBoxCornerDistances=d;
+			if(d>maxBoxCornerDistances) maxBoxCornerDistances=d;
+			}
+	
+		//long time=System.currentTimeMillis();
+		
+		//Figure out stepping
+		double shortestSide=os.realw;
+		if(shortestSide<os.realh)
+			shortestSide=os.realh;
+		if(shortestSide<os.reald)
+			shortestSide=os.reald;
+		double stepsize=shortestSide/200;
+
+		//Generate all planes
+		for(double q=minBoxCornerDistances;q<maxBoxCornerDistances;q+=stepsize)
+			{
+			Plane p=new Plane(camv.x,camv.y,camv.z,q);
+			renderPlane(gl, cam, os, p);
+			}
+		
+		//System.out.println("dt: "+(System.currentTimeMillis()-time));
+		
+		//Print new discovered cases
+		for(String s:newcases.values())
+			System.out.println(s);
+		if(!newcases.isEmpty())
+			System.out.println("# cases: "+newcases.size());
+		
+		}
 	
 	
 	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// Misc helpers //////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Round to best 2^
+	 */
+	private static int suitablePower2(int s)
+		{
+		//An option to restrict max texture size would be good
+		if(s>256) return 512;
+		else if(s>192) return 256;
+		else if(s>96) return 128;
+		else if(s>48) return 64;
+		else if(s>24) return 32;
+		else if(s>12) return 16;
+		else if(s>6) return 8;
+		else return 4;
+		}
 	
+	/**
+	 * Ceil to nearest 2^
+	 */
+	private static int ceilPower2(int s)
+		{
+		if(s>1024)
+			{
+			double log2=Math.log(2);
+			double x=Math.ceil(Math.log(s)/log2);
+			int v=(int)Math.exp(Math.log(2)*x);
+			System.out.println("ceilpow2 "+s+" => "+v);
+			return v;
+			}
+		else if(s>512) return 1024;
+		else if(s>256) return 512;
+		else if(s>128) return 256;
+		else if(s>64) return 128;
+		else if(s>32) return 64;
+		else if(s>16) return 32;
+		else if(s>8) return 16;
+		else if(s>4) return 8;
+		else return 4;
+		}
 	
 	}

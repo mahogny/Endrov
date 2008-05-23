@@ -2,14 +2,12 @@ package evplugin.modelWindow.voxel;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
 
 import javax.media.opengl.*;
 import javax.swing.SwingUtilities;
 
-import com.sun.opengl.util.j2d.TextureRenderer;
 import com.sun.opengl.util.texture.*;
 
 import evplugin.ev.Tuple;

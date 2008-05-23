@@ -13,7 +13,6 @@ import com.sun.opengl.util.texture.*;
 
 import evplugin.ev.Tuple;
 import evplugin.ev.Vector3D;
-import evplugin.filter.FilterSeq;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
@@ -40,13 +39,13 @@ http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
  * Render stack as several textured slices
  * @author Johan Henriksson
  */
-public class Stack2D
+public class Stack2D implements StackInterface
 	{	
 	Double lastframe=null; 
 	double resZ;
 	private TreeMap<Double,Vector<OneSlice>> texSlices=null;
 	private final int skipForward=1; //later maybe allow this to change
-	public boolean needLoadGL=false;
+	private boolean needLoadGL=false;
 	
 	
 	private static class OneSlice
@@ -69,14 +68,6 @@ public class Stack2D
 			gl.glDeleteTextures(1, texlist, 0);
 			}
 		}*/
-	
-	public static class ChannelSelection
-		{
-		Imageset im;
-		ChannelImages ch;
-		FilterSeq filterSeq;
-		Color color=new Color(0,0,0);
-		}
 	
 	
 	/**
@@ -116,6 +107,10 @@ public class Stack2D
 		}
 	
 	
+	public void setLastFrame(double frame)
+		{
+		lastframe=frame;
+		}
 
 	
 	public boolean needSettings(double frame)
@@ -124,7 +119,7 @@ public class Stack2D
 		}
 	
 	
-	public void startBuildThread(double frame, HashMap<ChannelImages, Stack2D.ChannelSelection> chsel,ModelWindow w)
+	public void startBuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 		{
 		stopBuildThread();
 		buildThread=new BuildThread(frame, chsel, w);
@@ -140,10 +135,10 @@ public class Stack2D
 	public class BuildThread extends Thread
 		{
 		private double frame;
-		private HashMap<ChannelImages, Stack2D.ChannelSelection> chsel;
+		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
 		private ModelWindow w;
-		public BuildThread(double frame, HashMap<ChannelImages, Stack2D.ChannelSelection> chsel,ModelWindow w)
+		public BuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
@@ -154,10 +149,10 @@ public class Stack2D
 			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
 			
 			//im cache safety issues
-			Collection<ChannelSelection> channels=chsel.values();
+			Collection<VoxelExtension.ChannelSelection> channels=chsel.values();
 			procList.clear();
 			int curchannum=0;
-			for(ChannelSelection chsel:channels)
+			for(VoxelExtension.ChannelSelection chsel:channels)
 				{
 				int cframe=chsel.ch.closestFrame((int)Math.round(frame));
 				//Common resolution for all channels
@@ -201,8 +196,7 @@ public class Stack2D
 	
 	
 
-//	public Tuple<BufferedImage,OneSlice> processImage(EvImage evim, int z, ChannelSelection chsel)
-	public Tuple<TextureRenderer,OneSlice> processImage(EvImage evim, int z, ChannelSelection chsel)
+	public Tuple<TextureRenderer,OneSlice> processImage(EvImage evim, int z, VoxelExtension.ChannelSelection chsel)
 		{
 		BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
 		OneSlice os=new OneSlice();
@@ -262,10 +256,14 @@ public class Stack2D
 	LinkedList<Tuple<TextureRenderer,OneSlice>> procList=new LinkedList<Tuple<TextureRenderer,OneSlice>>();
 	public void loadGL(GL gl/*,double frame, Collection<ChannelSelection> channels*/)
 		{
-		System.out.println("uploading to GL");
-		long t=System.currentTimeMillis();
-		addSlice(gl,procList);
-		System.out.println("voxels loading ok:"+(System.currentTimeMillis()-t));
+		if(needLoadGL)
+			{
+			needLoadGL=false;
+			System.out.println("uploading to GL");
+			long t=System.currentTimeMillis();
+			addSlice(gl,procList);
+			System.out.println("voxels loading ok:"+(System.currentTimeMillis()-t));
+			}
 		}
 	
 	

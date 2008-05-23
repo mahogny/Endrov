@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.media.opengl.*;
 import javax.swing.*;
@@ -21,7 +22,6 @@ import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.*;
 
-
 //for now does not update if image updated. would need a data update CB but
 //better to wait until data observer system is ready.
 
@@ -29,7 +29,7 @@ import evplugin.modelWindow.*;
 
 
 /**
- * 
+ * 3D stack renderers 
  * @author Johan Henriksson
  */
 public class VoxelExtension implements ModelWindowExtension
@@ -46,12 +46,23 @@ public class VoxelExtension implements ModelWindowExtension
 		}
 
 	
+	/**
+	 * Settings for one channel in an imageset
+	 */
+	public static class ChannelSelection
+		{
+		public Imageset im;
+		public ChannelImages ch;
+		public FilterSeq filterSeq;
+		public Color color=new Color(0,0,0);
+		}
+	
 	private class Hook implements ModelWindowHook
 		{
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
-		private Stack3D slices=new Stack3D();
-		private Stack3D lastSlices=null; //to be removed TODO, can we pile up too many?
+		private StackInterface slices=new Stack3D();
+		private Vector<StackInterface> lastSlices=new Vector<StackInterface>();
 
 		private OneImageChannel icR=new OneImageChannel("R", Color.RED);
 		private OneImageChannel icG=new OneImageChannel("G", Color.GREEN);
@@ -105,16 +116,12 @@ public class VoxelExtension implements ModelWindowExtension
 		
 		
 		
-		
-		
-		
-		
 		public void displayFinal(GL gl)
 			{
 			//Remove prior data
-			if(lastSlices!=null)    //TODO: make variable into list. potential memory leak
-				lastSlices.clean(gl);
-			lastSlices=null;
+			for(StackInterface s:lastSlices)
+				s.clean(gl);
+			lastSlices.clear();
 
 			double frame=getFrame();
 			
@@ -122,20 +129,20 @@ public class VoxelExtension implements ModelWindowExtension
 			if(slices.needSettings(frame))
 				{
 //				System.out.println("needsettings");
-				slices.lastframe=frame;
+				slices.setLastFrame(frame);
 				
 				//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
-				HashMap<ChannelImages, Stack3D.ChannelSelection> chsel=new HashMap<ChannelImages, Stack3D.ChannelSelection>(); 
+				HashMap<ChannelImages, ChannelSelection> chsel=new HashMap<ChannelImages, ChannelSelection>(); 
 				for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
 					{
 					Imageset im=oc.channelCombo.getImageset();
 					ChannelImages chim=im.getChannel(oc.channelCombo.getChannel());
 					if(chim!=null)
 						{
-						Stack3D.ChannelSelection sel=chsel.get(chim);
+						ChannelSelection sel=chsel.get(chim);
 						if(sel==null)
 							{
-							sel=new Stack3D.ChannelSelection();
+							sel=new ChannelSelection();
 							chsel.put(chim, sel);
 							}
 						sel.im=im;
@@ -155,11 +162,7 @@ public class VoxelExtension implements ModelWindowExtension
 				{
 //				System.out.println("render");
 				//Render
-				if(slices.needLoadGL)
-					{
-					slices.loadGL(gl);
-					slices.needLoadGL=false;
-					}
+				slices.loadGL(gl);
 				slices.render(gl,w.view.camera);
 				}
 			}
@@ -167,7 +170,9 @@ public class VoxelExtension implements ModelWindowExtension
 
 	
 
-		
+		/**
+		 * GUI component to control channel settings
+		 */
 		private class OneImageChannel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
@@ -196,7 +201,7 @@ public class VoxelExtension implements ModelWindowExtension
 				//TODO: when filter seq updated, a signal should be sent back
 				if(slices!=null)
 					slices.stopBuildThread();
-				lastSlices=slices;
+				lastSlices.add(slices);
 				slices=new Stack3D(); //Preferably disk data should be cached
 //				System.out.println("stack changed");
 				w.repaint();
