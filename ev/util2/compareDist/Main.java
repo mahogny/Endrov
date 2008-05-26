@@ -86,7 +86,7 @@ public class Main
 		List<String> nameList=new LinkedList<String>();
 		for(String s:reflin.nuc.keySet())
 			{
-			if(s.length()<=5)
+			//if(s.length()<=5)
 				nameList.add(s);
 			}
 		Collections.sort(nameList);
@@ -116,15 +116,28 @@ public class Main
 					String nucb=ieb.getKey().snd();
 					NucInterp bi=ieb.getValue();
 
+					//get first and last frame for each nucleus
+					NucLineage.Nuc nucac = lin.nuc.get(nuca);
+					NucLineage.Nuc nucbc = lin.nuc.get(nucb);
+					
 					if(nameList.contains(nuca) && nameList.contains(nucb))
 						{
-						Vector3d v=ai.pos.getPosCopy();
-						v.sub(bi.pos.getPosCopy());
-
-						double len=v.length();
-						distList.get(nuca).get(nucb).put(len);
-						distList.get(nucb).get(nuca).put(len);
-						oknuc++;
+						int starta = nucac.pos.firstKey();
+						int enda   = nucac.pos.lastKey();
+						int startb = nucbc.pos.firstKey();
+						int endb   = nucbc.pos.lastKey();
+						if(starta<=curframe && enda>=curframe &&
+								startb<=curframe && endb>=curframe)
+							{
+							//System.out.println(""+nuca+" => "+nucb);
+							Vector3d v=ai.pos.getPosCopy();
+							v.sub(bi.pos.getPosCopy());
+	
+							double len=v.length();
+							distList.get(nuca).get(nucb).put(len);
+							distList.get(nucb).get(nuca).put(len);
+							oknuc++;
+							}
 						}
 //					else
 //					System.out.println("Not in namelist: "+nuca+" "+nucb);
@@ -132,6 +145,8 @@ public class Main
 				}
 			}
 
+		if(true)
+			return;
 
 		//Save in data dir & average
 		try
@@ -170,8 +185,6 @@ public class Main
 			}
 		System.out.println("done");
 
-
-
 		}
 
 	/**
@@ -183,11 +196,11 @@ public class Main
 		EV.loadPlugins();
 
 		one("/Volumes/TBU_main02/ost4dgood/N2_071116");
-//	String linname="/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml";
+//		one("/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml");
 		one("/Volumes/TBU_main03/ost4dgood/TB2167_0804016");
 	
 
-//		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords");
+		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords");
 	
 		}
 
