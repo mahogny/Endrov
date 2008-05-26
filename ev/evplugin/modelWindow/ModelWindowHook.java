@@ -2,11 +2,12 @@ package evplugin.modelWindow;
 
 import java.util.Collection;
 
-import javax.media.opengl.*;
-import org.jdom.*;
+import javax.media.opengl.GL;
+
+import org.jdom.Element;
 
 import evplugin.data.EvObject;
-import evplugin.ev.*;
+import evplugin.ev.Vector3D;
 
 
 /**
@@ -32,4 +33,5 @@ public interface ModelWindowHook
 	public Collection<Double> autoCenterRadius(Vector3D mid, double FOV);
 	
 	public void datachangedEvent();
+	
 	}

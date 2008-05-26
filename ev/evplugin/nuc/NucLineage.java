@@ -884,10 +884,12 @@ public class NucLineage extends EvObject implements Cloneable
 				}
 
 			//This nucleus does not start until the parent is gone
-			if(parent!=null)
+			//If parent does not have coordinates, let's decide it is equivalent to no parent
+			if(parent!=null && !nuc.get(parent).pos.isEmpty())  //20080526
 				{
 				Nuc p=nuc.get(parent);
-				if(p.pos.isEmpty() || p.pos.lastKey()>frame)
+//				if(p.pos.isEmpty() || p.pos.lastKey()>frame) //20080526
+				if(p.pos.lastKey()>frame)
 					return null;
 				}
 			
