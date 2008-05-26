@@ -11,10 +11,12 @@ import java.util.TreeMap;
 
 import javax.vecmath.Vector3d;
 
+
 import evplugin.data.EvData;
 import evplugin.data.EvDataXML;
 import evplugin.data.EvObject;
 import evplugin.ev.EV;
+import evplugin.ev.EvParallel;
 import evplugin.ev.Log;
 import evplugin.ev.StdoutLog;
 import evplugin.nuc.NucLineage;
@@ -44,6 +46,15 @@ public class Main
 		}
 	
 	
+	public static class Foo
+		{
+		int c;
+		String lin;
+		public Foo(String lin,int c)
+			{this.c=c;this.lin=lin;}
+		}
+	
+	
 	/**
 	 * Set end frame of all cells without children to last frame. This stops them from occuring in interpolations.
 	 */
@@ -56,7 +67,43 @@ public class Main
 		}
 	
 	
-	public static void one(String linname)
+/*	
+	public static void shortenLineage(NucLineage lin)
+		{
+		int c=3;
+		for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
+			{
+//			String nucName=e.getKey();
+			NucLineage.Nuc nuc=e.getValue();
+			if(!nuc.pos.isEmpty())
+				{
+				int start = nuc.pos.firstKey()+c;
+				int end   = nuc.pos.lastKey()-c;
+	
+				
+	
+				if(start<end)
+					{
+					NucLineage.NucInterp interStart=nuc.interpolatePos(start);
+					NucLineage.NucInterp interEnd=nuc.interpolatePos(end);
+//					if(interStart==null || interEnd==null)
+//						System.out.println(nucName+" "+interStart+ " "+interEnd+" "+start+" "+end+" "+nuc.end);
+	
+					nuc.pos.put(start, new NucLineage.NucPos(interStart.pos));
+					nuc.pos.put(end, new NucLineage.NucPos(interEnd.pos));
+					
+					HashSet<Integer> ints=new HashSet<Integer>();
+					ints.addAll(nuc.pos.keySet());
+					
+					
+					}
+				}
+			}
+		
+		}
+*/
+	
+	public static void one(String linname, int c)
 		{
 		//Load lineage
 		EvData ost=new EvDataXML(linname+"/rmd.ostxml");
@@ -67,6 +114,7 @@ public class Main
 				lin=(NucLineage)evob;
 		if(lin==null)
 			System.out.println("WTF2");
+	//	shortenLineage(lin);
 		endAllCells(lin);
 
 		//Load reference tree for naming
@@ -100,7 +148,46 @@ public class Main
 				}
 			}
 
+		//For all nuc
+		for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
+			{
+			String nuca=e.getKey();
+			NucLineage.Nuc nuc=e.getValue();
+			if(!nuc.pos.isEmpty() && nameList.contains(nuca))
+				{
+				//In middle of life
+				int start = nuc.pos.firstKey();
+				int end   = nuc.pos.lastKey();
+				int curframe=(int)((start+end)/2);
+				NucLineage.NucInterp ai=nuc.interpolatePos(curframe);
+
+				//Look at neigh
+				Map<NucPair, NucInterp> inter=lin.getInterpNuc(curframe);
+				for(Map.Entry<NucPair, NucInterp> ie:inter.entrySet())
+					{
+					String nucb=ie.getKey().snd();
+					NucInterp bi=ie.getValue();
+					
+					//The > is for a strict selection between parent and child on the intersection
+					//Is this a bug in the interpol framework?
+					if(!nucb.equals(nuca) && nameList.contains(nucb) && lin.nuc.get(nucb).pos.lastKey()>curframe)
+						{
+//						System.out.println("neigh "+nuca+" "+nucb);
+						Vector3d v=ai.pos.getPosCopy();
+						v.sub(bi.pos.getPosCopy());
+
+						double len=v.length();
+						distList.get(nuca).get(nucb).put(len);
+//						distList.get(nucb).get(nuca).put(len); //makes relation symmetric
+						}
+					
+					}
+				
+				}
+			}
+		
 		//For all frames interpolate
+		/*
 		int oknuc=0;
 		for(int curframe=0;curframe<10000;curframe++)
 			{
@@ -144,9 +231,7 @@ public class Main
 					}
 				}
 			}
-
-		if(true)
-			return;
+			*/
 
 		//Save in data dir & average
 		try
@@ -159,7 +244,10 @@ public class Main
 				for(String t:nameList)
 					{
 					AvLen dlist=distList.get(s).get(t);
-					out.print(""+dlist.getAv()+" ");
+					double dist=dlist.getAv();
+//					if(dlist.count<c)
+//						dist=0;
+					out.print(""+dist+" ");
 					}
 				out.println();
 				}
@@ -183,8 +271,6 @@ public class Main
 			{
 			e.printStackTrace();
 			}
-		System.out.println("done");
-
 		}
 
 	/**
@@ -195,13 +281,26 @@ public class Main
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
-		one("/Volumes/TBU_main02/ost4dgood/N2_071116");
-//		one("/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml");
-		one("/Volumes/TBU_main03/ost4dgood/TB2167_0804016");
-	
+		Foo[] files=new Foo[]{
+				new Foo("/Volumes/TBU_main02/ost4dgood/N2_071116",40),
+				new Foo("/Volumes/TBU_main03/ost4dgood/TB2167_0804016",40),
+				new Foo("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords",15),
+				new Foo("/Volumes/TBU_main02/ost4dgood/stdcelegansNew",15)
+				};
+		List<Foo> l=new LinkedList<Foo>();
+		for(Foo s:files)
+			l.add(s);
+//		for(String s:files)
+//			one(s);
 
-		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords");
-	
+		EvParallel.map(l,new EvParallel.FuncAB<Foo,Object>(){
+			public Object func(Foo in)
+				{
+				one(in.lin, in.c);
+				return null;
+				}
+		});
+		System.out.println("done");
 		}
 
 	}

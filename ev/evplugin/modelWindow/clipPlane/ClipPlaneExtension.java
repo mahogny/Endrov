@@ -31,13 +31,15 @@ public class ClipPlaneExtension implements ModelWindowExtension
 	
 	public void newModelWindow(ModelWindow w)
 		{
-		w.modelWindowHooks.add(new Hook(w)); 
+		Hook h=new Hook(w);
+		w.modelWindowHooks.add(h); 
+//		w.view.addMouseListener(h);
 		}
 
 	
 
 	
-	private class Hook implements ModelWindowHook, ActionListener
+	private class Hook implements ModelWindowHook, ActionListener//, MouseListener
 		{
 		private ModelWindow w;
 		private Vector<ToolSlab> isolayers=new Vector<ToolSlab>();
@@ -132,7 +134,7 @@ public class ClipPlaneExtension implements ModelWindowExtension
 			private JNumericField sD=new JNumericField(0.0);
 			
 			//Should try and set a sensible default size-dependent
-			private Vector3d[] points=new Vector3d[]{new Vector3d(1,0,0),new Vector3d(0,1,0),new Vector3d(0,0,1)};
+			private final Vector3d[] points=new Vector3d[]{new Vector3d(1,0,0),new Vector3d(0,1,0),new Vector3d(0,0,1)};
 			
 			public ToolSlab()
 				{
@@ -247,6 +249,11 @@ public class ClipPlaneExtension implements ModelWindowExtension
 				}
 			
 			}
+		
+		
+		
+		
+		
 		
 		
 		}

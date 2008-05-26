@@ -140,6 +140,10 @@ public class ModelWindow extends BasicWindow
 		addKeyListener(this);
 		objectDisplayList.addChangeListener(this);
 
+		//Special: cross
+		view.addMouseMotionListener(crossMListener);
+		view.addMouseListener(crossMListener);
+		
 		addMenubar(menuModel);
 		menuModel.add(miView);
 		miView.add(miViewFront);
@@ -503,7 +507,8 @@ public class ModelWindow extends BasicWindow
 		}
 
 	private LinkedList<Cross> crossList=new LinkedList<Cross>();
-	private Integer crossListID=0;
+	private Integer crossListStartId=0;
+	Integer crossHoverId=null;
 	public void addCross(Vector3d v, CrossListener listener)
 		{
 		Cross cross=new Cross();
@@ -516,24 +521,23 @@ public class ModelWindow extends BasicWindow
 		}
 	
 
-	Integer lastHoverCrossId=null;
 	/** Feedback from listening */
 	private ModelView.GLSelectListener crossListener=new ModelView.GLSelectListener()
 		{
 		public void hover(int id)
 			{
-			lastHoverCrossId=id;
+			crossHoverId=id;
 			System.out.println("id "+id);
 			}
 		public void hoverInit(int id)
 			{
-			lastHoverCrossId=null;
+			crossHoverId=null;
 			}
 		};
 	
 	public void displayCrossSelect(GL gl)
 		{
-		crossListID=null;
+		crossListStartId=null;
 		gl.glPushAttrib(GL.GL_ENABLE_BIT);
 		for(int i=0;i<view.numClipPlanesSupported;i++)
 			gl.glDisable(GL.GL_CLIP_PLANE0+i);
@@ -542,8 +546,8 @@ public class ModelWindow extends BasicWindow
 			int col1=view.reserveSelectColor(crossListener);
 			int col2=view.reserveSelectColor(crossListener);
 			int col3=view.reserveSelectColor(crossListener);
-			if(crossListID==null)
-				crossListID=col1;
+			if(crossListStartId==null)
+				crossListStartId=col1;
 			float size=0.5f*(float)ModelWindowGrid.getGridSize(this);
 			gl.glPushMatrix();
 			gl.glTranslated(c.v.x, c.v.y, c.v.z);
@@ -585,6 +589,34 @@ public class ModelWindow extends BasicWindow
 			gl.glPopMatrix();
 			}
 		gl.glPopAttrib();
+		}
+	
+	private CrossMListener crossMListener=new CrossMListener();
+	private class CrossMListener implements MouseListener, MouseMotionListener
+		{
+		private CrossListener listener=null; 
+		private int axis=0;
+		public void mouseDragged(MouseEvent e)
+			{
+			//Need to override camera movement here!
+			if(listener!=null)
+				System.out.println("axis "+axis);
+			}
+		public void mouseMoved(MouseEvent e){}
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){listener=null;}
+		public void mousePressed(MouseEvent e)
+			{
+			if(crossHoverId!=null)
+				{
+				int i=crossHoverId-crossListStartId;
+				listener=crossList.get(i/3).listener;
+				axis=i%3;
+				}
+			}
+
+		public void mouseReleased(MouseEvent e){listener=null;}
 		}
 	
 	}
