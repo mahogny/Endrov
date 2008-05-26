@@ -22,7 +22,7 @@ public class MicroscopeTBU extends Microscope
 	
 	public MicroscopeTBU()
 		{
-		filtersEmission.put(0, "RFP"); //TODO
+		filtersEmission.put(0, "RFP"); //TODO microscope settings
 		
 	
 

@@ -25,7 +25,6 @@ public class CmdLoadOST extends Command
 			
 			BasicWindow.updateWindows();
 			
-			//TODO: print error?
 			
 			return new ExpVal(rec);
 			}

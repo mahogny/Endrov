@@ -98,8 +98,7 @@ public class ImagePanel extends JPanel
 				}
 			}
 		
-		
-		public void paintComponent(Graphics g, ImagePanel p, Integer b)
+		public void paintComponent(Graphics g, ImagePanel p)
 			{
 			Graphics2D g2 = (Graphics2D)g; 			
 			if(bufi!=null)
@@ -113,15 +112,7 @@ public class ImagePanel extends JPanel
 				g2.scale(zoomBinning,zoomBinning);
 				g2.rotate(p.rotation);
 				
-				if(b!=null)
-					{
-					Composite origComp=g2.getComposite();
-					g2.setComposite(new CompositeColor(b));
-					g2.drawImage(bufi, null, 0, 0);
-					g2.setComposite(origComp);
-					}
-				else
-					g2.drawImage(bufi, null, 0, 0);
+				g2.drawImage(bufi, null, 0, 0);
 				
 				g2.rotate(-p.rotation);
 				g2.scale(invZoomBinning,invZoomBinning);
@@ -131,7 +122,6 @@ public class ImagePanel extends JPanel
 		
 		}
 	
-		
 	
 	/**
 	 * Tell that images need be reloaded from disk.
@@ -171,15 +161,10 @@ public class ImagePanel extends JPanel
 			{
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
-			images.get(0).paintComponent(g, this, null);
+			images.get(0).paintComponent(g, this);
 			}
 		else
 			{
-			
-			//With composite
-			//for(int i=0;i<3 && i<images.size();i++)
-			//	images.get(i).paintComponent(g, this,i);
-			 
 			if(temporaryTotal==null || temporaryTotal.getWidth()!=getWidth() || temporaryTotal.getHeight()!=getHeight())
 				temporaryTotal=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
 			if(images.size()<3)
@@ -203,7 +188,7 @@ public class ImagePanel extends JPanel
 				
 				ImagePanelImage im=images.get(i);
 				Graphics2D g2=(Graphics2D)temporaryPart.getGraphics();
-				im.paintComponent(g2, this, null);
+				im.paintComponent(g2, this);
 				
 				temporaryPart.getRaster().getSamples(0, 0, getWidth(), getHeight(), 0, s);
 				temporaryTotal.getRaster().setSamples(0, 0, getWidth(), getHeight(), i	, s);

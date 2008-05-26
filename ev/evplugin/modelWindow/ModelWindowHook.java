@@ -10,7 +10,7 @@ import evplugin.ev.*;
 
 
 /**
- * 
+ * Hook, inserted by model window extensions into each model window instance
  * @author Johan Henriksson
  */
 public interface ModelWindowHook
@@ -22,7 +22,6 @@ public interface ModelWindowHook
 	
 	public void displayInit(GL gl);
 	public void displaySelect(GL gl);
-	public void select(int id);
 	public void displayFinal(GL gl);
 
 	

@@ -26,8 +26,6 @@ public class CmdDBIO extends Command
 			
 			BasicWindow.updateWindows();
 			
-			//TODO: print error?
-			
 			return new ExpVal(rec);
 			}
 		else

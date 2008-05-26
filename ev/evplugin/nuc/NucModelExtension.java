@@ -11,6 +11,7 @@ import org.jdom.Element;
 
 import evplugin.modelWindow.*;
 import evplugin.nuc.NucLineage.NucInterp;
+import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvObject;
 import evplugin.ev.*;
 
@@ -30,7 +31,7 @@ public class NucModelExtension implements ModelWindowExtension
 		w.modelWindowHooks.add(new NucModelWindowHook(w));
 		}
 	
-	public static class NucModelWindowHook implements ModelWindowHook, ActionListener
+	public static class NucModelWindowHook implements ModelWindowHook, ActionListener, ModelView.GLSelectListener
 		{
 		private final HashMap<Integer,NucPair> selectColorMap=new HashMap<Integer,NucPair>();
 		private Vector<Map<NucPair, NucLineage.NucInterp>> interpNuc=new Vector<Map<NucPair, NucLineage.NucInterp>>();
@@ -244,12 +245,22 @@ public class NucModelExtension implements ModelWindowExtension
 			}
 
 		
-		/**
-		 * Select a nucleus
-		 */
-		public void select(int pixelid)
+		/** Keep track of what hover was before hover test started */
+		private NucPair lastHover=null;
+		/** Called when hover test starts */
+		public void hoverInit(int pixelid)
+			{
+			//Update hover
+			lastHover=NucLineage.currentHover;
+			NucLineage.currentHover=new NucPair();
+			}
+		/** Called when nucleus hovered */
+		public void hover(int pixelid)
 			{
 			NucLineage.currentHover=selectColorMap.get(pixelid);
+			//Propagate hover. Avoid infinite recursion.
+			if(!NucLineage.currentHover.equals(lastHover))
+				BasicWindow.updateWindows(w);
 			}
 
 		

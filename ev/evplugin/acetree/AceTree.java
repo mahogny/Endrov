@@ -8,7 +8,9 @@ import evplugin.script.*;
 import evplugin.nuc.*;
 
 /**
- * Import for AceTree data
+ * Import for AceTree data.
+ * At this point parameters are not imported; the ones needed to get a complete dataset are set arbitrarily.
+ * 
  * @author Johan Henriksson
  */
 public class AceTree
@@ -34,8 +36,7 @@ public class AceTree
 	public final List<Vector<ARec>> afile=new LinkedList<Vector<ARec>>();
 	
 	public double xy_res=0.09, z_res=1.00;
-	public double frametime=1.0/60.0; //TODO: import it
-	
+	public double frametime=1.0/60.0;
 
 	
 	/**
@@ -49,9 +50,6 @@ public class AceTree
 		File basedir=new File(nameBasedir);
 		if(!basedir.exists())
 			return false;
-		
-		//Load parameters TODO
-//	File paramdir=new File(basedir,"parameters");
 		
 		//Load Coordinates
 		File nucdir=new File(basedir,"nuclei");

@@ -19,8 +19,6 @@ import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
 
 
-//int[] planes=new int[1];		gl.glGetIntegerv(GL.GL_MAX_CLIP_PLANES, planes, 0);		System.out.println("planes "+planes[0]);
-//6 planes on NVidia macpro
 
 //TODO: split up over z to waste less space
 //TODO: integrate transparency sorting in modw
@@ -54,7 +52,7 @@ public class Stack3D implements StackInterface
 		{
 		public int w, h, d; //size in pixels
 		//need starting position
-		public double resX,resY,resZ;
+		public double resX,resY;//,resZ; //resolution should maybe disappear?
 		public Texture3D tex; //could be multiple textures, interleaved
 		public Color color;
 		public double realw, realh, reald; //size [um]
@@ -109,7 +107,6 @@ public class Stack3D implements StackInterface
 			}
 		public void bind(GL gl)
 			{
-			//TODO
 			//here we can do all the multitexturing stuff! clever caching should be enough that different stack
 			//renderers need not know about each other
 			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
@@ -253,20 +250,15 @@ public class Stack3D implements StackInterface
 
 								os.resX=evim.getResX()/evim.getBinning(); //[px/um]
 								os.resY=evim.getResY()/evim.getBinning();
-								os.resZ=chsel.im.meta.resZ;
-								
-								double zscale=(1+slices.lastKey()-slices.firstKey())/slices.size();
-								System.out.println("zscale "+zscale);
-								os.resZ/=zscale; //TODO: check if correct. unit?
-								//TODO: check slice2d if correct there
 								
 								os.color=chsel.color;
 								texture.allocate(os.w, os.h, os.d);
 								
 								//real size
 								os.realw=os.w/os.resX;
-								os.realh=os.h/os.resY;
-								os.reald=os.d/os.resZ;
+								os.realh=os.h/os.resY;								
+								int slicespan=(1+slices.lastKey()-slices.firstKey());
+								os.reald=(os.d*(double)slicespan/(double)slices.size())/chsel.im.meta.resZ;
 								}
 
 

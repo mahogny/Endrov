@@ -29,7 +29,8 @@ public class ConfocalXShiftFilter extends FilterSlice
 		Filter.addFilter(new FilterInfo()
 			{
 			public String getCategory(){return filterCategory;}
-			public String getName(){return filterName;}
+			public String getMetaName(){return filterMeta;}
+			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new ConfocalXShiftFilter();}
 			public Filter readXML(Element e)

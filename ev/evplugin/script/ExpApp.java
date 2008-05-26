@@ -21,7 +21,7 @@ public class ExpApp extends Exp
 	
 
 	/**
-	 * Apply an argument - return a clone (can we clone even better?) TODO
+	 * Apply an argument - return a clone (can we clone even better?)
 	 */
 	public ExpApp apply(Exp e)
 		{

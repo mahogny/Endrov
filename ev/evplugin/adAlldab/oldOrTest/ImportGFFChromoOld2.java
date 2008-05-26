@@ -228,7 +228,6 @@ public class ImportGFFChromoOld2
 						}
 					catch (SQLException e)
 						{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						while((e=e.getNextException())!=null)
 							System.out.println(e.getMessage());

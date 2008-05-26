@@ -54,7 +54,7 @@ public abstract class Filter extends EvObject
 	
 	public static void addFilter(FilterInfo fi)
 		{
-		Filter.filterInfo.put(fi.getName(),fi);
+		Filter.filterInfo.put(fi.getMetaName(),fi);
 		}
 	
 	
