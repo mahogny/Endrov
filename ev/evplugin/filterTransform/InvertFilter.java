@@ -16,6 +16,7 @@ import evplugin.filter.*;
 public class InvertFilter extends FilterSlice
 	{
 	private static String filterName="Invert";
+	private static String filterMeta="Invert";
 	private static String filterCategory="Transform";
 	
 	public static void initPlugin() {}
@@ -24,7 +25,8 @@ public class InvertFilter extends FilterSlice
 		Filter.addFilter(new FilterInfo()
 			{
 			public String getCategory(){return filterCategory;}
-			public String getName(){return filterName;}
+			public String getMetaName(){return filterMeta;}
+			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new InvertFilter();}
 			public Filter readXML(Element e)
@@ -48,7 +50,7 @@ public class InvertFilter extends FilterSlice
 
 	public void saveMetadata(Element e)
 		{
-		setFilterXmlHead(e, filterName);
+		setFilterXmlHead(e, filterMeta);
 		}
 	
 	public void applyImage(BufferedImage in, BufferedImage out)

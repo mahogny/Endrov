@@ -194,7 +194,7 @@ public class NamebasedImageset extends Imageset
 				while(ctok.hasMoreTokens())
 					channelVector.add(ctok.nextToken());
 				
-				//Remove/add meta corresponding to channels. why needed? TODO //20080117
+				//Remove/add meta corresponding to channels. why needed?
 				for(String cname:channelVector)
 					meta.getCreateChannelMeta(cname);
 				

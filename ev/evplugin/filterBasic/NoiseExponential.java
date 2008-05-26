@@ -23,6 +23,7 @@ public class NoiseExponential extends FilterSlice
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	private static String filterName="Exponential";
+	private static String filterMeta="Exponential";
 	private static String filterCategory="Noise";
 
 	public static void initPlugin() {}
@@ -31,7 +32,8 @@ public class NoiseExponential extends FilterSlice
 		Filter.addFilter(new FilterInfo()
 			{
 			public String getCategory(){return filterCategory;}
-			public String getName(){return filterName;}
+			public String getMetaName(){return filterMeta;}
+			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new NoiseExponential();}
 			public Filter readXML(Element e)
@@ -57,7 +59,7 @@ public class NoiseExponential extends FilterSlice
 	
 	public void saveMetadata(Element e)
 		{
-		setFilterXmlHead(e, filterName);
+		setFilterXmlHead(e, filterMeta);
 		e.setAttribute("lambda",""+lambda);
 		}
 

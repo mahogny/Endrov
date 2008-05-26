@@ -59,9 +59,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 					v.add(lin);
 			return v;
 			}
-		
-		public void select(int pixelid){}
-		
+	
 		/**
 		 * Prepare for rendering
 		 */

@@ -131,6 +131,7 @@ public class Slice3DExtension implements ModelWindowExtension
 				
 				zplaneSpinner.addChangeListener(this);
 				chanCombo.addActionListener(this);
+				colorCombo.addActionListener(this);
 				bDelete.addActionListener(this);
 				zProject.addActionListener(this);
 				}

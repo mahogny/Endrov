@@ -290,7 +290,6 @@ public class DB
 	 */
 	public void setDatabaseVersion(int major, int minor)
 		{
-		//TODO
 		try
 			{
 			Statement stmt = createStatement();

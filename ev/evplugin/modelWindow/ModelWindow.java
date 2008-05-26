@@ -3,8 +3,12 @@ package evplugin.modelWindow;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
+import javax.media.opengl.GL;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.vecmath.Vector3d;
+
 import org.jdom.*;
 
 import evplugin.basicWindow.*;
@@ -476,6 +480,111 @@ public class ModelWindow extends BasicWindow
 	public void finalize()
 		{
 		System.out.println("removing model window");
+		}
+	
+	
+	
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////// Cross facility /////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////	
+	
+	
+	public static class Cross
+		{
+		public Vector3d v;
+		public CrossListener listener;
+		public int color;
+		}
+
+	public static interface CrossListener
+		{
+		public void crossmove(Vector3d diff);
+		}
+
+	private LinkedList<Cross> crossList=new LinkedList<Cross>();
+	private Integer crossListID=0;
+	public void addCross(Vector3d v, CrossListener listener)
+		{
+		Cross cross=new Cross();
+		cross.v=v;
+		crossList.add(cross);
+		}
+	public void resetCrossList()
+		{
+		crossList.clear();
+		}
+	
+
+	Integer lastHoverCrossId=null;
+	/** Feedback from listening */
+	private ModelView.GLSelectListener crossListener=new ModelView.GLSelectListener()
+		{
+		public void hover(int id)
+			{
+			lastHoverCrossId=id;
+			System.out.println("id "+id);
+			}
+		public void hoverInit(int id)
+			{
+			lastHoverCrossId=null;
+			}
+		};
+	
+	public void displayCrossSelect(GL gl)
+		{
+		crossListID=null;
+		gl.glPushAttrib(GL.GL_ENABLE_BIT);
+		for(int i=0;i<view.numClipPlanesSupported;i++)
+			gl.glDisable(GL.GL_CLIP_PLANE0+i);
+		for(Cross c:crossList)
+			{
+			int col1=view.reserveSelectColor(crossListener);
+			int col2=view.reserveSelectColor(crossListener);
+			int col3=view.reserveSelectColor(crossListener);
+			if(crossListID==null)
+				crossListID=col1;
+			float size=0.5f*(float)ModelWindowGrid.getGridSize(this);
+			gl.glPushMatrix();
+			gl.glTranslated(c.v.x, c.v.y, c.v.z);
+			gl.glLineWidth(4);//can be made wider
+			gl.glBegin(GL.GL_LINES);
+			view.setReserveColor(gl, col1);
+			gl.glVertex3f(-size, 0, 0);gl.glVertex3f(size, 0, 0);
+			view.setReserveColor(gl, col2);
+			gl.glVertex3f(0,-size,  0);gl.glVertex3f(0, size,  0);
+			view.setReserveColor(gl, col3);
+			gl.glVertex3f(0, 0, -size);gl.glVertex3f(0, 0, size);
+			gl.glEnd();
+			gl.glLineWidth(1);
+			gl.glPopMatrix();
+			c.color=col1;
+			}
+		gl.glPopAttrib();
+		}	
+	public void displayCrossFinal(GL gl)
+		{
+		gl.glPushAttrib(GL.GL_ENABLE_BIT);
+		for(int i=0;i<view.numClipPlanesSupported;i++)
+			gl.glDisable(GL.GL_CLIP_PLANE0+i);
+		for(Cross c:crossList)
+			{
+			gl.glPushMatrix();
+			gl.glTranslated(c.v.x, c.v.y, c.v.z);
+			float size=0.5f*(float)ModelWindowGrid.getGridSize(this);
+			gl.glLineWidth(4);
+			gl.glBegin(GL.GL_LINES);
+			gl.glColor3f(1,0,0);
+			gl.glVertex3f(-size, 0, 0);gl.glVertex3f(size, 0, 0);
+			gl.glColor3f(0,1,0);
+			gl.glVertex3f(0,-size,  0);gl.glVertex3f(0, size,  0);
+			gl.glColor3f(0,0,1);
+			gl.glVertex3f(0, 0, -size);gl.glVertex3f(0, 0, size);
+			gl.glEnd();
+			gl.glLineWidth(1);
+			gl.glPopMatrix();
+			}
+		gl.glPopAttrib();
 		}
 	
 	}

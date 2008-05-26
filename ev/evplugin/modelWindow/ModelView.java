@@ -5,7 +5,6 @@ import java.awt.geom.*;
 import java.awt.Font;
 import java.nio.*;
 
-//import javax.media.j3d.Texture;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Vector3d;
@@ -14,10 +13,8 @@ import javax.vecmath.Vector3d;
 //import com.sun.opengl.util.Screenshot;
 import com.sun.opengl.util.j2d.*;
 
-import evplugin.basicWindow.*;
 import evplugin.data.*;
 import evplugin.ev.*;
-import evplugin.nuc.*;
 
 
 //NEED GLJPanel
@@ -33,6 +30,8 @@ public class ModelView extends GLCanvas
 	{
 	public static final long serialVersionUID=0;
 	
+	/** Number of clipping planes supported by this context */
+	public int numClipPlanesSupported;
 	
 	/** Common data */
 	private ModelWindow window;
@@ -77,17 +76,23 @@ public class ModelView extends GLCanvas
 		}
 	
 	
+	public interface GLSelectListener
+		{
+		public void hoverInit(int id);
+		public void hover(int id);
+		}
 	
-	
+	//selectColorExtensionMap only used here. use something else than hook, new listener
+	//events: hover, click, drag etc
 
 	private int selectColorNum;
-	final private HashMap<Integer,ModelWindowHook> selectColorExtensionMap=new HashMap<Integer,ModelWindowHook>();
+	final private HashMap<Integer,GLSelectListener> selectColorExtensionMap=new HashMap<Integer,GLSelectListener>();
 	private void resetSelectColor()
 		{
 		selectColorNum=0;
 		selectColorExtensionMap.clear();
 		}
-	public int reserveSelectColor(ModelWindowHook ext)
+	public int reserveSelectColor(GLSelectListener ext)
 		{
 		//Obtain unique color. 
 		selectColorNum++;
@@ -105,7 +110,6 @@ public class ModelView extends GLCanvas
 //		System.out.println("out "+selectColorNum+" "+colR+" "+colG+" "+colB);
 		gl.glColor3ub(colR,colG,colB);
 		}
-	
 	
 	
 	private GLEventListener glEventListener=new GLEventListener()
@@ -140,6 +144,12 @@ public class ModelView extends GLCanvas
 			gl.glShadeModel(GL.GL_SMOOTH); //GL_FLAT
 			
 	    renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 72));
+	    
+	    int[] planesArr=new int[1];
+	    gl.glGetIntegerv(GL.GL_MAX_CLIP_PLANES, planesArr, 0);
+	    numClipPlanesSupported=planesArr[0];
+	    System.out.println("clipping planes supported: "+numClipPlanesSupported);
+	    //6 planes on NVidia macpro
 			}
 
 		
@@ -190,13 +200,14 @@ public class ModelView extends GLCanvas
 			// Render for selection
 			/////////////////////////////////
 			
+			window.resetCrossList();
+			
 			//Skip this step if mouse isn't even within the window
 			if(mouseX>=0 && mouseY>=0)
 				{
-				//Update hover
-				NucPair lastHover=NucLineage.currentHover;
-				NucLineage.currentHover=new NucPair();
-
+				for(Map.Entry<Integer,GLSelectListener> sel:selectColorExtensionMap.entrySet())
+					sel.getValue().hoverInit(sel.getKey());
+					
 				//This could later be replaced by line-sphere intersection. it would be
 				//a bit more cpu-intensive but cheap gfx-wise
 				
@@ -208,6 +219,10 @@ public class ModelView extends GLCanvas
 				for(ModelWindowHook h:window.modelWindowHooks)
 					h.displaySelect(gl);
 
+				//Render cross. could be an extension, but order need be right
+				window.displayCrossSelect(gl);
+				
+				
 				//Figure out where the mouse is
 				ByteBuffer rpix=ByteBuffer.allocate(3);
 				gl.glReadPixels(mouseX,getHeight()-mouseY,1,1,GL.GL_RGB, GL.GL_UNSIGNED_BYTE, rpix);
@@ -219,11 +234,7 @@ public class ModelView extends GLCanvas
 
 				//Update hover
 				if(selectColorExtensionMap.containsKey(pixelid))
-					selectColorExtensionMap.get(pixelid).select(pixelid);
-
-				//Propagate hover. Avoid infinite recursion.
-				if(!NucLineage.currentHover.equals(lastHover))
-					BasicWindow.updateWindows(window);
+					selectColorExtensionMap.get(pixelid).hover(pixelid);
 				}
 
 			/////////////////////////////////
@@ -237,6 +248,10 @@ public class ModelView extends GLCanvas
 			//Render extensions
 			for(ModelWindowHook h:window.modelWindowHooks) //todo: order of rendering
 				h.displayFinal(gl);
+			
+			//Render cross. could be an extension
+			window.displayCrossFinal(gl);
+
 			
 			//adjust scale for next time
 			//TODO: should take all into account somehow. average?
@@ -362,41 +377,14 @@ public class ModelView extends GLCanvas
 		gl.glEnable(GL.GL_CULL_FACE);
 		}
 	
+	
+	
+	
+	
+	
+	
+	
 	}
 
 
 
-
-
-/*
-float red[] = { 0.8f, 0.1f, 0.0f, 1.0f };
-float green[] = { 0.0f, 0.8f, 0.2f, 1.0f };
-float blue[] = { 0.2f, 0.2f, 1.0f, 1.0f };
-gear1 = gl.glGenLists(1);
-gl.glNewList(gear1, GL.GL_COMPILE);
-gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, red, 0);
-gear(gl, 1.0f, 4.0f, 1.0f, 20, 0.7f);
-gl.glEndList();
- * void GLWidget::cbPresetFront()
- { rotX=   0;  rotY=  0;  updateGL(); }
-void GLWidget::cbPresetBack()
- { rotX=   0;  rotY=180;  updateGL(); }
-void GLWidget::cbPresetLeft()
- { rotX=  0;  rotY= 90;  updateGL(); }
-void GLWidget::cbPresetRight()
- { rotX=  0;  rotY=-90;  updateGL(); }
-void GLWidget::cbPresetTop()
- { rotX= 90;  rotY=  0;  updateGL(); }
-void GLWidget::cbPresetBottom()
- { rotX=-90;  rotY=  0;  updateGL(); }
-
-gl.glTranslatef(-3.0f, -2.0f, 0.0f);
-gl.glRotatef(angle, 0.0f, 0.0f, 1.0f);
-gl.glCallList(gear1);
-	gl.glNormal3f(0.0f, 0.0f, 1.0f);
-	gl.glBegin(GL.GL_QUADS);
-		gl.glBegin(GL.GL_QUAD_STRIP);
-		gl.glVertex3f(r0 * (float)Math.cos(angle), r0 * (float)Math.sin(angle), width * 0.5f);
-		gl.glNormal3f(-(float)Math.cos(angle), -(float)Math.sin(angle), 0.0f);
-	gl.glEnd();
-	 */

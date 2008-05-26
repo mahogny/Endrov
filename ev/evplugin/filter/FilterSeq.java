@@ -57,7 +57,7 @@ public class FilterSeq extends EvObject
 	
 	public static void addFilter(FilterInfo fi)
 		{
-		FilterSeq.filterInfo.put(fi.getName(),fi);
+		FilterSeq.filterInfo.put(fi.getMetaName(),fi);
 		}
 	
 	

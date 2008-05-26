@@ -1,5 +1,6 @@
 package evplugin.modelWindow;
 import evplugin.ev.PluginDef;
+import evplugin.modelWindow.clipPlane.ClipPlaneExtension;
 import evplugin.modelWindow.isosurf.*;
 import evplugin.modelWindow.slice3d.Slice3DExtension;
 import evplugin.modelWindow.voxel.VoxelExtension;
@@ -33,6 +34,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ModelWindow.class,ModelWindowGrid.class,IsosurfaceExtension.class,Slice3DExtension.class,VoxelExtension.class};
+		return new Class[]{ModelWindow.class,ModelWindowGrid.class,ClipPlaneExtension.class,IsosurfaceExtension.class,Slice3DExtension.class,VoxelExtension.class};
 		}
 	}

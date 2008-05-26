@@ -133,7 +133,6 @@ public abstract class Macro
 			}
 		catch (InterruptedException e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		}

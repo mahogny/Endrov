@@ -174,7 +174,6 @@ public static void calcAP(File file, int fileNumber)
 		}
 	catch (Exception e)
 		{
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 		}
 	}

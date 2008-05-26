@@ -81,8 +81,6 @@ public class Xml
 			else
 				mergeXML(match, frome);
 			}
-		
-		//TODO (is there anything more?)
 		}
 
 	/**

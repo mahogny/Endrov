@@ -17,6 +17,7 @@ public class EqualizeHistogram extends FilterSlice
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	private static String filterName="Histogram Equalize";
+	private static String filterMeta="HistogramEqualize";
 	private static String filterCategory="Enhance";
 
 	public static void initPlugin() {}
@@ -25,7 +26,8 @@ public class EqualizeHistogram extends FilterSlice
 		Filter.addFilter(new FilterInfo()
 			{
 			public String getCategory(){return filterCategory;}
-			public String getName(){return filterName;}
+			public String getMetaName(){return filterMeta;}
+			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new EqualizeHistogram();}
 			public Filter readXML(Element e)
@@ -49,7 +51,7 @@ public class EqualizeHistogram extends FilterSlice
 	
 	public void saveMetadata(Element e)
 		{
-		setFilterXmlHead(e, filterName);
+		setFilterXmlHead(e, filterMeta);
 		}
 
 	

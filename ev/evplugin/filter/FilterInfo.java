@@ -9,7 +9,8 @@ import org.jdom.Element;
 public abstract class FilterInfo
 	{
 	public abstract String getCategory();
-	public abstract String getName();
+	public abstract String getMetaName();
+	public abstract String getReadableName();
 
 	public abstract boolean hasFilterROI();
 	public abstract FilterROI filterROI();

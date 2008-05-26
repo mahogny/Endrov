@@ -88,7 +88,15 @@ public class JNumericField extends JTextField
 			}
 		}
 	
+	public void set(int val)
+		{
+		setText(""+val);
+		}
 	
+	public void set(double val)
+		{
+		setText(""+val);
+		}
 	
 	
 	}

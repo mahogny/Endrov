@@ -201,8 +201,8 @@ public static void calcAP(File file)
 							rotPostY=Math.sin(angleAPonXYtoXZ)*oldRotPostX+Math.cos(angleAPonXYtoXZ)*oldRotPostY;
 							rotPostZ=                                                                              oldRotPostZ;
 
-//						System.out.println("angleAPXY   = "+angleAPXY+"r = "+angleAPXY/(Math.PI/2)*90+"¡");
-//						System.out.println("angleAPXYXZ = "+angleAPonXYtoXZ+"r = "+angleAPonXYtoXZ/(Math.PI/2)*90+"¡");
+//						System.out.println("angleAPXY   = "+angleAPXY+"r = "+angleAPXY/(Math.PI/2)*90+"ï¿½");
+//						System.out.println("angleAPXYXZ = "+angleAPonXYtoXZ+"r = "+angleAPonXYtoXZ/(Math.PI/2)*90+"ï¿½");
 //						System.out.println("oldrotPost= "+oldRotPostX+","+oldRotPostY+","+oldRotPostZ+" at frame "+frame);
 //						System.out.println("rotPost  = "+rotPostX+","+rotPostY+","+rotPostZ+" at frame "+frame);
 
@@ -506,7 +506,6 @@ public static void calcAP(File file)
 		}
 	catch (Exception e)
 		{
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 		}
 	}

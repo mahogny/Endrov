@@ -33,7 +33,8 @@ public class BinMorph2DFilter extends FilterSlice
 		Filter.addFilter(new FilterInfo()
 			{
 			public String getCategory(){return filterCategory;}
-			public String getName(){return filterName;}
+			public String getMetaName(){return filterMeta;}
+			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new BinMorph2DFilter();}
 			public Filter readXML(Element e)
@@ -323,6 +324,8 @@ public class BinMorph2DFilter extends FilterSlice
 		{
 		setFilterXmlHead(e, filterMeta);
 		e.setAttribute("w",""+currentKernel.kernelWidth);
+		//TODO
+		//TODO
 		//TODO
 		}
 

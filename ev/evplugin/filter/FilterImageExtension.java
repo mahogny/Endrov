@@ -43,7 +43,7 @@ public class FilterImageExtension implements ImageWindowExtension
 				BasicWindow.addMenuItemSorted(menu, mi);
 				}
 			JMenu cmenu=categories.get(fi.getCategory());
-			JMenuItem mi=new JMenuItem(fi.getName());
+			JMenuItem mi=new JMenuItem(fi.getReadableName());
 			cmenu.add(mi);
 			bl.bind(fi, mi);
 			}
