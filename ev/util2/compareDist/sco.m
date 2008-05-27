@@ -24,7 +24,7 @@ ns=[];
 na={};
 res1=[];
 
-ne=10;
+ne=20;
 
 myfile = fopen('table.html','w');
 fprintf(myfile,'<html><body><table border="1">\n');
@@ -34,7 +34,7 @@ for n=1:length(name)
     if length(name{n}) < 6
 
         fprintf(myfile,'<tr><td colspan="8"><b>%s</b></td></tr>',name{n});
-        fprintf(myfile,'<tr><td colspan="2">AnglerUnixCoords</td><td colspan="2">N2_071116</td><td colspan="2">TB2167_0804016</td><td colspan="2">stdcelegansNew</td></tr>\n');
+        fprintf(myfile,'<tr><td colspan="2">AnglerUnixCoords<br><img src="%s_1.jpg"></td><td colspan="2">N2_071116<br><img src="%s_2.jpg"></td><td colspan="2">TB2167_0804016<br><img src="%s_3.jpg"></td><td colspan="2">stdcelegansNew<br><img src="%s_4.jpg"></td></tr>\n',name{n},name{n},name{n},name{n});
 
         [d,i]=sort(arr1(:,n));
         i1=i(d>0);
@@ -99,9 +99,30 @@ for n=1:length(name)
             end
             fprintf(myfile,'</tr>');
         end
-
-
-        %fprintf(myfile,'</tr>\n');
+        if q1>0
+            plot(d1(1:q1));
+            imgn=strcat(name{n},'_1.jpg');
+            set(gcf,'PaperUnits','inches','PaperPosition',[0 0 4 3]);
+            print('-djpeg', imgn, '-r100');
+        end
+         if q2>0
+            plot(d2(1:q2));
+            imgn=strcat(name{n},'_2.jpg');
+            set(gcf,'PaperUnits','inches','PaperPosition',[0 0 4 3]);
+            print('-djpeg', imgn, '-r100');
+         end
+         if q3>0
+            plot(d3(1:q3));
+            imgn=strcat(name{n},'_3.jpg');
+            set(gcf,'PaperUnits','inches','PaperPosition',[0 0 4 3]);
+            print('-djpeg', imgn, '-r100');
+         end
+         if q4>0
+            plot(d4(1:q4));
+            imgn=strcat(name{n},'_4.jpg');
+            set(gcf,'PaperUnits','inches','PaperPosition',[0 0 4 3]);
+            print('-djpeg', imgn, '-r100');
+         end
     end
 end
 

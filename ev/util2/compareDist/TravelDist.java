@@ -3,6 +3,7 @@ package util2.compareDist;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.vecmath.Vector3d;
@@ -52,6 +53,32 @@ public class TravelDist
 			if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
 				nuc.end=nuc.pos.lastKey();
 		}
+
+	
+	/**
+	 * Set end frame of all cells without children to last frame. This stops them from occuring in interpolations.
+	 * Matlab edition
+	 */
+	public void endAllCellsMatlab(NucLineage lin)
+		{
+		//End all nuc without children for clarity
+		for(NucLineage.Nuc nuc:lin.nuc.values())
+			if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
+				nuc.end=nuc.pos.lastKey();
+		}
+
+
+	
+	public <B> B getStr(HashMap<String,B> map, int c)
+		{
+		return map.get(""+c);
+		}
+	public <B> B getStr(HashMap<String,B> map, String c)
+		{
+		return map.get(c);
+		}
+	
+	
 	
 	
 	public static void one(String linname)
@@ -131,7 +158,7 @@ public class TravelDist
 						fractalDist+=last.length();
 		
 						//Write out
-						out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist);
+						out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+r.getAv());
 						}
 					}
 				}
@@ -157,6 +184,7 @@ public class TravelDist
 		one("/Volumes/TBU_main02/ost4dgood/N2_071116");
 	//	one("/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml");
 		one("/Volumes/TBU_main03/ost4dgood/TB2167_0804016");
+		one("/Volumes/TBU_main02/ost4dgood/stdcelegansNew");
 	
 	
 		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords");
