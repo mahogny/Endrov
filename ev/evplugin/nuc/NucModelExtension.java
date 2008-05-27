@@ -84,17 +84,11 @@ public class NucModelExtension implements ModelWindowExtension
 					if(SwingUtilities.isLeftMouseButton(e))
 						NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 					}
-				@Override
 				public boolean mouseDragged(MouseEvent e, int dx, int dy){return false;}
-				@Override
 				public void mouseEntered(MouseEvent e){}
-				@Override
 				public void mouseExited(MouseEvent e){}
-				@Override
 				public void mouseMoved(MouseEvent e){}
-				@Override
 				public void mousePressed(MouseEvent e){}
-				@Override
 				public void mouseReleased(MouseEvent e){}
 			});
 			}

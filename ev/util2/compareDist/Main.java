@@ -177,6 +177,11 @@ public class Main
 						v.sub(bi.pos.getPosCopy());
 
 						double len=v.length();
+						if(c==1)
+							{
+							len-=ai.pos.r;
+							len-=bi.pos.r;
+							}
 						distList.get(nuca).get(nucb).put(len);
 //						distList.get(nucb).get(nuca).put(len); //makes relation symmetric
 						}
@@ -282,10 +287,10 @@ public class Main
 		EV.loadPlugins();
 
 		Foo[] files=new Foo[]{
-				new Foo("/Volumes/TBU_main02/ost4dgood/N2_071116",40),
-				new Foo("/Volumes/TBU_main03/ost4dgood/TB2167_0804016",40),
-				new Foo("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords",15),
-				new Foo("/Volumes/TBU_main02/ost4dgood/stdcelegansNew",15)
+				new Foo("/Volumes/TBU_main02/ost4dgood/N2_071116",1),
+				new Foo("/Volumes/TBU_main03/ost4dgood/TB2167_0804016",1),
+				new Foo("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords",0),
+				new Foo("/Volumes/TBU_main02/ost4dgood/stdcelegansNew",1)
 				};
 		List<Foo> l=new LinkedList<Foo>();
 		for(Foo s:files)
