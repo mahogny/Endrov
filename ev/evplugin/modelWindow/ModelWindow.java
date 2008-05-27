@@ -3,6 +3,7 @@ package evplugin.modelWindow;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.swing.*;
@@ -17,7 +18,7 @@ import evplugin.data.EvData;
 import evplugin.data.EvObject;
 import evplugin.ev.*;
 import evplugin.keyBinding.*;
-import evplugin.nuc.NucLineage;
+//import evplugin.nuc.NucLineage;
 
 /**
  * Model window - displays a navigatable 3d model
@@ -100,6 +101,14 @@ public class ModelWindow extends BasicWindow
 
 	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
 	
+	
+	private List<ModelWindowMouseListener> modelWindowMouseListeners=new LinkedList<ModelWindowMouseListener>();
+	public void addModelWindowMouseListener(ModelWindowMouseListener li)
+		{
+		modelWindowMouseListeners.add(li);
+		}
+	
+	
 	/**
 	 * Is an object supposed to be visible?
 	 */
@@ -141,8 +150,7 @@ public class ModelWindow extends BasicWindow
 		objectDisplayList.addChangeListener(this);
 
 		//Special: cross
-		view.addMouseMotionListener(crossMListener);
-		view.addMouseListener(crossMListener);
+		addModelWindowMouseListener(crossMListener);
 		
 		addMenubar(menuModel);
 		menuModel.add(miView);
@@ -165,9 +173,6 @@ public class ModelWindow extends BasicWindow
 	
 		
 		//Put GUI together
-		//JPanel bottomTotal=new JPanel(new GridLayout(2,1));
-
-		
 		GridBagConstraints constrFrame=new GridBagConstraints();
 		constrFrame.gridx=0;
 		constrFrame.weightx=1;
@@ -360,12 +365,8 @@ public class ModelWindow extends BasicWindow
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		//Clicking a nucleus selects it
-		if(SwingUtilities.isLeftMouseButton(e))
-			{
-			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
-			}
-//		else if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isMiddleMouseButton(e))
+		for(ModelWindowMouseListener list:modelWindowMouseListeners)
+			list.mouseClicked(e);
 		view.requestFocus();
 		}
 	
@@ -375,47 +376,64 @@ public class ModelWindow extends BasicWindow
 		mouseLastY = e.getY();
 		view.mouseX=mouseLastX;
 		view.mouseY=mouseLastY;
+		for(ModelWindowMouseListener list:modelWindowMouseListeners)
+			list.mousePressed(e);
 		}
 	public void mouseReleased(MouseEvent e)
 		{
+		for(ModelWindowMouseListener list:modelWindowMouseListeners)
+			list.mouseReleased(e);
 		}
 
 	
 	public void mouseEntered(MouseEvent e)
 		{
+		for(ModelWindowMouseListener list:modelWindowMouseListeners)
+			list.mouseEntered(e);
 		}
 	public void mouseExited(MouseEvent e)
 		{
+		for(ModelWindowMouseListener list:modelWindowMouseListeners)
+			list.mouseExited(e);
 		view.mouseX=-1;
-		view.mouseY=-1;
+		view.mouseY=-1;		
 		}
 	
 	public void mouseMoved(MouseEvent e)
 		{
 		view.mouseX=e.getX();
 		view.mouseY=e.getY();
-		view.repaint();
+		for(ModelWindowMouseListener list:modelWindowMouseListeners)
+			list.mouseMoved(e);
+		view.repaint(); //Needed to update selection etc
 		}
 	public void mouseDragged(MouseEvent e)
 		{
 		final int dx=e.getX()-mouseLastX;
 		final int dy=e.getY()-mouseLastY;
 
-		if((e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK)!=0 ||
-				SwingUtilities.isMiddleMouseButton(e))
+		boolean moveAccepted=false;
+		for(ModelWindowMouseListener list:modelWindowMouseListeners)
+			moveAccepted|=list.mouseDragged(e,dx,dy);
+
+		if(!moveAccepted)
 			{
-			view.pan(-dx,+dy,0,true);
-			}
-		else if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0)
-			{
-			view.pan(0,0,dy,false);
-			}
-		else
-			{
-			if(SwingUtilities.isLeftMouseButton(e))
-				view.camera.rotateCamera(-dy/400.0, -dx/400.0, 0);
-			else if(SwingUtilities.isRightMouseButton(e))
-				view.camera.rotateCenter(-dy/400.0, -dx/400.0, 0);
+			if((e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK)!=0 ||
+					SwingUtilities.isMiddleMouseButton(e))
+				{
+				view.pan(-dx,+dy,0,true);
+				}
+			else if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0)
+				{
+				view.pan(0,0,dy,false);
+				}
+			else
+				{
+				if(SwingUtilities.isLeftMouseButton(e))
+					view.camera.rotateCamera(-dy/400.0, -dx/400.0, 0);
+				else if(SwingUtilities.isRightMouseButton(e))
+					view.camera.rotateCenter(-dy/400.0, -dx/400.0, 0);
+				}
 			}
 		dataChangedEvent();
 
@@ -513,6 +531,7 @@ public class ModelWindow extends BasicWindow
 		{
 		Cross cross=new Cross();
 		cross.v=v;
+		cross.listener=listener;
 		crossList.add(cross);
 		}
 	public void resetCrossList()
@@ -551,7 +570,7 @@ public class ModelWindow extends BasicWindow
 			float size=0.5f*(float)ModelWindowGrid.getGridSize(this);
 			gl.glPushMatrix();
 			gl.glTranslated(c.v.x, c.v.y, c.v.z);
-			gl.glLineWidth(4);//can be made wider
+			gl.glLineWidth(8);//can be made wider
 			gl.glBegin(GL.GL_LINES);
 			view.setReserveColor(gl, col1);
 			gl.glVertex3f(-size, 0, 0);gl.glVertex3f(size, 0, 0);
@@ -591,16 +610,27 @@ public class ModelWindow extends BasicWindow
 		gl.glPopAttrib();
 		}
 	
-	private CrossMListener crossMListener=new CrossMListener();
-	private class CrossMListener implements MouseListener, MouseMotionListener
+	private ModelWindowMouseListener crossMListener=new ModelWindowMouseListener()
 		{
 		private CrossListener listener=null; 
 		private int axis=0;
-		public void mouseDragged(MouseEvent e)
+		public boolean mouseDragged(MouseEvent e, int dx, int dy)
 			{
-			//Need to override camera movement here!
 			if(listener!=null)
-				System.out.println("axis "+axis);
+				{
+				//Project axis. dot with mouse
+				Vector3d v=new Vector3d();
+				if(axis==0)
+					v.x+=dx;
+				else if(axis==1)
+					v.y+=dx;
+				else if(axis==2)
+					v.z+=dx;
+				listener.crossmove(v);
+				return true;
+				}
+			else
+				return false;
 			}
 		public void mouseMoved(MouseEvent e){}
 		public void mouseClicked(MouseEvent e){}
@@ -608,15 +638,16 @@ public class ModelWindow extends BasicWindow
 		public void mouseExited(MouseEvent e){listener=null;}
 		public void mousePressed(MouseEvent e)
 			{
-			if(crossHoverId!=null)
+			if(crossHoverId!=null && SwingUtilities.isLeftMouseButton(e))
 				{
 				int i=crossHoverId-crossListStartId;
 				listener=crossList.get(i/3).listener;
 				axis=i%3;
+				System.out.println("press");
 				}
 			}
-
-		public void mouseReleased(MouseEvent e){listener=null;}
-		}
 	
+		public void mouseReleased(MouseEvent e){listener=null;}
+		
+		};
 	}

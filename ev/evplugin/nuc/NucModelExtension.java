@@ -2,11 +2,13 @@ package evplugin.nuc;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.*;
 
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.swing.*;
+
 import org.jdom.Element;
 
 import evplugin.modelWindow.*;
@@ -74,6 +76,27 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowTraceSel.addActionListener(this);
 			miShowTraceCur.addActionListener(this);
 			miShowDiv.addActionListener(this);
+			
+			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
+				public void mouseClicked(MouseEvent e)
+					{
+					//Clicking a nucleus selects it
+					if(SwingUtilities.isLeftMouseButton(e))
+						NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					}
+				@Override
+				public boolean mouseDragged(MouseEvent e, int dx, int dy){return false;}
+				@Override
+				public void mouseEntered(MouseEvent e){}
+				@Override
+				public void mouseExited(MouseEvent e){}
+				@Override
+				public void mouseMoved(MouseEvent e){}
+				@Override
+				public void mousePressed(MouseEvent e){}
+				@Override
+				public void mouseReleased(MouseEvent e){}
+			});
 			}
 		
 		public void readPersonalConfig(Element e){}
