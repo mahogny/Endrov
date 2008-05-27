@@ -1,4 +1,4 @@
-function ncount=findneighone(filepath,namesi)
+function ncount=findneighone(filepath,namesi,names,newmax)
 
 import evplugin.nuc.*;
 import util2.compareDist.*;
@@ -28,8 +28,6 @@ minframe=10000;
 for i=1:length(nucs)
     nv=nucs(i);
     if ~nv.pos.isEmpty
-[minframe,maxframe]
-        
         if nv.pos.firstKey<minframe
             minframe=nv.pos.firstKey;
         end
@@ -41,7 +39,7 @@ end
 [minframe,maxframe]
 length(nucs)
 %maxframe=1500;
-
+maxframe=newmax;
 
 
 
@@ -53,7 +51,7 @@ ncount=zeros(namesi.size);
 notneigh=0;
 
 for curframe=[minframe:10:maxframe]
-%    curframe
+    curframe
     
     %Collect points
     inter=lin.getInterpNuc(curframe);
@@ -106,7 +104,7 @@ for curframe=[minframe:10:maxframe]
                     end
 %                    setinter
                 else
- %                   disp(['not ', cell2mat(thesename(i)),' ', cell2mat(thesename(j))])
+%                    disp(['not ', cell2mat(thesename(i)),' ', cell2mat(thesename(j))])
                     notneigh=notneigh+1;
                 end
             end
@@ -118,3 +116,7 @@ for curframe=[minframe:10:maxframe]
 end
 disp('done count neigh');
 notneigh
+
+
+save([filepath '/data/newneigh.mat'],'ncount','names');
+

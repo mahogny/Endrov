@@ -554,6 +554,7 @@ public class ModelWindow extends BasicWindow
 			}
 		};
 	
+	private static final float crossSizeFactor=0.2f;
 	public void displayCrossSelect(GL gl)
 		{
 		crossListStartId=null;
@@ -567,7 +568,7 @@ public class ModelWindow extends BasicWindow
 			int col3=view.reserveSelectColor(crossListener);
 			if(crossListStartId==null)
 				crossListStartId=col1;
-			float size=0.5f*(float)ModelWindowGrid.getGridSize(this);
+			float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(this);
 			gl.glPushMatrix();
 			gl.glTranslated(c.v.x, c.v.y, c.v.z);
 			gl.glLineWidth(8);//can be made wider
@@ -594,7 +595,7 @@ public class ModelWindow extends BasicWindow
 			{
 			gl.glPushMatrix();
 			gl.glTranslated(c.v.x, c.v.y, c.v.z);
-			float size=0.5f*(float)ModelWindowGrid.getGridSize(this);
+			float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(this);
 			gl.glLineWidth(4);
 			gl.glBegin(GL.GL_LINES);
 			gl.glColor3f(1,0,0);
