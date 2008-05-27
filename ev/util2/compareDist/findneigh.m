@@ -15,14 +15,19 @@ linsref=evmGetIdObjects(ostref,NucLineage);
 linref=linsref.value;
 % Get All names
 disp('name indexing');
-names=linref.nuc.keySet.toArray;
+names2=linref.nuc.keySet;
+names=TreeSet;
+names.addAll(names2);
+names=names.toArray;
 namesi=HashMap;
 for i=1:length(names)
     namesi.put(names(i),i);
 end
 
 
-ncount1=findneighone('/Volumes/TBU_main02/ost4dgood/N2_071116',namesi);
+ncount1=findneighone('/Volumes/TBU_main02/ost4dgood/N2_071116',namesi,names,1750);
+
+
 
 %plot(sort(sum(ncount1>1)))
 
@@ -30,22 +35,72 @@ ncount1=findneighone('/Volumes/TBU_main02/ost4dgood/N2_071116',namesi);
 
 %%
 
-ncount2=findneighone('/Volumes/TBU_main03/ost4dgood/TB2167_0804016',namesi);
+ncount2=findneighone('/Volumes/TBU_main03/ost4dgood/TB2167_0804016',namesi,names,1750);
 
 %%
 
-ncount3=findneighone('/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords',namesi);
+
+%ncount3=findneighone('/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords',namesi,names);
+ncount3=ncount2;
+
+
+%%
+ncount1b=ncount1;
+ncount2b=ncount2;
+ncount3b=ncount3;
+
+
 
 %%
 
 colormap('gray');
 
-numc=size(ncount1,1);
-ncount1=ncount1*numc/sum(diag(ncount1));
-ncount2=ncount2*numc/sum(diag(ncount2));
-ncount3=ncount3*numc/sum(diag(ncount3));
+% %?
+% numc=size(ncount1,1);
+% ncount1=ncount1*numc/sum(diag(ncount1));
+% ncount2=ncount2*numc/sum(diag(ncount2));
+% ncount3=ncount3*numc/sum(diag(ncount3));
+% 
+% %?
+% ncount1=ncount1*255/max(max(ncount1));
+% ncount2=ncount2*255/max(max(ncount2));
+% ncount3=ncount3*255/max(max(ncount3));
 
-c=40;
+for i=1:numc
+    ncount1(i,i)=0;
+    ncount2(i,i)=0;
+    ncount3(i,i)=0;
+end
+
+for i=1:numc
+    s=sum(ncount1(i,:));
+    if s==0
+        s=1;
+    end
+    ncount1(i,:)=ncount1(i,:)/s;
+
+    s=sum(ncount2(i,:));
+    if s==0
+        s=1;
+    end
+    ncount2(i,:)=ncount2(i,:)/s;
+
+    s=sum(ncount3(i,:));
+    if s==0
+        s=1;
+    end
+    ncount3(i,:)=ncount3(i,:)/s;
+
+end
+
+
+
+
+%?
+%row-wise?
+
+c=250;
+c=300;
 subplot(2,3,1);
 image(abs(ncount1)*c)
 subplot(2,3,2);
@@ -55,6 +110,7 @@ image(abs(ncount3)*c)
 
 subplot(2,3,4);
 image(abs(ncount1-ncount2)*c)
+%image(sqrt(ncount1*ncount2)*c)
 subplot(2,3,5);
 image(abs(ncount1-ncount3)*c)
 subplot(2,3,6);
@@ -69,3 +125,4 @@ sum(mean(abs(ncount2-ncount3)))
 
 
 %plot(sort(sum(ncount1>1)))
+

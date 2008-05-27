@@ -123,11 +123,11 @@ public class ClipPlaneExtension implements ModelWindowExtension
 			private JCheckBox cVisible=new JCheckBox("Visible",true);
 			
 			public JNumericField[][] fPoints=new JNumericField[][]{
-						{new JNumericField(1.0),new JNumericField(0.0),new JNumericField(0.0)},
-						{new JNumericField(0.0),new JNumericField(0.0),new JNumericField(0.0)},
-						{new JNumericField(0.0),new JNumericField(0.0),new JNumericField(0.0)}};
+						{new JNumericField(5.0),new JNumericField(0.0),new JNumericField(0.0)},
+						{new JNumericField(0.0),new JNumericField(5.0),new JNumericField(0.0)},
+						{new JNumericField(0.0),new JNumericField(0.0),new JNumericField(5.0)}};
 			//Should try and set a sensible default size-dependent
-			private final Vector3d[] points=new Vector3d[]{new Vector3d(1,0,0),new Vector3d(0,1,0),new Vector3d(0,0,1)};
+			private final Vector3d[] points=new Vector3d[]{new Vector3d(5,0,0),new Vector3d(0,5,0),new Vector3d(0,0,5)};
 
 			private double vertexGetCoord(Vector3d v, int i)
 				{
