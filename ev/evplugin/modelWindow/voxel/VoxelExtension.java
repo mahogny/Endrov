@@ -40,12 +40,22 @@ public class VoxelExtension implements ModelWindowExtension
 		ModelWindow.modelWindowExtensions.add(new VoxelExtension());
 		}
 	
+	
+
+		
 	public void newModelWindow(ModelWindow w)
 		{
 		w.modelWindowHooks.add(new Hook(w)); //TODO. need be drawn last if voxels also will be in
 		}
 
+
 	
+	
+
+
+
+
+
 	/**
 	 * Settings for one channel in an imageset
 	 */
@@ -57,7 +67,7 @@ public class VoxelExtension implements ModelWindowExtension
 		public Color color=new Color(0,0,0);
 		}
 	
-	private class Hook implements ModelWindowHook
+	private class Hook implements ModelWindowHook, ActionListener
 		{
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
@@ -69,6 +79,17 @@ public class VoxelExtension implements ModelWindowExtension
 		private OneImageChannel icB=new OneImageChannel("B", Color.BLUE);
 		
 		
+
+		
+		public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Names: Show for selected");
+	
+		public JRadioButtonMenuItem miRender3dTexture=new JRadioButtonMenuItem("Use 3D texture",true);
+		public JRadioButtonMenuItem miRender2dTexture=new JRadioButtonMenuItem("Use 2D texture",false);
+		private ButtonGroup bgTexture=new ButtonGroup();
+		
+		public JMenuItem miShowSelectedNuc=new JMenuItem("Nuclei: Unhide selected"); 
+	
+		
 		public Hook(ModelWindow w)
 			{
 			this.w=w;
@@ -76,7 +97,35 @@ public class VoxelExtension implements ModelWindowExtension
 			totalPanel.add(icR);
 			totalPanel.add(icG);
 			totalPanel.add(icB);
+			
+			
+			
+			bgTexture.add(miRender3dTexture);
+			bgTexture.add(miRender2dTexture);
+			
+			JMenu miVoxels=new JMenu("Voxels");
+			w.menuModel.add(miVoxels);
+		
+			miVoxels.add(miRender2dTexture);
+			miVoxels.add(miRender3dTexture);
+			miVoxels.addSeparator();
+			
+			miRender2dTexture.addActionListener(this);
+			miRender3dTexture.addActionListener(this);
 			}
+		
+		
+		public void actionPerformed(ActionEvent e)
+			{
+			icR.stackChanged();
+			icG.stackChanged();
+			icB.stackChanged();
+			}
+
+
+
+		
+		
 		public Collection<Double> adjustScale()
 			{
 			return slices.adjustScale(w);
@@ -196,13 +245,16 @@ public class VoxelExtension implements ModelWindowExtension
 			private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
 				{public void observerEvent(Object o){stackChanged();}};
 			
-			private void stackChanged()
+			public void stackChanged()
 				{
 				//TODO: when filter seq updated, a signal should be sent back
 				if(slices!=null)
 					slices.stopBuildThread();
 				lastSlices.add(slices);
-				slices=new Stack3D(); //Preferably disk data should be cached
+				if(miRender3dTexture.isSelected()) //Preferably disk data should be cached
+					slices=new Stack3D(); 
+				else
+					slices=new Stack2D();
 //				System.out.println("stack changed");
 				w.repaint();
 				}

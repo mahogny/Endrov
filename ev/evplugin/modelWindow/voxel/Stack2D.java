@@ -100,7 +100,8 @@ public class Stack2D implements StackInterface
 				for(OneSlice os:osv)
 					{
 					os.tex.dispose();
-					os.rend.dispose();
+					if(os.rend!=null)
+						os.rend.dispose();
 					}
 					//os.tex.dispose(gl);
 		texSlices=null;
@@ -219,32 +220,20 @@ public class Stack2D implements StackInterface
 		TextureRenderer rend=TextureRenderer.createAlphaOnlyRenderer(os.w, os.h);
 		Graphics2D g=rend.createGraphics();
 		
-		
-//		BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType());
-//		Graphics2D g=(Graphics2D)sim.getGraphics();
 		g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
 		g.drawImage(bim,0,0,Color.BLACK,null);
 		
-		
-		////Here is where to try the new texturerenderer
-		
-		
-		
-//		return new Tuple<BufferedImage, OneSlice>(sim,os);
 		return new Tuple<TextureRenderer, OneSlice>(rend,os);
 		}
 	
 	
 	public void addSlice(GL gl, List<Tuple<TextureRenderer,OneSlice>> procList)
-//	public void addSlice(GL gl, List<Tuple<BufferedImage,OneSlice>> procList)
 		{
 		clean(gl);
 		texSlices=new TreeMap<Double,Vector<OneSlice>>();
-//		for(Tuple<BufferedImage,OneSlice> proc:procList)
 		for(Tuple<TextureRenderer,OneSlice> proc:procList)
 			{
 			OneSlice os=proc.snd();
-//			os.tex=TextureIO.newTexture(proc.fst(),false);
 			os.tex=proc.fst().getTexture();
 			
 			Vector<OneSlice> texSlicesV=getTexSlicesFrame(os.z);
@@ -252,9 +241,8 @@ public class Stack2D implements StackInterface
 			}
 		}
 	
-//	LinkedList<Tuple<BufferedImage,OneSlice>> procList=new LinkedList<Tuple<BufferedImage,OneSlice>>();
 	LinkedList<Tuple<TextureRenderer,OneSlice>> procList=new LinkedList<Tuple<TextureRenderer,OneSlice>>();
-	public void loadGL(GL gl/*,double frame, Collection<ChannelSelection> channels*/)
+	public void loadGL(GL gl)
 		{
 		if(needLoadGL)
 			{
@@ -339,37 +327,7 @@ public class Stack2D implements StackInterface
 					//Select texture
 					os.tex.enable();
 					os.tex.bind();
-					
-					//gl.GL_MAX_3D_TEXTURE_SIZE
-					//gl.GL_MAX_TEXTURE_UNITS
-					
-					
-					/**
-					 * 
-					 * JOGL http://www.felixgers.de/teaching/jogl/texture3D.html
-					 * 
-					 * unsigned int texname;
-glGenTextures(1, &texname);
-glBindTexture(GL_TEXTURE_3D, texname);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB8, WIDTH, HEIGHT, DEPTH, 0, GL_RGB, 
-             GL_UNSIGNED_BYTE, texels);
-             
-             power of 2 in x,y,z
-             
-             
-             GL_MAX_TEXTURE_SIZE,
-This is only an estimate
-    glTexImage2D(GL_PROXY_TEXTURE_2D, level, internalFormat, width, height, border, format, type, NULL); 
-Note the pixels parameter is NULL, because OpenGL doesn't load texel data when the target parameter is GL_PROXY_TEXTURE_2D. Instead, OpenGL merely considers whether it can accommodate a texture of the specified size and description. If the specified texture can't be accommodated, the width and height texture values will be set to zero. After making a texture proxy call, you'll want to query these values as follows:
-    GLint width; glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width); if (width==0) { cannot use } 
-             
-					 */
-					
+										
 					//Find size and position
 					double w=os.w/os.resX;
 					double h=os.h/os.resY;

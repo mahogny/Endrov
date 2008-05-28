@@ -10,7 +10,9 @@ public class PLUGIN extends PluginDef
 
 	public String getAuthor()
 		{
-		return "Johan Henriksson (only library binding)";
+		return 
+		"LOCI (library)\n" +
+		"Johan Henriksson (library binding)";
 		}
 	
 	public boolean systemSupported()
