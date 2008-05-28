@@ -140,8 +140,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			public void stateChanged(ChangeEvent arg0)
 				{
 				slice.rebuild();
-				w.view.repaint();
-//				w.repaint();
+				w.view.repaint(); //TODO modw repaint
 				}
 
 

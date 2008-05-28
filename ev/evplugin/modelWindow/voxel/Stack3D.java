@@ -29,7 +29,7 @@ import evplugin.modelWindow.ModelWindow;
  * Render stack using 3d texture
  * @author Johan Henriksson
  */
-public class Stack3D implements StackInterface
+public class Stack3D extends StackInterface
 	{	
 	//Currently the code does not bother with which frame it is.
 	//and it might be worth delegating this to voxelextension
@@ -325,15 +325,23 @@ public class Stack3D implements StackInterface
 			}
 		}
 	
-	
+
 	
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Camera cam)
+	public void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges)
 		{
+//		gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
 		if(isBuilt())
 			{
+			//Draw edges
+			if(drawEdges)
+				for(Vector<VoxelStack> osv:texSlices.values())
+					for(VoxelStack os:osv)
+						renderEdge(gl, os.realw, os.realh, os.reald);
+			
+			//Fill voxels
 			//gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR); //used before, makes no sense with alpha
 			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			gl.glDepthMask(false);
@@ -358,6 +366,7 @@ public class Stack3D implements StackInterface
 			gl.glDepthMask(true);
 			gl.glEnable(GL.GL_CULL_FACE);
 			}
+	//	gl.glPopAttrib();
 		}
 
 
@@ -380,8 +389,7 @@ public class Stack3D implements StackInterface
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
-			double width=os.realw;
-			return Collections.singleton(width);
+			return Collections.singleton((os.realw+os.realh+os.reald)/3);
 			}
 		else
 			return Collections.emptySet();
@@ -396,9 +404,7 @@ public class Stack3D implements StackInterface
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
-			double width=os.w/os.resX;
-			double height=os.h/os.resY;
-			return Collections.singleton(new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0));
+			return Collections.singleton(new Vector3D(os.realw/2.0,os.realh/2.0,os.reald/2.0));
 			}
 		else
 			return Collections.emptySet();
@@ -413,11 +419,8 @@ public class Stack3D implements StackInterface
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
-			double width=os.w/os.resX;
-			double height=os.h/os.resY;
-			
-			double[] list={Math.abs(0-mid.x),Math.abs(0-mid.y),Math.abs(texSlices.firstKey()-mid.z), 
-					Math.abs(width-mid.x), Math.abs(height-mid.y), Math.abs(texSlices.lastKey()-mid.z)};
+			double[] list={Math.abs(0-mid.x),Math.abs(0-mid.y),Math.abs(0-mid.z), 
+					Math.abs(os.realw-mid.x), Math.abs(os.realh-mid.y), Math.abs(os.reald-mid.z)};
 			double max=list[0];
 			for(double d:list)
 				if(d>max)

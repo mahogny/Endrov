@@ -103,18 +103,13 @@ public class NucModelExtension implements ModelWindowExtension
 				{
 				for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
 					NucLineage.hiddenNuclei.remove(p);
-		//		w.view.repaint();
 				}
 			else if(e.getSource()==miHideSelectedNuc)
 				{
 				for(evplugin.nuc.NucPair p:NucLineage.selectedNuclei)
 					NucLineage.hiddenNuclei.add(p);
-	//			w.view.repaint();
 				}
-//			else if(e.getSource()==miShowAllNucNames)
-//				w.view.repaint();
-//			else if(e.getSource()==miShowSelectedNucNames)
-				w.view.repaint();
+				w.view.repaint(); //TODO modw repaint
 			}
 		
 		public boolean canRender(EvObject ob)

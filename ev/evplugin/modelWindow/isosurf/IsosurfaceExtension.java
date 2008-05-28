@@ -202,10 +202,10 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				}
 			
 			
-			public void stateChanged(ChangeEvent arg0)
+			public void stateChanged(ChangeEvent e)
 				{
 				surfaces.clear(); //can be made more clever if performance is wanted
-				w.repaint();
+				w.repaint(); //TODO modw repaint
 				}
 
 

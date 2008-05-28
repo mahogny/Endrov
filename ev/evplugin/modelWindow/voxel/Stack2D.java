@@ -39,7 +39,7 @@ http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
  * Render stack as several textured slices
  * @author Johan Henriksson
  */
-public class Stack2D implements StackInterface
+public class Stack2D extends StackInterface
 	{	
 	Double lastframe=null; 
 	double resZ;
@@ -58,16 +58,6 @@ public class Stack2D implements StackInterface
 		Color color;
 		}
 	
-	/*
-	private static class Texture
-		{
-		int id;
-		public void dispose(GL gl)
-			{
-			int texlist[]={id};
-			gl.glDeleteTextures(1, texlist, 0);
-			}
-		}*/
 	
 	
 	/**
@@ -103,7 +93,6 @@ public class Stack2D implements StackInterface
 					if(os.rend!=null)
 						os.rend.dispose();
 					}
-					//os.tex.dispose(gl);
 		texSlices=null;
 		}
 	
@@ -182,7 +171,6 @@ public class Stack2D implements StackInterface
 							EvImage evim=slices.get(i);
 							if(!chsel.filterSeq.isIdentity())
 								evim=chsel.filterSeq.applyReturnImage(evim);
-//							Tuple<BufferedImage,OneSlice> proc=processImage(evim, i, chsel);
 							Tuple<TextureRenderer,OneSlice> proc=processImage(evim, i, chsel);
 							procList.add(proc);
 							}
@@ -278,16 +266,31 @@ public class Stack2D implements StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Camera cam)
+	public void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges)
 		{
 		if(isBuilt())
 			{
-//			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-			gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
-			gl.glEnable(GL.GL_BLEND);
-			gl.glDepthMask(false);
-			gl.glDisable(GL.GL_CULL_FACE);
+			//Draw edges
+			if(drawEdges && !texSlices.isEmpty())
+				{
+				OneSlice os=texSlices.get(texSlices.lastKey()).lastElement();
+				double w=os.w/os.resX;
+				double h=os.h/os.resY;
+				double d=os.z;
+				renderEdge(gl, w, h, d);
+				}
 
+			
+			
+			gl.glDisable(GL.GL_CULL_FACE);
+			if(!solidColor)
+				{
+//			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+				gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
+				gl.glEnable(GL.GL_BLEND);
+				gl.glDepthMask(false);
+				}
+			
 			//Sort planes, O(n) since pre-ordered
 			SortedMap<Double,Vector<OneSlice>> frontMap=texSlices.headMap(cam.pos.z);
 			SortedMap<Double,Vector<OneSlice>> backMap=texSlices.tailMap(cam.pos.z);

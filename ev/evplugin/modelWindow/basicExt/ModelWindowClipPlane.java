@@ -1,4 +1,4 @@
-package evplugin.modelWindow.clipPlane;
+package evplugin.modelWindow.basicExt;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,12 +21,12 @@ import evplugin.modelWindow.*;
  * Clipping planes
  * @author Johan Henriksson
  */
-public class ClipPlaneExtension implements ModelWindowExtension
+public class ModelWindowClipPlane implements ModelWindowExtension
 	{
 	public static void initPlugin() {}
 	static
 		{
-		ModelWindow.modelWindowExtensions.add(new ClipPlaneExtension());
+		ModelWindow.modelWindowExtensions.add(new ModelWindowClipPlane());
 		}
 	
 	public void newModelWindow(ModelWindow w)
@@ -221,7 +221,7 @@ public class ClipPlaneExtension implements ModelWindowExtension
 			/**
 			 * Listener for changes in plane coordinates
 			 */
-			private class CL implements ModelWindow.CrossListener
+			private class CL implements CrossHandler.CrossListener
 				{
 				int id;
 				public CL(int id){this.id=id;}
@@ -243,11 +243,11 @@ public class ClipPlaneExtension implements ModelWindowExtension
 					Vector3d mid=new Vector3d();
 					for(int i=0;i<3;i++)
 						{
-						w.addCross(points[i], new CL(i));
+						w.crossHandler.addCross(points[i], new CL(i));
 						mid.add(points[i]);
 						}
 					mid.scale(1/3.0);
-					w.addCross(mid, new CL(4));
+					w.crossHandler.addCross(mid, new CL(4));
 					}
 				}
 				

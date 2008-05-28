@@ -15,6 +15,7 @@ import com.sun.opengl.util.j2d.*;
 
 import evplugin.data.*;
 import evplugin.ev.*;
+import evplugin.modelWindow.basicExt.ModelWindowGrid;
 
 
 //NEED GLJPanel
@@ -220,7 +221,7 @@ public class ModelView extends GLCanvas
 			// Render for selection
 			/////////////////////////////////
 			
-			window.resetCrossList();
+			window.crossHandler.resetCrossList();
 			
 			//Skip this step if mouse isn't even within the window
 			if(mouseX>=0 && mouseY>=0)
@@ -240,7 +241,7 @@ public class ModelView extends GLCanvas
 					h.displaySelect(gl);
 
 				//Render cross. could be an extension, but order need be right
-				window.displayCrossSelect(gl);
+				window.crossHandler.displayCrossSelect(gl,window);
 				
 				
 				//Figure out where the mouse is
@@ -270,7 +271,7 @@ public class ModelView extends GLCanvas
 				h.displayFinal(gl);
 			
 			//Render cross. could be an extension
-			window.displayCrossFinal(gl);
+			window.crossHandler.displayCrossFinal(gl,window);
 
 			
 			//adjust scale for next time
