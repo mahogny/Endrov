@@ -1,6 +1,5 @@
 package evplugin.pluginWindow;
 
-//Auto-rewrap README? if so, then on WORDS, not on characters
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,6 +14,7 @@ import evplugin.ev.*;
 
 import org.jdom.*;
 
+//TODO when moving with keyboard arrows, text is not updated
 
 /**
  * Browse plugins
@@ -32,7 +32,6 @@ public class PluginWindow extends BasicWindow
 
 	
 	//GUI components
-	private JTextArea docArea=new JTextArea();
 	private JTextArea miscArea=new JTextArea();
 	private Vector<PluginInfo> plugins;
 
@@ -103,24 +102,19 @@ public class PluginWindow extends BasicWindow
   			showPlugin((PluginInfo)list.getSelectedValue());
   			}
   		});
-  	JScrollPane listScroller = new JScrollPane(list);
-  	listScroller.setAlignmentX(LEFT_ALIGNMENT);
 
+  	setLayout(new GridLayout(1,1));
 
   	//Put GUI together
-  	JPanel left=new JPanel(new GridLayout(2,1));
-
-  	docArea.setLineWrap(true);
   	miscArea.setLineWrap(true);
   	
-  	JScrollPane docScrollPane = new JScrollPane(docArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+  	//JScrollPane docScrollPane = new JScrollPane(docArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
   	JSplitPane sp=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
   	add(sp);
-  	sp.add(left);
-  	sp.add(docScrollPane);
+  	
+  	sp.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+  	sp.add(new JScrollPane(miscArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 
-  	left.add(list);
-  	left.add(new JScrollPane(miscArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 
   	//Window overall things
   	setTitleEvWindow("Plugins");
@@ -140,16 +134,13 @@ public class PluginWindow extends BasicWindow
 
 	public void showPlugin(PluginInfo plugin)
 		{
-		/*
 		String misc="";
-		misc+="Name:\n"+plugin.name+"\n\n";
-		misc+="Author:\n"+plugin.author+"\n\n";
-		if(!plugin.cite.equals(""))
-			misc+="Cite:\n"+plugin.cite+"\n\n";
+		misc+="Name:\n"+plugin.pdef.getPluginName()+"\n\n";
+		misc+="Author:\n"+plugin.pdef.getAuthor()+"\n\n";
+		String cite=plugin.pdef.cite();
+		if(!cite.equals(""))
+			misc+="Cite:\n"+cite+"\n\n";
 		miscArea.setText(misc);
-		plugin.loadDoc();
-		docArea.setText(plugin.doc);
-		*/
 		}
 
 	public void loadedFile(EvData data){}

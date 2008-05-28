@@ -32,6 +32,13 @@ public class ModelView extends GLCanvas
 	
 	/** Number of clipping planes supported by this context */
 	public int numClipPlanesSupported;
+  //6 planes on NVidia macpro
+	/** Maximum 3D texture size */
+	public int max3DTextureSize;
+	//2048 on GeForce 8400 GS/PCI/SSE2
+	/** Number of texture units */
+	public int numTextureUnits;
+	//4 on GeForce 8400 GS/PCI/SSE2
 	
 	/** Common data */
 	private ModelWindow window;
@@ -144,12 +151,25 @@ public class ModelView extends GLCanvas
 			gl.glShadeModel(GL.GL_SMOOTH); //GL_FLAT
 			
 	    renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 72));
-	    
-	    int[] planesArr=new int[1];
-	    gl.glGetIntegerv(GL.GL_MAX_CLIP_PLANES, planesArr, 0);
-	    numClipPlanesSupported=planesArr[0];
+
+
+	    //Number of clipping planes
+	    int[] queryArr=new int[1];
+	    gl.glGetIntegerv(GL.GL_MAX_CLIP_PLANES, queryArr, 0);
+	    numClipPlanesSupported=queryArr[0];
 	    System.out.println("clipping planes supported: "+numClipPlanesSupported);
-	    //6 planes on NVidia macpro
+	    
+	    //3D texture support
+	    gl.glGetIntegerv(GL.GL_MAX_3D_TEXTURE_SIZE, queryArr, 0);
+	    max3DTextureSize=queryArr[0];
+	    System.out.println("max 3D texture size: "+max3DTextureSize);
+
+	    //Texture units
+	    gl.glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS, queryArr, 0);
+	    numTextureUnits=queryArr[0];
+	    System.out.println("num texture units: "+numTextureUnits);
+
+	    
 			}
 
 		
