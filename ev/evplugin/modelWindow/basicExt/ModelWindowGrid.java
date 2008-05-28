@@ -1,4 +1,4 @@
-package evplugin.modelWindow;
+package evplugin.modelWindow.basicExt;
 
 import java.awt.event.*;
 import java.util.Collection;
@@ -10,6 +10,9 @@ import org.jdom.*;
 
 import evplugin.data.EvObject;
 import evplugin.ev.Vector3D;
+import evplugin.modelWindow.ModelWindow;
+import evplugin.modelWindow.ModelWindowExtension;
+import evplugin.modelWindow.ModelWindowHook;
 
 public class ModelWindowGrid implements ModelWindowExtension
 	{

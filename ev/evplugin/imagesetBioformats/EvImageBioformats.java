@@ -49,8 +49,8 @@ public abstract class EvImageBioformats extends EvImage
 			//This hack fixes Leica
 			if(subid==null)
 				subid=0;
-			else
-				System.out.println("subid "+subid);
+			/*else
+				System.out.println("subid "+subid);*/
 			
 			if(subid!=null)
 				{

@@ -27,6 +27,7 @@ import evplugin.modelWindow.*;
 
 //http://www.java-tips.org/other-api-tips/jogl/vertex-buffer-objects-nehe-tutorial-jogl-port-2.html
 
+//Preferably disk data should be cached
 
 /**
  * 3D stack renderers 
@@ -39,20 +40,11 @@ public class VoxelExtension implements ModelWindowExtension
 		{
 		ModelWindow.modelWindowExtensions.add(new VoxelExtension());
 		}
-	
-	
 
-		
 	public void newModelWindow(ModelWindow w)
 		{
-		w.modelWindowHooks.add(new Hook(w)); //TODO. need be drawn last if voxels also will be in
+		w.modelWindowHooks.add(new Hook(w)); 
 		}
-
-
-	
-	
-
-
 
 
 
@@ -77,18 +69,13 @@ public class VoxelExtension implements ModelWindowExtension
 		private OneImageChannel icR=new OneImageChannel("R", Color.RED);
 		private OneImageChannel icG=new OneImageChannel("G", Color.GREEN);
 		private OneImageChannel icB=new OneImageChannel("B", Color.BLUE);
-		
-		
-
-		
-		public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Names: Show for selected");
 	
 		public JRadioButtonMenuItem miRender3dTexture=new JRadioButtonMenuItem("Use 3D texture",true);
 		public JRadioButtonMenuItem miRender2dTexture=new JRadioButtonMenuItem("Use 2D texture",false);
 		private ButtonGroup bgTexture=new ButtonGroup();
-		
-		public JMenuItem miShowSelectedNuc=new JMenuItem("Nuclei: Unhide selected"); 
-	
+		public JCheckBoxMenuItem miSolidColor=new JCheckBoxMenuItem("Solid color");
+		public JCheckBoxMenuItem miDrawEdge=new JCheckBoxMenuItem("Draw edge");
+
 		
 		public Hook(ModelWindow w)
 			{
@@ -97,8 +84,6 @@ public class VoxelExtension implements ModelWindowExtension
 			totalPanel.add(icR);
 			totalPanel.add(icG);
 			totalPanel.add(icB);
-			
-			
 			
 			bgTexture.add(miRender3dTexture);
 			bgTexture.add(miRender2dTexture);
@@ -109,17 +94,28 @@ public class VoxelExtension implements ModelWindowExtension
 			miVoxels.add(miRender2dTexture);
 			miVoxels.add(miRender3dTexture);
 			miVoxels.addSeparator();
+			miVoxels.add(miSolidColor);
+			miVoxels.add(miDrawEdge);
 			
 			miRender2dTexture.addActionListener(this);
 			miRender3dTexture.addActionListener(this);
+			miSolidColor.addActionListener(this);
+			miDrawEdge.addActionListener(this);
 			}
 		
 		
 		public void actionPerformed(ActionEvent e)
 			{
-			icR.stackChanged();
-			icG.stackChanged();
-			icB.stackChanged();
+			if(e.getSource()==miDrawEdge)
+				{
+				w.view.repaint();
+				}
+			else
+				{
+				icR.stackChanged();
+				icG.stackChanged();
+				icB.stackChanged();
+				}
 			}
 
 
@@ -212,7 +208,7 @@ public class VoxelExtension implements ModelWindowExtension
 //				System.out.println("render");
 				//Render
 				slices.loadGL(gl);
-				slices.render(gl,w.view.camera);
+				slices.render(gl,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected());
 				}
 			}
 		
@@ -251,7 +247,7 @@ public class VoxelExtension implements ModelWindowExtension
 				if(slices!=null)
 					slices.stopBuildThread();
 				lastSlices.add(slices);
-				if(miRender3dTexture.isSelected()) //Preferably disk data should be cached
+				if(miRender3dTexture.isSelected()) 
 					slices=new Stack3D(); 
 				else
 					slices=new Stack2D();

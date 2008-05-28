@@ -10,7 +10,7 @@ import evplugin.ev.Vector3D;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.ModelWindow;
-import evplugin.modelWindow.ModelWindowGrid;
+import evplugin.modelWindow.basicExt.ModelWindowGrid;
 
 /**
  * Render one slice in 3d
