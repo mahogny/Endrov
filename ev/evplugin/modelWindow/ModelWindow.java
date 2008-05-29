@@ -486,6 +486,35 @@ public class ModelWindow extends BasicWindow
 		}
 	
 	
+	/**
+	 
+	 
+	 
+	 isolevelberäknix ej i bakgrunden
+isolevel uppdateras ej när parametrar ändras
+isolevel försvinner inte när en tas bort
+
+
+
+
+
+
+
+
+implementera:
+kanallista uppdateras, ny entry, avbryt evaluerix
+sorterixslista
+se över när den spelar
+scale, gridsize, etc, var i koden ska detta ze?
+scale no longer empty set=>center?
+new clip plane: adjust depending on scale
+
+	 
+	 
+	 
+	 
+	 */
+	
 	
 
 	
