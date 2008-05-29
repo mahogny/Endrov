@@ -181,6 +181,12 @@ public class ChannelCombo extends JComboBox
 		else
 			return a.channel;
 		}
+	public String getChannelNotNull()
+		{
+		String ch=getChannel();
+		return ch==null ? "" : ch;
+		}
+	
 	
 	/**
 	 * Get the selected imageset
@@ -189,10 +195,7 @@ public class ChannelCombo extends JComboBox
 	public Imageset getImageset()
 		{		
 		Alternative a=(Alternative)getSelectedItem();
-		if(a==null)
-			return new EmptyImageset();
-		else
-			return a.imageset;
+		return a==null ? new EmptyImageset() : a.imageset; 
 		}
 	
 	/**
@@ -202,7 +205,10 @@ public class ChannelCombo extends JComboBox
 	public Imageset getImagesetNull()
 		{		
 		Alternative a=(Alternative)getSelectedItem();
-		return a.imageset;
+		if(a.imageset instanceof EmptyImageset)
+			return null; //TODO check if this breaks anything
+		else
+			return a.imageset;
 		}
 	
 	public Alternative createAlternative(Imageset imageset, String channel)

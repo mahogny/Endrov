@@ -49,7 +49,7 @@ public class EvLineModelExtension implements ModelWindowExtension
 		public Collection<EvLine> getAnnot()
 			{
 			List<EvLine> v=new LinkedList<EvLine>();
-			for(EvLine lin:EvLine.getObjects(w.metaCombo.getMeta()))
+			for(EvLine lin:EvLine.getObjects(w.getSelectedData()))
 				if(w.showObject(lin))
 					v.add(lin);
 			return v;

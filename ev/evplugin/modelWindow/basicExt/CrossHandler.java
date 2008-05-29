@@ -11,18 +11,29 @@ import evplugin.modelWindow.ModelView;
 import evplugin.modelWindow.ModelWindow;
 import evplugin.modelWindow.ModelWindowMouseListener;
 
-
+/**
+ * Movable crosses in model window
+ * @author Johan Henriksson
+ *
+ */
 public class CrossHandler
 	{
+	private static final float crossSizeFactor=0.15f;
 
-	
-	public static class Cross
+	/**
+	 * One cross
+	 */
+	private static class Cross
 		{
 		public Vector3d v;
 		public CrossListener listener;
 		public int color;
 		}
 
+	/**
+	 * Listener for movements of a cross
+	 * @author Johan Henriksson
+	 */
 	public static interface CrossListener
 		{
 		public void crossmove(Vector3d diff);
@@ -30,7 +41,9 @@ public class CrossHandler
 
 	private LinkedList<Cross> crossList=new LinkedList<Cross>();
 	private Integer crossListStartId=0;
-	Integer crossHoverId=null;
+	private Integer crossHoverId=null;
+	
+	
 	public void addCross(Vector3d v, CrossListener listener)
 		{
 		Cross cross=new Cross();
@@ -44,13 +57,14 @@ public class CrossHandler
 		}
 	
 
-	/** Feedback from listening */
+	/**
+	 * Feedback from listening 
+	 */
 	private ModelView.GLSelectListener crossListener=new ModelView.GLSelectListener()
 		{
 		public void hover(int id)
 			{
 			crossHoverId=id;
-			System.out.println("id "+id);
 			}
 		public void hoverInit(int id)
 			{
@@ -58,7 +72,9 @@ public class CrossHandler
 			}
 		};
 	
-	private static final float crossSizeFactor=0.2f;
+	/**
+	 * Display for selection
+	 */
 	public void displayCrossSelect(GL gl, ModelWindow w)
 		{
 		crossListStartId=null;
@@ -91,6 +107,10 @@ public class CrossHandler
 			}
 		gl.glPopAttrib();
 		}	
+	
+	/**
+	 * Display for viewing
+	 */
 	public void displayCrossFinal(GL gl, ModelWindow w)
 		{
 		ModelView view=w.view;
@@ -118,7 +138,9 @@ public class CrossHandler
 		}
 	
 	
-	
+	/**
+	 * Mouse listener
+	 */
 	public ModelWindowMouseListener crossMListener=new ModelWindowMouseListener()
 		{
 		private CrossListener listener=null; 
@@ -155,8 +177,6 @@ public class CrossHandler
 				System.out.println("press");
 				}
 			}
-	
 		public void mouseReleased(MouseEvent e){listener=null;}
-		
 		};
 	}

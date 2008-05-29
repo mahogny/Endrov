@@ -35,6 +35,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ModelWindow.class,ModelWindowGrid.class,ModelWindowClipPlane.class,IsosurfaceExtension.class,Slice3DExtension.class,VoxelExtension.class};
+		return new Class[]{ModelWindow.class,ModelWindowClipPlane.class,ModelWindowGrid.class,IsosurfaceExtension.class,Slice3DExtension.class,VoxelExtension.class};
 		}
 	}

@@ -61,7 +61,7 @@ public class ShellModelHook implements ModelWindowHook
 	public Collection<Shell> getVisibleShell()
 		{
 		Vector<Shell> v=new Vector<Shell>();
-		EvData metadata=w.metaCombo.getMeta();
+		EvData metadata=w.getSelectedData();
 		if(metadata!=null)
 			{
 			for(EvObject ob:metadata.metaObject.values()) //TODO: special command that already filters based on canRender would be nice
