@@ -5,9 +5,12 @@ import java.util.Map.Entry;
 
 import javax.vecmath.Vector3f;
 
-import evplugin.ev.Vector3D;
-import evplugin.modelWindow.ModelWindow;
 
+/**
+ * Generator for isosurfaces
+ * 
+ * @author Johan Henriksson
+ */
 public class Isosurface
 	{
 	
@@ -772,10 +775,6 @@ public class Isosurface
 					vec1.z*vec2.y - vec1.y*vec2.z,
 					vec1.x*vec2.z - vec1.z*vec2.x,
 					vec1.y*vec2.x - vec1.x*vec2.y);
-			/*Vector3f normal=new Vector3f(
-					vec2.z*vec1.y - vec2.y*vec1.z,
-					vec2.x*vec1.z - vec2.z*vec1.x,
-					vec2.y*vec1.x - vec2.x*vec1.y);*/
 			normals[id0].add(normal);
 			normals[id1].add(normal);
 			normals[id2].add(normal);
@@ -787,8 +786,8 @@ public class Isosurface
 		}
 		
 	private boolean maxUpdated=false;
-	private float maxX,maxY,maxZ,minX,minY,minZ;
-	private boolean updateScale()
+	public float maxX,maxY,maxZ,minX,minY,minZ;
+	public boolean updateScale()
 		{
 		if(isSurfaceValid())
 			{
@@ -815,60 +814,4 @@ public class Isosurface
 		else
 			return false;
 		}
-	
-	public Collection<Double> adjustScale(ModelWindow w)
-		{
-		if(updateScale())
-			{
-			return Collections.singleton((double)(maxX-minX));
-			/*
-			//pan speed
-			w.view.panspeed=(maxX-minX)/1000.0;
-
-			//Select grid size
-			double g=Math.pow(10, (int)Math.log10(maxX));
-			if(g<1) g=1;
-			ModelWindowGrid.setGridSize(w,g);
-			*/
-			}
-		else
-			return Collections.emptySet();
-		}
-	
-	
-	/**
-	 * Give suitable center of all objects
-	 */
-	public Vector3D autoCenterMid()
-		{
-		if(isSurfaceValid())
-			{
-			return new Vector3D((maxX+minX)/2,(maxY+minY)/2,(maxZ+minZ)/2);
-			}
-		else
-			return null;
-		}
-	
-	
-	/**
-	 * Given a middle position, figure out radius required to fit objects
-	 */
-	public Double autoCenterRadius(Vector3D mid, double FOV)
-		{
-		if(isSurfaceValid())
-			{
-			double[] list={Math.abs(minX-mid.x),Math.abs(minY-mid.y),Math.abs(minZ-mid.z),
-					Math.abs(maxX-mid.x), Math.abs(maxY-mid.y), Math.abs(maxZ-mid.z)};
-			double max=list[0];
-			for(double d:list)
-				if(d>max)
-					max=d;
-			//Find how far away the camera has to be. really have FOV in here?
-			return max/Math.sin(FOV);
-			}
-		else
-			return null;
-		}
-	
-	
 	}

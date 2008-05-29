@@ -218,6 +218,10 @@ public class OSTdaemon extends Thread
 	
 
 	
+	public File getImagesetFile(String imageset)
+		{
+		return new File(pathOutput,imageset+".ost");
+		}
 
 	
 	
@@ -241,7 +245,7 @@ public class OSTdaemon extends Thread
 		
 		log("Reading metafile for "+argImageset+" / "+argChannel);
 		
-		File to=new File(new File(pathOutput,argImageset+".ost"),argChannel);
+		File to=new File(getImagesetFile(argImageset),argChannel);
 		if(to.exists() || to.mkdirs())
 			{
 			try
@@ -250,7 +254,7 @@ public class OSTdaemon extends Thread
 				if(makeMaxChannel.contains(argChannel))
 					{
 //					File tomax=new File(pathOutput+"/"+argImageset+"/"+argImageset+"-"+argChannel+"max");
-					File tomax=new File(new File(pathOutput,argImageset),argChannel+"max");
+					File tomax=new File(getImagesetFile(argImageset),argChannel+"max");
 					tomax.mkdirs();
 					copyFile(from, new File(tomax,"rmd.txt"));
 					//copyMaxMeta(argImageset, argChannel); //not here
@@ -273,12 +277,10 @@ public class OSTdaemon extends Thread
 		{
 		String maxchannel=argChannel+"max";
 		
-//		File imagesetDir=new File(pathOutput,argImageset);
-		File imagesetDir=new File(pathOutput,argImageset+".ost");
+		File imagesetDir=getImagesetFile(argImageset);
 		if(imagesetDir.exists())
 			{
-//			File totalFile=new File(imagesetDir,"rmd.xml");
-			File totalFile=new File(imagesetDir,"rmd.ostxml");
+			File totalFile=getImagesetFile(argImageset);
 			Document rmd=Xml.readXML(totalFile.getPath());
 			Element root=rmd.getRootElement();
 			Element imagesetEl=root.getChild("imageset");
@@ -324,11 +326,9 @@ public class OSTdaemon extends Thread
 			{
 			String filename=from.getName();
 			String argImageset=filename.substring(0, filename.indexOf('-'));
-//			File imagesetDir=new File(pathOutput,argImageset);
-			File imagesetDir=new File(pathOutput,argImageset+".ost");
+			File imagesetDir=getImagesetFile(argImageset);
 			imagesetDir.mkdirs();
 			File totalFile=new File(imagesetDir,"rmd.ostxml");
-//			File totalFile=new File(imagesetDir,"rmd.xml");
 
 			try 
 				{
@@ -369,10 +369,8 @@ public class OSTdaemon extends Thread
 		{
 		String filename=from.getName();
 		String argImageset=filename.substring(0, filename.indexOf('-'));
-//		File imagesetDir=new File(pathOutput,argImageset);
-		File imagesetDir=new File(pathOutput,argImageset+".ost");
+		File imagesetDir=getImagesetFile(argImageset);
 		imagesetDir.mkdirs();
-//		File totalFile=new File(imagesetDir,"rmd.xml");
 		File totalFile=new File(imagesetDir,"rmd.ostxml");
 		try 
 			{
@@ -389,6 +387,7 @@ public class OSTdaemon extends Thread
 		}
 
 	
+	
 
 	/**
 	 * Copy file into data/-directory
@@ -400,8 +399,7 @@ public class OSTdaemon extends Thread
 		String argImageset=filename.substring(0, filename.indexOf('-'));
 		String argFilename=filename.substring(argImageset.length()+1+4+1);
 		
-		File toDir=new File(new File(pathOutput,argImageset+".ost"),"data");
-//		File toDir=new File(pathOutput+"/"+argImageset+"/"+argImageset+"-data");
+		File toDir=new File(getImagesetFile(argImageset),"data");
 		if(toDir.exists() || toDir.mkdirs())
 			{
 			File to=new File(toDir.getAbsolutePath(),argFilename);
@@ -536,7 +534,6 @@ public class OSTdaemon extends Thread
 				{
 				BufferedImage im=jubio.getBufferedImage(i);
 				if(!(skipBlackSlices && isBlackSlice(im)) && !(skipWhiteSlices && isWhiteSlice(im)))
-//				if(skipBlackSlices && !isBlack(im))
 					{				
 					File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, i);
 					saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
@@ -571,8 +568,7 @@ public class OSTdaemon extends Thread
 		{
 		if(ostVersion==2)
 			{
-//			File toDir = new File(pathOutput+"/"+argImageset+"/"+argImageset+"-"+argChannel+"/"+pad(argStack,8));
-			File toDir = new File(new File(new File(pathOutput,argImageset+".ost"),argChannel),pad(argStack,8));
+			File toDir = new File(new File(getImagesetFile(argImageset),argChannel),pad(argStack,8));
 			toDir.mkdirs();
 			File toFile = new File(toDir, pad(slice,8)+"."+ext); 
 			return toFile;

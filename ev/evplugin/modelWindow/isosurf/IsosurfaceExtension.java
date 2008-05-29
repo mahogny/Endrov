@@ -2,14 +2,23 @@ package evplugin.modelWindow.isosurf;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.lang.ref.WeakReference;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.*;
+import java.util.List;
 
 import javax.media.opengl.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.vecmath.Vector3f;
 
 import org.jdom.Element;
+
+import com.sun.opengl.util.BufferUtil;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.basicWindow.ChannelCombo;
@@ -23,8 +32,10 @@ import evplugin.modelWindow.*;
 //optimization: load images only once for multiple layers
 
 //http://www.java-tips.org/other-api-tips/jogl/vertex-buffer-objects-nehe-tutorial-jogl-port-2.html
+//possible to generate isosurf on GPU, if not transparent
 
 /**
+ * Model window extension: isosurfaces
  * 
  * @author Johan Henriksson
  */
@@ -38,7 +49,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 	
 	public void newModelWindow(ModelWindow w)
 		{
-		w.modelWindowHooks.add(new Hook(w)); //TODO. need be drawn last if voxels also will be in
+		w.modelWindowHooks.add(new Hook(w));
 		}
 
 	
@@ -54,67 +65,37 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			addIsolevel.addActionListener(this);
 			}
 		
-		private Collection<Isosurface> getOnedamnsurface()
+		private Collection<IsosurfaceRenderer> getSurfaces()
 			{
-			Vector<Isosurface> iso=new Vector<Isosurface>();
+			//Currently grabs for all frames. Later caching need to locate the current frame
+			List<IsosurfaceRenderer> iso=new LinkedList<IsosurfaceRenderer>();
 			for(ToolIsolayer f:isolayers)
-				if(!f.surfaces.isEmpty())
-					{
-					/*
-					for(IsosurfaceRenderer r:f.surfaces.values().iterator().next())
-						if(r.iso.isSurfaceValid())
-							return r.iso;
-					*/
-					Vector<IsosurfaceRenderer> vr=f.surfaces.values().iterator().next();
-					if(vr!=null)
-						{
-						IsosurfaceRenderer r=f.surfaces.values().iterator().next().iterator().next();
-						if(r!=null && r.iso.isSurfaceValid())
-							iso.add(r.iso);
-						//				return r.iso;
-						}
-					}
+				for(Vector<IsosurfaceRenderer> renderers:f.surfaces.values())
+					for(IsosurfaceRenderer renderer:renderers)
+						iso.add(renderer);
 			return iso;
-//			return null;
 			}
 		
 		public Collection<Double> adjustScale()
 			{
-			Collection<Isosurface> iso=getOnedamnsurface();
-			Vector<Double> scale=new Vector<Double>();
-			for(Isosurface s:iso)
+			List<Double> scale=new LinkedList<Double>();
+			for(IsosurfaceRenderer s:getSurfaces())
 				scale.addAll(s.adjustScale(w));
 			return scale;
-//			if(iso!=null)
-	//			iso.adjustScale(w);
 			}
 		public Collection<Vector3D> autoCenterMid()
 			{
-			Collection<Isosurface> iso=getOnedamnsurface();
-			Vector<Vector3D> scale=new Vector<Vector3D>();
-			for(Isosurface s:iso)
+			List<Vector3D> scale=new LinkedList<Vector3D>();
+			for(IsosurfaceRenderer s:getSurfaces())
 				scale.add(s.autoCenterMid());
 			return scale;
-			/*
-			Isosurface iso=getOnedamnsurface();
-			if(iso!=null)
-				return iso.autoCenterMid();
-			else
-				return null;*/
 			}
 		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
 			{
-			Collection<Isosurface> iso=getOnedamnsurface();
-			Vector<Double> scale=new Vector<Double>();
-			for(Isosurface s:iso)
+			List<Double> scale=new LinkedList<Double>();
+			for(IsosurfaceRenderer s:getSurfaces())
 				scale.add(s.autoCenterRadius(mid, FOV));
 			return scale;
-			/*
-			Isosurface iso=getOnedamnsurface();
-			if(iso!=null)
-				return iso.autoCenterRadius(mid, FOV);
-			else
-				return null;*/
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
@@ -182,7 +163,6 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				q3in.add(colorCombo);
 				q3.add(q3in,BorderLayout.CENTER);
 				q3.add(bDelete,BorderLayout.EAST);
-				//JPanel q4=new JPanel(new GridLayout(1,3));
 				
 				setLayout(new GridLayout(4,1));
 				setBorder(BorderFactory.createEtchedBorder());
@@ -190,7 +170,6 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				add(q2);
 				add(q1);
 				add(q3);
-				//add(q4);
 				
 				transSpinner.addChangeListener(this);
 				cutoffSpinner.addChangeListener(this);
@@ -205,7 +184,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			public void stateChanged(ChangeEvent e)
 				{
 				surfaces.clear(); //can be made more clever if performance is wanted
-				w.repaint(); //TODO modw repaint
+				w.view.repaint(); //TODO modw repaint
 				}
 
 
@@ -246,7 +225,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					surfaces.clear();
 				lastImageset=new WeakReference<Imageset>(im);
 				
-				
+				//Get channel
 				String channelName=chanCombo.getChannel();
 				Imageset.ChannelImages ch=im.channelImages.get(channelName);
 				if(ch!=null)
@@ -264,26 +243,243 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						surfaces.put(cframe, r);
 						int numpl=(Integer)numplaneSpinner.getModel().getValue();
 						if(numpl==1)
-							r.add(new IsosurfaceRenderer(im,channelName,cframe,blursize,(float)cutoff));
+							{
+							GenerateIsosurface gi=new GenerateIsosurface(im,channelName,cframe,blursize,(float)cutoff,w);
+							generators.add(gi);
+							gi.start();
+							}
 						else if(numpl>1)
 							{
 							double cutoffdiff=Math.abs(cutoff-cutoff2)/numpl;
 							double cutoffmin=Math.min(cutoff, cutoff2);
 							for(int pl=0;pl<numpl;pl++)
-								r.add(new IsosurfaceRenderer(im,channelName,cframe,blursize,(float)(cutoffmin+cutoffdiff*pl)));
+								{
+								GenerateIsosurface gi=new GenerateIsosurface(im,channelName,cframe,blursize,(float)(cutoffmin+cutoffdiff*pl),w);
+								generators.add(gi);
+								gi.start();
+								}
 							}
 						
 						}
 					
-					//Finally render
+					//Render available surfaces
 					Color col=colorCombo.getColor();
 					double trans=(Double)transSpinner.getModel().getValue();
+					System.out.println("render "+r.size());
 					for(IsosurfaceRenderer rr:r)
 						rr.render(gl,col.getRed()/255.0f, col.getGreen()/255.0f, col.getBlue()/255.0f, (float)trans/100.0f);
 					}
 				}
 			
+			
+			
+			
+			public Vector<GenerateIsosurface> generators=new Vector<GenerateIsosurface>();
+			
+			public class GenerateIsosurface extends Thread
+				{
+				private boolean stopFlag=false;
+				
+				private final Imageset im;
+				private final String channelName;
+				private final int cframe;
+				private final int blursize;
+				private final float cutoff;
+				private final ModelWindow mw;
+				
+				private Isosurface iso=new Isosurface();
+				private FloatBuffer vertb;
+				private FloatBuffer vertn;
+				private IntBuffer indb;
+
+				final int totalPartLoading=500;
+				final int totalPartConvertLists=totalPartLoading+100;
+
+				
+				public GenerateIsosurface(Imageset im, String channelName, int cframe, int blursize, float cutoff, ModelWindow mw)
+					{
+					this.im=im;
+					this.channelName=channelName;
+					this.cframe=cframe;
+					this.blursize=blursize;
+					this.cutoff=cutoff;
+					this.mw=mw;
+					}
+				
+				/**
+				 * Running thread
+				 */
+				public void run()
+					{
+					//Prepare to blur XY
+					ConvolveOp simpleBlur=null;
+					if(blursize!=0)
+						{
+						int blurarrsize=(1+2*blursize)*(1+2*blursize);
+						float weight = 1.0f/(float)blurarrsize;
+						float[] elements = new float[blurarrsize]; 
+						for (int i = 0; i < elements.length; i++) 
+							elements[i] = weight;
+						Kernel myKernel = new Kernel(blursize*2+1, blursize*2+1, elements);
+						simpleBlur = new ConvolveOp(myKernel);
+						}
+
+					int pixelsW=0,pixelsH=0,pixelsD=0;
+					float realw=0,realh=0,reald=0; //TODO: should be able to have different distances
+
+					float ptScalarField[]=null;
+					if(im.channelImages.containsKey(channelName) &&
+							im.channelImages.get(channelName).imageLoader.containsKey(cframe))
+						{
+						double resZ=im.meta.resZ;
+
+						
+						TreeMap<Integer,EvImage> slices=im.channelImages.get(channelName).imageLoader.get(cframe);
+						final int numSlices=slices.size();
+						int curslice=0;
+						if(slices!=null)
+							for(final int i:slices.keySet())
+								{
+								if(shouldStop()) return;
+								SwingUtilities.invokeLater(new Runnable(){public void run(){mw.progress.setValue(totalPartLoading*i/numSlices);}});
+
+								EvImage evim=slices.get(i);
+								BufferedImage bim=evim.getJavaImage();
+
+								//Blur the image
+								if(simpleBlur!=null)
+									{
+									BufferedImage bufo=new BufferedImage(bim.getWidth(), bim.getHeight(), bim.getType());
+									simpleBlur.filter(bim, bufo);
+									bim=bufo;
+									}
+
+								if(ptScalarField==null)
+									{
+									pixelsW=bim.getWidth();
+									pixelsH=bim.getHeight();
+									pixelsD=slices.size();
+									realw=(float)bim.getWidth()/(float)(evim.getResX()/evim.getBinning());
+									realh=(float)bim.getHeight()/(float)(evim.getResY()/evim.getBinning());
+									reald=(float)pixelsD/(float)resZ;
+									ptScalarField=new float[pixelsW*pixelsH*pixelsD];
+									System.out.println("alloc "+pixelsW+" "+pixelsH+" "+pixelsD);
+									}
+
+								float[] pixels=new float[bim.getWidth()];
+								for(int y=0;y<bim.getHeight();y++)
+									{
+									bim.getRaster().getPixels(0, y, bim.getWidth(), 1, pixels);
+									for(int x=0;x<bim.getWidth();x++)
+										ptScalarField[curslice*pixelsW*pixelsH+y*pixelsW+x]=pixels[x];
+
+									}
+								curslice++;
+								}
+						}
+					
+					if(shouldStop()) return;
+
+
+					//Generate polygons
+					if(ptScalarField!=null)
+						{
+						//Smoothen Z?
+						//Generate surface
+						//TODO threads for surf generation
+						//TODO progress
+						iso.generateSurface(ptScalarField, cutoff, pixelsW-1, pixelsH-1, pixelsD-1, realw/pixelsW, realh/pixelsH, reald/pixelsD);
+						if(shouldStop()) return;
+
+						Vector3f[] vertices=iso.getVertices();
+						Vector3f[] normals=iso.getNormals();
+						int[] indices=iso.getIndices();
+						if(vertices.length>0 && indices.length>0 && normals.length>0)
+							{
+							vertb=BufferUtil.newFloatBuffer(vertices.length*3);
+							for(int i=0;i<vertices.length;i++)
+								{
+								vertb.put(vertices[i].x);
+								vertb.put(vertices[i].y);
+								vertb.put(vertices[i].z);
+								}
+							if(shouldStop()) return;
+							vertn=BufferUtil.newFloatBuffer(normals.length*3);
+							for(int i=0;i<normals.length;i++)
+								{
+								vertn.put(normals[i].x);
+								vertn.put(normals[i].y);
+								vertn.put(normals[i].z);
+								}
+							if(shouldStop()) return;
+							indb=BufferUtil.newIntBuffer(indices.length); 
+							for(int i:indices)
+								indb.put(i);
+							}
+						}
+					
+					if(shouldStop()) return;
+					SwingUtilities.invokeLater(new Runnable(){public void run(){mw.progress.setValue(totalPartConvertLists);}});
+					
+					//If everything went ok, create renderer
+					if(iso.isSurfaceValid())
+						{
+						IsosurfaceRenderer renderer=new IsosurfaceRenderer();
+						renderer.vertb=vertb;
+						renderer.vertn=vertn;
+						renderer.indb=indb;
+	
+						iso.updateScale();
+						renderer.maxX=iso.maxX;
+						renderer.maxY=iso.maxY;
+						renderer.maxZ=iso.maxZ;
+						renderer.minX=iso.minX;
+						renderer.minY=iso.minY;
+						renderer.minZ=iso.minZ;
+						
+						//Add to list of renderers
+						//TODO UNSAFE
+						Vector<IsosurfaceRenderer> r=surfaces.get(cframe);
+						r.add(renderer);
+						}
+					
+					
+					System.out.println("done");
+					eliminate();
+					
+					SwingUtilities.invokeLater(new Runnable(){public void run()
+						{mw.progress.setValue(0);
+						mw.view.repaint(); //TODO modw repaint. w.repaint does not do the job in this case!
+						}});
+					}
+
+				public boolean shouldStop()
+					{
+					if(stopFlag)
+						{
+						eliminate();
+						SwingUtilities.invokeLater(new Runnable(){public void run()
+							{mw.progress.setValue(0);
+							}});
+						return true;
+						}
+					else
+						return false;
+					}
+				public void eliminate()
+					{
+					generators.remove(this);
+					System.out.println("eliminate");
+					}
+				public void stopGenerate()
+					{
+					stopFlag=true;
+					}
+				}
+		
+			
 			}
+		
 		
 		
 		}

@@ -494,7 +494,7 @@ public class ModelWindow extends BasicWindow
 isolevel uppdateras ej när parametrar ändras
 isolevel försvinner inte när en tas bort
 
-
+ost maker ost3?
 
 
 
