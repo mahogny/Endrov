@@ -179,7 +179,7 @@ public class Stack2D extends StackInterface
 				}
 
 			needLoadGL=true;
-			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);w.repaint();}});
+			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);w.view.repaint();}});
 			}
 		}
 	
@@ -393,19 +393,18 @@ public class Stack2D extends StackInterface
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
-			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
+			OneSlice os=texSlices.get(texSlices.firstKey()).lastElement();
 			double width=os.w/os.resX;
 			double height=os.h/os.resY;
+			double depth=os.z;
 			
-			double[] list={Math.abs(0-mid.x),Math.abs(0-mid.y),Math.abs(texSlices.firstKey()-mid.z), 
-					Math.abs(width-mid.x), Math.abs(height-mid.y), Math.abs(texSlices.lastKey()-mid.z)};
-			double max=list[0];
-			for(double d:list)
-				if(d>max)
-					max=d;
+			double dx=Math.max(Math.abs(0-mid.x), Math.abs(width-mid.x));
+			double dy=Math.max(Math.abs(0-mid.y), Math.abs(height-mid.y));
+			double dz=Math.max(Math.abs(0-mid.z), Math.abs(depth-mid.z));
+			double d=Math.sqrt(dx*dx+dy*dy+dz*dz);
 			
 			//Find how far away the camera has to be. really have FOV in here?
-			return max/Math.sin(FOV);
+			return d/Math.sin(FOV);
 			}
 		else
 			return null;

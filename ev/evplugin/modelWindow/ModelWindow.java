@@ -18,6 +18,8 @@ import evplugin.ev.*;
 import evplugin.keyBinding.*;
 import evplugin.modelWindow.basicExt.CrossHandler;
 
+//TODO drag and drop of a file with # in the name fails on linux
+
 /**
  * Model window - displays a navigatable 3d model
  * @author Johan Henriksson
@@ -40,11 +42,8 @@ public class ModelWindow extends BasicWindow
 				{
 				try
 					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					ModelWindow m=new ModelWindow(x,y,w,h);
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					ModelWindow m=new ModelWindow(r);
 					m.frameControl.setGroup(e.getAttribute("group").getIntValue());
 					
 					for(ModelWindowHook hook:m.modelWindowHooks)
@@ -83,7 +82,7 @@ public class ModelWindow extends BasicWindow
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
-	public final MetaCombo metaCombo=new MetaCombo(null,false);
+	private final MetaCombo metaCombo=new MetaCombo(null,false);
 	private final JButton buttonCenter=new JButton("Center");
 	private final EvHidableSidePane sidePanelSplitPane;
 	
@@ -124,13 +123,13 @@ public class ModelWindow extends BasicWindow
 	 */
 	public ModelWindow()
 		{
-		this(0,50,1000,800);
+		this(new Rectangle(0,50,1000,800));
 		}
 	
 	/**
 	 * Make a new window at some location
 	 */
-	public ModelWindow(int x, int y, int w, int h)
+	public ModelWindow(Rectangle bounds)
 		{
 		view=new ModelView(this);
 		frameControl=new FrameControlModel(this);
@@ -139,7 +138,7 @@ public class ModelWindow extends BasicWindow
 		for(ModelWindowExtension e:modelWindowExtensions)
 			e.newModelWindow(this);
 		
-		//Listeners		
+		//Add listeners to view
 		view.addMouseMotionListener(this);
 		view.addMouseListener(this);
 		view.addMouseWheelListener(this);
@@ -147,11 +146,8 @@ public class ModelWindow extends BasicWindow
 		view.setFocusable(true);
 		setFocusable(true);
 		addKeyListener(this);
-		objectDisplayList.addChangeListener(this);
 
-		//Special: cross
-		addModelWindowMouseListener(crossHandler.crossMListener);
-		
+		//Build view menu
 		addMenubar(menuModel);
 		menuModel.add(miView);
 		miView.add(miViewFront);
@@ -161,6 +157,7 @@ public class ModelWindow extends BasicWindow
 		miView.add(miViewLeft);
 		miView.add(miViewRight);
 		
+		//Add action listeners
 		miViewTop.addActionListener(this);
 		miViewLeft.addActionListener(this);
 		miViewFront.addActionListener(this);
@@ -169,8 +166,12 @@ public class ModelWindow extends BasicWindow
 		miViewRight.addActionListener(this);
 		buttonCenter.addActionListener(this);
 		metaCombo.addActionListener(this);
+		
+		//Add change listeners
+		objectDisplayList.addChangeListener(this);
 
-	
+		//Special: cross
+		addModelWindowMouseListener(crossHandler.crossMListener);
 		
 		//Put GUI together
 		GridBagConstraints constrFrame=new GridBagConstraints();
@@ -185,11 +186,8 @@ public class ModelWindow extends BasicWindow
 		constrFrame.weightx=3;
 		bottomMain.add(frameControl,constrFrame);
 		bottomMain.add(buttonCenter,constrCenter);
-		bottomMain.add(metaCombo,constrCombo);
+		bottomMain.add(metaCombo,constrCombo);		
 
-		
-		
-		
 		JPanel inToolpane=new JPanel(new BorderLayout());
 		inToolpane.setMinimumSize(new Dimension(250,20));
 		inToolpane.setMaximumSize(new Dimension(250,20));
@@ -200,23 +198,23 @@ public class ModelWindow extends BasicWindow
 		toolPanel.setMaximumSize(new Dimension(250,20));
 		updateToolPanels();
 		
-		
 		sidePanelSplitPane = new EvHidableSidePane(view, toolPanel, true);
 		
 		setLayout(new BorderLayout());
 		add(sidePanelSplitPane,BorderLayout.CENTER);
 		add(bottomPanel,BorderLayout.SOUTH);
 
+		//Trigger all events to build dynamic parts of window
 		updateToolPanels();
 		dataChangedEvent();
-		
-//		attachDragAndDrop(this); //TODO EXPERIMENTAL! FIX LINUX BEFORE RELEASE!
 		
 		//Window overall things
 		setTitleEvWindow("Model Window");
 		packEvWindow();
 		setVisibleEvWindow(true);
-		setBoundsEvWindow(x,y,w,h);
+		setBoundsEvWindow(bounds);
+		attachDragAndDrop(this);
+		view.autoCenter();
 		}
 	
 	
@@ -233,6 +231,7 @@ public class ModelWindow extends BasicWindow
 		for(ModelWindowHook h:modelWindowHooks)
 			h.fillModelWindomMenus();
 		
+		//Assemble side panel
 		int counta=0;
 		sidePanel.removeAll();
 		for(JComponent c:sidePanelItems)
@@ -245,6 +244,7 @@ public class ModelWindow extends BasicWindow
 		GridBagConstraints cg=new GridBagConstraints();	cg.gridy=counta;	cg.fill=GridBagConstraints.HORIZONTAL;	cg.weightx=1;
 		sidePanel.add(objectDisplayList,cg);
 		
+		//Assemble bottom panel
 		int countb=0;
 		bottomPanel.removeAll();
 		for(JComponent c:bottomPanelItems)
@@ -254,7 +254,6 @@ public class ModelWindow extends BasicWindow
 			bottomPanel.add(c,cr);
 			countb++;
 			}
-		
 		
 		sidePanel.revalidate();
 		bottomPanel.revalidate();
@@ -272,12 +271,8 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void windowPersonalSettings(Element root)
 		{
-		Rectangle r=getBounds();
 		Element e=new Element("modelwindow");
-		e.setAttribute("x", ""+r.x);
-		e.setAttribute("y", ""+r.y);
-		e.setAttribute("w", ""+r.width);
-		e.setAttribute("h", ""+r.height);
+		setXMLbounds(e);
 		e.setAttribute("group",""+frameControl.getGroup());
 		e.setAttribute("sidePanelVisible",""+sidePanelSplitPane.getPanelVisible());
 		
@@ -290,14 +285,13 @@ public class ModelWindow extends BasicWindow
 	
 
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	/**
+	 * Action listener
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
 		if(e.getSource()==metaCombo)
-			view.meta=metaCombo.getMeta();
+			dataChangedEvent();
 		else if(e.getSource()==buttonCenter)
 			{
 			view.autoCenter();
@@ -326,10 +320,6 @@ public class ModelWindow extends BasicWindow
 		view.autoCenter();
 		}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
-	 */
 	public void keyPressed(KeyEvent e)
 		{
 		if(!ScriptBinding.runScriptKey(e))
@@ -338,19 +328,9 @@ public class ModelWindow extends BasicWindow
 				ConsoleWindow.focusConsole(this, view);
 			}
 		}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
-	 */
 	public void keyReleased(KeyEvent e)
 		{
 		}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
-	 */
 	public void keyTyped(KeyEvent e)
 		{	
 		if(e.getKeyChar()=='a')
@@ -362,14 +342,12 @@ public class ModelWindow extends BasicWindow
 		else if(e.getKeyChar()=='s')
 			frameControl.stepBack(0.2);
 		}
-	
 	public void mouseClicked(MouseEvent e)
 		{
 		for(ModelWindowMouseListener list:modelWindowMouseListeners)
 			list.mouseClicked(e);
 		view.requestFocus();
 		}
-	
 	public void mousePressed(MouseEvent e)
 		{
 		mouseLastX = e.getX();
@@ -384,8 +362,6 @@ public class ModelWindow extends BasicWindow
 		for(ModelWindowMouseListener list:modelWindowMouseListeners)
 			list.mouseReleased(e);
 		}
-
-	
 	public void mouseEntered(MouseEvent e)
 		{
 		for(ModelWindowMouseListener list:modelWindowMouseListeners)
@@ -398,7 +374,6 @@ public class ModelWindow extends BasicWindow
 		view.mouseX=-1;
 		view.mouseY=-1;		
 		}
-	
 	public void mouseMoved(MouseEvent e)
 		{
 		view.mouseX=e.getX();
@@ -442,20 +417,6 @@ public class ModelWindow extends BasicWindow
 		view.mouseX=mouseLastX;
 		view.mouseY=mouseLastY;
 		}
-	
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-	 */
-	public void stateChanged(ChangeEvent e)
-		{
-		dataChangedEvent();
-		}
-
-	
-	
 	/**
 	 * Handle mouse scroll wheel
 	 */
@@ -475,12 +436,22 @@ public class ModelWindow extends BasicWindow
 	
 	/*
 	 * (non-Javadoc)
+	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+	 */
+	public void stateChanged(ChangeEvent e)
+		{
+		dataChangedEvent();
+		}
+
+	
+	
+	/*
+	 * (non-Javadoc)
 	 * @see client.BasicWindow#dataChanged()
 	 */
 	public void dataChangedEvent()
 		{
 		metaCombo.updateList();
-		view.meta=metaCombo.getMeta();
 		objectDisplayList.setData(metaCombo.getMeta());
 		objectDisplayList.updateList();
 		for(ModelWindowHook h:modelWindowHooks)
@@ -491,9 +462,19 @@ public class ModelWindow extends BasicWindow
 			view.repaint(); //TODO modw repaint
 			}
 		}
+
+	/**
+	 * Get the EvData currently selected
+	 */
+	public EvData getSelectedData()
+		{
+		return metaCombo.getMeta();
+		}
 	
 
-
+	/**
+	 * Called whenever a new file is loaded, and this window should change active set
+	 */
 	public void loadedFile(EvData data)
 		{
 		metaCombo.setMeta(data);

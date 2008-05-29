@@ -9,11 +9,9 @@ import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Vector3d;
 
-
 //import com.sun.opengl.util.Screenshot;
 import com.sun.opengl.util.j2d.*;
 
-import evplugin.data.*;
 import evplugin.ev.*;
 import evplugin.modelWindow.basicExt.ModelWindowGrid;
 
@@ -30,6 +28,9 @@ import evplugin.modelWindow.basicExt.ModelWindowGrid;
 public class ModelView extends GLCanvas
 	{
 	public static final long serialVersionUID=0;
+	
+	//method: display(). faster than repaint.
+	
 	
 	/** Number of clipping planes supported by this context */
 	public int numClipPlanesSupported;
@@ -60,39 +61,25 @@ public class ModelView extends GLCanvas
 	public TextRenderer renderer;
 
 	
-	
-	
-	/** Get metadata. Never returns null */
-	EvData meta=new EvDataEmpty();
-	public EvData getMetadata()
-		{
-		return meta;
-		}
-	
-	
 	/**
 	 * Construct new component with access to common program data
 	 */
 	public ModelView(ModelWindow window)
 		{
 		this.window=window;
-
 		addGLEventListener(glEventListener);
-		
-		
-		
 		}
 	
-	
+	/**
+	 * Listener for select changes. hoverinit is always called first once, then hover with the id
+	 * if it is hovered
+	 */
 	public interface GLSelectListener
 		{
 		public void hoverInit(int id);
 		public void hover(int id);
 		}
 	
-	//selectColorExtensionMap only used here. use something else than hook, new listener
-	//events: hover, click, drag etc
-
 	private int selectColorNum;
 	final private HashMap<Integer,GLSelectListener> selectColorExtensionMap=new HashMap<Integer,GLSelectListener>();
 	private void resetSelectColor()
@@ -119,6 +106,13 @@ public class ModelView extends GLCanvas
 		gl.glColor3ub(colR,colG,colB);
 		}
 	
+	
+	private boolean force=false;
+	public void forceRepaint()
+		{
+		force=true;
+		System.out.println("force enabled");
+		}
 	
 	private GLEventListener glEventListener=new GLEventListener()
 		{
@@ -149,7 +143,7 @@ public class ModelView extends GLCanvas
 			gl.glEnable(GL.GL_CULL_FACE);
 			gl.glEnable(GL.GL_DEPTH_TEST);
 			gl.glEnable(GL.GL_NORMALIZE);
-			gl.glShadeModel(GL.GL_SMOOTH); //GL_FLAT
+			gl.glShadeModel(GL.GL_SMOOTH);
 			
 	    renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 72));
 
@@ -169,8 +163,6 @@ public class ModelView extends GLCanvas
 	    gl.glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS, queryArr, 0);
 	    numTextureUnits=queryArr[0];
 	    System.out.println("num texture units: "+numTextureUnits);
-
-	    
 			}
 
 		
@@ -201,6 +193,13 @@ public class ModelView extends GLCanvas
 		 */
 		public void display(GLAutoDrawable drawable)
 			{
+			System.out.println();
+			System.out.println("begin display");
+			if(force)
+				System.out.println("===forced set===");
+			force=false;
+			
+			
 			//Store away unaffected matrix
 			GL gl = drawable.getGL();
 			gl.glPushMatrix();
@@ -212,6 +211,7 @@ public class ModelView extends GLCanvas
 			//Get camera into position
 			camera.transformGL(gl);
 			
+			window.crossHandler.resetCrossList();
 			
 			//Prepare render extensions
 			for(ModelWindowHook h:window.modelWindowHooks)
@@ -221,7 +221,6 @@ public class ModelView extends GLCanvas
 			// Render for selection
 			/////////////////////////////////
 			
-			window.crossHandler.resetCrossList();
 			
 			//Skip this step if mouse isn't even within the window
 			if(mouseX>=0 && mouseY>=0)
@@ -261,45 +260,57 @@ public class ModelView extends GLCanvas
 			/////////////////////////////////
 			// Render for viewing
 			/////////////////////////////////
+			
+
 
 			//Clear buffers
 			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-			
-			//Render extensions
-			for(ModelWindowHook h:window.modelWindowHooks) //todo: order of rendering
-				h.displayFinal(gl);
-			
 			//Render cross. could be an extension
 			window.crossHandler.displayCrossFinal(gl,window);
-
 			
-			//adjust scale for next time
-			//TODO: should take all into account somehow. average?
+			//Render extensions
+			for(ModelWindowHook h:window.modelWindowHooks) //TODO order of rendering
+				h.displayFinal(gl);
+			
+			//Adjust scale for next time
+			//TODO Highly questionable if this should be done _here_
+			double avdist=0;
+			int numdist=0;
 			for(ModelWindowHook h:window.modelWindowHooks)
 				{
 				for(double dist:h.adjustScale())
 					{
-					//Select pan speed
-					panspeed=dist/1000.0;
-					
-					//Select grid size
-					double g=Math.pow(10, (int)Math.log10(dist));
-					if(g<1) g=1;
-					ModelWindowGrid.setGridSize(window,g);
+					avdist+=dist;
+					numdist++;
 					}
 				}
+			avdist/=numdist;
+			
+			//Select pan speed
+			panspeed=avdist/1000.0;
+				
+			//Select grid size
+			double g=Math.pow(10, (int)Math.log10(avdist));
+			if(g<1) g=1;
+			ModelWindowGrid.setGridSize(window,g);
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
+			
+			System.out.println("end display");
 			}
 
 		
 		};
 	
 
-	
-	
+/*	private cameraMoved
+	public void autoCenterIfNeeded()
+		{
+			TODO autocenter if needed not obvious how to implement
+			
+		}*/
 	
 	/**
 	 * Place camera at a distance, position and angle that makes the whole model fit
@@ -313,38 +324,35 @@ public class ModelView extends GLCanvas
 			for(Vector3D newcenter:h.autoCenterMid())
 				center.add(newcenter);
 
-		//If centers were available, continue
-		if(!center.isEmpty())
+		//Default center
+		if(center.isEmpty())
+			center.add(new Vector3D(0,0,0));
+		
+		Vector3D mid=new Vector3D(0,0,0);
+		for(Vector3D v:center)
+			mid=mid.add(v);
+		mid=mid.mul(1.0/center.size());
+
+		//Figure out required distance
+		double dist=0;
+		for(ModelWindowHook h:window.modelWindowHooks)
 			{
-			Vector3D mid=new Vector3D(0,0,0);
-			for(Vector3D v:center)
-				mid=mid.add(v);
-			mid=mid.mul(1.0/center.size());
-			
-			//Figure out required distance
-			double dist=0;
-			for(ModelWindowHook h:window.modelWindowHooks)
-				{
-				for(Double newDist:h.autoCenterRadius(mid,FOV))
-					if(dist<newDist)
-						dist=newDist;
-				}
-			//Avoid divison by zero at least
-			if(dist==0)
-				dist=1;
-			
-			//Set camera
-			camera.center.x=mid.x;
-			camera.center.y=mid.y;
-			camera.center.z=mid.z;
-			
-			//TODO: if NaN, restore and warn
-			
-			camera.center(dist);
-			
-			if(EV.debugMode)
-				System.out.println("center: xyz "+camera.center.x+" "+camera.center.y+" "+camera.center.z+" dist "+dist);
+			for(Double newDist:h.autoCenterRadius(mid,FOV))
+				if(dist<newDist)
+					dist=newDist;
 			}
+		//Avoid divison by zero at least
+		if(dist==0)
+			dist=1;
+
+		//Set camera
+		camera.center.x=mid.x;
+		camera.center.y=mid.y;
+		camera.center.z=mid.z;
+		camera.center(dist);
+
+		if(EV.debugMode)
+			System.out.println("center: xyz "+camera.center.x+" "+camera.center.y+" "+camera.center.z+" dist "+dist);
 		repaint();
 		}
 	
@@ -370,37 +378,29 @@ public class ModelView extends GLCanvas
 	
 	/**
 	 * Render text in 3D
-	 * @param gl OpenGL context
 	 * @param renderer Font renderer
 	 * @param textScaleFactor Size of font
 	 * @param text String to render
 	 */
-	public void renderString(GL gl, TextRenderer renderer,
-			float textScaleFactor, 
-      String text)
+	public void renderString(GL gl, TextRenderer renderer, float textScaleFactor, String text)
 		{
+		gl.glPushAttrib(GL.GL_ENABLE_BIT);
 		renderer.begin3DRendering();
-		
+
 		//make global I guess?
 		gl.glDisable(GL.GL_CULL_FACE);
 		
-		//		Note that the defaults for glCullFace and glFrontFace are
-		//		GL_BACK and GL_CCW, which match the TextRenderer's definition
-		//		of front-facing text.
+		//Note that the defaults for glCullFace and glFrontFace are GL_BACK and GL_CCW, which
+		//match the TextRenderer's definition of front-facing text.
 		Rectangle2D bounds = renderer.getBounds(text);
 		float w = (float) bounds.getWidth();
 		float h = (float) bounds.getHeight();
 		renderer.draw3D(text, w / -2.0f * textScaleFactor, h / -2.0f * textScaleFactor, 0, textScaleFactor);
 		
-		//// OPTIMIZATION: would it be faster if I fixed scalefactor and scaled in GL?
-		
 		renderer.end3DRendering();
-		gl.glEnable(GL.GL_CULL_FACE);
+		gl.glPopAttrib();
+//		gl.glEnable(GL.GL_CULL_FACE);
 		}
-	
-	
-	
-	
 	
 	
 	

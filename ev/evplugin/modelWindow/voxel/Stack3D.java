@@ -297,7 +297,10 @@ public class Stack3D extends StackInterface
 				}
 
 			needLoadGL=true;
-			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);w.repaint();}});
+			SwingUtilities.invokeLater(new Runnable(){public void run()
+				{w.progress.setValue(0);
+				w.view.repaint(); //TODO modw repaint. w.repaint does not do the job in this case!
+				}});
 			}
 		}
 	
@@ -310,6 +313,7 @@ public class Stack3D extends StackInterface
 	public void loadGL(GL gl)
 		{
 		cleanDisposable(gl);
+		System.out.println("about to load gl: "+needLoadGL);
 		if(needLoadGL)
 			{
 			needLoadGL=false;
@@ -335,6 +339,7 @@ public class Stack3D extends StackInterface
 //		gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
 		if(isBuilt())
 			{
+			System.out.println("built");
 			//Draw edges
 			if(drawEdges)
 				for(Vector<VoxelStack> osv:texSlices.values())
@@ -366,6 +371,8 @@ public class Stack3D extends StackInterface
 			gl.glDepthMask(true);
 			gl.glEnable(GL.GL_CULL_FACE);
 			}
+		else
+			System.out.println("!built");
 	//	gl.glPopAttrib();
 		}
 
@@ -401,7 +408,7 @@ public class Stack3D extends StackInterface
 	 */
 	public Collection<Vector3D> autoCenterMid()
 		{
-		if(texSlices!=null && !texSlices.isEmpty())
+		if(!texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			return Collections.singleton(new Vector3D(os.realw/2.0,os.realh/2.0,os.reald/2.0));
@@ -416,18 +423,16 @@ public class Stack3D extends StackInterface
 	 */
 	public Double autoCenterRadius(Vector3D mid, double FOV)
 		{
-		if(texSlices!=null && !texSlices.isEmpty())
+		if(!texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
-			double[] list={Math.abs(0-mid.x),Math.abs(0-mid.y),Math.abs(0-mid.z), 
-					Math.abs(os.realw-mid.x), Math.abs(os.realh-mid.y), Math.abs(os.reald-mid.z)};
-			double max=list[0];
-			for(double d:list)
-				if(d>max)
-					max=d;
-			
+			double dx=Math.max(Math.abs(0-mid.x), Math.abs(os.realw-mid.x));
+			double dy=Math.max(Math.abs(0-mid.y), Math.abs(os.realh-mid.y));
+			double dz=Math.max(Math.abs(0-mid.z), Math.abs(os.reald-mid.z));
+			double d=Math.sqrt(dx*dx+dy*dy+dz*dz);
+		
 			//Find how far away the camera has to be. really have FOV in here?
-			return max/Math.sin(FOV);
+			return d/Math.sin(FOV);
 			}
 		else
 			return null;

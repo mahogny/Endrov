@@ -23,6 +23,8 @@ import evplugin.modelWindow.*;
  */
 public class ModelWindowClipPlane implements ModelWindowExtension
 	{
+	//OpenGL follows Ax+By+Cz+D=0 with ABC normalized
+	
 	public static void initPlugin() {}
 	static
 		{
@@ -35,10 +37,22 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		w.modelWindowHooks.add(h); 
 		}
 
+	/** Get vector3d axis by index */
+	public static double vertexGetCoord(Vector3d v, int i)
+		{
+		if(i==0) return v.x; else if(i==1) return v.y; else return v.z; //i==2
+		}
+	/** Set vector3d axis by index */
+	public static void vertexSetCoord(Vector3d v, int i, double d)
+		{
+		if(i==0) v.x=d; else if(i==1) v.y=d; else v.z=d; //i==2
+		}
 	
-
 	
-	private class Hook implements ModelWindowHook, ActionListener//, MouseListener
+	
+	
+	
+	private class Hook implements ModelWindowHook, ActionListener
 		{
 		private ModelWindow w;
 		private Vector<ToolSlab> isolayers=new Vector<ToolSlab>();
@@ -64,7 +78,6 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			return Collections.emptySet();
 			}
 		public boolean canRender(EvObject ob){return false;}
-		public void displayInit(GL gl){}
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
 		public void select(int id){}
@@ -92,21 +105,28 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		
 		
 		
+		public void displayInit(GL gl)
+			{
+			int i=0;
+			for(ToolSlab ti:isolayers)
+				{
+				ti.displayInit(gl, i);
+				i++;
+				}
+			for(;i<w.view.numClipPlanesSupported;i++)
+				gl.glDisable(GL.GL_CLIP_PLANE0+i);			
+			}
 		public void displaySelect(GL gl)
 			{
-			for(ToolSlab ti:isolayers)
-				ti.renderSelect(gl);
 			}
 		public void displayFinal(GL gl)
 			{
 			int i=0;
 			for(ToolSlab ti:isolayers)
 				{
-				ti.render(gl,i);
+				ti.renderFinal(gl,i);
 				i++;
 				}
-			for(;i<w.view.numClipPlanesSupported;i++)
-				gl.glDisable(GL.GL_CLIP_PLANE0+i);
 			}
 		
 
@@ -129,24 +149,6 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			//Should try and set a sensible default size-dependent
 			private final Vector3d[] points=new Vector3d[]{new Vector3d(5,0,0),new Vector3d(0,5,0),new Vector3d(0,0,5)};
 
-			private double vertexGetCoord(Vector3d v, int i)
-				{
-				if(i==0)
-					return v.x;
-				else if(i==1)
-					return v.y;
-				else
-					return v.z; //i==2
-				}
-			private void vertexSetCoord(Vector3d v, int i, double d)
-				{
-				if(i==0)
-					v.x=d;
-				else if(i==1)
-					v.y=d;
-				else
-					v.z=d; //i==2
-				}
 			
 			public ToolSlab()
 				{
@@ -182,7 +184,6 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			public void stateChanged(ChangeEvent arg0)
 				{
 				w.view.repaint();
-//				w.repaint();
 				}
 
 
@@ -236,9 +237,11 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					}
 				}
 			
-			public void renderSelect(GL gl)
+		
+				
+			public void displayInit(GL gl, int slabid)
 				{
-				if(cEnabled.isSelected() && cVisible.isSelected())
+				if(cVisible.isSelected())
 					{
 					Vector3d mid=new Vector3d();
 					for(int i=0;i<3;i++)
@@ -249,26 +252,9 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					mid.scale(1/3.0);
 					w.crossHandler.addCross(mid, new CL(4));
 					}
-				}
 				
-			/**
-			 * Render according to these controls. Create surfaces as needed.
-			 */
-			public void render(GL gl, int slabid)
-				{
-				//OpenGL follows Ax+By+Cz+D=0
 				if(cEnabled.isSelected())
 					{
-					if(cVisible.isSelected())
-						{
-						gl.glDisable(GL.GL_CLIP_PLANE0+slabid);
-						gl.glBegin(GL.GL_LINE_LOOP);
-						gl.glColor3f(1, 0, 0);
-						for(int i=0;i<3;i++)
-							gl.glVertex3f((float)points[i].x,(float)points[i].y,(float)points[i].z);
-						gl.glEnd();
-						}
-
 					//Calculate plane
 					Vector3d va=new Vector3d(points[0]);
 					Vector3d vb=new Vector3d(points[0]);
@@ -291,13 +277,27 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					gl.glDisable(GL.GL_CLIP_PLANE0+slabid);
 				}
 			
+		
+			/**
+			 * Render final
+			 */
+			public void renderFinal(GL gl, int slabid)
+				{
+				if(cVisible.isSelected())
+					{
+					gl.glDisable(GL.GL_CLIP_PLANE0+slabid);
+					gl.glBegin(GL.GL_LINE_LOOP);
+					gl.glColor3f(1, 0, 0);
+					for(int i=0;i<3;i++)
+						gl.glVertex3f((float)points[i].x,(float)points[i].y,(float)points[i].z);
+					gl.glEnd();
+					if(cEnabled.isSelected())
+						gl.glEnable(GL.GL_CLIP_PLANE0+slabid);
+					}
+				}
+			
 			}
-		
-		
-		
-		
-		
-		
+
 		
 		}
 	

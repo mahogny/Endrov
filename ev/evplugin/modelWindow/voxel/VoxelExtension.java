@@ -3,6 +3,7 @@ package evplugin.modelWindow.voxel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -107,9 +108,7 @@ public class VoxelExtension implements ModelWindowExtension
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==miDrawEdge)
-				{
 				w.view.repaint();
-				}
 			else
 				{
 				icR.stackChanged();
@@ -130,7 +129,14 @@ public class VoxelExtension implements ModelWindowExtension
 			{
 			return slices.autoCenterMid();
 			}
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV){return Collections.emptySet();}
+		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
+			{
+			Double r=slices.autoCenterRadius(mid, FOV);
+			if(r==null)
+				return Collections.emptySet();
+			else
+				return Collections.singleton(r);
+			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}
@@ -151,10 +157,15 @@ public class VoxelExtension implements ModelWindowExtension
 
 		public void datachangedEvent()
 			{
-			Imageset im=w.metaCombo.getImageset();
+			EvData data=w.getSelectedData();
+			Imageset im=data instanceof Imageset ? (Imageset)data : null;
+			
 			icR.channelCombo.setExternalImageset(im);
 			icG.channelCombo.setExternalImageset(im);
 			icB.channelCombo.setExternalImageset(im);
+			icR.checkStackChanged();
+			icG.checkStackChanged();
+			icB.checkStackChanged();
 			}
 		
 		
@@ -221,10 +232,11 @@ public class VoxelExtension implements ModelWindowExtension
 		private class OneImageChannel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
-			JButton bFs=FilterSeq.createFilterSeqButton();
-			ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
-			Color color;
-			FilterSeq filterSeq=new FilterSeq();
+			private JButton bFs=FilterSeq.createFilterSeqButton();
+//			private ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
+			private ChannelCombo channelCombo=new ChannelCombo(null,true);
+			private Color color;
+			private FilterSeq filterSeq=new FilterSeq();
 			
 			public OneImageChannel(String name,Color color)
 				{
@@ -238,9 +250,14 @@ public class VoxelExtension implements ModelWindowExtension
 				filterSeq.observer.addWeakListener(filterSeqObserver);
 				}
 			
+			/** Invoked when filter sequence changed */
 			private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
 				{public void observerEvent(Object o){stackChanged();}};
 			
+			public WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
+			public String lastChannel="";
+			
+			/** Update stack */ 
 			public void stackChanged()
 				{
 				//TODO: when filter seq updated, a signal should be sent back
@@ -251,8 +268,26 @@ public class VoxelExtension implements ModelWindowExtension
 					slices=new Stack3D(); 
 				else
 					slices=new Stack2D();
+				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
+				lastChannel=channelCombo.getChannelNotNull();
 //				System.out.println("stack changed");
-				w.repaint();
+				w.view.repaint();
+				}
+			
+			/** Update stack if imageset or channel changed */
+			public void checkStackChanged()
+				{
+				Imageset ims=lastImageset.get();
+				String ch=lastChannel;
+				Imageset newImageset=channelCombo.getImagesetNull();
+				String newChannel=channelCombo.getChannelNotNull();
+				
+			//	System.out.println(" "+ims+" "+newImageset+" "+ch+" "+newChannel);
+				if(ims!=newImageset || !ch.equals(newChannel)/* && (!ch.equals("") || !newChannel.equals(""))*/)
+		//			{
+//					System.out.println("changed");
+					stackChanged();
+	//				}
 				}
 				
 			public void actionPerformed(ActionEvent e)
@@ -260,12 +295,11 @@ public class VoxelExtension implements ModelWindowExtension
 				if(e.getSource()==channelCombo)
 					{
 					stackChanged();
+//					System.out.println("call stack change");
 					}
 				else if(e.getSource()==bFs)
 					{
 					new WindowFilterSeq(filterSeq);
-					
-					
 					}
 				}
 			
