@@ -572,6 +572,10 @@ public class ModelWindow extends BasicWindow
 	scale no longer empty set=>center?
 	new clip plane: adjust depending on scale
 		 
+		 kritiskt:
+		 * shader
+		 * sorterix
+		 
 		 */
 
 	
