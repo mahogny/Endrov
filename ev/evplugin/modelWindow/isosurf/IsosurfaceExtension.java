@@ -285,7 +285,8 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				private final int cframe;
 				private final int blursize;
 				private final float cutoff;
-				private final ModelWindow mw;
+				//private final ModelWindow mw;
+				ModelWindow.ProgressMeter pm;
 				
 				private Isosurface iso=new Isosurface();
 				private FloatBuffer vertb;
@@ -303,7 +304,8 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					this.cframe=cframe;
 					this.blursize=blursize;
 					this.cutoff=cutoff;
-					this.mw=mw;
+					//this.mw=mw;
+					pm=mw.createProgressMeter();
 					}
 				
 				/**
@@ -341,7 +343,8 @@ public class IsosurfaceExtension implements ModelWindowExtension
 							for(final int i:slices.keySet())
 								{
 								if(shouldStop()) return;
-								SwingUtilities.invokeLater(new Runnable(){public void run(){mw.progress.setValue(totalPartLoading*i/numSlices);}});
+								pm.set(totalPartLoading*i/numSlices);
+//								SwingUtilities.invokeLater(new Runnable(){public void run(){mw.progress.setValue(totalPartLoading*i/numSlices);}});
 
 								EvImage evim=slices.get(i);
 								BufferedImage bim=evim.getJavaImage();
@@ -419,7 +422,8 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						}
 					
 					if(shouldStop()) return;
-					SwingUtilities.invokeLater(new Runnable(){public void run(){mw.progress.setValue(totalPartConvertLists);}});
+					pm.set(totalPartConvertLists);
+//					SwingUtilities.invokeLater(new Runnable(){public void run(){mw.progress.setValue(totalPartConvertLists);}});
 					
 					//If everything went ok, create renderer
 					if(iso.isSurfaceValid())
@@ -446,11 +450,12 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					
 					System.out.println("done");
 					eliminate();
+					/*
 					
 					SwingUtilities.invokeLater(new Runnable(){public void run()
 						{mw.progress.setValue(0);
 						mw.view.repaint(); //TODO modw repaint. w.repaint does not do the job in this case!
-						}});
+						}});*/
 					}
 
 				public boolean shouldStop()
@@ -458,9 +463,10 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					if(stopFlag)
 						{
 						eliminate();
-						SwingUtilities.invokeLater(new Runnable(){public void run()
+//						pm.done();
+/*						SwingUtilities.invokeLater(new Runnable(){public void run()
 							{mw.progress.setValue(0);
-							}});
+							}});*/
 						return true;
 						}
 					else
@@ -469,6 +475,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				public void eliminate()
 					{
 					generators.remove(this);
+					pm.done();
 					System.out.println("eliminate");
 					}
 				public void stopGenerate()

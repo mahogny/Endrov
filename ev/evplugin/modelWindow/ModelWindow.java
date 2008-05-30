@@ -78,7 +78,8 @@ public class ModelWindow extends BasicWindow
 	private final JPanel bottomPanel=new JPanel(new GridBagLayout());
 	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
-	public JProgressBar progress=new JProgressBar(0,1000);
+	//public JProgressBar progress=new JProgressBar(0,1000);
+	private JPanel progress=new JPanel(); 
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
@@ -486,36 +487,92 @@ public class ModelWindow extends BasicWindow
 		}
 	
 	
+
+	
+	private List<ProgressMeter> progressMeters=new LinkedList<ProgressMeter>();
+	/**
+	 * Progress meters
+	 */
+	public class ProgressMeter
+		{
+		public void init()
+			{
+			SwingUtilities.invokeLater(new Runnable(){public void run(){updateProgressMeter();}});
+			}
+		/** Set progress, 0-1000 */
+		public void set(final int v)
+			{
+			SwingUtilities.invokeLater(new Runnable(){public void run(){pbar.setValue(v);}});
+			}
+		/** Remove progress bar. update view */
+		public void done()
+			{
+			progressMeters.remove(this);
+			SwingUtilities.invokeLater(new Runnable(){public void run()
+				{
+				updateProgressMeter();
+				view.repaint(); //TODO modw repaint. w.repaint does not do the job in this case!
+				}});
+			}
+		private JProgressBar pbar=new JProgressBar(0,1000);
+		}
+	/**
+	 * Update progressbar panel
+	 */
+	private void updateProgressMeter()
+		{
+		synchronized(progressMeters)
+			{
+			if(progressMeters.isEmpty())
+				{
+				progress.setVisible(false);
+				progress.removeAll();
+				}
+			else
+				{
+				progress.removeAll();
+				progress.setLayout(new GridLayout(1,progressMeters.size()));
+				for(ProgressMeter pm:progressMeters)
+					progress.add(pm.pbar);
+				progress.revalidate();
+				progress.setVisible(true);
+				}
+			}
+		}
+	/**
+	 * Create a new progress meter, add it, and return 
+	 */
+	public ProgressMeter createProgressMeter()
+		{
+		synchronized(progressMeters)
+			{
+			ProgressMeter m=new ProgressMeter();
+			m.init();
+			progressMeters.add(m);
+			return m;
+			}
+		}
+	
+	
+	
 	/**
 	 
 	 
 	 
-	 isolevelberäknix ej i bakgrunden
-isolevel uppdateras ej när parametrar ändras
-isolevel försvinner inte när en tas bort
+	isolevel försvinner inte när en tas bort
 
-ost maker ost3?
+	ost maker ost3?
 
 
-
-
-
-
-implementera:
-kanallista uppdateras, ny entry, avbryt evaluerix
-sorterixslista
-se över när den spelar
-scale, gridsize, etc, var i koden ska detta ze?
-scale no longer empty set=>center?
-new clip plane: adjust depending on scale
-
-	 
-	 
-	 
-	 
-	 */
-	
-	
+	implementera:
+	kanallista uppdateras, ny entry, avbryt evaluerix
+	sorterixslista
+	se över när den spelar
+	scale, gridsize, etc, var i koden ska detta ze?
+	scale no longer empty set=>center?
+	new clip plane: adjust depending on scale
+		 
+		 */
 
 	
 	}

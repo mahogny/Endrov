@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.List;
 
 import javax.media.opengl.*;
-import javax.swing.SwingUtilities;
 
 import com.sun.opengl.util.j2d.TextureRenderer;
 import com.sun.opengl.util.texture.*;
@@ -127,16 +126,19 @@ public class Stack2D extends StackInterface
 		private double frame;
 		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
-		private ModelWindow w;
+		//private ModelWindow w;
+		ModelWindow.ProgressMeter pm;
 		public BuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
-			this.w=w;
+			//this.w=w;
+			pm=w.createProgressMeter();
 			}
 		public void run()
 			{
-			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
+			pm.set(0);
+//			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
 			
 			//im cache safety issues
 			Collection<VoxelExtension.ChannelSelection> channels=chsel.values();
@@ -156,7 +158,8 @@ public class Stack2D extends StackInterface
 						{
 						if(stop)
 							{
-							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
+							pm.done();
+//							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
 							return; //Just stop thread if needed
 							}
 						skipcount++;
@@ -164,7 +167,8 @@ public class Stack2D extends StackInterface
 							{
 							final int progressSlices=i*1000/(channels.size()*slices.size());
 							final int progressChan=1000*curchannum/channels.size();
-							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(progressSlices+progressChan);}});
+							pm.set(progressSlices+progressChan);
+//							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(progressSlices+progressChan);}});
 							
 							skipcount=0;
 //							System.out.println("loading #"+i);
@@ -179,7 +183,8 @@ public class Stack2D extends StackInterface
 				}
 
 			needLoadGL=true;
-			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);w.view.repaint();}});
+			pm.done();
+//			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);w.view.repaint();}});
 			}
 		}
 	

@@ -193,8 +193,6 @@ public class ModelView extends GLCanvas
 		 */
 		public void display(GLAutoDrawable drawable)
 			{
-			System.out.println();
-			System.out.println("begin display");
 			if(force)
 				System.out.println("===forced set===");
 			force=false;
@@ -297,8 +295,6 @@ public class ModelView extends GLCanvas
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
-			
-			System.out.println("end display");
 			}
 
 		

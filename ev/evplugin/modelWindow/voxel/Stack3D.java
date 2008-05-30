@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
-import javax.swing.SwingUtilities;
 import javax.vecmath.Vector3d;
 
 import evplugin.ev.Tuple;
@@ -17,6 +16,7 @@ import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
+import evplugin.modelWindow.ModelWindow.ProgressMeter;
 
 
 
@@ -184,16 +184,16 @@ public class Stack3D extends StackInterface
 		private double frame;
 		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
-		private ModelWindow w;
+		private ProgressMeter pm;
 		public BuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
-			this.w=w;
+			pm=w.createProgressMeter();
 			}
 		public void run()
 			{
-			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
+			pm.set(0);
 			
 			//im. cache safety issues
 			Collection<VoxelExtension.ChannelSelection> channels=chsel.values();
@@ -213,16 +213,16 @@ public class Stack3D extends StackInterface
 						{
 						if(stop)
 							{
-							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
+							pm.done();
 							return; //Allow to just stop thread if needed
 							}
 						skipcount++;
 						if(skipcount>=skipForward)
 							{
 							skipcount=0;
-							final int progressSlices=i*1000/(channels.size()*slices.size());
-							final int progressChan=1000*curchannum/channels.size();
-							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(progressSlices+progressChan);}});
+							int progressSlices=i*1000/(channels.size()*slices.size());
+							int progressChan=1000*curchannum/channels.size();
+							pm.set(progressSlices+progressChan);
 							
 							//Apply filter if needed
 							EvImage evim=slices.get(i);
@@ -297,10 +297,7 @@ public class Stack3D extends StackInterface
 				}
 
 			needLoadGL=true;
-			SwingUtilities.invokeLater(new Runnable(){public void run()
-				{w.progress.setValue(0);
-				w.view.repaint(); //TODO modw repaint. w.repaint does not do the job in this case!
-				}});
+			pm.done();
 			}
 		}
 	
@@ -313,7 +310,6 @@ public class Stack3D extends StackInterface
 	public void loadGL(GL gl)
 		{
 		cleanDisposable(gl);
-		System.out.println("about to load gl: "+needLoadGL);
 		if(needLoadGL)
 			{
 			needLoadGL=false;
@@ -339,7 +335,6 @@ public class Stack3D extends StackInterface
 //		gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
 		if(isBuilt())
 			{
-			System.out.println("built");
 			//Draw edges
 			if(drawEdges)
 				for(Vector<VoxelStack> osv:texSlices.values())
