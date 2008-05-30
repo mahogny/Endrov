@@ -16,6 +16,7 @@ import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
+import evplugin.modelWindow.Shader;
 
 //if one ever wish to build it in the background:
 //GLContext glc=view.getContext();
@@ -271,7 +272,7 @@ public class Stack2D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges)
+	public void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
 		{
 		if(isBuilt())
 			{
@@ -290,8 +291,10 @@ public class Stack2D extends StackInterface
 			gl.glDisable(GL.GL_CULL_FACE);
 			if(!solidColor)
 				{
-//			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-				gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
+				if(mixColors)
+					gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+				else
+					gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
 				gl.glEnable(GL.GL_BLEND);
 				gl.glDepthMask(false);
 				}
@@ -320,6 +323,13 @@ public class Stack2D extends StackInterface
 		return texSlices!=null;
 		}
 
+	
+	/**
+	 * TODO move to voxext?
+	 */
+	private Shader shader2d=null;
+	
+	
 	/**
 	 * Render list of slices
 	 */
@@ -327,6 +337,11 @@ public class Stack2D extends StackInterface
 		{
 		if(isBuilt())
 			{
+			//Shader
+			if(shader2d==null)
+				shader2d=new Shader(gl,Stack3D.class.getResource("2dvert.glsl"),Stack3D.class.getResource("2dfrag.glsl"));
+
+			//Planes
 			for(Vector<OneSlice> osv:list)
 				{
 				for(OneSlice os:osv)

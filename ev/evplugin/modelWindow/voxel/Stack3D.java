@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.List;
 
 import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
 import javax.vecmath.Vector3d;
 
 import evplugin.ev.Tuple;
@@ -16,6 +15,7 @@ import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
+import evplugin.modelWindow.Shader;
 import evplugin.modelWindow.ModelWindow.ProgressMeter;
 
 
@@ -96,7 +96,7 @@ public class Stack3D extends StackInterface
 				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
 				//gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b);
 				gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b.rewind());
-				System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
+//				System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
 				gl.glDisable( GL.GL_TEXTURE_3D );
 				}
 			}
@@ -330,7 +330,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges)
+	public void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
 		{
 //		gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
 		if(isBuilt())
@@ -342,8 +342,15 @@ public class Stack3D extends StackInterface
 						renderEdge(gl, os.realw, os.realh, os.reald);
 			
 			//Fill voxels
-			//gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR); //used before, makes no sense with alpha
-			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			if(!solidColor)
+				{
+				if(mixColors)
+					gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
+				else
+					gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+				}
+			
+			
 			gl.glDepthMask(false);
 			gl.glDisable(GL.GL_CULL_FACE);
 			if(!drawLinePlanes)
@@ -356,7 +363,10 @@ public class Stack3D extends StackInterface
 				{
 				for(VoxelStack os:osv)
 					{
-					os.tex.bind(gl);
+					int texUnit=0;  //NEW
+					gl.glActiveTexture(GL.GL_TEXTURE0 + texUnit); //NEW
+
+					os.tex.bind(gl); //TODO called even when there is no texture! after setting one channel, then another, and moving mouse
 					renderVoxelStack(gl, cam, os);
 					}
 				}
@@ -743,16 +753,29 @@ public class Stack3D extends StackInterface
 		else
 			gl.glBegin(GL.GL_POLYGON);
 		gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
+//		gl.glColor3d(1.0,0.0,0.0); //TODO
 		for(Vector3d po:points)
 			point(gl, os, po.x, po.y, po.z);
 		gl.glEnd();
 		}
+	
+	
+	
+	/**
+	 * TODO move to voxext?
+	 */
+	private Shader shader3d=null;
 	
 	/**
 	 * Render all planes through a voxel stack
 	 */
 	private void renderVoxelStack(GL gl, Camera cam, VoxelStack os)
 		{
+		//Shader
+		if(shader3d==null)
+			shader3d=new Shader(gl,Stack3D.class.getResource("3dvert.glsl"),Stack3D.class.getResource("3dfrag.glsl"));
+//			shader=new Shader(gl,null,Stack3D.class.getResource("progfrag.glsl"));
+		
 		//Get direction of camera as vector
 		Vector3d camv=cam.transformedVector(0, 0, 1);
 	
@@ -785,11 +808,13 @@ public class Stack3D extends StackInterface
 		double stepsize=shortestSide/200;
 
 		//Generate all planes
+		shader3d.use(gl);
 		for(double q=minBoxCornerDistances;q<maxBoxCornerDistances;q+=stepsize)
 			{
 			Plane p=new Plane(camv.x,camv.y,camv.z,q);
 			renderPlane(gl, cam, os, p);
 			}
+		shader3d.stopUse(gl);
 		
 		//System.out.println("dt: "+(System.currentTimeMillis()-time));
 		

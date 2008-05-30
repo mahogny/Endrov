@@ -20,7 +20,7 @@ public abstract class StackInterface
 	public abstract void setLastFrame(double frame);
 	public abstract void clean(GL gl);
 	public abstract void loadGL(GL gl);
-	public abstract void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges);
+	public abstract void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors);
 	public abstract Collection<Double> adjustScale(ModelWindow w);
 	public abstract Collection<Vector3D> autoCenterMid();
 	public abstract Double autoCenterRadius(Vector3D mid, double FOV);

@@ -76,6 +76,7 @@ public class VoxelExtension implements ModelWindowExtension
 		private ButtonGroup bgTexture=new ButtonGroup();
 		public JCheckBoxMenuItem miSolidColor=new JCheckBoxMenuItem("Solid color");
 		public JCheckBoxMenuItem miDrawEdge=new JCheckBoxMenuItem("Draw edge");
+		public JCheckBoxMenuItem miMixColors=new JCheckBoxMenuItem("Mix colors");
 
 		
 		public Hook(ModelWindow w)
@@ -97,17 +98,20 @@ public class VoxelExtension implements ModelWindowExtension
 			miVoxels.addSeparator();
 			miVoxels.add(miSolidColor);
 			miVoxels.add(miDrawEdge);
+			miVoxels.add(miMixColors);
+			
 			
 			miRender2dTexture.addActionListener(this);
 			miRender3dTexture.addActionListener(this);
 			miSolidColor.addActionListener(this);
 			miDrawEdge.addActionListener(this);
+			miMixColors.addActionListener(this);
 			}
 		
 		
 		public void actionPerformed(ActionEvent e)
 			{
-			if(e.getSource()==miDrawEdge)
+			if(e.getSource()==miDrawEdge || e.getSource()==miMixColors)
 				w.view.repaint();
 			else
 				{
@@ -216,10 +220,9 @@ public class VoxelExtension implements ModelWindowExtension
 				}
 			else
 				{
-//				System.out.println("render");
 				//Render
 				slices.loadGL(gl);
-				slices.render(gl,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected());
+				slices.render(gl,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
 				}
 			}
 		
