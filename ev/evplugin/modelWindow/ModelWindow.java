@@ -557,23 +557,13 @@ public class ModelWindow extends BasicWindow
 	
 	/**
 	 
-	 
-	 
-	isolevel försvinner inte när en tas bort
-
 	ost maker ost3?
 
 
 	implementera:
 	kanallista uppdateras, ny entry, avbryt evaluerix
-	sorterixslista
 	se över när den spelar
 	scale, gridsize, etc, var i koden ska detta ze?
-	scale no longer empty set=>center?
-	new clip plane: adjust depending on scale
-		 
-		 kritiskt:
-		 * sorterix
 		 
 		 */
 

@@ -236,7 +236,6 @@ public class VoxelExtension implements ModelWindowExtension
 			{
 			static final long serialVersionUID=0;
 			private JButton bFs=FilterSeq.createFilterSeqButton();
-//			private ChannelCombo channelCombo=new ChannelCombo(new EmptyImageset(),true);
 			private ChannelCombo channelCombo=new ChannelCombo(null,true);
 			private Color color;
 			private FilterSeq filterSeq=new FilterSeq();
@@ -273,7 +272,6 @@ public class VoxelExtension implements ModelWindowExtension
 					currentStack=new Stack2D();
 				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
 				lastChannel=channelCombo.getChannelNotNull();
-//				System.out.println("stack changed");
 				w.view.repaint();
 				}
 			
@@ -285,12 +283,8 @@ public class VoxelExtension implements ModelWindowExtension
 				Imageset newImageset=channelCombo.getImagesetNull();
 				String newChannel=channelCombo.getChannelNotNull();
 				
-			//	System.out.println(" "+ims+" "+newImageset+" "+ch+" "+newChannel);
-				if(ims!=newImageset || !ch.equals(newChannel)/* && (!ch.equals("") || !newChannel.equals(""))*/)
-		//			{
-//					System.out.println("changed");
+				if(ims!=newImageset || !ch.equals(newChannel))
 					stackChanged();
-	//				}
 				}
 				
 			public void actionPerformed(ActionEvent e)
