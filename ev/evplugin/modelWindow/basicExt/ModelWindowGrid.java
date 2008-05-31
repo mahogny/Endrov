@@ -3,6 +3,7 @@ package evplugin.modelWindow.basicExt;
 import java.awt.event.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.swing.*;
@@ -13,7 +14,13 @@ import evplugin.ev.Vector3D;
 import evplugin.modelWindow.ModelWindow;
 import evplugin.modelWindow.ModelWindowExtension;
 import evplugin.modelWindow.ModelWindowHook;
+import evplugin.modelWindow.TransparentRender;
 
+/**
+ * Grid in model window
+ * 
+ * @author Johan Henriksson
+ */
 public class ModelWindowGrid implements ModelWindowExtension
 	{
 	public static void initPlugin() {}
@@ -29,7 +36,8 @@ public class ModelWindowGrid implements ModelWindowExtension
 		/** Size of the grid in um */
 		public double gridsize=1;
 
-		public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid"); 
+		public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid",true); 
+		public JCheckBoxMenuItem miShowRuler=new JCheckBoxMenuItem("Show ruler",false); 
 
 		
 		
@@ -37,8 +45,9 @@ public class ModelWindowGrid implements ModelWindowExtension
 			{
 			this.w=w;
 			w.menuModel.add(miShowGrid);
+			w.menuModel.add(miShowRuler);
 			miShowGrid.addActionListener(this);
-			setShowGrid(true);
+			miShowRuler.addActionListener(this);
 			}
 		
 		
@@ -86,47 +95,42 @@ public class ModelWindowGrid implements ModelWindowExtension
 		/**
 		 * Render all grid planes
 		 */
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
+			gl.glPushMatrix(); 
+			gl.glRotatef(90,0,1,0); 
+			gl.glRotatef(90,1,0,0); 
+			gl.glColor3d(0.4,0,0); 
 			if(miShowGrid.isSelected())
+				renderGridPlane(gl,gridsize); 
+			if(miShowRuler.isSelected())
 				{
-				boolean ruler=false;
-				gl.glPushMatrix(); 
-				gl.glRotatef(90,0,1,0); 
-				gl.glRotatef(90,1,0,0); 
-				gl.glColor3d(0.4,0,0); 
-				renderGridPlane(gl,gridsize); 
-				if(ruler)
-					{
-					gl.glColor3d(1,1,1); 
-					renderRuler(gl,gridsize);
-					}
-				gl.glPopMatrix();
-
-				gl.glColor3d(0,0.4,0);  
-				renderGridPlane(gl,gridsize); 
-				if(ruler)
-					{
-					gl.glColor3d(1,1,1); 
-					renderRuler(gl,gridsize);
-					}
-				
-				gl.glPushMatrix(); 
-				gl.glRotatef(90,0,0,1); 
-				gl.glRotatef(90,1,0,0); 
-				gl.glColor3d(0,0,0.4); 
-				renderGridPlane(gl,gridsize); 
-				if(ruler)
-					{
-					gl.glColor3d(1,1,1); 
-					renderRuler(gl,gridsize);
-					}
-				gl.glPopMatrix();
-				
+				gl.glColor3d(1,1,1); 
+				renderRuler(gl,transparentRenderers,gridsize);
 				}
-			
-			
-			
+			gl.glPopMatrix();
+
+			gl.glColor3d(0,0.4,0);  
+			if(miShowGrid.isSelected())
+				renderGridPlane(gl,gridsize); 
+			if(miShowRuler.isSelected())
+				{
+				gl.glColor3d(1,1,1); 
+				renderRuler(gl,transparentRenderers,gridsize);
+				}
+
+			gl.glPushMatrix(); 
+			gl.glRotatef(90,0,0,1); 
+			gl.glRotatef(90,1,0,0); 
+			gl.glColor3d(0,0,0.4); 
+			if(miShowGrid.isSelected())
+				renderGridPlane(gl,gridsize); 
+			if(miShowRuler.isSelected())
+				{
+				gl.glColor3d(1,1,1); 
+				renderRuler(gl,transparentRenderers,gridsize);
+				}
+			gl.glPopMatrix();
 			}
 
 		/**
@@ -143,23 +147,14 @@ public class ModelWindowGrid implements ModelWindowExtension
 				gl.glVertex3d(0,i*gsize, -gsize*gnum);
 				gl.glVertex3d(0,i*gsize,  gsize*gnum);
 				}
-			gl.glEnd();/*
-			gl.glLineWidth(5);
-			gl.glBegin(GL.GL_LINES);
-				{
-				gl.glVertex3d(0,0,0);
-				gl.glVertex3d(0,gsize*gnum,0);
-				}
 			gl.glEnd();
-			gl.glLineWidth(1);*/
 			}
 		
 		
 		/**
 		 * Render scale
-		 * TODO faster
 		 */
-		public void renderRuler(GL gl, double gsize)
+		public void renderRuler(GL gl,List<TransparentRender> transparentRenderers, double gsize)
 			{
 			int gnum=10;
 			for(int i=-gnum;i<=gnum;i++)
@@ -167,7 +162,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 					{
 					gl.glPushMatrix();
 					gl.glTranslated(0, i*gsize, 0);
-					w.view.renderString(gl, w.view.renderer, 0.02f, ""+i*gsize);
+					w.view.renderString(gl, transparentRenderers,w.view.renderer, (float)(gsize*0.004), ""+i*gsize);
 					gl.glPopMatrix();
 					}
 			}
@@ -175,7 +170,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 		
 		}
 	
-	
+	//TODO: replace grid size with repsize, and let view handle it
 	public static double getGridSize(ModelWindow w)
 		{
 		for(ModelWindowHook h:w.modelWindowHooks)

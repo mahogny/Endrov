@@ -171,7 +171,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render graphics
 		 */
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			initDrawSphere(gl);
 			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
@@ -209,7 +209,7 @@ public class NucModelExtension implements ModelWindowExtension
 			
 				//Render nuclei text
 				for(NucPair nucPair:inter.keySet())
-					renderNucLabel(gl,nucPair, inter.get(nucPair));
+					renderNucLabel(gl,transparentRenderers,nucPair, inter.get(nucPair));
 				}
 			
 			if(traceSel)
@@ -445,7 +445,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render labe of one nucleus
 		 */
-		private void renderNucLabel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
+		private void renderNucLabel(GL gl, List<TransparentRender> transparentRenderers, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
 			//Visibility rule
 			if(nuc.frameBefore==null)
@@ -473,7 +473,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    	//also consider setting size such that it does not vary with distance
 	    	//3d text at all? overlay rendering should be faster
 				String nucName=nucPair.snd();
-	    	w.view.renderString(gl, w.view.renderer, (float)(0.005*nuc.pos.r), nucName);
+	    	w.view.renderString(gl, transparentRenderers, w.view.renderer, (float)(0.005*nuc.pos.r), nucName);
 	    	}
 	    
 	    //Go back to world coordinates

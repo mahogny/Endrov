@@ -79,10 +79,10 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 		/**
 		 * Render graphics
 		 */
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			for(ImageAnnot ia:getAnnot())
-				renderOne(gl, ia);
+				renderOne(gl, ia,transparentRenderers);
 			}
 
 
@@ -91,7 +91,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 		 * Render label of one nucleus
 		 */
 		
-		private void renderOne(GL gl, ImageAnnot ia)
+		private void renderOne(GL gl, ImageAnnot ia,List<TransparentRender> transparentRenderers)
 			{
 			//Save world coordinate
 			gl.glPushMatrix();
@@ -109,7 +109,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 			//also consider setting size such that it does not vary with distance
 			//3d text at all? overlay rendering should be faster
 			float size=1; //(float)(0.005*nuc.pos.r) //trouble! relate to camera distance TODO
-			w.view.renderString(gl, w.view.renderer, size, ia.text);
+			w.view.renderString(gl, transparentRenderers, w.view.renderer, size, ia.text);
 
 
 			//Go back to world coordinates

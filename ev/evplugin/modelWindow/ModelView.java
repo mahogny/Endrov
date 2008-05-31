@@ -268,8 +268,17 @@ public class ModelView extends GLCanvas
 			window.crossHandler.displayCrossFinal(gl,window);
 			
 			//Render extensions
-			for(ModelWindowHook h:window.modelWindowHooks) //TODO order of rendering
-				h.displayFinal(gl);
+			List<TransparentRender> transparentRenderers=new LinkedList<TransparentRender>();
+			for(ModelWindowHook h:window.modelWindowHooks)
+				h.displayFinal(gl, transparentRenderers);
+			
+			//Take care of transparent renderers
+			Collections.sort(transparentRenderers);
+			for(TransparentRender r:transparentRenderers)
+				{
+				System.out.println("z "+r.z);
+				r.render(gl);
+				}
 			
 			//Adjust scale for next time
 			//TODO Highly questionable if this should be done _here_
@@ -378,12 +387,18 @@ public class ModelView extends GLCanvas
 	 * @param textScaleFactor Size of font
 	 * @param text String to render
 	 */
+	/*
 	public void renderString(GL gl, TextRenderer renderer, float textScaleFactor, String text)
 		{
 		gl.glPushAttrib(GL.GL_ENABLE_BIT);
 		renderer.begin3DRendering();
 
+		//TODO Text must be sorted
+		//gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
+		//gl.glEnable(GL.GL_BLEND);
+		
 		//make global I guess?
+		//TODO when rendering sorted objects, can disable this all the time as default
 		gl.glDisable(GL.GL_CULL_FACE);
 		
 		//Note that the defaults for glCullFace and glFrontFace are GL_BACK and GL_CCW, which
@@ -395,12 +410,46 @@ public class ModelView extends GLCanvas
 		
 		renderer.end3DRendering();
 		gl.glPopAttrib();
-//		gl.glEnable(GL.GL_CULL_FACE);
 		}
+*/	
 	
-	
-	
-	
+	public void renderString(GL gl, List<TransparentRender> transparentRenderers, final TextRenderer renderer, final float textScaleFactor, final String text)
+		{
+		final float[] matarray=new float[16]; //[col][row]
+		gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, matarray, 0);
+		final TextRenderer thisRenderer=renderer;
+		TransparentRender rend=new TransparentRender(){
+		public void render(GL gl)
+			{
+			//Save current state. Restore model view matrix as when this function was called.
+			gl.glPushAttrib(GL.GL_ENABLE_BIT);
+			gl.glPushMatrix();
+			gl.glLoadMatrixf(matarray, 0);
+			
+			thisRenderer.begin3DRendering();
+
+			//make global I guess?
+			//TODO when rendering sorted objects, can disable this all the time as default
+			gl.glDisable(GL.GL_CULL_FACE);
+			
+			//Note that the defaults for glCullFace and glFrontFace are GL_BACK and GL_CCW, which
+			//match the TextRenderer's definition of front-facing text.
+			Rectangle2D bounds = thisRenderer.getBounds(text);
+			float w = (float) bounds.getWidth();
+			float h = (float) bounds.getHeight();
+			renderer.draw3D(text, w / -2.0f * textScaleFactor, h / -2.0f * textScaleFactor, 0, textScaleFactor);
+
+			//Clean up
+			renderer.end3DRendering();
+			gl.glPopMatrix();
+			gl.glPopAttrib();
+			}
+		};
+		//Calculate z. Current coordinate: 0 0 0 1
+		rend.z=matarray[14];
+		transparentRenderers.add(rend);
+		}
+
 	
 	
 	

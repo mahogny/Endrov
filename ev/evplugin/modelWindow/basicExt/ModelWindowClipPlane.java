@@ -3,6 +3,7 @@ package evplugin.modelWindow.basicExt;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 
 import javax.media.opengl.*;
 import javax.swing.*;
@@ -119,7 +120,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		public void displaySelect(GL gl)
 			{
 			}
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			int i=0;
 			for(ToolSlab ti:isolayers)
