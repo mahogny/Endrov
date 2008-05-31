@@ -2,6 +2,7 @@ package evplugin.shell;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 import javax.media.opengl.GL;
@@ -75,10 +76,8 @@ public class ShellModelHook implements ModelWindowHook
 		return v;
 		}
 	
-	public void displayFinal(GL gl)
+	public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 		{
-		//Check if shell really exists. OUTDATED?
-//	if(shell!=null && (shell.midx!=0 || shell.midy!=0 || shell.midz!=0))
 		for(Shell shell:getVisibleShell())
 			{
 			gl.glPushMatrix();

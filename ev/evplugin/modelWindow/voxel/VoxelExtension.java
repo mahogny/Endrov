@@ -7,6 +7,7 @@ import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import javax.media.opengl.*;
@@ -64,8 +65,8 @@ public class VoxelExtension implements ModelWindowExtension
 		{
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
-		private StackInterface slices=new Stack3D();
-		private Vector<StackInterface> lastSlices=new Vector<StackInterface>();
+		private StackInterface currentStack=new Stack3D();
+		private Vector<StackInterface> removableStacks=new Vector<StackInterface>();
 
 		private OneImageChannel icR=new OneImageChannel("R", Color.RED);
 		private OneImageChannel icG=new OneImageChannel("G", Color.GREEN);
@@ -127,15 +128,15 @@ public class VoxelExtension implements ModelWindowExtension
 		
 		public Collection<Double> adjustScale()
 			{
-			return slices.adjustScale(w);
+			return currentStack.adjustScale(w);
 			}
 		public Collection<Vector3D> autoCenterMid()
 			{
-			return slices.autoCenterMid();
+			return currentStack.autoCenterMid();
 			}
 		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
 			{
-			Double r=slices.autoCenterRadius(mid, FOV);
+			Double r=currentStack.autoCenterRadius(mid, FOV);
 			if(r==null)
 				return Collections.emptySet();
 			else
@@ -176,20 +177,19 @@ public class VoxelExtension implements ModelWindowExtension
 		
 		
 		
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			//Remove prior data
-			for(StackInterface s:lastSlices)
+			for(StackInterface s:removableStacks)
 				s.clean(gl);
-			lastSlices.clear();
+			removableStacks.clear();
 
 			double frame=getFrame();
 			
 			//Build list of which channels should be rendered
-			if(slices.needSettings(frame))
+			if(currentStack.needSettings(frame))
 				{
-//				System.out.println("needsettings");
-				slices.setLastFrame(frame);
+				currentStack.setLastFrame(frame);
 				
 				//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
 				HashMap<ChannelImages, ChannelSelection> chsel=new HashMap<ChannelImages, ChannelSelection>(); 
@@ -216,13 +216,13 @@ public class VoxelExtension implements ModelWindowExtension
 					}
 				
 				//Start build thread
-				slices.startBuildThread(frame, chsel, w);
+				currentStack.startBuildThread(frame, chsel, w);
 				}
 			else
 				{
 				//Render
-				slices.loadGL(gl);
-				slices.render(gl,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
+				currentStack.loadGL(gl);
+				currentStack.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
 				}
 			}
 		
@@ -264,13 +264,13 @@ public class VoxelExtension implements ModelWindowExtension
 			public void stackChanged()
 				{
 				//TODO: when filter seq updated, a signal should be sent back
-				if(slices!=null)
-					slices.stopBuildThread();
-				lastSlices.add(slices);
+				if(currentStack!=null)
+					currentStack.stopBuildThread();
+				removableStacks.add(currentStack);
 				if(miRender3dTexture.isSelected()) 
-					slices=new Stack3D(); 
+					currentStack=new Stack3D(); 
 				else
-					slices=new Stack2D();
+					currentStack=new Stack2D();
 				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
 				lastChannel=channelCombo.getChannelNotNull();
 //				System.out.println("stack changed");

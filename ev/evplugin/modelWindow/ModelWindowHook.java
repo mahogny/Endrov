@@ -1,6 +1,7 @@
 package evplugin.modelWindow;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.media.opengl.GL;
 
@@ -23,7 +24,7 @@ public interface ModelWindowHook
 	
 	public void displayInit(GL gl);
 	public void displaySelect(GL gl);
-	public void displayFinal(GL gl);
+	public void displayFinal(GL gl,List<TransparentRender> transparentRenderers);
 
 	
 	public void fillModelWindomMenus();

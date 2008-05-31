@@ -317,8 +317,8 @@ public static void calculation(File file, BufferedWriter omitted, BufferedWriter
 								rotPostY=Math.sin(angleAPonXYtoXZ)*oldRotPostX+Math.cos(angleAPonXYtoXZ)*oldRotPostY;
 								rotPostZ=                                                                              oldRotPostZ;
 
-//								System.out.println("angleAPXY   = "+angleAPXY+"r = "+angleAPXY/(Math.PI/2)*90+"¡");
-//								System.out.println("angleAPXYXZ = "+angleAPonXYtoXZ+"r = "+angleAPonXYtoXZ/(Math.PI/2)*90+"¡");
+//								System.out.println("angleAPXY   = "+angleAPXY+"r = "+angleAPXY/(Math.PI/2)*90+"ï¿½");
+//								System.out.println("angleAPXYXZ = "+angleAPonXYtoXZ+"r = "+angleAPonXYtoXZ/(Math.PI/2)*90+"ï¿½");
 //								System.out.println("oldrotPost= "+oldRotPostX+","+oldRotPostY+","+oldRotPostZ+" at frame "+frame);
 //								System.out.println("rotPost  = "+rotPostX+","+rotPostY+","+rotPostZ+" at frame "+frame);
 
@@ -757,7 +757,6 @@ public static void calculation(File file, BufferedWriter omitted, BufferedWriter
 		}
 	catch (Exception e)
 		{
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 		try
 			{
@@ -765,7 +764,6 @@ public static void calculation(File file, BufferedWriter omitted, BufferedWriter
 			}
 		catch (IOException e1)
 			{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			}
 		}
@@ -849,7 +847,6 @@ public static void main(String[] arg)
 		}
 	catch (IOException e)
 		{
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 		}
 	}

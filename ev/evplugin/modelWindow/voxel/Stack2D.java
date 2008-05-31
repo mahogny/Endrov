@@ -17,6 +17,7 @@ import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
 import evplugin.modelWindow.Shader;
+import evplugin.modelWindow.TransparentRender;
 
 //if one ever wish to build it in the background:
 //GLContext glc=view.getContext();
@@ -93,6 +94,9 @@ public class Stack2D extends StackInterface
 					if(os.rend!=null)
 						os.rend.dispose();
 					}
+		if(shader2d!=null)
+			shader2d.delete(gl);
+		shader2d=null;
 		texSlices=null;
 		}
 	
@@ -127,19 +131,16 @@ public class Stack2D extends StackInterface
 		private double frame;
 		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
-		//private ModelWindow w;
 		ModelWindow.ProgressMeter pm;
 		public BuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
-			//this.w=w;
 			pm=w.createProgressMeter();
 			}
 		public void run()
 			{
 			pm.set(0);
-//			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
 			
 			//im cache safety issues
 			Collection<VoxelExtension.ChannelSelection> channels=chsel.values();
@@ -160,8 +161,7 @@ public class Stack2D extends StackInterface
 						if(stop)
 							{
 							pm.done();
-//							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);}});
-							return; //Just stop thread if needed
+							return;
 							}
 						skipcount++;
 						if(skipcount>=skipForward)
@@ -169,10 +169,8 @@ public class Stack2D extends StackInterface
 							final int progressSlices=i*1000/(channels.size()*slices.size());
 							final int progressChan=1000*curchannum/channels.size();
 							pm.set(progressSlices+progressChan);
-//							SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(progressSlices+progressChan);}});
 							
 							skipcount=0;
-//							System.out.println("loading #"+i);
 							EvImage evim=slices.get(i);
 							if(!chsel.filterSeq.isIdentity())
 								evim=chsel.filterSeq.applyReturnImage(evim);
@@ -185,7 +183,6 @@ public class Stack2D extends StackInterface
 
 			needLoadGL=true;
 			pm.done();
-//			SwingUtilities.invokeLater(new Runnable(){public void run(){w.progress.setValue(0);w.view.repaint();}});
 			}
 		}
 	
@@ -272,7 +269,7 @@ public class Stack2D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
+	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
 		{
 		if(isBuilt())
 			{
@@ -357,10 +354,7 @@ public class Stack2D extends StackInterface
 					TextureCoords tc=os.tex.getImageTexCoords();
 					
 					gl.glBegin(GL.GL_QUADS);
-					//gl.glColor3d(1, 1, 1);
 					gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
-					
-		//			gl.glColor4d(1, 1, 1, 0.2);
 					gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, os.z); //check
 					gl.glTexCoord2f(tc.right(),tc.top());    gl.glVertex3d(w, 0, os.z);
 					gl.glTexCoord2f(tc.right(),tc.bottom()); gl.glVertex3d(w, h, os.z);

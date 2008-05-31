@@ -127,10 +127,10 @@ public class IsosurfaceExtension implements ModelWindowExtension
 
 		
 		
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			for(ToolIsolayer ti:isolayers)
-				ti.render(gl);
+				ti.render(gl, transparentRenderers);
 			}
 		
 		
@@ -215,7 +215,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			/**
 			 * Render according to these controls. Create surfaces as needed.
 			 */
-			public void render(GL gl)
+			public void render(GL gl,List<TransparentRender> transparentRenderers)
 				{
 				chanCombo.updateChannelList();
 				

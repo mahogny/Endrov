@@ -76,7 +76,7 @@ public class EvLineModelExtension implements ModelWindowExtension
 		/**
 		 * Render graphics
 		 */
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			for(EvLine ia:getAnnot())
 				renderOne(gl, ia);

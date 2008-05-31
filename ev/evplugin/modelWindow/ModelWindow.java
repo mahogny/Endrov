@@ -573,7 +573,6 @@ public class ModelWindow extends BasicWindow
 	new clip plane: adjust depending on scale
 		 
 		 kritiskt:
-		 * shader
 		 * sorterix
 		 
 		 */

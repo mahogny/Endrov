@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.List;
 
 import javax.media.opengl.*;
 import javax.swing.*;
@@ -93,7 +94,7 @@ public class Slice3DExtension implements ModelWindowExtension
 
 		
 		
-		public void displayFinal(GL gl)
+		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			for(ToolIsolayer ti:isolayers)
 				ti.render(gl);

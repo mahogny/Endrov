@@ -1,34 +1,4 @@
-/*			
-		// Create the TextureRenderer and render into it using Java 2D
-	    TextureRenderer renderer = TextureRenderer(w, h, true);
-	    Graphics2D g2 = renderer.createGraphics();
-	    g2.setColor(...);
-	    g2.fill(...);
-	    // and so on...
-	    g2.dispose();
-	    renderer.sync(0, 0, w, h);
 
-	    // Now use it as you would any other OpenGL texture
-	    Texture tex = renderer.getTexture();
-	    ...
-*/
-			
-			
-				//int po=gl.glCreateProgramObjectARB()
-		//int a=gl.glCreateShaderObjectARB(GL.GL_VERTEX_SHADER_ARB);
-		//int my_fragment_shader = gl.glCreateShaderObjectARB(GL.GL_FRAGMENT_SHADER_ARB);
-		//gl.glShaderSourceARB(arg0, arg1, arg2, arg3, arg4)
-		//gl.glCompileShaderARB(arg0)
-		//gl.glAttachObjectARB(po, my_vertex_shader);
-		//gl.glLinkProgramARB(po);
-		//gl.glUseProgramObjectARB(po);
-/*		void glDeleteObjectARB(GLhandleARB object)
-		glGetInfoLogARB(GLhandleARB object, GLsizei maxLenght, GLsizei *length, GLcharARB *infoLog)
-glUseProgramObjectARB(my_program);
-int my_vec3_location = glGetUniformLocationARB(my_program, “my_3d_vector”);
-glUniform3fARB(my_vec3_location, 1.0f, 4.0f, 3.0f);
-http://nehe.gamedev.net/data/articles/article.asp?article=21 */
-			
 			
 			/*
 			//new////////////////
@@ -61,12 +31,6 @@ http://nehe.gamedev.net/data/articles/article.asp?article=21 */
 			//http://objectmix.com/graphics/136360-implementing-directx-style-texture-creation-locking-unlocking.html
 			//end new ///////////////////////////////////
 			*/		
-			
-			
-			
-			
-			////////////////////////////////////
-			
 			
 			
 			
