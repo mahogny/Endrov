@@ -307,41 +307,6 @@ public class Stack3D extends StackInterface
 
 	
 	
-	
-	LinkedList<Tuple<BufferedImage,VoxelStack>> procList=new LinkedList<Tuple<BufferedImage,VoxelStack>>();
-	public void loadGL(GL gl)
-		{
-		cleanDisposable(gl);
-
-		//Since upload can be called after the real upload call, just loop through everything
-		for(Vector<VoxelStack> osv:texSlices.values()) 
-			for(VoxelStack os:osv)
-				if(os.needLoadGL)
-					{
-					os.tex.upload(gl);
-					os.needLoadGL=false;
-					}
-		}
-	
-
-
-	
-	/**
-	 * Render entire stack
-	 */
-	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
-		{
-		//Draw edges
-		if(drawEdges)
-			for(Vector<VoxelStack> osv:texSlices.values())
-				for(VoxelStack os:osv)
-					renderEdge(gl, os.realw, os.realh, os.reald);
-
-		//Draw voxels
-		for(Vector<VoxelStack> osv:texSlices.values())
-			for(VoxelStack os:osv)
-				renderVoxelStack(gl, cam, os, solidColor, mixColors);
-		}
 
 
 	
@@ -713,6 +678,44 @@ public class Stack3D extends StackInterface
 	
 	
 	
+	
+
+	
+	LinkedList<Tuple<BufferedImage,VoxelStack>> procList=new LinkedList<Tuple<BufferedImage,VoxelStack>>();
+	public void loadGL(GL gl)
+		{
+		cleanDisposable(gl);
+
+		//Since upload can be called after the real upload call, just loop through everything
+		for(Vector<VoxelStack> osv:texSlices.values()) 
+			for(VoxelStack os:osv)
+				if(os.needLoadGL)
+					{
+					os.tex.upload(gl);
+					os.needLoadGL=false;
+					}
+		}
+	
+
+
+	
+	/**
+	 * Render entire stack
+	 */
+	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
+		{
+		//Draw edges
+		if(drawEdges)
+			for(Vector<VoxelStack> osv:texSlices.values())
+				for(VoxelStack os:osv)
+					renderEdge(gl, os.realw, os.realh, os.reald);
+
+		//Draw voxels
+		for(Vector<VoxelStack> osv:texSlices.values())
+			for(VoxelStack os:osv)
+				renderVoxelStack(gl, transparentRenderers, cam, os, solidColor, mixColors);
+		}
+	
 	/**
 	 * TODO move to voxext?
 	 */
@@ -721,7 +724,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render all planes through a voxel stack
 	 */
-	private void renderVoxelStack(GL gl, Camera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors)
+	private void renderVoxelStack(GL gl,List<TransparentRender> transparentRenderers, final Camera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors)
 		{
 		//Load shader
 		if(shader3d==null)
@@ -788,17 +791,24 @@ public class Stack3D extends StackInterface
 			shortestSide=os.reald;
 		double stepsize=shortestSide/200;
 
+		boolean drawDirectly=false;
+		
 		//Generate all planes
-		renderstate.activate(gl);
+		if(drawDirectly) renderstate.activate(gl);
 		for(double q=minBoxCornerDistances;q<maxBoxCornerDistances;q+=stepsize)
 			{
-			double planez=q-camz;
-			
-			
-			Plane p=new Plane(camv.x,camv.y,camv.z,q);
-			renderPlane(gl, cam, os, p);
+			final Plane p=new Plane(camv.x,camv.y,camv.z,q);
+			if(drawDirectly)
+				renderPlane(gl, cam, os, p);
+			else
+				{
+				TransparentRender renderer=new TransparentRender(){public void render(GL gl){renderPlane(gl, cam, os, p);}};
+				renderer.renderState=renderstate;
+				renderer.z=q-camz;
+				transparentRenderers.add(renderer);
+				}
 			}
-		renderstate.deactivate(gl);
+		if(drawDirectly) renderstate.deactivate(gl);
 		
 		//Print new discovered cases
 		for(String s:newcases.values())

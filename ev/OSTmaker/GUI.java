@@ -7,6 +7,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import javax.swing.*;
@@ -41,6 +42,7 @@ public class GUI extends JFrame implements ActionListener
 	private Vector<ToImport> importList=new Vector<ToImport>();
 	private static HashMap<String, Integer> chancomp=new HashMap<String, Integer>();
 	private JLabel labelStatus=new JLabel("");
+	private JLabel labelLog=new JLabel("");
 
 	/**
 	 * Get compression level or default 100
@@ -125,8 +127,10 @@ public class GUI extends JFrame implements ActionListener
 				{
 				while(!importList.isEmpty())
 					{
-					ToImport toim=importList.get(0);
-					labelStatus.setText("Importing "+toim.file.getName());
+					final ToImport toim=importList.get(0);
+					SwingUtilities.invokeLater(new Runnable(){
+						public void run(){labelStatus.setText("Importing "+toim.file.getName());}}
+					);
 					
 					String outfilename=toim.file.getName();
 					if(outfilename.indexOf(".")!=-1)
@@ -151,25 +155,50 @@ public class GUI extends JFrame implements ActionListener
 						new CompleteBatch(new SaveOSTThread(inim, outfile.getAbsolutePath()));
 						}
 					else
-						JOptionPane.showMessageDialog(null, "Cannot handle "+toim.file+": no file ending");
+						showMessage("Cannot handle "+toim.file+": no file ending");
 					
 					importList.remove(0);
 					updateFileList();
 					}
-				JOptionPane.showMessageDialog(null, "Finished importing data");
+				showMessage("Finished importing data");
 				}
 			catch (Exception e)
 				{
 				System.out.println("Interrupted");
 				}
 			
-			labelStatus.setText("");
-			bGo.setText("Go");
-			bGo.setEnabled(true);
-			setStopImportThread();
+			SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+				{
+				labelStatus.setText("");
+				bGo.setText("Go");
+				bGo.setEnabled(true);
+				setStopImportThread();
+				}}
+			);
+				
 			}
 		}
 	
+	
+	public void showMessage(final String msg)
+		{
+		final JFrame frame=this;
+		try
+			{
+			SwingUtilities.invokeAndWait(new Runnable(){
+				public void run(){JOptionPane.showMessageDialog(frame, msg);}
+			});
+			}
+		catch (InterruptedException e)
+			{
+			e.printStackTrace();
+			}
+		catch (InvocationTargetException e)
+			{
+			e.printStackTrace();
+			}
+		}
 	
 	/**
 	 * Create GUI for OST maker
@@ -177,6 +206,20 @@ public class GUI extends JFrame implements ActionListener
 	public GUI()
 		{
 		Log.listeners.add(new StdoutLog());
+		Log.listeners.add(new Log(){
+			public void listenDebug(final String s)
+				{
+				SwingUtilities.invokeLater(new Runnable(){public void run(){labelLog.setText(s);}});
+				}
+			public void listenError(final String s, Exception e)
+				{
+				SwingUtilities.invokeLater(new Runnable(){public void run(){labelLog.setText(s);}});
+				}
+			public void listenLog(final String s)
+				{
+				SwingUtilities.invokeLater(new Runnable(){public void run(){labelLog.setText(s);}});
+				}
+		});
 		timer.start();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -195,9 +238,10 @@ public class GUI extends JFrame implements ActionListener
 		bpanel.add(bRemove);
 		bpanel.add(bQuit);
 		
-		JPanel lpanel2=new JPanel(new GridLayout(2,1));
+		JPanel lpanel2=new JPanel(new GridLayout(3,1));
 		lpanel2.add(bpanel);
 		lpanel2.add(labelStatus);
+		lpanel2.add(labelLog);
 
 		JPanel lpanel=new JPanel(new BorderLayout());
 		lpanel.add(pComp,BorderLayout.CENTER);

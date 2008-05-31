@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.List;
 
 import javax.media.opengl.*;
+import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.j2d.TextureRenderer;
 import com.sun.opengl.util.texture.*;
@@ -269,10 +270,14 @@ public class Stack2D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
+	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, final boolean solidColor, final boolean drawEdges, final boolean mixColors)
 		{
 		if(isBuilt())
 			{
+			//Load shader
+			if(shader2d==null)
+				shader2d=new Shader(gl,Stack3D.class.getResource("2dvert.glsl"),Stack3D.class.getResource("2dfrag.glsl"));
+
 			//Draw edges
 			if(drawEdges && !texSlices.isEmpty())
 				{
@@ -284,17 +289,30 @@ public class Stack2D extends StackInterface
 				}
 
 			
-			
-			gl.glDisable(GL.GL_CULL_FACE);
-			if(!solidColor)
+			TransparentRender.RenderState renderstate=new TransparentRender.RenderState(){
+			public void activate(GL gl)
 				{
-				if(mixColors)
-					gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-				else
-					gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
-				gl.glEnable(GL.GL_BLEND);
-				gl.glDepthMask(false);
+				gl.glDisable(GL.GL_CULL_FACE);
+				if(!solidColor)
+					{
+					if(mixColors)
+						gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+					else
+						gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
+					gl.glEnable(GL.GL_BLEND);
+					gl.glDepthMask(false);
+					}
 				}
+			public void deactivate(GL gl)
+				{
+				gl.glDisable(GL.GL_BLEND);
+				gl.glDepthMask(true);
+				gl.glEnable(GL.GL_CULL_FACE);
+				}
+			}; 
+
+		
+			
 			
 			//Sort planes, O(n) since pre-ordered
 			SortedMap<Double,Vector<OneSlice>> frontMap=texSlices.headMap(cam.pos.z);
@@ -305,12 +323,11 @@ public class Stack2D extends StackInterface
 			for(Vector<OneSlice> os:backMap.values())
 				backList.addFirst(os);
 			
-			render(gl, frontList);
-			render(gl, backList);
+			//renderstate.activate(gl);
+			render(gl, transparentRenderers, cam, renderstate, frontList);
+			render(gl, transparentRenderers, cam, renderstate, backList);
+			//renderstate.deactivate(gl);
 			
-			gl.glDisable(GL.GL_BLEND);
-			gl.glDepthMask(true);
-			gl.glEnable(GL.GL_CULL_FACE);
 			}
 		}
 
@@ -330,39 +347,44 @@ public class Stack2D extends StackInterface
 	/**
 	 * Render list of slices
 	 */
-	public void render(GL gl, LinkedList<Vector<OneSlice>> list)
+	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
 		{
-		if(isBuilt())
+		//Get direction of camera as vector, and z-position
+		Vector3d camv=cam.transformedVector(0, 0, 1);
+		double camz=cam.pos.dot(camv);
+		
+		//For all stacks
+		for(Vector<OneSlice> osv:list)
 			{
-			//Shader
-			if(shader2d==null)
-				shader2d=new Shader(gl,Stack3D.class.getResource("2dvert.glsl"),Stack3D.class.getResource("2dfrag.glsl"));
-
-			//Planes
-			for(Vector<OneSlice> osv:list)
+			//For all planes
+			for(final OneSlice os:osv)
 				{
-				for(OneSlice os:osv)
-					{
+				final double w=os.w/os.resX;
+				final double h=os.h/os.resY;
 				
+				TransparentRender renderer=new TransparentRender(){public void render(GL gl)
+					{
 					//Select texture
 					os.tex.enable();
 					os.tex.bind();
-										
+
 					//Find size and position
-					double w=os.w/os.resX;
-					double h=os.h/os.resY;
 					TextureCoords tc=os.tex.getImageTexCoords();
-					
+
 					gl.glBegin(GL.GL_QUADS);
 					gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
-					gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, os.z); //check
+					gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, os.z);
 					gl.glTexCoord2f(tc.right(),tc.top());    gl.glVertex3d(w, 0, os.z);
 					gl.glTexCoord2f(tc.right(),tc.bottom()); gl.glVertex3d(w, h, os.z);
 					gl.glTexCoord2f(tc.left(), tc.bottom()); gl.glVertex3d(0, h, os.z);
 					gl.glEnd();
-		
+
 					os.tex.disable();
-					}
+				}};
+				renderer.renderState=renderstate;
+				renderer.z=new Vector3d(w/2,h/2,os.z).dot(camv)-camz;
+				transparentRenderers.add(renderer);
+				
 				}
 			}
 		}

@@ -144,15 +144,23 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			private JCheckBox cVisible=new JCheckBox("Visible",true);
 			
 			public JNumericField[][] fPoints=new JNumericField[][]{
-						{new JNumericField(5.0),new JNumericField(0.0),new JNumericField(0.0)},
-						{new JNumericField(0.0),new JNumericField(5.0),new JNumericField(0.0)},
-						{new JNumericField(0.0),new JNumericField(0.0),new JNumericField(5.0)}};
+						{new JNumericField(0.0),new JNumericField(0.0),new JNumericField(0.0)},
+						{new JNumericField(0.0),new JNumericField(0.0),new JNumericField(0.0)},
+						{new JNumericField(0.0),new JNumericField(0.0),new JNumericField(0.0)}};
 			//Should try and set a sensible default size-dependent
-			private final Vector3d[] points=new Vector3d[]{new Vector3d(5,0,0),new Vector3d(0,5,0),new Vector3d(0,0,5)};
+			private final Vector3d[] points=new Vector3d[]{new Vector3d(0,0,0),new Vector3d(0,0,0),new Vector3d(0,0,0)};
 
 			
 			public ToolSlab()
 				{
+				//Set coordinates
+				double size=ModelWindowGrid.getGridSize(w);
+				points[0].x=size;
+				points[1].y=size;
+				points[2].z=size;
+				updateVector2field();
+
+				//Build GUI
 				JPanel q3=new JPanel(new BorderLayout());
 				q3.add(cEnabled,BorderLayout.CENTER);
 				q3.add(bDelete,BorderLayout.EAST);
@@ -212,6 +220,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 				
 				stateChanged(null);
 				}
+
 
 			private void updateVector2field()
 				{

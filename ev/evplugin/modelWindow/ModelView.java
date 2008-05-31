@@ -13,6 +13,7 @@ import javax.vecmath.Vector3d;
 import com.sun.opengl.util.j2d.*;
 
 import evplugin.ev.*;
+import evplugin.modelWindow.TransparentRender.RenderState;
 import evplugin.modelWindow.basicExt.ModelWindowGrid;
 
 
@@ -274,11 +275,20 @@ public class ModelView extends GLCanvas
 			
 			//Take care of transparent renderers
 			Collections.sort(transparentRenderers);
+			RenderState currentRenderState=null;
 			for(TransparentRender r:transparentRenderers)
 				{
-				System.out.println("z "+r.z);
+				//System.out.println("z "+r.z);
+				if(r.renderState!=currentRenderState)
+					{
+					if(currentRenderState!=null) currentRenderState.deactivate(gl);
+					currentRenderState=r.renderState;
+					if(currentRenderState!=null) currentRenderState.activate(gl);
+					}
 				r.render(gl);
 				}
+			if(currentRenderState!=null)
+				currentRenderState.deactivate(gl);
 			
 			//Adjust scale for next time
 			//TODO Highly questionable if this should be done _here_
