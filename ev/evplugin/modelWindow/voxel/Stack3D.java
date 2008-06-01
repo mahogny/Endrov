@@ -19,10 +19,7 @@ import evplugin.modelWindow.TransparentRender;
 import evplugin.modelWindow.ModelWindow.ProgressMeter;
 
 
-
-//TODO: split up over z to waste less space
-//TODO: integrate transparency sorting in modw
-//TODO: NPOT mode?
+//XXX: NPOT mode?
 
 
 /**

@@ -125,7 +125,7 @@ public final class CalcThread extends BatchThread
     												(ay-dispY)*ch.getMeta().chBinning/(double)rec.meta.resY);
     										*/
     										Vector2D pos=new Vector2D(
-    												((ax)*ch.getMeta().chBinning+dispX)/(double)rec.meta.resX,  //WTF??? TODO
+    												((ax)*ch.getMeta().chBinning+dispX)/(double)rec.meta.resX,  //TODO WTF??? 
     												((ay)*ch.getMeta().chBinning+dispY)/(double)rec.meta.resY);
 /*
     										Vector2D pos=new Vector2D(

@@ -54,7 +54,6 @@ public final class CalcThreadOld extends BatchThread
 				return;
 				}
 
-			//TODO: once we have writable images, then remove this assumption and use ordinary save system
 			OstImageset ost=(OstImageset)rec;
 			ost.invalidateDatabaseCache();
 			

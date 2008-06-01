@@ -264,7 +264,6 @@ public class DB
 	 */
 	public boolean readDatabaseVersion()
 		{
-		//TODO
 		try
 			{
 			Statement stmt = createStatement();
