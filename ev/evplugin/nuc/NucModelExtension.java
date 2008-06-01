@@ -474,7 +474,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    	//also consider setting size such that it does not vary with distance
 	    	//3d text at all? overlay rendering should be faster
 				String nucName=nucPair.snd();
-	    	w.view.renderString(gl, transparentRenderers, w.view.renderer, (float)(0.005*nuc.pos.r), nucName);
+	    	w.view.renderString(gl, transparentRenderers, (float)(0.005*nuc.pos.r), nucName);
 	    	}
 	    
 	    //Go back to world coordinates
