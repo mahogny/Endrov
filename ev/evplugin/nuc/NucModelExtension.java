@@ -8,6 +8,7 @@ import java.util.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.swing.*;
+import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
@@ -503,7 +504,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Give suitable center of all objects
 		 */
-		public Collection<Vector3D> autoCenterMid()
+		public Collection<Vector3d> autoCenterMid()
 			{
 			//Calculate center
 			double meanx=0, meany=0, meanz=0;
@@ -526,7 +527,7 @@ public class NucModelExtension implements ModelWindowExtension
 				meanx/=num;
 				meany/=num;
 				meanz/=num;
-				return Collections.singleton(new Vector3D(meanx,meany,meanz));
+				return Collections.singleton(new Vector3d(meanx,meany,meanz));
 				}
 			}
 		
@@ -534,7 +535,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Given a middle position, figure out radius required to fit objects
 		 */
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 			{
 			//Calculate maximum radius
 			double maxr=0;

@@ -85,19 +85,15 @@ public class SaveOSTThread extends BatchThread
 		try
 			{
 			File imagesetPath=new File(imagesetFilename+".ost");
-//			File imagesetPath=new File(imagesetFilename);
 			imagesetPath.mkdirs();
-			//String imageset=imagesetPath.getName();
 			
 			//Meta data
 			rec.saveMeta(new File(imagesetPath, "rmd.ostxml"));
-//			rec.saveMeta(new File(imagesetPath, "rmd.xml"));
 			
 			//Image data
 			for(Imageset.ChannelImages channel:rec.channelImages.values())
 				{
 				File channelPath=new File(imagesetPath, channel.getMeta().name);
-//				File channelPath=new File(imagesetPath, imageset+"-"+channel.getMeta().name);
 				channelPath.mkdir();
 								
 				for(int frame:channel.imageLoader.keySet())

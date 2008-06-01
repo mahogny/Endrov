@@ -14,6 +14,7 @@ import java.util.List;
 import javax.media.opengl.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import org.jdom.Element;
@@ -24,7 +25,6 @@ import evplugin.basicWindow.BasicWindow;
 import evplugin.basicWindow.ChannelCombo;
 import evplugin.basicWindow.ColorCombo;
 import evplugin.data.*;
-import evplugin.ev.*;
 import evplugin.imageset.*;
 import evplugin.modelWindow.*;
 
@@ -55,8 +55,9 @@ public class IsosurfaceExtension implements ModelWindowExtension
 	
 	private class Hook implements ModelWindowHook, ActionListener
 		{
-		private ModelWindow w;
+		private final ModelWindow w;
 		private Vector<ToolIsolayer> isolayers=new Vector<ToolIsolayer>();
+		private Vector<IsosurfaceRenderer> removableRenderers=new Vector<IsosurfaceRenderer>();
 		private JButton addIsolevel=new JButton("Add isolevel");
 
 		public Hook(ModelWindow w)
@@ -83,14 +84,14 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				scale.addAll(s.adjustScale(w));
 			return scale;
 			}
-		public Collection<Vector3D> autoCenterMid()
+		public Collection<Vector3d> autoCenterMid()
 			{
-			List<Vector3D> scale=new LinkedList<Vector3D>();
+			List<Vector3d> scale=new LinkedList<Vector3d>();
 			for(IsosurfaceRenderer s:getSurfaces())
 				scale.add(s.autoCenterMid());
 			return scale;
 			}
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 			{
 			List<Double> scale=new LinkedList<Double>();
 			for(IsosurfaceRenderer s:getSurfaces())
@@ -178,24 +179,35 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				blurxySpinner.addChangeListener(this);
 				chanCombo.addActionListener(this);
 				bDelete.addActionListener(this);
+				colorCombo.addActionListener(this);
 				}
 			
 			
 			public void stateChanged(ChangeEvent e)
 				{
-				surfaces.clear(); //can be made more clever if performance is wanted
+				if(e.getSource()!=transSpinner)
+					surfaces.clear(); //can be made more clever if performance is wanted
 				w.view.repaint(); //TODO modw repaint
 				}
 
 
 			public void actionPerformed(ActionEvent e)
 				{
-				if(e.getSource()==bDelete)
+				if(e.getSource()==colorCombo)
+					w.view.repaint();
+				else
 					{
-					isolayers.remove(this);
-					w.updateToolPanels();
+					if(e.getSource()==bDelete)
+						{
+						for(Vector<IsosurfaceRenderer> renderers:surfaces.values())
+							for(IsosurfaceRenderer renderer:renderers)
+								removableRenderers.add(renderer);
+						isolayers.remove(this);
+						w.updateToolPanels();
+						}
+					surfaces.clear(); //can be made more clever if performance is wanted
+					w.view.repaint(); //TODO modw repaint
 					}
-				stateChanged(null);
 				}
 
 
@@ -218,6 +230,14 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			public void render(GL gl,List<TransparentRender> transparentRenderers)
 				{
 				chanCombo.updateChannelList();
+				
+				synchronized(surfaces)
+				{
+				
+				//Clean up resources
+				for(IsosurfaceRenderer renderer:removableRenderers)
+					renderer.clean(gl);
+				removableRenderers.clear();
 				
 				//Make sure surfaces are for the right imageset
 				Imageset im=chanCombo.getImageset();
@@ -266,8 +286,9 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					Color col=colorCombo.getColor();
 					double trans=(Double)transSpinner.getModel().getValue();
 					for(IsosurfaceRenderer rr:r)
-						rr.render(gl,col.getRed()/255.0f, col.getGreen()/255.0f, col.getBlue()/255.0f, (float)trans/100.0f);
+						rr.render(gl,transparentRenderers,w.view.camera,col.getRed()/255.0f, col.getGreen()/255.0f, col.getBlue()/255.0f, (float)trans/100.0f);
 					}
+				}
 				}
 			
 			
@@ -379,7 +400,6 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					
 					if(shouldStop()) return;
 
-
 					//Generate polygons
 					if(ptScalarField!=null)
 						{
@@ -424,10 +444,10 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					if(iso.isSurfaceValid())
 						{
 						IsosurfaceRenderer renderer=new IsosurfaceRenderer();
-						renderer.vertb=vertb;
-						renderer.vertn=vertn;
-						renderer.indb=indb;
-	
+						renderer.uploadData(w.view, vertb, vertn, indb);
+				
+						
+						
 						iso.updateScale();
 						renderer.maxX=iso.maxX;
 						renderer.maxY=iso.maxY;
@@ -437,9 +457,11 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						renderer.minZ=iso.minZ;
 						
 						//Add to list of renderers
-						//TODO UNSAFE
-						Vector<IsosurfaceRenderer> r=surfaces.get(cframe);
-						r.add(renderer);
+						synchronized(surfaces)
+							{
+							Vector<IsosurfaceRenderer> r=surfaces.get(cframe);
+							r.add(renderer);
+							}
 						}
 					
 					
@@ -461,7 +483,6 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					{
 					generators.remove(this);
 					pm.done();
-					System.out.println("eliminate");
 					}
 				public void stopGenerate()
 					{

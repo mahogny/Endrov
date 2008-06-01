@@ -10,7 +10,6 @@ import javax.media.opengl.*;
 import javax.vecmath.Vector3d;
 
 import evplugin.ev.Tuple;
-import evplugin.ev.Vector3D;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
@@ -332,12 +331,12 @@ public class Stack3D extends StackInterface
 	/**
 	 * Give suitable center of all objects
 	 */
-	public Collection<Vector3D> autoCenterMid()
+	public Collection<Vector3d> autoCenterMid()
 		{
 		if(!texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
-			return Collections.singleton(new Vector3D(os.realw/2.0,os.realh/2.0,os.reald/2.0));
+			return Collections.singleton(new Vector3d(os.realw/2.0,os.realh/2.0,os.reald/2.0));
 			}
 		else
 			return Collections.emptySet();
@@ -347,7 +346,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Given a middle position, figure out radius required to fit objects
 	 */
-	public Double autoCenterRadius(Vector3D mid, double FOV)
+	public Double autoCenterRadius(Vector3d mid, double FOV)
 		{
 		if(!texSlices.isEmpty())
 			{
@@ -754,6 +753,7 @@ public class Stack3D extends StackInterface
 				os.tex.bind(gl);
 				shader3d.use(gl);
 				}
+			public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState){return false;}
 			public void deactivate(GL gl)
 				{
 				shader3d.stopUse(gl);

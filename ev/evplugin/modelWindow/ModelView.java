@@ -14,7 +14,6 @@ import com.sun.opengl.util.j2d.*;
 
 import evplugin.ev.*;
 import evplugin.modelWindow.TransparentRender.RenderState;
-import evplugin.modelWindow.basicExt.ModelWindowGrid;
 
 
 //NEED GLJPanel
@@ -43,6 +42,8 @@ public class ModelView extends GLCanvas
 	public int numTextureUnits;
 	//4 on GeForce 8400 GS/PCI/SSE2
 	
+	 public boolean VBOsupported;
+	
 	/** Common data */
 	private ModelWindow window;
 
@@ -54,8 +55,13 @@ public class ModelView extends GLCanvas
 	
 
 	/** Scaling factor for panning */
-	public double panspeed=1; //private TODO
+	private double panspeed=1; //private TODO
 
+	private double representativeScale=1;
+	public double getRepresentativeScale()
+		{
+		return representativeScale;
+		}
 	
 	/** Current mouse coordinate */
 	public int mouseX=-1, mouseY=-1;	
@@ -127,11 +133,6 @@ public class ModelView extends GLCanvas
 				{
 				drawable.setGL(new DebugGL(drawable.getGL()));
 				GL gl = drawable.getGL();
-				Log.printLog("INIT GL IS: " + gl.getClass().getName());
-				Log.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
-				Log.printLog("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
-				Log.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
-				Log.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
 				}
 			
 			//Get GL context
@@ -148,22 +149,36 @@ public class ModelView extends GLCanvas
 			
 	    renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 72));
 
-
 	    //Number of clipping planes
 	    int[] queryArr=new int[1];
 	    gl.glGetIntegerv(GL.GL_MAX_CLIP_PLANES, queryArr, 0);
 	    numClipPlanesSupported=queryArr[0];
-	    System.out.println("clipping planes supported: "+numClipPlanesSupported);
 	    
 	    //3D texture support
 	    gl.glGetIntegerv(GL.GL_MAX_3D_TEXTURE_SIZE, queryArr, 0);
 	    max3DTextureSize=queryArr[0];
-	    System.out.println("max 3D texture size: "+max3DTextureSize);
 
 	    //Texture units
 	    gl.glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS, queryArr, 0);
 	    numTextureUnits=queryArr[0];
-	    System.out.println("num texture units: "+numTextureUnits);
+	    
+	    //VBO support
+	    VBOsupported = gl.isFunctionAvailable("glGenBuffersARB") &&
+	    gl.isFunctionAvailable("glBindBufferARB") &&
+	    gl.isFunctionAvailable("glBufferDataARB") &&
+	    gl.isFunctionAvailable("glDeleteBuffersARB");
+	    
+	    if(true)
+	    	{
+				Log.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
+				Log.printLog("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
+				Log.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
+				Log.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
+		    System.out.println("clipping planes supported: "+numClipPlanesSupported);
+		    System.out.println("max 3D texture size: "+max3DTextureSize);
+		    System.out.println("num texture units: "+numTextureUnits);
+		    System.out.println("VBO supported: "+VBOsupported);
+	    	}
 			}
 
 		
@@ -273,6 +288,7 @@ public class ModelView extends GLCanvas
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.displayFinal(gl, transparentRenderers);
 			
+			
 			//Take care of transparent renderers
 			Collections.sort(transparentRenderers);
 			RenderState currentRenderState=null;
@@ -281,9 +297,14 @@ public class ModelView extends GLCanvas
 				//System.out.println("z "+r.z);
 				if(r.renderState!=currentRenderState)
 					{
-					if(currentRenderState!=null) currentRenderState.deactivate(gl);
-					currentRenderState=r.renderState;
-					if(currentRenderState!=null) currentRenderState.activate(gl);
+					if(r.renderState.optimizedSwitch(gl, currentRenderState))
+						currentRenderState=r.renderState;
+					else
+						{
+						if(currentRenderState!=null) currentRenderState.deactivate(gl);
+						currentRenderState=r.renderState;
+						if(currentRenderState!=null) currentRenderState.activate(gl);
+						}
 					}
 				r.render(gl);
 				}
@@ -310,7 +331,8 @@ public class ModelView extends GLCanvas
 			//Select grid size
 			double g=Math.pow(10, (int)Math.log10(avdist));
 			if(g<1) g=1;
-			ModelWindowGrid.setGridSize(window,g);
+			//ModelWindowGrid.setGridSize(window,g);
+			representativeScale=g;
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
@@ -332,21 +354,21 @@ public class ModelView extends GLCanvas
 	 */
 	public void autoCenter()
 		{
-		Vector<Vector3D> center=new Vector<Vector3D>();
+		Vector<Vector3d> center=new Vector<Vector3d>();
 
 		//Find centers of everything
 		for(ModelWindowHook h:window.modelWindowHooks)
-			for(Vector3D newcenter:h.autoCenterMid())
+			for(Vector3d newcenter:h.autoCenterMid())
 				center.add(newcenter);
 
 		//Default center
 		if(center.isEmpty())
-			center.add(new Vector3D(0,0,0));
+			center.add(new Vector3d(0,0,0));
 		
-		Vector3D mid=new Vector3D(0,0,0);
-		for(Vector3D v:center)
-			mid=mid.add(v);
-		mid=mid.mul(1.0/center.size());
+		Vector3d mid=new Vector3d(0,0,0);
+		for(Vector3d v:center)
+			mid.add(v);
+		mid.scale(1.0/center.size());
 
 		//Figure out required distance
 		double dist=0;

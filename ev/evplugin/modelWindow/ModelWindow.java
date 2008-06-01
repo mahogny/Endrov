@@ -507,9 +507,10 @@ public class ModelWindow extends BasicWindow
 		/** Remove progress bar. update view */
 		public void done()
 			{
-			progressMeters.remove(this);
+			final ProgressMeter mthis=this;
 			SwingUtilities.invokeLater(new Runnable(){public void run()
 				{
+				progressMeters.remove(mthis);
 				updateProgressMeter();
 				view.repaint(); //TODO modw repaint. w.repaint does not do the job in this case!
 				}});
@@ -556,10 +557,6 @@ public class ModelWindow extends BasicWindow
 	
 	
 	/**
-	 
-	ost maker ost3?
-
-
 	implementera:
 	kanallista uppdateras, ny entry, avbryt evaluerix
 	se över när den spelar

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.media.opengl.GL;
+import javax.vecmath.Vector3d;
 
-import evplugin.ev.Vector3D;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
 import evplugin.modelWindow.ModelWindow;
@@ -24,8 +24,8 @@ public abstract class StackInterface
 	public abstract void loadGL(GL gl);
 	public abstract void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors);
 	public abstract Collection<Double> adjustScale(ModelWindow w);
-	public abstract Collection<Vector3D> autoCenterMid();
-	public abstract Double autoCenterRadius(Vector3D mid, double FOV);
+	public abstract Collection<Vector3d> autoCenterMid();
+	public abstract Double autoCenterRadius(Vector3d mid, double FOV);
 	public abstract void startBuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w);
 	public abstract void stopBuildThread();
 

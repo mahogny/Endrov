@@ -13,7 +13,7 @@ public class CacheImages
 	private static int qsize=5;
 	private static LinkedList<WeakReference<EvImage>> queue=new LinkedList<WeakReference<EvImage>>();
 	
-	public static void addToCache(EvImage im)
+	public static synchronized void addToCache(EvImage im)
 		{
 		WeakReference<EvImage> ref=null;
 		

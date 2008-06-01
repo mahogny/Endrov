@@ -3,11 +3,12 @@ package evplugin.line;
 import java.util.*;
 
 import javax.media.opengl.*;
+import javax.vecmath.Vector3d;
+
 import org.jdom.Element;
 
 import evplugin.modelWindow.*;
 import evplugin.data.EvObject;
-import evplugin.ev.*;
 
 
 /**
@@ -126,7 +127,7 @@ public class EvLineModelExtension implements ModelWindowExtension
 		/**
 		 * Give suitable center of all objects
 		 */
-		public Collection<Vector3D> autoCenterMid()
+		public Collection<Vector3d> autoCenterMid()
 			{
 			return Collections.emptySet();
 			}
@@ -135,7 +136,7 @@ public class EvLineModelExtension implements ModelWindowExtension
 		/**
 		 * Given a middle position, figure out radius required to fit objects
 		 */
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 			{
 			return Collections.emptySet();
 			}

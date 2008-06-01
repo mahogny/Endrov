@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import javax.media.opengl.*;
 import javax.swing.*;
+import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
@@ -130,11 +131,11 @@ public class VoxelExtension implements ModelWindowExtension
 			{
 			return currentStack.adjustScale(w);
 			}
-		public Collection<Vector3D> autoCenterMid()
+		public Collection<Vector3d> autoCenterMid()
 			{
 			return currentStack.autoCenterMid();
 			}
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 			{
 			Double r=currentStack.autoCenterRadius(mid, FOV);
 			if(r==null)
