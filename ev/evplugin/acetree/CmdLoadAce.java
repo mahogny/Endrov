@@ -35,8 +35,6 @@ public class CmdLoadAce extends Command
 				}
 			else
 				return null;
-			//TODO: print error?
-			
 			}
 		else
 			throw new Exception("Incompatible type");

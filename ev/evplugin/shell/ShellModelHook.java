@@ -2,6 +2,7 @@ package evplugin.shell;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -39,19 +40,19 @@ public class ShellModelHook implements ModelWindowHook
 
 	public Collection<Vector3d> autoCenterMid()
 		{
-		//TODO
-		return Collections.emptySet();
+		List<Vector3d> col=new LinkedList<Vector3d>();
+		for(Shell s:getVisibleShell())
+			col.add(new Vector3d(s.midx,s.midy,s.midz));
+		return col;
 		}
 	public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 		{
-		//TODO
 		return Collections.emptySet();
 		}
 
 	
 	public Collection<Double> adjustScale()
 		{
-		//TODO
 		return Collections.emptySet();
 		}
 	

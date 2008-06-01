@@ -13,7 +13,7 @@ public class CmdMap extends Command
 		
 		if(list instanceof Vector)
 			{
-			Vector<Exp> vl=(Vector<Exp>)list; //TODO unchecked cast from Object to vector warning
+			Vector<Exp> vl=(Vector<Exp>)list; 
 			Vector<Exp> out=new Vector<Exp>();
 			for(int i=0;i<vl.size();i++)
 				{
