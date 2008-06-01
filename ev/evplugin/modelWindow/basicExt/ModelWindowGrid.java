@@ -30,17 +30,16 @@ public class ModelWindowGrid implements ModelWindowExtension
 		ModelWindow.modelWindowExtensions.add(new ModelWindowGrid());
 		}
 	
+	public void newModelWindow(final ModelWindow w)
+		{
+		w.modelWindowHooks.add(new ModelWindowGridHook(w));
+		}
 	private class ModelWindowGridHook implements ModelWindowHook, ActionListener
 		{
 		private ModelWindow w;
 		
-		/** Size of the grid in um */
-		public double gridsize=1;
-
 		public JCheckBoxMenuItem miShowGrid=new JCheckBoxMenuItem("Show grid",true); 
 		public JCheckBoxMenuItem miShowRuler=new JCheckBoxMenuItem("Show ruler",false); 
-
-		
 		
 		public ModelWindowGridHook(ModelWindow w)
 			{
@@ -102,6 +101,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 			gl.glRotatef(90,0,1,0); 
 			gl.glRotatef(90,1,0,0); 
 			gl.glColor3d(0.4,0,0); 
+			double gridsize=w.view.getRepresentativeScale();
 			if(miShowGrid.isSelected())
 				renderGridPlane(gl,gridsize); 
 			if(miShowRuler.isSelected())
@@ -171,26 +171,5 @@ public class ModelWindowGrid implements ModelWindowExtension
 		
 		}
 	
-	//TODO: replace grid size with repsize, and let view handle it
-	/*
-	public static double getGridSize(ModelWindow w)
-		{
-		for(ModelWindowHook h:w.modelWindowHooks)
-			if(h instanceof ModelWindowGridHook)
-				return ((ModelWindowGridHook)h).gridsize;
-		return 0; //should never reach here
-		}
 	
-	public static void setGridSize(ModelWindow w, double g)
-		{
-		for(ModelWindowHook h:w.modelWindowHooks)
-			if(h instanceof ModelWindowGridHook)
-				((ModelWindowGridHook)h).gridsize=g;
-		}
-	*/
-	
-	public void newModelWindow(final ModelWindow w)
-		{
-		w.modelWindowHooks.add(new ModelWindowGridHook(w));
-		}
 	}

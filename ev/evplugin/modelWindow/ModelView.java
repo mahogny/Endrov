@@ -55,14 +55,13 @@ public class ModelView extends GLCanvas
 	
 
 	/** Scaling factor for panning */
-	private double panspeed=1; //private TODO
+	private double panspeed=1;
 
+	/** Scale to which everything should adapt */
+	//also panspeed?
 	private double representativeScale=1;
-	public double getRepresentativeScale()
-		{
-		return representativeScale;
-		}
 	
+		
 	/** Current mouse coordinate */
 	public int mouseX=-1, mouseY=-1;	
 	public TextRenderer renderer;
@@ -212,6 +211,25 @@ public class ModelView extends GLCanvas
 			if(force)
 				System.out.println("===forced set===");
 			force=false;
+
+			//Adjust scale
+			double avdist=0;
+			int numdist=0;
+			for(ModelWindowHook h:window.modelWindowHooks)
+				for(double dist:h.adjustScale())
+					{
+					avdist+=dist;
+					numdist++;
+					}
+			avdist/=numdist;
+			//Select pan speed
+			panspeed=avdist/1000.0;
+			//Select representative scale
+			double g=Math.pow(10, (int)Math.log10(avdist));
+			if(g<1) g=1;
+			representativeScale=g;
+
+			//Here it would be possible to auto-center the camera if it is totally out of range
 			
 			
 			//Store away unaffected matrix
@@ -230,6 +248,7 @@ public class ModelView extends GLCanvas
 			//Prepare render extensions
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.displayInit(gl);
+			
 			
 			/////////////////////////////////
 			// Render for selection
@@ -311,28 +330,7 @@ public class ModelView extends GLCanvas
 			if(currentRenderState!=null)
 				currentRenderState.deactivate(gl);
 			
-			//Adjust scale for next time
-			//TODO Highly questionable if this should be done _here_
-			double avdist=0;
-			int numdist=0;
-			for(ModelWindowHook h:window.modelWindowHooks)
-				{
-				for(double dist:h.adjustScale())
-					{
-					avdist+=dist;
-					numdist++;
-					}
-				}
-			avdist/=numdist;
 			
-			//Select pan speed
-			panspeed=avdist/1000.0;
-				
-			//Select grid size
-			double g=Math.pow(10, (int)Math.log10(avdist));
-			if(g<1) g=1;
-			//ModelWindowGrid.setGridSize(window,g);
-			representativeScale=g;
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
@@ -411,7 +409,11 @@ public class ModelView extends GLCanvas
 		camera.moveCamera(dx*panspeed, dy*panspeed, dz*panspeed);
 		}
 	
-	
+	public double getRepresentativeScale()
+		{
+		return representativeScale;
+		}
+
 	
 	/**
 	 * Render text in 3D
