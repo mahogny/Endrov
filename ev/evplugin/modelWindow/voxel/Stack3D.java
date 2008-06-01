@@ -745,8 +745,8 @@ public class Stack3D extends StackInterface
 				gl.glDisable(GL.GL_CULL_FACE);
 				gl.glEnable(GL.GL_TEXTURE_3D);
 				gl.glEnable(GL.GL_BLEND);
-				//int texUnit=0;  //NEW
-				//gl.glActiveTexture(GL.GL_TEXTURE0 + texUnit); //NEW
+					//int texUnit=0;  //NEW
+					//gl.glActiveTexture(GL.GL_TEXTURE0 + texUnit); //NEW
 				os.tex.bind(gl);
 				shader3d.use(gl);
 				}
