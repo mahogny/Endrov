@@ -163,7 +163,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 					{
 					gl.glPushMatrix();
 					gl.glTranslated(0, i*gsize, 0);
-					w.view.renderString(gl, transparentRenderers,w.view.renderer, (float)(gsize*0.004), ""+i*gsize);
+					w.view.renderString(gl, transparentRenderers, (float)(gsize*0.004), ""+i*gsize);
 					gl.glPopMatrix();
 					}
 			}

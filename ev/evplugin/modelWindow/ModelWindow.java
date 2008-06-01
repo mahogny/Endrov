@@ -554,15 +554,4 @@ public class ModelWindow extends BasicWindow
 			}
 		}
 	
-	
-	
-	/**
-	implementera:
-	kanallista uppdateras, ny entry, avbryt evaluerix
-	se över när den spelar
-	scale, gridsize, etc, var i koden ska detta ze?
-		 
-		 */
-
-	
 	}

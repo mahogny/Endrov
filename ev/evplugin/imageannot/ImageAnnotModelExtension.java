@@ -110,7 +110,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 			//also consider setting size such that it does not vary with distance
 			//3d text at all? overlay rendering should be faster
 			float size=1; //(float)(0.005*nuc.pos.r) //trouble! relate to camera distance TODO
-			w.view.renderString(gl, transparentRenderers, w.view.renderer, size, ia.text);
+			w.view.renderString(gl, transparentRenderers, size, ia.text);
 
 
 			//Go back to world coordinates

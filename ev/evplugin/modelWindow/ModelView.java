@@ -421,33 +421,7 @@ public class ModelView extends GLCanvas
 	 * @param textScaleFactor Size of font
 	 * @param text String to render
 	 */
-	/*
-	public void renderString(GL gl, TextRenderer renderer, float textScaleFactor, String text)
-		{
-		gl.glPushAttrib(GL.GL_ENABLE_BIT);
-		renderer.begin3DRendering();
-
-		//TODO Text must be sorted
-		//gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
-		//gl.glEnable(GL.GL_BLEND);
-		
-		//make global I guess?
-		//TODO when rendering sorted objects, can disable this all the time as default
-		gl.glDisable(GL.GL_CULL_FACE);
-		
-		//Note that the defaults for glCullFace and glFrontFace are GL_BACK and GL_CCW, which
-		//match the TextRenderer's definition of front-facing text.
-		Rectangle2D bounds = renderer.getBounds(text);
-		float w = (float) bounds.getWidth();
-		float h = (float) bounds.getHeight();
-		renderer.draw3D(text, w / -2.0f * textScaleFactor, h / -2.0f * textScaleFactor, 0, textScaleFactor);
-		
-		renderer.end3DRendering();
-		gl.glPopAttrib();
-		}
-*/	
-	
-	public void renderString(GL gl, List<TransparentRender> transparentRenderers, final TextRenderer renderer, final float textScaleFactor, final String text)
+	public void renderString(GL gl, List<TransparentRender> transparentRenderers, final float textScaleFactor, final String text)
 		{
 		final float[] matarray=new float[16]; //[col][row]
 		gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, matarray, 0);
@@ -485,6 +459,13 @@ public class ModelView extends GLCanvas
 		}
 
 	
+	/**
+	 * Overload repaint; can force some redraws to set a minimum FPS
+	 */
+	public void repaint()
+		{
+		super.repaint();
+		}
 	
 	
 	}
