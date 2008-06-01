@@ -9,6 +9,7 @@ import java.util.List;
 import javax.media.opengl.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
@@ -16,7 +17,6 @@ import evplugin.basicWindow.BasicWindow;
 import evplugin.basicWindow.ChannelCombo;
 import evplugin.basicWindow.ColorCombo;
 import evplugin.data.*;
-import evplugin.ev.*;
 import evplugin.imageset.*;
 import evplugin.modelWindow.*;
 
@@ -54,15 +54,21 @@ public class Slice3DExtension implements ModelWindowExtension
 		
 		public Collection<Double> adjustScale()
 			{
-			return Collections.emptySet(); //TODO
+			List<Double> col=new LinkedList<Double>();
+			for(ToolIsolayer ti:isolayers)
+				col.addAll(ti.slice.adjustScale());
+			return col;
 			}
-		public Collection<Vector3D> autoCenterMid()
+		public Collection<Vector3d> autoCenterMid()
 			{
-			return Collections.emptySet(); //TODO
+			return Collections.emptySet();
 			}
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 			{
-			return Collections.emptySet(); //TODO
+			List<Double> col=new LinkedList<Double>();
+			for(ToolIsolayer ti:isolayers)
+				col.addAll(ti.slice.autoCenterRadius(mid, FOV));
+			return col;
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
@@ -113,7 +119,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			private JCheckBox zProject=new JCheckBox("@Z=0");
 			private ColorCombo colorCombo=new ColorCombo();
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
-			private Slice3D slice=new Slice3D();
+			public Slice3D slice=new Slice3D();
 			
 			
 			public ToolIsolayer()

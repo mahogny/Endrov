@@ -70,11 +70,11 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			{
 			return Collections.emptySet();
 			}
-		public Collection<Vector3D> autoCenterMid()
+		public Collection<Vector3d> autoCenterMid()
 			{
 			return Collections.emptySet();
 			}
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV)
+		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 			{
 			return Collections.emptySet();
 			}
@@ -154,7 +154,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			public ToolSlab()
 				{
 				//Set coordinates
-				double size=ModelWindowGrid.getGridSize(w);
+				double size=w.view.getRepresentativeScale();//ModelWindowGrid.getGridSize(w);
 				points[0].x=size;
 				points[1].y=size;
 				points[2].z=size;

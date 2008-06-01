@@ -7,10 +7,11 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.swing.*;
+import javax.vecmath.Vector3d;
+
 import org.jdom.*;
 
 import evplugin.data.EvObject;
-import evplugin.ev.Vector3D;
 import evplugin.modelWindow.ModelWindow;
 import evplugin.modelWindow.ModelWindowExtension;
 import evplugin.modelWindow.ModelWindowHook;
@@ -82,8 +83,8 @@ public class ModelWindowGrid implements ModelWindowExtension
 			
 			
 		public Collection<Double> adjustScale(){return Collections.emptySet();}
-		public Collection<Vector3D> autoCenterMid(){return Collections.emptySet();}
-		public Collection<Double> autoCenterRadius(Vector3D mid, double FOV){return Collections.emptySet();}
+		public Collection<Vector3d> autoCenterMid(){return Collections.emptySet();}
+		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV){return Collections.emptySet();}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}
@@ -171,6 +172,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 		}
 	
 	//TODO: replace grid size with repsize, and let view handle it
+	/*
 	public static double getGridSize(ModelWindow w)
 		{
 		for(ModelWindowHook h:w.modelWindowHooks)
@@ -185,7 +187,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 			if(h instanceof ModelWindowGridHook)
 				((ModelWindowGridHook)h).gridsize=g;
 		}
-	
+	*/
 	
 	public void newModelWindow(final ModelWindow w)
 		{

@@ -89,7 +89,9 @@ public class CrossHandler
 			int col3=view.reserveSelectColor(crossListener);
 			if(crossListStartId==null)
 				crossListStartId=col1;
-			float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(w);
+//			float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(w);
+			float size=crossSizeFactor*(float)w.view.getRepresentativeScale();
+			
 			gl.glPushMatrix();
 			gl.glTranslated(c.v.x, c.v.y, c.v.z);
 			gl.glLineWidth(8);//can be made wider
@@ -121,7 +123,8 @@ public class CrossHandler
 			{
 			gl.glPushMatrix();
 			gl.glTranslated(c.v.x, c.v.y, c.v.z);
-			float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(w);
+			//float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(w);
+			float size=crossSizeFactor*(float)w.view.getRepresentativeScale();
 			gl.glLineWidth(4);
 			gl.glBegin(GL.GL_LINES);
 			gl.glColor3f(1,0,0);

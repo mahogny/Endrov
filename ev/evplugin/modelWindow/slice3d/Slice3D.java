@@ -2,15 +2,17 @@ package evplugin.modelWindow.slice3d;
 
 import java.awt.*;
 import java.awt.image.*;
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.media.opengl.*;
+import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.texture.*;
 
 import evplugin.ev.Vector3D;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
-import evplugin.modelWindow.ModelWindow;
-import evplugin.modelWindow.basicExt.ModelWindowGrid;
 
 /**
  * Render one slice in 3d
@@ -126,7 +128,7 @@ public class Slice3D
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Color color, int zplane)
+	public void render(GL gl, Color color, double zplane)
 		{
 		if(isBuilt())
 			{
@@ -160,44 +162,35 @@ public class Slice3D
 		}
 	
 	
-	public void adjustScale(ModelWindow w)
+	public Collection<Double> adjustScale()
 		{
 		if(tex!=null)
-			{
-			double width=this.w/resX;
-			
-			//pan speed
-			w.view.panspeed=width/1000.0;
-			
-			//Select grid size
-			double g=Math.pow(10, (int)Math.log10(width));
-			if(g<1) g=1;
-			ModelWindowGrid.setGridSize(w,g);
-			}
-		
+			return Collections.singleton(this.w/resX);
+		else
+			return Collections.emptySet();
 		}
-	
 	
 	/**
 	 * Give suitable center of all objects
+	 * TODO currently useless requiring z. need to move this value
 	 */
-	public Vector3D autoCenterMid(int z)
+	public Collection<Vector3D> autoCenterMid(double z)
 		{
 		if(tex!=null)
 			{
 			double width=w/resX;
 			double height=h/resY;
-			return new Vector3D(width/2.0,height/2.0,z);
+			return Collections.singleton(new Vector3D(width/2.0,height/2.0,z));
 			}
 		else
-			return null;
+			return Collections.emptySet();
 		}
 	
 	
 	/**
 	 * Given a middle position, figure out radius required to fit objects
 	 */
-	public Double autoCenterRadius(Vector3D mid, double FOV)
+	public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 		{
 		if(tex!=null)
 			{
@@ -212,10 +205,11 @@ public class Slice3D
 					max=d;
 			
 			//Find how far away the camera has to be. really have FOV in here?
-			return max/Math.sin(FOV);
+			return Collections.singleton(max/Math.sin(FOV));
 			}
 		else
-			return null;
+			return Collections.emptySet();
+///			return null;
 		}
 	
 	

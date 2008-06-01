@@ -12,7 +12,6 @@ import com.sun.opengl.util.j2d.TextureRenderer;
 import com.sun.opengl.util.texture.*;
 
 import evplugin.ev.Tuple;
-import evplugin.ev.Vector3D;
 import evplugin.imageset.*;
 import evplugin.imageset.Imageset.ChannelImages;
 import evplugin.modelWindow.Camera;
@@ -275,8 +274,8 @@ public class Stack2D extends StackInterface
 		if(isBuilt())
 			{
 			//Load shader
-			if(shader2d==null)
-				shader2d=new Shader(gl,Stack3D.class.getResource("2dvert.glsl"),Stack3D.class.getResource("2dfrag.glsl"));
+			//if(shader2d==null)
+//				shader2d=new Shader(gl,Stack3D.class.getResource("2dvert.glsl"),Stack3D.class.getResource("2dfrag.glsl"));
 
 			//Draw edges
 			if(drawEdges && !texSlices.isEmpty())
@@ -301,13 +300,16 @@ public class Stack2D extends StackInterface
 						gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
 					gl.glEnable(GL.GL_BLEND);
 					gl.glDepthMask(false);
+					//shader2d.use(gl); //currently not needed
 					}
 				}
+			public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState){return false;}
 			public void deactivate(GL gl)
 				{
 				gl.glDisable(GL.GL_BLEND);
 				gl.glDepthMask(true);
 				gl.glEnable(GL.GL_CULL_FACE);
+				//shader2d.stopUse(gl);
 				}
 			}; 
 
@@ -408,14 +410,14 @@ public class Stack2D extends StackInterface
 	/**
 	 * Give suitable center of all objects
 	 */
-	public Collection<Vector3D> autoCenterMid()
+	public Collection<Vector3d> autoCenterMid()
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
 			double width=os.w/os.resX;
 			double height=os.h/os.resY;
-			return Collections.singleton(new Vector3D(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0));
+			return Collections.singleton(new Vector3d(width/2.0,height/2.0,(texSlices.firstKey()+texSlices.lastKey())/2.0));
 			}
 		else
 			return Collections.emptySet();
@@ -425,7 +427,7 @@ public class Stack2D extends StackInterface
 	/**
 	 * Given a middle position, figure out radius required to fit objects
 	 */
-	public Double autoCenterRadius(Vector3D mid, double FOV)
+	public Double autoCenterRadius(Vector3d mid, double FOV)
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{

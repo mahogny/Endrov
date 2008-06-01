@@ -23,4 +23,9 @@ rm -Rf .project .classpath .metadata .settings
 #compress
 cd ..
 zip -r $name $name
+
+#linecount
+wc -l $name/*.java $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java  $name/*/*/*/*.glsl
+
+#delete
 rm -Rf $name

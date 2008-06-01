@@ -32,5 +32,7 @@ public abstract class TransparentRender implements Comparable<TransparentRender>
 		{
 		public void activate(GL gl);
 		public void deactivate(GL gl);
+		/** Asked to switch with less overhead. Returns true if it succeeds. */
+		public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState);
 		}
 	}

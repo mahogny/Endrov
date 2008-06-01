@@ -8,7 +8,7 @@ varying float gl_FogFragCoord;*/
 varying vec2 texCoords;
 varying vec4 vcolor;
 
-uniform sampler3D tex;
+uniform sampler2D tex;
 
 void main (void)  
 	{
