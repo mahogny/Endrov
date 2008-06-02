@@ -25,7 +25,9 @@ for i=1:length(names)
 end
 
 
-ncount1=findneighone('/Volumes/TBU_main02/ost4dgood/N2_071116',namesi,names,1750);
+dt=2;
+
+ncount1=findneighone('/Volumes/TBU_main02/ost4dgood/N2_071116',namesi,names,1750,dt*6);
 
 
 
@@ -35,14 +37,20 @@ ncount1=findneighone('/Volumes/TBU_main02/ost4dgood/N2_071116',namesi,names,1750
 
 %%
 
-ncount2=findneighone('/Volumes/TBU_main03/ost4dgood/TB2167_0804016',namesi,names,1750);
+ncount2=findneighone('/Volumes/TBU_main03/ost4dgood/TB2167_0804016',namesi,names,1750,dt*6);
 
 %%
 
 
-%ncount3=findneighone('/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords',namesi,names);
-ncount3=ncount2;
+ncount3=findneighone('/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords',namesi,names,250, dt);
+%ncount3=ncount2;
 
+%%
+ncount4=findneighone('/Volumes/TBU_main02/ost4dgood/N2_071114/',namesi,names,1750,dt*6);
+ncount4=findneighone('/Volumes/TBU_main02/ost4dgood/N2greenLED080206/',namesi,names,1750,dt*6);
+ncount4=findneighone('/Volumes/TBU_main02/ost4dgood/stdcelegansNew/',namesi,names,1750,dt*6);
+ncount4=findneighone('/Volumes/TBU_main02/ost4dgood/TB2164_080118/',namesi,names,1750,dt*6);
+ncount4=findneighone('/Volumes/TBU_main02/ost4dgood/TB2142_071129',namesi,names,1750,dt*6);
 
 %%
 ncount1b=ncount1;
@@ -56,7 +64,7 @@ ncount3b=ncount3;
 colormap('gray');
 
 % %?
-% numc=size(ncount1,1);
+numc=size(ncount1,1);
 % ncount1=ncount1*numc/sum(diag(ncount1));
 % ncount2=ncount2*numc/sum(diag(ncount2));
 % ncount3=ncount3*numc/sum(diag(ncount3));

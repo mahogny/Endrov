@@ -19,10 +19,12 @@ make starters
 rm -Rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
 rm -Rf .cvsignore */.cvsignore */*/.cvsignore */*/*/.cvsignore */*/*/*/.cvsignore
 rm -Rf .project .classpath .metadata .settings
+rm *.log
 
 #compress
 cd ..
 zip -r $name $name
+mv $name.zip release
 
 #linecount
 wc -l $name/*.java $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java  $name/*/*/*/*.glsl

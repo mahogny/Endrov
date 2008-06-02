@@ -1,4 +1,4 @@
-function ncount=findneighone(filepath,namesi,names,newmax)
+function ncount=findneighone(filepath,namesi,names,newmax,dt)
 
 import evplugin.nuc.*;
 import util2.compareDist.*;
@@ -39,7 +39,7 @@ end
 [minframe,maxframe]
 length(nucs)
 %maxframe=1500;
-maxframe=newmax;
+%maxframe=newmax;
 
 
 
@@ -50,7 +50,7 @@ disp('count neigh');
 ncount=zeros(namesi.size);
 notneigh=0;
 
-for curframe=[minframe:10:maxframe]
+for curframe=[minframe:dt:maxframe]
     curframe
     
     %Collect points
