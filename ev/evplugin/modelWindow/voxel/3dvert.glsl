@@ -13,4 +13,8 @@ void main()
 	
 	//http://lists.apple.com/archives/mac-opengl/2006/Jan/msg00028.html //order can matter!
 	//yes, same problem
+	//http://blogs.guardian.co.uk/technology/2007/12/21/apple_censorship_at_issue_on_its_support_forums_again.html
+	//me: NVIDIA GeForce 7300 GT
+	
+	//http://www.tomsguide.com/us/leopard-osx-problems,review-1028.html
 	}
