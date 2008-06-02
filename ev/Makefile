@@ -28,11 +28,12 @@ applet:
 	#jarsigner -keystore myKeys evapplet/applet.jar jdc
 	#keytool -export -keystore myKeys -alias jdc -file evapplet/johanhenriksson.cer
 
+#run in unzipped dist, with mykey
 totaljar:
-	jar cfvm ../ev.jar evgui/MANIFEST.WEBSTART evgui/*class evplugin/*/*class evplugin/*/*.png evplugin/*/cmd/*class evplugin/script/parser/*class evplugin/roi/primitive/*.class evplugin/roi/window/*.class \
-			evplugin/modelWindow/isosurf/*.class evplugin/modelWindow/voxel/*.class evplugin/modelWindow/slice3d/*.class \
-			evplugin/*/*.png evplugin/roi/window/*.png evplugin/roi/primitive/*.png \
-			evplugin/ev/pluginlist.txt
+	jar cfvm ../ev.jar evgui/MANIFEST.WEBSTART evplugin/ev/pluginlist.txt \
+		*/*class */*/*class */*/*/*class \
+		*/*/*png */*/*/*png \
+		*/*/*/*glsl 
 	jarsigner -keystore myKeys ../ev.jar jdc
 	du -hc ../ev.jar
 
