@@ -19,7 +19,7 @@ import org.jdom.output.*;
  */
 public class EV
 	{
-	public static final String version="2.9.0";
+	public static final String version="2.10.0";
 	public static final String website="http://www.endrov.net/index.php/";
 	public static final boolean debugMode=false;
 	public static final String programName="EV";

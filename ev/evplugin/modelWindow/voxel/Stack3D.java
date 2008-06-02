@@ -717,6 +717,9 @@ public class Stack3D extends StackInterface
 	 */
 	private Shader shader3d=null;
 	
+	
+	public abstract class Stack3DRenderState implements TransparentRender.RenderState{}
+	
 	/**
 	 * Render all planes through a voxel stack
 	 */
@@ -730,7 +733,7 @@ public class Stack3D extends StackInterface
 		Vector3d camv=cam.transformedVector(0, 0, 1);
 		double camz=cam.pos.dot(camv);
 		
-		TransparentRender.RenderState renderstate=new TransparentRender.RenderState(){
+		Stack3DRenderState renderstate=new Stack3DRenderState(){
 			public void activate(GL gl)
 				{
 //			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
@@ -750,7 +753,15 @@ public class Stack3D extends StackInterface
 				os.tex.bind(gl);
 				shader3d.use(gl);
 				}
-			public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState){return false;}
+			public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState)
+				{
+				if(currentState instanceof Stack3DRenderState)
+					{
+					os.tex.bind(gl);
+					return true;
+					}
+				return false;
+				}
 			public void deactivate(GL gl)
 				{
 				shader3d.stopUse(gl);
