@@ -1,6 +1,10 @@
 package evplugin.modelWindow;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
@@ -9,6 +13,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import org.jdom.*;
+
+import OSTdaemon.Xml;
 
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
@@ -44,12 +50,7 @@ public class ModelWindow extends BasicWindow
 					{
 					Rectangle r=BasicWindow.getXMLbounds(e);
 					ModelWindow m=new ModelWindow(r);
-					m.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					
-					for(ModelWindowHook hook:m.modelWindowHooks)
-						hook.readPersonalConfig(e);
-
-					m.sidePanelSplitPane.setPanelVisible(e.getAttribute("sidePanelVisible").getBooleanValue());
+					m.setPersonalConfig(e);
 					}
 				catch (Exception e1)
 					{
@@ -67,6 +68,25 @@ public class ModelWindow extends BasicWindow
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
+	
+	private void setPersonalConfig(Element e)
+		{
+		try
+			{
+			Rectangle r=BasicWindow.getXMLbounds(e);
+			setBounds(r);
+			frameControl.setGroup(e.getAttribute("group").getIntValue());
+			
+			for(ModelWindowHook hook:modelWindowHooks)
+				hook.readPersonalConfig(e);
+
+			sidePanelSplitPane.setPanelVisible(e.getAttribute("sidePanelVisible").getBooleanValue());
+			}
+		catch (Exception e1)
+			{
+			e1.printStackTrace();
+			}
+		}
 
 	
 	private int mouseLastX, mouseLastY;
@@ -96,6 +116,10 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miViewBottom=new JMenuItem("Bottom");
 	private JMenuItem miViewLeft=new JMenuItem("Left");
 	private JMenuItem miViewRight=new JMenuItem("Right");
+
+	private JMenu miWindowState=new JMenu("Window State");
+	private JMenuItem miCopyState=new JMenuItem("Copy");
+	private JMenuItem miPasteState=new JMenuItem("Paste");
 
 	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
 	
@@ -158,6 +182,11 @@ public class ModelWindow extends BasicWindow
 		miView.add(miViewLeft);
 		miView.add(miViewRight);
 		
+		//Build window state menu
+		menuModel.add(miWindowState);
+		miWindowState.add(miCopyState);
+		miWindowState.add(miPasteState);
+		
 		//Add action listeners
 		miViewTop.addActionListener(this);
 		miViewLeft.addActionListener(this);
@@ -167,6 +196,8 @@ public class ModelWindow extends BasicWindow
 		miViewRight.addActionListener(this);
 		buttonCenter.addActionListener(this);
 		metaCombo.addActionListener(this);
+		miCopyState.addActionListener(this);
+		miPasteState.addActionListener(this);
 		
 		//Add change listeners
 		objectDisplayList.addChangeListener(this);
@@ -310,6 +341,58 @@ public class ModelWindow extends BasicWindow
 			setPresetView(+Math.PI/2, 0, 0);
 		else if(e.getSource()==miViewBottom)
 			setPresetView(-Math.PI/2, 0, 0);
+		else if(e.getSource()==miCopyState)
+			{
+			Element root=new Element("w");
+			windowPersonalSettings(root);
+			try
+				{
+				String out=Xml.xmlToString(new Document(root.getChild("modelwindow")));
+				System.out.println(out);
+				//TODO: to clipboard
+				}
+			catch (Exception e1)
+				{
+				e1.printStackTrace();
+				}
+			}
+		else if(e.getSource()==miPasteState)
+			{
+			try
+				{
+				setPersonalConfig(Xml.stringToXml(getClipBoardString()));
+				}
+			catch (Exception e1)
+				{
+				e1.printStackTrace();
+				}
+			repaint();
+			}
+		}
+	
+	/**
+	 * Get string from clipboard, never null
+	 */
+	public static String getClipBoardString()
+		{
+		try
+			{
+			return (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+			}
+		catch(Exception e2)
+			{
+			System.out.println("Failed to get text from clipboard");
+			}
+		return "";
+		}
+	
+	
+	public static void setClipBoardString(String s)
+		{
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), 
+				new ClipboardOwner(){
+				public void lostOwnership( Clipboard aClipboard, Transferable aContents){}
+				});
 		}
 	
 	/**

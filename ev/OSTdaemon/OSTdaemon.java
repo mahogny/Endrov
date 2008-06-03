@@ -281,7 +281,7 @@ public class OSTdaemon extends Thread
 		if(imagesetDir.exists())
 			{
 			File totalFile=getImagesetFile(argImageset);
-			Document rmd=Xml.readXML(totalFile.getPath());
+			Document rmd=Xml.readXML(totalFile);
 			Element root=rmd.getRootElement();
 			Element imagesetEl=root.getChild("imageset");
 			Element newImageset=new Element("imageset");
@@ -335,12 +335,12 @@ public class OSTdaemon extends Thread
 				//Read current RMD
 				Document total=null;
 				if(totalFile.exists())
-					total=Xml.readXML(totalFile.getPath());
+					total=Xml.readXML(totalFile);
 				else
 					total=new Document(new Element("ost"));
 
 				//Read new data
-				Document newrmd=Xml.readXML(from.getPath());
+				Document newrmd=Xml.readXML(from);
 
 				//Merge
 				Xml.mergeXML(total.getRootElement(), newrmd.getRootElement());
@@ -374,7 +374,7 @@ public class OSTdaemon extends Thread
 		File totalFile=new File(imagesetDir,"rmd.ostxml");
 		try 
 			{
-			Document newrmd=Xml.readXML(from.getPath());
+			Document newrmd=Xml.readXML(from);
 			Xml.writeXmlData(newrmd, totalFile);
 			moveToConverted(from);
 			for(String ch:makeMaxChannel)
