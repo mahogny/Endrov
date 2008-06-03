@@ -1,6 +1,7 @@
 package OSTdaemon;
 
 import java.io.*;
+
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
@@ -12,7 +13,7 @@ import org.jdom.output.*;
 public class Xml
 	{
 
-	public static Document readXML(String filename) throws Exception
+	public static Document readXML(File filename) throws Exception
 		{
 		FileInputStream fileInputStream = new FileInputStream(filename);
 		SAXBuilder saxBuilder = new SAXBuilder();
@@ -96,4 +97,27 @@ public class Xml
 		writer.close();
 		}
 
+	
+	/**
+	 * Write XML-document to disk
+	 */
+	public static String xmlToString(Document doc) throws Exception
+		{
+		Format format=Format.getPrettyFormat();
+		XMLOutputter outputter = new XMLOutputter(format);
+		StringWriter writer = new StringWriter();
+		outputter.output(doc, writer);
+		return writer.toString();
+		}
+	
+	
+	public static Element stringToXml(String s) throws Exception
+		{
+		SAXBuilder saxBuilder = new SAXBuilder();
+		Document document = saxBuilder.build(new StringReader(s));
+		Element element = document.getRootElement();
+		return element;
+		}
+
+	
 	}
