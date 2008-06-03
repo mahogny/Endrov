@@ -5,6 +5,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
@@ -74,7 +75,8 @@ public class ModelWindow extends BasicWindow
 		try
 			{
 			Rectangle r=BasicWindow.getXMLbounds(e);
-			setBounds(r);
+			setBoundsEvWindow(r);
+			
 			frameControl.setGroup(e.getAttribute("group").getIntValue());
 			
 			for(ModelWindowHook hook:modelWindowHooks)
@@ -347,9 +349,8 @@ public class ModelWindow extends BasicWindow
 			windowPersonalSettings(root);
 			try
 				{
-				String out=Xml.xmlToString(new Document(root.getChild("modelwindow")));
-				System.out.println(out);
-				//TODO: to clipboard
+				String out=Xml.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
+				setClipBoardString(out);
 				}
 			catch (Exception e1)
 				{
@@ -391,7 +392,7 @@ public class ModelWindow extends BasicWindow
 		{
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), 
 				new ClipboardOwner(){
-				public void lostOwnership( Clipboard aClipboard, Transferable aContents){}
+				public void lostOwnership(Clipboard aClipboard, Transferable aContents){}
 				});
 		}
 	
