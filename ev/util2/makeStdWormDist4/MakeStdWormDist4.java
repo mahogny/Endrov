@@ -222,7 +222,7 @@ public class MakeStdWormDist4
 		for(NucLineage lin:lins.values())
 			for(NucLineage.Nuc nuc:lin.nuc.values())
 				if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
-					nuc.end=nuc.pos.lastKey();
+					nuc.overrideEnd=nuc.pos.lastKey();
 		}
 	
 	/**

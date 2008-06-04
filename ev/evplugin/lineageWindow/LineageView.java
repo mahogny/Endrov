@@ -456,7 +456,7 @@ public class LineageView extends JPanel
 		Internal internal=getNucinfo(nucName);
 
 		String namePrefix="";
-		if(nuc.end!=null && nuc.child.size()>0)
+		if(nuc.overrideEnd!=null && nuc.child.size()>0)
 			namePrefix="!!! ";
 		
 		//If there are no keyframes then this gotta be handled somehow. it shouldn't happen
@@ -489,8 +489,8 @@ public class LineageView extends JPanel
 		//Draw line spanning frames
 		g.setColor(Color.BLACK);
 		g.drawLine(startc, midr, endc, midr);
-		if(nuc.end!=null && nuc.child.size()==0)
-			drawNucEnd(g, f2c(nuc.end), midr);
+		if(nuc.overrideEnd!=null && nuc.child.size()==0)
+			drawNucEnd(g, f2c(nuc.overrideEnd), midr);
 		internal.lastVXstart=startc;
 		internal.lastVXend=endc;
 		internal.lastVY=midr;

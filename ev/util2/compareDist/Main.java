@@ -63,7 +63,7 @@ public class Main
 		//End all nuc without children for clarity
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
-				nuc.end=nuc.pos.lastKey();
+				nuc.overrideEnd=nuc.pos.lastKey();
 		}
 	
 	
