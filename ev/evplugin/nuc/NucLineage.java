@@ -77,9 +77,10 @@ public class NucLineage extends EvObject implements Cloneable
 						{
 						String nucName=nuce.getAttributeValue("name");
 						String ends=nuce.getAttributeValue("end");
+						String starts=nuce.getAttributeValue("start");
 						Nuc n=meta.getNucCreate(nucName);
-						if(ends!=null)
-							n.overrideEnd=Integer.parseInt(ends);
+						if(ends!=null) n.overrideEnd=Integer.parseInt(ends);
+						if(starts!=null) n.overrideStart=Integer.parseInt(starts);
 
 						for(Element pose:EV.castIterableElement(nuce.getChildren()))
 							{
@@ -333,8 +334,8 @@ public class NucLineage extends EvObject implements Cloneable
 			Element nuce=new Element("nuc");
 			e.addContent(nuce);
 			nuce.setAttribute("name", nucName);
-			if(n.overrideEnd!=null)
-				nuce.setAttribute("end", ""+n.overrideEnd);
+			if(n.overrideEnd!=null) nuce.setAttribute("end", ""+n.overrideEnd);
+			if(n.overrideStart!=null) nuce.setAttribute("start", ""+n.overrideStart);
 
 			for(int frame:n.pos.keySet())
 				{
@@ -880,7 +881,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(overrideStart!=null)
 				return overrideStart;
 			else
-				return firstFrame(); //Child starts existing right away
+				return pos.firstKey();
 			}
 		
 		
