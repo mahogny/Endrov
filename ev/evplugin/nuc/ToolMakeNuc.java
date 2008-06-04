@@ -255,13 +255,28 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.snd());
 			if(n!=null)
 				{
-				if(n.end!=null && n.end==curFramei)
-					n.end=null;
+				if(n.overrideEnd!=null && n.overrideEnd==curFramei)
+					n.overrideEnd=null;
 				else
 					{
-					n.end=curFramei;
-					//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
+					n.overrideEnd=curFramei;
 					lin.removePosAfterEqual(NucLineage.currentHover.snd(), curFramei+1);
+					}
+				BasicWindow.updateWindows();
+				}
+			}
+		else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETSTART).typed(e))
+			{
+			//Set end frame of nucleus
+			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.snd());
+			if(n!=null)
+				{
+				if(n.overrideStart!=null && n.overrideStart==curFramei)
+					n.overrideStart=null;
+				else
+					{	
+					n.overrideStart=curFramei;
+					lin.removePosBeforeEqual(NucLineage.currentHover.snd(), curFramei-1);
 					}
 				BasicWindow.updateWindows();
 				}

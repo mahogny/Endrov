@@ -51,7 +51,7 @@ public class TravelDist
 		//End all nuc without children for clarity
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
-				nuc.end=nuc.pos.lastKey();
+				nuc.overrideEnd=nuc.pos.lastKey();
 		}
 
 	
@@ -64,7 +64,7 @@ public class TravelDist
 		//End all nuc without children for clarity
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			if(nuc.child.isEmpty() && !nuc.pos.isEmpty())
-				nuc.end=nuc.pos.lastKey();
+				nuc.overrideEnd=nuc.pos.lastKey();
 		}
 
 
@@ -133,7 +133,7 @@ public class TravelDist
 						NucLineage.NucInterp interStart=nuc.interpolatePos(start);
 						NucLineage.NucInterp interEnd=nuc.interpolatePos(end);
 						if(interStart==null || interEnd==null)
-							System.out.println(nucName+" "+interStart+ " "+interEnd+" "+start+" "+end+" "+nuc.end);
+							System.out.println(nucName+" "+interStart+ " "+interEnd+" "+start+" "+end+" "+nuc.overrideEnd);
 		
 						Avg r=new Avg();
 						r.put(interStart.pos.r);

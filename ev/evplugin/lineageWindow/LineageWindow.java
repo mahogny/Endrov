@@ -355,11 +355,11 @@ public class LineageWindow extends BasicWindow
 						if(n!=null)
 							{
 							if(ends.equals(""))
-								n.end=null;
+								n.overrideEnd=null;
 							else
 								{
 								int end=Integer.parseInt(ends);
-								n.end=end;
+								n.overrideEnd=end;
 								//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
 								nucPair.fst().removePosAfterEqual(NucLineage.currentHover.snd(), end+1);
 								}
