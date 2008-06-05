@@ -23,6 +23,8 @@ import evplugin.data.EvData;
 import evplugin.data.EvObject;
 import evplugin.ev.*;
 import evplugin.keyBinding.*;
+import evplugin.keyBinding.NewBinding.EvBindKeyEvent;
+import evplugin.keyBinding.NewBinding.EvBindStatus;
 import evplugin.modelWindow.basicExt.CrossHandler;
 
 //TODO drag and drop of a file with # in the name fails on linux
@@ -32,7 +34,7 @@ import evplugin.modelWindow.basicExt.CrossHandler;
  * @author Johan Henriksson
  */
 public class ModelWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener, NewBinding.EvBindListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -249,6 +251,9 @@ public class ModelWindow extends BasicWindow
 		setBoundsEvWindow(bounds);
 		attachDragAndDrop(this);
 		view.autoCenter();
+		
+		//TODO dangerous, might be called before constructed
+		NewBinding.attachBindAxisListener(this);
 		}
 	
 	
@@ -637,5 +642,59 @@ public class ModelWindow extends BasicWindow
 			return m;
 			}
 		}
+
+	
+	private static final int AXIS_PAN_X=KeyBinding.register(new KeyBinding("Model Window","Axis pan X",'a'));
+	private static final int AXIS_PAN_Y=KeyBinding.register(new KeyBinding("Model Window","Axis pan Y",'s'));
+	private static final int AXIS_PAN_Z=KeyBinding.register(new KeyBinding("Model Window","Axis pan z",'d'));
+	private static final int AXIS_ROT=KeyBinding.register(new KeyBinding("Model Window","Axis rot",'f'));
+
+
+	public void bindAxisPerformed(EvBindStatus status)
+		{
+		float axismulxy=10;
+		float axismulz=30;
+		float rotmulxy=0.05f;
+		float rotmulz=0.1f;
+		float axisx=KeyBinding.get(AXIS_PAN_X).getAxis(status);
+		float axisy=KeyBinding.get(AXIS_PAN_Y).getAxis(status);
+		float axisz=KeyBinding.get(AXIS_PAN_Z).getAxis(status);
+		
+		axisx=0;
+		axisy=0;
+		
+		float roty=KeyBinding.get(AXIS_PAN_X).getAxis(status);
+		float rotx=KeyBinding.get(AXIS_PAN_Y).getAxis(status);
+		
+		float rotz=KeyBinding.get(AXIS_ROT).getAxis(status);
+		if(axisx!=0 || axisy!=0 || axisz!=0 || rotx!=0 || roty!=0 || rotz!=0) //null? or is 0 good?
+			{
+			
+//			view.camera.rotateCamera(-dy/400.0, -dx/400.0, 0);
+			
+			view.pan(axisx*axismulxy, -axisy*axismulxy, axisz*axismulz, false); //true
+			view.repaint();
+			view.camera.rotateCenter(rotx*rotmulxy, roty*rotmulxy, rotz*rotmulz); //vs rotateCamera
+			System.out.println("hej "+axisx+" "+axisy);
+			}
+		}
+
+
+	public void bindKeyPerformed(EvBindKeyEvent e, EvBindStatus status)
+		{
+		// TODO Auto-generated method stub
+		
+		}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	}

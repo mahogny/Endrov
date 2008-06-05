@@ -1,7 +1,5 @@
 package evplugin.keyBinding;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
@@ -10,59 +8,73 @@ import net.java.games.input.ControllerEnvironment;
 
 public class JInputManager implements Runnable
 	{
-	private static HashMap<net.java.games.input.Controller, EvController> evController=new HashMap<net.java.games.input.Controller, EvController>();
 	
 	
 	static
-	{
-	ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
-
-	Controller[] ca = ce.getControllers();
-	for(Controller cai:ca)
 		{
-		//System.out.println(cai.getName());
-//		System.out.println("Type: "+cai.getType().toString());
-		Component[] components = cai.getComponents();
-		System.out.println("Component Count: "+components.length);
-		for(int j=0;j<components.length;j++)
+		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
+	
+		Controller[] ca = ce.getControllers();
+		for(Controller cai:ca)
 			{
-//			System.out.println("Component "+j+": "+components[j].getName());
-			System.out.println("    Identifier: "+components[j].getIdentifier().getName());
-	//		System.out.print("    ComponentType: ");
-			if (components[j].isRelative())
-				System.out.print("Relative");
-			else 
-				System.out.print("Absolute");
-			if (components[j].isAnalog())
-				System.out.print(" Analog");
-			else 
-				System.out.print(" Digital");
-//			System.out.println();
-			}
-//		System.out.println("---------------------------------");
-		
-		net.java.games.input.Event event=new net.java.games.input.Event();
-		net.java.games.input.EventQueue queue=cai.getEventQueue();
-		for(;;)
-			{
-			//poll?
-			try { Thread.sleep(20);} catch (InterruptedException e) { }
-			while(queue.getNextEvent(event))
+			//System.out.println(cai.getName());
+	//		System.out.println("Type: "+cai.getType().toString());
+			Component[] components = cai.getComponents();
+			System.out.println("Component Count: "+components.length);
+			for(int j=0;j<components.length;j++)
 				{
+	//			System.out.println("Component "+j+": "+components[j].getName());
+				System.out.println("    Identifier: "+components[j].getIdentifier().getName());
+		//		System.out.print("    ComponentType: ");
+				if (components[j].isRelative())
+					System.out.print("Relative");
+				else 
+					System.out.print("Absolute");
+				if (components[j].isAnalog())
+					System.out.print(" Analog");
+				else 
+					System.out.print(" Digital");
+	//			System.out.println();
 				}
-			//buffer.append(components[i].getPollData());
+	//		System.out.println("---------------------------------");
+			
+			/*
+			net.java.games.input.Event event=new net.java.games.input.Event();
+			net.java.games.input.EventQueue queue=cai.getEventQueue();
+			for(;;)
+				{
+				//poll?
+				try { Thread.sleep(20);} catch (InterruptedException e) { }
+				while(queue.getNextEvent(event))
+					{
+					}
+				//buffer.append(components[i].getPollData());
+				}
+			*/
 			}
+	
+	
+	
 		
+	
 		}
-
-
-
+		
 	
-
-	}
+	public static final String[] povList={"Neutral","NW","N","NE","E","SE","S","SW","W"};
 	
 	
-	
+	public double povXaxis(double in)
+		{
+		if(in==0.125 || in==0.875 || in==1) return -1;
+		else if(in==0.375 || in==0.25 || in==0.625) return 1;
+		return 0;
+		}
+	public double povYaxis(double in)
+		{
+		if(in==0.125 || in==0.25 || in==0.375) return -1;
+		else if(in==0.625 || in==0.75 || in==0.825) return 1;
+		return 0;
+		}
 	
 	
 	public JInputManager()
@@ -73,10 +85,12 @@ public class JInputManager implements Runnable
 		}
 	
 	
-	
-	
+
+
 	public void run()
 		{
+		/*
+		}
 		Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 		Controller firstMouse=null;
 		for(int i=0;i<controllers.length && firstMouse==null;i++) 
@@ -93,16 +107,65 @@ public class JInputManager implements Runnable
 			}
 
 		System.out.println("First gamepad is: " + firstMouse.getName());
+		 */
+		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
 		while(true)
 			{
-			firstMouse.poll();
-			try
+			try{Thread.sleep(20);}catch(Exception e){}
+			Controller[] ca = ce.getControllers();
+			net.java.games.input.Event event=new net.java.games.input.Event();
+			for(Controller cai:ca)
 				{
-				Thread.sleep(100);
+				if(cai.getType()==Controller.Type.GAMEPAD || cai.getType()==Controller.Type.STICK)
+					{
+					cai.poll();
+					net.java.games.input.EventQueue queue=cai.getEventQueue();
+
+					//Button or axis position changed. Will really include analog axis even if it makes no sense
+					//right now
+					while(queue.getNextEvent(event))
+						{
+						net.java.games.input.Component component=event.getComponent();
+						float dz=component.getDeadZone();
+						//May need override
+						
+						float value=event.getValue();
+						
+						String name=component.getName();
+						
+						System.out.println(name+" value "+value+" dz "+dz);
+						}
+
+					
+					//Need to update about every axis every time
+					//Can optimize: when no axis at all flipped, don't do this
+					NewBinding.EvBindStatus status=new NewBinding.EvBindStatus();
+					for(Component component:cai.getComponents())
+						{
+						float v=component.getPollData();
+						//might be thresholding too early
+						if(component.isAnalog())
+							{
+							float dz=component.getDeadZone();
+							dz=0.08f;
+							if(Math.abs(v)<dz)
+								v=0;
+							}
+						
+						status.values.put(component.getName(),v);
+						}
+					for(NewBinding.EvBindListener listener:NewBinding.bindListeners)
+						{
+						
+						
+						listener.bindAxisPerformed(status);
+						}
+					
+					
+					break; //For now
+					}
 				}
-			catch (Exception e)
-				{
-				}
+			/*
 			Component[] components = firstMouse.getComponents();
 			StringBuffer buffer = new StringBuffer();
 			for(int i=0;i<components.length;i++)
@@ -112,58 +175,16 @@ public class JInputManager implements Runnable
 
 				buffer.append(components[i].getName());
 				buffer.append(": ");
-				
+
 				//if(components[i].isAnalog())
 				buffer.append(components[i].getPollData());
-				
+
 				}
 			System.out.println(buffer);
+			 */
+
 			}
 
 		}
-	
-	
-	private class EvController
-		{
-		HashMap<net.java.games.input.Component, EvControllerComponent> component=new HashMap<Component, EvControllerComponent>();
-		
-		/** Axis', meaning absolute analog */ 
-		LinkedList<net.java.games.input.Component> analogAxisComponent=new LinkedList<Component>();
-		
-		//stupid cross encodes into 
-		
-		
-		}
-	
-	private class EvControllerComponent
-		{
-		public double midValue, deadRegion;
-		public double curValue; //0 if disabled, otherwise 1
-		
-		
-		//in keybind, store name of component and controller name.
-		//cache controller and component to avoid expensive string lookup?
-		
-		//special keyAxisBind, 
-		
-		}
-	
-	
-	
-	
-	
-	public interface JInputListener
-		{
-		public void jinputDigital(EvController cont, boolean enabled);
-		
-		/** Called every 50ms if axis not in dead region */
-		public void jinputAxis(EvController cont);
-		
-		
-		}
-	
-	
-	
-	
-	
+
 	}

@@ -21,6 +21,9 @@ public class KeyBinding
 	public static HashMap<Integer,KeyBinding> bindings=new HashMap<Integer,KeyBinding>();
 	private static int nextId=0;
 
+	static JInputManager jinputManager=new JInputManager();
+
+	
 	public static void initPlugin() {}
 	static
 		{
@@ -40,7 +43,9 @@ public class KeyBinding
 					}
 				}
 			});
+		
 		}
+
 
 	/**
 	 * Make a keybinding out of an XML element
@@ -187,6 +192,45 @@ public class KeyBinding
 				r=r+"+";
 			return (r+KeyEvent.getKeyText(keyCode)).toLowerCase();
 			}
+		}
+	
+	
+	
+	
+	
+	
+	///////////////// to be merged later /////////////////////////////////
+	
+	
+	
+	public Float getAxis(NewBinding.EvBindStatus status)
+		{
+		if(key=='a')
+			return status.values.get("x");
+		else if(key=='s')
+			return status.values.get("y");
+		else if(key=='d')
+			return status.values.get("rz");
+		else if(key=='f')
+			return status.values.get("z");
+		return null;
+		//null TODO
+		
+		}
+	
+	public boolean typed(NewBinding.EvBindKeyEvent e)
+		{
+		if(key!=null)
+			{
+			//should not be key but something else
+			
+			//KeyBinding -> Binding.
+			//each Binding keep a list of BindingType = BindingTop, BindingKey, BindingAxis etc
+			
+			
+			
+			}
+		return false;
 		}
 	
 	
