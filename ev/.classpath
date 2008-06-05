@@ -43,5 +43,6 @@
 	<classpathentry kind="lib" path="libs/linux/jai_codec.jar"/>
 	<classpathentry kind="lib" path="libs/linux/jai_core.jar"/>
 	<classpathentry kind="lib" path="libs/linux/jogl.jar"/>
+	<classpathentry kind="lib" path="libs/jinput.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
