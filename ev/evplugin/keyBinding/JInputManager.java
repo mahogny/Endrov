@@ -20,46 +20,33 @@ public class JInputManager implements Runnable
 			//System.out.println(cai.getName());
 	//		System.out.println("Type: "+cai.getType().toString());
 			Component[] components = cai.getComponents();
-			System.out.println("Component Count: "+components.length);
+			//System.out.println("Component Count: "+components.length);
 			for(int j=0;j<components.length;j++)
 				{
 	//			System.out.println("Component "+j+": "+components[j].getName());
 				System.out.println("    Identifier: "+components[j].getIdentifier().getName());
 		//		System.out.print("    ComponentType: ");
-				if (components[j].isRelative())
+				/*if (components[j].isRelative())
 					System.out.print("Relative");
 				else 
 					System.out.print("Absolute");
 				if (components[j].isAnalog())
 					System.out.print(" Analog");
 				else 
-					System.out.print(" Digital");
+					System.out.print(" Digital");*/
 	//			System.out.println();
 				}
 	//		System.out.println("---------------------------------");
-			
-			/*
-			net.java.games.input.Event event=new net.java.games.input.Event();
-			net.java.games.input.EventQueue queue=cai.getEventQueue();
-			for(;;)
-				{
-				//poll?
-				try { Thread.sleep(20);} catch (InterruptedException e) { }
-				while(queue.getNextEvent(event))
-					{
-					}
-				//buffer.append(components[i].getPollData());
-				}
-			*/
 			}
 	
 	
-	
+	//"Trigger","Thumb","Thumb 2","Top","Top 2","Pinkie","Base","Base 2","Base 3","Base 4","Base 5","Base 6","pov"
 		
 	
 		}
 		
 	
+	//in steps of 0.125
 	public static final String[] povList={"Neutral","NW","N","NE","E","SE","S","SW","W"};
 	
 	
@@ -89,26 +76,8 @@ public class JInputManager implements Runnable
 
 	public void run()
 		{
-		/*
-		}
-		Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-		Controller firstMouse=null;
-		for(int i=0;i<controllers.length && firstMouse==null;i++) 
-			{
-			if(controllers[i].getType()==Controller.Type.GAMEPAD || 
-					controllers[i].getType()==Controller.Type.STICK)
-				firstMouse = controllers[i];
-			}
-		if(firstMouse==null) 
-			{
-			// Couldn't find a mouse
-			System.out.println("Found no gamepad");
-			System.exit(0);
-			}
-
-		System.out.println("First gamepad is: " + firstMouse.getName());
-		 */
 		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
+		NewBinding.EvBindStatus status=new NewBinding.EvBindStatus();
 		while(true)
 			{
 			try{Thread.sleep(20);}catch(Exception e){}
@@ -133,19 +102,22 @@ public class JInputManager implements Runnable
 						
 						String name=component.getName();
 						
+						
 						System.out.println(name+" value "+value+" dz "+dz);
+						
+						//status.values.put(component.getName(),value);
 						}
 
 					
 					//Need to update about every axis every time
 					//Can optimize: when no axis at all flipped, don't do this
-					NewBinding.EvBindStatus status=new NewBinding.EvBindStatus();
 					for(Component component:cai.getComponents())
 						{
 						float v=component.getPollData();
 						//might be thresholding too early
 						if(component.isAnalog())
 							{
+							//v*=1.0f/0.003f;
 							float dz=component.getDeadZone();
 							dz=0.08f;
 							if(Math.abs(v)<dz)
@@ -154,34 +126,14 @@ public class JInputManager implements Runnable
 						
 						status.values.put(component.getName(),v);
 						}
-					for(NewBinding.EvBindListener listener:NewBinding.bindListeners)
-						{
-						
-						
+					for(NewBinding.EvBindListener listener:NewBinding.bindListeners.keySet())
 						listener.bindAxisPerformed(status);
-						}
 					
 					
 					break; //For now
 					}
 				}
-			/*
-			Component[] components = firstMouse.getComponents();
-			StringBuffer buffer = new StringBuffer();
-			for(int i=0;i<components.length;i++)
-				{
-				if(i>0) 
-					buffer.append(", ");
-
-				buffer.append(components[i].getName());
-				buffer.append(": ");
-
-				//if(components[i].isAnalog())
-				buffer.append(components[i].getPollData());
-
-				}
-			System.out.println(buffer);
-			 */
+			
 
 			}
 

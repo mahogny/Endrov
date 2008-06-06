@@ -189,11 +189,14 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		public void keyPressed(KeyEvent e)
 			{
 			if(e.getKeyCode()==KeyEvent.VK_UNDEFINED)
-				b.key=e.getKeyChar();
+				{
+				b.types.clear();
+				b.types.add(new KeyBinding.TypeChar(e.getKeyChar()));
+				}
 			else
 				{
-				b.key=null;
-				b.keyCode=e.getKeyCode();
+				b.types.clear();
+				b.types.add(new KeyBinding.TypeKeycode(e.getKeyCode(),0));
 				}
 			fillList();
 			dispose();
