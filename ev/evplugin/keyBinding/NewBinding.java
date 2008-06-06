@@ -1,8 +1,7 @@
 package evplugin.keyBinding;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.WeakHashMap;
 
 public class NewBinding
 	{
@@ -21,11 +20,11 @@ public class NewBinding
 		
 		}
 
-	public static List<EvBindListener> bindListeners=new LinkedList<EvBindListener>();
+	public static WeakHashMap<EvBindListener,Object> bindListeners=new WeakHashMap<EvBindListener,Object>();
 
 	public static void attachBindAxisListener(EvBindListener listener)
 		{
-		bindListeners.add(listener);
+		bindListeners.put(listener,null);
 		}
 	
 	public interface EvBindListener

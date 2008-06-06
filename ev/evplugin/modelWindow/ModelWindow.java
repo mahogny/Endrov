@@ -643,11 +643,11 @@ public class ModelWindow extends BasicWindow
 			}
 		}
 
-	
-	private static final int AXIS_PAN_X=KeyBinding.register(new KeyBinding("Model Window","Axis pan X",'a'));
-	private static final int AXIS_PAN_Y=KeyBinding.register(new KeyBinding("Model Window","Axis pan Y",'s'));
-	private static final int AXIS_PAN_Z=KeyBinding.register(new KeyBinding("Model Window","Axis pan z",'d'));
-	private static final int AXIS_ROT=KeyBinding.register(new KeyBinding("Model Window","Axis rot",'f'));
+	//
+	private static final int AXIS_PAN_X=KeyBinding.register(new KeyBinding("Model Window","Axis pan X",new KeyBinding.TypeJInput("x",0)));
+	private static final int AXIS_PAN_Y=KeyBinding.register(new KeyBinding("Model Window","Axis pan Y",new KeyBinding.TypeJInput("y",0)));
+	private static final int AXIS_PAN_Z=KeyBinding.register(new KeyBinding("Model Window","Axis pan z",new KeyBinding.TypeJInput("rz",0)));
+	private static final int AXIS_ROT=KeyBinding.register(new KeyBinding("Model Window","Axis rot",new KeyBinding.TypeJInput("z",0)));
 
 
 	public void bindAxisPerformed(EvBindStatus status)
