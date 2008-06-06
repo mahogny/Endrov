@@ -2,6 +2,7 @@ package evplugin.keyBinding;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.TreeSet;
 
 import javax.swing.*;
 
@@ -92,7 +93,9 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		int y=0;
 		
 		//All special key bindings
-		for(final KeyBinding b:KeyBinding.bindings.values())
+		TreeSet<KeyBinding> sortedBindings=new TreeSet<KeyBinding>();
+		sortedBindings.addAll(KeyBinding.bindings.values());
+		for(final KeyBinding b:sortedBindings)
 			{
 			listPane.add(new JLabel(b.pluginName),gconstraint(0,y,1));
 			listPane.add(new JLabel(b.description),gconstraint(1,y,1));

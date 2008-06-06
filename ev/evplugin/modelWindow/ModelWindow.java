@@ -644,11 +644,19 @@ public class ModelWindow extends BasicWindow
 		}
 
 	//
-	private static final int AXIS_PAN_X=KeyBinding.register(new KeyBinding("Model Window","Axis pan X",new KeyBinding.TypeJInput("x",0)));
-	private static final int AXIS_PAN_Y=KeyBinding.register(new KeyBinding("Model Window","Axis pan Y",new KeyBinding.TypeJInput("y",0)));
-	private static final int AXIS_PAN_Z=KeyBinding.register(new KeyBinding("Model Window","Axis pan z",new KeyBinding.TypeJInput("rz",0)));
-	private static final int AXIS_ROT=KeyBinding.register(new KeyBinding("Model Window","Axis rot",new KeyBinding.TypeJInput("z",0)));
+	private static final int AXIS_ROTX=KeyBinding.register(new KeyBinding("Model Window","Rot X",new KeyBinding.TypeJInput("y",0)));
+	private static final int AXIS_ROTY=KeyBinding.register(new KeyBinding("Model Window","Rot Y",new KeyBinding.TypeJInput("x",0)));
+	private static final int AXIS_PANZ=KeyBinding.register(new KeyBinding("Model Window","Axis pan Z",new KeyBinding.TypeJInput("rz",0)));
+	private static final int AXIS_ROTZ=KeyBinding.register(new KeyBinding("Model Window","Axis rot",new KeyBinding.TypeJInput("z",0)));
 
+	private static final int ALTERNATIVECONTROLS=KeyBinding.register(new KeyBinding("Model Window","Toggle Alternative",new KeyBinding.TypeJInput("5",1)));
+
+	private static final int ALT_FORWARD=KeyBinding.register(new KeyBinding("Model Window","Alt/Forward",new KeyBinding.TypeJInput("4",1)));
+	private static final int ALT_BACKWARD=KeyBinding.register(new KeyBinding("Model Window","Alt/Backward",new KeyBinding.TypeJInput("6",1)));
+	private static final int AXIS_ALTPANX=KeyBinding.register(new KeyBinding("Model Window","Alt/Pan X",new KeyBinding.TypeJInput("x",0)));
+	private static final int AXIS_ALTPANY=KeyBinding.register(new KeyBinding("Model Window","Alt/Pan Y",new KeyBinding.TypeJInput("y",0)));
+	private static final int AXIS_ALTROTX=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot X",new KeyBinding.TypeJInput("rz",0)));
+	private static final int AXIS_ALTROTY=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot Y",new KeyBinding.TypeJInput("z",0)));
 
 	public void bindAxisPerformed(EvBindStatus status)
 		{
@@ -656,34 +664,50 @@ public class ModelWindow extends BasicWindow
 		float axismulz=30;
 		float rotmulxy=0.05f;
 		float rotmulz=0.1f;
-		float axisx=KeyBinding.get(AXIS_PAN_X).getAxis(status);
-		float axisy=KeyBinding.get(AXIS_PAN_Y).getAxis(status);
-		float axisz=KeyBinding.get(AXIS_PAN_Z).getAxis(status);
+
+		float axisx=0,axisy=0,axisz=0, rotx=0,roty=0,rotz=0, rotcx=0,rotcy=0,rotcz=0;
+		boolean update=false;
 		
-		axisx=0;
-		axisy=0;
+		if(KeyBinding.get(ALTERNATIVECONTROLS).typed(status))
+			{
+			axisx=KeyBinding.get(AXIS_ALTPANX).getAxis(status);
+			axisy=KeyBinding.get(AXIS_ALTPANY).getAxis(status);
+			rotcx=KeyBinding.get(AXIS_ALTROTX).getAxis(status);
+			rotcy=KeyBinding.get(AXIS_ALTROTY).getAxis(status);
+			
+			if(KeyBinding.get(ALT_FORWARD).typed(status))axisz=0.5f;
+			if(KeyBinding.get(ALT_BACKWARD).typed(status))axisz=-0.5f;
+			
+			//update=true;
+			}
+		else
+			{
+			rotx=KeyBinding.get(AXIS_ROTX).getAxis(status);
+			roty=KeyBinding.get(AXIS_ROTY).getAxis(status);
+			rotz=KeyBinding.get(AXIS_ROTZ).getAxis(status);
+			axisz=KeyBinding.get(AXIS_PANZ).getAxis(status);
+			
+		//	update=true;
+			}
 		
-		float roty=KeyBinding.get(AXIS_PAN_X).getAxis(status);
-		float rotx=KeyBinding.get(AXIS_PAN_Y).getAxis(status);
+		if(axisx!=0 || axisy!=0 || axisz!=0 || rotx!=0 || roty!=0 || rotz!=0 || rotcx!=0 || rotcy!=0 || rotcz!=0)
+			update=true;
 		
-		float rotz=KeyBinding.get(AXIS_ROT).getAxis(status);
-		if(axisx!=0 || axisy!=0 || axisz!=0 || rotx!=0 || roty!=0 || rotz!=0) //null? or is 0 good?
+		if(update)
 			{
 			
 //			view.camera.rotateCamera(-dy/400.0, -dx/400.0, 0);
 			
 			view.pan(axisx*axismulxy, -axisy*axismulxy, axisz*axismulz, false); //true
 			view.repaint();
-			view.camera.rotateCenter(rotx*rotmulxy, roty*rotmulxy, rotz*rotmulz); //vs rotateCamera
-			System.out.println("hej "+axisx+" "+axisy);
+			view.camera.rotateCenter(-rotx*rotmulxy, -roty*rotmulxy, rotz*rotmulz); 
+			view.camera.rotateCamera(rotcx*rotmulxy, rotcy*rotmulxy, rotcz*rotmulz); 
 			}
 		}
 
 
 	public void bindKeyPerformed(EvBindKeyEvent e, EvBindStatus status)
 		{
-		// TODO Auto-generated method stub
-		
 		}
 	
 	

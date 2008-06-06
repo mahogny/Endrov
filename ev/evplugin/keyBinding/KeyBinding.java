@@ -13,7 +13,7 @@ import evplugin.ev.PersonalConfig;
  * Handle key bindings
  * @author Johan Henriksson
  */
-public class KeyBinding
+public class KeyBinding implements Comparable<KeyBinding>
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -46,6 +46,9 @@ public class KeyBinding
 		
 		}
 
+	
+	
+	
 
 	/**
 	 * Make a keybinding out of an XML element
@@ -62,15 +65,11 @@ public class KeyBinding
 				{
 				Element ne=(Element)neo;
 				if(ne.getName().equals("char"))
-					{
-					TypeChar kb=new TypeChar(ne.getAttributeValue("char").charAt(0));
-					b.types.add(kb);
-					}
+					b.types.add(new TypeChar(ne.getAttributeValue("char").charAt(0)));
 				else if(ne.getName().equals("keycode"))
-					{
-					TypeKeycode kb=new TypeKeycode(e.getAttribute("keyCode").getIntValue(),e.getAttribute("modifier").getIntValue());
-					b.types.add(kb);
-					}
+					b.types.add(new TypeKeycode(ne.getAttribute("keyCode").getIntValue(),ne.getAttribute("modifier").getIntValue()));
+				else if(ne.getName().equals("jinput"))
+					b.types.add(new TypeJInput(ne.getAttributeValue("ident"),ne.getAttribute("value").getFloatValue()));
 				
 				
 				}
@@ -141,6 +140,8 @@ public class KeyBinding
 	public static interface KeyBindingType
 		{
 		public boolean typed(KeyEvent e);
+		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status);
+		
 		public void writeXML(Element e);
 		public String keyDesc();
 		public float getAxis(NewBinding.EvBindStatus status);
@@ -157,10 +158,14 @@ public class KeyBinding
 			{
 			return e.getKeyChar()==key;
 			}
+		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status)
+			{
+			return false;
+			}
 		public void writeXML(Element e)
 			{
 			Element ne=new Element("char");
-			ne.setAttribute("char","key");
+			ne.setAttribute("char",""+key);
 			e.addContent(ne);
 			}
 		public String keyDesc()
@@ -185,6 +190,10 @@ public class KeyBinding
 			{
 			//TODO: use modifier
 			return e.getKeyCode()==keyCode;
+			}
+		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status)
+			{
+			return false;
 			}
 		public void writeXML(Element e)
 			{
@@ -223,6 +232,11 @@ public class KeyBinding
 			return false;
 //			return status.values.get(ident)==value;
 			}
+		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status)
+			{
+			Float v=status.values.get(ident);
+			return v==null ? false : v==value;
+			}
 		public void writeXML(Element e)
 			{
 			Element ne=new Element("jinput");
@@ -232,12 +246,13 @@ public class KeyBinding
 			}
 		public String keyDesc()
 			{
-			return ident+"="+value;
+			return "JI:"+ident+"="+value;
 			}
 		public float getAxis(NewBinding.EvBindStatus status)
 			{
-			System.out.println("getaxis "+ident+" "+status.values.get(ident)+" "+status.values.get("x"));
-			return status.values.get(ident);
+//			System.out.println("getaxis "+ident+" "+status.values.get(ident)+" "+status.values.get("x"));
+			Float v=status.values.get(ident);
+			return v==null ? 0 : v;
 			} 
 		}
 	
@@ -251,6 +266,17 @@ public class KeyBinding
 	public Vector<KeyBindingType> types=new Vector<KeyBindingType>();
 	
 	
+	public int compareTo(KeyBinding o)
+		{
+		int v=pluginName.compareTo(o.pluginName);
+		if(v==0)
+			return description.compareTo(o.description);
+		else
+			return v;
+		}
+
+
+
 	/**
 	 * Key binding
 	 */
@@ -281,7 +307,6 @@ public class KeyBinding
 		{
 		this.pluginName=plugin;
 		this.description=description;
-		
 		TypeKeycode kb=new TypeKeycode(keyCode,modifierEx);
 		types.add(kb);
 		}
@@ -336,30 +361,22 @@ public class KeyBinding
 	
 	
 	/** Get axis value. NULL only on exception */
-	public Float getAxis(NewBinding.EvBindStatus status)
+	public float getAxis(NewBinding.EvBindStatus status)
 		{
-		return types.get(0).getAxis(status);
-		//TODO
-		/*
-		if(types.get(0) instanceof KeyBindingTypeChar)
-			{
-			KeyBindingTypeChar kb=(KeyBindingTypeChar)types.get(0);
-			if(kb.key=='a')
-				return status.values.get("x");
-			else if(kb.key=='s')
-				return status.values.get("y");
-			else if(kb.key=='d')
-				return status.values.get("rz");
-			else if(kb.key=='f')
-				return status.values.get("z");
-			}
-		
-		return null;
-		*/
+		float v=0;
+		for(KeyBindingType kb:types)
+			v+=kb.getAxis(status);
+		return v;
 		}
 	
-	public boolean typed(NewBinding.EvBindKeyEvent e)
+	public boolean typed(NewBinding.EvBindStatus status) //and an event?
 		{
+		for(KeyBindingType kb:types)
+			if(kb.typedNew(null,status))
+				return true;
+		//TODO
+		
+		
 		//if(key!=null)
 			{
 			//should not be key but something else
