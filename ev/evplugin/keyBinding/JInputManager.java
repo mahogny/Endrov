@@ -95,7 +95,14 @@ public class JInputManager implements Runnable
 
 						//one event was missed????
 						
+						//Change value
 						status.values.put(name,v);
+						
+						//Emit event?
+						for(NewBinding.EvBindListener listener:NewBinding.bindListeners.keySet())
+							listener.bindKeyPerformed(new NewBinding.EvBindKeyEvent(name,v,status));
+						
+						
 						}
 
 					

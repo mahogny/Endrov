@@ -139,8 +139,8 @@ public class KeyBinding implements Comparable<KeyBinding>
 	 *****************************************************************************************************/
 	public static interface KeyBindingType
 		{
-		public boolean typed(KeyEvent e);
-		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status);
+		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je);
+		public boolean held(KeyEvent e, NewBinding.EvBindStatus je);
 		
 		public void writeXML(Element e);
 		public String keyDesc();
@@ -154,13 +154,13 @@ public class KeyBinding implements Comparable<KeyBinding>
 		{
 		private char key;
 		public TypeChar(char key){this.key=key;}
-		public boolean typed(KeyEvent e)
+		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je)
 			{
-			return e.getKeyChar()==key;
+			return e!=null && e.getKeyChar()==key;
 			}
-		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status)
+		public boolean held(KeyEvent e, NewBinding.EvBindStatus je)
 			{
-			return false;
+			return false; //TODO
 			}
 		public void writeXML(Element e)
 			{
@@ -186,15 +186,21 @@ public class KeyBinding implements Comparable<KeyBinding>
 		private int keyCode;
 		private int modifierEx;
 		public TypeKeycode(int keyCode, int modifierEx){this.keyCode=keyCode;this.modifierEx=modifierEx;}
-		public boolean typed(KeyEvent e)
+		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je)
 			{
 			//TODO: use modifier
-			return e.getKeyCode()==keyCode;
+			return e!=null && e.getKeyCode()==keyCode;
 			}
+		public boolean held(KeyEvent e, NewBinding.EvBindStatus je)
+			{
+			return false; //TODO
+			}
+		/*
 		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status)
 			{
 			return false;
 			}
+		*/
 		public void writeXML(Element e)
 			{
 			Element ne=new Element("keycode");
@@ -227,15 +233,21 @@ public class KeyBinding implements Comparable<KeyBinding>
 			this.ident=ident;
 			this.value=value;
 			}
-		public boolean typed(KeyEvent e)
+		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je)
 			{
+			if(je!=null && je.srcName.equals(ident))
+				return je.srcValue==1;
 			return false;
 //			return status.values.get(ident)==value;
 			}
-		public boolean typedNew(KeyEvent e,NewBinding.EvBindStatus status)
+		public boolean held(KeyEvent e, NewBinding.EvBindStatus status)
 			{
-			Float v=status.values.get(ident);
-			return v==null ? false : v==value;
+			if(status!=null)
+				{
+				Float v=status.values.get(ident);
+				return v==null ? false : v==value;
+				}
+			return false;
 			}
 		public void writeXML(Element e)
 			{
@@ -332,11 +344,22 @@ public class KeyBinding implements Comparable<KeyBinding>
 	public boolean typed(KeyEvent e)
 		{
 		for(KeyBindingType kb:types)
-			if(kb.typed(e))
+			if(kb.typed(e,null))
 				return true;
 		return false;
 		}
-	
+
+	/**
+	 * Has key been typed?
+	 */
+	public boolean held(NewBinding.EvBindStatus status)
+		{
+		for(KeyBindingType kb:types)
+			if(kb.held(null,status))
+				return true;
+		return false;
+		}
+
 	
 	/**
 	 * Textual description of key
@@ -369,24 +392,11 @@ public class KeyBinding implements Comparable<KeyBinding>
 		return v;
 		}
 	
-	public boolean typed(NewBinding.EvBindStatus status) //and an event?
+	public boolean typed(NewBinding.EvBindKeyEvent e)
 		{
 		for(KeyBindingType kb:types)
-			if(kb.typedNew(null,status))
+			if(kb.typed(null,e))
 				return true;
-		//TODO
-		
-		
-		//if(key!=null)
-			{
-			//should not be key but something else
-			
-			//KeyBinding -> Binding.
-			//each Binding keep a list of BindingType = BindingTop, BindingKey, BindingAxis etc
-			
-			
-			
-			}
 		return false;
 		}
 	
