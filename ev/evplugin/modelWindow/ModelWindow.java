@@ -423,6 +423,7 @@ public class ModelWindow extends BasicWindow
 		}
 	public void keyTyped(KeyEvent e)
 		{	
+		//TODO not hardcode! then also GP bind
 		if(e.getKeyChar()=='a')
 			frameControl.stepBack(1.0);
 		else if(e.getKeyChar()=='d')
@@ -658,6 +659,8 @@ public class ModelWindow extends BasicWindow
 	private static final int AXIS_ALTROTX=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot X",new KeyBinding.TypeJInput("rz",0)));
 	private static final int AXIS_ALTROTY=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot Y",new KeyBinding.TypeJInput("z",0)));
 
+	private static final int CHANGEME=KeyBinding.register(new KeyBinding("Model Window","Toggle Alternative",new KeyBinding.TypeJInput("5",1)));
+
 	public void bindAxisPerformed(EvBindStatus status)
 		{
 		float axismulxy=10;
@@ -668,15 +671,15 @@ public class ModelWindow extends BasicWindow
 		float axisx=0,axisy=0,axisz=0, rotx=0,roty=0,rotz=0, rotcx=0,rotcy=0,rotcz=0;
 		boolean update=false;
 		
-		if(KeyBinding.get(ALTERNATIVECONTROLS).typed(status))
+		if(KeyBinding.get(ALTERNATIVECONTROLS).held(status))
 			{
 			axisx=KeyBinding.get(AXIS_ALTPANX).getAxis(status);
 			axisy=KeyBinding.get(AXIS_ALTPANY).getAxis(status);
 			rotcx=KeyBinding.get(AXIS_ALTROTX).getAxis(status);
 			rotcy=KeyBinding.get(AXIS_ALTROTY).getAxis(status);
 			
-			if(KeyBinding.get(ALT_FORWARD).typed(status))axisz=0.5f;
-			if(KeyBinding.get(ALT_BACKWARD).typed(status))axisz=-0.5f;
+			if(KeyBinding.get(ALT_FORWARD).held(status))axisz=0.5f;
+			if(KeyBinding.get(ALT_BACKWARD).held(status))axisz=-0.5f;
 			
 			//update=true;
 			}
@@ -706,7 +709,7 @@ public class ModelWindow extends BasicWindow
 		}
 
 
-	public void bindKeyPerformed(EvBindKeyEvent e, EvBindStatus status)
+	public void bindKeyPerformed(EvBindKeyEvent e)
 		{
 		}
 	

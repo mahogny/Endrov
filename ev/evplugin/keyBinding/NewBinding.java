@@ -15,8 +15,16 @@ public class NewBinding
 	
 	public static class EvBindKeyEvent 
 		{
+		public EvBindKeyEvent(String src, float value, EvBindStatus status)
+			{
+			srcName=src;
+			srcValue=value;
+			this.status=status;
+			}
 		
-		
+		String srcName;
+		EvBindStatus status;
+		float srcValue;
 		
 		}
 
@@ -30,7 +38,7 @@ public class NewBinding
 	public interface EvBindListener
 		{
 		public void bindAxisPerformed(EvBindStatus status);
-		public void bindKeyPerformed(EvBindKeyEvent e, EvBindStatus status);
+		public void bindKeyPerformed(EvBindKeyEvent e);
 		}
 	
 	
