@@ -659,7 +659,8 @@ public class ModelWindow extends BasicWindow
 	private static final int AXIS_ALTROTX=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot X",new KeyBinding.TypeJInput("rz",0)));
 	private static final int AXIS_ALTROTY=KeyBinding.register(new KeyBinding("Model Window","Alt/Rot Y",new KeyBinding.TypeJInput("z",0)));
 
-	private static final int CHANGEME=KeyBinding.register(new KeyBinding("Model Window","Toggle Alternative",new KeyBinding.TypeJInput("5",1)));
+	private static final int KEY_NEXTFRAME=KeyBinding.register(new KeyBinding("Model Window","Next frame",new KeyBinding.TypeJInput("2",1)));
+	private static final int KEY_PREVFRAME=KeyBinding.register(new KeyBinding("Model Window","Prev frame",new KeyBinding.TypeJInput("0",1)));
 
 	public void bindAxisPerformed(EvBindStatus status)
 		{
@@ -711,6 +712,10 @@ public class ModelWindow extends BasicWindow
 
 	public void bindKeyPerformed(EvBindKeyEvent e)
 		{
+		if(KeyBinding.get(KEY_PREVFRAME).typed(e))
+			frameControl.stepBack(1.0);	
+		if(KeyBinding.get(KEY_NEXTFRAME).typed(e))
+			frameControl.stepForward(1.0);	
 		}
 	
 	

@@ -22,9 +22,9 @@ public class NewBinding
 			this.status=status;
 			}
 		
-		String srcName;
-		EvBindStatus status;
-		float srcValue;
+		public String srcName;
+		public EvBindStatus status;
+		public float srcValue;
 		
 		}
 
