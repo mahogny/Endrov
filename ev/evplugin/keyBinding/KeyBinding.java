@@ -9,6 +9,8 @@ import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.EV;
 import evplugin.ev.PersonalConfig;
 
+//TODO: support gamepad repeat type
+
 /**
  * Handle key bindings
  * @author Johan Henriksson
@@ -395,7 +397,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 	public boolean typed(NewBinding.EvBindKeyEvent e)
 		{
 		for(KeyBindingType kb:types)
-			if(kb.typed(null,e))
+			if(kb.typed(null,e)) //TODO: any need to separate here?
 				return true;
 		return false;
 		}
