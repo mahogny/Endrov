@@ -43,7 +43,9 @@ ncount=zeros(namesi.size);
 nstatus={};
 nstart=zeros(namesi.size);
 nend=zeros(namesi.size);
+tnames={};
 for i=1:namesi.size
+    tnames{i}='';
      for j=1:namesi.size
          nstatus{i,j}=[];
      end
@@ -70,6 +72,9 @@ for curframe=[minframe:dt:maxframe]
         if curframe>td.getStr(lin.nuc,tempname).pos.lastKey
             continue;
         end
+        if ~namesi.containsKey(interkey(i).snd) % nuclei not included in reference lineage to remove all helper coordinates etc.
+            continue;
+        end
 
 
         thesename{j}=interkey(i).snd;
@@ -78,9 +83,12 @@ for curframe=[minframe:dt:maxframe]
         j=j+1;
     end
     numpoint=length(thesename);
-
+    %thesename
+    
     try
         %Voronoi
+        thisnamei=666;
+        thisnamej=666;
         [v,c]=voronoin(nucpos);
 
         %Find neighbours
@@ -99,20 +107,31 @@ for curframe=[minframe:dt:maxframe]
                 setinter=intersect(c{i},c{j});
                 setinter=setinter(setinter~=1);
                 if length(setinter)>0
-                    tempname=interkey(i).snd;
-                    nstart(namesi.get(cell2mat(thesename(i))))=td.getStr(lin.nuc,tempname).pos.firstKey;
-                    nend(namesi.get(cell2mat(thesename(i))))=td.getStr(lin.nuc,tempname).pos.lastKey;
+                    %tempname=interkey(namesi.get(cell2mat(thesename(j)))).snd;
+                    thisnamei=cell2mat(thesename(i));
+                    thisnamej=cell2mat(thesename(j));
                     
-                    ncount(namesi.get(cell2mat(thesename(i))),namesi.get(cell2mat(thesename(j))))=ncount(namesi.get(cell2mat(thesename(i))),namesi.get(cell2mat(thesename(j))))+1;
-                    if strcmp(cell2mat(thesename(i)),'ABarp')
-                        disp([cell2mat(thesename(i)),' ', cell2mat(thesename(j))])
+                    indexi=namesi.get(cell2mat(thesename(i)));
+                    indexj=namesi.get(cell2mat(thesename(j)));
+                    
+                    tnames{indexi}=thisnamei;
+                    nstart(indexi)=td.getStr(lin.nuc,thisnamei).pos.firstKey; % works
+                    %nstart(indexi)=td.getStr(lin.nuc,thisnamei).firstFrame;
+ 
+                    
+                    nend(indexi)=td.getStr(lin.nuc,thisnamei).pos.lastKey;
+                    %nend(indexi)=td.getStr(lin.nuc,thisnamei).lastFrame;
+
+                    ncount(indexi,indexj)=ncount(indexi,indexj)+1;
+                    if strcmp(thisnamei,'ABarp')
+                        disp([thisnamei,' ', thisnamej])
                     end
-                    %                   setinter
+                    % setinter
                     
 %                   [namesi.get(cell2mat(thesename(i))),namesi.get(cell2mat(thesename(j)))];
                     %nst=nstatus{namesi.get(cell2mat(thesename(i))),namesi.get(cell2mat(thesename(j)))};
                     %nstatus{namesi.get(cell2mat(thesename(i))),namesi.get(cell2mat(thesename(j)))}=sprintf('%sn',nst);
-                    nstatus{namesi.get(cell2mat(thesename(i))),namesi.get(cell2mat(thesename(j)))}=[nstatus{namesi.get(cell2mat(thesename(i))),namesi.get(cell2mat(thesename(j)))},curframe];
+                    nstatus{indexi,indexj}=[nstatus{indexi,indexj},curframe];
                 else
                     %                   disp(['not ', cell2mat(thesename(i)),' ',
                     %                   cell2mat(thesename(j))])
@@ -125,15 +144,18 @@ for curframe=[minframe:dt:maxframe]
                 end
             end
         end
-    catch ME
-        report = getReport(ME)
-
-    end
+     catch ME
+         disp(thisnamei);
+         disp(thisnamej);
+         report = getReport(ME)
+ 
+ 
+     end
 
 end
 disp('done count neigh');
 notneigh
 
 
-save([filepath '/data/newneigh.mat'],'ncount','nstatus','nstart','nend','dt','names');
+save([filepath '/data/newneigh.mat'],'ncount','nstatus','nstart','nend','dt','names','tnames');
 

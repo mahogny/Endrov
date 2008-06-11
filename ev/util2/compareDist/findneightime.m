@@ -1,4 +1,4 @@
-function findneightime();
+%function findneightime();
 
 % Barber, C.B., Dobkin, D.P., and Huhdanpaa, H.T., "The Quickhull 
 %   algorithm for convex hulls," ACM Trans. on Mathematical Software,

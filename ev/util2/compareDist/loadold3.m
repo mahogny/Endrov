@@ -1,12 +1,13 @@
+w=waitbar(0,'loadold3 running');
 %% input arguments
 neighfiles = {'/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords/data/newneigh.mat',...
-              '/Volumes/TBU_main02/ost4dgood/N2_071116/data/newneigh.mat',...
-              '/Volumes/TBU_main03/ost4dgood/TB2167_0804016/data/newneigh.mat',...
-%               '/Volumes/TBU_main02/ost4dgood/N2_071114/data/newneigh.mat',...
-%               '/Volumes/TBU_main02/ost4dgood/N2greenLED080206/data/newneigh.mat',...
-%               '/Volumes/TBU_main02/ost4dgood/TB2142_071129/data/newneigh.mat',...
-%               '/Volumes/TBU_main02/ost4dgood/TB2164_080118/data/newneigh.mat',...
-%               '/Volumes/TBU_main02/ost4dgood/stdcelegansNew/data/newneigh.mat'...
+    '/Volumes/TBU_main02/ost4dgood/N2_071116/data/newneigh.mat',...
+    '/Volumes/TBU_main03/ost4dgood/TB2167_0804016/data/newneigh.mat',...
+                  '/Volumes/TBU_main02/ost4dgood/N2_071114/data/newneigh.mat',...
+                  '/Volumes/TBU_main02/ost4dgood/N2greenLED080206/data/newneigh.mat',...
+                  '/Volumes/TBU_main02/ost4dgood/TB2142_071129/data/newneigh.mat',...
+                  '/Volumes/TBU_main02/ost4dgood/TB2164_080118/data/newneigh.mat',...
+                  '/Volumes/TBU_main02/ost4dgood/stdcelegansNew/data/newneigh.mat'...
     };
 
 recnames = {'AnglerUnixCoords','N2_071116','TB2167_0804016','N2_071114','N2greenLED080206','TB2142_071129','TB2164_080118','stdcelegansNew'};
@@ -18,18 +19,21 @@ clength=50; %px
 
 %%
 %create bitmaps for bars
-for brit=0:255
+for brit=0:255:255
     for n=1:cheight
         colormap('gray');
         img(n,1)=brit;
+        if brit == 0
+            ns='n';
+        elseif brit==255
+            ns='a';
+        end
+        imgn=sprintf('%s%i_bar.gif',targetdir,ns);
+        imwrite(img,imgn,'GIF');
     end
-
-    imgn=sprintf('%s%i_bar.gif',targetdir,brit);
-    imwrite(img,imgn,'GIF');
 end
-
 %%
-w=waitbar(0,'loadold3 running');
+
 % load the mat files
 namesx={};
 ncountx={};
@@ -46,10 +50,11 @@ for rec=1:r;
     dtx(rec)=dt;
     nstartx{rec}=nstart;
     nendx{rec}=nend;
+    tnamesx{rec}=tnames;
 end
 %%
 %clear unused variables (from MAT file loading)
-clear ncount; 
+clear ncount;
 %there will only be one version of "names" based on the reference lineage
 %as specified in findneigh.m
 %%
@@ -182,8 +187,8 @@ for i=1:le
                     co{q}='#cccccc';
                 end
                 if tanno(q) == 0 %% target not annotated
-                    str{q}='<font color="#ff0000">n.t.</font>';
-                    co{q}='#000000';
+                    str{q}='<font color="#ffffff">n.t.</font>';
+                    co{q}='#666666';
                 end
             end
 
@@ -193,41 +198,96 @@ for i=1:le
             for q=1:r
                 col=[co{q}];
                 perc=100*ncountx{q}(i,j)/ncountx{q}(i,i);
-                imgcode='';
-                if perc>=1
+                if perc>=1 && ncountx{q}(i,j)>0
+                    imgcode='';
+                    %imgcode=sprintf('%sstart: %i<br>end: %i<br>',imgcode,nstartx{q}(i),nendx{q}(i));
                     stri=sprintf('%.0f%%',perc);
-                    sl=(nendx{q}(i)-nstartx{q}(i))/dtx(q);
-                    for pix=1:clength
-                        if find(nstatusx{q}{i,j},nstart==round(pix/clength*sl))
-                            imgcode=sprintf('%s<img src="255_bar.gif">',imgcode);
-                        else
-                            imgcode=sprintf('%s<img src="0_bar.gif">',imgcode);    
+                    sl=round((nendx{q}(i)-nstartx{q}(i))/dtx(q));
+                    nf=round((nstatusx{q}{i,j}-nstartx{q}(i))./dtx(q));
+                    neighstr='';
+                    for st=1:clength
+                        neighstr(st)='a';                        
+                    end
                     
+                    fa=sl/clength;
+                    for curp=1:clength
+                        m=curp*fa;
+                        fl=floor(m);
+                        ce=ceil(m);
+                        if ce>=0 && ce<=sl && fl>=0 && fl<=sl
+                            if intersect(nf,ce)
+                                neighstr(curp)='n'; 
+                            end
+                            if intersect(nf,fl)
+                               neighstr(curp)='n'; 
+                            end
                         end
                     end
-                    %%build image code for display of bars
-                    %sl = length(nstatusx{q}{i,j});
-%                     sl= nstartx{q}(i)
-%                     ste=clength/sl;
-%                     for bl=1:clength
-%                         ind=round(1+bl/ste);
-%                         if ind>0 && ind<=sl
-%                             if nstatusx{q}{i,j}(ind)=='n';
-%                                 imgcode=sprintf('%s<img src="0_bar.gif">',imgcode);
-%                             else
-%                                 imgcode=sprintf('%s<img src="255_bar.gif">',imgcode);
+                    
+                    for curp=1:clength
+                        imgcode=sprintf('%s<img src="%s_bar.gif">',imgcode,neighstr(curp));
+                    end
+                    
+%                     for va=round(nstartx{q}(i)/dtx(q)):round(nendx{q}(i)/dtx(q))
+%                         nf=0;
+%                         for pix=1:length(nstatusx{q}{i,j})
+%                             if va-nstatusx{q}{i,j}(pix)/dtx(q)<0.3
+%                                 nf=1;
 %                             end
 %                         end
-
-                        %%end building image string
+%                         if  nf==1
+%                             neighstr=sprintf('%sn',neighstr);
+%                         else
+%                             neighstr=sprintf('%sa',neighstr);
+%                         end
+%                     end
                     
+
+
+
+                    %                     if (nstatusx{q}{i,j}-nstartx{q}(i)+pix*dtx(q)/clength*sl)<1 %overcome rounding errors
+                    %                         imgcode=sprintf('%s<img src="40_bar.gif">',imgcode);
+                    %                     else
+                    %                         imgcode=sprintf('%s<img src="245_bar.gif">',imgcode);
+                    %
+                    %                     end
+                    %end
+                    %for pix=1:length(nstatusx{q}{i,j})
+                    %    imgcode=sprintf('%s%i,',imgcode,nstatusx{q}{i,j}(pix));
+                    %end
+
+                    %imgcode=sprintf('%s<br><i>%s</i>',imgcode,neighstr);
+                    
+                    
+                    %%build image code for display of bars
+                    %sl = length(nstatusx{q}{i,j});
+                    %                     sl= nstartx{q}(i)
+                    %                     ste=clength/sl;
+                    %                     for bl=1:clength
+                    %                         ind=round(1+bl/ste);
+                    %                         if ind>0 && ind<=sl
+                    %                             if nstatusx{q}{i,j}(ind)=='n';
+                    %                                 imgcode=sprintf('%s<img src="0_bar.gif">',imgcode);
+                    %                             else
+                    %                                 imgcode=sprintf('%s<img src="255_bar.gif">',imgcode);
+                    %                             end
+                    %                         end
+
+                    %%end building image string
+
                 elseif findstr(str{q},'n.')
                     stri=[str{q}];
                 else
                     stri='&nbsp;';
                 end
                 fprintf(f,'<td bgcolor="%s"><tt>%s</tt></td>',col,stri);
-                fprintf(f2,'<td bgcolor="%s"><tt>%s<br>%s<br>%s</tt></td>',col,imgcode,stri,nstatusx{q}{i,j});
+                if findstr(stri,'n')
+                else
+                    stri=imgcode;
+                    col='#ffffff';
+                end
+                fprintf(f2,'<td bgcolor="%s"><tt>%s</tt></td>',col,stri);
+                
             end
             fprintf(f,'</tr>\n');
             fprintf(f2,'</tr>\n');
@@ -246,16 +306,16 @@ for i=1:le
     fprintf(f,'<table border="1" cellpadding="0" cellspacing="0" height="83" width="468"><tbody><tr><td><tt>target cell</tt><br></td><td bgcolor="#33ccff"><br>');
     fprintf(f,'</td></tr><tr><td><tt>neighbour cell<br></tt></td><td bgcolor="#ff0000"><tt><font color="#ff0000"><font color="#000000">neigbour for %% of life time</font></font></tt></td>');
     fprintf(f,'</tr><tr><td valign="top"><tt>cell not neighbour<br></tt></td><td valign="top"><br></td></tr><tr><td bgcolor="#ffffff"><tt>neighbour not annotated</tt><br></td>');
-    fprintf(f,'<td bgcolor="#cccccc"><font color="#000000"><tt>n.a.</tt></font></td></tr><tr><td bgcolor="#ffffff"><tt>target not annotated<br></tt></td><td bgcolor="#000000"><tt><font color="#ff0000">n.t.</font></tt></td></tr></tbody></table>');
+    fprintf(f,'<td bgcolor="#cccccc"><font color="#000000"><tt>n.a.</tt></font></td></tr><tr><td bgcolor="#ffffff"><tt>target not annotated<br></tt></td><td bgcolor="#666666"><tt><font color="#ffffff">n.t.</font></tt></td></tr></tbody></table>');
 
     fprintf(f,'<br><br>updated on %s<br>&copy;&nbsp; <b>Hench J and Henriksson J.</b>, L&uuml;ppert M. and B&uuml;rglin T.</body></html>',datestr(now,0));
     fclose(f);
 
     fprintf(f2,'<br><u>Legend:</u><br>');
     fprintf(f2,'<table border="1" cellpadding="0" cellspacing="0" height="83" width="468"><tbody><tr><td><tt>target cell</tt><br></td><td bgcolor="#33ccff"><br>');
-    fprintf(f2,'</td></tr><tr><td><tt>neighbour cell<br></tt></td><td bgcolor="#ff0000"><tt><font color="#ff0000"><font color="#000000">neigbour for %% of life time</font></font></tt></td>');
+    fprintf(f2,'</td></tr><tr><td><tt>neighbour cell<br></tt></td><td bgcolor="#ff0000"><tt><font color="#ffffff"><font color="#000000">neigbour over life time as indicated in black</font></font></tt></td>');
     fprintf(f2,'</tr><tr><td valign="top"><tt>cell not neighbour<br></tt></td><td valign="top"><br></td></tr><tr><td bgcolor="#ffffff"><tt>neighbour not annotated</tt><br></td>');
-    fprintf(f2,'<td bgcolor="#cccccc"><font color="#000000"><tt>n.a.</tt></font></td></tr><tr><td bgcolor="#ffffff"><tt>target not annotated<br></tt></td><td bgcolor="#000000"><tt><font color="#ff0000">n.t.</font></tt></td></tr></tbody></table>');
+    fprintf(f2,'<td bgcolor="#cccccc"><font color="#000000"><tt>n.a.</tt></font></td></tr><tr><td bgcolor="#ffffff"><tt>target not annotated<br></tt></td><td bgcolor="#666666"><tt><font color="#ffffff">n.t.</font></tt></td></tr></tbody></table>');
 
     fprintf(f2,'<br><br>updated on %s<br>&copy;&nbsp; <b>Hench J and Henriksson J.</b>, L&uuml;ppert M. and B&uuml;rglin T.</body></html>',datestr(now,0));
     fclose(f2);

@@ -1,6 +1,7 @@
 package imserv;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import evplugin.ev.EV;
 import evplugin.ev.Log;
@@ -20,8 +21,10 @@ public class ImServ
 		
 		public GUI()
 			{
+			add(new JLabel("ImServ"));
 			
-			
+			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			pack();
 			setVisible(true);
 			}
 		
