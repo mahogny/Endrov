@@ -13,7 +13,7 @@ import java.rmi.registry.Registry;
 //-Djavax.net.ssl.keyStore=testkeys -Djavax.net.ssl.keyStorePassword=passphrase
 
 
-public class HelloClient 
+public class Client 
 	{
 	
 	private static final int PORT = 2020;
@@ -25,11 +25,15 @@ public class HelloClient
 			// Make reference to SSL-based registry
 			Registry registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostName(), PORT,	new RMISSLClientSocketFactory());
 	
-			Hello obj = (Hello) registry.lookup("HelloServer");
+			ImservIF obj = (ImservIF) registry.lookup("imserv");
 	
 			String message = "blank";
 			message = obj.sayHello();
 			System.out.println(message+"\n");
+			
+			DataIF data=obj.getData("foo");
+			data.print();
+			
 			} 
 		catch (Exception e) 
 			{
