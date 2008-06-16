@@ -1,4 +1,4 @@
-package imserv;
+package imserv.old;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;

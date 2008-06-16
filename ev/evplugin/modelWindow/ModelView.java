@@ -316,7 +316,7 @@ public class ModelView extends GLCanvas
 				//System.out.println("z "+r.z);
 				if(r.renderState!=currentRenderState)
 					{
-					if(r.renderState.optimizedSwitch(gl, currentRenderState))
+					if(r.renderState!=null && r.renderState.optimizedSwitch(gl, currentRenderState))
 						currentRenderState=r.renderState;
 					else
 						{

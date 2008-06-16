@@ -1,4 +1,4 @@
-package imserv;
+package imserv.old;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
