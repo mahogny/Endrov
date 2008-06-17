@@ -4,10 +4,11 @@ import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+
 public class Imserv
 	{
 
-	private static final int PORT = 2020;
+	public static final int PORT = 2020;
 
 	public static void main(String args[]) 
 		{
@@ -21,7 +22,7 @@ public class Imserv
 			Registry registry = LocateRegistry.createRegistry(PORT, new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
 	
 			// Bind this object instance to the name "HelloServer"
-			registry.bind("imserv", new ImservImpl(PORT));
+			registry.bind("imserv", new ImservImpl());
 	
 			System.out.println("HelloServer bound in registry");
 			} 

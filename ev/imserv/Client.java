@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+//-Dsun.io.serialization.extendedDebugInfo=true
 
 //javac *.java
 //rmic HelloImpl

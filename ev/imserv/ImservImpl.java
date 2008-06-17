@@ -9,15 +9,15 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class ImservImpl extends UnicastRemoteObject implements ImservIF 
 	{
-	static final long serialVersionUID=0;
+	public static final long serialVersionUID=0;
 
 	
-	public ImservImpl(int PORT) throws Exception 
+	public ImservImpl() throws Exception 
 		{
-		super(PORT,	new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
+		super(Imserv.PORT,	new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
 		}
 	
-	public DataIF getData(String name)
+	public DataIF getData(String name) throws Exception 
 		{
 		return new DataImpl(name);
 		}
