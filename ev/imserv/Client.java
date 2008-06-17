@@ -28,9 +28,10 @@ public class Client
 	
 			ImservIF obj = (ImservIF) registry.lookup("imserv");
 	
-			String message = "blank";
-			message = obj.sayHello();
-			System.out.println(message+"\n");
+			//boolean b=
+			obj.auth("user", "pass");
+
+			
 			
 			DataIF data=obj.getData("foo");
 			data.print();
