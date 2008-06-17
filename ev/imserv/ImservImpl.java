@@ -5,16 +5,23 @@ package imserv;
 //http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/samples/index.html
 
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Map;
 
-
+/**
+ * Server "imserv" object: implementation
+ * 
+ * @author Johan Henriksson
+ */
 public class ImservImpl extends UnicastRemoteObject implements ImservIF 
 	{
 	public static final long serialVersionUID=0;
 
+	private Daemon daemon;
 	
-	public ImservImpl() throws Exception 
+	public ImservImpl(Daemon daemon) throws Exception 
 		{
-		super(Imserv.PORT,	new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
+		super(Daemon.PORT,	new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
+		this.daemon=daemon;
 		}
 	
 	public DataIF getData(String name) throws Exception 
@@ -22,10 +29,24 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 		return new DataImpl(name);
 		}
 	
-	public String sayHello() 
+	public ClientSessionIF auth(String user, String pass) throws Exception
 		{
-		return "Hello World!";
+		return new ClientSessionImpl();
 		}
+	
+	
+	public String[] getDataKeys() throws Exception
+		{
+		//Map<String,DataIF>	
+	//	Map<String,DataIF> map=new HashMap<String, DataIF>();
+		return daemon.getAllDataMap().keySet().toArray(new String[]{});
+		}
+	
+	public Map<String,DataIF> getDataMap()
+		{
+		return daemon.getAllDataMap();
+		}
+	
 	
 	}
 	
