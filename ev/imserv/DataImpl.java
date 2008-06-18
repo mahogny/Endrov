@@ -1,5 +1,8 @@
 package imserv;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.rmi.server.UnicastRemoteObject;
 
 
@@ -31,18 +34,16 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 		return name;
 		}
 
-	/*
-	public int compareTo(DataImpl o)
+
+	
+	public byte[] getThumb() throws Exception
 		{
-		return getName().compareTo(o.getName());
+		BufferedImage im=new BufferedImage(80,80,BufferedImage.TYPE_3BYTE_BGR);
+		Graphics g=im.getGraphics();
+		g.setColor(Color.BLUE);
+		g.fillRect(10, 10, 10, 10);
+		g.drawString(name, 20, 40);
+		return SendFile.getBytesFromImage(im);
 		}
-	
-	public boolean equals(Object o) 
-		{
-		if (!(o instanceof DataImpl))
-			return false;
-		return name.equals(((DataImpl)o).name);
-		}*/
-	
 	
 	}

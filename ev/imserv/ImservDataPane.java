@@ -5,10 +5,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 
 /**
@@ -34,14 +36,12 @@ public class ImservDataPane extends JPanel
 	private Area a=new Area();
 	private JScrollPane scroll=new JScrollPane(a);
 	private Set<Integer> selectedId=new HashSet<Integer>();
-
-	private Map<String, BufferedImage> thumbs=Collections.synchronizedMap(new HashMap<String, BufferedImage>());
-
-	List<String> obList=new ArrayList<String>();
+	private ImservConnection conn;
 	
-	//String for selected
+	private Map<String, Image> thumbs=Collections.synchronizedMap(new HashMap<String, Image>());
+
+	private List<String> obList=new ArrayList<String>();
 	
-	//List of items
 	
 	private int iconw=100;
 	private int iconh=100;
@@ -75,11 +75,26 @@ public class ImservDataPane extends JPanel
 					{
 					String sid=get();
 					
-					//need daemon
+					try 
+						{
+						DataIF data=conn.imserv.getData(sid);
+						ImageIcon icon=SendFile.getImageFromBytes(data.getThumb());
+						thumbs.put(sid,icon.getImage());
+						SwingUtilities.invokeLater(new Runnable(){
+						public void run()
+							{
+							repaint();
+							}
+						});
+						} 
+					catch (Exception e) 
+						{
+						System.out.println("exception: " + e.getMessage());
+						e.printStackTrace();
+						}
 					
-					//request thumb
 					
-					//store thumb
+					
 					
 					}
 				catch (InterruptedException e){}
@@ -143,9 +158,9 @@ public class ImservDataPane extends JPanel
 				g.setColor(Color.BLACK);
 				
 				
-				BufferedImage im=thumbs.get(sid);
+				Image im=thumbs.get(sid);
 				if(im!=null)
-					g.drawImage(im, x+(iconw-riconw)/2, y, im.getWidth(),im.getHeight(), null);
+					g.drawImage(im, x+(iconw-riconw)/2, y, im.getWidth(null),im.getHeight(null), null);
 				else
 					{
 					//Not totally fast. could condense into one synch call
@@ -153,15 +168,14 @@ public class ImservDataPane extends JPanel
 					g.drawRect(x+(iconw-riconw)/2, y, riconw, riconh);
 					}
 				
+				
 				if(selectedId.contains(id))
 					{
 					g.setColor(Color.BLUE);
 					g.drawRect(x+(iconw-riconw)/2-2, y-2, riconw+4, riconh+4);
 					}
 				
-				String str="foo "+id;
-				
-				int strw=g.getFontMetrics().stringWidth(str);
+				int strw=g.getFontMetrics().stringWidth(sid);
 				int strh=g.getFontMetrics().getHeight();
 				
 				int tx=x+(iconw-strw)/2;
@@ -171,7 +185,7 @@ public class ImservDataPane extends JPanel
 		//		g.fillRect(tx-2, ty-2-strh+2+1, strw+4,strh+4-2);
 				
 				g.setColor(Color.BLACK);
-				g.drawString(str, tx, ty);
+				g.drawString(sid, tx, ty);
 				}
 			
 			}
@@ -209,10 +223,22 @@ public class ImservDataPane extends JPanel
 	
 	
 	
-	public ImservDataPane()
+	public ImservDataPane(ImservConnection conn)
 		{
+		this.conn=conn;
 		setLayout(new GridLayout(1,1));
-		obList.add("foo");
+		
+		try
+			{
+			String[] keys=conn.imserv.getDataKeys();
+			for(String k:keys)
+				obList.add(k);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		
 		add(scroll);
 		impostloader.start();
 		}
