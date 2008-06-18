@@ -20,7 +20,7 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	
 	public ImservImpl(Daemon daemon) throws Exception 
 		{
-		super(Daemon.PORT,	new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
+		super(Daemon.PORT, new RMISSLClientSocketFactory(), new RMISSLServerSocketFactory());
 		this.daemon=daemon;
 		}
 	
