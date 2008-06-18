@@ -3,6 +3,7 @@ package imserv;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -133,15 +134,14 @@ public class ImservDataPane extends JPanel
 			g.setColor(Color.WHITE);
 			g.fillRect(r.x, r.y, r.width, r.height);
 			
+			
 			//Draw icons
+			g.setFont(Font.decode("Dialog PLAIN "+9));
 			int numcol=r.width/iconw;
 			int lastcol=(r.y+r.height)/iconh+1;
 			for(int ar=r.y/iconh;ar<lastcol;ar++)
 				for(int ac=0;ac<numcol;ac++)
-					{
-					int id=numcol*ar+ac;
-					drawData(g, ar, ac, id);
-					}
+					drawData(g, ar, ac, numcol*ar+ac);
 			}
 		
 		int riconw=80;

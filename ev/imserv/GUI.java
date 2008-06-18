@@ -29,6 +29,7 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 	JButton bQuit=new JButton("Quit");
 	JTabbedPane tabbedPane = new JTabbedPane();
 	JList repList=new JList();
+	JList sessionList=new JList();
 	
 	public GUI()
 		{
@@ -41,6 +42,7 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 		
 		tabbedPane.addTab("Log", new JScrollPane(textLog));
 		tabbedPane.addTab("Repositories",repList);
+		tabbedPane.addTab("Sessions",sessionList);
 		
 		
 		JPanel bp=new JPanel(new GridLayout(1,1));
@@ -58,7 +60,7 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 		daemon.start();
 		daemon.addListener(this);
 		
-		daemon.addRepository(new File("/Volumes/TBU_main02/ost4dfailed/"));
+		daemon.addRepository(new File("/Volumes/TBU_main02/fakeost/"));
 		}
 	
 	
@@ -105,6 +107,10 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 		SwingUtilities.invokeLater(new Runnable(){
 		public void run()
 			{
+			//hashset, need to sort somehow
+//			daemon.sessions.keySet()
+			
+//			sessionList.getModel().
 			//
 			}
 		});

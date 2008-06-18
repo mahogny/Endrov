@@ -19,15 +19,13 @@ import java.util.WeakHashMap;
  */
 public class Daemon extends Thread
 	{
-	private Vector<DaemonListener> listeners=new Vector<DaemonListener>();
-	
-	
 	public static final int PORT = 2020;
 
-	
+	private Vector<DaemonListener> listeners=new Vector<DaemonListener>();
 	private Vector<RepositoryDir> reps=new Vector<RepositoryDir>();
+	public WeakHashMap<ClientSessionIF, Object> sessions=new WeakHashMap<ClientSessionIF, Object>();
+
 	
-	private WeakHashMap<ClientSessionIF, Object> sessions=new WeakHashMap<ClientSessionIF, Object>();
 	
 	public static class RepositoryDir
 		{
@@ -98,7 +96,7 @@ public class Daemon extends Thread
 					{
 					try
 						{
-						DataIF data=new DataImpl(name);
+						DataIF data=new DataImpl(name,new File(rep.dir,name));
 						rep.data.put(name, data);
 						for(DaemonListener list:listeners)
 							list.log("Found new object: "+name);
@@ -129,6 +127,18 @@ public class Daemon extends Thread
 		}
 	
 	
+	
+	public synchronized DataIF getData(String name)
+		{
+		for(RepositoryDir rep:reps)
+			{
+			DataIF data=rep.data.get(name);
+			if(data!=null)
+				return data;
+			}
+		return null;
+		}
+	
 	public synchronized void addRepository(File dir)
 		{
 		RepositoryDir repdir=new RepositoryDir();
@@ -139,10 +149,20 @@ public class Daemon extends Thread
 		}
 	
 	
-	public void addListener(DaemonListener listener)
+	public synchronized void addListener(DaemonListener listener)
 		{
 		listeners.add(listener);
 		}
 	
+	
+	public synchronized void addSession(ClientSessionIF sess)
+		{
+		sessions.put(sess, null);
+		for(DaemonListener list:listeners)
+			{
+			list.sessionListUpdated();
+			list.log("Incoming connection");
+			}
+		}
 	
 	}
