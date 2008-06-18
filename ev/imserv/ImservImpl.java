@@ -26,12 +26,17 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	
 	public DataIF getData(String name) throws Exception 
 		{
-		return new DataImpl(name);
+		return daemon.getData(name);
+		
+		
+//		return new DataImpl(name);
 		}
 	
 	public ClientSessionIF auth(String user, String pass) throws Exception
 		{
-		return new ClientSessionImpl();
+		ClientSessionImpl sess=new ClientSessionImpl(user);
+		daemon.addSession(sess);
+		return sess;
 		}
 	
 	

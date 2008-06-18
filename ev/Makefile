@@ -58,11 +58,8 @@ memprof:
 
 
 
-# http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/samples/README.txt
-
 runimserv:
-	java  -Djava.security.policy=imserv/policy  imserv.GUI
+	java  imserv.GUI
 runimclient:
-	java -Djavax.net.ssl.keyStore=imserv/imservkeys -Djavax.net.ssl.keyStorePassword=passphrase  -Djavax.net.ssl.trustStore=imserv/cacerts  \
-	-Djavax.net.ssl.trustStorePassword=changeit  imserv.ClientGUI
+	java imserv.ClientGUI
 

@@ -11,9 +11,18 @@ public class ClientSessionImpl extends UnicastRemoteObject implements ClientSess
 	{
 	public static final long serialVersionUID=0;
 	
-	public ClientSessionImpl() throws Exception 
+	public String user;
+	//ip,port
+	//login time
+	
+	
+	public ClientSessionImpl(String user) throws Exception 
 		{
 		super(Daemon.PORT,	new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
+		this.user=user;
 		}
+	
+	
+	
 	
 	}
