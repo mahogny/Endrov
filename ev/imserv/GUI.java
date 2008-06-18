@@ -4,11 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -37,7 +39,7 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 		bQuit.addActionListener(this);
 		
 		
-		tabbedPane.addTab("Log", textLog);
+		tabbedPane.addTab("Log", new JScrollPane(textLog));
 		tabbedPane.addTab("Repositories",repList);
 		
 		
@@ -49,11 +51,14 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
-		setSize(300, 200);
+		setSize(400, 300);
 		setLocationRelativeTo(null);
 		setVisible(true);
 		
-		daemon.run();
+		daemon.start();
+		daemon.addListener(this);
+		
+		daemon.addRepository(new File("/Volumes/TBU_main02/ost4dfailed/"));
 		}
 	
 	

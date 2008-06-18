@@ -2,7 +2,6 @@ package imserv;
 
 
 import java.io.File;
-import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Collections;
@@ -26,9 +25,9 @@ public class Daemon extends Thread
 	public static final int PORT = 2020;
 
 	
-	Vector<RepositoryDir> reps=new Vector<RepositoryDir>();
+	private Vector<RepositoryDir> reps=new Vector<RepositoryDir>();
 	
-	WeakHashMap<ClientSessionIF, Object> sessions=new WeakHashMap<ClientSessionIF, Object>();
+	private WeakHashMap<ClientSessionIF, Object> sessions=new WeakHashMap<ClientSessionIF, Object>();
 	
 	public static class RepositoryDir
 		{
@@ -51,8 +50,8 @@ public class Daemon extends Thread
 	public void run()
 		{
 		//Create and install a security manager
-		if (System.getSecurityManager() == null) 
-			System.setSecurityManager(new RMISecurityManager());
+//		if (System.getSecurityManager() == null) 
+//			System.setSecurityManager(new RMISecurityManager());
 	
 		//Set up RMI service
 		try 
@@ -78,15 +77,14 @@ public class Daemon extends Thread
 			
 			//conc mod exception?
 			
-			
 			for(RepositoryDir rep:reps)
 				{
 				//Check what to remove and what to keep
 				HashSet<String> incoming=new HashSet<String>();
-				File[] children=rep.dir.listFiles();
-				for(File file:children)
+				for(File file:rep.dir.listFiles())
 					if(!file.getName().startsWith("."))
 						incoming.add(file.getName());
+				
 				
 				HashSet<String> toAdd=new HashSet<String>();
 				toAdd.addAll(incoming);
@@ -96,10 +94,29 @@ public class Daemon extends Thread
 				toRemove.addAll(rep.data.keySet());
 				toRemove.removeAll(incoming);
 				
-				//TODO
+				for(String name:toAdd)
+					{
+					try
+						{
+						DataIF data=new DataImpl(name);
+						rep.data.put(name, data);
+						for(DaemonListener list:listeners)
+							list.log("Found new object: "+name);
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
+					}
 				
-//				for(DataIF data:rep.data)
+				for(String name:toRemove)
+					{
+					rep.data.remove(name);
+					}
 				
+				if(!toAdd.isEmpty() || !toRemove.isEmpty())
+					for(DaemonListener list:listeners)
+						list.repListUpdated();
 				}
 			
 			//Sleep for a while
@@ -111,6 +128,15 @@ public class Daemon extends Thread
 		
 		}
 	
+	
+	public synchronized void addRepository(File dir)
+		{
+		RepositoryDir repdir=new RepositoryDir();
+		repdir.dir=dir;
+		reps.add(repdir);
+		System.out.println("add");
+		notify();
+		}
 	
 	
 	public void addListener(DaemonListener listener)
