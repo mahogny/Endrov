@@ -1,5 +1,9 @@
 package imserv;
 
+//can be replaced by
+//javax.rmi.ssl.SslRMIClientSocketFactory and javax.rmi.ssl.SslRMIServerSocketFactory
+
+
 import java.io.*;
 import java.net.*;
 import java.rmi.server.*;

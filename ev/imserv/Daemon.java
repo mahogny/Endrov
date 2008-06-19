@@ -8,9 +8,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
 
+
+//when refactoring, probably move most of this to imserv
 
 /**
  * ImServ daemon
@@ -26,6 +29,10 @@ public class Daemon extends Thread
 	public WeakHashMap<ClientSessionIF, Object> sessions=new WeakHashMap<ClientSessionIF, Object>();
 
 	
+	public Map<String,Set<DataIF>> channels=new HashMap<String,Set<DataIF>>();
+	public Map<String,Set<DataIF>> tags=new HashMap<String,Set<DataIF>>();
+	public Map<String,Set<DataIF>> objs=new HashMap<String,Set<DataIF>>();
+	
 	
 	public static class RepositoryDir
 		{
@@ -33,6 +40,9 @@ public class Daemon extends Thread
 		Map<String, DataIF> data=Collections.synchronizedMap(new HashMap<String, DataIF>());
 		
 		//handle synch manually at higher level
+		
+		
+		
 		}
 	
 	public Map<String,DataIF> getAllDataMap()
@@ -76,46 +86,46 @@ public class Daemon extends Thread
 			//conc mod exception?
 			
 			for(RepositoryDir rep:reps)
-				{
-				//Check what to remove and what to keep
-				HashSet<String> incoming=new HashSet<String>();
-				for(File file:rep.dir.listFiles())
-					if(!file.getName().startsWith("."))
-						incoming.add(file.getName());
-				
-				
-				HashSet<String> toAdd=new HashSet<String>();
-				toAdd.addAll(incoming);
-				toAdd.removeAll(rep.data.keySet());
-				
-				HashSet<String> toRemove=new HashSet<String>();
-				toRemove.addAll(rep.data.keySet());
-				toRemove.removeAll(incoming);
-				
-				for(String name:toAdd)
+				if(rep.dir.exists())
 					{
-					try
+					//Check what to remove and what to keep
+					HashSet<String> incoming=new HashSet<String>();
+					for(File file:rep.dir.listFiles())
+						if(!file.getName().startsWith("."))
+							incoming.add(file.getName());
+					
+					
+					HashSet<String> toAdd=new HashSet<String>();
+					toAdd.addAll(incoming);
+					toAdd.removeAll(rep.data.keySet());
+					
+					HashSet<String> toRemove=new HashSet<String>();
+					toRemove.addAll(rep.data.keySet());
+					toRemove.removeAll(incoming);
+					
+					for(String name:toAdd)
 						{
-						DataIF data=new DataImpl(name,new File(rep.dir,name));
-						rep.data.put(name, data);
+						try
+							{
+							DataImpl data=new DataImpl(name,new File(rep.dir,name));
+							addData(rep,data);
+//							rep.data.put(name, data);
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+						}
+					
+					for(String name:toRemove)
+						{
+						rep.data.remove(name);
+						}
+					
+					if(!toAdd.isEmpty() || !toRemove.isEmpty())
 						for(DaemonListener list:listeners)
-							list.log("Found new object: "+name);
-						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
-						}
+							list.repListUpdated();
 					}
-				
-				for(String name:toRemove)
-					{
-					rep.data.remove(name);
-					}
-				
-				if(!toAdd.isEmpty() || !toRemove.isEmpty())
-					for(DaemonListener list:listeners)
-						list.repListUpdated();
-				}
 			
 			//Sleep for a while
 			try{Thread.sleep(1000);}
@@ -124,6 +134,32 @@ public class Daemon extends Thread
 		
 		
 		
+		}
+	
+	
+	private synchronized void addData(RepositoryDir rep, DataImpl data)
+		{
+		rep.data.put(data.getName(), data);
+		for(String s:data.channels)
+			getMapCreate(s, channels).add(data);
+		for(String s:data.tags)
+			getMapCreate(s, tags).add(data);
+		for(String s:data.objs)
+			getMapCreate(s, objs).add(data);
+		
+		for(DaemonListener list:listeners)
+			list.log("Found new object: "+data.getName());
+		}
+	
+	private Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
+		{
+		Set<DataIF> set=map.get(key);
+		if(set==null)
+			{
+			set=new HashSet<DataIF>();
+			map.put(key,set);
+			}
+		return set;
 		}
 	
 	

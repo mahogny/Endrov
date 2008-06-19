@@ -61,6 +61,8 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 		daemon.addListener(this);
 		
 		daemon.addRepository(new File("/Volumes/TBU_main02/fakeost/"));
+		daemon.addRepository(new File("/home/mahogny/_imagedata/ost"));
+		
 		}
 	
 	
