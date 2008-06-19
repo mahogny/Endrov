@@ -6,6 +6,7 @@ package imserv;
 
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Server "imserv" object: implementation
@@ -51,6 +52,19 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 		{
 		return daemon.getAllDataMap();
 		}
+	
+	public String[] getTags() throws Exception
+		{
+		return daemon.tags.keySet().toArray(new String[]{});
+		}
+  public String[] getChannels() throws Exception
+	  {
+		return daemon.channels.keySet().toArray(new String[]{});
+	  }
+  public String[] getObjects() throws Exception
+	  {
+		return daemon.objs.keySet().toArray(new String[]{});
+	  }
 	
 	
 	}
