@@ -10,14 +10,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -34,22 +27,27 @@ public class ImservDataPane extends JPanel
 	{
 	public static final long serialVersionUID=0;
 	
+	
+	
 	private Area a=new Area();
 	private JScrollPane scroll=new JScrollPane(a);
 	private Set<Integer> selectedId=new HashSet<Integer>();
 	private ImservConnection conn;
-	
+	private ImPostLoader impostloader=new ImPostLoader();
 	private Map<String, Image> thumbs=Collections.synchronizedMap(new HashMap<String, Image>());
-
-	private List<String> obList=new ArrayList<String>();
-	
+	public List<String> obList=new ArrayList<String>();
 	
 	private int iconw=100;
 	private int iconh=100;
 	private int shifty=5;
+	private String filter="";
 	
-	ImPostLoader impostloader=new ImPostLoader();
 	
+	
+	/**
+	 * Thread to continuously download images
+	 * *************************************************************************
+	 */
 	public class ImPostLoader extends Thread
 		{
 		private LinkedList<String> toload=new LinkedList<String>();
@@ -80,7 +78,9 @@ public class ImservDataPane extends JPanel
 						{
 						DataIF data=conn.imserv.getData(sid);
 						ImageIcon icon=SendFile.getImageFromBytes(data.getThumb());
-						thumbs.put(sid,icon.getImage());
+						Image image=null;
+						if(icon!=null) image=icon.getImage();
+						thumbs.put(sid,image);
 						SwingUtilities.invokeLater(new Runnable(){
 						public void run()
 							{
@@ -103,6 +103,10 @@ public class ImservDataPane extends JPanel
 			}
 		}
 	
+	/**
+	 * Custom drawing area
+	 * *************************************************************************
+	 */
 	public class Area extends javax.swing.JPanel implements MouseListener
 		{
 		public static final long serialVersionUID=0;
@@ -121,7 +125,6 @@ public class ImservDataPane extends JPanel
 			int numcol=r.width/iconw;
 			int numrow=(int)Math.ceil(obList.size()/(double)numcol);
 			int height=numrow*iconh;
-			//System.out.println("h "+numrow+" "+height);
 			return new Dimension(scroll.getViewport().getWidth(),height);
 			}
 
@@ -164,14 +167,18 @@ public class ImservDataPane extends JPanel
 				else
 					{
 					//Not totally fast. could condense into one synch call
-					impostloader.add(sid);
-					g.drawRect(x+(iconw-riconw)/2, y, riconw, riconh);
+					if(!thumbs.containsKey(sid))
+						impostloader.add(sid);
+					int x1=x+(iconw-riconw)/2;
+					g.drawRect(x1, y, riconw, riconh);
+					g.drawLine(x1, y, x1+riconw, y+riconh);
+					g.drawLine(x1+riconw, y, x1, y+riconh);
 					}
 				
 				
 				if(selectedId.contains(id))
 					{
-					g.setColor(Color.BLUE);
+					g.setColor(Color.RED);
 					g.drawRect(x+(iconw-riconw)/2-2, y-2, riconw+4, riconh+4);
 					}
 				
@@ -198,7 +205,6 @@ public class ImservDataPane extends JPanel
 			int row=(e.getY()-shifty)/iconh;
 			int dx=e.getX()-(col*iconw+riconw/2);
 			//int dy=e.getY()-row*iconh+riconh/2;
-			System.out.println(""+dx);
 			if(Math.abs(dx)<riconw/2)
 				{
 				Rectangle r=scroll.getViewport().getViewRect();
@@ -227,19 +233,35 @@ public class ImservDataPane extends JPanel
 		{
 		this.conn=conn;
 		setLayout(new GridLayout(1,1));
+		setFilter("");
 		
+		add(scroll);
+		impostloader.start();
+		}
+	
+	
+	
+	public void setFilter(String s)
+		{
+		filter=s;
+		update();
+		}
+
+	public void update()
+		{
 		try
 			{
-			String[] keys=conn.imserv.getDataKeys();
-			for(String k:keys)
-				obList.add(k);
+			String[] keys=conn.imserv.getDataKeys(filter);
+			obList.clear();
+			if(keys!=null)
+				for(String k:keys)
+					obList.add(k);
+			repaint();
 			}
 		catch (Exception e)
 			{
 			e.printStackTrace();
 			}
-		
-		add(scroll);
-		impostloader.start();
 		}
+	
 	}

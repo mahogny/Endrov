@@ -1,8 +1,5 @@
 package imserv;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
 import java.rmi.server.UnicastRemoteObject;
@@ -32,7 +29,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	{
 	public static final long serialVersionUID=0;
 	private String name;
-	private File file;
+	public File file;
 	public Set<String> channels=new HashSet<String>();
 	public Set<String> tags=new HashSet<String>();
 	public Set<String> objs=new HashSet<String>();
@@ -50,7 +47,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			{
 			//Channels
 			for(File child:file.listFiles())
-				if(!child.getName().startsWith(".") && child.isDirectory())
+				if(!child.getName().startsWith(".") && child.isDirectory() && !child.getName().equals("data"))
 					channels.add(child.getName());
 			
 			rmd=new File(file,"rmd.ostxml");
@@ -67,7 +64,8 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			MySAXApp handler = new MySAXApp();
 			xr.setContentHandler(handler);
 
-	    xr.parse(new InputSource(new FileReader(rmd)));
+			if(rmd.exists())
+				xr.parse(new InputSource(new FileReader(rmd)));
 
 			
 			}
@@ -96,39 +94,11 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 
 	
 	
-	private byte[] generateOSTThumb()
-		{
-		
-		
-		
-		BufferedImage im=new BufferedImage(80,80,BufferedImage.TYPE_3BYTE_BGR);
-		Graphics g=im.getGraphics();
-		g.setColor(Color.BLUE);
-		g.fillRect(10, 10, 10, 10);
-		g.drawString(name, 20, 40);
-		return SendFile.getBytesFromImage(im);
-		}
 	
 	public byte[] getThumb() throws Exception
 		{
-		//OST3
-		if(file.isDirectory())
-			{
-			File thumbfile=new File(new File(file,"data"),"imserv.png");
-			if(thumbfile.exists())
-				return SendFile.getBytesFromFile(thumbfile);
-			
-			//Generate thumb and save down
-			
-			
-			}
-		
-		//Not supported, return NULL. really.
-		
-		
-		
-		return generateOSTThumb();
-		//or from file
+		ThumbMaker tm=new ThumbMaker();
+		return tm.getThumb(this,file);
 		}
 	
 	

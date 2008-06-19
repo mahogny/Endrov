@@ -60,7 +60,26 @@ public class GUI extends JFrame implements DaemonListener,ActionListener
 		daemon.start();
 		daemon.addListener(this);
 		
-		daemon.addRepository(new File("/Volumes/TBU_main02/fakeost/"));
+//		daemon.addRepository(new File("/Volumes/TBU_main02/fakeost/"));
+
+		daemon.addRepository(new File("/Volumes/TBU_main01/ost3dgood"));
+		daemon.addRepository(new File("/Volumes/TBU_main01/ost3dfailed"));
+		daemon.addRepository(new File("/Volumes/TBU_main01/ost4dgood"));
+		daemon.addRepository(new File("/Volumes/TBU_main01/ost4dfailed"));
+		daemon.addRepository(new File("/Volumes/TBU_main01/ostxml"));
+
+		daemon.addRepository(new File("/Volumes/TBU_main02/ost3dgood"));
+		daemon.addRepository(new File("/Volumes/TBU_main02/ost3dfailed"));
+		daemon.addRepository(new File("/Volumes/TBU_main02/ost4dgood"));
+		daemon.addRepository(new File("/Volumes/TBU_main02/ost4dfailed"));
+		daemon.addRepository(new File("/Volumes/TBU_main02/ostxml"));
+		
+		daemon.addRepository(new File("/Volumes/TBU_main03/ost3dgood"));
+		daemon.addRepository(new File("/Volumes/TBU_main03/ost3dfailed"));
+		daemon.addRepository(new File("/Volumes/TBU_main03/ost4dgood"));
+		daemon.addRepository(new File("/Volumes/TBU_main03/ost4dfailed"));
+		daemon.addRepository(new File("/Volumes/TBU_main03/ostxml"));
+		
 		daemon.addRepository(new File("/home/mahogny/_imagedata/ost"));
 		
 		}
