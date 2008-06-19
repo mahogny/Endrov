@@ -5,8 +5,8 @@ package imserv;
 //http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/samples/index.html
 
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Server "imserv" object: implementation
@@ -30,7 +30,7 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 		return daemon.getData(name);
 		
 		
-//		return new DataImpl(name);
+//		return new DataIF(name);
 		}
 	
 	public ClientSessionIF auth(String user, String pass) throws Exception
@@ -40,6 +40,20 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 		return sess;
 		}
 	
+
+	
+	public String[] getDataKeys(String filter) throws Exception
+		{
+		ListDescItem filter2=ListDescItem.parse(filter);
+		if(filter2!=null)
+			{
+			Map<String,DataIF> map=daemon.getAllDataMap();
+			filter2.filter(daemon, map);
+			return map.keySet().toArray(new String[]{});
+			}
+		return null;
+		}
+		
 	
 	public String[] getDataKeys() throws Exception
 		{
@@ -66,6 +80,9 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 		return daemon.objs.keySet().toArray(new String[]{});
 	  }
 	
-	
+  public Date getLastUpdate() throws Exception
+	  {
+	  return daemon.lastUpdate;
+	  }
 	}
 	

@@ -27,7 +27,8 @@ public class CustomObject extends EvObject
 		{
 		e.setName(xml.getName());
 		for(Object o:xml.getChildren())
-			xml.addContent((Element)o); //potential need for clone
+			e.addContent((Element)((Element)o).clone()); //potential need for clone
+		//added one later. xml to e. 
 		}
 	
 	

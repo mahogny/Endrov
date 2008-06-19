@@ -12,17 +12,13 @@ package imserv;
 
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataListener;
+import javax.swing.*;
+import javax.swing.event.*;
 
 
 /**
@@ -31,17 +27,20 @@ import javax.swing.event.ListDataListener;
  * @author Johan Henriksson
  *
  */
-public class ClientGUI extends JFrame
+public class ClientGUI extends JFrame implements ActionListener, ListSelectionListener
 	{
 	public static final long serialVersionUID=0;
 	
 	public ImservConnection conn;
 	
-	public JList tagList=new JList(new String[]{"*"});
+	public JList tagList=new JList(new String[]{});
 	public ImservDataPane pane;
 	public JTextField searchField=new JTextField();
 	public JButton bHelp=new JButton("Help");
-	
+	public JLabel status=new JLabel("");
+	private Timer timer=new Timer(1000,this);
+	private Date lastUpdate=new Date();
+
 	
 	private static JComponent borderLR(JComponent left, JComponent center, JComponent right)
 		{
@@ -53,46 +52,24 @@ public class ClientGUI extends JFrame
 		}
 
 	
-	private static class TagListTag
-		{
-		String tag;
-		public TagListTag(String tag){this.tag=tag;};
-		public String toString(){return "tag:"+tag;}
-		}
-	private static class TagListObject
-		{
-		String tag;
-		public TagListObject(String tag){this.tag=tag;};
-		public String toString(){return "obj:"+tag;}
-		}
-	private static class TagListChannel
-		{
-		String tag;
-		public TagListChannel(String tag){this.tag=tag;};
-		public String toString(){return "chan:"+tag;}
-		}
+	
 	
 	public void updateTagList()
 		{
 		try
 			{
 			final ArrayList<Object> list=new ArrayList<Object>();
-			list.add("*");
+			list.add(ListDescItem.makeMatchAll());
 			for(String s:conn.imserv.getTags())
-				list.add(new TagListTag(s));
+				list.add(ListDescItem.makeTag(s));
 			for(String s:conn.imserv.getObjects())
-				list.add(new TagListObject(s));
+				list.add(ListDescItem.makeObj(s));
 			for(String s:conn.imserv.getChannels())
-				list.add(new TagListChannel(s));
+				list.add(ListDescItem.makeChan(s));
 			
 			ListModel lm=new ListModel(){
-				public void addListDataListener(ListDataListener l)
-					{
-					}
-				public void removeListDataListener(ListDataListener l)
-					{
-					}
-
+				public void addListDataListener(ListDataListener l){}
+				public void removeListDataListener(ListDataListener l){}
 				public Object getElementAt(int index){return list.get(index);}
 				public int getSize(){return list.size();}
 			};
@@ -104,13 +81,72 @@ public class ClientGUI extends JFrame
 			}
 		}
 	
+	
+	
+	public void actionPerformed(ActionEvent e)
+		{
+		if(e.getSource()==searchField)
+			pane.setFilter(searchField.getText());
+		else if(e.getSource()==timer)
+			{
+			try
+				{
+				Date lastUpdate=conn.imserv.getLastUpdate();
+				if(!lastUpdate.equals(this.lastUpdate))
+					{
+					this.lastUpdate=lastUpdate;
+					updateTagList();
+					pane.update();
+					updateCount();
+					}
+				}
+			catch (Exception e1){}
+			}
+		}
+	
+	
+	
+	public void valueChanged(ListSelectionEvent e)
+		{
+		StringBuffer crit=new StringBuffer();
+		Object[] sels=tagList.getSelectedValues();
+		for(Object sel:sels)
+			{
+			ListDescItem item=(ListDescItem)sel;
+			if(crit.length()!=0)
+				crit.append(" and ");
+			crit.append(item.toString());
+			}
+		if(sels.length==0)
+			crit.append("*");
+		searchField.setText(crit.toString());
+		pane.setFilter(crit.toString());
+		updateCount();
+		try{lastUpdate=conn.imserv.getLastUpdate();}
+		catch (Exception e1){}
+		}
+	
+	
+	
+	
+	private void updateCount()
+		{
+		status.setText(""+pane.obList.size());
+		}
+	
+	
+	
 	public ClientGUI(ImservConnection conn)
 		{
 		this.conn=conn;
 		pane=new ImservDataPane(conn);
 		
+		searchField.addActionListener(this);
+		tagList.addListSelectionListener(this);
+		
+		
 		JPanel right=new JPanel(new BorderLayout());
-		right.add(borderLR(null,searchField,bHelp),BorderLayout.SOUTH);
+		right.add(borderLR(status,searchField,bHelp),BorderLayout.SOUTH);
 		right.add(pane,BorderLayout.CENTER);
 
 		setLayout(new BorderLayout());
@@ -119,13 +155,14 @@ public class ClientGUI extends JFrame
 		
 		
 		updateTagList();
+		updateCount();
 		
 		pack();
 		setBounds(0, 0, 500,400);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		
+		timer.start();
 		
 		//Update pane with list of objects
 		
@@ -136,6 +173,7 @@ public class ClientGUI extends JFrame
 		//start daemon, convenience
 		GUI.main(arg);
 
+		
 		try{Thread.sleep(1000);}
 		catch (InterruptedException e){}
 

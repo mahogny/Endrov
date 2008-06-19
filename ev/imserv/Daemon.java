@@ -4,13 +4,7 @@ package imserv;
 import java.io.File;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.WeakHashMap;
+import java.util.*;
 
 
 //when refactoring, probably move most of this to imserv
@@ -29,21 +23,26 @@ public class Daemon extends Thread
 	public WeakHashMap<ClientSessionIF, Object> sessions=new WeakHashMap<ClientSessionIF, Object>();
 
 	
-	public Map<String,Set<DataIF>> channels=new HashMap<String,Set<DataIF>>();
-	public Map<String,Set<DataIF>> tags=new HashMap<String,Set<DataIF>>();
-	public Map<String,Set<DataIF>> objs=new HashMap<String,Set<DataIF>>();
+	public Date lastUpdate=new Date();
+	
+	public Map<String,Set<DataIF>> channels=new TreeMap<String,Set<DataIF>>();
+	public Map<String,Set<DataIF>> tags=new TreeMap<String,Set<DataIF>>();
+	public Map<String,Set<DataIF>> objs=new TreeMap<String,Set<DataIF>>();
 	
 	
 	public static class RepositoryDir
 		{
 		File dir;
-		Map<String, DataIF> data=Collections.synchronizedMap(new HashMap<String, DataIF>());
+		Map<String, DataImpl> data=Collections.synchronizedMap(new HashMap<String, DataImpl>());
 		
 		//handle synch manually at higher level
 		
 		
 		
 		}
+
+	
+
 	
 	public Map<String,DataIF> getAllDataMap()
 		{
@@ -109,10 +108,10 @@ public class Daemon extends Thread
 							{
 							DataImpl data=new DataImpl(name,new File(rep.dir,name));
 							addData(rep,data);
-//							rep.data.put(name, data);
 							}
 						catch (Exception e)
 							{
+							System.out.println("For file: "+new File(rep.dir,name));
 							e.printStackTrace();
 							}
 						}
@@ -123,8 +122,11 @@ public class Daemon extends Thread
 						}
 					
 					if(!toAdd.isEmpty() || !toRemove.isEmpty())
+						{
+						lastUpdate=new Date();
 						for(DaemonListener list:listeners)
 							list.repListUpdated();
+						}
 					}
 			
 			//Sleep for a while

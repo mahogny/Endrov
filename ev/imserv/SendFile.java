@@ -56,8 +56,10 @@ public class SendFile
 	
 		try
 			{
-			ImageIcon ii = new ImageIcon(imgBytes);
-			return ii;
+			if(imgBytes==null)
+				return null;
+			else
+				return new ImageIcon(imgBytes);
 			}
 		catch(Exception e)
 			{
