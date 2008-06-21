@@ -1,4 +1,4 @@
-package imserv;
+package evplugin.imagesetImserv.service;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -27,7 +27,8 @@ public class ThumbMaker
 		//OST3
 		if(isOST3(file))
 			{
-			File thumbfile=new File(new File(file,"data"),"imserv.png");
+			File datadir=new File(file,"data");
+			File thumbfile=new File(datadir,"imserv.png");
 			
 			//Generate thumb and save down if it doesn't exist
 			try
@@ -64,6 +65,7 @@ public class ThumbMaker
 					
 					g.drawImage(sliceimage, 0, 0, im.getWidth(), im.getHeight(), 
 							Color.BLACK, null);
+					datadir.mkdir();
 					ImageIO.write(im, "png", thumbfile);
 					}
 				}

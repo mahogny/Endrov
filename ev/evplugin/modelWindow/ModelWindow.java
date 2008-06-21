@@ -15,7 +15,6 @@ import javax.swing.event.*;
 
 import org.jdom.*;
 
-import OSTdaemon.Xml;
 
 import evplugin.basicWindow.*;
 import evplugin.consoleWindow.*;
@@ -354,7 +353,7 @@ public class ModelWindow extends BasicWindow
 			windowPersonalSettings(root);
 			try
 				{
-				String out=Xml.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
+				String out=EvXMLutils.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
 				setClipBoardString(out);
 				}
 			catch (Exception e1)
@@ -366,7 +365,7 @@ public class ModelWindow extends BasicWindow
 			{
 			try
 				{
-				setPersonalConfig(Xml.stringToXml(getClipBoardString()));
+				setPersonalConfig(EvXMLutils.stringToXml(getClipBoardString()));
 				}
 			catch (Exception e1)
 				{

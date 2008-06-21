@@ -1,4 +1,4 @@
-package imserv;
+package evplugin.imagesetImserv.service;
 
 
 //-Dsun.io.serialization.extendedDebugInfo=true
@@ -20,52 +20,83 @@ import java.util.Date;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import evplugin.ev.BrowserControl;
+import evplugin.ev.EV;
+import evplugin.ev.EvSwingTools;
+
 
 /**
- * Interface to imserv
+ * Interface to imserv: a viewer with capability to select and load . Meant to be integrated in 
  * 
  * @author Johan Henriksson
  *
  */
-public class ClientGUI extends JFrame implements ActionListener, ListSelectionListener
+public class ImservClientPane extends JPanel implements ActionListener, ListSelectionListener
 	{
 	public static final long serialVersionUID=0;
 	
 	public ImservConnection conn;
 	
 	public JList tagList=new JList(new String[]{});
-	public ImservDataPane pane;
+	public DataIconPane pane;
 	public JTextField searchField=new JTextField();
 	public JButton bHelp=new JButton("Help");
 	public JLabel status=new JLabel("");
 	private Timer timer=new Timer(1000,this);
 	private Date lastUpdate=new Date();
 
-	
-	private static JComponent borderLR(JComponent left, JComponent center, JComponent right)
-		{
-		JPanel p=new JPanel(new BorderLayout());
-		if(left!=null)   p.add(left,BorderLayout.WEST);
-		if(center!=null) p.add(center,BorderLayout.CENTER);
-		if(right!=null)  p.add(right,BorderLayout.EAST);
-		return p;
-		}
 
+	/**
+	 * Constructor
+	 */
+	public ImservClientPane(ImservConnection conn)
+		{
+		this.conn=conn;
+		pane=new DataIconPane(conn);
+		
+		bHelp.addActionListener(this);
+		searchField.addActionListener(this);
+		tagList.addListSelectionListener(this);
+		
+		JPanel right=new JPanel(new BorderLayout());
+		right.add(EvSwingTools.borderLR(status,searchField,bHelp),BorderLayout.SOUTH);
+		right.add(pane,BorderLayout.CENTER);
+
+		setLayout(new BorderLayout());
+		add(new JScrollPane(tagList,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.WEST);
+		add(right,BorderLayout.CENTER);
+		
+		setConnection(conn);
+		timer.start();
+		}
 	
 	
+	public void setConnection(ImservConnection conn)
+		{
+		pane.setConn(conn);
+		updateTagList();
+		updateCount();
+		}
 	
+	
+	/**
+	 * Update the list of tags by querying the server
+	 */
 	public void updateTagList()
 		{
 		try
 			{
 			final ArrayList<Object> list=new ArrayList<Object>();
 			list.add(ListDescItem.makeMatchAll());
-			for(String s:conn.imserv.getTags())
-				list.add(ListDescItem.makeTag(s));
-			for(String s:conn.imserv.getObjects())
-				list.add(ListDescItem.makeObj(s));
-			for(String s:conn.imserv.getChannels())
-				list.add(ListDescItem.makeChan(s));
+			if(conn!=null)
+				{
+				for(String s:conn.imserv.getTags())
+					list.add(ListDescItem.makeTag(s));
+				for(String s:conn.imserv.getObjects())
+					list.add(ListDescItem.makeObj(s));
+				for(String s:conn.imserv.getChannels())
+					list.add(ListDescItem.makeChan(s));
+				}
 			
 			ListModel lm=new ListModel(){
 				public void addListDataListener(ListDataListener l){}
@@ -82,9 +113,13 @@ public class ClientGUI extends JFrame implements ActionListener, ListSelectionLi
 		}
 	
 	
-	
+	/**
+	 * Handle events
+	 */
 	public void actionPerformed(ActionEvent e)
 		{
+		if(e.getSource()==bHelp)
+			BrowserControl.displayURL(EV.website+"Organizing_with_ImServ");
 		if(e.getSource()==searchField)
 			pane.setFilter(searchField.getText());
 		else if(e.getSource()==timer)
@@ -105,7 +140,9 @@ public class ClientGUI extends JFrame implements ActionListener, ListSelectionLi
 		}
 	
 	
-	
+	/**
+	 * Handle selections in tag list
+	 */
 	public void valueChanged(ListSelectionEvent e)
 		{
 		StringBuffer crit=new StringBuffer();
@@ -136,75 +173,9 @@ public class ClientGUI extends JFrame implements ActionListener, ListSelectionLi
 	
 	
 	
-	public ClientGUI(ImservConnection conn)
-		{
-		this.conn=conn;
-		pane=new ImservDataPane(conn);
-		
-		searchField.addActionListener(this);
-		tagList.addListSelectionListener(this);
-		
-		
-		JPanel right=new JPanel(new BorderLayout());
-		right.add(borderLR(status,searchField,bHelp),BorderLayout.SOUTH);
-		right.add(pane,BorderLayout.CENTER);
-
-		setLayout(new BorderLayout());
-		add(new JScrollPane(tagList,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.WEST);
-		add(right,BorderLayout.CENTER);
-		
-		
-		updateTagList();
-		updateCount();
-		
-		pack();
-		setBounds(0, 0, 500,400);
-		setVisible(true);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-		timer.start();
-		
-		//Update pane with list of objects
-		
-		}
 	
-	public static void main(String[] arg)
-		{
-		//start daemon, convenience
-		GUI.main(arg);
-
-		
-		try{Thread.sleep(1000);}
-		catch (InterruptedException e){}
-
-		
-		System.setProperty("javax.net.ssl.keyStore",ClientGUI.class.getResource("imservkeys").getFile());
-		System.setProperty("javax.net.ssl.keyStorePassword","passphrase");
-		System.setProperty("javax.net.ssl.trustStore",ClientGUI.class.getResource("cacerts").getFile());
-		System.setProperty("javax.net.ssl.trustStorePassword","changeit");
-
-		
-		
-		//daemon: -Djava.security.policy=imserv/policy
-		
-		ImservConnection conn=ImservConnection.connect();
-		
-
-		/*
-		try 
-			{
-			DataIF data=conn.imserv.getData("foo");
-			data.print();
-			} 
-		catch (Exception e) 
-			{
-			System.out.println("HelloClient exception: " + e.getMessage());
-			e.printStackTrace();
-			}
-		*/
-		
-		new ClientGUI(conn);
-		}
+	
+	
 	
 	
 	

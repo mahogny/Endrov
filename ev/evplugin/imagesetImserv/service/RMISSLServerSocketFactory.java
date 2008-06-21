@@ -1,4 +1,4 @@
-package imserv;
+package evplugin.imagesetImserv.service;
 
 import java.io.*;
 import java.net.*;
@@ -16,8 +16,9 @@ public class RMISSLServerSocketFactory implements RMIServerSocketFactory
 			{
 			char[] passphrase = "passphrase".toCharArray();
 			KeyStore ks = KeyStore.getInstance("JKS");
-			ks.load(new FileInputStream("imserv/imservkeys"), passphrase);
-		
+			ks.load(new FileInputStream(ImservClientPane.class.getResource("imservkeys").getFile()), passphrase);
+			
+			
 			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 			kmf.init(ks, passphrase);
 		

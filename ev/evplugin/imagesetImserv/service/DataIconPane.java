@@ -1,4 +1,4 @@
-package imserv;
+package evplugin.imagesetImserv.service;
 
 
 import java.awt.Color;
@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities;
  * 
  * @author Johan Henriksson
  */
-public class ImservDataPane extends JPanel
+public class DataIconPane extends JPanel
 	{
 	public static final long serialVersionUID=0;
 	
@@ -229,7 +229,7 @@ public class ImservDataPane extends JPanel
 	
 	
 	
-	public ImservDataPane(ImservConnection conn)
+	public DataIconPane(ImservConnection conn)
 		{
 		this.conn=conn;
 		setLayout(new GridLayout(1,1));
@@ -239,6 +239,11 @@ public class ImservDataPane extends JPanel
 		impostloader.start();
 		}
 	
+	public void setConn(ImservConnection conn)
+		{
+		this.conn=conn;
+		update();
+		}
 	
 	
 	public void setFilter(String s)
@@ -251,11 +256,14 @@ public class ImservDataPane extends JPanel
 		{
 		try
 			{
-			String[] keys=conn.imserv.getDataKeys(filter);
 			obList.clear();
-			if(keys!=null)
-				for(String k:keys)
-					obList.add(k);
+			if(conn!=null)
+				{
+				String[] keys=conn.imserv.getDataKeys(filter);
+				if(keys!=null)
+					for(String k:keys)
+						obList.add(k);
+				}
 			repaint();
 			}
 		catch (Exception e)

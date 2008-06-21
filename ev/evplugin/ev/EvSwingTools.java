@@ -21,4 +21,16 @@ public class EvSwingTools
 		return p;
 		}
 
+	/**
+	 * Add a component with two components to the left and right
+	 */
+	public static JComponent borderLR(JComponent left, JComponent center, JComponent right)
+		{
+		JPanel p=new JPanel(new BorderLayout());
+		if(left!=null)   p.add(left,BorderLayout.WEST);
+		if(center!=null) p.add(center,BorderLayout.CENTER);
+		if(right!=null)  p.add(right,BorderLayout.EAST);
+		return p;
+		}
+
 	}

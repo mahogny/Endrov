@@ -1,4 +1,4 @@
-package imserv;
+package evplugin.imagesetImserv.service;
 
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
@@ -12,11 +12,12 @@ public class ImservConnection
 	
 	
 	
-	public static ImservConnection connect()
+	public static ImservConnection connect(String host, int port)
 		{
 		try 
 			{
 			ImservConnection conn=new ImservConnection();
+			
 			
 			conn.registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostName(), Daemon.PORT,	new RMISSLClientSocketFactory());
 			conn.imserv = (ImservIF) conn.registry.lookup("imserv");
