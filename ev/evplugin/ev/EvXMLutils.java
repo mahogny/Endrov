@@ -1,4 +1,4 @@
-package OSTdaemon;
+package evplugin.ev;
 
 import java.io.*;
 
@@ -10,7 +10,7 @@ import org.jdom.output.*;
  * Additional routines for XML data
  * @author Johan Henriksson
  */
-public class Xml
+public class EvXMLutils
 	{
 
 	public static Document readXML(File filename) throws Exception

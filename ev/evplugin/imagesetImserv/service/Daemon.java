@@ -1,4 +1,4 @@
-package imserv;
+package evplugin.imagesetImserv.service;
 
 
 import java.io.File;
@@ -19,9 +19,8 @@ public class Daemon extends Thread
 	public static final int PORT = 2020;
 
 	private Vector<DaemonListener> listeners=new Vector<DaemonListener>();
-	private Vector<RepositoryDir> reps=new Vector<RepositoryDir>();
+	public Vector<RepositoryDir> reps=new Vector<RepositoryDir>();
 	public WeakHashMap<ClientSessionIF, Object> sessions=new WeakHashMap<ClientSessionIF, Object>();
-
 	
 	public Date lastUpdate=new Date();
 	
@@ -29,11 +28,25 @@ public class Daemon extends Thread
 	public Map<String,Set<DataIF>> tags=new TreeMap<String,Set<DataIF>>();
 	public Map<String,Set<DataIF>> objs=new TreeMap<String,Set<DataIF>>();
 	
+	public Map<String,User> users=new TreeMap<String,User>();
 	
+	public static class User
+		{
+		/** Encrypted password */
+		public String passwd;
+		
+		//permission here
+	
+		}
+
+
+	/**
+	 * One repository location
+	 */
 	public static class RepositoryDir
 		{
-		File dir;
-		Map<String, DataImpl> data=Collections.synchronizedMap(new HashMap<String, DataImpl>());
+		public File dir;
+		public Map<String, DataImpl> data=Collections.synchronizedMap(new HashMap<String, DataImpl>());
 		
 		//handle synch manually at higher level
 		
@@ -53,7 +66,9 @@ public class Daemon extends Thread
 		}
 	
 	
-	
+	/**
+	 * Thread: run continuously
+	 */
 	public void run()
 		{
 		//Create and install a security manager
@@ -93,13 +108,10 @@ public class Daemon extends Thread
 						if(!file.getName().startsWith("."))
 							incoming.add(file.getName());
 					
-					
-					HashSet<String> toAdd=new HashSet<String>();
-					toAdd.addAll(incoming);
+					HashSet<String> toAdd=new HashSet<String>(incoming);
 					toAdd.removeAll(rep.data.keySet());
 					
-					HashSet<String> toRemove=new HashSet<String>();
-					toRemove.addAll(rep.data.keySet());
+					HashSet<String> toRemove=new HashSet<String>(rep.data.keySet());
 					toRemove.removeAll(incoming);
 					
 					for(String name:toAdd)
@@ -117,13 +129,12 @@ public class Daemon extends Thread
 						}
 					
 					for(String name:toRemove)
-						{
-						rep.data.remove(name);
-						}
+						removeData(rep, rep.data.get(name));
 					
 					if(!toAdd.isEmpty() || !toRemove.isEmpty())
 						{
-						lastUpdate=new Date();
+						setLastUpdate();
+						System.out.println("update");
 						for(DaemonListener list:listeners)
 							list.repListUpdated();
 						}
@@ -138,7 +149,17 @@ public class Daemon extends Thread
 		
 		}
 	
-	
+	/**
+	 * Set last updated time to now
+	 */
+	private void setLastUpdate()
+		{
+		lastUpdate=new Date();
+		}
+
+	/**
+	 * Add data to one repository
+	 */
 	private synchronized void addData(RepositoryDir rep, DataImpl data)
 		{
 		rep.data.put(data.getName(), data);
@@ -152,6 +173,18 @@ public class Daemon extends Thread
 		for(DaemonListener list:listeners)
 			list.log("Found new object: "+data.getName());
 		}
+	
+	private synchronized void removeData(RepositoryDir rep, DataImpl data)
+		{
+		rep.data.remove(data.getName());
+		for(String s:data.channels)
+			getMapCreate(s, channels).remove(data);
+		for(String s:data.tags)
+			getMapCreate(s, tags).remove(data);
+		for(String s:data.objs)
+			getMapCreate(s, objs).remove(data);
+		}
+	
 	
 	private Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
 		{
@@ -176,14 +209,38 @@ public class Daemon extends Thread
 			}
 		return null;
 		}
-	
+
+	/**
+	 * Add a repository
+	 */
 	public synchronized void addRepository(File dir)
 		{
 		RepositoryDir repdir=new RepositoryDir();
 		repdir.dir=dir;
 		reps.add(repdir);
-		System.out.println("add");
 		notify();
+		for(DaemonListener list:listeners)
+			list.repListUpdated();
+		}
+	
+	/**
+	 * Remove a repository
+	 */
+	public synchronized void removeRepository(File dir)
+		{
+		for(int i=0;i<reps.size();i++)
+			if(reps.get(i).dir.equals(dir))
+				{
+				RepositoryDir rep=reps.get(i);
+				for(DataImpl data:new HashSet<DataImpl>(rep.data.values()))
+					removeData(rep, data);
+				reps.remove(i);
+				break;
+				}
+		notify();
+		setLastUpdate();
+		for(DaemonListener list:listeners)
+			list.repListUpdated();
 		}
 	
 	
@@ -192,7 +249,9 @@ public class Daemon extends Thread
 		listeners.add(listener);
 		}
 	
-	
+	/**
+	 * Add a session
+	 */
 	public synchronized void addSession(ClientSessionIF sess)
 		{
 		sessions.put(sess, null);
@@ -202,5 +261,16 @@ public class Daemon extends Thread
 			list.log("Incoming connection");
 			}
 		}
+	
+	/**
+	 * Add user
+	 */
+	public synchronized User addUser(String user)
+		{
+		User u=new User();
+		users.put(user, u);
+		return u;
+		}
+
 	
 	}

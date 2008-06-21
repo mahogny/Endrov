@@ -1,4 +1,4 @@
-package imserv;
+package evplugin.imagesetImserv.service;
 
 import java.rmi.server.UnicastRemoteObject;
 

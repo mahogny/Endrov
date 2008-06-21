@@ -16,6 +16,7 @@ import javax.imageio.*;
 
 import org.jdom.*;
 
+import evplugin.ev.EvXMLutils;
 import evplugin.jubio.*;
 
 
@@ -281,7 +282,7 @@ public class OSTdaemon extends Thread
 		if(imagesetDir.exists())
 			{
 			File totalFile=getImagesetFile(argImageset);
-			Document rmd=Xml.readXML(totalFile);
+			Document rmd=EvXMLutils.readXML(totalFile);
 			Element root=rmd.getRootElement();
 			Element imagesetEl=root.getChild("imageset");
 			Element newImageset=new Element("imageset");
@@ -310,7 +311,7 @@ public class OSTdaemon extends Thread
 				}
 			root.removeChild("imageset");
 			root.addContent(newImageset);
-			Xml.writeXmlData(rmd, totalFile);
+			EvXMLutils.writeXmlData(rmd, totalFile);
 			}
 		}
 	
@@ -335,18 +336,18 @@ public class OSTdaemon extends Thread
 				//Read current RMD
 				Document total=null;
 				if(totalFile.exists())
-					total=Xml.readXML(totalFile);
+					total=EvXMLutils.readXML(totalFile);
 				else
 					total=new Document(new Element("ost"));
 
 				//Read new data
-				Document newrmd=Xml.readXML(from);
+				Document newrmd=EvXMLutils.readXML(from);
 
 				//Merge
-				Xml.mergeXML(total.getRootElement(), newrmd.getRootElement());
+				EvXMLutils.mergeXML(total.getRootElement(), newrmd.getRootElement());
 
 				//Save new RMD
-				Xml.writeXmlData(total, totalFile);
+				EvXMLutils.writeXmlData(total, totalFile);
 
 				moveToConverted(from);
 				}
@@ -374,8 +375,8 @@ public class OSTdaemon extends Thread
 		File totalFile=new File(imagesetDir,"rmd.ostxml");
 		try 
 			{
-			Document newrmd=Xml.readXML(from);
-			Xml.writeXmlData(newrmd, totalFile);
+			Document newrmd=EvXMLutils.readXML(from);
+			EvXMLutils.writeXmlData(newrmd, totalFile);
 			moveToConverted(from);
 			for(String ch:makeMaxChannel)
 				copyMaxMeta(argImageset,ch);
