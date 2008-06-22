@@ -51,7 +51,7 @@ public class EvImserv
 	public static class EvImservSession
 		{
 		ImservConnection conn;
-		public EvImservSession(String host, int port)
+		public EvImservSession(String host, int port) throws Exception
 			{
 			//InetAddress.getLocalHost().getHostName(), Daemon.PORT
 			conn=ImservConnection.connect(host,port);

@@ -17,6 +17,17 @@ public interface DataIF extends Remote
 	
 	public byte[] getThumb() throws Exception;
 	
+	public ImageList getImageList() throws Exception;
+	
+	
+	
+	public static class ImageList
+		{
+		public static final int NONE=0;
+		public static final int LZMA=1;
+		int compression;
+		byte[] data;
+		}
 	
 	
 	}

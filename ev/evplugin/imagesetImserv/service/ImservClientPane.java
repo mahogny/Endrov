@@ -73,6 +73,7 @@ public class ImservClientPane extends JPanel implements ActionListener, ListSele
 	
 	public void setConnection(ImservConnection conn)
 		{
+		this.conn=conn;
 		pane.setConn(conn);
 		updateTagList();
 		updateCount();

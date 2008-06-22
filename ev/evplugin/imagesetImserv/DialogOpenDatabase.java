@@ -89,7 +89,7 @@ public class DialogOpenDatabase extends JDialog implements ActionListener, Windo
 	/**
 	 * Run the dialog
 	 */
-	public EvImserv.EvImservSession run()
+	public EvImserv.EvImservSession run() throws Exception
 		{
 		try
 			{

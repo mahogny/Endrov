@@ -42,6 +42,9 @@ jnlp:	totaljar
 	rm ../ev.jar
 
 
+sevenjar:
+	jar cfv sevenzip.jar */*class */*/*/*class
+
 #keytool -genkey -keystore myKeys -alias jdc
 
 
@@ -59,7 +62,7 @@ memprof:
 
 
 runimserv:
-	java  imserv.GUI
+	java -jar startEndrov.jar evplugin.imagesetImserv.service.GUI
 runimclient:
-	java imserv.ClientGUI
+	java evplugin.imagesetImserv.service.ClientGUI
 

@@ -2,7 +2,6 @@ package evplugin.imagesetImserv.service;
 
 import java.awt.GridLayout;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 
@@ -47,7 +46,7 @@ public class ClientGUI extends JFrame
 			{
 			new ClientGUI(ImservConnection.connect(InetAddress.getLocalHost().getHostName(), Daemon.PORT));
 			}
-		catch (UnknownHostException e)
+		catch (Exception e)
 			{
 			e.printStackTrace();
 			}
