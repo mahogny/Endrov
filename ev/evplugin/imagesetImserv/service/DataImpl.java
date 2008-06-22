@@ -14,6 +14,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+
 //Tag:foo
 //Channel:RFP
 //Type:OST
@@ -104,6 +105,33 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	
 	
 	
+	
+	public ImageList getImageList() throws Exception
+		{
+		if(!isOST3())
+			return null;
+		else
+			{
+			ImageList imlist=new ImageList();
+			
+			//Load OST and generate listing if needed
+			
+			File imcacheFile=new File(file,"imagecache.txt");
+			if(imcacheFile.exists())
+				{
+				imlist.compression=ImageList.NONE;
+				
+				//Fill todo
+				
+				}
+			
+			
+			
+			
+			
+			return imlist;
+			}
+		}
 	
 	
 	

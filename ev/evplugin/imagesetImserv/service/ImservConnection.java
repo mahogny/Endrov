@@ -9,27 +9,22 @@ public class ImservConnection
 	public Registry registry;
 	public ImservIF imserv;
 	public ClientSessionIF session;
+	public int port;
+	public String host;
+	public String user;
 	
-	
-	
-	public static ImservConnection connect(String host, int port)
+	public static ImservConnection connect(String host, int port) throws Exception
 		{
-		try 
-			{
-			ImservConnection conn=new ImservConnection();
-			
-			
-			conn.registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostName(), Daemon.PORT,	new RMISSLClientSocketFactory());
-			conn.imserv = (ImservIF) conn.registry.lookup("imserv");
-			conn.session=conn.imserv.auth("user", "pass");
-			if(conn.session!=null)
-				return conn;
-			} 
-		catch (Exception e) 
-			{
-			System.out.println("HelloClient exception: " + e.getMessage());
-			e.printStackTrace();
-			}
+		ImservConnection conn=new ImservConnection();
+		conn.port=port;
+		conn.host=host;
+		conn.user="user";
+
+		conn.registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostName(), Daemon.PORT,	new RMISSLClientSocketFactory());
+		conn.imserv = (ImservIF) conn.registry.lookup("imserv");
+		conn.session=conn.imserv.auth(conn.user, "pass");
+		if(conn.session!=null)
+			return conn;
 		return null;
 		}
 	}
