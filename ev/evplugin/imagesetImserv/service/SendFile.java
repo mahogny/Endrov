@@ -1,6 +1,7 @@
 package evplugin.imagesetImserv.service;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,11 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
+/**
+ * Serialization of images to and from bytes
+ * @author Johan Henriksson
+ */
 public class SendFile
 	{
-
 	
 	public static byte[] getBytesFromFile(File file) throws IOException 
 		{
@@ -51,7 +54,7 @@ public class SendFile
 
 	
 	
-	public static ImageIcon getImageFromBytes(byte[] imgBytes)
+	public static BufferedImage getImageFromBytes(byte[] imgBytes)
 		{
 	
 		try
@@ -59,7 +62,9 @@ public class SendFile
 			if(imgBytes==null)
 				return null;
 			else
-				return new ImageIcon(imgBytes);
+				{
+				return ImageIO.read(new ByteArrayInputStream(imgBytes));
+				}
 			}
 		catch(Exception e)
 			{

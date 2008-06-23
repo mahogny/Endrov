@@ -1,6 +1,7 @@
 package evplugin.imagesetImserv.service;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
@@ -13,6 +14,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import evplugin.ev.EV;
+
 
 
 //Tag:foo
@@ -112,27 +116,56 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			return null;
 		else
 			{
-			ImageList imlist=new ImageList();
 			
 			//Load OST and generate listing if needed
 			
 			File imcacheFile=new File(file,"imagecache.txt");
+			if(!imcacheFile.exists())
+				{
+				//Create
+				
+				}
 			if(imcacheFile.exists())
 				{
+				ImageList imlist=new ImageList();
 				imlist.compression=ImageList.NONE;
-				
-				//Fill todo
-				
+				imlist.data=SendFile.getBytesFromFile(imcacheFile);
+				System.out.println("ok");
+				return imlist;
 				}
 			
 			
 			
 			
-			
-			return imlist;
+			return null;
 			}
 		}
 	
+	
+	
+	public ImageTransfer getImage(String channel, int frame, int z) throws Exception
+		{
+		
+		//Note: dangerous channel
+		
+		File chandir=new File(file,channel);
+		File framedir=new File(chandir,EV.pad(frame,8));
+		final String sz=EV.pad(z,8)+".";
+		System.out.println("frame "+framedir+" "+sz);
+		File zcand[]=framedir.listFiles(new FileFilter(){
+			public boolean accept(File pathname){return pathname.getName().startsWith(sz);}});
+		
+		if(zcand.length>0)
+			{
+			File thefile=zcand[0];
+			ImageTransfer transfer=new ImageTransfer();
+			transfer.format="awt";
+			transfer.data=SendFile.getBytesFromFile(thefile);
+			return transfer;
+			}
+		else
+			return null;
+		}
 	
 	
 	
