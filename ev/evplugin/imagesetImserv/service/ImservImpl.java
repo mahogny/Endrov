@@ -84,5 +84,12 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	  {
 	  return daemon.lastUpdate;
 	  }
+  
+  
+  public void setTag(String[] obs, String tag, boolean enable) throws Exception
+  {
+  
+  }
+
 	}
 	

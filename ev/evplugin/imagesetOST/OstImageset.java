@@ -48,90 +48,6 @@ public class OstImageset extends Imageset
 				}
 		});
 		
-/*		
-		EvDataMenu.extensions.add(new DataMenuExtension()
-			{
-			public void buildOpen(JMenu menu)
-				{
-				final JMenuItem miLoadVWBImageset=new JMenuItem("Load OST imageset");
-				addMetamenu(menu, miLoadVWBImageset);
-				final JMenuItem miLoadVWBImagesetPath=new JMenuItem("Load OST imageset by path");
-				addMetamenu(menu, miLoadVWBImagesetPath);
-
-				
-				ActionListener listener=new ActionListener()
-					{
-					public void actionPerformed(ActionEvent e)
-						{
-						if(e.getSource()==miLoadVWBImageset)
-							{
-							JFileChooser chooser = new JFileChooser();
-					    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    	chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
-					    int returnVal = chooser.showOpenDialog(null); //null=window
-					    if(returnVal == JFileChooser.APPROVE_OPTION)
-					    	{
-					    	String filename=chooser.getSelectedFile().getAbsolutePath();
-					    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
-					    	load(filename);
-					    	}
-							}
-						else if(e.getSource()==miLoadVWBImagesetPath)
-							{
-							String clipboardString=null;
-							try
-								{
-								clipboardString=(String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-								}
-							catch(Exception e2)
-								{
-								System.out.println("Failed to get text from clipboard");
-								}
-							if(clipboardString==null)
-								clipboardString="";
-							String fileName=JOptionPane.showInputDialog("Path",clipboardString);
-							if(fileName!=null)
-								{
-								File thefile=new File(fileName);
-								if(thefile.exists())
-									load(fileName);
-								else
-									JOptionPane.showMessageDialog(null, "Path does not exist");
-								}
-							}
-						}
-
-					public void load(String filename)
-						{
-						//Show loading dialog
-			    	//dialog doesn't really show, but better than nothing
-			    	JFrame loadingWindow=new JFrame(EV.programName); 
-			    	loadingWindow.setLayout(new GridLayout(1,1));
-			    	loadingWindow.add(new JLabel("Loading imageset"));
-			    	loadingWindow.pack();
-			    	loadingWindow.setBounds(200, 200, 300, 50);
-			    	loadingWindow.setVisible(true);
-			    	loadingWindow.repaint();
-			
-			    	//Load imageset and add to list
-			    	try {EvData.metadata.add(new OstImageset(filename));}
-						catch (Exception e){}
-						
-						//Close down dialog, update windows
-			    	BasicWindow.updateWindows();
-			    	loadingWindow.dispose();
-						}
-					
-					};
-				miLoadVWBImageset.addActionListener(listener);
-				miLoadVWBImagesetPath.addActionListener(listener);
-				}
-			public void buildSave(JMenu menu, EvData meta)
-				{
-				}
-			});
-			*/
-		
 		}
 
 	
@@ -402,14 +318,22 @@ public class OstImageset extends Imageset
 		if(basepath.exists())
 			{
 			//Load metadata
-			loadXmlMetadata(metaFile.getPath());
+			try
+				{
+				loadImagesetXmlMetadata(new FileInputStream(metaFile.getParent()));
+				}
+			catch (FileNotFoundException e)
+				{
+				e.printStackTrace();
+				}
+			/*loadXmlMetadata(metaFile.getPath());
 			for(String oi:metaObject.keySet())
 				if(metaObject.get(oi) instanceof ImagesetMeta)
 					{
 					meta=(ImagesetMeta)metaObject.get(oi);
 					metaObject.remove(oi);
 					break;
-					}
+					}*/
 
 			if(!loadDatabaseCache())
 				{
@@ -471,16 +395,15 @@ public class OstImageset extends Imageset
 		return new File(basedir,"imagecache.txt");
 		}
 	
+
 	
+	//would be nice to factor out loaddatabasecache
 	
 	/**
 	 * Load database from cache. Return if it succeeded
 	 */
 	public boolean loadDatabaseCache()
 		{
-//		boolean first=true;
-		
-		
 		try
 			{
 			String ext="";
@@ -495,8 +418,6 @@ public class OstImageset extends Imageset
 			else
 				{
 				Log.printLog("Loading imagelist cache");
-				
-				long currentTime=System.currentTimeMillis();
 				
 				channelImages.clear();
 				int numChannels=Integer.parseInt(in.readLine());
@@ -527,7 +448,6 @@ public class OstImageset extends Imageset
 						
 						
 						//Generate name of frame directory, optimized. windows support?
-//						String framedirName=buildFramePath(channelName, frame).getAbsolutePath()+File.pathSeparatorChar;
 						StringBuffer framedirName=new StringBuffer(channeldirName);
 						framedirName.append('/');
 						EV.pad(frame, 8, framedirName);
@@ -549,20 +469,11 @@ public class OstImageset extends Imageset
 							EV.pad(slice, 8, imagefilename);
 							imagefilename.append(ext);
 							
-							
-							//loaderset.put(slice, ((Channel)c).newEvImage(buildImagePath(parentchannelName, frame, slice, ext).getAbsolutePath()));
-							//String imagefilename=framedirName+EV.pad(slice, 8)+ext;
-							
 							EvImage evim=((Channel)c).newEvImage(imagefilename.toString());
-							
 							loaderset.put(slice, evim);
-							
 							}
 						}
 					}
-				
-				System.out.println(" timeC "+(System.currentTimeMillis()-currentTime));
-				
 				return true;
 				}
 			}

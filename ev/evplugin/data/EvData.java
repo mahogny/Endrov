@@ -391,11 +391,22 @@ public abstract class EvData
 	 */
 	public void loadXmlMetadata(String filename)
 		{
+		try
+			{
+			FileInputStream fileInputStream = new FileInputStream(filename);
+			loadXmlMetadata(fileInputStream);
+			}
+		catch (FileNotFoundException e)
+			{
+			e.printStackTrace();
+			}
+		}
+	public void loadXmlMetadata(InputStream fileInputStream)
+		{
 		metaObject.clear();
     Document document = null;
     try 
     	{
-  		FileInputStream fileInputStream = new FileInputStream(filename);
   		SAXBuilder saxBuilder = new SAXBuilder();
   		document = saxBuilder.build(fileInputStream);
   		Element element = document.getRootElement();
