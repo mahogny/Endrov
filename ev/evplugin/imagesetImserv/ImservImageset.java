@@ -4,16 +4,16 @@ package evplugin.imagesetImserv;
 
 import java.awt.image.*;
 import java.io.*;
-import java.util.List;
 import java.util.TreeMap;
 
 import evplugin.data.RecentReference;
 import evplugin.imageset.*;
 import evplugin.imagesetImserv.service.DataIF;
+import evplugin.imagesetImserv.service.SendFile;
 
 
 /**
- * Support for the native OST file format
+ * Support for ImServ
  * @author Johan Henriksson
  */
 public class ImservImageset extends Imageset
@@ -22,21 +22,17 @@ public class ImservImageset extends Imageset
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 
-	private EvImserv.EvImservSession omesession;
 	private DataIF omeimage;
-	//use "imageset" as id 
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
 	/**
-	 * Create a new recording. Basedir points to imageset- ie without the channel name
-	 * @param basedir
+	 * Create a new recording
 	 */
-	public ImservImageset(EvImserv.EvImservSession omesession, DataIF omeimage)
+	public ImservImageset(DataIF omeimage)
 		{
-		this.omesession=omesession;
 		this.omeimage=omeimage;
 		try
 			{
@@ -87,25 +83,15 @@ public class ImservImageset extends Imageset
 		{
 		//Set metadata TODO
 		
-		List<ome.model.core.Pixels> pixlist=omesession.getPixels(omeimage);
-		
-		for(ome.model.core.Pixels pix:omesession.getPixels(omeimage))
-			{
-			System.out.println("asdasd "+pix.getId()+" "+pix.getImage());
-			}
-		
-		ome.model.core.Pixels pixel=pixlist.iterator().next();
-		
-		
 		System.out.println("building imageset");
 		
 		
-		int numc=pixel.getSizeC();
+		int numc=3;
 		for(int c=0;c<numc;c++)
 			{
-			String channelName=""+c;
+			String channelName="ch"+c;
 			Channel ch=new Channel(meta.getCreateChannelMeta(channelName));
-			ch.scanFiles(pixel, c);
+			ch.scanFiles(channelName);
 			channelImages.put(channelName,ch);
 			}
 		
@@ -149,16 +135,17 @@ public class ImservImageset extends Imageset
 		/**
 		 * Scan all files for this channel and build a database
 		 */
-		public void scanFiles(ome.model.core.Pixels pixel, int chnum)
+		public void scanFiles(String chnum)
 			{
 			imageLoader.clear();
-			int numframe=pixel.getSizeT();
-			int numz=pixel.getSizeZ();
+
+			int numframe=1;
+			int numz=50;
 			for(int frame=0;frame<numframe;frame++)
 				{
 				TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
 				for(int z=0;z<numz;z++)
-					loaderset.put(z, newEvImage(pixel, z, frame, chnum));
+					loaderset.put(z, newEvImage(z, frame, chnum));
 				imageLoader.put(frame, loaderset);
 				}
 			}
@@ -170,25 +157,21 @@ public class ImservImageset extends Imageset
 			}
 		
 		
-		public EvImage newEvImage(ome.model.core.Pixels pixel, int z, int t, int c)
+		public EvImage newEvImage(int z, int t, String c)
 			{
-			return new EvImageOME(pixel, z, t, c);
+			return new EvImageImserv(z, t, c);
 			}
 		
 		
-		private class EvImageOME extends EvImage
+		private class EvImageImserv extends EvImage
 			{
-			int z,t,c;
-			int w, h;
-			long pixelid;
-			public EvImageOME(ome.model.core.Pixels pixel, int z, int t, int c)
+			int z,t;
+			String c;
+			public EvImageImserv(int z, int t, String c)
 				{
 				this.z=z;
 				this.t=t;
 				this.c=c;
-				w=pixel.getSizeX();
-				h=pixel.getSizeY();
-				pixelid=pixel.getId();
 				}
 
 			public int getBinning(){return getMeta().chBinning;}
@@ -198,17 +181,20 @@ public class ImservImageset extends Imageset
 			public double getResY(){return meta.resY;}
 			protected BufferedImage loadJavaImage()
 				{
-				BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-				WritableRaster r=im.getRaster();
-				byte[] b=omesession.getPlane(pixelid, z, t, c);
-				int[] strip=new int[w];
-				for(int y=0;y<h;y++)
+				//it is the server side responsibility to make byte_gray?
+	//			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+				try
 					{
-					for(int x=0;x<w;x++)
-						strip[x]=b[y*w+x];
-					r.setPixels(0, y, w, 1, strip);
+					DataIF.ImageTransfer transfer=omeimage.getImage(c, t, z);
+					if(transfer!=null)
+						return SendFile.getImageFromBytes(transfer.data);
 					}
-				return im;
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				return null;
+//				return im;
 				}
 		
 			}

@@ -10,12 +10,15 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+
+import evplugin.data.EvData;
+import evplugin.imagesetImserv.ImservImageset;
 
 
 /**
@@ -77,9 +80,7 @@ public class DataIconPane extends JPanel
 					try 
 						{
 						DataIF data=conn.imserv.getData(sid);
-						ImageIcon icon=SendFile.getImageFromBytes(data.getThumb());
-						Image image=null;
-						if(icon!=null) image=icon.getImage();
+						BufferedImage image=SendFile.getImageFromBytes(data.getThumb());
 						thumbs.put(sid,image);
 						SwingUtilities.invokeLater(new Runnable(){
 						public void run()
@@ -201,23 +202,47 @@ public class DataIconPane extends JPanel
 
 		public void mouseClicked(MouseEvent e)
 			{
-			int col=e.getX()/iconw;
-			int row=(e.getY()-shifty)/iconh;
-			int dx=e.getX()-(col*iconw+riconw/2);
-			//int dy=e.getY()-row*iconh+riconh/2;
-			if(Math.abs(dx)<riconw/2)
+			//if(e.getClickCount()==1)
+				//{
+				int col=e.getX()/iconw;
+				int row=(e.getY()-shifty)/iconh;
+				int dx=e.getX()-(col*iconw+riconw/2);
+				//int dy=e.getY()-row*iconh+riconh/2;
+				if(Math.abs(dx)<riconw/2)
+					{
+					Rectangle r=scroll.getViewport().getViewRect();
+					int numcol=r.width/iconw;
+					int id=numcol*row+col;
+					
+					if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)==0)
+						selectedId.clear();
+					
+					selectedId.add(id);
+					repaint();
+					}
+				//}
+			//else 
+				if(e.getClickCount()==2)
 				{
-				Rectangle r=scroll.getViewport().getViewRect();
-				int numcol=r.width/iconw;
-				int id=numcol*row+col;
+				System.out.println("dbl");
 				
-				if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)==0)
-					selectedId.clear();
+				try
+					{
+					String openName=obList.get(selectedId.iterator().next());
+					DataIF data=conn.imserv.getData(openName);
+					
+					//wrong place, temp
+					ImservImageset rec=new ImservImageset(data);
+					EvData.registerOpenedData(rec);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
 				
-				selectedId.add(id);
-				repaint();
+				
+				
 				}
-			
 			}
 
 		public void mouseEntered(MouseEvent arg0){}
