@@ -102,8 +102,19 @@ public abstract class Imageset extends EvData
 		}
 	
 	
-	
-	
+	public void loadImagesetXmlMetadata(InputStream fileInputStream)
+		{
+		//Load metadata
+		loadXmlMetadata(fileInputStream);
+		for(String oi:metaObject.keySet())
+			if(metaObject.get(oi) instanceof ImagesetMeta)
+				{
+				meta=(ImagesetMeta)metaObject.get(oi);
+				metaObject.remove(oi);
+				break;
+			}
+		}
+
 
 	/**
 	 * Images for one channel

@@ -134,31 +134,33 @@ public class TravelDist
 						NucLineage.NucInterp interEnd=nuc.interpolatePos(end);
 						if(interStart==null || interEnd==null)
 							System.out.println(nucName+" "+interStart+ " "+interEnd+" "+start+" "+end+" "+nuc.overrideEnd);
-		
-						Avg r=new Avg();
-						r.put(interStart.pos.r);
-						r.put(interEnd.pos.r);
-		
-						Vector3d v=interEnd.pos.getPosCopy();
-						v.sub(interStart.pos.getPosCopy());
-						double straightDistance=v.length();
-		
-						Vector3d last=interStart.pos.getPosCopy();
-		
-						double fractalDist=0;
-						for(Map.Entry<Integer, NucLineage.NucPos> ee:nuc.pos.entrySet())
-							if(ee.getKey()>start && ee.getKey()<end)
-								{
-								last.sub(ee.getValue().getPosCopy());
-								fractalDist+=last.length();
-								last=ee.getValue().getPosCopy();
-								r.put(ee.getValue().r);
-								}
-						last.sub(interEnd.pos.getPosCopy());
-						fractalDist+=last.length();
-		
-						//Write out
-						out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+r.getAv());
+						else
+							{
+							Avg r=new Avg();
+							r.put(interStart.pos.r);
+							r.put(interEnd.pos.r);
+			
+							Vector3d v=interEnd.pos.getPosCopy();
+							v.sub(interStart.pos.getPosCopy());
+							double straightDistance=v.length();
+			
+							Vector3d last=interStart.pos.getPosCopy();
+			
+							double fractalDist=0;
+							for(Map.Entry<Integer, NucLineage.NucPos> ee:nuc.pos.entrySet())
+								if(ee.getKey()>start && ee.getKey()<end)
+									{
+									last.sub(ee.getValue().getPosCopy());
+									fractalDist+=last.length();
+									last=ee.getValue().getPosCopy();
+									r.put(ee.getValue().r);
+									}
+							last.sub(interEnd.pos.getPosCopy());
+							fractalDist+=last.length();
+			
+							//Write out
+							out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+r.getAv());
+							}
 						}
 					}
 				}
@@ -185,10 +187,22 @@ public class TravelDist
 	//	one("/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml");
 		one("/Volumes/TBU_main03/ost4dgood/TB2167_0804016");
 		one("/Volumes/TBU_main02/ost4dgood/stdcelegansNew");
-	
-	
+
 		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords");
-	
+
+		one("/Volumes/TBU_main02/ost4dgood/N2_071114");
+
+		one("/Volumes/TBU_main02/ost4dgood/N2greenLED080206");
+		one("/Volumes/TBU_main02/ost4dgood/TB2142_071129");
+		one("/Volumes/TBU_main02/ost4dgood/TB2164_080118");
+		
+		System.exit(0);
+		
+		
+		
+		
+		
+		
 		}
 	
 	}

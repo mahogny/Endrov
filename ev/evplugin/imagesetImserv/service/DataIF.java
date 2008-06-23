@@ -18,7 +18,8 @@ public interface DataIF extends Remote
 	
 	public byte[] getThumb() throws Exception;
 	
-	public ImageList getImageList() throws Exception;
+	public CompressibleDataTransfer getImageList() throws Exception;
+	public CompressibleDataTransfer getRMD() throws Exception;
 	
 	public ImageTransfer getImage(String channel, int frame, int z) throws Exception;
 	
@@ -30,7 +31,7 @@ public interface DataIF extends Remote
 		public byte[] data;
 		}
 	
-	public static class ImageList implements Serializable
+	public static class CompressibleDataTransfer implements Serializable
 		{
 		static final long serialVersionUID=0;
 		public static final int NONE=0;

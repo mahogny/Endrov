@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.TreeMap;
 
 import evplugin.data.RecentReference;
+import evplugin.ev.Log;
 import evplugin.imageset.*;
 import evplugin.imagesetImserv.service.DataIF;
 import evplugin.imagesetImserv.service.SendFile;
@@ -22,7 +23,7 @@ public class ImservImageset extends Imageset
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 
-	private DataIF omeimage;
+	private DataIF data;
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -33,7 +34,7 @@ public class ImservImageset extends Imageset
 	 */
 	public ImservImageset(DataIF omeimage)
 		{
-		this.omeimage=omeimage;
+		this.data=omeimage;
 		try
 			{
 			imageset=omeimage.getName();
@@ -76,16 +77,95 @@ public class ImservImageset extends Imageset
 		}
 	
 	
+	
+	public boolean loadDatabaseCache(byte inp[])
+		{
+		try
+			{
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(inp)));
+		 
+			String line=in.readLine();
+			if(!line.equals("version1"))
+				{
+				Log.printLog("Image cache wrong version, ignoring");
+				return false;
+				}
+			else
+				{
+				Log.printLog("Loading imagelist cache");
+				
+				channelImages.clear();
+				int numChannels=Integer.parseInt(in.readLine());
+				for(int i=0;i<numChannels;i++)
+					{
+					String channelName=in.readLine();
+					int numFrame=Integer.parseInt(in.readLine());
+					ChannelImages c=getChannel(channelName);
+					if(c==null)
+						{
+						c=new Channel(meta.getCreateChannelMeta(channelName));
+						channelImages.put(channelName,c);
+						}
+					
+					for(int j=0;j<numFrame;j++)
+						{
+						int frame=Integer.parseInt(in.readLine());
+						int numSlice=Integer.parseInt(in.readLine());
+						TreeMap<Integer,EvImage> loaderset=c.imageLoader.get(frame);
+						if(loaderset==null)
+							{
+							//A sorted linked list would make set generation linear time
+							loaderset=new TreeMap<Integer,EvImage>();
+							c.imageLoader.put(frame, loaderset);
+							}
+						
+						for(int k=0;k<numSlice;k++)
+							{
+							String s=in.readLine();
+							if(s.startsWith("ext"))
+								s=in.readLine(); //We don't have to care about extensions
+							int slice=Integer.parseInt(s);
+
+							EvImage evim=((Channel)c).newEvImage(slice,frame,channelName);
+							loaderset.put(slice, evim);
+							}
+						}
+					}
+				return true;
+				}
+			}
+		catch(FileNotFoundException e)
+			{
+			return false;
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			return false;
+			}
+		}
+
+	
 	/**
 	 * Scan recording for channels and build a file database
 	 */
 	public void buildDatabase()
 		{
-		//Set metadata TODO
-		
-		System.out.println("building imageset");
-		
-		
+		try
+			{
+			System.out.println("building imageset");
+			DataIF.CompressibleDataTransfer ilist=data.getImageList();
+			loadDatabaseCache(ilist.data);
+			
+			//Set metadata
+			loadImagesetXmlMetadata(new ByteArrayInputStream(data.getRMD().data));
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+
+		/*
 		int numc=3;
 		for(int c=0;c<numc;c++)
 			{
@@ -94,7 +174,7 @@ public class ImservImageset extends Imageset
 			ch.scanFiles(channelName);
 			channelImages.put(channelName,ch);
 			}
-		
+		*/
 		}
 	
 	
@@ -185,7 +265,7 @@ public class ImservImageset extends Imageset
 	//			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 				try
 					{
-					DataIF.ImageTransfer transfer=omeimage.getImage(c, t, z);
+					DataIF.ImageTransfer transfer=data.getImage(c, t, z);
 					if(transfer!=null)
 						return SendFile.getImageFromBytes(transfer.data);
 					}

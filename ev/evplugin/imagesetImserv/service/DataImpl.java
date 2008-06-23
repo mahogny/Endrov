@@ -110,7 +110,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	
 	
 	
-	public ImageList getImageList() throws Exception
+	public CompressibleDataTransfer getImageList() throws Exception
 		{
 		if(!isOST3())
 			return null;
@@ -126,19 +126,26 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 				
 				}
 			if(imcacheFile.exists())
-				{
-				ImageList imlist=new ImageList();
-				imlist.compression=ImageList.NONE;
-				imlist.data=SendFile.getBytesFromFile(imcacheFile);
-				System.out.println("ok");
-				return imlist;
-				}
-			
-			
-			
-			
-			return null;
+				return getUncompressed(imcacheFile);
+			else
+				return null;
 			}
+		}
+	public CompressibleDataTransfer getRMD() throws Exception
+		{
+		File rmdFile=new File(file,"rmd.ostxml");
+		if(rmdFile.exists())
+			return getUncompressed(rmdFile);
+		else
+			return null;
+		}
+
+	private CompressibleDataTransfer getUncompressed(File file) throws Exception
+		{
+		CompressibleDataTransfer imlist=new CompressibleDataTransfer();
+		imlist.compression=CompressibleDataTransfer.NONE;
+		imlist.data=SendFile.getBytesFromFile(file);
+		return imlist;
 		}
 	
 	

@@ -34,7 +34,7 @@ public class DataIconPane extends JPanel
 	
 	private Area a=new Area();
 	private JScrollPane scroll=new JScrollPane(a);
-	private Set<Integer> selectedId=new HashSet<Integer>();
+	public Set<String> selectedId=new HashSet<String>();
 	private ImservConnection conn;
 	private ImPostLoader impostloader=new ImPostLoader();
 	private Map<String, Image> thumbs=Collections.synchronizedMap(new HashMap<String, Image>());
@@ -177,7 +177,7 @@ public class DataIconPane extends JPanel
 					}
 				
 				
-				if(selectedId.contains(id))
+				if(selectedId.contains(obList.get(id)))
 					{
 					g.setColor(Color.RED);
 					g.drawRect(x+(iconw-riconw)/2-2, y-2, riconw+4, riconh+4);
@@ -213,11 +213,13 @@ public class DataIconPane extends JPanel
 					Rectangle r=scroll.getViewport().getViewRect();
 					int numcol=r.width/iconw;
 					int id=numcol*row+col;
+					String sid=id<obList.size() && id>=0 ? obList.get(id) : null;
 					
 					if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)==0)
 						selectedId.clear();
+					if(sid!=null)
+						selectedId.add(sid);
 					
-					selectedId.add(id);
 					repaint();
 					}
 				//}
@@ -228,7 +230,7 @@ public class DataIconPane extends JPanel
 				
 				try
 					{
-					String openName=obList.get(selectedId.iterator().next());
+					String openName=selectedId.iterator().next();
 					DataIF data=conn.imserv.getData(openName);
 					
 					//wrong place, temp
