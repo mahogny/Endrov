@@ -32,7 +32,7 @@ public class TagList extends JPanel implements MouseListener
 	private Vector<ListDescItem> tags=new Vector<ListDescItem>();
 	public Set<ListDescItem> selected=new HashSet<ListDescItem>();
 	
-	private final Font font=Font.decode("Dialog PLAIN "); //+12
+	private final Font font=Font.decode("Dialog PLAIN");
 	private final int fonth,fonta;
 	private final FontMetrics fm;
 	private final int csize;
@@ -87,15 +87,17 @@ public class TagList extends JPanel implements MouseListener
 				g.fillRect(0, y, d.width, fonth);
 				}
 			
-			g.setColor(Color.BLUE);
-			g.fillOval(cxa, cy, csize, csize);
-			g.fillOval(cxb, cy, csize, csize);
-			
-			g.setColor(Color.WHITE);
-			g.drawLine(cxa+1, cy+csize/2, cxa+csize-1, cy+csize/2);
-			g.drawLine(cxa+csize/2, cy+1, cxa+csize/2, cy+csize-1);
-			g.drawLine(cxb+1, cy+csize/2, cxb+csize-1, cy+csize/2);
-			
+			if(tags.get(i).type==ListDescItem.TAG)
+				{
+				g.setColor(Color.BLUE);
+				g.fillOval(cxa, cy, csize, csize);
+				g.fillOval(cxb, cy, csize, csize);
+				
+				g.setColor(Color.WHITE);
+				g.drawLine(cxa+1, cy+csize/2, cxa+csize-1, cy+csize/2);
+				g.drawLine(cxa+csize/2, cy+1, cxa+csize/2, cy+csize-1);
+				g.drawLine(cxb+1, cy+csize/2, cxb+csize-1, cy+csize/2);
+				}
 			
 			g.setColor(Color.BLACK);
 			g.drawString(tags.get(i).toString(), totc, y+fonta);
@@ -117,7 +119,7 @@ public class TagList extends JPanel implements MouseListener
 
 	public void mouseClicked(MouseEvent e)
 		{
-		int i=e.getY()/fonth;
+		int i=(e.getY()-2)/fonth;
 		if(e.getX()<csize+3)
 			{
 			if(i<tags.size())

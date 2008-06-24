@@ -3,6 +3,8 @@ package evplugin.imageset;
 import java.io.*;
 import java.util.*;
 import org.jdom.*;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import evplugin.data.*;
 
@@ -87,7 +89,7 @@ public abstract class Imageset extends EvData
 	 * Save metadata to some specific files; mostly for imageset internal use. Implementations of imagesets
 	 * should implement a function which stores the metadata in a standard location.
 	 */
-	public void saveMeta(File outfile)
+	public void saveMeta(OutputStream os) throws IOException
 		{
 		//Add all objects
 		Document document=saveXmlMetadata();
@@ -98,7 +100,21 @@ public abstract class Imageset extends EvData
 		document.getRootElement().addContent(imagesetEl);
 		
 		//Write out to disk
-		writeXmlData(document, outfile);
+		
+		Format format=Format.getPrettyFormat();
+		XMLOutputter outputter = new XMLOutputter(format);
+
+//		writeXmlData(document, os);
+
+		outputter.output(document, os);
+		setMetadataModified(false);
+		}
+	public void saveMeta(File outfile) throws IOException
+		{
+//		FileWriter writer = new FileWriter(outfile);
+		FileOutputStream writer2=new FileOutputStream(outfile);
+		saveMeta(writer2);
+		writer2.close();
 		}
 	
 	

@@ -143,7 +143,15 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 			{
 			try
 				{
-				conn.imserv.setTag(pane.selectedId.toArray(new String[]{}), tag, enable);
+				for(String s:pane.selectedId)
+					{
+					DataIF data=conn.imserv.getData(s);
+					data.setTag(tag, enable);
+					}
+				
+//		  public void setTag(String[] obs, String tag, boolean enable) throws Exception;
+
+//				conn.imserv.setTag(pane.selectedId.toArray(new String[]{}), tag, enable);
 				}
 			catch (Exception e)
 				{
@@ -174,7 +182,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 			}
 		else if(e.getSource()==bToTrash)
 			{
-			if(JOptionPane.showConfirmDialog(this, "Confirm", "Do you really want to move the selected datasets to trash?", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+			if(JOptionPane.showConfirmDialog(this,  "Do you really want to move the selected datasets to trash?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				setTag("trash",true);
 			}
 		else if(e.getSource()==timer)
