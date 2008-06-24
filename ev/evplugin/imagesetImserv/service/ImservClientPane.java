@@ -12,25 +12,19 @@ package evplugin.imagesetImserv.service;
 
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.EventObject;
-import java.util.HashMap;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 import evplugin.ev.BrowserControl;
 import evplugin.ev.EV;
 import evplugin.ev.EvSwingTools;
+import evplugin.imagesetImserv.service.TagList.TagListListener;
 
 
 /**
@@ -39,13 +33,13 @@ import evplugin.ev.EvSwingTools;
  * @author Johan Henriksson
  *
  */
-public class ImservClientPane extends JPanel implements ActionListener, ListSelectionListener
+public class ImservClientPane extends JPanel implements ActionListener,TagListListener
 	{
 	public static final long serialVersionUID=0;
 	
 	public ImservConnection conn;
 	
-	public JList tagList=new JList(new String[]{});
+	//public JList tagList=new JList(new String[]{});
 	public DataIconPane pane;
 	public JTextField searchField=new JTextField();
 	public JButton bHelp=new JButton("Help");
@@ -57,37 +51,8 @@ public class ImservClientPane extends JPanel implements ActionListener, ListSele
 	
 	private TagList taglist=new TagList();
 
-	private JTable table=new JTable(new TableModel(){
-		public void addTableModelListener(TableModelListener l){}
-		public Class<?> getColumnClass(int columnIndex){return String.class;}
-		public int getColumnCount(){return 3;}
-		public String getColumnName(int columnIndex){return "";}
-		public int getRowCount(){return 10;}
-		public Object getValueAt(int rowIndex, int columnIndex)
-			{
-			return ""+rowIndex+"asasdasdasdasd";
-			}
-		public boolean isCellEditable(int rowIndex, int columnIndex){return false;}
-		public void removeTableModelListener(TableModelListener l){}
-		public void setValueAt(Object aValue, int rowIndex, int columnIndex){}
-	});
-
-	private HashMap<Integer, JButton> tablePlusMap=new HashMap<Integer, JButton>();
-	private JButton getTablePlusButton(int row)
-		{
-		JButton b=tablePlusMap.get(row);
-		if(b==null)
-			tablePlusMap.put(row, b=new JButton("+"));
-		return b;
-		}
-	private HashMap<Integer, JButton> tableMinusMap=new HashMap<Integer, JButton>();
-	private JButton getTableMinusButton(int row)
-		{
-		JButton b=tableMinusMap.get(row);
-		if(b==null)
-			tableMinusMap.put(row, b=new JButton("-"));
-		return b;
-		}
+	
+	ListDescItem theStar=ListDescItem.makeMatchAll();
 	
 	/**
 	 * Constructor
@@ -97,63 +62,13 @@ public class ImservClientPane extends JPanel implements ActionListener, ListSele
 		this.conn=conn;
 		pane=new DataIconPane(conn);
 
-//		table.setShowGrid(true); 
-		
-		table.setShowHorizontalLines(true);
-		table.setTableHeader(null);
-//		table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		
-		//+++
-		TableColumn plusColumn=table.getColumnModel().getColumn(0);
-//		plusColumn.setPreferredWidth(30);
-//		plusColumn.setMinWidth(30);
-//		plusColumn.setMaxWidth(30);
-		plusColumn.setCellEditor(new TableCellEditor(){
-			public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int col)
-				{return getTablePlusButton(row);}
-			public void addCellEditorListener(CellEditorListener arg0){}
-			public void cancelCellEditing(){}
-			public Object getCellEditorValue(){return null;}
-			public boolean isCellEditable(EventObject arg0){return true;}
-			public void removeCellEditorListener(CellEditorListener arg0){}
-			public boolean shouldSelectCell(EventObject arg0){return false;}
-			public boolean stopCellEditing(){return true;}
-		});
-		plusColumn.setCellRenderer(new TableCellRenderer(){
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col)
-				{return getTablePlusButton(row);}
-		});
-		
-		//---
-		TableColumn minusColumn=table.getColumnModel().getColumn(1);
-//		plusColumn.setPreferredWidth(30);
-//		minusColumn.setMinWidth(30);
-//		minusColumn.setMaxWidth(30);
-		minusColumn.setCellEditor(new TableCellEditor(){
-		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int col)
-			{return getTableMinusButton(row);}
-		public void addCellEditorListener(CellEditorListener arg0){}
-		public void cancelCellEditing(){}
-		public Object getCellEditorValue(){return null;}
-		public boolean isCellEditable(EventObject arg0){return true;}
-		public void removeCellEditorListener(CellEditorListener arg0){}
-		public boolean shouldSelectCell(EventObject arg0){return false;}
-		public boolean stopCellEditing(){return true;}
-		});
-		minusColumn.setCellRenderer(new TableCellRenderer(){
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col)
-			{return getTableMinusButton(row);}
-		});
-		
-		table.getColumnModel().getColumn(2).setPreferredWidth(10);
-		table.doLayout();
-		System.out.println(""+table.getPreferredSize()+" "+table.getMinimumSize()+" "+table.getMaximumSize());
-		
+
 		bHelp.addActionListener(this);
 		bToTrash.addActionListener(this);
 		bNewTag.addActionListener(this);
 		searchField.addActionListener(this);
-		tagList.addListSelectionListener(this);
+		//tagList.addListSelectionListener(this);
+		taglist.addTagListListener(this);
 		
 		JPanel listBottom=new JPanel(new GridLayout(3,1));
 		listBottom.add(bNewTag);
@@ -181,6 +96,7 @@ public class ImservClientPane extends JPanel implements ActionListener, ListSele
 
 		
 		setConnection(conn);
+		tagListSelect();
 		timer.start();
 		}
 	
@@ -201,8 +117,8 @@ public class ImservClientPane extends JPanel implements ActionListener, ListSele
 		{
 		try
 			{
-			final ArrayList<Object> list=new ArrayList<Object>();
-			list.add(ListDescItem.makeMatchAll());
+			final ArrayList<ListDescItem> list=new ArrayList<ListDescItem>();
+			list.add(theStar);
 			if(conn!=null)
 				{
 				for(String s:conn.imserv.getTags())
@@ -212,14 +128,7 @@ public class ImservClientPane extends JPanel implements ActionListener, ListSele
 				for(String s:conn.imserv.getChannels())
 					list.add(ListDescItem.makeChan(s));
 				}
-			
-			ListModel lm=new ListModel(){
-				public void addListDataListener(ListDataListener l){}
-				public void removeListDataListener(ListDataListener l){}
-				public Object getElementAt(int index){return list.get(index);}
-				public int getSize(){return list.size();}
-			};
-			tagList.setModel(lm);
+			taglist.setList(list);
 			}
 		catch (Exception e)
 			{
@@ -291,27 +200,47 @@ public class ImservClientPane extends JPanel implements ActionListener, ListSele
 	 */
 	public void valueChanged(ListSelectionEvent e)
 		{
+		
+		}
+	
+	
+	
+	
+	
+	
+	public void tagListAddRemove(ListDescItem item, boolean toAdd)
+		{
+		if(item.type==ListDescItem.TAG)
+			setTag(item.name,toAdd);
+		}
+
+
+	public void tagListSelect()
+		{
 		StringBuffer crit=new StringBuffer();
-		Object[] sels=tagList.getSelectedValues();
-		for(Object sel:sels)
+		ListDescItem[] sels=taglist.getSelectedValues();
+		
+		boolean trashSelected=false;
+		for(ListDescItem item:sels)
+			if(item.type==ListDescItem.TAG && item.name.equals("trash"))
+				trashSelected=true;
+		if(!trashSelected)
+			crit.append("not tag:trash");
+		
+		for(ListDescItem item:sels)
 			{
-			ListDescItem item=(ListDescItem)sel;
 			if(crit.length()!=0)
 				crit.append(" and ");
 			crit.append(item.toString());
 			}
-		if(sels.length==0)
-			crit.append("*");
 		searchField.setText(crit.toString());
 		pane.setFilter(crit.toString());
 		updateCount();
 		try{lastUpdate=conn.imserv.getLastUpdate();}
 		catch (Exception e1){}
 		}
-	
-	
-	
-	
+
+
 	private void updateCount()
 		{
 		status.setText(""+pane.obList.size());

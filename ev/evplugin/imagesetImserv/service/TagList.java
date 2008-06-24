@@ -8,11 +8,16 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.WeakHashMap;
 
 import javax.swing.JPanel;
+
+
+//TODO: not shift on mac
 
 /**
  * Tag list panel
@@ -42,14 +47,20 @@ public class TagList extends JPanel implements MouseListener
 		fonta=fm.getAscent();
 		csize=(fonth/2-2)*2;
 		totc=csize*2+8;
+		addMouseListener(this);
 		}
 
-
-	public void setList()
+	
+	public ListDescItem[] getSelectedValues()
 		{
-		//TODO
-		
-		//Eliminate selected ones that no longer exist
+		return selected.toArray(new ListDescItem[]{});
+		}
+
+	public void setList(Collection<ListDescItem> c)
+		{
+		tags.clear();
+		tags.addAll(c);
+		//Eliminate selected ones that no longer exist TODO
 		repaint();
 		}
 	
@@ -106,6 +117,35 @@ public class TagList extends JPanel implements MouseListener
 
 	public void mouseClicked(MouseEvent e)
 		{
+		int i=e.getY()/fonth;
+		if(e.getX()<csize+3)
+			{
+			if(i<tags.size())
+				{
+				ListDescItem item=tags.get(i);
+				for(TagListListener l:listeners.keySet())
+					l.tagListAddRemove(item, true);
+				}
+			}
+		else if(e.getX()<csize*2+6)
+			{
+			if(i<tags.size())
+				{
+				ListDescItem item=tags.get(i);
+				for(TagListListener l:listeners.keySet())
+					l.tagListAddRemove(item, false);
+				}
+			}
+		else
+			{
+			if((e.getModifiersEx()&MouseEvent.SHIFT_DOWN_MASK)==0)
+				selected.clear();
+			if(i<tags.size())
+				selected.add(tags.get(i));
+			for(TagListListener l:listeners.keySet())
+				l.tagListSelect();
+			repaint();
+			}
 		}
 
 
@@ -114,5 +154,19 @@ public class TagList extends JPanel implements MouseListener
 	public void mousePressed(MouseEvent e){}
 	public void mouseReleased(MouseEvent e){}
 	
+	private WeakHashMap<TagListListener, Object> listeners=new WeakHashMap<TagListListener, Object>();
+	
+	public void addTagListListener(TagListListener listener)
+		{
+		listeners.put(listener,null);
+		}
+	//or change?
+	
+	
+	public static interface TagListListener
+		{
+		public void tagListSelect();
+		public void tagListAddRemove(ListDescItem item, boolean toAdd);
+		}
 	
 	}

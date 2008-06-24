@@ -18,8 +18,8 @@ public class ListDescItem
 	public final static int TAG=1,CHAN=2,OBJ=3,ATTR=4,MATCHALL=5;
 	public final static int AND=10,OR=11,NOT=12;
 	
-	private int type;
-	private String name;
+	public int type;
+	public String name;
 	private String value;
 	private ListDescItem a,b;
 	
@@ -84,27 +84,6 @@ public class ListDescItem
 		}
 	
 	
-	/*
-	private ListDescItem(){}
-	public ListDescItem(int type, String name)
-		{
-		this.type=type;
-		this.name=name;
-		}
-	public ListDescItem(int type, String name, String value)
-		{
-		this.type=type;
-		this.name=name;
-		this.value=value;
-		}
-	public ListDescItem(int type, ListDescItem a, ListDescItem b)
-		{
-		this.type=type;
-		this.a=a;
-		this.b=b;
-		}
-	*/
-	
 	/**
 	 * Pretty-printer
 	 */
@@ -137,7 +116,11 @@ public class ListDescItem
 			return makeMatchAll();
 		try
 			{
-			return parseTop(sl);
+			ListDescItem item=parseTop(sl);
+			if(sl.isEmpty())
+				return item;
+			else
+				throw new Exception("Not consumed: "+restAsString(sl));
 			}
 		catch (Exception e)
 			{
@@ -149,39 +132,33 @@ public class ListDescItem
 
 	/**
 	 * Parser helper.
-	 * top = "not" top | atom [("and"|"or") top]
+	 * top = atom [("and"|"or") top]
 	 */
 	private static ListDescItem parseTop(LinkedList<Character> list) throws Exception
 		{
-		if(tryTake(list, "not "))
-			return makeNot(parseTop(list));
-		else
+		ListDescItem itemA=parseAtom(list);
+		if(tryTake(list, " and "))
 			{
-			ListDescItem itemA=parseAtom(list);
-			if(tryTake(list, " and "))
-				{
-				ListDescItem itemB=parseTop(list);
-				return makeAnd(itemA,itemB);
-				}
-			else if(tryTake(list, " or "))
-				{
-				ListDescItem itemB=parseTop(list);
-				return makeOr(itemA,itemB);
-				}
-			if(list.isEmpty())
-				return itemA;
-			else
-				throw new Exception("Not consumed: "+restAsString(list));
+			ListDescItem itemB=parseTop(list);
+			return makeAnd(itemA,itemB);
 			}
+		else if(tryTake(list, " or "))
+			{
+			ListDescItem itemB=parseTop(list);
+			return makeOr(itemA,itemB);
+			}
+		return itemA;
 		}
 
 	/**
 	 * Parser helper.
-	 * atom = "tag:" s | "chan:" s | "obj:" s | "attr:" s "=" s | "(" top ")" 
+	 * atom = "not" atom | "tag:" s | "chan:" s | "obj:" s | "attr:" s "=" s | "(" top ")" 
 	 */
 	private static ListDescItem parseAtom(LinkedList<Character> list) throws Exception
 		{
-		if(tryTake(list, "tag:"))
+		if(tryTake(list, "not "))
+			return makeNot(parseAtom(list));
+		else if(tryTake(list, "tag:"))
 			return makeTag(takeString(list));
 		else if(tryTake(list, "chan:"))
 			return makeChan(takeString(list));
@@ -331,15 +308,15 @@ public class ListDescItem
 		*/
 	
 	
-/*	
+	
 	public static void main(String[] arg)
 		{
 //		System.out.println(parse("tag:foo"));
-		System.out.println(parse("tag:foo and tag:bar or not chan:el"));
+		System.out.println(parse("not tag:trash and *"));
 		
 		
 		}
-	*/
+	
 	
 	
 	}
