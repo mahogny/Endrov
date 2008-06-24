@@ -28,6 +28,7 @@ mv $name.zip release
 
 #linecount
 wc -l $name/*.java $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java  $name/*/*/*/*.glsl
+du -hc -d 2 $name
 
 #delete
 rm -Rf $name

@@ -66,6 +66,7 @@ public class Daemon extends Thread
 		}
 	
 	
+	
 	/**
 	 * Thread: run continuously
 	 */
@@ -98,6 +99,8 @@ public class Daemon extends Thread
 			{
 			
 			//conc mod exception?
+
+			
 			
 			for(RepositoryDir rep:reps)
 				if(rep.dir.exists())
@@ -106,7 +109,10 @@ public class Daemon extends Thread
 					HashSet<String> incoming=new HashSet<String>();
 					for(File file:rep.dir.listFiles())
 						if(!file.getName().startsWith("."))
-							incoming.add(file.getName());
+							{
+							if(file.isDirectory() || file.getName().endsWith(".ostxml"))
+								incoming.add(file.getName());
+							}
 					
 					HashSet<String> toAdd=new HashSet<String>(incoming);
 					toAdd.removeAll(rep.data.keySet());
@@ -114,12 +120,15 @@ public class Daemon extends Thread
 					HashSet<String> toRemove=new HashSet<String>(rep.data.keySet());
 					toRemove.removeAll(incoming);
 					
+					//Add newfound entries
 					for(String name:toAdd)
 						{
 						try
 							{
-							DataImpl data=new DataImpl(name,new File(rep.dir,name));
+							DataImpl data=new DataImpl(this,name,new File(rep.dir,name));
 							addData(rep,data);
+							for(DaemonListener list:listeners)
+								list.log("Found new dataset: "+data.getName());
 							}
 						catch (Exception e)
 							{
@@ -128,13 +137,18 @@ public class Daemon extends Thread
 							}
 						}
 					
+					//Remove lost entries
 					for(String name:toRemove)
-						removeData(rep, rep.data.get(name));
+						{
+						DataImpl data=rep.data.get(name);
+						removeData(rep, data);
+						for(DaemonListener list:listeners)
+							list.log("Removed dataset: "+data.getName());
+						}
 					
 					if(!toAdd.isEmpty() || !toRemove.isEmpty())
 						{
 						setLastUpdate();
-						System.out.println("update");
 						for(DaemonListener list:listeners)
 							list.repListUpdated();
 						}
@@ -152,7 +166,7 @@ public class Daemon extends Thread
 	/**
 	 * Set last updated time to now
 	 */
-	private void setLastUpdate()
+	public void setLastUpdate()
 		{
 		lastUpdate=new Date();
 		}
@@ -169,9 +183,6 @@ public class Daemon extends Thread
 			getMapCreate(s, tags).add(data);
 		for(String s:data.objs)
 			getMapCreate(s, objs).add(data);
-		
-		for(DaemonListener list:listeners)
-			list.log("Found new object: "+data.getName());
 		}
 	
 	private synchronized void removeData(RepositoryDir rep, DataImpl data)
@@ -186,7 +197,7 @@ public class Daemon extends Thread
 		}
 	
 	
-	private Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
+	public Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
 		{
 		Set<DataIF> set=map.get(key);
 		if(set==null)

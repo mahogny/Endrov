@@ -140,7 +140,14 @@ public class OstImageset extends Imageset
 	 */
 	public void saveMeta()
 		{
-		saveMeta(new File(basedir,"rmd.ostxml"));
+		try
+			{
+			saveMeta(new File(basedir,"rmd.ostxml"));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 //		saveMeta(new File(basedir,"rmd.xml"));
 		saveImages();
 		
@@ -320,7 +327,7 @@ public class OstImageset extends Imageset
 			//Load metadata
 			try
 				{
-				loadImagesetXmlMetadata(new FileInputStream(metaFile.getParent()));
+				loadImagesetXmlMetadata(new FileInputStream(metaFile));
 				}
 			catch (FileNotFoundException e)
 				{

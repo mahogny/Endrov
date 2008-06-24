@@ -17,11 +17,10 @@ public interface ImservIF extends Remote
   public String[] getDataKeys() throws Exception;
   
   public DataIF getData(String name) throws Exception;
-  //ImagesetIF getImageset(String name)
   
   public Map<String,DataIF> getDataMap() throws Exception;
   
-  public void setTag(String[] obs, String tag, boolean enable) throws Exception;
+//  public void setTag(String[] obs, String tag, boolean enable) throws Exception;
   
   //To be able to present a list of tags etc, need a list to choose from
   public String[] getTags() throws Exception;

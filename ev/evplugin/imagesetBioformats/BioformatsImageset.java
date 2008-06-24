@@ -84,8 +84,14 @@ public class BioformatsImageset extends Imageset
 	
 	public void saveMeta()
 		{
-		saveMeta(getMetaFile());
-		setMetadataModified(false);
+		try
+			{
+			saveMeta(getMetaFile());
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 		}
 	
 	

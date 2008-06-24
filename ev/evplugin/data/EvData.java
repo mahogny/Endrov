@@ -507,7 +507,7 @@ public abstract class EvData
 			writer.close();
 			
 			//This is for the backup utility; "touch" all directories below
-			touchRecursive(file, System.currentTimeMillis());
+			//touchRecursive(file, System.currentTimeMillis());
 			} 
 		catch (java.io.IOException e) 
 			{

@@ -28,9 +28,6 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	public DataIF getData(String name) throws Exception 
 		{
 		return daemon.getData(name);
-		
-		
-//		return new DataIF(name);
 		}
 	
 	public ClientSessionIF auth(String user, String pass) throws Exception
@@ -57,8 +54,6 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	
 	public String[] getDataKeys() throws Exception
 		{
-		//Map<String,DataIF>	
-	//	Map<String,DataIF> map=new HashMap<String, DataIF>();
 		return daemon.getAllDataMap().keySet().toArray(new String[]{});
 		}
 	
@@ -85,11 +80,6 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	  return daemon.lastUpdate;
 	  }
   
-  
-  public void setTag(String[] obs, String tag, boolean enable) throws Exception
-  {
-  
-  }
 
 	}
 	

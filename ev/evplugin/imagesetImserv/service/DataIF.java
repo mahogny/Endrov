@@ -27,6 +27,9 @@ public interface DataIF extends Remote
 	public void putImage(String channel, int frame, int z, ImageTransfer data) throws Exception;
 	//it is up to server to recalculate imagelist after put. easiest way, delete cache.
 	
+	public void setTag(String tag, boolean enable) throws Exception;
+
+	
 	public static class ImageTransfer implements Serializable
 		{
 		static final long serialVersionUID=0;

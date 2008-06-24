@@ -69,6 +69,20 @@ public class ImservImageset extends Imageset
 	 */
 	public void saveMeta()
 		{
+		try
+			{
+			ByteArrayOutputStream os=new ByteArrayOutputStream();
+			saveMeta(os);
+			DataIF.CompressibleDataTransfer trans=new DataIF.CompressibleDataTransfer();
+			trans.compression=DataIF.CompressibleDataTransfer.NONE;
+			trans.data=os.toByteArray();
+			data.setRMD(trans);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		
 		}
 	
 	public RecentReference getRecentEntry()
@@ -155,10 +169,13 @@ public class ImservImageset extends Imageset
 			{
 			System.out.println("building imageset");
 			DataIF.CompressibleDataTransfer ilist=data.getImageList();
-			loadDatabaseCache(ilist.data);
-			
+			if(ilist!=null)
+				loadDatabaseCache(ilist.data);
+
+//			long time=System.currentTimeMillis();
 			//Set metadata
 			loadImagesetXmlMetadata(new ByteArrayInputStream(data.getRMD().data));
+//			System.out.println(""+(System.currentTimeMillis()-time));
 			}
 		catch (Exception e)
 			{
