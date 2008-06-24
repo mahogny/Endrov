@@ -2,6 +2,7 @@ package evplugin.imagesetImserv.service;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			{
 			
 			XMLReader xr = XMLReaderFactory.createXMLReader();
-			MySAXApp handler = new MySAXApp();
+			PartialRMDreader handler = new PartialRMDreader();
 			xr.setContentHandler(handler);
 
 			if(rmd.exists())
@@ -133,7 +134,13 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 		}
 	public CompressibleDataTransfer getRMD() throws Exception
 		{
-		File rmdFile=new File(file,"rmd.ostxml");
+		File rmdFile;
+		if(isOST3())
+			rmdFile=new File(file,"rmd.ostxml");
+		else if(isOSTXML())
+			rmdFile=file;
+		else
+			return null;
 		if(rmdFile.exists())
 			return getUncompressed(rmdFile);
 		else
@@ -176,25 +183,41 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	
 	
 	
+	public void setRMD(CompressibleDataTransfer data) throws Exception
+		{
+		File rmdFile;
+		if(isOST3())
+			rmdFile=new File(file,"rmd.ostxml");
+		else if(isOSTXML())
+			rmdFile=file;
+		else
+			return;
+
+//		if(data.compression==CompressibleDataTransfer.NONE)
+		FileOutputStream fo=new FileOutputStream(rmdFile);
+		fo.write(data.data);
+		fo.close();
+		}
+	
+	public void putImage(String channel, int frame, int z, ImageTransfer data) throws Exception
+		{
+		
+		}
+	
+	
+	
 	
 	/**
 	 * Simplified XML reader.
 	 * The point is that only a small subset of the data is needed and we want reading to be lightning fast.
 	 * Hence a SAX reader is used to skip the tree building step, and filter out everything uninteresting.
-	 * 
 	 */
-	public class MySAXApp extends DefaultHandler
+	public class PartialRMDreader extends DefaultHandler
 		{
 		int level=0;
 		boolean inImserv=false;
 		
-		public MySAXApp ()
-			{
-			super();
-
-
-			}
-
+		public PartialRMDreader(){super();}
 
 		public void startElement (String uri, String name,
 				String qName, Attributes atts)
@@ -202,8 +225,6 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			level++;
 			if(inImserv && name.equals("tag"))
 				tags.add(atts.getValue(atts.getIndex("name")));
-			
-			
 			if(level==2)
 				{
 				System.out.println(name);
@@ -217,10 +238,8 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			{
 			if(level==2)
 				inImserv=false;
-			
 			level--;
 			}
-
 		}
 
 	

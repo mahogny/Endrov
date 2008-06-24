@@ -19,10 +19,13 @@ public interface DataIF extends Remote
 	public byte[] getThumb() throws Exception;
 	
 	public CompressibleDataTransfer getImageList() throws Exception;
+	
 	public CompressibleDataTransfer getRMD() throws Exception;
+	public void setRMD(CompressibleDataTransfer data) throws Exception;
 	
 	public ImageTransfer getImage(String channel, int frame, int z) throws Exception;
-	
+	public void putImage(String channel, int frame, int z, ImageTransfer data) throws Exception;
+	//it is up to server to recalculate imagelist after put. easiest way, delete cache.
 	
 	public static class ImageTransfer implements Serializable
 		{
