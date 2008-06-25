@@ -79,7 +79,7 @@ public class CollectImages
 		Vector<Imageset> worms=new Vector<Imageset>();
 		for(String s:wnlist)
 			{
-			Imageset ost=new OstImageset(s);
+			Imageset ost=new OstImageset(new File(s));
 			if(getLin(ost)!=null)
 				worms.add(ost);
 			}

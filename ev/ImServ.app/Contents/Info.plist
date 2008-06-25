@@ -11,9 +11,9 @@
 	<key>CFBundleExecutable</key>
 	<string>JavaApplicationStub</string>
 	<key>CFBundleGetInfoString</key>
-	<string>http://celegans.sh.se</string>
+	<string>http://www.endrov.net</string>
 	<key>CFBundleIconFile</key>
-	<string>umicon.icns</string>
+	<string>ricardo.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -31,7 +31,7 @@
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
-		<string>OSTdaemon.GUI</string>
+		<string>evplugin.imagesetImserv.service.GUI</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.awt.Antialiasing</key>

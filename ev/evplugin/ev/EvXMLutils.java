@@ -15,9 +15,9 @@ public class EvXMLutils
 
 	public static Document readXML(File filename) throws Exception
 		{
-		FileInputStream fileInputStream = new FileInputStream(filename);
+//		FileInputStream fileInputStream = new FileInputStream(filename);
 		SAXBuilder saxBuilder = new SAXBuilder();
-		Document document = saxBuilder.build(fileInputStream);
+		Document document = saxBuilder.build(filename);
 		return document;
 		}
 

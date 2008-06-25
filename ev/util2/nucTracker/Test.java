@@ -47,7 +47,7 @@ public class Test
 		Vector<Imageset> worms=new Vector<Imageset>();
 		for(String s:wnlist)
 			{
-			Imageset ost=new OstImageset(s);
+			Imageset ost=new OstImageset(new File(s));
 			if(getLin(ost)!=null)
 				worms.add(ost);
 			}
@@ -78,7 +78,7 @@ public class Test
 		//For all imagesets
 		for(Imageset ost:worms)
 			{
-			NucLineage lin=getLin(ost);
+//			NucLineage lin=getLin(ost);
 
 			for(int frame:ost.getChannel(channelName).imageLoader.keySet())
 				{

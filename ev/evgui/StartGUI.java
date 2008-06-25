@@ -111,7 +111,7 @@ public class StartGUI
 				else
 					cmdarg.add("evgui.MW");
 
-
+				//Output jar-list for mac starter bundles
 				if(args.length>0 && args[args.length-1].equals("-macstarter"))
 					{
 					StringTokenizer t=new StringTokenizer(jarstring,":");
@@ -126,6 +126,7 @@ public class StartGUI
 						tot=tot+"$APP_PACKAGE/../"+s.substring(dotlen);
 						}
 					System.out.println(tot);
+					System.exit(0);
 					}
 
 				//Run process

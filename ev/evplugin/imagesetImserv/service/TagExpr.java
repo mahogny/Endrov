@@ -13,76 +13,96 @@ import java.util.Set;
  * 
  * @author Johan Henriksson
  */
-public class ListDescItem
+public class TagExpr
 	{
-	public final static int TAG=1,CHAN=2,OBJ=3,ATTR=4,MATCHALL=5;
+	public final static int TAG=1,CHAN=2,OBJ=3,ATTR=4,MATCHALL=5,MATCHNONE=6;
 	public final static int AND=10,OR=11,NOT=12;
 	
 	public int type;
 	public String name;
-	private String value;
-	private ListDescItem a,b;
+//	private String value;
+	private TagExpr a,b;
 	
 	
-	public static ListDescItem makeTag(String s)
+	
+	
+	public static TagExpr makeTag(String s)
 		{
-		ListDescItem item=new ListDescItem();
+		TagExpr item=new TagExpr();
 		item.type=TAG;
 		item.name=s;
 		return item;
 		}
-	public static ListDescItem makeChan(String s)
+	public static TagExpr makeChan(String s)
 		{
-		ListDescItem item=new ListDescItem();
+		TagExpr item=new TagExpr();
 		item.type=CHAN;
 		item.name=s;
 		return item;
 		}
-	public static ListDescItem makeObj(String s)
+	public static TagExpr makeObj(String s)
 		{
-		ListDescItem item=new ListDescItem();
+		TagExpr item=new TagExpr();
 		item.type=OBJ;
 		item.name=s;
 		return item;
 		}
-	public static ListDescItem makeAttr(String name,String value)
+/*	public static ListDescItem makeAttr(String name,String value)
 		{
 		ListDescItem item=new ListDescItem();
 		item.type=ATTR;
 		item.name=name;
 		item.value=value;
 		return item;
-		}
-	public static ListDescItem makeMatchAll()
+		}*/
+	public static TagExpr makeMatchAll()
 		{
-		ListDescItem item=new ListDescItem();
+		TagExpr item=new TagExpr();
 		item.type=MATCHALL;
 		return item;
 		}
-	public static ListDescItem makeNot(ListDescItem a)
+	public static TagExpr makeMatchNone()
 		{
-		ListDescItem item=new ListDescItem();
+		TagExpr item=new TagExpr();
+		item.type=MATCHNONE;
+		return item;
+		}
+	public static TagExpr makeNot(TagExpr a)
+		{
+		TagExpr item=new TagExpr();
 		item.type=NOT;
 		item.a=a;
 		return item;
 		}
-	public static ListDescItem makeOr(ListDescItem a,ListDescItem b)
+	public static TagExpr makeOr(TagExpr a,TagExpr b)
 		{
-		ListDescItem item=new ListDescItem();
+		TagExpr item=new TagExpr();
 		item.type=OR;
 		item.a=a;
 		item.b=b;
 		return item;
 		}
-	public static ListDescItem makeAnd(ListDescItem a,ListDescItem b)
+	public static TagExpr makeAnd(TagExpr a,TagExpr b)
 		{
-		ListDescItem item=new ListDescItem();
+		TagExpr item=new TagExpr();
 		item.type=AND;
 		item.a=a;
 		item.b=b;
 		return item;
 		}
 	
+
+	private String escapeString(String s)
+		{
+		return '"'+s+'"';
+		}
+	private String escapeStringIfNeeded(String s)
+		{
+		if(s.indexOf(' ')==-1)
+			return s;
+		else
+			return escapeString(s);
+		}
 	
 	/**
 	 * Pretty-printer
@@ -92,10 +112,11 @@ public class ListDescItem
 		switch(type)
 			{
 			case MATCHALL: return "*";
-			case TAG: return "tag:"+name;
-			case CHAN: return "chan:"+name;
-			case OBJ: return "obj:"+name;
-			case ATTR: return "attr:"+name+"="+value;
+			case MATCHNONE: return "!";
+			case TAG: return "tag:"+escapeStringIfNeeded(name);
+			case CHAN: return "chan:"+escapeStringIfNeeded(name);
+			case OBJ: return "obj:"+escapeStringIfNeeded(name);
+			//case ATTR: return "attr:"+name+"="+value;
 			case AND: return "("+a.toString()+") and ("+b.toString()+")";
 			case OR: return "("+a.toString()+") or ("+b.toString()+")";
 			case NOT: return "not ("+a.toString()+")";
@@ -107,7 +128,7 @@ public class ListDescItem
 	 * 
 	 * Packrat parser, syntax:
 	 */
-	public static ListDescItem parse(String s)
+	public static TagExpr parse(String s)
 		{
 		LinkedList<Character> sl=new LinkedList<Character>();
 		for(char c:s.toCharArray())
@@ -116,7 +137,7 @@ public class ListDescItem
 			return makeMatchAll();
 		try
 			{
-			ListDescItem item=parseTop(sl);
+			TagExpr item=parseTop(sl);
 			if(sl.isEmpty())
 				return item;
 			else
@@ -134,17 +155,17 @@ public class ListDescItem
 	 * Parser helper.
 	 * top = atom [("and"|"or") top]
 	 */
-	private static ListDescItem parseTop(LinkedList<Character> list) throws Exception
+	private static TagExpr parseTop(LinkedList<Character> list) throws Exception
 		{
-		ListDescItem itemA=parseAtom(list);
+		TagExpr itemA=parseAtom(list);
 		if(tryTake(list, " and "))
 			{
-			ListDescItem itemB=parseTop(list);
+			TagExpr itemB=parseTop(list);
 			return makeAnd(itemA,itemB);
 			}
 		else if(tryTake(list, " or "))
 			{
-			ListDescItem itemB=parseTop(list);
+			TagExpr itemB=parseTop(list);
 			return makeOr(itemA,itemB);
 			}
 		return itemA;
@@ -154,7 +175,7 @@ public class ListDescItem
 	 * Parser helper.
 	 * atom = "not" atom | "tag:" s | "chan:" s | "obj:" s | "attr:" s "=" s | "(" top ")" 
 	 */
-	private static ListDescItem parseAtom(LinkedList<Character> list) throws Exception
+	private static TagExpr parseAtom(LinkedList<Character> list) throws Exception
 		{
 		if(tryTake(list, "not "))
 			return makeNot(parseAtom(list));
@@ -166,17 +187,19 @@ public class ListDescItem
 			return makeObj(takeString(list));
 		else if(tryTake(list, "*"))
 			return makeMatchAll();
-		else if(tryTake(list, "attr:"))
+		else if(tryTake(list, "!"))
+			return makeMatchNone();
+		/*else if(tryTake(list, "attr:"))
 			{
 			String s=takeString(list);
 			int i=s.indexOf('=');
 			if(i==-1)
 				throw new Exception("Attr without =: "+s);
 			return makeAttr(s.substring(0,i),s.substring(i+1));
-			}
+			}*/
 		else if(tryTake(list, "("))
 			{
-			ListDescItem item=parseTop(list);
+			TagExpr item=parseTop(list);
 			if(tryTake(list, ")"))
 				return item;
 			else
@@ -208,12 +231,26 @@ public class ListDescItem
 			Character c=list.poll();
 			if(c==null)
 				break;
+			else if(c=='"')
+				{
+				//Until next "
+				for(;;)
+					{
+					c=list.poll();
+					if(c==null)
+						break;
+					else if(c=='"')
+						break;
+					bf.append(c);
+					}
+				}
 			else if(c==')' || c==' ')
 				{
 				list.addFirst(c);
 				break;
 				}
-			bf.append(c);
+			else
+				bf.append(c);
 			}
 		return bf.toString();
 		}
@@ -249,7 +286,11 @@ public class ListDescItem
 	 */
 	public void filter(Daemon daemon, Map<String,DataIF> map)
 		{
-		if(type==TAG)
+		if(type==MATCHALL)
+			;
+		else if(type==MATCHNONE)
+			map.clear();
+		else if(type==TAG)
 			{
 			Set<DataIF> datas=daemon.tags.get(name);
 			if(datas==null)

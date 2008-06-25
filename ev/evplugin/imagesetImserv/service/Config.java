@@ -1,7 +1,6 @@
 package evplugin.imagesetImserv.service;
 
 import java.io.File;
-import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -11,7 +10,6 @@ import evplugin.ev.EvXMLutils;
 /**
  * Handle config file for ImServ
  * @author Johan Henriksson
- *
  */
 public class Config
 	{
@@ -36,24 +34,13 @@ public class Config
 					String filename=e.getAttributeValue("dir");
 					daemon.addRepository(new File(filename));
 					}
-				else if(e.getName().equals("login"))
+				else if(e.getName().equals("auth"))
 					{
-					Daemon.User u=daemon.addUser(e.getAttributeValue("user"));
-					
-					String passwd=e.getAttributeValue("pass");
-					if(passwd==null)
-						passwd=e.getAttributeValue("epass");
-					else
-						passwd=HashPassword.SHA1(passwd);
-					if(passwd==null)
-						u.passwd="";
-					else
-						u.passwd=passwd;
+					Class<?> autho=Class.forName(e.getAttributeValue("class"));
+					daemon.auth=(Auth)autho.newInstance();
+					daemon.auth.readConfig(e);
 					}
 				}
-			
-			
-			
 			}
 		catch (Exception e)
 			{
@@ -78,15 +65,11 @@ public class Config
 				e.setAttribute("dir", rep.dir.toString());
 				root.addContent(e);
 				}
-			
-			for(Map.Entry<String, Daemon.User> u:daemon.users.entrySet())
-				{
-				Element e=new Element("login");
-				e.setAttribute("user", u.getKey());
-				e.setAttribute("epass", u.getValue().passwd);
-				root.addContent(e);
-				}
-			
+
+			Element authe=new Element("auth");
+			authe.setAttribute("class", daemon.auth.getClass().getCanonicalName());
+			daemon.auth.writeConfig(authe);
+			root.addContent(authe);
 			
 			EvXMLutils.writeXmlData(doc, configfile);
 			}

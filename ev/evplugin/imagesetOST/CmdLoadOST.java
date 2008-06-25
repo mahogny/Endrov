@@ -1,4 +1,5 @@
 package evplugin.imagesetOST;
+import java.io.File;
 import java.util.*;
 
 import evplugin.basicWindow.*;
@@ -20,7 +21,7 @@ public class CmdLoadOST extends Command
 			{
 			ExpVal v=(ExpVal)e;
 
-			Imageset rec=new OstImageset(v.stringValue());
+			Imageset rec=new OstImageset(new File(v.stringValue()));
 			EvData.metadata.add(rec);
 			
 			BasicWindow.updateWindows();

@@ -44,7 +44,7 @@ public class OstImageset extends Imageset
 				}
 			public EvData load(File file) throws Exception
 				{
-				return new OstImageset(file.getAbsolutePath());
+				return new OstImageset(file);
 				}
 		});
 		
@@ -60,13 +60,13 @@ public class OstImageset extends Imageset
 
 	
 	/** Path to imageset */
-	public String basedir;
+	public File basedir;
 
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
 	 * @param basedir
 	 */
-	public OstImageset(String basedir)
+	public OstImageset(File basedir)
 		{
 		this.basedir=basedir;
 		convert23();
@@ -78,7 +78,7 @@ public class OstImageset extends Imageset
 	 */
 	public void convert23()
 		{
-		String ostname=new File(basedir).getName();
+		String ostname=basedir.getName();
 		if(ostname.endsWith(".ost"))
 			ostname=ostname.substring(0,ostname.length()-".ost".length());
 		File rmdfile=new File(basedir,"rmd.xml");
@@ -90,7 +90,7 @@ public class OstImageset extends Imageset
 			rmdfile.renameTo(new File(basedir,"rmd.ostxml"));
 			
 			//Rename channels
-			for(File child:new File(basedir).listFiles())
+			for(File child:basedir.listFiles())
 				{
 				String n=child.getName();
 				if(child.isDirectory() && n.startsWith(ostname))
@@ -311,7 +311,7 @@ public class OstImageset extends Imageset
 	 */
 	public void buildDatabase()
 		{
-		File basepath=new File(basedir);
+		File basepath=basedir;
 		File metaFile=new File(basepath,"rmd.ostxml");
 //		File metaFile=new File(basepath,"rmd.xml");
 		if(!metaFile.exists())
@@ -698,7 +698,7 @@ public class OstImageset extends Imageset
 	
 	public RecentReference getRecentEntry()
 		{
-		return new RecentReference(getMetadataName(), basedir);
+		return new RecentReference(getMetadataName(), basedir.getPath());
 		}
 	}
 

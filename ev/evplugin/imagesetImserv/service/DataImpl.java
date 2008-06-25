@@ -71,7 +71,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			xr.setContentHandler(handler);
 
 			if(rmd.exists())
-				xr.parse(new InputSource(new FileReader(rmd)));
+				xr.parse(new InputSource(new FileInputStream(rmd)));
 			}
 		
 		readImservFile();
@@ -118,7 +118,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			if(!imcacheFile.exists())
 				{
 				//Create
-				OstImageset rec=new OstImageset(file.getPath());
+				OstImageset rec=new OstImageset(file);
 				rec.loadDatabaseCache(); //This is an ugly hack. Constructor creates cachefile, but java might not wait for completion
 				}
 			if(imcacheFile.exists())
@@ -290,6 +290,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			daemon.getMapCreate(tag, daemon.tags).remove(this);
 			tags.remove(tag);
 			}
+		System.out.println(tag+" "+enable);
 		writeImservFile();
 		daemon.setLastUpdate();
 		}
@@ -309,7 +310,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			xr.setContentHandler(handler);
 			File f=getImservFile();
 			if(f.exists())
-				xr.parse(new InputSource(new FileReader(f)));
+				xr.parse(new InputSource(new FileInputStream(f)));
 			}
 		catch (Exception e)
 			{

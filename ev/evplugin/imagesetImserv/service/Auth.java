@@ -1,5 +1,7 @@
 package evplugin.imagesetImserv.service;
 
+import java.util.Map;
+
 import org.jdom.Element;
 
 
@@ -11,8 +13,10 @@ public interface Auth
 	{
 
 	public void readConfig(Element e); 
-	public Element writeConfig();
+	public void writeConfig(Element root);
 	
-	
-	
+	public void canRead(Daemon daemon, String user, Map<String,DataIF> map);
+	public void canWrite(Daemon daemon, String user, Map<String,DataIF> map);
+
+	public boolean canLogin(String user, String password);
 	}

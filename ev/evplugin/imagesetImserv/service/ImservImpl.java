@@ -41,7 +41,7 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	
 	public String[] getDataKeys(String filter) throws Exception
 		{
-		ListDescItem filter2=ListDescItem.parse(filter);
+		TagExpr filter2=TagExpr.parse(filter);
 		if(filter2!=null)
 			{
 			Map<String,DataIF> map=daemon.getAllDataMap();

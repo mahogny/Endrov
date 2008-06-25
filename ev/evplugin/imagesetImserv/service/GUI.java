@@ -25,7 +25,7 @@ import javax.swing.event.ListDataListener;
  * 
  * @author Johan Henriksson
  */
-public class GUI extends JFrame implements DaemonListener,ActionListener,WindowListener
+public class GUI extends JFrame implements Daemon.DaemonListener,ActionListener,WindowListener
 	{
 	static final long serialVersionUID=0;
 	Daemon daemon=new Daemon();
@@ -34,7 +34,7 @@ public class GUI extends JFrame implements DaemonListener,ActionListener,WindowL
 	private JButton bQuit=new JButton("Quit");
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	private JList repList=new JList();
-	private JList sessionList=new JList();
+	//private JList sessionList=new JList();
 	
 	private JButton bRepAdd=new JButton("Add");
 	private JButton bRepRemove=new JButton("Remove");
@@ -60,13 +60,10 @@ public class GUI extends JFrame implements DaemonListener,ActionListener,WindowL
 		repPanel.add(new JScrollPane(repList),BorderLayout.CENTER);
 		repPanel.add(repPanelButtons,BorderLayout.SOUTH);
 		
-		JPanel authPanel=new JPanel(new BorderLayout());
-
 		//Tabs
 		tabbedPane.addTab("Log", new JScrollPane(textLog));
 		tabbedPane.addTab("Repositories",repPanel);
-		tabbedPane.addTab("Users",authPanel);
-		tabbedPane.addTab("Sessions",sessionList);
+		//tabbedPane.addTab("Sessions",sessionList);
 
 		//Total layout
 		JPanel totalBP=new JPanel(new GridLayout(1,1));
@@ -123,7 +120,8 @@ public class GUI extends JFrame implements DaemonListener,ActionListener,WindowL
 	public void actionPerformed(ActionEvent e)
 		{
 		if(e.getSource()==bQuit)
-			System.exit(0);
+			dispose();
+//			System.exit(0);
 		else if(e.getSource()==bRepAdd)
 			{
 			JFileChooser fc=new JFileChooser();
@@ -215,7 +213,6 @@ public class GUI extends JFrame implements DaemonListener,ActionListener,WindowL
 	public void windowActivated(WindowEvent e){}
 	public void windowClosed(WindowEvent e)
 		{
-		System.out.println("here");
 		Config.saveConfig(daemon);
 		System.exit(0);
 		}
