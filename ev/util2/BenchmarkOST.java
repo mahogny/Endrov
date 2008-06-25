@@ -31,7 +31,7 @@ public class BenchmarkOST
 			for(File file:(new File(s)).listFiles())
 				if(file.isDirectory())
 					{
-					new OstImageset(file.getPath());
+					new OstImageset(file);
 					num++;
 					if(num==1)
 						{

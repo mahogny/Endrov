@@ -27,7 +27,7 @@ public static void calculation(File file, BufferedWriter omitted, BufferedWriter
 		{
 		//System.out.println("current Imageset "+file.getPath());
 		String currentpath = file.getPath();
-		OstImageset ost=new OstImageset(file.getPath());
+		OstImageset ost=new OstImageset(file);
 		String currentostname = ost.toString();
 
 		System.out.println("current imageset: "+currentpath);

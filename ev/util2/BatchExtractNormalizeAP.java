@@ -31,7 +31,7 @@ public static void calcAP(File file)
 			System.out.println("imageset found, executing...");
 
 			long currentTime=System.currentTimeMillis();
-			OstImageset ost=new OstImageset(file.getPath());
+			OstImageset ost=new OstImageset(file);
 
 			String currentostname = ost.toString();
 			System.out.println("current imageset: " + currentostname);

@@ -25,12 +25,12 @@ import javax.swing.JPanel;
  * @author Johan Henriksson
  *
  */
-public class TagList extends JPanel implements MouseListener
+public class TagListPane extends JPanel implements MouseListener
 	{
 	public static final long serialVersionUID=0;
 	
-	private Vector<ListDescItem> tags=new Vector<ListDescItem>();
-	public Set<ListDescItem> selected=new HashSet<ListDescItem>();
+	private Vector<TagExpr> tags=new Vector<TagExpr>();
+	public Set<TagExpr> selected=new HashSet<TagExpr>();
 	
 	private final Font font=Font.decode("Dialog PLAIN");
 	private final int fonth,fonta;
@@ -38,10 +38,8 @@ public class TagList extends JPanel implements MouseListener
 	private final int csize;
 	private final int totc;
 	
-	public TagList()
+	public TagListPane()
 		{
-		tags.add(ListDescItem.makeChan("foo"));
-		tags.add(ListDescItem.makeTag("bar"));
 		fm=new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB).getGraphics().getFontMetrics(font);
 		fonth=fm.getHeight();
 		fonta=fm.getAscent();
@@ -51,16 +49,17 @@ public class TagList extends JPanel implements MouseListener
 		}
 
 	
-	public ListDescItem[] getSelectedValues()
+	public TagExpr[] getSelectedValues()
 		{
-		return selected.toArray(new ListDescItem[]{});
+		return selected.toArray(new TagExpr[]{});
 		}
 
-	public void setList(Collection<ListDescItem> c)
+	public void setList(Collection<TagExpr> c)
 		{
 		tags.clear();
 		tags.addAll(c);
 		//Eliminate selected ones that no longer exist TODO
+		revalidate();
 		repaint();
 		}
 	
@@ -87,7 +86,7 @@ public class TagList extends JPanel implements MouseListener
 				g.fillRect(0, y, d.width, fonth);
 				}
 			
-			if(tags.get(i).type==ListDescItem.TAG)
+			if(tags.get(i).type==TagExpr.TAG)
 				{
 				g.setColor(Color.BLUE);
 				g.fillOval(cxa, cy, csize, csize);
@@ -107,24 +106,24 @@ public class TagList extends JPanel implements MouseListener
 	public Dimension getPreferredSize()
 		{
 		int w=0;
-		for(ListDescItem s:tags)
+		for(TagExpr s:tags)
 			{
 			int nw=fm.stringWidth(s.toString());
 			if(w<nw)
 				w=nw;
 			}
-		return new Dimension(w+totc,tags.size()*fonth);
+		return new Dimension(w+totc,tags.size()*(fonth+1));
 		}
 
 
 	public void mouseClicked(MouseEvent e)
 		{
-		int i=(e.getY()-2)/fonth;
+		int i=(e.getY())/(fonth+1);
 		if(e.getX()<csize+3)
 			{
 			if(i<tags.size())
 				{
-				ListDescItem item=tags.get(i);
+				TagExpr item=tags.get(i);
 				for(TagListListener l:listeners.keySet())
 					l.tagListAddRemove(item, true);
 				}
@@ -133,7 +132,7 @@ public class TagList extends JPanel implements MouseListener
 			{
 			if(i<tags.size())
 				{
-				ListDescItem item=tags.get(i);
+				TagExpr item=tags.get(i);
 				for(TagListListener l:listeners.keySet())
 					l.tagListAddRemove(item, false);
 				}
@@ -162,13 +161,11 @@ public class TagList extends JPanel implements MouseListener
 		{
 		listeners.put(listener,null);
 		}
-	//or change?
-	
 	
 	public static interface TagListListener
 		{
 		public void tagListSelect();
-		public void tagListAddRemove(ListDescItem item, boolean toAdd);
+		public void tagListAddRemove(TagExpr item, boolean toAdd);
 		}
 	
 	}

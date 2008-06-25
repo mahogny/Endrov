@@ -16,7 +16,7 @@ public class BatchOST
 		if(file.isDirectory() && !rmdFile.exists())
 			{
 			System.out.println("Converting imageset "+file.getPath());
-			OstImageset ost=new OstImageset(file.getPath());
+			OstImageset ost=new OstImageset(file);
 			ost.saveMeta();
 			}
 		}

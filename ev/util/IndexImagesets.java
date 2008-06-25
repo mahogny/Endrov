@@ -15,7 +15,7 @@ public class IndexImagesets
 		if(!(new File(file,"imagecache.txt")).exists())
 			{
 			System.out.println("Indexing imageset "+file.getPath());
-			new OstImageset(file.getPath());
+			new OstImageset(file);
 			}
 		}
 	

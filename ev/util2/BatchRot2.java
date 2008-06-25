@@ -36,7 +36,7 @@ public class BatchRot2
 		id.put("shellmid2", 2021);
 		
 		System.out.println("Imageset "+file.getPath());
-		OstImageset ost=new OstImageset(file.getPath());
+		OstImageset ost=new OstImageset(file);
 
 		for(NucLineage lin:ost.getObjects(NucLineage.class))
 				{

@@ -9,6 +9,8 @@ import java.util.*;
 
 //when refactoring, probably move most of this to imserv
 
+//conc mod: need a strategy, common synch object?
+
 /**
  * ImServ daemon
  * 
@@ -28,17 +30,7 @@ public class Daemon extends Thread
 	public Map<String,Set<DataIF>> tags=new TreeMap<String,Set<DataIF>>();
 	public Map<String,Set<DataIF>> objs=new TreeMap<String,Set<DataIF>>();
 	
-	public Map<String,User> users=new TreeMap<String,User>();
-	
-	public static class User
-		{
-		/** Encrypted password */
-		public String passwd;
-		
-		//permission here
-	
-		}
-
+	public Auth auth=null;
 
 	/**
 	 * One repository location
@@ -55,9 +47,19 @@ public class Daemon extends Thread
 		}
 
 	
+	public static interface DaemonListener
+		{
+		public void log(String s);
+		
+		public void repListUpdated();
+		
+		public void sessionListUpdated();
+		}
 
 	
-	public Map<String,DataIF> getAllDataMap()
+	
+	
+	public synchronized Map<String,DataIF> getAllDataMap()
 		{
 		Map<String,DataIF> map=new HashMap<String, DataIF>();
 		for(RepositoryDir rep:reps)
@@ -197,7 +199,7 @@ public class Daemon extends Thread
 		}
 	
 	
-	public Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
+	public synchronized Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
 		{
 		Set<DataIF> set=map.get(key);
 		if(set==null)
@@ -273,15 +275,6 @@ public class Daemon extends Thread
 			}
 		}
 	
-	/**
-	 * Add user
-	 */
-	public synchronized User addUser(String user)
-		{
-		User u=new User();
-		users.put(user, u);
-		return u;
-		}
-
+	
 	
 	}

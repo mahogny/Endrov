@@ -4,6 +4,7 @@ import evplugin.ev.EV;
 import evplugin.imageset.*;
 import evplugin.imagesetOST.OstImageset;
 
+import java.io.File;
 import java.util.*;
 
 public class StripXML
@@ -19,7 +20,7 @@ public class StripXML
 		EV.loadPlugins();
 
 		String filename="/Volumes/TBU_xeon01_500GB01/x";
-		OstImageset rec=new OstImageset(filename);
+		OstImageset rec=new OstImageset(new File(filename));
 		for(String chan:rec.meta.channelMeta.keySet())
 			{
 			ImagesetMeta.Channel m=rec.meta.channelMeta.get(chan);

@@ -15,6 +15,8 @@ import java.util.*;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import evplugin.data.EvData;
@@ -26,7 +28,7 @@ import evplugin.imagesetImserv.ImservImageset;
  * 
  * @author Johan Henriksson
  */
-public class DataIconPane extends JPanel
+public class DataIconPane extends JPanel implements Scrollable
 	{
 	public static final long serialVersionUID=0;
 	
@@ -42,6 +44,8 @@ public class DataIconPane extends JPanel
 	
 	private int iconw=100;
 	private int iconh=100;
+	private int riconw=80;
+	private int riconh=80;
 	private int shifty=5;
 	private String filter="";
 	
@@ -126,6 +130,7 @@ public class DataIconPane extends JPanel
 			int numcol=r.width/iconw;
 			int numrow=(int)Math.ceil(obList.size()/(double)numcol);
 			int height=numrow*iconh;
+			System.out.println("ret h "+height);
 			return new Dimension(scroll.getViewport().getWidth(),height);
 			}
 
@@ -148,8 +153,6 @@ public class DataIconPane extends JPanel
 					drawData(g, ar, ac, numcol*ar+ac);
 			}
 		
-		int riconw=80;
-		int riconh=80;
 		
 		private void drawData(Graphics g, int row, int col, int id)
 			{
@@ -291,6 +294,7 @@ public class DataIconPane extends JPanel
 					for(String k:keys)
 						obList.add(k);
 				}
+			revalidate();
 			repaint();
 			}
 		catch (Exception e)
@@ -298,5 +302,25 @@ public class DataIconPane extends JPanel
 			e.printStackTrace();
 			}
 		}
+
+
+	
+	
+	
+	////////// Scrollable
+	
+	public Dimension getPreferredScrollableViewportSize(){return getPreferredSize();}
+	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction)
+		{return getScrollableUnitIncrement(visibleRect, orientation, direction);}
+	public boolean getScrollableTracksViewportHeight(){return false;}
+	public boolean getScrollableTracksViewportWidth(){return true;}
+	public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction)
+		{
+		if(orientation==SwingConstants.VERTICAL)
+			return iconw;
+		else
+			return iconh;
+		}
+	
 	
 	}

@@ -2,6 +2,7 @@ package util2.integrateExpression;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class IntegrateExpression
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
-		Imageset ost=new OstImageset("/Volumes/TBU_xeon01_500GB01/ost4dgood/TB2141070621b/");
+		Imageset ost=new OstImageset(new File("/Volumes/TBU_xeon01_500GB01/ost4dgood/TB2141070621b/"));
 
 
 		String channelName="GFP";

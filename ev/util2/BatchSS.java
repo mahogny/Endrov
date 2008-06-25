@@ -23,7 +23,7 @@ public class BatchSS
 	public static void makeGraph(File file)
 		{
 		System.out.println("Imageset "+file.getPath());
-		OstImageset ost=new OstImageset(file.getPath());
+		OstImageset ost=new OstImageset(file);
 		double stripeVar=0.001;
 		String svar=""+stripeVar;
 		if(svar.startsWith("0."))

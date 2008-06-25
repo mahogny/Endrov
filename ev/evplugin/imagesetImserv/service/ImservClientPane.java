@@ -24,7 +24,7 @@ import javax.swing.event.*;
 import evplugin.ev.BrowserControl;
 import evplugin.ev.EV;
 import evplugin.ev.EvSwingTools;
-import evplugin.imagesetImserv.service.TagList.TagListListener;
+import evplugin.imagesetImserv.service.TagListPane.TagListListener;
 
 
 /**
@@ -39,7 +39,6 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	
 	public ImservConnection conn;
 	
-	//public JList tagList=new JList(new String[]{});
 	public DataIconPane pane;
 	public JTextField searchField=new JTextField();
 	public JButton bHelp=new JButton("Help");
@@ -49,10 +48,10 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	private Timer timer=new Timer(1000,this);
 	private Date lastUpdate=new Date();
 	
-	private TagList taglist=new TagList();
+	private TagListPane taglist=new TagListPane();
 
 	
-	ListDescItem theStar=ListDescItem.makeMatchAll();
+	TagExpr theStar=TagExpr.makeMatchAll();
 	
 	/**
 	 * Constructor
@@ -67,7 +66,6 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		bToTrash.addActionListener(this);
 		bNewTag.addActionListener(this);
 		searchField.addActionListener(this);
-		//tagList.addListSelectionListener(this);
 		taglist.addTagListListener(this);
 		
 		JPanel listBottom=new JPanel(new GridLayout(3,1));
@@ -79,15 +77,8 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		right.add(EvSwingTools.borderLR(status,searchField,null),BorderLayout.SOUTH);
 		right.add(pane,BorderLayout.CENTER);
 
-		//JPanel foo=new JPanel(new GridLayout(1,1));
-	//	foo.add(table);
-		
 		JPanel left=new JPanel(new BorderLayout());
-//		left.add(new JScrollPane(tagList,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
 		left.add(new JScrollPane(taglist,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
-//		left.add(new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
-//		left.add(new JScrollPane(foo,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
-//		left.add(table,BorderLayout.CENTER);
 		left.add(listBottom,BorderLayout.SOUTH);
 		
 		setLayout(new BorderLayout());
@@ -107,6 +98,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		pane.setConn(conn);
 		updateTagList();
 		updateCount();
+		revalidate();
 		}
 	
 	
@@ -117,18 +109,19 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		{
 		try
 			{
-			final ArrayList<ListDescItem> list=new ArrayList<ListDescItem>();
+			final ArrayList<TagExpr> list=new ArrayList<TagExpr>();
 			list.add(theStar);
 			if(conn!=null)
 				{
 				for(String s:conn.imserv.getTags())
-					list.add(ListDescItem.makeTag(s));
+					list.add(TagExpr.makeTag(s));
 				for(String s:conn.imserv.getObjects())
-					list.add(ListDescItem.makeObj(s));
+					list.add(TagExpr.makeObj(s));
 				for(String s:conn.imserv.getChannels())
-					list.add(ListDescItem.makeChan(s));
+					list.add(TagExpr.makeChan(s));
 				}
 			taglist.setList(list);
+			revalidate();
 			}
 		catch (Exception e)
 			{
@@ -147,11 +140,8 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 					{
 					DataIF data=conn.imserv.getData(s);
 					data.setTag(tag, enable);
+//					System.out.println("set tag");
 					}
-				
-//		  public void setTag(String[] obs, String tag, boolean enable) throws Exception;
-
-//				conn.imserv.setTag(pane.selectedId.toArray(new String[]{}), tag, enable);
 				}
 			catch (Exception e)
 				{
@@ -159,6 +149,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 				}
 			pane.update();
 			updateCount();
+			revalidate();
 			}
 		else
 			JOptionPane.showMessageDialog(this, "No datasets selected");
@@ -173,17 +164,22 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		if(e.getSource()==bHelp)
 			BrowserControl.displayURL(EV.website+"Organizing_with_ImServ");
 		else if(e.getSource()==searchField)
+			{
 			pane.setFilter(searchField.getText());
+			revalidate();
+			}
 		else if(e.getSource()==bNewTag)
 			{
 			String tag=JOptionPane.showInputDialog(this,"Enter new tag");
 			if(tag!=null)
 				setTag(tag,true);
+			revalidate();
 			}
 		else if(e.getSource()==bToTrash)
 			{
 			if(JOptionPane.showConfirmDialog(this,  "Do you really want to move the selected datasets to trash?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				setTag("trash",true);
+			revalidate();
 			}
 		else if(e.getSource()==timer)
 			{
@@ -196,6 +192,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 					updateTagList();
 					pane.update();
 					updateCount();
+					revalidate();
 					}
 				}
 			catch (Exception e1){}
@@ -216,9 +213,9 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	
 	
 	
-	public void tagListAddRemove(ListDescItem item, boolean toAdd)
+	public void tagListAddRemove(TagExpr item, boolean toAdd)
 		{
-		if(item.type==ListDescItem.TAG)
+		if(item.type==TagExpr.TAG)
 			setTag(item.name,toAdd);
 		}
 
@@ -226,16 +223,16 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	public void tagListSelect()
 		{
 		StringBuffer crit=new StringBuffer();
-		ListDescItem[] sels=taglist.getSelectedValues();
+		TagExpr[] sels=taglist.getSelectedValues();
 		
 		boolean trashSelected=false;
-		for(ListDescItem item:sels)
-			if(item.type==ListDescItem.TAG && item.name.equals("trash"))
+		for(TagExpr item:sels)
+			if(item.type==TagExpr.TAG && item.name.equals("trash"))
 				trashSelected=true;
 		if(!trashSelected)
 			crit.append("not tag:trash");
 		
-		for(ListDescItem item:sels)
+		for(TagExpr item:sels)
 			{
 			if(crit.length()!=0)
 				crit.append(" and ");
@@ -244,6 +241,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		searchField.setText(crit.toString());
 		pane.setFilter(crit.toString());
 		updateCount();
+		revalidate();
 		try{lastUpdate=conn.imserv.getLastUpdate();}
 		catch (Exception e1){}
 		}

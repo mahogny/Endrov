@@ -29,7 +29,7 @@ public class BatchMovie
 		first=true;
 		System.out.println("Imageset "+file.getPath());
 		long currentTime=System.currentTimeMillis();
-		OstImageset ost=new OstImageset(file.getPath());
+		OstImageset ost=new OstImageset(file);
 		System.out.println(" timeX "+(System.currentTimeMillis()-currentTime));
 		
 		FilterSeq fsNull=new FilterSeq();
