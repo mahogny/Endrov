@@ -2,10 +2,7 @@ package evplugin.imagesetImserv.service;
 
 import java.io.*;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -38,10 +35,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	public static final long serialVersionUID=0;
 	private String name;
 	public File file;
-	public Set<String> channels=new HashSet<String>();
-	public Set<String> tags=new HashSet<String>();
-	public Set<String> objs=new HashSet<String>();
-	public Map<String,String> attrs=new HashMap<String, String>();
+	public Map<String,Tag> tags=new TreeMap<String,Tag>();
 	private final Daemon daemon;
 	
 	public DataImpl(Daemon daemon, String name, File file) throws Exception 
@@ -58,7 +52,10 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			//Channels
 			for(File child:file.listFiles())
 				if(!child.getName().startsWith(".") && child.isDirectory() && !child.getName().equals("data"))
-					channels.add(child.getName());
+					{
+					String tagname="chan:"+child.getName();
+					tags.put(tagname,new Tag(true,tagname));
+					}
 			rmd=new File(file,"rmd.ostxml");
 			}
 		else if(isOSTXML())
@@ -278,23 +275,40 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			}
 		}
 	
-	public synchronized void setTag(String tag, boolean enable) throws Exception
+	public synchronized void setTag(String tagname, String value, boolean enable) throws Exception
 		{
+		//Cannot overwrite virtual tags. Ignore this totally.
+		Tag extag=tags.get(tagname);
+		if(extag!=null && extag.virtual)
+			return;
+		
+		//Change this record
 		if(enable)
 			{
-			daemon.getMapCreate(tag, daemon.tags).add(this);
-			tags.add(tag);
+			Tag tag=new Tag(false,tagname,value);
+			tags.put(tagname,tag);
+			daemon.getMapCreate(tagname, daemon.tags).add(this);
 			}
 		else
 			{
-			daemon.getMapCreate(tag, daemon.tags).remove(this);
-			tags.remove(tag);
+			tags.remove(tagname);
+			daemon.getMapCreate(tagname, daemon.tags).remove(this);
 			}
-		System.out.println(tag+" "+enable);
+		//TODO: reload this data
+		System.out.println(tagname+" "+enable);
 		writeImservFile();
 		daemon.setLastUpdate();
 		}
 
+
+	public Tag[] getTags() throws Exception
+		{
+		return tags.values().toArray(new Tag[]{});
+		}
+
+	
+	
+	
 	
 	
 	private File getImservFile()
@@ -324,12 +338,15 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			{
 			Element root=new Element("imserv");
 			Document doc=new Document(root);
-			for(String tag:tags)
-				{
-				Element e=new Element("tag");
-				e.setAttribute("name", tag);
-				root.addContent(e);
-				}
+			for(Map.Entry<String, Tag> tag:tags.entrySet())
+				if(!tag.getValue().virtual)
+					{
+					Element e=new Element("tag");
+					e.setAttribute("name", tag.getKey());
+					if(tag.getValue().value!=null)
+						e.setAttribute("name", tag.getValue().value);
+					root.addContent(e);
+					}
 			EvXMLutils.writeXmlData(doc, getImservFile());
 			}
 		catch (Exception e)
@@ -350,7 +367,10 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 		public void startElement (String uri, String name, String qName, Attributes atts)
 			{
 			if(name.equals("tag"))
-				tags.add(atts.getValue(atts.getIndex("name")));
+				{
+				String tagname=atts.getValue(atts.getIndex("name"));
+				tags.put(tagname, new Tag(false,tagname,atts.getValue(atts.getIndex("value"))));
+				}
 			}
 		}
 
@@ -377,10 +397,13 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			//	tags.add(atts.getValue(atts.getIndex("name")));
 			if(level==2)
 				{
-				System.out.println(name);
+//				System.out.println(name);
+//				int i=atts.getIndex("value");
+				String tagname="obj:"+name;
+	//			String value=i==-1 ? null : atts.getValue(i);
 				//if(name.equals("imserv"))
 				//	inImserv=true;
-				objs.add(name);
+				tags.put(tagname,new Tag(true,tagname));
 				}
 			}
 

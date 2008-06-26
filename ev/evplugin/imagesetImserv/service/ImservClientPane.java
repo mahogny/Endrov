@@ -15,8 +15,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -24,6 +23,7 @@ import javax.swing.event.*;
 import evplugin.ev.BrowserControl;
 import evplugin.ev.EV;
 import evplugin.ev.EvSwingTools;
+import evplugin.ev.Tuple;
 import evplugin.imagesetImserv.service.TagListPane.TagListListener;
 
 
@@ -45,13 +45,13 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	public JButton bNewTag=new JButton("New Tag");
 	public JButton bToTrash=new JButton("=> Trash");
 	public JLabel status=new JLabel("");
-	private Timer timer=new Timer(1000,this);
+	private javax.swing.Timer timer=new javax.swing.Timer(1000,this);
 	private Date lastUpdate=new Date();
 	
 	private TagListPane taglist=new TagListPane();
 
 	
-	TagExpr theStar=TagExpr.makeMatchAll();
+	String theStar="*";
 	
 	/**
 	 * Constructor
@@ -109,18 +109,19 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		{
 		try
 			{
-			final ArrayList<TagExpr> list=new ArrayList<TagExpr>();
+			final ArrayList<String> list=new ArrayList<String>();
+			final Set<String> virtualTag=new HashSet<String>();
 			list.add(theStar);
 			if(conn!=null)
 				{
-				for(String s:conn.imserv.getTags())
-					list.add(TagExpr.makeTag(s));
-				for(String s:conn.imserv.getObjects())
-					list.add(TagExpr.makeObj(s));
-				for(String s:conn.imserv.getChannels())
-					list.add(TagExpr.makeChan(s));
+				//tags, virtualtags
+				Tuple<String[], String[]> tup=conn.imserv.getTags();
+				for(String tag:tup.fst())
+					list.add(tag);
+				for(String tag:tup.snd())
+					virtualTag.add(tag);
 				}
-			taglist.setList(list);
+			taglist.setList(list,virtualTag);
 			revalidate();
 			}
 		catch (Exception e)
@@ -130,7 +131,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		}
 	
 	
-	private void setTag(String tag, boolean enable)
+	private void setTag(String tag, String value, boolean enable)
 		{
 		if(!pane.selectedId.isEmpty())
 			{
@@ -139,7 +140,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 				for(String s:pane.selectedId)
 					{
 					DataIF data=conn.imserv.getData(s);
-					data.setTag(tag, enable);
+					data.setTag(tag, value,enable);
 //					System.out.println("set tag");
 					}
 				}
@@ -172,13 +173,13 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 			{
 			String tag=JOptionPane.showInputDialog(this,"Enter new tag");
 			if(tag!=null)
-				setTag(tag,true);
+				setTag(tag,null,true);
 			revalidate();
 			}
 		else if(e.getSource()==bToTrash)
 			{
 			if(JOptionPane.showConfirmDialog(this,  "Do you really want to move the selected datasets to trash?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-				setTag("trash",true);
+				setTag("trash",null,true);
 			revalidate();
 			}
 		else if(e.getSource()==timer)
@@ -213,10 +214,9 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	
 	
 	
-	public void tagListAddRemove(TagExpr item, boolean toAdd)
+	public void tagListAddRemove(Tag item, boolean toAdd)
 		{
-		if(item.type==TagExpr.TAG)
-			setTag(item.name,toAdd);
+		setTag(item.name,null,toAdd);
 		}
 
 
@@ -230,7 +230,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 			if(item.type==TagExpr.TAG && item.name.equals("trash"))
 				trashSelected=true;
 		if(!trashSelected)
-			crit.append("not tag:trash");
+			crit.append("not trash");
 		
 		for(TagExpr item:sels)
 			{

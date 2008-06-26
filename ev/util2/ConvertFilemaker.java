@@ -7,7 +7,8 @@ import java.util.List;
 import org.jdom.*;
 
 import evplugin.ev.EvXMLutils;
-import evplugin.imagesetOST.OstImageset;
+
+//import evplugin.imagesetOST.OstImageset;
 
 /**
  * Convert our filemaker database to ImServ tags
@@ -80,9 +81,11 @@ public class ConvertFilemaker
 						tags.add("drifts");
 
 					
+					/*
 					OstImageset rec=new OstImageset(imsetFile);
 					rec.meta.metaDescript=descLine;
 					System.out.println("desc: "+descLine);
+					*/
 					
 					//tag suggestions
 					//embryo
@@ -102,6 +105,7 @@ public class ConvertFilemaker
 					//agmount
 					
 					//can show a tree list for =-tags
+					
 					
 					try
 						{

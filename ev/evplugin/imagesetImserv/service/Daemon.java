@@ -26,9 +26,9 @@ public class Daemon extends Thread
 	
 	public Date lastUpdate=new Date();
 	
-	public Map<String,Set<DataIF>> channels=new TreeMap<String,Set<DataIF>>();
 	public Map<String,Set<DataIF>> tags=new TreeMap<String,Set<DataIF>>();
-	public Map<String,Set<DataIF>> objs=new TreeMap<String,Set<DataIF>>();
+
+	
 	
 	public Auth auth=null;
 
@@ -179,23 +179,15 @@ public class Daemon extends Thread
 	private synchronized void addData(RepositoryDir rep, DataImpl data)
 		{
 		rep.data.put(data.getName(), data);
-		for(String s:data.channels)
-			getMapCreate(s, channels).add(data);
-		for(String s:data.tags)
+		for(String s:data.tags.keySet())
 			getMapCreate(s, tags).add(data);
-		for(String s:data.objs)
-			getMapCreate(s, objs).add(data);
 		}
 	
 	private synchronized void removeData(RepositoryDir rep, DataImpl data)
 		{
 		rep.data.remove(data.getName());
-		for(String s:data.channels)
-			getMapCreate(s, channels).remove(data);
-		for(String s:data.tags)
+		for(String s:data.tags.keySet())
 			getMapCreate(s, tags).remove(data);
-		for(String s:data.objs)
-			getMapCreate(s, objs).remove(data);
 		}
 	
 	
@@ -209,6 +201,19 @@ public class Daemon extends Thread
 			}
 		return set;
 		}
+	
+
+	public synchronized Set<DataIF> getMapCreate(Tag key, Map<Tag,Set<DataIF>> map)
+		{
+		Set<DataIF> set=map.get(key);
+		if(set==null)
+			{
+			set=new HashSet<DataIF>();
+			map.put(key,set);
+			}
+		return set;
+		}
+	
 	
 	
 	

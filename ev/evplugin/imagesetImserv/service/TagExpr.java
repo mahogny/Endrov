@@ -15,12 +15,12 @@ import java.util.Set;
  */
 public class TagExpr
 	{
-	public final static int TAG=1,CHAN=2,OBJ=3,ATTR=4,MATCHALL=5,MATCHNONE=6;
+	public final static int TAG=1,ATTR=4,MATCHALL=5,MATCHNONE=6;
 	public final static int AND=10,OR=11,NOT=12;
 	
 	public int type;
 	public String name;
-//	private String value;
+	private String value;
 	private TagExpr a,b;
 	
 	
@@ -33,28 +33,14 @@ public class TagExpr
 		item.name=s;
 		return item;
 		}
-	public static TagExpr makeChan(String s)
+	public static TagExpr makeAttr(String name,String value)
 		{
 		TagExpr item=new TagExpr();
-		item.type=CHAN;
-		item.name=s;
-		return item;
-		}
-	public static TagExpr makeObj(String s)
-		{
-		TagExpr item=new TagExpr();
-		item.type=OBJ;
-		item.name=s;
-		return item;
-		}
-/*	public static ListDescItem makeAttr(String name,String value)
-		{
-		ListDescItem item=new ListDescItem();
 		item.type=ATTR;
 		item.name=name;
 		item.value=value;
 		return item;
-		}*/
+		}
 	public static TagExpr makeMatchAll()
 		{
 		TagExpr item=new TagExpr();
@@ -92,11 +78,11 @@ public class TagExpr
 		}
 	
 
-	private String escapeString(String s)
+	private static String escapeString(String s)
 		{
 		return '"'+s+'"';
 		}
-	private String escapeStringIfNeeded(String s)
+	public static String escapeStringIfNeeded(String s)
 		{
 		if(s.indexOf(' ')==-1)
 			return s;
@@ -113,14 +99,12 @@ public class TagExpr
 			{
 			case MATCHALL: return "*";
 			case MATCHNONE: return "!";
-			case TAG: return "tag:"+escapeStringIfNeeded(name);
-			case CHAN: return "chan:"+escapeStringIfNeeded(name);
-			case OBJ: return "obj:"+escapeStringIfNeeded(name);
-			//case ATTR: return "attr:"+name+"="+value;
+			case TAG: return escapeStringIfNeeded(name);
+			case ATTR: return escapeStringIfNeeded(name)+"="+escapeStringIfNeeded(value);
 			case AND: return "("+a.toString()+") and ("+b.toString()+")";
 			case OR: return "("+a.toString()+") or ("+b.toString()+")";
 			case NOT: return "not ("+a.toString()+")";
-			default: return "err"; 
+			default: return "<err>"; 
 			}
 		}
 	
@@ -179,12 +163,6 @@ public class TagExpr
 		{
 		if(tryTake(list, "not "))
 			return makeNot(parseAtom(list));
-		else if(tryTake(list, "tag:"))
-			return makeTag(takeString(list));
-		else if(tryTake(list, "chan:"))
-			return makeChan(takeString(list));
-		else if(tryTake(list, "obj:"))
-			return makeObj(takeString(list));
 		else if(tryTake(list, "*"))
 			return makeMatchAll();
 		else if(tryTake(list, "!"))
@@ -206,7 +184,11 @@ public class TagExpr
 				throw new Exception("Parse error before: "+restAsString(list));
 			}
 		else
-			throw new Exception("Parse error before: "+restAsString(list));
+			{
+			return makeTag(takeString(list));
+			//TODO: attribute
+			}
+//			throw new Exception("Parse error before: "+restAsString(list));
 		}
 
 	/**
@@ -298,21 +280,18 @@ public class TagExpr
 			else
 				map.values().retainAll(datas);
 			}
-		else if(type==CHAN)
+		else if(type==ATTR)
 			{
-			Set<DataIF> datas=daemon.channels.get(name);
+			//TODO
+			
+			
+			/*
+			Set<DataIF> datas=daemon.tags.get(name);
 			if(datas==null)
 				map.clear();
 			else
 				map.values().retainAll(datas);
-			}
-		else if(type==OBJ)
-			{
-			Set<DataIF> datas=daemon.objs.get(name);
-			if(datas==null)
-				map.clear();
-			else
-				map.values().retainAll(datas);
+				*/
 			}
 		else if(type==AND)
 			{

@@ -4,6 +4,8 @@ import java.rmi.Remote;
 import java.util.Date;
 import java.util.Map;
 
+import evplugin.ev.Tuple;
+
 /**
  * Server "imserv" object: interface
  * 
@@ -20,12 +22,8 @@ public interface ImservIF extends Remote
   
   public Map<String,DataIF> getDataMap() throws Exception;
   
-//  public void setTag(String[] obs, String tag, boolean enable) throws Exception;
   
-  //To be able to present a list of tags etc, need a list to choose from
-  public String[] getTags() throws Exception;
-  public String[] getChannels() throws Exception;
-  public String[] getObjects() throws Exception;
+  public Tuple<String[], String[]> getTags() throws Exception;
   
   //polling is bad. is there a better way to call in the opposite dir?
   //call & stall?
