@@ -29,8 +29,9 @@ public class TagListPane extends JPanel implements MouseListener
 	{
 	public static final long serialVersionUID=0;
 	
-	private Vector<TagExpr> tags=new Vector<TagExpr>();
-	public Set<TagExpr> selected=new HashSet<TagExpr>();
+	private Vector<String> tags=new Vector<String>(); 
+	private Set<String> virtualTags=new HashSet<String>(); 
+	public Set<Tag> selected=new HashSet<Tag>();
 	
 	private final Font font=Font.decode("Dialog PLAIN");
 	private final int fonth,fonta;
@@ -54,7 +55,7 @@ public class TagListPane extends JPanel implements MouseListener
 		return selected.toArray(new TagExpr[]{});
 		}
 
-	public void setList(Collection<TagExpr> c)
+	public void setList(Collection<String> c, Set<String> virtualTag)
 		{
 		tags.clear();
 		tags.addAll(c);
@@ -86,7 +87,7 @@ public class TagListPane extends JPanel implements MouseListener
 				g.fillRect(0, y, d.width, fonth);
 				}
 			
-			if(tags.get(i).type==TagExpr.TAG)
+			if(!virtualTags.contains(tags.get(i)))
 				{
 				g.setColor(Color.BLUE);
 				g.fillOval(cxa, cy, csize, csize);
@@ -106,7 +107,7 @@ public class TagListPane extends JPanel implements MouseListener
 	public Dimension getPreferredSize()
 		{
 		int w=0;
-		for(TagExpr s:tags)
+		for(Object s:tags)
 			{
 			int nw=fm.stringWidth(s.toString());
 			if(w<nw)
@@ -123,7 +124,7 @@ public class TagListPane extends JPanel implements MouseListener
 			{
 			if(i<tags.size())
 				{
-				TagExpr item=tags.get(i);
+				String item=tags.get(i);
 				for(TagListListener l:listeners.keySet())
 					l.tagListAddRemove(item, true);
 				}
@@ -132,7 +133,7 @@ public class TagListPane extends JPanel implements MouseListener
 			{
 			if(i<tags.size())
 				{
-				TagExpr item=tags.get(i);
+				String item=tags.get(i);
 				for(TagListListener l:listeners.keySet())
 					l.tagListAddRemove(item, false);
 				}
@@ -165,7 +166,7 @@ public class TagListPane extends JPanel implements MouseListener
 	public static interface TagListListener
 		{
 		public void tagListSelect();
-		public void tagListAddRemove(TagExpr item, boolean toAdd);
+		public void tagListAddRemove(Tag item, boolean toAdd);
 		}
 	
 	}

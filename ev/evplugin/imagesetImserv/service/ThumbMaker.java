@@ -39,8 +39,9 @@ public class ThumbMaker
 					File chandir=new File(file,"DIC");
 					if(!chandir.exists())
 						{
-						String onechannel=data.channels.iterator().next();
-						chandir=new File(file,onechannel);
+						for(String tag:data.tags.keySet())
+							if(tag.startsWith("chan:"))
+								chandir=new File(file,tag.substring("chan:".length()));
 						}
 					
 					LinkedList<String> frames=new LinkedList<String>();

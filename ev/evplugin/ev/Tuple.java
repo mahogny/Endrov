@@ -1,10 +1,13 @@
 package evplugin.ev;
 
+import java.io.Serializable;
+
 /**
  * This code was taken from a forum post. Can probably be considered public domain. Modified.
  */
-public class Tuple<L, R>
+public class Tuple<L, R> implements Serializable
 	{
+	public static final long serialVersionUID=0;
 	private final L fst;
 	private final R snd;
 

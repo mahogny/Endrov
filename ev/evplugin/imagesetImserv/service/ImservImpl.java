@@ -8,6 +8,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Map;
 
+import evplugin.ev.Tuple;
+
 /**
  * Server "imserv" object: implementation
  * 
@@ -62,18 +64,12 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 		return daemon.getAllDataMap();
 		}
 	
-	public String[] getTags() throws Exception
+	public Tuple<String[], String[]> getTags() throws Exception
 		{
-		return daemon.tags.keySet().toArray(new String[]{});
+		return new Tuple<String[], String[]>(
+				daemon.tags.keySet().toArray(new Tag[]{}),
+				daemon.virtualTags.toArray(new Tag[]{});
 		}
-  public String[] getChannels() throws Exception
-	  {
-		return daemon.channels.keySet().toArray(new String[]{});
-	  }
-  public String[] getObjects() throws Exception
-	  {
-		return daemon.objs.keySet().toArray(new String[]{});
-	  }
 	
   public Date getLastUpdate() throws Exception
 	  {
