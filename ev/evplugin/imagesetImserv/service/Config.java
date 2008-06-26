@@ -2,6 +2,8 @@ package evplugin.imagesetImserv.service;
 
 import java.io.File;
 
+import javax.swing.JOptionPane;
+
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -44,7 +46,14 @@ public class Config
 			}
 		catch (Exception e)
 			{
+			JOptionPane.showMessageDialog(null, "Failed to read config file. Check syntax.\n"+e.getMessage());
 			e.printStackTrace();
+			System.exit(1);
+			}
+		if(daemon.auth==null)
+			{
+			JOptionPane.showMessageDialog(null, "No authorization section was found in the config file!");
+			System.exit(1);
 			}
 		}
 	

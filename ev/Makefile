@@ -19,6 +19,7 @@ linecount:
 
 starters:
 	jar cfvm startOSTdaemon.jar evgui/MANIFEST.STARTOST evgui/StartOSTdaemon.class OSTdaemon/*.class
+	jar cfvm startImServ.jar evgui/MANIFEST.STARTIMSERV evgui/StartImServ.class
 	jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class
 	jar cfvm startEndrov.jar evgui/MANIFEST.STARTGUI evgui/StartGUI.class
 	du -hc start*.jar
@@ -63,6 +64,4 @@ memprof:
 
 runimserv:
 	java -jar startEndrov.jar evplugin.imagesetImserv.service.GUI
-runimclient:
-	java evplugin.imagesetImserv.service.ClientGUI
 
