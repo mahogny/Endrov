@@ -4,7 +4,6 @@ import java.rmi.Remote;
 import java.util.Date;
 import java.util.Map;
 
-import evplugin.ev.Tuple;
 
 /**
  * Server "imserv" object: interface
@@ -23,7 +22,7 @@ public interface ImservIF extends Remote
   public Map<String,DataIF> getDataMap() throws Exception;
   
   
-  public Tuple<String[], String[]> getTags() throws Exception;
+  public String[] getTags() throws Exception;
   
   //polling is bad. is there a better way to call in the opposite dir?
   //call & stall?
