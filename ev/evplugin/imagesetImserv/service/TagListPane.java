@@ -49,9 +49,9 @@ public class TagListPane extends JPanel implements MouseListener
 		}
 
 	
-	public TagExpr[] getSelectedValues()
+	public Set<String> getSelectedValues()
 		{
-		return selected.toArray(new TagExpr[]{});
+		return selected;
 		}
 
 	public void setList(Collection<String> c)

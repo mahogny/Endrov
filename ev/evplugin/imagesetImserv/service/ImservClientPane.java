@@ -20,6 +20,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import evplugin.basicWindow.BasicWindow;
 import evplugin.ev.BrowserControl;
 import evplugin.ev.EV;
 import evplugin.ev.EvSwingTools;
@@ -36,21 +37,45 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	{
 	public static final long serialVersionUID=0;
 	
+	private static ImageIcon iconSearchAttr=new ImageIcon(ImservClientPane.class.getResource("iconSearchAttr.png"));
+	private static ImageIcon iconNewTag=new ImageIcon(ImservClientPane.class.getResource("iconNewTag.png"));
+
+	
 	public ImservConnection conn;
 	
 	public DataIconPane pane;
 	public JTextField searchField=new JTextField();
-	public JButton bHelp=new JButton("Help");
-	public JButton bNewTag=new JButton("New Tag");
-	public JButton bToTrash=new JButton("=> Trash");
+	public JButton bHelp=new JButton(BasicWindow.getIconHelp());
+	public JButton bNewTag=new JButton(iconNewTag);
+	public JButton bNewAttrSearch=new JButton(iconSearchAttr);
+	public JButton bToTrash=new JButton(BasicWindow.getIconTrash());
 	public JLabel status=new JLabel("");
 	private javax.swing.Timer timer=new javax.swing.Timer(1000,this);
 	private Date lastUpdate=new Date();
 	
 	private TagListPane taglist=new TagListPane();
 
+	private JPanel attrPanes=new JPanel(new GridLayout(1,0));
+	private Vector<AttrPane> attrPanesList=new Vector<AttrPane>();
+
+	private Map<String,AttrEditPane> attrEditList=new TreeMap<String, AttrEditPane>();
+	private JPanel attrEditPane=new JPanel();
+
 	
-	String theStar="*";
+	private void addAttrPanel()
+		{
+		attrPanesList.add(new AttrPane());
+		updateTagList();
+		attrPanelLayout();
+		}
+	private void attrPanelLayout()
+		{
+		attrPanes.removeAll();
+		attrPanes.setLayout(new GridLayout(attrPanesList.size(),1));
+		for(AttrPane p:attrPanesList)
+			attrPanes.add(p);
+		attrPanes.revalidate();
+		}
 	
 	/**
 	 * Constructor
@@ -60,25 +85,42 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		this.conn=conn;
 		pane=new DataIconPane(conn);
 
+		addAttrPanel();
 
+		bHelp.setToolTipText("Help");
+		bToTrash.setToolTipText("Mark as trash");
+		bNewAttrSearch.setToolTipText("Add attribute search field");
+		bNewTag.setToolTipText("Add new tag to selected");
+		
 		bHelp.addActionListener(this);
 		bToTrash.addActionListener(this);
 		bNewTag.addActionListener(this);
+		bNewAttrSearch.addActionListener(this);
 		searchField.addActionListener(this);
 		taglist.addTagListListener(this);
 		
-		JPanel listBottom=new JPanel(new GridLayout(3,1));
+		JPanel listBottom=new JPanel(new GridLayout(1,4));
 		listBottom.add(bNewTag);
+		listBottom.add(bNewAttrSearch);
 		listBottom.add(bHelp);
 		listBottom.add(bToTrash);
 		
-		JPanel right=new JPanel(new BorderLayout());
-		right.add(EvSwingTools.borderLR(status,searchField,null),BorderLayout.SOUTH);
-		right.add(pane,BorderLayout.CENTER);
 
+		JPanel rightBottom=new JPanel(new BorderLayout());
+		rightBottom.add(attrEditPane,BorderLayout.CENTER);
+		rightBottom.add(EvSwingTools.borderLR(status,searchField,null),BorderLayout.SOUTH);
+		
+		JPanel right=new JPanel(new BorderLayout());
+		right.add(rightBottom,BorderLayout.SOUTH);
+		right.add(pane,BorderLayout.CENTER);
+		
+		JPanel leftBottom=new JPanel(new BorderLayout());
+		leftBottom.add(attrPanes,BorderLayout.CENTER);
+		leftBottom.add(listBottom,BorderLayout.SOUTH);
+		
 		JPanel left=new JPanel(new BorderLayout());
 		left.add(new JScrollPane(taglist,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
-		left.add(listBottom,BorderLayout.SOUTH);
+		left.add(leftBottom,BorderLayout.SOUTH);
 		
 		setLayout(new BorderLayout());
 		add(left,BorderLayout.WEST);
@@ -108,14 +150,20 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		{
 		try
 			{
-			final ArrayList<String> list=new ArrayList<String>();
-			list.add(theStar);
+			final LinkedList<String> list=new LinkedList<String>();
 			if(conn!=null)
-				{
 				for(String tag:conn.imserv.getTags())
 					list.add(tag);
-				}
+			List<String> nostarlist=new ArrayList<String>();
+			nostarlist.add("");
+			nostarlist.addAll(list);
+			
+			for(AttrPane p:attrPanesList)
+				p.updateTagList(nostarlist);
+
+			list.addFirst("*");
 			taglist.setList(list);
+
 			revalidate();
 			}
 		catch (Exception e)
@@ -176,6 +224,8 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 				setTag("trash",null,true);
 			revalidate();
 			}
+		else if(e.getSource()==bNewAttrSearch)
+			addAttrPanel();
 		else if(e.getSource()==timer)
 			{
 			try
@@ -217,24 +267,31 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	public void tagListSelect()
 		{
 		StringBuffer crit=new StringBuffer();
-		TagExpr[] sels=taglist.getSelectedValues();
+		Set<String> sels=taglist.getSelectedValues();
 		
-		boolean trashSelected=false;
-		for(TagExpr item:sels)
-			if(item.type==TagExpr.TAG && item.name.equals("trash"))
-				trashSelected=true;
+		boolean trashSelected=sels.contains("trash");
 		if(!trashSelected)
 			crit.append("not trash");
 		
-		for(TagExpr item:sels)
+		for(String item:sels)
 			{
 			if(crit.length()!=0)
 				crit.append(" and ");
 			crit.append(item.toString());
 			}
+		for(AttrPane p:attrPanesList)
+			{
+			String name=(String)p.cTag.getSelectedItem();
+			if(!name.equals(""))
+				{
+				String value=p.tValue.getText();
+				crit.append(" and "+name+"=.*"+value+".*");
+				}
+			}
 		searchField.setText(crit.toString());
 		pane.setFilter(crit.toString());
 		updateCount();
+		updateEditableAttrList();
 		revalidate();
 		try{lastUpdate=conn.imserv.getLastUpdate();}
 		catch (Exception e1){}
@@ -249,9 +306,209 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	
 	
 	
+	/**
+	 *	
+	 * /////////////////////////////////////////////////////////////////////////////
+	 */
+	public class AttrPane extends JPanel implements ActionListener
+		{
+		public static final long serialVersionUID=0;
+		
+		public JComboBox cTag=new JComboBox(new Object[]{""});
+		public JTextField tValue=new JTextField();
+		public JButton bRemove=new JButton(BasicWindow.getIconDelete());
+		
+		
+		public void updateTagList(final List<String> list)
+			{
+			String oldsel=(String)cTag.getSelectedItem();
+			if(oldsel==null)
+				oldsel=null;
+			final String oldsel2=oldsel;
+			ComboBoxModel model=new ComboBoxModel(){
+				Object sel=oldsel2;
+				public Object getSelectedItem(){return sel;}
+				public void setSelectedItem(Object anItem){sel=anItem;}
+				public Object getElementAt(int i){return list.get(i);}
+				public int getSize(){return list.size();}
+				public void addListDataListener(ListDataListener arg0){}
+				public void removeListDataListener(ListDataListener arg0){}
+			};
+			cTag.setModel(model);
+			cTag.repaint();
+			}
+		
+		public AttrPane()
+			{
+			cTag.addActionListener(this);
+			tValue.addActionListener(this);
+			setLayout(new GridLayout(2,1));
+			JPanel p=new JPanel(new BorderLayout());
+			p.add(cTag,BorderLayout.CENTER);
+			p.add(bRemove,BorderLayout.EAST);
+			add(p);
+			add(tValue);
+			bRemove.addActionListener(this);
+			}
+
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==bRemove)
+				{
+				attrPanesList.remove(this);
+				attrPanelLayout();
+				}
+			else
+				tagListSelect();
+			}
+		
+		}
 	
 	
 	
+	
+	
+	
+	/**
+	 * Adapt the list of editable attributes
+	 */
+	private void updateEditableAttrList()
+		{
+		boolean updated=false;
+		
+		Set<String> selected=pane.selectedId;
+		
+		if(selected.size()!=1)
+			{
+			if(!attrEditList.isEmpty())
+				{
+				updated=false;
+				attrEditList.clear();
+				attrEditPane.removeAll();
+				}
+			}
+		else
+			{
+			//null-entry: editable name
+			if(!attrEditList.containsKey(""))
+				{
+				updated=true;
+				attrEditList.put(null, new AttrEditPane(""));
+				}
+			
+			try
+				{
+				//Normal entries
+				DataIF data=conn.imserv.getData(selected.iterator().next());
+				Tag[] tags=data.getTags();
+				Map<String,String> attr=new TreeMap<String, String>();
+				for(Tag t:tags)
+					if(t.value!=null)
+						attr.put(t.name,t.value);
+
+				//Any new?
+				for(Map.Entry<String, String> ae:attr.entrySet())
+					{
+					AttrEditPane pane=attrEditList.get(ae.getKey());
+					if(pane==null)
+						{
+						pane=new AttrEditPane(ae.getKey());
+						attrEditList.put(ae.getKey(),pane);
+						updated=true;
+						}
+					else if(!pane.tValue.equals(ae.getValue()))
+						{
+						updated=true;
+						pane.tValue.setText(ae.getValue());
+						}
+					}
+					
+				//Any removed
+				List<String> lastKeys=new LinkedList<String>(attrEditList.keySet());
+				for(String key:lastKeys)
+					if(!attr.containsKey(key))
+						{
+						attrEditList.remove(key);
+						updated=true;
+						}
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			}
+		
+		
+		//do layout
+		if(updated)
+			{
+			attrEditPane.removeAll();
+			attrEditPane.setLayout(new GridLayout(attrEditList.size(),1));
+			for(Map.Entry<String, AttrEditPane> entry:attrEditList.entrySet())
+				{
+				attrEditPane.add(entry.getValue());
+				
+				}
+			revalidate();
+			}
+		}
+	
+	/**
+	 *	
+	 * /////////////////////////////////////////////////////////////////////////////
+	 */
+	public class AttrEditPane extends JPanel implements ActionListener
+		{
+		public static final long serialVersionUID=0;
+		
+		public JTextField tName=new JTextField();
+		public JTextField tValue=new JTextField();
+		public JButton bRemove=new JButton(BasicWindow.getIconDelete());
+		String name;
+		
+		public AttrEditPane(String name)
+			{
+			this.name=name;
+			setLayout(new BorderLayout());
+			if(name!=null)
+				{
+				add(new JLabel(name),BorderLayout.WEST);
+				add(bRemove,BorderLayout.EAST);
+				}
+			else
+				{
+				add(tName,BorderLayout.WEST);
+				
+				}
+			add(tValue,BorderLayout.CENTER);
+			tName.addActionListener(this);
+			tValue.addActionListener(this);
+			bRemove.addActionListener(this);
+			}
+		
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==bRemove)
+				{
+				setTag(name,null,false);
+				//update TODO
+				}
+			else if(e.getSource()==tValue || e.getSource()==tName)
+				{
+				String tname=name;
+				if(tname==null)
+					tname=tName.getText();
+				setTag(tname,tValue.getText(),true);
+				if(name==null)
+					{
+					attrEditList.remove(null);
+					updateEditableAttrList();
+					}
+				}
+			}
+		
+		
+		}
 	
 	
 	}
