@@ -23,7 +23,6 @@ import javax.swing.event.*;
 import evplugin.ev.BrowserControl;
 import evplugin.ev.EV;
 import evplugin.ev.EvSwingTools;
-import evplugin.ev.Tuple;
 import evplugin.imagesetImserv.service.TagListPane.TagListListener;
 
 
@@ -110,18 +109,13 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		try
 			{
 			final ArrayList<String> list=new ArrayList<String>();
-			final Set<String> virtualTag=new HashSet<String>();
 			list.add(theStar);
 			if(conn!=null)
 				{
-				//tags, virtualtags
-				Tuple<String[], String[]> tup=conn.imserv.getTags();
-				for(String tag:tup.fst())
+				for(String tag:conn.imserv.getTags())
 					list.add(tag);
-				for(String tag:tup.snd())
-					virtualTag.add(tag);
 				}
-			taglist.setList(list,virtualTag);
+			taglist.setList(list);
 			revalidate();
 			}
 		catch (Exception e)
@@ -214,9 +208,9 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	
 	
 	
-	public void tagListAddRemove(Tag item, boolean toAdd)
+	public void tagListAddRemove(String item, boolean toAdd)
 		{
-		setTag(item.name,null,toAdd);
+		setTag(item,null,toAdd);
 		}
 
 

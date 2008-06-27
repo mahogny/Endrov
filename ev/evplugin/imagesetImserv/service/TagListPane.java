@@ -30,8 +30,7 @@ public class TagListPane extends JPanel implements MouseListener
 	public static final long serialVersionUID=0;
 	
 	private Vector<String> tags=new Vector<String>(); 
-	private Set<String> virtualTags=new HashSet<String>(); 
-	public Set<Tag> selected=new HashSet<Tag>();
+	public Set<String> selected=new HashSet<String>();
 	
 	private final Font font=Font.decode("Dialog PLAIN");
 	private final int fonth,fonta;
@@ -55,7 +54,7 @@ public class TagListPane extends JPanel implements MouseListener
 		return selected.toArray(new TagExpr[]{});
 		}
 
-	public void setList(Collection<String> c, Set<String> virtualTag)
+	public void setList(Collection<String> c)
 		{
 		tags.clear();
 		tags.addAll(c);
@@ -87,17 +86,15 @@ public class TagListPane extends JPanel implements MouseListener
 				g.fillRect(0, y, d.width, fonth);
 				}
 			
-			if(!virtualTags.contains(tags.get(i)))
-				{
-				g.setColor(Color.BLUE);
-				g.fillOval(cxa, cy, csize, csize);
-				g.fillOval(cxb, cy, csize, csize);
-				
-				g.setColor(Color.WHITE);
-				g.drawLine(cxa+1, cy+csize/2, cxa+csize-1, cy+csize/2);
-				g.drawLine(cxa+csize/2, cy+1, cxa+csize/2, cy+csize-1);
-				g.drawLine(cxb+1, cy+csize/2, cxb+csize-1, cy+csize/2);
-				}
+			
+			g.setColor(Color.BLUE);
+			g.fillOval(cxa, cy, csize, csize);
+			g.fillOval(cxb, cy, csize, csize);
+			g.setColor(Color.WHITE);
+			g.drawLine(cxa+1, cy+csize/2, cxa+csize-1, cy+csize/2);
+			g.drawLine(cxa+csize/2, cy+1, cxa+csize/2, cy+csize-1);
+			g.drawLine(cxb+1, cy+csize/2, cxb+csize-1, cy+csize/2);
+			
 			
 			g.setColor(Color.BLACK);
 			g.drawString(tags.get(i).toString(), totc, y+fonta);
@@ -166,7 +163,7 @@ public class TagListPane extends JPanel implements MouseListener
 	public static interface TagListListener
 		{
 		public void tagListSelect();
-		public void tagListAddRemove(Tag item, boolean toAdd);
+		public void tagListAddRemove(String item, boolean toAdd);
 		}
 	
 	}
