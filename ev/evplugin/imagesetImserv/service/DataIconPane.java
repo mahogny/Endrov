@@ -34,6 +34,12 @@ public class DataIconPane extends JPanel implements Scrollable
 	
 	
 	
+	public interface DataIconPaneListener
+		{
+		public void dataIconSelection();
+		public void dataIconActivate(String s);
+		}
+	
 	private Area a=new Area();
 	private JScrollPane scroll=new JScrollPane(a);
 	public Set<String> selectedId=new HashSet<String>();
