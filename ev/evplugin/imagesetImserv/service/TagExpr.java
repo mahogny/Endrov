@@ -1,11 +1,14 @@
 package evplugin.imagesetImserv.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -185,8 +188,17 @@ public class TagExpr
 			}
 		else
 			{
-			return makeTag(takeString(list));
-			//TODO: attribute
+			String rest=takeString(list);
+			int i=rest.indexOf('=');
+			if(i==-1)
+				return makeTag(rest);
+			else
+				{
+				String name=rest.substring(0,i);
+				String value=rest.substring(i+1);
+				return makeAttr(name,value);
+				}
+			//TODO: escaping of attr name
 			}
 //			throw new Exception("Parse error before: "+restAsString(list));
 		}
@@ -282,16 +294,39 @@ public class TagExpr
 			}
 		else if(type==ATTR)
 			{
-			//TODO
-			
-			
-			/*
+			//Rough elimination
 			Set<DataIF> datas=daemon.tags.get(name);
 			if(datas==null)
 				map.clear();
 			else
 				map.values().retainAll(datas);
-				*/
+
+			//Go through every entry, match
+			try
+				{
+				Pattern p = Pattern.compile(value);
+				Set<String> keep=new HashSet<String>();
+				for(Map.Entry<String, DataIF> entry:map.entrySet())
+					{
+					//quick hack
+					DataImpl data=(DataImpl)entry.getValue();
+					Tag tag=data.tags.get(name);
+					Matcher m = p.matcher(tag.value);
+					if(m.matches())
+						{
+						keep.add(entry.getKey());
+						System.out.println("--match: "+tag.value+" for "+value+"--");
+						}
+					else
+						System.out.println("--no match: "+tag.value+" for "+value+"--");
+					}
+				map.keySet().retainAll(keep);
+				}
+			catch (RuntimeException e)
+				{
+				map.clear();
+				e.printStackTrace();
+				}
 			}
 		else if(type==AND)
 			{
@@ -316,23 +351,11 @@ public class TagExpr
 			}
 		}
 	
-
-	/*
-	public static ListDescItem multiAnd(Collection<ListDescItem> list)
-		{
-		ListDescItem base=new ListDescItem(MATCHALL,null);
-		for(ListDescItem item:list)
-			base=new ListDescItem(AND,base,item);
-		return base;
-		}
-		*/
-	
-	
 	
 	public static void main(String[] arg)
 		{
 //		System.out.println(parse("tag:foo"));
-		System.out.println(parse("not tag:trash and *"));
+		System.out.println(parse("foo=bar"));
 		
 		
 		}

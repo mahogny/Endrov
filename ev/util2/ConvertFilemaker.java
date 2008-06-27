@@ -1,8 +1,7 @@
 package util2;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.jdom.*;
 
@@ -38,6 +37,7 @@ public class ConvertFilemaker
 					}
 				
 				List<String> tags=new LinkedList<String>();
+				Map<String,String> attr=new HashMap<String, String>();
 				
 				
 				File imsetFile=new File(str.get(2));
@@ -56,7 +56,7 @@ public class ConvertFilemaker
 							author="JŸrgen Hench";
 						if(author.startsWith("Martin"))
 							author="Martin LŸppert";
-						tags.add("author:"+author);
+						attr.put("author", author);
 						}
 
 					//Tag type of image
@@ -80,6 +80,12 @@ public class ConvertFilemaker
 					if(descLine.indexOf("drifts")!=-1)
 						tags.add("drifts");
 
+					//Full description
+					attr.put("desc", descLine);
+					
+					//date
+					String date=str.get(3);
+					attr.put("entry_date",date);
 					
 					/*
 					OstImageset rec=new OstImageset(imsetFile);
@@ -115,6 +121,13 @@ public class ConvertFilemaker
 							{
 							Element e=new Element("tag");
 							e.setAttribute("name", tag);
+							root.addContent(e);
+							}
+						for(Map.Entry<String, String> entry:attr.entrySet())
+							{
+							Element e=new Element("tag");
+							e.setAttribute("name", entry.getKey());
+							e.setAttribute("value", entry.getValue());
 							root.addContent(e);
 							}
 						EvXMLutils.writeXmlData(doc, imservFile);

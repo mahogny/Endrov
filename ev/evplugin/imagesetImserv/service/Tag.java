@@ -35,24 +35,11 @@ public class Tag implements Serializable // Comparable<Tag>, Serializable//, Ext
 			return TagExpr.escapeStringIfNeeded(name)+"="+TagExpr.escapeStringIfNeeded(value);
 		}
 	
-	/*
-	public Tag(boolean virtual, String name, String value)
-		{
-		this.virtual=virtual;
-		this.name=name;
-		this.value=value;
-		}
-
-	public Tag(boolean virtual, String name)
-		{
-		this.virtual=virtual;
-		this.name=name;
-		}
-*/
 	
-
 	
 	//Two tags are considered equal if name is equal
+	
+	//used??
 	
 	public boolean equals(Object obj)
 		{
@@ -61,42 +48,7 @@ public class Tag implements Serializable // Comparable<Tag>, Serializable//, Ext
 		else
 			return false;
 		}
-	/*
-	public int compareTo(Tag o)
-		{
-		return name.compareTo(o.name);
-		}
-*/
-	/*
-	public int compareTo(Tag o)
-		{
-		int la=name.length;
-		int lb=o.name.length;
-		for(int i=0;i<la && i<lb;i++)
-			{
-			int c=name[i].compareTo(o.name[i]);
-			if(c!=0)
-				return c;
-			}
-		if(la<lb)
-			return -1;
-		else if(la>lb)
-			return 1;
-		else
-			return 0;
-		}
-*/
 	
-	
-	/*
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
-		{
-		}
-
-	public void writeExternal(ObjectOutput out) throws IOException
-		{
-		}
-*/	
 	
 	
 	}

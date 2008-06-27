@@ -35,11 +35,18 @@ public abstract class BasicWindow extends JPanel
 	static final long serialVersionUID=0; 
 
 	private static ImageIcon iconButtonDelete=new ImageIcon(BasicWindow.class.getResource("buttonDelete.png"));
-	public static ImageIcon getIconDelete(){return iconButtonDelete;}
 	private static ImageIcon iconButtonDown=new ImageIcon(BasicWindow.class.getResource("buttonDown.png"));
-	public static ImageIcon getIconDown(){return iconButtonDown;}
 	private static ImageIcon iconButtonUp=new ImageIcon(BasicWindow.class.getResource("buttonUp.png"));
+
+	private static ImageIcon iconButtonTrash=new ImageIcon(BasicWindow.class.getResource("iconTrash.png"));
+	private static ImageIcon iconButtonHelp=new ImageIcon(BasicWindow.class.getResource("iconHelp.png"));
+	
+	
+	public static ImageIcon getIconDelete(){return iconButtonDelete;}
+	public static ImageIcon getIconDown(){return iconButtonDown;}
 	public static ImageIcon getIconUp(){return iconButtonUp;}
+	public static ImageIcon getIconTrash(){return iconButtonTrash;}
+	public static ImageIcon getIconHelp(){return iconButtonHelp;}
 	
 //	private static ImageIcon iconMenuMaint=new ImageIcon(BasicWindow.class.getResource("iconMenuMaint.png"));
 //	private static ImageIcon iconMenuInfo=new ImageIcon(BasicWindow.class.getResource("iconMenuInfo.png"));
