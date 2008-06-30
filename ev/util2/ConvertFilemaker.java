@@ -19,7 +19,6 @@ public class ConvertFilemaker
 		{
 		try
 			{
-			int count=0;
 			BufferedReader bf=new BufferedReader(new FileReader(new File("/Volumes/TBU_main02/recordinfiles.csv")));
 			System.out.println("+++");
 			String line;
@@ -32,7 +31,7 @@ public class ConvertFilemaker
 					{
 					String ss=line.substring(0,index);
 					line=line.substring(index+3);
-					System.out.println("-"+ss);
+//					System.out.println("-"+ss);
 					str.add(ss);
 					}
 				
@@ -43,7 +42,6 @@ public class ConvertFilemaker
 				File imsetFile=new File(str.get(2));
 				File imservFile=new File(imsetFile.getParentFile(),imsetFile.getName()+".imserv");
 				
-				System.out.println(imservFile);
 
 				if(imsetFile.exists())
 					{
@@ -134,16 +132,13 @@ public class ConvertFilemaker
 						}
 					catch (Exception e)
 						{
+						System.out.println(imservFile);
 						e.printStackTrace();
 						}
 					
 					
 					}
 				
-				count++;
-				System.out.println("---"+count);
-				System.out.println("---");
-				System.out.println("---");
 				
 				
 				
