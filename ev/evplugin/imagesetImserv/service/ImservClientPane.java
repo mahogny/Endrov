@@ -12,6 +12,8 @@ package evplugin.imagesetImserv.service;
 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +35,7 @@ import evplugin.imagesetImserv.service.TagListPane.TagListListener;
  * @author Johan Henriksson
  *
  */
-public class ImservClientPane extends JPanel implements ActionListener,TagListListener
+public class ImservClientPane extends JPanel implements ActionListener,TagListListener,DataIconPane.DataIconPaneListener
 	{
 	public static final long serialVersionUID=0;
 	
@@ -126,6 +128,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		add(left,BorderLayout.WEST);
 		add(right,BorderLayout.CENTER);
 
+		pane.addIconPaneListener(this);
 		
 		setConnection(conn);
 		tagListSelect();
@@ -378,22 +381,25 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		
 		Set<String> selected=pane.selectedId;
 		
+		System.out.println("#sel "+selected.size());
 		if(selected.size()!=1)
 			{
+			System.out.println("=empty");
 			if(!attrEditList.isEmpty())
 				{
-				updated=false;
+				updated=true;
 				attrEditList.clear();
-				attrEditPane.removeAll();
 				}
 			}
 		else
 			{
+			System.out.println("something");
 			//null-entry: editable name
 			if(!attrEditList.containsKey(""))
 				{
 				updated=true;
-				attrEditList.put(null, new AttrEditPane(""));
+				attrEditList.put("", new AttrEditPane("",""));
+				System.out.println("new null");
 				}
 			
 			try
@@ -401,36 +407,40 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 				//Normal entries
 				DataIF data=conn.imserv.getData(selected.iterator().next());
 				Tag[] tags=data.getTags();
-				Map<String,String> attr=new TreeMap<String, String>();
+				Map<String,String> newAttrList=new TreeMap<String, String>();
 				for(Tag t:tags)
 					if(t.value!=null)
-						attr.put(t.name,t.value);
+						newAttrList.put(t.name,t.value);
 
 				//Any new?
-				for(Map.Entry<String, String> ae:attr.entrySet())
+				for(Map.Entry<String, String> ae:newAttrList.entrySet())
 					{
 					AttrEditPane pane=attrEditList.get(ae.getKey());
 					if(pane==null)
 						{
-						pane=new AttrEditPane(ae.getKey());
+						pane=new AttrEditPane(ae.getKey(),ae.getValue());
 						attrEditList.put(ae.getKey(),pane);
 						updated=true;
 						}
-					else if(!pane.tValue.equals(ae.getValue()))
+					else if(!pane.tValue.getText().equals(ae.getValue()))
 						{
+						//trouble: editing one cell, overriding
 						updated=true;
 						pane.tValue.setText(ae.getValue());
+						pane.setHighLight(false);
 						}
 					}
 					
 				//Any removed
-				List<String> lastKeys=new LinkedList<String>(attrEditList.keySet());
-				for(String key:lastKeys)
-					if(!attr.containsKey(key))
+				for(String key:new LinkedList<String>(attrEditList.keySet()))
+					{
+					if(!newAttrList.containsKey(key) && !key.equals(""))
 						{
+						System.out.println("removing key"+key);
 						attrEditList.remove(key);
 						updated=true;
 						}
+					}
 				}
 			catch (Exception e)
 				{
@@ -442,6 +452,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		//do layout
 		if(updated)
 			{
+			System.out.println("updated "+attrEditList.size());
 			attrEditPane.removeAll();
 			attrEditPane.setLayout(new GridLayout(attrEditList.size(),1));
 			for(Map.Entry<String, AttrEditPane> entry:attrEditList.entrySet())
@@ -449,6 +460,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 				attrEditPane.add(entry.getValue());
 				
 				}
+			setVisible(true);
 			revalidate();
 			}
 		}
@@ -457,33 +469,40 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	 *	
 	 * /////////////////////////////////////////////////////////////////////////////
 	 */
-	public class AttrEditPane extends JPanel implements ActionListener
+	public class AttrEditPane extends JPanel implements ActionListener, DocumentListener
 		{
 		public static final long serialVersionUID=0;
 		
 		public JTextField tName=new JTextField();
 		public JTextField tValue=new JTextField();
 		public JButton bRemove=new JButton(BasicWindow.getIconDelete());
-		String name;
+		private String name;
+		private Color normalColor;
 		
-		public AttrEditPane(String name)
+		public AttrEditPane(String name, String value)
 			{
 			this.name=name;
 			setLayout(new BorderLayout());
-			if(name!=null)
+			if(name.equals(""))
 				{
-				add(new JLabel(name),BorderLayout.WEST);
-				add(bRemove,BorderLayout.EAST);
+				add(tName,BorderLayout.WEST);
+				Dimension dim=tName.getPreferredSize();
+				dim.width=100;
+				tName.setPreferredSize(dim);
 				}
 			else
 				{
-				add(tName,BorderLayout.WEST);
-				
+				add(new JLabel(name+":"),BorderLayout.WEST);
+				add(bRemove,BorderLayout.EAST);
+				tValue.setText(value);
 				}
 			add(tValue,BorderLayout.CENTER);
 			tName.addActionListener(this);
 			tValue.addActionListener(this);
 			bRemove.addActionListener(this);
+			tValue.getDocument().addDocumentListener(this);
+			tName.getDocument().addDocumentListener(this);
+			normalColor=tValue.getBackground();
 			}
 		
 		public void actionPerformed(ActionEvent e)
@@ -491,24 +510,52 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 			if(e.getSource()==bRemove)
 				{
 				setTag(name,null,false);
-				//update TODO
+				updateEditableAttrList();
 				}
 			else if(e.getSource()==tValue || e.getSource()==tName)
 				{
 				String tname=name;
-				if(tname==null)
+				if(tname.equals(""))
 					tname=tName.getText();
-				setTag(tname,tValue.getText(),true);
-				if(name==null)
+				if(!tname.equals(""))
 					{
-					attrEditList.remove(null);
-					updateEditableAttrList();
+					setHighLight(false);
+					setTag(tname,tValue.getText(),true);
+					if(name.equals(""))
+						{
+						attrEditList.remove("");
+						updateEditableAttrList();
+						}
 					}
 				}
 			}
+
+		private void setHighLight(boolean state)
+			{
+			Color c=state ? new Color(219,219,112) : normalColor;
+			tName.setBackground(c);
+			tValue.setBackground(c);
+			}
 		
+		public void changedUpdate(DocumentEvent e){setHighLight(true);}
+		public void insertUpdate(DocumentEvent e){setHighLight(true);}
+		public void removeUpdate(DocumentEvent e){setHighLight(true);}
+		}
+
+
+
+
+
+
+	public void dataIconActivate(DataIF s)
+		{
 		
 		}
+	public void dataIconSelection()
+		{
+		updateEditableAttrList();
+		}
+	
 	
 	
 	}

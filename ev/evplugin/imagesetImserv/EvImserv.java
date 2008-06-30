@@ -3,11 +3,8 @@ package evplugin.imagesetImserv;
 
 import java.util.*;
 
-import org.jdom.Element;
 
 import evplugin.basicWindow.BasicWindow;
-import evplugin.ev.EV;
-import evplugin.ev.PersonalConfig;
 import evplugin.imagesetImserv.service.ImservClientPane;
 import evplugin.imagesetImserv.service.ImservConnection;
 
@@ -34,15 +31,7 @@ public class EvImserv
 		
 		BasicWindow.addBasicWindowExtension(new ImservBasic());
 		
-		EV.personalConfigLoaders.put("imservwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-//				try	{new FrameTimeWindow(BasicWindow.getXMLbounds(e));}
-	//			catch (Exception e1) {e1.printStackTrace();}
-				}
-			public void savePersonalConfig(Element e){}
-			});
+		
 		
 		//TODO: add new file type
 		}
@@ -51,10 +40,10 @@ public class EvImserv
 	public static class EvImservSession
 		{
 		ImservConnection conn;
-		public EvImservSession(String host, int port) throws Exception
+		public EvImservSession(String host, String pass, int port) throws Exception
 			{
 			//InetAddress.getLocalHost().getHostName(), Daemon.PORT
-			conn=ImservConnection.connect(host,port);
+			conn=ImservConnection.connect(host,pass,port);
 			}
 		
 

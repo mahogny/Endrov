@@ -13,7 +13,7 @@ public class ImservConnection
 	public String host;
 	public String user;
 	
-	public static ImservConnection connect(String host, int port) throws Exception
+	public static ImservConnection connect(String host, String passwd, int port) throws Exception
 		{
 		ImservConnection conn=new ImservConnection();
 		conn.port=port;
@@ -22,7 +22,7 @@ public class ImservConnection
 
 		conn.registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostName(), Daemon.PORT,	new RMISSLClientSocketFactory());
 		conn.imserv = (ImservIF) conn.registry.lookup("imserv");
-		conn.session=conn.imserv.auth(conn.user, "pass");
+		conn.session=conn.imserv.auth(conn.user, passwd);
 		if(conn.session!=null)
 			return conn;
 		return null;

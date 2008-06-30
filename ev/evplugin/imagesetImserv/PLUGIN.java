@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{EvImserv.class};
+		return new Class[]{EvImserv.class,ImservWindow.class};
 		}
 	}

@@ -2,7 +2,9 @@ package evplugin.imagesetImserv;
 
 import evplugin.basicWindow.BasicWindow;
 import evplugin.data.EvData;
+import evplugin.ev.EV;
 import evplugin.ev.EvSwingTools;
+import evplugin.ev.PersonalConfig;
 import evplugin.imagesetImserv.service.*;
 
 import java.awt.BorderLayout;
@@ -24,6 +26,32 @@ import org.jdom.Element;
 public class ImservWindow extends BasicWindow implements ActionListener
 	{
 	public static final long serialVersionUID=0;
+	
+	public static void initPlugin() {}
+	static
+		{
+		EV.personalConfigLoaders.put("imservwindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+//					System.out.println("load");
+					Rectangle r=getXMLbounds(e);
+					new ImservWindow(r);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
+	
+	
+	
+	
 	private ImservClientPane pane=new ImservClientPane(null);
 	private JComboBox sCombo=new JComboBox();
 	private JButton bLogin=new JButton("Login");
@@ -46,6 +74,10 @@ public class ImservWindow extends BasicWindow implements ActionListener
 			return conn.user+"@"+conn.host+":"+conn.port;
 			}
 		}
+
+	
+
+	
 	
 	
 	public ImservWindow()
@@ -145,8 +177,15 @@ public class ImservWindow extends BasicWindow implements ActionListener
 		{
 		}
 
-	public void windowPersonalSettings(Element e)
+	/**
+	 * Store down settings for window into personal config file
+	 */
+	public void windowPersonalSettings(Element root)
 		{
+//		System.out.println("store");
+		Element e=new Element("imservwindow");
+		setXMLbounds(e);
+		root.addContent(e);
 		}
 	
 	
