@@ -148,12 +148,8 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 */
 	public void windowPersonalSettings(Element root)
 		{
-		Rectangle r=getBounds();
 		Element e=new Element("consolewindow");
-		e.setAttribute("x", ""+r.x);
-		e.setAttribute("y", ""+r.y);
-		e.setAttribute("w", ""+r.width);
-		e.setAttribute("h", ""+r.height);
+		setXMLbounds(e);
 		root.addContent(e);
 		}
 

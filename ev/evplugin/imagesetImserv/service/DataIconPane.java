@@ -32,13 +32,20 @@ public class DataIconPane extends JPanel implements Scrollable
 	{
 	public static final long serialVersionUID=0;
 	
-	
+	private List<DataIconPaneListener> listeners=new Vector<DataIconPaneListener>();
 	
 	public interface DataIconPaneListener
 		{
 		public void dataIconSelection();
-		public void dataIconActivate(String s);
+		public void dataIconActivate(DataIF s);
 		}
+	
+	public void addIconPaneListener(DataIconPaneListener list)
+		{
+		listeners.add(list);
+		}
+	
+	
 	
 	private Area a=new Area();
 	private JScrollPane scroll=new JScrollPane(a);
@@ -229,6 +236,9 @@ public class DataIconPane extends JPanel implements Scrollable
 					if(sid!=null)
 						selectedId.add(sid);
 					
+					for(DataIconPaneListener listener:listeners)
+						listener.dataIconSelection();
+					
 					repaint();
 					}
 				//}
@@ -241,6 +251,9 @@ public class DataIconPane extends JPanel implements Scrollable
 					{
 					String openName=selectedId.iterator().next();
 					DataIF data=conn.imserv.getData(openName);
+					
+					for(DataIconPaneListener listener:listeners)
+						listener.dataIconActivate(data);
 					
 					//wrong place, temp
 					ImservImageset rec=new ImservImageset(data);

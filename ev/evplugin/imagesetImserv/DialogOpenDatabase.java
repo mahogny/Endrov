@@ -28,7 +28,7 @@ public class DialogOpenDatabase extends JDialog implements ActionListener, Windo
 	/**
 	 * Final values. Never null
 	 */
-	public String dbUrl="localhost", dbUser="root", dbPassword="";
+	public String dbUrl="localhost", dbUser="", dbPassword="";
 	public int dbPort=evplugin.imagesetImserv.service.Daemon.PORT;
 	
 	/**
@@ -99,7 +99,9 @@ public class DialogOpenDatabase extends JDialog implements ActionListener, Windo
 		catch(InterruptedException e){}
 		if(pressedOk)
 			{
-			EvImserv.EvImservSession ome=new EvImserv.EvImservSession(iUrl.getText(),Integer.parseInt(iPort.getText()));
+			EvImserv.EvImservSession ome=new EvImserv.EvImservSession(iUrl.getText(),iPassword.getText(),Integer.parseInt(iPort.getText()));
+			if(ome==null)
+				throw new Exception("Wrong user/pass");
 			return ome;
 			}
 		else

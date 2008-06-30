@@ -33,9 +33,14 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 	
 	public ClientSessionIF auth(String user, String pass) throws Exception
 		{
-		ClientSessionImpl sess=new ClientSessionImpl(user);
-		daemon.addSession(sess);
-		return sess;
+		if(daemon.auth.canLogin(user, pass))
+			{
+			ClientSessionImpl sess=new ClientSessionImpl(user);
+			daemon.addSession(sess);
+			return sess;
+			}
+		else
+			return null;
 		}
 	
 
