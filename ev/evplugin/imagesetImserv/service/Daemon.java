@@ -56,6 +56,11 @@ public class Daemon extends Thread
 		public void sessionListUpdated();
 		}
 
+	public void log(String s)
+		{
+		for(DaemonListener d:listeners)
+			d.log(s);
+		}
 	
 	
 	
@@ -187,11 +192,23 @@ public class Daemon extends Thread
 		{
 		rep.data.remove(data.getName());
 		for(String s:data.tags.keySet())
-			getMapCreate(s, tags).remove(data);
+			internalRemoveTag(s, data);
 		}
 	
+
+	public synchronized void internalAddTag(String s, DataIF data)
+		{
+		getMapCreate(s, tags).add(data);
+		}
+	public synchronized void internalRemoveTag(String s, DataIF data)
+		{
+		Set<DataIF> set=getMapCreate(s, tags);
+		set.remove(data);
+		if(set.isEmpty())
+			tags.remove(s);
+		}
 	
-	public synchronized Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
+	private static synchronized Set<DataIF> getMapCreate(String key, Map<String,Set<DataIF>> map)
 		{
 		Set<DataIF> set=map.get(key);
 		if(set==null)
@@ -203,7 +220,8 @@ public class Daemon extends Thread
 		}
 	
 
-	public synchronized Set<DataIF> getMapCreate(Tag key, Map<Tag,Set<DataIF>> map)
+	/*
+	private synchronized Set<DataIF> getMapCreate(Tag key, Map<Tag,Set<DataIF>> map)
 		{
 		Set<DataIF> set=map.get(key);
 		if(set==null)
@@ -212,7 +230,7 @@ public class Daemon extends Thread
 			map.put(key,set);
 			}
 		return set;
-		}
+		}*/
 	
 	
 	

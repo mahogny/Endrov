@@ -56,7 +56,7 @@ public class DataIconPane extends JPanel implements Scrollable
 	public List<String> obList=new ArrayList<String>();
 	
 	private int iconw=100;
-	private int iconh=100;
+	private int iconh=120;
 	private int riconw=80;
 	private int riconh=80;
 	private int shifty=5;
@@ -147,6 +147,13 @@ public class DataIconPane extends JPanel implements Scrollable
 			return new Dimension(scroll.getViewport().getWidth(),height);
 			}
 
+//		public Dimension getMaximumSize(){return getPreferredSize();}
+//		public Dimension getMinimumSize(){return getPreferredSize();}
+
+		
+		
+
+
 		protected void paintComponent(Graphics g)
 			{
 			Rectangle r=scroll.getViewport().getViewRect();
@@ -196,10 +203,27 @@ public class DataIconPane extends JPanel implements Scrollable
 				if(selectedId.contains(obList.get(id)))
 					{
 					g.setColor(Color.RED);
-					g.drawRect(x+(iconw-riconw)/2-2, y-2, riconw+4, riconh+4);
+					g.drawRect(x+(iconw-riconw)/2-2, y-2, riconw+3, riconh+3);
 					}
 				
 				int strw=g.getFontMetrics().stringWidth(sid);
+				String sid2=null;
+				if(strw>iconw)
+					{
+					for(int i=sid.length()-1;i>=0;i--)
+						{
+						String ns=sid.substring(0,i);
+						int nstrw=g.getFontMetrics().stringWidth(ns);
+						if(nstrw<=iconw)
+							{
+							strw=nstrw;
+							sid2=sid.substring(i);
+							sid=ns;
+							break;
+							}
+						}
+					}
+				
 				int strh=g.getFontMetrics().getHeight();
 				
 				int tx=x+(iconw-strw)/2;
@@ -210,6 +234,12 @@ public class DataIconPane extends JPanel implements Scrollable
 				
 				g.setColor(Color.BLACK);
 				g.drawString(sid, tx, ty);
+				if(sid2!=null)
+					{
+					strw=g.getFontMetrics().stringWidth(sid2);
+					tx=x+(iconw-strw)/2;
+					g.drawString(sid2, tx, ty+strh);
+					}
 				}
 			
 			}
@@ -314,6 +344,7 @@ public class DataIconPane extends JPanel implements Scrollable
 						obList.add(k);
 				}
 			revalidate();
+			scroll.revalidate();
 			repaint();
 			}
 		catch (Exception e)

@@ -13,12 +13,12 @@ public class ImservConnection
 	public String host;
 	public String user;
 	
-	public static ImservConnection connect(String host, String passwd, int port) throws Exception
+	public static ImservConnection connect(String host, String user, String passwd, int port) throws Exception
 		{
 		ImservConnection conn=new ImservConnection();
 		conn.port=port;
 		conn.host=host;
-		conn.user="user";
+		conn.user=user;
 
 		conn.registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostName(), Daemon.PORT,	new RMISSLClientSocketFactory());
 		conn.imserv = (ImservIF) conn.registry.lookup("imserv");

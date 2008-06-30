@@ -142,9 +142,12 @@ public class ImservWindow extends BasicWindow implements ActionListener
 			try
 				{
 				EvImserv.EvImservSession ome=dia.run();
-				EvImserv.sessions.add(ome);
-				updateSessionList();
-				BasicWindow.updateWindows();
+				if(ome!=null)
+					{
+					EvImserv.sessions.add(ome);
+					updateSessionList();
+					BasicWindow.updateWindows();
+					}
 				}
 			catch (Exception e1)
 				{
