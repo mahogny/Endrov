@@ -40,10 +40,12 @@ public class EvImserv
 	public static class EvImservSession
 		{
 		ImservConnection conn;
-		public EvImservSession(String host, String pass, int port) throws Exception
+		public EvImservSession(String host, String user, String pass, int port) throws Exception
 			{
 			//InetAddress.getLocalHost().getHostName(), Daemon.PORT
-			conn=ImservConnection.connect(host,pass,port);
+			conn=ImservConnection.connect(host,user,pass,port);
+			if(conn==null)
+				throw new Exception("Wrong user/pass?");
 			}
 		
 

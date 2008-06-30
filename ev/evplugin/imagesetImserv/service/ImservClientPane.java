@@ -107,10 +107,12 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		listBottom.add(bHelp);
 		listBottom.add(bToTrash);
 		
-
+		JPanel attrBorder=new JPanel(new GridLayout(1,1));
+		attrBorder.setBorder(BorderFactory.createTitledBorder("Attributes"));
 		JPanel rightBottom=new JPanel(new BorderLayout());
-		rightBottom.add(attrEditPane,BorderLayout.CENTER);
-		rightBottom.add(EvSwingTools.borderLR(status,searchField,null),BorderLayout.SOUTH);
+		attrBorder.add(attrEditPane);
+		rightBottom.add(attrBorder,BorderLayout.CENTER);
+		rightBottom.add(EvSwingTools.borderLR(new JLabel("Filter:"),searchField,status),BorderLayout.SOUTH);
 		
 		JPanel right=new JPanel(new BorderLayout());
 		right.add(rightBottom,BorderLayout.SOUTH);
@@ -280,7 +282,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 			{
 			if(crit.length()!=0)
 				crit.append(" and ");
-			crit.append(item.toString());
+			crit.append(TagExpr.escapeStringIfNeeded(item.toString()));
 			}
 		for(AttrPane p:attrPanesList)
 			{

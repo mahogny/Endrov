@@ -40,7 +40,10 @@ public class ImservImpl extends UnicastRemoteObject implements ImservIF
 			return sess;
 			}
 		else
+			{
+			daemon.log("Failed to log in: "+user);
 			return null;
+			}
 		}
 	
 

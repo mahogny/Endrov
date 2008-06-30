@@ -99,7 +99,8 @@ public class DialogOpenDatabase extends JDialog implements ActionListener, Windo
 		catch(InterruptedException e){}
 		if(pressedOk)
 			{
-			EvImserv.EvImservSession ome=new EvImserv.EvImservSession(iUrl.getText(),iPassword.getText(),Integer.parseInt(iPort.getText()));
+			EvImserv.EvImservSession ome=new EvImserv.EvImservSession(
+					iUrl.getText(),iUser.getText(),iPassword.getText(),Integer.parseInt(iPort.getText()));
 			if(ome==null)
 				throw new Exception("Wrong user/pass");
 			return ome;

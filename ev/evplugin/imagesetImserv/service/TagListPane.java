@@ -1,6 +1,7 @@
 package evplugin.imagesetImserv.service;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -14,13 +15,13 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 
-//TODO: not shift on mac
 
 /**
- * Tag list panel
+ * Panel with list of tags, selectable, removable
  * 
  * @author Johan Henriksson
  *
@@ -58,8 +59,11 @@ public class TagListPane extends JPanel implements MouseListener
 		{
 		tags.clear();
 		tags.addAll(c);
-		//Eliminate selected ones that no longer exist TODO
+		selected.retainAll(c);
 		revalidate();
+		Container cc=getParent();
+		if(cc instanceof JComponent)
+			((JComponent)cc).revalidate();
 		repaint();
 		}
 	
@@ -137,7 +141,8 @@ public class TagListPane extends JPanel implements MouseListener
 			}
 		else
 			{
-			if((e.getModifiersEx()&MouseEvent.SHIFT_DOWN_MASK)==0)
+			//Shift
+			if((e.getModifiersEx()&MouseEvent.META_DOWN_MASK)==0)
 				selected.clear();
 			if(i<tags.size())
 				selected.add(tags.get(i));

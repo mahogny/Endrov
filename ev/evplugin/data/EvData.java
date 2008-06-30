@@ -209,35 +209,6 @@ public abstract class EvData
 	 */
 	public static EvData loadFileDialog(LoadFileCallback cb)
 		{
-		/*
-		System.setProperty("apple.awt.fileDialogForDirectories", "true");
-		Frame frame=Frame.getFrames()[0]; //what if there is no open window?
-		FileDialog fd=new FileDialog(frame,"Load File");
-		fd.setDirectory(EvData.getLastDataPath());
-		fd.setFilenameFilter(new FilenameFilter(){
-			public boolean accept(File dir, String name)
-				{
-				File f=new File(dir,name);
-				if(f.isDirectory())
-					return true;
-				for(EvDataSupport s:EvData.supportFileFormats)
-					if(s.supports(f)!=null)
-						return true;
-				return false;
-				}
-		});
-		fd.setMode(FileDialog.LOAD);
-		fd.setVisible(true);
-		if(fd.getFile()!=null)
-			{
-			File filename=new File(fd.getDirectory(),fd.getFile());
-			EvData.setLastDataPath(fd.getDirectory());
-			return loadFile(filename);
-			}
-		return null;
-		*/
-		
-		
 		JFileChooser fc=new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fc.setFileFilter(new javax.swing.filechooser.FileFilter()

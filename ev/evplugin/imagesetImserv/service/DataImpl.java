@@ -287,12 +287,12 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			{
 			Tag tag=new Tag(false,tagname,value);
 			tags.put(tagname,tag);
-			daemon.getMapCreate(tagname, daemon.tags).add(this);
+			daemon.internalAddTag(tagname, this);
 			}
 		else
 			{
 			tags.remove(tagname);
-			daemon.getMapCreate(tagname, daemon.tags).remove(this);
+			daemon.internalRemoveTag(tagname, this);
 			}
 		//TODO: reload this data
 		System.out.println(tagname+" "+enable);
