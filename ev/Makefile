@@ -24,11 +24,14 @@ starters:
 	jar cfvm startEndrov.jar evgui/MANIFEST.STARTGUI evgui/StartGUI.class
 	du -hc start*.jar
 
-applet:
-	jar cfv evapplet/applet.jar evapplet/*.class
-	#jarsigner -keystore myKeys evapplet/applet.jar jdc
-	#keytool -export -keystore myKeys -alias jdc -file evapplet/johanhenriksson.cer
+#applet:
+#	jar cfv evapplet/applet.jar evapplet/*.class
+#	#jarsigner -keystore myKeys evapplet/applet.jar jdc
+#	#keytool -export -keystore myKeys -alias jdc -file evapplet/johanhenriksson.cer
 
+
+
+#### TODO: makerelease should handle this
 #run in unzipped dist, with mykey
 totaljar:
 	jar cfvm ../ev.jar evgui/MANIFEST.WEBSTART evplugin/ev/pluginlist.txt \

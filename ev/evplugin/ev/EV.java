@@ -198,7 +198,7 @@ public class EV
 		}
 	public static void savePluginList(File root)
 		{
-		if(!PluginInfo.storedInJar())
+		if(!PluginInfo.readFromList)
 	    try
 	    	{
 	      FileOutputStream out = new FileOutputStream(new File(new File("evplugin","ev"),"pluginlist.txt"));
@@ -223,8 +223,15 @@ public class EV
 		}
 	public static void loadPlugins(File root)
 		{
+//		PluginInfo.getPluginList(root);
+		
 		for(PluginInfo pi:PluginInfo.getPluginList(root))
+			{
+			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" start");
 			pi.load();
+			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" end");
+			}
+		JOptionPane.showMessageDialog(null, "no more");
 		}
 	
 	/**
