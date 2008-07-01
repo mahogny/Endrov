@@ -2,7 +2,6 @@ package evplugin.ev;
 
 import java.io.*;
 import java.lang.reflect.*;
-import java.net.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -16,6 +15,8 @@ public class PluginInfo
 	public String filename;
 	public PluginDef pdef=null;
 	
+	/** Set to true if pluginlist.txt should be used instead of scanning the plugin directories */
+	public static boolean readFromList=false;
 
 	
 	/**
@@ -44,6 +45,8 @@ public class PluginInfo
 			}
 		catch (Exception e)
 			{
+			JOptionPane.showMessageDialog(null, "Error loading plugin "+filename+": "+e.getMessage());
+			System.exit(0);
 			}
 		}
 	
@@ -95,7 +98,7 @@ public class PluginInfo
 	public static List<PluginInfo> getPluginList(File root)
 		{
 		final List<PluginInfo> p=new LinkedList<PluginInfo>();
-		if(storedInJar())
+		if(readFromList)
 			{
 			try
 				{
@@ -103,11 +106,11 @@ public class PluginInfo
 				BufferedReader br = new BufferedReader(new InputStreamReader(input));
 				String strLine;
 				while ((strLine = br.readLine()) != null)
-					p.add(new PluginInfo(strLine));
+					p.add(new PluginInfo(strLine.replace('/', '.').replace('\\','.')));
 				}
 			catch (Exception e)
 				{
-				JOptionPane.showMessageDialog(null, "Applet does not have a plugin listing");
+				JOptionPane.showMessageDialog(null, "Problem reading plugin listing: "+e.getMessage());
 				}
 			}
 		else
@@ -117,24 +120,35 @@ public class PluginInfo
 				JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");
 			else
 				for(File subdir:pluginDir.listFiles())
-					{
-					String plugin="evplugin/"+subdir.getName();
-					PluginInfo pi=new PluginInfo(plugin);
-					if(pi.exists())
-						p.add(pi);
-					}
+						{
+						String plugin="evplugin/"+subdir.getName();
+						if(new File(plugin,"PLUGIN.class").exists())
+							{
+							String classPath=(new File(plugin)).getAbsolutePath().
+							substring(-1+(new File(".")).getAbsolutePath().length()).replace('/', '.').replace('\\','.');
+							
+							PluginInfo pi=new PluginInfo(classPath);
+							if(pi.exists())
+								p.add(pi);
+							}
+						}
 			}
+		JOptionPane.showMessageDialog(null, "now here "+p.size());
 		return p;
 		}
 
 	/**
 	 * Check if EV is stored in a JAR-file
 	 */
+	/*
 	public static boolean storedInJar()
 		{
+		System.out.println("readpluginlist: "+System.getProperty("ev.readpluginlist"));
+		
+		
 		URL url=EV.class.getResource("pluginlist.txt");
 		return url!=null && url.toString().indexOf(".jar!")!=-1;
 		}
-	
+	*/
 
 	}

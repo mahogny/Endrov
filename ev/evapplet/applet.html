@@ -8,6 +8,9 @@ Test page for EV-Lite applet<br/>
 <!-- --------------------------- ENDROV APPLET START ----------------------------------------------- -->
 <applet codebase="../" width="700" height="350">
 	
+	<!-- Pass arguemnts, http://www.velocityreviews.com/forums/t133784-passing-arguments-to-applet.html -->
+	
+	
 	<!-- For JNLP-applet launcher -->
 	<param name="code" value="org.jdesktop.applet.util.JNLPAppletLauncher">  
 	<param name="subapplet.displayname" value="EV-Lite">
@@ -20,6 +23,10 @@ Test page for EV-Lite applet<br/>
    <param name="jnlpNumExtensions" value="1">
    <param name="jnlpExtension1"
           value="http://download.java.net/media/jogl/builds/archive/jsr-231-webstart-current/jogl.jnlp">
+	
+   <!-- For JInput -->
+    <param name="jnlpExtension2"
+          value="http://www.endrov.net/jinput/jinput.jnlp">
 	
 	<!-- Required JAR-files -->	
 	<param name="archive" value="
@@ -59,14 +66,16 @@ libs/xml_inc/xalan.jar,
 libs/xml_inc/xerces.jar,
 libs/xml_inc/xml-apis.jar,
 
+	http://www.endrov.net/jinput/jinput.jar,
 	http://download.java.net/media/applet-launcher/applet-launcher.jar,
 	http://download.java.net/media/jogl/builds/archive/jsr-231-webstart-current/jogl.jar,
-	http://download.java.net/media/gluegen/webstart/gluegen-rt.jar,
-	../ev.jar">
+	http://download.java.net/media/gluegen/webstart/gluegen-rt.jar">
 	
 	Your browser does not support Java applets.
 	</applet><br/>
 <!-- --------------------------- ENDROV APPLET END ----------------------------------------------- -->
+
+<!-- ../ev.jar -->
 
 	<param name="nimgs" value="17">
 	<param name="offset" value="-57">

@@ -10,6 +10,8 @@ import evplugin.lineageWindow.LineageWindow;
 import evplugin.modelWindow.ModelWindow;
 
 import javax.swing.JApplet;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 //http://lopica.sourceforge.net/faq.html#nosandbox
 //System.setSecurityManager(null)
@@ -53,7 +55,15 @@ public class AppletGUI extends JApplet
 		{
 		try
 			{
+			PluginInfo.readFromList=true;
 			EV.loadPlugins();
+			
+//			JTextField fi=new JTextField();
+	//		getContentPane().add(fi);
+
+//			JOptionPane.showMessageDialog(applet, "foo");
+			
+			
 			EvWindowManagerApplet manager=new EvWindowManagerApplet(2,applet==null);
 			BasicWindow.windowManager=manager;
 			new LineageWindow();
@@ -63,6 +73,7 @@ public class AppletGUI extends JApplet
 			
 			if(applet!=null)
 				applet.getContentPane().add(manager.totalPane);
+				
 			}
 		catch (Exception e)
 			{
