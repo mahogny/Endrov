@@ -133,7 +133,7 @@ public class PluginInfo
 							}
 						}
 			}
-		JOptionPane.showMessageDialog(null, "now here "+p.size());
+//		JOptionPane.showMessageDialog(null, "now here "+p.size());
 		return p;
 		}
 
