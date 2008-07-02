@@ -7,7 +7,7 @@ import org.jdom.*;
 
 import evplugin.ev.EvXMLutils;
 
-public class FilemakerToSql
+public class FilemakerToSqlHope
 	{
 
 	public static String escapeSQL(String s)
@@ -31,36 +31,24 @@ public class FilemakerToSql
 	public static void main(String[] args)
 		{
 		TreeMap<String, String> mapFM2SQL=new TreeMap<String, String>();
+		for(String s:new String[]{"lastmodified","currentstatus","receiveddate","received","todaysdate"})
+			mapFM2SQL.put(s,s);
+		for(int i=1;i<=39;i++)
+			mapFM2SQL.put("f"+i,"f"+i);
+		mapFM2SQL.put("TBUgenotype","tbugenotype");
+		mapFM2SQL.put("TBUphenotype","tbuphenotype");
+		mapFM2SQL.put("TBUnotes","tbunotes");
+
 		
-		mapFM2SQL.put("Gene_name","genename");
-		mapFM2SQL.put("Gene_Class","geneclass");
-		mapFM2SQL.put("Old_Gene_Name","oldgenename");
-		mapFM2SQL.put("Sequence_Name","seqname"); //ADD
-		mapFM2SQL.put("Cosmid","cosmid");
-		mapFM2SQL.put("WB_Listed_Strains","wblistedstrains");
-		mapFM2SQL.put("BC_Genome_GFP_Strains","bcgenomegfpstrains");
-		mapFM2SQL.put("BC_embryonic_expression","bcembexp");
-		mapFM2SQL.put("Ex_Transgene","extransgene");
-		mapFM2SQL.put("Is_Transgene","istransgene");
-		mapFM2SQL.put("Investigated","investigated");
-		mapFM2SQL.put("TB__Strain_available","tbstrainavailable");
-		mapFM2SQL.put("TB__Integration_Process","tbintegproc");
-		mapFM2SQL.put("GFP_Diss._Scope","gfpdissscope");
-		mapFM2SQL.put("GFP_highpower","gfphighpower"); //CHANGE
-		mapFM2SQL.put("Integration_Start","integstart");
-		mapFM2SQL.put("fourD_Recording","fourdrec");
-		mapFM2SQL.put("ToDo1","todo");
-		mapFM2SQL.put("re_freezing","refreezing");
-		mapFM2SQL.put("integratedstrains","numintstrains");
-		mapFM2SQL.put("strings_good_rec","goodrec");
-		mapFM2SQL.put("not_homeobox","markerfor");
+		
+		
 		
 		String[] areBooleanA=new String[]{/*"investigated"*/};
 		Set<String> areBoolean=new HashSet<String>();
 		for(String s:areBooleanA)
 			areBoolean.add(s);
 
-		String[] areIntegerA=new String[]{"numintstrains"};
+		String[] areIntegerA=new String[]{/*"numintstrains"*/};
 		Set<String> areInteger=new HashSet<String>();
 		for(String s:areIntegerA)
 			areInteger.add(s);
@@ -71,12 +59,14 @@ public class FilemakerToSql
 		
 		try
 			{
-			Document doc=EvXMLutils.readXML(new File("/Volumes/TBU_main02/homeoExport2.xml"));
+			Document doc=EvXMLutils.readXML(new File("/Volumes/TBU_main02/hopeExport.xml"));
 			Element root=doc.getRootElement();
 			
 			for(Object ro:root.getChildren())
 				{
 				Element rowe=(Element)ro;
+				if(!rowe.getName().equals("ROW"))
+					continue;
 				//One record
 				
 				TreeMap<String, Object> insert=new TreeMap<String, Object>();
@@ -137,12 +127,12 @@ public class FilemakerToSql
 					}
 				
 				
-				insert.put("ID",idnum);
+				insert.put("hopeID",idnum);
 				
 				//Put insert together
 				StringBuffer exp=new StringBuffer();
 				StringBuffer expv=new StringBuffer();
-				exp.append("insert into tbhomeo(");
+				exp.append("insert into tbhope(");
 				expv.append("(");
 				boolean needComma=false;
 				for(Map.Entry<String, Object> entry:insert.entrySet())

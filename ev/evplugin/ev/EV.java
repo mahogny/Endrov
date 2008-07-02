@@ -227,11 +227,11 @@ public class EV
 		
 		for(PluginInfo pi:PluginInfo.getPluginList(root))
 			{
-			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" start");
+//			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" start");
 			pi.load();
-			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" end");
+//			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" end");
 			}
-		JOptionPane.showMessageDialog(null, "no more");
+//		JOptionPane.showMessageDialog(null, "no more");
 		}
 	
 	/**
