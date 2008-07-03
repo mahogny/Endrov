@@ -190,21 +190,17 @@ public class EV
 	
 	
 	/**
-	 * Save plugin list to file. This is 
+	 * Save plugin list to file
 	 */
 	public static void savePluginList()
-		{
-		savePluginList(new File("."));
-		}
-	public static void savePluginList(File root)
 		{
 		if(!PluginInfo.readFromList)
 	    try
 	    	{
-	      FileOutputStream out = new FileOutputStream(new File(new File("evplugin","ev"),"pluginlist.txt"));
+	      FileOutputStream out = new FileOutputStream(new File(new File("endrov","ev"),"pluginlist.txt"));
 	      PrintStream p = new PrintStream( out );
-	    	for(PluginInfo pi:PluginInfo.getPluginList(root))
-	    		p.println(pi.filename);
+	    	for(PluginInfo pi:PluginInfo.getPluginList())
+	    		p.println(pi.classPath);
 	    	p.close();
 	    	out.close();
 	    	}
@@ -219,19 +215,8 @@ public class EV
 	 */
 	public static void loadPlugins()
 		{
-		loadPlugins(new File("."));
-		}
-	public static void loadPlugins(File root)
-		{
-//		PluginInfo.getPluginList(root);
-		
-		for(PluginInfo pi:PluginInfo.getPluginList(root))
-			{
-//			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" start");
+		for(PluginInfo pi:PluginInfo.getPluginList())
 			pi.load();
-//			JOptionPane.showMessageDialog(null, pi.pdef.getPluginName()+" end");
-			}
-//		JOptionPane.showMessageDialog(null, "no more");
 		}
 	
 	/**

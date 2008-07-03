@@ -7,7 +7,6 @@ import java.io.*;
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.shell.*;
-//import evplugin.metadata.*;
 
 
 /**

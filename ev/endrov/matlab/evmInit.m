@@ -5,7 +5,7 @@
 %   Warnings about already included jars may appear, nothing to worry
 %   about. To reinit Endrov, use "clear" first (or clear hasInitEv).
 
-import evplugin.matlab.*;
+import endrov.matlab.*;
 
 if ~exist('hasInitEv')
     hasInitEv=1;
@@ -14,17 +14,20 @@ if ~exist('hasInitEv')
     if length(evpath)==0
     	disp('====ERROR==== Cannot find Endrov. Check your path');
    	else
-	    evpath=evpath(1:(length(evpath)-length('evplugin/matlab/evmInit.m')))
+	    evpath=evpath(1:(length(evpath)-length('endrov/matlab/evmInit.m')))
 	    javaaddpath(evpath)
 	    jars=EvMatlab.getJars(evpath)
 	    for i=1:size(jars,1)
+		    char(jars(i))
 	    	javaaddpath(char(jars(i)));
 	    end
 	   
-	    logger=evplugin.ev.StdoutLog
-		evplugin.ev.Log.listeners.add(logger)
+	    logger=endrov.ev.StdoutLog
+		endrov.ev.Log.listeners.add(logger)
 	    
-	    evplugin.ev.EV.loadPlugins(java.io.File(evpath));
+	    endrov.ev.EV.loadPlugins();
+	    
+	    evpath
 	    
 		clear logger
 	    clear evpath

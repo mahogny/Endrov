@@ -14,7 +14,6 @@ import endrov.ev.Log;
 import endrov.imageWindow.*;
 import endrov.imageset.Imageset;
 import endrov.keyBinding.KeyBinding;
-//import evplugin.imageset.*;
 
 /**
  * Make nuclei by dragging an area. Also move nuclei.

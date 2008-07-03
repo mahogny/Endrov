@@ -3,7 +3,6 @@ package endrov.adAlldab;
 import java.sql.SQLException;
 //import java.util.Map;
 
-//import evplugin.adAlldab.SeqAnnot.Annotation;
 
 public class TestAnnot
 	{
