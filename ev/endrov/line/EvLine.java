@@ -11,7 +11,6 @@ import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
 import endrov.modelWindow.ModelWindow;
-//import evplugin.modelWindow.ModelWindow;
 
 /**
  * Meta object: Line 

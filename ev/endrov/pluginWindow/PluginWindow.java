@@ -3,7 +3,6 @@ package endrov.pluginWindow;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 
 import javax.swing.*;
 import java.util.Vector;
@@ -89,8 +88,8 @@ public class PluginWindow extends BasicWindow
 	public PluginWindow(int x, int y, int w, int h)
 		{				
 		plugins=new Vector<PluginInfo>();
-		plugins.addAll(PluginInfo.getPluginList(new File("."))); //Not always the right directory...
-
+		plugins.addAll(PluginInfo.getPluginList());
+		
 		list.setListData(plugins);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
   	list.setLayoutOrientation(JList.VERTICAL);

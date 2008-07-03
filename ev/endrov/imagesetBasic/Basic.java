@@ -1,7 +1,5 @@
 package endrov.imagesetBasic;
 
-//import evplugin.basicWindow.*;
-//import evplugin.imageset.*;
 import endrov.data.*;
 
 import java.io.File;

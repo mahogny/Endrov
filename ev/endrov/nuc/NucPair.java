@@ -6,7 +6,8 @@ import endrov.ev.Tuple;
 
 public class NucPair extends Tuple<NucLineage,String>
 	{
-	public NucPair(NucLineage lin, String nuc)
+	static final long serialVersionUID=0;
+ 	public NucPair(NucLineage lin, String nuc)
 		{
 		super(lin,nuc);
 		}

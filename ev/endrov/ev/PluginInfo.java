@@ -12,7 +12,7 @@ import javax.swing.*;
  */
 public class PluginInfo
 	{
-	public String filename;
+	public String classPath;
 	public PluginDef pdef=null;
 	
 	/** Set to true if pluginlist.txt should be used instead of scanning the plugin directories */
@@ -31,21 +31,23 @@ public class PluginInfo
 	 * Read directory for plugin information
 	 * @param filename
 	 */
-	public PluginInfo(String filename)
+	public PluginInfo(String classPath)
 		{
-		this.filename=filename;
+	//	this.filename=filename;
+		this.classPath=classPath;
 		pdef=null;
 		try
 			{
-			String classPath=(new File(filename)).getAbsolutePath().
-			substring(-1+(new File(".")).getAbsolutePath().length()).replace('/', '.').replace('\\','.');
+		//	String classPath=(new File(filename)).getAbsolutePath().
+			//substring(-1+(new File(".")).getAbsolutePath().length()).replace('/', '.').replace('\\','.');
 			Class<?> theClass=Class.forName(classPath+".PLUGIN");
 			Constructor<?> constr=theClass.getConstructor(new Class<?>[]{});
 			pdef=(PluginDef)constr.newInstance(new Object[]{});
 			}
 		catch (Exception e)
 			{
-			JOptionPane.showMessageDialog(null, "Error loading plugin "+filename+": "+e.getMessage());
+			JOptionPane.showMessageDialog(null, "Error loading plugin "+classPath+": "+e.getMessage());
+			System.out.println("Error loading plugin "+classPath+": "+e.getMessage());
 			System.exit(0);
 			}
 		}
@@ -89,13 +91,13 @@ public class PluginInfo
 		if(pdef!=null)
 			return pdef.getPluginName();
 		else
-			return filename;
+			return classPath;
 		}
 
 	/**
 	 * Get a list of all plugins
 	 */
-	public static List<PluginInfo> getPluginList(File root)
+	public static List<PluginInfo> getPluginList()
 		{
 		final List<PluginInfo> p=new LinkedList<PluginInfo>();
 		if(readFromList)
@@ -115,17 +117,21 @@ public class PluginInfo
 			}
 		else
 			{
-			File pluginDir=new File(root,"endrov");
+			File pluginDir=new File(PluginInfo.class.getResource(".").getFile()).getParentFile();
 			if(!pluginDir.exists())
+				{
 				JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");
+				System.out.println("Plugin directory does not exist!");
+				}
 			else
 				for(File subdir:pluginDir.listFiles())
 						{
-						String plugin="endrov/"+subdir.getName();
-						if(new File(plugin,"PLUGIN.class").exists())
+						if(new File(subdir,"PLUGIN.class").exists())
 							{
-							String classPath=(new File(plugin)).getAbsolutePath().
-							substring(-1+(new File(".")).getAbsolutePath().length()).replace('/', '.').replace('\\','.');
+							String classPath=subdir.getAbsolutePath().substring(pluginDir.getParent().length());
+							classPath=classPath.replace('/', '.').replace('\\','.');
+							if(classPath.startsWith("."))
+								classPath=classPath.substring(1);
 							
 							PluginInfo pi=new PluginInfo(classPath);
 							if(pi.exists())
