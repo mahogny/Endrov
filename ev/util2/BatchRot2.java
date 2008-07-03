@@ -3,9 +3,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-import evplugin.ev.*;
-import evplugin.imagesetOST.*;
-import evplugin.nuc.*;
+import endrov.ev.*;
+import endrov.imagesetOST.*;
+import endrov.nuc.*;
+
 import java.util.*;
 
 /**

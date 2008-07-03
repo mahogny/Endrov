@@ -13,15 +13,11 @@ jni:
 uploaddoc:
 	scp -r ../javadoc mahogny@celegans.sh.se:~/Sites/
 
-linecount:
-	wc -l evgui/*.java evplugin/*/*.java evplugin/*/*.txt evplugin/*/cmd/*.java evplugin/roi/primitive/*.java evplugin/roi/window/*.java \
-	evplugin/modelWindow/isosurf/*.java evplugin/modelWindow/voxel/*.java evplugin/modelWindow/slice3d/*.java
-
 starters:
-	jar cfvm startOSTdaemon.jar evgui/MANIFEST.STARTOST evgui/StartOSTdaemon.class OSTdaemon/*.class
-	jar cfvm startImServ.jar evgui/MANIFEST.STARTIMSERV evgui/StartImServ.class
+	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class
+	jar cfvm startImServ.jar endrov/starter/MANIFEST.STARTIMSERV endrov/starter/StartImServ.class
 	jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class
-	jar cfvm startEndrov.jar evgui/MANIFEST.STARTGUI evgui/StartGUI.class
+	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/StartGUI.class
 	du -hc start*.jar
 
 #applet:
@@ -34,7 +30,7 @@ starters:
 #### TODO: makerelease should handle this
 #run in unzipped dist, with mykey
 totaljar:
-	jar cfvm ../ev.jar evgui/MANIFEST.WEBSTART evplugin/ev/pluginlist.txt \
+	jar cfvm ../ev.jar endrov/starter/MANIFEST.WEBSTART evplugin/ev/pluginlist.txt \
 		*/*class */*/*class */*/*/*class \
 		*/*/*png */*/*/*png \
 		*/*/*/*glsl 

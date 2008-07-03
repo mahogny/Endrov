@@ -10,7 +10,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-import evplugin.ev.EV;
+import endrov.ev.EV;
 
 public class GetWormbaseLineage
 	{

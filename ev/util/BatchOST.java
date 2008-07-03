@@ -1,7 +1,7 @@
 package util;
 import java.io.*;
 
-import evplugin.imagesetOST.*;
+import endrov.imagesetOST.*;
 
 /**
  * Go through all OST imagesets in a directory and resave them. This will cause them to be resaved in the

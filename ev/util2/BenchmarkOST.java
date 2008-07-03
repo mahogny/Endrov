@@ -1,7 +1,8 @@
 package util2;
 
-import evplugin.ev.*;
-import evplugin.imagesetOST.*;
+import endrov.ev.*;
+import endrov.imagesetOST.*;
+
 import java.io.File;
 
 /**

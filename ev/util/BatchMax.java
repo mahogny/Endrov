@@ -1,9 +1,9 @@
 package util;
 import java.io.File;
 
-import evplugin.ev.*;
-import evplugin.imagesetOST.OstImageset;
-import evplugin.makeMax.CalcThread;
+import endrov.ev.*;
+import endrov.imagesetOST.OstImageset;
+import endrov.makeMax.CalcThread;
 
 
 /**
