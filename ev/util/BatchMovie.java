@@ -1,11 +1,11 @@
 package util;
 
-import evplugin.ev.*;
-import evplugin.filter.FilterSeq;
-import evplugin.filter.FilterSlice;
-import evplugin.filterBasic.ContrastBrightnessFilter;
-import evplugin.imagesetOST.*;
-import evplugin.makeQT.*;
+import endrov.ev.*;
+import endrov.filter.FilterSeq;
+import endrov.filter.FilterSlice;
+import endrov.filterBasic.ContrastBrightnessFilter;
+import endrov.imagesetOST.*;
+import endrov.makeQT.*;
 
 import java.util.*;
 import java.io.File;

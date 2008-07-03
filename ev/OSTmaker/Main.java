@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Vector;
 
-import evplugin.ev.*;
-import evplugin.imagesetBioformats.BioformatsImageset;
-import evplugin.imagesetOST.SaveOSTThread;
+import endrov.ev.*;
+import endrov.imagesetBioformats.BioformatsImageset;
+import endrov.imagesetOST.SaveOSTThread;
 
 /**
  * Import imagesets in varying formats

@@ -1,8 +1,8 @@
 package util;
 import java.io.File;
 
-import evplugin.ev.EV;
-import evplugin.imagesetOST.*;
+import endrov.ev.EV;
+import endrov.imagesetOST.*;
 
 /**
  * Run through all imagesets in a folder and generate imagecache.txt in them

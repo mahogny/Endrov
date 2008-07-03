@@ -16,8 +16,8 @@ import javax.imageio.*;
 
 import org.jdom.*;
 
-import evplugin.ev.EvXMLutils;
-import evplugin.jubio.*;
+import endrov.ev.EvXMLutils;
+import endrov.jubio.*;
 
 
 //ADD OPTION to skip black frames

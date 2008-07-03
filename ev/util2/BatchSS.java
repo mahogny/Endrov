@@ -3,11 +3,11 @@ package util2;
 import java.util.*;
 import java.io.File;
 
-import evplugin.data.*;
-import evplugin.ev.*;
-import evplugin.imagesetOST.OstImageset;
-import evplugin.shell.*;
-import evplugin.sliceSignal.*;
+import endrov.data.*;
+import endrov.ev.*;
+import endrov.imagesetOST.OstImageset;
+import endrov.shell.*;
+import endrov.sliceSignal.*;
 
 /**
  * Go through all imagesets in a directory and run slice/signal
