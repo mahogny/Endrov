@@ -1,0 +1,37 @@
+TODO: universal binary
+
+octave-3.0.0:7> help voronoin
+ -- Function File: [C, F] = voronoin (PTS)
+ -- Function File: [C, F] = voronoin (PTS, OPTIONS)
+     computes n- dimensional voronoi facets.  The input matrix PTS of
+     size [n, dim] contains n points of dimension dim.  C contains the
+     points of the voronoi facets. The list F contains for each facet
+     the indices of the voronoi points.
+
+     A second optional argument, which must be a string, contains extra
+     options passed to the underlying qhull command.  See the
+     documentation for the Qhull library for details.
+
+     
+     
+     function [C, F] = voronoin (pts, opt)
+
+  if (nargin != 1 && nargin != 2)
+    print_usage ();
+  endif
+
+  [np, dims] = size (pts);
+  if (np > dims)
+    if (nargin == 1)
+      [C, F, infi] = __voronoi__ (pts);
+    elseif ischar(opt)
+      [C, F, infi] = __voronoi__ (pts, opt);
+    else
+      error ("voronoin: second argument must be a string");
+    endif
+
+  else
+    error ("voronoin: number of points must be greater than their dimension")
+  endif
+endfunction
+     
