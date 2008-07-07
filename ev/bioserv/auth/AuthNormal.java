@@ -1,4 +1,4 @@
-package bioserv;
+package bioserv.auth;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -7,9 +7,13 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.imagesetImserv.service.DataIF;
-import endrov.imagesetImserv.service.ImservImpl;
-import endrov.imagesetImserv.service.TagExpr;
+import bioserv.BioservDaemon;
+import bioserv.BioservModule;
+import bioserv.HashPassword;
+import bioserv.imserv.DataIF;
+import bioserv.imserv.ImservImpl;
+import bioserv.imserv.TagExpr;
+
 
 /**
  * Permissions based on user/pass tags in XML

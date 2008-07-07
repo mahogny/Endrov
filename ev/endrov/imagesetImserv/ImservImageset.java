@@ -7,11 +7,11 @@ import java.io.*;
 import java.util.TreeMap;
 
 import bioserv.SendFile;
+import bioserv.imserv.DataIF;
 
 import endrov.data.RecentReference;
 import endrov.ev.Log;
 import endrov.imageset.*;
-import endrov.imagesetImserv.service.DataIF;
 
 
 /**

@@ -29,7 +29,7 @@ public class StartGUI
 	private String cpsep=":";
 	private String libdir="";
 	private String javaexe="java";
-	private String memstring="-Xmx700M";
+	private String memstring="-Xmx2000M";
 	ProcessBuilder pb=new ProcessBuilder("");
 	String jarstring=new File(".").getAbsolutePath();
 

@@ -137,6 +137,7 @@ public class GUI extends JFrame implements ActionListener
 						{
 						outfilename=outfilename.substring(0,outfilename.lastIndexOf("."));
 						outfilename=outfilename.replace('-', '_');
+						outfilename=outfilename+".ost";
 						File outfile=new File(toim.file.getParentFile(),outfilename);
 						
 						BioformatsImageset inim=toim.im;

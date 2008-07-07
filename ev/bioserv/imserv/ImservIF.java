@@ -1,4 +1,4 @@
-package endrov.imagesetImserv.service;
+package bioserv.imserv;
 
 import java.rmi.Remote;
 import java.util.Date;

@@ -121,7 +121,17 @@ public class OstImageset extends Imageset
 
 	public void convert33prime()
 		{
-		
+		//Rename channels
+		for(File child:basedir.listFiles())
+			{
+			String n=child.getName();
+			if(child.isDirectory() && !n.startsWith(".") && !n.startsWith("ch-") && !n.equals("data"))
+				{
+				File newname=new File(basedir,"ch-"+n);
+				System.out.println(""+n+" to "+newname);
+				child.renameTo(newname);
+				}
+			}
 		}
 
 	
@@ -358,11 +368,10 @@ public class OstImageset extends Imageset
 				//Check which files exist
 				File[] dirfiles=basepath.listFiles();
 				for(File f:dirfiles)
-					if(f.isDirectory() && !f.getName().startsWith(".") && !f.getName().equals("data"))
-//						if(f.isDirectory() && !f.getName().startsWith(".") && !f.getName().endsWith("-data"))
+					if(f.isDirectory() && f.getName().startsWith("ch-"))//!f.getName().startsWith(".") && !f.getName().equals("data"))
 						{
 						String fname=f.getName();
-						String channelName=fname;
+						String channelName=fname.substring("ch-".length());
 //						String channelName=fname.substring(fname.lastIndexOf('-')+1);
 						Log.printLog("Found channel: "+channelName);
 						Channel c=new Channel(meta.getCreateChannelMeta(channelName));
@@ -521,7 +530,7 @@ public class OstImageset extends Imageset
 	private File buildChannelPath(String channelName)
 		{
 //		return new File(basedir,imageset+"-"+channelName);
-		return new File(basedir,channelName);
+		return new File(basedir,"ch-"+channelName);
 		}
 	/** Internal: piece together a path to a frame */
 	public File buildFramePath(String channelName, int frame)

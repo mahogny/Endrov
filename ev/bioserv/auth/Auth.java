@@ -1,10 +1,12 @@
-package bioserv;
+package bioserv.auth;
 
 import java.util.Map;
 
 import org.jdom.Element;
 
-import endrov.imagesetImserv.service.DataIF;
+import bioserv.BioservDaemon;
+import bioserv.imserv.DataIF;
+
 
 
 /**

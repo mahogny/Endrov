@@ -4,8 +4,8 @@ package endrov.imagesetImserv;
 import java.util.*;
 
 import bioserv.BioservDaemon;
+import bioserv.imserv.ImservConnection;
 import endrov.basicWindow.BasicWindow;
-import endrov.imagesetImserv.service.ImservConnection;
 
 
 //recent: store host,port,user,pass

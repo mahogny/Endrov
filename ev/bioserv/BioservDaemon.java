@@ -5,6 +5,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
 
+import bioserv.auth.Auth;
+
 
 
 
