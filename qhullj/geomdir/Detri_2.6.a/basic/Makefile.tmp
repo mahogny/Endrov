@@ -1,0 +1,53 @@
+# 1 "Makefile.cpp"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "Makefile.cpp"
+
+
+
+
+
+LIB= ../lib
+INCLUDE= ../include
+CHMOD= chmod u+rw,go+r
+
+
+
+# 1 "Makefile.sys" 1
+# 11 "Makefile.sys"
+  CCFLAGS= -D__USE_FIXED_PROTOTYPES__ -Wall
+  DEPEND= true
+  AR= ar ruv lib_OUT.a
+  RANLIB= ranlib lib_OUT.a
+  MALLOC=
+# 13 "Makefile.cpp" 2
+
+
+MODULES= basic.c files.c malloc.c getarg.c cb.c cb_doprnt.c isort.c prime.c uhash.c istaque.c time.c counter.c arg.c qsort.c tokenize.c math2.c iit.c heapsort.c uf.c
+
+
+
+
+
+H_FILES= basic.h
+H_EXPORT= basic.h
+OBJECTS= ${MODULES:.c=.o}
+
+
+normal: a mv; @echo "Basic C Library ready."
+debug: ; ${MAKE} -k -f ${TMPMK} a COPT="-g -D__DEBUG__" mvd mv
+remove: ; rm -f ${OBJECTS}
+all: ; ${MAKE} debug remove normal
+
+
+a: zap ${OBJECTS}; ${AR} ${OBJECTS}; ${RANLIB}
+mvd: ; mv lib_OUT.a lib_OUT-g.a
+mv: ${H_FILES}; @ /bin/csh -cf '    echo "Moving targets ...";    if (-e lib_OUT.a)      mv lib_OUT.a     ${LIB}/lib_basic.a;    if (-e lib_OUT-g.a)    mv lib_OUT-g.a   ${LIB}/lib_basic-g.a;    pushd ${LIB}; $(CHMOD) *basic.{a,ln}; popd;    cp ${H_EXPORT} ${INCLUDE};    pushd ${INCLUDE}; $(CHMOD) ${H_EXPORT}; popd    '
+# 44 "Makefile.cpp"
+zap:; @/bin/csh -cf 'Makefile.zap ${MODULES}'
+
+
+.c.o: ${H_FILES}; ${CC} ${CCFLAGS} ${COPT} -c $*.c -o $*.o
+
+
+depend: zap; ${DEPEND} -f${TMPMK} -- ${H_FILES} ${MODULES}

@@ -1,0 +1,9 @@
+_______________________________________________________________________________
+README file: Trist module (3d TRIangle-edge data STructure).  Version 2.3
+
+The triangle-edge data structure is a simplification of Dobkin and
+Lazlo's edge-facet structure, which itself generalizes Guibas and
+Stolfi's famous quad-edge data structure to 3D.  Trist allows you to
+store 3D triangulations, or subcomplexes thereof, with 36 bytes per
+triangle.  For a description of Trist and its triangle-edge functions
+see Section 3.1 in [8].  Otherwise refer to the source code: trist.[ch].

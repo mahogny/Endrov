@@ -1,0 +1,76 @@
+/* Generic include-file for Makefile.cpp files. */
+
+/* Uses predefined C pre-processor macros to select target machine. */
+/* Add more machines if necessary.                                  */
+
+/*--------------------------------------------------------------------------*/
+/* default setting, SunOS, ''make CC=gcc' */
+/* NOTE: on a SUN, use gcc or an ANSI compiler */
+/* Also: use 'gcc -Wall' iff gcc is properly installed */
+
+  CCFLAGS= -D__USE_FIXED_PROTOTYPES__ -Wall /* gcc only! */
+  DEPEND= true /* Disabled! */
+  AR= ar ruv lib_OUT.a
+  RANLIB= ranlib lib_OUT.a
+  MALLOC=
+
+/*--------------------------------------------------------------------------*/
+/* for Silicon Graphics machines running IRIX 4.x, 5.x, 6.x, ... (System V) */
+/* NOTE: This is the system used for development  ==> turn all warnings on! */
+/* ALSO: 'gcc -ansi -pedantic -Wall' is a pretty good substitute for 'lint' */
+
+#if defined (__sgi) || defined (sgi)
+# if defined (_MIPS_SZPTR) && (_MIPS_SZPTR == 64)
+        /*
+         * This seems to indicate that we're running Irix 6.0 or higher, and
+         * 'cc -64' --- say, on a Power Challenge, R8000 ---  some things will
+         * have to be adjusted... (NOTE: if you want 32-bit mode, use '-32')
+         * To stay sane, we need to turn off some warnings:
+         *   85: something about ld and -lmalloc / seems to be loaded twice
+         * 1209: "controlling expression is constant" / in basic.h macros
+         * 1233: "explicit type is missing" / eg, "extern variable" in source
+         *        code / seems to happen in /usr/include/X11 all the time :(
+         */
+    CCFLAGS= /*-32*/ -fullwarn -signed /*-woff 1233*/ -woff 1209 -Wl,-woff,85
+                                      /* ^ turn off for X11 */
+# elif defined (__GNUC__)
+        /*
+         * That's when we're running GNU (make CC="gcc [-ansi]")
+         * ... this is quite good to "lint" the code
+         *
+         */
+    CCFLAGS= -pedantic -Wall -fsigned-char
+# else
+        /*
+         * By default, let's use SGI's regular 'cc' but with -fullwarn on!
+         */
+    CCFLAGS= -fullwarn -float -signed
+#endif
+  DEPEND= makedepend
+  AR= ar ruv lib_OUT.a
+  RANLIB= true /* Disabled! */
+  MALLOC= -lmalloc
+#endif
+
+/*--------------------------------------------------------------------------*/
+/* for NeXT stations */
+
+#if defined (NeXT)
+  CCFLAGS= -Wall /* NeXT's cc *is* gcc! */
+  DEPEND= true /* Disabled! */
+  AR= ar ruv lib_OUT.a
+  RANLIB= ranlib lib_OUT.a
+  MALLOC=
+#endif
+
+/*--------------------------------------------------------------------------*/
+/* for IBM RS/6000 systems */
+/* NOTE: gcc only, if at all */
+
+#if defined (_IBMR2)
+  CCFLAGS= 
+  DEPEND= true /* Disabled! */
+  AR= ar ruv lib_OUT.a
+  RANLIB= ranlib lib_OUT.a
+  MALLOC=
+#endif

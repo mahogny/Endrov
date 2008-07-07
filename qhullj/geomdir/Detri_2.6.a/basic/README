@@ -1,0 +1,60 @@
+_______________________________________________________________________________
+________________________ THE BASIC C LIBRARY __________________________________
+                                   
+                            Version: 1.6
+                        Author: Ernst Mucke [*]
+                               1991-95
+                                   
+    ________________________________________________________________________
+   |                                                                        |
+   |  The code of the Basic C Library may be freely distributed as long as  |
+   |  credit is given to the original authors, the copyright notice in the  |
+   |  file  "basic/copyright.h"  and ALL other source files  "basic/*.[ch]" |
+   |  are included, and this notice remains intact.  You may use the code   |
+   |  in whatever way you like, but ENTIRELY AT YOUR OWN RISK.              |
+   |                                                                        |
+   |  BECAUSE THE CODE IS PROVIDED FREE OF CHARGE, IT IS PROVIDED "AS IS"   |
+   |  AND WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED.        |
+   |________________________________________________________________________|
+
+
+This directory stores all the sources and makefiles of the Basic C Library.
+To use any module of this library simply do a
+
+        #include "basic.h"
+
+in your source code, call or reference stuff from the desired module.
+Compile the code with 
+
+        -I<home_of_the_headerfile>
+
+and link it with
+
+        -L<home_of_the_library> -l_basic
+
+The headerfile "basic.h" provides the function headings of ALL the
+modules in the library as well as several (more or less :-) useful
+macro extensions.
+
+See README.make for installation, Makefile, and other remarks.
+
+Enjoy,
+         _
+--Ernst Mucke   <mucke@uiuc.edu>
+  Dept.of Computer Science, UIUC
+
+_______________________________________________________________________________
+NOTE
+
+[*]     This library includes code by D'Arcy J M Cain and Steven Summit.
+        Relevant portions of the source files are clearly marked as such.
+
+_______________________________________________________________________________
+QUOTE
+        ................................................................
+        I think the best way I've heard this put is  "Pascal gives you a 
+        water pistol filled with distilled water.   C not only gives you 
+        a loaded .357, it points it at your head as a default.   Why  do 
+        you think Pascal is taught in school? And which would you rather 
+        have when there was a hungry bear in the area?"    --Jim Harkins
+        ................................................................

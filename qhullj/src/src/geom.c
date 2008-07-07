@@ -669,18 +669,25 @@ pointT *qh_getcenter(setT *vertices) {
   vertexT *vertex, **vertexp;
   int count= qh_setsize(vertices);
 
+printf("getcenter 1");
+
   if (count < 2) {
     fprintf (qh ferr, "qhull internal error (qh_getcenter): not defined for %d points\n", count);
     qh_errexit (qh_ERRqhull, NULL, NULL);
   }
+printf("getcenter 2");
   center= (pointT *)qh_memalloc(qh normal_size);
+printf("getcenter 3");
   for (k=0; k < qh hull_dim; k++) {
+printf("getcenter 4");
     coord= center+k;
     *coord= 0.0;
+printf("getcenter 5");
     FOREACHvertex_(vertices)
       *coord += vertex->point[k];
     *coord /= count;
   }
+printf("getcenter 6");
   return(center);
 } /* getcenter */
 

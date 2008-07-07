@@ -1,0 +1,90 @@
+Copyright (c) 1991-94 The Board of Trustees of the University of Illinois
+
+_______________________________________________________________________________
+INPUT FORMAT
+
+The raw data for the 3D alpha shape software are 3D points, each given
+by its 3 coordinates.  Each point set is given in an ASCII data file
+with the following simple format:
+
+        #title: <TITLE>         title line (optional),
+        #scale: <SCALE>         scale command (optional),
+        #fix: <W>.<A>           fixed-point command (optional),
+        # blah blah blah        comment line (ignored),
+        <blank line>            blank line (also ignored),
+        <X> <Y> <Z>             data line containing three coordinates.
+
+The i-th data line of the input file holds the coordinates of point i.
+It should be noted that the programs refers to a specific point by its
+index.  Also note that the i-th data line is not necessarily the i-th
+line of the input file.
+
+By default, we require the coordinates to be integers; other types are to
+be converted to integers with absolute values less than 2^31 = 2147483648.
+It is, however, possible to specify coordinates in fixed-point format, using
+the fixed-point command.  For example, the line
+
+        #fix: 7.5
+
+at the beginning of the data file, tells the program to expect coordinates
+with up to 7 significant decimal digits, of which up to 5 are after the
+decimal point.  So, coordinates like 55, -1234567, -5.5, 12.34567, or 0.00007 
+are acceptable, but, for example, 7e-7 is not.
+
+For additional convenience, the scale command multiplies all coordinates
+uniformly.  For example,
+
+        #scale: 1e-3
+
+divides the given coordinates by 1000 each.
+
+IMPLEMENTATION NOTE: Internally, the code works with long-integer numbers.
+The reason for this is the implicit use of a symbolic perturbation method
+to resolve degenerate cases (see Edelsbrunner and Mucke [1]).  The scale
+command is therefore relevant only to application programs with graphics
+or output of metric information.  The fixed-point command also does internal
+scaling.  Its main purpose is to enhance user-friendliness by allowing
+fixed-point real input.
+
+_______________________________________________________________________________
+FORMAT CONVERSION UTILITIES
+
+A utility function pdb2alpha is provided to convert standard protein
+data bank (pdb) files to our input format.  Execute
+
+        % pdb2alpha <INFILE> <OUTFILE>
+
+where <INFILE> denotes the path of the file in pdb format and <OUTFILE>
+is the path of the converted file in alpha shape input format.
+
+_______________________________________________________________________________
+AUTOMATIC DECOMPRESSION
+
+If the code is compiled with the "automatic decompression" feature
+turned on,  it will recognize compressed data files based on their
+file extension -- *.Z for compress, *.z or *.gz for gzip -- and if
+so, it will decompress the data on the fly.  This feature can be used
+to save disk space.  For example, you can have a cronjob running a
+script that routinely keeps your data files compressed; for example:
+
+        % find $HOME -name \*.alf -exec compress '{}' ';'
+        % find $HOME -name \*.dt  -exec compress '{}' ';'
+
+would compress all the intermediate data files in your home directory
+tree.  Keep in mind that ASCII files usually compress by more than
+60%, whereas the binary *.dt and *.alf files compress only by 25-35%
+and 35-50%, respectively.  Cf: man compress; man gzip; man crontab.
+Also: GNU's gzip usually compresses far better than the standard
+compress utility.
+
+Note: If you wish, you can also keep the input files (the ones with
+the point coordinates) compressed; but, eg, keeping the *.info files
+compressed won't necessarily work.
+
+_______________________________________________________________________________
+QUOTE
+            ..................................................................
+            "EOF or format error while reading vertex 1 (out of 101) at line 1.
+            IOT trap (core dumped)"
+            --Detri error message while reading an invalid input file
+            ...................................................................

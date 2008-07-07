@@ -1,0 +1,134 @@
+Copyright (c) 1991-94 The Board of Trustees of the University of Illinois
+
+_______________________________________________________________________________
+_______________________ The Detri README File _________________________________
+                                   
+                             Version 2.2
+                         Author: Ernst Mucke
+                    Department of Computer Science
+              University of Illinois at Urbana-Champaign
+                         <mucke@cs.uiuc.edu>
+                                   
+                                   
+            (See file Copyright for copyright information.)
+
+Detri 2.2 computes Delaunay triangulations of 3D point sets.  It employs a
+variant of the randomized incremental-flip algorithm due to Edelsbrunner and
+Shah [4] (see file REFERENCES).  The variant and its data structure is
+described in more detail in Mucke [8].  The time complexity of the code is
+roughly proportional to the number of triangles in the final triangulation.
+In the worst case, this is quadratic in the number of input points, but for
+most cases it is closer to linear.  (For historical reasons, there is a
+command-line option that forces Detri to use the original, non-randomized
+incremental-flip algorithm of Barry Joe [2].  The use of this option is
+discouraged because the randomized version of the code is typically
+significantly faster than the non-randomized one.)
+
+The code uses three other packages: the utility functions of the Basic C
+Library, the Lia Library for long-integer arithmetic, and the SoS Library
+implementing a symbolic perturbation (see Edelsbrunner and Mucke [1]).
+
+_______________________________________________________________________________
+THE PROGRAM
+
+Detri 2.2 reveals the list of available command-line options if it is executed
+without any argument:
+
+        % detri
+
+Assume now that a data file is given (refer to README.input for the input
+format of Detri's data files), for example
+
+        % detri data/torus
+
+The program first sorts the points along some direction, and discards
+duplicate points found in this process.  By definition, a duplicate point
+is one that has the same coordinates as a point earlier in the input file.
+For example, the log output
+
+        Scanning ASCII file "data/torus" ...
+        SoS: matrix[333,4] @ 4 Lia digits; lia_length (8); 0.032 Mb.
+        Reading 333 vertices from ASCII file "data/torus" ...
+        Scanning 333 vertices ...
+                77 duplicates dumped.
+                256 vertices left.
+
+indicates that 333 points are read from the data file, 77 points are
+duplicates and thus discarded, leaving 256 points.
+
+After this process, the Delaunay triangulation is constructed
+incrementally by adding one point at a time.  A single point is added
+by a sequence of flips.  Detri will select a random sequence v[1..n]
+of the n (non-duplicate) points given in the data file, and add one by
+one to the emerging triangulation.  The log will show lines of the
+form
+
+        v[I]... F1 F2 F3...
+        v[J]... 
+
+indicating that the points v[I] through v[J-1] have been added, using F1,
+F2, F3,... flip operations to restore Delaunayhood.  It is shown in [4] that
+the expected number of flip operations is roughly the same as the number of
+triangles in the final triangulation.  Empirical tests show that data with
+25k points will take about 10 minutes on a R4000 Indigo (see [8]).
+
+_______________________________________________________________________________
+THE ABC MODE (All But Computation)
+
+Detri stores the computed Delaunay triangulation of <DATA> in the binary
+<DATA>.dt file.  The ABC mode allows the user to extract ASCII face lists
+from this file.  For example, to print the Delaunay triangles of <DATA> to
+file <DATA>.DT.fl, do the following:
+
+        % detri <DATA>
+        % detri <DATA> -C "print triangles"
+
+The second time Detri is called, it does not recompute the Delaunay
+triangulation.  Instead, it reads the binary <DATA>.dt file (as produced the
+first time Detri is called), and extracts the desired information.  The
+format of the face-list files is more or less self-explanatory.  It consists
+of one line per face: the first character specifies the dimension and is
+followed by vertex indices corresponding to the data lines of the input.  Type
+
+        % detri <DATA> -C "help"
+
+for additional options available in Detri's ABC mode.  It should be mentioned
+that even for the "help" function the ABC mode requires the precomputed
+<DATA>.dt file.  Sorry.
+
+_______________________________________________________________________________
+SOME REMARKS
+
+Without going into too much detail about how the SoS perturbation scheme is
+used to make the code robust, see [1] and [8], we note the following:
+
+(i) The method requires exact (long-integer) arithmetic.  The resulting
+slow-down due to the lack of adequate hardware support is reasonably
+compensated by a well tuned long-integer package.  While it is true that
+exact arithmetic is slower than floating-point arithmetic, we believe this
+is an appropriate price to pay for robust code.  Nevertheless, due to popular
+demand, Detri is no longer restricted to integer input (see README.input).
+
+(ii) The current implementation of the flip algorithm only work if there are
+no duplicate points.  Detri removes duplicate points in a preprocessing step.
+
+(iii) The perturbation introduces certain artefacts; in particular, the
+Delaunay triangulation of the perturbed data might have totally flat
+tetrahedra (volume = 0) "glued onto" the convex hull in case of degeneracies.
+For convenience, Detri removes these tetrahedra by default.  This results in
+a correct Delaunay triangulation with respect to the original input data.
+When Detri is executed with the -k option, the SoS artefacts are not removed.
+
+_______________________________________________________________________________
+SOURCE CODE
+
+The C source code of Detri 2.2 is also available via anonymous ftp from
+cs.uiuc.edu (128.174.252.1), directory: /pub/edels/geometry, and from
+ftp.ncsa.uiuc.edu (141.142.3.135), directory: /SGI/Alpha-shapes.
+
+_______________________________________________________________________________
+QUOTE
+          .....................................................................
+          "If you make something easy enough for a fool to use only a fool will
+          want to use it."    --Ancient Saying (from a Newsnet .signature file)
+          .....................................................................

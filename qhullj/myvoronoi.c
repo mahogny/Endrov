@@ -49,13 +49,15 @@ JNIEXPORT jboolean JNICALL Java_qhull_QHull_voronoi_1
   char flags[250];
   sprintf (flags, "qhull v Fv T0 %s", options);
   
+
 ////////////////////////////////
 
 
   int ismalloc = false;
 
-  FILE *outfile = 0;
-  FILE *errfile = stderr;
+  FILE *outfile = stdout;
+//  FILE *errfile = stderr;
+  FILE *errfile = 0;
 
   if(!qh_new_qhull (dim, np, pt_array, ismalloc, flags, outfile, errfile)) 
     {
@@ -66,12 +68,15 @@ JNIEXPORT jboolean JNICALL Java_qhull_QHull_voronoi_1
     int n = 1, k = 0, m = 0, fidx = 0, j = 0;//, r = 0;
     
     int ni[np];
-	for (int i = 0; i < np; i++) ni[i] = 0;
+    for (int i = 0; i < np; i++) ni[i] = 0;
+
 	
     qh_setvoronoi_all ();
+return JNI_FALSE; ///////
     int infinity_seen = false;
     facetT *neighbor, **neighborp;
     coordT *voronoi_vertex;
+
 
     FORALLfacets 
 		{

@@ -1,0 +1,51 @@
+The alpha shape programs are based on the theory of alpha shapes, Delaunay 
+triangulations, and simulated perturbation.  The following papers had a
+significant influence on the program development.
+
+______________________________________________________________________________
+REFERENCES
+
+[1]     Herbert Edelsbrunner and Ernst Mucke.  Simulation of Simplicity:
+        a technique to cope with degenerate cases in geometric algorithms.
+        ACM Transactions on Graphics, 9(1):66-104, 1990.
+        [ftp://cs.uiuc.edu/pub/geometry/edels/sos-90.ps.Z]
+
+[2]     Barry Joe. Construction of three-dimensional Delaunay triangulations
+        using local transformations.  Computer Aided Geometric Design,
+        8(2):123-142, 1991.
+
+[3]     Herbert Edelsbrunner and Ernst Mucke.  Three-dimensional alpha shapes.
+        ACM Transactions on Graphics, 13(1):43-72, 1994.
+        [ftp://cs.uiuc.edu/pub/edels/geometry/shapes-94.Z]
+
+[4]     Herbert Edelsbrunner and Nimish Shah.  Incremental topological
+        flipping works for regular triangulations.  In the Proceedings of
+        the 8th Annual Symposium on Computational Geometry, 1992, 43-52.
+
+[5]     Cecil Delfinado and Herbert Edelsbrunner.  An incremental algorithm
+        for Betti numbers of simplicial complexes.  In the Proceedings of the
+        9th Annual Symposium on Computational Geometry, 1993, 232-239.
+
+[6]     Herbert Edelsbrunner and Ping Fu.  Measuring space filling diagrams
+        and voids.  Report UIUC-BI-MB-94-01, Beckman Institute, Molecular
+        Biophysics Group, University of Illinois at Urbana Champaign, 1994.
+
+[7]     Herbert Edelsbrunner.  The union of balls and its dual shape.
+        In the Proceedings of the 9th Annual Symposium on Computational
+        Geometry, 1993, 218-231.
+
+[8]     Ernst Mucke.  Shapes and Implementations in Three-Dimensional Geometry.
+        PhD Thesis.  Department of Computer Science, University of Illinois at
+        Urbana-Champaign.  Technical Report UIUCDCS-R-93-1836.
+        [ftp://cs.uiuc.edu/pub/TechReports/UIUCDCS-R-93-1836.ps.Z]
+
+[9]     Herbert Edelsbrunner, Michael Facello, Ping Fu and Jie Liang.
+        Measuring proteins and voids in proteins.  In the Proceedings of the
+        28th Hawaii Conference on System Sciences, 1995, to appear.
+
+_______________________________________________________________________________
+QUOTE
+               ................................................................
+               "... but that's mathematics, and that doesn't convince anybody."
+               -- George Francis
+               ................................................................

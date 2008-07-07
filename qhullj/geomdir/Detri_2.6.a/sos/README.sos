@@ -1,0 +1,190 @@
+_______________________________________________________________________________
+__________________________ THE SOS LIBRARY ____________________________________
+                                   
+                            Version: 1.3
+                         Author: Ernst Mucke
+                               1991-94
+
+    _______________________________________________________________________
+   |                                                                       |
+   |  The code for the SoS Library is copyrighted by the original author   |
+   |  and the Board of Trustees of the University of Illinois.  However,   |
+   |  permission to use, copy, modify, and distribute this software and    |
+   |  its documentation for educational, research, and non-profit purposes |
+   |  is hereby granted, provided that this notice, the README* files, ALL |
+   |  the source files sos/*.[ch], including copyright.h, and the name(s)  |
+   |  of the original author(s) appear in all such copies.                 |
+   |                                                                       |
+   |  BECAUSE THE CODE IS PROVIDED FREE OF CHARGE, IT IS PROVIDED "AS IS"  |
+   |  AND WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED.       |
+   |_______________________________________________________________________|
+
+
+_______________________________________________________________________________
+SOS --- A (VERY) SHORT DOCUMENTATION
+
+The basic reference for the SoS method is [1], or chapter 5 in [8]...
+
+The SoS Library includes two other packages: Basic C and Lia.
+
+        o The Basic C Library is a collection of utility routines, macros,
+          and types the author finds useful in his software environment.
+
+        o The Lia Library implements the long-integer arithmetic.
+
+In order to use SoS, you have to compile your code with:
+
+        cc -I$INCLUDE <you_code_comes_here> \
+           -L$LIBRARY -l_sos[-g] -l_lia[-g] -l_basic[-g]
+
+where $INCLUDE and $LIBRARY are the directory paths were to find the
+needed include and archive files, respectively.  The lint C code
+checker can be invoked analogously.  Note also, that there is a debugging
+version of the librarys (eg, -l_sos-g).  This is rather helpful when
+using dbx or the like.
+
+The following header files have to be included in your source code:
+
+      ( #include "basic.h" )
+      ( #include "lia.h"   )
+        #include "sos.h"
+
+In order to initialize SoS, call:
+
+        sos_matrix (n, d, scale, ELL, ELL');
+
+where n is the number and d the "dimension" of the geometric objects
+at hand.  Note that d is not necessarily identical to the dimension of
+the space in which you are operating, it is rather the number of
+parameters per object.  For example, with the in_sphere() predicate
+operating on points in E^3, d will be 4 since the predicate employs a
+lifting map to 4 dimensions: the first 3 parameters are the
+coordinates of the vertices, and the 4-th parameter is the sum of the
+coordinates' squares.  See also sos.c.
+
+The ELL parameter specifies the maximum length of any possible
+long-integer result of future long-integer computations.  In the case
+of the in_sphere() predicate, the "worst" determinants have the form
+
+        | # # # 3## 1 |
+        | # # # 3## 1 |
+        | # # # 3## 1 | == 360 #####
+        | # # # 3## 1 |
+        | # # # 3## 1 |
+
+where # is a placeholder for any possible input coordinate (## denotes
+its square, and so on).  For input coordinates in the range from 0
+to 2^31 - 1, one has to be prepared to deal with numbers having as
+much as 50 decimal digits.  One so-called "lia-digit" can hold 8
+decimal digits, and any lia-object needs one additional digits for
+bookkeeping, thus:
+
+        #define ELL (7 + 1)
+
+The ELL' parameter of sos_init() denotes the length of the object
+parameters.  If, you have your data given in, say, normal 4 byte
+integers, ELL' needs to be at least 3.  However, when warming up for
+the in_sphere() predicate, you will need ELL' == 4 since one parameter
+is the sum of the coordinate's squares.
+
+Use sos_param() to load the input data into the SoS parameter matrix
+Pi[1..n,1..d].  Assume, for example, that the 3-dimensional data is
+given in the int arrays x[], y[], and z[], and that you want to
+prepare SoS for the in_sphere() predicate:
+
+  for (i = 1; i <= n; i++)
+    { /* Load vertex i into SoS parameter matrix Pi[1..n,1..d] */
+      LIA xl[ELL], yl[ELL], zl[ELL]; /* lia objects to hold   coordinates */
+      LIA x2[ELL], y2[ELL], z2[ELL]; /* lia objects to hold their squares */
+      ;
+      lia_load (xl, x[i]);       /* transform coordinates to long-integer */
+      lia_load (yl, y[i]);
+      lia_load (zl, z[i]);
+      ;
+      lia_mul (x2, xl, xl);                         /* compute squares... */
+      lia_mul (y2, yl, yl);
+      lia_mul (z2, zl, zl);
+      lia_add (aux, x2, y2);                       /* ... and sum them up */
+      lia_add (sum, aux, z3);
+      ;
+      sos_param (i, 1, xl);              /* load vertex i into PI[i,1..d] */
+      sos_param (i, 2, yl);
+      sos_param (i, 3, zl);
+      sos_param (i, 4, sum);
+    }
+
+Note that above procedure shows the "old-fashioned" way to load int
+coordinates into the SoS parameter matrix.  There is a new Lia routine
+lia_ffpload() which is able to convert "fix-point" floating-point
+numbers into Lia objects.  (Unfortunately, I'm to lazy to write down
+the specifics. :)  Please refer to the source code of my Detri program
+for 3D delaunay triangulation, file: detri/dt.c.
+
+______________________________________________________________________________
+INCOMPLETE LIST OF FUNCTIONS
+
+Aside from the initialization procedure and routines to get certain
+accounting information, the most important part of the interface to
+SoS are its predicates.  Below is an incomplete list.
+
+* sos_smaller (i, j, k, l) returns TRUE (or 1) if PI[i,j] < PI[k,l]
+and FALSE (or 0) otherwise.  It is assumed that the given indices are in
+proper range (ie, >= 1 and <= n) and that they actually denote two
+different parameters (ie, [i,j] != [k,l]).
+
+* sos_positive3 (h, i, j, k) returns TRUE if vertices h, i, j, and
+k are positively oriented in E^3 (ie, whether or not vertex h sees the
+other three making a CCW turn) and FALSE otherwise.  It is assumed
+that the indices are in proper range and pairwise different.  The
+predicate evaluates a 4-by-4 determinant with ones in the last column.
+
+* sos_in_sphere (o, i, j, k, q) returns TRUE or FALSE depending on
+whether or not vertex q is inside the sphere spanned by vertices o, i,
+j, and k.  Again, the indices are assumed to be in proper range and
+pairwise different.  The predicate evaluates a 4-by-4 and a 5-by-5
+determinant, both with ones in the last row.  (When you know in
+advance that sos_positive (o, i, j, k) == TRUE, you can also call
+sos_in_sphere3_p (o, i, j, k, q) instead, thus saving the evaluation
+of the 4-by-4 determinant.)
+
+* sos_above3 (i, j, k, l) returns TRUE or FALSE depending on
+whether or not the point of intersection of the planes i, j, k lies
+above the plane l.  This works only for non-vertical planes.  All
+indices are assumed to be in proper range and pairwise different.  A
+3-by-3 as well as a 4-by-4 determinant, both with ones in the last
+column, will be evaluated to compute the result.  (The current version
+of SoS also contains a 4-dimensional variant of the above predicate.)
+
+To conclude this indeed very short documentation and to illustrate the
+internal levels of the SoS box, here is the major calling chain of
+sos_in_sphere_p():
+
+        sos_in_sphere_p();                                /* the predicate */
+             |
+             |
+             V
+        sos_lambda5();                          /* the epsilon-determinant */
+             |
+             |
+             V
+        sos_minor<D>() for <D> = 5, 4, 3, 2;        /* the subdeterminants */
+             |                
+             |
+             V
+        Long-integer arithmetic from Lia Library.
+
+_______________________________________________________________________________
+INSTALLATION
+
+Read README.make and edit Makefile.{sys,cpp} according to your needs
+and run make -k.  Of course, in order to do this, you have to install
+the Basic C and Lia Libraries first.
+
+Feel free report any bugs and difficulties.
+
+_______________________________________________________________________________
+QUOTE
+                                     .........................................
+                                     "Most people would sooner die than think; 
+                                     in fact, they do."    -- Bertrand Russell
+                                     .........................................

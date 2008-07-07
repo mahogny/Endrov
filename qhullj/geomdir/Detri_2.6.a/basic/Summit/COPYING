@@ -1,0 +1,51 @@
+It's a sad commentary on the current times that I have to include
+this file at all.  I'm sorry that I have to (or that I think I
+have to).  I'd like to simply spread this code around under sort
+of a "gentleman's agreement" of reasonable behavior, but
+attitudes about copyright, liability, and the like these days
+often seem to be anything but reasonable.
+
+The copyright notices scattered through this package all say
+something like "Copyright by Steve Summit.  Freely
+redistributable if these notices are retained.  Commercial use
+will require permission of the author."  This means that you can
+do practically anything you want with this code provided that:
+
+     1.	you leave my name and copyright on it, and don't try to 
+	misrepresent as your own, and
+
+     2.	you don't charge money for the code as such.
+
+The second point deserves elaboration.  I don't mind if you use
+this package as an internal tool within a commercial
+organization.  I also don't mind if you link products against this
+package and then sell those products (containing linked-in,
+executable code derived from these sources).  What I don't want
+you to do, without asking me first, is to sell the library as a
+library, in source, object, or object library form, either by
+itself or as part of a larger C run-time library.  I may give you
+permission to do this, but I will first want to discuss
+maintenance, liability, and remuneration.
+
+A note about liability: I accept responsibility for this code,
+but not liability.  This is high-quality code, and it should work
+well for you.  If it doesn't, I'd like to hear about it, and I'll
+probably try to fix it.  I'll even offer a no-questions-asked,
+money-back guarantee: if for any reason you are not satisfied
+with the performance of this code, simply return it for a prompt
+refund of your original purchase price.  However, if you use this
+code in such a way that its failure costs you time, money, or
+(heaven help us!) personal injury, I cannot be held liable for
+those damages.
+
+I'm no lawyer, and this file is probably not legally binding. 
+(Among other things, it uses lower-case letters as well as
+upper-case, and tends not to use a string of synonyms where one
+word will do.)  If you wanted to, you could probably figure out a
+way to circumvent the copyright notice and steal this code and
+make money off of it, or to sue me if its failure did cost you
+time, money, or personal injury.  Let me merely point out that
+neither of these actions would be very gentlemanly, and that I do
+not have deep pockets.  If you want to sue somebody, I would
+suggest you pick the largest corporation on the news feed path
+from my site to your site.

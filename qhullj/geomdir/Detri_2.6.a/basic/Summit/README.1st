@@ -1,0 +1,56 @@
+This directory stores part of the stdio-implementation by Steve Summit,
+as far as I need it in my Basic C Library.  I got the sources from the
+news.net quite a while ago; I thing it was from some CSU archive...
+
+Anyway, "Posting" contains the original posting on the net, and
+"paper.ms" the original paper in troff format.  All other files
+are the originals from the archive, including all the *.c files
+I modified and used in my library.
+
+--Ernst Mucke.  (Thu Sep 19 01:42:44 1991)
+
+
+
+--------- Mutation from Summit's doprnt.c to doprnt_cbuf.c ----------------
+
+1. change _do[2]prnt to _do[2]prnt_cbuf
+
+2. redefine Putc(c,fd) macro using cbuf_putc(c) and ignoring fd
+
+3. remove (with /* ... */) other occurences of fd
+
+4. #define VARARGS
+   #undef FASTNBF    ... since no more fd
+   #undef ASKF       ... see Posting
+
+5. actually include Summit's printf.h into source
+
+
+
+--------- Mutation from Summit's doscan.c to doscan_cbuf.c ----------------
+
+1.  change _do[2]sccan  to  _dos[2]can_cbuf
+
+2.  change all getc() & ungetc() calls to macros Getc() & Ungetc()
+    to make modification more local (like in doprnt.c)
+
+3. add definitions for Getc and Ungetc macros, using cbuf_getc, cbuf_ungetc
+
+4. remove occurences of fd (partly with comments)
+
+5. #undef UNGETCKLUDGE   ... since no more fd
+
+6. added the following to the top
+
+#ifdef VARARGS
+#include <varargs.h>
+#else
+#include <stdarg.h>
+#endif
+#include <ctype.h>
+
+7.  and did #define VARAGS
+
+8.  and #undef ASKF   ... see Posting
+
+But still, I'm afraid it doesn't work. :-()
