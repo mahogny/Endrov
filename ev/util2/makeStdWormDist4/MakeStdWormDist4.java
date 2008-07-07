@@ -41,7 +41,7 @@ public class MakeStdWormDist4
 				if(!f.getName().startsWith("."))
 					{
 					String s=f.getName();
-					EvData ost=new EvDataXML(f.getPath()+"/rmd.xml");
+					EvData ost=new EvDataXML(f.getPath()+"/rmd.ostxml");
 					worms.add(ost);
 					for(EvObject evob:ost.metaObject.values())
 						{
@@ -70,15 +70,16 @@ public class MakeStdWormDist4
 		//These all have timestep 10. NEED TO ADJUST LATER!
 		//Load all worms to standardize from
 		String[] wnlist={
-				"/Volumes/TBU_main02/ost4dgood/N2_071114",
-				"/Volumes/TBU_main02/ost4dgood/N2_071116",
-				"/Volumes/TBU_main02/ost4dgood/TB2142_071129",
-				"/Volumes/TBU_main03/ost4dgood/TB2167_0804016",  
-				"/Volumes/TBU_main02/ost4dgood/TB2164_080118",
+				"/Volumes/TBU_main02/ost4dgood/N2_071114.ost",
+				"/Volumes/TBU_main02/ost4dgood/N2_071116.ost",
+				"/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost",
+				"/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost",  
+				"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost",
+				"/Volumes/TBU_main03/ost4dgood/TB2167_080409b.ost",
 				}; 
 		for(String s:wnlist)
 			{
-			EvData ost=new EvDataXML(s+"/rmd.xml");
+			EvData ost=new EvDataXML(s+"/rmd.ostxml");
 //			Imageset ost=(Imageset)EvData.loadFile(new File(s));
 //			System.out.println("Timestep "+ost.meta.metaTimestep);
 			worms.add(ost);
@@ -325,7 +326,7 @@ public class MakeStdWormDist4
 	public static void rigidFitOverTime()
 		{
 		//Choose one lineage for rotation reference
-		final NucLineage refLin=lins.get("TB2167_0804016");
+		final NucLineage refLin=lins.get("TB2167_0804016.ost");
 		final int fminframe=firstFrameOfLineage(refLin);
 		final int fmaxframe=lastFrameOfLineage(refLin);
 		
@@ -621,7 +622,7 @@ public class MakeStdWormDist4
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
-		String outputName="/Volumes/TBU_main02/ostxml/model/stdcelegansNew.ostxml";
+		String outputName="/Volumes/TBU_main02/ostxml/model/stdcelegansNew2.ostxml";
 		
 		loadSelected();
 
@@ -723,7 +724,7 @@ public class MakeStdWormDist4
 		//Save normalized lineages
 		if(saveNormalized)
 			{
-			EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize.ostxml");
+			EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize2.ostxml");
 			output2.metaObject.clear();
 			for(Map.Entry<String, NucLineage> e:lins.entrySet())
 				output2.metaObject.put(e.getKey(),e.getValue());

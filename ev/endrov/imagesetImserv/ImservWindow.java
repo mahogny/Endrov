@@ -5,7 +5,6 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvSwingTools;
 import endrov.ev.PersonalConfig;
-import endrov.imagesetImserv.service.*;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -17,6 +16,10 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 import org.jdom.Element;
+
+import bioserv.BioservDaemon;
+import bioserv.imserv.ImservClientPane;
+import bioserv.imserv.ImservConnection;
 
 
 /**
@@ -88,9 +91,9 @@ public class ImservWindow extends BasicWindow implements ActionListener
 	
 	public ImservWindow(Rectangle bounds)
 		{
-		System.setProperty("javax.net.ssl.keyStore",ImservClientPane.class.getResource("imservkeys").getFile());
+		System.setProperty("javax.net.ssl.keyStore",BioservDaemon.class.getResource("imservkeys").getFile());
 		System.setProperty("javax.net.ssl.keyStorePassword","passphrase");
-		System.setProperty("javax.net.ssl.trustStore",ImservClientPane.class.getResource("cacerts").getFile());
+		System.setProperty("javax.net.ssl.trustStore",BioservDaemon.class.getResource("cacerts").getFile());
 		System.setProperty("javax.net.ssl.trustStorePassword","changeit");
 		
 		setLayout(new BorderLayout());

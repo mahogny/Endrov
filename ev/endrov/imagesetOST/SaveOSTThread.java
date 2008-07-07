@@ -93,7 +93,7 @@ public class SaveOSTThread extends BatchThread
 			//Image data
 			for(Imageset.ChannelImages channel:rec.channelImages.values())
 				{
-				File channelPath=new File(imagesetPath, channel.getMeta().name);
+				File channelPath=new File(imagesetPath, "ch-"+channel.getMeta().name);
 				channelPath.mkdir();
 								
 				for(int frame:channel.imageLoader.keySet())

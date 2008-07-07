@@ -7,6 +7,8 @@ import javax.swing.JOptionPane;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import bioserv.auth.Auth;
+
 
 import endrov.ev.EvXMLutils;
 

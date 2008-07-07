@@ -1,4 +1,4 @@
-package endrov.imagesetImserv.service;
+package bioserv.imserv;
 
 
 //-Dsun.io.serialization.extendedDebugInfo=true
@@ -22,11 +22,12 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import bioserv.imserv.TagListPane.TagListListener;
+
 import endrov.basicWindow.BasicWindow;
 import endrov.ev.BrowserControl;
 import endrov.ev.EV;
 import endrov.ev.EvSwingTools;
-import endrov.imagesetImserv.service.TagListPane.TagListListener;
 
 
 /**

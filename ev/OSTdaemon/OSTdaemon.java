@@ -218,10 +218,29 @@ public class OSTdaemon extends Thread
 		}
 	
 
-	
+
+	/**
+	 * Get the directory of the imageset
+	 */
 	public File getImagesetFile(String imageset)
 		{
 		return new File(pathOutput,imageset+".ost");
+		}
+	
+	/**
+	 * Get the name of an image as stored to the output
+	 */
+	private File outputImageName(String argImageset, String argChannel, String ext, int argStack, int slice)
+		{
+		if(ostVersion==2)
+			{
+			File toDir = new File(new File(getImagesetFile(argImageset),"ch-"+argChannel),pad(argStack,8));
+			toDir.mkdirs();
+			File toFile = new File(toDir, pad(slice,8)+"."+ext); 
+			return toFile;
+			}
+		else
+			return null;
 		}
 
 	
@@ -562,21 +581,6 @@ public class OSTdaemon extends Thread
 		}
 
 	
-	/**
-	 * Get the name of an image as stored to the output
-	 */
-	private File outputImageName(String argImageset, String argChannel, String ext, int argStack, int slice)
-		{
-		if(ostVersion==2)
-			{
-			File toDir = new File(new File(getImagesetFile(argImageset),argChannel),pad(argStack,8));
-			toDir.mkdirs();
-			File toFile = new File(toDir, pad(slice,8)+"."+ext); 
-			return toFile;
-			}
-		else
-			return null;
-		}
 	
 	
 	/**

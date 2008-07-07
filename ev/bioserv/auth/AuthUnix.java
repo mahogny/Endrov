@@ -1,4 +1,4 @@
-package bioserv;
+package bioserv.auth;
 
 /**
  * Permissions based on Unix PAM

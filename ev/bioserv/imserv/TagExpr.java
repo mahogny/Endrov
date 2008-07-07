@@ -1,4 +1,4 @@
-package endrov.imagesetImserv.service;
+package bioserv.imserv;
 
 import java.util.*;
 import java.util.regex.Matcher;
