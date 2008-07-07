@@ -70,6 +70,7 @@ public class OstImageset extends Imageset
 		{
 		this.basedir=basedir;
 		convert23();
+		convert33prime(); //should disappear ASAP, unsafe
 		buildDatabase();
 		}
 	
@@ -96,7 +97,11 @@ public class OstImageset extends Imageset
 				if(child.isDirectory() && n.startsWith(ostname))
 					{
 					n=n.substring((ostname+"-").length());
-					File newname=new File(basedir,n);
+					File newname;
+					if(n.equals("data"))
+						newname=new File(basedir,"data");
+					else
+						newname=new File(basedir,"ch-"+n);
 					child.renameTo(newname);
 					}
 				}
@@ -113,6 +118,12 @@ public class OstImageset extends Imageset
 		
 		}
 	
+
+	public void convert33prime()
+		{
+		
+		}
+
 	
 	/**
 	 * Get name description of this metadata
