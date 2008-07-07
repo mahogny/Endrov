@@ -1,0 +1,278 @@
+/* ----- getarg.c DESCRIPTION (by D'Arcy) ----- */
+
+This routine may be freely distributed as long as credit is given to D'Arcy
+J.M. Cain, the source is included and this notice remains intact.  There is
+specifically no restrictions on use of the program including personal or
+commercial.  You may even charge others for this routine as long as the above
+conditions are met.
+
+This is not shareware and no registration fee is expected.  If you like the
+program and want to support this method of distribution, write a program or
+routine and distribute it the same way and I will feel I have been paid.
+
+Of course gifts of money, drinks and extravagant jewels are always welcome.
+
+As for documentation, you're looking at it.
+
+First of all let me start by saying that I do not envision getarg as
+a plug and play replacement for getopt.  That is why I used a different
+name.  It is designed to look more or less the same to the user but it
+is not quite the same for the programmer.  I believe that it is a more
+logical and elegant interface to the command line than getopt.  What I
+am trying to say is that I make no apology for not emulating the clumsy
+programmer interface of getopt.
+
+
+This set of routines is a replacement for getopt.  To the user it should
+look the same except that options and files may be intermingled on the
+command line instead of forcing options to come first.  This allows
+things like the following where option 'a' takes a word argument:
+
+        command -vx -a on file1 -a off file2
+
+allowing the user to process file1 with the a flag on and file 2 with the a
+flag off.
+
+In addition, the caller may set up the argument list from more than one
+place.  The first place, of course, would be from the command line as
+getopt does.  Other possibilities are to read the an environment variable
+or a file for arguments.  You may even have one of the options cause a
+file to be read to insert arguments.  I am suggesting that "-@ filename"
+be used for consistency unless someone can suggest why this would not
+be suitable.
+
+
+To implement this, getarg splits the function into two main <parts plus
+a third part which is added for programmer convenience.  The first part
+is getarg_init which initialises the argument list.  The prototype is:
+
+        int getarg_init (int argc, char **argv);
+
+and would normally be called as follows:
+
+        getarg_init (argc - 1, argv + 1);
+
+This function can be called as often as you wish.  Each time you call
+getarg_init, the argument list is stuffed into the current list at the point
+which is currently being processed.  Thus, after making the above call you
+might look for an environment variable and if it exists then parse it into
+an argument list and call getarg_init again with that list.  This effectively
+allows users to set up defaults in their .profile and to override them when
+calling the program.  For example, say that there was program 'foo' which
+takes an option 'a' which took as an argument the word 'on' or 'off' and a
+user wanted to set it up so that it was normally off.  The user could add
+the line:
+
+        foo=-aoff
+
+to the .profile.  If one time the user wants the option on then a command
+line such as
+
+        foo -a on
+
+is effectively
+
+        foo -aoff -a on
+
+Which, if the code is written to allow flags to change back and forth, will
+change the default action.
+
+In addition you can use arguments from the command line to open files
+and read in more arguments which can be stuffed into the argument
+stream.
+
+    if (c == '@')
+      load_args_from_file (getarg_optarg);
+
+Note that there is a possibility of a problem if getarg_init is called while
+an argument is being parsed.  Consider the following code:
+
+  while ((c = getarg ("abcz")) != 0)
+    {
+      switch (c)
+        {
+         case 'a':
+          something ();
+          break;
+         case 'b':
+          something ();
+          break;
+         case 'c':
+          something ();
+          break;
+         case 'z':
+          foo ("standard.arg");
+          break;
+        }
+    }
+
+where foo is designed to read a file as a series of arguments and call
+getarg_init.  This can cause serious problems if you have a command such as
+"bar -abzc" since it will replace the pointer to "-abzc" with the first
+argument in the file.  Of course this will probably never be a problem
+since you would most likely include the file name to be read with the
+option rather than hard coding it so the current argument will be consumed
+before reading in the file but before pointing to the next argument.
+
+
+For programmer convenience there is a routine called getarg_inite() which
+is prototyped as:
+
+        int getarg_inite (int argc, char **argv);
+
+and is normally called as
+
+        getarg_inite (argc, argv);
+
+Notice that this is similar to the getarg_init example above except that all
+the arguments are sent including the program name.  This function will in
+turn call getarg_init with argc - 1 and argv +1.  In addition it will take the
+program's base name and look for an environment variable with that name.
+If found, it parses the string and stuffs that in as well.  Note that the
+environment string may include arguments with spaces if the argument is
+delimited by quotes.  This could get a little tricky since the quotes must
+be escaped in the shell.  for example the following string
+
+        -a "hello, world"
+
+would have to be created with the following command
+
+        foo="-a \"hello, world\""
+
+and of course strings that have quotes in them get even more complicated.
+
+        foo="-a \"This is a quote - \\\"\""
+
+which becomes
+
+        -a "This is a quote - \""
+
+And that becomes the strings
+
+        -a
+        This is a quote - "
+
+Both getarg_init and getarg_inite return -1 on error.  The only error
+condition is not enough memory to run the routines.  Otherwise they
+return the number of arguments added to the argument list.
+
+
+The other module is the function getarg which returns options and
+arguments to the calling program.  It is prototyped as follows:
+
+        int getarg (char *optstr);
+
+The parameter optstr is similar to the third parameter to getopt(3).
+The other arguments are not needed since getarg_init gets the argument
+list.
+
+There are five possible returns from getarg.  If there are no more
+options or arguments to read then it returns a zero.  If an option is
+read but is not matched in optstr or a needed argument is missing then
+a question mark is returned.  If a non option argument is read then -1
+is returned and getarg_optarg points to the argument.  If a '-'
+appears as a separate argument then a special return of '-' is
+returned indicating standard input (only by convention of course.)
+Otherwise it must be a valid option and the letter is returned.  If it
+is an option expecting an argument then getarg_optarg points to the
+argument.
+
+The use of "--" is allowed as in getopt to signal the end of options.  As
+soon as getarg sees this argument it sets a flag and points to the next
+argument.  It then calls itself to get the next argument.  The recursive
+call is to keep all the error checking and cleanup in one place.
+
+One extra feature I have added in is a semi-colon operator similiar to the
+colon operator.  If an option letter in opstring is followed by a semi-colon,
+the option may *optionally* take an argument.  The argument must follow the
+option letter as part of the same argument.  This normally means no spaces
+between the option letter and its argument.  I am not to sure about this
+one since it has to be treated a little different than other arguments by
+the user.  Comments on this feature hereby solicited.
+
+The global variable opterr is not implemented.  With Windows and other
+screen based applications getting to be so popular it is assumed that
+the calling routine will want to handle its own error message
+handling.  I am also thinking about dropping getarg_optind as a global
+since I haven't figured out any use for it now.  If someone can think
+of one, please let me know.  In the meantime you shouldn't declare
+getarg_optind as external in your program unless you have to.
+
+Sample usage assuming two mutually exclusive options 'a' and 'b', option
+'o' to specify output and option 'v' which must be set before any files
+are processed and not allowed after processing begins.
+
+main (int argc, char **argv)
+{
+  int c, void_started = 0;
+  FILE    *in_fp, *out_fp = stdout;
+  extern char *getarg_optarg;
+  static char *opt_str[] = { "abo;v", "abo;" };
+  .
+    .
+      .
+  getarg_init (argc - 1, argv + 1);
+  /*   --- OR (maybe not!) ---    getarg_inite (argc, argv);   */
+  while ((c = getarg (opt_str[void_started])) != 0)
+    {
+      switch (c)
+        {
+         case 'a':
+          {
+            if (bflag)
+              errflag++;
+            else
+              aflag++;
+            break;
+          }
+         case 'b':
+          {
+            if (aflag)
+              errflag++;
+            else
+              bflag++;
+            break;
+          }
+         case 'v':
+          {
+            vflag++;
+            break;
+          }
+         case 'o':
+          {
+            if ((out_fp != stdout) && (out_fp != NULL))
+              fclose (out_fp);
+            if (getarg_optarg == NULL)   /** no argument means stdout **/
+              out_fp = stdout;
+            else if ((out_fp = fopen (getarg_optarg, "w")) == NULL)
+              err_exit ("Can't open output file");
+            break;
+          }
+         case -1:
+          {
+            if ((fp = fopen (getarg_optarg, "r")) != NULL)
+              do_stuff (in_fp, out_fp);
+            else
+              err_exit ("Can't open input file\n");
+            void_started = 1;
+            break;
+          }
+         case '-':
+          {
+            do_stuff (stdin, out_fp);
+            void_started = 1;
+            break;
+          }
+         case '?':
+          {
+            usage ();
+            errflag++;
+            break;
+          }
+        }
+      if (errflag)
+        do_error_stuff_and_exit ();
+    }
+}
+
+/* ----- END OF DESCRIPTION (by D'Arcy) ----- */

@@ -44,7 +44,7 @@ PRINTC = enscript -2r
 #for Gnu's gcc compiler -O2 for optimization, -g for debugging, -Wall for check
 #
 CC     = gcc
-CCOPTS1 = -O2 -ansi 
+CCOPTS1 = -O2 -ansi -g
 
 # for Sun's cc compiler, -fast or O2 for optimization, -g for debugging, -Xc for ANSI
 #CC = cc

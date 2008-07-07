@@ -1,0 +1,117 @@
+to do:
+
+	getc (and maybe putc) macros probably need &0377 masking
+	(or make _ptr &c unsigned char *)
+
+	write straopen (poor name?) (straopen is to saprintf as
+	stropen is to sprintf.)  Also need char *straclose (which
+	returns pointer to completed string) or char *straptr (to
+	get at it along the way).
+
+	check _IORW more thoroughly
+
+	will fseek correctly undo ungetc when the in-buffer
+	adjustment for near seeks is used?  can an ungetc'd
+	character ever accidentally get written back to the
+	file from an _IORW stream?
+
+	line buffering probably isn't finished yet
+	(in particular, has implications for STDINFLUSH)
+	(I think there's gotta be some hair where _cnt is
+	always 0, too, especially #ifndef NOPUTCLBUF)
+
+	is setvbuf finished?
+
+	*printf return value (especially EOF on error)
+	(will it be acceptable for _doprnt to just call iserror()
+	when it's done, rather than after each character?)
+	(_doprnt should return -1 if ferror(), even if no
+	otherwise correct return value.)
+
+	worry about _ptr == _base case in ungetc
+	(never happens if char has been read?)
+	does it have the scanf(const char *) problem? (yes, at the moment)
+
+	do fread and fwrite have two cases or three?
+	they only need two, if in loop
+
+	idea: allow user-installable malloc replacement
+	(prleak, makeroom, etc.)
+
+	start writing a test suite
+
+open design questions:
+
+	preallocated buffers (_sibuf, _sobuf) for stdin & stdout?
+	(remember that they'd have to be word-aligned for raw magtape, etc.)
+
+	on-the-fly buffering decisions (especially for stdout)
+	based on isatty()?
+	(but remember to check readfunc/writefunc first)
+
+	pre/post increment/decrement in getc/putc macros?
+	(could use opposite way from standard implementations to
+	assert independence)
+
+	fflush on input streams?
+	(conditional -- #ifdef)
+	use fabort()
+
+	how to mesh _flsbuf and fflush better?
+	(the call to _writefunc oughta appear
+	in one or the other, not both)
+
+	flag for malloc'ed iob to avoid pointer compares in _freefile?
+
+	how should the caller install error functions?
+
+	fstat nonsense in _filbuf
+
+	fopen2, that does things right? (more open-ended &
+	extensible, allocate buffer upon open rather than
+	first use, ...)
+
+	worry more about struct iob compatibility?
+	(_file, _flags field sizes, _bufsize presence on
+	non-4.2 systems, etc.)
+
+	write return value: r < 0 vs. r != n
+
+	lseek return value checking?
+
+	write ftell/fseek in terms of potentially irregular lseek???
+	(conditionally compilable; only truly generic
+	implementation will probably involve seek/offset pair
+	encoding in ftell's return value)
+	("Library writers, like members of Congress, tend not to
+	like following their own rules...")
+
+	stderr: line buffered or unbuffered?
+
+	should _freefile() free _base and _filename?
+	(would lessen redundancy between fclose and fdclose)
+
+	worry about _bufsize field and/or fstat saying bufsize is 0?
+
+	should the #define FILE struct _iobuf in stdio.h
+	be inside the #ifndef FILE?
+
+	what should fflush do if _flsbuf has been redefined?
+
+	prototypes for the function pointers in struct _iob?
+	(makes _fptr even more of a problem)
+
+	Should fopen mode modifiers ('+', 'b', etc.) really be
+	accepted in any order?
+
+	Note that FASTNBUF forces loading of fwrite.o which is
+	quite big, if FASTFRDWR is turned on.
+
+design decisions:
+
+	the obvious extensions: virtual I/O functions,
+	error handlers, saved filename
+
+	_cleanup flushes rather than closing
+
+	set*buf can be called after reading or writing (I think)

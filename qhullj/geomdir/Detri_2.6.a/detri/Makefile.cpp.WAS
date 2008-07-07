@@ -1,0 +1,69 @@
+/* detri/Makefile.cpp --- C pre-processor Makefile for detri. */
+
+/* USAGE: cpp -P ${CPPMK} > ${TMPMK}; make -k TMPMK=${TMPMK} -f ${TMPMK} ... */
+
+/* Targets.  (CHANGE THIS ACCORDING TO YOUR NEEDS!) */
+DEST=    ../bin
+LIB=     ../lib
+INCLUDE= ../include
+
+/* Paramters: DEPEND, SHELL, CC, CPP, CPPMK, TMPMK, COPT. */
+/* System specifics: CCFLAGS, AR, RANLIB, MALLOC. */
+#include "Makefile.sys"
+
+/* Other libraries. */
+INCLS= -I${INCLUDE}
+LIBRARIES= -l_sos${DBX} -l_lia${DBX} -l_basic${DBX}
+LIBS= -L${LIB}
+
+/* Source and object files. */
+MODULES= detri.c delaunay.c flip.c prep.c \
+         dt.c print_dt.c search.c trist.c peel.c
+H_FILES= detri.h dt.h trist.h
+OBJECTS= ${MODULES:.c=.o}
+
+/* Interface. */
+normal: detri;  @echo "Detri ready."
+debug:  ;       ${MAKE} -k -f ${TMPMK} detri COPT="-D__DEBUG__" DBX=-g
+remove: ;       rm -f ${OBJECTS}
+all:    normal;
+
+/* BEGIN Meta Interface: make detri_new */
+/* Note: This is here so that we can package Detri stand-alone,
+   without the alpha shape software and it's top-level Makefile. */
+
+BASIC= ../basic
+LIA=   ../lia
+SOS=   ../sos
+DETRI= ./
+
+HD=echo "\n\n*** X ***\n"
+MK= ${MAKE} -k CC="${CC}" CPP="${CPP}" COPT="${COPT}"
+
+detri_new:;   ${MK} check soslibs_           detri_
+detri_debug:; ${MK} check soslibs_d          detri_d
+detri_all:;   ${MK} check soslibs_d soslibs_ detri_
+soslibs_: basic_ lia_ sos_
+detri_:;  @/bin/csh -cf '${HD:X=Detri}; cd ${DETRI}; ${MK} new'
+basic_:;  @/bin/csh -cf '${HD:X=Basic}; cd ${BASIC}; ${MK} new'
+lia_:;    @/bin/csh -cf '${HD:X=Lia};   cd ${LIA};   ${MK} new'
+sos_:;    @/bin/csh -cf '${HD:X=SoS};   cd ${SOS};   ${MK} new'
+basic_d:; @/bin/csh -cf '${HD:X=Basic}; cd ${BASIC}; ${MK} clear debug'
+lia_d:;   @/bin/csh -cf '${HD:X=Lia};   cd ${LIA};   ${MK} clear debug'
+sos_d:;   @/bin/csh -cf '${HD:X=SoS};   cd ${SOS};   ${MK} clear debug'
+check:;   @/bin/csh -cf '           \
+  echo Checking for target dirs;     \
+  if (! -e ${DEST})    mkdir ${DEST}; \
+  if (! -e ${LIB})     mkdir ${LIB};   \
+  if (! -e ${INCLUDE}) mkdir ${INCLUDE} \
+'
+
+/* Internal rules. */
+detri: ${OBJECTS}; ${CC} ${CCFLAGS} ${DBX} ${COPT} ${OBJECTS} \
+                        -o ${DEST}/detri ${LIBS} ${LIBRARIES} ${MALLOC} -lm;
+
+/* Generic rule to compile source files. */
+.c.o: ${H_FILES}; ${CC} ${CCFLAGS} ${DBX} ${COPT} ${INCLS} -c $*.c -o $*.o
+
+/* To compute dependencies with "make depend" ... */
+depend:; ${DEPEND} -f${TMPMK} -- ${INCLS} ${MODULES}

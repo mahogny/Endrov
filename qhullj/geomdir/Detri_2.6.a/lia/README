@@ -1,0 +1,133 @@
+_______________________________________________________________________________
+__________________________ THE LIA LIBRARY ____________________________________
+
+                            Version: 1.0a
+                         Author: Ernst Mucke
+                               1991-94
+
+    _______________________________________________________________________
+   |                                                                       |
+   |  The code for the Lia Library is copyrighted by the original author   |
+   |  and the Board of Trustees of the University of Illinois.  However,   |
+   |  permission to use, copy, modify, and distribute this software and    |
+   |  its documentation for educational, research, and non-profit purposes |
+   |  is hereby granted, provided that this notice, the README* files, ALL |
+   |  the source files lia/*.[ch], including copyright.h, and the name(s)  |
+   |  of the original author(s) appear in all such copies.                 |
+   |                                                                       |
+   |  BECAUSE THE CODE IS PROVIDED FREE OF CHARGE, IT IS PROVIDED "AS IS"  |
+   |  AND WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED.       |
+   |_______________________________________________________________________|
+
+
+The Lia library implements a pretty fast long-integer arithmetic,
+mainly for the operations +, -, and *.  The algorithmic background
+can be found in
+
+        D.E. Knuth.
+        The Art of Computer Programming, Volume 2: Seminumerical Algorithms.
+        Addison-Wesely, 1969.
+
+"Why implement your own long-integer arithmetic?", you ask.  Well, the
+standard long-integer library MP, which is included in some (but not
+all!) Unix boxes, is rather slow, probably due to dynamic allocation
+and a short int base type.
+
+The code for Lia originated in a Pascal package named "APIAP", written
+by Harald Rosenberger at the Technical University of Graz, Austria.
+However, in order to gain speed, major changes have been made.  The
+two most important are that
+
+        (a) a power of two is used as a base for the internal
+            representation rather than a power of ten, and 
+
+        (b) the current version uses local buffer variables rather
+            than packing/unpacking procedures to catch the overflow
+            with multiplication.
+
+Each Lia object is a linear array of Lia digits.  A digit is a data
+object of the basic type "Lia" which is essentially equivalent to C's
+"unsigned long int" type.  A declaration in the form of
+
+        Lia a[L]
+
+would then create a Lia object a with l digits:
+
+        a[0], a[1], ..., a[L-1].
+
+Digit a[0] is used to store the sign of the long-integer object, and
+the actual number of digits used for its representation.  The rest
+stores the absolute value of the long-integer object in radix
+representation to the base
+
+                 2*BETA
+        DBASE = 2
+
+where BETA depends on the word-length of your machine; eg, BETA = 15
+for 32-bit machines, because we need 2 bits for overflow handling.
+So, let |a| denote the absolute value of the long-integer number
+stored in a[0..l] and be l the number of Lia digits actually used.
+With this, we have
+
+              l-1             i-1      
+        |a| = SUM a[i] * DBASE.
+              i=1
+
+The arithmetic operations are now implemented in a digit-by-digit
+manner.  Two bits per Lia digit are assumed to be unused.  This is
+necessary in order to cope with a possible overflow during addition
+and multiplication of two single Lia digits.  Thus, addition is
+straightforward, since only one bit of overflow is possible when
+adding two m-bit numbers.  Nevertheless, in the inner loop of the
+multiplication procedure (cf, lia_mul() in file "lia.c") we have to
+perform operations of the form
+
+        (hi, lo) = ab + c + d
+
+where a, b, c, and d are Lia digits bounded by DBASE.  Let
+(hi, lo) denote the two Lia digits of the result.  Using the
+"micro-base" BASE = DBASE/2, they are computed as follows:
+
+              a
+        a1 = ----       a2 = a mod BASE
+             BASE
+
+              b
+        b1 = ----       b2 = b mod BASE
+             BASE
+
+                     a1*b2   a2*b1
+        hi = a1*b1 + ----- + -----
+                      BASE    BASE
+
+        lo = a2*b2 + ((a1*b2) mod BASE + (a2*b1) mod BASE) * BASE
+
+
+        lo = lo + c + d                                             (*)
+
+                   lo
+        hi = hi + ----                                             (**)
+                  BASE
+
+        lo = lo mod DBASE
+
+Here, two remarks are in order.  First, in (*) a two bit overflow is
+possible, but this is fine since there are two unused bits in the basic
+type "Lia".  Second, after the execution of (**), hi is already in the
+appropriate range, namely 0 <= hi < DBASE.
+
+
+Well... that's it.  (For more documentation, consult the source code. :-)
+
+All the best,
+         _
+--Ernst Mucke   <mucke@uiuc.edu>
+  Dept.of Computer Science, UIUC
+
+_______________________________________________________________________________
+QUOTE
+       ........................................................................
+       "The problem with the future is that it keeps turning into the present."
+       -- Hobbes, "Attack of the deranged mutant killer monster snow goons"
+       .......... by Bill Watterson
+                  .............................................................

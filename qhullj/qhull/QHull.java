@@ -8,7 +8,7 @@ public class QHull
 
 	static
 		{
-		System.loadLibrary("qhulllib");
+		System.loadLibrary("qhullj");
 		}
 
 	public static boolean voronoi(VoronoiResult result, Vector3d[] points)

@@ -1,0 +1,109 @@
+lia/README.notes --- Some Lia implementation notes/remarks. --- Newest on top!
+
+/*--------------------------------------------------------------------------*/
+
+AD 64-bit, ANSI C, and SGI Power Challange (Version 1.6)
+
+** First off: The README file is obviously horribly out of date!
+
+** Lia 1.6 is now ANSI C *and* 64-bit compatible (in the sense that it
+   seems to run w/ nullo problemo on a SGI Power Challenge (R8000)).
+   The speed-up seems to be roughly half for determinants; eg:
+
+        % time test.32 -d
+        Running on 14 Lia digits
+        Okay: 1000.
+        0.9u 0.0s 0:02 49% 0+0k 0+0io 0pf+0w
+
+        % time test.64 -d
+        Running on 8 Lia digits
+        Okay: 1000.
+        0.5u 0.0s 0:01 53% 0+0k 0+0io 0pf+0w
+
+** BUT NOTE: There is one potential, but minor, problem, though: lia_real() !?!
+        Since I do a cast from long int to double, I might loose too many
+        bits to get acceptable accuracy.  If we see some weird behavior
+        wrt. to SoS' floating-point coordinates, that's why.
+
+                >> TO DO: solve the 64-bit lia_real() problem! <<
+
+                        Wed Jul 19 11:23:06 1995 [emucke@poppy.c3.lanl.gov]
+
+/*--------------------------------------------------------------------------*/
+
+AD lia_mul()
+
+** It seems as if the current "lia_mul() strategy" of having
+   (sizeof(Lia)-2)-bit digits and breaking them up into "half digits,"
+   to do the inner-loop's double precision multiplication is the best.
+
+   Eg, using SGI's cc, or gcc, I tried to use the "long long" type.
+   This can be done as follows:
+
+        ...
+        typedef unsigned long long Lia2;
+        ...
+          unsigned long long ll_buf, ll_dbase = DBASE;  /* inside lia_mul() */
+        #if defined (sgi) && !defined (__GNUC__)
+          lldiv_t ll_div;
+        #endif
+          ...
+            {
+              /* inner loop:
+                 compute (hi,lo) = long1[i] * long2[j] + carry + longi[h]
+                 using a long long buffer */
+              ll_buf = (Lia2) long1[i] * long2[j] + carry + longi[h];
+        #if   defined (__GNUC__)
+              carry = ll_buf / ll_dbase;
+              longi[h] = ll_buf % ll_dbase;
+        #else /* defined (sgi) */
+              ll_div = lldiv (ll_buf, ll_dbase);
+              carry = ll_div.quot;
+              longi[h] = ll_div.rem;
+        #endif
+              h ++;
+            }
+          ...
+
+    SGI's cc defines lldiv() which can be used or not. GNU's gcc only
+    has / and %.   Here are the test results (data=torus), in CPU secs:
+
+                      normal    w/ long long
+        ------------------------------------
+        SGI lldiv       3.92    13.64           SGI = Indy
+        SGI /, %                13.58
+        SGI gcc         5.03     8.74
+        SUN cc          6.58                    SUN = Sparc 3?
+        SUN gcc         6.52    11.75
+
+    Plus, I seem to remember that I once tried  using the 52-bits of
+    IEEE double as a buffer fro the double precision multiplication
+    of the inner loop. Similar, discouriging result.
+
+    My explanation for this: the int shift operators are extremely fast,
+    while casting "int --> long long" or "int --> double" is slow.
+    The only way to possibly speed up Lia is using 64-bit int's.
+
+        NOTE: "typedef unsigned long long Lia" does not work, because
+        long long is less powerful than int; eg, the shift operators
+        don't seem to work.
+
+                          Fri Jun 16 20:49:53 1995 [emucke@poppy.c3.lanl.gov]
+
+/*--------------------------------------------------------------------------*/
+
+AD lia_add/sub()
+
+** It's interesting to observe that (at least in the context of
+   determinant computations) lia_psub() is called by far more
+   often than lia_padd()... which is somehow unfortunate, because
+   lia_psub() is slightly slower.
+
+** One might think that switch from indexing to pointer increment would
+   speed up the code. Well... empirical tests suggest that this is not true!
+   (All it does, is obscuring the code. :)
+
+                            Sat May  1 16:31:37 1993 [mucke@sugar.cs.uiuc.edu]
+
+/*--------------------------------------------------------------------------*/
+
