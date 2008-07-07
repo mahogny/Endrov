@@ -121,7 +121,7 @@ public class PluginInfo
 			if(!pluginDir.exists())
 				{
 				JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");
-				System.out.println("Plugin directory does not exist!");
+				System.out.println("Plugin directory does not exist! "+pluginDir);
 				}
 			else
 				for(File subdir:pluginDir.listFiles())

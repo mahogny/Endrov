@@ -1,11 +1,11 @@
 function ncount=findneighonetime(filepath,namesi,names,newmax,dt)
 
-import evplugin.nuc.*;
+import endrov.nuc.*;
 import util2.compareDist.*;
 import java.util.*;
 
 
-ost=evplugin.data.EvData.loadFile(java.io.File(filepath));
+ost=endrov.data.EvData.loadFile(java.io.File(filepath));
 lins=evmGetIdObjects(ost,NucLineage);
 lin=lins.value;
 
@@ -66,12 +66,13 @@ for curframe=[minframe:dt:maxframe]
     j=1;
     for i=1:length(interkey)
         tempname=interkey(i).snd;
-        if curframe<td.getStr(lin.nuc,tempname).pos.firstKey
-            continue;
-        end
-        if curframe>td.getStr(lin.nuc,tempname).pos.lastKey
-            continue;
-        end
+%         taken out 080307
+%         if curframe<td.getStr(lin.nuc,tempname).pos.firstKey
+%             continue;
+%         end
+%         if curframe>td.getStr(lin.nuc,tempname).pos.lastKey
+%             continue;
+%         end
         if ~namesi.containsKey(interkey(i).snd) % nuclei not included in reference lineage to remove all helper coordinates etc.
             continue;
         end
@@ -157,5 +158,5 @@ disp('done count neigh');
 notneigh
 
 
-save([filepath '/data/newneigh.mat'],'ncount','nstatus','nstart','nend','dt','names','tnames');
+save([filepath '/data/newneigh_080703.mat'],'ncount','nstatus','nstart','nend','dt','names','tnames');
 

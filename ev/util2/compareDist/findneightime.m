@@ -6,13 +6,13 @@
 
 evmInit
 
-import evplugin.nuc.*;
+import endrov.nuc.*;
 import util2.compareDist.*;
 import java.util.*;
 
 %reference names
 filepathref='/Volumes/TBU_main02/ostxml/model/stdcelegansNew.ostxml';
-ostref=evplugin.data.EvData.loadFile(java.io.File(filepathref));
+ostref=endrov.data.EvData.loadFile(java.io.File(filepathref));
 linsref=evmGetIdObjects(ostref,NucLineage);
 linref=linsref.value;
 % Get All names
