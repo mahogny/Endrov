@@ -1,11 +1,6 @@
 package endrov.modelWindow;
 
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
@@ -354,7 +349,7 @@ public class ModelWindow extends BasicWindow
 			try
 				{
 				String out=EvXMLutils.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
-				setClipBoardString(out);
+				EvSwingTools.setClipBoardString(out);
 				}
 			catch (Exception e1)
 				{
@@ -365,7 +360,7 @@ public class ModelWindow extends BasicWindow
 			{
 			try
 				{
-				setPersonalConfig(EvXMLutils.stringToXml(getClipBoardString()));
+				setPersonalConfig(EvXMLutils.stringToXml(EvSwingTools.getClipBoardString()));
 				}
 			catch (Exception e1)
 				{
@@ -373,31 +368,6 @@ public class ModelWindow extends BasicWindow
 				}
 			repaint();
 			}
-		}
-	
-	/**
-	 * Get string from clipboard, never null
-	 */
-	public static String getClipBoardString()
-		{
-		try
-			{
-			return (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-			}
-		catch(Exception e2)
-			{
-			System.out.println("Failed to get text from clipboard");
-			}
-		return "";
-		}
-	
-	
-	public static void setClipBoardString(String s)
-		{
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), 
-				new ClipboardOwner(){
-				public void lostOwnership(Clipboard aClipboard, Transferable aContents){}
-				});
 		}
 	
 	/**
