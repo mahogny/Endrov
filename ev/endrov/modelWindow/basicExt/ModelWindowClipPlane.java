@@ -140,6 +140,8 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			static final long serialVersionUID=0;
 			private JButton bDelete=new JButton(BasicWindow.getIconDelete());
 			private JButton bInvert=new JButton("Invert");
+			private JButton bCopy=new JButton("C");
+			private JButton bPaste=new JButton("P");
 			private JCheckBox cEnabled=new JCheckBox("Enabled",true);
 			private JCheckBox cVisible=new JCheckBox("Visible",true);
 			
@@ -160,6 +162,11 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 				points[2].z=size;
 				updateVector2field();
 
+				JPanel q6=new JPanel(new GridLayout(1,3));
+				q6.add(bCopy);
+				q6.add(bPaste);
+				q6.add(bDelete);
+				
 				//Build GUI
 				JPanel q3=new JPanel(new BorderLayout());
 				q3.add(cEnabled,BorderLayout.CENTER);
@@ -186,6 +193,8 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 				
 				bInvert.addActionListener(this);
 				bDelete.addActionListener(this);
+				bCopy.addActionListener(this);
+				bPaste.addActionListener(this);
 				cEnabled.addActionListener(this);
 				cVisible.addActionListener(this);
 				}
@@ -211,13 +220,34 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					isolayers.remove(this);
 					w.updateToolPanels();
 					}
-				
-				System.out.println("here");
-				for(int i=0;i<3;i++)
-					for(int j=0;j<3;j++)
-						if(fPoints[i][j]==e.getSource())
-							vertexSetCoord(points[i],j,fPoints[i][j].getDouble(0));
-				
+				else if(e.getSource()==bCopy)
+					{
+					StringBuffer bf=new StringBuffer();
+					for(int i=0;i<3;i++)
+						for(int j=0;j<3;j++)
+							bf.append(fPoints[i][j].getDouble(0)+" ");
+					EvSwingTools.setClipBoardString(bf.toString());
+					}
+				else if(e.getSource()==bPaste)
+					{
+					StringTokenizer st=new StringTokenizer(EvSwingTools.getClipBoardString()," ");
+					for(int i=0;i<3;i++)
+						{
+						points[i].x=Double.parseDouble(st.nextToken());
+						points[i].y=Double.parseDouble(st.nextToken());
+						points[i].z=Double.parseDouble(st.nextToken());
+						}
+					updateVector2field();
+					}
+				else
+					{
+					//Must be some entry field
+					System.out.println("here");
+					for(int i=0;i<3;i++)
+						for(int j=0;j<3;j++)
+					//		if(fPoints[i][j]==e.getSource())
+								vertexSetCoord(points[i],j,fPoints[i][j].getDouble(0));
+					}
 				stateChanged(null);
 				}
 
@@ -295,14 +325,26 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 				{
 				if(cVisible.isSelected())
 					{
-					gl.glDisable(GL.GL_CLIP_PLANE0+slabid);
+					//If rendering done in one place, some state changes can be avoided
+					gl.glPushAttrib(GL.GL_ENABLE_BIT);
+					
+					for(int i=0;i<w.view.numClipPlanesSupported;i++)
+						gl.glDisable(GL.GL_CLIP_PLANE0+i);
+					
+//					gl.glDisable(GL.GL_CLIP_PLANE0+slabid);
 					gl.glBegin(GL.GL_LINE_LOOP);
 					gl.glColor3f(1, 0, 0);
 					for(int i=0;i<3;i++)
 						gl.glVertex3f((float)points[i].x,(float)points[i].y,(float)points[i].z);
 					gl.glEnd();
+					
+					gl.glPopAttrib();
+					
 					if(cEnabled.isSelected())
 						gl.glEnable(GL.GL_CLIP_PLANE0+slabid);
+					
+					
+					
 					}
 				}
 			

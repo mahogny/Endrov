@@ -1,6 +1,13 @@
 package endrov.ev;
 
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+
 import javax.swing.*;
 
 /**
@@ -32,5 +39,29 @@ public class EvSwingTools
 		if(right!=null)  p.add(right,BorderLayout.EAST);
 		return p;
 		}
+
+	/**
+	 * Get string from clipboard, never null
+	 */
+	public static String getClipBoardString()
+		{
+		try
+			{
+			return (String)Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+			}
+		catch(Exception e2)
+			{
+			System.out.println("Failed to get text from clipboard");
+			}
+		return "";
+		}
+
+	public static void setClipBoardString(String s)
+	{
+	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), 
+			new ClipboardOwner(){
+			public void lostOwnership(Clipboard aClipboard, Transferable aContents){}
+			});
+	}
 
 	}
