@@ -15,7 +15,7 @@ uploaddoc:
 
 starters:
 	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class
-	jar cfvm startImServ.jar endrov/starter/MANIFEST.STARTIMSERV endrov/starter/StartImServ.class
+	jar cfvm startImServ.jar bioserv/MANIFEST.STARTIMSERV bioserv/StartImServ.class
 	jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class
 	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/StartGUI.class
 	du -hc start*.jar

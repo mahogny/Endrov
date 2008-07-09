@@ -22,7 +22,6 @@ import javax.swing.SwingUtilities;
 import bioserv.SendFile;
 
 import endrov.data.EvData;
-import endrov.imagesetImserv.ImservImageset;
 
 
 /**
@@ -287,9 +286,9 @@ public class DataIconPane extends JPanel implements Scrollable
 					for(DataIconPaneListener listener:listeners)
 						listener.dataIconActivate(data);
 					
+					
 					//wrong place, temp
-					ImservImageset rec=new ImservImageset(data);
-					EvData.registerOpenedData(rec);
+					EvData.registerOpenedData(conn.getImservImageset(openName));
 					}
 				catch (Exception e1)
 					{

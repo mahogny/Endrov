@@ -138,6 +138,16 @@ public class ImservImpl extends BioservModule implements ImservIF
 		}
 	
 
+	public static String nicifyName(String name)
+		{
+		
+		if(name.endsWith(".ost"))
+			return name.substring(0,name.length()-".ost".length());
+		else if(name.endsWith(".ostxml"))
+			return name.substring(0,name.length()-".ostxml".length());
+		else
+			return name;
+		}
 	
 	public class ImservThread extends Thread
 		{
@@ -164,26 +174,26 @@ public class ImservImpl extends BioservModule implements ImservIF
 					if(rep.dir.exists())
 						{
 						//Check what to remove and what to keep
-						HashSet<String> incoming=new HashSet<String>();
+						HashMap<String,File> incoming=new HashMap<String,File>();
 						for(File file:rep.dir.listFiles())
 							if(!file.getName().startsWith("."))
 								{
 								if(file.isDirectory() || file.getName().endsWith(".ostxml"))
-									incoming.add(file.getName());
+									incoming.put(nicifyName(file.getName()),file);
 								}
 		
-						HashSet<String> toAdd=new HashSet<String>(incoming);
+						HashSet<String> toAdd=new HashSet<String>(incoming.keySet());
 						toAdd.removeAll(rep.data.keySet());
 		
 						HashSet<String> toRemove=new HashSet<String>(rep.data.keySet());
-						toRemove.removeAll(incoming);
+						toRemove.removeAll(incoming.keySet());
 		
 						//Add newfound entries
 						for(String name:toAdd)
 							{
 							try
 								{
-								DataImpl data=new DataImpl(selfref,name,new File(rep.dir,name));
+								DataImpl data=new DataImpl(selfref,name,incoming.get(name)/*new File(rep.dir,name)*/);
 								addData(rep,data);
 								daemon.log("Found new dataset: "+data.getName());
 								}
@@ -235,6 +245,7 @@ public class ImservImpl extends BioservModule implements ImservIF
 	 */
 	private synchronized void addData(RepositoryDir rep, DataImpl data)
 		{
+		System.out.println(data.getName());
 		rep.data.put(data.getName(), data);
 		for(String s:data.tags.keySet())
 			getMapCreate(s, tags).add(data);

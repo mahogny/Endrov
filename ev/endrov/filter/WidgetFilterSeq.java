@@ -129,7 +129,7 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 				//Buttons
 				final JButton bUp=new JButton(BasicWindow.getIconUp());
 				final JButton bDown=new JButton(BasicWindow.getIconDown());
-				final JButton bDelete=new JButton(BasicWindow.getIconDelete());
+				final JButton bDelete=BasicWindow.getButtonDelete();
 
 				ActionListener listener=new ActionListener()
 					{

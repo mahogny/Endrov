@@ -26,13 +26,14 @@ public class BioformatsImageset extends Imageset
 		Script.addCommand("dbio", new CmdDBIO());
 		
 		supportFileFormats.add(new EvDataSupport(){
-			public Integer supports(File file)
+			public Integer supports(String fileS)
 				{
+				File file=new File(fileS);
 				return file.isFile() ? 100 : null; //Low priority; need to find a way to check extensions
 				}
-			public EvData load(File file) throws Exception
+			public EvData load(String file) throws Exception
 				{
-				return new BioformatsImageset(file.getAbsolutePath());
+				return new BioformatsImageset(file);
 				}
 		});
 		}
@@ -55,7 +56,7 @@ public class BioformatsImageset extends Imageset
 	 */
 	public BioformatsImageset(String basedir) throws Exception
 		{
-		this.basedir=basedir;
+		this.basedir=new File(basedir).getAbsolutePath();
 		this.imageset=(new File(basedir)).getName();
 		if(!(new File(basedir)).exists())
 			throw new Exception("File does not exist");

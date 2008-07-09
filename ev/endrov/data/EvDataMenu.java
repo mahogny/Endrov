@@ -137,7 +137,7 @@ public class EvDataMenu implements BasicWindowExtension
 				mRecent.add(mi);
 				mi.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e)
-						{EvData.registerOpenedData(EvData.loadFile(new File(rref.url)));}
+						{EvData.registerOpenedData(EvData.loadFile(rref.url));}
 					});
 				}
 			

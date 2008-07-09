@@ -60,6 +60,7 @@ public class JInputManager implements Runnable
 
 	public void run()
 		{
+		System.out.println("Jinput running thread");
 		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
 		NewBinding.EvBindStatus status=new NewBinding.EvBindStatus();
 		while(true)

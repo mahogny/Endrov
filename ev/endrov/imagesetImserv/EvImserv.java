@@ -6,9 +6,9 @@ import java.util.*;
 import bioserv.BioservDaemon;
 import bioserv.imserv.ImservConnection;
 import endrov.basicWindow.BasicWindow;
+import endrov.data.EvData;
+import endrov.data.EvDataSupport;
 
-
-//recent: store host,port,user,pass
 
 /**
  * Handler of active sessions to ImServ
@@ -19,6 +19,94 @@ import endrov.basicWindow.BasicWindow;
 public class EvImserv
 	{
 	public static List<EvImservSession> sessions=Collections.synchronizedList(new LinkedList<EvImservSession>());
+	
+	public static class ImservURL
+		{
+		String host;
+		String user;
+		String name;
+		String password;
+		int port=bioserv.BioservDaemon.PORT;
+		public ImservURL(String url)
+			{
+			//TODO Parser should be rewritten from scratch; error checking and escaping, port
+			
+			url=url.substring("imserv://".length());
+			
+			int nextat=url.indexOf('@');
+			if(nextat!=-1)
+				{
+				user=url.substring(0,nextat);
+				url=url.substring(nextat+1);
+				
+				int nextcolon=user.indexOf(":");
+				if(nextcolon!=-1)
+					{
+					String temp=user.substring(0,nextcolon);
+					password=user.substring(nextcolon+1);
+					user=temp;
+					}
+				
+				}
+			
+			int nextslash=url.indexOf('/');
+			host=url.substring(0,nextslash);
+			
+			name=url.substring(nextslash+1);
+			}
+		}
+
+	
+	public static EvImservSession getSession(String url) throws Exception
+		{
+		return getSession(new ImservURL(url));
+		}
+		
+	public static EvImservSession getSession(ImservURL url) throws Exception
+		{
+		//Search through existing sessions
+		for(EvImservSession session:sessions)
+			if(session.conn.host.equals(url.host))
+				return session;
+		
+		//Connect to new session
+		if(url.password!=null)
+			{
+			EvImservSession session=new EvImservSession(url.host, url.user, url.password, url.port);
+			sessions.add(session);
+			BasicWindow.updateWindows();
+			return session;
+			}
+		
+		
+		DialogOpenDatabase dlg=new DialogOpenDatabase(null);
+		dlg.dbUser=url.user;
+		dlg.dbUrl=url.host;
+		EvImservSession session=dlg.run();
+		if(session!=null)
+			{
+			sessions.add(session);
+			BasicWindow.updateWindows();
+			}
+		return session;
+		}
+
+	public static ImservImageset getImageset(String url) throws Exception
+		{
+		return getImageset(new ImservURL(url));
+		}
+
+	public static ImservImageset getImageset(ImservURL url) throws Exception
+		{
+		EvImservSession session=getSession(url);
+		if(session!=null)
+			return session.conn.getImservImageset(url.name);
+		else
+			return null;
+		}
+	
+	
+	
 	
 	public static void initPlugin() {}
 	static
@@ -31,14 +119,29 @@ public class EvImserv
 		BasicWindow.addBasicWindowExtension(new ImservBasic());
 		
 		
+		//New file type
+		EvData.supportFileFormats.add(new EvDataSupport(){
+		public Integer supports(String file)
+			{
+			System.out.println("try "+file);
+			if(file.startsWith("imserv://"))
+				return 10;
+			else
+				return null;
+			}
+		public EvData load(String file) throws Exception
+			{
+			System.out.println("loading "+file);
+			return getImageset(file);
+			}
+		});
 		
-		//TODO: add new file type
 		}
 	
 	
 	public static class EvImservSession
 		{
-		ImservConnection conn;
+		public ImservConnection conn;
 		public EvImservSession(String host, String user, String pass, int port) throws Exception
 			{
 			//InetAddress.getLocalHost().getHostName(), Daemon.PORT

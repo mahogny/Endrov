@@ -115,7 +115,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			static final long serialVersionUID=0;
 			private JSpinner zplaneSpinner=new JSpinner(new SpinnerNumberModel((int)0.0,(int)-99.0,(int)999.0,(int)1));
 			private ChannelCombo chanCombo=new ChannelCombo(null,true);
-			private JButton bDelete=new JButton(BasicWindow.getIconDelete());
+			private JButton bDelete=BasicWindow.getButtonDelete();
 			private JCheckBox zProject=new JCheckBox("@Z=0");
 			private ColorCombo colorCombo=new ColorCombo();
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);

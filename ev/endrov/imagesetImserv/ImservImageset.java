@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import bioserv.SendFile;
 import bioserv.imserv.DataIF;
+import bioserv.imserv.ImservConnection;
 
 import endrov.data.RecentReference;
 import endrov.ev.Log;
@@ -25,6 +26,7 @@ public class ImservImageset extends Imageset
 	 *****************************************************************************************************/
 
 	private DataIF data;
+	private ImservConnection conn;
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -33,9 +35,10 @@ public class ImservImageset extends Imageset
 	/**
 	 * Create a new recording
 	 */
-	public ImservImageset(DataIF omeimage)
+	public ImservImageset(DataIF omeimage, ImservConnection conn)
 		{
 		this.data=omeimage;
+		this.conn=conn;
 		try
 			{
 			imageset=omeimage.getName();
@@ -88,7 +91,10 @@ public class ImservImageset extends Imageset
 	
 	public RecentReference getRecentEntry()
 		{
-		return null;
+			//TODO @ in strings? or /? will fuck up. need escaping
+		String path="imserv://"+conn.user+"@"+conn.host+"/"+getMetadataName();
+		System.out.println("made path "+path);
+		return new RecentReference(getMetadataName(),path);
 		}
 	
 	
@@ -301,7 +307,7 @@ public class ImservImageset extends Imageset
 	
 	public void finalize()
 		{
-		System.out.println("finalize ome");
+		System.out.println("finalize imserv imageset");
 		}
 	
 	}

@@ -1,9 +1,8 @@
 package endrov.data;
 
-import java.io.File;
 
 public interface EvDataSupport
 	{
-	public Integer supports(File file);
-	public EvData load(File file) throws Exception;
+	public Integer supports(String file);
+	public EvData load(String file) throws Exception;
 	}
