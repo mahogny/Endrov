@@ -145,7 +145,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			private JSpinner numplaneSpinner=new JSpinner(new SpinnerNumberModel((int)1,(int)0,(int)99,(int)1));
 			private JSpinner blurxySpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)10.0,(int)1));
 			private ChannelCombo chanCombo=new ChannelCombo(null,true);
-			private JButton bDelete=new JButton(BasicWindow.getIconDelete());
+			private JButton bDelete=BasicWindow.getButtonDelete();
 			private ColorCombo colorCombo=new ColorCombo();
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
 			private HashMap<Integer,Vector<IsosurfaceRenderer>> surfaces=new HashMap<Integer,Vector<IsosurfaceRenderer>>(); 

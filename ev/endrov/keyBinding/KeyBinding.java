@@ -23,23 +23,24 @@ public class KeyBinding implements Comparable<KeyBinding>
 	public static HashMap<Integer,KeyBinding> bindings=new HashMap<Integer,KeyBinding>();
 	private static int nextId=0;
 
-//	static JInputManager jinputManager=null;
-
+	static JInputManager jinputManager=new JInputManager();
+	//TODO: how does this play with matlab?
 	
 	public static void initPlugin() {}
 	static
 		{
+		/*
 		try
 			{
-//			Class testClass=Class.forName("net.java.games.input.Component");
-//			testClass.newInstance();
-//			jinputManager=new JInputManager();
+			Class testClass=Class.forName("net.java.games.input.Component");
+			testClass.newInstance();
+			jinputManager=new JInputManager();
 			}
 		catch (Exception e1)
 			{
 			e1.printStackTrace();
 			}
-		
+		*/
 		
 		
 		BasicWindow.addBasicWindowExtension(new BasicKeyBinding());

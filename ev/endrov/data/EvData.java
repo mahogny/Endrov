@@ -39,14 +39,15 @@ public abstract class EvData
 		
 		//OST XML-support
 		supportFileFormats.add(new EvDataSupport(){
-			public Integer supports(File file)
+			public Integer supports(String fileS)
 				{
+				File file=new File(fileS);
 				return file.isFile() && (file.getName().endsWith(".xml") ||
 						file.getName().endsWith(".ostxml")) ? 10 : null;
 				}
-			public EvData load(File file) throws Exception
+			public EvData load(String file) throws Exception
 				{
-				return new EvDataXML(file.getAbsolutePath());
+				return new EvDataXML(file);
 				}
 		});
 		
@@ -160,18 +161,37 @@ public abstract class EvData
 		public void loadFileStatus(double proc, String text);
 		}
 
+	
+	/**
+	 * Load file by path
+	 */
+	public static EvData loadFile(String file)
+		{
+		return loadFile(file,null);
+		}
+
+	
 	/**
 	 * Load file by path
 	 */
 	public static EvData loadFile(File file)
 		{
-		return loadFile(file,null);
+		return loadFile(file.getPath(),null);
 		}
 	
 	/**
 	 * Load file by path, receive feedback on process
 	 */
 	public static EvData loadFile(File file, LoadFileCallback cb)
+		{
+		return loadFile(file.getPath(),cb);
+		}
+
+	
+	/**
+	 * Load file by path, receive feedback on process
+	 */
+	public static EvData loadFile(String file, LoadFileCallback cb)
 		{
 		EvDataSupport thes=null;
 		int lowest=0;
@@ -190,7 +210,7 @@ public abstract class EvData
 				{
 				EvData data=thes.load(file);
 				if(cb!=null)
-					cb.loadFileStatus(0, "Loading "+file.getName());
+					cb.loadFileStatus(0, "Loading "+file);
 				if(data!=null)
 					return data;
 				}
@@ -203,6 +223,7 @@ public abstract class EvData
 		return null;
 		}
 
+	
 	
 	/**
 	 * Load file by open dialog
@@ -218,7 +239,7 @@ public abstract class EvData
 				if(f.isDirectory())
 					return true;
 				for(EvDataSupport s:EvData.supportFileFormats)
-					if(s.supports(f)!=null)
+					if(s.supports(f.getPath())!=null)
 						return true;
 				return false;
 				}

@@ -19,6 +19,7 @@ public class BatchMax
 //		BatchThread c=new CalcThread(ost, 0, 1000000, "GFP",0.99);		
 		BatchThread c=new CalcThread(ost, 0, 1000000, "GFP");
 		new CompleteBatch(c);
+		//ost.saveMeta();
 		//TODO. need to save 
 		}
 	

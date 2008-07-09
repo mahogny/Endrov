@@ -5,7 +5,8 @@ import util2.compareDist.*;
 import java.util.*;
 
 
-ost=endrov.data.EvData.loadFile(java.io.File(filepath));
+ost=endrov.data.EvData.loadFile(java.io.File([filepath,'.ost'])); %temp hack, remove later
+ost
 lins=evmGetIdObjects(ost,NucLineage);
 lin=lins.value;
 
@@ -73,6 +74,14 @@ for curframe=[minframe:dt:maxframe]
 %         if curframe>td.getStr(lin.nuc,tempname).pos.lastKey
 %             continue;
 %         end
+%         does not work, this leaves all cells alive if taken out
+%           080707: changed to other keyframe determination function
+        if curframe<td.getStr(lin.nuc,tempname).firstFrame
+            continue;
+        end
+        if curframe>td.getStr(lin.nuc,tempname).lastFrame
+            continue;
+        end
         if ~namesi.containsKey(interkey(i).snd) % nuclei not included in reference lineage to remove all helper coordinates etc.
             continue;
         end
@@ -116,12 +125,15 @@ for curframe=[minframe:dt:maxframe]
                     indexj=namesi.get(cell2mat(thesename(j)));
                     
                     tnames{indexi}=thisnamei;
-                    nstart(indexi)=td.getStr(lin.nuc,thisnamei).pos.firstKey; % works
-                    %nstart(indexi)=td.getStr(lin.nuc,thisnamei).firstFrame;
+                    %nstart(indexi)=td.getStr(lin.nuc,thisnamei).pos.firstKey; % works, changed to new function
+
+                    nstart(indexi)=td.getStr(lin.nuc,thisnamei).firstFrame;
  
                     
-                    nend(indexi)=td.getStr(lin.nuc,thisnamei).pos.lastKey;
-                    %nend(indexi)=td.getStr(lin.nuc,thisnamei).lastFrame;
+                    %nend(indexi)=td.getStr(lin.nuc,thisnamei).pos.lastKey;
+                    %see above
+                    
+                    nend(indexi)=td.getStr(lin.nuc,thisnamei).lastFrame;
 
                     ncount(indexi,indexj)=ncount(indexi,indexj)+1;
                     if strcmp(thisnamei,'ABarp')
@@ -158,5 +170,5 @@ disp('done count neigh');
 notneigh
 
 
-save([filepath '/data/newneigh_080703.mat'],'ncount','nstatus','nstart','nend','dt','names','tnames');
+save([filepath '.ost/data/newneigh_080707.mat'],'ncount','nstatus','nstart','nend','dt','names','tnames');
 

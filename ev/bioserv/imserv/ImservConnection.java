@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import endrov.imagesetImserv.ImservImageset;
+
 import bioserv.ClientSessionIF;
 import bioserv.BioservDaemon;
 import bioserv.RMISSLClientSocketFactory;
@@ -31,4 +33,16 @@ public class ImservConnection
 			return conn;
 		return null;
 		}
+	
+	
+	
+	public ImservImageset getImservImageset(String name) throws Exception
+		{
+		DataIF data=imserv.getData(name);
+		ImservImageset rec=new ImservImageset(data,this);
+		return rec;
+		}
+	
+	
+	
 	}

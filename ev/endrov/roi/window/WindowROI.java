@@ -76,7 +76,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	private JButton bDelete=new JButton(getIconDelete());
+	private JButton bDelete=BasicWindow.getButtonDelete();
 	private JPanel upperPanel=new JPanel(new GridLayout(2,1));
 	private MetaCombo metaCombo=new MetaCombo(this, false);
 	public boolean comboFilterMetadataCallback(EvData meta)

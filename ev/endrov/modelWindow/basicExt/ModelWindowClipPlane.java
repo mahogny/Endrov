@@ -138,10 +138,10 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		private class ToolSlab extends JPanel implements ChangeListener, ActionListener
 			{
 			static final long serialVersionUID=0;
-			private JButton bDelete=new JButton(BasicWindow.getIconDelete());
+			private JButton bDelete=BasicWindow.getButtonDelete();
 			private JButton bInvert=new JButton("Invert");
-			private JButton bCopy=new JButton("C");
-			private JButton bPaste=new JButton("P");
+			private JButton bCopy=BasicWindow.getButtonCopy();
+			private JButton bPaste=BasicWindow.getButtonPaste();
 			private JCheckBox cEnabled=new JCheckBox("Enabled",true);
 			private JCheckBox cVisible=new JCheckBox("Visible",true);
 			
@@ -170,7 +170,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 				//Build GUI
 				JPanel q3=new JPanel(new BorderLayout());
 				q3.add(cEnabled,BorderLayout.CENTER);
-				q3.add(bDelete,BorderLayout.EAST);
+				q3.add(q6,BorderLayout.EAST);
 				JPanel q5=new JPanel(new BorderLayout());
 				q5.add(cVisible,BorderLayout.CENTER);
 				q5.add(bInvert,BorderLayout.EAST);

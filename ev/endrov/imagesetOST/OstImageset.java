@@ -29,8 +29,9 @@ public class OstImageset extends Imageset
 		Script.addCommand("loadost", new CmdLoadOST());
 		
 		supportFileFormats.add(new EvDataSupport(){
-			public Integer supports(File file)
+			public Integer supports(String fileS)
 				{
+				File file=new File(fileS);
 				if(file.isDirectory())
 					{
 					if(file.getName().endsWith(".ost")) //OST3+
@@ -42,9 +43,9 @@ public class OstImageset extends Imageset
 					}
 				return null;
 				}
-			public EvData load(File file) throws Exception
+			public EvData load(String file) throws Exception
 				{
-				return new OstImageset(file);
+				return new OstImageset(new File(file));
 				}
 		});
 		
@@ -434,8 +435,8 @@ public class OstImageset extends Imageset
 		try
 			{
 			String ext="";
-			BufferedReader in = new BufferedReader(new FileReader(getDatabaseCacheFile()));
-		 
+			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(getDatabaseCacheFile()),"UTF-8"));
+			
 			String line=in.readLine();
 			if(!line.equals("version1"))
 				{
@@ -573,7 +574,7 @@ public class OstImageset extends Imageset
 		try
 			{
 			String lastExt="";
-			BufferedWriter w=new BufferedWriter(new FileWriter(getDatabaseCacheFile()));
+			BufferedWriter w=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getDatabaseCacheFile()),"UTF-8"));
 			
 			w.write("version1\n");
 

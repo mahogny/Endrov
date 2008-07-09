@@ -210,7 +210,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	private File constructImageFile(String channel, int frame, int z, String end)
 		{
 		//dangerous format!
-		File chandir=new File(file,channel);
+		File chandir=new File(file,"ch-"+channel);
 		File framedir=new File(chandir,EV.pad(frame,8));
 		return new File(framedir,EV.pad(z,8)+end);
 		}
@@ -224,10 +224,10 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 		if(isOST3())
 			{
 			//Note: dangerous channel
-			File chandir=new File(file,channel);
+			File chandir=new File(file,"ch-"+channel);
 			File framedir=new File(chandir,EV.pad(frame,8));
 			final String sz=EV.pad(z,8)+".";
-			System.out.println("frame "+framedir+" "+sz);
+//			System.out.println("frame "+framedir+" "+sz);
 			File zcand[]=framedir.listFiles(new FileFilter(){
 				public boolean accept(File pathname){return pathname.getName().startsWith(sz);}});
 			

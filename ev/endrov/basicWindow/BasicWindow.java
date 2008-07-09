@@ -42,13 +42,35 @@ public abstract class BasicWindow extends JPanel
 	private static ImageIcon iconButtonTrash=new ImageIcon(BasicWindow.class.getResource("iconTrash.png"));
 	private static ImageIcon iconButtonHelp=new ImageIcon(BasicWindow.class.getResource("iconHelp.png"));
 	
+	private static ImageIcon iconButtonCopy=new ImageIcon(BasicWindow.class.getResource("iconCopy.png"));
+	private static ImageIcon iconButtonPaste=new ImageIcon(BasicWindow.class.getResource("iconPaste.png"));
+	
 	
 	public static ImageIcon getIconDelete(){return iconButtonDelete;}
 	public static ImageIcon getIconDown(){return iconButtonDown;}
 	public static ImageIcon getIconUp(){return iconButtonUp;}
 	public static ImageIcon getIconTrash(){return iconButtonTrash;}
 	public static ImageIcon getIconHelp(){return iconButtonHelp;}
-	
+
+	public static JButton getButtonCopy()
+		{
+		JButton b=new JButton(iconButtonCopy);
+		b.setToolTipText("Copy");
+		return b;
+		}
+	public static JButton getButtonPaste()
+		{
+		JButton b=new JButton(iconButtonPaste);
+		b.setToolTipText("Paste");
+		return b;
+		}
+	public static JButton getButtonDelete()
+		{
+		JButton b=new JButton(iconButtonDelete);
+		b.setToolTipText("Remove");
+		return b;
+		}
+
 //	private static ImageIcon iconMenuMaint=new ImageIcon(BasicWindow.class.getResource("iconMenuMaint.png"));
 //	private static ImageIcon iconMenuInfo=new ImageIcon(BasicWindow.class.getResource("iconMenuInfo.png"));
 	private static ImageIcon iconMenuQuit=new ImageIcon(BasicWindow.class.getResource("iconMenuQuit.png"));

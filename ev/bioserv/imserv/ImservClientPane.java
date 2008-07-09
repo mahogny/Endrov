@@ -322,7 +322,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		
 		public JComboBox cTag=new JComboBox(new Object[]{""});
 		public JTextField tValue=new JTextField();
-		public JButton bRemove=new JButton(BasicWindow.getIconDelete());
+		public JButton bRemove=BasicWindow.getButtonDelete();
 		
 		
 		public void updateTagList(final List<String> list)
@@ -478,7 +478,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		
 		public JTextField tName=new JTextField();
 		public JTextField tValue=new JTextField();
-		public JButton bRemove=new JButton(BasicWindow.getIconDelete());
+		public JButton bRemove=BasicWindow.getButtonDelete();
 		private String name;
 		private Color normalColor;
 		
