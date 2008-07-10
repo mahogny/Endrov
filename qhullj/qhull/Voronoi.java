@@ -21,8 +21,8 @@ public class Voronoi
 		Runtime runtime = Runtime.getRuntime();
     Process process = runtime.exec(executable.toString()+" s o");
     
-    //PrintWriter pw=new PrintWriter(process.getOutputStream());
-    PrintWriter pw=new PrintWriter(System.out);
+    PrintWriter pw=new PrintWriter(process.getOutputStream());
+    //PrintWriter pw=new PrintWriter(System.out);
     
     pw.println("3");
     pw.println(""+nump);
