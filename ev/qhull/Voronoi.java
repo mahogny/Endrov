@@ -12,24 +12,27 @@ import javax.vecmath.Vector3d;
 public class Voronoi
 	{
   public List<Vector3d> vvert=new Vector<Vector3d>();
-  public List<int[]> vface=new Vector<int[]>();
+  public List<int[]> vsimplex=new Vector<int[]>();
 	
 	public Voronoi(Vector3d[] points) throws Exception
 		{
-		File dir=new File(Voronoi.class.getResource(".").getFile());
-		File executable;
+		String platform;
 		if(endrov.ev.EV.isMac())
-			executable=new File(new File(dir,"mac"),"qvoronoi");
+			platform="mac";
 		else if(endrov.ev.EV.isWindows())
 			throw new Exception("QHULL Platform not supported");
 		else //assume linux?
-			executable=new File(new File(dir.getParentFile(),"linux32"),"qvoronoi");
+			platform="linux32";
+		
+		File dir=new File(Voronoi.class.getResource(".").getFile());
+		File executable=new File(new File(dir,platform),"qvoronoi");
 		
 		int nump=points.length;
 		
     Process process = Runtime.getRuntime().exec(executable.toString()+" o");
     
     PrintWriter pw=new PrintWriter(process.getOutputStream());
+    //PrintWriter pw=new PrintWriter(System.out);
     pw.println("3");
     pw.println(Integer.toString(nump));
     for(Vector3d p:points)
@@ -49,7 +52,8 @@ public class Voronoi
     int numVert=Integer.parseInt(new StringTokenizer(line2).nextToken());
     
     //Vertices
-    for(int i=0;i<numVert;i++)
+    br.readLine();//Skip infinity
+    for(int i=1;i<numVert;i++)
     	{
     	StringTokenizer st=new StringTokenizer(br.readLine());
     	Vector3d v=new Vector3d(
@@ -59,18 +63,19 @@ public class Voronoi
       vvert.add(v);
     	}
 
-    //Faces
+    //Simplexes
     String line;
     while((line = br.readLine())!=null)
     	{
     	StringTokenizer st=new StringTokenizer(line);
-    	Vector<Integer> facev=new Vector<Integer>();
+    	Vector<Integer> simplexv=new Vector<Integer>();
+    	st.nextToken(); //Skip number of vertices
     	while(st.hasMoreTokens())
-    		facev.add(Integer.parseInt(st.nextToken())-1);
-    	int[] fa=new int[facev.size()];
+    		simplexv.add(Integer.parseInt(st.nextToken())-1);
+    	int[] fa=new int[simplexv.size()];
     	for(int i=0;i<fa.length;i++)
-    		fa[i]=facev.get(i);
-    	vface.add(fa);
+    		fa[i]=simplexv.get(i);
+    	vsimplex.add(fa);
     	}
 		}
 	
@@ -80,7 +85,7 @@ public class Voronoi
 		StringBuffer bf=new StringBuffer();
 		bf.append(vvert);
 		bf.append("\n");
-		for(int[] f:vface)
+		for(int[] f:vsimplex)
 			{
 			for(int i:f)
 				bf.append(" "+i);
