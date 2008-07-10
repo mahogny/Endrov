@@ -592,6 +592,35 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	
 
+	/**
+	 * Find the first keyframe ever mentioned in a lineage object
+	 */
+	public int firstFrameOfLineage()
+		{
+		Integer minframe=null;
+		for(Nuc n:nuc.values())
+			{
+			if(minframe==null || (!n.pos.isEmpty() && n.pos.firstKey()<minframe))
+				minframe=n.pos.firstKey();
+			}
+		return minframe;
+		}
+
+	/**
+	 * Find the last keyframe ever mentioned in a lineage object
+	 */
+	public int lastFrameOfLineage()
+		{
+		Integer maxframe=null;
+		for(Nuc n:nuc.values())
+			{
+			if(maxframe==null || (!n.pos.isEmpty() && n.pos.firstKey()>maxframe))
+				maxframe=n.pos.firstKey();
+			}
+		return maxframe;
+		}
+
+	
 	
 	/******************************************************************************************************
 	 *                               Class NucPos                                                         *
@@ -684,6 +713,8 @@ public class NucLineage extends EvObject implements Cloneable
 		public Integer frameBefore;
 		public Integer frameAfter;
 		public java.awt.Color colorNuc;
+		boolean isEnd;
+		boolean hasParent;
 		public boolean isKeyFrame(double frame)
 			{
 			//double vs int ==. probably a bad idea
@@ -691,8 +722,11 @@ public class NucLineage extends EvObject implements Cloneable
 				return false;
 			else return frameBefore==frame || frameAfter==frame;
 			}
-		boolean isEnd;
-		boolean hasParent;
+		
+		public boolean isVisible()
+			{
+			return frameBefore!=null;
+			}
 		}
 
 	/******************************************************************************************************

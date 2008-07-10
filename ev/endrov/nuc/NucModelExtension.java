@@ -180,8 +180,68 @@ public class NucModelExtension implements ModelWindowExtension
 			boolean traceCur=miShowTraceCur.isSelected();
 			boolean traceSel=miShowTraceSel.isSelected();
 			
+			
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
+				//Draw neighbours. Need be calculated in the background and cached
+				try
+					{
+					NucVoronoi nvor=new NucVoronoi(inter);
+					
+					/*
+					for(int[] facelist:nvor.vor.vface)
+//					int size=nvor.nucnames.size();
+	//				for(int i=0;i<size;i++)
+						{
+						boolean isfinite=true;
+						for(int i:facelist)
+							if(i==-1)
+								isfinite=false;
+						if(isfinite)
+							{
+							gl.glBegin(GL.GL_LINE_LOOP);
+							gl.glColor3d(1, 0, 0);
+							for(int i:facelist)
+								{
+								Vector3d v=nvor.vor.vvert.get(i);
+								System.out.println(""+i+" "+v);
+								gl.glVertex3d(v.x, v.y, v.z);
+								}
+							gl.glEnd();
+							}
+						}
+					*/
+					
+					
+					
+					//Lines between neighbours
+					gl.glBegin(GL.GL_LINES);
+					gl.glColor3d(1, 0, 0);
+					int size=nvor.nucnames.size();
+					for(int i=0;i<size;i++)
+						{
+						Vector3d from=nvor.nmid.get(i);
+						for(int j:nvor.vneigh.dneigh.get(i))
+							if(j>i && j!=-1)
+								{
+								Vector3d to=nvor.nmid.get(j);
+								gl.glVertex3d(from.x, from.y, from.z);
+								gl.glVertex3d(to.x, to.y, to.z);
+								}
+						}
+					gl.glEnd();
+					
+					
+					
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+
+				
+				
+				
 				for(NucPair nucPair:inter.keySet())
 					{
 					//Render nuc body
@@ -318,7 +378,8 @@ public class NucModelExtension implements ModelWindowExtension
 		private void renderNuc(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
 			{
 			//Visibility rule
-			if(nuc.frameBefore==null)
+			if(!nuc.isVisible())
+//			if(nuc.frameBefore==null)
 				return;
 			
 			gl.glEnable(GL.GL_CULL_FACE);

@@ -13,18 +13,18 @@ public class VoronoiNeigh
 	
 	public VoronoiNeigh(Voronoi v)
 		{
-		int numface=v.vface.size();
-		for(int i=0;i<numface;i++)
+		int numsimplex=v.vsimplex.size();
+		for(int i=0;i<numsimplex;i++)
 			dneigh.add(new ArrayList<Integer>());
 
-		for(int i=0;i<numface;i++)
+		for(int i=0;i<numsimplex;i++)
 			{
 			HashSet<Integer> faceA=new HashSet<Integer>();
-			for(int e:v.vface.get(i))
+			for(int e:v.vsimplex.get(i))
 				faceA.add(e);
-			for(int j=i+1;j<numface;j++)
+			for(int j=i+1;j<numsimplex;j++)
 					{
-					for(int e:v.vface.get(j))
+					for(int e:v.vsimplex.get(j))
 						if(faceA.contains(e) && e!=-1)
 							{
 							dneigh.get(i).add(j);

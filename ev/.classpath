@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/script/parser/" kind="src" path=""/>
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeQT/|endrov/macBinding/|endrov/script/parser/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/mac/jogl.jar"/>
 	<classpathentry kind="lib" path="libs/mac/gluegen-rt.jar"/>
