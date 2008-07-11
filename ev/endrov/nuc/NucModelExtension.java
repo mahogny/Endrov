@@ -55,6 +55,8 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public JCheckBoxMenuItem miShowDiv=new JCheckBoxMenuItem("Show division lines", true); 
 
+		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false); 
+
 		public NucModelWindowHook(ModelWindow w)
 			{
 			this.w=w;
@@ -69,6 +71,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miShowTraceSel);
 			miNuc.add(miShowTraceCur);
 			miNuc.add(miShowDiv);
+			miNuc.add(miShowDelaunay);
 			w.menuModel.add(miNuc);
 			
 			miShowAllNucNames.addActionListener(this);
@@ -77,6 +80,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowTraceSel.addActionListener(this);
 			miShowTraceCur.addActionListener(this);
 			miShowDiv.addActionListener(this);
+			miShowDelaunay.addActionListener(this);
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
 				public void mouseClicked(MouseEvent e)
@@ -184,61 +188,64 @@ public class NucModelExtension implements ModelWindowExtension
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
 				//Draw neighbours. Need be calculated in the background and cached
-				try
+				if(miShowDelaunay.isSelected())
 					{
-					NucVoronoi nvor=new NucVoronoi(inter);
-					
-					/*
-					for(int[] facelist:nvor.vor.vface)
-//					int size=nvor.nucnames.size();
-	//				for(int i=0;i<size;i++)
+					try
 						{
-						boolean isfinite=true;
-						for(int i:facelist)
-							if(i==-1)
-								isfinite=false;
-						if(isfinite)
+						NucVoronoi nvor=new NucVoronoi(inter);
+						
+						/*
+						for(int[] facelist:nvor.vor.vface)
+	//					int size=nvor.nucnames.size();
+		//				for(int i=0;i<size;i++)
 							{
-							gl.glBegin(GL.GL_LINE_LOOP);
-							gl.glColor3d(1, 0, 0);
+							boolean isfinite=true;
 							for(int i:facelist)
+								if(i==-1)
+									isfinite=false;
+							if(isfinite)
 								{
-								Vector3d v=nvor.vor.vvert.get(i);
-								System.out.println(""+i+" "+v);
-								gl.glVertex3d(v.x, v.y, v.z);
+								gl.glBegin(GL.GL_LINE_LOOP);
+								gl.glColor3d(1, 0, 0);
+								for(int i:facelist)
+									{
+									Vector3d v=nvor.vor.vvert.get(i);
+									System.out.println(""+i+" "+v);
+									gl.glVertex3d(v.x, v.y, v.z);
+									}
+								gl.glEnd();
+								}
+							}
+						*/
+						
+						
+						
+						//Lines between neighbours
+						if(miShowDelaunay.isSelected())
+							{
+							gl.glBegin(GL.GL_LINES);
+							gl.glColor3d(1, 0, 0);
+							int size=nvor.nucnames.size();
+							for(int i=0;i<size;i++)
+								{
+								Vector3d from=nvor.nmid.get(i);
+								for(int j:nvor.vneigh.dneigh.get(i))
+									if(j>i && j!=-1)
+										{
+										Vector3d to=nvor.nmid.get(j);
+										gl.glVertex3d(from.x, from.y, from.z);
+										gl.glVertex3d(to.x, to.y, to.z);
+										}
 								}
 							gl.glEnd();
 							}
+						
 						}
-					*/
-					
-					
-					
-					//Lines between neighbours
-					gl.glBegin(GL.GL_LINES);
-					gl.glColor3d(1, 0, 0);
-					int size=nvor.nucnames.size();
-					for(int i=0;i<size;i++)
+					catch (Exception e)
 						{
-						Vector3d from=nvor.nmid.get(i);
-						for(int j:nvor.vneigh.dneigh.get(i))
-							if(j>i && j!=-1)
-								{
-								Vector3d to=nvor.nmid.get(j);
-								gl.glVertex3d(from.x, from.y, from.z);
-								gl.glVertex3d(to.x, to.y, to.z);
-								}
+						e.printStackTrace();
 						}
-					gl.glEnd();
-					
-					
-					
 					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-
 				
 				
 				
