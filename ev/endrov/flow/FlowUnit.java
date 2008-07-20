@@ -3,6 +3,7 @@ package endrov.flow;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.*;
 
 public class FlowUnit
 	{
@@ -24,5 +25,17 @@ public class FlowUnit
 		
 		
 		}
+	
+	
+	public SortedMap<String, FlowType> getInputTypes()
+		{
+		return null;
+		}
+	public SortedMap<String, FlowType> getOutputTypes()
+		{
+		return null;
+		}
+
+	
 	
 	}
