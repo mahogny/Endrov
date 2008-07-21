@@ -1,8 +1,13 @@
 package endrov.nuc;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.*;
+
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -81,7 +86,7 @@ public class NucLineage extends EvObject implements Cloneable
 						Nuc n=meta.getNucCreate(nucName);
 						if(ends!=null) n.overrideEnd=Integer.parseInt(ends);
 						if(starts!=null) n.overrideStart=Integer.parseInt(starts);
-
+							
 						for(Element pose:EV.castIterableElement(nuce.getChildren()))
 							{
 							if(pose.getName().equals("pos"))
@@ -151,6 +156,23 @@ public class NucLineage extends EvObject implements Cloneable
 	/** Additions to the object-specific menu */
 	public void buildMetamenu(JMenu menu)
 		{
+		JMenuItem miSaveColorScheme=new JMenuItem("Save color scheme"); 
+		JMenuItem miLoadColorScheme=new JMenuItem("Load color scheme"); 
+		menu.add(miSaveColorScheme);
+		menu.add(miLoadColorScheme);
+		
+		final NucLineage nthis=this;
+		miSaveColorScheme.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){nthis.saveColorSchemeDialog(null);}
+		});
+		miLoadColorScheme.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				nthis.loadColorSchemeDialog(null);
+				BasicWindow.updateWindows(); //TODO emit object update
+				}
+		});
+		
 		}
 
 	
@@ -299,7 +321,88 @@ public class NucLineage extends EvObject implements Cloneable
 	public HashMap<String, Nuc> nuc=new HashMap<String, Nuc>();
 
 	
-	
+	/**
+	 * Load color scheme from a file
+	 */
+	public void loadColorScheme(File filename) throws Exception
+		{
+		Document doc=EvXMLutils.readXML(filename);
+		Element root=doc.getRootElement();
+		for(Object oc:root.getChildren())
+			{
+			Element e=(Element)oc;
+			String name=e.getAttributeValue("name");
+			int r=e.getAttribute("r").getIntValue();
+			int g=e.getAttribute("g").getIntValue();
+			int b=e.getAttribute("b").getIntValue();
+			if(nuc.containsKey(name))
+				nuc.get(name).colorNuc=new Color(r,g,b);
+			}
+		}
+
+	/**
+	 * Save color scheme to a file
+	 */
+	public void saveColorScheme(File filename) throws Exception
+		{
+		Element root=new Element("nuccolor");
+		Document doc=new Document(root);
+		for(Map.Entry<String, Nuc> entry:nuc.entrySet())
+			if(entry.getValue().colorNuc!=null)
+				{
+				Color c=entry.getValue().colorNuc;
+				Element e=new Element("coloring");
+				e.setAttribute("name",entry.getKey());
+				e.setAttribute("r",""+c.getRed());
+				e.setAttribute("g",""+c.getGreen());
+				e.setAttribute("b",""+c.getBlue());
+				root.addContent(e);
+				}
+		EvXMLutils.writeXmlData(doc, filename);
+		}
+
+	/**
+	 * Bring up dialog to save color scheme
+	 */
+	public void saveColorSchemeDialog(Component parent)
+		{
+		JFileChooser fc=new JFileChooser(EvData.getLastDataPath());
+		if(fc.showSaveDialog(parent)==JFileChooser.APPROVE_OPTION)
+			{
+			File filename=fc.getSelectedFile();
+			if(!filename.getName().endsWith(".nuccol"))
+				filename=new File(filename.getParentFile(),filename.getName()+".nuccol");
+			try
+				{
+				saveColorScheme(filename);
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			}
+		}
+
+	/**
+	 * Bring up dialog to save color scheme
+	 */
+	public void loadColorSchemeDialog(Component parent)
+		{
+		JFileChooser fc=new JFileChooser(EvData.getLastDataPath());
+		if(fc.showOpenDialog(parent)==JFileChooser.APPROVE_OPTION)
+			{
+			File filename=fc.getSelectedFile();
+			try
+				{
+				loadColorScheme(filename);
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			}
+		}
+
 	
 	
 	/**

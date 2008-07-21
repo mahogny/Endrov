@@ -2,12 +2,18 @@ package endrov.flow;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.*;
 import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+/**
+ * Panel with flow
+ * @author Johan Henriksson
+ *
+ */
 public class FlowPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener//, KeyListener
 	{
 	static final long serialVersionUID=0;
@@ -32,11 +38,45 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		g.fillRect(0,0,getWidth(),getHeight());
 		
 		Vector<FlowUnit> units=new Vector<FlowUnit>();
-		units.add(new FlowUnit());
+//		units.add(new FlowUnitInput());
+//		units.add(new FlowUnitDiv());
+		
+		FlowUnit fa=new FlowUnitIf();
+		fa.x=200;
+		fa.y=100;
+
+		FlowUnit fb=new FlowUnitDiv();
+		fb.x=200;
+		fb.y=20;
+
+		FlowUnit fc=new FlowUnitInput();
+		fc.x=100;
+		fc.y=100;
+
+		FlowUnit fd=new FlowUnitMap();
+		fd.x=0;
+		fd.y=0;
+
+		FlowUnit fe=new FlowUnitOutput();
+		fe.x=100;
+		fe.y=140;
+
+		units.add(fa);
+		units.add(fb);
+		units.add(fc);
+		units.add(fd);
+		units.add(fe);
+		
+		Graphics2D g2=(Graphics2D)g;
+		g2.translate(-cameraX, -cameraY);
+		
+		
+//		g.drawRect(x-panel.cameraX,y-panel.cameraY,30,30);
 		
 		for(FlowUnit u:units)
-			u.paint(g, this);
+			u.paint(g2, this);
 		
+		g2.translate(cameraX, cameraY);
 		
 		}
 	

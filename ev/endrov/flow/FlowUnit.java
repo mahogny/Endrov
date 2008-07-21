@@ -2,40 +2,106 @@ package endrov.flow;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
-public class FlowUnit
+//think of how to do sub-flows later
+
+
+public abstract class FlowUnit
 	{
+	/** Absolute coordinate, not relative to container */
 	int x,y;
 	
-	
-	public Dimension getBoundingBox()
-		{
-		Dimension d=new Dimension(30,30);
-		return d;
-		}
-	
-	
-	public void paint(Graphics g, FlowPanel panel)
-		{
-		g.setColor(Color.blue);
-		g.drawRect(x-panel.cameraX,y-panel.cameraY,30,30);
-		
-		
-		
-		}
-	
-	
-	public SortedMap<String, FlowType> getInputTypes()
-		{
-		return null;
-		}
-	public SortedMap<String, FlowType> getOutputTypes()
-		{
-		return null;
-		}
+	private static Object staticSynch="";
+	private static int seqID=0;
+	private int ID;
 
+	
+	protected final static Font font=Font.decode("Dialog PLAIN");
+	protected final static int fonth,fonta;
+	protected final static FontMetrics fm;
+
+	static
+		{
+		fm=new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB).getGraphics().getFontMetrics(font);
+		fonth=fm.getHeight();
+		fonta=fm.getAscent();
+		}
+	
+	
+	//is this the way to do it?
+	boolean isTarget;
+	boolean isContinuous;
+	
+	public FlowUnit()
+		{
+
+		synchronized (staticSynch)
+			{
+			ID=seqID;
+			seqID++;
+			}
+		}
+	
+	/**
+	 * Get unique ID for this unit. Never changes once component is made.
+	 */
+	public int getUniqueID()
+		{
+		return ID;
+		}
+	
+	public abstract Dimension getBoundingBox();
+	public abstract void paint(Graphics g, FlowPanel panel);
+	
+	/** Get types of flows in */
+	public SortedMap<String, FlowType> getTypesIn()
+		{
+		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
+		types.put("A", null);
+		types.put("BCD", null);
+		return types;
+		}
+	/** Get types of flows out */
+	public SortedMap<String, FlowType> getTypesOut()
+		{
+		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
+		types.put("G", null);
+		
+		return types;
+		}
+	
+	public int getTypesInCount()
+		{
+		return getTypesIn().size();
+		}
+	public int getTypesOutCount()
+		{
+		return getTypesOut().size();
+		}
+	
+//is this the way to do it? keep them ordered as input arguments? separate in & out?
+	
+	protected static void drawConnPointLeft(Graphics g,int x, int y)
+		{
+		g.setColor(Color.BLACK);
+		g.fillRect(x-5, y-2, 5, 5);
+		}
+	
+	protected static void drawConnPointRight(Graphics g,int x, int y)
+		{
+		g.setColor(Color.BLACK);
+		g.fillRect(x, y-2, 5, 5);
+		}
+	
+	protected Color getBorderColor()
+		{
+		return Color.BLACK;
+		}
 	
 	
 	}

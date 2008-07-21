@@ -74,6 +74,8 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miShowDelaunay);
 			w.menuModel.add(miNuc);
 			
+	//		miSaveColorScheme.addActionListener(this);
+		//	miLoadColorScheme.addActionListener(this);
 			miShowAllNucNames.addActionListener(this);
 			miShowSelectedNuc.addActionListener(this);
 			miHideSelectedNuc.addActionListener(this);
@@ -114,7 +116,9 @@ public class NucModelExtension implements ModelWindowExtension
 				for(endrov.nuc.NucPair p:NucLineage.selectedNuclei)
 					NucLineage.hiddenNuclei.add(p);
 				}
-				w.view.repaint(); //TODO modw repaint
+//			else if(e.getSource()==miSaveColorScheme)
+				
+			w.view.repaint(); //TODO modw repaint
 			}
 		
 		public boolean canRender(EvObject ob)
