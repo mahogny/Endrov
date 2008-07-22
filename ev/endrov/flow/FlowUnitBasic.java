@@ -3,6 +3,9 @@ package endrov.flow;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.Map;
+
+import endrov.flow.ui.FlowPanel;
 
 /**
  * Basic shape flow unit
@@ -55,19 +58,23 @@ public abstract class FlowUnitBasic extends FlowUnit
 		
 		int cntIn=1;
 		if(cntIn<getTypesInCount()) cntIn=getTypesInCount();
-		for(int i=0;i<getTypesInCount();i++)
+		int i=0;
+		for(Map.Entry<String, FlowType> entry:getTypesIn().entrySet())
 			{
 			double py=y+(i+1)*d.height/(cntIn+1);
-			drawConnPointLeft(g, x, (int)py);
+			panel.drawConnPointLeft(g, this, entry.getKey(), x, (int)py);
+			i++;
 			}
 
 		
 		int cntOut=1;
 		if(cntOut<getTypesOutCount()) cntOut=getTypesOutCount();
-		for(int i=0;i<getTypesOutCount();i++)
+		i=0;
+		for(Map.Entry<String, FlowType> entry:getTypesOut().entrySet())
 			{
 			double py=y+(i+1)*d.height/(cntOut+1);
-			drawConnPointRight(g, x+d.width, (int)py);
+			panel.drawConnPointRight(g, this, entry.getKey(), x+d.width, (int)py);
+			i++;
 			}
 
 		
@@ -87,7 +94,11 @@ public abstract class FlowUnitBasic extends FlowUnit
 	
 	
 	
-	
+	public boolean mouseHoverMoveRegion(int x, int y)
+		{
+		Dimension dim=getBoundingBox();
+		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
+		}
 	
 	
 	

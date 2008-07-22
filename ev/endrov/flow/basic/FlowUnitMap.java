@@ -1,4 +1,6 @@
-package endrov.flow;
+package endrov.flow.basic;
+
+import endrov.flow.FlowUnitContainer;
 
 /**
  * Flow unit: Map

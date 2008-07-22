@@ -1,6 +1,8 @@
-package endrov.flow;
+package endrov.flow.basic;
 
 import java.awt.Color;
+
+import endrov.flow.FlowUnitBasic;
 
 public class FlowUnitDiv extends FlowUnitBasic
 	{

@@ -6,7 +6,7 @@ package endrov.flow;
  * 
  * @author Johan Henriksson
  */
-public class WorldState
+public class FlowWorldState
 	{
 	
 	}
