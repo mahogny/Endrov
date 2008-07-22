@@ -14,22 +14,21 @@ import endrov.flow.ui.FlowPanel;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitInput extends FlowUnit
+public class FlowUnitConstString extends FlowUnit
 	{
 	
-	public String varName;
-	public FlowUnit varUnit;
+	public String var;
 	
 	
-	public FlowUnitInput(String varName) //unit todo
+	public FlowUnitConstString(String var) 
 		{
-		this.varName=varName;
+		this.var=var;
 		}
 	
 	public Dimension getBoundingBox()
 		{
-		int w=fm.stringWidth("In: "+varName);
-		Dimension d=new Dimension(w+15,fonth);
+		int w=fm.stringWidth("\""+var+"\"");
+		Dimension d=new Dimension(w+25,fonth);
 		return d;
 		}
 	
@@ -37,20 +36,17 @@ public class FlowUnitInput extends FlowUnit
 		{
 		Dimension d=getBoundingBox();
 
-//		g.drawRect(x,y,d.width,d.height);
 		
-		int arcsize=8;
-		
-		g.setColor(Color.lightGray);
-		g.fillRoundRect(x,y,d.width,d.height,arcsize,arcsize);
+		g.setColor(Color.WHITE);
+		g.fillRect(x,y,d.width,d.height);
 		g.setColor(Color.black);
-		g.drawRoundRect(x,y,d.width,d.height,arcsize,arcsize);
-		
-		g.drawString("In: "+varName, x+5, y+fonta);
+		g.drawRect(x,y,d.width,d.height);
+		g.drawLine(x+2,y,x+2,y+d.height);
+		g.drawLine(x+d.width-2,y,x+d.width-2,y+d.height);
+		g.drawString("\""+var+"\"", x+8, y+fonta);
 		
 		
 		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
-		
 		}
 
 	public boolean mouseHoverMoveRegion(int x, int y)

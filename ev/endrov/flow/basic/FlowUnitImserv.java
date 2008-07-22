@@ -7,16 +7,18 @@ import java.util.TreeMap;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
-public class FlowUnitDiv extends FlowUnitBasic
+public class FlowUnitImserv extends FlowUnitBasic
 	{
 	public String getBasicName()
 		{
-		return "A/B";
+		return "ImServ";
 		}
+	
+	public static Color bgColor=new Color(200,255,200);
 	
 	public Color getBackground()
 		{
-		return new Color(200,255,200);
+		return bgColor;
 		}
 
 	
@@ -25,15 +27,14 @@ public class FlowUnitDiv extends FlowUnitBasic
 	public SortedMap<String, FlowType> getTypesIn()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("A", null);
-		types.put("B", null);
+		types.put("url", null);
 		return types;
 		}
 	/** Get types of flows out */
 	public SortedMap<String, FlowType> getTypesOut()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("C", null);
+		types.put("imserv", null);
 		return types;
 		}
 	
