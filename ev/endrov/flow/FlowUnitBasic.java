@@ -92,7 +92,15 @@ public abstract class FlowUnitBasic extends FlowUnit
 		}
 
 	
-	
+	public int getTypesInCount()
+		{
+		return getTypesIn().size();
+		}
+	public int getTypesOutCount()
+		{
+		return getTypesOut().size();
+		}
+
 	
 	public boolean mouseHoverMoveRegion(int x, int y)
 		{

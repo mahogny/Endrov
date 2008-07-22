@@ -62,30 +62,11 @@ public abstract class FlowUnit
 	public abstract void paint(Graphics g, FlowPanel panel);
 	
 	/** Get types of flows in */
-	public SortedMap<String, FlowType> getTypesIn()
-		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("A", null);
-		types.put("BCD", null);
-		return types;
-		}
+	public abstract Map<String, FlowType> getTypesIn();
 	/** Get types of flows out */
-	public SortedMap<String, FlowType> getTypesOut()
-		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("G", null);
-		
-		return types;
-		}
+	public abstract Map<String, FlowType> getTypesOut();
 	
-	public int getTypesInCount()
-		{
-		return getTypesIn().size();
-		}
-	public int getTypesOutCount()
-		{
-		return getTypesOut().size();
-		}
+	
 	
 //is this the way to do it? keep them ordered as input arguments? separate in & out?
 	

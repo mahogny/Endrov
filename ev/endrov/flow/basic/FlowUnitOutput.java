@@ -3,7 +3,11 @@ package endrov.flow.basic;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.ui.FlowPanel;
 
@@ -15,10 +19,13 @@ import endrov.flow.ui.FlowPanel;
 public class FlowUnitOutput extends FlowUnit
 	{
 	
-	public String varName="channel";
+	public String varName;
 	public FlowUnit varUnit;
 	
-	
+	public FlowUnitOutput(String varName) //unit todo
+		{
+		this.varName=varName;
+		}
 	
 	public Dimension getBoundingBox()
 		{
@@ -52,6 +59,21 @@ public class FlowUnitOutput extends FlowUnit
 		{
 		Dimension dim=getBoundingBox();
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
+		}
+
+	
+	
+	/** Get types of flows in */
+	public Map<String, FlowType> getTypesIn()
+		{
+		Map<String, FlowType> types=new TreeMap<String, FlowType>();
+		types.put("in", null);
+		return types;
+		}
+	/** Get types of flows out */
+	public Map<String, FlowType> getTypesOut()
+		{
+		return Collections.emptyMap();
 		}
 
 	
