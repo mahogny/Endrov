@@ -1,9 +1,12 @@
-package endrov.flow;
+package endrov.flow.basic;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Polygon;
+
+import endrov.flow.FlowUnit;
+import endrov.flow.ui.FlowPanel;
 
 /**
  * Flow unit: input variable
@@ -19,23 +22,28 @@ public class FlowUnitIf extends FlowUnit
 		return new Dimension(30,40);
 		}
 	
+	private Polygon getPolygon(Dimension d)
+		{
+		return new Polygon(new int[]{x,x+d.width,x}, new int[]{y,y+d.height/2,y+d.height},3);
+		}
+	
 	public void paint(Graphics g, FlowPanel panel)
 		{
 		Dimension d=getBoundingBox();
 
 //		g.drawRect(x,y,d.width,d.height);
 
-		drawConnPointRight(g,x+d.width,y+d.height/2);
+		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
 
 		int y1=y+d.height/2-10;
 		int y2=y+d.height/2+10;
 		
-		drawConnPointLeft(g,x,y+d.height/2);
-		drawConnPointLeft(g,x,y1);
-		drawConnPointLeft(g,x,y2);
+		panel.drawConnPointLeft(g,this,"cond",x,y+d.height/2);
+		panel.drawConnPointLeft(g,this,"true",x,y1);
+		panel.drawConnPointLeft(g,this,"false",x,y2);
 
 		
-		Polygon p=new Polygon(new int[]{x,x+d.width,x}, new int[]{y,y+d.height/2,y+d.height},3);
+		Polygon p=getPolygon(d);
 		g.setColor(new Color(255,255,200));
 		g.fillPolygon(p);
 		g.setColor(getBorderColor());
@@ -50,7 +58,13 @@ public class FlowUnitIf extends FlowUnit
 
 		}
 
-	
+	public boolean mouseHoverMoveRegion(int x, int y)
+		{
+		Dimension dim=getBoundingBox();
+		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height &&
+			getPolygon(dim).contains(x, y);
+		}
+
 	
 	
 	}

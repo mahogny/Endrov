@@ -1,16 +1,21 @@
-package endrov.flow;
+package endrov.flow.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.*;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.vecmath.Vector2d;
+
+import endrov.ev.Tuple;
+import endrov.flow.*;
+import endrov.flow.basic.*;
 
 /**
- * Panel with flow
+ * Panel showing flow
  * @author Johan Henriksson
  *
  */
@@ -20,6 +25,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public int cameraX, cameraY;
 	
+	Flow flow=new Flow();
 	
 	public FlowPanel()
 		{
@@ -29,17 +35,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 /*		setEnabled(true);
 		setFocusable(true);
 		addKeyListener(this);*/
-		}
-
-
-	protected void paintComponent(Graphics g)
-		{
-		g.setColor(Color.WHITE);
-		g.fillRect(0,0,getWidth(),getHeight());
 		
-		Vector<FlowUnit> units=new Vector<FlowUnit>();
-//		units.add(new FlowUnitInput());
-//		units.add(new FlowUnitDiv());
+		
+		////////////
 		
 		FlowUnit fa=new FlowUnitIf();
 		fa.x=200;
@@ -61,11 +59,61 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		fe.x=100;
 		fe.y=140;
 
-		units.add(fa);
-		units.add(fb);
-		units.add(fc);
-		units.add(fd);
-		units.add(fe);
+		flow.units.add(fa);
+		flow.units.add(fb);
+		flow.units.add(fc);
+		flow.units.add(fd);
+		flow.units.add(fe);
+		flow.conns.add(new FlowConn(fa,"out",fb,"A"));
+
+		
+		}
+
+	
+	
+	private Map<Tuple<FlowUnit, String>, Vector2d> connPoint=new HashMap<Tuple<FlowUnit,String>, Vector2d>();
+	
+	public void drawConnPointLeft(Graphics g,FlowUnit unit, String arg, int x, int y)
+		{
+		g.setColor(Color.BLACK);
+		g.fillRect(x-5, y-2, 5, 5);
+		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), new Vector2d(x-2,y));
+		}
+	
+	public void drawConnPointRight(Graphics g,FlowUnit unit, String arg, int x, int y)
+		{
+		g.setColor(Color.BLACK);
+		g.fillRect(x, y-2, 5, 5);
+		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), new Vector2d(x+2,y));
+		}
+
+	/**
+	 * Draw connecting line between two points
+	 */
+	public void drawConnLine(Graphics g,Vector2d vFrom, Vector2d vTo)
+		{
+		int spacing=20;
+		
+		int midy=(int)(vFrom.y+vTo.y)/2;
+		int x1=(int)(vFrom.x+vTo.x)/2;
+		int x2=x1;
+		if(x1<vFrom.x+spacing) x1=(int)vFrom.x+spacing;
+		if(x2>vTo.x-spacing) x2=(int)vTo.x-spacing;
+			
+		g.drawLine((int)vFrom.x, (int)vFrom.y, x1, (int)vFrom.y);
+		g.drawLine(x1, (int)vFrom.y,x1, midy);
+		g.drawLine(x1, midy, x2,midy);
+		g.drawLine(x2, (int)vTo.y,x2, midy);
+		g.drawLine((int)vTo.x, (int)vTo.y, x2, (int)vTo.y);
+		}
+	
+	
+	protected void paintComponent(Graphics g)
+		{
+		g.setColor(Color.WHITE);
+		g.fillRect(0,0,getWidth(),getHeight());
+		
+		
 		
 		Graphics2D g2=(Graphics2D)g;
 		g2.translate(-cameraX, -cameraY);
@@ -73,12 +121,23 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 //		g.drawRect(x-panel.cameraX,y-panel.cameraY,30,30);
 		
-		for(FlowUnit u:units)
+		//Draw all units
+		for(FlowUnit u:flow.units)
 			u.paint(g2, this);
+		
+		//All connection points should now be in the list
+		//Draw connection arrows
+		for(FlowConn conn:flow.conns)
+			{
+			Vector2d vFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg));
+			Vector2d vTo=connPoint.get(new Tuple<FlowUnit, String>(conn.toUnit, conn.toArg));
+			drawConnLine(g,vFrom,vTo);
+			}
 		
 		g2.translate(cameraX, cameraY);
 		
 		}
+	
 	
 	
 	private int mouseLastDragX=0, mouseLastDragY=0;

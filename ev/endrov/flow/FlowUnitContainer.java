@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
+import endrov.flow.ui.FlowPanel;
+
 /**
  * Flow unit of type container
  * @author Johan Henriksson
@@ -36,8 +38,8 @@ public abstract class FlowUnitContainer extends FlowUnit
 		g.drawRect(x+5, y-barh/2, fm.stringWidth(getContainerName())+10, barh);
 		g.drawString(getContainerName(), x+10, y+(barh-fonta)/2);
 		
-		drawConnThrough(g, x, y+conth/2);
-		drawConnThrough(g, x+contw-2, y+conth/2);
+		drawConnThrough(g, panel, "in","in'",x, y+conth/2);
+		drawConnThrough(g, panel, "out","out'",x+contw-2, y+conth/2);
 	/*	
 		int yleft=y+conth/2;
 		drawConnPointLeft(g, x, yleft);
@@ -46,11 +48,18 @@ public abstract class FlowUnitContainer extends FlowUnit
 
 		}
 
-	private void drawConnThrough(Graphics g, int x, int y)
+	private void drawConnThrough(Graphics g, FlowPanel panel, String argin, String argout, int x, int y)
 		{
-		drawConnPointLeft(g, x, y);
-		drawConnPointRight(g, x+2, y);
+		panel.drawConnPointLeft(g, this, argin, x, y);
+		panel.drawConnPointRight(g, this, argout, x+2, y);
 		}
 	
+	
+	public boolean mouseHoverMoveRegion(int x, int y)
+		{
+		int barh=fonth+4;
+		return x>=this.x+5 && y>=this.y-barh/2 && x<=this.x+fm.stringWidth(getContainerName())+10 && y<=this.y+barh;
+		}
+
 	
 	}

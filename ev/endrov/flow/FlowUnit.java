@@ -8,17 +8,19 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
+import endrov.flow.ui.FlowPanel;
+
 //think of how to do sub-flows later
 
 
 public abstract class FlowUnit
 	{
 	/** Absolute coordinate, not relative to container */
-	int x,y;
+	public int x,y;
 	
-	private static Object staticSynch="";
-	private static int seqID=0;
-	private int ID;
+	//private static Object staticSynch="";
+	//private static int seqID=0;
+	//private int ID;
 
 	
 	protected final static Font font=Font.decode("Dialog PLAIN");
@@ -39,21 +41,22 @@ public abstract class FlowUnit
 	
 	public FlowUnit()
 		{
-
+/*
 		synchronized (staticSynch)
 			{
 			ID=seqID;
 			seqID++;
-			}
+			}*/
 		}
 	
 	/**
 	 * Get unique ID for this unit. Never changes once component is made.
 	 */
+	/*
 	public int getUniqueID()
 		{
 		return ID;
-		}
+		}*/
 	
 	public abstract Dimension getBoundingBox();
 	public abstract void paint(Graphics g, FlowPanel panel);
@@ -86,17 +89,9 @@ public abstract class FlowUnit
 	
 //is this the way to do it? keep them ordered as input arguments? separate in & out?
 	
-	protected static void drawConnPointLeft(Graphics g,int x, int y)
-		{
-		g.setColor(Color.BLACK);
-		g.fillRect(x-5, y-2, 5, 5);
-		}
+	public abstract boolean mouseHoverMoveRegion(int x, int y);
+		
 	
-	protected static void drawConnPointRight(Graphics g,int x, int y)
-		{
-		g.setColor(Color.BLACK);
-		g.fillRect(x, y-2, 5, 5);
-		}
 	
 	protected Color getBorderColor()
 		{

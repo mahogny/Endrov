@@ -1,8 +1,11 @@
-package endrov.flow;
+package endrov.flow.basic;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+
+import endrov.flow.FlowUnit;
+import endrov.flow.ui.FlowPanel;
 
 /**
  * Flow unit: output variable
@@ -41,10 +44,15 @@ public class FlowUnitOutput extends FlowUnit
 		g.drawString("Out: "+varName, x+5, y+fonta);
 		
 		
-		drawConnPointLeft(g,x,y+d.height/2);
+		panel.drawConnPointLeft(g,this, "in",x,y+d.height/2);
 		
 		}
 
-	
+	public boolean mouseHoverMoveRegion(int x, int y)
+		{
+		Dimension dim=getBoundingBox();
+		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
+		}
+
 	
 	}
