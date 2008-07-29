@@ -90,6 +90,8 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miRotate=new JMenuItem("Rotate tree");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
 	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
+	public JCheckBoxMenuItem miShowTreeLabel=new JCheckBoxMenuItem("Show tree label",true);
+	public JCheckBoxMenuItem miShowLeafLabel=new JCheckBoxMenuItem("Show leaf label",true);
 	
 	public JCheckBoxMenuItem miShowExpDot=new JCheckBoxMenuItem("Show level dots",false);
 	public JMenu miShowExp=new JMenu("Level display");
@@ -133,6 +135,8 @@ public class LineageWindow extends BasicWindow
 		miShowExpLine.addActionListener(this);
 		miShowExpSolid.addActionListener(this);
 		miShowExpNone.addActionListener(this);
+		miShowTreeLabel.addActionListener(this);
+		miShowLeafLabel.addActionListener(this);
 		miRename.addActionListener(this);
 		miMerge.addActionListener(this);
 		miPC.addActionListener(this);
@@ -203,6 +207,8 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miShowKeyFrames);
 		menuLineage.add(miShowExpDot);
 		menuLineage.add(miShowExp);
+		menuLineage.add(miShowTreeLabel);
+		menuLineage.add(miShowLeafLabel);
 		menuLineage.add(miRotate);
 		
 		miShowExp.add(miShowExpNone);
@@ -391,6 +397,16 @@ public class LineageWindow extends BasicWindow
 		else if(e.getSource()==miShowKeyFrames)
 			{
 			view.showKeyFrames=miShowKeyFrames.isSelected();
+			repaint();
+			}
+		else if(e.getSource()==miShowTreeLabel)
+			{
+			view.showTreeLabel=miShowTreeLabel.isSelected();
+			repaint();
+			}
+		else if(e.getSource()==miShowLeafLabel)
+			{
+			view.showLeafLabel=miShowLeafLabel.isSelected();
 			repaint();
 			}
 		else if(e.getSource()==miUnfoldAll)

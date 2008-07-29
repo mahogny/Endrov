@@ -57,6 +57,9 @@ public class LineageView extends JPanel
 	public boolean showExpLine=true;
 	public boolean showExpSolid=true;
 	public boolean showExpDot=true;
+	public boolean showTreeLabel=true;
+	public boolean showLeafLabel=true;
+	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Cached tree /////////////////////////////////////////////
@@ -543,7 +546,8 @@ public class LineageView extends JPanel
 			drawNucName(g, "!!! ", new NucPair(currentLin, nucName), midr, endc);
 		else
 			drawNucName(g, "", new NucPair(currentLin, nucName), midr, endc);*/
-		drawNucName(g, namePrefix, new NucPair(currentLin, nucName), midr, endc);
+		if((nuc.child.isEmpty() && showLeafLabel) || (!nuc.child.isEmpty() && showTreeLabel))
+			drawNucName(g, namePrefix, new NucPair(currentLin, nucName), midr, endc);
 		}
 
 	
