@@ -1,6 +1,7 @@
 package endrov.imageset;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.*;
 import org.jdom.*;
 import org.jdom.output.Format;
@@ -82,6 +83,36 @@ public abstract class Imageset extends EvData
 		{
 		channelImages.remove(ch);
 		meta.channelMeta.remove(ch);
+		}
+	
+	
+	/**
+	 * This will not be here in the future 
+	 */
+	public String frameToTime(BigDecimal framed)
+		{
+		int frame=framed.intValue();
+		int numh=frame/3600;
+		int hsec=numh*3600;
+		frame-=hsec;
+		int nummin=frame/60;
+		int minsec=nummin*60;
+		frame-=minsec;
+		StringBuffer sb=new StringBuffer();
+		if(numh!=0)
+			{
+			sb.append(numh);
+			sb.append("h");
+			}
+		if(nummin!=0)
+			{
+			sb.append(nummin);
+			sb.append("m");
+			}
+		framed=framed.subtract(new BigDecimal(hsec+minsec));
+		sb.append(framed);
+		sb.append("s");
+		return sb.toString();
 		}
 	
 	
