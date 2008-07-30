@@ -117,7 +117,7 @@ public class PluginInfo
 			}
 		else
 			{
-			File pluginDir=new File(PluginInfo.class.getResource(".").getFile()).getParentFile();
+			File pluginDir=new File(EvJavaUtil.getFileFromURL(PluginInfo.class.getResource("."))).getParentFile();
 			if(!pluginDir.exists())
 				{
 				JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");
