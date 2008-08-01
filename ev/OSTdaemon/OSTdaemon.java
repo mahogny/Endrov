@@ -13,11 +13,12 @@ import com.sun.media.jai.codec.SeekableStream;
 import com.sun.media.jai.codec.TIFFDecodeParam;
 
 import javax.imageio.*;
+import javax.imageio.stream.ImageInputStream;
 
 import org.jdom.*;
 
 import endrov.ev.EvXMLutils;
-import endrov.jubio.*;
+import evplugin.jubio.Jubio;
 
 
 //ADD OPTION to skip black frames
@@ -439,6 +440,25 @@ public class OSTdaemon extends Thread
 		}
 	
 	
+	public List<BufferedImage> readStack(File from) throws IOException
+		{
+		ImageInputStream stream = ImageIO.createImageInputStream(from);
+	  Iterator readers = ImageIO.getImageReaders(stream);
+	  if (!readers.hasNext())
+	  	throw new RuntimeException("no image reader found");
+	  ImageReader reader = (ImageReader) readers.next();
+	  reader.setInput(stream);            // don't omit this line!
+	  int n = reader.getNumImages(true);  // don't use false!
+	  System.out.println("numImages = " + n);
+	  LinkedList<BufferedImage> imlist=new LinkedList<BufferedImage>();
+	  for (int i = 0; i < n; i++) 
+	  	{
+	  	BufferedImage image = reader.read(i);
+	  	imlist.add(image);
+	  	}
+	  stream.close(); 
+	  return imlist;
+		}
 
 	/**
 	 * ImageIO does not understand TIF. This helps.
@@ -522,8 +542,44 @@ public class OSTdaemon extends Thread
 		moveToConverted(from);
 		}
 	
-	
 
+	
+	
+	
+	/**
+	 * Load slices from stack
+	 */
+	public BufferedImage calcMaxStack(List<BufferedImage> imlist)
+		{
+		//Filter out bad images
+		List<BufferedImage> newlist=new LinkedList<BufferedImage>();
+		for(BufferedImage im:imlist)
+			if(!(skipBlackSlices && isBlackSlice(im)) && !(skipWhiteSlices && isWhiteSlice(im)))
+				newlist.add(im);
+		imlist=newlist;
+			
+		//
+		Iterator<BufferedImage> it=imlist.iterator();
+		BufferedImage fim=it.next();
+		
+		int height = fim.getHeight();
+		int width = fim.getWidth();
+		BufferedImage maxim = fim.getSubimage(0,0, width, height);
+		
+		while(it.hasNext())
+			{
+			BufferedImage im=it.next();
+			Raster imr=im.getRaster();
+			WritableRaster maxr=maxim.getRaster();
+			for(int ay=0;ay<height;ay++)
+				for(int ax=0;ax<width;ax++)
+					{
+					double s=imr.getSampleDouble(ax, ay, 0);
+					maxr.setSample(ax, ay, 0, s);
+					}
+			}
+		return maxim;
+		}
 	
 	/**
 	 * Convert an image stack: imageset-channel-frame.*
@@ -543,6 +599,40 @@ public class OSTdaemon extends Thread
 		
 		try
 			{
+			
+			/*
+			 ///// new, cannot handle 16-bit tiff
+			System.out.println("read stack");
+			List<BufferedImage> slices=readStack(from);
+
+			System.out.println("storing slices");
+			//Convert slices
+			int numz=slices.size();
+			for(int i=0;i<numz;i++)
+				{
+				BufferedImage im=slices.get(i);
+				if(!(skipBlackSlices && isBlackSlice(im)) && !(skipWhiteSlices && isWhiteSlice(im)))
+					{				
+					File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, i);
+					saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
+					}
+				else
+					System.out.println("Skipping slice "+i);
+				}
+
+			System.out.println("make max");
+			//Make a maximum slice too
+			if(makeMaxChannel.contains(argChannel))
+				{
+				log("Making max channel");
+				BufferedImage im=calcMaxStack(slices);
+				File toFile = outputImageName(argImageset, argChannel+"max", getOutputFormat(argChannel+"max"), argFrame, 0);
+				saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
+				}
+
+*/
+			
+			////////////// old ////////////////////
 			
 			//JAI or Jubio?... Jubio for now
 			
@@ -571,6 +661,7 @@ public class OSTdaemon extends Thread
 				File toFile = outputImageName(argImageset, argChannel+"max", getOutputFormat(argChannel+"max"), argFrame, 0);
 				saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
 				}
+				
 			}
 		catch (Exception e)
 			{
