@@ -1,4 +1,4 @@
-package endrov.jubio;
+package evplugin.jubio;
 
 import java.awt.image.*;
 
