@@ -15,7 +15,7 @@ public class BatchRot
 	public static void extractRot(File file)
 		{
 //		System.out.println("")
-		EvData rec=new EvDataXML(new File(file,"rmd.xml").getAbsolutePath());
+		EvData rec=new EvDataXML(new File(file,"rmd.ostxml").getAbsolutePath());
 		//Imageset rec=new OstImageset(file.getAbsolutePath());
 		CmdEmbrot.dumprot(file.getName(), rec);
 		}
@@ -31,7 +31,7 @@ public class BatchRot
 
 		
 		if(arg.length==0)
-			arg=new String[]{"/Volumes/TBU_xeon01_500GB01/ost4dgood/","/Volumes/TBU_xeon01_500GB02/ost4dgood/"};
+			arg=new String[]{"/Volumes/TBU_main01/ost4dgood/","/Volumes/TBU_main02/ost4dgood/"};
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
 				if(file.isDirectory())

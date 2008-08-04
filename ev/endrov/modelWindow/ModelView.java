@@ -2,6 +2,7 @@ package endrov.modelWindow;
 
 import java.util.*;
 import java.awt.geom.*;
+import java.awt.Color;
 import java.awt.Font;
 import java.nio.*;
 
@@ -66,6 +67,8 @@ public class ModelView extends GLCanvas
 	public int mouseX=-1, mouseY=-1;	
 	public TextRenderer renderer;
 
+	
+	public Color bgColor=Color.BLACK;
 	
 	/**
 	 * Construct new component with access to common program data
@@ -265,6 +268,7 @@ public class ModelView extends GLCanvas
 				//a bit more cpu-intensive but cheap gfx-wise
 				
 				//Clear buffers
+				gl.glClearColor(0f,0f,0f,0f);
 				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 				resetSelectColor();
 				
@@ -297,8 +301,12 @@ public class ModelView extends GLCanvas
 
 
 			//Clear buffers
+			gl.glClearColor((float)bgColor.getRed()/255.0f,(float)bgColor.getGreen()/255.0f,(float)bgColor.getBlue()/255.0f,0.0f);
 			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
+			
+			
+			
 			//Render cross. could be an extension
 			window.crossHandler.displayCrossFinal(gl,window);
 			

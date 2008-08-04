@@ -84,7 +84,7 @@ public class CmdEmbrot extends Command
 
 
 //				saveFile((new File(rec.datadir(),"070927.coord")).getAbsolutePath(), rec, linrot);
-				saveFile(name,(new File(new File("/Volumes/TBU_xeon01_500GB02/userdata/embrot"),name+".coord")).getAbsolutePath(), rec, lin);
+				saveFile(name,(new File(new File("/Volumes/TBU_main03/userdata/jurgen/embrot2"),name+".coord")).getAbsolutePath(), rec, lin);
 				}
 			catch (Exception e1)
 				{
