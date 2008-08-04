@@ -43,7 +43,8 @@ public class FlowWindow extends JFrame
 	public FlowWindow()
 		{
 		bSwap.setToolTipText("Swap position between 2 units");
-		
+		bPlay.setToolTipText("Run entire flow");
+		bStop.setToolTipText("Stop execution of flow");
 		
 		
 		

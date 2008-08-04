@@ -484,10 +484,10 @@ public class OSTdaemon extends Thread
 	public static List<BufferedImage> readStackJAI(File from) throws IOException
 		{
 		ImageInputStream stream = ImageIO.createImageInputStream(from);
-	  Iterator readers = ImageIO.getImageReaders(stream);
+	  Iterator<javax.imageio.ImageReader> readers = ImageIO.getImageReaders(stream);
 	  if (!readers.hasNext())
 	  	throw new RuntimeException("no image reader found");
-	  javax.imageio.ImageReader reader = (javax.imageio.ImageReader) readers.next();
+	  javax.imageio.ImageReader reader = readers.next();
 	  reader.setInput(stream);            // don't omit this line!
 	  int n = reader.getNumImages(true);  // don't use false!
 	  System.out.println("numImages = " + n);
