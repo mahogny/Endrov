@@ -302,7 +302,7 @@ public class OSTdaemon extends Thread
 		File imagesetDir=getImagesetFile(argImageset);
 		if(imagesetDir.exists())
 			{
-			File totalFile=getImagesetFile(argImageset);
+			File totalFile=new File(imagesetDir,"rmd.ostxml");
 			Document rmd=EvXMLutils.readXML(totalFile);
 			Element root=rmd.getRootElement();
 			Element imagesetEl=root.getChild("imageset");
