@@ -119,6 +119,9 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miCopyState=new JMenuItem("Copy");
 	private JMenuItem miPasteState=new JMenuItem("Paste");
 
+	private JMenu miSetBGColor=makeSetBGColorMenu();
+
+	
 	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
 	
 	public final CrossHandler crossHandler=new CrossHandler();
@@ -185,6 +188,9 @@ public class ModelWindow extends BasicWindow
 		miWindowState.add(miCopyState);
 		miWindowState.add(miPasteState);
 		
+		//Build set BG coor menu
+		menuModel.add(miSetBGColor);
+		
 		//Add action listeners
 		miViewTop.addActionListener(this);
 		miViewLeft.addActionListener(this);
@@ -249,6 +255,34 @@ public class ModelWindow extends BasicWindow
 		//TODO dangerous, might be called before constructed
 		NewBinding.attachBindAxisListener(this);
 		}
+	
+	
+	
+	
+	private JMenu makeSetBGColorMenu()
+		{
+		JMenu m=new JMenu("Set background color");
+		for(final EvColor c:EvColor.colorList)
+			{
+			JMenuItem mi=new JMenuItem(c.name);
+			mi.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e)
+					{
+					view.bgColor=c.c;
+					view.repaint();
+					}
+			});
+			m.add(mi);
+			}
+		return m;
+		}
+
+	
+	
+	
+	
+	
+	
 	
 	
 	
