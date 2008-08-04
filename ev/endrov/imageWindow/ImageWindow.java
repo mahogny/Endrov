@@ -44,6 +44,7 @@ public class ImageWindow extends BasicWindow
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
 	private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
 	
+	
 	public static int snapDistance=10;
 	
 	public static void initPlugin() {}
@@ -97,7 +98,6 @@ public class ImageWindow extends BasicWindow
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-	
 	
 	/**
 	 * The image panel extended with more graphics
