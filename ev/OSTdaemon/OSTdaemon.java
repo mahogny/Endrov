@@ -1,6 +1,7 @@
 package OSTdaemon;
 //todo: need to harmonize settings file?
 
+import java.awt.RenderingHints;
 import java.awt.image.*;
 import java.io.*;
 import java.util.*;
@@ -15,17 +16,17 @@ import com.sun.media.jai.codec.TIFFDecodeParam;
 import javax.imageio.*;
 import javax.imageio.stream.ImageInputStream;
 
+import loci.formats.IFormatReader;
+import loci.formats.ImageReader;
+
 import org.jdom.*;
 
 import endrov.ev.EvXMLutils;
-import evplugin.jubio.Jubio;
 
 
-//ADD OPTION to skip black frames
 
 //make max: duplicate whatever branch
 
-//2==3, hack
 
 public class OSTdaemon extends Thread
 	{
@@ -439,14 +440,54 @@ public class OSTdaemon extends Thread
 			log("Error creating directory "+toDir.getAbsolutePath());
 		}
 	
+
+	/**
+	 * Read a stack using Bioformats
+	 */
+	public static List<BufferedImage> readStackBioformats(File filename) throws Exception
+		{
+		IFormatReader imageReader=new ImageReader();
+		imageReader.setId(filename.getPath());
 	
-	public List<BufferedImage> readStack(File from) throws IOException
+		int count=imageReader.getImageCount();
+		int subid=0;
+	
+		LinkedList<BufferedImage> list=new LinkedList<BufferedImage>();
+		for(int id=0;id<count;id++)
+			{
+			BufferedImage i=imageReader.openImage(id);
+			int w=i.getWidth();
+			int h=i.getHeight();
+	
+			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+	
+			float matrix[][]={{0,0,0}};
+			if(i.getRaster().getNumBands()==1)
+				matrix=new float[][]{{0/*,0*/}};
+			else if(i.getRaster().getNumBands()==2)
+				matrix=new float[][]{{0,0/*,0*/}};
+			else if(i.getRaster().getNumBands()==3)
+				matrix=new float[][]{{0,0,0/*,0*/}};
+	
+			matrix[0][subid]=1;
+			RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));
+			op.filter(i.getRaster(), im.getRaster());
+	
+			list.add(im);
+			}
+		return list;
+		}
+	
+	/**
+	 * Read stack using JAI. cannot handle 16-bit tiff
+	 */
+	public static List<BufferedImage> readStackJAI(File from) throws IOException
 		{
 		ImageInputStream stream = ImageIO.createImageInputStream(from);
 	  Iterator readers = ImageIO.getImageReaders(stream);
 	  if (!readers.hasNext())
 	  	throw new RuntimeException("no image reader found");
-	  ImageReader reader = (ImageReader) readers.next();
+	  javax.imageio.ImageReader reader = (javax.imageio.ImageReader) readers.next();
 	  reader.setInput(stream);            // don't omit this line!
 	  int n = reader.getNumImages(true);  // don't use false!
 	  System.out.println("numImages = " + n);
@@ -599,11 +640,9 @@ public class OSTdaemon extends Thread
 		
 		try
 			{
-			
-			/*
-			 ///// new, cannot handle 16-bit tiff
+			///// new
 			System.out.println("read stack");
-			List<BufferedImage> slices=readStack(from);
+			List<BufferedImage> slices=readStackBioformats(from);
 
 			System.out.println("storing slices");
 			//Convert slices
@@ -630,12 +669,13 @@ public class OSTdaemon extends Thread
 				saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
 				}
 
-*/
+
 			
 			////////////// old ////////////////////
 			
 			//JAI or Jubio?... Jubio for now
 			
+			/*
 			Jubio jubio=new Jubio(from.getAbsolutePath());
 			
 			//Convert slices
@@ -661,7 +701,8 @@ public class OSTdaemon extends Thread
 				File toFile = outputImageName(argImageset, argChannel+"max", getOutputFormat(argChannel+"max"), argFrame, 0);
 				saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
 				}
-				
+			*/	
+			
 			}
 		catch (Exception e)
 			{
