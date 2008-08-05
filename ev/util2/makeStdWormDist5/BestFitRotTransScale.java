@@ -228,8 +228,11 @@ public class BestFitRotTransScale
 			if(i%40==0)
 				System.out.println("eps "+eps);
 //			System.out.println("eps "+eps);
-			if(i>minit && eps<okEps)
+			if((i>minit && eps<okEps*numpoint) || numpoint==0)
+				{
+				System.out.println("ok");
 				break;
+				}
 			}
 //		System.exit(0);
 		}
