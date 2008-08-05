@@ -229,6 +229,12 @@ public class OSTdaemon extends Thread
 		return new File(pathOutput,imageset+".ost");
 		}
 	
+	
+	public File getChannelFile(String imageset, String channel)
+		{
+		return new File(getImagesetFile(imageset),"ch-"+channel);
+		}
+	
 	/**
 	 * Get the name of an image as stored to the output
 	 */
@@ -236,7 +242,7 @@ public class OSTdaemon extends Thread
 		{
 		if(ostVersion==2)
 			{
-			File toDir = new File(new File(getImagesetFile(argImageset),"ch-"+argChannel),pad(argStack,8));
+			File toDir = new File(getChannelFile(argImageset, argChannel),pad(argStack,8));
 			toDir.mkdirs();
 			File toFile = new File(toDir, pad(slice,8)+"."+ext); 
 			return toFile;
@@ -258,6 +264,9 @@ public class OSTdaemon extends Thread
 	 * Copy metafile data which is of form imageset-channel.rmd
 	 * It replaces any earlier RMD-data.
 	 * Does not update RMD to OST2
+	 * 
+	 * actually still in use!
+	 * 
 	 */
 	public void readMeta1(File from)
 		{
@@ -267,7 +276,7 @@ public class OSTdaemon extends Thread
 		
 		log("Reading metafile for "+argImageset+" / "+argChannel);
 		
-		File to=new File(getImagesetFile(argImageset),argChannel);
+		File to=getChannelFile(argImageset, argChannel);
 		if(to.exists() || to.mkdirs())
 			{
 			try
@@ -276,7 +285,7 @@ public class OSTdaemon extends Thread
 				if(makeMaxChannel.contains(argChannel))
 					{
 //					File tomax=new File(pathOutput+"/"+argImageset+"/"+argImageset+"-"+argChannel+"max");
-					File tomax=new File(getImagesetFile(argImageset),argChannel+"max");
+					File tomax=getChannelFile(argImageset, argChannel+"max");
 					tomax.mkdirs();
 					copyFile(from, new File(tomax,"rmd.txt"));
 					//copyMaxMeta(argImageset, argChannel); //not here
