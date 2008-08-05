@@ -365,7 +365,8 @@ public class MakeStdWorm5
 			bf.findCommonNuc();
 			
 			//how many iteration?
-			bf.iterate(10, 1000, 1e-10);
+//			bf.iterate(10, 1000, 1e-10);   //orig
+			bf.iterate(500, 1000, 1e10);
 
 			//Remember first rotation
 			if(firstBF==null)
