@@ -32,7 +32,7 @@ public class EvParallel
 		final LinkedList<B> out=new LinkedList<B>();
 		try
 			{
-			System.out.println("#CPU "+numThread);
+//			System.out.println("#CPU "+numThread);
 			final Semaphore putsem=new Semaphore(numThread);
 			for(final A e:in)
 				{
@@ -54,6 +54,35 @@ public class EvParallel
 			}
 		return out;
 		}
+	
+	/**
+	 * Map :: [A] -> (A->B) -> [B]
+	 */
+	public static <A> void map_(List<A> in, final FuncAB<A,Object> func)
+		{
+		try
+			{
+//			System.out.println("#CPU "+numThread);
+			final Semaphore putsem=new Semaphore(numThread);
+			for(final A e:in)
+				{
+				putsem.acquire();
+				new Thread(new Runnable(){
+				public void run()
+					{
+					func.func(e);
+					putsem.release();
+					}
+				}).start();
+				}
+			putsem.acquire(numThread);
+			}
+		catch (InterruptedException e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
 	
 	
 	/**

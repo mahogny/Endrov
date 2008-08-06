@@ -49,7 +49,7 @@ public class LineageWindow extends BasicWindow
 	
 	
 	private JSlider sliderFrameDist=new JSlider(-20000,31000,0); 
-	private JSlider sliderBranchScale=new JSlider(JSlider.VERTICAL, -2000,2000,0); 
+	private JSlider sliderExpScale=new JSlider(JSlider.VERTICAL, -4000,2000,0); 
 	private JButton buttonGoRoot=new JButton("=> root");
 	private JButton buttonGoSelected=new JButton("=> selected");
 	private LineageView view;
@@ -129,7 +129,7 @@ public class LineageWindow extends BasicWindow
 		buttonGoRoot.addActionListener(this);
 		buttonGoSelected.addActionListener(this);
 		sliderFrameDist.addChangeListener(this);
-		sliderBranchScale.addChangeListener(this);
+		sliderExpScale.addChangeListener(this);
 		objectCombo.addActionListener(this);
 		miShowExpDot.addActionListener(this);
 		miShowExpLine.addActionListener(this);
@@ -169,7 +169,7 @@ public class LineageWindow extends BasicWindow
 		JPanel bottom = new JPanel(new GridBagLayout());
 		add(bottom,BorderLayout.SOUTH);
 
-		add(sliderBranchScale,BorderLayout.EAST);
+		add(sliderExpScale,BorderLayout.EAST);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
@@ -688,7 +688,7 @@ public class LineageWindow extends BasicWindow
 		{
 		view.setFrameDist(Math.pow(10.0,sliderFrameDist.getValue()/30000.0));
 		//view.setBranchScale(Math.pow(10.0,sliderBranchScale.getValue()/30000.0));
-		view.expScale=Math.pow(10.0,sliderBranchScale.getValue()/3000.0);
+		view.expScale=Math.pow(10.0,sliderExpScale.getValue()/3000.0);
 		repaint();
 		}
 

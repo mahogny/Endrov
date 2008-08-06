@@ -275,14 +275,13 @@ public class MakeStdWorm5
 	/**
 	 * Helper for rigid transform fitter: write transformed coordinates to a lineage object
 	 */
-	public static void writeRigidFitCoord(NucLineage newlin, BestFitRotTransScale bf, NucLineage cRef, int curframe)
+	public static void writeRigidFitCoord(NucLineage newlin, BestFitRotTransScale bf, NucLineage lin, int curframe)
 		{
-		//only one prob: reflin not moved back
-		
-		for(String nucName:bf.lininfo.get(cRef).untransformed.keySet())
+		for(String nucName:bf.lininfo.get(lin).untransformed.keySet())
 			{
-			newlin.getNucCreate(nucName).getPosCreate(curframe).setPosCopy(bf.lininfo.get(cRef).transformed.get(nucName));
-			newlin.getNucCreate(nucName).getPosCreate(curframe).r=bf.lininfo.get(cRef).untransformedR.get(nucName);
+			NucLineage.NucPos npos=newlin.getNucCreate(nucName).getPosCreate(curframe);
+			npos.setPosCopy(bf.lininfo.get(lin).transformed.get(nucName));
+			npos.r=bf.lininfo.get(lin).untransformedR.get(nucName);
 			}
 		}
 	
@@ -326,9 +325,9 @@ public class MakeStdWorm5
 		final int fmaxframe=lastFrameOfLineage(refLin);
 		
 		//Make copies of lineages
-		Map<NucLineage,NucLineage> newlin=new HashMap<NucLineage, NucLineage>();
-		for(NucLineage lin:lins.values())
-			newlin.put(lin,copyTree(lin));
+		SortedMap<String,NucLineage> newlin=new TreeMap<String, NucLineage>();
+		for(Map.Entry<String, NucLineage> e:lins.entrySet())
+			newlin.put(e.getKey(),copyTree(e.getValue()));
 		
 
 		System.out.println("--- rigid fit ---");
@@ -336,25 +335,35 @@ public class MakeStdWorm5
 		BestFitRotTransScale bf=new BestFitRotTransScale();
 		
 		
+		boolean firstTime=true;
+		
 		//Add lineages
 		for(NucLineage lin:lins.values())
 			bf.addLineage(lin);
 		
 		for(int curframe=fminframe;curframe<fmaxframe;curframe++)
-//			for(int curframe=fminframe;curframe<1200;curframe++)
+//		for(int curframe=fminframe;curframe<1200;curframe++)
 			{
-			if(curframe%100==0)
+			if(curframe%30==0)
 				System.out.println("frame "+curframe);
 			
 			//Fit
 			bf=new BestFitRotTransScale(bf);
-			for(NucLineage lin:lins.values())
+			for(Map.Entry<String, NucLineage> entry2:lins.entrySet())
 				{
+				NucLineage lin=entry2.getValue();
+				
 				//Interpolate for this frame
-				Map<NucPair, NucLineage.NucInterp> gRef=lin.getInterpNuc(curframe);
+				Map<NucPair, NucLineage.NucInterp> interp=lin.getInterpNuc(curframe);
+				//Only keep visible nuclei
+				Set<NucPair> visibleNuc=new HashSet<NucPair>();
+				for(Map.Entry<NucPair, NucLineage.NucInterp> e:interp.entrySet())
+					if(e.getValue().isVisible())
+						visibleNuc.add(e.getKey());
+				interp.keySet().retainAll(visibleNuc);
 
 				//Add coordinates
-				for(Map.Entry<NucPair, NucLineage.NucInterp> entry:gRef.entrySet())
+				for(Map.Entry<NucPair, NucLineage.NucInterp> entry:interp.entrySet())
 					{
 					String nucname=entry.getKey().snd();
 					bf.lininfo.get(lin).untransformed.put(nucname, entry.getValue().pos.getPosCopy());
@@ -365,21 +374,23 @@ public class MakeStdWorm5
 			bf.findCommonNuc();
 			
 			//how many iteration?
-//			bf.iterate(10, 1000, 1e-10);   //orig
-			bf.iterate(500, 1000, 1e10);
-
+			if(firstTime)
+				bf.iterate(1000, 10000, 1e10);
+			else
+				bf.iterate(200, 10000, 1e10);
+			firstTime=false;
+			
 			//Remember first rotation
 			if(firstBF==null)
 				firstBF=new BestFitRotTransScale(bf);
 
 			//Write rotated coordinates
-			for(NucLineage lin:lins.values())
-				writeRigidFitCoord(newlin.get(lin), bf, lin, curframe);
-			
-			
-			
-	
+			for(Map.Entry<String, NucLineage> e:lins.entrySet())
+				writeRigidFitCoord(newlin.get(e.getKey()), bf, e.getValue(), curframe);
 			}
+			
+		//Output rotated
+		lins=newlin;
 		}
 	
 
@@ -389,7 +400,8 @@ public class MakeStdWorm5
 
 
 	/**
-	 * Assemble model using averaging
+	 * Assemble model using averaging.
+	 * Calculate variance
 	 */
 	public static void assembleModel(NucLineage refLin)
 		{
@@ -424,6 +436,15 @@ public class MakeStdWorm5
 							one.curposAvg[2].count(u.z);
 							}
 						one.curpos=new Vector3d(one.curposAvg[0].getMean(), one.curposAvg[1].getMean(), one.curposAvg[2].getMean());
+						Vector3d dv=new Vector3d(one.curpos);
+						double sumsquare=0;
+						for(Vector3d u:poshere)
+							{
+							dv.sub(u);
+							sumsquare+=dv.lengthSquared();
+							}
+						sumsquare/=poshere.size();
+						one.rvar=sumsquare;
 						}
 					else
 						System.out.println("isempty "+onee.getKey()+" @ "+frame);
@@ -617,7 +638,7 @@ public class MakeStdWorm5
 						one.addCollPos(curframe, ni.pos.getPosCopy());
 						}
 					else
-						System.out.println("no one  for "+thisnucname);
+						System.out.println("no one for "+thisnucname);
 					}
 				}
 			}
@@ -626,7 +647,7 @@ public class MakeStdWorm5
 
 		
 		//Save normalized lineages
-/*		if(saveNormalized)
+		if(saveNormalized)
 			{
 			EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
 			output2.metaObject.clear();
@@ -634,7 +655,7 @@ public class MakeStdWorm5
 				output2.metaObject.put(e.getKey(),e.getValue());
 			output2.metaObject.put("model", combinedLin);
 			output2.saveMeta();
-			}*/
+			}
 		
 	
 		//Save reference

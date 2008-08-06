@@ -4,7 +4,6 @@ import java.util.*;
 import javax.vecmath.*;
 
 import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
 import static java.lang.Math.*;
 
 
@@ -36,6 +35,13 @@ public class BestFitRotTransScale
 		public Map<String,Vector3d> transformed=new HashMap<String, Vector3d>();
 		public Map<String,Vector3d> untransformed=new HashMap<String, Vector3d>();
 		public Map<String,Double> untransformedR=new HashMap<String, Double>();
+		public int numpoint;
+		
+		public synchronized void synchAddDx(double dx[])
+			{
+			for(int i=0;i<7;i++)
+				this.dx[i]+=dx[i];
+			}
 		
 		
 		/**
@@ -80,6 +86,7 @@ public class BestFitRotTransScale
 			{
 			transformed.clear();
 			dtransform.clear();
+			numpoint=0;
 			dx=new double[]{0,0,0, 0,0,0, 0};
 			
 			
@@ -130,6 +137,8 @@ public class BestFitRotTransScale
 			{
 			LinInfo newInfo=parent.lininfo.get(newLin);
 			LinInfo goalInfo=parent.lininfo.get(goalLin);
+			double newdx[]=new double[7];
+			double goaldx[]=new double[7];
 			for(String nucname:commonNuc)
 				{
 				Vector3d tv=newInfo.transformed.get(nucname);
@@ -138,17 +147,26 @@ public class BestFitRotTransScale
 				Vector3d diff=new Vector3d(tv);
 				diff.sub(gv);
 				parent.incNumPointEps(diff.lengthSquared());
+				
+				
+				
 				for(int j=1;j<=7;j++)
 					{
 //					Vector3d dtrans=transform(rotx, roty, rotz, rotxp, rotyp, rotzp, trans, scale, v, j);
 					Vector3d dtrans=newInfo.dtransform.get(nucname)[j-1];
-					newInfo.dx[j-1]+=2*dtrans.dot(diff);
-
+					//newInfo.dx[j-1]+=2*dtrans.dot(diff);
+					newdx[j-1]+=2*dtrans.dot(diff);
+					
 					//Difference inverted, changes sign
 					Vector3d dtrans2=goalInfo.dtransform.get(nucname)[j-1];
-					goalInfo.dx[j-1]-=2*dtrans2.dot(diff);
+					//goalInfo.dx[j-1]-=2*dtrans2.dot(diff);
+					goaldx[j-1]-=2*dtrans2.dot(diff);
 					}
 				}
+			newInfo.numpoint+=commonNuc.size();
+			goalInfo.numpoint+=commonNuc.size();
+			newInfo.synchAddDx(newdx);
+			goalInfo.synchAddDx(goaldx);
 			}
 		
 		
@@ -163,11 +181,11 @@ public class BestFitRotTransScale
 
 	
 	private double eps;
-	private int numpoint;
+	//private int numpoint;
 	
 	private void incNumPointEps(double eps)
 		{
-		numpoint++;
+//		numpoint++;
 		this.eps+=eps;
 		}
 
@@ -228,12 +246,15 @@ public class BestFitRotTransScale
 			if(i%40==0)
 				System.out.println("eps "+eps);
 //			System.out.println("eps "+eps);
-			if((i>minit && eps<okEps*numpoint) || numpoint==0)
+			if((i>minit))// && eps<okEps*numpoint) || numpoint==0)
 				{
 				System.out.println("ok");
 				break;
 				}
 			}
+		//Update to latest transformation
+//		for(LinInfo info:lininfo.values())
+//			info.update();
 //		System.exit(0);
 		}
 	
@@ -243,39 +264,40 @@ public class BestFitRotTransScale
 	public void doOneIteration()
 		{
 		//Transform all points
-		numpoint=0;
+//		numpoint=0;
 		eps=0;
 		for(LinInfo info:lininfo.values())
 			info.update();
 		
 		//For every pair, calculate how to move
-//		System.out.println("#pair "+pair.size());
+		//Turns out to be faster single-threaded
 		for(LinPair p:pair)
 			p.oneIteration(this);
 //		System.out.println("#point "+numpoint);
-		
-		if(numpoint>0)
-			{
-		
-			//Apply move
-			double lambdaT=0.1;
-			double lambdaR=0.0001;
-			double lambdaS=0.0001;
-	
-			for(LinInfo info:lininfo.values())
+
+		//Apply move
+		double lambdaT=0.1;
+		double lambdaR=0.0001;
+//		double lambdaS=0.0001;
+		double lambdaS=0;
+
+		//numpoint for each info?
+
+		for(LinInfo info:lininfo.values())
+			if(info.numpoint>0)
 				{
 				//Weigh
 				for(int i=0;i<3;i++)
-					info.dx[i]*=lambdaT/numpoint;
+					info.dx[i]*=lambdaT/info.numpoint;
 				for(int i=3;i<6;i++)
-					info.dx[i]*=lambdaR/numpoint;
+					info.dx[i]*=lambdaR/info.numpoint;
 				for(int i=6;i<7;i++)
-					info.dx[i]*=lambdaS/numpoint;
-				
-				//Move
+					info.dx[i]*=lambdaS/info.numpoint;
+
+				//Update transformation
 				for(int i=0;i<7;i++)
 					info.x[i]-=info.dx[i];
-	
+
 				//Restrict values
 				if(info.x[7-1]<0.01)
 					info.x[7-1]=0.01;
@@ -283,11 +305,11 @@ public class BestFitRotTransScale
 					info.x[7-1]=100;
 				info.x[7-1]=1; //fix scale
 				}
-			
-			//Restore reference rotation
-			lininfo.get(refLin).x=new double[]{0,0,0, 0,0,0, 1};
-		
-			}
+
+		//Restore reference rotation
+		lininfo.get(refLin).x=new double[]{0,0,0, 0,0,0, 1};
+
+
 		
 //		System.out.println("eps: "+eps+"  scale: "+x[7-1]+"    rot   "+x[4-1]+" "+x[5-1]+" "+x[6-1]+"    trans "+x[1-1]+" "+x[2-1]+" "+x[3-1]);
 //		System.out.println("diff: scale: "+dx[7-1]+"    rot   "+dx[4-1]+" "+dx[5-1]+" "+dx[6-1]+"    trans "+dx[1-1]+" "+dx[2-1]+" "+dx[3-1]);
@@ -418,3 +440,17 @@ public class BestFitRotTransScale
 	
 	
 	}
+
+
+
+
+/*
+final BestFitRotTransScale This=this;
+EvParallel.map_(pair, new EvParallel.FuncAB<LinPair, Object>(){
+	public Object func(LinPair in)
+		{
+		in.oneIteration(This);
+		return null;
+		}
+});
+*/
