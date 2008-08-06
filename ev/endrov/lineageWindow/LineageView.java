@@ -338,7 +338,7 @@ public class LineageView extends JPanel
 			{
 			Internal nuc=getNucinfo(nucName);
 			if(first)	first=false; else displacement+=nuc.sizer/2; //I don't like this layout really
-			drawTree(h, nucName,(int)(displacement+getVirtualHeight()/2-camVY)); 
+			drawTree((Graphics2D)h, nucName,(int)(displacement+getVirtualHeight()/2-camVY)); 
 			displacement+=nuc.sizer/2; //maybe really half this and half next?
 			}
 
@@ -402,7 +402,7 @@ public class LineageView extends JPanel
 	private void drawExpression(Graphics g, String nucName, int midr, NucLineage.Nuc nuc)
 		{
 		if(showExpDot || showExpSolid || showExpLine)
-			for(Map.Entry<String, NucLineage.NucExp> e:nuc.exp.entrySet())
+			for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
 				if(!e.getValue().level.isEmpty())
 					{
 //					double expScale=0.2;
@@ -443,7 +443,7 @@ public class LineageView extends JPanel
 	 * Recursive function to draw a tree
 	 * @param internal Which node to recurse from
 	 */
-	private void drawTree(Graphics g, String nucName, int midr)
+	private void drawTree(Graphics2D g, String nucName, int midr)
 		{
 		int childNoPosBranchLength=30;
 		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
@@ -490,8 +490,18 @@ public class LineageView extends JPanel
 		drawExpression(g,nucName,midr,nuc);
 		
 		//Draw line spanning frames
-		g.setColor(Color.BLACK);
-		g.drawLine(startc, midr, endc, midr);
+		if(nuc.colorNuc!=null)
+			{
+			g.setColor(nuc.colorNuc);
+			g.drawLine(startc, midr, endc, midr);
+			g.drawLine(startc, midr-1, endc, midr-1);
+			g.drawLine(startc, midr+1, endc, midr+1);
+			}
+		else
+			{
+			g.setColor(Color.BLACK);
+			g.drawLine(startc, midr, endc, midr);
+			}
 		if(nuc.overrideEnd!=null && nuc.child.size()==0)
 			drawNucEnd(g, f2c(nuc.overrideEnd), midr);
 		internal.lastVXstart=startc;
@@ -642,7 +652,10 @@ public class LineageView extends JPanel
 			if(nuc.child.size()==1)
 				{
 				Internal cInternal=getNucinfo(nuc.child.first());
-				cInternal.centerDisplacement=10;
+//				if(showTreeLabel)
+					cInternal.centerDisplacement=10;
+	//			else
+		//			cInternal.centerDisplacement=10;
 				}
 			else
 				{
@@ -659,7 +672,7 @@ public class LineageView extends JPanel
 		//Compute width for this node
 		internal.sizer=totw;
 		int fontHeight=g.getFontMetrics().getHeight()*2;
-		if(internal.sizer<fontHeight)
+		if(internal.sizer<fontHeight && nuc.child.isEmpty())
 			internal.sizer=fontHeight;
 		
 		//Scale

@@ -7,14 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import endrov.data.EvObject;
-import endrov.ev.EV;
-import endrov.ev.Log;
-import endrov.ev.StdoutLog;
-import endrov.imageset.EvImage;
-import endrov.imageset.Imageset;
+import endrov.ev.*;
+import endrov.imageset.*;
 import endrov.imagesetOST.OstImageset;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
+import endrov.nuc.*;
 
 public class IntegrateExpression
 	{
@@ -162,7 +158,7 @@ public class IntegrateExpression
 				{
 				double avg=expLevel.get(nucName)/nucVol.get(nucName);
 //				System.out.println(nucName+" "+avg);
-				NucLineage.NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
+				NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
 				if(lin.nuc.get(nucName).pos.lastKey()>=frame && lin.nuc.get(nucName).pos.firstKey()<=frame) 
 					exp.level.put(frame,avg);
 				
