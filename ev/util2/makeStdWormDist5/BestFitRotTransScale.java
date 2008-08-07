@@ -307,8 +307,8 @@ public class BestFitRotTransScale
 				}
 
 		//Restore reference rotation
-		lininfo.get(refLin).x=new double[]{0,0,0, 0,0,0, 1};
-
+//		lininfo.get(refLin).x=new double[]{0,0,0, 0,0,0, 1};
+//if not activated, we should get some sort of average
 
 		
 //		System.out.println("eps: "+eps+"  scale: "+x[7-1]+"    rot   "+x[4-1]+" "+x[5-1]+" "+x[6-1]+"    trans "+x[1-1]+" "+x[2-1]+" "+x[3-1]);

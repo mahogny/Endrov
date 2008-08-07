@@ -79,7 +79,7 @@ public class NucStats
 		public SortedMap<Integer, List<Vector3d>> collectedPos=new TreeMap<Integer, List<Vector3d>>();
 
 		//
-		public double rvar;
+		public double raverror;
 		
 		//Derived
 		public int lifeStart;
@@ -387,10 +387,10 @@ public class NucStats
 				
 				if(one.curposAvg[0].getCount()>1)
 					{
-					NucExp expVarR=nuc.getExpCreate("posVarR");
+					NucExp expVarR=nuc.getExpCreate("posMeanDevR");
 //					double var=one.curposAvg[0].getVar()+one.curposAvg[1].getVar()+one.curposAvg[2].getVar();
 					//Cannot add up!?
-					expVarR.level.put(frame, Math.sqrt(one.rvar));
+					expVarR.level.put(frame, Math.sqrt(one.raverror));
 
 //					NucExp expVarX=nuc.getExpCreate("posVarX");
 //					expVarX.level.put(frame, Math.sqrt(one.curposAvg[0].getVar()));
