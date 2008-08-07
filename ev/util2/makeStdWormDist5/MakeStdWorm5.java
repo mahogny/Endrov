@@ -438,13 +438,18 @@ public class MakeStdWorm5
 						one.curpos=new Vector3d(one.curposAvg[0].getMean(), one.curposAvg[1].getMean(), one.curposAvg[2].getMean());
 						Vector3d dv=new Vector3d(one.curpos);
 						double sumsquare=0;
+						double sumabsr=0;
 						for(Vector3d u:poshere)
 							{
-							dv.sub(u);
-							sumsquare+=dv.lengthSquared();
+							Vector3d v=new Vector3d(dv);
+							v.sub(u);
+							sumsquare+=v.lengthSquared();
+							sumabsr+=v.length();
 							}
 						sumsquare/=poshere.size();
-						one.rvar=sumsquare;
+						sumabsr/=poshere.size();
+//						one.rvar=sumsquare;
+						one.raverror=sumabsr;
 						}
 					else
 						System.out.println("isempty "+onee.getKey()+" @ "+frame);

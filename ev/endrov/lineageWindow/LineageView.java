@@ -7,7 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.*;
 import endrov.nuc.*;
 
 //TODO: kill internal which are not in use, especially roots
@@ -59,6 +59,7 @@ public class LineageView extends JPanel
 	public boolean showExpDot=true;
 	public boolean showTreeLabel=true;
 	public boolean showLeafLabel=true;
+	public boolean showScale=true;
 	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -342,6 +343,9 @@ public class LineageView extends JPanel
 			displacement+=nuc.sizer/2; //maybe really half this and half next?
 			}
 
+		//Draw scale bar
+		drawScalebar(g);
+
 		//Rotate image part 2
 		if(bim!=null)
 			{
@@ -351,6 +355,42 @@ public class LineageView extends JPanel
 			((Graphics2D)g).drawImage(bim, af, null);
 			}
 		}
+	
+	/**
+	 * Adaptively draw scale bar
+	 */
+	public void drawScalebar(Graphics g)
+		{
+		if(showScale)
+			{
+			int yshift=10;
+			int sh=2*getHeight()/3;
+			int x=20;
+			
+			double upper=Math.pow(10, (int)Math.log10(sh/expScale));
+			int toti=10;
+			
+			if(upper*expScale*5<sh)
+				{
+				upper*=5;
+				toti=5;
+				}
+			
+			g.setColor(Color.BLACK);
+			int y1=yshift;
+			int y2=yshift+(int)(upper*expScale);
+			g.drawLine(x, y1, x,y2);
+			g.drawString(""+upper, x+10, y2);
+			
+			int x1=x-2, x2=x+2;
+			for(int i=0;i<toti+1;i++)
+				{
+				int y3=(int)(yshift+upper*expScale*i/toti);
+				g.drawLine(x1, y3, x2, y3);
+				}
+			}
+		}
+	
 	
 	/**
 	 * Remove unused Internal nodes
@@ -401,12 +441,13 @@ public class LineageView extends JPanel
 	 */
 	private void drawExpression(Graphics g, String nucName, int midr, NucLineage.Nuc nuc)
 		{
+//		int colorIndex=-1;
+//		EvColor colorList[]=EvColor.colorList;
 		if(showExpDot || showExpSolid || showExpLine)
 			for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
 				if(!e.getValue().level.isEmpty())
 					{
-//					double expScale=0.2;
-		
+//					colorIndex=(colorIndex+1)%colorList.length;
 		
 					//Only draw if potentially visible
 					int minframe=e.getValue().level.firstKey();

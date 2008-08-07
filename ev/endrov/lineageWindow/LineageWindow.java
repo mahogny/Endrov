@@ -49,10 +49,10 @@ public class LineageWindow extends BasicWindow
 	
 	
 	private JSlider sliderFrameDist=new JSlider(-20000,31000,0); 
-	private JSlider sliderExpScale=new JSlider(JSlider.VERTICAL, -4000,2000,0); 
+	private JSlider sliderExpScale=new JSlider(JSlider.VERTICAL, -4000,4000,0); 
 	private JButton buttonGoRoot=new JButton("=> root");
 	private JButton buttonGoSelected=new JButton("=> selected");
-	private LineageView view;
+	private LineageView view=new LineageView();
 	private FrameControlLineage frameControl=new FrameControlLineage(new ChangeListener()
 		{
 		public void stateChanged(ChangeEvent e)
@@ -98,6 +98,7 @@ public class LineageWindow extends BasicWindow
 	public JRadioButtonMenuItem miShowExpNone=new JRadioButtonMenuItem("Off",false);
 	public JRadioButtonMenuItem miShowExpLine=new JRadioButtonMenuItem("Line",true);
 	public JRadioButtonMenuItem miShowExpSolid=new JRadioButtonMenuItem("Filled",false);
+	public JCheckBoxMenuItem miShowScale=new JCheckBoxMenuItem("Show scale",view.showScale);
 	
 	
 	
@@ -120,8 +121,6 @@ public class LineageWindow extends BasicWindow
 	 */
 	public LineageWindow(Rectangle bounds)
 		{
-		view=new LineageView();
-		
 		//Add listeners
 		view.addMouseListener(this);
 		view.addMouseMotionListener(this);
@@ -155,6 +154,7 @@ public class LineageWindow extends BasicWindow
 		miSelectAll.addActionListener(this);
 		miSelectAllName.addActionListener(this);
 		miRotate.addActionListener(this);
+		miShowScale.addActionListener(this);
 		
 		ButtonGroup expGroup=new ButtonGroup();
 		expGroup.add(miShowExpLine);
@@ -207,6 +207,7 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miShowKeyFrames);
 		menuLineage.add(miShowExpDot);
 		menuLineage.add(miShowExp);
+		menuLineage.add(miShowScale);
 		menuLineage.add(miShowTreeLabel);
 		menuLineage.add(miShowLeafLabel);
 		menuLineage.add(miRotate);
@@ -454,6 +455,11 @@ public class LineageWindow extends BasicWindow
 		else if(e.getSource()==miShowExpDot)
 			{
 			updateShowExp();
+			repaint();
+			}
+		else if(e.getSource()==miShowScale)
+			{
+			view.showScale=miShowScale.isSelected();
 			repaint();
 			}
 		else if(e.getSource()==miShowExpLine || e.getSource()==miShowExpSolid || e.getSource()==miShowExpNone)
