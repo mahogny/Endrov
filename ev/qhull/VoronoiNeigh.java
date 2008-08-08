@@ -8,6 +8,9 @@ import java.util.*;
  */
 public class VoronoiNeigh
 	{
+	/**
+	 * Which are neighbours? index list. a ~ a does not hold.
+	 */
 	public List<List<Integer>> dneigh=new ArrayList<List<Integer>>();
 	
 	
