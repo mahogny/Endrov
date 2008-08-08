@@ -1,9 +1,10 @@
 package endrov.nuc;
 
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.vecmath.Vector3d;
+
+import endrov.ev.Tuple;
 
 import qhull.Voronoi;
 import qhull.VoronoiNeigh;
@@ -38,5 +39,17 @@ public class NucVoronoi
 		vor=new Voronoi(nmid.toArray(new Vector3d[]{}));
 		//System.out.println(vor.toString());
 		vneigh=new VoronoiNeigh(vor);
+		}
+	
+	public Set<Tuple<String, String>> getNeighPairSet()
+		{
+		Set<Tuple<String, String>> list=new HashSet<Tuple<String,String>>();
+		for(int i=0;i<vneigh.dneigh.size();i++)
+			{
+			List<Integer> a=vneigh.dneigh.get(i);
+			for(int j:a)
+				list.add(new Tuple<String, String>(nucnames.get(i),nucnames.get(j)));
+			}
+		return list;
 		}
 	}
