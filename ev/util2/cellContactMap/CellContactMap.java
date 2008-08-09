@@ -9,14 +9,19 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
-import endrov.data.EvData;
-import endrov.data.EvDataXML;
+//import endrov.data.*;
 import endrov.ev.*;
+import endrov.imageset.Imageset;
+import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.*;
 import endrov.util.*;
 
+
 /**
  * Calculate cell contact map
+ * 
+ * about 40min on xeon
+ * 
  * @author Johan Henriksson, Jurgen Hench
  *
  */
@@ -41,9 +46,9 @@ public class CellContactMap
 		
 		//nuc -> nuc -> frames
 		public Map<String,Map<String,SortedSet<Integer>>> contactsf=new TreeMap<String, Map<String,SortedSet<Integer>>>();
-		
+		//nuc -> lifetime
 		public Map<String,Integer> lifelen=new HashMap<String,Integer>();
-		
+
 		public void addLifelen(String a)
 			{
 			Integer len=lifelen.get(a);
@@ -70,15 +75,6 @@ public class CellContactMap
 			}
 		
 		
-		public OneLineage(String file)
-			{
-			//Load lineage
-			EvData ost=new EvDataXML(file);
-			lin=ost.getObjects(NucLineage.class).iterator().next();
-			name=file.toString();
-			}
-		
-		
 		public void calcneigh(TreeSet<String> nucNames)
 			{
 			//Prepare different indexing
@@ -102,7 +98,6 @@ public class CellContactMap
 				/////////////////////////////
 //                                  				if(numframes>200)					break;
                                   				////////////////////
-                                  				
                                   				
 				//interpolate
 				Map<NucPair, NucLineage.NucInterp> inter=lin.getInterpNuc(curframe);
@@ -136,78 +131,103 @@ public class CellContactMap
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
-	
-	//TODO: use imserv instead
-	
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
-		EV.loadPlugins();
+		try
+			{
+			Log.listeners.add(new StdoutLog());
+			EV.loadPlugins();
 
-		NumberFormat percentFormat=NumberFormat.getInstance();
-		percentFormat.setMinimumFractionDigits(1);
-		percentFormat.setMaximumFractionDigits(1);
-		
-		
-		String[] files=new String[]{"/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost/rmd.ostxml",
-				"/Volumes/TBU_main02/ost4dgood/N2_071116.ost/rmd.ostxml",
-				"/Volumes/TBU_main02/ost4dgood/N2_071114.ost/rmd.ostxml",
-				//"/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/rmd.ostxml",
-				"/Volumes/TBU_main02/ostxml/model/stdcelegansNew4.ostxml",
-				"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/rmd.ostxml",
-				"/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost/rmd.ostxml",
-						"/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost/rmd.ostxml",
-							"/Volumes/TBU_main02/ost4dgood/N2greenLED080206.ost/rmd.ostxml",
-				};
-		
-		List<OneLineage> lins=new LinkedList<OneLineage>();
-		
-		//Load all
-		for(String s:files)
-			lins.add(new OneLineage(s));
+			NumberFormat percentFormat=NumberFormat.getInstance();
+			percentFormat.setMinimumFractionDigits(1);
+			percentFormat.setMaximumFractionDigits(1);
 
-		
-		
-		NucLineage reflin=new EvDataXML("/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/rmd.ostxml").getObjects(NucLineage.class).iterator().next();
-		final TreeSet<String> nucNames=new TreeSet<String>(reflin.nuc.keySet());
+			List<OneLineage> lins=new LinkedList<OneLineage>();
+
+			/*
+			//Load from disk right away
+			String[] files=new String[]{"/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost/rmd.ostxml",
+					"/Volumes/TBU_main02/ost4dgood/N2_071116.ost/rmd.ostxml",
+					"/Volumes/TBU_main02/ost4dgood/N2_071114.ost/rmd.ostxml",
+					//"/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/rmd.ostxml",
+					"/Volumes/TBU_main02/ostxml/model/stdcelegansNew4.ostxml",
+					"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/rmd.ostxml",
+					"/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost/rmd.ostxml",
+					"/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost/rmd.ostxml",
+					"/Volumes/TBU_main02/ost4dgood/N2greenLED080206.ost/rmd.ostxml",
+			};
 			
-		
-		
-		//Calc neigh
-		lins=EvParallel.map(lins, new EvParallel.FuncAB<OneLineage, OneLineage>(){
+			//Load all
+			for(String s:files)
+				{
+				//Load lineage
+				EvData ost=new EvDataXML(s);
+				OneLineage olin=new OneLineage();
+				olin.lin=ost.getObjects(NucLineage.class).iterator().next();
+				olin.name=s.toString();
+				lins.add(olin);
+//			lins.add(new OneLineage(s));
+				}
+			NucLineage reflin=new EvDataXML("/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/rmd.ostxml").getObjects(NucLineage.class).iterator().next();
+				*/
+
+			//bottle neck: building imageset when not needed. fix in Endrov3/OST4
+			
+			///////////
+			String url="imserv://:@localhost/";
+			String query="not trash and CCM";
+			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
+			String[] imsets=session.conn.imserv.getDataKeys(query);
+			//TODO make a getDataKeysWithTrash, exclude by default?
+			for(String s:imsets)
+				{
+				System.out.println("loading "+s);
+				Imageset im=EvImserv.getImageset(url+s);
+				OneLineage olin=new OneLineage();
+				olin.lin=im.getObjects(NucLineage.class).iterator().next();
+				olin.name=im.getMetadataName();
+				lins.add(olin);
+				}
+			NucLineage reflin=EvImserv.getImageset(url+"celegans2008.2").getObjects(NucLineage.class).iterator().next();
+			//////////
+
+			final TreeSet<String> nucNames=new TreeSet<String>(reflin.nuc.keySet());
+
+
+
+			//Calc neigh
+			lins=EvParallel.map(lins, new EvParallel.FuncAB<OneLineage, OneLineage>(){
 			public OneLineage func(OneLineage in)
 				{
 				in.calcneigh(nucNames);
 				return in;
 				}
-		});
-		
-		//Order by name
-		Map<String,OneLineage> orderedLin=new TreeMap<String, OneLineage>();
-		for(OneLineage lin:lins)
-			orderedLin.put(lin.name, lin);
-		int numid=1;
-		lins=new LinkedList<OneLineage>();
-		for(OneLineage lin:orderedLin.values())
-			{
-			lin.numid=numid++;
-			lins.add(lin);
-			}
-		
-		System.out.println("Writing files");
-		
-		
-		File targetdir=new File("/Volumes/TBU_main03/userdata/cellcontactmap/");
-		
-		String updateTime=new Date().toString();
-		
-		try
-			{
+			});
+
+			//Order by name
+			Map<String,OneLineage> orderedLin=new TreeMap<String, OneLineage>();
+			for(OneLineage lin:lins)
+				orderedLin.put(lin.name, lin);
+			int numid=1;
+			lins=new LinkedList<OneLineage>();
+			for(OneLineage lin:orderedLin.values())
+				{
+				lin.numid=numid++;
+				lins.add(lin);
+				}
+
+			System.out.println("Writing files");
+
+
+			File targetdir=new File("/Volumes/TBU_main03/userdata/cellcontactmap/");
+
+			String updateTime=new Date().toString();
+
+
 			//Images for bars
 			writeBar(new File(targetdir,"n_bar.png"),Color.black);
 			writeBar(new File(targetdir,"a_bar.png"),Color.white);
-			
+
 			//Write cell list files
 			StringBuffer mainSingleOut=new StringBuffer();
 			StringBuffer mainTreeOut=new StringBuffer();
@@ -222,12 +242,12 @@ public class CellContactMap
 			EvFileUtil.writeFile(new File(targetdir,"main_tree.htm"),
 					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_tree.htm")))
 					.replace("BODY", mainTreeOut));
-			
+
 			//List datasets
 			StringBuffer outDatasets=new StringBuffer();
 			for(OneLineage lin:lins)
 				outDatasets.append(""+lin.numid+": "+lin.name+" <br/>");
-			
+
 			//Write out HTML, cell by cell. Reference lineage is the first one in the list
 			//nucName: everything in the file is about this cell
 			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("neigh.htm")));
@@ -235,7 +255,7 @@ public class CellContactMap
 				{
 				StringBuffer bodyNeigh=new StringBuffer();
 				StringBuffer bodyTime=new StringBuffer();
-				
+
 				//Sub header: lin# & cell name
 				StringBuffer subhMain=new StringBuffer();
 				StringBuffer subhTime=new StringBuffer(); //f2
@@ -244,11 +264,11 @@ public class CellContactMap
 					subhMain.append("<td><tt>"+lin.numid+"</tt></td>");
 					subhTime.append("<td width=\""+clength+"\"><tt>"+lin.numid+"</tt></td>");
 					}
-				
+
 				//Compare with all other nuclei
 				for(String nucName2:nucNames)
 					{
-					
+
 					//Get annotation statistics
 					int notAnnotated=0; //# not annotated
 					int sa=0; //# co-occurance
@@ -261,7 +281,7 @@ public class CellContactMap
 						else
 							notAnnotated++;
 					int annotated=lins.size()-notAnnotated;
-					
+
 					//Do this cell only if any recording has it as a neighbour
 					if(sa!=0)
 						{
@@ -274,19 +294,19 @@ public class CellContactMap
 						String scoreColor="#ff"+hex+hex;
 						if(nucName.equals(nucName2)) //Itself
 							scoreColor=htmlColorSelf;						
-						
+
 						//Name in table
 						String line="<tr><td bgcolor=\""+scoreColor+"\"><tt><a href=\"FILE\">"+nucName2+"</a></tt></td><td bgcolor=\""+scoreColor+"\"><tt>"+sa+"/"+annotated+"</tt></td>\n";
 						bodyNeigh.append(line.replace("FILE",nucName2+"_neigh.htm"));
 						bodyTime.append(line.replace("FILE",nucName2+"_neightime.htm"));
-	
+
 						//Contact map itself
 						for(OneLineage lin:lins)
 							{
 							double percLifeLen=100*(double)lin.contactsf.get(nucName).get(nucName2).size()/lin.lifelen.get(nucName);
 							if(lin.lifelen.get(nucName)==0 || percLifeLen<1)
 								percLifeLen=0;
-							
+
 							//Formatting for non-time CCM
 							String neighColor;
 							String neighString;
@@ -310,22 +330,22 @@ public class CellContactMap
 								neighColor=htmlColorNotNeigh;
 								neighString="&nbsp;";
 								}
-							
+
 							//Basic formatting for time CCM based on non-time CCM
 							String timeColor=neighColor;
 							if(timeColor==scoreColor)
 								timeColor=htmlColorNotNeigh;
 							String timeString=neighString;
-							
+
 							//Format time based on when there is overlap
 							if(!lin.contactsf.get(nucName).get(nucName2).isEmpty())
 								{
 								if(percLifeLen!=0)
 									{
 									int lifeLenFrames=Math.round((lin.lin.nuc.get(nucName).lastFrame()-lin.lin.nuc.get(nucName).firstFrame()));
-	
+
 									boolean[] neighOverlaps=new boolean[clength];
-	
+
 									for(int curp=0;curp<clength;curp++)
 										{
 										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
@@ -333,18 +353,18 @@ public class CellContactMap
 										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
 											neighOverlaps[curp]=true;
 										}
-	
+
 									//Convert frame overlap to image
 									timeString=getOverlapBar(neighOverlaps).toString();
 									}
 								else
 									timeString=neighString="&nbsp;";
 								}
-								
+
 							bodyNeigh.append("<td bgcolor=\""+neighColor+"\"><tt>"+neighString+"</tt></td>\n");
 							bodyTime.append("<td bgcolor=\""+timeColor+"\"><tt>"+timeString+"</tt></td>\n");
 							}
-					
+
 						}
 					}
 
@@ -354,24 +374,24 @@ public class CellContactMap
 					.replace("NUCNAME", nucName)
 					.replace("DATASETS", outDatasets)
 					.replace("COLSPAN",""+lins.size());
-				EvFileUtil.writeFile(new File(targetdir,nucName+"_neigh.htm"), out
-						.replace("CONTACTTABLE", bodyNeigh)
-						.replace("SUBHEADER",subhMain));
-				EvFileUtil.writeFile(new File(targetdir,nucName+"_neightime.htm"), out
-						.replace("CONTACTTABLE", bodyTime)
-						.replace("SUBHEADER",subhTime));
+				EvFileUtil.writeFile(new File(targetdir,nucName+"_neigh.htm"), 
+						out
+							.replace("CONTACTTABLE", bodyNeigh)
+							.replace("SUBHEADER",subhMain));
+				EvFileUtil.writeFile(new File(targetdir,nucName+"_neightime.htm"), 
+						out
+							.replace("CONTACTTABLE", bodyTime)
+							.replace("SUBHEADER",subhTime));
 				}
 			}
-		catch (IOException e)
+		catch (Exception e)
 			{
 			e.printStackTrace();
 			}
-		
-	
 		System.out.println("done");
 		System.exit(0);
 		}
-	
+
 	/**
 	 * Generate optimized HTML for overlaps by using RLE
 	 */
@@ -401,17 +421,12 @@ public class CellContactMap
 		//	imgcode.append("<img src=\""+(b ? 'n' : 'a')+"_bar.png\">");
 		return imgcode.toString();
 		}
-	
+
 	public static String getOverlapImage(int len, boolean current)
 		{
 		return "<img width=\""+len+"\" height=\""+cheight+"\" src=\""+(current ? 'n' : 'a')+"_bar.png\">";
 		}
-	
-	
-	
-	
-	
-	
+
 
 	/**
 	 * Write bar image
@@ -445,10 +460,10 @@ int ce=(int)Math.ceil(m);
 			continue nextcurp; //Optimization
 			}
 		}
-	
-	*/
+
+ */
 //if(percLifeLen>1)
-					/* || nucName.equals(nucName2)*/
+/* || nucName.equals(nucName2)*/
 
 //Override color for match on itself when it exists
 /*							if(nucName.equals(nucName2) && lin.lin.nuc.containsKey(nucName))
