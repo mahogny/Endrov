@@ -3,32 +3,35 @@ package util2.cellContactMap;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
 
 import javax.imageio.ImageIO;
 
-
 import endrov.data.EvData;
 import endrov.data.EvDataXML;
 import endrov.ev.*;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
-import endrov.nuc.NucVoronoi;
-import endrov.util.EvFileUtil;
-import endrov.util.EvParallel;
-import endrov.util.Tuple;
+import endrov.nuc.*;
+import endrov.util.*;
 
 /**
  * Calculate cell contact map
- * @author Johan Henriksson
+ * @author Johan Henriksson, Jurgen Hench
  *
  */
 public class CellContactMap
 	{
-
+	public static String htmlColorNotNeigh="#ffffff";
+	public static String htmlColorNA="#cccccc";
+	public static String htmlColorNT="#666666";
+	public static String htmlColorSelf="#33ccff";
+	public static final int clength=50; //[px]
+	public static final int cheight=13; //[px]
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static class OneLineage
 		{
 		public Map<Integer,NucVoronoi> fcontacts=new HashMap<Integer, NucVoronoi>();
@@ -37,7 +40,7 @@ public class CellContactMap
 		public int numid;
 		
 		//nuc -> nuc -> frames
-		public Map<String,Map<String,Set<Integer>>> contactsf=new TreeMap<String, Map<String,Set<Integer>>>();
+		public Map<String,Map<String,SortedSet<Integer>>> contactsf=new TreeMap<String, Map<String,SortedSet<Integer>>>();
 		
 		public Map<String,Integer> lifelen=new HashMap<String,Integer>();
 		
@@ -57,10 +60,10 @@ public class CellContactMap
 			}
 		private void addFrame1(String a, String b, int f)
 			{
-			Map<String,Set<Integer>> na=contactsf.get(a);
+			Map<String,SortedSet<Integer>> na=contactsf.get(a);
 			if(na==null)
-				contactsf.put(a,na=new TreeMap<String,Set<Integer>>());
-			Set<Integer> sa=na.get(b);
+				contactsf.put(a,na=new TreeMap<String,SortedSet<Integer>>());
+			SortedSet<Integer> sa=na.get(b);
 			if(sa==null)
 				na.put(b, sa=new TreeSet<Integer>());
 			sa.add(f);
@@ -81,9 +84,9 @@ public class CellContactMap
 			//Prepare different indexing
 			for(String n:nucNames)
 				{
-				Map<String,Set<Integer>> u=new HashMap<String, Set<Integer>>();
+				Map<String,SortedSet<Integer>> u=new HashMap<String, SortedSet<Integer>>();
 				for(String m:nucNames)
-					u.put(m,new HashSet<Integer>());
+					u.put(m,new TreeSet<Integer>());
 				contactsf.put(n, u);
 				}
 
@@ -96,7 +99,11 @@ public class CellContactMap
 			for(int curframe=lin.firstFrameOfLineage();curframe<lin.lastFrameOfLineage();curframe++)
 				{
 				numframes++;
-                                  //				if(numframes>30)					break;
+				/////////////////////////////
+//                                  				if(numframes>200)					break;
+                                  				////////////////////
+                                  				
+                                  				
 				//interpolate
 				Map<NucPair, NucLineage.NucInterp> inter=lin.getInterpNuc(curframe);
 				if(curframe%100==0)
@@ -104,10 +111,8 @@ public class CellContactMap
 				try
 					{
 					//Get neighbours
-					NucVoronoi nvor=new NucVoronoi(inter);
+					NucVoronoi nvor=new NucVoronoi(inter,true);
 					fcontacts.put(curframe, nvor);
-					//TODO override: add a ~ a relation
-					//TODO
 					//TODO if parent neigh at this frame, remove child
 					
 					//Turn into more suitable index ordering for later use
@@ -126,6 +131,11 @@ public class CellContactMap
 			}
 		}
 	
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	
 	
 	//TODO: use imserv instead
@@ -177,7 +187,7 @@ public class CellContactMap
 		Map<String,OneLineage> orderedLin=new TreeMap<String, OneLineage>();
 		for(OneLineage lin:lins)
 			orderedLin.put(lin.name, lin);
-		int numid=0;
+		int numid=1;
 		lins=new LinkedList<OneLineage>();
 		for(OneLineage lin:orderedLin.values())
 			{
@@ -194,8 +204,6 @@ public class CellContactMap
 		
 		try
 			{
-			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("neigh.htm")));
-			
 			//Images for bars
 			writeBar(new File(targetdir,"n_bar.png"),Color.black);
 			writeBar(new File(targetdir,"a_bar.png"),Color.white);
@@ -203,28 +211,26 @@ public class CellContactMap
 			//Write cell list files
 			StringBuffer mainSingleOut=new StringBuffer();
 			StringBuffer mainTreeOut=new StringBuffer();
-			mainSingleOut.append(EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_single_header.htm"))));
-			mainTreeOut.append(EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_tree_header.htm"))));
 			for(String nucName:nucNames)
 				{
 				mainSingleOut.append("<a href=\""+nucName+"_neigh.htm\">"+nucName+"</a></br>");
 				mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
 				}
-			mainSingleOut.append("</body></html>");
-			mainTreeOut.append("</body></html>");
-			EvFileUtil.writeFile(new File(targetdir,"main_single.htm"),mainSingleOut.toString());
-			EvFileUtil.writeFile(new File(targetdir,"main_tree.htm"),mainTreeOut.toString());
+			EvFileUtil.writeFile(new File(targetdir,"main_single.htm"),
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_single.htm")))
+					.replace("BODY", mainSingleOut));
+			EvFileUtil.writeFile(new File(targetdir,"main_tree.htm"),
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_tree.htm")))
+					.replace("BODY", mainTreeOut));
 			
 			//List datasets
 			StringBuffer outDatasets=new StringBuffer();
 			for(OneLineage lin:lins)
 				outDatasets.append(""+lin.numid+": "+lin.name+" <br/>");
-
-			int clength=50; //[px]
-
 			
 			//Write out HTML, cell by cell. Reference lineage is the first one in the list
 			//nucName: everything in the file is about this cell
+			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("neigh.htm")));
 			for(String nucName:nucNames)
 				{
 				StringBuffer bodyNeigh=new StringBuffer();
@@ -240,159 +246,120 @@ public class CellContactMap
 					}
 				
 				//Compare with all other nuclei
-				nextNuc2: for(String nucName2:nucNames)
+				for(String nucName2:nucNames)
 					{
-					int notAnnotated=0;
-					int sa=0;
+					
+					//Get annotation statistics
+					int notAnnotated=0; //# not annotated
+					int sa=0; //# co-occurance
 					for(OneLineage lin:lins)
 						if(lin.lin.nuc.containsKey(nucName2))
 							{
-							//Count co-occurance in the recordings where nucname2 is annotated
 							if(!lin.contactsf.get(nucName).get(nucName2).isEmpty())
 								sa++;
 							}
 						else
-							//Count number of recordings in which this cell (nucname2) is not annotated
 							notAnnotated++;
 					int annotated=lins.size()-notAnnotated;
 					
-					//Skip this cell if none of the recordings has it as a neighbour
-					if(sa==0 && !nucName.equals(nucName2))
-						continue nextNuc2;
-					
-					double hits=(double)sa/(annotated);
-					int hc=(int)(255-hits*255);
-					
-					String hex=Integer.toHexString(hc);
-					if(hex.length()==1)
-						hex="0"+hex;
-					String htcolor="#ff"+hex+hex;
-					if(nucName.equals(nucName2)) //Itself
-						htcolor="#33ccff";
-					
-					
-					Map<OneLineage,String> lincolor=new HashMap<OneLineage, String>();
-					Map<OneLineage,String> linstr=new HashMap<OneLineage, String>();
-					Map<OneLineage,Boolean> linannot=new HashMap<OneLineage, Boolean>();
-					for(OneLineage lin:lins)
+					//Do this cell only if any recording has it as a neighbour
+					if(sa!=0)
 						{
-						String thiscolor;
-						String thisstr;
-						boolean thisannot;
-						//this (nucname) not annotated
-						if(!lin.lin.nuc.containsKey(nucName))
-							{
-							thiscolor="#666666";
-							thisstr="<font color=\"#ffffff\">n.t.</font>";
-							thisannot=false;
-							}
-						//nucname2 not annotated
-						else if(!lin.lin.nuc.containsKey(nucName2))
-							{
-							thiscolor="#cccccc";
-							thisstr="n.a.";
-							thisannot=false;
-							}
-						//Is not neighbour
-						else if(lin.contactsf.get(nucName).get(nucName2).isEmpty())
-							{
-							thiscolor="#ffffff";
-							thisstr="&nbsp;";
-							thisannot=true;
-							}
-						//Is neighbour
-						else
-							{
-							thiscolor=htcolor;
-							thisstr="an";
-							thisannot=true;
-							}
+						//Calculate a color based on the match score
+						double hits=(double)sa/(annotated);
+						int hc=(int)(255-hits*255);
+						String hex=Integer.toHexString(hc);
+						if(hex.length()==1)
+							hex="0"+hex;
+						String scoreColor="#ff"+hex+hex;
+						if(nucName.equals(nucName2)) //Itself
+							scoreColor=htmlColorSelf;						
 						
-						lincolor.put(lin, thiscolor);
-						linstr.put(lin,thisstr);
-						linannot.put(lin,thisannot);
-						}
-					
-					//Name in table
-					String line="<tr><td bgcolor=\""+htcolor+"\"><tt><a href=\"FILE\">"+nucName2+"</a></tt></td><td bgcolor=\""+htcolor+"\"><tt>"+sa+"/"+annotated+"</tt></td>\n";
-					bodyNeigh.append(line.replace("FILE",nucName2+"_neigh.htm"));
-					bodyTime.append(line.replace("FILE",nucName2+"_neightime.htm"));
-
-					//Contact map itself
-					for(OneLineage lin:lins)
-						{
-						String col=lincolor.get(lin);
-						double perc=100*(double)lin.contactsf.get(nucName).get(nucName2).size()/lin.lifelen.get(nucName);
-						StringBuffer imgcode=new StringBuffer();
-						String stri="";
-						if(!linannot.get(lin))
-							stri=linstr.get(lin);
-						else if(perc>1 && !lin.contactsf.get(nucName).get(nucName2).isEmpty())
+						//Name in table
+						String line="<tr><td bgcolor=\""+scoreColor+"\"><tt><a href=\"FILE\">"+nucName2+"</a></tt></td><td bgcolor=\""+scoreColor+"\"><tt>"+sa+"/"+annotated+"</tt></td>\n";
+						bodyNeigh.append(line.replace("FILE",nucName2+"_neigh.htm"));
+						bodyTime.append(line.replace("FILE",nucName2+"_neightime.htm"));
+	
+						//Contact map itself
+						for(OneLineage lin:lins)
 							{
-							stri=percentFormat.format(perc);
-							int sl=Math.round((lin.lin.nuc.get(nucName).lastFrame()-lin.lin.nuc.get(nucName).firstFrame()));
+							double percLifeLen=100*(double)lin.contactsf.get(nucName).get(nucName2).size()/lin.lifelen.get(nucName);
+							if(lin.lifelen.get(nucName)==0 || percLifeLen<1)
+								percLifeLen=0;
 							
-							boolean[] neighOverlaps=new boolean[clength];
-
-							//rewrite this code using retain
-							int fa=sl/clength;
-							nextcurp: for(int curp=0;curp<clength;curp++)
+							//Formatting for non-time CCM
+							String neighColor;
+							String neighString;
+							if(!lin.lin.nuc.containsKey(nucName))	//this (nucname) not annotated
 								{
-								int m=curp*fa;
-								int fl=(int)Math.floor(m);
-								int ce=(int)Math.ceil(m);
-								if(ce>=0 && ce<=sl && fl>=0 && fl<=sl)
-									for(int x:lin.contactsf.get(nucName).get(nucName2))
+								neighColor=htmlColorNT;
+								neighString="<font color=\"#ffffff\">n.t.</font>";
+								}
+							else if(!lin.lin.nuc.containsKey(nucName2))	//nucname2 not annotated
+								{
+								neighColor=htmlColorNA;
+								neighString="n.a.";
+								}
+							else if(percLifeLen!=0) //Is neighbour
+								{
+								neighColor=scoreColor;
+								neighString=percentFormat.format(percLifeLen);
+								}
+							else //Is not neighbour
+								{
+								neighColor=htmlColorNotNeigh;
+								neighString="&nbsp;";
+								}
+							
+							//Basic formatting for time CCM based on non-time CCM
+							String timeColor=neighColor;
+							if(timeColor==scoreColor)
+								timeColor=htmlColorNotNeigh;
+							String timeString=neighString;
+							
+							//Format time based on when there is overlap
+							if(!lin.contactsf.get(nucName).get(nucName2).isEmpty())
+								{
+								if(percLifeLen!=0)
+									{
+									int lifeLenFrames=Math.round((lin.lin.nuc.get(nucName).lastFrame()-lin.lin.nuc.get(nucName).firstFrame()));
+	
+									boolean[] neighOverlaps=new boolean[clength];
+	
+									for(int curp=0;curp<clength;curp++)
 										{
-										int nf=Math.round(x-lin.lin.nuc.get(nucName).firstFrame());
-										if(nf==ce || nf==fl)
-											{
+										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
+										SortedSet<Integer> frames=lin.contactsf.get(nucName).get(nucName2);
+										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
 											neighOverlaps[curp]=true;
-											continue nextcurp; //Optimization
-											}
 										}
+	
+									//Convert frame overlap to image
+									timeString=getOverlapBar(neighOverlaps).toString();
+									}
+								else
+									timeString=neighString="&nbsp;";
 								}
-							
-							//Convert frame overlap to image
-							//TODO stretch image
-							for(boolean b:neighOverlaps)
-								{
-								char c=b ? 'n' : 'a';
-								imgcode.append("<img src=\""+c+"_bar.png\">");
-								}
-							
+								
+							bodyNeigh.append("<td bgcolor=\""+neighColor+"\"><tt>"+neighString+"</tt></td>\n");
+							bodyTime.append("<td bgcolor=\""+timeColor+"\"><tt>"+timeString+"</tt></td>\n");
 							}
-						else
-							{
-							stri="&nbsp;";
-							}
-						bodyNeigh.append("<td bgcolor=\""+col+"\"><tt>"+stri+"</tt></td>\n");
-
-						//replace if
-						if(stri.indexOf('n')!=-1)
-							;
-						else
-							{
-							stri=imgcode.toString();
-							col="#ffffff";
-							}
-						bodyTime.append("<td bgcolor=\""+col+"\"><tt>"+stri+"</tt></td>\n");
+					
 						}
-				
 					}
-				
-				
 
-				//Output
+				//Output entire file
 				String out=neighTemplate
-					.replace("SUBHEADER",subhMain)
+					.replace("UPDATETIME",updateTime)
 					.replace("NUCNAME", nucName)
-					.replace("COLSPAN",""+lins.size())
 					.replace("DATASETS", outDatasets)
-					.replace("UPDATETIME",updateTime);
-				
-				EvFileUtil.writeFile(new File(targetdir,nucName+"_neigh.htm"), out.replace("CONTACTTABLE", bodyNeigh));
-				EvFileUtil.writeFile(new File(targetdir,nucName+"_neightime.htm"), out.replace("CONTACTTABLE", bodyTime));
+					.replace("COLSPAN",""+lins.size());
+				EvFileUtil.writeFile(new File(targetdir,nucName+"_neigh.htm"), out
+						.replace("CONTACTTABLE", bodyNeigh)
+						.replace("SUBHEADER",subhMain));
+				EvFileUtil.writeFile(new File(targetdir,nucName+"_neightime.htm"), out
+						.replace("CONTACTTABLE", bodyTime)
+						.replace("SUBHEADER",subhTime));
 				}
 			}
 		catch (IOException e)
@@ -405,9 +372,52 @@ public class CellContactMap
 		System.exit(0);
 		}
 	
+	/**
+	 * Generate optimized HTML for overlaps by using RLE
+	 */
+	public static String getOverlapBar(boolean[] neighOverlaps)
+		{
+		StringBuffer imgcode=new StringBuffer();
+
+		Boolean current=null;
+		int len=0;
+		for(boolean b:neighOverlaps)
+			{
+			if(current==null)
+				current=b;
+			else if(b!=current)
+				{
+				imgcode.append(getOverlapImage(len,current));
+				current=b;
+				len=0;
+				}
+			len++;
+			}
+		if(len!=0)
+			imgcode.append(getOverlapImage(len,current));
+
+		//Safe version
+		//for(boolean b:neighOverlaps)
+		//	imgcode.append("<img src=\""+(b ? 'n' : 'a')+"_bar.png\">");
+		return imgcode.toString();
+		}
+	
+	public static String getOverlapImage(int len, boolean current)
+		{
+		return "<img width=\""+len+"\" height=\""+cheight+"\" src=\""+(current ? 'n' : 'a')+"_bar.png\">";
+		}
+	
+	
+	
+	
+	
+	
+
+	/**
+	 * Write bar image
+	 */
 	public static void writeBar(File file, Color col) throws IOException
 		{
-		int cheight=13; //[px]
 		BufferedImage bim=new BufferedImage(1,cheight,BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D g=bim.createGraphics();
 		g.setColor(col);
@@ -415,3 +425,47 @@ public class CellContactMap
 		ImageIO.write(bim,"png",file);
 		}
 	}
+
+
+
+//rewrite this code using retain
+//int fa=lifeLenFrames/clength;
+/*nextcurp: */
+/*
+int m=curp*lifeLenFrames/clength; //corresponding frame
+int fl=(int)Math.floor(m);
+int ce=(int)Math.ceil(m);
+//if(ce>=0 && ce<=lifeLenFrames && fl>=0 && fl<=lifeLenFrames)
+	for(int x:lin.contactsf.get(nucName).get(nucName2))
+		{
+		int nf=Math.round(x-lin.lin.nuc.get(nucName).firstFrame());
+		if(nf==ce || nf==fl)
+			{
+			neighOverlaps[curp]=true;
+			continue nextcurp; //Optimization
+			}
+		}
+	
+	*/
+//if(percLifeLen>1)
+					/* || nucName.equals(nucName2)*/
+
+//Override color for match on itself when it exists
+/*							if(nucName.equals(nucName2) && lin.lin.nuc.containsKey(nucName))
+								{
+//								timeString="";
+//								neighString="100%";
+								neighColor=timeColor=htmlColorSelf;
+								}*/
+
+
+//TODO stretch image
+/*									StringBuffer imgcode=new StringBuffer();
+									for(boolean b:neighOverlaps)
+										imgcode.append("<img src=\""+(b ? 'n' : 'a')+"_bar.png\">");*/
+
+
+//Override occurance for self-referal
+//if(nucName.equals(nucName2))
+//sa=occurance;
+

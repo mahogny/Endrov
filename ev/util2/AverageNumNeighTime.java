@@ -73,7 +73,7 @@ public class AverageNumNeighTime
 				try
 					{
 					//Get neighbours
-					NucVoronoi nvor=new NucVoronoi(inter);
+					NucVoronoi nvor=new NucVoronoi(inter,false);
 					int curNumCell=nvor.nucnames.size();
 					
 					//Count number of contacts

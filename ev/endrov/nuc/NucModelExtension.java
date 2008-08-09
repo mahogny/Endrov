@@ -196,7 +196,7 @@ public class NucModelExtension implements ModelWindowExtension
 					{
 					try
 						{
-						NucVoronoi nvor=new NucVoronoi(inter);
+						NucVoronoi nvor=new NucVoronoi(inter,false);
 						
 						/*
 						for(int[] facelist:nvor.vor.vface)

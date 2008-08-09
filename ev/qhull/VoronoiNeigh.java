@@ -14,7 +14,7 @@ public class VoronoiNeigh
 	public List<List<Integer>> dneigh=new ArrayList<List<Integer>>();
 	
 	
-	public VoronoiNeigh(Voronoi v)
+	public VoronoiNeigh(Voronoi v, boolean selfNeigh)
 		{
 		int numsimplex=v.vsimplex.size();
 		for(int i=0;i<numsimplex;i++)
@@ -25,6 +25,8 @@ public class VoronoiNeigh
 			HashSet<Integer> faceA=new HashSet<Integer>();
 			for(int e:v.vsimplex.get(i))
 				faceA.add(e);
+			if(selfNeigh)
+				dneigh.get(i).add(i);
 			for(int j=i+1;j<numsimplex;j++)
 					{
 					for(int e:v.vsimplex.get(j))
