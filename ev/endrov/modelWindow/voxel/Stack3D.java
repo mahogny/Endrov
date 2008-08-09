@@ -9,7 +9,6 @@ import java.util.List;
 import javax.media.opengl.*;
 import javax.vecmath.Vector3d;
 
-import endrov.ev.Tuple;
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
 import endrov.modelWindow.Camera;
@@ -17,6 +16,7 @@ import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.Shader;
 import endrov.modelWindow.TransparentRender;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
+import endrov.util.Tuple;
 
 
 //XXX: NPOT mode?

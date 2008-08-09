@@ -10,9 +10,9 @@ import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.texture.*;
 
-import endrov.ev.Vector3D;
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
+import endrov.util.Vector3D;
 
 /**
  * Render one slice in 3d

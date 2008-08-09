@@ -3,10 +3,7 @@ package util2.cellContactMap;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.*;
@@ -20,6 +17,9 @@ import endrov.ev.*;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
 import endrov.nuc.NucVoronoi;
+import endrov.util.EvFileUtil;
+import endrov.util.EvParallel;
+import endrov.util.Tuple;
 
 /**
  * Calculate cell contact map
@@ -31,15 +31,15 @@ public class CellContactMap
 
 	public static class OneLineage
 		{
-		Map<Integer,NucVoronoi> fcontacts=new HashMap<Integer, NucVoronoi>();
-		NucLineage lin;
-		String name;
-		int numid;
+		public Map<Integer,NucVoronoi> fcontacts=new HashMap<Integer, NucVoronoi>();
+		public NucLineage lin;
+		public String name;
+		public int numid;
 		
 		//nuc -> nuc -> frames
-		Map<String,Map<String,Set<Integer>>> contactsf=new TreeMap<String, Map<String,Set<Integer>>>();
+		public Map<String,Map<String,Set<Integer>>> contactsf=new TreeMap<String, Map<String,Set<Integer>>>();
 		
-		Map<String,Integer> lifelen=new HashMap<String,Integer>();
+		public Map<String,Integer> lifelen=new HashMap<String,Integer>();
 		
 		public void addLifelen(String a)
 			{
@@ -106,10 +106,14 @@ public class CellContactMap
 					//Get neighbours
 					NucVoronoi nvor=new NucVoronoi(inter);
 					fcontacts.put(curframe, nvor);
+					//TODO override: add a ~ a relation
+					//TODO
+					//TODO if parent neigh at this frame, remove child
+					
 					//Turn into more suitable index ordering for later use
 					for(Tuple<String, String> e:nvor.getNeighPairSet())
 						addFrame(e.fst(),e.snd(),curframe);
-					//Lifelen
+					//Calculate lifelen
 					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
 						if(e.getValue().isVisible())
 							addLifelen(e.getKey().snd());
@@ -122,10 +126,6 @@ public class CellContactMap
 			}
 		}
 	
-	public static boolean emptyOrNotExist(Collection<?> a)
-		{
-		return a==null || a.isEmpty();
-		}
 	
 	
 	//TODO: use imserv instead
@@ -161,8 +161,7 @@ public class CellContactMap
 		
 		NucLineage reflin=new EvDataXML("/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/rmd.ostxml").getObjects(NucLineage.class).iterator().next();
 		final TreeSet<String> nucNames=new TreeSet<String>(reflin.nuc.keySet());
-				//lins.get(0).lin.nuc.keySet());
-
+			
 		
 		
 		//Calc neigh
@@ -195,7 +194,7 @@ public class CellContactMap
 		
 		try
 			{
-			String neighTemplate=readFile(EvJavaUtil.getFileFromURL(CellContactMap.class.getResource("neigh.htm")));
+			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("neigh.htm")));
 			
 			//Images for bars
 			writeBar(new File(targetdir,"n_bar.png"),Color.black);
@@ -204,8 +203,8 @@ public class CellContactMap
 			//Write cell list files
 			StringBuffer mainSingleOut=new StringBuffer();
 			StringBuffer mainTreeOut=new StringBuffer();
-			mainSingleOut.append(readFile(EvJavaUtil.getFileFromURL(CellContactMap.class.getResource("main_single_header.htm"))));
-			mainTreeOut.append(readFile(EvJavaUtil.getFileFromURL(CellContactMap.class.getResource("main_tree_header.htm"))));
+			mainSingleOut.append(EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_single_header.htm"))));
+			mainTreeOut.append(EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_tree_header.htm"))));
 			for(String nucName:nucNames)
 				{
 				mainSingleOut.append("<a href=\""+nucName+"_neigh.htm\">"+nucName+"</a></br>");
@@ -213,8 +212,8 @@ public class CellContactMap
 				}
 			mainSingleOut.append("</body></html>");
 			mainTreeOut.append("</body></html>");
-			writeFile(new File(targetdir,"main_single.htm"),mainSingleOut.toString());
-			writeFile(new File(targetdir,"main_tree.htm"),mainTreeOut.toString());
+			EvFileUtil.writeFile(new File(targetdir,"main_single.htm"),mainSingleOut.toString());
+			EvFileUtil.writeFile(new File(targetdir,"main_tree.htm"),mainTreeOut.toString());
 			
 			//List datasets
 			StringBuffer outDatasets=new StringBuffer();
@@ -314,13 +313,12 @@ public class CellContactMap
 						linannot.put(lin,thisannot);
 						}
 					
-					
-					
+					//Name in table
 					String line="<tr><td bgcolor=\""+htcolor+"\"><tt><a href=\"FILE\">"+nucName2+"</a></tt></td><td bgcolor=\""+htcolor+"\"><tt>"+sa+"/"+annotated+"</tt></td>\n";
-					
 					bodyNeigh.append(line.replace("FILE",nucName2+"_neigh.htm"));
 					bodyTime.append(line.replace("FILE",nucName2+"_neightime.htm"));
-					
+
+					//Contact map itself
 					for(OneLineage lin:lins)
 						{
 						String col=lincolor.get(lin);
@@ -332,11 +330,11 @@ public class CellContactMap
 						else if(perc>1 && !lin.contactsf.get(nucName).get(nucName2).isEmpty())
 							{
 							stri=percentFormat.format(perc);
-//dtx=1							
 							int sl=Math.round((lin.lin.nuc.get(nucName).lastFrame()-lin.lin.nuc.get(nucName).firstFrame()));
 							
 							boolean[] neighOverlaps=new boolean[clength];
 
+							//rewrite this code using retain
 							int fa=sl/clength;
 							nextcurp: for(int curp=0;curp<clength;curp++)
 								{
@@ -356,6 +354,7 @@ public class CellContactMap
 								}
 							
 							//Convert frame overlap to image
+							//TODO stretch image
 							for(boolean b:neighOverlaps)
 								{
 								char c=b ? 'n' : 'a';
@@ -367,10 +366,9 @@ public class CellContactMap
 							{
 							stri="&nbsp;";
 							}
-						//to f only
 						bodyNeigh.append("<td bgcolor=\""+col+"\"><tt>"+stri+"</tt></td>\n");
 
-						//to f2 only
+						//replace if
 						if(stri.indexOf('n')!=-1)
 							;
 						else
@@ -393,8 +391,8 @@ public class CellContactMap
 					.replace("DATASETS", outDatasets)
 					.replace("UPDATETIME",updateTime);
 				
-				writeFile(new File(targetdir,nucName+"_neigh.htm"), out.replace("CONTACTTABLE", bodyNeigh));
-				writeFile(new File(targetdir,nucName+"_neightime.htm"), out.replace("CONTACTTABLE", bodyTime));
+				EvFileUtil.writeFile(new File(targetdir,nucName+"_neigh.htm"), out.replace("CONTACTTABLE", bodyNeigh));
+				EvFileUtil.writeFile(new File(targetdir,nucName+"_neightime.htm"), out.replace("CONTACTTABLE", bodyTime));
 				}
 			}
 		catch (IOException e)
@@ -405,23 +403,6 @@ public class CellContactMap
 	
 		System.out.println("done");
 		System.exit(0);
-		}
-	
-	public static String readFile(File file) throws IOException
-		{
-		StringBuffer bf=new StringBuffer();
-		BufferedReader br=new BufferedReader(new FileReader(file));
-		String line;
-		while((line=br.readLine())!=null)
-			bf.append(line);
-		return bf.toString();
-		}
-	
-	public static void writeFile(File file,String out) throws IOException
-		{
-		FileWriter fw=new FileWriter(file);
-		fw.write(out);
-		fw.close();
 		}
 	
 	public static void writeBar(File file, Color col) throws IOException

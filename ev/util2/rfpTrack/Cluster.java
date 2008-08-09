@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import javax.vecmath.Vector3d;
 
 
-import endrov.ev.Tuple;
+import endrov.util.Tuple;
 
 public class Cluster
 	{

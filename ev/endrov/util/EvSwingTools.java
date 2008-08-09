@@ -1,4 +1,4 @@
-package endrov.ev;
+package endrov.util;
 
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
@@ -11,7 +11,7 @@ import java.awt.datatransfer.Transferable;
 import javax.swing.*;
 
 /**
- * Various GUI related helper functions
+ * Utility functions for Swing
  * @author Johan Henriksson
  */
 public class EvSwingTools

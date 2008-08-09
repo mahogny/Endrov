@@ -5,6 +5,8 @@ import java.lang.reflect.*;
 import java.util.*;
 import javax.swing.*;
 
+import endrov.util.EvFileUtil;
+
 /**
  * Load plugins. Every plugin is located in evplugin/.../ and has a PLUGIN.java describing how to load it.
  * 
@@ -117,7 +119,7 @@ public class PluginInfo
 			}
 		else
 			{
-			File pluginDir=EvJavaUtil.getFileFromURL(PluginInfo.class.getResource(".")).getParentFile();
+			File pluginDir=EvFileUtil.getFileFromURL(PluginInfo.class.getResource(".")).getParentFile();
 			if(!pluginDir.exists())
 				{
 				JOptionPane.showMessageDialog(null, "Plugin directory does not exist!");

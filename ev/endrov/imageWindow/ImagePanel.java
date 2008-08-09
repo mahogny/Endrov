@@ -9,6 +9,7 @@ import javax.vecmath.Vector2d;
 import endrov.ev.*;
 import endrov.filterBasic.ContrastBrightnessOp;
 import endrov.imageset.*;
+import endrov.util.Matrix2d;
 
 
 /**

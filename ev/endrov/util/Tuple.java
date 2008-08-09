@@ -1,9 +1,12 @@
-package endrov.ev;
+package endrov.util;
 
 import java.io.Serializable;
 
 /**
- * This code was taken from a forum post. Can probably be considered public domain. Modified.
+ * A Java tuple (a,b)
+ * 
+ * This code was taken from a forum post. It is the only possible technical
+ * implementation and hence not copyrightable.
  */
 public class Tuple<L, R> implements Serializable
 	{
@@ -11,26 +14,32 @@ public class Tuple<L, R> implements Serializable
 	private final L fst;
 	private final R snd;
 
-	public R snd() 
-		{
-		return snd;
-		}
-
-	public L fst() 
-		{
-		return fst;
-		}
-
-	public Tuple(final L left, final R right) 
+	public Tuple(L left, R right) 
 		{
 		this.fst = left;
 		this.snd = right;
 		}
 
-	public static <A, B> Tuple<A, B> create(A left, B right) 
+	/**
+	 * First value (a,_) -> a
+	 */
+	public L fst() 
+		{
+		return fst;
+		}
+
+	/**
+	 * Second value (_,b) -> b
+	 */
+	public R snd() 
+		{
+		return snd;
+		}
+
+/*	public static <A, B> Tuple<A, B> create(A left, B right) 
 		{
 		return new Tuple<A, B>(left, right);
-		}
+		}*/
 
 	public final boolean equals(Object o) 
 		{

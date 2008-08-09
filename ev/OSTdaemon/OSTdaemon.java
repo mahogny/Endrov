@@ -21,7 +21,7 @@ import loci.formats.ImageReader;
 
 import org.jdom.*;
 
-import endrov.ev.EvXMLutils;
+import endrov.util.EvXmlUtil;
 
 
 
@@ -312,7 +312,7 @@ public class OSTdaemon extends Thread
 		if(imagesetDir.exists())
 			{
 			File totalFile=new File(imagesetDir,"rmd.ostxml");
-			Document rmd=EvXMLutils.readXML(totalFile);
+			Document rmd=EvXmlUtil.readXML(totalFile);
 			Element root=rmd.getRootElement();
 			Element imagesetEl=root.getChild("imageset");
 			Element newImageset=new Element("imageset");
@@ -341,7 +341,7 @@ public class OSTdaemon extends Thread
 				}
 			root.removeChild("imageset");
 			root.addContent(newImageset);
-			EvXMLutils.writeXmlData(rmd, totalFile);
+			EvXmlUtil.writeXmlData(rmd, totalFile);
 			}
 		}
 	
@@ -366,18 +366,18 @@ public class OSTdaemon extends Thread
 				//Read current RMD
 				Document total=null;
 				if(totalFile.exists())
-					total=EvXMLutils.readXML(totalFile);
+					total=EvXmlUtil.readXML(totalFile);
 				else
 					total=new Document(new Element("ost"));
 
 				//Read new data
-				Document newrmd=EvXMLutils.readXML(from);
+				Document newrmd=EvXmlUtil.readXML(from);
 
 				//Merge
-				EvXMLutils.mergeXML(total.getRootElement(), newrmd.getRootElement());
+				EvXmlUtil.mergeXML(total.getRootElement(), newrmd.getRootElement());
 
 				//Save new RMD
-				EvXMLutils.writeXmlData(total, totalFile);
+				EvXmlUtil.writeXmlData(total, totalFile);
 
 				moveToConverted(from);
 				}
@@ -405,8 +405,8 @@ public class OSTdaemon extends Thread
 		File totalFile=new File(imagesetDir,"rmd.ostxml");
 		try 
 			{
-			Document newrmd=EvXMLutils.readXML(from);
-			EvXMLutils.writeXmlData(newrmd, totalFile);
+			Document newrmd=EvXmlUtil.readXML(from);
+			EvXmlUtil.writeXmlData(newrmd, totalFile);
 			moveToConverted(from);
 			for(String ch:makeMaxChannel)
 				copyMaxMeta(argImageset,ch);

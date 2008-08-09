@@ -1,7 +1,12 @@
-package endrov.ev;
+package endrov.util;
 
 import javax.vecmath.*;
 
+/**
+ * 2D matrix, missing in Java3D. Follows the same style
+ * @author Johan Henriksson
+ *
+ */
 public final class Matrix2d
 	{
 	double m00, m01, m10, m11;

@@ -20,6 +20,8 @@ import endrov.keyBinding.*;
 import endrov.keyBinding.NewBinding.EvBindKeyEvent;
 import endrov.keyBinding.NewBinding.EvBindStatus;
 import endrov.modelWindow.basicExt.CrossHandler;
+import endrov.util.EvSwingTools;
+import endrov.util.EvXmlUtil;
 
 //TODO drag and drop of a file with # in the name fails on linux
 
@@ -382,7 +384,7 @@ public class ModelWindow extends BasicWindow
 			windowPersonalSettings(root);
 			try
 				{
-				String out=EvXMLutils.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
+				String out=EvXmlUtil.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
 				EvSwingTools.setClipBoardString(out);
 				}
 			catch (Exception e1)
@@ -394,7 +396,7 @@ public class ModelWindow extends BasicWindow
 			{
 			try
 				{
-				setPersonalConfig(EvXMLutils.stringToXml(EvSwingTools.getClipBoardString()));
+				setPersonalConfig(EvXmlUtil.stringToXml(EvSwingTools.getClipBoardString()));
 				}
 			catch (Exception e1)
 				{

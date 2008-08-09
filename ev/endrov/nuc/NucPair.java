@@ -1,6 +1,6 @@
 package endrov.nuc;
 
-import endrov.ev.Tuple;
+import endrov.util.Tuple;
 
 //Maybe a bad class. just use the normal pair? otherwise get rid of pair, and left and right?
 

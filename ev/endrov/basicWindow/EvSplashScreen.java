@@ -1,9 +1,12 @@
-package endrov.ev;
+package endrov.basicWindow;
 
 import java.awt.*;
 import java.util.prefs.Preferences;
 
 import javax.swing.*;
+
+import endrov.ev.EV;
+import endrov.ev.Log;
 
 
 public class EvSplashScreen extends JFrame 

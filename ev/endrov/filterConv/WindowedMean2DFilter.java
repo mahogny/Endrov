@@ -7,6 +7,7 @@ import org.jdom.*;
 
 import endrov.ev.*;
 import endrov.filter.*;
+import endrov.util.EvSwingTools;
 
 /**
  * Filter: Laplace in 2D

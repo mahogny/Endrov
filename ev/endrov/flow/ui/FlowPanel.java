@@ -10,9 +10,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 
-import endrov.ev.Tuple;
 import endrov.flow.*;
 import endrov.flow.basic.*;
+import endrov.util.Tuple;
 
 /**
  * Panel showing flow

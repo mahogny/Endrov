@@ -3,8 +3,8 @@ package endrov.imagesetImserv;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.ev.EV;
-import endrov.ev.EvSwingTools;
 import endrov.ev.PersonalConfig;
+import endrov.util.EvSwingTools;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;

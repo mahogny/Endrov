@@ -16,11 +16,11 @@ import javax.swing.Timer;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.ev.CompleteBatch;
-import endrov.ev.EvSwingTools;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
 import endrov.imagesetBioformats.BioformatsImageset;
 import endrov.imagesetOST.SaveOSTThread;
+import endrov.util.EvSwingTools;
 
 
 /**

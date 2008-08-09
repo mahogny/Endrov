@@ -4,7 +4,7 @@ import java.util.*;
 
 import javax.vecmath.Vector3d;
 
-import endrov.ev.Tuple;
+import endrov.util.Tuple;
 
 import qhull.Voronoi;
 import qhull.VoronoiNeigh;

@@ -1,8 +1,9 @@
-package endrov.ev;
+package endrov.util;
 
 
 /**
  * A class that really should have been part of the API
+ * deprecated
  * @author Johan Henriksson
  */
 public class Vector3D
