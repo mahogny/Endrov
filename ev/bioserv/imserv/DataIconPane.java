@@ -340,6 +340,7 @@ public class DataIconPane extends JPanel implements Scrollable
 			if(conn!=null)
 				{
 				String[] keys=conn.imserv.getDataKeys(filter);
+				Arrays.sort(keys);
 				if(keys!=null)
 					for(String k:keys)
 						obList.add(k);
