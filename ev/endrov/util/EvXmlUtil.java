@@ -1,4 +1,4 @@
-package endrov.ev;
+package endrov.util;
 
 import java.io.*;
 
@@ -7,10 +7,10 @@ import org.jdom.input.*;
 import org.jdom.output.*;
 
 /**
- * Additional routines for XML data
+ * Utility functions for XML
  * @author Johan Henriksson
  */
-public class EvXMLutils
+public class EvXmlUtil
 	{
 
 	public static Document readXML(File filename) throws Exception

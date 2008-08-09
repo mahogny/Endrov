@@ -18,8 +18,8 @@ import bioserv.RMISSLServerSocketFactory;
 import bioserv.SendFile;
 
 import endrov.ev.EV;
-import endrov.ev.EvXMLutils;
 import endrov.imagesetOST.OstImageset;
+import endrov.util.EvXmlUtil;
 
 
 
@@ -352,7 +352,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 						e.setAttribute("name", tag.getValue().value);
 					root.addContent(e);
 					}
-			EvXMLutils.writeXmlData(doc, getImservFile());
+			EvXmlUtil.writeXmlData(doc, getImservFile());
 			}
 		catch (Exception e)
 			{

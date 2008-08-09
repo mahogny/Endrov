@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.jdom.*;
 
-import endrov.ev.EvXMLutils;
+import endrov.util.EvXmlUtil;
 
 public class FilemakerToSql
 	{
@@ -71,7 +71,7 @@ public class FilemakerToSql
 		
 		try
 			{
-			Document doc=EvXMLutils.readXML(new File("/Volumes/TBU_main02/homeoExport2.xml"));
+			Document doc=EvXmlUtil.readXML(new File("/Volumes/TBU_main02/homeoExport2.xml"));
 			Element root=doc.getRootElement();
 			
 			for(Object ro:root.getChildren())

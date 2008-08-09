@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.jdom.*;
 
-import endrov.ev.EvXMLutils;
+import endrov.util.EvXmlUtil;
 
 //import evplugin.imagesetOST.OstImageset;
 
@@ -51,9 +51,9 @@ public class ConvertFilemaker
 					if(author.length()>0)
 						{
 						if(author.endsWith("Hench"))
-							author="JŸrgen Hench";
+							author="Jï¿½rgen Hench";
 						if(author.startsWith("Martin"))
-							author="Martin LŸppert";
+							author="Martin Lï¿½ppert";
 						attr.put("author", author);
 						}
 
@@ -128,7 +128,7 @@ public class ConvertFilemaker
 							e.setAttribute("value", entry.getValue());
 							root.addContent(e);
 							}
-						EvXMLutils.writeXmlData(doc, imservFile);
+						EvXmlUtil.writeXmlData(doc, imservFile);
 						}
 					catch (Exception e)
 						{

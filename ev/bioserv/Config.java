@@ -10,7 +10,7 @@ import org.jdom.Element;
 import bioserv.auth.Auth;
 
 
-import endrov.ev.EvXMLutils;
+import endrov.util.EvXmlUtil;
 
 /**
  * Handle config file for ImServ
@@ -27,7 +27,7 @@ public class Config
 		{
 		try
 			{
-			Document doc=EvXMLutils.readXML(configfile);
+			Document doc=EvXmlUtil.readXML(configfile);
 			Element root=doc.getRootElement();
 			
 			for(Object o:root.getChildren())
@@ -97,7 +97,7 @@ public class Config
 			daemon.auth.writeConfig(authe);
 			root.addContent(authe);
 			
-			EvXMLutils.writeXmlData(doc, configfile);
+			EvXmlUtil.writeXmlData(doc, configfile);
 			}
 		catch (Exception e)
 			{

@@ -7,6 +7,7 @@ import java.io.*;
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.shell.*;
+import endrov.util.Vector2D;
 
 
 /**

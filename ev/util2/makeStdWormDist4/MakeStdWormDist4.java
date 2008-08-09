@@ -11,6 +11,7 @@ import endrov.ev.*;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
 import endrov.nuc.NucLineage.NucInterp;
+import endrov.util.EvParallel;
 
 
 //Do not use rigid transforms, use point dist.

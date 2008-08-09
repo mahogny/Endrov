@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.jdom.*;
 
-import endrov.ev.EvXMLutils;
+import endrov.util.EvXmlUtil;
 
 public class FilemakerToSqlHope
 	{
@@ -59,7 +59,7 @@ public class FilemakerToSqlHope
 		
 		try
 			{
-			Document doc=EvXMLutils.readXML(new File("/Volumes/TBU_main02/hopeExport.xml"));
+			Document doc=EvXmlUtil.readXML(new File("/Volumes/TBU_main02/hopeExport.xml"));
 			Element root=doc.getRootElement();
 			
 			for(Object ro:root.getChildren())

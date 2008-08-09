@@ -11,13 +11,13 @@ import javax.vecmath.Vector3d;
 import com.sun.opengl.util.j2d.TextureRenderer;
 import com.sun.opengl.util.texture.*;
 
-import endrov.ev.Tuple;
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
 import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.Shader;
 import endrov.modelWindow.TransparentRender;
+import endrov.util.Tuple;
 
 //if one ever wish to build it in the background:
 //GLContext glc=view.getContext();

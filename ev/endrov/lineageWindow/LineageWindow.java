@@ -12,6 +12,7 @@ import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.nuc.*;
+import endrov.util.Tuple;
 
 
 /**

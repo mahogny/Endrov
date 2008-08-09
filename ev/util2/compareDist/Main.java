@@ -16,12 +16,12 @@ import endrov.data.EvData;
 import endrov.data.EvDataXML;
 import endrov.data.EvObject;
 import endrov.ev.EV;
-import endrov.ev.EvParallel;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
 import endrov.nuc.NucLineage.NucInterp;
+import endrov.util.EvParallel;
 
 public class Main
 	{

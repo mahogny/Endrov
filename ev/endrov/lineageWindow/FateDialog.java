@@ -6,8 +6,8 @@ import java.awt.event.*;
 import java.util.*;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.ev.Tuple;
 import endrov.nuc.*;
+import endrov.util.Tuple;
 
 /**
  * Dialog to edit fate for a nucleus

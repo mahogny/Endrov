@@ -23,6 +23,7 @@ import endrov.imageWindow.ImageWindowExtension;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
 import endrov.script.*;
+import endrov.util.EvXmlUtil;
 
 /**
  * Meta object: Nuclei, a lineage and expression info
@@ -327,7 +328,7 @@ public class NucLineage extends EvObject implements Cloneable
 	 */
 	public void loadColorScheme(File filename) throws Exception
 		{
-		Document doc=EvXMLutils.readXML(filename);
+		Document doc=EvXmlUtil.readXML(filename);
 		Element root=doc.getRootElement();
 		for(Object oc:root.getChildren())
 			{
@@ -359,7 +360,7 @@ public class NucLineage extends EvObject implements Cloneable
 				e.setAttribute("b",""+c.getBlue());
 				root.addContent(e);
 				}
-		EvXMLutils.writeXmlData(doc, filename);
+		EvXmlUtil.writeXmlData(doc, filename);
 		}
 
 	/**

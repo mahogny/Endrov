@@ -27,7 +27,7 @@ import bioserv.imserv.TagListPane.TagListListener;
 import endrov.basicWindow.BasicWindow;
 import endrov.ev.BrowserControl;
 import endrov.ev.EV;
-import endrov.ev.EvSwingTools;
+import endrov.util.EvSwingTools;
 
 
 /**
