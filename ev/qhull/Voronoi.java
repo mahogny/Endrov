@@ -121,7 +121,7 @@ public class Voronoi
 			for(int i=0;i<num;i++)
 				{
 				Voronoi v=new Voronoi(vec.toArray(new Vector3d[]{}));
-				new VoronoiNeigh(v);
+				new VoronoiNeigh(v,false);
 //				v.foo();
 //				System.out.println(""+v);
 				

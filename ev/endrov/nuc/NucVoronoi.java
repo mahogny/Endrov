@@ -21,7 +21,7 @@ public class NucVoronoi
 	public Vector<Vector3d> nmid;
 	public VoronoiNeigh vneigh;
 	
-	public NucVoronoi(Map<NucPair, NucLineage.NucInterp> inter) throws Exception
+	public NucVoronoi(Map<NucPair, NucLineage.NucInterp> inter, boolean selfNeigh) throws Exception
 		{
 		nucnames=new Vector<String>();
 		nmid=new Vector<Vector3d>();
@@ -38,7 +38,7 @@ public class NucVoronoi
 			}
 		vor=new Voronoi(nmid.toArray(new Vector3d[]{}));
 		//System.out.println(vor.toString());
-		vneigh=new VoronoiNeigh(vor);
+		vneigh=new VoronoiNeigh(vor,selfNeigh);
 		}
 	
 	public Set<Tuple<String, String>> getNeighPairSet()
