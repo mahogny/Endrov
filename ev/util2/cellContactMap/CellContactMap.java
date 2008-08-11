@@ -105,6 +105,46 @@ public class CellContactMap
 					System.out.println(curframe);
 				try
 					{
+					//Eliminate cells not in official list or invisible
+					Map<NucPair, NucLineage.NucInterp> interclean=new HashMap<NucPair, NucLineage.NucInterp>();
+					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
+						if(e.getValue().isVisible() && nucNames.contains(e.getKey().snd()))
+							interclean.put(e.getKey(), e.getValue());
+					inter=interclean;
+					
+					//Add false nuclei at distance to make voronoi calc possible
+					if(!inter.isEmpty())
+						{
+						double r=3000; //300 is about the embryo. embryo is not centered in reality.
+						
+						NucLineage.NucInterp i1=new NucLineage.NucInterp();
+						i1.pos=new NucLineage.NucPos();
+						i1.frameBefore=0;
+						i1.pos.x=r;
+
+						NucLineage.NucInterp i2=new NucLineage.NucInterp();
+						i2.pos=new NucLineage.NucPos();
+						i2.frameBefore=0;
+						i2.pos.x=-r;
+
+						NucLineage.NucInterp i3=new NucLineage.NucInterp();
+						i3.pos=new NucLineage.NucPos();
+						i3.frameBefore=0;
+						i3.pos.y=-r;
+
+						NucLineage.NucInterp i4=new NucLineage.NucInterp();
+						i4.pos=new NucLineage.NucPos();
+						i4.frameBefore=0;
+						i4.pos.y=-r;
+
+						inter.put(new NucPair(null,":::1"), i1);
+						inter.put(new NucPair(null,":::2"), i2);
+						inter.put(new NucPair(null,":::3"), i3);
+						inter.put(new NucPair(null,":::4"), i4);
+						}
+					
+//					System.out.println("# inter "+inter.size());
+					
 					//Get neighbours
 					NucVoronoi nvor=new NucVoronoi(inter,true);
 					fcontacts.put(curframe, nvor);
@@ -115,8 +155,7 @@ public class CellContactMap
 						addFrame(e.fst(),e.snd(),curframe);
 					//Calculate lifelen
 					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
-						if(e.getValue().isVisible())
-							addLifelen(e.getKey().snd());
+						addLifelen(e.getKey().snd());
 					}
 				catch (Exception e)
 					{

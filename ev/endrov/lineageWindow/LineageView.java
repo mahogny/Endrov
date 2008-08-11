@@ -439,45 +439,68 @@ public class LineageView extends JPanel
 	/**
 	 * Draw expression profile
 	 */
-	private void drawExpression(Graphics g, String nucName, int midr, NucLineage.Nuc nuc)
+	private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc)
 		{
 //		int colorIndex=-1;
 //		EvColor colorList[]=EvColor.colorList;
-		if(showExpDot || showExpSolid || showExpLine)
+		if(showExpAtAll())
 			for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
 				if(!e.getValue().level.isEmpty())
 					{
-//					colorIndex=(colorIndex+1)%colorList.length;
-		
-					//Only draw if potentially visible
-					int minframe=e.getValue().level.firstKey();
-					int maxframe=e.getValue().level.lastKey();
-					boolean visible=midr>=0 && f2c(maxframe)>=0 && f2c(minframe)<getVirtualWidth() &&
-													midr-e.getValue().getMaxLevel()*expScale<getVirtualHeight();
-					if(visible)
+					if(e.getKey().equals("divDev")) //Division time deviation, special rendering
 						{
-						g.setColor(e.getValue().expColor);
-						boolean hasLastCoord=false;
-						int lastX=0, lastY=0;
-						for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())
+						int y1=midr+expanderSize+2;
+						int y2=y1-1;
+						
+						double level=e.getValue().level.values().iterator().next();
+						int x1=endc-(int)level;
+						int x2=endc+(int)level;
+						
+						g.setColor(Color.BLACK);
+						g.drawLine(x1, y1, x2, y1);
+						g.drawLine(x1, y1, x1, y2);
+						g.drawLine(x2, y1, x2, y2);
+						}
+					else //Ordinary level curve
+						{
+//						colorIndex=(colorIndex+1)%colorList.length;
+
+						//Only draw if potentially visible
+						int minframe=e.getValue().level.firstKey();
+						int maxframe=e.getValue().level.lastKey();
+						boolean visible=midr>=0 && f2c(maxframe)>=0 && f2c(minframe)<getVirtualWidth() &&
+						midr-e.getValue().getMaxLevel()*expScale<getVirtualHeight();
+						if(visible)
 							{
-							int y=(int)(-ve.getValue()*expScale+midr);
-							int x=f2c(ve.getKey());
-							if(hasLastCoord)
+							g.setColor(e.getValue().expColor);
+							boolean hasLastCoord=false;
+							int lastX=0, lastY=0;
+							for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())
 								{
-								if(showExpLine)
-									g.drawLine(lastX, lastY, x, y);
-								if(showExpSolid)
-									g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
+								int y=(int)(-ve.getValue()*expScale+midr);
+								int x=f2c(ve.getKey());
+								if(hasLastCoord)
+									{
+									if(showExpLine)
+										g.drawLine(lastX, lastY, x, y);
+									if(showExpSolid)
+										g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
+									}
+								if(showExpDot)
+									g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
+								hasLastCoord=true;
+								lastX=x;
+								lastY=y;
 								}
-							if(showExpDot)
-								g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
-							hasLastCoord=true;
-							lastX=x;
-							lastY=y;
 							}
 						}
 					}
+		}
+	
+	
+	private boolean showExpAtAll()
+		{
+		return showExpDot || showExpSolid || showExpLine;
 		}
 	
 	/**
@@ -528,7 +551,7 @@ public class LineageView extends JPanel
 			}
 		
 		//Draw expression
-		drawExpression(g,nucName,midr,nuc);
+		drawExpression(g,nucName,endc,midr,nuc);
 		
 		//Draw line spanning frames
 		if(nuc.colorNuc!=null)

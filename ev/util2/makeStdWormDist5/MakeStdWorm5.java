@@ -31,8 +31,8 @@ public class MakeStdWorm5
 	public static SortedMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
 	public static NucStats nucstats=new NucStats();
 
-	
-	public static void loadAllNuc()
+	/*
+	private static void loadAllNuc()
 		{
 		String[] dirs={"/Volumes/TBU_main01/ost4dgood","/Volumes/TBU_main02/ost4dgood","/Volumes/TBU_main03/ost4dgood"};
 		for(String dir:dirs)
@@ -64,7 +64,9 @@ public class MakeStdWorm5
 		
 		
 		}
-
+*/
+	
+	//TODO: load from imserv
 	public static void loadSelected()
 		{
 		//These all have timestep 10. NEED TO ADJUST LATER!
@@ -377,7 +379,7 @@ public class MakeStdWorm5
 			if(firstTime)
 				bf.iterate(1000, 10000, 1e10);
 			else
-				bf.iterate(200, 10000, 1e10);
+				bf.iterate(400, 10000, 1e10);
 			firstTime=false;
 			
 			//Remember first rotation
