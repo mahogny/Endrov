@@ -40,9 +40,18 @@ public class Voronoi
     pw.flush();
     pw.close();
     
-    InputStream is = process.getInputStream();
-    InputStreamReader isr = new InputStreamReader(is);
-    BufferedReader br = new BufferedReader(isr);
+    BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+    
+    ///////////
+/*    BufferedReader brerr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+    String line3;
+    while((line3 = br.readLine())!=null)
+    	System.out.println(line3);
+    System.out.println("---");
+    while((line3 = brerr.readLine())!=null)
+    	System.out.println(line3);
+    System.out.println("---err");*/
+    /////////////
     
     int outNumDim=Integer.parseInt(br.readLine());
     if(outNumDim!=3)

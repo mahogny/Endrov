@@ -196,7 +196,36 @@ public class NucModelExtension implements ModelWindowExtension
 					{
 					try
 						{
-						NucVoronoi nvor=new NucVoronoi(inter,false);
+						///////////////////////////// TODO TODO TODO  BAD
+						double r=3000; //300 is about the embryo. embryo is not centered in reality.
+						
+						Map<NucPair, NucLineage.NucInterp> interX=new HashMap<NucPair, NucInterp>(inter);
+						
+						NucLineage.NucInterp i1=new NucLineage.NucInterp();
+						i1.pos=new NucLineage.NucPos();
+						i1.frameBefore=0;
+						i1.pos.x=r;
+						NucLineage.NucInterp i2=new NucLineage.NucInterp();
+						i2.pos=new NucLineage.NucPos();
+						i2.frameBefore=0;
+						i2.pos.x=-r;
+						NucLineage.NucInterp i3=new NucLineage.NucInterp();
+						i3.pos=new NucLineage.NucPos();
+						i3.frameBefore=0;
+						i3.pos.y=-r;
+						NucLineage.NucInterp i4=new NucLineage.NucInterp();
+						i4.pos=new NucLineage.NucPos();
+						i4.frameBefore=0;
+						i4.pos.y=-r;
+
+						interX.put(new NucPair(null,":::1"), i1);
+						interX.put(new NucPair(null,":::2"), i2);
+						interX.put(new NucPair(null,":::3"), i3);
+						interX.put(new NucPair(null,":::4"), i4);
+						///////////////////////////// TODO TODO TODO  BAD
+
+						
+						NucVoronoi nvor=new NucVoronoi(interX,false);
 						
 						/*
 						for(int[] facelist:nvor.vor.vface)
@@ -222,25 +251,26 @@ public class NucModelExtension implements ModelWindowExtension
 							}
 						*/
 						
-						
-						
 						//Lines between neighbours
+						//TODO The ::: is really ugly
 						if(miShowDelaunay.isSelected())
 							{
 							gl.glBegin(GL.GL_LINES);
 							gl.glColor3d(1, 0, 0);
 							int size=nvor.nucnames.size();
 							for(int i=0;i<size;i++)
-								{
-								Vector3d from=nvor.nmid.get(i);
-								for(int j:nvor.vneigh.dneigh.get(i))
-									if(j>i && j!=-1)
-										{
-										Vector3d to=nvor.nmid.get(j);
-										gl.glVertex3d(from.x, from.y, from.z);
-										gl.glVertex3d(to.x, to.y, to.z);
-										}
-								}
+								if(!nvor.nucnames.get(i).startsWith(":::"))
+									{
+									Vector3d from=nvor.nmid.get(i);
+									for(int j:nvor.vneigh.dneigh.get(i))
+										if(j>i && j!=-1)
+											if(!nvor.nucnames.get(j).startsWith(":::"))
+												{
+												Vector3d to=nvor.nmid.get(j);
+												gl.glVertex3d(from.x, from.y, from.z);
+												gl.glVertex3d(to.x, to.y, to.z);
+												}
+									}
 							gl.glEnd();
 							}
 						

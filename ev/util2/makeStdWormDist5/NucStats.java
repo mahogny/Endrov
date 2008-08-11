@@ -394,6 +394,15 @@ public class NucStats
 
 //					NucExp expVarX=nuc.getExpCreate("posVarX");
 //					expVarX.level.put(frame, Math.sqrt(one.curposAvg[0].getVar()));
+					
+					
+					//Life time
+					StatDouble divstat=new StatDouble();
+					for(Integer i:one.lifetime)
+						divstat.count(i);
+					
+					NucExp expVarDiv=nuc.getExpCreate("divDev");
+					expVarDiv.level.put(0, Math.sqrt(divstat.getVar())/Math.sqrt(divstat.count));
 					}
 				}
 		}
