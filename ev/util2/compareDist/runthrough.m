@@ -1,3 +1,0 @@
-findneightime
-clear
-loadold3
