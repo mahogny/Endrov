@@ -400,9 +400,11 @@ public class NucStats
 					StatDouble divstat=new StatDouble();
 					for(Integer i:one.lifetime)
 						divstat.count(i);
-					
-					NucExp expVarDiv=nuc.getExpCreate("divDev");
-					expVarDiv.level.put(0, Math.sqrt(divstat.getVar())/Math.sqrt(divstat.count));
+					if(divstat.count>1)
+						{
+						NucExp expVarDiv=nuc.getExpCreate("divDev");
+						expVarDiv.level.put(0, Math.sqrt(divstat.getVar())/Math.sqrt(divstat.count));
+						}
 					}
 				}
 		}
