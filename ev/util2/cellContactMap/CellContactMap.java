@@ -312,7 +312,7 @@ public class CellContactMap
 					int notAnnotated=0; //# not annotated
 					int sa=0; //# co-occurance
 					for(OneLineage lin:lins)
-						if(lin.lin.nuc.containsKey(nucName2))
+						if(isAnnotated(lin.lin, nucName2))
 							{
 							if(!lin.contactsf.get(nucName).get(nucName2).isEmpty())
 								sa++;
@@ -349,12 +349,12 @@ public class CellContactMap
 							//Formatting for non-time CCM
 							String neighColor;
 							String neighString;
-							if(!lin.lin.nuc.containsKey(nucName))	//this (nucname) not annotated
+							if(!isAnnotated(lin.lin,nucName))	//this (nucname) not annotated
 								{
 								neighColor=htmlColorNT;
 								neighString="<font color=\"#ffffff\">n.t.</font>";
 								}
-							else if(!lin.lin.nuc.containsKey(nucName2))	//nucname2 not annotated
+							else if(!isAnnotated(lin.lin,nucName2))	//nucname2 not annotated
 								{
 								neighColor=htmlColorNA;
 								neighString="n.a.";
@@ -430,6 +430,12 @@ public class CellContactMap
 		System.out.println("done");
 		System.exit(0);
 		}
+	
+	public static boolean isAnnotated(NucLineage lin, String nucname)
+		{
+		return lin.nuc.containsKey(nucname) && !lin.nuc.get(nucname).pos.isEmpty();
+		}
+	
 
 	/**
 	 * Generate optimized HTML for overlaps by using RLE

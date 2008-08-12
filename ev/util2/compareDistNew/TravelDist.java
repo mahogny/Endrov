@@ -1,4 +1,4 @@
-package util2.compareDist;
+package util2.compareDistNew;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -172,7 +172,7 @@ public class TravelDist
 			e.printStackTrace();
 			}
 		System.out.println("done");
-	
+		System.exit(0);
 		}
 	
 	/**
@@ -183,18 +183,19 @@ public class TravelDist
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 	
-		one("/Volumes/TBU_main02/ost4dgood/N2_071116");
+		one("/Volumes/TBU_main02/ost4dgood/N2_071116.ost");
 	//	one("/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml");
-		one("/Volumes/TBU_main03/ost4dgood/TB2167_0804016");
-		one("/Volumes/TBU_main02/ost4dgood/stdcelegansNew");
+		one("/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost");
+		one("/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost");
+		one("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost");
 
-		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords");
+		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost");
 
-		one("/Volumes/TBU_main02/ost4dgood/N2_071114");
+		one("/Volumes/TBU_main02/ost4dgood/N2_071114.ost");
 
-		one("/Volumes/TBU_main02/ost4dgood/N2greenLED080206");
-		one("/Volumes/TBU_main02/ost4dgood/TB2142_071129");
-		one("/Volumes/TBU_main02/ost4dgood/TB2164_080118");
+		one("/Volumes/TBU_main02/ost4dgood/N2greenLED080206.ost");
+		one("/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost");
+		one("/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost");
 		
 		System.exit(0);
 		

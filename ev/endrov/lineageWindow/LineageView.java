@@ -452,7 +452,7 @@ public class LineageView extends JPanel
 						int y1=midr+expanderSize+2;
 						int y2=y1-1;
 						
-						double level=e.getValue().level.values().iterator().next();
+						double level=e.getValue().level.values().iterator().next()*frameDist;
 						int x1=endc-(int)level;
 						int x2=endc+(int)level;
 						

@@ -1,4 +1,4 @@
-package util2.compareDist;
+package util2.compareDistNew;
 
 import java.io.FileWriter;
 import java.io.IOException;
