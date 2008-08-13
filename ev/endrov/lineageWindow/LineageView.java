@@ -437,7 +437,7 @@ public class LineageView extends JPanel
 			int y1=yshift;
 			int y2=yshift+(int)(upper*expScale);
 			g.drawLine(x, y1, x,y2);
-			g.drawString(""+upper, x+10, y2);
+			g.drawString(""+upper+" um", x+10, y2);
 			
 			int x1=x-2, x2=x+2;
 			for(int i=0;i<toti+1;i++)

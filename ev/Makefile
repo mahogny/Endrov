@@ -20,6 +20,9 @@ starters:
 	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/StartGUI.class
 	du -hc start*.jar
 
+startcev:
+	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/StartCEviewer.class
+
 #applet:
 #	jar cfv evapplet/applet.jar evapplet/*.class
 #	#jarsigner -keystore myKeys evapplet/applet.jar jdc
