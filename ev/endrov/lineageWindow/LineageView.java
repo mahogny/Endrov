@@ -5,9 +5,12 @@ import java.util.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+
 import javax.swing.*;
 
 import endrov.basicWindow.*;
+import endrov.lineageWindow.print.Print2DtoPostScript;
 import endrov.nuc.*;
 
 //TODO: kill internal which are not in use, especially roots
@@ -38,12 +41,11 @@ public class LineageView extends JPanel
 	
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// State //((((((((/////////////////////////////////////////
+	/////////////////////////// State ///////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 	
 	public NucLineage currentLin=null;
 
-	public double camVY, camVX;
 //	public double currentFrame=0;
 	
 	private double frameDist=5;
@@ -51,7 +53,6 @@ public class LineageView extends JPanel
 
 	public double expScale=1;
 	
-	public boolean showHorizontalTree=true;	
 	public boolean showFrameLines=true;
 	public boolean showKeyFrames=true;	
 	public boolean showExpLine=true;
@@ -141,43 +142,75 @@ public class LineageView extends JPanel
 	
 		
 	
+  /////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// Camera for view ////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	Camera camera=new Camera();
 	
+	public class Camera
+		{
+		public double camVY, camVX;
+		public boolean showHorizontalTree=true;	
+
+		/** Get width of view as if horizontal */
+		public int getVirtualWidth()
+			{
+			return showHorizontalTree ? getWidth() : getHeight();
+			}
+		/** Get height of view as if horizontal */
+		public int getVirtualHeight()
+			{
+			return showHorizontalTree ? getHeight() : getWidth();
+			}
+		/** Get frame from screen x,y coordinate */
+		public int getFrameFromCursor(int x, int y)
+			{
+			return showHorizontalTree ? c2f(x) : c2f(y);
+			}
+		/** Convert frame position to coordinate */
+		public int f2c(int f)
+			{
+			return (int)(f*frameDist-camVX);
+			}	
+		/** Convert coordinate to frame position */
+		public int c2f(int c)
+			{
+			return (int)((c+camVX)/frameDist);
+			}
+		
+		
+		/**
+		 * Move according to mouse movement
+		 */
+		public void pan(int dx, int dy)
+			{
+			if(showHorizontalTree)
+				{
+				camVX-=dx;
+				camVY-=dy;
+				}
+			else
+				{
+				camVX-=dy;
+				camVY+=dx;
+				}
+			}
+
+		
+		}
 	
   /////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// The rest ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 	
-	/** Get width of view as if horizontal */
-	private int getVirtualWidth()
-		{
-		return showHorizontalTree ? getWidth() : getHeight();
-		}
-	/** Get height of view as if horizontal */
-	private int getVirtualHeight()
-		{
-		return showHorizontalTree ? getHeight() : getWidth();
-		}
-	/** Get frame from screen x,y coordinate */
-	public int getFrameFromCursor(int x, int y)
-		{
-		return showHorizontalTree ? c2f(x) : c2f(y);
-		}
-	/** Convert frame position to coordinate */
-	private int f2c(int f)
-		{
-		return (int)(f*frameDist-camVX);
-		}	
-	/** Convert coordinate to frame position */
-	private int c2f(int c)
-		{
-		return (int)((c+camVX)/frameDist);
-		}
+	
 	
 	/**
 	 * Go to the first root
 	 */
 	public void goRoot()
 		{	
+		Camera cam=camera;
 		Integer allMinFrame=null;
 		Set<String> roots=getRootNuc();
 		String rootName=null;
@@ -191,7 +224,7 @@ public class LineageView extends JPanel
 				}
 			}
 		if(allMinFrame!=null)
-			goInternalNuc(getNucinfo(rootName));
+			goInternalNuc(getNucinfo(rootName),cam);
 		}
 
 	/**
@@ -203,32 +236,16 @@ public class LineageView extends JPanel
 			{
 			String nucName=NucLineage.selectedNuclei.iterator().next().snd();
 			Internal internal=getNucinfo(nucName);
-			goInternalNuc(internal);
+			goInternalNuc(internal, camera);
 			}
 		}
-	private void goInternalNuc(Internal internal)
+	private void goInternalNuc(Internal internal, Camera cam)
 		{
-		camVY+=internal.lastVY-getVirtualHeight()/2;
-		camVX+=internal.lastVXstart-getVirtualWidth()/2;
+		cam.camVY+=internal.getLastVY(cam)-cam.getVirtualHeight()/2;
+		cam.camVX+=internal.getLastVXstart(cam)-cam.getVirtualWidth()/2;
 		repaint();
 		}
 	
-	/**
-	 * Move according to mouse movement
-	 */
-	public void pan(int dx, int dy)
-		{
-		if(showHorizontalTree)
-			{
-			camVX-=dx;
-			camVY-=dy;
-			}
-		else
-			{
-			camVX-=dy;
-			camVY+=dx;
-			}
-		}
 	
 
 	
@@ -237,11 +254,12 @@ public class LineageView extends JPanel
 	 */
 	public void setFrameDist(double s)
 		{
+		Camera cam=camera;
 		if(s<0.1)	s=0.1; //Not allowed to happen, quick fix
-		double h=getVirtualWidth()/2.0;
-		double curmid=(camVX+h)/frameDist;
+		double h=cam.getVirtualWidth()/2.0;
+		double curmid=(cam.camVX+h)/frameDist;
 		frameDist=s;
-		camVX=curmid*frameDist-h;
+		cam.camVX=curmid*frameDist-h;
 		}
 	
 	/**
@@ -249,11 +267,12 @@ public class LineageView extends JPanel
 	 */
 	public void setBranchScale(double s)
 		{
+		Camera cam=camera;
 		//TODO WRONG FORMULA?
-		double h=getVirtualHeight()/2.0;
-		double curmid=(camVY+h)/branchScale;
+		double h=cam.getVirtualHeight()/2.0;
+		double curmid=(cam.camVY+h)/branchScale;
 		branchScale=s;
-		camVY=curmid*branchScale-h;
+		cam.camVY=curmid*branchScale-h;
 		}
 
 
@@ -261,13 +280,15 @@ public class LineageView extends JPanel
 	/** Move camera to show some frame */
 	public void setFrame(double frame)
 		{
-		camVX=frame*frameDist-getVirtualWidth()/2;
+		Camera cam=camera;
+		cam.camVX=frame*frameDist-cam.getVirtualWidth()/2;
 		repaint();
 		}
 	/** Get frame camera currently looks at */
 	public double getFrame()
 		{
-		return (camVX+getVirtualWidth()/2)/frameDist;
+		Camera cam=camera;
+		return (cam.camVX+cam.getVirtualWidth()/2)/frameDist;
 		}
 	
 	
@@ -305,27 +326,70 @@ public class LineageView extends JPanel
 	 */
 	public void paintComponent(Graphics g)
 		{
+		Camera cam=camera;
 		//Rotate image, part 1
-		Graphics h;
+		Graphics2D h;
 		BufferedImage bim=null;
-		if(showHorizontalTree)
-			h=g;
+		if(cam.showHorizontalTree)
+			h=(Graphics2D)g;
 		else
 			{
-			bim=new BufferedImage(getVirtualWidth(),getVirtualHeight(),BufferedImage.TYPE_3BYTE_BGR);
-			h=bim.getGraphics();
+			bim=new BufferedImage(cam.getVirtualWidth(),cam.getVirtualHeight(),BufferedImage.TYPE_3BYTE_BGR);
+			h=(Graphics2D)bim.getGraphics();
 			}
 		
+		paintEverything((Graphics2D)h, true,cam);
+
+
+		//Rotate image part 2
+		if(bim!=null)
+			{
+			AffineTransform af = new AffineTransform(); 
+			af.translate(cam.getVirtualHeight(), 0);
+			af.rotate(Math.PI/2.0);
+			((Graphics2D)g).drawImage(bim, af, null);
+			}
+		
+		
+		}
+	
+	
+	public void saveToDisk()
+		{
+//	TEMP: draw to file
+		//Print2DtoPostScript print=
+		new Print2DtoPostScript(new File("/tmp/out.ps")){
+			public int getHeight()
+				{
+				return 0;
+				}
+			public int getWidth()
+				{
+				return 0;
+				}
+			public void paintComponent(Graphics2D g)
+				{
+				System.out.println("here");
+				Camera cam=new Camera();
+				paintEverything(g, false, cam);
+				}
+		};		
+		}
+	
+	
+	private void paintEverything(Graphics2D h, boolean toScreen, Camera cam)
+		{
 		//Redo list of clickable regions
 		regionClickList.clear();
 		drawnKeyFrames.clear();
 		
 		//Fill background
 		h.setColor(Color.WHITE);
-		h.fillRect(0, 0, getVirtualWidth(), getVirtualHeight());
+		h.fillRect(0, 0, cam.getVirtualWidth(), cam.getVirtualHeight());
 
 		//Draw frame lines
-		drawFrameLines(h);
+		if(toScreen)
+			drawFrameLines(h,cam);
 
 		//Update tree structure
 		removeUnusedInternal();
@@ -339,22 +403,15 @@ public class LineageView extends JPanel
 			{
 			Internal nuc=getNucinfo(nucName);
 			if(first)	first=false; else displacement+=nuc.sizer/2; //I don't like this layout really
-			drawTree((Graphics2D)h, nucName,(int)(displacement+getVirtualHeight()/2-camVY)); 
+			drawTree((Graphics2D)h, nucName,(int)(displacement+cam.getVirtualHeight()/2-cam.camVY),toScreen,cam); 
 			displacement+=nuc.sizer/2; //maybe really half this and half next?
 			}
 
 		//Draw scale bar
-		drawScalebar(g);
+		drawScalebar(h);
 
-		//Rotate image part 2
-		if(bim!=null)
-			{
-			AffineTransform af = new AffineTransform(); 
-			af.translate(getVirtualHeight(), 0);
-			af.rotate(Math.PI/2.0);
-			((Graphics2D)g).drawImage(bim, af, null);
-			}
 		}
+	
 	
 	/**
 	 * Adaptively draw scale bar
@@ -404,23 +461,23 @@ public class LineageView extends JPanel
 	/**
 	 * Draw the lines for frames, in the background
 	 */
-	public void drawFrameLines(Graphics g)
+	public void drawFrameLines(Graphics g, Camera cam)
 		{
 		if(showFrameLines)
 			{
 			double frameLineSkip=(int)(20/frameDist);
 			if(frameLineSkip<1)
 				frameLineSkip=1;
-			double starti=camVX/frameDist;
+			double starti=cam.camVX/frameDist;
 			starti=((int)(starti/frameLineSkip))*frameLineSkip;
 			
 			Graphics2D g2=(Graphics2D)g;
-			double endi=getVirtualWidth()/frameDist+1+frameLineSkip+camVX/frameDist;
-			int height=getVirtualHeight();
+			double endi=cam.getVirtualWidth()/frameDist+1+frameLineSkip+cam.camVX/frameDist;
+			int height=cam.getVirtualHeight();
 			int textY=height-5;//5
 			for(double i=starti;i<endi;i+=frameLineSkip)
 				{
-				int x=(int)(i*frameDist-camVX);
+				int x=(int)(i*frameDist-cam.camVX);
 				g.setColor(frameLineColor);
 				g.drawLine(x, 0, x, height);
 				g.setColor(frameStringColor);
@@ -431,7 +488,7 @@ public class LineageView extends JPanel
 				g2.translate(-x, -textY);
 				}
 			g.setColor(curFrameLineColor);
-			int curFrameX=getVirtualWidth()/2;
+			int curFrameX=cam.getVirtualWidth()/2;
 			g.drawLine(curFrameX, 0, curFrameX, height);
 			}
 		}
@@ -439,7 +496,7 @@ public class LineageView extends JPanel
 	/**
 	 * Draw expression profile
 	 */
-	private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc)
+	private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, Camera cam)
 		{
 //		int colorIndex=-1;
 //		EvColor colorList[]=EvColor.colorList;
@@ -468,8 +525,8 @@ public class LineageView extends JPanel
 						//Only draw if potentially visible
 						int minframe=e.getValue().level.firstKey();
 						int maxframe=e.getValue().level.lastKey();
-						boolean visible=midr>=0 && f2c(maxframe)>=0 && f2c(minframe)<getVirtualWidth() &&
-						midr-e.getValue().getMaxLevel()*expScale<getVirtualHeight();
+						boolean visible=(midr>=0 && cam.f2c(maxframe)>=0 && cam.f2c(minframe)<cam.getVirtualWidth() &&
+								midr-e.getValue().getMaxLevel()*expScale<cam.getVirtualHeight()) || !toScreen;
 						if(visible)
 							{
 							g.setColor(e.getValue().expColor);
@@ -478,7 +535,7 @@ public class LineageView extends JPanel
 							for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())
 								{
 								int y=(int)(-ve.getValue()*expScale+midr);
-								int x=f2c(ve.getKey());
+								int x=cam.f2c(ve.getKey());
 								if(hasLastCoord)
 									{
 									if(showExpLine)
@@ -507,7 +564,7 @@ public class LineageView extends JPanel
 	 * Recursive function to draw a tree
 	 * @param internal Which node to recurse from
 	 */
-	private void drawTree(Graphics2D g, String nucName, int midr)
+	private void drawTree(Graphics2D g, String nucName, int midr, boolean toScreen, Camera cam)
 		{
 		int childNoPosBranchLength=30;
 		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
@@ -536,7 +593,7 @@ public class LineageView extends JPanel
 			if(nuc.parent!=null)
 				{
 				Internal pInternal=getNucinfo(nuc.parent);
-				startc=pInternal.lastVXend+childNoPosBranchLength;
+				startc=pInternal.getLastVXend(cam)+childNoPosBranchLength;
 				System.out.println("warn: no coord");
 				namePrefix="!!! ";
 				}
@@ -546,12 +603,12 @@ public class LineageView extends JPanel
 			{
 			int firstFrame=nuc.pos.firstKey();
 			int lastFrame=nuc.lastFrame();
-			startc=f2c(firstFrame);
-			endc=f2c(lastFrame);
+			startc=cam.f2c(firstFrame);
+			endc=cam.f2c(lastFrame);
 			}
 		
 		//Draw expression
-		drawExpression(g,nucName,endc,midr,nuc);
+		drawExpression(g,nucName,endc,midr,nuc,toScreen,cam);
 		
 		//Draw line spanning frames
 		if(nuc.colorNuc!=null)
@@ -567,25 +624,26 @@ public class LineageView extends JPanel
 			g.drawLine(startc, midr, endc, midr);
 			}
 		if(nuc.overrideEnd!=null && nuc.child.size()==0)
-			drawNucEnd(g, f2c(nuc.overrideEnd), midr);
-		internal.lastVXstart=startc;
-		internal.lastVXend=endc;
-		internal.lastVY=midr;
+			drawNucEnd(g, cam.f2c(nuc.overrideEnd), midr);
+		internal.setLastVXstart(cam,startc);
+		internal.setLastVXend(cam,endc);
+		internal.setLastVY(cam,midr);
 		
 		//Draw keyframes
-		int virtualWidth=getVirtualWidth();
-		if(showKeyFrames && midr>-keyFrameSize && midr<getVirtualHeight()+keyFrameSize &&
-				endc>=-keyFrameSize && startc<=virtualWidth+keyFrameSize)
+		int virtualWidth=cam.getVirtualWidth();
+		if(showKeyFrames && 
+				((midr>-keyFrameSize && midr<cam.getVirtualHeight()+keyFrameSize &&
+				endc>=-keyFrameSize && startc<=virtualWidth+keyFrameSize) || !toScreen))
 			{
 			g.setColor(Color.RED);
 			//Test for complete visibility first, makes clipping cheap
-			if(startc>=-keyFrameSize && endc<virtualWidth+keyFrameSize)
+			if((startc>=-keyFrameSize && endc<virtualWidth+keyFrameSize) || !toScreen)
 				for(int frame:nuc.pos.keySet())
-					drawKeyFrame(g,f2c(frame), midr, nucName, frame);
+					drawKeyFrame(g,cam.f2c(frame), midr, nucName, frame);
 			else
 				for(int frame:nuc.pos.keySet())
 					{
-					int x=f2c(frame); //This might be slower than just drawing though
+					int x=cam.f2c(frame); //This might be slower than just drawing though
 					if(x>-keyFrameSize && x<virtualWidth+keyFrameSize)
 						drawKeyFrame(g,x, midr, nucName, frame);
 					}
@@ -602,11 +660,11 @@ public class LineageView extends JPanel
 					//Draw connecting line
 					g.setColor(Color.BLACK);
 					if(!c.pos.isEmpty())
-						g.drawLine(endc,midr,f2c(c.pos.firstKey()),midr+cInternal.centerDisplacement);
+						g.drawLine(endc,midr,cam.f2c(c.pos.firstKey()),midr+cInternal.centerDisplacement);
 					else
 						g.drawLine(endc,midr,endc+childNoPosBranchLength,midr+cInternal.centerDisplacement);
 					//Recurse down
-					drawTree(g,cName, midr+cInternal.centerDisplacement);
+					drawTree(g,cName, midr+cInternal.centerDisplacement, toScreen, cam);
 					}
 				}
 			}
@@ -757,7 +815,31 @@ public class LineageView extends JPanel
 		public boolean expanded=true;
 		public int sizer=0;
 		public int centerDisplacement=0;
-		public int lastVY, lastVXstart, lastVXend;
+		private int lastVY, lastVXstart, lastVXend;
+		public int getLastVY(Camera cam)
+			{
+			return lastVY;
+			}
+		public int getLastVXstart(Camera cam)
+			{
+			return lastVXstart;
+			}
+		public int getLastVXend(Camera cam)
+			{
+			return lastVXend;
+			}
+		public void setLastVY(Camera cam, int x)
+			{
+			lastVY=x;
+			}
+		public void setLastVXstart(Camera cam, int x)
+			{
+			lastVXstart=x;
+			}
+		public void setLastVXend(Camera cam, int x)
+			{
+			lastVXend=x;
+			}
 		}
 
 	
@@ -786,8 +868,9 @@ public class LineageView extends JPanel
 	 */
 	public void clickRegion(MouseEvent e)
 		{
+		Camera cam=camera;
 		int mousex,mousey;
-		if(showHorizontalTree)
+		if(cam.showHorizontalTree)
 			{
 			mousex=e.getX();
 			mousey=e.getY();

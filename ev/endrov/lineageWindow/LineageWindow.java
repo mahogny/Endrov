@@ -82,7 +82,7 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miFate=new JMenuItem("Set fate");
 	public JMenuItem miEndFrame=new JMenuItem("Set end frame...");
 	public JMenuItem miRemoveNucleus=new JMenuItem("Remove nucleus");
-	public JMenuItem miExportImage=new JMenuItem("Export Image*");
+	public JMenuItem miExportImage=new JMenuItem("Export Image");
 	public JMenuItem miSelectChildren=new JMenuItem("Select children");
 	public JMenuItem miSelectParents=new JMenuItem("Select parents");
 	public JMenuItem miSelectAll=new JMenuItem("Select all in this lineage");
@@ -281,7 +281,7 @@ public class LineageWindow extends BasicWindow
 			view.goSelected();
 		else if(e.getSource()==miRotate)
 			{
-			view.showHorizontalTree=!view.showHorizontalTree;
+			view.camera.showHorizontalTree=!view.camera.showHorizontalTree;
 			view.repaint();
 			}
 		else if(e.getSource()==miRename)
@@ -339,7 +339,7 @@ public class LineageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miExportImage)
 			{
-			
+			view.saveToDisk();
 			}
 		else if(e.getSource()==miFate)
 			{
@@ -549,7 +549,7 @@ public class LineageWindow extends BasicWindow
 		{
 		JPopupMenu popup = new JPopupMenu();
 		
-		final int hoverFrame=view.getFrameFromCursor(e.getX(), e.getY());
+		final int hoverFrame=view.camera.getFrameFromCursor(e.getX(), e.getY());
 		popup.add(new JMenuItem("--Frame: "+hoverFrame));
 		JMenuItem miGoToFrame=new JMenuItem("Go to frame");
 		popup.add(miGoToFrame);
@@ -664,7 +664,7 @@ public class LineageWindow extends BasicWindow
 		mouseLastY=e.getY();
 		if(SwingUtilities.isRightMouseButton(e))
 			{
-			view.pan(dx,dy);
+			view.camera.pan(dx,dy);
 			view.repaint();
 			}
 		
