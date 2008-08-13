@@ -29,8 +29,8 @@ public class EvColor
 			new EvColor("D.Cyan",new Color(0,128,128)),
 			new EvColor("L.Cyan",new Color(0,255,255)),
 			
-			new EvColor("D.Magenta",new Color(255,0,255)),
-			new EvColor("L.Magenta",new Color(128,0,128)),
+			new EvColor("D.Magenta",new Color(128,0,128)),
+			new EvColor("L.Magenta",new Color(255,0,255)),
 			
 			new EvColor("Purple",new Color(200,0,255)),
 			new EvColor("Orange",new Color(255,128,0)),

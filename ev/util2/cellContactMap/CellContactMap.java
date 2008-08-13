@@ -258,14 +258,17 @@ public class CellContactMap
 			System.out.println("Writing files");
 
 
-			File targetdir=new File("/Volumes/TBU_main03/userdata/cellcontactmap/");
+			File targetdirNeigh=new File("/Volumes/TBU_main03/userdata/cellcontactmap/neigh/");
+			File targetdirTree=new File("/Volumes/TBU_main03/userdata/cellcontactmap/tree/");
 
 			String updateTime=new Date().toString();
 
 
 			//Images for bars
-			writeBar(new File(targetdir,"n_bar.png"),Color.black);
-			writeBar(new File(targetdir,"a_bar.png"),Color.white);
+			writeBar(new File(targetdirNeigh,"n_bar.png"),Color.black);
+			writeBar(new File(targetdirNeigh,"a_bar.png"),Color.white);
+			writeBar(new File(targetdirTree,"n_bar.png"),Color.black);
+			writeBar(new File(targetdirTree,"a_bar.png"),Color.white);
 
 			//Write cell list files
 			StringBuffer mainSingleOut=new StringBuffer();
@@ -275,10 +278,10 @@ public class CellContactMap
 				mainSingleOut.append("<a href=\""+nucName+"_neigh.htm\">"+nucName+"</a></br>");
 				mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
 				}
-			EvFileUtil.writeFile(new File(targetdir,"main_single.htm"),
+			EvFileUtil.writeFile(new File(targetdirNeigh,"index.htm"),
 					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_single.htm")))
 					.replace("BODY", mainSingleOut));
-			EvFileUtil.writeFile(new File(targetdir,"main_tree.htm"),
+			EvFileUtil.writeFile(new File(targetdirTree,"index.htm"),
 					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_tree.htm")))
 					.replace("BODY", mainTreeOut));
 
@@ -413,11 +416,11 @@ public class CellContactMap
 					.replace("NUCNAME", nucName)
 					.replace("DATASETS", outDatasets)
 					.replace("COLSPAN",""+lins.size());
-				EvFileUtil.writeFile(new File(targetdir,nucName+"_neigh.htm"), 
+				EvFileUtil.writeFile(new File(targetdirNeigh,nucName+"_neigh.htm"), 
 						out
 							.replace("CONTACTTABLE", bodyNeigh)
 							.replace("SUBHEADER",subhMain));
-				EvFileUtil.writeFile(new File(targetdir,nucName+"_neightime.htm"), 
+				EvFileUtil.writeFile(new File(targetdirTree,nucName+"_neightime.htm"), 
 						out
 							.replace("CONTACTTABLE", bodyTime)
 							.replace("SUBHEADER",subhTime));
