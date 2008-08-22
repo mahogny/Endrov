@@ -1,6 +1,6 @@
 package endrov.starter;
 
-import endrov.starter.StartGUI;
+import endrov.starter.Start;
 
 /**
  * Start lw C.E viewer
@@ -10,6 +10,6 @@ public class StartCEviewer
 	{
 	public static void main(String[] args)
 		{
-		new StartGUI().run(new String[]{"endrov.starter.CEviewer"});
+		new Start().run(new String[]{"endrov.starter.CEviewer"});
 		}
 	}

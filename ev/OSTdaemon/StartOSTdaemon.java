@@ -1,6 +1,6 @@
 package OSTdaemon;
 
-import endrov.starter.StartGUI;
+import endrov.starter.Start;
 
 /**
  * Start OST daemon
@@ -10,6 +10,6 @@ public class StartOSTdaemon
 	{
 	public static void main(String[] args)
 		{
-		new StartGUI().run(new String[]{"OSTdaemon.GUI"});
+		new Start().run(new String[]{"OSTdaemon.GUI"});
 		}
 	}

@@ -7,7 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 
-import endrov.starter.StartGUI;
+import endrov.starter.Start;
 
 /**
  * Endrov - Matlab interface
@@ -18,7 +18,7 @@ public class EvMatlab
 	{
 	public static String[] getJars(String path) 
 		{
-		StartGUI sg=new StartGUI();
+		Start sg=new Start();
 		sg.collectSystemInfo(path);
 		String[] s=new String[sg.jarfiles.size()];
 		for(int i=0;i<s.length;i++)

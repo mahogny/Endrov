@@ -13,6 +13,6 @@ public class StartOSTmaker
 		args2[0]="OSTmaker.Main";
 		for(int i=0;i<args.length;i++)
 			args2[i+1]=args[i];
-		new StartGUI().run(args2);
+		new Start().run(args2);
 		}
 	}

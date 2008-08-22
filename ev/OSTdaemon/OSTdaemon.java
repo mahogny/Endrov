@@ -6,14 +6,16 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.*;
 import java.nio.channels.*;
-import com.sun.image.codec.jpeg.*; 
+/*import com.sun.image.codec.jpeg.*; 
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.ImageDecoder;
 import com.sun.media.jai.codec.SeekableStream;
 import com.sun.media.jai.codec.TIFFDecodeParam;
+*/
 
 import javax.imageio.*;
+import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 
 import loci.formats.IFormatReader;
@@ -21,6 +23,7 @@ import loci.formats.ImageReader;
 
 import org.jdom.*;
 
+import endrov.util.EvImageUtils;
 import endrov.util.EvXmlUtil;
 
 
@@ -519,11 +522,16 @@ public class OSTdaemon extends Thread
 			{
 			if((from.getName().endsWith(".tif") || from.getName().endsWith(".tiff"))) //ImageIO failed on a .tif
 				{
+				javax.imageio.ImageReader imr=ImageIO.getImageReadersByFormatName("tiff").next();
+				imr.setInput(new FileImageInputStream(from));
+				Raster ir=imr.read(0).getRaster();
+				/*
 				SeekableStream s = new FileSeekableStream(from);
 				TIFFDecodeParam param = null;
 			  ImageDecoder dec = ImageCodec.createImageDecoder("tiff", s, param);
-
 			  Raster ir=dec.decodeAsRaster();
+			  */
+				
 			  int type=ir.getSampleModel().getDataType();
 			  if(type==0) type=BufferedImage.TYPE_BYTE_GRAY;//?
 			  BufferedImage bim=new BufferedImage(ir.getWidth(),ir.getHeight(),type);
@@ -732,12 +740,13 @@ public class OSTdaemon extends Thread
 		String fileEnding=getFileEnding(toFile.getName());
 		if(fileEnding.equals("jpg") || fileEnding.equals("jpeg"))
 			{
-	    FileOutputStream toStream = new FileOutputStream(toFile); 
+			EvImageUtils.saveJPEG(im, toFile, quality);
+/*	    FileOutputStream toStream = new FileOutputStream(toFile); 
 	    JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(toStream); 
 	    JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(im); 
 	    param.setQuality(quality, false); 
 	    encoder.setJPEGEncodeParam(param); 
-	    encoder.encode(im); 
+	    encoder.encode(im); */
 			}
 		else
 			{
@@ -923,44 +932,45 @@ public class OSTdaemon extends Thread
 				File dir=new File(pathInput);
 				if(!dir.exists())
 					{
-					dir=new File(".");
+//					dir=new File(".");
 					log("ERROR: input directory does not exist");
 					}
-				for(File file:dir.listFiles())
-					{
-					shutDownLoop();
-					if(file.exists())
+				else
+					for(File file:dir.listFiles())
 						{
-						String filename=file.getName();
-						if(!file.getName().startsWith("."))
+						shutDownLoop();
+						if(file.exists())
 							{
-							log(filename);
-							if(filename.startsWith("-"))
-								dealWithFile(file);
-							else if(filename.equals("settings"))
-								readConfig(file.getAbsolutePath());
-							else if(filename.endsWith(".rmd"))
-								readMeta1(file);
-							else if(filename.endsWith("-new.xml"))
-								copyMeta2(file);
-							else if(filename.endsWith(".xml"))
-								readMeta2(file);
-							else if(filename.indexOf("-data-")>=0)
-								copyExtra(file);
-							else if(isImageFile(filename))
+							String filename=file.getName();
+							if(!file.getName().startsWith("."))
 								{
-								if(isStack(filename))
-									convertStack(file);
+								log(filename);
+								if(filename.startsWith("-"))
+									dealWithFile(file);
+								else if(filename.equals("settings"))
+									readConfig(file.getAbsolutePath());
+								else if(filename.endsWith(".rmd"))
+									readMeta1(file);
+								else if(filename.endsWith("-new.xml"))
+									copyMeta2(file);
+								else if(filename.endsWith(".xml"))
+									readMeta2(file);
+								else if(filename.indexOf("-data-")>=0)
+									copyExtra(file);
+								else if(isImageFile(filename))
+									{
+									if(isStack(filename))
+										convertStack(file);
+									else
+										convertSlice(file);						
+									}
 								else
-									convertSlice(file);						
+									log("File does not match rules: "+filename);
 								}
-							else
-								log("File does not match rules: "+filename);
 							}
+						else
+							System.out.println("Main loop: Could not find file: "+file.getAbsolutePath()+" (probably removed by user)");
 						}
-					else
-						System.out.println("Main loop: Could not find file: "+file.getAbsolutePath()+" (probably removed by user)");
-					}
 				}
 			catch (RuntimeException e)
 				{
