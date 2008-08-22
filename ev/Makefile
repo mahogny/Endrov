@@ -21,7 +21,7 @@ starters:
 	du -hc start*.jar
 
 startcev:
-	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/StartCEviewer.class
+	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/*.class
 
 #applet:
 #	jar cfv evapplet/applet.jar evapplet/*.class

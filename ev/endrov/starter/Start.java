@@ -211,19 +211,20 @@ public class Start
 	private static void collectJars(List<String> v,String dir)
 		{
 		File p=new File(dir);
-		for(File sub:p.listFiles())
-			{
-			if(sub.isFile() && (sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
+		if(p.exists())
+			for(File sub:p.listFiles())
 				{
-				String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
-				v.add(toadd);
-//				v.add(sub.getAbsolutePath());
-				if(printJavaLib)
-					System.out.println("Adding java library: "+toadd);
+				if(sub.isFile() && (sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
+					{
+					String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
+					v.add(toadd);
+	//				v.add(sub.getAbsolutePath());
+					if(printJavaLib)
+						System.out.println("Adding java library: "+toadd);
+					}
+				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
+					collectJars(v,sub.getAbsolutePath());
 				}
-			else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
-				collectJars(v,sub.getAbsolutePath());
-			}
 		}
 
 
