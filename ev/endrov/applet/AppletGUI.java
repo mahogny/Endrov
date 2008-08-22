@@ -7,7 +7,7 @@ import endrov.basicWindow.*;
 import endrov.ev.*;
 import endrov.lineageWindow.LineageWindow;
 import endrov.modelWindow.ModelWindow;
-import endrov.starter.StartGUI;
+import endrov.starter.Start;
 
 import javax.swing.JApplet;
 
@@ -82,7 +82,7 @@ public class AppletGUI extends JApplet
 	
 	public static String[] getJars(String path) 
 		{
-		StartGUI sg=new StartGUI();
+		Start sg=new Start();
 		sg.collectSystemInfo(path);
 		String[] s=new String[sg.jarfiles.size()];
 		for(int i=0;i<s.length;i++)

@@ -1,16 +1,18 @@
 package endrov.imageset;
 
 import javax.imageio.*;
+import javax.imageio.stream.FileImageInputStream;
 //import javax.vecmath.Vector2d;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
+/*import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
-import com.sun.media.jai.codec.*;
+import com.sun.media.jai.codec.*;*/
 import java.io.*;
 import java.awt.image.*;
 
 import endrov.ev.*;
+import endrov.util.EvImageUtils;
 
 //static int getNumDirectories(SeekableStream stream)
 
@@ -79,14 +81,17 @@ public abstract class EvImageJAI extends EvImage
 				fname=fname.substring(fname.lastIndexOf(".")+1);
 				if(slice==-1 && (fname.equals("tif") || fname.equals("tiff"))) //ImageIO failed on a .tif
 					{
+					Raster ir=EvImageUtils.readTIFF(file).getRaster();
+					
+	/*				
 					SeekableStream s = new FileSeekableStream(file);
 					TIFFDecodeParam param = null;
 	        ImageDecoder dec = ImageCodec.createImageDecoder("tiff", s, param);
-
+	        Raster ir=dec.decodeAsRaster();
+*/
 //	        Log.printDebug("Number of images in this TIFF: " + dec.getNumPages());
 //        System.out.println("w"+ir.getWidth()+" h"+ir.getHeight()+" b"+ir.getSampleModel().getNumBands());
 
-	        Raster ir=dec.decodeAsRaster();
 	        int type=ir.getSampleModel().getDataType();
 	        if(type==0) type=BufferedImage.TYPE_BYTE_GRAY;//?
 	        BufferedImage bim=new BufferedImage(ir.getWidth(),ir.getHeight(),type);
@@ -104,13 +109,24 @@ public abstract class EvImageJAI extends EvImage
 					{
 					//Multi-slice image
 					//Only one type supported right now: tiff stacks. so assume this is the type
+
+					
+					
+					ImageReader reader=ImageIO.getImageReadersByFormatName("tiff").next();
+					reader.setInput(new FileImageInputStream(file));
+					Raster ir=reader.read(0).getRaster();
+/*
+					Raster ir=reader.readRaster(0, null);
+					
 					SeekableStream s = new FileSeekableStream(file);
 					TIFFDecodeParam param = null;
 	        ImageDecoder dec = ImageCodec.createImageDecoder("tiff", s, param);
-
-	        Log.printDebug("Number of images in this TIFF: " + dec.getNumPages());
-
 	        Raster ir=dec.decodeAsRaster();
+*/
+	        
+	        Log.printDebug("Number of images in this TIFF: " + reader.getNumImages(true));
+//	        Log.printDebug("Number of images in this TIFF: " + dec.getNumPages());
+
 	        BufferedImage bim=new BufferedImage(ir.getWidth(),ir.getHeight(),ir.getSampleModel().getDataType());
 	        WritableRaster wr=bim.getRaster();
 	        wr.setRect(ir);
@@ -143,12 +159,15 @@ public abstract class EvImageJAI extends EvImage
 		String fileEnding=getFileEnding(toFile.getName());
 		if(fileEnding.equals("jpg") || fileEnding.equals("jpeg"))
 			{
-	    FileOutputStream toStream = new FileOutputStream(toFile); 
+			EvImageUtils.saveJPEG(im, toFile, quality);
+			
+			
+/*	    FileOutputStream toStream = new FileOutputStream(toFile); 
 	    JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(toStream); 
 	    JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(im); 
 	    param.setQuality(quality, false); 
 	    encoder.setJPEGEncodeParam(param); 
-	    encoder.encode(im); 
+	    encoder.encode(im); */
 			}
 		else
 			{

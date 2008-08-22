@@ -1,6 +1,6 @@
 package bioserv;
 
-import endrov.starter.StartGUI;
+import endrov.starter.Start;
 
 /**
  * Start ImServ
@@ -10,6 +10,6 @@ public class StartImServ
 	{
 	public static void main(String[] args)
 		{
-		new StartGUI().run(new String[]{"bioserv.BioservGUI"});
+		new Start().run(new String[]{"bioserv.BioservGUI"});
 		}
 	}
