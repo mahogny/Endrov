@@ -1,4 +1,4 @@
-package endrov.recording;
+package endrov.recordingOld;
 
 /**
  * Channel for a microsope. Since many programs allow or prefer that you set the settings once
