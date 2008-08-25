@@ -47,5 +47,8 @@
 	<classpathentry kind="lib" path="libs/linux/mlibwrapper_jai.jar"/>
 	<classpathentry kind="lib" path="libs/ee_/activation.jar"/>
 	<classpathentry kind="lib" path="libs/ee_/mail-1.4.1.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_/MMAutofocus_.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_/MMCoreJ.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_/MMJ_.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
