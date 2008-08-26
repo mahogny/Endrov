@@ -199,6 +199,8 @@ public class NucModelExtension implements ModelWindowExtension
 						///////////////////////////// TODO TODO TODO  BAD
 						double r=3000; //300 is about the embryo. embryo is not centered in reality.
 						
+						r=600; //TODO
+						
 						Map<NucPair, NucLineage.NucInterp> interX=new HashMap<NucPair, NucInterp>(inter);
 						
 						NucLineage.NucInterp i1=new NucLineage.NucInterp();
