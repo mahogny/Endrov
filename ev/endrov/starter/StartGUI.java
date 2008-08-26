@@ -9,6 +9,9 @@ public class StartGUI
 	{
 	public static void main(String[] args)
 		{
-		new Start().run(new String[]{"endrov.starter.MW"});
+		if(args.length==0)
+			new Start().run(new String[]{"endrov.starter.MW"});
+		else
+			new Start().run(args);
 		}
 	}

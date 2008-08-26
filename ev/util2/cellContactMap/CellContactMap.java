@@ -43,7 +43,6 @@ public class CellContactMap
 		public NucLineage lin;
 		public String name;
 		public int numid;
-		
 		//nuc -> nuc -> frames
 		public Map<String,Map<String,SortedSet<Integer>>> contactsf=new TreeMap<String, Map<String,SortedSet<Integer>>>();
 		//nuc -> lifetime
@@ -213,11 +212,13 @@ public class CellContactMap
 			//bottle neck: building imageset when not needed. fix in Endrov3/OST4
 			
 			///////////
+			System.out.println("Connecting");
 			String url="imserv://:@localhost/";
 			String query="not trash and CCM";
 			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
 			String[] imsets=session.conn.imserv.getDataKeys(query);
 			//TODO make a getDataKeysWithTrash, exclude by default?
+			System.out.println("Loading imsets");
 			for(String s:imsets)
 				{
 				System.out.println("loading "+s);
@@ -260,7 +261,9 @@ public class CellContactMap
 
 			File targetdirNeigh=new File("/Volumes/TBU_main03/userdata/cellcontactmap/neigh/");
 			File targetdirTree=new File("/Volumes/TBU_main03/userdata/cellcontactmap/tree/");
-
+			targetdirNeigh.mkdirs();
+			targetdirTree.mkdirs();
+			
 			String updateTime=new Date().toString();
 
 

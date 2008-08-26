@@ -1,19 +1,14 @@
 package util2;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 import endrov.data.EvData;
 import endrov.data.EvDataXML;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
-import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
-import endrov.nuc.NucVoronoi;
+import endrov.nuc.*;
 
 
 //Only consider those within bounds TODO
@@ -78,7 +73,7 @@ public class AverageNumNeighTime
 					
 					//Count number of contacts
 					int cnt=0;
-					for(List<Integer> list:nvor.vneigh.dneigh)
+					for(Collection<Integer> list:nvor.vneigh.dneigh)
 						cnt+=list.size();
 
 					double avg=((double)cnt)/(double)curNumCell;

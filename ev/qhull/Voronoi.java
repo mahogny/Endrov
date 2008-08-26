@@ -111,6 +111,7 @@ public class Voronoi
 	/**
 	 * test
 	 */
+	
 	public static void main(String[] arg)
 		{
 		Vector<Vector3d> vec=new Vector<Vector3d>();
@@ -130,7 +131,7 @@ public class Voronoi
 			for(int i=0;i<num;i++)
 				{
 				Voronoi v=new Voronoi(vec.toArray(new Vector3d[]{}));
-				new VoronoiNeigh(v,false);
+				new VoronoiNeigh(v,false,new HashSet<Integer>());
 //				v.foo();
 //				System.out.println(""+v);
 				
