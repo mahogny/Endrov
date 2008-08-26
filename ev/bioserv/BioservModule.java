@@ -13,6 +13,8 @@ import org.jdom.Element;
  */
 public abstract class BioservModule extends UnicastRemoteObject 
 	{
+	static final long serialVersionUID=0;
+	
 	protected BioservModule() throws Exception 
 		{
 		super(BioservDaemon.PORT, new RMISSLClientSocketFactory(), new RMISSLServerSocketFactory());

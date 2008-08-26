@@ -38,7 +38,23 @@ public class NucVoronoi
 			}
 		vor=new Voronoi(nmid.toArray(new Vector3d[]{}));
 		//System.out.println(vor.toString());
-		vneigh=new VoronoiNeigh(vor,selfNeigh);
+		
+		HashSet<Integer> infinityCell=new HashSet<Integer>();
+		for(int i=0;i<nucnames.size();i++)
+			if(nucnames.get(i).startsWith(":::"))
+				infinityCell.add(i);
+
+		
+		
+		vneigh=new VoronoiNeigh(vor,selfNeigh,infinityCell);
+		
+/*		for(int i=0;i<nucnames.size();i++)
+			{
+			String nucName=nucnames.get(i);
+			if(nucName.startsWith(":::"))
+				for(Set<Integer> dneigh:vneigh.dneigh)
+					dneigh.remove(i);
+			}*/
 		}
 	
 	public Set<Tuple<String, String>> getNeighPairSet()
@@ -46,8 +62,7 @@ public class NucVoronoi
 		Set<Tuple<String, String>> list=new HashSet<Tuple<String,String>>();
 		for(int i=0;i<vneigh.dneigh.size();i++)
 			{
-			List<Integer> a=vneigh.dneigh.get(i);
-			for(int j:a)
+			for(int j:vneigh.dneigh.get(i))
 				list.add(new Tuple<String, String>(nucnames.get(i),nucnames.get(j)));
 			}
 		return list;

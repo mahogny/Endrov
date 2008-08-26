@@ -7,7 +7,7 @@ public class Main
 	public static void main(String[] arg)
 		{
 		
-	//	mmcorej.MMCoreJ core=new MMCoreJ();
+		//mmcorej.MMCoreJ core=new MMCoreJ();
 		
 		MMCoreJ.getMaxStrLength();
 		mmcorej.CMMCore mmc=new mmcorej.CMMCore();
@@ -16,9 +16,9 @@ public class Main
 			{
 			mmc.loadSystemConfiguration("MMConfig.cfg");
 
-			
 			mmc.snapImage();
-/*
+			/*			
+
 			Object img=mmc.getImage();
 
 			int width=(int)mmc.getImageWidth();
