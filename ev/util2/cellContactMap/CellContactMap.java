@@ -253,16 +253,21 @@ public class CellContactMap
 			PrintWriter pw=new PrintWriter(new FileWriter(new File("/Volumes/TBU_main03/userdata/cellcontactmap/dist.csv")));
 			for(Map.Entry<Integer, NucVoronoi> entry:lins.get(0).fcontacts.entrySet())
 				{
-				NucLineage thelin=lins.get(0).lin;
+//				NucLineage thelin=lins.get(0).lin;
 				Map<NucPair,NucLineage.NucInterp> inter=lins.get(0).lin.getInterpNuc(entry.getKey());
-				
+				Map<String,NucLineage.NucInterp> inters=new HashMap<String, NucLineage.NucInterp>();
+				for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
+					inters.put(e.getKey().snd(),e.getValue());
 				
 				for(Tuple<String,String> pair:entry.getValue().getNeighPairSet())
 					{
-					Vector3d vA=inter.get(new NucPair(thelin,pair.fst())).pos.getPosCopy();
-					Vector3d vB=inter.get(new NucPair(thelin,pair.snd())).pos.getPosCopy();
-					vA.sub(vB);
-					pw.print(vA.length()+"\t");
+					if(inters.containsKey(pair.fst()) && inters.containsKey(pair.snd()))
+						{
+						Vector3d vA=inters.get(pair.fst()).pos.getPosCopy();
+						Vector3d vB=inters.get(pair.snd()).pos.getPosCopy();
+						vA.sub(vB);
+						pw.print(vA.length()+"\t");
+						}
 					}
 				pw.println();
 				}
