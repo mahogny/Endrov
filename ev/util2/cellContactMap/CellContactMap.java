@@ -8,6 +8,7 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Vector3d;
 
 //import endrov.data.*;
 import endrov.ev.*;
@@ -88,6 +89,7 @@ public class CellContactMap
 			//Prepare life length
 			for(String n:nucNames)
 				lifelen.put(n, 0);
+			
 			
 			//Go through all frames
 			int numframes=0;
@@ -216,9 +218,12 @@ public class CellContactMap
 			String url="imserv://:@localhost/";
 			String query="not trash and CCM";
 			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
-			String[] imsets=session.conn.imserv.getDataKeys(query);
+//			String[] imsets=session.conn.imserv.getDataKeys(query);
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
+			
+			String[] imsets=new String[]{"celegans2008.2"};
+			
 			for(String s:imsets)
 				{
 				System.out.println("loading "+s);
@@ -244,6 +249,26 @@ public class CellContactMap
 				}
 			});
 
+			//Output distances
+			PrintWriter pw=new PrintWriter(new FileWriter(new File("/Volumes/TBU_main03/userdata/cellcontactmap/dist.csv")));
+			for(Map.Entry<Integer, NucVoronoi> entry:lins.get(0).fcontacts.entrySet())
+				{
+				NucLineage thelin=lins.get(0).lin;
+				Map<NucPair,NucLineage.NucInterp> inter=lins.get(0).lin.getInterpNuc(entry.getKey());
+				
+				
+				for(Tuple<String,String> pair:entry.getValue().getNeighPairSet())
+					{
+					Vector3d vA=inter.get(new NucPair(thelin,pair.fst())).pos.getPosCopy();
+					Vector3d vB=inter.get(new NucPair(thelin,pair.snd())).pos.getPosCopy();
+					vA.sub(vB);
+					pw.print(vA.length()+"\t");
+					}
+				pw.println();
+				}
+			pw.close();
+			
+			
 			//Order by name
 			Map<String,OneLineage> orderedLin=new TreeMap<String, OneLineage>();
 			for(OneLineage lin:lins)
