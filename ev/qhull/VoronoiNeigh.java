@@ -53,11 +53,15 @@ public class VoronoiNeigh
 				boolean was=!faceB.isEmpty();
 				faceB.removeAll(infinityVertex);
 
-				if(faceB.isEmpty() && was)
+				//3 vert before. cuts too many.
+				
+//				if(faceB.isEmpty() && was)
+				if(!(faceB.size()>=1) && was)
 					used++;
 				
 				//Face shared?
-				if(!faceB.isEmpty())
+//				if(!faceB.isEmpty())
+				if(faceB.size()>=1)
 					{
 					dneigh.get(i).add(j);
 					dneigh.get(j).add(i);

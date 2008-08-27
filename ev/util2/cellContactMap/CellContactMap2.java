@@ -26,7 +26,7 @@ import endrov.util.*;
  * @author Johan Henriksson, Jurgen Hench
  *
  */
-public class CellContactMap
+public class CellContactMap2
 	{
 	public static String htmlColorNotNeigh="#ffffff";
 	public static String htmlColorNA="#cccccc";
@@ -323,10 +323,10 @@ public class CellContactMap
 				mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
 				}
 			EvFileUtil.writeFile(new File(targetdirNeigh,"index.htm"),
-					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_single.htm")))
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap2.class.getResource("main_single.htm")))
 					.replace("BODY", mainSingleOut));
 			EvFileUtil.writeFile(new File(targetdirTree,"index.htm"),
-					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_tree.htm")))
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap2.class.getResource("main_tree.htm")))
 					.replace("BODY", mainTreeOut));
 
 			//List datasets
@@ -336,7 +336,7 @@ public class CellContactMap
 
 			//Write out HTML, cell by cell. Reference lineage is the first one in the list
 			//nucName: everything in the file is about this cell
-			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("neigh.htm")));
+			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap2.class.getResource("neigh.htm")));
 			for(String nucName:nucNames)
 				{
 				StringBuffer bodyNeigh=new StringBuffer();
@@ -439,9 +439,12 @@ public class CellContactMap
 										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
 											neighOverlaps[curp]=true;
 										}
+									
+									//TODO TODO here generate new image, new timeString. 
 
 									//Convert frame overlap to image
-									timeString=getOverlapBar(neighOverlaps).toString();
+									timeString=getOverlapBar(neighOverlaps, targetdirTree).toString();
+									
 									}
 								else
 									timeString=neighString="&nbsp;";
@@ -484,6 +487,38 @@ public class CellContactMap
 		}
 	
 
+	
+	
+	private static int barImageNum=0;
+	public static String getOverlapBar(double[] neighOverlaps, File root) throws IOException
+		{
+		BufferedImage bim=new BufferedImage(clength,cheight,BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D g=bim.createGraphics();
+		g.setColor(Color.white);
+		g.fillRect(0,0,clength,cheight);
+
+		for(int i=0;i<clength;i++)
+			{
+			int lev=(int)(neighOverlaps[i]*cheight);
+			if(lev<0)
+				{
+				g.setColor(Color.yellow);
+				lev=-lev;
+				}
+			else
+				g.setColor(Color.black);
+			g.fillRect(i, 0, 1, lev);
+			}
+		String tf="bar_"+barImageNum+".png";
+		barImageNum++;
+		File outfile=new File(root,tf);
+		ImageIO.write(bim,"png",outfile);
+		
+		return "<img width=\""+clength+"\" height=\""+cheight+"\" src=\""+tf+"\">";
+		}
+	
+	
+	
 	/**
 	 * Generate optimized HTML for overlaps by using RLE
 	 */
@@ -530,6 +565,31 @@ public class CellContactMap
 		g.setColor(col);
 		g.fillRect(0,0,1,cheight);
 		ImageIO.write(bim,"png",file);
+		}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Calculate area of a convex polygon
+	 */
+	public static double polygonArea(Vector3d[] vv)
+		{
+		int n=vv.length;
+		double area=0;
+		Vector3d vA=vv[0];
+		for(int i=1;i<n-1;i++)
+			{
+			Vector3d vAB=vv[i];
+			Vector3d vAC=vv[i+1];
+			vAB.sub(vA);
+			vAC.sub(vA);
+			double x=vAB.dot(vAC);
+			area+=Math.sqrt(vAB.lengthSquared()*vAC.lengthSquared()-x*x);
+			}
+		return area*0.5;
 		}
 	}
 
