@@ -58,7 +58,7 @@ public class NucModelExtension implements ModelWindowExtension
 
 		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false);
 		
-		public JCheckBoxMenuItem miCalcAngle=new JCheckBoxMenuItem("Calculate angles", false);  
+		public JMenuItem miCalcAngle=new JMenuItem("Calculate angles");  
 
 		public NucModelWindowHook(ModelWindow w)
 			{
@@ -135,10 +135,12 @@ public class NucModelExtension implements ModelWindowExtension
 					Vector3d pB=nucpB.fst().nuc.get(nucpB.snd()).interpolatePos(frame).pos.getPosCopy();
 					Vector3d pC=nucpC.fst().nuc.get(nucpC.snd()).interpolatePos(frame).pos.getPosCopy();
 					
+					double scale=360/(2*Math.PI);
+					
 					Log.printLog("angles "+nucpB.snd()+"-"+nucpC.snd()+"-"+nucpA.snd()+"  "+
-							EvGeomUtil.midAngle(pA, pB, pC)+" "+
-							EvGeomUtil.midAngle(pB, pC, pA)+" "+
-							EvGeomUtil.midAngle(pC, pA, pB));
+							(scale*EvGeomUtil.midAngle(pA, pB, pC))+" "+
+							(scale*EvGeomUtil.midAngle(pB, pC, pA))+" "+
+							(scale*EvGeomUtil.midAngle(pC, pA, pB)));
 					}
 				else
 					Log.printLog("Select 3 nuclei first");

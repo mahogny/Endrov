@@ -32,6 +32,6 @@ public class EvGeomUtil
 		ba.sub(posB);
 		Vector3d bc=new Vector3d(posC);
 		bc.sub(posB);
-		return ba.dot(bc)/(ba.length()*bc.length());
+		return Math.acos(ba.dot(bc)/(ba.length()*bc.length()));
 		}
 	}
