@@ -25,7 +25,9 @@ public class EvGeomUtil
 		}
 	
 	
-	
+	/**
+	 * Calculate angle at B, given 3 positions
+	 */
 	public static double midAngle(Vector3d posA, Vector3d posB, Vector3d posC)
 		{
 		Vector3d ba=new Vector3d(posA);

@@ -17,7 +17,6 @@ import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.modelWindow.*;
 import endrov.nuc.NucLineage.NucInterp;
-import endrov.util.EvGeomUtil;
 
 
 /**
@@ -124,26 +123,8 @@ public class NucModelExtension implements ModelWindowExtension
 //			else if(e.getSource()==miSaveColorScheme)
 			else if(e.getSource()==miCalcAngle)
 				{
-				if(NucLineage.selectedNuclei.size()==3)
-					{
-					Iterator<NucPair> it=NucLineage.selectedNuclei.iterator();
-					NucPair nucpA=it.next();
-					NucPair nucpB=it.next();
-					NucPair nucpC=it.next();
-					double frame=w.frameControl.getFrame();
-					Vector3d pA=nucpA.fst().nuc.get(nucpA.snd()).interpolatePos(frame).pos.getPosCopy();
-					Vector3d pB=nucpB.fst().nuc.get(nucpB.snd()).interpolatePos(frame).pos.getPosCopy();
-					Vector3d pC=nucpC.fst().nuc.get(nucpC.snd()).interpolatePos(frame).pos.getPosCopy();
-					
-					double scale=360/(2*Math.PI);
-					
-					Log.printLog("angles "+nucpB.snd()+"-"+nucpC.snd()+"-"+nucpA.snd()+"  "+
-							(scale*EvGeomUtil.midAngle(pA, pB, pC))+" "+
-							(scale*EvGeomUtil.midAngle(pB, pC, pA))+" "+
-							(scale*EvGeomUtil.midAngle(pC, pA, pB)));
-					}
-				else
-					Log.printLog("Select 3 nuclei first");
+				double frame=w.frameControl.getFrame();
+				NucLineage.calcAngle(frame);
 				}
 			
 			w.view.repaint(); //TODO modw repaint
@@ -184,13 +165,14 @@ public class NucModelExtension implements ModelWindowExtension
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
-				for(NucPair nucPair:inter.keySet())
-					{
-					int rawcol=w.view.reserveSelectColor(this);
-					selectColorMap.put(rawcol, nucPair);
-					w.view.setReserveColor(gl, rawcol);
-					renderNucSel(gl,nucPair, inter.get(nucPair));
-					}
+				for(Map.Entry<NucPair, NucLineage.NucInterp> entry:inter.entrySet())
+					if(entry.getValue().isVisible())
+						{
+						int rawcol=w.view.reserveSelectColor(this);
+						selectColorMap.put(rawcol, entry.getKey());
+						w.view.setReserveColor(gl, rawcol);
+						renderNucSel(gl,entry.getKey(), entry.getValue());
+						}
 			}
 		
 		/**
@@ -227,7 +209,7 @@ public class NucModelExtension implements ModelWindowExtension
 						///////////////////////////// TODO TODO TODO  BAD
 						double r=3000; //300 is about the embryo. embryo is not centered in reality.
 						
-						r=600; //TODO
+//						r=600; //TODO
 						
 						Map<NucPair, NucLineage.NucInterp> interX=new HashMap<NucPair, NucInterp>(inter);
 						
