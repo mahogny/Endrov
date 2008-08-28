@@ -157,6 +157,9 @@ public class CellContactMap2
 					//Calculate lifelen
 					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
 						addLifelen(e.getKey().snd());
+					
+					//Calculate area
+					nvor.calcContactArea();
 					}
 				catch (Exception e)
 					{
@@ -251,11 +254,11 @@ public class CellContactMap2
 			String url="imserv://:@localhost/";
 			String query="not trash and CCM";
 			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
-//			String[] imsets=session.conn.imserv.getDataKeys(query);
+			String[] imsets=session.conn.imserv.getDataKeys(query);
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
 			
-			String[] imsets=new String[]{"celegans2008.2"};
+//			String[] imsets=new String[]{"celegans2008.2"};
 			
 			for(String s:imsets)
 				{

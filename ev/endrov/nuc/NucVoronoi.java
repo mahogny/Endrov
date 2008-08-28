@@ -22,8 +22,8 @@ public class NucVoronoi
 	public Vector<Vector3d> nmid;
 	public VoronoiNeigh vneigh;
 	
-	//vert -> vert -> -> area
-	//public Map<String,Map<String,SortedSet<Double>>> contactsf=new TreeMap<String, Map<String,SortedSet<Double>>>();
+	//vert -> vert -> area
+	public Map<String,Map<String,Double>> contactArea=new TreeMap<String, Map<String,Double>>();
 
 	
 	public NucVoronoi(Map<NucPair, NucLineage.NucInterp> inter, boolean selfNeigh) throws Exception
@@ -94,6 +94,8 @@ public class NucVoronoi
 			}*/
 		}
 	
+	
+	
 	public Set<Tuple<String, String>> getNeighPairSet()
 		{
 		Set<Tuple<String, String>> list=new HashSet<Tuple<String,String>>();
@@ -111,8 +113,14 @@ public class NucVoronoi
 		return list;
 		}
 	
-	public void calcNeighArea()
+	/**
+	 * Calculate contact areas
+	 */
+	public void calcContactArea()
 		{
+		for(int i=0;i<vneigh.dneigh.size();i++)
+			contactArea.put(nucnames.get(i), new HashMap<String,Double>());
+		
 		for(int i=0;i<vneigh.dneigh.size();i++)
 			for(int j:vneigh.dneigh.get(i))
 				{
@@ -125,8 +133,15 @@ public class NucVoronoi
 					surfB.add(v);
 				surf.retainAll(surfB);
 				
-				//
+				//Calculate area
+				Vector3d[] vv=new Vector3d[surf.size()];
+				Iterator<Integer> it=surf.iterator();
+				for(int ap=0;ap<surf.size();ap++)
+					vv[ap]=vor.vvert.get(it.next());
 				
+				double area=EvGeomUtil.polygonArea(EvGeomUtil.sortConvexPolygon(vv));
+				contactArea.get(nucnames.get(i)).put(nucnames.get(j), area);
+				contactArea.get(nucnames.get(j)).put(nucnames.get(i), area);
 				}
 		
 		}

@@ -390,7 +390,7 @@ public class CellContactMap
 						for(OneLineage lin:lins)
 							{
 							double percLifeLen=100*(double)lin.contactsf.get(nucName).get(nucName2).size()/lin.lifelen.get(nucName);
-							if(lin.lifelen.get(nucName)==0 || percLifeLen<1)
+							if(lin.lifelen.get(nucName)==0)// || percLifeLen<1)
 								percLifeLen=0;
 
 							//Formatting for non-time CCM
