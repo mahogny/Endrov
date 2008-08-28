@@ -17,6 +17,7 @@ import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.modelWindow.*;
 import endrov.nuc.NucLineage.NucInterp;
+import endrov.util.EvGeomUtil;
 
 
 /**
@@ -55,7 +56,9 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public JCheckBoxMenuItem miShowDiv=new JCheckBoxMenuItem("Show division lines", true); 
 
-		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false); 
+		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false);
+		
+		public JCheckBoxMenuItem miCalcAngle=new JCheckBoxMenuItem("Calculate angles", false);  
 
 		public NucModelWindowHook(ModelWindow w)
 			{
@@ -72,6 +75,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miShowTraceCur);
 			miNuc.add(miShowDiv);
 			miNuc.add(miShowDelaunay);
+			miNuc.add(miCalcAngle);
 			w.menuModel.add(miNuc);
 			
 	//		miSaveColorScheme.addActionListener(this);
@@ -83,6 +87,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowTraceCur.addActionListener(this);
 			miShowDiv.addActionListener(this);
 			miShowDelaunay.addActionListener(this);
+			miCalcAngle.addActionListener(this);
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
 				public void mouseClicked(MouseEvent e)
@@ -117,7 +122,28 @@ public class NucModelExtension implements ModelWindowExtension
 					NucLineage.hiddenNuclei.add(p);
 				}
 //			else if(e.getSource()==miSaveColorScheme)
-				
+			else if(e.getSource()==miCalcAngle)
+				{
+				if(NucLineage.selectedNuclei.size()==3)
+					{
+					Iterator<NucPair> it=NucLineage.selectedNuclei.iterator();
+					NucPair nucpA=it.next();
+					NucPair nucpB=it.next();
+					NucPair nucpC=it.next();
+					double frame=w.frameControl.getFrame();
+					Vector3d pA=nucpA.fst().nuc.get(nucpA.snd()).interpolatePos(frame).pos.getPosCopy();
+					Vector3d pB=nucpB.fst().nuc.get(nucpB.snd()).interpolatePos(frame).pos.getPosCopy();
+					Vector3d pC=nucpC.fst().nuc.get(nucpC.snd()).interpolatePos(frame).pos.getPosCopy();
+					
+					Log.printLog("angles "+nucpB.snd()+"-"+nucpC.snd()+"-"+nucpA.snd()+"  "+
+							EvGeomUtil.midAngle(pA, pB, pC)+" "+
+							EvGeomUtil.midAngle(pB, pC, pA)+" "+
+							EvGeomUtil.midAngle(pC, pA, pB));
+					}
+				else
+					Log.printLog("Select 3 nuclei first");
+				}
+			
 			w.view.repaint(); //TODO modw repaint
 			}
 		

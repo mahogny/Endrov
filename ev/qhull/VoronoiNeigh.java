@@ -3,14 +3,12 @@ package qhull;
 import java.util.*;
 
 /**
- * Extract neighbours from voronoi. This is not a reflexive relation ie NOT a ~ a
+ * Extract neighbours from voronoi
  * @author Johan Henriksson
  */
 public class VoronoiNeigh
 	{
-	/**
-	 * Which are neighbours? index list. a ~ a does not hold.
-	 */
+	/** Which are neighbours? index list */
 	public List<Set<Integer>> dneigh=new ArrayList<Set<Integer>>();
 	
 	

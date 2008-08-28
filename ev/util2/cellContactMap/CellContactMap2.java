@@ -394,8 +394,8 @@ public class CellContactMap2
 								percLifeLen=0;
 
 							//Formatting for non-time CCM
-							String neighColor;
 							String neighString;
+							String neighColor;
 							if(!isAnnotated(lin.lin,nucName))	//this (nucname) not annotated
 								{
 								neighColor=htmlColorNT;
@@ -572,25 +572,7 @@ public class CellContactMap2
 	
 	
 	
-	/**
-	 * Calculate area of a convex polygon
-	 */
-	public static double polygonArea(Vector3d[] vv)
-		{
-		int n=vv.length;
-		double area=0;
-		Vector3d vA=vv[0];
-		for(int i=1;i<n-1;i++)
-			{
-			Vector3d vAB=vv[i];
-			Vector3d vAC=vv[i+1];
-			vAB.sub(vA);
-			vAC.sub(vA);
-			double x=vAB.dot(vAC);
-			area+=Math.sqrt(vAB.lengthSquared()*vAC.lengthSquared()-x*x);
-			}
-		return area*0.5;
-		}
+	
 	}
 
 
