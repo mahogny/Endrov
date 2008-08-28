@@ -23,6 +23,7 @@ import endrov.imageWindow.ImageWindowExtension;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
 import endrov.script.*;
+import endrov.util.EvGeomUtil;
 import endrov.util.EvXmlUtil;
 
 /**
@@ -1062,6 +1063,35 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 		
 		
+		}
+	
+	
+	public static void calcAngle(double frame)
+		{
+		if(NucLineage.selectedNuclei.size()==3)
+			{
+			Iterator<NucPair> it=NucLineage.selectedNuclei.iterator();
+			NucPair nucpA=it.next();
+			NucPair nucpB=it.next();
+			NucPair nucpC=it.next();
+			Vector3d pA=nucpA.fst().nuc.get(nucpA.snd()).interpolatePos(frame).pos.getPosCopy();
+			Vector3d pB=nucpB.fst().nuc.get(nucpB.snd()).interpolatePos(frame).pos.getPosCopy();
+			Vector3d pC=nucpC.fst().nuc.get(nucpC.snd()).interpolatePos(frame).pos.getPosCopy();
+			
+			double scale=360/(2*Math.PI);
+			
+			Log.printLog("angles "+nucpB.snd()+"-"+nucpC.snd()+"-"+nucpA.snd()+"  "+
+					(scale*EvGeomUtil.midAngle(pA, pB, pC))+" "+
+					(scale*EvGeomUtil.midAngle(pB, pC, pA))+" "+
+					(scale*EvGeomUtil.midAngle(pC, pA, pB)));
+			}
+		else
+			{
+			Log.printLog("Select 3 nuclei first");
+			for(NucPair p:NucLineage.selectedNuclei)
+				Log.printLog(p.toString());
+			}
+
 		}
 	
 	}
