@@ -20,12 +20,13 @@ public class VoronoiNeigh
 		for(int i=0;i<numsimplex;i++)
 			dneigh.add(new HashSet<Integer>());
 
-		Set<Integer> infinityVertex=new HashSet<Integer>();
+		//Set virtual infinity
+/*		Set<Integer> infinityVertex=new HashSet<Integer>();
 		infinityVertex.add(-1);
 		for(int c:infinityCell)
 			for(int i:v.vsimplex.get(c))
-				infinityVertex.add(i);
-		
+				infinityVertex.add(i);*/
+		v.setInfinityCell(infinityCell);
 		
 		for(int i=0;i<numsimplex;i++) //Simplex A
 			{
@@ -49,8 +50,8 @@ public class VoronoiNeigh
 
 				//Ignore points at infinity
 				boolean was=!faceB.isEmpty();
-				faceB.removeAll(infinityVertex);
-
+//				faceB.removeAll(infinityVertex);
+				faceB.remove(-1);
 				//3 vert before. cuts too many.
 				
 //				if(faceB.isEmpty() && was)
