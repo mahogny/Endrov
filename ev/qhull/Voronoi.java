@@ -11,11 +11,14 @@ import javax.vecmath.Vector3d;
  */
 public class Voronoi
 	{
+	public Vector3d[] center;
   public List<Vector3d> vvert=new Vector<Vector3d>();
   public List<int[]> vsimplex=new Vector<int[]>();
 	
 	public Voronoi(Vector3d[] points) throws Exception
 		{
+		center=points;
+		
 		String platform;
 		if(endrov.ev.EV.isMac())
 			platform="mac";
@@ -103,9 +106,43 @@ public class Voronoi
 		return bf.toString();
 		}
 	
+	public boolean isAtInfinity(int i)
+		{
+		for(int vi:vsimplex.get(i))
+			if(vi==-1)
+				return true;
+		return false;
+		}
 	
 	
-	
+	public void setInfinityCell(Set<Integer> infinityCell)
+		{
+		HashSet<Integer> infVert=new HashSet<Integer>();
+		for(int i:infinityCell)
+			{
+			for(int vi:vsimplex.get(i))
+				infVert.add(vi);
+			vsimplex.set(i, new int[]{});
+			}
+		
+		for(int i=0;i<vsimplex.size();i++)
+			{
+			boolean hasInf=false;
+			LinkedList<Integer> newlist=new LinkedList<Integer>();
+			for(int vi:vsimplex.get(i))
+				if(vi==-1 || infVert.contains(vi))
+					hasInf=true;
+				else
+					newlist.add(vi);
+			if(hasInf)
+				newlist.add(-1);
+			int[] newa=new int[newlist.size()];
+			for(int k=0;k<newlist.size();k++)
+				newa[k]=newlist.get(k);
+			vsimplex.set(i,newa);
+			}
+		
+		}
 	
 	
 	/**
