@@ -251,11 +251,11 @@ public class CellContactMap
 			String url="imserv://:@localhost/";
 			String query="not trash and CCM";
 			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
-//			String[] imsets=session.conn.imserv.getDataKeys(query);
+			String[] imsets=session.conn.imserv.getDataKeys(query);
+//			String[] imsets=new String[]{"celegans2008.2"};
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
 			
-			String[] imsets=new String[]{"celegans2008.2"};
 			
 			for(String s:imsets)
 				{
@@ -283,7 +283,7 @@ public class CellContactMap
 			});
 
 			//Output distances
-			writeLineageNeighDistances(lins.get(0));
+//			writeLineageNeighDistances(lins.get(0));
 			
 			//Order by name
 			Map<String,OneLineage> orderedLin=new TreeMap<String, OneLineage>();

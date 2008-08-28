@@ -283,7 +283,7 @@ public class CellContactMap2
 			});
 
 			//Output distances
-			writeLineageNeighDistances(lins.get(0));
+//			writeLineageNeighDistances(lins.get(0));
 			
 			//Order by name
 			Map<String,OneLineage> orderedLin=new TreeMap<String, OneLineage>();
