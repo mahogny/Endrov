@@ -133,7 +133,7 @@ public class NucVoronoi
 					//Check if area will be finite
 					double area;
 					if(vor.isAtInfinity(i) && vor.isAtInfinity(j))
-						area=-1;
+						area=0;
 					else
 						{
 						//Obtain common surface
@@ -160,17 +160,29 @@ public class NucVoronoi
 					}
 		
 		//total areas
+		for(int i=0;i<nucnames.size();i++)
+			{
+			String name=nucnames.get(i);
+			double sum=0;
+			for(double area:contactArea.get(name).values())
+				if(area>0)
+					sum+=area;
+			totArea.put(name, vor.isAtInfinity(i) ? -sum : sum);
+
+			System.out.println("tot "+name+" "+totArea.get(name));
+			}
+		/*
 		for(Map.Entry<String,Map<String,Double>> entry:contactArea.entrySet())
 			{
 			double sum=0;
 			boolean facingOut=false;
 			for(double area:entry.getValue().values())
-				if(area>0)
-					sum+=area;
-				else
+				if(area<0)
 					facingOut=true;
+				else
+					sum+=area;
 			totArea.put(entry.getKey(), facingOut ? -sum : sum);
-			}
+			}*/
 		}
 	
 	}
