@@ -129,20 +129,21 @@ public class NucVoronoi
 			for(int j:vneigh.dneigh.get(i))
 				if(i!=j)
 					{
-					//Obtain common surface
-					HashSet<Integer> surf=new HashSet<Integer>();
-					for(int v:vor.vsimplex.get(i))
-						surf.add(v);
-					HashSet<Integer> surfB=new HashSet<Integer>();
-					for(int v:vor.vsimplex.get(j))
-						surfB.add(v);
-					surf.retainAll(surfB);
-					
+					//Check if area will be finite
 					double area;
 					if(vor.isAtInfinity(i) && vor.isAtInfinity(j))
 						area=-1;
 					else
 						{
+						//Obtain common surface
+						HashSet<Integer> surf=new HashSet<Integer>();
+						for(int v:vor.vsimplex.get(i))
+							surf.add(v);
+						HashSet<Integer> surfB=new HashSet<Integer>();
+						for(int v:vor.vsimplex.get(j))
+							surfB.add(v);
+						surf.retainAll(surfB);
+
 						//Calculate area
 						Vector3d[] vv=new Vector3d[surf.size()];
 						Iterator<Integer> it=surf.iterator();
@@ -150,6 +151,8 @@ public class NucVoronoi
 							vv[ap]=vor.vvert.get(it.next());
 						
 						area=EvGeomUtil.polygonArea(EvGeomUtil.sortConvexPolygon(vv));
+						
+						System.out.println("area "+area);
 						}
 					contactArea.get(nucnames.get(i)).put(nucnames.get(j), area);
 					contactArea.get(nucnames.get(j)).put(nucnames.get(i), area);
