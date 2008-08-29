@@ -33,7 +33,7 @@ public class CellContactMap2
 	public static String htmlColorNT="#666666";
 	public static String htmlColorSelf="#33ccff";
 	public static final int clength=50; //[px]
-	public static final int cheight=13; //[px]
+	public static final int cheight=20; //[px]
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -534,7 +534,7 @@ public class CellContactMap2
 			int lev=(int)(neighOverlaps[i]*cheight);
 			if(lev<0)
 				{
-				g.setColor(Color.PINK);
+				g.setColor(Color.blue);
 				lev=-lev;
 				}
 			else
