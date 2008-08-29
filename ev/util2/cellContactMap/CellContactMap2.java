@@ -471,7 +471,7 @@ public class CellContactMap2
 												neighOverlapsD[curp]=-1;
 											else
 												neighOverlapsD[curp]=
-												EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m);
+												EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m)*3;
 											}
 										}
 
@@ -534,12 +534,12 @@ public class CellContactMap2
 			int lev=(int)(neighOverlaps[i]*cheight);
 			if(lev<0)
 				{
-				g.setColor(Color.yellow);
+				g.setColor(Color.PINK);
 				lev=-lev;
 				}
 			else
 				g.setColor(Color.black);
-			g.fillRect(i, 0, 1, lev);
+			g.fillRect(i, cheight-1-lev, 1, lev);
 			}
 		String tf="bar_"+barImageNum+".png";
 		barImageNum++;
