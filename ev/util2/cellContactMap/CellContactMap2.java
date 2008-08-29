@@ -474,6 +474,7 @@ public class CellContactMap2
 												{
 												neighOverlapsD[curp]=
 												EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m)*30;
+												neighOverlapsD[curp]=1; /////
 												if(max<neighOverlapsD[curp])
 													max=neighOverlapsD[curp];
 												}
@@ -536,7 +537,8 @@ public class CellContactMap2
 		Graphics2D g=bim.createGraphics();
 		g.setColor(Color.white);
 		g.fillRect(0,0,clength,cheight);
-
+		File rootbar=new File(root,"bars");
+		
 		for(int i=0;i<clength;i++)
 			{
 			int lev=(int)(neighOverlaps[i]*cheight);
@@ -551,10 +553,11 @@ public class CellContactMap2
 			}
 		String tf="bar_"+barImageNum+".png";
 		barImageNum++;
-		File outfile=new File(root,tf);
+		rootbar.mkdirs();
+		File outfile=new File(rootbar,tf);
 		ImageIO.write(bim,"png",outfile);
 		
-		return "<img width=\""+clength+"\" height=\""+cheight+"\" src=\""+tf+"\">";
+		return "<img width=\""+clength+"\" height=\""+cheight+"\" src=\"bars/"+tf+"\">";
 		}
 	
 	
