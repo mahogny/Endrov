@@ -444,6 +444,7 @@ public class CellContactMap2
 										}*/
 									
 									double[] neighOverlapsD=new double[clength];
+									double max=0;
 									for(int curp=0;curp<clength;curp++)
 										{
 										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
@@ -470,9 +471,18 @@ public class CellContactMap2
 											if(tarea1<0 || tarea2<0)
 												neighOverlapsD[curp]=-1;
 											else
+												{
 												neighOverlapsD[curp]=
 												EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m)*30;
+												if(max<neighOverlapsD[curp])
+													max=neighOverlapsD[curp];
+												}
 											}
+										}
+									for(int curp=0;curp<clength;curp++)
+										{
+										if(neighOverlapsD[curp]>=0)
+											neighOverlapsD[curp]/=max;
 										}
 
 									//Convert frame overlap to image
