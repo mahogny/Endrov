@@ -476,7 +476,7 @@ public class CellContactMap2
 												{
 												neighOverlapsD[curp]=
 													EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m);
-												neighOverlapsD[curp]=1; /////
+												//neighOverlapsD[curp]=1; /////
 												if(max<neighOverlapsD[curp])
 													max=neighOverlapsD[curp];
 												}
