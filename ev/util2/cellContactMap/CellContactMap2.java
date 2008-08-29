@@ -303,8 +303,8 @@ public class CellContactMap2
 			System.out.println("Writing files");
 
 
-			File targetdirNeigh=new File("/Volumes/TBU_main03/userdata/cellcontactmap/neigh/");
-			File targetdirTree=new File("/Volumes/TBU_main03/userdata/cellcontactmap/tree/");
+			File targetdirNeigh=new File("/Volumes/TBU_main03/userdata/cellcontactmapArea/neigh/");
+			File targetdirTree=new File("/Volumes/TBU_main03/userdata/cellcontactmapArea/tree/");
 			targetdirNeigh.mkdirs();
 			targetdirTree.mkdirs();
 			
