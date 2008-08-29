@@ -448,10 +448,19 @@ public class CellContactMap2
 										{
 										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
 										SortedSet<Integer> frames=lin.contactsf.get(nucName).get(nucName2);
-										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
-											{
-											int frame1=frames.headSet(m).last();
-											int frame2=frames.tailSet(m).first();
+										if(frames.contains(m) || (!frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty()))
+											{ //() change
+											int frame1;
+											int frame2;
+											if(frames.contains(m))
+												frame1=frame2=m;
+											else
+												{
+												frame1=frames.headSet(m).last();
+												frame2=frames.tailSet(m).first();
+												}
+											
+											
 											double carea1=lin.fcontacts.get(frame1).contactArea.get(nucName).get(nucName2);
 											double tarea1=lin.fcontacts.get(frame1).totArea.get(nucName);
 											double carea2=lin.fcontacts.get(frame2).contactArea.get(nucName).get(nucName2);
