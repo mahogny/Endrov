@@ -14,13 +14,12 @@ public class EvGeomUtil
 	 */
 	public static double polygonArea(Vector3d[] vv)
 		{
-		int n=vv.length;
 		double area=0;
 		Vector3d vA=vv[0];
-		for(int i=1;i<n-1;i++)
+		for(int i=1;i<vv.length-1;i++)
 			{
-			Vector3d vAB=vv[i];
-			Vector3d vAC=vv[i+1];
+			Vector3d vAB=new Vector3d(vv[i]);
+			Vector3d vAC=new Vector3d(vv[i+1]);
 			vAB.sub(vA);
 			vAC.sub(vA);
 			double x=vAB.dot(vAC);
@@ -56,7 +55,7 @@ public class EvGeomUtil
 	 */
 	private static class UnclassifiedPoint implements Comparable<UnclassifiedPoint>
 		{
-		public Vector3d v;
+		int index;
 		public double angle;
 		public int compareTo(UnclassifiedPoint o)
 			{
@@ -82,7 +81,7 @@ public class EvGeomUtil
 			if(points[ap]!=null)
 				{
 				UnclassifiedPoint up=new UnclassifiedPoint();
-				up.v=points[ap];
+				up.index=ap;
 				Vector3d v=new Vector3d(points[ap]);
 				v.sub(center);
 				up.angle=Math.atan2(v.y, v.x); 
@@ -92,7 +91,7 @@ public class EvGeomUtil
 		Collections.sort(ups);
 		
 		for(int ap=0;ap<points.length;ap++)
-			points[ap]=ups.get(ap).v;
+			points[ap]=points[ups.get(ap).index];
 		return points;
 		}
 	
