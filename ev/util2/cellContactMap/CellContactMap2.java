@@ -92,12 +92,12 @@ public class CellContactMap2
 			
 			
 			//Go through all frames
-			int numframes=0;
+//			int numframes=0;
 			for(int curframe=lin.firstFrameOfLineage();curframe<lin.lastFrameOfLineage();curframe++)
 				{
-				numframes++;
+//				numframes++;
 				/////////////////////////////
-//                                  				if(numframes>200)					break;
+                                  				if(curframe>1400)					break;
                                   				////////////////////
                                   				
 				//interpolate
