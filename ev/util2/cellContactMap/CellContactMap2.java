@@ -443,6 +443,7 @@ public class CellContactMap2
 											neighOverlaps[curp]=true;
 										}*/
 									
+									
 									double[] neighOverlapsD=new double[clength];
 									double max=0;
 									for(int curp=0;curp<clength;curp++)
@@ -466,6 +467,7 @@ public class CellContactMap2
 											Double carea2=lin.fcontacts.get(frame2).contactArea.get(nucName).get(nucName2);
 											double tarea1=lin.fcontacts.get(frame1).totArea.get(nucName);
 											double tarea2=lin.fcontacts.get(frame2).totArea.get(nucName);
+											System.out.println("tot area "+nucName+"    "+tarea1+" "+tarea2);
 											if(carea1==null) carea1=0.0;
 											if(carea2==null) carea2=0.0;
 											if(tarea1<0 || tarea2<0)
@@ -473,7 +475,7 @@ public class CellContactMap2
 											else
 												{
 												neighOverlapsD[curp]=
-												EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m)*30;
+													EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m);
 												neighOverlapsD[curp]=1; /////
 												if(max<neighOverlapsD[curp])
 													max=neighOverlapsD[curp];

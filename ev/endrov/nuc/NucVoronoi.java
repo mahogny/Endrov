@@ -124,6 +124,7 @@ public class NucVoronoi
 		for(int i=0;i<vneigh.dneigh.size();i++)
 			contactArea.put(nucnames.get(i), new HashMap<String,Double>());
 		
+		
 		//nuc-nuc areas
 		for(int i=0;i<vneigh.dneigh.size();i++)
 			for(int j:vneigh.dneigh.get(i))
