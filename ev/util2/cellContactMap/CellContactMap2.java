@@ -463,8 +463,8 @@ public class CellContactMap2
 											
 											
 											Double carea1=lin.fcontacts.get(frame1).contactArea.get(nucName).get(nucName2);
-											double tarea1=lin.fcontacts.get(frame1).totArea.get(nucName);
 											Double carea2=lin.fcontacts.get(frame2).contactArea.get(nucName).get(nucName2);
+											double tarea1=lin.fcontacts.get(frame1).totArea.get(nucName);
 											double tarea2=lin.fcontacts.get(frame2).totArea.get(nucName);
 											if(carea1==null) carea1=0.0;
 											if(carea2==null) carea2=0.0;
@@ -480,10 +480,8 @@ public class CellContactMap2
 											}
 										}
 									for(int curp=0;curp<clength;curp++)
-										{
 										if(neighOverlapsD[curp]>=0)
 											neighOverlapsD[curp]/=max;
-										}
 
 									//Convert frame overlap to image
 									timeString=getOverlapBar(neighOverlapsD, targetdirTree).toString();
