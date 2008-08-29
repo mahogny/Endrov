@@ -152,7 +152,7 @@ public class NucVoronoi
 						
 						area=EvGeomUtil.polygonArea(EvGeomUtil.sortConvexPolygon(vv));
 						
-						System.out.println("area "+area);
+//						System.out.println("area "+area);
 						}
 					contactArea.get(nucnames.get(i)).put(nucnames.get(j), area);
 					contactArea.get(nucnames.get(j)).put(nucnames.get(i), area);
