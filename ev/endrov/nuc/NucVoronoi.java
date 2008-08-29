@@ -22,8 +22,10 @@ public class NucVoronoi
 	public Vector<Vector3d> nmid;
 	public VoronoiNeigh vneigh;
 	
-	//vert -> vert -> area
-	public Map<String,Map<String,Double>> contactArea=new TreeMap<String, Map<String,Double>>();
+	//nuc -> nuc -> area
+	public Map<String,Map<String,Double>> contactArea=new HashMap<String, Map<String,Double>>();
+	//nuc -> area
+	public Map<String,Double> totArea=new HashMap<String, Double>();
 
 	
 	public NucVoronoi(Map<NucPair, NucLineage.NucInterp> inter, boolean selfNeigh) throws Exception
@@ -52,8 +54,8 @@ public class NucVoronoi
 		vneigh=new VoronoiNeigh(vor,selfNeigh,infinityCell);
 		
 		//Remove high angle neighbours facing infinity
-		System.out.println(" ---- ");
-		int angcut=0;
+//		System.out.println(" ---- ");
+//		int angcut=0;
 		HashSet<Integer> atInf=new HashSet<Integer>();
 		for(int i=0;i<vor.vsimplex.size();i++)
 			if(vor.isAtInfinity(i))
@@ -75,14 +77,14 @@ public class NucVoronoi
 						{
 						vneigh.dneigh.get(pair.fst()).remove(pair.snd());
 						vneigh.dneigh.get(pair.snd()).remove(pair.fst());
-						System.out.println("used "+nucnames.get(pair.fst())+" - "+nucnames.get(pair.snd()));
-						angcut++;
+//						System.out.println("used "+nucnames.get(pair.fst())+" - "+nucnames.get(pair.snd()));
+//						angcut++;
 						break;
 						}
 					}
 				
 				}
-		System.out.println(""+angcut);
+//		System.out.println(""+angcut);
 		
 		
 /*		for(int i=0;i<nucnames.size();i++)
@@ -118,32 +120,53 @@ public class NucVoronoi
 	 */
 	public void calcContactArea()
 		{
+		//Prepare list
 		for(int i=0;i<vneigh.dneigh.size();i++)
 			contactArea.put(nucnames.get(i), new HashMap<String,Double>());
 		
+		//nuc-nuc areas
 		for(int i=0;i<vneigh.dneigh.size();i++)
 			for(int j:vneigh.dneigh.get(i))
-				{
-				//Obtain common surface
-				HashSet<Integer> surf=new HashSet<Integer>();
-				for(int v:vor.vsimplex.get(i))
-					surf.add(v);
-				HashSet<Integer> surfB=new HashSet<Integer>();
-				for(int v:vor.vsimplex.get(j))
-					surfB.add(v);
-				surf.retainAll(surfB);
-				
-				//Calculate area
-				Vector3d[] vv=new Vector3d[surf.size()];
-				Iterator<Integer> it=surf.iterator();
-				for(int ap=0;ap<surf.size();ap++)
-					vv[ap]=vor.vvert.get(it.next());
-				
-				double area=EvGeomUtil.polygonArea(EvGeomUtil.sortConvexPolygon(vv));
-				contactArea.get(nucnames.get(i)).put(nucnames.get(j), area);
-				contactArea.get(nucnames.get(j)).put(nucnames.get(i), area);
-				}
+				if(i!=j)
+					{
+					//Obtain common surface
+					HashSet<Integer> surf=new HashSet<Integer>();
+					for(int v:vor.vsimplex.get(i))
+						surf.add(v);
+					HashSet<Integer> surfB=new HashSet<Integer>();
+					for(int v:vor.vsimplex.get(j))
+						surfB.add(v);
+					surf.retainAll(surfB);
+					
+					double area;
+					if(vor.isAtInfinity(i) && vor.isAtInfinity(j))
+						area=-1;
+					else
+						{
+						//Calculate area
+						Vector3d[] vv=new Vector3d[surf.size()];
+						Iterator<Integer> it=surf.iterator();
+						for(int ap=0;ap<surf.size();ap++)
+							vv[ap]=vor.vvert.get(it.next());
+						
+						area=EvGeomUtil.polygonArea(EvGeomUtil.sortConvexPolygon(vv));
+						}
+					contactArea.get(nucnames.get(i)).put(nucnames.get(j), area);
+					contactArea.get(nucnames.get(j)).put(nucnames.get(i), area);
+					}
 		
+		//total areas
+		for(Map.Entry<String,Map<String,Double>> entry:contactArea.entrySet())
+			{
+			double sum=0;
+			boolean facingOut=false;
+			for(double area:entry.getValue().values())
+				if(area>0)
+					sum+=area;
+				else
+					facingOut=true;
+			totArea.put(entry.getKey(), facingOut ? -sum : sum);
+			}
 		}
 	
 	}

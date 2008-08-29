@@ -254,11 +254,11 @@ public class CellContactMap2
 			String url="imserv://:@localhost/";
 			String query="not trash and CCM";
 			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
-			String[] imsets=session.conn.imserv.getDataKeys(query);
+//			String[] imsets=session.conn.imserv.getDataKeys(query);
+			String[] imsets=new String[]{"celegans2008.2"};
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
 			
-//			String[] imsets=new String[]{"celegans2008.2"};
 			
 			for(String s:imsets)
 				{
@@ -433,20 +433,39 @@ public class CellContactMap2
 									{
 									int lifeLenFrames=Math.round((lin.lin.nuc.get(nucName).lastFrame()-lin.lin.nuc.get(nucName).firstFrame()));
 
+									/*
 									boolean[] neighOverlaps=new boolean[clength];
-
 									for(int curp=0;curp<clength;curp++)
 										{
 										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
 										SortedSet<Integer> frames=lin.contactsf.get(nucName).get(nucName2);
 										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
 											neighOverlaps[curp]=true;
-										}
+										}*/
 									
-									//TODO TODO here generate new image, new timeString. 
+									double[] neighOverlapsD=new double[clength];
+									for(int curp=0;curp<clength;curp++)
+										{
+										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
+										SortedSet<Integer> frames=lin.contactsf.get(nucName).get(nucName2);
+										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
+											{
+											int frame1=frames.headSet(m).last();
+											int frame2=frames.tailSet(m).first();
+											double carea1=lin.fcontacts.get(frame1).contactArea.get(nucName).get(nucName2);
+											double tarea1=lin.fcontacts.get(frame1).totArea.get(nucName);
+											double carea2=lin.fcontacts.get(frame2).contactArea.get(nucName).get(nucName2);
+											double tarea2=lin.fcontacts.get(frame2).totArea.get(nucName);
+											if(tarea1<0 || tarea2<0)
+												neighOverlapsD[curp]=-1;
+											else
+												neighOverlapsD[curp]=
+												EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m);
+											}
+										}
 
 									//Convert frame overlap to image
-									timeString=getOverlapBar(neighOverlaps, targetdirTree).toString();
+									timeString=getOverlapBar(neighOverlapsD, targetdirTree).toString();
 									
 									}
 								else
@@ -490,7 +509,6 @@ public class CellContactMap2
 		}
 	
 
-	
 	
 	private static int barImageNum=0;
 	public static String getOverlapBar(double[] neighOverlaps, File root) throws IOException

@@ -43,7 +43,11 @@ public class EvGeomUtil
 		}
 	
 	
-	
+	public static double interpolate(double x1, double y1, double x2, double y2, double x)
+		{
+		double s=(x-x1)/(x2-x1);
+		return s*y2+(1.0-s)*y1;
+		}
 	
 	
 	
