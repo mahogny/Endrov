@@ -461,10 +461,12 @@ public class CellContactMap2
 												}
 											
 											
-											double carea1=lin.fcontacts.get(frame1).contactArea.get(nucName).get(nucName2);
+											Double carea1=lin.fcontacts.get(frame1).contactArea.get(nucName).get(nucName2);
 											double tarea1=lin.fcontacts.get(frame1).totArea.get(nucName);
-											double carea2=lin.fcontacts.get(frame2).contactArea.get(nucName).get(nucName2);
+											Double carea2=lin.fcontacts.get(frame2).contactArea.get(nucName).get(nucName2);
 											double tarea2=lin.fcontacts.get(frame2).totArea.get(nucName);
+											if(carea1==null) carea1=0.0;
+											if(carea2==null) carea2=0.0;
 											if(tarea1<0 || tarea2<0)
 												neighOverlapsD[curp]=-1;
 											else
