@@ -97,6 +97,9 @@ public class EvGeomUtil
 	
 	public static void main(String[] arg)
 		{
+		System.out.println(interpolate(10, 2, 20, 4, 50));
+		
+		
 		Vector3d[] v=new Vector3d[]{new Vector3d(0,0,0), new Vector3d(1,0,0),
 				new Vector3d(4,1,0),new Vector3d(0,1,0)};
 		double area=polygonArea(sortConvexPolygon(v));
