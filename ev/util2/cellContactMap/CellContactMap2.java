@@ -476,15 +476,19 @@ public class CellContactMap2
 												{
 												neighOverlapsD[curp]=
 													EvGeomUtil.interpolate(frame1, carea1/tarea1, frame2, carea2/tarea2, m);
+
+												neighOverlapsD[curp]=carea1; ////
+												
 												//neighOverlapsD[curp]=1; /////
 												if(max<neighOverlapsD[curp])
 													max=neighOverlapsD[curp];
 												}
 											}
 										}
-									for(int curp=0;curp<clength;curp++)
-										if(neighOverlapsD[curp]>=0)
-											neighOverlapsD[curp]/=max;
+									if(max!=0)
+										for(int curp=0;curp<clength;curp++)
+											if(neighOverlapsD[curp]>=0)
+												neighOverlapsD[curp]/=max;
 
 									//Convert frame overlap to image
 									timeString=getOverlapBar(neighOverlapsD, targetdirTree).toString();
