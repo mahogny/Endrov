@@ -97,7 +97,7 @@ public class CellContactMap2
 				{
 //				numframes++;
 				/////////////////////////////
-                                  				if(curframe>1400)					break;
+//                                  				if(curframe>1400)					break;
                                   				////////////////////
                                   				
 				//interpolate
