@@ -170,6 +170,21 @@ public class CellContactMap2
 		}
 	
 	
+	public static int lastOkFrame(NucLineage lin)
+		{
+		int lastFrame=Integer.MAX_VALUE;
+		for(String nuc:lin.nuc.keySet())
+			{
+			if(lin.nuc.get(nuc).child.size()<2)
+				{
+				int f=lin.nuc.get(nuc).pos.lastKey();
+				if(f<lastFrame)
+					lastFrame=f;
+				}
+			}
+		return lastFrame;
+		}
+	
 	
 	public static void writeLineageNeighDistances(OneLineage lin) throws IOException
 		{
@@ -254,8 +269,8 @@ public class CellContactMap2
 			String url="imserv://:@localhost/";
 			String query="not trash and CCM";
 			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
-//			String[] imsets=session.conn.imserv.getDataKeys(query);
-			String[] imsets=new String[]{"celegans2008.2"};
+			String[] imsets=session.conn.imserv.getDataKeys(query);
+//			String[] imsets=new String[]{"celegans2008.2"};
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
 			
