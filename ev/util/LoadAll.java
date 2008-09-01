@@ -1,4 +1,4 @@
-package util2;
+package util;
 
 import endrov.data.*;
 import endrov.ev.*;
@@ -6,7 +6,7 @@ import endrov.ev.*;
 import java.io.*;
 
 /**
- * Go through and load all imagesets. Useful to update all imagesets.
+ * Go through and load all imagesets. This will trigger a format update if needed.
  * @author Johan Henriksson
  */
 public class LoadAll
