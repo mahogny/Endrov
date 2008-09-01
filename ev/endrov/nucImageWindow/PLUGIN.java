@@ -1,13 +1,12 @@
-package endrov.modelWindow;
+package endrov.nucImageWindow;
 import endrov.ev.PluginDef;
-import endrov.modelWindow.basicExt.ModelWindowClipPlane;
-import endrov.modelWindow.basicExt.ModelWindowGrid;
+import endrov.nucImageWindow.NucImageRenderer;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Model Window";
+		return "Nucleus/Lineage (image window extension)";
 		}
 
 	public String getAuthor()
@@ -32,6 +31,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ModelWindow.class,ModelWindowClipPlane.class,ModelWindowGrid.class};
+		return new Class[]{NucImageRenderer.class};
 		}
 	}

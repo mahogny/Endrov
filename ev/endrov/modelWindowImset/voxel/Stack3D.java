@@ -1,4 +1,4 @@
-package endrov.modelWindow.voxel;
+package endrov.modelWindowImset.voxel;
 
 import java.awt.*;
 import java.awt.image.*;

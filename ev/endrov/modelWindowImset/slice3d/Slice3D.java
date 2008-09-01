@@ -1,4 +1,4 @@
-package endrov.modelWindow.slice3d;
+package endrov.modelWindowImset.slice3d;
 
 import java.awt.*;
 import java.awt.image.*;

@@ -1,10 +1,10 @@
-package endrov.basicWindow;
+package endrov.imageset;
 
 import java.awt.event.*;
 import javax.swing.*;
 
 import endrov.data.*;
-import endrov.imageset.*;
+//import endrov.imageset.*;
 
 /**
  * A combobox with all channels

@@ -144,8 +144,8 @@ public class ImageCalcWindow extends BasicWindow implements ActionListener, Meta
 		{
 		if(e.getSource()==metaCombo)
 			{
-			channel1Combo.setExternalImageset(metaCombo.getImageset());
-			channel2Combo.setExternalImageset(metaCombo.getImageset());
+			channel1Combo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
+			channel2Combo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
 			}
 		else if(e.getSource()==bStart)
 			{
@@ -159,7 +159,7 @@ public class ImageCalcWindow extends BasicWindow implements ActionListener, Meta
 				}
 			else
 				{
-				CalcThread thread=new CalcThread(metaCombo.getImageset(), 
+				CalcThread thread=new CalcThread(Imageset.castEmpty(metaCombo.getMeta()), 
 						channel1Combo.getChannel(), (String)operator.getSelectedItem(), channel2Combo.getChannel(), (Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue()/*,
 						(Double)spinnerQuality.getValue()*/);
 				/*CalcThread thread=new CalcThread(metaCombo.getImageset(), 
@@ -178,8 +178,8 @@ public class ImageCalcWindow extends BasicWindow implements ActionListener, Meta
 	public void dataChangedEvent()
 		{
 		metaCombo.updateList();
-		channel1Combo.setExternalImageset(metaCombo.getImageset());
-		channel2Combo.setExternalImageset(metaCombo.getImageset());
+		channel1Combo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
+		channel2Combo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
 		}
 	
 	public void loadedFile(EvData data){}

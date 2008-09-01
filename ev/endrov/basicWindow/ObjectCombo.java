@@ -4,7 +4,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import endrov.data.*;
-import endrov.imageset.*;
+//import endrov.imageset.*;
+//import endrov.imageset.MetaCombo.Alternative;
 
 /**
  * A combobox with all channels
@@ -200,17 +201,28 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	 * Get the selected imageset
 	 * @return Imageset or null
 	 */
-	public Imageset getImageset()
+/*	public Imageset getImagesetNull()
 		{		
 		Alternative a=(Alternative)getSelectedItem();
 		if(a==null)
 			return new EmptyImageset();
 		else
 			return (Imageset)a.meta;
-		}
+		}*/
 	
 
-	
+	/**
+	 * Get a pointer directly to the meta object
+	 * @return Object or null
+	 */
+	public EvData getMeta()
+		{
+		Alternative a=(Alternative)getSelectedItem();
+		if(a==null)
+			return null;
+		else
+			return a.meta;
+		}
 	
 	public static interface comboFilterMetaObject
 		{

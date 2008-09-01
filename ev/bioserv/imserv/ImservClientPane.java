@@ -24,7 +24,7 @@ import javax.swing.event.*;
 
 import bioserv.imserv.TagListPane.TagListListener;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.BrowserControl;
 import endrov.ev.EV;
 import endrov.util.EvSwingTools;
@@ -48,10 +48,10 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 	
 	public DataIconPane pane;
 	public JTextField searchField=new JTextField();
-	public JButton bHelp=new JButton(BasicWindow.getIconHelp());
+	public JButton bHelp=new JButton(BasicIcon.iconButtonHelp);
 	public JButton bNewTag=new JButton(iconNewTag);
 	public JButton bNewAttrSearch=new JButton(iconSearchAttr);
-	public JButton bToTrash=new JButton(BasicWindow.getIconTrash());
+	public JButton bToTrash=new JButton(BasicIcon.iconButtonTrash);
 	public JLabel status=new JLabel("");
 	private javax.swing.Timer timer=new javax.swing.Timer(1000,this);
 	private Date lastUpdate=new Date();
@@ -322,7 +322,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		
 		public JComboBox cTag=new JComboBox(new Object[]{""});
 		public JTextField tValue=new JTextField();
-		public JButton bRemove=BasicWindow.getButtonDelete();
+		public JButton bRemove=BasicIcon.getButtonDelete();
 		
 		
 		public void updateTagList(final List<String> list)
@@ -478,7 +478,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		
 		public JTextField tName=new JTextField();
 		public JTextField tValue=new JTextField();
-		public JButton bRemove=BasicWindow.getButtonDelete();
+		public JButton bRemove=BasicIcon.getButtonDelete();
 		private String name;
 		private Color normalColor;
 		

@@ -1,4 +1,4 @@
-package endrov.nuc;
+package endrov.nucImageWindow;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -14,6 +14,8 @@ import endrov.ev.Log;
 import endrov.imageWindow.*;
 import endrov.imageset.Imageset;
 import endrov.keyBinding.KeyBinding;
+import endrov.nuc.NucLineage;
+import endrov.nuc.NucPair;
 
 /**
  * Make nuclei by dragging an area. Also move nuclei.

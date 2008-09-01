@@ -5,7 +5,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Nucleus/Lineage";
+		return "Nucleus/Lineage (definition)";
 		}
 
 	public String getAuthor()

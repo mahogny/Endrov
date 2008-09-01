@@ -1,15 +1,38 @@
-package endrov.nuc;
+package endrov.nucImageWindow;
 
 import java.awt.*;
 import java.util.*;
 import javax.vecmath.*;
 
+
 import endrov.basicWindow.*;
 import endrov.ev.*;
 import endrov.imageWindow.*;
+import endrov.nuc.NucLineage;
+import endrov.nuc.NucPair;
 
+/**
+ * Image window renderer of nuclei
+ * @author Johan Henriksson
+ *
+ */
 public class NucImageRenderer implements ImageWindowRenderer
 	{
+	public static void initPlugin() {}
+	static
+		{
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				NucImageRenderer r=new NucImageRenderer(w);
+				w.imageWindowTools.add(new NucImageTool(w,r));
+				w.imageWindowRenderers.add(r);
+				}
+			});
+		}
+	
+	
 	public ImageWindow w;
 	
 	/** Interpolated nuclei */

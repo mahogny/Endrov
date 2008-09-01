@@ -6,8 +6,6 @@ import javax.vecmath.*;
 import endrov.basicWindow.*;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
-import endrov.nuc.NucLineage.Nuc;
-import endrov.nuc.NucLineage.NucPos;
 import endrov.script.*;
 
 

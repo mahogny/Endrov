@@ -1,4 +1,4 @@
-package endrov.modelWindow.isosurf;
+package endrov.modelWindowImset.isosurf;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

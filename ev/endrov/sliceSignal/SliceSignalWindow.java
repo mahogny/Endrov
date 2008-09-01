@@ -76,7 +76,7 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 	 */
 	public SliceSignalWindow(int x, int y, int w, int h)
 		{
-		channelCombo=new ChannelCombo(metaCombo.getImageset(),true); //todo. no guarantee to be an imageset
+		channelCombo=new ChannelCombo(Imageset.castNull(metaCombo.getMeta()),true); //todo. no guarantee to be an imageset
 		bStart.addActionListener(this);
 		metaCombo.addActionListener(this);
 		
@@ -128,12 +128,12 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 		{
 		if(e.getSource()==metaCombo)
 			{
-			channelCombo.setExternalImageset(metaCombo.getImageset());
+			channelCombo.setExternalImageset(Imageset.castNull(metaCombo.getMeta()));
 			System.out.println("metacombo");
 			}
 		else if(e.getSource()==bStart)
 			{
-			if(channelCombo.getChannel().equals("") || metaCombo.getImageset()==null)
+			if(channelCombo.getChannel().equals("") || Imageset.castNull(metaCombo.getMeta())==null)
 				{
 				JOptionPane.showMessageDialog(null, "No channel selected");
 				}
@@ -143,15 +143,15 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 				if(svar.startsWith("0."))
 					svar="0_"+svar.substring(2);
 				
-				String suggestName=metaCombo.getImageset().getMetadataName()+"-"+(Integer)spinnerNumstripe.getValue()+"sl"+svar+"v.txt";
+				String suggestName=Imageset.castNull(metaCombo.getMeta()).getMetadataName()+"-"+(Integer)spinnerNumstripe.getValue()+"sl"+svar+"v.txt";
 				
 				JFileChooser chooser = new JFileChooser();
-		    chooser.setCurrentDirectory(metaCombo.getImageset().datadir());
+		    chooser.setCurrentDirectory(Imageset.castNull(metaCombo.getMeta()).datadir());
 		    chooser.setSelectedFile(new File(suggestName));
 		    int returnVal = chooser.showSaveDialog(this);
 		    if(returnVal == JFileChooser.APPROVE_OPTION)
 		    	{
-					BatchThread thread=new CalcThread((Imageset)metaCombo.getImageset(), (Shell)metaCombo.getObject(), 
+					BatchThread thread=new CalcThread(Imageset.castNull(metaCombo.getMeta()), (Shell)metaCombo.getObject(), 
 							(Double)spinnerStripevar.getValue(), (Integer)spinnerNumstripe.getValue(), channelCombo.getChannel(),
 							(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), 
 							chooser.getSelectedFile().getAbsolutePath());
@@ -169,7 +169,7 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 	public void dataChangedEvent()
 		{
 		metaCombo.updateObjectList();
-		channelCombo.setExternalImageset(metaCombo.getImageset());
+		channelCombo.setExternalImageset(Imageset.castNull(metaCombo.getMeta()));
 		}
 
 	

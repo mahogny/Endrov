@@ -16,7 +16,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.flow.*;
 
 public class FlowWindow extends JFrame
@@ -30,10 +30,10 @@ public class FlowWindow extends JFrame
 	private static ImageIcon iconButtonPlay=new ImageIcon(FlowWindow.class.getResource("labelPlayForward.png"));
 	private static ImageIcon iconButtonStop=new ImageIcon(FlowWindow.class.getResource("labelPlayStop.png"));
 	
-	JButton bCopy=BasicWindow.getButtonCopy();
-	JButton bPaste=BasicWindow.getButtonPaste();
+	JButton bCopy=BasicIcon.getButtonCopy();
+	JButton bPaste=BasicIcon.getButtonPaste();
 	//JButton bCut=BasicWindow.getButtonCut();
-	JButton bDelete=BasicWindow.getButtonDelete();
+	JButton bDelete=BasicIcon.getButtonDelete();
 
 	JButton bSwap=new JButton(iconButtonSwap);
 	JButton bPlay=new JButton(iconButtonPlay);

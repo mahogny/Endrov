@@ -403,6 +403,20 @@ public abstract class Imageset extends EvData
 
 		
 
+	public static Imageset castEmpty(EvData data)
+		{
+		if(data instanceof Imageset)
+			return (Imageset)data;
+		else
+			return new EmptyImageset();
+		}
 
-
+	public static Imageset castNull(EvData data)
+		{
+		if(data instanceof Imageset)
+			return (Imageset)data;
+		else
+			return null;
+		}
+	
 	}

@@ -253,7 +253,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	
 	private void readFromMetadata()
 		{
-		Imageset rec=metaCombo.getImagesetNull();
+		Imageset rec=Imageset.castNull(metaCombo.getMeta());
 		updatingFields=true;
 		
 		//Or just remember current tab?
@@ -358,7 +358,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		if(!updatingFields)
 			{
 			updatingFields=true;
-			Imageset rec=metaCombo.getImageset();
+			Imageset rec=Imageset.castEmpty(metaCombo.getMeta());
 			
 			double calcResX=rec.meta.metaObjective*rec.meta.metaOptivar/rec.meta.metaCampix; //[]*[]/[um/px]
 			double calcResY=calcResX;
@@ -488,7 +488,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	 */
 	public void fieldsToMeta()
 		{
-		Imageset rec=metaCombo.getImagesetNull();
+		Imageset rec=Imageset.castNull(metaCombo.getMeta());
 		if(rec!=null && !updatingFields)
 			{
 			try

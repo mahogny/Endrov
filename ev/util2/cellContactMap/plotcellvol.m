@@ -15,3 +15,21 @@ r=25/2;
 
 totalvol=4*pi*r^3/3 + (len-2*r)*pi*(r)^2
 %19000 um^3
+
+
+dat=load('/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt');
+curframe=dat(:,1);
+numcell=dat(:,2);
+totnucvol=dat(:,3);
+
+curframe=curframe-min(curframe);
+%curframe=curframe.*(10/60); %timestep I think
+
+
+volpernuc=totnucvol./numcell;
+volpercell=totalvol./numcell;
+
+semilogy(curframe,volpercell, 'r',curframe, volpercell,'b')
+
+
+plot(curframe,volpernuc./volpercell)
