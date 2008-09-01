@@ -1,5 +1,7 @@
 package util2.cellContactMap;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.*;
 
 import util2.ConnectImserv;
@@ -12,7 +14,7 @@ import endrov.nuc.NucPair;
 
 
 /**
- * calculate volume statistics
+ * Calculate volume statistics
  * @author Johan Henriksson
  */
 public class VolStats
@@ -76,6 +78,8 @@ public class VolStats
 		final int fminframe=firstFrameOfLineage(lin);
 		final int fmaxframe=lastOkFrame(lin);
 		
+		PrintWriter pw=new PrintWriter(new FileWriter("/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt"));
+
 		for(int curframe=fminframe;curframe<fmaxframe;curframe++)
 			{
 			if(curframe%30==0)
@@ -102,9 +106,9 @@ public class VolStats
 				}
 			
 			//Output
-			System.out.println(""+curframe+"\t"+numCellsNow+"\t"+totNucVol);
+			pw.println(""+curframe+"\t"+numCellsNow+"\t"+totNucVol);
 			}
-			
+		pw.close();
 		}
 	
 
