@@ -1,4 +1,4 @@
-package util2;
+package util2.converter;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.*;

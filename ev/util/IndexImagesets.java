@@ -5,7 +5,8 @@ import endrov.ev.EV;
 import endrov.imagesetOST.*;
 
 /**
- * Run through all imagesets in a folder and generate imagecache.txt in them
+ * Run through all imagesets in a folder and generate imagecache.txt in them. Will ignore
+ * imagesets which already have it.
  * @author Johan Henriksson
  */
 public class IndexImagesets
