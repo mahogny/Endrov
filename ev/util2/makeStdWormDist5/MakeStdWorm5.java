@@ -31,46 +31,9 @@ public class MakeStdWorm5
 	public static boolean saveNormalized=true;
 	public static int NUMTRY=0;
 
-//	public static Vector<EvData> worms=new Vector<EvData>();
 	public static SortedMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
 	public static NucStats nucstats=new NucStats();
 
-	/*
-	private static void loadAllNuc()
-		{
-		String[] dirs={"/Volumes/TBU_main01/ost4dgood","/Volumes/TBU_main02/ost4dgood","/Volumes/TBU_main03/ost4dgood"};
-		for(String dir:dirs)
-			{
-			for(File f:new File(dir).listFiles())
-				if(!f.getName().startsWith("."))
-					{
-					String s=f.getName();
-					EvData ost=new EvDataXML(f.getPath()+"/rmd.ostxml");
-					worms.add(ost);
-					for(EvObject evob:ost.metaObject.values())
-						{
-						if(evob instanceof NucLineage)
-							{
-							NucLineage lin=(NucLineage)evob;
-							if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-									lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
-									(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
-									(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
-								{
-								lins.put(s, lin);
-								System.out.println("ok:"+s);
-								}
-							}
-						}
-				
-				}
-			}
-		
-		
-		}
-*/
-	
-	//TODO: load from imserv
 	public static void loadSelected() throws Exception
 		{
 		System.out.println("Connecting");
@@ -97,41 +60,6 @@ public class MakeStdWorm5
 			}
 		
 		
-/*		
-		//These all have timestep 10. NEED TO ADJUST LATER!
-		//Load all worms to standardize from
-		String[] wnlist={
-				"/Volumes/TBU_main02/ost4dgood/N2_071114.ost",
-				"/Volumes/TBU_main02/ost4dgood/N2_071116.ost",
-				"/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost",
-				"/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost",  
-				"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost",  
-				"/Volumes/TBU_main03/ost4dgood/TB2167_080409b.ost", //Not in CCM. why?
-				//N2greenLED080206 is not in the list. why?
-				}; 
-		for(String s:wnlist)
-			{
-			EvData ost=new EvDataXML(s+"/rmd.ostxml");
-//			Imageset ost=(Imageset)EvData.loadFile(new File(s));
-//			System.out.println("Timestep "+ost.meta.metaTimestep);
-			worms.add(ost);
-			for(EvObject evob:ost.metaObject.values())
-				{
-				if(evob instanceof NucLineage)
-					{
-					NucLineage lin=(NucLineage)evob;
-					if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
-							lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
-							(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
-							(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
-						{
-						lins.put(new File(s).getName(), lin);
-						System.out.println("ok:"+s);
-						}
-					}
-				}
-			}
-		*/
 		}
 	
 	/**
@@ -236,7 +164,7 @@ public class MakeStdWorm5
 					{
 					//This is the optimal place to take different timesteps into account
 					int newFrame=(int)(one.lifeStart+oneLifeLen*(frame-thisFirstFrame)/thisDur);
-					System.out.println("> "+e.getKey()+" "+one.lifeStart+" "+frame+" -> "+newFrame+" // "+one.lifeEnd);
+//					System.out.println("> "+e.getKey()+" "+one.lifeStart+" "+frame+" -> "+newFrame+" // "+one.lifeEnd);
 					
 					NucLineage.NucPos pos=nuc.pos.get(frame);
 					newnuc.pos.put(newFrame, new NucLineage.NucPos(pos));
@@ -721,4 +649,76 @@ public class MakeStdWorm5
 	
 			
 	
+//public static Vector<EvData> worms=new Vector<EvData>();
+/*
+private static void loadAllNuc()
+	{
+	String[] dirs={"/Volumes/TBU_main01/ost4dgood","/Volumes/TBU_main02/ost4dgood","/Volumes/TBU_main03/ost4dgood"};
+	for(String dir:dirs)
+		{
+		for(File f:new File(dir).listFiles())
+			if(!f.getName().startsWith("."))
+				{
+				String s=f.getName();
+				EvData ost=new EvDataXML(f.getPath()+"/rmd.ostxml");
+				worms.add(ost);
+				for(EvObject evob:ost.metaObject.values())
+					{
+					if(evob instanceof NucLineage)
+						{
+						NucLineage lin=(NucLineage)evob;
+						if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
+								lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
+								(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
+								(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
+							{
+							lins.put(s, lin);
+							System.out.println("ok:"+s);
+							}
+						}
+					}
+			
+			}
+		}
 	
+	
+	}
+*/
+
+
+
+/*		
+//These all have timestep 10. NEED TO ADJUST LATER!
+//Load all worms to standardize from
+String[] wnlist={
+		"/Volumes/TBU_main02/ost4dgood/N2_071114.ost",
+		"/Volumes/TBU_main02/ost4dgood/N2_071116.ost",
+		"/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost",
+		"/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost",  
+		"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost",  
+		"/Volumes/TBU_main03/ost4dgood/TB2167_080409b.ost", //Not in CCM. why?
+		//N2greenLED080206 is not in the list. why?
+		}; 
+for(String s:wnlist)
+	{
+	EvData ost=new EvDataXML(s+"/rmd.ostxml");
+//	Imageset ost=(Imageset)EvData.loadFile(new File(s));
+//	System.out.println("Timestep "+ost.meta.metaTimestep);
+	worms.add(ost);
+	for(EvObject evob:ost.metaObject.values())
+		{
+		if(evob instanceof NucLineage)
+			{
+			NucLineage lin=(NucLineage)evob;
+			if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
+					lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
+					(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
+					(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
+				{
+				lins.put(new File(s).getName(), lin);
+				System.out.println("ok:"+s);
+				}
+			}
+		}
+	}
+*/
