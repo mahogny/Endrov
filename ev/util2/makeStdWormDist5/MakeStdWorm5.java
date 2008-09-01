@@ -568,6 +568,7 @@ public class MakeStdWorm5
 							n.equals("venc") || n.equals("germline") ||n.equals("2ftail") ||
 							n.equals("P") || n.indexOf('?')>=0 || n.indexOf('_')>=0)
 						nucstocopynot.add(n);
+				nucstocopynot.add("int2D");
 				for(String n:nucstocopynot)
 					lin.removeNuc(n);
 				}
