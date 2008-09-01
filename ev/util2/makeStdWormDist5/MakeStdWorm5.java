@@ -1,6 +1,5 @@
 package util2.makeStdWormDist5;
 
-import java.io.File;
 import java.util.*;
 
 import javax.vecmath.Matrix3d;
@@ -45,7 +44,8 @@ public class MakeStdWorm5
 		for(String s:imsets)
 			{
 			System.out.println("loading "+s);
-			Imageset im=EvImserv.getImageset(url+s);
+			Imageset im=EvImserv.getImageset(url+s); 
+			//TODO: should be able to go trough session to avoid url+s
 			for(NucLineage lin:im.getObjects(NucLineage.class))
 				{
 				if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
@@ -53,7 +53,7 @@ public class MakeStdWorm5
 						(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
 						(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
 					{
-					lins.put(new File(s).getName(), lin);
+					lins.put(s, lin); //TODO: only one per imset allowed
 					System.out.println("ok:"+s);
 					}
 				}
@@ -277,10 +277,13 @@ public class MakeStdWorm5
 	/**
 	 * Fit nuclei objects to one reference nuclei using rigid body transformations
 	 */
-	public static void rigidFitOverTime()
+	public static void rigidFitOverTime() throws Exception
 		{
 		//Choose one lineage for rotation reference
-		final NucLineage refLin=lins.get("TB2167_0804016.ost");
+//		final NucLineage refLin=lins.get("TB2167_0804016.ost");
+		final NucLineage refLin=lins.get("TB2167_0804016");
+		if(refLin==null)
+			throw new Exception("did not find rot ref");
 		final int fminframe=firstFrameOfLineage(refLin);
 		final int fmaxframe=lastFrameOfLineage(refLin);
 		
