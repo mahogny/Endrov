@@ -17,10 +17,10 @@ import endrov.imageset.*;
  * Image Window Tool: Associate time with current frame
  * @author Johan Henriksson
  */
-public class ToolSetFrametime implements ImageWindowTool
+public class FrameTimeImageTool implements ImageWindowTool
 	{
 	private final ImageWindow w;
-	public ToolSetFrametime(ImageWindow w)
+	public FrameTimeImageTool(ImageWindow w)
 		{
 		this.w=w;
 		}

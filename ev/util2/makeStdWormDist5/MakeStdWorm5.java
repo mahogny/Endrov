@@ -5,6 +5,8 @@ import java.util.*;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
 
+import util2.ConnectImserv;
+
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
@@ -36,7 +38,7 @@ public class MakeStdWorm5
 	public static void loadSelected() throws Exception
 		{
 		System.out.println("Connecting");
-		String url="imserv://:@localhost/";
+		String url=ConnectImserv.url;
 		String query="not trash and stdworm";
 		EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
 		String[] imsets=session.conn.imserv.getDataKeys(query);

@@ -16,7 +16,7 @@ import endrov.data.EvData;
  * Dialog to rename a nucleus
  * @author Johan Henriksson
  */
-public class RenameDialog extends JDialog implements ActionListener
+public class NucRenameDialog extends JDialog implements ActionListener
 	{
 	static final long serialVersionUID=0;
 
@@ -32,7 +32,7 @@ public class RenameDialog extends JDialog implements ActionListener
 	private final String oldName;
 	
 	
-	private RenameDialog(Frame frame, NucPair pair)
+	private NucRenameDialog(Frame frame, NucPair pair)
 		{
 		super(frame,"EV Rename Nucleus: "+pair.snd(),false);
 		this.frame=frame;
@@ -157,7 +157,7 @@ public class RenameDialog extends JDialog implements ActionListener
 			{
 			NucPair nucPair=NucLineage.selectedNuclei.iterator().next();
 			if(nucPair!=null)
-				new RenameDialog(caller,nucPair);
+				new NucRenameDialog(caller,nucPair);
 			}
 		else
 			JOptionPane.showMessageDialog(caller, "Select 1 nucleus");

@@ -15,14 +15,14 @@ import endrov.imageWindow.*;
  *
  * @author Johan Henriksson
  */
-public class ToolMakeImageAnnot implements ImageWindowTool
+public class ImageAnnotImageTool implements ImageWindowTool
 	{
 	private final ImageWindow w;
-	private final ImageAnnotRenderer r;
+	private final ImageAnnotImageRenderer r;
 	
 	private ImageAnnot activeAnnot=null;
 	
-	public ToolMakeImageAnnot(ImageWindow w, ImageAnnotRenderer r)
+	public ImageAnnotImageTool(ImageWindow w, ImageAnnotImageRenderer r)
 		{
 		this.w=w;
 		this.r=r;

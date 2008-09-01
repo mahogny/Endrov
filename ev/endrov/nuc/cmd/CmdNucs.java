@@ -1,7 +1,9 @@
-package endrov.nuc;
+package endrov.nuc.cmd;
 import java.util.*;
 
 import endrov.basicWindow.*;
+import endrov.nuc.NucLineage;
+import endrov.nuc.NucPair;
 import endrov.script.*;
 
 /**
