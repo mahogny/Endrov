@@ -288,6 +288,8 @@ public class CellContactMap2
 				}
 			NucLineage reflin=EvImserv.getImageset(url+"celegans2008.2").getObjects(NucLineage.class).iterator().next();
 			//////////
+			
+//			int lastOkFrame=lastOkFrame(reflin);
 
 			final TreeSet<String> nucNames=new TreeSet<String>(reflin.nuc.keySet());
 

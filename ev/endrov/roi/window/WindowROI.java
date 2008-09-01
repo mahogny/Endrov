@@ -10,6 +10,7 @@ import java.util.*;
 import org.jdom.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.roi.*;
@@ -76,7 +77,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	private JButton bDelete=BasicWindow.getButtonDelete();
+	private JButton bDelete=BasicIcon.getButtonDelete();
 	private JPanel upperPanel=new JPanel(new GridLayout(2,1));
 	private MetaCombo metaCombo=new MetaCombo(this, false);
 	public boolean comboFilterMetadataCallback(EvData meta)

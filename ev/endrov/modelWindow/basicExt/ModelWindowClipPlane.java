@@ -12,7 +12,7 @@ import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.modelWindow.*;
@@ -139,10 +139,10 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		private class ToolSlab extends JPanel implements ChangeListener, ActionListener
 			{
 			static final long serialVersionUID=0;
-			private JButton bDelete=BasicWindow.getButtonDelete();
+			private JButton bDelete=BasicIcon.getButtonDelete();
 			private JButton bInvert=new JButton("Invert");
-			private JButton bCopy=BasicWindow.getButtonCopy();
-			private JButton bPaste=BasicWindow.getButtonPaste();
+			private JButton bCopy=BasicIcon.getButtonCopy();
+			private JButton bPaste=BasicIcon.getButtonPaste();
 			private JCheckBox cEnabled=new JCheckBox("Enabled",true);
 			private JCheckBox cVisible=new JCheckBox("Visible",true);
 			

@@ -1,15 +1,21 @@
-package endrov.modelWindow.isosurf;
+package endrov.modelWindowImset.isosurf;
 
 import java.util.*;
 import java.util.Map.Entry;
 
 import javax.vecmath.Vector3f;
 
-public class IsosurfaceTooOptimized
+
+/**
+ * Generator for isosurfaces
+ * 
+ * @author Johan Henriksson
+ */
+public class Isosurface
 	{
 	
 	
-	private static final int[] m_edgeTable = 
+	private static int[] m_edgeTable = 
 		{
 				0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
 				0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -45,7 +51,7 @@ public class IsosurfaceTooOptimized
 				0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0
 		};
 	
-	private static final int[][] m_triTable = //can remove -1, check length instead
+	private static int[][] m_triTable = //can remove -1, check length instead
 		{
 					{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 					{0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -311,29 +317,36 @@ public class IsosurfaceTooOptimized
 		int p0, p1, p2;
 		}
 	
-	private static class POINT3DID //can now be replaced by vector3f
+	private static class POINT3DID
 		{
+		int newID;
 		float x, y, z;
 		}
 	
 	
+	public Vector3f[] getVertices()
+		{
+		return vertices;
+		}
+	public int[] getIndices()
+		{
+		return indices;
+		}
+	public Vector3f[] getNormals()
+		{
+		return normals;
+		}
 	
 	
-	//The vertices which make up the isosurface.
-	public Vector3f[] m_ppt3dVertices;
-		
-	//The indices of the vertices which make up the triangles.
-	public int[] m_piTriangleIndices; 
-	
-	//The normals.
-	public Vector3f[] m_pvec3dNormals;
-	
+	private Vector3f[] vertices;
+	private int[] indices; 
+	private Vector3f[] normals;
 	
 	//List of POINT3Ds which form the isosurface.
-	private final HashMap<Integer,POINT3DID> m_i2pt3idVertices=new HashMap<Integer,POINT3DID>();
+	private final HashMap<Integer,POINT3DID> ivertices=new HashMap<Integer,POINT3DID>();
 	
 	//List of TRIANGLES which form the triangulation of the isosurface.
-	private Vector<TRIANGLE> m_trivecTriangles=new Vector<TRIANGLE>();
+	private final Vector<TRIANGLE> triangles=new Vector<TRIANGLE>();
 	
 	
 	//No. of cells in x, y, and z directions.
@@ -343,7 +356,7 @@ public class IsosurfaceTooOptimized
 	private float m_fCellLengthX, m_fCellLengthY, m_fCellLengthZ;
 	
 	//The buffer holding the scalar field.
-	private float[] m_ptScalarField;
+	private float[] ptScalarField;
 	
 	//The isosurface value.
 	private float m_tIsoLevel;
@@ -359,8 +372,13 @@ public class IsosurfaceTooOptimized
 	 */
 	void generateSurface(float[] ptScalarField, float tIsoLevel, int nCellsX, int nCellsY, int nCellsZ, float fCellLengthX, float fCellLengthY, float fCellLengthZ)
 		{
-		deleteSurface();
-	
+		//Clean prior memory
+		m_bValidSurface = false;
+		vertices = null;
+		indices = null;
+		normals = null;
+
+		//Store settings
 		m_tIsoLevel = tIsoLevel;
 		m_nCellsX = nCellsX;
 		m_nCellsY = nCellsY;
@@ -368,7 +386,7 @@ public class IsosurfaceTooOptimized
 		m_fCellLengthX = fCellLengthX;
 		m_fCellLengthY = fCellLengthY;
 		m_fCellLengthZ = fCellLengthZ;
-		m_ptScalarField = ptScalarField;
+		this.ptScalarField = ptScalarField;
 	
 		int nPointsInXDirection = (m_nCellsX + 1);
 		int nPointsInSlice = nPointsInXDirection*(m_nCellsY + 1);
@@ -376,146 +394,151 @@ public class IsosurfaceTooOptimized
 		//manual index remapping probably disables static bound check?
 		//only one index, 2 checks removed?
 		
+		
 		// Generate isosurface.
+		short oldf[][]=new short[m_nCellsY][m_nCellsX];
+		for (int y = 0; y < m_nCellsY; y++)
+			for (int x = 0; x < m_nCellsX; x++) 
+				{
+				// Calculate table lookup index from those vertices which are below the isolevel.
+				int z=0;
+				short tableIndexB = 0;
+				if (ptScalarField[z*nPointsInSlice + y*nPointsInXDirection + x] < m_tIsoLevel)
+					tableIndexB |= 16;
+				if (ptScalarField[z*nPointsInSlice + (y+1)*nPointsInXDirection + x] < m_tIsoLevel)
+					tableIndexB |= 32;
+				if (ptScalarField[z*nPointsInSlice + (y+1)*nPointsInXDirection + (x+1)] < m_tIsoLevel)
+					tableIndexB |= 64;
+				if (ptScalarField[z*nPointsInSlice + y*nPointsInXDirection + (x+1)] < m_tIsoLevel)
+					tableIndexB |= 128;
+				oldf[y][x]=tableIndexB;
+				}
 		for (int z = 0; z < m_nCellsZ; z++)
+			{
 			for (int y = 0; y < m_nCellsY; y++)
 				for (int x = 0; x < m_nCellsX; x++) 
 					{
-					//Calculate table lookup index from those vertices which are below the isolevel.
-					//splitting up as tree does not speed up. factoring out additions does not help.
-					//about 300 ms for all ifs
-					int tableIndex = 0;
-					if (m_ptScalarField[z*nPointsInSlice + y*nPointsInXDirection + x] < m_tIsoLevel)
-						tableIndex |= 1;
-					if (m_ptScalarField[z*nPointsInSlice + (y+1)*nPointsInXDirection + x] < m_tIsoLevel)
-						tableIndex |= 2;
-					if (m_ptScalarField[z*nPointsInSlice + (y+1)*nPointsInXDirection + (x+1)] < m_tIsoLevel)
-						tableIndex |= 4;
-					if (m_ptScalarField[z*nPointsInSlice + y*nPointsInXDirection + (x+1)] < m_tIsoLevel)
-						tableIndex |= 8;
+					// Calculate table lookup index from those vertices which are below the isolevel.
+					short tableIndexB=0;
+					if (ptScalarField[(z+1)*nPointsInSlice + y*nPointsInXDirection + x] < m_tIsoLevel)
+						tableIndexB |= 16;
+					if (ptScalarField[(z+1)*nPointsInSlice + (y+1)*nPointsInXDirection + x] < m_tIsoLevel)
+						tableIndexB |= 32;
+					if (ptScalarField[(z+1)*nPointsInSlice + (y+1)*nPointsInXDirection + (x+1)] < m_tIsoLevel)
+						tableIndexB |= 64;
+					if (ptScalarField[(z+1)*nPointsInSlice + y*nPointsInXDirection + (x+1)] < m_tIsoLevel)
+						tableIndexB |= 128;
+	
+					int tableIndex=oldf[y][x]>>4 | tableIndexB;
+					oldf[y][x]=tableIndexB;
 					
-					if (m_ptScalarField[(z+1)*nPointsInSlice + y*nPointsInXDirection + x] < m_tIsoLevel)
-						tableIndex |= 16;
-					if (m_ptScalarField[(z+1)*nPointsInSlice + (y+1)*nPointsInXDirection + x] < m_tIsoLevel)
-						tableIndex |= 32;
-					if (m_ptScalarField[(z+1)*nPointsInSlice + (y+1)*nPointsInXDirection + (x+1)] < m_tIsoLevel)
-						tableIndex |= 64;
-					if (m_ptScalarField[(z+1)*nPointsInSlice + y*nPointsInXDirection + (x+1)] < m_tIsoLevel)
-						tableIndex |= 128;
 					
 					// Now create a triangulation of the isosurface in this cell
-					int theEdge=m_edgeTable[tableIndex];
-					
-					//if (theEdge!=0) 
-					//	new Vector3f();
-					
-					
-					
-					if (theEdge!=0) 
+					if (m_edgeTable[tableIndex] != 0) 
 						{
-						if ((theEdge & 8) != 0) 
+						if ((m_edgeTable[tableIndex] & 8) != 0) 
 							{
 							POINT3DID pt = calculateIntersection(x, y, z, 3);
 							int id = getEdgeID(x, y, z, 3);
-							m_i2pt3idVertices.put(id,pt);
+							ivertices.put(id,pt);
 							}
-						if ((theEdge & 1) != 0) 
+						if ((m_edgeTable[tableIndex] & 1) != 0) 
 							{
 							POINT3DID pt = calculateIntersection(x, y, z, 0);
 							int id = getEdgeID(x, y, z, 0);
-							m_i2pt3idVertices.put(id,pt);
+							ivertices.put(id,pt);
 							}
-						if ((theEdge & 256) != 0) 
+						if ((m_edgeTable[tableIndex] & 256) != 0) 
 							{
 							POINT3DID pt = calculateIntersection(x, y, z, 8);
 							int id = getEdgeID(x, y, z, 8);
-							m_i2pt3idVertices.put(id,pt);
+							ivertices.put(id,pt);
 							}
 	
 						if (x == m_nCellsX - 1) 
 							{
-							if((theEdge & 4) != 0)
+							if ((m_edgeTable[tableIndex] & 4) != 0)
 								{
 								POINT3DID pt = calculateIntersection(x, y, z, 2);
 								int id = getEdgeID(x, y, z, 2);
-								m_i2pt3idVertices.put(id,pt);
+								ivertices.put(id,pt);
 								}
-							if((theEdge & 2048) != 0)
+							if ((m_edgeTable[tableIndex] & 2048) != 0)
 								{
 								POINT3DID pt = calculateIntersection(x, y, z, 11);
 								int id = getEdgeID(x, y, z, 11);
-								m_i2pt3idVertices.put(id,pt);
-								}
-							//new below, replaces X1
-							if((y==m_nCellsY - 1) && (theEdge & 1024) != 0)
-								{
-								POINT3DID pt = calculateIntersection(x, y, z, 10);
-								int id = getEdgeID(x, y, z, 10);
-								m_i2pt3idVertices.put(id,pt);
-								}
-							if((z==m_nCellsZ - 1) && (theEdge & 64) != 0)
-								{
-								POINT3DID pt = calculateIntersection(x, y, z, 6);
-								int id = getEdgeID(x, y, z, 6);
-								m_i2pt3idVertices.put(id,pt);
+								ivertices.put(id,pt);
 								}
 							}
 						if (y == m_nCellsY - 1) 
 							{
-							if ((theEdge & 2) != 0) 
+							if ((m_edgeTable[tableIndex] & 2) != 0) 
 								{
 								POINT3DID pt = calculateIntersection(x, y, z, 1);
 								int id = getEdgeID(x, y, z, 1);
-								m_i2pt3idVertices.put(id,pt);
+								ivertices.put(id,pt);
 								}
-							if ((theEdge & 512) != 0)
+							if ((m_edgeTable[tableIndex] & 512) != 0)
 								{
 								POINT3DID pt = calculateIntersection(x, y, z, 9);
 								int id = getEdgeID(x, y, z, 9);
-								m_i2pt3idVertices.put(id,pt);
+								ivertices.put(id,pt);
 								}
 							}
-						if(z == m_nCellsZ - 1)
+						if (z == m_nCellsZ - 1)
 							{
-							if((theEdge & 16) != 0)
+							if ((m_edgeTable[tableIndex] & 16) != 0)
 								{
 								POINT3DID pt = calculateIntersection(x, y, z, 4);
 								int id = getEdgeID(x, y, z, 4);
-								m_i2pt3idVertices.put(id,pt);
+								ivertices.put(id,pt);
 								}
-							if((theEdge & 128) != 0)
+							if ((m_edgeTable[tableIndex] & 128) != 0)
 								{
 								POINT3DID pt = calculateIntersection(x, y, z, 7);
 								int id = getEdgeID(x, y, z, 7);
-								m_i2pt3idVertices.put(id,pt);
+								ivertices.put(id,pt);
 								}
 							}
-						//old X1 here
-						if((y==m_nCellsY - 1) && (z==m_nCellsZ - 1) && (theEdge & 32) != 0) 
-							{
-							POINT3DID pt = calculateIntersection(x, y, z, 5);
-							int id = getEdgeID(x, y, z, 5);
-							m_i2pt3idVertices.put(id,pt);
-							}
+						if ((x==m_nCellsX - 1) && (y==m_nCellsY - 1))
+							if ((m_edgeTable[tableIndex] & 1024) != 0)
+								{
+								POINT3DID pt = calculateIntersection(x, y, z, 10);
+								int id = getEdgeID(x, y, z, 10);
+								ivertices.put(id,pt);
+								}
+						if ((x==m_nCellsX - 1) && (z==m_nCellsZ - 1))
+							if ((m_edgeTable[tableIndex] & 64) != 0)
+								{
+								POINT3DID pt = calculateIntersection(x, y, z, 6);
+								int id = getEdgeID(x, y, z, 6);
+								ivertices.put(id,pt);
+								}
+						if ((y==m_nCellsY - 1) && (z==m_nCellsZ - 1))
+							if ((m_edgeTable[tableIndex] & 32) != 0) 
+								{
+								POINT3DID pt = calculateIntersection(x, y, z, 5);
+								int id = getEdgeID(x, y, z, 5);
+								ivertices.put(id,pt);
+								}
 
-						int[] tritab=m_triTable[tableIndex];
-						//maybe 100-200milli
-						for (int i = 0; tritab[i] != -1; i += 3) 
+						for (int i = 0; m_triTable[tableIndex][i] != -1; i += 3) 
 							{
 							TRIANGLE triangle=new TRIANGLE();
-							triangle.p0 = getEdgeID(x, y, z, tritab[i]);
-							triangle.p1 = getEdgeID(x, y, z, tritab[i+1]);
-							triangle.p2 = getEdgeID(x, y, z, tritab[i+2]);
-							m_trivecTriangles.add(triangle);
+							triangle.p0 = getEdgeID(x, y, z, m_triTable[tableIndex][i]);
+							triangle.p1 = getEdgeID(x, y, z, m_triTable[tableIndex][i+1]);
+							triangle.p2 = getEdgeID(x, y, z, m_triTable[tableIndex][i+2]);
+							triangles.add(triangle);
 							}
-							
 						}
-						
 					}
+			}
 	
-		renameVerticesAndTriangles(); //500 milli
-		calculateNormals(); //50-100 milli
+		renameVerticesAndTriangles();
+		calculateNormals();
 		m_bValidSurface = true;
+		ptScalarField = null;
+		maxUpdated=false;
 		}
 	
 	
@@ -525,18 +548,6 @@ public class IsosurfaceTooOptimized
 		}
 	
 	
-	/**
-	 * Release all resources
-	 */
-	public void deleteSurface()
-		{
-		//if (m_bValidSurface)
-		m_bValidSurface = false;
-		m_ppt3dVertices = null;
-		m_piTriangleIndices = null;
-		m_pvec3dNormals = null;
-		m_ptScalarField = null;
-		}
 	
 	
 	//only valid if isSurfaceValid
@@ -546,12 +557,10 @@ public class IsosurfaceTooOptimized
 	
 	
 	/**
-	 * Returns the edge ID. 
+	 * Returns the edge ID.
 	 */
-//	HashMap<Integer,Integer>
 	private int getEdgeID(int nX, int nY, int nZ, int nEdgeNo)
 		{
-		//Tried rewriting this as a tree of if's. did not help.
 		switch (nEdgeNo) 
 			{
 			case 0:
@@ -583,9 +592,6 @@ public class IsosurfaceTooOptimized
 			return -1;
 			}
 		}
-	
-	
-	
 	
 	/**
 	 * Returns the vertex ID
@@ -677,8 +683,8 @@ public class IsosurfaceTooOptimized
 	
 		int nPointsInXDirection = (m_nCellsX + 1);
 		int nPointsInSlice = nPointsInXDirection*(m_nCellsY + 1);
-		float val1 = m_ptScalarField[v1z*nPointsInSlice + v1y*nPointsInXDirection + v1x];
-		float val2 = m_ptScalarField[v2z*nPointsInSlice + v2y*nPointsInXDirection + v2x];
+		float val1 = ptScalarField[v1z*nPointsInSlice + v1y*nPointsInXDirection + v1x];
+		float val2 = ptScalarField[v2z*nPointsInSlice + v2y*nPointsInXDirection + v2x];
 		return interpolate(x1, y1, z1, x2, y2, z2, val1, val2);
 		}
 	
@@ -703,24 +709,23 @@ public class IsosurfaceTooOptimized
 		{
 		int nextID = 0;
 
-		
+	
 		//newID better made a local array. move to final array directly
 		HashMap<Integer,Integer> fromto=new HashMap<Integer,Integer>();
-		m_ppt3dVertices = new Vector3f[m_i2pt3idVertices.size()];
-		for(Entry<Integer,POINT3DID> p:m_i2pt3idVertices.entrySet())
+		vertices = new Vector3f[ivertices.size()];
+		for(Entry<Integer,POINT3DID> p:ivertices.entrySet())
 			{
 			fromto.put(p.getKey(),nextID);
 			POINT3DID pp=p.getValue();
-			m_ppt3dVertices[nextID]=new Vector3f(pp.x,pp.y,pp.z);
-			
+			vertices[nextID]=new Vector3f(pp.x,pp.y,pp.z);
 			nextID++;
 			}
 		
 		
 		// Copy vertex indices which make triangles.
-		Iterator<TRIANGLE> vecIterator=m_trivecTriangles.iterator();
-		m_piTriangleIndices = new int[m_trivecTriangles.size()*3];
-		for (int i = 0; i < m_trivecTriangles.size(); i++) 
+		Iterator<TRIANGLE> vecIterator=triangles.iterator();
+		indices = new int[triangles.size()*3];
+		for (int i = 0; i < triangles.size(); i++) 
 			{
 			TRIANGLE tri=vecIterator.next();
 			
@@ -730,13 +735,14 @@ public class IsosurfaceTooOptimized
 			tri.p2 = fromto.get(tri.p2);
 			
 			//copy
-			m_piTriangleIndices[i*3] = tri.p0;
-			m_piTriangleIndices[i*3+1] = tri.p1;
-			m_piTriangleIndices[i*3+2] = tri.p2;
+			indices[i*3] = tri.p0;
+			indices[i*3+1] = tri.p1;
+			indices[i*3+2] = tri.p2;
 			}
-	
-		m_i2pt3idVertices.clear();
-		m_trivecTriangles.clear();
+
+		
+		ivertices.clear();
+		triangles.clear();
 		}
 	
 	
@@ -745,33 +751,67 @@ public class IsosurfaceTooOptimized
 	 */
 	private void calculateNormals()
 		{
-		m_pvec3dNormals = new Vector3f[m_piTriangleIndices.length/3];
+		normals = new Vector3f[indices.length/3];
 	
-		//Set all normals to 0
-		for(int i=0;i<m_pvec3dNormals.length;i++)
-			m_pvec3dNormals[i]=new Vector3f();
+		// Set all normals to 0
+		for(int i=0;i<normals.length;i++)
+			normals[i]=new Vector3f();
 	
-		//Calculate normals
-		//optimization: it was *really* expensive to create new vectors. only done once
-		Vector3f vec1=new Vector3f();
-		Vector3f vec2=new Vector3f();
-		Vector3f normal=new Vector3f();
-		for(int i = 0; i < m_piTriangleIndices.length; i+=3) 
+		// Calculate normals.
+		for(int i = 0; i < indices.length; i+=3) 
 			{
-			int id0 = m_piTriangleIndices[i];
-			int id1 = m_piTriangleIndices[i+1];
-			int id2 = m_piTriangleIndices[i+2];
-			m_ppt3dVertices[id1].sub(m_ppt3dVertices[id0], vec1);
-			m_ppt3dVertices[id2].sub(m_ppt3dVertices[id0], vec2);
-			vec1.cross(vec2, normal);
-			m_pvec3dNormals[id0].add(normal);
-			m_pvec3dNormals[id1].add(normal);
-			m_pvec3dNormals[id2].add(normal);
+			int id0 = indices[i];
+			int id1 = indices[i+1];
+			int id2 = indices[i+2];
+			Vector3f vec1=new Vector3f(
+					vertices[id1].x - vertices[id0].x,
+					vertices[id1].y - vertices[id0].y,
+					vertices[id1].z - vertices[id0].z);
+			Vector3f vec2=new Vector3f(
+					vertices[id2].x - vertices[id0].x,
+					vertices[id2].y - vertices[id0].y,
+					vertices[id2].z - vertices[id0].z);
+			Vector3f normal=new Vector3f(
+					vec1.z*vec2.y - vec1.y*vec2.z,
+					vec1.x*vec2.z - vec1.z*vec2.x,
+					vec1.y*vec2.x - vec1.x*vec2.y);
+			normals[id0].add(normal);
+			normals[id1].add(normal);
+			normals[id2].add(normal);
 			}
-		
+	
 		// Normalize
-		for(Vector3f n:m_pvec3dNormals)
+		for(Vector3f n:normals)
 			n.normalize();
 		}
 		
+	private boolean maxUpdated=false;
+	public float maxX,maxY,maxZ,minX,minY,minZ;
+	public boolean updateScale()
+		{
+		if(isSurfaceValid())
+			{
+			if(vertices.length==0)
+				return false;
+			if(!maxUpdated)
+				{
+				maxUpdated=true;
+				maxX=maxY=maxZ=0;
+				minX=minY=minZ=Float.MAX_VALUE;
+				for(Vector3f pp:vertices)
+					{
+					if(pp.x>maxX) maxX=pp.x;
+					if(pp.y>maxY) maxY=pp.y;
+					if(pp.z>maxZ) maxZ=pp.z;
+					if(pp.x<minX) minX=pp.x;
+					if(pp.y<minY) minY=pp.y;
+					if(pp.z<minZ) minZ=pp.z;
+					}
+				
+				}
+			return true;
+			}
+		else
+			return false;
+		}
 	}

@@ -1,4 +1,4 @@
-package endrov.modelWindow.voxel;
+package endrov.modelWindowImset.voxel;
 
 import java.util.Collection;
 import java.util.HashMap;

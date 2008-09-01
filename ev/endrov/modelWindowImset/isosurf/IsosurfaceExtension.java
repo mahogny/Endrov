@@ -1,4 +1,4 @@
-package endrov.modelWindow.isosurf;
+package endrov.modelWindowImset.isosurf;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,9 +21,8 @@ import org.jdom.Element;
 
 import com.sun.opengl.util.BufferUtil;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.ChannelCombo;
 import endrov.basicWindow.ColorCombo;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
@@ -145,7 +144,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			private JSpinner numplaneSpinner=new JSpinner(new SpinnerNumberModel((int)1,(int)0,(int)99,(int)1));
 			private JSpinner blurxySpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)10.0,(int)1));
 			private ChannelCombo chanCombo=new ChannelCombo(null,true);
-			private JButton bDelete=BasicWindow.getButtonDelete();
+			private JButton bDelete=BasicIcon.getButtonDelete();
 			private ColorCombo colorCombo=new ColorCombo();
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
 			private HashMap<Integer,Vector<IsosurfaceRenderer>> surfaces=new HashMap<Integer,Vector<IsosurfaceRenderer>>(); 

@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import javax.swing.*;
 
-import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.SimpleObserver;
 import endrov.filter.FilterImageExtension.*;
 
@@ -127,9 +127,9 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 				titledPanel.add(fc);
 				
 				//Buttons
-				final JButton bUp=new JButton(BasicWindow.getIconUp());
-				final JButton bDown=new JButton(BasicWindow.getIconDown());
-				final JButton bDelete=BasicWindow.getButtonDelete();
+				final JButton bUp=new JButton(BasicIcon.iconButtonUp);
+				final JButton bDown=new JButton(BasicIcon.iconButtonDown);
+				final JButton bDelete=BasicIcon.getButtonDelete();
 
 				ActionListener listener=new ActionListener()
 					{

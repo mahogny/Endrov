@@ -1,4 +1,4 @@
-package endrov.modelWindow.voxel;
+package endrov.modelWindowImset.voxel;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +16,6 @@ import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.ChannelCombo;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.filter.FilterSeq;

@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 import endrov.basicWindow.*;
@@ -89,6 +92,13 @@ public class PluginWindow extends BasicWindow
 		{				
 		plugins=new Vector<PluginInfo>();
 		plugins.addAll(PluginInfo.getPluginList());
+		Collections.sort(plugins, new Comparator<PluginInfo>(){
+			public int compare(PluginInfo o1, PluginInfo o2)
+				{
+				return o1.toString().compareTo(o2.toString());
+				}
+		});
+		
 		
 		list.setListData(plugins);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

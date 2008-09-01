@@ -18,8 +18,6 @@ import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvColor;
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowExtension;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
 import endrov.nuc.cmd.CmdNucda;
@@ -150,15 +148,6 @@ public class NucLineage extends EvObject implements Cloneable
 					}
 				
 				return meta;
-				}
-			});
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				NucImageRenderer r=new NucImageRenderer(w);
-				w.imageWindowTools.add(new NucImageTool(w,r));
-				w.imageWindowRenderers.add(r);
 				}
 			});
 		}
@@ -828,8 +817,8 @@ public class NucLineage extends EvObject implements Cloneable
 		public Integer frameBefore;
 		public Integer frameAfter;
 		public java.awt.Color colorNuc;
-		boolean isEnd;
-		boolean hasParent;
+		public boolean isEnd;
+		public boolean hasParent;
 		public boolean isKeyFrame(double frame)
 			{
 			//double vs int ==. probably a bad idea

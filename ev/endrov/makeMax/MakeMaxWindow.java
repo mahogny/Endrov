@@ -136,7 +136,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 		{
 		if(e.getSource()==metaCombo)
 			{
-			channelCombo.setExternalImageset(metaCombo.getImageset());
+			channelCombo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
 			}
 		else if(e.getSource()==bStart)
 			{
@@ -146,7 +146,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 				}
 			else
 				{
-				CalcThread thread=new CalcThread(metaCombo.getImageset(), 
+				CalcThread thread=new CalcThread(Imageset.castEmpty(metaCombo.getMeta()), 
 						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannel()/*,
 						(Double)spinnerQuality.getValue()*/);
 				/*CalcThread thread=new CalcThread(metaCombo.getImageset(), 
@@ -165,7 +165,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	public void dataChangedEvent()
 		{
 		metaCombo.updateList();
-		channelCombo.setExternalImageset(metaCombo.getImageset());
+		channelCombo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
 		}
 	
 	public void loadedFile(EvData data){}

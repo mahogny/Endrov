@@ -7,7 +7,7 @@ import javax.swing.event.*;
 import java.util.*;
 
 import endrov.basicWindow.FrameControl;
-import endrov.imageWindow.FrameControlImage;
+import endrov.basicWindow.icon.BasicIcon;
 
 
 
@@ -31,6 +31,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/** Component to tell that frame has changed */
 	private ChangeListener listener;
 	
+	/*
 	private static ImageIcon iconFramePrev=new ImageIcon(FrameControlImage.class.getResource("buttonFramePrev.png"));
 	private static ImageIcon iconFrameNext=new ImageIcon(FrameControlImage.class.getResource("buttonFrameNext.png"));
 	private static ImageIcon iconFrameFirst=new ImageIcon(FrameControlImage.class.getResource("buttonFrameFirst.png"));
@@ -38,13 +39,14 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private static ImageIcon iconPlayBackward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayBackward.png"));
 	private static ImageIcon iconPlayForward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayForward.png"));
 	private static ImageIcon iconPlayStop=new ImageIcon(FrameControlImage.class.getResource("buttonPlayStop.png"));
+	*/
 	
-	private JButton buttonStepBack=new JButton(iconFramePrev);
-	private JButton buttonStepForward=new JButton(iconFrameNext);
-	private JButton buttonPlayBack=new JButton(iconPlayBackward);
-	private JButton buttonPlayForward=new JButton(iconPlayForward);
-	private JButton buttonBeginning=new JButton(iconFrameFirst);
-	private JButton buttonEnd=new JButton(iconFrameLast);
+	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
+	private JButton buttonStepForward=new JButton(BasicIcon.iconFrameNext);
+	private JButton buttonPlayBack=new JButton(BasicIcon.iconPlayBackward);
+	private JButton buttonPlayForward=new JButton(BasicIcon.iconPlayForward);
+	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
+	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
 
 	private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
@@ -195,14 +197,14 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			playingForward=forward;
 			timer=new javax.swing.Timer(dt, this);
 			timer.start();
-			buttonPlayForward.setIcon(iconPlayStop);
-			buttonPlayBack.setIcon(iconPlayStop);
+			buttonPlayForward.setIcon(BasicIcon.iconPlayStop);
+			buttonPlayBack.setIcon(BasicIcon.iconPlayStop);
 			}
 		else
 			{
 			timer=null;
-			buttonPlayForward.setIcon(iconPlayForward);
-			buttonPlayBack.setIcon(iconPlayBackward);
+			buttonPlayForward.setIcon(BasicIcon.iconPlayForward);
+			buttonPlayBack.setIcon(BasicIcon.iconPlayBackward);
 			}
 		}
 	
