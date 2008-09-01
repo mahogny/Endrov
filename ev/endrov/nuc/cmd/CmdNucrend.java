@@ -1,6 +1,7 @@
-package endrov.nuc;
+package endrov.nuc.cmd;
 import java.util.*;
 
+import endrov.nuc.NucRenameDialog;
 import endrov.script.*;
 
 /**
@@ -13,7 +14,7 @@ public class CmdNucrend extends Command
 	public int numArg()	{return 0;}
 	public Exp exec(Vector<Exp> arg) throws Exception
 		{
-		RenameDialog.run(null);
+		NucRenameDialog.run(null);
 		return null;
 		}
 	

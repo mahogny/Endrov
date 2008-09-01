@@ -16,7 +16,7 @@ import endrov.keyBinding.KeyBinding;
  * Image Window Extension: Edit shells
  * @author Johan Henriksson
  */
-public class ShellImageToolMakeShell implements ImageWindowTool
+public class ShellImageTool implements ImageWindowTool
 	{
 	private final ImageWindow w;
 	private final ShellImageRenderer r;
@@ -26,7 +26,7 @@ public class ShellImageToolMakeShell implements ImageWindowTool
 
 	public void unselected() {}
 	
-	public ShellImageToolMakeShell(ImageWindow w, ShellImageRenderer r)
+	public ShellImageTool(ImageWindow w, ShellImageRenderer r)
 		{
 		this.w=w;
 		this.r=r;

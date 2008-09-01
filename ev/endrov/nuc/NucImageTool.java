@@ -20,7 +20,7 @@ import endrov.keyBinding.KeyBinding;
  *
  * @author Johan Henriksson
  */
-public class ToolMakeNuc implements ImageWindowTool, ActionListener
+public class NucImageTool implements ImageWindowTool, ActionListener
 	{
 	private boolean active=false;
 	private double x1,x2,y1,y2;
@@ -37,7 +37,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 		editingLin=new WeakReference<NucLineage>(lin);
 		}
 	
-	public ToolMakeNuc(final ImageWindow w, NucImageRenderer r)
+	public NucImageTool(final ImageWindow w, NucImageRenderer r)
 		{
 		this.w=w;
 		this.r=r;
@@ -64,7 +64,7 @@ public class ToolMakeNuc implements ImageWindowTool, ActionListener
 				menu.add(miEdit);
 				}
 		JMenuItem miNew=new JMenuItem("New lineage");
-		final ToolMakeNuc This=this;
+		final NucImageTool This=this;
 		miNew.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 				{

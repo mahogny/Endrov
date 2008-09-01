@@ -6,12 +6,12 @@ import javax.vecmath.*;
 
 import endrov.imageWindow.*;
 
-public class ImageAnnotRenderer implements ImageWindowRenderer
+public class ImageAnnotImageRenderer implements ImageWindowRenderer
 	{
 	public ImageWindow w;
 	
 	
-	public ImageAnnotRenderer(ImageWindow w)
+	public ImageAnnotImageRenderer(ImageWindow w)
 		{
 		this.w=w;
 		}

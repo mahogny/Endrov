@@ -10,6 +10,8 @@ import java.util.*;
 import javax.imageio.ImageIO;
 import javax.vecmath.Vector3d;
 
+import util2.ConnectImserv;
+
 //import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
@@ -266,7 +268,7 @@ public class CellContactMap2
 			
 			///////////
 			System.out.println("Connecting");
-			String url="imserv://:@localhost/";
+			String url=ConnectImserv.url;
 			String query="not trash and CCM";
 			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
 			String[] imsets=session.conn.imserv.getDataKeys(query);

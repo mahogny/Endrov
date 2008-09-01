@@ -287,7 +287,7 @@ public class LineageWindow extends BasicWindow
 		else if(e.getSource()==miRename)
 			{
 //			RenameDialog.run(evw);
-			RenameDialog.run(null);
+			NucRenameDialog.run(null);
 			}
 		else if(e.getSource()==miMerge)
 			{

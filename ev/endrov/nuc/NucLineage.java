@@ -22,6 +22,13 @@ import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
+import endrov.nuc.cmd.CmdNucda;
+import endrov.nuc.cmd.CmdNuchide;
+import endrov.nuc.cmd.CmdNucren;
+import endrov.nuc.cmd.CmdNucrend;
+import endrov.nuc.cmd.CmdNucs;
+import endrov.nuc.cmd.CmdNucshow;
+import endrov.nuc.cmd.CmdNucsnap;
 import endrov.script.*;
 import endrov.util.EvGeomUtil;
 import endrov.util.EvXmlUtil;
@@ -150,7 +157,7 @@ public class NucLineage extends EvObject implements Cloneable
 			public void newImageWindow(ImageWindow w)
 				{
 				NucImageRenderer r=new NucImageRenderer(w);
-				w.imageWindowTools.add(new ToolMakeNuc(w,r));
+				w.imageWindowTools.add(new NucImageTool(w,r));
 				w.imageWindowRenderers.add(r);
 				}
 			});
