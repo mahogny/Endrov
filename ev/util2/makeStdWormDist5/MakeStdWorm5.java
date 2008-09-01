@@ -8,10 +8,14 @@ import javax.vecmath.Vector3d;
 
 import endrov.data.*;
 import endrov.ev.*;
+import endrov.imageset.Imageset;
+import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
 import endrov.nuc.NucLineage.NucInterp;
 
+//TODO: all are now the same time!
+//with OST3+, frametime concept gone, solved
 
 //Do not use rigid transforms, use point dist.
 
@@ -27,7 +31,7 @@ public class MakeStdWorm5
 	public static boolean saveNormalized=true;
 	public static int NUMTRY=0;
 
-	public static Vector<EvData> worms=new Vector<EvData>();
+//	public static Vector<EvData> worms=new Vector<EvData>();
 	public static SortedMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
 	public static NucStats nucstats=new NucStats();
 
@@ -67,8 +71,33 @@ public class MakeStdWorm5
 */
 	
 	//TODO: load from imserv
-	public static void loadSelected()
+	public static void loadSelected() throws Exception
 		{
+		System.out.println("Connecting");
+		String url="imserv://:@localhost/";
+		String query="not trash and stdworm";
+		EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
+		String[] imsets=session.conn.imserv.getDataKeys(query);
+		System.out.println("Loading imsets");
+		for(String s:imsets)
+			{
+			System.out.println("loading "+s);
+			Imageset im=EvImserv.getImageset(url+s);
+			for(NucLineage lin:im.getObjects(NucLineage.class))
+				{
+				if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
+						lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
+						(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
+						(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
+					{
+					lins.put(new File(s).getName(), lin);
+					System.out.println("ok:"+s);
+					}
+				}
+			}
+		
+		
+/*		
 		//These all have timestep 10. NEED TO ADJUST LATER!
 		//Load all worms to standardize from
 		String[] wnlist={
@@ -76,8 +105,9 @@ public class MakeStdWorm5
 				"/Volumes/TBU_main02/ost4dgood/N2_071116.ost",
 				"/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost",
 				"/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost",  
-				"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost",
-				"/Volumes/TBU_main03/ost4dgood/TB2167_080409b.ost",
+				"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost",  
+				"/Volumes/TBU_main03/ost4dgood/TB2167_080409b.ost", //Not in CCM. why?
+				//N2greenLED080206 is not in the list. why?
 				}; 
 		for(String s:wnlist)
 			{
@@ -101,7 +131,7 @@ public class MakeStdWorm5
 					}
 				}
 			}
-		
+		*/
 		}
 	
 	/**
@@ -581,97 +611,104 @@ public class MakeStdWorm5
 	 */
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
-		EV.loadPlugins();
-		
-		String outputName="/Volumes/TBU_main02/ostxml/model/stdcelegansNew3.ostxml";
-		
-		loadSelected();
-
-		//Get names of nuclei
-		TreeSet<String> nucNames=new TreeSet<String>();
-		for(NucLineage lin:lins.values())
-			nucNames.addAll(lin.nuc.keySet());
-		
-		//Remove all :-nucs from all lineages, as well as just crap
-		for(NucLineage lin:lins.values())
+		try
 			{
-			TreeSet<String> nucstocopynot=new TreeSet<String>();
-			for(String n:lin.nuc.keySet())
-				if(n.startsWith(":") || 
-						n.startsWith("shell") || n.equals("ant") || n.equals("post") || 
-						n.equals("venc") || n.equals("germline") ||n.equals("2ftail") ||
-						n.equals("P") || n.indexOf('?')>=0 || n.indexOf('_')>=0)
-					nucstocopynot.add(n);
-			for(String n:nucstocopynot)
-				lin.removeNuc(n);
-			}
-		
-		
-		assembleTree();
+			Log.listeners.add(new StdoutLog());
+			EV.loadPlugins();
+			
+			String outputName="/Volumes/TBU_main02/ostxml/model/stdcelegansNew3.ostxml";
+			
+			loadSelected();
 
-
-		lins=normalizeRot(lins);
-		lins=normalizeT(lins);
-		endAllCells(lins); //Important for later interpolation, not just visualization
-		rigidFitOverTime();
-		endAllCells(lins);
-
-
-		//Write tree to XML
-		NucLineage combinedLin=nucstats.generateXMLtree();
-		
-		
-		//Collect distances and radii
-		//TODO: all are now the same time!
-		System.out.println("--- collect spatial statistics");
-
-		for(int curframe=nucstats.minFrame();curframe<nucstats.maxFrame();curframe++)
-			{
-			if(curframe%100==0)
-				System.out.println(curframe);
+			//Get names of nuclei
+			TreeSet<String> nucNames=new TreeSet<String>();
+			for(NucLineage lin:lins.values())
+				nucNames.addAll(lin.nuc.keySet());
+			
+			//Remove all :-nucs from all lineages, as well as just crap
 			for(NucLineage lin:lins.values())
 				{
-				Map<NucPair, NucInterp> inter=lin.getInterpNuc(curframe);
-				for(Map.Entry<NucPair, NucInterp> ie:inter.entrySet())
+				TreeSet<String> nucstocopynot=new TreeSet<String>();
+				for(String n:lin.nuc.keySet())
+					if(n.startsWith(":") || 
+							n.startsWith("shell") || n.equals("ant") || n.equals("post") || 
+							n.equals("venc") || n.equals("germline") ||n.equals("2ftail") ||
+							n.equals("P") || n.indexOf('?')>=0 || n.indexOf('_')>=0)
+						nucstocopynot.add(n);
+				for(String n:nucstocopynot)
+					lin.removeNuc(n);
+				}
+			
+			
+			assembleTree();
+
+
+			lins=normalizeRot(lins);
+			lins=normalizeT(lins);
+			endAllCells(lins); //Important for later interpolation, not just visualization
+			rigidFitOverTime();
+			endAllCells(lins);
+
+
+			//Write tree to XML
+			NucLineage combinedLin=nucstats.generateXMLtree();
+			
+			
+			//Collect distances and radii
+			System.out.println("--- collect spatial statistics");
+
+			for(int curframe=nucstats.minFrame();curframe<nucstats.maxFrame();curframe++)
+				{
+				if(curframe%100==0)
+					System.out.println(curframe);
+				for(NucLineage lin:lins.values())
 					{
-					String thisnucname=ie.getKey().snd();
-					NucInterp ni=ie.getValue();
-					
-					NucStats.NucStatsOne one=nucstats.nuc.get(thisnucname);
-					if(one!=null)
+					Map<NucPair, NucInterp> inter=lin.getInterpNuc(curframe);
+					for(Map.Entry<NucPair, NucInterp> ie:inter.entrySet())
 						{
-						one.addRadius(curframe, ni.pos.r);
-						one.addCollPos(curframe, ni.pos.getPosCopy());
+						String thisnucname=ie.getKey().snd();
+						NucInterp ni=ie.getValue();
+						
+						NucStats.NucStatsOne one=nucstats.nuc.get(thisnucname);
+						if(one!=null)
+							{
+							one.addRadius(curframe, ni.pos.r);
+							one.addCollPos(curframe, ni.pos.getPosCopy());
+							}
+						else
+							System.out.println("no one for "+thisnucname);
 						}
-					else
-						System.out.println("no one for "+thisnucname);
 					}
 				}
-			}
-		
-		assembleModel(combinedLin);
+			
+			assembleModel(combinedLin);
 
-		
-		//Save normalized lineages
-		if(saveNormalized)
+			
+			//Save normalized lineages
+			if(saveNormalized)
+				{
+				EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
+				output2.metaObject.clear();
+				for(Map.Entry<String, NucLineage> e:lins.entrySet())
+					output2.metaObject.put(e.getKey(),e.getValue());
+				output2.metaObject.put("model", combinedLin);
+				output2.saveMeta();
+				}
+			
+
+			//Save reference
+			EvDataXML output=new EvDataXML(outputName);
+			output.metaObject.clear();
+			output.addMetaObject(combinedLin);
+			output.saveMeta();
+			
+			System.out.println("Done");
+			}
+		catch (Exception e)
 			{
-			EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
-			output2.metaObject.clear();
-			for(Map.Entry<String, NucLineage> e:lins.entrySet())
-				output2.metaObject.put(e.getKey(),e.getValue());
-			output2.metaObject.put("model", combinedLin);
-			output2.saveMeta();
+			e.printStackTrace();
 			}
 		
-	
-		//Save reference
-		EvDataXML output=new EvDataXML(outputName);
-		output.metaObject.clear();
-		output.addMetaObject(combinedLin);
-		output.saveMeta();
-		
-		System.out.println("Done");
 		System.exit(0);
 		}
 
