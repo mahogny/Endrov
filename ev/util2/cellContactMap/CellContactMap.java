@@ -92,6 +92,18 @@ public class CellContactMap
 			for(String n:nucNames)
 				lifelen.put(n, 0);
 			
+			PrintWriter pw=null;
+			try
+				{
+				if(name.equals("celegans2008.2"))
+					pw=new PrintWriter(new FileWriter(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/numneigh.txt")));
+				}
+			catch (IOException e1)
+				{
+				System.out.println("failed to open neigh count output");
+				System.exit(1);
+				}
+			
 			
 			//Go through all frames
 			int numframes=0;
@@ -110,6 +122,7 @@ public class CellContactMap
 					{
 					//Eliminate cells not in official list or invisible
 					Map<NucPair, NucLineage.NucInterp> interclean=new HashMap<NucPair, NucLineage.NucInterp>();
+					int numRealNuc=interclean.size();
 					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
 						if(e.getValue().isVisible() && nucNames.contains(e.getKey().snd()))
 							interclean.put(e.getKey(), e.getValue());
@@ -151,7 +164,7 @@ public class CellContactMap
 					//Get neighbours
 					NucVoronoi nvor=new NucVoronoi(inter,true);
 					fcontacts.put(curframe, nvor);
-					//TODO if parent neigh at this frame, remove child
+					//TODO if parent neigh at this frame, remove child?
 					
 					//Turn into more suitable index ordering for later use
 					for(Tuple<String, String> e:nvor.getNeighPairSet())
@@ -159,12 +172,23 @@ public class CellContactMap
 					//Calculate lifelen
 					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
 						addLifelen(e.getKey().snd());
+					
+					//Count neigh
+					if(pw!=null)
+						{
+						int numContact=nvor.getNeighPairSetIndex().size()/2-numRealNuc;
+						pw.println(""+curframe+"\t"+numContact);
+						}
+					
 					}
 				catch (Exception e)
 					{
 //					e.printStackTrace();
 					}
 				}
+			if(pw!=null)
+				pw.close();
+				
 			}
 		}
 	
