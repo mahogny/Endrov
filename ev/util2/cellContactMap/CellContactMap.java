@@ -176,7 +176,7 @@ public class CellContactMap
 					//Count neigh
 					if(pw!=null)
 						{
-						int numContact=nvor.getNeighPairSetIndex().size()/2-numRealNuc;
+						int numContact=nvor.getNeighPairSetIndex().size()-numRealNuc;
 						pw.println(""+curframe+"\t"+numContact);
 						}
 					
