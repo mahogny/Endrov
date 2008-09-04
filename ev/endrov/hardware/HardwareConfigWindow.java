@@ -86,7 +86,7 @@ public class HardwareConfigWindow extends BasicWindow
 	
 	public HardwareConfigWindow()
 		{
-		this(new Rectangle(300,400));
+		this(new Rectangle(400,300));
 		}
 	
 	public HardwareConfigWindow(Rectangle bounds)
