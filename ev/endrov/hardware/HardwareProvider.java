@@ -19,7 +19,7 @@ public abstract class HardwareProvider
 	public abstract void getConfig(Element root);
 	public abstract void setConfig(Element root);
 
+	public abstract List<String> provides();
 	
-	
-	
+	public abstract String getName();
 	}

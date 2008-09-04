@@ -1,5 +1,6 @@
 package endrov.recording;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.jdom.Element;
@@ -9,7 +10,10 @@ import endrov.hardware.HardwareProvider;
 
 public class MicroManager extends HardwareProvider
 	{
-
+	public String getName()
+		{
+		return "umanager";
+		}
 	
 	
 	
@@ -26,6 +30,15 @@ public class MicroManager extends HardwareProvider
 		{
 		}
 	
-	
+	public List<String> provides()
+		{
+		List<String> list=new LinkedList<String>();
+
+		list.add("xystage");
+		list.add("magnifier");
+		
+		
+		return list;
+		}
 
 	}
