@@ -167,7 +167,16 @@ public class Start
 						try
 							{
 							while ( (line = br.readLine()) != null)
+								{
+								if(line.startsWith("Could not create the Java Virtual Machine"))
+									{
+									JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
+//normal output follows									
+//									Error occurred during initialization of VM
+									//Could not reserve enough space for object heap
+									}
 								System.err.println(line);
+								}
 							}
 						catch (IOException e)
 							{
