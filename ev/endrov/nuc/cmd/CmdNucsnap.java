@@ -6,17 +6,16 @@ import javax.vecmath.*;
 import endrov.basicWindow.*;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
-import endrov.script.*;
 
 
 /**
  * Snap to line
  * @author Johan Henriksson
  */
-public class CmdNucsnap extends Command
+public class CmdNucsnap 
 	{
 	public int numArg()	{return 0;}
-	public Exp exec(Vector<Exp> arg) throws Exception
+	public void exec() throws Exception
 		{
 		for(NucPair nucPair:NucLineage.selectedNuclei)
 			{
@@ -51,6 +50,5 @@ public class CmdNucsnap extends Command
 			pos.z=posVec.z;
 			}
 		BasicWindow.updateWindows();
-		return null;
 		}	
 	}

@@ -7,7 +7,7 @@ import endrov.hardware.*;
  * @author Johan Henriksson
  *
  */
-public class Stage implements Hardware
+public abstract class Stage extends Hardware
 	{
 
 	}

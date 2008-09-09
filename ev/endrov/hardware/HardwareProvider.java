@@ -11,7 +11,7 @@ import org.jdom.Element;
 public abstract class HardwareProvider
 	{
 	/** Return null if operation not supported */
-	public abstract List<Hardware> autodetect();
+	public abstract Set<Hardware> autodetect();
 	
 	public Map<String, Hardware> hw=new HashMap<String, Hardware>();
 	

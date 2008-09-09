@@ -10,7 +10,6 @@ import java.util.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.*;
-import endrov.script.*;
 
 
 /**
@@ -26,8 +25,6 @@ public class OstImageset extends Imageset
 	public static void initPlugin() {}
 	static
 		{
-		Script.addCommand("loadost", new CmdLoadOST());
-		
 		supportFileFormats.add(new EvDataSupport(){
 			public Integer supports(String fileS)
 				{

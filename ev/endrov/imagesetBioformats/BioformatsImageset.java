@@ -5,7 +5,6 @@ import java.util.*;
 
 import endrov.data.*;
 import endrov.imageset.*;
-import endrov.script.Script;
 
 import loci.formats.*;
 
@@ -22,9 +21,6 @@ public class BioformatsImageset extends Imageset
 	public static void initPlugin() {}
 	static
 		{
-	
-		Script.addCommand("dbio", new CmdDBIO());
-		
 		supportFileFormats.add(new EvDataSupport(){
 			public Integer supports(String fileS)
 				{

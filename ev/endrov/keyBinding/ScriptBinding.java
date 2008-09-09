@@ -2,11 +2,12 @@ package endrov.keyBinding;
 
 import java.awt.event.*;
 import java.util.*;
+import bsh.*;
 
 import org.jdom.Element;
 
 import endrov.ev.*;
-import endrov.script.*;
+import endrov.script2.*;
 
 public class ScriptBinding
 	{
@@ -46,9 +47,11 @@ public class ScriptBinding
 				{
 				try
 					{
-					Script.evalExp(b.script);
+					Script script=new Script();
+					script.eval(b.script);
+					//TODO Print to console?
 					}
-				catch (Exception e1)
+				catch (EvalError e1)
 					{
 					Log.printError("ScriptBinding", e1);
 					}
