@@ -1,7 +1,6 @@
 package endrov.recording;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.jdom.Element;
 
@@ -17,7 +16,7 @@ public class MicroManager extends HardwareProvider
 	
 	
 	
-	public List<Hardware> autodetect()
+	public Set<Hardware> autodetect()
 		{
 		return null;
 		}

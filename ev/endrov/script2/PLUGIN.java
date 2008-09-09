@@ -1,11 +1,11 @@
-package endrov.script;
+package endrov.script2;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "EVScript";
+		return "Scripting";
 		}
 
 	public String getAuthor()

@@ -13,7 +13,7 @@ import endrov.basicWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
-import endrov.script.*;
+import endrov.script2.*;
 
 import org.jdom.*;
 
@@ -60,7 +60,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
-	
+	public Script script=new Script();
 	
 	/** Last component with focus remembered so this one can be refocused */
 	private WeakReference<Component> lastFocusComponent=null;
@@ -213,7 +213,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 				try
 					{
 					//TODO: why is error not given back here?
-					Exp exp=Script.evalExp(cmd);
+					Object exp=script.eval(cmd);
 					if(exp==null)
 						addHistory("-\n");
 					else

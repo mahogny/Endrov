@@ -5,7 +5,9 @@ package endrov.hardware;
  * @author Johan Henriksson
  *
  */
-public interface Hardware
+public abstract class Hardware
 	{
-
+	/** Descriptive name of hardware */
+	public abstract String getDescName();
+		
 	}

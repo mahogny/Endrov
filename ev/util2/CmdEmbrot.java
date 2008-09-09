@@ -1,68 +1,18 @@
-package endrov.embrot;
+package util2;
 import java.io.*;
-import java.util.*;
 import org.jdom.*;
 
-import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.nuc.*;
-import endrov.script.*;
 
 /**
  * Calculate embryo rotation
  * @author Johan Henriksson
  */
-public class CmdEmbrot extends Command
+public class CmdEmbrot
 	{
-	public static void initPlugin() {}
-	static
-		{
-		Script.addCommand("embrot", new CmdEmbrot());
-		}
 	
-	
-	public int numArg()	{return 0;}
-	public Exp exec(Vector<Exp> arg) throws Exception
-		{
-		NucLineage lin=NucLineage.getSelectedLineage();
-		if(lin!=null)
-			{
-			//Make a deep copy
-			NucLineage linrot=(NucLineage)lin.clone();
-
-//			rotate(lin);
-
-			Element e=new Element("embrot");
-
-			//Rotate embryo to standard position
-			rotate(linrot,e);
-			
-			
-			CustomObject embrot=new CustomObject(e);
-			
-			
-			
-			
-			EvData.getSelectedMetadata().addMetaObject(embrot);
-			//Metadata.getSelectedMetadata().addMetaObject(linrot);
-			
-			//Rotate
-			
-			
-			
-			//Write XML
-			
-			//actually, store new nuclin for comparison
-			
-			
-			
-			BasicWindow.updateWindows();
-			}
-		else
-			Log.printError("Select lineage", null);
-		return null;
-		}
 	
 	public static void dumprot(String name, EvData rec)
 		{
@@ -156,12 +106,7 @@ public class CmdEmbrot extends Command
 		//Calculate angle around yz for every nuc
 		double rotatedXY=-angleXY;
 		double rotatedXZ=-angleXZ;
-/*
-		for i=1:numnuc
-		        emb.dat(i,6)=atan2(emb.dat(i,5), emb.dat(i,4));
-		end
-*/
-		
+
 		Element exy=new Element("rotXY");
 		Element exz=new Element("rotXZ");
 		Element elen=new Element("length");
@@ -203,5 +148,4 @@ public class CmdEmbrot extends Command
 		
 		
 		}
-	
 	}

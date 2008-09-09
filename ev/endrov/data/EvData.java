@@ -10,9 +10,7 @@ import org.jdom.input.*;
 import org.jdom.output.*;
 
 import endrov.basicWindow.*;
-import endrov.data.cmd.*;
 import endrov.ev.*;
-import endrov.script.*;
 
 /**
  * Container of data for EV
@@ -29,14 +27,7 @@ public abstract class EvData
 	
 	public static void initPlugin() {}
 	static
-		{
-		Script.addCommand("loadostxml", new CmdLoadOSTXML());
-		Script.addCommand("dls",  new CmdDLS());
-		Script.addCommand("dsel", new CmdDSEL());
-		Script.addCommand("dunl", new CmdDUNL());
-		Script.addCommand("msel", new CmdMSEL());
-		Script.addCommand("mls",  new CmdMLS());
-		
+		{		
 		//OST XML-support
 		supportFileFormats.add(new EvDataSupport(){
 			public Integer supports(String fileS)

@@ -20,14 +20,6 @@ import endrov.data.*;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
-import endrov.nuc.cmd.CmdNucda;
-import endrov.nuc.cmd.CmdNuchide;
-import endrov.nuc.cmd.CmdNucren;
-import endrov.nuc.cmd.CmdNucrend;
-import endrov.nuc.cmd.CmdNucs;
-import endrov.nuc.cmd.CmdNucshow;
-import endrov.nuc.cmd.CmdNucsnap;
-import endrov.script.*;
 import endrov.util.EvGeomUtil;
 import endrov.util.EvXmlUtil;
 
@@ -65,16 +57,6 @@ public class NucLineage extends EvObject implements Cloneable
 	public static void initPlugin() {}
 	static
 		{
-		Script.addCommand("nus", new CmdNucs(true,true));
-		Script.addCommand("nua", new CmdNucs(false,true));
-		Script.addCommand("nud", new CmdNucs(false,true));
-		Script.addCommand("nuda", new CmdNucda());
-		Script.addCommand("nuren", new CmdNucren());
-		Script.addCommand("nurend", new CmdNucrend());
-		Script.addCommand("nusnap", new CmdNucsnap());
-		Script.addCommand("nuhide", new CmdNuchide());
-		Script.addCommand("nushow", new CmdNucshow());
-//		Script.addCommand("nun", new CmdNucName());
 
 		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
 		

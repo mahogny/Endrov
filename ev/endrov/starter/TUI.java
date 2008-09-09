@@ -1,9 +1,10 @@
 package endrov.starter;
 
 import java.util.*;
+import bsh.*;
 
 import endrov.ev.*;
-import endrov.script.*;
+import endrov.script2.*;
 
 /**
  * Text user interface / console
@@ -23,6 +24,8 @@ public class TUI
 		EV.loadPlugins();
 		Scanner in=new Scanner(System.in);
 
+		Script script=new Script();
+		
 		for(;;)
 			{
 
@@ -33,12 +36,20 @@ public class TUI
 
 			try
 				{
-				Exp e=Script.evalExp(line);
 				
-				if(e==null)
-					System.out.println("<>");
-				else
-					System.out.println(""+e);
+				
+				try
+					{
+					Object e=script.eval(line);
+					if(e==null)
+						System.out.println("<>");
+					else
+						System.out.println(""+e);
+					}
+				catch (EvalError e)
+					{
+					System.out.println(e);
+					}
 				}
 			catch (Exception e)
 				{
