@@ -4,8 +4,9 @@ import bsh.*;
 
 public class Script
 	{
-	Interpreter bsh=new Interpreter();
+	public Interpreter bsh=new Interpreter();
 	
+	public void initPlugin(){}
 	public Script()
 		{
 		bsh.setStrictJava(true);
@@ -20,5 +21,7 @@ public class Script
 		{
 		return bsh.eval(s);
 		}
+	
+	
 	
 	}

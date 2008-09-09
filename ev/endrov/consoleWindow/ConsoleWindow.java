@@ -163,6 +163,10 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		this(0,700,1200,200);
 		}
 	
+	public OutputStream consoleOS;
+	
+	
+	
 	/**
 	 * Make a new window at some specific location
 	 */
@@ -174,7 +178,16 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		history.addKeyListener(this);
 		addKeyListener(this);
 		miShowTraces.addChangeListener(this);
-	
+		
+		consoleOS=new OutputStream(){
+			public void write(int b) throws IOException
+				{
+
+				}
+		};
+		
+		script.bsh.setOut(new PrintStream(consoleOS));
+		
 		//Menu
 		addMenubar(consoleMenu);
 		consoleMenu.add(miShowTraces);
