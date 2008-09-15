@@ -13,8 +13,7 @@ import javax.swing.*;
 public class Start
 	{
 	public static boolean printCommand=false;
-	public static boolean printJavaLib=false;
-	
+	public static boolean printJavaLib=false;	
 	
 	public static void main(String[] args)
 		{
@@ -28,44 +27,53 @@ public class Start
 	public int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
 	public int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
 	public List<String> jarfiles=new LinkedList<String>();
+	public List<String> binfiles=new LinkedList<String>();
 	private String cpsep=":";
 	private String libdir="";
 	private String javaexe="java";
 //	private String memstring="-Xmx2000M";
 	ProcessBuilder pb=new ProcessBuilder("");
 	String jarstring=new File(".").getAbsolutePath();
+	String binstring="";
 
 
 	public void collectSystemInfo(String path)
 		{
 		//Detect OS
+		String osExt="";
+		cpsep=":";
 		if(OS.equals("mac os x"))
 			{
 //			javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
 			libdir=path+"libs/mac";
+			osExt="mac";
 			}
 		else if(OS.startsWith("windows"))
 			{
-			libdir=path+"libs/windows";
+//			libdir=path+"libs/windows";
 			cpsep=";";
+			osExt="win";
 			}
 		else if(OS.startsWith("linux"))
 			{
 			if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
 				{
-				libdir=path+"libs/linuxPPC";
+//				libdir=path+"libs/linuxPPC";
 				pb.environment().put("LD_LIBRARY_PATH", "libs/linuxPPC");
+				osExt="linuxPPC";
 				}
 			else //Assume some sort of x86
 				{
-				libdir=path+"libs/linux";
+//				libdir=path+"libs/linux";
 				pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
+				osExt="linux";
 				}
 			}
 		else if(OS.startsWith("solaris"))
 			{
-			libdir=path+"libs/solaris";
+//			libdir=path+"libs/solaris";
 			pb.environment().put("LD_LIBRARY_PATH", "libs/solaris");
+			osExt="solaris";
 			}
 		else
 			{
@@ -77,11 +85,18 @@ public class Start
 			}
 
 		//Collect jarfiles
-		collectJars(jarfiles, path+"libs");
-		if(!libdir.equals(""))
-			collectJars(jarfiles, libdir);
+		collectJars(jarfiles, binfiles, path+"libs", osExt);
+//		if(!libdir.equals(""))
+//			collectJars(jarfiles, binfiles, libdir, osExt);
 		for(String s:jarfiles)
 			jarstring+=cpsep+s;
+		for(String s:binfiles)
+			{
+			if(!binstring.equals(""))
+				binstring=binstring+cpsep;
+			binstring=binstring+s;
+			}
+		libdir=binstring;
 		}
 	
 	
@@ -117,10 +132,14 @@ public class Start
 
 				
 				//Add arguments from environment file
-				BufferedReader envReader=new BufferedReader(new FileReader(new File("javaenv.txt")));
-				StringTokenizer envTokenizer=new StringTokenizer(envReader.readLine()," ");
-				while(envTokenizer.hasMoreTokens())
-					cmdarg.add(envTokenizer.nextToken());
+				File javaenvFile=new File("javaenv.txt");
+				if(javaenvFile.exists())
+					{
+					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
+					StringTokenizer envTokenizer=new StringTokenizer(envReader.readLine()," ");
+					while(envTokenizer.hasMoreTokens())
+						cmdarg.add(envTokenizer.nextToken());
+					}
 				
 				//What to run? additional arguments?
 				for(String s:args)
@@ -217,7 +236,7 @@ public class Start
 	 * Get all jars and add them with path to vector. Recurses when it finds a directory
 	 * ending with _inc
 	 */
-	private static void collectJars(List<String> v,String dir)
+	private static void collectJars(List<String> v,List<String> binfiles,String dir, String osExt)
 		{
 		File p=new File(dir);
 		if(p.exists())
@@ -227,16 +246,27 @@ public class Start
 					{
 					String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
 					v.add(toadd);
-	//				v.add(sub.getAbsolutePath());
 					if(printJavaLib)
 						System.out.println("Adding java library: "+toadd);
 					}
 				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
-					collectJars(v,sub.getAbsolutePath());
+					collectJars(v,binfiles, sub.getAbsolutePath(), osExt);
+				else if(sub.isDirectory() && sub.getName().equals("bin_"+osExt))
+					{
+					collectJars(v,binfiles, sub.getAbsolutePath(), osExt);
+					
+					String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
+					binfiles.add(toadd);
+					if(printJavaLib)
+						System.out.println("Adding binary directory: "+toadd);
+					}
+					
 				}
 		}
 
+	
 
+	
 	}
 
 /*
