@@ -6,7 +6,7 @@ public class Script
 	{
 	public Interpreter bsh=new Interpreter();
 	
-	public void initPlugin(){}
+	public static void initPlugin(){}
 	public Script()
 		{
 		bsh.setStrictJava(true);

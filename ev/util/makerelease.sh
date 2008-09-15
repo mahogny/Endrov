@@ -20,15 +20,16 @@ rm -Rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
 rm -Rf .cvsignore */.cvsignore */*/.cvsignore */*/*/.cvsignore */*/*/*/.cvsignore
 rm -Rf .project .classpath .metadata .settings
 rm *.log
+rm javaenv.txt
 
 #compress
 cd ..
 zip -r $name $name
-mv $name.zip release
+mv $name.zip release/
 
 #linecount
-wc -l $name/*.java $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java  $name/*/*/*/*.glsl
-du -hc -d 2 $name
+wc -l $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java  $name/*/*/*/*.glsl
+du -hc --max-depth=2 $name
 
 #delete
 rm -Rf $name

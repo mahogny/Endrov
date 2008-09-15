@@ -1,0 +1,75 @@
+LOG(19974, 3081770688:): -------->>
+LOG(19974, 3081770688:): Core session started on Mon Sep 15 2008 16:49:47.446977 by tbudev3 on TBUasm01
+LOG(19974, 3081770688:): Debug logging disabled
+LOG(19974, 3081770688:): All devices unloaded.
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Error occured. Device MMCore::loadDevice. Error code: 8
+mmgr_dal_DemoCamera: cannot open shared object file: No such file or directory DemoCamera
+Unable to load library: file not accessible or corrupted.
+
+LOG(19974, 3081770688:): Starting initialization sequence for 0 devices...
+LOG(19974, 3081770688:): Auto shutter ON.
+LOG(19974, 3081770688:): Configuration Camera/MedRes: new setting for device Camera defined as Binning=2
+LOG(19974, 3081770688:): Configuration Camera/MedRes: new setting for device Camera defined as PixelType=8bit
+LOG(19974, 3081770688:): Configuration Camera/Default: new setting for device Camera defined as Binning=1
+LOG(19974, 3081770688:): Configuration Camera/Default: new setting for device Camera defined as PixelType=8bit
+LOG(19974, 3081770688:): Configuration Camera/LowRes: new setting for device Camera defined as Binning=4
+LOG(19974, 3081770688:): Configuration Camera/LowRes: new setting for device Camera defined as PixelType=8bit
+LOG(19974, 3081770688:): Configuration Camera/HiRes: new setting for device Camera defined as Binning=1
+LOG(19974, 3081770688:): Configuration Camera/HiRes: new setting for device Camera defined as PixelType=16bit
+LOG(19974, 3081770688:): Configuration Objective/20X: new setting for device Objective defined as State=3
+LOG(19974, 3081770688:): Configuration Objective/40X: new setting for device Objective defined as State=0
+LOG(19974, 3081770688:): Configuration Objective/10X: new setting for device Objective defined as State=1
+LOG(19974, 3081770688:): Configuration Channel/FITC: new setting for device Dichroic defined as Label=Q505LP
+LOG(19974, 3081770688:): Configuration Channel/FITC: new setting for device Emission defined as Label=Chroma-HQ535
+LOG(19974, 3081770688:): Configuration Channel/FITC: new setting for device Excitation defined as Label=Chroma-HQ480
+LOG(19974, 3081770688:): Configuration Channel/DAPI: new setting for device Dichroic defined as Label=400DCLP
+LOG(19974, 3081770688:): Configuration Channel/DAPI: new setting for device Emission defined as Label=Chroma-HQ620
+LOG(19974, 3081770688:): Configuration Channel/DAPI: new setting for device Excitation defined as Label=Chroma-D360
+LOG(19974, 3081770688:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as Label=Q585LP
+LOG(19974, 3081770688:): Configuration Channel/Rhodamine: new setting for device Emission defined as Label=Chroma-HQ700
+LOG(19974, 3081770688:): Configuration Channel/Rhodamine: new setting for device Excitation defined as Label=Chroma-HQ570
+LOG(19974, 3081770688:): Configuration Channel/Cy5: new setting for device Dichroic defined as Label=400DCLP
+LOG(19974, 3081770688:): Configuration Channel/Cy5: new setting for device Emission defined as Label=Chroma-HQ700
+LOG(19974, 3081770688:): Configuration Channel/Cy5: new setting for device Excitation defined as Label=Chroma-HQ570
+LOG(19974, 3081770688:): Configuration LightPath/Camera-left: new setting for device Path defined as State=1
+LOG(19974, 3081770688:): Configuration LightPath/Eyepiece: new setting for device Path defined as State=0
+LOG(19974, 3081770688:): Configuration LightPath/Camera-right: new setting for device Path defined as State=2
+LOG(19974, 3081770688:): All devices unloaded.
+LOG(19974, 3081770688:): System reset at Mon Sep 15 2008 16:49:47.499483.
+LOG(19974, 3081770688:): Core session ended on Mon Sep 15 2008 16:49:47.499508
