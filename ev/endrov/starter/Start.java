@@ -50,31 +50,18 @@ public class Start
 			}
 		else if(OS.startsWith("windows"))
 			{
-//			libdir=path+"libs/windows";
 			cpsep=";";
 			osExt="win";
 			}
 		else if(OS.startsWith("linux"))
 			{
 			if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
-				{
-//				libdir=path+"libs/linuxPPC";
-				pb.environment().put("LD_LIBRARY_PATH", "libs/linuxPPC");
 				osExt="linuxPPC";
-				}
 			else //Assume some sort of x86
-				{
-//				libdir=path+"libs/linux";
-				pb.environment().put("LD_LIBRARY_PATH", "libs/linux");
 				osExt="linux";
-				}
 			}
 		else if(OS.startsWith("solaris"))
-			{
-//			libdir=path+"libs/solaris";
-			pb.environment().put("LD_LIBRARY_PATH", "libs/solaris");
 			osExt="solaris";
-			}
 		else
 			{
 			JOptionPane.showMessageDialog(null, 
@@ -90,13 +77,19 @@ public class Start
 //			collectJars(jarfiles, binfiles, libdir, osExt);
 		for(String s:jarfiles)
 			jarstring+=cpsep+s;
+		String ldlibpath="";
 		for(String s:binfiles)
 			{
 			if(!binstring.equals(""))
 				binstring=binstring+cpsep;
 			binstring=binstring+s;
+			
+			if(!ldlibpath.equals(""))
+				ldlibpath=ldlibpath+":";
+			ldlibpath=ldlibpath+s;
 			}
 		libdir=binstring;
+		pb.environment().put("LD_LIBRARY_PATH", ldlibpath);
 		}
 	
 	
