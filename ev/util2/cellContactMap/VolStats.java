@@ -66,7 +66,10 @@ public class VolStats
 				{
 				int f=lin.nuc.get(nuc).pos.lastKey();
 				if(f<lastFrame)
+					{
 					lastFrame=f;
+					System.out.println("Ending with "+nuc+" at "+lastFrame);
+					}
 				}
 			}
 		return lastFrame;
