@@ -72,6 +72,10 @@ public class VolStats
 					}
 				}
 			}
+		
+		//override
+		lastFrame=1800;
+		
 		return lastFrame;
 		}
 	
