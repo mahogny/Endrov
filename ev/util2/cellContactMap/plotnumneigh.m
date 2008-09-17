@@ -10,6 +10,6 @@ numcontact=numcontact(1:length(curframe));
 
 
 
-plot(numcontact./numcell)
+plot(curframe,numcontact./numcell)
 
 %jurgen cuts y. only show 3+ contacts?

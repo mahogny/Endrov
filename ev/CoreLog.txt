@@ -1,0 +1,240 @@
+LOG(7853, 3084196752:): -------->>
+LOG(7853, 3084196752:): Core session started on Tue Sep 16 2008 15:41:18.312080 by tbudev3 on TBUasm01
+LOG(7853, 3084196752:): Debug logging disabled
+LOG(7853, 3084196752:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(7853, 3084196752:): Device Camera set as camera.
+LOG(7853, 3084196752:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(7853, 3084196752:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(7853, 3084196752:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(7853, 3084196752:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(7853, 3084196752:): Device DStage loaded from DemoCamera and labeled as X
+LOG(7853, 3084196752:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(7853, 3084196752:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(7853, 3084196752:): Starting initialization sequence for 8 devices...
+LOG(7853, 3084196752:): Device Camera initialized.
+LOG(7853, 3084196752:): Device Dichroic initialized.
+LOG(7853, 3084196752:): Device Emission initialized.
+LOG(7853, 3084196752:): Device Excitation initialized.
+LOG(7853, 3084196752:): Device Objective initialized.
+LOG(7853, 3084196752:): Device X initialized.
+LOG(7853, 3084196752:): Device Y initialized.
+LOG(7853, 3084196752:): Device Z initialized.
+LOG(7853, 3084196752:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(7853, 3084196752:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(7853, 3084196752:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(7853, 3084196752:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(7853, 3084196752:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(7853, 3084196752:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(7853, 3084196752:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(7853, 3084196752:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(7853, 3084196752:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2
+LOG(8247, 3084557200:): -------->>
+LOG(8247, 3084557200:): Core session started on Tue Sep 16 2008 15:53:40.204829 by tbudev3 on TBUasm01
+LOG(8247, 3084557200:): Debug logging disabled
+LOG(8247, 3084557200:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(8247, 3084557200:): Device Camera set as camera.
+LOG(8247, 3084557200:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(8247, 3084557200:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(8247, 3084557200:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(8247, 3084557200:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(8247, 3084557200:): Device DStage loaded from DemoCamera and labeled as X
+LOG(8247, 3084557200:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(8247, 3084557200:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(8247, 3084557200:): Starting initialization sequence for 8 devices...
+LOG(8247, 3084557200:): Device Camera initialized.
+LOG(8247, 3084557200:): Device Dichroic initialized.
+LOG(8247, 3084557200:): Device Emission initialized.
+LOG(8247, 3084557200:): Device Excitation initialized.
+LOG(8247, 3084557200:): Device Objective initialized.
+LOG(8247, 3084557200:): Device X initialized.
+LOG(8247, 3084557200:): Device Y initialized.
+LOG(8247, 3084557200:): Device Z initialized.
+LOG(8247, 3084557200:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(8247, 3084557200:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(8247, 3084557200:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(8247, 3084557200:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(8247, 3084557200:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(8247, 3084557200:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(8247, 3084557200:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(8247, 3084557200:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(8247, 3084557200:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2
+LOG(8288, 3084508048:): -------->>
+LOG(8288, 3084508048:): Core session started on Tue Sep 16 2008 15:54:16.557079 by tbudev3 on TBUasm01
+LOG(8288, 3084508048:): Debug logging disabled
+LOG(8288, 3084508048:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(8288, 3084508048:): Device Camera set as camera.
+LOG(8288, 3084508048:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(8288, 3084508048:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(8288, 3084508048:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(8288, 3084508048:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(8288, 3084508048:): Device DStage loaded from DemoCamera and labeled as X
+LOG(8288, 3084508048:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(8288, 3084508048:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(8288, 3084508048:): Starting initialization sequence for 8 devices...
+LOG(8288, 3084508048:): Device Camera initialized.
+LOG(8288, 3084508048:): Device Dichroic initialized.
+LOG(8288, 3084508048:): Device Emission initialized.
+LOG(8288, 3084508048:): Device Excitation initialized.
+LOG(8288, 3084508048:): Device Objective initialized.
+LOG(8288, 3084508048:): Device X initialized.
+LOG(8288, 3084508048:): Device Y initialized.
+LOG(8288, 3084508048:): Device Z initialized.
+LOG(8288, 3084508048:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(8288, 3084508048:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(8288, 3084508048:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(8288, 3084508048:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(8288, 3084508048:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(8288, 3084508048:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(8288, 3084508048:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(8288, 3084508048:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(8288, 3084508048:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2
+LOG(8329, 3084475280:): -------->>
+LOG(8329, 3084475280:): Core session started on Tue Sep 16 2008 15:54:43.302438 by tbudev3 on TBUasm01
+LOG(8329, 3084475280:): Debug logging disabled
+LOG(8329, 3084475280:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(8329, 3084475280:): Device Camera set as camera.
+LOG(8329, 3084475280:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(8329, 3084475280:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(8329, 3084475280:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(8329, 3084475280:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(8329, 3084475280:): Device DStage loaded from DemoCamera and labeled as X
+LOG(8329, 3084475280:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(8329, 3084475280:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(8329, 3084475280:): Starting initialization sequence for 8 devices...
+LOG(8329, 3084475280:): Device Camera initialized.
+LOG(8329, 3084475280:): Device Dichroic initialized.
+LOG(8329, 3084475280:): Device Emission initialized.
+LOG(8329, 3084475280:): Device Excitation initialized.
+LOG(8329, 3084475280:): Device Objective initialized.
+LOG(8329, 3084475280:): Device X initialized.
+LOG(8329, 3084475280:): Device Y initialized.
+LOG(8329, 3084475280:): Device Z initialized.
+LOG(8329, 3084475280:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(8329, 3084475280:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(8329, 3084475280:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(8329, 3084475280:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(8329, 3084475280:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(8329, 3084475280:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(8329, 3084475280:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(8329, 3084475280:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(8329, 3084475280:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2
+LOG(8389, 3084200848:): -------->>
+LOG(8389, 3084200848:): Core session started on Tue Sep 16 2008 15:56:09.866140 by tbudev3 on TBUasm01
+LOG(8389, 3084200848:): Debug logging disabled
+LOG(8389, 3084200848:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(8389, 3084200848:): Device Camera set as camera.
+LOG(8389, 3084200848:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(8389, 3084200848:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(8389, 3084200848:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(8389, 3084200848:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(8389, 3084200848:): Device DStage loaded from DemoCamera and labeled as X
+LOG(8389, 3084200848:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(8389, 3084200848:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(8389, 3084200848:): Starting initialization sequence for 8 devices...
+LOG(8389, 3084200848:): Device Camera initialized.
+LOG(8389, 3084200848:): Device Dichroic initialized.
+LOG(8389, 3084200848:): Device Emission initialized.
+LOG(8389, 3084200848:): Device Excitation initialized.
+LOG(8389, 3084200848:): Device Objective initialized.
+LOG(8389, 3084200848:): Device X initialized.
+LOG(8389, 3084200848:): Device Y initialized.
+LOG(8389, 3084200848:): Device Z initialized.
+LOG(8389, 3084200848:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(8389, 3084200848:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(8389, 3084200848:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(8389, 3084200848:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(8389, 3084200848:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(8389, 3084200848:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(8389, 3084200848:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(8389, 3084200848:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(8389, 3084200848:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2
+LOG(8419, 3084360592:): -------->>
+LOG(8419, 3084360592:): Core session started on Tue Sep 16 2008 15:56:17.138308 by tbudev3 on TBUasm01
+LOG(8419, 3084360592:): Debug logging disabled
+LOG(8419, 3084360592:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(8419, 3084360592:): Device Camera set as camera.
+LOG(8419, 3084360592:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(8419, 3084360592:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(8419, 3084360592:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(8419, 3084360592:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(8419, 3084360592:): Device DStage loaded from DemoCamera and labeled as X
+LOG(8419, 3084360592:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(8419, 3084360592:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(8419, 3084360592:): Starting initialization sequence for 8 devices...
+LOG(8419, 3084360592:): Device Camera initialized.
+LOG(8419, 3084360592:): Device Dichroic initialized.
+LOG(8419, 3084360592:): Device Emission initialized.
+LOG(8419, 3084360592:): Device Excitation initialized.
+LOG(8419, 3084360592:): Device Objective initialized.
+LOG(8419, 3084360592:): Device X initialized.
+LOG(8419, 3084360592:): Device Y initialized.
+LOG(8419, 3084360592:): Device Z initialized.
+LOG(8419, 3084360592:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(8419, 3084360592:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(8419, 3084360592:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(8419, 3084360592:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(8419, 3084360592:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(8419, 3084360592:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(8419, 3084360592:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(8419, 3084360592:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(8419, 3084360592:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2
+LOG(8454, 3084209040:): -------->>
+LOG(8454, 3084209040:): Core session started on Tue Sep 16 2008 15:56:50.599157 by tbudev3 on TBUasm01
+LOG(8454, 3084209040:): Debug logging disabled
+LOG(8454, 3084209040:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(8454, 3084209040:): Device Camera set as camera.
+LOG(8454, 3084209040:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(8454, 3084209040:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(8454, 3084209040:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(8454, 3084209040:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(8454, 3084209040:): Device DStage loaded from DemoCamera and labeled as X
+LOG(8454, 3084209040:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(8454, 3084209040:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(8454, 3084209040:): Starting initialization sequence for 8 devices...
+LOG(8454, 3084209040:): Device Camera initialized.
+LOG(8454, 3084209040:): Device Dichroic initialized.
+LOG(8454, 3084209040:): Device Emission initialized.
+LOG(8454, 3084209040:): Device Excitation initialized.
+LOG(8454, 3084209040:): Device Objective initialized.
+LOG(8454, 3084209040:): Device X initialized.
+LOG(8454, 3084209040:): Device Y initialized.
+LOG(8454, 3084209040:): Device Z initialized.
+LOG(8454, 3084209040:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(8454, 3084209040:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(8454, 3084209040:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(8454, 3084209040:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(8454, 3084209040:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(8454, 3084209040:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(8454, 3084209040:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(8454, 3084209040:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(8454, 3084209040:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2
+LOG(8504, 3084295056:): -------->>
+LOG(8504, 3084295056:): Core session started on Tue Sep 16 2008 15:57:54.130797 by tbudev3 on TBUasm01
+LOG(8504, 3084295056:): Debug logging disabled
+LOG(8504, 3084295056:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(8504, 3084295056:): Device Camera set as camera.
+LOG(8504, 3084295056:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(8504, 3084295056:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(8504, 3084295056:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(8504, 3084295056:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(8504, 3084295056:): Device DStage loaded from DemoCamera and labeled as X
+LOG(8504, 3084295056:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(8504, 3084295056:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(8504, 3084295056:): Starting initialization sequence for 8 devices...
+LOG(8504, 3084295056:): Device Camera initialized.
+LOG(8504, 3084295056:): Device Dichroic initialized.
+LOG(8504, 3084295056:): Device Emission initialized.
+LOG(8504, 3084295056:): Device Excitation initialized.
+LOG(8504, 3084295056:): Device Objective initialized.
+LOG(8504, 3084295056:): Device X initialized.
+LOG(8504, 3084295056:): Device Y initialized.
+LOG(8504, 3084295056:): Device Z initialized.
+LOG(8504, 3084295056:): Configuration Channel/FITC: new setting for device Emission defined as State=2
+LOG(8504, 3084295056:): Configuration Channel/FITC: new setting for device Excitation defined as State=3
+LOG(8504, 3084295056:): Configuration Channel/FITC: new setting for device Dichroic defined as State=1
+LOG(8504, 3084295056:): Configuration Channel/DAPI: new setting for device Emission defined as State=1
+LOG(8504, 3084295056:): Configuration Channel/DAPI: new setting for device Excitation defined as State=2
+LOG(8504, 3084295056:): Configuration Channel/DAPI: new setting for device Dichroic defined as State=0
+LOG(8504, 3084295056:): Configuration Channel/Rhodamine: new setting for device Emission defined as State=3
+LOG(8504, 3084295056:): Configuration Channel/Rhodamine: new setting for device Excitation defined as State=4
+LOG(8504, 3084295056:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as State=2

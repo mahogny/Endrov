@@ -22,8 +22,17 @@ curframe=dat(:,1);
 numcell=dat(:,2);
 totnucvol=dat(:,3);
 
-curframe=curframe-min(curframe);
+%curframe=curframe-min(curframe);
 %curframe=curframe.*(10/60); %timestep I think
+
+
+
+%cut off at 150 cells
+cutoff=find(numcell==150)
+cutoff=cutoff(1);
+curframe=curframe(1:cutoff);
+numcell=numcell(1:cutoff);
+totnucvol=totnucvol(1:cutoff);
 
 
 volpernuc=totnucvol./numcell;
