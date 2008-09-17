@@ -17,6 +17,9 @@ import endrov.script2.*;
 
 import org.jdom.*;
 
+//import bsh.ConsoleInterface;
+//import bsh.Interpreter;
+
 
 /**
  * Console Window. Provides a CLI in the GUI
@@ -63,14 +66,18 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public Script script=new Script();
 	
 	/** Last component with focus remembered so this one can be refocused */
-	private WeakReference<Component> lastFocusComponent=null;
-	private WeakReference<BasicWindow> lastFocusFrame=null;
+	private WeakReference<Component> lastFocusComponent=new WeakReference<Component>(null);
+	private WeakReference<BasicWindow> lastFocusFrame=new WeakReference<BasicWindow>(null);
 	
 	//GUI components
 	private JTextArea history=new JTextArea();
 	private JTextFieldHistorized commandLine=new JTextFieldHistorized();
+	private JTextArea commandArea=new JTextArea();
+	
+	
 	private JMenu consoleMenu=new JMenu("Console");
 	private JMenuItem miShowTraces=new JCheckBoxMenuItem("Show traces",false);
+	private JMenuItem miMultiLineInput=new JCheckBoxMenuItem("Multi-line input",false);
 	
 	/**
 	 * Take new log events and put them in console history
@@ -172,25 +179,43 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 */
 	public ConsoleWindow(int x, int y, int w, int h)
 		{
+		commandArea.addKeyListener(new KeyListener(){
+			public void keyPressed(KeyEvent e){}
+			public void keyTyped(KeyEvent e){}
+			public void keyReleased(KeyEvent e){
+			if(e.getKeyCode()==KeyEvent.VK_ENTER && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK)!=0)
+				{
+				String cmd=commandArea.getText();
+				execLine(cmd);
+				}
+			}
+		});
+		
+		
 		JScrollPane hs=new JScrollPane(history, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		history.setEditable(false);
 		commandLine.addActionListener(this);
 		history.addKeyListener(this);
 		addKeyListener(this);
 		miShowTraces.addChangeListener(this);
-		
+		miMultiLineInput.addActionListener(this);
+	
+		/*
 		consoleOS=new OutputStream(){
 			public void write(int b) throws IOException
 				{
-
+				
+				
+				System.out.print("cons "+Character.toString((char)b));
 				}
 		};
-		
 		script.bsh.setOut(new PrintStream(consoleOS));
+*/
 		
 		//Menu
 		addMenubar(consoleMenu);
 		consoleMenu.add(miShowTraces);
+		consoleMenu.add(miMultiLineInput);
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
@@ -210,6 +235,36 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		}
 	
 	
+	private void execLine(String cmd)
+		{
+		if(!cmd.equals(""))
+			{
+			try
+				{
+				//TODO: why is error not given back here?
+				Object exp=script.eval(cmd);
+				if(exp==null)
+					addHistory("-\n");
+				else
+					addHistory(""+exp+"\n");
+				}
+			catch(Exception ex)
+				{
+				if(miShowTraces.isSelected())
+					{
+					StringWriter sw=new StringWriter();
+					PrintWriter pw=new PrintWriter(sw);
+					ex.printStackTrace(pw);
+					pw.flush();
+					addHistory(ex.getMessage()+"\n"+sw.toString());
+					}
+				else
+					addHistory(ex.getMessage()+"\n");
+				}
+			}
+		returnFocus();
+		}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -219,34 +274,32 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		if(e.getSource()==commandLine)
 			{
 			String cmd=commandLine.getText();
+			addHistory("> "+cmd+"\n");
 			commandLine.setText("");
 			addHistory("> "+cmd+"\n");
-			if(!cmd.equals(""))
+			execLine(cmd);
+			}
+		else if(e.getSource()==miMultiLineInput)
+			{
+			if(miMultiLineInput.isSelected())
 				{
-				try
-					{
-					//TODO: why is error not given back here?
-					Object exp=script.eval(cmd);
-					if(exp==null)
-						addHistory("-\n");
-					else
-						addHistory(""+exp+"\n");
-					}
-				catch(Exception ex)
-					{
-					if(miShowTraces.isSelected())
-						{
-						StringWriter sw=new StringWriter();
-						PrintWriter pw=new PrintWriter(sw);
-						ex.printStackTrace(pw);
-						pw.flush();
-						addHistory(ex.getMessage()+"\n"+sw.toString());
-						}
-					else
-						addHistory(ex.getMessage()+"\n");
-					}
+				remove(commandLine);
+				add(commandArea,BorderLayout.SOUTH);
+/*				commandArea.setVisible(true);
+				commandLine.setVisible(false);*/
+				revalidate();
+	//			repaint();
 				}
-			returnFocus();
+			else
+				{
+				remove(commandArea);
+				add(commandLine,BorderLayout.SOUTH);
+		/*		commandArea.setVisible(false);
+				commandLine.setVisible(true);*/
+				revalidate();
+			//	repaint();
+				}
+			
 			}
 		}
 	
