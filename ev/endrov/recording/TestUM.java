@@ -1,5 +1,7 @@
 package endrov.recording;
 
+import java.util.Map;
+
 import mmcorej.*;
 
 public class TestUM
@@ -51,47 +53,33 @@ public class TestUM
 			core.defineStateLabel("Objective", 5, "Zeiss 4X Plan Apo");
 	
 			// define configurations
-			//
 			core.defineConfig("Channel", "FITC", "Emission", "State", "2");
 			core.defineConfig("Channel", "FITC", "Excitation", "State", "3");
 			core.defineConfig("Channel", "FITC", "Dichroic", "State", "1");
-	
 			core.defineConfig("Channel", "DAPI", "Emission", "State", "1");
 			core.defineConfig("Channel", "DAPI", "Excitation", "State", "2");
 			core.defineConfig("Channel", "DAPI", "Dichroic", "State", "0");
-	
 			core.defineConfig("Channel", "Rhodamine", "Emission", "State", "3");
 			core.defineConfig("Channel", "Rhodamine", "Excitation", "State", "4");
 			core.defineConfig("Channel", "Rhodamine", "Dichroic", "State", "2");
 	
 			// set initial imaging mode
-			//
 			core.setProperty("Camera", "Exposure", "55");
 			core.setProperty("Objective", "Label", "Nikon 10X S Fluor");
 			core.setConfig("Channel", "DAPI");
 	
 			// list devices
-			StrVector devices = core.getLoadedDevices();
 			System.out.println("Device status:");
-	
-			for (int i=0; i<devices.size(); i++)
+			for (String device:MMutil.getLoadedDevices(core))
 				{
-				System.out.println(devices.get(i));
-				// list device properties
-				StrVector properties = core.getDevicePropertyNames(devices.get(i));
-				if (properties.size() == 0)
-					System.out.println("   No properties.");
-				for (int j=0; j<properties.size(); j++)
+				System.out.println("dev"+device);
+				for(Map.Entry<String, String> prop:MMutil.getPropMap(core,device).entrySet())
 					{
-					System.out.println("   " + properties.get(j) + " = "
-							+ core.getProperty(devices.get(i), properties.get(j)));
-					StrVector values = core.getAllowedPropertyValues(devices.get(i), properties.get(j));
-					for (int k=0; k<values.size(); k++)
-						{
-						System.out.println("      " + values.get(k));
-						}
+					System.out.println(" " + prop.getKey() + " = " + prop.getValue());
+					System.out.println("  " + MMutil.getPropMap(core, device));
 					}
 				}
+			
 			// list configurations
 			StrVector groups = core.getAvailableConfigGroups();
 			for (int i=0; i<groups.size(); i++)
@@ -105,8 +93,7 @@ public class TestUM
 					for (int k=0; k<cdata.size(); k++) 
 						{
 						PropertySetting s = cdata.getSetting(k);
-						System.out.println("      " + s.getDeviceLabel() + ", " +
-								s.getPropertyName() + ", " + s.getPropertyValue());
+						System.out.println("      " + s.getDeviceLabel() + ", " +	s.getPropertyName() + ", " + s.getPropertyValue());
 						}
 					}
 				}
@@ -114,7 +101,7 @@ public class TestUM
 			}
 		catch (Exception e) 
 			{
-			System.out.println(e.getMessage());
+			System.out.println("err:"+e.getMessage());
 			System.exit(1);
 			}
 		}
