@@ -16,6 +16,16 @@ public class HardwareManager
 	{
 	public static List<HardwareProvider> provider=new Vector<HardwareProvider>();
 	
+	
+	public static void registerHardwareProvider(HardwareProvider hp)
+		{
+		provider.add(hp);
+		
+		//Load config here
+		
+		}
+	
+	
 	/**
 	 * Get device or null if it does not exist
 	 */
@@ -58,6 +68,7 @@ public class HardwareManager
 		}
 	
 	//
+	
 	
 	
 	}

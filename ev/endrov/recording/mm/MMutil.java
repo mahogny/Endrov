@@ -1,9 +1,8 @@
-package endrov.recording;
+package endrov.recording.mm;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import endrov.recording.CameraImage;
 
 import mmcorej.*;
 
@@ -27,14 +26,23 @@ public class MMutil
 		return MMutil.convVector(core.getLoadedDevices());
 		}
 	
-	public static Map<String,String> getPropMap(CMMCore core, String device) throws Exception
+	public static SortedMap<String,String> getPropMap(CMMCore core, String device) throws Exception
 		{
-		Map<String,String> map=new HashMap<String, String>();
+		SortedMap<String,String> map=new TreeMap<String, String>();
 		for(String key:convVector(core.getDevicePropertyNames(device)))
 			map.put(key,core.getProperty(device, key));
 		return map;
 		}
 	
-	
+	public static CameraImage snap(CMMCore core) throws Exception
+		{
+		CameraImage im=new CameraImage();
+		core.snapImage();
+		im.w = (int)core.getImageWidth();
+		im.h = (int)core.getImageHeight();
+		im.bytesPerPixel=(int)core.getBytesPerPixel();
+		im.pixels=core.getImage();
+		return im;
+		}
 	
 	}
