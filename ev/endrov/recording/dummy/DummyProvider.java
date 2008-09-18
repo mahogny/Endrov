@@ -4,18 +4,29 @@ import java.util.*;
 
 import org.jdom.Element;
 
-import endrov.hardware.Hardware;
-import endrov.hardware.HardwareProvider;
-import endrov.recording.*;
+import endrov.hardware.*;
 
 public class DummyProvider extends HardwareProvider
 	{
+	/*
 	public static Camera cam=new Camera(){
 		public String getDescName()
 			{
 			return "Dummy camera";
 			}
-		
+		public SortedMap<String,PropertyType> getPropertyTypes()
+			{
+			TreeMap<String, PropertyType> map=new TreeMap<String, PropertyType>();
+			return map;
+			}
+		public Map<String,String> getPropertyMap()
+			{
+			
+			}
+		public String getPropertyValue(String prop)
+			{
+			
+			}
 		
 		
 	};
@@ -25,15 +36,15 @@ public class DummyProvider extends HardwareProvider
 		return "Dummy stage";
 		}
 	
-	};
+	};*/
 
 	public Set<Hardware> providing=new HashSet<Hardware>();
 	
 	public DummyProvider()
 		{
 		//provider should not be static!!
-		providing.add(cam);
-		providing.add(stage);
+//		providing.add(cam);
+//		providing.add(stage);
 		}
 	
 	

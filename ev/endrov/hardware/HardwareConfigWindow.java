@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.*;
 
@@ -16,6 +17,10 @@ import endrov.basicWindow.BasicWindowExtension;
 import endrov.basicWindow.BasicWindowHook;
 import endrov.data.EvData;
 
+/**
+ * Hardware Configuration window
+ * @author Johan Henriksson 
+ */
 public class HardwareConfigWindow extends BasicWindow
 	{
 	/******************************************************************************************************
@@ -84,6 +89,15 @@ public class HardwareConfigWindow extends BasicWindow
 	JButton bAutodetect=new JButton("Autodetect");
 	
 	
+	private static class HWListItem
+		{
+		String name;
+		public String toString()
+			{
+			return name+" :: "+HardwareManager.getHardware(name).getDescName();
+			}
+		}
+	
 	public HardwareConfigWindow()
 		{
 		this(new Rectangle(400,300));
@@ -91,7 +105,16 @@ public class HardwareConfigWindow extends BasicWindow
 	
 	public HardwareConfigWindow(Rectangle bounds)
 		{
-		JList hwList=new JList();
+		Vector<HWListItem> hwNames=new Vector<HWListItem>();
+		for(String hw:HardwareManager.getHardwareList())
+			{
+			HWListItem item=new HWListItem();
+			item.name=hw;
+			hwNames.add(item);
+			}
+		
+		
+		JList hwList=new JList(hwNames);
 		
 		JPanel bpu=new JPanel(new GridLayout(1,2));
 		bpu.add(bAdd);
@@ -115,6 +138,7 @@ public class HardwareConfigWindow extends BasicWindow
 		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
 		}
+	
 	
 	
 	
