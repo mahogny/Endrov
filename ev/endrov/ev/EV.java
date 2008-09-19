@@ -236,6 +236,14 @@ public class EV
 		}
 
 	/**
+	 * Check if the system is running Linux
+	 */
+	public static boolean isLinux()
+		{
+		return System.getProperty("os.name").toUpperCase().indexOf("LINUX") != -1;
+		}
+
+	/**
 	 * Format a number to a certain number of digits.
 	 * @param n The number
 	 * @param len The length of the final string
