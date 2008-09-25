@@ -73,3 +73,66 @@ LOG(19974, 3081770688:): Configuration LightPath/Camera-right: new setting for d
 LOG(19974, 3081770688:): All devices unloaded.
 LOG(19974, 3081770688:): System reset at Mon Sep 15 2008 16:49:47.499483.
 LOG(19974, 3081770688:): Core session ended on Mon Sep 15 2008 16:49:47.499508
+LOG(22781, 3081639616:): -------->>
+LOG(22781, 3081639616:): Core session started on Thu Sep 25 2008 23:34:56.564465 by mahogny on venus
+LOG(22781, 3081639616:): Debug logging disabled
+LOG(22781, 3081639616:): All devices unloaded.
+LOG(22781, 3081639616:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(22781, 3081639616:): Device Camera set as camera.
+LOG(22781, 3081639616:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(22781, 3081639616:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(22781, 3081639616:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(22781, 3081639616:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(22781, 3081639616:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(22781, 3081639616:): Device DLightPath loaded from DemoCamera and labeled as Path
+LOG(22781, 3081639616:): Device DXYStage loaded from DemoCamera and labeled as XY
+LOG(22781, 3081639616:): Device XY set as xyStage.
+LOG(22781, 3081639616:): Device DShutter loaded from DemoCamera and labeled as Shutter
+LOG(22781, 3081639616:): Device Shutter set as shutter.
+LOG(22781, 3081639616:): Device DAutoFocus loaded from DemoCamera and labeled as Autofocus
+LOG(22781, 3081639616:): Device Autofocus set as auto-focus.
+LOG(22781, 3081639616:): Starting initialization sequence for 10 devices...
+LOG(22781, 3081639616:): Device Autofocus initialized.
+LOG(22781, 3081639616:): Device Camera initialized.
+LOG(22781, 3081639616:): Device Dichroic initialized.
+LOG(22781, 3081639616:): Device Emission initialized.
+LOG(22781, 3081639616:): Device Excitation initialized.
+LOG(22781, 3081639616:): Device Objective initialized.
+LOG(22781, 3081639616:): Device Path initialized.
+LOG(22781, 3081639616:): Device Shutter initialized.
+LOG(22781, 3081639616:): Device XY initialized.
+LOG(22781, 3081639616:): Device Z initialized.
+LOG(22781, 3081639616:): Camera device set to Camera
+LOG(22781, 3081639616:): Focus device set to Z
+LOG(22781, 3081639616:): Auto shutter ON.
+LOG(22781, 3081639616:): Configuration Camera/MedRes: new setting for device Camera defined as Binning=2
+LOG(22781, 3081639616:): Configuration Camera/MedRes: new setting for device Camera defined as PixelType=8bit
+LOG(22781, 3081639616:): Configuration Camera/Default: new setting for device Camera defined as Binning=1
+LOG(22781, 3081639616:): Configuration Camera/Default: new setting for device Camera defined as PixelType=8bit
+LOG(22781, 3081639616:): Configuration Camera/LowRes: new setting for device Camera defined as Binning=4
+LOG(22781, 3081639616:): Configuration Camera/LowRes: new setting for device Camera defined as PixelType=8bit
+LOG(22781, 3081639616:): Configuration Camera/HiRes: new setting for device Camera defined as Binning=1
+LOG(22781, 3081639616:): Configuration Camera/HiRes: new setting for device Camera defined as PixelType=16bit
+LOG(22781, 3081639616:): Configuration Objective/20X: new setting for device Objective defined as State=3
+LOG(22781, 3081639616:): Configuration Objective/40X: new setting for device Objective defined as State=0
+LOG(22781, 3081639616:): Configuration Objective/10X: new setting for device Objective defined as State=1
+LOG(22781, 3081639616:): Configuration Channel/FITC: new setting for device Dichroic defined as Label=Q505LP
+LOG(22781, 3081639616:): Configuration Channel/FITC: new setting for device Emission defined as Label=Chroma-HQ535
+LOG(22781, 3081639616:): Configuration Channel/FITC: new setting for device Excitation defined as Label=Chroma-HQ480
+LOG(22781, 3081639616:): Configuration Channel/DAPI: new setting for device Dichroic defined as Label=400DCLP
+LOG(22781, 3081639616:): Configuration Channel/DAPI: new setting for device Emission defined as Label=Chroma-HQ620
+LOG(22781, 3081639616:): Configuration Channel/DAPI: new setting for device Excitation defined as Label=Chroma-D360
+LOG(22781, 3081639616:): Configuration Channel/Rhodamine: new setting for device Dichroic defined as Label=Q585LP
+LOG(22781, 3081639616:): Configuration Channel/Rhodamine: new setting for device Emission defined as Label=Chroma-HQ700
+LOG(22781, 3081639616:): Configuration Channel/Rhodamine: new setting for device Excitation defined as Label=Chroma-HQ570
+LOG(22781, 3081639616:): Configuration Channel/Cy5: new setting for device Dichroic defined as Label=400DCLP
+LOG(22781, 3081639616:): Configuration Channel/Cy5: new setting for device Emission defined as Label=Chroma-HQ700
+LOG(22781, 3081639616:): Configuration Channel/Cy5: new setting for device Excitation defined as Label=Chroma-HQ570
+LOG(22781, 3081639616:): Configuration LightPath/Camera-left: new setting for device Path defined as State=1
+LOG(22781, 3081639616:): Configuration LightPath/Eyepiece: new setting for device Path defined as State=0
+LOG(22781, 3081639616:): Configuration LightPath/Camera-right: new setting for device Path defined as State=2
+LOG(22781, 3081639616:): System state cache updated.
+LOG(22781, 3081639616:): All devices unloaded.
+LOG(22781, 3081639616:): All devices unloaded.
+LOG(22781, 3081639616:): System reset at Thu Sep 25 2008 23:34:56.769120.
+LOG(22781, 3081639616:): Core session ended on Thu Sep 25 2008 23:34:56.769139
