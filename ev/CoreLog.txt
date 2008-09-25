@@ -905,3 +905,26 @@ LOG(18465, 3084790672:): Device X initialized.
 LOG(18465, 3084790672:): Device Y initialized.
 LOG(18465, 3084790672:): Device Z initialized.
 LOG(18465, 3084790672:): Syestem state cache updated.
+LOG(23008, 3084659600:): -------->>
+LOG(23008, 3084659600:): Core session started on Thu Sep 25 2008 23:53:46.400386 by mahogny on venus
+LOG(23008, 3084659600:): Debug logging disabled
+LOG(23008, 3084659600:): All devices unloaded.
+LOG(23008, 3084659600:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(23008, 3084659600:): Device Camera set as camera.
+LOG(23008, 3084659600:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(23008, 3084659600:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(23008, 3084659600:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(23008, 3084659600:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(23008, 3084659600:): Device DStage loaded from DemoCamera and labeled as X
+LOG(23008, 3084659600:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(23008, 3084659600:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(23008, 3084659600:): Starting initialization sequence for 8 devices...
+LOG(23008, 3084659600:): Device Camera initialized.
+LOG(23008, 3084659600:): Device Dichroic initialized.
+LOG(23008, 3084659600:): Device Emission initialized.
+LOG(23008, 3084659600:): Device Excitation initialized.
+LOG(23008, 3084659600:): Device Objective initialized.
+LOG(23008, 3084659600:): Device X initialized.
+LOG(23008, 3084659600:): Device Y initialized.
+LOG(23008, 3084659600:): Device Z initialized.
+LOG(23008, 3084659600:): System state cache updated.
