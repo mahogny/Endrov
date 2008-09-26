@@ -21,7 +21,8 @@ import endrov.util.*;
 
 
 /**
- * Calculate cell contact map
+ * Calculate cell contact map.
+ * Output number of contacts for each frame.
  * 
  * about 40min on xeon
  * 
