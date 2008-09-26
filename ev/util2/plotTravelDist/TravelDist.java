@@ -14,10 +14,12 @@ import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
+import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 
 /**
- * Get traveled distance for all nuclei
+ * Get traveled distance & relative division time error for all nuclei
+ * 
  * @author Johan Henriksson
  *
  */
@@ -111,7 +113,7 @@ public class TravelDist
 		//Save in data dir & average
 		try
 			{
-			FileWriter outFile = new FileWriter(linname+"t");
+			FileWriter outFile = new FileWriter(linname+"/data/traveldist.txt");
 			PrintWriter out = new PrintWriter(outFile);
 	
 	
@@ -121,7 +123,7 @@ public class TravelDist
 				{
 				String nucName=e.getKey();
 				NucLineage.Nuc nuc=e.getValue();
-				if(!nuc.pos.isEmpty())
+				if(!nuc.pos.isEmpty() && nuc.child.size()==2) //Only consider cells with children
 					{
 					int c=3;
 					int start = nuc.pos.firstKey()+c;
@@ -158,8 +160,14 @@ public class TravelDist
 							last.sub(interEnd.pos.getPosCopy());
 							fractalDist+=last.length();
 			
+							
+							double relDev=0;
+							NucExp ediv=nuc.exp.get("divDev");
+							if(ediv!=null)
+								relDev=ediv.level.get(0)/(nuc.lastFrame()-nuc.firstFrame());
+							
 							//Write out
-							out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+r.getAv());
+							out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+r.getAv()+"\t"+relDev);
 							}
 						}
 					}

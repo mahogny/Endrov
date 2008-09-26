@@ -23,12 +23,14 @@ import endrov.util.*;
 /**
  * Calculate cell contact map
  * 
+ * OBSOLETE: does levels which turned out to suck
+ * 
  * about 40min on xeon
  * 
  * @author Johan Henriksson, Jurgen Hench
  *
  */
-public class CellContactMap2
+public class CellContactMapLevel
 	{
 	public static String htmlColorNotNeigh="#ffffff";
 	public static String htmlColorNA="#cccccc";
@@ -345,10 +347,10 @@ public class CellContactMap2
 				mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
 				}
 			EvFileUtil.writeFile(new File(targetdirNeigh,"index.htm"),
-					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap2.class.getResource("main_single.htm")))
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapLevel.class.getResource("main_single.htm")))
 					.replace("BODY", mainSingleOut));
 			EvFileUtil.writeFile(new File(targetdirTree,"index.htm"),
-					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap2.class.getResource("main_tree.htm")))
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapLevel.class.getResource("main_tree.htm")))
 					.replace("BODY", mainTreeOut));
 
 			//List datasets
@@ -358,7 +360,7 @@ public class CellContactMap2
 
 			//Write out HTML, cell by cell. Reference lineage is the first one in the list
 			//nucName: everything in the file is about this cell
-			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap2.class.getResource("neigh.htm")));
+			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapLevel.class.getResource("neigh.htm")));
 			for(String nucName:nucNames)
 				{
 				StringBuffer bodyNeigh=new StringBuffer();
