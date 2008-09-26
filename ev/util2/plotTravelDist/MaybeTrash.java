@@ -1,4 +1,4 @@
-package util2.compareDistNew;
+package util2.plotTravelDist;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import endrov.nuc.NucPair;
 import endrov.nuc.NucLineage.NucInterp;
 import endrov.util.EvParallel;
 
-public class Main
+public class MaybeTrash
 	{
 
 	

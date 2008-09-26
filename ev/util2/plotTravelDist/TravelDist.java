@@ -1,4 +1,4 @@
-package util2.compareDistNew;
+package util2.plotTravelDist;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import endrov.nuc.NucLineage;
 
 /**
  * Get traveled distance for all nuclei
- * @author tbudev3
+ * @author Johan Henriksson
  *
  */
 public class TravelDist
@@ -111,7 +111,7 @@ public class TravelDist
 		//Save in data dir & average
 		try
 			{
-			FileWriter outFile = new FileWriter(linname+"/data/traveldist.txt");
+			FileWriter outFile = new FileWriter(linname+"t");
 			PrintWriter out = new PrintWriter(outFile);
 	
 	
@@ -183,11 +183,11 @@ public class TravelDist
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 	
+		one("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost");
+/*
 		one("/Volumes/TBU_main02/ost4dgood/N2_071116.ost");
-	//	one("/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml");
 		one("/Volumes/TBU_main03/ost4dgood/TB2167_0804016.ost");
 		one("/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost");
-		one("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost");
 
 		one("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost");
 
@@ -196,8 +196,9 @@ public class TravelDist
 		one("/Volumes/TBU_main02/ost4dgood/N2greenLED080206.ost");
 		one("/Volumes/TBU_main02/ost4dgood/TB2142_071129.ost");
 		one("/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost");
-		
+	*/	
 		System.exit(0);
+		//	one("/Volumes/TBU_main02/ostxml/mergedangler01_080522.xml");
 		
 		
 		
