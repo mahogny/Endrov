@@ -1,0 +1,3 @@
+/Volumes/TBU_main03/userdata/jurgen/LAB_DATA_JUERGEN_HENCH_2005-2008/C_elegans/cvs/common
+
+/Volumes/TBU_main03/userdata/jurgen/LAB_DATA_JUERGEN_HENCH_2005-2008/C_elegans/cvs/common/paperNormalDev
