@@ -26,7 +26,8 @@ public class DiffROI extends CompoundROI
 	private static final String metaDesc="Difference";
 	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconDiff.png"));
 
-	public static void initPlugin()
+	public static void initPlugin(){}
+	static
 		{
 		EvData.extensions.put(metaType,new EvObjectType()
 			{

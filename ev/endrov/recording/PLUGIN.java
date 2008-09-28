@@ -1,7 +1,9 @@
 package endrov.recording;
 import endrov.ev.EV;
 import endrov.ev.PluginDef;
+import endrov.recording.manualRec.ManualExtension;
 import endrov.recording.mm.MicroManager;
+import endrov.recording.recWindow.MicroscopeWindow;
 
 public class PLUGIN extends PluginDef
 	{
@@ -33,8 +35,8 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		if(EV.isLinux())
-			return new Class[]{MicroManager.class};
+			return new Class[]{MicroManager.class, MicroscopeWindow.class,ManualExtension.class};
 		else
-			return new Class[]{};
+			return new Class[]{MicroscopeWindow.class,ManualExtension.class};
 		}
 	}

@@ -23,9 +23,10 @@ public class IntersectROI extends CompoundROI
 	private static final String metaType="ROI_Intersection";
 	private static final String metaDesc="Intersection";
 	private static ImageIcon icon=new ImageIcon(IntersectROI.class.getResource("iconIntersect.png"));
-	public static void initPlugin()
+	public static void initPlugin(){}
+	static
 		{
-		EvData.extensions.put(metaType,new EvObjectType()
+		EvData.extensions.put(metaType,new EvObjectType() //fails here if not using static{}
 			{
 			public EvObject extractObjects(Element e)
 				{
@@ -35,7 +36,7 @@ public class IntersectROI extends CompoundROI
 				}
 			});
 		
-		ROI.addType(new ROIType()
+		ROI.addType(new ROIType() //Fails here if not using static{}
 			{
 			public boolean canPlace(){return false;}
 			public boolean isCompound(){return true;}
@@ -43,6 +44,11 @@ public class IntersectROI extends CompoundROI
 			public ROI makeInstance(){return new IntersectROI();}
 			public ImageIcon getIcon(){return icon;}
 			});
+		
+		//In common: Caused by: java.lang.NoClassDefFoundError: endrov/roi/primitive/IntersectROI$2 or 1
+		//this is a *Compound*ROI! first in plugin list
+		//not in a static{}. why does it make a difference?
+		
 		}
 
 

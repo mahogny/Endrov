@@ -23,7 +23,8 @@ public class SubtractROI extends CompoundROI
 	private static final String metaType="ROI_Subtract";
 	private static final String metaDesc="Subtract";
 	private static ImageIcon icon=new ImageIcon(SubtractROI.class.getResource("iconSub.png"));
-	public static void initPlugin()
+	public static void initPlugin(){}
+	static
 		{
 		EvData.extensions.put(metaType,new EvObjectType()
 			{
