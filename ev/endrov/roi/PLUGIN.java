@@ -38,6 +38,6 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{ROI.class,WindowROI.class,
-				BoxROI.class, EllipseROI.class,IntersectROI.class,UnionROI.class,DiffROI.class,SubtractROI.class};
+				BoxROI.class, EllipseROI.class,UnionROI.class,IntersectROI.class,DiffROI.class,SubtractROI.class};
 		}
 	}

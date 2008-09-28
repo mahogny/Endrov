@@ -21,9 +21,10 @@ public class UnionROI extends CompoundROI
 	private static final String metaType="ROI_Union";
 	private static final String metaDesc="Union";
 	private static ImageIcon icon=new ImageIcon(UnionROI.class.getResource("iconUnion.png"));	
-	public static void initPlugin()
+	public static void initPlugin(){}
+	static
 		{
-		EvData.extensions.put(metaType,new EvObjectType()
+		EvData.extensions.put(metaType,new EvObjectType() //crash here
 			{
 			public EvObject extractObjects(Element e)
 				{
