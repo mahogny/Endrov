@@ -6,7 +6,7 @@ package endrov.recording;
  * @author Johan Henriksson
  *
  */
-public abstract class Stage //extends Hardware
+public abstract class HWStage
 	{
 
 	}

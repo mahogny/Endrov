@@ -50,6 +50,25 @@ public class HardwareManager
 			hwlist.addAll(p.hw.keySet());
 		return hwlist;
 		}
+
+	/**
+	 * Get list of all installed hardware of a specific type
+	 */
+	public static Set<String> getHardwareList(Class<?> hw)
+		{
+		TreeSet<String> hwlist2=new TreeSet<String>();
+		for(String name:getHardwareList())
+			{
+			boolean is=false;
+			for(Class<?> intf:getHardware(name).getClass().getInterfaces())
+				if(intf==hw)
+					is=true;
+			if(is)
+				hwlist2.add(name);
+			}
+		return hwlist2;
+		}
+
 	
 	/**
 	 * Get current configuration as XML

@@ -332,7 +332,8 @@ public abstract class BasicWindow extends JPanel
 		}
 	public void setBoundsEvWindow(Rectangle r)
 		{
-		evw.setBounds(r);
+		if(r!=null)
+			evw.setBounds(r);
 		}
 	public void setBoundsEvWindow(int x, int y, int width, int height)
 		{
