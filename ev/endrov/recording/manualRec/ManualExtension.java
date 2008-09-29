@@ -53,6 +53,10 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			
 			///////// Shutter
 			hw.add(new ShutterPanel());
+			hw.add(new FilterPanel());
+			
+			
+			
 			
 			JPanel p=new JPanel(new GridLayout(hw.size(),1));
 			setLayout(new BorderLayout());
@@ -66,7 +70,10 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		
 		
 		
-		
+		/******************************************************************************************************
+		 *                               Shutter                                                              *
+		 *****************************************************************************************************/
+
 		public static class ShutterPanel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
@@ -94,6 +101,39 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				else
 					b.setIcon(iconShutterOpen);
 				b.repaint();
+				}
+			}
+		
+		
+		/******************************************************************************************************
+		 *                               Filter                                                               *
+		 *****************************************************************************************************/
+
+		public static class FilterPanel extends JPanel implements ActionListener
+			{
+			//Since we have cubes, several filters in one. use / to separate
+			//Color filters. Somewhere one need a filter database with the entire
+			//range for calculations.
+			static final long serialVersionUID=0;
+			JComboBox filters;
+			public FilterPanel()
+				{
+				Vector<String> fs=new Vector<String>();
+				fs.add("500 / 300");
+				fs.add("550 / 200");
+				filters=new JComboBox(fs);
+				
+				String name="Filter set";
+				
+				filters.setSelectedIndex(0); //TODO
+				filters.addActionListener(this);
+				
+				setLayout(new BorderLayout());
+				add(new JLabel(name),BorderLayout.CENTER);
+				add(filters,BorderLayout.EAST);
+				}
+			public void actionPerformed(ActionEvent e)
+				{
 				}
 			}
 		

@@ -6,7 +6,7 @@ import endrov.hardware.*;
  * Hardware with recording capabilities
  * @author Johan Henriksson
  */
-public interface Camera extends Hardware
+public interface HWCamera extends Hardware
 	{
 	public CameraImage snap();
 	}

@@ -1,6 +1,6 @@
 package endrov.recording.mm;
 
-import endrov.recording.Camera;
+import endrov.recording.HWCamera;
 import endrov.recording.CameraImage;
 
 /**
@@ -8,7 +8,7 @@ import endrov.recording.CameraImage;
  * @author Johan Henriksson
  *
  */
-public class MMCamera extends MMDeviceAdapter implements Camera
+public class MMCamera extends MMDeviceAdapter implements HWCamera
 	{
 
 	public MMCamera(MicroManager mm, String mmDeviceName)

@@ -1,27 +1,29 @@
-package endrov.recording.recWindow;
+package endrov.recording.camWindow;
 
 
 import java.awt.BorderLayout;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.TreeMap;
-import java.util.Vector;
+import java.awt.image.BufferedImage;
+import java.util.*;
 
 import javax.swing.*;
 
 import org.jdom.*;
 
-import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.BasicWindowExtension;
-import endrov.basicWindow.BasicWindowHook;
+import endrov.basicWindow.*;
 import endrov.data.EvData;
+import endrov.hardware.*;
+import endrov.recording.CameraImage;
+import endrov.recording.HWCamera;
 
 /**
  * Microscope Control Window
  * @author Johan Henriksson 
  */
-public class MicroscopeWindow extends BasicWindow
+public class CamWindow extends BasicWindow
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -42,43 +44,20 @@ public class MicroscopeWindow extends BasicWindow
 			{
 			public void createMenus(BasicWindow w)
 				{
-				JMenuItem mi=new JMenuItem("Microscope Control",new ImageIcon(getClass().getResource("iconWindow.png")));
+				JMenuItem mi=new JMenuItem("Camera Window",new ImageIcon(getClass().getResource("iconWindow.png")));
 				mi.addActionListener(this);
 				w.addMenuWindow(mi);
 				}
 
 			public void actionPerformed(ActionEvent e) 
 				{
-				new MicroscopeWindow();
+				new CamWindow();
 				}
 
 			public void buildMenu(BasicWindow w){}
 			}
 			});
 		
-		//addMicroscopeWindowExtension("Manual", new ManualExtension());
-		
-		
-/*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ConsoleWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-			*/
 		}
 	
 	public static TreeMap<String,Extension> extensions=new TreeMap<String,Extension>();
@@ -96,58 +75,93 @@ public class MicroscopeWindow extends BasicWindow
 		public JComponent addControls();
 		
 		}
-	
+
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
 	
+	private CamWindow This=this;
+	private JComboBox mcombo=new JComboBox();
+	private BufferedImage fromCam=null;
+	
+	private JPanel drawArea=new JPanel(){
+		static final long serialVersionUID=0;
+		protected void paintComponent(Graphics g)
+			{
+			BufferedImage im=This.fromCam;
+			if(im!=null)
+				{
+				g.drawImage(im, 0, 0, null);
+				//System.out.println("isrepaint");
+				SwingUtilities.invokeLater(new Runnable(){
+					public void run()
+						{
+						//This actually slows it down!
+						//This.drawArea.repaint();
+						}
+				});
+				}
+			}
+	};
 	
 	
-	public MicroscopeWindow()
+
+
+	private ActionListener listener=new ActionListener()
 		{
-		this(null);
+		public void actionPerformed(ActionEvent e) 
+			{
+			if(e.getSource()==This.timer)
+				{
+				//this does not work later. have to synchronize all calls for an image
+				//so all targets gets it.
+				
+				String camname=(String)This.mcombo.getSelectedItem();
+				if(camname!=null)
+					{
+					HWCamera cam=(HWCamera)HardwareManager.getHardware(camname);
+					CameraImage im=cam.snap();
+					This.fromCam=im.getAWT();
+					drawArea.repaint();
+					//System.out.println("do repaint");
+					}
+
+				
+				
+				}
+			}
+		};
+		
+	javax.swing.Timer timer=new javax.swing.Timer(10,listener);
+
+
+
+	public CamWindow()
+		{
+		this(new Rectangle(400,300));
 		}
 	
-	public MicroscopeWindow(Rectangle bounds)
+	public CamWindow(Rectangle bounds)
 		{
 		
-		
-		/*
-		Vector<HWListItem> hwNames=new Vector<HWListItem>();
-	
+		//TODO need to destroy windows when they close. this is not done now!
 		
 		
-		JList hwList=new JList(hwNames);
-		
-		JPanel bpu=new JPanel(new GridLayout(1,2));
-		bpu.add(bAdd);
-		bpu.add(bRemove);
-		JPanel bpl=new JPanel(new GridLayout(1,3));
-		bpl.add(bLoad);
-		bpl.add(bSave);
-		bpl.add(bAutodetect);
+		mcombo=new JComboBox(new Vector<String>(HardwareManager.getHardwareList(HWCamera.class)));
 
-		JPanel bp=new JPanel(new GridLayout(2,1));
-		bp.add(bpu);
-		bp.add(bpl);
-		
-		add(hwList,BorderLayout.CENTER);
-		add(bp,BorderLayout.SOUTH);
-		*/
-
-		
-		JComboBox mcombo=new JComboBox(new Vector<String>(extensions.keySet()));
-		String curMode=(String)mcombo.getSelectedItem();
-		
 		
 		
 		setLayout(new BorderLayout());
-		add(mcombo,BorderLayout.NORTH);
-		add(extensions.get(curMode).addControls(),BorderLayout.CENTER);
+		add(mcombo,BorderLayout.SOUTH);
+		add(drawArea,BorderLayout.CENTER);
+		
+		
+		
+		timer.start();
 		
 		//Window overall things
-		setTitleEvWindow("Microscope Control");
+		setTitleEvWindow("Camera Control");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
