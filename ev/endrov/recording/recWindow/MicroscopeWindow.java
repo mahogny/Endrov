@@ -56,8 +56,6 @@ public class MicroscopeWindow extends BasicWindow
 			}
 			});
 		
-		//addMicroscopeWindowExtension("Manual", new ManualExtension());
-		
 		
 /*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
 			{
@@ -169,23 +167,13 @@ public class MicroscopeWindow extends BasicWindow
 	
 	public void dataChangedEvent()
 		{
-		// TODO Auto-generated method stub
-		
 		}
 
 	public void loadedFile(EvData data){}
 
 	public void windowPersonalSettings(Element e)
 		{
-		// TODO Auto-generated method stub
-		
 		} 
 	
-	/*
-	public static void main(String[] arg)
-		{
-		new HardwareConfigWindow();
-		}
-*/	
 	
 	}

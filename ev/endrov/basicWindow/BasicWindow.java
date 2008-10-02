@@ -330,6 +330,10 @@ public abstract class BasicWindow extends JPanel
 		{
 		evw.pack();
 		}
+	public Rectangle getBoundsEvWindow()
+		{
+		return evw.getBounds();
+		}
 	public void setBoundsEvWindow(Rectangle r)
 		{
 		if(r!=null)

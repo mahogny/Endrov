@@ -19,4 +19,5 @@ public interface Hardware
 	public SortedMap<String,String> getPropertyMap();
 	public String getPropertyValue(String prop);
 	
+	
 	}

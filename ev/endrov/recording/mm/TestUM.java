@@ -79,6 +79,10 @@ public class TestUM
 				for(Map.Entry<String, String> prop:MMutil.getPropMap(core,device).entrySet())
 					{
 					System.out.print(" " + prop.getKey() + " = " + prop.getValue());
+					if(core.isPropertyReadOnly(device, prop.getKey()))
+						System.out.print(" (ro) ");
+					if(core.hasPropertyLimits(device, prop.getKey()))
+						System.out.print(" <"+core.getPropertyLowerLimit(device, prop.getKey())+" -- "+core.getPropertyLowerLimit(device, prop.getKey())+"> ");
 					System.out.println("  "+MMutil.convVector(core.getAllowedPropertyValues(device, prop.getKey())));
 					}
 				}

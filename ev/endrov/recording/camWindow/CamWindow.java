@@ -121,8 +121,23 @@ public class CamWindow extends BasicWindow
 				if(camname!=null)
 					{
 					HWCamera cam=(HWCamera)HardwareManager.getHardware(camname);
-					CameraImage im=cam.snap();
-					This.fromCam=im.getAWT();
+					CameraImage cim=cam.snap();
+					BufferedImage im=This.fromCam=cim.getAWT();
+					Rectangle dbounds=This.drawArea.getBounds();
+					if(im!=null)
+						if(im.getWidth()!=dbounds.getWidth() ||
+								im.getHeight()!=dbounds.getHeight())
+							{
+							Rectangle bounds=This.getBoundsEvWindow();
+							This.setBoundsEvWindow(new Rectangle(
+									(int)(bounds.getWidth()+(im.getWidth()-dbounds.getWidth())),
+									(int)(bounds.getHeight()+(im.getHeight()-dbounds.getHeight()))
+									));
+							}
+
+					
+					//Here one could mark totally black or saturated areas
+						
 					drawArea.repaint();
 					//System.out.println("do repaint");
 					}
@@ -133,6 +148,7 @@ public class CamWindow extends BasicWindow
 			}
 		};
 		
+	//Update timer, busy loop for now. replace later by camera event listener	
 	javax.swing.Timer timer=new javax.swing.Timer(10,listener);
 
 
@@ -146,7 +162,7 @@ public class CamWindow extends BasicWindow
 		{
 		
 		//TODO need to destroy windows when they close. this is not done now!
-		
+		//might be fixed once cam event is there
 		
 		mcombo=new JComboBox(new Vector<String>(HardwareManager.getHardwareList(HWCamera.class)));
 
@@ -183,7 +199,6 @@ public class CamWindow extends BasicWindow
 	
 	public void dataChangedEvent()
 		{
-		// TODO Auto-generated method stub
 		
 		}
 
@@ -191,15 +206,8 @@ public class CamWindow extends BasicWindow
 
 	public void windowPersonalSettings(Element e)
 		{
-		// TODO Auto-generated method stub
 		
 		} 
 	
-	/*
-	public static void main(String[] arg)
-		{
-		new HardwareConfigWindow();
-		}
-*/	
 	
 	}
