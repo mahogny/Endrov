@@ -7,10 +7,13 @@ import mmcorej.DeviceType;
 
 import org.jdom.Element;
 
-import endrov.hardware.Hardware;
-import endrov.hardware.HardwareManager;
-import endrov.hardware.HardwareProvider;
+import endrov.hardware.*;
 
+/**
+ * Micromanager hardware interface
+ * @author Johan Henriksson
+ *
+ */
 public class MicroManager extends HardwareProvider
 	{
 	public static void initPlugin() {}
@@ -24,7 +27,7 @@ public class MicroManager extends HardwareProvider
 
 	public MicroManager()
 		{
-		try 
+		try
 			{
 			core.loadSystemConfiguration("MMConfig.cfg");
 			
@@ -88,17 +91,29 @@ public class MicroManager extends HardwareProvider
 			//Register all devices
 			for(String devName:MMutil.convVector(core.getLoadedDevices()))
 				{
+				//Device fundamentals
 				DeviceType type=core.getDeviceType(devName);
 				MMDeviceAdapter adp;
 				if(type==DeviceType.CameraDevice)
 					adp=new MMCamera(this,devName);
+				else if((type.swigValue() & DeviceType.MagnifierDevice.swigValue())!=0)
+					adp=new MMMagnifier(this,devName);
+				else if((type.swigValue() & DeviceType.XYStageDevice.swigValue())!=0)
+					adp=new MMStage(this,devName);
+				else if((type.swigValue() & DeviceType.StageDevice.swigValue())!=0)
+					adp=new MMStage(this,devName);
+				else if((type.swigValue() & DeviceType.ShutterDevice.swigValue())!=0)
+					adp=new MMShutter(this,devName);
 				else
 					adp=new MMDeviceAdapter(this,devName);
+				System.out.println(devName+"---"+type+"---------------"+type.swigValue());
+				
 				hw.put(devName,adp);
 				}
 			}
 		catch (Exception e) 
 			{
+			e.printStackTrace();
 			System.out.println("err:"+e.getMessage());
 			}
 		

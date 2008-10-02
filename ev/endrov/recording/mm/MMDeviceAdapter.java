@@ -10,7 +10,7 @@ import endrov.hardware.*;
 
 
 /**
- * Micro manager device adapter, mapped to Endrov hardware
+ * Micro manager generic device adapter, mapped to Endrov hardware
  * @author Johan Henriksson
  *
  */
@@ -19,6 +19,7 @@ public class MMDeviceAdapter implements Hardware
 	MicroManager mm;
 	String mmDeviceName;
 
+		
 	public MMDeviceAdapter(MicroManager mm, String mmDeviceName)
 		{
 		this.mm=mm;
@@ -66,8 +67,23 @@ public class MMDeviceAdapter implements Hardware
 				PropertyType p=new PropertyType();
 				for(String s:MMutil.convVector(mm.core.getAllowedPropertyValues(mmDeviceName, propName)))
 					p.categories.add(s);
+				
+				p.readOnly=mm.core.isPropertyReadOnly(mmDeviceName, propName);
+				
+				p.hasRange=mm.core.hasPropertyLimits(mmDeviceName, propName);
+				p.rangeLower=mm.core.getPropertyLowerLimit(mmDeviceName, propName);
+				p.rangeUpper=mm.core.getPropertyUpperLimit(mmDeviceName, propName);
+
+				p.categories.addAll(MMutil.convVector(mm.core.getAllowedPropertyValues(mmDeviceName, propName)));
+				if(p.categories.size()==2 && p.categories.contains("0") && p.categories.contains("1"))
+					p.isBoolean=true;
+				
 				map.put(propName,p);
 				}
+			
+			
+			
+			
 			return map;
 			}
 		catch (Exception e)

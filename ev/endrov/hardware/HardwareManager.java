@@ -52,6 +52,18 @@ public class HardwareManager
 		}
 
 	/**
+	 * Get map of all installed hardware
+	 */
+	public static TreeMap<String,Hardware> getHardwareMap()
+		{
+		TreeMap<String,Hardware> map=new TreeMap<String,Hardware>();
+		for(HardwareProvider p:provider)
+			map.putAll(p.hw);
+		return map;
+		}
+
+	
+	/**
 	 * Get list of all installed hardware of a specific type
 	 */
 	public static Set<String> getHardwareList(Class<?> hw)

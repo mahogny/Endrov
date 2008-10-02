@@ -2,13 +2,12 @@ package endrov.recording;
 
 import endrov.hardware.Hardware;
 
-
 /**
- * Microscope moving stage
+ * Microscope filter wheel
  * @author Johan Henriksson
  *
  */
-public interface HWStage extends Hardware
+public interface HWFilter extends Hardware
 	{
 
 	}
