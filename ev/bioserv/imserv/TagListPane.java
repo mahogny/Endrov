@@ -35,6 +35,8 @@ public class TagListPane extends JPanel implements MouseListener
 	private final int csize;
 	private final int totc;
 	
+	private int curClick=-1;
+	
 	public TagListPane()
 		{
 		fm=new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB).getGraphics().getFontMetrics(font);
@@ -88,6 +90,9 @@ public class TagListPane extends JPanel implements MouseListener
 			
 			
 			g.setColor(Color.BLUE);
+			
+			//TODO: need to know if hover + or -
+			
 			g.fillOval(cxa, cy, csize, csize);
 			g.fillOval(cxb, cy, csize, csize);
 			g.setColor(Color.WHITE);
@@ -114,23 +119,30 @@ public class TagListPane extends JPanel implements MouseListener
 		}
 
 
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(MouseEvent e){}
+	public void mouseEntered(MouseEvent e){}
+	public void mouseExited(MouseEvent e){}
+	public void mousePressed(MouseEvent e)
 		{
-		int i=(e.getY())/(fonth+1);
+		curClick=(e.getY())/(fonth+1);
+		repaint();
+		}
+	public void mouseReleased(MouseEvent e)
+		{
 		if(e.getX()<csize+3)
 			{
-			if(i<tags.size())
+			if(curClick<tags.size())
 				{
-				String item=tags.get(i);
+				String item=tags.get(curClick);
 				for(TagListListener l:listeners.keySet())
 					l.tagListAddRemove(item, true);
 				}
 			}
 		else if(e.getX()<csize*2+6)
 			{
-			if(i<tags.size())
+			if(curClick<tags.size())
 				{
-				String item=tags.get(i);
+				String item=tags.get(curClick);
 				for(TagListListener l:listeners.keySet())
 					l.tagListAddRemove(item, false);
 				}
@@ -140,19 +152,14 @@ public class TagListPane extends JPanel implements MouseListener
 			//Shift
 			if((e.getModifiersEx()&MouseEvent.META_DOWN_MASK)==0)
 				selected.clear();
-			if(i<tags.size())
-				selected.add(tags.get(i));
+			if(curClick<tags.size())
+				selected.add(tags.get(curClick));
 			for(TagListListener l:listeners.keySet())
 				l.tagListSelect();
 			repaint();
 			}
+		curClick=-1;
 		}
-
-
-	public void mouseEntered(MouseEvent e){}
-	public void mouseExited(MouseEvent e){}
-	public void mousePressed(MouseEvent e){}
-	public void mouseReleased(MouseEvent e){}
 	
 	private WeakHashMap<TagListListener, Object> listeners=new WeakHashMap<TagListListener, Object>();
 	
