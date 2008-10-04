@@ -1,5 +1,9 @@
 //You may want to restrict permissions here
 grant {
-	permission java.net.SocketPermission "*", "accept,resolve";
+	// /etc/java-6-sun/security/java.policy has default settings on debian
+
+	permission java.security.AllPermission;
+
+//	permission java.net.SocketPermission "*", "accept,resolve";
 };
 

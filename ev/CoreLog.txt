@@ -1,0 +1,46 @@
+LOG(3616, 3085114256:): -------->>
+LOG(3616, 3085114256:): Core session started on Sat Oct  4 2008 14:13:55.127056 by tbudev3 on TBUasm01
+LOG(3616, 3085114256:): Debug logging disabled
+LOG(3616, 3085114256:): All devices unloaded.
+LOG(3616, 3085114256:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(3616, 3085114256:): Device Camera set as camera.
+LOG(3616, 3085114256:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(3616, 3085114256:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(3616, 3085114256:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(3616, 3085114256:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(3616, 3085114256:): Device DStage loaded from DemoCamera and labeled as X
+LOG(3616, 3085114256:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(3616, 3085114256:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(3616, 3085114256:): Starting initialization sequence for 8 devices...
+LOG(3616, 3085114256:): Device Camera initialized.
+LOG(3616, 3085114256:): Device Dichroic initialized.
+LOG(3616, 3085114256:): Device Emission initialized.
+LOG(3616, 3085114256:): Device Excitation initialized.
+LOG(3616, 3085114256:): Device Objective initialized.
+LOG(3616, 3085114256:): Device X initialized.
+LOG(3616, 3085114256:): Device Y initialized.
+LOG(3616, 3085114256:): Device Z initialized.
+LOG(3616, 3085114256:): System state cache updated.
+LOG(3749, 3084549008:): -------->>
+LOG(3749, 3084549008:): Core session started on Sat Oct  4 2008 14:17:33.278846 by tbudev3 on TBUasm01
+LOG(3749, 3084549008:): Debug logging disabled
+LOG(3749, 3084549008:): All devices unloaded.
+LOG(3749, 3084549008:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(3749, 3084549008:): Device Camera set as camera.
+LOG(3749, 3084549008:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(3749, 3084549008:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(3749, 3084549008:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(3749, 3084549008:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(3749, 3084549008:): Device DStage loaded from DemoCamera and labeled as X
+LOG(3749, 3084549008:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(3749, 3084549008:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(3749, 3084549008:): Starting initialization sequence for 8 devices...
+LOG(3749, 3084549008:): Device Camera initialized.
+LOG(3749, 3084549008:): Device Dichroic initialized.
+LOG(3749, 3084549008:): Device Emission initialized.
+LOG(3749, 3084549008:): Device Excitation initialized.
+LOG(3749, 3084549008:): Device Objective initialized.
+LOG(3749, 3084549008:): Device X initialized.
+LOG(3749, 3084549008:): Device Y initialized.
+LOG(3749, 3084549008:): Device Z initialized.
+LOG(3749, 3084549008:): System state cache updated.

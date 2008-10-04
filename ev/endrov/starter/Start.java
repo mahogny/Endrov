@@ -32,7 +32,6 @@ public class Start
 	private String cpsep=":";
 	private String libdir="";
 	private String javaexe="java";
-//	private String memstring="-Xmx2000M";
 	ProcessBuilder pb=new ProcessBuilder("");
 	String jarstring=new File(".").getAbsolutePath();
 	String binstring="";
@@ -130,7 +129,11 @@ public class Start
 					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
 					StringTokenizer envTokenizer=new StringTokenizer(envReader.readLine()," ");
 					while(envTokenizer.hasMoreTokens())
-						cmdarg.add(envTokenizer.nextToken());
+						{
+						String tok=envTokenizer.nextToken();
+						cmdarg.add(tok);
+						System.out.println("Java environment flag: "+tok);
+						}
 					}
 				
 				//What to run? additional arguments?
