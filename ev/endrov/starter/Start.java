@@ -23,6 +23,7 @@ public class Start
 	
 	private String javaver=System.getProperty("java.specification.version");
 	private String OS=System.getProperty("os.name").toLowerCase();
+	private String osExt="";
 	private String arch=System.getProperty("os.arch").toLowerCase();
 	public int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
 	public int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
@@ -40,7 +41,6 @@ public class Start
 	public void collectSystemInfo(String path)
 		{
 		//Detect OS
-		String osExt="";
 		cpsep=":";
 		if(OS.equals("mac os x"))
 			{
@@ -92,7 +92,6 @@ public class Start
 		pb.environment().put("LD_LIBRARY_PATH", ldlibpath);
 		}
 	
-	
 	public void run(String[] argsa)
 		{
 		List<String> args=new LinkedList<String>();
@@ -125,7 +124,7 @@ public class Start
 
 				
 				//Add arguments from environment file
-				File javaenvFile=new File("javaenv.txt");
+				File javaenvFile=new File("javaenv."+osExt+".txt");
 				if(javaenvFile.exists())
 					{
 					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
