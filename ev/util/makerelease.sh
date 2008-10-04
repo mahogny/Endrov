@@ -20,7 +20,6 @@ rm -Rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
 rm -Rf .cvsignore */.cvsignore */*/.cvsignore */*/*/.cvsignore */*/*/*/.cvsignore
 rm -Rf .project .classpath .metadata .settings
 rm *.log
-rm javaenv.txt
 
 #compress
 cd ..
