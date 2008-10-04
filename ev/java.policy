@@ -1,0 +1,5 @@
+//You may want to restrict permissions here
+grant {
+	permission java.net.SocketPermission "*", "accept,resolve";
+};
+
