@@ -1,5 +1,9 @@
 package bioserv.netio;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
 public @interface NetFunc
 	{
 	String name(); //default "[unassigned]"; 

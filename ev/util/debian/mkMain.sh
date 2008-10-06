@@ -31,6 +31,8 @@ mv debmainroot.deb endrov.deb
 
 
 
+#asciidoc manpage.asciidoc -d manpage -o endrov.1
+
 .
 |-- DEBIAN
 |   |-- control

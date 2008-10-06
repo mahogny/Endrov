@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
+
 //TODO display error if there is one
 
 /**
@@ -96,6 +97,14 @@ public class Start
 		List<String> args=new LinkedList<String>();
 		for(String s:argsa)
 			args.add(s);
+
+		//Print current version. need to be put in starter jar to work
+		/*
+		if(args.contains("--version"))
+			{
+			System.out.println("Endrov version "+EV.version);
+			System.exit(0);
+			}*/
 		
 		collectSystemInfo("");
 		
