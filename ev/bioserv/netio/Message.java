@@ -32,7 +32,8 @@ public class Message
 		ByteArrayOutputStream bos=new ByteArrayOutputStream(128);
 		ObjectOutputStream oos=new ObjectOutputStream(bos);
 		
-	
+		oos.writeUTF(command);
+		
 		//array should have less overhead than a list
 		for(Object o:arg)
 			{
@@ -83,8 +84,15 @@ public class Message
 		{
 		return command;
 		}
+	public int getBytesLength()
+		{
+		return args.length;
+		}
 	
-	
+	public void write(OutputStream os, int offset, int length) throws IOException
+		{
+		os.write(args, offset, length);
+		}
 	
 	public Object[] unpack(Class<?> arg[]) throws Exception
 		{
@@ -92,6 +100,10 @@ public class Message
 		ObjectInputStream is=new ObjectInputStream(bi);
 		Object[] ser=new Object[arg.length];
 		System.out.println("alen "+args.length);
+		
+		String funcName=is.readUTF(); //TODO?
+		
+		
 		for(int i=0;i<arg.length;i++)
 			{
 			if(arg[i]==Integer.class || arg[i]==int.class)
