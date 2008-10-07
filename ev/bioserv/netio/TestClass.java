@@ -9,7 +9,7 @@ public class TestClass
 	{
 	public static void main(String[] arg)
 		{
-		RMImanager rmi=new RMImanager();
+		RMImanager rmi=new RMImanager(null);
 		
 		rmi.regClass(TestClass.class);
 		
