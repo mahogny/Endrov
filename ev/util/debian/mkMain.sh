@@ -1,5 +1,8 @@
 #main package
 
+#should be executed on a release instead?
+
+
 ENDROV=../..
 ROOT=../../../debmainroot
 rm -Rf $ROOT
@@ -7,7 +10,7 @@ mkdir $ROOT
 
 ##### Meta information
 mkdir $ROOT/DEBIAN
-cp $ENDROV/docs/LICENSE.txt $ROOT/DEBIAN/copyright
+cp copyright.txt $ROOT/DEBIAN/copyright
 cp control.main $ROOT/DEBIAN/control
 echo "#!/bin/sh" > $ROOT/DEBIAN/postinst
 chmod 0555 $ROOT/DEBIAN/postinst
@@ -31,8 +34,6 @@ mv debmainroot.deb endrov.deb
 
 
 
-#asciidoc manpage.asciidoc -d manpage -o endrov.1
-
 .
 |-- DEBIAN
 |   |-- control
@@ -51,8 +52,12 @@ mv debmainroot.deb endrov.deb
         		<nothing>, but depend on other libraries
         |-- man
         |   `-- man1
-        |       `-- imagej.1.gz
+        |       `-- endrov.1.gz
         |-- menu
         |   `-- endrov
         `-- pixmaps
             `-- endrov.xpm
+   home
+      foo
+         .endrov         
+            
