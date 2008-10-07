@@ -3,6 +3,11 @@ package bioserv.netio;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Annotation of a function that should be exposed with RMI
+ * @author Johan Henriksson
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NetFunc
 	{

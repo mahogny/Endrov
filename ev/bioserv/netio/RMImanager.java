@@ -27,6 +27,7 @@ public class RMImanager
 		
 		public RegMethod(Method m)
 			{
+			this.m=m;
 			c=m.getParameterTypes();
 			}
 		
@@ -72,6 +73,15 @@ public class RMImanager
 			if(a!=null)
 				regFunc(a.name(), m);
 			}
+		}
+	
+	
+	public void send(Message msg)
+		{
+		RegMethod m=regfunc.get(msg.getCommand());
+		
+		if(m!=null)
+			m.recv(msg);
 		}
 	
 	}

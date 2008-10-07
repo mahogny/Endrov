@@ -1,22 +1,20 @@
 package bioserv.netio;
 
-public class NetClass
-	{
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-	/*
-	for (Method m : Class.forName(args[0]).getMethods()) {
-  if (m.isAnnotationPresent(Test.class)) {
-     try {
-        m.invoke(null);
-        passed++;
-     } catch (Throwable ex) {
-        System.out.printf("Test %s failed: %s %n", m, ex.getCause());
-        failed++;
-     }
-  }
-*/
-	
+/**
+ * Annotation of a class where functions should be exposed using RMI.
+ * The class loader has to replace it on callee side
+ * 
+ * @author Johan Henriksson
+ *
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NetClass
+	{
 	}
+
 
 
 //class loader: take a class, find annot, and return a generated stub from it
