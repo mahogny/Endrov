@@ -8,13 +8,14 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+import endrov.util.EvUtilBits;
+
 
 
 //////
 // Message format 
 //
-// msg := <call id>::short <msgsize>::int <msgtype>::byte {<callbody>::[byte] | <returnbody>::[byte]}
+// msg := <call id>::short <msgsize>::int <msgtype>::byte <function>::string <arguments....>::untyped
 //
 // one message can be split into several packages, allowing the queue to be sent
 // as round-robin. this is needed if several processes need to share the line.
@@ -22,21 +23,11 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 // to manually return as this opens up for too many security issues.
 // msgsize is the size of what follows.
 //
-// msgtype=0   call, end of transmission
-// msgtype=1   call, will continue
-// msgtype=2   return, end of transmission
-// msgtype=3   return, will continue
 // <bit 0>willcontinue
-// <bit 1>isreturn
 //
-// callbody := <function>::string <arguments....>::untyped
-// 
 // the arguments has to be known on receiving end as meta information is not transmitted
-// for bandwidth reasons
+// for bandwidth reasons. function is "" if returning value.
 //
-// returnbody := <arguments....>::untyped
-//
-// returnbody as callbody
 
 /**
  * RMI management. Registration of methods etc.
@@ -50,7 +41,6 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 public class RMImanager
 	{
 	private static final byte MSGBIT_CONT=1;
-	private static final byte MSGBIT_RET=2;
 
 	public static final int packetSize=50000; 
 
@@ -61,32 +51,21 @@ public class RMImanager
 	
 	
 	private Socket socket;
+	private OutputStream socketo;
 	
 	
 	/*****************************************************************************
 	 * One registered method
 	 */
-	private static class RegMethod
+	public static class RegMethod
 		{
-		private Method m;
-		private Class<?>[] c;
+		public Method m;
+		public Class<?>[] c;
 		
 		public RegMethod(Method m)
 			{
 			this.m=m;
 			c=m.getParameterTypes();
-			}
-		
-		public void recv(Message msg)
-			{
-			try
-				{
-				m.invoke(null, msg.unpack(c));
-				}
-			catch (Exception e)
-				{
-				e.printStackTrace();
-				}
 			}
 		}
 	
@@ -96,7 +75,7 @@ public class RMImanager
 	 */
 	private static class SendingMessage
 		{
-		Message msg;
+		SMessage msg;
 		int offset=0;
 		int msgid;
 		
@@ -110,19 +89,18 @@ public class RMImanager
 			int totlen=msg.getBytesLength();
 			
 			int left=totlen-offset;
-			boolean sendLast;
 			if(left>packetSize)
 				{
 				left=packetSize;
-				sendLast=false;
 				msgtype|=MSGBIT_CONT;
 				}
-			else
-				sendLast=true;
-			
+
+			short msgid=0;
 			
 			//<call id>::short 
+			os.write(EvUtilBits.shortToByteArray(msgid));
 			//<msgsize>::int 
+			os.write(EvUtilBits.intToByteArray(left));
 			//<msgtype>::byte
 			os.write(msgtype);
 			//{<callbody>::[byte] | <returnbody>::[byte]}
@@ -133,19 +111,21 @@ public class RMImanager
 	
 	
 	private HashMap<String, RegMethod> regfunc=new HashMap<String, RegMethod>();
-	private HashMap<Integer, Runnable> cb=new HashMap<Integer, Runnable>();
+	private HashMap<Integer, RegMethod> cb=new HashMap<Integer, RegMethod>();
 	private int nextCB=0;
 	
+	private Object qlock=new Object();
 	private LinkedList<SendingMessage> sendq=new LinkedList<SendingMessage>();
-	private HashMap<Integer,Message> recvq=new HashMap<Integer, Message>(); //msgid -> msg
+	private HashMap<Integer,SMessage> recvq=new HashMap<Integer, SMessage>(); //msgid -> msg
 
-	public RMImanager(Socket s)
+	public RMImanager(Socket s) throws IOException
 		{
 		socket=s;
+		socketo=socket.getOutputStream();
 		}
 
 	
-	public synchronized int registerCallback(Runnable r)
+	public synchronized int registerCallback(RegMethod r)
 		{
 		synchronized (cb)
 			{
@@ -160,13 +140,25 @@ public class RMImanager
 	
 	public void invokeCallback(int id)
 		{
-		Runnable r;
+		final RegMethod r;
 		synchronized (cb)
 			{
 			r=cb.remove(id);
 			}
 		if(r!=null)
-			new Thread(r).run();
+			new Thread(){
+			public void run()
+				{
+				try
+					{
+					r.m.invoke(null, new Object[]{}); //TODO
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				}
+			}.run();
 		//r.run();
 		//which semantic is wanted?
 		}
@@ -205,10 +197,55 @@ public class RMImanager
 	private int nextMsgID=0;
 	
 	
-	public void send(Message msg)
+	public void recv(SMessage msg)
 		{
-		RegMethod m=regfunc.get(msg.getCommand());
+		try
+			{
+			//if return, check type of callback
+			//if func, check type of func
+			msg.unpackAndInvoke(regfunc,cb,0);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
 		
+		
+		}
+	
+	public Thread rmithread=new Thread(){
+	public void run()
+		{
+		for(;;)
+			{
+			SendingMessage sm;
+			synchronized (qlock)
+				{
+				while(sendq.isEmpty())
+					try
+					{
+					sendq.wait();
+					}
+				catch (InterruptedException e)
+					{
+					e.printStackTrace();
+					}
+				sm=sendq.removeFirst();
+				}
+			
+			
+			
+			if(sm!=null)
+				synchronized (qlock)
+					{
+					sendq.addLast(sm);
+					}
+			}
+		}
+	};
+	
+	public void send(SMessage msg)
+		{
 		int thisid=0;
 		synchronized(synchMsgID)
 			{
@@ -226,10 +263,15 @@ public class RMImanager
 		
 		
 		
-		
 		//Loopback
-		if(m!=null)
-			m.recv(msg);
+		try
+			{
+			recv(msg);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
 		}
 	
 	}

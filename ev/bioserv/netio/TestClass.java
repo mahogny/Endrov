@@ -9,15 +9,15 @@ public class TestClass
 	{
 	public static void main(String[] arg)
 		{
-		RMImanager rmi=new RMImanager(null);
-		
-		rmi.regClass(TestClass.class);
 		
 		
 		
 			try
 				{
 				
+				RMImanager rmi=new RMImanager(null);
+				
+				rmi.regClass(TestClass.class);
 				
 			
 				
