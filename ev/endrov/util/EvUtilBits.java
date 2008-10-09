@@ -12,12 +12,12 @@ public class EvUtilBits
 		}
 
 
-	public static final int byteArrayToInt(byte [] b) 
+	public static final int byteArrayToInt(byte b0, byte b1, byte b2, byte b3) 
 		{
-		return (b[0] << 24)
-		+ ((b[1] & 0xFF) << 16)
-		+ ((b[2] & 0xFF) << 8)
-		+ (b[3] & 0xFF);
+		return (b0 << 24)
+		+ ((b1 & 0xFF) << 16)
+		+ ((b2 & 0xFF) << 8)
+		+ (b3 & 0xFF);
 		}
 
 
@@ -29,9 +29,9 @@ public class EvUtilBits
 		}
 
 
-	public static final int byteArrayToShort(byte [] b) 
+	public static final int byteArrayToShort(byte b0,byte b1) 
 		{
-		return ((b[0] & 0xFF) << 8)	+ (b[1] & 0xFF);
+		return ((b0 & 0xFF) << 8)	+ (b1 & 0xFF);
 		}
 
 	

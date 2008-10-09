@@ -1,7 +1,6 @@
 package bioserv.netio;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.Socket;
@@ -50,9 +49,19 @@ public class RMImanager
 	private static final byte MSGTYPE_RETCONT=MSGBIT_RET+MSGBIT_CONT;*/
 	
 	
+	//The socket has the same send queue length as in C, more or less
 	private Socket socket;
 	private OutputStream socketo;
+	private InputStream socketi;
 	
+	private HashMap<String, RegMethod> regfunc=new HashMap<String, RegMethod>();
+	private HashMap<Integer, RegMethod> cb=new HashMap<Integer, RegMethod>();
+	private int nextCB=0;
+	
+	private Object qlock=new Object();
+	private LinkedList<SendingMessage> sendq=new LinkedList<SendingMessage>();
+	private HashMap<Integer,IncomingMessage> recvq=new HashMap<Integer, IncomingMessage>(); //msgid -> msg
+
 	
 	/*****************************************************************************
 	 * One registered method
@@ -108,20 +117,97 @@ public class RMImanager
 			}
 		}
 	
+	/***********************************************************************
+	 * Incoming message
+	 */
+	private static class IncomingMessage
+		{
+		ByteArrayOutputStream bos=new ByteArrayOutputStream();
+		}
+	
+	/***********************************************************************
+	 * Sending thread
+	 */
+	public Thread sendthread=new Thread(){
+		public void run()
+			{
+			for(;;)
+				{
+				//Take one message off the queue
+				SendingMessage sm;
+				synchronized (qlock)
+					{
+					while(sendq.isEmpty())
+						try{sendq.wait();}
+						catch (InterruptedException e){e.printStackTrace();}
+					sm=sendq.removeFirst();
+					}
+				
+				
+				
+				
+				if(sm!=null)
+					addSendQueue(sm);
+				}
+			}
+		};
+	
+	/***********************************************************************
+	 * Receiving thread
+	 */
+		//TODO: create in constructor?
+	public Thread recvthread=new Thread(){
+		public void run()
+			{
+			for(;;)
+				{
+				//Receive one message
+				//<call id>::short
+				int callID=readShort();
+				//<msgsize>::int
+				int msgSize=readInt();
+				
+				byte[] msg=new byte[msgSize];
+				socketi.read(msg);
+				
+				
 	
 	
-	private HashMap<String, RegMethod> regfunc=new HashMap<String, RegMethod>();
-	private HashMap<Integer, RegMethod> cb=new HashMap<Integer, RegMethod>();
-	private int nextCB=0;
 	
-	private Object qlock=new Object();
-	private LinkedList<SendingMessage> sendq=new LinkedList<SendingMessage>();
-	private HashMap<Integer,SMessage> recvq=new HashMap<Integer, SMessage>(); //msgid -> msg
+	
+				if(sm!=null)
+					addSendQueue(sm);
+				}
+			}
+	};	
+		
+	private int readShort()
+		{
+		return EvUtilBits.byteArrayToShort((byte)socketi.read(),(byte)socketi.read());
+		}
+
+	private int readInt()
+		{
+		return EvUtilBits.byteArrayToInt((byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read());
+		}
+
+	
+	/**
+	 * Add message last on send queue
+	 */
+	private void addSendQueue(SendingMessage sm)
+		{
+		synchronized (qlock){sendq.addLast(sm);}
+		}
+	
+	
 
 	public RMImanager(Socket s) throws IOException
 		{
 		socket=s;
 		socketo=socket.getOutputStream();
+		socketi=socket.getInputStream();
+		sendthread.start();
 		}
 
 	
@@ -213,36 +299,6 @@ public class RMImanager
 		
 		}
 	
-	public Thread rmithread=new Thread(){
-	public void run()
-		{
-		for(;;)
-			{
-			SendingMessage sm;
-			synchronized (qlock)
-				{
-				while(sendq.isEmpty())
-					try
-					{
-					sendq.wait();
-					}
-				catch (InterruptedException e)
-					{
-					e.printStackTrace();
-					}
-				sm=sendq.removeFirst();
-				}
-			
-			
-			
-			if(sm!=null)
-				synchronized (qlock)
-					{
-					sendq.addLast(sm);
-					}
-			}
-		}
-	};
 	
 	public void send(SMessage msg)
 		{
