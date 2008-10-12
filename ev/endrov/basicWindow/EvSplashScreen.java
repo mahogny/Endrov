@@ -6,6 +6,7 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 
 import endrov.ev.EV;
+import endrov.ev.EvBuild;
 import endrov.ev.Log;
 
 
@@ -48,7 +49,7 @@ public class EvSplashScreen extends JFrame
 		add(new JLabel(iconSplash), BorderLayout.CENTER);
 		
 		JPanel p=new JPanel(new GridLayout(2,1));
-		p.add(new JLabel("Version "+EV.version));
+		p.add(new JLabel("Version "+EvBuild.version));
 		p.add(logLabel);
 		
 		add(p, BorderLayout.SOUTH);

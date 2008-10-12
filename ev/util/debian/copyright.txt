@@ -1,4 +1,0 @@
-Files: *
-Copyright: Copyright 2008, Johan Henriksson
-License: BSD-3
-
