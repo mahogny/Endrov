@@ -14,10 +14,10 @@ uploaddoc:
 	scp -r ../javadoc mahogny@celegans.sh.se:~/Sites/
 
 starters:
-	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class
-	jar cfvm startImServ.jar bioserv/MANIFEST.STARTIMSERV bioserv/StartImServ.class
-	jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class
-	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/*.class
+	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class endrov/ev/EvBuild.class
+	jar cfvm startImServ.jar bioserv/MANIFEST.STARTIMSERV bioserv/StartImServ.class endrov/ev/EvBuild.class
+	jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class endrov/ev/EvBuild.class
+	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/*.class endrov/ev/EvBuild.class
 	du -hc start*.jar
 
 startcev:

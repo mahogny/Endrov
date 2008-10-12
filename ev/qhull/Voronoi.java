@@ -30,6 +30,8 @@ public class Voronoi
 		File dir=new File(Voronoi.class.getResource(".").getFile());
 		File executable=new File(new File(dir,platform),"qvoronoi");
 		
+		// /usr/bin/qvoronoi
+		
 		int nump=points.length;
 		
     Process process = Runtime.getRuntime().exec(executable.toString()+" o");

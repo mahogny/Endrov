@@ -1,6 +1,0 @@
-?package(endrov):\
-  needs="X11"\
-  section="Applications/Graphics"\
-  title="endrov"\
-  icon="/usr/share/pixmaps/endrov.xpm"\
-  command="/usr/bin/endrov"

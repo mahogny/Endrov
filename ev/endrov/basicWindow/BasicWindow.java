@@ -521,7 +521,7 @@ public abstract class BasicWindow extends JPanel
 	 */
 	public static void dialogAbout()
 		{
-		String text=EV.programName+" "+EV.version+"\n"+
+		String text=EV.programName+" "+EvBuild.version+"\n"+
      "Developed by Johan Henriksson at KI, department of Biosciences and Nutrition\n"+
      "http://www.biosci.ki.se/groups/tbu/\n"+
      "This program is under BSD3 license\n" +

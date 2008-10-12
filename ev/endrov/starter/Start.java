@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
+import endrov.ev.EvBuild;
+
 
 //TODO display error if there is one
 
@@ -14,7 +16,7 @@ import javax.swing.*;
 public class Start
 	{
 	public static boolean printCommand=false;
-	public static boolean printJavaLib=false;	
+	public static boolean printJar=false;	
 	
 	public static void main(String[] args)
 		{
@@ -97,14 +99,20 @@ public class Start
 		List<String> args=new LinkedList<String>();
 		for(String s:argsa)
 			args.add(s);
+		
+		if(args.contains("--printcommand"))
+			printCommand=true;
+		if(args.contains("--printjar"))
+			printJar=true;
+//		args.remove("-printjar");
+//		args.remove("-printcommand");
 
 		//Print current version. need to be put in starter jar to work
-		/*
 		if(args.contains("--version"))
 			{
-			System.out.println("Endrov version "+EV.version);
+			System.out.println("Endrov "+EvBuild.version);
 			System.exit(0);
-			}*/
+			}
 		
 		collectSystemInfo("");
 		
@@ -250,8 +258,29 @@ public class Start
 					{
 					String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
 					v.add(toadd);
-					if(printJavaLib)
+					if(printJar)
 						System.out.println("Adding java library: "+toadd);
+					}
+				else if(sub.isFile() && (sub.getName().endsWith(".jarpath")))
+					{
+					//File containing list of jars to include. This is to be used on systems
+					//where jars are present already.
+					
+					try
+						{
+						BufferedReader input =  new BufferedReader(new FileReader(sub));
+						String line;
+						while((line=input.readLine())!=null)
+							{
+							v.add(line);
+							if(printJar)
+								System.out.println("Adding external java library: "+line);
+							}
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
 					}
 				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
 					collectJars(v,binfiles, sub.getAbsolutePath(), osExt);
@@ -261,9 +290,11 @@ public class Start
 					
 					String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
 					binfiles.add(toadd);
-					if(printJavaLib)
+					if(printJar)
 						System.out.println("Adding binary directory: "+toadd);
 					}
+				//else
+				//	System.out.println("Unknown file "+sub);
 					
 				}
 		}
