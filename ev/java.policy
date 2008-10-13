@@ -4,6 +4,6 @@ grant {
 
 	permission java.security.AllPermission;
 
-//	permission java.net.SocketPermission "*", "accept,resolve";
+	permission java.net.SocketPermission "*", "accept,resolve";
 };
 
