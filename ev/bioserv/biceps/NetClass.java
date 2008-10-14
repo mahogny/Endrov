@@ -1,4 +1,4 @@
-package bioserv.netio;
+package bioserv.biceps;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

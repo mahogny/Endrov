@@ -1,17 +1,19 @@
-package bioserv.netio;
+package bioserv.biceps;
 
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import bioserv.netio.RMImanager.RegMethod;
+import bioserv.biceps.RMImanager.RegMethod;
 
+
+//security: improve later
 
 /**
  * Message to be transferred over network
  * @author Johan Henriksson
  */
-public abstract class SMessage 
+public class Message 
 	{
 	//Potential DoS: must remove callback if parse failed
 	
@@ -28,7 +30,7 @@ public abstract class SMessage
 	/**
 	 * Compose message. Return message has command null
 	 */
-	protected SMessage(Serializable arg[],String command,Callback cb) throws IOException
+	protected Message(Serializable arg[],String command,Callback cb) throws IOException
 		{
 		this.cb=cb;
 		this.command=command;
@@ -105,7 +107,7 @@ public abstract class SMessage
 	
 	
 	
-	public void unpackAndInvoke(Map<String, RegMethod> regfunc, Map<Integer, RegMethod> cb,int messageID) throws Exception
+	public void unpackAndInvoke(Map<String, RegMethod> regfunc, Map<Integer, RegMethod> cb, int messageID) throws Exception
 		{
 		ByteArrayInputStream bi=new ByteArrayInputStream(args);
 		ObjectInputStream is=new ObjectInputStream(bi);

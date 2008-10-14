@@ -1,4 +1,4 @@
-package bioserv.netio;
+package bioserv.biceps;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -6,6 +6,10 @@ import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 import endrov.util.EvUtilBits;
 
@@ -43,12 +47,6 @@ public class RMImanager
 
 	public static final int packetSize=50000; 
 
-/*	private static final byte MSGTYPE_CALLEND=0;
-	private static final byte MSGTYPE_CALLCONT=MSGBIT_CONT;
-	private static final byte MSGTYPE_RETEND=MSGBIT_RET;
-	private static final byte MSGTYPE_RETCONT=MSGBIT_RET+MSGBIT_CONT;*/
-	
-	
 	//The socket has the same send queue length as in C, more or less
 	private Socket socket;
 	private OutputStream socketo;
@@ -62,6 +60,7 @@ public class RMImanager
 	private LinkedList<SendingMessage> sendq=new LinkedList<SendingMessage>();
 	private HashMap<Integer,IncomingMessage> recvq=new HashMap<Integer, IncomingMessage>(); //msgid -> msg
 
+	
 	
 	/*****************************************************************************
 	 * One registered method
@@ -84,7 +83,7 @@ public class RMImanager
 	 */
 	private static class SendingMessage
 		{
-		SMessage msg;
+		Message msg;
 		int offset=0;
 		int msgid;
 		
@@ -142,10 +141,6 @@ public class RMImanager
 						catch (InterruptedException e){e.printStackTrace();}
 					sm=sendq.removeFirst();
 					}
-				
-				
-				
-				
 				if(sm!=null)
 					addSendQueue(sm);
 				}
@@ -155,7 +150,6 @@ public class RMImanager
 	/***********************************************************************
 	 * Receiving thread
 	 */
-		//TODO: create in constructor?
 	public Thread recvthread=new Thread(){
 		public void run()
 			{
@@ -163,17 +157,14 @@ public class RMImanager
 				{
 				//Receive one message
 				//<call id>::short
-				int callID=readShort();
+				int callID=readShort(getInputStream());
 				//<msgsize>::int
-				int msgSize=readInt();
+				int msgSize=readInt(getInputStream());
 				
 				byte[] msg=new byte[msgSize];
-				socketi.read(msg);
-				
-				
+				getInputStream().read(msg);
 	
-	
-	
+//......	
 	
 				if(sm!=null)
 					addSendQueue(sm);
@@ -181,27 +172,56 @@ public class RMImanager
 			}
 	};	
 		
-	private int readShort()
-		{
-		return EvUtilBits.byteArrayToShort((byte)socketi.read(),(byte)socketi.read());
-		}
+	
 
-	private int readInt()
-		{
-		return EvUtilBits.byteArrayToInt((byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read());
-		}
-
+	
+	
+	
+	
+	
+	
+	/***********************************************************************
+	 * This class
+	 */
 	
 	/**
-	 * Add message last on send queue
+	 * Connect to remote host
 	 */
-	private void addSendQueue(SendingMessage sm)
+	public RMImanager(String host, int port) throws IOException
 		{
-		synchronized (qlock){sendq.addLast(sm);}
+	
+		SSLSocketFactory factory = (SSLSocketFactory)SSLSocketFactory.getDefault();
+		SSLSocket socket = (SSLSocket)factory.createSocket(host, port);
+		this.socket=socket;
+		
+		//Allow anonymous handshake ie no certificate needed
+		LinkedList<String> okCipher=new LinkedList<String>();
+		for(String s:socket.getSupportedCipherSuites())
+			if(s.contains("_anon_"))
+				okCipher.add(s);
+		socket.setEnabledCipherSuites(okCipher.toArray(new String[]{}));
+		
+		BufferedReader r=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		
+		System.out.println("hello "+r.readLine());
+	
+		//initital commands
+		//"login" user -> challenge
+		//"challenge" svar -> bool
+		//   send h(h(passwd) || challenge) 
+		//  1. can issue system info calls here
+		//  2. register other commands
+		
+		
+		socketo=socket.getOutputStream();
+		socketi=socket.getInputStream();
+		sendthread.start();
 		}
 	
 	
-
+	/**
+	 * Create RMI session from existing connection
+	 */
 	public RMImanager(Socket s) throws IOException
 		{
 		socket=s;
@@ -210,6 +230,15 @@ public class RMImanager
 		sendthread.start();
 		}
 
+	/**
+	 * Connect to another RMI manager. This is a loopback interface
+	 */
+	/*
+	public RMImanager(RMImanager rmi) throws IOException
+		{
+		
+		}
+*/
 	
 	public synchronized int registerCallback(RegMethod r)
 		{
@@ -283,7 +312,7 @@ public class RMImanager
 	private int nextMsgID=0;
 	
 	
-	public void recv(SMessage msg)
+	public void recv(Message msg)
 		{
 		try
 			{
@@ -300,7 +329,7 @@ public class RMImanager
 		}
 	
 	
-	public void send(SMessage msg)
+	public void send(Message msg)
 		{
 		int thisid=0;
 		synchronized(synchMsgID)
@@ -330,4 +359,16 @@ public class RMImanager
 			}
 		}
 	
+	
+	private static int readShort(InputStream socketi)
+		{return EvUtilBits.byteArrayToShort((byte)socketi.read(),(byte)socketi.read());}
+	private static int readInt(InputStream socketi)
+		{return EvUtilBits.byteArrayToInt((byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read());}
+	
+	/** Add message last on send queue */
+	private void addSendQueue(SendingMessage sm)
+		{synchronized (qlock){sendq.addLast(sm);}}
+	
+	private InputStream getInputStream()
+		{return socketi;}
 	}
