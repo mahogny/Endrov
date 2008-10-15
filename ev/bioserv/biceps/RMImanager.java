@@ -51,6 +51,7 @@ public class RMImanager
 	private Socket socket;
 	private OutputStream socketo;
 	private InputStream socketi;
+	private RMImanager loopback;
 	
 	private HashMap<String, RegMethod> regfunc=new HashMap<String, RegMethod>();
 	private HashMap<Integer, RegMethod> cb=new HashMap<Integer, RegMethod>();
@@ -371,4 +372,7 @@ public class RMImanager
 	
 	private InputStream getInputStream()
 		{return socketi;}
+	
+//	private RMImanager getLoopback()
+//		{return loopback;}
 	}
