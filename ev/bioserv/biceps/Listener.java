@@ -7,12 +7,6 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
-//name: BIdirective Paranoid Message EXchange 
-//BIPMEX RMI
-
-//BICEPS
-//bidirective command exchange, paranoid security
-
 
 /**
  * Listening connection. There is no login or anything in the protocol itself.
@@ -24,14 +18,17 @@ public class Listener extends Thread
 	private SSLServerSocket socket;
 	private IncomingManager mgr;
 	
+	/**
+	 * Event generated whenever there is a new incoming connection
+	 */
 	public static interface IncomingManager
 		{
 		public void newConnection(RMImanager conn);
 		}
-	
-	
-	
-	
+		
+	/**
+	 * Listen on port, report new connections to mgr
+	 */
 	public Listener(int port, IncomingManager mgr) throws IOException
 		{
 		SSLServerSocketFactory factory=(SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
@@ -46,9 +43,11 @@ public class Listener extends Thread
 		socket.setEnabledCipherSuites(okCipher.toArray(new String[]{}));
 	
 		this.mgr=mgr;
-		
 		}
 	
+	/**
+	 * Continuous thread
+	 */
 	public void run()
 		{
 		for(;;)
@@ -62,7 +61,4 @@ public class Listener extends Thread
 				e.printStackTrace();
 				}
 		}
-	
-	
-	
 	}
