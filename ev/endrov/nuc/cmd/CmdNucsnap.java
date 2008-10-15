@@ -1,6 +1,5 @@
 package endrov.nuc.cmd;
 
-import java.util.*;
 import javax.vecmath.*;
 
 import endrov.basicWindow.*;

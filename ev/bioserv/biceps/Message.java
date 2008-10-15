@@ -4,8 +4,6 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import bioserv.biceps.RMImanager.RegMethod;
-
 
 //security: improve later
 
@@ -17,20 +15,37 @@ public class Message
 	{
 	//Potential DoS: must remove callback if parse failed
 	
-	private Callback cb;
+	private RegMethod cb;
 	private String command;
-	private byte[] args;
-	
+	private ByteArrayOutputStream bos=new ByteArrayOutputStream(128);
+
 	
 
 	//public Message(byte b[],Callback cb) throws IOException
 	
 	
 	//Problem: not runnable. need to take an argument!
+
+	
+	public static Message withCallback(Serializable arg[],String command,Object cb) throws IOException
+		{
+		for(Method m:cb.getClass().getMethods())
+			if(m.getName().equals("run"))
+				return new Message(arg,command,new RegMethod(cb,m));
+		throw new IOException("No run method");
+		//			return new Message(arg,command,new RegMethod(cb,cb.getClass().getMethod("run", Object.class)));
+
+		}
+	/*
+	public Message(Serializable arg[],String command,Callback cb) throws IOException, NoSuchMethodException
+		{
+		this(arg,command,new RegMethod(cb,cb.getClass().getMethod("run", Object.class)));
+		}
+*/
 	/**
 	 * Compose message. Return message has command null
 	 */
-	protected Message(Serializable arg[],String command,Callback cb) throws IOException
+	public Message(Serializable arg[],String command,RegMethod cb) throws IOException
 		{
 		this.cb=cb;
 		this.command=command;
@@ -38,11 +53,10 @@ public class Message
 	
 		
 		
-		ByteArrayOutputStream bos=new ByteArrayOutputStream(128);
 		ObjectOutputStream oos=new ObjectOutputStream(bos);
 		
-		if(command!=null)
-			oos.writeUTF(command);
+//		if(command!=null)
+		oos.writeUTF(command);
 		
 		//array should have less overhead than a list
 		for(Object o:arg)
@@ -71,6 +85,8 @@ public class Message
 			}
 		oos.flush();
 	
+		System.out.println("send alen "+bos.size()+" #arg "+arg.length);
+		
 /*		System.out.println("----");
 		for(byte b:bos.toByteArray())
 			System.out.println("- "+(char)b);
@@ -81,12 +97,14 @@ public class Message
 			System.out.println("- "+b);
 		System.out.println("----" +bos.size()+" ");*/
 	
-		args=bos.toByteArray();
+//		args=bos.toByteArray();
 		}
-
+	public byte[] getBytes()
+		{
+		return bos.toByteArray();
+		}
 	
-	
-	public Callback getCallback()
+	public RegMethod getCallback()
 		{
 		return cb;
 		}
@@ -94,47 +112,42 @@ public class Message
 		{
 		return command;
 		}
-	public int getBytesLength()
-		{
-		return args.length;
-		}
-	
-	public void write(OutputStream os, int offset, int length) throws IOException
-		{
-		os.write(args, offset, length);
-		}
 	
 	
-	
-	
-	public void unpackAndInvoke(Map<String, RegMethod> regfunc, Map<Integer, RegMethod> cb, int messageID) throws Exception
+	/**
+	 * Read the contents of the message. Find the appropriate function and call it
+	 */
+	public static void unpackAndInvoke(byte[] args, final RMImanager rmi, Map<String, RegMethod> regfunc, Map<Short, RegMethod> cb, final short messageID) throws Exception
 		{
 		ByteArrayInputStream bi=new ByteArrayInputStream(args);
 		ObjectInputStream is=new ObjectInputStream(bi);
-		System.out.println("alen "+args.length);
 		
 		String funcName=is.readUTF(); 
 		
-		Class<?> arg[]; 
-		Method method;
-		if(funcName.equals(""))
+		final RegMethod rm;
+		boolean isReturnCall=funcName.equals("");
+		Class<?> arg[];
+		if(isReturnCall)
 			{
 			//Return of call
-		//TODO
-			RegMethod rm=cb.get(messageID);
-			method=rm.m;
-			arg=rm.c;
-			
-			
+			rm=cb.get(messageID);
+			cb.remove(messageID);
+/*			Class<?> r=rm.m.getReturnType();
+			if(r!=void.class)
+				arg=new Class<?>[]{rm.m.getReturnType()};
+			else
+				arg=new Class<?>[]{};*/
 			}
 		else
 			{
 			//Call
-			RegMethod rm=regfunc.get(funcName);
-			method=rm.m;
-			arg=rm.c;
+			rm=regfunc.get(funcName);
 			}
+		arg=rm.m.getParameterTypes();
 		
+
+		
+		System.out.println("recv alen "+args.length+" #arg "+arg.length);
 		
 		Object[] ser=new Object[arg.length];
 		
@@ -157,12 +170,23 @@ public class Message
 			else
 				{
 				//int vs Integer!!!?
-				System.out.println("type is "+arg[i].getCanonicalName()+" "+Integer.class.getCanonicalName());
+				System.out.println("type is "+arg[i].getCanonicalName());
 				ser[i]=is.readObject();
 				}
 			}
 		
-		method.invoke(null, ser);
+		final Object result=rm.m.invoke(rm.mthis, ser);
+		if(!isReturnCall)
+			{
+			if(rm.m.getReturnType()==void.class)
+				rmi.send(new Message(new Serializable[]{},"",null),messageID);
+			else
+				rmi.send(new Message(new Serializable[]{(Serializable)result},"",null),messageID);
+			System.out.println("Returning====");
+			}
+
+		
+		System.out.println("here");
 		}
 	
 	

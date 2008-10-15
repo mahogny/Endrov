@@ -4,21 +4,25 @@ import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import endrov.util.EvUtilBits;
 
+//name: BIdirective Paranoid Message EXchange 
+//BIPMEX RMI
+
+//BICEPS
+//bidirective command exchange, paranoid security
 
 
 //////
 // Message format 
 //
-// msg := <call id>::short <msgsize>::int <msgtype>::byte <function>::string <arguments....>::untyped
+// msg := <call id>::short <msgsize>::int <packetstatus>::byte ....part of content, #msgsize bytes....
+// content := <function>::string <arguments....>::untyped
 //
 // one message can be split into several packages, allowing the queue to be sent
 // as round-robin. this is needed if several processes need to share the line.
@@ -26,6 +30,7 @@ import endrov.util.EvUtilBits;
 // to manually return as this opens up for too many security issues.
 // msgsize is the size of what follows.
 //
+// packetstatus:
 // <bit 0>willcontinue
 //
 // the arguments has to be known on receiving end as meta information is not transmitted
@@ -54,29 +59,15 @@ public class RMImanager
 	private RMImanager loopback;
 	
 	private HashMap<String, RegMethod> regfunc=new HashMap<String, RegMethod>();
-	private HashMap<Integer, RegMethod> cb=new HashMap<Integer, RegMethod>();
-	private int nextCB=0;
-	
-	private Object qlock=new Object();
+	private HashMap<Short, RegMethod> callbacks=new HashMap<Short, RegMethod>();
 	private LinkedList<SendingMessage> sendq=new LinkedList<SendingMessage>();
-	private HashMap<Integer,IncomingMessage> recvq=new HashMap<Integer, IncomingMessage>(); //msgid -> msg
+	private HashMap<Short,IncomingMessage> recvq=new HashMap<Short, IncomingMessage>(); //msgid -> msg
 
+	private Object synchMsgID=new Object();
+	private short nextMsgID=0;
+
+	private RMImanager rmithis=this;
 	
-	
-	/*****************************************************************************
-	 * One registered method
-	 */
-	public static class RegMethod
-		{
-		public Method m;
-		public Class<?>[] c;
-		
-		public RegMethod(Method m)
-			{
-			this.m=m;
-			c=m.getParameterTypes();
-			}
-		}
 	
 	
 	/***********************************************************************
@@ -84,36 +75,40 @@ public class RMImanager
 	 */
 	private static class SendingMessage
 		{
-		Message msg;
+		final byte[] buf;
+		final short msgid;
 		int offset=0;
-		int msgid;
 		
-		//mark as return... best done in message. how to do it safely?
+		public SendingMessage(short msgid, byte[] buf)
+			{
+			this.msgid=msgid;
+			this.buf=buf;
+			}
 		
-		
-		public void putBytes(OutputStream os) throws IOException
+		public boolean putBytes(OutputStream os) throws IOException
 			{
 			byte msgtype=0;
 			
-			int totlen=msg.getBytesLength();
-			
-			int left=totlen-offset;
-			if(left>packetSize)
+			boolean done=true;
+			int len=buf.length-offset;
+			if(len>packetSize)
 				{
-				left=packetSize;
+				len=packetSize;
 				msgtype|=MSGBIT_CONT;
+				done=false;
 				}
-
-			short msgid=0;
 			
 			//<call id>::short 
 			os.write(EvUtilBits.shortToByteArray(msgid));
 			//<msgsize>::int 
-			os.write(EvUtilBits.intToByteArray(left));
-			//<msgtype>::byte
+			os.write(EvUtilBits.intToByteArray(len));
+			//<packetstatus>::byte
 			os.write(msgtype);
 			//{<callbody>::[byte] | <returnbody>::[byte]}
-			msg.write(os, offset, left);
+			os.write(buf, offset, len);
+			os.flush();
+			offset+=len;
+			return done;
 			}
 		}
 	
@@ -128,14 +123,14 @@ public class RMImanager
 	/***********************************************************************
 	 * Sending thread
 	 */
-	public Thread sendthread=new Thread(){
+	private Thread sendthread=new Thread(){
 		public void run()
 			{
 			for(;;)
 				{
 				//Take one message off the queue
 				SendingMessage sm;
-				synchronized (qlock)
+				synchronized (sendq) //qlock
 					{
 					while(sendq.isEmpty())
 						try{sendq.wait();}
@@ -143,7 +138,20 @@ public class RMImanager
 					sm=sendq.removeFirst();
 					}
 				if(sm!=null)
-					addSendQueue(sm);
+					{
+					try
+						{
+						if(!sm.putBytes(getOutputStream()))
+							addSendQueue(sm);
+						System.out.println("sent bytes, now q#="+sendq.size());
+						}
+					catch (IOException e)
+						{
+						//No idea what to do in this case
+						addSendQueue(sm);
+						e.printStackTrace();
+						}
+					}
 				}
 			}
 		};
@@ -151,25 +159,51 @@ public class RMImanager
 	/***********************************************************************
 	 * Receiving thread
 	 */
-	public Thread recvthread=new Thread(){
+	private Thread recvthread=new Thread(){
 		public void run()
 			{
 			for(;;)
-				{
-				//Receive one message
-				//<call id>::short
-				int callID=readShort(getInputStream());
-				//<msgsize>::int
-				int msgSize=readInt(getInputStream());
-				
-				byte[] msg=new byte[msgSize];
-				getInputStream().read(msg);
-	
-//......	
-	
-				if(sm!=null)
-					addSendQueue(sm);
-				}
+				try
+					{
+					System.out.println("ready to recv "+rmithis);
+					//Receive one message
+					//<call id>::short
+					short callID=(short)readShort(getInputStream());
+					
+					System.out.println("callid "+callID);
+					
+					//<msgsize>::int
+					int msgSize=readInt(getInputStream());
+					//<packetstatus>::byte
+					int packetStatus=getInputStream().read();
+					//package body
+					byte[] msg=new byte[msgSize];
+					getInputStream().read(msg);
+
+					System.out.println("recv "+msgSize+" "+packetStatus);
+					//Collect body
+					IncomingMessage inc=recvq.get(callID);
+					if(inc==null)
+						recvq.put(callID, inc=new IncomingMessage());
+					inc.bos.write(msg);
+
+					//When ready to parse, no MSGBIT_CONT, execute
+					if(packetStatus==0)
+						try
+							{
+							//TODO: does it stall?
+							Message.unpackAndInvoke(inc.bos.toByteArray(), rmithis, regfunc, callbacks, callID);
+							recvq.remove(callID);
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+					}
+				catch (IOException e)
+					{
+					e.printStackTrace();
+					}
 			}
 	};	
 		
@@ -178,48 +212,7 @@ public class RMImanager
 	
 	
 	
-	
-	
-	
-	/***********************************************************************
-	 * This class
-	 */
-	
-	/**
-	 * Connect to remote host
-	 */
-	public RMImanager(String host, int port) throws IOException
-		{
-	
-		SSLSocketFactory factory = (SSLSocketFactory)SSLSocketFactory.getDefault();
-		SSLSocket socket = (SSLSocket)factory.createSocket(host, port);
-		this.socket=socket;
-		
-		//Allow anonymous handshake ie no certificate needed
-		LinkedList<String> okCipher=new LinkedList<String>();
-		for(String s:socket.getSupportedCipherSuites())
-			if(s.contains("_anon_"))
-				okCipher.add(s);
-		socket.setEnabledCipherSuites(okCipher.toArray(new String[]{}));
-		
-		BufferedReader r=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		
-		System.out.println("hello "+r.readLine());
-	
-		//initital commands
-		//"login" user -> challenge
-		//"challenge" svar -> bool
-		//   send h(h(passwd) || challenge) 
-		//  1. can issue system info calls here
-		//  2. register other commands
-		
-		
-		socketo=socket.getOutputStream();
-		socketi=socket.getInputStream();
-		sendthread.start();
-		}
-	
-	
+
 	/**
 	 * Create RMI session from existing connection
 	 */
@@ -229,65 +222,25 @@ public class RMImanager
 		socketo=socket.getOutputStream();
 		socketi=socket.getInputStream();
 		sendthread.start();
+		recvthread.start();
 		}
-
+	
 	/**
 	 * Connect to another RMI manager. This is a loopback interface
 	 */
-	/*
-	public RMImanager(RMImanager rmi) throws IOException
+/*	public RMImanager(RMImanager rmi) throws IOException
 		{
-		
+		loopback=rmi;
 		}
-*/
-	
-	public synchronized int registerCallback(RegMethod r)
-		{
-		synchronized (cb)
-			{
-			//Can in theory fill up entire queue
-			while(cb.containsKey(nextCB))
-				nextCB++;
-			cb.put(nextCB, r);
-			return nextCB;
-			}
-		}
-	
-	
-	public void invokeCallback(int id)
-		{
-		final RegMethod r;
-		synchronized (cb)
-			{
-			r=cb.remove(id);
-			}
-		if(r!=null)
-			new Thread(){
-			public void run()
-				{
-				try
-					{
-					r.m.invoke(null, new Object[]{}); //TODO
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-				}
-			}.run();
-		//r.run();
-		//which semantic is wanted?
-		}
-	
-	
+/*
 	
 	
 	/**
 	 * Register a method
 	 */
-	public void regFunc(String netname, Method m)
+	public void regFunc(String netname, Object mthis, Method m)
 		{
-		RegMethod a=new RegMethod(m);
+		RegMethod a=new RegMethod(mthis,m);
 		System.out.println("reg: "+netname);
 		regfunc.put(netname, a);
 		}
@@ -295,84 +248,91 @@ public class RMImanager
 	/**
 	 * Register all methods in a class, based on if they are annotated
 	 */
-	public void regClass(Class<?> c)
+	public void regClass(Class<?> c, Object mthis)
 		{
 		for(Method m:c.getDeclaredMethods())
 			{
 			NetFunc a=m.getAnnotation(NetFunc.class);
-			for(Annotation aa:m.getAnnotations())
+			/*for(Annotation aa:m.getAnnotations())
 				System.out.println(aa);
-					
-			System.out.println("hm "+m+" "+a);
+			System.out.println("found func "+m+" "+a);*/
 			if(a!=null)
-				regFunc(a.name(), m);
+				regFunc(a.name(), mthis, m);
 			}
 		}
 	
-	private Object synchMsgID=new Object();
-	private int nextMsgID=0;
-	
-	
-	public void recv(Message msg)
+	/**
+	 * Connect to remote host
+	 */
+	public static RMImanager connect(String host, int port) throws IOException
 		{
-		try
-			{
-			//if return, check type of callback
-			//if func, check type of func
-			msg.unpackAndInvoke(regfunc,cb,0);
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
-			}
+		SSLSocketFactory factory = (SSLSocketFactory)SSLSocketFactory.getDefault();
+		SSLSocket socket = (SSLSocket)factory.createSocket(host, port);
 		
-		
+		//Allow anonymous handshake ie no certificate needed
+		LinkedList<String> okCipher=new LinkedList<String>();
+		for(String s:socket.getSupportedCipherSuites())
+			if(s.contains("_anon_"))
+				okCipher.add(s);
+		socket.setEnabledCipherSuites(okCipher.toArray(new String[]{}));
+				
+		return new RMImanager(socket);
 		}
 	
 	
+	/**
+	 * Queue a message for sending
+	 */
 	public void send(Message msg)
 		{
-		int thisid=0;
+		send(msg,null);
+		}
+
+	/**
+	 * Queue a message for sending
+	 */
+	public void send(Message msg, Short thisid)
+		{
 		synchronized(synchMsgID)
 			{
-			thisid=nextMsgID;
-			nextMsgID++;
+			if(thisid==null)
+				{
+				thisid=nextMsgID;
+				nextMsgID++;
+				}
+			//TODO: theoretically need to check if free
 
-			//TODO: need to check if free
+			//Register callback first
+			if(msg.getCallback()!=null)
+				callbacks.put(thisid, msg.getCallback());
 			
-			SendingMessage smsg=new SendingMessage();
-			smsg.msg=msg;
-			smsg.msgid=thisid;
-			recvq.put(smsg.msgid,msg);
-			sendq.add(smsg);
-			}
-		
-		
-		
-		//Loopback
-		try
-			{
-			recv(msg);
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
+			//Send message
+			if(loopback!=null)
+				{
+				//TODO
+//				loopback.recvq.put(smsg.msgid,msg);
+				}
+			else
+				{
+				SendingMessage smsg=new SendingMessage(thisid,msg.getBytes());
+				addSendQueue(smsg);
+				
+				System.out.println("sent");
+				}
 			}
 		}
 	
 	
-	private static int readShort(InputStream socketi)
+	private static int readShort(InputStream socketi) throws IOException
 		{return EvUtilBits.byteArrayToShort((byte)socketi.read(),(byte)socketi.read());}
-	private static int readInt(InputStream socketi)
+	private static int readInt(InputStream socketi) throws IOException
 		{return EvUtilBits.byteArrayToInt((byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read());}
 	
 	/** Add message last on send queue */
 	private void addSendQueue(SendingMessage sm)
-		{synchronized (qlock){sendq.addLast(sm);}}
+//		{synchronized (qlock){sendq.addLast(sm);}}
+		{synchronized (sendq){sendq.addLast(sm); sendq.notify();}}
 	
-	private InputStream getInputStream()
-		{return socketi;}
-	
-//	private RMImanager getLoopback()
-//		{return loopback;}
+	private InputStream getInputStream(){return socketi;}
+	private OutputStream getOutputStream(){return socketo;}
 	}

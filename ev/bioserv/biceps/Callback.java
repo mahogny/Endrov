@@ -1,6 +1,7 @@
 package bioserv.biceps;
 
-public interface Callback
+public interface Callback<E>
 	{
-	public void run(Object o);
+	//Cannot be used. type info :(
+	public void run(E o);
 	}
