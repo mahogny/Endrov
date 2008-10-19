@@ -719,4 +719,5 @@ public class LineageWindow extends BasicWindow
 	
 
 	public void loadedFile(EvData data)	{}
+	public void freeResources(){}
 	}

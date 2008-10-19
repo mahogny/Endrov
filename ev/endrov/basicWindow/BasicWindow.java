@@ -595,4 +595,7 @@ public abstract class BasicWindow extends JPanel
 	public abstract void loadedFile(EvData data);
 	
 	
+	public abstract void freeResources();
+
+	
 	}

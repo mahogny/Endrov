@@ -1,4 +1,4 @@
-package endrov.recording.mm;
+package endrov.micromanager;
 
 import java.util.*;
 
@@ -76,7 +76,7 @@ public class MicroManager extends HardwareProvider
 			
 	*/
 			// list devices
-			/*
+			
 			System.out.println("Device status:");
 			for (String device:MMutil.getLoadedDevices(core))
 				{
@@ -86,27 +86,43 @@ public class MicroManager extends HardwareProvider
 					System.out.print(" " + prop.getKey() + " = " + prop.getValue());
 					System.out.println("  "+MMutil.convVector(core.getAllowedPropertyValues(device, prop.getKey())));
 					}
-				}*/
-		
+				}
+
+			//Micro-manager has a defunct getDeviceType(), this is a work-around
+			//or is it? I think they have a different notion of filter
+			Collection<String> isMagnifier=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.MagnifierDevice));
+			Collection<String> isXY=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.XYStageDevice));
+			Collection<String> isStage=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StageDevice));
+			Collection<String> isShutter=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.ShutterDevice));
+			Collection<String> isSerial=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.SerialDevice));
+			Collection<String> isAutoFocus=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.AutoFocusDevice));
+			Collection<String> isCamera=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.CameraDevice));
+			Collection<String> isState=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StateDevice));
+			
 			//Register all devices
 			for(String devName:MMutil.convVector(core.getLoadedDevices()))
 				{
 				//Device fundamentals
-				DeviceType type=core.getDeviceType(devName);
 				MMDeviceAdapter adp;
-				if(type==DeviceType.CameraDevice)
+				if(isCamera.contains(devName))
 					adp=new MMCamera(this,devName);
-				else if((type.swigValue() & DeviceType.MagnifierDevice.swigValue())!=0)
+				else if(isMagnifier.contains(devName))
 					adp=new MMMagnifier(this,devName);
-				else if((type.swigValue() & DeviceType.XYStageDevice.swigValue())!=0)
+				else if(isXY.contains(isXY))
 					adp=new MMStage(this,devName);
-				else if((type.swigValue() & DeviceType.StageDevice.swigValue())!=0)
+				else if(isStage.contains(devName))
 					adp=new MMStage(this,devName);
-				else if((type.swigValue() & DeviceType.ShutterDevice.swigValue())!=0)
+				else if(isShutter.contains(devName))
 					adp=new MMShutter(this,devName);
+				else if(isAutoFocus.contains(devName))
+					adp=new MMAutoFocus(this,devName);
+				else if(isState.contains(devName))
+					adp=new MMState(this,devName);
+				else if(isSerial.contains(devName))
+					adp=new MMSerial(this,devName);
 				else
 					adp=new MMDeviceAdapter(this,devName);
-				System.out.println(devName+"---"+type+"---------------"+type.swigValue());
+				//System.out.println(devName+"---"+adp+" "+adp.getDescName());
 				
 				hw.put(devName,adp);
 				}

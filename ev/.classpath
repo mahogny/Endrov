@@ -46,11 +46,7 @@
 	<classpathentry kind="lib" path="libs/ome_inc/jcommon-1.0.9.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/spring-2.0.6.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/MMAutofocus_.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/MMBleach_.jar"/>
 	<classpathentry kind="lib" path="libs/umanager_inc/MMCoreJ.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/MMJ_.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/Tracker_.jar"/>
 	<classpathentry kind="lib" path="libs/ee_inc/activation.jar"/>
 	<classpathentry kind="lib" path="libs/ee_inc/mail-1.4.1.jar"/>
 	<classpathentry kind="output" path=""/>

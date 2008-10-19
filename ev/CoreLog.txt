@@ -1,0 +1,111 @@
+LOG(25619, 3084635024:): -------->>
+LOG(25619, 3084635024:): Core session started on Sat Oct 18 2008 22:21:57.011118 by mahogny on venus
+LOG(25619, 3084635024:): Debug logging disabled
+LOG(25619, 3084635024:): All devices unloaded.
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25619, 3084635024:): Starting initialization sequence for 0 devices...
+LOG(25734, 3085052816:): -------->>
+LOG(25734, 3085052816:): Core session started on Sat Oct 18 2008 22:24:14.616304 by mahogny on venus
+LOG(25734, 3085052816:): Debug logging disabled
+LOG(25734, 3085052816:): All devices unloaded.
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25734, 3085052816:): Starting initialization sequence for 0 devices...
+LOG(25832, 3084688272:): -------->>
+LOG(25832, 3084688272:): Core session started on Sat Oct 18 2008 22:26:22.599772 by mahogny on venus
+LOG(25832, 3084688272:): Debug logging disabled
+LOG(25832, 3084688272:): All devices unloaded.
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Error occured. Device MMCore::loadDevice. Error code: 6
+Device interface version: core=26, library=28
+Device interface version mismatch.
+
+LOG(25832, 3084688272:): Starting initialization sequence for 0 devices...

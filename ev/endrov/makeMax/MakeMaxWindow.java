@@ -169,5 +169,6 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 		}
 	
 	public void loadedFile(EvData data){}
+	public void freeResources(){}
 
 	}

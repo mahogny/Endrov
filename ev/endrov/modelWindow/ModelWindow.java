@@ -725,7 +725,8 @@ public class ModelWindow extends BasicWindow
 	
 	
 	
-	
+	public void freeResources(){}
+
 	
 	
 	

@@ -174,6 +174,7 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener/*, 
 
 	
 	public void loadedFile(EvData data){}
+	public void freeResources(){}
 
 	
 	

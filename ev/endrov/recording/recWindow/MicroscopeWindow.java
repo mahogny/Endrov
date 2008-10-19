@@ -174,6 +174,7 @@ public class MicroscopeWindow extends BasicWindow
 	public void windowPersonalSettings(Element e)
 		{
 		} 
+	public void freeResources(){}
 	
 	
 	}

@@ -161,9 +161,6 @@ public class CamWindow extends BasicWindow
 	public CamWindow(Rectangle bounds)
 		{
 		
-		//TODO need to destroy windows when they close. this is not done now!
-		//might be fixed once cam event is there
-		
 		mcombo=new JComboBox(new Vector<String>(HardwareManager.getHardwareList(HWCamera.class)));
 
 		
@@ -174,13 +171,13 @@ public class CamWindow extends BasicWindow
 		
 		
 		
-		timer.start();
 		
 		//Window overall things
 		setTitleEvWindow("Camera Control");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
+		timer.start();
 		}
 	
 	
@@ -208,6 +205,10 @@ public class CamWindow extends BasicWindow
 		{
 		
 		} 
+	public void freeResources()
+		{
+		timer.stop();
+		}
 	
 	
 	}

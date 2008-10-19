@@ -849,6 +849,7 @@ public class ImageWindow extends BasicWindow
 			getCurrentChannelWidget().comboChannel.setImageset((Imageset)data);
 		}
 
+	public void freeResources(){}
 	
 	
 	public void finalize()

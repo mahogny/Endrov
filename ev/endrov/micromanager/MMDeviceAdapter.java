@@ -1,4 +1,4 @@
-package endrov.recording.mm;
+package endrov.micromanager;
 
 import java.util.*;
 
@@ -25,7 +25,6 @@ public class MMDeviceAdapter implements Hardware
 		this.mm=mm;
 		this.mmDeviceName=mmDeviceName;
 		}
-	
 	
 	public String getDescName()
 		{
@@ -106,7 +105,27 @@ public class MMDeviceAdapter implements Hardware
 			}
 		}
 	
+	public boolean getPropertyValueBoolean(String prop)
+		{
+		return getPropertyValue(prop).equals("1");
+		}
 	
+	public void setPropertyValue(String prop, String value)
+		{
+		try
+			{
+			mm.core.setProperty(mmDeviceName, prop, value);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+	public void setPropertyValue(String prop, boolean value)
+		{
+		setPropertyValue(prop, value ? "1" : "0");
+		}
+
 	
 	
 	}

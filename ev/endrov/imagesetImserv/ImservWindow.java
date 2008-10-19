@@ -194,7 +194,8 @@ public class ImservWindow extends BasicWindow implements ActionListener
 		root.addContent(e);
 		}
 	
-	
+	public void freeResources(){}
+
 	
 	
 	}
