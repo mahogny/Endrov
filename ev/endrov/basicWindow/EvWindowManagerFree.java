@@ -40,6 +40,8 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 	public void windowClosed(WindowEvent arg0)
 		{
 		BasicWindow.windowList.remove(bw);
+		bw.freeResources();
+		System.out.println("here");
 		}
 	
 	

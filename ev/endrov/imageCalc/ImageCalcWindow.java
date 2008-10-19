@@ -183,5 +183,6 @@ public class ImageCalcWindow extends BasicWindow implements ActionListener, Meta
 		}
 	
 	public void loadedFile(EvData data){}
+	public void freeResources(){}
 
 	}

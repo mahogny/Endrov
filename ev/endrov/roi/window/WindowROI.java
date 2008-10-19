@@ -330,6 +330,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 
 	
 	public void loadedFile(EvData data){}
+	public void freeResources(){}
 
 	
 	}

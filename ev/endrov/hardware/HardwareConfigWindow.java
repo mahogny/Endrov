@@ -166,12 +166,6 @@ public class HardwareConfigWindow extends BasicWindow
 		// TODO Auto-generated method stub
 		
 		} 
-	
-	/*
-	public static void main(String[] arg)
-		{
-		new HardwareConfigWindow();
-		}
-*/	
+	public void freeResources(){}
 	
 	}

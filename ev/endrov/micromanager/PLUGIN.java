@@ -1,9 +1,7 @@
-package endrov.recording;
+package endrov.micromanager;
+import endrov.ev.EV;
 import endrov.ev.PluginDef;
-import endrov.recording.camWindow.CamWindow;
-import endrov.recording.recWindow.MicroscopeWindow;
-import endrov.recording.recmedManual.ManualExtension;
-import endrov.recording.recmetStack.StackExtension;
+import endrov.micromanager.MicroManager;
 
 public class PLUGIN extends PluginDef
 	{
@@ -19,7 +17,7 @@ public class PLUGIN extends PluginDef
 	
 	public boolean systemSupported()
 		{
-		return true;
+		return EV.isLinux();
 		}
 	
 	public String cite()
@@ -34,6 +32,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{MicroscopeWindow.class,ManualExtension.class,StackExtension.class,CamWindow.class};
+		return new Class[]{MicroManager.class};
 		}
 	}

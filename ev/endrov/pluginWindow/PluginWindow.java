@@ -153,5 +153,6 @@ public class PluginWindow extends BasicWindow
 		}
 
 	public void loadedFile(EvData data){}
+	public void freeResources(){}
 
 	}

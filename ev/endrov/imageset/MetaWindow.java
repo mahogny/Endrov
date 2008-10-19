@@ -544,5 +544,6 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	public void changedUpdate(DocumentEvent e) {fieldsToMeta();}
 	
 	public void loadedFile(EvData data){}
+	public void freeResources(){}
 
 	}

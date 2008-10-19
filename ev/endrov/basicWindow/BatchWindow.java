@@ -104,5 +104,5 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 		}
 	
 	public void loadedFile(EvData data){}
-	
+	public void freeResources(){}
 	}

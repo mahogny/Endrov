@@ -120,6 +120,7 @@ public class FilterImageExtension implements ImageWindowExtension
 
 		public void windowPersonalSettings(Element e){}
 		public void loadedFile(EvData data){}
+		public void freeResources(){}
 		}
 	
 	

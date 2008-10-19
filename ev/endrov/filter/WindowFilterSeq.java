@@ -183,5 +183,6 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 		}
 	
 	public void loadedFile(EvData data){}
+	public void freeResources(){}
 
 	}

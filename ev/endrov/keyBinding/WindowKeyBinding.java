@@ -208,6 +208,7 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		public void keyTyped(KeyEvent e){}
 		}
 	
+	public void freeResources(){}
 
 	
 	}

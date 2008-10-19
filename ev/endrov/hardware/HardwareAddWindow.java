@@ -90,6 +90,7 @@ public class HardwareAddWindow extends BasicWindow
 		
 		} 
 	
+	public void freeResources(){}
 	/*
 	public static void main(String[] arg)
 		{

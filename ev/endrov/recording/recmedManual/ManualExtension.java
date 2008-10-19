@@ -1,4 +1,4 @@
-package endrov.recording.manualRec;
+package endrov.recording.recmedManual;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -14,9 +14,7 @@ import endrov.ev.JNumericField;
 import endrov.hardware.Hardware;
 import endrov.hardware.HardwareManager;
 import endrov.hardware.PropertyType;
-import endrov.recording.HWCamera;
-import endrov.recording.HWFilter;
-import endrov.recording.HWShutter;
+import endrov.recording.*;
 import endrov.recording.recWindow.MicroscopeWindow;
 import endrov.util.EvSwingTools;
 
@@ -70,8 +68,13 @@ public class ManualExtension implements MicroscopeWindow.Extension
 					hw.add(new CameraPanel(entry.getKey(),(HWCamera)entry.getValue()));
 				else if(entry.getValue() instanceof HWShutter)
 					hw.add(new ShutterPanel(entry.getKey(),(HWShutter)entry.getValue()));
-				else if(entry.getValue() instanceof HWFilter)
-					hw.add(new FilterPanel(entry.getKey(),(HWFilter)entry.getValue()));
+				else if(entry.getValue() instanceof HWState)
+					hw.add(new StateDevicePanel(entry.getKey(),(HWState)entry.getValue()));
+/*				else if(entry.getValue() instanceof HWState)
+					hw.add(new StatePanel(entry.getKey(),(HWState)entry.getValue()));
+				else if(entry.getValue() instanceof HWStage)
+					hw.add(new StagePanel(entry.getKey(),(HWStage)entry.getValue()));
+	*/			
 				System.out.println(entry.getValue().getClass());
 				}
 			
@@ -105,13 +108,14 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			JToggleButton b=new JToggleButton(iconShutterClosed);
 			public ShutterPanel(String devName, HWShutter hw)
 				{
-				String name="Uniblitz shutter";
+				JLabel lTitle=new JLabel(devName);
+				lTitle.setToolTipText(hw.getDescName());
 				
 				setOpen(b.isSelected());
 				b.addActionListener(this);
 				
 				setLayout(new BorderLayout());
-				add(new JLabel(name),BorderLayout.CENTER);
+				add(lTitle,BorderLayout.CENTER);
 				add(b,BorderLayout.EAST);
 				}
 			public void actionPerformed(ActionEvent e)
@@ -131,34 +135,38 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		
 		
 		/******************************************************************************************************
-		 *                               Filter                                                               *
+		 *                               State device                                                         *
 		 *****************************************************************************************************/
 
-		public static class FilterPanel extends JPanel implements ActionListener
+		public static class StateDevicePanel extends JPanel implements ActionListener
 			{
+			//Cannot separate out generic state devices from filters
+			
 			//Since we have cubes, several filters in one. use / to separate
 			//Color filters. Somewhere one need a filter database with the entire
 			//range for calculations.
-			static final long serialVersionUID=0;
-			JComboBox filters;
-			public FilterPanel(String devName,HWFilter hw)
+			private static final long serialVersionUID=0;
+			private JComboBox state;
+			private HWState hw;
+			public StateDevicePanel(String devName,HWState hw)
 				{
-				Vector<String> fs=new Vector<String>();
-				fs.add("500 / 300");
-				fs.add("550 / 200");
-				filters=new JComboBox(fs);
+				this.hw=hw;
+				Vector<String> fs=new Vector<String>(hw.getStateNames());
+				state=new JComboBox(fs);
+				state.setSelectedIndex(hw.getCurrentState());
 				
-				String name="Filter set";
+				JLabel lTitle=new JLabel(devName);
+				lTitle.setToolTipText(hw.getDescName());
 				
-				filters.setSelectedIndex(0); //TODO
-				filters.addActionListener(this);
+				state.addActionListener(this);
 				
 				setLayout(new BorderLayout());
-				add(new JLabel(name),BorderLayout.CENTER);
-				add(filters,BorderLayout.EAST);
+				add(lTitle,BorderLayout.CENTER);
+				add(state,BorderLayout.EAST);
 				}
 			public void actionPerformed(ActionEvent e)
 				{
+				hw.setCurrentState(state.getSelectedIndex());
 				}
 			}
 		
@@ -169,27 +177,42 @@ public class ManualExtension implements MicroscopeWindow.Extension
 
 		public static class CameraPanel extends JPanel implements ActionListener
 			{
+			//TODO: build a function to decompose not only menus but entire swing components?
 			static final long serialVersionUID=0;
-			public CameraPanel(String devName,HWCamera hw)
+			public CameraPanel(String devName,final HWCamera hw)
 				{
 				setBorder(BorderFactory.createTitledBorder(devName));
+				setToolTipText(hw.getDescName());
 				
 				List<JComponent> comps=new LinkedList<JComponent>();
 				
 				SortedMap<String, PropertyType> props=hw.getPropertyTypes();
 				for(Map.Entry<String, PropertyType> entry:props.entrySet())
 					{
-					PropertyType pt=entry.getValue();
+					final String propName=entry.getKey();
+					final PropertyType pt=entry.getValue();
 					JComponent comp=null;
 					if(pt.readOnly)
 						;
 					else if(pt.isBoolean)
 						{
-						comp=new JCheckBox();
+						JCheckBox b=new JCheckBox();
+						b.setSelected(hw.getPropertyValueBoolean(propName));
+						b.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e)
+								{hw.setPropertyValue(propName, ((JCheckBox)e.getSource()).isSelected());}
+						});
+						comp=b;
 						}
 					else if(!pt.categories.isEmpty())
 						{
-						comp=new JComboBox(new Vector<String>(pt.categories));
+						JComboBox c=new JComboBox(new Vector<String>(pt.categories));
+						c.setSelectedItem(hw.getPropertyValue(propName));
+						c.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e)
+								{hw.setPropertyValue(propName, (String)((JComboBox)e.getSource()).getSelectedItem());}
+						});
+						comp=c;
 						}
 					else if(pt.hasRange)
 						{

@@ -1,4 +1,4 @@
-package endrov.recording.mm;
+package endrov.micromanager;
 
 import endrov.recording.HWCamera;
 import endrov.recording.CameraImage;
