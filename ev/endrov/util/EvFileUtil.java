@@ -41,6 +41,7 @@ public class EvFileUtil
 		String line;
 		while((line=br.readLine())!=null)
 			bf.append(line);
+		//TODO: should read file exactly as is. do not use readline!
 		return bf.toString();
 		}
 	

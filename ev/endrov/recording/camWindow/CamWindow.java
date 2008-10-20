@@ -20,7 +20,7 @@ import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
 
 /**
- * Microscope Control Window
+ * Camera live-feed window
  * @author Johan Henriksson 
  */
 public class CamWindow extends BasicWindow
@@ -160,7 +160,8 @@ public class CamWindow extends BasicWindow
 	
 	public CamWindow(Rectangle bounds)
 		{
-		
+
+
 		mcombo=new JComboBox(new Vector<String>(HardwareManager.getHardwareList(HWCamera.class)));
 
 		
@@ -168,7 +169,6 @@ public class CamWindow extends BasicWindow
 		setLayout(new BorderLayout());
 		add(mcombo,BorderLayout.SOUTH);
 		add(drawArea,BorderLayout.CENTER);
-		
 		
 		
 		
