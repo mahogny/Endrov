@@ -70,6 +70,7 @@ public class Test
 			System.out.println("===sending==");
 			
 			rmic.send(Message.withCallback(new Serializable[]{1},"foo",new Object(){
+				@SuppressWarnings("unused")
 				public void run(Integer o)
 					{
 					System.out.println("cb "+o);

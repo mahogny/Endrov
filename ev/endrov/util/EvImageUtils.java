@@ -28,6 +28,7 @@ public class EvImageUtils
 	
 	public static BufferedImage readTIFF(File file) throws IOException
 		{
+		//Does not work on linux. deprecate all use of TIFF! or use bioformats
 		ImageReader reader=ImageIO.getImageReadersByFormatName("tiff").next();
 		reader.setInput(new FileImageInputStream(file));
 		return reader.read(0);

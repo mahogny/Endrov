@@ -127,6 +127,7 @@ public class CellContactMap
 					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
 						if(e.getValue().isVisible() && nucNames.contains(e.getKey().snd()))
 							interclean.put(e.getKey(), e.getValue());
+					int numcleancell=interclean.size();
 					inter=interclean;
 					
 					//Add false nuclei at distance to make voronoi calc possible
@@ -178,7 +179,7 @@ public class CellContactMap
 					if(pw!=null)
 						{
 						int numContact=nvor.getNeighPairSetIndex().size()-numRealNuc;
-						pw.println(""+curframe+"\t"+numContact);
+						pw.println(""+curframe+"\t"+numContact+"\t"+numcleancell);
 						}
 					
 					}

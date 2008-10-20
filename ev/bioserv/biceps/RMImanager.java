@@ -1,7 +1,6 @@
 package bioserv.biceps;
 
 import java.io.*;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.*;
@@ -283,15 +282,15 @@ public class RMImanager
 	/**
 	 * Queue a message for sending
 	 */
-	public void send(Message msg)
+	public int send(Message msg)
 		{
-		send(msg,null);
+		return send(msg,null);
 		}
 
 	/**
 	 * Queue a message for sending
 	 */
-	public void send(Message msg, Short thisid)
+	public int send(Message msg, Short thisid)
 		{
 		synchronized(synchMsgID)
 			{
@@ -319,9 +318,29 @@ public class RMImanager
 				
 				System.out.println("sent");
 				}
+			return thisid;
 			}
 		}
 	
+	
+	public Object call(Serializable arg[],String command) throws IOException
+		{
+		
+		Message msg=Message.withCallback(arg,command,new Object(){
+		@SuppressWarnings("unused")
+		public void run(Integer o)
+			{
+			System.out.println("cb "+o);
+			}
+		});
+		
+		
+		
+		//Send message
+		int thisid=send(msg,null);
+		
+		
+		}
 	
 	private static int readShort(InputStream socketi) throws IOException
 		{return EvUtilBits.byteArrayToShort((byte)socketi.read(),(byte)socketi.read());}

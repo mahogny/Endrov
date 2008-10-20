@@ -1,0 +1,92 @@
+LOG(18820, 3085069200:): -------->>
+LOG(18820, 3085069200:): Core session started on Fri Oct 17 2008 09:51:24.403116 by tbudev3 on naos
+LOG(18820, 3085069200:): Debug logging disabled
+LOG(18820, 3085069200:): All devices unloaded.
+LOG(18820, 3085069200:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(18820, 3085069200:): Device Camera set as camera.
+LOG(18820, 3085069200:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(18820, 3085069200:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(18820, 3085069200:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(18820, 3085069200:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(18820, 3085069200:): Device DStage loaded from DemoCamera and labeled as X
+LOG(18820, 3085069200:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(18820, 3085069200:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(18820, 3085069200:): Starting initialization sequence for 8 devices...
+LOG(18820, 3085069200:): Device Camera initialized.
+LOG(18820, 3085069200:): Device Dichroic initialized.
+LOG(18820, 3085069200:): Device Emission initialized.
+LOG(18820, 3085069200:): Device Excitation initialized.
+LOG(18820, 3085069200:): Device Objective initialized.
+LOG(18820, 3085069200:): Device X initialized.
+LOG(18820, 3085069200:): Device Y initialized.
+LOG(18820, 3085069200:): Device Z initialized.
+LOG(18820, 3085069200:): System state cache updated.
+LOG(19316, 3084458896:): -------->>
+LOG(19316, 3084458896:): Core session started on Fri Oct 17 2008 10:14:38.731008 by tbudev3 on naos
+LOG(19316, 3084458896:): Debug logging disabled
+LOG(19316, 3084458896:): All devices unloaded.
+LOG(19316, 3084458896:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(19316, 3084458896:): Device Camera set as camera.
+LOG(19316, 3084458896:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(19316, 3084458896:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(19316, 3084458896:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(19316, 3084458896:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(19316, 3084458896:): Device DStage loaded from DemoCamera and labeled as X
+LOG(19316, 3084458896:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(19316, 3084458896:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(19316, 3084458896:): Starting initialization sequence for 8 devices...
+LOG(19316, 3084458896:): Device Camera initialized.
+LOG(19316, 3084458896:): Device Dichroic initialized.
+LOG(19316, 3084458896:): Device Emission initialized.
+LOG(19316, 3084458896:): Device Excitation initialized.
+LOG(19316, 3084458896:): Device Objective initialized.
+LOG(19316, 3084458896:): Device X initialized.
+LOG(19316, 3084458896:): Device Y initialized.
+LOG(19316, 3084458896:): Device Z initialized.
+LOG(19316, 3084458896:): System state cache updated.
+LOG(19432, 3084987280:): -------->>
+LOG(19432, 3084987280:): Core session started on Fri Oct 17 2008 10:18:24.154764 by tbudev3 on naos
+LOG(19432, 3084987280:): Debug logging disabled
+LOG(19432, 3084987280:): All devices unloaded.
+LOG(19432, 3084987280:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(19432, 3084987280:): Device Camera set as camera.
+LOG(19432, 3084987280:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(19432, 3084987280:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(19432, 3084987280:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(19432, 3084987280:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(19432, 3084987280:): Device DStage loaded from DemoCamera and labeled as X
+LOG(19432, 3084987280:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(19432, 3084987280:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(19432, 3084987280:): Starting initialization sequence for 8 devices...
+LOG(19432, 3084987280:): Device Camera initialized.
+LOG(19432, 3084987280:): Device Dichroic initialized.
+LOG(19432, 3084987280:): Device Emission initialized.
+LOG(19432, 3084987280:): Device Excitation initialized.
+LOG(19432, 3084987280:): Device Objective initialized.
+LOG(19432, 3084987280:): Device X initialized.
+LOG(19432, 3084987280:): Device Y initialized.
+LOG(19432, 3084987280:): Device Z initialized.
+LOG(19432, 3084987280:): System state cache updated.
+LOG(19739, 3084811152:): -------->>
+LOG(19739, 3084811152:): Core session started on Fri Oct 17 2008 10:29:24.227617 by tbudev3 on naos
+LOG(19739, 3084811152:): Debug logging disabled
+LOG(19739, 3084811152:): All devices unloaded.
+LOG(19739, 3084811152:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(19739, 3084811152:): Device Camera set as camera.
+LOG(19739, 3084811152:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(19739, 3084811152:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(19739, 3084811152:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(19739, 3084811152:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(19739, 3084811152:): Device DStage loaded from DemoCamera and labeled as X
+LOG(19739, 3084811152:): Device DStage loaded from DemoCamera and labeled as Y
+LOG(19739, 3084811152:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(19739, 3084811152:): Starting initialization sequence for 8 devices...
+LOG(19739, 3084811152:): Device Camera initialized.
+LOG(19739, 3084811152:): Device Dichroic initialized.
+LOG(19739, 3084811152:): Device Emission initialized.
+LOG(19739, 3084811152:): Device Excitation initialized.
+LOG(19739, 3084811152:): Device Objective initialized.
+LOG(19739, 3084811152:): Device X initialized.
+LOG(19739, 3084811152:): Device Y initialized.
+LOG(19739, 3084811152:): Device Z initialized.
+LOG(19739, 3084811152:): System state cache updated.
