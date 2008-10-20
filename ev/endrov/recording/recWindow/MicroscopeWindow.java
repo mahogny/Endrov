@@ -21,7 +21,7 @@ import endrov.data.EvData;
  * Microscope Control Window
  * @author Johan Henriksson 
  */
-public class MicroscopeWindow extends BasicWindow
+public class MicroscopeWindow extends BasicWindow implements ActionListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -100,6 +100,8 @@ public class MicroscopeWindow extends BasicWindow
 	 *****************************************************************************************************/
 
 	
+	JComboBox mcombo=new JComboBox(new Vector<String>(extensions.keySet()));
+	public JComponent centerp=null;
 	
 	
 	public MicroscopeWindow()
@@ -110,39 +112,14 @@ public class MicroscopeWindow extends BasicWindow
 	public MicroscopeWindow(Rectangle bounds)
 		{
 		
-		
-		/*
-		Vector<HWListItem> hwNames=new Vector<HWListItem>();
-	
-		
-		
-		JList hwList=new JList(hwNames);
-		
-		JPanel bpu=new JPanel(new GridLayout(1,2));
-		bpu.add(bAdd);
-		bpu.add(bRemove);
-		JPanel bpl=new JPanel(new GridLayout(1,3));
-		bpl.add(bLoad);
-		bpl.add(bSave);
-		bpl.add(bAutodetect);
-
-		JPanel bp=new JPanel(new GridLayout(2,1));
-		bp.add(bpu);
-		bp.add(bpl);
-		
-		add(hwList,BorderLayout.CENTER);
-		add(bp,BorderLayout.SOUTH);
-		*/
-
-		
-		JComboBox mcombo=new JComboBox(new Vector<String>(extensions.keySet()));
-		String curMode=(String)mcombo.getSelectedItem();
-		
-		
-		
 		setLayout(new BorderLayout());
 		add(mcombo,BorderLayout.NORTH);
+		setCenterP();
+		String curMode=(String)mcombo.getSelectedItem();
 		add(extensions.get(curMode).addControls(),BorderLayout.CENTER);
+
+		mcombo.addActionListener(this);
+
 		
 		//Window overall things
 		setTitleEvWindow("Microscope Control");
@@ -151,6 +128,26 @@ public class MicroscopeWindow extends BasicWindow
 		setBoundsEvWindow(bounds);
 		}
 	
+	
+	public void setCenterP()
+		{
+		if(centerp!=null)
+			remove(centerp);
+		
+		String curMode=(String)mcombo.getSelectedItem();
+		centerp=extensions.get(curMode).addControls();
+		add(centerp,BorderLayout.CENTER);
+
+		revalidate();
+		packEvWindow();
+
+		System.out.println("here");
+		}
+	
+	public void actionPerformed(ActionEvent e)
+		{
+		setCenterP();
+		}
 	
 	
 	
