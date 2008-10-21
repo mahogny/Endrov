@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -322,24 +323,39 @@ public class RMImanager
 			}
 		}
 	
-	
-	public Object call(Serializable arg[],String command) throws IOException
+	private static class CallClass
 		{
+		public Object returnval;
+		public Semaphore sem=new Semaphore(0);
 		
-		Message msg=Message.withCallback(arg,command,new Object(){
 		@SuppressWarnings("unused")
 		public void run(Integer o)
 			{
-			System.out.println("cb "+o);
+//			System.out.println("cb "+o);
+			returnval=o;
+			sem.release();
 			}
-		});
+		}
+	
+	public Object call(Serializable arg[],String command) throws IOException
+		{
+		CallClass cc=new CallClass();
+		Message msg=Message.withCallback(arg,command,cc);
 		
 		
 		
 		//Send message
-		int thisid=send(msg,null);
+		/*int thisid=*/send(msg,null);
+		try
+			{
+			cc.sem.acquire();
+			}
+		catch (InterruptedException e)
+			{
+			e.printStackTrace();
+			}
 		
-		
+		return cc.returnval;
 		}
 	
 	private static int readShort(InputStream socketi) throws IOException

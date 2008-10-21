@@ -49,5 +49,6 @@
 	<classpathentry kind="lib" path="libs/umanager_inc/MMCoreJ.jar"/>
 	<classpathentry kind="lib" path="libs/ee_inc/activation.jar"/>
 	<classpathentry kind="lib" path="libs/ee_inc/mail-1.4.1.jar"/>
+	<classpathentry kind="lib" path="libs/bcel-5.2.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

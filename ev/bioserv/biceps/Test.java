@@ -23,6 +23,17 @@ public class Test
 				
 				rmi.regClass(Test.class,null);
 
+				try
+					{
+					Integer r=(Integer)rmi.call(new Serializable[]{5}, "foo");
+					System.out.println("returned "+r+" ===");
+					}
+				catch (IOException e)
+					{
+					e.printStackTrace();
+					}
+				
+				
 				/*
 				try
 					{
@@ -66,7 +77,7 @@ public class Test
 			
 			rmic.regClass(Test.class,null);
 			
-			
+			/*
 			System.out.println("===sending==");
 			
 			rmic.send(Message.withCallback(new Serializable[]{1},"foo",new Object(){
@@ -76,6 +87,7 @@ public class Test
 					System.out.println("cb "+o);
 					}
 			}));
+			*/
 /*
 			rmic.send(Message.withCallback(new Serializable[]{2},"foo",new Callback(){
 			public void run(Object o)
