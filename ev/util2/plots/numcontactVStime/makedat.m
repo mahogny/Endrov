@@ -16,6 +16,12 @@ dat=importdata('/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson
 %numcell=dat(:,2);
 g=length(numcell);
 
+
+%better? matches vs duration
+%dat2=importdata('/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt');
+%lastframe=dat2(end,1);
+
+
 curframe=curframe(1:g);
 numcont=numcont(1:g);
 

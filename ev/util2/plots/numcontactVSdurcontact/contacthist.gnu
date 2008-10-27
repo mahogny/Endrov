@@ -1,7 +1,7 @@
 set terminal postscript portrait "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
 
 set output 'contacthist.ps'
-set boxwidth 0.7 absolute
+set boxwidth 1.0 absolute
 set style fill solid border -1
 #set style histogram clustered gap 1 title  offset character 0, 0, 0
 #set datafile missing '-'

@@ -8,6 +8,18 @@ timestep=10; %[s]
 %data generated when CCM is generated
 dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdur.txt');
 
+
+dat2=importdata('/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt');
+lastframe=dat2(end,1);
+
+
+%dat2=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/numneigh.txt');
+%lastframe=dat2(end,1);
+
+length(dat)
+
+dat=dat(dat(:,2)<lastframe,1);
+
 length(dat)
 
 dat=dat.*timestep;
