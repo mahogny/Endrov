@@ -208,7 +208,9 @@ public class CellContactMap
 									{
 									SortedSet<Integer> s=contactsf.get(n1).get(n2);
 									if(!s.isEmpty())
-										cp.println(s.last()-s.first()+1);
+										{
+										cp.println(""+(s.last()-s.first()+1)+"\t"+s.first());
+										}
 									}
 					cp.close();
 					System.exit(0);
