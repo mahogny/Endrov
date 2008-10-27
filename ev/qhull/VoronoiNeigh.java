@@ -14,7 +14,7 @@ public class VoronoiNeigh
 	
 	public VoronoiNeigh(Voronoi v, boolean selfNeigh, Set<Integer> infinityCell)
 		{
-		int used=0;
+//		int used=0;
 		
 		int numsimplex=v.vsimplex.size();
 		for(int i=0;i<numsimplex;i++)
@@ -49,14 +49,12 @@ public class VoronoiNeigh
 				faceB.retainAll(faceA);
 
 				//Ignore points at infinity
-				boolean was=!faceB.isEmpty();
-//				faceB.removeAll(infinityVertex);
+//				boolean was=!faceB.isEmpty();
 				faceB.remove(-1);
 				//3 vert before. cuts too many.
 				
-//				if(faceB.isEmpty() && was)
-				if(!(faceB.size()>=1) && was)
-					used++;
+//				if(!(faceB.size()>=1) && was)
+//					used++;
 				
 				//Face shared?
 //				if(!faceB.isEmpty())
@@ -71,7 +69,7 @@ public class VoronoiNeigh
 			//			for(int j:v.vface.get(i))
 			//				dneigh.get(i).add(j);
 			}
-		System.out.println("used "+used);
+//		System.out.println("used "+used);
 		}
 
 	}
