@@ -8,12 +8,14 @@ timestep=10; %[s]
 %data generated when CCM is generated
 dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdur.txt');
 
+length(dat)
+
 dat=dat.*timestep;
 dat=dat./60;
 
 %bins=linspace(0,0.4,15);
 %[N,X]=hist(dstraight);
-[N,X]=hist(dat,50); %hist(dat,bins);
+[N,X]=hist(dat,25); %hist(dat,bins);
 
 %write dat-file
 %out=[N,X];
