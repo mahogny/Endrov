@@ -5,7 +5,7 @@
 timestep=10; %[s]
 
 %data generated when CCM is generated
-dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/numneigh.txt');
+dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdur.txt');
 
 dat=dat./timestep;
 

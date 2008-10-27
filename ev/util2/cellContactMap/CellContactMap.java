@@ -207,7 +207,8 @@ public class CellContactMap
 										lin.nuc.get(n1).child.size()>1 && lin.nuc.get(n2).child.size()>1)
 									{
 									SortedSet<Integer> s=contactsf.get(n1).get(n2);
-									cp.println(s.last()-s.first()+1);
+									if(!s.isEmpty())
+										cp.println(s.last()-s.first()+1);
 									}
 					cp.close();
 					System.exit(0);
