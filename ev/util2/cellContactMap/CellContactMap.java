@@ -203,7 +203,7 @@ public class CellContactMap
 					for(String n1:contactsf.keySet())
 						if(lin.nuc.containsKey(n1))
 							for(String n2:contactsf.get(n1).keySet())
-								if(lin.nuc.containsKey(n2) && !n1.equals(n2) && 
+								if(lin.nuc.containsKey(n2) && n2.compareTo(n1)>0 && 
 										lin.nuc.get(n1).child.size()>1 && lin.nuc.get(n2).child.size()>1)
 									{
 									SortedSet<Integer> s=contactsf.get(n1).get(n2);

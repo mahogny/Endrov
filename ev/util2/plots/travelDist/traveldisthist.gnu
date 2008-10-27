@@ -1,6 +1,4 @@
-#made this one myself
-
-set terminal postscript "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
+set terminal postscript portrait "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
 
 set output 'traveldisthist.ps'
 set boxwidth 0.9 absolute #1.5

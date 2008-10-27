@@ -1,4 +1,4 @@
-set terminal postscript "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
+set terminal postscript portrait "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
 
 set output 'series.ps'
 #set boxwidth 1.5 absolute
@@ -6,7 +6,7 @@ set style fill solid border -1
 set key off
 set border 3
 set xlabel "Developmental time [min]"
-set ylabel "Number of contacts"
+set ylabel "Number of cells"
 #set yrange [ 0.00000 : 70] noreverse nowriteback
 set bmargin 4 #bottom margin
 plot 'series.dat' using 1:2 with lines
