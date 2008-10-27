@@ -3,12 +3,13 @@
 timestep=10; %[s]
 initialframe=0;
 
+
 dat=importdata('/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt');
 
-curframe=(dat(:,1)-initialframe)/timestep;
+curframe=(dat(:,1)-initialframe)*timestep + 17*60;
 numcell=dat(:,2);
 
-N=curframe;
+N=curframe./60; %[min]
 X=numcell;
 
 %write dat-file
