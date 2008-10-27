@@ -92,6 +92,10 @@ public class CellContactMap
 			//Prepare life length
 			for(String n:nucNames)
 				lifelen.put(n, 0);
+
+			//temp: only do model
+			if(!name.equals("celegans2008.2"))
+				return;
 			
 			PrintWriter pw=null;
 			try
@@ -198,7 +202,7 @@ public class CellContactMap
 					PrintWriter cp=new PrintWriter(new FileWriter(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdur.txt")));
 					for(String n1:contactsf.keySet())
 						for(String n2:contactsf.get(n1).keySet())
-							if(!n1.equals(n2))
+							if(!n1.equals(n2) && lin.nuc.get(n1).child.size()>1 && lin.nuc.get(n2).child.size()>1)
 								{
 								SortedSet<Integer> s=contactsf.get(n1).get(n2);
 								cp.println(s.last()-s.first()+1);

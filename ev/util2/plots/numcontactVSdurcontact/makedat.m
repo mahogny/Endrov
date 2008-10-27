@@ -1,23 +1,17 @@
 %# contact vs duration of contact
 
-
-
-
-
-
-
 %set to 1 once we use OST4
 %may need to rescale times piecewise linear when building the model
 timestep=10; %[s]
-initialframe=0;
 
-dat=importdata('/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt');
+%data generated when CCM is generated
+dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/numneigh.txt');
 
-curframe=(dat(:,1)-initialframe)/timestep;
-numcell=dat(:,2);
+dat=dat./timestep;
 
-N=curframe;
-X=numcell;
+%bins=linspace(0,0.4,15);
+%[N,X]=hist(dstraight);
+[N,X]=hist(lifedev); %hist(lifedev,bins);
 
 %write dat-file
 %out=[N,X];
