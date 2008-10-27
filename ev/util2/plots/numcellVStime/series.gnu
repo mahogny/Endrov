@@ -8,6 +8,7 @@ set border 3
 set xlabel "Developmental time [min]"
 set ylabel "Number of contacts"
 #set yrange [ 0.00000 : 70] noreverse nowriteback
+set bmargin 4 #bottom margin
 plot 'series.dat' using 1:2 with lines
 # with boxes
 
