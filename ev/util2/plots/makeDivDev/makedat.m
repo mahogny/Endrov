@@ -3,8 +3,8 @@ timestep=10; %[s]
 
 
 dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/traveldist.txt');
-%tstart=dat.data(:,1)/timestep;
-%tend=dat.data(:,2)/timestep;
+%tstart=dat.data(:,1)*timestep;
+%tend=dat.data(:,2)*timestep;
 dstraight=dat.data(:,3);
 dfractal=dat.data(:,4);
 rav=dat.data(:,5);
