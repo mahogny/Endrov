@@ -3,12 +3,12 @@
 set terminal postscript "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
 
 
-set output 'divdevhist.ps'
+set output 'plot.ps'
 set boxwidth 0.02 absolute #1.5
 set style fill solid border -1
 set xtic out nomirror 0.1
 set ytic out nomirror 20 #500
-set xrange [ 0 : 0.5 ]
+set xrange [ 0 : 0.4 ]
 set bmargin 4 #bottom margin
 set key off
 set border 3

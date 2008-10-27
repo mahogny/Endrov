@@ -190,7 +190,28 @@ public class CellContactMap
 				}
 			if(pw!=null)
 				pw.close();
-				
+
+			if(name.equals("celegans2008.2"))
+				{
+				try
+					{
+					PrintWriter cp=new PrintWriter(new FileWriter(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdur.txt")));
+					for(String n1:contactsf.keySet())
+						for(String n2:contactsf.get(n1).keySet())
+							if(!n1.equals(n2))
+								{
+								SortedSet<Integer> s=contactsf.get(n1).get(n2);
+								cp.println(s.last()-s.first()+1);
+								}
+					cp.close();
+					System.exit(0);
+					}
+				catch (IOException e)
+					{
+					e.printStackTrace();
+					}
+				}
+
 			}
 		}
 	

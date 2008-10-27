@@ -1,3 +1,11 @@
+%# contact vs duration of contact
+
+
+
+
+
+
+
 %set to 1 once we use OST4
 %may need to rescale times piecewise linear when building the model
 timestep=10; %[s]

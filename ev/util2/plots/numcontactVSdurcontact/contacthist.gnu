@@ -16,8 +16,8 @@ set border 3
 set xlabel "Duration of contact [min]"
 set ylabel "Number of contacts"
 #set yrange [ 0.00000 : 70] noreverse nowriteback
-plot 'contacthist.dat' using 2:1
-# with boxes
+set bmargin 4 #bottom margin
+plot 'contacthist.dat' using 2:1 with boxes
 
 #time of contact VS number of contacts
 #column 1: contact num
