@@ -11,4 +11,10 @@ import endrov.hardware.Hardware;
 public interface HWStage extends Hardware
 	{
 
+	public int getNumAxis();
+	
+	public String[] getAxisName();
+
+	public double[] getStagePos();
+	
 	}
