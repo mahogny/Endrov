@@ -70,11 +70,13 @@ public class ManualExtension implements MicroscopeWindow.Extension
 					hw.add(new ShutterPanel(entry.getKey(),(HWShutter)entry.getValue()));
 				else if(entry.getValue() instanceof HWState)
 					hw.add(new StateDevicePanel(entry.getKey(),(HWState)entry.getValue()));
-/*				else if(entry.getValue() instanceof HWState)
-					hw.add(new StatePanel(entry.getKey(),(HWState)entry.getValue()));
 				else if(entry.getValue() instanceof HWStage)
 					hw.add(new StagePanel(entry.getKey(),(HWStage)entry.getValue()));
+/*				else if(entry.getValue() instanceof HWState)
+					hw.add(new StatePanel(entry.getKey(),(HWState)entry.getValue()));
 	*/			
+				else
+					System.out.println("manual extension ignoring "+entry.getValue().getDescName()+" "+entry.getValue().getClass());
 				System.out.println(entry.getValue().getClass());
 				}
 			

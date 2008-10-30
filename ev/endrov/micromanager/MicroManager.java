@@ -108,10 +108,10 @@ public class MicroManager extends HardwareProvider
 					adp=new MMCamera(this,devName);
 				else if(isMagnifier.contains(devName))
 					adp=new MMMagnifier(this,devName);
-				else if(isXY.contains(isXY))
-					adp=new MMStage(this,devName);
+				else if(isXY.contains(devName))
+					adp=new MMStage(this,devName,true);
 				else if(isStage.contains(devName))
-					adp=new MMStage(this,devName);
+					adp=new MMStage(this,devName,false);
 				else if(isShutter.contains(devName))
 					adp=new MMShutter(this,devName);
 				else if(isAutoFocus.contains(devName))
@@ -122,7 +122,7 @@ public class MicroManager extends HardwareProvider
 					adp=new MMSerial(this,devName);
 				else
 					adp=new MMDeviceAdapter(this,devName);
-				//System.out.println(devName+"---"+adp+" "+adp.getDescName());
+				System.out.println(devName+"---"+adp+" "+adp.getDescName()+" ???? "+core.getDeviceType(devName));
 				
 				hw.put(devName,adp);
 				}
