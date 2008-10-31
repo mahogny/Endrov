@@ -7,17 +7,18 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.text.NumberFormat;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.recording.HWStage;
+import endrov.util.JImageButton;
+import endrov.util.JImageToggleButton;
 
 public class StagePanel extends JPanel implements ActionListener 
 	{
@@ -30,6 +31,8 @@ public class StagePanel extends JPanel implements ActionListener
 	private static final int spacing=2;
 	private static final int numIntDigits=10;
 	private static final int numFracDigits=3;
+	
+	public static ImageIcon iconStageAllDown=new ImageIcon(StagePanel.class.getResource("iconStageAllDown.png"));
 	
 	
 	private HWStage hw;
@@ -51,16 +54,28 @@ public class StagePanel extends JPanel implements ActionListener
 			JLabel lab=new JLabel("Axis "+hw.getAxisName()[curaxis]+" ");
 			lab.setToolTipText(devName+" ("+hw.getDescName()+") - "+hw.getAxisName()[curaxis]);
 			p.add(lab,c);
+			
 			OneAxisPanel a=new OneAxisPanel();
+			a.axisid=curaxis;
 			c.fill=GridBagConstraints.HORIZONTAL;
 			c.gridx=1;
 			c.weightx=1;
 			p.add(new JLabel(""),c);
+			
 			c.gridx=2;
 			c.weightx=0;
 			c.fill=0;
 			p.add(a,c);
-			a.axisid=curaxis;
+			
+			c.gridx=3;
+			JImageToggleButton toggleStageDown=new JImageToggleButton(iconStageAllDown);
+			p.add(toggleStageDown,c);
+
+			c.gridx=4;
+			JImageButton bController=new JImageButton(BasicIcon.iconController);
+			p.add(bController,c);
+
+			
 			}
 		setLayout(new GridLayout(1,1));
 		add(p);
@@ -85,7 +100,11 @@ public class StagePanel extends JPanel implements ActionListener
 		int axisid;
 		int yOffset=0;
 		int xOffset=0;
-		
+
+		Integer holdDigit=null;
+		int mouseLastTickY=0;
+		int tickDist=8;
+
 		public OneAxisPanel()
 			{
 			addMouseListener(this);
@@ -134,21 +153,39 @@ public class StagePanel extends JPanel implements ActionListener
 		
 		
 		
-		Integer holdDigit=null;
-		int lastMX=0;
-		int lastMY=0;
 		
 		public void mouseClicked(MouseEvent e)
 			{
 			Integer aUp=hitArrowUp(e.getX(), e.getY());
 			Integer aDown=hitArrowDown(e.getX(), e.getY());
 			Integer digit=hitDigit(e.getX(), e.getY());
+			
 			if(aUp!=null)
-				;
+				{
+				double[] axis=hw.getStagePos();
+				axis[axisid]+=Math.pow(10, aUp);
+				hw.setStagePos(axis);
+				repaint(); //TODO all observers
+				}
 			else if(aDown!=null)
-				;
-			else if(digit!=null)
-				;
+				{
+				double[] axis=hw.getStagePos();
+				axis[axisid]+=Math.pow(10, aDown);
+				hw.setStagePos(axis);
+				repaint(); //TODO all observers
+				}
+			else if(digit!=null && e.getClickCount()==2)
+				{
+				String newPos=JOptionPane.showInputDialog(this, "Enter new position", getPosString());
+				if(newPos!=null)
+					{
+					double[] axis=hw.getStagePos();
+					axis[axisid]=Double.parseDouble(newPos);
+					hw.setStagePos(axis);
+					System.out.println("set "+hw.getStagePos()[axisid]);
+					repaint();
+					}
+				}
 			}
 		public void mouseEntered(MouseEvent e)
 			{
@@ -159,6 +196,7 @@ public class StagePanel extends JPanel implements ActionListener
 		public void mousePressed(MouseEvent e)
 			{
 			holdDigit=hitDigit(e.getX(), e.getY());
+			mouseLastTickY=e.getY();
 			}
 		public void mouseReleased(MouseEvent e)
 			{
@@ -166,30 +204,29 @@ public class StagePanel extends JPanel implements ActionListener
 			}
 		public void mouseDragged(MouseEvent e)
 			{
-			int dy=e.getY()-lastMY;
-			lastMX=e.getX();
-			lastMY=e.getY();
-			
-			System.out.println(""+holdDigit+" "+dy);
-			
+			int dy=e.getY()-mouseLastTickY;
+			if(Math.abs(dy)>=tickDist)
+				{
+				int ticks=dy/tickDist;
+				
+				System.out.println(""+holdDigit+" "+ticks+" "+mouseLastTickY);
+				
+				mouseLastTickY+=ticks*tickDist;
+				}
 			}
 		public void mouseMoved(MouseEvent e)
 			{
-			lastMX=e.getX();
-			lastMY=e.getY();
 			}
 		
 		private String getPosString()
 			{
 			double pos=hw.getStagePos()[axisid];
-
 			NumberFormat nf=NumberFormat.getInstance();
 			nf.setGroupingUsed(false);
 			nf.setMinimumFractionDigits(numFracDigits);
 			nf.setMaximumFractionDigits(numFracDigits);
 			nf.setMinimumIntegerDigits(numIntDigits);
 			nf.setMaximumIntegerDigits(numIntDigits);
-			
 			return nf.format(pos);
 			}
 
@@ -214,16 +251,10 @@ public class StagePanel extends JPanel implements ActionListener
 		protected void paintComponent(Graphics g)
 			{
 			super.paintComponent(g);
-		
-			//int midy=hw.getNumAxis()*oneAxisH()/2;
-		
-		
-			//EV.pad(n, len)
-			
 			String poss=getPosString();			
 			
 			g.setColor(Color.WHITE);
-			g.fillRect(xOffset, yOffset+asize+2+1, (numIntDigits+numFracDigits)*digitWidth, digitHeight);
+			g.fillRect(xOffset, yOffset+asize+2+1, (numIntDigits+numFracDigits+1)*digitWidth, digitHeight);
 
 
 			g.setColor(Color.BLACK);
