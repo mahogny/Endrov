@@ -18,15 +18,15 @@ public class BasicIcon
 	public static final ImageIcon iconButtonHelp=new ImageIcon(BasicIcon.class.getResource("iconHelp.png"));
 	public static final ImageIcon iconButtonCopy=new ImageIcon(BasicIcon.class.getResource("iconCopy.png"));
 	public static final ImageIcon iconButtonPaste=new ImageIcon(BasicIcon.class.getResource("iconPaste.png"));
-	public static ImageIcon iconMenuQuit=new ImageIcon(BasicIcon.class.getResource("iconMenuQuit.png"));
-	public static ImageIcon iconFramePrev=new ImageIcon(BasicIcon.class.getResource("iconFramePrev.png"));
-	public static ImageIcon iconFrameNext=new ImageIcon(BasicIcon.class.getResource("iconFrameNext.png"));
-	public static ImageIcon iconFrameFirst=new ImageIcon(BasicIcon.class.getResource("iconFrameFirst.png"));
-	public static ImageIcon iconFrameLast=new ImageIcon(BasicIcon.class.getResource("iconFrameLast.png"));
-	public static ImageIcon iconPlayBackward=new ImageIcon(BasicIcon.class.getResource("iconPlayBackward.png"));
-	public static ImageIcon iconPlayForward=new ImageIcon(BasicIcon.class.getResource("iconPlayForward.png"));
-	public static ImageIcon iconPlayStop=new ImageIcon(BasicIcon.class.getResource("iconPlayStop.png"));
-
+	public static final ImageIcon iconMenuQuit=new ImageIcon(BasicIcon.class.getResource("iconMenuQuit.png"));
+	public static final ImageIcon iconFramePrev=new ImageIcon(BasicIcon.class.getResource("iconFramePrev.png"));
+	public static final ImageIcon iconFrameNext=new ImageIcon(BasicIcon.class.getResource("iconFrameNext.png"));
+	public static final ImageIcon iconFrameFirst=new ImageIcon(BasicIcon.class.getResource("iconFrameFirst.png"));
+	public static final ImageIcon iconFrameLast=new ImageIcon(BasicIcon.class.getResource("iconFrameLast.png"));
+	public static final ImageIcon iconPlayBackward=new ImageIcon(BasicIcon.class.getResource("iconPlayBackward.png"));
+	public static final ImageIcon iconPlayForward=new ImageIcon(BasicIcon.class.getResource("iconPlayForward.png"));
+	public static final ImageIcon iconPlayStop=new ImageIcon(BasicIcon.class.getResource("iconPlayStop.png"));
+	public static final ImageIcon iconController=new ImageIcon(BasicIcon.class.getResource("iconController.png"));
 	
 	
 	
