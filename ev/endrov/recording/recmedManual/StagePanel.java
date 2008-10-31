@@ -9,13 +9,17 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.text.NumberFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import endrov.recording.HWStage;
 
-public class StagePanel extends JPanel implements ActionListener
+public class StagePanel extends JPanel implements ActionListener 
 	{
 	static final long serialVersionUID=0;
 	
@@ -29,12 +33,12 @@ public class StagePanel extends JPanel implements ActionListener
 	
 	
 	private HWStage hw;
-	private String devName;
+	//private String devName;
 	
 	public StagePanel(String devName,final HWStage hw)
 		{
 		this.hw=hw;
-		this.devName=devName;
+	//	this.devName=devName;
 		
 		JPanel p=new JPanel(new GridBagLayout());
 		GridBagConstraints c=new GridBagConstraints();
@@ -44,13 +48,17 @@ public class StagePanel extends JPanel implements ActionListener
 			c.gridy=curaxis;
 			c.fill=GridBagConstraints.NONE;
 			c.weightx=0;
-			JLabel lab=new JLabel(hw.getAxisName()[curaxis]);
-			lab.setToolTipText(hw.getDescName()+" - "+hw.getAxisName()[curaxis]);
+			JLabel lab=new JLabel("Axis "+hw.getAxisName()[curaxis]+" ");
+			lab.setToolTipText(devName+" ("+hw.getDescName()+") - "+hw.getAxisName()[curaxis]);
 			p.add(lab,c);
 			OneAxisPanel a=new OneAxisPanel();
 			c.fill=GridBagConstraints.HORIZONTAL;
-			c.weightx=1;
 			c.gridx=1;
+			c.weightx=1;
+			p.add(new JLabel(""),c);
+			c.gridx=2;
+			c.weightx=0;
+			c.fill=0;
 			p.add(a,c);
 			a.axisid=curaxis;
 			}
@@ -66,16 +74,125 @@ public class StagePanel extends JPanel implements ActionListener
 		}
 
 	
+	
+	
 	/******************************************************************
 	 * Inner class: one axis
 	 ******************************************************************/
-	public class OneAxisPanel extends JPanel
+	public class OneAxisPanel extends JPanel implements MouseListener,MouseMotionListener
 		{
 		static final long serialVersionUID=0;
 		int axisid;
+		int yOffset=0;
+		int xOffset=0;
+		
+		public OneAxisPanel()
+			{
+			addMouseListener(this);
+			addMouseMotionListener(this);
+			}
+		
+		/** Get position as x in 10^x */
+		public Integer hitArrowUp(int x, int y)
+			{
+			if(y>0 && y<asize*2)
+				return hitArrowAny(x);
+			else
+				return null;
+			}
+		/** Get position as x in 10^x */
+		public Integer hitArrowDown(int x, int y)
+			{
+			if(y>asize*2+digitHeight+spacing*2)
+				return hitArrowAny(x);
+			else
+				return null;
+			}
+		/** Get position as x in 10^x */
+		public Integer hitDigit(int x, int y)
+			{
+			if(y<asize*2+digitHeight+spacing*2 && y>asize*2)
+				return hitArrowAny(x);
+			else
+				return null;
+			}
+		//If updating string and setting it again, better to just give position
+		private Integer hitArrowAny(int x)
+			{
+			int numid=x/digitWidth;
+			if(numid<0)
+				return null;
+			else if(numid<numIntDigits)
+				return numIntDigits-numid;
+				//return numid;
+			else if(numid<numIntDigits+numFracDigits+1 && numid>numIntDigits)
+				return numIntDigits+1-numid;
+				//return numid;
+			else
+				return null;
+			}
 		
 		
 		
+		Integer holdDigit=null;
+		int lastMX=0;
+		int lastMY=0;
+		
+		public void mouseClicked(MouseEvent e)
+			{
+			Integer aUp=hitArrowUp(e.getX(), e.getY());
+			Integer aDown=hitArrowDown(e.getX(), e.getY());
+			Integer digit=hitDigit(e.getX(), e.getY());
+			if(aUp!=null)
+				;
+			else if(aDown!=null)
+				;
+			else if(digit!=null)
+				;
+			}
+		public void mouseEntered(MouseEvent e)
+			{
+			}
+		public void mouseExited(MouseEvent e)
+			{
+			}
+		public void mousePressed(MouseEvent e)
+			{
+			holdDigit=hitDigit(e.getX(), e.getY());
+			}
+		public void mouseReleased(MouseEvent e)
+			{
+			holdDigit=null;
+			}
+		public void mouseDragged(MouseEvent e)
+			{
+			int dy=e.getY()-lastMY;
+			lastMX=e.getX();
+			lastMY=e.getY();
+			
+			System.out.println(""+holdDigit+" "+dy);
+			
+			}
+		public void mouseMoved(MouseEvent e)
+			{
+			lastMX=e.getX();
+			lastMY=e.getY();
+			}
+		
+		private String getPosString()
+			{
+			double pos=hw.getStagePos()[axisid];
+
+			NumberFormat nf=NumberFormat.getInstance();
+			nf.setGroupingUsed(false);
+			nf.setMinimumFractionDigits(numFracDigits);
+			nf.setMaximumFractionDigits(numFracDigits);
+			nf.setMinimumIntegerDigits(numIntDigits);
+			nf.setMaximumIntegerDigits(numIntDigits);
+			
+			return nf.format(pos);
+			}
+
 		private void drawArrowUp(Graphics g, int x, int y )
 			{
 			g.fillPolygon(new int[]{x-asize,x+asize,x}, new int[]{y,y,y-asize*2}, 3);
@@ -98,28 +215,30 @@ public class StagePanel extends JPanel implements ActionListener
 			{
 			super.paintComponent(g);
 		
-			int midy=hw.getNumAxis()*oneAxisH()/2;
+			//int midy=hw.getNumAxis()*oneAxisH()/2;
 		
 		
-
-			int yOffset=0;
-
-			int xOffset=0;
-
+			//EV.pad(n, len)
+			
+			String poss=getPosString();			
+			
 			g.setColor(Color.WHITE);
 			g.fillRect(xOffset, yOffset+asize+2+1, (numIntDigits+numFracDigits)*digitWidth, digitHeight);
 
 
 			g.setColor(Color.BLACK);
-			for(int i=0;i<numIntDigits+numFracDigits;i++)
+			for(int i=0;i<numIntDigits+numFracDigits+1;i++)
 				{
 				int x=xOffset+i*digitWidth;
 
-				drawArrowUp(g, x+arrowTextDisp, yOffset+asize*2);
-				drawArrowDown(g, x+arrowTextDisp, yOffset+asize*2+digitHeight+spacing*2);
+				if(i!=numIntDigits)
+					{
+					drawArrowUp(g, x+arrowTextDisp, yOffset+asize*2);
+					drawArrowDown(g, x+arrowTextDisp, yOffset+asize*2+digitHeight+spacing*2);
+					}
 
 
-				g.drawString("0", x, yOffset+asize*2+spacing+digitHeight);
+				g.drawString(""+poss.charAt(i), x, yOffset+asize*2+spacing+digitHeight);
 
 				}
 

@@ -115,8 +115,8 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 		setLayout(new BorderLayout());
 		add(mcombo,BorderLayout.NORTH);
 		setCenterP();
-		String curMode=(String)mcombo.getSelectedItem();
-		add(extensions.get(curMode).addControls(),BorderLayout.CENTER);
+		//String curMode=(String)mcombo.getSelectedItem();
+		//add(extensions.get(curMode).addControls(),BorderLayout.CENTER);
 
 		mcombo.addActionListener(this);
 
