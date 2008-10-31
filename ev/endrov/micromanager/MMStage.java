@@ -56,5 +56,16 @@ public class MMStage extends MMDeviceAdapter implements HWStage
 		
 		}
 	
+	public void setStagePos(double axis[])
+		{
+		try
+			{
+			mm.core.setXYPosition(mmDeviceName, axis[0], axis[1]);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
 	
 	}

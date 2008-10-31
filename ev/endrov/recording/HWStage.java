@@ -17,4 +17,5 @@ public interface HWStage extends Hardware
 
 	public double[] getStagePos();
 	
+	public void setStagePos(double axis[]);
 	}
