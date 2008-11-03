@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
+import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 /**

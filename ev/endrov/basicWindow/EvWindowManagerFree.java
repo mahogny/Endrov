@@ -27,7 +27,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 	
 	public void setTitle(String title)
 		{
-		super.setTitle(EV.programName+" "+title);
+		super.setTitle(EV.programName+" "+title+" ["+bw.windowInstance+"]");
 		}
 	
 	

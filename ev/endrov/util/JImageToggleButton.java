@@ -22,9 +22,10 @@ public class JImageToggleButton extends JToggleButton
 		return d;
 		}
 	
-	public JImageToggleButton(Icon icon)
+	public JImageToggleButton(Icon icon,String tooltip)
 		{
 		super(icon);
+		setToolTipText(tooltip);
 		}
 
 	}

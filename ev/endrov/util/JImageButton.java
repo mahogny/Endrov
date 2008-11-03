@@ -22,9 +22,10 @@ public class JImageButton extends JButton
 		return d;
 		}
 	
-	public JImageButton(Icon icon)
+	public JImageButton(Icon icon, String tooltip)
 		{
 		super(icon);
+		setToolTipText(tooltip);
 		}
 	
 	}

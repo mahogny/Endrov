@@ -5,8 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
-import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
+import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 /**

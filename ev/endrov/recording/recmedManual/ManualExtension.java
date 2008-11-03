@@ -17,6 +17,7 @@ import endrov.hardware.PropertyType;
 import endrov.recording.*;
 import endrov.recording.recWindow.MicroscopeWindow;
 import endrov.util.EvSwingTools;
+import endrov.util.JImageToggleButton;
 
 /**
  * Microscope control: Manual
@@ -72,12 +73,8 @@ public class ManualExtension implements MicroscopeWindow.Extension
 					hw.add(new StateDevicePanel(entry.getKey(),(HWState)entry.getValue()));
 				else if(entry.getValue() instanceof HWStage)
 					hw.add(new StagePanel(entry.getKey(),(HWStage)entry.getValue()));
-/*				else if(entry.getValue() instanceof HWState)
-					hw.add(new StatePanel(entry.getKey(),(HWState)entry.getValue()));
-	*/			
-				else
-					System.out.println("manual extension ignoring "+entry.getValue().getDescName()+" "+entry.getValue().getClass());
-				System.out.println(entry.getValue().getClass());
+//				else
+//					System.out.println("manual extension ignoring "+entry.getValue().getDescName()+" "+entry.getValue().getClass());
 				}
 			
 			
@@ -107,7 +104,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		public static class ShutterPanel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
-			JToggleButton b=new JToggleButton(iconShutterClosed);
+			JToggleButton b=new JImageToggleButton(iconShutterClosed,"Shutter status");
 			public ShutterPanel(String devName, HWShutter hw)
 				{
 				JLabel lTitle=new JLabel(devName);
