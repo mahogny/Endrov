@@ -3,6 +3,8 @@ package endrov.basicWindow.icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import endrov.util.JImageButton;
+
 /**
  * Commonly used icons
  * @author Johan Henriksson
@@ -33,23 +35,17 @@ public class BasicIcon
 	
 	public static JButton getButtonCopy()
 		{
-		JButton b=new JButton(iconButtonCopy);
-		b.setToolTipText("Copy");
-		return b;
+		return new JImageButton(iconButtonCopy,"Copy");
 		}
 	
 	public static JButton getButtonPaste()
 		{
-		JButton b=new JButton(iconButtonPaste);
-		b.setToolTipText("Paste");
-		return b;
+		return new JImageButton(iconButtonPaste,"Paste");
 		}
 	
 	public static JButton getButtonDelete()
 		{
-		JButton b=new JButton(iconButtonDelete);
-		b.setToolTipText("Remove");
-		return b;
+		return new JImageButton(iconButtonDelete,"Remove");
 		}
 	
 	//	private static ImageIcon iconMenuMaint=new ImageIcon(BasicWindow.class.getResource("iconMenuMaint.png"));

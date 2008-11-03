@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Map;
 
+import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 /**

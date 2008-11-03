@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.recording.HWStage;
@@ -68,11 +69,11 @@ public class StagePanel extends JPanel implements ActionListener
 			p.add(a,c);
 			
 			c.gridx=3;
-			JImageToggleButton toggleStageDown=new JImageToggleButton(iconStageAllDown);
+			JToggleButton toggleStageDown=new JImageToggleButton(iconStageAllDown,"Move stage all the way down");
 			p.add(toggleStageDown,c);
 
 			c.gridx=4;
-			JImageButton bController=new JImageButton(BasicIcon.iconController);
+			JImageButton bController=new JImageButton(BasicIcon.iconController,"Gamepad mapping");
 			p.add(bController,c);
 
 			

@@ -371,11 +371,25 @@ public abstract class BasicWindow extends JPanel
 	public HashMap<Class<?>,BasicWindowHook> basicWindowExtensionHook=new HashMap<Class<?>,BasicWindowHook>();
 
 	
+	private static Object instanceCounterLock=new Object();
+	private static int instanceCounter=0;
+	
+	/** 
+	 * Instance number unique to this window. Can be presented to the user to keep track of
+	 * related dialogs.
+	 */
+	public int windowInstance;
+	
 	/**
 	 * Just copy in needed data 
 	 */
 	public BasicWindow()
 		{
+		synchronized(instanceCounterLock)
+			{
+			windowInstance=instanceCounter++;
+			}
+		
 		BasicWindow.windowList.add(this);
 		
 		for(BasicWindowExtension e:basicWindowExtensions)

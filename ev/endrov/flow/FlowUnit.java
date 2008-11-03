@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
+import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 //think of how to do sub-flows later

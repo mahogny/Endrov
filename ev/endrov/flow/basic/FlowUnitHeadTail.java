@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
+import endrov.flow.type.FlowType;
 
 public class FlowUnitHeadTail extends FlowUnitBasic
 	{

@@ -3,8 +3,8 @@ package endrov.flow.basic;
 import java.util.Map;
 import java.util.TreeMap;
 
-import endrov.flow.FlowType;
 import endrov.flow.FlowUnitContainer;
+import endrov.flow.type.FlowType;
 
 /**
  * Flow unit: Map

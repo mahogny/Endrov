@@ -18,6 +18,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.flow.*;
+import endrov.util.JImageButton;
 
 public class FlowWindow extends JFrame
 	{
@@ -35,18 +36,13 @@ public class FlowWindow extends JFrame
 	//JButton bCut=BasicWindow.getButtonCut();
 	JButton bDelete=BasicIcon.getButtonDelete();
 
-	JButton bSwap=new JButton(iconButtonSwap);
-	JButton bPlay=new JButton(iconButtonPlay);
-	JButton bStop=new JButton(iconButtonStop);
+	JButton bSwap=new JImageButton(iconButtonSwap,"Swap position between 2 units");
+	JButton bPlay=new JImageButton(iconButtonPlay,"Run entire flow");
+	JButton bStop=new JImageButton(iconButtonStop,"Stop execution of flow");
 	
 	
 	public FlowWindow()
 		{
-		bSwap.setToolTipText("Swap position between 2 units");
-		bPlay.setToolTipText("Run entire flow");
-		bStop.setToolTipText("Stop execution of flow");
-		
-		
 		
 		//Sort unit declerations by category & name
 		Map<String, Map<String,FlowUnitDeclaration>> decls=new TreeMap<String, Map<String,FlowUnitDeclaration>>();
