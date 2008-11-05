@@ -2,7 +2,18 @@ package endrov.flow;
 
 import java.util.*;
 
-import endrov.flow.basic.*;
+import endrov.flow.std.FlowUnitImserv;
+import endrov.flow.std.FlowUnitImservLoad;
+import endrov.flow.std.FlowUnitImservQuery;
+import endrov.flow.std.basic.FlowUnitConstString;
+import endrov.flow.std.basic.FlowUnitGetObject;
+import endrov.flow.std.basic.FlowUnitIf;
+import endrov.flow.std.basic.FlowUnitInput;
+import endrov.flow.std.basic.FlowUnitOutput;
+import endrov.flow.std.basic.FlowUnitScript;
+import endrov.flow.std.collection.FlowUnitHeadTail;
+import endrov.flow.std.collection.FlowUnitMap;
+import endrov.flow.std.math.FlowUnitDiv;
 
 /**
  * Flow object - organisation of filters and work process
@@ -17,6 +28,7 @@ public class Flow //container?
 	 *****************************************************************************************************/
 	public static Vector<FlowUnitDeclaration> unitDeclarations=new Vector<FlowUnitDeclaration>();
 	
+	public static void initPlugin() {}
 	static
 		{
 		Flow.unitDeclarations.add(new FlowUnitDeclaration("Basic","If"){

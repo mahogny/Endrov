@@ -1,29 +1,25 @@
-package endrov.flow.basic;
+package endrov.flow.std.collection;
 
 import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.type.FlowType;
 
-/**
- * Flow unit - Custom code (script). User can specify a function to apply on the data
- * @author Johan Henriksson
- *
- */
-public class FlowUnitScript extends FlowUnitBasic
+public class FlowUnitHeadTail extends FlowUnitBasic
 	{
 	public String getBasicName()
 		{
-		return "Script";
+		return "HeadTail";
 		}
 	
 	public Color getBackground()
 		{
-		return new Color(200,255,255);
+		return new Color(200,255,200);
 		}
 
+	
 	
 	/** Get types of flows in */
 	public SortedMap<String, FlowType> getTypesIn()
@@ -36,9 +32,9 @@ public class FlowUnitScript extends FlowUnitBasic
 	public SortedMap<String, FlowType> getTypesOut()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("out", null);
+		types.put("head", null);
+		types.put("tail", null);
 		return types;
 		}
-	
 	
 	}

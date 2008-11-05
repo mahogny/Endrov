@@ -1,34 +1,37 @@
-package endrov.flow.basic;
+package endrov.flow.std.basic;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
+import endrov.flow.Flow;
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
-import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 /**
- * Flow unit: input variable
+ * Flow unit: output variable
  * @author Johan Henriksson
  *
  */
-public class FlowUnitInput extends FlowUnit
+public class FlowUnitOutput extends FlowUnit
 	{
 	
 	public String varName;
 	public FlowUnit varUnit;
 	
-	
-	public FlowUnitInput(String varName) //unit todo
+	public FlowUnitOutput(String varName) //unit todo
 		{
 		this.varName=varName;
 		}
 	
 	public Dimension getBoundingBox()
 		{
-		int w=fm.stringWidth("In: "+varName);
+		int w=fm.stringWidth("Out: "+varName);
 		Dimension d=new Dimension(w+15,fonth);
 		return d;
 		}
@@ -41,15 +44,16 @@ public class FlowUnitInput extends FlowUnit
 		
 		int arcsize=8;
 		
+		
 		g.setColor(Color.lightGray);
 		g.fillRoundRect(x,y,d.width,d.height,arcsize,arcsize);
 		g.setColor(Color.black);
 		g.drawRoundRect(x,y,d.width,d.height,arcsize,arcsize);
 		
-		g.drawString("In: "+varName, x+5, y+fonta);
+		g.drawString("Out: "+varName, x+5, y+fonta);
 		
 		
-		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
+		panel.drawConnPointLeft(g,this, "in",x,y+d.height/2);
 		
 		}
 
@@ -59,19 +63,25 @@ public class FlowUnitInput extends FlowUnit
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
-
+	
+	
 	/** Get types of flows in */
 	public Map<String, FlowType> getTypesIn()
 		{
-		return Collections.emptyMap();
+		Map<String, FlowType> types=new TreeMap<String, FlowType>();
+		types.put("in", null);
+		return types;
 		}
 	/** Get types of flows out */
 	public Map<String, FlowType> getTypesOut()
 		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("out", null);
-		return types;
+		return Collections.emptyMap();
 		}
-	
+
+	public Collection<FlowUnit> getSubUnits(Flow flow)
+		{
+		return Collections.singleton((FlowUnit)this);
+		}
+
 	
 	}

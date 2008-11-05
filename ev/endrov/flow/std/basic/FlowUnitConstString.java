@@ -1,12 +1,13 @@
-package endrov.flow.basic;
+package endrov.flow.std.basic;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
+import endrov.flow.Flow;
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
-import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -69,5 +70,11 @@ public class FlowUnitConstString extends FlowUnit
 		return types;
 		}
 	
+	
+	public Collection<FlowUnit> getSubUnits(Flow flow)
+		{
+		return Collections.singleton((FlowUnit)this);
+		}
+
 	
 	}

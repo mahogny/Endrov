@@ -1,41 +1,44 @@
-package endrov.flow.basic;
+package endrov.flow.std.basic;
 
 import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.type.FlowType;
 
-public class FlowUnitImserv extends FlowUnitBasic
+/**
+ * Flow unit - Custom code (script). User can specify a function to apply on the data
+ * @author Johan Henriksson
+ *
+ */
+public class FlowUnitScript extends FlowUnitBasic
 	{
 	public String getBasicName()
 		{
-		return "ImServ";
+		return "Script";
 		}
-	
-	public static Color bgColor=new Color(200,255,200);
 	
 	public Color getBackground()
 		{
-		return bgColor;
+		return new Color(200,255,255);
 		}
 
-	
 	
 	/** Get types of flows in */
 	public SortedMap<String, FlowType> getTypesIn()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("url", null);
+		types.put("in", null);
 		return types;
 		}
 	/** Get types of flows out */
 	public SortedMap<String, FlowType> getTypesOut()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("imserv", null);
+		types.put("out", null);
 		return types;
 		}
+	
 	
 	}

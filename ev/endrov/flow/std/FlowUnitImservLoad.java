@@ -1,22 +1,22 @@
-package endrov.flow.basic;
+package endrov.flow.std;
 
 import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.type.FlowType;
 
-public class FlowUnitHeadTail extends FlowUnitBasic
+public class FlowUnitImservLoad extends FlowUnitBasic
 	{
 	public String getBasicName()
 		{
-		return "HeadTail";
+		return "ImServ Load";
 		}
 	
 	public Color getBackground()
 		{
-		return new Color(200,255,200);
+		return FlowUnitImserv.bgColor;
 		}
 
 	
@@ -25,15 +25,15 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 	public SortedMap<String, FlowType> getTypesIn()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("in", null);
+		types.put("imserv", null);
+		types.put("name", null);
 		return types;
 		}
 	/** Get types of flows out */
 	public SortedMap<String, FlowType> getTypesOut()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("head", null);
-		types.put("tail", null);
+		types.put("data", null);
 		return types;
 		}
 	

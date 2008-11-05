@@ -1,13 +1,18 @@
-package endrov.flow.basic;
+package endrov.flow.std.collection;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnitContainer;
-import endrov.flow.type.FlowType;
 
 /**
  * Flow unit: Map
+ * 
+ * -> in in' ----- out' out ->
+ * 
  * @author Johan Henriksson
  *
  */
@@ -37,6 +42,12 @@ public class FlowUnitMap extends FlowUnitContainer
 		return types;
 		}
 
-	
+	public Set<String> getInsideConns()
+		{
+		HashSet<String> s=new HashSet<String>();
+		s.add("in'");
+		s.add("out'");
+		return s;
+		}
 	
 	}

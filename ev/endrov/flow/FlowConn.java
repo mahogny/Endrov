@@ -18,4 +18,9 @@ public class FlowConn
 		this.toArg=toArg;
 		}
 	
+	
+	public String toString()
+		{
+		return ""+fromUnit+":"+fromArg+"  --  "+toUnit+":"+toArg;
+		}
 	}

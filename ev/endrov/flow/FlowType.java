@@ -1,9 +1,7 @@
-package endrov.flow.type;
+package endrov.flow;
 
 import java.util.*;
 
-import endrov.data.EvData;
-import endrov.imageset.Imageset;
 
 /**
  * The type of the data between two FlowUnits. Support for type inference etc 
@@ -12,20 +10,28 @@ import endrov.imageset.Imageset;
  */
 public class FlowType
 	{
-	boolean isUnknown;
+	//private boolean isUnknown;
 	public Set<Class<?>> type=new HashSet<Class<?>>();
-	//good enough? what about List<....>? java removes <>
+	//good enough? what about List<....>? java removes <>. how to restore? manually annotate?
 	
 	public FlowType(){}
+	
 	public FlowType(Class<?> c)
 		{
 		type.add(c);
 		}
 	
-	public boolean isUnknown()
+	/*public boolean isUnknown()
 		{
 		return isUnknown;
+		}*/
+	
+	public boolean isEmptyType()
+		{
+		return type.isEmpty();
 		}
+	
+	
 	
 	private static List<Class<?>> getRelatedClasses(Class<?> c)
 		{
@@ -33,14 +39,11 @@ public class FlowType
 		for(Class<?> x:c.getInterfaces())
 			list.add(x);
 		Class<?> sup=c;
-//		System.out.println("here "+sup);
 		while(sup!=Object.class)
 			{
 			list.add(sup);
-//			System.out.println("-"+sup);
 			sup=sup.getSuperclass();
 			}
-//			System.out.println("here2 "+sup);
 		list.add(Object.class);
 		return list;
 		}
@@ -48,8 +51,6 @@ public class FlowType
 	public FlowType intersect(FlowType t)
 		{
 		FlowType out=new FlowType();
-
-		System.out.println("intersect");
 		
 		//First preserve what can be preserved, both lists
 		for(Class<?> oa:type)
@@ -67,31 +68,30 @@ public class FlowType
 						common.add(x);
 					for(Class<?> x:getRelatedClasses(ob))
 						common2.add(x);
-					System.out.println(common);
-					System.out.println(common2);
-
-					
+//					System.out.println(common);
+//					System.out.println(common2);
 					common.retainAll(common2);
-
-					//Now remove all classes which are parent of another
+//					System.out.println(common);
+					
+					
+					//Remove all classes which are parent of another.
+					//Eliminate all interfaces that follow from a class definition
 					Set<Class<?>> toremove=new HashSet<Class<?>>();
 					for(Class<?> x:common)
 						for(Class<?> y:common)
-							if(x==y.getSuperclass())
+							if(x==y.getSuperclass() || Arrays.asList(y.getInterfaces()).contains(x))
 								toremove.add(x);
 					common.removeAll(toremove);
-					System.out.println("remove "+toremove);
-
-					//Eliminate all interfaces that follow from any class definition
+					//System.out.println("remove "+toremove);
 					
-					//TODO
-					
-					
-					
+					//Comparable is saved. this might be a problem as it really is Comparable<...> but this
+					//type information is lost
 					
 					}
-					
-				System.out.println(common);
+				
+				
+				
+				//System.out.println(common);
 				
 				
 
@@ -116,8 +116,13 @@ public class FlowType
 	
 	public static void main(String[] arg)
 		{
-		FlowType a=new FlowType(Imageset.class);
-		FlowType b=new FlowType(EvData.class);
+		//FlowType a=new FlowType(Imageset.class);
+		//FlowType b=new FlowType(EvData.class);
+		
+		FlowType a=new FlowType(Double.class);
+		FlowType b=new FlowType(Integer.class);
+		
+		
 		
 		a.intersect(b);
 //		System.out.println(a.intersect(b));
