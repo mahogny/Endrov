@@ -3,9 +3,10 @@ package endrov.flow;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
-import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -109,7 +110,10 @@ public abstract class FlowUnitBasic extends FlowUnit
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 	
-	
+	public Collection<FlowUnit> getSubUnits(Flow flow)
+		{
+		return Collections.singleton((FlowUnit)this);
+		}
 	
 	
 	

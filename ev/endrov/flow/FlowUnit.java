@@ -8,7 +8,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-import endrov.flow.type.FlowType;
 import endrov.flow.ui.FlowPanel;
 
 //think of how to do sub-flows later
@@ -18,7 +17,9 @@ public abstract class FlowUnit
 	{
 	/** Absolute coordinate, not relative to container */
 	public int x,y;
-	
+
+	public Map<String,Object> lastOutput=new HashMap<String, Object>();
+
 	//private static Object staticSynch="";
 	//private static int seqID=0;
 	//private int ID;
@@ -67,13 +68,16 @@ public abstract class FlowUnit
 	/** Get types of flows out */
 	public abstract Map<String, FlowType> getTypesOut();
 	
+	public abstract void evaluate();
+	
 	
 	
 //is this the way to do it? keep them ordered as input arguments? separate in & out?
 	
 	public abstract boolean mouseHoverMoveRegion(int x, int y);
 		
-	
+	public abstract Collection<FlowUnit> getSubUnits(Flow flow);
+
 	
 	protected Color getBorderColor()
 		{

@@ -3,6 +3,7 @@ package endrov.flow;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.*;
 
 import endrov.flow.ui.FlowPanel;
 
@@ -39,7 +40,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 		g.drawString(getContainerName(), x+10, y+(barh-fonta)/2);
 		
 		drawConnThrough(g, panel, "in","in'",x, y+conth/2);
-		drawConnThrough(g, panel, "out","out'",x+contw-2, y+conth/2);
+		drawConnThrough(g, panel, "out'","out",x+contw-2, y+conth/2);
 	/*	
 		int yleft=y+conth/2;
 		drawConnPointLeft(g, x, yleft);
@@ -61,5 +62,40 @@ public abstract class FlowUnitContainer extends FlowUnit
 		return x>=this.x+5 && y>=this.y-barh/2 && x<=this.x+fm.stringWidth(getContainerName())+10 && y<=this.y+barh;
 		}
 
+	/**
+	 * Return a list of connected components
+	 */
+	public Collection<FlowUnit> getSubUnits(Flow flow)
+		{
+		HashSet<FlowUnit> sub=new HashSet<FlowUnit>();
+		sub.add(this);
+		for(FlowConn c:flow.conns)
+			{
+			if(c.fromUnit==this && getInsideConns().contains(c.fromArg))
+				traceGetSubUnitsForward(c.toUnit, flow, sub);
+			else if(c.toUnit==this && getInsideConns().contains(c.toArg))
+				traceGetSubUnitsReverse(c.toUnit, flow, sub);
+				
+			}
+		return sub;
+		}
+
+	private static void traceGetSubUnitsForward(FlowUnit u, Flow flow, HashSet<FlowUnit> sub)
+		{
+		sub.add(u);
+		for(FlowConn c:flow.conns)
+			if(c.fromUnit==u && !sub.contains(c.toUnit))
+				traceGetSubUnitsForward(c.toUnit, flow, sub);
+		}
+	private static void traceGetSubUnitsReverse(FlowUnit u, Flow flow, HashSet<FlowUnit> sub)
+		{
+		sub.add(u);
+		for(FlowConn c:flow.conns)
+			if(c.toUnit==u && !sub.contains(c.fromUnit))
+				traceGetSubUnitsForward(c.fromUnit, flow, sub);
+		}
+	
+	
+	public abstract Set<String> getInsideConns();
 	
 	}

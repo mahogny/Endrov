@@ -6,12 +6,15 @@ import java.awt.Graphics2D;
 import java.awt.event.*;
 import java.util.*;
 
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 
 import endrov.flow.*;
-import endrov.flow.basic.*;
+import endrov.flow.std.basic.FlowUnitConstString;
+import endrov.flow.std.basic.FlowUnitOutput;
 import endrov.util.Tuple;
 
 /**
@@ -213,12 +216,12 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		else
 			{
 			if(holdingUnit!=null)
-				{
-				holdingUnit.x+=dx;
-				holdingUnit.y+=dy;
-				//TODO: containers
-				repaint();
-				}
+				for(FlowUnit u:holdingUnit.getSubUnits(flow))
+					{
+					u.x+=dx;
+					u.y+=dy;
+					repaint();
+					}
 			}
 		
 		if(drawingConn!=null)
@@ -252,7 +255,32 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void keyTyped(KeyEvent e){}
 */
 
-	public void mouseClicked(MouseEvent e){}
+	public void mouseClicked(MouseEvent e)
+		{
+		int mx=e.getX()+cameraX;
+		int my=e.getY()+cameraY;
+		for(final FlowUnit u:flow.units)
+			if(u.mouseHoverMoveRegion(mx,my))
+				if(SwingUtilities.isRightMouseButton(e))
+					{
+					JPopupMenu popup = new JPopupMenu();
+					
+					JMenuItem itEval=new JMenuItem("Evaluate");
+					itEval.addActionListener(new ActionListener(){
+						public void actionPerformed(ActionEvent e)
+							{
+							u.evaluate();
+							
+							u.updateTopBottom();
+							
+							}
+					});
+					
+					popup.add(itEval);
+					popup.show(this,e.getX(),e.getY());
+					
+					}
+		}
 
 
 	public void mouseEntered(MouseEvent e){}
@@ -328,16 +356,23 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			int mx=e.getX()+cameraX;
 			int my=e.getY()+cameraY;
 			Tuple<FlowUnit,String> t=findHoverConnPoint(mx, my);
+			Tuple<FlowUnit,String> v=drawingConn.t;
 			
 			if(t!=null)
 				{
-				if(connPoint.get(drawingConn.t).isFrom != connPoint.get(t).isFrom)
+				if(connPoint.get(v).isFrom != connPoint.get(t).isFrom)
 					{
-				
-					if(connPoint.get(drawingConn.t).isFrom)
-						flow.conns.add(new FlowConn(drawingConn.t.fst(),drawingConn.t.snd(), t.fst(), t.snd()));
-					else 
-						flow.conns.add(new FlowConn(t.fst(), t.snd(), drawingConn.t.fst(),t.snd()));
+					if(!connPoint.get(v).isFrom)
+						{
+						Tuple<FlowUnit,String> temp=t;
+						t=v;
+						v=temp;
+						}
+					
+					//else 
+					//	flow.conns.add(new FlowConn(t.fst(), t.snd(), v.fst(),v.snd()));
+
+					flow.conns.add(new FlowConn(v.fst(),v.snd(), t.fst(), t.snd()));
 
 					//If a connection already exists at "to", remove it
 					}

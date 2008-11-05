@@ -1,11 +1,11 @@
-package endrov.flow.basic;
+package endrov.flow.std.math;
 
 import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.type.FlowType;
 
 public class FlowUnitDiv extends FlowUnitBasic
 	{
