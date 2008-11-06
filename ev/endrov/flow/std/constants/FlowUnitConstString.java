@@ -1,9 +1,13 @@
-package endrov.flow.std.basic;
+package endrov.flow.std.constants;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
+
+import javax.swing.JOptionPane;
+
+import org.jdom.Element;
 
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
@@ -70,11 +74,27 @@ public class FlowUnitConstString extends FlowUnit
 		return types;
 		}
 	
+	public void editDialog()
+		{
+		String newVal=JOptionPane.showInputDialog(null,"Enter value",var);
+		if(newVal!=null)
+			var=newVal;
+		}
+	public void storeXML(Element e)
+		{
+		e.setAttribute("value", ""+var);
+		}
+
 	
 	public Collection<FlowUnit> getSubUnits(Flow flow)
 		{
 		return Collections.singleton((FlowUnit)this);
 		}
 
+	
+	public void evaluate(Flow flow) throws Exception
+		{
+		lastOutput.put("out", var);
+		}
 	
 	}

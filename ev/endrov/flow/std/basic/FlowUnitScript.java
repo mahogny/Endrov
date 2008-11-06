@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
@@ -40,5 +41,11 @@ public class FlowUnitScript extends FlowUnitBasic
 		return types;
 		}
 	
+	
+	public void evaluate(Flow flow) throws Exception
+	{
+	//TODO flowunit
+	}
+
 	
 	}

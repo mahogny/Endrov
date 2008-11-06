@@ -23,4 +23,19 @@ public class FlowConn
 		{
 		return ""+fromUnit+":"+fromArg+"  --  "+toUnit+":"+toArg;
 		}
+
+
+	public boolean equals(Object obj)
+		{
+		if(obj instanceof FlowConn && obj!=null)
+			{
+			FlowConn c=(FlowConn)obj;
+			return fromUnit==c.fromUnit && toUnit==c.toUnit && fromArg.equals(c.fromArg) && toArg.equals(c.toArg);
+			}
+		else
+			return false;
+		}
+	
+	
+	
 	}

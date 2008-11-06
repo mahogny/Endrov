@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
@@ -36,5 +37,11 @@ public class FlowUnitImservLoad extends FlowUnitBasic
 		types.put("data", null);
 		return types;
 		}
+	
+	public void evaluate(Flow flow) throws Exception
+	{
+	//TODO flowunit
+	}
+
 	
 	}

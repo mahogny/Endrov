@@ -13,8 +13,6 @@ import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 
 import endrov.flow.*;
-import endrov.flow.std.basic.FlowUnitConstString;
-import endrov.flow.std.basic.FlowUnitOutput;
 import endrov.util.Tuple;
 
 /**
@@ -46,58 +44,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		setFocusable(true);
 		addKeyListener(this);*/
 		
-		
-		////////////
-////////////////////////////////
-////////////////////////////////
 	
-		/*
-		FlowUnit fa=new FlowUnitIf();
-		fa.x=200;
-		fa.y=100;
-
-		FlowUnit fb=new FlowUnitDiv();
-		fb.x=200;
-		fb.y=20;
-
-		FlowUnit fc=new FlowUnitInput("chA");
-		fc.x=100;
-		fc.y=100;
-
-		FlowUnit ff=new FlowUnitInput("chB");
-		ff.x=100;
-		ff.y=100;
-
-		FlowUnit fd=new FlowUnitMap();
-		fd.x=0;
-		fd.y=0;
-*/
-		FlowUnit fe=new FlowUnitOutput("chDiv");
-		fe.x=100;
-		fe.y=140;
-/*
-		FlowUnit fg=new FlowUnitScript();
-		fe.x=100;
-		fe.y=140;
-*/
-		FlowUnit fh=new FlowUnitConstString("timelapse and homeobox");
-		fh.x=250;
-		fh.y=140;
-/*
-		flow.units.add(fa);
-		flow.units.add(fb);
-		flow.units.add(fc);
-		flow.units.add(fd);
-		flow.units.add(ff);
-		flow.units.add(fg);
-*/
-		flow.units.add(fe);
-		
-		flow.units.add(fh);
-		
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
 		
 		}
 
@@ -261,7 +208,13 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		int my=e.getY()+cameraY;
 		for(final FlowUnit u:flow.units)
 			if(u.mouseHoverMoveRegion(mx,my))
-				if(SwingUtilities.isRightMouseButton(e))
+				{
+				if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2)
+					{
+					u.editDialog();
+					repaint();
+					}
+				else if(SwingUtilities.isRightMouseButton(e))
 					{
 					JPopupMenu popup = new JPopupMenu();
 					
@@ -269,17 +222,40 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					itEval.addActionListener(new ActionListener(){
 						public void actionPerformed(ActionEvent e)
 							{
-							u.evaluate();
+							try
+								{
+//								u.evaluate(flow);
+
+								u.updateTopBottom(flow);
+
+								System.out.println(u.lastOutput);
+								}
+							catch (Exception e1)
+								{
+								e1.printStackTrace();
+								}
 							
-							u.updateTopBottom();
 							
 							}
 					});
+
+					//TODO potential space leaks?
+					JMenuItem itRemove=new JMenuItem("Remove");
+					itRemove.addActionListener(new ActionListener(){
+						public void actionPerformed(ActionEvent e)
+							{
+							flow.removeUnit(u);
+							repaint();
+							}
+					});
+
 					
 					popup.add(itEval);
+					popup.add(itRemove);
 					popup.show(this,e.getX(),e.getY());
 					
 					}
+				}
 		}
 
 
@@ -362,19 +338,26 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				{
 				if(connPoint.get(v).isFrom != connPoint.get(t).isFrom)
 					{
+					//Correct order
 					if(!connPoint.get(v).isFrom)
 						{
 						Tuple<FlowUnit,String> temp=t;
 						t=v;
 						v=temp;
 						}
-					
-					//else 
-					//	flow.conns.add(new FlowConn(t.fst(), t.snd(), v.fst(),v.snd()));
 
-					flow.conns.add(new FlowConn(v.fst(),v.snd(), t.fst(), t.snd()));
-
-					//If a connection already exists at "to", remove it
+					//Add if it doesn't exist, otherwise remove
+					FlowConn nc=new FlowConn(v.fst(),v.snd(), t.fst(), t.snd());
+					boolean exists=false;
+					for(FlowConn c:flow.conns)
+						if(c.equals(nc))
+							{
+							exists=true;
+							flow.conns.remove(c);
+							break;
+							}
+					if(!exists)
+						flow.conns.add(nc);
 					}
 				}
 			drawingConn=null;

@@ -16,7 +16,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 	{
 	public abstract String getContainerName();
 
-	int contw=400, conth=150;
+	public int contw=400, conth=150;
 	
 	
 	public Dimension getBoundingBox()

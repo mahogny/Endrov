@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jdom.Element;
+
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -109,6 +111,10 @@ public abstract class FlowUnitBasic extends FlowUnit
 		Dimension dim=getBoundingBox();
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
+
+	public void editDialog(){}
+	
+	public void storeXML(Element e){}
 	
 	public Collection<FlowUnit> getSubUnits(Flow flow)
 		{
