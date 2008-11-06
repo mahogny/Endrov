@@ -30,6 +30,8 @@ public class FlowWindow extends JFrame
 	private static ImageIcon iconButtonSwap=new ImageIcon(FlowWindow.class.getResource("labelSwap.png"));
 	private static ImageIcon iconButtonPlay=new ImageIcon(FlowWindow.class.getResource("labelPlayForward.png"));
 	private static ImageIcon iconButtonStop=new ImageIcon(FlowWindow.class.getResource("labelPlayStop.png"));
+	private static ImageIcon iconAlignRight=new ImageIcon(FlowWindow.class.getResource("labelAlignRight.png"));
+	private static ImageIcon iconAlignVert=new ImageIcon(FlowWindow.class.getResource("labelAlignVert.png"));
 	
 	JButton bCopy=BasicIcon.getButtonCopy();
 	JButton bPaste=BasicIcon.getButtonPaste();
@@ -39,6 +41,8 @@ public class FlowWindow extends JFrame
 	JButton bSwap=new JImageButton(iconButtonSwap,"Swap position between 2 units");
 	JButton bPlay=new JImageButton(iconButtonPlay,"Run entire flow");
 	JButton bStop=new JImageButton(iconButtonStop,"Stop execution of flow");
+	JButton bAlignRight=new JImageButton(iconAlignRight,"Align right");
+	JButton bAlignVert=new JImageButton(iconAlignVert,"Align vertical");
 	
 	
 	public FlowWindow()
@@ -87,15 +91,9 @@ public class FlowWindow extends JFrame
 					System.out.println(decl);
 					FlowUnit unit=decl.createInstance();
 					if(unit!=null)
-						{
-						unit.x=0;
-						unit.y=0;
-						wthis.fp.flow.units.add(unit);
-						wthis.fp.repaint();
-						}
+						wthis.fp.placingUnit=unit;
+					unitTree.setSelectionPath(null);
 					}
-	//			JTree comp=(JTree)e.getSource();
-//				System.out.println(""+comp.getModel().g
 				}
 		});
 		//TODO: new tree model, disable multiple selection
@@ -108,6 +106,8 @@ public class FlowWindow extends JFrame
 		toolbar.add(bPaste);
 		toolbar.add(bDelete);
 		toolbar.add(bSwap);
+		toolbar.add(bAlignRight);
+		toolbar.add(bAlignVert);
 		toolbar.add(bPlay);
 		toolbar.add(bStop);
 		JPanel pTop=new JPanel(new BorderLayout());

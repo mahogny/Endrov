@@ -19,7 +19,6 @@ import endrov.flow.ui.FlowPanel;
 public abstract class FlowUnitBasic extends FlowUnit
 	{
 	public abstract String getBasicName();
-//	public FlowUnit varUnit;
 
 	
 	public abstract Color getBackground();

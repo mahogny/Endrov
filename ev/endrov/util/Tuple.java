@@ -63,4 +63,10 @@ public class Tuple<L, R> implements Serializable
 		int hRight = snd() == null ? 0 : snd().hashCode();
 		return hLeft + (57 * hRight);
 		}
-}
+	
+	public static<L,R> Tuple<L,R> make(L a, R b)
+		{
+		return new Tuple<L, R>(a,b);
+		}
+	
+	}

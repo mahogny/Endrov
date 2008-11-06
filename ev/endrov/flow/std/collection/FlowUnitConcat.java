@@ -13,7 +13,7 @@ public class FlowUnitConcat extends FlowUnitBasic
 	{
 	public String getBasicName()
 		{
-		return "A/B";
+		return "Concat";
 		}
 	
 	public Color getBackground()
