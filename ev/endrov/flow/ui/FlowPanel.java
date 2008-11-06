@@ -28,10 +28,15 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	public Flow flow=new Flow();
 
 	private Map<Tuple<FlowUnit, String>, ConnPoint> connPoint=new HashMap<Tuple<FlowUnit,String>, ConnPoint>();
+	private int mouseLastX, mouseLastY;
 	private int mouseLastDragX=0, mouseLastDragY=0;
 	private FlowUnit holdingUnit=null;
 	private DrawingConn drawingConn=null;
 
+	public FlowUnit placingUnit=null;
+	public FlowConn stickyConn=null;
+	
+	
 	/**
 	 * Constructor
 	 */
@@ -76,27 +81,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), p);
 		}
 
-	/**
-	 * Draw connecting line between two points
-	 */
-	public void drawConnLine(Graphics g,Vector2d vFrom, Vector2d vTo)
-		{
-		int spacing=15;
-		
-		int midy=(int)(vFrom.y+vTo.y)/2;
-		int x1=(int)(vFrom.x+vTo.x)/2;
-		int x2=x1;
-		if(vFrom.x>vTo.x)
-			{
-			if(x1<vFrom.x+spacing) x1=(int)vFrom.x+spacing;
-			if(x2>vTo.x-spacing) x2=(int)vTo.x-spacing;
-			}
-		g.drawLine((int)vFrom.x, (int)vFrom.y, x1, (int)vFrom.y);
-		g.drawLine(x1, (int)vFrom.y,x1, midy);
-		g.drawLine(x1, midy, x2,midy);
-		g.drawLine(x2, (int)vTo.y,x2, midy);
-		g.drawLine((int)vTo.x, (int)vTo.y, x2, (int)vTo.y);
-		}
+	
+	
 	
 	
 	protected void paintComponent(Graphics g)
@@ -122,7 +108,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 			Vector2d vFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg)).pos;
 			Vector2d vTo=connPoint.get(new Tuple<FlowUnit, String>(conn.toUnit, conn.toArg)).pos;
-			drawConnLine(g,vFrom,vTo);
+			drawConnLine(g,vFrom,vTo,conn);
 			}
 		
 		if(drawingConn!=null)
@@ -136,9 +122,13 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				vFrom=vTo;
 				vTo=v;
 				}
-			drawConnLine(g,vFrom,vTo);
+			drawConnLine(g,vFrom,vTo,null);
 			}
 		
+		if(placingUnit!=null)
+			{
+			placingUnit.paint(g2,this);
+			}
 		
 		g2.translate(cameraX, cameraY);
 		
@@ -154,6 +144,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 		int dx=(e.getX()-mouseLastDragX);
 		int dy=(e.getY()-mouseLastDragY);
+		mouseLastX=e.getX();
+		mouseLastY=e.getY();
 		if(SwingUtilities.isRightMouseButton(e))
 			{
 			cameraX-=dx;
@@ -186,10 +178,26 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public void mouseMoved(MouseEvent e)
 		{
-//		int sdx=(e.getX()-mouseLastMoveX);
-//		int sdy=(e.getY()-mouseLastMoveY);
-	//	mouseLastMoveX=e.getX();
-	//	mouseLastMoveY=e.getY();
+		mouseLastX=e.getX();
+		mouseLastY=e.getY();
+		if(placingUnit!=null)
+			{
+			
+			Tuple<Vector2d, FlowConn> hit=getHoverSegment();
+			if(hit!=null)
+				{
+				placingUnit.x=(int)hit.fst().x+cameraX;
+				placingUnit.y=(int)hit.fst().y+cameraY;
+				stickyConn=hit.snd();
+				}
+			else
+				{
+				placingUnit.x=mouseLastX+cameraX;
+				placingUnit.y=mouseLastY+cameraY;
+				}
+			
+			repaint();
+			}
 		}
 
 /*
@@ -206,56 +214,66 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 		int mx=e.getX()+cameraX;
 		int my=e.getY()+cameraY;
-		for(final FlowUnit u:flow.units)
-			if(u.mouseHoverMoveRegion(mx,my))
-				{
-				if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2)
+		if(placingUnit!=null)
+			{
+			if(SwingUtilities.isLeftMouseButton(e))
+				flow.units.add(placingUnit);
+			placingUnit=null;
+			repaint();
+			}
+		else
+			{
+			for(final FlowUnit u:flow.units)
+				if(u.mouseHoverMoveRegion(mx,my))
 					{
-					u.editDialog();
-					repaint();
-					}
-				else if(SwingUtilities.isRightMouseButton(e))
-					{
-					JPopupMenu popup = new JPopupMenu();
-					
-					JMenuItem itEval=new JMenuItem("Evaluate");
-					itEval.addActionListener(new ActionListener(){
-						public void actionPerformed(ActionEvent e)
-							{
-							try
+					if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2)
+						{
+						u.editDialog();
+						repaint();
+						}
+					else if(SwingUtilities.isRightMouseButton(e))
+						{
+						JPopupMenu popup = new JPopupMenu();
+						
+						JMenuItem itEval=new JMenuItem("Evaluate");
+						itEval.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e)
 								{
-//								u.evaluate(flow);
-
-								u.updateTopBottom(flow);
-
-								System.out.println(u.lastOutput);
+								try
+									{
+	//								u.evaluate(flow);
+	
+									u.updateTopBottom(flow);
+	
+									System.out.println(u.lastOutput);
+									}
+								catch (Exception e1)
+									{
+									e1.printStackTrace();
+									}
+								
+								
 								}
-							catch (Exception e1)
+						});
+	
+						//TODO potential space leaks?
+						JMenuItem itRemove=new JMenuItem("Remove");
+						itRemove.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e)
 								{
-								e1.printStackTrace();
+								flow.removeUnit(u);
+								repaint();
 								}
-							
-							
-							}
-					});
-
-					//TODO potential space leaks?
-					JMenuItem itRemove=new JMenuItem("Remove");
-					itRemove.addActionListener(new ActionListener(){
-						public void actionPerformed(ActionEvent e)
-							{
-							flow.removeUnit(u);
-							repaint();
-							}
-					});
-
-					
-					popup.add(itEval);
-					popup.add(itRemove);
-					popup.show(this,e.getX(),e.getY());
-					
+						});
+	
+						
+						popup.add(itEval);
+						popup.add(itRemove);
+						popup.show(this,e.getX(),e.getY());
+						
+						}
 					}
-				}
+			}
 		}
 
 
@@ -279,30 +297,41 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		int mx=e.getX()+cameraX;
 		int my=e.getY()+cameraY;
 
-		boolean found=false;
-		
-		//Find connection point
-		if(!found && SwingUtilities.isLeftMouseButton(e))
+		if(placingUnit!=null)
 			{
-			Tuple<FlowUnit,String> t=findHoverConnPoint(mx, my);
-			if(t!=null)
-				{
-				drawingConn=new DrawingConn();
-				drawingConn.t=t;
-				drawingConn.toPoint=new Vector2d(mx,my);
-				found=true;
-				}
+			
+			
 			}
-		
-		//Find component. TODO: containers?
-		if(!found && SwingUtilities.isLeftMouseButton(e))
-			for(FlowUnit u:flow.units)
-				if(u.mouseHoverMoveRegion(mx,my))
+		else
+			{
+			boolean found=false;
+			
+			//Find connection point
+			if(!found && SwingUtilities.isLeftMouseButton(e))
+				{
+				Tuple<FlowUnit,String> t=findHoverConnPoint(mx, my);
+				if(t!=null)
 					{
-					holdingUnit=u;
+					drawingConn=new DrawingConn();
+					drawingConn.t=t;
+					drawingConn.toPoint=new Vector2d(mx,my);
 					found=true;
-					break;
 					}
+				}
+			
+			//Find component. TODO: containers?
+			if(!found && SwingUtilities.isLeftMouseButton(e))
+				for(FlowUnit u:flow.units)
+					if(u.mouseHoverMoveRegion(mx,my))
+						{
+						holdingUnit=u;
+						found=true;
+						break;
+						}
+			
+			
+			}
+				
 		
 		
 		
@@ -369,6 +398,123 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	
 	
+	/******************************************************************************************************
+	 *                               Connecting lines                                                     *
+	 *****************************************************************************************************/
+	private List<ConnLineSegment> connSegments=new LinkedList<ConnLineSegment>();
+	private abstract class ConnLineSegment
+		{
+		public FlowConn c;
+		public abstract Tuple<Vector2d,Integer> hitLine(int x, int y);
+		}
+	private class ConnLineSegmentH extends ConnLineSegment
+		{
+		public int x1,x2,y;
+		public ConnLineSegmentH(Graphics g, int x1, int x2, int y, FlowConn c)
+			{
+			if(x1>x2)
+				{
+				this.x1=x2;
+				this.x2=x1;
+				}
+			else
+				{
+				this.x1=x1;
+				this.x2=x2;
+				}
+			this.y=y;
+			this.c=c;
+			g.drawLine(x1,y,x2,y);
+			if(c!=null)
+				connSegments.add(this);
+			}
+		public Tuple<Vector2d,Integer> hitLine(int x, int y)
+			{
+			int dist=Math.abs(y-this.y);
+			if(x>x1 && x<x2)
+				return Tuple.make(new Vector2d(x,this.y), dist);
+			else
+				return null;
+			}
+		}
+	private class ConnLineSegmentV extends ConnLineSegment
+		{
+		public int x,y1,y2;
+		public ConnLineSegmentV(Graphics g, int x, int y1, int y2, FlowConn c)
+			{
+			if(y1>y2)
+				{
+				this.y1=y2;
+				this.y2=y1;
+				}
+			else
+				{
+				this.y1=y1;
+				this.y2=y2;
+				}
+			this.x=x;
+			this.c=c;
+			g.drawLine(x,y1,x,y2);
+			if(c!=null)
+				connSegments.add(this);
+			}		//g.drawLine(x2, (int)vTo.y,x2, midy);
+		
+
+		public Tuple<Vector2d,Integer> hitLine(int x, int y)
+			{
+			int dist=Math.abs(x-this.x);
+			if(y>y1 && y<y2)
+				return Tuple.make(new Vector2d(this.x,y), dist);
+			else
+				return null;
+			}
+		}
+
 	
+	private static final int minLineHitDist=10;
+	private Tuple<Vector2d,FlowConn> getHoverSegment()
+		{
+		Integer closestDist=null;
+		ConnLineSegment closestSeg=null;
+		Vector2d closestProj=null;
+		for(ConnLineSegment seg:connSegments)
+			{
+			Tuple<Vector2d,Integer> hit=seg.hitLine(mouseLastX, mouseLastY);
+			if(hit!=null && (closestDist==null || hit.snd()<closestDist))
+				{
+				closestDist=hit.snd();
+				closestSeg=seg;
+				closestProj=hit.fst();
+				}
+			}
+		if(closestDist!=null && closestDist<minLineHitDist)
+			return Tuple.make(closestProj,closestSeg.c);
+		else
+			return null;
+		}
 	
+	/**
+	 * Draw connecting line between two points
+	 */
+	public void drawConnLine(Graphics g,Vector2d vFrom, Vector2d vTo, FlowConn c)
+		{
+		int spacing=15;
+		//g.drawLine(x2, (int)vTo.y,x2, midy);
+		
+
+		int midy=(int)(vFrom.y+vTo.y)/2;
+		int x1=(int)(vFrom.x+vTo.x)/2;
+		int x2=x1;
+		if(vFrom.x>vTo.x)
+			{
+			if(x1<vFrom.x+spacing) x1=(int)vFrom.x+spacing;
+			if(x2>vTo.x-spacing) x2=(int)vTo.x-spacing;
+			}
+		
+		new ConnLineSegmentH(g, (int)vFrom.x, x1, (int)vFrom.y,c);
+		new ConnLineSegmentV(g, x1, (int)vFrom.y, midy,c);
+		new ConnLineSegmentH(g,x1,x2,midy,c);
+		new ConnLineSegmentV(g,x2,(int)vTo.y,midy,c);
+		new ConnLineSegmentH(g,(int)vTo.x,x2,(int)vTo.y,c);
+		}
 	}
