@@ -1,4 +1,4 @@
-package endrov.flow.std.basic;
+package endrov.flow.std.constants;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,26 +15,31 @@ import endrov.flow.FlowUnit;
 import endrov.flow.ui.FlowPanel;
 
 /**
- * Flow unit: input variable
+ * Flow unit: double constant
  * @author Johan Henriksson
  *
  */
-public class FlowUnitInput extends FlowUnit
+public class FlowUnitConstDouble extends FlowUnit
 	{
 	
-	public String varName;
-	public FlowUnit varUnit;
+	public double var;
 	
 	
-	public FlowUnitInput(String varName) //unit todo
+	public FlowUnitConstDouble(double var) 
 		{
-		this.varName=varName;
+		this.var=var;
+		}
+	
+	
+	private String getText()
+		{
+		return "dbl "+var;
 		}
 	
 	public Dimension getBoundingBox()
 		{
-		int w=fm.stringWidth("In: "+varName);
-		Dimension d=new Dimension(w+15,fonth);
+		int w=fm.stringWidth(getText());
+		Dimension d=new Dimension(w+25,fonth);
 		return d;
 		}
 	
@@ -42,22 +47,19 @@ public class FlowUnitInput extends FlowUnit
 		{
 		Dimension d=getBoundingBox();
 
-//		g.drawRect(x,y,d.width,d.height);
 		
-		int arcsize=8;
-		
-		g.setColor(Color.lightGray);
-		g.fillRoundRect(x,y,d.width,d.height,arcsize,arcsize);
+		g.setColor(Color.WHITE);
+		g.fillRect(x,y,d.width,d.height);
 		g.setColor(Color.black);
-		g.drawRoundRect(x,y,d.width,d.height,arcsize,arcsize);
-		
-		g.drawString("In: "+varName, x+5, y+fonta);
+		g.drawRect(x,y,d.width,d.height);
+		g.drawLine(x+2,y,x+2,y+d.height);
+		g.drawLine(x+d.width-2,y,x+d.width-2,y+d.height);
+		g.drawString(getText(), x+8, y+fonta);
 		
 		
 		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
-		
 		}
-
+	
 	public boolean mouseHoverMoveRegion(int x, int y)
 		{
 		Dimension dim=getBoundingBox();
@@ -78,17 +80,26 @@ public class FlowUnitInput extends FlowUnit
 		return types;
 		}
 	
-	
 	public void editDialog()
 		{
-		String newVal=JOptionPane.showInputDialog(null,"Enter value",varName);
+		String newVal=JOptionPane.showInputDialog(null,"Enter value",""+var);
 		if(newVal!=null)
-			varName=newVal;
+			{
+			try
+				{
+				var=Double.parseDouble(newVal);
+				}
+			catch (NumberFormatException e)
+				{
+				JOptionPane.showMessageDialog(null, "Invalid input");
+				e.printStackTrace();
+				}
+			}
 		}
 
 	public void storeXML(Element e)
 		{
-		e.setAttribute("varname", varName);
+		e.setAttribute("value", ""+var);
 		}
 
 	
@@ -96,11 +107,11 @@ public class FlowUnitInput extends FlowUnit
 		{
 		return Collections.singleton((FlowUnit)this);
 		}
+
 	
 	public void evaluate(Flow flow) throws Exception
-	{
-	//TODO flowunit
-	}
-
+		{
+		lastOutput.put("out", var);
+		}
 	
 	}

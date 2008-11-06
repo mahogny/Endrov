@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.jdom.Element;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
@@ -89,11 +91,26 @@ public class FlowUnitIf extends FlowUnit
 		types.put("out", null);
 		return types;
 		}
-	
+
+	public void editDialog(){}
+
+	public void storeXML(Element e){}
+
 	public Collection<FlowUnit> getSubUnits(Flow flow)
 		{
 		return Collections.singleton((FlowUnit)this);
 		}
 
+	
+	public void evaluate(Flow flow) throws Exception
+		{
+		lastOutput.clear();
+		Boolean b=(Boolean)flow.getInputValue(this, "cond");
+		if(b)
+			lastOutput.put("out", flow.getInputValue(this, "true"));
+		else
+			lastOutput.put("out", flow.getInputValue(this, "false"));
+		}
+	
 	
 	}

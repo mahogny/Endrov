@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.JOptionPane;
+
+import org.jdom.Element;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
@@ -78,10 +82,29 @@ public class FlowUnitOutput extends FlowUnit
 		return Collections.emptyMap();
 		}
 
+
+	public void editDialog()
+		{
+		String newVal=JOptionPane.showInputDialog(null,"Enter value",varName);
+		if(newVal!=null)
+			varName=newVal;
+		}
+	
+	public void storeXML(Element e)
+		{
+		e.setAttribute("varname", varName);
+		}
+
 	public Collection<FlowUnit> getSubUnits(Flow flow)
 		{
 		return Collections.singleton((FlowUnit)this);
 		}
+
+	
+	public void evaluate(Flow flow) throws Exception
+	{
+	//TODO flowunit
+	}
 
 	
 	}

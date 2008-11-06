@@ -1,18 +1,24 @@
-package endrov.flow.std.collection;
+package endrov.flow.std.math;
 
 import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import endrov.flow.Flow;
+import endrov.flow.BadTypeFlowException;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
-public class FlowUnitHeadTail extends FlowUnitBasic
+public abstract class FlowUnitMathBinop extends FlowUnitBasic
 	{
+	public String opName;
+	public FlowUnitMathBinop(String name)
+		{
+		opName=name;
+		}
+	
 	public String getBasicName()
 		{
-		return "HeadTail";
+		return opName;
 		}
 	
 	public Color getBackground()
@@ -26,22 +32,27 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 	public SortedMap<String, FlowType> getTypesIn()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("in", null);
+		types.put("A", null);
+		types.put("B", null);
 		return types;
 		}
 	/** Get types of flows out */
 	public SortedMap<String, FlowType> getTypesOut()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("head", null);
-		types.put("tail", null);
+		types.put("C", null);
 		return types;
 		}
 	
-	public void evaluate(Flow flow) throws Exception
-	{
-	//TODO flowunit
-	}
-
+	public static double toDouble(Object o) throws Exception
+		{
+		if(o instanceof Double)
+			return (Double)o;
+		else if(o instanceof Integer)
+			return (Integer)o;
+		else throw new BadTypeFlowException("Not a numerical type "+o.getClass());
+		}
+	
+	
 	
 	}

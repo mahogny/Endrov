@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.jdom.Element;
+
+import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitContainer;
 
@@ -49,5 +52,20 @@ public class FlowUnitMap extends FlowUnitContainer
 		s.add("out'");
 		return s;
 		}
+	
+	
+	public void editDialog(){}
+
+	public void storeXML(Element e)
+		{
+		e.setAttribute("w",""+contw);
+		e.setAttribute("h",""+conth);
+		}
+
+	public void evaluate(Flow flow) throws Exception
+	{
+	//TODO flowunit
+	}
+
 	
 	}

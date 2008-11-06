@@ -8,6 +8,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
+import org.jdom.Element;
+
 import endrov.flow.ui.FlowPanel;
 
 //think of how to do sub-flows later
@@ -68,16 +70,36 @@ public abstract class FlowUnit
 	/** Get types of flows out */
 	public abstract Map<String, FlowType> getTypesOut();
 	
-	public abstract void evaluate();
+	public abstract void evaluate(Flow flow) throws Exception;
+
+	/**
+	 * Evaluate flow top-bottom with this component as the top 
+	 */
+	public void updateTopBottom(Flow flow) throws Exception
+		{
+		//TODO cache
+		Set<FlowUnit> toUpdate=new HashSet<FlowUnit>();
+		for(String arg:getTypesIn().keySet())
+			toUpdate.add(flow.getInputUnit(this, arg));
+		for(FlowUnit u:toUpdate)
+			u.updateTopBottom(flow);
+		evaluate(flow);
+		}
 	
 	
 	
 //is this the way to do it? keep them ordered as input arguments? separate in & out?
 	
 	public abstract boolean mouseHoverMoveRegion(int x, int y);
-		
+
+	public abstract void editDialog();
+	
 	public abstract Collection<FlowUnit> getSubUnits(Flow flow);
 
+	
+	public abstract void storeXML(Element e);
+		
+	
 	
 	protected Color getBorderColor()
 		{
