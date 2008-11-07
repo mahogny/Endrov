@@ -1,9 +1,12 @@
 package endrov.flow.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 import javax.swing.JMenuItem;
@@ -35,7 +38,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public FlowUnit placingUnit=null;
 	public FlowConn stickyConn=null;
+	public Rectangle2D selectRect=null;
 	
+	public Set<FlowUnit> selectedUnits=new HashSet<FlowUnit>();
 	
 	/**
 	 * Constructor
@@ -55,31 +60,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	
 	
-	private static class ConnPoint
-		{
-		Vector2d pos;
-		boolean isFrom;
-		}
-	
-	public void drawConnPointLeft(Graphics g,FlowUnit unit, String arg, int x, int y)
-		{
-		g.setColor(Color.BLACK);
-		g.fillRect(x-5, y-2, 5, 5);
-		ConnPoint p=new ConnPoint();
-		p.pos=new Vector2d(x-2,y);
-		p.isFrom=false;
-		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), p);
-		}
-	
-	public void drawConnPointRight(Graphics g,FlowUnit unit, String arg, int x, int y)
-		{
-		g.setColor(Color.BLACK);
-		g.fillRect(x, y-2, 5, 5);
-		ConnPoint p=new ConnPoint();
-		p.pos=new Vector2d(x+2,y);
-		p.isFrom=true;
-		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), p);
-		}
+
 
 	
 	
@@ -130,6 +111,14 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			placingUnit.paint(g2,this);
 			}
 		
+		if(selectRect!=null)
+			{
+			g.setColor(Color.MAGENTA);
+			g.drawRect((int)selectRect.getX(), (int)selectRect.getY(), 
+					(int)selectRect.getWidth(), (int)selectRect.getHeight());
+			}
+		
+		
 		g2.translate(cameraX, cameraY);
 		
 		}
@@ -146,22 +135,29 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		int dy=(e.getY()-mouseLastDragY);
 		mouseLastX=e.getX();
 		mouseLastY=e.getY();
+		
+		if(selectRect!=null)
+			{
+			int x=(int)selectRect.getX();
+			int y=(int)selectRect.getY();
+			selectRect=new Rectangle(x,y,e.getX()+cameraX-x,e.getY()+cameraY-y);
+			repaint();
+			}
+		
 		if(SwingUtilities.isRightMouseButton(e))
 			{
 			cameraX-=dx;
 			cameraY-=dy;
 			repaint();
 			}
-		else
-			{
-			if(holdingUnit!=null)
-				for(FlowUnit u:holdingUnit.getSubUnits(flow))
-					{
-					u.x+=dx;
-					u.y+=dy;
-					repaint();
-					}
-			}
+
+		if(holdingUnit!=null)
+			for(FlowUnit u:holdingUnit.getSubUnits(flow))
+				{
+				u.x+=dx;
+				u.y+=dy;
+				repaint();
+				}
 		
 		if(drawingConn!=null)
 			{
@@ -170,6 +166,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			drawingConn.toPoint=new Vector2d(mx,my);
 			repaint();
 			}
+		
 		
 		mouseLastDragX=e.getX();
 		mouseLastDragY=e.getY();
@@ -195,6 +192,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				placingUnit.x=mouseLastX+cameraX;
 				placingUnit.y=mouseLastY+cameraY;
 				}
+			Dimension dim=placingUnit.getBoundingBox();
+			placingUnit.x-=dim.width/2;
+			placingUnit.y-=dim.height/2;
 			
 			repaint();
 			}
@@ -217,12 +217,26 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(placingUnit!=null)
 			{
 			if(SwingUtilities.isLeftMouseButton(e))
+				{
 				flow.units.add(placingUnit);
+				if(stickyConn!=null && !placingUnit.getTypesIn().isEmpty() && !placingUnit.getTypesOut().isEmpty())
+					{
+					String argin=placingUnit.getTypesIn().keySet().iterator().next();
+					String argout=placingUnit.getTypesOut().keySet().iterator().next();
+					
+					flow.conns.remove(stickyConn);
+					flow.conns.add(new FlowConn(stickyConn.fromUnit,stickyConn.fromArg,placingUnit,argin));
+					flow.conns.add(new FlowConn(placingUnit,argout,stickyConn.toUnit,stickyConn.toArg));
+					}
+				
+				
+				}
 			placingUnit=null;
 			repaint();
 			}
 		else
 			{
+			boolean hitAnything=false;
 			for(final FlowUnit u:flow.units)
 				if(u.mouseHoverMoveRegion(mx,my))
 					{
@@ -230,6 +244,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						{
 						u.editDialog();
 						repaint();
+						hitAnything=true;
 						}
 					else if(SwingUtilities.isRightMouseButton(e))
 						{
@@ -257,7 +272,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						});
 	
 						//TODO potential space leaks?
-						JMenuItem itRemove=new JMenuItem("Remove");
+						JMenuItem itRemove=new JMenuItem("Remove unit");
 						itRemove.addActionListener(new ActionListener(){
 							public void actionPerformed(ActionEvent e)
 								{
@@ -270,25 +285,42 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						popup.add(itEval);
 						popup.add(itRemove);
 						popup.show(this,e.getX(),e.getY());
-						
+						hitAnything=true;
 						}
 					}
+			
+			if(!hitAnything && SwingUtilities.isRightMouseButton(e))
+				{
+				final Tuple<Vector2d,FlowConn> seg=getHoverSegment();
+				
+				JPopupMenu popup = new JPopupMenu();
+				
+				JMenuItem itRemove=new JMenuItem("Remove connection");
+				itRemove.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e)
+						{
+						flow.conns.remove(seg.snd());
+						repaint();
+						}
+				});
+				
+				popup.add(itRemove);
+				popup.show(this,e.getX(),e.getY());
+				
+				}
 			}
+		
+		
+		
+		
 		}
 
 
 	public void mouseEntered(MouseEvent e){}
-
-
 	public void mouseExited(MouseEvent e){}
 
 	
 
-	private static class DrawingConn
-		{
-		Tuple<FlowUnit,String> t;
-		Vector2d toPoint;
-		}
 	
 	public void mousePressed(MouseEvent e)
 		{
@@ -329,6 +361,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						break;
 						}
 			
+			if(!found && SwingUtilities.isLeftMouseButton(e))
+				{
+				selectRect=new Rectangle(e.getX()+cameraX,e.getY()+cameraY,0,0);
+				repaint();
+				}
 			
 			}
 				
@@ -337,26 +374,21 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 		}
 
-	/**
-	 * Find connection point near given coordinate
-	 */
-	private Tuple<FlowUnit,String> findHoverConnPoint(int mx, int my)
-		{
-		for(Map.Entry<Tuple<FlowUnit, String>, ConnPoint> entry:connPoint.entrySet())
-			{
-			Vector2d diff=new Vector2d(mx,my);
-			diff.sub(entry.getValue().pos);
-			if(diff.lengthSquared()<4*4)
-				return entry.getKey();
-			}
-		return null;
-		}
-	
 
 	public void mouseReleased(MouseEvent e)
 		{
 		holdingUnit=null;
-		if(drawingConn!=null)
+		if(selectRect!=null && SwingUtilities.isLeftMouseButton(e))
+			{
+			
+			
+			
+			selectRect=null;
+			repaint();
+			
+			//TODO
+			}
+		else if(drawingConn!=null && SwingUtilities.isLeftMouseButton(e))
 			{
 			int mx=e.getX()+cameraX;
 			int my=e.getY()+cameraY;
@@ -397,7 +429,58 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	
 	
+	/******************************************************************************************************
+	 *                               Connecting points                                                    *
+	 *****************************************************************************************************/
+
+	private static class DrawingConn
+		{
+		Tuple<FlowUnit,String> t;
+		Vector2d toPoint;
+		}
+
+	private static class ConnPoint
+		{
+		Vector2d pos;
+		boolean isFrom;
+		}
 	
+	public void drawConnPointLeft(Graphics g,FlowUnit unit, String arg, int x, int y)
+		{
+		g.setColor(Color.BLACK);
+		g.fillRect(x-5, y-2, 5, 5);
+		ConnPoint p=new ConnPoint();
+		p.pos=new Vector2d(x-2,y);
+		p.isFrom=false;
+		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), p);
+		}
+	
+	public void drawConnPointRight(Graphics g,FlowUnit unit, String arg, int x, int y)
+		{
+		g.setColor(Color.BLACK);
+		g.fillRect(x, y-2, 5, 5);
+		ConnPoint p=new ConnPoint();
+		p.pos=new Vector2d(x+2,y);
+		p.isFrom=true;
+		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), p);
+		}
+
+	/**
+	 * Find connection point near given coordinate
+	 */
+	private Tuple<FlowUnit,String> findHoverConnPoint(int mx, int my)
+		{
+		for(Map.Entry<Tuple<FlowUnit, String>, ConnPoint> entry:connPoint.entrySet())
+			{
+			Vector2d diff=new Vector2d(mx,my);
+			diff.sub(entry.getValue().pos);
+			if(diff.lengthSquared()<4*4)
+				return entry.getKey();
+			}
+		return null;
+		}
+	
+
 	/******************************************************************************************************
 	 *                               Connecting lines                                                     *
 	 *****************************************************************************************************/
