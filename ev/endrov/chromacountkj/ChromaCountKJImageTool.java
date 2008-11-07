@@ -165,13 +165,20 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 	public void keyPressed(KeyEvent e)
 		{
 		EvData data=w.getImageset();
+		System.out.println("kp "+e.getKeyChar()+" "+data);
 		if(data!=null)
 			{
 			ChromaCountKJ a=getHoverAnnot(lastMouseX,lastMouseY);
+			System.out.println("hover "+a);
 			if(e.getKeyCode()==KeyEvent.VK_Z)
 				{
 				if(a!=null)
+					{
 					data.removeMetaObjectByValue(a);
+					System.out.println("removed "+a);
+					}
+				else
+					System.out.println("no object");
 				w.updateImagePanel();
 				}
 			}

@@ -48,9 +48,9 @@ public class FlowUnitInput extends FlowUnit
 		
 		g.setColor(Color.lightGray);
 		g.fillRoundRect(x,y,d.width,d.height,arcsize,arcsize);
-		g.setColor(Color.black);
+		g.setColor(getBorderColor(panel));
 		g.drawRoundRect(x,y,d.width,d.height,arcsize,arcsize);
-		
+		g.setColor(getTextColor());
 		g.drawString("In: "+varName, x+5, y+fonta);
 		
 		

@@ -1,31 +1,43 @@
 package endrov.flow.ui;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.jdom.Element;
+
+import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.BasicWindowExtension;
+import endrov.basicWindow.BasicWindowHook;
+import endrov.basicWindow.ObjectCombo;
+import endrov.basicWindow.ObjectCombo.Alternative;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.flow.*;
 import endrov.util.JImageButton;
 
-public class FlowWindow extends JFrame
+/**
+ * Window for editing Flows
+ * @author Johan Henriksson
+ *
+ */
+public class FlowWindow extends BasicWindow implements ActionListener, ObjectCombo.comboFilterMetaObject
 	{
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
-	FlowPanel fp=new FlowPanel();
-	
-	JTree unitTree;
 
 	private static ImageIcon iconButtonSwap=new ImageIcon(FlowWindow.class.getResource("labelSwap.png"));
 	private static ImageIcon iconButtonPlay=new ImageIcon(FlowWindow.class.getResource("labelPlayForward.png"));
@@ -33,19 +45,65 @@ public class FlowWindow extends JFrame
 	private static ImageIcon iconAlignRight=new ImageIcon(FlowWindow.class.getResource("labelAlignRight.png"));
 	private static ImageIcon iconAlignVert=new ImageIcon(FlowWindow.class.getResource("labelAlignVert.png"));
 	
-	JButton bCopy=BasicIcon.getButtonCopy();
-	JButton bPaste=BasicIcon.getButtonPaste();
-	//JButton bCut=BasicWindow.getButtonCut();
-	JButton bDelete=BasicIcon.getButtonDelete();
+	
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+			{
+			public void createMenus(BasicWindow w)
+				{
+				JMenuItem mi=new JMenuItem("Flow",new ImageIcon(getClass().getResource("labelFS.png")));
+				mi.addActionListener(this);
+				w.addMenuWindow(mi);
+				}
 
-	JButton bSwap=new JImageButton(iconButtonSwap,"Swap position between 2 units");
-	JButton bPlay=new JImageButton(iconButtonPlay,"Run entire flow");
-	JButton bStop=new JImageButton(iconButtonStop,"Stop execution of flow");
-	JButton bAlignRight=new JImageButton(iconAlignRight,"Align right");
-	JButton bAlignVert=new JImageButton(iconAlignVert,"Align vertical");
+			public void actionPerformed(ActionEvent e) 
+				{
+				new FlowWindow();
+				}
+
+			public void buildMenu(BasicWindow w){}
+			}
+			});
+		}
+
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+	
+	
+	private FlowPanel fp=new FlowPanel();
+	
+	private JTree unitTree;
+	
+	
+	private JButton bCopy=BasicIcon.getButtonCopy();
+	private JButton bPaste=BasicIcon.getButtonPaste();
+	//JButton bCut=BasicWindow.getButtonCut();
+	private JButton bDelete=BasicIcon.getButtonDelete();
+
+	private JButton bSwap=new JImageButton(iconButtonSwap,"Swap position between 2 units");
+	private JButton bPlay=new JImageButton(iconButtonPlay,"Run entire flow");
+	private JButton bStop=new JImageButton(iconButtonStop,"Stop execution of flow");
+	private JButton bAlignRight=new JImageButton(iconAlignRight,"Align right");
+	private JButton bAlignVert=new JImageButton(iconAlignVert,"Align vertical");
+	
+	
 	
 	
 	public FlowWindow()
+		{
+		this(new Rectangle(500,400));
+		}
+	public FlowWindow(Rectangle bounds)
 		{
 		
 		//Sort unit declerations by category & name
@@ -101,7 +159,7 @@ public class FlowWindow extends JFrame
 		
 		
 		
-		JPanel toolbar=new JPanel();
+		JPanel toolbar=new JPanel(new GridLayout(1,8));
 		toolbar.add(bCopy);
 		toolbar.add(bPaste);
 		toolbar.add(bDelete);
@@ -113,6 +171,14 @@ public class FlowWindow extends JFrame
 		JPanel pTop=new JPanel(new BorderLayout());
 		pTop.add(toolbar,BorderLayout.WEST);
 		
+		bCopy.addActionListener(this);
+		bPaste.addActionListener(this);
+		bDelete.addActionListener(this);
+		bSwap.addActionListener(this);
+		bAlignRight.addActionListener(this);
+		bAlignVert.addActionListener(this);
+		bPlay.addActionListener(this);
+		bStop.addActionListener(this);
 		
 		JComponent unitTreeScroll=new JScrollPane(unitTree,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -122,9 +188,11 @@ public class FlowWindow extends JFrame
 		add(fp,BorderLayout.CENTER);
 		
 		
-		pack();
-		setSize(500,300);
-		setVisible(true);
+		//Window overall things
+		setTitleEvWindow("Flow");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(bounds);
 		}
 	
 	
@@ -136,6 +204,35 @@ public class FlowWindow extends JFrame
 		}
 	
 	
+	public void actionPerformed(ActionEvent e)
+		{
+		if(e.getSource()==bAlignRight)
+			fp.alignRight(fp.selectedUnits);
+		else if(e.getSource()==bAlignVert)
+			fp.alignVert(fp.selectedUnits);
+		else if(e.getSource()==bDelete)
+			{
+			fp.flow.removeUnits(fp.selectedUnits);
+			fp.repaint();
+			}
+		}
+	
+	public void dataChangedEvent()
+		{
+		// TODO Auto-generated method stub
+		
+		}
+
+	public void loadedFile(EvData data){}
+
+	public void windowPersonalSettings(Element e)
+		{
+		// TODO Auto-generated method stub
+		
+		} 
+	
+	public void freeResources(){}
+	
 	
 	
 	/**
@@ -143,9 +240,35 @@ public class FlowWindow extends JFrame
 	 */
 	public static void main(String[] args)
 		{
-		FlowWindow t=new FlowWindow();
-		t.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		new FlowWindow();
 		}
 
+	
+	
+	/******************************************************************************************************
+	 *                               Object component                                                     *
+	 *****************************************************************************************************/
+	public Alternative[] comboAddAlternative(ObjectCombo combo)
+		{
+		return new Alternative[]{};
+		}
+	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, final EvData meta)
+		{
+		Alternative a=new Alternative(meta,null,"New",new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				Flow flow=new Flow();
+				meta.addMetaObject(flow);
+				}
+			});
+		return new Alternative[]{a};
+		}
+	public boolean comboFilterMetaObjectCallback(EvObject ob)
+		{
+		return ob instanceof Flow;
+		}
+	
+	
+	
 	}

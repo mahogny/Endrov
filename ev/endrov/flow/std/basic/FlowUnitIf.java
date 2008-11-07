@@ -54,8 +54,9 @@ public class FlowUnitIf extends FlowUnit
 		Polygon p=getPolygon(d);
 		g.setColor(new Color(255,255,200));
 		g.fillPolygon(p);
-		g.setColor(getBorderColor());
+		g.setColor(getBorderColor(panel));
 		g.drawPolygon(p);
+		g.setColor(getTextColor());
 		g.drawString("IF", x+5, y+(d.height+fonta)/2);
 		
 		g.drawLine(x+3, y1-2, x+7, y1-2);

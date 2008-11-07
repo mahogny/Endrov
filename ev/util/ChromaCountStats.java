@@ -33,7 +33,7 @@ public class ChromaCountStats
 		TreeMap<Integer, int[]> countForFrame=new TreeMap<Integer, int[]>();
 		
 		int[] num=new int[4];
-		for(File file:(new File("/home/tbudev3/jepp")).listFiles())
+		for(File file:(new File("/home/tbudev3/jepp/ny/1034")).listFiles())
 			if(file.isDirectory() && file.getName().endsWith(".ost"))
 				{
 				System.out.println(file);

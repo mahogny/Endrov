@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
@@ -33,7 +34,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private Map<Tuple<FlowUnit, String>, ConnPoint> connPoint=new HashMap<Tuple<FlowUnit,String>, ConnPoint>();
 	private int mouseLastX, mouseLastY;
 	private int mouseLastDragX=0, mouseLastDragY=0;
-	private FlowUnit holdingUnit=null;
+	private Set<FlowUnit> movingUnits=new HashSet<FlowUnit>();
 	private DrawingConn drawingConn=null;
 
 	public FlowUnit placingUnit=null;
@@ -136,6 +137,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		mouseLastX=e.getX();
 		mouseLastY=e.getY();
 		
+		//Update shape of selection rectangle
 		if(selectRect!=null)
 			{
 			int x=(int)selectRect.getX();
@@ -144,6 +146,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			repaint();
 			}
 		
+		//Pan
 		if(SwingUtilities.isRightMouseButton(e))
 			{
 			cameraX-=dx;
@@ -151,14 +154,25 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			repaint();
 			}
 
-		if(holdingUnit!=null)
-			for(FlowUnit u:holdingUnit.getSubUnits(flow))
+		//Move held unit
+		if(!movingUnits.isEmpty() && SwingUtilities.isLeftMouseButton(e))
+			{
+			Set<FlowUnit> tomove=new HashSet<FlowUnit>();
+			for(FlowUnit u:movingUnits)
+				tomove.addAll(u.getSubUnits(flow));
+
+			for(FlowUnit u:tomove)
+//			for(FlowUnit u:holdingUnit.getSubUnits(flow))
 				{
 				u.x+=dx;
 				u.y+=dy;
-				repaint();
 				}
+			repaint();
+			}
 		
+		
+		
+		//Update shape of connection currently drawed
 		if(drawingConn!=null)
 			{
 			int mx=e.getX()+cameraX;
@@ -177,9 +191,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 		mouseLastX=e.getX();
 		mouseLastY=e.getY();
+		
+		//Update current position of the unit to be placed
 		if(placingUnit!=null)
 			{
-			
 			Tuple<Vector2d, FlowConn> hit=getHoverSegment();
 			if(hit!=null)
 				{
@@ -195,7 +210,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			Dimension dim=placingUnit.getBoundingBox();
 			placingUnit.x-=dim.width/2;
 			placingUnit.y-=dim.height/2;
-			
 			repaint();
 			}
 		}
@@ -240,7 +254,17 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			for(final FlowUnit u:flow.units)
 				if(u.mouseHoverMoveRegion(mx,my))
 					{
-					if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2)
+					if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==1)
+						{
+						if(!selectedUnits.contains(u))
+							{
+							selectedUnits.clear();
+							selectedUnits.add(u);
+							repaint();
+							}
+						hitAnything=true;
+						}
+					else if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2)
 						{
 						u.editDialog();
 						repaint();
@@ -356,7 +380,18 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				for(FlowUnit u:flow.units)
 					if(u.mouseHoverMoveRegion(mx,my))
 						{
-						holdingUnit=u;
+						if(selectedUnits.contains(u))
+							movingUnits.addAll(selectedUnits);
+						else
+							movingUnits.add(u);
+						/*
+						if(!selectedUnits.contains(u))
+							{
+							selectedUnits.clear();
+							selectedUnits.add(u);
+							}
+							*/
+						
 						found=true;
 						break;
 						}
@@ -377,16 +412,18 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public void mouseReleased(MouseEvent e)
 		{
-		holdingUnit=null;
+		movingUnits.clear();
 		if(selectRect!=null && SwingUtilities.isLeftMouseButton(e))
 			{
-			
-			
-			
+			selectedUnits.clear();
+			for(FlowUnit u:flow.units)
+				{
+				Point p=u.getMidPos();
+				if(p.x>selectRect.getX() && p.y>selectRect.getY() && p.x<selectRect.getMaxX() && p.y<selectRect.getMaxY())
+					selectedUnits.add(u);
+				}
 			selectRect=null;
 			repaint();
-			
-			//TODO
 			}
 		else if(drawingConn!=null && SwingUtilities.isLeftMouseButton(e))
 			{
@@ -427,6 +464,75 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 		}
 	
+	
+	
+	/******************************************************************************************************
+	 *                               Operations on flow                                                   *
+	 *****************************************************************************************************/
+
+	
+	private static class SortUnitY implements Comparable<SortUnitY>
+		{
+		public FlowUnit u;
+		public SortUnitY(FlowUnit u){this.u=u;}
+		public int compareTo(SortUnitY o){return new Integer(u.y).compareTo(new Integer(o.u.y));}
+		}
+	
+	
+	public void alignVert(Set<FlowUnit> sel)
+		{
+		List<SortUnitY> order=new LinkedList<SortUnitY>();
+		Integer maxh=null;
+		for(FlowUnit u:sel)
+			{
+			order.add(new SortUnitY(u));
+			if(maxh==null || u.getBoundingBox().height>maxh)
+				maxh=u.getBoundingBox().height;
+			}
+		Collections.sort(order);
+		int starty=order.iterator().next().u.getMidPos().y;
+		for(int i=0;i<order.size();i++)
+			{
+			int cy=order.get(i).u.getMidPos().y;
+			int ny=starty+i*(int)(maxh*1.3);
+			order.get(i).u.y+=ny-cy;
+			System.out.println(order.get(i).u.y);
+			}
+		repaint();
+		}
+	
+	public void alignRight(Set<FlowUnit> sel)
+		{
+		Map<FlowUnit,Double> xmap=new HashMap<FlowUnit, Double>();
+		Double totmax=null;
+		
+		for(Map.Entry<Tuple<FlowUnit, String>, ConnPoint> e:connPoint.entrySet())
+			if(selectedUnits.contains(e.getKey().fst()))
+				{
+				FlowUnit u=e.getKey().fst();
+				String arg=e.getKey().snd();
+				if(u.getTypesOut().keySet().contains(arg))
+					{
+					ConnPoint p=e.getValue();
+					Double maxx=xmap.get(u);
+					if(maxx==null || p.pos.x>maxx)
+						{
+						maxx=p.pos.x;
+						xmap.put(u,maxx);
+						if(totmax==null || totmax<p.pos.x)
+							totmax=p.pos.x;
+						}
+					}
+				}
+		
+		for(FlowUnit u:sel)
+			{
+			int diff=(int)(xmap.get(u)-totmax);
+			u.x-=diff;
+			}
+		repaint();
+		}
+
 	
 	
 	/******************************************************************************************************
