@@ -8,7 +8,7 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 	{
 	public FlowUnitAdd()
 		{
-		super("A/B");
+		super("A+B");
 		}
 	
 	public void evaluate(Flow flow) throws Exception

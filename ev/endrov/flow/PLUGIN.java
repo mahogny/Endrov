@@ -1,5 +1,6 @@
 package endrov.flow;
 import endrov.ev.PluginDef;
+import endrov.flow.ui.FlowWindow;
 
 public class PLUGIN extends PluginDef
 	{
@@ -30,6 +31,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{Flow.class};
+		return new Class[]{Flow.class,FlowWindow.class};
 		}
 	}

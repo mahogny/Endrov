@@ -27,7 +27,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 	
 	public void paint(Graphics g, FlowPanel panel)
 		{
-		g.setColor(getBorderColor());
+		g.setColor(getBorderColor(panel));
 		g.drawRect(x,y,contw,conth);
 		g.drawRect(x+2,y+2,contw-4,conth-4);
 		
@@ -35,8 +35,9 @@ public abstract class FlowUnitContainer extends FlowUnit
 		g.setColor(Color.WHITE);
 		g.fillRect(x+5, y-barh/2, fm.stringWidth(getContainerName())+10, barh);
 		
-		g.setColor(getBorderColor());
+		g.setColor(getBorderColor(panel));
 		g.drawRect(x+5, y-barh/2, fm.stringWidth(getContainerName())+10, barh);
+		g.setColor(getTextColor());
 		g.drawString(getContainerName(), x+10, y+(barh-fonta)/2);
 		
 		drawConnThrough(g, panel, "in","in'",x, y+conth/2);

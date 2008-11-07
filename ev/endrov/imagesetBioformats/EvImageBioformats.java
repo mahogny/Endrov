@@ -2,6 +2,7 @@ package endrov.imagesetBioformats;
 
 import java.awt.*;
 import java.awt.image.*;
+
 import loci.formats.*;
 
 import endrov.imageset.*;
@@ -44,6 +45,29 @@ public abstract class EvImageBioformats extends EvImage
 			{
 			BufferedImage i=imageReader.openImage(id);
 			
+			int w=i.getWidth();
+			int h=i.getHeight();
+
+			if(imageReader.getPixelType()==FormatTools.UINT16)
+				{
+				//Bug *compensation* 2008-11-07 CB72070min3.liff (openlab)
+				//Complain!
+				byte[] buf=new byte[imageReader.getSizeX()*imageReader.getSizeY()*2];
+				imageReader.openBytes(id, buf);
+				i=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+				for(int y=0;y<h;y++)
+					for(int x=0;x<w;x++)
+						{
+						byte a=buf[(w*y+x)*2];
+						int b=buf[(w*y+x)*2+1];
+						if(b<0)
+							b+=256;
+						int c=(((int)b)+(a<<8))>>4;
+						i.getRaster().setPixel(x, y, new int[]{c});
+						}
+				}
+			
+			
 			//System.out.println(""+i+" "+i.getWidth());
 			
 			//This hack fixes Leica
@@ -54,8 +78,6 @@ public abstract class EvImageBioformats extends EvImage
 			
 			if(subid!=null)
 				{
-				int w=i.getWidth();
-				int h=i.getHeight();
 				
 				/*
 				BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);

@@ -25,7 +25,9 @@ import endrov.flow.std.constants.FlowUnitConstBoolean;
 import endrov.flow.std.constants.FlowUnitConstDouble;
 import endrov.flow.std.constants.FlowUnitConstInteger;
 import endrov.flow.std.constants.FlowUnitConstString;
+import endrov.flow.std.math.FlowUnitAdd;
 import endrov.flow.std.math.FlowUnitDiv;
+import endrov.flow.std.math.FlowUnitSub;
 
 /**
  * Flow object - organisation of filters and work process
@@ -75,9 +77,9 @@ public class Flow extends EvObject
 		Flow.unitDeclarations.add(new FlowUnitDeclaration("Math","*"){
 		public FlowUnit createInstance(){return null;}});
 		Flow.unitDeclarations.add(new FlowUnitDeclaration("Math","+"){
-		public FlowUnit createInstance(){return null;}});
+		public FlowUnit createInstance(){return new FlowUnitAdd();}});
 		Flow.unitDeclarations.add(new FlowUnitDeclaration("Math","-"){
-		public FlowUnit createInstance(){return null;}});
+		public FlowUnit createInstance(){return new FlowUnitSub();}});
 		Flow.unitDeclarations.add(new FlowUnitDeclaration("Math","x^y"){
 		public FlowUnit createInstance(){return null;}});
 		Flow.unitDeclarations.add(new FlowUnitDeclaration("Math","x²"){
@@ -218,5 +220,12 @@ public class Flow extends EvObject
 		conns.removeAll(toRemove);
 		//TODO mark as updated
 		}
+	
+	public void removeUnits(Collection<FlowUnit> us)
+		{
+		for(FlowUnit u:us)
+			removeUnit(u);
+		}
+	
 	
 	}

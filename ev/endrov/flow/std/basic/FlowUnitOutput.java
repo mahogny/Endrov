@@ -51,9 +51,9 @@ public class FlowUnitOutput extends FlowUnit
 		
 		g.setColor(Color.lightGray);
 		g.fillRoundRect(x,y,d.width,d.height,arcsize,arcsize);
-		g.setColor(Color.black);
+		g.setColor(getBorderColor(panel));
 		g.drawRoundRect(x,y,d.width,d.height,arcsize,arcsize);
-		
+		g.setColor(getTextColor());
 		g.drawString("Out: "+varName, x+5, y+fonta);
 		
 		

@@ -50,9 +50,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 
 		g.setColor(getBackground());
 		g.fillRect(x,y,d.width,d.height);
-		g.setColor(getBorderColor());
+		g.setColor(getBorderColor(panel));
 		g.drawRect(x,y,d.width,d.height);
-
+		g.setColor(getTextColor());
 		g.drawString(getBasicName(), x+5, y+(d.height+fonta)/2);
 
 

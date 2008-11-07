@@ -5,8 +5,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.*;
+
 
 import org.jdom.Element;
 
@@ -17,6 +19,7 @@ import endrov.flow.ui.FlowPanel;
 
 public abstract class FlowUnit
 	{
+
 	/** Absolute coordinate, not relative to container */
 	public int x,y;
 
@@ -101,10 +104,23 @@ public abstract class FlowUnit
 		
 	
 	
-	protected Color getBorderColor()
+	protected Color getBorderColor(FlowPanel p)
+		{
+		if(p.selectedUnits.contains(this))
+			return Color.MAGENTA;
+		else
+			return Color.BLACK;
+		}
+	
+	protected Color getTextColor()
 		{
 		return Color.BLACK;
 		}
-	
+
+	public Point getMidPos()
+		{
+		Dimension dim=getBoundingBox();
+		return new Point(x+dim.width/2,y+dim.height/2);
+		}
 	
 	}
