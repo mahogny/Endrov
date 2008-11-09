@@ -44,7 +44,7 @@ public class CamWindow extends BasicWindow
 			{
 			public void createMenus(BasicWindow w)
 				{
-				JMenuItem mi=new JMenuItem("Camera Window",new ImageIcon(getClass().getResource("iconWindow.png")));
+				JMenuItem mi=new JMenuItem("Camera Window",new ImageIcon(getClass().getResource("tangoCamera.png")));
 				mi.addActionListener(this);
 				w.addMenuWindow(mi);
 				}

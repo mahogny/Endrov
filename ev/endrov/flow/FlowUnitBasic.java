@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
+
 import org.jdom.Element;
 
 import endrov.flow.ui.FlowPanel;
@@ -18,14 +20,20 @@ import endrov.flow.ui.FlowPanel;
  */
 public abstract class FlowUnitBasic extends FlowUnit
 	{
-	public abstract String getBasicName();
-
-	
+	/**
+	 * Name to be shown on box
+	 */
+	public abstract String getBasicShowName();
+	public abstract ImageIcon getIcon();
 	public abstract Color getBackground();
 	
 	public Dimension getBoundingBox()
 		{
-		int w=fm.stringWidth(getBasicName());
+		ImageIcon ico=getIcon();
+		
+		int w=fm.stringWidth(getBasicShowName());
+		if(ico!=null)
+			w+=ico.getIconWidth()+2;
 		int cnt=1;
 		if(cnt<getTypesInCount()) cnt=getTypesInCount();
 		if(cnt<getTypesOutCount()) cnt=getTypesOutCount();
@@ -47,13 +55,21 @@ public abstract class FlowUnitBasic extends FlowUnit
 
 //	g.drawRect(x,y,d.width,d.height);
 	
-
 		g.setColor(getBackground());
 		g.fillRect(x,y,d.width,d.height);
 		g.setColor(getBorderColor(panel));
 		g.drawRect(x,y,d.width,d.height);
+	
+		int iconW=0;
+		ImageIcon ico=getIcon();
+		if(ico!=null)
+			{
+			iconW=ico.getIconWidth()+2;
+			g.drawImage(ico.getImage(), x+2, y, null);
+			}
+		
 		g.setColor(getTextColor());
-		g.drawString(getBasicName(), x+5, y+(d.height+fonta)/2);
+		g.drawString(getBasicShowName(), x+iconW+5, y+(d.height+fonta)/2);
 
 
 //		drawConnPointRight(g,x+d.width,y+d.height/2);

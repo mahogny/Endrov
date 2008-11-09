@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
+
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
@@ -16,10 +18,8 @@ public abstract class FlowUnitMathBinop extends FlowUnitBasic
 		opName=name;
 		}
 	
-	public String getBasicName()
-		{
-		return opName;
-		}
+	public String getBasicShowName(){return opName;}
+	public ImageIcon getIcon(){return null;}
 	
 	public Color getBackground()
 		{

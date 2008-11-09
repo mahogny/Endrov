@@ -44,6 +44,11 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		System.out.println("here");
 		}
 	
+	public void toFront()
+		{
+		toFront();
+		}
+	
 	
 	public static class Manager implements BasicWindow.EvWindowManagerMaker
 		{

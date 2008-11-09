@@ -99,12 +99,12 @@ public class StagePanel extends JPanel implements ActionListener
 		{
 		static final long serialVersionUID=0;
 		int axisid;
+		int tickDist=8;
 		int yOffset=0;
 		int xOffset=0;
 
 		Integer holdDigit=null;
 		int mouseLastTickY=0;
-		int tickDist=8;
 
 		public OneAxisPanel()
 			{
@@ -142,11 +142,11 @@ public class StagePanel extends JPanel implements ActionListener
 			int numid=x/digitWidth;
 			if(numid<0)
 				return null;
-			else if(numid<numIntDigits)
+			else if(numid<numIntDigits+1)
 				return numIntDigits-numid;
 				//return numid;
 			else if(numid<numIntDigits+numFracDigits+1 && numid>numIntDigits)
-				return numIntDigits+1-numid;
+				return numIntDigits-numid+1;
 				//return numid;
 			else
 				return null;
@@ -171,7 +171,7 @@ public class StagePanel extends JPanel implements ActionListener
 			else if(aDown!=null)
 				{
 				double[] axis=hw.getStagePos();
-				axis[axisid]+=Math.pow(10, aDown);
+				axis[axisid]-=Math.pow(10, aDown);
 				hw.setStagePos(axis);
 				repaint(); //TODO all observers
 				}
@@ -209,9 +209,14 @@ public class StagePanel extends JPanel implements ActionListener
 			if(Math.abs(dy)>=tickDist)
 				{
 				int ticks=dy/tickDist;
-				
-				System.out.println(""+holdDigit+" "+ticks+" "+mouseLastTickY);
-				
+
+				if(ticks!=0)
+					{
+					double[] axis=hw.getStagePos();
+					axis[axisid]-=ticks*Math.pow(10, holdDigit);
+					hw.setStagePos(axis);
+					repaint();
+					}
 				mouseLastTickY+=ticks*tickDist;
 				}
 			}
@@ -228,7 +233,10 @@ public class StagePanel extends JPanel implements ActionListener
 			nf.setMaximumFractionDigits(numFracDigits);
 			nf.setMinimumIntegerDigits(numIntDigits);
 			nf.setMaximumIntegerDigits(numIntDigits);
-			return nf.format(pos);
+			String s=nf.format(pos);
+			if(!s.startsWith("-"))
+				s="+"+s;
+			return s;
 			}
 
 		private void drawArrowUp(Graphics g, int x, int y )
@@ -247,7 +255,7 @@ public class StagePanel extends JPanel implements ActionListener
 		
 		public Dimension getPreferredSize()
 			{
-			return new Dimension(digitWidth*(numIntDigits+numFracDigits)+20,oneAxisH());
+			return new Dimension(digitWidth*(numIntDigits+numFracDigits+2)+20,oneAxisH());
 			}
 		protected void paintComponent(Graphics g)
 			{
@@ -259,19 +267,17 @@ public class StagePanel extends JPanel implements ActionListener
 
 
 			g.setColor(Color.BLACK);
-			for(int i=0;i<numIntDigits+numFracDigits+1;i++)
+			for(int i=0;i<poss.length();i++)
 				{
 				int x=xOffset+i*digitWidth;
 
-				if(i!=numIntDigits)
+				if(i!=numIntDigits+1 && i!=0)
 					{
 					drawArrowUp(g, x+arrowTextDisp, yOffset+asize*2);
 					drawArrowDown(g, x+arrowTextDisp, yOffset+asize*2+digitHeight+spacing*2);
 					}
 
-
 				g.drawString(""+poss.charAt(i), x, yOffset+asize*2+spacing+digitHeight);
-
 				}
 
 

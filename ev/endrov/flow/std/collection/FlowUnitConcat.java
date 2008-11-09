@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
+
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
@@ -11,11 +13,12 @@ import endrov.flow.FlowUnitBasic;
 
 public class FlowUnitConcat extends FlowUnitBasic
 	{
-	public String getBasicName()
+	public String getBasicShowName()
 		{
 		return "Concat";
 		}
-	
+	public ImageIcon getIcon(){return null;}
+
 	public Color getBackground()
 		{
 		return new Color(200,255,200);
