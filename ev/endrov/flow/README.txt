@@ -34,8 +34,13 @@ updated
 == static typing ==
 
 whenever possible, the should be something like
-xxx run(xxx)
+xxx runFlow(xxx)
 later allowing real-time code generation with compile-time typing. evaluate should call this
 function. this is not strictly needed if the typing sucks because it can easily be detected
 when no such function exists and evaluate will be used as a slow alternative.
 
+
+== script edit ==
+
+http://java.sun.com/docs/books/tutorial/uiswing/components/editorpane.html
+or use jedit

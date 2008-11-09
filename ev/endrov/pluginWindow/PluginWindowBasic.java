@@ -21,7 +21,7 @@ public class PluginWindowBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Plugins",new ImageIcon(getClass().getResource("iconWindow.png")));
+			JMenuItem mi=new JMenuItem("Plugins",new ImageIcon(getClass().getResource("silkPluginWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

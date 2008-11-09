@@ -11,6 +11,7 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 		super("A+B");
 		}
 	
+	
 	public void evaluate(Flow flow) throws Exception
 		{
 		lastOutput.clear();

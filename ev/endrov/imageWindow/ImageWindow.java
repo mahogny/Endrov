@@ -38,7 +38,7 @@ public class ImageWindow extends BasicWindow
 	private static final int KEY_STEP_DOWN    =KeyBinding.register(new KeyBinding("Image Window","Step down",'s'));
 	private static final int KEY_HIDE_MARKINGS=KeyBinding.register(new KeyBinding("Image Window","Hide markings",' '));
 
-	private static ImageIcon iconLabelZoom=new ImageIcon(FrameControlImage.class.getResource("labelZoom.png"));
+	private static ImageIcon iconLabelZoom=new ImageIcon(FrameControlImage.class.getResource("silkMagnifier.png"));
 	private static ImageIcon iconLabelRotate=new ImageIcon(FrameControlImage.class.getResource("labelRotate.png"));
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));

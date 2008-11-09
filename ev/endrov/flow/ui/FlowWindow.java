@@ -96,7 +96,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 	private JButton bAlignRight=new JImageButton(iconAlignRight,"Align right");
 	private JButton bAlignVert=new JImageButton(iconAlignVert,"Align vertical");
 	
-	
+	private ObjectCombo objectCombo=new ObjectCombo(this, true);
 	
 	
 	public FlowWindow()
@@ -159,6 +159,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 		
 		
 		
+		
 		JPanel toolbar=new JPanel(new GridLayout(1,8));
 		toolbar.add(bCopy);
 		toolbar.add(bPaste);
@@ -169,6 +170,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 		toolbar.add(bPlay);
 		toolbar.add(bStop);
 		JPanel pTop=new JPanel(new BorderLayout());
+		pTop.add(objectCombo,BorderLayout.CENTER);
 		pTop.add(toolbar,BorderLayout.WEST);
 		
 		bCopy.addActionListener(this);
@@ -179,6 +181,8 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 		bAlignVert.addActionListener(this);
 		bPlay.addActionListener(this);
 		bStop.addActionListener(this);
+		objectCombo.addActionListener(this);
+		
 		
 		JComponent unitTreeScroll=new JScrollPane(unitTree,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -215,14 +219,25 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 			fp.flow.removeUnits(fp.selectedUnits);
 			fp.repaint();
 			}
+		else if(e.getSource()==objectCombo)
+			loadData();
 		}
 	
 	public void dataChangedEvent()
 		{
-		// TODO Auto-generated method stub
-		
+		objectCombo.updateObjectList();
+		loadData();
 		}
 
+	public void loadData()
+		{
+		Flow f=(Flow)objectCombo.getObject();
+		if(f==null)
+			f=new Flow();
+		fp.flow=f;
+		fp.repaint();
+		}
+	
 	public void loadedFile(EvData data){}
 
 	public void windowPersonalSettings(Element e)

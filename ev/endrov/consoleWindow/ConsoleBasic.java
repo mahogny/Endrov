@@ -21,7 +21,7 @@ public class ConsoleBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Console",new ImageIcon(getClass().getResource("iconWindow.png")));
+			JMenuItem mi=new JMenuItem("Console",new ImageIcon(getClass().getResource("tangoConsole.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
@@ -15,10 +17,29 @@ import endrov.flow.FlowUnitBasic;
  */
 public class FlowUnitScript extends FlowUnitBasic
 	{
-	public String getBasicName()
+	private static int scriptIDcnt=0;
+	private static Object scriptIDlock=new Object();
+	private int scriptID;
+	
+	private static ImageIcon icon=new ImageIcon(FlowUnitScript.class.getResource("silkScript.png"));
+	
+	public String code=
+	"public void runFlow()\n" +
+	" {\n" +
+	" }\n";
+	
+	public FlowUnitScript()
 		{
-		return "Script";
+		synchronized (scriptIDlock)
+			{
+			scriptID=scriptIDcnt++;
+			}
 		}
+	
+	
+	public String getBasicShowName(){return "Script "+getScriptID();}
+	public ImageIcon getIcon(){return icon;}
+	
 	
 	public Color getBackground()
 		{
@@ -41,11 +62,20 @@ public class FlowUnitScript extends FlowUnitBasic
 		return types;
 		}
 	
+	public int getScriptID()
+		{
+		return scriptID;
+		}
+	
 	
 	public void evaluate(Flow flow) throws Exception
-	{
-	//TODO flowunit
-	}
+		{
+		}
+
+	public void editDialog()
+		{
+		ScriptEditorWindow.openEditor(this);
+		}
 
 	
 	}

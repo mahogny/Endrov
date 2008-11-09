@@ -16,11 +16,11 @@ public class BasicIcon
 	public static final ImageIcon iconButtonDelete=new ImageIcon(BasicIcon.class.getResource("iconDelete.png"));
 	public static final ImageIcon iconButtonDown=new ImageIcon(BasicIcon.class.getResource("iconDown.png"));
 	public static final ImageIcon iconButtonUp=new ImageIcon(BasicIcon.class.getResource("iconUp.png"));
-	public static final ImageIcon iconButtonTrash=new ImageIcon(BasicIcon.class.getResource("iconTrash.png"));
+	public static final ImageIcon iconButtonTrash=new ImageIcon(BasicIcon.class.getResource("unkTrash.png"));
 	public static final ImageIcon iconButtonHelp=new ImageIcon(BasicIcon.class.getResource("iconHelp.png"));
 	public static final ImageIcon iconButtonCopy=new ImageIcon(BasicIcon.class.getResource("iconCopy.png"));
 	public static final ImageIcon iconButtonPaste=new ImageIcon(BasicIcon.class.getResource("iconPaste.png"));
-	public static final ImageIcon iconMenuQuit=new ImageIcon(BasicIcon.class.getResource("iconMenuQuit.png"));
+	public static final ImageIcon iconMenuQuit=new ImageIcon(BasicIcon.class.getResource("gnomeQuit.png"));
 	public static final ImageIcon iconFramePrev=new ImageIcon(BasicIcon.class.getResource("iconFramePrev.png"));
 	public static final ImageIcon iconFrameNext=new ImageIcon(BasicIcon.class.getResource("iconFrameNext.png"));
 	public static final ImageIcon iconFrameFirst=new ImageIcon(BasicIcon.class.getResource("iconFrameFirst.png"));
@@ -30,7 +30,7 @@ public class BasicIcon
 	public static final ImageIcon iconPlayStop=new ImageIcon(BasicIcon.class.getResource("iconPlayStop.png"));
 	public static final ImageIcon iconController=new ImageIcon(BasicIcon.class.getResource("iconController.png"));
 	
-	
+	public static final ImageIcon iconSave=new ImageIcon(BasicIcon.class.getResource("tangoSave.png"));
 	
 	
 	public static JButton getButtonCopy()
@@ -46,6 +46,11 @@ public class BasicIcon
 	public static JButton getButtonDelete()
 		{
 		return new JImageButton(iconButtonDelete,"Remove");
+		}
+	
+	public static JButton getButtonSave()
+		{
+		return new JImageButton(iconSave,"Save");
 		}
 	
 	//	private static ImageIcon iconMenuMaint=new ImageIcon(BasicWindow.class.getResource("iconMenuMaint.png"));

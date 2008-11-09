@@ -363,6 +363,10 @@ public abstract class BasicWindow extends JPanel
 		{
 		evw.dispose();
 		}
+	public void toFront()
+		{
+		evw.toFront();
+		}
 	//setfocusable
 	//addkeylistener
 	
@@ -579,9 +583,6 @@ public abstract class BasicWindow extends JPanel
     	EV.quit();
 		}
 
-	
-	
-	
 	
 	
 	/******************************************************************************************************

@@ -4,17 +4,20 @@ import java.awt.Color;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
 public class FlowUnitImserv extends FlowUnitBasic
 	{
-	public String getBasicName()
+	public String getBasicShowName()
 		{
 		return "ImServ";
 		}
-	
+	public ImageIcon getIcon(){return null;}
+
 	public static Color bgColor=new Color(200,255,200);
 	
 	public Color getBackground()

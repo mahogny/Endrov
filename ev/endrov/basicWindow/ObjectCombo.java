@@ -146,7 +146,8 @@ public class ObjectCombo extends JComboBox implements ActionListener
 			for(int i=0;i<getItemCount();i++)
 				{
 				Alternative a=(Alternative)getItemAt(i);
-				if(a.meta==curMeta && a.id.equals(curId))
+				//System.out.println(""+a+" ++ "+a.meta+" -- "+a.id+" ## "+curId);
+				if(a.meta==curMeta && (a.id!=null && a.id.equals(curId)))
 					setSelectedIndex(i);
 				}
 		}
