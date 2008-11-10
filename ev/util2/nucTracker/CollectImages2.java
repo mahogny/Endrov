@@ -3,7 +3,9 @@ package util2.nucTracker;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -85,9 +87,13 @@ public class CollectImages2
 				worms.add(ost);
 			}
 
+		int maxImages=50;
+		
 		try
 			{
 			int id=0;
+			
+			PrintWriter pw=new PrintWriter(new FileWriter(new File(outputDir.getParent(),"images.txt")));
 			
 			//For all lineages
 			for(Imageset ost:worms)
@@ -137,9 +143,24 @@ public class CollectImages2
 								sg.scale(sgs, sgs);
 								sg.drawImage(subim, 0, 0, null);
 								
-								File file = new File(outputDir,""+id+".png");
+								double[] samples=new double[20*20];
+								scaledIm.getRaster().getSamples(0, 0, 20, 20, 0, samples);
+								for(double s:samples)
+									pw.print(s+"\t");
+								pw.println();
+								
+									
+								
+								
+								//File file = new File(outputDir,""+id+".png");
 								id++;
-				        ImageIO.write(subim, "png", file);
+				        //ImageIO.write(subim, "png", file);
+				        
+				        if(id==maxImages)
+				        	{
+				        	pw.close();
+				        	System.exit(0);
+				        	}
 								}
 							
 							}
