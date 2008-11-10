@@ -57,7 +57,7 @@ public class CollectImages2
 		
 		if(channelName.equals("DIC"))
 			wnlist=new String[]{
-					"/Volumes/TBU_main02/ost4dgood/N2_071114",
+					"/Volumes/TBU_main02/ost4dgood/N2_071114.ost",
 /*					"/Volumes/TBU_main02/ost4dgood/N2_071115",
 					"/Volumes/TBU_main02/ost4dgood/N2_071116",
 					"/Volumes/TBU_main02/ost4dgood/N2_071117",
