@@ -21,7 +21,6 @@ import endrov.nuc.NucLineage;
 public class CollectImages2
 	{
 	
-	public static boolean doTrue=false;
 
 	public static NucLineage getLin(Imageset ost)
 		{
@@ -44,6 +43,8 @@ public class CollectImages2
 		String channelName="DIC";
 //		String channelName="RFP";
 		
+		boolean doTrue=true;
+
 		
 		File outputDir;
 		if(doTrue)
@@ -93,7 +94,7 @@ public class CollectImages2
 			{
 			int id=0;
 			
-			PrintWriter pw=new PrintWriter(new FileWriter(new File(outputDir.getParent(),"imfalse.txt")));
+			PrintWriter pw=new PrintWriter(new FileWriter(new File(outputDir.getParent(),"imtrue.txt")));
 			
 			//For all lineages
 			for(Imageset ost:worms)
