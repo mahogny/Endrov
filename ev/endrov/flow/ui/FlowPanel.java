@@ -80,12 +80,15 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 //		g.drawRect(x-panel.cameraX,y-panel.cameraY,30,30);
 		
+		//hm. clean up map of connection points?
+		
 		//Draw all units
 		for(FlowUnit u:flow.units)
 			u.paint(g2, this);
 		
 		//All connection points should now be in the list
 		//Draw connection arrows
+		connSegments.clear();
 		for(FlowConn conn:flow.conns)
 			{
 			Vector2d vFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg)).pos;
@@ -496,7 +499,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			int cy=order.get(i).u.getMidPos().y;
 			int ny=starty+i*(int)(maxh*1.3);
 			order.get(i).u.y+=ny-cy;
-			System.out.println(order.get(i).u.y);
 			}
 		repaint();
 		}
@@ -646,7 +648,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			g.drawLine(x,y1,x,y2);
 			if(c!=null)
 				connSegments.add(this);
-			}		//g.drawLine(x2, (int)vTo.y,x2, midy);
+			}		
 		
 
 		public Tuple<Vector2d,Integer> hitLine(int x, int y)

@@ -44,3 +44,18 @@ when no such function exists and evaluate will be used as a slow alternative.
 
 http://java.sun.com/docs/books/tutorial/uiswing/components/editorpane.html
 or use jedit
+
+== todo ==
+
+http://mgltools.scripps.edu/
+
+* hovering gives type
+* larger boxes to hit, going top to bottom
+* iterator, not map
+* type property "required"
+
+should have UI elements. combine labview front with back.
+
+paper with references
+
+
