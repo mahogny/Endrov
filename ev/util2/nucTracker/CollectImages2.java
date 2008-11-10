@@ -87,13 +87,13 @@ public class CollectImages2
 				worms.add(ost);
 			}
 
-		int maxImages=50;
+		int maxImages=1000;
 		
 		try
 			{
 			int id=0;
 			
-			PrintWriter pw=new PrintWriter(new FileWriter(new File(outputDir.getParent(),"images.txt")));
+			PrintWriter pw=new PrintWriter(new FileWriter(new File(outputDir.getParent(),"imfalse.txt")));
 			
 			//For all lineages
 			for(Imageset ost:worms)
