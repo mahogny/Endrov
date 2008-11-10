@@ -69,4 +69,9 @@ public class Tuple<L, R> implements Serializable
 		return new Tuple<L, R>(a,b);
 		}
 	
+	
+	public String toString()
+		{
+		return "("+fst+","+snd+")";
+		}
 	}
