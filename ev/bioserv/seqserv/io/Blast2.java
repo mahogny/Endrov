@@ -72,7 +72,17 @@ public class Blast2
 	public void invokeTblastn(String database, File input, File output)
 		{
 		//String cmd="blast2 -p tblastn -d "+database+" -i "+input.getPath()+" -m 9 -o "+output.getPath();
-		
+		ProcessBuilder pb=new ProcessBuilder("blast2","-p","tblastn","-d",database,"-i",input.getPath(),"-m","9","-o",output.getPath());
+
+		try
+			{
+			
+			pb.start();
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 		
 		
 		}
