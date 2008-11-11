@@ -25,6 +25,11 @@ public class GFF
 
 		String attributes;
 //		List<String> attribute=new LinkedList<String>();
+		
+		public String toString()
+			{
+			return seqname+"\t"+source+"\t"+feature+"\t"+start+"\t"+end+"\t"+score+"\t"+strand+"\t"+frame;
+			}
 		}
 
 	public LinkedList<Entry> entry=new LinkedList<Entry>();
@@ -64,6 +69,8 @@ public class GFF
 			e.strand=cols.get(6);
 			e.frame=cols.get(7);
 			e.attributes=cols.get(8);
+			
+			System.out.println(e);
 			}
 		}
 	
