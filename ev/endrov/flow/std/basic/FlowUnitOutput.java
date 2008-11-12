@@ -28,6 +28,13 @@ public class FlowUnitOutput extends FlowUnit
 	public String varName;
 	public FlowUnit varUnit;
 	
+	private static final String metaType="output";
+	public String storeXML(Element e)
+		{
+		e.setAttribute("varname", varName);
+		return metaType;
+		}
+
 	public FlowUnitOutput(String varName) //unit todo
 		{
 		this.varName=varName;
@@ -88,11 +95,6 @@ public class FlowUnitOutput extends FlowUnit
 		String newVal=JOptionPane.showInputDialog(null,"Enter value",varName);
 		if(newVal!=null)
 			varName=newVal;
-		}
-	
-	public void storeXML(Element e)
-		{
-		e.setAttribute("varname", varName);
 		}
 
 	public Collection<FlowUnit> getSubUnits(Flow flow)

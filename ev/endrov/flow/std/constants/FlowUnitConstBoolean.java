@@ -23,6 +23,13 @@ public class FlowUnitConstBoolean extends FlowUnit
 	public boolean var;
 	
 	
+	private static final String metaType="constBoolean";
+	public String storeXML(Element e)
+		{
+		e.setAttribute("value", ""+var);
+		return metaType;
+		}
+	
 	public FlowUnitConstBoolean(Boolean var) 
 		{
 		this.var=var;
@@ -89,10 +96,6 @@ public class FlowUnitConstBoolean extends FlowUnit
 		//TODO send out observer
 		}
 
-	public void storeXML(Element e)
-		{
-		e.setAttribute("value", ""+var);
-		}
 	
 	public void evaluate(Flow flow) throws Exception
 		{

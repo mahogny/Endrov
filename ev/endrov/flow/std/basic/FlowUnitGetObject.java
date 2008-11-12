@@ -6,12 +6,16 @@ import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 
+import org.jdom.Element;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
 public class FlowUnitGetObject extends FlowUnitBasic
 	{
+	private static final String metaType="getobject";
+	
 	public String getBasicShowName()
 		{
 		return "GetObjects";
@@ -41,6 +45,7 @@ public class FlowUnitGetObject extends FlowUnitBasic
 		return types;
 		}
 	
+	public String storeXML(Element e){return metaType;}
 	
 	public void evaluate(Flow flow) throws Exception
 	{

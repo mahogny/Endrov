@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 
+import org.jdom.Element;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
@@ -17,6 +19,13 @@ public class FlowUnitImservLoad extends FlowUnitBasic
 		return "ImServ Load";
 		}
 	public ImageIcon getIcon(){return null;}
+
+	
+	private static final String metaType="imservLoad";
+	public String storeXML(Element e)
+		{
+		return metaType;
+		}
 
 	public Color getBackground()
 		{

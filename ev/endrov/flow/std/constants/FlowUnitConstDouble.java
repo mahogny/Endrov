@@ -25,6 +25,15 @@ public class FlowUnitConstDouble extends FlowUnit
 	public double var;
 	
 	
+	
+	private static final String metaType="constDouble";
+	public String storeXML(Element e)
+		{
+		e.setAttribute("value", ""+var);
+		return metaType;
+		}
+
+	
 	public FlowUnitConstDouble(double var) 
 		{
 		this.var=var;
@@ -97,10 +106,6 @@ public class FlowUnitConstDouble extends FlowUnit
 			}
 		}
 
-	public void storeXML(Element e)
-		{
-		e.setAttribute("value", ""+var);
-		}
 
 	
 	public Collection<FlowUnit> getSubUnits(Flow flow)

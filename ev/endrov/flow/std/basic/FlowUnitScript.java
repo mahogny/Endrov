@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 
+import org.jdom.Element;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
@@ -67,6 +69,13 @@ public class FlowUnitScript extends FlowUnitBasic
 		return scriptID;
 		}
 	
+	private static final String metaType="script";
+	public String storeXML(Element e)
+		{
+		e.setAttribute("code", code);
+		return metaType;
+		}
+
 	
 	public void evaluate(Flow flow) throws Exception
 		{

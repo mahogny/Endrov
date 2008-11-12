@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 
+import org.jdom.Element;
+
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
@@ -22,6 +24,12 @@ public class FlowUnitConcat extends FlowUnitBasic
 	public Color getBackground()
 		{
 		return new Color(200,255,200);
+		}
+
+	private static final String metaType="concat";
+	public String storeXML(Element e)
+		{
+		return metaType;
 		}
 
 	

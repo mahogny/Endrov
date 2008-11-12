@@ -6,19 +6,28 @@ import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 
+import org.jdom.Element;
+
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
 public abstract class FlowUnitMathBinop extends FlowUnitBasic
 	{
-	public String opName;
-	public FlowUnitMathBinop(String name)
+	public String showName,metaType;
+	public FlowUnitMathBinop(String showName,String metaType)
 		{
-		opName=name;
+		this.showName=showName;
+		this.metaType=metaType;
 		}
 	
-	public String getBasicShowName(){return opName;}
+	
+	public String storeXML(Element e)
+		{
+		return metaType;
+		}
+
+	public String getBasicShowName(){return showName;}
 	public ImageIcon getIcon(){return null;}
 	
 	public Color getBackground()

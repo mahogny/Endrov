@@ -172,6 +172,28 @@ public class Flow extends EvObject
 
 	public void saveMetadata(Element e)
 		{
+		e.setName(metaType);
+		Map<FlowUnit, Integer> numMap=new HashMap<FlowUnit, Integer>();
+		int nexti=0;
+		//Save all units
+		for(FlowUnit u:units)
+			{
+			numMap.put(u,nexti++);
+			Element ne=new Element("unit");
+			//u.storeXML(ne);
+			
+			}
+		
+		//Save all connections
+		for(FlowConn c:conns)
+			{
+			Element ne=new Element("conn");
+			ne.setAttribute("fromUnit", ""+numMap.get(c.fromUnit));
+			ne.setAttribute("toUnit", ""+numMap.get(c.toUnit));
+			ne.setAttribute("fromArg",c.fromArg);
+			ne.setAttribute("toArg",c.toArg);
+			e.addContent(ne);
+			}
 		
 		}
 

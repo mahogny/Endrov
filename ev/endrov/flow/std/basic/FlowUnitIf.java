@@ -95,7 +95,9 @@ public class FlowUnitIf extends FlowUnit
 
 	public void editDialog(){}
 
-	public void storeXML(Element e){}
+	private static final String metaType="if";
+	public String storeXML(Element e){return metaType;}
+	
 
 	public Collection<FlowUnit> getSubUnits(Flow flow)
 		{
