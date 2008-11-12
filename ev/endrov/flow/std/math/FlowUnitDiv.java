@@ -7,7 +7,7 @@ public class FlowUnitDiv extends FlowUnitMathBinop
 	{
 	public FlowUnitDiv()
 		{
-		super("A/B");
+		super("A/B","div");
 		}
 	
 	public void evaluate(Flow flow) throws Exception

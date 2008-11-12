@@ -100,7 +100,7 @@ public abstract class FlowUnit
 	public abstract Collection<FlowUnit> getSubUnits(Flow flow);
 
 	
-	public abstract void storeXML(Element e);
+	public abstract String storeXML(Element e);
 		
 	
 	

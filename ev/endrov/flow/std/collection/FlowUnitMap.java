@@ -27,6 +27,14 @@ public class FlowUnitMap extends FlowUnitContainer
 		return "map";
 		}
 
+	private static final String metaType="map";
+	public String storeXML(Element e)
+		{
+		e.setAttribute("w",""+contw);
+		e.setAttribute("h",""+conth);
+		return metaType;
+		}
+
 	
 	/** Get types of flows in */
 	public Map<String, FlowType> getTypesIn()
@@ -56,11 +64,6 @@ public class FlowUnitMap extends FlowUnitContainer
 	
 	public void editDialog(){}
 
-	public void storeXML(Element e)
-		{
-		e.setAttribute("w",""+contw);
-		e.setAttribute("h",""+conth);
-		}
 
 	public void evaluate(Flow flow) throws Exception
 	{

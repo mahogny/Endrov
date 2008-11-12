@@ -25,6 +25,13 @@ public class FlowUnitConstString extends FlowUnit
 	public String var;
 	
 	
+	private static final String metaType="constString";
+	public String storeXML(Element e)
+		{
+		e.setAttribute("value", ""+var);
+		return metaType;
+		}
+
 	public FlowUnitConstString(String var) 
 		{
 		this.var=var;
@@ -79,10 +86,6 @@ public class FlowUnitConstString extends FlowUnit
 		String newVal=JOptionPane.showInputDialog(null,"Enter value",var);
 		if(newVal!=null)
 			var=newVal;
-		}
-	public void storeXML(Element e)
-		{
-		e.setAttribute("value", ""+var);
 		}
 
 	
