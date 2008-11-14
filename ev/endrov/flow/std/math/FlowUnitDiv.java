@@ -2,12 +2,23 @@ package endrov.flow.std.math;
 
 
 import endrov.flow.Flow;
+import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 public class FlowUnitDiv extends FlowUnitMathBinop
 	{
+	private static final String metaType="div";
+	
 	public FlowUnitDiv()
 		{
-		super("A/B","div");
+		super("A/B",metaType);
+		}
+	
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","/",metaType){
+		public FlowUnit createInstance(){return new FlowUnitDiv();}});
 		}
 	
 	public void evaluate(Flow flow) throws Exception

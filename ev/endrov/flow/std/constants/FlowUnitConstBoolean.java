@@ -10,6 +10,7 @@ import org.jdom.Element;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -24,6 +25,21 @@ public class FlowUnitConstBoolean extends FlowUnit
 	
 	
 	private static final String metaType="constBoolean";
+	
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclaration("Const","Boolean",metaType)
+			{
+			public FlowUnit createInstance(){return new FlowUnitConstBoolean(true);}
+			public FlowUnit fromXML(Element e)
+				{
+				FlowUnitConstBoolean u=new FlowUnitConstBoolean(Boolean.parseBoolean(e.getAttributeValue("value")));
+				return u;
+				}
+			});
+		}
+	
 	public String storeXML(Element e)
 		{
 		e.setAttribute("value", ""+var);

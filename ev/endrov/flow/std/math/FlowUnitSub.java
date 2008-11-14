@@ -3,12 +3,23 @@ package endrov.flow.std.math;
 
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
+import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 public class FlowUnitSub extends FlowUnitMathBinop
 	{
+	private static final String metaType="sub";
+	
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","-",metaType){
+		public FlowUnit createInstance(){return new FlowUnitSub();}});
+		}
+	
 	public FlowUnitSub()
 		{
-		super("A-B","sub");
+		super("A-B",metaType);
 		}
 	
 	public void evaluate(Flow flow) throws Exception

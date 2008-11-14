@@ -27,6 +27,17 @@ public class Brian
 				
 				}
 			
+			//For all genes in c.e
+			//  blast in X
+			//  store blast result in file
+			//  take #1 hit, blast in ce, is the search gene the best hit?
+			//   ### need to know the location of the c.e gene
+			//   ### store the ranking in SQL?
+			
+			//repeat for Y,Z
+			
+			//use sql to find intersection etc based on score
+
 			
 			
 			}

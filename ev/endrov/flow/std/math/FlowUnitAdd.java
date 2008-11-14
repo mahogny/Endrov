@@ -3,12 +3,23 @@ package endrov.flow.std.math;
 
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
+import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 public class FlowUnitAdd extends FlowUnitMathBinop
 	{
+	private static final String metaType="add";
+	
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","+",metaType){
+		public FlowUnit createInstance(){return new FlowUnitAdd();}});
+		}
+	
 	public FlowUnitAdd()
 		{
-		super("A+B","add");
+		super("A+B",metaType);
 		}
 	
 	

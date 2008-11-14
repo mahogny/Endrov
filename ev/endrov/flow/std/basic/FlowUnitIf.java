@@ -14,6 +14,7 @@ import org.jdom.Element;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitDeclarationTrivial;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -23,7 +24,15 @@ import endrov.flow.ui.FlowPanel;
  */
 public class FlowUnitIf extends FlowUnit
 	{
-	
+	private static final String metaType="if";
+
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Basic","If",metaType){
+		public FlowUnit createInstance(){return new FlowUnitIf();}});
+		}
+
 	
 	public Dimension getBoundingBox()
 		{
@@ -95,7 +104,6 @@ public class FlowUnitIf extends FlowUnit
 
 	public void editDialog(){}
 
-	private static final String metaType="if";
 	public String storeXML(Element e){return metaType;}
 	
 

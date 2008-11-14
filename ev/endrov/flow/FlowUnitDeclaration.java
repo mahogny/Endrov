@@ -1,12 +1,15 @@
 package endrov.flow;
 
+import org.jdom.Element;
+
 public abstract class FlowUnitDeclaration
 	{
-	public final String name, category;
-	public FlowUnitDeclaration(String category, String name)
+	public final String name, category, metadata;
+	public FlowUnitDeclaration(String category, String name, String metadata)
 		{
 		this.name=name;
 		this.category=category;
+		this.metadata=metadata;
 		}
 	
 	
@@ -17,6 +20,5 @@ public abstract class FlowUnitDeclaration
 		return name;
 		}
 	
-	//TODO function to deserialize
-	
+	public abstract FlowUnit fromXML(Element e);
 	}
