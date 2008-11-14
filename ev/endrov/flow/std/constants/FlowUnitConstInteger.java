@@ -12,6 +12,7 @@ import org.jdom.Element;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -27,6 +28,21 @@ public class FlowUnitConstInteger extends FlowUnit
 	
 	
 	private static final String metaType="constInteger";
+	
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclaration("Const","Integer",metaType)
+			{
+			public FlowUnit createInstance(){return new FlowUnitConstInteger(123);}
+			public FlowUnit fromXML(Element e)
+				{
+				FlowUnitConstInteger u=new FlowUnitConstInteger(Integer.parseInt(e.getAttributeValue("value")));
+				return u;
+				}
+			});
+		}
+	
 	public String storeXML(Element e)
 		{
 		e.setAttribute("value", ""+var);

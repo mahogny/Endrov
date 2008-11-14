@@ -12,6 +12,7 @@ import org.jdom.Element;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -24,8 +25,24 @@ public class FlowUnitInput extends FlowUnit
 	
 	public String varName;
 	public FlowUnit varUnit;
-	
 	private static final String metaType="input";
+
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclaration("Basic","Input",metaType)
+			{
+			public FlowUnit createInstance(){return new FlowUnitInput("foo");}
+			public FlowUnit fromXML(Element e)
+				{
+				FlowUnitInput u=new FlowUnitInput("");
+				e.setAttribute("varname", u.varName);
+				return u;
+				}
+			});
+		}
+
+	
 	public String storeXML(Element e)
 		{
 		e.setAttribute("varname", varName);

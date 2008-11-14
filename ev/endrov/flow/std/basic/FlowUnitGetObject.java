@@ -10,11 +10,21 @@ import org.jdom.Element;
 
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
+import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 public class FlowUnitGetObject extends FlowUnitBasic
 	{
-	private static final String metaType="getobject";
+	private static final String metaType="getevobject";
+	
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Basic","GetEvObject",metaType){
+		public FlowUnit createInstance(){return new FlowUnitGetObject();}});		
+		}
+
 	
 	public String getBasicShowName()
 		{

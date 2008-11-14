@@ -5,7 +5,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/bin_linux/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="libs/bin_linux/jai_codec.jar"/>
 	<classpathentry kind="lib" path="libs/bin_linux/jai_core.jar"/>
