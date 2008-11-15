@@ -1,10 +1,17 @@
 package endrov.flow;
 import endrov.ev.PluginDef;
+import endrov.flow.std.FlowUnitImserv;
+import endrov.flow.std.FlowUnitImservLoad;
+import endrov.flow.std.FlowUnitImservQuery;
 import endrov.flow.std.basic.FlowUnitGetObject;
 import endrov.flow.std.basic.FlowUnitIf;
 import endrov.flow.std.basic.FlowUnitInput;
 import endrov.flow.std.basic.FlowUnitOutput;
 import endrov.flow.std.basic.FlowUnitScript;
+import endrov.flow.std.collection.FlowUnitConcat;
+import endrov.flow.std.collection.FlowUnitHeadTail;
+import endrov.flow.std.collection.FlowUnitMap;
+import endrov.flow.std.collection.FlowUnitSize;
 import endrov.flow.std.constants.FlowUnitConstBoolean;
 import endrov.flow.std.constants.FlowUnitConstDouble;
 import endrov.flow.std.constants.FlowUnitConstInteger;
@@ -48,7 +55,9 @@ public class PLUGIN extends PluginDef
 		return new Class[]{Flow.class,FlowWindow.class,
 				FlowUnitGetObject.class,FlowUnitIf.class,FlowUnitInput.class,FlowUnitOutput.class,FlowUnitScript.class,
 				FlowUnitConstBoolean.class,FlowUnitConstDouble.class,FlowUnitConstInteger.class,FlowUnitConstString.class,
-				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class
+				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,
+				FlowUnitImserv.class,FlowUnitImservLoad.class,FlowUnitImservQuery.class,
+				FlowUnitConcat.class,FlowUnitHeadTail.class,FlowUnitMap.class,FlowUnitSize.class
 		};
 		
 		

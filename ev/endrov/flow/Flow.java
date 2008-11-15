@@ -9,13 +9,6 @@ import org.jdom.Element;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvObjectType;
-import endrov.flow.std.FlowUnitImserv;
-import endrov.flow.std.FlowUnitImservLoad;
-import endrov.flow.std.FlowUnitImservQuery;
-import endrov.flow.std.collection.FlowUnitConcat;
-import endrov.flow.std.collection.FlowUnitHeadTail;
-import endrov.flow.std.collection.FlowUnitMap;
-import endrov.flow.std.collection.FlowUnitSize;
 
 
 
@@ -85,28 +78,12 @@ public class Flow extends EvObject
 		public FlowUnit createInstance(){return null;}});
 		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Fold1",metaType){
 		public FlowUnit createInstance(){return null;}});*/
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Map",metaType){
-		public FlowUnit createInstance(){return new FlowUnitMap();}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Size",metaType){
-		public FlowUnit createInstance(){return new FlowUnitSize();}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","HeadTail",metaType){
-		public FlowUnit createInstance(){return new FlowUnitHeadTail();}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Concat",metaType){
-		public FlowUnit createInstance(){return new FlowUnitConcat();}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Merge",metaType){
-		public FlowUnit createInstance(){return new FlowUnitHeadTail();}});
 		
 		
 
 		/*Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Line","TotalLength",metaType){
 			public FlowUnit createInstance(){return null;}});*/
 
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("ImServ","ImServ",metaType){
-		public FlowUnit createInstance(){return new FlowUnitImserv();}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("ImServ","Load",metaType){
-		public FlowUnit createInstance(){return new FlowUnitImservLoad();}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("ImServ","Query",metaType){
-		public FlowUnit createInstance(){return new FlowUnitImservQuery();}});
 
 
 		EvData.extensions.put(metaType,new FlowObjectType());

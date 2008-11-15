@@ -11,10 +11,22 @@ import org.jdom.Element;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
+import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 public class FlowUnitConcat extends FlowUnitBasic
 	{
+	private static final String metaType="concat";
+
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Concat",metaType){
+		public FlowUnit createInstance(){return new FlowUnitConcat();}});
+		}
+
+	
 	public String getBasicShowName()
 		{
 		return "Concat";
@@ -26,7 +38,6 @@ public class FlowUnitConcat extends FlowUnitBasic
 		return new Color(200,255,200);
 		}
 
-	private static final String metaType="concat";
 	public String storeXML(Element e)
 		{
 		return metaType;
