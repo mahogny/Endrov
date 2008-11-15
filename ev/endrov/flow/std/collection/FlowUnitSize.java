@@ -11,10 +11,21 @@ import org.jdom.Element;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
+import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 public class FlowUnitSize extends FlowUnitBasic
 	{
+	private static final String metaType="size";
+
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Size",metaType){
+		public FlowUnit createInstance(){return new FlowUnitSize();}});
+		}
+	
 	public String getBasicShowName()
 		{
 		return "Size";
@@ -27,7 +38,6 @@ public class FlowUnitSize extends FlowUnitBasic
 		}
 
 	
-	private static final String metaType="size";
 	public String storeXML(Element e)
 		{
 		return metaType;

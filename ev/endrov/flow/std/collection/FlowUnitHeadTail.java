@@ -10,10 +10,22 @@ import org.jdom.Element;
 
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
+import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 public class FlowUnitHeadTail extends FlowUnitBasic
 	{
+	private static final String metaType="headtail";
+
+	
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","HeadTail",metaType){
+		public FlowUnit createInstance(){return new FlowUnitHeadTail();}});
+		}
+	
 	public String getBasicShowName()
 		{
 		return "HeadTail";
@@ -25,7 +37,6 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 		return new Color(200,255,200);
 		}
 
-	private static final String metaType="headtail";
 	public String storeXML(Element e)
 		{
 		return metaType;

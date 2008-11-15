@@ -9,7 +9,9 @@ import org.jdom.Element;
 
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
+import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitContainer;
+import endrov.flow.FlowUnitDeclarationTrivial;
 
 /**
  * Flow unit: Map
@@ -21,13 +23,21 @@ import endrov.flow.FlowUnitContainer;
  */
 public class FlowUnitMap extends FlowUnitContainer
 	{
+	private static final String metaType="map";
 
+	public static void initPlugin() {}
+	static
+		{
+		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Map",metaType){
+		public FlowUnit createInstance(){return new FlowUnitMap();}});
+		}
+	
+	
 	public String getContainerName()
 		{
 		return "map";
 		}
 
-	private static final String metaType="map";
 	public String storeXML(Element e)
 		{
 		e.setAttribute("w",""+contw);
