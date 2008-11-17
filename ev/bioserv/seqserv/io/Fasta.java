@@ -43,6 +43,11 @@ public class Fasta
 		return seq.values().iterator().next();
 		}
 	
+	public String onlyName()
+		{
+		return seq.keySet().iterator().next();
+		}
+	
 	public void writeFile(File file) throws IOException
 		{
 		PrintWriter pw=new PrintWriter(new FileWriter(file));
