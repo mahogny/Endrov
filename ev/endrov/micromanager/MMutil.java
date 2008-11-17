@@ -21,6 +21,22 @@ public class MMutil
 		return al;
 		}
 	
+	public static String convVector(CharVector v)
+		{
+		StringBuffer bf=new StringBuffer();
+		for (int j=0; j<v.size(); j++)
+			bf.append(v.get(j));
+		return bf.toString();
+		}
+	
+	public static CharVector convString(String s)
+		{
+		CharVector v=new CharVector();
+		for(int i=0;i<s.length();i++)
+			v.add(s.charAt(i));
+		return v;
+		}
+	
 	public static List<String> getLoadedDevices(CMMCore core)
 		{
 		return MMutil.convVector(core.getLoadedDevices());

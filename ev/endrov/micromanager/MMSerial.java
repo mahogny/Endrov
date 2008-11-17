@@ -22,7 +22,49 @@ public class MMSerial extends MMDeviceAdapter implements HWSerial
 	
 	
 	
+	/*
+	//void 	setSerialPortCommand (const char *deviceLabel, const char *command, const char *term) throw (CMMError)
+	std::string 	getSerialPortAnswer (const char *deviceLabel, const char *term) throw (CMMError)
+	void 	writeToSerialPort (const char *deviceLabel, const std::vector< char > &data) throw (CMMError)
+	std::vector< char > 	readFromSerialPort (const char *deviceLabel) throw (CMMError)
+*/
 	
+	public String nonblockingRead()
+		{
+		try
+			{
+			return MMutil.convVector(mm.core.readFromSerialPort(mmDeviceName));
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			return "";
+			}
+		}
+	public String readUntilTerminal(String term)
+		{
+		try
+			{
+			return mm.core.getSerialPortAnswer(mmDeviceName, term);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			return "";
+			}
+		}
+	public void writePort(String s)
+		{
+		try
+			{
+			mm.core.writeToSerialPort(mmDeviceName, MMutil.convString(s));
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+
 	
 	
 	}
