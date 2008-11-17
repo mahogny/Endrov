@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -18,14 +20,22 @@ public class Blast2
 	{
 	public static class Entry
 		{
-		String queryid, subjectid;
-		double identity;
-		int alignmentLength;
-		int mismatches;
-		int gapOpenings;
-		int qStart, qEnd;
-		int sStart, sEnd;
-		double evalue, bitscore;
+		public String queryid; //Name of sequence searched for
+		public String subjectid; //Name of sequence in which there is a hit
+		public double identity;
+		public int alignmentLength;
+		public int mismatches;
+		public int gapOpenings;
+		public int qStart, qEnd;
+		public int sStart, sEnd;
+		public double evalue, bitscore;
+		
+		public String toString()
+			{
+			return queryid+"\t"+subjectid+"\t"+identity+"\t"+alignmentLength+"\t"+mismatches+"\t"+
+			gapOpenings+"\t"+qStart+"\t"+qEnd+"\t"+sStart+"\t"+sEnd+"\t"+evalue+"\t"+bitscore;
+			//return subjectid;
+			}
 		}
 	
 	public List<Entry> entry=new LinkedList<Entry>();
@@ -33,7 +43,11 @@ public class Blast2
 	//Assume output "tabular commented"
 	public Blast2(File infile) throws IOException
 		{
-		BufferedReader input = new BufferedReader( new FileReader(infile) );
+		this(new BufferedReader( new FileReader(infile) ));
+		}
+	
+	public Blast2(BufferedReader input) throws IOException
+		{
 		String line = null;
 		while (( line = input.readLine()) != null)
 			{
@@ -69,23 +83,53 @@ public class Blast2
 	//SQL integration?
 	
 	
-	public void invokeTblastn(String database, File input, File output)
+	public static Blast2 invokeTblastn(String database, String seqname, String sequence)
 		{
 		//String cmd="blast2 -p tblastn -d "+database+" -i "+input.getPath()+" -m 9 -o "+output.getPath();
-		ProcessBuilder pb=new ProcessBuilder("blast2","-p","tblastn","-d",database,"-i",input.getPath(),"-m","9","-o",output.getPath());
+		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m","9");
 
+		/*
+		StringBuffer sb=new StringBuffer();
+		for(String s:pb.command())
+			sb.append(s+" ");
+		System.out.println(sb);*/
+		
 		try
 			{
 			
-			pb.start();
+			Process p=pb.start();
+			PrintWriter out=new PrintWriter(p.getOutputStream());
+			out.println(">"+seqname);
+			out.println(sequence);
+			out.flush();
+			out.close();
+			
+				/*		
+			final BufferedReader din = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line;
+			while ( (line = din.readLine()) != null ) out.write("out: "+line);
+			return null;
+			*/
+
+return new Blast2(new BufferedReader(new InputStreamReader(p.getInputStream())));
 			}
 		catch (IOException e)
 			{
 			e.printStackTrace();
 			}
-		
-		
-		
+		//WTF?
+		return null;
+		}
+	
+	
+	public String toString()
+		{
+		StringBuffer sb=new StringBuffer();
+		sb.append("{");
+		for(Entry e:entry)
+			sb.append(e+"\n");
+		sb.append("}");
+		return sb.toString();
 		}
 	
 	}

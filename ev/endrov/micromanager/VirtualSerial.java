@@ -8,15 +8,23 @@ import endrov.recording.HWSerial;
 
 public class VirtualSerial implements HWSerial
 	{
-
+	private String fifoIn="";
+	private Object lock=new Object();
+	
+	
 
 	public String nonblockingRead()
 		{
-		
+		synchronized (lock)
+			{
+			String s=fifoIn;
+			fifoIn="";
+			return s;
+			}
 		}
 	public String readUntilTerminal(String term)
 		{
-		
+		return "";//TODO
 		}
 	public void writePort(String s)
 		{
