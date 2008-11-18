@@ -104,14 +104,9 @@ public class Blast2
 			out.flush();
 			out.close();
 			
-				/*		
-			final BufferedReader din = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line;
-			while ( (line = din.readLine()) != null ) out.write("out: "+line);
-			return null;
-			*/
+			
 
-return new Blast2(new BufferedReader(new InputStreamReader(p.getInputStream())));
+			return new Blast2(new BufferedReader(new InputStreamReader(p.getInputStream())));
 			}
 		catch (IOException e)
 			{
@@ -121,6 +116,41 @@ return new Blast2(new BufferedReader(new InputStreamReader(p.getInputStream())))
 		return null;
 		}
 	
+	
+	public static void invokeTblastnToFile(String database, String seqname, String sequence,File outfile)
+		{
+		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m","9","-o",outfile.getPath());
+
+		/*
+		StringBuffer sb=new StringBuffer();
+		for(String s:pb.command())
+			sb.append(s+" ");
+		System.out.println(sb);*/
+		
+		try
+			{
+			
+			Process p=pb.start();
+			PrintWriter out=new PrintWriter(p.getOutputStream());
+			out.println(">"+seqname);
+			out.println(sequence);
+			out.flush();
+			out.close();
+			
+			p.waitFor();
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
+	/*		
+	final BufferedReader din = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	String line;
+	while ( (line = din.readLine()) != null ) out.write("out: "+line);
+	return null;
+	*/
 	
 	public String toString()
 		{
