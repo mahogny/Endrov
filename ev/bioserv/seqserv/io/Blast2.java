@@ -119,7 +119,10 @@ public class Blast2
 	
 	public static void invokeTblastnToFile(String database, String seqname, String sequence,File outfile)
 		{
-		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m","9","-o",outfile.getPath());
+		//9 nice text
+		//7 xml
+		
+		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m","7","-o",outfile.getPath());
 
 		/*
 		StringBuffer sb=new StringBuffer();
