@@ -5,6 +5,7 @@ import java.util.*;
 import javax.swing.*;
 
 import endrov.ev.EvBuild;
+import endrov.util.EvFileUtil;
 
 
 //TODO display error if there is one
@@ -22,6 +23,8 @@ public class Start
 		{
 		new Start().run(args);
 		}
+	
+	private final String argStringMacStarter="--macstarter";
 	
 	
 	private String javaver=System.getProperty("java.specification.version");
@@ -104,6 +107,11 @@ public class Start
 			printCommand=true;
 		if(args.contains("--printjar"))
 			printJar=true;
+
+		//Override detection to spit out mac directories
+		if(args.contains(argStringMacStarter))
+			OS="mac os x";
+			
 //		args.remove("-printjar");
 //		args.remove("-printcommand");
 
@@ -160,7 +168,7 @@ public class Start
 //					cmdarg.add("endrov.starter.MW");
 
 				//Output jar-list for mac starter bundles
-				if(args.contains("-macstarter"))
+				if(args.contains(argStringMacStarter))
 					{
 					StringTokenizer t=new StringTokenizer(jarstring,":");
 					File dot=new File(".");
@@ -171,9 +179,21 @@ public class Start
 						String s=t.nextToken();
 						if(!tot.equals(""))
 							tot=tot+":";
-						tot=tot+"$APP_PACKAGE/../"+s.substring(dotlen);
+						tot=tot+"$APPLICATION/../"+s.substring(dotlen);
 						}
 					System.out.println(tot);
+					
+					for(String app:new String[]{"EVGUI.app","ImServ.app","OSTdaemon.app","OSTmaker.app"})
+						{
+						String template=EvFileUtil.readFile(new File(app+"/Contents/Resources/preinfo.txt"));
+						EvFileUtil.writeFile(new File(app+"/Info.plist"), template.replace("JARLIST", tot));
+						}
+					
+					
+					FileWriter fw=new FileWriter(new File("EVGUI.app/Contents/Resources/jars.txt"));
+					fw.write(tot);
+					fw.flush();
+					fw.close();
 					System.exit(0);
 					}
 
