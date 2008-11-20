@@ -10,6 +10,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import endrov.util.EvXmlUtil;
+
 /**
  * BLAST2 output reader.
  * Assuming format tabular commented
@@ -30,6 +38,8 @@ public class Blast2
 		public int sStart, sEnd;
 		public double evalue, bitscore;
 		
+		public String qseq, hseq, midline;
+		
 		public String toString()
 			{
 			return queryid+"\t"+subjectid+"\t"+identity+"\t"+alignmentLength+"\t"+mismatches+"\t"+
@@ -38,16 +48,19 @@ public class Blast2
 			}
 		}
 	
+	
+	
 	public List<Entry> entry=new LinkedList<Entry>();
 	
 	//Assume output "tabular commented"
-	public Blast2(File infile) throws IOException
+	public static Blast2 readMode9(File infile) throws IOException
 		{
-		this(new BufferedReader( new FileReader(infile) ));
+		return Blast2.readMode9(new BufferedReader( new FileReader(infile) ));
 		}
-	
-	public Blast2(BufferedReader input) throws IOException
+	public static Blast2 readMode9(BufferedReader input) throws IOException
 		{
+		Blast2 b=new Blast2();
+		
 		String line = null;
 		while (( line = input.readLine()) != null)
 			{
@@ -71,11 +84,102 @@ public class Blast2
 				e.evalue=Double.parseDouble(tok.nextToken());
 				e.bitscore=Double.parseDouble(tok.nextToken());
 				
-				entry.add(e);
+				b.entry.add(e);
 				}
 			}
+		return b;
 		}
 	
+	
+	//These parses are not fast!
+	public static Blast2 readMode7(File infile) throws Exception
+		{
+		return Blast2.readMode7(new BufferedReader( new FileReader(infile) ));
+		}
+	public static Blast2 readMode7(BufferedReader input) throws Exception
+		{
+		Blast2 b=new Blast2();
+		
+		Document doc=EvXmlUtil.readXML(input);
+		
+		Element root=doc.getRootElement();
+		Element hits=root.getChild("BlastOutput_iterations").getChild("Iteration").getChild("Iteration_hits");
+		if(hits!=null)
+			for(Element hite:EvXmlUtil.getChildrenE(hits,"Hit"))
+				{
+	//			int hitnum=Integer.parseInt(hite.getChildText("Hit_num"));
+				
+				for(Element hsp:EvXmlUtil.getChildrenE(hite.getChild("Hit_hsps"),"Hsp"))
+					{
+					Entry e=new Entry();
+					e.qseq=hsp.getChildText("Hsp_qseq");
+					e.hseq=hsp.getChildText("Hsp_hseq");
+					e.midline=hsp.getChildText("Hsp_midline");
+					b.entry.add(e);
+					}
+				}
+		return b;
+		}
+	
+	
+	
+	public class Mode7parser extends DefaultHandler
+		{
+		int cmode=0;
+		public Blast2 b;
+		public void startElement(String namespaceURI, String localName,String qName, Attributes atts) 
+			{
+			System.out.println(qName);
+			}
+	
+		public void characters(char[] ch, int start, int length) throws SAXException 
+			{
+			String s = new String(ch,start,length);
+			switch(cmode)
+				{
+				case 1:
+				break;
+				}
+			
+			
+			cmode=0;
+			}
+
+		
+		
+	
+		}
+
+
+	
+	public static Blast2 firstHitMode7(File infile) throws Exception
+		{
+		return Blast2.firstHitMode7(new BufferedReader( new FileReader(infile) ));
+		}
+	public static Blast2 firstHitMode7(BufferedReader input) throws Exception
+		{
+		Blast2 b=new Blast2();
+		
+		Document doc=EvXmlUtil.readXML(input);
+		
+		Element root=doc.getRootElement();
+		Element hits=root.getChild("BlastOutput_iterations").getChild("Iteration").getChild("Iteration_hits");
+		if(hits!=null)
+			for(Element hite:EvXmlUtil.getChildrenE(hits,"Hit"))
+				{
+	//			int hitnum=Integer.parseInt(hite.getChildText("Hit_num"));
+				
+				for(Element hsp:EvXmlUtil.getChildrenE(hite.getChild("Hit_hsps"),"Hsp"))
+					{
+					Entry e=new Entry();
+					e.qseq=hsp.getChildText("Hsp_qseq");
+					e.hseq=hsp.getChildText("Hsp_hseq");
+					e.midline=hsp.getChildText("Hsp_midline");
+					b.entry.add(e);
+					}
+				}
+		return b;
+		}
 	
 	//work with files or stdin?
 	//how to cache data? lazy evaluation?
@@ -106,7 +210,8 @@ public class Blast2
 			
 			
 
-			return new Blast2(new BufferedReader(new InputStreamReader(p.getInputStream())));
+			return Blast2.readMode9(new BufferedReader(new InputStreamReader(p.getInputStream())));
+//			return new Blast2(new BufferedReader(new InputStreamReader(p.getInputStream())));
 			}
 		catch (IOException e)
 			{
