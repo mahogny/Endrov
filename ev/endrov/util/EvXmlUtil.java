@@ -1,6 +1,7 @@
 package endrov.util;
 
 import java.io.*;
+import java.util.List;
 
 import org.jdom.*;
 import org.jdom.input.*;
@@ -21,6 +22,40 @@ public class EvXmlUtil
 		return document;
 		}
 
+	public static Document readXML(Reader c) throws Exception
+		{
+		SAXBuilder saxBuilder = new SAXBuilder();
+		Document document = saxBuilder.build(c);
+		return document;
+		}
+
+	@SuppressWarnings("unchecked")
+	public static List<Element> getChildrenE(Element root, String name)
+		{
+		return root.getChildren(name);
+		}
+	@SuppressWarnings("unchecked")
+	public static List<Element> getChildrenE(Element root)
+		{
+		return root.getChildren();
+		}
+	
+	//TODO: text content, attributes
+	public static String prettyPrint(Element e)
+		{
+		StringBuffer b=new StringBuffer();
+		prettyPrint(e, b);
+		return b.toString();
+		}
+	public static void prettyPrint(Element e,StringBuffer b)
+		{
+		b.append("<"+e.getName()+">");
+		for(Object o:e.getChildren())
+			prettyPrint((Element)o,b);
+		b.append("</"+e.getName()+">");
+		}
+	
+	
 	/**
 	 * Checks if name and attributes equal, not content
 	 */
