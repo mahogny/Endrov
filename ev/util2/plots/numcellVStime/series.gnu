@@ -5,6 +5,8 @@ set output 'series.ps'
 set style fill solid border -1
 set key off
 set border 3
+set xtic out nomirror #50
+set ytic out nomirror #2
 set xlabel "Developmental time [min]"
 set ylabel "Number of cells"
 #set yrange [ 0.00000 : 70] noreverse nowriteback
