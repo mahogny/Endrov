@@ -10,12 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+
 import org.jdom.Document;
 import org.jdom.Element;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import endrov.util.EvXmlUtil;
 
 /**
@@ -48,16 +45,18 @@ public class Blast2
 			}
 		}
 	
+	public static final int MODE_XML=7;
+	public static final int MODE_TABULAR=9;
 	
 	
 	public List<Entry> entry=new LinkedList<Entry>();
 	
 	//Assume output "tabular commented"
-	public static Blast2 readMode9(File infile) throws IOException
+	public static Blast2 readModeTabular(File infile) throws IOException
 		{
-		return Blast2.readMode9(new BufferedReader( new FileReader(infile) ));
+		return Blast2.readModeTabular(new BufferedReader( new FileReader(infile) ));
 		}
-	public static Blast2 readMode9(BufferedReader input) throws IOException
+	public static Blast2 readModeTabular(BufferedReader input) throws IOException
 		{
 		Blast2 b=new Blast2();
 		
@@ -91,12 +90,12 @@ public class Blast2
 		}
 	
 	
-	//These parses are not fast!
-	public static Blast2 readMode7(File infile) throws Exception
+	//These parsers are not fast!
+	public static Blast2 readModeXML(File infile) throws Exception
 		{
-		return Blast2.readMode7(new BufferedReader( new FileReader(infile) ));
+		return Blast2.readModeXML(new BufferedReader( new FileReader(infile) ));
 		}
-	public static Blast2 readMode7(BufferedReader input) throws Exception
+	public static Blast2 readModeXML(BufferedReader input) throws Exception
 		{
 		Blast2 b=new Blast2();
 		
@@ -104,14 +103,24 @@ public class Blast2
 		
 		Element root=doc.getRootElement();
 		Element hits=root.getChild("BlastOutput_iterations").getChild("Iteration").getChild("Iteration_hits");
+		
+		String queryDef=root.getChildText("BlastOutput_query-def");
+		
+		
+		
 		if(hits!=null)
 			for(Element hite:EvXmlUtil.getChildrenE(hits,"Hit"))
 				{
 	//			int hitnum=Integer.parseInt(hite.getChildText("Hit_num"));
 				
+				String hitDef=hite.getChildText("Iteration_query-def");
+				
 				for(Element hsp:EvXmlUtil.getChildrenE(hite.getChild("Hit_hsps"),"Hsp"))
 					{
 					Entry e=new Entry();
+					e.queryid=queryDef;
+					e.subjectid=hitDef;
+					
 					e.qseq=hsp.getChildText("Hsp_qseq");
 					e.hseq=hsp.getChildText("Hsp_hseq");
 					e.midline=hsp.getChildText("Hsp_midline");
@@ -122,14 +131,14 @@ public class Blast2
 		}
 	
 	
-	
+	/*
 	public class Mode7parser extends DefaultHandler
 		{
 		int cmode=0;
-		public Blast2 b;
 		public void startElement(String namespaceURI, String localName,String qName, Attributes atts) 
 			{
-			System.out.println(qName);
+			if(qName.equals("Hsp_qseq"))
+				System.out.println(qName);
 			}
 	
 		public void characters(char[] ch, int start, int length) throws SAXException 
@@ -140,46 +149,20 @@ public class Blast2
 				case 1:
 				break;
 				}
-			
-			
 			cmode=0;
 			}
-
-		
-		
-	
 		}
-
-
-	
 	public static Blast2 firstHitMode7(File infile) throws Exception
-		{
-		return Blast2.firstHitMode7(new BufferedReader( new FileReader(infile) ));
-		}
-	public static Blast2 firstHitMode7(BufferedReader input) throws Exception
 		{
 		Blast2 b=new Blast2();
 		
-		Document doc=EvXmlUtil.readXML(input);
-		
-		Element root=doc.getRootElement();
-		Element hits=root.getChild("BlastOutput_iterations").getChild("Iteration").getChild("Iteration_hits");
-		if(hits!=null)
-			for(Element hite:EvXmlUtil.getChildrenE(hits,"Hit"))
-				{
-	//			int hitnum=Integer.parseInt(hite.getChildText("Hit_num"));
-				
-				for(Element hsp:EvXmlUtil.getChildrenE(hite.getChild("Hit_hsps"),"Hsp"))
-					{
-					Entry e=new Entry();
-					e.qseq=hsp.getChildText("Hsp_qseq");
-					e.hseq=hsp.getChildText("Hsp_hseq");
-					e.midline=hsp.getChildText("Hsp_midline");
-					b.entry.add(e);
-					}
-				}
+		Mode7parser p=b.new Mode7parser();
+		SAXParserFactory spf = SAXParserFactory.newInstance();
+		SAXParser sp = spf.newSAXParser();
+		sp.parse(infile, p);
 		return b;
 		}
+	*/
 	
 	//work with files or stdin?
 	//how to cache data? lazy evaluation?
@@ -210,7 +193,7 @@ public class Blast2
 			
 			
 
-			return Blast2.readMode9(new BufferedReader(new InputStreamReader(p.getInputStream())));
+			return Blast2.readModeTabular(new BufferedReader(new InputStreamReader(p.getInputStream())));
 //			return new Blast2(new BufferedReader(new InputStreamReader(p.getInputStream())));
 			}
 		catch (IOException e)
@@ -222,12 +205,12 @@ public class Blast2
 		}
 	
 	
-	public static void invokeTblastnToFile(String database, String seqname, String sequence,File outfile)
+	public static void invokeTblastnToFile(String database, String seqname, String sequence,File outfile, int mode)
 		{
 		//9 nice text
 		//7 xml
 		
-		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m","7","-o",outfile.getPath());
+		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m",""+mode,"-o",outfile.getPath());
 
 		/*
 		StringBuffer sb=new StringBuffer();

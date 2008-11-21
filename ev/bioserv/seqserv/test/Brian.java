@@ -33,12 +33,16 @@ public class Brian
 					String ceseq=cegenes.seq.get(key);
 					
 					StringTokenizer ntok=new StringTokenizer(key);
-					String shortName=ntok.nextToken();
+					ntok.nextToken(); //something
+					ntok.nextToken(); //something
+					String shortName=ntok.nextToken(); //WBname
 					
 					File out=new File(new File("/home/tbudev3/bioinfo/brian/blast",otherOrg),shortName);
-					System.out.println(out);
-					Blast2.invokeTblastnToFile(otherOrg, shortName,ceseq,out);
-					
+					if(!out.exists())
+						{
+						System.out.println(out);
+						Blast2.invokeTblastnToFile(otherOrg, shortName,ceseq,out,Blast2.MODE_XML);
+						}
 					}
 			
 			//For all genes in c.e
