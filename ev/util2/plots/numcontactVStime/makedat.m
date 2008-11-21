@@ -12,7 +12,7 @@ numcell=dat(:,3);
 
 %temp, replace later. or? cell has been restricted more
 %curframe does not match up between the two!!
-dat=importdata('/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt');
+dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt');
 %numcell=dat(:,2);
 g=length(numcell);
 
