@@ -17,7 +17,7 @@ public class Test
 		{
 		try
 			{
-			new GFF(new File("/home/tbudev3/foo.gff"));
+			new GFF(new File("/home/tbudev3/foo.gff"),null);
 			Fasta f=new Fasta(new File("/home/tbudev3/foo.fasta"));
 			for(Map.Entry<String, String> e:f.seq.entrySet())
 				System.out.println(e);

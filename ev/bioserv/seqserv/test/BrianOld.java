@@ -54,8 +54,9 @@ public class BrianOld
 
 				if(!blast.entry.isEmpty())
 					{
+					/*
 					int sStart=blast.entry.get(0).sStart;
-					int sEnd=blast.entry.get(0).sEnd;
+					int sEnd=blast.entry.get(0).sEnd;*/
 					
 					
 				

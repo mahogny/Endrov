@@ -85,7 +85,7 @@ public class VolStats
 		final int fminframe=firstFrameOfLineage(lin);
 		final int fmaxframe=lastOkFrame(lin);
 		
-		PrintWriter pw=new PrintWriter(new FileWriter("/Volumes/TBU_main02/ost4dgood/stdcelegansNew.ost/data/henriksson/volstats.txt"));
+		PrintWriter pw=new PrintWriter(new FileWriter("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt"));
 
 		for(int curframe=fminframe;curframe<fmaxframe;curframe++)
 			{
