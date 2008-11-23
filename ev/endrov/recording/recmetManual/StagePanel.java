@@ -1,4 +1,4 @@
-package endrov.recording.recmedManual;
+package endrov.recording.recmetManual;
 
 
 import java.awt.Color;
@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.hardware.HardwarePath;
 import endrov.recording.HWStage;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
@@ -39,7 +40,7 @@ public class StagePanel extends JPanel implements ActionListener
 	private HWStage hw;
 	//private String devName;
 	
-	public StagePanel(String devName,final HWStage hw)
+	public StagePanel(HardwarePath devName,final HWStage hw)
 		{
 		this.hw=hw;
 	//	this.devName=devName;

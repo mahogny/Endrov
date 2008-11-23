@@ -9,8 +9,6 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 
-import org.jdom.Element;
-
 import endrov.flow.ui.FlowPanel;
 
 /**

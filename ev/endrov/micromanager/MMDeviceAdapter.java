@@ -64,8 +64,9 @@ public class MMDeviceAdapter implements Hardware
 			for(String propName:MMutil.convVector(mm.core.getDevicePropertyNames(mmDeviceName)))
 				{
 				PropertyType p=new PropertyType();
-				for(String s:MMutil.convVector(mm.core.getAllowedPropertyValues(mmDeviceName, propName)))
-					p.categories.add(s);
+				List<String> allowedValues=MMutil.convVector(mm.core.getAllowedPropertyValues(mmDeviceName, propName));
+				for(int i=0;i<allowedValues.size();i++)
+					p.categories.add(allowedValues.get(i));
 				
 				p.readOnly=mm.core.isPropertyReadOnly(mmDeviceName, propName);
 				
@@ -73,7 +74,6 @@ public class MMDeviceAdapter implements Hardware
 				p.rangeLower=mm.core.getPropertyLowerLimit(mmDeviceName, propName);
 				p.rangeUpper=mm.core.getPropertyUpperLimit(mmDeviceName, propName);
 
-				p.categories.addAll(MMutil.convVector(mm.core.getAllowedPropertyValues(mmDeviceName, propName)));
 				if(p.categories.size()==2 && p.categories.contains("0") && p.categories.contains("1"))
 					p.isBoolean=true;
 				

@@ -117,7 +117,7 @@ public class CamWindow extends BasicWindow
 				//this does not work later. have to synchronize all calls for an image
 				//so all targets gets it.
 				
-				String camname=(String)This.mcombo.getSelectedItem();
+				HardwarePath camname=(HardwarePath)This.mcombo.getSelectedItem();
 				if(camname!=null)
 					{
 					HWCamera cam=(HWCamera)HardwareManager.getHardware(camname);
@@ -161,8 +161,9 @@ public class CamWindow extends BasicWindow
 	public CamWindow(Rectangle bounds)
 		{
 
-
-		mcombo=new JComboBox(new Vector<String>(HardwareManager.getHardwareList(HWCamera.class)));
+		
+		
+		mcombo=new JComboBox(new Vector<HardwarePath>(HardwareManager.getHardwareMap(HWCamera.class).keySet()));
 
 		
 		

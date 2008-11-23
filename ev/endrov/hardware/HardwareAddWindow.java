@@ -31,6 +31,7 @@ public class HardwareAddWindow extends BasicWindow
 		this(new Rectangle(400,300));
 		}
 	
+	/*
 	public static class AddHW
 		{
 		HardwareProvider p;
@@ -39,21 +40,21 @@ public class HardwareAddWindow extends BasicWindow
 			{
 			return ""+p.getName()+":"+hw;
 			}
-		}
+		}*/
 	
 	
 	public HardwareAddWindow(Rectangle bounds)
 		{
-		Vector<AddHW> hwlist=new Vector<AddHW>();
+		//Vector<AddHW> hwlist=new Vector<AddHW>();
 		
 		
-		JList hwList=new JList(hwlist);
+		//JList hwList=new JList(hwlist);
 
 		
 
 		
 		setLayout(new BorderLayout());
-		add(hwList,BorderLayout.CENTER);
+		//add(hwList,BorderLayout.CENTER);
 		add(bAdd,BorderLayout.SOUTH);
 		
 		//Window overall things
