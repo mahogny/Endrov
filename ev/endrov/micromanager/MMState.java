@@ -55,11 +55,38 @@ public class MMState extends MMDeviceAdapter implements HWState
 			}
 		}
 	
+	public String getCurrentStateLabel()
+		{
+		try
+			{
+			return mm.core.getStateLabel(mmDeviceName);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		return null;
+		}
+	
+
+	
 	public void setCurrentState(int state)
 		{
 		try
 			{
 			mm.core.setState(mmDeviceName, state);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
+	public void setCurrentStateLabel(String label)
+		{
+		try
+			{
+			mm.core.setStateLabel(mmDeviceName, label);
 			}
 		catch (Exception e)
 			{

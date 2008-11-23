@@ -1,8 +1,7 @@
 package endrov.recording;
 
-import endrov.hardware.Hardware;
 
-public interface HWShutter extends Hardware
+public interface HWShutter extends HWState
 	{
 
 	}

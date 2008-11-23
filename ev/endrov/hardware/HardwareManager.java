@@ -14,69 +14,81 @@ import org.jdom.Element;
  */
 public class HardwareManager
 	{
-	public static List<HardwareProvider> provider=new Vector<HardwareProvider>();
 	
 	
-	public static void registerHardwareProvider(HardwareProvider hp)
-		{
-		provider.add(hp);
-		
-		//Load config here
-		
-		}
+	public static HardwareRoot root=new HardwareRoot();
 	
 	
 	/**
 	 * Get device or null if it does not exist
 	 */
-	public static Hardware getHardware(String name)
+	public static Hardware getHardware(HardwarePath name)
 		{
-		for(HardwareProvider p:provider)
+		Hardware next=root;
+		for(String s:name.path)
 			{
-			Hardware h=p.hw.get(name);
-			if(h!=null)
-				return h;
+			if(next instanceof HardwareProvider)
+				{
+				next=((HardwareProvider)next).hw.get(s);
+				}
+			else
+				return null;
 			}
-		return null;
+		return next;
 		}
+	
 
 	/**
 	 * Get list of all installed hardware
 	 */
-	public static Set<String> getHardwareList()
+	public static Set<HardwarePath> getHardwareList()
 		{
-		TreeSet<String> hwlist=new TreeSet<String>();
-		for(HardwareProvider p:provider)
-			hwlist.addAll(p.hw.keySet());
-		return hwlist;
+		return getHardwareMap().keySet();
 		}
-
+	
+	
+	
 	/**
 	 * Get map of all installed hardware
 	 */
-	public static TreeMap<String,Hardware> getHardwareMap()
+	public static TreeMap<HardwarePath,Hardware> getHardwareMap()
 		{
-		TreeMap<String,Hardware> map=new TreeMap<String,Hardware>();
-		for(HardwareProvider p:provider)
-			map.putAll(p.hw);
+		TreeMap<HardwarePath,Hardware> map=new TreeMap<HardwarePath,Hardware>();
+		getHardwareMap(root, new LinkedList<String>(), map);
 		return map;
 		}
+	private static void getHardwareMap(Hardware root, List<String> path,TreeMap<HardwarePath,Hardware> map)
+		{
+		if(root instanceof HardwareProvider)
+			{
+			HardwareProvider p=(HardwareProvider)root;
+			for(Map.Entry<String, Hardware> e:p.hw.entrySet())
+				{
+				LinkedList<String> npath=new LinkedList<String>(path);
+				npath.add(e.getKey());
+				getHardwareMap(e.getValue(), npath, map);
+				}
+			}
+		if(!(root instanceof HardwareRoot))
+			map.put(new HardwarePath(path.toArray(new String[]{})), root);
+		}
+
 
 	
 	/**
 	 * Get list of all installed hardware of a specific type
 	 */
-	public static Set<String> getHardwareList(Class<?> hw)
+	public static Map<HardwarePath,Hardware> getHardwareMap(Class<?> hw)
 		{
-		TreeSet<String> hwlist2=new TreeSet<String>();
-		for(String name:getHardwareList())
+		TreeMap<HardwarePath,Hardware> hwlist2=new TreeMap<HardwarePath,Hardware>();
+		for(Map.Entry<HardwarePath, Hardware> hwe:getHardwareMap().entrySet())
 			{
 			boolean is=false;
-			for(Class<?> intf:getHardware(name).getClass().getInterfaces())
+			for(Class<?> intf:hwe.getValue().getClass().getInterfaces())
 				if(intf==hw)
 					is=true;
 			if(is)
-				hwlist2.add(name);
+				hwlist2.put(hwe.getKey(),hwe.getValue());
 			}
 		return hwlist2;
 		}

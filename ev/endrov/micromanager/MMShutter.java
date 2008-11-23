@@ -12,7 +12,7 @@ import endrov.recording.HWShutter;
  * @author Johan Henriksson
  *
  */
-public class MMShutter extends MMDeviceAdapter implements HWShutter
+public class MMShutter extends MMState implements HWShutter
 	{
 
 	public MMShutter(MicroManager mm, String mmDeviceName)

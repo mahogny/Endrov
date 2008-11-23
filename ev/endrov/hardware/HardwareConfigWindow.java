@@ -91,7 +91,7 @@ public class HardwareConfigWindow extends BasicWindow
 	
 	private static class HWListItem
 		{
-		String name;
+		HardwarePath name;
 		public String toString()
 			{
 			return name+" :: "+HardwareManager.getHardware(name).getDescName();
@@ -106,15 +106,15 @@ public class HardwareConfigWindow extends BasicWindow
 	public HardwareConfigWindow(Rectangle bounds)
 		{
 		Vector<HWListItem> hwNames=new Vector<HWListItem>();
-		for(String hw:HardwareManager.getHardwareList())
+		for(HardwarePath hw:HardwareManager.getHardwareList())
 			{
 			HWListItem item=new HWListItem();
 			item.name=hw;
 			hwNames.add(item);
 			}
 		
-		
 		JList hwList=new JList(hwNames);
+		JScrollPane spane=new JScrollPane(hwList,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		JPanel bpu=new JPanel(new GridLayout(1,2));
 		bpu.add(bAdd);
@@ -129,7 +129,7 @@ public class HardwareConfigWindow extends BasicWindow
 		bp.add(bpl);
 		
 		setLayout(new BorderLayout());
-		add(hwList,BorderLayout.CENTER);
+		add(spane,BorderLayout.CENTER);
 		add(bp,BorderLayout.SOUTH);
 		
 		//Window overall things

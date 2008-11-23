@@ -2,6 +2,7 @@ package endrov.hardware;
 
 import java.util.*;
 
+
 /**
  * One hardware device/session
  * @author Johan Henriksson
@@ -13,7 +14,7 @@ public interface Hardware
 	public String getDescName();
 		
 	
-	
+	////// For devices
 	
 	public SortedMap<String,PropertyType> getPropertyTypes();
 	public SortedMap<String,String> getPropertyMap();

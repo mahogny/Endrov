@@ -14,12 +14,13 @@ import endrov.hardware.*;
  * @author Johan Henriksson
  *
  */
-public class MicroManager extends HardwareProvider
+public class MicroManager extends HardwareProvider implements Hardware
 	{
 	public static void initPlugin() {}
 	static
 		{
-		HardwareManager.registerHardwareProvider(new MicroManager());
+		HardwareManager.root.hw.put("um", new MicroManager());
+//		HardwareManager.registerHardwareProvider(new MicroManager());
 		}
 	
 	
@@ -140,11 +141,7 @@ public class MicroManager extends HardwareProvider
 		}
 	
 	
-	public String getName()
-		{
-		return "umanager";
-		}
-	
+
 	
 	
 	public Set<Hardware> autodetect()
@@ -168,5 +165,52 @@ public class MicroManager extends HardwareProvider
 		
 		return list;
 		}
+	public Hardware newProvided(String s)
+		{
+		return null;
+		}
+
+
+	public String getDescName()
+		{
+		return "Micro-manager";
+		}
+
+
+	public SortedMap<String, String> getPropertyMap()
+		{
+		return null;
+		}
+
+
+	public SortedMap<String, PropertyType> getPropertyTypes()
+		{
+		return null;
+		}
+
+
+	public String getPropertyValue(String prop)
+		{
+		return null;
+		}
+
+
+	public boolean getPropertyValueBoolean(String prop)
+		{
+		return false;
+		}
+
+
+	public void setPropertyValue(String prop, boolean value)
+		{
+		}
+
+
+	public void setPropertyValue(String prop, String value)
+		{
+		}
+	
+	
+	
 
 	}

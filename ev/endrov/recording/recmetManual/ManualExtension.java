@@ -1,4 +1,4 @@
-package endrov.recording.recmedManual;
+package endrov.recording.recmetManual;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -13,6 +13,7 @@ import javax.swing.*;
 import endrov.ev.JNumericField;
 import endrov.hardware.Hardware;
 import endrov.hardware.HardwareManager;
+import endrov.hardware.HardwarePath;
 import endrov.hardware.PropertyType;
 import endrov.recording.*;
 import endrov.recording.recWindow.MicroscopeWindow;
@@ -63,7 +64,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			
 			
 			
-			for(Map.Entry<String, Hardware> entry:HardwareManager.getHardwareMap().entrySet())
+			for(Map.Entry<HardwarePath, Hardware> entry:HardwareManager.getHardwareMap().entrySet())
 				{
 				if(entry.getValue() instanceof HWCamera)
 					hw.add(new CameraPanel(entry.getKey(),(HWCamera)entry.getValue()));
@@ -105,9 +106,9 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			{
 			static final long serialVersionUID=0;
 			JToggleButton b=new JImageToggleButton(iconShutterClosed,"Shutter status");
-			public ShutterPanel(String devName, HWShutter hw)
+			public ShutterPanel(HardwarePath devName, HWShutter hw)
 				{
-				JLabel lTitle=new JLabel(devName);
+				JLabel lTitle=new JLabel(devName.toString());
 				lTitle.setToolTipText(hw.getDescName());
 				
 				setOpen(b.isSelected());
@@ -147,14 +148,21 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			private static final long serialVersionUID=0;
 			private JComboBox state;
 			private HWState hw;
-			public StateDevicePanel(String devName,HWState hw)
+			public StateDevicePanel(HardwarePath devName,HWState hw)
 				{
 				this.hw=hw;
 				Vector<String> fs=new Vector<String>(hw.getStateNames());
 				state=new JComboBox(fs);
-				state.setSelectedIndex(hw.getCurrentState());
+				try
+					{
+					state.setSelectedIndex(hw.getCurrentState());
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
 				
-				JLabel lTitle=new JLabel(devName);
+				JLabel lTitle=new JLabel(devName.toString());
 				lTitle.setToolTipText(hw.getDescName());
 				
 				state.addActionListener(this);
@@ -178,9 +186,9 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			{
 			//TODO: build a function to decompose not only menus but entire swing components?
 			static final long serialVersionUID=0;
-			public CameraPanel(String devName,final HWCamera hw)
+			public CameraPanel(HardwarePath devName,final HWCamera hw)
 				{
-				setBorder(BorderFactory.createTitledBorder(devName));
+				setBorder(BorderFactory.createTitledBorder(devName.toString()));
 				setToolTipText(hw.getDescName());
 				
 				List<JComponent> comps=new LinkedList<JComponent>();
@@ -220,7 +228,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 						}
 					if(comp!=null)
 						comps.add(EvSwingTools.withLabel(entry.getKey(), comp));
-					System.out.println(entry.getKey()+" "+pt.isBoolean+" "+pt.foo);
+					//System.out.println(entry.getKey()+" "+pt.isBoolean+" "+pt.foo);
 					}
 				setLayout(new GridLayout(comps.size(),1));
 				for(JComponent c:comps)
