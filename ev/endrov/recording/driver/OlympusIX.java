@@ -21,9 +21,31 @@ import endrov.recording.HWShutter;
  */
 public class OlympusIX extends HardwareProvider implements Hardware
 	{
-	public HWSerial serial=new VirtualSerial();
-	
 	public final static String newLine="\r\n";
+
+	public static class VirtualSerialIX extends VirtualSerial
+		{
+		public VirtualSerialIX()
+			{
+			super("IX");
+			autoresponse.put("1SHUT0?"+newLine, "1SHUT0 IN"+newLine);
+			autoresponse.put("1SHUT1?"+newLine, "1SHUT1 IN"+newLine);
+			autoresponse.put("1SHUT2?"+newLine, "1SHUT2 IN"+newLine);
+			autoresponse.put("1MU?"+newLine, "1MU 3"+newLine);
+			autoresponse.put("1OB?"+newLine, "1OB 2"+newLine);
+			autoresponse.put("1CD?"+newLine, "1CD 5"+newLine);
+			autoresponse.put("1LMPSEL?"+newLine, "1LMPSEL EPI"+newLine);
+			autoresponse.put("1LMP?"+newLine, "1LMP 100"+newLine);
+			autoresponse.put("1VER?"+newLine, "test??"+newLine);
+			}
+		public String response(String s)
+			{
+			return null;
+			}
+		}
+	
+	public HWSerial serial=new VirtualSerialIX();
+	
 	
 	public OlympusIX()
 		{
@@ -44,9 +66,12 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	public synchronized String queryCommand(String cmd)
 		{
 		serial.writePort(cmd+newLine);
-		String s=serial.readUntilTerminal("\n");
-		//s.substring(cmd.length(),s.length()-3-cmd.length()); //which?
-		return "123";
+		String s=serial.readUntilTerminal("\r\n");
+		s=s.substring(cmd.length());
+		s=s.substring(0,s.length()-2);
+		System.out.println("#"+s+"#");
+		return s; //which?
+		//return "123";
 //		return s;
 		}
 	
@@ -57,17 +82,16 @@ public class OlympusIX extends HardwareProvider implements Hardware
 		public DevShutter(int shutterNum)
 			{
 			this.shutterNum=shutterNum;
+			System.out.println("---------------create shutter "+this.shutterNum);
 			}
 		public DevShutter()
 			{
 			this(1);
 			}
-		public String getDescName()
-			{
-			return "IX shutter";
-			}
+		public String getDescName(){return "IX shutter";}
 		public int getCurrentStateHW()
 			{
+			System.out.println("shutternum "+shutterNum);
 			return queryCommand("1SHUT"+shutterNum+"?").equals("IN") ? 1 : 0;
 			//TODO what about intermediate state?
 			}
@@ -81,14 +105,8 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	/** Prism */
 	public class DevPrism extends BasicNativeCachingStateDevice 
 		{
-		public DevPrism()
-			{
-			super(1,2);
-			}
-		public String getDescName()
-			{
-			return "IX prism";
-			}
+		public DevPrism(){super(1,2);}
+		public String getDescName(){return "IX prism";}
 		public int getCurrentStateHW()
 			{
 			return Integer.parseInt(queryCommand("1PRISM?"));
@@ -105,14 +123,8 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	/** Mirror unit */
 	public class DevMirrorUnit extends BasicNativeCachingStateDevice 
 		{
-		public DevMirrorUnit()
-			{
-			super(1,5);
-			}
-		public String getDescName()
-			{
-			return "IX mirror unit";
-			}
+		public DevMirrorUnit(){super(1,5);}
+		public String getDescName(){return "IX mirror unit";}
 		public int getCurrentStateHW()
 			{
 			return Integer.parseInt(queryCommand("1MU?"));
@@ -128,14 +140,8 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	/** Objective */
 	public class DevObjective extends BasicNativeCachingStateDevice 
 		{
-		public DevObjective()
-			{
-			super(1,5);
-			}
-		public String getDescName()
-			{
-			return "IX objective";
-			}
+		public DevObjective(){super(1,5);}
+		public String getDescName(){return "IX objective";}
 		public int getCurrentStateHW()
 			{
 			return Integer.parseInt(queryCommand("1OB?"));
@@ -151,14 +157,8 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	/** Condenser */
 	public class DevCondenser extends BasicNativeCachingStateDevice 
 		{
-		public DevCondenser()
-			{
-			super(1,5);
-			}
-		public String getDescName()
-			{
-			return "IX condenser";
-			}
+		public DevCondenser(){super(1,5);}
+		public String getDescName(){return "IX condenser";}
 		public int getCurrentStateHW()
 			{
 			return Integer.parseInt(queryCommand("1CD?"));
@@ -175,17 +175,11 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	/** Lamp source */
 	public class DevLampSource extends BasicNativeCachingStateDevice 
 		{
-		public DevLampSource()
-			{
-			super(new int[]{0,1},new String[]{"DIA","EPI"});
-			}
-		public String getDescName()
-			{
-			return "IX lamp source";
-			}
+		public DevLampSource(){super(new int[]{0,1},new String[]{"DIA","EPI"});}
+		public String getDescName(){return "IX lamp source";}
 		public int getCurrentStateHW()
 			{
-			return Integer.parseInt(queryCommand("1LMPSEL?"));
+			return queryCommand("1LMPSEL?").equals("DIA")?0:1;
 			//TODO what about intermediate state?
 			}
 		public void setCurrentStateHW(int state)
@@ -203,10 +197,7 @@ public class OlympusIX extends HardwareProvider implements Hardware
 			//TODO no idea about range
 			super(0,10);
 			}
-		public String getDescName()
-			{
-			return "IX lamp source";
-			}
+		public String getDescName(){return "IX lamp source";}
 		public int getCurrentStateHW()
 			{
 			return Integer.parseInt(queryCommand("1LMP?"));

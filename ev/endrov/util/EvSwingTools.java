@@ -29,6 +29,17 @@ public class EvSwingTools
 		}
 
 	/**
+	 * Add a label above a swing component 
+	 */
+	public static JPanel withLabelAbove(String s, JComponent c)
+		{
+		JPanel p=new JPanel(new BorderLayout());
+		p.add(new JLabel(s),BorderLayout.NORTH);
+		p.add(c,BorderLayout.CENTER);
+		return p;
+		}
+
+	/**
 	 * Add a component with two components to the left and right
 	 */
 	public static JComponent borderLR(JComponent left, JComponent center, JComponent right)

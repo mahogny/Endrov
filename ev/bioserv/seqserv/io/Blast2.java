@@ -113,7 +113,7 @@ public class Blast2
 				{
 	//			int hitnum=Integer.parseInt(hite.getChildText("Hit_num"));
 				
-				String hitDef=hite.getChildText("Iteration_query-def");
+				String hitDef=hite.getChildText("Hit_def");
 				
 				for(Element hsp:EvXmlUtil.getChildrenE(hite.getChild("Hit_hsps"),"Hsp"))
 					{
@@ -205,12 +205,13 @@ public class Blast2
 		}
 	
 	
-	public static void invokeTblastnToFile(String database, String seqname, String sequence,File outfile, int mode)
+	public static void invokeTblastnToFile(String database, String seqname, String sequence,File outfile, int mode) throws IOException
 		{
 		//9 nice text
 		//7 xml
 		
-		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m",""+mode,"-o",outfile.getPath());
+		File tempFile=File.createTempFile("blast", "");
+		ProcessBuilder pb=new ProcessBuilder("/usr/bin/blast2","-p","tblastn","-d",database,"-m",""+mode,"-o",tempFile.getPath());
 
 		/*
 		StringBuffer sb=new StringBuffer();
@@ -229,6 +230,9 @@ public class Blast2
 			out.close();
 			
 			p.waitFor();
+			if(outfile.exists())
+				outfile.delete();
+			tempFile.renameTo(outfile);
 			}
 		catch (Exception e)
 			{
