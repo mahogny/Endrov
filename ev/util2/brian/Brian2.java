@@ -1,4 +1,4 @@
-package bioserv.seqserv.test;
+package util2.brian;
 
 
 import java.io.*;
@@ -30,7 +30,7 @@ public class Brian2
 						System.out.println(bfile+"\t=>\t"+outfile);
 						Blast2 b=Blast2.readModeXML(bfile);
 						//Blast2.firstHitMode7(bfile);
-
+						
 						
 						
 						if(!b.entry.isEmpty())

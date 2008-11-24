@@ -1,4 +1,4 @@
-package bioserv.seqserv.test;
+package util2.brian;
 
 import java.io.File;
 import java.io.IOException;

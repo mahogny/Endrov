@@ -4,24 +4,41 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.*;
 
 import javax.swing.*;
 
 import endrov.hardware.PropertyType;
 import endrov.recording.HWSerial;
+import endrov.util.EvSwingTools;
 
 /**
  * Virtual serial device. 
  * @author Johan Henriksson
  *
  */
-public class VirtualSerial implements HWSerial
+public abstract class VirtualSerial implements HWSerial
 	{
-	private String fifoIn="";
-	private Object lock=new Object();
+	/**
+	 * Automatic responses. Meant for overriding classes for testing.
+	 */
+	public Map<String,String> autoresponse=new HashMap<String, String>();
+
+	/**
+	 * Return clever response or null if none. Only used if there is no autoresponse
+	 */
+	public abstract String response(String s);
 	
-	
+	/**
+	 * Incoming queue
+	 */
+	private StringFIFO fifoIn=new StringFIFO();
+
+	/***************************************************
+	 * Line breaks
+	 */
 	private static class LineBreak
 		{
 		String show, real;
@@ -33,7 +50,11 @@ public class VirtualSerial implements HWSerial
 		public String toString(){return show;}
 		}
 		
-	public class VirtualSerialWindow extends JFrame implements ActionListener
+		
+	/***************************************************
+	 * Status window
+	 */
+	public class VirtualSerialWindow extends JFrame implements ActionListener, WindowListener
 		{
 		static final long serialVersionUID=0;
 		
@@ -45,25 +66,25 @@ public class VirtualSerial implements HWSerial
 		private JTextArea tOut=new JTextArea();
 		public JTextArea tIn=new JTextArea();
 		public JTextField tInput=new JTextField();
-		public VirtualSerialWindow()
+		public VirtualSerialWindow(String title)
 			{
 			tOut.setEditable(false);
 			tIn.setEditable(false);
-			tOut.append("Output:\n");
-			tIn.append("Input:\n");
 			tInput.addActionListener(this);
 			
 			JPanel pMid=new JPanel(new GridLayout(2,1));
-			pMid.add(new JScrollPane(tOut,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-			pMid.add(new JScrollPane(tIn,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+			pMid.add(EvSwingTools.withLabelAbove("Output",new JScrollPane(tOut,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)));
+			pMid.add(EvSwingTools.withLabelAbove("Input", new JScrollPane(tIn,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)));
 			
 			setLayout(new BorderLayout());
 			add(pMid,BorderLayout.CENTER);
 			add(cLineBreak,BorderLayout.NORTH);
 			add(tInput,BorderLayout.SOUTH);
 			
+			setTitle("Virtual Serial: "+title);
 			setSize(300, 400);
 			setVisible(true);
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		
 		public void actionPerformed(ActionEvent e)
@@ -72,35 +93,54 @@ public class VirtualSerial implements HWSerial
 			tInput.setText("");
 			tOut.append(s+"\n"); //LF alone does not break line
 			s=s+((LineBreak)cLineBreak.getSelectedItem()).real;
-			System.out.println("here");
+			fifoIn.addFifoIn(s);
 			}
+
+		public void windowActivated(WindowEvent e){}
+		public void windowClosed(WindowEvent e){setWindowGone();}
+		public void windowClosing(WindowEvent e){}
+		public void windowDeactivated(WindowEvent e){}
+		public void windowDeiconified(WindowEvent e){}
+		public void windowIconified(WindowEvent e){}
+		public void windowOpened(WindowEvent e){}
+		}
+
+	/** Current window */
+	private VirtualSerialWindow window=null;
+
+	/** Title of window */
+	private String serialTitle;
+
+	private void setWindowGone()
+		{
+		window=null;
+		}
+
+	/**
+	 * Constructor
+	 */
+	public VirtualSerial(String title)
+		{
+		serialTitle=title;
 		}
 	
-	private VirtualSerialWindow window=null;
-	
-	public VirtualSerialWindow getWindow()
+	public synchronized VirtualSerialWindow getWindow()
 		{
 		if(window==null)
-			window=new VirtualSerialWindow();
+			window=new VirtualSerialWindow(serialTitle);
 		return window;
-		//window.toFront();
 		}
 	
+	
+	/////////////////////////////// Serial hardware functions ////////////////////////////////////
 
 	public String nonblockingRead()
 		{
-		synchronized (lock)
-			{
-			String s=fifoIn;
-			fifoIn="";
-			return s;
-			}
+		return fifoIn.nonblockingRead();
 		}
 	public String readUntilTerminal(String term)
 		{
-		VirtualSerialWindow w=getWindow();
-		return "123\r\n";
-//		return "";//TODO
+		return fifoIn.readUntilTerminal(term);
 		}
 	public void writePort(final String s)
 		{
@@ -109,10 +149,19 @@ public class VirtualSerial implements HWSerial
 			{
 			VirtualSerialWindow w=getWindow();
 			w.tIn.append(s);
+			
+			for(Map.Entry<String, String> me:autoresponse.entrySet())
+				if(me.getKey().equals(s))
+					{
+					w.tOut.append(me.getValue());
+					fifoIn.addFifoIn(me.getValue());
+					}
 			}
 		});
 		}
 	
+	
+	///////////////////////////////// Generic hardware functions ////////////////////////////////////
 	
 	public String getDescName()
 		{
