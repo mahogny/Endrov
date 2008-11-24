@@ -1,5 +1,9 @@
 package endrov.recording.driver;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 
 import javax.swing.*;
@@ -29,7 +33,7 @@ public class VirtualSerial implements HWSerial
 		public String toString(){return show;}
 		}
 		
-	public class VirtualSerialWindow extends JFrame
+	public class VirtualSerialWindow extends JFrame implements ActionListener
 		{
 		static final long serialVersionUID=0;
 		
@@ -39,18 +43,36 @@ public class VirtualSerial implements HWSerial
 				new LineBreak("LF","\n"),
 		});;
 		private JTextArea tOut=new JTextArea();
-		private JTextArea tIn=new JTextArea();
+		public JTextArea tIn=new JTextArea();
+		public JTextField tInput=new JTextField();
 		public VirtualSerialWindow()
 			{
 			tOut.setEditable(false);
 			tIn.setEditable(false);
+			tOut.append("Output:\n");
+			tIn.append("Input:\n");
+			tInput.addActionListener(this);
 			
-			add(cLineBreak);
-			add(tOut);
-			add(tIn);
+			JPanel pMid=new JPanel(new GridLayout(2,1));
+			pMid.add(new JScrollPane(tOut,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+			pMid.add(new JScrollPane(tIn,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 			
-			setSize(300, 100);
+			setLayout(new BorderLayout());
+			add(pMid,BorderLayout.CENTER);
+			add(cLineBreak,BorderLayout.NORTH);
+			add(tInput,BorderLayout.SOUTH);
+			
+			setSize(300, 400);
 			setVisible(true);
+			}
+		
+		public void actionPerformed(ActionEvent e)
+			{
+			String s=tInput.getText();
+			tInput.setText("");
+			tOut.append(s+"\n"); //LF alone does not break line
+			s=s+((LineBreak)cLineBreak.getSelectedItem()).real;
+			System.out.println("here");
 			}
 		}
 	
@@ -76,12 +98,19 @@ public class VirtualSerial implements HWSerial
 		}
 	public String readUntilTerminal(String term)
 		{
+		VirtualSerialWindow w=getWindow();
 		return "123\r\n";
 //		return "";//TODO
 		}
-	public void writePort(String s)
+	public void writePort(final String s)
 		{
-		
+		SwingUtilities.invokeLater(new Runnable(){
+		public void run()
+			{
+			VirtualSerialWindow w=getWindow();
+			w.tIn.append(s);
+			}
+		});
 		}
 	
 	

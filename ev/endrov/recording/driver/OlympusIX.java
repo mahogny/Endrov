@@ -53,7 +53,7 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	/** Shutter */
 	public class DevShutter extends BasicNativeCachingStateDevice implements HWShutter
 		{
-		int shutterNum;
+		final int shutterNum;
 		public DevShutter(int shutterNum)
 			{
 			this.shutterNum=shutterNum;
