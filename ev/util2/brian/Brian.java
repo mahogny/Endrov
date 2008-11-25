@@ -2,48 +2,61 @@ package util2.brian;
 
 
 import java.io.*;
+import java.sql.*;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import bioserv.seqserv.io.*;
 
-//Naos blast in c.e: 3.6 sec
-//2h for entire genome
-
-
+/**
+ * Forward blasting
+ */
 public class Brian
 	{
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args)
 		{
+		System.out.println(BrianSQL.connectPostgres("//193.11.32.108/brian", "postgres", "wuermli"));
+		
 		try
 			{
-			//new GFF(new File("/home/tbudev3/bioinfo/incdata/celegans/gff2"));
-//			Fasta cegenes=new Fasta(new File("/home/tbudev3/bioinfo/incdata/celegans/mart_gene100_0.faa"));
 			Fasta cegenes=new Fasta(new File("/home/tbudev3/bioinfo/incdata/celegans/protein.faa"));
 			System.out.println("read genes");
 			
 			System.out.println("# of C.e genes: "+cegenes.seq.size());
 			
 			for(String otherOrg:new String[]{"ppatens","creinhardtii"})
+				{
+				//Which genes are left to do?
+				TreeSet<String> geneNotTODO=new TreeSet<String>(cegenes.seq.keySet());
+				ResultSet rs=BrianSQL.runQuery("select cegene,organism from blastfromce where organism='"+otherOrg+"'");
+				while(rs.next())
+					geneNotTODO.add(rs.getString(1));
+				System.out.println("Genes not todo: "+geneNotTODO.size());
+				
+				//Blast every gene
 				for(String key:cegenes.seq.keySet())
 					{
-					String ceseq=cegenes.seq.get(key);
-					
 					StringTokenizer ntok=new StringTokenizer(key);
 					ntok.nextToken(); //something
 					ntok.nextToken(); //something
-					String shortName=ntok.nextToken(); //WBname
-					
-					File out=new File(new File("/home/tbudev3/bioinfo/brian/blast",otherOrg),shortName);
-					if(!out.exists())
+					String wbGene=ntok.nextToken(); //WBname
+
+					if(!geneNotTODO.contains(wbGene))
 						{
-						System.out.println(out);
-						Blast2.invokeTblastnToFile(otherOrg, shortName,ceseq,out,Blast2.MODE_XML);
+						String ceseq=cegenes.seq.get(key);
+
+						File out=File.createTempFile("foo", "");
+						//					File out=new File(new File("/home/tbudev3/bioinfo/brian/blast",otherOrg),shortName);
+						System.out.println(wbGene);
+						Blast2.invokeTblastnToFile(otherOrg, wbGene,ceseq,out,Blast2.MODE_XML);
+						BrianSQL.insertBlastResult("blastfromce", otherOrg, wbGene, out);
+						out.delete();
 						}
+					else
+						System.out.println("Skipping "+wbGene);
+
 					}
+				}
 			
 			//For all genes in c.e
 			//  blast in X
@@ -59,7 +72,7 @@ public class Brian
 			
 			
 			}
-		catch (IOException e)
+		catch (Exception e)
 			{
 			e.printStackTrace();
 			}
