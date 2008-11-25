@@ -2,56 +2,58 @@ package util2.brian;
 
 
 import java.io.*;
+import java.sql.ResultSet;
+import java.util.TreeSet;
 
 import bioserv.seqserv.io.*;
 
-
+/**
+ * Do reverse blasting
+ */
 public class Brian2
 	{
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args)
 		{
 		try
 			{
+			System.out.println(BrianSQL.connectPostgres("//193.11.32.108/brian", "postgres", "wuermli"));
+			
 			for(String otherOrg:new String[]{"ppatens","creinhardtii"})
 				{
-				File outdir=new File("/home/tbudev3/bioinfo/brian/blast",otherOrg+".reverse");
-
-				for(File bfile:new File("/home/tbudev3/bioinfo/brian/blast",otherOrg).listFiles())
+				ResultSet rs=
+				BrianSQL.runQuery(
+						"select cegene from (" +
+						"select cegene,organism from blastfromce where organism='"+otherOrg+"' " +
+						"and blastout is not null and (cegene,organism) not in (select cegene,organism from reverseblast)" +
+						") as foo1");
+				TreeSet<String> geneTODO=new TreeSet<String>();
+				while(rs.next())
+					geneTODO.add(rs.getString(1));
+				System.out.println("TODO: "+geneTODO.size());
+				
+				for(String wbGene:geneTODO)
 					{
-					File outfile=new File(outdir,bfile.getName());
-					//Problem: sometimes target is not created because there was no source.
-					//messy to re-run
-					if(!outfile.exists())
-						{
-						System.out.println(bfile+"\t=>\t"+outfile);
-						Blast2 b=Blast2.readModeXML(bfile);
-						//Blast2.firstHitMode7(bfile);
-						
-						
-						
-						if(!b.entry.isEmpty())
-							{						
-							Blast2.Entry e=b.entry.iterator().next();
-							String found=e.hseq;
-
-							//found=found.replaceAll("-", "");
-							found=found.replaceAll("\\p{Punct}", "");
-							System.out.println(found);
-
-							Blast2.invokeTblastnToFile("celegans", "",found,outfile,Blast2.MODE_XML);
-
-
-							}
-						}
-					}
-
-
+					System.out.println(wbGene);
+					String finContent=BrianSQL.getBlastResult("blastfromce", otherOrg, wbGene);
+					Blast2 b=Blast2.readModeXML(new StringReader(finContent));
 					
+					if(!b.entry.isEmpty())
+						{	
+						Blast2.Entry e=b.entry.iterator().next();
+						String found=e.hseq;
+					
+						found=found.replaceAll("\\p{Punct}", "");
+						System.out.println("Found: "+found);
+
+						File outfile=File.createTempFile("foo", "");
+						Blast2.invokeTblastnToFile("celegans", "",found,outfile,Blast2.MODE_XML);
+						BrianSQL.insertBlastResult("reverseblast", otherOrg, wbGene, outfile);
+						outfile.delete();
+						}
+					else
+						BrianSQL.insertBlastResult("reverseblast", otherOrg, wbGene, "");
 					}
+				}
 			}
 		catch (Exception e)
 			{

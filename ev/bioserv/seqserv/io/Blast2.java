@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -95,7 +96,7 @@ public class Blast2
 		{
 		return Blast2.readModeXML(new BufferedReader( new FileReader(infile) ));
 		}
-	public static Blast2 readModeXML(BufferedReader input) throws Exception
+	public static Blast2 readModeXML(Reader input) throws Exception
 		{
 		Blast2 b=new Blast2();
 		
