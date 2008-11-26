@@ -1,13 +1,13 @@
 package endrov.imagesetBioformats;
 
-import endrov.imageset.*;
+//import endrov.imageset.*;
 
-import java.awt.image.*;
+//import java.awt.image.*;
 
 public class TestLSM
 	{
 	public static void main(String[] arg)
-		{
+		{/*
 		try
 			{
 			Imageset rec=new BioformatsImageset("/home/mahogny/_imagedata/2chZT.lsm");
@@ -27,7 +27,7 @@ public class TestLSM
 			{
 			e.printStackTrace();
 			}
-		
+		*/
 		
 		
 		

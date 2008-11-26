@@ -12,6 +12,7 @@ import javax.swing.*;
 import endrov.basicWindow.*;
 import endrov.lineageWindow.print.Print2DtoPostScript;
 import endrov.nuc.*;
+import endrov.util.EvDecimal;
 
 //TODO: kill internal which are not in use, especially roots
 //can use weak references! make a WeakTreeMap and stop using strings?
@@ -97,7 +98,8 @@ public class LineageView extends JPanel
 
 	public static class KeyFramePos
 		{
-		public int x, y, frame;
+		public int x, y;
+		public EvDecimal frame;
 		public String nuc;
 		}
 	
@@ -106,7 +108,7 @@ public class LineageView extends JPanel
 	/**
 	 * Draw key frame icon
 	 */
-	private void drawKeyFrame(Graphics g, int x, int y, String nuc, int frame)
+	private void drawKeyFrame(Graphics g, int x, int y, String nuc, EvDecimal frame)
 		{
 		g.drawOval(x-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
 		KeyFramePos f=new KeyFramePos();
@@ -163,12 +165,12 @@ public class LineageView extends JPanel
 			return showHorizontalTree ? getHeight() : getWidth();
 			}
 		/** Get frame from screen x,y coordinate */
-		public int getFrameFromCursor(int x, int y)
+		public EvDecimal getFrameFromCursor(int x, int y)
 			{
-			return showHorizontalTree ? c2f(x) : c2f(y);
+			return new EvDecimal(showHorizontalTree ? c2f(x) : c2f(y));
 			}
 		/** Convert frame position to coordinate */
-		public int f2c(int f)
+		public int f2c(double f)
 			{
 			return (int)(f*frameDist-camVX);
 			}	
@@ -211,13 +213,13 @@ public class LineageView extends JPanel
 	public void goRoot()
 		{	
 		Camera cam=camera;
-		Integer allMinFrame=null;
+		EvDecimal allMinFrame=null;
 		Set<String> roots=getRootNuc();
 		String rootName=null;
 		for(String nucName:roots)
 			{
 			NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
-			if((allMinFrame==null || nuc.pos.firstKey()<allMinFrame) && !nuc.pos.isEmpty())
+			if((allMinFrame==null || nuc.pos.firstKey().less(allMinFrame)) && !nuc.pos.isEmpty())
 				{
 				allMinFrame=nuc.pos.firstKey();
 				rootName=nucName;
@@ -523,19 +525,19 @@ public class LineageView extends JPanel
 //						colorIndex=(colorIndex+1)%colorList.length;
 
 						//Only draw if potentially visible
-						int minframe=e.getValue().level.firstKey();
-						int maxframe=e.getValue().level.lastKey();
-						boolean visible=(midr>=0 && cam.f2c(maxframe)>=0 && cam.f2c(minframe)<cam.getVirtualWidth() &&
+						EvDecimal minframe=e.getValue().level.firstKey();
+						EvDecimal maxframe=e.getValue().level.lastKey();
+						boolean visible=(midr>=0 && cam.f2c(maxframe.doubleValue())>=0 && cam.f2c(minframe.doubleValue())<cam.getVirtualWidth() &&
 								midr-e.getValue().getMaxLevel()*expScale<cam.getVirtualHeight()) || !toScreen;
 						if(visible)
 							{
 							g.setColor(e.getValue().expColor);
 							boolean hasLastCoord=false;
 							int lastX=0, lastY=0;
-							for(Map.Entry<Integer, Double> ve:e.getValue().level.entrySet())
+							for(Map.Entry<EvDecimal, Double> ve:e.getValue().level.entrySet())
 								{
 								int y=(int)(-ve.getValue()*expScale+midr);
-								int x=cam.f2c(ve.getKey());
+								int x=cam.f2c(ve.getKey().doubleValue());
 								if(hasLastCoord)
 									{
 									if(showExpLine)
@@ -601,10 +603,10 @@ public class LineageView extends JPanel
 			}
 		else
 			{
-			int firstFrame=nuc.pos.firstKey();
-			int lastFrame=nuc.lastFrame();
-			startc=cam.f2c(firstFrame);
-			endc=cam.f2c(lastFrame);
+			EvDecimal firstFrame=nuc.pos.firstKey();
+			EvDecimal lastFrame=nuc.lastFrame();
+			startc=cam.f2c(firstFrame.doubleValue());
+			endc=cam.f2c(lastFrame.doubleValue());
 			}
 		
 		//Draw expression
@@ -624,7 +626,7 @@ public class LineageView extends JPanel
 			g.drawLine(startc, midr, endc, midr);
 			}
 		if(nuc.overrideEnd!=null && nuc.child.size()==0)
-			drawNucEnd(g, cam.f2c(nuc.overrideEnd), midr);
+			drawNucEnd(g, cam.f2c(nuc.overrideEnd.doubleValue()), midr);
 		internal.setLastVXstart(cam,startc);
 		internal.setLastVXend(cam,endc);
 		internal.setLastVY(cam,midr);
@@ -638,12 +640,12 @@ public class LineageView extends JPanel
 			g.setColor(Color.RED);
 			//Test for complete visibility first, makes clipping cheap
 			if((startc>=-keyFrameSize && endc<virtualWidth+keyFrameSize) || !toScreen)
-				for(int frame:nuc.pos.keySet())
-					drawKeyFrame(g,cam.f2c(frame), midr, nucName, frame);
+				for(EvDecimal frame:nuc.pos.keySet())
+					drawKeyFrame(g,cam.f2c(frame.doubleValue()), midr, nucName, frame);
 			else
-				for(int frame:nuc.pos.keySet())
+				for(EvDecimal frame:nuc.pos.keySet())
 					{
-					int x=cam.f2c(frame); //This might be slower than just drawing though
+					int x=cam.f2c(frame.doubleValue()); //This might be slower than just drawing though
 					if(x>-keyFrameSize && x<virtualWidth+keyFrameSize)
 						drawKeyFrame(g,x, midr, nucName, frame);
 					}
@@ -660,7 +662,7 @@ public class LineageView extends JPanel
 					//Draw connecting line
 					g.setColor(Color.BLACK);
 					if(!c.pos.isEmpty())
-						g.drawLine(endc,midr,cam.f2c(c.pos.firstKey()),midr+cInternal.centerDisplacement);
+						g.drawLine(endc,midr,cam.f2c(c.pos.firstKey().doubleValue()),midr+cInternal.centerDisplacement);
 					else
 						g.drawLine(endc,midr,endc+childNoPosBranchLength,midr+cInternal.centerDisplacement);
 					//Recurse down

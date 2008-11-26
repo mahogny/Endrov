@@ -15,6 +15,7 @@ import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.imageWindow.*;
+import endrov.util.EvDecimal;
 
 /**
  * Create and edit lines.
@@ -144,7 +145,7 @@ public class ToolMakeLine implements ImageWindowTool
 	
 	private Hover getHoverAnnot(MouseEvent e)
 		{
-		int curFrame=(int)w.frameControl.getFrame();
+		EvDecimal curFrame=w.frameControl.getFrame();
 		Collection<EvLine> ann=getAnnots();
 		EvLine closest=null;
 		int closesti=0;
@@ -156,7 +157,7 @@ public class ToolMakeLine implements ImageWindowTool
 				double dx=a.pos.get(i).x-v.x;
 				double dy=a.pos.get(i).y-v.y;
 				double dist=dx*dx + dy*dy;
-				if((cdist>dist || closest==null) && curFrame==a.pos.get(i).w)
+				if((cdist>dist || closest==null) && curFrame.doubleValue()==a.pos.get(i).w) //TODO bd bad compare
 					{
 					cdist=dist;
 					closest=a;
@@ -190,8 +191,9 @@ public class ToolMakeLine implements ImageWindowTool
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
 			pos.x=v.x;
 			pos.y=v.y;
-			pos.z=w.s2wz(w.frameControl.getZ());
-			pos.w=(int)w.frameControl.getFrame();
+			pos.z=w.frameControl.getModelZ().doubleValue();
+//			w.s2wz(w.frameControl.getZ()).doubleValue();
+			pos.w=w.frameControl.getFrame().doubleValue();
 			
 			line.pos.add(pos);
 			line.pos.add(new Vector4d(pos));
@@ -240,11 +242,12 @@ public class ToolMakeLine implements ImageWindowTool
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
 			activeAnnot.ob.pos.get(activeAnnot.i).x=v.x;
 			activeAnnot.ob.pos.get(activeAnnot.i).y=v.y;
-			activeAnnot.ob.pos.get(activeAnnot.i).z=w.s2wz(w.frameControl.getZ()); 
+			activeAnnot.ob.pos.get(activeAnnot.i).z=w.frameControl.getModelZ().doubleValue();
+			//w.s2wz(w.frameControl.getZ()).doubleValue(); 
 	
-			int curFrame=(int)w.frameControl.getFrame();
+			EvDecimal curFrame=w.frameControl.getFrame();
 			for(Vector4d a:activeAnnot.ob.pos)
-				a.w=curFrame;
+				a.w=curFrame.doubleValue();
 			
 			if(!activeAnnot.isAdded)
 				{
@@ -346,7 +349,7 @@ public class ToolMakeLine implements ImageWindowTool
 	public void mouseExited(MouseEvent e)
 		{
 		//hack: confirm that it really is outside
-//		if(e.getX()<0 ||Êe.getY()<0 || e.getX()>=w.
+//		if(e.getX()<0 || e.getY()<0 || e.getX()>=w.
 		if(activeAnnot!=null)
 			{
 			EvData data=w.getImageset();

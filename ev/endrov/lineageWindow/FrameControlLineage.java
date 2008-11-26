@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import endrov.basicWindow.*;
+import endrov.util.EvDecimal;
 
 
 
@@ -25,8 +26,8 @@ public class FrameControlLineage extends JPanel implements FrameControl.Synch
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
 	private JSpinner spinnerGroup=new JSpinner(groupModel);
 	
-	private double frame;
-	private Double z=null;
+	private EvDecimal frame;
+	private EvDecimal z=null;
 	
 
 	/**
@@ -54,7 +55,7 @@ public class FrameControlLineage extends JPanel implements FrameControl.Synch
 	/**
 	 * Get settings from another synchronized control
 	 */
-	public void replicate(double frame, Double z)
+	public void replicate(EvDecimal frame, EvDecimal z)
 		{
 		this.frame=frame;
 		listener.stateChanged(new ChangeEvent(this));
@@ -75,13 +76,13 @@ public class FrameControlLineage extends JPanel implements FrameControl.Synch
 		}
 	
 	/** Get current frame */
-	public double getFrame()
+	public EvDecimal getFrame()
 		{
 		return frame;
 		}
 
 	/** Set current frame */
-	public void setFrame(double frame)
+	public void setFrame(EvDecimal frame)
 		{
 		this.frame=frame;
 		listener.stateChanged(new ChangeEvent(this));
@@ -89,13 +90,13 @@ public class FrameControlLineage extends JPanel implements FrameControl.Synch
 		}
 	
 	/** Current slice/Z */
-	public Double getModelZ()
+	public EvDecimal getModelZ()
 		{
 		return z;
 		}
 	
 	/** Set current z */
-	public void setFrameZ(double frame, double z)
+	public void setFrameZ(EvDecimal frame, EvDecimal z)
 		{
 		this.frame=frame;
 		this.z=z;

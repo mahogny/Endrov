@@ -6,6 +6,7 @@ import javax.vecmath.Vector3d;
 
 import endrov.nuc.*;
 import endrov.nuc.NucLineage.NucPos;
+import endrov.util.EvDecimal;
 
 
 
@@ -14,7 +15,7 @@ public class NucStats
 
 	public TreeMap<String, NucStatsOne> nuc=new TreeMap<String,NucStatsOne>();
 	
-	public List<Integer> ABPdiff=new LinkedList<Integer>();
+	public List<EvDecimal> ABPdiff=new LinkedList<EvDecimal>();
 
 	
 	/**
@@ -72,20 +73,20 @@ public class NucStats
 	public class NucStatsOne
 		{
 		//Stats
-		public List<Integer> lifetime=new LinkedList<Integer>();
-		public SortedMap<Integer, Map<String,StatDouble>> distance=new TreeMap<Integer, Map<String,StatDouble>>(); //frame rel start, nuc, length
-		public SortedMap<Integer, StatDouble> radius=new TreeMap<Integer, StatDouble>();
+		public List<EvDecimal> lifetime=new LinkedList<EvDecimal>();
+		public SortedMap<EvDecimal, Map<String,StatDouble>> distance=new TreeMap<EvDecimal, Map<String,StatDouble>>(); //frame rel start, nuc, length
+		public SortedMap<EvDecimal, StatDouble> radius=new TreeMap<EvDecimal, StatDouble>();
 		
-		public SortedMap<Integer, List<Vector3d>> collectedPos=new TreeMap<Integer, List<Vector3d>>();
+		public SortedMap<EvDecimal, List<Vector3d>> collectedPos=new TreeMap<EvDecimal, List<Vector3d>>();
 
 		//
 		public double raverror;
 		
 		//Derived
-		public int lifeStart;
-		public int lifeEnd;
+		public EvDecimal lifeStart;
+		public EvDecimal lifeEnd;
 		public String parent;
-		public Map<Integer, List<NucLineage.NucPos>> derivedPos=new TreeMap<Integer, List<NucLineage.NucPos>>();
+		public Map<EvDecimal, List<NucLineage.NucPos>> derivedPos=new TreeMap<EvDecimal, List<NucLineage.NucPos>>();
 		
 		//Used in BestFitLength
 		public Vector3d curpos=null;
@@ -93,18 +94,18 @@ public class NucStats
 		public TreeSet<Neigh> neigh=new TreeSet<Neigh>();
 		public StatDouble[] curposAvg=new StatDouble[]{new StatDouble(),new StatDouble(),new StatDouble()};
 		
-		public boolean existAt(int frame)
+		public boolean existAt(EvDecimal frame)
 			{
-			return lifeStart<=frame && frame<lifeEnd;
+			return lifeStart.lessEqual(frame) && frame.less(lifeEnd);
 			}
 		
 		
 		/**
 		 * Decide on average distances, weights and which neighbours to consider
 		 */
-		public void findNeigh(int frame)
+		public void findNeigh(EvDecimal frame)
 			{
-			Map<String,StatDouble> thisdistances=distance.get(frame-lifeStart);
+			Map<String,StatDouble> thisdistances=distance.get(frame.subtract(lifeStart));
 			neigh.clear();
 			if(thisdistances==null)
 				System.out.println("<<<<no distances!!!>>>>");
@@ -148,14 +149,14 @@ public class NucStats
 		
 		
 		
-		public void addRadius(int frame, double rs)
+		public void addRadius(EvDecimal frame, double rs)
 			{
 			StatDouble rl=radius.get(frame);
 			if(rl==null)
 				radius.put(frame, rl=new StatDouble());
 			rl.count(rs);
 			}
-		public void addCollPos(int frame, Vector3d pos)
+		public void addCollPos(EvDecimal frame, Vector3d pos)
 			{
 			List<Vector3d> rl=collectedPos.get(frame);
 			if(rl==null)
@@ -163,7 +164,7 @@ public class NucStats
 			rl.add(pos);
 			}
 		
-		public void addDistance(int frame, String nuc, double dist)
+		public void addDistance(EvDecimal frame, String nuc, double dist)
 			{
 			Map<String,StatDouble> rl=distance.get(frame);
 			if(rl==null)
@@ -175,25 +176,25 @@ public class NucStats
 			foo.count(dist);
 			}
 		
-		public int getLifeLen()
+		public EvDecimal getLifeLen()
 			{
-			return lifeEnd-lifeStart;
+			return lifeEnd.subtract(lifeStart);
 			}
 		
-		public int toGlobalFrame(int frame)
+		public EvDecimal toGlobalFrame(EvDecimal frame)
 			{
-			return frame+lifeStart;
+			return frame.add(lifeStart);
 			}
-		public int toLocalFrame(int frame)
+		public EvDecimal toLocalFrame(EvDecimal frame)
 			{
-			return frame-lifeStart;
+			return frame.subtract(lifeStart);
 			}
 		
 		
-		public double interpolTime(int start, int end, int frame)
+		public EvDecimal interpolTime(EvDecimal start, EvDecimal end, EvDecimal frame)
 			{
 //			System.out.println(" "+getLifeLen()+" "+start+" "+end+" "+(start+frame*(end-start)/(double)getLifeLen()));
-			return start+frame*(end-start)/(double)getLifeLen();
+			return start.add(frame.multiply(end.subtract(start).divide(getLifeLen())));
 			}
 		
 		}
@@ -224,40 +225,40 @@ public class NucStats
 		{
 		if(n.parent==null)
 //			n.lifeStart=0;
-			n.lifeStart=1000;
+			n.lifeStart=new EvDecimal(1000);
 		else
 			n.lifeStart=/*nuc.get(n.parent).lifeStart+*/nuc.get(n.parent).lifeEnd;
 		
 		//Set life length arbitrarily if unknown
 		//Later: Better to set average of all if none exist
-		int len=0;
+		EvDecimal len=EvDecimal.ZERO;
 		if(n.lifetime.isEmpty())
 			{
 //			len=10;
-			len=30; //or longer? inf=will not move anymore
+			len=new EvDecimal(30); //or longer? inf=will not move anymore
 			System.out.println("Does not know life length for "+nucname);
 			}
 		else
 			{
-			for(int l:n.lifetime)
-				len+=l;
-			len/=n.lifetime.size();
+			for(EvDecimal l:n.lifetime)
+				len=len.add(l);
+			len=len.divide(n.lifetime.size());
 			}
 
 //		if(nucname.equals("AB") || nucname.equals("P1'"))
 //			n.lifeStart=1000;
 		
-		n.lifeEnd=n.lifeStart+len;
+		n.lifeEnd=n.lifeStart.add(len);
 		
 		if(nucname.equals("P1'"))
 			{
-			double diff=0;
-			for(int d:ABPdiff)
-				diff+=d;
-			diff/=ABPdiff.size();
+			EvDecimal diff=EvDecimal.ZERO;
+			for(EvDecimal d:ABPdiff)
+				diff=diff.add(d);
+			diff=diff.divide(ABPdiff.size());
 			System.out.println("AB - P1' diff: "+diff);
-			n.lifeEnd-=diff;
-			n.lifeStart-=diff;
+			n.lifeEnd=n.lifeEnd.subtract(diff);
+			n.lifeStart=n.lifeStart.subtract(diff);
 			}
 		
 		System.out.println("lifetime "+nucname+" "+len+ " from "+n.lifeStart+" "+n.lifeEnd);
@@ -281,7 +282,7 @@ public class NucStats
 		}
 	
 	
-	public Map<String, NucStatsOne> getAtFrame(int frame)
+	public Map<String, NucStatsOne> getAtFrame(EvDecimal frame)
 		{
 		Map<String, NucStatsOne> m=new TreeMap<String, NucStatsOne>();
 		for(Entry<String, NucStatsOne> e:nuc.entrySet())
@@ -290,20 +291,20 @@ public class NucStats
 		return m;
 		}
 	
-	public int maxFrame()
+	public EvDecimal maxFrame()
 		{
-		int f=0;
+		EvDecimal f=EvDecimal.ZERO;
 		for(Entry<String, NucStatsOne> e:nuc.entrySet())
-			if(e.getValue().lifeEnd>f)
+			if(e.getValue().lifeEnd.greater(f))
 				f=e.getValue().lifeEnd;
 		return f;
 		}
 	
-	public int minFrame()
+	public EvDecimal minFrame()
 		{
-		Integer f=null;
+		EvDecimal f=null;
 		for(Entry<String, NucStatsOne> e:nuc.entrySet())
-			if(f==null || e.getValue().lifeStart<f)
+			if(f==null || e.getValue().lifeStart.less(f))
 				f=e.getValue().lifeStart;
 		return f;
 		}
@@ -329,7 +330,7 @@ public class NucStats
 	/**
 	 * Initalize coordinates before running iteration for one frame
 	 */
-	public void prepareCoord(NucLineage lin, int frame)
+	public void prepareCoord(NucLineage lin, EvDecimal frame)
 		{
 		//Inititalize coords
 		//Children get coords from parents with some perturbation
@@ -353,7 +354,7 @@ public class NucStats
 	/**
 	 * Put coords into XML data
 	 */
-	public void writeCoord(NucLineage lin, int frame)
+	public void writeCoord(NucLineage lin, EvDecimal frame)
 		{
 		
 		//TODO: save even when there is no neighbour?
@@ -398,12 +399,12 @@ public class NucStats
 					
 					//Life time
 					StatDouble divstat=new StatDouble();
-					for(Integer i:one.lifetime)
-						divstat.count(i);
+					for(EvDecimal i:one.lifetime)
+						divstat.count(i.doubleValue());
 					if(divstat.count>1)
 						{
 						NucExp expVarDiv=nuc.getExpCreate("divDev");
-						expVarDiv.level.put(0, Math.sqrt(divstat.getVar())/Math.sqrt(divstat.count));
+						expVarDiv.level.put(EvDecimal.ZERO, Math.sqrt(divstat.getVar())/Math.sqrt(divstat.count));
 						}
 					}
 				}

@@ -8,6 +8,7 @@ import java.util.*;
 
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.util.EvDecimal;
 
 
 
@@ -31,15 +32,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/** Component to tell that frame has changed */
 	private ChangeListener listener;
 	
-	/*
-	private static ImageIcon iconFramePrev=new ImageIcon(FrameControlImage.class.getResource("buttonFramePrev.png"));
-	private static ImageIcon iconFrameNext=new ImageIcon(FrameControlImage.class.getResource("buttonFrameNext.png"));
-	private static ImageIcon iconFrameFirst=new ImageIcon(FrameControlImage.class.getResource("buttonFrameFirst.png"));
-	private static ImageIcon iconFrameLast=new ImageIcon(FrameControlImage.class.getResource("buttonFrameLast.png"));
-	private static ImageIcon iconPlayBackward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayBackward.png"));
-	private static ImageIcon iconPlayForward=new ImageIcon(FrameControlImage.class.getResource("buttonPlayForward.png"));
-	private static ImageIcon iconPlayStop=new ImageIcon(FrameControlImage.class.getResource("buttonPlayStop.png"));
-	*/
+
 	
 	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
 	private JButton buttonStepForward=new JButton(BasicIcon.iconFrameNext);
@@ -58,10 +51,10 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	 */
 	private static class Speed
 		{
-		double speed;
+		EvDecimal speed;
 		public Speed(double speed)
 			{
-			this.speed=speed;
+			this.speed=new EvDecimal(speed);
 			}
 		public String toString()
 			{
@@ -158,13 +151,13 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	public void actionPerformed(ActionEvent e)
 		{
 		if(e.getSource()==buttonBeginning)
-			setFrame(0);
+			setFrame(new EvDecimal(0)); //TODO bd
 		else if(e.getSource()==buttonEnd)
-			setFrame(3000);
+			setFrame(new EvDecimal(3000)); //TODO bd
 		else if(e.getSource()==buttonStepForward)
-			stepForward(1);
+			stepForward(new EvDecimal(1)); //TODO hm. FPS?
 		else if(e.getSource()==buttonStepBack)
-			stepBack(1);
+			stepBack(new EvDecimal(1));
 		else if(e.getSource()==buttonPlayForward)
 			stopStart(true);
 		else if(e.getSource()==buttonPlayBack)
@@ -172,14 +165,14 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		else if(e.getSource()==timer)
 			{
 			if(playingForward)
-				setFrame(getFrame()+currentSpeed());
+				setFrame(getFrame().add(currentSpeed()));
 			else
-				setFrame(getFrame()-currentSpeed());
+				setFrame(getFrame().add(currentSpeed()));
 			}
 		
 		}
 	
-	private double currentSpeed()
+	private EvDecimal currentSpeed()
 		{
 		return ((Speed)speedCombo.getSelectedItem()).speed;
 		}
@@ -211,16 +204,16 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/**
 	 * Move to next existing frame
 	 */
-	public void stepForward(double s)
+	public void stepForward(EvDecimal s)
 		{
-		setFrame(getFrame()+s);
+		setFrame(getFrame().add(s));
 		}
 	/**
 	 * Move to last existing frame
 	 */
-	public void stepBack(double s)
+	public void stepBack(EvDecimal s)
 		{
-		setFrame(getFrame()-s);
+		setFrame(getFrame().subtract(s));
 		}
 	
 	
@@ -240,10 +233,10 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/**
 	 * Get settings from another synchronized control
 	 */
-	public void replicate(double frame, Double z)
+	public void replicate(EvDecimal frame, EvDecimal z)
 		{
 		removeChangeListener();
-		spinnerFrame.setValue((double)frame);
+		spinnerFrame.setValue(frame.doubleValue());
 		listener.stateChanged(new ChangeEvent(this));
 		addChangeListener();
 		}
@@ -263,21 +256,21 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		}
 	
 	/** Get current frame */
-	public double getFrame()
+	public EvDecimal getFrame()
 		{
-		return (Double)spinnerFrame.getValue();
+		return new EvDecimal((Double)spinnerFrame.getValue());
 		}
 
 	/** Set current frame */
-	public void setFrame(double frame)
+	public void setFrame(EvDecimal frame)
 		{
-		spinnerFrame.setValue((double)frame);
+		spinnerFrame.setValue(frame.doubleValue());
 		listener.stateChanged(new ChangeEvent(this));
 		FrameControl.replicateSettings(this);
 		}
 	
 	/** Current slice/Z */
-	public Double getModelZ()
+	public EvDecimal getModelZ()
 		{
 		return null;
 		}

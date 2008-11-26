@@ -1,6 +1,8 @@
 package endrov.recording.recmetManual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -60,20 +62,36 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		public Hook()
 			{
 			List<JComponent> hw=new Vector<JComponent>();
-			
+			//boolean isEven=true;
 			
 			
 			
 			for(Map.Entry<HardwarePath, Hardware> entry:HardwareManager.getHardwareMap().entrySet())
 				{
+				//isEven=!isEven;
+				JComponent c=null;
+				
 				if(entry.getValue() instanceof HWCamera)
-					hw.add(new CameraPanel(entry.getKey(),(HWCamera)entry.getValue()));
+					c=new CameraPanel(entry.getKey(),(HWCamera)entry.getValue());
 				else if(entry.getValue() instanceof HWShutter)
-					hw.add(new ShutterPanel(entry.getKey(),(HWShutter)entry.getValue()));
+					c=new ShutterPanel(entry.getKey(),(HWShutter)entry.getValue());
 				else if(entry.getValue() instanceof HWState)
-					hw.add(new StateDevicePanel(entry.getKey(),(HWState)entry.getValue()));
+					c=new StateDevicePanel(entry.getKey(),(HWState)entry.getValue());
 				else if(entry.getValue() instanceof HWStage)
-					hw.add(new StagePanel(entry.getKey(),(HWStage)entry.getValue()));
+					c=new StagePanel(entry.getKey(),(HWStage)entry.getValue());
+				if(c!=null)
+					{
+					hw.add(c);
+					/*
+					if(isEven)
+						{
+						Color col=c.getBackground();
+						c.setBackground(new Color(col.getRed()*97/100,col.getGreen()*97/100,col.getBlue()*97/100));
+						c.setOpaque(true);
+						}
+						*/
+					}
+				
 //				else
 //					System.out.println("manual extension ignoring "+entry.getValue().getDescName()+" "+entry.getValue().getClass());
 				}
@@ -109,13 +127,14 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			public ShutterPanel(HardwarePath devName, HWShutter hw)
 				{
 				JLabel lTitle=new JLabel(devName.toString());
-				lTitle.setToolTipText(hw.getDescName());
+				lTitle.setToolTipText(hw.getDescName()+" ");
 				
 				setOpen(b.isSelected());
 				b.addActionListener(this);
 				
 				setLayout(new BorderLayout());
-				add(lTitle,BorderLayout.CENTER);
+				add(lTitle,BorderLayout.WEST);
+				add(new DotPanel(),BorderLayout.CENTER);
 				add(b,BorderLayout.EAST);
 				}
 			public void actionPerformed(ActionEvent e)
@@ -162,14 +181,14 @@ public class ManualExtension implements MicroscopeWindow.Extension
 					e.printStackTrace();
 					}
 				
-				JLabel lTitle=new JLabel(devName.toString());
+				JLabel lTitle=new JLabel(devName.toString()+" ");
 				lTitle.setToolTipText(hw.getDescName());
 				
 				state.addActionListener(this);
 				
 				setLayout(new BorderLayout());
-				add(lTitle,BorderLayout.CENTER);
-				add(state,BorderLayout.EAST);
+				add(lTitle,BorderLayout.WEST);
+				add(state,BorderLayout.CENTER);
 				}
 			public void actionPerformed(ActionEvent e)
 				{
@@ -227,7 +246,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 						//Override: Exposure, Gain
 						}
 					if(comp!=null)
-						comps.add(EvSwingTools.withLabel(entry.getKey(), comp));
+						comps.add(EvSwingTools.withLabel(entry.getKey()+" ", comp));
 					//System.out.println(entry.getKey()+" "+pt.isBoolean+" "+pt.foo);
 					}
 				setLayout(new GridLayout(comps.size(),1));
@@ -239,6 +258,26 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				}
 			}
 
+		/******************************************************************************************************
+		 *                               Dot panel                                                            *
+		 *****************************************************************************************************/
+		public static class DotPanel extends JPanel
+			{
+			static final long serialVersionUID=0;
+
+			protected void paintComponent(Graphics g)
+				{
+				super.paintComponent(g);
+				int w=getWidth();
+				int h=getHeight();
+				g.setColor(Color.BLACK);
+				for(int x=0;x<w;x+=5)
+					g.drawLine(x, h/2, x+2, h/2);
+				}
+			
+			
+			}
+		
 		
 		
 		}

@@ -11,6 +11,7 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 
 //bug: new does not halt code.
@@ -309,14 +310,14 @@ public class SequenceImageset extends Imageset
 						return;
 					else
 						{
-						TreeMap<Integer, EvImage> loaders=new TreeMap<Integer, EvImage>();
+						TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
 						Channel ch=(Channel)getChannel(channelName);
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
-							loaders.put(i, ch.newImage(f.getAbsolutePath(),i));
+							loaders.put(new EvDecimal(i), ch.newImage(f.getAbsolutePath(),i)); //TODO bd set resolution
 						
 						
-						ch.imageLoader.put(frame, loaders);
+						ch.imageLoader.put(new EvDecimal(frame), loaders); //TODO bd need to set res at loading
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
 						}
 					frame+=frameForward;
@@ -385,7 +386,7 @@ public class SequenceImageset extends Imageset
 			{
 			super(channelName);
 			}
-		protected EvImage internalMakeLoader(int frame, int z)
+		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
 			{
 			return new EvImageExt("");
 			}

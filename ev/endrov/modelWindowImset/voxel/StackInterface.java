@@ -11,6 +11,7 @@ import endrov.imageset.Imageset.ChannelImages;
 import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
+import endrov.util.EvDecimal;
 
 /**
  * General interface to any stack renderer
@@ -18,15 +19,15 @@ import endrov.modelWindow.TransparentRender;
  */
 public abstract class StackInterface
 	{
-	public abstract boolean needSettings(double frame);
-	public abstract void setLastFrame(double frame);
+	public abstract boolean needSettings(EvDecimal frame);
+	public abstract void setLastFrame(EvDecimal frame);
 	public abstract void clean(GL gl);
 	public abstract void loadGL(GL gl);
 	public abstract void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors);
 	public abstract Collection<Double> adjustScale(ModelWindow w);
 	public abstract Collection<Vector3d> autoCenterMid();
 	public abstract Double autoCenterRadius(Vector3d mid, double FOV);
-	public abstract void startBuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w);
+	public abstract void startBuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w);
 	public abstract void stopBuildThread();
 
 	

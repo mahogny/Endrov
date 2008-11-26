@@ -7,6 +7,7 @@ import java.util.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.nuc.NucLineage;
+import endrov.util.EvDecimal;
 
 
 //Do not use rigid transforms, use point dist.
@@ -23,22 +24,22 @@ public class FixSchnabel
 
 	
 	
-	public static SortedMap<Double,Double> timeMap=new TreeMap<Double, Double>();
+	public static SortedMap<EvDecimal,EvDecimal> timeMap=new TreeMap<EvDecimal, EvDecimal>();
 	
 
-	public static double interpol(double frame)
+	public static EvDecimal interpol(EvDecimal frame)
 		{
-		double keyBefore=timeMap.headMap(frame).lastKey();
-		double keyAfter=timeMap.tailMap(frame).firstKey();
-		double toBefore=timeMap.get(keyBefore);
-		double toAfter=timeMap.get(keyAfter);
+		double keyBefore=timeMap.headMap(frame).lastKey().doubleValue();
+		double keyAfter=timeMap.tailMap(frame).firstKey().doubleValue();
+		double toBefore=timeMap.get(keyBefore).doubleValue();
+		double toAfter=timeMap.get(keyAfter).doubleValue();
 		
 		
 		
-		double x=(frame-keyBefore)/(keyAfter-keyBefore);
+		double x=(frame.doubleValue()-keyBefore)/(keyAfter-keyBefore);
 		double newframe=x*toAfter+(1-x)*toBefore;
 		System.out.println(""+frame+" "+newframe);
-		return newframe;
+		return new EvDecimal(newframe);
 		}
 	
 	
@@ -57,8 +58,8 @@ public class FixSchnabel
 			while((line=tfile.readLine())!=null)
 				{
 				StringTokenizer st=new StringTokenizer(line);
-				double from=Double.parseDouble(st.nextToken());
-				double to=Double.parseDouble(st.nextToken());
+				EvDecimal from=new EvDecimal(st.nextToken());
+				EvDecimal to=new EvDecimal(st.nextToken());
 				timeMap.put(from,to);
 				}
 			}
@@ -89,13 +90,13 @@ public class FixSchnabel
 					avr/=refnuc.pos.size();
 					avr*=7.46;//25;
 					
-				Map<Integer, NucLineage.NucPos> newpos=new HashMap<Integer, NucLineage.NucPos>(entry.getValue().pos);
+				Map<EvDecimal, NucLineage.NucPos> newpos=new HashMap<EvDecimal, NucLineage.NucPos>(entry.getValue().pos);
 				entry.getValue().pos.clear();	
 				
-				for(Map.Entry<Integer, NucLineage.NucPos> ne:newpos.entrySet())
+				for(Map.Entry<EvDecimal, NucLineage.NucPos> ne:newpos.entrySet())
 					{
 					ne.getValue().r=avr;
-					entry.getValue().pos.put((int)interpol(ne.getKey()),ne.getValue());
+					entry.getValue().pos.put(interpol(ne.getKey()),ne.getValue());
 					}
 				}
 			else

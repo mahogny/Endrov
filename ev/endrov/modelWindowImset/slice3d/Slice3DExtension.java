@@ -18,6 +18,7 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -92,7 +93,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			}
 		
 		
-		private double getFrame()
+		private EvDecimal getFrame()
 			{
 			return this.w.frameControl.getFrame();
 			}
@@ -189,15 +190,15 @@ public class Slice3DExtension implements ModelWindowExtension
 				Imageset.ChannelImages ch=im.channelImages.get(channelName);
 				if(ch!=null)
 					{
-					int cframe=ch.closestFrame((int)getFrame());
-					int zplane=(Integer)zplaneSpinner.getModel().getValue();
+					EvDecimal cframe=ch.closestFrame(getFrame());
+					EvDecimal zplane=new EvDecimal((Integer)zplaneSpinner.getModel().getValue());
 
 					//Create surface if it wasn't there before
 					if(slice.needBuild(cframe))
 						slice.build(gl, cframe, im, ch, zplane);
 					
 					//Finally render
-					int z=0;
+					EvDecimal z=EvDecimal.ZERO;
 					if(!zProject.isSelected())
 						z=zplane;
 					slice.render(gl,colorCombo.getColor(), z);

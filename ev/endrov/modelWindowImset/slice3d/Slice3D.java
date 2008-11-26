@@ -12,6 +12,7 @@ import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
+import endrov.util.EvDecimal;
 import endrov.util.Vector3D;
 
 /**
@@ -20,7 +21,7 @@ import endrov.util.Vector3D;
  */
 public class Slice3D
 	{	
-	double lastframe; 
+	EvDecimal lastframe; 
 
 	int w, h;
 	double resX,resY,resZ;
@@ -53,9 +54,9 @@ public class Slice3D
 		Color color=new Color(0,0,0);
 		}
 	
-	public boolean needBuild(double frame)
+	public boolean needBuild(EvDecimal frame)
 		{
-		return rebuild || frame!=lastframe || !isBuilt();
+		return rebuild || !frame.equals(lastframe) || !isBuilt();
 		}
 
 	private boolean isBuilt()
@@ -66,7 +67,7 @@ public class Slice3D
 	/**
 	 * Load stack into memory. Need GL context, forced by parameter.
 	 */
-	public void build(GL gl,double frame, Imageset im, ChannelImages ch, int zplane)
+	public void build(GL gl,EvDecimal frame, Imageset im, ChannelImages ch, EvDecimal zplane)
 		{
 		if(needBuild(frame))
 			{
@@ -74,7 +75,7 @@ public class Slice3D
 			clean(gl);
 			rebuild=false;
 
-			int cframe=ch.closestFrame((int)Math.round(frame));
+			EvDecimal cframe=ch.closestFrame(frame);
 			zplane=ch.closestZ(cframe, zplane);
 
 			lastframe=frame;
@@ -128,11 +129,11 @@ public class Slice3D
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Color color, double zplane)
+	public void render(GL gl, Color color, EvDecimal zplane)
 		{
 		if(isBuilt())
 			{
-			double z=zplane/resZ;
+			double z=zplane.divide(resZ).doubleValue();
 			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS); //bother to refine?
 			
 			gl.glDisable(GL.GL_CULL_FACE);

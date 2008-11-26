@@ -16,6 +16,7 @@ import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.Shader;
 import endrov.modelWindow.TransparentRender;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
+import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
 
@@ -30,8 +31,8 @@ public class Stack3D extends StackInterface
 	{	
 	//Currently the code does not bother with which frame it is.
 	//and it might be worth delegating this to voxelextension
-	public Double lastframe=null;
-	private TreeMap<Double,Vector<VoxelStack>> texSlices=new TreeMap<Double,Vector<VoxelStack>>();
+	public EvDecimal lastframe=null;
+	private TreeMap<EvDecimal,Vector<VoxelStack>> texSlices=new TreeMap<EvDecimal,Vector<VoxelStack>>();
 	private List<VoxelStack> disposableStacks=new LinkedList<VoxelStack>(); //Data to be removed. Not currently in use.
 	private final int skipForward=1; //later maybe allow this to change
 	
@@ -110,7 +111,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Get or create slices for one z. Has to be synchronized
 	 */ 
-	private synchronized Vector<VoxelStack> getTexSlicesFrame(double z)
+	private synchronized Vector<VoxelStack> getTexSlicesFrame(EvDecimal z)
 		{
 		//Put texture into list
 		Vector<VoxelStack> texSlicesV=texSlices.get(z);
@@ -152,18 +153,18 @@ public class Stack3D extends StackInterface
 		}
 	
 	
-	public void setLastFrame(double frame)
+	public void setLastFrame(EvDecimal frame)
 		{
 		lastframe=frame;
 		}
 	
-	public boolean needSettings(double frame)
+	public boolean needSettings(EvDecimal frame)
 		{
-		return lastframe==null || frame!=lastframe;
+		return lastframe==null || frame.equals(lastframe);
 		}
 	
 	
-	public void startBuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+	public void startBuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 		{
 		stopBuildThread();
 		buildThread=new BuildThread(frame, chsel, w);
@@ -178,11 +179,11 @@ public class Stack3D extends StackInterface
 	BuildThread buildThread=null;
 	public class BuildThread extends Thread
 		{
-		private double frame;
+		private EvDecimal frame;
 		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
 		private ProgressMeter pm;
-		public BuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+		public BuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
@@ -199,14 +200,14 @@ public class Stack3D extends StackInterface
 			for(VoxelExtension.ChannelSelection chsel:channels)
 				{
 				//For every Z
-				int cframe=chsel.ch.closestFrame((int)Math.round(frame));
-				TreeMap<Integer,EvImage> slices=chsel.ch.imageLoader.get(cframe);
+				EvDecimal cframe=chsel.ch.closestFrame(frame);
+				TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
 				Texture3D texture=new Texture3D();
 				VoxelStack os=null;
 				
 				int skipcount=0;
 				if(slices!=null)
-					for(int i:slices.keySet())
+					for(EvDecimal i:slices.keySet())
 						{
 						if(stop)
 							{
@@ -217,7 +218,7 @@ public class Stack3D extends StackInterface
 						if(skipcount>=skipForward)
 							{
 							skipcount=0;
-							int progressSlices=i*1000/(channels.size()*slices.size());
+							int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
 							int progressChan=1000*curchannum/channels.size();
 							pm.set(progressSlices+progressChan);
 							
@@ -254,7 +255,7 @@ public class Stack3D extends StackInterface
 								//real size
 								os.realw=os.w/os.resX;
 								os.realh=os.h/os.resY;								
-								int slicespan=(1+slices.lastKey()-slices.firstKey());
+								int slicespan=(slices.lastKey().subtract(slices.firstKey()).add(1).intValue()); //TODO bd problem, total redo
 								os.reald=(os.d*(double)slicespan/(double)slices.size())/chsel.im.meta.resZ;
 								}
 

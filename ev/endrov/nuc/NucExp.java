@@ -4,10 +4,12 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import endrov.util.EvDecimal;
+
 
 public class NucExp implements Cloneable
 	{
-	public SortedMap<Integer,Double> level=new TreeMap<Integer, Double>();
+	public SortedMap<EvDecimal,Double> level=new TreeMap<EvDecimal, Double>();
 	public java.awt.Color expColor=java.awt.Color.RED; //Not stored to disk, but kept here so the color is the same in all windows
 	public String unit;
 	
@@ -17,7 +19,7 @@ public class NucExp implements Cloneable
 	public Object clone()
 		{
 		NucExp exp=new NucExp();
-		for(Map.Entry<Integer, Double> e:level.entrySet())
+		for(Map.Entry<EvDecimal, Double> e:level.entrySet())
 			exp.level.put(e.getKey(),e.getValue());
 		exp.expColor=expColor;
 		return exp;
@@ -38,21 +40,21 @@ public class NucExp implements Cloneable
 	/**
 	 * Interpolate level for a certain frame
 	 */
-	public Double interpolateLevel(double frame)
+	public Double interpolateLevel(EvDecimal frame)
 		{
-		if(frame<level.firstKey())
+		if(frame.less(level.firstKey()))
 			return level.get(level.firstKey());
-		else if(frame>level.lastKey())
+		else if(frame.greater(level.lastKey()))
 			return level.get(level.lastKey());
 		else
 			{
-			SortedMap<Integer,Double> hlevel=level.headMap((int)frame);
-			SortedMap<Integer,Double> tlevel=level.tailMap((int)frame);
-			int frameBefore=hlevel.lastKey();
-			int frameAfter=tlevel.firstKey();
+			SortedMap<EvDecimal,Double> hlevel=level.headMap(frame);
+			SortedMap<EvDecimal,Double> tlevel=level.tailMap(frame);
+			EvDecimal frameBefore=hlevel.lastKey();
+			EvDecimal frameAfter=tlevel.firstKey();
 			double levelBefore=hlevel.get(frameBefore);
 			double levelAfter=tlevel.get(frameAfter);
-			double s=(frame-frameBefore)/(frameAfter-frameBefore);
+			double s=frame.subtract(frameBefore).divide((frameAfter.subtract(frameBefore))).doubleValue();
 			return levelAfter*s+levelBefore*(1-s);
 			}
 		}

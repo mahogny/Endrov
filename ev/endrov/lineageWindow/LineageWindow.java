@@ -12,6 +12,7 @@ import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.nuc.*;
+import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
 
@@ -58,7 +59,7 @@ public class LineageWindow extends BasicWindow
 		{
 		public void stateChanged(ChangeEvent e)
 			{
-			view.setFrame((int)frameControl.getFrame());
+			view.setFrame(frameControl.getFrame().doubleValue());
 			}
 		});
 	
@@ -366,10 +367,10 @@ public class LineageWindow extends BasicWindow
 								n.overrideEnd=null;
 							else
 								{
-								int end=Integer.parseInt(ends);
+								EvDecimal end=new EvDecimal(ends);
 								n.overrideEnd=end;
 								//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
-								nucPair.fst().removePosAfterEqual(NucLineage.currentHover.snd(), end+1);
+								nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), end, false);
 								}
 							}
 						}
@@ -549,7 +550,7 @@ public class LineageWindow extends BasicWindow
 		{
 		JPopupMenu popup = new JPopupMenu();
 		
-		final int hoverFrame=view.camera.getFrameFromCursor(e.getX(), e.getY());
+		final EvDecimal hoverFrame=view.camera.getFrameFromCursor(e.getX(), e.getY());
 		popup.add(new JMenuItem("--Frame: "+hoverFrame));
 		JMenuItem miGoToFrame=new JMenuItem("Go to frame");
 		popup.add(miGoToFrame);
@@ -584,7 +585,7 @@ public class LineageWindow extends BasicWindow
 					if(lin!=null)
 						{
 						NucLineage.NucInterp inter=lin.nuc.get(kf.nuc).interpolatePos(hoverFrame);
-						frameControl.setFrameZ(hoverFrame, inter.pos.z);
+						frameControl.setFrameZ(hoverFrame, new EvDecimal(inter.pos.z));
 						}
 					
 					
@@ -623,7 +624,7 @@ public class LineageWindow extends BasicWindow
 							String newname=lin.getUniqueNucName();
 							NucLineage.Nuc newnuc=lin.getNucCreate(newname);
 							newnuc.pos.putAll(nuc.pos.tailMap(kf.frame));
-							for(int key:newnuc.pos.keySet())
+							for(EvDecimal key:newnuc.pos.keySet())
 								nuc.pos.remove(key);
 							
 							newnuc.child.addAll(nuc.child);

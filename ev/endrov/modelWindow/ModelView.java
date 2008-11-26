@@ -15,6 +15,7 @@ import com.sun.opengl.util.j2d.*;
 
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
+import endrov.util.EvDecimal;
 
 
 //NEED GLJPanel
@@ -52,7 +53,7 @@ public class ModelView extends GLCanvas
 	public Camera camera=new Camera();
 	private final double FOV=45.0/180.0*Math.PI;	
 	/** Current frame */
-	public double frame=0;
+	public EvDecimal frame=EvDecimal.ZERO;
 	
 
 	/** Scaling factor for panning */

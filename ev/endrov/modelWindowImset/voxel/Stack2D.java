@@ -17,6 +17,7 @@ import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.Shader;
 import endrov.modelWindow.TransparentRender;
+import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
 //if one ever wish to build it in the background:
@@ -42,7 +43,7 @@ http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
  */
 public class Stack2D extends StackInterface
 	{	
-	Double lastframe=null; 
+	EvDecimal lastframe=null; 
 	double resZ;
 	private TreeMap<Double,Vector<OneSlice>> texSlices=null;
 	private final int skipForward=1; //later maybe allow this to change
@@ -101,19 +102,19 @@ public class Stack2D extends StackInterface
 		}
 	
 	
-	public void setLastFrame(double frame)
+	public void setLastFrame(EvDecimal frame)
 		{
 		lastframe=frame;
 		}
 
 	
-	public boolean needSettings(double frame)
+	public boolean needSettings(EvDecimal frame)
 		{
-		return lastframe==null || frame!=lastframe;// || !isBuilt();
+		return lastframe==null || frame.equals(lastframe);// || !isBuilt();
 		}
 	
 	
-	public void startBuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+	public void startBuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 		{
 		stopBuildThread();
 		buildThread=new BuildThread(frame, chsel, w);
@@ -128,11 +129,11 @@ public class Stack2D extends StackInterface
 	BuildThread buildThread=null;
 	public class BuildThread extends Thread
 		{
-		private double frame;
+		private EvDecimal frame;
 		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
 		ModelWindow.ProgressMeter pm;
-		public BuildThread(double frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+		public BuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;
@@ -148,15 +149,15 @@ public class Stack2D extends StackInterface
 			int curchannum=0;
 			for(VoxelExtension.ChannelSelection chsel:channels)
 				{
-				int cframe=chsel.ch.closestFrame((int)Math.round(frame));
+				EvDecimal cframe=chsel.ch.closestFrame(frame);
 				//Common resolution for all channels
 				resZ=chsel.im.meta.resZ;
 
 				//For every Z
-				TreeMap<Integer,EvImage> slices=chsel.ch.imageLoader.get(cframe);
+				TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
 				int skipcount=0;
 				if(slices!=null)
-					for(int i:slices.keySet())
+					for(EvDecimal i:slices.keySet())
 						{
 						if(stop)
 							{
@@ -166,7 +167,7 @@ public class Stack2D extends StackInterface
 						skipcount++;
 						if(skipcount>=skipForward)
 							{
-							final int progressSlices=i*1000/(channels.size()*slices.size());
+							final int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
 							final int progressChan=1000*curchannum/channels.size();
 							pm.set(progressSlices+progressChan);
 							
@@ -188,7 +189,7 @@ public class Stack2D extends StackInterface
 	
 	
 
-	public Tuple<TextureRenderer,OneSlice> processImage(EvImage evim, int z, VoxelExtension.ChannelSelection chsel)
+	public Tuple<TextureRenderer,OneSlice> processImage(EvImage evim, EvDecimal z, VoxelExtension.ChannelSelection chsel)
 		{
 		BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
 		OneSlice os=new OneSlice();
@@ -197,7 +198,7 @@ public class Stack2D extends StackInterface
 		os.h=bim.getHeight();
 		os.resX=evim.getResX()/evim.getBinning(); //px/um
 		os.resY=evim.getResY()/evim.getBinning();
-		os.z=z/resZ;
+		os.z=z.divide(resZ).doubleValue();
 		os.color=chsel.color;
 
 		int bw=suitablePower2(os.w);

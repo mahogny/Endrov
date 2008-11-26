@@ -14,6 +14,7 @@ import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
 import endrov.nuc.NucLineage.NucInterp;
+import endrov.util.EvDecimal;
 
 //TODO: all are now the same time!
 //with OST3+, frametime concept gone, solved
@@ -154,18 +155,18 @@ public class MakeStdWorm5
 				NucLineage.Nuc nuc=e.getValue();
 				NucLineage.Nuc newnuc=newlin.getNucCreate(e.getKey());
 				NucStats.NucStatsOne one=nucstats.nuc.get(e.getKey());
-				double thisDur;
-				int thisFirstFrame=nuc.pos.firstKey();
+				EvDecimal thisDur;
+				EvDecimal thisFirstFrame=nuc.pos.firstKey();
 				if(nuc.child.isEmpty())
 					thisDur=one.getLifeLen();
 				else
-					thisDur=nuc.lastFrame()-nuc.pos.firstKey();
-				double oneLifeLen=one.getLifeLen();
+					thisDur=nuc.lastFrame().subtract(nuc.pos.firstKey());
+				EvDecimal oneLifeLen=one.getLifeLen();
 				//potential trouble if no child and thisdur wrong
-				for(int frame:e.getValue().pos.keySet())
+				for(EvDecimal frame:e.getValue().pos.keySet())
 					{
 					//This is the optimal place to take different timesteps into account
-					int newFrame=(int)(one.lifeStart+oneLifeLen*(frame-thisFirstFrame)/thisDur);
+					EvDecimal newFrame=one.lifeStart.add(oneLifeLen.multiply(frame.subtract(thisFirstFrame)).divide(thisDur));
 //					System.out.println("> "+e.getKey()+" "+one.lifeStart+" "+frame+" -> "+newFrame+" // "+one.lifeEnd);
 					
 					NucLineage.NucPos pos=nuc.pos.get(frame);
@@ -211,15 +212,15 @@ public class MakeStdWorm5
 			//Relative time between AB and P1'
 			//Could take child times into account as well to increase resolution
 			if(lin.nuc.containsKey("AB") && lin.nuc.containsKey("P1'"))
-				nucstats.ABPdiff.add(lin.nuc.get("AB").lastFrame()-lin.nuc.get("P1'").lastFrame());
+				nucstats.ABPdiff.add(lin.nuc.get("AB").lastFrame().subtract(lin.nuc.get("P1'").lastFrame()));
 			
 			//Life length and children
 			for(String nucname:lin.nuc.keySet())
 				{
 				NucLineage.Nuc nuc=lin.nuc.get(nucname);
 				
-				int start=nuc.pos.firstKey();
-				int end=nuc.pos.lastKey();
+				EvDecimal start=nuc.pos.firstKey();
+				EvDecimal end=nuc.pos.lastKey();
 				NucStats.NucStatsOne one=nucstats.get(nucname);
 				if(nuc.parent!=null)
 					one.parent=nuc.parent;
@@ -227,7 +228,7 @@ public class MakeStdWorm5
 				//Should only add life time of this cell if it has children, otherwise there is no
 				//guarantee that the length is correct.
 				if(!nuc.child.isEmpty())
-					one.lifetime.add(end-start+1);
+					one.lifetime.add(end.subtract(start).add(1)); //TODO bd really -1? depends on framerate
 				}
 			}
 		nucstats.deriveLifetime();
@@ -237,7 +238,7 @@ public class MakeStdWorm5
 	/**
 	 * Helper for rigid transform fitter: write transformed coordinates to a lineage object
 	 */
-	public static void writeRigidFitCoord(NucLineage newlin, BestFitRotTransScale bf, NucLineage lin, int curframe)
+	public static void writeRigidFitCoord(NucLineage newlin, BestFitRotTransScale bf, NucLineage lin, EvDecimal curframe)
 		{
 		for(String nucName:bf.lininfo.get(lin).untransformed.keySet())
 			{
@@ -250,12 +251,12 @@ public class MakeStdWorm5
 	/**
 	 * Find the last keyframe ever mentioned in a lineage object
 	 */
-	public static int lastFrameOfLineage(NucLineage lin)
+	public static EvDecimal lastFrameOfLineage(NucLineage lin)
 		{
-		Integer maxframe=null;
+		EvDecimal maxframe=null;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
-			if(maxframe==null || nuc.pos.lastKey()>maxframe)
+			if(maxframe==null || nuc.pos.lastKey().greater(maxframe))
 				maxframe=nuc.pos.lastKey();
 			}
 		return maxframe;
@@ -264,12 +265,12 @@ public class MakeStdWorm5
 	/**
 	 * Find the first keyframe ever mentioned in a lineage object
 	 */
-	public static int firstFrameOfLineage(NucLineage lin)
+	public static EvDecimal firstFrameOfLineage(NucLineage lin)
 		{
-		Integer minframe=null;
+		EvDecimal minframe=null;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
-			if(minframe==null || nuc.pos.firstKey()<minframe)
+			if(minframe==null || nuc.pos.firstKey().less(minframe))
 				minframe=nuc.pos.firstKey();
 			}
 		return minframe;
@@ -286,8 +287,8 @@ public class MakeStdWorm5
 		final NucLineage refLin=lins.get("TB2167_0804016");
 		if(refLin==null)
 			throw new Exception("did not find rot ref");
-		final int fminframe=firstFrameOfLineage(refLin);
-		final int fmaxframe=lastFrameOfLineage(refLin);
+		final EvDecimal fminframe=firstFrameOfLineage(refLin);
+		final EvDecimal fmaxframe=lastFrameOfLineage(refLin);
 		
 		//Make copies of lineages
 		SortedMap<String,NucLineage> newlin=new TreeMap<String, NucLineage>();
@@ -306,10 +307,12 @@ public class MakeStdWorm5
 		for(NucLineage lin:lins.values())
 			bf.addLineage(lin);
 		
-		for(int curframe=fminframe;curframe<fmaxframe;curframe++)
+		int frameIncrement=1; //TODO bd what is the best value? check annotation. can save a lot of space and time!!
+		
+		for(EvDecimal curframe=fminframe;curframe.less(fmaxframe);curframe=curframe.add(frameIncrement))
 //		for(int curframe=fminframe;curframe<1200;curframe++)
 			{
-			if(curframe%30==0)
+			if(curframe.intValue()%30==0)
 				System.out.println("frame "+curframe);
 			
 			//Fit
@@ -371,12 +374,13 @@ public class MakeStdWorm5
 	public static void assembleModel(NucLineage refLin)
 		{
 		//Fit coordinates
-		int maxframe=nucstats.maxFrame();
-		int minframe=nucstats.minFrame();
+		EvDecimal maxframe=nucstats.maxFrame();
+		EvDecimal minframe=nucstats.minFrame();
 		System.out.println("--- fitting, from "+minframe+" to "+maxframe);
-		for(int frame=minframe;frame<maxframe;frame++)
+		EvDecimal frameInc=new EvDecimal(1); //TODO best value?
+		for(EvDecimal frame=minframe;frame.less(maxframe);frame=frame.add(frameInc))
 			{
-			if(frame%100==0)
+			if(frame.intValue()%100==0)
 				System.out.println(frame);
 
 //			Map<String, NucStatsOne> curnuc=nucstats.getAtFrame(frame);
@@ -591,9 +595,12 @@ public class MakeStdWorm5
 			//Collect distances and radii
 			System.out.println("--- collect spatial statistics");
 
-			for(int curframe=nucstats.minFrame();curframe<nucstats.maxFrame();curframe++)
+			EvDecimal frameInc=new EvDecimal(1); //TODO best value?
+			
+			
+			for(EvDecimal curframe=nucstats.minFrame();curframe.less(nucstats.maxFrame());curframe=curframe.add(frameInc))
 				{
-				if(curframe%100==0)
+				if(curframe.intValue()%100==0)
 					System.out.println(curframe);
 				for(NucLineage lin:lins.values())
 					{

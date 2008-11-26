@@ -17,6 +17,7 @@ import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.modelWindow.*;
 import endrov.nuc.NucLineage.NucInterp;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -123,7 +124,7 @@ public class NucModelExtension implements ModelWindowExtension
 //			else if(e.getSource()==miSaveColorScheme)
 			else if(e.getSource()==miCalcAngle)
 				{
-				double frame=w.frameControl.getFrame();
+				EvDecimal frame=w.frameControl.getFrame();
 				NucLineage.calcAngle(frame);
 				}
 			
@@ -215,19 +216,19 @@ public class NucModelExtension implements ModelWindowExtension
 						
 						NucLineage.NucInterp i1=new NucLineage.NucInterp();
 						i1.pos=new NucLineage.NucPos();
-						i1.frameBefore=0;
+						i1.frameBefore=EvDecimal.ZERO;
 						i1.pos.x=r;
 						NucLineage.NucInterp i2=new NucLineage.NucInterp();
 						i2.pos=new NucLineage.NucPos();
-						i2.frameBefore=0;
+						i2.frameBefore=EvDecimal.ZERO;
 						i2.pos.x=-r;
 						NucLineage.NucInterp i3=new NucLineage.NucInterp();
 						i3.pos=new NucLineage.NucPos();
-						i3.frameBefore=0;
+						i3.frameBefore=EvDecimal.ZERO;
 						i3.pos.y=-r;
 						NucLineage.NucInterp i4=new NucLineage.NucInterp();
 						i4.pos=new NucLineage.NucPos();
-						i4.frameBefore=0;
+						i4.frameBefore=EvDecimal.ZERO;
 						i4.pos.y=-r;
 
 						interX.put(new NucPair(null,":::1"), i1);
@@ -336,19 +337,19 @@ public class NucModelExtension implements ModelWindowExtension
 			//Cell divisions
 			if(miShowDiv.isSelected())
 				{
-				double curFrame=w.frameControl.getFrame();
+				EvDecimal curFrame=w.frameControl.getFrame();
 				gl.glLineWidth(3);
 				for(NucLineage lin:getLineages())
 					{
 					for(NucLineage.Nuc nuc:lin.nuc.values())
 						if(!nuc.pos.isEmpty() && nuc.parent!=null)
 							{
-							int tframe=nuc.pos.firstKey();
+							EvDecimal tframe=nuc.pos.firstKey();
 							NucLineage.Nuc pnuc=lin.nuc.get(nuc.parent);
 							if(!pnuc.pos.isEmpty())
 								{
-								int pframe=pnuc.pos.lastKey();
-								if(curFrame>=pframe && curFrame<=tframe)
+								EvDecimal pframe=pnuc.pos.lastKey();
+								if(curFrame.greaterEqual(pframe) && curFrame.lessEqual(tframe))
 									{
 									NucLineage.NucPos npos=nuc.pos.get(tframe);
 									NucLineage.NucPos ppos=pnuc.pos.get(pframe);

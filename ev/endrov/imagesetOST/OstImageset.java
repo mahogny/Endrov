@@ -10,6 +10,7 @@ import java.util.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -217,18 +218,18 @@ public class OstImageset extends Imageset
 				if(oldCh!=null)
 					{
 					//Removed frames: delete directories
-					HashSet<Integer> removedFrames=new HashSet<Integer>(oldCh.imageLoader.keySet());
+					HashSet<EvDecimal> removedFrames=new HashSet<EvDecimal>(oldCh.imageLoader.keySet());
 					removedFrames.removeAll(newCh.imageLoader.keySet());
-					for(Integer frame:removedFrames)
+					for(EvDecimal frame:removedFrames)
 						{
 						System.out.println("rf: "+frame);
 						deleteOk=deleteRecursive(buildFramePath(channelName, frame),deleteOk);
 						}
 					
 					//New frames: create directories
-					HashSet<Integer> newFrames=new HashSet<Integer>(newCh.imageLoader.keySet());
+					HashSet<EvDecimal> newFrames=new HashSet<EvDecimal>(newCh.imageLoader.keySet());
 					newFrames.removeAll(oldCh.imageLoader.keySet());
-					for(Integer frame:newFrames)
+					for(EvDecimal frame:newFrames)
 						{
 						System.out.println("cf: "+frame);
 						buildFramePath(channelName, frame).mkdir();
@@ -237,7 +238,7 @@ public class OstImageset extends Imageset
 				else
 					{
 					//All frames are new: create directories
-					for(Integer frame:newCh.imageLoader.keySet())
+					for(EvDecimal frame:newCh.imageLoader.keySet())
 						{
 						System.out.println("cf: "+frame);
 						buildFramePath(channelName, frame).mkdir();
@@ -245,19 +246,19 @@ public class OstImageset extends Imageset
 					}
 				
 				//Go through frames
-				for(int frame:newCh.imageLoader.keySet())
+				for(EvDecimal frame:newCh.imageLoader.keySet())
 					{
-					TreeMap<Integer, EvImage> newSlices=newCh.imageLoader.get(frame);
-					TreeMap<Integer, EvImage> oldSlices=null;
+					TreeMap<EvDecimal, EvImage> newSlices=newCh.imageLoader.get(frame);
+					TreeMap<EvDecimal, EvImage> oldSlices=null;
 					if(oldCh!=null)
 						oldSlices=oldCh.imageLoader.get(frame);
 					
 					//Removed slices: delete files
 					if(oldSlices!=null)
 						{
-						HashSet<Integer> removedImages=new HashSet<Integer>(oldSlices.keySet());
+						HashSet<EvDecimal> removedImages=new HashSet<EvDecimal>(oldSlices.keySet());
 						removedImages.removeAll(newSlices.keySet());
-						for(int z:removedImages)
+						for(EvDecimal z:removedImages)
 							{
 							System.out.println("rz: "+z);
 							Channel.EvImageOST im=(Channel.EvImageOST)oldSlices.get(z);
@@ -267,7 +268,7 @@ public class OstImageset extends Imageset
 						}
 					
 					//Go through slices
-					for(int z:newSlices.keySet())
+					for(EvDecimal z:newSlices.keySet())
 						{
 						Channel.EvImageOST newIm=(Channel.EvImageOST)newSlices.get(z);
 						if(newIm.modified())
@@ -396,12 +397,12 @@ public class OstImageset extends Imageset
 			Imageset.ChannelImages oldCh=getChannel(channelName);
 			Imageset.ChannelImages newCh=new Channel(null);
 			ostLoadedImages.put(channelName, newCh);
-			for(int frame:oldCh.imageLoader.keySet())
+			for(EvDecimal frame:oldCh.imageLoader.keySet())
 				{
-				TreeMap<Integer, EvImage> oldFrames=oldCh.imageLoader.get(frame);
-				TreeMap<Integer, EvImage> newFrames=new TreeMap<Integer, EvImage>();
+				TreeMap<EvDecimal, EvImage> oldFrames=oldCh.imageLoader.get(frame);
+				TreeMap<EvDecimal, EvImage> newFrames=new TreeMap<EvDecimal, EvImage>();
 				newCh.imageLoader.put(frame, newFrames);
-				for(int z:oldFrames.keySet())
+				for(EvDecimal z:oldFrames.keySet())
 					{
 					Channel.EvImageOST oldIm=(Channel.EvImageOST)oldFrames.get(z);
 					Channel.EvImageOST newIm=((Channel)newCh).newEvImage(oldIm.jaiFileName());
@@ -461,13 +462,13 @@ public class OstImageset extends Imageset
 					
 					for(int j=0;j<numFrame;j++)
 						{
-						int frame=Integer.parseInt(in.readLine());
+						EvDecimal frame=new EvDecimal(in.readLine());
 						int numSlice=Integer.parseInt(in.readLine());
-						TreeMap<Integer,EvImage> loaderset=c.imageLoader.get(frame);
+						TreeMap<EvDecimal,EvImage> loaderset=c.imageLoader.get(frame);
 						if(loaderset==null)
 							{
 							//A sorted linked list would make set generation linear time
-							loaderset=new TreeMap<Integer,EvImage>();
+							loaderset=new TreeMap<EvDecimal,EvImage>();
 							c.imageLoader.put(frame, loaderset);
 							}
 						
@@ -475,7 +476,7 @@ public class OstImageset extends Imageset
 						//Generate name of frame directory, optimized. windows support?
 						StringBuffer framedirName=new StringBuffer(channeldirName);
 						framedirName.append('/');
-						EV.pad(frame, 8, framedirName);
+						EV.pad(frame.intValue(), 8, framedirName);  //TODO bd wrong?
 						framedirName.append('/');
 						
 						
@@ -487,11 +488,11 @@ public class OstImageset extends Imageset
 								ext=s.substring(3);
 								s=in.readLine();
 								}
-							int slice=Integer.parseInt(s);
+							EvDecimal slice=new EvDecimal(s);
 
 							//Generate name of image file, optimized
 							StringBuffer imagefilename=new StringBuffer(framedirName);
-							EV.pad(slice, 8, imagefilename);
+							EV.pad(slice.intValue(), 8, imagefilename); //TODO bd wrong?
 							imagefilename.append(ext);
 							
 							EvImage evim=((Channel)c).newEvImage(imagefilename.toString());
@@ -531,21 +532,21 @@ public class OstImageset extends Imageset
 		return new File(basedir,"ch-"+channelName);
 		}
 	/** Internal: piece together a path to a frame */
-	public File buildFramePath(String channelName, int frame)
+	public File buildFramePath(String channelName, EvDecimal frame)
 		{
-		return new File(buildChannelPath(channelName), EV.pad(frame,8));
+		return new File(buildChannelPath(channelName), EV.pad(frame.intValue(),8)); //TODO bd wrong?
 		}
 	/** Internal: piece together a path to an image */
-	public File buildImagePath(String channelName, int frame, int slice, String ext)
+	public File buildImagePath(String channelName, EvDecimal frame, EvDecimal slice, String ext)
 		{
 		return buildImagePath(buildFramePath(channelName, frame), slice, ext);
 		}
 	/** Internal: piece together a path to an image */
-	public File buildImagePath(File parent, int slice, String ext)
+	public File buildImagePath(File parent, EvDecimal slice, String ext)
 		{
 //		File.pathSeparatorChar
 //		EV.pad(slice, 8)+ext
-		return new File(parent,EV.pad(slice, 8)+ext);
+		return new File(parent,EV.pad(slice.intValue(), 8)+ext); //TODO bd wrong?
 		}
 	
 	
@@ -580,11 +581,11 @@ public class OstImageset extends Imageset
 				{
 				w.write(c.getMeta().name+"\n");
 				w.write(""+c.imageLoader.size()+"\n");
-				for(int frame:c.imageLoader.keySet())
+				for(EvDecimal frame:c.imageLoader.keySet())
 					{
 					w.write(""+frame+"\n");
 					w.write(""+c.imageLoader.get(frame).size()+"\n");
-					for(int slice:c.imageLoader.get(frame).keySet())
+					for(EvDecimal slice:c.imageLoader.get(frame).keySet())
 						{
 						EvImage loader=c.getImageLoader(frame, slice);
 						File imagefile=new File(((EvImageJAI)loader).jaiFileName());
@@ -650,9 +651,9 @@ public class OstImageset extends Imageset
 			for(File framedir:framedirs)
 				if(framedir.isDirectory() && !framedir.getName().startsWith("."))
 					{
-					int framenum=Integer.parseInt(framedir.getName());
+					EvDecimal framenum=new EvDecimal(framedir.getName());
 					
-					TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
+					TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
 					File[] slicefiles=framedir.listFiles();
 					for(File f:slicefiles)
 						{
@@ -662,7 +663,7 @@ public class OstImageset extends Imageset
 							partname=partname.substring(0,partname.lastIndexOf('.'));
 							try
 								{
-								int slicenum=Integer.parseInt(partname);
+								EvDecimal slicenum=new EvDecimal(partname);
 								loaderset.put(slicenum, newEvImage(f.getAbsolutePath()));
 								}
 							catch (NumberFormatException e)
@@ -676,7 +677,7 @@ public class OstImageset extends Imageset
 					}
 			}
 
-		protected EvImage internalMakeLoader(int frame, int z)
+		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
 			{
 			return newEvImage(buildImagePath(getMeta().name, frame, z, ".png").getAbsolutePath()); //png?
 			}

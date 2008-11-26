@@ -12,6 +12,8 @@ import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
 
+import endrov.util.EvDecimal;
+
 /**
  * Support functions for the EV framework
  * 
@@ -242,6 +244,32 @@ public class EV
 		return System.getProperty("os.name").toUpperCase().indexOf("LINUX") != -1;
 		}
 
+	
+	public static String pad(EvDecimal d, int len)
+		{
+		String s=d.toString();
+		String topad="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+		int slen=s.indexOf(".");
+		if(slen==-1)
+			slen=s.length();
+		len-=slen;
+		if(slen<=0)
+			return s;
+		else if(len<100)
+			return topad.substring(0,len)+s;
+		else
+			{
+			StringBuffer sb=new StringBuffer(slen+len+10);
+			while(len>0)
+				{
+				sb.append('0');
+				len--;
+				}
+			sb.append(s);
+			return sb.toString();
+			}
+		}
+	
 	/**
 	 * Format a number to a certain number of digits.
 	 * @param n The number

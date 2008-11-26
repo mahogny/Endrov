@@ -11,6 +11,7 @@ import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -45,27 +46,27 @@ public class VolStats
 	/**
 	 * Find the first keyframe ever mentioned in a lineage object
 	 */
-	public static int firstFrameOfLineage(NucLineage lin)
+	public static EvDecimal firstFrameOfLineage(NucLineage lin)
 		{
-		Integer minframe=null;
+		EvDecimal minframe=null;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
-			if(minframe==null || nuc.pos.firstKey()<minframe)
+			if(minframe==null || nuc.pos.firstKey().less(minframe))
 				minframe=nuc.pos.firstKey();
 			}
 		return minframe;
 		}
 	
 	
-	public static int lastOkFrame(NucLineage lin)
+	public static EvDecimal lastOkFrame(NucLineage lin)
 		{
-		int lastFrame=Integer.MAX_VALUE;
+		EvDecimal lastFrame=new EvDecimal(Integer.MAX_VALUE);
 		for(String nuc:lin.nuc.keySet())
 			{
 			if(lin.nuc.get(nuc).child.size()<2)
 				{
-				int f=lin.nuc.get(nuc).pos.lastKey();
-				if(f<lastFrame)
+				EvDecimal f=lin.nuc.get(nuc).pos.lastKey();
+				if(f.less(lastFrame))
 					{
 					lastFrame=f;
 					System.out.println("Ending with "+nuc+" at "+lastFrame);
@@ -82,14 +83,15 @@ public class VolStats
 	
 	public static void calcVolStat(NucLineage lin) throws Exception
 		{
-		final int fminframe=firstFrameOfLineage(lin);
-		final int fmaxframe=lastOkFrame(lin);
+		final EvDecimal fminframe=firstFrameOfLineage(lin);
+		final EvDecimal fmaxframe=lastOkFrame(lin);
 		
 		PrintWriter pw=new PrintWriter(new FileWriter("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt"));
 
-		for(int curframe=fminframe;curframe<fmaxframe;curframe++)
+		EvDecimal frameInc=new EvDecimal(1); //TODO bd why 1?
+		for(EvDecimal curframe=fminframe;curframe.less(fmaxframe);curframe=curframe.add(frameInc))
 			{
-			if(curframe%30==0)
+			if(curframe.intValue()%30==0)
 				System.out.println("frame "+curframe);
 
 			//Interpolate for this frame

@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import endrov.data.RecentReference;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -161,14 +162,15 @@ public class OMEImageset extends Imageset
 			int numz=pixel.getSizeZ();
 			for(int frame=0;frame<numframe;frame++)
 				{
-				TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
+				TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
 				for(int z=0;z<numz;z++)
-					loaderset.put(z, newEvImage(pixel, z, frame, chnum));
-				imageLoader.put(frame, loaderset);
+					loaderset.put(new EvDecimal(z), newEvImage(pixel, z, frame, chnum));
+				imageLoader.put(new EvDecimal(frame), loaderset);
+				//TODO bd real resolution
 				}
 			}
 
-		protected EvImage internalMakeLoader(int frame, int z)
+		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
 			{
 			return null;
 //			return newEvImage(buildImagePath(getMeta().name, frame, z, ".png").getAbsolutePath()); //png?

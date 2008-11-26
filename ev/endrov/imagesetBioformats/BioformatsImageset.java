@@ -5,6 +5,7 @@ import java.util.*;
 
 import endrov.data.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 import loci.formats.*;
 
@@ -154,16 +155,17 @@ public class BioformatsImageset extends Imageset
 			channelImages.put(channelName,c);
 			for(int framenum=0;framenum<numt;framenum++)
 				{
-				TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
+				TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
 				for(int slicenum=0;slicenum<numz;slicenum++)
 					{
+					EvDecimal realSliceNum=new EvDecimal(slicenum); //TODO bd resolution
 					if(imageReader.isRGB())
-						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, 0, framenum), channelnum, ""));
+						loaderset.put(realSliceNum, c.newImage(imageReader,imageReader.getIndex(slicenum, 0, framenum), channelnum, ""));
 //						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), channelnum, ""));
 					else
-						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), null, ""));
+						loaderset.put(realSliceNum, c.newImage(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), null, ""));
 					}
-				c.imageLoader.put(framenum, loaderset);
+				c.imageLoader.put(new EvDecimal(framenum), loaderset); //TODO bd time resolution
 				}
 			}
 		}
@@ -191,7 +193,7 @@ public class BioformatsImageset extends Imageset
 			{
 			super(channelName);
 			}
-		protected EvImage internalMakeLoader(int frame, int z)
+		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
 			{
 			return new EvImageExt(null,0,0,"");
 			}

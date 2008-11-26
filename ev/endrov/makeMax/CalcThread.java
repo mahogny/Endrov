@@ -5,6 +5,7 @@ package endrov.makeMax;
 import endrov.basicWindow.*;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 import java.awt.image.*;
 
@@ -62,13 +63,13 @@ public final class CalcThread extends BatchThread
 				throw new Exception("Max-channel already exists");
 			
 			//For all frames
-			int curframe=chfrom.closestFrame(startFrame);
-			while(curframe<=endFrame)
+			EvDecimal curframe=chfrom.closestFrame(new EvDecimal(startFrame));
+			while(curframe.lessEqual(new EvDecimal(endFrame)))
 				{
 				//Tell about progress
 				batchLog(""+curframe);
 
-				int z=chfrom.closestZ(curframe, 0);
+				EvDecimal z=chfrom.closestZ(curframe, EvDecimal.ZERO);
 				try
 					{
 					int[][] maxim=null;
@@ -107,8 +108,8 @@ public final class CalcThread extends BatchThread
 									}
 	
 							//Go to next z
-							final int nz=chfrom.closestZAbove(curframe, z);
-							if(nz==z)
+							final EvDecimal nz=chfrom.closestZAbove(curframe, z);
+							if(nz.equals(z))
 								break;
 							z=nz;
 							}
@@ -116,7 +117,7 @@ public final class CalcThread extends BatchThread
 					//Write out max image
 					if(maxim!=null)
 						{
-						EvImage toim=chto.createImageLoader(curframe, 0);
+						EvImage toim=chto.createImageLoader(curframe, EvDecimal.ZERO);
 						toim.setImage(makeBI(maxim));
 						BasicWindow.updateWindows();
 						}
@@ -129,8 +130,8 @@ public final class CalcThread extends BatchThread
 					}
 
 				//Go to next frame. End if there are no more frames.
-				int newcurframe=chfrom.closestFrameAfter(curframe);
-				if(newcurframe==curframe)
+				EvDecimal newcurframe=chfrom.closestFrameAfter(curframe);
+				if(newcurframe.equals(curframe))
 					break;
 				curframe=newcurframe;
 				}

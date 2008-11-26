@@ -11,6 +11,7 @@ import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.imagesetOST.OstImageset;
 import endrov.nuc.*;
+import endrov.util.EvDecimal;
 
 public class IntegrateExpression
 	{
@@ -76,7 +77,7 @@ public class IntegrateExpression
 
 		//For all frames
 		System.out.println("num frames: "+ost.getChannel(channelName).imageLoader.size());
-		for(Integer frame:ost.getChannel(channelName).imageLoader.keySet())
+		for(EvDecimal frame:ost.getChannel(channelName).imageLoader.keySet())
 			{
 			System.out.println();
 			System.out.println("frame "+frame);
@@ -88,11 +89,11 @@ public class IntegrateExpression
 
 
 			//For all images
-			for(Map.Entry<Integer, EvImage> eim:ost.getChannel(channelName).imageLoader.get(frame).entrySet())
+			for(Map.Entry<EvDecimal, EvImage> eim:ost.getChannel(channelName).imageLoader.get(frame).entrySet())
 				{
 				EvImage im=eim.getValue();
 				BufferedImage bim=null;
-				double imageZw=eim.getKey()/ost.meta.resZ;
+				double imageZw=eim.getKey().doubleValue()/ost.meta.resZ; //TODO bd, res no more
 
 				//For all nuc
 				for(Map.Entry<NucPair,NucLineage.NucInterp> e:inter.entrySet())
@@ -159,7 +160,7 @@ public class IntegrateExpression
 				double avg=expLevel.get(nucName)/nucVol.get(nucName);
 //				System.out.println(nucName+" "+avg);
 				NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
-				if(lin.nuc.get(nucName).pos.lastKey()>=frame && lin.nuc.get(nucName).pos.firstKey()<=frame) 
+				if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(frame) && lin.nuc.get(nucName).pos.firstKey().lessEqual(frame)) 
 					exp.level.put(frame,avg);
 				
 				if(minExpLevel==null || avg<minExpLevel)
@@ -175,7 +176,7 @@ public class IntegrateExpression
 		double expSize=maxExpLevel-minExpLevel;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			if(nuc.exp.containsKey(expName))
-				for(Map.Entry<Integer, Double> e:nuc.exp.get(expName).level.entrySet())
+				for(Map.Entry<EvDecimal, Double> e:nuc.exp.get(expName).level.entrySet())
 					{
 					nuc.exp.get(expName).level.put(e.getKey(), (e.getValue()-minExpLevel)*5);
 					}

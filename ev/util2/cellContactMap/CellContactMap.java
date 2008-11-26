@@ -43,12 +43,12 @@ public class CellContactMap
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static class OneLineage
 		{
-		public Map<Integer,NucVoronoi> fcontacts=new HashMap<Integer, NucVoronoi>();
+		public Map<EvDecimal,NucVoronoi> fcontacts=new HashMap<EvDecimal, NucVoronoi>();
 		public NucLineage lin;
 		public String name;
 		public int numid;
 		//nuc -> nuc -> frames
-		public Map<String,Map<String,SortedSet<Integer>>> contactsf=new TreeMap<String, Map<String,SortedSet<Integer>>>();
+		public Map<String,Map<String,SortedSet<EvDecimal>>> contactsf=new TreeMap<String, Map<String,SortedSet<EvDecimal>>>();
 		//nuc -> lifetime
 		public Map<String,Integer> lifelen=new HashMap<String,Integer>();
 
@@ -61,19 +61,19 @@ public class CellContactMap
 			lifelen.put(a,len);
 			}
 		
-		public void addFrame(String a, String b, int f)
+		public void addFrame(String a, String b, EvDecimal f)
 			{
 			addFrame1(a, b, f);
 			addFrame1(b, a, f);
 			}
-		private void addFrame1(String a, String b, int f)
+		private void addFrame1(String a, String b, EvDecimal f)
 			{
-			Map<String,SortedSet<Integer>> na=contactsf.get(a);
+			Map<String,SortedSet<EvDecimal>> na=contactsf.get(a);
 			if(na==null)
-				contactsf.put(a,na=new TreeMap<String,SortedSet<Integer>>());
-			SortedSet<Integer> sa=na.get(b);
+				contactsf.put(a,na=new TreeMap<String,SortedSet<EvDecimal>>());
+			SortedSet<EvDecimal> sa=na.get(b);
 			if(sa==null)
-				na.put(b, sa=new TreeSet<Integer>());
+				na.put(b, sa=new TreeSet<EvDecimal>());
 			sa.add(f);
 			}
 		
@@ -83,9 +83,9 @@ public class CellContactMap
 			//Prepare different indexing
 			for(String n:nucNames)
 				{
-				Map<String,SortedSet<Integer>> u=new HashMap<String, SortedSet<Integer>>();
+				Map<String,SortedSet<EvDecimal>> u=new HashMap<String, SortedSet<EvDecimal>>();
 				for(String m:nucNames)
-					u.put(m,new TreeSet<Integer>());
+					u.put(m,new TreeSet<EvDecimal>());
 				contactsf.put(n, u);
 				}
 
@@ -112,7 +112,8 @@ public class CellContactMap
 			
 			//Go through all frames
 			int numframes=0;
-			for(int curframe=lin.firstFrameOfLineage();curframe<lin.lastFrameOfLineage();curframe++)
+			EvDecimal frameInc=new EvDecimal(1); //TODO bd, why 1?
+			for(EvDecimal curframe=lin.firstFrameOfLineage();curframe.less(lin.lastFrameOfLineage());curframe=curframe.add(frameInc))
 				{
 				numframes++;
 				/////////////////////////////
@@ -121,7 +122,7 @@ public class CellContactMap
                                   				
 				//interpolate
 				Map<NucPair, NucLineage.NucInterp> inter=lin.getInterpNuc(curframe);
-				if(curframe%100==0)
+				if(curframe.intValue()%100==0)
 					System.out.println(curframe);
 				try
 					{
@@ -141,22 +142,22 @@ public class CellContactMap
 						
 						NucLineage.NucInterp i1=new NucLineage.NucInterp();
 						i1.pos=new NucLineage.NucPos();
-						i1.frameBefore=0;
+						i1.frameBefore=EvDecimal.ZERO;
 						i1.pos.x=r;
 
 						NucLineage.NucInterp i2=new NucLineage.NucInterp();
 						i2.pos=new NucLineage.NucPos();
-						i2.frameBefore=0;
+						i2.frameBefore=EvDecimal.ZERO;
 						i2.pos.x=-r;
 
 						NucLineage.NucInterp i3=new NucLineage.NucInterp();
 						i3.pos=new NucLineage.NucPos();
-						i3.frameBefore=0;
+						i3.frameBefore=EvDecimal.ZERO;
 						i3.pos.y=-r;
 
 						NucLineage.NucInterp i4=new NucLineage.NucInterp();
 						i4.pos=new NucLineage.NucPos();
-						i4.frameBefore=0;
+						i4.frameBefore=EvDecimal.ZERO;
 						i4.pos.y=-r;
 
 						inter.put(new NucPair(null,":::1"), i1);
@@ -206,10 +207,10 @@ public class CellContactMap
 								if(lin.nuc.containsKey(n2) && n2.compareTo(n1)>0 && 
 										lin.nuc.get(n1).child.size()>1 && lin.nuc.get(n2).child.size()>1)
 									{
-									SortedSet<Integer> s=contactsf.get(n1).get(n2);
+									SortedSet<EvDecimal> s=contactsf.get(n1).get(n2);
 									if(!s.isEmpty())
 										{
-										cp.println(""+(s.last()-s.first()+1)+"\t"+s.first());
+										cp.println(""+(s.last().subtract(s.first()).add(1))+"\t"+s.first());
 										}
 									}
 					cp.close();
@@ -229,7 +230,7 @@ public class CellContactMap
 	public static void writeLineageNeighDistances(OneLineage lin) throws IOException
 		{
 		PrintWriter pw=new PrintWriter(new FileWriter(new File("/Volumes/TBU_main03/userdata/cellcontactmap/dist.csv")));
-		for(Map.Entry<Integer, NucVoronoi> entry:lin.fcontacts.entrySet())
+		for(Map.Entry<EvDecimal, NucVoronoi> entry:lin.fcontacts.entrySet())
 			{
 //			NucLineage thelin=lins.get(0).lin;
 			Map<NucPair,NucLineage.NucInterp> inter=lin.lin.getInterpNuc(entry.getKey());
@@ -486,16 +487,25 @@ public class CellContactMap
 								{
 								if(percLifeLen!=0)
 									{
-									int lifeLenFrames=Math.round((lin.lin.nuc.get(nucName).lastFrame()-lin.lin.nuc.get(nucName).firstFrame()));
+									EvDecimal lifeLenFrames=(lin.lin.nuc.get(nucName).lastFrame().subtract(lin.lin.nuc.get(nucName).firstFrame()));
 
 									boolean[] neighOverlaps=new boolean[clength];
 
 									for(int curp=0;curp<clength;curp++)
 										{
+										/*
 										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
-										SortedSet<Integer> frames=lin.contactsf.get(nucName).get(nucName2);
+										SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
 										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
 											neighOverlaps[curp]=true;
+										*/
+										
+										EvDecimal m=lin.lin.nuc.get(nucName).firstFrame().add(lifeLenFrames.multiply(curp).divide(clength)); //corresponding frame
+										SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
+										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
+											neighOverlaps[curp]=true;
+										
+										
 										}
 
 									//Convert frame overlap to image

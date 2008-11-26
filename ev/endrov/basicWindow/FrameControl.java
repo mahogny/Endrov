@@ -2,6 +2,8 @@ package endrov.basicWindow;
 
 import java.util.*;
 
+import endrov.util.EvDecimal;
+
 /**
  * Synchronized Frame(/Z)-controls
  * @author Johan Henriksson
@@ -11,12 +13,12 @@ public class FrameControl
 	public static interface Synch
 		{
 		public int getGroup();
-		public double getFrame();
+		public EvDecimal getFrame();
 //		public Integer getZ(); //slice #
-		public Double getModelZ(); //model coord Z
+		public EvDecimal getModelZ(); //model coord Z
 		
 //		public void replicate(double frame, Integer slice);
-		public void replicate(double frame, Double slice); //model coord
+		public void replicate(EvDecimal frame, EvDecimal slice); //model coord
 		}
 
 	/** List of all framecontrols. Used if grouped */
@@ -31,8 +33,8 @@ public class FrameControl
 	public static void replicateSettings(Synch synch)
 		{
 		int group=synch.getGroup();
-		double frame=synch.getFrame();
-		Double z=synch.getModelZ();
+		EvDecimal frame=synch.getFrame();
+		EvDecimal z=synch.getModelZ();
 		
 		for(FrameControl.Synch c:FrameControl.controls.keySet())
 			if(c.getGroup()==group && c!=synch)

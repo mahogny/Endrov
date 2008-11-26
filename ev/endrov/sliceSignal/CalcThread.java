@@ -7,6 +7,7 @@ import java.io.*;
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.shell.*;
+import endrov.util.EvDecimal;
 import endrov.util.Vector2D;
 
 
@@ -64,15 +65,15 @@ public final class CalcThread extends BatchThread
     			stripepos[i]=(double)i/numstripes + 0.5/numstripes;
 
     		//For all frames
-    		int curframe=startFrame;
+    		EvDecimal curframe=new EvDecimal(startFrame);
     		curframe=ch.closestFrame(curframe);
-     		while(curframe<=endFrame)
+     		while(curframe.lessEqual(new EvDecimal(endFrame)))
     			{
     			final double[] stripeint=new double[numstripes];
     			final double[] stripew=new double[numstripes];
 
     			//For all z
-    			int z=ch.closestZ(curframe, 0);
+    			EvDecimal z=ch.closestZ(curframe, EvDecimal.ZERO);
     			for(;;)
     				{
     				//Check for premature stop
@@ -181,8 +182,8 @@ public final class CalcThread extends BatchThread
     					}
 
     				//Go to next z
-    				final int nz=ch.closestZAbove(curframe, z);
-    				if(nz==z)
+    				final EvDecimal nz=ch.closestZAbove(curframe, z);
+    				if(nz.equals(z))
     					break;
     				z=nz;
     				}
@@ -213,8 +214,8 @@ public final class CalcThread extends BatchThread
   				System.out.print(newline);
 
     			//Go to next frame. End if there are no more frames.
-    			int newcurframe=ch.closestFrameAfter(curframe);
-    			if(newcurframe==curframe)
+  				EvDecimal newcurframe=ch.closestFrameAfter(curframe);
+    			if(newcurframe.equals(curframe))
     				break;
     			curframe=newcurframe;
     			}

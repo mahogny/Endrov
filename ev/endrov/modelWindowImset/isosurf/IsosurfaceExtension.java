@@ -26,6 +26,7 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
+import endrov.util.EvDecimal;
 
 
 //optimization: load images only once for multiple layers
@@ -120,7 +121,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			}
 		
 		
-		private double getFrame()
+		private EvDecimal getFrame()
 			{
 			return this.w.frameControl.getFrame();
 			}
@@ -147,7 +148,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			private JButton bDelete=BasicIcon.getButtonDelete();
 			private ColorCombo colorCombo=new ColorCombo();
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
-			private HashMap<Integer,Vector<IsosurfaceRenderer>> surfaces=new HashMap<Integer,Vector<IsosurfaceRenderer>>(); 
+			private HashMap<EvDecimal,Vector<IsosurfaceRenderer>> surfaces=new HashMap<EvDecimal,Vector<IsosurfaceRenderer>>(); 
 			
 			public ToolIsolayer()
 				{
@@ -249,7 +250,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				Imageset.ChannelImages ch=im.channelImages.get(channelName);
 				if(ch!=null)
 					{
-					int cframe=ch.closestFrame((int)getFrame());
+					EvDecimal cframe=ch.closestFrame(getFrame());
 
 					//Create surface if it wasn't there before
 					Vector<IsosurfaceRenderer> r=surfaces.get(cframe);
@@ -301,7 +302,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				
 				private final Imageset im;
 				private final String channelName;
-				private final int cframe;
+				private final EvDecimal cframe;
 				private final int blursize;
 				private final float cutoff;
 				ModelWindow.ProgressMeter pm;
@@ -315,7 +316,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				final int totalPartConvertLists=totalPartLoading+100;
 
 				
-				public GenerateIsosurface(Imageset im, String channelName, int cframe, int blursize, float cutoff, ModelWindow mw)
+				public GenerateIsosurface(Imageset im, String channelName, EvDecimal cframe, int blursize, float cutoff, ModelWindow mw)
 					{
 					this.im=im;
 					this.channelName=channelName;
@@ -353,14 +354,14 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						double resZ=im.meta.resZ;
 
 						
-						TreeMap<Integer,EvImage> slices=im.channelImages.get(channelName).imageLoader.get(cframe);
+						TreeMap<EvDecimal,EvImage> slices=im.channelImages.get(channelName).imageLoader.get(cframe);
 						final int numSlices=slices.size();
 						int curslice=0;
 						if(slices!=null)
-							for(final int i:slices.keySet())
+							for(final EvDecimal i:slices.keySet())
 								{
 								if(shouldStop()) return;
-								pm.set(totalPartLoading*i/numSlices);
+								pm.set(i.multiply(totalPartLoading).intValue()/numSlices);
 
 								EvImage evim=slices.get(i);
 								BufferedImage bim=evim.getJavaImage();

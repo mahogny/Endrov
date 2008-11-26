@@ -20,6 +20,7 @@ import endrov.keyBinding.*;
 import endrov.keyBinding.NewBinding.EvBindKeyEvent;
 import endrov.keyBinding.NewBinding.EvBindStatus;
 import endrov.modelWindow.basicExt.CrossHandler;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 import endrov.util.EvXmlUtil;
 
@@ -430,13 +431,13 @@ public class ModelWindow extends BasicWindow
 		{	
 		//TODO not hardcode! then also GP bind
 		if(e.getKeyChar()=='a')
-			frameControl.stepBack(1.0);
+			frameControl.stepBack(new EvDecimal(1.0));
 		else if(e.getKeyChar()=='d')
-			frameControl.stepForward(1.0);	
+			frameControl.stepForward(new EvDecimal(1.0));	
 		else if(e.getKeyChar()=='w')
-			frameControl.stepForward(0.2);	
+			frameControl.stepForward(new EvDecimal(0.2));	
 		else if(e.getKeyChar()=='s')
-			frameControl.stepBack(0.2);
+			frameControl.stepBack(new EvDecimal(0.2));
 		}
 	public void mouseClicked(MouseEvent e)
 		{
@@ -718,9 +719,9 @@ public class ModelWindow extends BasicWindow
 	public void bindKeyPerformed(EvBindKeyEvent e)
 		{
 		if(KeyBinding.get(KEY_PREVFRAME).typed(e))
-			frameControl.stepBack(1.0);	
+			frameControl.stepBack(new EvDecimal(1.0));	
 		if(KeyBinding.get(KEY_NEXTFRAME).typed(e))
-			frameControl.stepForward(1.0);	
+			frameControl.stepForward(new EvDecimal(1.0));	
 		}
 	
 	

@@ -20,8 +20,12 @@ import endrov.data.*;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
+import endrov.util.EvDecimal;
 import endrov.util.EvGeomUtil;
 import endrov.util.EvXmlUtil;
+
+//WARNING! A LOT OF == DOES NOT GIVE WARNING SINCE BG TODO
+
 
 /**
  * Meta object: Nuclei, a lineage and expression info
@@ -73,14 +77,14 @@ public class NucLineage extends EvObject implements Cloneable
 						String ends=nuce.getAttributeValue("end");
 						String starts=nuce.getAttributeValue("start");
 						Nuc n=meta.getNucCreate(nucName);
-						if(ends!=null) n.overrideEnd=Integer.parseInt(ends);
-						if(starts!=null) n.overrideStart=Integer.parseInt(starts);
+						if(ends!=null) n.overrideEnd=new EvDecimal(ends);
+						if(starts!=null) n.overrideStart=new EvDecimal(starts);
 							
 						for(Element pose:EV.castIterableElement(nuce.getChildren()))
 							{
 							if(pose.getName().equals("pos"))
 								{
-								int frame=pose.getAttribute("f").getIntValue();
+								EvDecimal frame=new EvDecimal(pose.getAttribute("f").getValue());
 								double posx=pose.getAttribute("x").getDoubleValue();
 								double posy=pose.getAttribute("y").getDoubleValue();
 								double posz=pose.getAttribute("z").getDoubleValue();
@@ -103,7 +107,7 @@ public class NucLineage extends EvObject implements Cloneable
 								n.exp.put(expName, exp);
 								for(Element expe:EV.castIterableElement(pose.getChildren()))
 									{
-									int frame=expe.getAttribute("f").getIntValue();
+									EvDecimal frame=new EvDecimal(expe.getAttribute("f").getValue());
 									double level=expe.getAttribute("l").getDoubleValue();
 									exp.level.put(frame, level);
 									}
@@ -254,7 +258,7 @@ public class NucLineage extends EvObject implements Cloneable
 			return;
 			}
 		String parentName=null;
-		int parentFrame=0;
+		EvDecimal parentFrame=new EvDecimal(0);
 		NucLineage.Nuc parent=null;
 		NucLineage lin=NucLineage.selectedNuclei.iterator().next().fst();
 		//Decide which is the parent
@@ -264,8 +268,8 @@ public class NucLineage extends EvObject implements Cloneable
 				
 				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);
-				int firstFrame=n.pos.firstKey();
-				if(parentName==null || firstFrame<parentFrame)
+				EvDecimal firstFrame=n.pos.firstKey();
+				if(parentName==null || firstFrame.less(parentFrame))
 					{
 					parentFrame=firstFrame;
 					parentName=childName;
@@ -421,7 +425,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(n.overrideEnd!=null) nuce.setAttribute("end", ""+n.overrideEnd);
 			if(n.overrideStart!=null) nuce.setAttribute("start", ""+n.overrideStart);
 
-			for(int frame:n.pos.keySet())
+			for(EvDecimal frame:n.pos.keySet())
 				{
 				NucPos pos=n.pos.get(frame);
 				Element pose=new Element("pos");
@@ -447,7 +451,7 @@ public class NucLineage extends EvObject implements Cloneable
 				if(entry.getValue().unit!=null)
 					childe.setAttribute("unit", entry.getValue().unit);
 				nuce.addContent(childe);
-				for(Map.Entry<Integer, Double> ve:entry.getValue().level.entrySet())
+				for(Map.Entry<EvDecimal, Double> ve:entry.getValue().level.entrySet())
 					{
 					Element value=new Element("v");
 					value.setAttribute("f",""+ve.getKey());
@@ -477,9 +481,9 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Divide a nucleus at the specified frame
 	 */
-	public void divide(String parentName, int frame)
+	public void divide(String parentName, EvDecimal frame)
 		{
-		removePosAfterEqual(parentName, frame);
+		removePosAfter(parentName, frame, true);
 		Nuc n=nuc.get(parentName);
 		Log.printLog("divide:"+parentName);
 		if(n!=null)
@@ -508,17 +512,27 @@ public class NucLineage extends EvObject implements Cloneable
 	 * Delete all positions after or equal to the current frame. If there are no more positions,
 	 * remove the nucleus as well
 	 */
-	public void removePosAfterEqual(String nucName, int frame)
+	public void removePosAfter(String nucName, EvDecimal frame, boolean alsoEqual)
 		{
 		Nuc n=nuc.get(nucName);
 		if(n!=null)
 			{
-			List<Integer> todel=new LinkedList<Integer>();
+			List<EvDecimal> todel=new LinkedList<EvDecimal>();
 			
-			for(int f:n.pos.keySet())
-				if(f>=frame)
-					todel.add(f);
-			for(int f:todel)
+			for(EvDecimal f:n.pos.keySet())
+				{
+				if(alsoEqual)
+					{
+					if(f.greaterEqual(frame))
+						todel.add(f);
+					}
+				else
+					{
+					if(f.greater(frame))
+						todel.add(f);
+					}
+				}
+			for(EvDecimal f:todel)
 				n.pos.remove(f);
 			
 			if(n.pos.isEmpty())
@@ -530,17 +544,28 @@ public class NucLineage extends EvObject implements Cloneable
 	 * Delete all positions before or equal to the current frame. If there are no more positions,
 	 * remove the nucleus as well
 	 */
-	public void removePosBeforeEqual(String nucName, int frame)
+	public void removePosBefore(String nucName, EvDecimal frame, boolean alsoEqual)
 		{
 		Nuc n=nuc.get(nucName);
 		if(n!=null)
 			{
-			List<Integer> todel=new LinkedList<Integer>();
+			List<EvDecimal> todel=new LinkedList<EvDecimal>();
 			
-			for(int f:n.pos.keySet())
-				if(f<=frame)
-					todel.add(f);
-			for(int f:todel)
+			for(EvDecimal f:n.pos.keySet())
+				{
+				if(alsoEqual)
+					{
+					if(f.lessEqual(frame))
+						todel.add(f);
+					}
+				else
+					{
+					if(f.less(frame))
+						todel.add(f);
+					
+					}
+				}
+			for(EvDecimal f:todel)
 				n.pos.remove(f);
 			
 			if(n.pos.isEmpty())
@@ -569,7 +594,7 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Get all interpolated nuclei
 	 */
-	public Map<NucPair, NucInterp> getInterpNuc(double frame)
+	public Map<NucPair, NucInterp> getInterpNuc(EvDecimal frame)
 		{
 		HashMap<NucPair, NucInterp> nucs=new HashMap<NucPair, NucInterp>();
 		for(String nucName:nuc.keySet())
@@ -681,12 +706,12 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Find the first keyframe ever mentioned in a lineage object
 	 */
-	public int firstFrameOfLineage()
+	public EvDecimal firstFrameOfLineage()
 		{
-		Integer minframe=null;
+		EvDecimal minframe=null;
 		for(Nuc n:nuc.values())
 			{
-			if(minframe==null || (!n.pos.isEmpty() && n.pos.firstKey()<minframe))
+			if(minframe==null || (!n.pos.isEmpty() && n.pos.firstKey().less(minframe)))
 				minframe=n.pos.firstKey();
 			}
 		return minframe;
@@ -695,12 +720,13 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Find the last keyframe ever mentioned in a lineage object
 	 */
-	public int lastFrameOfLineage()
+	public EvDecimal lastFrameOfLineage()
 		{
-		Integer maxframe=null;
+		EvDecimal maxframe=null;
 		for(Nuc n:nuc.values())
 			{
-			if(maxframe==null || (!n.pos.isEmpty() && n.pos.firstKey()>maxframe))
+			//TODO bd wrong? lastKey?
+			if(maxframe==null || (!n.pos.isEmpty() && n.pos.firstKey().greater(maxframe)))
 				maxframe=n.pos.firstKey();
 			}
 		return maxframe;
@@ -796,17 +822,18 @@ public class NucLineage extends EvObject implements Cloneable
 	public static class NucInterp
 		{
 		public NucPos pos;
-		public Integer frameBefore;
-		public Integer frameAfter;
+		public EvDecimal frameBefore;
+		public EvDecimal frameAfter;
 		public java.awt.Color colorNuc;
 		public boolean isEnd;
 		public boolean hasParent;
-		public boolean isKeyFrame(double frame)
+		public boolean isKeyFrame(EvDecimal frame)
 			{
 			//double vs int ==. probably a bad idea
 			if(frameBefore==null || frameAfter==null)
 				return false;
-			else return frameBefore==frame || frameAfter==frame;
+			else return frameBefore.equals(frame) || frameAfter.equals(frame); //TODO bd
+//			else return frameBefore==frame || frameAfter==frame;
 			}
 		
 		public boolean isVisible()
@@ -832,7 +859,7 @@ public class NucLineage extends EvObject implements Cloneable
 		/** Name of parent */
 		public String parent=null;
 		/** Pos key frames */
-		public final SortedMap<Integer, NucPos> pos=new TreeMap<Integer, NucPos>();
+		public final SortedMap<EvDecimal, NucPos> pos=new TreeMap<EvDecimal, NucPos>();
 		/** Expression key frames */
 		public final SortedMap<String, NucExp> exp=new TreeMap<String, NucExp>();
 		/** Color for nuc */
@@ -842,9 +869,9 @@ public class NucLineage extends EvObject implements Cloneable
 		//idea: reserve x,y,z,r as special keywords, use expression system for all interpol?
 		
 		/** Override first frame of existence */
-		public Integer overrideStart;
+		public EvDecimal overrideStart;
 		/** Override start frame of existence */
-		public Integer overrideEnd;
+		public EvDecimal overrideEnd;
 		/** Fate of nucleus */
 		public String fate="";
 		
@@ -856,7 +883,7 @@ public class NucLineage extends EvObject implements Cloneable
 			n.parent=parent;
 			n.overrideEnd=overrideEnd;
 			n.fate=fate;
-			for(int i:pos.keySet())
+			for(EvDecimal i:pos.keySet())
 				n.pos.put(i, new NucPos(pos.get(i)));
 			for(Map.Entry<String, NucExp> e:exp.entrySet())
 				n.exp.put(e.getKey(), (NucExp)e.getValue().clone());
@@ -864,12 +891,12 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 		
 		/** Get position frame <= , not including override */
-		public Integer getPosFrameBefore(int frame)
+		public EvDecimal getPosFrameBefore(EvDecimal frame)
 			{
 			NucPos exact=pos.get(frame);
 			if(exact!=null)
 				return frame;
-			SortedMap<Integer, NucPos> part=pos.headMap(frame); 
+			SortedMap<EvDecimal, NucPos> part=pos.headMap(frame); 
 			if(part.size()==0)
 				return null;
 			else
@@ -877,9 +904,9 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 		
 		/** Get position frame >= , not including override */
-		public Integer getPosFrameAfter(int frame)
+		public EvDecimal getPosFrameAfter(EvDecimal frame)
 			{
-			SortedMap<Integer, NucPos> part=pos.tailMap(frame); 
+			SortedMap<EvDecimal, NucPos> part=pos.tailMap(frame); 
 			if(part.size()==0)
 				return null;
 			else
@@ -887,7 +914,7 @@ public class NucLineage extends EvObject implements Cloneable
 			} 
 		
 		/** Get position, create if it does not exist */
-		public NucPos getPosCreate(int frame)
+		public NucPos getPosCreate(EvDecimal frame)
 			{
 			NucPos npos=pos.get(frame);
 			if(npos==null)
@@ -912,24 +939,24 @@ public class NucLineage extends EvObject implements Cloneable
 		/**
 		 * Get the last frame accounting for override
 		 */
-		public int lastFrame()
+		public EvDecimal lastFrame()
 			{
 			if(overrideEnd!=null)
 				return overrideEnd;
 			else
 				{
-				int lastFrame=pos.lastKey();
-				Integer cfirstFrame=null;
+				EvDecimal lastFrame=pos.lastKey();
+				EvDecimal cfirstFrame=null;
 				for(String cName:child)
 					{
 					//Parent stop existing once there is a child
 					NucLineage.Nuc c=nuc.get(cName);
 					if(c.pos.isEmpty())
 						System.out.println("Error: no positions for "+cName);
-					else if(cfirstFrame==null || cfirstFrame>c.pos.firstKey())
+					else if(cfirstFrame==null || cfirstFrame.greater(c.pos.firstKey()))
 						cfirstFrame=c.pos.firstKey();
 					}
-				if(cfirstFrame!=null && cfirstFrame>lastFrame)
+				if(cfirstFrame!=null && cfirstFrame.greater(lastFrame))
 					lastFrame=cfirstFrame;
 				return lastFrame;
 				}
@@ -939,7 +966,7 @@ public class NucLineage extends EvObject implements Cloneable
 		/**
 		 * Get the first frame accounting for override
 		 */
-		public int firstFrame()
+		public EvDecimal firstFrame()
 			{
 			if(overrideStart!=null)
 				return overrideStart;
@@ -949,13 +976,14 @@ public class NucLineage extends EvObject implements Cloneable
 		
 		
 		
-		private NucInterp posToInterpol(int frame, Integer frameBefore, Integer frameAfter)
+		private NucInterp posToInterpol(EvDecimal frame, EvDecimal frameBefore, EvDecimal frameAfter)
 			{
 			NucInterp inter=new NucInterp();
 			inter.pos=pos.get(frame);//TODO: copy?
 			inter.frameAfter=frameAfter;
 			inter.frameBefore=frameBefore;
-			inter.isEnd = overrideEnd!=null && (int)frame==(int)overrideEnd;
+			inter.isEnd = overrideEnd!=null && frame.equals(overrideEnd);  
+			//TODO bd wrong? was (int)frame==(int)overrideEnd. use of end problematic, what does it mean? "close enough"?
 			inter.hasParent=parent!=null;
 			inter.colorNuc=colorNuc;
 			return inter;
@@ -965,7 +993,7 @@ public class NucLineage extends EvObject implements Cloneable
 		/**
 		 * Interpolate frame information
 		 */
-		public NucInterp interpolatePos(double frame)
+		public NucInterp interpolatePos(EvDecimal frame)
 			{
 			//If there are no frames, abort early. This is only to get interpolation working
 			//while the set is being edited.
@@ -973,16 +1001,16 @@ public class NucLineage extends EvObject implements Cloneable
 				return null;
 			
 			//If outside the overriden existing interval, return nothing
-			if(overrideEnd!=null && frame>overrideEnd)
+			if(overrideEnd!=null && frame.greater(overrideEnd))
 				return null;
-			else if(overrideStart!=null && frame<overrideStart)
+			else if(overrideStart!=null && frame.less(overrideStart))
 				return null;
 
 			//This nucleus only continues until there is a child
 			for(String childName:child)
 				{
 				Nuc n=nuc.get(childName);
-				if(!n.pos.isEmpty() && frame>=n.pos.firstKey())
+				if(!n.pos.isEmpty() && frame.greaterEqual(n.pos.firstKey()))
 					return null;
 				}
 
@@ -1002,8 +1030,10 @@ public class NucLineage extends EvObject implements Cloneable
 				}*/
 
 			//Only option left, normal interpolation or we hit one specific position.
-			Integer frameBefore=getPosFrameBefore((int)frame);
-			Integer frameAfter=getPosFrameAfter((int)Math.ceil(frame));
+//			EvDecimal frameBefore=getPosFrameBefore((int)frame); //bd
+//			EvDecimal frameAfter=getPosFrameAfter((int)Math.ceil(frame));  //bd
+			EvDecimal frameBefore=getPosFrameBefore(frame);
+			EvDecimal frameAfter=getPosFrameAfter(frame);
 			if(frameBefore==null)
 				{
 				if(frameAfter==null)
@@ -1011,10 +1041,11 @@ public class NucLineage extends EvObject implements Cloneable
 				else
 					return posToInterpol(frameAfter, frameBefore, frameAfter);
 				}
-			else if(frameAfter==null || (int)frameBefore==(int)frameAfter)
+			else if(frameAfter==null || frameBefore.equals(frameAfter)) //(int)frameBefore==(int)frameAfter) //bd
 				{
 				NucInterp inter=posToInterpol(frameBefore, frameBefore, frameAfter);
-				if(overrideEnd!=null && overrideEnd==(int)frame)
+//				if(overrideEnd!=null && overrideEnd==(int)frame) //bd
+				if(overrideEnd!=null && overrideEnd.equals(frame))
 					inter.isEnd=true;
 				return inter;
 				}
@@ -1023,7 +1054,8 @@ public class NucLineage extends EvObject implements Cloneable
 				NucPos before=pos.get(frameBefore);
 				NucPos after=pos.get(frameAfter);
 				
-				double frac=(frame-frameBefore)/(frameAfter-frameBefore);
+				double frac=frame.subtract(frameBefore).divide(frameAfter.subtract(frameBefore)).doubleValue();
+//				double frac=(frame-frameBefore)/(frameAfter-frameBefore); //bd
 				double frac1=1.0-frac;
 				
 				NucInterp inter=new NucInterp();
@@ -1044,7 +1076,7 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 	
 	
-	public static void calcAngle(double frame)
+	public static void calcAngle(EvDecimal frame)
 		{
 		if(NucLineage.selectedNuclei.size()==3)
 			{

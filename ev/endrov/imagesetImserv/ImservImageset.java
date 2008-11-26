@@ -13,6 +13,7 @@ import bioserv.imserv.ImservConnection;
 import endrov.data.RecentReference;
 import endrov.ev.Log;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -130,13 +131,13 @@ public class ImservImageset extends Imageset
 					
 					for(int j=0;j<numFrame;j++)
 						{
-						int frame=Integer.parseInt(in.readLine());
+						EvDecimal frame=new EvDecimal(in.readLine());
 						int numSlice=Integer.parseInt(in.readLine());
-						TreeMap<Integer,EvImage> loaderset=c.imageLoader.get(frame);
+						TreeMap<EvDecimal,EvImage> loaderset=c.imageLoader.get(frame);
 						if(loaderset==null)
 							{
 							//A sorted linked list would make set generation linear time
-							loaderset=new TreeMap<Integer,EvImage>();
+							loaderset=new TreeMap<EvDecimal,EvImage>();
 							c.imageLoader.put(frame, loaderset);
 							}
 						
@@ -145,7 +146,7 @@ public class ImservImageset extends Imageset
 							String s=in.readLine();
 							if(s.startsWith("ext"))
 								s=in.readLine(); //We don't have to care about extensions
-							int slice=Integer.parseInt(s);
+							EvDecimal slice=new EvDecimal(s);
 
 							EvImage evim=((Channel)c).newEvImage(slice,frame,channelName);
 							loaderset.put(slice, evim);
@@ -243,25 +244,28 @@ public class ImservImageset extends Imageset
 			{
 			imageLoader.clear();
 
+			//TODO MAJOR WTF!
 			int numframe=1;
 			int numz=50;
+			/*
 			for(int frame=0;frame<numframe;frame++)
 				{
-				TreeMap<Integer,EvImage> loaderset=new TreeMap<Integer,EvImage>();
+				TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
 				for(int z=0;z<numz;z++)
 					loaderset.put(z, newEvImage(z, frame, chnum));
 				imageLoader.put(frame, loaderset);
 				}
+				*/
 			}
 
-		protected EvImage internalMakeLoader(int frame, int z)
+		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
 			{
 			return null;
 //			return newEvImage(buildImagePath(getMeta().name, frame, z, ".png").getAbsolutePath()); //png?
 			}
 		
 		
-		public EvImage newEvImage(int z, int t, String c)
+		public EvImage newEvImage(EvDecimal z, EvDecimal t, String c)
 			{
 			return new EvImageImserv(z, t, c);
 			}
@@ -269,9 +273,9 @@ public class ImservImageset extends Imageset
 		
 		private class EvImageImserv extends EvImage
 			{
-			int z,t;
+			EvDecimal z,t;
 			String c;
-			public EvImageImserv(int z, int t, String c)
+			public EvImageImserv(EvDecimal z, EvDecimal t, String c)
 				{
 				this.z=z;
 				this.t=t;

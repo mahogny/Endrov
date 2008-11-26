@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.*;
+import endrov.util.EvDecimal;
 
 public class ImagesetImageExtension implements ImageWindowExtension
 	{
@@ -42,7 +43,7 @@ public class ImagesetImageExtension implements ImageWindowExtension
 				else if(e.getSource()==miRemoveFrame)
 					{
 					String ch=w.getCurrentChannelName();
-					int frame=(int)w.frameControl.getFrame();
+					EvDecimal frame=w.frameControl.getFrame();
 					
 					if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+", frame "+frame+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 						{
@@ -53,8 +54,8 @@ public class ImagesetImageExtension implements ImageWindowExtension
 				else if(e.getSource()==miRemoveSlice)
 					{
 					String ch=w.getCurrentChannelName();
-					int frame=(int)w.frameControl.getFrame();
-					int z=w.frameControl.getZ();
+					EvDecimal frame=w.frameControl.getFrame();
+					EvDecimal z=w.frameControl.getZ();
 					
 					if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+", frame "+frame+", slice "+z+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 						{

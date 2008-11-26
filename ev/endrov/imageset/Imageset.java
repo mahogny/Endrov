@@ -1,13 +1,13 @@
 package endrov.imageset;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 import org.jdom.*;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import endrov.data.*;
+import endrov.util.EvDecimal;
 
 /**
  * Interface to one imageset + metadata
@@ -89,7 +89,7 @@ public abstract class Imageset extends EvData
 	/**
 	 * This will not be here in the future 
 	 */
-	public String frameToTime(BigDecimal framed)
+	public String frameToTime(EvDecimal framed)
 		{
 		int frame=framed.intValue();
 		int numh=frame/3600;
@@ -109,7 +109,7 @@ public abstract class Imageset extends EvData
 			sb.append(nummin);
 			sb.append("m");
 			}
-		framed=framed.subtract(new BigDecimal(hsec+minsec));
+		framed=framed.subtract(new EvDecimal(hsec+minsec));
 		sb.append(framed);
 		sb.append("s");
 		return sb.toString();
@@ -172,7 +172,7 @@ public abstract class Imageset extends EvData
 		private ImagesetMeta.Channel meta;
 				
 		/** Image loaders */
-		public TreeMap<Integer, TreeMap<Integer, EvImage>> imageLoader=new TreeMap<Integer, TreeMap<Integer, EvImage>>();
+		public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
 
 		/**
 		 * Create a new channel
@@ -190,7 +190,7 @@ public abstract class Imageset extends EvData
 		/**
 		 * Get access to an image
 		 */
-		public EvImage getImageLoader(int frame, int z)
+		public EvImage getImageLoader(EvDecimal frame, EvDecimal z)
 			{
 			try
 				{
@@ -205,17 +205,17 @@ public abstract class Imageset extends EvData
 		/**
 		 * Get or create an image
 		 */
-		public EvImage createImageLoader(int frame, int z)
+		public EvImage createImageLoader(EvDecimal frame, EvDecimal z)
 			{
 			EvImage im=getImageLoader(frame, z);
 			if(im!=null)
 				return im;
 			else
 				{
-				TreeMap<Integer, EvImage> frames=imageLoader.get(frame);
+				TreeMap<EvDecimal, EvImage> frames=imageLoader.get(frame);
 				if(frames==null)
 					{
-					frames=new TreeMap<Integer, EvImage>();
+					frames=new TreeMap<EvDecimal, EvImage>();
 					imageLoader.put(frame, frames);
 					}
 				im=internalMakeLoader(frame, z);
@@ -224,7 +224,7 @@ public abstract class Imageset extends EvData
 				}
 			}
 
-		protected abstract EvImage internalMakeLoader(int frame, int z);
+		protected abstract EvImage internalMakeLoader(EvDecimal frame, EvDecimal z);
 		
 	
 		
@@ -248,7 +248,7 @@ public abstract class Imageset extends EvData
 		 * @param prop Property
 		 * @return Value of property or null if it does not exist
 		 */
-		public String getFrameMeta(int frame, String prop)
+		public String getFrameMeta(EvDecimal frame, String prop)
 			{
 			HashMap<String,String> framedata=meta.metaFrame.get(frame);
 			if(framedata==null)
@@ -269,24 +269,24 @@ public abstract class Imageset extends EvData
 		 * @param frame Which frame to match against
 		 * @return If there are no frames or there is an exact match, then frame. Otherwise the closest frame.
 		 */
-		public int closestFrame(int frame)
+		public EvDecimal closestFrame(EvDecimal frame)
 			{
 			if(imageLoader.get(frame)!=null || imageLoader.size()==0)
 				return frame;
 			else
 				{
-				SortedMap<Integer, TreeMap<Integer,EvImage>> before=imageLoader.headMap(frame);
-				SortedMap<Integer, TreeMap<Integer,EvImage>> after=imageLoader.tailMap(frame);
+				SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> before=imageLoader.headMap(frame);
+				SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=imageLoader.tailMap(frame);
 				if(before.size()==0)
 					return imageLoader.firstKey();
 				else if(after.size()==0)
 					return imageLoader.lastKey();
 				else
 					{
-					int afterkey=after.firstKey();
-					int beforekey=before.lastKey();
+					EvDecimal afterkey=after.firstKey();
+					EvDecimal beforekey=before.lastKey();
 					
-					if(afterkey-frame < frame-beforekey)
+					if(afterkey.subtract(frame).less(frame.subtract(beforekey)))
 						return afterkey;
 					else
 						return beforekey;
@@ -300,9 +300,9 @@ public abstract class Imageset extends EvData
 		 * @param frame Current frame
 		 * @return The frame before or the same frame if no frame before found
 		 */
-		public int closestFrameBefore(int frame)
+		public EvDecimal closestFrameBefore(EvDecimal frame)
 			{
-			SortedMap<Integer, TreeMap<Integer,EvImage>> before=imageLoader.headMap(frame); 
+			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> before=imageLoader.headMap(frame); 
 			if(before.size()==0)
 				return frame;
 			else
@@ -313,9 +313,9 @@ public abstract class Imageset extends EvData
 		 * @param frame Current frame
 		 * @return The frame after or the same frame if no frame after found
 		 */
-		public int closestFrameAfter(int frame)
+		public EvDecimal closestFrameAfter(EvDecimal frame)
 			{
-			SortedMap<Integer, TreeMap<Integer,EvImage>> after=imageLoader.tailMap(frame+1);
+			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=imageLoader.tailMap(frame.add(1)); //TODO bd wrong?
 			if(after.size()==0)
 				return frame;
 			else
@@ -329,25 +329,25 @@ public abstract class Imageset extends EvData
 		 * @param z Z we wish to match
 		 * @return Same z if frame does not exist or no slices exist, otherwise the closest z
 		 */
-		public int closestZ(int frame, int z)
+		public EvDecimal closestZ(EvDecimal frame, EvDecimal z)
 			{
-			TreeMap<Integer,EvImage> slices=imageLoader.get(frame);
+			TreeMap<EvDecimal,EvImage> slices=imageLoader.get(frame);
 			if(slices==null || slices.size()==0)
 				return z;
 			else
 				{
-				SortedMap<Integer,EvImage> before=slices.headMap(z);
-				SortedMap<Integer,EvImage> after=slices.tailMap(z);
+				SortedMap<EvDecimal,EvImage> before=slices.headMap(z);
+				SortedMap<EvDecimal,EvImage> after=slices.tailMap(z);
 				if(before.size()==0)
 					return after.firstKey();
 				else if(after.size()==0)
 					return before.lastKey();
 				else
 					{
-					int afterkey=after.firstKey();
-					int beforekey=before.lastKey();
+					EvDecimal afterkey=after.firstKey();
+					EvDecimal beforekey=before.lastKey();
 					
-					if(afterkey-z < z-beforekey)
+					if(afterkey.subtract(z).less(z.subtract(beforekey)))
 						return afterkey;
 					else
 						return beforekey;
@@ -362,14 +362,14 @@ public abstract class Imageset extends EvData
 		 * @param z Z we wish to match
 		 * @return Same z if frame does not exist or no slices exist, otherwise the closest z above
 		 */
-		public int closestZAbove(int frame, int z)
+		public EvDecimal closestZAbove(EvDecimal frame, EvDecimal z)
 			{
-			TreeMap<Integer,EvImage> slices=imageLoader.get(frame);
+			TreeMap<EvDecimal,EvImage> slices=imageLoader.get(frame);
 			if(slices==null)
 				return z;
 			else
 				{
-				SortedMap<Integer,EvImage> after=slices.tailMap(z+1);
+				SortedMap<EvDecimal,EvImage> after=slices.tailMap(z.add(1)); //TODO bd wrong
 				if(after.size()==0)
 					return z;
 				else
@@ -383,14 +383,14 @@ public abstract class Imageset extends EvData
 		 * @param z Z we wish to match
 		 * @return Same z if frame does not exist or no slices exist, otherwise the closest z below
 		 */
-		public int closestZBelow(int frame, int z)
+		public EvDecimal closestZBelow(EvDecimal frame, EvDecimal z)
 			{
-			TreeMap<Integer, EvImage> slices=imageLoader.get(frame);
+			TreeMap<EvDecimal, EvImage> slices=imageLoader.get(frame);
 			if(slices==null)
 				return z;
 			else
 				{
-				SortedMap<Integer, EvImage> before=slices.headMap(z);
+				SortedMap<EvDecimal, EvImage> before=slices.headMap(z);
 				if(before.size()==0)
 					return z;
 				else
