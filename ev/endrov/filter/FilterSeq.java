@@ -11,6 +11,7 @@ import endrov.ev.SimpleObserver;
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
 import endrov.roi.*;
+import endrov.util.EvDecimal;
 
 //Filter = not such a good name? ImageOperators?
 
@@ -231,8 +232,8 @@ public class FilterSeq extends EvObject
 	public void apply(Imageset rec, ROI roi)
 		{
 		for(String chan:roi.getChannels(rec))
-			for(int frame:roi.getFrames(rec, chan))
-				for(int z:roi.getSlice(rec, chan, frame))
+			for(EvDecimal frame:roi.getFrames(rec, chan))
+				for(EvDecimal z:roi.getSlice(rec, chan, frame))
 					{
 					System.out.println("- "+chan+"/"+frame+"/"+z);
 					EvImage evim=rec.getChannel(chan).getImageLoader(frame,z);
@@ -253,10 +254,10 @@ public class FilterSeq extends EvObject
 		for(String chan:rec.channelImages.keySet())
 			{
 			ChannelImages ch=rec.channelImages.get(chan);
-			for(int frame:ch.imageLoader.keySet())
+			for(EvDecimal frame:ch.imageLoader.keySet())
 				{
-				Map<Integer,EvImage> slices=ch.imageLoader.get(frame);
-				for(int z:slices.keySet())
+				Map<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);
+				for(EvDecimal z:slices.keySet())
 					{
 					System.out.println("- "+chan+"/"+frame+"/"+z);
 					EvImage evim=slices.get(z);

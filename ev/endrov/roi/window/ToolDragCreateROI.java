@@ -18,6 +18,7 @@ import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.Imageset;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
+import endrov.util.EvDecimal;
 
 /**
  * Image window tool: initial placement of a ROI
@@ -83,8 +84,8 @@ public class ToolDragCreateROI implements ImageWindowTool
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
 			roi.getPlacementHandle1().setPos(v.x, v.y);
 			roi.getPlacementHandle2().setPos(v.x, v.y);
-			double curFrame=w.frameControl.getFrame();
-			double curZ=w.frameControl.getZ();
+			EvDecimal curFrame=w.frameControl.getFrame();
+			EvDecimal curZ=w.frameControl.getZ();
 			roi.initPlacement(w.getCurrentChannelName(),curFrame,curZ);
 			}
 		else if(SwingUtilities.isRightMouseButton(e))

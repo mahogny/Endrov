@@ -16,6 +16,7 @@ import endrov.ev.*;
 import endrov.filter.*;
 import endrov.imageset.*;
 import endrov.keyBinding.*;
+import endrov.util.EvDecimal;
 
 /**
  * Image window - Displays imageset with overlays. Data can be edited with tools, filters can be applied.
@@ -328,7 +329,7 @@ public class ImageWindow extends BasicWindow
 			w.comboChannel.updateChannelList();
 		packEvWindow();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());
-		frameControl.setFrame(0);
+		frameControl.setFrame(EvDecimal.ZERO);
 		setBoundsEvWindow(bounds);
 		setVisibleEvWindow(true);
 		updateImagePanel();
@@ -480,7 +481,7 @@ public class ImageWindow extends BasicWindow
 	/** Convert world to screen Z coordinate */
 	public double w2sz(double z) {return z*getImageset().meta.resZ;}
 	/** Convert world to screen Z coordinate */
-	public double s2wz(double sz) {return sz/(double)getImageset().meta.resZ;} 
+	public double s2wz(double sz) {return sz/((double)getImageset().meta.resZ);} 
 
 	
 	//are these useful?
@@ -526,8 +527,8 @@ public class ImageWindow extends BasicWindow
 				pi.brightness=channelWidget.get(i).sliderBrightness.getValue();
 				pi.contrast=Math.pow(2,channelWidget.get(i).sliderContrast.getValue()/1000.0);
 				
-				int frame=(int)frameControl.getFrame();
-				int z=frameControl.getZ();
+				EvDecimal frame=frameControl.getFrame();
+				EvDecimal z=frameControl.getZ();
 				frame=ch.closestFrame(frame);
 				z=ch.closestZ(frame, z);
 				
@@ -640,12 +641,12 @@ public class ImageWindow extends BasicWindow
 			Imageset.ChannelImages ch=getImageset().getChannel(getCurrentChannelName());
 			if(ch!=null)
 				{
-				int curFrame=ch.closestFrame((int)frameControl.getFrame());
+				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
 				if(ch.imageLoader.get(curFrame).size()>0)
 					{
-					int firstSlice=ch.imageLoader.get(curFrame).firstKey();
-					int lastSlice=ch.imageLoader.get(curFrame).lastKey();
-					frameControl.setZ(ch.closestZ(curFrame, (firstSlice+lastSlice)/2));
+					EvDecimal firstSlice=ch.imageLoader.get(curFrame).firstKey();
+					EvDecimal lastSlice=ch.imageLoader.get(curFrame).lastKey();
+					frameControl.setZ(ch.closestZ(curFrame, firstSlice.add(lastSlice).divide(2)));
 					updateImagePanel();
 					}
 				}

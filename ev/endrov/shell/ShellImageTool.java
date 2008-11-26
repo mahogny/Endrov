@@ -81,7 +81,9 @@ public class ShellImageTool implements ImageWindowTool
 //		double wx=w.s2wx(mx);
 	//	double wy=w.s2wy(my);
 		
-		double wz=w.s2wz(w.frameControl.getZ());
+		
+		double wz=w.frameControl.getModelZ().doubleValue();
+		//w.s2wz(w.frameControl.getZ());
 		
 		for(EvObject ob:w.getImageset().metaObject.values())
 			if(ob instanceof Shell)
@@ -141,7 +143,8 @@ public class ShellImageTool implements ImageWindowTool
 					shell.midy=v.y;
 //					shell.midx=w.s2wx(e.getX());
 	//				shell.midy=w.s2wy(e.getY());
-					shell.midz=w.s2wz(w.frameControl.getZ());
+					shell.midz=w.frameControl.getModelZ().doubleValue();
+					//w.s2wz(w.frameControl.getZ());
 					shell.major=w.scaleS2w(80);
 					shell.minor=w.scaleS2w(50);
 					w.getImageset().addMetaObject(shell);
@@ -192,7 +195,8 @@ public class ShellImageTool implements ImageWindowTool
 		if(KeyBinding.get(Shell.KEY_SETZ).typed(e) && shell!=null)
 			{
 			//Bring shell to this Z
-			shell.midz=w.s2wz(w.frameControl.getZ());
+			shell.midz=w.frameControl.getModelZ().doubleValue();
+			//w.s2wz(w.frameControl.getZ());
 			BasicWindow.updateWindows();
 			}
 		}

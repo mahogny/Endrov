@@ -23,6 +23,7 @@ import endrov.filter.WindowFilterSeq;
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
 import endrov.modelWindow.*;
+import endrov.util.EvDecimal;
 
 //for now does not update if image updated. would need a data update CB but
 //better to wait until data observer system is ready.
@@ -155,7 +156,7 @@ public class VoxelExtension implements ModelWindowExtension
 
 	
 		
-		public double getFrame()
+		public EvDecimal getFrame()
 			{
 			return this.w.frameControl.getFrame();
 			}
@@ -184,7 +185,7 @@ public class VoxelExtension implements ModelWindowExtension
 				s.clean(gl);
 			removableStacks.clear();
 
-			double frame=getFrame();
+			EvDecimal frame=getFrame();
 			
 			//Build list of which channels should be rendered
 			if(currentStack.needSettings(frame))

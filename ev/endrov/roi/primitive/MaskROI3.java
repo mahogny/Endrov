@@ -7,6 +7,7 @@ import org.jdom.*;
 import endrov.data.*;
 import endrov.imageset.*;
 import endrov.roi.*;
+import endrov.util.EvDecimal;
 
 /**
  * 
@@ -116,21 +117,21 @@ public class MaskROI3 extends ROI
 	/**
 	 * Get frames that at least are partially selected
 	 */
-	public Set<Integer> getFrames(Imageset rec, String channel)
+	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
-		TreeSet<Integer> c=new TreeSet<Integer>();
+		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
 		Imageset.ChannelImages ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
 			if(isSingleRegion)
 				{
-				for(int f:ch.imageLoader.keySet())
+				for(EvDecimal f:ch.imageLoader.keySet())
 					if(regionFrames.inRange(f))
 						c.add(f);
 				}
 			else
 				{
-				for(int f:ch.imageLoader.keySet())
+				for(EvDecimal f:ch.imageLoader.keySet())
 					if(frameMask.containsKey(f)) //or interpolate? setting?
 						c.add(f);
 				
@@ -143,18 +144,18 @@ public class MaskROI3 extends ROI
 	/**
 	 * Get slices that at least are partially selected
 	 */
-	public Set<Integer> getSlice(Imageset rec, String channel, int frame)
+	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
-		TreeSet<Integer> c=new TreeSet<Integer>();
+		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
 		Imageset.ChannelImages ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
-			TreeMap<Integer,EvImage> slices=ch.imageLoader.get(frame);
+			TreeMap<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);
 			if(slices!=null)
 				{
 //			if(isSingleRegion)
 				if(isSingleZ)
-					for(int f:slices.keySet())
+					for(EvDecimal f:slices.keySet())
 						if(regionZ.inRange(f))
 							c.add(f);
 				}
@@ -164,7 +165,7 @@ public class MaskROI3 extends ROI
 	
 				//TODO
 				
-				for(int f:slices.keySet())
+				for(EvDecimal f:slices.keySet())
 					if(regionZ.inRange(f))
 						c.add(f);
 				}
@@ -174,7 +175,7 @@ public class MaskROI3 extends ROI
 	
 	
 
-	public boolean imageInRange(String channel, double frame, int z)
+	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
 		return regionChannels.channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
 		}
@@ -182,7 +183,7 @@ public class MaskROI3 extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvImage im, final String channel, final int frame, final int z)
+	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
@@ -215,7 +216,7 @@ public class MaskROI3 extends ROI
 	public Handle[] getHandles(){return null;}
 	public Handle getPlacementHandle1(){return null;}
 	public Handle getPlacementHandle2(){return null;}
-	public void initPlacement(String chan, double frame, double z){}
+	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
 	
 	
 	public Vector<ROI> getSubRoi(){return new Vector<ROI>();}

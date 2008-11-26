@@ -8,6 +8,7 @@ import com.sun.image.codec.jpeg.*;
 
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -96,12 +97,12 @@ public class SaveOSTThread extends BatchThread
 				File channelPath=new File(imagesetPath, "ch-"+channel.getMeta().name);
 				channelPath.mkdir();
 								
-				for(int frame:channel.imageLoader.keySet())
+				for(EvDecimal frame:channel.imageLoader.keySet())
 					{
 					File framePath=new File(channelPath, EV.pad(frame,8).toString());
 					framePath.mkdir();
-					TreeMap<Integer, EvImage> slices=channel.imageLoader.get(frame);
-					for(int slice:slices.keySet())
+					TreeMap<EvDecimal, EvImage> slices=channel.imageLoader.get(frame);
+					for(EvDecimal slice:slices.keySet())
 						{
 						//Check for premature stop
 						if(die)

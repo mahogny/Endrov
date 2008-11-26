@@ -9,6 +9,7 @@ import org.jdom.Element;
 
 import endrov.data.EvObject;
 import endrov.modelWindow.*;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -97,9 +98,10 @@ public class EvLineModelExtension implements ModelWindowExtension
 			gl.glColor3d(0, 1.0, 0);
 			if(ia.pos.size()>1)
 				{
-				int curFrame=(int)w.frameControl.getFrame();
+				EvDecimal curFrame=w.frameControl.getFrame();
 				
-				if(ia.pos.get(0).w==curFrame && ia.pos.size()>1)
+				//TODO bad bd comparison. double
+				if(ia.pos.get(0).w==curFrame.doubleValue() && ia.pos.size()>1)
 					{
 					gl.glBegin(GL.GL_LINE_STRIP);
 					for(int i=0;i<ia.pos.size();i++)

@@ -4,6 +4,7 @@ import java.awt.image.*;
 
 import endrov.imageset.*;
 import endrov.roi.*;
+import endrov.util.EvDecimal;
 
 /**
  * Filter that works on a slice-by-slice basis. Wrapped so it also can work on ROI-basis.
@@ -15,7 +16,7 @@ public abstract class FilterSlice extends FilterROI
 	/**
 	 * Apply filter to image given ROI and where this image is located
 	 */
-	public void applyImage(EvImage evim, ROI roi, String channel, int frame, int z)
+	public void applyImage(EvImage evim, ROI roi, String channel, EvDecimal frame, EvDecimal z)
 		{
 		LineIterator it=roi.getLineIterator(evim, channel, frame, z);
 		applyImage(evim, it);

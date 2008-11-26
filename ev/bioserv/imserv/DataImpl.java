@@ -19,6 +19,7 @@ import bioserv.SendFile;
 
 import endrov.ev.EV;
 import endrov.imagesetOST.OstImageset;
+import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
 
@@ -177,7 +178,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	/**
 	 * Get image data
 	 */
-	public synchronized ImageTransfer getImage(String channel, int frame, int z) throws Exception
+	public synchronized ImageTransfer getImage(String channel, EvDecimal frame, EvDecimal z) throws Exception
 		{
 		File thefile=getImageFile(channel, frame, z);
 		if(thefile!=null)
@@ -207,7 +208,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	/**
 	 * Construct proper name of image file
 	 */
-	private File constructImageFile(String channel, int frame, int z, String end)
+	private File constructImageFile(String channel, EvDecimal frame, EvDecimal z, String end)
 		{
 		//dangerous format!
 		File chandir=new File(file,"ch-"+channel);
@@ -219,7 +220,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	 * Get file for image.
 	 * Can it be made faster by guessing name?
 	 */
-	private File getImageFile(String channel, int frame, int z)
+	private File getImageFile(String channel, EvDecimal frame, EvDecimal z)
 		{
 		if(isOST3())
 			{
@@ -262,7 +263,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	/**
 	 * Set image
 	 */
-	public synchronized void putImage(String channel, int frame, int z, ImageTransfer data) throws Exception
+	public synchronized void putImage(String channel, EvDecimal frame, EvDecimal z, ImageTransfer data) throws Exception
 		{
 		if(isOST3())
 			{

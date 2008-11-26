@@ -16,6 +16,7 @@ import endrov.imageset.Imageset;
 import endrov.keyBinding.KeyBinding;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
+import endrov.util.EvDecimal;
 
 /**
  * Make nuclei by dragging an area. Also move nuclei.
@@ -146,10 +147,10 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				//New name for this nucleus => null
 				String nucName=lin.getUniqueNucName();
 				NucLineage.Nuc n=lin.getNucCreate(nucName);
-				NucLineage.NucPos pos=n.getPosCreate((int)w.frameControl.getFrame());
+				NucLineage.NucPos pos=n.getPosCreate(w.frameControl.getFrame());
 				pos.x=(x1+x2)/2;
 				pos.y=(y1+y2)/2;
-				pos.z=w.s2wz(w.frameControl.getZ());
+				pos.z=w.s2wz(w.frameControl.getZ().doubleValue());
 				pos.r=Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))/2;
 				
 				Vector2d so1=w.transformW2S(new Vector2d(pos.r,0));
@@ -204,7 +205,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			holdRadius=true;
 		
-		int curFramei=(int)w.frameControl.getFrame();
+		EvDecimal curFramei=w.frameControl.getFrame();
 		NucLineage lin=NucLineage.currentHover.fst();
 		
 		if(lin!=null && (KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)))
@@ -245,7 +246,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				NucLineage.NucPos pos=n.getPosCreate(curFramei); 
 				pos.x=inter.pos.x;
 				pos.y=inter.pos.y;
-				pos.z=w.s2wz(w.frameControl.getZ());
+				pos.z=w.s2wz(w.frameControl.getZ().doubleValue());
 				pos.r=inter.pos.r;
 				r.commitModifyingNuc();
 				}
@@ -256,12 +257,12 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.snd());
 			if(n!=null)
 				{
-				if(n.overrideEnd!=null && n.overrideEnd==curFramei)
+				if(n.overrideEnd!=null && n.overrideEnd.equals(curFramei))
 					n.overrideEnd=null;
 				else
 					{
 					n.overrideEnd=curFramei;
-					lin.removePosAfterEqual(NucLineage.currentHover.snd(), curFramei+1);
+					lin.removePosAfter(NucLineage.currentHover.snd(), curFramei,false);
 					}
 				BasicWindow.updateWindows();
 				}
@@ -272,12 +273,12 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			NucLineage.Nuc n=lin.nuc.get(NucLineage.currentHover.snd());
 			if(n!=null)
 				{
-				if(n.overrideStart!=null && n.overrideStart==curFramei)
+				if(n.overrideStart!=null && n.overrideStart.equals(curFramei))
 					n.overrideStart=null;
 				else
 					{	
 					n.overrideStart=curFramei;
-					lin.removePosBeforeEqual(NucLineage.currentHover.snd(), curFramei-1);
+					lin.removePosBefore(NucLineage.currentHover.snd(), curFramei,false); 
 					}
 				BasicWindow.updateWindows();
 				}
@@ -290,14 +291,14 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			
 			double x=0,y=0,z=0,r=0;
 			int num=0;
-			int firstFrame=1000000;
+			EvDecimal firstFrame=null;
 			for(NucPair childPair:NucLineage.selectedNuclei)
 				{
 				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);
 				NucLineage.NucPos pos=n.pos.get(n.pos.firstKey());
 				x+=pos.x;				y+=pos.y;				z+=pos.z;				r+=pos.r;
-				if(n.pos.firstKey()<firstFrame)
+				if(firstFrame==null || n.pos.firstKey().less(firstFrame))
 					firstFrame=n.pos.firstKey();
 				num++;
 				n.parent=parentName;
@@ -306,10 +307,10 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			x/=num;			y/=num;			z/=num;			r/=num;
 			NucLineage.NucPos pos=new NucLineage.NucPos();
 			pos.x=x; pos.y=y; pos.z=z; pos.r=r;
-			parent.pos.put(firstFrame-1,pos);
+			parent.pos.put(firstFrame.subtract(EvDecimal.ONE),pos); //TODO bd will not work
 			Log.printLog("Made parent "+parentName);
 			
-			this.r.w.frameControl.setFrame(firstFrame-1);
+			this.r.w.frameControl.setFrame(firstFrame.subtract(EvDecimal.ONE));
 			BasicWindow.updateWindows();
 			}
 		else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETPARENT).typed(e))
@@ -358,7 +359,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		if(lin!=null && n!=null && holdTranslate)
 			{
 			//nuc temporarily flashes back here. don't know why (used to?)
-			int framei=(int)w.frameControl.getFrame();
+			EvDecimal framei=w.frameControl.getFrame();
 			n.pos.remove(framei);
 			if(n.pos.size()==0)
 				lin.removeNuc(r.modifyingNucName.snd());

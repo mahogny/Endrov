@@ -15,6 +15,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.Imageset;
 import endrov.imagesetOST.OstImageset;
 import endrov.nuc.NucLineage;
+import endrov.util.EvDecimal;
 
 public class Test
 	{
@@ -36,8 +37,8 @@ public class Test
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
-		int startFrame=1500;
-		int endFrame=2000;
+		EvDecimal startFrame=new EvDecimal(1500);
+		EvDecimal endFrame=new EvDecimal(2000);
 		
 		//Load all worms
 		String[] wnlist={
@@ -80,15 +81,15 @@ public class Test
 			{
 //			NucLineage lin=getLin(ost);
 
-			for(int frame:ost.getChannel(channelName).imageLoader.keySet())
+			for(EvDecimal frame:ost.getChannel(channelName).imageLoader.keySet())
 				{
-				if(frame<startFrame || frame>endFrame)
+				if(frame.less(startFrame) || frame.greater(endFrame))
 //				if(frame!=1202)
 					continue;
 //				Map<NucPair, NucLineage.NucInterp> inter=lin.getInterpNuc(frame);
 
 
-				for(int z:ost.getChannel(channelName).imageLoader.get(frame).keySet())
+				for(EvDecimal z:ost.getChannel(channelName).imageLoader.get(frame).keySet())
 					{
 //					if(z!=46)
 //						continue;

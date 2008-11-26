@@ -16,6 +16,7 @@ import endrov.ev.Log;
 import endrov.ev.StdoutLog;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
+import endrov.util.EvDecimal;
 
 /**
  * Get traveled distance & relative division time error for all nuclei
@@ -126,11 +127,11 @@ public class TravelDist
 				if(!nuc.pos.isEmpty() && nuc.child.size()==2) //Only consider cells with children
 					{
 					int c=3;
-					int start = nuc.pos.firstKey()+c;
-					int end   = nuc.pos.lastKey()-c;
+					EvDecimal start = nuc.pos.firstKey().add(c);
+					EvDecimal end   = nuc.pos.lastKey().subtract(c);
 		
 		
-					if(start<end)
+					if(start.less(end))
 						{
 						NucLineage.NucInterp interStart=nuc.interpolatePos(start);
 						NucLineage.NucInterp interEnd=nuc.interpolatePos(end);
@@ -149,8 +150,8 @@ public class TravelDist
 							Vector3d last=interStart.pos.getPosCopy();
 			
 							double fractalDist=0;
-							for(Map.Entry<Integer, NucLineage.NucPos> ee:nuc.pos.entrySet())
-								if(ee.getKey()>start && ee.getKey()<end)
+							for(Map.Entry<EvDecimal, NucLineage.NucPos> ee:nuc.pos.entrySet())
+								if(ee.getKey().greater(start) && ee.getKey().less(end))
 									{
 									last.sub(ee.getValue().getPosCopy());
 									fractalDist+=last.length();
@@ -164,7 +165,7 @@ public class TravelDist
 							double relDev=0;
 							NucExp ediv=nuc.exp.get("divDev");
 							if(ediv!=null)
-								relDev=ediv.level.get(0)/(nuc.lastFrame()-nuc.firstFrame());
+								relDev=ediv.level.get(0)/nuc.lastFrame().subtract(nuc.firstFrame()).doubleValue();
 							
 							//Write out
 							out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+r.getAv()+"\t"+relDev);

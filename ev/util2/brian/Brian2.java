@@ -7,6 +7,8 @@ import java.util.TreeSet;
 
 import bioserv.seqserv.io.*;
 
+//BLAST hanged once! randomly!
+
 /**
  * Do reverse blasting
  */
@@ -18,7 +20,7 @@ public class Brian2
 			{
 			System.out.println(BrianSQL.connectPostgres("//193.11.32.108/brian", "postgres", "wuermli"));
 			
-			for(String otherOrg:new String[]{"ppatens","creinhardtii"})
+			for(String otherOrg:new String[]{"creinhardtii","ppatens"})
 				{
 				ResultSet rs=
 				BrianSQL.runQuery(
@@ -33,7 +35,7 @@ public class Brian2
 				
 				for(String wbGene:geneTODO)
 					{
-					System.out.println(wbGene);
+					System.out.println(otherOrg+"\t"+wbGene);
 					String finContent=BrianSQL.getBlastResult("blastfromce", otherOrg, wbGene);
 					Blast2 b=Blast2.readModeXML(new StringReader(finContent));
 					

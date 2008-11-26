@@ -11,6 +11,7 @@ import endrov.data.EvObject;
 import endrov.data.EvObjectType;
 import endrov.imageset.*;
 import endrov.roi.*;
+import endrov.util.EvDecimal;
 
 /**
  * Ellipse, flat
@@ -104,20 +105,20 @@ public class EllipseROI extends ROI
 			}
 		public double getX()
 			{
-			if(isStartX) return regionX.start;
-			else return regionX.end;
+			if(isStartX) return regionX.start.doubleValue();
+			else return regionX.end.doubleValue();
 			}
 		public double getY()
 			{
-			if(isStartY) return regionY.start;
-			else return regionY.end;
+			if(isStartY) return regionY.start.doubleValue();
+			else return regionY.end.doubleValue();
 			}
 		public void setPos(double x, double y)
 			{
-			if(isStartX) regionX.start=x;
-			else regionX.end=x;
-			if(isStartY) regionY.start=y;
-			else regionY.end=y;
+			if(isStartX) regionX.start=new EvDecimal(x);
+			else regionX.end=new EvDecimal(x);
+			if(isStartY) regionY.start=new EvDecimal(y);
+			else regionY.end=new EvDecimal(y);
 			ROI.roiParamChanged.emit(null);
 			}
 		}
@@ -163,13 +164,13 @@ public class EllipseROI extends ROI
 	/**
 	 * Get frames that at least are partially selected
 	 */
-	public Set<Integer> getFrames(Imageset rec, String channel)
+	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
-		TreeSet<Integer> c=new TreeSet<Integer>();
+		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
 		Imageset.ChannelImages ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
-			for(int f:ch.imageLoader.keySet())
+			for(EvDecimal f:ch.imageLoader.keySet())
 				if(regionFrames.inRange(f))
 					c.add(f);
 			}
@@ -180,15 +181,15 @@ public class EllipseROI extends ROI
 	/**
 	 * Get slices that at least are partially selected
 	 */
-	public Set<Integer> getSlice(Imageset rec, String channel, int frame)
+	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
-		TreeSet<Integer> c=new TreeSet<Integer>();
+		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
 		Imageset.ChannelImages ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
-			TreeMap<Integer,EvImage> slices=ch.imageLoader.get(frame);
+			TreeMap<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);
 			if(slices!=null)
-				for(int f:slices.keySet())
+				for(EvDecimal f:slices.keySet())
 					if(regionZ.inRange(f))
 						c.add(f);
 			}
@@ -197,7 +198,7 @@ public class EllipseROI extends ROI
 	
 	
 
-	public boolean imageInRange(String channel, double frame, int z)
+	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
 		return regionChannels.channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
 		}
@@ -205,7 +206,7 @@ public class EllipseROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvImage im, final String channel, final int frame, final int z)
+	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
@@ -216,18 +217,18 @@ public class EllipseROI extends ROI
 			it.y=0;
 
 			//Correct for span
-			int rXend=(int)im.transformWorldImageX(regionX.end);
+			int rXend=(int)im.transformWorldImageX(regionX.end.doubleValue());
 			if(it.maxX>rXend) it.maxX=rXend;
 			
-			int rYstart=(int)im.transformWorldImageY(regionY.start);
-			int rYend=(int)im.transformWorldImageY(regionY.end)+1;
+			int rYstart=(int)im.transformWorldImageY(regionY.start.doubleValue());
+			int rYend=(int)im.transformWorldImageY(regionY.end.doubleValue())+1;
 			if(it.y<rYstart)	it.y=rYstart;
 			if(it.maxY>rYend) it.maxY=rYend;
 			
-			it.midx=(im.transformWorldImageX(regionX.start)+im.transformWorldImageX(regionX.end))/2.0;
-			it.midy=(im.transformWorldImageY(regionY.start)+im.transformWorldImageY(regionY.end))/2.0;
-			it.rx=(im.transformWorldImageX(regionX.end)-im.transformWorldImageX(regionX.start))/2.0;
-			it.ry=(im.transformWorldImageY(regionY.end)-im.transformWorldImageY(regionY.start))/2.0;
+			it.midx=(im.transformWorldImageX(regionX.start.doubleValue())+im.transformWorldImageX(regionX.end.doubleValue()))/2.0;
+			it.midy=(im.transformWorldImageY(regionY.start.doubleValue())+im.transformWorldImageY(regionY.end.doubleValue()))/2.0;
+			it.rx=(im.transformWorldImageX(regionX.end.doubleValue())-im.transformWorldImageX(regionX.start.doubleValue()))/2.0;
+			it.ry=(im.transformWorldImageY(regionY.end.doubleValue())-im.transformWorldImageY(regionY.start.doubleValue()))/2.0;
 			
 			
 			//Sanity check
@@ -294,11 +295,11 @@ public class EllipseROI extends ROI
 		}
 	public Handle getPlacementHandle1(){return new ThisHandle("4",true,true);}	
 	public Handle getPlacementHandle2(){return new ThisHandle("1",false,false);}
-	public void initPlacement(String chan, double frame, double z)
+	public void initPlacement(String chan, EvDecimal frame, EvDecimal z)
 		{
 		regionChannels.add(chan);
-		regionFrames.set(frame,frame+1);
-		regionZ.set(z, z+1);
+		regionFrames.set(frame,frame.add(EvDecimal.ONE));
+		regionZ.set(z, z.add(EvDecimal.ONE));
 		}
 		
 	

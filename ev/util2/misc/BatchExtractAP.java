@@ -5,6 +5,7 @@ import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.imagesetOST.*;
 import endrov.nuc.*;
+import endrov.util.EvDecimal;
 
 import java.util.*;
 import java.io.*;
@@ -58,18 +59,18 @@ public static void calcAP(File file)
 						NucLineage.Nuc ENuc = lin.nuc.get("E");
 						NucLineage.Nuc EpNuc = lin.nuc.get("Ep");
 						NucLineage.Nuc vencNuc = lin.nuc.get("venc");
-						int ENucFirstKey = ENuc.pos.firstKey(); 
-						int EpNucFirstKey = EpNuc.pos.firstKey();
-						int vencNucFirstKey = vencNuc.pos.firstKey();
-						int ENucLastKey = ENuc.pos.lastKey();
-						int EpNucLastKey = EpNuc.pos.lastKey();
-						int vencNucLastKey = vencNuc.pos.lastKey();
+						EvDecimal ENucFirstKey = ENuc.pos.firstKey(); 
+						EvDecimal EpNucFirstKey = EpNuc.pos.firstKey();
+						EvDecimal vencNucFirstKey = vencNuc.pos.firstKey();
+						EvDecimal ENucLastKey = ENuc.pos.lastKey();
+						EvDecimal EpNucLastKey = EpNuc.pos.lastKey();
+						EvDecimal vencNucLastKey = vencNuc.pos.lastKey();
 						System.out.println("E first key " + ENucFirstKey + ", last key " + ENucLastKey);
 						System.out.println("Ep first key " + EpNucFirstKey + ", last key " + EpNucLastKey);
 						System.out.println("venc first key " + vencNucFirstKey + ", last key " + vencNucLastKey);
 						
 						Imageset.ChannelImages ch=ost.channelImages.get("GFP");
-						TreeMap<Integer, TreeMap<Integer, EvImage>> images=ch.imageLoader;
+						TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> images=ch.imageLoader;
 						
 						//create an output file in the data directory
 					
@@ -123,9 +124,9 @@ public static void calcAP(File file)
 						double oldPostPosZ = -1; 
 
 
-						for(int frame:images.keySet())
+						for(EvDecimal frame:images.keySet())
 							{
-							TreeMap<Integer, EvImage> zs=images.get(frame);
+							TreeMap<EvDecimal, EvImage> zs=images.get(frame);
 
 							//get exposure
 							double exptime=0;
@@ -285,7 +286,7 @@ public static void calcAP(File file)
 							double rotPixY=0;
 							double rotPixZ=0;
 
-							for(int z:zs.keySet())
+							for(EvDecimal z:zs.keySet())
 								{
 								EvImage evim=zs.get(z);	
 								//get image
@@ -510,12 +511,12 @@ public static void calcAP(File file)
 		}
 	}
 
-public static NucLineage.NucPos getpos(NucLineage lin, String name, int frame)
+public static NucLineage.NucPos getpos(NucLineage lin, String name, EvDecimal frame)
 	{
 	//Get position
 	NucLineage.Nuc nuc=lin.nuc.get(name);
 	NucLineage.NucPos pos;
-	Map<Integer,NucLineage.NucPos> hm=nuc.pos.headMap(frame);
+	Map<EvDecimal,NucLineage.NucPos> hm=nuc.pos.headMap(frame);
 	if(hm.isEmpty())
 		pos=nuc.pos.get(nuc.pos.firstKey());
 	else

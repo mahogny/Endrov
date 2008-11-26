@@ -3,6 +3,8 @@ package bioserv.imserv;
 import java.io.Serializable;
 import java.rmi.Remote;
 
+import endrov.util.EvDecimal;
+
 /**
  * Server "data" object: interface
  * 
@@ -23,8 +25,8 @@ public interface DataIF extends Remote
 	public CompressibleDataTransfer getRMD() throws Exception;
 	public void setRMD(CompressibleDataTransfer data) throws Exception;
 	
-	public ImageTransfer getImage(String channel, int frame, int z) throws Exception;
-	public void putImage(String channel, int frame, int z, ImageTransfer data) throws Exception;
+	public ImageTransfer getImage(String channel, EvDecimal frame, EvDecimal z) throws Exception;
+	public void putImage(String channel, EvDecimal frame, EvDecimal z, ImageTransfer data) throws Exception;
 	//it is up to server to recalculate imagelist after put. easiest way, delete cache.
 	
 	public void setTag(String tag, String value, boolean enable) throws Exception;

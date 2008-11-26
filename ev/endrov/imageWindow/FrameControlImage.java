@@ -10,6 +10,7 @@ import javax.swing.event.*;
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.imageset.Imageset;
+import endrov.util.EvDecimal;
 
 
 
@@ -56,21 +57,21 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
 		public void addChangeListener(ChangeListener e){listeners.add(e);}
 		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
-		public int frame;
+		public EvDecimal frame=new EvDecimal(0);
 		public Object getNextValue()
 			{
-			Integer i=nextFrame();
+			EvDecimal i=nextFrame();
 			if(i==null)	return frame;	else return i;
 			}
 		public Object getPreviousValue()
 			{
-			Integer i=lastFrame();
+			EvDecimal i=lastFrame();
 			if(i==null)	return frame;	else return i;
 			}
 		public Object getValue(){return frame;}
 		public void setValue(Object e)
 			{
-			frame=(Integer)e;
+			frame=(EvDecimal)e;
 			for(ChangeListener li:listeners)
 				li.stateChanged(new ChangeEvent(this));
 			}
@@ -82,37 +83,37 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
 		public void addChangeListener(ChangeListener e){listeners.add(e);}
 		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
-		public int z;
+		public EvDecimal z=new EvDecimal(0);
 		public Object getNextValue()
 			{
-			Integer i=nextUp();
+			EvDecimal i=nextUp();
 			if(i==null)	return z;	else return i;
 			}
 		public Object getPreviousValue()
 			{
-			Integer i=nextDown();
+			EvDecimal i=nextDown();
 			if(i==null)	return z;	else return i;
 			}
 		public Object getValue(){return z;}
 		public void setValue(Object e)
 			{
-			z=(Integer)e;
+			z=(EvDecimal)e;
 			for(ChangeListener li:listeners)
 				li.stateChanged(new ChangeEvent(this));
 			}
 		};		
 
 	/** Editor for integer spinners */	
-	private static class IntegerEditor extends JTextField
+	private static class BigDecimalEditor extends JTextField
 		{
 		static final long serialVersionUID=0;
-		public IntegerEditor(final JSpinner sp)
+		public BigDecimalEditor(final JSpinner sp)
 			{
 			addActionListener(new ActionListener()
 				{public void actionPerformed(ActionEvent e){sp.getModel().setValue(Integer.parseInt(getText()));}});
 			sp.getModel().addChangeListener(new ChangeListener()
-				{public void stateChanged(ChangeEvent e){setText(""+(Integer)sp.getModel().getValue());}});
-			setText(""+(int)(Integer)sp.getModel().getValue());
+				{public void stateChanged(ChangeEvent e){setText(""+(EvDecimal)sp.getModel().getValue());}});
+			setText(""+(EvDecimal)sp.getModel().getValue());
 			}
 		}
 		
@@ -154,9 +155,9 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		playPanel.add(buttonPlayForward);
 		
 		spinnerFrame=new JSpinner(frameModel);
-		spinnerFrame.setEditor(new IntegerEditor(spinnerFrame));
+		spinnerFrame.setEditor(new BigDecimalEditor(spinnerFrame));
 		spinnerZ=new JSpinner(zModel);
-		spinnerZ.setEditor(new IntegerEditor(spinnerZ));
+		spinnerZ.setEditor(new BigDecimalEditor(spinnerZ));
 
 		
 		//Build other controls and merge
@@ -223,7 +224,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		else if(e.getSource()==buttonStepForward)
 			stepForward();
 		else if(e.getSource()==buttonStepBack)
-			setFrame(getFrame()-1);
+			setFrame(getFrame().subtract(EvDecimal.ONE)); //TODO bd BAD!
 		else if(e.getSource()==buttonPlayForward)
 			stopStart(true);
 		else if(e.getSource()==buttonPlayBack)
@@ -240,9 +241,9 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			else
 				{
 				if(playingForward)
-					setFrame(getFrame()+0.1);
+					setFrame(getFrame().add(new EvDecimal(0.1)));
 				else
-					setFrame(getFrame()-0.1);
+					setFrame(getFrame().subtract(new EvDecimal(0.1)));
 				}
 			}
 		
@@ -275,13 +276,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	public void goFirstFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).closestFrameAfter((int)-1000000));
+			setFrame(getImageset().getChannel(channel).closestFrameAfter(new EvDecimal(-1000000))); //TODO bd BAD!
 		}
 
 	public void goLastFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).closestFrameAfter((int)1000000));
+			setFrame(getImageset().getChannel(channel).closestFrameAfter(new EvDecimal(1000000))); //TODO bd BAD!
 		}
 
 	/**
@@ -289,13 +290,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	 */
 	public void stepForward()
 		{
-		Integer i=nextFrame();
-		if(i!=null) setFrame((int)i);
+		EvDecimal i=nextFrame();
+		if(i!=null) setFrame(i);
 		}
-	private Integer nextFrame()
+	private EvDecimal nextFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			return getImageset().getChannel(channel).closestFrameAfter((int)getFrame());
+			return getImageset().getChannel(channel).closestFrameAfter(getFrame());
 		else
 			return null;
 		}
@@ -307,13 +308,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	 */
 	public void stepBack()
 		{
-		Integer i=lastFrame();
-		if(i!=null) setFrame((int)i);
+		EvDecimal i=lastFrame();
+		if(i!=null) setFrame(i);
 		}
-	private Integer lastFrame()
+	private EvDecimal lastFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			return getImageset().getChannel(channel).closestFrameBefore((int)getFrame());
+			return getImageset().getChannel(channel).closestFrameBefore(getFrame());
 		else
 			return null;
 		}
@@ -323,13 +324,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	 */
 	public void stepUp()
 		{
-		Integer i=nextUp();
-		if(i!=null) setZ((int)i);
+		EvDecimal i=nextUp();
+		if(i!=null) setZ(i);
 		}
-	private Integer nextUp()
+	private EvDecimal nextUp()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			return getImageset().getChannel(channel).closestZBelow((int)getFrame(),getZ());
+			return getImageset().getChannel(channel).closestZBelow(getFrame(),getZ());
 		else
 			return null;
 		}
@@ -338,13 +339,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	 */
 	public void stepDown()
 		{
-		Integer i=nextDown();
-		if(i!=null) setZ((int)i);
+		EvDecimal i=nextDown();
+		if(i!=null) setZ(i);
 		}
-	private Integer nextDown()
+	private EvDecimal nextDown()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			return getImageset().getChannel(channel).closestZAbove((int)getFrame(),getZ());
+			return getImageset().getChannel(channel).closestZAbove(getFrame(),getZ());
 		else
 			return null;
 		}
@@ -363,15 +364,15 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	/**
 	 * Update all settings at the same time. This is an optimization as it avoids multiple repaints
 	 */
-	public void setAll(double frame, int z)
+	public void setAll(EvDecimal frame, EvDecimal z)
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
 			{
-			frame=getImageset().getChannel(channel).closestFrame((int)frame);
-			z=getImageset().getChannel(channel).closestZ((int)frame, z);
+			frame=getImageset().getChannel(channel).closestFrame(frame);
+			z=getImageset().getChannel(channel).closestZ(frame, z);
 			}
 		removeChangeListener();
-		spinnerFrame.setValue((int)frame);
+		spinnerFrame.setValue(frame);
 		spinnerZ.setValue(z);
 		addChangeListener();
 		listener.stateChanged(new ChangeEvent(this));
@@ -380,26 +381,26 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	
 	
 	/** Convert world to screen Z coordinate. REPLICATED CODE, BAD! */
-	public double w2sz(double z) {return z*getImageset().meta.resZ;}
+	public EvDecimal w2sz(EvDecimal z) {return z.multiply(getImageset().meta.resZ);}
 	/** Convert world to screen Z coordinate. REPLICATED CODE, BAD! */
-	public double s2wz(double sz) {return sz/(double)getImageset().meta.resZ;} 
+	public EvDecimal s2wz(EvDecimal sz) {return sz.divide(getImageset().meta.resZ);} 
 	
 	/**
 	 * Get settings from another synchronized control
 	 */
-	public void replicate(double frame, Double z)
+	public void replicate(EvDecimal frame, EvDecimal z)
 		{
 		if(z==null)
 			z=getModelZ();
-		int slicenum=(int)Math.round(w2sz(z));
+		EvDecimal slicenum=w2sz(z);
 		
 		if(channel!=null && getImageset().getChannel(channel)!=null)
 			{
-			frame=getImageset().getChannel(channel).closestFrame((int)frame);
-			slicenum=getImageset().getChannel(channel).closestZ((int)frame, slicenum);
+			frame=getImageset().getChannel(channel).closestFrame(frame);
+			slicenum=getImageset().getChannel(channel).closestZ(frame, slicenum);
 			}
 		removeChangeListener();
-		spinnerFrame.setValue((int)frame);
+		spinnerFrame.setValue(frame);
 		if(checkGroupSlice.isSelected())
 			spinnerZ.setValue(slicenum);
 		addChangeListener();
@@ -426,37 +427,37 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		}
 	
 	/** Get current frame */
-	public double getFrame()
+	public EvDecimal getFrame()
 		{
-		return (Integer)spinnerFrame.getValue();
+		return (EvDecimal)spinnerFrame.getValue();
 		}
 
 	/** Set current frame */
-	public void setFrame(double frame)
+	public void setFrame(EvDecimal frame)
 		{
 		setAll(frame,getZ());
 		}
 	
 	/** Current slice/Z */
-	public Integer getZ()
+	public EvDecimal getZ()
 		{
-		return (Integer)spinnerZ.getValue();
+		return (EvDecimal)spinnerZ.getValue();
 		}
-	public Double getModelZ()
+	public EvDecimal getModelZ()
 		{
-		return s2wz((Integer)spinnerZ.getValue());
+		return s2wz((EvDecimal)spinnerZ.getValue());
 		}
 	
 	
 	
 	/** Set current slice/Z */
-	public void setZ(int z)
+	public void setZ(EvDecimal z)
 		{
 		setAll(getFrame(), z);
 		}
 	
 	/** Set current slice/Z */
-	public void setModelZ(int z)
+	public void setModelZ(EvDecimal z)
 		{
 		setAll(getFrame(), z);
 		}

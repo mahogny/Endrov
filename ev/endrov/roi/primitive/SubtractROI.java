@@ -10,6 +10,7 @@ import endrov.data.EvObject;
 import endrov.data.EvObjectType;
 import endrov.imageset.*;
 import endrov.roi.*;
+import endrov.util.EvDecimal;
 
 
 //TODO: restrict interval better
@@ -81,7 +82,7 @@ public class SubtractROI extends CompoundROI
 				}
 			}
 		
-		public ThisLineIterator(EvImage im, LineIterator ita, LineIterator itb, String channel, int frame, int z)
+		public ThisLineIterator(EvImage im, LineIterator ita, LineIterator itb, String channel, EvDecimal frame, EvDecimal z)
 			{
 			this.z=z;
 			this.ita=new OneIt(ita);
@@ -211,9 +212,9 @@ public class SubtractROI extends CompoundROI
 	/**
 	 * Get frames that at least are partially selected
 	 */
-	public Set<Integer> getFrames(Imageset rec, String channel)
+	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
-		TreeSet<Integer> c=new TreeSet<Integer>();
+		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
 		for(ROI roi:subRoi)
 			c.addAll(roi.getFrames(rec, channel));
 		return c;
@@ -223,9 +224,9 @@ public class SubtractROI extends CompoundROI
 	/**
 	 * Get slices that at least are partially selected
 	 */
-	public Set<Integer> getSlice(Imageset rec, String channel, int frame)
+	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
-		TreeSet<Integer> c=new TreeSet<Integer>();
+		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
 		for(ROI roi:subRoi)
 			c.addAll(roi.getSlice(rec, channel, frame));
 		return c;
@@ -233,7 +234,7 @@ public class SubtractROI extends CompoundROI
 	
 	
 
-	public boolean imageInRange(String channel, double frame, int z)
+	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
 		for(ROI roi:subRoi)
 			if(roi.imageInRange(channel, frame, z))
@@ -244,7 +245,7 @@ public class SubtractROI extends CompoundROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvImage im, final String channel, final int frame, final int z)
+	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
@@ -285,7 +286,7 @@ public class SubtractROI extends CompoundROI
 	public Handle[] getHandles(){return getCompoundHandles();}
 	public Handle getPlacementHandle1(){return null;}
 	public Handle getPlacementHandle2(){return null;}
-	public void initPlacement(String chan, double frame, double z){}
+	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
 	
 	
 	

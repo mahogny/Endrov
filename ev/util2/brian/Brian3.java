@@ -63,6 +63,9 @@ public class Brian3
 										}
 									rank++;
 									}
+								
+								//TODO: Find E-values, upload these too.
+								
 								BrianSQL.runUpdate("insert into blastrank values('"+otherOrg+"','"+wbGene+"',"+foundRank+")");
 								}
 							catch (Exception e)

@@ -17,6 +17,7 @@ import endrov.ev.SimpleObserver;
 import endrov.imageWindow.*;
 import endrov.imageset.*;
 import endrov.roi.window.WindowROI;
+import endrov.util.EvDecimal;
 
 /**
  * ROI (Region Of Interest), selects a region on channel X frames X x,y,z (5D)
@@ -184,18 +185,18 @@ public abstract class ROI extends EvObject
 	
 	
 	public abstract Set<String> getChannels(Imageset rec);
-	public abstract Set<Integer> getFrames(Imageset rec, String channel);
-	public abstract Set<Integer> getSlice(Imageset rec, String channel, int frame);
+	public abstract Set<EvDecimal> getFrames(Imageset rec, String channel);
+	public abstract Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame);
 
 	public abstract Handle[] getHandles();
 	
 	//only interesting for placeable ROIs
 	public abstract Handle getPlacementHandle1();
 	public abstract Handle getPlacementHandle2();
-	public abstract void initPlacement(String chan, double frame, double z);
+	public abstract void initPlacement(String chan, EvDecimal frame, EvDecimal z);
 	
-	public abstract boolean imageInRange(String channel, double frame, int z);
-	public abstract LineIterator getLineIterator(EvImage im, String channel, int frame, int z);
+	public abstract boolean imageInRange(String channel, EvDecimal frame, EvDecimal z);
+	public abstract LineIterator getLineIterator(EvImage im, String channel, EvDecimal frame, EvDecimal z);
 	
 	public abstract Vector<ROI> getSubRoi();
 	
@@ -210,37 +211,37 @@ public abstract class ROI extends EvObject
 		{
 		public SpanNumeric(){all=true;}
 		public SpanNumeric(boolean initialAll){all=initialAll;}
-		public SpanNumeric(double start, double end){this.start=start;this.end=end;all=false;}
+		public SpanNumeric(EvDecimal start, EvDecimal end){this.start=start;this.end=end;all=false;}
 		public boolean all;
-		public double start, end;
-		public boolean inRange(double x)
+		public EvDecimal start, end;
+		public boolean inRange(EvDecimal x)
 			{
-			return all || (x>=start && x<end);
+			return all || (x.greaterEqual(start) && x.less(end));
 			}
-		public void set(double start, double end)
+		public void set(EvDecimal start, EvDecimal end)
 			{
 			all=false;
 			this.start=start;
 			this.end=end;
 			}
-		public void set(double start)
+		public void set(EvDecimal start)
 			{
-			set(start,start+1);
+			set(start,start.add(EvDecimal.ONE));
 			}
 		public void saveRange(Element e, String a)
 			{
 			if(!all)
 				{
-				e.setAttribute(a+"start", Double.toString(start));
-				e.setAttribute(a+"end", Double.toString(end));
+				e.setAttribute(a+"start", start.toString());
+				e.setAttribute(a+"end", end.toString());
 				}
 			}
 		public void loadRange(Element e, String a)
 			{
 			try
 				{
-				start=Double.parseDouble(e.getAttributeValue(a+"start"));
-				end=Double.parseDouble(e.getAttributeValue(a+"end"));
+				start=new EvDecimal(e.getAttributeValue(a+"start"));
+				end=new EvDecimal(e.getAttributeValue(a+"end"));
 				all=false;
 				}
 			catch(Exception e2)
@@ -305,8 +306,8 @@ public abstract class ROI extends EvObject
 				{
 				if(cSpan instanceof JCheckBox)
 					span.all=!((JCheckBox)cSpan).isSelected();
-				span.start=Double.parseDouble(spinnerS.getText());
-				span.end  =Double.parseDouble(spinnerE.getText());
+				span.start=new EvDecimal(spinnerS.getText());
+				span.end  =new EvDecimal(spinnerE.getText());
 				roiParamChanged.emit(tthis.get());
 				}
 			catch (NumberFormatException e){}

@@ -3,6 +3,7 @@ package endrov.imageset;
 import java.io.File;
 
 import endrov.data.RecentReference;
+import endrov.util.EvDecimal;
 
 
 public class EmptyImageset extends Imageset
@@ -10,6 +11,9 @@ public class EmptyImageset extends Imageset
 	public EmptyImageset()
 		{
 		imageset="(Empty)";
+		meta.resX=1;
+		meta.resY=1;
+		meta.resZ=1;
 		}
 	public void buildDatabase(){}
 	public void saveMeta(){}
@@ -33,7 +37,7 @@ public class EmptyImageset extends Imageset
 			{
 			super(channelName);
 			}
-		protected EvImage internalMakeLoader(int frame, int z)
+		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
 			{
 			return new EvImageEmpty("");
 			}

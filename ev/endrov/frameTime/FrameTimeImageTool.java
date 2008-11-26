@@ -57,7 +57,7 @@ public class FrameTimeImageTool implements ImageWindowTool
 			for(FrameTime f:rec.getObjects(FrameTime.class))
 				{
 				double frametime=Double.parseDouble(frametimes);
-				f.add((int)w.frameControl.getFrame(), frametime);
+				f.add(w.frameControl.getFrame().intValue(), frametime);  //TODO bad bd, but maybe deprecate frametime?
 				BasicWindow.updateWindows();
 				}
 			}

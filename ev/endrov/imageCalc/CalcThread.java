@@ -5,6 +5,7 @@ package endrov.imageCalc;
 import endrov.basicWindow.*;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 import java.awt.image.*;
 import javax.media.jai.*;
@@ -69,13 +70,13 @@ public final class CalcThread extends BatchThread
 				throw new Exception(calcChannel + " already exists");
 			
 			//For all frames
-			int curframe=ch1from.closestFrame(startFrame);
-			while(curframe<=endFrame)
+			EvDecimal curframe=ch1from.closestFrame(new EvDecimal(startFrame));
+			while(curframe.lessEqual(new EvDecimal(endFrame)))
 				{
 				//Tell about progress
 				batchLog(""+curframe);
 
-				int z=ch1from.closestZ(curframe, 0);
+				EvDecimal z=ch1from.closestZ(curframe, new EvDecimal(0));
 				try
 					{
 
@@ -119,8 +120,8 @@ public final class CalcThread extends BatchThread
 								}
 
 							//Go to next z
-							final int nz=ch1from.closestZAbove(curframe, z);
-							if(nz==z)
+							final EvDecimal nz=ch1from.closestZAbove(curframe, z);
+							if(nz.equals(z))
 								break;
 							z=nz;
 							}
@@ -132,8 +133,8 @@ public final class CalcThread extends BatchThread
 					}
 
 				//Go to next frame. End if there are no more frames.
-				int newcurframe=ch1from.closestFrameAfter(curframe);
-				if(newcurframe==curframe)
+				EvDecimal newcurframe=ch1from.closestFrameAfter(curframe);
+				if(newcurframe.equals(curframe))
 					break;
 				curframe=newcurframe;
 				}

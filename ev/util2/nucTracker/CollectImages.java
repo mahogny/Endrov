@@ -13,6 +13,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.Imageset;
 import endrov.imagesetOST.OstImageset;
 import endrov.nuc.NucLineage;
+import endrov.util.EvDecimal;
 
 
 public class CollectImages
@@ -48,8 +49,8 @@ public class CollectImages
 		else
 			outputDir=new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/"+channelName+"/images/false/");
 		
-		int startFrame=0;
-		int endFrame=100000000;
+		EvDecimal startFrame=new EvDecimal(0);
+		EvDecimal endFrame=new EvDecimal(100000000);
 		
 		//Load all worms
 		String[] wnlist;
@@ -71,8 +72,8 @@ public class CollectImages
 					"/Volumes/TBU_main02/ost4dgood/TB2164_080118",
 					"/Volumes/TBU_main02/ost4dgood/TB2142_071129",
 			};
-			startFrame=1500;
-			endFrame=2000;
+			startFrame=new EvDecimal(1500);
+			endFrame=new EvDecimal(2000);
 			}
 		
 		
@@ -99,15 +100,15 @@ public class CollectImages
 					NucLineage.Nuc nuc=e2.getValue();
 					String n=e2.getKey();
 					if(!(n.startsWith(":") || n.startsWith("shell") || n.equals("ant") || n.equals("post") || n.equals("venc") || n.equals("P") || n.indexOf('?')>=0 || n.indexOf('_')>=0 || n.equals("2ftail") || n.equals("germline")))
-						for(Map.Entry<Integer, NucLineage.NucPos> e:nuc.pos.entrySet())
+						for(Map.Entry<EvDecimal, NucLineage.NucPos> e:nuc.pos.entrySet())
 							{
-							int frame=e.getKey();
-							if(frame>=startFrame && frame<=endFrame)
+							EvDecimal frame=e.getKey();
+							if(frame.greaterEqual(startFrame) && frame.lessEqual(endFrame))
 								{
 								NucLineage.NucPos pos=e.getValue();
 								
 								frame=ost.getChannel(channelName).closestFrame(frame);
-								int z=ost.getChannel(channelName).closestZ(frame, (int)Math.round(pos.z*ost.meta.resZ));
+								EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z*ost.meta.resZ));
 								EvImage im=ost.getChannel(channelName).getImageLoader(frame, z);
 								
 								int midx=(int)im.transformWorldImageX(pos.x);

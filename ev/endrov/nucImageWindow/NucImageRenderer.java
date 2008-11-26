@@ -10,6 +10,7 @@ import endrov.ev.*;
 import endrov.imageWindow.*;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
+import endrov.util.EvDecimal;
 
 /**
  * Image window renderer of nuclei
@@ -192,7 +193,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	private double projectSphere(double r, double z)
 		{
 		//Currently assumes resx=resy. Maybe this should be specified harder?
-		double wz=w.s2wz(w.frameControl.getZ());
+		double wz=w.s2wz(w.frameControl.getZ().doubleValue());
 		double tf=r*r-(z-wz)*(z-wz);
 		if(tf>0)
 			{
@@ -212,7 +213,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			return null;
 		else
 			{
-			int framei=(int)w.frameControl.getFrame();
+			EvDecimal framei=w.frameControl.getFrame();
 			if(n.pos.get(framei)==null)
 				{
 				NucLineage.NucInterp inter=n.interpolatePos(framei);

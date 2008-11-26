@@ -9,6 +9,7 @@ import endrov.ev.SimpleObserver;
 import endrov.imageWindow.*;
 import endrov.roi.primitive.BoxROI;
 import endrov.roi.primitive.EllipseROI;
+import endrov.util.EvDecimal;
 
 /**
  * Render ROI in Image Window
@@ -58,8 +59,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 	private void drawROI(Graphics g, ROI roiUncast)
 		{
-		double frame=w.frameControl.getFrame();
-		int z=w.frameControl.getZ();
+		EvDecimal frame=w.frameControl.getFrame();
+		EvDecimal z=w.frameControl.getZ();
 		String channel=w.getCurrentChannelName();
 		
 		if(roiUncast.imageInRange(channel, frame, z))
@@ -74,13 +75,13 @@ public class ImageRendererROI implements ImageWindowRenderer
 				double x1=-1000,y1=-1000,x2=1000,y2=1000;
 				if(!roi.regionX.all)
 					{
-					x1=roi.regionX.start;
-					x2=roi.regionX.end;
+					x1=roi.regionX.start.doubleValue();
+					x2=roi.regionX.end.doubleValue();
 					}
 				if(!roi.regionY.all)
 					{
-					y1=roi.regionY.start;
-					y2=roi.regionY.end;
+					y1=roi.regionY.start.doubleValue();
+					y2=roi.regionY.end.doubleValue();
 					}
 				Vector2d ul=w.transformW2S(new Vector2d(x1,y1));
 				Vector2d ll=w.transformW2S(new Vector2d(x1,y2));
@@ -96,8 +97,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 				{
 				EllipseROI roi=(EllipseROI)roiUncast;
 				
-				Vector2d ul=w.transformW2S(new Vector2d(roi.regionX.start,roi.regionY.start));
-				Vector2d lr=w.transformW2S(new Vector2d(roi.regionX.end,roi.regionY.end));
+				Vector2d ul=w.transformW2S(new Vector2d(roi.regionX.start.doubleValue(),roi.regionY.start.doubleValue()));
+				Vector2d lr=w.transformW2S(new Vector2d(roi.regionX.end.doubleValue(),roi.regionY.end.doubleValue()));
 				
 				g.drawOval((int)ul.x, (int)ul.y, (int)(lr.x-ul.x), (int)(lr.y-ul.y));
 				}

@@ -12,6 +12,7 @@ import endrov.basicWindow.*;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 public class NamebasedImageset extends Imageset
 	{	
@@ -297,15 +298,15 @@ public class NamebasedImageset extends Imageset
 
 				//Get a place to put EVimage. Create holders if needed
 				ChannelImages ch=getCreateChannel(channelName);
-				TreeMap<Integer, EvImage> loaders=ch.imageLoader.get(frame);
+				TreeMap<EvDecimal, EvImage> loaders=ch.imageLoader.get(frame);
 				if(loaders==null)
 					{
-					loaders=new TreeMap<Integer, EvImage>();
-					ch.imageLoader.put(frame, loaders);
+					loaders=new TreeMap<EvDecimal, EvImage>();
+					ch.imageLoader.put(new EvDecimal(frame), loaders);
 					}
 				
 				//Plug EVimage
-				loaders.put(slice, ((Channel)ch).newImage(f.getAbsolutePath()));
+				loaders.put(new EvDecimal(slice), ((Channel)ch).newImage(f.getAbsolutePath())); //TODO bd, need to set resolution when loading
 				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
 				System.out.println(newLogEntry);
 				rebuildLog+=newLogEntry;
@@ -365,7 +366,7 @@ public class NamebasedImageset extends Imageset
 			{
 			super(channelName);
 			}
-		protected EvImage internalMakeLoader(int frame, int z)
+		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
 			{
 			return new EvImageExt("");
 			}
