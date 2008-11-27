@@ -15,6 +15,7 @@ public class GFF
 	{
 	public static final String featureINTRON="intron";
 	public static final String featureEXON="exon";
+	public static final String featureCDS="CDS";
 	
 	public static class Entry
 		{
