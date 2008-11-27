@@ -55,7 +55,7 @@ public class HMMER
 		while (( line = input.readLine()) != null)
 			{
 			String qseqLine=input.readLine();//		Query sequence: CHROMOSOME_X
-			String seqName=qseqLine.substring(qseqLine.indexOf(":")+1);
+			String seqName=qseqLine.substring(qseqLine.indexOf(":")+2);
 			input.readLine(); //Accession:      [none]
 			input.readLine(); //Description:    [none]
 			input.readLine(); //

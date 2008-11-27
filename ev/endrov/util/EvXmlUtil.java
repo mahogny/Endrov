@@ -24,7 +24,7 @@ public class EvXmlUtil
 
 	public static Document readXML(Reader c) throws Exception
 		{
-		SAXBuilder saxBuilder = new SAXBuilder();
+		SAXBuilder saxBuilder = new SAXBuilder(false); //No validation
 		Document document = saxBuilder.build(c);
 		return document;
 		}

@@ -121,7 +121,7 @@ public class Blast2
 					Entry e=new Entry();
 					e.queryid=queryDef;
 					e.subjectid=hitDef;
-					
+					e.evalue=Double.parseDouble(hsp.getChildText("Hsp_evalue"));
 					e.qseq=hsp.getChildText("Hsp_qseq");
 					e.hseq=hsp.getChildText("Hsp_hseq");
 					e.midline=hsp.getChildText("Hsp_midline");

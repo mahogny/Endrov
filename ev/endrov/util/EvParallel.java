@@ -55,11 +55,19 @@ public class EvParallel
 			}
 		return out;
 		}
-	
+
 	/**
 	 * Map :: [A] -> (A->B) -> [B]
 	 */
 	public static <A> void map_(List<A> in, final FuncAB<A,Object> func)
+		{
+		map_(numThread, in, func);
+		}
+	
+	/**
+	 * Map :: [A] -> (A->B) -> [B]
+	 */
+	public static <A> void map_(int numThread, List<A> in, final FuncAB<A,Object> func)
 		{
 		try
 			{
