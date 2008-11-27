@@ -3,6 +3,7 @@ package endrov.util;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 
 /**
  * Arbitrary precision decimal.
@@ -85,11 +86,11 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 	
 	public EvDecimal divide(EvDecimal val)
 		{
-		return new EvDecimal(dec.divide(val.dec));
+		return new EvDecimal(dec.divide(val.dec,MathContext.DECIMAL64));
 		}
 	public EvDecimal divide(double val)
 		{
-		return new EvDecimal(dec.divide(new BigDecimal(val)));
+		return new EvDecimal(dec.divide(new BigDecimal(val),MathContext.DECIMAL64));
 		}
 	public double doubleValue()
 		{

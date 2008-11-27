@@ -52,7 +52,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private static class Speed
 		{
 		EvDecimal speed;
-		public Speed(double speed)
+		public Speed(String speed)
 			{
 			this.speed=new EvDecimal(speed);
 			}
@@ -83,13 +83,13 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		listener=l;
 
 		Vector<Speed> speeds=new Vector<Speed>();
-		speeds.add(new Speed(0.1));
-		speeds.add(new Speed(0.5));
-		speeds.add(new Speed(1));
-		speeds.add(new Speed(5));
-		speeds.add(new Speed(10));
-		speeds.add(new Speed(50));
-		speeds.add(new Speed(100));
+		speeds.add(new Speed("0.1"));
+		speeds.add(new Speed("0.5"));
+		speeds.add(new Speed("1"));
+		speeds.add(new Speed("5"));
+		speeds.add(new Speed("10"));
+		speeds.add(new Speed("50"));
+		speeds.add(new Speed("100"));
 		speedCombo=new JComboBox(speeds);
 
 		setLayout(new GridBagLayout());
