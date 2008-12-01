@@ -351,7 +351,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					if(im.channelImages.containsKey(channelName) &&
 							im.channelImages.get(channelName).imageLoader.containsKey(cframe))
 						{
-						double resZ=im.meta.resZ;
+						//double resZ=im.meta.resZ;
 
 						
 						TreeMap<EvDecimal,EvImage> slices=im.channelImages.get(channelName).imageLoader.get(cframe);
@@ -381,7 +381,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 									pixelsD=slices.size();
 									realw=(float)bim.getWidth()/(float)(evim.getResX()/evim.getBinning());
 									realh=(float)bim.getHeight()/(float)(evim.getResY()/evim.getBinning());
-									reald=(float)pixelsD/(float)resZ;
+									reald=(float)pixelsD;//(float)resZ;
 									ptScalarField=new float[pixelsW*pixelsH*pixelsD];
 									System.out.println("alloc "+pixelsW+" "+pixelsH+" "+pixelsD);
 									}

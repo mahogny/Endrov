@@ -71,7 +71,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		public Object getValue(){return frame;}
 		public void setValue(Object e)
 			{
-			frame=(EvDecimal)e;
+			if(e instanceof Double)
+				frame=new EvDecimal((Double)e);
+			else if(e instanceof Integer)
+				frame=new EvDecimal((Integer)e);
+			else if(e instanceof EvDecimal)
+				frame=(EvDecimal)e;
+			//frame=(EvDecimal)e;
 			for(ChangeListener li:listeners)
 				li.stateChanged(new ChangeEvent(this));
 			}
@@ -97,7 +103,12 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		public Object getValue(){return z;}
 		public void setValue(Object e)
 			{
-			z=(EvDecimal)e;
+			if(e instanceof Double)
+				z=new EvDecimal((Double)e);
+			else if(e instanceof Integer)
+				z=new EvDecimal((Integer)e);
+			else if(e instanceof EvDecimal)
+				z=(EvDecimal)e;
 			for(ChangeListener li:listeners)
 				li.stateChanged(new ChangeEvent(this));
 			}
@@ -381,9 +392,9 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	
 	
 	/** Convert world to screen Z coordinate. REPLICATED CODE, BAD! */
-	public EvDecimal w2sz(EvDecimal z) {return z.multiply(getImageset().meta.resZ);}
+	public EvDecimal w2sz(EvDecimal z) {return z/*.multiply(getImageset().meta.resZ)*/;}
 	/** Convert world to screen Z coordinate. REPLICATED CODE, BAD! */
-	public EvDecimal s2wz(EvDecimal sz) {return sz.divide(getImageset().meta.resZ);} 
+	public EvDecimal s2wz(EvDecimal sz) {return sz/*.divide(getImageset().meta.resZ)*/;} 
 	
 	/**
 	 * Get settings from another synchronized control

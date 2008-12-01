@@ -87,7 +87,7 @@ public class Slice3D
 			h=bim.getHeight();
 			resX=evim.getResX()/evim.getBinning(); //px/um
 			resY=evim.getResY()/evim.getBinning();
-			resZ=im.meta.resZ;
+			//resZ=im.meta.resZ;
 
 			//Load bitmap, scale down. Not needed, little data.
 			/*

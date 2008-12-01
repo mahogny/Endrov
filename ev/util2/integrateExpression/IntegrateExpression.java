@@ -93,7 +93,7 @@ public class IntegrateExpression
 				{
 				EvImage im=eim.getValue();
 				BufferedImage bim=null;
-				double imageZw=eim.getKey().doubleValue()/ost.meta.resZ; //TODO bd, res no more
+				double imageZw=eim.getKey().doubleValue();///ost.meta.resZ; //TODO bd, res no more
 
 				//For all nuc
 				for(Map.Entry<NucPair,NucLineage.NucInterp> e:inter.entrySet())

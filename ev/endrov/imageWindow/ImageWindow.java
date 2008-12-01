@@ -479,9 +479,9 @@ public class ImageWindow extends BasicWindow
 		}
 	
 	/** Convert world to screen Z coordinate */
-	public double w2sz(double z) {return z*getImageset().meta.resZ;}
+	//public double w2sz(double z) {return z*getImageset().meta.resZ;}
 	/** Convert world to screen Z coordinate */
-	public double s2wz(double sz) {return sz/((double)getImageset().meta.resZ);} 
+	//public double s2wz(double sz) {return sz/((double)getImageset().meta.resZ);} 
 
 	
 	//are these useful?

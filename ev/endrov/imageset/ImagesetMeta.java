@@ -192,7 +192,7 @@ public class ImagesetMeta extends EvObject
 	 *****************************************************************************************************/
 	
 	/** Common resolution [px/um] */
-	public double resX, resY, resZ;
+	public double resX, resY, resZ; //TODO Deprecate Z once all OST converted
 	
 	/** Number of seconds each frame */
 	public double metaTimestep=1;

@@ -256,7 +256,7 @@ public class Stack3D extends StackInterface
 								os.realw=os.w/os.resX;
 								os.realh=os.h/os.resY;								
 								int slicespan=(slices.lastKey().subtract(slices.firstKey()).add(1).intValue()); //TODO bd problem, total redo
-								os.reald=(os.d*(double)slicespan/(double)slices.size())/chsel.im.meta.resZ;
+								os.reald=(os.d*(double)slicespan/(double)slices.size());///chsel.im.meta.resZ;
 								}
 
 

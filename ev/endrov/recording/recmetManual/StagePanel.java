@@ -1,13 +1,10 @@
 package endrov.recording.recmetManual;
 
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 
 import javax.swing.ImageIcon;
@@ -19,21 +16,35 @@ import javax.swing.JToggleButton;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.hardware.HardwarePath;
 import endrov.recording.HWStage;
+import endrov.util.EvSwingTools;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 
+/**
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class StagePanel extends JPanel implements ActionListener 
 	{
 	static final long serialVersionUID=0;
 	
 	private static int asize=3;
 	private static final int arrowTextDisp=4;
-	private static final int digitHeight=10; 
-	private static final int digitWidth=8;
+	private static int digitHeight=10; 
+	private static int digitWidth=8;
 	private static final int spacing=2;
 	private static final int numIntDigits=10;
 	private static final int numFracDigits=3;
 	
+	static
+	{
+	BufferedImage im=new BufferedImage(1,1,BufferedImage.TYPE_BYTE_GRAY);
+	FontMetrics fm=im.getGraphics().getFontMetrics();
+	Rectangle2D r=fm.getStringBounds("234567890", im.getGraphics());
+	digitWidth=(int)(r.getWidth()/9);
+//	digitHeight=(int)r.getHeight();
+	}
 	public static ImageIcon iconStageAllDown=new ImageIcon(StagePanel.class.getResource("iconStageAllDown.png"));
 	
 	
@@ -45,39 +56,23 @@ public class StagePanel extends JPanel implements ActionListener
 		this.hw=hw;
 	//	this.devName=devName;
 		
-		JPanel p=new JPanel(new GridBagLayout());
-		GridBagConstraints c=new GridBagConstraints();
+		JPanel p=new JPanel(new GridLayout(hw.getNumAxis(),1));
 		for(int curaxis=0;curaxis<hw.getNumAxis();curaxis++)
 			{
-			c.gridx=0;
-			c.gridy=curaxis;
-			c.fill=GridBagConstraints.NONE;
-			c.weightx=0;
 			JLabel lab=new JLabel("Axis "+hw.getAxisName()[curaxis]+" ");
 			lab.setToolTipText(devName+" ("+hw.getDescName()+") - "+hw.getAxisName()[curaxis]);
-			p.add(lab,c);
 			
 			OneAxisPanel a=new OneAxisPanel();
 			a.axisid=curaxis;
-			c.fill=GridBagConstraints.HORIZONTAL;
-			c.gridx=1;
-			c.weightx=1;
-			p.add(new JLabel(""),c);
 			
-			c.gridx=2;
-			c.weightx=0;
-			c.fill=0;
-			p.add(a,c);
 			
-			c.gridx=3;
 			JToggleButton toggleStageDown=new JImageToggleButton(iconStageAllDown,"Move stage all the way down");
-			p.add(toggleStageDown,c);
-
-			c.gridx=4;
 			JImageButton bController=new JImageButton(BasicIcon.iconController,"Gamepad mapping");
-			p.add(bController,c);
-
+			JPanel pb=new JPanel(new GridLayout(1,2));
+			pb.add(toggleStageDown);
+			pb.add(bController);
 			
+			p.add(EvSwingTools.borderLR(lab, a, pb));
 			}
 		setLayout(new GridLayout(1,1));
 		add(p);
@@ -262,9 +257,11 @@ public class StagePanel extends JPanel implements ActionListener
 			{
 			super.paintComponent(g);
 			String poss=getPosString();			
+
+			//g.setColor(Color.red);			g.fillRect(0,0,getWidth(),getHeight());
 			
-			g.setColor(Color.WHITE);
-			g.fillRect(xOffset, yOffset+asize+2+1, (numIntDigits+numFracDigits+1)*digitWidth, digitHeight);
+			//g.setColor(Color.);
+			//g.fillRect(xOffset, yOffset+asize*2, (numIntDigits+numFracDigits+2)*digitWidth, digitHeight+spacing*2);
 
 
 			g.setColor(Color.BLACK);

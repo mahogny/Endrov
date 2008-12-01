@@ -247,6 +247,12 @@ public class EV
 	
 	public static String pad(EvDecimal d, int len)
 		{
+		StringBuffer sb=new StringBuffer();
+		pad(d,len,sb);
+		return sb.toString();
+		}
+	public static void pad(EvDecimal d, int len, StringBuffer sb)
+		{
 		String s=d.toString();
 		String topad="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 		int slen=s.indexOf(".");
@@ -254,19 +260,21 @@ public class EV
 			slen=s.length();
 		len-=slen;
 		if(slen<=0)
-			return s;
+			sb.append(s);
+//			return s;
 		else if(len<100)
-			return topad.substring(0,len)+s;
+			sb.append(topad.substring(0,len)+s);
+//			return topad.substring(0,len)+s;
 		else
 			{
-			StringBuffer sb=new StringBuffer(slen+len+10);
+//			StringBuffer sb=new StringBuffer(slen+len+10);
 			while(len>0)
 				{
 				sb.append('0');
 				len--;
 				}
 			sb.append(s);
-			return sb.toString();
+//			return sb.toString();
 			}
 		}
 	

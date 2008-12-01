@@ -193,7 +193,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	private double projectSphere(double r, double z)
 		{
 		//Currently assumes resx=resy. Maybe this should be specified harder?
-		double wz=w.s2wz(w.frameControl.getZ().doubleValue());
+		double wz=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
 		double tf=r*r-(z-wz)*(z-wz);
 		if(tf>0)
 			{

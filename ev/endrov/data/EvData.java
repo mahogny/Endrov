@@ -11,6 +11,7 @@ import org.jdom.output.*;
 
 import endrov.basicWindow.*;
 import endrov.ev.*;
+import endrov.util.EvDecimal;
 
 /**
  * Container of data for EV
@@ -365,7 +366,7 @@ public abstract class EvData
 		}
 	
 	/** Version of metadata */
-	String metadataVersion="<undefined>";
+	public String metadataVersion="0";
 	
 	
 	/**
@@ -384,6 +385,17 @@ public abstract class EvData
 			e.printStackTrace();
 			}
 		}
+	private static void help331(Element e, EvDecimal timestep)
+		{
+		String aF=e.getAttributeValue("f");
+		if(aF!=null)
+			e.setAttribute("f",new EvDecimal(aF).multiply(timestep).toString());
+		String aFrame=e.getAttributeValue("frame");
+		if(aFrame!=null)
+			e.setAttribute("frame",new EvDecimal(aFrame).multiply(timestep).toString());
+		for(Element child:EV.castIterableElement(e.getChildren()))
+			help331(child, timestep);
+		}
 	public void loadXmlMetadata(InputStream fileInputStream)
 		{
 		metaObject.clear();
@@ -396,6 +408,14 @@ public abstract class EvData
 
   		if(element.getAttribute("version")!=null)
   			metadataVersion=element.getAttributeValue("version");
+  		
+  		//metadata 3->3.1
+  		if(!metadataVersion.equals("3.1"))
+	  		{
+	  		Element eIm=element.getChild("imageset");
+	  		EvDecimal timestep=new EvDecimal(eIm.getChild("timestep").getText());
+	  		help331(element, timestep);
+	  		}
   		
   		//Extract objects
   		for(Element child:EV.castIterableElement(element.getChildren()))
@@ -462,6 +482,7 @@ public abstract class EvData
 	public Document saveXmlMetadata() //root name
 		{
 		Element ostElement=new Element("ost");
+		ostElement.setAttribute("version",metadataVersion);
 		Document doc = new Document(ostElement);
 		for(String id:metaObject.keySet())
 			{

@@ -150,7 +150,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				NucLineage.NucPos pos=n.getPosCreate(w.frameControl.getFrame());
 				pos.x=(x1+x2)/2;
 				pos.y=(y1+y2)/2;
-				pos.z=w.s2wz(w.frameControl.getZ().doubleValue());
+				pos.z=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
 				pos.r=Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))/2;
 				
 				Vector2d so1=w.transformW2S(new Vector2d(pos.r,0));
@@ -246,7 +246,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				NucLineage.NucPos pos=n.getPosCreate(curFramei); 
 				pos.x=inter.pos.x;
 				pos.y=inter.pos.y;
-				pos.z=w.s2wz(w.frameControl.getZ().doubleValue());
+				pos.z=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
 				pos.r=inter.pos.r;
 				r.commitModifyingNuc();
 				}
