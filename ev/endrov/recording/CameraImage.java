@@ -35,17 +35,23 @@ public class CameraImage
 			{
 			//I'm sure this can be made faster, low-level if not otherwise
 			int p[]=new int[w];
-			if(bytesPerPixel==1)
+			if(pixels instanceof BufferedImage)
 				{
+				return (BufferedImage)pixels;
+				}
+			else if(bytesPerPixel==1)
+				{
+				int off=y*w;
 				byte[] in=(byte[])pixels;
 				for(int x=0;x<w;x++)
-					p[x]=in[x];
+					p[x]=in[x+off];
 				}
 			else if(bytesPerPixel==2)
 				{
+				int off=y*w;
 				short[] in=(short[])pixels;
 				for(int x=0;x<w;x++)
-					p[x]=in[x];
+					p[x]=in[x+off];
 				}
 			r.setPixels(0, y, w, 1, p);
 			}

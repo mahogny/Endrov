@@ -182,9 +182,9 @@ public abstract class VirtualSerial implements HWSerial
 		{
 		return null;
 		}
-	public boolean getPropertyValueBoolean(String prop)
+	public Boolean getPropertyValueBoolean(String prop)
 		{
-		return false;
+		return null;
 		}
 	public void setPropertyValue(String prop, boolean value)
 		{

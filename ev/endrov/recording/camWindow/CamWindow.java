@@ -130,6 +130,7 @@ public class CamWindow extends BasicWindow
 							{
 							Rectangle bounds=This.getBoundsEvWindow();
 							This.setBoundsEvWindow(new Rectangle(
+									bounds.x,bounds.y,
 									(int)(bounds.getWidth()+(im.getWidth()-dbounds.getWidth())),
 									(int)(bounds.getHeight()+(im.getHeight()-dbounds.getHeight()))
 									));

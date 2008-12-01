@@ -19,7 +19,7 @@ public interface Hardware
 	public SortedMap<String,PropertyType> getPropertyTypes();
 	public SortedMap<String,String> getPropertyMap();
 	public String getPropertyValue(String prop);
-	public boolean getPropertyValueBoolean(String prop);
+	public Boolean getPropertyValueBoolean(String prop);
 	
 	public void setPropertyValue(String prop, String value);
 	public void setPropertyValue(String prop, boolean value);

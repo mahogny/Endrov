@@ -88,7 +88,7 @@ public abstract class BasicNativeCachingStateDevice implements HWState
 		}
 
 	
-	public boolean getPropertyValueBoolean(String prop)
+	public Boolean getPropertyValueBoolean(String prop)
 		{
 		if(prop.equals("state"))
 			return getCurrentState()!=0;

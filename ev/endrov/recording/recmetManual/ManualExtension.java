@@ -228,7 +228,11 @@ public class ManualExtension implements MicroscopeWindow.Extension
 							public void actionPerformed(ActionEvent e)
 								{hw.setPropertyValue(propName, ((JCheckBox)e.getSource()).isSelected());}
 						});
-						comp=b;
+						JPanel p=new JPanel(new BorderLayout());
+						//p.add(new JLabel(propName),BorderLayout.WEST);
+						p.add(new DotPanel(),BorderLayout.CENTER);
+						p.add(b,BorderLayout.EAST);
+						comp=p;
 						}
 					else if(!pt.categories.isEmpty())
 						{

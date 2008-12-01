@@ -105,7 +105,7 @@ public class MMDeviceAdapter implements Hardware
 			}
 		}
 	
-	public boolean getPropertyValueBoolean(String prop)
+	public Boolean getPropertyValueBoolean(String prop)
 		{
 		return getPropertyValue(prop).equals("1");
 		}
