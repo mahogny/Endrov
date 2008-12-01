@@ -118,13 +118,13 @@ public class BioformatsImageset extends Imageset
 		meta=new ImagesetMeta();
 		meta.resX=1;
 		meta.resY=1;
-		meta.resZ=1;
+		double resZ=1;
 		if(imageReader.getMetadataValue("VoxelSizeX")!=null)
 			meta.resX=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeY")!=null)
 			meta.resY=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeZ")!=null)
-			meta.resZ=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6);
+			resZ=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6);
 
 		//Load metadata from added OSTXML-file
 		File metaFile=getMetaFile();
@@ -158,7 +158,7 @@ public class BioformatsImageset extends Imageset
 				TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
 				for(int slicenum=0;slicenum<numz;slicenum++)
 					{
-					EvDecimal realSliceNum=new EvDecimal(slicenum); //TODO bd resolution
+					EvDecimal realSliceNum=new EvDecimal(slicenum*resZ);
 					if(imageReader.isRGB())
 						loaderset.put(realSliceNum, c.newImage(imageReader,imageReader.getIndex(slicenum, 0, framenum), channelnum, ""));
 //						loaderset.put(slicenum, c.newImage(imageReader,imageReader.getIndex(slicenum, channelnum, framenum), channelnum, ""));

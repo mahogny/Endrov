@@ -315,7 +315,10 @@ public abstract class Imageset extends EvData
 		 */
 		public EvDecimal closestFrameAfter(EvDecimal frame)
 			{
-			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=imageLoader.tailMap(frame.add(1)); //TODO bd wrong?
+			//Can be made faster by iterator
+			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=new TreeMap<EvDecimal, TreeMap<EvDecimal,EvImage>>(imageLoader.tailMap(frame));
+			after.remove(frame);
+			
 			if(after.size()==0)
 				return frame;
 			else
@@ -369,7 +372,10 @@ public abstract class Imageset extends EvData
 				return z;
 			else
 				{
-				SortedMap<EvDecimal,EvImage> after=slices.tailMap(z.add(1)); //TODO bd wrong
+				//Can be made faster
+				SortedMap<EvDecimal,EvImage> after=new TreeMap<EvDecimal, EvImage>(slices.tailMap(z));
+				after.remove(z);
+				
 				if(after.size()==0)
 					return z;
 				else

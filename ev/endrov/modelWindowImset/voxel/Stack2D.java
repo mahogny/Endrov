@@ -44,7 +44,7 @@ http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
 public class Stack2D extends StackInterface
 	{	
 	EvDecimal lastframe=null; 
-	double resZ;
+	//double resZ;
 	private TreeMap<Double,Vector<OneSlice>> texSlices=null;
 	private final int skipForward=1; //later maybe allow this to change
 	private boolean needLoadGL=false;
@@ -151,7 +151,7 @@ public class Stack2D extends StackInterface
 				{
 				EvDecimal cframe=chsel.ch.closestFrame(frame);
 				//Common resolution for all channels
-				resZ=chsel.im.meta.resZ;
+				//resZ=chsel.im.meta.resZ;
 
 				//For every Z
 				TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
@@ -198,7 +198,7 @@ public class Stack2D extends StackInterface
 		os.h=bim.getHeight();
 		os.resX=evim.getResX()/evim.getBinning(); //px/um
 		os.resY=evim.getResY()/evim.getBinning();
-		os.z=z.divide(resZ).doubleValue();
+		os.z=z/*.divide(resZ)*/.doubleValue();
 		os.color=chsel.color;
 
 		int bw=suitablePower2(os.w);

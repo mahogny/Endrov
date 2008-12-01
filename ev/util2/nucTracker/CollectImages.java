@@ -108,7 +108,7 @@ public class CollectImages
 								NucLineage.NucPos pos=e.getValue();
 								
 								frame=ost.getChannel(channelName).closestFrame(frame);
-								EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z*ost.meta.resZ));
+								EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));
 								EvImage im=ost.getChannel(channelName).getImageLoader(frame, z);
 								
 								int midx=(int)im.transformWorldImageX(pos.x);

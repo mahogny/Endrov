@@ -19,6 +19,10 @@ import endrov.recording.HWStage;
 
 /**
  * Demo microscope
+ * 
+ * To add: condenser distance, cond loc, light intensity, choice of light, DIC, PhC, dark field, bright field, 
+ * 
+ * 
  * @author Johan Henriksson
  *
  */

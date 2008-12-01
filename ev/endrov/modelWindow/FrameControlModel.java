@@ -58,7 +58,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			}
 		public String toString()
 			{
-			return ""+speed+" FPS";
+			return ""+speed+"x";
 			}
 		}
 		
@@ -83,13 +83,13 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		listener=l;
 
 		Vector<Speed> speeds=new Vector<Speed>();
+		speeds.add(new Speed("0.01"));
 		speeds.add(new Speed("0.1"));
-		speeds.add(new Speed("0.5"));
 		speeds.add(new Speed("1"));
-		speeds.add(new Speed("5"));
 		speeds.add(new Speed("10"));
-		speeds.add(new Speed("50"));
 		speeds.add(new Speed("100"));
+		speeds.add(new Speed("1000"));
+		speeds.add(new Speed("10000"));
 		speedCombo=new JComboBox(speeds);
 
 		setLayout(new GridBagLayout());
@@ -108,7 +108,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		
 		//Build other controls and merge
 		//setLayout(new GridLayout());
-		frameModel=new SpinnerNumberModel((double)0.0,(double)0.0,(double)10000.0,(double)0.1);
+		frameModel=new SpinnerNumberModel((double)0.0,(double)0.0,(double)1000000.0,(double)0.1);
 		spinnerFrame=new JSpinner(frameModel);
 		add(new JLabel("Frame:"),playButtonConstraint(7));
 		add(spinnerFrame,playButtonConstraint(8));
@@ -144,6 +144,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		spinnerGroup.removeChangeListener(this);
 		}
 	
+	private static int FPS=30;
+	
 	/**
 	 * Handle buttons and timer
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -153,7 +155,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		if(e.getSource()==buttonBeginning)
 			setFrame(new EvDecimal(0)); //TODO bd
 		else if(e.getSource()==buttonEnd)
-			setFrame(new EvDecimal(3000)); //TODO bd
+			setFrame(new EvDecimal(30000)); //TODO bd
 		else if(e.getSource()==buttonStepForward)
 			stepForward(new EvDecimal(1)); //TODO hm. FPS?
 		else if(e.getSource()==buttonStepBack)
@@ -165,9 +167,9 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		else if(e.getSource()==timer)
 			{
 			if(playingForward)
-				setFrame(getFrame().add(currentSpeed()));
+				setFrame(getFrame().add(currentSpeed().divide(FPS)));
 			else
-				setFrame(getFrame().add(currentSpeed()));
+				setFrame(getFrame().add(currentSpeed().divide(FPS)));
 			}
 		
 		}
@@ -183,7 +185,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	 */
 	public void stopStart(boolean forward)
 		{
-		int dt=100/4;
+		int dt=1000/FPS;
 			
 		if(timer==null)
 			{

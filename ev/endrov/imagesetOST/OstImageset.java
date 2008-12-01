@@ -69,7 +69,7 @@ public class OstImageset extends Imageset
 		{
 		this.basedir=basedir;
 		convert23();
-		convert33prime(); //should disappear ASAP, unsafe
+		//convert33prime(); //should disappear ASAP, unsafe
 		buildDatabase();
 		}
 	
@@ -117,7 +117,86 @@ public class OstImageset extends Imageset
 		
 		}
 	
-
+	/**
+	 * Convert 3 -> 3.1
+	 * Timestep and resZ deleted, major file renaming
+	 */
+	public void convert33d1()
+		{
+		double curv=Double.parseDouble(metadataVersion);
+		if(curv<3.1)
+			{
+			System.out.println("Updating files 3->3.1");
+			
+			//For all channels
+			for(File fchan:basedir.listFiles())
+				if(fchan.isDirectory() && fchan.getName().startsWith("ch-"))
+					{
+					
+					//For all frames, prepend "n"
+					for(File fframe:fchan.listFiles())
+						if(fframe.isDirectory() && !fframe.getName().startsWith("."))
+							{
+							File newframe=new File(fchan,"n"+fframe.getName());
+							//System.out.println("rename "+fframe+" "+newframe);
+							fframe.renameTo(newframe);
+							}
+					//For all frames, remove "n" and multiply
+					for(File fframe:fchan.listFiles())
+						if(fframe.isDirectory() && fframe.getName().startsWith("n"))
+							{
+							String s=fframe.getName();
+							EvDecimal cur=new EvDecimal(s.substring(1));
+							File newframe=new File(fchan, EV.pad(cur.multiply(meta.metaTimestep), 8));
+							//System.out.println("rename "+fframe+" "+newframe);
+							fframe.renameTo(newframe);
+							}
+					
+					//For all frames
+					for(File fframe:fchan.listFiles())
+						if(fframe.isDirectory() && !fframe.getName().startsWith("."))
+							{
+							//For all slices, prepend "n"
+							for(File fslice:fframe.listFiles())
+								if(fslice.isFile() && !fslice.getName().startsWith("."))
+									{
+									File newslice=new File(fframe,"n"+fslice.getName());
+									//System.out.println("renameS1 "+fslice+" "+newslice);
+									fslice.renameTo(newslice);
+									}
+							//For all slices, remove "n" and divide
+							for(File fslice:fframe.listFiles())
+								if(fslice.isFile() && fslice.getName().startsWith("n"))
+									{
+									String s=fslice.getName().substring(1);
+									String ext=s.substring(s.lastIndexOf("."));
+									s=s.substring(0,s.lastIndexOf("."));
+									File newslice=new File(fframe,EV.pad(new EvDecimal(s).divide(meta.resZ),8)+ext);
+									//System.out.println("renameS2 "+fslice+" "+newslice);
+									fslice.renameTo(newslice);
+									}
+							
+							
+							
+							}
+					
+					
+					
+					
+					
+					}
+			
+			
+			System.out.println("Saving meta 3.1");
+			//saveMeta();
+			invalidateDatabaseCache();
+			System.out.println("Reloading file listing");
+			scanFiles();
+			}
+		
+		
+		}
+	
 	public void convert33prime()
 		{
 		//Rename channels
@@ -331,23 +410,23 @@ public class OstImageset extends Imageset
 	 */
 	public void buildDatabase()
 		{
-		File basepath=basedir;
-		File metaFile=new File(basepath,"rmd.ostxml");
+		File metaFile=new File(basedir,"rmd.ostxml");
 //		File metaFile=new File(basepath,"rmd.xml");
 		if(!metaFile.exists())
 			System.out.printf("AAIEEE NO METAFILE?? this might mean this is in the OST1 format which has been removed");
 
 		//Get descriptive name of imageset
-		imageset=basepath.getName();
+		imageset=basedir.getName();
 		if(imageset.endsWith(".ost"))
 			imageset=imageset.substring(0,imageset.length()-".ost".length());
 		
-		if(basepath.exists())
+		if(basedir.exists())
 			{
 			//Load metadata
 			try
 				{
 				loadImagesetXmlMetadata(new FileInputStream(metaFile));
+				convert33d1();
 				}
 			catch (FileNotFoundException e)
 				{
@@ -364,20 +443,7 @@ public class OstImageset extends Imageset
 
 			if(!loadDatabaseCache())
 				{
-				//Check which files exist
-				File[] dirfiles=basepath.listFiles();
-				for(File f:dirfiles)
-					if(f.isDirectory() && f.getName().startsWith("ch-"))//!f.getName().startsWith(".") && !f.getName().equals("data"))
-						{
-						String fname=f.getName();
-						String channelName=fname.substring("ch-".length());
-//						String channelName=fname.substring(fname.lastIndexOf('-')+1);
-						Log.printLog("Found channel: "+channelName);
-						Channel c=new Channel(meta.getCreateChannelMeta(channelName));
-						c.scanFiles();
-						channelImages.put(channelName,c);
-						}
-				saveDatabaseCache();
+				scanFiles();
 				}
 			}
 		else
@@ -385,6 +451,24 @@ public class OstImageset extends Imageset
 		replicateLoadedFiles();
 		}
 	
+	private void scanFiles()
+		{
+		//Check which files exist
+		channelImages.clear();
+		File[] dirfiles=basedir.listFiles();
+		for(File f:dirfiles)
+			if(f.isDirectory() && f.getName().startsWith("ch-"))//!f.getName().startsWith(".") && !f.getName().equals("data"))
+				{
+				String fname=f.getName();
+				String channelName=fname.substring("ch-".length());
+//				String channelName=fname.substring(fname.lastIndexOf('-')+1);
+				Log.printLog("Found channel: "+channelName);
+				Channel c=new Channel(meta.getCreateChannelMeta(channelName));
+				c.scanFiles(this);
+				channelImages.put(channelName,c);
+				}
+		saveDatabaseCache();
+		}
 	
 	/**
 	 * Make a copy of current list of loaders to ostLoadedImages. Meta is set to null in this copy.
@@ -436,7 +520,7 @@ public class OstImageset extends Imageset
 			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(getDatabaseCacheFile()),"UTF-8"));
 			
 			String line=in.readLine();
-			if(!line.equals("version1"))
+			if(!line.equals("version1")) //version1
 				{
 				Log.printLog("Image cache wrong version, ignoring");
 				return false;
@@ -463,20 +547,24 @@ public class OstImageset extends Imageset
 					for(int j=0;j<numFrame;j++)
 						{
 						EvDecimal frame=new EvDecimal(in.readLine());
+						//EvDecimal realFrame=frame.multiply(meta.metaTimestep);
+						
 						int numSlice=Integer.parseInt(in.readLine());
+//						TreeMap<EvDecimal,EvImage> loaderset=c.imageLoader.get(realFrame);
 						TreeMap<EvDecimal,EvImage> loaderset=c.imageLoader.get(frame);
 						if(loaderset==null)
 							{
 							//A sorted linked list would make set generation linear time
 							loaderset=new TreeMap<EvDecimal,EvImage>();
 							c.imageLoader.put(frame, loaderset);
+//							c.imageLoader.put(realFrame, loaderset);
 							}
 						
 						
 						//Generate name of frame directory, optimized. windows support?
 						StringBuffer framedirName=new StringBuffer(channeldirName);
 						framedirName.append('/');
-						EV.pad(frame.intValue(), 8, framedirName);  //TODO bd wrong?
+						EV.pad(frame, 8, framedirName);  
 						framedirName.append('/');
 						
 						
@@ -489,14 +577,18 @@ public class OstImageset extends Imageset
 								s=in.readLine();
 								}
 							EvDecimal slice=new EvDecimal(s);
+//							EvDecimal realSlice=new EvDecimal(in.readLine());
 
 							//Generate name of image file, optimized
 							StringBuffer imagefilename=new StringBuffer(framedirName);
-							EV.pad(slice.intValue(), 8, imagefilename); //TODO bd wrong?
+							EV.pad(slice, 8, imagefilename); 
 							imagefilename.append(ext);
 							
 							EvImage evim=((Channel)c).newEvImage(imagefilename.toString());
-							loaderset.put(slice, evim);
+							loaderset.put(slice, evim); //TODO TODO  ost3 hack
+//							loaderset.put(realSlice, evim); //TODO TODO  ost3 hack
+							
+							//System.out.println("## "+slice+"\t"+realSlice);
 							}
 						}
 					}
@@ -574,6 +666,7 @@ public class OstImageset extends Imageset
 			String lastExt="";
 			BufferedWriter w=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getDatabaseCacheFile()),"UTF-8"));
 			
+			//w.write("version2\n");
 			w.write("version1\n");
 
 			w.write(channelImages.size()+"\n");
@@ -583,16 +676,19 @@ public class OstImageset extends Imageset
 				w.write(""+c.imageLoader.size()+"\n");
 				for(EvDecimal frame:c.imageLoader.keySet())
 					{
+					//EvDecimal diskFrame=frame.divide(meta.metaTimestep);
+					//w.write(""+diskFrame+"\n");
 					w.write(""+frame+"\n");
 					w.write(""+c.imageLoader.get(frame).size()+"\n");
-					for(EvDecimal slice:c.imageLoader.get(frame).keySet())
+					for(EvDecimal realSlice:c.imageLoader.get(frame).keySet())
 						{
-						EvImage loader=c.getImageLoader(frame, slice);
-						File imagefile=new File(((EvImageJAI)loader).jaiFileName());
+						EvImageJAI loader=(EvImageJAI)c.getImageLoader(frame, realSlice);
+						File imagefile=new File((loader).jaiFileName());
 						String filename=imagefile.getName();
 						String ext="";
-						if(filename.indexOf('.')!=-1)
-							ext=filename.substring(filename.indexOf('.'));
+						if(filename.lastIndexOf('.')!=-1)
+							ext=filename.substring(filename.lastIndexOf('.')); //TODO enforce file ending in spec
+						//String slice=filename.substring(0,filename.length()-ext.length());   //TODO ost3 hack
 						
 						if(!ext.equals(lastExt))
 							{
@@ -600,7 +696,8 @@ public class OstImageset extends Imageset
 							lastExt=ext;
 							}
 						
-						w.write(""+slice+"\n");
+						//w.write(""+slice+"\n");
+						w.write(""+realSlice+"\n");
 						}
 					}
 				}
@@ -642,7 +739,7 @@ public class OstImageset extends Imageset
 		/**
 		 * Scan all files for this channel and build a database
 		 */
-		public void scanFiles()
+		public void scanFiles(OstImageset ost)
 			{
 			imageLoader.clear();
 			
@@ -652,8 +749,12 @@ public class OstImageset extends Imageset
 				if(framedir.isDirectory() && !framedir.getName().startsWith("."))
 					{
 					EvDecimal framenum=new EvDecimal(framedir.getName());
+
+					//EvDecimal realFramenum=framenum.multiply(ost.meta.metaTimestep);
 					
 					TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
+					imageLoader.put(framenum, loaderset);
+//					imageLoader.put(realFramenum, loaderset);
 					File[] slicefiles=framedir.listFiles();
 					for(File f:slicefiles)
 						{
@@ -663,8 +764,12 @@ public class OstImageset extends Imageset
 							partname=partname.substring(0,partname.lastIndexOf('.'));
 							try
 								{
-								EvDecimal slicenum=new EvDecimal(partname);
-								loaderset.put(slicenum, newEvImage(f.getAbsolutePath()));
+								//EvDecimal realSlicenum=new EvDecimal(partname).divide(ost.meta.resZ); //TODO TODO OST3-hack
+								//loaderset.put(realSlicenum, newEvImage(f.getAbsolutePath()));
+
+								EvDecimal slice=new EvDecimal(partname);
+								//EvDecimal slice=new EvDecimal(partname).divide(ost.meta.resZ);
+								loaderset.put(slice, newEvImage(f.getAbsolutePath()));
 								}
 							catch (NumberFormatException e)
 								{
@@ -673,7 +778,6 @@ public class OstImageset extends Imageset
 								}
 							}
 						}
-					imageLoader.put(framenum, loaderset);
 					}
 			}
 
