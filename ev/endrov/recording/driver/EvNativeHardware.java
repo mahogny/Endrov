@@ -18,9 +18,11 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 	static
 		{
 		HardwareManager.root.hw.put("ev",new EvNativeHardware());
+		
 		//TODO synchronize needed?
 		
 		hardwareProvided.put("OlympusIX", OlympusIX.class);
+		hardwareProvided.put("Demo", DemoScope.class);
 		}
 	
 	public EvNativeHardware()
@@ -28,6 +30,7 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 		OlympusIX core=new OlympusIX();
 		
 		hw.put("IX", core);
+		hw.put("demo", new DemoScope());
 		
 		
 		}
@@ -88,7 +91,7 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 		}
 
 
-	public boolean getPropertyValueBoolean(String prop)
+	public Boolean getPropertyValueBoolean(String prop)
 		{
 		return false;
 		}

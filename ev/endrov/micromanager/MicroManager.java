@@ -195,9 +195,9 @@ public class MicroManager extends HardwareProvider implements Hardware
 		}
 
 
-	public boolean getPropertyValueBoolean(String prop)
+	public Boolean getPropertyValueBoolean(String prop)
 		{
-		return false;
+		return null;
 		}
 
 
