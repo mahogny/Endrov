@@ -188,7 +188,7 @@ public class OstImageset extends Imageset
 			
 			
 			System.out.println("Saving meta 3.1");
-			//saveMeta();
+			saveMeta();
 			invalidateDatabaseCache();
 			System.out.println("Reloading file listing");
 			scanFiles();

@@ -1,0 +1,31 @@
+Things to check before every release
+=======================================
+
+Check that it runs on major platforms
+* Linux (ubuntu)
+* OSX
+* Windows XP
+
+Image formats
+* Is metadata loaded correctly? res?
+* can connect to OME?
+
+Functionality
+* Does image conversion work?
+* Does ROI work?
+
+Dependencies up to date?
+* micro-manager
+* bioformats
+
+
+
+
+Additional checks
+=======================================
+* Does it work on Vista?
+* Imserv long tags working?
+* imserv cache transfer?
+* lineage window ok?
+* is OST gracefully updated?
+* does example imagesets work?
