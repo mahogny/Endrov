@@ -412,6 +412,7 @@ public abstract class EvData
   		//metadata 3->3.1
   		if(!metadataVersion.equals("3.1"))
 	  		{
+	  		System.out.println("Updating metadata to 3.1");
 	  		Element eIm=element.getChild("imageset");
 	  		EvDecimal timestep=new EvDecimal(eIm.getChild("timestep").getText());
 	  		help331(element, timestep);
@@ -482,7 +483,7 @@ public abstract class EvData
 	public Document saveXmlMetadata() //root name
 		{
 		Element ostElement=new Element("ost");
-		ostElement.setAttribute("version",metadataVersion);
+		ostElement.setAttribute("version","3.1");
 		Document doc = new Document(ostElement);
 		for(String id:metaObject.keySet())
 			{
