@@ -89,6 +89,7 @@ public abstract class Imageset extends EvData
 	/**
 	 * This will not be here in the future 
 	 */
+	/*
 	public String frameToTime(EvDecimal framed)
 		{
 		int frame=framed.intValue();
@@ -113,7 +114,7 @@ public abstract class Imageset extends EvData
 		sb.append(framed);
 		sb.append("s");
 		return sb.toString();
-		}
+		}*/
 	
 	
 	/**
