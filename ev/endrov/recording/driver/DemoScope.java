@@ -50,10 +50,13 @@ public class DemoScope extends HardwareProvider implements Hardware
 			Graphics g=im.getGraphics();
 			
 			g.setColor(Color.WHITE);
-			g.drawString(""+stagePos[0], 30, 30);
+//			g.drawString(""+stagePos[0], 30, 30);
 
 			int r=(int)stagePos[2];
 
+			g.translate((int)stagePos[0], (int)stagePos[1]);
+			
+			
 			g.fillOval(100-r, 100-r, 2*r, 2*r);
 			
 			CameraImage cim=new CameraImage();
