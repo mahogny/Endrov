@@ -16,6 +16,7 @@ import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowExtension;
 import endrov.modelWindow.ModelWindowHook;
 import endrov.modelWindow.TransparentRender;
+import endrov.util.EvDecimal;
 
 /**
  * Grid in model window
@@ -168,7 +169,8 @@ public class ModelWindowGrid implements ModelWindowExtension
 					}
 			}
 		
-		
+		public EvDecimal getFirstFrame(){return null;}
+		public EvDecimal getLastFrame(){return null;}
 		}
 	
 	

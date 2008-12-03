@@ -493,8 +493,9 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			
 			}
 		
-		
-		
+		//TODO: can do better
+		public EvDecimal getFirstFrame(){return null;}
+		public EvDecimal getLastFrame(){return null;}
 		}
 	
 	}

@@ -9,6 +9,7 @@ import org.jdom.Element;
 
 import endrov.data.EvObject;
 import endrov.modelWindow.*;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -149,6 +150,10 @@ public class ChromaCountKJModelExtension implements ModelWindowExtension
 			{
 			return Collections.emptySet();
 			}
+		
+		public EvDecimal getFirstFrame(){return null;}
+		public EvDecimal getLastFrame(){return null;};
+		
 		
 		};
 	}

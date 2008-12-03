@@ -1,10 +1,6 @@
 package endrov.shell;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3d;
@@ -12,8 +8,8 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.data.*;
-import endrov.ev.*;
 import endrov.modelWindow.*;
+import endrov.util.EvDecimal;
 
 public class ShellModelExtension implements ModelWindowExtension
 	{
@@ -48,7 +44,7 @@ public class ShellModelExtension implements ModelWindowExtension
 		public Collection<Vector3d> autoCenterMid()
 			{
 			List<Vector3d> col=new LinkedList<Vector3d>();
-			for(Shell s:getVisibleShell())
+			for(Shell s:w.getVisibleObjects(Shell.class))
 				col.add(new Vector3d(s.midx,s.midy,s.midz));
 			return col;
 			}
@@ -67,27 +63,16 @@ public class ShellModelExtension implements ModelWindowExtension
 			{
 			}
 		
-		
+		/*
 		public Collection<Shell> getVisibleShell()
 			{
-			Vector<Shell> v=new Vector<Shell>();
-			EvData metadata=w.getSelectedData();
-			if(metadata!=null)
-				{
-				for(EvObject ob:metadata.metaObject.values()) //TODO: special command that already filters based on canRender would be nice
-					if(ob instanceof Shell)
-						if(w.showObject(ob))
-							v.add((Shell)ob);
-				}
-			else
-				if(EV.debugMode)
-					System.out.println("No meta");
-			return v;
+			return w.getVisibleObjects(Shell.class);
 			}
+		*/
 		
 		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
-			for(Shell shell:getVisibleShell())
+			for(Shell shell:w.getVisibleObjects(Shell.class))
 				{
 				gl.glPushMatrix();
 				
@@ -124,6 +109,8 @@ public class ShellModelExtension implements ModelWindowExtension
 			gl.glEnd();
 			}
 		
+		public EvDecimal getFirstFrame(){return null;}
+		public EvDecimal getLastFrame(){return null;}
 		}
 	
 	}

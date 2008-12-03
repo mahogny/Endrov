@@ -16,6 +16,7 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.modelWindow.*;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 
 
@@ -351,7 +352,8 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			
 			}
 
-		
+		public EvDecimal getFirstFrame(){return null;}
+		public EvDecimal getLastFrame(){return null;}
 		}
 	
 	}

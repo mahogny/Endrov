@@ -679,6 +679,30 @@ public class NucModelExtension implements ModelWindowExtension
 				return Collections.emptySet();
 			}
 		
+		
+		public EvDecimal getFirstFrame()
+			{
+			EvDecimal first=null;
+			for(NucLineage lin:w.getVisibleObjects(NucLineage.class))
+				{
+				EvDecimal f=lin.firstFrameOfLineage();
+				if(f!=null && (first==null || f.less(first)))
+					first=f;
+				}
+			return first;
+			}
+		public EvDecimal getLastFrame()
+			{
+			EvDecimal last=null;
+			for(NucLineage lin:w.getVisibleObjects(NucLineage.class))
+				{
+				EvDecimal f=lin.lastFrameOfLineage();
+				if(f!=null && (last==null || f.greater(last)))
+					last=f;
+				}
+			return last;
+			}
+		
 		};
 	}
 
