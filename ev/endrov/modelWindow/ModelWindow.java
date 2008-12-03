@@ -161,7 +161,7 @@ public class ModelWindow extends BasicWindow
 	public ModelWindow(Rectangle bounds)
 		{
 		view=new ModelView(this);
-		frameControl=new FrameControlModel(this);
+		frameControl=new FrameControlModel(this,this);
 
 		//Add hooks
 		for(ModelWindowExtension e:modelWindowExtensions)
@@ -729,7 +729,22 @@ public class ModelWindow extends BasicWindow
 	public void freeResources(){}
 
 	
-	
+	public <E extends EvObject> Collection<E> getVisibleObjects(Class<E> c)
+		{
+		List<E> v=new LinkedList<E>();
+		EvData metadata=getSelectedData();
+		if(metadata!=null)
+			{
+			for(E ob:metadata.getObjects(c))
+				if(showObject(ob))
+					v.add(ob);
+			}
+		else
+			if(EV.debugMode)
+				System.out.println("No meta");
+		return v;
+		}
+
 	
 	
 	

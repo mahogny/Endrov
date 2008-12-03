@@ -207,7 +207,8 @@ public class Slice3DExtension implements ModelWindowExtension
 			
 			}
 		
-		
+		public EvDecimal getFirstFrame(){return null;}
+		public EvDecimal getLastFrame(){return null;}		
 		}
 	
 	}

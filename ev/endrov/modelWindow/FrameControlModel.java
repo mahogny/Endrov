@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+
 import java.util.*;
 
 import endrov.basicWindow.FrameControl;
@@ -12,7 +13,6 @@ import endrov.util.EvDecimal;
 
 
 
-//todo: spinners are based on integer. low precision?
 
 /**
  * Common control to change which frame is to be displayed
@@ -32,7 +32,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/** Component to tell that frame has changed */
 	private ChangeListener listener;
 	
-
+	private ModelWindow w; //TODO hm listener vs w
 	
 	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
 	private JButton buttonStepForward=new JButton(BasicIcon.iconFrameNext);
@@ -41,7 +41,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
 	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
 
-	private SpinnerModel frameModel;
+	//private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
 	private JSpinner spinnerFrame;
 	private JSpinner spinnerGroup=new JSpinner(groupModel);
@@ -65,6 +65,38 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private JComboBox speedCombo;
 	
 	
+	/** Frame spinner behaviour */
+	private SpinnerModel frameModel=new SpinnerModel()
+		{
+		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
+		public void addChangeListener(ChangeListener e){listeners.add(e);}
+		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
+		public EvDecimal frame=new EvDecimal(0);
+		public Object getNextValue()
+			{
+			EvDecimal i=frame.add(1);
+			if(i==null)	return frame;	else return i;
+			}
+		public Object getPreviousValue()
+			{
+			EvDecimal i=frame.subtract(1);
+			if(i==null)	return frame;	else return i;
+			}
+		public Object getValue(){return frame;}
+		public void setValue(Object e)
+			{
+			if(e instanceof Double)
+				frame=new EvDecimal((Double)e);
+			else if(e instanceof Integer)
+				frame=new EvDecimal((Integer)e);
+			else if(e instanceof EvDecimal)
+				frame=(EvDecimal)e;
+			//frame=(EvDecimal)e;
+			for(ChangeListener li:listeners)
+				li.stateChanged(new ChangeEvent(this));
+			}
+		};
+	
 	
 	private GridBagConstraints playButtonConstraint(int x)
 		{
@@ -78,9 +110,10 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/**
 	 * @param l Object to receive updates on change
 	 */
-	public FrameControlModel(ChangeListener l)
+	public FrameControlModel(ModelWindow w, ChangeListener l)
 		{	
 		listener=l;
+		this.w=w;
 
 		Vector<Speed> speeds=new Vector<Speed>();
 		speeds.add(new Speed("0.01"));
@@ -91,6 +124,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		speeds.add(new Speed("1000"));
 		speeds.add(new Speed("10000"));
 		speedCombo=new JComboBox(speeds);
+		speedCombo.setSelectedIndex(4);
 
 		setLayout(new GridBagLayout());
 		
@@ -108,7 +142,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		
 		//Build other controls and merge
 		//setLayout(new GridLayout());
-		frameModel=new SpinnerNumberModel((double)0.0,(double)0.0,(double)1000000.0,(double)0.1);
+		//frameModel=new SpinnerNumberModel(new EvDecimal(0),new EvDecimal(0),new EvDecimal((double)1000000.0,(double)0.1);
 		spinnerFrame=new JSpinner(frameModel);
 		add(new JLabel("Frame:"),playButtonConstraint(7));
 		add(spinnerFrame,playButtonConstraint(8));
@@ -153,13 +187,39 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	public void actionPerformed(ActionEvent e)
 		{
 		if(e.getSource()==buttonBeginning)
-			setFrame(new EvDecimal(0)); //TODO bd
+			{
+			EvDecimal first=null;
+			for(ModelWindowHook h:w.modelWindowHooks)
+				{
+				EvDecimal f=h.getFirstFrame();
+				if(f!=null && (first==null || f.less(first)))
+					first=f;
+				}
+			System.out.println(first);
+			if(first==null)
+				setFrame(new EvDecimal(0));
+			else
+				setFrame(first);
+			}
 		else if(e.getSource()==buttonEnd)
-			setFrame(new EvDecimal(30000)); //TODO bd
+			{
+			EvDecimal last=null;
+			for(ModelWindowHook h:w.modelWindowHooks)
+				{
+				EvDecimal f=h.getLastFrame();
+				if(f!=null && (last==null || f.greater(last)))
+					last=f;
+				}
+			System.out.println(last);
+			if(last==null)
+				setFrame(new EvDecimal(0));
+			else
+				setFrame(last);
+			}
 		else if(e.getSource()==buttonStepForward)
-			stepForward(new EvDecimal(1)); //TODO hm. FPS?
+			stepForward(currentSpeed());
 		else if(e.getSource()==buttonStepBack)
-			stepBack(new EvDecimal(1));
+			stepBack(currentSpeed());
 		else if(e.getSource()==buttonPlayForward)
 			stopStart(true);
 		else if(e.getSource()==buttonPlayBack)
@@ -260,7 +320,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/** Get current frame */
 	public EvDecimal getFrame()
 		{
-		return new EvDecimal((Double)spinnerFrame.getValue());
+		return (EvDecimal)spinnerFrame.getValue();
 		}
 
 	/** Set current frame */

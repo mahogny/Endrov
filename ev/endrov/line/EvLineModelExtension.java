@@ -143,6 +143,8 @@ public class EvLineModelExtension implements ModelWindowExtension
 			return Collections.emptySet();
 			}
 		
+		public EvDecimal getFirstFrame(){return null;}
+		public EvDecimal getLastFrame(){return null;};
 		};
 	}
 

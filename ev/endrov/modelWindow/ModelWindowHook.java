@@ -9,6 +9,7 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.data.EvObject;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -32,6 +33,10 @@ public interface ModelWindowHook
 	public Collection<Double> adjustScale();
 	public Collection<Vector3d> autoCenterMid();
 	public Collection<Double> autoCenterRadius(Vector3d mid, double FOV);
+	
+	public EvDecimal getFirstFrame();
+	public EvDecimal getLastFrame();
+	
 	
 	public void datachangedEvent();
 	
