@@ -46,4 +46,6 @@ public interface EvIOData
 	//Image data, blob data and XML data?
 	
 	
+//io must have RecentReference
+	
 	}

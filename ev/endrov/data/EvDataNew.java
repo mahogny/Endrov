@@ -1,58 +1,28 @@
 package endrov.data;
 
-import java.util.LinkedList;
-
 public abstract class EvDataNew
 	{
-
-	//Undo ops are defined on level of one EvData. cross-evdata is generally wtf?
 	
-	LinkedList<UndoOp> undoList=new LinkedList<UndoOp>();
-	LinkedList<UndoOp> redoList=new LinkedList<UndoOp>();
-
-	public abstract UndoOp getLastUndo();
-	
-	/**
-	 * Add undo operation. If the same operation is added twice then the last value on the queue will not be replaced.
-	 */
-	public void addUndo(UndoOp op)
-		{
-		if(undoList.getLast()!=op)
-			undoList.add(op);
-		}
-	
-	
+	//TODO remove these
+	//saveMeta can point to io and get a concrete implementation
 	/*
-	 * Undo has tricky semantics vs save as. 
-	 * boolean, is undo allowed? 
-	 * redo is always possible.
-	 * 
-	 * movement, simple replacement of last undo.
-	 * 
-	 */
+	public abstract String getMetadataName();
+	public abstract void saveMeta();
+	public abstract RecentReference getRecentEntry();
+	*/
 	
+	//This is new
 	
-	public interface UndoOp
+	private String metadataName;
+	
+	public String getMetadataName()
 		{
-		public boolean canUndo();
-		public void undo();
-		public void redo();
-		
-		
-		
-		public String undoName();
+		return metadataName;
 		}
 	
-	/**
-	 * This is meant as a stupid fallback. Make a deep copy of an entire object
-	 *
-	 */
-	public class UndoOpStateSave //implements UndoOp
-		{
-		public UndoOpStateSave(String objName, String name)
-			{
-			
-			}
-		}
+	public EvIOData io;
+	
+	//io must have RecentReference
+	
 	
 	}
