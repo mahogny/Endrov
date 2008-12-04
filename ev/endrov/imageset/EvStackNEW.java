@@ -4,7 +4,19 @@ import java.util.TreeMap;
 
 import endrov.util.EvDecimal;
 
-public abstract class EvStack //temp abstract
+/**
+ * 
+ * have to decide on where resolution goes. stack has res -> image does not. or a link is needed
+ * which will give plenty of headache.
+ * 
+ * if res goes into stack then only stacks should be passed around. 
+ * 
+ * 
+ * 
+ * @author tbudev3
+ *
+ */
+public abstract class EvStackNEW
 	{
 	int binning;
 	double dispX, dispY;
@@ -30,6 +42,8 @@ public abstract class EvStack //temp abstract
 	
 	public TreeMap<EvDecimal, EvImage> slice=new TreeMap<EvDecimal, EvImage>();
 	
+	//TODO keep track of deleted slices
+	
 	/**
 	 * 
 	 * goal: EvImage cannot be abstract anymore, too costly. instead it will
@@ -44,5 +58,8 @@ public abstract class EvStack //temp abstract
 	 */
 	
 	public abstract void insertImage(EvDecimal z, EvImage im);
+	
+	
+	
 	
 	}

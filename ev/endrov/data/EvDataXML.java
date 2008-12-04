@@ -6,6 +6,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.jdom.Document;
 
+import endrov.util.EvXmlUtil;
+
 
 /**
  * Metadata stored in an ordinary XML-file
@@ -34,8 +36,8 @@ public class EvDataXML extends EvData
 	
 	public EvDataXML(String filename)
 		{
-		loadXmlMetadata(filename);
 		this.filename=new File(filename);
+		loadXmlMetadata(this.filename);
 		}
 	
 
@@ -59,8 +61,15 @@ public class EvDataXML extends EvData
 			if(!filename.getName().endsWith(".xml") && !filename.getName().endsWith(".ostxml"))
 				filename=new File(filename.getAbsolutePath()+".ostxml");
 			Document document=saveXmlMetadata();
-			writeXmlData(document, filename);
-			setMetadataModified(false);
+			try
+				{
+				EvXmlUtil.writeXmlData(document, filename);
+				setMetadataModified(false);
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
 			}
 		}
 

@@ -256,7 +256,13 @@ public class OstImageset extends Imageset
 		setMetadataModified(false);
 		}
 	
-
+	public static void touchRecursive(File f, long timestamp)
+		{
+		f.setLastModified(timestamp);
+		File parent=f.getParentFile();
+		if(parent!=null)
+			touchRecursive(parent,timestamp);
+		}
 	
 	
 	/**

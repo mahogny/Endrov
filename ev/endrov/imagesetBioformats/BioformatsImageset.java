@@ -131,7 +131,7 @@ public class BioformatsImageset extends Imageset
 		if(metaFile.exists())
 			{
 			//Load metadata
-			loadXmlMetadata(metaFile.getPath());
+			loadXmlMetadata(metaFile);
 			for(String oi:metaObject.keySet())
 				if(metaObject.get(oi) instanceof ImagesetMeta)
 					{

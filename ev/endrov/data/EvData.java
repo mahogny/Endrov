@@ -7,7 +7,6 @@ import javax.swing.JFileChooser;
 
 import org.jdom.*;
 import org.jdom.input.*;
-import org.jdom.output.*;
 
 import endrov.basicWindow.*;
 import endrov.ev.*;
@@ -367,13 +366,17 @@ public abstract class EvData
 	
 	/** Version of metadata */
 	public String metadataVersion="0";
+
 	
+	/******************************************************************************************************
+	 *                               Instance: XML tools                                                  *
+	 *****************************************************************************************************/
+
 	
 	/**
 	 * Load metadata from XML-file
-	 * @param filename Name of file
 	 */
-	public void loadXmlMetadata(String filename)
+	public void loadXmlMetadata(File filename)
 		{
 		try
 			{
@@ -396,14 +399,14 @@ public abstract class EvData
 		for(Element child:EV.castIterableElement(e.getChildren()))
 			help331(child, timestep);
 		}
-	public void loadXmlMetadata(InputStream fileInputStream)
+	public void loadXmlMetadata(InputStream is)
 		{
 		metaObject.clear();
     Document document = null;
     try 
     	{
   		SAXBuilder saxBuilder = new SAXBuilder();
-  		document = saxBuilder.build(fileInputStream);
+  		document = saxBuilder.build(is);
   		Element element = document.getRootElement();
 
   		if(element.getAttribute("version")!=null)
@@ -480,7 +483,7 @@ public abstract class EvData
 	/**
 	 * Put all meta objects into an XML document
 	 */
-	public Document saveXmlMetadata() //root name
+	public Document saveXmlMetadata() 
 		{
 		Element ostElement=new Element("ost");
 		ostElement.setAttribute("version","3.1");
@@ -496,39 +499,7 @@ public abstract class EvData
 		return doc;
 		}
 	
-	
-	/**
-	 * Write XML-document to disk
-	 */
-	public static void writeXmlData(Document doc, File file)
-		{
-		try 
-			{
-			Format format=Format.getPrettyFormat();
-			XMLOutputter outputter = new XMLOutputter(format);
-			FileWriter writer = new FileWriter(file);
-			FileOutputStream writer2=new FileOutputStream(file);
-			outputter.output(doc, writer2);
-			writer.close();
-			
-			//This is for the backup utility; "touch" all directories below
-			//touchRecursive(file, System.currentTimeMillis());
-			} 
-		catch (java.io.IOException e) 
-			{
-			e.printStackTrace();
-			}
-		}
-	
-	public static void touchRecursive(File f, long timestamp)
-		{
-		f.setLastModified(timestamp);
-		File parent=f.getParentFile();
-		if(parent!=null)
-			touchRecursive(parent,timestamp);
-		}
 
-	
 	/******************************************************************************************************
 	 *                               Abstract Instance                                                    *
 	 *****************************************************************************************************/
