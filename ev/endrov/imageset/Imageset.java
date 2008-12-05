@@ -163,6 +163,18 @@ public abstract class Imageset extends EvData
 			}
 		}
 
+	
+	/**
+	 * Get access to an image
+	 */
+	public EvImage getImageLoader(String channel, EvDecimal frame, EvDecimal z)
+		{
+		ChannelImages chim=channelImages.get(channel);
+		if(chim!=null)
+			return chim.getImageLoader(frame, z);
+		else
+			return null;
+		}
 
 	/**
 	 * Images for one channel

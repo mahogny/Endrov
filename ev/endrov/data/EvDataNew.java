@@ -20,7 +20,7 @@ public abstract class EvDataNew
 		return metadataName;
 		}
 	
-	public EvIOData io;
+	public EvIOData io=null;
 	
 	//io must have RecentReference
 	
