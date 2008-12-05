@@ -42,7 +42,7 @@ public abstract class EvStackNEW
 	
 	public TreeMap<EvDecimal, EvImage> slice=new TreeMap<EvDecimal, EvImage>();
 	
-	//TODO keep track of deleted slices
+	//TODO keep track of deleted slices - NO. not here!
 	
 	/**
 	 * 
@@ -60,6 +60,10 @@ public abstract class EvStackNEW
 	public abstract void insertImage(EvDecimal z, EvImage im);
 	
 	
-	
+	/**
+	 * optimization for stack formats:
+	 * 
+	 * loadAllSlices()
+	 */
 	
 	}

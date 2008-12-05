@@ -3,12 +3,18 @@ package endrov.imageset;
 import java.awt.image.*;
 import java.lang.ref.*;
 
+import endrov.data.EvIOData;
+
 /**
  * Interface to any form of image loader
  * @author Johan Henriksson
  */
 public abstract class EvImage
 	{
+	
+	public EvIOData io=null; //temp added
+
+	
 	/**
 	 * In-memory image. Set to null if there is none.
 	 */

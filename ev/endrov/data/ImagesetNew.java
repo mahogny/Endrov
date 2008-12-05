@@ -3,6 +3,7 @@ package endrov.data;
 import java.util.Set;
 import java.util.TreeSet;
 
+import endrov.imageset.ImagesetMeta;
 import endrov.util.EvDecimal;
 
 public class ImagesetNew
@@ -13,6 +14,9 @@ public class ImagesetNew
 	
 	//channel renames would be expensive! undo?
 	
+	
+	//this goes into each channel directly
+	//private ImagesetMeta.Channel meta;
 	
 	public class ImageNew
 		{

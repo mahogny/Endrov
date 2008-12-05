@@ -14,6 +14,10 @@ import java.lang.ref.SoftReference;
 public class EvImageNew //not abstract. or maybe? can have in-memory images and 
 	{
 
+	public EVIOImage io=null;
+	
+	public boolean isDirty=false; //TODO 
+	
 	/**
 	 * In-memory image. Set to null if there is none.
 	 * 
@@ -24,6 +28,8 @@ public class EvImageNew //not abstract. or maybe? can have in-memory images and
 	 * class can be abstract. EvImageCopy would work, and then a *generic* EvImageWithLoader that
 	 * has a pointer to the imageset
 	 * 
+	 * keeping pointers in program up to date will be a mess if abstract. better put in a loader reference.
+	 * it can be swapped upon saving all images
 	 * 
 	 * 
 	 */
