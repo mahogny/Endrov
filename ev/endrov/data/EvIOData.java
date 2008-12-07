@@ -2,8 +2,6 @@ package endrov.data;
 
 import java.io.File;
 
-import endrov.imageset.EvImage;
-import endrov.util.EvDecimal;
 
 
 /**
@@ -23,6 +21,8 @@ public interface EvIOData
 	 * 
 	 */
 	
+	public String getMetadataName();
+
 	
 	
 	/** Scan recording for channels */
@@ -32,11 +32,6 @@ public interface EvIOData
 	public void saveMeta(EvData d);
 	
 
-	
-	public EvImage getImageLoader(String object, String channel, EvDecimal frame, EvDecimal z);
-	
-	//how to scan images?
-	
 	
 	/**
 	 * How to resave imageset

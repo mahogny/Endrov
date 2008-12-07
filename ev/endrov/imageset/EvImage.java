@@ -3,8 +3,6 @@ package endrov.imageset;
 import java.awt.image.*;
 import java.lang.ref.*;
 
-import endrov.data.EvIOData;
-
 /**
  * Interface to any form of image loader
  * @author Johan Henriksson
@@ -12,8 +10,8 @@ import endrov.data.EvIOData;
 public abstract class EvImage
 	{
 	
-	public EvIOData io=null; //temp added
-
+	public EvIOImage io=null; //temp added
+	public boolean isDirty=false; //For any special reason modified, such as change of compression 
 	
 	/**
 	 * In-memory image. Set to null if there is none.
@@ -80,7 +78,7 @@ public abstract class EvImage
 	 */
 	public boolean modified()
 		{
-		return im!=null;
+		return im!=null || isDirty;
 		}
 	
 	/**

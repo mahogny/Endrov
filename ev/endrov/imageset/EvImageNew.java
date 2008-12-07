@@ -6,17 +6,25 @@ import java.lang.ref.SoftReference;
 
 
 /**
- * TODO copy constructor
- * @author tbudev3
+ * @author Johan Henriksson
  *
  */
 
-public class EvImageNew //not abstract. or maybe? can have in-memory images and 
+public class EvImageNew  
 	{
-
-	public EVIOImage io=null;
 	
-	public boolean isDirty=false; //TODO 
+	//TODO copy constructor
+
+	
+	/**
+	 * Connection to I/O. This is how partial loading is implemented
+	 */
+	public EvIOImage io=null;
+	
+  /**
+   * Force rewrite, such as change of compression
+   */ 
+	public boolean isDirty=false;   
 	
 	/**
 	 * In-memory image. Set to null if there is none.
@@ -62,7 +70,7 @@ public class EvImageNew //not abstract. or maybe? can have in-memory images and
 			BufferedImage loaded=cachedImage.get();
 			if(loaded==null)
 				{
-				loaded=loadJavaImage();
+				loaded=io.loadJavaImage();
 				cachedImage=new SoftReference<BufferedImage>(loaded);
 				}
 			return loaded;
@@ -95,7 +103,7 @@ public class EvImageNew //not abstract. or maybe? can have in-memory images and
 	 */
 	public boolean modified()
 		{
-		return im!=null;
+		return im!=null || isDirty;
 		}
 	
 	/**
@@ -110,7 +118,7 @@ public class EvImageNew //not abstract. or maybe? can have in-memory images and
 	
 	
 	
-	//what to do about this?
+	//what to do about this? now it points to io
 	
 	public double transformImageWorldX(double c){return (c*getBinning()+getDispX())/getResX();}
 	public double transformImageWorldY(double c){return (c*getBinning()+getDispY())/getResY();}			
@@ -120,12 +128,37 @@ public class EvImageNew //not abstract. or maybe? can have in-memory images and
 	public double scaleImageWorldY(double c){return c/(getResY()/getBinning());}
 	public double scaleWorldImageX(double c){return c*getResX()/getBinning();}
 	public double scaleWorldImageY(double c){return c*getResY()/getBinning();}
-	public abstract int getBinning();
-	public abstract double getDispX();
-	public abstract double getDispY();
-	public abstract double getResX();
-	public abstract double getResY();
 	
+	
+	
+	
+	//Is this the final solution? Probably not, it will be moved to Stack level(?). or homogenized.
+	//but it's a quick patch
+	
+	public double resX, resY, binning;
+	public double dispX, dispY;
+	
+	public double getResX()
+		{
+		return resX;
+		}
+	public double getResY()
+		{
+		return resY;
+		}
+	public double getBinning()
+		{
+		return binning;
+		}
+	
+	public double getDispX()
+		{
+		return dispX;
+		}
+	public double getDispY()
+		{
+		return dispY;
+		}
 	
 	
 	}
