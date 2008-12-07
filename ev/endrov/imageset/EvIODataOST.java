@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -20,6 +22,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import endrov.data.EvData;
+import endrov.data.EvDataNew;
 import endrov.data.EvDataSupport;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
@@ -42,27 +45,48 @@ public class EvIODataOST implements EvIOData
 	private static class SliceIO implements EvIOImage
 		{
 		public File f;
-		public SliceIO(File f)
+		public EvIODataOST ost;
+		public EvIOImage oldio;   //Strong pointer! make sure to delete it ASAP
+		public SliceIO(EvIODataOST ost, File f)
 			{
+			this.ost=ost;
 			this.f=f;
 			}
 
 		public BufferedImage loadJavaImage()
 			{
-			try
-				{
-				return ImageIO.read(f);
-				}
-			catch (IOException e)
-				{
-				e.printStackTrace();
-				}
+			//This overloading is important during the save stage
+			//with some recoding it would be possible to remove it
+			if(oldio!=null)
+				return oldio.loadJavaImage();
+			else
+				try
+					{
+					return ImageIO.read(f);
+					}
+				catch (IOException e)
+					{
+					e.printStackTrace();
+					}
 			return null;
 			}
 		
 		public File outputFile(EvIODataOST ost, String channelName, EvDecimal frame, EvDecimal slice, String ext)
 			{
 			return ost.buildImagePath(channelName, frame, slice, ext);
+			}
+		
+		public String fileFormat()
+			{
+			String n=f.getName();
+			return n.substring(0,n.lastIndexOf("."));
+			}
+		
+		
+		public int getBinning()
+			{
+			ImagesetNew im=new ImagesetNew();
+			//im.
 			}
 		}
 	
@@ -118,11 +142,11 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
 	 */
-	public EvIODataOST(File basedir)
+	public EvIODataOST(EvData d, File basedir)
 		{
 		this.basedir=basedir;
 		convert23();
-		buildDatabase();
+		buildDatabase(d);
 		}
 
 	
@@ -219,7 +243,11 @@ public class EvIODataOST implements EvIOData
 				}
 			public EvData load(String file) throws Exception
 				{
-				return new OstImageset(new File(file));
+				EvDataNew d=new EvDataNew();
+				
+				d.io=new EvIODataOST(d, new File(file));
+				
+				return d;
 				}
 		});
 		
@@ -335,10 +363,12 @@ public class EvIODataOST implements EvIOData
 			
 			
 			System.out.println("Saving meta 3.1");
-			saveMeta(d, im);
+			saveMeta(d);
 			invalidateDatabaseCache();
 			System.out.println("Reloading file listing");
 			scanFiles(im);
+			filesToImageset(im);
+
 			}
 		
 		
@@ -356,39 +386,45 @@ public class EvIODataOST implements EvIOData
 
 	
 
+	private File getMetaFile()
+		{
+		return new File(basedir,"rmd.ostxml");
+		}
+	
 	
 	/**
 	 * Save meta for all channels into RMD-file
 	 */
-	public void saveMeta(EvData d, Imageset im)
+	public void saveMeta(EvData d)
 		{
+		Imageset im=getHackImageset(d);
 		try
 			{
-			im.saveMeta(new File(basedir,"rmd.ostxml"));
+			im.saveMeta(getMetaFile());
+			d.setMetadataModified(false);
 			}
 		catch (IOException e)
 			{
 			e.printStackTrace();
 			}
-//		saveMeta(new File(basedir,"rmd.xml"));
 		saveImages(im);
 		
 		//Update date of datadir to have it backuped
-		touchRecursive(datadir(), System.currentTimeMillis());
+		//touchRecursive(datadir(), System.currentTimeMillis());
 		
-		d.setMetadataModified(false);
 		}
-	
+		
+	/*
 	public static void touchRecursive(File f, long timestamp)
 		{
 		f.setLastModified(timestamp);
 		File parent=f.getParentFile();
 		if(parent!=null)
 			touchRecursive(parent,timestamp);
-		}
+		}*/
 	
 	
-	private File getFileFor(String channelName, EvDecimal frame, EvDecimal slice)
+	private File getCurrentFileFor(String channelName, EvDecimal frame, EvDecimal slice)
 		{
 		HashMap<EvDecimal,HashMap<EvDecimal,File>> ce=imageLoader.get(channelName);
 		if(ce!=null)
@@ -400,6 +436,13 @@ public class EvIODataOST implements EvIOData
 		return null;
 		}
 	
+	private File fileShouldBe(Imageset im, String channel, EvDecimal frame, EvDecimal z)
+		{
+		//TODO
+		return buildImagePath(channel, frame,z,".png");
+		}
+	
+	
 	/**
 	 * Save images in this imageset
 	 *
@@ -409,18 +452,16 @@ public class EvIODataOST implements EvIOData
 		boolean deleteOk=false;
 		try
 			{
-			//Problem! if an image has been moved then it might have to be read into memory or it will be overwritten
+			//This code looks complicated but solves the following problem:
+			//if an image has been moved then it might have to be read into memory or it will be overwritten
 			//before it is loaded. cannot always consider this case because it is uncommon and will *eat* memory.
 			
 			//Images to delete
 			Set<File> toDelete=new HashSet<File>();
-			//Images to overwrite
-			Set<File> toOverwrite=new HashSet<File>();
 			//Images that need be read
-			Map<EvImage,File> toRead=new HashMap<EvImage, File>(); //Can not be the other order
+			Map<File,HashSet<EvImage>> toRead=new HashMap<File, HashSet<EvImage>>();
 			//Images to write
-			Set<EvImage> toWrite=new HashSet<EvImage>();
-			
+			LinkedList<EvImage> toWrite=new LinkedList<EvImage>();
 			
 			//Which files will be deleted because they are no longer in the imageset?
 			for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:imageLoader.entrySet())
@@ -430,185 +471,126 @@ public class EvIODataOST implements EvIOData
 							toDelete.add(se.getValue());
 			
 			//Which images are dirty and need be written?
+			//Dirty image := an image that has been modified or has not been written to this OST
 			for(Map.Entry<String, Imageset.ChannelImages> ce:im.channelImages.entrySet())
 				for(Map.Entry<EvDecimal, TreeMap<EvDecimal,EvImage>> fe:ce.getValue().imageLoader.entrySet())
 					for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 						{
-						//Image is dirty, need be written?
-						//TODO need not be the same file in case it is being compressed
-						if(ie.getValue().im!=null)
+						//Check if dirty
+						boolean dirty=false;
+						if(ie.getValue().modified())
+							dirty=true;
+						EvIOImage oldio=ie.getValue().io;
+						if(!(oldio!=null && oldio instanceof SliceIO && ((SliceIO)oldio).ost==this))
+							dirty=true;
+						if(!dirty)
 							{
-							toWrite.add(ie.getValue());
-							
-							SliceIO sio=(SliceIO)ie.getValue().io;
-							
-							
-							
-							
-							}
-						else
-							{
-							File file=getFileFor(ce.getKey(), fe.getKey(), ie.getKey());
-							if(file==null)
+							File file=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
+							if(file!=null)
 								{
-								//File for this image does not exist yet so it has to be written.
-								//In addition, it has not been read from the disk yet so need to
-								//make sure the source is not deleted before it is read and rewritten.
-								//This occurs if for example the image has been moved and hence the 
-								//picture data itself has not been altered. 
-								
+								File output=fileShouldBe(im,ce.getKey(), fe.getKey(),ie.getKey());
 								//TODO
-								File output=buildImagePath(ce.getKey(), fe.getKey(),ie.getKey(),".png");
-								
-								toRead.put(ie.getValue(), output);
-								toOverwrite.add(output);
-								
-								
+								//if(!output.equals(file))
+								//	{
+									//toDelete.add(file);
+									//	dirty=true;
+								//	}
 								}
+							else
+								dirty=true;
 							}
 						
-						HashMap<EvDecimal,HashMap<EvDecimal,File>> lce=imageLoader.get(ce.getKey());
-						if(lce!=null)
+						//If dirty, prepare it to be written
+						if(dirty)
 							{
+							EvImage evim=ie.getValue();
 							
+							//Mark all dirty. When they are not dirty they need not be written
+							evim.isDirty=true; 
+
+							//Mark current file for reading if it is not in memory
+							File currentFile=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
+							if(currentFile!=null && evim.im!=null)
+								{
+								HashSet<EvImage> ims=toRead.get(currentFile);
+								if(ims==null)
+									toRead.put(currentFile, ims=new HashSet<EvImage>());
+								ims.add(evim);
+								}
 							
+							File newFile=currentFile;
+							if(newFile==null) //TODO better format handling
+								newFile=fileShouldBe(im,ce.getKey(), fe.getKey(),ie.getKey());
+							
+							SliceIO newio=new SliceIO(this,newFile);
+							newio.oldio=oldio;
+							
+							toWrite.add(evim);
 							
 							}
 						
+					
 						
 						
 						}
 					
 			
-			//Read all images into memory
+			//Write the files
+			while(!toWrite.isEmpty())
+				{
+				EvImage evim=toWrite.getFirst();
+				if(evim.isDirty)
+					{
+					//Even an overwrite is equivalent to optional read, then delete.
+					//This is important if one slice is for example copied and the original modified.
+	
+					SliceIO io=(SliceIO)evim.io;
+
+					//Have all images dependent on this file read it into memory
+					//As an optimization, put these first in write queue to avoid reading
+					//an entire channel into memory before writing it out
+					HashSet<EvImage> needToRead=toRead.get(io.f);
+					if(needToRead!=null)
+						{
+						toRead.remove(io.f);
+						for(EvImage ci:needToRead)
+							{
+							ci.im=ci.getJavaImage();
+							toWrite.addFirst(ci);
+							}
+						}
+
+					//Write image to disk
+					BufferedImage bim=evim.getJavaImage(); 
+					ImageIO.write(bim, io.fileFormat(), io.f);
+					
+					
+					//Mark this image as done
+					evim.isDirty=false;
+					}
+				toWrite.removeFirst();
+				}
+			
 			
 			//Delete the files
 			if(deleteOk)
 				for(File f:toDelete)
 					f.delete();
 			
-			//Write the files
-			for(EvImage evim:toWrite)
-				{
-				
-				}
 			
 			
 			//Remove empty channel directories
 			//Remove empty frame directories
+			//TODO
 			
 			
+			//Clear up oldio
+			for(Map.Entry<String, Imageset.ChannelImages> ce:im.channelImages.entrySet())
+				for(Map.Entry<EvDecimal, TreeMap<EvDecimal,EvImage>> fe:ce.getValue().imageLoader.entrySet())
+					for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
+						((SliceIO)ie.getValue().io).oldio=null;
 			
-			
-			
-			/*
-			
-			//NOTE: keyset for the maps is linked internally. This means this set should NOT directly be messed with but we make a copy.
-
-			//Removed channels: Delete those directories.
-			HashSet<String> removedChanNames=new HashSet<String>(ostLoadedImages.keySet());
-			removedChanNames.removeAll(channelImages.keySet());
-			for(String s:removedChanNames)
-				{
-				System.out.println("rc: "+s);
-				deleteOk=deleteRecursive(buildChannelPath(s),deleteOk);
-				}
-			
-			//New channels: Create directories
-			HashSet<String> newChanNames=new HashSet<String>(channelImages.keySet());
-			newChanNames.remove(ostLoadedImages.keySet());
-			for(String s:newChanNames)
-				{
-				System.out.println("nc: "+s);
-				buildChannelPath(s).mkdirs();
-				}
-
-			//Go through all channels
-			for(String channelName:channelImages.keySet())
-				{
-				Channel newCh=(Channel)getChannel(channelName);
-				Channel oldCh=(Channel)ostLoadedImages.get(channelName);
-
-				if(oldCh!=null)
-					{
-					//Removed frames: delete directories
-					HashSet<EvDecimal> removedFrames=new HashSet<EvDecimal>(oldCh.imageLoader.keySet());
-					removedFrames.removeAll(newCh.imageLoader.keySet());
-					for(EvDecimal frame:removedFrames)
-						{
-						System.out.println("rf: "+frame);
-						deleteOk=deleteRecursive(buildFramePath(channelName, frame),deleteOk);
-						}
-					
-					//New frames: create directories
-					HashSet<EvDecimal> newFrames=new HashSet<EvDecimal>(newCh.imageLoader.keySet());
-					newFrames.removeAll(oldCh.imageLoader.keySet());
-					for(EvDecimal frame:newFrames)
-						{
-						System.out.println("cf: "+frame);
-						buildFramePath(channelName, frame).mkdir();
-						}
-					}
-				else
-					{
-					//All frames are new: create directories
-					for(EvDecimal frame:newCh.imageLoader.keySet())
-						{
-						System.out.println("cf: "+frame);
-						buildFramePath(channelName, frame).mkdir();
-						}
-					}
-				
-				//Go through frames
-				for(EvDecimal frame:newCh.imageLoader.keySet())
-					{
-					TreeMap<EvDecimal, EvImage> newSlices=newCh.imageLoader.get(frame);
-					TreeMap<EvDecimal, EvImage> oldSlices=null;
-					if(oldCh!=null)
-						oldSlices=oldCh.imageLoader.get(frame);
-					
-					//Removed slices: delete files
-					if(oldSlices!=null)
-						{
-						HashSet<EvDecimal> removedImages=new HashSet<EvDecimal>(oldSlices.keySet());
-						removedImages.removeAll(newSlices.keySet());
-						for(EvDecimal z:removedImages)
-							{
-							System.out.println("rz: "+z);
-							Channel.EvImageOST im=(Channel.EvImageOST)oldSlices.get(z);
-							File zdir=new File(im.jaiFileName());
-							deleteOk=deleteRecursive(zdir,deleteOk);
-							}
-						}
-					
-					//Go through slices
-					for(EvDecimal z:newSlices.keySet())
-						{
-						Channel.EvImageOST newIm=(Channel.EvImageOST)newSlices.get(z);
-						if(newIm.modified())
-							{
-							//Delete old image - it might have a different file extension
-							if(oldSlices!=null)
-								{
-								Channel.EvImageOST oldIm=(Channel.EvImageOST)oldSlices.get(z);
-								if(oldIm!=null)
-									{
-									deleteOk=dialogDelete(deleteOk);
-									if(deleteOk)
-										(new File(oldIm.jaiFileName())).delete();
-									}
-								}
-							//Save new image
-							newIm.saveImage();
-							}
-						}
-					}
-				}
-			
-			
-			//Remember new state
-			replicateLoadedFiles();
-			*/
+			//Update the fast-load cache
 			saveDatabaseCache();
 			}
 		catch (Exception e)
@@ -644,20 +626,30 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Scan recording for channels and build a file database
 	 */
-	public void buildDatabase(EvData d, Imageset im)
+	public void buildDatabase(EvData d)
 		{
 		File metaFile=new File(basedir,"rmd.ostxml");
-//		File metaFile=new File(basepath,"rmd.xml");
 		if(!metaFile.exists())
 			System.out.printf("AAIEEE NO METAFILE?? this might mean this is in the OST1 format which has been removed");
 
 		if(basedir.exists())
 			{
+			
 			//Load metadata
 			try
 				{
 				d.metaObject.clear();
 				d.loadXmlMetadata(new FileInputStream(metaFile));
+
+				//This is a hack for now, im
+				Imageset im=getHackImageset(d);
+
+				if(!loadDatabaseCache())
+					scanFiles(im);
+				
+				
+				filesToImageset(im);
+
 				convert33d1(d,im);
 				}
 			catch (FileNotFoundException e)
@@ -665,26 +657,53 @@ public class EvIODataOST implements EvIOData
 				e.printStackTrace();
 				}
 
-			if(!loadDatabaseCache())
-				scanFiles(im);
+
+			
 			}
 		else
 			Log.printError("Error: Imageset base directory does not exist",null);
-		
-		
-		filesToImageset(im);
 		}
 	
-	private void filesToImageset(Imageset im)
+	/**
+	 * TODO remove need for this
+	 */
+	private Imageset getHackImageset(EvData d)
+		{
+		List<Imageset> ims=d.getObjects(Imageset.class);
+		Imageset im=ims.get(0);
+		}
+	
+
+	/**
+	 * For every loader, set up an entry in the metadata object
+	 */
+	private void filesToImageset(ImagesetNew im)
 		{
 		im.channelImages.clear();
-		for(String channelName:imageLoader.keySet())
+		for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:imageLoader.entrySet())
 			{
+			ChannelImages chim=im.createChannel(ce.getKey());
 			
-			
-			
+			for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
+				{
+				TreeMap<EvDecimal, EvImage> stack=new TreeMap<EvDecimal, EvImage>();
+				chim.imageLoader.put(fe.getKey(),stack);
+				for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
+					{
+					EvImageNew evim=new EvImageNew();
+					evim.io=new SliceIO(this,getCurrentFileFor(ce.getKey(), fe.getKey(), se.getKey()));
+					
+					
+
+					//TODO for early version of OST, is it sustainable?
+					evim.resX=im.resX;
+					evim.resY=im.resY;
+					evim.dispX=chim.getMeta().dispX;
+					evim.dispY=chim.getMeta().dispY;
+					evim.binning=chim.getMeta().chBinning;
+					}
+				}
 			}
-		
 		
 		}
 	
@@ -699,11 +718,8 @@ public class EvIODataOST implements EvIOData
 				{
 				String fname=f.getName();
 				String channelName=fname.substring("ch-".length());
-//				String channelName=fname.substring(fname.lastIndexOf('-')+1);
 				Log.printLog("Found channel: "+channelName);
-				
 				scanFilesChannel(im, channelName);
-				
 				}
 		saveDatabaseCache();
 		}
@@ -720,9 +736,6 @@ public class EvIODataOST implements EvIOData
 		}
 	
 
-	
-	//would be nice to factor out loaddatabasecache
-	
 	/**
 	 * Load database from cache. Return if it succeeded
 	 */
@@ -758,14 +771,9 @@ public class EvIODataOST implements EvIOData
 					for(int j=0;j<numFrame;j++)
 						{
 						EvDecimal frame=new EvDecimal(in.readLine());
-						//EvDecimal realFrame=frame.multiply(meta.metaTimestep);
-						
 						int numSlice=Integer.parseInt(in.readLine());
-//						TreeMap<EvDecimal,EvImage> loaderset=c.imageLoader.get(realFrame);
-						
 						HashMap<EvDecimal,File> loaderset=new HashMap<EvDecimal, File>();
 						c.put(frame,loaderset);
-						
 						
 						//Generate name of frame directory, optimized. windows support?
 						StringBuffer framedirName=new StringBuffer(channeldirName);
@@ -783,7 +791,6 @@ public class EvIODataOST implements EvIOData
 								s=in.readLine();
 								}
 							EvDecimal slice=new EvDecimal(s);
-//							EvDecimal realSlice=new EvDecimal(in.readLine());
 
 							//Generate name of image file, optimized
 							StringBuffer imagefilename=new StringBuffer(framedirName);

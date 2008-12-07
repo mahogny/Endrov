@@ -1,10 +1,8 @@
 package endrov.data;
 
 import java.util.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 
 import org.jdom.*;
@@ -12,7 +10,6 @@ import org.jdom.input.*;
 
 import endrov.basicWindow.*;
 import endrov.ev.*;
-import endrov.imageset.EvIOImage;
 import endrov.util.EvDecimal;
 
 /**
