@@ -147,7 +147,7 @@ public class GUI extends JFrame implements ActionListener
 							if(chancomp.containsKey(chname))
 								{
 								System.out.println("comp "+chname+" "+chancomp.get(chname));
-								inim.meta.channelMeta.get(chname).compression=chancomp.get(chname);
+								inim.channelMeta.get(chname).compression=chancomp.get(chname);
 								}
 						
 						//the save system could now be replaced by writable OST imagesets.
@@ -272,7 +272,7 @@ public class GUI extends JFrame implements ActionListener
 			ToImport toim=new ToImport();
     	toim.file=filename;
 			toim.im=new BioformatsImageset(toim.file.getAbsolutePath());
-			System.out.println(toim.im.getMetadataName());
+			System.out.println(toim.file.getName());
     	importList.add(toim);
 			}
 		catch (Exception e1)

@@ -82,8 +82,8 @@ public class ImagePanel extends JPanel
 			loadImage();
 			if(bufi!=null)
 				{
-				int w=bufi.getWidth()*image.getBinning();
-				int h=bufi.getHeight()*image.getBinning();
+				int w=(int)(bufi.getWidth()*image.getBinning());
+				int h=(int)(bufi.getHeight()*image.getBinning());
 							
 				//Adjust zoom
 				double zoom1=p.getWidth()/(double)w;

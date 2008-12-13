@@ -67,7 +67,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 
 	
 	
-	public static Collection<ImageAnnot> getObjects(EvData meta)
+	public static Collection<ImageAnnot> getObjects(EvContainer meta)
 		{
 		if(meta==null)
 			return new Vector<ImageAnnot>();

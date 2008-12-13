@@ -10,6 +10,7 @@ import javax.vecmath.*;
 import javax.swing.*;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.EV;
@@ -109,7 +110,7 @@ public class ToolMakeLine implements ImageWindowTool
 		}
 	
 	
-	private void renameObjectDialog(EvData data, String obId)
+	private void renameObjectDialog(EvContainer data, String obId)
 		{
 		String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Rename object", 
 				JOptionPane.QUESTION_MESSAGE, null, null, obId);
@@ -123,7 +124,7 @@ public class ToolMakeLine implements ImageWindowTool
 			}
 		}
 	
-	private void renameObjectDialog(EvData data, EvObject obVal)
+	private void renameObjectDialog(EvContainer data, EvObject obVal)
 		{
 		String key=null;
 		for(Map.Entry<String, EvObject> e:data.metaObject.entrySet())
@@ -137,7 +138,7 @@ public class ToolMakeLine implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			EvData data=w.getImageset();
+			EvContainer data=w.getImageset();
 			renameObjectDialog(data, activeAnnot.ob);
 			activeAnnot=null;
 			}
@@ -352,7 +353,7 @@ public class ToolMakeLine implements ImageWindowTool
 //		if(e.getX()<0 || e.getY()<0 || e.getX()>=w.
 		if(activeAnnot!=null)
 			{
-			EvData data=w.getImageset();
+			EvContainer data=w.getImageset();
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot.ob);
 			System.out.println("mouse exited "+e.getX()+" "+e.getY());

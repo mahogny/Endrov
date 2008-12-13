@@ -30,7 +30,7 @@ public final class CalcThread extends BatchThread
 	
 	public String getBatchName()
 		{
-		return "MakeMax "+rec.getMetadataName();
+		return "MakeMax";
 		}
 
 	

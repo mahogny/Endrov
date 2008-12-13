@@ -1,22 +1,29 @@
 package endrov.data;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import javax.swing.JFileChooser;
 
-import org.jdom.*;
-import org.jdom.input.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
-import endrov.basicWindow.*;
-import endrov.ev.*;
+import endrov.basicWindow.BasicWindow;
+import endrov.ev.EV;
+import endrov.ev.Log;
+import endrov.ev.PersonalConfig;
 import endrov.util.EvDecimal;
 
 /**
- * Container of data for EV
+ * Root of container tree, handler of types
  * @author Johan Henriksson
  */
-public abstract class EvData
+public class EvData extends EvContainer
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -86,18 +93,7 @@ public abstract class EvData
 
 	
 	
-	public static int selectedMetadataId=-1;
 
-	/**
-	 * Get currently selected metadata or null
-	 */
-	public static EvData getSelectedMetadata()
-		{
-		if(selectedMetadataId>=0 && selectedMetadataId<metadata.size())
-			return metadata.get(selectedMetadataId);
-		else
-			return null;
-		}
 
 	/******************************************************************************************************
 	 *                               Static: Loading                                                      *
@@ -258,111 +254,25 @@ public abstract class EvData
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	/** All meta objects */
-	public TreeMap<String,EvObject> metaObject=new TreeMap<String,EvObject>();
 
-	/** Flag if the metadata container itself has been modified */
-	private boolean coreMetadataModified=false;
 
-	
-	public int selectedMetaobjectId=-1;
 
 	/**
-	 * Get currently selected metadata or null
+	 * Connection with disk for partial I/O etc
 	 */
-	public EvObject getSelectedMetaobject()
-		{
-		return metaObject.get(selectedMetaobjectId);
-		}
+	public EvIOData io=null;
 
-	/**
-	 * Get all objects of a certain type
-	 */
-	@SuppressWarnings("unchecked") public <E> List<E> getObjects(Class<E> cl)
+
+	public void saveMeta()
 		{
-		LinkedList<E> ll=new LinkedList<E>();
-		for(EvObject ob2:metaObject.values())
-			if(ob2.getClass() == cl)
-				ll.add((E)ob2);
-		return ll;
-		}
-	
-	/**
-	 * Get all ID and objects of a certain type
-	 */
-	@SuppressWarnings("unchecked") public <E> SortedMap<String, E> getIdObjects(Class<E> cl)
-		{
-		TreeMap<String, E> map=new TreeMap<String, E>();
-		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
-			if(e.getValue().getClass()==cl)
-				map.put(e.getKey(),(E)e.getValue());
-		return map;
+		io.saveMeta(this);
 		}
 	
 	
 	
+
 	
-	/**
-	 * Set if metadata has been modified
-	 */
-	public void setMetadataModified(boolean flag)
-		{
-		if(flag)
-			coreMetadataModified=true;
-		else
-			{
-			coreMetadataModified=false;
-			for(EvObject ob:metaObject.values())
-				ob.metaObjectModified=false;
-			}
-		}
 	
-	/**
-	 * Check if the metadata or any object has been modified
-	 */
-	public boolean isMetadataModified()
-		{
-		boolean modified=coreMetadataModified;
-		for(EvObject ob:metaObject.values())
-			modified|=ob.metaObjectModified;
-		return modified;
-		}
-	
-	/**
-	 * Get a meta object by ID
-	 */
-	public EvObject getMetaObject(String i)
-		{
-		return metaObject.get(i);
-		}
-	
-	/**
-	 * Put a meta object into the collection
-	 */
-	public int addMetaObject(EvObject o)
-		{
-		int i=1;
-		while(metaObject.get(Integer.toString(i))!=null)
-			i++;
-		metaObject.put(Integer.toString(i), o);
-		return i;
-		}
-	
-	/**
-	 * Remove an object via the pointer
-	 */
-	public void removeMetaObjectByValue(EvObject ob)
-		{
-		String id=null;
-		for(Map.Entry<String, EvObject> entry:metaObject.entrySet())
-			if(entry.getValue()==ob)
-				{
-				id=entry.getKey();
-				break;
-				}
-		if(id!=null)
-			metaObject.remove(id);
-		}
 	
 	/** Version of metadata */
 	public String metadataVersion="0";
@@ -441,7 +351,8 @@ public abstract class EvData
   			if(sid==null) 
   				//This is only needed for imagesets without the EV extended attributes
   				//should maybe grab a free one (detect)
-  				id=""+-1;
+  				//id=""+-1;
+  				id="im"; //This is for the OST3 transition
   			else
   				id=sid;
  				metaObject.put(id, o);
@@ -498,25 +409,36 @@ public abstract class EvData
 			}
 		return doc;
 		}
+
 	
-
-	/******************************************************************************************************
-	 *                               Abstract Instance                                                    *
-	 *****************************************************************************************************/
-
-
-	/**
-	 * Get a name description of the metadata
-	 */
-	public abstract String getMetadataName();
 	
 	/**
-	 * Save metadata
+	 * Get the name of this metadata to be displayed in menus
 	 */
-	public abstract void saveMeta();
+	public String getMetadataName()
+		{
+		if(io==null)
+			return "<unnamed>";
+		else
+			return io.getMetadataName();
+		}
+	
+	public String toString()
+		{
+		return getMetadataName();
+		}
 
+	
 	/**
 	 * Get entry for Load Recent or null if not possible
 	 */
-	public abstract RecentReference getRecentEntry();
+	public RecentReference getRecentEntry()
+		{
+		if(io==null)
+			return null;
+		else
+			return io.getRecentEntry();
+		}
+
+	
 	}

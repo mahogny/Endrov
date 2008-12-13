@@ -166,8 +166,10 @@ public class ObjectCombo extends JComboBox implements ActionListener
 			for(String id:thisMeta.metaObject.keySet())
 				if(filterObject.comboFilterMetaObjectCallback(thisMeta.getMetaObject(id)))
 					addItem(new Alternative(thisMeta,id, null, null));
-			for(Alternative a:filterObject.comboAddObjectAlternative(this, thisMeta))
-				addItem(a);
+			Alternative as[]=filterObject.comboAddObjectAlternative(this, thisMeta);
+			if(as!=null)
+				for(Alternative a:as)
+					addItem(a);
 			}
 		}
 	
@@ -228,8 +230,9 @@ public class ObjectCombo extends JComboBox implements ActionListener
 	public static interface comboFilterMetaObject
 		{
 		public boolean comboFilterMetaObjectCallback(EvObject ob);
+		/** Can return null */
 		public Alternative[] comboAddObjectAlternative(ObjectCombo combo, EvData meta);
-		public Alternative[] comboAddAlternative(ObjectCombo combo);
+		//public Alternative[] comboAddAlternative(ObjectCombo combo);
 		}
 	
 	public static class Alternative

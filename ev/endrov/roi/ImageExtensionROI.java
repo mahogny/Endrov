@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.*;
 
 import endrov.basicWindow.*;
-import endrov.data.EvData;
+import endrov.data.EvContainer;
 import endrov.imageWindow.*;
 import endrov.roi.window.*;
 
@@ -34,10 +34,10 @@ public class ImageExtensionROI implements ImageWindowExtension
 		JMenu miModify=new JMenu("Modify");
 		JMenu miComposite=new JMenu("Composite");
 		JMenu miAnalyze=new JMenu("Analyze");
-		BasicWindow.addMenuItemSorted(miROI, miNew);
-		BasicWindow.addMenuItemSorted(miROI, miModify);
-		BasicWindow.addMenuItemSorted(miROI, miAnalyze);
-		BasicWindow.addMenuItemSorted(miROI, miComposite);
+		BasicWindow.addMenuItemSorted(miROI, miNew, "roi_1new");
+		BasicWindow.addMenuItemSorted(miROI, miModify, "roi_modify");
+		BasicWindow.addMenuItemSorted(miROI, miComposite, "roi_composite");
+		BasicWindow.addMenuItemSorted(miROI, miAnalyze, "roi_analyze");
 
 		//ROI Window
 		JMenuItem miROIWindow=new JMenuItem("ROI Window...");
@@ -73,7 +73,7 @@ public class ImageExtensionROI implements ImageWindowExtension
 				miNewROIthis.addActionListener(new ActionListener()
 					{public void actionPerformed(ActionEvent e)
 						{
-						EvData data=w.getImageset();
+						EvContainer data=w.getImageset();
 						if(data!=null)
 							{
 							CompoundROI croi=(CompoundROI)rt.makeInstance();

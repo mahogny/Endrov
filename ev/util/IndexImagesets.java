@@ -1,6 +1,7 @@
 package util;
 import java.io.File;
 
+import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.imagesetOST.*;
 
@@ -16,7 +17,8 @@ public class IndexImagesets
 		if(!(new File(file,"imagecache.txt")).exists())
 			{
 			System.out.println("Indexing imageset "+file.getPath());
-			new OstImageset(file);
+			EvData d=new EvData();
+			new EvIODataOST(d,file);
 			}
 		}
 	

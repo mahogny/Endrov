@@ -115,14 +115,13 @@ public class BioformatsImageset extends Imageset
 			Map.Entry e=(Map.Entry)o;
 			System.out.println("> "+e.getKey()+" "+e.getValue());
 			}
-		meta=new ImagesetMeta();
-		meta.resX=1;
-		meta.resY=1;
+		resX=1;
+		resY=1;
 		double resZ=1;
 		if(imageReader.getMetadataValue("VoxelSizeX")!=null)
-			meta.resX=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6);
+			resX=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeY")!=null)
-			meta.resY=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6);
+			resY=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeZ")!=null)
 			resZ=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6);
 
@@ -132,13 +131,6 @@ public class BioformatsImageset extends Imageset
 			{
 			//Load metadata
 			loadXmlMetadata(metaFile);
-			for(String oi:metaObject.keySet())
-				if(metaObject.get(oi) instanceof ImagesetMeta)
-					{
-					meta=(ImagesetMeta)metaObject.get(oi);
-					metaObject.remove(oi);
-					break;
-					}
 			}
 		
 		
@@ -147,11 +139,11 @@ public class BioformatsImageset extends Imageset
 		for(int channelnum=0;channelnum<numc;channelnum++)
 			{
 			String channelName="ch"+channelnum;
-			ImagesetMeta.Channel mc=meta.getCreateChannelMeta(channelName);
+			Imageset.Channel mc=getCreateChannelMeta(channelName);
 			loadMeta(mc);
 
 			//Fill up with image loaders
-			Channel c=new Channel(meta.getCreateChannelMeta(channelName));
+			Channel c=new Channel(getCreateChannelMeta(channelName));
 			channelImages.put(channelName,c);
 			for(int framenum=0;framenum<numt;framenum++)
 				{
@@ -170,7 +162,7 @@ public class BioformatsImageset extends Imageset
 			}
 		}
 
-	private void loadMeta(ImagesetMeta.Channel mc)
+	private void loadMeta(Imageset.Channel mc)
 		{
 		mc.chBinning=1;
 		
@@ -183,13 +175,14 @@ public class BioformatsImageset extends Imageset
 	/**
 	 * Channel - contains methods for building frame database
 	 */
+	/*
 	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
 		{
 		return new Channel(ch);
 		}
 	public class Channel extends Imageset.ChannelImages
 		{
-		public Channel(ImagesetMeta.Channel channelName)
+		public Channel(Imageset.Channel channelName)
 			{
 			super(channelName);
 			}
@@ -211,8 +204,8 @@ public class BioformatsImageset extends Imageset
 			public int getBinning(){return getMeta().chBinning;}
 			public double getDispX(){return getMeta().dispX;}
 			public double getDispY(){return getMeta().dispY;}
-			public double getResX(){return meta.resX;}
-			public double getResY(){return meta.resY;}
+			public double getResX(){return resX;}
+			public double getResY(){return resY;}
 			}
 		
 		
@@ -222,6 +215,6 @@ public class BioformatsImageset extends Imageset
 		{
 		return new RecentReference(getMetadataName(), basedir);
 		}
-	
+	*/
 	}
 

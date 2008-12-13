@@ -1,5 +1,6 @@
 package endrov.util;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
@@ -57,17 +58,17 @@ public class EvParallel
 		}
 
 	/**
-	 * Map :: [A] -> (A->B) -> [B]
+	 * Map_ :: [A] -> (A->_) -> []
 	 */
-	public static <A> void map_(List<A> in, final FuncAB<A,Object> func)
+	public static <A> void map_(Collection<A> in, final FuncAB<A,Object> func)
 		{
 		map_(numThread, in, func);
 		}
 	
 	/**
-	 * Map :: [A] -> (A->B) -> [B]
+	 * Map_ :: [A] -> (A->_) -> []
 	 */
-	public static <A> void map_(int numThread, List<A> in, final FuncAB<A,Object> func)
+	public static <A> void map_(int numThread, Collection<A> in, final FuncAB<A,Object> func)
 		{
 		try
 			{

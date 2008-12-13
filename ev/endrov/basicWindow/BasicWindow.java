@@ -144,22 +144,31 @@ public abstract class BasicWindow extends JPanel
 
 	/**
 	 * Add menu item to a menu, put it in alphabetical order
-	 * @param menu
-	 * @param ni
 	 */
-	public static void addMenuItemSorted(JMenu menu, JMenuItem ni)
+	public static void addMenuItemSorted(JMenu menu, JMenuItem ni, String itemName)
 		{
-		String thisText=ni.getText().toLowerCase();
+//		String thisText=ni.getText().toLowerCase();
+		String thisText=itemName;
+		ni.setName(itemName);
 		for(int i=0;i<menu.getItemCount();i++)
 			{
 			JMenuItem nj=(JMenuItem)menu.getItem(i);
-			if(thisText.compareTo(nj.getText().toLowerCase())<0)
+//			System.out.println("nj "+nj.getLabel()+" "+nj.getName());
+			if(thisText.compareTo(nj.getName())<0)
+//			if(thisText.compareTo(nj.getText().toLowerCase())<0)
 				{
 				menu.add(ni, i);
 				return;
 				}			
 			}
 		menu.add(ni);
+		}
+	/**
+	 * Add sorted entry, take label as name 
+	 */
+	public static void addMenuItemSorted(JMenu menu, JMenuItem ni)
+		{
+		addMenuItemSorted(menu, ni, ni.getText());
 		}
 
 	/**
@@ -444,11 +453,11 @@ public abstract class BasicWindow extends JPanel
 		};
 		
 	private JMenuBar menubar=new JMenuBar();
-	private JMenu menuFile=new JMenu("EV");
+	public JMenu menuFile=new JMenu("File");
 	private JMenu menuMaintenance=new JMenu("Maintenance");
 	private JMenu menuWindows=new JMenu("Windows");
 	private JMenu menuBatch=new JMenu("Batch");
-	private JMenu menuInfo=new JMenu("Info");
+	//private JMenu menuInfo=new JMenu("Info");
 	private JMenuItem miGC=new JMenuItem("Run GC");
 	private JMenuItem miResetPC=new JMenuItem("Reset personal config");
 	private JMenuItem miSavePluginList=new JMenuItem("Save plugin list");
@@ -500,24 +509,36 @@ public abstract class BasicWindow extends JPanel
 		addMenubar(menuFile);
 		addMenubar(menuWindows);
 		addMenubar(menuBatch);	
-		menuFile.add(menuInfo);
-		menuFile.add(menuMaintenance);
+		//BasicWindow.addMenuItemSorted(menuFile,menuInfo,"sys_info");
+		BasicWindow.addMenuItemSorted(menuFile,menuMaintenance,"sys_maintenance");
+		//menuFile.add(menuInfo);
+		//menuFile.add(menuMaintenance);
 		menuMaintenance.add(miGC);
 		menuMaintenance.add(miResetPC);
 		menuMaintenance.add(miSavePluginList);
 		menuMaintenance.add(miToggleSplash);
 		menuMaintenance.add(miSaveConfig);
-		menuFile.add(miQuit);
+		BasicWindow.addMenuItemSorted(menuFile,miQuit,"zquit");
+		//menuFile.add(miQuit);
 		
-		menuInfo.add(miAbout);
-		menuInfo.add(miWebHome);
-		menuInfo.add(miWebUser);
-		menuInfo.add(miWebPlugins);
-		menuInfo.add(miSysInfo);
 
 		for(BasicWindowHook hook:basicWindowExtensionHook.values())
 			hook.createMenus(this);
 
+
+		JMenu mHelp=new JMenu("Help");
+		
+		mHelp.add(miAbout);
+		mHelp.add(miWebHome);
+		mHelp.add(miWebUser);
+		mHelp.add(miWebPlugins);
+		mHelp.add(miSysInfo);
+
+		
+		menubar.add(Box.createHorizontalGlue());
+		menubar.add(mHelp);
+
+		
 		//Listeners
 		miQuit.addActionListener(listener);
 		miResetPC.addActionListener(listener);

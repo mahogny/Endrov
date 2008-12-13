@@ -74,7 +74,7 @@ public class EvLine extends EvObject implements Cloneable
 
 	
 	
-	public static Collection<EvLine> getObjects(EvData meta)
+	public static Collection<EvLine> getObjects(EvContainer meta)
 		{
 		if(meta==null)
 			return new Vector<EvLine>();

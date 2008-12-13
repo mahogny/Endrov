@@ -20,6 +20,8 @@ public class BasicIcon
 	public static final ImageIcon iconButtonHelp=new ImageIcon(BasicIcon.class.getResource("iconHelp.png"));
 	public static final ImageIcon iconButtonCopy=new ImageIcon(BasicIcon.class.getResource("iconCopy.png"));
 	public static final ImageIcon iconButtonPaste=new ImageIcon(BasicIcon.class.getResource("iconPaste.png"));
+	public static final ImageIcon iconMenuNew=new ImageIcon(BasicIcon.class.getResource("gnomeNew.png"));
+	public static final ImageIcon iconMenuLoad=new ImageIcon(BasicIcon.class.getResource("gnomeOpen.png"));
 	public static final ImageIcon iconMenuQuit=new ImageIcon(BasicIcon.class.getResource("gnomeQuit.png"));
 	public static final ImageIcon iconFramePrev=new ImageIcon(BasicIcon.class.getResource("iconFramePrev.png"));
 	public static final ImageIcon iconFrameNext=new ImageIcon(BasicIcon.class.getResource("iconFrameNext.png"));

@@ -1,6 +1,8 @@
 package endrov.imageset;
 
 import java.awt.event.*;
+import java.util.Map;
+
 import javax.swing.*;
 
 import endrov.data.*;
@@ -73,19 +75,29 @@ public class ChannelCombo extends JComboBox
 	
 	private class Alternative
 		{
+		final public EvData data;
+		final public String obName;
 		final public Imageset imageset;
 		final public String channel;
-		public Alternative(Imageset imageset, String channel)
+		public Alternative(EvData data, String obName, Imageset imageset, String channel)
 			{
+			this.data=data;
 			this.imageset=imageset;
 			this.channel=channel;
+			this.obName=obName;
 			}
 		public String toString()
 			{
 			if(imagesetExternal!=null)
 				return channel;
 			else
-				return imageset.getMetadataName()+"-"+channel;
+				{
+				if(imageset==null)
+					return "";
+				else
+					return data.getMetadataName()+"-"+obName+"-"+channel;
+				}
+//				return obName+"-"+channel;
 			}
 		}
 
@@ -147,24 +159,32 @@ public class ChannelCombo extends JComboBox
 		{
 		removeAllItems();
 		if(addEmptyChannel)
-			addItem(new Alternative(new EmptyImageset(),""));
+			addItem(new Alternative(null,"",null,""));
 		if(imagesetExternal!=null)
 			{
 			//Add Imageset imageset
 			for(String channel:imagesetExternal.channelImages.keySet())
-				addItem(new Alternative(imagesetExternal,channel));
+				addItem(new Alternative(new EvData(),"<ext>",imagesetExternal,channel));
 			}
 		else
 			{
 			//Add other metadata
 			for(EvData thisMeta:EvData.metadata)
 				{
+				for(Map.Entry<String, Imageset> ime:thisMeta.getIdObjects(Imageset.class).entrySet())
+					{
+					Imageset im=ime.getValue();
+					for(String channel:im.channelImages.keySet())
+						addItem(new Alternative(thisMeta,ime.getKey(),im,channel));
+					}
+				/*
 				if(thisMeta instanceof Imageset)
 					{
 					Imageset im=(Imageset)thisMeta;
 					for(String channel:im.channelImages.keySet())
 						addItem(new Alternative(im,channel));
 					}
+				*/	
 				}
 			}
 		}
@@ -195,7 +215,36 @@ public class ChannelCombo extends JComboBox
 	public Imageset getImageset()
 		{		
 		Alternative a=(Alternative)getSelectedItem();
-		return a==null ? new EmptyImageset() : a.imageset; 
+		return a==null ? new Imageset() : a.imageset; 
+		}
+
+	/**
+	 * Get the selected data or an empty dataset
+	 */
+	public EvData getData()
+		{		
+		Alternative a=(Alternative)getSelectedItem();
+		if(a!=null)
+			return a.data;
+		else
+			return new EvData();
+		}
+	
+	
+	/**
+	 * Get the selected data or null
+	 */
+	public EvData getDataNull()
+		{		
+		Alternative a=(Alternative)getSelectedItem();
+		if(a!=null)
+			return a.data;
+		else
+			return null;
+/*		if(a.imageset instanceof EmptyImageset)
+			return null; //TODO check if this breaks anything
+		else
+			return a.imageset;*/
 		}
 	
 	/**
@@ -205,15 +254,20 @@ public class ChannelCombo extends JComboBox
 	public Imageset getImagesetNull()
 		{		
 		Alternative a=(Alternative)getSelectedItem();
+		return a.imageset;
+		/*
 		if(a.imageset instanceof EmptyImageset)
 			return null; //TODO check if this breaks anything
 		else
 			return a.imageset;
+			*/
 		}
-	
+
+	/*
 	public Alternative createAlternative(Imageset imageset, String channel)
 		{
 		return new Alternative(imageset, channel);
 		}
+		*/
 	
 	}

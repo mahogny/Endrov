@@ -1,22 +1,84 @@
 package endrov.imageset;
 
-import java.awt.image.*;
-import java.lang.ref.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.lang.ref.SoftReference;
+
 
 /**
- * Interface to any form of image loader
  * @author Johan Henriksson
+ *
  */
-public abstract class EvImage
+
+public class EvImage  
 	{
 	
-	public EvIOImage io=null; //temp added
-	public boolean isDirty=false; //For any special reason modified, such as change of compression 
+	//TODO copy constructor
+
+	
+	public EvImage()
+		{
+		}
+
+	public EvImage(EvImage copy)
+		{
+		resX=copy.resX;
+		resY=copy.resY;
+		dispX=copy.dispX;
+		dispY=copy.dispY;
+		binning=copy.binning;
+		io=copy.io;
+		
+		if(copy.im!=null)
+			{
+			im=new BufferedImage(copy.im.getWidth(),copy.im.getHeight(),copy.im.getType());
+			im.getGraphics().drawImage(copy.im, 0, 0, null);
+			}
+		}
+	
+	
+	/**
+	 * Connection to I/O. This is how partial loading is implemented
+	 */
+	public EvIOImage io=null;
+	
+  /**
+   * Force rewrite, such as change of compression
+   */ 
+	public boolean isDirty=false;   
 	
 	/**
 	 * In-memory image. Set to null if there is none.
+	 * 
+	 * TODO new image representation
+	 * 
+	 * TODO loadJavaImage, what to replace it with?
+	 * 
+	 * class can be abstract. EvImageCopy would work, and then a *generic* EvImageWithLoader that
+	 * has a pointer to the imageset
+	 * 
+	 * keeping pointers in program up to date will be a mess if abstract. better put in a loader reference.
+	 * it can be swapped upon saving all images
+	 * 
+	 * 
 	 */
 	protected BufferedImage im=null;
+	
+	
+	/**
+	 * ONLY for use by I/O system
+	 */
+	public BufferedImage getMemoryImage()
+		{
+		return im;
+		}
+	/**
+	 * ONLY for use by I/O system
+	 */
+	public void setMemoryImage(BufferedImage im)
+		{
+		this.im=im;
+		}
 	
 	/**
 	 * Cache: pointer to loaded image
@@ -45,7 +107,7 @@ public abstract class EvImage
 			BufferedImage loaded=cachedImage.get();
 			if(loaded==null)
 				{
-				loaded=loadJavaImage();
+				loaded=io.loadJavaImage();
 				cachedImage=new SoftReference<BufferedImage>(loaded);
 				}
 			return loaded;
@@ -91,45 +153,49 @@ public abstract class EvImage
 		cachedImage=new SoftReference<BufferedImage>(null);
 		}
 	
-	/**
-	 * Load image from disk.
-	 */
-	protected abstract BufferedImage loadJavaImage();
 	
 	
-	/**
-	 * Get a copy of this image that is legal to modify
-	 */
-	public EvImage getWritableCopy()
-		{
-		return new EvImageCopy(this);
-		}
+	//what to do about this? now it points to io
 	
 	public double transformImageWorldX(double c){return (c*getBinning()+getDispX())/getResX();}
 	public double transformImageWorldY(double c){return (c*getBinning()+getDispY())/getResY();}			
 	public double transformWorldImageX(double c){return (c*getResX()-getDispX())/getBinning();}
 	public double transformWorldImageY(double c){return (c*getResY()-getDispY())/getBinning();}
-	
-	
-	
 	public double scaleImageWorldX(double c){return c/(getResX()/getBinning());}
 	public double scaleImageWorldY(double c){return c/(getResY()/getBinning());}
 	public double scaleWorldImageX(double c){return c*getResX()/getBinning();}
 	public double scaleWorldImageY(double c){return c*getResY()/getBinning();}
 	
-	//how about a Z-transform too?
-
-	public abstract int getBinning();
-	public abstract double getDispX();
-	public abstract double getDispY();
-	public abstract double getResX();
-	public abstract double getResY();
 	
-	/*
-	public void finalize()
+	
+	
+	//Is this the final solution? Probably not, it will be moved to Stack level(?). or homogenized.
+	//but it's a quick patch
+	
+	public double resX, resY, binning;
+	public double dispX, dispY;
+	
+	public double getResX()
 		{
-		System.out.println("Removing image");
+		return resX;
 		}
-		*/
-
+	public double getResY()
+		{
+		return resY;
+		}
+	public double getBinning()
+		{
+		return binning;
+		}
+	
+	public double getDispX()
+		{
+		return dispX;
+		}
+	public double getDispY()
+		{
+		return dispY;
+		}
+	
+	
 	}

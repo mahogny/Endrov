@@ -164,7 +164,10 @@ public class VoxelExtension implements ModelWindowExtension
 		public void datachangedEvent()
 			{
 			EvData data=w.getSelectedData();
-			Imageset im=data instanceof Imageset ? (Imageset)data : null;
+			List<Imageset> ims=data.getObjects(Imageset.class);
+			Imageset im=ims.isEmpty() ? null : ims.get(0);
+			
+			//Imageset im=data instanceof Imageset ? (Imageset)data : null;
 			
 			icR.channelCombo.setExternalImageset(im);
 			icG.channelCombo.setExternalImageset(im);

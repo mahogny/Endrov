@@ -35,7 +35,7 @@ public class Main
 				//Set compression
 				for(String chname:inim.channelImages.keySet())
 					if(chancomp.containsKey(chname))
-						inim.meta.channelMeta.get(chname).compression=chancomp.get(chname);
+						inim.channelMeta.get(chname).compression=chancomp.get(chname);
 				
 				//the save system could now be replaced by writable OST imagesets.
 				//problem though: lack a system to set compression rates, write locks are in, rather ugly in general

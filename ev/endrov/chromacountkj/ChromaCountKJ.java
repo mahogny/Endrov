@@ -67,7 +67,7 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 
 	
 	
-	public static Collection<ChromaCountKJ> getObjects(EvData meta)
+	public static Collection<ChromaCountKJ> getObjects(EvContainer meta)
 		{
 		if(meta==null)
 			return new Vector<ChromaCountKJ>();

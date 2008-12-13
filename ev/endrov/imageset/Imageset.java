@@ -1,51 +1,43 @@
 package endrov.imageset;
 
-import java.io.*;
 import java.util.*;
+
+import javax.swing.JMenu;
+
 import org.jdom.*;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
 import endrov.data.*;
+import endrov.imageWindow.ImageWindow;
 import endrov.util.EvDecimal;
 
 /**
  * Interface to one imageset + metadata
  * @author Johan Henriksson
  */
-public abstract class Imageset extends EvData
+public class Imageset extends EvObject
 	{
-	/** Name of imageset */
-	protected String imageset;
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
+	private static final String metaType="imageset";
+	
+	public static void initPlugin() {}
+	static
+		{
+		ImageWindow.addImageWindowExtension(new ImagesetImageExtension());
+		EvData.extensions.put(metaType,new ImagesetMetaObjectExtension());
+		
+		
+		}
+	
 	
 	/** List of all channels belonging to this imageset */
 	public HashMap<String,ChannelImages> channelImages=new HashMap<String,ChannelImages>();
 	
 	
-	/** Meta object belonging to the imageset. Never null. Referenced elsewhere, do not change pointer */
-	public ImagesetMeta meta=new ImagesetMeta();
 
 	
-	/** Scan recording for channels */
-	public abstract void buildDatabase();
-	
-	/** Save meta for all channels */
-	public abstract void saveMeta();
 
-	/** 
-	 * Directory for auxiliary data. null if one does not exist
-	 */
-	public abstract File datadir();
-
-
-	public String getMetadataName()
-		{
-		return imageset;
-		}
-	public String toString()
-		{
-		return getMetadataName();
-		}
 
 	
 	/**
@@ -67,60 +59,29 @@ public abstract class Imageset extends EvData
 		ChannelImages im=channelImages.get(ch);
 		if(im==null)
 			{
-			ImagesetMeta.Channel m=meta.getCreateChannelMeta(ch);
-			im=internalMakeChannel(m);// new ChannelImages(m);
+			Imageset.Channel m=getCreateChannelMeta(ch);
+			im=new ChannelImages(m);
 			channelImages.put(ch, im);
 			}
 		return im;
 		}
 
-	protected abstract ChannelImages internalMakeChannel(ImagesetMeta.Channel ch);
-	
 	/**
 	 * Remove channel images and metadata
 	 */
 	public void removeChannel(String ch)
 		{
 		channelImages.remove(ch);
-		meta.channelMeta.remove(ch);
+		channelMeta.remove(ch);
 		}
 	
-	
-	/**
-	 * This will not be here in the future 
-	 */
-	/*
-	public String frameToTime(EvDecimal framed)
-		{
-		int frame=framed.intValue();
-		int numh=frame/3600;
-		int hsec=numh*3600;
-		frame-=hsec;
-		int nummin=frame/60;
-		int minsec=nummin*60;
-		frame-=minsec;
-		StringBuffer sb=new StringBuffer();
-		if(numh!=0)
-			{
-			sb.append(numh);
-			sb.append("h");
-			}
-		if(nummin!=0)
-			{
-			sb.append(nummin);
-			sb.append("m");
-			}
-		framed=framed.subtract(new EvDecimal(hsec+minsec));
-		sb.append(framed);
-		sb.append("s");
-		return sb.toString();
-		}*/
 	
 	
 	/**
 	 * Save metadata to some specific files; mostly for imageset internal use. Implementations of imagesets
 	 * should implement a function which stores the metadata in a standard location.
 	 */
+	/*
 	public void saveMeta(OutputStream os) throws IOException
 		{
 		//Add all objects
@@ -128,7 +89,7 @@ public abstract class Imageset extends EvData
 		
 		//Add imageset XML
 		Element imagesetEl=new Element("imageset");
-		meta.saveMetadata(imagesetEl);
+		saveMetadata(imagesetEl);
 		document.getRootElement().addContent(imagesetEl);
 		
 		//Write out to disk
@@ -162,7 +123,35 @@ public abstract class Imageset extends EvData
 				break;
 			}
 		}
+*/
+	
+	
+	/**
+	 * Cast to imageset or return a new empty imageset
+	 */
+	public static Imageset castEmpty(EvObject data)
+		{
+		if(data instanceof Imageset)
+			return (Imageset)data;
+		else
+			return new Imageset();
+		}
 
+	/**
+	 * Cast to Imageset or return null
+	 */
+	public static Imageset castNull(EvObject data)
+		{
+		if(data instanceof Imageset)
+			return (Imageset)data;
+		else
+			return null;
+		}
+	
+	
+	
+	
+	
 	
 	/**
 	 * Get access to an image
@@ -179,10 +168,10 @@ public abstract class Imageset extends EvData
 	/**
 	 * Images for one channel
 	 */
-	public abstract class ChannelImages
+	public class ChannelImages
 		{
 		/** Private copy to channel specific meta data in meta */
-		private ImagesetMeta.Channel meta;
+		private Imageset.Channel meta;
 				
 		/** Image loaders */
 		public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
@@ -190,7 +179,7 @@ public abstract class Imageset extends EvData
 		/**
 		 * Create a new channel
 		 */
-		public ChannelImages(ImagesetMeta.Channel channelName)
+		public ChannelImages(Imageset.Channel channelName)
 			{
 			meta=channelName;
 			}
@@ -231,43 +220,13 @@ public abstract class Imageset extends EvData
 					frames=new TreeMap<EvDecimal, EvImage>();
 					imageLoader.put(frame, frames);
 					}
-				im=internalMakeLoader(frame, z);
+				im=new EvImage();
 				frames.put(z, im);
 				return im;
 				}
 			}
 
-		protected abstract EvImage internalMakeLoader(EvDecimal frame, EvDecimal z);
-		
 	
-		
-		/****************************************************************************************/
-		/******************************* Meta data **********************************************/
-		/****************************************************************************************/
-
-		
-		/**
-		 * Get channel specific meta data
-		 */
-		public ImagesetMeta.Channel getMeta()
-			{
-			return meta;
-			}
-
-		
-		/**
-		 * Get property assigned to a frame
-		 * @param frame Frame
-		 * @param prop Property
-		 * @return Value of property or null if it does not exist
-		 */
-		public String getFrameMeta(EvDecimal frame, String prop)
-			{
-			HashMap<String,String> framedata=meta.metaFrame.get(frame);
-			if(framedata==null)
-				return null;
-			return framedata.get(prop);
-			}
 		
 		
 
@@ -418,24 +377,364 @@ public abstract class Imageset extends EvData
 			}		
 		
 		
+		/****************************************************************************************/
+		/******************************* Meta data 1 **********************************************/
+		/****************************************************************************************/
+
+		
+		/**
+		 * Get channel specific meta data
+		 */
+		public Imageset.Channel getMeta()
+			{
+			return meta;
+			}
+
+		
+		/**
+		 * Get property assigned to a frame
+		 * @param frame Frame
+		 * @param prop Property
+		 * @return Value of property or null if it does not exist
+		 */
+		public String getFrameMeta(EvDecimal frame, String prop)
+			{
+			HashMap<String,String> framedata=meta.metaFrame.get(frame);
+			if(framedata==null)
+				return null;
+			return framedata.get(prop);
+			}
+
+		//TODO merge here
+		
 		}
 
 		
+	
+	
+	/******************************************************************************************************
+	 *                               Channel META                                                         *
+	 *****************************************************************************************************/
 
-	public static Imageset castEmpty(EvData data)
+	/**
+	 * Channel specific meta data
+	 * 
+	 * TODO merge with ChannelImages
+	 * 
+	 */
+	public static class Channel
 		{
-		if(data instanceof Imageset)
-			return (Imageset)data;
-		else
-			return new EmptyImageset();
+		public String name; //TODO: do not store name here
+		
+		/** Binning, a scale factor from the microscope */
+		public int chBinning=1;
+		
+		/** Displacement */
+		public double dispX=0, dispY=0;
+		
+		/** Comppression 0-100, 100=lossless, what compression to apply to new images */
+		public int compression=100;
+		
+		/** Other */
+		public HashMap<String,String> metaOther=new HashMap<String,String>();
+		
+		/** frame data */
+		public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
+		
+		
+		
+		
+		/** Get (other) meta data in form of a string (default="") */
+		public String getMetaValueString(String s)
+			{
+			String t=metaOther.get(s);
+			if(t==null)	return "";
+			else return t;
+			}
+
+		/** Get (other) meta data in form of a double (default=0) */
+		public double getMetaValueDouble(String s)
+			{
+			String t=getMetaValueString(s);
+			if(t.equals("")) return 0;
+			else return Double.parseDouble(t);
+			}
+		
+		/**
+		 * Get a common frame. Creates structure if it does not exist.
+		 */
+		public HashMap<String,String> getMetaFrame(int fid)
+			{
+			HashMap<String,String> frame=metaFrame.get(fid);
+			if(frame==null)
+				{
+				frame=new HashMap<String,String>();
+				metaFrame.put(fid, frame);
+				}
+			return frame;
+			}
 		}
 
-	public static Imageset castNull(EvData data)
+	
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+	
+	/** Common resolution [px/um] */
+	public double resX, resY, resZ; //TODO Deprecate Z once all OST converted. X and Y? or just keep these?
+	
+	/** Number of seconds each frame */
+	public double metaTimestep=1; //TODO deprecate
+	
+	public double metaNA=0;
+	public double metaObjective=1;
+	public double metaOptivar=1;
+	public double metaCampix=1;
+	public double metaSlicespacing=1;
+	public String metaSample="";
+	public String metaDescript="";
+	
+	/** Other */
+	public HashMap<String,String> metaOther=new HashMap<String,String>();
+	
+	/** Frame data */
+	public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
+	
+	/** Channel specific data */
+	public HashMap<String,Channel> channelMeta=new HashMap<String,Channel>();
+
+	public String getMetaTypeDesc()
 		{
-		if(data instanceof Imageset)
-			return (Imageset)data;
-		else
-			return null;
+		return metaType;
 		}
+
+	/** Additions to the object-specific menu */
+	public void buildMetamenu(JMenu menu)
+		{
+		}
+
+	
+	/** Get (other) meta data in form of a string (default="") */
+	public String getMetaValueString(String s)
+		{
+		String t=metaOther.get(s);
+		if(t==null)	return "";
+		else return t;
+		}
+
+	/** Get (other) meta data in form of a double (default=0) */
+	public double getMetaValueDouble(String s)
+		{
+		String t=getMetaValueString(s);
+		if(t.equals("")) return 0;
+		else return Double.parseDouble(t);
+		}
+	
+	/**
+	 * Get a common frame. Creates structure if it does not exist.
+	 */
+	public HashMap<String,String> getMetaFrame(int fid)
+		{
+		HashMap<String,String> frame=metaFrame.get(fid);
+		if(frame==null)
+			{
+			frame=new HashMap<String,String>();
+			metaFrame.put(fid, frame);
+			}
+		return frame;
+		}
+	
+	
+	/**
+	 * Get a channel. Creates structure if it does not exist.
+	 */
+	public Channel getCreateChannelMeta(String ch)
+		{
+		Channel c=channelMeta.get(ch);
+		if(c==null)
+			{
+			c=new Channel();
+			c.name=ch;
+			channelMeta.put(ch,c);
+			}
+		return c;
+		}
+	
+	/**
+	 * Save down data
+	 */
+	public void saveMetadata(Element e)
+		{
+		e.setName(metaType);
+		
+		//Common
+		e.addContent(new Element("resX").addContent(""+resX));
+		e.addContent(new Element("resY").addContent(""+resY));
+		e.addContent(new Element("resZ").addContent(""+resZ));
+		e.addContent(new Element("timestep").addContent(""+metaTimestep));
+		e.addContent(new Element("NA").addContent(""+metaNA));
+		e.addContent(new Element("objective").addContent(""+metaObjective));
+		e.addContent(new Element("optivar").addContent(""+metaOptivar));
+		e.addContent(new Element("campix").addContent(""+metaCampix));
+		e.addContent(new Element("slicespacing").addContent(""+metaSlicespacing));
+		e.addContent(new Element("sample").addContent(""+metaSample));
+		e.addContent(new Element("description").addContent(""+metaDescript));
+		for(String key:metaOther.keySet())
+			e.addContent(new Element(key).addContent(""+metaOther.get(key)));
+		saveFrameMetadata(metaFrame, e);
+		
+		//Channels
+		for(Channel ch:channelMeta.values())
+			{
+			Element elOstChannel=new Element("channel");
+			elOstChannel.setAttribute("name", ch.name);
+			e.addContent(elOstChannel);
+			
+			elOstChannel.addContent(new Element("binning").addContent(""+ch.chBinning));
+			elOstChannel.addContent(new Element("dispX").addContent(""+ch.dispX));
+			elOstChannel.addContent(new Element("dispY").addContent(""+ch.dispY));
+			elOstChannel.addContent(new Element("comression").addContent(""+ch.compression));
+			for(String key:ch.metaOther.keySet())
+				elOstChannel.addContent(new Element(key).addContent(""+ch.metaOther.get(key)));
+			saveFrameMetadata(ch.metaFrame, elOstChannel);
+			}
+		
+		}
+	
+
+	/**
+	 * Save down frame data
+	 */
+	private static void saveFrameMetadata(HashMap<Integer,HashMap<String,String>> fd, Element e)
+		{
+		for(int fid:fd.keySet())
+			{
+			Element frameEl=new Element("frame");
+			frameEl.setAttribute("frame", ""+fid);
+			
+			HashMap<String,String> frame=fd.get(fid);
+			for(String field:frame.keySet())
+				{
+				String value=frame.get(field);
+				Element fieldEl=new Element(field);
+				fieldEl.addContent(value);
+				frameEl.addContent(fieldEl);
+				}
+			
+			e.addContent(frameEl);
+			}
+		}
+	
+	
+	
+
+	
+
+	/******************************************************************************************************
+	 *            Class: XML Reader and writer of this type of meta object                                *
+	 *****************************************************************************************************/
+	
+	public static class ImagesetMetaObjectExtension implements EvObjectType
+		{
+		public EvObject extractObjects(Element e)
+			{
+			Imageset meta=new Imageset();
+			
+			for(Object oi:e.getChildren())
+				{
+				Element i=(Element)oi;
+				
+				if(i.getName().equals("timestep"))
+					meta.metaTimestep=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resX"))
+					meta.resX=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resY"))
+					meta.resY=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resZ"))
+					meta.resZ=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("NA"))
+					meta.metaNA=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("objective"))
+					meta.metaObjective=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("optivar"))
+					meta.metaOptivar=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("campix"))
+					meta.metaCampix=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("slicespacing"))
+					meta.metaSlicespacing=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("sample"))
+					meta.metaSample=i.getValue();
+				else if(i.getName().equals("description"))
+					meta.metaDescript=i.getValue();
+				else if(i.getName().equals("channel"))
+					{
+					Imageset.Channel ch=extractChannel(meta, i);
+					meta.channelMeta.put(ch.name, ch);
+					}
+				else if(i.getName().equals("frame"))
+					extractFrame(meta.metaFrame, i);
+				else
+					meta.metaOther.put(i.getName(), i.getValue());
+				}
+			
+			return meta;
+			}
+		
+		/**
+		 * Extract channel XML data
+		 */
+		public Imageset.Channel extractChannel(Imageset data, Element e)
+			{
+			Imageset.Channel ch=new Imageset.Channel();
+			ch.name=e.getAttributeValue("name");
+			
+			for(Object oi:e.getChildren())
+				{
+				Element i=(Element)oi;
+				
+				if(i.getName().equals("dispX"))
+					ch.dispX=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("dispY"))
+					ch.dispY=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("binning"))
+					ch.chBinning=Integer.parseInt(i.getValue());
+				else if(i.getName().equals("compression"))
+					ch.compression=Integer.parseInt(i.getValue());
+				else if(i.getName().equals("frame"))
+					extractFrame(ch.metaFrame, i);
+				else
+					ch.metaOther.put(i.getName(), i.getValue());
+				}
+			
+			return ch;
+			}
+		
+		/**
+		 * Get frame metadata
+		 */
+		public void extractFrame(HashMap<Integer,HashMap<String,String>> metaFrame, Element e)
+			{
+			int fid=Integer.parseInt(e.getAttributeValue("frame"));
+			for(Object oi:e.getChildren())
+				{
+				Element i=(Element)oi;
+				HashMap<String,String> frame=metaFrame.get(fid);
+				if(frame==null)
+					{
+					frame=new HashMap<String,String>();
+					metaFrame.put(fid, frame);
+					}
+				frame.put(i.getName(), i.getValue());
+				}
+			
+			}
+		
+		}
+	
+	
+	
+	
+	
 	
 	}
