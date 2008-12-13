@@ -1,6 +1,7 @@
 package endrov.imageWindow;
 
 import java.util.*;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -421,6 +422,11 @@ public class ImageWindow extends BasicWindow
 		else
 			return null;
 		}
+	/** Get current metadata */
+	public EvData getData()
+		{
+		return getCurrentChannelWidget().comboChannel.getData();
+		}
 	/** Get current imageset */
 	public Imageset getImageset()
 		{
@@ -459,9 +465,9 @@ public class ImageWindow extends BasicWindow
 
 	/** Scale screen vector to world vector 
 	 * */
-	public double scaleS2w(double s) {return s/(getImageset().meta.resY*getZoom());}
+	public double scaleS2w(double s) {return s/(getImageset().resY*getZoom());}
 	/** Scale world to screen vector */
-	public double scaleW2s(double w) {return w*getImageset().meta.resY*getZoom();}
+	public double scaleW2s(double w) {return w*getImageset().resY*getZoom();}
 
 	
 	//New functions, should replace the ones above at some point
@@ -469,27 +475,27 @@ public class ImageWindow extends BasicWindow
 	/** Transform world coordinate to screen coordinate */
 	public Vector2d transformW2S(Vector2d u)
 		{
-		return imagePanel.transformI2S(new Vector2d(u.x*getImageset().meta.resX,u.y*getImageset().meta.resY));
+		return imagePanel.transformI2S(new Vector2d(u.x*getImageset().resX,u.y*getImageset().resY));
 		}
 	/** Transform screen coordinate to world coordinate */
 	public Vector2d transformS2W(Vector2d u)
 		{
 		Vector2d v=imagePanel.transformS2I(u);
-		return new Vector2d(v.x/getImageset().meta.resX, v.y/getImageset().meta.resY);
+		return new Vector2d(v.x/getImageset().resX, v.y/getImageset().resY);
 		}
 	
 	/** Convert world to screen Z coordinate */
-	//public double w2sz(double z) {return z*getImageset().meta.resZ;}
+	//public double w2sz(double z) {return z*getImageset().resZ;}
 	/** Convert world to screen Z coordinate */
-	//public double s2wz(double sz) {return sz/((double)getImageset().meta.resZ);} 
+	//public double s2wz(double sz) {return sz/((double)getImageset().resZ);} 
 
 	
 	//are these useful?
 	public void transformOverlay(Graphics2D g)
 		{
 		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
-		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
+		double zoomBinningX=imagePanel.zoom*getImageset().resX;
+		double zoomBinningY=imagePanel.zoom*getImageset().resY;
 		g.translate(trans.x,trans.y);
 		g.scale(zoomBinningX,zoomBinningY);
 		g.rotate(imagePanel.rotation);
@@ -497,8 +503,8 @@ public class ImageWindow extends BasicWindow
 	public void untransformOverlay(Graphics2D g)
 		{
 		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getImageset().meta.resX;
-		double zoomBinningY=imagePanel.zoom*getImageset().meta.resY;
+		double zoomBinningX=imagePanel.zoom*getImageset().resX;
+		double zoomBinningY=imagePanel.zoom*getImageset().resY;
 		g.rotate(-imagePanel.rotation);
 		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
 		g.translate(-trans.x,-trans.y);
@@ -581,7 +587,7 @@ public class ImageWindow extends BasicWindow
 			}
 			
 		//Update window title
-		setTitleEvWindow("Image Window - "+getImageset().getMetadataName());
+		setTitleEvWindow("Image Window - "+getData().getMetadataName());
 		}
 	
 	
@@ -677,7 +683,8 @@ public class ImageWindow extends BasicWindow
 		{
 	//	if(!ScriptBinding.runScriptKey(e))
 			{
-		Imageset rec=getImageset();
+		EvData data=getData();
+		//Imageset rec=getImageset();
 		if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
 			{
 			temporarilyHideMarkings=true;
@@ -687,19 +694,13 @@ public class ImageWindow extends BasicWindow
 			ConsoleWindow.focusConsole(this, imagePanel);
 		else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
 			{
-			if(!(rec instanceof EmptyImageset))
-				{
-				rec.saveMeta();
-				Log.printLog("Saving "+rec.getMetadataName());
-				}
+			data.saveMeta();
+			Log.printLog("Saving "+data.getMetadataName());
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
 			{
-			if(!(rec instanceof EmptyImageset))
-				{
-				EvData.metadata.remove(rec);
-				Log.printLog("Closing "+rec.getMetadataName());
-				}
+			EvData.metadata.remove(data);
+			Log.printLog("Closing "+data.getMetadataName());
 			BasicWindow.updateWindows();
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_0)
@@ -846,8 +847,9 @@ public class ImageWindow extends BasicWindow
 	
 	public void loadedFile(EvData data)
 		{
-		if(data instanceof Imageset)
-			getCurrentChannelWidget().comboChannel.setImageset((Imageset)data);
+		List<Imageset> ims=data.getObjects(Imageset.class);
+		if(!ims.isEmpty())
+			getCurrentChannelWidget().comboChannel.setImageset(ims.get(0));
 		}
 
 	public void freeResources(){}

@@ -1,8 +1,9 @@
 package util;
 import java.io.File;
 
+import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.imagesetOST.OstImageset;
+import endrov.imageset.Imageset;
 import endrov.makeMax.CalcThread;
 
 
@@ -15,9 +16,12 @@ public class BatchMax
 	public static void makeMax(File file)
 		{
 		System.out.println("Imageset "+file.getPath());
-		OstImageset ost=new OstImageset(file);
+		EvData data=EvData.loadFile(file);
+		Imageset im=data.getObjects(Imageset.class).get(0);
+		
+//		OstImageset ost=new OstImageset(file);
 //		BatchThread c=new CalcThread(ost, 0, 1000000, "GFP",0.99);		
-		BatchThread c=new CalcThread(ost, 0, 1000000, "GFP");
+		BatchThread c=new CalcThread(im, 0, 1000000, "GFP");
 		new CompleteBatch(c);
 		//ost.saveMeta();
 		//TODO. need to save 

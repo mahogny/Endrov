@@ -400,7 +400,7 @@ public class SequenceImageset extends Imageset
 			return new EvImageExt(filename, slice);
 			}
 		
-		private class EvImageExt extends EvImageJAI
+		private class EvImageExt extends EvImageJAI_OLD
 			{
 			public EvImageExt(String filename){super(filename);}
 			public EvImageExt(String filename, int z){super(filename,z);}

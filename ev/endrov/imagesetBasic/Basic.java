@@ -77,7 +77,7 @@ public class Basic //implements BasicWindowExtension
 			
 			public void buildSave(JMenu menu, final EvData meta)
 				{
-				if(meta instanceof NamebasedImageset)
+				if(meta.io instanceof NamebasedImageset)
 					{
 					JMenuItem miSetup=new JMenuItem("Setup");
 					menu.add(miSetup);
@@ -87,7 +87,7 @@ public class Basic //implements BasicWindowExtension
 							{((NamebasedImageset)meta).setup();}
 						});	
 					}
-				else if(meta instanceof SequenceImageset)
+				else if(meta.io instanceof SequenceImageset)
 					{
 					JMenuItem miSetup=new JMenuItem("Setup");
 					menu.add(miSetup);

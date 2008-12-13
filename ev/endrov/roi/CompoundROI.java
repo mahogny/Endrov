@@ -24,7 +24,7 @@ public abstract class CompoundROI extends ROI
 	/**
 	 * Take selected ROIs and push them all into a compound ROI
 	 */
-	public static void makeCompoundROI(EvData data, CompoundROI croi)
+	public static void makeCompoundROI(EvContainer data, CompoundROI croi)
 		{
 		Set<ROI> rois=CompoundROI.collectRecursiveROI(data);
 		data.addMetaObject(croi);

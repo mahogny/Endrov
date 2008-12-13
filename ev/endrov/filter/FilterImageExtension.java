@@ -40,7 +40,7 @@ public class FilterImageExtension implements ImageWindowExtension
 				{
 				JMenu mi=new JMenu(fi.getCategory());
 				categories.put(fi.getCategory(),mi);
-				BasicWindow.addMenuItemSorted(menu, mi);
+				BasicWindow.addMenuItemSorted(menu, mi, mi.getText());
 				}
 			JMenu cmenu=categories.get(fi.getCategory());
 			JMenuItem mi=new JMenuItem(fi.getReadableName());
@@ -133,11 +133,11 @@ public class FilterImageExtension implements ImageWindowExtension
 		final JMenu miOnFrame=new JMenu("On frame");
 		final JMenu miOnSlice=new JMenu("On slice");
 		final JMenu miOnROI=new JMenu("On ROI");
-		BasicWindow.addMenuItemSorted(w.menuImage, miOnImageset);
-		BasicWindow.addMenuItemSorted(w.menuImage, miOnChannel);
-		BasicWindow.addMenuItemSorted(w.menuImage, miOnFrame);
-		BasicWindow.addMenuItemSorted(w.menuImage, miOnSlice);
-		BasicWindow.addMenuItemSorted(w.menuImage, miOnROI);
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnImageset, miOnImageset.getText());
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnChannel, miOnChannel.getText());
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnFrame, miOnFrame.getText());
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnSlice, miOnSlice.getText());
+		BasicWindow.addMenuItemSorted(w.menuImage, miOnROI, miOnROI.getText());
 		
 		//ROI filter menu action listener
 		final BindListener bROI=new BindListener()

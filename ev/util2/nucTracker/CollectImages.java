@@ -11,7 +11,6 @@ import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.EvImage;
 import endrov.imageset.Imageset;
-import endrov.imagesetOST.OstImageset;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 
@@ -21,7 +20,7 @@ public class CollectImages
 	
 	public static boolean doTrue=false;
 
-	public static NucLineage getLin(Imageset ost)
+	public static NucLineage getLin(EvContainer ost)
 		{
 		for(EvObject evob:ost.metaObject.values())
 			{
@@ -80,9 +79,11 @@ public class CollectImages
 		Vector<Imageset> worms=new Vector<Imageset>();
 		for(String s:wnlist)
 			{
-			Imageset ost=new OstImageset(new File(s));
+			EvData ost=EvData.loadFile(new File(s));
 			if(getLin(ost)!=null)
-				worms.add(ost);
+				{
+				worms.addAll(ost.getObjects(Imageset.class));
+				}
 			}
 
 		try

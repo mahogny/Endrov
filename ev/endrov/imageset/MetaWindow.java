@@ -9,16 +9,16 @@ import javax.swing.event.*;
 import org.jdom.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.ObjectCombo.Alternative;
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.imagesetOST.*;
 
 
 /**
  * Meta data window for imageset
  * @author Johan Henriksson
  */
-public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo.comboFilterMetadata, DocumentListener
+public class MetaWindow extends BasicWindow implements ActionListener, ObjectCombo.comboFilterMetaObject, DocumentListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -111,10 +111,24 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 				}
 			public void buildSave(JMenu menu, final EvData meta)
 				{
+				if(meta.io!=null && meta.io.datadir()!=null)
+					{
+					final JMenuItem miOpenDatadir=new JMenuItem("Open data directory");
+					ActionListener listener=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							EV.openExternal(meta.io.datadir());
+							}
+						};
+					miOpenDatadir.addActionListener(listener);
+					menu.add(miOpenDatadir);					
+					}
+				//TODO recode reload
+				/*
 				if(meta instanceof OstImageset)
 					{
 					final Imageset rec=(Imageset)meta;
-					final JMenuItem miOpenDatadir=new JMenuItem("Open data directory");
 					final JMenuItem miReload=new JMenuItem("Reload");
 					ActionListener listener=new ActionListener()
 						{
@@ -136,6 +150,9 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 					menu.add(miOpenDatadir);					
 					menu.add(miReload);					
 					}
+					*/
+				//TODO Replace with more general Save as
+				/*
 				else if(meta instanceof Imageset)
 					{
 //					final Imageset rec=(Imageset)meta;
@@ -153,7 +170,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 						};
 					miExportOST.addActionListener(listener);
 					menu.add(miExportOST);
-					}
+					}*/
 				}
 			});
 		}
@@ -164,12 +181,14 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	 *****************************************************************************************************/
 	
 	
-	private MetaCombo metaCombo=new MetaCombo(this, false);
-	public boolean comboFilterMetadataCallback(EvData meta)
+	private ObjectCombo metaCombo=new ObjectCombo(this, false);
+	
+	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, EvData meta){return null;}
+	public boolean comboFilterMetaObjectCallback(EvObject ob)
 		{
-		return meta instanceof Imageset;
+		return ob instanceof Imageset;
 		}
-
+	
 	
 	private Vector<ChannelTab> channels=new Vector<ChannelTab>();
 
@@ -253,7 +272,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	
 	private void readFromMetadata()
 		{
-		Imageset rec=Imageset.castNull(metaCombo.getMeta());
+		Imageset rec=Imageset.castNull(metaCombo.getObject());
 		updatingFields=true;
 		
 		//Or just remember current tab?
@@ -269,18 +288,18 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			//Create common tab
 			createCommon();		
 	
-			commonManResX.setText(""+rec.meta.resX);
-			commonManResY.setText(""+rec.meta.resY);
-			commonManResZ.setText(""+rec.meta.resZ);
+			commonManResX.setText(""+rec.resX);
+			commonManResY.setText(""+rec.resY);
+			commonManResZ.setText(""+rec.resZ);
 			
-			commonSlicespacing.setText(""+rec.meta.metaSlicespacing);
-			commonObjective.setText(""+rec.meta.metaObjective);
-			commonNA.setText(""+rec.meta.metaNA);
-			commonOptivar.setText(""+rec.meta.metaOptivar);
-			commonCampix.setText(""+rec.meta.metaCampix);
-			commonTimestep.setText(""+rec.meta.metaTimestep);
-			commonSample.setText(rec.meta.metaSample);
-			commonDescript.setText(rec.meta.metaDescript);
+			commonSlicespacing.setText(""+rec.metaSlicespacing);
+			commonObjective.setText(""+rec.metaObjective);
+			commonNA.setText(""+rec.metaNA);
+			commonOptivar.setText(""+rec.metaOptivar);
+			commonCampix.setText(""+rec.metaCampix);
+			commonTimestep.setText(""+rec.metaTimestep);
+			commonSample.setText(rec.metaSample);
+			commonDescript.setText(rec.metaDescript);
 			
 			//Add channel tabs
 			for(String channelName:rec.channelImages.keySet())
@@ -293,7 +312,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			
 			for(ChannelTab t:channels)
 				{
-				ImagesetMeta.Channel cm=rec.meta.channelMeta.get(t.channelName);
+				Imageset.Channel cm=rec.channelMeta.get(t.channelName);
 				t.iDispX.setText(""+cm.dispX);
 				t.iDispY.setText(""+cm.dispY);			
 				t.iBinning.setText(""+cm.chBinning);
@@ -358,11 +377,11 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 		if(!updatingFields)
 			{
 			updatingFields=true;
-			Imageset rec=Imageset.castEmpty(metaCombo.getMeta());
+			Imageset rec=Imageset.castEmpty(metaCombo.getObject());
 			
-			double calcResX=rec.meta.metaObjective*rec.meta.metaOptivar/rec.meta.metaCampix; //[]*[]/[um/px]
+			double calcResX=rec.metaObjective*rec.metaOptivar/rec.metaCampix; //[]*[]/[um/px]
 			double calcResY=calcResX;
-			double calcResZ=1.0/rec.meta.metaSlicespacing;
+			double calcResZ=1.0/rec.metaSlicespacing;
 			commonCalcResX.setText(""+calcResX);
 			commonCalcResY.setText(""+calcResY);
 			commonCalcResZ.setText(""+calcResZ);
@@ -375,13 +394,13 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 			double manResY=parseDoubleOr0(commonManResY.getText());
 			double manResZ=parseDoubleOr0(commonManResZ.getText());
 	
-			if(manResX==0) rec.meta.resX=calcResX; else rec.meta.resX=manResX;
-			if(manResY==0) rec.meta.resY=calcResY; else rec.meta.resY=manResY;
-			if(manResZ==0) rec.meta.resZ=calcResZ; else rec.meta.resZ=manResZ;
+			if(manResX==0) rec.resX=calcResX; else rec.resX=manResX;
+			if(manResY==0) rec.resY=calcResY; else rec.resY=manResY;
+			if(manResZ==0) rec.resZ=calcResZ; else rec.resZ=manResZ;
 	
-			commonResX.setText(""+rec.meta.resX);
-			commonResY.setText(""+rec.meta.resY);
-			commonResZ.setText(""+rec.meta.resZ);
+			commonResX.setText(""+rec.resX);
+			commonResY.setText(""+rec.resY);
+			commonResZ.setText(""+rec.resZ);
 			updatingFields=false;
 			}
 		}
@@ -488,28 +507,28 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	 */
 	public void fieldsToMeta()
 		{
-		Imageset rec=Imageset.castNull(metaCombo.getMeta());
+		Imageset rec=Imageset.castNull(metaCombo.getObject());
 		if(rec!=null && !updatingFields)
 			{
 			try
 				{
 				updateRes();
-				rec.meta.resX=Double.parseDouble(commonResX.getText());
-				rec.meta.resY=Double.parseDouble(commonResY.getText());
-				rec.meta.resZ=Double.parseDouble(commonResZ.getText());
+				rec.resX=Double.parseDouble(commonResX.getText());
+				rec.resY=Double.parseDouble(commonResY.getText());
+				rec.resZ=Double.parseDouble(commonResZ.getText());
 
-				rec.meta.metaSlicespacing=Double.parseDouble(commonSlicespacing.getText());
-				rec.meta.metaObjective=Double.parseDouble(commonObjective.getText());
-				rec.meta.metaNA=Double.parseDouble(commonNA.getText());
-				rec.meta.metaOptivar=Double.parseDouble(commonOptivar.getText());
-				rec.meta.metaCampix=Double.parseDouble(commonCampix.getText());
-				rec.meta.metaTimestep=Double.parseDouble(commonTimestep.getText());
-				rec.meta.metaSample=commonSample.getText();
-				rec.meta.metaDescript=commonDescript.getText();
+				rec.metaSlicespacing=Double.parseDouble(commonSlicespacing.getText());
+				rec.metaObjective=Double.parseDouble(commonObjective.getText());
+				rec.metaNA=Double.parseDouble(commonNA.getText());
+				rec.metaOptivar=Double.parseDouble(commonOptivar.getText());
+				rec.metaCampix=Double.parseDouble(commonCampix.getText());
+				rec.metaTimestep=Double.parseDouble(commonTimestep.getText());
+				rec.metaSample=commonSample.getText();
+				rec.metaDescript=commonDescript.getText();
 				
 				for(ChannelTab t:channels)
 					{
-					ImagesetMeta.Channel ch=rec.meta.channelMeta.get(t.channelName);
+					Imageset.Channel ch=rec.channelMeta.get(t.channelName);
 					
 					ch.dispX=Double.parseDouble(t.iDispX.getText());
 					ch.dispY=Double.parseDouble(t.iDispY.getText());
@@ -535,7 +554,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, MetaCombo
 	 */
 	public void dataChangedEvent()
 		{
-		metaCombo.updateList();
+		metaCombo.updateObjectList();
 		readFromMetadata();
 		}
 

@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{MetaWindow.class,ImagesetMeta.class};
+		return new Class[]{MetaWindow.class,Imageset.class};
 		}
 	}

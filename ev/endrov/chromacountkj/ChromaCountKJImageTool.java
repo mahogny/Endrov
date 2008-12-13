@@ -7,7 +7,7 @@ import java.util.Collection;
 import javax.vecmath.*;
 import javax.swing.*;
 
-import endrov.data.EvData;
+import endrov.data.EvContainer;
 import endrov.imageWindow.*;
 
 /**
@@ -83,7 +83,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		EvData data=w.getImageset();
+		EvContainer data=w.getImageset();
 		if(data!=null)
 			{
 			ChromaCountKJ a=getHoverAnnot(e);
@@ -164,7 +164,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 		}
 	public void keyPressed(KeyEvent e)
 		{
-		EvData data=w.getImageset();
+		EvContainer data=w.getImageset();
 		System.out.println("kp "+e.getKeyChar()+" "+data);
 		if(data!=null)
 			{
@@ -190,7 +190,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			EvData data=w.getImageset();
+			EvContainer data=w.getImageset();
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot);
 			activeAnnot=null;

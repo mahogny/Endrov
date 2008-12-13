@@ -113,25 +113,14 @@ public class BrianSQL
 		
 	public static void insertBlastResult(String table, String organism, String gene, String content) throws Exception
 		{
+		PreparedStatement ps=conn.prepareStatement("insert into "+table+" values(?,?,?)");
+		ps.setString(1, organism);
+		ps.setString(2, gene);
 		if(content.length()==0)
-			{
-			//System.out.println("empty");
-			PreparedStatement ps=conn.prepareStatement("insert into "+table+" values(?,?,?)");
-			ps.setString(1, organism);
-			ps.setString(2, gene);
 			ps.setString(3, null);
-			ps.execute();
-			}
 		else
-			{
-			//System.out.println("something "+content.length());
-			PreparedStatement ps=conn.prepareStatement("insert into "+table+" values(?,?,?)");
-			ps.setString(1, organism);
-			ps.setString(2, gene);
 			ps.setString(3, content);
-			ps.execute();
-			}
-		
+		ps.execute();
 		}
 	
 	public static String getBlastResult(String table, String organism, String gene) throws Exception

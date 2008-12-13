@@ -20,7 +20,7 @@ import endrov.util.EvDecimal;
  * Support for ImServ
  * @author Johan Henriksson
  */
-public class ImservImageset extends Imageset
+public class ImservImageset extends Imageset  //TODO: there should be no extend no more
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -204,12 +204,12 @@ public class ImservImageset extends Imageset
 	
 	
 
-
-	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
+/*
+	protected ChannelImages internalMakeChannel(Imageset.Channel ch)
 		{
 		return new Channel(ch);
 		}
-		
+	*/	
 	
 	
 
@@ -228,18 +228,14 @@ public class ImservImageset extends Imageset
 	/**
 	 * OST channel - contains methods for building frame database
 	 */
+	/*
 	public class Channel extends Imageset.ChannelImages
 		{
-		public Channel(ImagesetMeta.Channel channelName)
+		public Channel(Imageset.Channel channelName)
 			{
 			super(channelName);
 			}
-		
-	
-		
-		/**
-		 * Scan all files for this channel and build a database
-		 */
+
 		public void scanFiles(String chnum)
 			{
 			imageLoader.clear();
@@ -247,15 +243,7 @@ public class ImservImageset extends Imageset
 			//TODO MAJOR WTF!
 			int numframe=1;
 			int numz=50;
-			/*
-			for(int frame=0;frame<numframe;frame++)
-				{
-				TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
-				for(int z=0;z<numz;z++)
-					loaderset.put(z, newEvImage(z, frame, chnum));
-				imageLoader.put(frame, loaderset);
-				}
-				*/
+
 			}
 
 		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
@@ -282,11 +270,11 @@ public class ImservImageset extends Imageset
 				this.c=c;
 				}
 
-			public int getBinning(){return getMeta().chBinning;}
+			public int getBinning(){return (int)getMeta().chBinning;}
 			public double getDispX(){return getMeta().dispX;}
 			public double getDispY(){return getMeta().dispY;}
-			public double getResX(){return meta.resX;}
-			public double getResY(){return meta.resY;}
+			public double getResX(){return resX;}
+			public double getResY(){return resY;}
 			protected BufferedImage loadJavaImage()
 				{
 				//it is the server side responsibility to make byte_gray?
@@ -307,6 +295,7 @@ public class ImservImageset extends Imageset
 		
 			}
 		}
+*/
 	
 	
 	public void finalize()

@@ -7,19 +7,20 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import endrov.data.EvContainer;
+import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
 import endrov.imageset.EvImage;
 import endrov.imageset.Imageset;
-import endrov.imagesetOST.OstImageset;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 
 public class Test
 	{
-	public static NucLineage getLin(Imageset ost)
+	public static NucLineage getLin(EvContainer ost)
 		{
 		for(EvObject evob:ost.metaObject.values())
 			{
@@ -48,9 +49,9 @@ public class Test
 		Vector<Imageset> worms=new Vector<Imageset>();
 		for(String s:wnlist)
 			{
-			Imageset ost=new OstImageset(new File(s));
-			if(getLin(ost)!=null)
-				worms.add(ost);
+			EvData data=EvData.loadFile(new File(s));
+			if(getLin(data)!=null)
+				worms.addAll(data.getObjects(Imageset.class));
 			}
 
 //		String channelName="DIC";

@@ -1,4 +1,4 @@
-package endrov.imageset;
+package endrov.imagesetOST;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,16 +22,15 @@ import java.util.TreeMap;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
-import endrov.data.EvData;
-import endrov.data.EvDataNew;
-import endrov.data.EvDataSupport;
-import endrov.data.EvIOData;
-import endrov.data.RecentReference;
+import org.jdom.*;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import endrov.data.*;
 import endrov.ev.EV;
 import endrov.ev.Log;
+import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
-import endrov.imagesetOST.OstImageset;
-import endrov.imagesetOST.OstImageset.Channel;
 import endrov.util.EvDecimal;
 
 public class EvIODataOST implements EvIOData
@@ -81,13 +81,7 @@ public class EvIODataOST implements EvIOData
 			String n=f.getName();
 			return n.substring(0,n.lastIndexOf("."));
 			}
-		
-		
-		public int getBinning()
-			{
-			ImagesetNew im=new ImagesetNew();
-			//im.
-			}
+
 		}
 	
 	
@@ -226,7 +220,7 @@ public class EvIODataOST implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		supportFileFormats.add(new EvDataSupport(){
+		EvData.supportFileFormats.add(new EvDataSupport(){
 			public Integer supports(String fileS)
 				{
 				File file=new File(fileS);
@@ -243,7 +237,7 @@ public class EvIODataOST implements EvIOData
 				}
 			public EvData load(String file) throws Exception
 				{
-				EvDataNew d=new EvDataNew();
+				EvData d=new EvData();
 				
 				d.io=new EvIODataOST(d, new File(file));
 				
@@ -322,7 +316,7 @@ public class EvIODataOST implements EvIOData
 							{
 							String s=fframe.getName();
 							EvDecimal cur=new EvDecimal(s.substring(1));
-							File newframe=new File(fchan, EV.pad(cur.multiply(im.meta.metaTimestep), 8));
+							File newframe=new File(fchan, EV.pad(cur.multiply(im.metaTimestep), 8));
 							//System.out.println("rename "+fframe+" "+newframe);
 							fframe.renameTo(newframe);
 							}
@@ -346,7 +340,7 @@ public class EvIODataOST implements EvIOData
 									String s=fslice.getName().substring(1);
 									String ext=s.substring(s.lastIndexOf("."));
 									s=s.substring(0,s.lastIndexOf("."));
-									File newslice=new File(fframe,EV.pad(new EvDecimal(s).divide(im.meta.resZ),8)+ext);
+									File newslice=new File(fframe,EV.pad(new EvDecimal(s).divide(im.resZ),8)+ext);
 									//System.out.println("renameS2 "+fslice+" "+newslice);
 									fslice.renameTo(newslice);
 									}
@@ -392,21 +386,44 @@ public class EvIODataOST implements EvIOData
 		}
 	
 	
+	
+	public void saveMeta(EvData d, OutputStream os) throws IOException
+	  {
+	  //Add all objects
+	  Document document=d.saveXmlMetadata();
+	
+	  //Write out to disk
+	  Format format=Format.getPrettyFormat();
+	  XMLOutputter outputter = new XMLOutputter(format);
+	  outputter.output(document, os);
+	  d.setMetadataModified(false);
+	  }
+	public void saveMeta(EvData d, File outfile) throws IOException
+	  {
+	  FileOutputStream writer2=new FileOutputStream(outfile);
+	  saveMeta(d,writer2);
+	  writer2.close();
+	  }
+
+	
+	
+	
+	
 	/**
 	 * Save meta for all channels into RMD-file
 	 */
 	public void saveMeta(EvData d)
 		{
-		Imageset im=getHackImageset(d);
 		try
 			{
-			im.saveMeta(getMetaFile());
+			saveMeta(d,getMetaFile());  //TODO, get from old Imageset
 			d.setMetadataModified(false);
 			}
 		catch (IOException e)
 			{
 			e.printStackTrace();
 			}
+		Imageset im=getHackImageset(d);
 		saveImages(im);
 		
 		//Update date of datadir to have it backuped
@@ -488,7 +505,7 @@ public class EvIODataOST implements EvIOData
 							File file=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
 							if(file!=null)
 								{
-								File output=fileShouldBe(im,ce.getKey(), fe.getKey(),ie.getKey());
+								//File output=fileShouldBe(im,ce.getKey(), fe.getKey(),ie.getKey());
 								//TODO
 								//if(!output.equals(file))
 								//	{
@@ -510,7 +527,7 @@ public class EvIODataOST implements EvIOData
 
 							//Mark current file for reading if it is not in memory
 							File currentFile=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
-							if(currentFile!=null && evim.im!=null)
+							if(currentFile!=null && evim.getMemoryImage()!=null)
 								{
 								HashSet<EvImage> ims=toRead.get(currentFile);
 								if(ims==null)
@@ -555,7 +572,7 @@ public class EvIODataOST implements EvIOData
 						toRead.remove(io.f);
 						for(EvImage ci:needToRead)
 							{
-							ci.im=ci.getJavaImage();
+							ci.setMemoryImage(ci.getJavaImage());
 							toWrite.addFirst(ci);
 							}
 						}
@@ -671,13 +688,14 @@ public class EvIODataOST implements EvIOData
 		{
 		List<Imageset> ims=d.getObjects(Imageset.class);
 		Imageset im=ims.get(0);
+		return im;
 		}
 	
 
 	/**
 	 * For every loader, set up an entry in the metadata object
 	 */
-	private void filesToImageset(ImagesetNew im)
+	private void filesToImageset(Imageset im)
 		{
 		im.channelImages.clear();
 		for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:imageLoader.entrySet())
@@ -690,7 +708,7 @@ public class EvIODataOST implements EvIOData
 				chim.imageLoader.put(fe.getKey(),stack);
 				for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
 					{
-					EvImageNew evim=new EvImageNew();
+					EvImage evim=new EvImage();
 					evim.io=new SliceIO(this,getCurrentFileFor(ce.getKey(), fe.getKey(), se.getKey()));
 					
 					
@@ -737,7 +755,7 @@ public class EvIODataOST implements EvIOData
 	
 
 	/**
-	 * Load database from cache. Return if it succeeded
+	 * Load database from cache into file-list. Return if it succeeded. Does not update imageset objects
 	 */
 	public boolean loadDatabaseCache()
 		{
@@ -798,9 +816,6 @@ public class EvIODataOST implements EvIOData
 							imagefilename.append(ext);
 							
 							loaderset.put(slice,new File(imagefilename.toString()));
-							
-							
-							//TODO: generate EvImage as well
 							}
 						}
 					}

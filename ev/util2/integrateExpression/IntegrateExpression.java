@@ -6,10 +6,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import endrov.data.EvContainer;
+import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.imageset.*;
-import endrov.imagesetOST.OstImageset;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
 
@@ -41,7 +42,7 @@ public class IntegrateExpression
 		}
 	
 	
-	public static NucLineage getLin(Imageset ost)
+	public static NucLineage getLin(EvContainer ost)
 		{
 		for(EvObject evob:ost.metaObject.values())
 			{
@@ -60,16 +61,16 @@ public class IntegrateExpression
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
-		Imageset ost=new OstImageset(new File("/Volumes/TBU_xeon01_500GB01/ost4dgood/TB2141070621b/"));
+		EvData data=EvData.loadFile(new File("/Volumes/TBU_xeon01_500GB01/ost4dgood/TB2141070621b/"));
 
 
 		String channelName="GFP";
 		String expName="CEH-5";
 
-
+		Imageset ost=data.getObjects(Imageset.class).get(0);
 
 		//For all lineages
-		NucLineage lin=getLin(ost);
+		NucLineage lin=getLin(data);
 
 		
 		Double minExpLevel=null;
@@ -183,7 +184,7 @@ public class IntegrateExpression
 		
 		
 		
-		ost.saveMeta();
+		data.saveMeta();
 
 		}
 	}

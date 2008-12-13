@@ -7,6 +7,7 @@ import java.util.Collection;
 import javax.vecmath.*;
 import javax.swing.*;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.imageWindow.*;
 
@@ -76,7 +77,7 @@ public class ImageAnnotImageTool implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		EvData data=w.getImageset();
+		EvContainer data=w.getImageset();
 		if(data!=null)
 			{
 			ImageAnnot a=getHoverAnnot(e);
@@ -148,7 +149,7 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			EvData data=w.getImageset();
+			EvContainer data=w.getImageset();
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot);
 			activeAnnot=null;

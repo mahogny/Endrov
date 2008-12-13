@@ -9,6 +9,7 @@ import java.util.*;
 import javax.swing.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
 
 /**
@@ -27,7 +28,7 @@ public class EvDataMenu implements BasicWindowExtension
 	private class BasicHook implements BasicWindowHook, ActionListener
 		{
 		private JMenu mData=new JMenu("Data");
-		private JMenuItem miNew=new JMenuItem("New XML");
+		private JMenuItem miNew=new JMenuItem("New");
 		private JMenu mRecent=new JMenu("Recent Files");
 
 		private JMenuItem miOpenFile=new JMenuItem("Load File");
@@ -39,6 +40,25 @@ public class EvDataMenu implements BasicWindowExtension
 			{
 			w.addMenubar(mData);
 			this.w=new WeakReference<BasicWindow>(null);
+			JMenu mFile=w.menuFile;
+			
+			miNew.setIcon(BasicIcon.iconMenuNew);
+			miOpenFile.setIcon(BasicIcon.iconMenuLoad);
+			miOpenFilePath.setIcon(BasicIcon.iconMenuLoad);
+			mRecent.setIcon(BasicIcon.iconMenuLoad);
+			
+			BasicWindow.addMenuItemSorted(mFile, miNew, "data_1new");
+			BasicWindow.addMenuItemSorted(mFile, miOpenFile, "data_2open");			
+			BasicWindow.addMenuItemSorted(mFile, miOpenFilePath, "data_3openpath");			
+			BasicWindow.addMenuItemSorted(mFile, mRecent, "data_4recent");			
+			
+			for(DataMenuExtension e:extensions)
+				e.buildOpen(mData);
+
+			miNew.addActionListener(this);
+			miOpenFile.addActionListener(this);
+			miOpenFilePath.addActionListener(this);
+			
 			buildMenu(w);
 			}
 		
@@ -46,7 +66,7 @@ public class EvDataMenu implements BasicWindowExtension
 			{
 			if(e.getSource()==miNew)
 				{
-				EvData.addMetadata(new EvDataXML());
+				EvData.addMetadata(new EvData());
 				BasicWindow.updateWindows();
 				}
 			else if(e.getSource()==miOpenFile)
@@ -115,9 +135,9 @@ public class EvDataMenu implements BasicWindowExtension
 		
 		public void buildMenu(BasicWindow w)
 			{
-			BasicWindow.tearDownMenu(mRecent);
 			BasicWindow.tearDownMenu(mData);
-			
+			BasicWindow.tearDownMenu(mRecent);
+			/*
 			BasicWindow.addMenuItemSorted(mData, miNew);
 			BasicWindow.addMenuItemSorted(mData, miOpenFile);			
 			BasicWindow.addMenuItemSorted(mData, miOpenFilePath);			
@@ -128,7 +148,7 @@ public class EvDataMenu implements BasicWindowExtension
 			miOpenFilePath.addActionListener(this);
 			for(DataMenuExtension e:extensions)
 				e.buildOpen(mData);
-			mData.addSeparator();
+			mData.addSeparator();*/
 			
 			//List recent entries
 			for(final RecentReference rref:EvData.recentlyLoadedFiles)
@@ -144,7 +164,7 @@ public class EvDataMenu implements BasicWindowExtension
 			
 			
 			//Special entry: For all
-			if(!EvData.metadata.isEmpty())
+			//if(!EvData.metadata.isEmpty())
 				{
 				JMenu menuMetadata=new JMenu("For All Data");
 				mData.add(menuMetadata);

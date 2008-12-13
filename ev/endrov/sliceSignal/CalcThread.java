@@ -42,7 +42,7 @@ public final class CalcThread extends BatchThread
 	
 	public String getBatchName()
 		{
-		return "Slice/Signal "+rec.getMetadataName();
+		return "Slice/Signal";
 		}
 	
 	public void run()
@@ -126,8 +126,8 @@ public final class CalcThread extends BatchThread
     												(ay-dispY)*ch.getMeta().chBinning/(double)rec.meta.resY);
     										*/
     										Vector2D pos=new Vector2D(
-    												((ax)*ch.getMeta().chBinning+dispX)/(double)rec.meta.resX,  //TODO WTF??? 
-    												((ay)*ch.getMeta().chBinning+dispY)/(double)rec.meta.resY);
+    												((ax)*ch.getMeta().chBinning+dispX)/(double)rec.resX,  //TODO WTF??? 
+    												((ay)*ch.getMeta().chBinning+dispY)/(double)rec.resY);
 /*
     										Vector2D pos=new Vector2D(
     												(ax)*ch.getMeta().chBinning/(double)rec.meta.resX, 

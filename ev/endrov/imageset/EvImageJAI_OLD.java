@@ -20,7 +20,7 @@ import endrov.util.EvImageUtils;
  * Loader of images from single slice images using JAI
  * @author Johan Henriksson
  */
-public abstract class EvImageJAI extends EvImage
+public abstract class EvImageJAI_OLD extends EvImage
 	{
 	private String filename;
 	private int slice;
@@ -28,7 +28,7 @@ public abstract class EvImageJAI extends EvImage
 	/**
 	 * Load a single-slice image
 	 */
-	public EvImageJAI(String filename)
+	public EvImageJAI_OLD(String filename)
 		{
 		this.filename=filename;
 		this.slice=-1;
@@ -37,7 +37,7 @@ public abstract class EvImageJAI extends EvImage
 	/**
 	 * Load a slice in a stack
 	 */
-	public EvImageJAI(String filename, int slice)
+	public EvImageJAI_OLD(String filename, int slice)
 		{
 		this.filename=filename;
 		this.slice=slice;

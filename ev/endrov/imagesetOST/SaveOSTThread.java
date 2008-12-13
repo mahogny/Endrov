@@ -89,7 +89,21 @@ public class SaveOSTThread extends BatchThread
 			imagesetPath.mkdirs();
 			
 			//Meta data
-			rec.saveMeta(new File(imagesetPath, "rmd.ostxml"));
+			
+			//TODO
+		//TODO
+		//TODO
+		//TODO
+		//TODO
+			
+//			rec.saveMeta(new File(imagesetPath, "rmd.ostxml"));
+
+			//TODO
+			//TODO
+			//TODO
+			//TODO
+			//TODO
+
 			
 			//Image data
 			for(Imageset.ChannelImages channel:rec.channelImages.values())
