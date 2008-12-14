@@ -29,3 +29,57 @@ Additional checks
 * lineage window ok?
 * is OST gracefully updated?
 * does example imagesets work?
+
+
+
+
+
+2.13
+	new Image internals
+
+	common "save as"
+
+	Menu homogenisation
+		Data into EV menu. Change EV into File
+		"ImageWindow", better name for menu?
+		"New XML" should just become "New"
+		"Ev->info", create a Help menu
+    
+	JPEG2000 for OST. OME uses it! 
+  
+	simple recording  
+    
+    object hierarchy in menus etc
+    
+    
+2.14
+  Flows to create max channel
+  Flows for calcium imaging
+  
+  Remove batch system, allow filters to be applied permanently
+  	Can batch be removed? what about creating movies? change into Task?
+
+  "Image" menu, and ROIs, how will this go with filters? I can imagine
+     filters that take one image in and one out can be thrown into a menu. but should
+     this way of working be promoted? 
+  
+     an image filter then has to be able to take an optional ROI. how does this work
+     with live filters? should it be possible to attach a filter to a ROI?
+     will it be possible to run a filter on a single frame? <why would you?>
+  
+     how is "analyze" done? graph output object? graph is not a very nice idea, but general
+     rendering?
+  
+  
+  
+ 2.15
+	Store/load recording settings (exposure etc)
+	stitching
+	dynamic range 
+    extended depth of focus
+    surface from 2d-rendering
+    
+
+
+6D := (X,Y,Z,Lambda(wavelength),T, multi stage points). 
+  
