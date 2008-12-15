@@ -719,6 +719,8 @@ public class EvIODataOST implements EvIOData
 					evim.dispX=chim.getMeta().dispX;
 					evim.dispY=chim.getMeta().dispY;
 					evim.binning=chim.getMeta().chBinning;
+					
+					stack.put(se.getKey(),evim);
 					}
 				}
 			}

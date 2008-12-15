@@ -51,7 +51,7 @@ public class BrianTot
 				
 				
 				//Blast every gene
-				EvParallel.map_(4,new TreeSet<String>(cegenes.seq.keySet()),
+				EvParallel.map_(1,new TreeSet<String>(cegenes.seq.keySet()),
 						new EvParallel.FuncAB<String, Object>(){
 						public Object func(String key)
 							{
