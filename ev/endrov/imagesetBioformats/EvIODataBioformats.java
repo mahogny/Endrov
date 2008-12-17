@@ -236,7 +236,7 @@ public class EvIODataBioformats implements EvIOData
 		return new File(basedir.getParent(),basedir.getName()+".ostxml");
 		}
 	
-	public void saveMeta(EvData d)
+	public void saveData(EvData d)
 		{
 		try
 			{

@@ -641,7 +641,7 @@ public class MakeStdWorm5
 				for(Map.Entry<String, NucLineage> e:lins.entrySet())
 					output2.metaObject.put(e.getKey(),e.getValue());
 				output2.metaObject.put("model", combinedLin);
-				output2.saveFileAs("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
+				output2.saveDataAs("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
 				}
 			
 
@@ -655,7 +655,7 @@ public class MakeStdWorm5
 			
 			EvData output=new EvData();
 			output.addMetaObject(combinedLin);
-			output.saveFileAs(outputName);
+			output.saveDataAs(outputName);
 
 			
 			System.out.println("Done");

@@ -9,15 +9,81 @@ import java.util.*;
 import java.util.List;
 
 import endrov.basicWindow.*;
+import endrov.data.DataMenuExtension;
+import endrov.data.EvData;
+import endrov.data.EvDataMenu;
+import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
 
-public class NamebasedImageset extends Imageset
-	{	
+public class NamebasedImageset implements EvIOData
+	{
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvDataMenu.extensions.add(new DataMenuExtension()
+			{
+
+			public void buildOpen(JMenu menu)
+				{
+				//wrong menu??
+				final JMenuItem miLoadNamebasedImageset=new JMenuItem("Load namebased imageset");
+				addMetamenu(menu,miLoadNamebasedImageset);
+				
+				ActionListener listener=new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						JFileChooser chooser = new JFileChooser();
+				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
+				    int returnVal = chooser.showOpenDialog(null);
+				    if(returnVal == JFileChooser.APPROVE_OPTION)
+				    	{
+				    	File filename=chooser.getSelectedFile();
+				    	EvData.setLastDataPath(filename.getParent());
+				    	
+				    	EvData data=new EvData();
+				    	data.io=new NamebasedImageset(data,filename);
+				    	EvData.addMetadata(data);
+				    	}
+						}
+					};
+					
+				miLoadNamebasedImageset.addActionListener(listener);
+				}
+			
+			public void buildSave(JMenu menu, final EvData meta)
+				{
+				if(meta.io instanceof NamebasedImageset)
+					{
+					JMenuItem miSetup=new JMenuItem("Setup");
+					menu.add(miSetup);
+					miSetup.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{((NamebasedImageset)meta.io).setup();}
+						});	
+					}
+				}
+			});
+		
+		}
+	
+	
+	/******************************************************************************************************
+	 *                               Static: Loading                                                      *
+	 *****************************************************************************************************/
+
+	
 	/** Path to imageset */
-	private String basedir;
+	private File basedir;
+	private EvData data;
 	
 	private String fileConvention="";
 	private String channelList="";
@@ -26,10 +92,10 @@ public class NamebasedImageset extends Imageset
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
 	 * @param basedir
 	 */
-	public NamebasedImageset(String basedir)
+	public NamebasedImageset(EvData data, File basedir)
 		{
+		this.data=data;
 		this.basedir=basedir;
-		this.imageset=(new File(basedir)).getName();
 		setup();
 		}
 
@@ -44,10 +110,10 @@ public class NamebasedImageset extends Imageset
 	/**
 	 * Go through all files and put in database
 	 */
-	public void buildDatabase()
+	public void buildDatabase(EvData d)
 		{
 		NamebasedDatabaseBuilder b=new NamebasedDatabaseBuilder();
-		b.run();
+		b.run(d);
 		BasicWindow.updateWindows();
 		}
 	
@@ -69,18 +135,7 @@ public class NamebasedImageset extends Imageset
 		new FileConvention();
 		}
 	
-	/**
-	 * Get a channel or create it if it does not exist
-	 * TODO RENAME, OVERRIDES A METHOD IN A STUPID WAY
-	 */
-	public Imageset.ChannelImages getCreateChannel(String ch)
-		{
-		if(!channelImages.containsKey(ch))
-			channelImages.put(ch, internalMakeChannel(meta.channelMeta.get(ch)));
-		return channelImages.get(ch);
-		}
 	
-
 	/**
 	 * Dialog for selecting sequence of files
 	 */
@@ -111,9 +166,10 @@ public class NamebasedImageset extends Imageset
 		
 		public FileConvention()
 			{
-			setTitle(EV.programName+" Name based Import File Conventions: "+imageset);
+			setTitle(EV.programName+" Name based Import File Conventions");
 			
-			JPanel input=new JPanel(new GridLayout(2,1));
+			JPanel input=new JPanel(new GridLayout(3,1));
+			input.add(new JLabel(basedir.toString()));
 			input.add(withLabel("Name:",eSequence));
 			input.add(withLabel("Channels:",eChannels));
 			
@@ -156,7 +212,7 @@ public class NamebasedImageset extends Imageset
 				fileConvention=eSequence.getText();
 				channelList=eChannels.getText();
 				NamebasedDatabaseBuilder b=new NamebasedDatabaseBuilder();
-				b.run();
+				b.run(data);
 				eLog.setText(b.rebuildLog);
 				BasicWindow.updateWindows();
 				}
@@ -180,15 +236,28 @@ public class NamebasedImageset extends Imageset
 		private String rebuildLog="";
 		
 		
-		public void run()
+		public void run(EvData data)
 			{
 			Vector<String> channelVector=new Vector<String>();
 			try
 				{
 				rebuildLog="";				
 				
-				File dir=new File(basedir);
+				File dir=basedir;
 				fileList=dir.listFiles();
+
+				//Get the imageset and clean it up
+				Imageset im;
+				Collection<Imageset> ims=data.getObjects(Imageset.class);
+				if(!ims.isEmpty())
+					im=ims.iterator().next();
+				else
+					{
+					im=new Imageset();
+					data.metaObject.put("im", im);
+					}
+				im.channelImages.clear();
+				im.channelMeta.clear();
 				
 				//Parse list of channels into vector
 				StringTokenizer ctok=new StringTokenizer(channelList,",");
@@ -197,11 +266,11 @@ public class NamebasedImageset extends Imageset
 				
 				//Remove/add meta corresponding to channels. why needed?
 				for(String cname:channelVector)
-					meta.getCreateChannelMeta(cname);
+					im.getCreateChannelMeta(cname);
 				
 				//Clear up old database
 				List<String> channelsToRemove=new LinkedList<String>(); 
-				for(ChannelImages ch:channelImages.values())
+				for(Imageset.ChannelImages ch:im.channelImages.values())
 					{
 					ch.imageLoader.clear();
 					boolean exists=false;
@@ -212,12 +281,12 @@ public class NamebasedImageset extends Imageset
 						channelsToRemove.add(ch.getMeta().name);
 					}
 				for(String s:channelsToRemove)
-					channelImages.remove(s);
+					im.channelImages.remove(s);
 				
 				//Go through list of files
 				File f;
 				while((f=nextFile())!=null)
-					buildAddFile(f,channelVector);
+					buildAddFile(im,f,channelVector);
 				}
 			catch (Exception e)
 				{
@@ -226,7 +295,7 @@ public class NamebasedImageset extends Imageset
 				}
 			}
 	
-		private void buildAddFile(File f, Vector<String> channelVector) throws Exception
+		private void buildAddFile(Imageset im, File f, Vector<String> channelVector) throws Exception
 			{
 			
 			String filename=f.getName();
@@ -297,7 +366,7 @@ public class NamebasedImageset extends Imageset
 				String channelName=channelVector.get(channelNum);
 
 				//Get a place to put EVimage. Create holders if needed
-				ChannelImages ch=getCreateChannel(channelName);
+				Imageset.ChannelImages ch=im.createChannel(channelName);
 				TreeMap<EvDecimal, EvImage> loaders=ch.imageLoader.get(frame);
 				if(loaders==null)
 					{
@@ -306,7 +375,17 @@ public class NamebasedImageset extends Imageset
 					}
 				
 				//Plug EVimage
-				loaders.put(new EvDecimal(slice), ((Channel)ch).newImage(f.getAbsolutePath())); //TODO bd, need to set resolution when loading
+				EvImage evim=new EvImage();
+				evim.dispX=0;
+				evim.dispY=0;
+				evim.binning=1;
+				evim.resX=1;  //bd todo
+				evim.resY=1;  //bd todo
+				evim.io=new SliceIOJAI(f);
+				
+				EvDecimal realSlice=new EvDecimal(slice); //TODO bd, need to set resolution when loading
+				
+				loaders.put(realSlice, evim); 
 				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
 				System.out.println(newLogEntry);
 				rebuildLog+=newLogEntry;
@@ -351,45 +430,19 @@ public class NamebasedImageset extends Imageset
 			}
 		
 		}
-	
-	
-	
-	
-	
-	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
+
+
+
+	public String getMetadataName()
 		{
-		return new Channel(ch);
+		return basedir.getName();
 		}
-	public class Channel extends Imageset.ChannelImages
+
+	public void saveData(EvData d)
 		{
-		public Channel(ImagesetMeta.Channel channelName)
-			{
-			super(channelName);
-			}
-		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
-			{
-			return new EvImageExt("");
-			}
-		
-		public EvImageExt newImage(String filename)
-			{
-			return new EvImageExt(filename);
-			}
-		public EvImageExt newImage(String filename, int slice)
-			{
-			return new EvImageExt(filename, slice);
-			}
-		
-		private class EvImageExt extends EvImageJAI_OLD
-			{
-			public EvImageExt(String filename){super(filename);}
-			public EvImageExt(String filename, int z){super(filename,z);}
-			public int getBinning(){return getMeta().chBinning;}
-			public double getDispX(){return getMeta().dispX;}
-			public double getDispY(){return getMeta().dispY;}
-			public double getResX(){return meta.resX;}
-			public double getResY(){return meta.resY;}
-			}
-		
+		JOptionPane.showMessageDialog(null, "This image format does not support saving. Convert to e.g. OST instead");
 		}
+	
+	
+	
 	}

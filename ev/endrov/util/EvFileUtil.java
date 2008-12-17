@@ -54,4 +54,12 @@ public class EvFileUtil
 		fw.write(out);
 		fw.close();
 		}
+	
+	public static void touchRecursive(File f, long timestamp)
+		{
+		f.setLastModified(timestamp);
+		File parent=f.getParentFile();
+		if(parent!=null)
+			touchRecursive(parent,timestamp);
+		}
 	}

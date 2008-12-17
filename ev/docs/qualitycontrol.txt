@@ -29,14 +29,14 @@ Additional checks
 * lineage window ok?
 * is OST gracefully updated?
 * does example imagesets work?
-
+* set up a database of strange formats that should work
 
 
 
 
 2.13
-	new Image internals
-
+	DONE====
+	
 	common "save as"
 
 	Menu homogenisation
@@ -44,12 +44,20 @@ Additional checks
 		"ImageWindow", better name for menu?
 		"New XML" should just become "New"
 		"Ev->info", create a Help menu
+	
+	TODO====
+	
+	new Image internals
     
 	JPEG2000 for OST. OME uses it! 
   
 	simple recording  
     
     object hierarchy in menus etc
+    
+    make sure prop files can be converted
+    
+    possible to set compression level
     
     
 2.14

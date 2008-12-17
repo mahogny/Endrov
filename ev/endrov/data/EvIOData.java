@@ -5,8 +5,7 @@ import java.io.File;
 
 
 /**
- * Handle loading and saving of data. 
- * 
+ * Handle loading and saving of data 
  * 
  * @author Johan Henriksson
  *
@@ -20,6 +19,12 @@ public interface EvIOData
 	 * * new image format
 	 * 
 	 */
+	//can some scanning be held off? in particular, if just objects are needed, should be possible
+	//to load set normally without hacks
+	
+	//how to save XML?
+	
+	//Image data, blob data and XML data?
 	
 	public String getMetadataName();
 
@@ -28,39 +33,8 @@ public interface EvIOData
 	/** Scan recording for channels */
 	public void buildDatabase(EvData d);
 	
-	/** Save meta for all channels */
-	public void saveMeta(EvData d);
-	
-
-	
-	/**
-	 * How to resave imageset
-	 * Save as VS Save a copy
-	 * 
-	 * Save as = Save a copy + reload.
-	 * Easiest to implement, internal pointers might get screwed. worth it, uncommon.
-	 * up to EVIOData how it is done
-	 * 
-	 * 
-	 * this motivates keeping info about removed objects etc in EVIOData instead of spreading it.
-	 * simplifies operations. 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
-	
-	
-	//can some scanning be held off? in particular, if just objects are needed, should be possible
-	//to load set normally without hacks
-	
-	//how to save XML?
-	
-	//How to save images? delete images? channels?
-	
-	//channel meta
-	
-	//Image data, blob data and XML data?
+	/** Save data */
+	public void saveData(EvData d);
 	
 	
 	/**

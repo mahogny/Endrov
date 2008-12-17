@@ -13,7 +13,7 @@ import bioserv.seqserv.io.Fasta;
 
 public class BrianTot
 	{
-	public static String[] orgs=new String[]{"creinhardtii","ppatens","bdendrobatidis","scerevisiae","cpombe","athaliana","bdendrobatidis","hsapiens"};
+	public static String[] orgs=new String[]{"creinhardtii","ppatens","bdendrobatidis","scerevisiae","cpombe","athaliana","bdendrobatidis"/*,"hsapiens"*/};
 	
 	public static void main(String[] args)
 		{
