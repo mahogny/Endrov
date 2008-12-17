@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
 
 //this vs batch. scrap one? two different dialogs?
 
-public class LoadProgressDialog extends JFrame implements EvData.LoadFileCallback
+public class LoadProgressDialog extends JFrame implements EvData.FileIOStatusCallback
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -43,7 +43,7 @@ public class LoadProgressDialog extends JFrame implements EvData.LoadFileCallbac
 	
 	
 	
-	public void loadFileStatus(double proc, String text)
+	public void fileIOStatus(double proc, String text)
 		{
 		status=text;
 		this.proc=proc;

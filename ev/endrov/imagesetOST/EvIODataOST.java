@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+
 import org.jdom.*;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -32,6 +33,7 @@ import endrov.ev.Log;
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
+import endrov.util.Tuple;
 
 public class EvIODataOST implements EvIOData
 	{
@@ -101,7 +103,6 @@ public class EvIODataOST implements EvIOData
 	public File basedir;
 
 	
-	//TODO rename
 	public String getMetadataName()
 		{
 		String imageset=basedir.getName();
@@ -221,7 +222,7 @@ public class EvIODataOST implements EvIOData
 	static
 		{
 		EvData.supportFileFormats.add(new EvDataSupport(){
-			public Integer supports(String fileS)
+			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);
 				if(file.isDirectory())
@@ -235,13 +236,23 @@ public class EvIODataOST implements EvIOData
 					}
 				return null;
 				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				formats.add(new Tuple<String, String[]>("OST",new String[]{".ost",".ost"}));
+				return formats;
+				}
 			public EvData load(String file) throws Exception
 				{
 				EvData d=new EvData();
-				
 				d.io=new EvIODataOST(d, new File(file));
-				
 				return d;
+				}
+			public Integer saveSupports(String file){return loadSupports(file);}
+			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
+			public EvIOData getSaver(EvData d, String file) throws Exception
+				{
+				return new EvIODataXML(d,file);
 				}
 		});
 		
@@ -387,7 +398,7 @@ public class EvIODataOST implements EvIOData
 	
 	
 	
-	public void saveMeta(EvData d, OutputStream os) throws IOException
+	public static void saveMeta(EvData d, OutputStream os) throws IOException
 	  {
 	  //Add all objects
 	  Document document=d.saveXmlMetadata();
@@ -398,7 +409,7 @@ public class EvIODataOST implements EvIOData
 	  outputter.output(document, os);
 	  d.setMetadataModified(false);
 	  }
-	public void saveMeta(EvData d, File outfile) throws IOException
+	public static void saveMeta(EvData d, File outfile) throws IOException
 	  {
 	  FileOutputStream writer2=new FileOutputStream(outfile);
 	  saveMeta(d,writer2);

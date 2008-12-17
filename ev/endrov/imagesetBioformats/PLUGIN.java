@@ -32,6 +32,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{BioformatsImageset.class};
+		return new Class[]{EvIODataBioformats.class};
 		}
 	}

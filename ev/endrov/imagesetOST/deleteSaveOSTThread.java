@@ -15,7 +15,7 @@ import endrov.util.EvDecimal;
  * Convert an imageset to native format
  * @author Johan Henriksson
  */
-public class SaveOSTThread extends BatchThread
+public class deleteSaveOSTThread extends BatchThread
 	{
 	private final Imageset rec;
 	private final String imagesetFilename;
@@ -27,7 +27,7 @@ public class SaveOSTThread extends BatchThread
 	 * @param filename Path where images will be stored (includes imageset name)
 	 * @param quality Between 0 and 1 (1 for lossless)
 	 */
-	public SaveOSTThread(Imageset rec, String filename)
+	public deleteSaveOSTThread(Imageset rec, String filename)
 		{
 		this.rec=rec;
 		this.imagesetFilename=filename;

@@ -14,18 +14,18 @@ import endrov.imageset.Imageset;
  * Dialog for selecting channel compression settings
  * @author Johan Henriksson
  */
-public class SaveOSTDialog extends JFrame
+public class deleteSaveOSTDialog extends JFrame
 	{
 	static final long serialVersionUID=0;
 	
-	public SaveOSTDialog(Imageset rec)
+	public deleteSaveOSTDialog(Imageset rec)
 		{
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
 		int returnVal = chooser.showSaveDialog(null);
 		if(returnVal == JFileChooser.APPROVE_OPTION)
 			{
-			BatchThread thread=new SaveOSTThread(rec, chooser.getSelectedFile().getAbsolutePath());
+			BatchThread thread=new deleteSaveOSTThread(rec, chooser.getSelectedFile().getAbsolutePath());
 			new BatchWindow(thread);
 			}
 		}

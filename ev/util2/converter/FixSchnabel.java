@@ -69,8 +69,10 @@ public class FixSchnabel
 			}
 		
 		
-		EvData ref=new EvDataXML("/Volumes/TBU_main02/ostxml/model/stdcelegansNew.ostxml");
-		EvData ost=new EvDataXML("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost/rmd.ostxml");
+		EvData ref=EvData.loadFile("/Volumes/TBU_main02/ostxml/model/stdcelegansNew.ostxml");
+		//new EvIODataXML("/Volumes/TBU_main02/ostxml/model/stdcelegansNew.ostxml");
+		EvData ost=EvData.loadFile("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost/rmd.ostxml");
+		//new EvIODataXML("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost/rmd.ostxml");
 
 		
 		NucLineage reflin=ref.getObjects(NucLineage.class).iterator().next();
@@ -104,11 +106,17 @@ public class FixSchnabel
 			}
 		
 		//Save reference
-		EvDataXML output=new EvDataXML("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords_no_AP_radius.ost/rmd.ostxml");
+		/*
+		EvIODataXML output=new EvIODataXML("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords_no_AP_radius.ost/rmd.ostxml");
 		output.metaObject.clear();
 		output.addMetaObject(lin);
 		output.saveMeta();
-		
+*/
+		EvData output=new EvData();
+		output.metaObject.clear();
+		output.addMetaObject(lin);
+		output.saveFileAs("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords_no_AP_radius.ost/rmd.ostxml");
+
 		}
 
 	}

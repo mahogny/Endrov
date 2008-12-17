@@ -168,7 +168,7 @@ public class Imageset extends EvObject
 	/**
 	 * Images for one channel
 	 */
-	public class ChannelImages
+	public static class ChannelImages
 		{
 		/** Private copy to channel specific meta data in meta */
 		private Imageset.Channel meta;

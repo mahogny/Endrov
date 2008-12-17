@@ -4,9 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Vector;
 
+import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.imagesetBioformats.BioformatsImageset;
-import endrov.imagesetOST.SaveOSTThread;
+import endrov.imageset.Imageset;
+import endrov.imagesetOST.deleteSaveOSTThread;
 
 /**
  * Import imagesets in varying formats
@@ -30,7 +31,9 @@ public class Main
 				File outfile=new File(infile.getParentFile(),outfilename);
 				
 				System.out.println("Loading imageset "+infile.getAbsolutePath());
-				BioformatsImageset inim=new BioformatsImageset(infile.getAbsolutePath());
+				EvData data=EvData.loadFile(infile);
+				Imageset inim=data.getObjects(Imageset.class).iterator().next();
+//				BioformatsImageset inim=new BioformatsImageset(infile.getAbsolutePath());
 				
 				//Set compression
 				for(String chname:inim.channelImages.keySet())
@@ -40,7 +43,7 @@ public class Main
 				//the save system could now be replaced by writable OST imagesets.
 				//problem though: lack a system to set compression rates, write locks are in, rather ugly in general
 				System.out.println("Saving to: "+outfile);
-				new CompleteBatch(new SaveOSTThread(inim, outfile.getAbsolutePath()));
+				new CompleteBatch(new deleteSaveOSTThread(inim, outfile.getAbsolutePath()));
 				return true;
 				}
 			}

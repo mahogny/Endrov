@@ -297,7 +297,7 @@ public abstract class BasicWindow extends JPanel
 					for(File f:files)
 						{
 						loadDialog.setCurFile(i);
-						loadDialog.loadFileStatus(0, "Loading "+f);
+						loadDialog.fileIOStatus(0, "Loading "+f);
 						EvData d=EvData.loadFile(f);
 						if(d==null)
 							JOptionPane.showMessageDialog(null, "Failed to open "+f);

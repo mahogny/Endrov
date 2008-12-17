@@ -103,6 +103,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 		/******************************************************************************************************
 		 *                               Data menu extension                                                  *
 		 *****************************************************************************************************/
+		/*
 		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
 			public void buildOpen(JMenu menu)
@@ -110,20 +111,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 				
 				}
 			public void buildSave(JMenu menu, final EvData meta)
-				{
-				if(meta.io!=null && meta.io.datadir()!=null)
-					{
-					final JMenuItem miOpenDatadir=new JMenuItem("Open data directory");
-					ActionListener listener=new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{
-							EV.openExternal(meta.io.datadir());
-							}
-						};
-					miOpenDatadir.addActionListener(listener);
-					menu.add(miOpenDatadir);					
-					}
+				{*/
 				//TODO recode reload
 				/*
 				if(meta instanceof OstImageset)
@@ -171,8 +159,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 					miExportOST.addActionListener(listener);
 					menu.add(miExportOST);
 					}*/
-				}
-			});
+			/*	}
+			});*/
 		}
 
 	
