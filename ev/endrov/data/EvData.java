@@ -3,10 +3,12 @@ package endrov.data;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -135,32 +137,21 @@ public class EvData extends EvContainer
 		}
 
 	
-	/**
-	 * Load file by path
-	 */
-	public static EvData loadFile(String file)
-		{
-		return loadFile(file,null);
-		}
+	
+	/******************************************************************************************************
+	 *                               Loading                                                              *
+	 *****************************************************************************************************/
+
+	/** Load file by path/URI */
+	public static EvData loadFile(String file){return loadFile(file,null);}
 
 	
-	/**
-	 * Load file by path
-	 */
-	public static EvData loadFile(File file)
-		{
-		return loadFile(file.getPath(),null);
-		}
+	/** Load file by path */
+	public static EvData loadFile(File file){return loadFile(file.getPath(),null);}
 	
-	/**
-	 * Load file by path, receive feedback on process
-	 */
-	public static EvData loadFile(File file, FileIOStatusCallback cb)
-		{
-		return loadFile(file.getPath(),cb);
-		}
+	/** Load file by path, receive feedback on process */
+	public static EvData loadFile(File file, FileIOStatusCallback cb){return loadFile(file.getPath(),cb);}
 
-	
 	/**
 	 * Load file by path, receive feedback on process
 	 */
@@ -196,52 +187,6 @@ public class EvData extends EvContainer
 		return null;
 		}
 
-
-	/**
-	 * Save file by path, receive feedback on process
-	 */
-	public void saveFileAs(String file)
-		{
-		saveFileAs(file,null);
-		}
-	/**
-	 * Save file by path, receive feedback on process
-	 */
-	public void saveFileAs(String file, FileIOStatusCallback cb)
-		{
-		EvDataSupport thes=null;
-		int lowest=0;
-		for(EvDataSupport s:EvData.supportFileFormats)
-			{
-			Integer sup=s.saveSupports(file);
-			if(sup!=null && (thes==null || lowest>sup))
-				{
-				thes=s;
-				lowest=sup;
-				}
-			}
-		if(thes!=null)
-			{
-			try
-				{
-				EvIOData io=thes.getSaver(this, file);
-				if(io!=null)
-					{
-					this.io=io;
-					if(cb!=null)
-						cb.fileIOStatus(0, "Saving "+file);
-					this.saveMeta();
-					}
-				}
-			catch (Exception e)
-				{
-				e.printStackTrace();
-				}
-			}
-		}
-
-	
-	
 	/**
 	 * Load file by open dialog
 	 */
@@ -249,6 +194,13 @@ public class EvData extends EvContainer
 		{
 		JFileChooser fc=new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		
+		/*final TreeSet<String> endings=new TreeSet<String>();
+		for(EvDataSupport h:supportFileFormats)
+			for(Tuple<String,String[]> f:h.getLoadFormats())
+				for(String s:f.snd())
+					endings.add(s);*/
+		
 		fc.setFileFilter(new javax.swing.filechooser.FileFilter()
 			{
 			public boolean accept(File f)
@@ -277,7 +229,100 @@ public class EvData extends EvContainer
 			}
 		return null;
 		}
+	
 
+	/******************************************************************************************************
+	 *                               Saving                                                               *
+	 *****************************************************************************************************/
+
+	/** Save by file or URI */
+	public void saveDataAs(String file) throws IOException {saveDataAs(file,null);}
+
+	/** Save by path */
+	public void saveDataAs(File file) throws IOException {saveDataAs(file.getPath(),null);}
+
+	/**
+	 * Save file by path, receive feedback on process. Return if ok.
+	 */
+	public void saveDataAs(String file, FileIOStatusCallback cb) throws IOException
+		{
+		EvDataSupport thes=null;
+		int lowest=0;
+		for(EvDataSupport s:EvData.supportFileFormats)
+			{
+			Integer sup=s.saveSupports(file);
+			if(sup!=null && (thes==null || lowest>sup))
+				{
+				thes=s;
+				lowest=sup;
+				}
+			}
+		if(thes!=null)
+			{
+			try
+				{
+				EvIOData io=thes.getSaver(this, file);
+				if(io!=null)
+					{
+					this.io=io;
+					if(cb!=null)
+						cb.fileIOStatus(0, "Saving "+file);
+					this.saveData();
+					}
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			}
+		else
+			throw new IOException("No suitable plugin to save file");
+		}
+
+	/**
+	 * Save file by dialog
+	 */
+	public void saveFileDialog(FileIOStatusCallback cb)
+		{
+		JFileChooser fc=new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		
+		fc.setFileFilter(new javax.swing.filechooser.FileFilter()
+			{
+			public boolean accept(File f)
+				{
+				if(f.isDirectory())
+					return true;
+				for(EvDataSupport s:EvData.supportFileFormats)
+					if(s.loadSupports(f.getPath())!=null)
+						return true;
+				return false;
+				}
+			public String getDescription()
+				{
+				return "Data Files and Imagesets";
+				}
+			});
+		fc.setCurrentDirectory(new File(EvData.getLastDataPath()));
+		int ret=fc.showSaveDialog(null);
+		if(ret==JFileChooser.APPROVE_OPTION)
+			{
+			EvData.setLastDataPath(fc.getSelectedFile().getParent());
+			File filename=fc.getSelectedFile();
+			if(filename.getName().indexOf(".")==-1)
+				filename=new File(filename.getParent(),filename.getName()+".ost");
+			if(cb!=null)
+				cb.fileIOStatus(0, "Saving "+filename.getName());
+			try
+				{
+				saveDataAs(filename.getPath(), cb);
+				}
+			catch (IOException e)
+				{
+				JOptionPane.showMessageDialog(null, "Found no suitable plugin to save "+filename.getName());
+				}
+			}
+		}
 	
 	
 	/******************************************************************************************************
@@ -293,9 +338,9 @@ public class EvData extends EvContainer
 	public EvIOData io=null;
 
 
-	public void saveMeta()
+	public void saveData()
 		{
-		io.saveMeta(this);
+		io.saveData(this);
 		}
 	
 	

@@ -112,10 +112,17 @@ public class FixSchnabel
 		output.addMetaObject(lin);
 		output.saveMeta();
 */
-		EvData output=new EvData();
-		output.metaObject.clear();
-		output.addMetaObject(lin);
-		output.saveFileAs("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords_no_AP_radius.ost/rmd.ostxml");
+		try
+			{
+			EvData output=new EvData();
+			output.metaObject.clear();
+			output.addMetaObject(lin);
+			output.saveDataAs("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords_no_AP_radius.ost/rmd.ostxml");
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 
 		}
 

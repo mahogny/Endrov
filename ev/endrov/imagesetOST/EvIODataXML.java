@@ -4,8 +4,6 @@ import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 import org.jdom.Document;
 
 import endrov.data.EvData;
@@ -47,7 +45,9 @@ public class EvIODataXML implements EvIOData
 			public EvData load(String file) throws Exception
 				{
 				EvData d=new EvData();
-				d.io=new EvIODataXML(d,file);
+				EvIODataXML io=new EvIODataXML(d,file);
+				d.io=io;
+				io.buildDatabase(d);
 				return d;
 				}
 			public Integer saveSupports(String file){return loadSupports(file);}
@@ -84,16 +84,26 @@ public class EvIODataXML implements EvIOData
 	public EvIODataXML(EvData d, String filename)
 		{
 		this.filename=new File(filename);
-		d.loadXmlMetadata(this.filename);
 		}
 	
 
 	
 	/**
-	 * Save metadata. Will present a dialog. Is this a good idea really?
+	 * Save data
 	 */
-	public void saveMeta(EvData d)
+	public void saveData(EvData d)
 		{
+		Document document=d.saveXmlMetadata();
+		try
+			{
+			EvXmlUtil.writeXmlData(document, filename);
+			d.setMetadataModified(false);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		/*
 		JFileChooser fc=getFileChooser();
 		if(filename!=null)
 			fc.setSelectedFile(filename);
@@ -118,11 +128,14 @@ public class EvIODataXML implements EvIOData
 				e.printStackTrace();
 				}
 			}
+		*/
 		}
 
 	
 	public void buildDatabase(EvData d)
 		{
+		d.metaObject.clear();
+		d.loadXmlMetadata(filename);
 		}
 	
 	/**
@@ -155,7 +168,7 @@ public class EvIODataXML implements EvIOData
 			return null;
 		}
 	
-	*/
+
 	
 	
 	private static JFileChooser getFileChooser()
@@ -173,7 +186,7 @@ public class EvIODataXML implements EvIOData
 				}
 			});
 		return fc;
-		}
+		}*/
 	
 	
 	public File datadir()

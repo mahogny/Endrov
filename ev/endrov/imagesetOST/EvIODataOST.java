@@ -42,8 +42,58 @@ public class EvIODataOST implements EvIOData
 	 *****************************************************************************************************/
 	
 	
-
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				File file=new File(fileS);
+				if(file.isDirectory())
+					{
+					if(file.getName().endsWith(".ost")) //OST3+
+						return 10;
+					else //OST2
+						for(File f:file.listFiles())
+							if(f.isFile() && (f.getName().equals("rmd.xml") || f.getName().equals("rmd.ostxml")))
+								return 10;
+					}
+				return null;
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				formats.add(new Tuple<String, String[]>("OST",new String[]{".ost"}));
+				return formats;
+				}
+			public EvData load(String file) throws Exception
+				{
+				EvData d=new EvData();
+				EvIODataOST io=new EvIODataOST(d, new File(file));
+				io.initialLoad(d);
+				d.io=io;
+				return d;
+				}
+			public Integer saveSupports(String fileS)
+				{
+				File file=new File(fileS);
+				if(file.getName().endsWith(".ost")) //OST3+
+					return 10;
+				return null;
+				}
+			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
+			public EvIOData getSaver(EvData d, String file) throws Exception
+				{
+				return new EvIODataOST(d,new File(file));
+				}
+		});
+		
+		}
 	
+	/******************************************************************************************************
+	 *                               Slice I/O class                                                      *
+	 *****************************************************************************************************/
+
 	private static class SliceIO implements EvIOImage
 		{
 		public File f;
@@ -140,11 +190,13 @@ public class EvIODataOST implements EvIOData
 	public EvIODataOST(EvData d, File basedir)
 		{
 		this.basedir=basedir;
+		}
+
+	public void initialLoad(EvData d)
+		{
 		convert23();
 		buildDatabase(d);
 		}
-
-	
 	
 	
 	
@@ -211,52 +263,7 @@ public class EvIODataOST implements EvIOData
 	
 	
 	
-	
-	
-	
-	/******************************************************************************************************
-	 *                               old                                                               *
-	 *****************************************************************************************************/
-	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportFileFormats.add(new EvDataSupport(){
-			public Integer loadSupports(String fileS)
-				{
-				File file=new File(fileS);
-				if(file.isDirectory())
-					{
-					if(file.getName().endsWith(".ost")) //OST3+
-						return 10;
-					else //OST2
-						for(File f:file.listFiles())
-							if(f.isFile() && (f.getName().equals("rmd.xml") || f.getName().equals("rmd.ostxml")))
-								return 10;
-					}
-				return null;
-				}
-			public List<Tuple<String,String[]>> getLoadFormats()
-				{
-				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
-				formats.add(new Tuple<String, String[]>("OST",new String[]{".ost",".ost"}));
-				return formats;
-				}
-			public EvData load(String file) throws Exception
-				{
-				EvData d=new EvData();
-				d.io=new EvIODataOST(d, new File(file));
-				return d;
-				}
-			public Integer saveSupports(String file){return loadSupports(file);}
-			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
-			public EvIOData getSaver(EvData d, String file) throws Exception
-				{
-				return new EvIODataXML(d,file);
-				}
-		});
-		
-		}
+
 
 
 	
@@ -368,7 +375,7 @@ public class EvIODataOST implements EvIOData
 			
 			
 			System.out.println("Saving meta 3.1");
-			saveMeta(d);
+			saveData(d);
 			invalidateDatabaseCache();
 			System.out.println("Reloading file listing");
 			scanFiles(im);
@@ -423,11 +430,12 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Save meta for all channels into RMD-file
 	 */
-	public void saveMeta(EvData d)
+	public void saveData(EvData d)
 		{
 		try
 			{
-			saveMeta(d,getMetaFile());  //TODO, get from old Imageset
+			basedir.mkdirs();
+			saveMeta(d,getMetaFile());  
 			d.setMetadataModified(false);
 			}
 		catch (IOException e)
@@ -436,20 +444,8 @@ public class EvIODataOST implements EvIOData
 			}
 		Imageset im=getHackImageset(d);
 		saveImages(im);
-		
-		//Update date of datadir to have it backuped
-		//touchRecursive(datadir(), System.currentTimeMillis());
-		
 		}
 		
-	/*
-	public static void touchRecursive(File f, long timestamp)
-		{
-		f.setLastModified(timestamp);
-		File parent=f.getParentFile();
-		if(parent!=null)
-			touchRecursive(parent,timestamp);
-		}*/
 	
 	
 	private File getCurrentFileFor(String channelName, EvDecimal frame, EvDecimal slice)
