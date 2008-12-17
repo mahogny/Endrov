@@ -231,12 +231,47 @@ public class EvDataMenu implements BasicWindowExtension
 				mData.add(menuMetadata);
 				
 				JMenuItem miUnload=new JMenuItem("Unload");
-				JMenuItem miSave=new JMenuItem("Save");
 				menuMetadata.add(miUnload);
-				menuMetadata.add(miSave);
+				
+				//Only add save option if there is a current way of saving it
+				if(thisMeta.io!=null)
+					{
+					JMenuItem miSave=new JMenuItem("Save");
+					menuMetadata.add(miSave);
+					ActionListener metaListenerSave=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							thisMeta.saveMeta();
+							thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+							}
+						};
+					miSave.addActionListener(metaListenerSave);
+					}
+				
+				JMenu miSaveAs=new JMenu("Save as");
+				menuMetadata.add(miSaveAs);
 				
 				for(DataMenuExtension e:extensions)
-					e.buildSave(menuMetadata, thisMeta);
+					e.buildSave(miSaveAs, thisMeta);
+				
+				//Optional "Open data directory" menu item
+				if(thisMeta.io!=null && thisMeta.io.datadir()!=null)
+					{
+					final JMenuItem miOpenDatadir=new JMenuItem("Open data directory");
+					ActionListener listener=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							EV.openExternal(thisMeta.io.datadir());
+							}
+						};
+					miOpenDatadir.addActionListener(listener);
+					menuMetadata.add(miOpenDatadir);					
+					}
+
+				
+				
 				menuMetadata.addSeparator();
 				
 				//// Menu item Listener: Unload
@@ -263,17 +298,7 @@ public class EvDataMenu implements BasicWindowExtension
 					};
 				miUnload.addActionListener(metaListenerUnload);
 
-				//// Menu item Listener: Save
-				ActionListener metaListenerSave=new ActionListener()
-					{
-					public void actionPerformed(ActionEvent e)
-						{
-						thisMeta.saveMeta();
-						thisMeta.setMetadataModified(false);//this might be wrong if save not supported
-						}
-					};
-				miSave.addActionListener(metaListenerSave);
-				
+			
 				
 				for(final String obId:thisMeta.metaObject.keySet())
 					{

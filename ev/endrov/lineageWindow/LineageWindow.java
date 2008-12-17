@@ -67,7 +67,7 @@ public class LineageWindow extends BasicWindow
 		{
 		public ObjectCombo.Alternative[] comboAddObjectAlternative(ObjectCombo ob, EvData meta)	{return new ObjectCombo.Alternative[]{};}
 		public boolean comboFilterMetaObjectCallback(EvObject ob)	{return ob instanceof NucLineage;}
-		public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)	{return new ObjectCombo.Alternative[]{};}
+		//public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)	{return new ObjectCombo.Alternative[]{};}
 		},false);
 
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */

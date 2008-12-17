@@ -1,6 +1,8 @@
 package endrov.basicWindow;
 
 import java.awt.event.*;
+import java.util.HashSet;
+
 import javax.swing.*;
 
 import endrov.data.*;
@@ -108,8 +110,13 @@ public class ObjectCombo extends JComboBox implements ActionListener
 
 	private void setSelection()
 		{
+		HashSet<EvData> datas=new HashSet<EvData>();
+		for(int i=0;i<getItemCount();i++)
+			datas.add(((Alternative)getItemAt(0)).meta);
+		boolean curMetaInList=datas.contains(curMeta);
+		
 		//Make sure curmeta exists, otherwise get rid of it. This speeds up GC
-		boolean curmetaok=curMeta instanceof EvDataEmpty;
+		boolean curmetaok=!curMetaInList;
 		for(int i=0;i<getItemCount();i++)
 			{
 			Alternative a=(Alternative)getItemAt(i);
@@ -124,7 +131,7 @@ public class ObjectCombo extends JComboBox implements ActionListener
 		//If this list does not allow that no imageset is selected then just take one
 		if(!addEmpty)
 			{
-			if(curMeta instanceof EvDataEmpty && getItemCount()>0)
+			if(!datas.contains(curMeta) && getItemCount()>0) //changed 2008-12-17
 				{
 				curMeta=((Alternative)getItemAt(0)).meta;
 				curId=null;

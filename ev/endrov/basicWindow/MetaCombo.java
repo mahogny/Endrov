@@ -1,6 +1,8 @@
 package endrov.basicWindow;
 
 import java.awt.event.*;
+import java.util.HashSet;
+
 import javax.swing.*;
 
 import endrov.data.*;
@@ -19,7 +21,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 	private final comboFilterMetadata filterMeta;
 	
 	//Needed to unselect special alternatives after user selected them
-	private EvData curMeta=new EvDataEmpty();
+	private EvData curMeta=new EvData();
 
 	
 	
@@ -97,7 +99,11 @@ public class MetaCombo extends JComboBox implements ActionListener
 		//If this list does not allow that no imageset is selected then just take one
 		if(getItemCount()>0)
 			{
-			if(!addEmpty && curMeta instanceof EvDataEmpty)
+			HashSet<EvData> datas=new HashSet<EvData>();
+			for(int i=0;i<getItemCount();i++)
+				datas.add(((Alternative)getItemAt(i)).meta);
+			
+			if(!addEmpty && !datas.contains(curMeta) ) //changed 2008-12-17
 				curMeta=((Alternative)getItemAt(0)).meta;
 			
 			//Reselect old item in list
@@ -109,7 +115,7 @@ public class MetaCombo extends JComboBox implements ActionListener
 				}
 			}
 		else
-			curMeta=new EvDataEmpty();
+			curMeta=new EvData();
 		}
 	
 	/**

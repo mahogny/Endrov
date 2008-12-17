@@ -1,5 +1,6 @@
 package util2.plots.travelDist;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,7 +10,6 @@ import java.util.Map;
 import javax.vecmath.Vector3d;
 
 import endrov.data.EvData;
-import endrov.data.EvDataXML;
 import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.Log;
@@ -88,7 +88,8 @@ public class TravelDist
 		{
 		System.out.println(linname);
 		//Load lineage
-		EvData ost=new EvDataXML(linname+"/rmd.ostxml");
+		//EvData ost=new EvIODataXML(linname+"/rmd.ostxml");
+		EvData ost=EvData.loadFile(new File(linname+"/rmd.ostxml"));
 		NucLineage lin=null;
 		for(EvObject evob:ost.metaObject.values())
 			if(evob instanceof NucLineage && ((NucLineage)evob).nuc.size()>10)

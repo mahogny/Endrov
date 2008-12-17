@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.TreeMap;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.JFileChooser;
 
@@ -35,20 +34,7 @@ public class EvData extends EvContainer
 	public static void initPlugin() {}
 	static
 		{		
-		//OST XML-support
-		supportFileFormats.add(new EvDataSupport(){
-			public Integer supports(String fileS)
-				{
-				File file=new File(fileS);
-				return file.isFile() && (file.getName().endsWith(".xml") ||
-						file.getName().endsWith(".ostxml")) ? 10 : null;
-				}
-			public EvData load(String file) throws Exception
-				{
-				return new EvDataXML(file);
-				}
-		});
-		
+	
 		//Store recent entries in personal config
 		EV.personalConfigLoaders.put("recentlyLoaded",new PersonalConfig()
 			{
@@ -143,9 +129,9 @@ public class EvData extends EvContainer
 		}
 
 	
-	public interface LoadFileCallback
+	public interface FileIOStatusCallback
 		{
-		public void loadFileStatus(double proc, String text);
+		public void fileIOStatus(double proc, String text);
 		}
 
 	
@@ -169,7 +155,7 @@ public class EvData extends EvContainer
 	/**
 	 * Load file by path, receive feedback on process
 	 */
-	public static EvData loadFile(File file, LoadFileCallback cb)
+	public static EvData loadFile(File file, FileIOStatusCallback cb)
 		{
 		return loadFile(file.getPath(),cb);
 		}
@@ -178,13 +164,13 @@ public class EvData extends EvContainer
 	/**
 	 * Load file by path, receive feedback on process
 	 */
-	public static EvData loadFile(String file, LoadFileCallback cb)
+	public static EvData loadFile(String file, FileIOStatusCallback cb)
 		{
 		EvDataSupport thes=null;
 		int lowest=0;
 		for(EvDataSupport s:EvData.supportFileFormats)
 			{
-			Integer sup=s.supports(file);
+			Integer sup=s.loadSupports(file);
 			if(sup!=null && (thes==null || lowest>sup))
 				{
 				thes=s;
@@ -197,7 +183,7 @@ public class EvData extends EvContainer
 				{
 				EvData data=thes.load(file);
 				if(cb!=null)
-					cb.loadFileStatus(0, "Loading "+file);
+					cb.fileIOStatus(0, "Loading "+file);
 				if(data!=null)
 					return data;
 				}
@@ -210,12 +196,56 @@ public class EvData extends EvContainer
 		return null;
 		}
 
+
+	/**
+	 * Save file by path, receive feedback on process
+	 */
+	public void saveFileAs(String file)
+		{
+		saveFileAs(file,null);
+		}
+	/**
+	 * Save file by path, receive feedback on process
+	 */
+	public void saveFileAs(String file, FileIOStatusCallback cb)
+		{
+		EvDataSupport thes=null;
+		int lowest=0;
+		for(EvDataSupport s:EvData.supportFileFormats)
+			{
+			Integer sup=s.saveSupports(file);
+			if(sup!=null && (thes==null || lowest>sup))
+				{
+				thes=s;
+				lowest=sup;
+				}
+			}
+		if(thes!=null)
+			{
+			try
+				{
+				EvIOData io=thes.getSaver(this, file);
+				if(io!=null)
+					{
+					this.io=io;
+					if(cb!=null)
+						cb.fileIOStatus(0, "Saving "+file);
+					this.saveMeta();
+					}
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			}
+		}
+
 	
 	
 	/**
 	 * Load file by open dialog
 	 */
-	public static EvData loadFileDialog(LoadFileCallback cb)
+	public static EvData loadFileDialog(FileIOStatusCallback cb)
 		{
 		JFileChooser fc=new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -226,7 +256,7 @@ public class EvData extends EvContainer
 				if(f.isDirectory())
 					return true;
 				for(EvDataSupport s:EvData.supportFileFormats)
-					if(s.supports(f.getPath())!=null)
+					if(s.loadSupports(f.getPath())!=null)
 						return true;
 				return false;
 				}
@@ -242,7 +272,7 @@ public class EvData extends EvContainer
 			EvData.setLastDataPath(fc.getSelectedFile().getParent());
 			File filename=fc.getSelectedFile();
 			if(cb!=null)
-				cb.loadFileStatus(0, "Loading "+filename.getName());
+				cb.fileIOStatus(0, "Loading "+filename.getName());
 			return loadFile(filename);
 			}
 		return null;

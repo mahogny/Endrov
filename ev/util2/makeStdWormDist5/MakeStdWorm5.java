@@ -628,20 +628,35 @@ public class MakeStdWorm5
 			//Save normalized lineages
 			if(saveNormalized)
 				{
-				EvDataXML output2=new EvDataXML("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
+				/*
+				EvIODataXML output2=new EvIODataXML("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
 				output2.metaObject.clear();
 				for(Map.Entry<String, NucLineage> e:lins.entrySet())
 					output2.metaObject.put(e.getKey(),e.getValue());
 				output2.metaObject.put("model", combinedLin);
 				output2.saveMeta();
+				*/
+				
+				EvData output2=new EvData();
+				for(Map.Entry<String, NucLineage> e:lins.entrySet())
+					output2.metaObject.put(e.getKey(),e.getValue());
+				output2.metaObject.put("model", combinedLin);
+				output2.saveFileAs("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
 				}
 			
 
 			//Save reference
-			EvDataXML output=new EvDataXML(outputName);
+			/*
+			EvIODataXML output=new EvIODataXML(outputName);
 			output.metaObject.clear();
 			output.addMetaObject(combinedLin);
 			output.saveMeta();
+			*/
+			
+			EvData output=new EvData();
+			output.addMetaObject(combinedLin);
+			output.saveFileAs(outputName);
+
 			
 			System.out.println("Done");
 			}

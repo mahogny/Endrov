@@ -18,8 +18,8 @@ import endrov.data.EvData;
 import endrov.ev.CompleteBatch;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
-import endrov.imagesetBioformats.BioformatsImageset;
-import endrov.imagesetOST.SaveOSTThread;
+import endrov.imagesetBioformats.*;
+import endrov.imagesetOST.deleteSaveOSTThread;
 import endrov.util.EvSwingTools;
 
 
@@ -153,7 +153,7 @@ public class GUI extends JFrame implements ActionListener
 						//the save system could now be replaced by writable OST imagesets.
 						//problem though: lack a system to set compression rates, write locks are in, rather ugly in general
 						System.out.println("Saving to: "+outfile);
-						new CompleteBatch(new SaveOSTThread(inim, outfile.getAbsolutePath()));
+						new CompleteBatch(new deleteSaveOSTThread(inim, outfile.getAbsolutePath()));
 						}
 					else
 						showMessage("Cannot handle "+toim.file+": no file ending");

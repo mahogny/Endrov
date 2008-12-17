@@ -1,20 +1,67 @@
-package endrov.data;
+package endrov.imagesetOST;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.jdom.Document;
 
+import endrov.data.EvData;
+import endrov.data.EvDataSupport;
+import endrov.data.EvIOData;
+import endrov.data.RecentReference;
 import endrov.util.EvXmlUtil;
+import endrov.util.Tuple;
 
 
 /**
  * Metadata stored in an ordinary XML-file
  * @author Johan Henriksson
  */
-public class EvDataXML extends EvData
+public class EvIODataXML implements EvIOData
 	{
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
+	
+	
+	public static void initPlugin() {}
+	static
+		{		
+		//OST XML-support
+		EvData.supportFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				File file=new File(fileS);
+				return file.isFile() && (file.getName().endsWith(".xml") ||
+						file.getName().endsWith(".ostxml")) ? 10 : null;
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				formats.add(new Tuple<String, String[]>("OST XML",new String[]{".ostxml"}));
+				return formats;
+				}
+			public EvData load(String file) throws Exception
+				{
+				EvData d=new EvData();
+				d.io=new EvIODataXML(d,file);
+				return d;
+				}
+			public Integer saveSupports(String file){return loadSupports(file);}
+			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
+			public EvIOData getSaver(EvData d, String file) throws Exception
+				{
+				return new EvIODataXML(d,file);
+				}
+
+			
+		});
+		}
+	
+	
 	public File filename=null;
 	
 	public String getMetadataName()
@@ -30,14 +77,14 @@ public class EvDataXML extends EvData
 		}
 
 	
-	public EvDataXML()
+	/*public EvIODataXML()
 		{
-		}
+		}*/
 	
-	public EvDataXML(String filename)
+	public EvIODataXML(EvData d, String filename)
 		{
 		this.filename=new File(filename);
-		loadXmlMetadata(this.filename);
+		d.loadXmlMetadata(this.filename);
 		}
 	
 
@@ -45,7 +92,7 @@ public class EvDataXML extends EvData
 	/**
 	 * Save metadata. Will present a dialog. Is this a good idea really?
 	 */
-	public void saveMeta()
+	public void saveMeta(EvData d)
 		{
 		JFileChooser fc=getFileChooser();
 		if(filename!=null)
@@ -60,11 +107,11 @@ public class EvDataXML extends EvData
 			filename=fc.getSelectedFile();
 			if(!filename.getName().endsWith(".xml") && !filename.getName().endsWith(".ostxml"))
 				filename=new File(filename.getAbsolutePath()+".ostxml");
-			Document document=saveXmlMetadata();
+			Document document=d.saveXmlMetadata();
 			try
 				{
 				EvXmlUtil.writeXmlData(document, filename);
-				setMetadataModified(false);
+				d.setMetadataModified(false);
 				}
 			catch (Exception e)
 				{
@@ -73,6 +120,10 @@ public class EvDataXML extends EvData
 			}
 		}
 
+	
+	public void buildDatabase(EvData d)
+		{
+		}
 	
 	/**
 	 * Load metadata by showing open dialog
@@ -107,7 +158,7 @@ public class EvDataXML extends EvData
 	*/
 	
 	
-	public static JFileChooser getFileChooser()
+	private static JFileChooser getFileChooser()
 		{
 		JFileChooser fc=new JFileChooser();
 		fc.setFileFilter(new FileFilter()
@@ -125,8 +176,17 @@ public class EvDataXML extends EvData
 		}
 	
 	
+	public File datadir()
+		{
+		return filename.getParentFile();
+		}
+	
 	public RecentReference getRecentEntry()
 		{
 		return new RecentReference(getMetadataName(), filename.getAbsolutePath());
 		}
+
+	
+	
+	
 	}
