@@ -1,6 +1,5 @@
 package endrov.imagesetOST;
 
-import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -21,7 +20,7 @@ public class deleteSaveOSTDialog extends JFrame
 	public deleteSaveOSTDialog(Imageset rec)
 		{
 		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
+		chooser.setCurrentDirectory(EvData.getLastDataPath());
 		int returnVal = chooser.showSaveDialog(null);
 		if(returnVal == JFileChooser.APPROVE_OPTION)
 			{

@@ -245,6 +245,21 @@ public class EV
 		}
 
 	
+	public static File getStandardDocumentsDirectory()
+		{
+		if(isWindows())
+			return new File("C:\\"); //no idea what to do on windows
+		else
+			{
+			String home=System.getenv("HOME");
+			if(home==null)
+				return new File("/");
+			else
+				return new File(home);
+			}
+		}
+	
+	
 	public static String pad(EvDecimal d, int len)
 		{
 		StringBuffer sb=new StringBuffer();

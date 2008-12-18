@@ -153,7 +153,7 @@ public abstract class BasicWindow extends JPanel
 		for(int i=0;i<menu.getItemCount();i++)
 			{
 			JMenuItem nj=(JMenuItem)menu.getItem(i);
-//			System.out.println("nj "+nj.getLabel()+" "+nj.getName());
+			//System.out.println(thisText+" vs "+nj.getName()+" "+thisText.compareTo(nj.getName()));
 			if(thisText.compareTo(nj.getName())<0)
 //			if(thisText.compareTo(nj.getText().toLowerCase())<0)
 				{
@@ -302,7 +302,10 @@ public abstract class BasicWindow extends JPanel
 						if(d==null)
 							JOptionPane.showMessageDialog(null, "Failed to open "+f);
 						else
+							{
+							EvData.setLastDataPath(f.getParentFile());
 							dlist.add(d);
+							}
 						i++;
 						}
 					SwingUtilities.invokeLater(new Runnable(){
