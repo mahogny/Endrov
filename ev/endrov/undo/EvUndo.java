@@ -35,10 +35,14 @@ public class EvUndo
 		
 		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
-			public void buildOpen(JMenu menu)
+			public void buildData(JMenu menu)
 				{
 				final JMenu miUndo=new JMenu("Undo");
 				addMetamenu(menu,miUndo);
+				
+				}
+			public void buildOpen(JMenu menu)
+				{
 
 				}
 			public void buildSave(JMenu menu, final EvData meta)

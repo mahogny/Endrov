@@ -2,6 +2,7 @@ package endrov.imageset;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -61,14 +62,14 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 			{
 			public void loadPersonalConfig(Element e)
 				{
-				EvData.setLastDataPath(e.getAttributeValue("path"));
+				EvData.setLastDataPath(new File(e.getAttributeValue("path")));
 				}
 			public void savePersonalConfig(Element root)
 				{
 				try
 					{
 					Element e=new Element("lastImagesetPath");
-					e.setAttribute("path",EvData.getLastDataPath());
+					e.setAttribute("path",EvData.getLastDataPath().getPath());
 					root.addContent(e);
 					}
 				catch (Exception e)
@@ -92,7 +93,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 					e1.printStackTrace();
 					}
 				
-				EvData.setLastDataPath(e.getAttributeValue("path"));
+				EvData.setLastDataPath(new File(e.getAttributeValue("path")));
 				}
 			public void savePersonalConfig(Element root)
 				{

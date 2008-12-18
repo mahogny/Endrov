@@ -48,12 +48,12 @@ public class EvDataMenu implements BasicWindowExtension
 			mRecent.setIcon(BasicIcon.iconMenuLoad);
 			
 			BasicWindow.addMenuItemSorted(mFile, miNew, "data_1new");
-			BasicWindow.addMenuItemSorted(mFile, miOpenFile, "data_2open");			
-			BasicWindow.addMenuItemSorted(mFile, miOpenFilePath, "data_3openpath");			
-			BasicWindow.addMenuItemSorted(mFile, mRecent, "data_4recent");			
+			BasicWindow.addMenuItemSorted(mFile, mRecent, "data_recent");
+			BasicWindow.addMenuItemSorted(mFile, miOpenFile, "data_open_file");			
+			BasicWindow.addMenuItemSorted(mFile, miOpenFilePath, "data_open_file_by_path");
 			
 			for(DataMenuExtension e:extensions)
-				e.buildOpen(mData);
+				e.buildOpen(mFile);
 
 			miNew.addActionListener(this);
 			miOpenFile.addActionListener(this);
@@ -149,6 +149,10 @@ public class EvDataMenu implements BasicWindowExtension
 			for(DataMenuExtension e:extensions)
 				e.buildOpen(mData);
 			mData.addSeparator();*/
+			
+			for(DataMenuExtension e:extensions)
+				e.buildData(mData);
+
 			
 			//List recent entries
 			for(final RecentReference rref:EvData.recentlyLoadedFiles)

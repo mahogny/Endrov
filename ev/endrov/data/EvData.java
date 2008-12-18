@@ -87,15 +87,16 @@ public class EvData extends EvContainer
 	 *                               Static: Loading                                                      *
 	 *****************************************************************************************************/
 	/** Remember last path used to load an imageset */
-	private static String lastDataPath="/";
-	public static String getLastDataPath()
+	private static File lastDataPath=EV.getStandardDocumentsDirectory();
+	public static File getLastDataPath()
 		{
+		System.out.println(EV.getStandardDocumentsDirectory());
 		if(lastDataPath==null)
-			return "";
+			return EV.getStandardDocumentsDirectory();
 		else
 			return lastDataPath;
 		}
-	public static void setLastDataPath(String s)
+	public static void setLastDataPath(File s)
 		{
 		if(s!=null)
 			lastDataPath=s;
@@ -217,11 +218,11 @@ public class EvData extends EvContainer
 				return "Data Files and Imagesets";
 				}
 			});
-		fc.setCurrentDirectory(new File(EvData.getLastDataPath()));
+		fc.setCurrentDirectory(EvData.getLastDataPath());
 		int ret=fc.showOpenDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			EvData.setLastDataPath(fc.getSelectedFile().getParent());
+			EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
 			File filename=fc.getSelectedFile();
 			if(cb!=null)
 				cb.fileIOStatus(0, "Loading "+filename.getName());
@@ -303,11 +304,11 @@ public class EvData extends EvContainer
 				return "Data Files and Imagesets";
 				}
 			});
-		fc.setCurrentDirectory(new File(EvData.getLastDataPath()));
+		fc.setCurrentDirectory(EvData.getLastDataPath());
 		int ret=fc.showSaveDialog(null);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
-			EvData.setLastDataPath(fc.getSelectedFile().getParent());
+			EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
 			File filename=fc.getSelectedFile();
 			if(filename.getName().indexOf(".")==-1)
 				filename=new File(filename.getParent(),filename.getName()+".ost");

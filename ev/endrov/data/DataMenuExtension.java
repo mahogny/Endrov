@@ -15,7 +15,8 @@ public abstract class DataMenuExtension
 		{
 		BasicWindow.addMenuItemSorted(menu, mi);
 		}
-	
+
+	public abstract void buildData(JMenu menu);
 	public abstract void buildOpen(JMenu menu);
 	public abstract void buildSave(JMenu menu, EvData meta);
 	}

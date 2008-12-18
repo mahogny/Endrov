@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.List;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.DataMenuExtension;
 import endrov.data.EvData;
 import endrov.data.EvDataMenu;
@@ -18,6 +19,11 @@ import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
 
+/**
+ * Import a list of images by matching the names
+ * @author Johan Henriksson
+ *
+ */
 public class NamebasedImageset implements EvIOData
 	{
 	/******************************************************************************************************
@@ -28,12 +34,16 @@ public class NamebasedImageset implements EvIOData
 		{
 		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
-
+			public void buildData(JMenu menu)
+				{
+				
+				}
 			public void buildOpen(JMenu menu)
 				{
-				//wrong menu??
 				final JMenuItem miLoadNamebasedImageset=new JMenuItem("Load namebased imageset");
-				addMetamenu(menu,miLoadNamebasedImageset);
+				miLoadNamebasedImageset.setIcon(BasicIcon.iconMenuLoad);
+				BasicWindow.addMenuItemSorted(menu,miLoadNamebasedImageset,"data_open_namebased");
+				
 				
 				ActionListener listener=new ActionListener()
 					{
@@ -41,16 +51,16 @@ public class NamebasedImageset implements EvIOData
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
+				    chooser.setCurrentDirectory(EvData.getLastDataPath());
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
 				    	File filename=chooser.getSelectedFile();
-				    	EvData.setLastDataPath(filename.getParent());
+				    	EvData.setLastDataPath(filename.getParentFile());
 				    	
 				    	EvData data=new EvData();
 				    	data.io=new NamebasedImageset(data,filename);
-				    	EvData.addMetadata(data);
+				    	EvData.registerOpenedData(data);
 				    	}
 						}
 					};
@@ -87,10 +97,13 @@ public class NamebasedImageset implements EvIOData
 	
 	private String fileConvention="";
 	private String channelList="";
+	private double resX=1;
+	private double resY=1;
+	private EvDecimal spacingZ=EvDecimal.ONE;
+	
 	
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
-	 * @param basedir
 	 */
 	public NamebasedImageset(EvData data, File basedir)
 		{
@@ -144,12 +157,16 @@ public class NamebasedImageset implements EvIOData
 		static final long serialVersionUID=0;
 		
 		private JButton bRebuild=new JButton("Rebuild database");
-		private JButton bSyntax=new JButton("Syntax");
+		private JButton bSyntax=new JButton("Website");
 		
-		private JTextField eSequence=new JTextField();
-		private JTextField eChannels=new JTextField();
+		private JTextField eSequence=new JTextField("foo-%C-%F-%Z.jpg");
+		private JTextField eChannels=new JTextField("chan1,chan2");
 		private JTextArea eLog=new JTextArea();
-		
+
+		private JTextField eResX=new JTextField("1");
+		private JTextField eResY=new JTextField("1");
+		private JTextField eSpacingZ=new JTextField("1");
+
 		
 		/**
 		 * Embed control with a label
@@ -168,10 +185,14 @@ public class NamebasedImageset implements EvIOData
 			{
 			setTitle(EV.programName+" Name based Import File Conventions");
 			
-			JPanel input=new JPanel(new GridLayout(3,1));
+			JPanel input=new JPanel(new GridLayout(6,1));
 			input.add(new JLabel(basedir.toString()));
 			input.add(withLabel("Name:",eSequence));
 			input.add(withLabel("Channels:",eChannels));
+
+			input.add(withLabel("Resolution X [px/um]:",eResX));
+			input.add(withLabel("Resolution Y [px/um]:",eResY));
+			input.add(withLabel("Spacing Z [um/plane]:",eSpacingZ));
 			
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));
@@ -211,6 +232,9 @@ public class NamebasedImageset implements EvIOData
 				{
 				fileConvention=eSequence.getText();
 				channelList=eChannels.getText();
+				resX=Double.parseDouble(eResX.getText());
+				resY=Double.parseDouble(eResY.getText());
+				spacingZ=new EvDecimal(eSpacingZ.getText());
 				NamebasedDatabaseBuilder b=new NamebasedDatabaseBuilder();
 				b.run(data);
 				eLog.setText(b.rebuildLog);
@@ -367,7 +391,7 @@ public class NamebasedImageset implements EvIOData
 
 				//Get a place to put EVimage. Create holders if needed
 				Imageset.ChannelImages ch=im.createChannel(channelName);
-				TreeMap<EvDecimal, EvImage> loaders=ch.imageLoader.get(frame);
+				TreeMap<EvDecimal, EvImage> loaders=ch.imageLoader.get(new EvDecimal(frame));
 				if(loaders==null)
 					{
 					loaders=new TreeMap<EvDecimal, EvImage>();
@@ -379,11 +403,11 @@ public class NamebasedImageset implements EvIOData
 				evim.dispX=0;
 				evim.dispY=0;
 				evim.binning=1;
-				evim.resX=1;  //bd todo
-				evim.resY=1;  //bd todo
+				evim.resX=resX; 
+				evim.resY=resY; 
 				evim.io=new SliceIOJAI(f);
 				
-				EvDecimal realSlice=new EvDecimal(slice); //TODO bd, need to set resolution when loading
+				EvDecimal realSlice=new EvDecimal(slice).multiply(spacingZ);
 				
 				loaders.put(realSlice, evim); 
 				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
