@@ -6,6 +6,8 @@ import java.util.List;
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 
 /**
  * Utility functions for XML
@@ -22,9 +24,20 @@ public class EvXmlUtil
 		return document;
 		}
 
+	public static class NoOpEntityResolver implements EntityResolver 
+		{
+	  @SuppressWarnings("deprecation")
+		public InputSource resolveEntity(String publicId, String systemId) 
+	  	{
+	    return new InputSource(new StringBufferInputStream(""));
+	  	}
+		}
+
 	public static Document readXML(Reader c) throws Exception
 		{
 		SAXBuilder saxBuilder = new SAXBuilder(false); //No validation
+		//saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false); //xerxes only
+		saxBuilder.setEntityResolver(new NoOpEntityResolver()); //http://www.jdom.org/docs/faq.html#a0350
 		Document document = saxBuilder.build(c);
 		return document;
 		}
