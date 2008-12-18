@@ -59,6 +59,14 @@ Additional checks
     
     possible to set compression level
     
+    micket==
+    align items in rec
+    arrows up/down ugly
+    datum/tid i log console
+    shutterikonen otydlig
+    wants: limit on how far one can move outside, picture should never go completely outside
+    flows: icons on items
+    
     
 2.14
   Flows to create max channel
