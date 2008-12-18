@@ -18,8 +18,8 @@ public class BrianTot
 	public static void main(String[] args)
 		{
 		System.out.println(BrianSQL.connectPostgres("//193.11.32.108/brian", "postgres", "wuermli"));
-		part1();
-		part2();
+//		part1();
+//		part2();
 		part3();
 		}
 	
@@ -173,10 +173,15 @@ public class BrianTot
 				//Which records need be done?
 				System.out.println("Finding work: "+otherOrg);
 				ResultSet rs=
-				BrianSQL.runQuery(
+/*				BrianSQL.runQuery(
 						"select cegene from (" +
 						"select cegene,organism from reverseblast as t1 where organism='"+otherOrg+"' " +
 						"and blastout is not null and (cegene,organism) not in (select cegene,organism from blastrank2 as t2 where t2.cegene=t1.cegene)" +
+				") as foo1");*/
+				BrianSQL.runQuery(
+						"select cegene from (" +
+						"(select cegene,organism from reverseblast where organism='"+otherOrg+"' " +
+						"and blastout is not null) except (select cegene,organism from blastrank2)" +
 				") as foo1");
 				LinkedList<String> geneTODO=new LinkedList<String>();
 				while(rs.next())
@@ -226,6 +231,7 @@ public class BrianTot
 								}
 							catch (Exception e)
 								{
+								System.out.println("error for "+wbGene);
 								e.printStackTrace();
 								}
 	
