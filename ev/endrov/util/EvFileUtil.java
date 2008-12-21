@@ -40,7 +40,10 @@ public class EvFileUtil
 		BufferedReader br=new BufferedReader(new FileReader(file));
 		String line;
 		while((line=br.readLine())!=null)
+			{
 			bf.append(line);
+			bf.append("\n");
+			}
 		//TODO: should read file exactly as is. do not use readline!
 		return bf.toString();
 		}

@@ -11,12 +11,13 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.DataMenuExtension;
 import endrov.data.EvData;
 import endrov.data.EvDataMenu;
+import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
-import endrov.imagesetBasic.NamebasedImageset;
-import endrov.imagesetBasic.SequenceImageset;
+import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
+import endrov.util.EvSwingTools;
 
 
 //bug: new does not halt code.
@@ -25,7 +26,7 @@ import endrov.util.EvDecimal;
  * 
  * @author Johan Henriksson
  */
-public class SequenceImageset extends Imageset
+public class SequenceImageset implements EvIOData
 	{	
 	public static void initPlugin() {}
 	static
@@ -34,22 +35,19 @@ public class SequenceImageset extends Imageset
 		
 		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
-
+			public void buildData(JMenu menu)
+				{
+				}
 			public void buildOpen(JMenu menu)
 				{
-				final JMenuItem miLoadSequenceImageset=new JMenuItem("Load sequence imageset");
-				final JMenuItem miLoadNamebasedImageset=new JMenuItem("Load namebased imageset");
+				JMenuItem miLoadSequenceImageset=new JMenuItem("Load sequence imageset");
 				addMetamenu(menu,miLoadSequenceImageset);
-				addMetamenu(menu,miLoadNamebasedImageset);
 				
 				ActionListener listener=new ActionListener()
 					{
 					public void actionPerformed(ActionEvent e)
 						{
-						if(e.getSource()==miLoadSequenceImageset)
-							dialogSequenceLoadImageset();
-						else if(e.getSource()==miLoadNamebasedImageset)
-							dialogNamebasedLoadImageset();
+						dialogSequenceLoadImageset();
 						}
 					
 					/**
@@ -59,59 +57,36 @@ public class SequenceImageset extends Imageset
 						{
 						JFileChooser chooser = new JFileChooser();
 				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
+				    chooser.setCurrentDirectory(EvData.getLastDataPath());
 				    int returnVal = chooser.showOpenDialog(null);
 				    if(returnVal == JFileChooser.APPROVE_OPTION)
 				    	{
-				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
-				    	EvData.addMetadata(new SequenceImageset(filename));
+				    	File filename=chooser.getSelectedFile();
+				    	EvData.setLastDataPath(chooser.getSelectedFile().getParentFile());
+				    	EvData data=new EvData();
+				    	SequenceImageset io=new SequenceImageset(data,filename);
+				    	data.io=io;
+				    	EvData.addMetadata(data);
 				    	}
 						}
 					
 					
-					/**
-					 * Show dialog for opening a new sequence based imageset
-					 */
-					public void dialogNamebasedLoadImageset()
-						{
-						JFileChooser chooser = new JFileChooser();
-				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(new File(EvData.getLastDataPath()));
-				    int returnVal = chooser.showOpenDialog(null);
-				    if(returnVal == JFileChooser.APPROVE_OPTION)
-				    	{
-				    	String filename=chooser.getSelectedFile().getAbsolutePath();
-				    	EvData.setLastDataPath(chooser.getSelectedFile().getParent());
-				    	EvData.addMetadata(new NamebasedImageset(filename));
-				    	}
-						}
+				
 					};
 					
-				miLoadNamebasedImageset.addActionListener(listener);
 				miLoadSequenceImageset.addActionListener(listener);
 				}
 			
 			public void buildSave(JMenu menu, final EvData meta)
 				{
-				if(meta.io instanceof NamebasedImageset)
+				if(meta.io instanceof SequenceImageset)
 					{
 					JMenuItem miSetup=new JMenuItem("Setup");
 					menu.add(miSetup);
 					miSetup.addActionListener(new ActionListener()
 						{
 						public void actionPerformed(ActionEvent e)
-							{((NamebasedImageset)meta).setup();}
-						});	
-					}
-				else if(meta.io instanceof SequenceImageset)
-					{
-					JMenuItem miSetup=new JMenuItem("Setup");
-					menu.add(miSetup);
-					miSetup.addActionListener(new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{((SequenceImageset)meta).setup();}
+							{((SequenceImageset)meta.io).setup(meta);}
 						});	
 					}
 				}
@@ -126,7 +101,10 @@ public class SequenceImageset extends Imageset
 	
 	
 	/** Path to imageset */
-	private String basedir;
+	private File basedir;
+	private double resX=1;
+	private double resY=1;
+	private EvDecimal spacingZ=EvDecimal.ONE;
 	
 	private String fileConvention="";
 	private String channelList="";
@@ -136,11 +114,10 @@ public class SequenceImageset extends Imageset
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
 	 * @param basedir
 	 */
-	public SequenceImageset(String basedir)
+	public SequenceImageset(EvData data, File basedir)
 		{
 		this.basedir=basedir;
-		this.imageset=(new File(basedir)).getName();
-		setup();
+		setup(data);
 		}
 
 	public String toString()
@@ -154,15 +131,16 @@ public class SequenceImageset extends Imageset
 	/**
 	 * Go through all files and put in database
 	 */
-	public void buildDatabase()
+	public void buildDatabase(EvData data)
 		{
-		new SequenceDatabaseBuilder();
+		new SequenceDatabaseBuilder(data);
 		BasicWindow.updateWindows();
 		}
 	
 	
-	public void saveMeta()
+	public void saveData(EvData data)
 		{
+		JOptionPane.showMessageDialog(null, "This image format does not support saving. Convert to e.g. OST instead");
 		}
 	
 	public RecentReference getRecentEntry()
@@ -173,21 +151,11 @@ public class SequenceImageset extends Imageset
 	/**
 	 * Imageset specific settings
 	 */
-	public void setup()
+	public void setup(EvData data)
 		{
-		new FileConvention();
+		new FileConvention(data);
 		}
 	
-	/**
-	 * Get a channel or create it if it does not exist
-	 * TODO RENAME, OVERRIDES A METHOD IN A STUPID WAY
-	 */
-	public Imageset.ChannelImages getChannel(String ch)
-		{
-		if(!channelImages.containsKey(ch))
-			channelImages.put(ch, internalMakeChannel(meta.channelMeta.get(ch)));
-		return channelImages.get(ch);
-		}
 	
 
 	/**
@@ -203,31 +171,28 @@ public class SequenceImageset extends Imageset
 		private JTextField eSequence=new JTextField();
 		private JTextField eChannels=new JTextField();
 		private JTextArea eLog=new JTextArea();
+		private EvData data;
+
+		private JTextField eResX=new JTextField("1");
+		private JTextField eResY=new JTextField("1");
+		private JTextField eSpacingZ=new JTextField("1");
+
 		
-		
-		/**
-		 * Embed control with a label
-		 */
-		private JComponent withLabel(String text, JComponent right)
+		public FileConvention(EvData data)
 			{
-			JPanel p=new JPanel(new BorderLayout());
-			p.add(new JLabel(text),BorderLayout.WEST);
-			p.add(right,BorderLayout.CENTER);
-			return p;
-			}
-		
-		public FileConvention()
-			{
-			setTitle(EV.programName+" Sequence Import File Conventions: "+imageset);
+			setTitle(EV.programName+" Sequence Import File Conventions: "+basedir.getName());
+			this.data=data;
 			
 			//GridBox might be better
 			
-			JPanel input=new JPanel(new GridLayout(2,1));
-			input.add(withLabel("Sequence:",eSequence));
-			input.add(withLabel("Channels:", eChannels));
-			
-			
-			
+			JPanel input=new JPanel(new GridLayout(6,1));
+			input.add(EvSwingTools.withLabel("Sequence:",eSequence));
+			input.add(EvSwingTools.withLabel("Channels:", eChannels));
+
+			input.add(EvSwingTools.withLabel("Resolution X [px/um]:",eResX));
+			input.add(EvSwingTools.withLabel("Resolution Y [px/um]:",eResY));
+			input.add(EvSwingTools.withLabel("Spacing Z [um/plane]:",eSpacingZ));
+
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));
 
@@ -269,7 +234,10 @@ public class SequenceImageset extends Imageset
 				{
 				fileConvention=eSequence.getText();
 				channelList=eChannels.getText();
-				buildDatabase();
+				resX=Double.parseDouble(eResX.getText());
+				resY=Double.parseDouble(eResY.getText());
+				spacingZ=new EvDecimal(eSpacingZ.getText());
+				buildDatabase(data);
 				eLog.setText(rebuildLog);
 				}
 			}
@@ -296,22 +264,35 @@ public class SequenceImageset extends Imageset
 		int stringpos=0;
 		int numSlices=0;
 		
-		public SequenceDatabaseBuilder()
+		public SequenceDatabaseBuilder(EvData data)
 			{
 			try
 				{
 				rebuildLog="";				
 				
-				File dir=new File(basedir);
-				fileList=dir.listFiles();
+//				File dir=basedir;
+				fileList=basedir.listFiles();
 				
 				//Parse list of channels into vector
 				StringTokenizer ctok=new StringTokenizer(channelList,",");
 				while(ctok.hasMoreTokens())
 					channelVector.add(ctok.nextToken());
 				
+				Collection<Imageset> ims=data.getObjects(Imageset.class);
+				Imageset im=null;
+				if(!ims.isEmpty())
+					{
+					im=ims.iterator().next();
+					im.channelImages.clear();
+					}
+				else
+					{
+					im=new Imageset();
+					data.metaObject.put("im", im);
+					}
+					
 				//Clear up old database
-				for(ChannelImages ch:channelImages.values())
+				for(Imageset.ChannelImages ch:im.channelImages.values())
 					{
 					ch.imageLoader.clear();
 					boolean exists=false;
@@ -319,11 +300,11 @@ public class SequenceImageset extends Imageset
 						if(channelName.equals(ch.getMeta().name))
 							exists=true;
 					if(!exists)
-						channelImages.remove(ch.getMeta().name);
+						im.channelImages.remove(ch.getMeta().name);
 					}
 				
 				//Go through list of files
-				build(true);
+				build(im,true);
 				}
 			catch (Exception e)
 				{
@@ -335,7 +316,7 @@ public class SequenceImageset extends Imageset
 		
 		
 		/** Main parser */
-		private void build(boolean toplevel) throws Exception
+		private void build(Imageset imset, boolean toplevel) throws Exception
 			{
 			if(stringpos==fileConvention.length())
 				{
@@ -355,15 +336,15 @@ public class SequenceImageset extends Imageset
 					for(int i=0;i<numRepeat;i++)
 						{
 						stringpos=savedStringPos;
-						build(false);
+						build(imset,false);
 						}
 					stringpos++; //)
-					build(toplevel);
+					build(imset,toplevel);
 					}
 				else if(firstChar==',')
 					{
 					stringpos++;
-					build(toplevel);
+					build(imset,toplevel);
 					}
 				else if(firstChar==')')
 					return;
@@ -372,7 +353,7 @@ public class SequenceImageset extends Imageset
 					//Number of slices
 					stringpos++;
 					numSlices=parseInt();
-					build(toplevel);
+					build(imset,toplevel);
 					}
 				else if(firstChar=='s')
 					{
@@ -414,18 +395,30 @@ public class SequenceImageset extends Imageset
 					else
 						{
 						TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
-						Channel ch=(Channel)getChannel(channelName);
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
-							loaders.put(new EvDecimal(i), ch.newImage(f.getAbsolutePath(),i)); //TODO bd set resolution
+							{
+							EvImage evim=new EvImage();
+							
+							//TODO
+							evim.dispX=0;
+							evim.dispY=0;
+							evim.binning=1;
+							evim.resX=resX; 
+							evim.resY=resY; 
+							evim.io=new SliceIOJAI(f,i);
+							//TODO is this the way to go? only works with TIFF stacks
+							
+							loaders.put(new EvDecimal(i).multiply(spacingZ), evim); 
+							}
 						
-						
-						ch.imageLoader.put(new EvDecimal(frame), loaders); //TODO bd need to set res at loading
+						Imageset.ChannelImages ch=imset.createChannel(channelName);
+						ch.imageLoader.put(new EvDecimal(frame), loaders);
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
 						}
 					frame+=frameForward;
 					
-					build(toplevel);
+					build(imset,toplevel);
 					}
 				else
 					{
@@ -447,7 +440,7 @@ public class SequenceImageset extends Imageset
 			String part="";
 			while("1234567890".indexOf(fileConvention.charAt(stringpos))>=0)
 				{
-				part=part+fileConvention.charAt(stringpos);
+				part+=fileConvention.charAt(stringpos);
 				stringpos++;
 				}
 			if(part=="")
@@ -474,46 +467,11 @@ public class SequenceImageset extends Imageset
 		}
 
 	
+	public String getMetadataName()
+		{
+		return basedir.getName();
+		}
 
 
-	
-	
-	protected ChannelImages internalMakeChannel(ImagesetMeta.Channel ch)
-		{
-		return new Channel(ch);
-		}
-	
-	public class Channel extends Imageset.ChannelImages
-		{
-		public Channel(ImagesetMeta.Channel channelName)
-			{
-			super(channelName);
-			}
-		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
-			{
-			return new EvImageExt("");
-			}
-		
-		public EvImageExt newImage(String filename)
-			{
-			return new EvImageExt(filename);
-			}
-		public EvImageExt newImage(String filename, int slice)
-			{
-			return new EvImageExt(filename, slice);
-			}
-		
-		private class EvImageExt extends EvImageJAI_OLD
-			{
-			public EvImageExt(String filename){super(filename);}
-			public EvImageExt(String filename, int z){super(filename,z);}
-			public int getBinning(){return getMeta().chBinning;}
-			public double getDispX(){return getMeta().dispX;}
-			public double getDispY(){return getMeta().dispY;}
-			public double getResX(){return meta.resX;}
-			public double getResY(){return meta.resY;}
-			}
-		
-		}
 	
 	}

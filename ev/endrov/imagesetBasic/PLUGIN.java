@@ -30,6 +30,6 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{NamebasedImageset.class};
+		return new Class[]{NamebasedImageset.class, SequenceImageset.class};
 		}
 	}

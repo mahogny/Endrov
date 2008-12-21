@@ -1,0 +1,38 @@
+jar-jar dependencies have to be kept track of here
+
+
+
+==OME==
+this seems out of date to me
+
+    * OMERO code
+          o client/client-<VERSION>.jar
+          o client/common-<VERSION>.jar
+          o client/model-psql-<VERSION>.jar 
+    * Hibernate annotation dependencies (used by model classes)
+          o client/hibernate-annotations-<VERSION>.jar
+          o client/hibernate-search-<VERSION>.jar 
+    * JBoss dependencies
+          o client/jboss-annotations-ejb3-<VERSION>.jar
+          o client/jboss-ejb3-<VERSION>.jar
+          o client/jboss-ejb3x-<VERSION>.jar
+          o client/jbossall-client-<VERSION>.jar
+          o client/jbosssx-<VERSION>.jar
+          o client/persistence-api-<VERSION>.jar 
+    * Other
+          o client/spring-<VERSION>.jar
+          o client/log4j-<VERSION>.jar
+          o client/commons-logging-<VERSION>.jar 
+
+==Bio-formats==
+
+
+
+==jfreechart==
+
+
+
+
+==itext pdf library==
+
+http://www.lowagie.com/iText/

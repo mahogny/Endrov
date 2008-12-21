@@ -60,9 +60,9 @@ public class EV
 	/**
 	 * Get name of config file in case it is stored as an individual file
 	 */
-	private static String getConfigName()
+	private static File getConfigFileName()
 		{
-		return System.getenv("HOME")+"/.ev.xml";
+		return new File(System.getenv("HOME")+"/.endrov/config.xml");
 		}
 	
 	/**
@@ -70,12 +70,13 @@ public class EV
 	 */
 	public static void loadPersonalConfig()
 		{
-		getConfigName();
 		Preferences prefs = Preferences.userNodeForPackage (EV.class);
 		String s=prefs.get("evdata", null);
 		if(s==null)
 			{
-			File configFile=new File(getConfigName());
+			//TODO check if this is allowed e.g. applet
+			//TODO on linux, make this always yes
+			File configFile=getConfigFileName();
 			if(configFile.exists())
 				{
 				s="";
@@ -138,6 +139,8 @@ public class EV
 		{
 		Preferences prefs = Preferences.userNodeForPackage(EV.class);
 		prefs.remove("evdata");
+		if(useHomedirConfig)
+			getConfigFileName().delete();
 		}
 	
 	/**
@@ -169,7 +172,8 @@ public class EV
 			{
 			try
 				{
-				BufferedWriter bufferedwriter = new BufferedWriter(new FileWriter(getConfigName()));
+				getConfigFileName().getParentFile().mkdirs();
+				BufferedWriter bufferedwriter = new BufferedWriter(new FileWriter(getConfigFileName()));
 				bufferedwriter.write(s);
 				bufferedwriter.close();
 				}
@@ -182,6 +186,7 @@ public class EV
 			{		
 			Preferences prefs = Preferences.userNodeForPackage(EV.class);
 			prefs.put("evdata", s);
+			//What if this fails?
 			}
 		
 		if(EV.debugMode)

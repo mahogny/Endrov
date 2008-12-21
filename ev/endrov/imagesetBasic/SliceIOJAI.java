@@ -16,10 +16,17 @@ import endrov.imageset.EvIOImage;
 public class SliceIOJAI implements EvIOImage
 	{
 	private File file;
+	private Integer z=null;
 	
 	public SliceIOJAI(File f)
 		{
 		file=f;
+		}
+	public SliceIOJAI(File f, int z)
+		{
+		file=f;
+		this.z=z;
+		//TODO use z
 		}
 	
 	
