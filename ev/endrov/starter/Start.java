@@ -12,38 +12,41 @@ import endrov.util.EvFileUtil;
 
 /**
  * Start EV, automatically collects which jar-files should be linked
+ * 
  * @author Johan Henriksson
  */
 public class Start
 	{
-	public static boolean printCommand=false;
-	public static boolean printJar=false;	
+	private static boolean printJar=false;	
 	
 	public static void main(String[] args)
 		{
 		new Start().run(args);
 		}
 	
-	private final String argStringMacStarter="--macstarter";
 	
 	
 	private String javaver=System.getProperty("java.specification.version");
 	private String OS=System.getProperty("os.name").toLowerCase();
 	private String osExt="";
 	private String arch=System.getProperty("os.arch").toLowerCase();
-	public int vermajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
-	public int verminor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
-	public List<String> jarfiles=new LinkedList<String>();
-	public List<String> binfiles=new LinkedList<String>();
+	private int javaVerMajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
+	private int javarVerMinor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
 	private String cpsep=":";
 	private String libdir="";
 	private String javaexe="java";
-	ProcessBuilder pb=new ProcessBuilder("");
-	String jarstring=new File(".").getAbsolutePath();
-	String binstring="";
+	public List<String> jarfiles=new LinkedList<String>();
+	public List<String> binfiles=new LinkedList<String>();
+	private ProcessBuilder pb=new ProcessBuilder("");
+	private String jarstring="";//new File(".").getAbsolutePath(); //may have to keep this due to matlab
+	private String binstring="";
 
 
 	public void collectSystemInfo(String path)
+		{
+		collectSystemInfo(new File(path));
+		}
+	public void collectSystemInfo(File path)
 		{
 		//Detect OS
 		cpsep=":";
@@ -76,8 +79,10 @@ public class Start
 			System.exit(1);
 			}
 
+		jarstring=path.getAbsolutePath();
+
 		//Collect jarfiles
-		collectJars(jarfiles, binfiles, path+"libs", osExt);
+		collectJars(jarfiles, binfiles, new File(path,"libs"), osExt);
 //		if(!libdir.equals(""))
 //			collectJars(jarfiles, binfiles, libdir, osExt);
 		for(String s:jarfiles)
@@ -99,40 +104,73 @@ public class Start
 	
 	public void run(String[] argsa)
 		{
-		List<String> args=new LinkedList<String>();
-		for(String s:argsa)
-			args.add(s);
+		boolean printMacStarter=false;
+		boolean hasSpecifiedLibdir=false;
+		boolean printCommand=false;
+		File javaenvFile=null;
+		File basedir=new File(".");
+		String libdir2="";
 		
-		if(args.contains("--printcommand"))
-			printCommand=true;
-		if(args.contains("--printjar"))
-			printJar=true;
-
-		//Override detection to spit out mac directories
-		if(args.contains(argStringMacStarter))
-			OS="mac os x";
-			
-//		args.remove("-printjar");
-//		args.remove("-printcommand");
-
-		//Print current version. need to be put in starter jar to work
-		if(args.contains("--version"))
+		int numNonflagArg=0;
+		List<String> args=new LinkedList<String>();
+		for(int argi=0;argi<argsa.length;argi++)
 			{
-			System.out.println("Endrov "+EvBuild.version);
-			System.exit(0);
+			String curarg=argsa[argi];
+			
+			if(curarg.equals("--printcommand"))
+				printCommand=true;
+			else if(curarg.equals("--printjar"))
+				printJar=true;
+			else if(curarg.equals("--macstarter"))
+				{
+				//Override detection to spit out mac directories
+				OS="mac os x"; 
+				printMacStarter=true;
+				}
+			else if(args.contains("--version"))
+				{
+				//Print current version. need to be put in starter jar to work
+				System.out.println("Endrov "+EvBuild.version);
+				System.exit(0);
+				}
+			else if(curarg.startsWith("-Djava.library.path="))
+				{
+				hasSpecifiedLibdir=true;
+				args.add(curarg);
+				}
+			else if(curarg.equals("--cp2"))
+				{
+				//Additional jars to add to classpath
+				libdir2+=":"+argsa[argi+1];
+				argi++;
+				}
+			else if(curarg.equals("--basedir"))
+				{
+				//Override current directory
+				basedir=new File(argsa[argi+1]);
+				argi++;
+				}
+			else if(curarg.equals("--javaenv"))
+				{
+				//Override current directory
+				javaenvFile=new File(argsa[argi+1]);
+				argi++;
+				}
+			else
+				{
+				if(!curarg.startsWith("--"))
+					numNonflagArg++;
+				args.add(curarg);
+				}
 			}
 		
-		collectSystemInfo("");
+		collectSystemInfo(basedir);
 		
 		System.out.println("This system runs OS:"+OS+" with java:"+javaver+" on arch:"+arch);
 		
-		boolean hasSpecifiedLibdir=false;
-		for(String s:args)
-			if(s.startsWith("-Djava.library.path="))
-				hasSpecifiedLibdir=true;
 
-
-		if(vermajor>1 || (vermajor==1 && verminor>=5))
+		//Continue if java 1.5+
+		if(javaVerMajor>1 || (javaVerMajor==1 && javarVerMinor>=5))
 			{
 			try
 				{
@@ -144,11 +182,11 @@ public class Start
 				cmdarg.add(jarstring);
 //				cmdarg.add(memstring);
 				if(!libdir.equals("") && !hasSpecifiedLibdir)
-					cmdarg.add("-Djava.library.path="+libdir);
+					cmdarg.add("-Djava.library.path="+libdir+libdir2);
 
-				
 				//Add arguments from environment file
-				File javaenvFile=new File("javaenv."+osExt+".txt");
+				if(javaenvFile==null)
+					javaenvFile=new File("javaenv."+osExt+".txt");
 				if(javaenvFile.exists())
 					{
 					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
@@ -164,16 +202,20 @@ public class Start
 				//What to run? additional arguments?
 				for(String s:args)
 					cmdarg.add(s);
+				//TODO TODO TODO TODO TODO this is a bug, does not handle
+				//additional arguments properly
+				
 //				if(args.length==0)
 //					cmdarg.add("endrov.starter.MW");
 
 				//Output jar-list for mac starter bundles
-				if(args.contains(argStringMacStarter))
+				if(printMacStarter)
 					{
 					StringTokenizer t=new StringTokenizer(jarstring,":");
 					File dot=new File(".");
 					int dotlen=dot.getAbsolutePath().length()-1;
 					String tot="";
+					//jarstring.replace //more efficient but it is a regexp!
 					while(t.hasMoreTokens())
 						{
 						String s=t.nextToken();
@@ -259,29 +301,29 @@ public class Start
 				}
 			}
 		else
-			JOptionPane.showMessageDialog(null, "Your version of Java is too old. At least 1.5 required");
+			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
 		}
 
 	
 	
 	/**
-	 * Get all jars and add them with path to vector. Recurses when it finds a directory
-	 * ending with _inc
+	 * Get all jars and add them with path to vector. 
+	 * Recurses when it finds a directory ending with _inc.
+	 * 
 	 */
-	private static void collectJars(List<String> v,List<String> binfiles,String dir, String osExt)
+	private static void collectJars(List<String> v,List<String> binfiles,File p, String osExt)
 		{
-		File p=new File(dir);
 		if(p.exists())
 			for(File sub:p.listFiles())
 				{
 				if(sub.isFile() && (sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
 					{
-					String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
+					String toadd=sub.getAbsolutePath();
 					v.add(toadd);
 					if(printJar)
 						System.out.println("Adding java library: "+toadd);
 					}
-				else if(sub.isFile() && (sub.getName().endsWith(".jarpath")))
+				/*else if(sub.isFile() && (sub.getName().endsWith(".jarpath")))
 					{
 					//File containing list of jars to include. This is to be used on systems
 					//where jars are present already.
@@ -301,14 +343,14 @@ public class Start
 						{
 						e.printStackTrace();
 						}
-					}
+					}*/
 				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
-					collectJars(v,binfiles, sub.getAbsolutePath(), osExt);
+					collectJars(v,binfiles, sub, osExt);
 				else if(sub.isDirectory() && sub.getName().equals("bin_"+osExt))
 					{
-					collectJars(v,binfiles, sub.getAbsolutePath(), osExt);
+					collectJars(v,binfiles, sub, osExt);
 					
-					String toadd=sub.getAbsolutePath();//dir+"/"+sub.getName();
+					String toadd=sub.getAbsolutePath();
 					binfiles.add(toadd);
 					if(printJar)
 						System.out.println("Adding binary directory: "+toadd);

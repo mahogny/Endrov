@@ -20,9 +20,11 @@ rm -Rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
 rm -Rf .cvsignore */.cvsignore */*/.cvsignore */*/*/.cvsignore */*/*/*/.cvsignore
 rm -Rf .project .classpath .metadata .settings
 rm *.log
+rm -Rf libs/unused
 
 #compress
 cd ..
+rm $name.zip
 zip -r $name $name
 mv $name.zip release/
 

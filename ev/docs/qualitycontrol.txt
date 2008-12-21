@@ -9,16 +9,20 @@ Check that it runs on major platforms
 Image formats
 * Is metadata loaded correctly? res?
 * can connect to OME?
+* does example imagesets work?
+* set up a database of strange formats that should work
 
 Functionality
 * Does image conversion work?
 * Does ROI work?
+* Does matlab interface work?
+* Does JNLP work?
 
 Dependencies up to date?
 * micro-manager
 * bioformats
 
-
+Starters up to date?
 
 
 Additional checks
@@ -28,9 +32,7 @@ Additional checks
 * imserv cache transfer?
 * lineage window ok?
 * is OST gracefully updated?
-* does example imagesets work?
-* set up a database of strange formats that should work
-
+* sliceiojai, z not implemented. use JAI at all?
 
 
 
@@ -45,6 +47,8 @@ Additional checks
 		"New XML" should just become "New"
 		"Ev->info", create a Help menu
 	
+    can any jars be deleted? EE?
+
 	TODO====
 	
 	new Image internals
@@ -58,6 +62,13 @@ Additional checks
     make sure prop files can be converted
     
     possible to set compression level
+
+    debian packages
+    
+    
+    eliminate JAI, use Bioformats only
+    
+    separate movie encoder, put in macBinding
     
     micket==
     align items in rec

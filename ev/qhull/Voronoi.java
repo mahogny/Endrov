@@ -25,10 +25,10 @@ public class Voronoi
 		else if(endrov.ev.EV.isWindows())
 			throw new Exception("QHULL Platform not supported");
 		else //assume linux?
-			platform="linux32";
+			platform="linux";
 		
 		File dir=new File(Voronoi.class.getResource(".").getFile());
-		File executable=new File(new File(dir,platform),"qvoronoi");
+		File executable=new File(new File(dir,"bin_"+platform),"qvoronoi");
 		
 		// /usr/bin/qvoronoi
 		
