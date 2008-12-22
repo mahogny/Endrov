@@ -7,6 +7,6 @@ Essential: no
 Depends: DEPENDENCIES
 Installed-Size: SIZE
 Maintainer: Johan Henriksson [mahogny@areta.org]
-Description: Endrov is a modular programming for 5D image processing and analysis. It is tailored towards the need of life sciences and e.g. can control hardware such as microscopes.
-Micro-Manager provides a programmatic and user interface for research microscopes and related equipment
+Description: Image processing and analysis tool.
+ Endrov is a modular programming for 5D image processing and analysis. It is tailored towards the need of life sciences and e.g. can control hardware such as microscopes.
 Homepage: http://www.endrov.net

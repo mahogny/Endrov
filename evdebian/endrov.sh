@@ -1,14 +1,14 @@
 #!/bin/bash
 
-#* should copy java env here
+#using ls * is not the optimal way of starting up, it slows down startup
 
-java -jar /usr/share/endrov/startEndrov.jar \
-	--basedir /usr/share/endrov
-	--config $(HOME)/.endrov/config.xml \
-	--cp2 $(HOME)/.endrov/ \
-	--cp2 `build-classpath DEBPACKAGES` \
-	--javaenv $(HOME)/.endrov/javaenv.txt \
+java -jar /usr/share/endrov/startEndrov.jar endrov.starter.MW \
+	--basedir /usr/share/endrov \
+	--config $HOME/.endrov/config.xml \
+	--cp2 `ls -d -1 /usr/share/java/*.jar | tr '\n' ':'`$HOME/.endrov/ \
+	--javaenv $HOME/.endrov/javaenv.txt \
 	$@
+
 	
 
 #* startEndrov needs to know basedir to find jars

@@ -16,6 +16,8 @@ import java.util.*;
  * /usr/share/menu/endrov 
  * /usr/share/pixmaps/endrov.xpm
  * 
+ * http://freedesktop.org/wiki/Specifications/desktop-entry-spec?action=show&redirect=Standards%2Fdesktop-entry-spec
+ * 
  * 
  * @author Johan Henriksson
  *
@@ -27,22 +29,26 @@ public class Main
 		{
 		try
 			{
-			File zip=new File("../ev081220.zip");
+			File zip=new File("../ev081222.zip");
 			//File zip=new File(args[0]);
 			
 			File dPkg=new File("/tmp/endrov");
 			File dUsr=new File(dPkg,"usr");
 			File dShare=new File(dUsr,"share");
 			File dEndrov=new File(dShare,"endrov");
-			File dMan=new File(dShare,"man1/man");
+			File dMan=new File(dShare,"man/man1");
 			File dMenu=new File(dShare,"menu");
 			File dControl=new File(dPkg,"DEBIAN");
 			File dZipTemp=new File("/tmp/unzip");
 			File dShareDoc=new File(dShare,"doc");
 			File dSharePixmaps=new File(dShare,"pixmaps");
+			File dUsrBin=new File(dUsr,"bin");
+			File dShareApplications=new File(dShare,"applications");
 			
-			File fUsrEndrov=new File(dEndrov,"endrov");
+			File fUsrBinEndrov=new File(dUsrBin,"endrov");
 			File fIcon=new File(dSharePixmaps,"endrov.xpm");
+			File fUsrShareMenuEndrov=new File(dMenu,"endrov");
+			File fUsrShareApplicationsEndrov=new File(dShareApplications,"endrov.desktop");
 			
 			//Clean dirs
 			if(dPkg.exists())
@@ -56,7 +62,9 @@ public class Main
 			dShareDoc.mkdirs();
 			dMan.mkdirs();
 			dMenu.mkdirs();
+			dUsrBin.mkdirs();
 			dSharePixmaps.mkdirs();
+			dShareApplications.mkdirs();
 			
 			//Extract files
 			System.out.println("unzipping");
@@ -71,8 +79,11 @@ public class Main
 			new File(dEndrov,"docs").renameTo(new File(dShareDoc,"endrov"));
 			copyFile(new File("endrov.1"), new File(dMan,"endrov.1"));
 			copyFile(new File("icon.xpm"), fIcon);
-			copyFile(new File("endrov.sh"),fUsrEndrov);
-			fUsrEndrov.setExecutable(true);
+			copyFile(new File("endrov.sh"),fUsrBinEndrov);
+			copyFile(new File("usrShareMenuEndrov"),fUsrShareMenuEndrov);
+			copyFile(new File("endrov.desktop"),fUsrShareApplicationsEndrov);
+			setExec(fUsrBinEndrov);
+			//fUsrEndrov.setExecutable(true);
 			
 			//Packages
 			//maybe do pattern match instead?
@@ -89,19 +100,21 @@ public class Main
 			pkgs.add(new DebPackage("libxalan2-java","xalan2",new String[]{"xalan.jar"}));
 			//xerces and xml-apis separate?
 			pkgs.add(new DebPackage("libxerces2-java","xerces xml-apis",new String[]{"xerces.jar","xml-apis.jar"}));
-			pkgs.add(new DebPackage("libjdom-java","jdom",new String[]{"jdom.jar"})); //any overlap here?
+			pkgs.add(new DebPackage("libjdom1-java","jdom",new String[]{"jdom.jar"})); //any overlap here?
 			//jogl TODO. how to handle so's?
 			pkgs.add(new DebPackage("libjogl-java","",new String[]{"gluegen-rt.jar","jogl.jar","libgluegen-rt.so","libjogl_awt.so","libjogl_cg.so","libjogl.so"}));
 			pkgs.add(new DebPackage("libjfreechart-java","jfreechart",new String[]{"jfreechart-1.0.5.jar"}));
 			pkgs.add(new DebPackage("libjakarta-poi-java","poi",new String[]{"poi-contrib-3.0.1-FINAL-20070705.jar","poi-3.0.1-FINAL-20070705.jar","poi-scratchpad-3.0.1-FINAL-20070705.jar"}));
-			pkgs.add(new DebPackage("libsaxpath-java","saxpath",new String[]{"saxpath.jar"}));
-			pkgs.add(new DebPackage("libjaxen-java","jaxen-core jaxen-jdom",new String[]{"jaxen-core.jar","jaxen-jdom.jar"}));
+			pkgs.add(new DebPackage("libjaxen-java","jaxen-core jaxen-jdom",new String[]{"jaxen-core.jar","jaxen-jdom.jar","saxpath.jar"}));
 			/*pkgs.add(new DebPackage("",new String[]{""});
 			pkgs.add(new DebPackage("",new String[]{""});*/
 			//jinput-test.jar jinput.jar
 			//JAI, can I trust it to be included? reduce need?
 
-			
+
+			//Specialty for micro-manager
+			File dLibs=new File(dEndrov,"libs");
+			EvFileUtil.writeFile(new File(dLibs,"umanager.paths"), "b:/usr/lib/micro-manager");
 			
 			//For OME  http://trac.openmicroscopy.org.uk/omero/wiki/OmeroClientLibrary
 			pkgs.add(new DebPackage("liblog4j1.2-java","log4j",new String[]{"log4j-1.2.14.jar"}));
@@ -145,6 +158,7 @@ libjboss-webservices-java
 			
 			System.out.println("Deleting binary files not for linux");
 			deleteBinDirs(dEndrov);
+			deleteExt(dEndrov, ".app"); //Mac APP-bundles
 			
 			System.out.println("Extracting packages");
 			deletePkgFiles(pkgs, new File(dEndrov,"libs"));
@@ -161,6 +175,10 @@ libjboss-webservices-java
 					replace("VERSION",version).
 					replace("SIZE",""+totalSize));
 			
+			System.out.println("Debianizing");
+			runUntilQuit(new String[]{"/usr/bin/dpkg-deb","-b","/tmp/endrov"});
+			//dpkg-deb -b endrov
+			
 			System.out.println("Done");
 			}
 		catch (Exception e)
@@ -170,6 +188,33 @@ libjboss-webservices-java
 		
 		}
 
+	public static void setExec(File file)
+		{
+		System.out.println("set exec "+file);
+		runUntilQuit(new String[]{"/bin/chmod","+x",file.getPath()});
+		}
+	
+	public static void runUntilQuit(String[] arg)
+		{
+		try
+			{
+			Process proc=Runtime.getRuntime().exec(arg);
+			BufferedReader os=new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			while(os.readLine()!=null);
+			proc.waitFor();
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		catch (InterruptedException e)
+			{
+			e.printStackTrace();
+			}
+		
+		}
+	
+	
 	public static String makeDeps(List<DebPackage> pkgs) throws Exception
 		{
 		StringBuffer sb=new StringBuffer();
@@ -204,6 +249,14 @@ libjboss-webservices-java
 			}
 		}
 
+	public static void deleteExt(File root, String ext)
+		{
+		for(File child:root.listFiles())
+			if(child.getName().endsWith(ext))
+				recursiveDelete(child);
+			else if(child.isDirectory())
+				deleteExt(child, ext);
+		}
 	
 	
 	public static void deleteBinDirs(File root)
