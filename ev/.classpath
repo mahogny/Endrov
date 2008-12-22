@@ -5,7 +5,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-logging-1.0.4.jar"/>
@@ -49,5 +48,6 @@
 	<classpathentry kind="lib" path="libs/servlet.jar"/>
 	<classpathentry kind="lib" path="libs/spring-2.0.6.jar"/>
 	<classpathentry kind="lib" path="libs/vecmath.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

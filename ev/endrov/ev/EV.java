@@ -56,13 +56,32 @@ public class EV
 		hasStartedUp.release();
 		}
 
+	/**
+	 * Directory where all user data normally is stored
+	 */
+	public static File getHomeDir()
+		{
+		if(isWindows())
+			return new File("C:\\");
+		else
+			{
+			String e=System.getenv("HOME");
+			if(e!=null)
+				return new File(e);
+			else
+				return new File("/");
+			}
+		}
+
+	
+
 	
 	/**
 	 * Get name of config file in case it is stored as an individual file
 	 */
 	private static File getConfigFileName()
 		{
-		return new File(System.getenv("HOME")+"/.endrov/config.xml");
+		return new File(getHomeDir(),".endrov/config.xml");
 		}
 	
 	/**
@@ -250,19 +269,6 @@ public class EV
 		}
 
 	
-	public static File getStandardDocumentsDirectory()
-		{
-		if(isWindows())
-			return new File("C:\\"); //no idea what to do on windows
-		else
-			{
-			String home=System.getenv("HOME");
-			if(home==null)
-				return new File("/");
-			else
-				return new File(home);
-			}
-		}
 	
 	
 	public static String pad(EvDecimal d, int len)

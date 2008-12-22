@@ -109,7 +109,7 @@ public class Start
 		boolean printCommand=false;
 		File javaenvFile=null;
 		File basedir=new File(".");
-		String libdir2="";
+		String cp2="";
 		
 		int numNonflagArg=0;
 		List<String> args=new LinkedList<String>();
@@ -141,7 +141,7 @@ public class Start
 			else if(curarg.equals("--cp2"))
 				{
 				//Additional jars to add to classpath
-				libdir2+=":"+argsa[argi+1];
+				cp2+=":"+argsa[argi+1];
 				argi++;
 				}
 			else if(curarg.equals("--basedir"))
@@ -179,10 +179,10 @@ public class Start
 				LinkedList<String> cmdarg=new LinkedList<String>();
 				cmdarg.add(javaexe);
 				cmdarg.add("-cp");
-				cmdarg.add(jarstring);
+				cmdarg.add(jarstring+cp2);
 //				cmdarg.add(memstring);
 				if(!libdir.equals("") && !hasSpecifiedLibdir)
-					cmdarg.add("-Djava.library.path="+libdir+libdir2);
+					cmdarg.add("-Djava.library.path="+libdir);
 
 				//Add arguments from environment file
 				if(javaenvFile==null)
@@ -304,7 +304,13 @@ public class Start
 			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
 		}
 
-	
+
+	private static void addJar(List<String> v, String toadd)
+		{
+		v.add(toadd);
+		if(printJar)
+			System.out.println("Adding java library: "+toadd);
+		}
 	
 	/**
 	 * Get all jars and add them with path to vector. 
@@ -318,14 +324,16 @@ public class Start
 				{
 				if(sub.isFile() && (sub.getName().endsWith(".jar") || sub.getName().endsWith(".zip")))
 					{
-					String toadd=sub.getAbsolutePath();
+					addJar(v,sub.getAbsolutePath());
+/*					String toadd=sub.getAbsolutePath();
 					v.add(toadd);
 					if(printJar)
-						System.out.println("Adding java library: "+toadd);
+						System.out.println("Adding java library: "+toadd);*/
 					}
-				/*else if(sub.isFile() && (sub.getName().endsWith(".jarpath")))
+				else if(sub.isFile() && (sub.getName().endsWith(".paths")))
 					{
-					//File containing list of jars to include. This is to be used on systems
+					//File containing list of jars or libraries
+					//to include. This is to be used on systems
 					//where jars are present already.
 					
 					try
@@ -334,16 +342,22 @@ public class Start
 						String line;
 						while((line=input.readLine())!=null)
 							{
+							if(line.startsWith("j:"))
+								addJar(v,line.substring(2)); //j:
+							else
+								binfiles.add(line.substring(2)); //b:
+							}
+/*							{
 							v.add(line);
 							if(printJar)
 								System.out.println("Adding external java library: "+line);
-							}
+							}*/
 						}
 					catch (Exception e)
 						{
 						e.printStackTrace();
 						}
-					}*/
+					}
 				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
 					collectJars(v,binfiles, sub, osExt);
 				else if(sub.isDirectory() && sub.getName().equals("bin_"+osExt))

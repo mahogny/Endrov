@@ -87,12 +87,11 @@ public class EvData extends EvContainer
 	 *                               Static: Loading                                                      *
 	 *****************************************************************************************************/
 	/** Remember last path used to load an imageset */
-	private static File lastDataPath=EV.getStandardDocumentsDirectory();
+	private static File lastDataPath=EV.getHomeDir();
 	public static File getLastDataPath()
 		{
-		System.out.println(EV.getStandardDocumentsDirectory());
 		if(lastDataPath==null)
-			return EV.getStandardDocumentsDirectory();
+			return EV.getHomeDir();
 		else
 			return lastDataPath;
 		}

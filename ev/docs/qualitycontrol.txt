@@ -77,7 +77,8 @@ Additional checks
     shutterikonen otydlig
     wants: limit on how far one can move outside, picture should never go completely outside
     flows: icons on items
-    
+    Ringa in lampan med slidern, gråskalorna med den andra slidern
+    sätts en shortcut fås toFront-rekurzon
     
 2.14
   Flows to create max channel
@@ -110,3 +111,21 @@ Additional checks
 
 6D := (X,Y,Z,Lambda(wavelength),T, multi stage points). 
   
+  
+  
+debian problems ================
+etchy base install
+  java.lang.NoClassDefFoundError: java.lang.ProcessBuilder
+  
+install package classpath  
+  
+  
+  
+debian development ==========
+gcj+classpath has problems, install sun-java
+
+deb http://ftp.sunet.se/pub/Linux/distributions/debian/ lenny main contrib non-free
+deb-src http://ftp.sunet.se/pub/Linux/distributions/debian/ lenny main contrib non-free
+and # comment those for etchy
+
+
