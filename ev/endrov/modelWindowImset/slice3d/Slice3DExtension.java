@@ -77,7 +77,7 @@ public class Slice3DExtension implements ModelWindowExtension
 		public void savePersonalConfig(Element e){}
 		public void select(int id){}
 		public void datachangedEvent(){}
-		public void fillModelWindomMenus()
+		public void fillModelWindowMenus()
 			{
 			w.sidePanelItems.add(addIsolevel);
 			for(ToolIsolayer ti:isolayers)

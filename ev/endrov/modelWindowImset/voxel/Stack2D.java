@@ -110,7 +110,7 @@ public class Stack2D extends StackInterface
 	
 	public boolean needSettings(EvDecimal frame)
 		{
-		return lastframe==null || frame.equals(lastframe);// || !isBuilt();
+		return lastframe==null || !frame.equals(lastframe);// || !isBuilt();
 		}
 	
 	

@@ -29,7 +29,7 @@ public class ShellModelExtension implements ModelWindowExtension
 		
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
-		public void fillModelWindomMenus(){}
+		public void fillModelWindowMenus(){}
 		public void datachangedEvent(){}
 		
 		

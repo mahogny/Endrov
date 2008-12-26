@@ -133,7 +133,7 @@ public class Slice3D
 		{
 		if(isBuilt())
 			{
-			double z=zplane.divide(resZ).doubleValue();
+			double z=zplane.doubleValue();
 			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS); //bother to refine?
 			
 			gl.glDisable(GL.GL_CULL_FACE);

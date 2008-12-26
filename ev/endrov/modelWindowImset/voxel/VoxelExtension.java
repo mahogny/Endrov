@@ -46,6 +46,7 @@ public class VoxelExtension implements ModelWindowExtension
 
 	public void newModelWindow(ModelWindow w)
 		{
+		//TODO Optimally only add if shaders are supported
 		w.modelWindowHooks.add(new Hook(w)); 
 		}
 
@@ -117,6 +118,7 @@ public class VoxelExtension implements ModelWindowExtension
 				w.view.repaint();
 			else
 				{
+				//System.out.println("voxel repaint2");
 				icR.stackChanged();
 				icG.stackChanged();
 				icB.stackChanged();
@@ -149,7 +151,7 @@ public class VoxelExtension implements ModelWindowExtension
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
 		public void select(int id){}
-		public void fillModelWindomMenus()
+		public void fillModelWindowMenus()
 			{
 			w.bottomPanelItems.add(totalPanel);
 			}
@@ -163,11 +165,10 @@ public class VoxelExtension implements ModelWindowExtension
 
 		public void datachangedEvent()
 			{
+			//System.out.println("voxel datachanged event");
 			EvData data=w.getSelectedData();
 			List<Imageset> ims=data.getObjects(Imageset.class);
-			Imageset im=ims.isEmpty() ? null : ims.get(0);
-			
-			//Imageset im=data instanceof Imageset ? (Imageset)data : null;
+			Imageset im=ims.isEmpty() ? new Imageset() : ims.get(0);
 			
 			icR.channelCombo.setExternalImageset(im);
 			icG.channelCombo.setExternalImageset(im);
@@ -183,50 +184,63 @@ public class VoxelExtension implements ModelWindowExtension
 		
 		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
-			//Remove prior data
-			for(StackInterface s:removableStacks)
-				s.clean(gl);
-			removableStacks.clear();
+			try
+				{
+				//Remove prior data
+				for(StackInterface s:removableStacks)
+					s.clean(gl);
+				removableStacks.clear();
 
-			EvDecimal frame=getFrame();
-			
-			//Build list of which channels should be rendered
-			if(currentStack.needSettings(frame))
-				{
-				currentStack.setLastFrame(frame);
+				EvDecimal frame=getFrame();
 				
-				//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
-				HashMap<ChannelImages, ChannelSelection> chsel=new HashMap<ChannelImages, ChannelSelection>(); 
-				for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
+				//Build list of which channels should be rendered
+				if(currentStack.needSettings(frame))
 					{
-					Imageset im=oc.channelCombo.getImageset();
-					ChannelImages chim=im.getChannel(oc.channelCombo.getChannel());
-					if(chim!=null)
+					currentStack.setLastFrame(frame);
+					
+					//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
+					HashMap<ChannelImages, ChannelSelection> chsel=new HashMap<ChannelImages, ChannelSelection>(); 
+					for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
 						{
-						ChannelSelection sel=chsel.get(chim);
-						if(sel==null)
+						Imageset im=oc.channelCombo.getImageset();
+//					System.out.println("im: "+im);
+//					System.out.println("im2: "+oc.channelCombo.getChannel());
+						ChannelImages chim=im.getChannel(oc.channelCombo.getChannel());
+						if(chim!=null)
 							{
-							sel=new ChannelSelection();
-							chsel.put(chim, sel);
+							ChannelSelection sel=chsel.get(chim);
+							if(sel==null)
+								{
+								sel=new ChannelSelection();
+								chsel.put(chim, sel);
+								}
+							sel.im=im;
+							sel.ch=chim;
+							sel.filterSeq=oc.filterSeq;
+							sel.color=new Color(
+									sel.color.getRed()+oc.color.getRed(),
+									sel.color.getGreen()+oc.color.getGreen(),
+									sel.color.getBlue()+oc.color.getBlue());
 							}
-						sel.im=im;
-						sel.ch=chim;
-						sel.filterSeq=oc.filterSeq;
-						sel.color=new Color(
-								sel.color.getRed()+oc.color.getRed(),
-								sel.color.getGreen()+oc.color.getGreen(),
-								sel.color.getBlue()+oc.color.getBlue());
 						}
+					
+					//Start build thread
+		//			System.out.println("start build thread");
+					currentStack.startBuildThread(frame, chsel, w);
 					}
-				
-				//Start build thread
-				currentStack.startBuildThread(frame, chsel, w);
+				else
+					{
+					//Render
+		//			System.out.println("voxloadgl");
+					currentStack.loadGL(gl);
+		//			System.out.println("voxrender");
+					currentStack.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
+					}
 				}
-			else
+			catch (Exception e)
 				{
-				//Render
-				currentStack.loadGL(gl);
-				currentStack.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
+				//This catches exceptions related to shaders
+				e.printStackTrace();
 				}
 			}
 		
@@ -260,8 +274,9 @@ public class VoxelExtension implements ModelWindowExtension
 			private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
 				{public void observerEvent(Object o){stackChanged();}};
 			
-			public WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
-			public String lastChannel="";
+//			public WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
+//			public String lastChannel="";
+			public WeakReference<Imageset.ChannelImages> lastChannelImages=new WeakReference<ChannelImages>(null);
 			
 			/** Update stack */ 
 			public void stackChanged()
@@ -270,24 +285,32 @@ public class VoxelExtension implements ModelWindowExtension
 				if(currentStack!=null)
 					currentStack.stopBuildThread();
 				removableStacks.add(currentStack);
+				System.out.println("new stack");
 				if(miRender3dTexture.isSelected()) 
 					currentStack=new Stack3D(); 
 				else
 					currentStack=new Stack2D();
-				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
-				lastChannel=channelCombo.getChannelNotNull();
+//				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
+//				lastChannel=channelCombo.getChannelNotNull();
+
+				Imageset.ChannelImages images=channelCombo.getImageset().channelImages.get(channelCombo.getChannel());
+				lastChannelImages=new WeakReference<ChannelImages>(images);
+				
+				System.out.println("voxel repaint");
 				w.view.repaint();
 				}
 			
 			/** Update stack if imageset or channel changed */
 			public void checkStackChanged()
 				{
-				Imageset ims=lastImageset.get();
+/*				Imageset ims=lastImageset.get();
 				String ch=lastChannel;
 				Imageset newImageset=channelCombo.getImagesetNull();
-				String newChannel=channelCombo.getChannelNotNull();
-				
-				if(ims!=newImageset || !ch.equals(newChannel))
+				String newChannel=channelCombo.getChannelNotNull();*/
+				Imageset.ChannelImages images=channelCombo.getImageset().channelImages.get(channelCombo.getChannel());
+				System.out.println(""+images+" vs "+lastChannelImages.get());
+				if(images!=lastChannelImages.get())
+//				if(ims!=newImageset || !ch.equals(newChannel))
 					stackChanged();
 				}
 				

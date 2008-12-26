@@ -13,26 +13,32 @@ import endrov.util.JImageButton;
 public class BasicIcon
 	{
 
-	public static final ImageIcon iconButtonDelete=new ImageIcon(BasicIcon.class.getResource("iconDelete.png"));
-	public static final ImageIcon iconButtonDown=new ImageIcon(BasicIcon.class.getResource("iconDown.png"));
-	public static final ImageIcon iconButtonUp=new ImageIcon(BasicIcon.class.getResource("iconUp.png"));
-	public static final ImageIcon iconButtonTrash=new ImageIcon(BasicIcon.class.getResource("unkTrash.png"));
+	public static final ImageIcon iconButtonDelete=new ImageIcon(BasicIcon.class.getResource("gnome-edit-delete.png"));
+	public static final ImageIcon iconButtonDown=new ImageIcon(BasicIcon.class.getResource("tango-go-down.png"));
+	public static final ImageIcon iconButtonUp=new ImageIcon(BasicIcon.class.getResource("tango-go-up.png"));
+	public static final ImageIcon iconButtonTrash=new ImageIcon(BasicIcon.class.getResource("tangoTrash.png"));
 	public static final ImageIcon iconButtonHelp=new ImageIcon(BasicIcon.class.getResource("iconHelp.png"));
-	public static final ImageIcon iconButtonCopy=new ImageIcon(BasicIcon.class.getResource("iconCopy.png"));
-	public static final ImageIcon iconButtonPaste=new ImageIcon(BasicIcon.class.getResource("iconPaste.png"));
-	public static final ImageIcon iconMenuNew=new ImageIcon(BasicIcon.class.getResource("gnomeNew.png"));
-	public static final ImageIcon iconMenuLoad=new ImageIcon(BasicIcon.class.getResource("gnomeOpen.png"));
-	public static final ImageIcon iconMenuQuit=new ImageIcon(BasicIcon.class.getResource("gnomeQuit.png"));
-	public static final ImageIcon iconFramePrev=new ImageIcon(BasicIcon.class.getResource("iconFramePrev.png"));
-	public static final ImageIcon iconFrameNext=new ImageIcon(BasicIcon.class.getResource("iconFrameNext.png"));
-	public static final ImageIcon iconFrameFirst=new ImageIcon(BasicIcon.class.getResource("iconFrameFirst.png"));
-	public static final ImageIcon iconFrameLast=new ImageIcon(BasicIcon.class.getResource("iconFrameLast.png"));
+	public static final ImageIcon iconButtonCopy=new ImageIcon(BasicIcon.class.getResource("tango-edit-copy.png"));
+	public static final ImageIcon iconButtonPaste=new ImageIcon(BasicIcon.class.getResource("tango-edit-paste.png"));
+	public static final ImageIcon iconMenuNew=new ImageIcon(BasicIcon.class.getResource("tango-document-new.png"));
+	public static final ImageIcon iconMenuLoad=new ImageIcon(BasicIcon.class.getResource("tango-document-open.png"));
+	public static final ImageIcon iconMenuSave=new ImageIcon(BasicIcon.class.getResource("tango-document-save.png"));
+	public static final ImageIcon iconMenuSaveAs=new ImageIcon(BasicIcon.class.getResource("tango-document-save-as.png"));
+	public static final ImageIcon iconMenuQuit=new ImageIcon(BasicIcon.class.getResource("gnome-application-exit.png"));
+	public static final ImageIcon iconFramePrev=new ImageIcon(BasicIcon.class.getResource("tango-go-previous.png"));
+	public static final ImageIcon iconFrameNext=new ImageIcon(BasicIcon.class.getResource("tango-go-next.png"));
+	public static final ImageIcon iconFrameFirst=new ImageIcon(BasicIcon.class.getResource("tango-go-first.png"));
+	public static final ImageIcon iconFrameLast=new ImageIcon(BasicIcon.class.getResource("tango-go-last.png"));
 	public static final ImageIcon iconPlayBackward=new ImageIcon(BasicIcon.class.getResource("iconPlayBackward.png"));
 	public static final ImageIcon iconPlayForward=new ImageIcon(BasicIcon.class.getResource("iconPlayForward.png"));
 	public static final ImageIcon iconPlayStop=new ImageIcon(BasicIcon.class.getResource("iconPlayStop.png"));
-	public static final ImageIcon iconController=new ImageIcon(BasicIcon.class.getResource("iconController.png"));
-	
-	public static final ImageIcon iconSave=new ImageIcon(BasicIcon.class.getResource("tangoSave.png"));
+	public static final ImageIcon iconController=new ImageIcon(BasicIcon.class.getResource("gnome-input-gaming.png"));
+
+	public static final ImageIcon iconZoomFitBest=new ImageIcon(BasicIcon.class.getResource("gnome-zoom-fit-best.png"));
+
+	public static final ImageIcon iconKeyboard=new ImageIcon(BasicIcon.class.getResource("totem-input-keyboard.png"));
+	public static final ImageIcon iconImage=new ImageIcon(BasicIcon.class.getResource("gnome-image-x-generic.png"));
+
 	
 	
 	public static JButton getButtonCopy()
@@ -52,7 +58,7 @@ public class BasicIcon
 	
 	public static JButton getButtonSave()
 		{
-		return new JImageButton(iconSave,"Save");
+		return new JImageButton(iconMenuSave,"Save");
 		}
 	
 	//	private static ImageIcon iconMenuMaint=new ImageIcon(BasicWindow.class.getResource("iconMenuMaint.png"));

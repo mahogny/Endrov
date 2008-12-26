@@ -1,5 +1,6 @@
 package endrov.imageWindow;
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -18,7 +19,7 @@ public class ImageWindowBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Image",new ImageIcon(getClass().getResource("iconWindow.png")));
+			JMenuItem mi=new JMenuItem("Image",BasicIcon.iconImage);
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

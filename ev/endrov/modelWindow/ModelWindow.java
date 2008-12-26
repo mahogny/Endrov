@@ -235,7 +235,7 @@ public class ModelWindow extends BasicWindow
 		
 		toolPanel.setMinimumSize(new Dimension(250,20));
 		toolPanel.setMaximumSize(new Dimension(250,20));
-		updateToolPanels();
+//		updateToolPanels();
 		
 		sidePanelSplitPane = new EvHidableSidePane(view, toolPanel, true);
 		
@@ -294,12 +294,13 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void updateToolPanels()
 		{
+		System.out.println("updating tool panels");
 		sidePanelItems.clear();
 		bottomPanelItems.clear();
 		bottomPanelItems.add(bottomMain);
 		bottomPanelItems.add(progress); //Since it belongs to voxel, maybe keep it there?
 		for(ModelWindowHook h:modelWindowHooks)
-			h.fillModelWindomMenus();
+			h.fillModelWindowMenus();
 		
 		//Assemble side panel
 		int counta=0;
@@ -557,17 +558,30 @@ public class ModelWindow extends BasicWindow
 			{
 			view.frame=frameControl.getFrame();
 			view.repaint(); //TODO modw repaint
+			//System.out.println("repainting");
 			}
 		}
 
 	/**
-	 * Get the EvData currently selected
+	 * Get the EvData currently selected, never null
 	 */
 	public EvData getSelectedData()
 		{
+		EvData d=getSelectedDataNull();
+		if(d==null)
+			return new EvData();
+		else
+			return d;
+		}
+
+	/**
+	 * Get the EvData currently selected, can be null
+	 */
+	public EvData getSelectedDataNull()
+		{
 		return metaCombo.getMeta();
 		}
-	
+
 
 	/**
 	 * Called whenever a new file is loaded, and this window should change active set
@@ -598,6 +612,7 @@ public class ModelWindow extends BasicWindow
 		/** Set progress, 0-1000 */
 		public void set(final int v)
 			{
+			System.out.println("progress set");
 			SwingUtilities.invokeLater(new Runnable(){public void run(){pbar.setValue(v);}});
 			}
 		/** Remove progress bar. update view */
@@ -620,6 +635,7 @@ public class ModelWindow extends BasicWindow
 		{
 		synchronized(progressMeters)
 			{
+			System.out.println("update progress");
 			if(progressMeters.isEmpty())
 				{
 				progress.setVisible(false);

@@ -41,7 +41,7 @@ public class NucModelExtension implements ModelWindowExtension
 		private Vector<Map<NucPair, NucLineage.NucInterp>> interpNuc=new Vector<Map<NucPair, NucLineage.NucInterp>>();
 		private final ModelWindow w;
 		
-		public void fillModelWindomMenus(){}
+		public void fillModelWindowMenus(){}
 		
 
 		

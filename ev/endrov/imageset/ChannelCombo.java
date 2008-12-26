@@ -188,10 +188,11 @@ public class ChannelCombo extends JComboBox
 				}
 			}
 		}
+
+	//TODO naming of these suck. fix
 	
 	/**
-	 * Get the selected channel
-	 * @return Channel or null
+	 * Get the selected channel or null
 	 */
 	public String getChannel()
 		{
@@ -201,7 +202,7 @@ public class ChannelCombo extends JComboBox
 		else
 			return a.channel;
 		}
-	public String getChannelNotNull()
+	public String getChannelNotNull() 
 		{
 		String ch=getChannel();
 		return ch==null ? "" : ch;
@@ -215,7 +216,10 @@ public class ChannelCombo extends JComboBox
 	public Imageset getImageset()
 		{		
 		Alternative a=(Alternative)getSelectedItem();
-		return a==null ? new Imageset() : a.imageset; 
+		Imageset im= a==null ? new Imageset() : a.imageset; 
+		if(im==null)
+			im=new Imageset(); //This should hopefully never be needed!
+		return im;
 		}
 
 	/**

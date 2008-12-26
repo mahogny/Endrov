@@ -133,15 +133,15 @@ public class Start
 				System.out.println("Endrov "+EvBuild.version);
 				System.exit(0);
 				}
-			else if(curarg.startsWith("-Djava.library.path="))
-				{
-				hasSpecifiedLibdir=true;
-				args.add(curarg);
-				}
 			else if(curarg.equals("--cp2"))
 				{
 				//Additional jars to add to classpath
 				cp2+=":"+argsa[argi+1];
+				argi++;
+				}
+			else if(curarg.equals("--libpath2"))
+				{
+				binfiles.add(argsa[argi+1]);
 				argi++;
 				}
 			else if(curarg.equals("--basedir"))

@@ -160,7 +160,7 @@ public class Stack3D extends StackInterface
 	
 	public boolean needSettings(EvDecimal frame)
 		{
-		return lastframe==null || frame.equals(lastframe);
+		return lastframe==null || !frame.equals(lastframe);
 		}
 	
 	

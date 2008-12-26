@@ -4,7 +4,10 @@ not listed here means it follows the endrov license, made by johan henriksson
 == Tango!
 http://tango.freedesktop.org/images/2/20/Tango-feet.png
 Creative Commons Attribution Share-Alike license.
-tango* 
+tango-* 
+
+NOTE: they should keep their original name if it makes sense. this allows symlinking
+to these themes on linux
 
 
 == gnome

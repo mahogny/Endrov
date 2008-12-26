@@ -28,7 +28,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 		{
 		private final ModelWindow w;
 		
-		public void fillModelWindomMenus(){}
+		public void fillModelWindowMenus(){}
 		
 
 		

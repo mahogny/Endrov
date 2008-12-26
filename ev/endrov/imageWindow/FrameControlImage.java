@@ -7,6 +7,7 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import endrov.basicWindow.EvDecimalEditor;
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.imageset.Imageset;
@@ -114,19 +115,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			}
 		};		
 
-	/** Editor for integer spinners */	
-	private static class BigDecimalEditor extends JTextField
-		{
-		static final long serialVersionUID=0;
-		public BigDecimalEditor(final JSpinner sp)
-			{
-			addActionListener(new ActionListener()
-				{public void actionPerformed(ActionEvent e){sp.getModel().setValue(Integer.parseInt(getText()));}});
-			sp.getModel().addChangeListener(new ChangeListener()
-				{public void stateChanged(ChangeEvent e){setText(""+(EvDecimal)sp.getModel().getValue());}});
-			setText(""+(EvDecimal)sp.getModel().getValue());
-			}
-		}
+	
 		
 		
 		
@@ -166,9 +155,9 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		playPanel.add(buttonPlayForward);
 		
 		spinnerFrame=new JSpinner(frameModel);
-		spinnerFrame.setEditor(new BigDecimalEditor(spinnerFrame));
+		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
 		spinnerZ=new JSpinner(zModel);
-		spinnerZ.setEditor(new BigDecimalEditor(spinnerZ));
+		spinnerZ.setEditor(new EvDecimalEditor(spinnerZ));
 
 		
 		//Build other controls and merge
