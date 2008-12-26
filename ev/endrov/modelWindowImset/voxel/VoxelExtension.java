@@ -308,7 +308,6 @@ public class VoxelExtension implements ModelWindowExtension
 				Imageset newImageset=channelCombo.getImagesetNull();
 				String newChannel=channelCombo.getChannelNotNull();*/
 				Imageset.ChannelImages images=channelCombo.getImageset().channelImages.get(channelCombo.getChannel());
-				System.out.println(""+images+" vs "+lastChannelImages.get());
 				if(images!=lastChannelImages.get())
 //				if(ims!=newImageset || !ch.equals(newChannel))
 					stackChanged();

@@ -612,7 +612,7 @@ public class ModelWindow extends BasicWindow
 		/** Set progress, 0-1000 */
 		public void set(final int v)
 			{
-			System.out.println("progress set");
+			//System.out.println("progress set");
 			SwingUtilities.invokeLater(new Runnable(){public void run(){pbar.setValue(v);}});
 			}
 		/** Remove progress bar. update view */
@@ -635,7 +635,7 @@ public class ModelWindow extends BasicWindow
 		{
 		synchronized(progressMeters)
 			{
-			System.out.println("update progress");
+			//System.out.println("update progress");
 			if(progressMeters.isEmpty())
 				{
 				progress.setVisible(false);

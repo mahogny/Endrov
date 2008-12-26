@@ -36,7 +36,7 @@ public class BasicIcon
 
 	public static final ImageIcon iconZoomFitBest=new ImageIcon(BasicIcon.class.getResource("gnome-zoom-fit-best.png"));
 
-	public static final ImageIcon iconKeyboard=new ImageIcon(BasicIcon.class.getResource("totem-input-keyboard.png"));
+	public static final ImageIcon iconKeyboard=new ImageIcon(BasicIcon.class.getResource("tango-input-keyboard.png"));
 	public static final ImageIcon iconImage=new ImageIcon(BasicIcon.class.getResource("gnome-image-x-generic.png"));
 
 	
