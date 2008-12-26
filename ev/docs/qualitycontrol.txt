@@ -1,6 +1,8 @@
 Things to check before every release
 =======================================
 
+more icons http://people.freedesktop.org/~jimmac/icons/#git
+
 Check that it runs on major platforms
 * Linux (ubuntu)
 * OSX
@@ -49,8 +51,26 @@ Additional checks
 	
     can any jars be deleted? EE?
 
+    debian packages
+
+	send update to micromanager
+
+    jogl doesn't work
+
 	TODO====
+
+	play forward should always work
 	
+	zoom on laptops with 2 buttons
+	
+	home/config/endrov/
+
+	seqbased and namebased: need to cope with . in names... maybe
+
+    OST bug
+
+	eliminate ChannelMetadata (merge with ChannelImages)
+
 	new Image internals
     
 	JPEG2000 for OST. OME uses it! 
@@ -62,9 +82,6 @@ Additional checks
     make sure prop files can be converted
     
     possible to set compression level
-
-    debian packages
-    
     
     eliminate JAI, use Bioformats only
     
@@ -80,7 +97,20 @@ Additional checks
     Ringa in lampan med slidern, gråskalorna med den andra slidern
     sätts en shortcut fås toFront-rekurzon
     
+    micket2==
+    ROIs are slow
+    didn't find the ROI tool easily
+    2d zoom was slow    
+    
+    linux strategy===
+    require binaries to be installed, always. how can deb fit better with standard dh?
+    separate micro-manager
+     
+    
 2.14
+
+	mac quality: QT integration
+
   Flows to create max channel
   Flows for calcium imaging
   
@@ -107,6 +137,7 @@ Additional checks
     extended depth of focus
     surface from 2d-rendering
     
+	movie encoding on linux
 
 
 6D := (X,Y,Z,Lambda(wavelength),T, multi stage points). 

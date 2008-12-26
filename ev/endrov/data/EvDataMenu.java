@@ -176,6 +176,7 @@ public class EvDataMenu implements BasicWindowExtension
 				
 				JMenuItem miUnload=new JMenuItem("Unload");
 				JMenuItem miSave=new JMenuItem("Save");
+				miSave.setIcon(BasicIcon.iconMenuSave);
 				menuMetadata.add(miUnload);
 				menuMetadata.add(miSave);
 				
@@ -241,6 +242,7 @@ public class EvDataMenu implements BasicWindowExtension
 				if(thisMeta.io!=null)
 					{
 					JMenuItem miSave=new JMenuItem("Save");
+					miSave.setIcon(BasicIcon.iconMenuSave);
 					menuMetadata.add(miSave);
 					ActionListener metaListenerSave=new ActionListener()
 						{
@@ -262,6 +264,7 @@ public class EvDataMenu implements BasicWindowExtension
 */
 				
 				JMenuItem miSaveAs=new JMenuItem("Save as");
+				miSaveAs.setIcon(BasicIcon.iconMenuSaveAs);
 				menuMetadata.add(miSaveAs);
 				ActionListener metaListenerSaveAs=new ActionListener()
 					{

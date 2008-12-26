@@ -28,7 +28,7 @@ public interface ModelWindowHook
 	public void displayFinal(GL gl,List<TransparentRender> transparentRenderers);
 
 	
-	public void fillModelWindomMenus();
+	public void fillModelWindowMenus();
 	
 	public Collection<Double> adjustScale();
 	public Collection<Vector3d> autoCenterMid();

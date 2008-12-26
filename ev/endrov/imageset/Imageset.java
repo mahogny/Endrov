@@ -41,9 +41,7 @@ public class Imageset extends EvObject
 
 	
 	/**
-	 * Quick access to channels
-	 * @param ch Name of channel
-	 * @return Channel if it exists or null
+	 * Get channel or null if it doesn't exist
 	 */
 	public ChannelImages getChannel(String ch)
 		{

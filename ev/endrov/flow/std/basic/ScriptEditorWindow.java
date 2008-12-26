@@ -49,7 +49,7 @@ public class ScriptEditorWindow extends BasicWindow implements ActionListener
 	//proper name in title. need an ID of sort
 	
 	JButton bSave=BasicIcon.getButtonSave();
-	JMenuItem miSave=new JMenuItem("Save",BasicIcon.iconSave);
+	JMenuItem miSave=new JMenuItem("Save",BasicIcon.iconMenuSave);
 	
 	private final JMenu menuEdit=new JMenu("Edit");
 	

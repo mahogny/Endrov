@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util/BatchMovie.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|bioserv/imserv/|endrov/imagesetImserv/|endrov/imagesetOME/|endrov/macBinding/|endrov/makeMax/|endrov/makeQT/|endrov/sliceSignal/|endrov/basicWindow/SendCommentDialog.java|endrov/imagesetOST/FtpOST.java" kind="src" path="">
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util/BatchMovie.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|bioserv/imserv/|endrov/imagesetImserv/|endrov/imagesetOME/|endrov/macBinding/|endrov/makeMax/|endrov/sliceSignal/|endrov/basicWindow/SendCommentDialog.java|endrov/imagesetOST/FtpOST.java" kind="src" path="">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
@@ -8,11 +8,6 @@
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jai_codec.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jai_core.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/mlibwrapper_jai.jar"/>
 	<classpathentry kind="lib" path="libs/jboss_inc/_jboss_remoting.jar"/>
 	<classpathentry kind="lib" path="libs/jboss_inc/jboss-annotations-ejb3-4.2.1.GA.jar"/>
 	<classpathentry kind="lib" path="libs/jboss_inc/jboss-aop-jdk50-4.2.1.GA.jar"/>
@@ -23,7 +18,6 @@
 	<classpathentry kind="lib" path="libs/jboss_inc/jbossall-client-4.2.1.GA.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/client-3.0-Beta2.3.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/common-3.0-Beta2.3.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/MMCoreJ.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/jaxen-core.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/jaxen-jdom.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/jcommon-1.0.9.jar"/>
@@ -49,5 +43,7 @@
 	<classpathentry kind="lib" path="libs/spring-2.0.6.jar"/>
 	<classpathentry kind="lib" path="libs/vecmath.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/usr/share/java/jogl.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/MMCoreJ.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

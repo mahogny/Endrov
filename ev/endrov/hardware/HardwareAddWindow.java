@@ -2,7 +2,6 @@ package endrov.hardware;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
-import java.util.Vector;
 
 import javax.swing.*;
 

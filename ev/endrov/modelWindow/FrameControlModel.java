@@ -7,9 +7,11 @@ import javax.swing.event.*;
 
 import java.util.*;
 
+import endrov.basicWindow.EvDecimalEditor;
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.util.EvDecimal;
+import endrov.util.EvSwingTools;
 
 
 
@@ -106,6 +108,14 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		c.weightx=1;
 		return c;
 		}
+	private GridBagConstraints smallButtonConstraint(int x)
+		{
+		GridBagConstraints c=new GridBagConstraints();
+		c.gridx=x;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		c.weightx=0;
+		return c;
+		}
 	
 	/**
 	 * @param l Object to receive updates on change
@@ -135,7 +145,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		add(buttonEnd,playButtonConstraint(1));
 		add(buttonStepBack,playButtonConstraint(2));
 		add(buttonStepForward,playButtonConstraint(3));
-		add(speedCombo,playButtonConstraint(4));
+		add(speedCombo,smallButtonConstraint(4));
 		add(buttonPlayBack,playButtonConstraint(5));
 		add(buttonPlayForward,playButtonConstraint(6));
 
@@ -144,10 +154,9 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		//setLayout(new GridLayout());
 		//frameModel=new SpinnerNumberModel(new EvDecimal(0),new EvDecimal(0),new EvDecimal((double)1000000.0,(double)0.1);
 		spinnerFrame=new JSpinner(frameModel);
-		add(new JLabel("Frame:"),playButtonConstraint(7));
-		add(spinnerFrame,playButtonConstraint(8));
-		add(new JLabel("Group:"),playButtonConstraint(9));
-		add(spinnerGroup,playButtonConstraint(10));
+		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
+		add(EvSwingTools.withLabel("Frame:",spinnerFrame),playButtonConstraint(7));
+		add(EvSwingTools.withLabel("Group",spinnerGroup),playButtonConstraint(8));
 		
 		//Make this class listen to everything
 		buttonBeginning.addActionListener(this);

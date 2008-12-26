@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.*;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.DataMenuExtension;
 import endrov.data.EvData;
 import endrov.data.EvDataMenu;
@@ -15,7 +16,6 @@ import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 
@@ -41,7 +41,11 @@ public class SequenceImageset implements EvIOData
 			public void buildOpen(JMenu menu)
 				{
 				JMenuItem miLoadSequenceImageset=new JMenuItem("Load sequence imageset");
-				addMetamenu(menu,miLoadSequenceImageset);
+
+				
+				miLoadSequenceImageset.setIcon(BasicIcon.iconMenuLoad);
+				BasicWindow.addMenuItemSorted(menu,miLoadSequenceImageset,"data_open_namebased");
+				
 				
 				ActionListener listener=new ActionListener()
 					{

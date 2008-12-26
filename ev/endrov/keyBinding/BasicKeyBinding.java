@@ -1,10 +1,10 @@
 package endrov.keyBinding;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 
 import java.awt.event.*;
 
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 /**
@@ -21,7 +21,7 @@ public class BasicKeyBinding implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Key Bindings",new ImageIcon(getClass().getResource("iconWindow.png")));
+			JMenuItem mi=new JMenuItem("Key Bindings",BasicIcon.iconKeyboard);
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

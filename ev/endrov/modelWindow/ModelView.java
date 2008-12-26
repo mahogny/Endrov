@@ -44,7 +44,8 @@ public class ModelView extends GLCanvas
 	public int numTextureUnits;
 	//4 on GeForce 8400 GS/PCI/SSE2
 	
-	 public boolean VBOsupported;
+	public boolean VBOsupported;
+	public boolean shaderSupported;
 	
 	/** Common data */
 	private ModelWindow window;
@@ -166,21 +167,35 @@ public class ModelView extends GLCanvas
 	    numTextureUnits=queryArr[0];
 	    
 	    //VBO support
-	    VBOsupported = gl.isFunctionAvailable("glGenBuffersARB") &&
+	    VBOsupported= 
+	    gl.isFunctionAvailable("glGenBuffersARB") &&
 	    gl.isFunctionAvailable("glBindBufferARB") &&
 	    gl.isFunctionAvailable("glBufferDataARB") &&
 	    gl.isFunctionAvailable("glDeleteBuffersARB");
 	    
+	    //Shader support
+	    shaderSupported=
+			gl.isFunctionAvailable("glCreateShader") &&
+			gl.isFunctionAvailable("glShaderSource") &&
+			gl.isFunctionAvailable("glCompileShader") &&
+			gl.isFunctionAvailable("glCreateProgram") &&
+			gl.isFunctionAvailable("glAttachShader") &&
+			gl.isFunctionAvailable("glLinkProgram") &&
+			gl.isFunctionAvailable("glValidateProgram") &&
+			gl.isFunctionAvailable("glUseProgram");
+
+	    
 	    if(true)
 	    	{
+	    	//crashed here, started working after syso. postpone swing?
 				Log.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
 				Log.printLog("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
 				Log.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
 				Log.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
-		    System.out.println("clipping planes supported: "+numClipPlanesSupported);
-		    System.out.println("max 3D texture size: "+max3DTextureSize);
-		    System.out.println("num texture units: "+numTextureUnits);
-		    System.out.println("VBO supported: "+VBOsupported);
+				Log.printLog("clipping planes supported: "+numClipPlanesSupported);
+				Log.printLog("max 3D texture size: "+max3DTextureSize);
+				Log.printLog("num texture units: "+numTextureUnits);
+				Log.printLog("VBO supported: "+VBOsupported);
 	    	}
 			}
 

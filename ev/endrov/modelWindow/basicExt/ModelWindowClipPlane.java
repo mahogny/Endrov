@@ -85,7 +85,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		public void savePersonalConfig(Element e){}
 		public void select(int id){}
 		public void datachangedEvent(){}
-		public void fillModelWindomMenus()
+		public void fillModelWindowMenus()
 			{
 			w.sidePanelItems.add(addIsolevel);
 			for(ToolSlab ti:isolayers)

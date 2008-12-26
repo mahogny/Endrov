@@ -11,7 +11,6 @@ import javax.swing.*;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
-import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.Log;
