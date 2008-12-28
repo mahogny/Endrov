@@ -11,6 +11,7 @@ import javax.vecmath.*;
 import org.jdom.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.consoleWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
@@ -40,8 +41,6 @@ public class ImageWindow extends BasicWindow
 	private static final int KEY_STEP_DOWN    =KeyBinding.register(new KeyBinding("Image Window","Step down",'s'));
 	private static final int KEY_HIDE_MARKINGS=KeyBinding.register(new KeyBinding("Image Window","Hide markings",' '));
 
-	private static ImageIcon iconLabelZoom=new ImageIcon(FrameControlImage.class.getResource("silkMagnifier.png"));
-	private static ImageIcon iconLabelRotate=new ImageIcon(FrameControlImage.class.getResource("labelRotate.png"));
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
 	private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
@@ -143,10 +142,12 @@ public class ImageWindow extends BasicWindow
 			setLayout(new GridLayout(1,4));
 		
 			JPanel contrastPanel=new JPanel(new BorderLayout());
+			contrastPanel.setBorder(BorderFactory.createEtchedBorder());
 			contrastPanel.add(new JLabel(iconLabelContrast), BorderLayout.WEST);
 			contrastPanel.add(sliderContrast,BorderLayout.CENTER);
 
 			JPanel brightnessPanel=new JPanel(new BorderLayout());
+			brightnessPanel.setBorder(BorderFactory.createEtchedBorder());
 			brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
 			brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
 
@@ -299,11 +300,11 @@ public class ImageWindow extends BasicWindow
 			}
 		
 		JPanel zoomPanel=new JPanel(new BorderLayout());
-		zoomPanel.add(new JLabel(iconLabelZoom), BorderLayout.NORTH);
+		zoomPanel.add(new JLabel(BasicIcon.iconLabelZoom), BorderLayout.NORTH);
 		zoomPanel.add(sliderZoom,BorderLayout.CENTER);
 		
 		JPanel rotatePanel=new JPanel(new BorderLayout());
-		rotatePanel.add(new JLabel(iconLabelRotate), BorderLayout.NORTH);
+		rotatePanel.add(new JLabel(BasicIcon.iconLabelRotate), BorderLayout.NORTH);
 		rotatePanel.add(sliderRotate,BorderLayout.CENTER);
 		
 		JPanel rightPanel=new JPanel(new GridLayout(2,1));

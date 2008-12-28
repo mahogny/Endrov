@@ -379,6 +379,7 @@ public abstract class BasicWindow extends JPanel
 		{
 		evw.toFront();
 		}
+		
 	//setfocusable
 	//addkeylistener
 	

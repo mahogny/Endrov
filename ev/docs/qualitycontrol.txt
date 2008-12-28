@@ -34,8 +34,8 @@ Additional checks
 * imserv cache transfer?
 * lineage window ok?
 * is OST gracefully updated?
-* sliceiojai, z not implemented. use JAI at all?
-
+* is jp2 supported?
+* can read TIFF?
 
 
 2.13
@@ -47,67 +47,53 @@ Additional checks
 		Data into EV menu. Change EV into File
 		"ImageWindow", better name for menu?
 		"New XML" should just become "New"
-		"Ev->info", create a Help menu
-	
+		"Ev->info", create a Help menu	
     can any jars be deleted? EE?
-
     debian packages
-
 	send update to micromanager
-
     jogl doesn't work
-
-	TODO====
-
-	play forward should always work
-	
-	zoom on laptops with 2 buttons
-	
-	home/config/endrov/
-
-	seqbased and namebased: need to cope with . in names... maybe
-
-    OST bug
-
-	eliminate ChannelMetadata (merge with ChannelImages)
-
-	new Image internals
-    
-	JPEG2000 for OST. OME uses it! 
-  
-	simple recording  
-    
-    object hierarchy in menus etc
-    
-    make sure prop files can be converted
-    
-    possible to set compression level
-    
-    eliminate JAI, use Bioformats only
-    
+    sätts en shortcut fås toFront-rekurzon
     separate movie encoder, put in macBinding
+    datum/tid i log console
+	holding space should work. fixed?
+	Bioformats used in Basic plugin when needed
+	XDG_CONFIG_HOME used
+	JPEG2000 for OST. OME uses it! 
+    Ringa in lampan med slidern, gråskalorna med den andra slidern
+	custom ev icon on non-mac
+    align items in rec
+    shutterikonen otydlig
+	3d zoom on laptops with 2 buttons
+	
+	TODO====
+    arrows up/down ugly
+    2d zoom at cursor
+	eliminate ChannelMetadata (merge with ChannelImages)
+	!!!!play forward should always work	
+    !!!!OST bug, compression+save+jp2
+	new Image internals
+	simple recording 
+    object hierarchy in menus etc
+	working imserv (back to last standard, refactor later)
+    !!!!which objects should be drawn in 2d? 3d?
     
     micket==
-    align items in rec
-    arrows up/down ugly
-    datum/tid i log console
-    shutterikonen otydlig
     wants: limit on how far one can move outside, picture should never go completely outside
-    flows: icons on items
-    Ringa in lampan med slidern, gråskalorna med den andra slidern
-    sätts en shortcut fås toFront-rekurzon
-    
-    micket2==
-    ROIs are slow
-    didn't find the ROI tool easily
     2d zoom was slow    
     
-    linux strategy===
-    require binaries to be installed, always. how can deb fit better with standard dh?
+	release jinput etc dependent libraries. on my own page if needed
+	can dh_ be used?	
     separate micro-manager
      
     
 2.14
+
+    flows: icons on items
+    ROIs are slow
+    didn't find the ROI tool easily
+	X associate mime types
+
+	log4j standard logging. suggest to micromanager too!!!!
 
 	mac quality: QT integration
 

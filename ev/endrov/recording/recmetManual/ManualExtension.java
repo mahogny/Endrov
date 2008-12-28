@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -19,8 +18,8 @@ import endrov.hardware.HardwarePath;
 import endrov.hardware.PropertyType;
 import endrov.recording.*;
 import endrov.recording.recWindow.MicroscopeWindow;
-import endrov.util.EvSwingTools;
 import endrov.util.JImageToggleButton;
+import endrov.util.JSmartToggleCombo;
 
 /**
  * Microscope control: Manual
@@ -57,31 +56,70 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		static final long serialVersionUID=0;
 		
 		
+		GroupLayout lay=null;
+		GroupLayout.SequentialGroup hgroup=null;
+		GroupLayout.SequentialGroup vgroup=null;
+		GroupLayout.ParallelGroup leftcol=null;
+		GroupLayout.ParallelGroup rightcol=null;
+
+		JPanel p=new JPanel();
+		int row=0;
 		
+		public void add2(JComponent left,JComponent right)
+			{
+			GridBagConstraints c=new GridBagConstraints();
+			c.gridy=row;
+			c.anchor=GridBagConstraints.BASELINE_LEADING;
+			c.fill=GridBagConstraints.HORIZONTAL;
+			c.weightx=0;
+			p.add(left,c);
+			c.gridx=1;
+			c.weightx=1;
+			p.add(right,c);
+			row++;
+			}
+		public void add1(JComponent center)
+			{
+			GridBagConstraints c=new GridBagConstraints();
+			c.gridy=row;
+			c.fill=GridBagConstraints.HORIZONTAL;
+			c.gridwidth=2;
+			p.add(center,c);
+			row++;
+			}
 		
 		public Hook()
 			{
-			List<JComponent> hw=new Vector<JComponent>();
+//			List<JComponent> hw=new Vector<JComponent>();
 			//boolean isEven=true;
 			
+//			JPanel p=new JPanel();
+			setLayout(new BorderLayout());
+			add(p,BorderLayout.NORTH);
+
+			p.setLayout(new GridBagLayout());
 			
 			
 			for(Map.Entry<HardwarePath, Hardware> entry:HardwareManager.getHardwareMap().entrySet())
 				{
 				//isEven=!isEven;
-				JComponent c=null;
+		//		JComponent c=null;
+			
+				
 				
 				if(entry.getValue() instanceof HWCamera)
-					c=new CameraPanel(entry.getKey(),(HWCamera)entry.getValue());
-				else if(entry.getValue() instanceof HWShutter)
-					c=new ShutterPanel(entry.getKey(),(HWShutter)entry.getValue());
+					/*c=*/ 
+					new CameraPanel(entry.getKey(),(HWCamera)entry.getValue());
+	//			else 
+					if(entry.getValue() instanceof HWShutter)
+					/*c=*/new ShutterPanel(entry.getKey(),(HWShutter)entry.getValue());
 				else if(entry.getValue() instanceof HWState)
-					c=new StateDevicePanel(entry.getKey(),(HWState)entry.getValue());
+					/*c=*/new StateDevicePanel(entry.getKey(),(HWState)entry.getValue());
 				else if(entry.getValue() instanceof HWStage)
-					c=new StagePanel(entry.getKey(),(HWStage)entry.getValue());
-				if(c!=null)
+					/*c=*/new StagePanel(entry.getKey(),(HWStage)entry.getValue(),this);
+/*				if(c!=null)
 					{
-					hw.add(c);
+					hw.add(c);*/
 					/*
 					if(isEven)
 						{
@@ -90,13 +128,13 @@ public class ManualExtension implements MicroscopeWindow.Extension
 						c.setOpaque(true);
 						}
 						*/
-					}
+	//				}
 				
 //				else
 //					System.out.println("manual extension ignoring "+entry.getValue().getDescName()+" "+entry.getValue().getClass());
 				}
 			
-			
+			/*
 			int counta=0;
 			JPanel p=new JPanel(new GridBagLayout());
 			for(JComponent c:hw)
@@ -107,10 +145,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				counta++;
 				}	
 			
-			setLayout(new BorderLayout());
-			add(p,BorderLayout.NORTH);
-
-			
+			*/
 			
 			}
 		
@@ -120,7 +155,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		 *                               Shutter                                                              *
 		 *****************************************************************************************************/
 
-		public static class ShutterPanel extends JPanel implements ActionListener
+		public class ShutterPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
 			JToggleButton b=new JImageToggleButton(iconShutterClosed,"Shutter status");
@@ -132,10 +167,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				setOpen(b.isSelected());
 				b.addActionListener(this);
 				
-				setLayout(new BorderLayout());
-				add(lTitle,BorderLayout.WEST);
-				add(new DotPanel(),BorderLayout.CENTER);
-				add(b,BorderLayout.EAST);
+				add2(lTitle,b);
 				}
 			public void actionPerformed(ActionEvent e)
 				{
@@ -157,7 +189,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		 *                               State device                                                         *
 		 *****************************************************************************************************/
 
-		public static class StateDevicePanel extends JPanel implements ActionListener
+		public class StateDevicePanel implements ActionListener
 			{
 			//Cannot separate out generic state devices from filters
 			
@@ -165,13 +197,13 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			//Color filters. Somewhere one need a filter database with the entire
 			//range for calculations.
 			private static final long serialVersionUID=0;
-			private JComboBox state;
+			private JSmartToggleCombo state;
 			private HWState hw;
 			public StateDevicePanel(HardwarePath devName,HWState hw)
 				{
 				this.hw=hw;
 				Vector<String> fs=new Vector<String>(hw.getStateNames());
-				state=new JComboBox(fs);
+				state=new JSmartToggleCombo(fs);
 				try
 					{
 					state.setSelectedIndex(hw.getCurrentState());
@@ -185,10 +217,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				lTitle.setToolTipText(hw.getDescName());
 				
 				state.addActionListener(this);
-				
-				setLayout(new BorderLayout());
-				add(lTitle,BorderLayout.WEST);
-				add(state,BorderLayout.CENTER);
+				add2(lTitle,state);
 				}
 			public void actionPerformed(ActionEvent e)
 				{
@@ -201,7 +230,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		 *                               Camera                                                               *
 		 *****************************************************************************************************/
 
-		public static class CameraPanel extends JPanel implements ActionListener
+		public class CameraPanel extends JPanel implements ActionListener
 			{
 			//TODO: build a function to decompose not only menus but entire swing components?
 			static final long serialVersionUID=0;
@@ -210,7 +239,12 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				setBorder(BorderFactory.createTitledBorder(devName.toString()));
 				setToolTipText(hw.getDescName());
 				
-				List<JComponent> comps=new LinkedList<JComponent>();
+				GroupLayout lay=new GroupLayout(this);
+				setLayout(lay);
+				GroupLayout.SequentialGroup vgroup=lay.createSequentialGroup();
+				GroupLayout.SequentialGroup hgroup=lay.createSequentialGroup();
+				GroupLayout.ParallelGroup leftcol=lay.createParallelGroup();
+				GroupLayout.ParallelGroup rightcol=lay.createParallelGroup();
 				
 				SortedMap<String, PropertyType> props=hw.getPropertyTypes();
 				for(Map.Entry<String, PropertyType> entry:props.entrySet())
@@ -228,20 +262,28 @@ public class ManualExtension implements MicroscopeWindow.Extension
 							public void actionPerformed(ActionEvent e)
 								{hw.setPropertyValue(propName, ((JCheckBox)e.getSource()).isSelected());}
 						});
-						JPanel p=new JPanel(new BorderLayout());
-						//p.add(new JLabel(propName),BorderLayout.WEST);
-						p.add(new DotPanel(),BorderLayout.CENTER);
-						p.add(b,BorderLayout.EAST);
-						comp=p;
+//						JPanel p=new JPanel(new BorderLayout());
+//						p.add(new DotPanel(),BorderLayout.CENTER);
+//						p.add(b,BorderLayout.EAST);
+//						comp=p;
+						comp=b;
 						}
 					else if(!pt.categories.isEmpty())
 						{
+						JSmartToggleCombo c=new JSmartToggleCombo(new Vector<String>(pt.categories));
+						c.setSelectedItem(hw.getPropertyValue(propName));
+						c.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e)
+								{hw.setPropertyValue(propName, (String)((JSmartToggleCombo)e.getSource()).getSelectedItem());}
+						});
+						/*
 						JComboBox c=new JComboBox(new Vector<String>(pt.categories));
 						c.setSelectedItem(hw.getPropertyValue(propName));
 						c.addActionListener(new ActionListener(){
 							public void actionPerformed(ActionEvent e)
 								{hw.setPropertyValue(propName, (String)((JComboBox)e.getSource()).getSelectedItem());}
 						});
+						*/
 						comp=c;
 						}
 					else if(pt.hasRange)
@@ -250,12 +292,20 @@ public class ManualExtension implements MicroscopeWindow.Extension
 						//Override: Exposure, Gain
 						}
 					if(comp!=null)
-						comps.add(EvSwingTools.withLabel(entry.getKey()+" ", comp));
-					//System.out.println(entry.getKey()+" "+pt.isBoolean+" "+pt.foo);
+						{
+						JLabel label=new JLabel(entry.getKey());
+						vgroup.addGroup(lay.createParallelGroup().
+								addComponent(label).addComponent(comp));
+						leftcol.addComponent(label);
+						rightcol.addComponent(comp);
+						}
 					}
-				setLayout(new GridLayout(comps.size(),1));
-				for(JComponent c:comps)
-					add(c);
+				lay.setVerticalGroup(vgroup);
+				lay.setHorizontalGroup(hgroup);
+				hgroup.addGroup(leftcol);
+				hgroup.addGroup(rightcol);
+				
+				add1(this);
 				}
 			public void actionPerformed(ActionEvent e)
 				{

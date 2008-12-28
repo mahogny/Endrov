@@ -65,4 +65,21 @@ public class EvFileUtil
 		if(parent!=null)
 			touchRecursive(parent,timestamp);
 		}
+	
+	/**
+	 * Return file ending not including the dot, or null if there is none
+	 */
+	public static String fileEnding(File file)
+		{
+		String fn=file.getName();
+		int doti=fn.lastIndexOf(".");
+		if(doti!=-1)
+			{
+			String fileEnd=fn.substring(doti+1);
+			return fileEnd;
+			
+			}
+		else
+			return null;
+		}
 	}

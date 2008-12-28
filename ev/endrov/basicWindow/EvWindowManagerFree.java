@@ -4,6 +4,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
 
 /**
@@ -23,6 +24,12 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		this.bw=bw;
 		addWindowListener(this);
 		add(bw);
+		
+    //int titleBarHeight = getInsets().top; //can be used to set the right icon
+    //20x20 seems good on windows? or more?
+		//16x16 on gnome, but in alt+tab larger. can supply larger image
+		if(!EV.isMac())
+			setIconImage(BasicIcon.programIcon.getImage());
 		}
 	
 	public void setTitle(String title)
@@ -44,10 +51,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		System.out.println("here");
 		}
 	
-	public void toFront()
-		{
-		toFront();
-		}
+	
 	
 	
 	public static class Manager implements BasicWindow.EvWindowManagerMaker

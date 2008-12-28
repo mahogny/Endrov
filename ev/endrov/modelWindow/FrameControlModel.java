@@ -31,10 +31,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/** Set to True if playing forward, False if playing backwards */
 	private boolean playingForward=true;
 	
-	/** Component to tell that frame has changed */
-	private ChangeListener listener;
+	private ModelWindow w; 
 	
-	private ModelWindow w; //TODO hm listener vs w
 	
 	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
 	private JButton buttonStepForward=new JButton(BasicIcon.iconFrameNext);
@@ -120,9 +118,9 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/**
 	 * @param l Object to receive updates on change
 	 */
-	public FrameControlModel(ModelWindow w, ChangeListener l)
+	public FrameControlModel(ModelWindow w)
 		{	
-		listener=l;
+	//	listener=l;
 		this.w=w;
 
 		Vector<Speed> speeds=new Vector<Speed>();
@@ -197,6 +195,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		{
 		if(e.getSource()==buttonBeginning)
 			{
+			//TODO need to be recursive
 			EvDecimal first=null;
 			for(ModelWindowHook h:w.modelWindowHooks)
 				{
@@ -212,6 +211,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			}
 		else if(e.getSource()==buttonEnd)
 			{
+			//TODO need to be recursive
 			EvDecimal last=null;
 			for(ModelWindowHook h:w.modelWindowHooks)
 				{
@@ -308,7 +308,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		{
 		removeChangeListener();
 		spinnerFrame.setValue(frame.doubleValue());
-		listener.stateChanged(new ChangeEvent(this));
+		w.stateChanged(new ChangeEvent(this));
 		addChangeListener();
 		}
 	
@@ -336,7 +336,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	public void setFrame(EvDecimal frame)
 		{
 		spinnerFrame.setValue(frame.doubleValue());
-		listener.stateChanged(new ChangeEvent(this));
+		w.stateChanged(new ChangeEvent(this));
 		FrameControl.replicateSettings(this);
 		}
 	

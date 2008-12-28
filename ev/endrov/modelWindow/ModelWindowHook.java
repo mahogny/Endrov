@@ -34,6 +34,8 @@ public interface ModelWindowHook
 	public Collection<Vector3d> autoCenterMid();
 	public Collection<Double> autoCenterRadius(Vector3d mid, double FOV);
 	
+	//These two could be put in a special class that EvContainer can implement.
+	//it can then be shared with imagewindow
 	public EvDecimal getFirstFrame();
 	public EvDecimal getLastFrame();
 	

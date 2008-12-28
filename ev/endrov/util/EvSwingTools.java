@@ -51,6 +51,20 @@ public class EvSwingTools
 		return p;
 		}
 
+
+	/**
+	 * Add a component with two components to the above and below
+	 */
+	public static JComponent borderAB(JComponent above, JComponent center, JComponent below)
+		{
+		JPanel p=new JPanel(new BorderLayout());
+		if(above!=null)  p.add(above,BorderLayout.NORTH);
+		if(center!=null) p.add(center,BorderLayout.CENTER);
+		if(below!=null)  p.add(below,BorderLayout.SOUTH);
+		return p;
+		}
+
+	
 	/**
 	 * Get string from clipboard, never null
 	 */

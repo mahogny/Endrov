@@ -25,7 +25,7 @@ import endrov.util.JImageToggleButton;
  * @author Johan Henriksson
  *
  */
-public class StagePanel extends JPanel implements ActionListener 
+public class StagePanel /*extends JPanel */ implements ActionListener 
 	{
 	static final long serialVersionUID=0;
 	
@@ -51,12 +51,12 @@ public class StagePanel extends JPanel implements ActionListener
 	private HWStage hw;
 	//private String devName;
 	
-	public StagePanel(HardwarePath devName,final HWStage hw)
+	public StagePanel(HardwarePath devName,final HWStage hw, ManualExtension.Hook hook)
 		{
 		this.hw=hw;
 	//	this.devName=devName;
 		
-		JPanel p=new JPanel(new GridLayout(hw.getNumAxis(),1));
+//		JPanel p=new JPanel(new GridLayout(hw.getNumAxis(),1));
 		for(int curaxis=0;curaxis<hw.getNumAxis();curaxis++)
 			{
 			JLabel lab=new JLabel("Axis "+hw.getAxisName()[curaxis]+" ");
@@ -71,11 +71,14 @@ public class StagePanel extends JPanel implements ActionListener
 			JPanel pb=new JPanel(new GridLayout(1,2));
 			pb.add(toggleStageDown);
 			pb.add(bController);
+
 			
-			p.add(EvSwingTools.borderLR(lab, a, pb));
+			hook.add1(EvSwingTools.borderLR(null, lab, EvSwingTools.borderLR(null, a, pb)));
+//			hook.add1(EvSwingTools.borderLR(lab, a, pb));
+//			p.add(EvSwingTools.borderLR(lab, a, pb));
 			}
-		setLayout(new GridLayout(1,1));
-		add(p);
+//		setLayout(new GridLayout(1,1));
+//		add(p);
 	
 		}
 	

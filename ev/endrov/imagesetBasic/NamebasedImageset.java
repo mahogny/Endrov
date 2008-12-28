@@ -394,7 +394,7 @@ public class NamebasedImageset implements EvIOData
 				evim.binning=1;
 				evim.resX=resX; 
 				evim.resY=resY; 
-				evim.io=new SliceIOJAI(f);
+				evim.io=new BasicSliceIO(f);
 				
 				EvDecimal realSlice=new EvDecimal(slice).multiply(spacingZ);
 				

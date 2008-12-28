@@ -12,6 +12,7 @@ import org.jdom.*;
 
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.consoleWindow.*;
 import endrov.data.EvData;
 import endrov.data.EvObject;
@@ -23,6 +24,7 @@ import endrov.modelWindow.basicExt.CrossHandler;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 import endrov.util.EvXmlUtil;
+import endrov.util.SnapBackSlider;
 
 //TODO drag and drop of a file with # in the name fails on linux
 
@@ -124,6 +126,8 @@ public class ModelWindow extends BasicWindow
 
 	private JMenu miSetBGColor=makeSetBGColorMenu();
 
+	private SnapBackSlider barZoom=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
+	private SnapBackSlider barRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
 	
 	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
 	
@@ -161,12 +165,12 @@ public class ModelWindow extends BasicWindow
 	public ModelWindow(Rectangle bounds)
 		{
 		view=new ModelView(this);
-		frameControl=new FrameControlModel(this,this);
+		frameControl=new FrameControlModel(this);
 
 		//Add hooks
 		for(ModelWindowExtension e:modelWindowExtensions)
 			e.newModelWindow(this);
-		
+				
 		//Add listeners to view
 		view.addMouseMotionListener(this);
 		view.addMouseListener(this);
@@ -236,13 +240,37 @@ public class ModelWindow extends BasicWindow
 		toolPanel.setMinimumSize(new Dimension(250,20));
 		toolPanel.setMaximumSize(new Dimension(250,20));
 //		updateToolPanels();
+
+		JPanel zoomrotPanel=new JPanel(new GridLayout(2,1));
+		zoomrotPanel.add(EvSwingTools.borderAB(new JLabel(BasicIcon.iconLabelZoom), barZoom, null));
+		zoomrotPanel.add(EvSwingTools.borderAB(new JLabel(BasicIcon.iconLabelRotate), barRotate, null));
+
+		
+		barZoom.addSnapListener(new SnapBackSlider.SnapChangeListener(){
+			public void slideChange(int change)
+				{
+				view.pan(0,0,change*5,false);
+				view.repaint();
+				}
+		});
+		barRotate.addSnapListener(new SnapBackSlider.SnapChangeListener(){
+			public void slideChange(int change)
+				{
+				view.camera.rotateCamera(0, 0, change/200.0);
+				view.repaint();
+				}
+		});
+
+
 		
 		sidePanelSplitPane = new EvHidableSidePane(view, toolPanel, true);
 		
 		setLayout(new BorderLayout());
 		add(sidePanelSplitPane,BorderLayout.CENTER);
 		add(bottomPanel,BorderLayout.SOUTH);
-
+		add(zoomrotPanel,BorderLayout.EAST);
+		
+		
 		//Trigger all events to build dynamic parts of window
 		updateToolPanels();
 		dataChangedEvent();
