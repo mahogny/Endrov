@@ -410,7 +410,7 @@ public class SequenceImageset implements EvIOData
 							evim.binning=1;
 							evim.resX=resX; 
 							evim.resY=resY; 
-							evim.io=new SliceIOJAI(f,i);
+							evim.io=new BasicSliceIO(f,i);
 							//TODO is this the way to go? only works with TIFF stacks
 							
 							loaders.put(new EvDecimal(i).multiply(spacingZ), evim); 

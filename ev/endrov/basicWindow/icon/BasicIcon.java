@@ -39,6 +39,7 @@ public class BasicIcon
 	public static final ImageIcon iconKeyboard=new ImageIcon(BasicIcon.class.getResource("tango-input-keyboard.png"));
 	public static final ImageIcon iconImage=new ImageIcon(BasicIcon.class.getResource("gnome-image-x-generic.png"));
 
+	public static final ImageIcon programIcon=new ImageIcon(BasicIcon.class.getResource("programIcon.png"));
 	
 	
 	public static JButton getButtonCopy()
@@ -60,6 +61,9 @@ public class BasicIcon
 		{
 		return new JImageButton(iconMenuSave,"Save");
 		}
+
+	public static ImageIcon iconLabelZoom=new ImageIcon(BasicIcon.class.getResource("silkMagnifier.png"));
+	public static ImageIcon iconLabelRotate=new ImageIcon(BasicIcon.class.getResource("labelRotate.png"));
 	
 	//	private static ImageIcon iconMenuMaint=new ImageIcon(BasicWindow.class.getResource("iconMenuMaint.png"));
 	//	private static ImageIcon iconMenuInfo=new ImageIcon(BasicWindow.class.getResource("iconMenuInfo.png"));

@@ -74,14 +74,31 @@ public class EV
 		}
 
 	
-
+	/**
+	 * Report which directory to store application specific configurations in
+	 * http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+	 */
+	private static File getGlobalConfigDir()
+		{
+		String e=System.getenv("XDG_CONFIG_HOME");
+		if(e==null)
+			{
+			//Mac might have Libraries TODO
+			if(isWindows())
+				return new File("C:\\config");
+			else
+				return new File(getHomeDir(),".config");
+			}
+		else
+			return new File(e);
+		}
 	
 	/**
 	 * Get name of config file in case it is stored as an individual file
 	 */
 	private static File getConfigFileName()
 		{
-		return new File(getHomeDir(),".endrov/config.xml");
+		return new File(new File(getGlobalConfigDir(),"endrov"),"config.xml");
 		}
 	
 	/**
@@ -89,12 +106,17 @@ public class EV
 	 */
 	public static void loadPersonalConfig()
 		{
+		//TODO check if this is allowed e.g. applet
+		useHomedirConfig=true;
+		
+		
+		//TODO XDG can have several config directories
 		Preferences prefs = Preferences.userNodeForPackage (EV.class);
-		String s=prefs.get("evdata", null);
+		String s=null;
+		if(!useHomedirConfig)
+			prefs.get("evdata", null);
 		if(s==null)
 			{
-			//TODO check if this is allowed e.g. applet
-			//TODO on linux, make this always yes
 			File configFile=getConfigFileName();
 			if(configFile.exists())
 				{

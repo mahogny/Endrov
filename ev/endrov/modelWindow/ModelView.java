@@ -430,7 +430,7 @@ public class ModelView extends GLCanvas
 			camera.center.add(v);
 			}
 		else
-		camera.moveCamera(dx*panspeed, dy*panspeed, dz*panspeed);
+			camera.moveCamera(dx*panspeed, dy*panspeed, dz*panspeed);
 		}
 	
 	public double getRepresentativeScale()
@@ -484,6 +484,7 @@ public class ModelView extends GLCanvas
 
 	
 	/**
+	 * TODO
 	 * Overload repaint; can force some redraws to set a minimum FPS
 	 */
 	public void repaint()

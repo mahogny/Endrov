@@ -3,6 +3,9 @@ package endrov.consoleWindow;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.ref.*;
+import java.text.NumberFormat;
+import java.util.Calendar;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -16,6 +19,7 @@ import endrov.keyBinding.KeyBinding;
 import endrov.script2.*;
 
 import org.jdom.*;
+
 
 //import bsh.ConsoleInterface;
 //import bsh.Interpreter;
@@ -84,18 +88,29 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 */
 	private Log consoleLog=new Log()
 		{
+		//TODO probably need to postpone for swing
+		private void appendDate()
+			{
+			NumberFormat nf=NumberFormat.getIntegerInstance();
+			nf.setMinimumIntegerDigits(2);
+			Calendar c=Calendar.getInstance();
+			addHistory("["+nf.format(c.get(Calendar.HOUR_OF_DAY))+":"+nf.format(c.get(Calendar.MINUTE))+":"+nf.format(c.get(Calendar.SECOND))+"] ");
+			}
+		
 		public void listenDebug(String s)
 			{
-			history.append(s);
-			history.append("\n");
+			appendDate();
+			addHistory(s);
+			addHistory("\n");
 			}
 	
 		public void listenError(String s, Exception e)
 			{
+			appendDate();
 			if(s!=null)
 				{
-				history.append(s);
-				history.append("\n");
+				addHistory(s);
+				addHistory("\n");
 				}
 			if(e!=null)
 				{
@@ -104,16 +119,17 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 				e.printStackTrace(s2);
 				s2.flush();
 	
-				history.append("Exception message: ");
-				history.append("\n");
-				history.append(sw. toString());
+				addHistory("Exception message: ");
+				addHistory("\n");
+				addHistory(sw. toString());
 				}
 			}
 	
 		public void listenLog(String s)
 			{
-			history.append(s);
-			history.append("\n");
+			appendDate();
+			addHistory(s);
+			addHistory("\n");
 			}
 		};
 
@@ -337,7 +353,6 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	
 	/**
 	 * Add text to the history
-	 * @param s Text to be added
 	 */
 	public void addHistory(String s)
 		{
