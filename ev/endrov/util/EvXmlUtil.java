@@ -53,7 +53,7 @@ public class EvXmlUtil
 		return root.getChildren();
 		}
 	
-	//TODO: text content, attributes
+	//TODO: text content, attributes not printed
 	public static String prettyPrint(Element e)
 		{
 		StringBuffer b=new StringBuffer();
@@ -137,14 +137,21 @@ public class EvXmlUtil
 	 */
 	public static void writeXmlData(Document doc, File file) throws Exception
 		{
-		Format format=Format.getPrettyFormat();
-		XMLOutputter outputter = new XMLOutputter(format);
 		FileWriter writer = new FileWriter(file);
 		FileOutputStream writer2=new FileOutputStream(file);
-		outputter.output(doc, writer2);
+		writeXmlData(doc, writer2);
 		writer.close();
 		}
 
+	/**
+	 * Write XML-document to stream
+	 */
+	public static void writeXmlData(Document doc, OutputStream os) throws Exception
+		{
+		Format format=Format.getPrettyFormat();
+		XMLOutputter outputter = new XMLOutputter(format);
+		outputter.output(doc, os);
+		}
 	
 	/**
 	 * Write XML-document to disk

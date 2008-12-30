@@ -4,7 +4,8 @@ import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import endrov.imagesetImserv.ImservImageset;
+import endrov.data.EvData;
+import endrov.imagesetImserv.EvIODataImserv;
 
 import bioserv.ClientSessionIF;
 import bioserv.BioservDaemon;
@@ -36,11 +37,12 @@ public class ImservConnection
 	
 	
 	
-	public ImservImageset getImservImageset(String name) throws Exception
+	public EvData getImservImageset(String name) throws Exception
 		{
-		DataIF data=imserv.getData(name);
-		ImservImageset rec=new ImservImageset(data,this);
-		return rec;
+		DataIF ifdata=imserv.getData(name);
+		EvData data=new EvData();
+		data.io=new EvIODataImserv(data,ifdata,this);
+		return data;
 		}
 	
 	

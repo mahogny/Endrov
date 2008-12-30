@@ -24,7 +24,6 @@ import endrov.util.EvDecimal;
 import endrov.util.EvGeomUtil;
 import endrov.util.EvXmlUtil;
 
-//WARNING! A LOT OF == DOES NOT GIVE WARNING SINCE BG TODO
 
 
 /**

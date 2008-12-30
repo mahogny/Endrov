@@ -83,7 +83,7 @@ public class EV
 		String e=System.getenv("XDG_CONFIG_HOME");
 		if(e==null)
 			{
-			//Mac might have Libraries TODO
+			//TODO Mac might have Libraries
 			if(isWindows())
 				return new File("C:\\config");
 			else

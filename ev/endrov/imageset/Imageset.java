@@ -31,8 +31,6 @@ public class Imageset extends EvObject
 		}
 	
 	
-	/** List of all channels belonging to this imageset */
-	public HashMap<String,ChannelImages> channelImages=new HashMap<String,ChannelImages>();
 	
 	
 
@@ -57,20 +55,22 @@ public class Imageset extends EvObject
 		ChannelImages im=channelImages.get(ch);
 		if(im==null)
 			{
-			Imageset.Channel m=getCreateChannelMeta(ch);
-			im=new ChannelImages(m);
+			im=new ChannelImages();
 			channelImages.put(ch, im);
 			}
 		return im;
 		}
 
+
+	
+	
 	/**
 	 * Remove channel images and metadata
 	 */
 	public void removeChannel(String ch)
 		{
 		channelImages.remove(ch);
-		channelMeta.remove(ch);
+//		channelMeta.remove(ch);
 		}
 	
 	
@@ -169,18 +169,11 @@ public class Imageset extends EvObject
 	public static class ChannelImages
 		{
 		/** Private copy to channel specific meta data in meta */
-		private Imageset.Channel meta;
+		//private Imageset.ChannelImages meta;
 				
 		/** Image loaders */
 		public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
 
-		/**
-		 * Create a new channel
-		 */
-		public ChannelImages(Imageset.Channel channelName)
-			{
-			meta=channelName;
-			}
 		
 
 		/****************************************************************************************/
@@ -376,19 +369,11 @@ public class Imageset extends EvObject
 		
 		
 		/****************************************************************************************/
-		/******************************* Meta data 1 **********************************************/
+		/******************************* Meta data ************************************************/
 		/****************************************************************************************/
 
 		
-		/**
-		 * Get channel specific meta data
-		 */
-		public Imageset.Channel getMeta()
-			{
-			return meta;
-			}
-
-		
+	
 		/**
 		 * Get property assigned to a frame
 		 * @param frame Frame
@@ -397,32 +382,13 @@ public class Imageset extends EvObject
 		 */
 		public String getFrameMeta(EvDecimal frame, String prop)
 			{
-			HashMap<String,String> framedata=meta.metaFrame.get(frame);
+			HashMap<String,String> framedata=metaFrame.get(frame);
 			if(framedata==null)
 				return null;
 			return framedata.get(prop);
 			}
 
-		//TODO merge here
-		
-		}
-
-		
-	
-	
-	/******************************************************************************************************
-	 *                               Channel META                                                         *
-	 *****************************************************************************************************/
-
-	/**
-	 * Channel specific meta data
-	 * 
-	 * TODO merge with ChannelImages
-	 * 
-	 */
-	public static class Channel
-		{
-		public String name; //TODO: do not store name here
+//		public String name; //TODO: do not store name here
 		
 		/** Binning, a scale factor from the microscope */
 		public int chBinning=1;
@@ -478,7 +444,10 @@ public class Imageset extends EvObject
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-	
+
+	/** List of all channels belonging to this imageset */
+	public HashMap<String,ChannelImages> channelImages=new HashMap<String,ChannelImages>();
+
 	/** Common resolution [px/um] */
 	public double resX, resY, resZ; //TODO Deprecate Z once all OST converted. X and Y? or just keep these?
 	
@@ -500,7 +469,7 @@ public class Imageset extends EvObject
 	public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
 	
 	/** Channel specific data */
-	public HashMap<String,Channel> channelMeta=new HashMap<String,Channel>();
+//	public HashMap<String,ChannelImages> channelMeta=new HashMap<String,ChannelImages>();
 
 	public String getMetaTypeDesc()
 		{
@@ -545,21 +514,6 @@ public class Imageset extends EvObject
 	
 	
 	/**
-	 * Get a channel. Creates structure if it does not exist.
-	 */
-	public Channel getCreateChannelMeta(String ch)
-		{
-		Channel c=channelMeta.get(ch);
-		if(c==null)
-			{
-			c=new Channel();
-			c.name=ch;
-			channelMeta.put(ch,c);
-			}
-		return c;
-		}
-	
-	/**
 	 * Save down data
 	 */
 	public void saveMetadata(Element e)
@@ -583,10 +537,12 @@ public class Imageset extends EvObject
 		saveFrameMetadata(metaFrame, e);
 		
 		//Channels
-		for(Channel ch:channelMeta.values())
+		for(Map.Entry<String, ChannelImages> entry:channelImages.entrySet())
 			{
+			ChannelImages ch=entry.getValue();
+			
 			Element elOstChannel=new Element("channel");
-			elOstChannel.setAttribute("name", ch.name);
+			elOstChannel.setAttribute("name", entry.getKey());
 			e.addContent(elOstChannel);
 			
 			elOstChannel.addContent(new Element("binning").addContent(""+ch.chBinning));
@@ -667,8 +623,9 @@ public class Imageset extends EvObject
 					meta.metaDescript=i.getValue();
 				else if(i.getName().equals("channel"))
 					{
-					Imageset.Channel ch=extractChannel(meta, i);
-					meta.channelMeta.put(ch.name, ch);
+					//Imageset.ChannelImages ch=
+					extractChannel(meta, i);
+//					meta.channelImages.put(ch.name, ch);
 					}
 				else if(i.getName().equals("frame"))
 					extractFrame(meta.metaFrame, i);
@@ -682,10 +639,13 @@ public class Imageset extends EvObject
 		/**
 		 * Extract channel XML data
 		 */
-		public Imageset.Channel extractChannel(Imageset data, Element e)
+		public void extractChannel(Imageset data, Element e)
 			{
-			Imageset.Channel ch=new Imageset.Channel();
-			ch.name=e.getAttributeValue("name");
+			String chname=e.getAttributeValue("name");
+			
+			Imageset.ChannelImages ch=data.createChannel(chname);
+//			new Imageset.ChannelImages();
+//			ch.name=
 			
 			for(Object oi:e.getChildren())
 				{
@@ -705,7 +665,7 @@ public class Imageset extends EvObject
 					ch.metaOther.put(i.getName(), i.getValue());
 				}
 			
-			return ch;
+//			return ch;
 			}
 		
 		/**

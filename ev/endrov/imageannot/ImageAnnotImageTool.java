@@ -7,8 +7,7 @@ import java.util.Collection;
 import javax.vecmath.*;
 import javax.swing.*;
 
-import endrov.data.EvContainer;
-import endrov.data.EvData;
+import endrov.data.*;
 import endrov.imageWindow.*;
 
 /**

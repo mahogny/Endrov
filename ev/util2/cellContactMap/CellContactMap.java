@@ -13,6 +13,7 @@ import javax.vecmath.Vector3d;
 import util2.ConnectImserv;
 
 //import endrov.data.*;
+import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
@@ -319,10 +320,12 @@ public class CellContactMap
 			for(String s:imsets)
 				{
 				System.out.println("loading "+s);
-				Imageset im=EvImserv.getImageset(url+s);
+				EvData data=EvData.loadFile(url+s);
+//			Imageset im=EvImserv.getImageset(url+s); 
+				Imageset im=data.getObjects(Imageset.class).iterator().next();
 				OneLineage olin=new OneLineage();
 				olin.lin=im.getObjects(NucLineage.class).iterator().next();
-				olin.name=im.getMetadataName();
+				olin.name=data.getMetadataName();//im.getMetadataName();
 				lins.add(olin);
 				}
 			NucLineage reflin=EvImserv.getImageset(url+"celegans2008.2").getObjects(NucLineage.class).iterator().next();

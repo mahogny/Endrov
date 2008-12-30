@@ -32,8 +32,7 @@ import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.imageset.*;
 import endrov.imageset.Imageset.ChannelImages;
-import endrov.util.EvDecimal;
-import endrov.util.Tuple;
+import endrov.util.*;
 
 public class EvIODataOST implements EvIOData
 	{
@@ -130,8 +129,8 @@ public class EvIODataOST implements EvIOData
 		
 		public String fileFormat()
 			{
-			String n=f.getName();
-			return n.substring(0,n.lastIndexOf("."));
+			//Assumption is made that there is a file ending
+			return EvFileUtil.fileEnding(f);
 			}
 
 		}
@@ -462,6 +461,7 @@ public class EvIODataOST implements EvIOData
 	
 	private File fileShouldBe(Imageset im, String channel, EvDecimal frame, EvDecimal z)
 		{
+//		im.channelImages
 		//TODO
 		return buildImagePath(channel, frame,z,".png");
 		}
@@ -477,8 +477,9 @@ public class EvIODataOST implements EvIOData
 		try
 			{
 			//This code looks complicated but solves the following problem:
-			//if an image has been moved then it might have to be read into memory or it will be overwritten
-			//before it is loaded. cannot always consider this case because it is uncommon and will *eat* memory.
+			//if an image has been moved then it might have to be read into
+			//memory or it will be overwritten before it is loaded. cannot
+			//always consider this case because it is uncommon and will *eat* memory.
 			
 			//Images to delete
 			Set<File> toDelete=new HashSet<File>();
@@ -500,15 +501,22 @@ public class EvIODataOST implements EvIOData
 				for(Map.Entry<EvDecimal, TreeMap<EvDecimal,EvImage>> fe:ce.getValue().imageLoader.entrySet())
 					for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 						{
+						//Does the image belong to this IO?
+						EvIOImage oldio=ie.getValue().io;
+						boolean belongsToThisImagesetIO = oldio!=null && oldio instanceof SliceIO && ((SliceIO)oldio).ost==this;
+						
 						//Check if dirty
 						boolean dirty=false;
 						if(ie.getValue().modified())
 							dirty=true;
-						EvIOImage oldio=ie.getValue().io;
-						if(!(oldio!=null && oldio instanceof SliceIO && ((SliceIO)oldio).ost==this))
+						if(!belongsToThisImagesetIO)
 							dirty=true;
 						if(!dirty)
 							{
+							//TODO need it be resaved? (file format change)
+							//maybe better to have it marked dirty in that case
+							//to avoid needless resaving
+							/*
 							File file=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
 							if(file!=null)
 								{
@@ -522,6 +530,7 @@ public class EvIODataOST implements EvIOData
 								}
 							else
 								dirty=true;
+							*/
 							}
 						
 						//If dirty, prepare it to be written
@@ -532,25 +541,39 @@ public class EvIODataOST implements EvIOData
 							//Mark all dirty. When they are not dirty they need not be written
 							evim.isDirty=true; 
 
-							//Mark current file for reading if it is not in memory
-							File currentFile=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
-							if(currentFile!=null && evim.getMemoryImage()!=null)
+							//Where should new file be written?
+							File newFile=null;
+
+							//Mark current file for reading if it is not in memory.
+							//This is used whenever the image is taken from this IO to avoid overwriting,
+							//otherwise the picture will be read from another source and nothing
+							//can be guaranteed.
+							if(evim.getMemoryImage()!=null && belongsToThisImagesetIO)
 								{
-								HashSet<EvImage> ims=toRead.get(currentFile);
-								if(ims==null)
-									toRead.put(currentFile, ims=new HashSet<EvImage>());
-								ims.add(evim);
+								File currentFile=((SliceIO)oldio).f;
+								//File currentFile=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
+								if(currentFile!=null)
+									{
+									HashSet<EvImage> ims=toRead.get(currentFile);
+									if(ims==null)
+										toRead.put(currentFile, ims=new HashSet<EvImage>());
+									ims.add(evim);
+									}
+								
+								//TODO only if in the current imageset
+								newFile=currentFile;
+								//TODO change of format?
+								//TODO delete this file if renamed
 								}
 							
-							File newFile=currentFile;
 							if(newFile==null) //TODO better format handling
 								newFile=fileShouldBe(im,ce.getKey(), fe.getKey(),ie.getKey());
 							
 							SliceIO newio=new SliceIO(this,newFile);
 							newio.oldio=oldio;
+							evim.io=newio;
 							
 							toWrite.add(evim);
-							
 							}
 						
 					
@@ -558,6 +581,8 @@ public class EvIODataOST implements EvIOData
 						
 						}
 					
+			
+			System.out.println("write files...");
 			
 			//Write the files
 			while(!toWrite.isEmpty())
@@ -580,14 +605,19 @@ public class EvIODataOST implements EvIOData
 						for(EvImage ci:needToRead)
 							{
 							ci.setMemoryImage(ci.getJavaImage());
+							System.out.println("need write "+ci);
 							toWrite.addFirst(ci);
 							}
 						}
 
 					//Write image to disk
 					BufferedImage bim=evim.getJavaImage(); 
+					System.out.println("write "+io.f);
+					io.f.getParentFile().mkdirs(); //TODO optimize. cache which exist?
 					ImageIO.write(bim, io.fileFormat(), io.f);
+					//TODO file is not getting to disk
 					
+					//TODO bioformats for jp2
 					
 					//Mark this image as done
 					evim.isDirty=false;
@@ -599,9 +629,10 @@ public class EvIODataOST implements EvIOData
 			//Delete the files
 			if(deleteOk)
 				for(File f:toDelete)
-					f.delete();
+					System.out.println("delete "+f);
+					//f.delete();
 			
-			
+			System.out.println("done writing");
 			
 			//Remove empty channel directories
 			//Remove empty frame directories
@@ -723,9 +754,9 @@ public class EvIODataOST implements EvIOData
 					//TODO for early version of OST, is it sustainable?
 					evim.resX=im.resX;
 					evim.resY=im.resY;
-					evim.dispX=chim.getMeta().dispX;
-					evim.dispY=chim.getMeta().dispY;
-					evim.binning=chim.getMeta().chBinning;
+					evim.dispX=chim.dispX;
+					evim.dispY=chim.dispY;
+					evim.binning=chim.chBinning;
 					
 					stack.put(se.getKey(),evim);
 					}
