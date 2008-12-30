@@ -4,51 +4,52 @@ package endrov.imagesetImserv;
 
 import java.awt.image.*;
 import java.io.*;
+import java.util.Collection;
 import java.util.TreeMap;
+
+import org.jdom.Document;
 
 import bioserv.SendFile;
 import bioserv.imserv.DataIF;
 import bioserv.imserv.ImservConnection;
 
+import endrov.data.EvData;
+import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.Log;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
+import endrov.util.EvXmlUtil;
 
 
 /**
  * Support for ImServ
  * @author Johan Henriksson
  */
-public class ImservImageset extends Imageset  //TODO: there should be no extend no more
+public class EvIODataImserv implements EvIOData
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 
-	private DataIF data;
-	private ImservConnection conn;
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
+
+	private DataIF ifdata;
+	private ImservConnection conn;
+//	private EvData data;
+	private String cachedName="<name not checked>";
 	
 	/**
 	 * Create a new recording
 	 */
-	public ImservImageset(DataIF omeimage, ImservConnection conn)
+	public EvIODataImserv(EvData data, DataIF omeimage, ImservConnection conn)
 		{
-		this.data=omeimage;
+		this.ifdata=omeimage;
 		this.conn=conn;
-		try
-			{
-			imageset=omeimage.getName();
-			}
-		catch (Exception e)
-			{
-			imageset="<name lookup failure>";
-			}
-		buildDatabase();
+		buildDatabase(data);
 		}
 	
 	/**
@@ -58,8 +59,13 @@ public class ImservImageset extends Imageset  //TODO: there should be no extend 
 		{
 		return getMetadataName();
 		}
+	public String getMetadataName()
+		{
+		return cachedName;
+		}
 
 	
+
 
 	/**
 	 * Get directory for this imageset where any datafiles can be stored
@@ -70,18 +76,22 @@ public class ImservImageset extends Imageset  //TODO: there should be no extend 
 		}
 
 	/**
-	 * Save meta for all channels into RMD-file
+	 * Save meta for all channels
 	 */
-	public void saveMeta()
+	public void saveData(EvData data)
 		{
 		try
 			{
 			ByteArrayOutputStream os=new ByteArrayOutputStream();
-			saveMeta(os);
+
+			Document document=data.saveXmlMetadata();
+			EvXmlUtil.writeXmlData(document, os);
 			DataIF.CompressibleDataTransfer trans=new DataIF.CompressibleDataTransfer();
 			trans.compression=DataIF.CompressibleDataTransfer.NONE;
 			trans.data=os.toByteArray();
-			data.setRMD(trans);
+			ifdata.setRMD(trans);
+			
+			//TODO also save image data
 			}
 		catch (Exception e)
 			{
@@ -100,8 +110,16 @@ public class ImservImageset extends Imageset  //TODO: there should be no extend 
 	
 	
 	
-	public boolean loadDatabaseCache(byte inp[])
+	public boolean loadDatabaseCache(EvData data, byte inp[])
 		{
+		//TODO support multiple imset
+		Collection<Imageset> imsets=data.getObjects(Imageset.class);
+		Imageset imageset;
+		if(imsets.isEmpty())
+			data.metaObject.put("im", imageset=new Imageset());
+		else
+			imageset=imsets.iterator().next();
+		
 		try
 			{
 			BufferedReader in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(inp)));
@@ -115,19 +133,15 @@ public class ImservImageset extends Imageset  //TODO: there should be no extend 
 			else
 				{
 				Log.printLog("Loading imagelist cache");
-				
-				channelImages.clear();
+
+				//TODO don't clear, check if channels are gone
+				//channelImages.clear();
 				int numChannels=Integer.parseInt(in.readLine());
 				for(int i=0;i<numChannels;i++)
 					{
 					String channelName=in.readLine();
 					int numFrame=Integer.parseInt(in.readLine());
-					ChannelImages c=getChannel(channelName);
-					if(c==null)
-						{
-						c=new Channel(meta.getCreateChannelMeta(channelName));
-						channelImages.put(channelName,c);
-						}
+					Imageset.ChannelImages c=imageset.createChannel(channelName);
 					
 					for(int j=0;j<numFrame;j++)
 						{
@@ -148,7 +162,14 @@ public class ImservImageset extends Imageset  //TODO: there should be no extend 
 								s=in.readLine(); //We don't have to care about extensions
 							EvDecimal slice=new EvDecimal(s);
 
-							EvImage evim=((Channel)c).newEvImage(slice,frame,channelName);
+							
+							
+							EvImage evim=new EvImage();
+							//TODO fill up with metadata here
+							
+							
+							SliceIO io=new SliceIO(slice,frame,channelName);
+							evim.io=io;
 							loaderset.put(slice, evim);
 							}
 						}
@@ -171,18 +192,27 @@ public class ImservImageset extends Imageset  //TODO: there should be no extend 
 	/**
 	 * Scan recording for channels and build a file database
 	 */
-	public void buildDatabase()
+	public void buildDatabase(EvData data)
 		{
 		try
 			{
+			cachedName=ifdata.getName();
+			}
+		catch (Exception e)
+			{
+			cachedName="<name lookup failure>";
+			}
+		try
+			{
 			System.out.println("building imageset");
-			DataIF.CompressibleDataTransfer ilist=data.getImageList();
+			DataIF.CompressibleDataTransfer ilist=ifdata.getImageList();
 			if(ilist!=null)
-				loadDatabaseCache(ilist.data);
+				loadDatabaseCache(data, ilist.data);
 
 //			long time=System.currentTimeMillis();
 			//Set metadata
-			loadImagesetXmlMetadata(new ByteArrayInputStream(data.getRMD().data));
+			data.loadXmlMetadata(new ByteArrayInputStream(ifdata.getRMD().data));
+//			loadImagesetXmlMetadata(new ByteArrayInputStream(ifdata.getRMD().data));
 //			System.out.println(""+(System.currentTimeMillis()-time));
 			}
 		catch (Exception e)
@@ -216,86 +246,36 @@ public class ImservImageset extends Imageset  //TODO: there should be no extend 
 	
 	
 	
-	///// this custom channel is messing up more than helping //////////
-	///// this custom channel is messing up more than helping //////////
-	///// this custom channel is messing up more than helping //////////
-	///// this custom channel is messing up more than helping //////////
-	///// this custom channel is messing up more than helping //////////
-	///// this custom channel is messing up more than helping //////////
-	///// this custom channel is messing up more than helping //////////
-
 	
-	/**
-	 * OST channel - contains methods for building frame database
-	 */
-	/*
-	public class Channel extends Imageset.ChannelImages
+	public class SliceIO implements EvIOImage
 		{
-		public Channel(Imageset.Channel channelName)
+		EvDecimal z,t;
+		String c;
+		public SliceIO(EvDecimal z, EvDecimal t, String c)
 			{
-			super(channelName);
-			}
-
-		public void scanFiles(String chnum)
-			{
-			imageLoader.clear();
-
-			//TODO MAJOR WTF!
-			int numframe=1;
-			int numz=50;
-
-			}
-
-		protected EvImage internalMakeLoader(EvDecimal frame, EvDecimal z)
-			{
-			return null;
-//			return newEvImage(buildImagePath(getMeta().name, frame, z, ".png").getAbsolutePath()); //png?
+			this.z=z;
+			this.t=t;
+			this.c=c;
 			}
 		
-		
-		public EvImage newEvImage(EvDecimal z, EvDecimal t, String c)
+		public BufferedImage loadJavaImage()
 			{
-			return new EvImageImserv(z, t, c);
-			}
-		
-		
-		private class EvImageImserv extends EvImage
-			{
-			EvDecimal z,t;
-			String c;
-			public EvImageImserv(EvDecimal z, EvDecimal t, String c)
+			//it is the server side responsibility to make byte_gray?
+			//			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+			try
 				{
-				this.z=z;
-				this.t=t;
-				this.c=c;
+				DataIF.ImageTransfer transfer=ifdata.getImage(c, t, z);
+				if(transfer!=null)
+					return SendFile.getImageFromBytes(transfer.data);
 				}
-
-			public int getBinning(){return (int)getMeta().chBinning;}
-			public double getDispX(){return getMeta().dispX;}
-			public double getDispY(){return getMeta().dispY;}
-			public double getResX(){return resX;}
-			public double getResY(){return resY;}
-			protected BufferedImage loadJavaImage()
+			catch (Exception e)
 				{
-				//it is the server side responsibility to make byte_gray?
-	//			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-				try
-					{
-					DataIF.ImageTransfer transfer=data.getImage(c, t, z);
-					if(transfer!=null)
-						return SendFile.getImageFromBytes(transfer.data);
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-				return null;
-//				return im;
+				e.printStackTrace();
 				}
-		
+			return null;			
 			}
+
 		}
-*/
 	
 	
 	public void finalize()

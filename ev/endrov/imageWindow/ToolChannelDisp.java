@@ -57,8 +57,8 @@ public class ToolChannelDisp implements ImageWindowTool
 			Imageset.ChannelImages c=w.getSelectedChannel();
 			if(rec!=null && c!=null)
 				{
-				c.getMeta().dispX+=dx/w.getZoom();
-				c.getMeta().dispY+=dy/w.getZoom();
+				c.dispX+=dx/w.getZoom();
+				c.dispY+=dy/w.getZoom();
 				//w.updateImagePanel();
 				BasicWindow.updateWindows();
 				rec.setMetadataModified(true);

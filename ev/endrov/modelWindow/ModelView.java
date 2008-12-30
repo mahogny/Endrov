@@ -484,8 +484,7 @@ public class ModelView extends GLCanvas
 
 	
 	/**
-	 * TODO
-	 * Overload repaint; can force some redraws to set a minimum FPS
+	 * TODO Overload repaint; can force some redraws to set a minimum FPS
 	 */
 	public void repaint()
 		{

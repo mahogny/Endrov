@@ -6,6 +6,7 @@ import java.util.*;
 
 import util2.ConnectImserv;
 
+import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
@@ -34,7 +35,9 @@ public class VolStats
 		String s="celegans2008.2";
 		
 		System.out.println("loading "+s);
-		Imageset im=EvImserv.getImageset(url+s); 
+		EvData data=EvData.loadFile(url+s);
+//		Imageset im=EvImserv.getImageset(url+s); 
+		Imageset im=data.getObjects(Imageset.class).iterator().next();
 		//TODO: should be able to go trough session to avoid url+s
 		for(NucLineage lin:im.getObjects(NucLineage.class))
 			return lin;

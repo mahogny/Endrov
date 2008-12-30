@@ -294,14 +294,14 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 			for(String channelName:rec.channelImages.keySet())
 				{
 				System.out.println("meta123: "+channelName);
-				tabs.add(channelName, new ChannelTab(this,rec.getChannel(channelName)));
+				tabs.add(channelName, new ChannelTab(this,channelName,rec.getChannel(channelName)));
 				}
 			if(currentIndex>=0 && currentIndex<tabs.getComponentCount())
 				tabs.setSelectedIndex(currentIndex);
 			
 			for(ChannelTab t:channels)
 				{
-				Imageset.Channel cm=rec.channelMeta.get(t.channelName);
+				Imageset.ChannelImages cm=rec.getChannel(t.channelName);
 				t.iDispX.setText(""+cm.dispX);
 				t.iDispY.setText(""+cm.dispY);			
 				t.iBinning.setText(""+cm.chBinning);
@@ -419,11 +419,11 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 		public JTextField iCompression=new JTextField();
 		public JTextArea iOther=new JTextArea();
 		
-		public ChannelTab(MetaWindow w, Imageset.ChannelImages c)
+		public ChannelTab(MetaWindow w, String cname, Imageset.ChannelImages c)
 			{
 			int cury=0;
-			tabs.add(c.getMeta().name, this);
-			channelName=c.getMeta().name;
+			tabs.add(cname, this);
+			channelName=cname;
 			channels.add(this);
 			setLayout(new GridBagLayout());
 			iDispX.setPreferredSize(new Dimension(300,24));
@@ -517,7 +517,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 				
 				for(ChannelTab t:channels)
 					{
-					Imageset.Channel ch=rec.channelMeta.get(t.channelName);
+					Imageset.ChannelImages ch=rec.getChannel(t.channelName);
 					
 					ch.dispX=Double.parseDouble(t.iDispX.getText());
 					ch.dispY=Double.parseDouble(t.iDispY.getText());

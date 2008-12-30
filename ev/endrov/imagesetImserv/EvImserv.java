@@ -8,6 +8,8 @@ import bioserv.imserv.ImservConnection;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.data.EvDataSupport;
+import endrov.data.EvIOData;
+import endrov.util.Tuple;
 
 
 /**
@@ -91,12 +93,12 @@ public class EvImserv
 		return session;
 		}
 
-	public static ImservImageset getImageset(String url) throws Exception
+	public static EvData getImageset(String url) throws Exception
 		{
-		return getImageset(new ImservURL(url));
+		return getDataIO(new ImservURL(url));
 		}
 
-	public static ImservImageset getImageset(ImservURL url) throws Exception
+	public static EvData getDataIO(ImservURL url) throws Exception
 		{
 		EvImservSession session=getSession(url);
 		if(session!=null)
@@ -121,7 +123,7 @@ public class EvImserv
 		
 		//New file type
 		EvData.supportFileFormats.add(new EvDataSupport(){
-		public Integer supports(String file)
+		public Integer loadSupports(String file)
 			{
 			System.out.println("try "+file);
 			if(file.startsWith("imserv://"))
@@ -134,6 +136,25 @@ public class EvImserv
 			System.out.println("loading "+file);
 			return getImageset(file);
 			}
+		public List<Tuple<String, String[]>> getLoadFormats()
+			{
+			return new LinkedList<Tuple<String,String[]>>();
+			}
+		public List<Tuple<String, String[]>> getSaveFormats()
+			{
+			return new LinkedList<Tuple<String,String[]>>();
+			}
+		public EvIOData getSaver(EvData d, String file) throws Exception
+			{
+			// TODO Auto-generated method stub
+			return null;
+			}
+		public Integer saveSupports(String file)
+			{
+			//TODO probably a good thing to implement
+			return null;
+			}
+		
 		});
 		
 		}

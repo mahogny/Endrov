@@ -1,5 +1,6 @@
 package util;
 
+import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
@@ -46,10 +47,13 @@ public class BatchImServ
 				{
 				System.out.println("trying "+s);
 				
-				Imageset im=EvImserv.getImageset(url+s);
+//				Imageset im=EvImserv.getImageset(url+s);
+				EvData data=EvData.loadFile(url+s);
+//			Imageset im=EvImserv.getImageset(url+s); 
+				Imageset im=data.getObjects(Imageset.class).iterator().next();
 				
-				System.out.println("metadata name "+im.getMetadataName());
-				
+				System.out.println("metadata name "+data.getMetadataName());
+				System.out.println("dont warn "+im);
 				
 				}
 			

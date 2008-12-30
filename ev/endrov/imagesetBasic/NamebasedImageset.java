@@ -17,6 +17,7 @@ import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 
@@ -270,7 +271,6 @@ public class NamebasedImageset implements EvIOData
 					data.metaObject.put("im", im);
 					}
 				im.channelImages.clear();
-				im.channelMeta.clear();
 				
 				//Parse list of channels into vector
 				StringTokenizer ctok=new StringTokenizer(channelList,",");
@@ -279,19 +279,19 @@ public class NamebasedImageset implements EvIOData
 				
 				//Remove/add meta corresponding to channels. why needed?
 				for(String cname:channelVector)
-					im.getCreateChannelMeta(cname);
+					im.createChannel(cname);
 				
 				//Clear up old database
 				List<String> channelsToRemove=new LinkedList<String>(); 
-				for(Imageset.ChannelImages ch:im.channelImages.values())
+				for(Map.Entry<String, ChannelImages> entry:im.channelImages.entrySet())
 					{
-					ch.imageLoader.clear();
+					entry.getValue().imageLoader.clear();
 					boolean exists=false;
 					for(String channelName:channelVector)
-						if(channelName.equals(ch.getMeta().name))
+						if(channelName.equals(entry.getKey()))
 							exists=true;
 					if(!exists)
-						channelsToRemove.add(ch.getMeta().name);
+						channelsToRemove.add(entry.getKey());
 					}
 				for(String s:channelsToRemove)
 					im.channelImages.remove(s);

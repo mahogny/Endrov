@@ -264,10 +264,10 @@ public class EvData extends EvContainer
 				EvIOData io=thes.getSaver(this, file);
 				if(io!=null)
 					{
-					this.io=io;
 					if(cb!=null)
 						cb.fileIOStatus(0, "Saving "+file);
-					this.saveData();
+					this.io=io;
+					saveData();
 					}
 				}
 			catch (Exception e)

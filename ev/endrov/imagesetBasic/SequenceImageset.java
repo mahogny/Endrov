@@ -16,6 +16,7 @@ import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 
@@ -296,15 +297,15 @@ public class SequenceImageset implements EvIOData
 					}
 					
 				//Clear up old database
-				for(Imageset.ChannelImages ch:im.channelImages.values())
+				for(Map.Entry<String, ChannelImages> entry:im.channelImages.entrySet())
 					{
-					ch.imageLoader.clear();
+					entry.getValue().imageLoader.clear();
 					boolean exists=false;
 					for(String channelName:channelVector)
-						if(channelName.equals(ch.getMeta().name))
+						if(channelName.equals(entry.getKey()))
 							exists=true;
 					if(!exists)
-						im.channelImages.remove(ch.getMeta().name);
+						im.channelImages.remove(entry.getKey());
 					}
 				
 				//Go through list of files

@@ -64,29 +64,47 @@ Additional checks
     align items in rec
     shutterikonen otydlig
 	3d zoom on laptops with 2 buttons
+	eliminate ChannelMetadata (merge with ChannelImages)
 	
 	TODO====
     arrows up/down ugly
-    2d zoom at cursor
-	eliminate ChannelMetadata (merge with ChannelImages)
+    !!!!check that imageloader code does not delete metadata
+    
 	!!!!play forward should always work	
     !!!!OST bug, compression+save+jp2
+    	saving on existing works
+    	fixed: save to new: no images created. saving to old, not new
+    	channel directories are not created
+    	save as: show progress meter
+		save as: does not change menu entry name
+		loader: do not create empty frames or channels if dir empty
+
+	OST support multiple imagesets in one file
+    new bioformats
 	new Image internals
 	simple recording 
     object hierarchy in menus etc
 	working imserv (back to last standard, refactor later)
     !!!!which objects should be drawn in 2d? 3d?
-    
-    micket==
-    wants: limit on how far one can move outside, picture should never go completely outside
-    2d zoom was slow    
+    micket: limit on how far one can move outside, picture should never go completely outside
+    micket: 2d zoom was slow    
+    2d zoom at cursor
     
 	release jinput etc dependent libraries. on my own page if needed
 	can dh_ be used?	
     separate micro-manager
      
+
+HOWTO
+recording templates. probably an OST with created channels and preset compression rates.
+and description. what about metadata that should go into imserv?
+
     
 2.14
+
+	image swap system
+	
+	undo
 
     flows: icons on items
     ROIs are slow
