@@ -7,8 +7,6 @@ import javax.swing.*;
 import org.jdom.*;
 
 import endrov.data.EvData;
-import endrov.data.EvObject;
-import endrov.data.EvObjectType;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
@@ -27,15 +25,7 @@ public class IntersectROI extends CompoundROI
 	public static void initPlugin(){}
 	static
 		{
-		EvData.extensions.put(metaType,new EvObjectType() //fails here if not using static{}
-			{
-			public EvObject extractObjects(Element e)
-				{
-				IntersectROI meta=new IntersectROI();
-				meta.loadCompoundMetadata(e);
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,IntersectROI.class);
 		
 		ROI.addType(new ROIType() //Fails here if not using static{}
 			{
@@ -261,6 +251,10 @@ public class IntersectROI extends CompoundROI
 	public void saveMetadata(Element e)
 		{
 		saveCompoundMetadata(metaType, e);
+		}
+	public void loadMetadata(Element e)
+		{
+		loadCompoundMetadata(e);
 		}
 	
 	

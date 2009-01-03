@@ -1,6 +1,7 @@
 package endrov.imagesetImserv;
 
 
+import java.io.IOException;
 import java.util.*;
 
 import bioserv.BioservDaemon;
@@ -131,7 +132,7 @@ public class EvImserv
 			else
 				return null;
 			}
-		public EvData load(String file) throws Exception
+		public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
 			{
 			System.out.println("loading "+file);
 			return getImageset(file);
@@ -144,7 +145,7 @@ public class EvImserv
 			{
 			return new LinkedList<Tuple<String,String[]>>();
 			}
-		public EvIOData getSaver(EvData d, String file) throws Exception
+		public EvIOData getSaver(EvData d, String file) throws IOException
 			{
 			// TODO Auto-generated method stub
 			return null;

@@ -3,7 +3,6 @@ import java.io.File;
 
 import endrov.data.EvData;
 import endrov.ev.EV;
-import endrov.imagesetOST.*;
 
 /**
  * Run through all imagesets in a folder and generate imagecache.txt in them. Will ignore
@@ -17,8 +16,7 @@ public class IndexImagesets
 		if(!(new File(file,"imagecache.txt")).exists())
 			{
 			System.out.println("Indexing imageset "+file.getPath());
-			EvData d=new EvData();
-			new EvIODataOST(d,file);
+			EvData.loadFile(file);
 			}
 		}
 	

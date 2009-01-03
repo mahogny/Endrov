@@ -17,7 +17,6 @@ import ome.parameters.Parameters;
 //http://warlock.openmicroscopy.org.uk:5555/job/OMERO/ws/trunk/components/importer/src/ome/formats/OMEROMetadataStore.java/*view*/
 //http://cvs.openmicroscopy.org.uk/svn/shoola/tags/3.0-Beta2.3/SRC/org/openmicroscopy/shoola/env/data/OmeroImageServiceImpl.java
 
-//TODO: remove all Vector<>? List might be faster.
 
 /**
  * For keeping track of an OME session. Note that some of the code is GPL infected.

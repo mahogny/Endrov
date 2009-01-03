@@ -32,23 +32,8 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 
 		ModelWindow.modelWindowExtensions.add(new ChromaCountKJModelExtension());
 		
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				ChromaCountKJ meta=new ChromaCountKJ();
-				try
-					{
-					meta.pos.x=e.getAttribute("x").getDoubleValue();
-					meta.pos.y=e.getAttribute("y").getDoubleValue();
-					meta.pos.z=e.getAttribute("z").getDoubleValue();
-					meta.frame=e.getAttribute("frame").getIntValue();
-					meta.group=e.getAttribute("group").getIntValue();
-					}
-				catch (DataConversionException e1){e1.printStackTrace();}
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,ChromaCountKJ.class);
+		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
 			public void newImageWindow(ImageWindow w)
@@ -111,7 +96,19 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 		}
 	
 	
-	
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			pos.x=e.getAttribute("x").getDoubleValue();
+			pos.y=e.getAttribute("y").getDoubleValue();
+			pos.z=e.getAttribute("z").getDoubleValue();
+			frame=e.getAttribute("frame").getIntValue();
+			group=e.getAttribute("group").getIntValue();
+			}
+		catch (DataConversionException e1){e1.printStackTrace();}
+		}
+
 	
 	
 	}

@@ -25,6 +25,7 @@ public class Start
 		}
 	
 	
+	public String mainClass="";
 	
 	private String javaver=System.getProperty("java.specification.version");
 	private String OS=System.getProperty("os.name").toLowerCase();
@@ -150,6 +151,12 @@ public class Start
 				basedir=new File(argsa[argi+1]);
 				argi++;
 				}
+			else if(curarg.equals("--main"))
+				{
+				//Override current directory
+				mainClass=argsa[argi+1];
+				argi++;
+				}
 			else if(curarg.equals("--javaenv"))
 				{
 				//Override current directory
@@ -199,14 +206,12 @@ public class Start
 						}
 					}
 				
-				//What to run? additional arguments?
+				//What to run? 
+				cmdarg.add(mainClass);
+				
+				//additional arguments?
 				for(String s:args)
 					cmdarg.add(s);
-				//TODO TODO TODO TODO TODO this is a bug, does not handle
-				//additional arguments properly
-				
-//				if(args.length==0)
-//					cmdarg.add("endrov.starter.MW");
 
 				//Output jar-list for mac starter bundles
 				if(printMacStarter)
@@ -358,7 +363,7 @@ public class Start
 						e.printStackTrace();
 						}
 					}
-				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith("."))
+				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith(".") && !sub.getName().equals("unused"))
 					collectJars(v,binfiles, sub, osExt);
 				else if(sub.isDirectory() && sub.getName().equals("bin_"+osExt))
 					{

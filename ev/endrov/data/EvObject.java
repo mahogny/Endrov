@@ -4,23 +4,38 @@ import javax.swing.*;
 import org.jdom.*;
 
 /**
- * An endrov object
+ * An endrov object. Very little is required, the class exists to great
+ * deal for type safety. Serialization and keeping track of modifications
+ * is the main thing.
+ * 
+ * It should be possible to create objects with an empty constructor ie
+ * it should be a Java Bean. This keeps several future possibilities open.
+ * 
+ * 
  * @author Johan Henriksson
  *
  */
 public abstract class EvObject extends EvContainer
 	{
+	//TODO new serializer
+	//TODO new serializer
+	// EvData.extensions.put(metaType,new ImagesetMetaObjectExtension());
+  //if the class is a bean then Extension is not needed, rather give
+	//the .class and create a new method here.
 	
-	//TODO only use container flag
-	/** Has this data been modified? */
-	public boolean metaObjectModified=false;
+	
 	
 	/** Serialize object */
 	public abstract void saveMetadata(Element e);
+	
+	/** Unserialize object */
+	public abstract void loadMetadata(Element e);
 	
 	/** Human readable name */
 	public abstract String getMetaTypeDesc();
 	
 	/** Attach menu entries specific for this type of object */
 	public abstract void buildMetamenu(JMenu menu);
+	
+	
 	}

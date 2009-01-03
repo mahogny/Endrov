@@ -8,7 +8,6 @@ import org.jdom.Element;
 
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.data.EvObjectType;
 
 
 
@@ -86,7 +85,7 @@ public class Flow extends EvObject
 
 
 
-		EvData.extensions.put(metaType,new FlowObjectType());
+		EvData.extensions.put(metaType,Flow.class);
 		}
 
 	
@@ -94,18 +93,8 @@ public class Flow extends EvObject
 	 *            Class: XML Reader and writer of this type of meta object                                *
 	 *****************************************************************************************************/
 	
-	public static class FlowObjectType implements EvObjectType
+	public void loadMetadata(Element e)
 		{
-		public EvObject extractObjects(Element e)
-			{
-			return extractFlowXML(e);
-			}
-		}
-	public static EvObject extractFlowXML(Element e)
-		{
-		Flow flow=new Flow();
-		//TODO
-		return flow;
 		//String filterName=e.getAttributeValue("filtername");
 		//return filterInfo.get(filterName).readXML(e);
 		}

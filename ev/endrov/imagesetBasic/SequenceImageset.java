@@ -16,7 +16,6 @@ import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 
@@ -143,7 +142,7 @@ public class SequenceImageset implements EvIOData
 		}
 	
 	
-	public void saveData(EvData data)
+	public void saveData(EvData data, EvData.FileIOStatusCallback cb)
 		{
 		JOptionPane.showMessageDialog(null, "This image format does not support saving. Convert to e.g. OST instead");
 		}
@@ -286,10 +285,7 @@ public class SequenceImageset implements EvIOData
 				Collection<Imageset> ims=data.getObjects(Imageset.class);
 				Imageset im=null;
 				if(!ims.isEmpty())
-					{
 					im=ims.iterator().next();
-					im.channelImages.clear();
-					}
 				else
 					{
 					im=new Imageset();
@@ -297,6 +293,8 @@ public class SequenceImageset implements EvIOData
 					}
 					
 				//Clear up old database
+				im.channelImages.keySet().retainAll(channelVector);
+				/*
 				for(Map.Entry<String, ChannelImages> entry:im.channelImages.entrySet())
 					{
 					entry.getValue().imageLoader.clear();
@@ -307,6 +305,7 @@ public class SequenceImageset implements EvIOData
 					if(!exists)
 						im.channelImages.remove(entry.getKey());
 					}
+				*/
 				
 				//Go through list of files
 				build(im,true);

@@ -60,81 +60,8 @@ public class NucLineage extends EvObject implements Cloneable
 	public static void initPlugin() {}
 	static
 		{
-
 		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
-		
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				NucLineage meta=new NucLineage();
-				try
-					{
-					for(Element nuce:EV.castIterableElement(e.getChildren()))
-						{
-						String nucName=nuce.getAttributeValue("name");
-						String ends=nuce.getAttributeValue("end");
-						String starts=nuce.getAttributeValue("start");
-						Nuc n=meta.getNucCreate(nucName);
-						if(ends!=null) n.overrideEnd=new EvDecimal(ends);
-						if(starts!=null) n.overrideStart=new EvDecimal(starts);
-							
-						for(Element pose:EV.castIterableElement(nuce.getChildren()))
-							{
-							if(pose.getName().equals("pos"))
-								{
-								EvDecimal frame=new EvDecimal(pose.getAttribute("f").getValue());
-								double posx=pose.getAttribute("x").getDoubleValue();
-								double posy=pose.getAttribute("y").getDoubleValue();
-								double posz=pose.getAttribute("z").getDoubleValue();
-								double posr=pose.getAttribute("r").getDoubleValue();
-								NucPos pos=new NucPos();
-								pos.setPosCopy(new Vector3d(posx,posy,posz));
-								pos.r=posr;
-								n.pos.put(frame, pos);
-								}
-							else if(pose.getName().equals("child"))
-								{
-								String child=pose.getAttributeValue("name");
-								n.child.add(child);
-								}
-							else if(pose.getName().equals("exp"))
-								{
-								String expName=pose.getAttributeValue("name");
-								NucExp exp=new NucExp();
-								exp.unit=pose.getAttributeValue("unit");
-								n.exp.put(expName, exp);
-								for(Element expe:EV.castIterableElement(pose.getChildren()))
-									{
-									EvDecimal frame=new EvDecimal(expe.getAttribute("f").getValue());
-									double level=expe.getAttribute("l").getDoubleValue();
-									exp.level.put(frame, level);
-									}
-								}
-							}
-						}
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				
-				//Restore parent relations
-				for(String parentName:meta.nuc.keySet())
-					{
-					Nuc parent=meta.nuc.get(parentName);
-					for(String childName:parent.child)
-						{
-						Nuc child=meta.nuc.get(childName);
-						if(child==null)
-							Log.printError("Missing child: "+childName, null);
-						child.parent=parentName;
-						}
-					}
-				
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,NucLineage.class);
 		}
 
 	/** Additions to the object-specific menu */
@@ -244,7 +171,7 @@ public class NucLineage extends EvObject implements Cloneable
 			childn.parent=parent;
 			parentn.child.add(child);
 			}
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 		
 		
@@ -296,7 +223,7 @@ public class NucLineage extends EvObject implements Cloneable
 					}
 		if(!assignedChild)
 			JOptionPane.showMessageDialog(null, "Found no children to assign to parent");
-		lin.metaObjectModified=true;
+		lin.setMetadataModified();
 		}
 
 	
@@ -463,7 +390,74 @@ public class NucLineage extends EvObject implements Cloneable
 			
 			}
 		}
-	
+
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			for(Element nuce:EV.castIterableElement(e.getChildren()))
+				{
+				String nucName=nuce.getAttributeValue("name");
+				String ends=nuce.getAttributeValue("end");
+				String starts=nuce.getAttributeValue("start");
+				Nuc n=getNucCreate(nucName);
+				if(ends!=null) n.overrideEnd=new EvDecimal(ends);
+				if(starts!=null) n.overrideStart=new EvDecimal(starts);
+					
+				for(Element pose:EV.castIterableElement(nuce.getChildren()))
+					{
+					if(pose.getName().equals("pos"))
+						{
+						EvDecimal frame=new EvDecimal(pose.getAttribute("f").getValue());
+						double posx=pose.getAttribute("x").getDoubleValue();
+						double posy=pose.getAttribute("y").getDoubleValue();
+						double posz=pose.getAttribute("z").getDoubleValue();
+						double posr=pose.getAttribute("r").getDoubleValue();
+						NucPos pos=new NucPos();
+						pos.setPosCopy(new Vector3d(posx,posy,posz));
+						pos.r=posr;
+						n.pos.put(frame, pos);
+						}
+					else if(pose.getName().equals("child"))
+						{
+						String child=pose.getAttributeValue("name");
+						n.child.add(child);
+						}
+					else if(pose.getName().equals("exp"))
+						{
+						String expName=pose.getAttributeValue("name");
+						NucExp exp=new NucExp();
+						exp.unit=pose.getAttributeValue("unit");
+						n.exp.put(expName, exp);
+						for(Element expe:EV.castIterableElement(pose.getChildren()))
+							{
+							EvDecimal frame=new EvDecimal(expe.getAttribute("f").getValue());
+							double level=expe.getAttribute("l").getDoubleValue();
+							exp.level.put(frame, level);
+							}
+						}
+					}
+				}
+			}
+		catch (DataConversionException e1)
+			{
+			e1.printStackTrace();
+			}
+		
+		//Restore parent relations
+		for(String parentName:nuc.keySet())
+			{
+			Nuc parent=nuc.get(parentName);
+			for(String childName:parent.child)
+				{
+				Nuc child=nuc.get(childName);
+				if(child==null)
+					Log.printError("Missing child: "+childName, null);
+				child.parent=parentName;
+				}
+			}
+		}
+
 	
 	/** 
 	 * Get a nucleus. Create if needed 
@@ -506,7 +500,7 @@ public class NucLineage extends EvObject implements Cloneable
 			c1.pos.put(frame, c1p);
 			c2.pos.put(frame, c2p);
 			}
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 
 	/**
@@ -539,7 +533,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(n.pos.isEmpty())
 				removeNuc(nucName);
 			}
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 	/**
 	 * Delete all positions before or equal to the current frame. If there are no more positions,
@@ -572,7 +566,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(n.pos.isEmpty())
 				removeNuc(nucName);
 			}
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 
 	/**
@@ -588,7 +582,7 @@ public class NucLineage extends EvObject implements Cloneable
 			if(n.parent!=null && n.parent.equals(nucName))
 				n.parent=null;
 			}
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 	
 
@@ -632,7 +626,7 @@ public class NucLineage extends EvObject implements Cloneable
 			nuc.remove(oldName);
 			nuc.put(newName, n);
 			updateNameReference(oldName, newName);
-			metaObjectModified=true;
+			setMetadataModified();
 			return true;
 			}
 		}
@@ -654,7 +648,7 @@ public class NucLineage extends EvObject implements Cloneable
 		ns.child.addAll(nt.child);
 		updateNameReference(targetName,sourceName);
 		ns.child.remove(sourceName);
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 
 	
@@ -673,7 +667,7 @@ public class NucLineage extends EvObject implements Cloneable
 			Nuc parent=nuc.get(parentName);
 			parent.child.remove(nucName);
 			}
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 
 	
@@ -699,7 +693,7 @@ public class NucLineage extends EvObject implements Cloneable
 				selectedNuclei.add(new NucPair(this,newName));
 				}
 			}
-		metaObjectModified=true;
+		setMetadataModified();
 		}
 	
 	
@@ -923,7 +917,7 @@ public class NucLineage extends EvObject implements Cloneable
 				npos=new NucPos();
 				pos.put(frame,npos);
 				}
-			metaObjectModified=true;
+			setMetadataModified();
 			return npos;
 			}
 

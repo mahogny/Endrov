@@ -1,0 +1,7 @@
+
+
+//Print out frame metadata from first loaded data set, imageset "im", channel "GFP"
+System.out.println(endrov.data.EvData.metadata.get(0).metaObject.get("im").getChannel("GFP").metaFrame);
+
+
+

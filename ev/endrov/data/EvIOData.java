@@ -36,7 +36,7 @@ public interface EvIOData
 	/** 
 	 * Save data
 	 */
-	public void saveData(EvData d);
+	public void saveData(EvData d, EvData.FileIOStatusCallback cb);
 	
 	
 	/**

@@ -32,23 +32,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 
 		ModelWindow.modelWindowExtensions.add(new ImageAnnotModelExtension());
 		
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				ImageAnnot meta=new ImageAnnot();
-				try
-					{
-					meta.pos.x=e.getAttribute("x").getDoubleValue();
-					meta.pos.y=e.getAttribute("y").getDoubleValue();
-					meta.pos.z=e.getAttribute("z").getDoubleValue();
-					meta.frame=e.getAttribute("frame").getIntValue();
-					meta.text=e.getAttributeValue("text");
-					}
-				catch (DataConversionException e1){e1.printStackTrace();}
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,ImageAnnot.class);
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
 			public void newImageWindow(ImageWindow w)
@@ -110,6 +94,18 @@ public class ImageAnnot extends EvObject implements Cloneable
 		e.setAttribute("text", ""+text);
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			pos.x=e.getAttribute("x").getDoubleValue();
+			pos.y=e.getAttribute("y").getDoubleValue();
+			pos.z=e.getAttribute("z").getDoubleValue();
+			frame=e.getAttribute("frame").getIntValue();
+			text=e.getAttributeValue("text");
+			}
+		catch (DataConversionException e1){e1.printStackTrace();}
+		}
 	
 	
 	

@@ -9,14 +9,15 @@ import org.jdom.*;
  */
 public class CustomObject extends EvObject
 	{
-	public final Element xml;
-	public final String metaType;
+	public Element xml;
+	public String metaType;
 	
+	/*
 	public CustomObject(Element xml)
 		{
 		this.xml=xml;
 		metaType=xml.getName();
-		}
+		}*/
 	
 	public String getMetaTypeDesc()
 		{
@@ -31,6 +32,11 @@ public class CustomObject extends EvObject
 		//added one later. xml to e. 
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		xml=e;
+		metaType=xml.getName();
+		}
 	
 	public void buildMetamenu(JMenu menu)
 		{

@@ -31,29 +31,7 @@ public class EvLine extends EvObject implements Cloneable
 
 		ModelWindow.modelWindowExtensions.add(new EvLineModelExtension());
 		
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				EvLine meta=new EvLine();
-				try
-					{
-					for(Object ee:e.getChildren())
-						{
-						Element el=(Element)ee;
-						Vector4d pos=new Vector4d();
-						pos.x=el.getAttribute("x").getDoubleValue();
-						pos.y=el.getAttribute("y").getDoubleValue();
-						pos.z=el.getAttribute("z").getDoubleValue();
-						if(el.getAttribute("frame")!=null)
-							pos.w=el.getAttribute("frame").getDoubleValue();
-						meta.pos.add(pos);
-						}
-					}
-				catch (DataConversionException e1){e1.printStackTrace();}
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,EvLine.class);
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
@@ -72,15 +50,6 @@ public class EvLine extends EvObject implements Cloneable
 		{
 		}
 
-	
-	
-	public static Collection<EvLine> getObjects(EvContainer meta)
-		{
-		if(meta==null)
-			return new Vector<EvLine>();
-		else
-			return meta.getObjects(EvLine.class);
-		}
 	
 	
 
@@ -154,7 +123,24 @@ public class EvLine extends EvObject implements Cloneable
 			}
 		}
 	
-	
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			for(Object ee:e.getChildren())
+				{
+				Element el=(Element)ee;
+				Vector4d pos=new Vector4d();
+				pos.x=el.getAttribute("x").getDoubleValue();
+				pos.y=el.getAttribute("y").getDoubleValue();
+				pos.z=el.getAttribute("z").getDoubleValue();
+				if(el.getAttribute("frame")!=null)
+					pos.w=el.getAttribute("frame").getDoubleValue();
+				pos.add(pos);
+				}
+			}
+		catch (DataConversionException e1){e1.printStackTrace();}
+		}
 	
 	
 	

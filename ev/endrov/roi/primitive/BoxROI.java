@@ -36,19 +36,7 @@ public class BoxROI extends ROI
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				BoxROI meta=new BoxROI();
-				meta.regionFrames.loadRange(e,"f");
-				meta.regionX.loadRange(e,"x");
-				meta.regionY.loadRange(e,"y");
-				meta.regionZ.loadRange(e,"z");
-				meta.regionChannels.loadRange(e, "channel");
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,BoxROI.class);
 		
 		ROI.addType(new ROIType()
 			{
@@ -74,7 +62,16 @@ public class BoxROI extends ROI
 		regionZ.saveRange(e, "z");
 		regionChannels.saveRange(e, "channel");
 		}
-	
+
+	public void loadMetadata(Element e)
+		{
+		regionFrames.loadRange(e,"f");
+		regionX.loadRange(e,"x");
+		regionY.loadRange(e,"y");
+		regionZ.loadRange(e,"z");
+		regionChannels.loadRange(e, "channel");
+		}
+
 	
 	/******************************************************************************************************
 	 *                               Iterator                                                             *

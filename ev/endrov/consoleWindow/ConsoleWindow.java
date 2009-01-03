@@ -76,12 +76,15 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	//GUI components
 	private JTextArea history=new JTextArea();
 	private JTextFieldHistorized commandLine=new JTextFieldHistorized();
-	private JTextArea commandArea=new JTextArea();
+	private JTextArea commandArea=new JTextArea("\n\n\n");
+	private JScrollPane hs=new JScrollPane(history, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	
 	
 	private JMenu consoleMenu=new JMenu("Console");
 	private JMenuItem miShowTraces=new JCheckBoxMenuItem("Show traces",false);
 	private JMenuItem miMultiLineInput=new JCheckBoxMenuItem("Multi-line input",false);
+	private JButton bMultiGo=new JButton("Run");	
+	private JPanel pMulti=new JPanel(new BorderLayout());
 	
 	/**
 	 * Take new log events and put them in console history
@@ -208,14 +211,18 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		});
 		
 		
-		JScrollPane hs=new JScrollPane(history, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		history.setEditable(false);
 		commandLine.addActionListener(this);
 		history.addKeyListener(this);
 		addKeyListener(this);
 		miShowTraces.addChangeListener(this);
 		miMultiLineInput.addActionListener(this);
-	
+
+		bMultiGo.addActionListener(this);
+		
+		pMulti.add(commandArea,BorderLayout.CENTER);
+		pMulti.add(bMultiGo,BorderLayout.EAST);
+
 		/*
 		consoleOS=new OutputStream(){
 			public void write(int b) throws IOException
@@ -292,7 +299,6 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 			String cmd=commandLine.getText();
 			addHistory("> "+cmd+"\n");
 			commandLine.setText("");
-			addHistory("> "+cmd+"\n");
 			execLine(cmd);
 			}
 		else if(e.getSource()==miMultiLineInput)
@@ -300,7 +306,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 			if(miMultiLineInput.isSelected())
 				{
 				remove(commandLine);
-				add(commandArea,BorderLayout.SOUTH);
+				add(pMulti,BorderLayout.SOUTH);
 /*				commandArea.setVisible(true);
 				commandLine.setVisible(false);*/
 				revalidate();
@@ -308,7 +314,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 				}
 			else
 				{
-				remove(commandArea);
+				remove(pMulti);
 				add(commandLine,BorderLayout.SOUTH);
 		/*		commandArea.setVisible(false);
 				commandLine.setVisible(true);*/
@@ -335,10 +341,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 			c.requestFocus();
 			lastFocusComponent=new WeakReference<Component>(null);
 			if(f!=null)
-				{
 				f.evw.toFront();
-				System.out.println("tofront");
-				}
 			}
 		}
 
@@ -357,6 +360,8 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public void addHistory(String s)
 		{
 		history.append(s);
+		history.setCaretPosition(history.getText().length() );
+//		hs.scrollRectToVisible(		  new Rectangle(0,history.getHeight()-2,1,1));
 		}
 
 

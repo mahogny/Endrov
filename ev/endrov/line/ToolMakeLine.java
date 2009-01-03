@@ -204,7 +204,7 @@ public class ToolMakeLine implements ImageWindowTool
 			
 			BasicWindow.updateWindows();
 			editing=false;
-			a.ob.metaObjectModified=true;
+			a.ob.setMetadataModified();
 			}
 		else
 			{
@@ -227,7 +227,7 @@ public class ToolMakeLine implements ImageWindowTool
 				activeAnnot.i++;
 //				activeAnnot.ob.pos.remove(activeAnnot.i);
 	//			activeAnnot=null;
-				activeAnnot.ob.metaObjectModified=true;
+				activeAnnot.ob.setMetadataModified();
 				}
 //			else
 			}
@@ -238,7 +238,7 @@ public class ToolMakeLine implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			activeAnnot.ob.metaObjectModified=true;
+			activeAnnot.ob.setMetadataModified();
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
 			activeAnnot.ob.pos.get(activeAnnot.i).x=v.x;
 			activeAnnot.ob.pos.get(activeAnnot.i).y=v.y;

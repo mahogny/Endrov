@@ -1,10 +1,11 @@
 package endrov.data;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
+
+import org.jdom.Element;
+
+import endrov.ev.EV;
+import endrov.ev.Log;
 
 
 /**
@@ -30,9 +31,13 @@ public class EvContainer
 		else
 			{
 			coreMetadataModified=false;
-			for(EvObject ob:metaObject.values())
-				ob.metaObjectModified=false;
+			for(EvContainer ob:metaObject.values())
+				ob.coreMetadataModified=false;
 			}
+		}
+	public void setMetadataModified()
+		{
+		setMetadataModified(true);
 		}
 	
 	/**
@@ -108,7 +113,145 @@ public class EvContainer
 			metaObject.remove(id);
 		}	
 	
+	/*
+	public void saveSubObjectsXML(Element ostElement)
+		{
+		for(String id:metaObject.keySet())
+			{
+			EvObject o=metaObject.get(id);
+			Element el=new Element("TEMPNAME");
+			el.setAttribute("id",""+id);
+			o.saveMetadata(el);
+			ostElement.addContent(el);
+			}
+		}
+*/
 	
+	
+	/**
+	 * Serialize object and all children
+	 */
+	public void recursiveSaveMetadata(Element root)
+		{
+		for(String id:metaObject.keySet())
+			{
+			EvObject o=metaObject.get(id);
+			Element el=new Element("TEMPNAME");
+			el.setAttribute("id",""+id);
+			o.saveMetadata(el);
 
+			//subobjects
+			if(!o.metaObject.isEmpty())
+				{
+				Element sube=new Element("ostsubobjects");
+				o.recursiveSaveMetadata(sube);
+				el.addContent(sube);
+				}
+			root.addContent(el);
+			}
+		}
 
+	/**
+	 * Load object and all children
+	 */
+	public void recursiveLoadMetadata(Element element)
+		{
+		//Extract objects
+		for(Element child:EV.castIterableElement(element.getChildren()))
+			{
+			Class<? extends EvObject> ext=EvData.extensions.get(child.getName());
+			EvObject o=null;
+			if(ext==null)
+				o=new CustomObject();
+			else
+				{
+				try
+					{
+					o=ext.newInstance();
+					}
+				catch (InstantiationException e)
+					{
+					e.printStackTrace();
+					}
+				catch (IllegalAccessException e)
+					{
+					e.printStackTrace();
+					}
+				}
+			String sid=child.getAttributeValue("id");
+			String id;
+			if(sid==null) 
+				//TODO this should disappear once all OST is 3.2
+				//This is only needed for imagesets without the EV extended attributes
+				//should maybe grab a free one (detect)
+				//id=""+-1;
+				id="im"; //This is for the OST3 transition
+			else
+				id=sid;
+			
+			Element subob=child.getChild("ostsubobjects");
+			if(subob!=null)
+				{
+				o.recursiveLoadMetadata(child);
+				child.removeContent(subob);
+				}
+			o.loadMetadata(child);
+			metaObject.put(id, o);
+			Log.printLog("Found meta object of type "+child.getName());
+			}
+		}
+	
+	
+	/**
+	 * Extract EvObjects from an element.
+	 * @deprecated
+	 */
+	/*
+	private static Map<String,EvObject> extractSubObjectsFromXML(Element element)
+		{
+		Map<String,EvObject> obs=new HashMap<String, EvObject>();
+	//Extract objects
+		for(Element child:EV.castIterableElement(element.getChildren()))
+			{
+			Class<? extends EvObject> ext=EvData.extensions.get(child.getName());
+			EvObject o=null;
+			if(ext==null)
+				{
+				o=new CustomObject();
+				o.loadMetadata(child);
+				Log.printLog("Found unknown meta object of type "+child.getName());
+				}
+			else
+				{
+				try
+					{
+					o=ext.newInstance();
+					}
+				catch (InstantiationException e)
+					{
+					e.printStackTrace();
+					}
+				catch (IllegalAccessException e)
+					{
+					e.printStackTrace();
+					}
+				o.loadMetadata(child);
+				Log.printLog("Found meta object of type "+child.getName());
+				}
+			String sid=child.getAttributeValue("id");
+			String id;
+			if(sid==null) 
+				//TODO this should disappear once all OST is 3.2
+				//This is only needed for imagesets without the EV extended attributes
+				//should maybe grab a free one (detect)
+				//id=""+-1;
+				id="im"; //This is for the OST3 transition
+			else
+				id=sid;
+			obs.put(id, o);
+			}
+		return obs;
+		}
+*/
+	
 	}

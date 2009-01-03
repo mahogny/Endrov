@@ -10,11 +10,5 @@ import java.awt.image.BufferedImage;
  */
 public interface EvIOImage
 	{
-	
-	
 	public BufferedImage loadJavaImage();
-	
-	
-
-
 	}

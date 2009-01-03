@@ -23,14 +23,7 @@ public class MaskROI3 extends ROI
 	//private static ImageIcon icon=null;//new ImageIcon(UnionROI.class.getResource("iconUnion.png"));	
 	public static void initPlugin()
 		{
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				MaskROI3 meta=new MaskROI3();
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,MaskROI3.class);
 		/*
 		ROI.addType(new ROIType()
 			{
@@ -198,6 +191,10 @@ public class MaskROI3 extends ROI
 		{
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		}
+
 	
 	/**
 	 * Get widget for editing this ROI

@@ -7,8 +7,6 @@ import javax.swing.*;
 import org.jdom.*;
 
 import endrov.data.EvData;
-import endrov.data.EvObject;
-import endrov.data.EvObjectType;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
@@ -25,19 +23,7 @@ public class EllipseROI extends ROI
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				EllipseROI meta=new EllipseROI();
-				meta.regionFrames.loadRange(e,"f");
-				meta.regionX.loadRange(e,"x");
-				meta.regionY.loadRange(e,"y");
-				meta.regionZ.loadRange(e,"z");
-				meta.regionChannels.loadRange(e, "channel");
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,EllipseROI.class);
 		
 		ROI.addType(new ROIType()
 			{
@@ -59,6 +45,15 @@ public class EllipseROI extends ROI
 		regionChannels.saveRange(e, "channel");
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		regionFrames.loadRange(e,"f");
+		regionX.loadRange(e,"x");
+		regionY.loadRange(e,"y");
+		regionZ.loadRange(e,"z");
+		regionChannels.loadRange(e, "channel");
+		}
+
 
 	/******************************************************************************************************
 	 *                               Iterator                                                             *

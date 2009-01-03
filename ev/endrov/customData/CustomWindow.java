@@ -155,7 +155,9 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 				String type=JOptionPane.showInputDialog("Type of new object");
 				if(type!=null)
 					{
-					meta.addMetaObject(new CustomObject(new Element(type)));
+					CustomObject ob=new CustomObject();
+					ob.loadMetadata(new Element(type));
+					meta.addMetaObject(ob);
 					BasicWindow.updateWindows();
 					}
 				}
@@ -255,7 +257,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 						TreePath p=e.getPath();
 						treeModel.addChild(e, new Element(name));
 						tree.setSelectionPath(p);    //should not be needed
-						objectCombo.getObject().metaObjectModified=true;
+						objectCombo.getObject().setMetadataModified();
 						}
 					}
 				});
@@ -271,7 +273,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 						TreePath p=e.getPath();
 						treeModel.updateElement(e);
 						tree.setSelectionPath(p);    //should not be needed
-						objectCombo.getObject().metaObjectModified=true;
+						objectCombo.getObject().setMetadataModified();
 						}
 					}
 				});
@@ -286,7 +288,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 						parent.e.removeContent(e.e);
 						treeModel.emitAllChanged();
 						tree.setSelectionPath(parent.getPath());
-						objectCombo.getObject().metaObjectModified=true;
+						objectCombo.getObject().setMetadataModified();
 						}
 					}
 				});

@@ -21,7 +21,7 @@ public class EvLineRenderer implements ImageWindowRenderer
 	public Collection<EvLine> getVisible()
 		{
 		//TODO: pick out
-		return EvLine.getObjects(w.getImageset());
+		return w.getImageset().getObjects(EvLine.class);
 		}
 	
 	/**

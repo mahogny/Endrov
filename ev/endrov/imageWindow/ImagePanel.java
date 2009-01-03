@@ -57,7 +57,7 @@ public class ImagePanel extends JPanel
 						{
 						bufi=image.getJavaImage();
 						if(bufi==null)
-							throw new Exception();
+							throw new Exception("Got null image from I/O");
 						ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
 						BufferedImage bufo=new BufferedImage(bufi.getWidth(), bufi.getHeight(), bufi.getType());
 						bcfilter.filter(bufi,bufo);

@@ -163,7 +163,8 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				{
 				JLabel lTitle=new JLabel(devName.toString());
 				lTitle.setToolTipText(hw.getDescName()+" ");
-				
+
+				b.setToolTipText("Open/Close shutter");
 				setOpen(b.isSelected());
 				b.addActionListener(this);
 				

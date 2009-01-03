@@ -21,11 +21,11 @@ import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 
 /**
- * 
+ * Widget to move microscope stage 
  * @author Johan Henriksson
  *
  */
-public class StagePanel /*extends JPanel */ implements ActionListener 
+public class StagePanel implements ActionListener 
 	{
 	static final long serialVersionUID=0;
 	
@@ -59,7 +59,7 @@ public class StagePanel /*extends JPanel */ implements ActionListener
 //		JPanel p=new JPanel(new GridLayout(hw.getNumAxis(),1));
 		for(int curaxis=0;curaxis<hw.getNumAxis();curaxis++)
 			{
-			JLabel lab=new JLabel("Axis "+hw.getAxisName()[curaxis]+" ");
+			JLabel lab=new JLabel("Axis "+hw.getAxisName()[curaxis]+" [um] ");
 			lab.setToolTipText(devName+" ("+hw.getDescName()+") - "+hw.getAxisName()[curaxis]);
 			
 			OneAxisPanel a=new OneAxisPanel();
