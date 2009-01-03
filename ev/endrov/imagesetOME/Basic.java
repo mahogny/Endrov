@@ -16,10 +16,13 @@ public class Basic
 		{
 		EvDataMenu.extensions.add(new DataMenuExtension()
 			{
-
+			public void buildData(JMenu menu)
+				{
+				
+				}
 			public void buildOpen(JMenu menu)
 				{
-				final JMenu miOME=new JMenu("OME");
+				final JMenu miOME=new JMenu("ome");
 				addMetamenu(menu,miOME);
 
 				//Login
@@ -73,9 +76,9 @@ public class Basic
 									{
 									public void actionPerformed(ActionEvent e)
 										{
-										EvData.metadata.add(new OMEImageset(omesession, im));
-										
-										BasicWindow.updateWindows();
+										EvData data=new EvData();
+										data.io=new EvIODataOME(data, omesession, im);
+										EvData.registerOpenedData(data);
 										}
 									});
 								

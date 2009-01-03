@@ -41,28 +41,7 @@ public class Shell extends EvObject
 		
 		ModelWindow.modelWindowExtensions.add(new ShellModelExtension());
 		
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				Shell shell=new Shell();
-				try
-					{
-					shell.midx=e.getAttribute("x").getDoubleValue();
-					shell.midy=e.getAttribute("y").getDoubleValue();
-					shell.midz=e.getAttribute("z").getDoubleValue();
-					shell.major=e.getAttribute("major").getDoubleValue();
-					shell.minor=e.getAttribute("minor").getDoubleValue();
-					shell.angle=e.getAttribute("angle").getDoubleValue();
-					shell.angleinside=e.getAttribute("angleinside").getDoubleValue();
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				return shell;
-				}
-			});
+		EvData.extensions.put(metaType,Shell.class);
 		
 		}
 	
@@ -94,7 +73,26 @@ public class Shell extends EvObject
 		e.setAttribute("angle", ""+angle);
 		e.setAttribute("angleinside", ""+angleinside);
 		}
+
 	
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			midx=e.getAttribute("x").getDoubleValue();
+			midy=e.getAttribute("y").getDoubleValue();
+			midz=e.getAttribute("z").getDoubleValue();
+			major=e.getAttribute("major").getDoubleValue();
+			minor=e.getAttribute("minor").getDoubleValue();
+			angle=e.getAttribute("angle").getDoubleValue();
+			angleinside=e.getAttribute("angleinside").getDoubleValue();
+			}
+		catch (DataConversionException e1)
+			{
+			e1.printStackTrace();
+			}
+		}
+
 	
 	/**
 	 * Desciption of data

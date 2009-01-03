@@ -1,5 +1,6 @@
 package endrov.data;
 
+import java.io.IOException;
 import java.util.List;
 
 import endrov.util.Tuple;
@@ -12,9 +13,9 @@ public interface EvDataSupport
 	{
 	public Integer loadSupports(String file);
 	public List<Tuple<String,String[]>> getLoadFormats();
-	public EvData load(String file) throws Exception;
+	public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception;
 	
 	public Integer saveSupports(String file);
 	public List<Tuple<String,String[]>> getSaveFormats();
-	public EvIOData getSaver(EvData d, String file) throws Exception;
+	public EvIOData getSaver(EvData d, String file) throws IOException;
 	}

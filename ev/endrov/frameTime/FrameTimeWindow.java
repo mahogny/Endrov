@@ -217,7 +217,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			meta.list.clear();
 			for(int i=0;i<inputVector.size();i++)
 				meta.add((Integer)inputVector.get(i)[0].getValue(), (Double)inputVector.get(i)[1].getValue());
-			meta.metaObjectModified=true;
+			meta.setMetadataModified();
 			}
 		}
 	

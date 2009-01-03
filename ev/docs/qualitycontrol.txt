@@ -36,7 +36,8 @@ Additional checks
 * is OST gracefully updated?
 * is jp2 supported?
 * can read TIFF?
-
+* can do jp2?
+* test bash completion
 
 2.13
 	DONE====
@@ -65,83 +66,138 @@ Additional checks
     shutterikonen otydlig
 	3d zoom on laptops with 2 buttons
 	eliminate ChannelMetadata (merge with ChannelImages)
-	
-	TODO====
-    arrows up/down ugly
-    !!!!check that imageloader code does not delete metadata
-    
-	!!!!play forward should always work	
-    !!!!OST bug, compression+save+jp2
-    	saving on existing works
-    	fixed: save to new: no images created. saving to old, not new
-    	channel directories are not created
-    	save as: show progress meter
-		save as: does not change menu entry name
-		loader: do not create empty frames or channels if dir empty
+    starter, --main for other main function
+	new bioformats
+	sub-objects are saved
+	fixed, metadata is not deleted upon loading
+	fixed: micket2: tooltip framecontrol buttons
+	new converter to ost 3.2
+	support for multiple imsets in one file
+	full ost saver implemented except blob renames
+	save as updates menu
+	save/load progress bar
+	imwindow step back fixed. first/last improved
+		
+================================TODO===========================
 
-	OST support multiple imagesets in one file
-    new bioformats
-	new Image internals
-	simple recording 
-    object hierarchy in menus etc
+2.13.1 -- file formats and schema
+
+	support hierarchy of objects properly
+	    object hierarchy in menus etc
+	    new widgets, new create function in widgets
+	    which objects should be drawn in 2d? 3d?
 	working imserv (back to last standard, refactor later)
-    !!!!which objects should be drawn in 2d? 3d?
-    micket: limit on how far one can move outside, picture should never go completely outside
-    micket: 2d zoom was slow    
-    2d zoom at cursor
-    
+	
+
+2.13.2 -- user interface
+	micket2: camera window does not play well with tiled wm since it rescales     
+	play forward should always work
+	image vox render should NOT attempt to show a progress bar if there is nothing to do
+
+2.13.3 -- release management
 	release jinput etc dependent libraries. on my own page if needed
 	can dh_ be used?	
     separate micro-manager
-     
+    put OSX code in jar to simplify distribution?
+    dependencies can be put in a jar+manifest
 
-HOWTO
-recording templates. probably an OST with created channels and preset compression rates.
-and description. what about metadata that should go into imserv?
-
-    
-2.14
-
+2.13.4 -- images, memory usage
+	caching strategy
 	image swap system
-	
-	undo
+	new Image internals
+     
+2.13.x -- simple recording 
+	how to do manual slices?
+	how to do stacks? (manual??)
+	how to do movies?
+	FRAP? calcium?
+	finalize hardware interface
 
+	HOWTO
+		recording templates. probably an OST with created channels and preset compression rates.
+		and description. what about metadata that should go into imserv?
+	     
+2.14.1 -- undo
+	general framework
+	encapsulate all operations
+
+2.?.? -- ROIs
+	ROI definition can be changed. makeinstance? or keep, change for object instance?
+	implement arbitrary shape ROIs
+	strategy for using ROIs
+    ROIs are slow. probably too much redraw. see observers
+    micket didn't find the ROI tool easily	
+
+2.14.2 -- flows
+	check code for UI
+	real-time flows
     flows: icons on items
-    ROIs are slow
-    didn't find the ROI tool easily
+	
+	Flows to create max channel
+	Flows for calcium imaging
+	  "Image" menu, and ROIs, how will this go with filters? I can imagine
+	     filters that take one image in and one out can be thrown into a menu. but should
+	     this way of working be promoted? 
+	  
+	     an image filter then has to be able to take an optional ROI. how does this work
+	     with live filters? should it be possible to attach a filter to a ROI?
+	     will it be possible to run a filter on a single frame? <why would you?>
+	  
+	     how is "analyze" done? graph output object? graph is not a very nice idea, but general
+	     rendering?
+
+2.14.? -- platform integration
 	X associate mime types
+	mac quality: QT integration, in a jar?
+	integration on windows?
+
+2.14.? -- GUI next round
+    micket: limit on how far one can move outside, picture should never go completely outside
+    micket: 2d zoom was slow    
+    2d zoom at cursor
+	imserv new +/- icon
+    micket: arrows up/down ugly
+
+2.14.? -- input
+	full gamepad support
+	rework keybindings
+
+2.14.x
+
+	jp2
+
+	classloader to load jars instead of a starter? can JNI be dealt with?
+		can the race condition be dealt with?
+		one classloader for everything or singletons will be a problem.
+		
+	better use of observers. can they be made more fine-grained, like a tree of listeners?
+		move up until finding one listener
+	imserv better updating list. restrict length. new protocol
+
 
 	log4j standard logging. suggest to micromanager too!!!!
 
-	mac quality: QT integration
 
-  Flows to create max channel
-  Flows for calcium imaging
   
   Remove batch system, allow filters to be applied permanently
   	Can batch be removed? what about creating movies? change into Task?
 
-  "Image" menu, and ROIs, how will this go with filters? I can imagine
-     filters that take one image in and one out can be thrown into a menu. but should
-     this way of working be promoted? 
-  
-     an image filter then has to be able to take an optional ROI. how does this work
-     with live filters? should it be possible to attach a filter to a ROI?
-     will it be possible to run a filter on a single frame? <why would you?>
-  
-     how is "analyze" done? graph output object? graph is not a very nice idea, but general
-     rendering?
+	  
   
   
-  
- 2.15
+2.15 -- applications
 	Store/load recording settings (exposure etc)
 	stitching
 	dynamic range 
     extended depth of focus
     surface from 2d-rendering
+	the movie I got!!!
     
 	movie encoding on linux
+
+2.16 -- pre-3.0 QA
+	deal with every TODO in the code
+	all files should compile or disappear
 
 
 6D := (X,Y,Z,Lambda(wavelength),T, multi stage points). 
@@ -157,7 +213,7 @@ install package classpath
   
   
 debian development ==========
-gcj+classpath has problems, install sun-java
+gcj+classpath has problems. use openjdk
 
 deb http://ftp.sunet.se/pub/Linux/distributions/debian/ lenny main contrib non-free
 deb-src http://ftp.sunet.se/pub/Linux/distributions/debian/ lenny main contrib non-free

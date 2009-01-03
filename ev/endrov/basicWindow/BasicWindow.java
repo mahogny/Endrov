@@ -16,7 +16,7 @@ import javax.swing.*;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
-import endrov.data.LoadProgressDialog;
+import endrov.data.GuiEvDataIO;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
 
@@ -291,7 +291,14 @@ public abstract class BasicWindow extends JPanel
 				public void run()
 					{ 
 					EV.waitUntilStartedUp();
-					LoadProgressDialog loadDialog=new LoadProgressDialog(files.size());
+					List<String> flist=new LinkedList<String>();
+					for(File f:files)
+						flist.add(f.getAbsolutePath());
+					for(EvData d:GuiEvDataIO.loadFile(flist))
+						EvData.registerOpenedData(d);
+
+					/*
+						LoadProgressDialog loadDialog=new LoadProgressDialog(files.size());
 					final List<EvData> dlist=new LinkedList<EvData>();
 					int i=0;
 					for(File f:files)
@@ -316,6 +323,7 @@ public abstract class BasicWindow extends JPanel
 						}
 					});
 					loadDialog.dispose();
+					*/
 					}}.start(); 
 				return true;
 				}

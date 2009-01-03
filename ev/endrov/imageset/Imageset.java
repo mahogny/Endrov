@@ -25,13 +25,16 @@ public class Imageset extends EvObject
 	static
 		{
 		ImageWindow.addImageWindowExtension(new ImagesetImageExtension());
-		EvData.extensions.put(metaType,new ImagesetMetaObjectExtension());
+		EvData.extensions.put(metaType,Imageset.class);
 		
 		
 		}
 	
 	
 	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
 	
 
 	
@@ -388,7 +391,6 @@ public class Imageset extends EvObject
 			return framedata.get(prop);
 			}
 
-//		public String name; //TODO: do not store name here
 		
 		/** Binning, a scale factor from the microscope */
 		public int chBinning=1;
@@ -467,9 +469,6 @@ public class Imageset extends EvObject
 	
 	/** Frame data */
 	public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
-	
-	/** Channel specific data */
-//	public HashMap<String,ChannelImages> channelMeta=new HashMap<String,ChannelImages>();
 
 	public String getMetaTypeDesc()
 		{
@@ -588,107 +587,93 @@ public class Imageset extends EvObject
 	/******************************************************************************************************
 	 *            Class: XML Reader and writer of this type of meta object                                *
 	 *****************************************************************************************************/
-	
-	public static class ImagesetMetaObjectExtension implements EvObjectType
+
+
+	public void loadMetadata(Element e)
 		{
-		public EvObject extractObjects(Element e)
+		for(Object oi:e.getChildren())
 			{
-			Imageset meta=new Imageset();
-			
-			for(Object oi:e.getChildren())
-				{
-				Element i=(Element)oi;
-				
-				if(i.getName().equals("timestep"))
-					meta.metaTimestep=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("resX"))
-					meta.resX=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("resY"))
-					meta.resY=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("resZ"))
-					meta.resZ=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("NA"))
-					meta.metaNA=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("objective"))
-					meta.metaObjective=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("optivar"))
-					meta.metaOptivar=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("campix"))
-					meta.metaCampix=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("slicespacing"))
-					meta.metaSlicespacing=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("sample"))
-					meta.metaSample=i.getValue();
-				else if(i.getName().equals("description"))
-					meta.metaDescript=i.getValue();
-				else if(i.getName().equals("channel"))
-					{
-					//Imageset.ChannelImages ch=
-					extractChannel(meta, i);
-//					meta.channelImages.put(ch.name, ch);
-					}
-				else if(i.getName().equals("frame"))
-					extractFrame(meta.metaFrame, i);
-				else
-					meta.metaOther.put(i.getName(), i.getValue());
-				}
-			
-			return meta;
+			Element i=(Element)oi;
+
+			if(i.getName().equals("timestep"))
+				metaTimestep=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("resX"))
+				resX=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("resY"))
+				resY=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("resZ"))
+				resZ=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("NA"))
+				metaNA=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("objective"))
+				metaObjective=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("optivar"))
+				metaOptivar=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("campix"))
+				metaCampix=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("slicespacing"))
+				metaSlicespacing=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("sample"))
+				metaSample=i.getValue();
+			else if(i.getName().equals("description"))
+				metaDescript=i.getValue();
+			else if(i.getName().equals("channel"))
+				extractChannel(i);
+			else if(i.getName().equals("frame"))
+				extractFrame(metaFrame, i);
+			else
+				metaOther.put(i.getName(), i.getValue());
 			}
-		
-		/**
-		 * Extract channel XML data
-		 */
-		public void extractChannel(Imageset data, Element e)
-			{
-			String chname=e.getAttributeValue("name");
-			
-			Imageset.ChannelImages ch=data.createChannel(chname);
-//			new Imageset.ChannelImages();
-//			ch.name=
-			
-			for(Object oi:e.getChildren())
-				{
-				Element i=(Element)oi;
-				
-				if(i.getName().equals("dispX"))
-					ch.dispX=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("dispY"))
-					ch.dispY=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("binning"))
-					ch.chBinning=Integer.parseInt(i.getValue());
-				else if(i.getName().equals("compression"))
-					ch.compression=Integer.parseInt(i.getValue());
-				else if(i.getName().equals("frame"))
-					extractFrame(ch.metaFrame, i);
-				else
-					ch.metaOther.put(i.getName(), i.getValue());
-				}
-			
-//			return ch;
-			}
-		
-		/**
-		 * Get frame metadata
-		 */
-		public void extractFrame(HashMap<Integer,HashMap<String,String>> metaFrame, Element e)
-			{
-			int fid=Integer.parseInt(e.getAttributeValue("frame"));
-			for(Object oi:e.getChildren())
-				{
-				Element i=(Element)oi;
-				HashMap<String,String> frame=metaFrame.get(fid);
-				if(frame==null)
-					{
-					frame=new HashMap<String,String>();
-					metaFrame.put(fid, frame);
-					}
-				frame.put(i.getName(), i.getValue());
-				}
-			
-			}
-		
 		}
+
+	/**
+	 * Extract channel XML data
+	 */
+	public void extractChannel(Element e)
+		{
+		String chname=e.getAttributeValue("name");
+
+		Imageset.ChannelImages ch=createChannel(chname);
+
+		for(Object oi:e.getChildren())
+			{
+			Element i=(Element)oi;
+
+			if(i.getName().equals("dispX"))
+				ch.dispX=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("dispY"))
+				ch.dispY=Double.parseDouble(i.getValue());
+			else if(i.getName().equals("binning"))
+				ch.chBinning=Integer.parseInt(i.getValue());
+			else if(i.getName().equals("compression"))
+				ch.compression=Integer.parseInt(i.getValue());
+			else if(i.getName().equals("frame"))
+				extractFrame(ch.metaFrame, i);
+			else
+				ch.metaOther.put(i.getName(), i.getValue());
+			}
+		}
+
+	/**
+	 * Get frame metadata
+	 */
+	public void extractFrame(HashMap<Integer,HashMap<String,String>> metaFrame, Element e)
+		{
+		int fid=Integer.parseInt(e.getAttributeValue("frame"));
+		for(Object oi:e.getChildren())
+			{
+			Element i=(Element)oi;
+			HashMap<String,String> frame=metaFrame.get(fid);
+			if(frame==null)
+				{
+				frame=new HashMap<String,String>();
+				metaFrame.put(fid, frame);
+				}
+			frame.put(i.getName(), i.getValue());
+			}
+
+		}
+
 	
 	
 	

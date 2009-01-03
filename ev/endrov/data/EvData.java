@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -71,7 +68,8 @@ public class EvData extends EvContainer
 		//priorities on update? windows should really go last. then the updateWindows call here is solved.
 		}
 	
-	public static TreeMap<String,EvObjectType> extensions=new TreeMap<String,EvObjectType>();
+//	public static TreeMap<String,EvObjectType> extensions=new TreeMap<String,EvObjectType>();
+	public static TreeMap<String,Class<? extends EvObject>> extensions=new TreeMap<String,Class<? extends EvObject>>();
 	public static Vector<EvData> metadata=new Vector<EvData>();
 
 	public static void addMetadata(EvData m)
@@ -133,21 +131,25 @@ public class EvData extends EvContainer
 	
 	public interface FileIOStatusCallback
 		{
-		public void fileIOStatus(double proc, String text);
+		/**
+		 * Tell current status. Fraction is within 0-1
+		 */
+		public void fileIOStatus(double frac, String text);
 		}
 
-	
+	public static FileIOStatusCallback deafFileIOCB=new FileIOStatusCallback(){
+		public void fileIOStatus(double frac, String text){}
+	};
 	
 	/******************************************************************************************************
 	 *                               Loading                                                              *
 	 *****************************************************************************************************/
 
 	/** Load file by path/URI */
-	public static EvData loadFile(String file){return loadFile(file,null);}
-
+	public static EvData loadFile(String file){return loadFile(file,deafFileIOCB);}
 	
 	/** Load file by path */
-	public static EvData loadFile(File file){return loadFile(file.getPath(),null);}
+	public static EvData loadFile(File file){return loadFile(file.getPath(),deafFileIOCB);}
 	
 	/** Load file by path, receive feedback on process */
 	public static EvData loadFile(File file, FileIOStatusCallback cb){return loadFile(file.getPath(),cb);}
@@ -172,7 +174,7 @@ public class EvData extends EvContainer
 			{
 			try
 				{
-				EvData data=thes.load(file);
+				EvData data=thes.load(file, cb);
 				if(cb!=null)
 					cb.fileIOStatus(0, "Loading "+file);
 				if(data!=null)
@@ -187,19 +189,22 @@ public class EvData extends EvContainer
 		return null;
 		}
 
+	
+	
+	
+	
 	/**
 	 * Load file by open dialog
+	 * @deprecated
 	 */
+	/*
 	public static EvData loadFileDialog(FileIOStatusCallback cb)
 		{
+		//TODO cb will not work properly due to swing. the only way around this is to 
+		//TODO separate loading dialog and loading IO. it goes into a thread, swingutils will send updates.
+		
 		JFileChooser fc=new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		
-		/*final TreeSet<String> endings=new TreeSet<String>();
-		for(EvDataSupport h:supportFileFormats)
-			for(Tuple<String,String[]> f:h.getLoadFormats())
-				for(String s:f.snd())
-					endings.add(s);*/
 		
 		fc.setFileFilter(new javax.swing.filechooser.FileFilter()
 			{
@@ -229,6 +234,8 @@ public class EvData extends EvContainer
 			}
 		return null;
 		}
+*/
+
 	
 
 	/******************************************************************************************************
@@ -236,16 +243,47 @@ public class EvData extends EvContainer
 	 *****************************************************************************************************/
 
 	/** Save by file or URI */
-	public void saveDataAs(String file) throws IOException {saveDataAs(file,null);}
+	public void saveDataAs(String file) throws IOException {saveDataAs(file,deafFileIOCB);}
 
 	/** Save by path */
-	public void saveDataAs(File file) throws IOException {saveDataAs(file.getPath(),null);}
+	public void saveDataAs(File file) throws IOException {saveDataAs(file.getPath(),deafFileIOCB);}
 
+	/**
+	 * Point I/O to a new file, prepare for saving. This does not affect currently loaded data 
+	 */
+	public void setSaver(String file) throws IOException
+		{
+		EvDataSupport thes=null;
+		int lowest=0;
+		for(EvDataSupport s:EvData.supportFileFormats)
+			{
+			Integer sup=s.saveSupports(file);
+			if(sup!=null && (thes==null || lowest>sup))
+				{
+				thes=s;
+				lowest=sup;
+				}
+			}
+		if(thes!=null)
+			{
+			EvIOData io=thes.getSaver(this, file);
+			if(io!=null)
+				this.io=io;
+			else
+				throw new IOException("Plugin does not support saving this file");
+			}
+		else
+			throw new IOException("No suitable plugin to save file");
+		}
+	
 	/**
 	 * Save file by path, receive feedback on process. Return if ok.
 	 */
 	public void saveDataAs(String file, FileIOStatusCallback cb) throws IOException
 		{
+		setSaver(file);
+		saveData(cb);
+		/*
 		EvDataSupport thes=null;
 		int lowest=0;
 		for(EvDataSupport s:EvData.supportFileFormats)
@@ -264,10 +302,8 @@ public class EvData extends EvContainer
 				EvIOData io=thes.getSaver(this, file);
 				if(io!=null)
 					{
-					if(cb!=null)
-						cb.fileIOStatus(0, "Saving "+file);
 					this.io=io;
-					saveData();
+					saveData(cb);
 					}
 				}
 			catch (Exception e)
@@ -277,52 +313,10 @@ public class EvData extends EvContainer
 			}
 		else
 			throw new IOException("No suitable plugin to save file");
+			*/
 		}
 
-	/**
-	 * Save file by dialog
-	 */
-	public void saveFileDialog(FileIOStatusCallback cb)
-		{
-		JFileChooser fc=new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		
-		fc.setFileFilter(new javax.swing.filechooser.FileFilter()
-			{
-			public boolean accept(File f)
-				{
-				if(f.isDirectory())
-					return true;
-				for(EvDataSupport s:EvData.supportFileFormats)
-					if(s.loadSupports(f.getPath())!=null)
-						return true;
-				return false;
-				}
-			public String getDescription()
-				{
-				return "Data Files and Imagesets";
-				}
-			});
-		fc.setCurrentDirectory(EvData.getLastDataPath());
-		int ret=fc.showSaveDialog(null);
-		if(ret==JFileChooser.APPROVE_OPTION)
-			{
-			EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
-			File filename=fc.getSelectedFile();
-			if(filename.getName().indexOf(".")==-1)
-				filename=new File(filename.getParent(),filename.getName()+".ost");
-			if(cb!=null)
-				cb.fileIOStatus(0, "Saving "+filename.getName());
-			try
-				{
-				saveDataAs(filename.getPath(), cb);
-				}
-			catch (IOException e)
-				{
-				JOptionPane.showMessageDialog(null, "Found no suitable plugin to save "+filename.getName());
-				}
-			}
-		}
+
 	
 	
 	/******************************************************************************************************
@@ -337,20 +331,22 @@ public class EvData extends EvContainer
 	 */
 	public EvIOData io=null;
 
+	/** Version of metadata */
+	public String metadataVersion="0";
+
 
 	public void saveData()
 		{
-		io.saveData(this);
+		saveData(deafFileIOCB);
+		}
+	
+	public void saveData(EvData.FileIOStatusCallback cb)
+		{
+		io.saveData(this, cb);
+		setMetadataModified(false);
 		}
 	
 	
-	
-
-	
-	
-	
-	/** Version of metadata */
-	public String metadataVersion="0";
 
 	
 	/******************************************************************************************************
@@ -397,15 +393,17 @@ public class EvData extends EvContainer
   		if(element.getAttribute("version")!=null)
   			metadataVersion=element.getAttributeValue("version");
   		
-  		//metadata 3->3.1
-  		if(!metadataVersion.equals("3.1"))
+  		//metadata 3->3.2
+  		if(!metadataVersion.equals("3.2"))
 	  		{
-	  		System.out.println("Updating metadata to 3.1");
+	  		System.out.println("Updating metadata to 3.2");
 	  		Element eIm=element.getChild("imageset");
 	  		EvDecimal timestep=new EvDecimal(eIm.getChild("timestep").getText());
 	  		help331(element, timestep);
 	  		}
   		
+  		recursiveLoadMetadata(element);
+  		/*
   		//Extract objects
   		for(Element child:EV.castIterableElement(element.getChildren()))
   			{
@@ -432,6 +430,7 @@ public class EvData extends EvContainer
   				id=sid;
  				metaObject.put(id, o);
   			}
+  			*/
     	} 
     catch (Exception e) 
     	{
@@ -442,24 +441,40 @@ public class EvData extends EvContainer
 	
 	/**
 	 * Get all child-objects from XML
-	 * TODO: What about object id?
+	 * TODO What about object id?
+	 * TODO can extractsubobject replace this function?
+	 * @deprecated
 	 */
 	public static Vector<EvObject> getChildObXML(Element element)
 		{
 		Vector<EvObject> obs=new Vector<EvObject>();
 		for(Element child:EV.castIterableElement(element.getChildren()))
 			{
-			EvObjectType ext=extensions.get(child.getName());
-			EvObject o;
+			Class<? extends EvObject> ext=extensions.get(child.getName());
+			EvObject o=null;
 			if(ext==null)
 				{
-				o=new CustomObject(child);
+				o=new CustomObject();
+				o.loadMetadata(child);
 				Log.printLog("Found unknown meta object of type "+child.getName());
 				}
 			else
 				{
-				o=ext.extractObjects(child);
-				Log.printLog("Found meta object of type "+child.getName());
+				try
+					{
+					o=ext.newInstance();
+					o.loadMetadata(child);
+					Log.printLog("Found meta object of type "+child.getName());
+					}
+				catch (InstantiationException e)
+					{
+					e.printStackTrace();
+					}
+				catch (IllegalAccessException e)
+					{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					}
 				}
 			obs.add(o);
 			}
@@ -472,16 +487,11 @@ public class EvData extends EvContainer
 	public Document saveXmlMetadata() 
 		{
 		Element ostElement=new Element("ost");
-		ostElement.setAttribute("version","3.1");
+		ostElement.setAttribute("version","3.2");
 		Document doc = new Document(ostElement);
-		for(String id:metaObject.keySet())
-			{
-			EvObject o=metaObject.get(id);
-			Element el=new Element("TEMPNAME");
-			el.setAttribute("id",""+id);
-			o.saveMetadata(el);
-			ostElement.addContent(el);
-			}
+//		save
+		recursiveSaveMetadata(ostElement);
+//		saveSubObjectsXML(ostElement);
 		return doc;
 		}
 

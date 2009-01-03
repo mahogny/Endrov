@@ -6,8 +6,6 @@ import javax.swing.*;
 import org.jdom.*;
 
 import endrov.data.EvData;
-import endrov.data.EvObject;
-import endrov.data.EvObjectType;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
@@ -27,15 +25,7 @@ public class SubtractROI extends CompoundROI
 	public static void initPlugin(){}
 	static
 		{
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				SubtractROI meta=new SubtractROI();
-				meta.loadCompoundMetadata(e);
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,SubtractROI.class);
 		
 		ROI.addType(new ROIType()
 			{
@@ -267,7 +257,12 @@ public class SubtractROI extends CompoundROI
 		{
 		saveCompoundMetadata(metaType, e);
 		}
-	
+
+	public void loadMetadata(Element e)
+		{
+		loadCompoundMetadata(e);
+		}
+
 	
 	/**
 	 * Get widget for editing this ROI

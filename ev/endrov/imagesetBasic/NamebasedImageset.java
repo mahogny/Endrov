@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
@@ -17,7 +16,6 @@ import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingTools;
 
@@ -260,6 +258,11 @@ public class NamebasedImageset implements EvIOData
 				File dir=basedir;
 				fileList=dir.listFiles();
 
+				//Parse list of channels into vector
+				StringTokenizer ctok=new StringTokenizer(channelList,",");
+				while(ctok.hasMoreTokens())
+					channelVector.add(ctok.nextToken());
+
 				//Get the imageset and clean it up
 				Imageset im;
 				Collection<Imageset> ims=data.getObjects(Imageset.class);
@@ -270,17 +273,12 @@ public class NamebasedImageset implements EvIOData
 					im=new Imageset();
 					data.metaObject.put("im", im);
 					}
-				im.channelImages.clear();
 				
-				//Parse list of channels into vector
-				StringTokenizer ctok=new StringTokenizer(channelList,",");
-				while(ctok.hasMoreTokens())
-					channelVector.add(ctok.nextToken());
-				
-				//Remove/add meta corresponding to channels. why needed?
+				//Create channels, remove unneeded (for rebuild)
+				im.channelImages.keySet().retainAll(channelVector);
 				for(String cname:channelVector)
 					im.createChannel(cname);
-				
+				/*
 				//Clear up old database
 				List<String> channelsToRemove=new LinkedList<String>(); 
 				for(Map.Entry<String, ChannelImages> entry:im.channelImages.entrySet())
@@ -295,6 +293,7 @@ public class NamebasedImageset implements EvIOData
 					}
 				for(String s:channelsToRemove)
 					im.channelImages.remove(s);
+				*/
 				
 				//Go through list of files
 				File f;
@@ -451,7 +450,7 @@ public class NamebasedImageset implements EvIOData
 		return basedir.getName();
 		}
 
-	public void saveData(EvData d)
+	public void saveData(EvData d, EvData.FileIOStatusCallback cb)
 		{
 		JOptionPane.showMessageDialog(null, "This image format does not support saving. Convert to e.g. OST instead");
 		}

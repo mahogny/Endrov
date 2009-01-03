@@ -32,7 +32,7 @@ public class FilterSeq extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,new FilterSeqObjectType());
+	//	EvData.extensions.put(metaType,new FilterSeqObjectType());
 		}
 
 	
@@ -90,6 +90,11 @@ public class FilterSeq extends EvObject
 			e.addContent(e2);
 			}
 		}
+	public void loadMetadata(Element e)
+		{
+		//TODO implement if ever to use
+		}
+	
 	
 	/******************************************************************************************************
 	 *                               Filter Sequence                                                      *

@@ -78,7 +78,6 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 				frame=new EvDecimal((Integer)e);
 			else if(e instanceof EvDecimal)
 				frame=(EvDecimal)e;
-			//frame=(EvDecimal)e;
 			for(ChangeListener li:listeners)
 				li.stateChanged(new ChangeEvent(this));
 			}
@@ -137,6 +136,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	public FrameControlImage(ChangeListener l)
 		{	
 		listener=l;
+
+		buttonStepBack.setToolTipText("Previous frame");
+		buttonStepForward.setToolTipText("Next frame");
+		buttonPlayBack.setToolTipText("Play backwards");
+		buttonPlayForward.setToolTipText("Play forward");
+		buttonBeginning.setToolTipText("Go to first frame");
+		buttonEnd.setToolTipText("Go to last frame");
 		
 		//Find a unique group ID
 		spinnerGroup.setValue(FrameControl.getUniqueGroup());
@@ -224,7 +230,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		else if(e.getSource()==buttonStepForward)
 			stepForward();
 		else if(e.getSource()==buttonStepBack)
-			setFrame(getFrame().subtract(EvDecimal.ONE)); //TODO bd BAD!
+			stepBack();
 		else if(e.getSource()==buttonPlayForward)
 			stopStart(true);
 		else if(e.getSource()==buttonPlayBack)
@@ -276,13 +282,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	public void goFirstFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).closestFrameAfter(new EvDecimal(-1000000))); //TODO bd BAD!
+			setFrame(getImageset().getChannel(channel).imageLoader.firstKey());
 		}
 
 	public void goLastFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).closestFrameAfter(new EvDecimal(1000000))); //TODO bd BAD!
+			setFrame(getImageset().getChannel(channel).imageLoader.lastKey());
 		}
 
 	/**
@@ -435,7 +441,8 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	/** Set current frame */
 	public void setFrame(EvDecimal frame)
 		{
-		setAll(frame,getZ());
+		if(frame!=null)
+			setAll(frame,getZ());
 		}
 	
 	/** Current slice/Z */

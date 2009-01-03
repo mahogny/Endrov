@@ -30,7 +30,7 @@ public abstract class Filter extends EvObject
 	static
 		{
 		ImageWindow.addImageWindowExtension(new FilterImageExtension());
-		EvData.extensions.put(metaType,new FilterObjectType());
+//		EvData.extensions.put(metaType,new FilterObjectType());
 		}
 	
 	public String getMetaTypeDesc()

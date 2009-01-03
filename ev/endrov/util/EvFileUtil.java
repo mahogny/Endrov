@@ -82,4 +82,15 @@ public class EvFileUtil
 		else
 			return null;
 		}
+	
+	
+	public static void deleteRecursive(File f) throws IOException
+		{
+		if(f.isDirectory())
+			for(File c:f.listFiles())
+				deleteRecursive(c);
+		f.delete();
+		}
+
+	
 	}

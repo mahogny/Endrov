@@ -101,7 +101,7 @@ public class CustomTableModel extends AbstractTableModel
 		Element date=getValue(rowe, columnList.get(col));
 		date.removeContent();
 		date.addContent((String)val);
-		ob.metaObjectModified=true;
+		ob.setMetadataModified();
 		fireTableCellUpdated(row, col);
 		}
 
@@ -151,7 +151,7 @@ public class CustomTableModel extends AbstractTableModel
 		list.remove(row);
 		tableRoot.removeContent();
 		tableRoot.addContent(list);
-		ob.metaObjectModified=true;
+		ob.setMetadataModified();
 		fireTableRowsDeleted(row, row);
 		}
 	
@@ -169,7 +169,7 @@ public class CustomTableModel extends AbstractTableModel
 			oe.addContent(list);
 			}
 		collectColumns();
-		ob.metaObjectModified=true;
+		ob.setMetadataModified();
 		fireTableStructureChanged();
 		}
 	

@@ -1,6 +1,7 @@
 package endrov.util;
 
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -72,6 +73,7 @@ public class JSmartToggleCombo extends JPanel
 				final int fi=i;
 				//JToggleButton b=new SmallJToggleButton(names.get(i));
 				JToggleButton b=new JToggleButton(names.get(i));
+				fixMargin(b);
 				if(i==0)
 					b.setSelected(true);
 				allButtons.add(b);
@@ -106,12 +108,18 @@ public class JSmartToggleCombo extends JPanel
 		
 		}
 	
+	private AbstractButton fixMargin(AbstractButton b)
+		{
+		b.setMargin(new Insets(2,2,2,2));
+		return b;
+		}
+	
 	private int getMinimumSizeOfButtons()
 		{
 		int totSize=0;
 		for(String s:names)
 			//totSize+=new SmallJToggleButton(s).getMinimumSize().width;
-			totSize+=new JToggleButton(s).getMinimumSize().width;
+			totSize+=fixMargin(new JToggleButton(s)).getMinimumSize().width;
 		return totSize;
 		}
 	

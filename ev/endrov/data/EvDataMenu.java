@@ -71,20 +71,13 @@ public class EvDataMenu implements BasicWindowExtension
 				}
 			else if(e.getSource()==miOpenFile)
 				{
-				new Thread(){
+				EvData data=GuiEvDataIO.loadFileDialog();
+				EvData.registerOpenedData(data);
+/*				new Thread(){
 					public void run()
 						{
-						LoadProgressDialog loadDialog=new LoadProgressDialog(1);
-						final EvData data=EvData.loadFileDialog(loadDialog);
-						SwingUtilities.invokeLater(new Runnable(){
-							public void run()
-								{
-								EvData.registerOpenedData(data);
-								}
-						});
-						loadDialog.dispose();
 						}
-				}.start();
+				}.start();*/
 				}
 			else if(e.getSource()==miOpenFilePath)
 				loadByPath();
@@ -113,15 +106,13 @@ public class EvDataMenu implements BasicWindowExtension
 					new Thread(){
 					public void run()
 						{
-						LoadProgressDialog loadDialog=new LoadProgressDialog(1);
-						final EvData data=EvData.loadFile(thefile,loadDialog);
+						final EvData data=EvData.loadFile(thefile,null);
 						SwingUtilities.invokeLater(new Runnable(){
 						public void run()
 							{
 							EvData.registerOpenedData(data);
 							}
 						});
-						loadDialog.dispose();
 						}
 					}.start();
 //					EvData.registerOpenedData(EvData.loadFile(thefile));
@@ -168,7 +159,7 @@ public class EvDataMenu implements BasicWindowExtension
 			
 			
 			//Special entry: For all
-			//if(!EvData.metadata.isEmpty())
+			if(!EvData.metadata.isEmpty())
 				{
 				JMenu menuMetadata=new JMenu("For All Data");
 				mData.add(menuMetadata);
@@ -216,11 +207,7 @@ public class EvDataMenu implements BasicWindowExtension
 					{
 					public void actionPerformed(ActionEvent e)
 						{
-						for(EvData thisMeta:EvData.metadata)
-							{
-							thisMeta.saveData();
-							thisMeta.setMetadataModified(false);//this might be wrong if save not supported
-							}
+						GuiEvDataIO.saveFile(EvData.metadata);
 						}
 					};
 				miSave.addActionListener(metaListenerSave);
@@ -248,7 +235,8 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						public void actionPerformed(ActionEvent e)
 							{
-							thisMeta.saveData();
+							GuiEvDataIO.saveFile(thisMeta);
+							//thisMeta.saveData();
 							thisMeta.setMetadataModified(false);
 							}
 						};
@@ -270,8 +258,10 @@ public class EvDataMenu implements BasicWindowExtension
 					{
 					public void actionPerformed(ActionEvent e)
 						{
-						thisMeta.saveFileDialog(null);
+						GuiEvDataIO.saveFileDialog(thisMeta);
+						//thisMeta.saveFileDialog(null);
 						thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+						BasicWindow.updateWindows();
 						}
 					};
 				miSaveAs.addActionListener(metaListenerSaveAs);

@@ -13,7 +13,7 @@ import endrov.imageset.*;
  * 
  * @author Johan Henriksson (binding only)
  */
-public abstract class EvImageBioformats extends EvImage
+public abstract class OldEvImageBioformats extends EvImage
 	{
 	private int id;
 	private Integer subid;
@@ -21,7 +21,7 @@ public abstract class EvImageBioformats extends EvImage
 	private String sourceName;
 
 	
-	public EvImageBioformats(IFormatReader imageReader, int id, Integer subid, String sourceName)
+	public OldEvImageBioformats(IFormatReader imageReader, int id, Integer subid, String sourceName)
 		{
 		this.imageReader=imageReader;
 		this.id=id;

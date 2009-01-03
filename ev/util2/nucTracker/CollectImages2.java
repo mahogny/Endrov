@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-import endrov.basicWindow.EvColor;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.EvImage;

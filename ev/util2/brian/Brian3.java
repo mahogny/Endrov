@@ -80,7 +80,6 @@ public class Brian3
 			}
 		catch (SQLException e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		System.out.println("main done");

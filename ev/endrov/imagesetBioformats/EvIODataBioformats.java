@@ -60,7 +60,7 @@ public class EvIODataBioformats implements EvIOData
 					}				
 				return formats;
 				}
-			public EvData load(String file) throws Exception
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
 				{
 				EvData d=new EvData();
 				d.io=new EvIODataBioformats(d, new File(file));
@@ -68,7 +68,7 @@ public class EvIODataBioformats implements EvIOData
 				}
 			public Integer saveSupports(String file){return null;}
 			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
-			public EvIOData getSaver(EvData d, String file) throws Exception{return null;}
+			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
 		});
 		}
 	
@@ -76,8 +76,6 @@ public class EvIODataBioformats implements EvIOData
 	/******************************************************************************************************
 	 *                               Image I/O class                                                      *
 	 *****************************************************************************************************/
-
-	
 	
 	/**
 	 * Image I/O
@@ -236,7 +234,7 @@ public class EvIODataBioformats implements EvIOData
 		return new File(basedir.getParent(),basedir.getName()+".ostxml");
 		}
 	
-	public void saveData(EvData d)
+	public void saveData(EvData d, EvData.FileIOStatusCallback cb)
 		{
 		try
 			{
@@ -273,21 +271,26 @@ public class EvIODataBioformats implements EvIOData
 			}
 		double resX=1;
 		double resY=1;
-		double resZ=1;
+		EvDecimal invResZ=EvDecimal.ONE;
+		EvDecimal resT=EvDecimal.ONE;
+//		double resZ=1;
 		if(imageReader.getMetadataValue("VoxelSizeX")!=null)
 			resX=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeY")!=null)
 			resY=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeZ")!=null)
-			resZ=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6);
+			invResZ=new EvDecimal(""+imageReader.getMetadataValue("VoxelSizeZ")).divide(new EvDecimal("1000000"));
 
+		if(imageReader.getMetadataValue("TimeInterval")!=null)
+			resT=new EvDecimal(""+imageReader.getMetadataValue("TimeInterval"));
+		
+//			resZ=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6);
+
+		
 		//Load metadata from added OSTXML-file
 		File metaFile=getMetaFile();
 		if(metaFile.exists())
-			{
-			//Load metadata
 			d.loadXmlMetadata(metaFile);
-			}
 		
 		Collection<Imageset> ims=d.getObjects(Imageset.class);
 		Imageset im;
@@ -315,7 +318,7 @@ public class EvIODataBioformats implements EvIOData
 				for(int slicenum=0;slicenum<numz;slicenum++)
 					{
 					EvImage evim=new EvImage();
-					loaderset.put(new EvDecimal(slicenum*resZ), evim);
+					loaderset.put(new EvDecimal(slicenum).divide(invResZ), evim); //used to be mul, with non-inv resz
 					evim.binning=1;
 					evim.dispX=0;
 					evim.dispY=0;
@@ -328,7 +331,7 @@ public class EvIODataBioformats implements EvIOData
 						evim.io=new SliceIO(imageReader, imageReader.getIndex(slicenum, channelnum, framenum), null, "");
 							
 					}
-				c.imageLoader.put(new EvDecimal(framenum), loaderset); //TODO bd time resolution
+				c.imageLoader.put(resT.multiply(framenum), loaderset);
 				}
 			}
 		}

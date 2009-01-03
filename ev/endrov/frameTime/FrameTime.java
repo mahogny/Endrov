@@ -28,23 +28,7 @@ public class FrameTime extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,new EvObjectType()
-			{
-			public EvObject extractObjects(Element e)
-				{
-				FrameTime meta=new FrameTime();
-				
-				for(Object oframetime:e.getChildren())
-					{
-					Element e2=(Element)oframetime;
-					int frame=Integer.parseInt(e2.getAttribute("frame").getValue());
-					double frametime=Double.parseDouble(e2.getAttribute("frame").getValue());
-					meta.list.add(new Pair(frame,frametime));
-					}
-				
-				return meta;
-				}
-			});
+		EvData.extensions.put(metaType,FrameTime.class);
 		}
 
 	/******************************************************************************************************
@@ -74,7 +58,18 @@ public class FrameTime extends EvObject
 			e.addContent(f);
 			}
 		}
-	
+
+	public void loadMetadata(Element e)
+		{
+		for(Object oframetime:e.getChildren())
+			{
+			Element e2=(Element)oframetime;
+			int frame=Integer.parseInt(e2.getAttribute("frame").getValue());
+			double frametime=Double.parseDouble(e2.getAttribute("frame").getValue());
+			list.add(new Pair(frame,frametime));
+			}
+		}
+
 
 	public void buildMetamenu(JMenu menu)
 		{

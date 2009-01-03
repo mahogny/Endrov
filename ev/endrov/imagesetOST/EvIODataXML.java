@@ -42,7 +42,7 @@ public class EvIODataXML implements EvIOData
 				formats.add(new Tuple<String, String[]>("OST XML",new String[]{".ostxml"}));
 				return formats;
 				}
-			public EvData load(String file) throws Exception
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
 				{
 				EvData d=new EvData();
 				EvIODataXML io=new EvIODataXML(d,file);
@@ -52,7 +52,7 @@ public class EvIODataXML implements EvIOData
 				}
 			public Integer saveSupports(String file){return loadSupports(file);}
 			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
-			public EvIOData getSaver(EvData d, String file) throws Exception
+			public EvIOData getSaver(EvData d, String file) throws IOException
 				{
 				return new EvIODataXML(d,file);
 				}
@@ -91,7 +91,7 @@ public class EvIODataXML implements EvIOData
 	/**
 	 * Save data
 	 */
-	public void saveData(EvData d)
+	public void saveData(EvData d, EvData.FileIOStatusCallback cb)
 		{
 		Document document=d.saveXmlMetadata();
 		try

@@ -51,7 +51,7 @@ public class EvLineModelExtension implements ModelWindowExtension
 		public Collection<EvLine> getAnnot()
 			{
 			List<EvLine> v=new LinkedList<EvLine>();
-			for(EvLine lin:EvLine.getObjects(w.getSelectedData()))
+			for(EvLine lin:w.getSelectedData().getObjects(EvLine.class))
 				if(w.showObject(lin))
 					v.add(lin);
 			return v;

@@ -123,6 +123,13 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	//	listener=l;
 		this.w=w;
 
+		buttonStepBack.setToolTipText("Step back");
+		buttonStepForward.setToolTipText("Step forward");
+		buttonPlayBack.setToolTipText("Play backwards");
+		buttonPlayForward.setToolTipText("Play forward");
+		buttonBeginning.setToolTipText("Go to first interesting time point");
+		buttonEnd.setToolTipText("Go to last interesting time point");
+		
 		Vector<Speed> speeds=new Vector<Speed>();
 		speeds.add(new Speed("0.01"));
 		speeds.add(new Speed("0.1"));
@@ -185,7 +192,11 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		spinnerGroup.removeChangeListener(this);
 		}
 	
-	private static int FPS=30;
+	/**
+	 * Number of frames per second movie will be attempted to be played at.
+	 * It need to be a nice number to divide with! no rounding problems
+	 */
+	private static int FPS=50;
 	
 	/**
 	 * Handle buttons and timer

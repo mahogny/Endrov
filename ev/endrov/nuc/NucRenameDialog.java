@@ -10,6 +10,7 @@ import javax.swing.*;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
+import endrov.data.GuiEvDataIO;
 
 
 /**
@@ -81,7 +82,7 @@ public class NucRenameDialog extends JDialog implements ActionListener
 		if(e.getSource()==bLoad)
 			{
 			timer=null;
-			EvData data=EvData.loadFileDialog(null);
+			EvData data=GuiEvDataIO.loadFileDialog();
 			if(data!=null)
 				{
 				List<NucLineage> lins=data.getObjects(NucLineage.class);

@@ -52,7 +52,8 @@ public class ShellImageRenderer implements ImageWindowRenderer
 		double pshortaxis=projectSphere(s.minor, s.midz);
 
 		//Coordinate transformation
-		Vector2d so=w.transformW2S(new Vector2d(s.midx,s.midy)); //TODO: ellipse fails rotation
+		Vector2d so=w.transformW2S(new Vector2d(s.midx,s.midy)); 
+		//Note that ellipse fails rotation
 
 		double polarrad=10;
 		double angle=s.angle+w.getRotation();

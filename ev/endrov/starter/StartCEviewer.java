@@ -10,6 +10,8 @@ public class StartCEviewer
 	{
 	public static void main(String[] args)
 		{
-		new Start().run(new String[]{"endrov.starter.CEviewer"});
+		Start start=new Start();
+		start.mainClass="endrov.starter.CEviewer";
+		start.run(args);
 		}
 	}
