@@ -104,6 +104,15 @@ public class EvData extends EvContainer
 	
 	public static Vector<RecentReference> recentlyLoadedFiles=new Vector<RecentReference>();
 
+	/**
+	 * Unregister loaded data
+	 */
+	public void unregisterData()
+		{
+		EvData.metadata.remove(this);
+		BasicWindow.updateWindows();
+		}
+	
 	/** 
 	 * Register data file in GUI 
 	 */
