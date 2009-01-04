@@ -12,7 +12,7 @@ import endrov.util.EvDecimal;
 
 
 /**
- * Editor for integer spinners 
+ * Editor for EvDecimal spinners 
  * @author Johan Henriksson
  */	
 public class EvDecimalEditor extends JTextField

@@ -5,7 +5,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import endrov.basicWindow.*;
-import endrov.basicWindow.ObjectCombo.Alternative;
 import endrov.data.*;
 import endrov.ev.*;
 
@@ -16,7 +15,7 @@ import org.jdom.*;
  * 
  * @author Johan Henriksson
  */
-public class WindowFilterSeq extends BasicWindow implements ActionListener, ObjectCombo.comboFilterMetaObject
+public class WindowFilterSeq extends BasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	
@@ -76,32 +75,10 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	private boolean isTemporaryWindow;
 	
 
-	private ObjectCombo objectCombo=new ObjectCombo(this, true);
+	private EvComboObjectOne<FilterSeq> objectCombo=new EvComboObjectOne<FilterSeq>(new FilterSeq(),false,true);
 	private WidgetFilterSeq wFilterSeq=new WidgetFilterSeq();
 	private JMenu mAdd=new JMenu("Add");
 		
-	public Alternative[] comboAddAlternative(ObjectCombo combo)
-		{
-		return new Alternative[]{};
-		}
-	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, final EvData meta)
-		{
-		Alternative a=new Alternative(meta,null,"New",new ActionListener()
-			{
-			public void actionPerformed(ActionEvent e)
-				{
-				FilterSeq seq=new FilterSeq();
-				meta.addMetaObject(seq);
-				}
-			});
-		return new Alternative[]{a};
-		}
-	public boolean comboFilterMetaObjectCallback(EvObject ob)
-		{
-		return ob instanceof FilterSeq;
-		}
-
-	
 	
 	
 	/**
@@ -162,7 +139,7 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 	 */
 	public FilterSeq getFilterSequence()
 		{
-		return (FilterSeq)objectCombo.getObject();
+		return objectCombo.getSelectedObject();
 		}
 	
 	
@@ -171,14 +148,13 @@ public class WindowFilterSeq extends BasicWindow implements ActionListener, Obje
 		{
 		if(e.getSource()==objectCombo)
 			{
-			wFilterSeq.setFilterSeq((FilterSeq)objectCombo.getObject());
+			wFilterSeq.setFilterSeq(objectCombo.getSelectedObject());
 			}
 		}
 	
 	public void dataChangedEvent()
 		{
-//		if(objectCombo!=null)
-		objectCombo.updateObjectList();
+		objectCombo.updateList();
 		wFilterSeq.buildMenu(mAdd);
 		}
 	

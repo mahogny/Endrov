@@ -192,7 +192,7 @@ public class EvContainer
 			Element subob=child.getChild("ostsubobjects");
 			if(subob!=null)
 				{
-				o.recursiveLoadMetadata(child);
+				o.recursiveLoadMetadata(subob);
 				child.removeContent(subob);
 				}
 			o.loadMetadata(child);

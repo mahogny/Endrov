@@ -19,5 +19,6 @@ public interface EvWindowManager
 	public void setBounds(Rectangle r);
 	public void setLocation(int x, int y);
 	public void setTitle(String title);
+	public void setResizable(boolean b);
 	public Rectangle getBounds();
 	}

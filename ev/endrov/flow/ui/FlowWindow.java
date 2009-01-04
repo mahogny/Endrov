@@ -19,11 +19,9 @@ import org.jdom.Element;
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.BasicWindowExtension;
 import endrov.basicWindow.BasicWindowHook;
-import endrov.basicWindow.ObjectCombo;
-import endrov.basicWindow.ObjectCombo.Alternative;
+import endrov.basicWindow.EvComboObjectOne;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.flow.*;
 import endrov.util.JImageButton;
 
@@ -32,7 +30,7 @@ import endrov.util.JImageButton;
  * @author Johan Henriksson
  *
  */
-public class FlowWindow extends BasicWindow implements ActionListener, ObjectCombo.comboFilterMetaObject
+public class FlowWindow extends BasicWindow implements ActionListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -96,7 +94,7 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 	private JButton bAlignRight=new JImageButton(iconAlignRight,"Align right");
 	private JButton bAlignVert=new JImageButton(iconAlignVert,"Align vertical");
 	
-	private ObjectCombo objectCombo=new ObjectCombo(this, true);
+	private EvComboObjectOne<Flow> objectCombo=new EvComboObjectOne<Flow>(new Flow(),false,true);
 	
 	
 	public FlowWindow()
@@ -225,16 +223,13 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 	
 	public void dataChangedEvent()
 		{
-		objectCombo.updateObjectList();
+		objectCombo.updateList();
 		loadData();
 		}
 
 	public void loadData()
 		{
-		Flow f=(Flow)objectCombo.getObject();
-		if(f==null)
-			f=new Flow();
-		fp.flow=f;
+		fp.flow=objectCombo.getSelectedObjectNotNull();
 		fp.repaint();
 		}
 	
@@ -258,31 +253,6 @@ public class FlowWindow extends BasicWindow implements ActionListener, ObjectCom
 		new FlowWindow();
 		}
 
-	
-	
-	/******************************************************************************************************
-	 *                               Object component                                                     *
-	 *****************************************************************************************************/
-	public Alternative[] comboAddAlternative(ObjectCombo combo)
-		{
-		return new Alternative[]{};
-		}
-	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, final EvData meta)
-		{
-		Alternative a=new Alternative(meta,null,"New",new ActionListener()
-			{
-			public void actionPerformed(ActionEvent e)
-				{
-				Flow flow=new Flow();
-				meta.addMetaObject(flow);
-				}
-			});
-		return new Alternative[]{a};
-		}
-	public boolean comboFilterMetaObjectCallback(EvObject ob)
-		{
-		return ob instanceof Flow;
-		}
 	
 	
 	

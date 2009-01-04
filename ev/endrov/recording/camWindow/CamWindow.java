@@ -180,6 +180,7 @@ public class CamWindow extends BasicWindow
 		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
 		timer.start();
+		setResizable(false);
 		}
 	
 	

@@ -10,7 +10,6 @@ import javax.swing.event.*;
 import org.jdom.*;
 
 import endrov.basicWindow.*;
-import endrov.basicWindow.ObjectCombo.Alternative;
 import endrov.data.*;
 import endrov.ev.*;
 
@@ -19,7 +18,7 @@ import endrov.ev.*;
  * Meta data window for imageset
  * @author Johan Henriksson
  */
-public class MetaWindow extends BasicWindow implements ActionListener, ObjectCombo.comboFilterMetaObject, DocumentListener
+public class MetaWindow extends BasicWindow implements ActionListener, DocumentListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -170,13 +169,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 	 *****************************************************************************************************/
 	
 	
-	private ObjectCombo metaCombo=new ObjectCombo(this, false);
+	private EvComboObjectOne<Imageset> metaCombo=new EvComboObjectOne<Imageset>(new Imageset(),false,true);
 	
-	public Alternative[] comboAddObjectAlternative(ObjectCombo combo, EvData meta){return null;}
-	public boolean comboFilterMetaObjectCallback(EvObject ob)
-		{
-		return ob instanceof Imageset;
-		}
 	
 	
 	private Vector<ChannelTab> channels=new Vector<ChannelTab>();
@@ -261,7 +255,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 	
 	private void readFromMetadata()
 		{
-		Imageset rec=Imageset.castNull(metaCombo.getObject());
+		Imageset rec=Imageset.castNull(metaCombo.getSelectedObject());
 		updatingFields=true;
 		
 		//Or just remember current tab?
@@ -366,7 +360,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 		if(!updatingFields)
 			{
 			updatingFields=true;
-			Imageset rec=Imageset.castEmpty(metaCombo.getObject());
+			Imageset rec=metaCombo.getSelectedObjectNotNull();
 			
 			double calcResX=rec.metaObjective*rec.metaOptivar/rec.metaCampix; //[]*[]/[um/px]
 			double calcResY=calcResX;
@@ -496,7 +490,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 	 */
 	public void fieldsToMeta()
 		{
-		Imageset rec=Imageset.castNull(metaCombo.getObject());
+		Imageset rec=metaCombo.getSelectedObject();
+//		Imageset.castNull(metaCombo.getObject());
 		if(rec!=null && !updatingFields)
 			{
 			try
@@ -543,7 +538,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, ObjectCom
 	 */
 	public void dataChangedEvent()
 		{
-		metaCombo.updateObjectList();
+		metaCombo.updateList();
 		readFromMetadata();
 		}
 

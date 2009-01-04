@@ -3,7 +3,6 @@ package endrov.makeMovie;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.Collection;
 import java.util.Vector;
 //import java.awt.image.*;
 import javax.swing.*;
@@ -22,7 +21,7 @@ import org.jdom.*;
  * Tool for generating expression profiles, I(x,t), where x is the distance to posterior projected to major axis.
  * @author Johan Henriksson
  */
-public class MakeMovieWindow extends BasicWindow implements ActionListener, MetaCombo.comboFilterMetadata
+public class MakeMovieWindow extends BasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	
@@ -36,7 +35,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener, Meta
 
 	//GUI components
 	private JButton bStart=new JButton("Start");
-	private Vector<ChannelCombo> channelCombo=new Vector<ChannelCombo>();
+	private Vector<OldChannelCombo> channelCombo=new Vector<OldChannelCombo>();
 	private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
 	private Vector<JTextField> chanDesc=new Vector<JTextField>();
 	
@@ -52,11 +51,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener, Meta
 	private SpinnerModel wModel =new SpinnerNumberModel(336,0,1000000,1);
 	private JSpinner spinnerW   =new JSpinner(wModel);
 
-	private MetaCombo metaCombo=new MetaCombo(this, false);
-	public boolean comboFilterMetadataCallback(EvData meta)
-		{
-		return !meta.getObjects(Imageset.class).isEmpty(); //TODO this is not the way to do it
-		}
+	private EvComboObjectOne<Imageset> metaCombo=new EvComboObjectOne<Imageset>(new Imageset(),false,false);
 
 	//TODO maybe put these in codec
 	public static final String[] qualityStrings = {"Low", "Normal", "High", "Maximum"};
@@ -82,7 +77,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener, Meta
 		qualityCombo.setSelectedItem(qualityStrings[2]);
 		for(int i=0;i<numChannelCombo;i++)
 			{
-			ChannelCombo c=new ChannelCombo(getCurrentImageset(),true);
+			OldChannelCombo c=new OldChannelCombo(getCurrentImageset(),true);
 			c.addActionListener(this);
 			channelCombo.add(c);
 			
@@ -181,13 +176,13 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener, Meta
 		{
 		if(e.getSource()==metaCombo)
 			{
-			for(ChannelCombo c:channelCombo)
+			for(OldChannelCombo c:channelCombo)
 				c.setExternalImageset(getCurrentImageset());
 			packEvWindow();
 			}
 		else if(e.getSource()==bStart)
 			{
-			if(/*channelCombo.getChannel().equals("") ||*/ metaCombo.getMeta()==null)
+			if(/*channelCombo.getChannel().equals("") ||*/ metaCombo.getSelectedObject()==null)
 				{
 				JOptionPane.showMessageDialog(null, "No imageset selected");
 				}
@@ -201,14 +196,14 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener, Meta
 						textBad=true;
 						}
 				
-				if(!textBad && metaCombo.getMeta()!=null)
+				if(!textBad && metaCombo.getSelectedObject()!=null)
 					{
 					Vector<CalcThread.MovieChannel> channelNames=new Vector<CalcThread.MovieChannel>();
 					for(int i=0;i<channelCombo.size();i++)
 						if(!channelCombo.get(i).getChannel().equals(""))
 							channelNames.add(new CalcThread.MovieChannel(channelCombo.get(i).getChannel(), filterSeq.get(i), chanDesc.get(i).getText()));
 						
-					EvData data=metaCombo.getMeta();
+					EvData data=metaCombo.getData();
 					
 					//Decide name of movie file
 					if(data.io==null || data.io.datadir()==null)
@@ -233,12 +228,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener, Meta
 	
 	public Imageset getCurrentImageset()
 		{
-		EvData d=metaCombo.getMeta();
-		Imageset im=new Imageset();
-		Collection<Imageset> ims=d.getObjects(Imageset.class);
-		if(!ims.isEmpty())
-			im=ims.iterator().next();
-		return im;
+		return metaCombo.getSelectedObjectNotNull();
 		}
 	
 	/*
@@ -249,7 +239,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener, Meta
 		{
 		metaCombo.updateList();
 		Imageset im=getCurrentImageset();	
-		for(ChannelCombo c:channelCombo)
+		for(OldChannelCombo c:channelCombo)
 			c.setExternalImageset(im);
 		}
 	

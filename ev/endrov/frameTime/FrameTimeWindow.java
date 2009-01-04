@@ -13,7 +13,6 @@ import org.jfree.chart.plot.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
 import endrov.imageWindow.*;
@@ -26,7 +25,7 @@ import org.jdom.*;
  * Adjust Frame-Time mapping
  * @author Johan Henriksson
  */
-public class FrameTimeWindow extends BasicWindow implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject
+public class FrameTimeWindow extends BasicWindow implements ActionListener, ChangeListener
 	{
 	static final long serialVersionUID=0;
 
@@ -65,7 +64,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	private XYSeries frametimeSeries=new XYSeries("FT");
 	private Vector<JSpinner[]> inputVector=new Vector<JSpinner[]>();
 	
-	private ObjectCombo objectCombo=new ObjectCombo(this, true);
+	private EvComboObjectOne<FrameTime> objectCombo=new EvComboObjectOne<FrameTime>(new FrameTime(),false,true);
 
 	/**
 	 * Store down settings for window into personal config file
@@ -133,47 +132,14 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		setBoundsEvWindow(bounds);
 		}
 
-	/**
-	 * For combo box - which meta objects to list
-	 */
-	public boolean comboFilterMetaObjectCallback(EvObject ob)
-		{
-		return ob instanceof FrameTime;
-		}
-	
-	/**
-	 * Add special options for the combo box
-	 */
-	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final EvData meta)
-		{
-		ObjectCombo.Alternative a=new ObjectCombo.Alternative(meta, null, "<Create frame/time>",new ActionListener()
-			{
-			public void actionPerformed(ActionEvent e)
-				{
-				//Create a new Frame/Time metaobject
-				FrameTime ft=new FrameTime();
-				meta.addMetaObject(ft);
-				}
-			});
-		return new ObjectCombo.Alternative[]{a};
-		}
-	/**
-	 * Add special options for the combo box
-	 */
-	public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)
-		{
-		return new ObjectCombo.Alternative[]{};
-		}
 
 	
 	/**
 	 * Add an entry. Does not update UI
-	 * @param frame
-	 * @param time
 	 */
 	public void addEntry(int frame, double time)
 		{
-		FrameTime meta=(FrameTime)objectCombo.getObject();
+		FrameTime meta=objectCombo.getSelectedObject();
 		if(meta!=null)
 			{
 			JSpinner field[]=new JSpinner[2];
@@ -194,7 +160,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		{
 		inputVector.clear();
 		
-		FrameTime meta=(FrameTime)objectCombo.getObject();
+		FrameTime meta=objectCombo.getSelectedObject();
 		if(meta!=null)
 			for(Pair p:meta.list)
 				addEntry(p.frame, p.frametime);
@@ -211,7 +177,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	public void saveData()
 		{
 		//should save even exist?
-		FrameTime meta=(FrameTime)objectCombo.getObject();
+		FrameTime meta=objectCombo.getSelectedObject();
 		if(meta!=null)
 			{
 			meta.list.clear();
@@ -232,7 +198,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			{
 			String filename=chooser.getSelectedFile().getAbsolutePath();
 
-			FrameTime frametime=(FrameTime)objectCombo.getObject();//new FrameTime(db, DB.currentSample);
+			FrameTime frametime=objectCombo.getSelectedObject();
 			if(frametime!=null)
 				{
 				for(int i=0;i<inputVector.size();i++)
@@ -330,13 +296,9 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		fillGraphpart();
 		}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see client.BasicWindow#dataChanged()
-	 */
 	public void dataChangedEvent()
 		{
-		objectCombo.updateObjectList();
+		objectCombo.updateList();
 		loadData();
 		}
 	

@@ -13,12 +13,12 @@ import endrov.data.*;
 public class ROITreeModel implements TreeModel
 	{
 	HashSet<TreeModelListener> listener=new HashSet<TreeModelListener>();
-	private EvData meta=null;
+	private EvContainer meta=null;
 
 	public WeakHashMap<Object, ROITreeElement> allElements=new WeakHashMap<Object, ROITreeElement>(); 
 	
 	
-	public void setMetaObject(EvData o)
+	public void setMetaObject(EvContainer o)
 		{
 		meta=o;
 		emitAllChanged();

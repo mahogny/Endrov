@@ -127,7 +127,7 @@ public class ImageWindow extends BasicWindow
 		static final long serialVersionUID=0;
 		
 		public final JRadioButton rSelect=new JRadioButton();
-		public final ChannelCombo comboChannel=new ChannelCombo(null,false);
+		public final OldChannelCombo comboChannel=new OldChannelCombo(null,false);
 		public final JSlider sliderContrast=new JSlider(-4000,4000,0);
 		public final JSlider sliderBrightness=new JSlider(-100,100,0);
 		public final JButton bFilterSequence=FilterSeq.createFilterSeqButton();

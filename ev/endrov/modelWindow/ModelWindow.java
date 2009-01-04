@@ -14,6 +14,7 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.consoleWindow.*;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.*;
@@ -106,7 +107,14 @@ public class ModelWindow extends BasicWindow
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
-	private final MetaCombo metaCombo=new MetaCombo(null,false);
+	private final EvComboObject metaCombo=new EvComboObject(new LinkedList<EvObject>(),true,false)
+		{
+		static final long serialVersionUID=0;
+		public boolean includeObject(EvContainer cont)
+			{
+			return true;
+			}
+		};
 	private final JButton buttonCenter=new JButton("Center");
 	private final EvHidableSidePane sidePanelSplitPane;
 	
@@ -578,7 +586,7 @@ public class ModelWindow extends BasicWindow
 	public void dataChangedEvent()
 		{
 		metaCombo.updateList();
-		objectDisplayList.setData(metaCombo.getMeta());
+		objectDisplayList.setData(metaCombo.getSelectedObject());
 		objectDisplayList.updateList();
 		for(ModelWindowHook h:modelWindowHooks)
 			h.datachangedEvent();
@@ -591,13 +599,13 @@ public class ModelWindow extends BasicWindow
 		}
 
 	/**
-	 * Get the EvData currently selected, never null
+	 * Get the EvContainer currently selected, never null
 	 */
-	public EvData getSelectedData()
+	public EvContainer getSelectedData()
 		{
-		EvData d=getSelectedDataNull();
+		EvContainer d=getSelectedDataNull();
 		if(d==null)
-			return new EvData();
+			return new EvContainer();
 		else
 			return d;
 		}
@@ -605,9 +613,9 @@ public class ModelWindow extends BasicWindow
 	/**
 	 * Get the EvData currently selected, can be null
 	 */
-	public EvData getSelectedDataNull()
+	public EvContainer getSelectedDataNull()
 		{
-		return metaCombo.getMeta();
+		return metaCombo.getSelectedObject();
 		}
 
 
@@ -616,7 +624,8 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void loadedFile(EvData data)
 		{
-		metaCombo.setMeta(data);
+		metaCombo.setSelectedObject(data);
+		//metaCombo.setMeta(data);
 		}
 	
 	public void finalize()
@@ -776,7 +785,7 @@ public class ModelWindow extends BasicWindow
 	public <E extends EvObject> Collection<E> getVisibleObjects(Class<E> c)
 		{
 		List<E> v=new LinkedList<E>();
-		EvData metadata=getSelectedData();
+		EvContainer metadata=getSelectedData();
 		if(metadata!=null)
 			{
 			for(E ob:metadata.getObjects(c))

@@ -7,10 +7,10 @@ import javax.swing.JComboBox;
  * Combo select for colors
  * @author Johan Henriksson
  */
-public class ColorCombo extends JComboBox
+public class EvComboColor extends JComboBox
 	{
 	static final long serialVersionUID=0;
-	public ColorCombo()
+	public EvComboColor()
 		{
 		super(EvColor.colorList);
 		}

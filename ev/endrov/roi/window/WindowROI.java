@@ -13,6 +13,7 @@ import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.ev.*;
+import endrov.imageset.Imageset;
 import endrov.roi.*;
 
 
@@ -25,7 +26,7 @@ import endrov.roi.*;
  * 
  * @author Johan Henriksson
  */
-public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.comboFilterMetadata, TreeSelectionListener, TreeExpansionListener
+public class WindowROI extends BasicWindow implements ActionListener, TreeSelectionListener, TreeExpansionListener
 	{
 	static final long serialVersionUID=0;
 
@@ -79,7 +80,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 
 	private JButton bDelete=BasicIcon.getButtonDelete();
 	private JPanel upperPanel=new JPanel(new GridLayout(2,1));
-	private MetaCombo metaCombo=new MetaCombo(this, false);
+	private EvComboObjectOne<Imageset> metaCombo=new EvComboObjectOne<Imageset>(new Imageset(),false,false);
 	public boolean comboFilterMetadataCallback(EvData meta)
 		{
 		return true;
@@ -141,7 +142,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 
 		//Init selection
 		metaCombo.updateList();
-		treeModel.setMetaObject(metaCombo.getMeta());
+		treeModel.setMetaObject(metaCombo.getSelectedObject());
 		traverseSelection();
 		
 		addTreeListeners();
@@ -266,7 +267,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		{
 		if(e.getSource()==metaCombo)
 			{
-			treeModel.setMetaObject(metaCombo.getMeta());
+			treeModel.setMetaObject(metaCombo.getSelectedObject());
 			///channelCombo.setImageset(metaCombo.getImageset());
 			}
 		else if(e.getSource()==bDelete)
@@ -283,7 +284,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 		{
 //		System.out.println("all changed");
 		metaCombo.updateList();
-		treeModel.setMetaObject(metaCombo.getMeta());
+		treeModel.setMetaObject(metaCombo.getSelectedObject());
 		treeModel.emitAllChanged(); //overkill?
 		traverseSelection();
 		}
@@ -294,7 +295,7 @@ public class WindowROI extends BasicWindow implements ActionListener, MetaCombo.
 
 	private void makeCompoundROI(CompoundROI croi)
 		{
-		EvData data=metaCombo.getMeta();
+		EvContainer data=metaCombo.getSelectedObject();
 		if(data!=null)
 			CompoundROI.makeCompoundROI(data,croi);
 		}

@@ -30,7 +30,7 @@ public class ObjectDisplayList extends JPanel
 		}
 
 	private WeakHashMap<EvObject, Object> toNotDisplay=new WeakHashMap<EvObject, Object>();
-	private WeakReference<EvData> evdata=new WeakReference<EvData>(null);
+	private WeakReference<EvContainer> evdata=new WeakReference<EvContainer>(null);
 	//can ask to be notified
 	
 	private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
@@ -45,9 +45,9 @@ public class ObjectDisplayList extends JPanel
 		}
 	
 	
-	public void setData(EvData evdata)
+	public void setData(EvContainer evdata)
 		{
-		this.evdata=new WeakReference<EvData>(evdata);
+		this.evdata=new WeakReference<EvContainer>(evdata);
 		updateList();
 		}
 	
@@ -60,7 +60,7 @@ public class ObjectDisplayList extends JPanel
 	public void updateList()
 		{
 		removeAll();
-		EvData d=evdata.get();
+		EvContainer d=evdata.get();
 		if(d!=null && !d.metaObject.isEmpty())
 			{
 			int countb=0;

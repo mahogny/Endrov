@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+import javax.swing.SwingUtilities;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -124,7 +126,9 @@ public class EvData extends EvContainer
 						recentlyLoadedFiles.remove(recentlyLoadedFiles.size()-1);
 					}
 				}
-			BasicWindow.updateWindows();
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run(){BasicWindow.updateWindows();}
+			});
 			}
 		}
 

@@ -103,19 +103,8 @@ public class EvDataMenu implements BasicWindowExtension
 				final File thefile=new File(fileName);
 				if(thefile.exists())
 					{
-					new Thread(){
-					public void run()
-						{
-						final EvData data=EvData.loadFile(thefile,null);
-						SwingUtilities.invokeLater(new Runnable(){
-						public void run()
-							{
-							EvData.registerOpenedData(data);
-							}
-						});
-						}
-					}.start();
-//					EvData.registerOpenedData(EvData.loadFile(thefile));
+					EvData data=GuiEvDataIO.loadFile(thefile.getAbsolutePath());
+					EvData.registerOpenedData(data);
 					}
 				else
 					JOptionPane.showMessageDialog(null, "Path does not exist");
@@ -123,23 +112,139 @@ public class EvDataMenu implements BasicWindowExtension
 			}
 		
 		
+		/**
+		 * Build Move Object menu
+		 */
+		private JMenu buildMoveMenu(EvContainer moveObRoot, String moveObName)
+			{
+			JMenu miMoveOb=new JMenu("Move");
+
+			//All metadata
+			for(final EvData thisMeta:EvData.metadata)
+				{
+				JMenu menuMetadata=new JMenu(thisMeta.getMetadataName());
+				miMoveOb.add(menuMetadata);
+				//All objects
+				recurseBuildMove(menuMetadata,moveObRoot, moveObName, thisMeta);
+				}
+			
+			return miMoveOb;
+			}
+		/**
+		 * Build Move Object menu, helper
+		 */
+		private void recurseBuildMove(JMenu menu, final EvContainer moveObRoot, final String moveObName, final EvContainer root)
+			{
+			JMenuItem miHere=new JMenuItem(">>Here<<");
+			menu.add(miHere);
+			
+			
+			miHere.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					EvObject toMove=moveObRoot.metaObject.get(moveObName);
+					if(toMove!=null)
+						{
+						moveObRoot.metaObject.remove(moveObName);
+						root.metaObject.put(moveObName,toMove); //Danger. what about overlapping name?
+						BasicWindow.updateWindows();
+						}
+					}
+				});
+
+
+			//Subobjects
+			EvObject objectToMove=moveObRoot.getMetaObject(moveObName);
+			for(Map.Entry<String, EvObject> me:root.metaObject.entrySet())
+				{
+				final String obId=me.getKey();
+				final EvObject ob=me.getValue();
+				if(ob!=objectToMove)
+					{
+					JMenu miSub=new JMenu(obId);
+					menu.add(miSub);
+					recurseBuildMove(miSub, moveObRoot, moveObName, ob);
+					}
+				}
+			}
 		
+
+		/**
+		 * Build menus for all subobjects in data menu
+		 */
+		private void attachSubObjectMenus(JMenu menuMetadata, final EvContainer thisMeta)
+			{
+			if(!thisMeta.metaObject.isEmpty())
+				{
+				menuMetadata.addSeparator();
+				
+				for(Map.Entry<String, EvObject> me:thisMeta.metaObject.entrySet())
+					{
+					final String obId=me.getKey();
+					final EvObject ob=me.getValue();
+					JMenu obmenu=new JMenu(""+obId+": "+ob.getMetaTypeDesc());
+					menuMetadata.add(obmenu);
+	
+					JMenuItem miRemoveOb=new JMenuItem("Delete");
+					obmenu.add(miRemoveOb);
+					JMenuItem miRenameOb=new JMenuItem("Rename");
+					obmenu.add(miRenameOb);
+					JMenu miMoveOb=buildMoveMenu(thisMeta, obId);
+					obmenu.add(miMoveOb);
+					
+					ob.buildMetamenu(obmenu);
+
+					attachSubObjectMenus(obmenu, ob);
+
+					//Menu item listener: object/Remove
+					ActionListener obListenerRemove=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							int option = JOptionPane.showConfirmDialog(null, 
+									"Are you sure you want to delete "+ob.getMetaTypeDesc()+" "+obId+"?", "Delete?", JOptionPane.YES_NO_OPTION);
+							if (option == JOptionPane.YES_OPTION)
+								{
+								thisMeta.metaObject.remove(obId);
+								BasicWindow.updateWindows();
+								thisMeta.setMetadataModified(true);
+								}
+							}
+						};
+					miRemoveOb.addActionListener(obListenerRemove);
+					
+					//Menu item listener: object/Rename
+					ActionListener obListenerRename=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Rename object", 
+									JOptionPane.QUESTION_MESSAGE, null, null, obId);
+							//Maybe use weak reference?
+							if(newId!=null)
+								{
+								EvObject ob=thisMeta.metaObject.remove(obId);
+								if(ob!=null)
+									thisMeta.metaObject.put(newId, ob);
+								BasicWindow.updateWindows();
+								}
+							}
+						};
+					miRenameOb.addActionListener(obListenerRename);
+					
+					}
+				}
+			
+			}
+		
+		/**
+		 * Top level function to build menus
+		 */
 		public void buildMenu(BasicWindow w)
 			{
 			BasicWindow.tearDownMenu(mData);
 			BasicWindow.tearDownMenu(mRecent);
-			/*
-			BasicWindow.addMenuItemSorted(mData, miNew);
-			BasicWindow.addMenuItemSorted(mData, miOpenFile);			
-			BasicWindow.addMenuItemSorted(mData, miOpenFilePath);			
-			BasicWindow.addMenuItemSorted(mData, mRecent);			
-			
-			miNew.addActionListener(this);
-			miOpenFile.addActionListener(this);
-			miOpenFilePath.addActionListener(this);
-			for(DataMenuExtension e:extensions)
-				e.buildOpen(mData);
-			mData.addSeparator();*/
 			
 			for(DataMenuExtension e:extensions)
 				e.buildData(mData);
@@ -243,13 +348,6 @@ public class EvDataMenu implements BasicWindowExtension
 					miSave.addActionListener(metaListenerSave);
 					}
 				
-
-				/*
-				JMenu miSaveAs=new JMenu("Save as");
-				menuMetadata.add(miSaveAs);
-				for(DataMenuExtension e:extensions)
-					e.buildSave(miSaveAs, thisMeta);
-*/
 				
 				JMenuItem miSaveAs=new JMenuItem("Save as");
 				miSaveAs.setIcon(BasicIcon.iconMenuSaveAs);
@@ -272,7 +370,7 @@ public class EvDataMenu implements BasicWindowExtension
 				//Optional "Open data directory" menu item
 				if(thisMeta.io!=null && thisMeta.io.datadir()!=null)
 					{
-					final JMenuItem miOpenDatadir=new JMenuItem("Open data directory");
+					final JMenuItem miOpenDatadir=new JMenuItem("Open data dir");
 					ActionListener listener=new ActionListener()
 						{
 						public void actionPerformed(ActionEvent e)
@@ -286,7 +384,6 @@ public class EvDataMenu implements BasicWindowExtension
 
 				
 				
-				menuMetadata.addSeparator();
 				
 				//// Menu item Listener: Unload
 				ActionListener metaListenerUnload=new ActionListener()
@@ -312,58 +409,8 @@ public class EvDataMenu implements BasicWindowExtension
 					};
 				miUnload.addActionListener(metaListenerUnload);
 
-			
+				attachSubObjectMenus(menuMetadata, thisMeta);
 				
-				for(final String obId:thisMeta.metaObject.keySet())
-					{
-					final EvObject ob=thisMeta.metaObject.get(obId); //might become problematic?
-					JMenu obmenu=new JMenu(""+obId+": "+ob.getMetaTypeDesc());
-					menuMetadata.add(obmenu);
-
-					JMenuItem miRemoveOb=new JMenuItem("Delete");
-					obmenu.add(miRemoveOb);
-					JMenuItem miRenameOb=new JMenuItem("Rename");
-					obmenu.add(miRenameOb);
-					
-					ob.buildMetamenu(obmenu);
-					
-					//Menu item listener: object/Remove
-					ActionListener obListenerRemove=new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{
-							int option = JOptionPane.showConfirmDialog(null, 
-									"Are you sure you want to delete "+ob.getMetaTypeDesc()+" "+obId+"?", "Delete?", JOptionPane.YES_NO_OPTION);
-							if (option == JOptionPane.YES_OPTION)
-								{
-								thisMeta.metaObject.remove(obId);
-								BasicWindow.updateWindows();
-								thisMeta.setMetadataModified(true);
-								}
-							}
-						};
-					miRemoveOb.addActionListener(obListenerRemove);
-					
-					//Menu item listener: object/Rename
-					ActionListener obListenerRename=new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{
-							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Rename object", 
-									JOptionPane.QUESTION_MESSAGE, null, null, obId);
-							//Maybe use weak reference?
-							if(newId!=null)
-								{
-								EvObject ob=thisMeta.metaObject.remove(obId);
-								if(ob!=null)
-									thisMeta.metaObject.put(newId, ob);
-								BasicWindow.updateWindows();
-								}
-							}
-						};
-					miRenameOb.addActionListener(obListenerRename);
-					
-					}
 				}
 
 			

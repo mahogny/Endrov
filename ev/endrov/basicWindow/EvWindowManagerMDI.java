@@ -58,6 +58,9 @@ public class EvWindowManagerMDI extends JPanel implements /*WindowListener,*/ Ev
 	public void setLocation(int x, int y)
 		{
 		}
+	public void setResizable(boolean b)
+		{
+		}
 
 	public static JFrame totalFrame=new JFrame(EV.programName+" foo");
 	public static JPanel totalPane=new JPanel();
