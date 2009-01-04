@@ -168,12 +168,10 @@ public class VoxelExtension implements ModelWindowExtension
 			//System.out.println("voxel datachanged event");
 			EvContainer data=w.getSelectedData();
 			Imageset im=data instanceof Imageset ? (Imageset)data : new Imageset();
-//			List<Imageset> ims=data.getObjects(Imageset.class);
-//			ims.isEmpty() ? new Imageset() : ims.get(0);
 			
-			icR.channelCombo.setExternalImageset(im);
-			icG.channelCombo.setExternalImageset(im);
-			icB.channelCombo.setExternalImageset(im);
+			icR.channelCombo.setRoot(im);
+			icG.channelCombo.setRoot(im);
+			icB.channelCombo.setRoot(im);
 			icR.checkStackChanged();
 			icG.checkStackChanged();
 			icB.checkStackChanged();
@@ -255,7 +253,7 @@ public class VoxelExtension implements ModelWindowExtension
 			{
 			static final long serialVersionUID=0;
 			private JButton bFs=FilterSeq.createFilterSeqButton();
-			private OldChannelCombo channelCombo=new OldChannelCombo(null,true);
+			private EvComboChannel channelCombo=new EvComboChannel(null,true);
 			private Color color;
 			private FilterSeq filterSeq=new FilterSeq();
 			

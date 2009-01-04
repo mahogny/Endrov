@@ -35,7 +35,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 
 	//GUI components
 	private JButton bStart=new JButton("Start");
-	private Vector<OldChannelCombo> channelCombo=new Vector<OldChannelCombo>();
+	private Vector<EvComboChannel> channelCombo=new Vector<EvComboChannel>();
 	private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
 	private Vector<JTextField> chanDesc=new Vector<JTextField>();
 	
@@ -77,7 +77,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		qualityCombo.setSelectedItem(qualityStrings[2]);
 		for(int i=0;i<numChannelCombo;i++)
 			{
-			OldChannelCombo c=new OldChannelCombo(getCurrentImageset(),true);
+			EvComboChannel c=new EvComboChannel(getCurrentImageset(),true);
 			c.addActionListener(this);
 			channelCombo.add(c);
 			
@@ -176,8 +176,8 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		{
 		if(e.getSource()==metaCombo)
 			{
-			for(OldChannelCombo c:channelCombo)
-				c.setExternalImageset(getCurrentImageset());
+			for(EvComboChannel c:channelCombo)
+				c.setRoot(getCurrentImageset());
 			packEvWindow();
 			}
 		else if(e.getSource()==bStart)
@@ -239,8 +239,8 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		{
 		metaCombo.updateList();
 		Imageset im=getCurrentImageset();	
-		for(OldChannelCombo c:channelCombo)
-			c.setExternalImageset(im);
+		for(EvComboChannel c:channelCombo)
+			c.setRoot(im);
 		}
 	
 	

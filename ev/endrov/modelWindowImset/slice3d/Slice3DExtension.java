@@ -114,7 +114,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			{
 			static final long serialVersionUID=0;
 			private JSpinner zplaneSpinner=new JSpinner(new SpinnerNumberModel((int)0.0,(int)-99.0,(int)999.0,(int)1));
-			private OldChannelCombo chanCombo=new OldChannelCombo(null,true);
+			private EvComboChannel chanCombo=new EvComboChannel(null,true);
 			private JButton bDelete=BasicIcon.getButtonDelete();
 			private JCheckBox zProject=new JCheckBox("@Z=0");
 			private EvComboColor colorCombo=new EvComboColor();
@@ -177,7 +177,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			 */
 			public void render(GL gl)
 				{
-				chanCombo.updateChannelList();
+				chanCombo.updateList();
 				
 				//Make sure surfaces are for the right imageset
 				Imageset im=chanCombo.getImageset();

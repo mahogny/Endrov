@@ -29,11 +29,13 @@ public class EvComboChannel extends JPanel implements ActionListener
 	private boolean allowNoSelection;	
 	private EvContainer root;	
 	private JComboBox combo=new JComboBox();
+	public String lastSelectChannel=null;
 	
-	public EvComboChannel(List<EvObject> creators, boolean allowNoSelection)
+	public EvComboChannel(EvContainer root, boolean allowNoSelection)
 		{
 		this.allowNoSelection=allowNoSelection;
 		//TODO listen on object data changes
+		this.root=root;
 		updateList();
 		setLayout(new BorderLayout());
 		add(combo,BorderLayout.CENTER);
@@ -64,6 +66,15 @@ public class EvComboChannel extends JPanel implements ActionListener
  		private WeakReference<EvContainer> con; 
 		private WeakReference<EvData> data; 
 		public String channelName; 
+				
+		public ComboItem(List<String> path, String channelName, EvContainer obj, EvData data)
+			{
+			this.path=path.toArray(new String[0]);
+			this.con=new WeakReference<EvContainer>(obj);
+			this.data=new WeakReference<EvData>(data);
+			this.channelName=channelName;
+//			System.out.println("new, path: "+path);
+			}
 		
 		public EvContainer getCon()
 			{
@@ -74,16 +85,7 @@ public class EvComboChannel extends JPanel implements ActionListener
 			return data.get();
 			}
 		
-		public ComboItem(List<String> path, String channelName, EvContainer obj, EvData data)
-			{
-			this.path=path.toArray(new String[0]);
-			this.con=new WeakReference<EvContainer>(obj);
-			this.data=new WeakReference<EvData>(data);
-			this.channelName=channelName;
-//			System.out.println("new, path: "+path);
-			}
-		
-		public String toString()
+		public StringBuffer getObjectPath()
 			{
 			StringBuffer sb=new StringBuffer();
 			for(int i=0;i<path.length;i++)
@@ -91,21 +93,24 @@ public class EvComboChannel extends JPanel implements ActionListener
 				sb.append(path[i]);
 				if(i!=path.length-1)
 					sb.append("/");
-				if(channelName!=null)
-					{
-					if(path.length!=0)
-						sb.append("-");
-					sb.append(channelName);
-					}
+				}
+			return sb;
+			}
+		
+		public String toString()
+			{
+			StringBuffer sb=getObjectPath();
+			if(channelName!=null)
+				{
+				if(path.length!=0)
+					sb.append("-");
+				sb.append(channelName);
 				}
 			return sb.toString();
 			}
 		
-		
-		
 		}
 	
-	private String lastChannel=null;
 	
 	/**
 	 * Update list of objects
@@ -171,12 +176,6 @@ public class EvComboChannel extends JPanel implements ActionListener
 			}
 		}
 	
-	
-	public boolean includeObject(EvContainer cont)
-		{
-		return cont instanceof Imageset;
-		}
-	
 	private void updateListRec(EvContainer root, LinkedList<String> contPath, EvData data)
 		{
 		addChannelsFor(root, contPath, data);
@@ -197,7 +196,7 @@ public class EvComboChannel extends JPanel implements ActionListener
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
 //		if(ci.channelName!=null)
-		lastChannel=ci.channelName;
+		lastSelectChannel=ci.channelName;
 		emitListener();
 		
 		
@@ -243,10 +242,10 @@ public class EvComboChannel extends JPanel implements ActionListener
 	/**
 	 * Return currently selected object or null
 	 */
-	public EvContainer getSelectedObject()
+	public Imageset getImageset()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
-		return ci.getCon();
+		return (Imageset)ci.getCon();
 		}
 	
 	public void setSelectedObject(EvContainer c, String wantChannel)
@@ -264,8 +263,8 @@ public class EvComboChannel extends JPanel implements ActionListener
 		ComboItem ci;
 		if(chanMap.containsKey(wantChannel))
 			ci=chanMap.get(wantChannel);
-		else if(chanMap.containsKey(lastChannel))
-			ci=chanMap.get(lastChannel);
+		else if(chanMap.containsKey(lastSelectChannel))
+			ci=chanMap.get(lastSelectChannel);
 		else
 			ci=chanMap.values().iterator().next();
 		combo.setSelectedItem(ci);
@@ -279,5 +278,11 @@ public class EvComboChannel extends JPanel implements ActionListener
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
 		return ci.channelName;
+		}
+	
+	public String getSelectedObjectPath()
+		{
+		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		return ci.getObjectPath().toString();
 		}
 	}

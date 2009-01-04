@@ -127,7 +127,7 @@ public class ImageWindow extends BasicWindow
 		static final long serialVersionUID=0;
 		
 		public final JRadioButton rSelect=new JRadioButton();
-		public final OldChannelCombo comboChannel=new OldChannelCombo(null,false);
+		public final EvComboChannel comboChannel=new EvComboChannel(null,false);//
 		public final JSlider sliderContrast=new JSlider(-4000,4000,0);
 		public final JSlider sliderBrightness=new JSlider(-100,100,0);
 		public final JButton bFilterSequence=FilterSeq.createFilterSeqButton();
@@ -328,7 +328,7 @@ public class ImageWindow extends BasicWindow
 		//Window overall things
 		setTitleEvWindow("Image Window");
 		for(ChannelWidget w:channelWidget)
-			w.comboChannel.updateChannelList();
+			w.comboChannel.updateList();
 		packEvWindow();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());
 		frameControl.setFrame(EvDecimal.ZERO);
@@ -428,10 +428,14 @@ public class ImageWindow extends BasicWindow
 		{
 		return getCurrentChannelWidget().comboChannel.getData();
 		}
-	/** Get current imageset */
+	/** Get current imageset or an empty one */
 	public Imageset getImageset()
 		{
-		return getCurrentChannelWidget().comboChannel.getImageset();
+		Imageset im=getCurrentChannelWidget().comboChannel.getImageset();
+		if(im==null)
+			return new Imageset();
+		else
+			return im;
 		}
 	/** Get the zoom factor not including binning */
 	public double getZoom()
@@ -588,7 +592,7 @@ public class ImageWindow extends BasicWindow
 			}
 			
 		//Update window title
-		setTitleEvWindow("Image Window - "+getData().getMetadataName());
+		setTitleEvWindow("Image Window - "+channelWidget.get(0).comboChannel.getSelectedObjectPath());
 		}
 	
 	
@@ -600,7 +604,7 @@ public class ImageWindow extends BasicWindow
 		for(ImageWindowRenderer r:imageWindowRenderers)
 			r.dataChangedEvent();
 		for(ChannelWidget w:channelWidget)
-			w.comboChannel.updateChannelList();
+			w.comboChannel.updateList();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());//hm. does not cause cascade?
 		buildMenu();
 		updateImagePanel();
@@ -700,9 +704,8 @@ public class ImageWindow extends BasicWindow
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
 			{
-			EvData.metadata.remove(data);
+			data.unregisterData();
 			Log.printLog("Closing "+data.getMetadataName());
-			BasicWindow.updateWindows();
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_0)
 			{
@@ -850,7 +853,7 @@ public class ImageWindow extends BasicWindow
 		{
 		List<Imageset> ims=data.getObjects(Imageset.class);
 		if(!ims.isEmpty())
-			getCurrentChannelWidget().comboChannel.setImageset(ims.get(0));
+			getCurrentChannelWidget().comboChannel.setSelectedObject(ims.get(0), getCurrentChannelWidget().comboChannel.lastSelectChannel);
 		}
 
 	public void freeResources(){}

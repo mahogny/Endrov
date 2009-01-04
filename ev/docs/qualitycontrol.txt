@@ -80,32 +80,38 @@ Additional checks
 	can now move objects in hierarchy
 	fully hierarchical menus
 	might have fixed micket bug, resizing cam window
+	hierarchial combos. decided what to rended in 2d and 3d
 		
 ================================TODO===========================
 
-2.13.1 -- file formats and schema
 
-	support hierarchy of objects properly
-	    new widgets, new create function in widgets
-	    which objects should be drawn in 2d? 3d?
+2.13.TODAY
 	working imserv (back to last standard, refactor later)
-	
-
-2.13.2 -- user interface
-	play forward should always work
+		::replicate data to imserv cache files. do NOT replicate OST format, use normal loader
 	image vox render should NOT attempt to show a progress bar if there is nothing to do
+		::trouble at playback
+	try to play with many objects on screen. update bug
+    separate micro-manager plugin
+	image swap system & caching strategy
+		::basics only. can use io. goes together with caching
+		hm. register images in global list (constructor in evimage). on getimage methods, apply a priority queue.
+		implement LRU. replace io. this will force all users to Set the image when they are done or theoretically
+		they might be working on data no longer in memory!
+	virtual jar dependency on linux
 
+2.13.1 -- file formats and schema
+2.13.2 -- user interface
 2.13.3 -- release management
 	release jinput etc dependent libraries. on my own page if needed
 	can dh_ be used?
-    separate micro-manager plugin
     put OSX code in jar to simplify distribution?
     dependencies can be put in a jar+manifest
     	but memory usage etc is harder to fix
+    	OS dependent jars
+    	must be easy for end-user to add jars!
+    	virtual jar only on linux, through process builder? removes ls hack at least
 
 2.13.4 -- images, memory usage
-	caching strategy
-	image swap system
 	new Image internals
      
 2.13.x -- simple recording 
