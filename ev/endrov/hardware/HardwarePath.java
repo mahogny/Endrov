@@ -16,7 +16,7 @@ public class HardwarePath implements Comparable<HardwarePath>
 	public HardwarePath(String dotPath)
 		{
 		List<String> n=new LinkedList<String>();
-		StringTokenizer stok=new StringTokenizer(dotPath,".");
+		StringTokenizer stok=new StringTokenizer(dotPath,"/");
 		while(stok.hasMoreElements())
 			n.add(stok.nextToken());
 		path=n.toArray(new String[]{});
@@ -40,7 +40,7 @@ public class HardwarePath implements Comparable<HardwarePath>
 			{
 			sb.append(path[i]);
 			if(i!=path.length-1)
-				sb.append(".");
+				sb.append("/");
 			}
 		return sb.toString();
 		}

@@ -13,7 +13,7 @@ import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.ColorCombo;
+import endrov.basicWindow.EvComboColor;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.*;
 import endrov.imageset.*;
@@ -114,10 +114,10 @@ public class Slice3DExtension implements ModelWindowExtension
 			{
 			static final long serialVersionUID=0;
 			private JSpinner zplaneSpinner=new JSpinner(new SpinnerNumberModel((int)0.0,(int)-99.0,(int)999.0,(int)1));
-			private ChannelCombo chanCombo=new ChannelCombo(null,true);
+			private OldChannelCombo chanCombo=new OldChannelCombo(null,true);
 			private JButton bDelete=BasicIcon.getButtonDelete();
 			private JCheckBox zProject=new JCheckBox("@Z=0");
-			private ColorCombo colorCombo=new ColorCombo();
+			private EvComboColor colorCombo=new EvComboColor();
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
 			public Slice3D slice=new Slice3D();
 			

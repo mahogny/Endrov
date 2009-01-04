@@ -379,6 +379,10 @@ public abstract class BasicWindow extends JPanel
 		{
 		evw.setVisible(true);
 		}
+	public void setResizable(boolean b)
+		{
+		evw.setResizable(b);
+		}
 	public void disposeEvWindow()
 		{
 		evw.dispose();

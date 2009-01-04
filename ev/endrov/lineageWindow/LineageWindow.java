@@ -21,7 +21,7 @@ import endrov.util.Tuple;
  * @author Johan Henriksson
  */
 public class LineageWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener/*, KeyListener*/, ChangeListener
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, ChangeListener
 	{
 	static final long serialVersionUID=0;
 	
@@ -63,12 +63,7 @@ public class LineageWindow extends BasicWindow
 			}
 		});
 	
-	public final ObjectCombo objectCombo=new ObjectCombo(new ObjectCombo.comboFilterMetaObject()
-		{
-		public ObjectCombo.Alternative[] comboAddObjectAlternative(ObjectCombo ob, EvData meta)	{return new ObjectCombo.Alternative[]{};}
-		public boolean comboFilterMetaObjectCallback(EvObject ob)	{return ob instanceof NucLineage;}
-		//public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)	{return new ObjectCombo.Alternative[]{};}
-		},false);
+	public final EvComboObjectOne<NucLineage> objectCombo=new EvComboObjectOne<NucLineage>(new NucLineage(),false,false);
 
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastX=0, mouseLastY=0;
@@ -261,11 +256,9 @@ public class LineageWindow extends BasicWindow
 	
 	private NucLineage getLineage()
 		{
-		EvObject ob=objectCombo.getObject();
-		if(ob instanceof NucLineage)
-			return (NucLineage)ob;
-		else
-			return null;
+		return objectCombo.getSelectedObject();
+//		return lin==null?new NucL
+//		return objectCombo.getSelectedObjectNotNull();
 		}
 	
 
@@ -451,7 +444,7 @@ public class LineageWindow extends BasicWindow
 		else if(e.getSource()==objectCombo)
 			{
 			System.out.println("objectcombo");
-			view.currentLin=(NucLineage)objectCombo.getObject();
+			view.currentLin=getLineage();
 			repaint();
 			}
 		else if(e.getSource()==miShowExpDot)
@@ -707,9 +700,9 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void dataChangedEvent()
 		{
-		objectCombo.updateObjectList();
-//		view.currentFrame=frameControl.getFrame();
-		view.currentLin=(NucLineage)objectCombo.getObject();
+		objectCombo.updateList();
+//			view.currentFrame=frameControl.getFrame();
+		view.currentLin=getLineage();
 		repaint();
 		}
 	

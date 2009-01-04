@@ -77,29 +77,31 @@ Additional checks
 	save as updates menu
 	save/load progress bar
 	imwindow step back fixed. first/last improved
+	can now move objects in hierarchy
+	fully hierarchical menus
+	might have fixed micket bug, resizing cam window
 		
 ================================TODO===========================
 
 2.13.1 -- file formats and schema
 
 	support hierarchy of objects properly
-	    object hierarchy in menus etc
 	    new widgets, new create function in widgets
 	    which objects should be drawn in 2d? 3d?
 	working imserv (back to last standard, refactor later)
 	
 
 2.13.2 -- user interface
-	micket2: camera window does not play well with tiled wm since it rescales     
 	play forward should always work
 	image vox render should NOT attempt to show a progress bar if there is nothing to do
 
 2.13.3 -- release management
 	release jinput etc dependent libraries. on my own page if needed
-	can dh_ be used?	
-    separate micro-manager
+	can dh_ be used?
+    separate micro-manager plugin
     put OSX code in jar to simplify distribution?
     dependencies can be put in a jar+manifest
+    	but memory usage etc is harder to fix
 
 2.13.4 -- images, memory usage
 	caching strategy
@@ -198,6 +200,7 @@ Additional checks
 2.16 -- pre-3.0 QA
 	deal with every TODO in the code
 	all files should compile or disappear
+	plugin for http://photosounder.com
 
 
 6D := (X,Y,Z,Lambda(wavelength),T, multi stage points). 

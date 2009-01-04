@@ -166,6 +166,10 @@ public class Imageset extends EvObject
 			return null;
 		}
 
+	/****************************************************************************************/
+	/******************************* Channel data *******************************************/
+	/****************************************************************************************/
+
 	/**
 	 * Images for one channel
 	 */
@@ -372,24 +376,10 @@ public class Imageset extends EvObject
 		
 		
 		/****************************************************************************************/
-		/******************************* Meta data ************************************************/
+		/************************** Channel Meta data *******************************************/
 		/****************************************************************************************/
 
 		
-	
-		/**
-		 * Get property assigned to a frame
-		 * @param frame Frame
-		 * @param prop Property
-		 * @return Value of property or null if it does not exist
-		 */
-		public String getFrameMeta(EvDecimal frame, String prop)
-			{
-			HashMap<String,String> framedata=metaFrame.get(frame);
-			if(framedata==null)
-				return null;
-			return framedata.get(prop);
-			}
 
 		
 		/** Binning, a scale factor from the microscope */
@@ -406,7 +396,23 @@ public class Imageset extends EvObject
 		
 		/** frame data */
 		public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
+
 		
+
+		
+		/**
+		 * Get property assigned to a frame
+		 * @param frame Frame
+		 * @param prop Property
+		 * @return Value of property or null if it does not exist
+		 */
+		public String getFrameMeta(EvDecimal frame, String prop)
+			{
+			HashMap<String,String> framedata=metaFrame.get(frame);
+			if(framedata==null)
+				return null;
+			return framedata.get(prop);
+			}
 		
 		
 		
@@ -441,12 +447,13 @@ public class Imageset extends EvObject
 			}
 		}
 
-	
-	
-	/******************************************************************************************************
-	 *                               Instance                                                             *
-	 *****************************************************************************************************/
 
+	/****************************************************************************************/
+	/************************** Imageset Meta data ******************************************/
+	/****************************************************************************************/
+	
+	
+	
 	/** List of all channels belonging to this imageset */
 	public HashMap<String,ChannelImages> channelImages=new HashMap<String,ChannelImages>();
 

@@ -25,7 +25,7 @@ import org.jdom.*;
  * @author Johan Henriksson
  */
 public class CustomWindow extends BasicWindow 
-implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, TreeSelectionListener, TableModelListener
+implements ActionListener, ChangeListener, TreeSelectionListener, TableModelListener
 	{
 	static final long serialVersionUID=0;
 
@@ -47,7 +47,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		}
 	
 	//GUI components
-	private ObjectCombo objectCombo=new ObjectCombo(this, true);
+	private EvComboObjectOne<CustomObject> objectCombo=new EvComboObjectOne<CustomObject>(new CustomObject(),false,true);
 	private CustomTreeModel treeModel=new CustomTreeModel();
 	private JTree tree=new JTree(treeModel);
 	private JPanel treeFields=new JPanel();
@@ -136,41 +136,6 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		setBoundsEvWindow(bounds);
 		}
 
-	/**
-	 * For combo box - which meta objects to list
-	 */
-	public boolean comboFilterMetaObjectCallback(EvObject ob)
-		{
-		return ob instanceof CustomObject;
-		}
-	/**
-	 * Add special options for the combo box, every object
-	 */
-	public ObjectCombo.Alternative[] comboAddObjectAlternative(final ObjectCombo combo, final EvData meta)
-		{
-		ObjectCombo.Alternative a=new ObjectCombo.Alternative(meta, null, "<New object>", new ActionListener()
-			{
-			public void actionPerformed(ActionEvent e)
-				{
-				String type=JOptionPane.showInputDialog("Type of new object");
-				if(type!=null)
-					{
-					CustomObject ob=new CustomObject();
-					ob.loadMetadata(new Element(type));
-					meta.addMetaObject(ob);
-					BasicWindow.updateWindows();
-					}
-				}
-			});
-		return new ObjectCombo.Alternative[]{a};
-		}
-	/**
-	 * Add special options for the combo box
-	 */
-	public ObjectCombo.Alternative[] comboAddAlternative(final ObjectCombo combo)
-		{
-		return new ObjectCombo.Alternative[]{};
-		}
 
 	
 	/**
@@ -182,13 +147,13 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		if(p==null)
 			{
 			fillTreeAttributesPane(null);
-			tableModel.setRoot(objectCombo.getObject(), null);
+			tableModel.setRoot(objectCombo.getSelectedObject(), null);
 			}
 		else
 			{
 			CustomTreeElement e=(CustomTreeElement)p.getLastPathComponent();
 			fillTreeAttributesPane(e);
-			tableModel.setRoot(objectCombo.getObject(), e.e);
+			tableModel.setRoot(objectCombo.getSelectedObject(), e.e);
 			}
 		}
 
@@ -257,7 +222,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 						TreePath p=e.getPath();
 						treeModel.addChild(e, new Element(name));
 						tree.setSelectionPath(p);    //should not be needed
-						objectCombo.getObject().setMetadataModified();
+						objectCombo.getSelectedObject().setMetadataModified();
 						}
 					}
 				});
@@ -273,7 +238,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 						TreePath p=e.getPath();
 						treeModel.updateElement(e);
 						tree.setSelectionPath(p);    //should not be needed
-						objectCombo.getObject().setMetadataModified();
+						objectCombo.getSelectedObject().setMetadataModified();
 						}
 					}
 				});
@@ -288,7 +253,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 						parent.e.removeContent(e.e);
 						treeModel.emitAllChanged();
 						tree.setSelectionPath(parent.getPath());
-						objectCombo.getObject().setMetadataModified();
+						objectCombo.getSelectedObject().setMetadataModified();
 						}
 					}
 				});
@@ -310,7 +275,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 		{
 		if(e.getSource()==objectCombo)
 			{
-			treeModel.setMetaObject((CustomObject)objectCombo.getObject());
+			treeModel.setMetaObject(objectCombo.getSelectedObject());
 			
 			}
 		else if(e.getSource()==btInsertEntry)
@@ -416,7 +381,7 @@ implements ActionListener, ChangeListener, ObjectCombo.comboFilterMetaObject, Tr
 	 */
 	public void dataChangedEvent()
 		{
-		objectCombo.updateObjectList();
+		objectCombo.updateList();
 		//copy list
 		fillTreeAttributesPane((CustomTreeElement)treeModel.getRoot());
 		}

@@ -12,7 +12,7 @@ import endrov.data.*;
  * A combobox with all channels
  * @author Johan Henriksson
  */
-public class ChannelCombo extends JComboBox
+public class OldChannelCombo extends JComboBox
 	{
 	static final long serialVersionUID=0;
 
@@ -45,7 +45,7 @@ public class ChannelCombo extends JComboBox
 	/**
 	 * Construct new channel combo, needs access to global data
 	 */
-	public ChannelCombo(Imageset imagesetExternal, boolean addEmptyChannel)
+	public OldChannelCombo(Imageset imagesetExternal, boolean addEmptyChannel)
 		{
 		this.imagesetExternal=imagesetExternal;
 		this.addEmptyChannel=addEmptyChannel;

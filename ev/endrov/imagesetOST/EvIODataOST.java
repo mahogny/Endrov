@@ -409,7 +409,7 @@ public class EvIODataOST implements EvIOData
 							//Does the image belong to this IO?
 							EvIOImage oldio=ie.getValue().io;
 							boolean belongsToThisDatasetIO = oldio!=null && oldio instanceof SliceIO && ((SliceIO)oldio).ost==this;
-							System.out.println("belongs to imageset "+belongsToThisDatasetIO);
+							//System.out.println("belongs to imageset "+belongsToThisDatasetIO);
 
 							//Where should new file be written?
 							File newFile=fileShouldBe(im,ce.getKey(), fe.getKey(),ie.getKey());

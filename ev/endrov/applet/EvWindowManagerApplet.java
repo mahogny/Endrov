@@ -60,7 +60,9 @@ public class EvWindowManagerApplet implements BasicWindow.EvWindowManagerMaker
 		public void setTitle(String title)
 			{
 			}
-		
+		public void setResizable(boolean b)
+			{
+			}
 		
 		
 		
