@@ -1,7 +1,9 @@
 package endrov.basicWindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.ref.WeakReference;
@@ -10,8 +12,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 
 import endrov.basicWindow.icon.BasicIcon;
@@ -48,20 +55,39 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		//TODO allow delete as well?
 		
 		JPanel pCreate=new JPanel(new GridLayout(1,creators.size()));
-		for(EvObject ob:creators)
+		for(final EvObject ob:creators)
 			{
-			JImageButton b=new JImageButton(BasicIcon.iconMenuNew,"Create new "+ob.getMetaTypeDesc());
+			final JImageButton b=new JImageButton(BasicIcon.iconMenuNew,"Create new "+ob.getMetaTypeDesc());
 			pCreate.add(b);
 			System.out.println("to implement");
 			
+			b.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e)
+					{
+					try
+						{
+						NewObjectWindow w=new NewObjectWindow(ob.getClass().newInstance());
+						w.setLocation(b.getLocationOnScreen());
+						//w.setLocationRelativeTo(b);
+						//Could be out of screen, move it back in that case
+						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+						if(w.getLocation().y+w.getHeight()>dim.height)
+							w.setLocation(w.getLocation().x, dim.height-w.getHeight());
+						if(w.getLocation().x+w.getWidth()>dim.width)
+							w.setLocation(dim.width-w.getWidth(),w.getLocation().y);
+						w.setVisible(true);
+						}
+					catch (Exception e1)
+						{
+						e1.printStackTrace();
+						}
+					}
+			});
 			
-			/*
-			 * 					CustomObject ob=new CustomObject();
-					ob.loadMetadata(new Element(type));
-					meta.addMetaObject(ob);
-					BasicWindow.updateWindows();
 
-			 */
+			
+			//hm. should have used class instead
+			
 			//TODO
 			}
 
@@ -273,6 +299,70 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	//use case 3: list objects for one data. data is the root
 
 	//extended object can be parameterized. get method without cast can then be introduced
+	
+	
+	public class NewObjectWindow extends JFrame implements ActionListener
+		{
+		static final long serialVersionUID=0;
+		private EvTreeObject tree=new EvTreeObject();
+		private JTextField fName=new JTextField();
+		private JButton bOk=new JButton("Ok");
+		private JButton bCancel=new JButton("Cancel");
+		private EvObject newObject;
+		
+		//TODO enter and esc
+		
+		public NewObjectWindow(EvObject newObject)
+			{
+			this.newObject=newObject;
+			setLayout(new BorderLayout());
+			JScrollPane scroll=new JScrollPane(tree,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			JPanel topPanel=new JPanel(new BorderLayout());
+			JPanel bottomPanel=new JPanel(new GridLayout(1,2));
+			topPanel.add(new JLabel("Name:"),BorderLayout.WEST);
+			topPanel.add(fName,BorderLayout.CENTER);
+			bottomPanel.add(bOk);
+			bottomPanel.add(bCancel);
+			add(scroll,BorderLayout.CENTER);
+			add(topPanel,BorderLayout.NORTH);
+			add(bottomPanel,BorderLayout.SOUTH);
+			bOk.addActionListener(this);
+			bCancel.addActionListener(this);
+			fName.addActionListener(this);
+			setTitle("Create new "+newObject.getMetaTypeDesc());
+			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			setUndecorated(true);
+			pack();
+			int minh=150;
+//			if(getHeight()<minh)
+			setSize(getWidth(), minh);
+			}
+
+		//TODO could gray the ok until really ok
+		
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==bCancel)
+				dispose();
+			else if(e.getSource()==bOk || e.getSource()==fName)
+				{
+				EvContainer con=tree.getSelectedContainer();
+				String name=fName.getText();
+				if(con!=null && !name.equals("") && con.getMetaObject(name)==null)
+					{
+					dispose();
+					con.metaObject.put(name,newObject);
+					updateList();
+					setSelectedObject(newObject);
+					BasicWindow.updateWindows();
+					}
+				}
+				
+			}
+		
+		
+		
+		}
 	
 	
 	}

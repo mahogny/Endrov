@@ -11,7 +11,6 @@ import javax.vecmath.Vector3d;
 import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.EvDecimal;
 import endrov.util.Vector3D;
 
@@ -50,7 +49,7 @@ public class Slice3D
 	public static class ChannelSelection
 		{
 		
-		ChannelImages ch;
+		EvChannel ch;
 		Color color=new Color(0,0,0);
 		}
 	
@@ -67,7 +66,7 @@ public class Slice3D
 	/**
 	 * Load stack into memory. Need GL context, forced by parameter.
 	 */
-	public void build(GL gl,EvDecimal frame, Imageset im, ChannelImages ch, EvDecimal zplane)
+	public void build(GL gl,EvDecimal frame, Imageset im, EvChannel ch, EvDecimal zplane)
 		{
 		if(needBuild(frame))
 			{

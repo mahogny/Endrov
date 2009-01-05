@@ -141,7 +141,7 @@ public class EvIODataImserv implements EvIOData
 					{
 					String channelName=in.readLine();
 					int numFrame=Integer.parseInt(in.readLine());
-					Imageset.ChannelImages c=imageset.createChannel(channelName);
+					EvChannel c=imageset.createChannel(channelName);
 					
 					for(int j=0;j<numFrame;j++)
 						{

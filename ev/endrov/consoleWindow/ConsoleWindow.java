@@ -76,7 +76,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	//GUI components
 	private JTextArea history=new JTextArea();
 	private JTextFieldHistorized commandLine=new JTextFieldHistorized();
-	private JTextArea commandArea=new JTextArea("\n\n\n");
+	private JTextArea commandArea=new JTextArea("\n\n");
 	private JScrollPane hs=new JScrollPane(history, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	
 	
@@ -294,7 +294,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		if(e.getSource()==commandLine)
+		if(e.getSource()==commandLine || e.getSource()==bMultiGo)
 			{
 			String cmd=commandLine.getText();
 			addHistory("> "+cmd+"\n");
@@ -311,6 +311,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 				commandLine.setVisible(false);*/
 				revalidate();
 	//			repaint();
+				scrollEnd();
 				}
 			else
 				{
@@ -320,6 +321,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 				commandLine.setVisible(true);*/
 				revalidate();
 			//	repaint();
+				scrollEnd();
 				}
 			
 			}
@@ -360,10 +362,14 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public void addHistory(String s)
 		{
 		history.append(s);
-		history.setCaretPosition(history.getText().length() );
+		scrollEnd();
 //		hs.scrollRectToVisible(		  new Rectangle(0,history.getHeight()-2,1,1));
 		}
 
+	public void scrollEnd()
+		{
+		history.setCaretPosition(history.getText().length() );
+		}
 
 	/**
 	 * Give focus to console

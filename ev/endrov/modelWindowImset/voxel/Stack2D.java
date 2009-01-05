@@ -12,7 +12,6 @@ import com.sun.opengl.util.j2d.TextureRenderer;
 import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.Shader;
@@ -114,7 +113,7 @@ public class Stack2D extends StackInterface
 		}
 	
 	
-	public void startBuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+	public void startBuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 		{
 		stopBuildThread();
 		buildThread=new BuildThread(frame, chsel, w);
@@ -126,14 +125,14 @@ public class Stack2D extends StackInterface
 			buildThread.stop=true;
 		}
 	
-	BuildThread buildThread=null;
+	private BuildThread buildThread=null;
 	public class BuildThread extends Thread
 		{
 		private EvDecimal frame;
-		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
+		private HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
-		ModelWindow.ProgressMeter pm;
-		public BuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+		private ModelWindow.ProgressMeter pm;
+		public BuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;

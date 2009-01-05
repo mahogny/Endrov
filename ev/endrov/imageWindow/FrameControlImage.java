@@ -144,6 +144,14 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		buttonBeginning.setToolTipText("Go to first frame");
 		buttonEnd.setToolTipText("Go to last frame");
 		
+		buttonStepBack.setFocusable(false);
+		buttonStepForward.setFocusable(false);
+		buttonPlayBack.setFocusable(false);
+		buttonPlayForward.setFocusable(false);
+		buttonBeginning.setFocusable(false);
+		buttonEnd.setFocusable(false);
+
+		
 		//Find a unique group ID
 		spinnerGroup.setValue(FrameControl.getUniqueGroup());
 		

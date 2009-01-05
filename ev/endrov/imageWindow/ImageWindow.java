@@ -415,7 +415,7 @@ public class ImageWindow extends BasicWindow
 		return getCurrentChannelWidget().comboChannel.getChannel();
 		}
 	/** Get current channel or null */
-	public Imageset.ChannelImages getSelectedChannel()
+	public EvChannel getSelectedChannel()
 		{
 		String channelName=getCurrentChannelName();
 		if(channelName!=null && getImageset().getChannel(channelName)!=null)
@@ -533,7 +533,7 @@ public class ImageWindow extends BasicWindow
 			String chname=channelWidget.get(i).comboChannel.getChannel();
 			if(rec2!=null && chname!=null)
 				{
-				Imageset.ChannelImages ch=rec2.getChannel(chname);
+				EvChannel ch=rec2.getChannel(chname);
 				ImagePanel.ImagePanelImage pi=new ImagePanel.ImagePanelImage();
 				pi.brightness=channelWidget.get(i).sliderBrightness.getValue();
 				pi.contrast=Math.pow(2,channelWidget.get(i).sliderContrast.getValue()/1000.0);
@@ -649,7 +649,7 @@ public class ImageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miMiddleSlice)
 			{
-			Imageset.ChannelImages ch=getImageset().getChannel(getCurrentChannelName());
+			EvChannel ch=getImageset().getChannel(getCurrentChannelName());
 			if(ch!=null)
 				{
 				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
@@ -686,6 +686,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void keyPressed(KeyEvent e)
 		{
+		
 	//	if(!ScriptBinding.runScriptKey(e))
 			{
 		EvData data=getData();

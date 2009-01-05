@@ -113,7 +113,7 @@ public class MaskROI3 extends ROI
 	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		Imageset.ChannelImages ch=rec.getChannel(channel);
+		EvChannel ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
 			if(isSingleRegion)
@@ -140,7 +140,7 @@ public class MaskROI3 extends ROI
 	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		Imageset.ChannelImages ch=rec.getChannel(channel);
+		EvChannel ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
 			TreeMap<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);

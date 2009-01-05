@@ -255,7 +255,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 	
 	private void readFromMetadata()
 		{
-		Imageset rec=Imageset.castNull(metaCombo.getSelectedObject());
+		Imageset rec=metaCombo.getSelectedObject();
 		updatingFields=true;
 		
 		//Or just remember current tab?
@@ -295,7 +295,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			
 			for(ChannelTab t:channels)
 				{
-				Imageset.ChannelImages cm=rec.getChannel(t.channelName);
+				EvChannel cm=rec.getChannel(t.channelName);
 				t.iDispX.setText(""+cm.dispX);
 				t.iDispY.setText(""+cm.dispY);			
 				t.iBinning.setText(""+cm.chBinning);
@@ -413,7 +413,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 		public JTextField iCompression=new JTextField();
 		public JTextArea iOther=new JTextArea();
 		
-		public ChannelTab(MetaWindow w, String cname, Imageset.ChannelImages c)
+		public ChannelTab(MetaWindow w, String cname, EvChannel c)
 			{
 			int cury=0;
 			tabs.add(cname, this);
@@ -512,7 +512,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 				
 				for(ChannelTab t:channels)
 					{
-					Imageset.ChannelImages ch=rec.getChannel(t.channelName);
+					EvChannel ch=rec.getChannel(t.channelName);
 					
 					ch.dispX=Double.parseDouble(t.iDispX.getText());
 					ch.dispY=Double.parseDouble(t.iDispY.getText());

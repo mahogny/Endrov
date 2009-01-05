@@ -5,6 +5,7 @@ import java.lang.ref.*;
 
 /**
  * Very simple image cache. Linear complexity in size, optimized for small sizes.
+ * TODO cache locking, better algorithm
  * 
  * @author Johan Henriksson
  */

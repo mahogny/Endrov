@@ -9,7 +9,6 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.*;
 import endrov.ev.SimpleObserver;
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
 
@@ -258,7 +257,7 @@ public class FilterSeq extends EvObject
 		{
 		for(String chan:rec.channelImages.keySet())
 			{
-			ChannelImages ch=rec.channelImages.get(chan);
+			EvChannel ch=rec.channelImages.get(chan);
 			for(EvDecimal frame:ch.imageLoader.keySet())
 				{
 				Map<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);
