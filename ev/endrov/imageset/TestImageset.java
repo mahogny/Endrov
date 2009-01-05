@@ -17,7 +17,7 @@ public class TestImageset
 		Imageset imset=data.getObjects(Imageset.class).iterator().next();
 		
 		
-		Imageset.ChannelImages chan=imset.getChannel("DIC");
+		EvChannel chan=imset.getChannel("DIC");
 		
 		//This is a bisarre case, swapping two images
 		//most difficult to handle

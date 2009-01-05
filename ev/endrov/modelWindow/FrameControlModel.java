@@ -129,7 +129,14 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		buttonPlayForward.setToolTipText("Play forward");
 		buttonBeginning.setToolTipText("Go to first interesting time point");
 		buttonEnd.setToolTipText("Go to last interesting time point");
-		
+
+		buttonStepBack.setFocusable(false);
+		buttonStepForward.setFocusable(false);
+		buttonPlayBack.setFocusable(false);
+		buttonPlayForward.setFocusable(false);
+		buttonBeginning.setFocusable(false);
+		buttonEnd.setFocusable(false);
+
 		Vector<Speed> speeds=new Vector<Speed>();
 		speeds.add(new Speed("0.01"));
 		speeds.add(new Speed("0.1"));
@@ -249,7 +256,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			if(playingForward)
 				setFrame(getFrame().add(currentSpeed().divide(FPS)));
 			else
-				setFrame(getFrame().add(currentSpeed().divide(FPS)));
+				setFrame(getFrame().subtract(currentSpeed().divide(FPS)));
 			}
 		
 		}
@@ -259,6 +266,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		return ((Speed)speedCombo.getSelectedItem()).speed;
 		}
 	
+	
 	/**
 	 * Start and stop playback
 	 * @param forward Set to true if to play forward
@@ -266,7 +274,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	public void stopStart(boolean forward)
 		{
 		int dt=1000/FPS;
-			
+		playingForward=forward;	
+		
 		if(timer==null)
 			{
 			playingForward=forward;

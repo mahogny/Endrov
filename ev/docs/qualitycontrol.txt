@@ -59,7 +59,6 @@ Additional checks
 	holding space should work. fixed?
 	Bioformats used in Basic plugin when needed
 	XDG_CONFIG_HOME used
-	JPEG2000 for OST. OME uses it! 
     Ringa in lampan med slidern, gråskalorna med den andra slidern
 	custom ev icon on non-mac
     align items in rec
@@ -81,60 +80,30 @@ Additional checks
 	fully hierarchical menus
 	might have fixed micket bug, resizing cam window
 	hierarchial combos. decided what to rended in 2d and 3d
-		
+	virtual jar dependency on linux
+	extracted EvChannel
+	vox render progressbar bug fixed
+	generic way of creating new objects done
+	fixed: imwin focus problems, mov with z
+	
 ================================TODO===========================
 
 
 2.13.TODAY
-	working imserv (back to last standard, refactor later)
-		::replicate data to imserv cache files. do NOT replicate OST format, use normal loader
-	image vox render should NOT attempt to show a progress bar if there is nothing to do
-		::trouble at playback
-	try to play with many objects on screen. update bug
-    separate micro-manager plugin
 	image swap system & caching strategy
 		::basics only. can use io. goes together with caching
 		hm. register images in global list (constructor in evimage). on getimage methods, apply a priority queue.
 		implement LRU. replace io. this will force all users to Set the image when they are done or theoretically
 		they might be working on data no longer in memory!
-	virtual jar dependency on linux
 
 2.13.1 -- file formats and schema
+	working imserv (back to last standard, refactor later)
+		::replicate data to imserv cache files. do NOT replicate OST format, use normal loader
+		with lazy loading of blobs, it would be a lot less expensive to load imagesets
 2.13.2 -- user interface
-2.13.3 -- release management
-	release jinput etc dependent libraries. on my own page if needed
-	can dh_ be used?
-    put OSX code in jar to simplify distribution?
-    dependencies can be put in a jar+manifest
-    	but memory usage etc is harder to fix
-    	OS dependent jars
-    	must be easy for end-user to add jars!
-    	virtual jar only on linux, through process builder? removes ls hack at least
 
 2.13.4 -- images, memory usage
 	new Image internals
-     
-2.13.x -- simple recording 
-	how to do manual slices?
-	how to do stacks? (manual??)
-	how to do movies?
-	FRAP? calcium?
-	finalize hardware interface
-
-	HOWTO
-		recording templates. probably an OST with created channels and preset compression rates.
-		and description. what about metadata that should go into imserv?
-	     
-2.14.1 -- undo
-	general framework
-	encapsulate all operations
-
-2.?.? -- ROIs
-	ROI definition can be changed. makeinstance? or keep, change for object instance?
-	implement arbitrary shape ROIs
-	strategy for using ROIs
-    ROIs are slow. probably too much redraw. see observers
-    micket didn't find the ROI tool easily	
 
 2.14.2 -- flows
 	check code for UI
@@ -154,15 +123,48 @@ Additional checks
 	     how is "analyze" done? graph output object? graph is not a very nice idea, but general
 	     rendering?
 
+ONTRAIN
+2.13.x -- simple recording 
+	how to do manual slices?
+	how to do stacks? (manual??)
+	how to do movies?
+	FRAP? calcium?
+	finalize hardware interface
+
+	HOWTO
+		recording templates. probably an OST with created channels and preset compression rates.
+		and description. what about metadata that should go into imserv?
+
+     
+2.13.ATWORK     
+	try to play with many objects on screen. update bug
+		::::appears to be mac-only
+	release jinput etc dependent libraries. on my own page if needed
+    put OSX code in jar to simplify distribution?
 2.14.? -- platform integration
 	X associate mime types
 	mac quality: QT integration, in a jar?
 	integration on windows?
 
+
+=================== time for release here ==========================
+
+	     
+2.14.1 -- undo
+	general framework
+	encapsulate all operations
+
+2.?.? -- ROIs
+	ROI definition can be changed. makeinstance? or keep, change for object instance?
+	implement arbitrary shape ROIs
+	strategy for using ROIs
+    ROIs are slow. probably too much redraw. see observers
+    micket didn't find the ROI tool easily	
+
 2.14.? -- GUI next round
     micket: limit on how far one can move outside, picture should never go completely outside
     micket: 2d zoom was slow    
-    2d zoom at cursor
+    micket: 2d zoom at cursor
 	imserv new +/- icon
     micket: arrows up/down ugly
 
@@ -170,27 +172,29 @@ Additional checks
 	full gamepad support
 	rework keybindings
 
+=================== time for release here ==========================
+
+
+NOPRIORITY	  
+2.13.3 -- release management
+    separate micro-manager plugin
+	can dh_ be used?
+    dependencies can be put in a jar+manifest
+    	but memory usage etc is harder to fix
+    	OS dependent jars?
+    	must be easy for end-user to add jars!
 2.14.x
-
 	jp2
-
 	classloader to load jars instead of a starter? can JNI be dealt with?
 		can the race condition be dealt with?
 		one classloader for everything or singletons will be a problem.
-		
 	better use of observers. can they be made more fine-grained, like a tree of listeners?
 		move up until finding one listener
 	imserv better updating list. restrict length. new protocol
-
-
 	log4j standard logging. suggest to micromanager too!!!!
-
-
   
   Remove batch system, allow filters to be applied permanently
   	Can batch be removed? what about creating movies? change into Task?
-
-	  
   
   
 2.15 -- applications

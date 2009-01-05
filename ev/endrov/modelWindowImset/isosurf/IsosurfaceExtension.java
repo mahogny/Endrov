@@ -247,7 +247,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				
 				//Get channel
 				String channelName=chanCombo.getChannel();
-				Imageset.ChannelImages ch=im.channelImages.get(channelName);
+				EvChannel ch=im.channelImages.get(channelName);
 				if(ch!=null)
 					{
 					EvDecimal cframe=ch.closestFrame(getFrame());

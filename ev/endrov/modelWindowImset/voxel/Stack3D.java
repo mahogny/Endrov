@@ -10,7 +10,6 @@ import javax.media.opengl.*;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.Shader;
@@ -164,7 +163,7 @@ public class Stack3D extends StackInterface
 		}
 	
 	
-	public void startBuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+	public void startBuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 		{
 		stopBuildThread();
 		buildThread=new BuildThread(frame, chsel, w);
@@ -180,10 +179,10 @@ public class Stack3D extends StackInterface
 	public class BuildThread extends Thread
 		{
 		private EvDecimal frame;
-		private HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel;
+		private HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel;
 		public boolean stop=false;
 		private ProgressMeter pm;
-		public BuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+		public BuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
 			{
 			this.frame=frame;
 			this.chsel=chsel;

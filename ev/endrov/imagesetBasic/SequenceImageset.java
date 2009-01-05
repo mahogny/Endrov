@@ -416,7 +416,7 @@ public class SequenceImageset implements EvIOData
 							loaders.put(new EvDecimal(i).multiply(spacingZ), evim); 
 							}
 						
-						Imageset.ChannelImages ch=imset.createChannel(channelName);
+						EvChannel ch=imset.createChannel(channelName);
 						ch.imageLoader.put(new EvDecimal(frame), loaders);
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
 						}

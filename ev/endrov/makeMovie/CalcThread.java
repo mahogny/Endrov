@@ -110,7 +110,7 @@ public final class CalcThread extends BatchThread
 				boolean allImloadOk=true;
 				for(MovieChannel cName:channels)
 					{
-					Imageset.ChannelImages ch=rec.getChannel(cName.name);
+					EvChannel ch=rec.getChannel(cName.name);
 					EvDecimal frame=ch.closestFrame(curframe);
 					EvDecimal tz=ch.closestZ(frame, new EvDecimal(z));
 					EvImage imload=ch.getImageLoader(frame, tz);

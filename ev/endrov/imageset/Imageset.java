@@ -31,431 +31,13 @@ public class Imageset extends EvObject
 		}
 	
 	
-	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-	
-
-	
 
 
-	
-	/**
-	 * Get channel or null if it doesn't exist
-	 */
-	public ChannelImages getChannel(String ch)
-		{
-		return channelImages.get(ch);
-		}
-	
-	
-	/**
-	 * Create a channel if it doesn't exist
-	 */
-	public ChannelImages createChannel(String ch)
-		{
-		ChannelImages im=channelImages.get(ch);
-		if(im==null)
-			{
-			im=new ChannelImages();
-			channelImages.put(ch, im);
-			}
-		return im;
-		}
-
-
-	
-	
-	/**
-	 * Remove channel images and metadata
-	 */
-	public void removeChannel(String ch)
-		{
-		channelImages.remove(ch);
-//		channelMeta.remove(ch);
-		}
-	
-	
-	
-	/**
-	 * Save metadata to some specific files; mostly for imageset internal use. Implementations of imagesets
-	 * should implement a function which stores the metadata in a standard location.
-	 */
-	/*
-	public void saveMeta(OutputStream os) throws IOException
-		{
-		//Add all objects
-		Document document=saveXmlMetadata();
-		
-		//Add imageset XML
-		Element imagesetEl=new Element("imageset");
-		saveMetadata(imagesetEl);
-		document.getRootElement().addContent(imagesetEl);
-		
-		//Write out to disk
-		
-		Format format=Format.getPrettyFormat();
-		XMLOutputter outputter = new XMLOutputter(format);
-
-//		writeXmlData(document, os);
-
-		outputter.output(document, os);
-		setMetadataModified(false);
-		}
-	public void saveMeta(File outfile) throws IOException
-		{
-//		FileWriter writer = new FileWriter(outfile);
-		FileOutputStream writer2=new FileOutputStream(outfile);
-		saveMeta(writer2);
-		writer2.close();
-		}
-	
-	
-	public void loadImagesetXmlMetadata(InputStream fileInputStream)
-		{
-		//Load metadata
-		loadXmlMetadata(fileInputStream);
-		for(String oi:metaObject.keySet())
-			if(metaObject.get(oi) instanceof ImagesetMeta)
-				{
-				meta=(ImagesetMeta)metaObject.get(oi);
-				metaObject.remove(oi);
-				break;
-			}
-		}
-*/
-	
-	
-	/**
-	 * Cast to imageset or return a new empty imageset
-	 */
-	public static Imageset castEmpty(EvObject data)
-		{
-		if(data instanceof Imageset)
-			return (Imageset)data;
-		else
-			return new Imageset();
-		}
-
-	/**
-	 * Cast to Imageset or return null
-	 */
-	public static Imageset castNull(EvObject data)
-		{
-		if(data instanceof Imageset)
-			return (Imageset)data;
-		else
-			return null;
-		}
-	
-	
-	
-	
-	
-	
-	/**
-	 * Get access to an image
-	 */
-	public EvImage getImageLoader(String channel, EvDecimal frame, EvDecimal z)
-		{
-		ChannelImages chim=channelImages.get(channel);
-		if(chim!=null)
-			return chim.getImageLoader(frame, z);
-		else
-			return null;
-		}
-
-	/****************************************************************************************/
-	/******************************* Channel data *******************************************/
-	/****************************************************************************************/
-
-	/**
-	 * Images for one channel
-	 */
-	public static class ChannelImages
-		{
-		/** Private copy to channel specific meta data in meta */
-		//private Imageset.ChannelImages meta;
-				
-		/** Image loaders */
-		public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
-
-		
-
-		/****************************************************************************************/
-		/******************************* Image data *********************************************/
-		/****************************************************************************************/
-		
-		/**
-		 * Get access to an image
-		 */
-		public EvImage getImageLoader(EvDecimal frame, EvDecimal z)
-			{
-			try
-				{
-				return imageLoader.get(frame).get(z);
-				}
-			catch(Exception e)
-				{
-				return null;
-				}
-			}
-		
-		/**
-		 * Get or create an image
-		 */
-		public EvImage createImageLoader(EvDecimal frame, EvDecimal z)
-			{
-			EvImage im=getImageLoader(frame, z);
-			if(im!=null)
-				return im;
-			else
-				{
-				TreeMap<EvDecimal, EvImage> frames=imageLoader.get(frame);
-				if(frames==null)
-					{
-					frames=new TreeMap<EvDecimal, EvImage>();
-					imageLoader.put(frame, frames);
-					}
-				im=new EvImage();
-				frames.put(z, im);
-				return im;
-				}
-			}
-
-	
-		
-		
-
-		/****************************************************************************************/
-		/******************************* Find frames/z ******************************************/
-		/****************************************************************************************/
-		
-		
-		
-		/**
-		 * Find out the closest frame
-		 * @param frame Which frame to match against
-		 * @return If there are no frames or there is an exact match, then frame. Otherwise the closest frame.
-		 */
-		public EvDecimal closestFrame(EvDecimal frame)
-			{
-			if(imageLoader.get(frame)!=null || imageLoader.size()==0)
-				return frame;
-			else
-				{
-				SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> before=imageLoader.headMap(frame);
-				SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=imageLoader.tailMap(frame);
-				if(before.size()==0)
-					return imageLoader.firstKey();
-				else if(after.size()==0)
-					return imageLoader.lastKey();
-				else
-					{
-					EvDecimal afterkey=after.firstKey();
-					EvDecimal beforekey=before.lastKey();
-					
-					if(afterkey.subtract(frame).less(frame.subtract(beforekey)))
-						return afterkey;
-					else
-						return beforekey;
-					}
-				}
-			}
-		
-		
-		/**
-		 * Get the frame before
-		 * @param frame Current frame
-		 * @return The frame before or the same frame if no frame before found
-		 */
-		public EvDecimal closestFrameBefore(EvDecimal frame)
-			{
-			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> before=imageLoader.headMap(frame); 
-			if(before.size()==0)
-				return frame;
-			else
-				return before.lastKey();
-			}
-		/**
-		 * Get the frame after
-		 * @param frame Current frame
-		 * @return The frame after or the same frame if no frame after found
-		 */
-		public EvDecimal closestFrameAfter(EvDecimal frame)
-			{
-			//Can be made faster by iterator
-			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=new TreeMap<EvDecimal, TreeMap<EvDecimal,EvImage>>(imageLoader.tailMap(frame));
-			after.remove(frame);
-			
-			if(after.size()==0)
-				return frame;
-			else
-				return after.firstKey();
-			}
-		
-		
-		/**
-		 * Find the closest slice given a frame and slice
-		 * @param frame Which frame to search
-		 * @param z Z we wish to match
-		 * @return Same z if frame does not exist or no slices exist, otherwise the closest z
-		 */
-		public EvDecimal closestZ(EvDecimal frame, EvDecimal z)
-			{
-			TreeMap<EvDecimal,EvImage> slices=imageLoader.get(frame);
-			if(slices==null || slices.size()==0)
-				return z;
-			else
-				{
-				SortedMap<EvDecimal,EvImage> before=slices.headMap(z);
-				SortedMap<EvDecimal,EvImage> after=slices.tailMap(z);
-				if(before.size()==0)
-					return after.firstKey();
-				else if(after.size()==0)
-					return before.lastKey();
-				else
-					{
-					EvDecimal afterkey=after.firstKey();
-					EvDecimal beforekey=before.lastKey();
-					
-					if(afterkey.subtract(z).less(z.subtract(beforekey)))
-						return afterkey;
-					else
-						return beforekey;
-					}
-				}
-			}
-
-
-		/**
-		 * Find the closest slice above given a slice in a frame
-		 * @param frame Which frame to search
-		 * @param z Z we wish to match
-		 * @return Same z if frame does not exist or no slices exist, otherwise the closest z above
-		 */
-		public EvDecimal closestZAbove(EvDecimal frame, EvDecimal z)
-			{
-			TreeMap<EvDecimal,EvImage> slices=imageLoader.get(frame);
-			if(slices==null)
-				return z;
-			else
-				{
-				//Can be made faster
-				SortedMap<EvDecimal,EvImage> after=new TreeMap<EvDecimal, EvImage>(slices.tailMap(z));
-				after.remove(z);
-				
-				if(after.size()==0)
-					return z;
-				else
-					return after.firstKey();
-				}
-			}
-		
-		/**
-		 * Find the closest slice below given a slice in a frame
-		 * @param frame Which frame to search
-		 * @param z Z we wish to match
-		 * @return Same z if frame does not exist or no slices exist, otherwise the closest z below
-		 */
-		public EvDecimal closestZBelow(EvDecimal frame, EvDecimal z)
-			{
-			TreeMap<EvDecimal, EvImage> slices=imageLoader.get(frame);
-			if(slices==null)
-				return z;
-			else
-				{
-				SortedMap<EvDecimal, EvImage> before=slices.headMap(z);
-				if(before.size()==0)
-					return z;
-				else
-					return before.lastKey();
-				}
-			}		
-		
-		
-		/****************************************************************************************/
-		/************************** Channel Meta data *******************************************/
-		/****************************************************************************************/
-
-		
-
-		
-		/** Binning, a scale factor from the microscope */
-		public int chBinning=1;
-		
-		/** Displacement */
-		public double dispX=0, dispY=0;
-		
-		/** Comppression 0-100, 100=lossless, what compression to apply to new images */
-		public int compression=100;
-		
-		/** Other */
-		public HashMap<String,String> metaOther=new HashMap<String,String>();
-		
-		/** frame data */
-		public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
-
-		
-
-		
-		/**
-		 * Get property assigned to a frame
-		 * @param frame Frame
-		 * @param prop Property
-		 * @return Value of property or null if it does not exist
-		 */
-		public String getFrameMeta(EvDecimal frame, String prop)
-			{
-			HashMap<String,String> framedata=metaFrame.get(frame);
-			if(framedata==null)
-				return null;
-			return framedata.get(prop);
-			}
-		
-		
-		
-		/** Get (other) meta data in form of a string (default="") */
-		public String getMetaValueString(String s)
-			{
-			String t=metaOther.get(s);
-			if(t==null)	return "";
-			else return t;
-			}
-
-		/** Get (other) meta data in form of a double (default=0) */
-		public double getMetaValueDouble(String s)
-			{
-			String t=getMetaValueString(s);
-			if(t.equals("")) return 0;
-			else return Double.parseDouble(t);
-			}
-		
-		/**
-		 * Get a common frame. Creates structure if it does not exist.
-		 */
-		public HashMap<String,String> getMetaFrame(int fid)
-			{
-			HashMap<String,String> frame=metaFrame.get(fid);
-			if(frame==null)
-				{
-				frame=new HashMap<String,String>();
-				metaFrame.put(fid, frame);
-				}
-			return frame;
-			}
-		}
-
-
-	/****************************************************************************************/
-	/************************** Imageset Meta data ******************************************/
-	/****************************************************************************************/
-	
-	
-	
 	/** List of all channels belonging to this imageset */
-	public HashMap<String,ChannelImages> channelImages=new HashMap<String,ChannelImages>();
+	public HashMap<String,EvChannel> channelImages=new HashMap<String,EvChannel>();
 
 	/** Common resolution [px/um] */
 	public double resX, resY, resZ; //TODO Deprecate Z once all OST converted. X and Y? or just keep these?
@@ -481,6 +63,59 @@ public class Imageset extends EvObject
 		{
 		return metaType;
 		}
+
+	
+	/**
+	 * Get channel or null if it doesn't exist
+	 */
+	public EvChannel getChannel(String ch)
+		{
+		return channelImages.get(ch);
+		}
+	
+	
+	/**
+	 * Create a channel if it doesn't exist
+	 */
+	public EvChannel createChannel(String ch)
+		{
+		EvChannel im=channelImages.get(ch);
+		if(im==null)
+			{
+			im=new EvChannel();
+			channelImages.put(ch, im);
+			}
+		return im;
+		}
+
+
+	
+	
+	/**
+	 * Remove channel images and metadata
+	 */
+	public void removeChannel(String ch)
+		{
+		channelImages.remove(ch);
+		}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Get access to an image
+	 */
+	public EvImage getImageLoader(String channel, EvDecimal frame, EvDecimal z)
+		{
+		EvChannel chim=channelImages.get(channel);
+		if(chim!=null)
+			return chim.getImageLoader(frame, z);
+		else
+			return null;
+		}
+
 
 	/** Additions to the object-specific menu */
 	public void buildMetamenu(JMenu menu)
@@ -543,9 +178,9 @@ public class Imageset extends EvObject
 		saveFrameMetadata(metaFrame, e);
 		
 		//Channels
-		for(Map.Entry<String, ChannelImages> entry:channelImages.entrySet())
+		for(Map.Entry<String, EvChannel> entry:channelImages.entrySet())
 			{
-			ChannelImages ch=entry.getValue();
+			EvChannel ch=entry.getValue();
 			
 			Element elOstChannel=new Element("channel");
 			elOstChannel.setAttribute("name", entry.getKey());
@@ -640,7 +275,7 @@ public class Imageset extends EvObject
 		{
 		String chname=e.getAttributeValue("name");
 
-		Imageset.ChannelImages ch=createChannel(chname);
+		EvChannel ch=createChannel(chname);
 
 		for(Object oi:e.getChildren())
 			{

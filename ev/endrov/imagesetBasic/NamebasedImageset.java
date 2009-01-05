@@ -378,7 +378,7 @@ public class NamebasedImageset implements EvIOData
 				String channelName=channelVector.get(channelNum);
 
 				//Get a place to put EVimage. Create holders if needed
-				Imageset.ChannelImages ch=im.createChannel(channelName);
+				EvChannel ch=im.createChannel(channelName);
 				TreeMap<EvDecimal, EvImage> loaders=ch.imageLoader.get(new EvDecimal(frame));
 				if(loaders==null)
 					{

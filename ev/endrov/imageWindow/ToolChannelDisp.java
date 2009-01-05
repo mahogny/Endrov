@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.imageset.EvChannel;
 import endrov.imageset.Imageset;
 
 /**
@@ -54,7 +55,7 @@ public class ToolChannelDisp implements ImageWindowTool
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			Imageset rec=w.getImageset();
-			Imageset.ChannelImages c=w.getSelectedChannel();
+			EvChannel c=w.getSelectedChannel();
 			if(rec!=null && c!=null)
 				{
 				c.dispX+=dx/w.getZoom();

@@ -7,7 +7,7 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3d;
 
-import endrov.imageset.Imageset.ChannelImages;
+import endrov.imageset.EvChannel;
 import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
@@ -27,7 +27,7 @@ public abstract class StackInterface
 	public abstract Collection<Double> adjustScale(ModelWindow w);
 	public abstract Collection<Vector3d> autoCenterMid();
 	public abstract Double autoCenterRadius(Vector3d mid, double FOV);
-	public abstract void startBuildThread(EvDecimal frame, HashMap<ChannelImages, VoxelExtension.ChannelSelection> chsel,ModelWindow w);
+	public abstract void startBuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w);
 	public abstract void stopBuildThread();
 
 	

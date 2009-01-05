@@ -12,7 +12,6 @@ import endrov.data.*;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.util.*;
 
 /**
@@ -402,7 +401,7 @@ public class EvIODataOST implements EvIOData
 			for(Map.Entry<String, Imageset> datae:dataImagesets.entrySet())
 				{
 				Imageset im=datae.getValue();
-				for(Map.Entry<String, Imageset.ChannelImages> ce:im.channelImages.entrySet())
+				for(Map.Entry<String, EvChannel> ce:im.channelImages.entrySet())
 					for(Map.Entry<EvDecimal, TreeMap<EvDecimal,EvImage>> fe:ce.getValue().imageLoader.entrySet())
 						for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 							{
@@ -595,7 +594,7 @@ public class EvIODataOST implements EvIOData
 				{
 				DiskBlob blob=getCreateBlob(im);
 				blob.diskImageLoader.clear();
-				for(Map.Entry<String, Imageset.ChannelImages> ce:im.channelImages.entrySet())
+				for(Map.Entry<String, EvChannel> ce:im.channelImages.entrySet())
 					{
 					HashMap<EvDecimal,HashMap<EvDecimal,File>> loaderFrames=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
 					blob.diskImageLoader.put(ce.getKey(), loaderFrames);
@@ -688,7 +687,7 @@ public class EvIODataOST implements EvIOData
 				im.channelImages.clear();
 				for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:blob.diskImageLoader.entrySet())
 					{
-					ChannelImages chim=im.createChannel(ce.getKey());
+					EvChannel chim=im.createChannel(ce.getKey());
 					
 					for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
 						{

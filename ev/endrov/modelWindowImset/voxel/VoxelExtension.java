@@ -21,7 +21,6 @@ import endrov.ev.*;
 import endrov.filter.FilterSeq;
 import endrov.filter.WindowFilterSeq;
 import endrov.imageset.*;
-import endrov.imageset.Imageset.ChannelImages;
 import endrov.modelWindow.*;
 import endrov.util.EvDecimal;
 
@@ -58,7 +57,7 @@ public class VoxelExtension implements ModelWindowExtension
 	public static class ChannelSelection
 		{
 		public Imageset im;
-		public ChannelImages ch;
+		public EvChannel ch;
 		public FilterSeq filterSeq;
 		public Color color=new Color(0,0,0);
 		}
@@ -198,21 +197,18 @@ public class VoxelExtension implements ModelWindowExtension
 					currentStack.setLastFrame(frame);
 					
 					//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
-					HashMap<ChannelImages, ChannelSelection> chsel=new HashMap<ChannelImages, ChannelSelection>(); 
+					HashMap<EvChannel, ChannelSelection> chsel=new HashMap<EvChannel, ChannelSelection>(); 
 					for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
 						{
-						Imageset im=oc.channelCombo.getImageset();
+						Imageset im=oc.channelCombo.getImagesetNotNull();
 //					System.out.println("im: "+im);
 //					System.out.println("im2: "+oc.channelCombo.getChannel());
-						ChannelImages chim=im.getChannel(oc.channelCombo.getChannel());
+						EvChannel chim=im.getChannel(oc.channelCombo.getChannel());
 						if(chim!=null)
 							{
 							ChannelSelection sel=chsel.get(chim);
 							if(sel==null)
-								{
-								sel=new ChannelSelection();
-								chsel.put(chim, sel);
-								}
+								chsel.put(chim, sel=new ChannelSelection());
 							sel.im=im;
 							sel.ch=chim;
 							sel.filterSeq=oc.filterSeq;
@@ -224,8 +220,8 @@ public class VoxelExtension implements ModelWindowExtension
 						}
 					
 					//Start build thread
-		//			System.out.println("start build thread");
-					currentStack.startBuildThread(frame, chsel, w);
+					if(!chsel.isEmpty())
+						currentStack.startBuildThread(frame, chsel, w);
 					}
 				else
 					{
@@ -275,7 +271,7 @@ public class VoxelExtension implements ModelWindowExtension
 			
 //			public WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
 //			public String lastChannel="";
-			public WeakReference<Imageset.ChannelImages> lastChannelImages=new WeakReference<ChannelImages>(null);
+			public WeakReference<EvChannel> lastChannelImages=new WeakReference<EvChannel>(null);
 			
 			/** Update stack */ 
 			public void stackChanged()
@@ -292,8 +288,8 @@ public class VoxelExtension implements ModelWindowExtension
 //				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
 //				lastChannel=channelCombo.getChannelNotNull();
 
-				Imageset.ChannelImages images=channelCombo.getImageset().channelImages.get(channelCombo.getChannel());
-				lastChannelImages=new WeakReference<ChannelImages>(images);
+				EvChannel images=channelCombo.getImagesetNotNull().channelImages.get(channelCombo.getChannel());
+				lastChannelImages=new WeakReference<EvChannel>(images);
 				
 				System.out.println("voxel repaint");
 				w.view.repaint();
@@ -306,7 +302,7 @@ public class VoxelExtension implements ModelWindowExtension
 				String ch=lastChannel;
 				Imageset newImageset=channelCombo.getImagesetNull();
 				String newChannel=channelCombo.getChannelNotNull();*/
-				Imageset.ChannelImages images=channelCombo.getImageset().channelImages.get(channelCombo.getChannel());
+				EvChannel images=channelCombo.getImagesetNotNull().channelImages.get(channelCombo.getChannel());
 				if(images!=lastChannelImages.get())
 //				if(ims!=newImageset || !ch.equals(newChannel))
 					stackChanged();
