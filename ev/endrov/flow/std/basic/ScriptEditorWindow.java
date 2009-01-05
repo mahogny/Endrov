@@ -148,10 +148,7 @@ public class ScriptEditorWindow extends BasicWindow implements ActionListener
 		{
 		ScriptEditorWindow w=editors.get(u);
 		if(w==null)
-			{
-			w=new ScriptEditorWindow(u);
-			editors.put(u,w);
-			}
+			editors.put(u,w=new ScriptEditorWindow(u));
 		else
 			w.toFront();
 		}

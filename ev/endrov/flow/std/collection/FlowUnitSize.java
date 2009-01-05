@@ -1,6 +1,7 @@
 package endrov.flow.std.collection;
 
 import java.awt.Color;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -8,6 +9,7 @@ import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.FlowExec;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
@@ -59,10 +61,11 @@ public class FlowUnitSize extends FlowUnitBasic
 		return types;
 		}
 	
-	public void evaluate(Flow flow) throws Exception
+	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
+		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.clear();
-		Object a=flow.getInputValue(this, "in");
+		Object a=flow.getInputValue(this, exec, "in");
 		if(a instanceof String)
 			lastOutput.put("size", ((String)a).length());
 		else

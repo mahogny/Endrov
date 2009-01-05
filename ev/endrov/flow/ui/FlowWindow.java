@@ -214,7 +214,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			fp.alignVert(fp.selectedUnits);
 		else if(e.getSource()==bDelete)
 			{
-			fp.flow.removeUnits(fp.selectedUnits);
+			fp.getFlow().removeUnits(fp.selectedUnits);
 			fp.repaint();
 			}
 		else if(e.getSource()==objectCombo)
@@ -229,7 +229,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 
 	public void loadData()
 		{
-		fp.flow=objectCombo.getSelectedObjectNotNull();
+		fp.setFlow(objectCombo.getSelectedObjectNotNull());
 		fp.repaint();
 		}
 	

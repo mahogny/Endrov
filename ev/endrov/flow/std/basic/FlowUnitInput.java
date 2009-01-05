@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
@@ -117,8 +118,9 @@ public class FlowUnitInput extends FlowUnit
 		return Collections.singleton((FlowUnit)this);
 		}
 	
-	public void evaluate(Flow flow) throws Exception
+	public void evaluate(Flow flow, FlowExec exec) throws Exception
 	{
+//	Map<String,Object> lastOutput=exec.getLastOutput(this);
 	//TODO flowunit
 	}
 

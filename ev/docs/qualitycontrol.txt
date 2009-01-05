@@ -110,6 +110,24 @@ Additional checks
 	real-time flows
     flows: icons on items
 	
+	cannot twice double-click on script. window disposed?
+	
+	THIS MUST BE DONE
+		* output items in tree
+		* output items as ... output. associate a runner that deals with the output?
+		* input from whatever. get items from tree
+			FlowIOmanager?
+			can also connect callbacks into output and input variables
+				- trouble - instances. need to make a copy or the entries will be overwritten
+				separate unit declaration from data? FlowExec. this would be perfect for submodules.
+				DECIDED. 
+	FLOW MODES
+		stand-alone on request
+			continuous, open window?
+			once on demand
+		sub module in another flow
+		
+	
 	Flows to create max channel
 	Flows for calcium imaging
 	  "Image" menu, and ROIs, how will this go with filters? I can imagine

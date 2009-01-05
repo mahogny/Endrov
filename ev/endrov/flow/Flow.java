@@ -6,6 +6,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.FlowExec;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 
@@ -135,11 +136,14 @@ public class Flow extends EvObject
 	public List<FlowUnit> units=new Vector<FlowUnit>();
 	public List<FlowConn> conns=new Vector<FlowConn>();
 	
-	public Object getInputValue(FlowUnit u, String arg) throws Exception
+	public Object getInputValue(FlowUnit u, FlowExec exec, String arg) throws Exception
 		{
 		for(FlowConn c:conns)
 			if(c.toUnit==u && c.toArg.equals(arg))
-				return c.fromUnit.lastOutput.get(c.fromArg);
+				{
+				Map<String,Object> lastOutput=exec.getLastOutput(c.fromUnit);
+				return lastOutput.get(c.fromArg);
+				}
 		throw new Exception("Input not connected - "+arg);
 		}
 	
