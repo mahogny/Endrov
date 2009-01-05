@@ -6,11 +6,13 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
@@ -113,14 +115,15 @@ public class FlowUnitIf extends FlowUnit
 		}
 
 	
-	public void evaluate(Flow flow) throws Exception
+	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
+		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.clear();
-		Boolean b=(Boolean)flow.getInputValue(this, "cond");
+		Boolean b=(Boolean)flow.getInputValue(this, exec, "cond");
 		if(b)
-			lastOutput.put("out", flow.getInputValue(this, "true"));
+			lastOutput.put("out", flow.getInputValue(this, exec, "true"));
 		else
-			lastOutput.put("out", flow.getInputValue(this, "false"));
+			lastOutput.put("out", flow.getInputValue(this, exec, "false"));
 		}
 	
 	

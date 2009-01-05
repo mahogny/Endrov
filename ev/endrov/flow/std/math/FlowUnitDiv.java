@@ -1,6 +1,9 @@
 package endrov.flow.std.math;
 
 
+import java.util.Map;
+
+import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclarationTrivial;
@@ -21,11 +24,11 @@ public class FlowUnitDiv extends FlowUnitMathBinop
 		public FlowUnit createInstance(){return new FlowUnitDiv();}});
 		}
 	
-	public void evaluate(Flow flow) throws Exception
+	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
-		lastOutput.clear();
-		Object a=flow.getInputValue(this, "A");
-		Object b=flow.getInputValue(this, "B");
+		Map<String,Object> lastOutput=exec.getLastOutput(this);
+		Object a=flow.getInputValue(this, exec, "A");
+		Object b=flow.getInputValue(this, exec, "B");
 		if(a instanceof Double)
 			lastOutput.put("C", ((Double)a)/toDouble(b));
 		else

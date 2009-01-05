@@ -12,6 +12,7 @@ import java.util.*;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.FlowExec;
 import endrov.flow.ui.FlowPanel;
 
 //think of how to do sub-flows later
@@ -23,7 +24,7 @@ public abstract class FlowUnit
 	/** Absolute coordinate, not relative to container */
 	public int x,y;
 
-	public Map<String,Object> lastOutput=new HashMap<String, Object>();
+//	public Map<String,Object> lastOutput=new HashMap<String, Object>();
 
 	//private static Object staticSynch="";
 	//private static int seqID=0;
@@ -73,20 +74,20 @@ public abstract class FlowUnit
 	/** Get types of flows out */
 	public abstract Map<String, FlowType> getTypesOut();
 	
-	public abstract void evaluate(Flow flow) throws Exception;
+	public abstract void evaluate(Flow flow,FlowExec exec) throws Exception;
 
 	/**
 	 * Evaluate flow top-bottom with this component as the top 
 	 */
-	public void updateTopBottom(Flow flow) throws Exception
+	public void updateTopBottom(Flow flow, FlowExec exec) throws Exception
 		{
 		//TODO cache
 		Set<FlowUnit> toUpdate=new HashSet<FlowUnit>();
 		for(String arg:getTypesIn().keySet())
 			toUpdate.add(flow.getInputUnit(this, arg));
 		for(FlowUnit u:toUpdate)
-			u.updateTopBottom(flow);
-		evaluate(flow);
+			u.updateTopBottom(flow,exec);
+		evaluate(flow,exec);
 		}
 	
 	
