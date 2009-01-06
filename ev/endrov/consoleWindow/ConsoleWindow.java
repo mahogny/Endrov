@@ -247,7 +247,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		
 		//Log handling
 		Log.listeners.add(consoleLog);
-		evw.addWindowListener(wlist);
+		getEvw().addWindowListener(wlist);
 		history.append(Log.memoryLog.get());
 		
 		//Window overall things
@@ -343,7 +343,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 			c.requestFocus();
 			lastFocusComponent=new WeakReference<Component>(null);
 			if(f!=null)
-				f.evw.toFront();
+				f.getEvw().toFront();
 			}
 		}
 
@@ -379,7 +379,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		{
 		ConsoleWindow c=getConsole();
 		if(c==null) c=new ConsoleWindow();
-		c.evw.toFront();
+		c.getEvw().toFront();
 		c.lastFocusComponent=new WeakReference<Component>(me);
 		c.lastFocusFrame=new WeakReference<BasicWindow>(frame);
 		c.commandLine.requestFocus();

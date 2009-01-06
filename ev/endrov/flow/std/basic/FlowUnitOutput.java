@@ -27,7 +27,7 @@ import endrov.flow.ui.FlowPanel;
 public class FlowUnitOutput extends FlowUnit
 	{
 	
-	public String varName;
+	public String varName="foo";
 	public FlowUnit varUnit;
 	
 	private static final String metaType="output";
@@ -35,22 +35,17 @@ public class FlowUnitOutput extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclaration("Basic","Output",metaType)
-			{
-			public FlowUnit createInstance(){return new FlowUnitOutput("foo");}
-			public FlowUnit fromXML(Element e)
-				{
-				FlowUnitOutput u=new FlowUnitOutput("");
-				e.setAttribute("varname", u.varName);
-				return u;
-				}
-			});
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","Output",metaType,FlowUnitOutput.class));
 		}
 	
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		e.setAttribute("varname", varName);
 		return metaType;
+		}
+	public void fromXML(Element e)
+		{
+		varName=e.getAttributeValue("varname");
 		}
 
 	public FlowUnitOutput(String varName) //unit todo
@@ -121,11 +116,17 @@ public class FlowUnitOutput extends FlowUnit
 		}
 
 	
+	/**
+	 * There is an invisible connector out. Whatever executes the flow can grab this output.
+	 */
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
-	{
-//	Map<String,Object> lastOutput=exec.getLastOutput(this);
-	//TODO flowunit
-	}
+		{
+		Map<String,Object> lastOutput=exec.getLastOutput(this);
+		lastOutput.clear();
+		Object a=flow.getInputValue(this, exec, "in");
+		lastOutput.put("out", a);
+		}
 
+	
 	
 	}

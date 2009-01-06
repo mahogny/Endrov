@@ -1,6 +1,7 @@
 package endrov.flow.std.collection;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -13,10 +14,14 @@ import endrov.basicWindow.FlowExec;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
+/**
+ * Size of a collection, string etc
+ * @author Johan Henriksson
+ *
+ */
 public class FlowUnitSize extends FlowUnitBasic
 	{
 	private static final String metaType="size";
@@ -24,8 +29,7 @@ public class FlowUnitSize extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Size",metaType){
-		public FlowUnit createInstance(){return new FlowUnitSize();}});
+		Flow.addUnitType(new FlowUnitDeclaration("Collection","Size",metaType,FlowUnitSize.class));
 		}
 	
 	public String getBasicShowName()
@@ -40,10 +44,11 @@ public class FlowUnitSize extends FlowUnitBasic
 		}
 
 	
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		return metaType;
 		}
+	public void fromXML(Element e){}
 	
 	
 	/** Get types of flows in */
@@ -57,7 +62,7 @@ public class FlowUnitSize extends FlowUnitBasic
 	public SortedMap<String, FlowType> getTypesOut()
 		{
 		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("size", null);
+		types.put("size", FlowType.TINTEGER);
 		return types;
 		}
 	
@@ -68,6 +73,8 @@ public class FlowUnitSize extends FlowUnitBasic
 		Object a=flow.getInputValue(this, exec, "in");
 		if(a instanceof String)
 			lastOutput.put("size", ((String)a).length());
+		if(a instanceof Collection<?>)
+			lastOutput.put("size", ((Collection<?>)a).size());
 		else
 			throw new BadTypeFlowException("Unsupported collection type "+a.getClass());
 		}

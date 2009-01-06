@@ -85,7 +85,10 @@ public class ImageWindow extends BasicWindow
 		Element e=new Element("imagewindow");
 		setXMLbounds(e);
 		e.setAttribute("group", ""+frameControl.getGroup());
-		e.setAttribute("lastSelectChannel", channelWidget.get(0).comboChannel.lastSelectChannel);
+		String lastChan=channelWidget.get(0).comboChannel.lastSelectChannel;
+		if(lastChan==null)
+			lastChan="";
+		e.setAttribute("lastSelectChannel", lastChan);
 		root.addContent(e);
 		}
 

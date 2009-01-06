@@ -11,9 +11,8 @@ import org.jdom.Element;
 import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
 public class FlowUnitHeadTail extends FlowUnitBasic
 	{
@@ -23,8 +22,7 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","HeadTail",metaType){
-		public FlowUnit createInstance(){return new FlowUnitHeadTail();}});
+		Flow.addUnitType(new FlowUnitDeclaration("Collection","HeadTail",metaType,FlowUnitHeadTail.class));
 		}
 	
 	public String getBasicShowName()
@@ -38,10 +36,8 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 		return new Color(200,255,200);
 		}
 
-	public String storeXML(Element e)
-		{
-		return metaType;
-		}
+	public String toXML(Element e){return metaType;}
+	public void fromXML(Element e){}
 
 	
 	/** Get types of flows in */

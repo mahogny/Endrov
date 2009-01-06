@@ -19,7 +19,7 @@ import endrov.util.Matrix2d;
  */
 public class ImagePanel extends JPanel
 	{
-	static final long serialVersionUID=0; //wtf
+	static final long serialVersionUID=0;
 	public Vector<ImagePanelImage> images=new Vector<ImagePanelImage>();
 	public double zoom=1;
 	public double rotation=0;

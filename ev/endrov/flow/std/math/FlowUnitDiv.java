@@ -5,8 +5,7 @@ import java.util.Map;
 
 import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
-import endrov.flow.FlowUnit;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
 public class FlowUnitDiv extends FlowUnitMathBinop
 	{
@@ -20,8 +19,7 @@ public class FlowUnitDiv extends FlowUnitMathBinop
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","/",metaType){
-		public FlowUnit createInstance(){return new FlowUnitDiv();}});
+		Flow.addUnitType(new FlowUnitDeclaration("Math","/",metaType,FlowUnitDiv.class));
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception

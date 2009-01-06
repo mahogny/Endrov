@@ -101,7 +101,7 @@ public abstract class FlowUnit
 	public abstract Collection<FlowUnit> getSubUnits(Flow flow);
 
 	
-	public abstract String storeXML(Element e);
+	public abstract String toXML(Element e);
 		
 	
 	
@@ -123,5 +123,8 @@ public abstract class FlowUnit
 		Dimension dim=getBoundingBox();
 		return new Point(x+dim.width/2,y+dim.height/2);
 		}
+	
+	
+	public abstract void fromXML(Element e);
 	
 	}

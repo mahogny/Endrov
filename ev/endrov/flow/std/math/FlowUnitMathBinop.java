@@ -22,11 +22,15 @@ public abstract class FlowUnitMathBinop extends FlowUnitBasic
 		}
 	
 	
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		return metaType;
 		}
 
+	public void fromXML(Element e)
+		{
+		}
+	
 	public String getBasicShowName(){return showName;}
 	public ImageIcon getIcon(){return null;}
 	

@@ -6,9 +6,13 @@ import java.util.Map;
 import endrov.basicWindow.FlowExec;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
-import endrov.flow.FlowUnit;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
+/**
+ * Flow unit: add numbers
+ * @author Johan Henriksson
+ *
+ */
 public class FlowUnitAdd extends FlowUnitMathBinop
 	{
 	private static final String metaType="add";
@@ -16,8 +20,7 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","+",metaType){
-		public FlowUnit createInstance(){return new FlowUnitAdd();}});
+		Flow.addUnitType(new FlowUnitDeclaration("Math","+",metaType,FlowUnitAdd.class));
 		}
 	
 	public FlowUnitAdd()

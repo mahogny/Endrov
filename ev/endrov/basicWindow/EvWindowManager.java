@@ -2,6 +2,7 @@ package endrov.basicWindow;
 
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
+
 import javax.swing.JMenuBar;
 
 /**

@@ -11,9 +11,8 @@ import org.jdom.Element;
 import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
 public class FlowUnitImservQuery extends FlowUnitBasic
 	{
@@ -22,8 +21,7 @@ public class FlowUnitImservQuery extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("ImServ","Query",metaType){
-		public FlowUnit createInstance(){return new FlowUnitImservQuery();}});
+		Flow.addUnitType(new FlowUnitDeclaration("ImServ","Query",metaType,FlowUnitImservQuery.class));
 		}
 	
 	public String getBasicShowName()
@@ -33,10 +31,8 @@ public class FlowUnitImservQuery extends FlowUnitBasic
 	public ImageIcon getIcon(){return null;}
 
 	
-	public String storeXML(Element e)
-		{
-		return metaType;
-		}
+	public String toXML(Element e){return metaType;}
+	public void fromXML(Element e){}
 
 	public Color getBackground()
 		{

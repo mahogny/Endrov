@@ -22,7 +22,7 @@ import endrov.flow.ui.FlowPanel;
 public class FlowUnitConstBoolean extends FlowUnit
 	{
 	
-	public boolean var;
+	public boolean var=true;
 	
 	
 	private static final String metaType="constBoolean";
@@ -30,27 +30,21 @@ public class FlowUnitConstBoolean extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclaration("Const","Boolean",metaType)
-			{
-			public FlowUnit createInstance(){return new FlowUnitConstBoolean(true);}
-			public FlowUnit fromXML(Element e)
-				{
-				FlowUnitConstBoolean u=new FlowUnitConstBoolean(Boolean.parseBoolean(e.getAttributeValue("value")));
-				return u;
-				}
-			});
+		Flow.addUnitType(new FlowUnitDeclaration("Const","Boolean",metaType,FlowUnitConstBoolean.class));
 		}
 	
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		e.setAttribute("value", ""+var);
 		return metaType;
 		}
-	
-	public FlowUnitConstBoolean(Boolean var) 
+
+	public void fromXML(Element e)
 		{
-		this.var=var;
+		var=Boolean.parseBoolean(e.getAttributeValue("value"));
 		}
+
+	
 	
 	private String getText()
 		{

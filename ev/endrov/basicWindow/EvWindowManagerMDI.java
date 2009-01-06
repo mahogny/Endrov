@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 //import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -62,6 +64,7 @@ public class EvWindowManagerMDI extends JPanel implements /*WindowListener,*/ Ev
 		{
 		}
 
+
 	public static JFrame totalFrame=new JFrame(EV.programName+" foo");
 	public static JPanel totalPane=new JPanel();
 	{
@@ -111,6 +114,12 @@ public class EvWindowManagerMDI extends JPanel implements /*WindowListener,*/ Ev
 			EvWindowManagerMDI w=new EvWindowManagerMDI(bw);
 			return w;
 			}
+
+		public List<BasicWindow> getAllWindows()
+			{
+			return null;//TODO
+			}
+
 		}
 
 	}

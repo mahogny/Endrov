@@ -24,37 +24,29 @@ import endrov.flow.ui.FlowPanel;
 public class FlowUnitInput extends FlowUnit
 	{
 	
-	public String varName;
+	public String varName="foo";
 	public FlowUnit varUnit;
 	private static final String metaType="input";
 
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclaration("Basic","Input",metaType)
-			{
-			public FlowUnit createInstance(){return new FlowUnitInput("foo");}
-			public FlowUnit fromXML(Element e)
-				{
-				FlowUnitInput u=new FlowUnitInput("");
-				e.setAttribute("varname", u.varName);
-				return u;
-				}
-			});
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","Input",metaType,FlowUnitInput.class));
 		}
 
 	
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		e.setAttribute("varname", varName);
 		return metaType;
 		}
 
-	
-	public FlowUnitInput(String varName) //unit todo
+	public void fromXML(Element e)
 		{
-		this.varName=varName;
+		varName=e.getAttributeValue("varname");
 		}
+
+	
 	
 	public Dimension getBoundingBox()
 		{
@@ -117,12 +109,17 @@ public class FlowUnitInput extends FlowUnit
 		{
 		return Collections.singleton((FlowUnit)this);
 		}
-	
+
+	/**
+	 * There is an invisible connector to in. Whatever executes the flow is responsible for setting this input
+	 */
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
-	{
-//	Map<String,Object> lastOutput=exec.getLastOutput(this);
-	//TODO flowunit
-	}
+		{
+		Map<String,Object> lastOutput=exec.getLastOutput(this);
+		lastOutput.clear();
+		Object a=flow.getInputValue(this, exec, "in");
+		lastOutput.put("out", a);
+		}
 
 	
 	}
