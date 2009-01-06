@@ -19,6 +19,17 @@ import java.util.*;
  * http://freedesktop.org/wiki/Specifications/desktop-entry-spec?action=show&redirect=Standards%2Fdesktop-entry-spec
  * 
  * 
+ * 
+ * ============ goals ========
+ * turn libraries into dependencies
+ * delete plugins that are specicific to other OS'
+ * integrate endrov into debian desktop
+ * ======= debian guidelines ====
+ * separate packaging system from project. this is why
+ * this is a separate project.
+ * automatic upgrades by downloading source
+ * -> later problem
+ * 
  * @author Johan Henriksson
  *
  */
@@ -29,13 +40,16 @@ public class Main
 		{
 		try
 			{
-			File zip=new File("../ev081222.zip");
-			//File zip=new File(args[0]);
+			File zip=new File("../ev081225.zip");
+			if(args.length==1)
+				zip=new File(args[0]);
 			
 			File dPkg=new File("/tmp/endrov");
 			File dUsr=new File(dPkg,"usr");
+			File dEtc=new File(dPkg,"etc");
 			File dShare=new File(dUsr,"share");
 			File dEndrov=new File(dShare,"endrov");
+			File dEndrovLibs=new File(dEndrov,"libs");
 			File dMan=new File(dShare,"man/man1");
 			File dMenu=new File(dShare,"menu");
 			File dControl=new File(dPkg,"DEBIAN");
@@ -44,6 +58,7 @@ public class Main
 			File dSharePixmaps=new File(dShare,"pixmaps");
 			File dUsrBin=new File(dUsr,"bin");
 			File dShareApplications=new File(dShare,"applications");
+			File dEtcBash=new File(dEtc,"bash_completion.d");
 			
 			File fUsrBinEndrov=new File(dUsrBin,"endrov");
 			File fIcon=new File(dSharePixmaps,"endrov.xpm");
@@ -82,50 +97,50 @@ public class Main
 			copyFile(new File("endrov.sh"),fUsrBinEndrov);
 			copyFile(new File("usrShareMenuEndrov"),fUsrShareMenuEndrov);
 			copyFile(new File("endrov.desktop"),fUsrShareApplicationsEndrov);
+			copyFile(new File("bash_completion"),new File(dEtcBash,"endrov"));
 			setExec(fUsrBinEndrov);
 			//fUsrEndrov.setExecutable(true);
 			
 			//Packages
 			//maybe do pattern match instead?
 			List<DebPackage> pkgs=new LinkedList<DebPackage>();
-			pkgs.add(new DebPackage("java2-runtime","",null));
-			pkgs.add(new DebPackage("bsh","bsh",new String[]{"bsh-2.0b4.jar"}));
-			pkgs.add(new DebPackage("junit","junit",new String[]{"junit.jar"}));
-			pkgs.add(new DebPackage("libpg-java","postgresql",new String[]{"postgresql-8.2-505.jdbc3.jar"}));
-			pkgs.add(new DebPackage("libvecmath1.2-java","vecmath",new String[]{"vecmath.jar"}));
-			//micro-manager, does it work with bp?
-			pkgs.add(new DebPackage("micro-manager","micro-manager",new String[]{"umanager_inc"}));
-			pkgs.add(new DebPackage("libbcel-java","bcel",new String[]{"bcel-5.2.jar"}));
-			pkgs.add(new DebPackage("libservlet2.3-java","servlet",new String[]{"servlet.jar"})); //2.4 also exists
-			pkgs.add(new DebPackage("libxalan2-java","xalan2",new String[]{"xalan.jar"}));
-			//xerces and xml-apis separate?
-			pkgs.add(new DebPackage("libxerces2-java","xerces xml-apis",new String[]{"xerces.jar","xml-apis.jar"}));
-			pkgs.add(new DebPackage("libjdom1-java","jdom",new String[]{"jdom.jar"})); //any overlap here?
-			//jogl TODO. how to handle so's?
-			pkgs.add(new DebPackage("libjogl-java","",new String[]{"gluegen-rt.jar","jogl.jar","libgluegen-rt.so","libjogl_awt.so","libjogl_cg.so","libjogl.so"}));
-			pkgs.add(new DebPackage("libjfreechart-java","jfreechart",new String[]{"jfreechart-1.0.5.jar"}));
-			pkgs.add(new DebPackage("libjakarta-poi-java","poi",new String[]{"poi-contrib-3.0.1-FINAL-20070705.jar","poi-3.0.1-FINAL-20070705.jar","poi-scratchpad-3.0.1-FINAL-20070705.jar"}));
-			pkgs.add(new DebPackage("libjaxen-java","jaxen-core jaxen-jdom",new String[]{"jaxen-core.jar","jaxen-jdom.jar","saxpath.jar"}));
-			/*pkgs.add(new DebPackage("",new String[]{""});
-			pkgs.add(new DebPackage("",new String[]{""});*/
-			//jinput-test.jar jinput.jar
-			//JAI, can I trust it to be included? reduce need?
+			pkgs.add(new DebPackage("java2-runtime",null,new String[]{"linux.paths"}));
+			pkgs.add(new DebPackage("bsh",new String[]{"bsh.jar"},new String[]{"bsh-2.0b4.jar"}));
+			pkgs.add(new DebPackage("junit",new String[]{"junit.jar"},new String[]{"junit.jar"}));
+			pkgs.add(new DebPackage("libpg-java",new String[]{"postgresql.jar"},new String[]{"postgresql-8.2-505.jdbc3.jar"}));
+			pkgs.add(new DebPackage("libvecmath1.2-java",new String[]{"vecmath1.2.jar"},new String[]{"vecmath.jar"}));
+			pkgs.add(new DebPackage("micromanager",new String[]{},new String[]{"umanager_inc"})); //rely on inc-file to add jar files
+			pkgs.add(new DebPackage("libbcel-java",new String[]{"bcel.jar"},new String[]{"bcel-5.2.jar"}));
+			pkgs.add(new DebPackage("libservlet2.3-java",new String[]{"servlet-2.3.jar"},new String[]{"servlet.jar"})); //2.4 also exists
+			pkgs.add(new DebPackage("libxalan2-java",new String[]{"xalan2.jar"},new String[]{"xalan.jar","xerces.jar","xml-apis.jar"}));
+			pkgs.add(new DebPackage("libjdom1-java",new String[]{"jdom1.jar"},new String[]{"jdom.jar"})); //any overlap here?
+			pkgs.add(new DebPackage("libjogl-java",new String[]{"jogl.jar","gluegen-rt.jar"},new String[]{"gluegen-rt.jar","jogl.jar","libgluegen-rt.so","libjogl_awt.so","libjogl_cg.so","libjogl.so"}));
+			pkgs.add(new DebPackage("libjfreechart-java",new String[]{"jfreechart.jar"},new String[]{"jfreechart-1.0.5.jar"}));
+			pkgs.add(new DebPackage("libjakarta-poi-java",new String[]{"jakarta-poi-contrib.jar","jakarta-poi.jar","jakarta-poi-scratchpad.jar"},new String[]{"poi-contrib-3.0.1-FINAL-20070705.jar","poi-3.0.1-FINAL-20070705.jar","poi-scratchpad-3.0.1-FINAL-20070705.jar"}));
+			pkgs.add(new DebPackage("libjaxen-java",new String[]{"jaxen.jar"},new String[]{"jaxen-core.jar","jaxen-jdom.jar","saxpath.jar"}));
+			pkgs.add(new DebPackage("libjinput-java",new String[]{"jinput.jar"},new String[]{"libjinput-linux.so","jinput.jar","jinput-test.jar"}));
 
+			//JAI, seems to work without
+			//the filter system might need some operations, not sure
+			//pkgs.add(new DebPackage(null,null,new String[]{"jai_codec.jar","jai_core.jar","mlibwrapper_jai.jar","libmlib_jai.so"}));
+			
+			
 
 			//Specialty for micro-manager
-			File dLibs=new File(dEndrov,"libs");
-			EvFileUtil.writeFile(new File(dLibs,"umanager.paths"), "b:/usr/lib/micro-manager");
+//			File dLibs=new File(dEndrov,"libs");
+//			EvFileUtil.writeFile(new File(dLibs,"umanager.paths"), "b:/usr/lib/micro-manager");
 			
 			//For OME  http://trac.openmicroscopy.org.uk/omero/wiki/OmeroClientLibrary
-			pkgs.add(new DebPackage("liblog4j1.2-java","log4j",new String[]{"log4j-1.2.14.jar"}));
-			pkgs.add(new DebPackage("libjboss-aop-java","jboss-aop",new String[]{"jboss-aop-jdk50-4.2.1.GA.jar","jboss-aop-jdk50-client-4.2.1.GA.jar"}));
-			pkgs.add(new DebPackage("libjboss-aspects-java","jboss-aspects",new String[]{"jboss-aspect-library-jdk50-4.2.1.GA.jar"}));
-			pkgs.add(new DebPackage("libjboss-ejb3-java","jboss-ejb3",new String[]{"jboss-ejb3-4.2.1.GA.jar"}));
-			pkgs.add(new DebPackage("libjboss-ejb3x-java","jboss-ejb3x",new String[]{"jboss-ejb3x-4.2.1.GA.jar"}));                 
-			pkgs.add(new DebPackage("libjcommon-java","jcommon",new String[]{"jcommon-1.0.9.jar"}));
-			pkgs.add(new DebPackage("libcommons-codec-java","commons-codec",new String[]{"commons-codec-1.3.jar"}));
-			pkgs.add(new DebPackage("libcommons-httpclient-java","commons-httpclient",new String[]{"commons-httpclient-3.0.1.jar"}));           
-			pkgs.add(new DebPackage("libcommons-logging-java","commons-logging",new String[]{"commons-logging-1.0.4.jar"}));                  
+			//Consider a separate OME package to reduce dependencies
+			pkgs.add(new DebPackage("liblog4j1.2-java",new String[]{"log4j-1.2.jar"},new String[]{"log4j-1.2.14.jar"}));
+			pkgs.add(new DebPackage("libjboss-aop-java",new String[]{"jboss-aop.jar"},new String[]{"jboss-aop-jdk50-4.2.1.GA.jar","jboss-aop-jdk50-client-4.2.1.GA.jar"}));
+			pkgs.add(new DebPackage("libjboss-aspects-java",new String[]{"jboss-aspects.jar"},new String[]{"jboss-aspect-library-jdk50-4.2.1.GA.jar"}));
+			pkgs.add(new DebPackage("libjboss-ejb3-java",new String[]{"jboss-ejb3.jar"},new String[]{"jboss-ejb3-4.2.1.GA.jar"}));
+			pkgs.add(new DebPackage("libjboss-ejb3x-java",new String[]{"jboss-ejb3x.jar"},new String[]{"jboss-ejb3x-4.2.1.GA.jar"}));                 
+			pkgs.add(new DebPackage("libjcommon-java",new String[]{"jcommon.jar"},new String[]{"jcommon-1.0.9.jar"}));
+			pkgs.add(new DebPackage("libcommons-codec-java",new String[]{"commons-codec.jar"},new String[]{"commons-codec-1.3.jar"}));
+			pkgs.add(new DebPackage("libcommons-httpclient-java",new String[]{"commons-httpclient.jar"},new String[]{"commons-httpclient-3.0.1.jar"}));           
+			pkgs.add(new DebPackage("libcommons-logging-java",new String[]{"commons-logging.jar"},new String[]{"commons-logging-1.0.4.jar"}));                  
 
 			//Unused
 			//pkgs.add(new DebPackage("lib-jline-java",new String[]{"jline-0.9.94.jar"}));
@@ -161,8 +176,24 @@ libjboss-webservices-java
 			deleteExt(dEndrov, ".app"); //Mac APP-bundles
 			
 			System.out.println("Extracting packages");
-			deletePkgFiles(pkgs, new File(dEndrov,"libs"));
-			
+			deletePkgFiles(pkgs, dEndrovLibs);
+
+			File manifestFile=File.createTempFile("MANIFEST", "");
+			StringBuffer manifestContent=new StringBuffer();
+			manifestContent.append("Manifest-Version: 1.0\n");
+			manifestContent.append("Class-Path: \n");
+			for(DebPackage pkg:pkgs)
+				for(String jar:pkg.linkJars)
+					{
+					File jarfile=new File("/usr/share/java/"+jar);
+					if(!jarfile.exists())
+						System.out.println("Error: does not exist: "+jarfile);
+					manifestContent.append(" "+jarfile.getAbsolutePath()+" \n");
+					}
+			manifestContent.append("\n");
+			EvFileUtil.writeFile(manifestFile, manifestContent.toString());
+			runUntilQuit(new String[]{"/usr/bin/jar","cmf",manifestFile.getAbsolutePath(),new File(dEndrovLibs,"debian.jar").getAbsolutePath()});
+
 			System.out.println("Writing control file");
 			Scanner scanner = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/ev/version.txt")));
 			String version=scanner.nextLine();
@@ -220,12 +251,13 @@ libjboss-webservices-java
 		StringBuffer sb=new StringBuffer();
 		boolean first=true;
 		for(DebPackage p:pkgs)
-			{
-			if(!first)
-				sb.append(",");
-			sb.append(p.name);
-			first=false;
-			}
+			if(p.name!=null)
+				{
+				if(!first)
+					sb.append(",");
+				sb.append(p.name);
+				first=false;
+				}
 		return sb.toString();
 		}
 	

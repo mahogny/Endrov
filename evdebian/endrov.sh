@@ -4,12 +4,13 @@
 
 java -jar /usr/share/endrov/startEndrov.jar endrov.starter.MW \
 	--basedir /usr/share/endrov \
-	--config $HOME/.endrov/config.xml \
-	--cp2 `ls -d -1 /usr/share/java/*.jar | tr '\n' ':'`$HOME/.endrov/ \
-	--javaenv $HOME/.endrov/javaenv.txt \
+	--cp2 $HOME/.endrov/ \
+	--javaenv $HOME/.endrov/javaenv.txt --libpath2 /usr/lib/jni \
 	$@
 
-	
+#	--config $HOME/.endrov/config.xml \
+
+#	--cp2 `ls -d -1 /usr/share/java/*.jar | tr '\n' ':'`$HOME/.endrov/ \
 
 #* startEndrov needs to know basedir to find jars
 #* user needs a private plugin directory for development. this is .endrov.

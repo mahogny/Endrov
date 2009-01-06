@@ -1,95 +1,54 @@
-.\" Hey, EMACS: -*- nroff -*-
-.\" First parameter, NAME, should be all caps
-.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
-.\" other parameters are allowed: see man(7), man(1)
-.\" Please adjust this date whenever revising the manpage.
-.\" 
-.\" Some roff macros, for reference:
-.\" .nh        disable hyphenation
-.\" .hy        enable hyphenation
-.\" .ad l      left justify
-.\" .ad b      justify to both left and right margins
-.\" .nf        disable filling
-.\" .fi        enable filling
-.\" .br        insert line break
-.\" .sp <n>    insert n+1 empty lines
-.\" for manpage-specific macros, see man(7)
-.TH "ENDROV" "1" "December 20, 2008" "Johan Henriksson" ""
-.SH "NAME"
-.LP 
-endrov \- A modular framework for among other things, image processing and analysis.
-.SH "SYNTAX"
-.LP 
-endrov [\fIoption\fP] <\fIfilename\fP>
-.br 
-endrov [\-i image] [\-b|\-m] [arg1 ... argN]
-.SH "DESCRIPTION"
-.LP 
-\fBEndrov\fP is a modular framework for life science imaging developed at Karolinska Institutet.
-The emphasis is on extensibility in form of plugins, scripts and flows.
-It was developed with all level of users in mind, from biologists with little
-computer experience to expert developers.
-.SH "OPTIONS"
-.LP 
-.TP 
-\fB\--cp\fR <\fCLASSPATH\fP>\fR
-Add additional libraries to the classpath.
-.TP 
-\fB\-o\fR
-Open images in existing ImageJ panel if one exists.
-.TP 
-\fB\-p\fR <\fIN\fP>
-Open images in existing ImageJ panel number <N>.
-.TP 
-\fB\-x\fR <\fIMB\fP>   
-Set available memory.
-.TP 
-\fB\-c\fR
-Enable plugin compilation within imagej.
-.TP 
-\fB\-v\fR
-Be verbose (vv or vvv increases verbosity).
-.TP 
-\fB\-e\fR \fIMacro Code\fP
-Execute macro code.
-.TP 
-\fB\-r\fR \fIMenu Command\fP
-Run menu command.
-Quotation marks are required around commands including spaces
-Commands can be sent to open ImageJ panels with the \-p option.
-.TP 
-\fB\-b\fR \fImacro\fP
-Run macro without graphics window.
-.TP 
-\fB\-m\fR \fImacro\fP
-Run macro, image will be opened before macro is run all following arguments are passed to macro.
-.SH "FILES"
-.LP 
-Most IMAGEJ add\-on are taken from $HOME/.imagej.  The  system  wide
- equivalent is in /usr/share/imagej/
-.TP 
-.B \ HOME/.imagej/plugins/,
-you can find and put new plugins here
-.TP 
-.B \ HOME/.imagej/macros/,
-you can find and put new macros here
-.TP 
-.B \ HOME/.imagej/luts/,
-you can find and put new look up tables here
+ENDROV(1)                                                            ENDROV(1)
 
-.SH "EXAMPLES"
-.LP 
-For compiling plugins:
-.LP 
-imagej \-c
-.SH "SEE ALSO"
-.\"/.BR bar (1),
-.\"/.BR baz (1).
-.br 
-The program is fully documented at 
-http://www.endrov.net
-.SH "AUTHOR"
-.LP 
-Endrov was originally written by Johan Henriksson <mahogny@areta.org>
-.PP 
-This manual page, the wrapper and packaging was done by Johan Henriksson, for the Debian project.
+
+
+NNAAMMEE
+       endrov - Start the Endrov GUI
+
+SSYYNNOOPPSSIISS
+       eennddrroovv [ [--main _m_a_i_n___c_l_a_s_s] [--cp2 _c_l_a_s_s_p_a_t_h]
+          [--libpath2 _d_i_r_e_c_t_o_r_i_e_s] [--printcommand] [--version]
+          [--basedir _p_a_t_h]
+
+DDEESSCCRRIIPPTTIIOONN
+       eennddrroovv  starts  up the Endrov graphical user interface and can also run
+       an alternate _m_a_i_n___c_l_a_s_s if given.
+
+       EEnnddrroovv is a modular framework for life  science  imaging  developed  at
+       Karolinska Institutet. The emphasis is on extensibility in form of plu-
+       gins, scripts and flows. It was developed with all level  of  users  in
+       mind,  from biologists with little computer experience to expert devel-
+       opers.
+
+   OOppttiioonnss
+       ----mmaaiinn _m_a_i_n___c_l_a_s_s
+              Run another class with a main function ----ccpp22 _c_l_a_s_s_p_a_t_h AAdddd aaddddii--
+              ttiioonnaall  jjaarrss  ttoo ccllaassssppaatthh,, ccoolloonn--sseeppaarraatteedd ----lliibbppaatthh22 _c_l_a_s_s_p_a_t_h
+              AAdddd aaddddiittiioonnaall ddiirreeccttoorriieess ttoo jjaavvaa..lliibbrraarryy..ppaatthh,, ccoolloonn--sseeppaarraatteedd
+
+       ----bbaasseeddiirr _p_a_t_h
+              The directory in which the core plugins are installed
+
+       ----vveerrssiioonn
+              Print version
+
+       ----pprriinnttccoommmmaanndd
+              Print the full internal java command to start up Endrov.
+
+
+       FFIILLEESS
+
+       /usr/share/endrov/
+              System-wide  endrov  distribution  /HOME/.endrov/  User specific
+              endrov configuration and plugins
+
+SSEEEE AALLSSOO
+       http://www.endrov.net
+
+BBUUGGSS
+       Bugs are documented on the Endrov website bug tracker.
+
+
+
+
+                               24 December 2008                      ENDROV(1)
