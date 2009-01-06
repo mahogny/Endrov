@@ -13,9 +13,8 @@ import endrov.basicWindow.FlowExec;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
 public class FlowUnitConcat extends FlowUnitBasic
 	{
@@ -24,8 +23,7 @@ public class FlowUnitConcat extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Concat",metaType){
-		public FlowUnit createInstance(){return new FlowUnitConcat();}});
+		Flow.addUnitType(new FlowUnitDeclaration("Collection","Concat",metaType,FlowUnitConcat.class));
 		}
 
 	
@@ -40,9 +38,13 @@ public class FlowUnitConcat extends FlowUnitBasic
 		return new Color(200,255,200);
 		}
 
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		return metaType;
+		}
+
+	public void fromXML(Element e)
+		{
 		}
 
 	

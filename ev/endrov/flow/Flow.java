@@ -25,6 +25,11 @@ public class Flow extends EvObject
 	 *****************************************************************************************************/
 	public static Vector<FlowUnitDeclaration> unitDeclarations=new Vector<FlowUnitDeclaration>();
 	
+	public static void addUnitType(FlowUnitDeclaration dec)
+		{
+		unitDeclarations.add(dec);
+		}
+	
 	private static final String metaType="flow";
 	
 	public static void initPlugin() {}
@@ -32,56 +37,56 @@ public class Flow extends EvObject
 		{
 		
 		/*
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","*",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","*",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","x^y",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","x^y",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","x²",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","x²",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","Mod",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","Mod",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","Expression",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","Expression",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","Floor",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","Floor",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","Ceil",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","Ceil",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","ToInteger,metaType"){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","ToInteger,metaType"){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Math","ToDouble",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Math","ToDouble",metaType){
 		public FlowUnit createInstance(){return null;}});*/
 
 		/*
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Stats","Average",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Stats","Average",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Stats","Variance",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Stats","Variance",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Stats","Median",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Stats","Median",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Stats","t-test",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Stats","t-test",metaType){
 		public FlowUnit createInstance(){return null;}});*/
 
 		/*
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("I/O","Read CSV",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("I/O","Read CSV",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("I/O","Read XML",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("I/O","Read XML",metaType){
 		public FlowUnit createInstance(){return null;}});
 
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Im.Enhance","Contrast",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Im.Enhance","Contrast",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Im.Math","Convolve",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Im.Math","Convolve",metaType){
 		public FlowUnit createInstance(){return null;}});*/
 		
-		/*Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","GetByKey",metaType){
+		/*addUnitType(new FlowUnitDeclarationTrivial("Collection","GetByKey",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","GetBy#",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Collection","GetBy#",metaType){
 		public FlowUnit createInstance(){return null;}});
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Collection","Fold1",metaType){
+		addUnitType(new FlowUnitDeclarationTrivial("Collection","Fold1",metaType){
 		public FlowUnit createInstance(){return null;}});*/
 		
 		
 
-		/*Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Line","TotalLength",metaType){
+		/*addUnitType(new FlowUnitDeclarationTrivial("Line","TotalLength",metaType){
 			public FlowUnit createInstance(){return null;}});*/
 
 
@@ -96,8 +101,41 @@ public class Flow extends EvObject
 	
 	public void loadMetadata(Element e)
 		{
-		//String filterName=e.getAttributeValue("filtername");
-		//return filterInfo.get(filterName).readXML(e);
+		
+		
+		Map<String, FlowUnitDeclaration> map=new HashMap<String, FlowUnitDeclaration>();
+		for(FlowUnitDeclaration dec:unitDeclarations)
+			map.put(dec.metadata,dec);
+
+		units.clear();
+		conns.clear();
+		
+		//Load all units
+		Map<Integer,FlowUnit> numMap=new HashMap<Integer, FlowUnit>();
+		int nexti=0;
+		for(Object subo:e.getChildren())
+			{
+			Element sube=(Element)subo;
+			if(sube.getName().equals("unit"))
+				{
+				//TODO handle unknown units
+				String unitname=sube.getAttributeValue("unitname");
+				FlowUnitDeclaration dec=map.get(unitname);
+				FlowUnit unit=dec.createInstance();
+				numMap.put(nexti++, unit);
+				unit.fromXML(sube);
+				units.add(unit);
+				}
+			else if(sube.getName().equals("conn"))
+				{
+				FlowUnit fromUnit=numMap.get(Integer.parseInt(sube.getAttributeValue("fromUnit")));
+				FlowUnit toUnit=numMap.get(Integer.parseInt(sube.getAttributeValue("toUnit")));
+				String fromArg=sube.getAttributeValue("fromArg");
+				String toArg=sube.getAttributeValue("toArg");
+				FlowConn c=new FlowConn(fromUnit,fromArg,toUnit,toArg);
+				conns.add(c);
+				}
+			}
 		}
 
 	public void saveMetadata(Element e)
@@ -110,7 +148,7 @@ public class Flow extends EvObject
 			{
 			numMap.put(u,nexti++);
 			Element ne=new Element("unit");
-			String uname=u.storeXML(ne);
+			String uname=u.toXML(ne);
 			ne.setAttribute("unitname",uname);
 			e.addContent(ne);
 			}
@@ -136,6 +174,9 @@ public class Flow extends EvObject
 	public List<FlowUnit> units=new Vector<FlowUnit>();
 	public List<FlowConn> conns=new Vector<FlowConn>();
 	
+	/**
+	 * Get value that is on one input port
+	 */
 	public Object getInputValue(FlowUnit u, FlowExec exec, String arg) throws Exception
 		{
 		for(FlowConn c:conns)
@@ -147,6 +188,9 @@ public class Flow extends EvObject
 		throw new Exception("Input not connected - "+arg);
 		}
 	
+	/**
+	 * Get unit connected to one input connector
+	 */
 	public FlowUnit getInputUnit(FlowUnit u, String arg) throws Exception
 		{
 		for(FlowConn c:conns)
@@ -158,14 +202,15 @@ public class Flow extends EvObject
 	public String getMetaTypeDesc()
 		{
 		return "Flow";
-		//return "Flow ("+getFilterName()+")";
 		}
 
 	public void buildMetamenu(JMenu menu)
 		{
 		}
 
-	
+	/**
+	 * Remove one unit from the flow and dissociate all connections
+	 */
 	public void removeUnit(FlowUnit u)
 		{
 		units.remove(u);
@@ -176,7 +221,10 @@ public class Flow extends EvObject
 		conns.removeAll(toRemove);
 		//TODO mark as updated
 		}
-	
+
+	/**
+	 * Remove multiple units
+	 */
 	public void removeUnits(Collection<FlowUnit> us)
 		{
 		for(FlowUnit u:us)

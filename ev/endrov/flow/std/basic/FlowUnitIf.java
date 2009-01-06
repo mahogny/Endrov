@@ -16,7 +16,7 @@ import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -31,8 +31,7 @@ public class FlowUnitIf extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Basic","If",metaType){
-		public FlowUnit createInstance(){return new FlowUnitIf();}});
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","If",metaType,FlowUnitIf.class));
 		}
 
 	
@@ -106,7 +105,8 @@ public class FlowUnitIf extends FlowUnit
 
 	public void editDialog(){}
 
-	public String storeXML(Element e){return metaType;}
+	public String toXML(Element e){return metaType;}
+	public void fromXML(Element e){}
 	
 
 	public Collection<FlowUnit> getSubUnits(Flow flow)

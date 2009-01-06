@@ -1,24 +1,40 @@
 package endrov.flow;
 
-import org.jdom.Element;
-
-public abstract class FlowUnitDeclaration
+/**
+ * One flow unit type
+ * @author Johan Henriksson
+ *
+ */
+public class FlowUnitDeclaration
 	{
 	public final String name, category, metadata;
-	public FlowUnitDeclaration(String category, String name, String metadata)
+	private Class<? extends FlowUnit> c;
+	public FlowUnitDeclaration(String category, String name, String metadata,Class<? extends FlowUnit> c)
 		{
 		this.name=name;
 		this.category=category;
 		this.metadata=metadata;
+		this.c=c;
 		}
 	
+
 	
+	public FlowUnit createInstance()
+		{
+		try
+			{
+			return c.newInstance();
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		System.out.println("this should not happen");
+		return null; //wtf
+		}
 	
-	public abstract FlowUnit createInstance();
 	public String toString()
 		{
 		return name;
 		}
-	
-	public abstract FlowUnit fromXML(Element e);
 	}

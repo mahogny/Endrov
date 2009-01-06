@@ -85,6 +85,7 @@ Additional checks
 	vox render progressbar bug fixed
 	generic way of creating new objects done
 	fixed: imwin focus problems, mov with z
+	fixed swing space leak again
 	
 ================================TODO===========================
 
@@ -109,8 +110,6 @@ Additional checks
 	check code for UI
 	real-time flows
     flows: icons on items
-	
-	cannot twice double-click on script. window disposed?
 	
 	THIS MUST BE DONE
 		* output items in tree

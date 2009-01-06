@@ -1,9 +1,13 @@
 package endrov.applet;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -63,12 +67,18 @@ public class EvWindowManagerApplet implements BasicWindow.EvWindowManagerMaker
 		public void setResizable(boolean b)
 			{
 			}
-		
-		
+
+
 		
 		}
 		
-	
+	public List<BasicWindow> getAllWindows()
+		{
+		LinkedList<BasicWindow> list=new LinkedList<BasicWindow>();
+		for(Component c:totalPane.getComponents())
+			list.add(((Window)c).bw);
+		return list;
+		}
 	
 	public JPanel totalPane=new JPanel();
 	

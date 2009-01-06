@@ -11,9 +11,8 @@ import org.jdom.Element;
 import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
 /**
  * Flow unit - Custom code (script). User can specify a function to apply on the data
@@ -37,15 +36,7 @@ public class FlowUnitScript extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Basic","Script",metaType){
-		public FlowUnit createInstance(){return new FlowUnitScript();}
-		public FlowUnit fromXML(Element e)
-			{
-			FlowUnitScript u=new FlowUnitScript();
-			u.code=e.getAttributeValue("code");
-			return u;
-			}
-		});
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","Script",metaType,FlowUnitScript.class));
 		}
 	
 	public FlowUnitScript()
@@ -87,10 +78,14 @@ public class FlowUnitScript extends FlowUnitBasic
 		return scriptID;
 		}
 	
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		e.setAttribute("code", code);
 		return metaType;
+		}
+	public void fromXML(Element e)
+		{
+		code=e.getAttributeValue("code");
 		}
 
 	

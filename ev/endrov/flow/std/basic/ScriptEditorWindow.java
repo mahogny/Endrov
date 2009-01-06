@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 //import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.*;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.swing.JButton;
@@ -37,7 +38,8 @@ public class ScriptEditorWindow extends BasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	//To avoid double-opening windows
-	public static WeakHashMap<FlowUnitScript, ScriptEditorWindow> editors=new WeakHashMap<FlowUnitScript, ScriptEditorWindow>();
+	//Note that the order has to be strange or windows will not unload properly!
+	public static WeakHashMap<ScriptEditorWindow,FlowUnitScript> editors=new WeakHashMap<ScriptEditorWindow, FlowUnitScript>();
 	
 	//Or should it be a tabbed editor? can be changed later. prepare for it
 	private FlowUnitScript unit;
@@ -146,17 +148,22 @@ public class ScriptEditorWindow extends BasicWindow implements ActionListener
 	
 	public static void openEditor(FlowUnitScript u)
 		{
-		ScriptEditorWindow w=editors.get(u);
-		if(w==null)
-			editors.put(u,w=new ScriptEditorWindow(u));
-		else
-			w.toFront();
+		for(Map.Entry<ScriptEditorWindow, FlowUnitScript> e:editors.entrySet())
+			if(e.getValue()==u)
+				{
+				e.getKey().toFront();
+				return;
+				}
+		editors.put(new ScriptEditorWindow(u),u);
 		}
 	
 	
 	public void loadedFile(EvData data){}
 	public void windowPersonalSettings(Element e){}
-	public void freeResources(){}
+	public void freeResources()
+		{
+		textArea.getActionMap().clear();
+		}
 	public void dataChangedEvent(){}
 	
 	

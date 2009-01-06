@@ -127,7 +127,6 @@ public abstract class FlowUnitBasic extends FlowUnit
 
 	public void editDialog(){}
 	
-	//public String storeXML(Element e){}
 	
 	public Collection<FlowUnit> getSubUnits(Flow flow)
 		{

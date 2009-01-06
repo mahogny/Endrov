@@ -59,8 +59,6 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			{
 			final JImageButton b=new JImageButton(BasicIcon.iconMenuNew,"Create new "+ob.getMetaTypeDesc());
 			pCreate.add(b);
-			System.out.println("to implement");
-			
 			b.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e)
 					{

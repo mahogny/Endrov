@@ -11,9 +11,8 @@ import org.jdom.Element;
 import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitBasic;
-import endrov.flow.FlowUnitDeclarationTrivial;
+import endrov.flow.FlowUnitDeclaration;
 
 public class FlowUnitGetObject extends FlowUnitBasic
 	{
@@ -22,8 +21,7 @@ public class FlowUnitGetObject extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclarationTrivial("Basic","GetEvObject",metaType){
-		public FlowUnit createInstance(){return new FlowUnitGetObject();}});		
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","GetEvObject",metaType,FlowUnitGetObject.class));		
 		}
 
 	
@@ -56,7 +54,8 @@ public class FlowUnitGetObject extends FlowUnitBasic
 		return types;
 		}
 	
-	public String storeXML(Element e){return metaType;}
+	public String toXML(Element e){return metaType;}
+	public void fromXML(Element e){}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 	{

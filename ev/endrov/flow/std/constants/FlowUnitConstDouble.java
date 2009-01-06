@@ -24,7 +24,7 @@ import endrov.flow.ui.FlowPanel;
 public class FlowUnitConstDouble extends FlowUnit
 	{
 	
-	public double var;
+	public double var=123;
 	
 	
 	
@@ -33,30 +33,21 @@ public class FlowUnitConstDouble extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.unitDeclarations.add(new FlowUnitDeclaration("Const","Double",metaType)
-			{
-			public FlowUnit createInstance(){return new FlowUnitConstDouble(123);}
-			public FlowUnit fromXML(Element e)
-				{
-				FlowUnitConstDouble u=new FlowUnitConstDouble(Double.parseDouble(e.getAttributeValue("value")));
-				return u;
-				}
-			});
+		Flow.addUnitType(new FlowUnitDeclaration("Const","Double",metaType,FlowUnitConstDouble.class));
 		}
 
 	
-	public String storeXML(Element e)
+	public String toXML(Element e)
 		{
 		e.setAttribute("value", ""+var);
 		return metaType;
 		}
 
-	
-	public FlowUnitConstDouble(double var) 
+	public void fromXML(Element e)
 		{
-		this.var=var;
+		var=Double.parseDouble(e.getAttributeValue("value"));
 		}
-	
+
 	
 	private String getText()
 		{
