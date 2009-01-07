@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.util.*;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 import org.jdom.Element;
 
@@ -22,7 +21,7 @@ import endrov.flow.ui.FlowPanel;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConstInteger extends FlowUnit
+public class FlowUnitConstIntegerOld extends FlowUnit
 	{
 	
 	public int var=123;
@@ -34,7 +33,7 @@ public class FlowUnitConstInteger extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","Integer",metaType,FlowUnitConstInteger.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Const","Integer",metaType,FlowUnitConstIntegerOld.class));
 		}
 	
 	public String toXML(Element e)
@@ -48,6 +47,8 @@ public class FlowUnitConstInteger extends FlowUnit
 		var=Integer.parseInt(e.getAttributeValue("value"));
 		}
 
+
+	
 	
 	private String getText()
 		{
@@ -61,20 +62,11 @@ public class FlowUnitConstInteger extends FlowUnit
 		return d;
 		}
 	
-	JTextField fField=new JTextField("123456");
-	
 	public void paint(Graphics g, FlowPanel panel)
 		{
 		Dimension d=getBoundingBox();
 
-		fField.setLocation(x,y);
-		fField.setSize(fField.getPreferredSize());
-
 		
-		fField.paint(g);
-		
-		
-		/*
 		g.setColor(Color.WHITE);
 		g.fillRect(x,y,d.width,d.height);
 		g.setColor(Color.black);
@@ -83,8 +75,8 @@ public class FlowUnitConstInteger extends FlowUnit
 		g.drawLine(x+d.width-2,y,x+d.width-2,y+d.height);
 		g.drawString(getText(), x+8, y+fonta);
 		
+		
 		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
-		*/
 		}
 	
 	public boolean mouseHoverMoveRegion(int x, int y)

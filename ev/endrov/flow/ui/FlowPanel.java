@@ -1,6 +1,7 @@
 package endrov.flow.ui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -45,6 +46,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	public Set<FlowUnit> selectedUnits=new HashSet<FlowUnit>();
 	
+	
+	//SpinnerNumberModel nm=new SpinnerNumberModel(0,0,100,1);	JSpinner spin=new JSpinner(nm);
+	
+	
 	/**
 	 * Constructor
 	 */
@@ -56,15 +61,117 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 /*		setEnabled(true);
 		setFocusable(true);
 		addKeyListener(this);*/
+		setLayout(null);
 		
-	
+//		add(spin);		
 		
+		doFlowSwingLayout();
 		}
 
 	
 	
+	/**
+	 * Call whenever component is panned, an object is added or removed
+	 */
+	private void doFlowSwingLayout()
+		{
+		addSwingComponents();
+		
+		//Set position and size of all components
+			for(FlowUnit unit:getEffectiveUnitList())
+				{
+				Component c=unit.getGUIcomponent();
+				c.setEnabled(false); //temp
+				for(MouseListener list:c.getMouseListeners())
+					c.removeMouseListener(list);
+				c.addMouseListener(new MouseListener(){
+					public void mouseClicked(MouseEvent e)
+						{
+//						new MouseEvent(FlowPanel.this,e.getID(),e.getWhen(),e.getModifiers(),)
+						FlowPanel.this.mouseClicked(e);
+						System.out.println("here");
+						}
 
+					public void mouseEntered(MouseEvent e)
+						{
+						// TODO Auto-generated method stub
+						
+						}
 
+					public void mouseExited(MouseEvent e)
+						{
+						// TODO Auto-generated method stub
+						
+						}
+
+					public void mousePressed(MouseEvent e)
+						{
+						// TODO Auto-generated method stub
+						
+						}
+
+					public void mouseReleased(MouseEvent e)
+						{
+						// TODO Auto-generated method stub
+						
+						}});
+				
+				
+				//offset?
+				c.setSize(c.getPreferredSize());
+				c.setLocation(unit.x-cameraX, unit.y-cameraY);
+				c.validate();
+				}
+		
+		
+		}
+	private List<FlowUnit> getEffectiveUnitList()
+		{
+		LinkedList<FlowUnit> list=new LinkedList<FlowUnit>();
+		if(flow!=null)
+			list.addAll(flow.units);
+		if(placingUnit!=null)
+			list.add(placingUnit);
+		return list;
+		}
+	private boolean addSwingComponents()
+		{
+		boolean changed=false;
+		//Build a list of components that should exist
+		Set<Component> shouldExist=new HashSet<Component>();
+			for(FlowUnit unit:getEffectiveUnitList())
+				{
+			//probably want an offset too. or mix how?
+				Component c=unit.getGUIcomponent();
+				if(c!=null)
+					shouldExist.add(c); 
+				}
+		
+		//Build a list of components that exist
+		Set<Component> doExist=new HashSet<Component>();
+		for(Component c:getComponents())
+			doExist.add(c);
+		
+		//Remove components that no longer exist
+		Set<Component> toRemove=new HashSet<Component>(doExist);
+		toRemove.removeAll(shouldExist);
+		for(Component c:toRemove)
+			{
+			remove(c);
+			changed=true;
+			}
+		
+		//Add new components
+		Set<Component> toAdd=new HashSet<Component>(shouldExist);
+		toAdd.removeAll(doExist);
+		for(Component c:toAdd)
+			{
+			add(c);
+			changed=true;
+			}
+		
+		return changed;
+		}
 	
 	
 	
@@ -73,9 +180,14 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 		g.setColor(Color.WHITE);
 		g.fillRect(0,0,getWidth(),getHeight());
+
+//		spin.paintAll(g);
 		
-		
-		
+		/*
+		setOpaque(false);
+		super.paintComponent(g);
+		*/
+				
 		Graphics2D g2=(Graphics2D)g;
 		g2.translate(-cameraX, -cameraY);
 		
@@ -83,6 +195,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 //		g.drawRect(x-panel.cameraX,y-panel.cameraY,30,30);
 		
 		//hm. clean up map of connection points?
+		
 		
 		//Draw all units
 		for(FlowUnit u:getFlow().units)
@@ -117,6 +230,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			placingUnit.paint(g2,this);
 			}
 		
+		//so, do NOT add 
+		
+		
+		
+		
 		if(selectRect!=null)
 			{
 			g.setColor(Color.MAGENTA);
@@ -127,6 +245,16 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 		g2.translate(cameraX, cameraY);
 		
+		//Was a component forgotten for some reason? need to repaint in that case.
+		//This is a hack to fix that swing need to set locations of components *outside*
+		//paintComponent and in many cases the flow will be updated without knowing this.
+		//observers would rescue but that comes later.
+		if(addSwingComponents())
+			{
+//			doFlowSwingLayout();
+			repaint();
+			}
+
 		}
 	
 	
@@ -153,11 +281,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 		//Pan
 		if(SwingUtilities.isRightMouseButton(e))
-			{
-			cameraX-=dx;
-			cameraY-=dy;
-			repaint();
-			}
+			pan(dx,dy);
 
 		//Move held unit
 		if(!movingUnits.isEmpty() && SwingUtilities.isLeftMouseButton(e))
@@ -172,6 +296,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				u.x+=dx;
 				u.y+=dy;
 				}
+			//doFlowSwingLayout();
 			repaint();
 			}
 		
@@ -192,6 +317,15 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 
 
+	public void pan(int dx, int dy)
+		{
+		//TODO if new components are added, more work needed
+		cameraX-=dx;
+		cameraY-=dy;
+		//doFlowSwingLayout();
+		repaint();
+		}
+	
 	public void mouseMoved(MouseEvent e)
 		{
 		mouseLastX=e.getX();
@@ -215,6 +349,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			Dimension dim=placingUnit.getBoundingBox();
 			placingUnit.x-=dim.width/2;
 			placingUnit.y-=dim.height/2;
+			//doFlowSwingLayout();
 			repaint();
 			}
 		}
@@ -246,11 +381,15 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					getFlow().conns.remove(stickyConn);
 					getFlow().conns.add(new FlowConn(stickyConn.fromUnit,stickyConn.fromArg,placingUnit,argin));
 					getFlow().conns.add(new FlowConn(placingUnit,argout,stickyConn.toUnit,stickyConn.toArg));
+					
+					stickyConn=null;
+					System.out.println("Placed sticky");
 					}
 				
 				
 				}
 			placingUnit=null;
+			//doFlowSwingLayout();
 			repaint();
 			}
 		else
@@ -415,7 +554,12 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 		}
 
-
+	public void repaint()
+		{
+		doFlowSwingLayout();
+		super.repaint();
+		}
+	
 	public void mouseReleased(MouseEvent e)
 		{
 		movingUnits.clear();

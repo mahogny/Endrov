@@ -48,10 +48,6 @@ public class FlowUnitOutput extends FlowUnit
 		varName=e.getAttributeValue("varname");
 		}
 
-	public FlowUnitOutput(String varName) //unit todo
-		{
-		this.varName=varName;
-		}
 	
 	public Dimension getBoundingBox()
 		{

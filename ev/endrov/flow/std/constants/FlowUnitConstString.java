@@ -47,11 +47,7 @@ public class FlowUnitConstString extends FlowUnit
 		var=e.getAttributeValue("value");
 		}
 
-	public FlowUnitConstString(String var) 
-		{
-		this.var=var;
-		}
-	
+
 	public Dimension getBoundingBox()
 		{
 		int w=fm.stringWidth("\""+var+"\"");

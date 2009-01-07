@@ -39,6 +39,9 @@ Additional checks
 * can do jp2?
 * test bash completion
 
+
+1-bit png exists. could be used for storing ROIs
+
 2.13
 	DONE====
 	

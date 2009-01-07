@@ -44,10 +44,7 @@ public class FlowUnitSize extends FlowUnitBasic
 		}
 
 	
-	public String toXML(Element e)
-		{
-		return metaType;
-		}
+	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	
 	
