@@ -30,6 +30,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{SliceSignalWindow.class};
+		return new Class[]{};
+//		return new Class[]{SliceSignalWindow.class};
 		}
 	}

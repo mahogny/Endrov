@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util/BatchMovie.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/macBinding/|endrov/makeMax/|endrov/sliceSignal/|endrov/basicWindow/SendCommentDialog.java|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/filterConv/|endrov/filterMorphological/|endrov/filterOS/|endrov/filterTransform/|endrov/filterBasic/ConfocalXShiftFilter.java|endrov/filterBasic/DeinterlaceFilter.java|endrov/filterBasic/EqualizeHistogram.java|endrov/filterBasic/FilterAddConst.java|endrov/filterBasic/NoiseExponential.java|endrov/filterBasic/NoisePepperAndSalt.java|endrov/filterBasic/NoisePoisson.java" kind="src" path="">
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util/BatchMovie.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/macBinding/|endrov/basicWindow/SendCommentDialog.java|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/filterBasic/ConfocalXShiftFilter.java|endrov/filterBasic/DeinterlaceFilter.java|endrov/filterBasic/EqualizeHistogram.java|endrov/filterBasic/FilterAddConst.java|endrov/filterBasic/NoiseExponential.java|endrov/filterBasic/NoisePepperAndSalt.java|endrov/filterBasic/NoisePoisson.java" kind="src" path="">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
@@ -44,7 +44,7 @@
 	<classpathentry kind="lib" path="libs/vecmath.jar"/>
 	<classpathentry kind="lib" path="libs/swing-worker-1.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/share/java/jogl.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/MMCoreJ.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/jogl.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

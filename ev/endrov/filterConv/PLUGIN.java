@@ -34,12 +34,14 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
+		return new Class[]{};
+		/*
 		return new Class[]{ 
 				Convolve2DFilter.class, 
 				WindowedMean2DFilter.class, 
 				Sharpen2DFilter.class,
 				Gaussian2DFilter.class,
 				LaplacianOfGaussian2DFilter.class
-				};
+				};*/
 		}
 	}

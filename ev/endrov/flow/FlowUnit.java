@@ -1,6 +1,7 @@
 package endrov.flow;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -8,6 +9,9 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.*;
+
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 
 import org.jdom.Element;
@@ -127,4 +131,12 @@ public abstract class FlowUnit
 	
 	public abstract void fromXML(Element e);
 	
+SpinnerNumberModel nm=new SpinnerNumberModel(0,0,100,1);
+	
+	JSpinner spin=new JSpinner(nm);
+	
+	public Component getGUIcomponent()
+		{
+		return spin;
+		}
 	}
