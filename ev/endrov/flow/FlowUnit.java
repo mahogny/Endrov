@@ -10,10 +10,6 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-
-
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
@@ -21,18 +17,17 @@ import endrov.flow.ui.FlowPanel;
 
 //think of how to do sub-flows later
 
-
+/**
+ * One component in a flow
+ */
 public abstract class FlowUnit
 	{
-
+	//TODO should consider working with swing components only, dropping the custom paint method
+	//editDialog() can be totally deprecated in that case
+	
 	/** Absolute coordinate, not relative to container */
 	public int x,y;
 
-//	public Map<String,Object> lastOutput=new HashMap<String, Object>();
-
-	//private static Object staticSynch="";
-	//private static int seqID=0;
-	//private int ID;
 
 	
 	protected final static Font font=Font.decode("Dialog PLAIN");
@@ -70,8 +65,8 @@ public abstract class FlowUnit
 		return ID;
 		}*/
 	
-	public abstract Dimension getBoundingBox();
-	public abstract void paint(Graphics g, FlowPanel panel);
+	public abstract Dimension getBoundingBox(Component comp);
+	public abstract void paint(Graphics g, FlowPanel panel, Component comp);
 	
 	/** Get types of flows in */
 	public abstract Map<String, FlowType> getTypesIn();
@@ -93,22 +88,23 @@ public abstract class FlowUnit
 			u.updateTopBottom(flow,exec);
 		evaluate(flow,exec);
 		}
-	
+
+	public abstract Collection<FlowUnit> getSubUnits(Flow flow);
+
 	
 	
 //is this the way to do it? keep them ordered as input arguments? separate in & out?
 	
-	public abstract boolean mouseHoverMoveRegion(int x, int y);
-
-	public abstract void editDialog();
-	
-	public abstract Collection<FlowUnit> getSubUnits(Flow flow);
+	public abstract boolean mouseHoverMoveRegion(int x, int y, Component comp);
 
 	
-	public abstract String toXML(Element e);
+
+	
 		
 	
-	
+	/**
+	 * Color to use for border
+	 */
 	protected Color getBorderColor(FlowPanel p)
 		{
 		if(p.selectedUnits.contains(this))
@@ -117,26 +113,31 @@ public abstract class FlowUnit
 			return Color.BLACK;
 		}
 	
+	/**
+	 * Color to be used for text strings
+	 */
 	protected Color getTextColor()
 		{
 		return Color.BLACK;
 		}
 
-	public Point getMidPos()
+	/**
+	 * For the purpose of placing a component, calculate mid position
+	 * TODO consider for swing integ to let another point be used
+	 */
+	public Point getMidPos(Component c)
 		{
-		Dimension dim=getBoundingBox();
+		Dimension dim=getBoundingBox(c);
 		return new Point(x+dim.width/2,y+dim.height/2);
 		}
 	
 	
+	public abstract String toXML(Element e);
 	public abstract void fromXML(Element e);
 	
-SpinnerNumberModel nm=new SpinnerNumberModel(0,0,100,1);
 	
-	JSpinner spin=new JSpinner(nm);
-	
-	public Component getGUIcomponent()
-		{
-		return spin;
-		}
+	public abstract Component getGUIcomponent(FlowPanel p);
+	public abstract int getGUIcomponentOffsetX();
+	public abstract int getGUIcomponentOffsetY();
+	public abstract void editDialog();
 	}

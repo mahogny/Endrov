@@ -1,6 +1,7 @@
 package endrov.flow.std.constants;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
@@ -54,16 +55,16 @@ public class FlowUnitConstDouble extends FlowUnit
 		return "dbl "+var;
 		}
 	
-	public Dimension getBoundingBox()
+	public Dimension getBoundingBox(Component comp)
 		{
 		int w=fm.stringWidth(getText());
 		Dimension d=new Dimension(w+25,fonth);
 		return d;
 		}
 	
-	public void paint(Graphics g, FlowPanel panel)
+	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
-		Dimension d=getBoundingBox();
+		Dimension d=getBoundingBox(comp);
 
 		
 		g.setColor(Color.WHITE);
@@ -78,9 +79,9 @@ public class FlowUnitConstDouble extends FlowUnit
 		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
 		}
 	
-	public boolean mouseHoverMoveRegion(int x, int y)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
 		{
-		Dimension dim=getBoundingBox();
+		Dimension dim=getBoundingBox(comp);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
@@ -129,4 +130,8 @@ public class FlowUnitConstDouble extends FlowUnit
 		lastOutput.put("out", var);
 		}
 	
+	public Component getGUIcomponent(FlowPanel p){return null;}
+	public int getGUIcomponentOffsetX(){return 0;}
+	public int getGUIcomponentOffsetY(){return 0;}
+
 	}

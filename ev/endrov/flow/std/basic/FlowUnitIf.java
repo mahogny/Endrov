@@ -1,6 +1,7 @@
 package endrov.flow.std.basic;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Polygon;
@@ -35,7 +36,7 @@ public class FlowUnitIf extends FlowUnit
 		}
 
 	
-	public Dimension getBoundingBox()
+	public Dimension getBoundingBox(Component comp)
 		{
 		return new Dimension(30,40);
 		}
@@ -45,9 +46,9 @@ public class FlowUnitIf extends FlowUnit
 		return new Polygon(new int[]{x,x+d.width,x}, new int[]{y,y+d.height/2,y+d.height},3);
 		}
 	
-	public void paint(Graphics g, FlowPanel panel)
+	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
-		Dimension d=getBoundingBox();
+		Dimension d=getBoundingBox(comp);
 
 //		g.drawRect(x,y,d.width,d.height);
 
@@ -77,9 +78,9 @@ public class FlowUnitIf extends FlowUnit
 
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
 		{
-		Dimension dim=getBoundingBox();
+		Dimension dim=getBoundingBox(comp);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height &&
 			getPolygon(dim).contains(x, y);
 		}
@@ -126,5 +127,8 @@ public class FlowUnitIf extends FlowUnit
 			lastOutput.put("out", flow.getInputValue(this, exec, "false"));
 		}
 	
-	
+	public Component getGUIcomponent(FlowPanel p){return null;}
+	public int getGUIcomponentOffsetX(){return 0;}
+	public int getGUIcomponentOffsetY(){return 0;}
+
 	}
