@@ -1,6 +1,7 @@
 package endrov.flow;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Collection;
@@ -24,8 +25,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 	public abstract String getBasicShowName();
 	public abstract ImageIcon getIcon();
 	public abstract Color getBackground();
+	protected boolean hasComponent=false; //Something has to be done here. how to get the size? better way? argument to paint?
 	
-	public Dimension getBoundingBox()
+	public Dimension getBoundingBox(Component comp)
 		{
 		ImageIcon ico=getIcon();
 		
@@ -44,12 +46,12 @@ public abstract class FlowUnitBasic extends FlowUnit
 	
 	
 	
-	public void paint(Graphics g, FlowPanel panel)
+	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
 		g.setColor(Color.blue);
 		
 		
-		Dimension d=getBoundingBox();
+		Dimension d=getBoundingBox(comp);
 
 //	g.drawRect(x,y,d.width,d.height);
 	
@@ -119,9 +121,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 		}
 
 	
-	public boolean mouseHoverMoveRegion(int x, int y)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
 		{
-		Dimension dim=getBoundingBox();
+		Dimension dim=getBoundingBox(comp);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
@@ -133,7 +135,20 @@ public abstract class FlowUnitBasic extends FlowUnit
 		return Collections.singleton((FlowUnit)this);
 		}
 	
-	
-	
+	/**
+	 * Trivial implementation, can be overriden
+	 */
+	public Component getGUIcomponent(FlowPanel p)
+		{
+		return null;
+		}
+	public int getGUIcomponentOffsetX()
+		{
+		return 0;
+		}
+	public int getGUIcomponentOffsetY()
+		{
+		return 0;
+		}
 	
 	}

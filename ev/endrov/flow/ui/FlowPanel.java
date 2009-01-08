@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.vecmath.Vector2d;
 
 import endrov.basicWindow.FlowExec;
@@ -45,9 +46,12 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	public Rectangle2D selectRect=null;
 	
 	public Set<FlowUnit> selectedUnits=new HashSet<FlowUnit>();
-	
-	
-	//SpinnerNumberModel nm=new SpinnerNumberModel(0,0,100,1);	JSpinner spin=new JSpinner(nm);
+
+	/**
+	 * Every unit can have an assigned visible component. it should be created for every flow and instance once only
+	 * and will be stored here.
+	 */
+	private HashMap<FlowUnit, Component> unitComponent=new HashMap<FlowUnit, Component>();
 	
 	
 	/**
@@ -58,148 +62,144 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addMouseWheelListener(this);
-/*		setEnabled(true);
+	setEnabled(true);
 		setFocusable(true);
-		addKeyListener(this);*/
+/*		addKeyListener(this);*/
 		setLayout(null);
+		ToolTipManager.sharedInstance().registerComponent(this);
 		
 //		add(spin);		
 		
-		doFlowSwingLayout();
+//		doFlowSwingLayout();
 		}
 
-	
+
+	public void setFlow(Flow flow)
+		{
+		if(flow!=this.flow)
+			flowExec=new FlowExec();
+		this.flow = flow;
+		unitComponent.clear();
+		removeAll();
+		}
+
+
+	public Flow getFlow()
+		{
+		return flow;
+		}
+
 	
 	/**
 	 * Call whenever component is panned, an object is added or removed
 	 */
 	private void doFlowSwingLayout()
 		{
-		addSwingComponents();
-		
-		//Set position and size of all components
-			for(FlowUnit unit:getEffectiveUnitList())
-				{
-				Component c=unit.getGUIcomponent();
-				c.setEnabled(false); //temp
-				for(MouseListener list:c.getMouseListeners())
-					c.removeMouseListener(list);
-				c.addMouseListener(new MouseListener(){
-					public void mouseClicked(MouseEvent e)
-						{
-//						new MouseEvent(FlowPanel.this,e.getID(),e.getWhen(),e.getModifiers(),)
-						FlowPanel.this.mouseClicked(e);
-						System.out.println("here");
-						}
-
-					public void mouseEntered(MouseEvent e)
-						{
-						// TODO Auto-generated method stub
-						
-						}
-
-					public void mouseExited(MouseEvent e)
-						{
-						// TODO Auto-generated method stub
-						
-						}
-
-					public void mousePressed(MouseEvent e)
-						{
-						// TODO Auto-generated method stub
-						
-						}
-
-					public void mouseReleased(MouseEvent e)
-						{
-						// TODO Auto-generated method stub
-						
-						}});
-				
-				
-				//offset?
-				c.setSize(c.getPreferredSize());
-				c.setLocation(unit.x-cameraX, unit.y-cameraY);
-				c.validate();
-				}
-		
-		
-		}
-	private List<FlowUnit> getEffectiveUnitList()
-		{
-		LinkedList<FlowUnit> list=new LinkedList<FlowUnit>();
 		if(flow!=null)
-			list.addAll(flow.units);
-		if(placingUnit!=null)
-			list.add(placingUnit);
-		return list;
-		}
-	private boolean addSwingComponents()
-		{
-		boolean changed=false;
-		//Build a list of components that should exist
-		Set<Component> shouldExist=new HashSet<Component>();
-			for(FlowUnit unit:getEffectiveUnitList())
+			{
+			HashSet<FlowUnit> allUnit=new HashSet<FlowUnit>(flow.units);
+			if(placingUnit!=null)
+				allUnit.add(placingUnit);
+			
+			//Add units
+			Set<FlowUnit> toAdd=new HashSet<FlowUnit>(allUnit);
+			toAdd.removeAll(unitComponent.keySet());
+			for(FlowUnit u:toAdd)
+				getComponentForUnit(u);
+	
+			//Remove units
+			Set<FlowUnit> toRemove=new HashSet<FlowUnit>(unitComponent.keySet());
+			toRemove.removeAll(allUnit);
+			for(FlowUnit u:toRemove)
 				{
-			//probably want an offset too. or mix how?
-				Component c=unit.getGUIcomponent();
+				Component c=unitComponent.get(u);
 				if(c!=null)
-					shouldExist.add(c); 
+					{
+					remove(c);
+					unitComponent.remove(u);
+					}
 				}
-		
-		//Build a list of components that exist
-		Set<Component> doExist=new HashSet<Component>();
-		for(Component c:getComponents())
-			doExist.add(c);
-		
-		//Remove components that no longer exist
-		Set<Component> toRemove=new HashSet<Component>(doExist);
-		toRemove.removeAll(shouldExist);
-		for(Component c:toRemove)
-			{
-			remove(c);
-			changed=true;
+			
+			//Set position and size of all components
+			for(FlowUnit unit:allUnit)
+				setUnitSize(unit);
+			
+			//Placing need special treatment to be invisible
+			/*
+			if(placingUnit!=null)
+				{
+				Component c=placingUnit.getGUIcomponent();
+				if(c!=null)
+					{
+					c.setSize(c.getPreferredSize());
+					c.setLocation(0, -10000);
+					c.validate();
+					}
+				}
+				*/
 			}
 		
-		//Add new components
-		Set<Component> toAdd=new HashSet<Component>(shouldExist);
-		toAdd.removeAll(doExist);
-		for(Component c:toAdd)
-			{
-			add(c);
-			changed=true;
-			}
 		
-		return changed;
+		}
+
+	
+	private void setUnitSize(FlowUnit unit)
+		{
+		Component c=unitComponent.get(unit);
+		if(c!=null)
+			{
+			//offset?
+			Dimension dim=c.getPreferredSize();
+			Dimension dimMin=c.getMinimumSize();
+			if(dim.width<dimMin.width)   dim.width=dimMin.width;
+			if(dim.height<dimMin.height) dim.height=dimMin.height;
+				
+			c.setSize(dim);
+			if(unit==placingUnit)
+				c.setLocation(0, -dim.height-1000);
+			else
+				c.setLocation(unit.x-cameraX+unit.getGUIcomponentOffsetX(), unit.y-cameraY+unit.getGUIcomponentOffsetY());
+			c.validate();
+			}
 		}
 	
-	
+	/**
+	 * Get component assigned to unit. Make sure it is there
+	 */
+	private Component getComponentForUnit(FlowUnit u)
+		{
+		if(unitComponent.containsKey(u))
+			return unitComponent.get(u);
+		else
+			{
+			Component c=u.getGUIcomponent(this);
+			unitComponent.put(u,c);
+			if(c!=null)
+				add(c);
+			setUnitSize(u);
+			return c;
+			}
+		}
 	
 	
 	protected void paintComponent(Graphics g)
 		{
+		doFlowSwingLayout();
+
 		g.setColor(Color.WHITE);
 		g.fillRect(0,0,getWidth(),getHeight());
 
-//		spin.paintAll(g);
+
 		
-		/*
-		setOpaque(false);
-		super.paintComponent(g);
-		*/
-				
 		Graphics2D g2=(Graphics2D)g;
 		g2.translate(-cameraX, -cameraY);
-		
-		
-//		g.drawRect(x-panel.cameraX,y-panel.cameraY,30,30);
 		
 		//hm. clean up map of connection points?
 		
 		
 		//Draw all units
 		for(FlowUnit u:getFlow().units)
-			u.paint(g2, this);
+			u.paint(g2, this, unitComponent.get(u));
 		
 		//All connection points should now be in the list
 		//Draw connection arrows
@@ -227,7 +227,26 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 		if(placingUnit!=null)
 			{
-			placingUnit.paint(g2,this);
+			placingUnit.paint(g2,this,unitComponent.get(placingUnit));
+			//Component c=placingUnit.getGUIcomponent();
+			//Can render just the border
+			/*
+			BufferedImage im=new BufferedImage(spin.getWidth(),spin.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
+//		Graphics2D g2=(Graphics2D)g;
+		Graphics2D g2=(Graphics2D)im.getGraphics();
+		//g2.translate(20,20);
+		
+
+		
+		Rectangle clipr=g.getClipBounds();
+		g2.setClip(spin.getX(),spin.getY(),spin.getWidth(),spin.getHeight());
+		spin.paint(g2);
+		g2.setClip(clipr);
+		
+		//g2.translate(-20,-20);
+
+			
+			*/
 			}
 		
 		//so, do NOT add 
@@ -249,12 +268,12 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		//This is a hack to fix that swing need to set locations of components *outside*
 		//paintComponent and in many cases the flow will be updated without knowing this.
 		//observers would rescue but that comes later.
-		if(addSwingComponents())
+/*		if(addSwingComponents())
 			{
 //			doFlowSwingLayout();
 			repaint();
 			}
-
+*/
 		}
 	
 	
@@ -314,15 +333,16 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		
 		mouseLastDragX=e.getX();
 		mouseLastDragY=e.getY();
+		setToolTipText(null);
 		}
 
-
+	/**
+	 * Move camera
+	 */
 	public void pan(int dx, int dy)
 		{
-		//TODO if new components are added, more work needed
 		cameraX-=dx;
 		cameraY-=dy;
-		//doFlowSwingLayout();
 		repaint();
 		}
 	
@@ -330,39 +350,41 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 		mouseLastX=e.getX();
 		mouseLastY=e.getY();
+		Tuple<Vector2d, FlowConn> hoverSegment=getHoverSegment();
 		
 		//Update current position of the unit to be placed
 		if(placingUnit!=null)
 			{
-			Tuple<Vector2d, FlowConn> hit=getHoverSegment();
-			if(hit!=null)
+			if(hoverSegment!=null)
 				{
-				placingUnit.x=(int)hit.fst().x+cameraX;
-				placingUnit.y=(int)hit.fst().y+cameraY;
-				stickyConn=hit.snd();
+				placingUnit.x=(int)hoverSegment.fst().x+cameraX;
+				placingUnit.y=(int)hoverSegment.fst().y+cameraY;
+				stickyConn=hoverSegment.snd();
 				}
 			else
 				{
 				placingUnit.x=mouseLastX+cameraX;
 				placingUnit.y=mouseLastY+cameraY;
 				}
-			Dimension dim=placingUnit.getBoundingBox();
+			Dimension dim=placingUnit.getBoundingBox(getComponentForUnit(placingUnit));
 			placingUnit.x-=dim.width/2;
 			placingUnit.y-=dim.height/2;
-			//doFlowSwingLayout();
 			repaint();
 			}
+
+		//TODO If the mouse hovers a connection it should tell the type
+		if(hoverSegment!=null)
+			{
+			FlowConn conn=hoverSegment.snd();
+			setToolTipText(""+conn.fromArg+" - "+conn.toArg+ "(...type...)");
+			}
+		else
+			setToolTipText(null);
+	
+
 		}
 
-/*
-	public void keyPressed(KeyEvent e){}
 
-
-	public void keyReleased(KeyEvent e){}
-
-
-	public void keyTyped(KeyEvent e){}
-*/
 
 	public void mouseClicked(MouseEvent e)
 		{
@@ -389,14 +411,13 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				
 				}
 			placingUnit=null;
-			//doFlowSwingLayout();
 			repaint();
 			}
 		else
 			{
 			boolean hitAnything=false;
 			for(final FlowUnit u:getFlow().units)
-				if(u.mouseHoverMoveRegion(mx,my))
+				if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u)))
 					{
 					if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==1)
 						{
@@ -490,7 +511,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	
 
-	
+	/**
+	 * Mouse button pressed
+	 */
 	public void mousePressed(MouseEvent e)
 		{
 		mouseLastDragX=e.getX();
@@ -523,7 +546,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			//Find component. TODO: containers?
 			if(!found && SwingUtilities.isLeftMouseButton(e))
 				for(FlowUnit u:getFlow().units)
-					if(u.mouseHoverMoveRegion(mx,my))
+					if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u)))
 						{
 						if(selectedUnits.contains(u))
 							movingUnits.addAll(selectedUnits);
@@ -548,18 +571,12 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				}
 			
 			}
-				
-		
-		
 		
 		}
 
-	public void repaint()
-		{
-		doFlowSwingLayout();
-		super.repaint();
-		}
-	
+	/**
+	 * Mouse button released
+	 */
 	public void mouseReleased(MouseEvent e)
 		{
 		movingUnits.clear();
@@ -568,7 +585,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			selectedUnits.clear();
 			for(FlowUnit u:getFlow().units)
 				{
-				Point p=u.getMidPos();
+				Point p=u.getMidPos(unitComponent.get(u));
 				if(p.x>selectRect.getX() && p.y>selectRect.getY() && p.x<selectRect.getMaxX() && p.y<selectRect.getMaxY())
 					selectedUnits.add(u);
 				}
@@ -636,14 +653,16 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		for(FlowUnit u:sel)
 			{
 			order.add(new SortUnitY(u));
-			if(maxh==null || u.getBoundingBox().height>maxh)
-				maxh=u.getBoundingBox().height;
+			if(maxh==null || u.getBoundingBox(unitComponent.get(u)).height>maxh)
+				maxh=u.getBoundingBox(unitComponent.get(u)).height;
 			}
 		Collections.sort(order);
-		int starty=order.iterator().next().u.getMidPos().y;
+		FlowUnit fu=order.iterator().next().u;
+		int starty=fu.getMidPos(unitComponent.get(fu)).y;
 		for(int i=0;i<order.size();i++)
 			{
-			int cy=order.get(i).u.getMidPos().y;
+			FlowUnit au=order.get(i).u;
+			int cy=au.getMidPos(unitComponent.get(au)).y;
 			int ny=starty+i*(int)(maxh*1.3);
 			order.get(i).u.y+=ny-cy;
 			}
@@ -864,16 +883,4 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 
 
-	public void setFlow(Flow flow)
-		{
-		if(flow!=this.flow)
-			flowExec=new FlowExec();
-		this.flow = flow;
-		}
-
-
-	public Flow getFlow()
-		{
-		return flow;
-		}
 	}

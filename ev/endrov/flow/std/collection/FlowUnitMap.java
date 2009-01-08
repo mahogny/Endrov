@@ -1,5 +1,6 @@
 package endrov.flow.std.collection;
 
+import java.awt.Component;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,7 @@ import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitContainer;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flow.ui.FlowPanel;
 
 /**
  * Flow unit: Map
@@ -80,10 +82,13 @@ public class FlowUnitMap extends FlowUnitContainer
 
 
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
-	{
-//	Map<String,Object> lastOutput=exec.getLastOutput(this);
-	//TODO flowunit
-	}
+		{
+	//	Map<String,Object> lastOutput=exec.getLastOutput(this);
+		//TODO flowunit
+		}
 
-	
+	public Component getGUIcomponent(FlowPanel p){return null;}
+	public int getGUIcomponentOffsetX(){return 0;}
+	public int getGUIcomponentOffsetY(){return 0;}
+
 	}

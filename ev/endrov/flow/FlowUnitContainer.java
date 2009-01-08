@@ -1,6 +1,7 @@
 package endrov.flow;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
@@ -19,13 +20,13 @@ public abstract class FlowUnitContainer extends FlowUnit
 	public int contw=400, conth=150;
 	
 	
-	public Dimension getBoundingBox()
+	public Dimension getBoundingBox(Component comp)
 		{
 		Dimension d=new Dimension(contw,conth);
 		return d;
 		}
 	
-	public void paint(Graphics g, FlowPanel panel)
+	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
 		g.setColor(getBorderColor(panel));
 		g.drawRect(x,y,contw,conth);
@@ -57,7 +58,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 		}
 	
 	
-	public boolean mouseHoverMoveRegion(int x, int y)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
 		{
 		int barh=fonth+4;
 		return x>=this.x+5 && y>=this.y-barh/2 && x<=this.x+fm.stringWidth(getContainerName())+10 && y<=this.y+barh;

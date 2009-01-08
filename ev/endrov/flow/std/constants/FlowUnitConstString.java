@@ -1,18 +1,21 @@
 package endrov.flow.std.constants;
 
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
 
-import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 
@@ -21,9 +24,10 @@ import endrov.flow.ui.FlowPanel;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConstString extends FlowUnit
+public class FlowUnitConstString extends FlowUnitConst
 	{
 	
+
 	public String var="foo";
 	
 	
@@ -35,7 +39,6 @@ public class FlowUnitConstString extends FlowUnit
 		Flow.addUnitType(new FlowUnitDeclaration("Const","String",metaType,FlowUnitConstString.class));
 		}
 	
-	
 	public String toXML(Element e)
 		{
 		e.setAttribute("value", ""+var);
@@ -46,70 +49,53 @@ public class FlowUnitConstString extends FlowUnit
 		{
 		var=e.getAttributeValue("value");
 		}
-
-
-	public Dimension getBoundingBox()
-		{
-		int w=fm.stringWidth("\""+var+"\"");
-		Dimension d=new Dimension(w+25,fonth);
-		return d;
-		}
 	
-	public void paint(Graphics g, FlowPanel panel)
+	protected String getLabel()
 		{
-		Dimension d=getBoundingBox();
-
-		
-		g.setColor(Color.WHITE);
-		g.fillRect(x,y,d.width,d.height);
-		g.setColor(Color.black);
-		g.drawRect(x,y,d.width,d.height);
-		g.drawLine(x+2,y,x+2,y+d.height);
-		g.drawLine(x+d.width-2,y,x+d.width-2,y+d.height);
-		g.drawString("\""+var+"\"", x+8, y+fonta);
-		
-		
-		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
+		return "S";
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y)
+	protected FlowType getConstType()
 		{
-		Dimension dim=getBoundingBox();
-		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
+		return FlowType.TSTRING;
 		}
-
-
-	/** Get types of flows in */
-	public Map<String, FlowType> getTypesIn()
-		{
-		return Collections.emptyMap();
-		}
-	/** Get types of flows out */
-	public Map<String, FlowType> getTypesOut()
-		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("out", null);
-		return types;
-		}
-	
-	public void editDialog()
-		{
-		String newVal=JOptionPane.showInputDialog(null,"Enter value",var);
-		if(newVal!=null)
-			var=newVal;
-		}
-
-	
-	public Collection<FlowUnit> getSubUnits(Flow flow)
-		{
-		return Collections.singleton((FlowUnit)this);
-		}
-
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.put("out", var);
 		}
+	
+	
+	public Component getGUIcomponent(final FlowPanel p)
+		{
+		final JTextArea field=new JTextArea(var);
+		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
+		/*field.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0)
+				{
+				//Should maybe be change listener
+				//should emit an update
+				}});*/
+		
+		field.addKeyListener(new KeyListener(){
+			public void keyPressed(KeyEvent arg0){}
+			public void keyReleased(KeyEvent arg0){}
+			public void keyTyped(KeyEvent arg0)
+				{
+				var=field.getText();
+				p.repaint();
+				}
+		
+		});
+		return field;
+		}
+	
+	
+	
+	
+	
+	
+	
 	
 	}
