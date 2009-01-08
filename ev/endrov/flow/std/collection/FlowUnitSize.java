@@ -26,17 +26,20 @@ public class FlowUnitSize extends FlowUnitBasic
 	{
 	private static final String metaType="size";
 
+	
+	private static ImageIcon icon=new ImageIcon(FlowUnitSize.class.getResource("jhSize.png"));
+
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Collection","Size",metaType,FlowUnitSize.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Collection","Size",metaType,FlowUnitSize.class, icon));
 		}
 	
 	public String getBasicShowName()
 		{
 		return "Size";
 		}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return icon;}
 
 	public Color getBackground()
 		{

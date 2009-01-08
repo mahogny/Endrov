@@ -34,7 +34,7 @@ public class FlowUnitConstIntegerOld extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","Integer",metaType,FlowUnitConstIntegerOld.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Const","Integer",metaType,FlowUnitConstIntegerOld.class, null));
 		}
 	
 	public String toXML(Element e)

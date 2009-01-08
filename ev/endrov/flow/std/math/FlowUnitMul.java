@@ -8,23 +8,23 @@ import endrov.flow.Flow;
 import endrov.flow.FlowUnitDeclaration;
 
 /**
- * Flow unit: /
+ * Flow unit: *
  * @author Johan Henriksson
  *
  */
-public class FlowUnitDiv extends FlowUnitMathBinop
+public class FlowUnitMul extends FlowUnitMathBinop
 	{
-	private static final String metaType="div";
+	private static final String metaType="mul";
 	
-	public FlowUnitDiv()
+	public FlowUnitMul()
 		{
-		super("A/B",metaType);
+		super("A*B",metaType);
 		}
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","/",metaType,FlowUnitDiv.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","*",metaType,FlowUnitMul.class, null));
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
@@ -33,7 +33,7 @@ public class FlowUnitDiv extends FlowUnitMathBinop
 		Object a=flow.getInputValue(this, exec, "A");
 		Object b=flow.getInputValue(this, exec, "B");
 		if(a instanceof Double)
-			lastOutput.put("C", ((Double)a)/toDouble(b));
+			lastOutput.put("C", ((Double)a)*toDouble(b));
 		else
 			throw new Exception("Unsupported numerical type "+a.getClass());
 		}

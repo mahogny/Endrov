@@ -8,6 +8,7 @@ import endrov.flow.std.basic.FlowUnitIf;
 import endrov.flow.std.basic.FlowUnitInput;
 import endrov.flow.std.basic.FlowUnitOutput;
 import endrov.flow.std.basic.FlowUnitScript;
+import endrov.flow.std.basic.FlowUnitShow;
 import endrov.flow.std.collection.FlowUnitConcat;
 import endrov.flow.std.collection.FlowUnitHeadTail;
 import endrov.flow.std.collection.FlowUnitMap;
@@ -18,6 +19,7 @@ import endrov.flow.std.constants.FlowUnitConstInteger;
 import endrov.flow.std.constants.FlowUnitConstString;
 import endrov.flow.std.math.FlowUnitAdd;
 import endrov.flow.std.math.FlowUnitDiv;
+import endrov.flow.std.math.FlowUnitMul;
 import endrov.flow.std.math.FlowUnitSub;
 import endrov.flow.ui.FlowWindow;
 
@@ -53,10 +55,19 @@ public class PLUGIN extends PluginDef
 		
 		
 		return new Class[]{Flow.class,FlowWindow.class,
-				FlowUnitGetObject.class,FlowUnitIf.class,FlowUnitInput.class,FlowUnitOutput.class,FlowUnitScript.class,
+				//Basic
+				FlowUnitGetObject.class,FlowUnitIf.class,FlowUnitInput.class,FlowUnitOutput.class,FlowUnitScript.class,FlowUnitShow.class,
+				
+				//Const
 				FlowUnitConstBoolean.class,FlowUnitConstDouble.class,FlowUnitConstInteger.class,FlowUnitConstString.class,
-				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,
+				
+				//Math
+				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,FlowUnitMul.class,
+				
+				//Imserv
 				FlowUnitImserv.class,FlowUnitImservLoad.class,FlowUnitImservQuery.class,
+				
+				//Collection
 				FlowUnitConcat.class,FlowUnitHeadTail.class,FlowUnitMap.class,FlowUnitSize.class
 		};
 		

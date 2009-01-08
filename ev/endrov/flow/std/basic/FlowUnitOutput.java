@@ -36,7 +36,7 @@ public class FlowUnitOutput extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","Output",metaType,FlowUnitOutput.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","Output",metaType,FlowUnitOutput.class, null));
 		}
 	
 	public String toXML(Element e)

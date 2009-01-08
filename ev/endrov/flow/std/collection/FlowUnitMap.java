@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
+
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
@@ -27,10 +29,12 @@ public class FlowUnitMap extends FlowUnitContainer
 	{
 	private static final String metaType="map";
 
+	private static ImageIcon icon=new ImageIcon(FlowUnitMap.class.getResource("jhMap.png"));
+
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Collection","Map",metaType,FlowUnitMap.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Collection","Map",metaType,FlowUnitMap.class, icon));
 		}
 	
 	

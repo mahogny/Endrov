@@ -21,7 +21,7 @@ public class FlowUnitImservLoad extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("ImServ","Load",metaType,FlowUnitImservLoad.class));
+		Flow.addUnitType(new FlowUnitDeclaration("ImServ","Load",metaType,FlowUnitImservLoad.class, null));
 		}
 
 	

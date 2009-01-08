@@ -2,15 +2,12 @@ package endrov.flow.std.constants;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
@@ -30,13 +27,15 @@ public class FlowUnitConstString extends FlowUnitConst
 
 	public String var="foo";
 	
+	private static ImageIcon icon=new ImageIcon(FlowUnitConstString.class.getResource("jhString.png"));
+
 	
 	private static final String metaType="constString";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","String",metaType,FlowUnitConstString.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Const","String",metaType,FlowUnitConstString.class, icon));
 		}
 	
 	public String toXML(Element e)

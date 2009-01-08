@@ -35,6 +35,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private Flow flow=new Flow();
 	private FlowExec flowExec=new FlowExec();
 
+	public FlowExec getFlowExec()
+		{
+		return flowExec;
+		}
+	
 	private Map<Tuple<FlowUnit, String>, ConnPoint> connPoint=new HashMap<Tuple<FlowUnit,String>, ConnPoint>();
 	private int mouseLastX, mouseLastY;
 	private int mouseLastDragX=0, mouseLastDragY=0;

@@ -32,7 +32,7 @@ public class FlowUnitIf extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","If",metaType,FlowUnitIf.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","If",metaType,FlowUnitIf.class, null));
 		}
 
 	

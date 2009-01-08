@@ -20,10 +20,13 @@ public class FlowUnitConcat extends FlowUnitBasic
 	{
 	private static final String metaType="concat";
 
+	
+	private static ImageIcon icon=new ImageIcon(FlowUnitConcat.class.getResource("jhConcat.png"));
+
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Collection","Concat",metaType,FlowUnitConcat.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Collection","Concat",metaType,FlowUnitConcat.class, icon));
 		}
 
 	
@@ -31,7 +34,7 @@ public class FlowUnitConcat extends FlowUnitBasic
 		{
 		return "Concat";
 		}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return icon;}
 
 	public Color getBackground()
 		{

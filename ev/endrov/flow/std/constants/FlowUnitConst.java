@@ -36,7 +36,6 @@ public abstract class FlowUnitConst extends FlowUnit
 		g.setColor(Color.GREEN);
 		g.fillRect(x,y,d.width,d.height);
 		g.setColor(getBorderColor(panel));
-		g.setColor(Color.black);
 		g.drawRect(x,y,d.width,d.height);
 		g.setColor(getTextColor());
 		g.drawString(getLabel(), x+3, y+d.height/2+fonta/2);

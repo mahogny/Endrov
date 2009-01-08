@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.jdom.Element;
@@ -27,14 +28,15 @@ public class FlowUnitConstDouble extends FlowUnit
 	
 	public double var=123;
 	
-	
+	private static ImageIcon icon=new ImageIcon(FlowUnitConstDouble.class.getResource("jhNumber.png"));
+
 	
 	private static final String metaType="constDouble";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","Double",metaType,FlowUnitConstDouble.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Const","Double",metaType,FlowUnitConstDouble.class, icon));
 		}
 
 	
