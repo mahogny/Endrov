@@ -20,7 +20,7 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","+",metaType,FlowUnitAdd.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","+",metaType,FlowUnitAdd.class, null));
 		}
 	
 	public FlowUnitAdd()

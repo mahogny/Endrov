@@ -9,6 +9,7 @@ import org.jdom.Element;
 import endrov.basicWindow.FlowExec;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.util.Maybe;
 
 
 
@@ -187,7 +188,21 @@ public class Flow extends EvObject
 				}
 		throw new Exception("Input not connected - "+arg);
 		}
-	
+
+	/**
+	 * Get value that is on one input port
+	 */
+	public Maybe<Object> getInputValueMaybe(FlowUnit u, FlowExec exec, String arg) throws Exception
+		{
+		for(FlowConn c:conns)
+			if(c.toUnit==u && c.toArg.equals(arg))
+				{
+				Map<String,Object> lastOutput=exec.getLastOutput(c.fromUnit);
+				return Maybe.just(lastOutput.get(c.fromArg));
+				}
+		return new Maybe<Object>();
+		}
+
 	/**
 	 * Get unit connected to one input connector
 	 */
@@ -196,7 +211,8 @@ public class Flow extends EvObject
 		for(FlowConn c:conns)
 			if(c.toUnit==u && c.toArg.equals(arg))
 				return c.fromUnit;
-		throw new Exception("Input not connected - "+arg);
+		return null;
+//		throw new Exception("Input not connected - "+arg);
 		}
 	
 	public String getMetaTypeDesc()

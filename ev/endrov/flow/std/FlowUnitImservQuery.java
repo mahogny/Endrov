@@ -21,7 +21,7 @@ public class FlowUnitImservQuery extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("ImServ","Query",metaType,FlowUnitImservQuery.class));
+		Flow.addUnitType(new FlowUnitDeclaration("ImServ","Query",metaType,FlowUnitImservQuery.class, null));
 		}
 	
 	public String getBasicShowName()

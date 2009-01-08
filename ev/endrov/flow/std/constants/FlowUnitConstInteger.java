@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 
 import org.jdom.Element;
@@ -16,6 +17,7 @@ import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flow.std.collection.FlowUnitConcat;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -29,13 +31,14 @@ public class FlowUnitConstInteger extends FlowUnitConst
 	public int var=123;
 	
 	
-	
+	private static ImageIcon icon=new ImageIcon(FlowUnitConstInteger.class.getResource("jhNumber.png"));
+
 	private static final String metaType="constInteger";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","Integer",metaType,FlowUnitConstInteger.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Const","Integer",metaType,FlowUnitConstInteger.class, icon));
 		}
 	
 	public String toXML(Element e)

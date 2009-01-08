@@ -32,7 +32,7 @@ public class FlowUnitInput extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","Input",metaType,FlowUnitInput.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","Input",metaType,FlowUnitInput.class, null));
 		}
 
 	

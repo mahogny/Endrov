@@ -1,6 +1,7 @@
 package endrov.flow.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -13,6 +14,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.jdom.Element;
 
@@ -74,6 +76,32 @@ public class FlowWindow extends BasicWindow implements ActionListener
 
 	
 	/******************************************************************************************************
+	 *                               Custom appearance of tree nodes                                      *
+	 *****************************************************************************************************/
+
+	private static class MyRenderer extends DefaultTreeCellRenderer 
+		{
+		private static final long serialVersionUID = 1L;
+
+		public Component getTreeCellRendererComponent(JTree tree,Object value,boolean sel,boolean expanded,boolean leaf,int row,boolean hasFocus) 
+			{
+			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,	hasFocus);
+			if(leaf)
+				{
+				FlowUnitDeclaration decl=(FlowUnitDeclaration)((DefaultMutableTreeNode)value).getUserObject();
+				if(decl.icon!=null)
+					setIcon(decl.icon);
+				//          setToolTipText("This book is in the Tutorial series.");
+				} 
+			else 
+				{
+				//        setToolTipText(null); //no tool tip
+				} 
+			return this;
+			}
+		}
+	
+	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
@@ -96,6 +124,9 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	
 	private EvComboObjectOne<Flow> objectCombo=new EvComboObjectOne<Flow>(new Flow(),false,true);
 	
+	
+
+
 	
 	public FlowWindow()
 		{
@@ -129,6 +160,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			}
 		
 		unitTree=new JTree(treeRoot);
+		unitTree.setCellRenderer(new MyRenderer());
 
 		
 		final FlowWindow wthis=this;

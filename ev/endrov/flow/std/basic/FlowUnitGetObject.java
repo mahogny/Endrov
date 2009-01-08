@@ -21,7 +21,7 @@ public class FlowUnitGetObject extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","GetEvObject",metaType,FlowUnitGetObject.class));		
+		Flow.addUnitType(new FlowUnitDeclaration("Basic","GetEvObject",metaType,FlowUnitGetObject.class, null));		
 		}
 
 	

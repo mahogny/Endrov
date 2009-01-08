@@ -85,7 +85,8 @@ public abstract class FlowUnit
 		for(String arg:getTypesIn().keySet())
 			toUpdate.add(flow.getInputUnit(this, arg));
 		for(FlowUnit u:toUpdate)
-			u.updateTopBottom(flow,exec);
+			if(u!=null)
+				u.updateTopBottom(flow,exec);
 		evaluate(flow,exec);
 		}
 

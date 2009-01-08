@@ -25,7 +25,15 @@ public abstract class FlowUnitBasic extends FlowUnit
 	public abstract String getBasicShowName();
 	public abstract ImageIcon getIcon();
 	public abstract Color getBackground();
-	protected boolean hasComponent=false; //Something has to be done here. how to get the size? better way? argument to paint?
+	protected boolean hasComponent=false; 
+	
+	public FlowUnitBasic()
+		{
+		}
+	public FlowUnitBasic(boolean hasComponent)
+		{
+		this.hasComponent=hasComponent;
+		}
 	
 	public Dimension getBoundingBox(Component comp)
 		{
@@ -40,6 +48,13 @@ public abstract class FlowUnitBasic extends FlowUnit
 //		cnt++;
 		int h=fonth*cnt;
 		Dimension d=new Dimension(w+15,h);
+		if(comp!=null)
+			{
+			d.height+=comp.getHeight();
+			int cw=comp.getWidth();
+			if(cw>d.width)
+				d.width=cw;
+			}
 		return d;
 		}
 	
@@ -65,7 +80,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 		if(ico!=null)
 			{
 			iconW=ico.getIconWidth()+2;
-			g.drawImage(ico.getImage(), x+2, y, null);
+			g.drawImage(ico.getImage(), x+3, y+(d.height-ico.getIconHeight())/2, null);
 			}
 		
 		g.setColor(getTextColor());
@@ -136,7 +151,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 		}
 	
 	/**
-	 * Trivial implementation, can be overriden
+	 * Trivial implementation, can be overridden
 	 */
 	public Component getGUIcomponent(FlowPanel p)
 		{
@@ -148,7 +163,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 		}
 	public int getGUIcomponentOffsetY()
 		{
-		return 0;
+		return fonta;
 		}
 	
 	}

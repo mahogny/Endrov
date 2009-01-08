@@ -18,18 +18,19 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 	{
 	private static final String metaType="headtail";
 
-	
+	private static ImageIcon icon=new ImageIcon(FlowUnitHeadTail.class.getResource("jhHeadTail.png"));
+
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Collection","HeadTail",metaType,FlowUnitHeadTail.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Collection","HeadTail",metaType,FlowUnitHeadTail.class, icon));
 		}
 	
 	public String getBasicShowName()
 		{
 		return "HeadTail";
 		}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return icon;}
 
 	public Color getBackground()
 		{

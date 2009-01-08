@@ -12,6 +12,11 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
+/**
+ * Flow unit: binary operator
+ * @author Johan Henriksson
+ *
+ */
 public abstract class FlowUnitMathBinop extends FlowUnitBasic
 	{
 	public String showName,metaType;

@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
+import javax.swing.ImageIcon;
+
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
@@ -26,12 +28,14 @@ public class FlowUnitConstBoolean extends FlowUnit
 	public boolean var=true;
 	
 	
+	private static ImageIcon icon=new ImageIcon(FlowUnitConstBoolean.class.getResource("jhBoolean.png"));
+
 	private static final String metaType="constBoolean";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","Boolean",metaType,FlowUnitConstBoolean.class));
+		Flow.addUnitType(new FlowUnitDeclaration("Const","Boolean",metaType,FlowUnitConstBoolean.class, icon));
 		}
 	
 	public String toXML(Element e)
