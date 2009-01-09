@@ -8,15 +8,12 @@ import java.awt.Polygon;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
@@ -35,11 +32,11 @@ public class FlowUnitIf extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"If",metaType,FlowUnitIf.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"If",metaType,FlowUnitIf.class, icon,"Conditional flow"));
 		}
 
 	
-	public Dimension getBoundingBox(Component comp)
+	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		return new Dimension(30,40);
 		}
@@ -51,7 +48,7 @@ public class FlowUnitIf extends FlowUnit
 	
 	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
-		Dimension d=getBoundingBox(comp);
+		Dimension d=getBoundingBox(comp, panel.getFlow());
 
 //		g.drawRect(x,y,d.width,d.height);
 
@@ -81,9 +78,9 @@ public class FlowUnitIf extends FlowUnit
 
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
 		{
-		Dimension dim=getBoundingBox(comp);
+		Dimension dim=getBoundingBox(comp, flow);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height &&
 			getPolygon(dim).contains(x, y);
 		}
@@ -91,20 +88,16 @@ public class FlowUnitIf extends FlowUnit
 	
 	
 	/** Get types of flows in */
-	public SortedMap<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("cond", null);
 		types.put("true", null);
 		types.put("false", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public SortedMap<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("out", null);
-		return types;
 		}
 
 	public void editDialog(){}

@@ -18,7 +18,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.vecmath.Vector2d;
 
-import endrov.basicWindow.FlowExec;
+import endrov.data.EvContainer;
+import endrov.data.EvData;
 import endrov.flow.*;
 import endrov.util.Tuple;
 
@@ -77,10 +78,14 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	/**
 	 * Set which flow to edit
 	 */
-	public void setFlow(Flow flow)
+	public void setFlow(Flow flow, EvData data, EvContainer parent)
 		{
-		if(flow!=this.flow)
+		if(flow!=this.flow || data!=flowExec.getData() || parent!=flowExec.getParent())
+			{
 			flowExec=new FlowExec();
+			flowExec.setData(data);
+			flowExec.setParent(parent);
+			}
 		this.flow = flow;
 		unitComponent.clear();
 		removeAll();
@@ -373,7 +378,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					placingUnit.x=mouseLastX+cameraX;
 					placingUnit.y=mouseLastY+cameraY;
 					}
-				Dimension dim=placingUnit.getBoundingBox(getComponentForUnit(placingUnit));
+				Dimension dim=placingUnit.getBoundingBox(getComponentForUnit(placingUnit), flow);
 				placingUnit.x-=dim.width/2;
 				placingUnit.y-=dim.height/2;
 				repaint();
@@ -402,9 +407,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(SwingUtilities.isLeftMouseButton(e))
 				{
 				getFlow().units.add(placingUnit);
-				if(stickyConn!=null && !placingUnit.getTypesIn().isEmpty() && !placingUnit.getTypesOut().isEmpty())
+				if(stickyConn!=null && !placingUnit.getTypesIn(flow).isEmpty() && !placingUnit.getTypesOut().isEmpty())
 					{
-					String argin=placingUnit.getTypesIn().keySet().iterator().next();
+					String argin=placingUnit.getTypesIn(flow).keySet().iterator().next();
 					String argout=placingUnit.getTypesOut().keySet().iterator().next();
 					
 					getFlow().conns.remove(stickyConn);
@@ -424,7 +429,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 			boolean hitAnything=false;
 			for(final FlowUnit u:getFlow().units)
-				if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u)))
+				if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u), flow))
 					{
 					if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==1)
 						{
@@ -553,7 +558,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			//Find component. TODO: containers?
 			if(!found && SwingUtilities.isLeftMouseButton(e))
 				for(FlowUnit u:getFlow().units)
-					if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u)))
+					if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u), flow))
 						{
 						if(selectedUnits.contains(u))
 							movingUnits.addAll(selectedUnits);
@@ -592,7 +597,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			selectedUnits.clear();
 			for(FlowUnit u:getFlow().units)
 				{
-				Point p=u.getMidPos(unitComponent.get(u));
+				Point p=u.getMidPos(unitComponent.get(u),flow);
 				if(p.x>selectRect.getX() && p.y>selectRect.getY() && p.x<selectRect.getMaxX() && p.y<selectRect.getMaxY())
 					selectedUnits.add(u);
 				}
@@ -660,16 +665,16 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		for(FlowUnit u:sel)
 			{
 			order.add(new SortUnitY(u));
-			if(maxh==null || u.getBoundingBox(unitComponent.get(u)).height>maxh)
-				maxh=u.getBoundingBox(unitComponent.get(u)).height;
+			if(maxh==null || u.getBoundingBox(unitComponent.get(u), flow).height>maxh)
+				maxh=u.getBoundingBox(unitComponent.get(u), flow).height;
 			}
 		Collections.sort(order);
 		FlowUnit fu=order.iterator().next().u;
-		int starty=fu.getMidPos(unitComponent.get(fu)).y;
+		int starty=fu.getMidPos(unitComponent.get(fu),flow).y;
 		for(int i=0;i<order.size();i++)
 			{
 			FlowUnit au=order.get(i).u;
-			int cy=au.getMidPos(unitComponent.get(au)).y;
+			int cy=au.getMidPos(unitComponent.get(au),flow).y;
 			int ny=starty+i*(int)(maxh*1.3);
 			order.get(i).u.y+=ny-cy;
 			}
@@ -686,7 +691,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				{
 				FlowUnit u=e.getKey().fst();
 				String arg=e.getKey().snd();
-				if(u.getTypesOut().keySet().contains(arg))
+				//TODO improve
+				//Problematic assumption: all components have to the right, or otherwise to the left
+				//If there is no connector at all then it will fail totally
+				if(u.getTypesOut().keySet().contains(arg) || u.getTypesIn(flow).keySet().contains(arg))
 					{
 					ConnPoint p=e.getValue();
 					Double maxx=xmap.get(u);
@@ -698,6 +706,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 							totmax=p.pos.x;
 						}
 					}
+				
 				}
 		
 		for(FlowUnit u:sel)
@@ -734,6 +743,17 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		p.pos=new Vector2d(x-2,y);
 		p.isFrom=false;
 		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), p);
+		
+		boolean connected=false;
+		for(FlowConn conn:getFlow().conns)
+			if(conn.toUnit==unit && arg.equals(conn.toArg))
+				connected=true;
+		if(!connected)
+			{
+			int fw=g.getFontMetrics().stringWidth(arg);
+			int fh=g.getFontMetrics().getAscent();
+			g.drawString(arg, x-fw-5, y-2+fh/2);
+			}
 		}
 	
 	public void drawConnPointRight(Graphics g,FlowUnit unit, String arg, int x, int y)
@@ -744,6 +764,16 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		p.pos=new Vector2d(x+2,y);
 		p.isFrom=true;
 		connPoint.put(new Tuple<FlowUnit, String>(unit,arg), p);
+		
+		boolean connected=false;
+		for(FlowConn conn:getFlow().conns)
+			if(conn.fromUnit==unit && arg.equals(conn.fromArg))
+				connected=true;
+		if(!connected)
+			{
+			int fh=g.getFontMetrics().getAscent();
+			g.drawString(arg, x+5, y-2+fh/2);
+			}
 		}
 
 	/**

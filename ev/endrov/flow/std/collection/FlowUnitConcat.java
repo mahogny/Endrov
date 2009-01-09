@@ -2,16 +2,13 @@ package endrov.flow.std.collection;
 
 import java.awt.Color;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
@@ -26,26 +23,18 @@ public class FlowUnitConcat extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Collection","Concat",metaType,FlowUnitConcat.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Concat",metaType,FlowUnitConcat.class, icon,"Concatenate lists or strings"));
 		}
 
 	
-	public String getBasicShowName()
-		{
-		return "Concat";
-		}
+	public String getBasicShowName(){return "Concat";}
 	public ImageIcon getIcon(){return icon;}
-
-	public Color getBackground()
-		{
-		return new Color(200,255,200);
-		}
+	public Color getBackground(){return CategoryInfo.bgColor;}
 
 	public String toXML(Element e)
 		{
 		return metaType;
 		}
-
 	public void fromXML(Element e)
 		{
 		}
@@ -53,19 +42,15 @@ public class FlowUnitConcat extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	public SortedMap<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("A", null);
 		types.put("B", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public SortedMap<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("C", null);
-		return types;
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception

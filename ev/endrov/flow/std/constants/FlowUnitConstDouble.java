@@ -13,8 +13,8 @@ import javax.swing.JTextField;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
@@ -38,7 +38,7 @@ public class FlowUnitConstDouble extends FlowUnitConst
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Double",metaType,FlowUnitConstDouble.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Double",metaType,FlowUnitConstDouble.class, icon,"Constant double"));
 		}
 	
 	public String toXML(Element e)

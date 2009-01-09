@@ -1,9 +1,7 @@
 package endrov.flow.std.math;
 
 import java.awt.Color;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
+import java.util.Map;
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
@@ -47,19 +45,15 @@ public abstract class FlowUnitMathBinop extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	public SortedMap<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("A", null);
 		types.put("B", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public SortedMap<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("C", null);
-		return types;
 		}
 	
 	public static double toDouble(Object o) throws Exception

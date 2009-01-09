@@ -6,7 +6,7 @@ import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.data.EvContainer;
+import endrov.data.EvData;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
@@ -18,15 +18,15 @@ import endrov.flow.FlowUnitDeclaration;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitParent extends FlowUnitBasic
+public class FlowUnitThisData extends FlowUnitBasic
 	{
-	private static final String metaType="getthisparent";
-	private static final String showName="Parent";
+	private static final String metaType="getthisdata";
+	private static final String showName="ThisData";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitParent.class, null,"Get the EvContainer that has this flow"));		
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitThisData.class, null,"Get the EvData that has this flow"));		
 		}
 	
 	
@@ -43,7 +43,7 @@ public class FlowUnitParent extends FlowUnitBasic
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		types.put("parent", new FlowType(EvContainer.class));
+		types.put("data", new FlowType(EvData.class));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -52,7 +52,7 @@ public class FlowUnitParent extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		lastOutput.put("parent", exec.getParent());
+		lastOutput.put("data", exec.getData());
 		}
 	
 	}

@@ -3,9 +3,9 @@ package endrov.flow.std.math;
 
 import java.util.Map;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
 
 /**
@@ -20,7 +20,7 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","+",metaType,FlowUnitAdd.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","+",metaType,FlowUnitAdd.class, null,"Add values"));
 		}
 	
 	public FlowUnitAdd()

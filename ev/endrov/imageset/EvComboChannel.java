@@ -246,6 +246,8 @@ public class EvComboChannel extends JPanel implements ActionListener
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
 		return (Imageset)ci.getCon();
+//		 * TODO bug: getImageset has once been asked before it was ready
+		//ci was null
 		}
 
 	/**
