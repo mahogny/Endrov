@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
+import javax.swing.ImageIcon;
+
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
@@ -24,11 +26,12 @@ import endrov.util.Maybe;
 public class FlowUnitShow extends FlowUnit
 	{
 	private static final String metaType="showValue";
+	private static ImageIcon icon=new ImageIcon(FlowUnitShow.class.getResource("jhShow.png"));
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","Show",metaType,FlowUnitShow.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Show",metaType,FlowUnitShow.class, icon));
 		}
 	
 	public String toXML(Element e)

@@ -36,7 +36,7 @@ public class FlowUnitScript extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","Script",metaType,FlowUnitScript.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Script",metaType,FlowUnitScript.class, icon));
 		}
 	
 	public FlowUnitScript()

@@ -273,6 +273,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	public EvContainer getSelectedObject()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		//bug: I think ci was once null after unloading data. was nothing reselected?
 		return ci.getObject();
 		}
 	

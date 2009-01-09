@@ -1,4 +1,4 @@
-package endrov.flow.std.basic;
+package endrov.flow.std.objects;
 
 import java.awt.Color;
 import java.util.SortedMap;
@@ -21,7 +21,7 @@ public class FlowUnitGetObject extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","GetEvObject",metaType,FlowUnitGetObject.class, null));		
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"GetEvObject",metaType,FlowUnitGetObject.class, null));		
 		}
 
 	

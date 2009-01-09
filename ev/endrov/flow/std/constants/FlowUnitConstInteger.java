@@ -17,7 +17,6 @@ import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.std.collection.FlowUnitConcat;
 import endrov.flow.ui.FlowPanel;
 
 /**
@@ -38,7 +37,7 @@ public class FlowUnitConstInteger extends FlowUnitConst
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","Integer",metaType,FlowUnitConstInteger.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Integer",metaType,FlowUnitConstInteger.class, icon));
 		}
 	
 	public String toXML(Element e)

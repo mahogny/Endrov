@@ -1,20 +1,21 @@
 package endrov.flow.std.constants;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 
@@ -23,108 +24,44 @@ import endrov.flow.ui.FlowPanel;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConstDouble extends FlowUnit
+public class FlowUnitConstDouble extends FlowUnitConst
 	{
+	
 	
 	public double var=123;
 	
+	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstDouble.class.getResource("jhNumber.png"));
 
-	
 	private static final String metaType="constDouble";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","Double",metaType,FlowUnitConstDouble.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Double",metaType,FlowUnitConstDouble.class, icon));
 		}
-
 	
 	public String toXML(Element e)
 		{
 		e.setAttribute("value", ""+var);
 		return metaType;
 		}
-
+	
 	public void fromXML(Element e)
 		{
 		var=Double.parseDouble(e.getAttributeValue("value"));
 		}
 
 	
-	private String getText()
+	protected String getLabel()
 		{
-		return "dbl "+var;
-		}
-	
-	public Dimension getBoundingBox(Component comp)
-		{
-		int w=fm.stringWidth(getText());
-		Dimension d=new Dimension(w+25,fonth);
-		return d;
-		}
-	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
-		{
-		Dimension d=getBoundingBox(comp);
-
-		
-		g.setColor(Color.WHITE);
-		g.fillRect(x,y,d.width,d.height);
-		g.setColor(Color.black);
-		g.drawRect(x,y,d.width,d.height);
-		g.drawLine(x+2,y,x+2,y+d.height);
-		g.drawLine(x+d.width-2,y,x+d.width-2,y+d.height);
-		g.drawString(getText(), x+8, y+fonta);
-		
-		
-		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
-		}
-	
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
-		{
-		Dimension dim=getBoundingBox(comp);
-		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
+		return "D";
 		}
 
-
-	/** Get types of flows in */
-	public Map<String, FlowType> getTypesIn()
+	protected FlowType getConstType()
 		{
-		return Collections.emptyMap();
+		return FlowType.TDOUBLE;
 		}
-	/** Get types of flows out */
-	public Map<String, FlowType> getTypesOut()
-		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
-		types.put("out", null);
-		return types;
-		}
-	
-	public void editDialog()
-		{
-		String newVal=JOptionPane.showInputDialog(null,"Enter value",""+var);
-		if(newVal!=null)
-			{
-			try
-				{
-				var=Double.parseDouble(newVal);
-				}
-			catch (NumberFormatException e)
-				{
-				JOptionPane.showMessageDialog(null, "Invalid input");
-				e.printStackTrace();
-				}
-			}
-		}
-
-
-	
-	public Collection<FlowUnit> getSubUnits(Flow flow)
-		{
-		return Collections.singleton((FlowUnit)this);
-		}
-
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
@@ -132,8 +69,27 @@ public class FlowUnitConstDouble extends FlowUnit
 		lastOutput.put("out", var);
 		}
 	
-	public Component getGUIcomponent(FlowPanel p){return null;}
-	public int getGUIcomponentOffsetX(){return 0;}
-	public int getGUIcomponentOffsetY(){return 0;}
+	
+	public Component getGUIcomponent(final FlowPanel p)
+		{
+		final JTextField field=new JTextField(""+var);
+		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
+		field.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0)
+				{
+				//Should maybe be change listener
+				var=Double.parseDouble(field.getText());
+				//should emit an update
+				}});
+		
+		field.addKeyListener(new KeyListener(){
+			public void keyPressed(KeyEvent arg0){}
+			public void keyReleased(KeyEvent arg0){}
+			public void keyTyped(KeyEvent arg0){p.repaint();}
+		
+		});
+		return field;
+		}
+	
 
 	}
