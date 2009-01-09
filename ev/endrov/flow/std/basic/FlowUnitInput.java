@@ -11,8 +11,8 @@ import javax.swing.JOptionPane;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
@@ -34,7 +34,7 @@ public class FlowUnitInput extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Input",metaType,FlowUnitInput.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Input",metaType,FlowUnitInput.class, icon,"Input value from flow executor"));
 		}
 
 	
@@ -51,7 +51,7 @@ public class FlowUnitInput extends FlowUnit
 
 	
 	
-	public Dimension getBoundingBox(Component comp)
+	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth("In: "+varName);
 		Dimension d=new Dimension(w+15,fonth);
@@ -60,7 +60,7 @@ public class FlowUnitInput extends FlowUnit
 	
 	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
-		Dimension d=getBoundingBox(comp);
+		Dimension d=getBoundingBox(comp, panel.getFlow());
 
 //		g.drawRect(x,y,d.width,d.height);
 		
@@ -78,24 +78,21 @@ public class FlowUnitInput extends FlowUnit
 		
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
 		{
-		Dimension dim=getBoundingBox(comp);
+		Dimension dim=getBoundingBox(comp, flow);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
 
 	/** Get types of flows in */
-	public Map<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		return Collections.emptyMap();
 		}
 	/** Get types of flows out */
-	public Map<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("out", null);
-		return types;
 		}
 	
 	
@@ -120,8 +117,7 @@ public class FlowUnitInput extends FlowUnit
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.clear();
-		Object a=flow.getInputValue(this, exec, "in");
-		lastOutput.put("out", a);
+		lastOutput.put("out", exec.listener.getInputObject(varName));
 		}
 
 	public Component getGUIcomponent(FlowPanel p){return null;}

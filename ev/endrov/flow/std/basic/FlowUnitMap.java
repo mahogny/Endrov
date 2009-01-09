@@ -1,17 +1,15 @@
-package endrov.flow.std.collection;
+package endrov.flow.std.basic;
 
 import java.awt.Component;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitContainer;
 import endrov.flow.FlowUnitDeclaration;
@@ -34,7 +32,7 @@ public class FlowUnitMap extends FlowUnitContainer
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Collection","Map",metaType,FlowUnitMap.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Map",metaType,FlowUnitMap.class, icon,"Operate on all values element by element"));
 		}
 	
 	
@@ -57,20 +55,16 @@ public class FlowUnitMap extends FlowUnitContainer
 
 	
 	/** Get types of flows in */
-	public Map<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("in", null);
 		types.put("out", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public Map<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("in'", null);
 		types.put("out'", null);
-		return types;
 		}
 
 	public Set<String> getInsideConns()

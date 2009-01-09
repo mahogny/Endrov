@@ -21,21 +21,21 @@ import endrov.flow.ui.FlowPanel;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConstString extends FlowUnitConst
+public class FlowUnitConstClass extends FlowUnitConst
 	{
 	
 
-	public String var="foo";
+	public String var="java.lang.String";
 	
-	private static ImageIcon icon=new ImageIcon(FlowUnitConstString.class.getResource("jhString.png"));
+	private static ImageIcon icon=new ImageIcon(FlowUnitConstClass.class.getResource("jhClass.png"));
 
 	
-	private static final String metaType="constString";
+	private static final String metaType="constClass";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"String",metaType,FlowUnitConstString.class, icon,"Constant string"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Class",metaType,FlowUnitConstClass.class, icon,"Constant class"));
 		}
 	
 	public String toXML(Element e)
@@ -51,7 +51,7 @@ public class FlowUnitConstString extends FlowUnitConst
 	
 	protected String getLabel()
 		{
-		return "S";
+		return "C";
 		}
 
 	protected FlowType getConstType()
@@ -62,7 +62,8 @@ public class FlowUnitConstString extends FlowUnitConst
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		lastOutput.put("out", var);
+		Class<?> cl=Class.forName(var);
+		lastOutput.put("out", cl);
 		}
 	
 	
@@ -70,12 +71,6 @@ public class FlowUnitConstString extends FlowUnitConst
 		{
 		final JTextArea field=new JTextArea(var);
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
-		/*field.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0)
-				{
-				//Should maybe be change listener
-				//should emit an update
-				}});*/
 		
 		field.addKeyListener(new KeyListener(){
 			public void keyPressed(KeyEvent arg0){}

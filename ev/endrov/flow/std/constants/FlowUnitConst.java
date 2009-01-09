@@ -7,8 +7,6 @@ import java.awt.Graphics;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
-
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
@@ -22,7 +20,7 @@ public abstract class FlowUnitConst extends FlowUnit
 
 	protected abstract String getLabel();
 	
-	public Dimension getBoundingBox(Component comp)
+	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth(getLabel());
 		Dimension d=new Dimension(3+w+3+comp.getWidth()+1,comp.getHeight()+2);
@@ -31,7 +29,7 @@ public abstract class FlowUnitConst extends FlowUnit
 	
 	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
-		Dimension d=getBoundingBox(comp);
+		Dimension d=getBoundingBox(comp, panel.getFlow());
 		
 		g.setColor(Color.GREEN);
 		g.fillRect(x,y,d.width,d.height);
@@ -43,24 +41,21 @@ public abstract class FlowUnitConst extends FlowUnit
 		panel.drawConnPointRight(g,this,"out",x+d.width,y+d.height/2);
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
 		{
-		Dimension dim=getBoundingBox(comp);
+		Dimension dim=getBoundingBox(comp, flow);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
 
 	/** Get types of flows in */
-	public Map<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		return Collections.emptyMap();
 		}
 	/** Get types of flows out */
-	public Map<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("out", getConstType());
-		return types;
 		}
 	
 	protected abstract FlowType getConstType();

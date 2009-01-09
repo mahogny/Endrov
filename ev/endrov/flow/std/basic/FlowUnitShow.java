@@ -7,15 +7,14 @@ import java.awt.Graphics;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.WeakHashMap;
 
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
@@ -31,7 +30,7 @@ public class FlowUnitShow extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Show",metaType,FlowUnitShow.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Show",metaType,FlowUnitShow.class, icon,"Show value"));
 		}
 	
 	public String toXML(Element e)
@@ -46,7 +45,7 @@ public class FlowUnitShow extends FlowUnit
 
 	protected String getLabel(){return ">";}
 	
-	public Dimension getBoundingBox(Component comp)
+	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth(getLabel());
 		Dimension d=new Dimension(3+w+3+comp.getWidth(),comp.getHeight());
@@ -55,7 +54,7 @@ public class FlowUnitShow extends FlowUnit
 	
 	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
-		Dimension d=getBoundingBox(comp);
+		Dimension d=getBoundingBox(comp, panel.getFlow());
 		
 		g.setColor(Color.GREEN);
 		g.fillRect(x,y,d.width,d.height);
@@ -67,24 +66,21 @@ public class FlowUnitShow extends FlowUnit
 		panel.drawConnPointLeft(g,this,"in",x,y+d.height/2);
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
 		{
-		Dimension dim=getBoundingBox(comp);
+		Dimension dim=getBoundingBox(comp, flow);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
 
 	/** Get types of flows in */
-	public Map<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("in", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public Map<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		return Collections.emptyMap();
 		}
 	
 	public void editDialog()

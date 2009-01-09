@@ -20,7 +20,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 	public int contw=400, conth=150;
 	
 	
-	public Dimension getBoundingBox(Component comp)
+	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		Dimension d=new Dimension(contw,conth);
 		return d;
@@ -58,7 +58,7 @@ public abstract class FlowUnitContainer extends FlowUnit
 		}
 	
 	
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
 		{
 		int barh=fonth+4;
 		return x>=this.x+5 && y>=this.y-barh/2 && x<=this.x+fm.stringWidth(getContainerName())+10 && y<=this.y+barh;

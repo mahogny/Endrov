@@ -9,16 +9,18 @@ import javax.swing.ImageIcon;
  */
 public class FlowUnitDeclaration
 	{
-	public final String name, category, metadata;
+	public final String name, category, metadata, description;
 	public final ImageIcon icon;
 	private final Class<? extends FlowUnit> c;
-	public FlowUnitDeclaration(String category, String name, String metadata,Class<? extends FlowUnit> c, ImageIcon icon)
+	public FlowUnitDeclaration(String category, String name, String metadata,Class<? extends FlowUnit> c, ImageIcon icon,
+			String description)
 		{
 		this.name=name;
 		this.category=category;
 		this.metadata=metadata;
 		this.c=c;
 		this.icon=icon;
+		this.description=description;
 		}
 	
 

@@ -17,6 +17,10 @@ public class EvContainer
 	/** All meta objects */
 	public TreeMap<String,EvObject> metaObject=new TreeMap<String,EvObject>();
 
+	//TODO should make accessors
+	//TODO parent pointer?
+	//TODO putting an object should be checked to not create a cycle
+	
 	
 	/** Flag if the metadata container itself has been modified */
 	private boolean coreMetadataModified=false;

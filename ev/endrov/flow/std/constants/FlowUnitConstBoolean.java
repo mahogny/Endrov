@@ -9,8 +9,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
@@ -33,7 +33,7 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Boolean",metaType,FlowUnitConstBoolean.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Boolean",metaType,FlowUnitConstBoolean.class, icon,"Constant boolean"));
 		}
 	
 	public String toXML(Element e)

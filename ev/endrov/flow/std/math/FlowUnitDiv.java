@@ -3,8 +3,8 @@ package endrov.flow.std.math;
 
 import java.util.Map;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
 
 /**
@@ -24,7 +24,7 @@ public class FlowUnitDiv extends FlowUnitMathBinop
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","/",metaType,FlowUnitDiv.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","/",metaType,FlowUnitDiv.class, null,"Divide numbers"));
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception

@@ -7,26 +7,28 @@ import javax.swing.ImageIcon;
 import org.jdom.Element;
 
 import endrov.data.EvContainer;
+import endrov.data.EvObject;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.util.Maybe;
 
 /**
  * Get all objects of a type from a container
  * @author Johan Henriksson
  *
  */
-public class FlowUnitGetObject extends FlowUnitBasic
+public class FlowUnitPutObject extends FlowUnitBasic
 	{
-	private static final String metaType="getevobjectsoftype";
-	private static final String showName="GetEvObjectsOfType";
+	private static final String metaType="putevobject";
+	private static final String showName="PutEvObject";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitGetObject.class, null,"Get all objects of a type from a container"));		
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitPutObject.class, null,"Store object in a container. Container defaults to this flow."));		
 		}
 
 	
@@ -39,13 +41,13 @@ public class FlowUnitGetObject extends FlowUnitBasic
 	/** Get types of flows in */
 	public void getTypesIn(Map<String, FlowType> types)
 		{
-		types.put("container", new FlowType(EvContainer.class));
-		types.put("class", new FlowType(Class.class));
 		}
 	/** Get types of flows out */
 	public void getTypesOut(Map<String, FlowType> types)
 		{
-		types.put("objects", null);
+		types.put("container", new FlowType(EvContainer.class));
+		types.put("name", new FlowType(String.class));
+		types.put("object", new FlowType(EvObject.class));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -53,10 +55,13 @@ public class FlowUnitGetObject extends FlowUnitBasic
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
-		EvContainer con=(EvContainer)flow.getInputValue(this, exec, "container");
-		Class<?> cl=(Class<?>)flow.getInputValue(this, exec, "class");
-		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		lastOutput.put("objects",con.getObjects(cl));
+		Maybe<Object> con=flow.getInputValueMaybe(this, exec, "container");
+		EvContainer into=flow;
+		if(con.hasValue())
+			into=(EvContainer)con.get();
+		String name=(String)flow.getInputValue(this, exec, "name");
+		EvObject ob=(EvObject)flow.getInputValue(this, exec, "object");
+		into.metaObject.put(name,ob);
 		}
 	
 	}

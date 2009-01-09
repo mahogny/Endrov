@@ -3,16 +3,13 @@ package endrov.flow.std.collection;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
@@ -32,19 +29,12 @@ public class FlowUnitSize extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Collection","Size",metaType,FlowUnitSize.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Size",metaType,FlowUnitSize.class, icon,"Size of string or list"));
 		}
 	
-	public String getBasicShowName()
-		{
-		return "Size";
-		}
+	public String getBasicShowName(){return "Size";}
 	public ImageIcon getIcon(){return icon;}
-
-	public Color getBackground()
-		{
-		return new Color(200,255,200);
-		}
+	public Color getBackground(){return CategoryInfo.bgColor;}
 
 	
 	public String toXML(Element e){return metaType;}
@@ -52,18 +42,14 @@ public class FlowUnitSize extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	public SortedMap<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("in", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public SortedMap<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("size", FlowType.TINTEGER);
-		return types;
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception

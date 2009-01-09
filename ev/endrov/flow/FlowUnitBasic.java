@@ -35,7 +35,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 		this.hasComponent=hasComponent;
 		}
 	
-	public Dimension getBoundingBox(Component comp)
+	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		ImageIcon ico=getIcon();
 		
@@ -43,7 +43,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 		if(ico!=null)
 			w+=ico.getIconWidth()+2;
 		int cnt=1;
-		if(cnt<getTypesInCount()) cnt=getTypesInCount();
+		if(cnt<getTypesInCount(flow)) cnt=getTypesInCount(flow);
 		if(cnt<getTypesOutCount()) cnt=getTypesOutCount();
 //		cnt++;
 		int h=fonth*cnt;
@@ -66,7 +66,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 		g.setColor(Color.blue);
 		
 		
-		Dimension d=getBoundingBox(comp);
+		Dimension d=getBoundingBox(comp, panel.getFlow());
 
 //	g.drawRect(x,y,d.width,d.height);
 	
@@ -91,9 +91,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 
 		
 		int cntIn=1;
-		if(cntIn<getTypesInCount()) cntIn=getTypesInCount();
+		if(cntIn<getTypesInCount(panel.getFlow())) cntIn=getTypesInCount(panel.getFlow());
 		int i=0;
-		for(Map.Entry<String, FlowType> entry:getTypesIn().entrySet())
+		for(Map.Entry<String, FlowType> entry:getTypesIn(panel.getFlow()).entrySet())
 			{
 			double py=y+(i+1)*d.height/(cntIn+1);
 			panel.drawConnPointLeft(g, this, entry.getKey(), x, (int)py);
@@ -126,9 +126,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 		}
 
 	
-	public int getTypesInCount()
+	public int getTypesInCount(Flow flow)
 		{
-		return getTypesIn().size();
+		return getTypesIn(flow).size();
 		}
 	public int getTypesOutCount()
 		{
@@ -136,9 +136,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 		}
 
 	
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
 		{
-		Dimension dim=getBoundingBox(comp);
+		Dimension dim=getBoundingBox(comp, flow);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 

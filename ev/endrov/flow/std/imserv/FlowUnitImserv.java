@@ -1,15 +1,13 @@
-package endrov.flow.std;
+package endrov.flow.std.imserv;
 
 import java.awt.Color;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
+import java.util.Map;
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
@@ -21,13 +19,10 @@ public class FlowUnitImserv extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("ImServ","ImServ",metaType,FlowUnitImserv.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration("ImServ","ImServ",metaType,FlowUnitImserv.class, null,"Connect to ImServ?"));
 		}
 	
-	public String getBasicShowName()
-		{
-		return "ImServ";
-		}
+	public String getBasicShowName(){return "ImServ";}
 	public ImageIcon getIcon(){return null;}
 
 	public static Color bgColor=new Color(200,255,200);
@@ -44,18 +39,14 @@ public class FlowUnitImserv extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	public SortedMap<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("url", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public SortedMap<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		TreeMap<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("imserv", null);
-		return types;
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception

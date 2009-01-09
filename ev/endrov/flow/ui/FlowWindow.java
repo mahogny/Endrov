@@ -91,12 +91,10 @@ public class FlowWindow extends BasicWindow implements ActionListener
 				FlowUnitDeclaration decl=(FlowUnitDeclaration)((DefaultMutableTreeNode)value).getUserObject();
 				if(decl.icon!=null)
 					setIcon(decl.icon);
-				//          setToolTipText("This book is in the Tutorial series.");
+				setToolTipText(decl.description);
 				} 
 			else 
-				{
-				//        setToolTipText(null); //no tool tip
-				} 
+				setToolTipText(null);
 			return this;
 			}
 		}
@@ -135,7 +133,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	public FlowWindow(Rectangle bounds)
 		{
 		
-		//Sort unit declerations by category & name
+		//Sort unit declarations by category & name
 		Map<String, Map<String,FlowUnitDeclaration>> decls=new TreeMap<String, Map<String,FlowUnitDeclaration>>();
 		for(FlowUnitDeclaration u:Flow.unitDeclarations)
 			{
@@ -161,7 +159,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		
 		unitTree=new JTree(treeRoot);
 		unitTree.setCellRenderer(new MyRenderer());
-
+		ToolTipManager.sharedInstance().registerComponent(unitTree);
 		
 		final FlowWindow wthis=this;
 		
@@ -230,14 +228,6 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		}
 	
 	
-	/*
-	public EvChannel process(EvChannel ch)
-		{
-		//...filter code here...
-		
-		return ch;
-		}*/
-	
 	
 	public void actionPerformed(ActionEvent e)
 		{
@@ -262,7 +252,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 
 	public void loadData()
 		{
-		fp.setFlow(objectCombo.getSelectedObjectNotNull());
+		fp.setFlow(objectCombo.getSelectedObjectNotNull(), objectCombo.getData(), objectCombo.getRoot());
 		fp.repaint();
 		}
 	

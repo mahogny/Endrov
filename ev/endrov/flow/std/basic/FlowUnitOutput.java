@@ -7,15 +7,13 @@ import java.awt.Graphics;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
-
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.FlowExec;
 import endrov.flow.Flow;
+import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
@@ -37,7 +35,7 @@ public class FlowUnitOutput extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Output",metaType,FlowUnitOutput.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Output",metaType,FlowUnitOutput.class, icon,"Output value to flow executor"));
 		}
 	
 	public String toXML(Element e)
@@ -51,7 +49,7 @@ public class FlowUnitOutput extends FlowUnit
 		}
 
 	
-	public Dimension getBoundingBox(Component comp)
+	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth("Out: "+varName);
 		Dimension d=new Dimension(w+15,fonth);
@@ -60,7 +58,7 @@ public class FlowUnitOutput extends FlowUnit
 	
 	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
-		Dimension d=getBoundingBox(comp);
+		Dimension d=getBoundingBox(comp, panel.getFlow());
 
 //		g.drawRect(x,y,d.width,d.height);
 		
@@ -79,25 +77,22 @@ public class FlowUnitOutput extends FlowUnit
 		
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp)
+	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
 		{
-		Dimension dim=getBoundingBox(comp);
+		Dimension dim=getBoundingBox(comp, flow);
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
 	
 	
 	/** Get types of flows in */
-	public Map<String, FlowType> getTypesIn()
+	protected void getTypesIn(Map<String, FlowType> types)
 		{
-		Map<String, FlowType> types=new TreeMap<String, FlowType>();
 		types.put("in", null);
-		return types;
 		}
 	/** Get types of flows out */
-	public Map<String, FlowType> getTypesOut()
+	protected void getTypesOut(Map<String, FlowType> types)
 		{
-		return Collections.emptyMap();
 		}
 
 
@@ -119,10 +114,8 @@ public class FlowUnitOutput extends FlowUnit
 	 */
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
-		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		lastOutput.clear();
 		Object a=flow.getInputValue(this, exec, "in");
-		lastOutput.put("out", a);
+		exec.listener.setOutputObject(varName, a);
 		}
 
 	
