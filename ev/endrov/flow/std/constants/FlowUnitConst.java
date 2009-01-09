@@ -25,7 +25,7 @@ public abstract class FlowUnitConst extends FlowUnit
 	public Dimension getBoundingBox(Component comp)
 		{
 		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth(),comp.getHeight());
+		Dimension d=new Dimension(3+w+3+comp.getWidth()+1,comp.getHeight()+2);
 		return d;
 		}
 	
@@ -84,7 +84,7 @@ public abstract class FlowUnitConst extends FlowUnit
 		int w=fm.stringWidth(getLabel());
 		return 3+w+3;
 		}
-	public int getGUIcomponentOffsetY(){return 0;}
+	public int getGUIcomponentOffsetY(){return 1;}
 
 	
 	}

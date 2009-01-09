@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.jdom.Element;
@@ -30,13 +31,13 @@ public class FlowUnitOutput extends FlowUnit
 	
 	public String varName="foo";
 	public FlowUnit varUnit;
-	
 	private static final String metaType="output";
+	private static ImageIcon icon=new ImageIcon(FlowUnitOutput.class.getResource("jhOutput.png"));
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","Output",metaType,FlowUnitOutput.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Output",metaType,FlowUnitOutput.class, icon));
 		}
 	
 	public String toXML(Element e)

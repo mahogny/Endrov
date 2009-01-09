@@ -221,21 +221,22 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		add(pTop,BorderLayout.NORTH);
 		add(fp,BorderLayout.CENTER);
 		
-		
 		//Window overall things
 		setTitleEvWindow("Flow");
 		packEvWindow();
+		dataChangedEvent();
 		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
 		}
 	
 	
+	/*
 	public EvChannel process(EvChannel ch)
 		{
 		//...filter code here...
 		
 		return ch;
-		}
+		}*/
 	
 	
 	public void actionPerformed(ActionEvent e)

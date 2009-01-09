@@ -2,8 +2,6 @@ package endrov.util;
 
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.util.StringTokenizer;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -28,14 +26,13 @@ public class JMultilineLabel extends JPanel
 	public void setText(String label)
 		{
 		removeAll();
-		StringTokenizer t = new StringTokenizer(label, "\n");
-    int numLines = t.countTokens();
-		setLayout(new GridLayout(numLines,1));
-		while(t.hasMoreTokens())
+		String[] lines=label.split("\n");
+		setLayout(new GridLayout(lines.length,1));
+		for(String line:lines)
 			{
 			//To avoid squashing lines, store " "
-			String s=t.nextToken();
-			add(new JLabel(s.equals("") ? " " : s));
+			add(new JLabel(line));
+			//add(new JLabel(s.equals("") ? " " : s));
 			}
 		setOpaque(isOpaque());
 		}

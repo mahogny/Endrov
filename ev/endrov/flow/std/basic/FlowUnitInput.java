@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.jdom.Element;
@@ -28,11 +29,12 @@ public class FlowUnitInput extends FlowUnit
 	public String varName="foo";
 	public FlowUnit varUnit;
 	private static final String metaType="input";
+	private static ImageIcon icon=new ImageIcon(FlowUnitInput.class.getResource("jhInput.png"));
 
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","Input",metaType,FlowUnitInput.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"Input",metaType,FlowUnitInput.class, icon));
 		}
 
 	

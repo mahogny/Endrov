@@ -72,13 +72,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 /*		addKeyListener(this);*/
 		setLayout(null);
 		ToolTipManager.sharedInstance().registerComponent(this);
-		
-//		add(spin);		
-		
-//		doFlowSwingLayout();
 		}
 
-
+	/**
+	 * Set which flow to edit
+	 */
 	public void setFlow(Flow flow)
 		{
 		if(flow!=this.flow)
@@ -189,96 +187,100 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	protected void paintComponent(Graphics g)
 		{
-		doFlowSwingLayout();
-
 		g.setColor(Color.WHITE);
 		g.fillRect(0,0,getWidth(),getHeight());
+		
+		doFlowSwingLayout();
 
-
-		
-		Graphics2D g2=(Graphics2D)g;
-		g2.translate(-cameraX, -cameraY);
-		
-		//hm. clean up map of connection points?
-		
-		
-		//Draw all units
-		for(FlowUnit u:getFlow().units)
-			u.paint(g2, this, unitComponent.get(u));
-		
-		//All connection points should now be in the list
-		//Draw connection arrows
-		connSegments.clear();
-		for(FlowConn conn:getFlow().conns)
+		if(flow!=null)
 			{
-			Vector2d vFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg)).pos;
-			Vector2d vTo=connPoint.get(new Tuple<FlowUnit, String>(conn.toUnit, conn.toArg)).pos;
-			drawConnLine(g,vFrom,vTo,conn);
-			}
 		
-		if(drawingConn!=null)
-			{
-			ConnPoint p=connPoint.get(new Tuple<FlowUnit, String>(drawingConn.t.fst(), drawingConn.t.snd()));
-			Vector2d vFrom=p.pos;
-			Vector2d vTo=drawingConn.toPoint;
-			if(!p.isFrom)
-				{
-				Vector2d v=vFrom;
-				vFrom=vTo;
-				vTo=v;
-				}
-			drawConnLine(g,vFrom,vTo,null);
-			}
-		
-		if(placingUnit!=null)
-			{
-			placingUnit.paint(g2,this,unitComponent.get(placingUnit));
-			//Component c=placingUnit.getGUIcomponent();
-			//Can render just the border
-			/*
-			BufferedImage im=new BufferedImage(spin.getWidth(),spin.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
-//		Graphics2D g2=(Graphics2D)g;
-		Graphics2D g2=(Graphics2D)im.getGraphics();
-		//g2.translate(20,20);
-		
-
-		
-		Rectangle clipr=g.getClipBounds();
-		g2.setClip(spin.getX(),spin.getY(),spin.getWidth(),spin.getHeight());
-		spin.paint(g2);
-		g2.setClip(clipr);
-		
-		//g2.translate(-20,-20);
-
+	
 			
-			*/
+			Graphics2D g2=(Graphics2D)g;
+			g2.translate(-cameraX, -cameraY);
+			
+			//hm. clean up map of connection points?
+			
+			
+			//Draw all units
+			for(FlowUnit u:getFlow().units)
+				u.paint(g2, this, unitComponent.get(u));
+			
+			//All connection points should now be in the list
+			//Draw connection arrows
+			connSegments.clear();
+			for(FlowConn conn:getFlow().conns)
+				{
+				Vector2d vFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg)).pos;
+				Vector2d vTo=connPoint.get(new Tuple<FlowUnit, String>(conn.toUnit, conn.toArg)).pos;
+				drawConnLine(g,vFrom,vTo,conn);
+				}
+			
+			if(drawingConn!=null)
+				{
+				ConnPoint p=connPoint.get(new Tuple<FlowUnit, String>(drawingConn.t.fst(), drawingConn.t.snd()));
+				Vector2d vFrom=p.pos;
+				Vector2d vTo=drawingConn.toPoint;
+				if(!p.isFrom)
+					{
+					Vector2d v=vFrom;
+					vFrom=vTo;
+					vTo=v;
+					}
+				drawConnLine(g,vFrom,vTo,null);
+				}
+			
+			if(placingUnit!=null)
+				{
+				placingUnit.paint(g2,this,unitComponent.get(placingUnit));
+				//Component c=placingUnit.getGUIcomponent();
+				//Can render just the border
+				/*
+				BufferedImage im=new BufferedImage(spin.getWidth(),spin.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
+	//		Graphics2D g2=(Graphics2D)g;
+			Graphics2D g2=(Graphics2D)im.getGraphics();
+			//g2.translate(20,20);
+			
+	
+			
+			Rectangle clipr=g.getClipBounds();
+			g2.setClip(spin.getX(),spin.getY(),spin.getWidth(),spin.getHeight());
+			spin.paint(g2);
+			g2.setClip(clipr);
+			
+			//g2.translate(-20,-20);
+	
+				
+				*/
+				}
+			
+			//so, do NOT add 
+			
+			
+			
+			
+			if(selectRect!=null)
+				{
+				g.setColor(Color.MAGENTA);
+				g.drawRect((int)selectRect.getX(), (int)selectRect.getY(), 
+						(int)selectRect.getWidth(), (int)selectRect.getHeight());
+				}
+			
+			
+			g2.translate(cameraX, cameraY);
+			
+			//Was a component forgotten for some reason? need to repaint in that case.
+			//This is a hack to fix that swing need to set locations of components *outside*
+			//paintComponent and in many cases the flow will be updated without knowing this.
+			//observers would rescue but that comes later.
+	/*		if(addSwingComponents())
+				{
+	//			doFlowSwingLayout();
+				repaint();
+				}
+	*/
 			}
-		
-		//so, do NOT add 
-		
-		
-		
-		
-		if(selectRect!=null)
-			{
-			g.setColor(Color.MAGENTA);
-			g.drawRect((int)selectRect.getX(), (int)selectRect.getY(), 
-					(int)selectRect.getWidth(), (int)selectRect.getHeight());
-			}
-		
-		
-		g2.translate(cameraX, cameraY);
-		
-		//Was a component forgotten for some reason? need to repaint in that case.
-		//This is a hack to fix that swing need to set locations of components *outside*
-		//paintComponent and in many cases the flow will be updated without knowing this.
-		//observers would rescue but that comes later.
-/*		if(addSwingComponents())
-			{
-//			doFlowSwingLayout();
-			repaint();
-			}
-*/
 		}
 	
 	
@@ -315,12 +317,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				tomove.addAll(u.getSubUnits(getFlow()));
 
 			for(FlowUnit u:tomove)
-//			for(FlowUnit u:holdingUnit.getSubUnits(flow))
 				{
 				u.x+=dx;
 				u.y+=dy;
 				}
-			//doFlowSwingLayout();
 			repaint();
 			}
 		
@@ -355,38 +355,40 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 		mouseLastX=e.getX();
 		mouseLastY=e.getY();
-		Tuple<Vector2d, FlowConn> hoverSegment=getHoverSegment();
-		
-		//Update current position of the unit to be placed
-		if(placingUnit!=null)
+		if(flow!=null)
 			{
+			Tuple<Vector2d, FlowConn> hoverSegment=getHoverSegment();
+			
+			//Update current position of the unit to be placed
+			if(placingUnit!=null)
+				{
+				if(hoverSegment!=null)
+					{
+					placingUnit.x=(int)hoverSegment.fst().x+cameraX;
+					placingUnit.y=(int)hoverSegment.fst().y+cameraY;
+					stickyConn=hoverSegment.snd();
+					}
+				else
+					{
+					placingUnit.x=mouseLastX+cameraX;
+					placingUnit.y=mouseLastY+cameraY;
+					}
+				Dimension dim=placingUnit.getBoundingBox(getComponentForUnit(placingUnit));
+				placingUnit.x-=dim.width/2;
+				placingUnit.y-=dim.height/2;
+				repaint();
+				}
+	
+			//TODO If the mouse hovers a connection it should tell the type
 			if(hoverSegment!=null)
 				{
-				placingUnit.x=(int)hoverSegment.fst().x+cameraX;
-				placingUnit.y=(int)hoverSegment.fst().y+cameraY;
-				stickyConn=hoverSegment.snd();
+				FlowConn conn=hoverSegment.snd();
+				setToolTipText(""+conn.fromArg+" - "+conn.toArg+ "(...type...)");
 				}
 			else
-				{
-				placingUnit.x=mouseLastX+cameraX;
-				placingUnit.y=mouseLastY+cameraY;
-				}
-			Dimension dim=placingUnit.getBoundingBox(getComponentForUnit(placingUnit));
-			placingUnit.x-=dim.width/2;
-			placingUnit.y-=dim.height/2;
-			repaint();
+				setToolTipText(null);
+		
 			}
-
-		//TODO If the mouse hovers a connection it should tell the type
-		if(hoverSegment!=null)
-			{
-			FlowConn conn=hoverSegment.snd();
-			setToolTipText(""+conn.fromArg+" - "+conn.toArg+ "(...type...)");
-			}
-		else
-			setToolTipText(null);
-	
-
 		}
 
 

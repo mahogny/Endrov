@@ -35,7 +35,7 @@ public class FlowUnitConstString extends FlowUnitConst
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Const","String",metaType,FlowUnitConstString.class, icon));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"String",metaType,FlowUnitConstString.class, icon));
 		}
 	
 	public String toXML(Element e)

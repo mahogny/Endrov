@@ -102,8 +102,6 @@ public class Flow extends EvObject
 	
 	public void loadMetadata(Element e)
 		{
-		
-		
 		Map<String, FlowUnitDeclaration> map=new HashMap<String, FlowUnitDeclaration>();
 		for(FlowUnitDeclaration dec:unitDeclarations)
 			map.put(dec.metadata,dec);
@@ -123,6 +121,8 @@ public class Flow extends EvObject
 				String unitname=sube.getAttributeValue("unitname");
 				FlowUnitDeclaration dec=map.get(unitname);
 				FlowUnit unit=dec.createInstance();
+				unit.x=Integer.parseInt(sube.getAttributeValue("unitx"));
+				unit.y=Integer.parseInt(sube.getAttributeValue("unity"));
 				numMap.put(nexti++, unit);
 				unit.fromXML(sube);
 				units.add(unit);
@@ -151,6 +151,8 @@ public class Flow extends EvObject
 			Element ne=new Element("unit");
 			String uname=u.toXML(ne);
 			ne.setAttribute("unitname",uname);
+			ne.setAttribute("unitx",""+u.x);
+			ne.setAttribute("unity",""+u.y);
 			e.addContent(ne);
 			}
 		

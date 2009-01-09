@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
+
 import org.jdom.Element;
 
 import endrov.basicWindow.FlowExec;
@@ -28,11 +30,12 @@ import endrov.flow.ui.FlowPanel;
 public class FlowUnitIf extends FlowUnit
 	{
 	private static final String metaType="if";
+	private static ImageIcon icon=new ImageIcon(FlowUnitIf.class.getResource("jhIf.png"));
 
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Basic","If",metaType,FlowUnitIf.class, null));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryName.name,"If",metaType,FlowUnitIf.class, icon));
 		}
 
 	
