@@ -13,7 +13,7 @@ import endrov.roi.ROI;
  * @author Johan Henriksson
  *
  */
-public abstract class FlowUnitFilter extends FlowUnitBasic
+public abstract class FlowUnitFilter2 extends FlowUnitBasic
 	{
 
 //	public String getBasicShowName(){return "Combine channels";}

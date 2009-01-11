@@ -8,15 +8,15 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 
 /**
- * Filter: invert
+ * Filter: project Z, take maximum
  * @author Johan Henriksson
  *
  */
-public class FlowUnitFilterInvert extends FlowUnitFilter
+public class Filter2MaxZ extends FlowUnitFilter2
 	{
-	private static final String metaType="filterInvert";
+	private static final String metaType="filterMaxZ";
 
-	public String getBasicShowName(){return "Invert";}
+	public String getBasicShowName(){return "MaxZ";}
 	public ImageIcon getIcon(){return null;}
 	
 	

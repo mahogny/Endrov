@@ -14,12 +14,12 @@ import endrov.flow.std.collection.CategoryInfo;
  * Recording method: combine channels
  * @author Johan Henriksson
  */
-public class FlowUnitRecMetCombineChannels extends FlowUnitRecMet
+public class RecmetCombineChannels extends FlowUnitRecmet
 	{
 	private static final String metaType="recmetCombineChannels";
 
 	
-	public Integer canConnectNum(){return null;}
+	public Integer shouldConnectNum(){return null;}
 
 	
 //	private static ImageIcon icon=new ImageIcon(FlowUnitConcat.class.getResource("jhConcat.png"));
@@ -27,7 +27,7 @@ public class FlowUnitRecMetCombineChannels extends FlowUnitRecMet
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Combine Channels",metaType,FlowUnitRecMetCombineChannels.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Combine Channels",metaType,RecmetCombineChannels.class, null,
 				"Combine several recording channels into one stack"));
 		}
 

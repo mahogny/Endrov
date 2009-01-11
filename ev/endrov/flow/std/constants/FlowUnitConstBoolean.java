@@ -23,7 +23,7 @@ import endrov.flow.ui.FlowPanel;
 public class FlowUnitConstBoolean extends FlowUnitConst
 	{
 	
-	public boolean var=true;
+	private boolean var=true;
 	
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstBoolean.class.getResource("jhBoolean.png"));
@@ -38,13 +38,13 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 	
 	public String toXML(Element e)
 		{
-		e.setAttribute("value", ""+var);
+		e.setAttribute("value", ""+isVar());
 		return metaType;
 		}
 
 	public void fromXML(Element e)
 		{
-		var=Boolean.parseBoolean(e.getAttributeValue("value"));
+		setVar(Boolean.parseBoolean(e.getAttributeValue("value")));
 		}
 
 	
@@ -62,21 +62,32 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		lastOutput.put("out", var);
+		lastOutput.put("out", isVar());
 		}
 	
 	
 	public Component getGUIcomponent(final FlowPanel p)
 		{
-		final JCheckBox comp=new JCheckBox("",var);
+		final JCheckBox comp=new JCheckBox("",isVar());
 		comp.setOpaque(false);
 		comp.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0)
 				{
 				//Should maybe be change listener
 				//should emit an update
+				setVar(comp.isSelected());
 				p.repaint();
 				}});
 		return comp;
+		}
+
+	public void setVar(boolean var)
+		{
+			this.var = var;
+		}
+
+	public boolean isVar()
+		{
+			return var;
 		}
 	}

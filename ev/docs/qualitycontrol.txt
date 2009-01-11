@@ -89,6 +89,7 @@ Additional checks
 	generic way of creating new objects done
 	fixed: imwin focus problems, mov with z
 	fixed swing space leak again
+	flow icons in tree
 	
 ================================TODO===========================
 
@@ -112,22 +113,21 @@ Additional checks
 2.14.2 -- flows
 	check code for UI
 	real-time flows
-    flows: icons on items
+
+	flag if a unit needs update
 	
-	THIS MUST BE DONE
-		* output items in tree
-		* output items as ... output. associate a runner that deals with the output?
-		* input from whatever. get items from tree
-			FlowIOmanager?
-			can also connect callbacks into output and input variables
-				- trouble - instances. need to make a copy or the entries will be overwritten
-				separate unit declaration from data? FlowExec. this would be perfect for submodules.
-				DECIDED. 
 	FLOW MODES
 		stand-alone on request
 			continuous, open window?
 			once on demand
 		sub module in another flow
+		
+		
+		math ops, on images vs in general. keep separate? seems hard.
+		
+		manual operation should maybe be separate from recording. hardware control window?
+		
+		
 		
 	
 	Flows to create max channel
@@ -160,7 +160,7 @@ ONTRAIN
 	try to play with many objects on screen. update bug
 		::::appears to be mac-only
 	release jinput etc dependent libraries. on my own page if needed
-    put OSX code in jar to simplify distribution?
+    put OSX code in jar to simplify distribution? - no. compile once, disable code. send over .class
 2.14.? -- platform integration
 	X associate mime types
 	mac quality: QT integration, in a jar?
@@ -235,6 +235,13 @@ NOPRIORITY
 
 6D := (X,Y,Z,Lambda(wavelength),T, multi stage points). 
   
+
+flow ops =======================
+
+matrix operations
+least squares
+
+
   
   
 debian problems ================
