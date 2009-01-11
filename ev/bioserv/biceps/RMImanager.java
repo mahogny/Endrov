@@ -309,7 +309,7 @@ public class RMImanager
 			//Send message
 			if(loopback!=null)
 				{
-				//TODO
+				//TODO send message
 //				loopback.recvq.put(smsg.msgid,msg);
 				}
 			else

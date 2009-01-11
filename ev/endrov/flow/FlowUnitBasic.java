@@ -44,7 +44,7 @@ public abstract class FlowUnitBasic extends FlowUnit
 			w+=ico.getIconWidth()+2;
 		int cnt=1;
 		if(cnt<getTypesInCount(flow)) cnt=getTypesInCount(flow);
-		if(cnt<getTypesOutCount()) cnt=getTypesOutCount();
+		if(cnt<getTypesOutCount(flow)) cnt=getTypesOutCount(flow);
 //		cnt++;
 		int h=fonth*cnt;
 		Dimension d=new Dimension(w+15,h);
@@ -102,9 +102,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 
 		
 		int cntOut=1;
-		if(cntOut<getTypesOutCount()) cntOut=getTypesOutCount();
+		if(cntOut<getTypesOutCount(panel.getFlow())) cntOut=getTypesOutCount(panel.getFlow());
 		i=0;
-		for(Map.Entry<String, FlowType> entry:getTypesOut().entrySet())
+		for(Map.Entry<String, FlowType> entry:getTypesOut(panel.getFlow()).entrySet())
 			{
 			double py=y+(i+1)*d.height/(cntOut+1);
 			panel.drawConnPointRight(g, this, entry.getKey(), x+d.width, (int)py);
@@ -130,9 +130,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 		{
 		return getTypesIn(flow).size();
 		}
-	public int getTypesOutCount()
+	public int getTypesOutCount(Flow flow)
 		{
-		return getTypesOut().size();
+		return getTypesOut(flow).size();
 		}
 
 	

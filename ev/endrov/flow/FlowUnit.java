@@ -52,23 +52,25 @@ public abstract class FlowUnit
 
 	public abstract void paint(Graphics g, FlowPanel panel, Component comp);
 
-	/** Get types of flows in */
-	protected abstract void getTypesIn(Map<String, FlowType> types); // TODO add			// flow																																		// parameter
+	/** Get types of flows in 
+	 * @param flow TODO*/
+	protected abstract void getTypesIn(Map<String, FlowType> types, Flow flow);
 
-	/** Get types of flows out */
-	protected abstract void getTypesOut(Map<String, FlowType> types);
+	/** Get types of flows out 
+	 * @param flow TODO*/
+	protected abstract void getTypesOut(Map<String, FlowType> types, Flow flow);
 
 	public Map<String, FlowType> getTypesIn(Flow flow)
 		{
 		Map<String, FlowType> map = new HashMap<String, FlowType>();
-		getTypesIn(map);
+		getTypesIn(map, flow);
 		return map;
 		}
 
-	public Map<String, FlowType> getTypesOut()
+	public Map<String, FlowType> getTypesOut(Flow flow)
 		{
 		Map<String, FlowType> map = new HashMap<String, FlowType>();
-		getTypesOut(map);
+		getTypesOut(map, flow);
 		return map;
 		}
 
@@ -117,8 +119,8 @@ public abstract class FlowUnit
 		}
 
 	/**
-	 * For the purpose of placing a component, calculate mid position TODO
-	 * consider for swing integ to let another point be used
+	 * For the purpose of placing a component, calculate mid position 
+	 * TODO consider for swing integ to let another point be used
 	 */
 	public Point getMidPos(Component c, Flow flow)
 		{

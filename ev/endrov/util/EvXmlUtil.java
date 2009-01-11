@@ -53,12 +53,25 @@ public class EvXmlUtil
 		return root.getChildren();
 		}
 	
-	//TODO: text content, attributes not printed
 	public static String prettyPrint(Element e)
 		{
+		try
+			{
+			//TODO not sure if this works
+			Document doc=new Document((Element)e.clone()); //need to clone?
+			return xmlToString(doc);
+			}
+		catch (Exception e1)
+			{
+			e1.printStackTrace();
+			return null;
+			}
+/*		
+		
+		
 		StringBuffer b=new StringBuffer();
 		prettyPrint(e, b);
-		return b.toString();
+		return b.toString();*/
 		}
 	public static void prettyPrint(Element e,StringBuffer b)
 		{

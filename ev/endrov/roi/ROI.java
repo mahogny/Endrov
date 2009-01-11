@@ -74,7 +74,7 @@ public abstract class ROI extends EvObject
 			}
 		selected.clear();
 //		selectionChanged.emit(null);
-		BasicWindow.updateWindows(null); //to remove TODO
+		BasicWindow.updateWindows(null); //to remove TODO updateWindows
 		}
 	
 	//maybe all objects should have a parent assigned

@@ -42,13 +42,13 @@ public class FlowUnitConcat extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types)
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("A", null);
 		types.put("B", null);
 		}
 	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types)
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("C", null);
 		}

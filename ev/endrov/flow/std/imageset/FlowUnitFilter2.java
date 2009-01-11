@@ -3,6 +3,7 @@ package endrov.flow.std.imageset;
 import java.awt.Color;
 import java.util.Map;
 
+import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.imageset.Imageset;
@@ -48,7 +49,7 @@ public abstract class FlowUnitFilter2 extends FlowUnitBasic
 
 
 	@Override
-	protected void getTypesIn(Map<String, FlowType> types)
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		//ROI is optional
 		types.put("roi", new FlowType(ROI.class));
@@ -60,7 +61,7 @@ public abstract class FlowUnitFilter2 extends FlowUnitBasic
 		}
 
 	@Override
-	protected void getTypesOut(Map<String, FlowType> types)
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		//Will imagesets be split? very seldom
 		types.put("imagesetOut", new FlowType(Imageset.class));

@@ -87,13 +87,12 @@ public abstract class FlowUnitRecmet extends FlowUnitBasic
 	 * Get types of flows in. If this is overridden to add optional inputs then 
 	 * this super method has to be invoked as well.
 	 */
-	protected void getTypesIn(Map<String, FlowType> types)
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		Integer shouldNum=shouldConnectNum();
 		String prefix="primin";
 		if(shouldNum==null)
 			{
-			Flow flow=null; //TODO
 			//Add those in use
 			HashSet<Integer> nums=new HashSet<Integer>();
 			for(FlowConn c:flow.getFlowsToUnit(this))
@@ -117,7 +116,7 @@ public abstract class FlowUnitRecmet extends FlowUnitBasic
 		}
 	
 	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types)
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("primout", null); //Type
 		}

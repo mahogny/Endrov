@@ -163,7 +163,7 @@ public class ImservWindow extends BasicWindow implements ActionListener
 			SessionCombo c=(SessionCombo)sCombo.getSelectedItem();
 			if(c!=null)
 				{
-//			evimsession.disconnect(); //TODO!!!
+//			evimsession.disconnect(); //TODO disconnect
 				EvImserv.sessions.remove(c.sess);
 				}
 			updateSessionList();
