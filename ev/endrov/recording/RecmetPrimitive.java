@@ -21,22 +21,33 @@ import endrov.imageset.EvImage;
  * @author Johan Henriksson
  *
  */
-public class PlannedRecPrimitive
+public class RecmetPrimitive
 	{
 	//Standardized tag names
-	public final static String CHANNEL="CHANNEL"; // String
+	
+//actually, use string for everything so user can enter it?
+	
+	public final static String CHANNEL="CHANNEL"; // String                 
 	public final static String IMAGESET_NAME="IMAGESET_NAME";  // String
 	public final static String FRAME="CHANNEL"; //EvDecimal
-	public final static String Z="Z"; //EvDecimal
 	public final static String EXPOSURETIME="EXPOSURETIME"; //EvDecimal
 	public final static String WAITUNTIL="WAITUNTIL"; //EvDecimal, unix time. 
-
+	public final static String BINNING="BINNING"; //Integer
+	public final static String CAMERA="CAMERA"; //String
+	
+	//This refer to endrov XYZ, hardware might call it something else
+	public final static String X="X"; //EvDecimal
+	public final static String Y="Y"; //EvDecimal
+	public final static String Z="Z"; //EvDecimal
+	
+	public final static String SETHWPROP="SETHWPROP/"; //String
+	
 	/**
 	 * A listener to be informed upon completion of this primitive
 	 */
 	public interface PlannedRecPrimitiveListener
 		{
-		public void done(PlannedRecPrimitive p, EvImage im);
+		public void done(RecmetPrimitive p, EvImage im);
 		}
 	
 	/**

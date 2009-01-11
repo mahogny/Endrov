@@ -28,7 +28,7 @@ public class FlowUnitConstDouble extends FlowUnitConst
 	{
 	
 	
-	public double var=123;
+	private double var=123;
 	
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstDouble.class.getResource("jhNumber.png"));
@@ -43,13 +43,13 @@ public class FlowUnitConstDouble extends FlowUnitConst
 	
 	public String toXML(Element e)
 		{
-		e.setAttribute("value", ""+var);
+		e.setAttribute("value", ""+getVar());
 		return metaType;
 		}
 	
 	public void fromXML(Element e)
 		{
-		var=Double.parseDouble(e.getAttributeValue("value"));
+		setVar(Double.parseDouble(e.getAttributeValue("value")));
 		}
 
 	
@@ -66,19 +66,19 @@ public class FlowUnitConstDouble extends FlowUnitConst
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		lastOutput.put("out", var);
+		lastOutput.put("out", getVar());
 		}
 	
 	
 	public Component getGUIcomponent(final FlowPanel p)
 		{
-		final JTextField field=new JTextField(""+var);
+		final JTextField field=new JTextField(""+getVar());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
 		field.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0)
 				{
 				//Should maybe be change listener
-				var=Double.parseDouble(field.getText());
+				setVar(Double.parseDouble(field.getText()));
 				//should emit an update
 				}});
 		
@@ -89,6 +89,16 @@ public class FlowUnitConstDouble extends FlowUnitConst
 		
 		});
 		return field;
+		}
+
+	public void setVar(double var)
+		{
+		this.var = var;
+		}
+
+	public double getVar()
+		{
+		return var;
 		}
 	
 

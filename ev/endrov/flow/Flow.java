@@ -216,6 +216,18 @@ public class Flow extends EvObject
 //		throw new Exception("Input not connected - "+arg);
 		}
 	
+	/**
+	 * Return all flows that goes to one unit
+	 */
+	public List<FlowConn> getFlowsToUnit(FlowUnit unit)
+		{
+		LinkedList<FlowConn> newc=new LinkedList<FlowConn>();
+		for(FlowConn c:conns)
+			if(c.toUnit==unit)
+				newc.add(c);
+		return newc;
+		}
+	
 	public String getMetaTypeDesc()
 		{
 		return "Flow";
