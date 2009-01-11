@@ -404,7 +404,7 @@ public class SequenceImageset implements EvIOData
 							{
 							EvImage evim=new EvImage();
 							
-							//TODO
+							//TODO metadata?
 							evim.dispX=0;
 							evim.dispY=0;
 							evim.binning=1;

@@ -86,7 +86,7 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 								{
 								FilterSeq fs=(FilterSeq)fi;
 								filterseq.addFilter(fs);
-//								BasicWindow.updateWindows();  //TODO: delete
+//								BasicWindow.updateWindows();  //TODO updateWindows
 								}
 							buildList();
 							}
@@ -138,19 +138,19 @@ public class WidgetFilterSeq extends JPanel implements SimpleObserver.Listener
 						if(e.getSource()==bUp)
 							{
 							filterseq.moveUp(currentPos);
-	//						BasicWindow.updateWindows();   //TODO: delete
+	//						BasicWindow.updateWindows();   //TODO updateWindows
 //							buildList();
 							}
 						else if(e.getSource()==bDown)
 							{
 							filterseq.moveDown(currentPos);
-	//						BasicWindow.updateWindows();    //TODO: delete
+	//						BasicWindow.updateWindows();    //TODO updateWindows
 		//					buildList();
 							}
 						else if(e.getSource()==bDelete)
 							{
 							filterseq.delete(currentPos);
-		//					BasicWindow.updateWindows();   //TODO: delete
+		//					BasicWindow.updateWindows();   //TODO updateWindows
 	//						buildList();   //TODO: can be deleted if window listens to changes
 							}
 						}

@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 import org.jdom.Element;
 
 import endrov.flow.BadTypeFlowException;
+import endrov.flow.Flow;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 
@@ -45,13 +46,13 @@ public abstract class FlowUnitMathBinop extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types)
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("A", null);
 		types.put("B", null);
 		}
 	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types)
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("C", null);
 		}

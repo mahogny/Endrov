@@ -110,7 +110,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 			gl.glRotated(180,   0.0, 0.0, 1.0);
 			//also consider setting size such that it does not vary with distance
 			//3d text at all? overlay rendering should be faster
-			float size=1; //(float)(0.005*nuc.pos.r) //trouble! relate to camera distance TODO
+			float size=1; //(float)(0.005*nuc.pos.r) //TODO trouble! relate to camera distance 
 			w.view.renderString(gl, transparentRenderers, size, ia.text);
 
 

@@ -407,10 +407,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(SwingUtilities.isLeftMouseButton(e))
 				{
 				getFlow().units.add(placingUnit);
-				if(stickyConn!=null && !placingUnit.getTypesIn(flow).isEmpty() && !placingUnit.getTypesOut().isEmpty())
+				if(stickyConn!=null && !placingUnit.getTypesIn(flow).isEmpty() && !placingUnit.getTypesOut(flow).isEmpty())
 					{
 					String argin=placingUnit.getTypesIn(flow).keySet().iterator().next();
-					String argout=placingUnit.getTypesOut().keySet().iterator().next();
+					String argout=placingUnit.getTypesOut(flow).keySet().iterator().next();
 					
 					getFlow().conns.remove(stickyConn);
 					getFlow().conns.add(new FlowConn(stickyConn.fromUnit,stickyConn.fromArg,placingUnit,argin));
@@ -694,7 +694,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				//TODO improve
 				//Problematic assumption: all components have to the right, or otherwise to the left
 				//If there is no connector at all then it will fail totally
-				if(u.getTypesOut().keySet().contains(arg) || u.getTypesIn(flow).keySet().contains(arg))
+				if(u.getTypesOut(flow).keySet().contains(arg) || u.getTypesIn(flow).keySet().contains(arg))
 					{
 					ConnPoint p=e.getValue();
 					Double maxx=xmap.get(u);

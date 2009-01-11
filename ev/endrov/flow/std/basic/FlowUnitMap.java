@@ -55,13 +55,13 @@ public class FlowUnitMap extends FlowUnitContainer
 
 	
 	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types)
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("in", null);
 		types.put("out", null);
 		}
 	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types)
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("in'", null);
 		types.put("out'", null);

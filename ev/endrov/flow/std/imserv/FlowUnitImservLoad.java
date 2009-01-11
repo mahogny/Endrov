@@ -39,13 +39,13 @@ public class FlowUnitImservLoad extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types)
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("imserv", null);
 		types.put("name", null);
 		}
 	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types)
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("data", null);
 		}

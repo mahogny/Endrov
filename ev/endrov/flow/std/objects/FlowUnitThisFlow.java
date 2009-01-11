@@ -36,11 +36,11 @@ public class FlowUnitThisFlow extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types)
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		}
 	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types)
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("this", new FlowType(Flow.class));
 		}

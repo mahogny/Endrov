@@ -82,7 +82,7 @@ public class EvIODataOME implements EvIOData
 	 */
 	public void buildDatabase(EvData data)
 		{
-		//Set metadata TODO
+		//TODO Set metadata 
 		
 		Imageset im;
 		if(data.getObjects(Imageset.class).isEmpty())

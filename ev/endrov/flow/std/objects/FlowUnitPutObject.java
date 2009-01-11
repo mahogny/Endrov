@@ -39,11 +39,11 @@ public class FlowUnitPutObject extends FlowUnitBasic
 	
 	
 	/** Get types of flows in */
-	public void getTypesIn(Map<String, FlowType> types)
+	public void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		}
 	/** Get types of flows out */
-	public void getTypesOut(Map<String, FlowType> types)
+	public void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("container", new FlowType(EvContainer.class));
 		types.put("name", new FlowType(String.class));
