@@ -5,12 +5,12 @@ set output 'series.ps'
 set style fill solid border -1
 set key off
 set border 3
-set xtic out nomirror 50
+set xtic out nomirror 20
 set ytic out nomirror 2
 set xlabel "Developmental time [min]"
-set ylabel "Number of contacts"
+set ylabel "Number of contacts per cell"
 set yrange [ 0.00000 : 14] noreverse nowriteback
-set xrange [ 0.000000 : 250 ] noreverse nowriteback
+set xrange [ 0.000000 : 140 ] noreverse nowriteback
 set bmargin 4 #bottom margin
 plot 'series.dat' using 1:2 with lines
 # with boxes

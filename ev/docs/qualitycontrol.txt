@@ -94,6 +94,8 @@ Additional checks
 ================================TODO===========================
 
 
+more colors. custom colors, able to modify existing?
+
 2.13.TODAY
 	image swap system & caching strategy
 		::basics only. can use io. goes together with caching
