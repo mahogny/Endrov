@@ -12,7 +12,7 @@ set xrange [ 0 : 0.4 ]
 set bmargin 4 #bottom margin
 set key off
 set border 3
-set xlabel "Relative deviation of mean life time []"
+set xlabel "Relative deviation of mean life time [-]"
 set ylabel "Number of cells"
 plot 'divdevhist.dat' using 2:1 with boxes
 
