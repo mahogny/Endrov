@@ -1,4 +1,4 @@
-package endrov.makeQT;
+package endrov.macBinding;
 
 import quicktime.*;
 import quicktime.io.*;

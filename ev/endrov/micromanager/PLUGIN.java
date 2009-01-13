@@ -7,7 +7,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Recording hardware";
+		return "Micro-manager";
 		}
 
 	public String getAuthor()
@@ -17,7 +17,7 @@ public class PLUGIN extends PluginDef
 	
 	public boolean systemSupported()
 		{
-		return EV.isLinux();
+		return EV.isLinux() || (EV.isMac() && EV.isX86());
 		}
 	
 	public String cite()

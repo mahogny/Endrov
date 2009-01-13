@@ -54,11 +54,11 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	private EvComboObjectOne<Imageset> metaCombo=new EvComboObjectOne<Imageset>(new Imageset(),false,false);
 
 	//TODO maybe put these in codec
-	public static final String[] qualityStrings = {"Low", "Normal", "High", "Maximum"};
+//	public static final String[] qualityStrings = {"Low", "Normal", "High", "Maximum"};
 
 	
 	private JComboBox codecCombo = new JComboBox(EvMovieMakerFactory.makers);
-	private JComboBox qualityCombo = new JComboBox(qualityStrings);
+	private JComboBox qualityCombo = new JComboBox();
 	
 	/**
 	 * Make a new window at default location
@@ -68,13 +68,29 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		this(new Rectangle(20,20,700,300));
 		}
 	
+	public void updateQualityList()
+		{
+		EvMovieMakerFactory maker=(EvMovieMakerFactory)codecCombo.getSelectedItem();
+		qualityCombo.removeAllItems();		
+		if(maker!=null)
+			{
+			for(String s:maker.getQualities())
+				{
+				qualityCombo.addItem(s);
+				if(s.equals(maker.getDefaultQuality()))
+					qualityCombo.setSelectedItem(s);
+				}
+			}
+		}
+	
 	/**
 	 * Make a new window at some specific location
 	 */
 	public MakeMovieWindow(Rectangle bounds)
 		{
+		updateQualityList();
 		//codecCombo.setSelectedItem(QTMovieMaker.codecs[QTMovieMaker.codecs.length-1]);
-		qualityCombo.setSelectedItem(qualityStrings[2]);
+//		qualityCombo.setSelectedItem(qualityStrings[2]);
 		for(int i=0;i<numChannelCombo;i++)
 			{
 			EvComboChannel c=new EvComboChannel(getCurrentImageset(),true);
@@ -89,6 +105,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 			}
 		metaCombo.addActionListener(this);
 		bStart.addActionListener(this);
+		codecCombo.addActionListener(this);
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
@@ -179,6 +196,10 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 			for(EvComboChannel c:channelCombo)
 				c.setRoot(getCurrentImageset());
 			packEvWindow();
+			}
+		else if(e.getSource()==codecCombo)
+			{
+			updateQualityList();
 			}
 		else if(e.getSource()==bStart)
 			{

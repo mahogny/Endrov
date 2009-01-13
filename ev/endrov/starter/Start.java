@@ -230,10 +230,13 @@ public class Start
 						}
 					System.out.println(tot);
 					
-					for(String app:new String[]{"EVGUI.app","ImServ.app","OSTdaemon.app","OSTmaker.app"})
+					for(String app:new String[]{"EVGUI.app","ImServ.app","OSTdaemon.app"})
 						{
 						String template=EvFileUtil.readFile(new File(app+"/Contents/Resources/preinfo.txt"));
-						EvFileUtil.writeFile(new File(app+"/Info.plist"), template.replace("JARLIST", tot));
+						File out=new File(app+"/Contents/Info.plist");
+						EvFileUtil.writeFile(out, template.replace("JARLIST", tot));
+						System.out.println("Wrote to "+out);
+						//TODO also write SO-list
 						}
 					
 					

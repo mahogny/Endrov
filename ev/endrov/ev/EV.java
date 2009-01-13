@@ -290,6 +290,10 @@ public class EV
 		return System.getProperty("os.name").toUpperCase().indexOf("LINUX") != -1;
 		}
 
+	public static boolean isX86()
+		{
+		return System.getProperty("os.arch").contains("86");
+		}
 	
 	
 	
