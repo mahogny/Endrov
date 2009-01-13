@@ -23,7 +23,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 	static final long serialVersionUID=0; 
 	//this is not needed in later versions of java. just for OSX compatibility
 	private static WeakHashMap<Window, Void> java15windowList=new WeakHashMap<Window, Void>();
-	public static Collection<Window> getWindows()
+	public static Collection<Window> get15Windows()
 		{
 		return java15windowList.keySet();
 		}
@@ -114,7 +114,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		public List<BasicWindow> getAllWindows()
 			{
 			LinkedList<BasicWindow> list=new LinkedList<BasicWindow>();
-			for(Window w:getWindows())
+			for(Window w:get15Windows())
 				if(w instanceof EvWindowManagerFree)
 					{
 					EvWindowManagerFree ww=(EvWindowManagerFree)w;
