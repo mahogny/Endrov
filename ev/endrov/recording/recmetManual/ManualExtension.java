@@ -56,11 +56,13 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		static final long serialVersionUID=0;
 		
 		
+		
+		/*§
 		GroupLayout lay=null;
 		GroupLayout.SequentialGroup hgroup=null;
 		GroupLayout.SequentialGroup vgroup=null;
 		GroupLayout.ParallelGroup leftcol=null;
-		GroupLayout.ParallelGroup rightcol=null;
+		GroupLayout.ParallelGroup rightcol=null;*/
 
 		JPanel p=new JPanel();
 		int row=0;
@@ -69,7 +71,8 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			{
 			GridBagConstraints c=new GridBagConstraints();
 			c.gridy=row;
-			c.anchor=GridBagConstraints.BASELINE_LEADING;
+			c.anchor=GridBagConstraints.LINE_START;
+//			c.anchor=GridBagConstraints.BASELINE_LEADING;
 			c.fill=GridBagConstraints.HORIZONTAL;
 			c.weightx=0;
 			p.add(left,c);
@@ -240,13 +243,16 @@ public class ManualExtension implements MicroscopeWindow.Extension
 				setBorder(BorderFactory.createTitledBorder(devName.toString()));
 				setToolTipText(hw.getDescName());
 				
+				/*
 				GroupLayout lay=new GroupLayout(this);
 				setLayout(lay);
 				GroupLayout.SequentialGroup vgroup=lay.createSequentialGroup();
 				GroupLayout.SequentialGroup hgroup=lay.createSequentialGroup();
 				GroupLayout.ParallelGroup leftcol=lay.createParallelGroup();
 				GroupLayout.ParallelGroup rightcol=lay.createParallelGroup();
-				
+				*/
+				setLayout(new GridBagLayout());
+				int row=0;
 				SortedMap<String, PropertyType> props=hw.getPropertyTypes();
 				for(Map.Entry<String, PropertyType> entry:props.entrySet())
 					{
@@ -295,16 +301,30 @@ public class ManualExtension implements MicroscopeWindow.Extension
 					if(comp!=null)
 						{
 						JLabel label=new JLabel(entry.getKey());
+						
+						GridBagConstraints c=new GridBagConstraints();
+						c.gridy=row;
+						c.anchor=GridBagConstraints.LINE_START;
+//						c.anchor=GridBagConstraints.BASELINE_LEADING;
+						c.fill=GridBagConstraints.HORIZONTAL;
+						c.weightx=0;
+						add(label,c);
+						c.gridx=1;
+						c.weightx=1;
+						add(comp,c);
+						row++;
+						/*
 						vgroup.addGroup(lay.createParallelGroup().
 								addComponent(label).addComponent(comp));
 						leftcol.addComponent(label);
-						rightcol.addComponent(comp);
+						rightcol.addComponent(comp);*/
 						}
 					}
+				/*
 				lay.setVerticalGroup(vgroup);
 				lay.setHorizontalGroup(hgroup);
 				hgroup.addGroup(leftcol);
-				hgroup.addGroup(rightcol);
+				hgroup.addGroup(rightcol);*/
 				
 				add1(this);
 				}

@@ -4,8 +4,10 @@ import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import javax.swing.JFrame;
 
@@ -19,8 +21,19 @@ import endrov.ev.EV;
 public class EvWindowManagerFree extends JFrame implements WindowListener, EvWindowManager
 	{
 	static final long serialVersionUID=0; 
+	//this is not needed in later versions of java. just for OSX compatibility
+	private static WeakHashMap<Window, Void> java15windowList=new WeakHashMap<Window, Void>();
+	public static Collection<Window> getWindows()
+		{
+		return java15windowList.keySet();
+		}
+
+	
+	
+	
 	private WeakReference<BasicWindow> bw;
 	private boolean shouldHaveBeenDisposed=false;
+	
 	
 	private BasicWindow getBasicWindow()
 		{
@@ -41,6 +54,8 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		//16x16 on gnome, but in alt+tab larger. can supply larger image
 		if(!EV.isMac())
 			setIconImage(BasicIcon.programIcon.getImage());
+		
+		java15windowList.put(this,null);
 		}
 	
 	public void setTitle(String title)

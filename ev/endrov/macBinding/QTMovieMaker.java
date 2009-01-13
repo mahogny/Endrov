@@ -1,7 +1,9 @@
-package endrov.makeQT;
+package endrov.macBinding;
 
 import java.awt.image.*;
 import java.io.*;
+
+import endrov.makeMovie.EvMovieMaker;
 import quicktime.*;
 import quicktime.io.*;
 import quicktime.qd.*;
@@ -91,7 +93,7 @@ public class QTMovieMaker implements StdQTConstants, EvMovieMaker
 		QTSession.open();
 		System.out.println("Target movie file: "+path);
 		
-		finalFile=new File(path);
+		finalFile=path;
 		tempFile=new File(finalFile.getParentFile(),"_temp.mov");
 		
 		movFile = new QTFile(tempFile);

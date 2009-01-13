@@ -50,7 +50,7 @@
 			<string>true</string>
 		</dict>
 		<key>VMOptions</key>
-		<string>-Xms32m -Xmx1500m -Djava.library.path=libs/mac</string>
+		<string>-Xms32m -Xmx1500m -Djava.library.path=libs/mac:libs/umanager_inc/bin_mac</string>
 	</dict>
 </dict>
 </plist>

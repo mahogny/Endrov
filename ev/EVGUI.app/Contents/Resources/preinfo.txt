@@ -79,7 +79,7 @@
 			<string>true</string>
 		</dict>
 		<key>VMOptions</key>
-		<string>-Xmx2000m -Djava.library.path=libs/bin_mac</string>
+		<string>-Xmx2000m -Djava.library.path=libs/bin_mac:libs/umanager_inc/bin_mac</string>
 	</dict>
 </dict>
 </plist>
