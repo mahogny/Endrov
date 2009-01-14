@@ -24,7 +24,8 @@ macstarters:
 	#should only be run on a mac
 	java -jar startEndrov.jar --macstarter
 
-	
+macplugin:
+	jar cfv libs/bin_mac/macbinding.jar endrov/macBinding/*.class
 
 
 startcev:
@@ -52,8 +53,8 @@ jnlp:	totaljar
 	rm ../ev.jar
 
 
-sevenjar:
-	jar cfv sevenzip.jar */*class */*/*/*class
+#sevenjar:
+#	jar cfv sevenzip.jar */*class */*/*/*class
 
 #keytool -genkey -keystore myKeys -alias jdc
 

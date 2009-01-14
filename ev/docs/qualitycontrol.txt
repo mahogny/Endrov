@@ -171,6 +171,11 @@ ONTRAIN
 
 =================== time for release here ==========================
 
+more colors, color previews in menu, custom colors.
+move coloring of selection one step up, make a top-level menu
+more right-click commands in linw such as selecting children
+MIPs for volumes, used for vessels
+histograms
 	     
 2.14.1 -- undo
 	general framework
@@ -260,5 +265,16 @@ gcj+classpath has problems. use openjdk
 deb http://ftp.sunet.se/pub/Linux/distributions/debian/ lenny main contrib non-free
 deb-src http://ftp.sunet.se/pub/Linux/distributions/debian/ lenny main contrib non-free
 and # comment those for etchy
+
+
+new UI displays ===============
+
+support multiple panes in one 3d window/2d window.
+* bioimagesuite 3-slice mode with orthogonal views, linked by a cursor. cut-through
+* N slices in one direction
+* free view, current model view
+* 2d views, sort of
+
+next, transfer functions: colormap from intensity. can make plenty use of shaders here.
 
 
