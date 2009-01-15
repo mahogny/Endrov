@@ -37,9 +37,19 @@ public class EvCommonImageIO
 			if(fend!=null)
 				if(fend.equals("jpg") || fend.equals("jpeg") || fend.equals("png"))
 					{
-					BufferedImage bim=ImageIO.read(file);
+					BufferedImage bim;
+					try
+						{
+						bim = ImageIO.read(file);
+						return bim;
+						}
+					catch (Exception e)
+						{
+						System.out.println("Can't read "+file);
+						e.printStackTrace();
+						return null;
+						}
 					//System.out.println("bim   "+bim);
-					return bim;
 					}
 			
 			//Rely on Bioformats in the worst case

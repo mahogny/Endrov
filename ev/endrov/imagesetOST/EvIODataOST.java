@@ -119,7 +119,7 @@ public class EvIODataOST implements EvIOData
 	 */
 	private class DiskBlob
 		{
-		String currentDir; 
+		private String currentDir; 
 		//e.g. "imset-im", whatever was used when everything was read into memory
 		//can be null, then it has not allocated a diskblob
 
@@ -136,6 +136,34 @@ public class EvIODataOST implements EvIOData
 				return new File(basedir,currentDir);
 			else
 				return null;
+			}
+		
+		public void allocate(String keyName)
+			{
+			if(currentDir==null)
+				{
+				boolean taken=false;
+				String dir="imset-"+keyName;
+				for(DiskBlob blob:mapBlobs.values())
+					if(blob.currentDir.equals(dir))
+						taken=true;
+				if(taken)
+					{
+					int cnt=0;
+					do
+						{
+						taken=false;
+						dir="imset-x"+cnt;
+						for(DiskBlob blob:mapBlobs.values())
+							if(blob.currentDir.equals(dir))
+								taken=true;
+						cnt++;
+						}while(taken);
+					}
+				currentDir=dir;
+				System.out.println("allocating blob "+currentDir);
+				new File(basedir,currentDir).mkdirs();
+				}
 			}
 		}
 
@@ -304,7 +332,18 @@ public class EvIODataOST implements EvIOData
 	  }
 
 	
-	
+
+	public void saveMetaDataOnly(EvData d, EvData.FileIOStatusCallback cb) throws IOException
+		{
+		basedir.mkdirs();
+
+		//Make sure to store the right IDs in metadata
+		for(Map.Entry<EvObject, DiskBlob> e:mapBlobs.entrySet())
+			e.getKey().ostBlobID=e.getValue().currentDir;
+		saveMeta(d,getMetaFile());  
+		d.setMetadataModified(false);
+		}
+		
 	/**
 	 * Save all data
 	 */
@@ -312,15 +351,13 @@ public class EvIODataOST implements EvIOData
 		{
 		try
 			{
-			basedir.mkdirs();
-			saveMeta(d,getMetaFile());  
-			d.setMetadataModified(false);
+			saveMetaDataOnly(d, cb);
+			saveImages(d);
 			}
 		catch (IOException e)
 			{
 			e.printStackTrace();
 			}
-		saveImages(d);
 		}
 		
 	
@@ -339,8 +376,6 @@ public class EvIODataOST implements EvIOData
 		//TODO hierarchy
 		Map<String,Imageset> dataImagesets=data.getIdObjects(Imageset.class);
 		
-		
-		//TODO rename of blobs not supported
 		try
 			{
 			//Images to delete
@@ -383,16 +418,18 @@ public class EvIODataOST implements EvIOData
 					}
 			
 			//Newly created imagesets might not have a blob. Need to create these.
-			for(Map.Entry<String, Imageset> datae:data.getIdObjects(Imageset.class).entrySet())
+			for(Map.Entry<String, Imageset> datae:dataImagesets.entrySet())
 				{
 				Imageset im=datae.getValue();
 				DiskBlob blob=getCreateBlob(im);
-				if(blob.currentDir==null)
+				blob.allocate(datae.getKey());
+				datae.getValue().ostBlobID=blob.currentDir;
+/*				if(blob.currentDir==null)
 					{
 					blob.currentDir="imset-"+datae.getKey();
 					System.out.println("allocating blob "+blob.currentDir);
 					new File(basedir,blob.currentDir).mkdirs();
-					}
+					}*/
 				}
 			
 			//Which images are dirty and need be written?
@@ -674,12 +711,14 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * For every loader, set up an entry in the metadata object
 	 */
+	/*
 	private void diskloaderToImageset(EvData data)
 		{
 		for(Map.Entry<EvObject, DiskBlob> blobe:mapBlobs.entrySet())
 			if(blobe.getKey() instanceof Imageset)
 				{
 				DiskBlob blob=blobe.getValue();
+				//TODO NO! this is not the way to do it! (?)
 				String imsetName=blobe.getValue().currentDir.substring("imset-".length());
 				Imageset im=(Imageset)blobe.getKey();
 				data.metaObject.put(imsetName, im);
@@ -710,7 +749,7 @@ public class EvIODataOST implements EvIOData
 						}
 					}				
 				}
-		}
+		}*/
 	
 	
 	/**
@@ -718,9 +757,64 @@ public class EvIODataOST implements EvIOData
 	 */
 	private void scanFiles(EvData data, EvData.FileIOStatusCallback cb)
 		{
-		//Check which files exist
+		//Create blobs
 		mapBlobs.clear();
-
+		
+		//hierarchy TODO
+		for(Imageset ob:data.getIdObjects(Imageset.class).values())
+			{
+			DiskBlob blob=getCreateBlob(ob);
+			blob.currentDir=ob.ostBlobID;
+			if(blob.currentDir==null)
+				{
+				System.out.println("Fixed blob id. this should only occur during 3->3.2 transition");
+				blob.currentDir=".";
+				}
+			
+			//Get list of images, from cache or by listing files
+			if(!(getDatabaseCacheFile(blob).exists() && loadDatabaseCache(ob, blob)))
+				{
+				for(File chanf:blob.getDirectory().listFiles())
+					if(chanf.isDirectory() && chanf.getName().startsWith("ch-"))
+						{
+						String channelName=chanf.getName().substring("ch-".length());
+						Log.printLog("Found channel: "+channelName);
+						scanFilesChannel(ob, channelName, blob);
+						}
+				}
+			
+			//Update the list of images in the imageset object
+			Imageset im=ob;
+			im.channelImages.clear();
+			for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:blob.diskImageLoader.entrySet())
+				{
+				EvChannel chim=im.createChannel(ce.getKey());
+				
+				for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
+					{
+					TreeMap<EvDecimal, EvImage> stack=new TreeMap<EvDecimal, EvImage>();
+					chim.imageLoader.put(fe.getKey(),stack);
+					for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
+						{
+						EvImage evim=new EvImage();
+						evim.io=new SliceIO(this,getCurrentFileFor(im,ce.getKey(), fe.getKey(), se.getKey()));
+						
+						//TODO properly move metadata
+						evim.resX=im.resX;
+						evim.resY=im.resY;
+						evim.dispX=chim.dispX;
+						evim.dispY=chim.dispY;
+						evim.binning=chim.chBinning;
+						
+						stack.put(se.getKey(),evim);
+						}
+					}
+				}
+			}
+		
+		
+		/*
+		//TODO NO! look in object hierarchy!
 		for(File imsetf:basedir.listFiles())
 			if(imsetf.isDirectory() && imsetf.getName().startsWith("imset-"))
 				{
@@ -746,10 +840,11 @@ public class EvIODataOST implements EvIOData
 							scanFilesChannel(im, channelName, blob);
 							}
 					}
-				}
+				}*/
 
 		saveDatabaseCache();
-		diskloaderToImageset(data);
+		
+//		diskloaderToImageset(data);
 		}
 	
 	
@@ -1009,6 +1104,7 @@ public class EvIODataOST implements EvIOData
 			//This is a hack, there is only one imageset in these dated formats
 			List<Imageset> ims=d.getObjects(Imageset.class);
 			Imageset im=ims.get(0);
+			im.ostBlobID="imset-im";
 
 			//For all channels
 			for(File fchan:basedir.listFiles())
@@ -1070,7 +1166,16 @@ public class EvIODataOST implements EvIOData
 			d.metaObject.put("im",im);
 			
 			System.out.println("Saving meta 3.2");
-			saveData(d, null);
+			mapBlobs.clear();
+			try
+				{
+				saveMetaDataOnly(d, null);
+				}
+			catch (IOException e)
+				{
+				e.printStackTrace();
+				}
+//			saveData(d, null);
 			invalidateDatabaseCache();
 			System.out.println("Reloading file listing");
 			scanFiles(d,EvData.deafFileIOCB);

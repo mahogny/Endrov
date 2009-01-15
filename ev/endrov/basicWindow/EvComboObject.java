@@ -196,7 +196,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			combo.addItem(emptyItem);
 
 		//If null-selection not allowed then reselect any item in the list
-		if(currentItem==null || (currentItem==emptyItem && !allowNoSelection))
+		if(currentItem==null || (currentItem==emptyItem && !allowNoSelection) || !getItemMap().containsKey(currentCont))
 			currentCont=((ComboItem)combo.getItemAt(0)).getObject();
 
 		//Reselect last item
@@ -274,10 +274,14 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
 		//bug: I think ci was once null after unloading data. was nothing reselected?
+		if(ci==null)
+			{
+			System.out.println("ci null "+combo.getItemCount());
+			}
 		return ci.getObject();
 		}
 	
-	public void setSelectedObject(EvContainer c)
+	private Map<EvContainer,ComboItem> getItemMap()
 		{
 		Map<EvContainer,ComboItem> itemMap=new HashMap<EvContainer, ComboItem>();
 		for(int ci=0;ci<combo.getItemCount();ci++)
@@ -285,7 +289,12 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			ComboItem item=(ComboItem)combo.getItemAt(ci);
 			itemMap.put(item.getObject(),item);
 			}
-		combo.setSelectedItem(itemMap.get(c));
+		return itemMap;
+		}
+	
+	public void setSelectedObject(EvContainer c)
+		{
+		combo.setSelectedItem(getItemMap().get(c));
 		//TODO should this emit an event?
 		}
 	
