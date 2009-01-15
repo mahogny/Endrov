@@ -19,11 +19,7 @@ java -jar /usr/share/endrov/startEndrov.jar endrov.starter.MW \
 #* -arguments go to JVM, -- to main()
 
 
-#TODO put MMConfig.cfg in a sensible location, probably in .endrov/
-
 #TODO with next version of Imserv, java.policy can be removed (needs basedir)
-
-#TODO what about env file?
 
 #http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212863
 
