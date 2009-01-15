@@ -163,3 +163,33 @@ LOG(855, 25187840:): Device Shutter initialized.
 LOG(855, 25187840:): Device XY initialized.
 LOG(855, 25187840:): Device Z initialized.
 LOG(855, 25187840:): System state cache updated.
+LOG(1220, 25187840:): -------->>
+LOG(1220, 25187840:): Core session started on Thu Jan 15 2009 13:22:49.631822 by tbudev3 on xeon
+LOG(1220, 25187840:): Debug logging disabled
+LOG(1220, 25187840:): All devices unloaded.
+LOG(1220, 25187840:): Device DCam loaded from DemoCamera and labeled as Camera
+LOG(1220, 25187840:): Device Camera set as camera.
+LOG(1220, 25187840:): Device DWheel loaded from DemoCamera and labeled as Dichroic
+LOG(1220, 25187840:): Device DWheel loaded from DemoCamera and labeled as Emission
+LOG(1220, 25187840:): Device DWheel loaded from DemoCamera and labeled as Excitation
+LOG(1220, 25187840:): Device DObjective loaded from DemoCamera and labeled as Objective
+LOG(1220, 25187840:): Device DXYStage loaded from DemoCamera and labeled as XY
+LOG(1220, 25187840:): Device XY set as xyStage.
+LOG(1220, 25187840:): Device DStage loaded from DemoCamera and labeled as Z
+LOG(1220, 25187840:): Device DLightPath loaded from DemoCamera and labeled as Path
+LOG(1220, 25187840:): Device DShutter loaded from DemoCamera and labeled as Shutter
+LOG(1220, 25187840:): Device Shutter set as shutter.
+LOG(1220, 25187840:): Device DAutoFocus loaded from DemoCamera and labeled as Autofocus
+LOG(1220, 25187840:): Device Autofocus set as auto-focus.
+LOG(1220, 25187840:): Starting initialization sequence for 10 devices...
+LOG(1220, 25187840:): Device Autofocus initialized.
+LOG(1220, 25187840:): Device Camera initialized.
+LOG(1220, 25187840:): Device Dichroic initialized.
+LOG(1220, 25187840:): Device Emission initialized.
+LOG(1220, 25187840:): Device Excitation initialized.
+LOG(1220, 25187840:): Device Objective initialized.
+LOG(1220, 25187840:): Device Path initialized.
+LOG(1220, 25187840:): Device Shutter initialized.
+LOG(1220, 25187840:): Device XY initialized.
+LOG(1220, 25187840:): Device Z initialized.
+LOG(1220, 25187840:): System state cache updated.

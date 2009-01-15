@@ -25,6 +25,9 @@ Dependencies up to date?
 * bioformats
 
 Starters up to date?
+* make starters
+* make macstarters
+* make macplugin
 
 
 Additional checks
