@@ -33,6 +33,7 @@ Starters up to date?
 Additional checks
 =======================================
 * Does it work on Vista?
+* Does a distro work on mac?
 * Imserv long tags working?
 * imserv cache transfer?
 * lineage window ok?
@@ -93,6 +94,7 @@ Additional checks
 	fixed: imwin focus problems, mov with z
 	fixed swing space leak again
 	flow icons in tree
+	mac shit put in jar, easier to make distro on linux
 	
 ================================TODO===========================
 
@@ -168,8 +170,10 @@ ONTRAIN
     put OSX code in jar to simplify distribution? - no. compile once, disable code. send over .class
 2.14.? -- platform integration
 	X associate mime types
-	mac quality: QT integration, in a jar?
 	integration on windows?
+
+LZMA
+being able to 
 
 
 =================== time for release here ==========================

@@ -26,6 +26,13 @@ public class EvContainer
 	private boolean coreMetadataModified=false;
 	
 	/**
+	 * This blobID is only valid *exactly after XML has been read*. This is because is really should
+	 * be stored in the I/O-session, but more conveniently located here since 
+	 */
+	public String ostBlobID;
+	
+	
+	/**
 	 * Set if metadata has been modified
 	 */
 	public void setMetadataModified(boolean flag)
@@ -142,6 +149,8 @@ public class EvContainer
 			EvObject o=metaObject.get(id);
 			Element el=new Element("TEMPNAME");
 			el.setAttribute("id",""+id);
+			if(o.ostBlobID!=null)
+				el.setAttribute("ostblobid",o.ostBlobID);
 			o.saveMetadata(el);
 
 			//subobjects
@@ -192,6 +201,9 @@ public class EvContainer
 				id="im"; //This is for the OST3 transition
 			else
 				id=sid;
+			
+			o.ostBlobID=child.getAttributeValue("ostblobid");
+			
 			
 			Element subob=child.getChild("ostsubobjects");
 			if(subob!=null)

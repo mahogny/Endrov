@@ -125,8 +125,12 @@ public class EvComboChannel extends JPanel implements ActionListener
 		combo.removeActionListener(this);
 		combo.removeAllItems();
 
+		boolean hasEmpty=false;
 		if(allowNoSelection)
+			{
+			hasEmpty=true;
 			combo.addItem(emptyItem);
+			}
 
 		//Build list. Depending on if there is a root it will be used or all data will be listed
 		if(root==null)
@@ -149,15 +153,19 @@ public class EvComboChannel extends JPanel implements ActionListener
 			}
 		
 		if(combo.getItemCount()==0)
+			{
+			hasEmpty=true;
 			combo.addItem(emptyItem);
+			}
 
 		//If null-selection not allowed then reselect any item in the list
-		if(currentItem==null || (currentItem==emptyItem && !allowNoSelection))
+		if(currentItem==null || (currentItem==emptyItem && !allowNoSelection) || !getItemMap().containsKey(currentCont))// ||
+			//	(currentItem==emptyItem && !hasEmpty)) //This special case, select preferred channel TODO 
 			{
 			currentCont=((ComboItem)combo.getItemAt(0)).getCon();
 			currentChannel=null;
 			}
-
+		
 		//Reselect last item
 		setSelectedObject(currentCont, currentChannel);
 		
@@ -260,8 +268,10 @@ public class EvComboChannel extends JPanel implements ActionListener
 		return im==null ? new Imageset() : im;
 		}
 
-	
-	public void setSelectedObject(EvContainer c, String wantChannel)
+	/**
+	 * Get a map of the current entries
+	 */
+	private Map<EvContainer,Map<String,ComboItem>> getItemMap()
 		{
 		Map<EvContainer,Map<String,ComboItem>> itemMap=new HashMap<EvContainer, Map<String,ComboItem>>();
 		for(int ci=0;ci<combo.getItemCount();ci++)
@@ -272,7 +282,23 @@ public class EvComboChannel extends JPanel implements ActionListener
 				itemMap.put(item.getCon(),chanMap=new HashMap<String, ComboItem>());
 			chanMap.put(item.channelName,item);
 			}
-		Map<String,ComboItem> chanMap=itemMap.get(c);
+		return itemMap;
+		}
+	
+	/**
+	 * Set which object should be selected
+	 */
+	public void setSelectedObject(EvContainer c, String wantChannel)
+		{
+		//System.out.println("select "+c+" "+wantChannel);
+		Map<EvContainer,Map<String,ComboItem>> itemMap=getItemMap();
+		//Ugly hack to fix null. does it work?
+/*		if(itemMap.get(c)==null)
+			{
+			updateList();
+			itemMap=getItemMap();
+			}*/
+		Map<String,ComboItem> chanMap=itemMap.get(c); //has been null
 		ComboItem ci;
 		if(chanMap.containsKey(wantChannel))
 			ci=chanMap.get(wantChannel);
