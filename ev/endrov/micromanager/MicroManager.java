@@ -1,5 +1,6 @@
 package endrov.micromanager;
 
+import java.io.File;
 import java.util.*;
 
 import mmcorej.CMMCore;
@@ -7,6 +8,7 @@ import mmcorej.DeviceType;
 
 import org.jdom.Element;
 
+import endrov.ev.EV;
 import endrov.hardware.*;
 
 /**
@@ -30,7 +32,12 @@ public class MicroManager extends HardwareProvider implements Hardware
 		{
 		try
 			{
-			core.loadSystemConfiguration("MMConfig.cfg");
+			File fMMconfig=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
+			fMMconfig.getParentFile().mkdirs();
+			if(!fMMconfig.exists())
+				fMMconfig=new File("MMConfig.cfg");
+			
+			core.loadSystemConfiguration(fMMconfig.getPath());
 			
 	/*
 			// add devices

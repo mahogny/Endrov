@@ -86,19 +86,26 @@ public class EV
 			//TODO Mac might have Libraries
 			if(isWindows())
 				return new File("C:\\config");
+			else if(isMac())
+				return new File(new File(getHomeDir(),"Library"),"Application Support");
 			else
 				return new File(getHomeDir(),".config");
 			}
 		else
 			return new File(e);
 		}
-	
+
+	public static File getGlobalConfigEndrovDir()
+		{
+		return new File(getGlobalConfigDir(),"endrov");
+		}
+
 	/**
 	 * Get name of config file in case it is stored as an individual file
 	 */
 	private static File getConfigFileName()
 		{
-		return new File(new File(getGlobalConfigDir(),"endrov"),"config.xml");
+		return new File(getGlobalConfigEndrovDir(),"config.xml");
 		}
 	
 	/**
