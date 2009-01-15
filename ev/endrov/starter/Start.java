@@ -41,7 +41,7 @@ public class Start
 	private ProcessBuilder pb=new ProcessBuilder("");
 	private String jarstring="";//new File(".").getAbsolutePath(); //may have to keep this due to matlab
 	private String binstring="";
-
+	private String archExt="";
 
 	public void collectSystemInfo(String path)
 		{
@@ -51,6 +51,12 @@ public class Start
 		{
 		//Detect OS
 		cpsep=":";
+		
+		if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
+			archExt="ppc";
+		else
+			archExt="x86";
+		
 		if(OS.equals("mac os x"))
 			{
 //			javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
@@ -64,10 +70,7 @@ public class Start
 			}
 		else if(OS.startsWith("linux"))
 			{
-			if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
-				osExt="linuxPPC";
-			else //Assume some sort of x86
-				osExt="linux";
+			osExt="linux";
 			}
 		else if(OS.startsWith("solaris"))
 			osExt="solaris";
@@ -83,7 +86,7 @@ public class Start
 		jarstring=path.getAbsolutePath();
 
 		//Collect jarfiles
-		collectJars(jarfiles, binfiles, new File(path,"libs"), osExt);
+		collectJars(jarfiles, binfiles, new File(path,"libs"), osExt, archExt);
 //		if(!libdir.equals(""))
 //			collectJars(jarfiles, binfiles, libdir, osExt);
 		for(String s:jarfiles)
@@ -325,7 +328,7 @@ public class Start
 	 * Recurses when it finds a directory ending with _inc.
 	 * 
 	 */
-	private static void collectJars(List<String> v,List<String> binfiles,File p, String osExt)
+	private static void collectJars(List<String> v,List<String> binfiles,File p, String osExt, String archExt)
 		{
 		if(p.exists())
 			for(File sub:p.listFiles())
@@ -367,10 +370,11 @@ public class Start
 						}
 					}
 				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith(".") && !sub.getName().equals("unused"))
-					collectJars(v,binfiles, sub, osExt);
-				else if(sub.isDirectory() && sub.getName().equals("bin_"+osExt))
+					collectJars(v,binfiles, sub, osExt, archExt);
+				else if(sub.isDirectory() && (sub.getName().equals("bin_"+osExt)
+						|| sub.getName().equals("bin_"+archExt)))
 					{
-					collectJars(v,binfiles, sub, osExt);
+					collectJars(v,binfiles, sub, osExt, archExt);
 					
 					String toadd=sub.getAbsolutePath();
 					binfiles.add(toadd);

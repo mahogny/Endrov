@@ -1,0 +1,25 @@
+debian PPC should now work perfectly. no need for this.
+
+----------------------- prereq ---------------------------
+
+install Debian.
+
+Install the IBM java environment. You will download the zip from IBMs page and then run the linux utility <<<name?>>> to create a .deb-file out of it.
+I got:  ibm-j2sdk1.5_1.5.0_powerpc.deb 
+Had to rename .zip prior to running the utility.
+
+----------------------- Modifications I had to make to get JOGL to compile --------------------
+
+this mods should now be in debian. just install jogl as normal.
+
+libjawt.so in the wrong place. copied bin/*.so to lib/ppc/
+	/usr/lib/j2sdk1.5-ibm/jre/bin# cp *so ../lib/ppc/
+
+CPU.java and StructLayout.java:
+	(os.startsWith("linux") && cpu.equals("ppc")) || //Reported by sizeof on G4 and G5
+
+Plenty of hacks in build.xml
+
+-------------- Endrov affected ------------
+
+could not reach libjawt.so so put it in libs/linuxPPC/

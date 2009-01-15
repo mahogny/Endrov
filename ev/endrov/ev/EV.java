@@ -295,7 +295,10 @@ public class EV
 		return System.getProperty("os.arch").contains("86");
 		}
 	
-	
+	public static boolean isPPC()
+		{
+		return System.getProperty("os.arch").contains("ppc");
+		}
 	
 	public static String pad(EvDecimal d, int len)
 		{
