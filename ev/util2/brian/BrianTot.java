@@ -22,7 +22,10 @@ public class BrianTot
 //		part2();
 		part3();
 		}
-	
+
+	/**
+	 * forward blast goes into table blastfromce
+	 */
 	public static void part1()
 		{
 		try
@@ -97,7 +100,9 @@ public class BrianTot
 	
 	
 	
-	
+	/**
+	 * Reverse blast goes into table reverseblast
+	 */
 	public static void part2()
 		{
 		try
@@ -163,7 +168,9 @@ public class BrianTot
 		System.out.println("main2 done");
 		}
 	
-	
+	/**
+	 * rankings goes into blastrank2
+	 */
 	public static void part3()
 		{
 		try

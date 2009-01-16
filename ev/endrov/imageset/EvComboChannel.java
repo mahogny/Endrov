@@ -158,6 +158,13 @@ public class EvComboChannel extends JPanel implements ActionListener
 			combo.addItem(emptyItem);
 			}
 
+		//TODO: more informed decision
+		if(currentItem==emptyItem && !hasEmpty)
+			{
+			currentCont=((ComboItem)combo.getItemAt(0)).getCon();
+			currentChannel=null;
+			}
+		
 		//If null-selection not allowed then reselect any item in the list
 		if(currentItem==null || (currentItem==emptyItem && !allowNoSelection) || !getItemMap().containsKey(currentCont))// ||
 			//	(currentItem==emptyItem && !hasEmpty)) //This special case, select preferred channel TODO 
