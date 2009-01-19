@@ -173,7 +173,29 @@ ONTRAIN
 	integration on windows?
 
 LZMA
-being able to 
+
+
+=============
+OST transition:
+
+--- MONDAY
+1. imserv support OST3 *only*, no pure xml-files
+2. save all RMD files
+3. save all imagesets needed to do current calcs + copy of current software
+4. convert all files
+5. adapt voronoi, graph makers. need to get an idea about intervals
+5.1 an intermediate object "neigh map" would be very useful
+        (cell::string)->cell->[((start::EvDecimal),end)]
+        
+
+
+
+then:
+* integration of entire image
+**** can linearity be adjust by background? grab a few lines around the border
+	this could be reused for the more advanced methods
+
+* using start coordinate plane, overlap cube 
 
 
 =================== time for release here ==========================
