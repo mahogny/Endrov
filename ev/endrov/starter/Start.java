@@ -200,12 +200,16 @@ public class Start
 				if(javaenvFile.exists())
 					{
 					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
-					StringTokenizer envTokenizer=new StringTokenizer(envReader.readLine()," ");
-					while(envTokenizer.hasMoreTokens())
+					String line=envReader.readLine();
+					if(line!=null)
 						{
-						String tok=envTokenizer.nextToken();
-						cmdarg.add(tok);
-						System.out.println("Java environment flag: "+tok);
+						StringTokenizer envTokenizer=new StringTokenizer(line," ");
+						while(envTokenizer.hasMoreTokens())
+							{
+							String tok=envTokenizer.nextToken();
+							cmdarg.add(tok);
+							System.out.println("Java environment flag: "+tok);
+							}
 						}
 					}
 				
