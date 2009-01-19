@@ -66,7 +66,7 @@ public class Start
 		else if(OS.startsWith("windows"))
 			{
 			cpsep=";";
-			osExt="win";
+			osExt="windows";
 			}
 		else if(OS.startsWith("linux"))
 			{

@@ -4,8 +4,7 @@ package endrov.imagesetImserv;
 
 import java.awt.image.*;
 import java.io.*;
-import java.util.Collection;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.jdom.Document;
 
@@ -15,6 +14,7 @@ import bioserv.imserv.ImservConnection;
 
 import endrov.data.EvData;
 import endrov.data.EvIOData;
+import endrov.data.EvPath;
 import endrov.data.RecentReference;
 import endrov.ev.Log;
 import endrov.imageset.*;
@@ -89,7 +89,7 @@ public class EvIODataImserv implements EvIOData
 			DataIF.CompressibleDataTransfer trans=new DataIF.CompressibleDataTransfer();
 			trans.compression=DataIF.CompressibleDataTransfer.NONE;
 			trans.data=os.toByteArray();
-			ifdata.setRMD(trans);
+			ifdata.setMetadata(trans);
 			
 			//TODO also save image data
 			}
@@ -110,19 +110,11 @@ public class EvIODataImserv implements EvIOData
 	
 	
 	//TODO share cache code with OST
-	public boolean loadDatabaseCache(EvData data, byte inp[])
+	public boolean loadDatabaseCache(Imageset imageset, String blobid, InputStream inp)
 		{
-		//TODO support multiple imset
-		Collection<Imageset> imsets=data.getObjects(Imageset.class);
-		Imageset imageset;
-		if(imsets.isEmpty())
-			data.metaObject.put("im", imageset=new Imageset());
-		else
-			imageset=imsets.iterator().next();
-		
 		try
 			{
-			BufferedReader in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(inp)));
+			BufferedReader in = new BufferedReader(new InputStreamReader(inp));
 		 
 			String line=in.readLine();
 			if(!line.equals("version1"))
@@ -161,14 +153,20 @@ public class EvIODataImserv implements EvIOData
 							if(s.startsWith("ext"))
 								s=in.readLine(); //We don't have to care about extensions
 							EvDecimal slice=new EvDecimal(s);
-
-							
 							
 							EvImage evim=new EvImage();
+							//TODO properly fill in metadata
+							evim.resX=imageset.resX;
+							evim.resY=imageset.resY;
+							evim.dispX=c.dispX;
+							evim.dispY=c.dispY;
+							evim.binning=c.chBinning;
+							
+							
 							//TODO fill up with metadata here
 							
 							
-							SliceIO io=new SliceIO(slice,frame,channelName);
+							SliceIO io=new SliceIO(blobid, slice,frame,channelName);
 							evim.io=io;
 							loaderset.put(slice, evim);
 							}
@@ -204,32 +202,22 @@ public class EvIODataImserv implements EvIOData
 			}
 		try
 			{
-			System.out.println("building imageset");
-			DataIF.CompressibleDataTransfer ilist=ifdata.getImageList();
-			if(ilist!=null)
-				loadDatabaseCache(data, ilist.data);
+			System.out.println("Loading metadata");
+			data.loadXmlMetadata(ifdata.getMetadata().getInputStream());
 
-//			long time=System.currentTimeMillis();
-			//Set metadata
-			data.loadXmlMetadata(new ByteArrayInputStream(ifdata.getRMD().data));
-//			loadImagesetXmlMetadata(new ByteArrayInputStream(ifdata.getRMD().data));
-//			System.out.println(""+(System.currentTimeMillis()-time));
+			//This is a big bottle neck. It would be nice if it could be postponed using new get/set mechanisms
+			System.out.println("building imageset");
+			for(Map.Entry<EvPath, Imageset> ime:data.getIdObjectsRecursive(Imageset.class).entrySet())
+				{
+				DataIF.CompressibleDataTransfer ilist=ifdata.getImageList(ime.getValue().ostBlobID);
+				if(ilist!=null)
+					loadDatabaseCache(ime.getValue(), ime.getValue().ostBlobID, ilist.getInputStream());
+				}
 			}
 		catch (Exception e)
 			{
 			e.printStackTrace();
 			}
-
-		/*
-		int numc=3;
-		for(int c=0;c<numc;c++)
-			{
-			String channelName="ch"+c;
-			Channel ch=new Channel(meta.getCreateChannelMeta(channelName));
-			ch.scanFiles(channelName);
-			channelImages.put(channelName,ch);
-			}
-		*/
 		}
 	
 	
@@ -247,12 +235,14 @@ public class EvIODataImserv implements EvIOData
 	
 	
 	
-	public class SliceIO implements EvIOImage
+	private class SliceIO implements EvIOImage
 		{
 		EvDecimal z,t;
 		String c;
-		public SliceIO(EvDecimal z, EvDecimal t, String c)
+		String blobid;
+		public SliceIO(String blobid, EvDecimal z, EvDecimal t, String c)
 			{
+			this.blobid=blobid;
 			this.z=z;
 			this.t=t;
 			this.c=c;
@@ -264,7 +254,7 @@ public class EvIODataImserv implements EvIOData
 			//			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 			try
 				{
-				DataIF.ImageTransfer transfer=ifdata.getImage(c, t, z);
+				DataIF.ImageTransfer transfer=ifdata.getImage(blobid, c, t, z);
 				if(transfer!=null)
 					return SendFile.getImageFromBytes(transfer.data);
 				}

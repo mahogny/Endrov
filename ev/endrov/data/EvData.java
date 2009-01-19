@@ -411,7 +411,13 @@ public class EvData extends EvContainer
 	  		{
 	  		System.out.println("Updating metadata to 3.2");
 	  		Element eIm=element.getChild("imageset");
-	  		EvDecimal timestep=new EvDecimal(eIm.getChild("timestep").getText());
+	  		EvDecimal timestep=EvDecimal.ONE;
+	  		if(eIm!=null)
+	  			{
+		  		Element timestepe=eIm.getChild("timestep");
+		  		if(timestepe!=null)
+		  			timestep=new EvDecimal(timestepe.getText());
+	  			}
 	  		help331(element, timestep);
 	  		}
   		

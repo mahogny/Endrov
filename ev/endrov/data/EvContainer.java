@@ -89,6 +89,30 @@ public class EvContainer
 		}
 
 	/**
+	 * Get all ID and objects of a certain type
+	 */
+	public <E> SortedMap<EvPath, E> getIdObjectsRecursive(Class<E> cl)
+		{
+		//TODO getclass==, does this exclude subclasses?
+		TreeMap<EvPath, E> map=new TreeMap<EvPath, E>();
+		getIdObjectsRecursiveHelper(map, new LinkedList<String>(), cl);
+		return map;
+		}
+	@SuppressWarnings("unchecked") private <E> void getIdObjectsRecursiveHelper(Map<EvPath, E> map, LinkedList<String> curPath, Class<E> cl)
+		{
+		//TODO getclass==, does this exclude subclasses?
+		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
+			{
+			curPath.addFirst(e.getKey());
+			if(e.getValue().getClass()==cl)
+				map.put(new EvPath(curPath),(E)e.getValue());
+			((EvContainer)e.getValue()).getIdObjectsRecursiveHelper(map, curPath, cl);
+			curPath.removeLast();
+			}
+		}
+	
+	
+	/**
 	 * Get a meta object by ID
 	 */
 	public EvObject getMetaObject(String i)

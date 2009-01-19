@@ -179,7 +179,7 @@ LZMA
 OST transition:
 
 --- MONDAY
-1. imserv support OST3 *only*, no pure xml-files
+1. imserv support OST3 *only*, no pure xml-files. .imserv into data?
 2. save all RMD files
 3. save all imagesets needed to do current calcs + copy of current software
 4. convert all files

@@ -277,25 +277,34 @@ public class EvIODataOST implements EvIOData
 		{
 		return new File(mapBlobs.get(im).getDirectory(),"ch-"+channelName);
 		}
+	private static File buildChannelPath(File blobpath, String channelName)
+		{
+		return new File(blobpath,"ch-"+channelName);
+		}
+	
 	/** Internal: piece together a path to a frame */
-	private File buildFramePath(File channelPath, EvDecimal frame)
+	private static File buildFramePath(File channelPath, EvDecimal frame)
 		{
 		return new File(channelPath, EV.pad(frame,8));
 		}
+	
 	private File buildFramePath(Imageset im, String channelName, EvDecimal frame)
 		{
 		return buildFramePath(buildChannelPath(im,channelName), frame);
 		}
+	
 	/** Internal: piece together a path to an image */
 	private File buildImagePath(Imageset im, String channelName, EvDecimal frame, EvDecimal slice, String ext)
 		{
 		return buildImagePath(buildFramePath(im, channelName, frame), slice, ext);
 		}
+	
 	/** Internal: piece together a path to an image */
-	private File buildImagePath(File framePath, EvDecimal slice, String ext)
+	private static File buildImagePath(File framePath, EvDecimal slice, String ext)
 		{
 		return new File(framePath,EV.pad(slice, 8)+ext);
 		}
+	
 	/** internal: name of metadata file */
 	private File getMetaFile()
 		{
@@ -903,16 +912,12 @@ public class EvIODataOST implements EvIOData
 		}
 	
 
-	/**
-	 * Load database from cache into file-list. Return if it succeeded. Does not update imageset objects
-	 */
-	public boolean loadDatabaseCache(Imageset im, DiskBlob blob)
+	public static boolean loadDatabaseCacheMap(HashMap<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> diskImageLoader, InputStream cachefile, File blobFile)
 		{
 		try
 			{
 			String ext="";
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(getDatabaseCacheFile(blob)),"UTF-8"));
-
+			BufferedReader in = new BufferedReader(new InputStreamReader(cachefile,"UTF-8"));
 			String line=in.readLine();
 			if(!line.equals("version1")) //version1
 				{
@@ -923,7 +928,6 @@ public class EvIODataOST implements EvIOData
 				{
 				Log.printLog("Loading imagelist cache");
 
-				blob.diskImageLoader.clear();
 				int numChannels=Integer.parseInt(in.readLine());
 				for(int i=0;i<numChannels;i++)
 					{
@@ -931,9 +935,11 @@ public class EvIODataOST implements EvIOData
 					int numFrame=Integer.parseInt(in.readLine());
 
 					HashMap<EvDecimal,HashMap<EvDecimal,File>> c=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
-					blob.diskImageLoader.put(channelName, c);
+					diskImageLoader.put(channelName, c);
 
-					String channeldirName=buildChannelPath(im,channelName).getAbsolutePath();
+					
+					
+					String channeldirName=buildChannelPath(blobFile,channelName).getAbsolutePath();
 
 					for(int j=0;j<numFrame;j++)
 						{
@@ -971,13 +977,28 @@ public class EvIODataOST implements EvIOData
 				}
 			return true;
 			}
-		catch(FileNotFoundException e)
-			{
-			return false;
-			}
 		catch (Exception e)
 			{
 			e.printStackTrace();
+			return false;
+			}
+
+		
+		}
+	
+	
+	/**
+	 * Load database from cache into file-list. Return if it succeeded. Does not update imageset objects
+	 */
+	public boolean loadDatabaseCache(Imageset im, DiskBlob blob)
+		{
+		blob.diskImageLoader.clear();
+		try
+			{
+			return loadDatabaseCacheMap(blob.diskImageLoader, new FileInputStream(getDatabaseCacheFile(blob)), mapBlobs.get(im).getDirectory());
+			}
+		catch (FileNotFoundException e)
+			{
 			return false;
 			}
 		}

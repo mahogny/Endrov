@@ -17,7 +17,9 @@ import bioserv.RMISSLClientSocketFactory;
 import bioserv.RMISSLServerSocketFactory;
 import bioserv.SendFile;
 
+import endrov.data.EvData;
 import endrov.ev.EV;
+import endrov.imagesetOST.EvIODataOST;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
@@ -35,11 +37,11 @@ import endrov.util.EvXmlUtil;
  * 
  * @author Johan Henriksson
  */
-public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparable<DataImpl>
+public class DataImpl extends UnicastRemoteObject implements DataIF
 	{
 	public static final long serialVersionUID=0;
 	private String name;
-	public File file;
+	public File fileRoot;
 	public Map<String,Tag> tags=new TreeMap<String,Tag>();
 	private final ImservImpl imserv;
 	
@@ -47,7 +49,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 		{
 		super(BioservDaemon.PORT,	new RMISSLClientSocketFactory(),	new RMISSLServerSocketFactory());
 		this.name=name;
-		this.file=file;
+		this.fileRoot=file;
 		this.imserv=imserv;
 
 		//Collect information about dataset
@@ -63,8 +65,8 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 					}
 			rmd=new File(file,"rmd.ostxml");
 			}
-		else if(isOSTXML())
-			rmd=file;
+//		else if(isOSTXML())
+	//		rmd=file;
 
 		if(rmd!=null)
 			{
@@ -81,8 +83,8 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	
 	
 	//One could make several implementations, depending on type
-	private boolean isOST3(){return file.isDirectory();}
-	private boolean isOSTXML(){return file.isFile() && file.getName().endsWith(".ostxml");}
+	private boolean isOST3(){return fileRoot.isDirectory() && fileRoot.getName().endsWith(".ost");}
+//	private boolean isOSTXML(){return file.isFile() && file.getName().endsWith(".ostxml");}
 	
 	
 
@@ -100,7 +102,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	public synchronized byte[] getThumb() throws Exception
 		{
 		ThumbMaker tm=new ThumbMaker();
-		return tm.getThumb(this,file);
+		return tm.getThumb(this,fileRoot);
 		}
 	
 	
@@ -109,19 +111,22 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	/**
 	 * Get image listing. This is the same as the image cache.
 	 */
-	public CompressibleDataTransfer getImageList() throws Exception
+	public CompressibleDataTransfer getImageList(String blobid) throws Exception
 		{
 		if(!isOST3())
 			return null;
 		else
 			{			
 			//Load OST and generate listing if needed
-			File imcacheFile=new File(file,"imagecache.txt");
+			File imcacheFile=new File(fileRoot,"imagecache.txt");
 			if(!imcacheFile.exists())
 				{
 				//Create
-				OstImageset rec=new OstImageset(file);
-				rec.loadDatabaseCache(); //This is an ugly hack. Constructor creates cachefile, but java might not wait for completion
+				EvIODataOST io=new EvIODataOST(fileRoot);
+				EvData data=new EvData();
+				io.initialLoad(data, EvData.deafFileIOCB);
+				//a function of io must be called or the JVM will not wait
+				//rec.loadDatabaseCache(); //This is an ugly hack. Constructor creates cachefile, but java might not wait for completion
 				}
 			if(imcacheFile.exists())
 				return getUncompressed(imcacheFile);
@@ -130,14 +135,19 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			}
 		}
 	
+	private boolean blobidIsSafe(String blobid)
+		{
+		return blobid.indexOf("/")==-1 && blobid.indexOf('\\')==-1;
+		}
+	
 	/**
 	 * Get File for imagecache
 	 */
-	private File getImageCacheFile()
+	private File getImageCacheFile(String blobid)
 		{
-		if(isOST3())
+		if(blobidIsSafe(blobid))
 			{
-			File imcacheFile=new File(file,"imagecache.txt");
+			File imcacheFile=new File(fileRoot,"imagecache.txt");
 			if(imcacheFile.exists())
 				return imcacheFile;
 			}
@@ -147,15 +157,15 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	/**
 	 * Get metadata
 	 */
-	public synchronized CompressibleDataTransfer getRMD() throws Exception
+	public synchronized CompressibleDataTransfer getMetadata() throws Exception
 		{
-		File rmdFile;
-		if(isOST3())
-			rmdFile=new File(file,"rmd.ostxml");
-		else if(isOSTXML())
-			rmdFile=file;
-		else
-			return null;
+		File rmdFile=new File(fileRoot,"rmd.ostxml");
+//		if(isOST3())
+//			rmdFile=new File(file,"rmd.ostxml");
+//		else if(isOSTXML())
+//			rmdFile=file;
+//		else
+//			return null;
 		if(rmdFile.exists())
 			return getUncompressed(rmdFile);
 		else
@@ -177,9 +187,9 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	/**
 	 * Get image data
 	 */
-	public synchronized ImageTransfer getImage(String channel, EvDecimal frame, EvDecimal z) throws Exception
+	public synchronized ImageTransfer getImage(String blobid, String channel, EvDecimal frame, EvDecimal z) throws Exception
 		{
-		File thefile=getImageFile(channel, frame, z);
+		File thefile=getImageFile(blobid, channel, frame, z);
 		if(thefile!=null)
 			{
 			ImageTransfer transfer=new ImageTransfer();
@@ -210,7 +220,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	private File constructImageFile(String channel, EvDecimal frame, EvDecimal z, String end)
 		{
 		//dangerous format!
-		File chandir=new File(file,"ch-"+channel);
+		File chandir=new File(fileRoot,"ch-"+channel);
 		File framedir=new File(chandir,EV.pad(frame,8));
 		return new File(framedir,EV.pad(z,8)+end);
 		}
@@ -219,12 +229,13 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	 * Get file for image.
 	 * Can it be made faster by guessing name?
 	 */
-	private File getImageFile(String channel, EvDecimal frame, EvDecimal z)
+	private File getImageFile(String blobid, String channel, EvDecimal frame, EvDecimal z)
 		{
-		if(isOST3())
+		if(blobidIsSafe(blobid) && blobidIsSafe(channel))
 			{
 			//Note: dangerous channel
-			File chandir=new File(file,"ch-"+channel);
+			File blobdir=new File(fileRoot,blobid);
+			File chandir=new File(blobdir,"ch-"+channel);
 			File framedir=new File(chandir,EV.pad(frame,8));
 			final String sz=EV.pad(z,8)+".";
 //			System.out.println("frame "+framedir+" "+sz);
@@ -243,16 +254,16 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	/**
 	 * Set metadata file
 	 */
-	public synchronized void setRMD(CompressibleDataTransfer data) throws Exception
+	public synchronized void setMetadata(CompressibleDataTransfer data) throws Exception
 		{
-		File rmdFile;
-		if(isOST3())
+		File rmdFile=new File(fileRoot,"rmd.ostxml");
+/*		if(isOST3())
 			rmdFile=new File(file,"rmd.ostxml");
 		else if(isOSTXML())
 			rmdFile=file;
 		else
 			return;
-
+*/
 //		if(data.compression==CompressibleDataTransfer.NONE)
 		FileOutputStream fo=new FileOutputStream(rmdFile);
 		fo.write(data.data);
@@ -260,13 +271,13 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 		}
 
 	/**
-	 * Set image
+	 * Set image data
 	 */
-	public synchronized void putImage(String channel, EvDecimal frame, EvDecimal z, ImageTransfer data) throws Exception
+	public synchronized void putImage(String blobid, String channel, EvDecimal frame, EvDecimal z, ImageTransfer data) throws Exception
 		{
 		if(isOST3())
 			{
-			File oldFile=getImageFile(channel, frame, z);
+			File oldFile=getImageFile(blobid, channel, frame, z);
 			if(oldFile.exists())
 				oldFile.delete();
 			File newFile=constructImageFile(channel, frame, z, data.format);
@@ -274,7 +285,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 			FileOutputStream fo=new FileOutputStream(newFile);
 			fo.write(data.data);
 			fo.close();
-			File imagecache=getImageCacheFile();
+			File imagecache=getImageCacheFile(blobid);
 			if(imagecache!=null)
 				imagecache.delete();
 			}
@@ -318,7 +329,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF//, Comparabl
 	
 	private File getImservFile()
 		{
-		return new File(file.getParent(),file.getName()+".imserv");
+		return new File(fileRoot.getParent(),fileRoot.getName()+".imserv");
 		}
 	private void readImservFile()
 		{
