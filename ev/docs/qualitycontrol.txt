@@ -95,6 +95,7 @@ Additional checks
 	fixed swing space leak again
 	flow icons in tree
 	mac shit put in jar, easier to make distro on linux
+	windows compat
 	
 ================================TODO===========================
 
@@ -166,11 +167,11 @@ ONTRAIN
 2.13.ATWORK     
 	try to play with many objects on screen. update bug
 		::::appears to be mac-only
+			not quite. slow on mine. maybe event stack.
 	release jinput etc dependent libraries. on my own page if needed
     put OSX code in jar to simplify distribution? - no. compile once, disable code. send over .class
 2.14.? -- platform integration
 	X associate mime types
-	integration on windows?
 
 LZMA
 
