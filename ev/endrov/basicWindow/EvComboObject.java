@@ -25,6 +25,7 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.EvPath;
 import endrov.util.JImageButton;
 
 /**
@@ -116,8 +117,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	 */
 	private static class ComboItem
 		{
-		//another path interface in HW
-		String path[];
+		EvPath path;
  		private WeakReference<EvContainer> ob; 
 		private WeakReference<EvData> data; 
 
@@ -132,7 +132,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		
 		public ComboItem(List<String> path, EvContainer ob, EvData data)
 			{
-			this.path=path.toArray(new String[0]);
+			this.path=new EvPath(path);
+//			this.path=path.toArray(new String[0]);
 			this.ob=new WeakReference<EvContainer>(ob);
 			this.data=new WeakReference<EvData>(data);
 //			System.out.println("new, path: "+path);
@@ -140,14 +141,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		
 		public String toString()
 			{
-			StringBuffer sb=new StringBuffer();
-			for(int i=0;i<path.length;i++)
-				{
-				sb.append(path[i]);
-				if(i!=path.length-1)
-					sb.append("/");
-				}
-			return sb.toString();
+			return path.toString();
 			}
 		
 		

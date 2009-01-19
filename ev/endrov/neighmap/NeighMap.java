@@ -54,6 +54,8 @@ public class NeighMap extends EvObject
 	
 	public Map<String, Interval> lifetime=new HashMap<String, Interval>();
 	public Map<String, Map<String, List<Interval>>> neighmap=new HashMap<String, Map<String,List<Interval>>>();
+	public Interval validity=null;
+
 	
 	
 	public Map<String, List<Interval>> getCreateNeighMap(String a)

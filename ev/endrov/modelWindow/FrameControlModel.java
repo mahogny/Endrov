@@ -355,7 +355,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	/** Set current frame */
 	public void setFrame(EvDecimal frame)
 		{
-		spinnerFrame.setValue(frame.doubleValue());
+		spinnerFrame.setValue(frame);
 		w.stateChanged(new ChangeEvent(this));
 		FrameControl.replicateSettings(this);
 		}
