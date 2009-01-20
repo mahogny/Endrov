@@ -148,20 +148,9 @@ public class EvContainer
 			metaObject.remove(id);
 		}	
 	
-	/*
-	public void saveSubObjectsXML(Element ostElement)
-		{
-		for(String id:metaObject.keySet())
-			{
-			EvObject o=metaObject.get(id);
-			Element el=new Element("TEMPNAME");
-			el.setAttribute("id",""+id);
-			o.saveMetadata(el);
-			ostElement.addContent(el);
-			}
-		}
-*/
+
 	
+	private static final String tagOstblobid="ostblobid";
 	
 	/**
 	 * Serialize object and all children
@@ -180,7 +169,7 @@ public class EvContainer
 			//subobjects
 			if(!o.metaObject.isEmpty())
 				{
-				Element sube=new Element("ostsubobjects");
+				Element sube=new Element(tagOstblobid);
 				o.recursiveSaveMetadata(sube);
 				el.addContent(sube);
 				}
@@ -229,7 +218,7 @@ public class EvContainer
 			o.ostBlobID=child.getAttributeValue("ostblobid");
 			
 			
-			Element subob=child.getChild("ostsubobjects");
+			Element subob=child.getChild(tagOstblobid);
 			if(subob!=null)
 				{
 				o.recursiveLoadMetadata(subob);

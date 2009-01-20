@@ -10,6 +10,8 @@ public class StartImServ
 	{
 	public static void main(String[] args)
 		{
-		new Start().run(new String[]{"bioserv.BioservGUI"});
+		Start start=new Start();
+		start.mainClass="bioserv.BioservGUI";
+		start.run(new String[]{});
 		}
 	}

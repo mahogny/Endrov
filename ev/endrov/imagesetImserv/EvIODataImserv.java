@@ -39,7 +39,6 @@ public class EvIODataImserv implements EvIOData
 
 	private DataIF ifdata;
 	private ImservConnection conn;
-//	private EvData data;
 	private String cachedName="<name not checked>";
 	
 	/**
@@ -110,8 +109,9 @@ public class EvIODataImserv implements EvIOData
 	
 	
 	//TODO share cache code with OST
-	public boolean loadDatabaseCache(Imageset imageset, String blobid, InputStream inp)
+	public boolean loadDatabaseCache(Imageset imageset, InputStream inp)
 		{
+		String blobid=imageset.ostBlobID;
 		try
 			{
 			BufferedReader in = new BufferedReader(new InputStreamReader(inp));
@@ -133,7 +133,7 @@ public class EvIODataImserv implements EvIOData
 					{
 					String channelName=in.readLine();
 					int numFrame=Integer.parseInt(in.readLine());
-					EvChannel c=imageset.createChannel(channelName);
+					EvChannel c=imageset.getCreateChannel(channelName);
 					
 					for(int j=0;j<numFrame;j++)
 						{
@@ -168,6 +168,7 @@ public class EvIODataImserv implements EvIOData
 							
 							SliceIO io=new SliceIO(blobid, slice,frame,channelName);
 							evim.io=io;
+							System.out.println("Got image "+evim+" ch "+channelName);
 							loaderset.put(slice, evim);
 							}
 						}
@@ -209,9 +210,12 @@ public class EvIODataImserv implements EvIOData
 			System.out.println("building imageset");
 			for(Map.Entry<EvPath, Imageset> ime:data.getIdObjectsRecursive(Imageset.class).entrySet())
 				{
-				DataIF.CompressibleDataTransfer ilist=ifdata.getImageList(ime.getValue().ostBlobID);
+				System.out.println("found imageset "+ime.getKey());
+				DataIF.CompressibleDataTransfer ilist=ifdata.getImageCache(ime.getValue().ostBlobID);
 				if(ilist!=null)
-					loadDatabaseCache(ime.getValue(), ime.getValue().ostBlobID, ilist.getInputStream());
+					loadDatabaseCache(ime.getValue(), ilist.getInputStream());
+				else
+					System.out.println("Did not get database cache");
 				}
 			}
 		catch (Exception e)
@@ -221,25 +225,16 @@ public class EvIODataImserv implements EvIOData
 		}
 	
 	
-
-/*
-	protected ChannelImages internalMakeChannel(Imageset.Channel ch)
-		{
-		return new Channel(ch);
-		}
-	*/	
 	
 	
-
-	
-	
-	
-	
+	/**
+	 * Slice I/O - get one image from server
+	 */
 	private class SliceIO implements EvIOImage
 		{
-		EvDecimal z,t;
-		String c;
-		String blobid;
+		private EvDecimal z,t;
+		private String c;
+		private String blobid;
 		public SliceIO(String blobid, EvDecimal z, EvDecimal t, String c)
 			{
 			this.blobid=blobid;
