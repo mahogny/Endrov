@@ -77,14 +77,11 @@ public class Imageset extends EvObject
 	/**
 	 * Create a channel if it doesn't exist
 	 */
-	public EvChannel createChannel(String ch)
+	public EvChannel getCreateChannel(String ch)
 		{
 		EvChannel im=channelImages.get(ch);
 		if(im==null)
-			{
-			im=new EvChannel();
-			channelImages.put(ch, im);
-			}
+			channelImages.put(ch, im=new EvChannel());
 		return im;
 		}
 
@@ -275,14 +272,17 @@ public class Imageset extends EvObject
 		{
 		String chname=e.getAttributeValue("name");
 
-		EvChannel ch=createChannel(chname);
+		EvChannel ch=getCreateChannel(chname);
 
 		for(Object oi:e.getChildren())
 			{
 			Element i=(Element)oi;
 
 			if(i.getName().equals("dispX"))
+				{
 				ch.dispX=Double.parseDouble(i.getValue());
+				//System.out.println("dispX =" +ch.dispX);
+				}
 			else if(i.getName().equals("dispY"))
 				ch.dispY=Double.parseDouble(i.getValue());
 			else if(i.getName().equals("binning"))

@@ -277,7 +277,7 @@ public class NamebasedImageset implements EvIOData
 				//Create channels, remove unneeded (for rebuild)
 				im.channelImages.keySet().retainAll(channelVector);
 				for(String cname:channelVector)
-					im.createChannel(cname);
+					im.getCreateChannel(cname);
 				/*
 				//Clear up old database
 				List<String> channelsToRemove=new LinkedList<String>(); 
@@ -378,7 +378,7 @@ public class NamebasedImageset implements EvIOData
 				String channelName=channelVector.get(channelNum);
 
 				//Get a place to put EVimage. Create holders if needed
-				EvChannel ch=im.createChannel(channelName);
+				EvChannel ch=im.getCreateChannel(channelName);
 				TreeMap<EvDecimal, EvImage> loaders=ch.imageLoader.get(new EvDecimal(frame));
 				if(loaders==null)
 					{

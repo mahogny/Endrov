@@ -19,7 +19,7 @@ public interface DataIF extends Remote
 	public String getName() throws Exception;
 	
 	
-	public CompressibleDataTransfer getImageList(String blobid) throws Exception;
+	public CompressibleDataTransfer getImageCache(String blobid) throws Exception;
 	public CompressibleDataTransfer getMetadata() throws Exception;
 	public void setMetadata(CompressibleDataTransfer data) throws Exception;
 	

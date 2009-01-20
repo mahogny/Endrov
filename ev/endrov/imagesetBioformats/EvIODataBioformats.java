@@ -306,7 +306,7 @@ public class EvIODataBioformats implements EvIOData
 		for(int channelnum=0;channelnum<numc;channelnum++)
 			{
 			String channelName="ch"+channelnum;
-			EvChannel mc=im.createChannel(channelName);
+			EvChannel mc=im.getCreateChannel(channelName);
 			mc.chBinning=1;
 
 			//Fill up with image loaders

@@ -31,8 +31,12 @@ public class ThumbMaker
 			{
 			File datadir=new File(file,"data");
 			File thumbfile=new File(datadir,"imserv.png");
+
+			
+			//TODO
 			
 			//Generate thumb and save down if it doesn't exist
+			/*
 			try
 				{
 				if(!thumbfile.exists() || file.lastModified()>thumbfile.lastModified())
@@ -75,7 +79,7 @@ public class ThumbMaker
 			catch (RuntimeException e)
 				{
 				e.printStackTrace();
-				}
+				}*/
 			
 			if(thumbfile.exists())
 				return SendFile.getBytesFromFile(thumbfile);

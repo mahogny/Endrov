@@ -19,6 +19,9 @@ public class EvPath implements Comparable<EvPath>
 		this.path=path.toArray(new String[0]);
 		}
 	
+	/**
+	 * Get standard representation
+	 */
 	public String toString()
 		{
 		StringBuffer sb=new StringBuffer();
@@ -29,6 +32,17 @@ public class EvPath implements Comparable<EvPath>
 				sb.append("/");
 			}
 		return sb.toString();
+		}
+	
+	/**
+	 * Get name of last object in hierarchy
+	 */
+	public String getLeafName()
+		{
+		if(path.length!=0)
+			return path[path.length-1];
+		else
+			return null;
 		}
 	
 	/**

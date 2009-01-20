@@ -5,6 +5,10 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
 
+import endrov.ev.EV;
+import endrov.ev.Log;
+import endrov.ev.StdoutLog;
+
 import bioserv.auth.Auth;
 
 
@@ -28,7 +32,11 @@ public class BioservDaemon extends Thread
 	public Auth auth=null;
 	public Vector<BioservModule> modules=new Vector<BioservModule>();
 	
-	
+	public BioservDaemon()
+		{
+		Log.listeners.add(new StdoutLog());
+		EV.loadPlugins();
+		}
 	
 	public static interface DaemonListener
 		{

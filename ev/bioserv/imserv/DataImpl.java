@@ -84,8 +84,6 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 	
 	//One could make several implementations, depending on type
 	private boolean isOST3(){return fileRoot.isDirectory() && fileRoot.getName().endsWith(".ost");}
-//	private boolean isOSTXML(){return file.isFile() && file.getName().endsWith(".ostxml");}
-	
 	
 
 	/**
@@ -111,33 +109,32 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 	/**
 	 * Get image listing. This is the same as the image cache.
 	 */
-	public CompressibleDataTransfer getImageList(String blobid) throws Exception
+	public CompressibleDataTransfer getImageCache(String blobid) throws Exception
 		{
-		if(!isOST3())
-			return null;
-		else
-			{			
-			//Load OST and generate listing if needed
-			File imcacheFile=new File(fileRoot,"imagecache.txt");
-			if(!imcacheFile.exists())
-				{
-				//Create
-				EvIODataOST io=new EvIODataOST(fileRoot);
-				EvData data=new EvData();
-				io.initialLoad(data, EvData.deafFileIOCB);
-				//a function of io must be called or the JVM will not wait
-				//rec.loadDatabaseCache(); //This is an ugly hack. Constructor creates cachefile, but java might not wait for completion
-				}
-			if(imcacheFile.exists())
-				return getUncompressed(imcacheFile);
-			else
-				return null;
+		File imcacheFile=getImageCacheFile(blobid);
+		if(!imcacheFile.exists())
+			{
+			//Create
+			System.out.println("No cache file, creating " + imcacheFile);
+			EvIODataOST io=new EvIODataOST(fileRoot);
+			io.initialLoad(new EvData(), EvData.deafFileIOCB);
 			}
+
+		if(!imcacheFile.exists())
+			{
+			System.out.println("Error: failed to create cache " + imcacheFile);
+			return null;
+			}
+		else
+			return getUncompressed(imcacheFile);
 		}
 	
 	private boolean blobidIsSafe(String blobid)
 		{
-		return blobid.indexOf("/")==-1 && blobid.indexOf('\\')==-1;
+		boolean safe=blobid.indexOf("/")==-1 && blobid.indexOf('\\')==-1;
+		if(!safe)
+			System.out.println("unsafe! "+blobid);
+		return safe;
 		}
 	
 	/**
@@ -147,12 +144,13 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 		{
 		if(blobidIsSafe(blobid))
 			{
-			File imcacheFile=new File(fileRoot,"imagecache.txt");
-			if(imcacheFile.exists())
-				return imcacheFile;
+			File imcacheFile=new File(new File(fileRoot,blobid), "imagecache.txt");
+			return imcacheFile;
 			}
 		return null;
 		}
+
+	
 
 	/**
 	 * Get metadata
@@ -160,12 +158,6 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 	public synchronized CompressibleDataTransfer getMetadata() throws Exception
 		{
 		File rmdFile=new File(fileRoot,"rmd.ostxml");
-//		if(isOST3())
-//			rmdFile=new File(file,"rmd.ostxml");
-//		else if(isOSTXML())
-//			rmdFile=file;
-//		else
-//			return null;
 		if(rmdFile.exists())
 			return getUncompressed(rmdFile);
 		else
@@ -239,6 +231,7 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 			File framedir=new File(chandir,EV.pad(frame,8));
 			final String sz=EV.pad(z,8)+".";
 //			System.out.println("frame "+framedir+" "+sz);
+			System.out.println("looking for images in "+framedir);
 			File zcand[]=framedir.listFiles(new FileFilter(){
 				public boolean accept(File pathname){return pathname.getName().startsWith(sz);}});
 			
@@ -257,13 +250,6 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 	public synchronized void setMetadata(CompressibleDataTransfer data) throws Exception
 		{
 		File rmdFile=new File(fileRoot,"rmd.ostxml");
-/*		if(isOST3())
-			rmdFile=new File(file,"rmd.ostxml");
-		else if(isOSTXML())
-			rmdFile=file;
-		else
-			return;
-*/
 //		if(data.compression==CompressibleDataTransfer.NONE)
 		FileOutputStream fo=new FileOutputStream(rmdFile);
 		fo.write(data.data);
@@ -275,20 +261,17 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 	 */
 	public synchronized void putImage(String blobid, String channel, EvDecimal frame, EvDecimal z, ImageTransfer data) throws Exception
 		{
-		if(isOST3())
-			{
-			File oldFile=getImageFile(blobid, channel, frame, z);
-			if(oldFile.exists())
-				oldFile.delete();
-			File newFile=constructImageFile(channel, frame, z, data.format);
-			newFile.getParentFile().mkdirs();
-			FileOutputStream fo=new FileOutputStream(newFile);
-			fo.write(data.data);
-			fo.close();
-			File imagecache=getImageCacheFile(blobid);
-			if(imagecache!=null)
-				imagecache.delete();
-			}
+		File oldFile=getImageFile(blobid, channel, frame, z);
+		if(oldFile.exists())
+			oldFile.delete();
+		File newFile=constructImageFile(channel, frame, z, data.format);
+		newFile.getParentFile().mkdirs();
+		FileOutputStream fo=new FileOutputStream(newFile);
+		fo.write(data.data);
+		fo.close();
+		File imagecache=getImageCacheFile(blobid);
+		if(imagecache!=null)
+			imagecache.delete();
 		}
 	
 	public synchronized void setTag(String tagname, String value, boolean enable) throws Exception
@@ -327,9 +310,13 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 	
 	
 	
-	private File getImservFile()
+	private File getOldImservFile()
 		{
 		return new File(fileRoot.getParent(),fileRoot.getName()+".imserv");
+		}
+	private File getImservFile()
+		{
+		return new File(new File(new File(fileRoot.getParent(),fileRoot.getName()),"data"),"imserv.txt");
 		}
 	private void readImservFile()
 		{
@@ -338,7 +325,13 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 			XMLReader xr = XMLReaderFactory.createXMLReader();
 			ImservReader handler = new ImservReader();
 			xr.setContentHandler(handler);
-			File f=getImservFile();
+			File f=getOldImservFile();
+			if(f.exists())
+				{
+				getImservFile().getParentFile().mkdirs();
+				f.renameTo(getImservFile());
+				}
+			f=getImservFile();
 			if(f.exists())
 				xr.parse(new InputSource(new FileInputStream(f)));
 			}
@@ -408,7 +401,8 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 		public void startElement (String uri, String name,
 				String qName, Attributes atts)
 			{
-			level++;
+			if(!name.equals("ostblobid"))
+				level++;
 			//if(inImserv && name.equals("tag"))
 			//	tags.add(atts.getValue(atts.getIndex("name")));
 			if(level==2)
@@ -427,7 +421,8 @@ public class DataImpl extends UnicastRemoteObject implements DataIF
 			{
 			//if(level==2)
 			//	inImserv=false;
-			level--;
+			if(!name.equals("ostblobid"))
+				level--;
 			}
 		}
 	 

@@ -124,7 +124,7 @@ public class EvIODataOME implements EvIOData
 			String channelName=""+c;
 //			Channel ch=new Channel(meta.getCreateChannelMeta(channelName));
 			
-			EvChannel ch=im.createChannel(channelName);
+			EvChannel ch=im.getCreateChannel(channelName);
 			
 			ch.imageLoader.clear();
 			int numframe=pixel.getSizeT();
