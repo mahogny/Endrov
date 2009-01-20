@@ -45,7 +45,8 @@
 	<classpathentry kind="lib" path="libs/swing-worker-1.2.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/jogl.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/bin_x86/MMCoreJ.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/MMCoreJ.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/mmconf.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
