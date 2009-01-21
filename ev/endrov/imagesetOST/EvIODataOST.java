@@ -803,6 +803,16 @@ public class EvIODataOST implements EvIOData
 		for(File framedir:framedirs)
 			if(framedir.isDirectory() && !framedir.getName().startsWith("."))
 				{
+				//Backwards compat
+				if(framedir.getName().indexOf('-')!=-1)
+					{
+					//Somehow this is a really old OST. remove chan-
+					File nf=new File(framedir.getParentFile(),framedir.getName().substring(framedir.getName().indexOf('-')+1));
+					System.out.println(nf);
+					framedir.renameTo(nf);
+					framedir=nf;
+					}				
+				
 				EvDecimal framenum=new EvDecimal(framedir.getName());
 				
 				HashMap<EvDecimal,File> loaderset=new HashMap<EvDecimal,File>();
@@ -813,6 +823,16 @@ public class EvIODataOST implements EvIOData
 					String partname=f.getName();
 					if(!partname.startsWith("."))
 						{
+						if(partname.lastIndexOf('-')!=-1)
+							{
+							//Somehow this is a really old OST. remove xxx-
+							File nf=new File(f.getParentFile(),partname.substring(partname.lastIndexOf('-')+1));
+							f.renameTo(nf);
+							f=nf;
+							partname=f.getName();
+							}
+						
+						
 						partname=partname.substring(0,partname.lastIndexOf('.'));
 						try
 							{

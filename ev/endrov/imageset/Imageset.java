@@ -263,6 +263,16 @@ public class Imageset extends EvObject
 			else
 				metaOther.put(i.getName(), i.getValue());
 			}
+		
+		//Handle fucked up imagesets. Should not be used!
+		if(resZ==0)
+			resZ=1;
+		if(resX==0)
+			resX=1;
+		if(resY==0)
+			resY=1;
+		if(metaTimestep==0)
+			metaTimestep=1;
 		}
 
 	/**
