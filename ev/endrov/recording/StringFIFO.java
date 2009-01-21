@@ -1,4 +1,4 @@
-package endrov.recording.driver;
+package endrov.recording;
 
 /**
  * String FIFOs (buffer)

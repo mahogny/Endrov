@@ -34,4 +34,6 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{MicroManager.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

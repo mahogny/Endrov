@@ -32,4 +32,6 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{EvImserv.class,ImservWindow.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

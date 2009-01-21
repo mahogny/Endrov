@@ -40,4 +40,6 @@ public class PLUGIN extends PluginDef
 		return new Class[]{ROI.class,WindowROI.class,
 				BoxROI.class, EllipseROI.class,UnionROI.class,IntersectROI.class,DiffROI.class,SubtractROI.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

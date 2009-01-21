@@ -32,4 +32,6 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{EvIODataOST.class,EvIODataXML.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

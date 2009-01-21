@@ -1,4 +1,4 @@
-package endrov.recording.driver;
+package endrov.recording;
 
 /**
  * Virtual serial device: No automatic replies or anything. Override VirtualSerial to create a proper testing environment
