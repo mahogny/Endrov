@@ -83,4 +83,6 @@ public class PLUGIN extends PluginDef
 		
 		
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

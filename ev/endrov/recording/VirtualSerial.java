@@ -1,4 +1,4 @@
-package endrov.recording.driver;
+package endrov.recording;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -11,7 +11,6 @@ import java.util.*;
 import javax.swing.*;
 
 import endrov.hardware.PropertyType;
-import endrov.recording.HWSerial;
 import endrov.util.EvSwingTools;
 
 /**

@@ -32,4 +32,6 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{KeyBinding.class, ScriptBinding.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

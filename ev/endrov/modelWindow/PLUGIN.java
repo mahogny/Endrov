@@ -34,4 +34,6 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{ModelWindow.class,ModelWindowClipPlane.class,ModelWindowGrid.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

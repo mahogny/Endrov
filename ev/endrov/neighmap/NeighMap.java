@@ -44,6 +44,26 @@ public class NeighMap extends EvObject
 			this.end = end;
 			}
 		public EvDecimal start,end;
+		
+		public Interval cut(Interval i)
+			{
+			Interval ni=new Interval(start,end);
+			if(ni.start.less(i.start))
+				ni.start=i.start;
+			if(ni.end==null || (i.end!=null && ni.end.greater(i.end)))
+				ni.end=i.end;
+			return ni;
+			}
+		
+		public EvDecimal length()
+			{
+			EvDecimal len=end.subtract(start);
+			if(len.less(EvDecimal.ZERO))
+				return EvDecimal.ZERO;
+			else
+				return len;
+			}
+		
 		}
 	
 
@@ -53,7 +73,14 @@ public class NeighMap extends EvObject
 
 	
 	public Map<String, Interval> lifetime=new HashMap<String, Interval>();
+	
+	/**
+	 * List of intervals during which A and B are neighbours. The list is entirely symmetric: (a,b) and (b,a)
+	 * point to the same list (in memory). 
+	 */
 	public Map<String, Map<String, List<Interval>>> neighmap=new HashMap<String, Map<String,List<Interval>>>();
+	
+	
 	public Interval validity=null;
 
 	
@@ -68,11 +95,14 @@ public class NeighMap extends EvObject
 	
 	public List<Interval> getCreateListFor(String a, String b)
 		{
-		//HM! can share lists with pointer! TODO
-		Map<String, List<Interval>> m=getCreateNeighMap(a);
-		List<Interval> list=m.get(b);
+		Map<String, List<Interval>> ma=getCreateNeighMap(a);
+		List<Interval> list=ma.get(b);
 		if(list==null)
-			m.put(b,list=new LinkedList<Interval>());
+			{
+			ma.put(b,list=new LinkedList<Interval>());
+			Map<String, List<Interval>> mb=getCreateNeighMap(b);
+			mb.put(a,list);
+			}
 		return list;
 		}
 	

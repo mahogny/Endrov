@@ -12,4 +12,5 @@ public abstract class PluginDef
 	public abstract Class<?>[] getInitClasses();
 	public abstract String cite();
 	public abstract boolean systemSupported();
+	public abstract boolean isDefaultEnabled();
 	}

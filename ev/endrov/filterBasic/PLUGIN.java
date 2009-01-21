@@ -43,4 +43,6 @@ public class PLUGIN extends PluginDef
 				FilterAddConst.class
 				};*/
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

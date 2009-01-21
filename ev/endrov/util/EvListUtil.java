@@ -14,7 +14,7 @@ import java.util.TreeMap;
 public class EvListUtil
 	{
 
-	public static <A,B> List<Tuple<A, B>> map2tuples(SortedMap<A, B> map)
+	public static <A,B> List<Tuple<A, B>> map2tuples(Map<A, B> map)
 		{
 		LinkedList<Tuple<A, B>> list=new LinkedList<Tuple<A,B>>();
 		for(Map.Entry<A, B> e:map.entrySet())

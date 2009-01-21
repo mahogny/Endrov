@@ -1,9 +1,6 @@
 package endrov.util;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 
 
@@ -25,11 +22,29 @@ public class EvParallel
 		public B func(A in);
 		}
 	
-	
+
+	public static <A,B,C,D> Map<C,D> map(Map<A,B> in, final FuncAB<Tuple<A,B>,Tuple<C, D>> func)
+		{
+		return EvListUtil.tuples2map(map(numThread,EvListUtil.map2tuples(in), func));
+		}
+
+	public static <A,B,C,D> Map<C,D> map(int numThread, Map<A,B> in, final FuncAB<Tuple<A,B>,Tuple<C, D>> func)
+		{
+		return EvListUtil.tuples2map(map(numThread,EvListUtil.map2tuples(in), func));
+		}
+
 	/**
 	 * Map :: [A] -> (A->B) -> [B]
 	 */
 	public static <A,B> List<B> map(List<A> in, final FuncAB<A,B> func)
+		{
+		return map(numThread, in,func);
+		}
+	
+	/**
+	 * Map :: [A] -> (A->B) -> [B]
+	 */
+	public static <A,B> List<B> map(int numThread, List<A> in, final FuncAB<A,B> func)
 		{
 		final LinkedList<B> out=new LinkedList<B>();
 		try
@@ -98,7 +113,7 @@ public class EvParallel
 	/**
 	 * Map :: SortedMap A,B -> (B->C) -> SortedMap A,C
 	 */
-	public static <A,B,C> SortedMap<A, C> fmapValues(SortedMap<A, B> map, final EvParallel.FuncAB<B,C> func)
+	public static <A,B,C> SortedMap<A, C> mapValues(SortedMap<A, B> map, final EvParallel.FuncAB<B,C> func)
 		{
 		return EvListUtil.tuples2map(EvParallel.map(EvListUtil.map2tuples(map), new EvParallel.FuncAB<Tuple<A,B>,Tuple<A,C>>(){
 			public Tuple<A,C> func(Tuple<A,B> in)	{return new Tuple<A, C>(in.fst(),func.func(in.snd()));}

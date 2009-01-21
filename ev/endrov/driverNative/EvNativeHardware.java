@@ -1,4 +1,4 @@
-package endrov.recording.driver;
+package endrov.driverNative;
 
 import java.util.*;
 
@@ -9,6 +9,11 @@ import endrov.hardware.HardwareManager;
 import endrov.hardware.HardwareProvider;
 import endrov.hardware.PropertyType;
 
+/**
+ * Native device drivers
+ * @author Johan Henriksson
+ *
+ */
 public class EvNativeHardware extends HardwareProvider implements Hardware
 	{
 	private static Map<String, Class<? extends Hardware>> hardwareProvided=new TreeMap<String, Class<? extends Hardware>>();
@@ -27,9 +32,7 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 	
 	public EvNativeHardware()
 		{
-		OlympusIX core=new OlympusIX();
-		
-		hw.put("IX", core);
+		//hw.put("IX", new OlympusIX());
 		hw.put("demo", new DemoScope());
 		
 		
@@ -47,7 +50,7 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 
 	public List<String> provides()
 		{
-		return null;
+		return Arrays.asList("IXvirtual");
 		}
 	public Hardware newProvided(String s)
 		{

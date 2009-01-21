@@ -1,11 +1,11 @@
-package endrov.chromacountkj;
+package endrov.neighmap;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Jeppson chromatin counting";
+		return "Temporal Neighbour map";
 		}
 
 	public String getAuthor()
@@ -30,7 +30,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ChromaCountKJ.class};
+		return new Class[]{NeighMap.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

@@ -32,4 +32,6 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{MetaWindow.class,Imageset.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

@@ -1,4 +1,4 @@
-package endrov.recording.driver;
+package endrov.driverNative;
 
 import java.util.List;
 import java.util.Set;
@@ -12,6 +12,7 @@ import endrov.hardware.HardwareProvider;
 import endrov.hardware.PropertyType;
 import endrov.recording.HWSerial;
 import endrov.recording.HWShutter;
+import endrov.recording.VirtualSerial;
 
 
 /**
@@ -44,7 +45,9 @@ public class OlympusIX extends HardwareProvider implements Hardware
 			}
 		}
 	
-	public HWSerial serial=new VirtualSerialIX();
+	public HWSerial serial=null;
+	
+	
 	
 	
 	public OlympusIX()
@@ -60,13 +63,14 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	
 	public synchronized void sendCommand(String cmd)
 		{
-		serial.writePort(cmd+newLine);
+		if(serial!=null)
+			serial.writePort(cmd+newLine);
 		}
 	
 	public synchronized String queryCommand(String cmd)
 		{
 		serial.writePort(cmd+newLine);
-		String s=serial.readUntilTerminal("\r\n");
+		String s=serial==null ? "\r\n" : serial.readUntilTerminal("\r\n");
 		s=s.substring(cmd.length());
 		s=s.substring(0,s.length()-2);
 		System.out.println("#"+s+"#");

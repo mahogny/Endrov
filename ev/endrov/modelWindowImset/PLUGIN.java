@@ -36,4 +36,6 @@ public class PLUGIN extends PluginDef
 //		return new Class[]{};
 		return new Class[]{IsosurfaceExtension.class,Slice3DExtension.class,VoxelExtension.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}

@@ -32,4 +32,6 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{NamebasedImageset.class, SequenceImageset.class};
 		}
+	
+	public boolean isDefaultEnabled(){return true;};
 	}
