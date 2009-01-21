@@ -227,7 +227,7 @@ public class EvChannel
 	public HashMap<String,String> metaOther=new HashMap<String,String>();
 	
 	/** frame data */
-	public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
+	public HashMap<EvDecimal,HashMap<String,String>> metaFrame=new HashMap<EvDecimal,HashMap<String,String>>();
 
 	
 
@@ -267,7 +267,7 @@ public class EvChannel
 	/**
 	 * Get a common frame. Creates structure if it does not exist.
 	 */
-	public HashMap<String,String> getMetaFrame(int fid)
+	public HashMap<String,String> getMetaFrame(EvDecimal fid)
 		{
 		HashMap<String,String> frame=metaFrame.get(fid);
 		if(frame==null)
