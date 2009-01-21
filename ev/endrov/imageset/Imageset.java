@@ -57,7 +57,7 @@ public class Imageset extends EvObject
 	public HashMap<String,String> metaOther=new HashMap<String,String>();
 	
 	/** Frame data */
-	public HashMap<Integer,HashMap<String,String>> metaFrame=new HashMap<Integer,HashMap<String,String>>();
+	public HashMap<EvDecimal,HashMap<String,String>> metaFrame=new HashMap<EvDecimal,HashMap<String,String>>();
 
 	public String getMetaTypeDesc()
 		{
@@ -139,14 +139,11 @@ public class Imageset extends EvObject
 	/**
 	 * Get a common frame. Creates structure if it does not exist.
 	 */
-	public HashMap<String,String> getMetaFrame(int fid)
+	public HashMap<String,String> getMetaFrame(EvDecimal fid)
 		{
 		HashMap<String,String> frame=metaFrame.get(fid);
 		if(frame==null)
-			{
-			frame=new HashMap<String,String>();
-			metaFrame.put(fid, frame);
-			}
+			metaFrame.put(fid, frame=new HashMap<String,String>());
 		return frame;
 		}
 	
@@ -198,12 +195,12 @@ public class Imageset extends EvObject
 	/**
 	 * Save down frame data
 	 */
-	private static void saveFrameMetadata(HashMap<Integer,HashMap<String,String>> fd, Element e)
+	private static void saveFrameMetadata(HashMap<EvDecimal,HashMap<String,String>> fd, Element e)
 		{
-		for(int fid:fd.keySet())
+		for(EvDecimal fid:fd.keySet())
 			{
 			Element frameEl=new Element("frame");
-			frameEl.setAttribute("frame", ""+fid);
+			frameEl.setAttribute("frame", fid.toString());
 			
 			HashMap<String,String> frame=fd.get(fid);
 			for(String field:frame.keySet())
@@ -309,9 +306,9 @@ public class Imageset extends EvObject
 	/**
 	 * Get frame metadata
 	 */
-	public void extractFrame(HashMap<Integer,HashMap<String,String>> metaFrame, Element e)
+	public void extractFrame(HashMap<EvDecimal,HashMap<String,String>> metaFrame, Element e)
 		{
-		int fid=Integer.parseInt(e.getAttributeValue("frame"));
+		EvDecimal fid=new EvDecimal(e.getAttributeValue("frame"));
 		for(Object oi:e.getChildren())
 			{
 			Element i=(Element)oi;

@@ -1071,7 +1071,13 @@ public class EvIODataOST implements EvIOData
 	public void convert3_3d2(EvData d)
 		{
 		double curv=Double.parseDouble(d.metadataVersion);
-		if(curv<3.2)
+		
+		boolean chExists=false;
+		for(File f:basedir.listFiles())
+			if(f.getName().startsWith("ch-"))
+				chExists=true;
+		
+		if(curv<3.2 || chExists)
 			{
 			System.out.println("Updating files 3->3.2");
 			
@@ -1081,6 +1087,15 @@ public class EvIODataOST implements EvIOData
 			File oldcache=new File(basedir,"imagecache.txt");
 			if(oldcache.exists())
 				oldcache.delete();
+
+			//Hack when there is no imageset object
+			if(d.getObjects(Imageset.class).isEmpty())
+				{
+				Imageset im=new Imageset();
+				d.metaObject.put("im", im);
+				im.resX=im.resY=im.resZ=1;
+				im.metaTimestep=1;
+				}
 			
 			//This is a hack, there is only one imageset in these dated formats
 			List<Imageset> ims=d.getObjects(Imageset.class);
