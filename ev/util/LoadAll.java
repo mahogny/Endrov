@@ -51,9 +51,9 @@ public class LoadAll
 		
 		if(arg.length==0)
 			arg=new String[]{
-					"/Volumes/TBU_main01/ost4dgood",
-/*					"/Volumes/TBU_main02/ost4dgood",
-					"/Volumes/TBU_main03/ost4dgood"*/};
+//					"/Volumes/TBU_main01/ost4dgood",
+					"/Volumes/TBU_main02/ost4dgood",
+					"/Volumes/TBU_main03/ost4dgood"};
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
 				if(file.isDirectory())
