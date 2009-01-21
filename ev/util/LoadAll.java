@@ -50,7 +50,10 @@ public class LoadAll
 		/*/home/tbudev3/imserv*/
 		
 		if(arg.length==0)
-			arg=new String[]{"/Volumes/TBU_main02/ost4dfailed"};
+			arg=new String[]{
+					"/Volumes/TBU_main01/ost3dgood",
+					"/Volumes/TBU_main02/ost3dgood",
+					"/Volumes/TBU_main03/ost3dgood"};
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
 				if(file.isDirectory())
