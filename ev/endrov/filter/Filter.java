@@ -72,7 +72,9 @@ public abstract class Filter extends EvObject
 	public static EvObject extractFilterXML(Element e)
 		{
 		String filterName=e.getAttributeValue("filtername");
-		return filterInfo.get(filterName).readXML(e);
+		//TODO no! cannot have superclass for filters like this
+		return null;
+//		return filterInfo.get(filterName).readXML(e);
 		}
 	
 	

@@ -5,11 +5,10 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.ref.WeakReference;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -237,9 +236,41 @@ public abstract class BasicWindow extends JPanel
 		try
 			{
 			List<File> files = new LinkedList<File>();
-			if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
+			if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+				{
+				List data = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+				Iterator i = data.iterator();
+				while (i.hasNext())
+					files.add((File) i.next());
+				return files;
+				}
+			else if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
 				{
 				String data = (String) t.getTransferData(DataFlavor.stringFlavor);
+		    for (StringTokenizer st = new StringTokenizer(data, "\r\n"); st.hasMoreTokens();) 
+		    	{
+		      String s = st.nextToken();
+		      if (s.startsWith("#")) 
+		        // the line is a comment (as per the RFC 2483)
+		        continue;
+		      
+		      try 
+		      	{
+		        URI uri = new URI(s);
+		        files.add(new File(uri));
+		      	}
+		      catch (URISyntaxException e) 
+		      	{
+		        e.printStackTrace();
+		      	}
+		      catch (IllegalArgumentException e) 
+		      	{
+		        e.printStackTrace();
+		      	}
+		    	}
+
+				/*
+				
 				BufferedReader buf = new BufferedReader(new StringReader(data));
 				String line;
 				while ((line = buf.readLine())!=null)
@@ -251,15 +282,7 @@ public abstract class BasicWindow extends JPanel
 						}
 					else
 						System.out.println("Not sure how to read: "+line);
-					}
-				return files;
-				}
-			else if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
-				{
-				List data = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-				Iterator i = data.iterator();
-				while (i.hasNext())
-					files.add((File) i.next());
+					}*/
 				return files;
 				}
 			return null;

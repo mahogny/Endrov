@@ -40,12 +40,6 @@ public class Convolve2DFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new Convolve2DFilter();}
-			public Filter readXML(Element e)
-				{
-				Convolve2DFilter f=new Convolve2DFilter();
-				f.currentKernel.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
-				return f;
-				}
 			});
 		}
 	
@@ -304,6 +298,10 @@ public class Convolve2DFilter extends FilterSlice
 	
 	public String getFilterName(){return filterName;}
 	
+	public void loadMetadata(Element e)
+		{
+		currentKernel.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

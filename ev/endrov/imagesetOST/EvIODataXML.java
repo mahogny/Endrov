@@ -33,7 +33,7 @@ public class EvIODataXML implements EvIOData
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);
-				return file.isFile() && (file.getName().endsWith(".xml") ||
+				return file.isFile() && (/*file.getName().endsWith(".xml") ||*/
 						file.getName().endsWith(".ostxml")) ? 10 : null;
 				}
 			public List<Tuple<String,String[]>> getLoadFormats()

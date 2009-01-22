@@ -33,20 +33,6 @@ public class WindowedMean2DFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new WindowedMean2DFilter();}
-			public Filter readXML(Element e)
-				{
-				WindowedMean2DFilter f=new WindowedMean2DFilter();
-				try
-					{
-					f.fwidth.setValue(e.getAttribute("w").getIntValue());
-					f.fheight.setValue(e.getAttribute("h").getIntValue());
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				return f;
-				}
 			});
 		}
 	
@@ -62,6 +48,18 @@ public class WindowedMean2DFilter extends FilterSlice
 	
 
 	
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			fwidth.setValue(e.getAttribute("w").getIntValue());
+			fheight.setValue(e.getAttribute("h").getIntValue());
+			}
+		catch (DataConversionException e1)
+			{
+			e1.printStackTrace();
+			}
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

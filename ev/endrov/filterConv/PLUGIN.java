@@ -1,9 +1,5 @@
 package endrov.filterConv;
 import endrov.ev.PluginDef;
-import endrov.filterConv.Convolve2DFilter;
-import endrov.filterConv.Gaussian2DFilter;
-import endrov.filterConv.Sharpen2DFilter;
-import endrov.filterConv.WindowedMean2DFilter;
 
 public class PLUGIN extends PluginDef
 	{
@@ -34,14 +30,17 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{};
-		/*
 		return new Class[]{ 
 				Convolve2DFilter.class, 
 				WindowedMean2DFilter.class, 
 				Sharpen2DFilter.class,
 				Gaussian2DFilter.class,
 				LaplacianOfGaussian2DFilter.class
-				};*/
+				};
+		}
+	
+	public boolean isDefaultEnabled()
+		{
+		return true;
 		}
 	}

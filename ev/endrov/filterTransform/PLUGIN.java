@@ -31,10 +31,13 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{};
-/*
 		return new Class[]{
 				InvertFilter.class, 
-				};*/
+				};
+		}
+	
+	public boolean isDefaultEnabled()
+		{
+		return true;
 		}
 	}

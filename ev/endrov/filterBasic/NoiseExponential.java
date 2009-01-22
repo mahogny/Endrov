@@ -36,12 +36,6 @@ public class NoiseExponential extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new NoiseExponential();}
-			public Filter readXML(Element e)
-				{
-				NoiseExponential f=new NoiseExponential();
-				f.lambda.setValue(Double.parseDouble(e.getAttributeValue("lambda")));
-				return f;
-				}
 			});
 		}
 	
@@ -57,6 +51,10 @@ public class NoiseExponential extends FilterSlice
 		return filterName;
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		lambda.setValue(Double.parseDouble(e.getAttributeValue("lambda")));
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

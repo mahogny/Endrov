@@ -33,12 +33,6 @@ public class ConfocalXShiftFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new ConfocalXShiftFilter();}
-			public Filter readXML(Element e)
-				{
-				ConfocalXShiftFilter f=new ConfocalXShiftFilter();
-				f.dx.setValue(Double.parseDouble(e.getAttributeValue("dx")));
-				return f;
-				}
 			});
 		}
 	
@@ -54,6 +48,10 @@ public class ConfocalXShiftFilter extends FilterSlice
 		return filterName;
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		dx.setValue(Double.parseDouble(e.getAttributeValue("dx")));
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

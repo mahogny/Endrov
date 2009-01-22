@@ -30,10 +30,13 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{};
-/*
 		return new Class[]{
 				OS2DFilter.class
-				};*/
+				};
+		}
+	
+	public boolean isDefaultEnabled()
+		{
+		return true;
 		}
 	}

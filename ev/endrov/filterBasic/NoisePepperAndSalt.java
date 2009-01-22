@@ -33,13 +33,6 @@ public class NoisePepperAndSalt extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new NoisePepperAndSalt();}
-			public Filter readXML(Element e)
-				{
-				NoisePepperAndSalt f=new NoisePepperAndSalt();
-				f.pwhite.setValue(Double.parseDouble(e.getAttributeValue("pwhite")));
-				f.pblack.setValue(Double.parseDouble(e.getAttributeValue("pblack")));
-				return f;
-				}
 			});
 		}
 	
@@ -56,6 +49,11 @@ public class NoisePepperAndSalt extends FilterSlice
 		return filterName;
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		pwhite.setValue(Double.parseDouble(e.getAttributeValue("pwhite")));
+		pblack.setValue(Double.parseDouble(e.getAttributeValue("pblack")));
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

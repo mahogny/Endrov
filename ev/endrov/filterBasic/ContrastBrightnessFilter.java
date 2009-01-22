@@ -34,13 +34,6 @@ public class ContrastBrightnessFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new ContrastBrightnessFilter();}
-			public Filter readXML(Element e)
-				{/*
-				ContrastBrightnessFilter f=new ContrastBrightnessFilter();
-				f.pcontrast.setValue(Double.parseDouble(e.getAttributeValue("pwhite")));
-				f.pbrightness.setValue(Double.parseDouble(e.getAttributeValue("pblack")));
-				return f;*/return null;
-				}
 			});
 		}
 	
@@ -58,6 +51,7 @@ public class ContrastBrightnessFilter extends FilterSlice
 		return filterName;
 		}
 	
+	
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);
@@ -66,9 +60,8 @@ public class ContrastBrightnessFilter extends FilterSlice
 		}
 	public void loadMetadata(Element e)
 		{
-			pcontrast.setValue(Double.parseDouble(e.getAttributeValue("pwhite")));
-			pbrightness.setValue(Double.parseDouble(e.getAttributeValue("pblack")));
-
+		pcontrast.setValue(Double.parseDouble(e.getAttributeValue("pwhite")));
+		pbrightness.setValue(Double.parseDouble(e.getAttributeValue("pblack")));
 		}
 	
 	public JComponent getFilterWidget()

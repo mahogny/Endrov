@@ -114,7 +114,64 @@ public class EvIODataBioformats implements EvIOData
 				
 				int w=i.getWidth();
 				int h=i.getHeight();
-	
+	/*
+				System.out.println("INT8   = "+FormatTools.INT8);
+				System.out.println("INT16  = "+FormatTools.INT16);
+				System.out.println("INT32  = "+FormatTools.INT32);
+				System.out.println("UINT8  = "+FormatTools.UINT8);
+				System.out.println("UINT16 = "+FormatTools.UINT16);
+				System.out.println("UINT32 = "+FormatTools.UINT32);
+				System.out.println("pixtype  "+imageReader.getPixelType());*/
+				
+				
+				if(imageReader.getPixelType()==FormatTools.INT16 && basedir.getName().endsWith(".r3d"))
+					{
+					//Bug *compensation* 2009-01-22 '/Volumes/TBU_main03/customer/antoine/sun1wtdeconvolvedHuygens.r3d'
+					byte[] buf=new byte[imageReader.getSizeX()*imageReader.getSizeY()*2];
+					imageReader.openBytes(id, buf);
+					i=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+					for(int y=0;y<h;y++)
+						for(int x=0;x<w;x++)
+							{
+							int a=buf[(w*y+x)*2];
+							int b=buf[(w*y+x)*2+1];
+
+							//a is really unsigned
+							if(a<0)
+								a+=256;
+							
+							int c=(a+(b*256))/8; //8, just to get it in range of 8bit in my case
+						
+							i.getRaster().setPixel(x, y, new int[]{c});
+							}
+					}
+
+				if(imageReader.getPixelType()==FormatTools.UINT16 && basedir.getName().endsWith(".dv"))
+					{
+					//Bug *compensation* 2009-01-22 '/Volumes/TBU_main03/customer/antoine/sun1wtgonad3part1_R3D.dv'
+					byte[] buf=new byte[imageReader.getSizeX()*imageReader.getSizeY()*2];
+					imageReader.openBytes(id, buf);
+					i=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+					for(int y=0;y<h;y++)
+						for(int x=0;x<w;x++)
+							{
+							int a=buf[(w*y+x)*2];
+							int b=buf[(w*y+x)*2+1];
+							
+							if(b<0)
+								b+=256;
+
+							//a is really unsigned
+							if(a<0)
+								a+=256;
+							
+							int c=(a+(b*256))/4; //4, just to get it in range of 8bit in my case
+							i.getRaster().setPixel(x, y, new int[]{c});
+							}
+					}
+
+				
+				/*
 				if(imageReader.getPixelType()==FormatTools.UINT16)
 					{
 					//Bug *compensation* 2008-11-07 CB72070min3.liff (openlab)
@@ -133,7 +190,7 @@ public class EvIODataBioformats implements EvIOData
 							i.getRaster().setPixel(x, y, new int[]{c});
 							}
 					}
-				
+				*/
 				
 				//System.out.println(""+i+" "+i.getWidth());
 				
@@ -153,8 +210,8 @@ public class EvIODataBioformats implements EvIOData
 					int[] pixels=new int[w*h];
 					rastin.getSamples(0, 0, w, h, subid, pixels);				
 					rastout.setSamples(0, 0, w, h, 0, pixels);				
-					 */
-					/*
+					 
+					
 					int[] pixin=new int[3*w*h];
 					int[] pixout=new int[w*h];
 					rastin.getPixels(0, 0, w, h, pixin);				
@@ -286,6 +343,7 @@ public class EvIODataBioformats implements EvIOData
 		
 //			resZ=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))*1e6);
 
+		System.out.println("BF Resolution X Y 1/Z T: "+resX+"\t"+resY+"\t"+invResZ+"\t"+resT);
 		
 		//Load metadata from added OSTXML-file
 		File metaFile=getMetaFile();

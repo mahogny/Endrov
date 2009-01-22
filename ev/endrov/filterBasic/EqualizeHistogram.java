@@ -30,11 +30,6 @@ public class EqualizeHistogram extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new EqualizeHistogram();}
-			public Filter readXML(Element e)
-				{
-				EqualizeHistogram f=new EqualizeHistogram();
-				return f;
-				}
 			});
 		}
 	
@@ -49,6 +44,10 @@ public class EqualizeHistogram extends FilterSlice
 		return filterName;
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);
