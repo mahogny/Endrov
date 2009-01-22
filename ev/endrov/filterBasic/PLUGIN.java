@@ -31,8 +31,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{};
-/*		return new Class[]{
+		return new Class[]{
 				NoisePepperAndSalt.class, 
 				NoisePoisson.class,
 				NoiseExponential.class,
@@ -41,7 +40,7 @@ public class PLUGIN extends PluginDef
 				DeinterlaceFilter.class,
 				ConfocalXShiftFilter.class,
 				FilterAddConst.class
-				};*/
+				};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

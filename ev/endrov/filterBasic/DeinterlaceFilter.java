@@ -29,11 +29,6 @@ public class DeinterlaceFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new DeinterlaceFilter();}
-			public Filter readXML(Element e)
-				{
-				DeinterlaceFilter f=new DeinterlaceFilter();
-				return f;
-				}
 			});
 		}
 	
@@ -48,6 +43,9 @@ public class DeinterlaceFilter extends FilterSlice
 		return filterName;
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterName);

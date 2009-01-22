@@ -29,11 +29,6 @@ public class InvertFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new InvertFilter();}
-			public Filter readXML(Element e)
-				{
-				InvertFilter f=new InvertFilter();
-				return f;
-				}
 			});
 		}
 
@@ -48,6 +43,9 @@ public class InvertFilter extends FilterSlice
 		return null;
 		}
 
+	public void loadMetadata(Element e)
+		{
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

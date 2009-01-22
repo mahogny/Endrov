@@ -18,7 +18,7 @@ public class BrianTot
 	public static void main(String[] args)
 		{
 		System.out.println(BrianSQL.connectPostgres("//193.11.32.108/brian", "postgres", "wuermli"));
-//		part1();
+		part1();
 //		part2();
 		part3();
 		}

@@ -35,19 +35,6 @@ public class Sharpen2DFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new Sharpen2DFilter();}
-			public Filter readXML(Element e)
-				{
-				Sharpen2DFilter f=new Sharpen2DFilter();
-				try
-					{
-					f.flevel.setValue(e.getAttribute("level").getIntValue());
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				return f;
-				}
 			});
 		}
 	
@@ -63,6 +50,17 @@ public class Sharpen2DFilter extends FilterSlice
 	
 
 	
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			flevel.setValue(e.getAttribute("level").getIntValue());
+			}
+		catch (DataConversionException e1)
+			{
+			e1.printStackTrace();
+			}
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

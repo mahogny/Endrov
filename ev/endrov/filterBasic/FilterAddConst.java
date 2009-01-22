@@ -33,12 +33,6 @@ public class FilterAddConst extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new FilterAddConst();}
-			public Filter readXML(Element e)
-				{
-				FilterAddConst f=new FilterAddConst();
-				f.value.setValue(Double.parseDouble(e.getAttributeValue("value")));
-				return f;
-				}
 			});
 		}
 	
@@ -54,6 +48,10 @@ public class FilterAddConst extends FilterSlice
 		return filterName;
 		}
 	
+	public void loadMetadata(Element e)
+		{
+		value.setValue(Double.parseDouble(e.getAttributeValue("value")));
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);

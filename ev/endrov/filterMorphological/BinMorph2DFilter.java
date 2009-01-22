@@ -38,12 +38,6 @@ public class BinMorph2DFilter extends FilterSlice
 			public String getReadableName(){return filterName;}
 			public boolean hasFilterROI(){return true;}
 			public FilterROI filterROI(){return new BinMorph2DFilter();}
-			public Filter readXML(Element e)
-				{
-				BinMorph2DFilter f=new BinMorph2DFilter();
-				f.currentKernel.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
-				return f;
-				}
 			});
 		}
 	
@@ -321,6 +315,10 @@ public class BinMorph2DFilter extends FilterSlice
 	
 	public String getFilterName(){return filterName;}
 	
+	public void loadMetadata(Element e)
+		{
+		currentKernel.repeats.setValue(Integer.parseInt(e.getAttributeValue("repeats")));
+		}
 	public void saveMetadata(Element e)
 		{
 		setFilterXmlHead(e, filterMeta);
