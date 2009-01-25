@@ -28,11 +28,8 @@ import endrov.util.Tuple;
  */
 public class Stack3D extends StackInterface
 	{	
-	//Currently the code does not bother with which frame it is.
-	//and it might be worth delegating this to voxelextension
-	public EvDecimal lastframe=null;
-	private TreeMap<EvDecimal,Vector<VoxelStack>> texSlices=new TreeMap<EvDecimal,Vector<VoxelStack>>();
-	private List<VoxelStack> disposableStacks=new LinkedList<VoxelStack>(); //Data to be removed. Not currently in use.
+	private Vector<VoxelStack> texSlices=new Vector<VoxelStack>();
+	//private List<VoxelStack> disposableStacks=new LinkedList<VoxelStack>(); //Data to be removed. Not currently in use.
 	private final int skipForward=1; //later maybe allow this to change
 	
 	
@@ -110,17 +107,15 @@ public class Stack3D extends StackInterface
 	/**
 	 * Get or create slices for one z. Has to be synchronized
 	 */ 
+	/*
 	private synchronized Vector<VoxelStack> getTexSlicesFrame(EvDecimal z)
 		{
 		//Put texture into list
 		Vector<VoxelStack> texSlicesV=texSlices.get(z);
 		if(texSlicesV==null)
-			{
-			texSlicesV=new Vector<VoxelStack>();
-			texSlices.put(z, texSlicesV);
-			}
+			texSlices.put(z, texSlicesV=new Vector<VoxelStack>());
 		return texSlicesV;
-		}
+		}*/
 		
 		
 	
@@ -130,28 +125,32 @@ public class Stack3D extends StackInterface
 	 */
 	public void clean(GL gl)
 		{
-		for(Vector<VoxelStack> osv:texSlices.values())
-			for(VoxelStack os:osv)
+//		for(Vector<VoxelStack> osv:texSlices.values())
+//			for(VoxelStack os:osv)
+		for(VoxelStack os:texSlices)
 				os.tex.dispose(gl);
 		texSlices.clear();
 		if(shader3d!=null)
 			shader3d.delete(gl);
 		shader3d=null;
-		cleanDisposable(gl);
+//		cleanDisposable(gl);
 		}
 	
 	
 	/**
 	 * Dispose useless stacks. Need GL context, forced by parameter.
 	 */
+	/*
 	public void cleanDisposable(GL gl)
 		{
 		for(VoxelStack os:disposableStacks)
 			os.tex.dispose(gl);
 		disposableStacks.clear();
 		}
+		*/
 	
 	
+	/*
 	public void setLastFrame(EvDecimal frame)
 		{
 		lastframe=frame;
@@ -161,148 +160,123 @@ public class Stack3D extends StackInterface
 		{
 		return lastframe==null || !frame.equals(lastframe);
 		}
+	*/
 	
-	
-	public void startBuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+	public boolean newCreate(ProgressMeter pm, EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel2,ModelWindow w)
 		{
-		stopBuildThread();
-		buildThread=new BuildThread(frame, chsel, w);
-		buildThread.start();
-		}
-	public void stopBuildThread()
-		{
-		if(buildThread!=null)
-			buildThread.stop=true;
-		}
-	
-	BuildThread buildThread=null;
-	public class BuildThread extends Thread
-		{
-		private EvDecimal frame;
-		private HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel;
-		public boolean stop=false;
-		private ProgressMeter pm;
-		public BuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+
+		//disposableStacks.addAll(texSlices); //New. TODO
+		//texSlices.clear();
+
+		//im. cache safety issues
+		Collection<VoxelExtension.ChannelSelection> channels=chsel2.values();
+		procList.clear();
+		int curchannum=0;
+		for(VoxelExtension.ChannelSelection chsel:channels)
 			{
-			this.frame=frame;
-			this.chsel=chsel;
-			pm=w.createProgressMeter();
-			}
-		public void run()
-			{
-			pm.set(0);
-			
-			//im. cache safety issues
-			Collection<VoxelExtension.ChannelSelection> channels=chsel.values();
-			procList.clear();
-			int curchannum=0;
-			for(VoxelExtension.ChannelSelection chsel:channels)
-				{
-				//For every Z
-				EvDecimal cframe=chsel.ch.closestFrame(frame);
-				TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
-				Texture3D texture=new Texture3D();
-				VoxelStack os=null;
-				
-				int skipcount=0;
-				if(slices!=null)
-					for(EvDecimal i:slices.keySet())
+			//For every Z
+			EvDecimal cframe=chsel.ch.closestFrame(frame);
+			TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
+			Texture3D texture=new Texture3D();
+			VoxelStack os=null;
+
+			int skipcount=0;
+			if(slices!=null)
+				for(EvDecimal i:slices.keySet())
+					{
+					if(stopBuildThread) //Allow to just stop thread if needed
+						return false;
+					skipcount++;
+					if(skipcount>=skipForward)
 						{
-						if(stop)
+						skipcount=0;
+						int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
+						int progressChan=1000*curchannum/channels.size();
+						pm.set(progressSlices+progressChan);
+
+						//Apply filter if needed
+						EvImage evim=slices.get(i);
+						if(!chsel.filterSeq.isIdentity())
+							evim=chsel.filterSeq.applyReturnImage(evim);
+
+						//Get image for this plane
+						BufferedImage bim=evim.getJavaImage();
+
+						//Set up slice if not done yet
+						if(os==null)
 							{
-							pm.done();
-							return; //Allow to just stop thread if needed
+							os=new VoxelStack();
+							os.tex=texture;
+							os.w=bim.getWidth();
+							os.h=bim.getHeight();
+							os.d=ceilPower2(slices.size());
+
+							int bw=suitablePower2(os.w);
+							os.resX/=os.w/(double)bw;
+							os.w=bw;
+							int bh=suitablePower2(os.h);
+							os.resY/=os.h/(double)bh;
+							os.h=bh;
+
+							os.resX=evim.getResX()/evim.getBinning(); //[px/um]
+							os.resY=evim.getResY()/evim.getBinning();
+
+							os.color=chsel.color;
+							texture.allocate(os.w, os.h, os.d);
+
+							//real size
+							os.realw=os.w/os.resX;
+							os.realh=os.h/os.resY;								
+							int slicespan=(slices.lastKey().subtract(slices.firstKey()).add(1).intValue()); //TODO bd problem, total redo
+							os.reald=(os.d*(double)slicespan/(double)slices.size());///chsel.im.meta.resZ;
 							}
-						skipcount++;
-						if(skipcount>=skipForward)
-							{
-							skipcount=0;
-							int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
-							int progressChan=1000*curchannum/channels.size();
-							pm.set(progressSlices+progressChan);
-							
-							//Apply filter if needed
-							EvImage evim=slices.get(i);
-							if(!chsel.filterSeq.isIdentity())
-								evim=chsel.filterSeq.applyReturnImage(evim);
-							
-							//Get image for this plane
-							BufferedImage bim=evim.getJavaImage();
-							
-							//Set up slice if not done yet
-							if(os==null)
+
+
+						//Load bitmap, scale down
+						BufferedImage sim=new BufferedImage(os.w,os.h,BufferedImage.TYPE_BYTE_GRAY); 
+						//BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType()); //change type to byte or something? float better internally?
+						Graphics2D g=(Graphics2D)sim.getGraphics();
+						g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
+						g.drawImage(bim,0,0,Color.BLACK,null);
+
+						//Convert to something suitable for texture upload?
+						//DataBufferByte buf=(DataBufferByte)sim.getRaster().getDataBuffer();
+						//texture.b.put(buf.getData());
+
+						//theoretically slower but can be made safer
+						Raster ras=sim.getRaster();
+						for(int ay=0;ay<os.h;ay++)
+							for(int ax=0;ax<os.w;ax++)
 								{
-								os=new VoxelStack();
-								os.tex=texture;
-								os.w=bim.getWidth();
-								os.h=bim.getHeight();
-								os.d=ceilPower2(slices.size());
-
-								int bw=suitablePower2(os.w);
-								os.resX/=os.w/(double)bw;
-								os.w=bw;
-								int bh=suitablePower2(os.h);
-								os.resY/=os.h/(double)bh;
-								os.h=bh;
-
-								os.resX=evim.getResX()/evim.getBinning(); //[px/um]
-								os.resY=evim.getResY()/evim.getBinning();
-								
-								os.color=chsel.color;
-								texture.allocate(os.w, os.h, os.d);
-								
-								//real size
-								os.realw=os.w/os.resX;
-								os.realh=os.h/os.resY;								
-								int slicespan=(slices.lastKey().subtract(slices.firstKey()).add(1).intValue()); //TODO bd problem, total redo
-								os.reald=(os.d*(double)slicespan/(double)slices.size());///chsel.im.meta.resZ;
+								int pix[]=new int[3];
+								ras.getPixel(ax, ay, pix);
+								//texture.b.put((byte)ras.getSample(ax, ay, 0));
+								texture.b.put((byte)pix[0]);
 								}
 
-
-							//Load bitmap, scale down
-							BufferedImage sim=new BufferedImage(os.w,os.h,BufferedImage.TYPE_BYTE_GRAY); 
-							//BufferedImage sim=new BufferedImage(os.w,os.h,bim.getType()); //change type to byte or something? float better internally?
-							Graphics2D g=(Graphics2D)sim.getGraphics();
-							g.scale(os.w/(double)bim.getWidth(), os.h/(double)bim.getHeight()); //0.5 sec tot maybe
-							g.drawImage(bim,0,0,Color.BLACK,null);
-
-							//Convert to something suitable for texture upload?
-							//DataBufferByte buf=(DataBufferByte)sim.getRaster().getDataBuffer();
-							//texture.b.put(buf.getData());
-
-							//theoretically slower but can be made safer
-							Raster ras=sim.getRaster();
-							for(int ay=0;ay<os.h;ay++)
-								for(int ax=0;ax<os.w;ax++)
-									{
-									int pix[]=new int[3];
-									ras.getPixel(ax, ay, pix);
-									//texture.b.put((byte)ras.getSample(ax, ay, 0));
-									texture.b.put((byte)pix[0]);
-									}
-
-							}
 						}
-				
-				//Add black frames up to z power of 2
-				int pixToWrite=os.w*os.h*os.d-texture.b.position();
-				texture.b.put(new byte[pixToWrite], 0, 0);
-				
-				getTexSlicesFrame(frame).add(os);
-				
-				os.needLoadGL=true;
+					}
 
-				curchannum++;
-				}
+			//Add black frames up to z power of 2
+			int pixToWrite=os.w*os.h*os.d-texture.b.position();
+			texture.b.put(new byte[pixToWrite], 0, 0);
 
-			pm.done();
+
+			texSlices.add(os);
+			//				getTexSlicesFrame(frame).add(os);
+
+			os.needLoadGL=true;
+
+			curchannum++;
 			}
-		}
-	
-	
 
-	
-	
+		return true;
+		}
+
+
+
+
+
 
 
 	
@@ -315,9 +289,11 @@ public class Stack3D extends StackInterface
 	 */
 	public Collection<Double> adjustScale(ModelWindow w)
 		{
-		if(texSlices!=null && !texSlices.isEmpty())
+		if(!texSlices.isEmpty())
+	//	if(texSlices!=null && !texSlices.isEmpty())
 			{
-			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
+			VoxelStack os=texSlices.get(0);
+//			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			return Collections.singleton((os.realw+os.realh+os.reald)/3);
 			}
 		else
@@ -332,7 +308,8 @@ public class Stack3D extends StackInterface
 		{
 		if(!texSlices.isEmpty())
 			{
-			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
+			VoxelStack os=texSlices.get(0);
+//			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			return Collections.singleton(new Vector3d(os.realw/2.0,os.realh/2.0,os.reald/2.0));
 			}
 		else
@@ -347,7 +324,8 @@ public class Stack3D extends StackInterface
 		{
 		if(!texSlices.isEmpty())
 			{
-			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
+			VoxelStack os=texSlices.get(0);
+//			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			double dx=Math.max(Math.abs(0-mid.x), Math.abs(os.realw-mid.x));
 			double dy=Math.max(Math.abs(0-mid.y), Math.abs(os.realh-mid.y));
 			double dz=Math.max(Math.abs(0-mid.z), Math.abs(os.reald-mid.z));
@@ -680,11 +658,12 @@ public class Stack3D extends StackInterface
 	LinkedList<Tuple<BufferedImage,VoxelStack>> procList=new LinkedList<Tuple<BufferedImage,VoxelStack>>();
 	public void loadGL(GL gl)
 		{
-		cleanDisposable(gl);
+//		cleanDisposable(gl);
 
 		//Since upload can be called after the real upload call, just loop through everything
-		for(Vector<VoxelStack> osv:texSlices.values()) 
-			for(VoxelStack os:osv)
+//		for(Vector<VoxelStack> osv:texSlices.values()) 
+//			for(VoxelStack os:osv)
+		for(VoxelStack os:texSlices)
 				if(os.needLoadGL)
 					{
 					os.tex.upload(gl);
@@ -700,15 +679,22 @@ public class Stack3D extends StackInterface
 	 */
 	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
 		{
+/*		if(!texSlices.isEmpty())
+			{
+			Vector<VoxelStack> texSlices.get(getClosestFrame(texSlices.keySet(), )
+			}*/
+		
 		//Draw edges
 		if(drawEdges)
-			for(Vector<VoxelStack> osv:texSlices.values())
-				for(VoxelStack os:osv)
+//			for(Vector<VoxelStack> osv:texSlices.values())
+//				for(VoxelStack os:osv)
+			for(VoxelStack os:texSlices)
 					renderEdge(gl, os.realw, os.realh, os.reald);
 
 		//Draw voxels
-		for(Vector<VoxelStack> osv:texSlices.values())
-			for(VoxelStack os:osv)
+//		for(Vector<VoxelStack> osv:texSlices.values())
+//			for(VoxelStack os:osv)
+		for(VoxelStack os:texSlices)
 				renderVoxelStack(gl, transparentRenderers, cam, os, solidColor, mixColors);
 		}
 	

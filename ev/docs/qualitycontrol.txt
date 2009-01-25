@@ -231,6 +231,7 @@ histograms
 
 =================== time for release here ==========================
 
+http://trac.openmicroscopy.org.uk/omero/wiki/ImporterFormats
 
 NOPRIORITY	  
 2.13.3 -- release management
