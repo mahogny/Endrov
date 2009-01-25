@@ -18,6 +18,7 @@ import endrov.modelWindow.Shader;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
+import endrov.modelWindow.ModelWindow.ProgressMeter;
 
 //if one ever wish to build it in the background:
 //GLContext glc=view.getContext();
@@ -42,9 +43,7 @@ http://lists.apple.com/archives/Mac-opengl/2007/Feb/msg00063.html
  */
 public class Stack2D extends StackInterface
 	{	
-	EvDecimal lastframe=null; 
-	//double resZ;
-	private TreeMap<Double,Vector<OneSlice>> texSlices=null;
+	private TreeMap<Double,Vector<OneSlice>> texSlices=null; //Z->slices for one plane
 	private final int skipForward=1; //later maybe allow this to change
 	private boolean needLoadGL=false;
 	
@@ -100,7 +99,7 @@ public class Stack2D extends StackInterface
 		texSlices=null;
 		}
 	
-	
+	/*
 	public void setLastFrame(EvDecimal frame)
 		{
 		lastframe=frame;
@@ -112,78 +111,48 @@ public class Stack2D extends StackInterface
 		return lastframe==null || !frame.equals(lastframe);// || !isBuilt();
 		}
 	
+	*/
 	
-	public void startBuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+	public boolean newCreate(ProgressMeter pm, EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel2, ModelWindow w)
 		{
-		stopBuildThread();
-		buildThread=new BuildThread(frame, chsel, w);
-		buildThread.start();
-		}
-	public void stopBuildThread()
-		{
-		if(buildThread!=null)
-			buildThread.stop=true;
-		}
-	
-	private BuildThread buildThread=null;
-	public class BuildThread extends Thread
-		{
-		private EvDecimal frame;
-		private HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel;
-		public boolean stop=false;
-		private ModelWindow.ProgressMeter pm;
-		public BuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w)
+		//im cache safety issues
+		Collection<VoxelExtension.ChannelSelection> channels=chsel2.values();
+		procList.clear();
+		int curchannum=0;
+		for(VoxelExtension.ChannelSelection chsel:channels)
 			{
-			this.frame=frame;
-			this.chsel=chsel;
-			pm=w.createProgressMeter();
-			}
-		public void run()
-			{
-			pm.set(0);
-			
-			//im cache safety issues
-			Collection<VoxelExtension.ChannelSelection> channels=chsel.values();
-			procList.clear();
-			int curchannum=0;
-			for(VoxelExtension.ChannelSelection chsel:channels)
-				{
-				EvDecimal cframe=chsel.ch.closestFrame(frame);
-				//Common resolution for all channels
-				//resZ=chsel.im.meta.resZ;
+			EvDecimal cframe=chsel.ch.closestFrame(frame);
+			//Common resolution for all channels
+			//resZ=chsel.im.meta.resZ;
 
-				//For every Z
-				TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
-				int skipcount=0;
-				if(slices!=null)
-					for(EvDecimal i:slices.keySet())
+			//For every Z
+			TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
+			int skipcount=0;
+			if(slices!=null)
+				for(EvDecimal i:slices.keySet())
+					{
+					if(stopBuildThread)
+						return false;
+					skipcount++;
+					if(skipcount>=skipForward)
 						{
-						if(stop)
-							{
-							pm.done();
-							return;
-							}
-						skipcount++;
-						if(skipcount>=skipForward)
-							{
-							final int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
-							final int progressChan=1000*curchannum/channels.size();
-							pm.set(progressSlices+progressChan);
-							
-							skipcount=0;
-							EvImage evim=slices.get(i);
-							if(!chsel.filterSeq.isIdentity())
-								evim=chsel.filterSeq.applyReturnImage(evim);
-							Tuple<TextureRenderer,OneSlice> proc=processImage(evim, i, chsel);
-							procList.add(proc);
-							}
-						}
-				curchannum++;
-				}
+						final int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
+						final int progressChan=1000*curchannum/channels.size();
+						pm.set(progressSlices+progressChan);
 
-			needLoadGL=true;
-			pm.done();
+						skipcount=0;
+						EvImage evim=slices.get(i);
+						if(!chsel.filterSeq.isIdentity())
+							evim=chsel.filterSeq.applyReturnImage(evim);
+						Tuple<TextureRenderer,OneSlice> proc=processImage(evim, i, chsel);
+						procList.add(proc);
+						}
+					}
+			curchannum++;
 			}
+
+		needLoadGL=true;
+		return true;
 		}
 	
 	

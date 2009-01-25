@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.media.opengl.*;
@@ -22,6 +24,7 @@ import endrov.filter.FilterSeq;
 import endrov.filter.WindowFilterSeq;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
+import endrov.modelWindow.ModelWindow.ProgressMeter;
 import endrov.util.EvDecimal;
 
 //for now does not update if image updated. would need a data update CB but
@@ -49,7 +52,35 @@ public class VoxelExtension implements ModelWindowExtension
 		w.modelWindowHooks.add(new Hook(w)); 
 		}
 
+	/**
+	 * Assuming set is non-empty, get the closest match
+	 */
+	public static EvDecimal getClosestFrame(SortedSet<EvDecimal> frames, EvDecimal frame)
+		{
+		if(frames.contains(frame))
+			return frame;
+		else
+			{
+			SortedSet<EvDecimal> before=frames.headSet(frame);
+			SortedSet<EvDecimal> after=frames.tailSet(frame);
+			if(before.isEmpty())
+				return frames.first();
+			else if(after.isEmpty())
+				return frames.last();
+			else
+				{
+				EvDecimal afterkey=after.first();
+				EvDecimal beforekey=before.last();
 
+				if(afterkey.subtract(frame).less(frame.subtract(beforekey)))
+					return afterkey;
+				else
+					return beforekey;
+				}
+			}
+		
+		
+		}
 
 	/**
 	 * Settings for one channel in an imageset
@@ -66,7 +97,9 @@ public class VoxelExtension implements ModelWindowExtension
 		{
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
-		private StackInterface currentStack=new Stack3D();
+		//private TreeMap<EvDecimal, StackInterface> currentStack=new TreeMap<EvDecimal, StackInterface>();
+		private StackInterface currentStack=null;
+		private StackInterface loadingStack=null;
 		private Vector<StackInterface> removableStacks=new Vector<StackInterface>();
 
 		private OneImageChannel icR=new OneImageChannel("R", Color.RED);
@@ -80,6 +113,10 @@ public class VoxelExtension implements ModelWindowExtension
 		public JCheckBoxMenuItem miDrawEdge=new JCheckBoxMenuItem("Draw edge");
 		public JCheckBoxMenuItem miMixColors=new JCheckBoxMenuItem("Mix colors");
 
+		
+		
+		
+		
 		
 		public Hook(ModelWindow w)
 			{
@@ -126,23 +163,44 @@ public class VoxelExtension implements ModelWindowExtension
 
 
 
+		public StackInterface getCurrentStack()
+			{
+			return currentStack;
+			/*
+			if(currentStack.isEmpty())
+				return null;
+			else
+				return currentStack.get(getClosestFrame((SortedSet)currentStack.keySet(), getFrame()));
+				*/
+			}
 		
 		
 		public Collection<Double> adjustScale()
 			{
-			return currentStack.adjustScale(w);
+			StackInterface s=getCurrentStack();
+			if(s!=null)
+				return s.adjustScale(w);
+			else
+				return Collections.emptySet();
 			}
 		public Collection<Vector3d> autoCenterMid()
 			{
-			return currentStack.autoCenterMid();
+			StackInterface s=getCurrentStack();
+			if(s!=null)
+				return s.autoCenterMid();
+			else
+				return Collections.emptySet();
 			}
 		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
 			{
-			Double r=currentStack.autoCenterRadius(mid, FOV);
-			if(r==null)
-				return Collections.emptySet();
-			else
-				return Collections.singleton(r);
+			StackInterface s=getCurrentStack();
+			if(s!=null)
+				{
+				Double r=s.autoCenterRadius(mid, FOV);
+				if(r!=null)
+					return Collections.singleton(r);
+				}
+			return Collections.emptySet();
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
@@ -179,7 +237,6 @@ public class VoxelExtension implements ModelWindowExtension
 		
 		
 		
-		
 		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
 			try
@@ -189,15 +246,37 @@ public class VoxelExtension implements ModelWindowExtension
 					s.clean(gl);
 				removableStacks.clear();
 
-				EvDecimal frame=getFrame();
-				
-				//Build list of which channels should be rendered
-				if(currentStack.needSettings(frame))
+				//Swap to new stack whenever possible
+				if(loadingStack!=null && loadingStack.newisReady)
 					{
-					currentStack.setLastFrame(frame);
+					if(currentStack!=null)
+						removableStacks.add(currentStack);
+					currentStack=loadingStack;
+					loadingStack=null;
+					currentStack.loadGL(gl);
+					}
+				
+				//Check if a new stack has to be uploaded
+				boolean needNewStack=currentStack==null;
+				if(!needNewStack)
+					{
+					//TODO this can be improved a lot
+					if(!currentStack.newlastFrame.equals(getFrame()))
+						needNewStack=true;
+					
+					}
+				
+				if(needNewStack)
+					{
+					//Abort prior loading
+					if(loadingStack!=null)
+						{
+						loadingStack.stopCreate();
+						loadingStack=null;
+						}
 					
 					//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
-					HashMap<EvChannel, ChannelSelection> chsel=new HashMap<EvChannel, ChannelSelection>(); 
+					final HashMap<EvChannel, ChannelSelection> chsel=new HashMap<EvChannel, ChannelSelection>(); 
 					for(OneImageChannel oc:new OneImageChannel[]{icR, icG, icB})
 						{
 						Imageset im=oc.channelCombo.getImagesetNotNull();
@@ -221,7 +300,42 @@ public class VoxelExtension implements ModelWindowExtension
 					
 					//Start build thread
 					if(!chsel.isEmpty())
-						currentStack.startBuildThread(frame, chsel, w);
+						{
+						if(miRender3dTexture.isSelected()) 
+							loadingStack=new Stack3D(); 
+						else
+							loadingStack=new Stack2D();
+						loadingStack.newlastFrame=getFrame();
+						final ProgressMeter pm=w.createProgressMeter();
+						new Thread(){
+						public void run()
+							{
+							pm.set(0);
+							if(loadingStack.newCreate(pm, getFrame(), chsel, w))
+								loadingStack.newisReady=true;
+							pm.done();
+							}
+						}.run();
+						}
+					
+					
+					
+					//TODO changing data does not trigger making new stack
+						
+					
+					}
+				
+				//Render current stack
+				if(currentStack!=null)
+					currentStack.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
+				
+				/*
+				//Build list of which channels should be rendered
+				if(currentStack.needSettings(frame))
+					{
+					currentStack.setLastFrame(frame);
+					
+					
 					}
 				else
 					{
@@ -230,7 +344,7 @@ public class VoxelExtension implements ModelWindowExtension
 					currentStack.loadGL(gl);
 		//			System.out.println("voxrender");
 					currentStack.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
-					}
+					}*/
 				}
 			catch (Exception e)
 				{
@@ -277,14 +391,24 @@ public class VoxelExtension implements ModelWindowExtension
 			public void stackChanged()
 				{
 				//TODO: when filter seq updated, a signal should be sent back
+				if(loadingStack!=null)
+					{
+					loadingStack.stopCreate();
+					loadingStack=null;
+					}
 				if(currentStack!=null)
-					currentStack.stopBuildThread();
-				removableStacks.add(currentStack);
+					removableStacks.add(currentStack);
+				
+//				removableStacks.add(currentStack);
 				System.out.println("new stack");
-				if(miRender3dTexture.isSelected()) 
+	
+				//TODO good enough?
+				
+				
+/*				if(miRender3dTexture.isSelected()) 
 					currentStack=new Stack3D(); 
 				else
-					currentStack=new Stack2D();
+					currentStack=new Stack2D();*/
 //				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
 //				lastChannel=channelCombo.getChannelNotNull();
 

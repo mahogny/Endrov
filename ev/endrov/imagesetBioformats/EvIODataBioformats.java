@@ -110,6 +110,7 @@ public class EvIODataBioformats implements EvIOData
 			{
 			try
 				{
+				
 				BufferedImage i=imageReader.openImage(id);
 				
 				int w=i.getWidth();
@@ -317,17 +318,17 @@ public class EvIODataBioformats implements EvIOData
 		int numt=imageReader.getSizeT();
 		int numc=imageReader.getSizeC();
 		
-
+		
 		
 		//Read meta data from original imageset
-		System.out.println("# XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
+		System.out.println("BF # XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
 		for(Object o:(Set)imageReader.getMetadata().entrySet())
 			{
 			Map.Entry e=(Map.Entry)o;
-			System.out.println("> "+e.getKey()+" "+e.getValue());
+			System.out.println("> \""+e.getKey()+"\" \""+e.getValue()+"\"");
 			}
-		double resX=1;
-		double resY=1;
+		double resX=1; //[px/um]
+		double resY=1; //[px/um]
 		EvDecimal invResZ=EvDecimal.ONE;
 		EvDecimal resT=EvDecimal.ONE;
 //		double resZ=1;
@@ -337,7 +338,14 @@ public class EvIODataBioformats implements EvIOData
 			resY=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6);
 		if(imageReader.getMetadataValue("VoxelSizeZ")!=null)
 			invResZ=new EvDecimal(""+imageReader.getMetadataValue("VoxelSizeZ")).divide(new EvDecimal("1000000"));
-
+		
+		if(imageReader.getMetadataValue("X element length (in um)")!=null) 
+			resX=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("X element length (in um)")));
+		if(imageReader.getMetadataValue("Y element length (in um)")!=null) 
+			resY=1.0/(Double.parseDouble(""+imageReader.getMetadataValue("Y element length (in um)")));
+		if(imageReader.getMetadataValue("Z element length (in um)")!=null) 
+			invResZ=new EvDecimal(""+imageReader.getMetadataValue("Z element length (in um)"));
+		
 		if(imageReader.getMetadataValue("TimeInterval")!=null)
 			resT=new EvDecimal(""+imageReader.getMetadataValue("TimeInterval"));
 		

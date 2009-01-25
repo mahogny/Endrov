@@ -102,8 +102,8 @@ public class ModelWindow extends BasicWindow
 	private final JPanel bottomPanel=new JPanel(new GridBagLayout());
 	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
-	//public JProgressBar progress=new JProgressBar(0,1000);
-	private JPanel progress=new JPanel(); 
+	private JProgressBar progress=new JProgressBar(0,1000);
+//	private JPanel progress=new JPanel(); 
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
@@ -649,8 +649,8 @@ public class ModelWindow extends BasicWindow
 		/** Set progress, 0-1000 */
 		public void set(final int v)
 			{
-			//System.out.println("progress set");
-			SwingUtilities.invokeLater(new Runnable(){public void run(){pbar.setValue(v);}});
+			progress=v;	SwingUtilities.invokeLater(new Runnable(){public void run(){updateProgressMeter();}});
+//			SwingUtilities.invokeLater(new Runnable(){public void run(){pbar.setValue(v);}});
 			}
 		/** Remove progress bar. update view */
 		public void done()
@@ -663,8 +663,10 @@ public class ModelWindow extends BasicWindow
 				view.repaint(); //TODO modw repaint. w.repaint does not do the job in this case!
 				}});
 			}
-		private JProgressBar pbar=new JProgressBar(0,1000);
+		private int progress=0; 
+//		private JProgressBar pbar=new JProgressBar(0,1000);
 		}
+	
 	/**
 	 * Update progressbar panel
 	 */
@@ -672,7 +674,15 @@ public class ModelWindow extends BasicWindow
 		{
 		synchronized(progressMeters)
 			{
-			//System.out.println("update progress");
+//			int tot=progressMeters.size()*1000;
+			int sum=0;
+			for(ProgressMeter pm:progressMeters)
+				sum+=pm.progress;
+			if(progressMeters.isEmpty())
+				progress.setValue(1000);
+			else
+				progress.setValue(sum/progressMeters.size());
+			/*
 			if(progressMeters.isEmpty())
 				{
 				progress.setVisible(false);
@@ -687,8 +697,10 @@ public class ModelWindow extends BasicWindow
 				progress.revalidate();
 				progress.setVisible(true);
 				}
+				*/
 			}
 		}
+	
 	/**
 	 * Create a new progress meter, add it, and return 
 	 */
