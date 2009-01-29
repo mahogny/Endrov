@@ -25,14 +25,7 @@ public class UnionROI extends CompoundROI
 		{
 		EvData.extensions.put(metaType,UnionROI.class);
 		
-		ROI.addType(new ROIType()
-			{
-			public boolean canPlace(){return false;}
-			public boolean isCompound(){return true;}
-			public String name(){return metaDesc;};
-			public ROI makeInstance(){return new UnionROI();}
-			public ImageIcon getIcon(){return icon;}
-			});
+		ROI.addType(new ROIType(icon, UnionROI.class, false,true,metaDesc));
 		}
 
 
@@ -194,7 +187,7 @@ public class UnionROI extends CompoundROI
 	public Set<String> getChannels(Imageset rec)
 		{
 		TreeSet<String> c=new TreeSet<String>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getChannels(rec));
 		return c;
 		}
@@ -205,7 +198,7 @@ public class UnionROI extends CompoundROI
 	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getFrames(rec, channel));
 		return c;
 		}
@@ -217,7 +210,7 @@ public class UnionROI extends CompoundROI
 	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getSlice(rec, channel, frame));
 		return c;
 		}
@@ -226,7 +219,7 @@ public class UnionROI extends CompoundROI
 
 	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			if(roi.imageInRange(channel, frame, z))
 				return true;
 		return false;
@@ -237,6 +230,7 @@ public class UnionROI extends CompoundROI
 	 */
 	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
+		List<ROI> subRoi=getSubRoi();
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
 			LineIterator li=subRoi.get(0).getLineIterator(im, channel, frame, z);
@@ -251,12 +245,10 @@ public class UnionROI extends CompoundROI
 	
 	public void saveMetadata(Element e)
 		{
-		saveCompoundMetadata(metaType, e);
+		e.setName(metaType);
 		}
-
 	public void loadMetadata(Element e)
 		{
-		loadCompoundMetadata(e);
 		}
 
 	

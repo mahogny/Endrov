@@ -12,9 +12,6 @@ uniform sampler2D tex;
 
 void main (void)  
 	{
-
-	//TODO: everything
-
 	vec4 texCol = texture2D(tex, texCoords);
 	float alpha = texCol.w;
 	vec4 newCol = vcolor;

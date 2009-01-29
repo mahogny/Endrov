@@ -198,7 +198,7 @@ public class Stack3D extends StackInterface
 						EvImage evim=slices.get(i);
 						if(!chsel.filterSeq.isIdentity())
 							evim=chsel.filterSeq.applyReturnImage(evim);
-
+						
 						//Get image for this plane
 						BufferedImage bim=evim.getJavaImage();
 
@@ -679,21 +679,12 @@ public class Stack3D extends StackInterface
 	 */
 	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
 		{
-/*		if(!texSlices.isEmpty())
-			{
-			Vector<VoxelStack> texSlices.get(getClosestFrame(texSlices.keySet(), )
-			}*/
-		
 		//Draw edges
 		if(drawEdges)
-//			for(Vector<VoxelStack> osv:texSlices.values())
-//				for(VoxelStack os:osv)
 			for(VoxelStack os:texSlices)
 					renderEdge(gl, os.realw, os.realh, os.reald);
 
 		//Draw voxels
-//		for(Vector<VoxelStack> osv:texSlices.values())
-//			for(VoxelStack os:osv)
 		for(VoxelStack os:texSlices)
 				renderVoxelStack(gl, transparentRenderers, cam, os, solidColor, mixColors);
 		}

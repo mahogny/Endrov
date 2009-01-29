@@ -1,6 +1,7 @@
 package endrov.roi.primitive;
 
 import java.util.*;
+
 import javax.swing.*;
 
 import org.jdom.*;
@@ -27,14 +28,7 @@ public class SubtractROI extends CompoundROI
 		{
 		EvData.extensions.put(metaType,SubtractROI.class);
 		
-		ROI.addType(new ROIType()
-			{
-			public boolean canPlace(){return false;}
-			public boolean isCompound(){return true;}
-			public String name(){return metaDesc;};
-			public ROI makeInstance(){return new SubtractROI();}
-			public ImageIcon getIcon(){return icon;}
-			});
+		ROI.addType(new ROIType(icon, SubtractROI.class, false,true,metaDesc));
 		}
 
 
@@ -194,7 +188,7 @@ public class SubtractROI extends CompoundROI
 	public Set<String> getChannels(Imageset rec)
 		{
 		TreeSet<String> c=new TreeSet<String>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getChannels(rec));
 		return c;
 		}
@@ -205,7 +199,7 @@ public class SubtractROI extends CompoundROI
 	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getFrames(rec, channel));
 		return c;
 		}
@@ -217,7 +211,7 @@ public class SubtractROI extends CompoundROI
 	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getSlice(rec, channel, frame));
 		return c;
 		}
@@ -226,7 +220,7 @@ public class SubtractROI extends CompoundROI
 
 	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			if(roi.imageInRange(channel, frame, z))
 				return true;
 		return false;
@@ -237,6 +231,7 @@ public class SubtractROI extends CompoundROI
 	 */
 	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
+		List<ROI> subRoi=getSubRoi();
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
 			if(subRoi.size()>=2)
@@ -255,12 +250,10 @@ public class SubtractROI extends CompoundROI
 	
 	public void saveMetadata(Element e)
 		{
-		saveCompoundMetadata(metaType, e);
+		e.setName(metaType);
 		}
-
 	public void loadMetadata(Element e)
 		{
-		loadCompoundMetadata(e);
 		}
 
 	

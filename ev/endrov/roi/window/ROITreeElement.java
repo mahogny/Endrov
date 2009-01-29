@@ -13,10 +13,10 @@ import endrov.roi.ROI;
  */
 public class ROITreeElement
 	{
-	public Object e; //a ROI or EvData
+	public EvContainer e; //a ROI or EvData
 	final public ROITreeElement parent;
 	
-	public ROITreeElement(ROITreeModel model, Object e, ROITreeElement parent)
+	public ROITreeElement(ROITreeModel model, EvContainer e, ROITreeElement parent)
 		{
 		this.e=e;
 		this.parent=parent;
@@ -46,12 +46,14 @@ public class ROITreeElement
 		{
 		if(e==null)
 			return new Vector<ROI>();
-		else if(e instanceof ROI)
+/*		else if(e instanceof ROI)
+			{
 			return ((ROI)e).getSubRoi();
+			}*/
 		else
 			{
 			Vector<ROI> v=new Vector<ROI>();
-			EvData data=(EvData)e;
+			EvContainer data=(EvContainer)e;
 			for(EvObject ob:data.metaObject.values())
 				if(ob instanceof ROI)
 					v.add((ROI)ob);
@@ -83,11 +85,15 @@ public class ROITreeElement
 	 */
 	public String toString()
 		{
+		//getROIDesc()
+		
 		if(e==null)
 			return "<empty>";
-		else if(e instanceof ROI)
-			return ((ROI)e).getROIDesc();
-		else
+		else if(e instanceof EvObject)
+			return ((EvObject)e).getMetaTypeDesc();
+		else if(e instanceof EvData)
 			return ((EvData)e).getMetadataName();
+		else
+			return "wtf";
 		}
 	}

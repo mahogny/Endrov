@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.*;
 
 import loci.formats.*;
+import loci.formats.meta.IMetadata;
 import endrov.data.*;
 import endrov.imageset.*;
 import endrov.imagesetOST.EvIODataOST;
@@ -124,6 +125,7 @@ public class EvIODataBioformats implements EvIOData
 				System.out.println("UINT32 = "+FormatTools.UINT32);
 				System.out.println("pixtype  "+imageReader.getPixelType());*/
 				
+				//Float getPlaneTimingExposureTime(int imageIndex, int pixelsIndex, int planeIndex);
 				
 				if(imageReader.getPixelType()==FormatTools.INT16 && basedir.getName().endsWith(".r3d"))
 					{
@@ -258,6 +260,7 @@ public class EvIODataBioformats implements EvIOData
 
 	
 	public IFormatReader imageReader=null;
+	public IMetadata retrieve=null;
 	
 	/**
 	 * Open a new recording
@@ -270,7 +273,10 @@ public class EvIODataBioformats implements EvIOData
 			throw new Exception("File does not exist");
 
 		imageReader=new ImageReader();
+		retrieve=MetadataTools.createOMEXMLMetadata();
+		imageReader.setMetadataStore(retrieve);
 		imageReader.setId(basedir.getAbsolutePath());
+		imageReader=new ChannelSeparator(imageReader);
 		
 		buildDatabase(d);
 		}
@@ -305,21 +311,296 @@ public class EvIODataBioformats implements EvIOData
 		}
 	
 
+	//Consider using this instead
+	/*
+	private static int getPlaneIndex(IFormatReader r, int planeNum) 
+		{
+		MetadataRetrieve retrieve = (MetadataRetrieve) r.getMetadataStore();
+		int imageIndex = r.getSeries();
+		int planeCount = retrieve.getPlaneCount(imageIndex, 0);
+		int[] zct = r.getZCTCoords(planeNum);
+		for (int i=0; i<planeCount; i++) 
+			{
+			Integer theC = retrieve.getPlaneTheC(imageIndex, 0, i);
+			Integer theT = retrieve.getPlaneTheT(imageIndex, 0, i);
+			Integer theZ = retrieve.getPlaneTheZ(imageIndex, 0, i);
+			if (zct[0] == theZ.intValue() && zct[1] == theC.intValue() && zct[2] == theT.intValue())
+				return i;
+			}
+		return -1;
+		}
+	*/
 
+	
+	
+	@SuppressWarnings("deprecation")
+	private static EvDecimal parseBFDate(String s)
+		{
+		//2002-06-17T18:35:59
+		//Note that there is no time zone here. Use the local one. 
+		try
+			{
+			int year=Integer.parseInt(s.substring(0,4));
+			int month=Integer.parseInt(s.substring(5,7));
+			int day=Integer.parseInt(s.substring(8,10));
+			int hour=Integer.parseInt(s.substring(11,13));
+			int minute=Integer.parseInt(s.substring(14,16));
+			int second=Integer.parseInt(s.substring(17,19));
+			Date d=new Date(year-1900,month-1,day,hour,minute,second);
+			return new EvDecimal(d.getTime());
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			return null;
+			}
+		}
 	
 	/**
 	 * Scan recording for channels and build a file database
 	 */
-	@SuppressWarnings("unchecked") public void buildDatabase(EvData d)
+	//@SuppressWarnings("unchecked") 
+	public void buildDatabase(EvData d)
 		{
+
+		//Bioformats has ImageIndex and imagePlaneIndex
+		//MetadataRetrieve retrieve = (MetadataRetrieve)imageReader.getMetadataStore();
+
+		System.out.println("numser "+imageReader.getSeriesCount());
+		
+		/*for(Object o:(Set)imageReader.getMetadata().entrySet())
+			{
+			Map.Entry e=(Map.Entry)o;
+			System.out.println("> \""+e.getKey()+"\" \""+e.getValue()+"\"");
+			}*/
+
+		
+		for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
+			{
+			//String getImageDescription(int imageIndex);
+			//String getPixelsDimensionOrder(int imageIndex, int pixelsIndex);
+			
+			imageReader.setSeries(seriesIndex);
+			//int imageIndex=imageReader.getSeries();
+			
+			
+			System.out.println("pixel count "+retrieve.getPixelsCount(seriesIndex));
+			
+			String imageName=retrieve.getImageName(seriesIndex);
+			
+			
+			//Some names might be awful. Might be a bad idea
+			String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
+			
+			if(d.metaObject.containsKey(imsetName))
+				imsetName="im-"+imageName;
+			
+			Imageset im=(Imageset)d.metaObject.get(imsetName);
+			if(im==null)
+				d.metaObject.put(imsetName, im=new Imageset());
+			im.channelImages.clear();
+			
+			
+			String creationDate = retrieve.getImageCreationDate(seriesIndex);
+			if(creationDate!=null)
+				im.dateCreate=parseBFDate(creationDate);
+				
+			//System.out.println("create "+creationDate);
+			
+
+			
+			/*
+			
+			//int planeCount = retrieve.getPixelsCount(imageIndex);
+			int planeCount = retrieve.getPlaneCount(imageIndex,0);
+			System.out.println("planecount "+planeCount);
+			for (int curPlane=0; curPlane<planeCount; curPlane++) 
+				{
+				Integer theC = retrieve.getPlaneTheC(imageIndex, 0, curPlane);
+				Integer theT = retrieve.getPlaneTheT(imageIndex, 0, curPlane);
+				Integer theZ = retrieve.getPlaneTheZ(imageIndex, 0, curPlane);
+				
+				String channelName="ch"+theC;
+				EvChannel mc=im.getCreateChannel(channelName);
+
+				Float expTime=retrieve.getPlaneTimingExposureTime(imageIndex, 0, curPlane);
+				
+				Float fdx=retrieve.getDimensionsPhysicalSizeX(imageIndex, curPlane); //um/px
+				Float fdy=retrieve.getDimensionsPhysicalSizeY(imageIndex, curPlane); //um/px
+				Float fdz=retrieve.getDimensionsPhysicalSizeZ(imageIndex, curPlane); //um/px
+				if(fdx==null) fdx=1.0f;
+				if(fdy==null) fdy=1.0f;
+				if(fdz==null) fdz=1.0f;
+				
+				EvDecimal frame=new EvDecimal(theT*fdz);
+				double resX=1.0/fdx; //[px/um]
+				double resY=1.0/fdy; //[px/um]
+				double resZ=fdz;
+				EvDecimal zpos=new EvDecimal(fdz).multiply(theZ);
+				
+				int numChannel=retrieve.getChannelComponentCount(imageIndex, curPlane);
+				System.out.println("plane "+curPlane+" "+numChannel);
+				for(int curChannel=0;curChannel<numChannel;curChannel++)
+					{
+					
+					TreeMap<EvDecimal, EvImage> loaderset=mc.getCreateFrame(frame);
+					
+					EvImage evim=new EvImage();
+					loaderset.put(zpos, evim); //used to be mul, with non-inv resz
+					evim.binning=1;
+					evim.dispX=0;
+					evim.dispY=0;
+					evim.resX=resX;
+					evim.resY=resY;
+					
+					im.resX=resX;
+					im.resY=resY;
+					im.resZ=resZ;
+					
+					if(imageReader.isRGB())
+						evim.io=new SliceIO(imageReader, curPlane, curChannel, "");
+					else
+						evim.io=new SliceIO(imageReader, curPlane, null, ""); 
+							
+					}
+				
+				}
+			*/
+			
+			
+			
+			int numx=imageReader.getSizeX();
+			int numy=imageReader.getSizeY();
+			int numz=imageReader.getSizeZ();
+			int numt=imageReader.getSizeT();
+			int numc=imageReader.getSizeC();
+
+			//Read meta data from original imageset
+			System.out.println("BF # XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
+
+			
+
+			
+			//Enlist images
+			for(int channelnum=0;channelnum<numc;channelnum++)
+				{
+				String channelName="ch"+channelnum;
+				EvChannel mc=im.getCreateChannel(channelName);
+				mc.chBinning=1;
+
+				//Fill up with image loaders
+				EvChannel c=new EvChannel();
+				im.channelImages.put(channelName,c);
+				for(int framenum=0;framenum<numt;framenum++)
+					{
+					for(int slicenum=0;slicenum<numz;slicenum++)
+						{
+						int curPixel;
+						Integer bandID=null;
+						if(imageReader.isRGB())
+							{
+							curPixel=imageReader.getIndex(slicenum, 0, framenum);
+							bandID=channelnum;
+							}
+						else
+							curPixel=imageReader.getIndex(slicenum, channelnum, framenum);
+
+						
+						Float expTime=retrieve.getPlaneTimingExposureTime(seriesIndex, 0, curPixel);
+						
+
+						EvDecimal frame=null;
+						Float deltaT=retrieve.getPlaneTimingDeltaT(seriesIndex,0,curPixel);
+						if(deltaT!=null)
+							frame=new EvDecimal(deltaT);
+
+						if(frame!=null)
+							{
+							Float fdt=retrieve.getDimensionsTimeIncrement(0, 0);
+							if(fdt!=null)
+								frame=new EvDecimal(framenum*fdt);
+							}
+						
+						
+						//It *must* be 0,0
+						Float fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
+						Float fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
+						Float fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
+						/*
+						if(fdx==null && imageReader.getMetadataValue("VoxelSizeX")!=null)
+							fdx=(float)(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6);
+						if(fdy==null && imageReader.getMetadataValue("VoxelSizeY")!=null)
+							fdy=(float)(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeY"))*1e6);
+						if(fdz==null && imageReader.getMetadataValue("VoxelSizeZ")!=null)
+							fdz=(float)(1.0/( Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeZ"))/1000000 ));
+						
+						if(frame==null && imageReader.getMetadataValue("TimeInterval")!=null)
+							frame=new EvDecimal(""+imageReader.getMetadataValue("TimeInterval")).multiply(framenum);
+							*/
+
+						//System.out.println("orig dz" +fdz);
+						
+						if(fdx==null) fdx=1.0f;
+						if(fdy==null) fdy=1.0f;
+						if(fdz==null) fdz=1.0f;
+
+						if(frame==null)
+							frame=new EvDecimal(framenum);
+						
+						double resX=1.0/fdx; //[px/um]
+						double resY=1.0/fdy; //[px/um]
+						double resZ=fdz;
+						EvDecimal zpos=new EvDecimal(fdz).multiply(slicenum);
+						
+						im.resX=resX;
+						im.resY=resY;
+						im.resZ=resZ;
+						
+//						System.out.println("resf  "+fdx+" "+fdy+" "+fdz);
+	//					System.out.println("resEV "+im.resX+" "+im.resY+" "+im.resZ+" "+frame);
+						
+						EvImage evim=new EvImage();
+						TreeMap<EvDecimal, EvImage> loaderset=c.getCreateFrame(frame);
+						loaderset.put(zpos, evim); //used to be mul, with non-inv resz
+						evim.binning=1;
+						evim.dispX=0;
+						evim.dispY=0;
+						evim.resX=resX;
+						evim.resY=resY;
+						
+						evim.io=new SliceIO(imageReader, curPixel, bandID, "");
+						}
+					}
+				}
+			
+			
+			
+			}
+
+		//Load metadata from added OSTXML-file
+		File metaFile=getMetaFile();
+		if(metaFile.exists())
+			d.loadXmlMetadata(metaFile);
+
+		//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/components/bio-formats/src/loci/formats/meta/MetadataRetrieve.java
+		
+		//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/formats/meta/MetadataRetrieve.java?rev=4058
+		//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/components/loci-plugins/src/loci/plugins/LociFunctions.java
+//		imageReader.get
+//		retrieve.getDimensionsPhysicalSizeX(seriesIndex, arg1)
+		
+		//For a particular Dimensions, gets the size of an individual pixel's Z axis in microns.
+
+
+		
+		/*
+		 * 		
 		int numx=imageReader.getSizeX();
 		int numy=imageReader.getSizeY();
 		int numz=imageReader.getSizeZ();
 		int numt=imageReader.getSizeT();
 		int numc=imageReader.getSizeC();
-		
-		
-		
+
 		//Read meta data from original imageset
 		System.out.println("BF # XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
 		for(Object o:(Set)imageReader.getMetadata().entrySet())
@@ -400,6 +681,7 @@ public class EvIODataBioformats implements EvIOData
 				c.imageLoader.put(resT.multiply(framenum), loaderset);
 				}
 			}
+		*/
 		}
 
 

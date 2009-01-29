@@ -19,20 +19,14 @@ import endrov.util.EvDecimal;
 public class EllipseROI extends ROI
 	{
 	private static final String metaType="ROI_Ellipse";
+	private static final String metaDesc="Ellipse";
 	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconEllipse.png"));
 	public static void initPlugin() {}
 	static
 		{
 		EvData.extensions.put(metaType,EllipseROI.class);
 		
-		ROI.addType(new ROIType()
-			{
-			public boolean canPlace(){return true;}
-			public boolean isCompound(){return false;}
-			public String name(){return "Ellipse";};
-			public ROI makeInstance(){return new EllipseROI();}
-			public ImageIcon getIcon(){return icon;}
-			});
+		ROI.addType(new ROIType(icon, EllipseROI.class, true,false,metaDesc));
 		}
 	
 	public void saveMetadata(Element e)

@@ -22,13 +22,13 @@ public final class CalcThread extends BatchThread
 	private final String channelName;
 	private final int startFrame;
 	private final int endFrame;
-	private final String signalfilename;	
+	private final File signalfilename;	
 	private final Shell shell;
 	
 	public CalcThread(Imageset rec,	Shell shell,
 										double stripevar, int numstripes,	String channelName,	
 										int startFrame,	int endFrame,	
-										String signalfilename)
+										File signalfilename)
 		{
 		this.rec=rec;
 		this.shell=shell;
@@ -57,7 +57,7 @@ public final class CalcThread extends BatchThread
     	
     	if(signalfilename!=null)
     		{
-    		Imageset.ChannelImages ch=rec.getChannel(channelName);
+    		EvChannel ch=rec.getChannel(channelName);
     				
     		//Figure out how to discretize
     		final double[] stripepos=new double[numstripes];
@@ -104,8 +104,8 @@ public final class CalcThread extends BatchThread
     							if(lengthmap==null)
     								{
     								lengthmap=new double[h][w];
-      			    		final int dispX=(int)ch.getMeta().dispX;
-      			    		final int dispY=(int)ch.getMeta().dispY;
+      			    		final int dispX=(int)ch.dispX;
+      			    		final int dispY=(int)ch.dispY;
       			    		/*
       			    		System.out.println("Displaced "+dispX+" "+dispY+" / size "+w+" "+h);
       			    		System.out.println("shell "+shell.midx+" "+shell.midy+" "+shell.major+" --- "+(ch.getMeta().chBinning/(double)rec.meta.resX)+
@@ -126,8 +126,8 @@ public final class CalcThread extends BatchThread
     												(ay-dispY)*ch.getMeta().chBinning/(double)rec.meta.resY);
     										*/
     										Vector2D pos=new Vector2D(
-    												((ax)*ch.getMeta().chBinning+dispX)/(double)rec.resX,  //TODO WTF??? 
-    												((ay)*ch.getMeta().chBinning+dispY)/(double)rec.resY);
+    												((ax)*ch.chBinning+dispX)/(double)rec.resX,  //TODO WTF??? 
+    												((ay)*ch.chBinning+dispY)/(double)rec.resY);
 /*
     										Vector2D pos=new Vector2D(
     												(ax)*ch.getMeta().chBinning/(double)rec.meta.resX, 

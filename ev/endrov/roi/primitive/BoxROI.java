@@ -38,14 +38,7 @@ public class BoxROI extends ROI
 		{
 		EvData.extensions.put(metaType,BoxROI.class);
 		
-		ROI.addType(new ROIType()
-			{
-			public boolean canPlace(){return true;}
-			public boolean isCompound(){return false;}
-			public String name(){return "Box";};
-			public ROI makeInstance(){return new BoxROI();}
-			public ImageIcon getIcon(){return icon;}
-			});
+		ROI.addType(new ROIType(icon, BoxROI.class, true,false,"Box"));
 		
 		
 		}

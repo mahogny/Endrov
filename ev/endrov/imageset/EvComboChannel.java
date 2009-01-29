@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.EvPath;
 
 /**
  * Object combo. with children disabled it also works as a EvData selector.
@@ -62,14 +63,15 @@ public class EvComboChannel extends JPanel implements ActionListener
 	private class ComboItem
 		{
 		//another path interface in HW
-		String path[];
+		public EvPath path;
+		
  		private WeakReference<EvContainer> con; 
 		private WeakReference<EvData> data; 
 		public String channelName; 
 				
 		public ComboItem(List<String> path, String channelName, EvContainer obj, EvData data)
 			{
-			this.path=path.toArray(new String[0]);
+			this.path=new EvPath(path);
 			this.con=new WeakReference<EvContainer>(obj);
 			this.data=new WeakReference<EvData>(data);
 			this.channelName=channelName;
@@ -85,28 +87,25 @@ public class EvComboChannel extends JPanel implements ActionListener
 			return data.get();
 			}
 		
-		public StringBuffer getObjectPath()
-			{
-			StringBuffer sb=new StringBuffer();
-			for(int i=0;i<path.length;i++)
-				{
-				sb.append(path[i]);
-				if(i!=path.length-1)
-					sb.append("/");
-				}
-			return sb;
-			}
-		
 		public String toString()
 			{
-			StringBuffer sb=getObjectPath();
+			String s=path.toString();
+			if(channelName!=null)
+				{
+				if(path.path.length!=0)
+					s=s+"-"+channelName;
+				else
+					s=s+channelName;
+				}
+			return s;
+/*			StringBuffer sb=getObjectPath();
 			if(channelName!=null)
 				{
 				if(path.length!=0)
 					sb.append("-");
 				sb.append(channelName);
 				}
-			return sb.toString();
+			return sb.toString();*/
 			}
 		
 		}
@@ -325,10 +324,12 @@ public class EvComboChannel extends JPanel implements ActionListener
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
 		return ci.channelName;
 		}
+
 	
-	public String getSelectedObjectPath()
+	public EvPath getSelectedObjectPath()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
-		return ci.getObjectPath().toString();
+		return ci.path;
+//		getObjectPath().toString();
 		}
 	}

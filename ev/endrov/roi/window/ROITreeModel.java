@@ -35,7 +35,7 @@ public class ROITreeModel implements TreeModel
 
 	
 
-	private ROITreeElement getCreate(Object e, ROITreeElement parent)
+	private ROITreeElement getCreate(EvContainer e, ROITreeElement parent)
 		{
 		//System.out.println("getcreate e:"+e+" p:"+parent);
 		ROITreeElement o=allElements.get(e);

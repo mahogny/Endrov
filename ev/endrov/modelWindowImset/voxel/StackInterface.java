@@ -33,6 +33,7 @@ public abstract class StackInterface
 
 	
 	public boolean newisReady=false;
+	public boolean outOfDate=false;
 
 	//The new 3-step design
 	//Stacks are created once, rendered a few times, disposed

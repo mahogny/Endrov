@@ -79,13 +79,12 @@ public abstract class ROI extends EvObject
 	
 	//maybe all objects should have a parent assigned
 	
-	private static void deleteSelected(CompoundROI from)
+	private static void deleteSelected(EvContainer from)
 		{
-		for(ROI child:from.subRoi)
-			if(child instanceof CompoundROI)
-				deleteSelected((CompoundROI)child);
+		for(EvContainer child:from.metaObject.values())
+			deleteSelected(child);
 		for(ROI roi:selected)
-			from.subRoi.remove(roi);
+			from.metaObject.values().remove(roi);
 		}
 	
 	
@@ -112,17 +111,46 @@ public abstract class ROI extends EvObject
 	/******************************************************************************************************
 	 *            Class: Information about a ROI type                                                     *
 	 *****************************************************************************************************/
-	public static interface ROIType
+	public static class ROIType
 		{
+		private final ImageIcon icon;
+		private final Class<? extends ROI> roiClass;
+		private final boolean canPlace;
+		private final String name;
+		private final boolean isCompound;
+		public ROIType(ImageIcon icon, Class<? extends ROI> roiClass, boolean canPlace, boolean isCompound, String name)
+			{
+			this.icon=icon;
+			this.roiClass=roiClass;
+			this.canPlace=canPlace;
+			this.isCompound=isCompound;
+			this.name=name;
+			}
+		
 		/** Can be made by dragging two points in image window */
-		public boolean canPlace();
-		/** Instance is subclass of CompoundROI */
-		public boolean isCompound();
-		public String name();
+		public boolean canPlace(){return canPlace;}
+		
+		/** Compound ROI: puts together ROI from sub objects */
+		public boolean isCompound(){return isCompound;}
+		
+		public String name(){return name;}
+		
 		/** Create an instance of this ROI */
-		public ROI makeInstance();
+		public ROI makeInstance()
+			{
+			try
+				{
+				return roiClass.newInstance();
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				return null;
+				}
+			}
+		
 		/** Icon, can be null */
-		public ImageIcon getIcon();
+		public ImageIcon getIcon(){return icon;}
 		}
 	
 	private static TreeMap<String, ROIType> types=new TreeMap<String, ROIType>();
@@ -198,7 +226,7 @@ public abstract class ROI extends EvObject
 	public abstract boolean imageInRange(String channel, EvDecimal frame, EvDecimal z);
 	public abstract LineIterator getLineIterator(EvImage im, String channel, EvDecimal frame, EvDecimal z);
 	
-	public abstract Vector<ROI> getSubRoi();
+//	public abstract Vector<ROI> getSubRoi();
 	
 	
 	

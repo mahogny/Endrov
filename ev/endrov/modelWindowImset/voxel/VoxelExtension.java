@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.media.opengl.*;
@@ -263,7 +262,8 @@ public class VoxelExtension implements ModelWindowExtension
 					//TODO this can be improved a lot
 					if(!currentStack.newlastFrame.equals(getFrame()))
 						needNewStack=true;
-					
+					if(currentStack.outOfDate)
+						needNewStack=true;
 					}
 				
 				if(needNewStack)
@@ -301,6 +301,7 @@ public class VoxelExtension implements ModelWindowExtension
 					//Start build thread
 					if(!chsel.isEmpty())
 						{
+						System.out.println("New stack ----- "+chsel.keySet());
 						if(miRender3dTexture.isSelected()) 
 							loadingStack=new Stack3D(); 
 						else
@@ -397,10 +398,12 @@ public class VoxelExtension implements ModelWindowExtension
 					loadingStack=null;
 					}
 				if(currentStack!=null)
-					removableStacks.add(currentStack);
+					{
+					currentStack.outOfDate=true;
+					}
 				
 //				removableStacks.add(currentStack);
-				System.out.println("new stack");
+				System.out.println("new stack (changed)");
 	
 				//TODO good enough?
 				

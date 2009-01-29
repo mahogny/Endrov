@@ -6,6 +6,7 @@ import org.jdom.Element;
 
 import endrov.ev.EV;
 import endrov.ev.Log;
+import endrov.util.EvDecimal;
 
 
 /**
@@ -31,6 +32,21 @@ public class EvContainer
 	 */
 	public String ostBlobID;
 	
+	/**
+	 * Date when object was created. Can be null. Unix time
+	 */
+	public EvDecimal dateCreate;
+	
+	/**
+	 * Date when this object was last modified. Can be null. Unix time.
+	 */
+	public EvDecimal dateLastModify;
+	
+	
+	public EvContainer()
+		{
+		dateCreate=new EvDecimal(System.currentTimeMillis());
+		}
 	
 	/**
 	 * Set if metadata has been modified
@@ -38,7 +54,10 @@ public class EvContainer
 	public void setMetadataModified(boolean flag)
 		{
 		if(flag)
+			{
 			coreMetadataModified=true;
+			dateLastModify=new EvDecimal(System.currentTimeMillis());
+			}
 		else
 			{
 			coreMetadataModified=false;
@@ -70,7 +89,7 @@ public class EvContainer
 		{
 		LinkedList<E> ll=new LinkedList<E>();
 		for(EvObject ob2:metaObject.values())
-			if(ob2.getClass() == cl)
+			if(ob2.getClass().isInstance(cl))
 				ll.add((E)ob2);
 		return ll;
 		}
@@ -80,10 +99,9 @@ public class EvContainer
 	 */
 	@SuppressWarnings("unchecked") public <E> SortedMap<String, E> getIdObjects(Class<E> cl)
 		{
-		//TODO getclass==, does this exclude subclasses?
 		TreeMap<String, E> map=new TreeMap<String, E>();
 		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
-			if(e.getValue().getClass()==cl)
+			if(e.getValue().getClass().isInstance(cl))
 				map.put(e.getKey(),(E)e.getValue());
 		return map;
 		}
@@ -93,18 +111,16 @@ public class EvContainer
 	 */
 	public <E> SortedMap<EvPath, E> getIdObjectsRecursive(Class<E> cl)
 		{
-		//TODO getclass==, does this exclude subclasses?
 		TreeMap<EvPath, E> map=new TreeMap<EvPath, E>();
 		getIdObjectsRecursiveHelper(map, new LinkedList<String>(), cl);
 		return map;
 		}
 	@SuppressWarnings("unchecked") private <E> void getIdObjectsRecursiveHelper(Map<EvPath, E> map, LinkedList<String> curPath, Class<E> cl)
 		{
-		//TODO getclass==, does this exclude subclasses?
 		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
 			{
 			curPath.addFirst(e.getKey());
-			if(e.getValue().getClass()==cl)
+			if(e.getValue().getClass().isInstance(cl))
 				map.put(new EvPath(curPath),(E)e.getValue());
 			((EvContainer)e.getValue()).getIdObjectsRecursiveHelper(map, curPath, cl);
 			curPath.removeLast();
@@ -164,6 +180,10 @@ public class EvContainer
 			el.setAttribute("id",""+id);
 			if(o.ostBlobID!=null)
 				el.setAttribute("ostblobid",o.ostBlobID);
+			if(o.dateCreate!=null)
+				el.setAttribute("ostdatecreate",o.dateCreate.toString());
+			if(o.dateLastModify!=null)
+				el.setAttribute("ostdatemodify",o.dateLastModify.toString());
 			o.saveMetadata(el);
 
 			//subobjects
@@ -215,8 +235,17 @@ public class EvContainer
 			else
 				id=sid;
 			
+			//Common data for all OST objects
 			o.ostBlobID=child.getAttributeValue("ostblobid");
 			
+			String dateCreate=child.getAttributeValue("ostdatecreate");
+			if(dateCreate!=null)
+				o.dateCreate=new EvDecimal(dateCreate);
+			else
+				o.dateCreate=null;
+			String dateModify=child.getAttributeValue("ostdatemodify");
+			if(dateModify!=null)
+				o.dateLastModify=new EvDecimal(dateModify);
 			
 			Element subob=child.getChild(tagOstblobid);
 			if(subob!=null)
