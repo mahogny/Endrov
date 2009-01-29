@@ -33,4 +33,9 @@ public class PLUGIN extends PluginDef
 		return new Class[]{};
 //		return new Class[]{SliceSignalWindow.class};
 		}
+
+	public boolean isDefaultEnabled()
+		{
+		return true;
+		}
 	}

@@ -7,6 +7,7 @@ import javax.swing.JMenu;
 import org.jdom.*;
 
 import endrov.data.*;
+import endrov.ev.Log;
 import endrov.imageWindow.ImageWindow;
 import endrov.util.EvDecimal;
 
@@ -231,34 +232,41 @@ public class Imageset extends EvObject
 			{
 			Element i=(Element)oi;
 
-			if(i.getName().equals("timestep"))
-				metaTimestep=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("resX"))
-				resX=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("resY"))
-				resY=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("resZ"))
-				resZ=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("NA"))
-				metaNA=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("objective"))
-				metaObjective=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("optivar"))
-				metaOptivar=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("campix"))
-				metaCampix=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("slicespacing"))
-				metaSlicespacing=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("sample"))
-				metaSample=i.getValue();
-			else if(i.getName().equals("description"))
-				metaDescript=i.getValue();
-			else if(i.getName().equals("channel"))
-				extractChannel(i);
-			else if(i.getName().equals("frame"))
-				extractFrame(metaFrame, i);
-			else
-				metaOther.put(i.getName(), i.getValue());
+			try
+				{
+				if(i.getName().equals("timestep"))
+					metaTimestep=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resX"))
+					resX=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resY"))
+					resY=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("resZ"))
+					resZ=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("NA"))
+					metaNA=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("objective"))
+					metaObjective=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("optivar"))
+					metaOptivar=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("campix"))
+					metaCampix=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("slicespacing"))
+					metaSlicespacing=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("sample"))
+					metaSample=i.getValue();
+				else if(i.getName().equals("description"))
+					metaDescript=i.getValue();
+				else if(i.getName().equals("channel"))
+					extractChannel(i);
+				else if(i.getName().equals("frame"))
+					extractFrame(metaFrame, i);
+				else
+					metaOther.put(i.getName(), i.getValue());
+				}
+			catch (NumberFormatException e1)
+				{
+				Log.printError("Parse error, gracefully ignoring and resuming", e1);
+				}
 			}
 		
 		//Handle fucked up imagesets. Should not be used!
@@ -285,21 +293,28 @@ public class Imageset extends EvObject
 			{
 			Element i=(Element)oi;
 
-			if(i.getName().equals("dispX"))
+			try
 				{
-				ch.dispX=Double.parseDouble(i.getValue());
-				//System.out.println("dispX =" +ch.dispX);
+				if(i.getName().equals("dispX"))
+					{
+					ch.dispX=Double.parseDouble(i.getValue());
+					//System.out.println("dispX =" +ch.dispX);
+					}
+				else if(i.getName().equals("dispY"))
+					ch.dispY=Double.parseDouble(i.getValue());
+				else if(i.getName().equals("binning"))
+					ch.chBinning=Integer.parseInt(i.getValue());
+				else if(i.getName().equals("compression"))
+					ch.compression=Integer.parseInt(i.getValue());
+				else if(i.getName().equals("frame"))
+					extractFrame(ch.metaFrame, i);
+				else
+					ch.metaOther.put(i.getName(), i.getValue());
 				}
-			else if(i.getName().equals("dispY"))
-				ch.dispY=Double.parseDouble(i.getValue());
-			else if(i.getName().equals("binning"))
-				ch.chBinning=Integer.parseInt(i.getValue());
-			else if(i.getName().equals("compression"))
-				ch.compression=Integer.parseInt(i.getValue());
-			else if(i.getName().equals("frame"))
-				extractFrame(ch.metaFrame, i);
-			else
-				ch.metaOther.put(i.getName(), i.getValue());
+			catch (NumberFormatException e1)
+				{
+				Log.printError("Parse error, gracefully ignoring and resuming", e1);
+				}
 			}
 		}
 

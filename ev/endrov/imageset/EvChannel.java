@@ -33,7 +33,19 @@ public class EvChannel
 			return null;
 			}
 		}
+
 	
+	/**
+	 * Get access to a frame
+	 */
+	public TreeMap<EvDecimal, EvImage> getCreateFrame(EvDecimal frame)
+		{
+		TreeMap<EvDecimal, EvImage> f=imageLoader.get(frame);
+		if(f==null)
+			imageLoader.put(frame,f=new TreeMap<EvDecimal, EvImage>());
+		return f;
+		}
+
 	/**
 	 * Get or create an image
 	 */

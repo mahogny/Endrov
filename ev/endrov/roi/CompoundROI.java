@@ -2,8 +2,6 @@ package endrov.roi;
 
 import java.util.*;
 
-import org.jdom.Element;
-
 import endrov.basicWindow.BasicWindow;
 import endrov.data.*;
 
@@ -14,11 +12,14 @@ import endrov.data.*;
  */
 public abstract class CompoundROI extends ROI
 	{
-	protected Vector<ROI> subRoi=new Vector<ROI>();
-	
-	public Vector<ROI> getSubRoi()
+	/**
+	 * Get immediate children ROIs. List ordered by name.
+	 */
+	public List<ROI> getSubRoi()
 		{
-		return subRoi;
+		ArrayList<ROI> alist=new ArrayList<ROI>();
+		alist.addAll(getObjects(ROI.class));
+		return alist;
 		}
 
 	/**
@@ -28,21 +29,36 @@ public abstract class CompoundROI extends ROI
 		{
 		Set<ROI> rois=CompoundROI.collectRecursiveROI(data);
 		data.addMetaObject(croi);
+		int i=0;
 		for(ROI roi:rois)
-			croi.subRoi.add(roi);
+			{
+			String name;
+			do
+				{
+				name=""+i;
+				i++;
+				} while(croi.metaObject.containsKey(name));
+			croi.metaObject.put(name, roi);
+			}
 		BasicWindow.updateWindows();
 		}
 	
 
+	public SortedMap<String,ROI> getImmediateSubROI()
+		{
+		//TODO Here it is VERY important that it means to take a subclass
+		return getIdObjects(ROI.class);
+		}
+	
 	/**
 	 * Remove all selected ROIs recursively from their parents and return them
 	 */
-	private static Set<ROI> collectRecursiveROI(Object parent)
+	private static Set<ROI> collectRecursiveROI(EvContainer parent)
 		{
 		HashSet<ROI> hs=new HashSet<ROI>();
-		if(parent instanceof EvData)
+//		if(parent instanceof EvContainer)
 			{
-			EvData data=(EvData)parent;
+			EvContainer data=(EvContainer)parent;
 			Set<String> toremove=new HashSet<String>();
 			for(String key:data.metaObject.keySet())
 				{
@@ -61,6 +77,7 @@ public abstract class CompoundROI extends ROI
 			for(String key:toremove)
 				data.metaObject.remove(key);
 			}
+		/*
 		else if(parent instanceof CompoundROI)
 			{
 			Set<ROI> toremove=new HashSet<ROI>();
@@ -75,7 +92,7 @@ public abstract class CompoundROI extends ROI
 					hs.addAll(collectRecursiveROI(roi));
 				}
 			((CompoundROI)parent).subRoi.removeAll(toremove);
-			}
+			}*/
 		return hs;
 		}
 	
@@ -109,6 +126,8 @@ public abstract class CompoundROI extends ROI
 		}
 	
 	
+	
+	
 	/**
 	 * Get handles for corners
 	 */
@@ -116,7 +135,7 @@ public abstract class CompoundROI extends ROI
 		{
 		int id=0;
 		LinkedList<Handle> h=new LinkedList<Handle>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			for(Handle th:roi.getHandles())
 				h.add(new CompoundHandle(id++,th));
 //	return (Handle[])h.toArray();
@@ -131,7 +150,7 @@ public abstract class CompoundROI extends ROI
 		}
 	
 	
-	
+	/*
 	protected void saveCompoundMetadata(String name,Element e)
 		{
 		e.setName(name);
@@ -141,14 +160,15 @@ public abstract class CompoundROI extends ROI
 			r.saveMetadata(e2);
 			e.addContent(e2);
 			}
-		}
+		}*/
 	
+	/*
 	protected void loadCompoundMetadata(Element e)
 		{
 		Vector<EvObject> cobs=EvData.getChildObXML(e);
 		for(EvObject r:cobs)
 			subRoi.add((ROI)r);
-		}
+		}*/
 	
 //function to write/read all children as xml	
 	}

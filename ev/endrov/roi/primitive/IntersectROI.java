@@ -27,14 +27,8 @@ public class IntersectROI extends CompoundROI
 		{
 		EvData.extensions.put(metaType,IntersectROI.class);
 		
-		ROI.addType(new ROIType() //Fails here if not using static{}
-			{
-			public boolean canPlace(){return false;}
-			public boolean isCompound(){return true;}
-			public String name(){return metaDesc;};
-			public ROI makeInstance(){return new IntersectROI();}
-			public ImageIcon getIcon(){return icon;}
-			});
+		ROI.addType(new ROIType(icon, IntersectROI.class, false,true,metaDesc));
+
 		
 		//In common: Caused by: java.lang.NoClassDefFoundError: endrov/roi/primitive/IntersectROI$2 or 1
 		//this is a *Compound*ROI! first in plugin list
@@ -193,7 +187,7 @@ public class IntersectROI extends CompoundROI
 	public Set<String> getChannels(Imageset rec)
 		{
 		TreeSet<String> c=new TreeSet<String>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getChannels(rec));
 		return c;
 		}
@@ -204,7 +198,7 @@ public class IntersectROI extends CompoundROI
 	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getFrames(rec, channel));
 		return c;
 		}
@@ -216,7 +210,7 @@ public class IntersectROI extends CompoundROI
 	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getSlice(rec, channel, frame));
 		return c;
 		}
@@ -225,7 +219,7 @@ public class IntersectROI extends CompoundROI
 
 	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			if(roi.imageInRange(channel, frame, z))
 				return true;
 		return false;
@@ -236,6 +230,7 @@ public class IntersectROI extends CompoundROI
 	 */
 	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
+		List<ROI> subRoi=getSubRoi();
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
 			LineIterator li=subRoi.get(0).getLineIterator(im, channel, frame, z);
@@ -250,11 +245,10 @@ public class IntersectROI extends CompoundROI
 	
 	public void saveMetadata(Element e)
 		{
-		saveCompoundMetadata(metaType, e);
+		e.setName(metaType);
 		}
 	public void loadMetadata(Element e)
 		{
-		loadCompoundMetadata(e);
 		}
 	
 	

@@ -30,15 +30,7 @@ public class DiffROI extends CompoundROI
 		{
 		EvData.extensions.put(metaType,DiffROI.class);
 		
-		ROI.addType(new ROIType()
-			{
-
-			public boolean canPlace(){return false;}
-			public boolean isCompound(){return true;}
-			public String name(){return metaDesc;};
-			public ROI makeInstance(){return new DiffROI();}
-			public ImageIcon getIcon(){return icon;}
-			});
+		ROI.addType(new ROIType(icon, DiffROI.class, false,true,metaDesc));
 		}
 
 
@@ -203,7 +195,7 @@ public class DiffROI extends CompoundROI
 	public Set<String> getChannels(Imageset rec)
 		{
 		TreeSet<String> c=new TreeSet<String>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getChannels(rec));
 		return c;
 		}
@@ -214,7 +206,7 @@ public class DiffROI extends CompoundROI
 	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getFrames(rec, channel));
 		return c;
 		}
@@ -226,7 +218,7 @@ public class DiffROI extends CompoundROI
 	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
 		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			c.addAll(roi.getSlice(rec, channel, frame));
 		return c;
 		}
@@ -235,7 +227,7 @@ public class DiffROI extends CompoundROI
 
 	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
-		for(ROI roi:subRoi)
+		for(ROI roi:getSubRoi())
 			if(roi.imageInRange(channel, frame, z))
 				return true;
 		return false;
@@ -246,11 +238,14 @@ public class DiffROI extends CompoundROI
 	 */
 	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
+		Collection<ROI> subRoi=getSubRoi();
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
-			LineIterator li=subRoi.get(0).getLineIterator(im, channel, frame, z);
+			Iterator<ROI> it=subRoi.iterator();
+			LineIterator li=it.next().getLineIterator(im, channel, frame, z);
+			while(it.hasNext())
 			for(int i=1;i<subRoi.size();i++)
-				li=new ThisLineIterator(im, subRoi.get(i).getLineIterator(im, channel, frame, z), li, channel, frame, z);
+				li=new ThisLineIterator(im, it.next().getLineIterator(im, channel, frame, z), li, channel, frame, z);
 			return li;
 			}
 		else
@@ -258,15 +253,15 @@ public class DiffROI extends CompoundROI
 		}
 	
 	
+	
 	public void saveMetadata(Element e)
 		{
-		saveCompoundMetadata(metaType, e);
+		e.setName(metaType);
 		}
-
 	public void loadMetadata(Element e)
 		{
-		loadCompoundMetadata(e);
 		}
+	
 	
 	/**
 	 * Get widget for editing this ROI
