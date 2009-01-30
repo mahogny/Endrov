@@ -59,6 +59,7 @@ public abstract class ROI extends EvObject
 		{
 		selected.clear();
 		selected.addAll(newsel);
+		System.out.println("selected "+selected);
 		selectionChanged.emit(null);
 		}
 	

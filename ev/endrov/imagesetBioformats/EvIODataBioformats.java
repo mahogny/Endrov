@@ -114,8 +114,20 @@ public class EvIODataBioformats implements EvIOData
 				
 				BufferedImage i=imageReader.openImage(id);
 				
+				
 				int w=i.getWidth();
 				int h=i.getHeight();
+				
+				System.out.println("bf got "+i);
+				
+				//Make sure it is 8-bit all the time
+				if(i.getType()!=BufferedImage.TYPE_BYTE_GRAY)
+					{
+					BufferedImage j=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
+					j.getGraphics().drawImage(i,0,0,null);
+					i=j;
+					}
+				
 	/*
 				System.out.println("INT8   = "+FormatTools.INT8);
 				System.out.println("INT16  = "+FormatTools.INT16);
@@ -126,6 +138,7 @@ public class EvIODataBioformats implements EvIOData
 				System.out.println("pixtype  "+imageReader.getPixelType());*/
 				
 				//Float getPlaneTimingExposureTime(int imageIndex, int pixelsIndex, int planeIndex);
+				
 				
 				if(imageReader.getPixelType()==FormatTools.INT16 && basedir.getName().endsWith(".r3d"))
 					{
@@ -197,9 +210,9 @@ public class EvIODataBioformats implements EvIOData
 				
 				//System.out.println(""+i+" "+i.getWidth());
 				
-				//This hack fixes Leica
-				if(subid==null)
-					subid=0;
+				//This hack fixes Leica. SHOULDN'T BE NEEDED(?). bug upstream if needed again
+//				if(subid==null)
+//					subid=0;
 				/*else
 					System.out.println("subid "+subid);*/
 				

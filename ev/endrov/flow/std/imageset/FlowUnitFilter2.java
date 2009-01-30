@@ -46,16 +46,18 @@ public abstract class FlowUnitFilter2 extends FlowUnitBasic
 		}
 */
 
-
+	public static final String nameInROI="roi";
+	public static final String nameInImageset="imagesetIn";
+	public static final String nameOutImageset="imagesetOut";
 
 	@Override
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		//ROI is optional
-		types.put("roi", new FlowType(ROI.class));
+		types.put(nameInROI, new FlowType(ROI.class));
 		
 		//Some take several imagesets. provide one by default?
-		types.put("imagesetIn", new FlowType(Imageset.class));
+		types.put(nameInImageset, new FlowType(Imageset.class));
 		
 		
 		}
@@ -64,7 +66,7 @@ public abstract class FlowUnitFilter2 extends FlowUnitBasic
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
 		//Will imagesets be split? very seldom
-		types.put("imagesetOut", new FlowType(Imageset.class));
+		types.put(nameOutImageset, new FlowType(Imageset.class));
 		}
 
 	//May want to divide into Slice, Stack, Channel, Imageset depending on the level of the output.
