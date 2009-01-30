@@ -26,6 +26,7 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.flow.*;
 import endrov.util.JImageButton;
+import endrov.util.JImageToggleButton;
 
 /**
  * Window for editing Flows
@@ -40,10 +41,11 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	static final long serialVersionUID=0;
 
 	private static ImageIcon iconButtonSwap=new ImageIcon(FlowWindow.class.getResource("labelSwap.png"));
-	private static ImageIcon iconButtonPlay=new ImageIcon(FlowWindow.class.getResource("labelPlayForward.png"));
-	private static ImageIcon iconButtonStop=new ImageIcon(FlowWindow.class.getResource("labelPlayStop.png"));
+	private static ImageIcon iconButtonPlayOnce=new ImageIcon(FlowWindow.class.getResource("labelPlayForward.png"));
+	//private static ImageIcon iconButtonStop=new ImageIcon(FlowWindow.class.getResource("labelPlayStop.png"));
 	private static ImageIcon iconAlignRight=new ImageIcon(FlowWindow.class.getResource("labelAlignRight.png"));
 	private static ImageIcon iconAlignVert=new ImageIcon(FlowWindow.class.getResource("labelAlignVert.png"));
+	private static ImageIcon iconButtonPlayCont=new ImageIcon(FlowWindow.class.getResource("labelRepeat.png"));
 	
 	
 	public static void initPlugin() {}
@@ -115,8 +117,9 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	private JButton bDelete=BasicIcon.getButtonDelete();
 
 	private JButton bSwap=new JImageButton(iconButtonSwap,"Swap position between 2 units");
-	private JButton bPlay=new JImageButton(iconButtonPlay,"Run entire flow");
-	private JButton bStop=new JImageButton(iconButtonStop,"Stop execution of flow");
+	private JButton bPlayOnce=new JImageButton(iconButtonPlayOnce,"Evaluate flow once");
+	private JToggleButton bRepeat=new JImageToggleButton(iconButtonPlayCont,"Evaluate flow continuously");
+	//private JButton bStop=new JImageButton(iconButtonStop,"Stop execution of flow");
 	private JButton bAlignRight=new JImageButton(iconAlignRight,"Align right");
 	private JButton bAlignVert=new JImageButton(iconAlignVert,"Align vertical");
 	
@@ -195,8 +198,8 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		toolbar.add(bSwap);
 		toolbar.add(bAlignRight);
 		toolbar.add(bAlignVert);
-		toolbar.add(bPlay);
-		toolbar.add(bStop);
+		toolbar.add(bPlayOnce);
+		toolbar.add(bRepeat);
 		JPanel pTop=new JPanel(new BorderLayout());
 		pTop.add(objectCombo,BorderLayout.CENTER);
 		pTop.add(toolbar,BorderLayout.WEST);
@@ -207,8 +210,8 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		bSwap.addActionListener(this);
 		bAlignRight.addActionListener(this);
 		bAlignVert.addActionListener(this);
-		bPlay.addActionListener(this);
-		bStop.addActionListener(this);
+		bPlayOnce.addActionListener(this);
+		bRepeat.addActionListener(this);
 		objectCombo.addActionListener(this);
 		
 		

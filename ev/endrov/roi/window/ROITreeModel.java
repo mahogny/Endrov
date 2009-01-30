@@ -12,7 +12,7 @@ import endrov.data.*;
  */
 public class ROITreeModel implements TreeModel
 	{
-	HashSet<TreeModelListener> listener=new HashSet<TreeModelListener>();
+	private HashSet<TreeModelListener> listener=new HashSet<TreeModelListener>();
 	private EvContainer meta=null;
 
 	public WeakHashMap<Object, ROITreeElement> allElements=new WeakHashMap<Object, ROITreeElement>(); 

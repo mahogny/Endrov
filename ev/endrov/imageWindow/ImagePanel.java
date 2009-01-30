@@ -58,8 +58,18 @@ public class ImagePanel extends JPanel
 						bufi=image.getJavaImage();
 						if(bufi==null)
 							throw new Exception("Got null image from I/O");
+						
+						
+						//int numBits=src.getSampleModel().getSampleSize(0);
+						
 						ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
-						BufferedImage bufo=new BufferedImage(bufi.getWidth(), bufi.getHeight(), bufi.getType());
+						
+						
+						WritableRaster wr = Raster.createWritableRaster(bufi.getSampleModel(),new Point(0,0));
+						BufferedImage bufo = new BufferedImage(bufi.getColorModel(),wr,true,new Hashtable<Object,Object>());
+						
+/*						int newImType=bufi.getType();
+						BufferedImage bufo=new BufferedImage(bufi.getWidth(), bufi.getHeight(), newImType);*/
 						bcfilter.filter(bufi,bufo);
 						bufi=bufo;
 						

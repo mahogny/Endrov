@@ -192,6 +192,7 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 //		System.out.println("valuechanged");
 		HashSet<ROI> selected=new HashSet<ROI>();
 		TreePath[] selection=tree.getSelectionPaths();
+		System.out.println("---");
 		if(selection!=null)
 			for(TreePath tp:selection)
 				{
@@ -199,6 +200,7 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 				ROITreeElement to=(ROITreeElement)o;
 				if(to.e instanceof ROI)
 					selected.add((ROI)to.e);
+				System.out.println(to.e);
 				}
 		removeTreeListeners();
 		ROI.setSelected(selected);
