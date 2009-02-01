@@ -16,6 +16,12 @@ import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
 
+
+
+//metaretriever getPixelsBigEndian
+//in imageraeder, int getPixelType();
+//http://hudson.openmicroscopy.org.uk/job/LOCI/javadoc/loci/formats/FormatTools.html   types
+
 /**
  * Support for proprietary formats through LOCI Bioformats
  * 

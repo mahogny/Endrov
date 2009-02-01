@@ -295,7 +295,7 @@ public class FilterSeq extends EvObject
 	 */
 	public EvImage applyReturnImage(EvImage evim)
 		{
-		evim=new EvImage(evim);
+		evim=evim.makeHardCopy();
 		for(Filter fi:sequence)
 			{
 			FilterROI firoi=(FilterROI)fi;

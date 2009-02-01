@@ -2,67 +2,208 @@ package endrov.imageset;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.util.HashSet;
+import java.util.WeakHashMap;
+
+import javax.imageio.ImageIO;
 
 
 /**
+ * Endrov image plane. Can be swapped to disk, lazily read and lazily generated. Images can share data using
+ * copy-on-write semantics; copies following this are called shadows.
+ * 
+ * The user has to ensure exclusive access to memory and that it is in fact in memory before writing to it.
+ * Thread-safety should be implemented by locking on the EvImage object. Memory is kept in place if lock()
+ * is called prior to writing it. Remember to unlock() it after use or it can never be swapped out.
+ * 
+ * 
+ * 
+ * The damn data representation problem! can have another class, EvImageData, with all possible representations.
+ * These are: 
+ * * Signed/unsigned 8/16/32bit integer array
+ * * float/double array 
+ * * AWT image
+ * 
+ * Bonus feature: Java cannot handle unsigned data! AWT does some low-level interpretation. ways around:
+ * * let these go from -127 to 127. Non-standard!
+ * * ignore sign. +-* are the same on binary level. / is not and need special code; / is not good for integer images anyway
+ * * cut one bit to make it fit
+ * 
+ * Support for extremely large pictures, how does this affect interface?
+ * 
+ * 
  * @author Johan Henriksson
  *
  */
 
 public class EvImage  
 	{
+	/*
+	 * Memory precedence, skip to next step if null
+	 * 1. im
+	 * 2. cache
+	 * 3. swap
+	 * 4. shadowedImage
+	 * 5. io
+	 * 
+	 * Shadow data must be reset if data in this image.
+	 * 3,4 could be swapped for performance reasons, it should not affect semantics.
+	 * 
+	 * end user should be able to read/write metadata. resolution, displacement & binning are really required for normal operations and should be copied when needed.
+	 * other data can be left.
+	 * TODO maybe want to shadow this separately? can then send it all
+	 * 
+	 * image data is mutable. it is changed only if the changes are meant to be written to disk. for speed, the data is changed on byte-level. prior to this, 
+	 * all shadowed images should get a copy of the data. 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
 	
-	//TODO copy constructor
 
+	/** memory lock counter */
+	private int locks=0;
+	
+	/** Image this image shadows */
+	private EvImage shadowedImage=null;
+	/** Images shadowing this image */
+	private WeakHashMap<EvImage, Object> shadowedBy=new WeakHashMap<EvImage, Object>();
+
+	/** 
+	 * Connection to I/O. Allows lazy reading by postponing load operation. Also allows lazy generation by putting a generator as a loader.
+	 * 
+	 * */
+	public EvIOImage io=null;
+	
+  /** Force rewrite, such as change of compression */ 
+	public boolean isDirty=false;   
+	
+	/** In-memory image. Set to null if there is none. */
+	private BufferedImage im=null;
+
+	/** Swap file */
+	private File swapIm=null;
+	
+	/**
+	 * Cache: pointer to loaded image
+	 */
+	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
+
+	public double resX, resY, binning;
+	public double dispX, dispY;
+	
+	
+	
+	
+	
+	
+	
+
+	/**
+	 * Copy data from shadowed image here. Make sure this truly is a shadowed image before calling
+	 */
+	private void getShadowData()
+		{
+		BufferedImage sim=shadowedImage.getJavaImage();
+		im=new BufferedImage(sim.getWidth(),sim.getHeight(),sim.getType());
+		im.getGraphics().drawImage(im, 0, 0, null);
+		shadowedImage.shadowedBy.remove(this);
+		shadowedImage=null;
+		}
+	
+	/*private void clearThisAsShadow()
+		{
+		if(shadowedImage!=null)
+			shadowedImage.shadowedBy.remove(this);
+		shadowedImage=null;
+		}
+	*/
+	
+	/**
+	 * Give data to all images that shadow this image
+	 */
+	private void sendShadowData()
+		{
+		for(EvImage evim:new HashSet<EvImage>(shadowedBy.keySet()))
+			evim.getShadowData();
+		}
+	
+	
 	
 	public EvImage()
 		{
 		}
-
-	public EvImage(EvImage copy)
+	
+	/**
+	 * Make an image that points to this image for data.
+	 * Data is copy-on-write
+	 * 
+	 *  
+	 */
+	public EvImage makeShadowCopy()
 		{
-		resX=copy.resX;
-		resY=copy.resY;
-		dispX=copy.dispX;
-		dispY=copy.dispY;
-		binning=copy.binning;
-		io=copy.io;
-		
-		if(copy.im!=null)
-			{
-			im=new BufferedImage(copy.im.getWidth(),copy.im.getHeight(),copy.im.getType());
-			im.getGraphics().drawImage(copy.im, 0, 0, null);
-			}
+		EvImage copy=new EvImage();
+		copy.shadowedImage=this;
+		shadowedBy.put(copy, null);
+		copy.resX=resX;
+		copy.resY=resY;
+		copy.dispX=dispX;
+		copy.dispY=dispY;
+		copy.binning=binning;
+
+		return copy;
+		}
+	
+	/**
+	 * Precise copy of the image that contains it's own data
+	 */
+	public EvImage makeHardCopy()
+		{
+		//This could be made potentially faster, keeping it abstract for now
+		EvImage copy=makeShadowCopy();
+		copy.getShadowData();
+		return copy;
+		}
+	
+	/**
+	 * Must be called prior to making changes to mutable objects
+	 */
+	public void prepareForWrite()
+		{
+		sendShadowData();
+		if(shadowedImage!=null)
+			getShadowData();
 		}
 	
 	
-	/**
-	 * Connection to I/O. This is how partial loading is implemented
-	 */
-	public EvIOImage io=null;
 	
-  /**
-   * Force rewrite, such as change of compression
-   */ 
-	public boolean isDirty=false;   
 	
 	/**
-	 * In-memory image. Set to null if there is none.
-	 * 
-	 * TODO new image representation
-	 * 
-	 * TODO loadJavaImage, what to replace it with?
-	 * 
-	 * class can be abstract. EvImageCopy would work, and then a *generic* EvImageWithLoader that
-	 * has a pointer to the imageset
-	 * 
-	 * keeping pointers in program up to date will be a mess if abstract. better put in a loader reference.
-	 * it can be swapped upon saving all images
-	 * 
-	 * 
+	 * Ensure that data is in memory. This does NOT guarantee thread safety. Lock on the evimage object for this.
 	 */
-	protected BufferedImage im=null;
+	public void lock()
+		{
+		locks++;
+		//TODO ensure memory is in memory
+		}
+	
+	/**
+	 * Undo lock
+	 */
+	public void unlock()
+		{
+		locks--;
+		}
+	
+	public boolean isLocked()
+		{
+		return locks!=0;
+		}
+	
 	
 	
 	/**
@@ -80,10 +221,6 @@ public class EvImage
 		this.im=im;
 		}
 	
-	/**
-	 * Cache: pointer to loaded image
-	 */
-	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
 	
 	/**
 	 * Remove cached image. Can be called whenever.
@@ -98,28 +235,67 @@ public class EvImage
 	 * It is the choice for rendering or if AWT is guaranteed to be able to handle the image.
 	 * 
 	 * This image is read-only unless it is again set to be the AWT image of this EVImage. (best-practice?)
+	 * This has to be done *before* writing to the image.
+	 * TODO is this the best way? separate method?
+	 * 
+	 * 
+	 * This does not give a copy. to be damn sure there won't be any problems, you need to lock the data!
+	 * 
 	 */
 	public BufferedImage getJavaImage()
 		{
-		if(im==null)
-			{
-			CacheImages.addToCache(this);
-			BufferedImage loaded=cachedImage.get();
-			if(loaded==null)
-				{
-				loaded=io.loadJavaImage();
-				cachedImage=new SoftReference<BufferedImage>(loaded);
-				}
-			return loaded;
-			}
-		else
+		//Use in-memory image
+		if(im!=null)
 			return im;
+		else
+			{
+			//Use cache-memory
+			BufferedImage loaded=cachedImage.get();
+			if(loaded!=null)
+				{
+				CacheImages.addToCache(this);
+				return loaded;
+				}
+			else
+				{
+				//Use swap memory
+				if(swapIm!=null)
+					{
+					try
+						{
+						im=ImageIO.read(swapIm);
+						swapIm=null;
+						return im;
+						}
+					catch (IOException e)
+						{
+						e.printStackTrace();
+						return null;
+						}
+					}
+				else
+					{
+					//Use shadow image
+					if(shadowedImage!=null)
+						return shadowedImage.getJavaImage();
+					else
+						{
+						//Use IO
+						loaded=io.loadJavaImage();
+						cachedImage=new SoftReference<BufferedImage>(loaded);
+						return loaded;
+						}
+					}
+				}
+			}
 		}
 	
 	/**
 	 * Get array representation of image.
 	 * In the next-gen EV imaging API this will be the central function but at the moment
 	 * the AWT interface is faster.
+	 * 
+	 * 2D arrray? java has trouble with these. the primary interface should maybe be a 1d-array+width
 	 */
 	public double[][] getArrayImage()
 		{
@@ -140,14 +316,16 @@ public class EvImage
 	 */
 	public boolean modified()
 		{
-		return im!=null || isDirty;
+		return im!=null || swapIm!=null || isDirty || (shadowedImage!=null && shadowedImage.modified());
 		}
 	
 	/**
 	 * Modify image by setting a new image in this container. AWT format: Only use this format if no data will be lost.
+	 * Will call prepareForWrite automatically
 	 */
 	public void setImage(BufferedImage im)
 		{
+		prepareForWrite();
 		this.im=im;
 		cachedImage.clear();
 		cachedImage=new SoftReference<BufferedImage>(null);
@@ -172,8 +350,6 @@ public class EvImage
 	//Is this the final solution? Probably not, it will be moved to Stack level(?). or homogenized.
 	//but it's a quick patch
 	
-	public double resX, resY, binning;
-	public double dispX, dispY;
 	
 	public double getResX()
 		{
