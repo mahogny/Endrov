@@ -1,6 +1,7 @@
 package endrov.imageset;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 
 public class EvPixels
 	{
@@ -25,15 +26,25 @@ public class EvPixels
 	public int arrayW;
 	
 	/////// Data containers ///////////
-	public float arrayF[];
-	public double arrayD[];
+	private float arrayF[];
+	private double arrayD[];
 	
-	public byte  arrayB[];
-	public short arrayS[];
-	public int arrayI[];
+	private byte  arrayB[];
+	private short arrayS[];
+	private int arrayI[];
 	
-	public BufferedImage awt;
+	private BufferedImage awt;
 
+	/////// Access to arrays. This way the pointer cannot be changed externally
+	public float[] getArrayF(){return arrayF;}
+	public double[] getArrayD(){return arrayD;}
+	public byte[] getArrayB(){return arrayB;}
+	public short[] getArrayS(){return arrayS;}
+	public int[] getArrayI(){return arrayI;}
+	public BufferedImage getAWT(){return awt;}
+	
+	
+	
 	/////// Types ////////////////
 	public static final int TYPE_BYTE   =1<<0;
 	public static final int TYPE_UBYTE  =1<<1;
@@ -84,9 +95,113 @@ public class EvPixels
 		//Only convert if needed
 		if(type!=newType)
 			{
+			//Conversion is coded to be slow but short at the moment. Metaprogramming would help!
+			if(isIntegral() || type==TYPE_AWT)
+				{
+				helperConvertToInt();
+				
+				
+				
+				}
+			
+			
+			
+			
+			if(newType==TYPE_AWT)
+				{
+				
+				}
+			
+			
 			//TODO
 			
 			}
+		}
+	
+	private void helperConvertFromAwt(int newType)
+		{
+		WritableRaster r=awt.getRaster();
+		arrayW=awt.getWidth();
+		awt=null;
+		switch(newType)
+			{
+			case TYPE_BYTE:
+			case TYPE_UBYTE:
+				helperConvertFromAwt(TYPE_INT);
+				break;
+			
+			case TYPE_SHORT:
+			case TYPE_USHORT:
+				helperConvertFromAwt(TYPE_INT);
+				break;
+			
+			case TYPE_INT:
+			case TYPE_UINT:
+				arrayI=new int[r.getWidth()*r.getHeight()];
+				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, arrayI); 
+				break;
+				
+			case TYPE_FLOAT:
+				arrayF=new float[r.getWidth()*r.getHeight()];
+				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, arrayF); 
+				break;
+				
+			case TYPE_DOUBLE:
+				arrayF=new float[r.getWidth()*r.getHeight()];
+				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, arrayF); 
+				break;
+			}
+		type=newType;
+			
+		
+		}
+	
+	private void helperConvertToInt()
+		{
+		//There are some local variable optimizations(?).
+		int[] narr=null;
+		if(type==TYPE_BYTE || type==TYPE_UBYTE)
+			{
+			byte[] larr=arrayB;
+			narr=new int[larr.length];
+			for(int i=0;i<larr.length;i++)
+				narr[i]=larr[i];
+			arrayB=null;
+			}
+		else if(type==TYPE_SHORT || type==TYPE_USHORT)
+			{
+			short[] larr=arrayS;
+			narr=new int[larr.length];
+			for(int i=0;i<larr.length;i++)
+				narr[i]=larr[i];
+			arrayS=null;
+			}
+		else if(type==TYPE_INT || type==TYPE_UINT)
+			{
+			narr=this.arrayI;
+			}
+		else if(type==TYPE_FLOAT)
+			{
+			short[] larr=arrayS;
+			narr=new int[larr.length];
+			for(int i=0;i<larr.length;i++)
+				narr[i]=larr[i];
+			arrayS=null;
+			}
+		else if(type==TYPE_DOUBLE)
+			{
+			
+			}
+		else if(type==TYPE_AWT)
+			{
+			WritableRaster r=awt.getRaster();
+			narr=new int[awt.getWidth()*awt.getHeight()];
+			r.getSamples(0, 0, awt.getWidth(), awt.getHeight(), 0, narr); //exist for more types
+			arrayW=awt.getWidth();
+			awt=null;
+			}
+		this.arrayI=narr;
+		type=TYPE_INT;
 		}
 	
 	/**
