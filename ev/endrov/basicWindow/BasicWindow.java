@@ -22,6 +22,8 @@ import endrov.keyBinding.KeyBinding;
 
 import org.jdom.*;
 
+import util2.converter.ConvertStrainDB;
+
 /**
  * Any window in the application inherits this class.
  * 
@@ -222,6 +224,36 @@ public abstract class BasicWindow extends JPanel
 	 * Static: DnD utils *
 	 *****************************************************************************************************/
 
+
+	public static String convertStreamToString(InputStream is)
+		{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+
+		String line = null;
+		try 
+			{
+			while ((line = reader.readLine()) != null) 
+				sb.append(line + "\n");
+			}
+		catch (IOException e) 
+			{
+			e.printStackTrace();
+			} 
+		finally
+			{
+			try
+				{
+				is.close();
+				} catch (IOException e) 
+					{
+					e.printStackTrace();
+					}
+			}
+		return sb.toString();
+		}
+
+
 	public static void attachDragAndDrop(JComponent c)
 		{
 		// c.getClass().getMethod("setDragEnabled", parameterTypes)
@@ -233,6 +265,7 @@ public abstract class BasicWindow extends JPanel
 	@SuppressWarnings("unchecked")
 	public static List<File> transferableToFileList(Transferable t)
 		{
+		System.out.println("Drag and drop");
 		try
 			{
 			List<File> files = new LinkedList<File>();
@@ -242,11 +275,27 @@ public abstract class BasicWindow extends JPanel
 				Iterator i = data.iterator();
 				while (i.hasNext())
 					files.add((File) i.next());
+				System.out.println("javalistflavour "+files);
 				return files;
 				}
-			else if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
+			else //if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
 				{
-				String data = (String) t.getTransferData(DataFlavor.stringFlavor);
+				String data;
+				if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
+					data = (String) t.getTransferData(DataFlavor.stringFlavor);
+				else
+					{
+					Object inp=t.getTransferData(t.getTransferDataFlavors()[0]);
+					if(inp.getClass()==String.class)
+						data=(String)inp;
+					else if(inp.getClass()==ByteArrayInputStream.class) //noo
+						{
+						ByteArrayInputStream bi=(ByteArrayInputStream)inp;
+						data=convertStreamToString(bi);
+						}
+					else
+						return null;
+					}
 		    for (StringTokenizer st = new StringTokenizer(data, "\r\n"); st.hasMoreTokens();) 
 		    	{
 		      String s = st.nextToken();
@@ -283,9 +332,21 @@ public abstract class BasicWindow extends JPanel
 					else
 						System.out.println("Not sure how to read: "+line);
 					}*/
+				System.out.println(files);
 				return files;
 				}
-			return null;
+/*			else
+				{
+				Object inp=t.getTransferData(t.getTransferDataFlavors()[0]);
+				System.out.println(""+inp.getClass()+"   "+inp);
+
+				
+				LinkedList<DataFlavor> flav=new LinkedList<DataFlavor>();
+				for(DataFlavor fl:t.getTransferDataFlavors())
+					flav.add(fl);
+				System.out.println("unsupported drag and drop, flavours: "+flav.toString());
+				return null;
+				}*/
 			}
 		catch (UnsupportedFlavorException e)
 			{
