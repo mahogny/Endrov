@@ -693,7 +693,7 @@ public class EvIODataOST implements EvIOData
 		{
 		File metaFile=new File(basedir,"rmd.ostxml");
 		if(!metaFile.exists())
-			System.out.printf("AAIEEE NO METAFILE?? this might mean this is in the OST1 format which has been removed");
+			Log.printError("PROBLEM! There is no rmd.ostxml. This is not conforming to the OST standard",null);
 
 		if(basedir.exists())
 			{
@@ -706,17 +706,17 @@ public class EvIODataOST implements EvIOData
 				cb.fileIOStatus(0.5, "images...");
 				scanFiles(d, cb);
 
-				convert3_3d2(d);
+				convert3_3d2(d,cb);
 				}
 			catch (FileNotFoundException e)
 				{
-				e.printStackTrace();
+				Log.printError("Could not load OST", e);
 				}
 
 			
 			}
 		else
-			Log.printError("Error: Imageset base directory does not exist",null);
+			Log.printError("Fatal: Imageset base directory does not exist",null);
 		}
 	
 
@@ -748,7 +748,9 @@ public class EvIODataOST implements EvIOData
 			//Get list of images, from cache or by listing files
 			if(!(getDatabaseCacheFile(blob).exists() && loadDatabaseCache(im, blob)))
 				{
-				for(File chanf:blob.getDirectory().listFiles())
+				File blobdir=blob.getDirectory();
+				System.out.println("Scanning for images in "+blobdir);
+				for(File chanf:blobdir.listFiles())
 					if(chanf.isDirectory() && chanf.getName().startsWith("ch-"))
 						{
 						String channelName=chanf.getName().substring("ch-".length());
@@ -877,8 +879,7 @@ public class EvIODataOST implements EvIOData
 				}
 			else
 				{
-				Log.printLog("Loading imagelist cache");
-
+				//Log.printLog("Loading imagelist cache "+blobFile);
 				int numChannels=Integer.parseInt(in.readLine());
 				for(int i=0;i<numChannels;i++)
 					{
@@ -946,7 +947,9 @@ public class EvIODataOST implements EvIOData
 		blob.diskImageLoader.clear();
 		try
 			{
-			return loadDatabaseCacheMap(blob.diskImageLoader, new FileInputStream(getDatabaseCacheFile(blob)), mapBlobs.get(im).getDirectory());
+			File cacheFile=getDatabaseCacheFile(blob);
+			System.out.println("Attempting to load image cache "+cacheFile);
+			return loadDatabaseCacheMap(blob.diskImageLoader, new FileInputStream(cacheFile), mapBlobs.get(im).getDirectory());
 			}
 		catch (FileNotFoundException e)
 			{
@@ -1068,18 +1071,21 @@ public class EvIODataOST implements EvIOData
 	 * Convert 3 -> 3.2
 	 * Timestep and resZ deleted, major file renaming. imageset directories
 	 */
-	public void convert3_3d2(EvData d)
+	public void convert3_3d2(EvData d,EvData.FileIOStatusCallback cb)
 		{
-		double curv=Double.parseDouble(d.metadataVersion);
+		EvDecimal curv=new EvDecimal(d.metadataVersion);
 		
 		boolean chExists=false;
 		for(File f:basedir.listFiles())
 			if(f.getName().startsWith("ch-"))
 				chExists=true;
 		
-		if(curv<3.2 || chExists)
+		if(curv.less(new EvDecimal("3.2")) || chExists)
 			{
-			System.out.println("Updating files 3->3.2");
+			cb.fileIOStatus(90, "Converting to OST 3.2, this might take a while");
+			Log.printLog("Updating files 3->3.2");
+			//With SSHFS+mac there is a problem: renames hang the system!
+			
 			
 			mapBlobs.clear(); //Make sure blob gets the right blobid
 

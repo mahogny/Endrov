@@ -20,6 +20,8 @@ Functionality
 * Does ROI work?
 * Does matlab interface work?
 * Does JNLP work?
+* Can do 3D rendering?
+* Drag and drop working?
 
 Dependencies up to date?
 * micro-manager

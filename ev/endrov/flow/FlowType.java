@@ -108,7 +108,7 @@ public class FlowType
 	public boolean supports(Class<?> c)
 		{
 		for(Class<?> oc:type)
-			if(c.isInstance(oc))
+			if(c.isInstance(oc)) //TODO wrong, this is not how isinstance works
 				return true;
 		return false;
 		}

@@ -89,7 +89,7 @@ public class EvContainer
 		{
 		LinkedList<E> ll=new LinkedList<E>();
 		for(EvObject ob2:metaObject.values())
-			if(ob2.getClass().isInstance(cl))
+			if(cl.isInstance(ob2))
 				ll.add((E)ob2);
 		return ll;
 		}
@@ -101,7 +101,7 @@ public class EvContainer
 		{
 		TreeMap<String, E> map=new TreeMap<String, E>();
 		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
-			if(e.getValue().getClass().isInstance(cl))
+			if(cl.isInstance(e.getValue()))
 				map.put(e.getKey(),(E)e.getValue());
 		return map;
 		}
@@ -120,7 +120,7 @@ public class EvContainer
 		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
 			{
 			curPath.addFirst(e.getKey());
-			if(e.getValue().getClass().isInstance(cl))
+			if(cl.isInstance(e.getValue()))
 				map.put(new EvPath(curPath),(E)e.getValue());
 			((EvContainer)e.getValue()).getIdObjectsRecursiveHelper(map, curPath, cl);
 			curPath.removeLast();
