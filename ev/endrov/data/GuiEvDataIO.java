@@ -14,6 +14,8 @@ import javax.swing.JProgressBar;
 
 import org.jdesktop.swingworker.SwingWorker;
 
+import endrov.ev.Log;
+
 
 /**
  * Graphical loading and saving of files
@@ -49,7 +51,10 @@ public class GuiEvDataIO
 		
 		public void fileIOStatus(double proc, String text)
 			{
-			setProgress((int)(100*nowAt+proc*100)/path.size());
+			if(proc>=0 && proc<=1)
+				setProgress((int)(100*nowAt+proc*100)/path.size());
+			else
+				Log.printError("fileIOstatus range should be 0-1", null);
 			}
 		
 		}
@@ -81,7 +86,10 @@ public class GuiEvDataIO
 		
 		public void fileIOStatus(double proc, String text)
 			{
-			setProgress((int)(100*nowAt+proc*100)/datas.size());
+			if(proc>=0 && proc<=1)
+				setProgress((int)(100*nowAt+proc*100)/datas.size());
+			else
+				Log.printError("fileIOstatus range should be 0-1", null);
 			}
 		
 		}
