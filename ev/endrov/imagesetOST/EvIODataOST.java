@@ -1082,7 +1082,7 @@ public class EvIODataOST implements EvIOData
 		
 		if(curv.less(new EvDecimal("3.2")) || chExists)
 			{
-			cb.fileIOStatus(90, "Converting to OST 3.2, this might take a while");
+			cb.fileIOStatus(0.9, "Converting to OST 3.2, this might take a while");
 			Log.printLog("Updating files 3->3.2");
 			//With SSHFS+mac there is a problem: renames hang the system!
 			
