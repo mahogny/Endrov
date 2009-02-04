@@ -244,6 +244,8 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				if(lastImageset.get()!=im)
 					surfaces.clear();
 				lastImageset=new WeakReference<Imageset>(im);
+				if(im==null)
+					im=new Imageset();
 				
 				//Get channel
 				String channelName=chanCombo.getChannel();

@@ -29,7 +29,6 @@ import endrov.util.Tuple;
 public class Stack3D extends StackInterface
 	{	
 	private Vector<VoxelStack> texSlices=new Vector<VoxelStack>();
-	//private List<VoxelStack> disposableStacks=new LinkedList<VoxelStack>(); //Data to be removed. Not currently in use.
 	private final int skipForward=1; //later maybe allow this to change
 	
 	
@@ -104,20 +103,6 @@ public class Stack3D extends StackInterface
 			}
 		}
 	
-	/**
-	 * Get or create slices for one z. Has to be synchronized
-	 */ 
-	/*
-	private synchronized Vector<VoxelStack> getTexSlicesFrame(EvDecimal z)
-		{
-		//Put texture into list
-		Vector<VoxelStack> texSlicesV=texSlices.get(z);
-		if(texSlicesV==null)
-			texSlices.put(z, texSlicesV=new Vector<VoxelStack>());
-		return texSlicesV;
-		}*/
-		
-		
 	
 	
 	/**
@@ -125,49 +110,17 @@ public class Stack3D extends StackInterface
 	 */
 	public void clean(GL gl)
 		{
-//		for(Vector<VoxelStack> osv:texSlices.values())
-//			for(VoxelStack os:osv)
 		for(VoxelStack os:texSlices)
 				os.tex.dispose(gl);
 		texSlices.clear();
 		if(shader3d!=null)
 			shader3d.delete(gl);
 		shader3d=null;
-//		cleanDisposable(gl);
 		}
 	
-	
-	/**
-	 * Dispose useless stacks. Need GL context, forced by parameter.
-	 */
-	/*
-	public void cleanDisposable(GL gl)
-		{
-		for(VoxelStack os:disposableStacks)
-			os.tex.dispose(gl);
-		disposableStacks.clear();
-		}
-		*/
-	
-	
-	/*
-	public void setLastFrame(EvDecimal frame)
-		{
-		lastframe=frame;
-		}
-	
-	public boolean needSettings(EvDecimal frame)
-		{
-		return lastframe==null || !frame.equals(lastframe);
-		}
-	*/
 	
 	public boolean newCreate(ProgressMeter pm, EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel2,ModelWindow w)
 		{
-
-		//disposableStacks.addAll(texSlices); //New. TODO
-		//texSlices.clear();
-
 		//im. cache safety issues
 		Collection<VoxelExtension.ChannelSelection> channels=chsel2.values();
 		procList.clear();
@@ -263,8 +216,6 @@ public class Stack3D extends StackInterface
 
 
 			texSlices.add(os);
-			//				getTexSlicesFrame(frame).add(os);
-
 			os.needLoadGL=true;
 
 			curchannum++;
@@ -290,10 +241,8 @@ public class Stack3D extends StackInterface
 	public Collection<Double> adjustScale(ModelWindow w)
 		{
 		if(!texSlices.isEmpty())
-	//	if(texSlices!=null && !texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(0);
-//			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			return Collections.singleton((os.realw+os.realh+os.reald)/3);
 			}
 		else
@@ -309,7 +258,6 @@ public class Stack3D extends StackInterface
 		if(!texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(0);
-//			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			return Collections.singleton(new Vector3d(os.realw/2.0,os.realh/2.0,os.reald/2.0));
 			}
 		else
@@ -325,7 +273,6 @@ public class Stack3D extends StackInterface
 		if(!texSlices.isEmpty())
 			{
 			VoxelStack os=texSlices.get(0);
-//			VoxelStack os=texSlices.get(texSlices.firstKey()).get(0);
 			double dx=Math.max(Math.abs(0-mid.x), Math.abs(os.realw-mid.x));
 			double dy=Math.max(Math.abs(0-mid.y), Math.abs(os.realh-mid.y));
 			double dz=Math.max(Math.abs(0-mid.z), Math.abs(os.reald-mid.z));

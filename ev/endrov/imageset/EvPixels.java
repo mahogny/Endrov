@@ -362,6 +362,15 @@ public class EvPixels
 		}
 	
 	
+	public int getRowIndex(int y)
+		{
+		return arrayW*y;
+		}
+	
+	public int getPixelIndex(int x, int y)
+		{
+		return arrayW*y+x;
+		}
 	
 	public static void main(String[] arg)
 		{
