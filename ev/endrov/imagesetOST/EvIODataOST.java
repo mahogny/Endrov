@@ -14,6 +14,9 @@ import endrov.ev.Log;
 import endrov.imageset.*;
 import endrov.util.*;
 
+//TODO what happens if an object with a blobid from another imageset is moved to this imageset?
+
+
 /**
  * I/O for OST-files and derived file formats
  * 
@@ -731,8 +734,6 @@ public class EvIODataOST implements EvIOData
 		//Create blobs
 		mapBlobs.clear();
 		
-		//System.out.println("found imagesets # "+data.getIdObjects(Imageset.class).size());
-		
 		for(Imageset im:data.getIdObjectsRecursive(Imageset.class).values())
 			{
 			DiskBlob blob=getCreateBlob(im);
@@ -1086,9 +1087,7 @@ public class EvIODataOST implements EvIOData
 			Log.printLog("Updating files 3->3.2");
 			//With SSHFS+mac there is a problem: renames hang the system!
 			
-			
 			mapBlobs.clear(); //Make sure blob gets the right blobid
-
 
 			File oldcache=new File(basedir,"imagecache.txt");
 			if(oldcache.exists())
@@ -1103,7 +1102,7 @@ public class EvIODataOST implements EvIOData
 				im.metaTimestep=1;
 				}
 			
-			//This is a hack, there is only one imageset in these dated formats
+			//There is only one imageset in these dated formats
 			List<Imageset> ims=d.getObjects(Imageset.class);
 			if(ims.size()>0)
 				{
@@ -1111,9 +1110,6 @@ public class EvIODataOST implements EvIOData
 				im.ostBlobID="imset-im";
 				DiskBlob blob=getCreateBlob(im);
 				blob.currentDir=im.ostBlobID;
-				
-				//mapBlobs.clear();
-				//getCreateBlob(im);
 				
 				//For all channels
 				for(File fchan:basedir.listFiles())

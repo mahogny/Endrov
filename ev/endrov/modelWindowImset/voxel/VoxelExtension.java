@@ -165,12 +165,6 @@ public class VoxelExtension implements ModelWindowExtension
 		public StackInterface getCurrentStack()
 			{
 			return currentStack;
-			/*
-			if(currentStack.isEmpty())
-				return null;
-			else
-				return currentStack.get(getClosestFrame((SortedSet)currentStack.keySet(), getFrame()));
-				*/
 			}
 		
 		
@@ -318,6 +312,15 @@ public class VoxelExtension implements ModelWindowExtension
 							}
 						}.run();
 						}
+					else
+						{
+						//Remove existing stack if all channels deselected
+						loadingStack=null;
+						if(currentStack!=null)
+							removableStacks.add(currentStack);
+						currentStack=null;
+						}
+					
 					
 					
 					
@@ -329,23 +332,6 @@ public class VoxelExtension implements ModelWindowExtension
 				//Render current stack
 				if(currentStack!=null)
 					currentStack.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
-				
-				/*
-				//Build list of which channels should be rendered
-				if(currentStack.needSettings(frame))
-					{
-					currentStack.setLastFrame(frame);
-					
-					
-					}
-				else
-					{
-					//Render
-		//			System.out.println("voxloadgl");
-					currentStack.loadGL(gl);
-		//			System.out.println("voxrender");
-					currentStack.render(gl,transparentRenderers,w.view.camera,miSolidColor.isSelected(),miDrawEdge.isSelected(), miMixColors.isSelected());
-					}*/
 				}
 			catch (Exception e)
 				{
@@ -384,8 +370,6 @@ public class VoxelExtension implements ModelWindowExtension
 			private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
 				{public void observerEvent(Object o){stackChanged();}};
 			
-//			public WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
-//			public String lastChannel="";
 			public WeakReference<EvChannel> lastChannelImages=new WeakReference<EvChannel>(null);
 			
 			/** Update stack */ 

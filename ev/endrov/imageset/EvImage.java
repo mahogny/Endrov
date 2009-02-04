@@ -110,7 +110,7 @@ public class EvImage
 		{
 		BufferedImage sim=shadowedImage.getJavaImage();
 		im=new BufferedImage(sim.getWidth(),sim.getHeight(),sim.getType());
-		im.getGraphics().drawImage(im, 0, 0, null);
+		im.getGraphics().drawImage(sim, 0, 0, null);
 		shadowedImage.shadowedBy.remove(this);
 		shadowedImage=null;
 		}

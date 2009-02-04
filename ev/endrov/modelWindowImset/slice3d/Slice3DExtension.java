@@ -184,7 +184,8 @@ public class Slice3DExtension implements ModelWindowExtension
 				if(lastImageset.get()!=im)
 					slice.rebuild();
 				lastImageset=new WeakReference<Imageset>(im);
-				
+				if(im==null)
+					im=new Imageset();
 				
 				String channelName=chanCombo.getChannel();
 				EvChannel ch=im.channelImages.get(channelName);

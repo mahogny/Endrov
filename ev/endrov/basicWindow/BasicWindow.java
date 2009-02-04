@@ -22,7 +22,6 @@ import endrov.keyBinding.KeyBinding;
 
 import org.jdom.*;
 
-import util2.converter.ConvertStrainDB;
 
 /**
  * Any window in the application inherits this class.
@@ -225,9 +224,9 @@ public abstract class BasicWindow extends JPanel
 	 *****************************************************************************************************/
 
 
-	public static String convertStreamToString(InputStream is)
+	public static String convertStreamToString(InputStreamReader r)
 		{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		BufferedReader reader=new BufferedReader(r);
 		StringBuilder sb = new StringBuilder();
 
 		String line = null;
@@ -244,13 +243,18 @@ public abstract class BasicWindow extends JPanel
 			{
 			try
 				{
-				is.close();
-				} catch (IOException e) 
-					{
-					e.printStackTrace();
-					}
+				reader.close();
+				} 
+			catch (IOException e) 
+				{
+				e.printStackTrace();
+				}
 			}
 		return sb.toString();
+		}
+	public static String convertStreamToString(InputStream is)
+		{
+		return convertStreamToString(new InputStreamReader(is));
 		}
 
 
@@ -288,13 +292,15 @@ public abstract class BasicWindow extends JPanel
 					Object inp=t.getTransferData(t.getTransferDataFlavors()[0]);
 					if(inp.getClass()==String.class)
 						data=(String)inp;
-					else if(inp.getClass()==ByteArrayInputStream.class) //noo
-						{
-						ByteArrayInputStream bi=(ByteArrayInputStream)inp;
-						data=convertStreamToString(bi);
-						}
+					else if(InputStream.class.isInstance(inp)) 
+						data=convertStreamToString((InputStream)inp);
+					else if(InputStreamReader.class.isInstance(inp))
+						data=convertStreamToString((InputStreamReader)inp);
 					else
+						{
+						System.out.println("Unsupported type: "+inp.getClass());
 						return null;
+						}
 					}
 		    for (StringTokenizer st = new StringTokenizer(data, "\r\n"); st.hasMoreTokens();) 
 		    	{
