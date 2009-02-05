@@ -16,8 +16,8 @@ uploaddoc:
 starters:
 	jar cfvm startOSTdaemon.jar OSTdaemon/MANIFEST.STARTOST OSTdaemon/*.class endrov/ev/EvBuild.class
 	jar cfvm startImServ.jar bioserv/MANIFEST.STARTIMSERV bioserv/StartImServ.class endrov/ev/EvBuild.class
-	#jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class endrov/ev/EvBuild.class
 	jar cfvm startEndrov.jar endrov/starter/MANIFEST.STARTGUI endrov/starter/*.class endrov/ev/EvBuild.class
+	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/*.class endrov/ev/EvBuild.class
 	du -hc start*.jar
 
 macstarters:
@@ -26,10 +26,6 @@ macstarters:
 
 macplugin:
 	jar cfv libs/bin_mac/macbinding.jar endrov/macBinding/*.class
-
-
-startcev:
-	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/*.class
 
 #applet:
 #	jar cfv evapplet/applet.jar evapplet/*.class
@@ -72,6 +68,8 @@ memprof:
 
 
 
-runimserv:
-	java -jar startEndrov.jar evplugin.imagesetImserv.service.GUI
+#runimserv:
+#	java -jar startEndrov.jar evplugin.imagesetImserv.service.GUI
+
+	#jar cfvm OSTmaker.jar OSTmaker/MANIFEST OSTmaker/StartOSTmaker.class endrov/ev/EvBuild.class
 
