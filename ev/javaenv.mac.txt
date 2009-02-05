@@ -1,1 +1,0 @@
--Xmx1900M -Djava.security.manager -Djava.security.policy=java.policy
