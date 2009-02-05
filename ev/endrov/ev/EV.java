@@ -406,6 +406,10 @@ public class EV
 			{
 			if(EV.isMac())
 				Runtime.getRuntime().exec(new String[]{"/usr/bin/open",f.getAbsolutePath()});
+			else if(EV.isLinux())
+				{
+				Runtime.getRuntime().exec(new String[]{"/usr/bin/xdg-open",f.getAbsolutePath()});
+				}
 			else
 				{
 				//TODO JAVA6

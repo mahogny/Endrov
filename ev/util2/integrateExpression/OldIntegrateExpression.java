@@ -14,7 +14,7 @@ import endrov.imageset.*;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
 
-public class IntegrateExpression
+public class OldIntegrateExpression
 	{
 	
 	

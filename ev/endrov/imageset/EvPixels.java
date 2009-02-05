@@ -2,7 +2,6 @@ package endrov.imageset;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.util.Arrays;
 
 
 /**
@@ -111,6 +110,8 @@ public class EvPixels
 	public static final int TYPES_SIGNED = TYPE_SHORT | TYPE_INT | TYPE_FLOAT | TYPE_DOUBLE;
 	public static final int TYPES_INTEGRAL = TYPE_UBYTE | TYPE_SHORT | TYPE_INT;
 	public static final int TYPES_FP = TYPE_FLOAT | TYPE_DOUBLE;
+	public static final int TYPES_ANY = TYPE_UBYTE | TYPE_SHORT | TYPE_INT | TYPE_FLOAT | TYPE_DOUBLE | TYPE_AWT;
+	public static final int TYPES_ANYBUTAWT = TYPE_UBYTE | TYPE_SHORT | TYPE_INT | TYPE_FLOAT | TYPE_DOUBLE;
 	
 	/**
 	 * Constructing an empty pixelset, shouldn't really be possible outside
@@ -190,6 +191,16 @@ public class EvPixels
 			}
 		}
 	
+
+	/**
+	 * Copy constructor, from AWT image
+	 */
+	public EvPixels(BufferedImage awt)
+		{
+		setPixels(awt);
+		}
+	
+	
 	/**
 	 * Allocate a new pixel plane
 	 */
@@ -235,7 +246,11 @@ public class EvPixels
 				return helperConvertFromAwt(newType);
 			else
 				{
-				EvPixels p=helperConvertToInt();
+				EvPixels p;
+				if(type==TYPE_INT)
+					p=this;
+				else
+					p=helperConvertToInt();
 				return p.helperConvertFromInt(newType);
 				}
 			}
@@ -266,6 +281,26 @@ public class EvPixels
 		return get(validTypes, false);
 		}
 
+	public static String type2string(int type)
+		{
+		if(type==0)
+			return "no type";
+		else if(type==TYPE_AWT)
+			return "AWT";
+		else if(type==TYPE_UBYTE)
+			return "ubyte";
+		else if(type==TYPE_SHORT)
+			return "short";
+		else if(type==TYPE_INT)
+			return "int";
+		else if(type==TYPE_FLOAT)
+			return "float";
+		else if(type==TYPE_DOUBLE)
+			return "double";
+		else
+			return "<???>";
+		}
+	
 	/**
 	 * Get pixels in suitable format
 	 */
@@ -275,6 +310,7 @@ public class EvPixels
 		//Needed to keep AWT in particular
 		if((validTypes & type)!=0)
 			{
+			System.out.println("keep type"+type2string(type));
 			if(readOnly)
 				return this;
 			else
@@ -295,12 +331,18 @@ public class EvPixels
 		//Try to upconvert to satisfy
 		for(int i=curtypei;i<typeOrder.length;i++)
 			if((typeOrder[i] & validTypes)!=0)
+				{
+				//System.out.println("Upconvert "+type2string(typeOrder[i]));
 				return convertTo(typeOrder[i], readOnly);
+				}
 		
 		//Try to downconvert. Best-effort, use the least destructible option
 		for(int i=curtypei;i>=0;i--)
 			if((typeOrder[i] & validTypes)!=0)
+				{
+				//System.out.println("Downconvert "+type2string(typeOrder[i]));
 				return convertTo(typeOrder[i], readOnly);
+				}
 
 		//Sane options exhausted
 		throw new RuntimeException("No types at all would fit conversion! Was the acceptable-list 0?");
@@ -333,23 +375,23 @@ public class EvPixels
 			
 			case TYPE_INT:
 				p.arrayI=new int[r.getWidth()*r.getHeight()];
-				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, arrayI);
+				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, p.arrayI);
 				return p;
 				
 			case TYPE_FLOAT:
 				p.arrayF=new float[r.getWidth()*r.getHeight()];
-				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, arrayF);
+				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, p.arrayF);
 				return p;
 				
 			case TYPE_DOUBLE:
 				p.arrayD=new double[r.getWidth()*r.getHeight()];
-				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, arrayD);
+				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, p.arrayD);
 				return p;
 			
 			default:
 				System.out.println("Conversion error in fromawt");
 			}
-		return p;
+		throw new RuntimeException("convert from awt to "+type2string(newType)+" not supported by this function");
 		}
 	
 	/**
@@ -362,21 +404,24 @@ public class EvPixels
 		p.w=w;
 		p.h=h;
 		p.type=newType;
+		System.out.println("conv int->"+type2string(newType));
 		
 		int[] larr=arrayI;
-		if(type==TYPE_UBYTE)
+		if(newType==TYPE_UBYTE)
 			{
 			byte[] narr=new byte[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(byte)larr[i];
 			p.arrayB=narr;
+			return p;
 			}
-		else if(type==TYPE_SHORT)
+		else if(newType==TYPE_SHORT)
 			{
 			short[] narr=new short[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(short)larr[i];
 			p.arrayS=narr;
+			return p;
 			}
 		else if(newType==TYPE_FLOAT)
 			{
@@ -384,6 +429,7 @@ public class EvPixels
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(float)larr[i];
 			p.arrayF=narr;
+			return p;
 			}
 		else if(newType==TYPE_DOUBLE)
 			{
@@ -391,19 +437,21 @@ public class EvPixels
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(double)larr[i];
 			p.arrayD=narr;
+			return p;
 			}
 		else if(newType==TYPE_AWT)
 			{
 			//Can be made faster
-			BufferedImage im=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-			im.getRaster().setPixels(0, 0, w, h, arrayI);
-			p.awt=im;
+			p.awt=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
+			p.awt.getRaster().setPixels(0, 0, w, h, arrayI);
+			return p;
 			}
-		return p;
+		throw new RuntimeException("convert from int to "+type2string(newType)+" not supported by this function");
 		}
 	
 	/**
-	 * Convert from int to any type
+	 * Convert from int to any type.
+	 * Assumes it is not int so conversion will always be needed
 	 */
 	private EvPixels helperConvertToInt()
 		{
@@ -415,7 +463,6 @@ public class EvPixels
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=larr[i];
-			arrayB=null;
 			}
 		else if(type==TYPE_SHORT)
 			{
@@ -423,11 +470,6 @@ public class EvPixels
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=larr[i];
-			arrayS=null;
-			}
-		else if(type==TYPE_INT)
-			{
-			narr=this.arrayI;
 			}
 		else if(type==TYPE_FLOAT)
 			{
@@ -435,7 +477,6 @@ public class EvPixels
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(int)larr[i];
-			arrayF=null;
 			}
 		else if(type==TYPE_DOUBLE)
 			{
@@ -443,22 +484,26 @@ public class EvPixels
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(int)larr[i];
-			arrayD=null;
 			}
 		else if(type==TYPE_AWT)
 			{
 			WritableRaster r=awt.getRaster();
 			narr=new int[awt.getWidth()*awt.getHeight()];
 			r.getSamples(0, 0, awt.getWidth(), awt.getHeight(), 0, narr); //exist for more types
-			w=awt.getWidth();
-			awt=null;
 			}
-		EvPixels p=new EvPixels();
-		p.arrayI=narr;
-		p.type=TYPE_INT;
-		p.w=w;
-		p.h=h;
-		return p;
+		
+		
+		if(narr!=null)
+			{
+			EvPixels p=new EvPixels();
+			p.arrayI=narr;
+			p.type=TYPE_INT;
+			p.w=w;
+			p.h=h;
+			return p;
+			}
+		else
+			throw new RuntimeException("convert to int from "+type2string(type)+" not supported by this function");
 		}
 	
 	
@@ -534,6 +579,7 @@ public class EvPixels
 		return w*y+x;
 		}
 	
+	/*
 	public static void main(String[] arg)
 		{
 		EvPixels p=new EvPixels(EvPixels.TYPE_INT, 200, 100);
@@ -543,22 +589,6 @@ public class EvPixels
 		
 		//but what if I want a copy of a different type? why the need to duplicate *and* convert?
 		
-		/*
-		 * this is what I really want
-		 * 
-		 * EvPixels n=p.getReadOnly();
-		 * EvPixels n=p.getReadOnlyFormats(TYPE_INT,....);
-		 * EvPixels n=p.getReadOnly
-		 * 
-		 * somehow also keep track of it was copied. set a flag internally?
-		 * 
-		 * EvPixels n=p.getWritableCopy()
-		 * 
-		 * And in very few cases, p.convert();  but this can be done with the above functions
-		 * 
-		 * 
-		 */
-		
-		
 		}
+	*/
 	}

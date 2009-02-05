@@ -9,7 +9,7 @@ import java.util.Scanner;
  */
 public class EvBuild
 	{
-	public static final String version;//="2.12.0";
+	public static final String version;
 	static
 		{
 		Scanner scanner = new Scanner(EvBuild.class.getResourceAsStream("version.txt"));

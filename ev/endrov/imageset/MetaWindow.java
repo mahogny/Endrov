@@ -287,7 +287,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			//Add channel tabs
 			for(String channelName:rec.channelImages.keySet())
 				{
-				System.out.println("meta123: "+channelName);
+				//System.out.println("meta123: "+channelName);
 				tabs.add(channelName, new ChannelTab(this,channelName,rec.getChannel(channelName)));
 				}
 			if(currentIndex>=0 && currentIndex<tabs.getComponentCount())
@@ -334,7 +334,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 		p.add(p3, new GridBagConstraints(0,cury++,3,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 		p.add(new JLabel("Description"),new GridBagConstraints(0,cury++,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 		
-		JScrollPane scrollPane = new JScrollPane(commonDescript, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollPane = new JScrollPane(commonDescript, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		p.add(scrollPane,	new GridBagConstraints(0,cury++,3,1,1,1,GridBagConstraints.CENTER,GridBagConstraints.BOTH,ins,0,0));
 
 		commonSlicespacing.setPreferredSize(new Dimension(400,22));
