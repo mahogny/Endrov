@@ -6,22 +6,51 @@
 	<string>true</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>CFBundleIdentifier</key>
-	<string>OSTdaemon</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>129</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>****</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>xml</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>OST XML</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>TEXT</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>NSDocumentClass</key>
+			<string>MyDocument</string>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>JavaApplicationStub</string>
 	<key>CFBundleGetInfoString</key>
-	<string>http://celegans.sh.se</string>
+	<string>http://www.endrov.net</string>
 	<key>CFBundleIconFile</key>
-	<string>umicon.icns</string>
+	<string>ImageJ.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>evgui</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>OSTDaemon</string>
+	<string>EVGUI</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
-	<string>OSTDaemon</string>
+	<string>EV</string>
 	<key>CFBundleVersion</key>
 	<string>10.2</string>
 	<key>Java</key>
@@ -31,7 +60,7 @@
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
-		<string>OSTdaemon.GUI</string>
+		<string>endrov.starter.MW</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.awt.Antialiasing</key>
@@ -50,7 +79,7 @@
 			<string>true</string>
 		</dict>
 		<key>VMOptions</key>
-		<string>-Xms32m -Xmx1500m -Djava.library.path=libs/bin_mac:libs/umanager_inc/bin_mac</string>
+		<string>-Xmx2000m -Djava.library.path=libs/bin_mac:libs/umanager_inc/bin_mac</string>
 	</dict>
 </dict>
 </plist>

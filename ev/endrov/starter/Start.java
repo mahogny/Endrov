@@ -236,18 +236,22 @@ public class Start
 						tot=tot+"$APPLICATION/../"+s.substring(dotlen);
 						}
 					System.out.println(tot);
+
+					File dotdir=new File(".");
+					String loclibdir=libdir.replace(dotdir.getAbsolutePath()+"/", "");
 					
-					for(String app:new String[]{"EVGUI.app","ImServ.app","OSTdaemon.app"})
+					for(String app:new String[]{"Endrov.app","ImServ.app","OSTdaemon.app"})
 						{
 						String template=EvFileUtil.readFile(new File(app+"/Contents/Resources/preinfo.txt"));
 						File out=new File(app+"/Contents/Info.plist");
-						EvFileUtil.writeFile(out, template.replace("JARLIST", tot));
+						EvFileUtil.writeFile(out, template
+								.replace("JARLIST", tot)
+								.replace("SOLIST",loclibdir));
 						System.out.println("Wrote to "+out);
-						//TODO also write SO-list
 						}
 					
 					
-					FileWriter fw=new FileWriter(new File("EVGUI.app/Contents/Resources/jars.txt"));
+					FileWriter fw=new FileWriter(new File("Endrov.app/Contents/Resources/jars.txt"));
 					fw.write(tot);
 					fw.flush();
 					fw.close();
