@@ -128,6 +128,9 @@ public class EvPixels
 		p.w=w;
 		p.h=h;
 		
+		/*
+		 * 
+		 *  TODO does not work on mac, new in 1.6
 		if(arrayB!=null)
 			p.arrayB=Arrays.copyOf(arrayB, arrayB.length);
 		if(arrayS!=null)
@@ -138,6 +141,47 @@ public class EvPixels
 			p.arrayF=Arrays.copyOf(arrayF, arrayF.length);
 		if(arrayD!=null)
 			p.arrayD=Arrays.copyOf(arrayD, arrayD.length);
+		*/
+
+		if(arrayB!=null)
+			{
+			p.arrayB=new byte[arrayB.length];
+			for(int i=0;i<arrayB.length;i++)
+				p.arrayB[i]=arrayB[i];
+			}
+
+		if(arrayS!=null)
+			{
+			p.arrayS=new short[arrayS.length];
+			for(int i=0;i<arrayS.length;i++)
+				p.arrayS[i]=arrayS[i];
+			}
+
+		if(arrayI!=null)
+			{
+			p.arrayI=new int[arrayI.length];
+			for(int i=0;i<arrayI.length;i++)
+				p.arrayI[i]=arrayI[i];
+			}
+
+		if(arrayF!=null)
+			{
+			p.arrayF=new float[arrayF.length];
+			for(int i=0;i<arrayF.length;i++)
+				p.arrayF[i]=arrayF[i];
+			}
+
+		if(arrayD!=null)
+			{
+			p.arrayD=new double[arrayD.length];
+			for(int i=0;i<arrayD.length;i++)
+				p.arrayD[i]=arrayD[i];
+			}
+
+		
+		
+		
+		
 		if(awt!=null)
 			{
 			BufferedImage im=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
