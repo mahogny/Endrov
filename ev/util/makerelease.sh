@@ -10,7 +10,7 @@ cp -r ev $name
 cd $name
 
 #private
-rm -Rf evplugin2 util2 myKeys   
+rm -Rf evplugin2 util2 util/myKeys   
 
 #make sure these are up to date
 make starters

@@ -196,7 +196,7 @@ public class Start
 
 				//Add arguments from environment file
 				if(javaenvFile==null)
-					javaenvFile=new File("javaenv."+osExt+".txt");
+					javaenvFile=new File(new File("config"),"javaenv."+osExt+".txt");
 				if(javaenvFile.exists())
 					{
 					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));

@@ -18,7 +18,7 @@ import endrov.util.EvXmlUtil;
  */
 public class Config
 	{
-	static File configfile=new File("bioserv.conf");
+	static File configfile=new File(new File("config"),"bioserv.conf");
 	
 	/**
 	 * Read config from file

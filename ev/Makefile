@@ -33,7 +33,7 @@ startcev:
 
 #applet:
 #	jar cfv evapplet/applet.jar evapplet/*.class
-#	#jarsigner -keystore myKeys evapplet/applet.jar jdc
+#	#jarsigner -keystore util/myKeys evapplet/applet.jar jdc
 #	#keytool -export -keystore myKeys -alias jdc -file evapplet/johanhenriksson.cer
 
 
@@ -45,7 +45,7 @@ totaljar:
 		*/*class */*/*class */*/*/*class \
 		*/*/*png */*/*/*png \
 		*/*/*/*glsl 
-	jarsigner -keystore myKeys ../ev.jar jdc
+	jarsigner -keystore util/myKeys ../ev.jar jdc
 	du -hc ../ev.jar
 
 jnlp:	totaljar
@@ -56,7 +56,7 @@ jnlp:	totaljar
 #sevenjar:
 #	jar cfv sevenzip.jar */*class */*/*/*class
 
-#keytool -genkey -keystore myKeys -alias jdc
+#keytool -genkey -keystore util/myKeys -alias jdc
 
 
 hpj:	
