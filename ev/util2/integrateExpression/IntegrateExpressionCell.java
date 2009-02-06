@@ -1,20 +1,22 @@
 package util2.integrateExpression;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
 
+/**
+ * Cell-level expression level integration.
+ * @author Johan Henriksson
+ *
+ */
 public class IntegrateExpressionCell
 	{
 	
@@ -63,9 +65,6 @@ public class IntegrateExpressionCell
 		//For all lineages
 		NucLineage lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 		
-		Double minExpLevel=null;
-		Double maxExpLevel=null;
-
 		TreeMap<EvDecimal, Integer> bgLevel=new TreeMap<EvDecimal, Integer>();
 		
 		
@@ -82,6 +81,11 @@ public class IntegrateExpressionCell
 			Map<String, Double> expLevel=new HashMap<String, Double>();
 			Map<String, Integer> nucVol=new HashMap<String, Integer>();
 
+			//Get exposure time
+			String sExpTime=ost.channelImages.get(channelName).metaFrame.get(frame).get("exposure"); //TODO name. write down constants? predef variables?
+			double expTime=1;
+			if(sExpTime!=null)
+				expTime=Double.parseDouble(sExpTime);
 			
 			int bgIntegral=0;
 			int bgVolume=0;
@@ -179,21 +183,23 @@ public class IntegrateExpressionCell
 			for(String nucName:expLevel.keySet())
 				{
 				double avg=expLevel.get(nucName)/nucVol.get(nucName);
+				avg/=expTime;
 //				System.out.println(nucName+" "+avg);
 				NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
 				if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(frame) && 
 						lin.nuc.get(nucName).pos.firstKey().lessEqual(frame)) 
 					exp.level.put(frame,avg);
 				
-				if(minExpLevel==null || avg<minExpLevel)
-					minExpLevel=avg;
-				if(maxExpLevel==null || avg>maxExpLevel)
-					maxExpLevel=avg;
+				
+				
+//				if(minExpLevel==null || avg<minExpLevel) minExpLevel=avg;
+//				if(maxExpLevel==null || avg>maxExpLevel) maxExpLevel=avg;
+				
 				}
 
 			}
 
-
+/*
 		//Subtract background. 
 		//TODO But using minExpLevel, I don't like it. should use some image average. border? first line?
 		double expSize=maxExpLevel-minExpLevel;
@@ -204,7 +210,7 @@ public class IntegrateExpressionCell
 					nuc.exp.get(expName).level.put(e.getKey(), (e.getValue()-minExpLevel)*5);
 					}
 		
-		
+	*/	
 		
 		//data.saveData();
 
