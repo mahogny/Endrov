@@ -2,9 +2,11 @@ package util2.integrateExpression;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import endrov.data.EvData;
 import endrov.ev.*;
@@ -12,6 +14,7 @@ import endrov.imageset.*;
 import endrov.nuc.*;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
+import endrov.util.EvFileUtil;
 import endrov.util.Vector2D;
 
 /**
@@ -54,29 +57,39 @@ public class IntegrateExpressionAP
 		//TODO need to group lineage and shell. introduce a new object?
 		NucLineage lin=imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 		Shell shell=imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
+		ExpUtil.clearExp(lin, expName);
+
+		//Virtual nuc for AP
+		for(int i=0;i<numSubDiv;i++)
+			lin.getNucCreate("_slice"+i);
 		
-		TreeMap<EvDecimal, Integer> bgLevel=new TreeMap<EvDecimal, Integer>();
+		
+		
+		TreeMap<EvDecimal, Double> bgLevel=new TreeMap<EvDecimal, Double>();
 		
 		
 		HashMap<EvDecimal, EvPixels> distanceMap=new HashMap<EvDecimal, EvPixels>();
 		
 		
 		
+		EvChannel ch=imset.getChannel(channelName);
+		
 		
 		
 		//For all frames
 		System.out.println("num frames: "+imset.getChannel(channelName).imageLoader.size());
-		EvDecimal lastFrame=imset.getChannel(channelName).imageLoader.lastKey();
-		for(EvDecimal frame:imset.getChannel(channelName).imageLoader.keySet())
+		EvDecimal lastFrame=ch.imageLoader.lastKey();
+		for(EvDecimal frame:ch.imageLoader.keySet())
+			if(frame.less(new EvDecimal("30000")) && frame.greater(new EvDecimal("29000")))
 			{
 			System.out.println();
 			System.out.println("frame "+frame+" / "+lastFrame);
 
-			Map<String, Double> expLevel=new HashMap<String, Double>();
-			Map<String, Integer> nucVol=new HashMap<String, Integer>();
+			//Map<String, Double> expLevel=new HashMap<String, Double>();
+			//Map<String, Integer> nucVol=new HashMap<String, Integer>();
 
 			//Get exposure time
-			String sExpTime=imset.channelImages.get(channelName).metaFrame.get(frame).get("exposure"); //TODO name. write down constants? predef variables?
+			String sExpTime=imset.metaFrame.get(frame).get("exposuretime");
 			double expTime=1;
 			if(sExpTime!=null)
 				expTime=Double.parseDouble(sExpTime);
@@ -88,7 +101,6 @@ public class IntegrateExpressionAP
 			int[] sliceVol=new int[numSubDiv];
 
 			//For all z
-			EvChannel ch=imset.channelImages.get(channelName);
 			for(Map.Entry<EvDecimal, EvImage> eim:ch.imageLoader.get(frame).entrySet())
 				{
 				EvDecimal curZ=eim.getKey();
@@ -192,6 +204,12 @@ public class IntegrateExpressionAP
 				double avg=(double)sliceExp[i]/(double)sliceVol[i];
 				avg/=expTime;
 				
+		
+				NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
+				NucExp exp=nuc.getExpCreate(expName);
+				exp.level.put(frame, avg);
+				
+				
 				/*
 				NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
 				if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(frame) && 
@@ -208,14 +226,14 @@ public class IntegrateExpressionAP
 			//Store bglevel in list
 			if(bgVolume!=0)
 				{
-				bgLevel.put(frame, bgIntegral/bgVolume);
+				bgLevel.put(frame, bgIntegral/(double)bgVolume);
 				System.out.println("BG: "+bgLevel.get(frame));
 				}
 
 
 
 			
-			
+			/*
 			
 			//Store value in XML
 			for(String nucName:expLevel.keySet())
@@ -231,10 +249,47 @@ public class IntegrateExpressionAP
 
 
 
-				}
+				}*/
 
 			}
 
+		
+		
+		TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
+		ExpUtil.correctExposureChange(imset, lin, expName, framesSorted);
+		ExpUtil.normalizeSignal(lin, expName);
+
+		
+
+		
+		
+		try
+			{
+			StringBuffer outf=new StringBuffer();
+			
+			here: for(EvDecimal frame:ch.imageLoader.keySet())
+				{
+				for(int i=0;i<numSubDiv;i++)
+					{
+					NucLineage.Nuc nuc=lin.nuc.get("_slice"+i);
+					NucExp nexp=nuc.exp.get(expName);
+					Double level=nexp.level.get(frame);
+					if(level==null)
+						continue here;
+					outf.append(level);
+					}
+				outf.append("\n");
+				}
+			EvFileUtil.writeFile(new File("/tmp/out.txt"), outf.toString());
+			
+			
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		
+		
 /*
 		//Subtract background. 
 		//TODO But using minExpLevel, I don't like it. should use some image average. border? first line?
@@ -248,7 +303,7 @@ public class IntegrateExpressionAP
 		
 	*/	
 		
-		//data.saveData();
-
+		//data.saveData(); NOOO
+		System.exit(0);
 		}
 	}

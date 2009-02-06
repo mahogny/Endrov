@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import endrov.data.EvData;
 import endrov.ev.*;
@@ -60,18 +61,20 @@ public class IntegrateExpressionCell
 		String channelName="GFP";
 		String expName="CEH-5";
 
-		Imageset ost=data.getObjects(Imageset.class).get(0);
+		Imageset imset=data.getObjects(Imageset.class).get(0);
 
 		//For all lineages
 		NucLineage lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
-		
-		TreeMap<EvDecimal, Integer> bgLevel=new TreeMap<EvDecimal, Integer>();
-		
+		ExpUtil.clearExp(lin, expName);
+
+		TreeMap<EvDecimal, Double> bgLevel=new TreeMap<EvDecimal, Double>();
 		
 		//For all frames
-		System.out.println("num frames: "+ost.getChannel(channelName).imageLoader.size());
-		EvDecimal lastFrame=ost.getChannel(channelName).imageLoader.lastKey();
-		for(EvDecimal frame:ost.getChannel(channelName).imageLoader.keySet())
+		System.out.println("num frames: "+imset.getChannel(channelName).imageLoader.size());
+		EvChannel ch=imset.getChannel(channelName);
+		EvDecimal lastFrame=ch.imageLoader.lastKey();
+		for(EvDecimal frame:ch.imageLoader.keySet())
+			if(frame.less(new EvDecimal("35000")) && frame.greater(new EvDecimal("10000")))
 			{
 			System.out.println();
 			System.out.println("frame "+frame+" / "+lastFrame);
@@ -82,16 +85,18 @@ public class IntegrateExpressionCell
 			Map<String, Integer> nucVol=new HashMap<String, Integer>();
 
 			//Get exposure time
-			String sExpTime=ost.channelImages.get(channelName).metaFrame.get(frame).get("exposure"); //TODO name. write down constants? predef variables?
+			String sExpTime=imset.metaFrame.get(frame).get("exposuretime");
 			double expTime=1;
 			if(sExpTime!=null)
 				expTime=Double.parseDouble(sExpTime);
+			System.out.println("exptime: "+expTime);
 			
 			int bgIntegral=0;
 			int bgVolume=0;
 
+			
 			//For all images
-			for(Map.Entry<EvDecimal, EvImage> eim:ost.getChannel(channelName).imageLoader.get(frame).entrySet())
+			for(Map.Entry<EvDecimal, EvImage> eim:ch.imageLoader.get(frame).entrySet())
 				{
 				EvImage im=eim.getValue();
 				EvPixels pixels=null;
@@ -173,7 +178,7 @@ public class IntegrateExpressionCell
 			//Store bglevel in list
 			if(bgVolume!=0)
 				{
-				bgLevel.put(frame, bgIntegral/bgVolume);
+				bgLevel.put(frame, (double)bgIntegral/(double)bgVolume);
 				System.out.println("BG: "+bgLevel.get(frame));
 				}
 			
@@ -212,7 +217,13 @@ public class IntegrateExpressionCell
 		
 	*/	
 		
-		//data.saveData();
+		TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
+		ExpUtil.correctExposureChange(imset, lin, expName, framesSorted);
+		ExpUtil.normalizeSignal(lin, expName);
 
+		
+		data.saveData();
+
+		System.exit(0);
 		}
 	}

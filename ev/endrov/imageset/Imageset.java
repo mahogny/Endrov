@@ -316,6 +316,8 @@ public class Imageset extends EvObject
 				Log.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
 			}
+		
+//		System.out.println("chanframemeta "+ch.metaFrame);
 		}
 
 	/**
