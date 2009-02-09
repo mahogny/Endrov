@@ -1129,7 +1129,7 @@ public class EvIODataOST implements EvIOData
 								{
 								String s=fframe.getName();
 								EvDecimal cur=new EvDecimal(s.substring(1));
-								File newframe=new File(fchan, EV.pad(cur.multiply(im.metaTimestep), 8));
+								File newframe=new File(fchan, EV.pad(cur.multiply(new EvDecimal(im.metaTimestep)), 8));
 								fframe.renameTo(newframe);
 								}
 						

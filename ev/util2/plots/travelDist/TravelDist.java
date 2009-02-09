@@ -128,8 +128,8 @@ public class TravelDist
 				if(!nuc.pos.isEmpty() && nuc.child.size()==2) //Only consider cells with children
 					{
 					int c=3;
-					EvDecimal start = nuc.pos.firstKey().add(c);
-					EvDecimal end   = nuc.pos.lastKey().subtract(c);
+					EvDecimal start = nuc.firstFrame().add(c);
+					EvDecimal end   = nuc.lastFrame().subtract(c);
 		
 		
 					if(start.less(end))

@@ -114,7 +114,7 @@ public class CellContactMap
 			//Go through all frames
 			int numframes=0;
 			EvDecimal frameInc=new EvDecimal(1); //TODO bd, why 1?
-			for(EvDecimal curframe=lin.firstFrameOfLineage();curframe.less(lin.lastFrameOfLineage());curframe=curframe.add(frameInc))
+			for(EvDecimal curframe=lin.firstFrameOfLineage().fst();curframe.less(lin.lastFrameOfLineage().fst());curframe=curframe.add(frameInc))
 				{
 				numframes++;
 				/////////////////////////////

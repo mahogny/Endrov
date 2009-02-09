@@ -13,9 +13,8 @@ import endrov.basicWindow.*;
 import endrov.lineageWindow.print.Print2DtoPostScript;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
+import endrov.util.Tuple;
 
-//TODO: kill internal which are not in use, especially roots
-//can use weak references! make a WeakTreeMap and stop using strings?
 
 /**
  * The lineage view is so specific to the view that there is no point in separating it.
@@ -145,7 +144,7 @@ public class LineageView extends JPanel
 		
 	
   /////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// Camera for view ////////////////////////////////////////////////
+	/////////////////////////// Camera for view /////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 	Camera camera=new Camera();
 	
@@ -212,6 +211,10 @@ public class LineageView extends JPanel
 	 */
 	public void goRoot()
 		{	
+		Tuple<EvDecimal, String> found=currentLin.firstFrameOfLineage();
+		if(found!=null)
+			goInternalNuc(getNucinfo(found.snd()),camera);
+		/*
 		Camera cam=camera;
 		EvDecimal allMinFrame=null;
 		Set<String> roots=getRootNuc();
@@ -219,14 +222,15 @@ public class LineageView extends JPanel
 		for(String nucName:roots)
 			{
 			NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
-			if((allMinFrame==null || nuc.pos.firstKey().less(allMinFrame)) && !nuc.pos.isEmpty())
+			if((allMinFrame==null || nuc.firstFrame().less(allMinFrame)) && !nuc.pos.isEmpty())
 				{
-				allMinFrame=nuc.pos.firstKey();
+				allMinFrame=nuc.firstFrame();
 				rootName=nucName;
 				}
 			}
 		if(allMinFrame!=null)
 			goInternalNuc(getNucinfo(rootName),cam);
+			*/
 		}
 
 	/**
@@ -378,7 +382,6 @@ public class LineageView extends JPanel
 		};		
 		}
 	
-	
 	private void paintEverything(Graphics2D h, boolean toScreen, Camera cam)
 		{
 		//Redo list of clickable regions
@@ -394,7 +397,6 @@ public class LineageView extends JPanel
 			drawFrameLines(h,cam);
 
 		//Update tree structure
-		removeUnusedInternal();
 		for(String nucName:getRootNuc())
 			updateTreeFormat(h,nucName);
 		
@@ -411,7 +413,6 @@ public class LineageView extends JPanel
 
 		//Draw scale bar
 		drawScalebar(h);
-
 		}
 	
 	
@@ -451,14 +452,6 @@ public class LineageView extends JPanel
 		}
 	
 	
-	/**
-	 * Remove unused Internal nodes
-	 */
-	public void removeUnusedInternal()
-		{
-		//TODO. clean-up not really needed.
-		//Could use weak references, clean-up automatic
-		}
 	
 	/**
 	 * Draw the lines for frames, in the background
@@ -585,32 +578,34 @@ public class LineageView extends JPanel
 		if(nuc.overrideEnd!=null && nuc.child.size()>0)
 			namePrefix="!!! ";
 		
-		//If there are no keyframes then this gotta be handled somehow. it shouldn't happen
-		//but cope with it as well as possible
+		//If there are no first or last frames then handle it as well as possible 
 		int startc;
 		int endc;
-		if(nuc.pos.isEmpty())
+		EvDecimal firstFrame=nuc.firstFrame();
+		if(firstFrame==null)
 			{
 			startc=0;
 			if(nuc.parent!=null)
 				{
 				Internal pInternal=getNucinfo(nuc.parent);
 				startc=pInternal.getLastVXend(cam)+childNoPosBranchLength;
-				System.out.println("warn: no coord");
+				//System.out.println("warn: no coord");
 				namePrefix="!!! ";
 				}
-			endc=startc;
 			}
 		else
-			{
-			EvDecimal firstFrame=nuc.pos.firstKey();
-			EvDecimal lastFrame=nuc.lastFrame();
 			startc=cam.f2c(firstFrame.doubleValue());
+
+		EvDecimal lastFrame=nuc.lastFrame();
+		if(lastFrame==null)
+			endc=startc;
+		else
 			endc=cam.f2c(lastFrame.doubleValue());
-			}
 		
 		//Draw expression
 		drawExpression(g,nucName,endc,midr,nuc,toScreen,cam);
+		
+		//System.out.println(nucName+" "+firstFrame+"    -    "+lastFrame);
 		
 		//Draw line spanning frames
 		if(nuc.colorNuc!=null)
@@ -653,7 +648,6 @@ public class LineageView extends JPanel
 		
 		//Draw children
 		if(internal.expanded)
-			{
 			for(String cName:nuc.child)
 				{
 				NucLineage.Nuc c=currentLin.nuc.get(cName);
@@ -661,25 +655,21 @@ public class LineageView extends JPanel
 					Internal cInternal=getDrawCache().nucInternal.get(cName);
 					//Draw connecting line
 					g.setColor(Color.BLACK);
-					if(!c.pos.isEmpty())
-						g.drawLine(endc,midr,cam.f2c(c.pos.firstKey().doubleValue()),midr+cInternal.centerDisplacement);
+					EvDecimal cFirstFrame=c.firstFrame();
+					if(cFirstFrame!=null)
+						g.drawLine(endc,midr,cam.f2c(cFirstFrame.doubleValue()),midr+cInternal.centerDisplacement);
 					else
 						g.drawLine(endc,midr,endc+childNoPosBranchLength,midr+cInternal.centerDisplacement);
 					//Recurse down
 					drawTree(g,cName, midr+cInternal.centerDisplacement, toScreen, cam);
 					}
 				}
-			}
 		
 		//Draw expander
 		if(nuc.child.size()>0)
 			drawExpanderSymbol(g,nucName, endc,midr,internal.expanded);
 
 		//Draw name of nucleus. Warn if something is wrong
-	/*	if(nuc.end!=null && nuc.child.size()>0)
-			drawNucName(g, "!!! ", new NucPair(currentLin, nucName), midr, endc);
-		else
-			drawNucName(g, "", new NucPair(currentLin, nucName), midr, endc);*/
 		if((nuc.child.isEmpty() && showLeafLabel) || (!nuc.child.isEmpty() && showTreeLabel))
 			drawNucName(g, namePrefix, new NucPair(currentLin, nucName), midr, endc);
 		}

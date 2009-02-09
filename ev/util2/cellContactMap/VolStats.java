@@ -54,8 +54,8 @@ public class VolStats
 		EvDecimal minframe=null;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
-			if(minframe==null || nuc.pos.firstKey().less(minframe))
-				minframe=nuc.pos.firstKey();
+			if(minframe==null || nuc.firstFrame().less(minframe))
+				minframe=nuc.firstFrame();
 			}
 		return minframe;
 		}
