@@ -134,7 +134,7 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		{
 		return new EvDecimal(dec.multiply(val.dec));
 		}
-	public EvDecimal multiply(double val)
+	public EvDecimal multiply(int val)
 		{
 		return new EvDecimal(dec.multiply(new BigDecimal(val)));
 		}

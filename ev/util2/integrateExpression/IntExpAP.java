@@ -22,7 +22,7 @@ import endrov.util.Vector2D;
  * @author Johan Henriksson
  *
  */
-public class IntegrateExpressionAP
+public class IntExpAP
 	{
 /*	
 	private static int min2(int a, int b)

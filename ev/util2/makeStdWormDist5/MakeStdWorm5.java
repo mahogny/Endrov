@@ -157,11 +157,11 @@ public class MakeStdWorm5
 				NucLineage.Nuc newnuc=newlin.getNucCreate(e.getKey());
 				NucStats.NucStatsOne one=nucstats.nuc.get(e.getKey());
 				EvDecimal thisDur;
-				EvDecimal thisFirstFrame=nuc.pos.firstKey();
+				EvDecimal thisFirstFrame=nuc.firstFrame();
 				if(nuc.child.isEmpty())
 					thisDur=one.getLifeLen();
 				else
-					thisDur=nuc.lastFrame().subtract(nuc.pos.firstKey());
+					thisDur=nuc.lastFrame().subtract(nuc.firstFrame());
 				EvDecimal oneLifeLen=one.getLifeLen();
 				//potential trouble if no child and thisdur wrong
 				for(EvDecimal frame:e.getValue().pos.keySet())
@@ -220,8 +220,8 @@ public class MakeStdWorm5
 				{
 				NucLineage.Nuc nuc=lin.nuc.get(nucname);
 				
-				EvDecimal start=nuc.pos.firstKey();
-				EvDecimal end=nuc.pos.lastKey();
+				EvDecimal start=nuc.firstFrame();
+				EvDecimal end=nuc.lastFrame();
 				NucStats.NucStatsOne one=nucstats.get(nucname);
 				if(nuc.parent!=null)
 					one.parent=nuc.parent;
@@ -271,8 +271,8 @@ public class MakeStdWorm5
 		EvDecimal minframe=null;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
-			if(minframe==null || nuc.pos.firstKey().less(minframe))
-				minframe=nuc.pos.firstKey();
+			if(minframe==null || nuc.firstFrame().less(minframe))
+				minframe=nuc.firstFrame();
 			}
 		return minframe;
 		}

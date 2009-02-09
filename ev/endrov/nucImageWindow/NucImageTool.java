@@ -296,10 +296,10 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				{
 				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);
-				NucLineage.NucPos pos=n.pos.get(n.pos.firstKey());
+				NucLineage.NucPos pos=n.pos.get(n.firstFrame());
 				x+=pos.x;				y+=pos.y;				z+=pos.z;				r+=pos.r;
-				if(firstFrame==null || n.pos.firstKey().less(firstFrame))
-					firstFrame=n.pos.firstKey();
+				if(firstFrame==null || n.firstFrame().less(firstFrame))
+					firstFrame=n.firstFrame();
 				num++;
 				n.parent=parentName;
 				parent.child.add(childName);

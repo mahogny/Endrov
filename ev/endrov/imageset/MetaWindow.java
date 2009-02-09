@@ -92,7 +92,9 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 					e1.printStackTrace();
 					}
 				
-				EvData.setLastDataPath(new File(e.getAttributeValue("path")));
+				String lastPath=e.getAttributeValue("path");
+				if(lastPath!=null)
+					EvData.setLastDataPath(new File(lastPath));
 				}
 			public void savePersonalConfig(Element root)
 				{

@@ -66,9 +66,9 @@ public class MakeCellContactMap
 	public void calcneigh(TreeSet<String> nucNames, EvDecimal startFrame, EvDecimal endFrame, EvDecimal frameInc)
 		{
 		if(startFrame==null)
-			startFrame=lin.firstFrameOfLineage();
+			startFrame=lin.firstFrameOfLineage().fst();
 		if(endFrame==null)
-			endFrame=lin.lastFrameOfLineage();
+			endFrame=lin.lastFrameOfLineage().fst();
 		
 		
 		if(frameInc==null)

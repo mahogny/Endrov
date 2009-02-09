@@ -344,7 +344,7 @@ public class NucModelExtension implements ModelWindowExtension
 					for(NucLineage.Nuc nuc:lin.nuc.values())
 						if(!nuc.pos.isEmpty() && nuc.parent!=null)
 							{
-							EvDecimal tframe=nuc.pos.firstKey();
+							EvDecimal tframe=nuc.firstFrame();
 							NucLineage.Nuc pnuc=lin.nuc.get(nuc.parent);
 							if(!pnuc.pos.isEmpty())
 								{
@@ -685,7 +685,7 @@ public class NucModelExtension implements ModelWindowExtension
 			EvDecimal first=null;
 			for(NucLineage lin:w.getVisibleObjects(NucLineage.class))
 				{
-				EvDecimal f=lin.firstFrameOfLineage();
+				EvDecimal f=lin.firstFrameOfLineage().fst();
 				if(f!=null && (first==null || f.less(first)))
 					first=f;
 				}
@@ -696,7 +696,7 @@ public class NucModelExtension implements ModelWindowExtension
 			EvDecimal last=null;
 			for(NucLineage lin:w.getVisibleObjects(NucLineage.class))
 				{
-				EvDecimal f=lin.lastFrameOfLineage();
+				EvDecimal f=lin.lastFrameOfLineage().fst();
 				if(f!=null && (last==null || f.greater(last)))
 					last=f;
 				}
