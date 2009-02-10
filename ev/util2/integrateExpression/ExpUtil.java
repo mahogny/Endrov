@@ -1,9 +1,12 @@
 package util2.integrateExpression;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
@@ -15,7 +18,24 @@ import endrov.util.EvDecimal;
  */
 public class ExpUtil
 	{
+	private static int min2(int a, int b)
+		{
+		return a<b? a:b;
+		}
 
+	private static int max2(int a, int b)
+		{
+		return a>b? a:b;
+		}
+	
+	private static double min2(double a, double b)
+		{
+		return a<b? a:b;
+		}
+	private static double max2(double a, double b)
+		{
+		return a>b? a:b;
+		}
 	
 	/**
 	 * Correct for background etc. Signal has already been divided by exposure time. 
@@ -187,6 +207,179 @@ public class ExpUtil
 	 */
 	public static void compressSignal(NucLineage lin, String expName)
 		{
+		
+		}
+	
+	
+	
+	
+	/**
+	 * Integrate a piece-wise linear function
+	 */
+	public static double integratePLFunction(TreeMap<Double, Double> func)
+		{
+		if(func.isEmpty())
+			return 0;
+		else
+			{
+			double sum=0;
+			Iterator<Map.Entry<Double, Double>> itval=func.entrySet().iterator();
+			Map.Entry<Double, Double> lastPoint=itval.next();
+			while(itval.hasNext())
+				{
+				Map.Entry<Double, Double> nextPoint=itval.next();
+				sum+=(nextPoint.getKey()-lastPoint.getKey())*(lastPoint.getValue()+nextPoint.getValue())/2.0;
+				lastPoint=nextPoint;
+				}
+			return sum;
+			}
+		}
+	
+	
+	
+	
+	/**
+	 * Integrate [f(x)-c*g(x)]^2
+	 */
+	public static double integrateFunctionFminusG2(TreeMap<Double, Double> funcF, TreeMap<Double, Double> funcG, double c)
+		{
+		if(funcF.size()<2 || funcG.size()<2)
+			return 0;
+
+		double minX=max2(funcF.firstKey(), funcG.firstKey());
+		double maxX=min2(funcF.lastKey(),  funcG.lastKey());
+		
+		funcF=cutFunc(funcF, minX, maxX);
+		funcF=cutFunc(funcG, minX, maxX);
+		
+		TreeSet<Double> xs=new TreeSet<Double>();
+		xs.addAll(funcF.keySet());
+		xs.addAll(funcG.keySet());
+		
+		
+		return 0;
+		/*
+		FuncArr arr[]=new FuncArr[]{new FuncArr(funcF,minX,maxX),new FuncArr(funcG,minX,maxX)};
+		int indexF=0;
+		int indexG=0;
+		
+		//a*a*delta+2*a*b*delta*delta/2+b*b*delta*delta*delta/3.0
+		
+		
+		for(int i=0;indexF<arr[0].x.length && indexG<arr[1].x.length;i++)
+			{//+1?
+			if(arr[0].x[i+1]<arr[1].x[i+1])
+				{
+				//0 ends first
+				
+				
+				}
+			else
+				{
+				//1 ends first
+				
+				}
+			
+			
+			}
+			
+		
+		
+		*/
+		
+		
+		}
+	
+	/**
+	 * Cut off function to be within interval
+	 */
+	public static TreeMap<Double, Double> cutFunc(TreeMap<Double, Double> func, double min, double max)
+		{
+		if(func.firstKey()>=min && func.lastKey()<=max)
+			return func;
+		else
+			{
+			TreeMap<Double, Double> funcNew=new TreeMap<Double, Double>();
+			Iterator<Map.Entry<Double, Double>> itval=func.entrySet().iterator();
+			Map.Entry<Double, Double> lastPoint=itval.next();
+			Map.Entry<Double, Double> nextPoint=null;
+			while(itval.hasNext())
+				{
+				nextPoint=itval.next();
+				if(nextPoint.getKey()>min)
+					{
+					if(lastPoint.getKey()<min)
+						{
+						//Add last point, interpolated to be inside
+						double slope=(nextPoint.getValue()-lastPoint.getValue())/(nextPoint.getKey()-lastPoint.getKey());
+						funcNew.put(min, lastPoint.getValue()+(min-lastPoint.getKey())*slope);
+						}
+					else
+						funcNew.put(lastPoint.getKey(),lastPoint.getValue());
+					if(nextPoint.getKey()>max)
+						{
+						//Add next point, interpolated to be inside, and signal to not add it again
+						double slope=(nextPoint.getValue()-lastPoint.getValue())/(nextPoint.getKey()-lastPoint.getKey());
+						funcNew.put(min, nextPoint.getValue()-(nextPoint.getKey()-max)*slope);
+						nextPoint=null;
+						break;
+						}
+					}
+				}
+			if(nextPoint!=null)
+				funcNew.put(nextPoint.getKey(),nextPoint.getValue());
+			return funcNew;
+			}
+		}
+	
+	private static class FuncArr
+		{
+		double[] x;
+		double[] y;
+		
+		/**
+		 * Convert whole
+		 */
+		public FuncArr(TreeMap<Double, Double> func)
+			{
+			set(func);
+			}
+
+		public void set(TreeMap<Double, Double> func)
+			{
+			x=new double[func.size()];
+			y=new double[func.size()];
+			Iterator<Map.Entry<Double, Double>> itval=func.entrySet().iterator();
+			int i=0;
+			while(itval.hasNext())
+				{
+				Map.Entry<Double, Double> nextPoint=itval.next();
+				x[i]=nextPoint.getKey();
+				y[i]=nextPoint.getValue();
+				i++;
+				}
+			}
+
+		/**
+		 * Convert & cut function to be with interval
+		 */
+		/*
+		public FuncArr(TreeMap<Double, Double> func, double min, double max)
+			{
+			if(func.isEmpty())
+				{
+				x=new double[0];
+				y=new double[0];
+				}
+			else if(func.firstKey()>=min && func.lastKey()<=max)
+				set(func);
+			else
+				{
+				
+				set(funcNew);
+				}
+			}
+		*/
 		
 		}
 	
