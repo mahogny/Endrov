@@ -205,6 +205,27 @@ public class LineageView extends JPanel
 	/////////////////////////////////////////////////////////////////////////////////////
 	
 	
+	public NucLineage getLineage()
+		{
+		return currentLin;
+		}
+	
+	public LineageView()
+		{
+		addMouseMotionListener(new MouseMotionListener(){
+			public void mouseDragged(MouseEvent e)
+				{
+				}
+			public void mouseMoved(MouseEvent e)
+				{
+				String hovers=null;
+				ClickRegion r=getClickRegion(e);
+				if(r!=null)
+					hovers=r.getHoverString();
+				setToolTipText(hovers);
+				}
+		});
+		}
 	
 	/**
 	 * Go to the first root
@@ -375,7 +396,7 @@ public class LineageView extends JPanel
 				}
 			public void paintComponent(Graphics2D g)
 				{
-				System.out.println("here");
+				System.out.println("here savetodisk");
 				Camera cam=new Camera();
 				paintEverything(g, false, cam);
 				}
@@ -602,6 +623,8 @@ public class LineageView extends JPanel
 		else
 			endc=cam.f2c(lastFrame.doubleValue());
 		
+		//System.out.println(nucName+"  "+firstFrame+" "+lastFrame);
+		
 		//Draw expression
 		drawExpression(g,nucName,endc,midr,nuc,toScreen,cam);
 		
@@ -715,7 +738,7 @@ public class LineageView extends JPanel
 		g2.drawString(nucName, 0, 0);
 		g2.translate(-textc, -textr);
 		//Make it clickable
-		regionClickList.add(new ClickRegionName(prefix+nucName, textc, textr-3*fontHeight/4, fontWidth,fontHeight));
+		regionClickList.add(new ClickRegionName(nucName, textc, textr-3*fontHeight/4, fontWidth,fontHeight));
 		}
 	
 	/**
@@ -860,6 +883,16 @@ public class LineageView extends JPanel
 	 */
 	public void clickRegion(MouseEvent e)
 		{
+		ClickRegion r=getClickRegion(e);
+		if(r!=null)
+			r.clickRegion(e);
+		else if(SwingUtilities.isLeftMouseButton(e))
+			NucLineage.selectedNuclei.clear();
+		BasicWindow.updateWindows();
+		}
+
+	public ClickRegion getClickRegion(MouseEvent e)
+		{
 		Camera cam=camera;
 		int mousex,mousey;
 		if(cam.showHorizontalTree)
@@ -874,37 +907,47 @@ public class LineageView extends JPanel
 			}
 		for(ClickRegion r:regionClickList)
 			if(mousex>=r.x && mousey>=r.y && mousex<=r.x+r.w && mousey<=r.y+r.h)
-				{
-				r.clickRegion(e);
-				return;
-				}
-		if(SwingUtilities.isLeftMouseButton(e))
-			NucLineage.selectedNuclei.clear();
-		BasicWindow.updateWindows();
+				return r;
+		return null;
 		}
-
+	
 	/**
 	 * Mouse click handler
 	 */
-	private abstract class ClickRegion
+	public static abstract class ClickRegion
 		{
 		public int x=0,y=0,w=0,h=0;
 		public abstract void clickRegion(MouseEvent e);
+		public abstract String getHoverString();
 		}
 
 	/**
 	 * Mouse click handler: on a name panel
 	 */
-	private class ClickRegionName extends ClickRegion
+	public class ClickRegionName extends ClickRegion
 		{
-		String nucname;
+		public String nucname;
 		public ClickRegionName(String nucname, int x, int y, int w, int h)
 			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
 		public void clickRegion(MouseEvent e)
 			{
-			if(currentLin!=null && SwingUtilities.isLeftMouseButton(e))
-				NucLineage.mouseSelectNuc(new NucPair(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+			if(currentLin!=null)
+				{
+				//System.out.println("here "+nucname+"   "+SwingUtilities.isLeftMouseButton(e)+"  "+currentLin);
+				if(SwingUtilities.isLeftMouseButton(e))
+					NucLineage.mouseSelectNuc(new NucPair(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+				}
 			BasicWindow.updateWindows();
+			}
+		public String getHoverString()
+			{
+			if(currentLin!=null)
+				{
+				NucLineage.Nuc nuc=currentLin.nuc.get(nucname);
+				if(nuc!=null)
+					return nuc.description;
+				}
+			return null;
 			}
 		}
 	
@@ -925,6 +968,10 @@ public class LineageView extends JPanel
 			else if(SwingUtilities.isRightMouseButton(e))
 				recursiveExpand(nucname, !internal.expanded);
 			repaint();
+			}
+		public String getHoverString()
+			{
+			return null;
 			}
 		}
 

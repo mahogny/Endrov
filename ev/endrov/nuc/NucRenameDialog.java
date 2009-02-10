@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.*;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.*;
@@ -152,11 +153,11 @@ public class NucRenameDialog extends JDialog implements ActionListener
 	 * Create rename dialog if possible
 	 * @param caller Window that calls or null
 	 */
-	public static void run(Frame caller)
+	public static void run(Collection<NucPair> nucs, Frame caller)
 		{
-		if(NucLineage.selectedNuclei.size()==1) 
+		if(nucs.size()==1) 
 			{
-			NucPair nucPair=NucLineage.selectedNuclei.iterator().next();
+			NucPair nucPair=nucs.iterator().next();
 			if(nucPair!=null)
 				new NucRenameDialog(caller,nucPair);
 			}
