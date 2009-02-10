@@ -734,6 +734,20 @@ public abstract class BasicWindow extends JPanel
 		freeResources();
 		}
 	
+	public static void showErrorDialog(String error)
+		{
+		//Can get current window
+		//TODO icon
+		JOptionPane.showMessageDialog(null, error,"Error",JOptionPane.ERROR_MESSAGE);
+		}
+
+	public static void showWarningDialog(String error)
+		{
+		//Can get current window
+		//TODO icon
+		JOptionPane.showMessageDialog(null, error,"Warning",JOptionPane.WARNING_MESSAGE);
+		}
+
 	/******************************************************************************************************
 	 * Abstract Instance *
 	 *****************************************************************************************************/

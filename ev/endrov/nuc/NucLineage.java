@@ -96,7 +96,6 @@ public class NucLineage extends EvObject implements Cloneable
 	 */
 	public static void mouseSelectNuc(NucPair nucPair, boolean shift)
 		{
-		NucLineage lin=nucPair.fst();
 		String nucname=nucPair.snd();
 		//Shift-key used to select multiple
 		if(shift)
@@ -106,14 +105,14 @@ public class NucLineage extends EvObject implements Cloneable
 				if(selectedNuclei.contains(nucPair))
 					selectedNuclei.remove(nucPair);
 				else
-					selectedNuclei.add(new NucPair(lin,nucname));
+					selectedNuclei.add(nucPair);
 				}
 			}
 		else
 			{
 			selectedNuclei.clear();				
 			if(!nucname.equals(""))
-				selectedNuclei.add(new NucPair(lin,nucname));
+				selectedNuclei.add(nucPair);
 			}
 		BasicWindow.updateWindows();
 		}
@@ -131,31 +130,6 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 
 	
-
-	/**
-	 * Get select lineage object (console reference)
-	 */
-	/*
-	public static NucLineage getSelectedLineage()
-		{
-		EvData m=EvData.getSelectedMetadata();
-		if(m!=null)
-			{
-			EvObject ob=m.getSelectedMetaobject();
-			if(ob instanceof NucLineage)
-				return (NucLineage)ob;
-			else
-				{
-				List<NucLineage> l=m.getObjects(NucLineage.class);
-				if(l.isEmpty())
-					return null;
-				else
-					return l.get(0);
-				}
-			}
-		return null;
-		}
-	*/
 
 	
 	/**
@@ -353,7 +327,8 @@ public class NucLineage extends EvObject implements Cloneable
 			nuce.setAttribute("name", nucName);
 			if(n.overrideEnd!=null) nuce.setAttribute("end", ""+n.overrideEnd);
 			if(n.overrideStart!=null) nuce.setAttribute("start", ""+n.overrideStart);
-
+			if(n.description!=null) nuce.setAttribute("desc",n.description);
+			
 			for(EvDecimal frame:n.pos.keySet())
 				{
 				NucPos pos=n.pos.get(frame);
@@ -404,7 +379,8 @@ public class NucLineage extends EvObject implements Cloneable
 				Nuc n=getNucCreate(nucName);
 				if(ends!=null) n.overrideEnd=new EvDecimal(ends);
 				if(starts!=null) n.overrideStart=new EvDecimal(starts);
-					
+				n.description=nuce.getAttributeValue("desc");	
+				
 				for(Element pose:EV.castIterableElement(nuce.getChildren()))
 					{
 					if(pose.getName().equals("pos"))
@@ -865,6 +841,8 @@ public class NucLineage extends EvObject implements Cloneable
 		public EvDecimal overrideEnd;
 		/** Fate of nucleus */
 		public String fate="";
+		/** Description of cell. null if none */
+		public String description=null;
 		
 		/** Make a deep copy */
 		public Object clone()
@@ -973,11 +951,13 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 		
 		
-		
+		/**
+		 * Get interpolated position by reference to position. pos is shallow copied
+		 */
 		private NucInterp posToInterpol(EvDecimal frame, EvDecimal frameBefore, EvDecimal frameAfter)
 			{
 			NucInterp inter=new NucInterp();
-			inter.pos=pos.get(frame);//TODO: copy?
+			inter.pos=pos.get(frame);
 			inter.frameAfter=frameAfter;
 			inter.frameBefore=frameBefore;
 			inter.isEnd = overrideEnd!=null && frame.equals(overrideEnd);  

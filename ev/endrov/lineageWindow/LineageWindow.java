@@ -11,6 +11,8 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
+import endrov.lineageWindow.LineageView.ClickRegion;
+import endrov.lineageWindow.LineageView.ClickRegionName;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
@@ -63,21 +65,24 @@ public class LineageWindow extends BasicWindow
 			}
 		});
 	
-	public final EvComboObjectOne<NucLineage> objectCombo=new EvComboObjectOne<NucLineage>(new NucLineage(),false,false);
+	public final EvComboObjectOne<NucLineage> objectCombo=new EvComboObjectOne<NucLineage>(new NucLineage(),false,true);
 
 	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
 	private int mouseLastX=0, mouseLastY=0;
 	
 	
 	public JMenu menuLineage=new JMenu("Lineage");
-	public JMenuItem miRename=new JMenuItem("Rename nucleus...");
+	public JMenuItem miRename=new JMenuItem("Rename nucleus");
+	public JMenuItem miNewNuc=new JMenuItem("Create empty nucleus");
 	public JMenuItem miMerge=new JMenuItem("Merge nuclei");
 	public JMenuItem miPC=new JMenuItem("Associate parent");
 	public JMenuItem miUnparent=new JMenuItem("Unassociate from parent");
 	public JMenuItem miSwapChildren=new JMenuItem("Swap children names*");
 	public JMenuItem miFate=new JMenuItem("Set fate");
-	public JMenuItem miEndFrame=new JMenuItem("Set end frame...");
-	public JMenuItem miRemoveNucleus=new JMenuItem("Remove nucleus");
+	public JMenuItem miSetDesc=new JMenuItem("Set description");
+	public JMenuItem miStartFrame=new JMenuItem("Set override start frame");
+	public JMenuItem miEndFrame=new JMenuItem("Set override end frame");
+	public JMenuItem miDeleteNucleus=new JMenuItem("Delete nucleus");
 	public JMenuItem miExportImage=new JMenuItem("Export Image");
 	public JMenuItem miSelectChildren=new JMenuItem("Select children");
 	public JMenuItem miSelectParents=new JMenuItem("Select parents");
@@ -134,14 +139,17 @@ public class LineageWindow extends BasicWindow
 		miShowTreeLabel.addActionListener(this);
 		miShowLeafLabel.addActionListener(this);
 		miRename.addActionListener(this);
+		miNewNuc.addActionListener(this);
 		miMerge.addActionListener(this);
 		miPC.addActionListener(this);
 		miUnparent.addActionListener(this);
 		miSwapChildren.addActionListener(this);
 		miExportImage.addActionListener(this);
 		miFate.addActionListener(this);
+		miSetDesc.addActionListener(this);
+		miStartFrame.addActionListener(this);
 		miEndFrame.addActionListener(this);
-		miRemoveNucleus.addActionListener(this);
+		miDeleteNucleus.addActionListener(this);
 		miShowFrameLines.addActionListener(this);
 		miShowKeyFrames.addActionListener(this);
 		miFoldAll.addActionListener(this);
@@ -189,13 +197,16 @@ public class LineageWindow extends BasicWindow
 		
 		addMenubar(menuLineage);
 		menuLineage.add(miRename);
+		menuLineage.add(miNewNuc);
 		menuLineage.add(miMerge);
 		menuLineage.add(miPC);
 		menuLineage.add(miUnparent);
 		menuLineage.add(miSwapChildren);
 		menuLineage.add(miFate);
+		menuLineage.add(miSetDesc);
+		menuLineage.add(miStartFrame);
 		menuLineage.add(miEndFrame);
-		menuLineage.add(miRemoveNucleus);
+		menuLineage.add(miDeleteNucleus);
 		menuLineage.add(NucLineage.makeSetColorMenu());
 		menuLineage.addSeparator();
 		menuLineage.add(miExportImage);
@@ -224,7 +235,7 @@ public class LineageWindow extends BasicWindow
 		
 		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
 		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
-		miRemoveNucleus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+		miDeleteNucleus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 		
 		
 		//Window overall things
@@ -279,9 +290,20 @@ public class LineageWindow extends BasicWindow
 			view.repaint();
 			}
 		else if(e.getSource()==miRename)
+			NucRenameDialog.run(NucLineage.selectedNuclei, null);
+		else if(e.getSource()==miNewNuc)
 			{
-//			RenameDialog.run(evw);
-			NucRenameDialog.run(null);
+			String nucName=JOptionPane.showInputDialog("Name of new nucleus");
+			if(nucName!=null)
+				{
+				if(getLineage().nuc.containsKey(nucName))
+					showErrorDialog("Name already taken");
+				else
+					{
+					getLineage().getNucCreate(nucName);
+					repaint();
+					}
+				}
 			}
 		else if(e.getSource()==miMerge)
 			{
@@ -343,48 +365,14 @@ public class LineageWindow extends BasicWindow
 			else
 				JOptionPane.showMessageDialog(this, "Select 1 nucleus first");
 			}
+		else if(e.getSource()==miSetDesc)
+			actionSetDesc(NucLineage.selectedNuclei);
+		else if(e.getSource()==miStartFrame)
+			actionSetStartFrame(NucLineage.selectedNuclei);
 		else if(e.getSource()==miEndFrame)
-			{
-			if(!NucLineage.selectedNuclei.isEmpty())
-				{
-				String ends=JOptionPane.showInputDialog("End frame or empty for none");
-				if(ends!=null)
-					{
-					for(NucPair nucPair:NucLineage.selectedNuclei)
-						{
-						String nucName=nucPair.snd();
-						NucLineage.Nuc n=nucPair.fst().nuc.get(nucName);
-						if(n!=null)
-							{
-							if(ends.equals(""))
-								n.overrideEnd=null;
-							else
-								{
-								EvDecimal end=new EvDecimal(ends);
-								n.overrideEnd=end;
-								//r.getModifyingNucPos(); //Make a key frame for the sake of keeping interpolation?
-								nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), end, false);
-								}
-							}
-						}
-					BasicWindow.updateWindows();
-					}
-				}
-			}
-		else if(e.getSource()==miRemoveNucleus)
-			{
-			if(!NucLineage.selectedNuclei.isEmpty())
-				{
-				String nucNames="";
-				for(NucPair nucName:NucLineage.selectedNuclei)
-					nucNames=nucNames+nucName.snd()+" ";
-				int option = JOptionPane.showConfirmDialog(null, "Really want to delete: "+nucNames, "Remove?", JOptionPane.YES_NO_OPTION);
-				if (option == JOptionPane.YES_OPTION)
-					for(NucPair nucPair:NucLineage.selectedNuclei)
-						nucPair.fst().removeNuc(nucPair.snd());
-				BasicWindow.updateWindows();
-				}
-			}
+			actionSetEndFrame(NucLineage.selectedNuclei);
+		else if(e.getSource()==miDeleteNucleus)
+			actionRemove(NucLineage.selectedNuclei);
 		else if(e.getSource()==miShowFrameLines)
 			{
 			view.showFrameLines=miShowFrameLines.isSelected();
@@ -466,6 +454,105 @@ public class LineageWindow extends BasicWindow
 			
 		}
 	
+	
+	/**
+	 * Set override end frame of nuclei
+	 */
+	public static void actionSetEndFrame(Collection<NucPair> nucs)
+		{
+		if(!nucs.isEmpty())
+			{
+			String sFrame=JOptionPane.showInputDialog("End frame or empty for none");
+			if(sFrame!=null)
+				{
+				for(NucPair nucPair:nucs)
+					{
+					String nucName=nucPair.snd();
+					NucLineage.Nuc n=nucPair.fst().nuc.get(nucName);
+					if(n!=null)
+						{
+						if(sFrame.equals(""))
+							n.overrideEnd=null;
+						else
+							{
+							EvDecimal frame=new EvDecimal(sFrame);
+							n.overrideEnd=frame;
+							nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), frame, false);
+							}
+						}
+					}
+				BasicWindow.updateWindows();
+				}
+			}
+		}
+
+	/**
+	 * Set override start frame
+	 */
+	public static void actionSetStartFrame(Collection<NucPair> nucs)
+		{
+		if(!nucs.isEmpty())
+			{
+			String sFrame=JOptionPane.showInputDialog("Start frame or empty for none");
+			if(sFrame!=null)
+				{
+				for(NucPair nucPair:nucs)
+					{
+					String nucName=nucPair.snd();
+					NucLineage.Nuc n=nucPair.fst().nuc.get(nucName);
+					if(n!=null)
+						{
+						if(sFrame.equals(""))
+							n.overrideStart=null;
+						else
+							{
+							EvDecimal frame=new EvDecimal(sFrame);
+							n.overrideStart=frame;
+							nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), frame, false);
+							}
+						}
+					}
+				BasicWindow.updateWindows();
+				}
+			}
+		}
+	
+	public static void actionRemove(Collection<NucPair> nucs)
+		{
+		if(!nucs.isEmpty())
+			{
+			String nucNames="";
+			for(NucPair nucName:nucs)
+				nucNames=nucNames+nucName.snd()+" ";
+			int option = JOptionPane.showConfirmDialog(null, "Really want to delete: "+nucNames, "Remove?", JOptionPane.YES_NO_OPTION);
+			if (option == JOptionPane.YES_OPTION)
+				for(NucPair nucPair:nucs)
+					nucPair.fst().removeNuc(nucPair.snd());
+			BasicWindow.updateWindows();
+			}
+
+		}
+	
+	public static void actionSetDesc(Collection<NucPair> nucs)
+		{
+		for(NucPair nucPair:nucs)
+			{
+			String nucName=nucPair.snd();
+			NucLineage.Nuc n=nucPair.fst().nuc.get(nucName);
+			if(n!=null)
+				{
+				String newDesc=JOptionPane.showInputDialog("Description for "+nucName);
+				if(newDesc!=null)
+					{
+					if(newDesc.equals(""))
+						newDesc=null;
+					n.description=newDesc;
+					}
+				}
+			}
+		BasicWindow.updateWindows();
+		}
+	
 	public void updateShowExp()
 		{
 		view.showExpDot=miShowExpDot.isSelected();
@@ -536,6 +623,62 @@ public class LineageWindow extends BasicWindow
 		}
 	
 	
+	
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
+	 */
+	public void mouseDragged(MouseEvent e)
+		{
+		int dx=e.getX()-mouseLastX;
+		int dy=e.getY()-mouseLastY;
+		mouseLastX=e.getX();
+		mouseLastY=e.getY();
+		if(SwingUtilities.isRightMouseButton(e))
+			{
+			view.camera.pan(dx,dy);
+			view.repaint();
+			}
+		
+		}
+	
+
+
+	public void mouseMoved(MouseEvent e) {}
+	public void mouseExited(MouseEvent e)	{}
+	public void mouseEntered(MouseEvent e) {}
+	
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+	 */
+	public void mouseWheelMoved(MouseWheelEvent e)
+		{
+		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
+			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
+		else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
+			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
+		view.repaint();
+		}
+
+	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+	 */
+	public void stateChanged(ChangeEvent e)
+		{
+		view.setFrameDist(Math.pow(10.0,sliderFrameDist.getValue()/30000.0));
+		//view.setBranchScale(Math.pow(10.0,sliderBranchScale.getValue()/30000.0));
+		view.expScale=Math.pow(10.0,sliderExpScale.getValue()/3000.0);
+		repaint();
+		}
+
+	
 	/**
 	 * Open popup menu on right-click
 	 */
@@ -564,7 +707,7 @@ public class LineageWindow extends BasicWindow
 			popup.add(new JMenuItem("--Keyframe: "+kf.nuc+"/"+kf.frame));
 			JMenuItem miGotoFZ=new JMenuItem("Go to frame and z");
 			popup.add(miGotoFZ);
-			popup.addSeparator();
+			//popup.addSeparator();
 			JMenuItem miDelKF=new JMenuItem("Delete keyframe");
 			popup.add(miDelKF);
 			JMenuItem miSplit=new JMenuItem("Split here");
@@ -638,61 +781,74 @@ public class LineageWindow extends BasicWindow
 		//		menuItem.addActionListener(this);
 //		menuItem.addActionListener(this);
 
-		
-		
-		
-
-		popup.show(e.getComponent(),e.getX(), e.getY());
-		}
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
-	 */
-	public void mouseDragged(MouseEvent e)
-		{
-		int dx=e.getX()-mouseLastX;
-		int dy=e.getY()-mouseLastY;
-		mouseLastX=e.getX();
-		mouseLastY=e.getY();
-		if(SwingUtilities.isRightMouseButton(e))
+		//Actions on a nucleus
+		ClickRegion r=view.getClickRegion(e);
+		if(r!=null && r instanceof ClickRegionName)
 			{
-			view.camera.pan(dx,dy);
-			view.repaint();
+			final String nucName=((ClickRegionName)r).nucname;
+			
+			popup.addSeparator();
+			popup.add(new JMenuItem("--Nuc: "+nucName));
+			JMenuItem miSetStartFrame=new JMenuItem("Set override start frame");
+			popup.add(miSetStartFrame);
+			JMenuItem miSetEndFrame=new JMenuItem("Set override end frame");
+			popup.add(miSetEndFrame);
+			JMenuItem miSetDesc=new JMenuItem("Set description");
+			popup.add(miSetDesc);
+			JMenuItem miCreateEmptyChild=new JMenuItem("Create empty child");
+			popup.add(miCreateEmptyChild);
+			JMenuItem miRename=new JMenuItem("Rename");
+			popup.add(miRename);
+			JMenuItem miDelete=new JMenuItem("Delete");
+			popup.add(miDelete);
+
+			miSetStartFrame.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{actionSetStartFrame(Collections.singleton(new NucPair(getLineage(),nucName)));}
+				});
+			miSetEndFrame.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{actionSetEndFrame(Collections.singleton(new NucPair(getLineage(),nucName)));}
+				});
+			miRename.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{NucRenameDialog.run(Collections.singleton(new NucPair(getLineage(),nucName)),null);}
+				});
+			miSetDesc.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{actionSetDesc(Collections.singleton(new NucPair(getLineage(),nucName)));}
+				});
+			miDelete.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{actionRemove(Collections.singleton(new NucPair(getLineage(),nucName)));}
+				});
+			miCreateEmptyChild.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					String cname=JOptionPane.showInputDialog("Name of child");
+					if(cname!=null)
+						{
+						if(getLineage().nuc.containsKey(cname))
+							JOptionPane.showMessageDialog(null, "Name already taken");
+						else
+							{
+							getLineage().nuc.get(nucName).child.add(cname);
+							getLineage().getNucCreate(cname).parent=nucName;
+							repaint();
+							}
+						}
+					}
+				});
 			}
 		
+		popup.show(e.getComponent(),e.getX(), e.getY());
 		}
-	
-
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
-	 */
-	public void mouseWheelMoved(MouseWheelEvent e)
-		{
-		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
-			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
-		else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
-			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
-		view.repaint();
-		}
-
-	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-	 */
-	public void stateChanged(ChangeEvent e)
-		{
-		view.setFrameDist(Math.pow(10.0,sliderFrameDist.getValue()/30000.0));
-		//view.setBranchScale(Math.pow(10.0,sliderBranchScale.getValue()/30000.0));
-		view.expScale=Math.pow(10.0,sliderExpScale.getValue()/3000.0);
-		repaint();
-		}
-
 	
 	/*
 	 * (non-Javadoc)
@@ -706,12 +862,6 @@ public class LineageWindow extends BasicWindow
 		repaint();
 		}
 	
-	
-	public void mouseMoved(MouseEvent e) {}
-	public void mouseExited(MouseEvent e)	{}
-	public void mouseEntered(MouseEvent e) {}
-	
-
 	public void loadedFile(EvData data)	{}
 	public void freeResources(){}
 	}
