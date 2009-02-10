@@ -24,18 +24,7 @@ import endrov.util.Vector2D;
  */
 public class IntExpAP
 	{
-/*	
-	private static int min2(int a, int b)
-		{
-		return a<b? a:b;
-		}
 
-	private static int max2(int a, int b)
-		{
-		return a>b? a:b;
-		}
-
-	*/
 	public static void main(String arg[])
 		{
 		Log.listeners.add(new StdoutLog());
