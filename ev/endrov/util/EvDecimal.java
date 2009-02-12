@@ -83,7 +83,13 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		return dec.compareTo(val.dec);
 		}
 
-	
+
+	public Tuple<EvDecimal,EvDecimal> divideRemainder(EvDecimal val)
+		{
+		BigDecimal[] pair=dec.divideAndRemainder(val.dec);
+		return new Tuple<EvDecimal, EvDecimal>(new EvDecimal(pair[0]),new EvDecimal(pair[1]));
+		}
+
 	public EvDecimal divide(EvDecimal val)
 		{
 		return new EvDecimal(dec.divide(val.dec,MathContext.DECIMAL64));

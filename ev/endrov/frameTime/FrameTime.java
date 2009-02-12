@@ -1,19 +1,15 @@
 package endrov.frameTime;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.JMenu;
 
 import endrov.data.*;
-import endrov.ev.*;
+import endrov.util.EvDecimal;
+import endrov.util.Tuple;
 
 import org.jdom.*;
-//import org.jdom.output.*;
-//import javax.swing.*;
-//this will replace FrameTime later on
+
 
 public class FrameTime extends EvObject
 	{
@@ -35,10 +31,13 @@ public class FrameTime extends EvObject
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
-	//A sorted map would be better but...
-	
-	public final Vector<Pair> list=new Vector<Pair>();
+	//(Frame,Frametime), the real list
+	public final Vector<Tuple<EvDecimal,EvDecimal>> list=new Vector<Tuple<EvDecimal,EvDecimal>>();
 
+	//Maps in two directions, cached versions of list
+	public final SortedMap<EvDecimal, EvDecimal> mapFrame2Frametime=new TreeMap<EvDecimal, EvDecimal>();
+	public final SortedMap<EvDecimal, EvDecimal> mapFrametime2Frame=new TreeMap<EvDecimal, EvDecimal>();
+	
 	public String getMetaTypeDesc()
 		{
 		return metaType;
@@ -50,11 +49,11 @@ public class FrameTime extends EvObject
 	public void saveMetadata(Element e)
 		{
 		e.setName(metaType);
-		for(Pair p:list)
+		for(Tuple<EvDecimal,EvDecimal> p:list)
 			{
 			Element f=new Element(metaElement);
-			f.setAttribute("frame", ""+p.frame);
-			f.setAttribute("time",  ""+p.frametime);
+			f.setAttribute("frame", ""+p.fst());
+			f.setAttribute("time",  ""+p.snd());
 			e.addContent(f);
 			}
 		}
@@ -64,9 +63,9 @@ public class FrameTime extends EvObject
 		for(Object oframetime:e.getChildren())
 			{
 			Element e2=(Element)oframetime;
-			int frame=Integer.parseInt(e2.getAttribute("frame").getValue());
-			double frametime=Double.parseDouble(e2.getAttribute("frame").getValue());
-			list.add(new Pair(frame,frametime));
+			EvDecimal frame=new EvDecimal(e2.getAttribute("frame").getValue());
+			EvDecimal frametime=new EvDecimal(e2.getAttribute("time").getValue());
+			list.add(new Tuple<EvDecimal,EvDecimal>(frame,frametime));
 			}
 		}
 
@@ -79,64 +78,105 @@ public class FrameTime extends EvObject
 	/**
 	 * Add new frame/frametime to this object
 	 */
-	public void add(int frame, double frametime)
+	public void add(EvDecimal frame, EvDecimal frametime)
 		{
-		list.add(new Pair(frame, frametime));
+		list.add(new Tuple<EvDecimal,EvDecimal>(frame, frametime));
 		}
 	
 	
 
 	/**
-	 * Take a frame, figure out time. Assumes the list is sorted.
-	 * @param frame Frame
-	 * @return Time, minimum or maximum time if out of range, 0 otherwise
+	 * Interpolate x given x->yTuple<EvDecimal,EvDecimal>
 	 */
-	public double interpolateTime(int frame)
+	private EvDecimal interpolate(SortedMap<EvDecimal, EvDecimal> map, EvDecimal x)
 		{
-		if(list.size()==0)
-			return 0;
-		else if(list.size()==1)
-			return list.get(0).frametime;
+		EvDecimal preciseY=map.get(x);
+		if(preciseY!=null)
+			return preciseY;
+		
+		//Actually, can assume linear but passing through this point if size==1
+		if(map.isEmpty())
+			return x;
+		else if(map.size()==1)
+			{
+			//y=kx+m. assume k=1. then m=p.y/p.x. y=x+p.y/p.x
+			EvDecimal px=map.firstKey();
+			EvDecimal py=map.get(px);
+			return x.add(py.divide(px));
+			}
 		else
 			{
-			int i=0;
-			while(i<list.size() && frame>list.get(i).frame)
-				i++;
-			if(i==0)
-				return list.get(0).frametime; //Out of range below
-			else if(i==list.size())
-				return list.get(list.size()-1).frametime; //Out of range above
+			SortedMap<EvDecimal, EvDecimal> hmap=map.headMap(x);
+			SortedMap<EvDecimal, EvDecimal> tmap=map.tailMap(x);
+			
+			if(hmap.isEmpty())
+				{
+				//Take the two first points and extrapolate
+				Iterator<Map.Entry<EvDecimal, EvDecimal>> it=map.entrySet().iterator();
+				Map.Entry<EvDecimal, EvDecimal> first=it.next();
+				Map.Entry<EvDecimal, EvDecimal> second=it.next();
+				return linInterpolate(first.getKey(),second.getKey(),first.getValue(),second.getValue(),x);
+				}
+			else if(tmap.isEmpty())
+				{
+				//Take the two last points and extrapolate
+				EvDecimal lastX=map.lastKey();
+				EvDecimal secondX=map.headMap(lastX).lastKey();
+				EvDecimal lastY=map.get(lastX);
+				EvDecimal secondY=map.get(secondX);
+				return linInterpolate(lastX, secondX, lastY, secondY, x);
+				}
 			else
 				{
-				//In range, interpolate
-				int frame1=list.get(i-1).frame;
-				int frame2=list.get(i).frame;
-				double time1=list.get(i-1).frametime;
-				double time2=list.get(i).frametime;
-				double x=(frame-frame1)/(double)(frame2-frame1);
-				return (1-x)*time1+x*time2;
+				EvDecimal lastX=hmap.lastKey();
+				EvDecimal nextX=tmap.firstKey();
+				EvDecimal lastY=hmap.get(lastX);
+				EvDecimal nextY=hmap.get(nextX);
+				return linInterpolate(lastX, nextX, lastY, nextY, x);
 				}
 			}
 		}
 	
+	/**
+	 * Linear interpolation
+	 */
+	private EvDecimal linInterpolate(EvDecimal lastX,EvDecimal nextX, EvDecimal lastY, EvDecimal nextY, EvDecimal x)
+		{
+		EvDecimal frac=nextX.subtract(x).divide(nextX.subtract(lastX));
+		return EvDecimal.ONE.subtract(frac).multiply(lastY).add(
+				frac.multiply(nextY));
+		}
+	
 	
 	/**
-	 * Save down in a pure text file
-	 * @param filename Name of file
+	 * Figure out time from frame
 	 */
-	public void storeTextFile(String filename)
+	public EvDecimal interpolateTime(EvDecimal frame)
 		{
-		try
-			{
-			BufferedWriter fp = new BufferedWriter(new FileWriter(filename));
-			for(Pair p:list)
-				fp.write(""+p.frame+" "+p.frametime+"\n");
-			fp.close();
-			}
-		catch (IOException e)
-			{
-			Log.printError("Error writing file",e);
-			}
+		return interpolate(mapFrame2Frametime, frame);
 		}
-		
+	
+	/**
+	 * Figure out time from frame
+	 */
+	public EvDecimal interpolateFrame(EvDecimal time)
+		{
+		return interpolate(mapFrametime2Frame, time);
+		}
+	
+	/**
+	 * Update cached maps. Has to be done after list of points has been changed
+	 */
+	public void updateMaps()
+		{
+		mapFrame2Frametime.clear();
+		mapFrametime2Frame.clear();
+		for(Tuple<EvDecimal,EvDecimal> p:list)
+			{
+			mapFrame2Frametime.put(p.fst(), p.snd());
+			mapFrametime2Frame.put(p.snd(), p.fst());
+			}
+		//TODO emit changed
+		}
+	
 	}

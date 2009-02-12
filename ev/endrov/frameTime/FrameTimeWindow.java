@@ -16,6 +16,8 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
 import endrov.imageWindow.*;
+import endrov.util.EvDecimal;
+import endrov.util.Tuple;
 
 import org.jdom.*;
 
@@ -137,16 +139,14 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	/**
 	 * Add an entry. Does not update UI
 	 */
-	public void addEntry(int frame, double time)
+	public void addEntry(EvDecimal frame, EvDecimal time)
 		{
 		FrameTime meta=objectCombo.getSelectedObject();
 		if(meta!=null)
 			{
 			JSpinner field[]=new JSpinner[2];
-			SpinnerModel numModel1 =new SpinnerNumberModel(frame,-1, 100000000,  1  );
-			SpinnerModel numModel2 =new SpinnerNumberModel(time, 0.0,100000000.0,1.0);
-			field[0]=new JSpinner(numModel1);
-			field[1]=new JSpinner(numModel2);
+			field[0]=new JSpinner(new EvDecimalSpinnerModel());
+			field[1]=new JSpinner(new EvDecimalSpinnerModel());
 			inputVector.add(field);
 			field[0].addChangeListener(this);
 			field[1].addChangeListener(this);
@@ -162,8 +162,8 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		
 		FrameTime meta=objectCombo.getSelectedObject();
 		if(meta!=null)
-			for(Pair p:meta.list)
-				addEntry(p.frame, p.frametime);
+			for(Tuple<EvDecimal,EvDecimal> p:meta.list)
+				addEntry(p.fst(), p.snd());
 		
 		fillGraphpart();
 		fillDatapart();
@@ -171,18 +171,16 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	
 	
 	
-	/**
-	 * Save data to SQL
-	 */
-	public void saveData()
+	public void applyData()
 		{
-		//should save even exist?
+		//Not real-time updates? this goes counter to the rest of EV
 		FrameTime meta=objectCombo.getSelectedObject();
 		if(meta!=null)
 			{
 			meta.list.clear();
 			for(int i=0;i<inputVector.size();i++)
-				meta.add((Integer)inputVector.get(i)[0].getValue(), (Double)inputVector.get(i)[1].getValue());
+				meta.add((EvDecimal)inputVector.get(i)[0].getValue(), (EvDecimal)inputVector.get(i)[1].getValue());
+			meta.updateMaps();
 			meta.setMetadataModified();
 			}
 		}
@@ -190,6 +188,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	/**
 	 * Save data to text file
 	 */
+	/*
 	public void saveTextData()
 		{
 		JFileChooser chooser = new JFileChooser();
@@ -202,11 +201,12 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			if(frametime!=null)
 				{
 				for(int i=0;i<inputVector.size();i++)
-					frametime.add((Integer)inputVector.get(i)[0].getValue(), (Double)inputVector.get(i)[1].getValue());
+					frametime.add((EvDecimal)inputVector.get(i)[0].getValue(), (EvDecimal)inputVector.get(i)[1].getValue());
 				frametime.storeTextFile(filename);
 				}
 			}
 		}
+/*
 
 	/**
 	 * Regenerate all points in the graph
@@ -253,7 +253,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			}
 		if(e.getSource()==bAdd)
 			{
-			addEntry(0, 0);
+			addEntry(EvDecimal.ZERO, EvDecimal.ZERO);
 			fillGraphpart();
 			fillDatapart();
 			}
@@ -263,8 +263,8 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			}
 		else if(e.getSource()==bApply)
 			{
-			saveData();
-			loadData();
+			applyData();
+//			loadData();
 			}
 	/*	else if(e.getSource()==bSaveText)
 			{

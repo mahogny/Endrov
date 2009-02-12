@@ -25,17 +25,25 @@ import endrov.util.Vector2D;
 public class IntExpAP
 	{
 
+	
+	
 	public static void main(String arg[])
 		{
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141070621b.ost/"));
-
-
-		String channelName="GFP";
-		String expName="CEH-5";
+		
 		int numSubDiv=20;
+		doProfile(data, "CEH-5",numSubDiv);
+		//data.saveData(); NOOO
+		
+		System.exit(0);
+		}
+		
+	public static void doProfile(EvData data, String expName, int numSubDiv)
+		{
+		String channelName="GFP";
 
 		
 		
@@ -292,7 +300,5 @@ public class IntExpAP
 		
 	*/	
 		
-		//data.saveData(); NOOO
-		System.exit(0);
 		}
 	}
