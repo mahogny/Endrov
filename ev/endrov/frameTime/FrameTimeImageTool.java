@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 
 /**
  * Image Window Tool: Associate time with current frame
@@ -56,8 +57,8 @@ public class FrameTimeImageTool implements ImageWindowTool
 			Imageset rec=w.getImageset();
 			for(FrameTime f:rec.getObjects(FrameTime.class))
 				{
-				double frametime=Double.parseDouble(frametimes);
-				f.add(w.frameControl.getFrame().intValue(), frametime);  //TODO bad bd, but maybe deprecate frametime?
+				EvDecimal frametime=new EvDecimal(frametimes);
+				f.add(w.frameControl.getFrame(), frametime);  //TODO bad bd, but maybe deprecate frametime?
 				BasicWindow.updateWindows();
 				}
 			}

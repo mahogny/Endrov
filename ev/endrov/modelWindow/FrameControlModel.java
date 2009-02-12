@@ -8,6 +8,7 @@ import javax.swing.event.*;
 import java.util.*;
 
 import endrov.basicWindow.EvDecimalEditor;
+import endrov.basicWindow.EvDecimalSpinnerModel;
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.util.EvDecimal;
@@ -66,7 +67,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	
 	
 	/** Frame spinner behaviour */
-	private SpinnerModel frameModel=new SpinnerModel()
+	private SpinnerModel frameModel=new EvDecimalSpinnerModel();
+	/*new SpinnerModel()
 		{
 		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
 		public void addChangeListener(ChangeListener e){listeners.add(e);}
@@ -95,7 +97,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			for(ChangeListener li:listeners)
 				li.stateChanged(new ChangeEvent(this));
 			}
-		};
+		};*/
 	
 	
 	private GridBagConstraints playButtonConstraint(int x)
