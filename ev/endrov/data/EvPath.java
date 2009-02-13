@@ -18,6 +18,11 @@ public class EvPath implements Comparable<EvPath>
 		{
 		this.path=path.toArray(new String[0]);
 		}
+	public EvPath(String... path)
+		{
+		//Maybe make a copy?
+		this.path=path;
+		}
 	
 	/**
 	 * Get standard representation

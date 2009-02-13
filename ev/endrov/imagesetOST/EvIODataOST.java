@@ -704,12 +704,12 @@ public class EvIODataOST implements EvIOData
 			try
 				{
 				d.metaObject.clear();
-				cb.fileIOStatus(0, "meta...");
+				cb.fileIOStatus(0, "loading meta...");
 				d.loadXmlMetadata(new FileInputStream(metaFile));
-				cb.fileIOStatus(0.5, "images...");
-				scanFiles(d, cb);
-
+				cb.fileIOStatus(0.3, "conversion if needed...");
 				convert3_3d2(d,cb);
+				cb.fileIOStatus(0.6, "loading images...");
+				scanFiles(d, cb);
 				}
 			catch (FileNotFoundException e)
 				{
@@ -1184,8 +1184,8 @@ public class EvIODataOST implements EvIOData
 				}
 			//			saveData(d, null);
 			invalidateDatabaseCache();
-			System.out.println("Reloading file listing");
-			scanFiles(d,EvData.deafFileIOCB);
+//			System.out.println("Reloading file listing");
+//			scanFiles(d,EvData.deafFileIOCB);
 				
 			}
 		}
