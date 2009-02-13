@@ -1,12 +1,17 @@
 package endrov.data;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import ucar.nc2.dataset.conv.MADISStation;
-
+/**
+ * Add menu entries for selecting a type of object
+ * @author Johan Henriksson
+ */
 public class DataObjectSelectMenu
 	{
 	public interface Callback<E>
@@ -14,41 +19,52 @@ public class DataObjectSelectMenu
 		public void select(EvData data, EvPath path, E con);
 		}
 	
-	public static void create(JMenu menu, Class<EvObject> type)
+	public static <E> void create(JMenu menu, Class<E> type, Callback<E> cb)
 		{
 		for(EvData data:EvData.metadata)
 			{
-			JMenu dataMenu=new JMenu(data.getMetadataName());
-			menu.add(dataMenu);
-			
-			
-			
+			LinkedList<String> path=new LinkedList<String>();
+			path.add(data.getMetadataName());
+			JMenuItem dataMenu=createObjectMenu(data, path, data, type, cb);
+			if(dataMenu!=null)
+				menu.add(dataMenu);
 			}
 		}
 	
-	private static <E> JMenuItem createDataMenu(JMenu menu, EvData data, Class<E> type)
-		{
-		for(Map.Entry<String, EvObject> e:data.metaObject.entrySet())
-			{
-			createObjectMenu(menu, e.getKey(), e.getValue(), type);
-			}
-		
-		
-		}
 	
-	private static JMenuItem createObjectMenu(JMenu menu, String obname, EvObject ob, Class<EvObject> type)
+	@SuppressWarnings("unchecked")
+	private static <E> JMenuItem createObjectMenu(final EvData data, final LinkedList<String> path, EvContainer con, Class<E> type, final Callback<E> cb)
 		{
-		if(type.isInstance(ob))
+		JMenu submenu=new JMenu(path.getLast()+".");
+		for(Map.Entry<String, EvObject> e:con.metaObject.entrySet())
 			{
-			//menu.addActionListener(arg0)
+			path.addLast(e.getKey());
+			if(type.isInstance(e.getValue()))
+				{
+				final E obe=(E)e.getValue();
+				JMenuItem mi=new JMenuItem(e.getKey());
+				submenu.add(mi);
+				
+				mi.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e)
+						{
+						cb.select(data, new EvPath(path), obe);
+						}
+				});
+				
+				}
 			
-			JMenuItem mi=new JMenuItem(obname);
-			mi.addActionListener(l)
+			JMenuItem subitem=createObjectMenu(data, path, e.getValue(), type, cb);
+			if(subitem!=null)
+				submenu.add(subitem);
 			
+			path.removeLast();
 			}
-		JMenu obmenu=new JMenu();
-		
-		
+
+		if(submenu.getMenuComponentCount()>0)
+			return submenu;
+		else
+			return null;
 		}
 
 	

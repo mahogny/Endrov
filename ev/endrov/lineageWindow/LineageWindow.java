@@ -506,7 +506,7 @@ public class LineageWindow extends BasicWindow
 							n.overrideStart=null;
 						else
 							{
-							EvDecimal frame=new EvDecimal(sFrame);
+							EvDecimal frame=FrameControl.parseTime(sFrame);
 							n.overrideStart=frame;
 							nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), frame, false);
 							}
@@ -778,8 +778,6 @@ public class LineageWindow extends BasicWindow
 
 			}
 		
-		//		menuItem.addActionListener(this);
-//		menuItem.addActionListener(this);
 
 		//Actions on a nucleus
 		ClickRegion r=view.getClickRegion(e);
@@ -797,6 +795,8 @@ public class LineageWindow extends BasicWindow
 			popup.add(miSetDesc);
 			JMenuItem miCreateEmptyChild=new JMenuItem("Create empty child");
 			popup.add(miCreateEmptyChild);
+			JMenuItem miCreateAP=new JMenuItem("Create empty AP+start time");
+			popup.add(miCreateAP);
 			JMenuItem miRename=new JMenuItem("Rename");
 			popup.add(miRename);
 			JMenuItem miDelete=new JMenuItem("Delete");
@@ -835,16 +835,45 @@ public class LineageWindow extends BasicWindow
 					if(cname!=null)
 						{
 						if(getLineage().nuc.containsKey(cname))
-							JOptionPane.showMessageDialog(null, "Name already taken");
+							showErrorDialog("Name already taken");
 						else
 							{
 							getLineage().nuc.get(nucName).child.add(cname);
 							getLineage().getNucCreate(cname).parent=nucName;
-							repaint();
+							BasicWindow.updateWindows();
 							}
 						}
 					}
 				});
+			miCreateAP.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					String nameA=nucName+"a";
+					String nameP=nucName+"p";
+					if(!getLineage().nuc.containsKey(nameA) && !getLineage().nuc.containsKey(nameP))
+						{
+						getLineage().nuc.get(nucName).child.add(nameA);
+						getLineage().getNucCreate(nameA).parent=nucName;
+						getLineage().nuc.get(nucName).child.add(nameP);
+						getLineage().getNucCreate(nameP).parent=nucName;
+						BasicWindow.updateWindows();
+						
+						String sFrame=JOptionPane.showInputDialog("Start frame or nothing for none");
+						if(sFrame!=null)
+							{
+							EvDecimal frame=FrameControl.parseTime(sFrame);
+							getLineage().nuc.get(nameA).overrideStart=frame;
+							getLineage().nuc.get(nameP).overrideStart=frame;
+							BasicWindow.updateWindows();
+							}
+						}
+					else
+						showErrorDialog("One child already exist");
+					}
+				});
+			
+			
 			}
 		
 		popup.show(e.getComponent(),e.getX(), e.getY());

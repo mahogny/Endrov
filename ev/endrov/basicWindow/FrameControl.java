@@ -102,30 +102,40 @@ public class FrameControl
 	public static EvDecimal parseTime(String s)
 		{
 		EvDecimal accTime=EvDecimal.ZERO;
-		Pattern pvalue=Pattern.compile("([0-9]+(?:[.][0-9]+)?[mhs]?)+");
+		Pattern pvalue=Pattern.compile("([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?");
 		Matcher m=pvalue.matcher(s);
-		for(int i=0;i<=m.groupCount();i++)
+		if(!m.matches())
+			return null;
+		for(int i=1;i<=m.groupCount();i++)
 			{
+			/*
+			System.out.println(m.group(i));
 			int pos2=i==m.groupCount() ? s.length() : m.start(i+1);
 			String spart=s.substring(m.start(i),pos2);
-			int spartlen=spart.length();
-			char lastChar=spart.charAt(spartlen-1);
-			if(lastChar=='s')
-				accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)));
-			else if(lastChar=='m')
-				accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)).multiply(new EvDecimal(60)));
-			else if(lastChar=='h')
-				accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)).multiply(new EvDecimal(3600)));
-			else
-				accTime=accTime.add(new EvDecimal(spart));
+			System.out.println(spart+" "+spartlen+" "+pos2+" ");
+			*/
+			String spart=m.group(i);
+			if(spart!=null)
+				{
+				int spartlen=spart.length();
+				char lastChar=spart.charAt(spartlen-1);
+				if(lastChar=='s')
+					accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)));
+				else if(lastChar=='m')
+					accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)).multiply(new EvDecimal(60)));
+				else if(lastChar=='h')
+					accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)).multiply(new EvDecimal(3600)));
+				else
+					accTime=accTime.add(new EvDecimal(spart));
+				}
 			}
 		return accTime;
 		}
 
 	public static void main(String[] args)
 		{
-		System.out.println(parseTime("1m5.2s"));
-//		System.out.println(parseTime("1m3s"));
+		System.out.println(parseTime("5.2s"));
+		System.out.println(parseTime("1m3s"));
 		}
 	
 	
