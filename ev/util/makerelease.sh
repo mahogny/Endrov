@@ -32,5 +32,9 @@ mv $name.zip release/
 wc -l $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java  $name/*/*/*/*.glsl
 du -hc --max-depth=2 $name
 
+echo "claimed version"
+cat $name/endrov/ev/version.txt
+echo ""
+
 #delete
 rm -Rf $name
