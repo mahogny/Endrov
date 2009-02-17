@@ -9,20 +9,21 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import endrov.data.EvData;
-import endrov.ev.*;
-import endrov.imageset.*;
-import endrov.nuc.*;
+import endrov.ev.EV;
+import endrov.ev.Log;
+import endrov.ev.StdoutLog;
+import endrov.imageset.EvChannel;
+import endrov.imageset.EvImage;
+import endrov.imageset.EvPixels;
+import endrov.imageset.Imageset;
+import endrov.nuc.NucExp;
+import endrov.nuc.NucLineage;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.Vector2D;
 
-/**
- * Anterior-posterior expression integration. Whole-embryo corresponds to numSlices=1 
- * @author Johan Henriksson
- *
- */
-public class IntExpAP
+public class IntExpTissue
 	{
 
 	
@@ -34,16 +35,34 @@ public class IntExpAP
 
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141070621b.ost/"));
 		
-		int numSubDiv=20;
-		String channelName="GFP";
-		doProfile(data, "AP20:CEH-5","CEH-5",channelName,numSubDiv);
+		int numSubDivX=20;
+		int numSubDivYZ=20;
+		doProfile(data, "T:CEH-5","CEH-5",numSubDivX,numSubDivYZ);
 		//data.saveData(); NOOO
 		
 		System.exit(0);
 		}
 		
-	public static void doProfile(EvData data, String newLineName, String expName, String channelName, int numSubDiv)
+	public static void doProfile(EvData data, String newLinName, String expName, int numSubDivX, int numSubDivYZ)
 		{
+		String channelName="GFP";
+
+		
+		//TODO
+		/**
+		 * 
+		 * How to get coordinates? Can assume 4 cells exist but this is not optimal. Can try
+		 * to fit against model using first frame with enough cells (>2). Can refit over time
+		 * to account for rotation. 
+		 * 
+		 * new metaobject: coordinate system
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		
+		
 		
 		
 		
@@ -57,7 +76,7 @@ public class IntExpAP
 		ExpUtil.clearExp(lin, expName);
 
 		//Virtual nuc for AP
-		for(int i=0;i<numSubDiv;i++)
+		for(int i=0;i<numSubDivX;i++)
 			lin.getNucCreate("_slice"+i);
 		
 		
@@ -94,8 +113,8 @@ public class IntExpAP
 			int bgIntegral=0;
 			int bgVolume=0;
 
-			int[] sliceExp=new int[numSubDiv];
-			int[] sliceVol=new int[numSubDiv];
+			int[] sliceExp=new int[numSubDivX];
+			int[] sliceVol=new int[numSubDivX];
 
 			//For all z
 			for(Map.Entry<EvDecimal, EvImage> eim:ch.imageLoader.get(frame).entrySet())
@@ -196,7 +215,7 @@ public class IntExpAP
 				}
 
 			
-			for(int i=0;i<numSubDiv;i++)
+			for(int i=0;i<numSubDivX;i++)
 				{
 				double avg=(double)sliceExp[i]/(double)sliceVol[i];
 				avg/=expTime;
@@ -266,7 +285,7 @@ public class IntExpAP
 			
 			here: for(EvDecimal frame:ch.imageLoader.keySet())
 				{
-				for(int i=0;i<numSubDiv;i++)
+				for(int i=0;i<numSubDivX;i++)
 					{
 					NucLineage.Nuc nuc=lin.nuc.get("_slice"+i);
 					NucExp nexp=nuc.exp.get(expName);
@@ -301,4 +320,5 @@ public class IntExpAP
 	*/	
 		
 		}
+	
 	}
