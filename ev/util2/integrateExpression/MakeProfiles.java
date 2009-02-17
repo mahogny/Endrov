@@ -17,9 +17,23 @@ public class MakeProfiles
 	public static void doProfile(EvData data, String name)
 		{
 		
+		String channelName="GFP";
+
+		//Naming of lineages
+		//AP20:<name>    (20 slices)
+		//AP1:<name>     (over time only, 1 slice)
+		//T20-10:<name>  (tissue level, by mapping cube, 20x10x10 with 20 along major axis)
+		//C:<name>       (cellular level)
 		
-		IntExpAP.doProfile(data,name,20);
+		int apNumSlice=20;
+		IntExpAP.doProfile(data,"AP"+apNumSlice+":"+name,name, channelName,apNumSlice);
 		
+		IntExpAP.doProfile(data,"AP1:"+name,name,channelName,1);
+
+		int numSubDivX=20, numSubDivYZ=10;
+		IntExpTissue.doProfile(data, "T"+numSubDivX+"-"+numSubDivYZ+":"+name, name, numSubDivX, numSubDivYZ);
+		
+		IntExpCell.doProfile(data, name, channelName);
 		//data.saveData(); NOOO
 
 		//Imageset im=data.getObjects(Imageset.class).iterator().next();

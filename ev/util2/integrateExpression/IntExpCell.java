@@ -50,6 +50,8 @@ public class IntExpCell
 		}
 
 	
+	
+	
 	public static void main(String arg[])
 		{
 		Log.listeners.add(new StdoutLog());
@@ -60,7 +62,17 @@ public class IntExpCell
 
 		String channelName="GFP";
 		String expName="CEH-5";
+		
+		doProfile(data, expName, channelName);
+		
+		data.saveData();
 
+		System.exit(0);
+		}
+
+	public static void doProfile(EvData data, String expName, String channelName)
+		{
+		
 		Imageset imset=data.getObjects(Imageset.class).get(0);
 
 		//For all lineages
@@ -222,8 +234,5 @@ public class IntExpCell
 		ExpUtil.normalizeSignal(lin, expName);
 
 		
-		data.saveData();
-
-		System.exit(0);
 		}
 	}

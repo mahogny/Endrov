@@ -1,7 +1,15 @@
-test on gene5, lineage size increases 40% with expression added. no compression of any type.
+* test on gene5, lineage file size increases 40% with expression added. no compression of any type.
+* background does not really change intensity when exposure changes. proof: CEH-5 28100,10160 exp500-333   
 
 
+* earlier problem, reverify: camera does some *strange* adaption randomly. this needs separate
+  treatment, but done the same way as when exp changes 
 
+Assumption: realIntensity=integ/exposure + C(exposure)
+have to fit C when exposure changes
+
+
+======================
 
 
 
