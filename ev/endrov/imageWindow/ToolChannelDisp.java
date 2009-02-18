@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
@@ -12,7 +14,9 @@ import javax.swing.SwingUtilities;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageset.EvChannel;
+import endrov.imageset.EvImage;
 import endrov.imageset.Imageset;
+import endrov.util.EvDecimal;
 
 /**
  * 
@@ -26,19 +30,6 @@ public class ToolChannelDisp implements ImageWindowTool
 		{
 		this.w=w;
 		}
-	/*
-	public boolean isToggleable()
-		{
-		return true;
-		}
-	public String toolCaption()
-		{
-		return "Channel/Displacement";
-		}
-	public boolean enabled()
-		{
-		return true;
-		}*/
 	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Channel/Displacement");
@@ -56,11 +47,21 @@ public class ToolChannelDisp implements ImageWindowTool
 			{
 			Imageset rec=w.getImageset();
 			EvChannel c=w.getSelectedChannel();
-			if(rec!=null && c!=null)
+			double ddx=dx/w.getZoom();
+			double ddy=dy/w.getZoom();
+			if(c!=null)
 				{
-				c.dispX+=dx/w.getZoom();
-				c.dispY+=dy/w.getZoom();
-				//w.updateImagePanel();
+				c.dispX+=ddx;
+				c.dispY+=ddy;
+				
+				for(Map.Entry<EvDecimal, TreeMap<EvDecimal, EvImage>> frames:c.imageLoader.entrySet())
+					for(Map.Entry<EvDecimal, EvImage> stacks:frames.getValue().entrySet())
+						{
+						EvImage evim=stacks.getValue();
+						evim.dispX+=ddx;
+						evim.dispY+=ddy;
+						}
+				
 				BasicWindow.updateWindows();
 				rec.setMetadataModified(true);
 				}

@@ -27,12 +27,16 @@ public class PLUGIN extends PluginDef
 		{
 		return new String[]{};
 		}
-	
+
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{};
-/*
 		return new Class[]{MakeMaxWindow.class};
-		*/
 		}
+
+	public boolean isDefaultEnabled()
+		{
+		return true;
+		}
+	
+	
 	}

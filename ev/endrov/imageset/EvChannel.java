@@ -56,19 +56,25 @@ public class EvChannel
 			return im;
 		else
 			{
-			TreeMap<EvDecimal, EvImage> frames=imageLoader.get(frame);
-			if(frames==null)
-				{
-				frames=new TreeMap<EvDecimal, EvImage>();
-				imageLoader.put(frame, frames);
-				}
 			im=new EvImage();
-			frames.put(z, im);
+			setImage(frame, z, im);
 			return im;
 			}
 		}
 
-
+	/**
+	 * Set image
+	 */
+	public void setImage(EvDecimal frame, EvDecimal z, EvImage im)
+		{
+		TreeMap<EvDecimal, EvImage> frames=imageLoader.get(frame);
+		if(frames==null)
+			{
+			frames=new TreeMap<EvDecimal, EvImage>();
+			imageLoader.put(frame, frames);
+			}
+		frames.put(z, im);
+		}
 	
 	
 
