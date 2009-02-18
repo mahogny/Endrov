@@ -42,22 +42,22 @@ public final class CalcThread extends BatchThread
 			//ost.invalidateDatabaseCache();
 
 			//Get channel to process
-			Imageset.ChannelImages chfrom=rec.getChannel(channel);
+			EvChannel chfrom=rec.getChannel(channel);
 			if(chfrom==null)
 				throw new Exception("Missing channel");
 			
 			//Get channel to write
 			String maxChannel=channel+"max";
-			Imageset.ChannelImages chto=rec.getChannel(maxChannel);
+			EvChannel chto=rec.getChannel(maxChannel);
 			if(chto==null)
 				{
 				//Channel does not exist before. Create it
-				chto=rec.createChannel(maxChannel);
+				chto=rec.getCreateChannel(maxChannel);
 				
 				//should anything else be copied? copy entire meta? TODO
-				chto.getMeta().chBinning=chfrom.getMeta().chBinning;
-				chto.getMeta().dispX=chfrom.getMeta().dispX;
-				chto.getMeta().dispY=chfrom.getMeta().dispY;
+				chto.chBinning=chfrom.chBinning;
+				chto.dispX=chfrom.dispX;
+				chto.dispY=chfrom.dispY;
 				}
 			else
 				throw new Exception("Max-channel already exists");
@@ -70,6 +70,7 @@ public final class CalcThread extends BatchThread
 				batchLog(""+curframe);
 
 				EvDecimal z=chfrom.closestZ(curframe, EvDecimal.ZERO);
+				double resX=1,resY=1,dispX=0,dispY=0,binning=1;
 				try
 					{
 					int[][] maxim=null;
@@ -87,6 +88,13 @@ public final class CalcThread extends BatchThread
 							EvImage imload=chfrom.getImageLoader(curframe, z);
 							if(imload==null)
 								break;
+							resX=imload.resX;
+							resY=imload.resY;
+							dispX=imload.dispX;
+							dispY=imload.dispY;
+							binning=imload.binning;
+							
+							
 							BufferedImage bufi=imload.getJavaImage();
 							if(bufi==null)
 								throw new Exception("Could not load image");
@@ -117,8 +125,16 @@ public final class CalcThread extends BatchThread
 					//Write out max image
 					if(maxim!=null)
 						{
-						EvImage toim=chto.createImageLoader(curframe, EvDecimal.ZERO);
+						
+						EvImage toim=new EvImage();
 						toim.setImage(makeBI(maxim));
+						toim.resX=resX;
+						toim.resY=resY;
+						toim.dispX=dispX;
+						toim.dispY=dispY;
+						toim.binning=binning;
+						
+						chto.setImage(curframe, EvDecimal.ZERO, toim);
 						BasicWindow.updateWindows();
 						}
 					

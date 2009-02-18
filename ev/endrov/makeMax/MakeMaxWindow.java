@@ -15,7 +15,7 @@ import org.jdom.*;
  * 
  * @author Johan Henriksson
  */
-public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCombo.comboFilterMetadata
+public class MakeMaxWindow extends BasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	
@@ -51,7 +51,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	
 	//GUI components
 	private JButton bStart=new JButton("Start");
-	private ChannelCombo channelCombo;
+	private EvComboChannel channelCombo=new EvComboChannel(null,false);
 	
 	private SpinnerModel startModel  =new SpinnerNumberModel(0,0,1000000,1);
 	private JSpinner spinnerStart    =new JSpinner(startModel);
@@ -62,13 +62,6 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 //	private SpinnerModel qualityModel    =new SpinnerNumberModel(0.99,0.0,1.0,0.01);
 //	private JSpinner spinnerQuality      =new JSpinner(qualityModel);
 
-	
-	private MetaCombo metaCombo=new MetaCombo(this, false);
-	public boolean comboFilterMetadataCallback(EvData meta)
-		{
-		return meta instanceof Imageset;
-		}
-	
 	
 	/**
 	 * Make a new window at default location
@@ -83,31 +76,22 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	 */
 	public MakeMaxWindow(int x, int y, int w, int h)
 		{
-		channelCombo=new ChannelCombo((Imageset)metaCombo.getMeta(),true);
 		channelCombo.addActionListener(this);
-		metaCombo.addActionListener(this);
 		bStart.addActionListener(this);
 		
 		//Put GUI together
 		setLayout(new BorderLayout());
 	
-		JPanel bottom=new JPanel(new GridLayout(2,6));
-		add(metaCombo,BorderLayout.NORTH);
+		JPanel bottom=new JPanel(new GridLayout(2,4));
 		add(bottom, BorderLayout.CENTER);
 		
 		bottom.add(new JLabel("Start frame:"));
 		bottom.add(spinnerStart);
 		bottom.add(new JLabel("End frame:"));
 		bottom.add(spinnerEnd);	
+
 		bottom.add(new JLabel("Channel: "));
 		bottom.add(channelCombo);
-
-		bottom.add(new JLabel(""));
-		bottom.add(new JLabel(""));
-		bottom.add(new JLabel(""));
-		bottom.add(new JLabel(""));
-//		bottom.add(new JLabel("Quality: "));
-//		bottom.add(spinnerQuality);
 		bottom.add(new JLabel(""));
 		bottom.add(bStart);
 		
@@ -134,24 +118,17 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		if(e.getSource()==metaCombo)
+		if(e.getSource()==bStart)
 			{
-			channelCombo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
-			}
-		else if(e.getSource()==bStart)
-			{
-			if(channelCombo.getChannel().equals("") || metaCombo.getMeta()==null)
+			if(channelCombo.getChannel()==null)
 				{
 				JOptionPane.showMessageDialog(null, "No channel/imageset selected");
 				}
 			else
 				{
-				CalcThread thread=new CalcThread(Imageset.castEmpty(metaCombo.getMeta()), 
-						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannel()/*,
-						(Double)spinnerQuality.getValue()*/);
-				/*CalcThread thread=new CalcThread(metaCombo.getImageset(), 
-						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannel(),
-						(Double)spinnerQuality.getValue());*/
+				CalcThread thread=new CalcThread(channelCombo.getImageset(), 
+						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannel());
+
 				new BatchWindow(thread);
 				}
 			}
@@ -164,8 +141,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener, MetaCo
 	 */
 	public void dataChangedEvent()
 		{
-		metaCombo.updateList();
-		channelCombo.setExternalImageset(Imageset.castEmpty(metaCombo.getMeta()));
+		channelCombo.updateList();
 		}
 	
 	public void loadedFile(EvData data){}
