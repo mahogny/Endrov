@@ -4,6 +4,7 @@ package endrov.coordinateSystem;
 import javax.swing.JMenu;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
 
 import endrov.data.*;
 
@@ -33,31 +34,19 @@ public class CoordinateSystem extends EvObject
 	 *****************************************************************************************************/
 	
 	public Vector3d midpoint=new Vector3d(0,0,0);
+	/**
+	 * Base vectors relative to midpoint
+	 */
 	public final Vector3d[] base=new Vector3d[]{new Vector3d(1,0,0), new Vector3d(0,1,0), new Vector3d(0,0,1)};
 	
-	public String getMetaTypeDesc()
+	
+	private Matrix4d cachedFromSystem, cachedToSystem=new Matrix4d();
+	
+	public CoordinateSystem()
 		{
-		return metaType;
+		updateCachedMatrices();
 		}
 	
-	/**
-	 * Save down data
-	 */
-	public void saveMetadata(Element e)
-		{
-		e.setName(metaType);
-//		e.
-		}
-
-	public void loadMetadata(Element e)
-		{
-		}
-
-
-	public void buildMetamenu(JMenu menu)
-		{
-		}
-
 	/**
 	 * Get transformation matrix from current basis to basis of this system
 	 * 
@@ -66,17 +55,9 @@ public class CoordinateSystem extends EvObject
 	 * rewrite as matrix e'=M e 
 	 * give vector v, v' = sum_i v_i' e_i' = sum_i v_i' sum_j basis_i_j e_j)  
 	 * 
-	 * 
-	 * @return
+	 * The one changing the bases is responsible for calling this function
 	 */
-	public Matrix4d getTransformToSystem()
-		{
-		Matrix4d m=getTransformFromSystem();
-		m.invert();
-		return m;
-		}
-	
-	public Matrix4d getTransformFromSystem()
+	public void updateCachedMatrices()
 		{
 		Matrix4d m=new Matrix4d();
 		m.m00=base[0].x;
@@ -90,11 +71,117 @@ public class CoordinateSystem extends EvObject
 		m.m22=base[2].z;
 		m.m33=1;
 		Matrix4d mt=new Matrix4d();
+		mt.setIdentity();
 		mt.setTranslation(midpoint);
-		
-		//TODO mul
-		
-		return m;
+		mt.mul(m);
+
+		cachedFromSystem=mt;
+		System.out.println(cachedFromSystem);
+		cachedToSystem.invert(cachedFromSystem);
 		}
 	
+	public String getMetaTypeDesc()
+		{
+		return metaType;
+		}
+	
+	/**
+	 * Save down data
+	 */
+	public void saveMetadata(Element e)
+		{
+		e.setName(metaType);
+		Element mide=new Element("midpoint");
+		mide.setAttribute("x",""+midpoint.x);
+		mide.setAttribute("y",""+midpoint.y);
+		mide.setAttribute("z",""+midpoint.z);
+		e.addContent(mide);
+		for(int i=0;i<3;i++)
+			{
+			Element ce=new Element("basis");
+			ce.setAttribute("x",""+base[i].x);
+			ce.setAttribute("y",""+base[i].y);
+			ce.setAttribute("z",""+base[i].z);
+			e.addContent(ce);
+			}
+		}
+
+	public void loadMetadata(Element e)
+		{
+		try
+			{
+			for(Object o:e.getChildren())
+				{
+				Element c=(Element)o;
+				if(c.getName().equals("basis"))
+					{
+					Vector3d v=new Vector3d(
+							c.getAttribute("x").getDoubleValue(),
+							c.getAttribute("y").getDoubleValue(),
+							c.getAttribute("z").getDoubleValue());
+					base[c.getAttribute("num").getIntValue()]=v;
+					}
+				else if(c.getName().equals("midpoint"))
+					{
+					Vector3d v=new Vector3d(
+							c.getAttribute("x").getDoubleValue(),
+							c.getAttribute("y").getDoubleValue(),
+							c.getAttribute("z").getDoubleValue());
+					midpoint=v;
+					}
+				}
+			}
+		catch (DataConversionException e1)
+			{
+			e1.printStackTrace();
+			}
+		updateCachedMatrices();
+		}
+
+
+	public void buildMetamenu(JMenu menu)
+		{
+		}
+
+	/**
+	 * Get read-only matrix going TO this system
+	 */
+	public Matrix4d getTransformToSystem()
+		{
+		return cachedToSystem;
+		}
+	
+	/**
+	 * Get read-only matrix going FROM this system
+	 */
+	public Matrix4d getTransformFromSystem()
+		{
+		return cachedFromSystem;
+		}
+	
+	public Vector3d transformFromSystem(Vector3d v)
+		{
+		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
+		cachedFromSystem.transform(w);
+		return new Vector3d(w.x,w.y,w.z);
+		}
+
+	public Vector3d transformToSystem(Vector3d v)
+		{
+		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
+		cachedToSystem.transform(w);
+		return new Vector3d(w.x,w.y,w.z);
+		}
+
+	public static void main(String[] args)
+		{
+		
+		CoordinateSystem cs=new CoordinateSystem();
+		
+		Vector3d v=new Vector3d(1,0,0);
+		
+		Vector3d w=cs.transformToSystem(v);
+		System.out.println(w);
+		
+		}
 	}
