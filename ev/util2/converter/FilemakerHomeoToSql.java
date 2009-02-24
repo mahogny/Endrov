@@ -7,7 +7,7 @@ import org.jdom.*;
 
 import endrov.util.EvXmlUtil;
 
-public class FilemakerToSql
+public class FilemakerHomeoToSql
 	{
 
 	public static String escapeSQL(String s)
@@ -71,7 +71,7 @@ public class FilemakerToSql
 		
 		try
 			{
-			Document doc=EvXmlUtil.readXML(new File("/Volumes/TBU_main02/homeoExport2.xml"));
+			Document doc=EvXmlUtil.readXML(new File("/Volumes/TBU_main03/userdata/henriksson/fromfilemaker090223/homeobox"));
 			Element root=doc.getRootElement();
 			
 			for(Object ro:root.getChildren())
