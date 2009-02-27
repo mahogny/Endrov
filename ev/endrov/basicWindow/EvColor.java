@@ -34,6 +34,8 @@ public class EvColor
 			
 			new EvColor("Purple",new Color(200,0,255)),
 			new EvColor("Orange",new Color(255,128,0)),
+			
+			new EvColor("Black",new Color(0,0,0)),
 			};
 	
 	public String name;
