@@ -1,12 +1,18 @@
 package util2.integrateExpression;
 
 
+import java.io.File;
+import java.util.Arrays;
+
 import util2.ConnectImserv;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
+import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
+import endrov.shell.Shell;
+import endrov.util.EvParallel;
 
 
 
@@ -14,7 +20,7 @@ public class MakeProfiles
 	{
 
 	
-	public static void doProfile(EvData data, String name)
+	public static void doProfile(EvData data)
 		{
 		
 		String channelName="GFP";
@@ -25,16 +31,37 @@ public class MakeProfiles
 		//T20-10:<name>  (tissue level, by mapping cube, 20x10x10 with 20 along major axis)
 		//C:<name>       (cellular level)
 		
-		int apNumSlice=20;
-		IntExpAP.doProfile(data,"AP"+apNumSlice+":"+name,name, channelName,apNumSlice);
+		if(data.getObjects(Imageset.class).get(0).getChannel(channelName)==null)
+			return;
+		if(data.getIdObjectsRecursive(Shell.class).isEmpty())
+			return;
 		
-		IntExpAP.doProfile(data,"AP1:"+name,name,channelName,1);
+		
+		IntExpAP.doProfile(data,IntExpAP.linFor(1, channelName),"exp",channelName,1);
+
+		int apNumSlice=20;
+		IntExpAP.doProfile(data,IntExpAP.linFor(apNumSlice, channelName),"exp", channelName,apNumSlice);
+
+		IntExpAP.printProfile(data, IntExpAP.linFor(1, channelName),"exp",channelName,1, 
+				IntExpAP.fileFor(data,1,channelName));
+		IntExpAP.printProfile(data, IntExpAP.linFor(20, channelName),"exp",channelName,apNumSlice, 
+				IntExpAP.fileFor(data,apNumSlice,channelName));
+
+		data.saveData();
+		
+		
+//		printProfile(data, "AP20:CEH-5",expName,channelName,numSubDiv, new File("/tmp/out.txt"));
+
+		
+		
+		
+		/*
 
 		int numSubDivX=20, numSubDivYZ=10;
 		IntExpTissue.doProfile(data, "T"+numSubDivX+"-"+numSubDivYZ+":"+name, name, numSubDivX, numSubDivYZ);
 		
 		IntExpCell.doProfile(data, name, channelName);
-		//data.saveData(); NOOO
+		*/
 
 		//Imageset im=data.getObjects(Imageset.class).iterator().next();
 		
@@ -44,6 +71,39 @@ public class MakeProfiles
 	
 	
 	public static void main(String[] args)
+		{
+		Log.listeners.add(new StdoutLog());
+		EV.loadPlugins();
+		
+	//	EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
+		//doProfile(data);
+
+		EvParallel.map_(Arrays.asList(new File("/Volumes/TBU_main01/ost4dgood").listFiles()), new EvParallel.FuncAB<File, Object>(){
+			public Object func(File f)
+				{
+				if(f.getName().endsWith(".ost"))
+					{
+					EvData data=EvData.loadFile(f);
+					if(!data.getObjects(Imageset.class).isEmpty())
+						doProfile(data);
+					}
+				return null;
+				}
+		
+		});
+		
+		/*
+		for(File f:)
+			{
+			
+			
+			}
+	*/
+		
+		System.exit(0);
+		}
+	
+	public static void main2(String[] args)
 		{
 		try
 			{
@@ -64,7 +124,7 @@ public class MakeProfiles
 				{
 				System.out.println("loading "+s);
 				EvData data=EvData.loadFile(url+s);
-				doProfile(data, s);
+				doProfile(data);
 				}
 
 			}

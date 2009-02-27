@@ -3,10 +3,7 @@ package util2.integrateExpression;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import endrov.data.EvData;
 import endrov.ev.*;
@@ -32,19 +29,72 @@ public class IntExpAP
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
-		EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141070621b.ost/"));
+		EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 		
 		int numSubDiv=20;
 		String channelName="GFP";
-		doProfile(data, "AP20:CEH-5","CEH-5",channelName,numSubDiv);
-		//data.saveData(); NOOO
+		String expName="exp"; //Neutral name
+		
+		String newLinName=linFor(numSubDiv,channelName);
+		doProfile(data, newLinName,expName,channelName,numSubDiv);
+		data.saveData(); 
+		
+		printProfile(data, newLinName,expName,channelName,numSubDiv, fileFor(data,numSubDiv,channelName));
 		
 		System.exit(0);
 		}
 		
+	
+	public static String linFor(int numSubDiv, String channelName)
+		{
+		return "AP"+numSubDiv+"-"+channelName;
+		}
+	
+	public static File fileFor(EvData data, int numSubDiv, String channelName)
+		{
+		//TODO: later, use blobs or similar?
+		File datadir=data.io.datadir();
+		return new File(datadir,"AP"+numSubDiv+"-"+channelName);
+		}
+	
+	
+	
+	/**
+	 * Store profile as array on disk
+	 */
+	public static void printProfile(EvData data, String newLineName, String expName, String channelName, int numSubDiv, File file)
+		{
+		Imageset imset=data.getObjects(Imageset.class).get(0);
+		EvChannel ch=imset.getChannel(channelName);
+		NucLineage lin=(NucLineage)imset.metaObject.get(newLineName);
+		try
+			{
+			StringBuffer outf=new StringBuffer();
+			
+			here: for(EvDecimal frame:ch.imageLoader.keySet())
+				{
+				for(int i=0;i<numSubDiv;i++)
+					{
+					NucLineage.Nuc nuc=lin.nuc.get("_slice"+i);
+					NucExp nexp=nuc.exp.get(expName);
+					Double level=nexp.level.get(frame);
+					if(level==null)
+						continue here;
+					outf.append(level);
+					outf.append("\t");
+					}
+				outf.append("\n");
+				}
+			EvFileUtil.writeFile(file, outf.toString());
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
 	public static void doProfile(EvData data, String newLineName, String expName, String channelName, int numSubDiv)
 		{
-		
 		
 		
 		
@@ -52,17 +102,21 @@ public class IntExpAP
 
 		//For all lineages
 		//TODO need to group lineage and shell. introduce a new object?
-		NucLineage lin=imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+		NucLineage lin=new NucLineage();
+		//imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 		Shell shell=imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
-		ExpUtil.clearExp(lin, expName);
+		//ExpUtil.clearExp(lin, expName);
 
+		imset.metaObject.put(newLineName, lin);
+		
+		
 		//Virtual nuc for AP
 		for(int i=0;i<numSubDiv;i++)
 			lin.getNucCreate("_slice"+i);
 		
 		
 		
-		TreeMap<EvDecimal, Double> bgLevel=new TreeMap<EvDecimal, Double>();
+		//TreeMap<EvDecimal, Double> bgLevel=new TreeMap<EvDecimal, Double>();
 		
 		
 		HashMap<EvDecimal, EvPixels> distanceMap=new HashMap<EvDecimal, EvPixels>();
@@ -76,20 +130,22 @@ public class IntExpAP
 		//For all frames
 		System.out.println("num frames: "+imset.getChannel(channelName).imageLoader.size());
 		EvDecimal lastFrame=ch.imageLoader.lastKey();
+		double expTime=1; //For missing frames, use last frame
 		for(EvDecimal frame:ch.imageLoader.keySet())
-			if(frame.less(new EvDecimal("30000")) && frame.greater(new EvDecimal("29000")))
+//			if(frame.less(new EvDecimal("30000")) && frame.greater(new EvDecimal("29000")))
 			{
 			System.out.println();
-			System.out.println("frame "+frame+" / "+lastFrame);
+			System.out.println(data+"    frame "+frame+" / "+lastFrame);
 
 			//Map<String, Double> expLevel=new HashMap<String, Double>();
 			//Map<String, Integer> nucVol=new HashMap<String, Integer>();
 
 			//Get exposure time
-			String sExpTime=imset.metaFrame.get(frame).get("exposuretime");
-			double expTime=1;
+			String sExpTime=imset.getMetaFrame(frame).get("exposuretime");
 			if(sExpTime!=null)
 				expTime=Double.parseDouble(sExpTime);
+			else
+				System.out.println("No exposure time");
 			
 			int bgIntegral=0;
 			int bgVolume=0;
@@ -170,7 +226,7 @@ public class IntExpAP
 						double len=lenMapArr[i];
 						if(len>-1)
 							{
-							int sliceNum=(int)(len*20); //may need to bound in addition
+							int sliceNum=(int)(len*numSubDiv); //may need to bound in addition
 							sliceExp[sliceNum]+=pixelsLine[i];
 							sliceVol[sliceNum]++;
 							}
@@ -195,110 +251,41 @@ public class IntExpAP
 				*/
 				}
 
-			
+		
+			/**
+			 * Store pattern in lineage
+			 */
 			for(int i=0;i<numSubDiv;i++)
 				{
 				double avg=(double)sliceExp[i]/(double)sliceVol[i];
 				avg/=expTime;
-				
 		
 				NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
 				NucExp exp=nuc.getExpCreate(expName);
 				exp.level.put(frame, avg);
 				
-				
-				/*
-				NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
-				if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(frame) && 
-						lin.nuc.get(nucName).pos.firstKey().lessEqual(frame)) 
-					exp.level.put(frame,avg);*/
-				
-//				if(minExpLevel==null || avg<minExpLevel) minExpLevel=avg;
-//				if(maxExpLevel==null || avg>maxExpLevel) maxExpLevel=avg;
-				}
-		
-
-
-
-			//Store bglevel in list
-			if(bgVolume!=0)
-				{
-				bgLevel.put(frame, bgIntegral/(double)bgVolume);
-				System.out.println("BG: "+bgLevel.get(frame));
 				}
 
-
-
 			
-			/*
-			
-			//Store value in XML
-			for(String nucName:expLevel.keySet())
-				{
-				double avg=expLevel.get(nucName)/nucVol.get(nucName);
-				avg/=expTime;
-				//				System.out.println(nucName+" "+avg);
-				NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
-				if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(frame) && 
-						lin.nuc.get(nucName).pos.firstKey().lessEqual(frame)) 
-					exp.level.put(frame,avg);
-
-
-
-
-				}*/
-
 			}
 
-		
-		
-		TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
-		ExpUtil.correctExposureChange(imset, lin, expName, framesSorted);
-		ExpUtil.normalizeSignal(lin, expName);
-
-		
-
-		
-		
-		try
+		//Set override start and end times
+		for(int i=0;i<numSubDiv;i++)
 			{
-			StringBuffer outf=new StringBuffer();
-			
-			here: for(EvDecimal frame:ch.imageLoader.keySet())
-				{
-				for(int i=0;i<numSubDiv;i++)
-					{
-					NucLineage.Nuc nuc=lin.nuc.get("_slice"+i);
-					NucExp nexp=nuc.exp.get(expName);
-					Double level=nexp.level.get(frame);
-					if(level==null)
-						continue here;
-					outf.append(level);
-					}
-				outf.append("\n");
-				}
-			EvFileUtil.writeFile(new File("/tmp/out.txt"), outf.toString());
-			
-			
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
+			NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
+			nuc.overrideStart=ch.imageLoader.firstKey();
+			nuc.overrideEnd=ch.imageLoader.lastKey();
 			}
 		
+		//TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
+		ExpUtil.correctExposureChange(imset, lin, expName, new TreeSet<EvDecimal>(ch.imageLoader.keySet()));
 		
-/*
-		//Subtract background. 
-		//TODO But using minExpLevel, I don't like it. should use some image average. border? first line?
-		double expSize=maxExpLevel-minExpLevel;
-		for(NucLineage.Nuc nuc:lin.nuc.values())
-			if(nuc.exp.containsKey(expName))
-				for(Map.Entry<EvDecimal, Double> e:nuc.exp.get(expName).level.entrySet())
-					{
-					nuc.exp.get(expName).level.put(e.getKey(), (e.getValue()-minExpLevel)*5);
-					}
 		
-	*/	
+		//ExpUtil.normalizeSignal(lin, expName); //TODO when everything else works
+
+		
+
+		
 		
 		}
 	}
