@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
@@ -38,6 +40,23 @@ public class EvFileUtil
 		{
 		StringBuffer bf=new StringBuffer();
 		BufferedReader br=new BufferedReader(new FileReader(file));
+		String line;
+		while((line=br.readLine())!=null)
+			{
+			bf.append(line);
+			bf.append("\n");
+			}
+		//TODO: should read file exactly as is. do not use readline!
+		return bf.toString();
+		}
+	
+	/**
+	 * Read file into string
+	 */
+	public static String readStream(InputStream is) throws IOException
+		{
+		StringBuffer bf=new StringBuffer();
+		BufferedReader br=new BufferedReader(new InputStreamReader(is));
 		String line;
 		while((line=br.readLine())!=null)
 			{

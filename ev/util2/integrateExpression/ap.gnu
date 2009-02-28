@@ -1,3 +1,5 @@
+#START
+
 set xlabel "AP"
 set ylabel "Time [s]"
 #set key top
@@ -10,7 +12,7 @@ set hidden3d
 unset xtics
 unset ztics
 
-set view 35,25,1,1
+set view 35,55,1,1
 
 #set pm3d at s hidden3d 100
 #set style line 100 lt 5 lw 0.5
@@ -18,6 +20,9 @@ set view 35,25,1,1
 unset colorbox
 unset surface
 
-splot "/Volumes/TBU_main01/ost4dgood/ceh33_reco2.ost/data/AP20-GFP" matrix notitle
+
+splot "#INFILE" matrix notitle
+
+#splot "/Volumes/TBU_main01/ost4dgood/ceh33_reco2.ost/data/AP20-GFP" matrix notitle
 
 ####TODO time is wrong

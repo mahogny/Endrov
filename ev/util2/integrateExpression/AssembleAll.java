@@ -1,8 +1,13 @@
 package util2.integrateExpression;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.text.NumberFormat;
 
+import endrov.util.EvFileUtil;
 import endrov.util.Tuple;
 
 /**
@@ -73,6 +78,26 @@ public class AssembleAll
 		}
 	
 	
+	public static void gnuplot(String s) throws IOException
+		{
+		try
+			{
+			Process process = Runtime.getRuntime().exec("/usr/bin/gnuplot");
+			    
+			PrintWriter pw=new PrintWriter(process.getOutputStream());
+			pw.println(s);
+			pw.flush();
+			pw.close();
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			while(br.readLine()!=null);
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
 	public static void main(String[] args)
 		{
 		
@@ -85,21 +110,35 @@ public class AssembleAll
 	//	EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 		//doProfile(data);
 
-		for(File f:new File("/Volumes/TBU_main01/ost4dgood").listFiles())
-			if(f.getName().endsWith(".ost")) 
-				{
-				File APfile=new File(new File(f,"data"),"AP20-GFP");
-				if(APfile.exists())
+		try
+			{
+			final String gpCmd=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("ap.gnu"));
+			
+			for(File f:new File("/Volumes/TBU_main01/ost4dgood").listFiles())
+				if(f.getName().endsWith(".ost")) 
 					{
-					System.out.println(APfile);
-					Tuple<String, String> nameDate=nameDateFromOSTName(f.getName());
-					System.out.println(nameDate);
-					
-					
-					
-					
+					File APfile=new File(new File(f,"data"),"AP20-GFP");
+					if(APfile.exists())
+						{
+						System.out.println(APfile);
+						Tuple<String, String> nameDate=nameDateFromOSTName(f.getName());
+						System.out.println(nameDate);
+						
+						String thisCmd=gpCmd
+						.replace("#INFILE", APfile.toString())
+						.replace("#START","set terminal png\nset output '"+APfile.toString()+".png'\n");
+						System.out.println(thisCmd);
+						gnuplot(thisCmd);
+						
+						
+						}
 					}
-				}
+			}
+		catch (IOException e)
+			{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
 		
 		System.exit(0);
 		
