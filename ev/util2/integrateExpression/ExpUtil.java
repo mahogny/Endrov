@@ -5,6 +5,7 @@ import java.util.*;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
+import endrov.nuc.NucLineage.Nuc;
 import endrov.util.EvDecimal;
 import endrov.util.EvMathUtil;
 import endrov.util.Tuple;
@@ -57,6 +58,7 @@ public class ExpUtil
 		double correctionK=1;
 		double correctionM=0;
 		
+		Nuc corrNuc=lin.getNucCreate("correctExp");
 		
 		int framecount=0;
 		
@@ -91,9 +93,10 @@ public class ExpUtil
 			
 			if(newKM!=null)
 				{
-				if(Math.abs(newKM.snd()-correctionM)>0.01) //Better constant! TODO
+				double jmp=Math.abs(newKM.snd()-correctionM);
+				if(jmp>0.02) //Better constant! TODO
 					{
-					System.out.println("Detected sudden jump");
+					System.out.println("Detected sudden jump: "+jmp);
 					lastExposure=-1.0;
 					}
 				}
@@ -101,7 +104,7 @@ public class ExpUtil
 			//Trigger correction
 			if(!lastExposure.equals(expTime))
 				{
-					
+				corrNuc.getPosCreate(frame);
 				
 				//NOTE! last frame has already been corrected. Hence correction does not depend on last correction!
 //				Tuple<Double,Double> newKM=EvMathUtil.fitLinear1D(lastFit, curFit);
@@ -255,7 +258,7 @@ public class ExpUtil
 	public static void normalizeSignal(NucLineage lin, String expName)
 		{
 		Double max=null;
-		double normalizedVal=100;
+		double normalizedVal=1;
 		
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{

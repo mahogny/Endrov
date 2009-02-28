@@ -47,15 +47,15 @@ public class IntExpAP
 	
 	public static String linFor(int numSubDiv, String channelName)
 		{
-//		return "AP"+numSubDiv+"-"+channelName;
-		return "AP"+numSubDiv+"-"+channelName+"b"; //TODO TEMP
+		return "AP"+numSubDiv+"-"+channelName;
 		}
 	
 	public static File fileFor(EvData data, int numSubDiv, String channelName)
 		{
 		//TODO: later, use blobs or similar?
 		File datadir=data.io.datadir();
-		return new File(datadir,"AP"+numSubDiv+"-"+channelName);
+//		return new File(datadir,"AP"+numSubDiv+"-"+channelName);
+		return new File(datadir,"AP"+numSubDiv+"-"+channelName+"b"); //TODO temp
 		}
 	
 	
@@ -74,6 +74,7 @@ public class IntExpAP
 			
 			here: for(EvDecimal frame:ch.imageLoader.keySet())
 				{
+				outf.append(""+frame+"\t");
 				for(int i=0;i<numSubDiv;i++)
 					{
 					NucLineage.Nuc nuc=lin.nuc.get("_slice"+i);
@@ -130,13 +131,14 @@ public class IntExpAP
 		
 		//For all frames
 		System.out.println("num frames: "+imset.getChannel(channelName).imageLoader.size());
+		EvDecimal firstframe=ch.imageLoader.firstKey();
 		EvDecimal lastFrame=ch.imageLoader.lastKey();
 		double expTime=1; //For missing frames, use last frame
 		for(EvDecimal frame:ch.imageLoader.keySet())
 //			if(frame.less(new EvDecimal("30000")) && frame.greater(new EvDecimal("29000")))
 			{
 			System.out.println();
-			System.out.println(data+"    frame "+frame+" / "+lastFrame);
+			System.out.println(data+"    frame "+frame+" / "+firstframe+" - "+lastFrame);
 
 			//Map<String, Double> expLevel=new HashMap<String, Double>();
 			//Map<String, Integer> nucVol=new HashMap<String, Integer>();
@@ -279,10 +281,16 @@ public class IntExpAP
 			}
 		
 		//TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
+
+		//Normalization is needed before exposure correction to make sure the threshold for
+		//detecting jumps always works
+		ExpUtil.normalizeSignal(lin, expName); 
+
+		
 		ExpUtil.correctExposureChange(imset, lin, expName, new TreeSet<EvDecimal>(ch.imageLoader.keySet()));
 		
-		
-		//ExpUtil.normalizeSignal(lin, expName); //TODO when everything else works
+		//This is only for the eye
+		ExpUtil.normalizeSignal(lin, expName); 
 
 		
 
