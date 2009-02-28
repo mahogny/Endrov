@@ -42,11 +42,14 @@ public class MakeProfiles
 		int apNumSlice=20;
 		IntExpAP.doProfile(data,IntExpAP.linFor(apNumSlice, channelName),"exp", channelName,apNumSlice);
 
-		IntExpAP.printProfile(data, IntExpAP.linFor(1, channelName),"exp",channelName,1, 
-				IntExpAP.fileFor(data,1,channelName));
-		IntExpAP.printProfile(data, IntExpAP.linFor(20, channelName),"exp",channelName,apNumSlice, 
-				IntExpAP.fileFor(data,apNumSlice,channelName));
+		File fileT=IntExpAP.fileFor(data,1,channelName);
+		File fileAP=IntExpAP.fileFor(data,apNumSlice,channelName);
+		IntExpAP.printProfile(data, IntExpAP.linFor(1, channelName),"exp",channelName,1, fileT);
+		IntExpAP.printProfile(data, IntExpAP.linFor(20, channelName),"exp",channelName,apNumSlice, fileAP);
 
+		System.out.println(fileT);
+		System.out.println(fileAP);
+		
 		data.saveData();
 		
 		
