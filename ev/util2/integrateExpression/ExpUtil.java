@@ -75,12 +75,20 @@ public class ExpUtil
 //			Double curAv=helperGetAverageForFrame(lin, expName, frame);
 
 	
-			//Values to piece together
+			//Values to piece together. Model a*x+b
+			/*
 			List<Double> lastFit=helperGetAverageForFrameNew(lin, expName, lastFrame);
 			List<Double> curFit=helperGetAverageForFrameNew(lin, expName, frame);
-//			if(lastFit==null)
-				//lastFit=curFit;
 			Tuple<Double,Double> newKM=EvMathUtil.fitLinear1D(lastFit, curFit);
+			*/
+			
+			//Values to piece together. Model x+b
+			Tuple<Double,Double> newKM=new Tuple<Double, Double>(
+					1.0,
+					helperGetAverageForFrame(lin, expName, lastFrame)-helperGetAverageForFrame(lin, expName, frame));
+			
+
+			
 			if(newKM!=null)
 				{
 				if(Math.abs(newKM.snd()-correctionM)>0.01) //Better constant! TODO
@@ -141,6 +149,9 @@ public class ExpUtil
 			}
 		return list;
 		}
+	
+
+	
 	/////////////////////////////////////////////
 	/////////////////////////////////////////////
 	/////////////////////////////////////////////

@@ -47,7 +47,8 @@ public class IntExpAP
 	
 	public static String linFor(int numSubDiv, String channelName)
 		{
-		return "AP"+numSubDiv+"-"+channelName;
+//		return "AP"+numSubDiv+"-"+channelName;
+		return "AP"+numSubDiv+"-"+channelName+"b"; //TODO TEMP
 		}
 	
 	public static File fileFor(EvData data, int numSubDiv, String channelName)
