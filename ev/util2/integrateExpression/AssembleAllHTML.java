@@ -10,17 +10,16 @@ import java.io.PrintWriter;
 import java.text.NumberFormat;
 import java.util.StringTokenizer;
 
-import org.apache.poi.hssf.record.formula.functions.Replace;
 
 import endrov.util.EvFileUtil;
 import endrov.util.Tuple;
 
 /**
- * Take all OSTs with generated profiles and generate assemblies
+ * Turn profiles into HTML
  * @author Johan Henriksson
  *
  */
-public class AssembleAll
+public class AssembleAllHTML
 	{
 	
 	public static boolean isNumber(String s)
@@ -179,16 +178,19 @@ public class AssembleAll
 
 		try
 			{
-			String apTotTemplate=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("ap3d.html"));
-			String apCellTemplate=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("ap3dcell.html"));
-			String tTotTemplate=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("t.html"));
-			String tCellTemplate=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("tcell.html"));
-			StringBuffer sbApCells=new StringBuffer();
+			String ap3dTotTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap3d.html"));
+			String ap3dCellTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap3dcell.html"));
+			String ap2dTotTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap2d.html"));
+			String ap2dCellTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap2dcell.html"));
+			String tTotTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("t.html"));
+			String tCellTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("tcell.html"));
+			StringBuffer sbAp3dCells=new StringBuffer();
+			StringBuffer sbAp2dCells=new StringBuffer();
 			StringBuffer sbTCells=new StringBuffer();
 			
-			String gnuplotAP3d=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("ap3d.gnu"));
-			String gnuplotAP2d=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("ap2d.gnu"));
-			String gnuplotT=EvFileUtil.readStream(AssembleAll.class.getResourceAsStream("t.gnu"));
+			String gnuplotAP3d=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap3d.gnu"));
+			String gnuplotAP2d=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap2d.gnu"));
+			String gnuplotT=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("t.gnu"));
 			
 			File tempdatFile=File.createTempFile("surface", ".dat");
 			System.out.println(tempdatFile);
@@ -218,20 +220,26 @@ public class AssembleAll
 //						System.out.println(thisCmd);
 						gnuplot(thisCmd);
 
+						String imgap2d=APfile.toString()+"b.2d.png";
 						String thisCmd2d=gnuplotAP2d
 						.replace("TITLE", nameDate.fst())
 						.replace("#INFILE", tempdatFile.toString())
-						.replace("#START","set terminal png size 128,350\nset output '"+APfile.toString()+"b.2d.png'\n");
+						.replace("#START","set terminal png size 128,350\nset output '"+imgap2d+"'\n");
 //						.replace("#START","set terminal png size 128,350\nset output '"+APfile.toString()+".2d.png'\n");
 //						System.out.println(thisCmd2d);
 						gnuplot(thisCmd2d);
 
 						
-						sbApCells.append(apCellTemplate
+						sbAp3dCells.append(ap3dCellTemplate
 								.replace("STRAIN",nameDate.fst())
 								.replace("OSTURL", f.toString())
 								.replace("IMGURL",imgap3d));
-						
+
+						sbAp2dCells.append(ap2dCellTemplate
+								.replace("STRAIN",nameDate.fst())
+								.replace("OSTURL", f.toString())
+								.replace("IMGURL",imgap2d));
+
 						}
 					
 					
@@ -256,8 +264,10 @@ public class AssembleAll
 						
 						}
 					}
-			EvFileUtil.writeFile(new File(htmlOutdir,"ap3d.html"), apTotTemplate
-					.replace("TABLECONTENT", sbApCells.toString()));
+			EvFileUtil.writeFile(new File(htmlOutdir,"ap3d.html"), ap3dTotTemplate
+					.replace("TABLECONTENT", sbAp3dCells.toString()));
+			EvFileUtil.writeFile(new File(htmlOutdir,"ap2d.html"), ap2dTotTemplate
+					.replace("TABLECONTENT", sbAp2dCells.toString()));
 			EvFileUtil.writeFile(new File(htmlOutdir,"t.html"), tTotTemplate
 					.replace("TABLECONTENT", sbTCells.toString()));
 			}

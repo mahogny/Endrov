@@ -51,13 +51,15 @@ public class ExpUtil
 	
 	/**
 	 * Correct for background etc. 
+	 * Return table of correction values so it can be applied again. Will be used for non-AP
 	 */
-	public static void correctExposureChange(Imageset imset, NucLineage lin, String expName, SortedSet<EvDecimal> frames)
+	public static TreeMap<EvDecimal, Tuple<Double,Double>> correctExposureChange(Imageset imset, NucLineage lin, String expName, SortedSet<EvDecimal> frames)
 		{
 		//Initital correction=none
 		double correctionK=1;
 		double correctionM=0;
 		
+		TreeMap<EvDecimal, Tuple<Double,Double>> historyKM=new TreeMap<EvDecimal, Tuple<Double,Double>>();
 		Nuc corrNuc=lin.getNucCreate("correctExp");
 		
 		int framecount=0;
@@ -122,7 +124,7 @@ public class ExpUtil
 			lastFrame=frame;
 			lastExposure=expTime;
 			
-
+			historyKM.put(frame,new Tuple<Double, Double>(correctionK,correctionM));
 			
 			//Correct this frame. Also get 
 			for(NucLineage.Nuc nuc:lin.nuc.values())
@@ -136,6 +138,7 @@ public class ExpUtil
 					}
 				}
 			}
+		return historyKM;
 		}
 	private static List<Double> helperGetAverageForFrameNew(NucLineage lin, String expName, EvDecimal frame)
 		{
@@ -151,6 +154,38 @@ public class ExpUtil
 				}
 			}
 		return list;
+		}
+	
+	
+	
+	
+	/**
+	 * Correct for background etc. Use table of corrections
+	 */
+	public static void correctExposureChange(TreeMap<EvDecimal, Tuple<Double,Double>> corrections, NucLineage lin, String expName)
+		{
+		int framecount=0;
+		
+		//For all frames
+		for(EvDecimal frame:corrections.keySet())
+			{
+			framecount++;
+
+			double correctionK=corrections.get(frame).fst();
+			double correctionM=corrections.get(frame).snd();
+			
+			//Correct this frame. Also get 
+			for(NucLineage.Nuc nuc:lin.nuc.values())
+				{
+				NucExp nexp=nuc.exp.get(expName);
+				if(nexp!=null)
+					{
+					Double level=nexp.level.get(frame);
+					if(level!=null)
+						nexp.level.put(frame,correctionK*level+correctionM);
+					}
+				}
+			}
 		}
 	
 
