@@ -290,10 +290,34 @@ public class ExpUtil
 	/**
 	 * Normalize expression such that maximum is 1.0
 	 */
-	public static void normalizeSignal(NucLineage lin, String expName)
+	public static void normalizeSignal(NucLineage lin, String expName, double max, double min)
+		{
+//		Double max=getSignalMax(lin, expName);
+		double normalizedVal=1;
+		double scale=normalizedVal/(max-min);
+		
+		for(NucLineage.Nuc nuc:lin.nuc.values())
+			{
+			NucExp nexp=nuc.exp.get(expName);
+			if(nexp!=null)
+				{
+				nexp.unit=null;
+				HashMap<EvDecimal, Double> newlevel=new HashMap<EvDecimal, Double>();
+				for(Map.Entry<EvDecimal, Double> e:nexp.level.entrySet())
+					newlevel.put(e.getKey(),(e.getValue()-min)*scale);
+				nexp.level.clear();
+				nexp.level.putAll(newlevel);
+				}
+			}
+
+		}
+	
+	/**
+	 * Get maximum value for expression
+	 */
+	public static Double getSignalMax(NucLineage lin, String expName)
 		{
 		Double max=null;
-		double normalizedVal=1;
 		
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
@@ -303,26 +327,26 @@ public class ExpUtil
 					if(max==null || level>max)
 						max=level;
 			}
-
+		return max;
+		}
+	
+	/**
+	 * Get minimum value for expression
+	 */
+	public static Double getSignalMin(NucLineage lin, String expName)
+		{
+		Double min=null;
+		
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
 			NucExp nexp=nuc.exp.get(expName);
 			if(nexp!=null)
-				{
-				nexp.unit=null;
-				HashMap<EvDecimal, Double> newlevel=new HashMap<EvDecimal, Double>();
-				for(Map.Entry<EvDecimal, Double> e:nexp.level.entrySet())
-					newlevel.put(e.getKey(),normalizedVal*e.getValue()/max);
-				nexp.level.clear();
-				nexp.level.putAll(newlevel);
-				}
+				for(double level:nexp.level.values())
+					if(min==null || level>min)
+						min=level;
 			}
-
+		return min;
 		}
-	
-
-	
-	
 	
 	
 	}

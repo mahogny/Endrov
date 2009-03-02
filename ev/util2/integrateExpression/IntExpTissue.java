@@ -270,12 +270,13 @@ public class IntExpTissue
 			}
 
 		
-		
+
+		/*
 		TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
 		ExpUtil.correctExposureChange(imset, lin, expName, framesSorted);
 		ExpUtil.normalizeSignal(lin, expName);
-
-		
+*/
+		//TODO TODO TODO get corrections from AP calc. or use tissue? 
 
 		
 		

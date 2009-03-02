@@ -12,6 +12,7 @@ import endrov.nuc.*;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
+import endrov.util.Tuple;
 import endrov.util.Vector2D;
 
 /**
@@ -284,13 +285,16 @@ public class IntExpAP
 
 		//Normalization is needed before exposure correction to make sure the threshold for
 		//detecting jumps always works
-		ExpUtil.normalizeSignal(lin, expName); 
+		ExpUtil.normalizeSignal(lin, expName, ExpUtil.getSignalMax(lin, expName),0); 
 
 		
+		//TreeMap<EvDecimal, Tuple<Double,Double>> expCorrects=
 		ExpUtil.correctExposureChange(imset, lin, expName, new TreeSet<EvDecimal>(ch.imageLoader.keySet()));
 		
 		//This is only for the eye
-		ExpUtil.normalizeSignal(lin, expName); 
+		double sigMax=ExpUtil.getSignalMax(lin, expName);
+		double sigMin=ExpUtil.getSignalMin(lin, expName);
+		ExpUtil.normalizeSignal(lin, expName,sigMax,sigMin); 
 
 		
 

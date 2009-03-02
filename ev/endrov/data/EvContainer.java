@@ -119,7 +119,7 @@ public class EvContainer
 		{
 		for(Map.Entry<String, EvObject> e:metaObject.entrySet())
 			{
-			curPath.addFirst(e.getKey());
+			curPath.addLast(e.getKey());
 			if(cl.isInstance(e.getValue()))
 				map.put(new EvPath(curPath),(E)e.getValue());
 			((EvContainer)e.getValue()).getIdObjectsRecursiveHelper(map, curPath, cl);
