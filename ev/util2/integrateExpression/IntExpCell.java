@@ -216,23 +216,12 @@ public class IntExpCell
 
 			}
 
-/*
-		//Subtract background. 
-		//TODO But using minExpLevel, I don't like it. should use some image average. border? first line?
-		double expSize=maxExpLevel-minExpLevel;
-		for(NucLineage.Nuc nuc:lin.nuc.values())
-			if(nuc.exp.containsKey(expName))
-				for(Map.Entry<EvDecimal, Double> e:nuc.exp.get(expName).level.entrySet())
-					{
-					nuc.exp.get(expName).level.put(e.getKey(), (e.getValue()-minExpLevel)*5);
-					}
-		
-	*/	
-		
+		/*
 		TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
 		ExpUtil.correctExposureChange(imset, lin, expName, framesSorted);
-		ExpUtil.normalizeSignal(lin, expName);
+		ExpUtil.normalizeSignal(lin, expName);*/
 
+		//TODO TODO TODO get corrections from AP calc
 		
 		}
 	}
