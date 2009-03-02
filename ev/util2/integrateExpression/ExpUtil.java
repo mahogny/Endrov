@@ -318,7 +318,6 @@ public class ExpUtil
 	public static Double getSignalMax(NucLineage lin, String expName)
 		{
 		Double max=null;
-		
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
 			NucExp nexp=nuc.exp.get(expName);
@@ -336,7 +335,6 @@ public class ExpUtil
 	public static Double getSignalMin(NucLineage lin, String expName)
 		{
 		Double min=null;
-		
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
 			NucExp nexp=nuc.exp.get(expName);

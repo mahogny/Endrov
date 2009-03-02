@@ -53,8 +53,9 @@ public class NewIntExp
 		{
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
-
-		doOne(new File("/Volumes2/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
+		
+		doOne(new File("/home/tbudev3/TB2141_070621_b.ost"));
+//		doOne(new File("/Volumes2/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 		
 		System.exit(0);
 		}
@@ -89,6 +90,7 @@ public class NewIntExp
 				System.out.println("found lineage "+e.getKey());
 				lin=e.getValue();
 				}
+		lin=null;
 		
 		//Decide on integrators
 		LinkedList<Integrator> ints=new LinkedList<Integrator>();
@@ -117,7 +119,7 @@ public class NewIntExp
 		intAP.done(integrator,null);
 		intT.done(integrator,intAP.correctedExposure);
 		
-		if(intC!=null)
+		if(lin!=null)
 			intC.done(integrator,intAP.correctedExposure);
 		
 		//Put integral in file for use by Gnuplot
@@ -607,7 +609,7 @@ public class NewIntExp
 			
 			//Use prior correction on this expression as well
 			Double max1=ExpUtil.getSignalMax(lin, integrator.expName);
-			if(max1!=null)
+			if(max1==null)
 				{
 				System.out.println("max==null, there is no signal!");
 				}
