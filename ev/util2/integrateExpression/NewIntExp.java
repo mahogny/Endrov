@@ -21,6 +21,10 @@ import endrov.util.Vector2D;
 
 /**
  * All integrations are done at the same time to reduce disk I/O. Images not needed are discarded through lazy evaluation.
+ * 
+ * Background is subtracted. This only affects the first frame, but sets a proper 0.
+ * COULD put background into first frame of correction instead. Is this better?
+ * 
  * @author Johan Henriksson
  *
  */
@@ -89,15 +93,16 @@ public class NewIntExp
 				{
 				System.out.println("found lineage "+e.getKey());
 				lin=e.getValue();
+				System.out.println(lin);
 				}
-		lin=null;
+		//lin=null;
 		
 		//Decide on integrators
 		LinkedList<Integrator> ints=new LinkedList<Integrator>();
 		
 		NewIntExp integrator=new NewIntExp(data, expName,channelName);
-		IntegratorAP intAP=new IntegratorAP(integrator,newLinNameAP,numSubDiv);
-		IntegratorAP intT=new IntegratorAP(integrator,newLinNameT,1);
+		IntegratorAP intAP=new IntegratorAP(integrator,newLinNameAP,numSubDiv,null);
+		IntegratorAP intT=new IntegratorAP(integrator,newLinNameT,1,intAP.bg);
 		
 		ints.add(intAP);
 		ints.add(intT);
@@ -105,14 +110,15 @@ public class NewIntExp
 		IntegratorCell intC=null;
 		if(lin!=null)
 			{
-			intC=new IntegratorCell(integrator, lin);
+			intC=new IntegratorCell(integrator, lin, intAP.bg);
 			ints.add(intC);
 			}
 		
 		//todo check which lin to use, add to list if one exists
 		
 		//Run integrators
-		integrator.doProfile(intAP,intT);
+		integrator.doProfile(ints);
+		//integrator.doProfile(intAP,intT);
 		
 		//Wrap up, store in OST
 		//Use common correction factors for exposure
@@ -227,6 +233,8 @@ public class NewIntExp
 		for(EvDecimal frame:ch.imageLoader.keySet())
 //			if(frame.less(new EvDecimal("30000")) && frame.greater(new EvDecimal("29000")))
 			{
+			this.frame=frame;
+			
 			System.out.println();
 			System.out.println(data+"    frame "+frame+" / "+firstframe+" - "+lastFrame);
 
@@ -245,7 +253,6 @@ public class NewIntExp
 			for(Map.Entry<EvDecimal, EvImage> eim:ch.imageLoader.get(frame).entrySet())
 				{
 				curZ=eim.getKey();
-				this.frame=frame;
 				//Load images lazily (for AP not really needed)
 				im=eim.getValue();
 				//EvPixels pixels=null;
@@ -288,11 +295,21 @@ public class NewIntExp
 		NucLineage lin;
 		String newLinName;
 		
-		public IntegratorAP(NewIntExp integrator, String newLinName, int numSubDiv)
+		Map<EvDecimal, Double> bg=new HashMap<EvDecimal, Double>();
+		TreeMap<EvDecimal, Tuple<Double,Double>> correctedExposure;
+		boolean updateBG=true;
+		//variable if to update bg
+		
+		
+		public IntegratorAP(NewIntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 			{
 			this.numSubDiv=numSubDiv;
 			this.newLinName=newLinName;
-			
+			if(bg!=null)
+				{
+				this.bg=bg;
+				updateBG=false;
+				}
 			sliceExp=new int[numSubDiv];
 			sliceVol=new int[numSubDiv];
 			
@@ -309,9 +326,12 @@ public class NewIntExp
 				lin.getNucCreate("_slice"+i);
 			}
 		
-		
+		double curBgInt=0;
+		int curBgVol=0;
 		public void integrateStackStart(NewIntExp integrator)
 			{
+			curBgInt=0;
+			curBgVol=0;
 			}
 		
 		
@@ -371,30 +391,38 @@ public class NewIntExp
 						sliceExp[sliceNum]+=integrator.pixelsLine[i];
 						sliceVol[sliceNum]++;
 						}
+					else
+						{
+						//Measure background
+						curBgInt+=integrator.pixelsLine[i];
+						curBgVol++;
+						}
 					}
 				}
 			}
 	
 		
-		public void integrateStackDone(NewIntExp images)
+		public void integrateStackDone(NewIntExp integrator)
 			{
-			/**
-			 * Store pattern in lineage
-			 */
+			//Store background
+			if(updateBG)
+				bg.put(integrator.frame, curBgInt/curBgVol);
+			
+			//Store pattern in lineage
 			for(int i=0;i<numSubDiv;i++)
 				{
-				double avg=(double)sliceExp[i]/(double)sliceVol[i];
-				avg/=images.expTime;
+				double avg=(double)sliceExp[i]/(double)sliceVol[i] - bg.get(integrator.frame);
+				avg/=integrator.expTime;
 		
 				NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
-				NucExp exp=nuc.getExpCreate(images.expName);
-				exp.level.put(images.frame, avg);
+				NucExp exp=nuc.getExpCreate(integrator.expName);
+				exp.level.put(integrator.frame, avg);
 				
 				}
+			
 			}
 		
 		
-		TreeMap<EvDecimal, Tuple<Double,Double>> correctedExposure;
 		
 		public void done(NewIntExp integrator, TreeMap<EvDecimal, Tuple<Double,Double>> correctedExposure)
 			{
@@ -491,12 +519,12 @@ public class NewIntExp
 	
 	private static int min2(int a, int b)
 		{
-		return a<b? a:b;
+		return a<b ? a:b;
 		}
 
 	private static int max2(int a, int b)
 		{
-		return a>b? a:b;
+		return a>b ? a:b;
 		}
 
 	
@@ -508,12 +536,14 @@ public class NewIntExp
 		Map<String, Double> expLevel;
 		Map<String, Integer> nucVol;
 		Map<NucPair,NucLineage.NucInterp> inter;
-	
+		Map<EvDecimal, Double> bg;
 		
-		public IntegratorCell(NewIntExp integrator, NucLineage lin)
+		public IntegratorCell(NewIntExp integrator, NucLineage lin, Map<EvDecimal, Double> bg)
 			{
 			this.lin=lin;
+			this.bg=bg;
 			ExpUtil.clearExp(lin, integrator.expName);
+			ExpUtil.clearExp(lin, "CEH-5"); //TEMP
 			}
 
 		public void integrateStackStart(NewIntExp integrator)
@@ -593,13 +623,19 @@ public class NewIntExp
 			//Store value in XML
 			for(String nucName:expLevel.keySet())
 				{
-				double avg=expLevel.get(nucName)/nucVol.get(nucName);
-				avg/=integrator.expTime;
-//				System.out.println(nucName+" "+avg);
-				NucExp exp=lin.nuc.get(nucName).getExpCreate(integrator.expName);
-				if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(integrator.frame) && 
-						lin.nuc.get(nucName).pos.firstKey().lessEqual(integrator.frame)) 
-					exp.level.put(integrator.frame,avg);
+				//Assumption: a cell does not move to vol=0 in the mid so it is fine to throw away these values. 
+				//they have to be set to 0 otherwise
+				double vol=nucVol.get(nucName);
+				if(vol!=0)
+					{
+					double avg=expLevel.get(nucName)/vol - bg.get(integrator.frame);
+					avg/=integrator.expTime;
+					//System.out.println(nucName+" "+avg);
+					NucExp exp=lin.nuc.get(nucName).getExpCreate(integrator.expName);
+					if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(integrator.frame) && 
+							lin.nuc.get(nucName).pos.firstKey().lessEqual(integrator.frame)) 
+						exp.level.put(integrator.frame,avg);
+					}
 				}
 			}
 		
@@ -610,9 +646,7 @@ public class NewIntExp
 			//Use prior correction on this expression as well
 			Double max1=ExpUtil.getSignalMax(lin, integrator.expName);
 			if(max1==null)
-				{
 				System.out.println("max==null, there is no signal!");
-				}
 			else
 				{
 				ExpUtil.normalizeSignal(lin, integrator.expName, max1,0); 
