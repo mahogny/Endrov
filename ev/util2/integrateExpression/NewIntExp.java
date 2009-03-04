@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import javax.vecmath.Vector3d;
+
+import endrov.coordinateSystem.CoordinateSystem;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.ev.*;
@@ -24,6 +27,10 @@ import endrov.util.Vector2D;
  * 
  * Background is subtracted. This only affects the first frame, but sets a proper 0.
  * COULD put background into first frame of correction instead. Is this better?
+ * 
+ * The cubemap contains too much data for the lineage window. 20x20x20=8000 tracks, impossible. also EATS space, especially if
+ * stored as XML. So, it has to be stored as images. Originally as channel "mod-GFP". Overlap is not possible due to
+ * reorientation. Frame-time remap will not be done until assembly.
  * 
  * @author Johan Henriksson
  *
@@ -104,8 +111,15 @@ public class NewIntExp
 		IntegratorAP intAP=new IntegratorAP(integrator,newLinNameAP,numSubDiv,null);
 		IntegratorAP intT=new IntegratorAP(integrator,newLinNameT,1,intAP.bg);
 		
+		IntegratorXYZ intXYZ=new IntegratorXYZ(integrator,newLinNameAP,numSubDiv,intAP.bg);
+		
 		ints.add(intAP);
 		ints.add(intT);
+		
+		if(lin!=null && intXYZ.setupCS(lin))
+			ints.add(intXYZ);
+		else
+			intXYZ=null;
 		
 		IntegratorCell intC=null;
 		if(lin!=null)
@@ -124,6 +138,8 @@ public class NewIntExp
 		//Use common correction factors for exposure
 		intAP.done(integrator,null);
 		intT.done(integrator,intAP.correctedExposure);
+		if(intXYZ!=null)
+			intXYZ.done(integrator,intAP.correctedExposure);
 		
 		if(lin!=null)
 			intC.done(integrator,intAP.correctedExposure);
@@ -131,8 +147,22 @@ public class NewIntExp
 		//Put integral in file for use by Gnuplot
 		intAP.profileForGnuplot(integrator,fileFor(data,numSubDiv,channelName));
 
+		
+		if(intXYZ!=null)
+			{
+			//Extract XYZ profile
+			
+			
+			
+			}
+		
 		//TODO
 		//compression?
+		
+		//Here, save xyz lineage as channel, delete lineage
+		
+		
+		
 		
 		data.saveData(); 
 
@@ -292,14 +322,16 @@ public class NewIntExp
 		Shell shell;
 		int[] sliceExp;
 		int[] sliceVol;
-		NucLineage lin;
+		NucLineage lin=new NucLineage();;
 		String newLinName;
 		
 		Map<EvDecimal, Double> bg=new HashMap<EvDecimal, Double>();
 		TreeMap<EvDecimal, Tuple<Double,Double>> correctedExposure;
-		boolean updateBG=true;
-		//variable if to update bg
+		boolean updateBG=true; //variable if to update bg
 		
+		double curBgInt=0;
+		int curBgVol=0;
+
 		
 		public IntegratorAP(NewIntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 			{
@@ -314,10 +346,9 @@ public class NewIntExp
 			sliceVol=new int[numSubDiv];
 			
 			//TODO need to group lineage and shell. introduce a new object?
-			lin=new NucLineage();
+			integrator.imset.metaObject.put(newLinName, lin);
 			//imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 			shell=integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
-			//ExpUtil.clearExp(lin, expName);
 
 			integrator.imset.metaObject.put(newLinName, lin);
 			
@@ -326,8 +357,6 @@ public class NewIntExp
 				lin.getNucCreate("_slice"+i);
 			}
 		
-		double curBgInt=0;
-		int curBgVol=0;
 		public void integrateStackStart(NewIntExp integrator)
 			{
 			curBgInt=0;
@@ -436,7 +465,7 @@ public class NewIntExp
 			
 			//Normalization is needed before exposure correction to make sure the threshold for
 			//detecting jumps always works
-			ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(lin, integrator.expName),0); 
+			ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(lin, integrator.expName),0,1); 
 			
 			if(correctedExposure!=null)
 				{
@@ -451,7 +480,7 @@ public class NewIntExp
 			//This is only for the eye
 			double sigMax=ExpUtil.getSignalMax(lin, integrator.expName);
 			double sigMin=ExpUtil.getSignalMin(lin, integrator.expName);
-			ExpUtil.normalizeSignal(lin, integrator.expName,sigMax,sigMin); 
+			ExpUtil.normalizeSignal(lin, integrator.expName,sigMax,sigMin,1); 
 			}
 		
 		
@@ -649,7 +678,7 @@ public class NewIntExp
 				System.out.println("max==null, there is no signal!");
 			else
 				{
-				ExpUtil.normalizeSignal(lin, integrator.expName, max1,0); 
+				ExpUtil.normalizeSignal(lin, integrator.expName, max1,0,1); 
 				ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
 				}
 			
@@ -675,5 +704,241 @@ public class NewIntExp
 	
 	
 	
+	
+	public static class Vector3i
+		{
+		public Vector3i(int x, int y, int z)
+			{
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			}
+
+		int x,y,z;
+		
+		}
+	
+	/**
+	 * Cube overlay
+	 */
+	public static class IntegratorXYZ implements Integrator
+		{
+		int numSubDiv;
+		HashMap<EvDecimal, Vector3i[][]> distanceMap=new HashMap<EvDecimal, Vector3i[][]>(); //z->y,x
+//		Shell shell;
+		int[][][] sliceExp; //z,y,x
+		int[][][] sliceVol; //z,y,x
+		NucLineage lin;
+		
+		Map<EvDecimal, Double> bg=new HashMap<EvDecimal, Double>();
+		TreeMap<EvDecimal, Tuple<Double,Double>> correctedExposure;
+
+		CoordinateSystem cs;
+
+		public IntegratorXYZ(NewIntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
+			{
+			this.numSubDiv=numSubDiv;
+			this.bg=bg;
+			
+			//TODO need to group lineage and shell. introduce a new object?
+			lin=new NucLineage();
+			//shell=integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
+			
+			//Virtual nuc
+			for(int i=0;i<numSubDiv;i++)
+				for(int j=0;j<numSubDiv;j++)
+					for(int k=0;k<numSubDiv;k++)
+						lin.getNucCreate("xyz_"+i+"_"+j+"_"+k);
+			}
+
+		/**
+		 * Set up coordinate system, return if successful
+		 */
+		public boolean setupCS(NucLineage refLin)
+			{
+			NucLineage.Nuc nucP2=refLin.nuc.get("P2'");
+			NucLineage.Nuc nucABa=refLin.nuc.get("ABa");
+			NucLineage.Nuc nucABp=refLin.nuc.get("ABp");
+			NucLineage.Nuc nucEMS=refLin.nuc.get("EMS");
+			
+			System.out.println("foo");
+			if(nucP2==null || nucABa==null || nucABp==null || nucEMS==null ||
+					nucP2.pos.isEmpty() || nucABa.pos.isEmpty() || nucABp.pos.isEmpty() || nucEMS.pos.isEmpty())
+				{
+				System.out.println("Does not have required 4-cell stage marked, will not produce cube");
+				return false;
+				}
+			
+			System.out.println("bar");
+			Vector3d posP2=nucP2.pos.get(nucP2.pos.lastKey()).getPosCopy();
+			Vector3d posABa=nucABa.pos.get(nucABa.pos.lastKey()).getPosCopy();
+			Vector3d posABp=nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
+			Vector3d posEMS=nucEMS.pos.get(nucEMS.pos.lastKey()).getPosCopy();
+			
+			Vector3d v1=new Vector3d();
+			Vector3d v2=new Vector3d();
+			v1.sub(posABa, posP2);
+			v2.sub(posEMS,posABp);
+			
+			//By using all 4 cells for mid it should be less sensitive to abberrations
+			Vector3d mid=new Vector3d();
+			mid.add(posABa);
+			mid.add(posABp);
+			mid.add(posEMS);
+			mid.add(posP2);
+			mid.scale(0.25);
+			
+			//Enlarge by 20%
+			cs=new CoordinateSystem();
+			cs.setFromTwoVectors(v1, v2, v1.length()*1.2, v2.length()*1.2, v2.length()*1.2, mid);
+			
+			return true;
+			}
+		
+		
+		public void integrateStackStart(NewIntExp integrator)
+			{
+			sliceExp=new int[numSubDiv][numSubDiv][numSubDiv];
+			sliceVol=new int[numSubDiv][numSubDiv][numSubDiv];
+			}
+		
+		
+		public void integrateImage(NewIntExp integrator)
+			{
+			integrator.ensureImageLoaded();
+			
+			
+			//Calculate distance mask lazily
+			Vector3i[][] lenMap;
+			if(distanceMap.containsKey(integrator.curZ))
+				lenMap=distanceMap.get(integrator.curZ);
+			else
+				{
+				lenMap=new Vector3i[integrator.pixels.getHeight()][integrator.pixels.getWidth()];
+				distanceMap.put(integrator.curZ,lenMap);
+/*
+				Vector2D dirvec=Vector2D.polar(shell.major, shell.angle);
+				Vector2D startpos=dirvec.add(new Vector2D(shell.midx,shell.midy));
+				dirvec=dirvec.normalize().mul(-1);*/
+
+				int cnt=0;
+
+				//Calculate indices
+				for(int ay=0;ay<integrator.pixels.getHeight();ay++)
+					{
+					for(int ax=0;ax<integrator.pixels.getWidth();ax++)
+						{
+						//Convert to world coordinates
+						Vector3d pos=new Vector3d(integrator.im.transformImageWorldX(ax),integrator.im.transformImageWorldY(ay),integrator.curZ.doubleValue());
+
+						Vector3d insys=cs.transformToSystem(pos);
+						//insys.scale(1.0/1.2); //Add 20% in all directions
+						
+						int cx=(int)((insys.x+0.5)*numSubDiv);
+						int cy=(int)((insys.y+0.5)*numSubDiv);
+						int cz=(int)((insys.z+0.5)*numSubDiv);
+
+						if(cx>=0 && cy>=0 && cz>=0 && cx<numSubDiv && cy<numSubDiv && cz<numSubDiv)
+							{
+//							System.out.println(pos+" -> "+cx+" "+cy+" "+cz);
+							cnt++;
+							lenMap[ay][ax]=new Vector3i(cx,cy,cz);
+							}
+						
+						
+						
+						
+						//TODO
+//						lenMap[ay][ax]=new Vector3i();
+						}
+					}
+				System.out.println(cnt);
+
+				}
+			
+			//Integrate this area
+			for(int y=0;y<integrator.pixels.getHeight();y++)
+				{
+				int lineIndex=integrator.pixels.getRowIndex(y);
+				for(int x=0;x<integrator.pixels.getWidth();x++)
+					{
+					int i=lineIndex+x;
+					Vector3i index=lenMap[y][x];
+					
+					if(index!=null)
+						{
+						//int sliceNum=(int)(len*numSubDiv); //may need to bound in addition
+						sliceExp[index.z][index.y][index.x]+=integrator.pixelsLine[i];
+						sliceVol[index.z][index.y][index.x]++;
+						}
+					
+					}
+				}
+			}
+	
+		
+		public void integrateStackDone(NewIntExp integrator)
+			{
+			//Store pattern in lineage
+			for(int i=0;i<numSubDiv;i++)
+				for(int j=0;j<numSubDiv;j++)
+					for(int k=0;k<numSubDiv;k++)
+						{
+						double curbg=bg.get(integrator.frame); 
+						double avg=(double)sliceExp[i][j][k]/(double)sliceVol[i][j][k] - curbg;
+						avg/=integrator.expTime;
+						
+						NucLineage.Nuc nuc=lin.nuc.get("xyz_"+i+"_"+j+"_"+k);
+						NucExp exp=nuc.getExpCreate(integrator.expName);
+						exp.level.put(integrator.frame, avg);
+						System.out.println(exp.level);
+						}
+
+			}
+		
+		
+		
+		public void done(NewIntExp integrator, TreeMap<EvDecimal, Tuple<Double,Double>> correctedExposure)
+			{
+			//Set override start and end times
+			for(int i=0;i<numSubDiv;i++)
+				{
+				NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
+				nuc.overrideStart=integrator.ch.imageLoader.firstKey();
+				nuc.overrideEnd=integrator.ch.imageLoader.lastKey();
+				}
+			
+			//Normalization is needed before exposure correction to make sure the threshold for
+			//detecting jumps always works
+			ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(lin, integrator.expName),0,1); 
+			
+			if(correctedExposure!=null)
+				{
+				ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
+				}
+			else
+				{
+				this.correctedExposure=
+				ExpUtil.correctExposureChange(integrator.imset, lin, integrator.expName, new TreeSet<EvDecimal>(integrator.ch.imageLoader.keySet()));
+				}
+			
+			//This is only for the eye
+			double sigMax=ExpUtil.getSignalMax(lin, integrator.expName);
+			double sigMin=ExpUtil.getSignalMin(lin, integrator.expName);
+			ExpUtil.normalizeSignal(lin, integrator.expName,sigMax,sigMin,256);
+			
+			//TODO store as images in a channel. normalize to 255?
+			//integrator.imset
+			
+			}
+		
+		
+		}
+
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	
 	}
