@@ -462,7 +462,7 @@ public class EvPixels
 			byte[] larr=arrayB;
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
-				narr[i]=larr[i];
+				narr[i]=(int)(larr[i] & 0xff); //Kill off sign
 			}
 		else if(type==TYPE_SHORT)
 			{
