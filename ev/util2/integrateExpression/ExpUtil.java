@@ -290,10 +290,9 @@ public class ExpUtil
 	/**
 	 * Normalize expression such that maximum is 1.0
 	 */
-	public static void normalizeSignal(NucLineage lin, String expName, double max, double min)
+	public static void normalizeSignal(NucLineage lin, String expName, double max, double min, double normalizedVal)
 		{
 //		Double max=getSignalMax(lin, expName);
-		double normalizedVal=1;
 		double scale=normalizedVal/(max-min);
 		
 		for(NucLineage.Nuc nuc:lin.nuc.values())

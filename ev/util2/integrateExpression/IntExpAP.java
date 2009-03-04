@@ -285,7 +285,7 @@ public class IntExpAP
 
 		//Normalization is needed before exposure correction to make sure the threshold for
 		//detecting jumps always works
-		ExpUtil.normalizeSignal(lin, expName, ExpUtil.getSignalMax(lin, expName),0); 
+		ExpUtil.normalizeSignal(lin, expName, ExpUtil.getSignalMax(lin, expName),0,1); 
 
 		
 		//TreeMap<EvDecimal, Tuple<Double,Double>> expCorrects=
@@ -294,7 +294,7 @@ public class IntExpAP
 		//This is only for the eye
 		double sigMax=ExpUtil.getSignalMax(lin, expName);
 		double sigMin=ExpUtil.getSignalMin(lin, expName);
-		ExpUtil.normalizeSignal(lin, expName,sigMax,sigMin); 
+		ExpUtil.normalizeSignal(lin, expName,sigMax,sigMin,1); 
 
 		
 

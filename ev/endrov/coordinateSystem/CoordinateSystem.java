@@ -184,4 +184,36 @@ public class CoordinateSystem extends EvObject
 		System.out.println(w);
 		
 		}
+	
+	
+	/**
+	 * v3=v1 x v2
+	 * v2 is replaced by one orthogonal to v1 and v2
+	 * finally the base vectors are made to lengths
+	 */
+	public void setFromTwoVectors(Vector3d v1, Vector3d v2, double len1, double len2, double len3, Vector3d mid)
+		{
+		Vector3d v1prim=new Vector3d(v1);
+		v1prim.normalize();
+		v1prim.scale(len1);
+		
+		Vector3d v3=new Vector3d();
+		v3.cross(v1, v2);
+		v3.normalize();
+		v3.scale(len3);
+		
+		Vector3d v2prim=new Vector3d();
+		v2prim.cross(v3, v1);
+		v2prim.normalize();
+		v2prim.scale(len2);
+		
+		base[0]=v1prim;
+		base[1]=v2prim;
+		base[2]=v3;
+		
+		midpoint.set(mid);
+		
+		updateCachedMatrices();
+		}
+	
 	}
