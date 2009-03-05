@@ -107,6 +107,14 @@ public class EvIODataOST implements EvIOData
 			{
 			return ost.buildImagePath(im, channelName, frame, slice, ext);
 			}
+		
+		public String toString()
+			{
+			if(oldio==null)
+				return "write "+f;
+			else
+				return "write "+f+" using "+oldio;
+			}
 		}
 	
 	
@@ -517,6 +525,7 @@ public class EvIODataOST implements EvIOData
 								evim.io=newio;
 								
 								toWrite.add(evim);
+								System.out.println(evim.io);
 								imCompression.put(evim,ce.getValue().compression);
 								}
 							
@@ -551,14 +560,15 @@ public class EvIODataOST implements EvIOData
 						toRead.remove(io.f);
 						for(EvImage ci:needToRead)
 							{
-							ci.setMemoryImage(ci.getJavaImage());
+							ci.setMemoryImage(ci.getPixels());
 							System.out.println("reading image. need write soon "+ci);
 							toWrite.addFirst(ci);
 							}
 						}
 
 					//Write image to disk
-					BufferedImage bim=evim.getJavaImage(); 
+					BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
+					//evim.getJavaImage(); 
 					System.out.println("write "+io.f);
 					io.f.getParentFile().mkdirs(); //TODO optimize. cache which exist?
 					

@@ -1,12 +1,8 @@
 package util2.integrateExpression;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import endrov.data.EvData;
 import endrov.ev.EV;
@@ -127,9 +123,11 @@ public class IntExpTissue
 				//Load images lazily (for AP not really needed)
 				if(pixels==null)
 					{
+					/*
 					BufferedImage b=im.getJavaImage();
 					pixels=new EvPixels(b);
-					pixels=pixels.getReadOnly(EvPixels.TYPE_INT);
+					pixels=pixels.getReadOnly(EvPixels.TYPE_INT);*/
+					pixels=im.getPixels().getReadOnly(EvPixels.TYPE_INT);
 					pixelsLine=pixels.getArrayInt();
 
 					//Integrate background

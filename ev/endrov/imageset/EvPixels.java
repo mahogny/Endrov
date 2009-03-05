@@ -125,9 +125,7 @@ public class EvPixels
 	 */
 	public EvPixels(EvPixels p)
 		{
-		p.type=type;
-		p.w=w;
-		p.h=h;
+		setPixels(p);
 		
 		/*
 		 * 
@@ -144,51 +142,7 @@ public class EvPixels
 			p.arrayD=Arrays.copyOf(arrayD, arrayD.length);
 		*/
 
-		if(arrayB!=null)
-			{
-			p.arrayB=new byte[arrayB.length];
-			for(int i=0;i<arrayB.length;i++)
-				p.arrayB[i]=arrayB[i];
-			}
-
-		if(arrayS!=null)
-			{
-			p.arrayS=new short[arrayS.length];
-			for(int i=0;i<arrayS.length;i++)
-				p.arrayS[i]=arrayS[i];
-			}
-
-		if(arrayI!=null)
-			{
-			p.arrayI=new int[arrayI.length];
-			for(int i=0;i<arrayI.length;i++)
-				p.arrayI[i]=arrayI[i];
-			}
-
-		if(arrayF!=null)
-			{
-			p.arrayF=new float[arrayF.length];
-			for(int i=0;i<arrayF.length;i++)
-				p.arrayF[i]=arrayF[i];
-			}
-
-		if(arrayD!=null)
-			{
-			p.arrayD=new double[arrayD.length];
-			for(int i=0;i<arrayD.length;i++)
-				p.arrayD[i]=arrayD[i];
-			}
-
-		
-		
-		
-		
-		if(awt!=null)
-			{
-			BufferedImage im=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-			im.getGraphics().drawImage(awt, 0, 0, null);
-			p.awt=im;
-			}
+	
 		}
 	
 
@@ -535,6 +489,62 @@ public class EvPixels
 		h=im.getHeight();
 		awt=im;
 		}
+
+	/**
+	 * Set all pixels to image. Will copy data, not link to it
+	 */
+	public void setPixels(EvPixels im)
+		{
+		unallocate();
+		
+		type=im.type;
+		w=im.w;
+		h=im.h;
+
+		if(arrayB!=null)
+			{
+			arrayB=new byte[im.arrayB.length];
+			for(int i=0;i<arrayB.length;i++)
+				arrayB[i]=im.arrayB[i];
+			}
+
+		if(arrayS!=null)
+			{
+			arrayS=new short[im.arrayS.length];
+			for(int i=0;i<arrayS.length;i++)
+				arrayS[i]=im.arrayS[i];
+			}
+
+		if(arrayI!=null)
+			{
+			arrayI=new int[im.arrayI.length];
+			for(int i=0;i<arrayI.length;i++)
+				arrayI[i]=im.arrayI[i];
+			}
+
+		if(arrayF!=null)
+			{
+			arrayF=new float[im.arrayF.length];
+			for(int i=0;i<arrayF.length;i++)
+				arrayF[i]=im.arrayF[i];
+			}
+
+		if(arrayD!=null)
+			{
+			arrayD=new double[im.arrayD.length];
+			for(int i=0;i<arrayD.length;i++)
+				arrayD[i]=im.arrayD[i];
+			}
+		
+		if(awt!=null)
+			{
+			BufferedImage bim=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
+			bim.getGraphics().drawImage(awt, 0, 0, null);
+			awt=bim;
+			}
+		
+		}
+
 	
 	/**
 	 * Set type and allocate space for image. All pixels will be set to 0
@@ -577,6 +587,36 @@ public class EvPixels
 	public int getPixelIndex(int x, int y)
 		{
 		return w*y+x;
+		}
+	
+	
+	public BufferedImage quickReadOnlyAWT()
+		{
+		return convertTo(EvPixels.TYPE_AWT, true).getAWT();
+		}
+
+	public String asciiImage()
+		{
+		StringBuffer sb=new StringBuffer();
+		if(type==TYPE_INT)
+			{
+			for(int i=0;i<getHeight();i++)
+				{
+				for(int j=0;j<getWidth();j++)
+					sb.append(arrayI[i*getWidth()+j]+"\t");
+				sb.append("\n");
+				}
+			}
+		else if(type==TYPE_DOUBLE)
+			{
+			for(int i=0;i<getHeight();i++)
+				{
+				for(int j=0;j<getWidth();j++)
+					sb.append(arrayD[i*getWidth()+j]+"\t");
+				sb.append("\n");
+				}
+			}
+		return sb.toString();
 		}
 	
 	/*

@@ -6,9 +6,7 @@ import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucLineage.Nuc;
-import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
-import endrov.util.Tuple;
+import endrov.util.*;
 
 /**
  * Util functions to mess around with expression levels
@@ -339,7 +337,7 @@ public class ExpUtil
 			NucExp nexp=nuc.exp.get(expName);
 			if(nexp!=null)
 				for(double level:nexp.level.values())
-					if(min==null || level>min)
+					if(min==null || level<min)
 						min=level;
 			}
 		return min;
