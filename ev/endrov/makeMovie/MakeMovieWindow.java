@@ -209,21 +209,22 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 				}
 			else
 				{
-				boolean textBad=false;
+				String textBad=null;
 				for(JTextField tf:chanDesc)
 					if(!new MovieDescString(tf.getText()).isValidXML())
-						{
-						JOptionPane.showMessageDialog(this, "This is not valid: "+tf.getText());
-						textBad=true;
-						}
+						textBad="This is not valid: "+tf.getText();
 				
-				if(!textBad && metaCombo.getSelectedObject()!=null)
+				if(textBad!=null)
+					BasicWindow.showErrorDialog(textBad);
+				else if(metaCombo.getSelectedObject()==null)
+					BasicWindow.showErrorDialog("No data selected");
+				else
 					{
 					Vector<CalcThread.MovieChannel> channelNames=new Vector<CalcThread.MovieChannel>();
 					for(int i=0;i<channelCombo.size();i++)
-						if(!channelCombo.get(i).getChannel().equals(""))
+						if(channelCombo.get(i).getChannel()!=null)
 							channelNames.add(new CalcThread.MovieChannel(channelCombo.get(i).getChannel(), filterSeq.get(i), chanDesc.get(i).getText()));
-						
+					
 					EvData data=metaCombo.getData();
 					
 					//Decide name of movie file

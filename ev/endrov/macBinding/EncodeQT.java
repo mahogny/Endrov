@@ -30,6 +30,11 @@ public class EncodeQT
 					return "QT: "+codec;
 					}
 
+				public String toString()
+					{
+					return getName();
+					}
+				
 				public List<String> getQualities() 
 					{
 					return Arrays.asList(QTMovieMaker.qualityStrings);
@@ -44,4 +49,7 @@ public class EncodeQT
 			});
 			}
 		}
+	
+	
+	
 	}

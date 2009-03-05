@@ -3,6 +3,11 @@ import endrov.ev.*;
 
 public class PLUGIN extends PluginDef
 	{
+	public boolean isDefaultEnabled()
+		{
+		return true;
+		}
+
 	public String getPluginName()
 		{
 		return "Mac binding";
@@ -30,6 +35,8 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{OSXAdapter.class};
+		return new Class[]{OSXAdapter.class, EncodeQT.class};
 		}
+	
+	
 	}
