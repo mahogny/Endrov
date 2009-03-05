@@ -228,14 +228,24 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 					EvData data=metaCombo.getData();
 					
 					//Decide name of movie file
+					File outdir;
 					if(data.io==null || data.io.datadir()==null)
-						JOptionPane.showMessageDialog(null,"Error: data does not support a data directory");
+						{
+						outdir=null;
+						
+						
+						}
+					else
+						outdir=data.io.datadir();
+					
+					if(outdir==null)
+						BasicWindow.showErrorDialog("This fileformat plugin does not support datadir");
 					else
 						{
 						String lastpart=data.getMetadataName()+"-"+channelNames.get(0).name;
 						for(int i=1;i<channelNames.size();i++)
 							lastpart+="_"+channelNames.get(i).name;
-						File moviePath=new File(data.io.datadir(),lastpart);
+						File moviePath=new File(outdir,lastpart);
 						
 						BatchThread thread=new CalcThread(getCurrentImageset(), 
 								(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), (Integer)spinnerZ.getValue(), channelNames, (Integer)spinnerW.getValue(),

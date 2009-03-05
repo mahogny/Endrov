@@ -118,7 +118,10 @@ public class NamebasedImageset implements EvIOData
 		}
 	
 	
-	public File datadir(){return null;}
+	public File datadir()
+		{
+		return basedir;
+		}
 
 	/**
 	 * Go through all files and put in database

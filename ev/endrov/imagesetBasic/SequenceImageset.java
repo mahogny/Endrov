@@ -130,7 +130,10 @@ public class SequenceImageset implements EvIOData
 		}
 
 	
-	public File datadir(){return null;}
+	public File datadir()
+		{
+		return basedir.getParentFile();
+		}
 
 	/**
 	 * Go through all files and put in database
