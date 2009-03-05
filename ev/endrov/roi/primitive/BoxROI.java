@@ -213,9 +213,13 @@ public class BoxROI extends ROI
 			RectLineIterator it=new RectLineIterator();
 			it.startX=0;
 			it.y=0;
+			EvPixels p=im.getPixels();
+			it.endX=p.getWidth();
+			it.endY=p.getHeight();
+			/*
 			it.endX=im.getJavaImage().getWidth();
 			it.endY=im.getJavaImage().getHeight();
-
+*/
 			//Correct for span
 			if(!regionX.all)
 				{

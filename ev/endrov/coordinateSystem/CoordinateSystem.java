@@ -76,7 +76,7 @@ public class CoordinateSystem extends EvObject
 		mt.mul(m);
 
 		cachedFromSystem=mt;
-		System.out.println(cachedFromSystem);
+		//System.out.println(cachedFromSystem);
 		cachedToSystem.invert(cachedFromSystem);
 		}
 	

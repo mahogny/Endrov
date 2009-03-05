@@ -83,7 +83,8 @@ public class EvImage
 	public boolean isDirty=false;   
 	
 	/** In-memory image. Set to null if there is none. */
-	private BufferedImage im=null;
+	//private BufferedImage im=null;
+	private EvPixels memoryPixels=null;
 
 	/** Swap file */
 	private File swapIm=null;
@@ -91,7 +92,8 @@ public class EvImage
 	/**
 	 * Cache: pointer to loaded image
 	 */
-	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
+//	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
+	private SoftReference<EvPixels> cachedPixels=new SoftReference<EvPixels>(null);
 
 	public double resX, resY, binning;
 	public double dispX, dispY;
@@ -108,9 +110,13 @@ public class EvImage
 	 */
 	private void getShadowData()
 		{
+		/*
 		BufferedImage sim=shadowedImage.getJavaImage();
 		im=new BufferedImage(sim.getWidth(),sim.getHeight(),sim.getType());
 		im.getGraphics().drawImage(sim, 0, 0, null);
+		*/
+		
+		memoryPixels=new EvPixels(shadowedImage.memoryPixels);
 		shadowedImage.shadowedBy.remove(this);
 		shadowedImage=null;
 		}
@@ -209,16 +215,28 @@ public class EvImage
 	/**
 	 * ONLY for use by I/O system
 	 */
+	public EvPixels getMemoryImage()
+		{
+		return memoryPixels;
+		}
+	/*
 	public BufferedImage getMemoryImage()
 		{
 		return im;
-		}
+		}*/
+
+	
 	/**
 	 * ONLY for use by I/O system
 	 */
 	public void setMemoryImage(BufferedImage im)
 		{
-		this.im=im;
+		this.memoryPixels.setPixels(im);
+//		this.im=im;
+		}
+	public void setMemoryImage(EvPixels im)
+		{
+		this.memoryPixels.setPixels(im);
 		}
 	
 	
@@ -227,7 +245,7 @@ public class EvImage
 	 */
 	public void clearCachedImage()
 		{
-		cachedImage.clear();
+		cachedPixels.clear();
 		}
 	
 	/**
@@ -241,9 +259,12 @@ public class EvImage
 	 * 
 	 * This does not give a copy. to be damn sure there won't be any problems, you need to lock the data!
 	 * 
+	 * @deprecated use expixels?
+	 * 
 	 */
 	public BufferedImage getJavaImage()
 		{
+		/*
 		//Use in-memory image
 		if(im!=null)
 			return im;
@@ -288,7 +309,66 @@ public class EvImage
 					}
 				}
 			}
+			*/
+		EvPixels p=getPixels();
+		return p.convertTo(EvPixels.TYPE_AWT, true).getAWT();
 		}
+	
+	/**
+	 * Get pixel data for image
+	 * 
+	 * TODO changes to pixels should stay
+	 */
+	public EvPixels getPixels()
+		{
+		//Use in-memory image
+		if(memoryPixels!=null)
+			return memoryPixels;
+		else
+			{
+			//Use cache-memory
+			EvPixels loaded=cachedPixels.get();
+			if(loaded!=null)
+				{
+				CacheImages.addToCache(this);
+				return loaded;
+				}
+			else
+				{
+				//Use swap memory
+				if(swapIm!=null)
+					{
+					try
+						{
+						memoryPixels=new EvPixels(ImageIO.read(swapIm));
+						swapIm=null;
+						return memoryPixels;
+						}
+					catch (IOException e)
+						{
+						e.printStackTrace();
+						return null;
+						}
+					}
+				else
+					{
+					//Use shadow image
+					if(shadowedImage!=null)
+						return shadowedImage.getPixels();
+					else
+						{
+						//Use IO
+						loaded=new EvPixels(io.loadJavaImage());
+						cachedPixels=new SoftReference<EvPixels>(loaded);
+						return loaded;
+						}
+					}
+				}
+			}
+		}
+	
+	
+	
 	
 	/**
 	 * Get array representation of image.
@@ -296,6 +376,8 @@ public class EvImage
 	 * the AWT interface is faster.
 	 * 
 	 * 2D arrray? java has trouble with these. the primary interface should maybe be a 1d-array+width
+	 * 
+	 * @deprecated use getPixels
 	 */
 	public double[][] getArrayImage()
 		{
@@ -316,21 +398,34 @@ public class EvImage
 	 */
 	public boolean modified()
 		{
-		return im!=null || swapIm!=null || isDirty || (shadowedImage!=null && shadowedImage.modified());
+		return memoryPixels!=null || swapIm!=null || isDirty || (shadowedImage!=null && shadowedImage.modified());
 		}
 	
 	/**
 	 * Modify image by setting a new image in this container. AWT format: Only use this format if no data will be lost.
 	 * Will call prepareForWrite automatically
+	 * 
+	 * @deprecated
 	 */
 	public void setImage(BufferedImage im)
 		{
 		prepareForWrite();
-		this.im=im;
-		cachedImage.clear();
-		cachedImage=new SoftReference<BufferedImage>(null);
+		this.memoryPixels=new EvPixels(im);
+		cachedPixels.clear();
+		cachedPixels=new SoftReference<EvPixels>(null); //Really needed?
 		}
-	
+
+	/**
+	 * Set pixel data. Will NOT make a copy, makes a reference. Caller has to supply a copy if the pixels are to be used elsewhere as well. 
+	 */
+	public void setPixelsReference(EvPixels im)
+		{
+		prepareForWrite();
+		this.memoryPixels=im;
+		cachedPixels.clear();
+		cachedPixels=new SoftReference<EvPixels>(null); //Really needed?
+		}
+
 	
 	
 	//what to do about this? now it points to io

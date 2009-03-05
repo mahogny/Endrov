@@ -1,20 +1,11 @@
 package util2.integrateExpression;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.text.NumberFormat;
-import java.util.StringTokenizer;
 
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
-import endrov.util.EvFileUtil;
-import endrov.util.Tuple;
+import endrov.util.*;
 
 /**
  * Put all data onto model

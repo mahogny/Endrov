@@ -1,6 +1,5 @@
 package util2.integrateExpression;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -14,13 +13,9 @@ import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.nuc.*;
 import endrov.shell.Shell;
-import endrov.util.EvDecimal;
-import endrov.util.EvFileUtil;
-import endrov.util.EvParallel;
-import endrov.util.Tuple;
-import endrov.util.Vector2D;
+import endrov.util.*;
 
-//TODO all warnings in some file
+//TODO all warnings into some file
 
 /**
  * All integrations are done at the same time to reduce disk I/O. Images not needed are discarded through lazy evaluation.
@@ -140,29 +135,14 @@ public class NewIntExp
 		intT.done(integrator,intAP.correctedExposure);
 		if(intXYZ!=null)
 			intXYZ.done(integrator,intAP.correctedExposure);
-		
-		if(lin!=null)
+		if(intC!=null)
 			intC.done(integrator,intAP.correctedExposure);
-		
+
 		//Put integral in file for use by Gnuplot
 		intAP.profileForGnuplot(integrator,fileFor(data,numSubDiv,channelName));
 
-		
-		if(intXYZ!=null)
-			{
-			//Extract XYZ profile
-			
-			
-			
-			}
-		
 		//TODO
 		//compression?
-		
-		//Here, save xyz lineage as channel, delete lineage
-		
-		
-		
 		
 		data.saveData(); 
 
@@ -223,9 +203,7 @@ public class NewIntExp
 		{
 		if(pixels==null)
 			{
-			BufferedImage b=im.getJavaImage();
-			pixels=new EvPixels(b);
-			pixels=pixels.getReadOnly(EvPixels.TYPE_INT);
+			pixels=im.getPixels().getReadOnly(EvPixels.TYPE_INT);
 			pixelsLine=pixels.getArrayInt();
 			}
 		}
@@ -239,6 +217,20 @@ public class NewIntExp
 		this.channelName=channelName;
 		imset=data.getObjects(Imageset.class).get(0);
 		ch=imset.getChannel(channelName);
+
+		/*
+		//Test: write image
+
+		EvChannel ch=imset.getCreateChannel("XYZ");
+		EvImage evim=ch.createImageLoader(imset.getChannel("GFP").imageLoader.firstKey(), new EvDecimal("0"));
+		EvPixels p=new EvPixels(EvPixels.TYPE_INT,10,10);
+		evim.setPixelsReference(p);
+		
+		
+		data.saveData();
+		System.exit(0);
+*/		
+		
 
 		}
 
@@ -682,15 +674,6 @@ public class NewIntExp
 				ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
 				}
 			
-			
-			/*
-			TreeSet<EvDecimal> framesSorted=new TreeSet<EvDecimal>(bgLevel.keySet());
-			ExpUtil.correctExposureChange(imset, lin, expName, framesSorted);
-			ExpUtil.normalizeSignal(lin, expName);*/
-
-			//TODO TODO TODO get corrections from AP calc
-		
-			
 			}
 		
 		}
@@ -707,15 +690,13 @@ public class NewIntExp
 	
 	public static class Vector3i
 		{
+		int x,y,z;
 		public Vector3i(int x, int y, int z)
 			{
 			this.x = x;
 			this.y = y;
 			this.z = z;
 			}
-
-		int x,y,z;
-		
 		}
 	
 	/**
@@ -724,7 +705,7 @@ public class NewIntExp
 	public static class IntegratorXYZ implements Integrator
 		{
 		int numSubDiv;
-		HashMap<EvDecimal, Vector3i[][]> distanceMap=new HashMap<EvDecimal, Vector3i[][]>(); //z->y,x
+		HashMap<EvDecimal, Vector3i[][]> indexMap=new HashMap<EvDecimal, Vector3i[][]>(); //z->y,x
 //		Shell shell;
 		int[][][] sliceExp; //z,y,x
 		int[][][] sliceVol; //z,y,x
@@ -761,15 +742,17 @@ public class NewIntExp
 			NucLineage.Nuc nucABp=refLin.nuc.get("ABp");
 			NucLineage.Nuc nucEMS=refLin.nuc.get("EMS");
 			
-			System.out.println("foo");
 			if(nucP2==null || nucABa==null || nucABp==null || nucEMS==null ||
 					nucP2.pos.isEmpty() || nucABa.pos.isEmpty() || nucABp.pos.isEmpty() || nucEMS.pos.isEmpty())
 				{
 				System.out.println("Does not have required 4-cell stage marked, will not produce cube");
 				return false;
 				}
+			else
+				{
+				System.out.println("Will do XYZ");
+				}
 			
-			System.out.println("bar");
 			Vector3d posP2=nucP2.pos.get(nucP2.pos.lastKey()).getPosCopy();
 			Vector3d posABa=nucABa.pos.get(nucABa.pos.lastKey()).getPosCopy();
 			Vector3d posABp=nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
@@ -798,6 +781,7 @@ public class NewIntExp
 		
 		public void integrateStackStart(NewIntExp integrator)
 			{
+			//Zero out
 			sliceExp=new int[numSubDiv][numSubDiv][numSubDiv];
 			sliceVol=new int[numSubDiv][numSubDiv][numSubDiv];
 			}
@@ -808,18 +792,14 @@ public class NewIntExp
 			integrator.ensureImageLoaded();
 			
 			
-			//Calculate distance mask lazily
-			Vector3i[][] lenMap;
-			if(distanceMap.containsKey(integrator.curZ))
-				lenMap=distanceMap.get(integrator.curZ);
+			//Calculate index map lazily
+			Vector3i[][] imap;
+			if(indexMap.containsKey(integrator.curZ))
+				imap=indexMap.get(integrator.curZ);
 			else
 				{
-				lenMap=new Vector3i[integrator.pixels.getHeight()][integrator.pixels.getWidth()];
-				distanceMap.put(integrator.curZ,lenMap);
-/*
-				Vector2D dirvec=Vector2D.polar(shell.major, shell.angle);
-				Vector2D startpos=dirvec.add(new Vector2D(shell.midx,shell.midy));
-				dirvec=dirvec.normalize().mul(-1);*/
+				imap=new Vector3i[integrator.pixels.getHeight()][integrator.pixels.getWidth()];
+				indexMap.put(integrator.curZ,imap);
 
 				int cnt=0;
 
@@ -842,14 +822,8 @@ public class NewIntExp
 							{
 //							System.out.println(pos+" -> "+cx+" "+cy+" "+cz);
 							cnt++;
-							lenMap[ay][ax]=new Vector3i(cx,cy,cz);
+							imap[ay][ax]=new Vector3i(cx,cy,cz);
 							}
-						
-						
-						
-						
-						//TODO
-//						lenMap[ay][ax]=new Vector3i();
 						}
 					}
 				System.out.println(cnt);
@@ -863,7 +837,7 @@ public class NewIntExp
 				for(int x=0;x<integrator.pixels.getWidth();x++)
 					{
 					int i=lineIndex+x;
-					Vector3i index=lenMap[y][x];
+					Vector3i index=imap[y][x];
 					
 					if(index!=null)
 						{
@@ -876,59 +850,81 @@ public class NewIntExp
 				}
 			}
 	
-		
+		/**
+		 * One stack processed
+		 */
 		public void integrateStackDone(NewIntExp integrator)
 			{
 			//Store pattern in lineage
-			for(int i=0;i<numSubDiv;i++)
-				for(int j=0;j<numSubDiv;j++)
-					for(int k=0;k<numSubDiv;k++)
+			for(int z=0;z<numSubDiv;z++)
+				for(int y=0;y<numSubDiv;y++)
+					for(int x=0;x<numSubDiv;x++)
 						{
 						double curbg=bg.get(integrator.frame); 
-						double avg=(double)sliceExp[i][j][k]/(double)sliceVol[i][j][k] - curbg;
+						double vol=sliceVol[z][y][x];
+						double avg=vol==0 ? 0 : (double)sliceExp[z][y][x]/vol - curbg;
 						avg/=integrator.expTime;
 						
-						NucLineage.Nuc nuc=lin.nuc.get("xyz_"+i+"_"+j+"_"+k);
+						NucLineage.Nuc nuc=lin.nuc.get("xyz_"+x+"_"+y+"_"+z);
 						NucExp exp=nuc.getExpCreate(integrator.expName);
 						exp.level.put(integrator.frame, avg);
-						System.out.println(exp.level);
+						//System.out.println(exp.level);
 						}
 
 			}
 		
 		
-		
+		/**
+		 * All frames processed
+		 */
 		public void done(NewIntExp integrator, TreeMap<EvDecimal, Tuple<Double,Double>> correctedExposure)
 			{
-			//Set override start and end times
-			for(int i=0;i<numSubDiv;i++)
-				{
-				NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
-				nuc.overrideStart=integrator.ch.imageLoader.firstKey();
-				nuc.overrideEnd=integrator.ch.imageLoader.lastKey();
-				}
-			
 			//Normalization is needed before exposure correction to make sure the threshold for
 			//detecting jumps always works
 			ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(lin, integrator.expName),0,1); 
+			ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
 			
-			if(correctedExposure!=null)
-				{
-				ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
-				}
-			else
-				{
-				this.correctedExposure=
-				ExpUtil.correctExposureChange(integrator.imset, lin, integrator.expName, new TreeSet<EvDecimal>(integrator.ch.imageLoader.keySet()));
-				}
+			int binning=16;
+			
 			
 			//This is only for the eye
 			double sigMax=ExpUtil.getSignalMax(lin, integrator.expName);
 			double sigMin=ExpUtil.getSignalMin(lin, integrator.expName);
-			ExpUtil.normalizeSignal(lin, integrator.expName,sigMax,sigMin,256);
+			ExpUtil.normalizeSignal(lin, integrator.expName,sigMax,sigMin,255);
+
+			//Store expression as a new channel
+			EvChannel chanxyz=integrator.imset.getCreateChannel("XYZ");
+			chanxyz.chBinning=binning;
+			for(EvDecimal frame:lin.nuc.get("xyz_0_0_0").exp.get(integrator.expName).level.keySet())
+				{
+				System.out.println("frame "+frame);
+				for(int z=0;z<numSubDiv;z++)
+					{
+					EvImage evim=chanxyz.createImageLoader(frame, new EvDecimal(z));
+					EvPixels p=new EvPixels(EvPixels.TYPE_INT, numSubDiv, numSubDiv);
+					//EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE, numSubDiv, numSubDiv);
+					evim.setPixelsReference(p);
+					evim.resX=evim.resY=1;
+					evim.binning=binning;
+					int[] line=p.getArrayInt();
+					//double[] line=p.getArrayDouble();
+					for(int y=0;y<numSubDiv;y++)
+						for(int x=0;x<numSubDiv;x++)
+							{
+							NucLineage.Nuc nuc=lin.nuc.get("xyz_"+x+"_"+y+"_"+z);
+							line[p.getPixelIndex(x, y)]=(int)(double)nuc.exp.get(integrator.expName).level.get(frame);
+//							line[p.getPixelIndex(x, y)]=(double)nuc.exp.get(integrator.expName).level.get(frame);
+							}
+/*					if(z==5)
+						{
+						System.out.println(p.asciiImage());
+						System.out.println();
+						}*/
+					}
+				}
 			
-			//TODO store as images in a channel. normalize to 255?
-			//integrator.imset
+			//System.exit(0); ///////////
+			
 			
 			}
 		

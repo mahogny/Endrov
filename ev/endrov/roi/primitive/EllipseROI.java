@@ -201,8 +201,11 @@ public class EllipseROI extends ROI
 			{
 			//Initial boundary: cover entire image
 			ThisLineIterator it=new ThisLineIterator();
-			it.maxX=im.getJavaImage().getWidth();
-			it.maxY=im.getJavaImage().getHeight();
+			EvPixels p=im.getPixels();
+			it.maxX=p.getWidth();
+			it.maxY=p.getHeight();
+//			it.maxX=im.getJavaImage().getWidth();
+	//		it.maxY=im.getJavaImage().getHeight();
 			it.y=0;
 
 			//Correct for span

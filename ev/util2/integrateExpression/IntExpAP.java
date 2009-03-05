@@ -1,6 +1,5 @@
 package util2.integrateExpression;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -10,10 +9,7 @@ import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.nuc.*;
 import endrov.shell.Shell;
-import endrov.util.EvDecimal;
-import endrov.util.EvFileUtil;
-import endrov.util.Tuple;
-import endrov.util.Vector2D;
+import endrov.util.*;
 
 /**
  * Anterior-posterior expression integration. Whole-embryo corresponds to numSlices=1 
@@ -168,9 +164,12 @@ public class IntExpAP
 				//Load images lazily (for AP not really needed)
 				if(pixels==null)
 					{
+					/*
 					BufferedImage b=im.getJavaImage();
 					pixels=new EvPixels(b);
 					pixels=pixels.getReadOnly(EvPixels.TYPE_INT);
+					*/
+					pixels=im.getPixels().getReadOnly(EvPixels.TYPE_INT);
 					pixelsLine=pixels.getArrayInt();
 
 					//Integrate background

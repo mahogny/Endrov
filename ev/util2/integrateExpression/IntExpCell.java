@@ -1,11 +1,7 @@
 package util2.integrateExpression;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import endrov.data.EvData;
 import endrov.ev.*;
@@ -143,9 +139,11 @@ public class IntExpCell
 							//Load images lazily
 							if(pixels==null)
 								{
+								/*
 								BufferedImage b=im.getJavaImage();
 								pixels=new EvPixels(b);
-								pixels=pixels.getReadOnly(EvPixels.TYPE_INT);
+								pixels=pixels.getReadOnly(EvPixels.TYPE_INT);*/
+								pixels=im.getPixels().getReadOnly(EvPixels.TYPE_INT);
 								line=pixels.getArrayInt();
 								
 								//Integrate background
