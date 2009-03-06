@@ -63,12 +63,15 @@ public class CoordinateSystem extends EvObject
 		m.m00=base[0].x;
 		m.m10=base[0].y;
 		m.m20=base[0].z;
+		
 		m.m01=base[1].x;
 		m.m11=base[1].y;
 		m.m21=base[1].z;
+		
 		m.m02=base[2].x;
 		m.m12=base[2].y;
 		m.m22=base[2].z;
+		
 		m.m33=1;
 		Matrix4d mt=new Matrix4d();
 		mt.setIdentity();

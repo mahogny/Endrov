@@ -687,7 +687,9 @@ public class NewIntExp
 	
 	
 	
-	
+	/**
+	 * 3D vector, integer
+	 */
 	public static class Vector3i
 		{
 		int x,y,z;
@@ -696,6 +698,10 @@ public class NewIntExp
 			this.x = x;
 			this.y = y;
 			this.z = z;
+			}
+		public String toString()
+			{
+			return "("+x+","+y+","+z+")";
 			}
 		}
 	
@@ -706,7 +712,6 @@ public class NewIntExp
 		{
 		int numSubDiv;
 		HashMap<EvDecimal, Vector3i[][]> indexMap=new HashMap<EvDecimal, Vector3i[][]>(); //z->y,x
-//		Shell shell;
 		int[][][] sliceExp; //z,y,x
 		int[][][] sliceVol; //z,y,x
 		NucLineage lin;
@@ -723,13 +728,17 @@ public class NewIntExp
 			
 			//TODO need to group lineage and shell. introduce a new object?
 			lin=new NucLineage();
-			//shell=integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
 			
 			//Virtual nuc
 			for(int i=0;i<numSubDiv;i++)
 				for(int j=0;j<numSubDiv;j++)
 					for(int k=0;k<numSubDiv;k++)
 						lin.getNucCreate("xyz_"+i+"_"+j+"_"+k);
+			
+			integrator.imset.channelImages.remove("indX");
+			integrator.imset.channelImages.remove("indY");
+			integrator.imset.channelImages.remove("indZ");
+
 			}
 
 		/**
@@ -773,15 +782,17 @@ public class NewIntExp
 			
 			//Enlarge by 20%
 			cs=new CoordinateSystem();
-			cs.setFromTwoVectors(v1, v2, v1.length()*1.2, v2.length()*1.2, v2.length()*1.2, mid);
-			
+			double scale=1.35;
+			cs.setFromTwoVectors(v1, v2, v1.length()*scale, v2.length()*scale, v2.length()*scale, mid);
+
+
 			return true;
 			}
 		
 		
 		public void integrateStackStart(NewIntExp integrator)
 			{
-			//Zero out
+			//Zero out arrays
 			sliceExp=new int[numSubDiv][numSubDiv][numSubDiv];
 			sliceVol=new int[numSubDiv][numSubDiv][numSubDiv];
 			}
@@ -791,18 +802,36 @@ public class NewIntExp
 			{
 			integrator.ensureImageLoaded();
 			
+			EvChannel chIndexX=integrator.imset.getCreateChannel("indX");
+			EvChannel chIndexY=integrator.imset.getCreateChannel("indY");
+			EvChannel chIndexZ=integrator.imset.getCreateChannel("indZ");
 			
 			//Calculate index map lazily
-			Vector3i[][] imap;
-			if(indexMap.containsKey(integrator.curZ))
-				imap=indexMap.get(integrator.curZ);
-			else
+			EvImage indX=chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ);
+			EvPixels pX;
+			EvPixels pY;
+			EvPixels pZ;
+			if(indX==null)
 				{
-				imap=new Vector3i[integrator.pixels.getHeight()][integrator.pixels.getWidth()];
-				indexMap.put(integrator.curZ,imap);
-
-				int cnt=0;
-
+				indX=chIndexX.createImageLoader(EvDecimal.ZERO, integrator.curZ);
+				EvImage indY=chIndexY.createImageLoader(EvDecimal.ZERO, integrator.curZ);
+				EvImage indZ=chIndexZ.createImageLoader(EvDecimal.ZERO, integrator.curZ);
+				int w=integrator.pixels.getWidth();
+				int h=integrator.pixels.getHeight();
+				pX=new EvPixels(EvPixels.TYPE_INT, w,h);
+				pY=new EvPixels(EvPixels.TYPE_INT, w,h);
+				pZ=new EvPixels(EvPixels.TYPE_INT, w,h);
+				indX.setPixelsReference(pX);
+				indY.setPixelsReference(pY);
+				indZ.setPixelsReference(pZ);
+				
+				chIndexX.chBinning=chIndexY.chBinning=chIndexZ.chBinning=4;
+				indX.binning=indY.binning=indZ.binning=4;
+				
+				int[] lineX=pX.getArrayInt();
+				int[] lineY=pY.getArrayInt();
+				int[] lineZ=pZ.getArrayInt();
+				
 				//Calculate indices
 				for(int ay=0;ay<integrator.pixels.getHeight();ay++)
 					{
@@ -812,42 +841,50 @@ public class NewIntExp
 						Vector3d pos=new Vector3d(integrator.im.transformImageWorldX(ax),integrator.im.transformImageWorldY(ay),integrator.curZ.doubleValue());
 
 						Vector3d insys=cs.transformToSystem(pos);
-						//insys.scale(1.0/1.2); //Add 20% in all directions
+
 						
 						int cx=(int)((insys.x+0.5)*numSubDiv);
 						int cy=(int)((insys.y+0.5)*numSubDiv);
 						int cz=(int)((insys.z+0.5)*numSubDiv);
 
+						int index=pX.getPixelIndex(ax, ay);
 						if(cx>=0 && cy>=0 && cz>=0 && cx<numSubDiv && cy<numSubDiv && cz<numSubDiv)
 							{
-//							System.out.println(pos+" -> "+cx+" "+cy+" "+cz);
-							cnt++;
-							imap[ay][ax]=new Vector3i(cx,cy,cz);
+							lineX[index]=cx;
+							lineY[index]=cy;
+							lineZ[index]=cz;
 							}
+						else
+							lineX[index]=-1;
 						}
 					}
-				System.out.println(cnt);
-
+				
+				}
+			else
+				{
+				pX=chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
+				pY=chIndexY.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
+				pZ=chIndexZ.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
 				}
 			
+			
 			//Integrate this area
-			for(int y=0;y<integrator.pixels.getHeight();y++)
+			int[] lineX=pX.getArrayInt();
+			int[] lineY=pY.getArrayInt();
+			int[] lineZ=pZ.getArrayInt();
+			for(int i=0;i<integrator.pixelsLine.length;i++)
 				{
-				int lineIndex=integrator.pixels.getRowIndex(y);
-				for(int x=0;x<integrator.pixels.getWidth();x++)
+				int cx=lineX[i];
+				if(cx!=-1)
 					{
-					int i=lineIndex+x;
-					Vector3i index=imap[y][x];
-					
-					if(index!=null)
-						{
-						//int sliceNum=(int)(len*numSubDiv); //may need to bound in addition
-						sliceExp[index.z][index.y][index.x]+=integrator.pixelsLine[i];
-						sliceVol[index.z][index.y][index.x]++;
-						}
-					
+					int cy=lineY[i];
+					int cz=lineZ[i];
+					sliceExp[cz][cy][cx]+=integrator.pixelsLine[i];
+					sliceVol[cz][cy][cx]++;
 					}
 				}
+			
+				
 			}
 	
 		/**
@@ -856,16 +893,16 @@ public class NewIntExp
 		public void integrateStackDone(NewIntExp integrator)
 			{
 			//Store pattern in lineage
-			for(int z=0;z<numSubDiv;z++)
-				for(int y=0;y<numSubDiv;y++)
-					for(int x=0;x<numSubDiv;x++)
+			for(int az=0;az<numSubDiv;az++)
+				for(int ay=0;ay<numSubDiv;ay++)
+					for(int ax=0;ax<numSubDiv;ax++)
 						{
 						double curbg=bg.get(integrator.frame); 
-						double vol=sliceVol[z][y][x];
-						double avg=vol==0 ? 0 : (double)sliceExp[z][y][x]/vol - curbg;
+						double vol=sliceVol[az][ay][ax];
+						double avg=vol==0 ? 0 : (double)sliceExp[az][ay][ax]/vol - curbg;
 						avg/=integrator.expTime;
 						
-						NucLineage.Nuc nuc=lin.nuc.get("xyz_"+x+"_"+y+"_"+z);
+						NucLineage.Nuc nuc=lin.nuc.get("xyz_"+ax+"_"+ay+"_"+az);
 						NucExp exp=nuc.getExpCreate(integrator.expName);
 						exp.level.put(integrator.frame, avg);
 						//System.out.println(exp.level);
@@ -898,9 +935,9 @@ public class NewIntExp
 			for(EvDecimal frame:lin.nuc.get("xyz_0_0_0").exp.get(integrator.expName).level.keySet())
 				{
 				System.out.println("frame "+frame);
-				for(int z=0;z<numSubDiv;z++)
+				for(int az=0;az<numSubDiv;az++)
 					{
-					EvImage evim=chanxyz.createImageLoader(frame, new EvDecimal(z));
+					EvImage evim=chanxyz.createImageLoader(frame, new EvDecimal(az));
 					EvPixels p=new EvPixels(EvPixels.TYPE_INT, numSubDiv, numSubDiv);
 					//EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE, numSubDiv, numSubDiv);
 					evim.setPixelsReference(p);
@@ -908,18 +945,13 @@ public class NewIntExp
 					evim.binning=binning;
 					int[] line=p.getArrayInt();
 					//double[] line=p.getArrayDouble();
-					for(int y=0;y<numSubDiv;y++)
-						for(int x=0;x<numSubDiv;x++)
+					for(int ay=0;ay<numSubDiv;ay++)
+						for(int ax=0;ax<numSubDiv;ax++)
 							{
-							NucLineage.Nuc nuc=lin.nuc.get("xyz_"+x+"_"+y+"_"+z);
-							line[p.getPixelIndex(x, y)]=(int)(double)nuc.exp.get(integrator.expName).level.get(frame);
+							NucLineage.Nuc nuc=lin.nuc.get("xyz_"+ax+"_"+ay+"_"+az);
+							line[p.getPixelIndex(ax, ay)]=(int)(double)nuc.exp.get(integrator.expName).level.get(frame);
 //							line[p.getPixelIndex(x, y)]=(double)nuc.exp.get(integrator.expName).level.get(frame);
 							}
-/*					if(z==5)
-						{
-						System.out.println(p.asciiImage());
-						System.out.println();
-						}*/
 					}
 				}
 			

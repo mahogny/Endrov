@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
+
 
 import com.sun.opengl.util.BufferUtil;
 
@@ -46,6 +46,7 @@ public class Shader
 		{
 		try
 			{
+			ModelView.checkerr(gl);
 			if(srcv!=null)
 				{
 				idv=gl.glCreateShader(GL.GL_VERTEX_SHADER);
@@ -57,15 +58,16 @@ public class Shader
 				uploadURL(gl, idf, srcf,"f");
 				}
 			
+			ModelView.checkerr(gl);
 			prog = gl.glCreateProgram();
-			checkerr(gl,"7");
+			ModelView.checkerr(gl);
 			if(idv!=null)	gl.glAttachShader(prog, idv);
 			if(idf!=null)	gl.glAttachShader(prog, idf);
-			checkerr(gl,"8");
+			ModelView.checkerr(gl);
 			gl.glLinkProgram(prog);
-			checkerr(gl,"9");
+			ModelView.checkerr(gl);
 			gl.glValidateProgram(prog);
-			checkerr(gl,"4");
+			ModelView.checkerr(gl);
 			System.out.println("prog "+prog+" "+idv+" "+idf);
 			}
 		catch (IOException e)
@@ -74,14 +76,25 @@ public class Shader
 			e.printStackTrace();
 			}
 		}
-	
+	/*
 	private void checkerr(GL gl, String pos)
 		{
 		int errcode=gl.glGetError();
 		if(errcode!=GL.GL_NO_ERROR)
-			System.out.println("error ("+pos+")"+new GLU().gluErrorString(errcode));
+			{
+			try
+				{
+				throw new Exception("GL error: "+new GLU().gluErrorString(errcode));
+				}
+			catch (Exception e)
+				{
+				//System.out.println("GL error: "+new GLU().gluErrorString(errcode));
+				e.printStackTrace();
+				}
+//			System.out.println("error ("+pos+") "+new GLU().gluErrorString(errcode));
+			}
 		}
-	
+	*/
 	
   private void checkLogInfo(GL gl, int obj, String type)
   	{
@@ -110,25 +123,25 @@ public class Shader
 
 
 //		gl.glEnable(GL.GL_VERTEX_PROGRAM_ARB);
-		checkerr(gl,"3");
+		ModelView.checkerr(gl);
 //		gl.glEnable(GL.GL_FRAGMENT_PROGRAM_ARB);
-		checkerr(gl,"2");
+		ModelView.checkerr(gl);
 		gl.glUseProgram(prog);
-		checkerr(gl,"1");
+		ModelView.checkerr(gl);
 		
 		//before bind
 		int texUnit=0;
 //		gl.glActiveTexture(GL.GL_TEXTURE0 + texUnit);
 		
 		
-		checkerr(gl,"10");
+		ModelView.checkerr(gl);
 		
-	int texLoc=gl.glGetUniformLocation(prog, "tex");
-	checkerr(gl,"11");
-	gl.glUniform1i(texLoc, texUnit);
+		int texLoc=gl.glGetUniformLocation(prog, "tex");
+		ModelView.checkerr(gl);
+		gl.glUniform1i(texLoc, texUnit);
 
 		
-		checkerr(gl,"5");
+		ModelView.checkerr(gl);
 
 		
 		}
@@ -136,11 +149,11 @@ public class Shader
 	public void stopUse(GL gl)
 		{
 //		gl.glDisable(GL.GL_VERTEX_PROGRAM_ARB);
-		checkerr(gl,"6");
+		ModelView.checkerr(gl);
 //		gl.glDisable(GL.GL_FRAGMENT_PROGRAM_ARB);
-		checkerr(gl,"7");
+		ModelView.checkerr(gl);
 		gl.glUseProgram(0);
-		checkerr(gl,"8");
+		ModelView.checkerr(gl);
 		}
 	
 	public void delete(GL gl)

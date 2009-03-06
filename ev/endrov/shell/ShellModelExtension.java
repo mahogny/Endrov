@@ -75,15 +75,15 @@ public class ShellModelExtension implements ModelWindowExtension
 			for(Shell shell:w.getVisibleObjects(Shell.class))
 				{
 				gl.glPushMatrix();
-				
+
 				//Move into position
 				gl.glTranslated(shell.midx,shell.midy,shell.midz);
 				gl.glRotated(shell.angle*180/Math.PI, 0, 0, 1);
-				
+
 				//Render
 				gl.glColor3d(1, 0, 0);			
 				renderEllipse(gl, shell.major, shell.minor);
-				gl.glBegin(GL.GL_LINE);
+				gl.glBegin(GL.GL_LINES);
 					gl.glVertex3d(shell.major, 0, 0);
 					gl.glVertex3d(shell.major*1.1, 0, 0);
 				gl.glEnd();
@@ -91,7 +91,7 @@ public class ShellModelExtension implements ModelWindowExtension
 				renderEllipse(gl, shell.major, shell.minor);
 				gl.glRotated(90, 0, 1, 0);
 				renderEllipse(gl, shell.minor, shell.minor);
-				
+
 				gl.glPopMatrix();
 				}
 			
