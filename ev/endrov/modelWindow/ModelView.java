@@ -264,10 +264,13 @@ public class ModelView extends GLCanvas
 			
 			window.crossHandler.resetCrossList();
 			
+			checkerr(gl);
+			
 			//Prepare render extensions
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.displayInit(gl);
 			
+			checkerr(gl);
 			
 			/////////////////////////////////
 			// Render for selection
@@ -290,7 +293,10 @@ public class ModelView extends GLCanvas
 				
 				//Render extensions
 				for(ModelWindowHook h:window.modelWindowHooks)
+					{
 					h.displaySelect(gl);
+					checkerr(gl,h);
+					}
 
 				//Render cross. could be an extension, but order need be right
 				window.crossHandler.displayCrossSelect(gl,window);
@@ -326,10 +332,15 @@ public class ModelView extends GLCanvas
 			//Render cross. could be an extension
 			window.crossHandler.displayCrossFinal(gl,window);
 			
+			checkerr(gl);
+			
 			//Render extensions
 			List<TransparentRender> transparentRenderers=new LinkedList<TransparentRender>();
 			for(ModelWindowHook h:window.modelWindowHooks)
+				{
 				h.displayFinal(gl, transparentRenderers);
+				checkerr(gl,h);
+				}
 			
 			
 			//Take care of transparent renderers
@@ -350,6 +361,7 @@ public class ModelView extends GLCanvas
 						}
 					}
 				r.render(gl);
+				checkerr(gl,r);
 				}
 			if(currentRenderState!=null)
 				currentRenderState.deactivate(gl);
@@ -416,6 +428,29 @@ public class ModelView extends GLCanvas
 		}
 	
 	
+	public static void checkerr(GL gl)
+		{
+		checkerr(gl,null);
+		}
+	public static void checkerr(GL gl, Object data)
+		{
+		int errcode=gl.glGetError();
+		if(errcode!=GL.GL_NO_ERROR)
+			{
+			try
+				{
+				throw new Exception("GL error: "+new GLU().gluErrorString(errcode));
+				}
+			catch (Exception e)
+				{
+				if(data!=null)
+					System.out.println("## "+data);
+				//System.out.println("GL error: "+new GLU().gluErrorString(errcode));
+				e.printStackTrace();
+				}
+//			System.out.println("error ("+pos+") "+new GLU().gluErrorString(errcode));
+			}
+		}
 	
 	/**
 	 * Pan by a vector, world coordinates. 
