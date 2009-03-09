@@ -128,43 +128,59 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		encPanel.add(EvSwingTools.withLabel("Quality:", qualityCombo));
 		encPanel.setBorder(BorderFactory.createTitledBorder("Encoding"));
 		
-		JPanel channelPanel=new JPanel(new GridLayout(channelCombo.size()+1,1));
-		add(channelPanel,BorderLayout.CENTER);
-
-		channelPanel.add(metaCombo);
-		for(int i=0;i<channelCombo.size();i++)
-			{
-			JPanel cp = new JPanel(new GridBagLayout());
-			GridBagConstraints c = new GridBagConstraints();
-			
-			//Channel name
-			c.gridy = 0;c.gridx = 0;
-			cp.add(new JLabel("Ch "+i+": "),c);
-			
-			//Filter sequence
-			JButton bFS=FilterSeq.createFilterSeqButton();
-			final int fi=i;
-			bFS.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e)
-					{
-					new WindowFilterSeq(filterSeq.get(fi));
-					}
-			});
-			c.gridx++;
-			cp.add(bFS,c);
-			
-			//Channel selector
-			c.gridx++;
-			cp.add(channelCombo.get(i),c);
-
-			//Channel description
-			c.gridx++;
-			c.weightx=1;
-			c.fill = GridBagConstraints.HORIZONTAL;
-			cp.add(chanDesc.get(i),c);
-			
-			channelPanel.add(cp);
-			}
+		JPanel cpChan = new JPanel(new GridBagLayout());
+		JPanel someRight=new JPanel(new BorderLayout());
+		someRight.add(metaCombo, BorderLayout.NORTH);
+		someRight.add(cpChan, BorderLayout.CENTER);
+		
+		add(someRight,BorderLayout.CENTER);
+		
+		GridBagConstraints cChan = new GridBagConstraints();
+		cChan.gridy=0;
+		cChan.gridx=0;
+		cChan.fill = 0;
+		
+		cpChan.add(new JLabel(""),cChan);
+		cChan.gridx++;
+		cpChan.add(new JLabel("F"));
+		cChan.gridx++;
+		cpChan.add(new JLabel("From channel"));
+		cChan.gridx++;
+		cChan.fill = GridBagConstraints.HORIZONTAL;
+		cpChan.add(new JLabel("Description"));
+			for(int i=0;i<channelCombo.size();i++)
+				{
+				
+				//Channel name
+				//cChan.gridy = 0;
+				cChan.gridy++;
+				cChan.gridx = 0;
+				cpChan.add(new JLabel("Ch "+i+": "),cChan);
+				
+				//Filter sequence
+				JButton bFS=FilterSeq.createFilterSeqButton();
+				final int fi=i;
+				bFS.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e)
+						{
+						new WindowFilterSeq(filterSeq.get(fi));
+						}
+				});
+				cChan.gridx++;
+				cpChan.add(bFS,cChan);
+				
+				//Channel selector
+				cChan.gridx++;
+				cpChan.add(channelCombo.get(i),cChan);
+	
+				//Channel description
+				cChan.gridx++;
+				cChan.weightx=1;
+				cChan.fill = GridBagConstraints.HORIZONTAL;
+				cpChan.add(chanDesc.get(i),cChan);
+				
+				}
+//		channelPanel.add(cpChan);
 		
 		add(bStart,BorderLayout.SOUTH);
 		
