@@ -35,7 +35,16 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{OSXAdapter.class, EncodeQT.class};
+		try
+			{
+			return new Class[]{Class.forName("endrov.macBinding.OSXAdapter"),Class.forName("endrov.macBinding.EncodeQT")};
+			}
+		catch (ClassNotFoundException e)
+			{
+			e.printStackTrace();
+			return new Class[]{};
+			}
+		//return new Class[]{OSXAdapter.class, EncodeQT.class};
 		}
 	
 	
