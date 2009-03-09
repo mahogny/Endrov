@@ -8,11 +8,15 @@ import java.awt.Color;
  */
 public class EvColor
 	{
+	public static EvColor black=new EvColor("Black",new Color(0,0,0));
+	public static EvColor white=new EvColor("White",new Color(255,255,255));
+	
+	
 	public static EvColor[] colorList=new EvColor[]{
 			new EvColor("D.Gray",Color.DARK_GRAY),
 			new EvColor("M.Gray",Color.GRAY),
 			new EvColor("L.Gray",Color.LIGHT_GRAY),
-			new EvColor("White",new Color(255,255,255)),
+			white,
 			
 			new EvColor("D.Red",new Color(128,0,0)),
 			new EvColor("L.Red",new Color(255,0,0)),
@@ -35,7 +39,7 @@ public class EvColor
 			new EvColor("Purple",new Color(200,0,255)),
 			new EvColor("Orange",new Color(255,128,0)),
 			
-			new EvColor("Black",new Color(0,0,0)),
+			black,
 			};
 	
 	public String name;

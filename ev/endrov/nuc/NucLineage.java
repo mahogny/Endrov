@@ -708,51 +708,56 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Generate a menu for setting color on nuclei
 	 */
-	public static JMenu makeSetColorMenu()
+	public static JMenu makeSetColorMenu(final EvColor... exclude)
 		{
-		JMenu m=new JMenu("Set color");
-		
-		JMenuItem mir=new JMenuItem("<Remove>");
-		mir.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e)
-				{
-				for(NucPair p:selectedNuclei)
-					p.fst().nuc.get(p.snd()).colorNuc=null;
-				BasicWindow.updateWindows();
-				}
-		});
-		m.add(mir);
-		for(final EvColor c:EvColor.colorList)
+		JMenu m = new JMenu("Set color");
+
+		JMenuItem mir = new JMenuItem("<Remove>");
+		mir.addActionListener(new ActionListener()
 			{
-			JMenuItem mi=new JMenuItem(c.name);
-			mi.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e)
 					{
-					for(NucPair p:selectedNuclei)
-						p.fst().nuc.get(p.snd()).colorNuc=c.c;
+					for (NucPair p : selectedNuclei)
+						p.fst().nuc.get(p.snd()).colorNuc = null;
 					BasicWindow.updateWindows();
 					}
 			});
+		m.add(mir);
+		for (final EvColor c : EvColor.colorList)
+			{
+			JMenuItem mi = new JMenuItem(c.name);
+			mi.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent e)
+						{
+						for (NucPair p : selectedNuclei)
+							p.fst().nuc.get(p.snd()).colorNuc = c.c;
+						BasicWindow.updateWindows();
+						}
+				});
 			m.add(mi);
 			}
-		JMenuItem mirb=new JMenuItem("<Rainbow>");
-		mirb.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e)
-				{
-				for(NucPair p:selectedNuclei)
+		JMenuItem mirb = new JMenuItem("<Rainbow>");
+		mirb.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
 					{
-					
-					int pi=Math.abs(p.snd().hashCode())%EvColor.colorList.length;
-					p.fst().nuc.get(p.snd()).colorNuc=EvColor.colorList[pi].c;
+					ArrayList<EvColor> colors = new ArrayList<EvColor>(Arrays
+							.asList(EvColor.colorList));
+					for (EvColor c : exclude)
+						colors.remove(c);
+					colors.remove(EvColor.black);
+					for (NucPair p : selectedNuclei)
+						{
+						int pi = Math.abs(p.snd().hashCode())%colors.size();
+						p.fst().nuc.get(p.snd()).colorNuc = colors.get(pi).c;
+						}
+					BasicWindow.updateWindows();
 					}
-				BasicWindow.updateWindows();
-				}
-		});
+			});
 		m.add(mirb);
 		return m;
 		}
-
-
 
 
 	/**
