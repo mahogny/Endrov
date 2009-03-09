@@ -86,6 +86,7 @@ public class MakeProfiles
 				{
 				if(f.getName().endsWith(".ost"))
 					{
+					//TODO skip
 					EvData data=EvData.loadFile(f);
 					if(!data.getObjects(Imageset.class).isEmpty())
 						doProfile(data);
@@ -95,13 +96,8 @@ public class MakeProfiles
 		
 		});
 		
-		/*
-		for(File f:)
-			{
-			
-			
-			}
-	*/
+		
+		//Does not reach here. crash?
 		
 		System.exit(0);
 		}
