@@ -27,7 +27,7 @@ import bioserv.imserv.TagListPane.TagListListener;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.BrowserControl;
 import endrov.ev.EV;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 
 /**
@@ -113,7 +113,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		JPanel rightBottom=new JPanel(new BorderLayout());
 		attrBorder.add(attrEditPane);
 		rightBottom.add(attrBorder,BorderLayout.CENTER);
-		rightBottom.add(EvSwingTools.borderLR(new JLabel("Filter:"),searchField,status),BorderLayout.SOUTH);
+		rightBottom.add(EvSwingUtil.borderLR(new JLabel("Filter:"),searchField,status),BorderLayout.SOUTH);
 		
 		JPanel right=new JPanel(new BorderLayout());
 		right.add(rightBottom,BorderLayout.SOUTH);

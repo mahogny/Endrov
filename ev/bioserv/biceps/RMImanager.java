@@ -9,7 +9,7 @@ import java.util.concurrent.Semaphore;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import endrov.util.EvUtilBits;
+import endrov.util.EvBitsUtil;
 
 //name: BIdirective Paranoid Message EXchange 
 //BIPMEX RMI
@@ -99,9 +99,9 @@ public class RMImanager
 				}
 			
 			//<call id>::short 
-			os.write(EvUtilBits.shortToByteArray(msgid));
+			os.write(EvBitsUtil.shortToByteArray(msgid));
 			//<msgsize>::int 
-			os.write(EvUtilBits.intToByteArray(len));
+			os.write(EvBitsUtil.intToByteArray(len));
 			//<packetstatus>::byte
 			os.write(msgtype);
 			//{<callbody>::[byte] | <returnbody>::[byte]}
@@ -359,9 +359,9 @@ public class RMImanager
 		}
 	
 	private static int readShort(InputStream socketi) throws IOException
-		{return EvUtilBits.byteArrayToShort((byte)socketi.read(),(byte)socketi.read());}
+		{return EvBitsUtil.byteArrayToShort((byte)socketi.read(),(byte)socketi.read());}
 	private static int readInt(InputStream socketi) throws IOException
-		{return EvUtilBits.byteArrayToInt((byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read());}
+		{return EvBitsUtil.byteArrayToInt((byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read(),(byte)socketi.read());}
 	
 	/** Add message last on send queue */
 	private void addSendQueue(SendingMessage sm)

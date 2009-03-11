@@ -13,7 +13,7 @@ import endrov.ev.*;
 import endrov.filter.FilterSeq;
 import endrov.filter.WindowFilterSeq;
 import endrov.imageset.*;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 import org.jdom.*;
 
@@ -118,14 +118,14 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		totalLeft.add(framesPanel,BorderLayout.NORTH);
 		totalLeft.add(encPanel,BorderLayout.SOUTH);
 
-		framesPanel.add(EvSwingTools.withLabel("From:", spinnerStart));
-		framesPanel.add(EvSwingTools.withLabel("To:", spinnerEnd));
-		framesPanel.add(EvSwingTools.withLabel("Z:", spinnerZ));
+		framesPanel.add(EvSwingUtil.withLabel("From:", spinnerStart));
+		framesPanel.add(EvSwingUtil.withLabel("To:", spinnerEnd));
+		framesPanel.add(EvSwingUtil.withLabel("Z:", spinnerZ));
 		framesPanel.setBorder(BorderFactory.createTitledBorder("Range"));
 		
-		encPanel.add(EvSwingTools.withLabel("Width:", spinnerW));
-		encPanel.add(EvSwingTools.withLabel("Codec:", codecCombo));
-		encPanel.add(EvSwingTools.withLabel("Quality:", qualityCombo));
+		encPanel.add(EvSwingUtil.withLabel("Width:", spinnerW));
+		encPanel.add(EvSwingUtil.withLabel("Codec:", codecCombo));
+		encPanel.add(EvSwingUtil.withLabel("Quality:", qualityCombo));
 		encPanel.setBorder(BorderFactory.createTitledBorder("Encoding"));
 		
 		JPanel cpChan = new JPanel(new GridBagLayout());

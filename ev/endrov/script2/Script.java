@@ -9,7 +9,7 @@ public class Script
 	public static void initPlugin(){}
 	public Script()
 		{
-		bsh.setStrictJava(true);
+		//bsh.setStrictJava(true);
 		
 		
 		

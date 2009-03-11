@@ -7,7 +7,7 @@ import org.jdom.*;
 
 import endrov.ev.*;
 import endrov.filter.*;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 /**
  * Filter: Laplace in 2D
@@ -72,8 +72,8 @@ public class WindowedMean2DFilter extends FilterSlice
 		JPanel p=new JPanel(new GridLayout(1,2));
 		JNumericFieldMutableInteger nwidth=new JNumericFieldMutableInteger(fwidth,observer,this);
 		JNumericFieldMutableInteger nheight=new JNumericFieldMutableInteger(fheight,observer,this);
-		p.add(EvSwingTools.withLabel("Width:",nwidth));
-		p.add(EvSwingTools.withLabel("Height:",nheight));
+		p.add(EvSwingUtil.withLabel("Width:",nwidth));
+		p.add(EvSwingUtil.withLabel("Height:",nheight));
 		return p;
 		}
 

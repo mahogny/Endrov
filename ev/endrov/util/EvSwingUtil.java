@@ -7,6 +7,8 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.*;
 
@@ -14,7 +16,7 @@ import javax.swing.*;
  * Utility functions for Swing
  * @author Johan Henriksson
  */
-public class EvSwingTools
+public class EvSwingUtil
 	{
 
 	/**
@@ -88,5 +90,25 @@ public class EvSwingTools
 			public void lostOwnership(Clipboard aClipboard, Transferable aContents){}
 			});
 	}
+
+	/**
+	 * Totally rip a menu apart, recursively. Action listeners are removed in a
+	 * safe way which guarantees GC can proceed
+	 */
+	public static void tearDownMenu(JMenu menu)
+		{
+		Vector<JMenuItem> componentsToRemove = new Vector<JMenuItem>();
+		for (int i = 0; i<menu.getItemCount(); i++)
+			componentsToRemove.add(menu.getItem(i));
+		for (JMenuItem c : componentsToRemove)
+			if (c==null)
+				;// Separator
+			else if (c instanceof JMenu)
+				tearDownMenu((JMenu) c);
+			else
+				for (ActionListener l : c.getActionListeners())
+					c.removeActionListener(l);
+		menu.removeAll();
+		}
 
 	}

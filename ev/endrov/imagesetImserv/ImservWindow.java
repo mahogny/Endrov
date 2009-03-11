@@ -4,7 +4,7 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -101,7 +101,7 @@ public class ImservWindow extends BasicWindow implements ActionListener
 		
 		
 		
-		add(EvSwingTools.borderLR(null, sComboPanel, EvSwingTools.borderLR(null, bLogout, bLogin)),BorderLayout.SOUTH);
+		add(EvSwingUtil.borderLR(null, sComboPanel, EvSwingUtil.borderLR(null, bLogout, bLogin)),BorderLayout.SOUTH);
 		
 		bLogin.addActionListener(this);
 		bLogout.addActionListener(this);

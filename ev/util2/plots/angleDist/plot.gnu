@@ -1,4 +1,4 @@
-set terminal postscript portrait "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
+set terminal postscript portrait "Helvetica" 10 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
 set output 'plot.ps'
 
 unset xtics 

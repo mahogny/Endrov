@@ -9,7 +9,7 @@ import org.jdom.Element;
 
 import endrov.ev.*;
 import endrov.filter.*;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 //http://homepages.inf.ed.ac.uk/rbf/HIPR2/log.htm
 
@@ -72,7 +72,7 @@ public class LaplacianOfGaussian2DFilter extends FilterSlice
 		{
 		JPanel p=new JPanel(new GridLayout(1,1));
 		JNumericFieldMutableDouble nlevel=new JNumericFieldMutableDouble(flevel,observer,this);
-		p.add(EvSwingTools.withLabel("sigma (pixels):",nlevel));
+		p.add(EvSwingUtil.withLabel("sigma (pixels):",nlevel));
 		return p;
 		}
 

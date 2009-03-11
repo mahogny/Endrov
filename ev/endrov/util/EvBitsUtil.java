@@ -1,6 +1,6 @@
 package endrov.util;
 
-public class EvUtilBits
+public class EvBitsUtil
 	{
 	public static final byte[] intToByteArray(int value) 
 		{

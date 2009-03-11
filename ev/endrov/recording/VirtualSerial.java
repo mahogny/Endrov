@@ -11,7 +11,7 @@ import java.util.*;
 import javax.swing.*;
 
 import endrov.hardware.PropertyType;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 /**
  * Virtual serial device. 
@@ -72,8 +72,8 @@ public abstract class VirtualSerial implements HWSerial
 			tInput.addActionListener(this);
 			
 			JPanel pMid=new JPanel(new GridLayout(2,1));
-			pMid.add(EvSwingTools.withLabelAbove("Output",new JScrollPane(tOut,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)));
-			pMid.add(EvSwingTools.withLabelAbove("Input", new JScrollPane(tIn,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)));
+			pMid.add(EvSwingUtil.withLabelAbove("Output",new JScrollPane(tOut,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)));
+			pMid.add(EvSwingUtil.withLabelAbove("Input", new JScrollPane(tIn,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)));
 			
 			setLayout(new BorderLayout());
 			add(pMid,BorderLayout.CENTER);

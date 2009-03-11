@@ -17,7 +17,7 @@ import endrov.data.*;
 import endrov.ev.*;
 import endrov.modelWindow.*;
 import endrov.util.EvDecimal;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 
 /**
@@ -228,11 +228,11 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					for(int i=0;i<3;i++)
 						for(int j=0;j<3;j++)
 							bf.append(fPoints[i][j].getDouble(0)+" ");
-					EvSwingTools.setClipBoardString(bf.toString());
+					EvSwingUtil.setClipBoardString(bf.toString());
 					}
 				else if(e.getSource()==bPaste)
 					{
-					StringTokenizer st=new StringTokenizer(EvSwingTools.getClipBoardString()," ");
+					StringTokenizer st=new StringTokenizer(EvSwingUtil.getClipBoardString()," ");
 					for(int i=0;i<3;i++)
 						{
 						points[i].x=Double.parseDouble(st.nextToken());

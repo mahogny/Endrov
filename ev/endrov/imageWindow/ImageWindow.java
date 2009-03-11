@@ -19,6 +19,7 @@ import endrov.filter.*;
 import endrov.imageset.*;
 import endrov.keyBinding.*;
 import endrov.util.EvDecimal;
+import endrov.util.EvSwingUtil;
 
 /**
  * Image window - Displays imageset with overlays. Data can be edited with tools, filters can be applied.
@@ -375,7 +376,7 @@ public class ImageWindow extends BasicWindow
 		{
 //		System.out.println("build menu");
 
-		BasicWindow.tearDownMenu(menuImageWindow);
+		EvSwingUtil.tearDownMenu(menuImageWindow);
 		miReset.addActionListener(this);
 		miMiddleSlice.addActionListener(this);
 		miZoomToFit.addActionListener(this);

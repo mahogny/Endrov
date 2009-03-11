@@ -16,7 +16,7 @@ import javax.swing.JToggleButton;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.hardware.HardwarePath;
 import endrov.recording.HWStage;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 
@@ -73,7 +73,7 @@ public class StagePanel implements ActionListener
 			pb.add(bController);
 
 			
-			hook.add1(EvSwingTools.borderLR(null, lab, EvSwingTools.borderLR(null, a, pb)));
+			hook.add1(EvSwingUtil.borderLR(null, lab, EvSwingUtil.borderLR(null, a, pb)));
 //			hook.add1(EvSwingTools.borderLR(lab, a, pb));
 //			p.add(EvSwingTools.borderLR(lab, a, pb));
 			}

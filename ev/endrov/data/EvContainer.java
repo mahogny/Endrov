@@ -18,6 +18,20 @@ public class EvContainer
 	/** All meta objects */
 	public TreeMap<String,EvObject> metaObject=new TreeMap<String,EvObject>();
 
+	public EvObject getChild(String name)
+		{
+		return metaObject.get(name);
+		}
+	
+	/**
+	 * Convenience function to get name o
+	 * @return
+	 */
+	public Set<String> getChildNames()
+		{
+		return metaObject.keySet();
+		}
+	
 	//TODO should make accessors
 	//TODO parent pointer?
 	//TODO putting an object should be checked to not create a cycle

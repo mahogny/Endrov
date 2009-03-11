@@ -12,7 +12,7 @@ import endrov.basicWindow.EvDecimalSpinnerModel;
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.util.EvDecimal;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 
 
@@ -169,8 +169,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		//frameModel=new SpinnerNumberModel(new EvDecimal(0),new EvDecimal(0),new EvDecimal((double)1000000.0,(double)0.1);
 		spinnerFrame=new JSpinner(frameModel);
 		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
-		add(EvSwingTools.withLabel("Frame:",spinnerFrame),playButtonConstraint(7));
-		add(EvSwingTools.withLabel("Group",spinnerGroup),playButtonConstraint(8));
+		add(EvSwingUtil.withLabel("Frame:",spinnerFrame),playButtonConstraint(7));
+		add(EvSwingUtil.withLabel("Group",spinnerGroup),playButtonConstraint(8));
 		
 		//Make this class listen to everything
 		buttonBeginning.addActionListener(this);

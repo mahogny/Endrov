@@ -23,7 +23,7 @@ import endrov.keyBinding.NewBinding.EvBindKeyEvent;
 import endrov.keyBinding.NewBinding.EvBindStatus;
 import endrov.modelWindow.basicExt.CrossHandler;
 import endrov.util.EvDecimal;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 import endrov.util.EvXmlUtil;
 import endrov.util.SnapBackSlider;
 
@@ -250,8 +250,8 @@ public class ModelWindow extends BasicWindow
 //		updateToolPanels();
 
 		JPanel zoomrotPanel=new JPanel(new GridLayout(2,1));
-		zoomrotPanel.add(EvSwingTools.borderAB(new JLabel(BasicIcon.iconLabelZoom), barZoom, null));
-		zoomrotPanel.add(EvSwingTools.borderAB(new JLabel(BasicIcon.iconLabelRotate), barRotate, null));
+		zoomrotPanel.add(EvSwingUtil.borderAB(new JLabel(BasicIcon.iconLabelZoom), barZoom, null));
+		zoomrotPanel.add(EvSwingUtil.borderAB(new JLabel(BasicIcon.iconLabelRotate), barRotate, null));
 
 		
 		barZoom.addSnapListener(new SnapBackSlider.SnapChangeListener(){
@@ -423,7 +423,7 @@ public class ModelWindow extends BasicWindow
 			try
 				{
 				String out=EvXmlUtil.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));
-				EvSwingTools.setClipBoardString(out);
+				EvSwingUtil.setClipBoardString(out);
 				}
 			catch (Exception e1)
 				{
@@ -434,7 +434,7 @@ public class ModelWindow extends BasicWindow
 			{
 			try
 				{
-				setPersonalConfig(EvXmlUtil.stringToXml(EvSwingTools.getClipBoardString()));
+				setPersonalConfig(EvXmlUtil.stringToXml(EvSwingUtil.getClipBoardString()));
 				}
 			catch (Exception e1)
 				{
