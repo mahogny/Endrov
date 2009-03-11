@@ -1,7 +1,9 @@
 package endrov.modelWindow;
+
 import endrov.ev.PluginDef;
 import endrov.modelWindow.basicExt.ModelWindowClipPlane;
 import endrov.modelWindow.basicExt.ModelWindowGrid;
+import endrov.modelWindow.basicExt.ModelWindowScreenshot;
 
 public class PLUGIN extends PluginDef
 	{
@@ -32,7 +34,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{ModelWindow.class,ModelWindowClipPlane.class,ModelWindowGrid.class};
+		return new Class[]{ModelWindow.class,ModelWindowClipPlane.class,ModelWindowGrid.class, ModelWindowScreenshot.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};
