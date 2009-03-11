@@ -2,15 +2,18 @@ package endrov.modelWindow;
 
 import java.util.*;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
 import java.nio.*;
 
+import javax.imageio.ImageIO;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Vector3d;
 
-//import com.sun.opengl.util.Screenshot;
 import com.sun.opengl.util.j2d.*;
 
 import endrov.ev.*;
@@ -525,6 +528,113 @@ public class ModelView extends GLCanvas
 		{
 		super.repaint();
 		}
+	
+	
+	public BufferedImage getScreenshot()
+		{
+		GLContext c=getContext();
+		c.makeCurrent();
+		BufferedImage image=getFrameData(getGL());
+		c.release();
+		return image;
+		}
+	
+	/**
+	 * Get framebuffer data. Has to hold GL context
+	 */
+	private ByteBuffer getFrameData( GL gl, ByteBuffer pixelsRGB ) 
+		{
+		gl.glReadBuffer( GL.GL_BACK );
+		gl.glPixelStorei( GL.GL_PACK_ALIGNMENT, 1 );
+		gl.glReadPixels( 0, 0, getWidth(), getHeight(), GL.GL_RGB, GL.GL_UNSIGNED_BYTE, pixelsRGB );
+		return pixelsRGB;
+		}
+
+	/**
+	 * Get framebuffer data. Has to hold GL context
+	 */
+	private BufferedImage getFrameData( GL gl ) 
+		{  
+		// Create a ByteBuffer to hold the frame data.
+		java.nio.ByteBuffer pixelsRGB = ByteBuffer.allocateDirect	( getWidth() * getHeight() * 3 ); 
+
+		// Get date from frame as ByteBuffer.
+		getFrameData( gl, pixelsRGB );
+
+		return transformPixelsRGBBuffer2ARGB_ByHand( pixelsRGB );
+		}
+
+	/**
+	 * Convert framebuffer to AWT format
+	 */
+	private BufferedImage transformPixelsRGBBuffer2ARGB_ByHand(ByteBuffer pixelsRGB)
+		{
+		// Transform the ByteBuffer and get it as pixeldata.
+
+		int w=getWidth();
+		int h=getHeight();
+
+		int[] pixelInts = new int[w*h];
+
+		// Convert RGB bytes to ARGB ints with no transparency. 
+		// Flip image vertically by reading the
+		// rows of pixels in the byte buffer in reverse 
+		// - (0,0) is at bottom left in OpenGL.
+		//
+		// Points to first byte (red) in each row.
+		int p = w*h*3; 
+		int i = 0; // Index into target int[]
+		int w3 = w*3; // Number of bytes in each row
+		for(int row = 0; row < h; row++) 
+			{
+			p -= w3;
+			int q = p;
+			for(int col = 0; col < w; col++)
+				{
+				int iR = pixelsRGB.get(q++);
+				int iG = pixelsRGB.get(q++);
+				int iB = pixelsRGB.get(q++);
+				pixelInts[i++] = 0xFF000000 | ((iR & 0x000000FF) << 16) | ((iG & 0x000000FF) << 8) | (iB & 0x000000FF);
+				}
+			}
+
+		// Create a new BufferedImage from the pixeldata.
+		BufferedImage bufferedImage = new BufferedImage( getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		bufferedImage.setRGB( 0, 0, w, h, pixelInts, 0, w );
+
+		return bufferedImage;
+		}
+
+	//http://www.felixgers.de/teaching/jogl/imagingProg.html
+
+
+	 
+	 /*
+	will never work
+	public BufferedImage getScreenshot()
+		{	
+
+		int w = getWidth();
+    int h = getHeight();
+    int type = BufferedImage.TYPE_INT_RGB;
+    BufferedImage image = new BufferedImage(w,h,type);
+    Graphics2D g2 = image.createGraphics();
+    paint(g2);
+    g2.dispose();
+    
+    try
+			{
+			ImageIO.write(image, "png", new File("/tmp/foo.png"));
+			}
+		catch (IOException e)
+			{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+    
+    return image;
+		}
+		*/
 	
 	
 	}

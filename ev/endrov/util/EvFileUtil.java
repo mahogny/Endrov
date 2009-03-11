@@ -102,6 +102,17 @@ public class EvFileUtil
 			return null;
 		}
 	
+	/**
+	 * Make sure filename ends with ending, that must include a "." if wanted
+	 */
+	public static File makeFileEnding(File f, String end)
+		{
+		if(f.getName().endsWith(end))
+			return f;
+		else
+			return new File(f.getParentFile(),f.getName()+end);
+		}
+	
 	
 	public static void deleteRecursive(File f) throws IOException
 		{
