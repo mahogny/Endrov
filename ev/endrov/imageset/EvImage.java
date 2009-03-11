@@ -11,6 +11,7 @@ import java.util.WeakHashMap;
 import javax.imageio.ImageIO;
 
 
+
 /**
  * Endrov image plane. Can be swapped to disk, lazily read and lazily generated. Images can share data using
  * copy-on-write semantics; copies following this are called shadows.
@@ -103,20 +104,26 @@ public class EvImage
 	
 	
 	
+	/**
+	 * Make sure this is a hard copy. Always safe to call. Seldom useful, use only if you know what you are doing
+	 */
+	public void makeSureHardCopy()
+		{
+		if(shadowedImage!=null)
+			getShadowDataInternal();
+		}
 	
-
 	/**
 	 * Copy data from shadowed image here. Make sure this truly is a shadowed image before calling
 	 */
-	private void getShadowData()
+	private void getShadowDataInternal()
 		{
-		/*
-		BufferedImage sim=shadowedImage.getJavaImage();
-		im=new BufferedImage(sim.getWidth(),sim.getHeight(),sim.getType());
-		im.getGraphics().drawImage(sim, 0, 0, null);
-		*/
+		EvPixels otherPixels=shadowedImage.getPixels();
+		if(otherPixels!=null)
+			memoryPixels=new EvPixels(otherPixels);
+		else
+			memoryPixels=null;
 		
-		memoryPixels=new EvPixels(shadowedImage.memoryPixels);
 		shadowedImage.shadowedBy.remove(this);
 		shadowedImage=null;
 		}
@@ -135,7 +142,7 @@ public class EvImage
 	private void sendShadowData()
 		{
 		for(EvImage evim:new HashSet<EvImage>(shadowedBy.keySet()))
-			evim.getShadowData();
+			evim.getShadowDataInternal();
 		}
 	
 	
@@ -165,13 +172,13 @@ public class EvImage
 		}
 	
 	/**
-	 * Precise copy of the image that contains it's own data
+	 * Precise copy of the image that contains its own data
 	 */
 	public EvImage makeHardCopy()
 		{
 		//This could be made potentially faster, keeping it abstract for now
 		EvImage copy=makeShadowCopy();
-		copy.getShadowData();
+		copy.getShadowDataInternal();
 		return copy;
 		}
 	
@@ -182,7 +189,7 @@ public class EvImage
 		{
 		sendShadowData();
 		if(shadowedImage!=null)
-			getShadowData();
+			getShadowDataInternal();
 		}
 	
 	
@@ -468,5 +475,9 @@ public class EvImage
 		return dispY;
 		}
 	
+	public String toString()
+		{
+		return "EvImage mempxl: "+memoryPixels+" shdw:"+shadowedImage+" shdwBy#:"+shadowedBy.size();
+		}
 	
 	}

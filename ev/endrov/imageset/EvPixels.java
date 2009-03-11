@@ -501,45 +501,45 @@ public class EvPixels
 		w=im.w;
 		h=im.h;
 
-		if(arrayB!=null)
+		if(im.arrayB!=null)
 			{
 			arrayB=new byte[im.arrayB.length];
 			for(int i=0;i<arrayB.length;i++)
 				arrayB[i]=im.arrayB[i];
 			}
 
-		if(arrayS!=null)
+		if(im.arrayS!=null)
 			{
 			arrayS=new short[im.arrayS.length];
 			for(int i=0;i<arrayS.length;i++)
 				arrayS[i]=im.arrayS[i];
 			}
 
-		if(arrayI!=null)
+		if(im.arrayI!=null)
 			{
 			arrayI=new int[im.arrayI.length];
 			for(int i=0;i<arrayI.length;i++)
 				arrayI[i]=im.arrayI[i];
 			}
 
-		if(arrayF!=null)
+		if(im.arrayF!=null)
 			{
 			arrayF=new float[im.arrayF.length];
 			for(int i=0;i<arrayF.length;i++)
 				arrayF[i]=im.arrayF[i];
 			}
 
-		if(arrayD!=null)
+		if(im.arrayD!=null)
 			{
 			arrayD=new double[im.arrayD.length];
 			for(int i=0;i<arrayD.length;i++)
 				arrayD[i]=im.arrayD[i];
 			}
 		
-		if(awt!=null)
+		if(im.awt!=null)
 			{
 			BufferedImage bim=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-			bim.getGraphics().drawImage(awt, 0, 0, null);
+			bim.getGraphics().drawImage(im.awt, 0, 0, null);
 			awt=bim;
 			}
 		
@@ -593,6 +593,11 @@ public class EvPixels
 	public BufferedImage quickReadOnlyAWT()
 		{
 		return convertTo(EvPixels.TYPE_AWT, true).getAWT();
+		}
+	
+	public String toString()
+		{
+		return "EvPixels type:"+type2string(type)+" w:"+w+" h:"+h;
 		}
 
 	public String asciiImage()

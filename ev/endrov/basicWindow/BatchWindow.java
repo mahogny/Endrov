@@ -93,10 +93,12 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 	
 	public void batchDone()
 		{
+		bStop.setText("Done");
 		}
 	public void batchError(String s)
 		{
 		lCurFrame.setText(s);
+		System.out.println(s);
 		}
 	public void batchLog(String s)
 		{
