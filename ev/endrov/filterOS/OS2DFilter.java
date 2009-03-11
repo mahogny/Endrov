@@ -10,7 +10,7 @@ import org.jdom.Element;
 
 import endrov.ev.*;
 import endrov.filter.*;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 /**
  * Filter: Order statistics operations in 2D
@@ -174,10 +174,10 @@ public class OS2DFilter extends FilterSlice
 			
 			JPanel lefttot=new JPanel(new GridLayout(3,1));
 			JPanel panelxy=new JPanel(new GridLayout(1,2));
-			panelxy.add(EvSwingTools.withLabel("#X:",xs));
-			panelxy.add(EvSwingTools.withLabel("#Y:",ys));
+			panelxy.add(EvSwingUtil.withLabel("#X:",xs));
+			panelxy.add(EvSwingUtil.withLabel("#Y:",ys));
 			lefttot.add(panelxy);
-			lefttot.add(EvSwingTools.withLabel("Repeats:",nrepeats));
+			lefttot.add(EvSwingUtil.withLabel("Repeats:",nrepeats));
 			lefttot.add(kernelCombo);
 			spanel.add(lefttot,BorderLayout.NORTH);
 			

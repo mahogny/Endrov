@@ -3,6 +3,10 @@ package endrov.modelWindow;
 import javax.vecmath.*;
 import javax.media.opengl.*;
 
+import org.jdom.Element;
+
+import endrov.util.EvXmlUtil;
+
 //Vector3D vs javax.vecmath.....? part of javax.media.*
 
 public class Camera
@@ -14,15 +18,43 @@ public class Camera
 	public Vector3d center=new Vector3d(0,0,0);
 	
 	/** Transformation matrix */
-	private final Matrix3d mat;
+	private final Matrix3d mat=new Matrix3d();
 	
 	
-
 	
 	public Camera()
 		{
-		mat=new Matrix3d();
 		mat.setIdentity();
+		}
+	
+	public Camera(Camera cam)
+		{
+		pos.set(cam.pos);
+		center.set(cam.center);
+		mat.set(cam.mat);
+		}
+	
+	public void toElement(Element e)
+		{
+		Element epos=new Element("pos");
+		Element ecenter=new Element("center");
+		Element emat=new Element("mat");
+		EvXmlUtil.vector2element(epos, pos);
+		EvXmlUtil.vector2element(ecenter, center);
+		EvXmlUtil.matrix2element(emat, mat);
+		e.addContent(epos);
+		e.addContent(ecenter);
+		e.addContent(emat);
+		}
+	
+	public void fromElement(Element e)
+		{
+		Element epos=e.getChild("pos");
+		Element ecenter=e.getChild("center");
+		Element emat=e.getChild("mat");
+		EvXmlUtil.element2vector(epos, pos);
+		EvXmlUtil.element2vector(ecenter, center);
+		EvXmlUtil.element2matrix(emat, mat);
 		}
 	
 	public Vector3d transformedVector(double x, double y, double z)
@@ -79,6 +111,14 @@ public class Camera
 		{
 		mat.setIdentity();
 		rotateCamera(x,y,z);
+		}
+
+	/**
+	 * Set rotation of camera through matrix
+	 */
+	public void setRotationMatrix(Matrix3d mat)
+		{
+		this.mat.set(mat);
 		}
 
 	/**

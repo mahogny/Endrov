@@ -9,7 +9,7 @@ import org.jdom.Element;
 
 import endrov.ev.*;
 import endrov.filter.*;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 /**
  * Filter: Sharpen in 2D
@@ -71,7 +71,7 @@ public class Sharpen2DFilter extends FilterSlice
 		{
 		JPanel p=new JPanel(new GridLayout(1,1));
 		JNumericFieldMutableDouble nlevel=new JNumericFieldMutableDouble(flevel,observer,this);
-		p.add(EvSwingTools.withLabel("Level:",nlevel));
+		p.add(EvSwingUtil.withLabel("Level:",nlevel));
 		return p;
 		}
 

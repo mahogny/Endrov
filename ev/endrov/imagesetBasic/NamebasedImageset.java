@@ -17,7 +17,7 @@ import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 /**
  * Import a list of images by matching the names
@@ -178,12 +178,12 @@ public class NamebasedImageset implements EvIOData
 			
 			JPanel input=new JPanel(new GridLayout(6,1));
 			input.add(new JLabel(basedir.toString()));
-			input.add(EvSwingTools.withLabel("Name:",eSequence));
-			input.add(EvSwingTools.withLabel("Channels:",eChannels));
+			input.add(EvSwingUtil.withLabel("Name:",eSequence));
+			input.add(EvSwingUtil.withLabel("Channels:",eChannels));
 
-			input.add(EvSwingTools.withLabel("Resolution X [px/um]:",eResX));
-			input.add(EvSwingTools.withLabel("Resolution Y [px/um]:",eResY));
-			input.add(EvSwingTools.withLabel("Spacing Z [um/plane]:",eSpacingZ));
+			input.add(EvSwingUtil.withLabel("Resolution X [px/um]:",eResX));
+			input.add(EvSwingUtil.withLabel("Resolution Y [px/um]:",eResY));
+			input.add(EvSwingUtil.withLabel("Spacing Z [um/plane]:",eSpacingZ));
 			
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));

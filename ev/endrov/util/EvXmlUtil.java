@@ -3,6 +3,9 @@ package endrov.util;
 import java.io.*;
 import java.util.List;
 
+import javax.vecmath.Matrix3d;
+import javax.vecmath.Vector3d;
+
 import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
@@ -187,7 +190,44 @@ public class EvXmlUtil
 		return element;
 		}
 
+	public static void vector2element(Element e, Vector3d v)
+		{
+		e.setAttribute("x",Double.toString(v.x));
+		e.setAttribute("y",Double.toString(v.y));
+		e.setAttribute("z",Double.toString(v.z));
+		}
 	
+	public static void element2vector(Element e, Vector3d v)
+		{
+		v.x=Double.parseDouble(e.getAttributeValue("x"));
+		v.y=Double.parseDouble(e.getAttributeValue("y"));
+		v.z=Double.parseDouble(e.getAttributeValue("z"));
+		}
 	
+	public static void matrix2element(Element e, Matrix3d v)
+		{
+		e.setAttribute("m00",Double.toString(v.m00));
+		e.setAttribute("m01",Double.toString(v.m01));
+		e.setAttribute("m02",Double.toString(v.m02));
+		e.setAttribute("m10",Double.toString(v.m10));
+		e.setAttribute("m11",Double.toString(v.m11));
+		e.setAttribute("m12",Double.toString(v.m12));
+		e.setAttribute("m20",Double.toString(v.m20));
+		e.setAttribute("m21",Double.toString(v.m21));
+		e.setAttribute("m22",Double.toString(v.m22));
+		}
+	
+	public static void element2matrix(Element e, Matrix3d v)
+		{
+		v.m00=Double.parseDouble(e.getAttributeValue("m00"));
+		v.m01=Double.parseDouble(e.getAttributeValue("m01"));
+		v.m02=Double.parseDouble(e.getAttributeValue("m02"));
+		v.m10=Double.parseDouble(e.getAttributeValue("m10"));
+		v.m11=Double.parseDouble(e.getAttributeValue("m11"));
+		v.m12=Double.parseDouble(e.getAttributeValue("m12"));
+		v.m20=Double.parseDouble(e.getAttributeValue("m20"));
+		v.m21=Double.parseDouble(e.getAttributeValue("m21"));
+		v.m22=Double.parseDouble(e.getAttributeValue("m22"));
+		}
 	
 	}

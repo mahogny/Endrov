@@ -119,7 +119,7 @@ public final class CalcThread extends BatchThread
 					else
 						{
 						imload=cName.fs.applyReturnImage(imload);
-						BufferedImage ji=imload.getJavaImage();
+						BufferedImage ji=imload.getPixels().getAWT();
 						if(ji==null)
 							allImloadOk=false;
 						else

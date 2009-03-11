@@ -17,7 +17,7 @@ import endrov.data.RecentReference;
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
-import endrov.util.EvSwingTools;
+import endrov.util.EvSwingUtil;
 
 
 //bug: new does not halt code.
@@ -193,12 +193,12 @@ public class SequenceImageset implements EvIOData
 			//GridBox might be better
 			
 			JPanel input=new JPanel(new GridLayout(6,1));
-			input.add(EvSwingTools.withLabel("Sequence:",eSequence));
-			input.add(EvSwingTools.withLabel("Channels:", eChannels));
+			input.add(EvSwingUtil.withLabel("Sequence:",eSequence));
+			input.add(EvSwingUtil.withLabel("Channels:", eChannels));
 
-			input.add(EvSwingTools.withLabel("Resolution X [px/um]:",eResX));
-			input.add(EvSwingTools.withLabel("Resolution Y [px/um]:",eResY));
-			input.add(EvSwingTools.withLabel("Spacing Z [um/plane]:",eSpacingZ));
+			input.add(EvSwingUtil.withLabel("Resolution X [px/um]:",eResX));
+			input.add(EvSwingUtil.withLabel("Resolution Y [px/um]:",eResY));
+			input.add(EvSwingUtil.withLabel("Spacing Z [um/plane]:",eSpacingZ));
 
 			eSequence.setPreferredSize(new Dimension(430,20));
 			eChannels.setPreferredSize(new Dimension(400,20));

@@ -11,6 +11,7 @@ import javax.swing.*;
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
+import endrov.util.EvSwingUtil;
 
 /**
  * Extension to BasicWindow
@@ -243,8 +244,8 @@ public class EvDataMenu implements BasicWindowExtension
 		 */
 		public void buildMenu(BasicWindow w)
 			{
-			BasicWindow.tearDownMenu(mData);
-			BasicWindow.tearDownMenu(mRecent);
+			EvSwingUtil.tearDownMenu(mData);
+			EvSwingUtil.tearDownMenu(mRecent);
 			
 			for(DataMenuExtension e:extensions)
 				e.buildData(mData);
