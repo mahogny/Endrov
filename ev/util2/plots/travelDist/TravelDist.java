@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.vecmath.Vector3d;
 
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
@@ -86,16 +85,25 @@ public class TravelDist
 	
 	public static void one(String linname)
 		{
+		Log.listeners.add(new StdoutLog());
+		EV.loadPlugins();
+
+		
 		System.out.println(linname);
 		//Load lineage
 		//EvData ost=new EvIODataXML(linname+"/rmd.ostxml");
-		EvData ost=EvData.loadFile(new File(linname+"/rmd.ostxml"));
+		EvData ost=EvData.loadFile(new File(linname));
 		NucLineage lin=null;
-		for(EvObject evob:ost.metaObject.values())
-			if(evob instanceof NucLineage && ((NucLineage)evob).nuc.size()>10)
-				lin=(NucLineage)evob;
+		for(NucLineage evob:ost.getIdObjectsRecursive(NucLineage.class).values())
+			if(evob.nuc.size()>10)
+				lin=evob;
+			else
+				System.out.println("hmmm");
 		if(lin==null)
+			{
 			System.out.println("WTF2");
+			System.exit(0);
+			}
 		endAllCells(lin);
 	
 		//Load reference tree for naming
@@ -144,8 +152,22 @@ public class TravelDist
 							r.put(interStart.pos.r);
 							r.put(interEnd.pos.r);
 			
+							
+							Vector3d startPos=interStart.pos.getPosCopy();
+							
+							double avLenChild=0;
+							for(String cname:nuc.child)
+								{
+								NucLineage.Nuc child=lin.nuc.get(cname);
+								Vector3d vc=child.pos.get(child.pos.firstKey()).getPosCopy();
+								vc.sub(startPos);
+								avLenChild+=vc.length();
+								}
+							avLenChild/=nuc.child.size();
+							
+							
 							Vector3d v=interEnd.pos.getPosCopy();
-							v.sub(interStart.pos.getPosCopy());
+							v.sub(startPos);
 							double straightDistance=v.length();
 			
 							Vector3d last=interStart.pos.getPosCopy();
@@ -166,10 +188,11 @@ public class TravelDist
 							double relDev=0;
 							NucExp ediv=nuc.exp.get("divDev");
 							if(ediv!=null)
-								relDev=ediv.level.get(0)/nuc.lastFrame().subtract(nuc.firstFrame()).doubleValue();
+								relDev=ediv.level.get(EvDecimal.ZERO)/nuc.lastFrame().subtract(nuc.firstFrame()).doubleValue();
 							
 							//Write out
-							out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+r.getAv()+"\t"+relDev);
+							out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+
+									r.getAv()+"\t"+relDev+"\t"+avLenChild);
 							}
 						}
 					}
