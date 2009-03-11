@@ -115,13 +115,19 @@ public final class CalcThread extends BatchThread
 					EvDecimal tz=ch.closestZ(frame, new EvDecimal(z));
 					EvImage imload=ch.getImageLoader(frame, tz);
 					if(imload==null)
+						{
+						batchError("Failure: Could not collect EvImage for ch:"+cName.name+" f:"+frame+" z:"+tz);
 						allImloadOk=false;
+						}
 					else
 						{
 						imload=cName.fs.applyReturnImage(imload);
-						BufferedImage ji=imload.getPixels().getAWT();
+						BufferedImage ji=imload.getPixels().quickReadOnlyAWT();
 						if(ji==null)
+							{
+							batchError("Failure: Could not collect EvPixels for ch:"+cName.name+" f:"+frame+" z:"+tz);
 							allImloadOk=false;
+							}
 						else
 							mc.add(new MovieChannelImage(ji, cName.name));
 						}
@@ -138,8 +144,6 @@ public final class CalcThread extends BatchThread
 					//Encode frame
 					movieMaker.addFrame(c);
 					}
-				else
-					batchError("Failure: not all images could be collected");
 
 				//Go to next frame. End if there are no more frames.
 				EvDecimal newcurframe=rec.getChannel(channels.get(0).name).closestFrameAfter(curframe);
@@ -154,7 +158,7 @@ public final class CalcThread extends BatchThread
 			else
 				System.out.println("No movie maker to destroy");
 			//Normal exit
-			batchLog("Done");
+			batchDone();
 			}
 		catch (Exception e)
 			{
