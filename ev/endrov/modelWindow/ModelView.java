@@ -5,11 +5,8 @@ import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.awt.Font;
-import java.io.File;
-import java.io.IOException;
 import java.nio.*;
 
-import javax.imageio.ImageIO;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Vector3d;
