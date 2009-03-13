@@ -74,6 +74,9 @@ public class EvData extends EvContainer
 	public static TreeMap<String,Class<? extends EvObject>> extensions=new TreeMap<String,Class<? extends EvObject>>();
 	public static Vector<EvData> metadata=new Vector<EvData>();
 
+	/**
+	 * TODO better name
+	 */
 	public static void addMetadata(EvData m)
 		{
 		metadata.add(m);
