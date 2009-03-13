@@ -11,6 +11,7 @@ import endrov.basicWindow.EvDecimalEditor;
 import endrov.basicWindow.EvDecimalSpinnerModel;
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.frameTime.MyFrameControl;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -41,6 +42,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private JButton buttonPlayForward=new JButton(BasicIcon.iconPlayForward);
 	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
 	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
+	
+	private MyFrameControl buttonFrameTime=new MyFrameControl();
 
 	//private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
@@ -104,8 +107,10 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		{
 		GridBagConstraints c=new GridBagConstraints();
 		c.gridx=x;
-		c.fill=GridBagConstraints.HORIZONTAL;
-		c.weightx=1;
+//		c.fill=GridBagConstraints.HORIZONTAL;
+		c.fill=0;
+		c.weightx=0;
+//		c.weightx=1;
 		return c;
 		}
 	private GridBagConstraints smallButtonConstraint(int x)
@@ -162,6 +167,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		add(speedCombo,smallButtonConstraint(4));
 		add(buttonPlayBack,playButtonConstraint(5));
 		add(buttonPlayForward,playButtonConstraint(6));
+		
 
 		
 		//Build other controls and merge
@@ -170,7 +176,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		spinnerFrame=new JSpinner(frameModel);
 		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
 		add(EvSwingUtil.withLabel("Frame:",spinnerFrame),playButtonConstraint(7));
-		add(EvSwingUtil.withLabel("Group",spinnerGroup),playButtonConstraint(8));
+		add(buttonFrameTime,playButtonConstraint(8));
+		add(EvSwingUtil.withLabel("Group",spinnerGroup),playButtonConstraint(9));
 		
 		//Make this class listen to everything
 		buttonBeginning.addActionListener(this);
@@ -179,6 +186,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		buttonStepForward.addActionListener(this);
 		buttonPlayForward.addActionListener(this);
 		buttonEnd.addActionListener(this);
+		
 		
 		addChangeListener();
 		
@@ -262,6 +270,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			}
 		
 		}
+	
+	
 	
 	private EvDecimal currentSpeed()
 		{
