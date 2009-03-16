@@ -1,43 +1,43 @@
 package endrov.basicWindow;
 
 import java.awt.*;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+
+import endrov.util.JImageButton;
 
 /**
  * Drop-down button
  * @author Johan Henriksson
  *
  */
-public abstract class EvDropDownButton extends JButton implements ActionListener
+public abstract class EvDropDownButton extends JImageButton implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 	JPopupMenu popup=null;
-	
-	public EvDropDownButton(String title)
+
+	public abstract JPopupMenu createPopup();
+
+	public EvDropDownButton(Icon icon, String tooltip)
 		{
-		super(title);
+		super(icon,tooltip);
 		addActionListener(this);
 		}
-	
-	public abstract JPopupMenu createPopup();
 	
 	public void actionPerformed(ActionEvent e)
 		{
 		if(e.getSource()==this)
+			{
 			if(popup==null)
 				{
 				popup=createPopup();
 				popup.pack();
 				Point thisPos=getLocationOnScreen();
-				popup.setLocation((int)thisPos.getX(), (int)thisPos.getY()-getHeight());
+				int x=(int)thisPos.getX();
+				int y=(int)thisPos.getY()-getHeight();
 				//might have to move popup if outside
-				popup.setVisible(true);
 				//might have to be heavy for modelw
 
 				popup.setLightWeightPopupEnabled(false);
@@ -46,19 +46,14 @@ public abstract class EvDropDownButton extends JButton implements ActionListener
 				for(Component d:popup.getComponents())
 					if(d instanceof JMenuItem)
 						addActionListenerToAll((JMenuItem)d, new ActionListener(){
-							public void actionPerformed(ActionEvent arg0)
-								{
-								closePopup();
-								}
+							public void actionPerformed(ActionEvent e){closePopup();}
 						});
-				
 
+				
+				popup.show(this, x-(int)thisPos.getX(), y-(int)thisPos.getY());
 				}
 			else
 				closePopup();
-		else
-			{
-			System.out.println("foo");
 			}
 		
 		}

@@ -2,6 +2,7 @@ package endrov.frameTime;
 
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 
 import endrov.data.*;
@@ -17,6 +18,8 @@ public class FrameTime extends EvObject
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
+	public final static ImageIcon icon=new ImageIcon(FrameTime.class.getResource("iconWindow.png"));
+	
 	private static final String metaType="frametime";
 	
 	private static final String metaElement="ft";
@@ -31,12 +34,12 @@ public class FrameTime extends EvObject
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 	
-	//(Frame,Frametime), the real list
+	//(Frame,Time), the real list
 	public final Vector<Tuple<EvDecimal,EvDecimal>> list=new Vector<Tuple<EvDecimal,EvDecimal>>();
 
 	//Maps in two directions, cached versions of list
-	public final SortedMap<EvDecimal, EvDecimal> mapFrame2Frametime=new TreeMap<EvDecimal, EvDecimal>();
-	public final SortedMap<EvDecimal, EvDecimal> mapFrametime2Frame=new TreeMap<EvDecimal, EvDecimal>();
+	public final SortedMap<EvDecimal, EvDecimal> mapFrame2time=new TreeMap<EvDecimal, EvDecimal>();
+	public final SortedMap<EvDecimal, EvDecimal> mapTime2Frame=new TreeMap<EvDecimal, EvDecimal>();
 	
 	public String getMetaTypeDesc()
 		{
@@ -153,7 +156,7 @@ public class FrameTime extends EvObject
 	 */
 	public EvDecimal interpolateTime(EvDecimal frame)
 		{
-		return interpolate(mapFrame2Frametime, frame);
+		return interpolate(mapFrame2time, frame);
 		}
 	
 	/**
@@ -161,7 +164,7 @@ public class FrameTime extends EvObject
 	 */
 	public EvDecimal interpolateFrame(EvDecimal time)
 		{
-		return interpolate(mapFrametime2Frame, time);
+		return interpolate(mapTime2Frame, time);
 		}
 	
 	/**
@@ -169,12 +172,12 @@ public class FrameTime extends EvObject
 	 */
 	public void updateMaps()
 		{
-		mapFrame2Frametime.clear();
-		mapFrametime2Frame.clear();
+		mapFrame2time.clear();
+		mapTime2Frame.clear();
 		for(Tuple<EvDecimal,EvDecimal> p:list)
 			{
-			mapFrame2Frametime.put(p.fst(), p.snd());
-			mapFrametime2Frame.put(p.snd(), p.fst());
+			mapFrame2time.put(p.fst(), p.snd());
+			mapTime2Frame.put(p.snd(), p.fst());
 			}
 		//TODO emit changed
 		}
