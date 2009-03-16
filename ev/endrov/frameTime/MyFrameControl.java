@@ -1,26 +1,67 @@
 package endrov.frameTime;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import endrov.basicWindow.EvDecimalEditor;
 import endrov.basicWindow.EvDropDownButton;
+import endrov.basicWindow.icon.BasicIcon;
+import endrov.modelWindow.ModelWindow;
 import endrov.util.EvDecimal;
-import endrov.util.Tuple;
 
 /**
  * Frame control
  * @author Johan Henriksson
  *
  */
-public class MyFrameControl extends JPanel implements ActionListener
+public abstract class MyFrameControl extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
+	private JSpinner spinnerFrame;
 
+	
+	/** Timer used for playback. Set to null when there is no playback */
+	private javax.swing.Timer timer=null;
+	
+	/** Set to True if playing forward, False if playing backwards */
+	private boolean playingForward=true;
+	
+	
+	private JButton buttonStepBack=new JButton(BasicIcon.iconFramePrev);
+	private JButton buttonStepForward=new JButton(BasicIcon.iconFrameNext);
+	private JButton buttonPlayBack=new JButton(BasicIcon.iconPlayBackward);
+	private JButton buttonPlayForward=new JButton(BasicIcon.iconPlayForward);
+	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
+	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
+	
+	/**
+	 * Playback speed
+	 */
+	private static class Speed
+		{
+		EvDecimal speed;
+		public Speed(String speed)
+			{
+			this.speed=new EvDecimal(speed);
+			}
+		public String toString()
+			{
+			return ""+speed+"x";
+			}
+		}
+		
+	private JComboBox speedCombo;
+	
+	/**
+	 * Drop-down menu button to select FrameTime mapping
+	 */
 	public EvDropDownButton buttonFrameTime=new EvDropDownButton("FT")
 		{
 		private static final long serialVersionUID = 1L;
@@ -40,12 +81,6 @@ public class MyFrameControl extends JPanel implements ActionListener
 			}
 		};
 	
-	public MyFrameControl()
-		{
-		setLayout(new GridLayout(1,1));
-		add(buttonFrameTime);
-		buttonFrameTime.addActionListener(this);
-		}
 	
 	public void actionPerformed(ActionEvent e)
 		{
@@ -53,64 +88,98 @@ public class MyFrameControl extends JPanel implements ActionListener
 		
 		}
 	
+	public abstract EvDecimal lastFrame();
+	public abstract EvDecimal nextFrame();
 	
-
-	/**
-	 * Show time as minutes and seconds
-	 */
-	public static String frameControlMinutes(EvDecimal d)
+	
+	public SpinnerModel frameModel=new SpinnerModel()
 		{
-		Tuple<EvDecimal,EvDecimal> ms=d.divideRemainder(new EvDecimal(60));
-		StringBuffer sb=new StringBuffer();
-		//if(!ms.fst().equals(EvDecimal.ZERO))
-		sb.append(ms.fst()+"m");
-		//if(!ms.fst().equals(EvDecimal.ZERO))
-		sb.append(ms.snd()+"s");
-		return sb.toString();
-		}
-
-	/**
-	 * Parse time, in seconds, from a string representation
-	 */
-	public static EvDecimal parseTime(String s)
-		{
-		EvDecimal accTime=EvDecimal.ZERO;
-		Pattern pvalue=Pattern.compile("([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?");
-		Matcher m=pvalue.matcher(s);
-		if(!m.matches())
-			return null;
-		for(int i=1;i<=m.groupCount();i++)
+		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
+		public void addChangeListener(ChangeListener e){listeners.add(e);}
+		public void removeChangeListener(ChangeListener e){listeners.remove(e);}
+		public EvDecimal frame=new EvDecimal(0);
+		public Object getNextValue()
 			{
-			/*
-			System.out.println(m.group(i));
-			int pos2=i==m.groupCount() ? s.length() : m.start(i+1);
-			String spart=s.substring(m.start(i),pos2);
-			System.out.println(spart+" "+spartlen+" "+pos2+" ");
-			*/
-			String spart=m.group(i);
-			if(spart!=null)
-				{
-				int spartlen=spart.length();
-				char lastChar=spart.charAt(spartlen-1);
-				if(lastChar=='s')
-					accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)));
-				else if(lastChar=='m')
-					accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)).multiply(new EvDecimal(60)));
-				else if(lastChar=='h')
-					accTime=accTime.add(new EvDecimal(spart.substring(0,spartlen-1)).multiply(new EvDecimal(3600)));
-				else
-					accTime=accTime.add(new EvDecimal(spart));
-				}
+			EvDecimal i=nextFrame();
+			if(i==null)	return frame;	else return i;
 			}
-		return accTime;
-		}
+		public Object getPreviousValue()
+			{
+			EvDecimal i=lastFrame();
+			if(i==null)	return frame;	else return i;
+			}
+		public Object getValue(){return frame;}
+		public void setValue(Object e)
+			{
+			if(e instanceof Double)
+				frame=new EvDecimal((Double)e);
+			else if(e instanceof Integer)
+				frame=new EvDecimal((Integer)e);
+			else if(e instanceof EvDecimal)
+				frame=(EvDecimal)e;
+			for(ChangeListener li:listeners)
+				li.stateChanged(new ChangeEvent(this));
+			}
+		};
 
-	
 
-	public static void main(String[] args)
+	public MyFrameControl()
 		{
-		System.out.println(parseTime("5.2s"));
-		System.out.println(parseTime("1m3s"));
+		
+		spinnerFrame=new JSpinner(frameModel);
+		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
+
+		JPanel gridLeft=new JPanel(new GridLayout(1,3));
+		gridLeft.add(buttonBeginning);
+		gridLeft.add(buttonPlayBack);
+		gridLeft.add(buttonStepBack);
+
+		JPanel gridRight=new JPanel(new GridLayout(1,4));
+		gridRight.add(buttonFrameTime);
+		gridRight.add(buttonStepForward);
+		gridRight.add(buttonPlayForward);
+		gridRight.add(buttonEnd);
+
+		setLayout(new BorderLayout());
+		add(gridLeft,BorderLayout.WEST);
+		add(spinnerFrame,BorderLayout.CENTER);
+		add(gridRight,BorderLayout.EAST);
+
+		buttonFrameTime.addActionListener(this);
+
+		Vector<Speed> speeds=new Vector<Speed>();
+		speeds.add(new Speed("0.01"));
+		speeds.add(new Speed("0.1"));
+		speeds.add(new Speed("1"));
+		speeds.add(new Speed("10"));
+		speeds.add(new Speed("100"));
+		speeds.add(new Speed("1000"));
+		speeds.add(new Speed("10000"));
+		speedCombo=new JComboBox(speeds);
+		speedCombo.setSelectedIndex(2);
+		
+		//TODO: idea: can use nextFrame to find when next frame occurs. then adjust speed with this.
+		//fits with imagewindow
+		
+		}
+		
+		
+	/** 
+	 * Get current frame 
+	 */
+	public EvDecimal getFrame()
+		{
+		return (EvDecimal)spinnerFrame.getValue();
 		}
 	
+	/**
+	 * Set current frame. will NOT trigger replicateSettings or any listeners!
+	 */
+	public void setFrame(EvDecimal frame)
+		{
+		spinnerFrame.setValue(frame);
+		}
+
+	
+		
 	}

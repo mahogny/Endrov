@@ -36,8 +36,13 @@ public class MicroManager extends HardwareProvider implements Hardware
 			fMMconfig.getParentFile().mkdirs();
 			if(!fMMconfig.exists())
 				fMMconfig=new File("MMConfig.cfg");
-			
+			if(!fMMconfig.exists())
+				{
+				System.out.println("No config file found");
+				return;
+				}
 			System.out.println("Loading "+fMMconfig.getAbsolutePath());
+			
 			core.loadSystemConfiguration(fMMconfig.getPath());
 			
 	/*

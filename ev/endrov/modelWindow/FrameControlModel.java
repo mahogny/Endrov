@@ -43,7 +43,18 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
 	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
 	
-	private MyFrameControl buttonFrameTime=new MyFrameControl();
+	private MyFrameControl buttonFrameTime=new MyFrameControl()
+		{
+		private static final long serialVersionUID = 1L;
+		public EvDecimal lastFrame()
+			{
+			return getFrame().subtract(currentSpeed());
+			}
+		public EvDecimal nextFrame()
+			{
+			return getFrame().add(currentSpeed());
+			}
+		};
 
 	//private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
