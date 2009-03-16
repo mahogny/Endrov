@@ -88,12 +88,12 @@ public class FrameControl
 	/**
 	 * Show time as minutes and seconds
 	 */
-	public static String frameControlMinutes(EvDecimal d)
+	public static String formatTime(EvDecimal d)
 		{
 		Tuple<EvDecimal,EvDecimal> ms=d.divideRemainder(new EvDecimal(60));
 		StringBuffer sb=new StringBuffer();
-		//if(!ms.fst().equals(EvDecimal.ZERO))
-		sb.append(ms.fst()+"m");
+		if(!ms.fst().equals(EvDecimal.ZERO))
+			sb.append(ms.fst()+"m");
 		//if(!ms.fst().equals(EvDecimal.ZERO))
 		sb.append(ms.snd()+"s");
 		return sb.toString();

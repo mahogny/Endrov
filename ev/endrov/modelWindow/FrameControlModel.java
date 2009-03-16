@@ -7,11 +7,9 @@ import javax.swing.event.*;
 
 import java.util.*;
 
-import endrov.basicWindow.EvDecimalEditor;
-import endrov.basicWindow.EvDecimalSpinnerModel;
-import endrov.basicWindow.FrameControl;
+import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
-import endrov.frameTime.MyFrameControl;
+import endrov.frameTime.*;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -42,19 +40,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	private JButton buttonPlayForward=new JButton(BasicIcon.iconPlayForward);
 	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
 	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
-	
-	private MyFrameControl buttonFrameTime=new MyFrameControl()
-		{
-		private static final long serialVersionUID = 1L;
-		public EvDecimal lastFrame()
-			{
-			return getFrame().subtract(currentSpeed());
-			}
-		public EvDecimal nextFrame()
-			{
-			return getFrame().add(currentSpeed());
-			}
-		};
+			
+	private FrameTimeDropDown buttonFrameTime=new FrameTimeDropDown();
 
 	//private SpinnerModel frameModel;
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
@@ -81,7 +68,20 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 	
 	
 	/** Frame spinner behaviour */
-	private SpinnerModel frameModel=new EvDecimalSpinnerModel();
+	private SpinnerModel frameModel=new SpinnerFrameModel()
+		{
+		public EvDecimal lastFrame(EvDecimal currentFrame)
+			{
+			return currentFrame.subtract(currentSpeed());
+			}
+		public EvDecimal nextFrame(EvDecimal currentFrame)
+			{
+			return currentFrame.add(currentSpeed());
+			}
+		};
+		
+		
+		
 	/*new SpinnerModel()
 		{
 		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
@@ -118,10 +118,10 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		{
 		GridBagConstraints c=new GridBagConstraints();
 		c.gridx=x;
-//		c.fill=GridBagConstraints.HORIZONTAL;
-		c.fill=0;
-		c.weightx=0;
-//		c.weightx=1;
+		c.fill=GridBagConstraints.HORIZONTAL;
+//		c.fill=0;
+//		c.weightx=0;
+		c.weightx=1;
 		return c;
 		}
 	private GridBagConstraints smallButtonConstraint(int x)
@@ -185,7 +185,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		//setLayout(new GridLayout());
 		//frameModel=new SpinnerNumberModel(new EvDecimal(0),new EvDecimal(0),new EvDecimal((double)1000000.0,(double)0.1);
 		spinnerFrame=new JSpinner(frameModel);
-		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
+//		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
+		spinnerFrame.setEditor(new EvFrameEditor(spinnerFrame));
 		add(EvSwingUtil.withLabel("Frame:",spinnerFrame),playButtonConstraint(7));
 		add(buttonFrameTime,playButtonConstraint(8));
 		add(EvSwingUtil.withLabel("Group",spinnerGroup),playButtonConstraint(9));
