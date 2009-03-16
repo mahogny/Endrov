@@ -30,7 +30,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{FrameTimeWindow.class};
+		return new Class[]{FrameTime.class, FrameTimeWindow.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

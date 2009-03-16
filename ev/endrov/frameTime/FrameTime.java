@@ -70,6 +70,7 @@ public class FrameTime extends EvObject
 			EvDecimal frametime=new EvDecimal(e2.getAttribute("time").getValue());
 			list.add(new Tuple<EvDecimal,EvDecimal>(frame,frametime));
 			}
+		updateMaps();
 		}
 
 
@@ -134,7 +135,7 @@ public class FrameTime extends EvObject
 				EvDecimal lastX=hmap.lastKey();
 				EvDecimal nextX=tmap.firstKey();
 				EvDecimal lastY=hmap.get(lastX);
-				EvDecimal nextY=hmap.get(nextX);
+				EvDecimal nextY=tmap.get(nextX);
 				return linInterpolate(lastX, nextX, lastY, nextY, x);
 				}
 			}
