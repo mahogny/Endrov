@@ -188,7 +188,27 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 	
 	public String toString()
 		{
-		return dec.stripTrailingZeros().toPlainString();
+		String s=dec.stripTrailingZeros().toPlainString();
+		if(s.indexOf('.')!=-1)
+			{
+			System.out.println(s);
+			int i=s.length();
+			char c;
+			do
+				{
+				i--;
+				c=s.charAt(i);
+				}	while(c=='0');
+			i++;
+			if(c=='.')
+				i--;
+			
+			if(i!=s.length())
+				s=s.substring(0,i);
+			System.out.println(s);
+			}
+		
+		return s;
 		}
 	
 	

@@ -53,11 +53,12 @@ public class FrameTimeDropDown extends EvDropDownButton
 
 	private void click(FrameTime ft)
 		{
+		System.out.println("click "+ft);
 		for(EvFrameEditor l:listeners)
 			l.setFrameTime(ft);
 		}
 	
-	public void addActionListener(EvFrameEditor l)
+	public void addEditor(EvFrameEditor l)
 		{
 		listeners.add(l);
 		}

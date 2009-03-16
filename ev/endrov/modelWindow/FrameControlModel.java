@@ -186,7 +186,10 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		//frameModel=new SpinnerNumberModel(new EvDecimal(0),new EvDecimal(0),new EvDecimal((double)1000000.0,(double)0.1);
 		spinnerFrame=new JSpinner(frameModel);
 //		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
-		spinnerFrame.setEditor(new EvFrameEditor(spinnerFrame));
+		EvFrameEditor frameEditor=new EvFrameEditor(spinnerFrame);
+		spinnerFrame.setEditor(frameEditor);
+		buttonFrameTime.addEditor(frameEditor);
+		
 		add(EvSwingUtil.withLabel("Frame:",spinnerFrame),playButtonConstraint(7));
 		add(buttonFrameTime,playButtonConstraint(8));
 		add(EvSwingUtil.withLabel("Group",spinnerGroup),playButtonConstraint(9));

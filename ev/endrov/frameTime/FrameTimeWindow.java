@@ -147,6 +147,8 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			JSpinner field[]=new JSpinner[2];
 			field[0]=new JSpinner(new EvDecimalSpinnerModel());
 			field[1]=new JSpinner(new EvDecimalSpinnerModel());
+			field[0].setValue(frame);
+			field[1].setValue(time);
 			inputVector.add(field);
 			field[0].addChangeListener(this);
 			field[1].addChangeListener(this);
@@ -216,9 +218,9 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		frametimeSeries.clear();
 		for(int i=0;i<inputVector.size();i++)
 			{
-			double frame=(Integer)inputVector.get(i)[0].getValue();
-			double time=(Double)inputVector.get(i)[1].getValue();
-			frametimeSeries.add(time, frame);
+			EvDecimal frame=(EvDecimal)inputVector.get(i)[0].getValue();
+			EvDecimal time=(EvDecimal)inputVector.get(i)[1].getValue();
+			frametimeSeries.add(time.doubleValue(), frame.doubleValue());
 			}
 		//would we want to list special times here?
 		}	

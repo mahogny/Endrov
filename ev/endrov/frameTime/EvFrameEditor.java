@@ -88,6 +88,7 @@ public class EvFrameEditor extends JTextField
 		currentFrameTime=ft;
 		setFrame(d);
 		sm.setValue(getFrame());
+		System.out.println("setframetime "+ft);
 		}
 	
 	}
