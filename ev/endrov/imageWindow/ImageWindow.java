@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.vecmath.*;
@@ -74,6 +76,7 @@ public class ImageWindow extends BasicWindow
 			public void newImageWindow(ImageWindow w)
 				{
 				w.imageWindowTools.add(new ToolChannelDisp(w));
+				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
 				}
 			});
 		}
@@ -122,6 +125,17 @@ public class ImageWindow extends BasicWindow
 				}
 			}
 		};
+		
+	/**
+	 * Acquire a screenshot
+	 */	
+	public BufferedImage getScreenshot()
+		{
+		BufferedImage bi = new BufferedImage(imagePanel.getWidth(),imagePanel.getHeight(),BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = bi.createGraphics();
+		imagePanel.paintComponent(g);
+		return bi;
+		}
 		
 	/**
 	 * One row of channel settings in the GUI
