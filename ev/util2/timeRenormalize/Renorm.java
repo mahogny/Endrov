@@ -25,8 +25,9 @@ public class Renorm
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
-		EvData data=EvData.loadFile(new File("/Volumes3/TBU_main02/ost4dgood/celegans2008.2.ost"));
+		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));
 		//EvData data=EvData.loadFile(new File("/Volumes3/TBU_main03/ost4dgood/AnglerUnixCoords.ost"));
+//		EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords_no_AP_radius.ost"));
 		NucLineage lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 		
 

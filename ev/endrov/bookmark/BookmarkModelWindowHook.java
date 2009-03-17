@@ -69,10 +69,11 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 		
 		for(EvData data:EvData.metadata)
 			{
+			JMenu miData=new JMenu(data.getMetadataName());
 			for(Map.Entry<EvPath, Bookmark> e:data.getIdObjectsRecursive(Bookmark.class).entrySet())
 				{
 				JMenuItem miGoto=new JMenuItem("=> "+e.getKey());
-				miBookmark.add(miGoto);
+				miData.add(miGoto);
 				final Bookmark m=e.getValue();
 				
 				miGoto.addActionListener(new ActionListener()
@@ -87,6 +88,8 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 						}
 					});
 				}
+			if(miData.getItemCount()>0)
+				miBookmark.add(miData);
 			}
 		
 		
