@@ -28,24 +28,30 @@ public class EvFrameEditor extends JTextField
 		{public void actionPerformed(ActionEvent e)
 			{
 			removeActionListener(this);
+			getModel().removeChangeListener(cl);
 			String newText=FrameControl.formatTime(FrameControl.parseTime(getText()));
 			setText(newText);
-			addActionListener(this);
 			getModel().setValue(getFrame());
+			addActionListener(this);
+			getModel().addChangeListener(cl);
 			}
 		};
 		
+		
+	ChangeListener cl=new ChangeListener()
+		{
+		public void stateChanged(ChangeEvent e)
+			{
+			//System.out.println("state changed");
+			setFrame((EvDecimal)getModel().getValue());
+			}
+		};
 	
 	public EvFrameEditor(final JSpinner sp)
 		{
 		sm=sp.getModel();
 		addActionListener(alist);
-		sp.getModel().addChangeListener(new ChangeListener()
-			{public void stateChanged(ChangeEvent e)
-				{
-				setFrame((EvDecimal)sp.getModel().getValue());
-				}
-			});
+		getModel().addChangeListener(cl);
 		setFrame((EvDecimal)sp.getModel().getValue());
 		}
 	
@@ -65,9 +71,30 @@ public class EvFrameEditor extends JTextField
 		{
 		if(currentFrameTime!=null)
 			d=currentFrameTime.interpolateTime(d);		
-		setText(FrameControl.formatTime(d));
+		if(d!=null)
+			{
+			newSetText(d);
+			}
 		}
 
+	private void newSetText(EvDecimal d)
+		{
+		String s=FrameControl.formatTime(d);
+		int doti=s.indexOf('.');
+		if(doti==-1)
+			setText(s);
+		else
+			{
+			int len=10;
+			if(doti+len<s.length()) //Limit number of decimals when changing number
+				s=s.substring(0,doti+len);
+			setText(s);
+			}
+		}
+	
+	//TODO time increment in model window: next frame should be based on model time
+	
+	
 	/**
 	 * Get text as frame
 	 */
