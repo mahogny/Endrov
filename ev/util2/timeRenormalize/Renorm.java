@@ -25,36 +25,39 @@ public class Renorm
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
-		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));
-		//EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/AnglerUnixCoords.ost"));
+		EvData data=EvData.loadFile(new File("/Volumes3/TBU_main02/ost4dgood/celegans2008.2.ost"));
+		//EvData data=EvData.loadFile(new File("/Volumes3/TBU_main03/ost4dgood/AnglerUnixCoords.ost"));
 		NucLineage lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 		
 
 		
-		List<Double> min=new LinkedList<Double>();
+		List<Double> sec=new LinkedList<Double>();
 		List<Double> frame=new LinkedList<Double>();
+		List<Double> w=new LinkedList<Double>();
 		List<String> cell=new LinkedList<String>();
 		//Should take frames from model
 		
 		//min.add(18.0); cell.add("P1'"); //cannot use this one
-		min.add(34.0); cell.add("ABa");
-		min.add(52.0); cell.add("ABar");
-		min.add(72.0); cell.add("ABara");
-		min.add(74.0); cell.add("ABpla");		
-		min.add(104.0); cell.add("ABaraa");
-		min.add(133.0); cell.add("ABarapa");
-		min.add(133.0); cell.add("ABplapa");
-		min.add(172.0); cell.add("ABarappa");
-		min.add(230.0); cell.add("ABprppapa");
-		min.add(236.0); cell.add("Eala");
-		min.add(260.0); cell.add("MSapaap");
+		//min.add(17.0); cell.add("AB"); //cannot use this one  //APPEARS at 17! we cannot trust our start-time annotation 
+		w.add(5.0); sec.add(60*40.0); cell.add("EMS");
+		w.add(5.0); sec.add(60*34.0); cell.add("ABa");
+		w.add(3.0); sec.add(60*52.0); cell.add("ABar");
+		w.add(1.0); sec.add(60*72.0); cell.add("ABara");
+		w.add(1.0); sec.add(60*74.0); cell.add("ABpla");		
+		w.add(1.0); sec.add(60*104.0); cell.add("ABaraa");
+		w.add(1.0); sec.add(60*133.0); cell.add("ABarapa");
+		w.add(1.0); sec.add(60*133.0); cell.add("ABplapa");
+		w.add(1.0); sec.add(60*172.0); cell.add("ABarappa");
+		w.add(1.0); sec.add(60*230.0); cell.add("ABprppapa");
+		w.add(1.0); sec.add(60*236.0); cell.add("Eala");
+		w.add(1.0); sec.add(60*260.0); cell.add("MSapaap");
 
 		
 		for(String n:cell)
 			frame.add(lin.nuc.get(n).pos.firstKey().doubleValue());
 		
-		for(int i=0;i<min.size();i++)
-			System.out.println(min.get(i)+"\t"+frame.get(i));
+//		for(int i=0;i<min.size();i++)
+//			System.out.println(min.get(i)+"\t"+frame.get(i));
 		
 		System.out.println();
 
@@ -62,7 +65,8 @@ public class Renorm
 		
 		//Enforce time of P1'? or rather a child since P1' is hm-hm
 		
-		Tuple<Double,Double> km=EvMathUtil.fitLinear1D(min, frame);
+//		Tuple<Double,Double> km=EvMathUtil.fitLinear1D(min, frame);
+		Tuple<Double,Double> km=EvMathUtil.fitWeightedLinear1D(sec, frame, w);
 		System.out.println(km);
 		double k=km.fst();
 		double m=km.snd();
@@ -71,8 +75,26 @@ public class Renorm
 		
 		//Create frametime mapping
 		FrameTime ft=new FrameTime();
-		ft.add(new EvDecimal(0*k+m), new EvDecimal(0));
-		ft.add(new EvDecimal(1000*k+m), new EvDecimal(1000));
+//		ft.add(new EvDecimal(1000), new EvDecimal(1000*k+m));
+
+		
+		//ft.add(new EvDecimal(-m/k), new EvDecimal(0));
+		//ft.add(new EvDecimal(1500), new EvDecimal(1500*k+m));
+		
+		ft.add(new EvDecimal(0),new EvDecimal(0*k+m));
+		ft.add(new EvDecimal(1500),new EvDecimal(1500*k+m));
+
+		ft.updateMaps();
+	
+		System.out.println();
+		System.out.println("sec\tframe\tfitsec");
+		for(int i=0;i<sec.size();i++)
+			System.out.println(
+					sec.get(i)+"\t"+
+					frame.get(i)+"\t"+
+					ft.interpolateTime(new EvDecimal(frame.get(i))));
+		System.out.println();
+		
 		data.metaObject.put("cetime", ft);
 		data.saveData();
 		

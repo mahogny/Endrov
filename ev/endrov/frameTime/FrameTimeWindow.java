@@ -12,12 +12,12 @@ import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
 import endrov.imageWindow.*;
-import endrov.util.EvDecimal;
-import endrov.util.Tuple;
+import endrov.util.*;
 
 import org.jdom.*;
 
@@ -56,6 +56,14 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		
 		}
 	
+	/**
+	 * One entry line
+	 */
+	private static class InputLine
+		{
+		JSpinner frame, time;
+		JButton bDelete=BasicIcon.getButtonDelete();
+		}
 	
 	//GUI components
 	private JButton bAdd=new JButton("Add");
@@ -64,7 +72,9 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	
 	private JPanel datapart=new JPanel();
 	private XYSeries frametimeSeries=new XYSeries("FT");
-	private Vector<JSpinner[]> inputVector=new Vector<JSpinner[]>();
+	private Vector<InputLine> inputVector=new Vector<InputLine>();
+	
+	
 	
 	private EvComboObjectOne<FrameTime> objectCombo=new EvComboObjectOne<FrameTime>(new FrameTime(),false,true);
 
@@ -134,7 +144,11 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		setBoundsEvWindow(bounds);
 		}
 
-
+	private class SpinnerFrameModelFT extends SpinnerFrameModel
+		{
+		public EvDecimal lastFrame(EvDecimal currentFrame){return currentFrame.subtract(1);}
+		public EvDecimal nextFrame(EvDecimal currentFrame){return currentFrame.add(1);}
+		}
 	
 	/**
 	 * Add an entry. Does not update UI
@@ -144,14 +158,31 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		FrameTime meta=objectCombo.getSelectedObject();
 		if(meta!=null)
 			{
-			JSpinner field[]=new JSpinner[2];
-			field[0]=new JSpinner(new EvDecimalSpinnerModel());
-			field[1]=new JSpinner(new EvDecimalSpinnerModel());
-			field[0].setValue(frame);
-			field[1].setValue(time);
-			inputVector.add(field);
-			field[0].addChangeListener(this);
-			field[1].addChangeListener(this);
+			InputLine inp=new InputLine();
+			
+			inp.frame=new JSpinner(new SpinnerFrameModelFT());
+			inp.time=new JSpinner(new SpinnerFrameModelFT());
+			
+			EvFrameEditor frameEditor=new EvFrameEditor(inp.frame);
+			EvFrameEditor frameEditor2=new EvFrameEditor(inp.time);
+			
+			inp.frame.setEditor(frameEditor);
+			inp.time.setEditor(frameEditor2);
+			
+			inp.frame.setValue(frame);
+			inp.time.setValue(time);
+			
+			
+			for(int i=0;i<2;i++)
+				{
+				
+	//			field[i]=new JSpinner(new EvDecimalSpinnerModel());
+//				field[i].setEditor(new EvDecimalEditor(field[i]));
+				}
+			inputVector.add(inp);
+			inp.frame.addChangeListener(this);
+			inp.time.addChangeListener(this);
+			inp.bDelete.addActionListener(this);
 			}
 		}
 	
@@ -181,7 +212,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 			{
 			meta.list.clear();
 			for(int i=0;i<inputVector.size();i++)
-				meta.add((EvDecimal)inputVector.get(i)[0].getValue(), (EvDecimal)inputVector.get(i)[1].getValue());
+				meta.add((EvDecimal)inputVector.get(i).frame.getValue(), (EvDecimal)inputVector.get(i).time.getValue());
 			meta.updateMaps();
 			meta.setMetadataModified();
 			}
@@ -218,8 +249,8 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		frametimeSeries.clear();
 		for(int i=0;i<inputVector.size();i++)
 			{
-			EvDecimal frame=(EvDecimal)inputVector.get(i)[0].getValue();
-			EvDecimal time=(EvDecimal)inputVector.get(i)[1].getValue();
+			EvDecimal frame=(EvDecimal)inputVector.get(i).frame.getValue();
+			EvDecimal time=(EvDecimal)inputVector.get(i).time.getValue();
 			frametimeSeries.add(time.doubleValue(), frame.doubleValue());
 			}
 		//would we want to list special times here?
@@ -231,13 +262,28 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	public void fillDatapart()
 		{
 		datapart.removeAll();
-		datapart.setLayout(new GridLayout(1+inputVector.size(),2));
-		datapart.add(new JLabel("Frame"));
-		datapart.add(new JLabel("Time"));
+		datapart.setLayout(new GridBagLayout());
+		GridBagConstraints c=new GridBagConstraints();
+		c.gridy=0;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		c.weightx=1;
+		c.gridx=0;
+		datapart.add(new JLabel("Frame"),c);
+		c.gridx=1;
+		datapart.add(new JLabel("Time"),c);
 		for(int i=0;i<inputVector.size();i++)
 			{
-			datapart.add(inputVector.get(i)[0]);
-			datapart.add(inputVector.get(i)[1]);
+			c.gridy++;
+			c.fill=GridBagConstraints.HORIZONTAL;
+			c.weightx=1;
+			c.gridx=0;
+			datapart.add(inputVector.get(i).frame,c);
+			c.gridx=1;
+			datapart.add(inputVector.get(i).time,c);
+			c.gridx=2;
+			c.fill=0;
+			c.weightx=0;
+			datapart.add(inputVector.get(i).bDelete,c);
 			}
 		setVisibleEvWindow(true);
 		}
@@ -266,14 +312,17 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		else if(e.getSource()==bApply)
 			{
 			applyData();
-//			loadData();
 			}
-	/*	else if(e.getSource()==bSaveText)
-			{
 			
-			}*/
-			
-		
+		for(int i=0;i<inputVector.size();i++)
+			if(inputVector.get(i).bDelete==e.getSource())
+				{
+				//TODO non-optimal. keep track of entry in map. then push through change right away
+				inputVector.remove(i);
+				fillGraphpart();
+				fillDatapart();
+				}
+
 		}
 	
 	
@@ -283,17 +332,20 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	 */
 	public void stateChanged(ChangeEvent e)
 		{
-		for(int i=0;i<inputVector.size();i++)
-			if(inputVector.get(i)[0]==e.getSource())
+			/*
+			if(inputVector.get(i).frame==e.getSource())
 				{
 				//Negative frame = delete
-				if((Integer)inputVector.get(i)[0].getValue()==-1)
+				//TODO really bad. add delete button
+				EvDecimal f=(EvDecimal)inputVector.get(i).frame.getValue();
+				if(f.equals(new EvDecimal("-1")))
 					{
 					inputVector.remove(i);
 					fillGraphpart();
 					fillDatapart();
 					}
-				}		
+				}
+				*/		
 		
 		fillGraphpart();
 		}

@@ -82,9 +82,9 @@ public class FrameTime extends EvObject
 	/**
 	 * Add new frame/frametime to this object
 	 */
-	public void add(EvDecimal frame, EvDecimal frametime)
+	public void add(EvDecimal frame, EvDecimal time)
 		{
-		list.add(new Tuple<EvDecimal,EvDecimal>(frame, frametime));
+		list.add(new Tuple<EvDecimal,EvDecimal>(frame, time));
 		}
 	
 	
@@ -146,8 +146,9 @@ public class FrameTime extends EvObject
 	 */
 	private EvDecimal linInterpolate(EvDecimal lastX,EvDecimal nextX, EvDecimal lastY, EvDecimal nextY, EvDecimal x)
 		{
-		EvDecimal frac=nextX.subtract(x).divide(nextX.subtract(lastX));
-		return EvDecimal.ONE.subtract(frac).multiply(lastY).add(
+		EvDecimal frac=x.subtract(lastX).divide(nextX.subtract(lastX));
+		EvDecimal frac1=EvDecimal.ONE.subtract(frac);
+		return frac1.multiply(lastY).add(
 				frac.multiply(nextY));
 		}
 	

@@ -10,6 +10,7 @@ import javax.swing.event.*;
 import endrov.basicWindow.EvDecimalEditor;
 import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.frameTime.*;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 
@@ -46,6 +47,8 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	private JButton buttonBeginning=new JButton(BasicIcon.iconFrameFirst);
 	private JButton buttonEnd=new JButton(BasicIcon.iconFrameLast);
 
+	private FrameTimeDropDown buttonFrameTime=new FrameTimeDropDown();
+	
 	private SpinnerModel groupModel=new SpinnerNumberModel(0,0,9,1);
 	private JSpinner spinnerZ;
 	private JSpinner spinnerFrame;
@@ -53,7 +56,21 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	private JCheckBox checkGroupSlice=new JCheckBox("");
 
 	/** Frame spinner behaviour */
-	private SpinnerModel frameModel=new SpinnerModel()
+	private SpinnerModel frameModel=new SpinnerFrameModel()
+		{
+		public EvDecimal lastFrame(EvDecimal currentFrame)
+			{
+			return FrameControlImage.this.lastFrame();
+			}
+		public EvDecimal nextFrame(EvDecimal currentFrame)
+			{
+			return FrameControlImage.this.nextFrame();
+			}
+		};
+	
+	/*
+	
+	new SpinnerModel()
 		{
 		private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
 		public void addChangeListener(ChangeListener e){listeners.add(e);}
@@ -81,7 +98,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			for(ChangeListener li:listeners)
 				li.stateChanged(new ChangeEvent(this));
 			}
-		};
+		};*/
 		
 	/** Z spinner behaviour */
 	private SpinnerModel zModel=new SpinnerModel()
@@ -167,9 +184,18 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		playPanel.add(buttonStepForward);
 		playPanel.add(buttonPlayBack);
 		playPanel.add(buttonPlayForward);
+
+		
 		
 		spinnerFrame=new JSpinner(frameModel);
-		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
+//		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
+		
+		EvFrameEditor frameEditor=new EvFrameEditor(spinnerFrame);
+		spinnerFrame.setEditor(frameEditor);
+		buttonFrameTime.addEditor(frameEditor);
+
+		
+		
 		spinnerZ=new JSpinner(zModel);
 		spinnerZ.setEditor(new EvDecimalEditor(spinnerZ));
 
@@ -184,6 +210,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 				
 		fPanel.add(new JLabel("Frame:"), BorderLayout.WEST);
 		fPanel.add(spinnerFrame, BorderLayout.CENTER);
+		fPanel.add(buttonFrameTime, BorderLayout.EAST);
 		
 		JPanel gPanel=new JPanel(new BorderLayout());
 		gPanel.add(new JLabel("Group:"), BorderLayout.WEST);

@@ -90,8 +90,12 @@ public class FrameControl
 	 */
 	public static String formatTime(EvDecimal d)
 		{
-		Tuple<EvDecimal,EvDecimal> ms=d.divideRemainder(new EvDecimal(60));
 		StringBuffer sb=new StringBuffer();
+		Tuple<EvDecimal,EvDecimal> hs=d.dividePositiveRemainder(new EvDecimal(3600));
+		d=hs.snd();
+		if(!hs.fst().equals(EvDecimal.ZERO))
+			sb.append(hs.fst()+"h");
+		Tuple<EvDecimal,EvDecimal> ms=d.dividePositiveRemainder(new EvDecimal(60));
 		if(!ms.fst().equals(EvDecimal.ZERO))
 			sb.append(ms.fst()+"m");
 		//if(!ms.fst().equals(EvDecimal.ZERO))
@@ -105,10 +109,14 @@ public class FrameControl
 	public static EvDecimal parseTime(String s)
 		{
 		EvDecimal accTime=EvDecimal.ZERO;
-		Pattern pvalue=Pattern.compile("([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?");
+		Pattern pvalue=Pattern.compile("([\\+\\-]?[0-9]+(?:[.][0-9]+)?[mhs]?)?([\\+\\-]?[0-9]+(?:[.][0-9]+)?[mhs]?)?([\\+\\-]?[0-9]+(?:[.][0-9]+)?[mhs]?)?");
+//		Pattern pvalue=Pattern.compile("([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?([0-9]+(?:[.][0-9]+)?[mhs]?)?");
 		Matcher m=pvalue.matcher(s);
 		if(!m.matches())
+			{
+			System.out.println("No match: "+s);
 			return null;
+			}
 		for(int i=1;i<=m.groupCount();i++)
 			{
 			/*
@@ -141,6 +149,7 @@ public class FrameControl
 		{
 		System.out.println(parseTime("5.2s"));
 		System.out.println(parseTime("1m3s"));
+		System.out.println(parseTime("-7h"));
 		}
 
 	

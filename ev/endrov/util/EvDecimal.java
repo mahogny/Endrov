@@ -90,6 +90,18 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		return new Tuple<EvDecimal, EvDecimal>(new EvDecimal(pair[0]),new EvDecimal(pair[1]));
 		}
 
+	/**
+	 * Version where remainder will be positive 
+	 */
+	public Tuple<EvDecimal,EvDecimal> dividePositiveRemainder(EvDecimal val)
+		{
+		BigDecimal[] pair=dec.divideAndRemainder(val.dec);
+		if(pair[1].signum()==-1)
+			return new Tuple<EvDecimal, EvDecimal>(new EvDecimal(pair[0].subtract(BigDecimal.ONE)),new EvDecimal(pair[1].add(val.dec)));
+		else
+			return new Tuple<EvDecimal, EvDecimal>(new EvDecimal(pair[0]),new EvDecimal(pair[1]));
+		}
+	
 	public EvDecimal divide(EvDecimal val)
 		{
 		return new EvDecimal(dec.divide(val.dec,MathContext.DECIMAL64));
@@ -191,7 +203,7 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		String s=dec.stripTrailingZeros().toPlainString();
 		if(s.indexOf('.')!=-1)
 			{
-			System.out.println(s);
+			//System.out.println(s);
 			int i=s.length();
 			char c;
 			do
@@ -205,7 +217,7 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 			
 			if(i!=s.length())
 				s=s.substring(0,i);
-			System.out.println(s);
+			//System.out.println(s);
 			}
 		
 		return s;
@@ -216,6 +228,13 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		{
 		EvDecimal a=new EvDecimal("0002234234324324234657657656765.123000");
 		System.out.println(a);
+		
+		EvDecimal b=new EvDecimal("-5000");
+		EvDecimal c=new EvDecimal("7");
+
+		Tuple<EvDecimal,EvDecimal> ret=b.dividePositiveRemainder(c);
+		System.out.println(ret.fst().multiply(c).add(ret.snd()));
+		System.out.println(ret);
 		}
 	
 	}
