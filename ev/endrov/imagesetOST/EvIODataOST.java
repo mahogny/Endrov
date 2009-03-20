@@ -175,7 +175,8 @@ public class EvIODataOST implements EvIOData
 						}while(taken);
 					}
 				currentDir=dir;
-				System.out.println("allocating blob "+currentDir);
+				if(EV.debugMode)
+					System.out.println("allocating blob "+currentDir);
 				new File(basedir,currentDir).mkdirs();
 				}
 			}
@@ -432,7 +433,8 @@ public class EvIODataOST implements EvIOData
 					else
 						{
 						//Delete everything
-						System.out.println("Deleting entire imageset");
+						if(EV.debugMode)
+							System.out.println("Deleting entire imageset");
 						for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:ime.getValue().diskImageLoader.entrySet())
 							for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
 								for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
@@ -508,7 +510,8 @@ public class EvIODataOST implements EvIOData
 									//File currentFile=getCurrentFileFor(ce.getKey(), fe.getKey(), ie.getKey());
 									if(currentFile!=null)
 										{
-										System.out.println("adding to read"+currentFile);
+										if(EV.debugMode)
+											System.out.println("adding to read"+currentFile);
 										HashSet<EvImage> ims=toRead.get(currentFile);
 										if(ims==null)
 											toRead.put(currentFile, ims=new HashSet<EvImage>());
@@ -525,7 +528,8 @@ public class EvIODataOST implements EvIOData
 								evim.io=newio;
 								
 								toWrite.add(evim);
-								System.out.println(evim.io);
+								if(EV.debugMode)
+									System.out.println(evim.io);
 								imCompression.put(evim,ce.getValue().compression);
 								}
 							
@@ -533,9 +537,12 @@ public class EvIODataOST implements EvIOData
 				}
 					
 			
-			System.out.println("to read");
-			for(Map.Entry<File, HashSet<EvImage>> entry:toRead.entrySet())
-				System.out.println(entry.getKey());
+			if(EV.debugMode)
+				{
+				System.out.println("to read");
+				for(Map.Entry<File, HashSet<EvImage>> entry:toRead.entrySet())
+					System.out.println(entry.getKey());
+				}
 			
 			System.out.println("writing files...");
 			
@@ -561,15 +568,16 @@ public class EvIODataOST implements EvIOData
 						for(EvImage ci:needToRead)
 							{
 							ci.setMemoryImage(ci.getPixels());
-							System.out.println("reading image. need write soon "+ci);
+							if(EV.debugMode)
+								System.out.println("reading image. need write soon "+ci);
 							toWrite.addFirst(ci);
 							}
 						}
 
 					//Write image to disk
 					BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
-					//evim.getJavaImage(); 
-					System.out.println("write "+io.f);
+					if(EV.debugMode)
+						System.out.println("write "+io.f);
 					io.f.getParentFile().mkdirs(); //TODO optimize. cache which exist?
 					
 					EvCommonImageIO.saveImage(bim, io.f, imCompression.get(evim));
@@ -586,7 +594,8 @@ public class EvIODataOST implements EvIOData
 			System.out.println("Deleting files");
 			for(File f:toDelete)
 				{
-				System.out.println("delete "+f);
+				if(EV.debugMode)
+					System.out.println("delete "+f);
 				f.delete();
 				}
 			
@@ -614,7 +623,8 @@ public class EvIODataOST implements EvIOData
 						if(!im.channelImages.containsKey(oldChannel))
 							{
 							File chdir=new File(blobDir,"ch-"+oldChannel);
-							System.out.println("Deleting entire channel: "+oldChannel);
+							if(EV.debugMode)
+								System.out.println("Deleting entire channel: "+oldChannel);
 							if(chdir.exists())
 								EvFileUtil.deleteRecursive(chdir);
 							}
@@ -631,7 +641,8 @@ public class EvIODataOST implements EvIOData
 						for(EvDecimal frame:removeFrame)
 							{
 							File f=buildFramePath(chanPath, frame);
-							System.out.println("Totally deleting frame "+frame);
+							if(EV.debugMode)
+								System.out.println("Totally deleting frame "+frame);
 							if(f.exists())
 								EvFileUtil.deleteRecursive(f);
 							}
@@ -643,7 +654,8 @@ public class EvIODataOST implements EvIOData
 							framee.getValue().keySet().removeAll(im.getChannel(channelName).imageLoader.get(framee.getKey()).keySet());
 							for(File f:framee.getValue().values())
 								{
-								System.out.println("deleting slice "+f);
+								if(EV.debugMode)
+									System.out.println("deleting slice "+f);
 								f.delete();
 								}
 							}
@@ -754,13 +766,15 @@ public class EvIODataOST implements EvIOData
 				blob.currentDir=".";
 				}
 			else
-				System.out.println("Found blob "+blob.currentDir);
+				if(EV.debugMode)
+					System.out.println("Found blob "+blob.currentDir);
 			
 			//Get list of images, from cache or by listing files
 			if(!(getDatabaseCacheFile(blob).exists() && loadDatabaseCache(im, blob)))
 				{
 				File blobdir=blob.getDirectory();
-				System.out.println("Scanning for images in "+blobdir);
+				if(EV.debugMode)
+					System.out.println("Scanning for images in "+blobdir);
 				for(File chanf:blobdir.listFiles())
 					if(chanf.isDirectory() && chanf.getName().startsWith("ch-"))
 						{
@@ -821,7 +835,8 @@ public class EvIODataOST implements EvIOData
 					{
 					//Somehow this is a really old OST. remove chan-
 					File nf=new File(framedir.getParentFile(),framedir.getName().substring(framedir.getName().indexOf('-')+1));
-					System.out.println(nf);
+					if(EV.debugMode)
+						System.out.println(nf);
 					framedir.renameTo(nf);
 					framedir=nf;
 					}				
@@ -959,7 +974,8 @@ public class EvIODataOST implements EvIOData
 		try
 			{
 			File cacheFile=getDatabaseCacheFile(blob);
-			System.out.println("Attempting to load image cache "+cacheFile);
+			if(EV.debugMode)
+				System.out.println("Attempting to load image cache "+cacheFile);
 			return loadDatabaseCacheMap(blob.diskImageLoader, new FileInputStream(cacheFile), mapBlobs.get(im).getDirectory());
 			}
 		catch (FileNotFoundException e)
@@ -1025,7 +1041,8 @@ public class EvIODataOST implements EvIOData
 						}
 					}
 				w.close();
-				Log.printLog("Wrote cache file "+cFile);
+				if(EV.debugMode)
+					Log.printLog("Wrote cache file "+cFile);
 				}
 			}
 		catch (IOException e)

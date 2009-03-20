@@ -126,7 +126,6 @@ public class EvImserv
 		EvData.supportFileFormats.add(new EvDataSupport(){
 		public Integer loadSupports(String file)
 			{
-			System.out.println("try "+file);
 			if(file.startsWith("imserv://"))
 				return 10;
 			else
