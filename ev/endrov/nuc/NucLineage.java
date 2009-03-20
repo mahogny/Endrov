@@ -2,11 +2,14 @@ package endrov.nuc;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -712,8 +715,8 @@ public class NucLineage extends EvObject implements Cloneable
 		{
 		JMenu m = new JMenu("Set color");
 
-		JMenuItem mir = new JMenuItem("<Remove>");
-		mir.addActionListener(new ActionListener()
+		JMenuItem miRemove = new JMenuItem("<Remove>");
+		miRemove.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 					{
@@ -722,23 +725,10 @@ public class NucLineage extends EvObject implements Cloneable
 					BasicWindow.updateWindows();
 					}
 			});
-		m.add(mir);
-		for (final EvColor c : EvColor.colorList)
-			{
-			JMenuItem mi = new JMenuItem(c.name);
-			mi.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-						{
-						for (NucPair p : selectedNuclei)
-							p.fst().nuc.get(p.snd()).colorNuc = c.c;
-						BasicWindow.updateWindows();
-						}
-				});
-			m.add(mi);
-			}
-		JMenuItem mirb = new JMenuItem("<Rainbow>");
-		mirb.addActionListener(new ActionListener()
+		m.add(miRemove);
+		
+		JMenuItem miRainbow = new JMenuItem("<Rainbow>");
+		miRainbow.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 					{
@@ -755,7 +745,29 @@ public class NucLineage extends EvObject implements Cloneable
 					BasicWindow.updateWindows();
 					}
 			});
-		m.add(mirb);
+		m.add(miRainbow);
+
+		
+		for (final EvColor c : EvColor.colorList)
+			{
+			BufferedImage bim=new BufferedImage(16,16,BufferedImage.TYPE_INT_BGR);
+			Graphics g=bim.getGraphics();
+			g.setColor(c.c);
+			g.fillRect(0, 0, 16, 16);
+			
+			JMenuItem mi = new JMenuItem(c.name,new ImageIcon(bim));
+			
+			mi.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent e)
+						{
+						for (NucPair p : selectedNuclei)
+							p.fst().nuc.get(p.snd()).colorNuc = c.c;
+						BasicWindow.updateWindows();
+						}
+				});
+			m.add(mi);
+			}
 		return m;
 		}
 
