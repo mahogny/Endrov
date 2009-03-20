@@ -387,15 +387,26 @@ public class EvData extends EvContainer
 		}
 	private static void help331(Element e, EvDecimal timestep)
 		{
-		String aF=e.getAttributeValue("f");
+		mulAttrib331(e, "f", timestep);
+		mulAttrib331(e, "frame", timestep);
+		mulAttrib331(e, "start", timestep);
+		mulAttrib331(e, "end", timestep);
+/*		String aF=e.getAttributeValue("f");
 		if(aF!=null)
 			e.setAttribute("f",new EvDecimal(aF).multiply(timestep).toString());
 		String aFrame=e.getAttributeValue("frame");
 		if(aFrame!=null)
-			e.setAttribute("frame",new EvDecimal(aFrame).multiply(timestep).toString());
+			e.setAttribute("frame",new EvDecimal(aFrame).multiply(timestep).toString());*/
 		for(Element child:EV.castIterableElement(e.getChildren()))
 			help331(child, timestep);
 		}
+	private static void mulAttrib331(Element e, String name, EvDecimal timestep)
+		{
+		String s=e.getAttributeValue(name);
+		if(s!=null)
+			e.setAttribute(name,new EvDecimal(s).multiply(timestep).toString());
+		}
+	
 	public void loadXmlMetadata(InputStream is)
 		{
 		metaObject.clear();
@@ -486,7 +497,8 @@ public class EvData extends EvContainer
 					{
 					o=ext.newInstance();
 					o.loadMetadata(child);
-					Log.printLog("Found meta object of type "+child.getName());
+					if(EV.debugMode)
+						Log.printLog("Found meta object of type "+child.getName());
 					}
 				catch (InstantiationException e)
 					{

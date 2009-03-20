@@ -269,7 +269,8 @@ public class EvContainer
 				}
 			o.loadMetadata(child);
 			metaObject.put(id, o);
-			Log.printLog("Found meta object of type "+child.getName());
+			if(EV.debugMode)
+				Log.printLog("Found meta object of type "+child.getName());
 			}
 		}
 	
