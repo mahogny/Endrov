@@ -6,39 +6,49 @@
 %   about. To reinit Endrov, use "clear" first (or clear hasInitEv).
 
 import endrov.matlab.*;
+import java.util.*;
 
 if ~exist('hasInitEv')
-    hasInitEv=1;
-   	
+    
     evpath=which('evmInit');
     if length(evpath)==0
     	disp('====ERROR==== Cannot find Endrov. Check your path');
    	else
-	    evpath=evpath(1:(length(evpath)-length('endrov/matlab/evmInit.m')))
-	    javaaddpath(evpath)
-	    jars=EvMatlab.getJars(evpath)
-	    for i=1:size(jars,1)
-		    char(jars(i))
-	    	javaaddpath(char(jars(i)));
-	    end
-	   
-	    logger=endrov.ev.StdoutLog
-		endrov.ev.Log.listeners.add(logger)
+	    evpath=evpath(1:(length(evpath)-length('endrov/matlab/evmInit.m')));
+	    javaaddpath(evpath);
+        
+        jarbefore=javaclasspath('-all');
+        jarbeforelist=java.util.LinkedList; %Can use to eliminate warnings
+        
+	    jars=EvMatlab.getJars(evpath,matlabroot,computer('arch'));
+        cellpath={};
+        for i=1:size(jars,1)
+            cellpath{i}=char(jars(i));
+        end
+        
+        javaaddpath(cellpath);
+
+	    logger=endrov.ev.StdoutLog;
+		endrov.ev.Log.listeners.add(logger);
 	    
 	    endrov.ev.EV.loadPlugins();
 	    
-	    evpath
+        %evpath
 	    
 		clear logger
 	    clear evpath
+        clear jarbefore
+        clear jarbeforelist
 	    
 	    disp('Longest java name you can access directly: ');
 	    disp(namelengthmax);
     end
     
+    
+    hasInitEv=1;
 else
     disp('EV already initialized');
 end
 
-
+import endrov.util.*;
 
