@@ -18,11 +18,10 @@
 %%
 
 
-initev
+evmInit
 
-
-ost=evplugin.imagesetOST.OstImageset('/Volumes/TBU_main03/ost4dgood/TB2167_0804016');
-channel=ost.channelImages.get('RFP');
+ost=endrov.data.EvData.loadFile('/Volumes3/TBU_main03/ost4dgood/TB2167_080416.ost')
+channel=ost.getChild('im').channelImages.get('RFP');
 
 frames=channel.imageLoader.keySet
 
@@ -34,7 +33,7 @@ frames=channel.imageLoader.keySet
 %[voxin,zs]=getVoxStack(channel,1013); %too early
 %diskrad=12; 
 
-[voxin,zs]=getVoxStack(channel,1055);
+[voxin,zs]=evmGetVoxStack(channel,EvDecimal(10550));
 diskrad=16; 
 diskrad=25; 
 %diskrad=40;
@@ -210,7 +209,7 @@ end
 %%
 
 
-loader=newclassloader;
+loader=evmNewclassloader;
 cl=loader.loadClass('util2.rfpTrack.Cluster').newInstance;
 zscale=10;
 %maximas2=maximas(st:end,:);

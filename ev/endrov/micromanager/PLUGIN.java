@@ -32,7 +32,8 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{MicroManager.class};
+		//return new Class[]{MicroManager.class};
+		return new Class[]{};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

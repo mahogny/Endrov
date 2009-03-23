@@ -26,12 +26,14 @@ public class MicroManager extends HardwareProvider implements Hardware
 		}
 	
 	
-	CMMCore core=new CMMCore();
+	CMMCore core;
 
 	public MicroManager()
 		{
 		try
 			{
+			core=new CMMCore();
+			
 			File fMMconfig=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
 			fMMconfig.getParentFile().mkdirs();
 			if(!fMMconfig.exists())

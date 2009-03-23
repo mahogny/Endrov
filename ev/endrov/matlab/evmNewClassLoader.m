@@ -1,5 +1,5 @@
 function c=evmNewClassLoader()
-import evplugin.matlab.*;
-evpath=which('initev');
-evpath=evpath(1:(length(evpath)-length('evplugin/matlab/initev.m')));
+import endrov.matlab.*;
+evpath=which('evmInit');
+evpath=evpath(1:(length(evpath)-length('endrov/matlab/evmInit.m')));
 c=EvMatlab.getClassLoader(['file://',evpath]);
