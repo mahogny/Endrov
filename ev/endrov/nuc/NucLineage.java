@@ -748,6 +748,28 @@ public class NucLineage extends EvObject implements Cloneable
 		m.add(miRainbow);
 
 		
+		JMenuItem miCustom = new JMenuItem("<Enter RGB>");
+		miCustom.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				String sr=JOptionPane.showInputDialog("Red 0-255");
+				if(sr==null) return;
+				String sg=JOptionPane.showInputDialog("Green 0-255");
+				if(sg==null) return;
+				String sb=JOptionPane.showInputDialog("Blue 0-255");
+				if(sb==null) return;
+				
+				Color awtc=new Color(Integer.parseInt(sr),Integer.parseInt(sg),Integer.parseInt(sb));
+				EvColor c=new EvColor("Custom",awtc);
+				
+				for (NucPair p : selectedNuclei)
+					p.fst().nuc.get(p.snd()).colorNuc = c.c;
+				BasicWindow.updateWindows();
+				}
+			});
+		m.add(miCustom);
+		
 		for (final EvColor c : EvColor.colorList)
 			{
 			BufferedImage bim=new BufferedImage(16,16,BufferedImage.TYPE_INT_BGR);

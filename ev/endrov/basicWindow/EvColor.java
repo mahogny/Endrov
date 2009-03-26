@@ -22,7 +22,7 @@ public class EvColor
 			
 			new EvColor("Blue/Dark",new Color(0,0,128)),
 			new EvColor("Blue/Medium",new Color(0,0,255)),
-			new EvColor("Blue/Bright",new Color(128,128,255)),
+			new EvColor("Blue/Bright",new Color(0,128,255)),
 
 			new EvColor("Cyan/Dark",new Color(0,128,128)),
 			new EvColor("Cyan/Bright",new Color(128,255,255)),
@@ -45,6 +45,8 @@ public class EvColor
 			new EvColor("Red/Dark",new Color(128,0,0)),
 			new EvColor("Red/Medium",new Color(255,0,0)),
 			new EvColor("Red/Bright",new Color(255,128,128)),
+			new EvColor("Red/Green64",new Color(255,64,0)),
+			new EvColor("Red/Blue64",new Color(255,0,64)),
 			
 			new EvColor("Yellow/Dark",new Color(128,128,0)),
 			new EvColor("Yellow/Bright",new Color(255,255,0)),
