@@ -168,7 +168,7 @@ public class EvIODataImserv implements EvIOData
 							
 							SliceIO io=new SliceIO(blobid, slice,frame,channelName);
 							evim.io=io;
-							System.out.println("Got image "+evim+" ch "+channelName);
+//							System.out.println("Got image "+evim+" ch "+channelName);
 							loaderset.put(slice, evim);
 							}
 						}
