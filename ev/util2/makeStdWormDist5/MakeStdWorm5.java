@@ -9,14 +9,12 @@ import util2.ConnectImserv;
 
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucPair;
 import endrov.nuc.NucLineage.NucInterp;
 import endrov.util.EvDecimal;
 
-//TODO: all are now the same time!
 //with OST3+, frametime concept gone, solved
 
 //Do not use rigid transforms, use point dist.
@@ -36,6 +34,8 @@ public class MakeStdWorm5
 	public static SortedMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
 	public static NucStats nucstats=new NucStats();
 
+	public static EvDecimal frameInc=new EvDecimal(30); //TODO best value?
+
 	public static void loadSelected() throws Exception
 		{
 		System.out.println("Connecting");
@@ -48,16 +48,16 @@ public class MakeStdWorm5
 			{
 			System.out.println("loading "+s);
 			EvData data=EvData.loadFile(url+s);
-			Imageset im=data.getObjects(Imageset.class).iterator().next();
-			//TODO: should be able to go trough session to avoid url+s
-			for(NucLineage lin:im.getObjects(NucLineage.class))
+			//Imageset im=data.getObjects(Imageset.class).iterator().next();
+			for(NucLineage lin:data.getIdObjectsRecursive(NucLineage.class).values())
+			//for(NucLineage lin:data.getObjects(NucLineage.class))
 				{
 				if(lin.nuc.containsKey("ABa") && lin.nuc.containsKey("ABp") &&
 						lin.nuc.containsKey("EMS") && lin.nuc.containsKey("P2'") && //these are required for the coord sys
 						(lin.nuc.containsKey("ABal") || lin.nuc.containsKey("ABar")) &&
 						(lin.nuc.containsKey("ABpl") || lin.nuc.containsKey("ABpr"))) //these make sense
 					{
-					lins.put(s, lin); //TODO: only one per imset allowed
+					lins.put(s, lin); //Limitation: only one lineage per imset allowed
 					System.out.println("ok:"+s);
 					}
 				}
@@ -229,7 +229,8 @@ public class MakeStdWorm5
 				//Should only add life time of this cell if it has children, otherwise there is no
 				//guarantee that the length is correct.
 				if(!nuc.child.isEmpty())
-					one.lifetime.add(end.subtract(start).add(1)); //TODO bd really -1? depends on framerate
+					one.lifetime.add(end.subtract(start));
+//				one.lifetime.add(end.subtract(start).add(1)); //TODO bd really -1? depends on framerate
 				}
 			}
 		nucstats.deriveLifetime();
@@ -308,9 +309,8 @@ public class MakeStdWorm5
 		for(NucLineage lin:lins.values())
 			bf.addLineage(lin);
 		
-		int frameIncrement=1; //TODO bd what is the best value? check annotation. can save a lot of space and time!!
 		
-		for(EvDecimal curframe=fminframe;curframe.less(fmaxframe);curframe=curframe.add(frameIncrement))
+		for(EvDecimal curframe=fminframe;curframe.less(fmaxframe);curframe=curframe.add(frameInc))
 //		for(int curframe=fminframe;curframe<1200;curframe++)
 			{
 			if(curframe.intValue()%30==0)
@@ -378,7 +378,6 @@ public class MakeStdWorm5
 		EvDecimal maxframe=nucstats.maxFrame();
 		EvDecimal minframe=nucstats.minFrame();
 		System.out.println("--- fitting, from "+minframe+" to "+maxframe);
-		EvDecimal frameInc=new EvDecimal(1); //TODO best value?
 		for(EvDecimal frame=minframe;frame.less(maxframe);frame=frame.add(frameInc))
 			{
 			if(frame.intValue()%100==0)
@@ -596,7 +595,6 @@ public class MakeStdWorm5
 			//Collect distances and radii
 			System.out.println("--- collect spatial statistics");
 
-			EvDecimal frameInc=new EvDecimal(1); //TODO best value?
 			
 			
 			for(EvDecimal curframe=nucstats.minFrame();curframe.less(nucstats.maxFrame());curframe=curframe.add(frameInc))
