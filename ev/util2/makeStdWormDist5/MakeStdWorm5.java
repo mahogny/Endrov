@@ -34,7 +34,7 @@ public class MakeStdWorm5
 	public static SortedMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
 	public static NucStats nucstats=new NucStats();
 
-	public static EvDecimal frameInc=new EvDecimal(30); //TODO best value?
+	public static EvDecimal frameInc=new EvDecimal(10); //TODO best value?
 
 	public static void loadSelected() throws Exception
 		{
@@ -286,7 +286,7 @@ public class MakeStdWorm5
 		{
 		//Choose one lineage for rotation reference
 //		final NucLineage refLin=lins.get("TB2167_0804016.ost");
-		final NucLineage refLin=lins.get("TB2167_0804016");
+		final NucLineage refLin=lins.get("TB2167_080416");
 		if(refLin==null)
 			throw new Exception("did not find rot ref");
 		final EvDecimal fminframe=firstFrameOfLineage(refLin);
@@ -553,7 +553,7 @@ public class MakeStdWorm5
 			Log.listeners.add(new StdoutLog());
 			EV.loadPlugins();
 			
-			String outputName="/Volumes/TBU_main02/ostxml/model/stdcelegansNew3.ostxml";
+			String outputName="/Volumes/TBU_main02/ost4dgood/celegans2008.new.ost";
 			
 			loadSelected();
 
@@ -640,7 +640,7 @@ public class MakeStdWorm5
 				for(Map.Entry<String, NucLineage> e:lins.entrySet())
 					output2.metaObject.put(e.getKey(),e.getValue());
 				output2.metaObject.put("model", combinedLin);
-				output2.saveDataAs("/Volumes/TBU_main02/ostxml/model/normalize3.ostxml");
+				output2.saveDataAs("/Volumes/TBU_main02/ost4dgood/celegans2008.new.all.ost");
 				}
 			
 

@@ -1052,20 +1052,32 @@ public class NucLineage extends EvObject implements Cloneable
 				NucPos before=pos.get(frameBefore);
 				NucPos after=pos.get(frameAfter);
 				
-				double frac=frame.subtract(frameBefore).divide(frameAfter.subtract(frameBefore)).doubleValue();
-				double frac1=1.0-frac;
+				EvDecimal tdiff=frameAfter.subtract(frameBefore);
+				if(tdiff.less(new EvDecimal(1e-6)))
+//				if(frameAfter.equals(frameBefore))
+					{
+					//Very strange case
+					return posToInterpol(frameAfter, frameBefore, frameAfter);
+					}
+				else
+					{
+					System.out.println(frameBefore+"   "+frameAfter+"   "+tdiff);
 				
-				NucInterp inter=new NucInterp();
-				inter.pos=new NucPos();
-				inter.pos.x=before.x*frac1 + after.x*frac;
-				inter.pos.y=before.y*frac1 + after.y*frac;
-				inter.pos.z=before.z*frac1 + after.z*frac;
-				inter.pos.r=before.r*frac1 + after.r*frac;
-				inter.frameBefore=frameBefore;
-				inter.frameAfter=frameAfter;
-				inter.hasParent=parent!=null;
-				inter.colorNuc=colorNuc;
-				return inter;
+					double frac=frame.subtract(frameBefore).divide(tdiff).doubleValue();
+					double frac1=1.0-frac;
+					
+					NucInterp inter=new NucInterp();
+					inter.pos=new NucPos();
+					inter.pos.x=before.x*frac1 + after.x*frac;
+					inter.pos.y=before.y*frac1 + after.y*frac;
+					inter.pos.z=before.z*frac1 + after.z*frac;
+					inter.pos.r=before.r*frac1 + after.r*frac;
+					inter.frameBefore=frameBefore;
+					inter.frameAfter=frameAfter;
+					inter.hasParent=parent!=null;
+					inter.colorNuc=colorNuc;
+					return inter;
+					}
 				}
 			}
 		

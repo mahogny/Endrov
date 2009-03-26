@@ -104,7 +104,15 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 	
 	public EvDecimal divide(EvDecimal val)
 		{
-		return new EvDecimal(dec.divide(val.dec,MathContext.DECIMAL64));
+		try
+			{
+			return new EvDecimal(dec.divide(val.dec,MathContext.DECIMAL64));
+			}
+		catch (RuntimeException e)
+			{
+			System.out.println(dec+"   /   "+val.dec);
+			throw e;
+			}
 		}
 	public EvDecimal divide(double val)
 		{
