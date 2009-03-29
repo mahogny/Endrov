@@ -15,7 +15,6 @@ import util2.ConnectImserv;
 //import endrov.data.*;
 import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.*;
 import endrov.util.*;
@@ -95,8 +94,8 @@ public class CellContactMap
 				lifelen.put(n, 0);
 
 			//temp: only do model
-			if(!name.equals("celegans2008.2"))
-				return;
+			//if(!name.equals("celegans2008.2"))
+			//	return;
 			
 			PrintWriter pw=null;
 			try
@@ -113,7 +112,7 @@ public class CellContactMap
 			
 			//Go through all frames
 			int numframes=0;
-			EvDecimal frameInc=new EvDecimal(1); //TODO bd, why 1?
+			EvDecimal frameInc=new EvDecimal(10);
 			for(EvDecimal curframe=lin.firstFrameOfLineage().fst();curframe.less(lin.lastFrameOfLineage().fst());curframe=curframe.add(frameInc))
 				{
 				numframes++;
@@ -215,7 +214,7 @@ public class CellContactMap
 										}
 									}
 					cp.close();
-					System.exit(0);
+					//System.exit(0); //temp
 					}
 				catch (IOException e)
 					{
@@ -321,11 +320,9 @@ public class CellContactMap
 				{
 				System.out.println("loading "+s);
 				EvData data=EvData.loadFile(url+s);
-//			Imageset im=EvImserv.getImageset(url+s); 
-				Imageset im=data.getObjects(Imageset.class).iterator().next();
 				OneLineage olin=new OneLineage();
-				olin.lin=im.getObjects(NucLineage.class).iterator().next();
-				olin.name=data.getMetadataName();//im.getMetadataName();
+				olin.lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+				olin.name=data.getMetadataName();
 				lins.add(olin);
 				}
 			NucLineage reflin=EvImserv.getImageset(url+"celegans2008.2").getObjects(NucLineage.class).iterator().next();

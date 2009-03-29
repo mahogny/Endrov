@@ -14,10 +14,11 @@ import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvObject;
+import endrov.data.EvPath;
 import endrov.ev.*;
 import endrov.modelWindow.*;
 import endrov.nuc.NucLineage.NucInterp;
-import endrov.util.EvDecimal;
+import endrov.util.*;
 
 
 /**
@@ -60,6 +61,8 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public JMenuItem miCalcAngle=new JMenuItem("Calculate angles");  
 
+		public JMenuItem miCountNuc=new JMenuItem("Count nuclei in frame");  
+
 		public NucModelWindowHook(ModelWindow w)
 			{
 			this.w=w;
@@ -76,6 +79,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miShowDiv);
 			miNuc.add(miShowDelaunay);
 			miNuc.add(miCalcAngle);
+			miNuc.add(miCountNuc);
 			w.menuModel.add(miNuc);
 			
 	//		miSaveColorScheme.addActionListener(this);
@@ -88,6 +92,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowDiv.addActionListener(this);
 			miShowDelaunay.addActionListener(this);
 			miCalcAngle.addActionListener(this);
+			miCountNuc.addActionListener(this);
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
 				public void mouseClicked(MouseEvent e)
@@ -126,6 +131,12 @@ public class NucModelExtension implements ModelWindowExtension
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				NucLineage.calcAngle(frame);
+				}
+			else if(e.getSource()==miCountNuc)
+				{
+				EvDecimal frame=w.frameControl.getFrame();
+				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
+					Log.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNuc(frame));
 				}
 			
 			w.view.repaint(); //TODO modw repaint

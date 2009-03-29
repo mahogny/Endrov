@@ -1053,6 +1053,7 @@ public class NucLineage extends EvObject implements Cloneable
 				NucPos after=pos.get(frameAfter);
 				
 				EvDecimal tdiff=frameAfter.subtract(frameBefore);
+				/*
 				if(tdiff.less(new EvDecimal(1e-6)))
 //				if(frameAfter.equals(frameBefore))
 					{
@@ -1062,8 +1063,17 @@ public class NucLineage extends EvObject implements Cloneable
 				else
 					{
 					System.out.println(frameBefore+"   "+frameAfter+"   "+tdiff);
-				
-					double frac=frame.subtract(frameBefore).divide(tdiff).doubleValue();
+				*/
+					double frac;
+					try
+						{
+						frac=frame.subtract(frameBefore).divide(tdiff).doubleValue();
+						}
+					catch (RuntimeException e)
+						{
+						//This can occur if tdiff is really small
+						return posToInterpol(frameAfter, frameBefore, frameAfter);
+						}
 					double frac1=1.0-frac;
 					
 					NucInterp inter=new NucInterp();
@@ -1077,7 +1087,7 @@ public class NucLineage extends EvObject implements Cloneable
 					inter.hasParent=parent!=null;
 					inter.colorNuc=colorNuc;
 					return inter;
-					}
+//					}
 				}
 			}
 		
@@ -1112,5 +1122,11 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 
 		}
+	
+	public int countNuc(EvDecimal frame)
+		{
+		return getInterpNuc(frame).size();
+		}
+	
 	
 	}

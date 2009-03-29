@@ -93,13 +93,14 @@ public class Renorm
 			System.out.println(
 					sec.get(i)+"\t"+
 					frame.get(i)+"\t"+
-					ft.interpolateTime(new EvDecimal(frame.get(i))));
+					ft.interpolateTime(new EvDecimal(frame.get(i)))+"\t"+
+					cell.get(i));
 		System.out.println();
 		
-		data.metaObject.put("cetime", ft);
+		data.metaObject.put("sulstontime", ft); //"sulstontime"
 		data.saveData();
 		
-		//TODO in case of celegans2008.2, this mapping should be applied on the frames
+		//TODO in case of celegans2008.2, this mapping should be applied on the frames? or?
 		
 		System.exit(0);
 		
