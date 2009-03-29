@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvCommonImageIO;
+import endrov.imageset.EvPixels;
 
 /**
  * Read single-slice image into memory
@@ -25,9 +26,9 @@ public class BasicSliceIO implements EvIOImage
 		this.z=z;
 		}
 	
-	public BufferedImage loadJavaImage()
+	public EvPixels loadJavaImage()
 		{
-		return EvCommonImageIO.loadJavaImage(file, z);
+		return EvCommonImageIO.loadPixels(file, z);
 		}
 
 	

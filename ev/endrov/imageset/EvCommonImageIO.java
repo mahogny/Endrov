@@ -24,6 +24,13 @@ import endrov.util.EvFileUtil;
  */
 public class EvCommonImageIO
 	{
+	public static EvPixels loadPixels(File file, Integer z)
+		{
+		BufferedImage im=loadJavaImage(file, z);
+		return im==null ? null : new EvPixels(im);
+		}
+
+	
 	/**
 	 * Load image file
 	 */

@@ -1,6 +1,5 @@
 package endrov.imageset;
 
-import java.awt.image.BufferedImage;
 
 /**
  * I/O functions connected to a particular image
@@ -10,5 +9,5 @@ import java.awt.image.BufferedImage;
  */
 public interface EvIOImage
 	{
-	public BufferedImage loadJavaImage();
+	public EvPixels loadJavaImage();
 	}
