@@ -7,6 +7,7 @@ import java.awt.image.RasterOp;
 import java.io.*;
 import java.util.*;
 
+import loci.common.DataTools;
 import loci.formats.*;
 import loci.formats.meta.IMetadata;
 import endrov.data.*;
@@ -113,16 +114,80 @@ public class EvIODataBioformats implements EvIOData
 		/**
 		 * Load the image
 		 */
-		public BufferedImage loadJavaImage()
+		public EvPixels loadJavaImage()
 			{
 			try
 				{
 				
+				
+				byte[] bytes=imageReader.openBytes(id);
+				
+				//FormatTools, DOUBLE, FLOAT, INT16, INT32, INT8, UINT16, UINT32, UINT8
+				
+				
+				int w=imageReader.getSizeX();
+				int h=imageReader.getSizeY();
+				//DataInputStream di=new DataInputStream(new ByteArrayInputStream(bytes));
+				
+				int type=imageReader.getPixelType();
+				int bpp=FormatTools.getBytesPerPixel(type);
+				boolean isFloat = type == FormatTools.FLOAT || type == FormatTools.DOUBLE;
+				boolean isLittle = imageReader.isLittleEndian();
+				
+				Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
+				
+				//DataTools.bytesTo ... !
+				//.makeDataArray
+				
+				/*
+				 //This appears needed due to Bio-formats internals
+				  
+				 byte[] q = (byte[]) pixels;
+if (q.length > w * h) {
+byte[] tmp = q;
+q = new byte[w * h];
+System.arraycopy(tmp, 0, q, 0, q.length);
+}
+
+if (isSigned) q = DataTools.makeSigned(q);
+				
+				 * 
+				 * 
+				 * 
+				 */
+				
+				
+				//How Bioformats ImageJ conversion works
+				//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289   
+				
+				/*
+				switch(imageReader.getPixelType())
+					{
+					case FormatTools.DOUBLE:
+						EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+						double[] arrd=p.getArrayDouble();
+						for(int i=0;i<arrd.length;i++)
+							arrd[i]=di.readDouble();
+						return p;
+						
+						
+					case FormatTools.UINT16:
+						
+					case FormatTools.FLOAT:
+					case FormatTools.INT8:
+					case FormatTools.INT16:
+					case FormatTools.INT32:
+					
+					case FormatTools.UINT32:
+					case FormatTools.UINT8:
+					System.out.println(FormatTools.getPixelTypeString(imageReader.getPixelType()));
+					}
+				*/
+				
 				BufferedImage i=imageReader.openImage(id);
 				
-				
-				int w=i.getWidth();
-				int h=i.getHeight();
+				//int w=i.getWidth();
+				//int h=i.getHeight();
 				
 				System.out.println("bf got "+i);
 				
@@ -145,7 +210,7 @@ public class EvIODataBioformats implements EvIOData
 				
 				//Float getPlaneTimingExposureTime(int imageIndex, int pixelsIndex, int planeIndex);
 				
-				
+				/*
 				if(imageReader.getPixelType()==FormatTools.INT16 && basedir.getName().endsWith(".r3d"))
 					{
 					//Bug *compensation* 2009-01-22 '/Volumes/TBU_main03/customer/antoine/sun1wtdeconvolvedHuygens.r3d'
@@ -191,7 +256,7 @@ public class EvIODataBioformats implements EvIOData
 							i.getRaster().setPixel(x, y, new int[]{c});
 							}
 					}
-
+*/
 				
 				/*
 				if(imageReader.getPixelType()==FormatTools.UINT16)
@@ -257,10 +322,10 @@ public class EvIODataBioformats implements EvIOData
 					RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));
 					op.filter(i.getRaster(), im.getRaster());
 					
-					return im;
+					return new EvPixels(im);
 					}
 					
-				return i;
+				return new EvPixels(i);
 				}
 			catch(Exception e)
 				{

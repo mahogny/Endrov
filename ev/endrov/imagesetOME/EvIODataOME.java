@@ -169,7 +169,7 @@ public class EvIODataOME implements EvIOData
 			h=pixel.getSizeY();
 			pixelid=pixel.getId();
 			}
-		public BufferedImage loadJavaImage()
+		public EvPixels loadJavaImage()
 			{
 			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 			WritableRaster r=im.getRaster();
@@ -181,7 +181,7 @@ public class EvIODataOME implements EvIOData
 					strip[x]=b[y*w+x];
 				r.setPixels(0, y, w, 1, strip);
 				}
-			return im;
+			return new EvPixels(im);
 			}
 	
 		}

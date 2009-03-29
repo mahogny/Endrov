@@ -93,14 +93,20 @@ public class EvIODataOST implements EvIOData
 			this.f=f;
 			}
 
-		public BufferedImage loadJavaImage()
+		public EvPixels loadJavaImage()
 			{
 			//This overloading is important during the save stage
 			//with some recoding it would be possible to remove it
 			if(oldio!=null)
 				return oldio.loadJavaImage();
 			else
-				return EvCommonImageIO.loadJavaImage(f, null);
+				{
+				BufferedImage im=EvCommonImageIO.loadJavaImage(f, null);
+				if(im==null)
+					return null;
+				else
+					return new EvPixels(im);
+				}
 			}
 		
 		public File outputFile(EvIODataOST ost, Imageset im, String channelName, EvDecimal frame, EvDecimal slice, String ext)

@@ -243,7 +243,7 @@ public class EvIODataImserv implements EvIOData
 			this.c=c;
 			}
 		
-		public BufferedImage loadJavaImage()
+		public EvPixels loadJavaImage()
 			{
 			//it is the server side responsibility to make byte_gray?
 			//			BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
@@ -251,7 +251,13 @@ public class EvIODataImserv implements EvIOData
 				{
 				DataIF.ImageTransfer transfer=ifdata.getImage(blobid, c, t, z);
 				if(transfer!=null)
-					return SendFile.getImageFromBytes(transfer.data);
+					{
+					BufferedImage bim=SendFile.getImageFromBytes(transfer.data);
+					if(bim!=null)
+						return new EvPixels(bim);
+					else
+						return null;
+					}
 				}
 			catch (Exception e)
 				{
