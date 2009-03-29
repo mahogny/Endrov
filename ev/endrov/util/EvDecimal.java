@@ -110,7 +110,7 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 			}
 		catch (RuntimeException e)
 			{
-			System.out.println(dec+"   /   "+val.dec);
+			System.out.println(dec+"   /prob/   "+val.dec);
 			throw e;
 			}
 		}
