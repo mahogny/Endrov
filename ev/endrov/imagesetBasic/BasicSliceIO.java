@@ -1,6 +1,5 @@
 package endrov.imagesetBasic;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvCommonImageIO;

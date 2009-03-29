@@ -163,6 +163,57 @@ public class EvPixels
 		allocate(type,w,h);
 		}
 	
+	public static EvPixels createFromUByte(int w, int h, byte[] a)
+		{
+		EvPixels p=new EvPixels();
+		p.type=TYPE_UBYTE;
+		p.w=w;
+		p.h=h;
+		p.arrayB=a;
+		return p;
+		}
+	
+	public static EvPixels createFromShort(int w, int h, short[] a)
+		{
+		EvPixels p=new EvPixels();
+		p.type=TYPE_SHORT;
+		p.w=w;
+		p.h=h;
+		p.arrayS=a;
+		return p;
+		}
+
+	public static EvPixels createFromInt(int w, int h, int[] a)
+		{
+		EvPixels p=new EvPixels();
+		p.type=TYPE_INT;
+		p.w=w;
+		p.h=h;
+		p.arrayI=a;
+		return p;
+		}
+
+	public static EvPixels createFromFloat(int w, int h, float[] a)
+		{
+		EvPixels p=new EvPixels();
+		p.type=TYPE_FLOAT;
+		p.w=w;
+		p.h=h;
+		p.arrayF=a;
+		return p;
+		}
+
+	public static EvPixels createFromDouble(int w, int h, double[] a)
+		{
+		EvPixels p=new EvPixels();
+		p.type=TYPE_DOUBLE;
+		p.w=w;
+		p.h=h;
+		p.arrayD=a;
+		return p;
+		}
+	
+	
 	/**
 	 * Is some sort of integer
 	 */
@@ -636,4 +687,37 @@ public class EvPixels
 		
 		}
 	*/
+	
+	/**
+	 * Convert unsigned short to signed integer
+	 */
+	public static int[] convertUshortToInt(short[] a, int len)
+		{
+		int[] b=new int[len];
+		for(int i=0;i<len;i++)
+			{
+			int v=a[i];
+			if(v<0)
+				v+=65536; //TODO or 65535? I think 6
+			v/=8; //TODO temp. AWT messes up later in contrast/brightness
+			b[i]=v;
+			}
+		return b;		
+		}
+	
+	/**
+	 * Convert unsigned byte to signed short
+	 */
+	public static short[] convertUbyteToShort(byte[] a, int len)
+		{
+		short[] b=new short[len];
+		for(int i=0;i<len;i++)
+			{
+			short v=a[i];
+			if(v<0)
+				v+=256; //TODO or 256?
+			b[i]=v;
+			}
+		return b;		
+		}
 	}

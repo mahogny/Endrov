@@ -1,9 +1,9 @@
 package endrov.imagesetBioformats;
 
-import java.awt.RenderingHints;
+/*import java.awt.RenderingHints;
 import java.awt.image.BandCombineOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.RasterOp;
+import java.awt.image.RasterOp;*/
 import java.io.*;
 import java.util.*;
 
@@ -111,6 +111,7 @@ public class EvIODataBioformats implements EvIOData
 			}
 	
 		
+		
 		/**
 		 * Load the image
 		 */
@@ -133,57 +134,114 @@ public class EvIODataBioformats implements EvIOData
 				int bpp=FormatTools.getBytesPerPixel(type);
 				boolean isFloat = type == FormatTools.FLOAT || type == FormatTools.DOUBLE;
 				boolean isLittle = imageReader.isLittleEndian();
-				
+				boolean isSigned = type == FormatTools.INT8 || type == FormatTools.INT16 || type == FormatTools.INT32;
 				Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
 				
-				//DataTools.bytesTo ... !
-				//.makeDataArray
 				
-				/*
-				 //This appears needed due to Bio-formats internals
-				  
-				 byte[] q = (byte[]) pixels;
-if (q.length > w * h) {
-byte[] tmp = q;
-q = new byte[w * h];
-System.arraycopy(tmp, 0, q, 0, q.length);
-}
-
-if (isSigned) q = DataTools.makeSigned(q);
+				System.out.println(bfpixels.getClass()+"  "+isSigned);
 				
-				 * 
-				 * 
-				 * 
-				 */
-				
-				
-				//How Bioformats ImageJ conversion works
-				//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289   
-				
-				/*
-				switch(imageReader.getPixelType())
+				//Much of this code modified from bioformats IJ-plugin. I deem it functional and hence not copyrightable
+				//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289
+				//unsigned values have to be upconverted to fit into signed
+				if (bfpixels instanceof byte[]) 
 					{
-					case FormatTools.DOUBLE:
-						EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
-						double[] arrd=p.getArrayDouble();
-						for(int i=0;i<arrd.length;i++)
-							arrd[i]=di.readDouble();
-						return p;
-						
-						
-					case FormatTools.UINT16:
-						
-					case FormatTools.FLOAT:
-					case FormatTools.INT8:
-					case FormatTools.INT16:
-					case FormatTools.INT32:
-					
-					case FormatTools.UINT32:
-					case FormatTools.UINT8:
-					System.out.println(FormatTools.getPixelTypeString(imageReader.getPixelType()));
+					byte[] q = (byte[]) bfpixels;
+					int len=w*h;
+					if(isSigned)
+						{
+						if (q.length > w * h) 
+							{
+							byte[] tmp = q;
+							q = new byte[w * h];
+							System.arraycopy(tmp, 0, q, 0, q.length);
+							}
+						q = DataTools.makeSigned(q);
+						return EvPixels.createFromUByte(w, h, q);
+						}
+					else
+						return EvPixels.createFromShort(w, h, EvPixels.convertUbyteToShort(q, len));
 					}
-				*/
-				
+				else if (bfpixels instanceof short[])
+					{
+					short[] q = (short[]) bfpixels;
+					
+					int len=w*h;
+					if(isSigned)
+						{
+						if (q.length > w * h) 
+							{
+							short[] tmp = q;
+							q = new short[w * h];
+							System.arraycopy(tmp, 0, q, 0, q.length);
+							}
+						q = DataTools.makeSigned(q);
+						return EvPixels.createFromShort(w, h, q);
+						}
+					else
+						return EvPixels.createFromInt(w, h, EvPixels.convertUshortToInt(q, len));
+					/*
+					if (q.length > w * h) 
+						{
+						short[] tmp = q;
+						q = new short[w * h];
+						System.arraycopy(tmp, 0, q, 0, q.length);
+						}
+
+					if (isSigned) 
+						q = DataTools.makeSigned(q);
+
+					
+					//TODO unsigned - upconvert
+					return EvPixels.createFromShort(w, h, q);*/
+					}
+				else if (bfpixels instanceof int[])
+					{
+					int[] q = (int[]) bfpixels;
+					if (q.length > w * h) 
+						{
+						int[] tmp = q;
+						q = new int[w * h];
+						System.arraycopy(tmp, 0, q, 0, q.length);
+						}
+
+					if (isSigned) 
+						q = DataTools.makeSigned(q);
+
+					//unsigned? - screw it. would have to convert to float/double, evil.
+					return EvPixels.createFromInt(w, h, q);
+					}
+				else if (bfpixels instanceof float[])
+					{
+					float[] q = (float[]) bfpixels;
+					if (q.length > w * h) 
+						{
+						float[] tmp = q;
+						q = new float[w * h];
+						System.arraycopy(tmp, 0, q, 0, q.length);
+						}
+					return EvPixels.createFromFloat(w, h, q);
+					}
+				else if (bfpixels instanceof double[]) 
+					{
+					double[] q = (double[]) bfpixels;
+					if (q.length > w * h) 
+						{
+						double[] tmp = q;
+						q = new double[w * h];
+						System.arraycopy(tmp, 0, q, 0, q.length);
+						}
+					return EvPixels.createFromDouble(w, h, q);
+					}
+				else
+					{
+					System.out.println("Bioformats returns unrecognized format");
+					System.out.println(bfpixels.getClass()+"  "+isSigned);
+					return null;
+					}
+
+
+
+				/*
 				BufferedImage i=imageReader.openImage(id);
 				
 				//int w=i.getWidth();
@@ -198,125 +256,19 @@ if (isSigned) q = DataTools.makeSigned(q);
 					j.getGraphics().drawImage(i,0,0,null);
 					i=j;
 					}
-				
-	/*
-				System.out.println("INT8   = "+FormatTools.INT8);
-				System.out.println("INT16  = "+FormatTools.INT16);
-				System.out.println("INT32  = "+FormatTools.INT32);
-				System.out.println("UINT8  = "+FormatTools.UINT8);
-				System.out.println("UINT16 = "+FormatTools.UINT16);
-				System.out.println("UINT32 = "+FormatTools.UINT32);
-				System.out.println("pixtype  "+imageReader.getPixelType());*/
-				
-				//Float getPlaneTimingExposureTime(int imageIndex, int pixelsIndex, int planeIndex);
-				
-				/*
-				if(imageReader.getPixelType()==FormatTools.INT16 && basedir.getName().endsWith(".r3d"))
-					{
-					//Bug *compensation* 2009-01-22 '/Volumes/TBU_main03/customer/antoine/sun1wtdeconvolvedHuygens.r3d'
-					byte[] buf=new byte[imageReader.getSizeX()*imageReader.getSizeY()*2];
-					imageReader.openBytes(id, buf);
-					i=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-					for(int y=0;y<h;y++)
-						for(int x=0;x<w;x++)
-							{
-							int a=buf[(w*y+x)*2];
-							int b=buf[(w*y+x)*2+1];
-
-							//a is really unsigned
-							if(a<0)
-								a+=256;
-							
-							int c=(a+(b*256))/8; //8, just to get it in range of 8bit in my case
-						
-							i.getRaster().setPixel(x, y, new int[]{c});
-							}
-					}
-
-				if(imageReader.getPixelType()==FormatTools.UINT16 && basedir.getName().endsWith(".dv"))
-					{
-					//Bug *compensation* 2009-01-22 '/Volumes/TBU_main03/customer/antoine/sun1wtgonad3part1_R3D.dv'
-					byte[] buf=new byte[imageReader.getSizeX()*imageReader.getSizeY()*2];
-					imageReader.openBytes(id, buf);
-					i=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-					for(int y=0;y<h;y++)
-						for(int x=0;x<w;x++)
-							{
-							int a=buf[(w*y+x)*2];
-							int b=buf[(w*y+x)*2+1];
-							
-							if(b<0)
-								b+=256;
-
-							//a is really unsigned
-							if(a<0)
-								a+=256;
-							
-							int c=(a+(b*256))/4; //4, just to get it in range of 8bit in my case
-							i.getRaster().setPixel(x, y, new int[]{c});
-							}
-					}
-*/
-				
-				/*
-				if(imageReader.getPixelType()==FormatTools.UINT16)
-					{
-					//Bug *compensation* 2008-11-07 CB72070min3.liff (openlab)
-					//Complain!
-					byte[] buf=new byte[imageReader.getSizeX()*imageReader.getSizeY()*2];
-					imageReader.openBytes(id, buf);
-					i=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-					for(int y=0;y<h;y++)
-						for(int x=0;x<w;x++)
-							{
-							byte a=buf[(w*y+x)*2];
-							int b=buf[(w*y+x)*2+1];
-							if(b<0)
-								b+=256;
-							int c=(((int)b)+(a<<8))>>4;
-							i.getRaster().setPixel(x, y, new int[]{c});
-							}
-					}
-				*/
-				
-				//System.out.println(""+i+" "+i.getWidth());
-				
-				//This hack fixes Leica. SHOULDN'T BE NEEDED(?). bug upstream if needed again
-//				if(subid==null)
-//					subid=0;
-				/*else
-					System.out.println("subid "+subid);*/
-				
+	
 				if(subid!=null)
 					{
-					
-					/*
-					BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-					WritableRaster rastin=i.getRaster();
-					WritableRaster rastout=im.getRaster();
-					int[] pixels=new int[w*h];
-					rastin.getSamples(0, 0, w, h, subid, pixels);				
-					rastout.setSamples(0, 0, w, h, 0, pixels);				
-					 
-					
-					int[] pixin=new int[3*w*h];
-					int[] pixout=new int[w*h];
-					rastin.getPixels(0, 0, w, h, pixin);				
-					for(int j=0;j<w*h;j++)
-						pixout[j]=pixin[j*3+subid];
-					rastout.setPixels(0, 0, w, h, pixout);				
-					*/
-					
-	
+				
 					BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 					
 					float matrix[][]={{0,0,0}};
 					if(i.getRaster().getNumBands()==1)
-						matrix=new float[][]{{0/*,0*/}};
+						matrix=new float[][]{{0}};
 					else if(i.getRaster().getNumBands()==2)
-						matrix=new float[][]{{0,0/*,0*/}};
+						matrix=new float[][]{{0,0/}};
 					else if(i.getRaster().getNumBands()==3)
-						matrix=new float[][]{{0,0,0/*,0*/}};
+						matrix=new float[][]{{0,0,0}};
 					
 					matrix[0][subid]=1;
 					RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));
@@ -325,7 +277,7 @@ if (isSigned) q = DataTools.makeSigned(q);
 					return new EvPixels(im);
 					}
 					
-				return new EvPixels(i);
+				return new EvPixels(i);*/
 				}
 			catch(Exception e)
 				{
