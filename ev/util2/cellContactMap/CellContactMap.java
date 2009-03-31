@@ -358,6 +358,35 @@ public class CellContactMap
 
 			System.out.println("Writing files");
 
+			
+			//Compare CE and A model
+			OneLineage theCE=null;
+			OneLineage theA=null;
+			for(OneLineage l:lins)
+				if(l.name.equals("celegans2008.2"))
+					theCE=l;
+				else if(l.name.equals("AnglerUnixCoords"))
+					theA=l;
+
+			StringBuffer outDiff=new StringBuffer();
+			//LinkedList<String> listDiff=new LinkedList<String>();
+			for(String name:theCE.lifelen.keySet())
+				for(String name2:theCE.lifelen.keySet())
+					{
+					int numFrames1=theCE.contactsf.get(name).get(name2).size();
+					int numFrames2=theA.contactsf.get(name).get(name2).size();
+					if((numFrames1!=0 && numFrames2==0) || (numFrames1==0 && numFrames2!=0))
+						outDiff.append(name+"\t"+name2+"\n");
+						//listDiff.add();
+					}
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiff.toString());
+			
+			
+			
+			 
+			
+			
+			/////// HTML files for all contacts
 
 			File targetdirNeigh=new File("/Volumes/TBU_main03/userdata/cellcontactmap/neigh/");
 			File targetdirTree=new File("/Volumes/TBU_main03/userdata/cellcontactmap/tree/");
