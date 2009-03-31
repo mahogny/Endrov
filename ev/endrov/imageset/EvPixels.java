@@ -1,6 +1,7 @@
 package endrov.imageset;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 
@@ -687,6 +688,24 @@ public class EvPixels
 		
 		}
 	*/
+	
+	
+	
+	/**
+	 * Convert to 2D array. This is not fast! Recommended only for use with matlab
+	 */
+	public double[][] convertArrayDouble2D()
+		{
+		BufferedImage bim=convertTo(EvPixels.TYPE_AWT, true).getAWT();
+
+		int w=bim.getWidth();
+		int h=bim.getHeight();
+		double[][] aim=new double[h][w];
+		Raster r=bim.getRaster();
+		for(int i=0;i<h;i++)
+			r.getSamples(0, i, w, 1, 0, aim[i]);
+		return aim;
+		}
 	
 	/**
 	 * Convert unsigned short to signed integer

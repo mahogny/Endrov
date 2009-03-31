@@ -138,7 +138,7 @@ public class EvIODataBioformats implements EvIOData
 				Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
 				
 				
-				System.out.println(bfpixels.getClass()+"  "+isSigned);
+				//System.out.println(bfpixels.getClass()+"  "+isSigned);
 				
 				//Much of this code modified from bioformats IJ-plugin. I deem it functional and hence not copyrightable
 				//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289
