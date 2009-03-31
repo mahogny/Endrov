@@ -22,10 +22,10 @@ dy=dy-1;
 
 [h,w]=size(part1);
 
-err1=overlaperr(part1,part2,dx,dy)
-err2=overlaperr(part1,part2,dx-w,dy)
-err3=overlaperr(part1,part2,dx,dy-h)
-err4=overlaperr(part1,part2,dx-w,dy-h)
+err1=overlaperr(part1,part2,dx,dy);
+err2=overlaperr(part1,part2,dx-w,dy);
+err3=overlaperr(part1,part2,dx,dy-h);
+err4=overlaperr(part1,part2,dx-w,dy-h);
 
 allerr=[...
     err1,dy,dx;...

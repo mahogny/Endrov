@@ -1,7 +1,6 @@
 package endrov.imageset;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -9,6 +8,7 @@ import java.util.HashSet;
 import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
+
 
 
 
@@ -388,7 +388,8 @@ public class EvImage
 	 */
 	public double[][] getArrayImage()
 		{
-		BufferedImage bim=getJavaImage();
+		return memoryPixels.convertArrayDouble2D();
+/*		BufferedImage bim=getJavaImage();
 		int w=bim.getWidth();
 		int h=bim.getHeight();
 		double[][] aim=new double[h][w];
@@ -397,7 +398,7 @@ public class EvImage
 			r.getSamples(0, i, w, 1, 0, aim[i]);
 		
 		//I get 0-255. wtf? 0-1 better
-		return aim;
+		return aim;*/
 		}
 	
 	/**
