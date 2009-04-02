@@ -60,6 +60,7 @@ public class NucModelExtension implements ModelWindowExtension
 		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false);
 		
 		public JMenuItem miCalcAngle=new JMenuItem("Calculate angles");  
+		public JMenuItem miCalcPos=new JMenuItem("Show positions");  
 
 		public JMenuItem miCountNuc=new JMenuItem("Count nuclei in frame");  
 
@@ -79,6 +80,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miShowDiv);
 			miNuc.add(miShowDelaunay);
 			miNuc.add(miCalcAngle);
+			miNuc.add(miCalcPos);
 			miNuc.add(miCountNuc);
 			w.menuModel.add(miNuc);
 			
@@ -92,6 +94,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowDiv.addActionListener(this);
 			miShowDelaunay.addActionListener(this);
 			miCalcAngle.addActionListener(this);
+			miCalcPos.addActionListener(this);
 			miCountNuc.addActionListener(this);
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
@@ -131,6 +134,11 @@ public class NucModelExtension implements ModelWindowExtension
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				NucLineage.calcAngle(frame);
+				}
+			else if(e.getSource()==miCalcPos)
+				{
+				EvDecimal frame=w.frameControl.getFrame();
+				NucLineage.showPos(frame);
 				}
 			else if(e.getSource()==miCountNuc)
 				{
