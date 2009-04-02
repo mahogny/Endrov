@@ -37,9 +37,8 @@ public class VolStats
 		System.out.println("loading "+s);
 		EvData data=EvData.loadFile(url+s);
 //		Imageset im=EvImserv.getImageset(url+s); 
-		Imageset im=data.getObjects(Imageset.class).iterator().next();
 		//TODO: should be able to go trough session to avoid url+s
-		for(NucLineage lin:im.getObjects(NucLineage.class))
+		for(NucLineage lin:data.getIdObjects(NucLineage.class).values())
 			return lin;
 		throw new Exception("did not find");
 		}
@@ -54,7 +53,8 @@ public class VolStats
 		EvDecimal minframe=null;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
-			if(minframe==null || nuc.firstFrame().less(minframe))
+			EvDecimal n=nuc.firstFrame();
+			if(minframe==null || (n!=null && n.less(minframe)))
 				minframe=nuc.firstFrame();
 			}
 		return minframe;
@@ -66,7 +66,7 @@ public class VolStats
 		EvDecimal lastFrame=new EvDecimal(Integer.MAX_VALUE);
 		for(String nuc:lin.nuc.keySet())
 			{
-			if(lin.nuc.get(nuc).child.size()<2)
+			if(lin.nuc.get(nuc).child.size()<2 && !lin.nuc.get(nuc).pos.isEmpty())
 				{
 				EvDecimal f=lin.nuc.get(nuc).pos.lastKey();
 				if(f.less(lastFrame))
@@ -91,7 +91,7 @@ public class VolStats
 		
 		PrintWriter pw=new PrintWriter(new FileWriter("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt"));
 
-		EvDecimal frameInc=new EvDecimal(1); //TODO bd why 1?
+		EvDecimal frameInc=new EvDecimal(10);
 		for(EvDecimal curframe=fminframe;curframe.less(fmaxframe);curframe=curframe.add(frameInc))
 			{
 			if(curframe.intValue()%30==0)

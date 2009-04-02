@@ -37,6 +37,7 @@ public class CellContactMap
 	public static String htmlColorSelf="#33ccff";
 	public static final int clength=50; //[px]
 	public static final int cheight=13; //[px]
+	public static EvDecimal frameInc=new EvDecimal(10);
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +113,6 @@ public class CellContactMap
 			
 			//Go through all frames
 			int numframes=0;
-			EvDecimal frameInc=new EvDecimal(10);
 			for(EvDecimal curframe=lin.firstFrameOfLineage().fst();curframe.less(lin.lastFrameOfLineage().fst());curframe=curframe.add(frameInc))
 				{
 				numframes++;
@@ -257,12 +257,108 @@ public class CellContactMap
 		
 		}
 	
+	public static int countTrue(boolean[] b)
+		{
+		int count=0;
+		for(boolean c:b)
+			if(c)
+				count++;
+		return count;
+		}
 	
+	public static int getDivRound(String name)
+		{
+		if(name.startsWith("AB"))
+			return name.length()-2+0;
+		else if(name.startsWith("C"))
+			return name.length()-1+2;
+		else if(name.startsWith("D"))
+			return name.length()-1+3;
+		else if(name.endsWith("'"))
+			return Integer.parseInt(name.substring(1, 2))-1;
+		else if(name.equals("EMS"))
+			return 1;
+		else if(name.startsWith("E"))
+			return name.length()-1+2;
+		else if(name.startsWith("Z"))
+			return name.length()-1+4;
+		else if(name.startsWith("MS"))
+			return name.length()-2+2;
+		else
+			return 0;
+		}
+	
+	public static boolean maybeOverlaps(String name1, String name2)
+		{
+		if(name1.equals(name2))
+			return false;
+		return true;
+		/*
+		if(getDivRound(name1)!=getDivRound(name2))
+			return false;
+		return true;
+		*/
+		}
+	
+	
+	
+	
+	/**
+	 * Calculate overlap array for two cells
+	 */
+	public static boolean[] getOverlaps(OneLineage lin, String nucName, String nucName2)
+		{
+
+		boolean[] neighOverlaps=new boolean[clength];
+
+		if(lin.contactsf.get(nucName).get(nucName2).isEmpty())
+			return neighOverlaps;
+		
+		EvDecimal lifeLenFrames=(lin.lin.nuc.get(nucName).lastFrame().subtract(lin.lin.nuc.get(nucName).firstFrame()));
+		
+
+		for(int curp=0;curp<clength;curp++)
+			{
+			/*
+				int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
+				SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
+				if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
+					neighOverlaps[curp]=true;
+			 */
+
+			EvDecimal m=lin.lin.nuc.get(nucName).firstFrame().add(lifeLenFrames.multiply(curp).divide(clength)); //corresponding frame
+			SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
+			if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
+				neighOverlaps[curp]=true;
+			}
+		return neighOverlaps;
+		}
+	
+	public static void doesChildrenSplit(OneLineage theCE, File f, Set<String> nucNames) throws IOException
+		{
+		StringBuffer outSplitChild=new StringBuffer();
+		for(String name:nucNames)
+			{
+			NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
+			if(nuc!=null && nuc.child.size()==2)
+				{
+				String cn1=nuc.child.first();
+				String cn2=nuc.child.last();
+				if(EvArrayUtil.all(getOverlaps(theCE, cn1, cn2)) || EvArrayUtil.all(getOverlaps(theCE, cn2, cn1)))
+					;
+				else
+					outSplitChild.append(cn1+"\t"+cn2+"\n");
+				}
+			}
+		EvFileUtil.writeFile(f, outSplitChild.toString());
+
+		}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	
 	public static void main(String[] args)
 		{
 		try
@@ -359,30 +455,63 @@ public class CellContactMap
 			System.out.println("Writing files");
 
 			
+//			Collections.so
+			
 			//Compare CE and A model
-			OneLineage theCE=null;
-			OneLineage theA=null;
-			for(OneLineage l:lins)
-				if(l.name.equals("celegans2008.2"))
-					theCE=l;
-				else if(l.name.equals("AnglerUnixCoords"))
-					theA=l;
-
-			StringBuffer outDiff=new StringBuffer();
+			OneLineage theCE=orderedLin.get("celegans2008.2");
+			OneLineage theA=orderedLin.get("AnglerUnixCoords");
+			LinkedList<Tuple<Integer,String>> outDiffList=new LinkedList<Tuple<Integer,String>>();
 			//LinkedList<String> listDiff=new LinkedList<String>();
-			for(String name:theCE.lifelen.keySet())
-				for(String name2:theCE.lifelen.keySet())
+			for(String name:nucNames)
+				for(String name2:nucNames)
 					{
-					int numFrames1=theCE.contactsf.get(name).get(name2).size();
-					int numFrames2=theA.contactsf.get(name).get(name2).size();
-					if((numFrames1!=0 && numFrames2==0) || (numFrames1==0 && numFrames2!=0))
-						outDiff.append(name+"\t"+name2+"\n");
+					System.out.println(name+"\t"+name2);
+//					int numFrames1=theCE.contactsf.get(name).get(name2).size();
+	//				int numFrames2=theA.contactsf.get(name).get(name2).size();
+					
+					if(maybeOverlaps(name, name2))
+						{
+						int c1=countTrue(getOverlaps(theCE, name, name2));
+						int c2=countTrue(getOverlaps(theA, name, name2));
+						int framediff=c1-c2;
+						if(framediff!=0)
+								outDiffList.add(new Tuple<Integer, String>(framediff,framediff+"\t"+name+"\t"+name2+"\n"));
+						}
+					/*
+					EvDecimal lifeLenFrames1=theCE.lin.nuc.get(name).pos.isEmpty() ? 
+							EvDecimal.ZERO : theCE.lin.nuc.get(name).lastFrame().subtract(theCE.lin.nuc.get(name).firstFrame());
+					EvDecimal lifeLenFrames2=theA.lin.nuc.get(name2).pos.isEmpty() ? 
+							EvDecimal.ZERO : theA.lin.nuc.get(name2).lastFrame().subtract(theA.lin.nuc.get(name2).firstFrame());
+
+					
+					int framediff=numFrames1-numFrames2;
+					EvDecimal first1=reflin.nuc.get(name).firstFrame();
+					EvDecimal first2=reflin.nuc.get(name2).firstFrame();
+					if(first1!=null && first2!=null)
+						if(first1.less(new EvDecimal(2*3600+30*60)) && 
+								first2.less(new EvDecimal(2*3600+30*60))	) //Within reasonable time
+							if(Math.abs(framediff)>3)
+								if(maybeOverlaps(name, name2))
+									outDiffList.add(new Tuple<Integer, String>(framediff,framediff+"\t"+name+"\t"+name2+"\n"));
+//									outDiff.append(framediff+"\t"+name+"\t"+name2+"\n");
 						//listDiff.add();
+						 * */
 					}
+			Collections.sort(outDiffList, new Comparator<Tuple<Integer,String>>(){
+				public int compare(Tuple<Integer, String> o1, Tuple<Integer, String> o2)
+					{
+					return o1.fst().compareTo(o2.fst());
+					}
+			});
+			StringBuffer outDiff=new StringBuffer();
+			for(Tuple<Integer,String> e:outDiffList)
+				outDiff.append(e.snd());
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiff.toString());
 			
 			
-			
+			//Does children split?
+			doesChildrenSplit(theCE, new File("/Volumes/TBU_main03/userdata/cellcontactmap/splitchild.txt"),nucNames);
+			doesChildrenSplit(theA, new File("/Volumes/TBU_main03/userdata/cellcontactmap/splitchildAngler.txt"),nucNames);
 			 
 			
 			
@@ -516,18 +645,14 @@ public class CellContactMap
 								{
 								if(percLifeLen!=0)
 									{
-									EvDecimal lifeLenFrames=(lin.lin.nuc.get(nucName).lastFrame().subtract(lin.lin.nuc.get(nucName).firstFrame()));
+//									EvDecimal lifeLenFrames=(lin.lin.nuc.get(nucName).lastFrame().subtract(lin.lin.nuc.get(nucName).firstFrame()));
 
-									boolean[] neighOverlaps=new boolean[clength];
+									boolean[] neighOverlaps=getOverlaps(lin, nucName, nucName2);
+									/*
+									new boolean[clength];
 
 									for(int curp=0;curp<clength;curp++)
 										{
-										/*
-										int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
-										SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
-										if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
-											neighOverlaps[curp]=true;
-										*/
 										
 										EvDecimal m=lin.lin.nuc.get(nucName).firstFrame().add(lifeLenFrames.multiply(curp).divide(clength)); //corresponding frame
 										SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
@@ -536,7 +661,7 @@ public class CellContactMap
 										
 										
 										}
-
+*/
 									//Convert frame overlap to image
 									timeString=getOverlapBar(neighOverlaps).toString();
 									}
