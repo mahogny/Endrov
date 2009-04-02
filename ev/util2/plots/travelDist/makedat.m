@@ -1,4 +1,4 @@
-dat=importdata('/Volumes3/TBU_main02/ost4dgood/celegans2008.2.ost/data/traveldist.txt');
+dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/traveldist.txt');
 %tstart=dat.data(:,1);
 %tend=dat.data(:,2);
 dstraight=dat.data(:,3);

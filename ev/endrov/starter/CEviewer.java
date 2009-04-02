@@ -72,8 +72,8 @@ public class CEviewer
 				new LineageWindow();
 				new ModelWindow();
 				}
-			EvData.registerOpenedData(EvData.loadFile(new File("angler.ostxml")));
-			EvData.registerOpenedData(EvData.loadFile(new File("ce2008.ostxml")));
+			EvData.registerOpenedData(EvData.loadFile(new File("angler.ost")));
+			EvData.registerOpenedData(EvData.loadFile(new File("ce2008.ost")));
 			if(ss!=null)
 				{
 				ss.disableLog();
