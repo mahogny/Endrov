@@ -156,14 +156,22 @@ public class TravelDist
 							Vector3d startPos=interStart.pos.getPosCopy();
 							
 							double avLenChild=0;
+							int childCount=0;
 							for(String cname:nuc.child)
 								{
 								NucLineage.Nuc child=lin.nuc.get(cname);
-								Vector3d vc=child.pos.get(child.pos.firstKey()).getPosCopy();
-								vc.sub(startPos);
-								avLenChild+=vc.length();
+								if(!child.pos.isEmpty())
+									{
+									Vector3d vc=child.pos.get(child.pos.firstKey()).getPosCopy();
+									vc.sub(startPos);
+									avLenChild+=vc.length();
+									childCount++;
+									}
 								}
-							avLenChild/=nuc.child.size();
+							if(childCount==0)
+								avLenChild=-1;
+							else
+								avLenChild/=childCount;
 							
 							
 							Vector3d v=interEnd.pos.getPosCopy();
