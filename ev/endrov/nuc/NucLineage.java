@@ -1123,6 +1123,18 @@ public class NucLineage extends EvObject implements Cloneable
 
 		}
 	
+	public static void showPos(EvDecimal frame)
+		{
+		for(NucPair p:selectedNuclei)
+			{
+			NucLineage.NucPos npos=p.fst().nuc.get(p.snd()).interpolatePos(frame).pos;
+			//Vector3d pos=p.fst().nuc.get(p.snd()).interpolatePos(frame).pos.getPosCopy();
+			Log.printLog("pos "+p.snd()+": "+npos.x+" , "+npos.y+" , "+npos.z+"  r: "+npos.r);
+			}
+			
+		}
+	
+	
 	public int countNuc(EvDecimal frame)
 		{
 		return getInterpNuc(frame).size();
