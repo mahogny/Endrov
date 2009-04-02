@@ -1,8 +1,8 @@
 %set to 1 once we use OST4
 %may need to rescale times piecewise linear when building the model
-timestep=10; %[s]
-initialframe=1020;
-%this is cell AB, 17 minutes
+timestep=1; %[s]
+initialframe=1380;
+%this is cell ABa, 34 minutes
 
 dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/numneigh.txt');
 
@@ -16,6 +16,9 @@ dat=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/numneigh.t
 
 
 dat2=importdata('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt');
+dat2=dat2(9:end,:); %hack. no idea why needed, FIX LATER
+
+
 lastframe=dat2(end,1)
 dat=dat(dat(:,2)<lastframe,:);
 
@@ -30,7 +33,7 @@ numcont=dat(:,2);
 numcell=dat(:,3);
 
 
-curframe=(curframe-initialframe)*timestep + 17*60;
+curframe=(curframe-initialframe)*timestep + 34*60;
 
 %curframe=curframe(1:g);
 %numcont=numcont(1:g);
