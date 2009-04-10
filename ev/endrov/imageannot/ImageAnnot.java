@@ -2,8 +2,6 @@ package endrov.imageannot;
 
 import org.jdom.*;
 
-import java.util.*;
-
 import javax.swing.JMenu;
 import javax.vecmath.Vector3d;
 
@@ -50,7 +48,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 		}
 
 	
-	
+	/*
 	public static Collection<ImageAnnot> getObjects(EvContainer meta)
 		{
 		if(meta==null)
@@ -58,7 +56,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 		else
 			return meta.getObjects(ImageAnnot.class);
 		}
-	
+	*/
 	
 
 	
@@ -81,7 +79,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 		}
 	
 	/**
-	 * Save down data
+	 * Save data
 	 */
 	public void saveMetadata(Element e)
 		{
@@ -94,6 +92,9 @@ public class ImageAnnot extends EvObject implements Cloneable
 		e.setAttribute("text", ""+text);
 		}
 	
+	/**
+	 * Load data
+	 */
 	public void loadMetadata(Element e)
 		{
 		try
