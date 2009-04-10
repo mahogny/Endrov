@@ -56,7 +56,7 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 		public Collection<ImageAnnot> getAnnot()
 			{
 			List<ImageAnnot> v=new LinkedList<ImageAnnot>();
-			for(ImageAnnot lin:ImageAnnot.getObjects(w.getSelectedData()))
+			for(ImageAnnot lin:w.getSelectedData().getIdObjects(ImageAnnot.class).values())
 				if(w.showObject(lin))
 					v.add(lin);
 			return v;
