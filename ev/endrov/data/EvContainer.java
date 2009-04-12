@@ -18,14 +18,16 @@ public class EvContainer
 	/** All meta objects */
 	public TreeMap<String,EvObject> metaObject=new TreeMap<String,EvObject>();
 
+	/**
+	 * Get one child
+	 */
 	public EvObject getChild(String name)
 		{
 		return metaObject.get(name);
 		}
 	
 	/**
-	 * Convenience function to get name o
-	 * @return
+	 * Get the names of all children
 	 */
 	public Set<String> getChildNames()
 		{
@@ -79,6 +81,9 @@ public class EvContainer
 				ob.coreMetadataModified=false;
 			}
 		}
+	/**
+	 * State that metadata has been modified
+	 */
 	public void setMetadataModified()
 		{
 		setMetadataModified(true);

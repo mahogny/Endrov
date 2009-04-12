@@ -57,7 +57,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 		
 		
 		
-		/*§
+		/*
 		GroupLayout lay=null;
 		GroupLayout.SequentialGroup hgroup=null;
 		GroupLayout.SequentialGroup vgroup=null;

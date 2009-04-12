@@ -688,24 +688,6 @@ public class NewIntExp
 	
 	
 	/**
-	 * 3D vector, integer
-	 */
-	public static class Vector3i
-		{
-		int x,y,z;
-		public Vector3i(int x, int y, int z)
-			{
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			}
-		public String toString()
-			{
-			return "("+x+","+y+","+z+")";
-			}
-		}
-	
-	/**
 	 * Cube overlay
 	 */
 	public static class IntegratorXYZ implements Integrator

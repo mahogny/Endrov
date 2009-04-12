@@ -134,11 +134,10 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		}
 	
 	/**
-	 * @param l Object to receive updates on change
+	 * Create a frame control linked to model window
 	 */
 	public FrameControlModel(ModelWindow w)
 		{	
-	//	listener=l;
 		this.w=w;
 
 		buttonStepBack.setToolTipText("Step back");

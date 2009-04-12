@@ -31,7 +31,6 @@ public class EvIODataOME implements EvIOData
 	
 	/**
 	 * Create a new recording. Basedir points to imageset- ie without the channel name
-	 * @param basedir
 	 */
 	public EvIODataOME(EvData data, EVOME omesession, ome.model.core.Image omeimage)
 		{
