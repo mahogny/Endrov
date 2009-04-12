@@ -31,7 +31,6 @@ public class PluginInfo
 
 	/**
 	 * Read directory for plugin information
-	 * @param filename
 	 */
 	public PluginInfo(String classPath)
 		{

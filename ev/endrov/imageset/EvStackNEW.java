@@ -6,6 +6,14 @@ import endrov.util.EvDecimal;
 
 /**
  * 
+ * the main reason for keeping stacks is that the stack listing, including metadata, could be generated lazily.
+ * many convenience operations could be moved into stack from channel. 
+ * 
+ * 
+ * 
+ * 
+ * ** old **
+ * 
  * have to decide on where resolution goes. stack has res -> image does not. or a link is needed
  * which will give plenty of headache.
  * 
@@ -18,6 +26,7 @@ import endrov.util.EvDecimal;
  */
 public abstract class EvStackNEW
 	{
+	/*
 	int binning;
 	double dispX, dispY;
 	double resX, resY;
@@ -40,7 +49,7 @@ public abstract class EvStackNEW
 	public double getResY(){return resY;}
 
 	
-	public TreeMap<EvDecimal, EvImage> slice=new TreeMap<EvDecimal, EvImage>();
+	public TreeMap<EvDecimal, EvImage> slice=new TreeMap<EvDecimal, EvImage>();*/
 	
 	//TODO keep track of deleted slices - NO. not here!
 	
@@ -57,7 +66,7 @@ public abstract class EvStackNEW
 	 * 
 	 */
 	
-	public abstract void insertImage(EvDecimal z, EvImage im);
+	//public abstract void insertImage(EvDecimal z, EvImage im);
 	
 	
 	/**

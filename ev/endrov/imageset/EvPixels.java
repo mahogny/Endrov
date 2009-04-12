@@ -696,11 +696,12 @@ public class EvPixels
 	 */
 	public double[][] convertArrayDouble2D()
 		{
+		double[][] aim=new double[h][w];
+
+		//TODO support other types
+		
 		BufferedImage bim=convertTo(EvPixels.TYPE_AWT, true).getAWT();
 
-		int w=bim.getWidth();
-		int h=bim.getHeight();
-		double[][] aim=new double[h][w];
 		Raster r=bim.getRaster();
 		for(int i=0;i<h;i++)
 			r.getSamples(0, i, w, 1, 0, aim[i]);

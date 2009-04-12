@@ -476,9 +476,6 @@ public class ModelView extends GLCanvas
 	
 	/**
 	 * Render text in 3D
-	 * @param renderer Font renderer
-	 * @param textScaleFactor Size of font
-	 * @param text String to render
 	 */
 	public void renderString(GL gl, List<TransparentRender> transparentRenderers, final float textScaleFactor, final String text)
 		{

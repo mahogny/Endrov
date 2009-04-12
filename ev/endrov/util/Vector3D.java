@@ -2,8 +2,8 @@ package endrov.util;
 
 
 /**
- * A class that really should have been part of the API
- * deprecated
+ * Immutable 3D double vector
+ * 
  * @author Johan Henriksson
  */
 public class Vector3D

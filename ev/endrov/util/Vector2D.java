@@ -2,7 +2,8 @@ package endrov.util;
 
 
 /**
- * A class that really should have been part of the API
+ * Immutable 2D double vector
+ * 
  * @author Johan Henriksson
  */
 public class Vector2D
