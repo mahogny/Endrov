@@ -14,7 +14,9 @@ import endrov.imageset.EvPixels;
 public class CompareImage
 	{
 	
-	
+	/**
+	 * Strictly greater than
+	 */
 	public static EvPixels greater(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
@@ -34,7 +36,9 @@ public class CompareImage
 		return out;
 		}
 	
-	
+	/**
+	 * Strictly greater than
+	 */
 	public static EvPixels greater(EvPixels a, int b)
 		{
 		//Should use the common higher type here
