@@ -542,6 +542,7 @@ public class EvPixels
 		awt=im;
 		}
 
+
 	/**
 	 * Set all pixels to image. Will copy data, not link to it
 	 */
@@ -692,9 +693,9 @@ public class EvPixels
 	
 	
 	/**
-	 * Convert to 2D array. This is not fast! Recommended only for use with matlab
+	 * Get 2D array. This is not fast! Recommended only for use with matlab
 	 */
-	public double[][] convertArrayDouble2D()
+	public double[][] getArrayDouble2D()
 		{
 		double[][] aim=new double[h][w];
 
@@ -707,6 +708,23 @@ public class EvPixels
 			r.getSamples(0, i, w, 1, 0, aim[i]);
 		return aim;
 		}
+
+	/**
+	 * ONLY recommended for non-java users as it is not as fast as using getArray
+	 * and filling it in yourself, avoiding a copy.
+	 */
+	public void setArrayDouble2D(double[][] arr)
+		{
+		type=TYPE_DOUBLE;
+		h=arr.length;
+		w=arr[0].length;
+		arrayD=new double[w*h];
+		for(int y=0;y<h;y++)
+			for(int x=0;x<w;x++)
+				arrayD[x+y*w]=arr[y][x];
+		}
+	
+	
 	
 	/**
 	 * Convert unsigned short to signed integer

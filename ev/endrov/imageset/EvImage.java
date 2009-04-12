@@ -388,7 +388,7 @@ public class EvImage
 	 */
 	public double[][] getArrayImage()
 		{
-		return getPixels().convertArrayDouble2D();
+		return getPixels().getArrayDouble2D();
 /*		BufferedImage bim=getJavaImage();
 		int w=bim.getWidth();
 		int h=bim.getHeight();
