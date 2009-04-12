@@ -91,7 +91,7 @@ public class EvIODataBioformats implements EvIOData
 	private class SliceIO implements EvIOImage
 		{
 		private int id;
-		private Integer subid;
+		//private Integer subid;
 		private IFormatReader imageReader;
 		private String sourceName;
 	
@@ -100,7 +100,7 @@ public class EvIODataBioformats implements EvIOData
 			{
 			this.imageReader=imageReader;
 			this.id=id;
-			this.subid=subid;
+			//this.subid=subid;
 			this.sourceName=sourceName;
 			}
 	

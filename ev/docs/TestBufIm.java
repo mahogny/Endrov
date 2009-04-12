@@ -21,6 +21,10 @@ import javax.swing.JPanel;
 
 public class TestBufIm extends JPanel
 	{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	BufferedImage bi;
 	
 	public TestBufIm()
