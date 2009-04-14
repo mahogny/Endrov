@@ -20,8 +20,8 @@ frames=channel.imageLoader.keySet
 colormap('gray');
 
 oneim=vox(:,:,9);
-%pim=windowedPerc(oneim,20,20,90); %70 minimum. A lot happens 80-90   %14050
-pim=windowedPerc(oneim,15,15,90); %70 minimum. A lot happens 80-90   %17970
+pim=windowedPerc(oneim,20,20,90); %70 minimum. A lot happens 80-90   %14050
+%pim=windowedPerc(oneim,15,15,90); %70 minimum. A lot happens 80-90   %17970
 c=oneim-pim;
 d=(c>0)*100;
 image(d);

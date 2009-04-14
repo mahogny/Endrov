@@ -257,7 +257,10 @@ public class EvPixels
 					p=this;
 				else
 					p=helperConvertToInt();
-				return p.helperConvertFromInt(newType);
+				if(newType==TYPE_INT)
+					return p;
+				else
+					return p.helperConvertFromInt(newType);
 				}
 			}
 		else

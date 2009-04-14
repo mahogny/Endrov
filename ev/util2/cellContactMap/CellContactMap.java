@@ -37,7 +37,7 @@ public class CellContactMap
 	public static String htmlColorSelf="#33ccff";
 	public static final int clength=50; //[px]
 	public static final int cheight=13; //[px]
-	public static EvDecimal frameInc=new EvDecimal(10);
+//	public static EvDecimal frameInc=new EvDecimal(5);
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +53,8 @@ public class CellContactMap
 		//nuc -> lifetime
 		public Map<String,Integer> lifelen=new HashMap<String,Integer>();
 
+		public EvDecimal frameInc=new EvDecimal(5);
+		
 		public void addLifelen(String a)
 			{
 			Integer len=lifelen.get(a);
@@ -302,12 +304,14 @@ public class CellContactMap
 	
 	
 	
-	
+
 	/**
 	 * Calculate overlap array for two cells
 	 */
 	public static boolean[] getOverlaps(OneLineage lin, String nucName, String nucName2)
 		{
+		//lin.frameInc
+	
 
 		boolean[] neighOverlaps=new boolean[clength];
 
@@ -317,18 +321,24 @@ public class CellContactMap
 		EvDecimal lifeLenFrames=(lin.lin.nuc.get(nucName).lastFrame().subtract(lin.lin.nuc.get(nucName).firstFrame()));
 		
 
+		
+		
 		for(int curp=0;curp<clength;curp++)
 			{
-			/*
-				int m=(int)(curp*lifeLenFrames/(double)clength+lin.lin.nuc.get(nucName).firstFrame()); //corresponding frame
-				SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
-				if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
-					neighOverlaps[curp]=true;
-			 */
 
+			
+			
+			/*
 			EvDecimal m=lin.lin.nuc.get(nucName).firstFrame().add(lifeLenFrames.multiply(curp).divide(clength)); //corresponding frame
 			SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
 			if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
+				neighOverlaps[curp]=true;*/
+
+			//Idea here is to slide a window over of size frameInc. it *should* it something since it has the same spacing
+			EvDecimal m=lin.lin.nuc.get(nucName).firstFrame().add(lifeLenFrames.multiply(curp).divide(clength));
+			SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
+			SortedSet<EvDecimal> tailframes=frames.tailSet(m);
+			if(!tailframes.isEmpty() && tailframes.iterator().next().subtract(m).lessEqual(lin.frameInc))
 				neighOverlaps[curp]=true;
 			}
 		return neighOverlaps;
@@ -419,6 +429,8 @@ public class CellContactMap
 				OneLineage olin=new OneLineage();
 				olin.lin=data.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 				olin.name=data.getMetadataName();
+				if(olin.name.equals("AnglerUnixCoords"))
+					olin.frameInc=new EvDecimal("1"); //One cell can be like 20 frames
 				lins.add(olin);
 				}
 			NucLineage reflin=EvImserv.getImageset(url+"celegans2008.2").getObjects(NucLineage.class).iterator().next();
@@ -709,7 +721,7 @@ public class CellContactMap
 	/**
 	 * Generate optimized HTML for overlaps by using RLE
 	 */
-	public static String getOverlapBar(boolean[] neighOverlaps)
+	public static String getOverlapBar(boolean[] neighOverlaps)	
 		{
 		StringBuffer imgcode=new StringBuffer();
 
