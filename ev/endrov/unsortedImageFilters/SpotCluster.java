@@ -4,7 +4,9 @@ import java.util.*;
 
 import javax.vecmath.Vector3d;
 
+import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 
 /**
@@ -75,6 +77,16 @@ public class SpotCluster
 		
 		return part;
 		}
+	
+	
+	/*
+	public static Partitioning<Vector3i> exec3d(TreeMap<EvDecimal, EvImage> in)
+		{
+		LinkedList<EvPixels> p=new LinkedList<EvPixels>();
+		for(EvImage evim:in.values())
+			p.add(evim.getPixels());
+		return exec3d(p);
+		}*/
 	
 	
 	/**

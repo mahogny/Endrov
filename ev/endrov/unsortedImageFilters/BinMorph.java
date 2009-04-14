@@ -118,20 +118,20 @@ public class BinMorph
 		}
 	
 	
-	public static EvPixels close(EvPixels in, EvPixels kernel, int kcx, int kcy)
+	public static EvPixels open(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
 		return dilate(erode(in,kernel,kcx,kcy),kernel,kcx,kcy);
 		}
 
 	
-	public static EvPixels open(EvPixels in, EvPixels kernel, int kcx, int kcy)
+	public static EvPixels close(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
 		return erode(dilate(in,kernel,kcx,kcy),kernel,kcx,kcy);
 		}
 	
 	
 	
-	
+	//matlab handles borders differenly. matlab keeps more pixels with open . close
 	
 
 	}

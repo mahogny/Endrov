@@ -13,16 +13,7 @@ frames=channel.imageLoader.keySet
 
 %%
 
-%[vox,zs]=evmGetVoxStack(channel,EvDecimal(14050));
-%[vox,zs]=evmGetVoxStack(channel,EvDecimal(17970));
-[vox,zs]=evmGetVoxStack(channel,EvDecimal(10550));
-
-evim=channel.getImageLoader(EvDecimal(10550),EvDecimal(13)); %check
-pixels=evim.getPixels();
-
 colormap('gray');
-
-%oneim=vox(:,:,9);
 
 import endrov.imageset.*;
 
@@ -31,23 +22,37 @@ algPercentile=endrov.unsortedImageFilters.WindowedPercentile;
 algCompare=endrov.unsortedImageFilters.CompareImage;
 algMath=endrov.unsortedImageFilters.ImageMath;
 algMorph=endrov.unsortedImageFilters.BinMorph;
-0
-percpixels=algPercentile.run(pixels, 20, 20, 0.9);
-percpixels=percpixels(1);
-111
-spotpixels=algCompare.greater(algMath.minus(pixels,percpixels),0);
-222
-binmask=[0,1,0;1,1,1;0,1,0];
-binmaskpixels=EvPixels(EvPixels.TYPE_INT,3,3);
-333
-binmaskpixels.setArrayDouble2D(binmask);
+
+theframe=EvDecimal(14050);
+%thez=EvDecimal(13);
 
 
-algMorph.close(spotpixels,binmaskpixels,1,1)
+itz=channel.imageLoader.get(theframe).keySet.iterator;
 
-e=imclose(d,strel('diamond',1));
-e=imopen(e,strel('diamond',1));
+allplanes=LinkedList;
 
-%spotpixels.getArrayDouble2D();
+tic
+while itz.hasNext
+    thez=itz.next
+    
+    
+    testperc2slice
+    
+    allplanes.add(f);
+    
+end
+toc
+    
+%%
 
+%image(allplanes.get(0).getArrayDouble2D)
+
+algSpotcluster.exec3d(allplanes)
+
+
+%testperc2slice
+
+
+
+%matlab perc 30s, java perc 4s
 

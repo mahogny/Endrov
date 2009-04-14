@@ -15,21 +15,25 @@ frames=channel.imageLoader.keySet
 
 %[vox,zs]=evmGetVoxStack(channel,EvDecimal(14050));
 %[vox,zs]=evmGetVoxStack(channel,EvDecimal(17970));
-[vox,zs]=evmGetVoxStack(channel,EvDecimal(10550));
+[vox,zs]=evmGetVoxStack(channel,EvDecimal(14050));
 
 colormap('gray');
 
 oneim=vox(:,:,9);
+0
+tic
 pim=windowedPerc(oneim,20,20,90); %70 minimum. A lot happens 80-90   %14050
+toc
 %pim=windowedPerc(oneim,15,15,90); %70 minimum. A lot happens 80-90   %17970
+111
 c=oneim-pim;
 d=(c>0)*100;
 image(d);
 
 %se = strel('ball',2,2);
-e=imclose(d,strel('diamond',1));
-e=imopen(e,strel('diamond',1));
-image(e)
+e2=imclose(d,strel('diamond',1));
+f2=imopen(e2,strel('diamond',1));
+image(f2)
 
 
 
