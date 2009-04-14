@@ -35,24 +35,28 @@ public class WindowedPercentile
 		
 		for(int ay=0;ay<h;ay++)
 			{
-			System.out.println(ay);
+			//System.out.println(ay);
 			for(int ax=0;ax<w;ax++)
 				{
 				//ArrayList<Integer> listPixels=new ArrayList<Integer>((pw*2+1)*(ph*2+1));
 				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+w+1);
+				int tox=Math.min(w,ax+pw+1);
 				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+h+1);
+				int toy=Math.min(h,ay+ph+1);
 				int area=(tox-fromx)*(toy-fromy);
 				int gotpixels[]=new int[area];
 				int curpixi=0;
 				for(int sy=fromy;sy<toy;sy++)
+					{
+					int pi=sy*w+fromx;
 					for(int sx=fromx;sx<tox;sx++)
 						{
 						//listPixels.add(inPixels[in.getPixelIndex(sx, sy)]);
-						gotpixels[curpixi]=inPixels[in.getPixelIndex(sx, sy)];
+						gotpixels[curpixi]=inPixels[pi];
+						pi++;
 						curpixi++;
 						}
+					}
 				//Collections.sort(listPixels);
 				Arrays.sort(gotpixels);
 				
