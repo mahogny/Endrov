@@ -17,48 +17,37 @@ frames=channel.imageLoader.keySet
 %[vox,zs]=evmGetVoxStack(channel,EvDecimal(17970));
 [vox,zs]=evmGetVoxStack(channel,EvDecimal(10550));
 
-evim=channel.getImageLoader(EvDecimal(10550),EvDecimal(10)); %check
+evim=channel.getImageLoader(EvDecimal(10550),EvDecimal(13)); %check
 pixels=evim.getPixels();
 
 colormap('gray');
 
 %oneim=vox(:,:,9);
 
+import endrov.imageset.*;
+
 algSpotcluster=endrov.unsortedImageFilters.SpotCluster;
 algPercentile=endrov.unsortedImageFilters.WindowedPercentile;
 algCompare=endrov.unsortedImageFilters.CompareImage;
 algMath=endrov.unsortedImageFilters.ImageMath;
 algMorph=endrov.unsortedImageFilters.BinMorph;
-
-percpixels=algPercentile.run(pixels, 15, 15, 0.7);
+0
+percpixels=algPercentile.run(pixels, 20, 20, 0.9);
+percpixels=percpixels(1);
+111
 spotpixels=algCompare.greater(algMath.minus(pixels,percpixels),0);
-
+222
 binmask=[0,1,0;1,1,1;0,1,0];
 binmaskpixels=EvPixels(EvPixels.TYPE_INT,3,3);
+333
 binmaskpixels.setArrayDouble2D(binmask);
 
 
+algMorph.close(spotpixels,binmaskpixels,1,1)
+
+e=imclose(d,strel('diamond',1));
+e=imopen(e,strel('diamond',1));
 
 %spotpixels.getArrayDouble2D();
 
 
-
-%pim=windowedPerc(oneim,20,20,90); %70 minimum. A lot happens 80-90   %14050
-pim=windowedPerc(oneim,15,15,90); %70 minimum. A lot happens 80-90   %17970
-c=oneim-pim;
-d=(c>0)*100;
-image(d);
-
-%se = strel('ball',2,2);
-e=imclose(d,strel('diamond',1));
-e=imopen(e,strel('diamond',1));
-image(e)
-
-
-
-%optimal threshold? can maybe be found automatically by running with
-%several values, and expecting a sane # of nuclei
-
-
-%image centers: average of cluster
-%require volume

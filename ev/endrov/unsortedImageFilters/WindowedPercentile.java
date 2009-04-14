@@ -1,7 +1,6 @@
 package endrov.unsortedImageFilters;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 import endrov.imageset.EvPixels;
 
@@ -35,17 +34,35 @@ public class WindowedPercentile
 			out[i]=new EvPixels(in.getType(),w,h);
 		
 		for(int ay=0;ay<h;ay++)
+			{
+			System.out.println(ay);
 			for(int ax=0;ax<w;ax++)
 				{
-				ArrayList<Integer> listPixels=new ArrayList<Integer>();
-				Collections.sort(listPixels);
-				for(int sy=Math.max(0,ay-ph);sy<Math.min(h,ay+h+1);sy++)
-					for(int sx=Math.max(0,ax-pw);sx<Math.min(w,ax+w+1);sx++)
-						listPixels.add(inPixels[in.getPixelIndex(sx, sy)]);
+				//ArrayList<Integer> listPixels=new ArrayList<Integer>((pw*2+1)*(ph*2+1));
+				int fromx=Math.max(0,ax-pw);
+				int tox=Math.min(w,ax+w+1);
+				int fromy=Math.max(0,ay-ph);
+				int toy=Math.min(h,ay+h+1);
+				int area=(tox-fromx)*(toy-fromy);
+				int gotpixels[]=new int[area];
+				int curpixi=0;
+				for(int sy=fromy;sy<toy;sy++)
+					for(int sx=fromx;sx<tox;sx++)
+						{
+						//listPixels.add(inPixels[in.getPixelIndex(sx, sy)]);
+						gotpixels[curpixi]=inPixels[in.getPixelIndex(sx, sy)];
+						curpixi++;
+						}
+				//Collections.sort(listPixels);
+				Arrays.sort(gotpixels);
+				
+				
 				
 				for(int i=0;i<percentile.length;i++)
-					out[i].getArrayInt()[out[i].getPixelIndex(ax, ay)]=listPixels.get((int)((listPixels.size()-1)*percentile[i]));
+					//out[i].getArrayInt()[out[i].getPixelIndex(ax, ay)]=listPixels.get((int)((listPixels.size()-1)*percentile[i]));
+					out[i].getArrayInt()[out[i].getPixelIndex(ax, ay)]=gotpixels[(int)((gotpixels.length-1)*percentile[i])];
 				}
+			}
 		
 		return out;
 		}

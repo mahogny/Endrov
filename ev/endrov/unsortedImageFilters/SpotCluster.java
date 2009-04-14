@@ -70,7 +70,59 @@ public class SpotCluster
 						part.createSpecifyEquivalent(tv, ov);
 						}
 					}
+				//Minor bug here: not -1 on both, need to add two strips here.
 				}
+		
+		return part;
+		}
+	
+	
+	/**
+	 * Partition all areas in the volume. Planes must be same size and aligned.
+	 * 
+	 * go sideways too?
+	 */
+	public static Partitioning<Vector3i> exec3d(List<EvPixels> in)
+		{
+		int w=in.get(0).getWidth();
+		int h=in.get(0).getHeight();
+		int d=in.size();
+		int[][] inPixels=new int[d][];
+		for(int az=0;az<in.size();az++)
+			inPixels[az]=in.get(az).convertTo(EvPixels.TYPE_INT, true).getArrayInt();
+		
+		Partitioning<Vector3i> part=new Partitioning<Vector3i>();
+		
+		//Need only test in one direction since the relation is symmetric.
+		for(int az=0;az<d;az++)
+			{
+			for(int ay=0;ay<h-1;ay++)
+				for(int ax=0;ax<w-1;ax++)
+					{
+					if(inPixels[az][ax+ay*w]!=0)
+						{
+						Vector3i tv=new Vector3i(ax,ay,az);
+						part.createElement(tv);
+						if(inPixels[az][(ax+1)+ay*w]!=0)
+							{
+							Vector3i ov=new Vector3i(ax+1,ay,az);
+							part.createSpecifyEquivalent(tv, ov);
+							}
+						if(inPixels[az][ax+(ay+1)*w]!=0)
+							{
+							Vector3i ov=new Vector3i(ax,ay+1,az);
+							part.createSpecifyEquivalent(tv, ov);
+							}
+						if(az!=d-1) //Could be moved out for speed
+							if(inPixels[az+1][ax+ay*w]!=0)
+								{
+								Vector3i ov=new Vector3i(ax,ay,az+1);
+								part.createSpecifyEquivalent(tv, ov);
+								}
+						}
+					//Minor bug here: not -1 on both xy, need to add two strips here.
+					}
+			}
 		
 		return part;
 		}
