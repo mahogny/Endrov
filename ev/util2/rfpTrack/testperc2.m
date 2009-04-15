@@ -22,6 +22,10 @@ algPercentile=endrov.unsortedImageFilters.WindowedPercentile;
 algCompare=endrov.unsortedImageFilters.CompareImage;
 algMath=endrov.unsortedImageFilters.ImageMath;
 algMorph=endrov.unsortedImageFilters.BinMorph;
+algHistogram=endrov.unsortedImageFilters.Histogram;
+algThres=endrov.unsortedImageFilters.FindThreshold;
+algAverage=endrov.unsortedImageFilters.MiscFilter;
+algCumSum=endrov.unsortedImageFilters.CumSum;
 
 theframe=EvDecimal(14050);
 %thez=EvDecimal(13);
@@ -47,8 +51,10 @@ toc
 
 %image(allplanes.get(0).getArrayDouble2D)
 
+disp('cluster')
+tic
 algSpotcluster.exec3d(allplanes)
-
+toc
 
 %testperc2slice
 

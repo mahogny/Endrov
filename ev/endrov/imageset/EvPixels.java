@@ -702,13 +702,28 @@ public class EvPixels
 		{
 		double[][] aim=new double[h][w];
 
-		//TODO support other types
-		
-		BufferedImage bim=convertTo(EvPixels.TYPE_AWT, true).getAWT();
-
-		Raster r=bim.getRaster();
-		for(int i=0;i<h;i++)
-			r.getSamples(0, i, w, 1, 0, aim[i]);
+		if(type==TYPE_INT)
+			{
+			int curi=0;
+			for(int ay=0;ay<h;ay++)
+				for(int ax=0;ax<w;ax++)
+					{
+					aim[ay][ax]=arrayI[curi];
+					curi++;
+					}
+			}
+		else
+			{
+			
+			
+			//TODO support other types
+			
+			BufferedImage bim=convertTo(EvPixels.TYPE_AWT, true).getAWT();
+	
+			Raster r=bim.getRaster();
+			for(int i=0;i<h;i++)
+				r.getSamples(0, i, w, 1, 0, aim[i]);
+			}
 		return aim;
 		}
 

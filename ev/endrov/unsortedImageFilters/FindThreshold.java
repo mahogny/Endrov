@@ -32,6 +32,8 @@ public class FindThreshold
 	/**
 	 * Otsu thresholding
 	 * http://en.wikipedia.org/wiki/Otsu's_method
+	 * 
+	 * Complexity O(w*h+numColorUsed*log(numColorUsed))
 	 */
 	public static double otsuThreshold(EvPixels in)
 		{
@@ -39,7 +41,7 @@ public class FindThreshold
 		
 		int numPixels=in.getWidth()*in.getHeight();
 		
-		Map<Integer,Integer> hist=Histogram.intHistogram(in);
+		SortedMap<Integer,Integer> hist=new TreeMap<Integer,Integer>(Histogram.intHistogram(in));
 
 		//The goal is to maximize sigma_b
 
@@ -68,7 +70,7 @@ public class FindThreshold
 			
 			//Jump to next threshold
 			int n_b1=n_b+n_T;
-			int n_o1=n_b-n_T;
+			int n_o1=n_o-n_T;
 			mu_b=(mu_b*n_b+n_T*T)/n_b1;
 			mu_o=(mu_o*n_o-n_T*T)/n_o1;
 			n_b=n_b1;
@@ -88,7 +90,8 @@ public class FindThreshold
 				maxSigmaThres=T;
 				}
 			
-			System.out.println("sigmab "+sigma_b+"     thr "+T);
+			//System.out.println("nb"+n_b+"   no"+n_o+"  nT"+n_T);
+			//System.out.println("sigmab "+sigma_b+"     thr "+T);
 			}
 		
 		return maxSigmaThres;

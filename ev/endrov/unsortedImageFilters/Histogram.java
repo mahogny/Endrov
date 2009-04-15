@@ -41,7 +41,9 @@ public class Histogram
 	
 	/**
 	 * Use the original type of the pixels later? simplifies extraction, less conversion, only one function,
-	 * but the invoker will have less information
+	 * but the invoker will have less information.
+	 * 
+	 * NOTE! Does not return a sorted map. Invoker has to sort himself.
 	 */
 	public static Map<Integer,Integer> intHistogram(EvPixels in)
 		{

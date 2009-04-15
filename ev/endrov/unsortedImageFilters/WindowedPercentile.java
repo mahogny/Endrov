@@ -16,6 +16,7 @@ public class WindowedPercentile
 	/**
 	 * Several percentiles can be calculated at the same time; this is because it's very cheap to do several
 	 * 
+	 * Complexity O(w*h*pw*ph*log(pw*ph)*numPercentile)
 	 * 
 	 * @param in Input image
 	 * @param pw Pixels to the left and right. 0=just middle
