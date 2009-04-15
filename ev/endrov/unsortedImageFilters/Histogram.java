@@ -24,6 +24,9 @@ public class Histogram
 		m.put(a, i);
 		}
 	
+	/**
+	 * Given a histogram, generate a new one that is the cumulative count
+	 */
 	public static <A> SortedMap<A,Integer> makeHistCumulative(Map<A,Integer> in)
 		{
 		TreeMap<A, Integer> cumsum=new TreeMap<A, Integer>();
@@ -40,7 +43,7 @@ public class Histogram
 	 * Use the original type of the pixels later? simplifies extraction, less conversion, only one function,
 	 * but the invoker will have less information
 	 */
-	public Map<Integer,Integer> intHistogram(EvPixels in)
+	public static Map<Integer,Integer> intHistogram(EvPixels in)
 		{
 		if(in.getType()==EvPixels.TYPE_INT)
 			{
