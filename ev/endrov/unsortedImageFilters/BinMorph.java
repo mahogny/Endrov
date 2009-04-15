@@ -38,6 +38,8 @@ public class BinMorph
 	
 	/**
 	 * in (+) kernel. Kernel has a specified center kcx,kcy. Outside image assumed empty
+	 * 
+	 * Complexity O(w*h*kw*kh)
 	 */
 	public static EvPixels dilate(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
@@ -77,6 +79,8 @@ public class BinMorph
 	
 	/**
 	 * in (-) kernel. Kernel has a specified center kcx,kcy. Outside image assumed empty
+	 * 
+	 * Complexity O(w*h*kw*kh)
 	 */
 	public static EvPixels erode(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
