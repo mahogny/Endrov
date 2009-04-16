@@ -4,9 +4,7 @@ import java.util.*;
 
 import javax.vecmath.Vector3d;
 
-import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
-import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 
 /**
@@ -57,10 +55,13 @@ public class SpotCluster
 		for(int ay=0;ay<h-1;ay++)
 			for(int ax=0;ax<w-1;ax++)
 				{
-				if(inPixels[in.getPixelIndex(ax, ay)]!=0)
+				int thisi=in.getPixelIndex(ax, ay);
+				if(inPixels[thisi]!=0)
 					{
 					Vector3i tv=new Vector3i(ax,ay,z);
 					part.createElement(tv);
+					
+					//Try to join it
 					if(inPixels[in.getPixelIndex(ax+1, ay)]!=0)
 						{
 						Vector3i ov=new Vector3i(ax+1,ay,z);
@@ -111,22 +112,23 @@ public class SpotCluster
 			for(int ay=0;ay<h-1;ay++)
 				for(int ax=0;ax<w-1;ax++)
 					{
-					if(inPixels[az][ax+ay*w]!=0)
+					int thisi=ax+ay*w;
+					if(inPixels[az][thisi]!=0)
 						{
 						Vector3i tv=new Vector3i(ax,ay,az);
 						part.createElement(tv);
-						if(inPixels[az][(ax+1)+ay*w]!=0)
+						if(inPixels[az][thisi+1]!=0)
 							{
 							Vector3i ov=new Vector3i(ax+1,ay,az);
 							part.createSpecifyEquivalent(tv, ov);
 							}
-						if(inPixels[az][ax+(ay+1)*w]!=0)
+						if(inPixels[az][thisi+w]!=0)
 							{
 							Vector3i ov=new Vector3i(ax,ay+1,az);
 							part.createSpecifyEquivalent(tv, ov);
 							}
 						if(az!=d-1) //Could be moved out for speed
-							if(inPixels[az+1][ax+ay*w]!=0)
+							if(inPixels[az+1][thisi]!=0)
 								{
 								Vector3i ov=new Vector3i(ax,ay,az+1);
 								part.createSpecifyEquivalent(tv, ov);

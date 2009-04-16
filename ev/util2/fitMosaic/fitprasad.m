@@ -3,7 +3,8 @@
 
 evminit
 
-ost=endrov.data.EvData.loadFile('/Volumes/TBU_main03/customer/prasad/090326 timelapse/20090326-DYF17timelapse3.tiff');
+%ost=endrov.data.EvData.loadFile('/Volumes/TBU_main03/customer/prasad/090326 timelapse/20090326-DYF17timelapse3.tiff');
+ost=endrov.data.EvData.loadFile('/Volumes/TBU_main04/customer/prasad/SP2101-2.tiff');
 channel=ost.getChild('im0').channelImages.get('ch0');
 
 
