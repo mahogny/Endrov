@@ -10,13 +10,15 @@ pixels=evim.getPixels();
 %percpixels=algPercentile.run(pixels, 30, 30, 0.5);
 %percpixels=algPercentile.run(pixels, 20, 20, 0.5);
 %percpixels=algPercentile.run(pixels, 20, 20, 0.9);
-percpixels=percpixels(1);
+%percpixels=percpixels(1);
 percpixels=algAverage.movingAverage(pixels,30,30);
 
 c2=algMath.minus(pixels,percpixels);
-otsu=algThres.otsuThreshold(c2);
-%spotpixels=algCompare.greater(c2,0);
-spotpixels=algCompare.greater(c2,otsu);
+%otsu=algThres.otsuThreshold(c2);
+
+
+spotpixels=algCompare.greater(c2,2);
+%spotpixels=algCompare.greater(c2,otsu); %otsu always says "1"
 
 
 %spotpixels2=algCompare.greater(algAverage.movingSum(spotpixels,1,1),6); %9 is highest possible

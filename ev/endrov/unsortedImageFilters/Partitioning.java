@@ -26,7 +26,7 @@ public class Partitioning<E>
 		HashSet<E> members=new HashSet<E>(); 
 		}
 		
-	private HashSet<Partition<E>> partitions=new HashSet<Partition<E>>();
+	//private HashSet<Partition<E>> partitions=new HashSet<Partition<E>>();
 	private HashMap<E, Partition<E>> ep=new HashMap<E, Partition<E>>(); 
 	
 	/*
@@ -40,7 +40,7 @@ public class Partitioning<E>
 	
 	/**
 	 * Create an element with no initial relations except reflexivity.
-	 * Checks if it exists first 
+	 * Checks if it exists first, will not disrupt relations
 	 */
 	public void createElement(E e)
 		{
@@ -48,7 +48,7 @@ public class Partitioning<E>
 			{
 			Partition<E> p=new Partition<E>();
 			p.members.add(e);
-			partitions.add(p);
+			//partitions.add(p);
 			ep.put(e,p);
 			}
 		}
@@ -63,7 +63,7 @@ public class Partitioning<E>
 		pa.members.addAll(pb.members);
 		for(E e:pb.members)
 			ep.put(e,pa);
-		partitions.remove(pb);
+		//partitions.remove(pb);
 		}
 
 	/**
@@ -72,6 +72,13 @@ public class Partitioning<E>
 	 */
 	public void createSpecifyEquivalent(E a, E b)
 		{
+		/*
+		//Slow but correct 
+		createElement(a);
+		createElement(b);
+		specifyEquivalent(a, b);
+		*/
+		
 		Partition<E> pa=ep.get(a);
 		Partition<E> pb=ep.get(b);
 		if(pa==null)
@@ -82,7 +89,7 @@ public class Partitioning<E>
 				Partition<E> p=new Partition<E>();
 				p.members.add(a);
 				p.members.add(b);
-				partitions.add(p);
+				//partitions.add(p);
 				ep.put(a,p);
 				ep.put(b,p);
 				}
@@ -103,16 +110,35 @@ public class Partitioning<E>
 				}
 			else
 				{
-				if(!pa.members.contains(a))
+				//Optimization: Make sure they are not already merged
+				if(pa!=pb)
 					{
+					
+				//if(!pa.members.contains(a))
+					//{
 					//Merge two partitions
 					pa.members.addAll(pb.members);
 					for(E e:pb.members)
 						ep.put(e,pa);
-					partitions.remove(pb);
+					//partitions.remove(pb);
+					//}
 					}
 				}
 			}
+		
+		}
+	
+	/**
+	 * Specify two existing elements as equivalent. Might be slower than automatically creating new partitions
+	 */
+	public void existingSpecifyEquivalent(E a, E b)
+		{
+		Partition<E> pa=ep.get(a);
+		Partition<E> pb=ep.get(b);
+		//Merge two partitions
+		pa.members.addAll(pb.members);
+		for(E e:pb.members)
+			ep.put(e,pa);
 		}
 
 	
@@ -135,13 +161,40 @@ public class Partitioning<E>
 	/**
 	 * Get all partitions
 	 */
+	/*
 	public List<Set<E>> getPartitions()
 		{
 		LinkedList<Set<E>> list=new LinkedList<Set<E>>();
 		for(Partition<E> p:partitions)
 			list.add(Collections.unmodifiableSet(p.members));
 		return list;
+		}*/
+	
+	/**
+	 * Get all partitions
+	 */
+	public List<Set<E>> getPartitions()
+		{
+		HashSet<Partition<E>> partitions=new HashSet<Partition<E>>();
+		for(Partition<E> e:ep.values())
+			partitions.add(e);
+		LinkedList<Set<E>> list=new LinkedList<Set<E>>();
+		for(Partition<E> p:partitions)
+			list.add(Collections.unmodifiableSet(p.members));
+		return list;
 		}
 	
+	
+	/**
+	 * Remove all entries smaller than a certain volume
+	 */
+	public List<Set<E>> filterSize(List<Set<E>> list, int minSize)
+		{
+		LinkedList<Set<E>> out=new LinkedList<Set<E>>();
+		for(Set<E> e:list)
+			if(e.size()>=minSize)
+				out.add(e);
+		return out;
+		}
 	
 	}
