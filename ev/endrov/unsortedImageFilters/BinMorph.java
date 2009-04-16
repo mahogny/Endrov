@@ -155,6 +155,7 @@ public class BinMorph
 	
 	/**
 	 * Black Tophat: BTH(image)=close(image) - image
+	 * Also called Bottomhat
 	 */
 	public static EvPixels blacktophat(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
