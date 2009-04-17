@@ -3,8 +3,6 @@ package endrov.imagesetOME;
 import java.awt.image.*;
 import java.io.*;
 import java.util.List;
-import java.util.TreeMap;
-
 import endrov.data.EvData;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
@@ -130,7 +128,7 @@ public class EvIODataOME implements EvIOData
 			int numz=pixel.getSizeZ();
 			for(int frame=0;frame<numframe;frame++)
 				{
-				TreeMap<EvDecimal,EvImage> loaderset=new TreeMap<EvDecimal,EvImage>();
+				EvStack loaderset=new EvStack();
 				for(int z=0;z<numz;z++)
 					{
 					EvImage evim=new EvImage();

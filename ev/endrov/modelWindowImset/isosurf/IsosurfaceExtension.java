@@ -356,16 +356,16 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						//double resZ=im.meta.resZ;
 
 						
-						TreeMap<EvDecimal,EvImage> slices=im.channelImages.get(channelName).imageLoader.get(cframe);
-						final int numSlices=slices.size();
+						EvStack stack=im.channelImages.get(channelName).imageLoader.get(cframe);
+						final int numSlices=stack.size();
 						int curslice=0;
-						if(slices!=null)
-							for(final EvDecimal i:slices.keySet())
+						if(stack!=null)
+							for(final EvDecimal i:stack.keySet())
 								{
 								if(shouldStop()) return;
 								pm.set(i.multiply(totalPartLoading).intValue()/numSlices);
 
-								EvImage evim=slices.get(i);
+								EvImage evim=stack.get(i);
 								BufferedImage bim=evim.getJavaImage();
 
 								//Blur the image
@@ -380,7 +380,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 									{
 									pixelsW=bim.getWidth();
 									pixelsH=bim.getHeight();
-									pixelsD=slices.size();
+									pixelsD=stack.size();
 									realw=(float)bim.getWidth()/(float)(evim.getResX()/evim.getBinning());
 									realh=(float)bim.getHeight()/(float)(evim.getResY()/evim.getBinning());
 									reald=(float)pixelsD;//(float)resZ;

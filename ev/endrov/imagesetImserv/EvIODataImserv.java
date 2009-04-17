@@ -139,11 +139,11 @@ public class EvIODataImserv implements EvIOData
 						{
 						EvDecimal frame=new EvDecimal(in.readLine());
 						int numSlice=Integer.parseInt(in.readLine());
-						TreeMap<EvDecimal,EvImage> loaderset=c.imageLoader.get(frame);
+						EvStack loaderset=c.imageLoader.get(frame);
 						if(loaderset==null)
 							{
 							//A sorted linked list would make set generation linear time
-							loaderset=new TreeMap<EvDecimal,EvImage>();
+							loaderset=new EvStack();
 							c.imageLoader.put(frame, loaderset);
 							}
 						

@@ -596,8 +596,8 @@ public class EvIODataBioformats implements EvIOData
 	//					System.out.println("resEV "+im.resX+" "+im.resY+" "+im.resZ+" "+frame);
 						
 						EvImage evim=new EvImage();
-						TreeMap<EvDecimal, EvImage> loaderset=c.getCreateFrame(frame);
-						loaderset.put(zpos, evim); //used to be mul, with non-inv resz
+						EvStack stack=c.getCreateFrame(frame);
+						stack.put(zpos, evim); //used to be mul, with non-inv resz
 						evim.binning=1;
 						evim.dispX=0;
 						evim.dispY=0;

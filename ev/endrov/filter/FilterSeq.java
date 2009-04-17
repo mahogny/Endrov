@@ -260,11 +260,11 @@ public class FilterSeq extends EvObject
 			EvChannel ch=rec.channelImages.get(chan);
 			for(EvDecimal frame:ch.imageLoader.keySet())
 				{
-				Map<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);
-				for(EvDecimal z:slices.keySet())
+				EvStack stack=ch.imageLoader.get(frame);
+				for(EvDecimal z:stack.keySet())
 					{
 					System.out.println("- "+chan+"/"+frame+"/"+z);
-					EvImage evim=slices.get(z);
+					EvImage evim=stack.get(z);
 
 					for(Filter fi:sequence)
 						{

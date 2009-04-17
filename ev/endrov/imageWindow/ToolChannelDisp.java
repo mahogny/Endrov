@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
@@ -15,6 +14,7 @@ import javax.swing.SwingUtilities;
 import endrov.basicWindow.BasicWindow;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 
@@ -54,7 +54,7 @@ public class ToolChannelDisp implements ImageWindowTool
 				c.dispX+=ddx;
 				c.dispY+=ddy;
 				
-				for(Map.Entry<EvDecimal, TreeMap<EvDecimal, EvImage>> frames:c.imageLoader.entrySet())
+				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
 					for(Map.Entry<EvDecimal, EvImage> stacks:frames.getValue().entrySet())
 						{
 						EvImage evim=stacks.getValue();

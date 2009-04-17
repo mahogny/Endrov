@@ -1,7 +1,6 @@
 package endrov.micromanager;
 import endrov.ev.EV;
 import endrov.ev.PluginDef;
-import endrov.micromanager.MicroManager;
 
 public class PLUGIN extends PluginDef
 	{

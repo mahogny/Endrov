@@ -17,7 +17,8 @@ public class EvChannel
 	/****************************************************************************************/
 
 	/** Image loaders */
-	public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
+//	public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
+	public TreeMap<EvDecimal, EvStack> imageLoader=new TreeMap<EvDecimal, EvStack>();
 
 	/**
 	 * Get access to an image
@@ -38,11 +39,11 @@ public class EvChannel
 	/**
 	 * Get access to a frame
 	 */
-	public TreeMap<EvDecimal, EvImage> getCreateFrame(EvDecimal frame)
+	public EvStack getCreateFrame(EvDecimal frame)
 		{
-		TreeMap<EvDecimal, EvImage> f=imageLoader.get(frame);
+		EvStack f=imageLoader.get(frame);
 		if(f==null)
-			imageLoader.put(frame,f=new TreeMap<EvDecimal, EvImage>());
+			imageLoader.put(frame,f=new EvStack());
 		return f;
 		}
 
@@ -67,10 +68,10 @@ public class EvChannel
 	 */
 	public void setImage(EvDecimal frame, EvDecimal z, EvImage im)
 		{
-		TreeMap<EvDecimal, EvImage> frames=imageLoader.get(frame);
+		EvStack frames=imageLoader.get(frame);
 		if(frames==null)
 			{
-			frames=new TreeMap<EvDecimal, EvImage>();
+			frames=new EvStack();
 			imageLoader.put(frame, frames);
 			}
 		frames.put(z, im);
@@ -95,8 +96,8 @@ public class EvChannel
 			return frame;
 		else
 			{
-			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> before=imageLoader.headMap(frame);
-			SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=imageLoader.tailMap(frame);
+			SortedMap<EvDecimal, EvStack> before=imageLoader.headMap(frame);
+			SortedMap<EvDecimal, EvStack> after=imageLoader.tailMap(frame);
 			if(before.size()==0)
 				return imageLoader.firstKey();
 			else if(after.size()==0)
@@ -122,7 +123,7 @@ public class EvChannel
 	 */
 	public EvDecimal closestFrameBefore(EvDecimal frame)
 		{
-		SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> before=imageLoader.headMap(frame); 
+		SortedMap<EvDecimal, EvStack> before=imageLoader.headMap(frame); 
 		if(before.size()==0)
 			return frame;
 		else
@@ -136,7 +137,7 @@ public class EvChannel
 	public EvDecimal closestFrameAfter(EvDecimal frame)
 		{
 		//Can be made faster by iterator
-		SortedMap<EvDecimal, TreeMap<EvDecimal,EvImage>> after=new TreeMap<EvDecimal, TreeMap<EvDecimal,EvImage>>(imageLoader.tailMap(frame));
+		SortedMap<EvDecimal, EvStack> after=new TreeMap<EvDecimal, EvStack>(imageLoader.tailMap(frame));
 		after.remove(frame);
 		
 		if(after.size()==0)
@@ -144,6 +145,8 @@ public class EvChannel
 		else
 			return after.firstKey();
 		}
+	
+	
 	
 	
 	/**
@@ -154,28 +157,11 @@ public class EvChannel
 	 */
 	public EvDecimal closestZ(EvDecimal frame, EvDecimal z)
 		{
-		TreeMap<EvDecimal,EvImage> slices=imageLoader.get(frame);
-		if(slices==null || slices.size()==0)
+		EvStack slices=imageLoader.get(frame);
+		if(slices==null)
 			return z;
 		else
-			{
-			SortedMap<EvDecimal,EvImage> before=slices.headMap(z);
-			SortedMap<EvDecimal,EvImage> after=slices.tailMap(z);
-			if(before.size()==0)
-				return after.firstKey();
-			else if(after.size()==0)
-				return before.lastKey();
-			else
-				{
-				EvDecimal afterkey=after.firstKey();
-				EvDecimal beforekey=before.lastKey();
-				
-				if(afterkey.subtract(z).less(z.subtract(beforekey)))
-					return afterkey;
-				else
-					return beforekey;
-				}
-			}
+			return slices.closestZ(z);
 		}
 
 
@@ -187,20 +173,11 @@ public class EvChannel
 	 */
 	public EvDecimal closestZAbove(EvDecimal frame, EvDecimal z)
 		{
-		TreeMap<EvDecimal,EvImage> slices=imageLoader.get(frame);
+		EvStack slices=imageLoader.get(frame);
 		if(slices==null)
 			return z;
 		else
-			{
-			//Can be made faster
-			SortedMap<EvDecimal,EvImage> after=new TreeMap<EvDecimal, EvImage>(slices.tailMap(z));
-			after.remove(z);
-			
-			if(after.size()==0)
-				return z;
-			else
-				return after.firstKey();
-			}
+			return slices.closestZAbove(z);
 		}
 	
 	/**
@@ -211,17 +188,11 @@ public class EvChannel
 	 */
 	public EvDecimal closestZBelow(EvDecimal frame, EvDecimal z)
 		{
-		TreeMap<EvDecimal, EvImage> slices=imageLoader.get(frame);
+		EvStack slices=imageLoader.get(frame);
 		if(slices==null)
 			return z;
 		else
-			{
-			SortedMap<EvDecimal, EvImage> before=slices.headMap(z);
-			if(before.size()==0)
-				return z;
-			else
-				return before.lastKey();
-			}
+			return slices.closestZBelow(z); 
 		}		
 	
 	

@@ -470,7 +470,7 @@ public class EvIODataOST implements EvIOData
 				{
 				Imageset im=datae.getValue();
 				for(Map.Entry<String, EvChannel> ce:im.channelImages.entrySet())
-					for(Map.Entry<EvDecimal, TreeMap<EvDecimal,EvImage>> fe:ce.getValue().imageLoader.entrySet())
+					for(Map.Entry<EvDecimal, EvStack> fe:ce.getValue().imageLoader.entrySet())
 						for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 							{
 							//Does the image belong to this IO?
@@ -678,7 +678,7 @@ public class EvIODataOST implements EvIOData
 					{
 					HashMap<EvDecimal,HashMap<EvDecimal,File>> loaderFrames=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
 					blob.diskImageLoader.put(ce.getKey(), loaderFrames);
-					for(Map.Entry<EvDecimal, TreeMap<EvDecimal,EvImage>> fe:ce.getValue().imageLoader.entrySet())
+					for(Map.Entry<EvDecimal, EvStack> fe:ce.getValue().imageLoader.entrySet())
 						{
 						HashMap<EvDecimal,File> loaderSlices=new HashMap<EvDecimal, File>();
 						loaderFrames.put(fe.getKey(),loaderSlices);
@@ -797,7 +797,7 @@ public class EvIODataOST implements EvIOData
 				
 				for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
 					{
-					TreeMap<EvDecimal, EvImage> stack=new TreeMap<EvDecimal, EvImage>();
+					EvStack stack=new EvStack();
 					channel.imageLoader.put(fe.getKey(),stack);
 					for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
 						{
