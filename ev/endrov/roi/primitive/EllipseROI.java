@@ -176,9 +176,9 @@ public class EllipseROI extends ROI
 		EvChannel ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
-			TreeMap<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);
-			if(slices!=null)
-				for(EvDecimal f:slices.keySet())
+			EvStack stack=ch.imageLoader.get(frame);
+			if(stack!=null)
+				for(EvDecimal f:stack.keySet())
 					if(regionZ.inRange(f))
 						c.add(f);
 			}

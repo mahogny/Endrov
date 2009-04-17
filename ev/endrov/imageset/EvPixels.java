@@ -88,23 +88,45 @@ public class EvPixels
 	private BufferedImage awt;
 
 	/////// Access to arrays. This way the pointer cannot be changed externally
+	/**
+	 * Return pointer to content. Array meant to be modifiable.
+	 */
 	public float[] getArrayFloat(){return arrayF;}
+	/**
+	 * Return pointer to content. Array meant to be modifiable.
+	 */
 	public double[] getArrayDouble(){return arrayD;}
+	/**
+	 * Return pointer to content. Array meant to be modifiable.
+	 */
 	public byte[] getArrayUnsignedByte(){return arrayB;}
+	/**
+	 * Return pointer to content. Array meant to be modifiable.
+	 */
 	public short[] getArrayShort(){return arrayS;}
+	/**
+	 * Return pointer to content. Array meant to be modifiable.
+	 */
 	public int[] getArrayInt(){return arrayI;}
+	/**
+	 * Return pointer to content. Array meant to be modifiable.
+	 */
 	public BufferedImage getAWT(){return awt;}
 	
 	
 	
 	/////// Types ////////////////
+	/** Unsigned byte */
 	public static final int TYPE_UBYTE  =1<<1;
+	/** Signed short 16-bit */
 	public static final int TYPE_SHORT  =1<<2;
+	/** Signed integer 32-bit */
 	public static final int TYPE_INT    =1<<4;
-
+	/** Floating point (approximate decimals) 32-bit */
 	public static final int TYPE_FLOAT  =1<<6;
+	/** Floating point (approximate decimals) 64-bit */
 	public static final int TYPE_DOUBLE =1<<7;
-
+	/** AWT BufferedImage */
 	public static final int TYPE_AWT    =1<<8;
 
 	/////// Compound types ========

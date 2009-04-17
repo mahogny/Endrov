@@ -126,22 +126,22 @@ public class Stack2D extends StackInterface
 			//resZ=chsel.im.meta.resZ;
 
 			//For every Z
-			TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
+			EvStack stack=chsel.ch.imageLoader.get(cframe);
 			int skipcount=0;
-			if(slices!=null)
-				for(EvDecimal i:slices.keySet())
+			if(stack!=null)
+				for(EvDecimal i:stack.keySet())
 					{
 					if(stopBuildThread)
 						return false;
 					skipcount++;
 					if(skipcount>=skipForward)
 						{
-						final int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
+						final int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.size());
 						final int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
 
 						skipcount=0;
-						EvImage evim=slices.get(i);
+						EvImage evim=stack.get(i);
 						if(!chsel.filterSeq.isIdentity())
 							evim=chsel.filterSeq.applyReturnImage(evim);
 						Tuple<TextureRenderer,OneSlice> proc=processImage(evim, i, chsel);

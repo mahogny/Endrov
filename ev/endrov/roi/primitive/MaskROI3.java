@@ -143,12 +143,12 @@ public class MaskROI3 extends ROI
 		EvChannel ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
-			TreeMap<EvDecimal,EvImage> slices=ch.imageLoader.get(frame);
-			if(slices!=null)
+			EvStack stack=ch.imageLoader.get(frame);
+			if(stack!=null)
 				{
 //			if(isSingleRegion)
 				if(isSingleZ)
-					for(EvDecimal f:slices.keySet())
+					for(EvDecimal f:stack.keySet())
 						if(regionZ.inRange(f))
 							c.add(f);
 				}
@@ -158,7 +158,7 @@ public class MaskROI3 extends ROI
 	
 				//TODO
 				
-				for(EvDecimal f:slices.keySet())
+				for(EvDecimal f:stack.keySet())
 					if(regionZ.inRange(f))
 						c.add(f);
 				}

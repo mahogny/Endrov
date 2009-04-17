@@ -1,8 +1,6 @@
 package endrov.flow.std.imageset;
 
 import java.util.Map;
-import java.util.TreeMap;
-
 import javax.swing.ImageIcon;
 
 import org.jdom.Element;
@@ -11,6 +9,7 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
@@ -67,10 +66,10 @@ public class Filter2Invert extends FlowUnitFilter2
 
 				EvChannel chout=imout.getCreateChannel(che.getKey());
 				
-				for(Map.Entry<EvDecimal, TreeMap<EvDecimal, EvImage>> fe:che.getValue().imageLoader.entrySet())
+				for(Map.Entry<EvDecimal, EvStack> fe:che.getValue().imageLoader.entrySet())
 					{
 					
-					TreeMap<EvDecimal, EvImage> fout=chout.getCreateFrame(fe.getKey());
+					EvStack fout=chout.getCreateFrame(fe.getKey());
 					
 					for(Map.Entry<EvDecimal, EvImage> se:fe.getValue().entrySet())
 						{

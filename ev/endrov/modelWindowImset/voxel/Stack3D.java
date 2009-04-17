@@ -129,13 +129,13 @@ public class Stack3D extends StackInterface
 			{
 			//For every Z
 			EvDecimal cframe=chsel.ch.closestFrame(frame);
-			TreeMap<EvDecimal,EvImage> slices=chsel.ch.imageLoader.get(cframe);
+			EvStack stack=chsel.ch.imageLoader.get(cframe);
 			Texture3D texture=new Texture3D();
 			VoxelStack os=null;
 
 			int skipcount=0;
-			if(slices!=null)
-				for(EvDecimal i:slices.keySet())
+			if(stack!=null)
+				for(EvDecimal i:stack.keySet())
 					{
 					if(stopBuildThread) //Allow to just stop thread if needed
 						return false;
@@ -143,12 +143,12 @@ public class Stack3D extends StackInterface
 					if(skipcount>=skipForward)
 						{
 						skipcount=0;
-						int progressSlices=i.multiply(1000).intValue()/(channels.size()*slices.size());
+						int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.size());
 						int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
 
 						//Apply filter if needed
-						EvImage evim=slices.get(i);
+						EvImage evim=stack.get(i);
 						if(!chsel.filterSeq.isIdentity())
 							evim=chsel.filterSeq.applyReturnImage(evim);
 						
@@ -162,7 +162,7 @@ public class Stack3D extends StackInterface
 							os.tex=texture;
 							os.w=bim.getWidth();
 							os.h=bim.getHeight();
-							os.d=ceilPower2(slices.size());
+							os.d=ceilPower2(stack.size());
 
 							int bw=suitablePower2(os.w);
 							os.resX/=os.w/(double)bw;
@@ -180,8 +180,8 @@ public class Stack3D extends StackInterface
 							//real size
 							os.realw=os.w/os.resX;
 							os.realh=os.h/os.resY;								
-							int slicespan=(slices.lastKey().subtract(slices.firstKey()).add(1).intValue()); //TODO bd problem, total redo
-							os.reald=(os.d*(double)slicespan/(double)slices.size());///chsel.im.meta.resZ;
+							int slicespan=(stack.lastZ().subtract(stack.firstZ()).add(1).intValue()); //TODO bd problem, total redo
+							os.reald=(os.d*(double)slicespan/(double)stack.size());///chsel.im.meta.resZ;
 							}
 
 

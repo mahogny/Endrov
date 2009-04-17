@@ -401,7 +401,7 @@ public class SequenceImageset implements EvIOData
 						return;
 					else
 						{
-						TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
+						EvStack stack=new EvStack();
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
 							{
@@ -416,11 +416,11 @@ public class SequenceImageset implements EvIOData
 							evim.io=new BasicSliceIO(f,i);
 							//TODO is this the way to go? only works with TIFF stacks
 							
-							loaders.put(new EvDecimal(i).multiply(spacingZ), evim); 
+							stack.put(new EvDecimal(i).multiply(spacingZ), evim); 
 							}
 						
 						EvChannel ch=imset.getCreateChannel(channelName);
-						ch.imageLoader.put(new EvDecimal(frame), loaders);
+						ch.imageLoader.put(new EvDecimal(frame), stack);
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
 						}
 					frame+=frameForward;

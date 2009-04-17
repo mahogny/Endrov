@@ -673,8 +673,8 @@ public class ImageWindow extends BasicWindow
 				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
 				if(ch.imageLoader.get(curFrame).size()>0)
 					{
-					EvDecimal firstSlice=ch.imageLoader.get(curFrame).firstKey();
-					EvDecimal lastSlice=ch.imageLoader.get(curFrame).lastKey();
+					EvDecimal firstSlice=ch.imageLoader.get(curFrame).firstZ();
+					EvDecimal lastSlice=ch.imageLoader.get(curFrame).lastZ();
 					frameControl.setZ(ch.closestZ(curFrame, firstSlice.add(lastSlice).divide(2)));
 					updateImagePanel();
 					}
