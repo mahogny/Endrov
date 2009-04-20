@@ -26,7 +26,7 @@ public class SubtractROI extends CompoundROI
 	public static void initPlugin(){}
 	static
 		{
-		EvData.extensions.put(metaType,SubtractROI.class);
+		EvData.supportedMetadataFormats.put(metaType,SubtractROI.class);
 		
 		ROI.addType(new ROIType(icon, SubtractROI.class, false,true,metaDesc));
 		}

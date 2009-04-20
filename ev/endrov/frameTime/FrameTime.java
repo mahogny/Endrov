@@ -27,7 +27,7 @@ public class FrameTime extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,FrameTime.class);
+		EvData.supportedMetadataFormats.put(metaType,FrameTime.class);
 		}
 
 	/******************************************************************************************************

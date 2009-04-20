@@ -135,7 +135,7 @@ public class EvComboChannel extends JPanel implements ActionListener
 		if(root==null)
 			{
 			//List EvData
-			for(EvData data:EvData.metadata)
+			for(EvData data:EvData.openedData)
 				{
 				LinkedList<String> paths=new LinkedList<String>();
 				paths.add(data.getMetadataName());

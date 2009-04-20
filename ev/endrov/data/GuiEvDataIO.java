@@ -139,7 +139,7 @@ public class GuiEvDataIO
 				{
 				if(f.isDirectory())
 					return true;
-				for(EvDataSupport s:EvData.supportFileFormats)
+				for(EvDataSupport s:EvData.supportedFileFormats)
 					if(s.loadSupports(f.getPath())!=null)
 						return true;
 				return false;
@@ -263,7 +263,7 @@ public class GuiEvDataIO
 				{
 				if(f.isDirectory())
 					return true;
-				for(EvDataSupport s:EvData.supportFileFormats)
+				for(EvDataSupport s:EvData.supportedFileFormats)
 					if(s.loadSupports(f.getPath())!=null)
 						return true;
 				return false;

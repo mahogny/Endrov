@@ -29,7 +29,7 @@ public class EvIODataXML implements EvIOData
 	static
 		{		
 		//OST XML-support
-		EvData.supportFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvDataSupport(){
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);

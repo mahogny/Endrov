@@ -65,7 +65,7 @@ public class NucLineage extends EvObject implements Cloneable
 	static
 		{
 		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
-		EvData.extensions.put(metaType,NucLineage.class);
+		EvData.supportedMetadataFormats.put(metaType,NucLineage.class);
 		}
 
 	/** Additions to the object-specific menu */

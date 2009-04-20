@@ -57,7 +57,7 @@ public class EvTreeObject extends JTree
 		public MyTreeNode()
 			{
 			name="";
-			for(EvData data:EvData.metadata)
+			for(EvData data:EvData.openedData)
 				children.add(new MyTreeNode(this, data.getMetadataName(),data));
 			}
 		

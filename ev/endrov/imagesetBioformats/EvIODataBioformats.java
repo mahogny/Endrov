@@ -36,7 +36,7 @@ public class EvIODataBioformats implements EvIOData
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvDataSupport(){
 			public Integer loadSupports(String fileS)
 				{
 				//ImageReader r=new ImageReader(); //Possible to get all suffixes and match

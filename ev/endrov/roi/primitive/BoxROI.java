@@ -36,7 +36,7 @@ public class BoxROI extends ROI
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,BoxROI.class);
+		EvData.supportedMetadataFormats.put(metaType,BoxROI.class);
 		
 		ROI.addType(new ROIType(icon, BoxROI.class, true,false,"Box"));
 		

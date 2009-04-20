@@ -26,7 +26,7 @@ public class CoordinateSystem extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,CoordinateSystem.class);
+		EvData.supportedMetadataFormats.put(metaType,CoordinateSystem.class);
 		}
 
 	/******************************************************************************************************

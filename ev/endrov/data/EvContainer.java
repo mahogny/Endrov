@@ -224,7 +224,7 @@ public class EvContainer
 		//Extract objects
 		for(Element child:EV.castIterableElement(element.getChildren()))
 			{
-			Class<? extends EvObject> ext=EvData.extensions.get(child.getName());
+			Class<? extends EvObject> ext=EvData.supportedMetadataFormats.get(child.getName());
 			EvObject o=null;
 			if(ext==null)
 				o=new CustomObject();

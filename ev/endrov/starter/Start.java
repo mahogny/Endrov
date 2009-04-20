@@ -33,7 +33,7 @@ public class Start
 	private String arch=System.getProperty("os.arch").toLowerCase();
 	private int javaVerMajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
 	private int javarVerMinor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
-	private String cpsep=":";
+	private String cpsep=""+File.pathSeparatorChar;
 	private String libdir="";
 	private String javaexe="java";
 	public List<String> jarfiles=new LinkedList<String>();
@@ -50,8 +50,6 @@ public class Start
 	public void collectSystemInfo(File path)
 		{
 		//Detect OS
-		cpsep=":";
-		
 		if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
 			archExt="ppc";
 		else
@@ -65,7 +63,6 @@ public class Start
 			}
 		else if(OS.startsWith("windows"))
 			{
-			cpsep=";";
 			osExt="windows";
 			}
 		else if(OS.startsWith("linux"))

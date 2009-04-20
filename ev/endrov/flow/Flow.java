@@ -91,7 +91,7 @@ public class Flow extends EvObject
 
 
 
-		EvData.extensions.put(metaType,Flow.class);
+		EvData.supportedMetadataFormats.put(metaType,Flow.class);
 		}
 
 	

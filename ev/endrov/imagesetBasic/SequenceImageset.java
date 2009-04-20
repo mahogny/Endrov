@@ -70,7 +70,7 @@ public class SequenceImageset implements EvIOData
 				    	EvData data=new EvData();
 				    	SequenceImageset io=new SequenceImageset(data,filename);
 				    	data.io=io;
-				    	EvData.addMetadata(data);
+				    	EvData.registerOpenedData(data);
 				    	}
 						}
 					
