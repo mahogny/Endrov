@@ -28,7 +28,7 @@ public class DiffROI extends CompoundROI
 	public static void initPlugin(){}
 	static
 		{
-		EvData.extensions.put(metaType,DiffROI.class);
+		EvData.supportedMetadataFormats.put(metaType,DiffROI.class);
 		
 		ROI.addType(new ROIType(icon, DiffROI.class, false,true,metaDesc));
 		}

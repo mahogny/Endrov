@@ -24,7 +24,7 @@ public class EllipseROI extends ROI
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,EllipseROI.class);
+		EvData.supportedMetadataFormats.put(metaType,EllipseROI.class);
 		
 		ROI.addType(new ROIType(icon, EllipseROI.class, true,false,metaDesc));
 		}

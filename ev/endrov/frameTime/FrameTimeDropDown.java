@@ -38,7 +38,7 @@ public class FrameTimeDropDown extends EvDropDownButton
 		miNull.addActionListener(new ActionListener(){public void actionPerformed(ActionEvent ee){click(null);}});
 		m.add(miNull);
 		
-		for(EvData data:EvData.metadata)
+		for(EvData data:EvData.openedData)
 			{
 			for(Map.Entry<EvPath, FrameTime> e:data.getIdObjectsRecursive(FrameTime.class).entrySet())
 				{

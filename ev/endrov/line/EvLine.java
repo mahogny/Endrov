@@ -31,7 +31,7 @@ public class EvLine extends EvObject implements Cloneable
 
 		ModelWindow.modelWindowExtensions.add(new EvLineModelExtension());
 		
-		EvData.extensions.put(metaType,EvLine.class);
+		EvData.supportedMetadataFormats.put(metaType,EvLine.class);
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{

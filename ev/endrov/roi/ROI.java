@@ -66,7 +66,7 @@ public abstract class ROI extends EvObject
 	
 	public static void deleteSelected()
 		{
-		for(EvData data:EvData.metadata)
+		for(EvData data:EvData.openedData)
 			{
 			for(CompoundROI ob:data.getObjects(CompoundROI.class))
 				deleteSelected(ob);

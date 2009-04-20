@@ -42,29 +42,6 @@ import javax.imageio.ImageIO;
 
 public class EvImage  
 	{
-	/*
-	 * Memory precedence, skip to next step if null
-	 * 1. im
-	 * 2. cache
-	 * 3. swap
-	 * 4. shadowedImage
-	 * 5. io
-	 * 
-	 * Shadow data must be reset if data in this image.
-	 * 3,4 could be swapped for performance reasons, it should not affect semantics.
-	 * 
-	 * end user should be able to read/write metadata. resolution, displacement & binning are really required for normal operations and should be copied when needed.
-	 * other data can be left.
-	 * TODO maybe want to shadow this separately? can then send it all
-	 * 
-	 * image data is mutable. it is changed only if the changes are meant to be written to disk. for speed, the data is changed on byte-level. prior to this, 
-	 * all shadowed images should get a copy of the data. 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
-	
 
 	/** memory lock counter */
 	private int locks=0;
@@ -84,7 +61,6 @@ public class EvImage
 	public boolean isDirty=false;   
 	
 	/** In-memory image. Set to null if there is none. */
-	//private BufferedImage im=null;
 	private EvPixels memoryPixels=null;
 
 	/** Swap file */
@@ -93,14 +69,30 @@ public class EvImage
 	/**
 	 * Cache: pointer to loaded image
 	 */
-//	private SoftReference<BufferedImage> cachedImage=new SoftReference<BufferedImage>(null);
 	private SoftReference<EvPixels> cachedPixels=new SoftReference<EvPixels>(null);
 
-	public double resX, resY, binning;
+	/**
+	 * Resolution [px/um].
+	 * Binning not taken into account
+	 */
+	public double resX, resY;
+	
+	/**
+	 * Binning. 4 would mean the image is 4 times smaller than what it depicts.
+	 */
+	public double binning;
+	
+	/**
+	 * Displacement in micrometer
+	 */
 	public double dispX, dispY;
 	
 	
+
 	
+	public EvImage()
+		{
+		}
 	
 	
 	
@@ -128,14 +120,6 @@ public class EvImage
 		shadowedImage=null;
 		}
 	
-	/*private void clearThisAsShadow()
-		{
-		if(shadowedImage!=null)
-			shadowedImage.shadowedBy.remove(this);
-		shadowedImage=null;
-		}
-	*/
-	
 	/**
 	 * Give data to all images that shadow this image
 	 */
@@ -146,10 +130,6 @@ public class EvImage
 		}
 	
 	
-	
-	public EvImage()
-		{
-		}
 	
 	/**
 	 * Make an image that points to this image for data.

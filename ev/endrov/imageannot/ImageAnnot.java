@@ -30,7 +30,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 
 		ModelWindow.modelWindowExtensions.add(new ImageAnnotModelExtension());
 		
-		EvData.extensions.put(metaType,ImageAnnot.class);
+		EvData.supportedMetadataFormats.put(metaType,ImageAnnot.class);
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
 			public void newImageWindow(ImageWindow w)

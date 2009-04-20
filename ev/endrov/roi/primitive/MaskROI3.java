@@ -23,7 +23,7 @@ public class MaskROI3 extends ROI
 	//private static ImageIcon icon=null;//new ImageIcon(UnionROI.class.getResource("iconUnion.png"));	
 	public static void initPlugin()
 		{
-		EvData.extensions.put(metaType,MaskROI3.class);
+		EvData.supportedMetadataFormats.put(metaType,MaskROI3.class);
 		/*
 		ROI.addType(new ROIType()
 			{

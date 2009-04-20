@@ -21,7 +21,7 @@ public class DataObjectSelectMenu
 	
 	public static <E> void create(JMenu menu, Class<E> type, Callback<E> cb)
 		{
-		for(EvData data:EvData.metadata)
+		for(EvData data:EvData.openedData)
 			{
 			LinkedList<String> path=new LinkedList<String>();
 			path.add(data.getMetadataName());

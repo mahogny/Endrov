@@ -142,10 +142,45 @@ public class SpotCluster
 		}
 	
 	
-	/*public static Partitioning merge3d()
+	/**
+	 * Partition all areas in the volume. Planes must be same size and aligned.
+	 */
+	/*
+	public static List<Set<Vector3d>> exec3d(EvStack stack)
 		{
+
+		//Returning a set of points is not optimal. Should return ROIs, which would be a lot easier to work with
+		//(resolution independent)
+		
+		Map<Integer,EvDecimal> imap=new HashMap<Integer, EvDecimal>();
+		double dV=0;
+		List<EvPixels> plist=new LinkedList<EvPixels>();
+		
+		Iterator<EvDecimal> zit=imageset.getChannel(channelName).imageLoader.get(frame).keySet().iterator();
+		EvDecimal z0=zit.next();
+		EvDecimal z1=zit.next();
+		double dz=z1.subtract(z0).doubleValue();
+		
+		int i=0;
+		for(Map.Entry<EvDecimal,EvImage> e:stack.entrySet())
+			{
+			imap.put(i,e.getKey());
+			//This ignores shift etc totally
+			EvImage evim=e.getValue();
+			plist.add(evim.getPixels());
+			dV=dz*evim.binning*evim.binning*(evim.resX*evim.resY);
+			i++;
+			}
+		
+		
+		
+		
+		Partitioning<Vector3i> p=exec3d(plist);
+		
 		
 		}*/
+	
+	
 	
 	public static void main(String[] args)
 		{

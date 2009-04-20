@@ -25,7 +25,7 @@ public class IntersectROI extends CompoundROI
 	public static void initPlugin(){}
 	static
 		{
-		EvData.extensions.put(metaType,IntersectROI.class);
+		EvData.supportedMetadataFormats.put(metaType,IntersectROI.class);
 		
 		ROI.addType(new ROIType(icon, IntersectROI.class, false,true,metaDesc));
 

@@ -32,7 +32,7 @@ public class NeighMap extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,NeighMap.class);
+		EvData.supportedMetadataFormats.put(metaType,NeighMap.class);
 		}
 
 	

@@ -422,7 +422,7 @@ public class LineageWindow extends BasicWindow
 			HashSet<String> names=new HashSet<String>();
 			for(NucPair p:NucLineage.selectedNuclei)
 				names.add(p.snd());
-			for(EvData data:EvData.metadata)
+			for(EvData data:EvData.openedData)
 				for(NucLineage lin:data.getObjects(NucLineage.class))
 					for(String n:names)
 						if(lin.nuc.containsKey(n))

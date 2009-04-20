@@ -23,7 +23,7 @@ public class UnionROI extends CompoundROI
 	public static void initPlugin(){}
 	static
 		{
-		EvData.extensions.put(metaType,UnionROI.class);
+		EvData.supportedMetadataFormats.put(metaType,UnionROI.class);
 		
 		ROI.addType(new ROIType(icon, UnionROI.class, false,true,metaDesc));
 		}

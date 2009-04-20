@@ -723,7 +723,7 @@ public class ImageWindow extends BasicWindow
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
 			{
-			data.unregisterData();
+			data.unregisterOpenedData();
 			Log.printLog("Closing "+data.getMetadataName());
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_0)

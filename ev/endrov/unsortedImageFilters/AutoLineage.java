@@ -1,13 +1,13 @@
 package endrov.unsortedImageFilters;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import javax.vecmath.Vector3d;
 
 
+import endrov.basicWindow.BasicWindow;
+import endrov.data.EvData;
+import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
@@ -26,14 +26,52 @@ public class AutoLineage
 	{
 	public static void run()
 		{
+		System.out.println("2");
+		
+		//TODO: virtual channels through lazy eval in EvImage
+		
+		new Thread(){
+			public void run()
+				{
+				for(EvData data:EvData.openedData)
+					{
+					for(Imageset im:data.getIdObjectsRecursive(Imageset.class).values())
+						{
+						NucLineage lin=new NucLineage();
+						im.metaObject.put("auto", lin);
+						String channelName="RFP";
+						EvChannel ch=im.getChannel(channelName);
+						if(ch!=null)
+							{
+							
+							Set<EvDecimal> frames=ch.imageLoader.keySet();
+							
+							for(EvDecimal f:frames)
+								//if(f.less(new EvDecimal("15000")))
+									{
+									
+									System.out.println("frame "+f);
+									
+									//For all image planes
+									
+									AutoLineage.run(lin,im,channelName,f);
+									
+									
+									BasicWindow.updateWindows();
+									}
+							
+							}
+						
+						}
+					}
+					
+				}
+		
+		}.start();
 		
 		
 		
-		
-		
-		//For all image planes
-		
-		
+		//endrov.unsortedImageFilters.AutoLineage2.run();
 		
 		
 		}
@@ -88,6 +126,7 @@ public class AutoLineage
 			}
 		
 		//Sort by size
+		//Maybe not needed
 		Collections.sort(clusters,new Comparator<Set<Vector3i>>(){
 			public int compare(Set<Vector3i> o1, Set<Vector3i> o2)
 				{
@@ -96,10 +135,58 @@ public class AutoLineage
 			});
 		
 		
+		EvImage exampleIm=imageset.getChannel(channelName).imageLoader.firstEntry().getValue().firstEntry().getValue();
+		
+		Iterator<EvDecimal> zit=imageset.getChannel(channelName).imageLoader.get(frame).keySet().iterator();
+		EvDecimal z0=zit.next();
+		EvDecimal z1=zit.next();
+		for(EvDecimal d:imageset.getChannel(channelName).imageLoader.get(frame).keySet())
+			System.out.println("plane "+d);
+		
+		
+		//Problem: uneven resolution and distances
+		double dz=z1.subtract(z0).doubleValue();
+		double dv=exampleIm.binning*exampleIm.binning*dz*1.0/(exampleIm.resX*exampleIm.resY);
+		
+		//dz 140!!!
+		
+		System.out.println("Scaling");
+		System.out.println(exampleIm.binning/exampleIm.resX);
+		System.out.println(exampleIm.binning/exampleIm.resY);
+		System.out.println(dz);
 		//Extract candidates from clusters
+		int i=0;
 		for(Set<Vector3i> c:clusters)
 			{
-			
+			int size=c.size();
+			if(size>maxVolume/10)
+				{
+				i++;
+				double vol=size*dv;
+
+				//V=4*pi*r^3/3
+				//=> r=(V*3/(4*PI))^(1/3)
+				
+				double r=Math.pow(vol*3/(4*Math.PI),1.0/3.0);
+				
+				NucLineage.Nuc nuc=lin.getNucCreate(""+frame+":"+i);
+				
+				
+				NucLineage.NucPos pos=nuc.getPosCreate(frame);
+				
+				//Problem: uneven distances. Unsure of displacement 
+				Vector3d center=SpotCluster.calculateCenter(c);
+				
+				pos.x=center.x*exampleIm.binning/exampleIm.resX;
+				pos.y=center.y*exampleIm.binning/exampleIm.resY;
+				pos.z=center.z*dz+z0.doubleValue();
+				pos.r=r;
+				
+				nuc.overrideEnd=frame.add(new EvDecimal("15"));
+				nuc.overrideStart=frame.add(new EvDecimal("-1"));
+				
+				
+				}
 			}
 		
 		

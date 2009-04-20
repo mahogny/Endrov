@@ -29,7 +29,20 @@ public class EvData extends EvContainer
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
-	public static Vector<EvDataSupport> supportFileFormats=new Vector<EvDataSupport>();
+	/**
+	 * Supported file formats and associated routines to load it
+	 */
+	public static Vector<EvDataSupport> supportedFileFormats=new Vector<EvDataSupport>();
+	
+	/**
+	 * Registered types of metadata
+	 */
+	public static TreeMap<String,Class<? extends EvObject>> supportedMetadataFormats=new TreeMap<String,Class<? extends EvObject>>();
+	
+	/**
+	 * Data opened by the user and hence visible as a working data set
+	 */
+	public static Vector<EvData> openedData=new Vector<EvData>();
 	
 	
 	public static void initPlugin() {}
@@ -70,27 +83,24 @@ public class EvData extends EvContainer
 		//priorities on update? windows should really go last. then the updateWindows call here is solved.
 		}
 	
-//	public static TreeMap<String,EvObjectType> extensions=new TreeMap<String,EvObjectType>();
-	public static TreeMap<String,Class<? extends EvObject>> extensions=new TreeMap<String,Class<? extends EvObject>>();
-	public static Vector<EvData> metadata=new Vector<EvData>();
 
-	/**
-	 * TODO better name
-	 */
-	public static void addMetadata(EvData m)
-		{
-		metadata.add(m);
-		}
 
 	
 	
 
 
 	/******************************************************************************************************
-	 *                               Static: Loading                                                      *
+	 *                               Static: Last path                                                    *
 	 *****************************************************************************************************/
-	/** Remember last path used to load an imageset */
+	
+	/**
+	 * Remember last path used to load an imageset 
+	 */
 	private static File lastDataPath=EV.getHomeDir();
+	
+	/**
+	 * Get last path used to open or save data
+	 */
 	public static File getLastDataPath()
 		{
 		if(lastDataPath==null)
@@ -98,32 +108,45 @@ public class EvData extends EvContainer
 		else
 			return lastDataPath;
 		}
+	
+	/**
+	 * Set last path used to open or save data
+	 */
 	public static void setLastDataPath(File s)
 		{
 		if(s!=null)
 			lastDataPath=s;
 		}
+
+	/******************************************************************************************************
+	 *                               Static: Data registration                                            *
+	 *****************************************************************************************************/
+
 	
-	
+	/**
+	 * List of recently loaded files
+	 */
 	public static Vector<RecentReference> recentlyLoadedFiles=new Vector<RecentReference>();
 
 	/**
-	 * Unregister loaded data
+	 * Unregister loaded data from the GUI 
 	 */
-	public void unregisterData()
+	public void unregisterOpenedData()
 		{
-		EvData.metadata.remove(this);
+		EvData.openedData.remove(this);
 		BasicWindow.updateWindows();
 		}
 	
+	
 	/** 
-	 * Register data file in GUI 
+	 * Register loaded data in GUI 
 	 */
 	public static void registerOpenedData(EvData data)
 		{
 		if(data!=null)
 			{
-			EvData.addMetadata(data);
+			openedData.add(data);
+			//EvData.registerLoadedDataGUI(data);
 			RecentReference rref=data.getRecentEntry();
 			if(rref!=null)
 				{
@@ -144,7 +167,11 @@ public class EvData extends EvContainer
 			}
 		}
 
-	
+
+	/**
+	 * Callback for current status on I/O (saving, loading)
+	 * @author Johan Henriksson
+	 */
 	public interface FileIOStatusCallback
 		{
 		/**
@@ -153,6 +180,9 @@ public class EvData extends EvContainer
 		public void fileIOStatus(double frac, String text);
 		}
 
+	/**
+	 * File I/O status callback: Doesn't do anything, to be used when status does not have to be presented
+	 */
 	public static FileIOStatusCallback deafFileIOCB=new FileIOStatusCallback(){
 		public void fileIOStatus(double frac, String text){}
 	};
@@ -177,7 +207,7 @@ public class EvData extends EvContainer
 		{
 		EvDataSupport thes=null;
 		int lowest=0;
-		for(EvDataSupport s:EvData.supportFileFormats)
+		for(EvDataSupport s:EvData.supportedFileFormats)
 			{
 			Integer sup=s.loadSupports(file);
 			if(sup!=null && (thes==null || lowest>sup))
@@ -209,49 +239,6 @@ public class EvData extends EvContainer
 	
 	
 	
-	/**
-	 * Load file by open dialog
-	 * @deprecated
-	 */
-	/*
-	public static EvData loadFileDialog(FileIOStatusCallback cb)
-		{
-		//TODO cb will not work properly due to swing. the only way around this is to 
-		//TODO separate loading dialog and loading IO. it goes into a thread, swingutils will send updates.
-		
-		JFileChooser fc=new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		
-		fc.setFileFilter(new javax.swing.filechooser.FileFilter()
-			{
-			public boolean accept(File f)
-				{
-				if(f.isDirectory())
-					return true;
-				for(EvDataSupport s:EvData.supportFileFormats)
-					if(s.loadSupports(f.getPath())!=null)
-						return true;
-				return false;
-				}
-			public String getDescription()
-				{
-				return "Data Files and Imagesets";
-				}
-			});
-		fc.setCurrentDirectory(EvData.getLastDataPath());
-		int ret=fc.showOpenDialog(null);
-		if(ret==JFileChooser.APPROVE_OPTION)
-			{
-			EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
-			File filename=fc.getSelectedFile();
-			if(cb!=null)
-				cb.fileIOStatus(0, "Loading "+filename.getName());
-			return loadFile(filename);
-			}
-		return null;
-		}
-*/
-
 	
 
 	/******************************************************************************************************
@@ -271,7 +258,7 @@ public class EvData extends EvContainer
 		{
 		EvDataSupport thes=null;
 		int lowest=0;
-		for(EvDataSupport s:EvData.supportFileFormats)
+		for(EvDataSupport s:EvData.supportedFileFormats)
 			{
 			Integer sup=s.saveSupports(file);
 			if(sup!=null && (thes==null || lowest>sup))
@@ -299,37 +286,6 @@ public class EvData extends EvContainer
 		{
 		setSaver(file);
 		saveData(cb);
-		/*
-		EvDataSupport thes=null;
-		int lowest=0;
-		for(EvDataSupport s:EvData.supportFileFormats)
-			{
-			Integer sup=s.saveSupports(file);
-			if(sup!=null && (thes==null || lowest>sup))
-				{
-				thes=s;
-				lowest=sup;
-				}
-			}
-		if(thes!=null)
-			{
-			try
-				{
-				EvIOData io=thes.getSaver(this, file);
-				if(io!=null)
-					{
-					this.io=io;
-					saveData(cb);
-					}
-				}
-			catch (Exception e)
-				{
-				e.printStackTrace();
-				}
-			}
-		else
-			throw new IOException("No suitable plugin to save file");
-			*/
 		}
 
 
@@ -483,7 +439,7 @@ public class EvData extends EvContainer
 		Vector<EvObject> obs=new Vector<EvObject>();
 		for(Element child:EV.castIterableElement(element.getChildren()))
 			{
-			Class<? extends EvObject> ext=extensions.get(child.getName());
+			Class<? extends EvObject> ext=supportedMetadataFormats.get(child.getName());
 			EvObject o=null;
 			if(ext==null)
 				{
@@ -506,7 +462,6 @@ public class EvData extends EvContainer
 					}
 				catch (IllegalAccessException e)
 					{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					}
 				}
@@ -549,7 +504,7 @@ public class EvData extends EvContainer
 
 	
 	/**
-	 * Get entry for Load Recent or null if not possible
+	 * Get entry for the "Load Recent"-menu or null if not possible
 	 */
 	public RecentReference getRecentEntry()
 		{

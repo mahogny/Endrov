@@ -41,7 +41,7 @@ public class Shell extends EvObject
 		
 		ModelWindow.modelWindowExtensions.add(new ShellModelExtension());
 		
-		EvData.extensions.put(metaType,Shell.class);
+		EvData.supportedMetadataFormats.put(metaType,Shell.class);
 		
 		}
 	

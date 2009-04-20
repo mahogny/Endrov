@@ -144,6 +144,8 @@ public class EvStack
 		{
 		return loaders.firstKey();
 		}
+	
+	 
 
 	/**
 	 * Last (largest) value of Z, or null
@@ -171,5 +173,8 @@ public class EvStack
 		return loaders.entrySet();
 		}
 
-	
+	public Map.Entry<EvDecimal, EvImage> firstEntry()
+		{
+		return loaders.firstEntry();
+		}
 	}

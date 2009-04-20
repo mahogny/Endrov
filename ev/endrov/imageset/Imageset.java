@@ -26,7 +26,7 @@ public class Imageset extends EvObject
 	static
 		{
 		ImageWindow.addImageWindowExtension(new ImagesetImageExtension());
-		EvData.extensions.put(metaType,Imageset.class);
+		EvData.supportedMetadataFormats.put(metaType,Imageset.class);
 		
 		
 		}

@@ -32,7 +32,7 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 
 		ModelWindow.modelWindowExtensions.add(new ChromaCountKJModelExtension());
 		
-		EvData.extensions.put(metaType,ChromaCountKJ.class);
+		EvData.supportedMetadataFormats.put(metaType,ChromaCountKJ.class);
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{

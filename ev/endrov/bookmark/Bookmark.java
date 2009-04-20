@@ -30,7 +30,7 @@ public class Bookmark extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.extensions.put(metaType,Bookmark.class);
+		EvData.supportedMetadataFormats.put(metaType,Bookmark.class);
 		ModelWindow.modelWindowExtensions.add(new ModelWindowExtension(){
 			public void newModelWindow(ModelWindow w)
 				{

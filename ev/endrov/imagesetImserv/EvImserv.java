@@ -123,7 +123,7 @@ public class EvImserv
 		
 		
 		//New file type
-		EvData.supportFileFormats.add(new EvDataSupport(){
+		EvData.supportedFileFormats.add(new EvDataSupport(){
 		public Integer loadSupports(String file)
 			{
 			if(file.startsWith("imserv://"))
