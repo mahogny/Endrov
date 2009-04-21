@@ -9,6 +9,8 @@ import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
+import endrov.unsortedImageFilters.OverlayClassLoader;
+
 /**
  * Dynamic loading of classes
  * @author Johan Henriksson
@@ -26,7 +28,6 @@ public class DynamicClass
 			LinkedList<URL> toks=new LinkedList<URL>();
 			while(tok.hasMoreTokens())
 				toks.add(new File(tok.nextToken()).toURI().toURL());
-			System.out.println(toks);
 			urls=toks.toArray(new URL[]{});
 			}
 		catch (MalformedURLException e)
@@ -45,7 +46,8 @@ public class DynamicClass
 		{
 		try
 			{
-			URLClassLoader cl=new URLClassLoader(urls);
+//			URLClassLoader cl=new URLClassLoader(urls);
+			OverlayClassLoader cl=new OverlayClassLoader(urls,ClassLoader.getSystemClassLoader());
 			Class<?> c=cl.loadClass(className);
 			return c.newInstance();
 			}
@@ -71,7 +73,8 @@ public class DynamicClass
 		{
 		try
 			{
-			URLClassLoader cl=new URLClassLoader(urls);
+			//URLClassLoader cl=new URLClassLoader(urls, );
+			URLClassLoader cl=new URLClassLoader(urls, null);
 			Class<?> c=cl.loadClass(className);
 			Method m=c.getMethod(method);
 			m.invoke(null);

@@ -8,12 +8,14 @@ import javax.vecmath.Vector3d;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.imageset.EvChannel;
+import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
+import endrov.util.Memoize;
 import endrov.util.Vector3i;
 
 /**
@@ -26,7 +28,7 @@ public class AutoLineage
 	{
 	public static void run()
 		{
-		System.out.println("2");
+		System.out.println("1");
 		
 		//TODO: virtual channels through lazy eval in EvImage
 		
@@ -43,6 +45,12 @@ public class AutoLineage
 						EvChannel ch=im.getChannel(channelName);
 						if(ch!=null)
 							{
+							
+							//TODO lazily eval moving average
+							
+							
+							
+							/////Old method
 							
 							Set<EvDecimal> frames=ch.imageLoader.keySet();
 							
@@ -75,6 +83,59 @@ public class AutoLineage
 		
 		
 		}
+	
+	//endrov.unsortedImageFilters.AutoLineage.runAvg();
+	
+	public static void runAvg()
+		{
+		for(EvData data:EvData.openedData)
+			{
+			for(Imageset im:data.getIdObjectsRecursive(Imageset.class).values())
+				{
+				im.channelImages.put("MA", movingAverage(im.channelImages.get("RFP"), 30, 30));
+				}
+			}
+		BasicWindow.updateWindows();
+		}
+	
+	/**
+	 * Moving average.
+	 * This one lazily creates a channel
+	 */
+	public static EvChannel movingAverage(EvChannel ch, final int pw, final int ph)
+		{
+		//Not quite final: what if changes should go back into the channel? how?
+		EvChannel newch=new EvChannel();
+		
+		for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+			{
+			EvStack newstack=new EvStack();
+			EvStack stack=se.getValue();
+			for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
+				{
+				final EvImage evim=pe.getValue();
+				EvImage newim=new EvImage();
+				newim.getMetaFrom(evim);
+				newstack.put(pe.getKey(), newim);
+				
+				newim.io=new EvIOImage(){
+					public EvPixels loadJavaImage()
+						{
+						Memoize<EvPixels> m=new Memoize<EvPixels>(){
+							protected EvPixels eval()
+								{
+								return MiscFilter.movingAverage(evim.getPixels(), pw, ph);
+								}};
+						return m.get();
+						}};
+				}
+			newch.imageLoader.put(se.getKey(), newstack);
+			}
+		return newch;
+		}
+	
+	
+	
 	
 	public static void run(NucLineage lin, Imageset imageset, String channelName, EvDecimal frame)
 		{
