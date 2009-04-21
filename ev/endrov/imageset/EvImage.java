@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
+
+import endrov.util.Memoize;
 
 
 
@@ -43,6 +46,15 @@ import javax.imageio.ImageIO;
 public class EvImage  
 	{
 
+	//TODO
+	//Memoize is not forgetful. Would be nice with a semi-lazy version that remembers evaluation time
+	//and can throw away the result after a while. Forgetful memoization. But it should be possible
+	//to permanently force evaluation such as when the source will become unavailable.
+	
+	
+	
+	
+	
 	/** memory lock counter */
 	private int locks=0;
 	
@@ -50,7 +62,9 @@ public class EvImage
 	private EvImage shadowedImage=null;
 	/** Images shadowing this image */
 	private WeakHashMap<EvImage, Object> shadowedBy=new WeakHashMap<EvImage, Object>();
-
+	/** Pending lazy operations */
+	private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>();
+		
 	/** 
 	 * Connection to I/O. Allows lazy reading by postponing load operation. Also allows lazy generation by putting a generator as a loader.
 	 * 
@@ -87,14 +101,22 @@ public class EvImage
 	 */
 	public double dispX, dispY;
 	
-	
+	//Changes in resolution might screw up pending operations. Need to encapsulate!
+	//TODO
 
 	
 	public EvImage()
 		{
 		}
 	
-	
+	/**
+	 * Register a lazy operation. Before this image is changed, it will be executed
+	 */
+	public void registerLazyOp(Memoize<?> op)
+		{
+		pendingLazy.put(op,null);
+		}
+
 	
 	/**
 	 * Make sure this is a hard copy. Always safe to call. Seldom useful, use only if you know what you are doing
@@ -121,12 +143,16 @@ public class EvImage
 		}
 	
 	/**
-	 * Give data to all images that shadow this image
+	 * Eliminate dependencies:
+	 * * Give data to all images that shadow this image
+	 * * Execute pending lazy operations
 	 */
-	private void sendShadowData()
+	private void eliminateDependencies()
 		{
-		for(EvImage evim:new HashSet<EvImage>(shadowedBy.keySet()))
+		for(EvImage evim:new LinkedList<EvImage>(shadowedBy.keySet()))
 			evim.getShadowDataInternal();
+		for(Memoize<?> op:new LinkedList<Memoize<?>>(pendingLazy.keySet()))
+			op.get();
 		}
 	
 	
@@ -167,7 +193,7 @@ public class EvImage
 	 */
 	public void prepareForWrite()
 		{
-		sendShadowData();
+		eliminateDependencies();
 		if(shadowedImage!=null)
 			getShadowDataInternal();
 		}
@@ -461,4 +487,15 @@ public class EvImage
 		return "EvImage mempxl: "+memoryPixels+" shdw:"+shadowedImage+" shdwBy#:"+shadowedBy.size();
 		}
 	
+	/**
+	 * Get all parameters from another image. once stack gets parameters, this one can be killed
+	 */
+	public void getMetaFrom(EvImage a)
+		{
+		resX=a.resX;
+		resY=a.resY;
+		dispX=a.dispX;
+		dispY=a.dispY;
+		binning=a.binning;
+		}
 	}
