@@ -39,17 +39,17 @@ public class EvStack
 	/**
 	 * Get one image plane
 	 */
-	public EvImage get(EvDecimal frame)
+	public EvImage get(EvDecimal z)
 		{
-		return loaders.get(frame);
+		return loaders.get(z);
 		}
 	
 	/**
 	 * Set one image plane
 	 */
-	public void put(EvDecimal frame, EvImage im)
+	public void put(EvDecimal z, EvImage im)
 		{
-		loaders.put(frame,im);
+		loaders.put(z,im);
 		}
 
 	/**

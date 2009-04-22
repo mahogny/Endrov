@@ -38,8 +38,10 @@ public class Imageset extends EvObject
 
 
 	/** List of all channels belonging to this imageset */
-	public HashMap<String,EvChannel> channelImages=new HashMap<String,EvChannel>();
-
+	public Map<String,EvChannel> channelImages=new TreeMap<String,EvChannel>();
+//	public HashMap<String,EvChannel> channelImages=new HashMap<String,EvChannel>();
+	//Sorting only for viewing convenience. Can be done in controls otherwise
+	
 	/** Common resolution [px/um] */
 	public double resX, resY, resZ; //TODO Deprecate Z once all OST converted. X and Y? or just keep these?
 	
