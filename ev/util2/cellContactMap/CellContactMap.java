@@ -53,7 +53,10 @@ public class CellContactMap
 		//nuc -> lifetime
 		public Map<String,Integer> lifelen=new HashMap<String,Integer>();
 
-		public EvDecimal frameInc=new EvDecimal(5);
+		public EvDecimal frameInc=new EvDecimal(30);
+		//20 steps=150s!
+		
+		public TreeSet<EvDecimal> framesTested=new TreeSet<EvDecimal>();
 		
 		public void addLifelen(String a)
 			{
@@ -117,6 +120,7 @@ public class CellContactMap
 			int numframes=0;
 			for(EvDecimal curframe=lin.firstFrameOfLineage().fst();curframe.less(lin.lastFrameOfLineage().fst());curframe=curframe.add(frameInc))
 				{
+				framesTested.add(curframe);
 				numframes++;
 				/////////////////////////////
 //                                  				if(numframes>200)					break;
@@ -310,39 +314,77 @@ public class CellContactMap
 	 */
 	public static boolean[] getOverlaps(OneLineage lin, String nucName, String nucName2)
 		{
-		//lin.frameInc
 	
 
-		boolean[] neighOverlaps=new boolean[clength];
 
-		if(lin.contactsf.get(nucName).get(nucName2).isEmpty())
+		boolean[] neighOverlaps=new boolean[clength];
+		
+		if(lin.contactsf.get(nucName)==null)
 			return neighOverlaps;
 		
-		EvDecimal lifeLenFrames=(lin.lin.nuc.get(nucName).lastFrame().subtract(lin.lin.nuc.get(nucName).firstFrame()));
 		
+		Set<EvDecimal> ov=lin.contactsf.get(nucName).get(nucName2);
+		
+		if(ov==null || ov.isEmpty())
+			return neighOverlaps;
+		EvDecimal firstFrame=lin.lin.nuc.get(nucName).firstFrame();
+		EvDecimal lastFrame=lin.lin.nuc.get(nucName).lastFrame();
+		SortedMap<EvDecimal,Boolean> isNeighMap=new TreeMap<EvDecimal, Boolean>();
+		//Could restrict better using lifetime
+		for(EvDecimal f:lin.framesTested.tailSet(lastFrame))
+			if(f.lessEqual(lastFrame))
+				isNeighMap.put(f, false);
+		
+		for(EvDecimal f:ov)
+			isNeighMap.put(f, true);
+			
 
-		
-		
+		EvDecimal lifeLenFrames=(lastFrame.subtract(firstFrame));
+
 		for(int curp=0;curp<clength;curp++)
 			{
-
+			//For each curp, map to time, check which keyframe (for neighcheck) is closest.
+			//Check if it is a neighbour in this frame
+			EvDecimal m=firstFrame.add(lifeLenFrames.multiply(curp+0.5).divide(clength));
 			
-			
-			/*
+			EvDecimal closestFrame=EvListUtil.closestFrame(isNeighMap, m);
+//			if(closestFrame!=null)
+			if(isNeighMap.get(closestFrame))
+				neighOverlaps[curp]=true;
+			}
+		
+		
+		/*
+		for(int curp=0;curp<clength;curp++)
+			{
 			EvDecimal m=lin.lin.nuc.get(nucName).firstFrame().add(lifeLenFrames.multiply(curp).divide(clength)); //corresponding frame
 			SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
 			if(frames.contains(m) || !frames.headSet(m).isEmpty() && !frames.tailSet(m).isEmpty())
-				neighOverlaps[curp]=true;*/
+				neighOverlaps[curp]=true;
+			}
+		*/
+		/*
+		for(int curp=0;curp<clength;curp++)
+			{
 
 			//Idea here is to slide a window over of size frameInc. it *should* it something since it has the same spacing
 			EvDecimal m=lin.lin.nuc.get(nucName).firstFrame().add(lifeLenFrames.multiply(curp).divide(clength));
+			
+			//TODO: subtract 1, and timestep?
+			
 			SortedSet<EvDecimal> frames=lin.contactsf.get(nucName).get(nucName2);
 			SortedSet<EvDecimal> tailframes=frames.tailSet(m);
 			if(!tailframes.isEmpty() && tailframes.iterator().next().subtract(m).lessEqual(lin.frameInc))
 				neighOverlaps[curp]=true;
 			}
+		*/
 		return neighOverlaps;
 		}
+	
+	
+	
+	
+	
 	
 	public static void doesChildrenSplit(OneLineage theCE, File f, Set<String> nucNames) throws IOException
 		{
@@ -472,7 +514,7 @@ public class CellContactMap
 			//Compare CE and A model
 			OneLineage theCE=orderedLin.get("celegans2008.2");
 			OneLineage theA=orderedLin.get("AnglerUnixCoords");
-			LinkedList<Tuple<Integer,String>> outDiffList=new LinkedList<Tuple<Integer,String>>();
+			LinkedList<Tuple<Double,String>> outDiffList=new LinkedList<Tuple<Double,String>>();
 			//LinkedList<String> listDiff=new LinkedList<String>();
 			for(String name:nucNames)
 				for(String name2:nucNames)
@@ -481,13 +523,21 @@ public class CellContactMap
 //					int numFrames1=theCE.contactsf.get(name).get(name2).size();
 	//				int numFrames2=theA.contactsf.get(name).get(name2).size();
 					
+					
+					
 					if(maybeOverlaps(name, name2))
 						{
-						int c1=countTrue(getOverlaps(theCE, name, name2));
-						int c2=countTrue(getOverlaps(theA, name, name2));
-						int framediff=c1-c2;
-						if(framediff!=0)
-								outDiffList.add(new Tuple<Integer, String>(framediff,framediff+"\t"+name+"\t"+name2+"\n"));
+						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
+							theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))
+							if(!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty() &&
+									!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty())
+								{
+								int c1=countTrue(getOverlaps(theCE, name, name2));
+								int c2=countTrue(getOverlaps(theA, name, name2));
+								double framediff=c1-c2;
+								if(framediff!=0)
+										outDiffList.add(new Tuple<Double, String>(framediff/(c1+c2),framediff/(c1+c2)+"\t"+name+"\t"+name2+"\n"));
+								}
 						}
 					/*
 					EvDecimal lifeLenFrames1=theCE.lin.nuc.get(name).pos.isEmpty() ? 
@@ -509,14 +559,14 @@ public class CellContactMap
 						//listDiff.add();
 						 * */
 					}
-			Collections.sort(outDiffList, new Comparator<Tuple<Integer,String>>(){
-				public int compare(Tuple<Integer, String> o1, Tuple<Integer, String> o2)
+			Collections.sort(outDiffList, new Comparator<Tuple<Double,String>>(){
+				public int compare(Tuple<Double, String> o1, Tuple<Double, String> o2)
 					{
 					return o1.fst().compareTo(o2.fst());
 					}
 			});
 			StringBuffer outDiff=new StringBuffer();
-			for(Tuple<Integer,String> e:outDiffList)
+			for(Tuple<Double,String> e:outDiffList)
 				outDiff.append(e.snd());
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiff.toString());
 			
@@ -557,6 +607,8 @@ public class CellContactMap
 			EvFileUtil.writeFile(new File(targetdirTree,"index.htm"),
 					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("main_tree.htm")))
 					.replace("BODY", mainTreeOut));
+			EvFileUtil.writeFile(new File(targetdirTree,"style.css"),
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMap.class.getResource("style.css"))));
 
 			//List datasets
 			StringBuffer outDatasets=new StringBuffer();
@@ -688,6 +740,7 @@ public class CellContactMap
 						}
 					}
 
+				
 				//Output entire file
 				String out=neighTemplate
 					.replace("UPDATETIME",updateTime)

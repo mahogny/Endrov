@@ -164,6 +164,10 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		{
 		return new EvDecimal(dec.multiply(new BigDecimal(val)));
 		}
+	public EvDecimal multiply(double val)
+		{
+		return new EvDecimal(dec.multiply(new BigDecimal(val)));
+		}
 	public EvDecimal negate()
 		{
 		return new EvDecimal(dec.negate());

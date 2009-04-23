@@ -115,6 +115,22 @@ public class ImageMath
 		return out;
 		}
 	
+	public static EvPixels times(EvPixels a, int b)
+		{
+		//Should use the common higher type here
+		a=a.convertTo(EvPixels.TYPE_INT, true);
+		
+		int w=a.getWidth();
+		int h=a.getHeight();
+		EvPixels out=new EvPixels(a.getType(),w,h);
+		int[] aPixels=a.getArrayInt();
+		int[] outPixels=out.getArrayInt();
+		
+		for(int i=0;i<aPixels.length;i++)
+			outPixels[i]=aPixels[i]*b;
+		
+		return out;
+		}
 	
 	public static EvPixels div(EvPixels a, EvPixels b)
 		{

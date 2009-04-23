@@ -1,8 +1,8 @@
 pathinput /Volumes/ZeissRec128GB/4ddaemon
 pathconverted /Volumes/ZeissRec128GB/4ddaemon_converted
 
-pathoutput /Volumes/TBU_main03/daemon/output
-#pathoutput /Volumes/TBU_main03/daemon/outputTest
+pathoutput /Volumes/TBU_main04/daemon/output
+#pathoutput /Volumes/TBU_main04/daemon/outputTest
 
 
 #pathinput /Volumes/TBU_iomega_700GB/daemon/input

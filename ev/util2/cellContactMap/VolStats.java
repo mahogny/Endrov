@@ -23,6 +23,7 @@ public class VolStats
 	public static boolean showNeigh=false;
 	public static boolean saveNormalized=true;
 	public static int NUMTRY=0;
+	public static EvDecimal frameInc=new EvDecimal(10);
 
 	public static NucLineage loadLin() throws Exception
 		{
@@ -47,6 +48,7 @@ public class VolStats
 	/**
 	 * Find the first keyframe ever mentioned in a lineage object
 	 */
+	/*
 	public static EvDecimal firstFrameOfLineage(NucLineage lin)
 		{
 		EvDecimal minframe=null;
@@ -57,7 +59,7 @@ public class VolStats
 				minframe=nuc.firstFrame();
 			}
 		return minframe;
-		}
+		}*/
 	
 	
 	public static EvDecimal lastOkFrame(NucLineage lin)
@@ -85,12 +87,12 @@ public class VolStats
 	
 	public static void calcVolStat(NucLineage lin) throws Exception
 		{
-		final EvDecimal fminframe=firstFrameOfLineage(lin);
+		final EvDecimal fminframe=lin.firstFrameOfLineage().fst();
 		final EvDecimal fmaxframe=lastOkFrame(lin);
+//		final EvDecimal fmaxframe=new EvDecimal("");
 		
 		PrintWriter pw=new PrintWriter(new FileWriter("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt"));
 
-		EvDecimal frameInc=new EvDecimal(10);
 		for(EvDecimal curframe=fminframe;curframe.less(fmaxframe);curframe=curframe.add(frameInc))
 			{
 			if(curframe.intValue()%30==0)
