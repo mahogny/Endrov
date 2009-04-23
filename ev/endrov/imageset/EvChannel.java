@@ -5,6 +5,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import endrov.util.EvDecimal;
+import endrov.util.EvListUtil;
 
 /**
  * Images for one channel
@@ -92,6 +93,11 @@ public class EvChannel
 	 */
 	public EvDecimal closestFrame(EvDecimal frame)
 		{
+		return EvListUtil.closestFrame(imageLoader, frame); 
+		}
+	/*
+	public EvDecimal closestFrame(EvDecimal frame)
+		{
 		if(imageLoader.get(frame)!=null || imageLoader.size()==0)
 			return frame;
 		else
@@ -113,8 +119,7 @@ public class EvChannel
 					return beforekey;
 				}
 			}
-		}
-	
+		}*/
 	
 	/**
 	 * Get the frame before

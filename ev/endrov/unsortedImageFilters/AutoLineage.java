@@ -84,7 +84,7 @@ public class AutoLineage
 		
 		
 		}
-	
+	// /Volumes/TBU_main03/ost4dgood/TB2167_080416.ost
 	//endrov.unsortedImageFilters.AutoLineage.run2();
 	
 	public static void run2()
@@ -112,6 +112,8 @@ public class AutoLineage
 				im.channelImages.put("spotpixels", greater(im.channelImages.get("minus"),2));
 				im.channelImages.put("spotpixels2", greater(im.channelImages.get("minus2"),2));
 
+				im.channelImages.put("MA15", movingAverage(im.channelImages.get("RFP"), 5, 5));
+				im.channelImages.put("MA30-MA15", minus(times(im.channelImages.get("MA15"),2), im.channelImages.get("MA")));
 
 				
 				//EvPixels out=CompareImage.greater(MiscFilter.movingSum(spotpixels, 2, 2), 15);
@@ -171,7 +173,7 @@ public class AutoLineage
 	
 	public static EvStack eagerAvgZ(EvStack in)
 		{
-		EvImage proto=in.firstEntry().getValue();
+		EvImage proto=in.firstEntry().snd();
 		
 		EvStack out=new EvStack();
 
@@ -255,6 +257,17 @@ public class AutoLineage
 			public EvPixels exec(EvPixels... p)
 				{
 				return CompareImage.greater(p[0], b);
+				}
+		});
+		}
+	
+	
+	public static EvChannel times(EvChannel ch, final int b)
+		{
+		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
+			public EvPixels exec(EvPixels... p)
+				{
+				return ImageMath.times(p[0], b);
 				}
 		});
 		}
@@ -483,8 +496,8 @@ public class AutoLineage
 				}
 			});
 		
-		
-		EvImage exampleIm=imageset.getChannel(channelName).imageLoader.firstEntry().getValue().firstEntry().getValue();
+		EvChannel ch=imageset.getChannel(channelName);
+		EvImage exampleIm=ch.imageLoader.get(ch.imageLoader.firstKey()).firstEntry().snd();
 		
 		Iterator<EvDecimal> zit=imageset.getChannel(channelName).imageLoader.get(frame).keySet().iterator();
 		EvDecimal z0=zit.next();

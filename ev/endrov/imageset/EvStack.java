@@ -6,6 +6,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import endrov.util.EvDecimal;
+import endrov.util.Tuple;
 
 /**
  * One stack of images. Corresponds to one frame in one channel.
@@ -173,8 +174,9 @@ public class EvStack
 		return loaders.entrySet();
 		}
 
-	public Map.Entry<EvDecimal, EvImage> firstEntry()
+	public Tuple<EvDecimal, EvImage> firstEntry()
 		{
-		return loaders.firstEntry();
+		EvDecimal k=loaders.firstKey();
+		return Tuple.make(k, loaders.get(k));
 		}
 	}
