@@ -2,6 +2,7 @@ package endrov.util;
 
 import java.util.*;
 
+
 public class EvMathUtil
 	{
 	/*
@@ -101,6 +102,18 @@ public class EvMathUtil
 		System.out.println(sumy);
 		System.out.println(common);*/
 		return new Tuple<Double, Double>(k,m);
+		}
+	
+	
+	/**
+	 * Solve x^2+bx+c=0
+	 * 
+	 * @return x=fst() +- snd() 
+	 */
+	public Tuple<Double,Double> solveQuadratic(double b, double c)
+		{
+		double out=b/2;
+		return Tuple.make(-out,Math.sqrt(out*out-c));
 		}
 	
 	
