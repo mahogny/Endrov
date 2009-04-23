@@ -1,4 +1,4 @@
-package endrov.basicWindow;
+package endrov.histEqualizer;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -29,12 +29,12 @@ public class HistogramEqWidget extends JPanel
 		
 		}
 	
-	
+	/*
 	private double map(double d)
 		{
 		EvArrayUtil.
 		points.h
-		}
+		}*/
 	
 	
 	

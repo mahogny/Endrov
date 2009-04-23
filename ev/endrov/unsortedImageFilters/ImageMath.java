@@ -194,4 +194,22 @@ public class ImageMath
 		
 		return out;
 		}
+	
+	
+	/**
+	 * Sum up the signal in an image
+	 */
+	//could always be double if we wanted
+	public static double sum(EvPixels a)
+		{
+		//support all types
+		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		
+		double[] aPixels=a.getArrayDouble();
+		double sum=0;
+		for(int i=0;i<aPixels.length;i++)
+			sum+=aPixels[i];
+		return sum;
+		}
+	
 	}
