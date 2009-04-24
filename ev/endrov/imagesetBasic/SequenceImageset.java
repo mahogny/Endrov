@@ -402,17 +402,17 @@ public class SequenceImageset implements EvIOData
 					else
 						{
 						EvStack stack=new EvStack();
+						//TODO metadata?
+						stack.dispX=0;
+						stack.dispY=0;
+						stack.binning=1;
+						stack.resX=resX; 
+						stack.resY=resY; 
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
 							{
 							EvImage evim=new EvImage();
 							
-							//TODO metadata?
-							evim.dispX=0;
-							evim.dispY=0;
-							evim.binning=1;
-							evim.resX=resX; 
-							evim.resY=resY; 
 							evim.io=new BasicSliceIO(f,i);
 							//TODO is this the way to go? only works with TIFF stacks
 							

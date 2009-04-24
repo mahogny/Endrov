@@ -229,17 +229,17 @@ public class SubtractROI extends CompoundROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
+	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
 		List<ROI> subRoi=getSubRoi();
 		if(imageInRange(channel, frame, z) && !subRoi.isEmpty())
 			{
 			if(subRoi.size()>=2)
 				return new ThisLineIterator(im,
-						subRoi.get(0).getLineIterator(im, channel, frame, z),
-						subRoi.get(1).getLineIterator(im, channel, frame, z),channel,frame,z);
+						subRoi.get(0).getLineIterator(stack, im, channel, frame, z),
+						subRoi.get(1).getLineIterator(stack, im, channel, frame, z),channel,frame,z);
 			else if(subRoi.size()==1)
-				return subRoi.get(0).getLineIterator(im, channel, frame, z);
+				return subRoi.get(0).getLineIterator(stack, im, channel, frame, z);
 			else
 				return new EmptyLineIterator();
 			}

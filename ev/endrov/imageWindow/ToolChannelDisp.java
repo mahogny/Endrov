@@ -13,7 +13,6 @@ import javax.swing.SwingUtilities;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
@@ -55,12 +54,11 @@ public class ToolChannelDisp implements ImageWindowTool
 				c.dispY+=ddy;
 				
 				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
-					for(Map.Entry<EvDecimal, EvImage> stacks:frames.getValue().entrySet())
-						{
-						EvImage evim=stacks.getValue();
-						evim.dispX+=ddx;
-						evim.dispY+=ddy;
-						}
+					{
+					EvStack stack=frames.getValue();
+					stack.dispX+=ddx;
+					stack.dispY+=ddy;
+					}
 				
 				BasicWindow.updateWindows();
 				rec.setMetadataModified(true);

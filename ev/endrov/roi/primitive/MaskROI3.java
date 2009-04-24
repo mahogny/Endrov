@@ -176,7 +176,7 @@ public class MaskROI3 extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
+	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
 		if(imageInRange(channel, frame, z))
 			{

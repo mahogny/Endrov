@@ -186,7 +186,7 @@ public class AutoLineage
 		ptot=ImageMath.div(ptot,numZ);
 		
 		EvImage imout=new EvImage();
-		imout.getMetaFrom(proto);
+		out.getMetaFrom(in);
 		imout.setPixelsReference(ptot);
 		
 		//Lazy stack op will use all planes!
@@ -335,11 +335,11 @@ public class AutoLineage
 			{
 			EvStack newstack=new EvStack();
 			EvStack stack=se.getValue();
+			newstack.getMetaFrom(stack);
 			for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
 				{
-				final EvImage evim=pe.getValue();
+				//final EvImage evim=pe.getValue();
 				EvImage newim=new EvImage();
-				newim.getMetaFrom(evim);
 				newstack.put(pe.getKey(), newim);
 				
 				//TODO register lazy operation
@@ -420,9 +420,9 @@ public class AutoLineage
 			for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
 				{
 				
-				final EvImage evim=pe.getValue();
+				//final EvImage evim=pe.getValue();
 				EvImage newim=new EvImage();
-				newim.getMetaFrom(evim);
+				//newim.getMetaFrom(evim);
 				newstack.put(pe.getKey(), newim);
 				
 				final EvDecimal z=pe.getKey();
@@ -497,7 +497,8 @@ public class AutoLineage
 			});
 		
 		EvChannel ch=imageset.getChannel(channelName);
-		EvImage exampleIm=ch.imageLoader.get(ch.imageLoader.firstKey()).firstEntry().snd();
+		EvStack stack=ch.imageLoader.get(ch.imageLoader.firstKey());
+		//EvImage exampleIm=stack.firstEntry().snd();
 		
 		Iterator<EvDecimal> zit=imageset.getChannel(channelName).imageLoader.get(frame).keySet().iterator();
 		EvDecimal z0=zit.next();
@@ -508,14 +509,10 @@ public class AutoLineage
 		
 		//Problem: uneven resolution and distances
 		double dz=z1.subtract(z0).doubleValue();
-		double dv=exampleIm.binning*exampleIm.binning*dz*1.0/(exampleIm.resX*exampleIm.resY);
+		double dv=dz/(stack.getResbinX()*stack.getResbinY());
 		
 		//dz 140!!!
 		
-		System.out.println("Scaling");
-		System.out.println(exampleIm.binning/exampleIm.resX);
-		System.out.println(exampleIm.binning/exampleIm.resY);
-		System.out.println(dz);
 		//Extract candidates from clusters
 		int i=0;
 		for(Set<Vector3i> c:clusters)
@@ -539,8 +536,10 @@ public class AutoLineage
 				//Problem: uneven distances. Unsure of displacement 
 				Vector3d center=SpotCluster.calculateCenter(c);
 				
-				pos.x=center.x*exampleIm.binning/exampleIm.resX;
-				pos.y=center.y*exampleIm.binning/exampleIm.resY;
+				//TODO use stack transform functions
+				
+				pos.x=center.x/stack.getResbinX();
+				pos.y=center.y/stack.getResbinY();//*exampleIm.binning/exampleIm.resY;
 				pos.z=center.z*dz+z0.doubleValue();
 				pos.r=r;
 				

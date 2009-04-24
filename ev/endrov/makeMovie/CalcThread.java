@@ -121,7 +121,8 @@ public final class CalcThread extends BatchThread
 						}
 					else
 						{
-						imload=cName.fs.applyReturnImage(imload);
+						EvStack stack=ch.imageLoader.get(frame);
+						imload=cName.fs.applyReturnImage(stack, imload);
 						BufferedImage ji=imload.getPixels().quickReadOnlyAWT();
 						if(ji==null)
 							{

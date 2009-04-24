@@ -11,6 +11,7 @@ import java.util.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.EvImage;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
@@ -115,10 +116,11 @@ public class CollectImages2
 								frame=ost.getChannel(channelName).closestFrame(frame);
 								EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));
 								EvImage im=ost.getChannel(channelName).getImageLoader(frame, z);
+								EvStack stack=ost.getChannel(channelName).imageLoader.get(frame);
 								
-								int midx=(int)im.transformWorldImageX(pos.x);
-								int midy=(int)im.transformWorldImageY(pos.y);
-								int r=(int)im.scaleWorldImageX(pos.r);
+								int midx=(int)stack.transformWorldImageX(pos.x);
+								int midy=(int)stack.transformWorldImageY(pos.y);
+								int r=(int)stack.scaleWorldImageX(pos.r);
 //								int rr=r+20;
 								int rr=(int)(r*2);
 	

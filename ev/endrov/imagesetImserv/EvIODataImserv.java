@@ -139,13 +139,19 @@ public class EvIODataImserv implements EvIOData
 						{
 						EvDecimal frame=new EvDecimal(in.readLine());
 						int numSlice=Integer.parseInt(in.readLine());
-						EvStack loaderset=c.imageLoader.get(frame);
-						if(loaderset==null)
+						EvStack stack=c.imageLoader.get(frame);
+						if(stack==null)
 							{
 							//A sorted linked list would make set generation linear time
-							loaderset=new EvStack();
-							c.imageLoader.put(frame, loaderset);
+							stack=new EvStack();
+							c.imageLoader.put(frame, stack);
 							}
+						//TODO proper metadata
+						stack.resX=imageset.resX;
+						stack.resY=imageset.resY;
+						stack.dispX=c.dispX;
+						stack.dispY=c.dispY;
+						stack.binning=c.chBinning;
 						
 						for(int k=0;k<numSlice;k++)
 							{
@@ -155,21 +161,11 @@ public class EvIODataImserv implements EvIOData
 							EvDecimal slice=new EvDecimal(s);
 							
 							EvImage evim=new EvImage();
-							//TODO properly fill in metadata
-							evim.resX=imageset.resX;
-							evim.resY=imageset.resY;
-							evim.dispX=c.dispX;
-							evim.dispY=c.dispY;
-							evim.binning=c.chBinning;
-							
-							
-							//TODO fill up with metadata here
-							
 							
 							SliceIO io=new SliceIO(blobid, slice,frame,channelName);
 							evim.io=io;
 //							System.out.println("Got image "+evim+" ch "+channelName);
-							loaderset.put(slice, evim);
+							stack.put(slice, evim);
 							}
 						}
 					}

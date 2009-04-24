@@ -104,7 +104,8 @@ public class IntExpCell
 
 			
 			//For all images
-			for(Map.Entry<EvDecimal, EvImage> eim:ch.imageLoader.get(frame).entrySet())
+			EvStack stack=ch.imageLoader.get(frame);
+			for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
 				{
 				EvImage im=eim.getValue();
 				EvPixels pixels=null;
@@ -125,9 +126,9 @@ public class IntExpCell
 					Double pr=projectSphere(pos.r, pos.z, imageZw);
 					if(pr!=null)
 						{
-						int midSx=(int)im.transformWorldImageX(pos.x);
-						int midSy=(int)im.transformWorldImageY(pos.y);
-						int rS=(int)im.scaleWorldImageX(pr);
+						int midSx=(int)stack.transformWorldImageX(pos.x);
+						int midSy=(int)stack.transformWorldImageY(pos.y);
+						int rS=(int)stack.scaleWorldImageX(pr);
 						if(rS>0)
 							{
 							if(!expLevel.containsKey(nucName))

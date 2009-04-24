@@ -205,7 +205,7 @@ public class BoxROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
+	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
@@ -223,15 +223,15 @@ public class BoxROI extends ROI
 			//Correct for span
 			if(!regionX.all)
 				{
-				int rXstart=(int)im.transformWorldImageX(regionX.start.doubleValue());
-				int rXend=(int)im.transformWorldImageX(regionX.end.doubleValue());
+				int rXstart=(int)stack.transformWorldImageX(regionX.start.doubleValue());
+				int rXend=(int)stack.transformWorldImageX(regionX.end.doubleValue());
 				if(it.startX<rXstart)	it.startX=rXstart;
 				if(it.endX>rXend) it.endX=rXend;
 				}
 			if(!regionY.all)
 				{
-				int rYstart=(int)im.transformWorldImageY(regionY.start.doubleValue());
-				int rYend=(int)im.transformWorldImageY(regionY.end.doubleValue());
+				int rYstart=(int)stack.transformWorldImageY(regionY.start.doubleValue());
+				int rYend=(int)stack.transformWorldImageY(regionY.end.doubleValue());
 				if(it.y<rYstart)	it.y=rYstart;
 				if(it.endY>rYend) it.endY=rYend;
 				}

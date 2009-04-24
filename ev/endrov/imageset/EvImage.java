@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.WeakHashMap;
 
@@ -89,17 +88,17 @@ public class EvImage
 	 * Resolution [px/um].
 	 * Binning not taken into account
 	 */
-	public double resX, resY;
+	//public double resX, resY;
 	
 	/**
 	 * Binning. 4 would mean the image is 4 times smaller than what it depicts.
 	 */
-	public double binning;
+//	public double binning;
 	
 	/**
 	 * Displacement in micrometer
 	 */
-	public double dispX, dispY;
+//	public double dispX, dispY;
 	
 	//Changes in resolution might screw up pending operations. Need to encapsulate!
 	//TODO
@@ -168,11 +167,11 @@ public class EvImage
 		EvImage copy=new EvImage();
 		copy.shadowedImage=this;
 		shadowedBy.put(copy, null);
-		copy.resX=resX;
+		/*copy.resX=resX;
 		copy.resY=resY;
 		copy.dispX=dispX;
 		copy.dispY=dispY;
-		copy.binning=binning;
+		copy.binning=binning;*/
 
 		return copy;
 		}
@@ -444,22 +443,12 @@ public class EvImage
 	
 	//what to do about this? now it points to io
 	
-	public double transformImageWorldX(double c){return (c*getBinning()+getDispX())/getResX();}
-	public double transformImageWorldY(double c){return (c*getBinning()+getDispY())/getResY();}			
-	public double transformWorldImageX(double c){return (c*getResX()-getDispX())/getBinning();}
-	public double transformWorldImageY(double c){return (c*getResY()-getDispY())/getBinning();}
-	public double scaleImageWorldX(double c){return c/(getResX()/getBinning());}
-	public double scaleImageWorldY(double c){return c/(getResY()/getBinning());}
-	public double scaleWorldImageX(double c){return c*getResX()/getBinning();}
-	public double scaleWorldImageY(double c){return c*getResY()/getBinning();}
-	
-	
 	
 	
 	//Is this the final solution? Probably not, it will be moved to Stack level(?). or homogenized.
 	//but it's a quick patch
 	
-	
+	/*
 	public double getResX()
 		{
 		return resX;
@@ -480,7 +469,7 @@ public class EvImage
 	public double getDispY()
 		{
 		return dispY;
-		}
+		}*/
 	
 	public String toString()
 		{
@@ -490,6 +479,7 @@ public class EvImage
 	/**
 	 * Get all parameters from another image. once stack gets parameters, this one can be killed
 	 */
+	/*
 	public void getMetaFrom(EvImage a)
 		{
 		resX=a.resX;
@@ -498,4 +488,5 @@ public class EvImage
 		dispY=a.dispY;
 		binning=a.binning;
 		}
+	*/
 	}

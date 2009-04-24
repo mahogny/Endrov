@@ -73,7 +73,7 @@ public class Filter2Invert extends FlowUnitFilter2
 					
 					for(Map.Entry<EvDecimal, EvImage> se:fe.getValue().entrySet())
 						{
-						EvImage evimin=se.getValue();
+						//EvImage evimin=se.getValue();
 						
 						
 						

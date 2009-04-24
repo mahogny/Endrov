@@ -80,12 +80,13 @@ public class Slice3D
 			lastframe=frame;
 
 			//Load image
-			EvImage evim=ch.imageLoader.get(cframe).get(zplane);
+			EvStack stack=ch.imageLoader.get(cframe);
+			EvImage evim=stack.get(zplane);
 			BufferedImage bim=evim.getJavaImage();
 			w=bim.getWidth();
 			h=bim.getHeight();
-			resX=evim.getResX()/evim.getBinning(); //px/um
-			resY=evim.getResY()/evim.getBinning();
+			resX=stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
+			resY=stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
 			//resZ=im.meta.resZ;
 
 			//Load bitmap, scale down. Not needed, little data.

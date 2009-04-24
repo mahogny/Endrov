@@ -598,11 +598,11 @@ public class EvIODataBioformats implements EvIOData
 						EvImage evim=new EvImage();
 						EvStack stack=c.getCreateFrame(frame);
 						stack.put(zpos, evim); //used to be mul, with non-inv resz
-						evim.binning=1;
-						evim.dispX=0;
-						evim.dispY=0;
-						evim.resX=resX;
-						evim.resY=resY;
+						stack.binning=1;
+						stack.dispX=0;
+						stack.dispY=0;
+						stack.resX=resX;
+						stack.resY=resY;
 						
 						evim.io=new SliceIO(imageReader, curPixel, bandID, "");
 						}

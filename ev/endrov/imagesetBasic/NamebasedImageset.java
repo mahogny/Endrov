@@ -382,25 +382,26 @@ public class NamebasedImageset implements EvIOData
 
 				//Get a place to put EVimage. Create holders if needed
 				EvChannel ch=im.getCreateChannel(channelName);
-				EvStack loaders=ch.imageLoader.get(new EvDecimal(frame));
-				if(loaders==null)
+				EvStack stack=ch.imageLoader.get(new EvDecimal(frame));
+				if(stack==null)
 					{
-					loaders=new EvStack();
-					ch.imageLoader.put(new EvDecimal(frame), loaders);
+					stack=new EvStack();
+					ch.imageLoader.put(new EvDecimal(frame), stack);
 					}
 				
 				//Plug EVimage
 				EvImage evim=new EvImage();
-				evim.dispX=0;
-				evim.dispY=0;
-				evim.binning=1;
-				evim.resX=resX; 
-				evim.resY=resY; 
+				stack.dispX=0;
+				stack.dispY=0;
+				stack.binning=1;
+				stack.resX=resX; 
+				stack.resY=resY;
+				
 				evim.io=new BasicSliceIO(f);
 				
 				EvDecimal realSlice=new EvDecimal(slice).multiply(spacingZ);
 				
-				loaders.put(realSlice, evim); 
+				stack.put(realSlice, evim); 
 				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
 				System.out.println(newLogEntry);
 				rebuildLog+=newLogEntry;

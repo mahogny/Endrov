@@ -85,14 +85,15 @@ public final class CalcThread extends BatchThread
 								}
 	
 							//Load image
+							EvStack stack=chfrom.imageLoader.get(curframe);
 							EvImage imload=chfrom.getImageLoader(curframe, z);
 							if(imload==null)
 								break;
-							resX=imload.resX;
-							resY=imload.resY;
-							dispX=imload.dispX;
-							dispY=imload.dispY;
-							binning=imload.binning;
+							resX=stack.resX;
+							resY=stack.resY;
+							dispX=stack.dispX;
+							dispY=stack.dispY;
+							binning=stack.binning;
 							
 							
 							BufferedImage bufi=imload.getJavaImage();
@@ -125,16 +126,21 @@ public final class CalcThread extends BatchThread
 					//Write out max image
 					if(maxim!=null)
 						{
+						EvStack stack=new EvStack();
 						
 						EvImage toim=new EvImage();
 						toim.setImage(makeBI(maxim));
-						toim.resX=resX;
-						toim.resY=resY;
-						toim.dispX=dispX;
-						toim.dispY=dispY;
-						toim.binning=binning;
+						stack.resX=resX;
+						stack.resY=resY;
+						stack.dispX=dispX;
+						stack.dispY=dispY;
+						stack.binning=binning;
 						
-						chto.setImage(curframe, EvDecimal.ZERO, toim);
+						stack.put(EvDecimal.ZERO,toim);
+						
+						chto.imageLoader.put(curframe,stack);
+						
+						//chto.setImage(curframe, EvDecimal.ZERO, toim);
 						BasicWindow.updateWindows();
 						}
 					

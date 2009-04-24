@@ -150,7 +150,7 @@ public class Stack3D extends StackInterface
 						//Apply filter if needed
 						EvImage evim=stack.get(i);
 						if(!chsel.filterSeq.isIdentity())
-							evim=chsel.filterSeq.applyReturnImage(evim);
+							evim=chsel.filterSeq.applyReturnImage(stack, evim);
 						
 						//Get image for this plane
 						BufferedImage bim=evim.getJavaImage();
@@ -171,8 +171,8 @@ public class Stack3D extends StackInterface
 							os.resY/=os.h/(double)bh;
 							os.h=bh;
 
-							os.resX=evim.getResX()/evim.getBinning(); //[px/um]
-							os.resY=evim.getResY()/evim.getBinning();
+							os.resX=stack.getResbinX();//stack.resX/evim.getResX()/evim.getBinning(); //[px/um]
+							os.resY=stack.getResbinY();//evim.getResY()/evim.getBinning();
 
 							os.color=chsel.color;
 							texture.allocate(os.w, os.h, os.d);
