@@ -240,12 +240,13 @@ public class FilterSeq extends EvObject
 				for(EvDecimal z:roi.getSlice(rec, chan, frame))
 					{
 					System.out.println("- "+chan+"/"+frame+"/"+z);
+					EvStack stack=rec.getChannel(chan).imageLoader.get(frame);
 					EvImage evim=rec.getChannel(chan).getImageLoader(frame,z);
 
 					for(Filter fi:sequence)
 						{
 						FilterROI firoi=(FilterROI)fi;
-						firoi.applyImage(evim, roi, chan, frame, z);
+						firoi.applyImage(stack, evim, roi, chan, frame, z);
 						}
 					}
 		}
@@ -269,7 +270,7 @@ public class FilterSeq extends EvObject
 					for(Filter fi:sequence)
 						{
 						FilterROI firoi=(FilterROI)fi;
-						firoi.applyImage(evim);
+						firoi.applyImage(stack, evim);
 						}
 					}
 				}
@@ -280,12 +281,12 @@ public class FilterSeq extends EvObject
 	/**
 	 * Apply to a single image
 	 */
-	public void apply(EvImage evim)
+	public void apply(EvStack stack, EvImage evim)
 		{
 		for(Filter fi:sequence)
 			{
 			FilterROI firoi=(FilterROI)fi;
-			firoi.applyImage(evim);
+			firoi.applyImage(stack, evim);
 			}
 		BasicWindow.updateWindows();
 		}
@@ -293,13 +294,13 @@ public class FilterSeq extends EvObject
 	/**
 	 * Apply sequence, but do not modify source; return modified image
 	 */
-	public EvImage applyReturnImage(EvImage evim)
+	public EvImage applyReturnImage(EvStack stack, EvImage evim)
 		{
 		evim=evim.makeHardCopy();
 		for(Filter fi:sequence)
 			{
 			FilterROI firoi=(FilterROI)fi;
-			firoi.applyImage(evim);
+			firoi.applyImage(stack, evim);
 			}
 		return evim;
 		}

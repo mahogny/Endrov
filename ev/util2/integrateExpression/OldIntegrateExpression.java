@@ -90,7 +90,8 @@ public class OldIntegrateExpression
 
 
 			//For all images
-			for(Map.Entry<EvDecimal, EvImage> eim:ost.getChannel(channelName).imageLoader.get(frame).entrySet())
+			EvStack stack=ost.getChannel(channelName).imageLoader.get(frame);
+			for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
 				{
 				EvImage im=eim.getValue();
 				BufferedImage bim=null;
@@ -105,9 +106,9 @@ public class OldIntegrateExpression
 					NucLineage.NucPos pos=e.getValue().pos;
 
 					double pr=projectSphere(pos.r, pos.z, imageZw);
-					int midSx=(int)im.transformWorldImageX(pos.x);
-					int midSy=(int)im.transformWorldImageY(pos.y);
-					int rS=(int)im.scaleWorldImageX(pr);
+					int midSx=(int)stack.transformWorldImageX(pos.x);
+					int midSy=(int)stack.transformWorldImageY(pos.y);
+					int rS=(int)stack.scaleWorldImageX(pr);
 					if(rS>0)
 						{
 						if(!expLevel.containsKey(nucName))

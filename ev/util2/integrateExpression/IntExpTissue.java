@@ -11,6 +11,7 @@ import endrov.ev.StdoutLog;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
@@ -113,7 +114,8 @@ public class IntExpTissue
 			int[] sliceVol=new int[numSubDivX];
 
 			//For all z
-			for(Map.Entry<EvDecimal, EvImage> eim:ch.imageLoader.get(frame).entrySet())
+			EvStack stack=ch.imageLoader.get(frame);
+			for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
 				{
 				EvDecimal curZ=eim.getKey();
 				EvImage im=eim.getValue();
@@ -161,7 +163,7 @@ public class IntExpTissue
 						for(int ax=0;ax<pixels.getWidth();ax++)
 							{
 							//Convert to world coordinates
-							Vector2D pos=new Vector2D(im.transformImageWorldX(ax),im.transformImageWorldY(ay));
+							Vector2D pos=new Vector2D(stack.transformImageWorldX(ax),stack.transformImageWorldY(ay));
 
 							//Check if this is within ellipse boundary
 							Vector2D elip=pos.sub(new Vector2D(shell.midx, shell.midy)).rotate(shell.angle); //TODO angle? what?

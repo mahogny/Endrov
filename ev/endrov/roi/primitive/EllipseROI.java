@@ -195,7 +195,7 @@ public class EllipseROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
+	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
@@ -209,18 +209,18 @@ public class EllipseROI extends ROI
 			it.y=0;
 
 			//Correct for span
-			int rXend=(int)im.transformWorldImageX(regionX.end.doubleValue());
+			int rXend=(int)stack.transformWorldImageX(regionX.end.doubleValue());
 			if(it.maxX>rXend) it.maxX=rXend;
 			
-			int rYstart=(int)im.transformWorldImageY(regionY.start.doubleValue());
-			int rYend=(int)im.transformWorldImageY(regionY.end.doubleValue())+1;
+			int rYstart=(int)stack.transformWorldImageY(regionY.start.doubleValue());
+			int rYend=(int)stack.transformWorldImageY(regionY.end.doubleValue())+1;
 			if(it.y<rYstart)	it.y=rYstart;
 			if(it.maxY>rYend) it.maxY=rYend;
 			
-			it.midx=(im.transformWorldImageX(regionX.start.doubleValue())+im.transformWorldImageX(regionX.end.doubleValue()))/2.0;
-			it.midy=(im.transformWorldImageY(regionY.start.doubleValue())+im.transformWorldImageY(regionY.end.doubleValue()))/2.0;
-			it.rx=(im.transformWorldImageX(regionX.end.doubleValue())-im.transformWorldImageX(regionX.start.doubleValue()))/2.0;
-			it.ry=(im.transformWorldImageY(regionY.end.doubleValue())-im.transformWorldImageY(regionY.start.doubleValue()))/2.0;
+			it.midx=(stack.transformWorldImageX(regionX.start.doubleValue())+stack.transformWorldImageX(regionX.end.doubleValue()))/2.0;
+			it.midy=(stack.transformWorldImageY(regionY.start.doubleValue())+stack.transformWorldImageY(regionY.end.doubleValue()))/2.0;
+			it.rx=(stack.transformWorldImageX(regionX.end.doubleValue())-stack.transformWorldImageX(regionX.start.doubleValue()))/2.0;
+			it.ry=(stack.transformWorldImageY(regionY.end.doubleValue())-stack.transformWorldImageY(regionY.start.doubleValue()))/2.0;
 			
 			
 			//Sanity check

@@ -31,10 +31,22 @@ public class ImagePanel extends JPanel
 	 */
 	public static class ImagePanelImage
 		{
-		public EvImage image=null;
+		private EvImage image=null;
+		private EvStack stack=null;
 		public double contrast=1;
 		public double brightness=0;
 		private BufferedImage bufi=null;
+		
+		public void setImage(EvStack stack, EvImage image)
+			{
+			this.image=image;
+			this.stack=stack;
+			}
+		
+		public EvImage getImage()
+			{
+			return image;
+			}
 		
 		public void update()
 			{
@@ -92,8 +104,8 @@ public class ImagePanel extends JPanel
 			loadImage();
 			if(bufi!=null)
 				{
-				int w=(int)(bufi.getWidth()*image.getBinning());
-				int h=(int)(bufi.getHeight()*image.getBinning());
+				int w=(int)(bufi.getWidth()*stack.binning);
+				int h=(int)(bufi.getHeight()*stack.binning);
 							
 				//Adjust zoom
 				double zoom1=p.getWidth()/(double)w;
@@ -104,8 +116,8 @@ public class ImagePanel extends JPanel
 					p.zoom=zoom2;
 				
 				//Place camera in the middle
-				p.transX=-w/2-image.getDispX();
-				p.transY=-h/2-image.getDispY();
+				p.transX=-w/2-stack.dispX;
+				p.transY=-h/2-stack.dispY;
 				}
 			}
 		
@@ -115,8 +127,8 @@ public class ImagePanel extends JPanel
 			if(bufi!=null)
 				{
 				//Calculate translation and zoom of image
-				Vector2d trans=p.transformI2S(new Vector2d(image.getDispX(), image.getDispY()));
-				double zoomBinning=p.zoom*image.getBinning();
+				Vector2d trans=p.transformI2S(new Vector2d(stack.dispX, stack.dispY));
+				double zoomBinning=p.zoom*stack.binning;
 				double invZoomBinning=1.0/zoomBinning;
 
 				g2.translate(trans.x,trans.y);

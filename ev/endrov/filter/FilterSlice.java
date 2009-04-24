@@ -16,17 +16,17 @@ public abstract class FilterSlice extends FilterROI
 	/**
 	 * Apply filter to image given ROI and where this image is located
 	 */
-	public void applyImage(EvImage evim, ROI roi, String channel, EvDecimal frame, EvDecimal z)
+	public void applyImage(EvStack stack, EvImage evim, ROI roi, String channel, EvDecimal frame, EvDecimal z)
 		{
-		LineIterator it=roi.getLineIterator(evim, channel, frame, z);
-		applyImage(evim, it);
+		LineIterator it=roi.getLineIterator(stack, evim, channel, frame, z);
+		applyImage(stack, evim, it);
 		}
 
 	
 	/**
 	 * Apply filter to image given iterator
 	 */
-	public void applyImage(EvImage evim, LineIterator it)
+	public void applyImage(EvStack stack, EvImage evim, LineIterator it)
 		{
 		BufferedImage i=evim.getJavaImage();
 		BufferedImage i2=new BufferedImage(i.getWidth(),i.getHeight(),i.getType());
@@ -52,7 +52,7 @@ public abstract class FilterSlice extends FilterROI
 	/**
 	 * Apply filter on entire image
 	 */
-	public void applyImage(EvImage evim)
+	public void applyImage(EvStack stack, EvImage evim)
 		{
 		BufferedImage i=evim.getJavaImage();
 		evim.setImage(i);

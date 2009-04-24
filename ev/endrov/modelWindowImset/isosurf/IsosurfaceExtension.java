@@ -381,8 +381,8 @@ public class IsosurfaceExtension implements ModelWindowExtension
 									pixelsW=bim.getWidth();
 									pixelsH=bim.getHeight();
 									pixelsD=stack.size();
-									realw=(float)bim.getWidth()/(float)(evim.getResX()/evim.getBinning());
-									realh=(float)bim.getHeight()/(float)(evim.getResY()/evim.getBinning());
+									realw=(float)bim.getWidth()/(float)(stack.resX/stack.binning);
+									realh=(float)bim.getHeight()/(float)(stack.resY/stack.binning);
 									reald=(float)pixelsD;//(float)resZ;
 									ptScalarField=new float[pixelsW*pixelsH*pixelsD];
 									System.out.println("alloc "+pixelsW+" "+pixelsH+" "+pixelsD);

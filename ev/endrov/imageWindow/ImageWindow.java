@@ -561,11 +561,16 @@ public class ImageWindow extends BasicWindow
 				frame=ch.closestFrame(frame);
 				z=ch.closestZ(frame, z);
 				
-				pi.image=ch.getImageLoader(frame,z);
-				FilterSeq fseq=channelWidget.get(i).filterSeq;
-				if(!fseq.isIdentity())
-					pi.image=fseq.applyReturnImage(pi.image);
-				
+				EvStack stack=ch.imageLoader.get(frame);
+				if(stack==null)
+					pi.setImage(stack,null);
+				else
+					{
+					pi.setImage(stack,stack.get(z));
+					FilterSeq fseq=channelWidget.get(i).filterSeq;
+					if(!fseq.isIdentity())
+						pi.setImage(stack, fseq.applyReturnImage(stack, pi.getImage()));
+					}
 				imagePanel.images.add(pi);
 				}
 			}

@@ -19,6 +19,52 @@ public class EvStack
 	private TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
 	
 	/**
+	 * Resolution [px/um].
+	 * Binning not taken into account
+	 */
+	public double resX, resY;
+	
+	/**
+	 * Binning. 4 would mean the image is 4 times smaller than what it depicts.
+	 */
+	public double binning;
+	
+	/**
+	 * Displacement in micrometer
+	 */
+	public double dispX, dispY;
+
+	/**
+	 * Return combined resolution and binning. [px/um]
+	 */
+	public double getResbinX()
+		{
+		return resX/binning;
+		}
+	public double getResbinY()
+		{
+		return resY/binning;
+		}
+
+	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
+	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
+	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
+	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
+	public double scaleImageWorldX(double c){return c/(resX/binning);}
+	public double scaleImageWorldY(double c){return c/(resY/binning);}
+	public double scaleWorldImageX(double c){return c*resX/binning;}
+	public double scaleWorldImageY(double c){return c*resY/binning;}
+	
+	public void getMetaFrom(EvStack o)
+		{
+		resX=o.resX;
+		resY=o.resY;
+		binning=o.binning;
+		dispX=o.dispX;
+		dispY=o.dispY;
+		}
+	
+	/**
 	 * Get the number of image planes
 	 */
 	public int size()

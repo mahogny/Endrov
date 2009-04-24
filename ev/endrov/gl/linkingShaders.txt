@@ -1,0 +1,20 @@
+GLuint hProgram;  // already created
+GLuint hVertexShader1, hVertexShader2; // created and compiled
+GLuint hFragmentShader1, hFragmentShader2; // created and compiled
+
+glAttachShader( hProgram, hVertexShader1 );
+glAttachShader( hProgram, hFragmentShader1 );
+glAttachShader( hProgram, hVertexShader2 );
+glAttachShader( hProgram, hFragmentShader2 );
+
+// then link the program to get ready for use
+glLinkProgram( hProgram );
+
+...
+
+// activate the program when rendering
+glUseProgram( hProgram );
+... // draw your stuff
+glUseProgram( 0 ); // disable shaders and reenable fixed pipeline
+
+

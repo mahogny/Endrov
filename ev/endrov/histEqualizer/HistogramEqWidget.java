@@ -6,8 +6,6 @@ import java.util.TreeMap;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import endrov.util.EvArrayUtil;
-
 public class HistogramEqWidget extends JPanel
 	{
 	

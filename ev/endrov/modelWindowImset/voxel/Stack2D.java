@@ -143,8 +143,8 @@ public class Stack2D extends StackInterface
 						skipcount=0;
 						EvImage evim=stack.get(i);
 						if(!chsel.filterSeq.isIdentity())
-							evim=chsel.filterSeq.applyReturnImage(evim);
-						Tuple<TextureRenderer,OneSlice> proc=processImage(evim, i, chsel);
+							evim=chsel.filterSeq.applyReturnImage(stack, evim);
+						Tuple<TextureRenderer,OneSlice> proc=processImage(stack, evim, i, chsel);
 						procList.add(proc);
 						}
 					}
@@ -157,15 +157,15 @@ public class Stack2D extends StackInterface
 	
 	
 
-	public Tuple<TextureRenderer,OneSlice> processImage(EvImage evim, EvDecimal z, VoxelExtension.ChannelSelection chsel)
+	public Tuple<TextureRenderer,OneSlice> processImage(EvStack stack, EvImage evim, EvDecimal z, VoxelExtension.ChannelSelection chsel)
 		{
 		BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
 		OneSlice os=new OneSlice();
 		
 		os.w=bim.getWidth();
 		os.h=bim.getHeight();
-		os.resX=evim.getResX()/evim.getBinning(); //px/um
-		os.resY=evim.getResY()/evim.getBinning();
+		os.resX=stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
+		os.resY=stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
 		os.z=z/*.divide(resZ)*/.doubleValue();
 		os.color=chsel.color;
 

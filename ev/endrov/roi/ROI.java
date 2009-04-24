@@ -225,7 +225,7 @@ public abstract class ROI extends EvObject
 	public abstract void initPlacement(String chan, EvDecimal frame, EvDecimal z);
 	
 	public abstract boolean imageInRange(String channel, EvDecimal frame, EvDecimal z);
-	public abstract LineIterator getLineIterator(EvImage im, String channel, EvDecimal frame, EvDecimal z);
+	public abstract LineIterator getLineIterator(EvStack stack, EvImage im, String channel, EvDecimal frame, EvDecimal z);
 	
 //	public abstract Vector<ROI> getSubRoi();
 	
