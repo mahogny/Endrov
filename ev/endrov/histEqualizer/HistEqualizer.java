@@ -11,7 +11,10 @@ public class HistEqualizer
 	 * Map is never inverted
 	 */
 	
-	private SortedMap<Double, Double> points=new TreeMap<Double, Double>();
+	/**
+	 * Never allowed to be empty
+	 */
+	public SortedMap<Double, Double> points=new TreeMap<Double, Double>();
 	
 	
 	public HistEqualizer()

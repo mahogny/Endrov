@@ -1,6 +1,7 @@
 package endrov.unsortedImageFilters;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -65,7 +66,17 @@ public class Histogram
 			return hist;
 			}
 		}
+
+	//Will we be forced to reification by metaprog ourselves?
+	//A<B> will generate AiiiB as a subclass. instanceof will be
+	//possible on many levels. AiiiB.getClassAiii1() could return B.class
 	
-	
+	public static boolean isIntegerHist(Map<?,?> m)
+		{
+		Iterator<?> it=m.keySet().iterator();
+		if(it.hasNext() && !(it.next() instanceof Integer))
+			return false;
+		return true;
+		}
 	
 	}
