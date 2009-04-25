@@ -602,7 +602,7 @@ public class LineageView extends JPanel
 		//If there are no first or last frames then handle it as well as possible 
 		int startc;
 		int endc;
-		EvDecimal firstFrame=nuc.firstFrame();
+		EvDecimal firstFrame=nuc.getFirstFrame();
 		if(firstFrame==null)
 			{
 			startc=0;
@@ -617,7 +617,7 @@ public class LineageView extends JPanel
 		else
 			startc=cam.f2c(firstFrame.doubleValue());
 
-		EvDecimal lastFrame=nuc.lastFrame();
+		EvDecimal lastFrame=nuc.getLastFrame();
 		if(lastFrame==null)
 			endc=startc;
 		else
@@ -678,7 +678,7 @@ public class LineageView extends JPanel
 					Internal cInternal=getDrawCache().nucInternal.get(cName);
 					//Draw connecting line
 					g.setColor(Color.BLACK);
-					EvDecimal cFirstFrame=c.firstFrame();
+					EvDecimal cFirstFrame=c.getFirstFrame();
 					if(cFirstFrame!=null)
 						g.drawLine(endc,midr,cam.f2c(cFirstFrame.doubleValue()),midr+cInternal.centerDisplacement);
 					else

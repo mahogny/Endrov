@@ -54,7 +54,10 @@ public class NucModelExtension implements ModelWindowExtension
 
 		public JCheckBoxMenuItem miShowTraceSel=new JCheckBoxMenuItem("Traces: Show for selected"); 
 		public JCheckBoxMenuItem miShowTraceCur=new JCheckBoxMenuItem("Traces: Show for current"); 
-		
+		public JCheckBoxMenuItem miShowSimpleTraces=new JCheckBoxMenuItem("Traces: Simplified"); 
+
+		public JCheckBoxMenuItem miShowSmallNuclei=new JCheckBoxMenuItem("Nuclei 50% size"); 
+
 		public JCheckBoxMenuItem miShowDiv=new JCheckBoxMenuItem("Show division lines", true); 
 
 		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false);
@@ -62,7 +65,8 @@ public class NucModelExtension implements ModelWindowExtension
 		public JMenuItem miCalcAngle=new JMenuItem("Calculate angles");  
 		public JMenuItem miCalcPos=new JMenuItem("Show positions");  
 
-		public JMenuItem miCountNuc=new JMenuItem("Count nuclei in frame");  
+		public JMenuItem miCountNucAtFrame=new JMenuItem("Count nuclei in frame");  
+		public JMenuItem miCountNucUpTo=new JMenuItem("Count nuclei up to frame");  
 
 		public NucModelWindowHook(ModelWindow w)
 			{
@@ -77,11 +81,14 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miHideSelectedNuc);
 			miNuc.add(miShowTraceSel);
 			miNuc.add(miShowTraceCur);
+			miNuc.add(miShowSimpleTraces);
+			miNuc.add(miShowSmallNuclei);
 			miNuc.add(miShowDiv);
 			miNuc.add(miShowDelaunay);
 			miNuc.add(miCalcAngle);
 			miNuc.add(miCalcPos);
-			miNuc.add(miCountNuc);
+			miNuc.add(miCountNucAtFrame);
+			miNuc.add(miCountNucUpTo);
 			w.menuModel.add(miNuc);
 			
 	//		miSaveColorScheme.addActionListener(this);
@@ -95,7 +102,9 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowDelaunay.addActionListener(this);
 			miCalcAngle.addActionListener(this);
 			miCalcPos.addActionListener(this);
-			miCountNuc.addActionListener(this);
+			miCountNucAtFrame.addActionListener(this);
+			miCountNucUpTo.addActionListener(this);
+			miShowSmallNuclei.addActionListener(this);
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
 				public void mouseClicked(MouseEvent e)
@@ -140,11 +149,17 @@ public class NucModelExtension implements ModelWindowExtension
 				EvDecimal frame=w.frameControl.getFrame();
 				NucLineage.showPos(frame);
 				}
-			else if(e.getSource()==miCountNuc)
+			else if(e.getSource()==miCountNucAtFrame)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
-					Log.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNuc(frame));
+					Log.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
+				}
+			else if(e.getSource()==miCountNucUpTo)
+				{
+				EvDecimal frame=w.frameControl.getFrame();
+				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
+					Log.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucUpTo(frame));
 				}
 			
 			w.view.repaint(); //TODO modw repaint
@@ -182,6 +197,7 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		public void displaySelect(GL gl)
 			{
+			boolean showSmallNuc=miShowSmallNuclei.isSelected();
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
@@ -191,20 +207,35 @@ public class NucModelExtension implements ModelWindowExtension
 						int rawcol=w.view.reserveSelectColor(this);
 						selectColorMap.put(rawcol, entry.getKey());
 						w.view.setReserveColor(gl, rawcol);
-						renderNucSel(gl,entry.getKey(), entry.getValue());
+						renderNucSel(gl,entry.getKey(), entry.getValue(), showSmallNuc);
 						}
 			}
 		
 		/**
 		 * Render movement trace of nuc
 		 */
-		private void renderTrace(GL gl, NucLineage.Nuc nuc)
+		private void renderTrace(GL gl, NucLineage.Nuc nuc, boolean simple)
 			{
-			gl.glBegin(GL.GL_LINE_STRIP);
-			gl.glColor3d(1, 1, 1);
-			for(NucLineage.NucPos pos:nuc.pos.values())
-				gl.glVertex3d(pos.x,pos.y,pos.z);
-			gl.glEnd();
+			if(!nuc.pos.isEmpty())
+				{
+				gl.glBegin(GL.GL_LINE_STRIP);
+				gl.glColor3d(1, 1, 1);
+				if(simple)
+					{
+					EvDecimal f1=nuc.pos.firstKey();
+					EvDecimal f2=nuc.pos.lastKey();
+					NucLineage.NucPos pos1=nuc.pos.get(f1);
+					NucLineage.NucPos pos2=nuc.pos.get(f2);
+					gl.glVertex3d(pos1.x,pos1.y,pos1.z);
+					gl.glVertex3d(pos2.x,pos2.y,pos2.z);
+					}
+				else
+					{
+					for(NucLineage.NucPos pos:nuc.pos.values())
+						gl.glVertex3d(pos.x,pos.y,pos.z);
+					}
+				gl.glEnd();
+				}
 			}
 		
 		/**
@@ -217,7 +248,8 @@ public class NucModelExtension implements ModelWindowExtension
 			
 			boolean traceCur=miShowTraceCur.isSelected();
 			boolean traceSel=miShowTraceSel.isSelected();
-			
+			boolean tracesSimple=miShowSimpleTraces.isSelected();
+			boolean showSmallNuclei=miShowSmallNuclei.isSelected();
 			
 			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
 				{
@@ -318,12 +350,12 @@ public class NucModelExtension implements ModelWindowExtension
 				for(NucPair nucPair:inter.keySet())
 					{
 					//Render nuc body
-					renderNuc(gl, nucPair, inter.get(nucPair));
+					renderNuc(gl, nucPair, inter.get(nucPair), showSmallNuclei);
 					
-					if(traceCur && !traceSel)
+					if(traceCur && !traceSel && inter.get(nucPair).isVisible())
 						{
 						NucLineage.Nuc nuc=nucPair.fst().nuc.get(nucPair.snd());
-						renderTrace(gl,nuc);
+						renderTrace(gl,nuc, tracesSimple);
 						}
 					
 					//Draw connecting line
@@ -350,7 +382,7 @@ public class NucModelExtension implements ModelWindowExtension
 				for(NucPair pair:NucLineage.selectedNuclei)
 					{
 					NucLineage.Nuc nuc=pair.fst().nuc.get(pair.snd());
-					renderTrace(gl,nuc);
+					renderTrace(gl,nuc, tracesSimple);
 					}
 			
 			//Cell divisions
@@ -363,7 +395,7 @@ public class NucModelExtension implements ModelWindowExtension
 					for(NucLineage.Nuc nuc:lin.nuc.values())
 						if(!nuc.pos.isEmpty() && nuc.parent!=null)
 							{
-							EvDecimal tframe=nuc.firstFrame();
+							EvDecimal tframe=nuc.getFirstFrame();
 							NucLineage.Nuc pnuc=lin.nuc.get(nuc.parent);
 							if(!pnuc.pos.isEmpty())
 								{
@@ -448,11 +480,10 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render body of one nucleus
 		 */
-		private void renderNuc(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
+		private void renderNuc(GL gl, NucPair nucPair, NucLineage.NucInterp nuc, boolean showSmall)
 			{
 			//Visibility rule
 			if(!nuc.isVisible())
-//			if(nuc.frameBefore==null)
 				return;
 			
 			gl.glEnable(GL.GL_CULL_FACE);
@@ -463,6 +494,10 @@ public class NucModelExtension implements ModelWindowExtension
 			//Move to cell center = local coordinate
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
 
+	    double showRadius=nuc.pos.r;
+	    if(showSmall)
+	    	showRadius*=0.5;
+	    
 	    //Decide color based on if the nucleus is selected
 			float lightDiffuse[];
 			if(nuc.colorNuc!=null)
@@ -481,12 +516,12 @@ public class NucModelExtension implements ModelWindowExtension
 		    
 	    	//Hidden cell
 	    	gl.glColor3d(lightDiffuse[0], lightDiffuse[1], lightDiffuse[2]);
-	    	drawHiddenSphere(gl, nuc.pos.r);
+	    	drawHiddenSphere(gl, showRadius);
 	    	}
 	    else
 	    	{
 	    	//Visible cell
-	    	drawVisibleSphere(gl, nuc.pos.r, NucLineage.selectedNuclei.contains(nucPair));
+	    	drawVisibleSphere(gl, showRadius, NucLineage.selectedNuclei.contains(nucPair));
 	    	}
 	    
 	    //Go back to world coordinates
@@ -619,7 +654,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render nucleus in the invisible selection channel
 		 */
-		private void renderNucSel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
+		private void renderNucSel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc, boolean showSmallNuc)
 			{    
 			gl.glEnable(GL.GL_CULL_FACE);
 			
@@ -628,7 +663,12 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
 	  	//If visible cell
 	    if(!NucLineage.hiddenNuclei.contains(nucPair))
-	    	drawSelectSphere(gl, nuc.pos.r);
+	    	{
+	    	double showRadius=nuc.pos.r;
+	    	if(showSmallNuc)
+	    		showRadius*=0.5;
+	    	drawSelectSphere(gl, showRadius);
+	    	}
 	    //Go back to world coordinates
 	    gl.glPopMatrix();
 			}

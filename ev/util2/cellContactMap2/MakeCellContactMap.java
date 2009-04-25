@@ -83,7 +83,7 @@ public class MakeCellContactMap
 		for(String nname:contactStart.keySet())
 			{
 			NucLineage.Nuc nuc=lin.nuc.get(nname);
-			nmap.lifetime.put(nname, new NeighMap.Interval(nuc.firstFrame(),nuc.lastFrame()));
+			nmap.lifetime.put(nname, new NeighMap.Interval(nuc.getFirstFrame(),nuc.getLastFrame()));
 			}
 
 		

@@ -157,11 +157,11 @@ public class MakeStdWorm5
 				NucLineage.Nuc newnuc=newlin.getNucCreate(e.getKey());
 				NucStats.NucStatsOne one=nucstats.nuc.get(e.getKey());
 				EvDecimal thisDur;
-				EvDecimal thisFirstFrame=nuc.firstFrame();
+				EvDecimal thisFirstFrame=nuc.getFirstFrame();
 				if(nuc.child.isEmpty())
 					thisDur=one.getLifeLen();
 				else
-					thisDur=nuc.lastFrame().subtract(nuc.firstFrame());
+					thisDur=nuc.getLastFrame().subtract(nuc.getFirstFrame());
 				EvDecimal oneLifeLen=one.getLifeLen();
 				//potential trouble if no child and thisdur wrong
 				for(EvDecimal frame:e.getValue().pos.keySet())
@@ -213,15 +213,15 @@ public class MakeStdWorm5
 			//Relative time between AB and P1'
 			//Could take child times into account as well to increase resolution
 			if(lin.nuc.containsKey("AB") && lin.nuc.containsKey("P1'"))
-				nucstats.ABPdiff.add(lin.nuc.get("AB").lastFrame().subtract(lin.nuc.get("P1'").lastFrame()));
+				nucstats.ABPdiff.add(lin.nuc.get("AB").getLastFrame().subtract(lin.nuc.get("P1'").getLastFrame()));
 			
 			//Life length and children
 			for(String nucname:lin.nuc.keySet())
 				{
 				NucLineage.Nuc nuc=lin.nuc.get(nucname);
 				
-				EvDecimal start=nuc.firstFrame();
-				EvDecimal end=nuc.lastFrame();
+				EvDecimal start=nuc.getFirstFrame();
+				EvDecimal end=nuc.getLastFrame();
 				NucStats.NucStatsOne one=nucstats.get(nucname);
 				if(nuc.parent!=null)
 					one.parent=nuc.parent;
@@ -272,8 +272,8 @@ public class MakeStdWorm5
 		EvDecimal minframe=null;
 		for(NucLineage.Nuc nuc:lin.nuc.values())
 			{
-			if(minframe==null || nuc.firstFrame().less(minframe))
-				minframe=nuc.firstFrame();
+			if(minframe==null || nuc.getFirstFrame().less(minframe))
+				minframe=nuc.getFirstFrame();
 			}
 		return minframe;
 		}

@@ -276,19 +276,23 @@ public class VoxelExtension implements ModelWindowExtension
 						Imageset im=oc.channelCombo.getImagesetNotNull();
 //					System.out.println("im: "+im);
 //					System.out.println("im2: "+oc.channelCombo.getChannel());
-						EvChannel chim=im.getChannel(oc.channelCombo.getChannel());
-						if(chim!=null)
+						String channelName=oc.channelCombo.getChannel();
+						if(channelName!=null)
 							{
-							ChannelSelection sel=chsel.get(chim);
-							if(sel==null)
-								chsel.put(chim, sel=new ChannelSelection());
-							sel.im=im;
-							sel.ch=chim;
-							sel.filterSeq=oc.filterSeq;
-							sel.color=new Color(
-									sel.color.getRed()+oc.color.getRed(),
-									sel.color.getGreen()+oc.color.getGreen(),
-									sel.color.getBlue()+oc.color.getBlue());
+							EvChannel chim=im.getChannel(channelName);
+							if(chim!=null)
+								{
+								ChannelSelection sel=chsel.get(chim);
+								if(sel==null)
+									chsel.put(chim, sel=new ChannelSelection());
+								sel.im=im;
+								sel.ch=chim;
+								sel.filterSeq=oc.filterSeq;
+								sel.color=new Color(
+										sel.color.getRed()+oc.color.getRed(),
+										sel.color.getGreen()+oc.color.getGreen(),
+										sel.color.getBlue()+oc.color.getBlue());
+								}
 							}
 						}
 					
@@ -413,10 +417,14 @@ public class VoxelExtension implements ModelWindowExtension
 				String ch=lastChannel;
 				Imageset newImageset=channelCombo.getImagesetNull();
 				String newChannel=channelCombo.getChannelNotNull();*/
-				EvChannel images=channelCombo.getImagesetNotNull().channelImages.get(channelCombo.getChannel());
-				if(images!=lastChannelImages.get())
-//				if(ims!=newImageset || !ch.equals(newChannel))
-					stackChanged();
+				String channelName=channelCombo.getChannel();
+				if(channelName!=null)
+					{
+					EvChannel images=channelCombo.getImagesetNotNull().channelImages.get(channelName);
+					if(images!=lastChannelImages.get())
+	//				if(ims!=newImageset || !ch.equals(newChannel))
+						stackChanged();
+					}
 				}
 				
 			public void actionPerformed(ActionEvent e)
