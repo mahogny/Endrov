@@ -1,9 +1,14 @@
-package endrov.histEqualizer;
+package endrov.unsortedImageFilters;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class HistEqualizer
+/**
+ * Piecewise continuous histogram transform 
+ * @author Johan Henriksson
+ *
+ */
+public class HistogramTransform
 	{
 
 	/**
@@ -17,7 +22,7 @@ public class HistEqualizer
 	public SortedMap<Double, Double> points=new TreeMap<Double, Double>();
 	
 	
-	public HistEqualizer()
+	public HistogramTransform()
 		{
 		//Maybe separate mapping from the widget? can do later
 		

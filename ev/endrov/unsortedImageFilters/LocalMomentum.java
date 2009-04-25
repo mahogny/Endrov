@@ -1,6 +1,5 @@
 package endrov.unsortedImageFilters;
 
-import endrov.imageset.EvPixels;
 
 /**
  * Local momentum. Can be used to find local orientation.
@@ -26,67 +25,7 @@ import endrov.imageset.EvPixels;
  **/
 public class LocalMomentum
 	{
-
 	
-	
-	
-	
-	
-	/**
-	 * Calculation done by decomposition:
-	 * Iij=sum ij rho(x,y) - (Ei+Ej) sum rho + Ei Ej sum rho 
-	 * Ei=sum i rho(x,y)
-	 * These operations can be done efficiently using cumsums and image math, independent of window size 
-	 * 
-	 * O(w*h)
-	 * 
-	 * @return Ixx, Iyy, Ixy
-	 * 
-	 */
-	/*public static Tuple<EvPixels,Tuple<EvPixels, EvPixels>> localMomentum(EvPixels p, int kw, int kh)
-		{
-		
-		
-		
-		}*/
-
-	/**
-	 * Return an image of given size
-	 * 1 2 3
-	 * 1 2 3
-	 * 1 2 3
-	 */
-	public static EvPixels genIncX(int w, int h)
-		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_INT,w,h);
-		int[] aPixels=p.getArrayInt();
-		for(int y=0;y<h;y++)
-			{
-			int base=y*w;
-			for(int x=0;x<w;x++)
-				aPixels[base+x]=x;
-			}
-		return p;
-		}
-	
-	/**
-	 * Return an image of given size:
-	 * 1 1 1
-	 * 2 2 2
-	 * 3 3 3
-	 */
-	public static EvPixels genIncY(int w, int h)
-		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_INT,w,h);
-		int[] aPixels=p.getArrayInt();
-		for(int y=0;y<h;y++)
-			{
-			int base=y*w;
-			for(int x=0;x<w;x++)
-				aPixels[base+x]=y;
-			}
-		return p;
-		}
-	
+	//Use functions in imagegenerator
 	
 	}

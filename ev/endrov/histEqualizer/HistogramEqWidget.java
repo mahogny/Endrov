@@ -7,6 +7,7 @@ import java.util.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import endrov.unsortedImageFilters.HistogramTransform;
 import endrov.unsortedImageFilters.Histogram;
 
 public class HistogramEqWidget extends JPanel
@@ -19,7 +20,7 @@ public class HistogramEqWidget extends JPanel
 	 * Map is never inverted
 	 */
 
-	HistEqualizer eq=new HistEqualizer();
+	HistogramTransform eq=new HistogramTransform();
 	
 	
 	SortedMap<?,Integer> cumHist=new TreeMap<Integer, Integer>();
