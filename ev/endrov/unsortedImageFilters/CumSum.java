@@ -2,6 +2,12 @@ package endrov.unsortedImageFilters;
 
 import endrov.imageset.EvPixels;
 
+/**
+ * Operations to work with cumulative sums
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class CumSum
 	{
 	/**
@@ -41,6 +47,41 @@ public class CumSum
 		
 		return out;
 		}
+	
+	/**
+	 * Special optimized version of cumsum. We have the property Var(x)=E(x^2)-(E(x))^2. Since it is used so much
+	 * to find local variance, this function exist and returns cumsum(x^2)
+	 * 
+	 * Complexity O(w*h)
+	 * 
+	 */
+	public static EvPixels cumsum2(EvPixels in)
+		{
+		in=in.convertTo(EvPixels.TYPE_INT, true);
+		int w=in.getWidth();
+		int h=in.getHeight();
+		EvPixels out=new EvPixels(EvPixels.TYPE_INT,w+1,h+1); //Must be able to fit. Need not be original type.
+		int[] inPixels=in.getArrayInt();
+		int[] outPixels=out.getArrayInt();
+		
+		int curin=0;
+		for(int ay=0;ay<h;ay++)
+			{
+			int sum=0;
+			for(int ax=0;ax<w;ax++)
+				{
+				sum+=inPixels[curin]*inPixels[curin];
+				
+				int outnext=out.getPixelIndex(ax+1, ay+1);
+				int outbefore=outnext-(w+1);//out.getPixelIndex(ax+1, ay);
+				outPixels[outnext]=sum+outPixels[outbefore];
+				curin++;
+				}
+			}
+		
+		return out;
+		}
+	
 	
 	
 	/**

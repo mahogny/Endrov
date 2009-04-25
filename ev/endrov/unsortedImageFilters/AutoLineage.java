@@ -207,7 +207,7 @@ public class AutoLineage
 		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
-				return MiscFilter.movingAverage(p[0], pw, ph);
+				return AveragingFilter.movingAverage(p[0], pw, ph);
 				}
 		});
 		}
@@ -280,7 +280,7 @@ public class AutoLineage
 		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
-				return MiscFilter.movingSum(p[0], pw, ph);
+				return AveragingFilter.movingSum(p[0], pw, ph);
 				}
 		});
 		}
@@ -449,7 +449,7 @@ public class AutoLineage
 		for(Map.Entry<EvDecimal, EvImage> e:origStack.entrySet())
 			{
 			EvPixels in=e.getValue().getPixels();
-			EvPixels average=MiscFilter.movingAverage(in, 30, 30);
+			EvPixels average=AveragingFilter.movingAverage(in, 30, 30);
 			EvImage evim=e.getValue().makeShadowCopy();
 			
 			
@@ -463,7 +463,7 @@ public class AutoLineage
 			binmaskp[1]=binmaskp[0+3]=binmaskp[1+3]=binmaskp[2+3]=binmaskp[1+3*2]=1;
 			*/
 			
-			EvPixels out=CompareImage.greater(MiscFilter.movingSum(spotpixels, 2, 2), 15);
+			EvPixels out=CompareImage.greater(AveragingFilter.movingSum(spotpixels, 2, 2), 15);
 			
 			
 			
