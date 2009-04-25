@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * A Java tuple (a,b)
  * 
- * This code was taken from a forum post. It is the only possible technical
+ * This code was taken from a forum post and modified. It is the only possible technical
  * implementation and hence not copyrightable.
  */
 public class Tuple<L, R> implements Serializable
@@ -14,9 +14,9 @@ public class Tuple<L, R> implements Serializable
 	private final L fst;
 	private final R snd;
 
-	public Tuple(L left, R right) 
+	public Tuple(L fst, R right) 
 		{
-		this.fst = left;
+		this.fst = fst;
 		this.snd = right;
 		}
 
@@ -36,10 +36,6 @@ public class Tuple<L, R> implements Serializable
 		return snd;
 		}
 
-/*	public static <A, B> Tuple<A, B> create(A left, B right) 
-		{
-		return new Tuple<A, B>(left, right);
-		}*/
 
 	public final boolean equals(Object o) 
 		{
