@@ -209,4 +209,16 @@ public class AveragingFilter
 		*/
 		return out;
 		}
+	
+	
+	/*
+	 * TODO
+	 * page 77. other average filters are possible.
+	 * u^-1(E[u(p)])  with u(g)=g arithmetic,  u(g)=1/g harmonic,  u(g)=log g geometric
+	 */
+	
+	
+	
+	
+	
 	}

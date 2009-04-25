@@ -8,7 +8,7 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class ImageGenerator
+public class GenerateSpecialImage
 	{
 
 	/**
@@ -17,17 +17,17 @@ public class ImageGenerator
 	 */
 	public static EvPixels genXpYp(int w, int h, int p, int q)
 		{
-		EvPixels out=ImageGenerator.genConstant(w, h, 1);
+		EvPixels out=GenerateSpecialImage.genConstant(w, h, 1);
 		
 		if(p>0)
 			{
-			EvPixels mul=ImageGenerator.genIncX(w, h);
+			EvPixels mul=GenerateSpecialImage.genIncX(w, h);
 			for(int i=0;i<p;i++)
 				out=ImageMath.times(out, mul);
 			}
 		if(q>0)
 			{
-			EvPixels mul=ImageGenerator.genIncY(w, h);
+			EvPixels mul=GenerateSpecialImage.genIncY(w, h);
 			for(int i=0;i<q;i++)
 				out=ImageMath.times(out, mul);
 			}
@@ -90,5 +90,9 @@ public class ImageGenerator
 			}
 		return p;
 		}
+	
+	/**
+	 * Common kernels? gaussian, laplace etc
+	 */
 
 	}
