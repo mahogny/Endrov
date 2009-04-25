@@ -136,8 +136,8 @@ public class TravelDist
 				if(!nuc.pos.isEmpty() && nuc.child.size()==2) //Only consider cells with children
 					{
 					int c=3;
-					EvDecimal start = nuc.firstFrame().add(c);
-					EvDecimal end   = nuc.lastFrame().subtract(c);
+					EvDecimal start = nuc.getFirstFrame().add(c);
+					EvDecimal end   = nuc.getLastFrame().subtract(c);
 		
 		
 					if(start.less(end))
@@ -196,7 +196,7 @@ public class TravelDist
 							double relDev=0;
 							NucExp ediv=nuc.exp.get("divDev");
 							if(ediv!=null)
-								relDev=ediv.level.get(EvDecimal.ZERO)/nuc.lastFrame().subtract(nuc.firstFrame()).doubleValue();
+								relDev=ediv.level.get(EvDecimal.ZERO)/nuc.getLastFrame().subtract(nuc.getFirstFrame()).doubleValue();
 							
 							//Write out
 							out.println(nucName+"\t"+start+"\t"+end+"\t"+straightDistance+"\t"+fractalDist+"\t"+

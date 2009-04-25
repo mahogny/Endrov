@@ -174,7 +174,7 @@ public class NucLineage extends EvObject implements Cloneable
 				
 				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);
-				EvDecimal firstFrame=n.firstFrame();
+				EvDecimal firstFrame=n.getFirstFrame();
 				if(parentName==null || firstFrame.less(parentFrame))
 					{
 					parentFrame=firstFrame;
@@ -685,8 +685,8 @@ public class NucLineage extends EvObject implements Cloneable
 		{
 		Tuple<EvDecimal, String> found=null;
 		for(Map.Entry<String, Nuc> n:nuc.entrySet())
-			if(found==null || (!n.getValue().pos.isEmpty() && n.getValue().firstFrame().less(found.fst())))
-				found=new Tuple<EvDecimal, String>(n.getValue().firstFrame(),n.getKey());
+			if(found==null || (!n.getValue().pos.isEmpty() && n.getValue().getFirstFrame().less(found.fst())))
+				found=new Tuple<EvDecimal, String>(n.getValue().getFirstFrame(),n.getKey());
 		return found;
 		}
 
@@ -697,8 +697,8 @@ public class NucLineage extends EvObject implements Cloneable
 		{
 		Tuple<EvDecimal, String> found=null;
 		for(Map.Entry<String, Nuc> n:nuc.entrySet())
-			if(found==null || (!n.getValue().pos.isEmpty() && n.getValue().lastFrame().greater(found.fst())))
-				found=new Tuple<EvDecimal, String>(n.getValue().lastFrame(),n.getKey());
+			if(found==null || (!n.getValue().pos.isEmpty() && n.getValue().getLastFrame().greater(found.fst())))
+				found=new Tuple<EvDecimal, String>(n.getValue().getLastFrame(),n.getKey());
 		return found;
 		}
 
@@ -945,7 +945,7 @@ public class NucLineage extends EvObject implements Cloneable
 		/**
 		 * Get the last frame accounting for override
 		 */
-		public EvDecimal lastFrame()
+		public EvDecimal getLastFrame()
 			{
 			if(overrideEnd!=null)
 				return overrideEnd;
@@ -964,10 +964,10 @@ public class NucLineage extends EvObject implements Cloneable
 						*/
 //					if(cfirstFrame==null || cfirstFrame.greater(c.lastFrame())) //Changed 2008-02-09
 //						cfirstFrame=c.lastFrame();
-					EvDecimal thisFirstFrame=c.firstFrame();
+					EvDecimal thisFirstFrame=c.getFirstFrame();
 					if(thisFirstFrame!=null)
 						if(cfirstFrame==null || cfirstFrame.greater(thisFirstFrame))
-							cfirstFrame=c.firstFrame();
+							cfirstFrame=c.getFirstFrame();
 					}
 				if(cfirstFrame!=null && (lastFrame==null || cfirstFrame.greater(lastFrame)))
 					lastFrame=cfirstFrame;
@@ -979,7 +979,7 @@ public class NucLineage extends EvObject implements Cloneable
 		/**
 		 * Get the first frame accounting for override
 		 */
-		public EvDecimal firstFrame()
+		public EvDecimal getFirstFrame()
 			{
 			if(overrideStart!=null)
 				return overrideStart;
@@ -1026,7 +1026,7 @@ public class NucLineage extends EvObject implements Cloneable
 			for(String childName:child)
 				{
 				Nuc n=nuc.get(childName);
-				EvDecimal cFirstFrame=n.firstFrame();
+				EvDecimal cFirstFrame=n.getFirstFrame();
 				if(cFirstFrame!=null && frame.greaterEqual(cFirstFrame))
 					return null;
 				}
@@ -1135,7 +1135,19 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 	
 	
-	public int countNuc(EvDecimal frame)
+	public int countNucUpTo(EvDecimal frame)
+		{
+		int count=0;
+		for(NucLineage.Nuc n:nuc.values())
+			{
+			EvDecimal f=n.getFirstFrame();
+			if(f!=null && f.lessEqual(frame))
+				count++;
+			}
+		return count;
+		}
+	
+	public int countNucAtFrame(EvDecimal frame)
 		{
 		return getInterpNuc(frame).size();
 		}

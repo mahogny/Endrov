@@ -327,8 +327,8 @@ public class CellContactMap
 		
 		if(ov==null || ov.isEmpty())
 			return neighOverlaps;
-		EvDecimal firstFrame=lin.lin.nuc.get(nucName).firstFrame();
-		EvDecimal lastFrame=lin.lin.nuc.get(nucName).lastFrame();
+		EvDecimal firstFrame=lin.lin.nuc.get(nucName).getFirstFrame();
+		EvDecimal lastFrame=lin.lin.nuc.get(nucName).getLastFrame();
 		SortedMap<EvDecimal,Boolean> isNeighMap=new TreeMap<EvDecimal, Boolean>();
 		//Could restrict better using lifetime
 		for(EvDecimal f:lin.framesTested.tailSet(lastFrame))
