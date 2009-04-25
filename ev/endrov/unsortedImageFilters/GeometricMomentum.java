@@ -33,7 +33,7 @@ public class GeometricMomentum
 		{
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels pq=ImageGenerator.genXpYp(w, h, p, q);
+		EvPixels pq=GenerateSpecialImage.genXpYp(w, h, p, q);
 		
 		return ImageMath.sum(ImageMath.times(pq, in));
 		
