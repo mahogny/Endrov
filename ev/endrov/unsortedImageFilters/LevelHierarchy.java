@@ -127,7 +127,9 @@ public class LevelHierarchy
 		for(int z=0;z<d;z++)
 			for(int y=0;y<h;y++)
 				for(int x=0;x<w;x++)
+					{
 					nodes.add(pixelNode[z][y][x]);
+					}
 		//System.out.println(nodes);
 		System.out.println(nodes.size());
 		
@@ -157,6 +159,8 @@ public class LevelHierarchy
 					//Need to join nodes. Eliminate thisNode.
 					neighNode.pixels.addAll(thisNode.pixels);
 					neighNode.children.addAll(thisNode.children);
+					for(Node n:thisNode.children)
+						n.parent=neighNode;
 					for(Vector3i u:thisNode.pixels)
 						pixelNode[u.z][u.y][u.x]=neighNode;
 					thisNode=neighNode;
@@ -187,6 +191,7 @@ public class LevelHierarchy
 						thisNode.pixels.add(v);
 						}
 					thisNode.children.add(neighNode);
+					neighNode.parent=thisNode;
 					}
 				}
 			}
