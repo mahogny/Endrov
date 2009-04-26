@@ -1,0 +1,6 @@
+* general code, classes with .plus etc
+* in and out, have to have at least 2 variables. hardcode 2 classes?
+* peculiar cases may exist with stranger needs
+* 8bit difficult
+* classloader with automatic compilation of classes into reified versions
+* might be hard to work with AST? might have to. unless... _plus() etc, easy to identify
