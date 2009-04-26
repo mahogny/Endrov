@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.*;
 
 import endrov.data.EvData;
+import endrov.ev.EV;
+import endrov.ev.Log;
+import endrov.ev.StdoutLog;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
@@ -23,10 +26,15 @@ public class LevelHierarchy
 	
 	public static class Node
 		{
-		public Integer intensity;
+		public int intensity;
 		public HashSet<Vector3i> pixels=new HashSet<Vector3i>();
 		public Node parent;
 		public HashSet<Node> children=new HashSet<Node>();
+		
+		public String toString()
+			{
+			return pixels.size()+" { "+children+" }";
+			}
 		}
 	
 	public Node root;
@@ -78,63 +86,25 @@ public class LevelHierarchy
 		
 		for(Map.Entry<Integer, LinkedList<Vector3i>> level:pixels.entrySet())
 			{
-			Integer thisIntensity=level.getKey();
+			int thisIntensity=level.getKey();
+			System.out.println(thisIntensity);
 			
 			for(Vector3i v:level.getValue())
 				{
 				Node thisNode=null;
 				
-				//Test in all directions
-				Node neighNode=pixelNode[v.z+1][v.y][v.x];
-				if(neighNode!=null)
-					{
-					if(neighNode.intensity.equals(thisIntensity))
-						{
-						//Same level
-						if(thisNode==null)
-							{
-							//Add pixel to node
-							neighNode.pixels.add(v);
-							thisNode=neighNode;
-							}
-						else
-							{
-							//Need to join nodes. Eliminate thisNode.
-							neighNode.pixels.addAll(thisNode.pixels);
-							neighNode.children.addAll(thisNode.children);
-							for(Vector3i u:thisNode.pixels)
-								pixelNode[u.z][u.y][u.x]=neighNode;
-							thisNode=neighNode;
-							}
-						}
-					else
-						{
-						//Neighbour must be a higher intensity, hence a child of this pixel.
-						
-						//Which is the highest node containing pixel?
-						while(neighNode.parent!=null)
-							neighNode=neighNode.parent;
-						
-						//Check if area is on the same level
-						if(neighNode.intensity.equals(thisIntensity))
-							{
-							//Add this pixel to node
-							neighNode.pixels.add(v);
-							thisNode=neighNode;
-							}
-						else
-							{
-							//Add area as child. Create a node for this pixel if needed.
-							if(thisNode==null)
-								{
-								thisNode=new Node();
-								thisNode.intensity=level.getKey();
-								thisNode.pixels.add(v);
-								}
-							thisNode.children.add(neighNode);
-							}
-						}
-					}
+				if(v.x+1<w)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x+1, v.y,   v.z);
+				if(v.x>0)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x-1, v.y,   v.z);
+				if(v.y+1<h)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y+1, v.z);
+				if(v.y>0)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y-1, v.z);
+				if(v.z+1<d)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y,   v.z+1);
+				if(v.z>0)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y,   v.z-1);
 
 				//Alone so far. No neighbours. Create a new Node
 				if(thisNode==null)
@@ -144,17 +114,83 @@ public class LevelHierarchy
 					thisNode.pixels.add(v);
 					}
 
-				pixelNode[v.z][v.y][v.x]=thisNode;
+				//System.out.println(thisNode);
 				
+				pixelNode[v.z][v.y][v.x]=thisNode;
 				}
+
 			
-			root=pixelNode[0][0][0];
 			}
 		
 		
+		HashSet<Node> nodes=new HashSet<Node>();
+		for(int z=0;z<d;z++)
+			for(int y=0;y<h;y++)
+				for(int x=0;x<w;x++)
+					nodes.add(pixelNode[z][y][x]);
+		//System.out.println(nodes);
+		System.out.println(nodes.size());
+		
+		root=pixelNode[0][0][0];
 		
 		
-		
+		}
+	
+	
+	private Node testOneNeigh(Node thisNode, Integer thisIntensity, Node[][][] pixelNode, Vector3i v, int x2, int y2, int z2)
+		{
+		//Test in all directions
+		Node neighNode=pixelNode[z2][y2][x2];
+		if(neighNode!=null)
+			{
+			if(neighNode.intensity==thisIntensity)
+				{
+				//Same level
+				if(thisNode==null)
+					{
+					//Add pixel to node
+					neighNode.pixels.add(v);
+					thisNode=neighNode;
+					}
+				else
+					{
+					//Need to join nodes. Eliminate thisNode.
+					neighNode.pixels.addAll(thisNode.pixels);
+					neighNode.children.addAll(thisNode.children);
+					for(Vector3i u:thisNode.pixels)
+						pixelNode[u.z][u.y][u.x]=neighNode;
+					thisNode=neighNode;
+					}
+				}
+			else
+				{
+				//Neighbour must be a higher intensity, hence a child of this pixel.
+				
+				//Which is the highest node containing pixel?
+				while(neighNode.parent!=null)
+					neighNode=neighNode.parent;
+				
+				//Check if area is on the same level
+				if(neighNode.intensity==thisIntensity)
+					{
+					//Add this pixel to node
+					neighNode.pixels.add(v);
+					thisNode=neighNode;
+					}
+				else
+					{
+					//Add area as child. Create a node for this pixel if needed.
+					if(thisNode==null)
+						{
+						thisNode=new Node();
+						thisNode.intensity=thisIntensity;
+						thisNode.pixels.add(v);
+						}
+					thisNode.children.add(neighNode);
+					}
+				}
+			}
+		return thisNode;
 		}
 	
 	/**
@@ -204,6 +240,7 @@ public class LevelHierarchy
 	public int _check(Node node, int count)
 		{
 		int sum=node.pixels.size();
+		System.out.println("size here "+sum);
 		for(Node c:node.children)
 			{
 			if(c.intensity<=node.intensity)
@@ -217,16 +254,31 @@ public class LevelHierarchy
 	
 	public static void main(String[] args)
 		{
+		Log.listeners.add(new StdoutLog());
+		EV.loadPlugins();
+		
+		
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/TB2167_080416.ost"));
 		
 		Imageset im=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
 		
-		EvStack stack=im.getChannel("RFP").imageLoader.get(new EvDecimal((14050)));
+		EvStack stack=im.getChannel("RFP").imageLoader.get(new EvDecimal(14050));
+		stack.keySet().remove(new EvDecimal("1"));
+		stack.keySet().remove(new EvDecimal("2.5"));
+		stack.keySet().remove(new EvDecimal("4"));
+		stack.keySet().remove(new EvDecimal("5.5"));
+		
+		stack.keySet().remove(new EvDecimal("31"));		
+		stack.keySet().remove(new EvDecimal("32.5"));
+		stack.keySet().remove(new EvDecimal("34"));
+		System.out.println(stack.keySet());
 		
 		LevelHierarchy hi=new LevelHierarchy(stack);
 		
 		hi._check();
+		System.out.println(hi.root);
 		
+		System.exit(0);
 		}
 	
 	
