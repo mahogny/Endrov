@@ -55,6 +55,20 @@ public class EvStack
 	public double scaleWorldImageX(double c){return c*resX/binning;}
 	public double scaleWorldImageY(double c){return c*resY/binning;}
 	
+	
+	/*
+	public double transformImageWorldZ(double c)
+		{
+		//TODO
+		}
+	public double transformWorldImageZ(double c)
+		{
+		//TODO
+		}
+	public double scaleWorldImageZ(double c){}
+	public double scaleImageWorldZ(double c){}
+	*/
+	
 	public void getMetaFrom(EvStack o)
 		{
 		resX=o.resX;
@@ -62,14 +76,6 @@ public class EvStack
 		binning=o.binning;
 		dispX=o.dispX;
 		dispY=o.dispY;
-		}
-	
-	/**
-	 * Get the number of image planes
-	 */
-	public int size()
-		{
-		return loaders.size();
 		}
 	
 	//TODO lazy generation of the stack
@@ -225,4 +231,50 @@ public class EvStack
 		EvDecimal k=loaders.firstKey();
 		return Tuple.make(k, loaders.get(k));
 		}
+	
+	
+	
+	/**
+	 * TODO require and enforce that somehow all layers have the same width and height
+	 * Get width in number of pixels
+	 */
+	public int getWidth()
+		{
+		return firstEntry().snd().getPixels().getWidth();
+		}
+	
+	/**
+	 * Get height in number of pixels
+	 * @return
+	 */
+	public int getHeight()
+		{
+		return firstEntry().snd().getPixels().getHeight();
+		}
+	
+
+	/**
+	 * Get the number of image planes
+	 */
+	public int getDepth()
+		{
+		return loaders.size();
+		}
+		
+	/**
+	 * Get array of pixels. This will cause all layers to be loaded so it should only be used
+	 * when all pixels will be used
+	 */
+	public EvPixels[] getPixels()
+		{
+		EvPixels[] arr=new EvPixels[loaders.size()];
+		int i=0;
+		for(EvImage evim:loaders.values())
+			arr[i++]=evim.getPixels();
+		return arr;
+		}
+	
+	
+	
+	
 	}

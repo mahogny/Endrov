@@ -143,7 +143,7 @@ public class Stack3D extends StackInterface
 					if(skipcount>=skipForward)
 						{
 						skipcount=0;
-						int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.size());
+						int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.getDepth());
 						int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
 
@@ -162,7 +162,7 @@ public class Stack3D extends StackInterface
 							os.tex=texture;
 							os.w=bim.getWidth();
 							os.h=bim.getHeight();
-							os.d=ceilPower2(stack.size());
+							os.d=ceilPower2(stack.getDepth());
 
 							int bw=suitablePower2(os.w);
 							os.resX/=os.w/(double)bw;
@@ -181,7 +181,7 @@ public class Stack3D extends StackInterface
 							os.realw=os.w/os.resX;
 							os.realh=os.h/os.resY;								
 							int slicespan=(stack.lastZ().subtract(stack.firstZ()).add(1).intValue()); //TODO bd problem, total redo
-							os.reald=(os.d*(double)slicespan/(double)stack.size());///chsel.im.meta.resZ;
+							os.reald=(os.d*(double)slicespan/(double)stack.getDepth());///chsel.im.meta.resZ;
 							}
 
 

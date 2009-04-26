@@ -136,7 +136,7 @@ public class Stack2D extends StackInterface
 					skipcount++;
 					if(skipcount>=skipForward)
 						{
-						final int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.size());
+						final int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.getDepth());
 						final int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
 

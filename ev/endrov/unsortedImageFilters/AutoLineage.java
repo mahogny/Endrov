@@ -179,7 +179,7 @@ public class AutoLineage
 
 
 		EvPixels ptot=new EvPixels(EvPixels.TYPE_INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
-		int numZ=in.size();
+		int numZ=in.getDepth();
 		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
 			ptot=ImageMath.plus(ptot, plane.getValue().getPixels());
 
