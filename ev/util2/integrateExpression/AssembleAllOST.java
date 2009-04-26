@@ -22,7 +22,7 @@ public class AssembleAllOST
 		{
 		
 		
-		File htmlOutdir=new File("/Volumes2/TBU_main03/userdata/henriksson/geneProfilesAPT");
+		File htmlOutdir=new File("/Volumes/TBU_main03/userdata/henriksson/geneProfilesAPT");
 		
 		
 		htmlOutdir.mkdirs();
@@ -35,7 +35,8 @@ public class AssembleAllOST
 		//doProfile(data);
 
 		
-			for(File f:new File("/Volumes2/TBU_main01/ost4dgood").listFiles())
+		for(File f:new File("/Volumes/TBU_main01/ost4dgood").listFiles())
+//			for(File f:new File("/Volumes2/TBU_main01/ost4dgood").listFiles())
 				if(f.getName().endsWith(".ost")) 
 					{
 					File APfile=new File(new File(f,"data"),"AP20-GFPb");

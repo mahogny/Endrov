@@ -81,7 +81,8 @@ public class MakeProfiles
 	//	EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 		//doProfile(data);
 
-		EvParallel.map_(Arrays.asList(new File("/Volumes/TBU_main01/ost4dgood").listFiles()), new EvParallel.FuncAB<File, Object>(){
+		EvParallel.map_(Arrays.asList(new File("/Volumes/TBU_main04/daemon/output").listFiles()), new EvParallel.FuncAB<File, Object>(){
+//		EvParallel.map_(Arrays.asList(new File("/Volumes/TBU_main01/ost4dgood").listFiles()), new EvParallel.FuncAB<File, Object>(){
 			public Object func(File f)
 				{
 				if(f.getName().endsWith(".ost"))
