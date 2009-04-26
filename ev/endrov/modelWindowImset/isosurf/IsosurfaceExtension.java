@@ -357,7 +357,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 
 						
 						EvStack stack=im.channelImages.get(channelName).imageLoader.get(cframe);
-						final int numSlices=stack.size();
+						final int numSlices=stack.getDepth();
 						int curslice=0;
 						if(stack!=null)
 							for(final EvDecimal i:stack.keySet())
@@ -380,7 +380,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 									{
 									pixelsW=bim.getWidth();
 									pixelsH=bim.getHeight();
-									pixelsD=stack.size();
+									pixelsD=stack.getDepth();
 									realw=(float)bim.getWidth()/(float)(stack.resX/stack.binning);
 									realh=(float)bim.getHeight()/(float)(stack.resY/stack.binning);
 									reald=(float)pixelsD;//(float)resZ;

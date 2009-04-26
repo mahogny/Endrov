@@ -676,7 +676,7 @@ public class ImageWindow extends BasicWindow
 			if(ch!=null)
 				{
 				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
-				if(ch.imageLoader.get(curFrame).size()>0)
+				if(ch.imageLoader.get(curFrame).getDepth()>0)
 					{
 					EvDecimal firstSlice=ch.imageLoader.get(curFrame).firstZ();
 					EvDecimal lastSlice=ch.imageLoader.get(curFrame).lastZ();
