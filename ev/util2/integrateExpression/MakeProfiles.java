@@ -36,6 +36,7 @@ public class MakeProfiles
 		if(data.getIdObjectsRecursive(Shell.class).isEmpty())
 			return;
 		
+		System.out.println("Doing: "+data.getMetadataName());
 		
 		IntExpAP.doProfile(data,IntExpAP.linFor(1, channelName),"exp",channelName,1);
 
@@ -81,7 +82,7 @@ public class MakeProfiles
 	//	EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 		//doProfile(data);
 
-		EvParallel.map_(Arrays.asList(new File("/Volumes/TBU_main04/daemon/output").listFiles()), new EvParallel.FuncAB<File, Object>(){
+		EvParallel.map_(Arrays.asList(new File("/Volumes/TBU_main03/daemon/output").listFiles()), new EvParallel.FuncAB<File, Object>(){
 //		EvParallel.map_(Arrays.asList(new File("/Volumes/TBU_main01/ost4dgood").listFiles()), new EvParallel.FuncAB<File, Object>(){
 			public Object func(File f)
 				{
