@@ -13,7 +13,7 @@ public class Maybe<E>
 	private E e;
 	
 	/**
-	 * Construct a no-value
+	 * Construct a Nothing-value
 	 */
 	public Maybe()
 		{

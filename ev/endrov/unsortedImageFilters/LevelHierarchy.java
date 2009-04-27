@@ -11,6 +11,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
+import endrov.util.PersistentGrowingCollection;
 import endrov.util.Vector3i;
 
 /**
@@ -27,13 +28,15 @@ public class LevelHierarchy
 	public static class Node
 		{
 		public int intensity;
-		public HashSet<Vector3i> pixels=new HashSet<Vector3i>();
+		public PersistentGrowingCollection<Vector3i> pixels=null;//new PersistentGrowingCollection<Vector3i>();
+//		public HashSet<Vector3i> pixels=new HashSet<Vector3i>();
 		public Node parent;
 		public HashSet<Node> children=new HashSet<Node>();
 		
 		public String toString()
 			{
-			return pixels.size()+" { "+children+" }";
+			return " { "+children+" }";
+//			return pixels.size()+" { "+children+" }";
 			}
 		}
 	
@@ -84,34 +87,42 @@ public class LevelHierarchy
 		
 		TreeMap<Integer, LinkedList<Vector3i>> pixels=getSortedPixelList(stack, true);
 		
+		int countPixel=0;
+		
 		for(Map.Entry<Integer, LinkedList<Vector3i>> level:pixels.entrySet())
 			{
 			int thisIntensity=level.getKey();
-			System.out.println(thisIntensity);
+			System.out.println("i"+thisIntensity);
 			
 			for(Vector3i v:level.getValue())
 				{
-				Node thisNode=null;
+				countPixel++;
+//				if(countPixel%1000==0)
+					System.out.println(countPixel);
 				
-				if(v.x+1<w)
-					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x+1, v.y,   v.z);
-				if(v.x>0)
-					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x-1, v.y,   v.z);
-				if(v.y+1<h)
-					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y+1, v.z);
-				if(v.y>0)
-					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y-1, v.z);
-				if(v.z+1<d)
-					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y,   v.z+1);
+				Node thisNode=null;
+
+				//Order optimized to add single pixels as often as possible
 				if(v.z>0)
 					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y,   v.z-1);
+				if(v.z+1<d)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y,   v.z+1);
+				if(v.y>0)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y-1, v.z);
+				if(v.y+1<h)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x,   v.y+1, v.z);
+				if(v.x>0)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x-1, v.y,   v.z);
+				if(v.x+1<w)
+					thisNode=testOneNeigh(thisNode, thisIntensity, pixelNode, v, v.x+1, v.y,   v.z);
 
 				//Alone so far. No neighbours. Create a new Node
 				if(thisNode==null)
 					{
 					thisNode=new Node();
 					thisNode.intensity=level.getKey();
-					thisNode.pixels.add(v);
+					thisNode.pixels=new PersistentGrowingCollection<Vector3i>(v);//.add(v);
+					//thisNode.pixels.add(v);
 					}
 
 				//System.out.println(thisNode);
@@ -120,24 +131,25 @@ public class LevelHierarchy
 				}
 
 			
+			HashSet<Node> nodes=new HashSet<Node>();
+			for(int z=0;z<d;z++)
+				for(int y=0;y<h;y++)
+					for(int x=0;x<w;x++)
+						{
+						nodes.add(pixelNode[z][y][x]);
+						}
+			//System.out.println(nodes);
+			System.out.println("# top level nodes: "+nodes.size());
 			}
 		
 		
-		HashSet<Node> nodes=new HashSet<Node>();
-		for(int z=0;z<d;z++)
-			for(int y=0;y<h;y++)
-				for(int x=0;x<w;x++)
-					{
-					nodes.add(pixelNode[z][y][x]);
-					}
-		//System.out.println(nodes);
-		System.out.println(nodes.size());
 		
 		root=pixelNode[0][0][0];
 		
 		
 		}
 	
+	int expensive=0;
 	
 	private Node testOneNeigh(Node thisNode, Integer thisIntensity, Node[][][] pixelNode, Vector3i v, int x2, int y2, int z2)
 		{
@@ -151,19 +163,31 @@ public class LevelHierarchy
 				if(thisNode==null)
 					{
 					//Add pixel to node
-					neighNode.pixels.add(v);
+					neighNode.pixels=new PersistentGrowingCollection<Vector3i>(v,neighNode.pixels);
+					//neighNode.pixels.add(v);
 					thisNode=neighNode;
 					}
 				else
 					{
 					//Need to join nodes. Eliminate thisNode.
-					neighNode.pixels.addAll(thisNode.pixels);
+					neighNode.pixels=new PersistentGrowingCollection<Vector3i>(v,neighNode.pixels);
+//					neighNode.pixels.addAll(thisNode.pixels);
 					neighNode.children.addAll(thisNode.children);
 					for(Node n:thisNode.children)
 						n.parent=neighNode;
-					for(Vector3i u:thisNode.pixels)
+					Iterator<Vector3i> itu=PersistentGrowingCollection.iterator(thisNode.pixels);
+					while(itu.hasNext())
+						{
+						Vector3i u=itu.next();
 						pixelNode[u.z][u.y][u.x]=neighNode;
+						}
+//					for(Vector3i u:thisNode.pixels)
+//						pixelNode[u.z][u.y][u.x]=neighNode;
 					thisNode=neighNode;
+					
+					expensive++;
+					if(expensive%1000==0)
+						System.out.println("expensive "+expensive);
 					}
 				}
 			else
@@ -171,14 +195,23 @@ public class LevelHierarchy
 				//Neighbour must be a higher intensity, hence a child of this pixel.
 				
 				//Which is the highest node containing pixel?
+				int parentInc=0;
 				while(neighNode.parent!=null)
+					{
 					neighNode=neighNode.parent;
+					parentInc++;
+					if(parentInc>100)
+						System.out.println("parentInc "+parentInc);
+					}
+				pixelNode[z2][y2][x2]=neighNode; //Avoid parent traversal
+				
 				
 				//Check if area is on the same level
 				if(neighNode.intensity==thisIntensity)
 					{
 					//Add this pixel to node
-					neighNode.pixels.add(v);
+					neighNode.pixels=new PersistentGrowingCollection<Vector3i>(v,neighNode.pixels);
+					//neighNode.pixels.add(v);
 					thisNode=neighNode;
 					}
 				else
@@ -188,7 +221,8 @@ public class LevelHierarchy
 						{
 						thisNode=new Node();
 						thisNode.intensity=thisIntensity;
-						thisNode.pixels.add(v);
+						neighNode.pixels=new PersistentGrowingCollection<Vector3i>(v,neighNode.pixels);
+						//thisNode.pixels.add(v);
 						}
 					thisNode.children.add(neighNode);
 					neighNode.parent=thisNode;
@@ -244,7 +278,8 @@ public class LevelHierarchy
 		}
 	public int _check(Node node, int count)
 		{
-		int sum=node.pixels.size();
+		int sum=PersistentGrowingCollection.size(node.pixels);
+//		int sum=node.pixels.size();
 		System.out.println("size here "+sum);
 		for(Node c:node.children)
 			{
@@ -266,19 +301,33 @@ public class LevelHierarchy
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/TB2167_080416.ost"));
 		
 		Imageset im=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
+		im.channelImages.put("MA15", AutoLineage.movingAverage(im.channelImages.get("RFP"), 5, 5));
 		
-		EvStack stack=im.getChannel("RFP").imageLoader.get(new EvDecimal(14050));
+		EvStack stack=im.getChannel("MA15").imageLoader.get(new EvDecimal(14050));
+		
+		
 		stack.keySet().remove(new EvDecimal("1"));
 		stack.keySet().remove(new EvDecimal("2.5"));
 		stack.keySet().remove(new EvDecimal("4"));
 		stack.keySet().remove(new EvDecimal("5.5"));
-		
+		stack.keySet().remove(new EvDecimal("7"));
+		stack.keySet().remove(new EvDecimal("8.5"));
+		stack.keySet().remove(new EvDecimal("10"));
+		stack.keySet().remove(new EvDecimal("11.5"));
+		stack.keySet().remove(new EvDecimal("13"));
+
+		stack.keySet().remove(new EvDecimal("25"));
+		stack.keySet().remove(new EvDecimal("26.5"));
+		stack.keySet().remove(new EvDecimal("28"));
+		stack.keySet().remove(new EvDecimal("29.5"));
 		stack.keySet().remove(new EvDecimal("31"));		
 		stack.keySet().remove(new EvDecimal("32.5"));
 		stack.keySet().remove(new EvDecimal("34"));
 		System.out.println(stack.keySet());
 		
 		LevelHierarchy hi=new LevelHierarchy(stack);
+		
+		System.out.println("hello");
 		
 		hi._check();
 		System.out.println(hi.root);
