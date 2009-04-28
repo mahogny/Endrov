@@ -166,7 +166,7 @@ public class AssembleAllHTML
 		{
 		
 		
-		File htmlOutdir=new File("/Volumes2/TBU_main03/userdata/henriksson/geneProfilesAPT");
+		File htmlOutdir=new File("/Volumes2/TBU_main03/userdata/henriksson/geneProfilesAPT_lois");
 		htmlOutdir.mkdirs();
 		
 		
@@ -195,7 +195,8 @@ public class AssembleAllHTML
 			File tempdatFile=File.createTempFile("surface", ".dat");
 			System.out.println(tempdatFile);
 			
-			for(File f:new File("/Volumes2/TBU_main01/ost4dgood").listFiles())
+			for(File f:new File("/Volumes/TBU_main03/daemon/output").listFiles())
+//			for(File f:new File("/Volumes2/TBU_main01/ost4dgood").listFiles())
 				if(f.getName().endsWith(".ost")) 
 					{
 					File APfile=new File(new File(f,"data"),"AP20-GFPb");
