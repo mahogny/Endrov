@@ -1,0 +1,4 @@
+currently the driver tree is based on hardware providers. this makes sense for module hierarchy and how micromanager
+works.
+
+configuration wise it makes more sense to base the hierarchy on buses e.g. com1.stageX, com1.stageY etc.

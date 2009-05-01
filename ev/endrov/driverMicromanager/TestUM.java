@@ -1,10 +1,12 @@
-package endrov.micromanager;
+package endrov.driverMicromanager;
 
 import java.util.Map;
 
+import endrov.recording.CameraImage;
+
 import mmcorej.*;
 
-public class TestUMorig
+public class TestUM
 	{
 	
 	public static void main(String[] args)
@@ -53,7 +55,7 @@ public class TestUMorig
 			core.defineStateLabel("Objective", 5, "Zeiss 4X Plan Apo");
 	
 			// define configurations
-			core.defineConfig("Channel", "FITC", "Emission", "State", "2");
+/*			core.defineConfig("Channel", "FITC", "Emission", "State", "2");
 			core.defineConfig("Channel", "FITC", "Excitation", "State", "3");
 			core.defineConfig("Channel", "FITC", "Dichroic", "State", "1");
 			core.defineConfig("Channel", "DAPI", "Emission", "State", "1");
@@ -61,12 +63,12 @@ public class TestUMorig
 			core.defineConfig("Channel", "DAPI", "Dichroic", "State", "0");
 			core.defineConfig("Channel", "Rhodamine", "Emission", "State", "3");
 			core.defineConfig("Channel", "Rhodamine", "Excitation", "State", "4");
-			core.defineConfig("Channel", "Rhodamine", "Dichroic", "State", "2");
+			core.defineConfig("Channel", "Rhodamine", "Dichroic", "State", "2");*/
 	
 			// set initial imaging mode
 			core.setProperty("Camera", "Exposure", "55");
 			core.setProperty("Objective", "Label", "Nikon 10X S Fluor");
-			core.setConfig("Channel", "DAPI");
+//			core.setConfig("Channel", "DAPI");
 	
 			// list devices
 			System.out.println("Device status:");
@@ -77,59 +79,74 @@ public class TestUMorig
 				for(Map.Entry<String, String> prop:MMutil.getPropMap(core,device).entrySet())
 					{
 					System.out.print(" " + prop.getKey() + " = " + prop.getValue());
+					if(core.isPropertyReadOnly(device, prop.getKey()))
+						System.out.print(" (ro) ");
+					if(core.hasPropertyLimits(device, prop.getKey()))
+						System.out.print(" <"+core.getPropertyLowerLimit(device, prop.getKey())+" -- "+core.getPropertyLowerLimit(device, prop.getKey())+"> ");
 					System.out.println("  "+MMutil.convVector(core.getAllowedPropertyValues(device, prop.getKey())));
 					}
 				}
 			
-			// list configurations
-			for (String group:MMutil.convVector(core.getAvailableConfigGroups()))
-				{
-				StrVector configs = core.getAvailableConfigs(group);
-				System.out.println("Group " + group);
-				for (int j=0; j<configs.size(); j++)
-					{
-					Configuration cdata = core.getConfigData(group, configs.get(j));
-					System.out.println("   Configuration " + configs.get(j));
-					for (int k=0; k<cdata.size(); k++) 
-						{
-						PropertySetting s = cdata.getSetting(k);
-						System.out.println("      " + s.getDeviceLabel() + ", " +	s.getPropertyName() + ", " + s.getPropertyValue());
-						}
-					}
-				}
-	
 			
 		
 		   // set some properties
-//      core.setProperty("Camera", "Binning", "2");
-  //    core.setProperty("Camera", "PixelType", "8bit");
-
+      core.setProperty("Camera", "Binning", "2");
+      core.setProperty("Camera", "PixelType", "8bit");
+			core.setProperty("Camera", "Exposure", "50");
+			//CCDTemperature
+//       core.setExposure(50);
+			core.setProperty("Core", "AutoShutter", "1");
 			
-       core.setExposure(50);
+			
+			
+//       core.setAutoShutter(true);
+//       core.setCameraDevice(arg0);
+       
        core.snapImage();
 
-       if (core.getBytesPerPixel() == 1) 
-      	 {
-      	 // 8-bit grayscale pixels
-      	 byte[] img = (byte[])core.getImage();
-      	 System.out.println("Image snapped, " + img.length + " pixels total, 8 bits each.");
-      	 System.out.println("Pixel [0,0] value = " + img[0]);
-      	 } 
-       else if (core.getBytesPerPixel() == 2)
-      	 {
-      	 // 16-bit grayscale pixels
-      	 short[] img = (short[])core.getImage();
-      	 System.out.println("Image snapped, " + img.length + " pixels total, 16 bits each.");
-      	 System.out.println("Pixel [0,0] value = " + img[0]);
-      	 } 
-       else
-      	 {
-      	 System.out.println("Dont' know how to handle images with " +
-      			 core.getBytesPerPixel() + " byte pixels.");
-      	 }
+       CameraImage im=MMutil.snap(core);
+       System.out.println(im);
+      
+			
+       
+       /*
+       core.loadDevice("Port", "SerialManager", "COM1");
+       core.setProperty("Port", "StopBits", "2");
+       core.setProperty("Port", "Parity", "None");
+       core.initializeDevice("Port");
 
-			
-			
+       core.setSerialPortCommand("Port", "MOVE X=300", "\r");
+       String answer = core.getSerialPortAnswer("Port", "\r");
+       */
+       
+       /*
+        * // The following devices must stop moving before the image is acquired
+core.assignImageSynchro("X");
+core.assignImageSynchro("Y");
+core.assignImageSynchro("Z");
+core.assignImageSynchro("Emission");
+        */
+       //alternate way
+      // core.waitForDevice("Emission"); // until it stops moving
+       
+       //core.loadSystemConfiguration("MMConfig.cfg");
+
+       
+       /*
+    // take image with manual shutter
+       core.setAutoShutter(false); // disable auto shutter
+       core.setProperty("Shutter", "State", "1"); // open
+       core.waitForDevice("Shutter");
+       core.snapImage();
+       core.setProperty("Shutter", "State", "0"); // close
+       */
+       /*
+       //check Z stage status
+       boolean ZStageBusy = core.deviceBusy("Z");
+
+       //check if any of the devices in the systema are busy
+       boolean systemBusy = core.systemBusy();
+       */
 			}
 		catch (Exception e) 
 			{

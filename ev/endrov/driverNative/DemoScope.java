@@ -42,7 +42,7 @@ public class DemoScope extends HardwareProvider implements Hardware
 	/**
 	 * Demo camera
 	 */
-	public class DevCamera implements HWCamera
+	private class DevCamera implements HWCamera
 		{
 		public CameraImage snap()
 			{
@@ -97,7 +97,7 @@ public class DemoScope extends HardwareProvider implements Hardware
 	/**
 	 * Demo stage
 	 */
-	public class DevStage implements HWStage
+	private class DevStage implements HWStage
 		{
 		//Simulate moving stage?
 		
