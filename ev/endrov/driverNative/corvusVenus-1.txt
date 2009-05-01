@@ -1,0 +1,41 @@
+
+
+this gives automatic status back:
+10 10 2 move
+0 0 1 r   %relative movement
+st
+ge
+
+
+
+
+0 mode   % host mode, for programming
+
+
+
+2 setdim  %will use axis 1,2
+
+
+1 2 setunit   %use um for axis 2
+
+1 2 3 m  %move to 1 2 3, absolute
+1 2 3 r  %relative move 1,2,3
+
+cal %calibrates by moving stage, setting 0
+
+ge %get error
+
+
+st %get status, bitfield
+
+p %return position, given # axis
+
+identify %return name of unit + more info  "Corvus ....."
+
+
+* can set torque
+* many calibration commands
+* can define how to move with absolute coordinates
+* rm for hardware limits together with cal?
+* setlimit software limit
+* there are many digital I/O ports!

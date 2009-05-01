@@ -1,4 +1,4 @@
-package endrov.micromanager;
+package endrov.driverMicromanager;
 import endrov.ev.EV;
 import endrov.ev.PluginDef;
 

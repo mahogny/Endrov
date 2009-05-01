@@ -27,6 +27,7 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 		//TODO synchronize needed?
 		
 		hardwareProvided.put("OlympusIX", OlympusIX.class);
+		hardwareProvided.put("ITKCorvus", ITKCorvus.class);
 		hardwareProvided.put("Demo", DemoScope.class);
 		}
 	
@@ -35,6 +36,7 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 		//hw.put("IX", new OlympusIX());
 		hw.put("demo", new DemoScope());
 		
+		hw.put("ITK", new ITKCorvus());
 		
 		}
 		
