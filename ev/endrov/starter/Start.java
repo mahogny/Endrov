@@ -29,7 +29,7 @@ public class Start
 	
 	private String javaver=System.getProperty("java.specification.version");
 	private String OS=System.getProperty("os.name").toLowerCase();
-	private String osExt="";
+	private LinkedList<String> osExt=new LinkedList<String>();
 	private String arch=System.getProperty("os.arch").toLowerCase();
 	private int javaVerMajor=Integer.parseInt(javaver.substring(0,javaver.indexOf('.')));
 	private int javarVerMinor=Integer.parseInt(javaver.substring(javaver.indexOf('.')+1));
@@ -59,18 +59,22 @@ public class Start
 			{
 //			javaexe="java -Dcom.apple.laf.useScreenMenuBar=true -Xdock:name=EV";
 			libdir=path+"libs/mac";
-			osExt="mac";
+			osExt.add("mac");
+			if(arch.equals("ppc"))
+				osExt.add("macppc");
+			else
+				osExt.add("macx86");
 			}
 		else if(OS.startsWith("windows"))
 			{
-			osExt="windows";
+			osExt.add("windows");
 			}
 		else if(OS.startsWith("linux"))
 			{
-			osExt="linux";
+			osExt.add("linux");
 			}
 		else if(OS.startsWith("solaris"))
-			osExt="solaris";
+			osExt.add("solaris");
 		else
 			{
 			JOptionPane.showMessageDialog(null, 
@@ -333,7 +337,7 @@ public class Start
 	 * Recurses when it finds a directory ending with _inc.
 	 * 
 	 */
-	private static void collectJars(List<String> v,List<String> binfiles,File p, String osExt, String archExt)
+	private static void collectJars(List<String> v,List<String> binfiles,File p, Collection<String> osExt, String archExt)
 		{
 		if(p.exists())
 			for(File sub:p.listFiles())
@@ -376,15 +380,22 @@ public class Start
 					}
 				else if(sub.isDirectory() && sub.getName().endsWith("_inc") && !sub.getName().startsWith(".") && !sub.getName().equals("unused"))
 					collectJars(v,binfiles, sub, osExt, archExt);
-				else if(sub.isDirectory() && (sub.getName().equals("bin_"+osExt)
-						|| sub.getName().equals("bin_"+archExt)))
+				else 
 					{
-					collectJars(v,binfiles, sub, osExt, archExt);
-					
-					String toadd=sub.getAbsolutePath();
-					binfiles.add(toadd);
-					if(printJar)
-						System.out.println("Adding binary directory: "+toadd);
+					for(String oneExt:osExt)
+						{
+						if(sub.isDirectory() && (sub.getName().equals("bin_"+oneExt)
+								|| sub.getName().equals("bin_"+archExt)))
+							{
+							collectJars(v,binfiles, sub, osExt, archExt);
+							
+							String toadd=sub.getAbsolutePath();
+							binfiles.add(toadd);
+							if(printJar)
+								System.out.println("Adding binary directory: "+toadd);
+							}
+						
+						}
 					}
 				//else
 				//	System.out.println("Unknown file "+sub);
