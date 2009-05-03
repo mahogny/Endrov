@@ -42,7 +42,6 @@
 	<classpathentry kind="lib" path="libs/xml_inc/jcommon-1.0.9.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/jaxen-jdom.jar"/>
 	<classpathentry kind="lib" path="libs/xml_inc/jaxen-core.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/MMCoreJ.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/common-3.0-Beta2.3.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/client-3.0-Beta2.3.jar"/>
 	<classpathentry kind="lib" path="libs/jboss_inc/jbossall-client-4.2.1.GA.jar"/>
@@ -56,5 +55,6 @@
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/bin_ppc/MMCoreJ.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

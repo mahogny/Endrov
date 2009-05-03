@@ -16,7 +16,8 @@ public class PLUGIN extends PluginDef
 	
 	public boolean systemSupported()
 		{
-		return EV.isLinux() || (EV.isMac() && EV.isX86());
+//		return EV.isLinux() || (EV.isMac() && EV.isX86());
+		return EV.isLinux() || EV.isMac();
 		}
 	
 	public String cite()
@@ -31,8 +32,8 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		//return new Class[]{MicroManager.class};
-		return new Class[]{};
+		return new Class[]{MicroManager.class};
+		//return new Class[]{};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

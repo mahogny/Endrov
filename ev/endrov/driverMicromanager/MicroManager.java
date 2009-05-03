@@ -34,13 +34,14 @@ public class MicroManager extends HardwareProvider implements Hardware
 			{
 			core=new CMMCore();
 			
-			File fMMconfig=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
+			File fMMconfig1=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
+			File fMMconfig=fMMconfig1;
 			fMMconfig.getParentFile().mkdirs();
 			if(!fMMconfig.exists())
 				fMMconfig=new File("MMConfig.cfg");
 			if(!fMMconfig.exists())
 				{
-				System.out.println("No config file found");
+				System.out.println("No config file found ("+fMMconfig1+" nor "+fMMconfig+")");
 				return;
 				}
 			System.out.println("Loading "+fMMconfig.getAbsolutePath());
