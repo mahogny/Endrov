@@ -34,7 +34,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{MicroscopeWindow.class,ManualExtension.class,StackExtension.class,CamWindow.class};
+		return new Class[]{MicroscopeWindow.class,ManualExtension.class,StackExtension.class,CamWindow.class, RecordingResource.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};
