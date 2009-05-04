@@ -51,7 +51,7 @@ public class ExpUtil
 	 * Correct for background etc. 
 	 * Return table of correction values so it can be applied again. Will be used for non-AP
 	 */
-	public static TreeMap<EvDecimal, Tuple<Double,Double>> correctExposureChange(Imageset imset, NucLineage lin, String expName, SortedSet<EvDecimal> frames)
+	public static TreeMap<EvDecimal, Tuple<Double,Double>> correctExposureChange(Imageset imset, NucLineage lin, String expName, String channelName, SortedSet<EvDecimal> frames)
 		{
 		//Initital correction=none
 		double correctionK=1;
@@ -68,7 +68,7 @@ public class ExpUtil
 		for(EvDecimal frame:frames)
 			{
 			framecount++;
-			String sExpTime=imset.metaFrame.get(frame).get("exposuretime");
+			String sExpTime=imset.getChannel(channelName).metaFrame.get(frame).get("exposuretime");
 			double expTime=1;
 			if(sExpTime!=null)
 				expTime=Double.parseDouble(sExpTime);

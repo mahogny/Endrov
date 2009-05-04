@@ -104,6 +104,7 @@ public class EvSound
 	 */
 	public void start()
 		{
+		System.out.println("start play");
 		if(p!=null)
 			try
 				{
@@ -115,6 +116,7 @@ public class EvSound
 				}
 		else if(clip!=null)
 			clip.start();
+		System.out.println("end play");
 		}
 	
 	/**

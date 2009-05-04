@@ -166,7 +166,7 @@ public class AssembleAllHTML
 		{
 		
 		
-		File htmlOutdir=new File("/Volumes2/TBU_main03/userdata/henriksson/geneProfilesAPT_lois");
+		File htmlOutdir=new File("/Volumes/TBU_main03/userdata/henriksson/geneProfilesAPT_lois");
 		htmlOutdir.mkdirs();
 		
 		
