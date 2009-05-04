@@ -56,5 +56,6 @@
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/bin_ppc/MMCoreJ.jar"/>
+	<classpathentry kind="lib" path="libs/jl1.0.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
