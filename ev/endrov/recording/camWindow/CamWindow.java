@@ -117,10 +117,10 @@ public class CamWindow extends BasicWindow
 				//this does not work later. have to synchronize all calls for an image
 				//so all targets gets it.
 				
-				HardwarePath camname=(HardwarePath)This.mcombo.getSelectedItem();
+				DevicePath camname=(DevicePath)This.mcombo.getSelectedItem();
 				if(camname!=null)
 					{
-					HWCamera cam=(HWCamera)HardwareManager.getHardware(camname);
+					HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
 					CameraImage cim=cam.snap();
 					BufferedImage im=This.fromCam=cim.getAWT();
 					Rectangle dbounds=This.drawArea.getBounds();
@@ -164,7 +164,7 @@ public class CamWindow extends BasicWindow
 
 		
 		
-		mcombo=new JComboBox(new Vector<HardwarePath>(HardwareManager.getHardwareMap(HWCamera.class).keySet()));
+		mcombo=new JComboBox(new Vector<DevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
 
 		
 		

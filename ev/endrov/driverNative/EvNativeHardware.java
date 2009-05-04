@@ -4,9 +4,9 @@ import java.util.*;
 
 import org.jdom.Element;
 
-import endrov.hardware.Hardware;
-import endrov.hardware.HardwareManager;
-import endrov.hardware.HardwareProvider;
+import endrov.hardware.Device;
+import endrov.hardware.EvHardware;
+import endrov.hardware.DeviceProvider;
 import endrov.hardware.PropertyType;
 
 /**
@@ -14,20 +14,20 @@ import endrov.hardware.PropertyType;
  * @author Johan Henriksson
  *
  */
-public class EvNativeHardware extends HardwareProvider implements Hardware
+public class EvNativeHardware extends DeviceProvider implements Device
 	{
-	private static Map<String, Class<? extends Hardware>> hardwareProvided=new TreeMap<String, Class<? extends Hardware>>();
+	private static Map<String, Class<? extends Device>> hardwareProvided=new TreeMap<String, Class<? extends Device>>();
 	
 	
 	public static void initPlugin() {}
 	static
 		{
-		HardwareManager.root.hw.put("ev",new EvNativeHardware());
+		EvHardware.root.hw.put("ev",new EvNativeHardware());
 		
 		//TODO synchronize needed?
 		
 		hardwareProvided.put("OlympusIX", OlympusIX.class);
-		hardwareProvided.put("ITKCorvus", ITKCorvus.class);
+		//hardwareProvided.put("ITKCorvus", ITKCorvus.class);
 		hardwareProvided.put("Demo", DemoScope.class);
 		}
 	
@@ -36,13 +36,13 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 		//hw.put("IX", new OlympusIX());
 		hw.put("demo", new DemoScope());
 		
-//		hw.put("ITK", new ITKCorvus());
+		//hw.put("ITK", new ITKCorvus());
 		
 		}
 		
 	
 	
-	public Set<Hardware> autodetect()
+	public Set<Device> autodetect()
 		{
 		return null;
 		}
@@ -54,7 +54,7 @@ public class EvNativeHardware extends HardwareProvider implements Hardware
 		{
 		return Arrays.asList("IXvirtual");
 		}
-	public Hardware newProvided(String s)
+	public Device newProvided(String s)
 		{
 		try
 			{

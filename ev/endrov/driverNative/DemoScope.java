@@ -10,8 +10,8 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.hardware.Hardware;
-import endrov.hardware.HardwareProvider;
+import endrov.hardware.Device;
+import endrov.hardware.DeviceProvider;
 import endrov.hardware.PropertyType;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
@@ -26,7 +26,7 @@ import endrov.recording.HWStage;
  * @author Johan Henriksson
  *
  */
-public class DemoScope extends HardwareProvider implements Hardware
+public class DemoScope extends DeviceProvider implements Device
 	{
 
 	
@@ -119,6 +119,11 @@ public class DemoScope extends HardwareProvider implements Hardware
 			stagePos[1]=axis[1];
 			stagePos[2]=axis[2];
 			}
+		public void goHome()
+			{
+			for(int i=0;i<3;i++)
+				stagePos[i]=0;
+			}
 		public String getDescName()
 			{
 			return "Demo stage";
@@ -134,7 +139,7 @@ public class DemoScope extends HardwareProvider implements Hardware
 
 
 
-	public Set<Hardware> autodetect()
+	public Set<Device> autodetect()
 		{
 		return null;
 		}
@@ -147,7 +152,7 @@ public class DemoScope extends HardwareProvider implements Hardware
 		{
 		return null;
 		}
-	public Hardware newProvided(String s)
+	public Device newProvided(String s)
 		{
 		return null; //TODO
 		}

@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import endrov.basicWindow.icon.BasicIcon;
-import endrov.hardware.HardwarePath;
+import endrov.hardware.DevicePath;
 import endrov.recording.HWStage;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -51,7 +51,7 @@ public class StagePanel implements ActionListener
 	private HWStage hw;
 	//private String devName;
 	
-	public StagePanel(HardwarePath devName,final HWStage hw, ManualExtension.Hook hook)
+	public StagePanel(DevicePath devName,final HWStage hw, ManualExtension.Hook hook)
 		{
 		this.hw=hw;
 	//	this.devName=devName;
@@ -195,28 +195,34 @@ public class StagePanel implements ActionListener
 			}
 		public void mousePressed(MouseEvent e)
 			{
+			System.out.println("mouse pressed");
 			holdDigit=hitDigit(e.getX(), e.getY());
 			mouseLastTickY=e.getY();
 			}
 		public void mouseReleased(MouseEvent e)
 			{
+			System.out.println("mouse released");
 			holdDigit=null;
 			}
 		public void mouseDragged(MouseEvent e)
 			{
 			int dy=e.getY()-mouseLastTickY;
-			if(Math.abs(dy)>=tickDist)
+			if(holdDigit!=null)
 				{
-				int ticks=dy/tickDist;
-
-				if(ticks!=0)
+				if(Math.abs(dy)>=tickDist)
 					{
-					double[] axis=hw.getStagePos();
-					axis[axisid]-=ticks*Math.pow(10, holdDigit);
-					hw.setStagePos(axis);
-					repaint();
+					int ticks=dy/tickDist;
+	
+					if(ticks!=0)
+						{
+						double[] axis=hw.getStagePos();
+						System.out.println(axis+" "+holdDigit);
+						axis[axisid]-=ticks*Math.pow(10, holdDigit);
+						hw.setStagePos(axis);
+						repaint();
+						}
+					mouseLastTickY+=ticks*tickDist;
 					}
-				mouseLastTickY+=ticks*tickDist;
 				}
 			}
 		public void mouseMoved(MouseEvent e)

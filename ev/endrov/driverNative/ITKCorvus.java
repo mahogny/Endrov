@@ -8,8 +8,10 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.hardware.Hardware;
-import endrov.hardware.HardwareProvider;
+import endrov.hardware.Device;
+import endrov.hardware.EvHardware;
+import endrov.hardware.DevicePath;
+import endrov.hardware.DeviceProvider;
 import endrov.hardware.PropertyType;
 import endrov.recording.HWSerial;
 import endrov.recording.HWStage;
@@ -23,15 +25,20 @@ import endrov.recording.VirtualSerialBasic;
  * @author Johan Henriksson
  *
  */
-public class ITKCorvus extends HardwareProvider implements Hardware
+public class ITKCorvus extends DeviceProvider implements Device
 	{
-	private final static String sendNewLine="\r"; 
+	private final static String sendNewLine=" "; //\r for terminal mode
 	private final static String recvNewLine="\r\n";  
 	//TODO
 	
 //	public HWSerial serial=null;
 	
-	public HWSerial serial=new VirtualSerialBasic();
+	/**
+	 * I/O is blocking. hence the GUI dies upon init (most likely)
+	 */
+	
+	public HWSerial serial=(HWSerial)EvHardware.getDevice(new DevicePath("mm.com2"));
+	//new VirtualSerialBasic();
 	
 	
 	private int numAxis=3;
@@ -49,12 +56,19 @@ public class ITKCorvus extends HardwareProvider implements Hardware
 	
 	public synchronized String queryCommand(String cmd)
 		{
-		serial.writePort(cmd+sendNewLine);
-		String s=serial==null ? "\r\n" : serial.readUntilTerminal("\r\n");
-		s=s.substring(cmd.length());
-		s=s.substring(0,s.length()-2);
-		System.out.println("#"+s+"#");
-		return s; //which?
+		if(serial!=null)
+			{
+			serial.writePort(cmd+sendNewLine);
+			String s=serial.readUntilTerminal(recvNewLine);
+			s=s.substring(cmd.length());
+			s=s.substring(0,s.length()-recvNewLine.length());
+			System.out.println("#"+s+"#");
+			return s; //which?
+			}
+		else
+			{
+			return "";
+			}
 		//return "123";
 //		return s;
 		}
@@ -161,6 +175,12 @@ public class ITKCorvus extends HardwareProvider implements Hardware
 			sendCommand(sb.toString());
 			}
 
+		public void goHome()
+			{
+			sendCommand("cal");
+			}
+		
+		
 		public String getDescName()
 			{
 			return "ITK Corvus stage";
@@ -178,7 +198,7 @@ public class ITKCorvus extends HardwareProvider implements Hardware
 	
 	
 
-	public Set<Hardware> autodetect()
+	public Set<Device> autodetect()
 		{
 		/**
 		 * The command "identify" will return something like "Corvus ...".
@@ -199,7 +219,7 @@ public class ITKCorvus extends HardwareProvider implements Hardware
 		{
 		return null;
 		}
-	public Hardware newProvided(String s)
+	public Device newProvided(String s)
 		{
 		return null; //TODO
 		}
