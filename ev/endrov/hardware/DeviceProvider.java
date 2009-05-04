@@ -5,18 +5,18 @@ import org.jdom.Element;
 
 
 /**
- * 
+ * A provider of other devices
  * @author Johan Henriksson
  *
  */
-public abstract class HardwareProvider
+public abstract class DeviceProvider
 	{
 	/** Return null if operation not supported 
 	 * TODO maybe not return but add it right away?
 	 * */
-	public abstract Set<Hardware> autodetect();
+	public abstract Set<Device> autodetect();
 	
-	public Map<String, Hardware> hw=new HashMap<String, Hardware>();
+	public Map<String, Device> hw=new HashMap<String, Device>();
 	
 	
 	
@@ -24,5 +24,5 @@ public abstract class HardwareProvider
 	public abstract void setConfig(Element root);
 
 	public abstract List<String> provides();
-	public abstract Hardware newProvided(String s); 
+	public abstract Device newProvided(String s); 
 	}

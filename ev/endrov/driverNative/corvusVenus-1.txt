@@ -9,7 +9,9 @@ ge
 
 
 
-0 mode   % host mode, for programming
+0 mode
+% 0=host mode. append space after command.
+% 1=terminal mode. have to send commands with trailing CR.
 
 
 

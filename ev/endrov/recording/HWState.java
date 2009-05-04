@@ -2,9 +2,9 @@ package endrov.recording;
 
 import java.util.*;
 
-import endrov.hardware.Hardware;
+import endrov.hardware.Device;
 
-public interface HWState extends Hardware
+public interface HWState extends Device
 	{
 
 	public List<String> getStateNames();

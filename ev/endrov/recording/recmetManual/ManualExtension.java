@@ -15,13 +15,18 @@ import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvComboData;
 import endrov.data.EvData;
 import endrov.ev.JNumericField;
-import endrov.hardware.Hardware;
-import endrov.hardware.HardwareManager;
-import endrov.hardware.HardwarePath;
+import endrov.hardware.Device;
+import endrov.hardware.EvHardware;
+import endrov.hardware.DevicePath;
 import endrov.hardware.PropertyType;
+import endrov.imageset.EvChannel;
+import endrov.imageset.EvImage;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.*;
 import endrov.recording.recWindow.MicroscopeWindow;
+import endrov.recording.recWindow.MicroscopeWindow.ExtensionInstance;
+import endrov.util.EvDecimal;
 import endrov.util.JImageToggleButton;
 import endrov.util.JSmartToggleCombo;
 
@@ -30,7 +35,7 @@ import endrov.util.JSmartToggleCombo;
  * 
  * @author Johan Henriksson
  */
-public class ManualExtension implements MicroscopeWindow.Extension
+public class ManualExtension
 	{
 	public static final ImageIcon iconShutterOpen = new ImageIcon(
 			ManualExtension.class.getResource("iconShutterOpen.png"));
@@ -50,17 +55,25 @@ public class ManualExtension implements MicroscopeWindow.Extension
 
 	static
 		{
-		MicroscopeWindow.addMicroscopeWindowExtension("Manual Mode",
-				new ManualExtension());
+		MicroscopeWindow.addMicroscopeWindowExtension(
+				new MicroscopeWindow.Extension(){
+					public ExtensionInstance getInstance()
+						{
+						return new Hook();
+						}
+
+					public String getName()
+						{
+						return "Manual Mode";
+						}
+				
+				}
+				);
 		}
 
-	public JComponent addControls()
-		{
-		return new Hook();
-		}
 
 	// /////////////////////////////////////////////////////////////////////
-	public static class Hook extends JPanel
+	public static class Hook extends MicroscopeWindow.ExtensionInstance
 		{
 		static final long serialVersionUID = 0;
 
@@ -109,8 +122,8 @@ public class ManualExtension implements MicroscopeWindow.Extension
 
 			p.setLayout(new GridBagLayout());
 
-			for (Map.Entry<HardwarePath, Hardware> entry : HardwareManager
-					.getHardwareMap().entrySet())
+			for (Map.Entry<DevicePath, Device> entry : EvHardware
+					.getDeviceMap().entrySet())
 				{
 				// isEven=!isEven;
 				// JComponent c=null;
@@ -159,7 +172,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			JToggleButton b = new JImageToggleButton(iconShutterClosed,
 					"Shutter status");
 
-			public ShutterPanel(HardwarePath devName, HWShutter hw)
+			public ShutterPanel(DevicePath devName, HWShutter hw)
 				{
 				JLabel lTitle = new JLabel(devName.toString());
 				lTitle.setToolTipText(hw.getDescName()+" ");
@@ -202,7 +215,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			private JSmartToggleCombo state;
 			private HWState hw;
 
-			public StateDevicePanel(HardwarePath devName, HWState hw)
+			public StateDevicePanel(DevicePath devName, HWState hw)
 				{
 				this.hw = hw;
 				Vector<String> fs = new Vector<String>(hw.getStateNames());
@@ -240,7 +253,7 @@ public class ManualExtension implements MicroscopeWindow.Extension
 			static final long serialVersionUID = 0;
 
 			private int camrow=0;
-			public CameraPanel(HardwarePath devName, final HWCamera hw)
+			public CameraPanel(DevicePath devName, final HWCamera hw)
 				{
 				setBorder(BorderFactory.createTitledBorder(devName.toString()));
 				setToolTipText(hw.getDescName());
@@ -319,6 +332,19 @@ public class ManualExtension implements MicroscopeWindow.Extension
 							data.metaObject.put(imsetName, imset);
 							RecordingResource.soundCameraSnap.start();
 							
+							EvChannel ch=imset.getCreateChannel(tChannel.getText());
+							EvStack stack=ch.getCreateFrame(new EvDecimal(0));
+							CameraImage cim=hw.snap();
+							
+							//TODO
+							stack.resX=1;
+							stack.resY=1;
+							stack.binning=1;
+							
+							EvImage evim=new EvImage();
+							evim.setPixelsReference(cim.getPixels());
+							stack.put(new EvDecimal(0),evim);
+							
 							BasicWindow.updateWindows(); //TODO trigger on data
 							
 							}
@@ -368,6 +394,13 @@ public class ManualExtension implements MicroscopeWindow.Extension
 					g.drawLine(x, h/2, x+2, h/2);
 				}
 
+			}
+
+		//TODO not the greatest way of getting to know data updates. add events
+		public void dataChangedEvent()
+			{
+			// TODO Auto-generated method stub
+			
 			}
 
 		}

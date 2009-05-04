@@ -14,7 +14,7 @@ import endrov.hardware.*;
  * @author Johan Henriksson
  *
  */
-public class MMDeviceAdapter implements Hardware
+public class MMDeviceAdapter implements Device
 	{
 	MicroManager mm;
 	String mmDeviceName;

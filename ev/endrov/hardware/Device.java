@@ -8,7 +8,7 @@ import java.util.*;
  * @author Johan Henriksson
  *
  */
-public interface Hardware
+public interface Device
 	{
 	/** Descriptive name of hardware */
 	public String getDescName();

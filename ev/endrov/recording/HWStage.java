@@ -1,6 +1,6 @@
 package endrov.recording;
 
-import endrov.hardware.Hardware;
+import endrov.hardware.Device;
 
 
 /**
@@ -8,7 +8,7 @@ import endrov.hardware.Hardware;
  * @author Johan Henriksson
  *
  */
-public interface HWStage extends Hardware
+public interface HWStage extends Device
 	{
 
 	public int getNumAxis();
@@ -20,4 +20,6 @@ public interface HWStage extends Hardware
 	public void setStagePos(double axis[]);
 	
 	public void setRelStagePos(double axis[]);
+	
+	public void goHome();
 	}

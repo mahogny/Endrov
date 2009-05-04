@@ -2,3 +2,30 @@ currently the driver tree is based on hardware providers. this makes sense for m
 works.
 
 configuration wise it makes more sense to base the hierarchy on buses e.g. com1.stageX, com1.stageY etc.
+
+
+====
+
+raw config can be put into imageset. stacks then get the changed values as override.
+some values need to have standard names; compare with OME schema.
+can be stored as map: device#attribute = value
+
+====
+
+EV devices depending on MM: use late initiation. likely providers are all loaded then.
+
+====
+
+attribute configuration is NOT part of the GUI! hence multiple windows issue disappears.
+
+====
+
+gamepad follows window focus WITH EXCEPTION:
+File -> Input -> 
+  option Gamepad to focused BasicWindow
+  option Gamepad to microscope           <---- .hardware installs an override manager
+  
+window focuses (like camera window) will forward to this override manager
+  
+hence gamepad for the stage is decoupled from the GUI  
+  

@@ -91,10 +91,10 @@ public class HardwareConfigWindow extends BasicWindow
 	
 	private static class HWListItem
 		{
-		HardwarePath name;
+		DevicePath name;
 		public String toString()
 			{
-			return name+" :: "+HardwareManager.getHardware(name).getDescName();
+			return name+" :: "+EvHardware.getDevice(name).getDescName();
 			}
 		}
 	
@@ -106,7 +106,7 @@ public class HardwareConfigWindow extends BasicWindow
 	public HardwareConfigWindow(Rectangle bounds)
 		{
 		Vector<HWListItem> hwNames=new Vector<HWListItem>();
-		for(HardwarePath hw:HardwareManager.getHardwareList())
+		for(DevicePath hw:EvHardware.getDeviceList())
 			{
 			HWListItem item=new HWListItem();
 			item.name=hw;

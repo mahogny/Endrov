@@ -1,8 +1,8 @@
 package endrov.recording;
 
-import endrov.hardware.Hardware;
+import endrov.hardware.Device;
 
-public interface HWMagnifier extends Hardware
+public interface HWMagnifier extends Device
 	{
 
 	}

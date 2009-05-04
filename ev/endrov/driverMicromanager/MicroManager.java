@@ -16,12 +16,12 @@ import endrov.hardware.*;
  * @author Johan Henriksson
  *
  */
-public class MicroManager extends HardwareProvider implements Hardware
+public class MicroManager extends DeviceProvider implements Device
 	{
 	public static void initPlugin() {}
 	static
 		{
-		HardwareManager.root.hw.put("um", new MicroManager());
+		EvHardware.root.hw.put("um", new MicroManager());
 //		HardwareManager.registerHardwareProvider(new MicroManager());
 		}
 	
@@ -160,7 +160,7 @@ public class MicroManager extends HardwareProvider implements Hardware
 
 	
 	
-	public Set<Hardware> autodetect()
+	public Set<Device> autodetect()
 		{
 		return null;
 		}
@@ -181,7 +181,7 @@ public class MicroManager extends HardwareProvider implements Hardware
 		
 		return list;
 		}
-	public Hardware newProvided(String s)
+	public Device newProvided(String s)
 		{
 		return null;
 		}

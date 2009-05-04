@@ -12,24 +12,24 @@ import org.jdom.Element;
  * @author Johan Henriksson
  *
  */
-public class HardwareManager
+public class EvHardware
 	{
 	
 	
-	public static HardwareRoot root=new HardwareRoot();
+	public static DeviceRoot root=new DeviceRoot();
 	
 	
 	/**
 	 * Get device or null if it does not exist
 	 */
-	public static Hardware getHardware(HardwarePath name)
+	public static Device getDevice(DevicePath name)
 		{
-		Hardware next=root;
+		Device next=root;
 		for(String s:name.path)
 			{
-			if(next instanceof HardwareProvider)
+			if(next instanceof DeviceProvider)
 				{
-				next=((HardwareProvider)next).hw.get(s);
+				next=((DeviceProvider)next).hw.get(s);
 				}
 			else
 				return null;
@@ -41,9 +41,9 @@ public class HardwareManager
 	/**
 	 * Get list of all installed hardware
 	 */
-	public static Set<HardwarePath> getHardwareList()
+	public static Set<DevicePath> getDeviceList()
 		{
-		return getHardwareMap().keySet();
+		return getDeviceMap().keySet();
 		}
 	
 	
@@ -51,26 +51,26 @@ public class HardwareManager
 	/**
 	 * Get map of all installed hardware
 	 */
-	public static TreeMap<HardwarePath,Hardware> getHardwareMap()
+	public static TreeMap<DevicePath,Device> getDeviceMap()
 		{
-		TreeMap<HardwarePath,Hardware> map=new TreeMap<HardwarePath,Hardware>();
-		getHardwareMap(root, new LinkedList<String>(), map);
+		TreeMap<DevicePath,Device> map=new TreeMap<DevicePath,Device>();
+		getDeviceMap(root, new LinkedList<String>(), map);
 		return map;
 		}
-	private static void getHardwareMap(Hardware root, List<String> path,TreeMap<HardwarePath,Hardware> map)
+	private static void getDeviceMap(Device root, List<String> path,TreeMap<DevicePath,Device> map)
 		{
-		if(root instanceof HardwareProvider)
+		if(root instanceof DeviceProvider)
 			{
-			HardwareProvider p=(HardwareProvider)root;
-			for(Map.Entry<String, Hardware> e:p.hw.entrySet())
+			DeviceProvider p=(DeviceProvider)root;
+			for(Map.Entry<String, Device> e:p.hw.entrySet())
 				{
 				LinkedList<String> npath=new LinkedList<String>(path);
 				npath.add(e.getKey());
-				getHardwareMap(e.getValue(), npath, map);
+				getDeviceMap(e.getValue(), npath, map);
 				}
 			}
-		if(!(root instanceof HardwareRoot))
-			map.put(new HardwarePath(path.toArray(new String[]{})), root);
+		if(!(root instanceof DeviceRoot))
+			map.put(new DevicePath(path.toArray(new String[]{})), root);
 		}
 
 
@@ -78,10 +78,10 @@ public class HardwareManager
 	/**
 	 * Get list of all installed hardware of a specific type
 	 */
-	public static Map<HardwarePath,Hardware> getHardwareMap(Class<?> hw)
+	public static Map<DevicePath,Device> getDeviceMap(Class<?> hw)
 		{
-		TreeMap<HardwarePath,Hardware> hwlist2=new TreeMap<HardwarePath,Hardware>();
-		for(Map.Entry<HardwarePath, Hardware> hwe:getHardwareMap().entrySet())
+		TreeMap<DevicePath,Device> hwlist2=new TreeMap<DevicePath,Device>();
+		for(Map.Entry<DevicePath, Device> hwe:getDeviceMap().entrySet())
 			{
 			boolean is=false;
 			for(Class<?> intf:hwe.getValue().getClass().getInterfaces())

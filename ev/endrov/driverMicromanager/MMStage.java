@@ -87,8 +87,30 @@ public class MMStage extends MMDeviceAdapter implements HWStage
 
 		}
 	
-	//stop
-	//setOriginXY
-	//home
+	public void goHome()
+		{
+		try
+			{
+			mm.core.home(mmDeviceName);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+
+	
+	//Not in interface yet
+	/*
+	public void setOrigin()
+		{
+		mm.core.setOriginXY(mmDeviceName);
+		}
+	
+	public void stop()
+		{
+		mm.core.stop(mmDeviceName);
+		}
+	*/
 	
 	}

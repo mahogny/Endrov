@@ -6,10 +6,15 @@ import java.util.SortedMap;
 
 import org.jdom.Element;
 
-public class HardwareRoot extends HardwareProvider implements Hardware
+/**
+ * The special device "root". Doesn't do anything, just there to form a complete tree
+ * @author Johan Henriksson
+ *
+ */
+public class DeviceRoot extends DeviceProvider implements Device
 	{
 
-	public Set<Hardware> autodetect(){return null;}
+	public Set<Device> autodetect(){return null;}
 
 	public void getConfig(Element root)
 		{
@@ -17,7 +22,7 @@ public class HardwareRoot extends HardwareProvider implements Hardware
 
 
 	public List<String> provides(){return null;}
-	public Hardware newProvided(String s){return null;}
+	public Device newProvided(String s){return null;}
 
 	public void setConfig(Element root)
 		{

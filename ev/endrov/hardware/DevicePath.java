@@ -6,14 +6,14 @@ import java.util.*;
  * Path to hardware. Internally a list of strings, for the user seen as a dot-separated string
  * @author Johan Henriksson
  */
-public class HardwarePath implements Comparable<HardwarePath>
+public class DevicePath implements Comparable<DevicePath>
 	{
 	public String[] path;
 	
 	/**
 	 * Construct from dot-separated path
 	 */
-	public HardwarePath(String dotPath)
+	public DevicePath(String dotPath)
 		{
 		List<String> n=new LinkedList<String>();
 		StringTokenizer stok=new StringTokenizer(dotPath,"/");
@@ -25,7 +25,7 @@ public class HardwarePath implements Comparable<HardwarePath>
 	/**
 	 * Construct from raw path
 	 */
-	public HardwarePath(String[] path)
+	public DevicePath(String[] path)
 		{
 		this.path=path;
 		}
@@ -48,7 +48,7 @@ public class HardwarePath implements Comparable<HardwarePath>
 	/**
 	 * Ordering of paths
 	 */
-	public int compareTo(HardwarePath o)
+	public int compareTo(DevicePath o)
 		{
 		int checkLength=path.length;
 		int defret=-1;
@@ -75,8 +75,8 @@ public class HardwarePath implements Comparable<HardwarePath>
 	 */
 	public static void main(String[] arg)
 		{
-		HardwarePath a=new HardwarePath(new String[]{"a","c"});
-		HardwarePath b=new HardwarePath(new String[]{"a"});
+		DevicePath a=new DevicePath(new String[]{"a","c"});
+		DevicePath b=new DevicePath(new String[]{"a"});
 		System.out.println(a.compareTo(b));
 		System.out.println(a);
 		}

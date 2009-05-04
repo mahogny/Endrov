@@ -6,32 +6,43 @@ import java.awt.GridBagLayout;
 import javax.swing.*;
 
 import endrov.recording.recWindow.MicroscopeWindow;
+import endrov.recording.recWindow.MicroscopeWindow.ExtensionInstance;
 
 /**
  * Microscope control: Capture stack
  * @author Johan Henriksson
  *
  */
-public class StackExtension implements MicroscopeWindow.Extension
+public class StackExtension
 	{
   	
 	
 	public static void initPlugin() {}
 	static
 		{
-		MicroscopeWindow.addMicroscopeWindowExtension("Stack", new StackExtension());
+		MicroscopeWindow.addMicroscopeWindowExtension(
+				new MicroscopeWindow.Extension(){
+					public ExtensionInstance getInstance()
+						{
+						return new Hook();
+						}
+
+					public String getName()
+						{
+						return "Stacl";
+						}
+				
+				}
+				);
+		
 		}
 	
-	public JComponent addControls()
-		{
-		return new Hook();
-		}
 	
 	
 	
 	
 	///////////////////////////////////////////////////////////////////////
-	public static class Hook extends JPanel
+	public static class Hook extends MicroscopeWindow.ExtensionInstance
 		{
 		static final long serialVersionUID=0;
 		
@@ -48,6 +59,13 @@ public class StackExtension implements MicroscopeWindow.Extension
 
 			
 			
+			}
+
+
+
+
+		public void dataChangedEvent()
+			{
 			}
 		
 		

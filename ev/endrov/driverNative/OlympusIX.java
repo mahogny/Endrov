@@ -7,8 +7,8 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.hardware.Hardware;
-import endrov.hardware.HardwareProvider;
+import endrov.hardware.Device;
+import endrov.hardware.DeviceProvider;
 import endrov.hardware.PropertyType;
 import endrov.recording.HWSerial;
 import endrov.recording.HWShutter;
@@ -20,7 +20,7 @@ import endrov.recording.VirtualSerial;
  * @author Johan Henriksson
  *
  */
-public class OlympusIX extends HardwareProvider implements Hardware
+public class OlympusIX extends DeviceProvider implements Device
 	{
 	public final static String newLine="\r\n";
 
@@ -217,7 +217,7 @@ public class OlympusIX extends HardwareProvider implements Hardware
 	
 	
 
-	public Set<Hardware> autodetect()
+	public Set<Device> autodetect()
 		{
 		return null;
 		}
@@ -230,7 +230,7 @@ public class OlympusIX extends HardwareProvider implements Hardware
 		{
 		return null;
 		}
-	public Hardware newProvided(String s)
+	public Device newProvided(String s)
 		{
 		return null; //TODO
 		}

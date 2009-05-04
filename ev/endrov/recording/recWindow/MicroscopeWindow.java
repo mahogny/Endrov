@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -79,10 +80,10 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 			*/
 		}
 	
-	public static TreeMap<String,Extension> extensions=new TreeMap<String,Extension>();
-	public static void addMicroscopeWindowExtension(String name, Extension e)
+	public static List<Extension> extensions=new Vector<Extension>();
+	public static void addMicroscopeWindowExtension(Extension e)
 		{
-		extensions.put(name,e);
+		extensions.add(e);
 		}
 
 	/******************************************************************************************************
@@ -91,8 +92,22 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 
 	public static interface Extension
 		{
-		public JComponent addControls();
-		
+		public ExtensionInstance getInstance();
+		public abstract String getName();
+		}
+	
+
+	public static abstract class ExtensionInstance extends JComponent
+		{
+		private static final long serialVersionUID = 1L;
+		public abstract void dataChangedEvent();
+		}
+	
+	
+	public TreeMap<String,ExtensionInstance> extensionInstance=new TreeMap<String,ExtensionInstance>();
+	public void addMicroscopeWindowExtensionInstance(String name, ExtensionInstance e)
+		{
+		extensionInstance.put(name,e);
 		}
 	
 	/******************************************************************************************************
@@ -100,8 +115,10 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 	 *****************************************************************************************************/
 
 	
-	JComboBox mcombo=new JComboBox(new Vector<String>(extensions.keySet()));
+	private JComboBox mcombo;
 	public JComponent centerp=null;
+	
+	
 	
 	
 	public MicroscopeWindow()
@@ -111,6 +128,14 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 	
 	public MicroscopeWindow(Rectangle bounds)
 		{
+		for(Extension e:extensions)
+			{
+			ExtensionInstance ei=e.getInstance();
+			extensionInstance.put(ei.getName(), ei);
+			}
+		
+		mcombo=new JComboBox(new Vector<String>(extensionInstance.keySet()));
+		
 		
 		setLayout(new BorderLayout());
 		add(mcombo,BorderLayout.NORTH);
@@ -135,7 +160,7 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 			remove(centerp);
 		
 		String curMode=(String)mcombo.getSelectedItem();
-		centerp=extensions.get(curMode).addControls();
+		centerp=extensionInstance.get(curMode);
 		add(centerp,BorderLayout.CENTER);
 
 		revalidate();
@@ -164,6 +189,8 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 	
 	public void dataChangedEvent()
 		{
+		String curMode=(String)mcombo.getSelectedItem();
+		extensionInstance.get(curMode).dataChangedEvent();
 		}
 
 	public void loadedFile(EvData data){}
