@@ -3,6 +3,8 @@ package endrov.recording;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
+import endrov.imageset.EvPixels;
+
 /**
  * Image from camera
  * 
@@ -24,6 +26,7 @@ public class CameraImage
 	
 	/**
 	 * Make AWT image out of input
+	 * @deprecated
 	 */
 	public BufferedImage getAWT()
 		{
@@ -59,5 +62,31 @@ public class CameraImage
 		
 		return im;
 		}
+	
+	/**
+	 * Get pixel data from camera
+	 */
+	public EvPixels getPixels()
+		{
+		if(pixels instanceof BufferedImage)
+			{
+			return new EvPixels((BufferedImage)pixels);
+			}
+		else if(bytesPerPixel==1)
+			{
+			return EvPixels.createFromUByte(w, h, (byte[])pixels);
+			}
+		else if(bytesPerPixel==2)
+			{
+			return EvPixels.createFromShort(w, h, (short[])pixels);
+//			return EvPixels.createFromShort(w, h, CastArray.toShort((byte[])pixels));
+			}
+		else
+			{
+			System.out.println("Uncovered pixel type "+bytesPerPixel);
+			return null;
+			}
+		}
+	
 	
 	}
