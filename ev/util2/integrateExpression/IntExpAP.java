@@ -289,7 +289,7 @@ public class IntExpAP
 
 		
 		//TreeMap<EvDecimal, Tuple<Double,Double>> expCorrects=
-		ExpUtil.correctExposureChange(imset, lin, expName, new TreeSet<EvDecimal>(ch.imageLoader.keySet()));
+		ExpUtil.correctExposureChange(imset, lin, expName, channelName, new TreeSet<EvDecimal>(ch.imageLoader.keySet()));
 		
 		//This is only for the eye
 		double sigMax=ExpUtil.getSignalMax(lin, expName);

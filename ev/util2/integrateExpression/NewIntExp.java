@@ -60,9 +60,16 @@ public class NewIntExp
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
-		doOne(new File("/home/tbudev3/TB2141_070621_b.ost"));
+		//doOne(new File("/home/tbudev3/TB2141_070621_b.ost"));
 		// doOne(new File("/Volumes2/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 
+		doOne(new File("/Volumes/TBU_main03/daemon/output/TB2111_090123.ost"));
+	/*	
+		for(File f:new File("/Volumes/TBU_main03/daemon/output").listFiles())
+			if(f.getName().endsWith(".ost"))
+				doOne(f);
+*/		
+		
 		System.exit(0);
 		}
 
@@ -99,7 +106,10 @@ public class NewIntExp
 		// Decide on integrators
 		LinkedList<Integrator> ints = new LinkedList<Integrator>();
 
+//		boolean hasShell=!data.getIdObjects(Shell.class).isEmpty();
+		
 		NewIntExp integrator = new NewIntExp(data, expName, channelName);
+		
 		IntegratorAP intAP = new IntegratorAP(integrator, newLinNameAP, numSubDiv,
 				null);
 		IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
@@ -242,17 +252,18 @@ public class NewIntExp
 					+lastFrame);
 
 			// Get exposure time
-			String sExpTime = imset.getMetaFrame(frame).get("exposuretime");
+			//String sExpTime = imset.getMetaFrame(frame).get("exposuretime");
+			String sExpTime = imset.getChannel("GFP").getMetaFrame(frame).get("exposuretime");
 			if (sExpTime!=null)
 				expTime = Double.parseDouble(sExpTime);
 			else
-				System.out.println("No exposure time");
+				System.out.println("No exposure time, frame "+frame);
 
 			for (Integrator i : ints)
 				i.integrateStackStart(this);
 
 			// For all z
-			EvStack stack=ch.imageLoader.get(frame);
+			stack=ch.imageLoader.get(frame);
 			for (Map.Entry<EvDecimal, EvImage> eim : stack.entrySet())
 				{
 				curZ = eim.getKey();
@@ -263,12 +274,12 @@ public class NewIntExp
 
 				pixels = null;
 
-				for (Integrator i : ints)
+				for(Integrator i : ints)
 					i.integrateImage(this);
 
 				}
 
-			for (Integrator i : ints)
+			for(Integrator i : ints)
 				i.integrateStackDone(this);
 
 			}
@@ -449,7 +460,7 @@ public class NewIntExp
 			else
 				{
 				this.correctedExposure = ExpUtil.correctExposureChange(
-						integrator.imset, lin, integrator.expName, new TreeSet<EvDecimal>(
+						integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(
 								integrator.ch.imageLoader.keySet()));
 				}
 
