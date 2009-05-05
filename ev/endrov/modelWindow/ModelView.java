@@ -13,6 +13,7 @@ import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.j2d.*;
 
+import endrov.coordinateSystem.CoordinateSystem;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
 import endrov.util.EvDecimal;
@@ -597,6 +598,58 @@ public class ModelView extends GLCanvas
 		bufferedImage.setRGB( 0, 0, w, h, pixelInts, 0, w );
 
 		return bufferedImage;
+		}
+	
+	
+	
+	/**
+	 * Draw the head of an arrow, with specified tip point and direction. Uses the currently selected color
+	 */
+	public void renderArrowHead(GL gl, Vector3d tip, Vector3d direction)
+		{
+		CoordinateSystem cs=new CoordinateSystem();
+	
+		//Need to find a perpendicular vector
+		Vector3d up=new Vector3d(0,0,1);
+		Vector3d right=new Vector3d(1,0,0);
+		if(direction.equals(up))
+			cs.setFromTwoVectors(direction, right, 1, 1, 1, tip);
+		else
+			cs.setFromTwoVectors(direction, up, 1, 1, 1, tip);
+	
+		
+		int numAngle=6;
+		double r=representativeScale*0.04;
+		double length=r*2;;
+		
+		Vector3d[] points=new Vector3d[numAngle];
+		
+		for(int i=0;i<numAngle;i++)
+			{
+			double angle=2*Math.PI*i/numAngle;
+			points[i]=cs.transformFromSystem(new Vector3d(-length,r*Math.cos(angle),r*Math.sin(angle)));
+			}
+		
+		gl.glBegin(GL.GL_TRIANGLE_FAN);
+		gl.glVertex3d(tip.x, tip.y, tip.z);
+		for(int i=0;i<numAngle;i++)
+			gl.glVertex3d(points[i].x, points[i].y, points[i].z);
+		gl.glVertex3d(points[0].x, points[0].y, points[0].z);
+		gl.glEnd();
+		
+		gl.glBegin(GL.GL_POLYGON);
+		for(int i=numAngle-1;i>=0;i--)
+			gl.glVertex3d(points[i].x, points[i].y, points[i].z);
+		int lasta=numAngle-1;
+		gl.glVertex3d(points[lasta].x, points[lasta].y, points[lasta].z);
+		gl.glEnd();
+		
+		
+		/*
+		 * This means a lot of trig. An option is to store down the tip once in a list, then write a shader
+		 * that applies the local transform. 
+		 */
+		
 		}
 
 	//http://www.felixgers.de/teaching/jogl/imagingProg.html

@@ -190,9 +190,7 @@ public class CoordinateSystem extends EvObject
 	
 	
 	/**
-	 * v3=v1 x v2
-	 * v2 is replaced by one orthogonal to v1 and v2
-	 * finally the base vectors are made to lengths
+	 * v3=v1 x v2. v2 is replaced by one orthogonal to v1 and v3. Finally the base vectors are made to have given lengths.
 	 */
 	public void setFromTwoVectors(Vector3d v1, Vector3d v2, double len1, double len2, double len3, Vector3d mid)
 		{

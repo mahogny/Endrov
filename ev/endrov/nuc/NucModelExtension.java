@@ -218,23 +218,42 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			if(!nuc.pos.isEmpty())
 				{
-				gl.glBegin(GL.GL_LINE_STRIP);
 				gl.glColor3d(1, 1, 1);
 				if(simple)
 					{
+					gl.glBegin(GL.GL_LINE_STRIP);
 					EvDecimal f1=nuc.pos.firstKey();
 					EvDecimal f2=nuc.pos.lastKey();
 					NucLineage.NucPos pos1=nuc.pos.get(f1);
 					NucLineage.NucPos pos2=nuc.pos.get(f2);
 					gl.glVertex3d(pos1.x,pos1.y,pos1.z);
 					gl.glVertex3d(pos2.x,pos2.y,pos2.z);
+					gl.glEnd();
+					
+					Vector3d direction=pos2.getPosCopy();
+					direction.sub(pos1.getPosCopy());
+					w.view.renderArrowHead(gl, pos2.getPosCopy(), direction);
 					}
 				else
 					{
+					gl.glBegin(GL.GL_LINE_STRIP);
+					//Vector3d last=null, secondLast=null;
 					for(NucLineage.NucPos pos:nuc.pos.values())
+						{
 						gl.glVertex3d(pos.x,pos.y,pos.z);
+						/*secondLast=last;
+						last=pos.getPosCopy();*/
+						}
+					gl.glEnd();
+					/*
+					if(secondLast!=null)
+						{
+						Vector3d direction=new Vector3d(last);
+						direction.sub(secondLast);
+						w.view.renderArrowHead(gl, last, direction);
+						}
+						*/
 					}
-				gl.glEnd();
 				}
 			}
 		
@@ -438,36 +457,6 @@ public class NucModelExtension implements ModelWindowExtension
 				BasicWindow.updateWindows(w);
 			}
 
-		
-		
-		public void drawArrowHead(GL gl, Vector3d tip, Vector3d direction)
-			{
-			
-			//TODO
-			
-			//Need to find a perpendicular vector
-			Vector3d up=new Vector3d(0,0,1);
-			Vector3d right=new Vector3d(1,0,0);
-			Vector3d e2=new Vector3d();
-			if(direction.equals(up))
-				e2.cross(direction, right);
-			else
-				e2.cross(direction, up);
-			
-			//Normalized, prepare a new local coordinate system
-			Vector3d e1=new Vector3d();
-			e1.normalize(direction);
-			e2.normalize();
-			Vector3d e3=new Vector3d();
-			e3.cross(e1, e2);
-			//e1 forward. e_i forms a base 
-			
-			int numAngle=4;
-			double size=1; //TODO
-			
-			aoeaoe
-			}
-		
 		
 		/**
 		 * Adjust the scale
