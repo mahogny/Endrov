@@ -720,3 +720,8 @@ LOG(441, 25188352:): Configuration Camera/MedRes: new setting for device CAM def
 LOG(441, 25188352:): Configuration Camera/HiRes: new setting for device CAM defined as Binning=1
 LOG(441, 25188352:): Configuration Camera/HiRes: new setting for device CAM defined as PixelType=16bit
 LOG(441, 25188352:): System state cache updated.
+LOG(Tue May  5 2009 18:47:06.393448, 11647, 25189888:): -------->>
+LOG(Tue May  5 2009 18:47:06.404397, 11647, 25189888:): Core session started on Tue May  5 2009 18:47:06.404407 by tbudev3 on xeon
+LOG(Tue May  5 2009 18:47:06.404984, 11647, 25189888:): Debug logging disabled
+LOG(Tue May  5 2009 18:47:06.472883, 11647, 25189888:): All devices unloaded.
+LOG(Tue May  5 2009 18:47:06.474288, 11647, 25189888:): System state cache updated.
