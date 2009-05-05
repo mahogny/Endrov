@@ -331,7 +331,8 @@ public class CellContactMap
 		EvDecimal lastFrame=lin.lin.nuc.get(nucName).getLastFrame();
 		SortedMap<EvDecimal,Boolean> isNeighMap=new TreeMap<EvDecimal, Boolean>();
 		//Could restrict better using lifetime
-		for(EvDecimal f:lin.framesTested.tailSet(lastFrame))
+		for(EvDecimal f:lin.framesTested.tailSet(firstFrame))
+//		for(EvDecimal f:lin.framesTested.tailSet(lastFrame))    //WHY LAST FRAME??? TODO
 			if(f.lessEqual(lastFrame))
 				isNeighMap.put(f, false);
 		
