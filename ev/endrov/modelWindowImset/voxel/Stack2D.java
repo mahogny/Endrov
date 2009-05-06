@@ -159,13 +159,14 @@ public class Stack2D extends StackInterface
 
 	public Tuple<TextureRenderer,OneSlice> processImage(EvStack stack, EvImage evim, EvDecimal z, VoxelExtension.ChannelSelection chsel)
 		{
-		BufferedImage bim=evim.getJavaImage(); //1-2 sec tot?
+		EvPixels p=evim.getPixels();
+		BufferedImage bim=p.quickReadOnlyAWT();
 		OneSlice os=new OneSlice();
 		
-		os.w=bim.getWidth();
-		os.h=bim.getHeight();
-		os.resX=stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
-		os.resY=stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
+		os.w=p.getWidth();
+		os.h=p.getHeight();
+		os.resX=stack.getResbinX();//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
+		os.resY=stack.getResbinY();//stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
 		os.z=z/*.divide(resZ)*/.doubleValue();
 		os.color=chsel.color;
 

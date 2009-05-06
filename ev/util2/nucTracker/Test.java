@@ -98,7 +98,7 @@ public class Test
 					
 					
 					EvImage im=ost.getChannel(channelName).getImageLoader(frame, z);
-					BufferedImage jim=im.getJavaImage();
+					BufferedImage jim=im.getPixels().quickReadOnlyAWT();
 					TImage tim=new TImage();
 					tim.createCumIm(jim);
 					tim.valueY=1;

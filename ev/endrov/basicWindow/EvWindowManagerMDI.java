@@ -120,6 +120,11 @@ public class EvWindowManagerMDI extends JPanel implements /*WindowListener,*/ Ev
 			return null;//TODO
 			}
 
+		public BasicWindow getFocusWindow()
+			{
+			return null;
+			}
+
 		}
 
 	}

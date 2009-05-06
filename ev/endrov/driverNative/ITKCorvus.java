@@ -15,7 +15,6 @@ import endrov.hardware.DeviceProvider;
 import endrov.hardware.PropertyType;
 import endrov.recording.HWSerial;
 import endrov.recording.HWStage;
-import endrov.recording.VirtualSerialBasic;
 
 /**
  * ITK Corvus stage drive + joystick.

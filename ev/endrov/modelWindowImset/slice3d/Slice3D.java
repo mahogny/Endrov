@@ -82,9 +82,10 @@ public class Slice3D
 			//Load image
 			EvStack stack=ch.imageLoader.get(cframe);
 			EvImage evim=stack.get(zplane);
-			BufferedImage bim=evim.getJavaImage();
-			w=bim.getWidth();
-			h=bim.getHeight();
+			EvPixels p=evim.getPixels();
+			BufferedImage bim=p.quickReadOnlyAWT();
+			w=p.getWidth();
+			h=p.getHeight();
 			resX=stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
 			resY=stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
 			//resZ=im.meta.resZ;

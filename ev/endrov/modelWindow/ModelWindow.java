@@ -19,8 +19,6 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.keyBinding.*;
-import endrov.keyBinding.NewBinding.EvBindKeyEvent;
-import endrov.keyBinding.NewBinding.EvBindStatus;
 import endrov.modelWindow.basicExt.CrossHandler;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
@@ -34,7 +32,7 @@ import endrov.util.SnapBackSlider;
  * @author Johan Henriksson
  */
 public class ModelWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener, NewBinding.EvBindListener
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener, JinputListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -292,7 +290,7 @@ public class ModelWindow extends BasicWindow
 		view.autoCenter();
 		
 		//TODO dangerous, might be called before constructed
-		NewBinding.attachBindAxisListener(this);
+		attachJinputListener(this);
 		}
 	
 	
@@ -733,7 +731,7 @@ public class ModelWindow extends BasicWindow
 	private static final int KEY_NEXTFRAME=KeyBinding.register(new KeyBinding("Model Window","Next frame",new KeyBinding.TypeJInput("2",1)));
 	private static final int KEY_PREVFRAME=KeyBinding.register(new KeyBinding("Model Window","Prev frame",new KeyBinding.TypeJInput("0",1)));
 
-	public void bindAxisPerformed(EvBindStatus status)
+	public void bindAxisPerformed(JInputManager.EvJinputStatus status)
 		{
 		float axismulxy=10;
 		float axismulz=30;
@@ -781,7 +779,7 @@ public class ModelWindow extends BasicWindow
 		}
 
 
-	public void bindKeyPerformed(EvBindKeyEvent e)
+	public void bindKeyPerformed(JInputManager.EvJinputButtonEvent e)
 		{
 		if(KeyBinding.get(KEY_PREVFRAME).typed(e))
 			frameControl.stepBack(new EvDecimal(1.0));	

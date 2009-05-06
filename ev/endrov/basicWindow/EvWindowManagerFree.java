@@ -63,12 +63,16 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 		super.setTitle(EV.programName+" "+title+" ["+getBasicWindow().windowInstance+"]");
 		}
 	
+	private static WeakReference<BasicWindow> lastActiveWindow=new WeakReference<BasicWindow>(null);
 	
 	public void windowClosing(WindowEvent e) 
 		{
 	
 		}
-	public void windowActivated(WindowEvent arg0)	{}
+	public void windowActivated(WindowEvent e)
+		{
+		lastActiveWindow=new WeakReference<BasicWindow>(getBasicWindow());
+		}
 	public void windowDeactivated(WindowEvent arg0)	{}
 	public void windowDeiconified(WindowEvent arg0)	{}
 	public void windowIconified(WindowEvent arg0) {}
@@ -123,6 +127,11 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
 						list.add(bw);
 					}
 			return list;
+			}
+
+		public BasicWindow getFocusWindow()
+			{
+			return lastActiveWindow.get();
 			}
 		
 		}

@@ -122,7 +122,7 @@ public class CamWindow extends BasicWindow
 					{
 					HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
 					CameraImage cim=cam.snap();
-					BufferedImage im=This.fromCam=cim.getAWT();
+					BufferedImage im=This.fromCam=cim.getPixels().quickReadOnlyAWT();
 					Rectangle dbounds=This.drawArea.getBounds();
 					if(im!=null)
 						if(im.getWidth()!=dbounds.getWidth() ||

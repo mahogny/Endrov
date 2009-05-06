@@ -1,15 +1,87 @@
 package endrov.keyBinding;
 
 
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
-import net.java.games.input.ControllerEnvironment;
+import java.util.HashMap;
+import java.util.TreeMap;
 
+import endrov.basicWindow.BasicWindow;
 
+import net.java.games.input.*;
+
+/**
+ * Thread taking care of gamepad/joystick input, forwarding events
+ * @author Johan Henriksson
+ *
+ */
 public class JInputManager implements Runnable
 	{
 	
+	/**
+	 * Axis/status update
+	 * @author Johan Henriksson
+	 *
+	 */
+	public static class EvJinputStatus
+		{
+		public HashMap<String, Float> values=new HashMap<String, Float>();
+		}
+
+
+
+
+	/**
+	 * Button update
+	 * @author Johan Henriksson
+	 *
+	 */
+	public static class EvJinputButtonEvent 
+		{
+		public EvJinputButtonEvent(String src, float value, EvJinputStatus status)
+			{
+			srcName=src;
+			srcValue=value;
+			this.status=status;
+			}
+		
+		public String srcName;
+		public EvJinputStatus status;
+		public float srcValue;
+		}
+
+
+
+
+	public static TreeMap<String, JInputMode> gamepadModes=new TreeMap<String, JInputMode>();
+	public static String selectedGamepadMode="";
 	
+	/**
+	 * Add a new gamepad mode
+	 */
+	public static void addGamepadMode(String name, JInputMode gp, boolean makeDefault)
+		{
+		synchronized (gamepadModes)
+			{
+			gamepadModes.put(name, gp);
+			if(makeDefault)
+				selectedGamepadMode=name;
+			}
+		BasicWindow.updateWindows();
+		}
+	
+	/**
+	 * Get currently selected gamepad mode
+	 */
+	private JInputMode getGamepadMode()
+		{
+		JInputMode m=gamepadModes.get(selectedGamepadMode);
+		if(m==null && !gamepadModes.isEmpty())
+			m=gamepadModes.values().iterator().next();
+		return m;
+		}
+	
+	
+	
+	/*
 	static
 		{
 		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
@@ -28,7 +100,10 @@ public class JInputManager implements Runnable
 	//"Trigger","Thumb","Thumb 2","Top","Top 2","Pinkie","Base","Base 2","Base 3","Base 4","Base 5","Base 6","pov"
 	
 		}
-		
+		*/
+	
+	
+	
 	
 	//in steps of 0.125
 	public static final String[] povList={"Neutral","NW","N","NE","E","SE","S","SW","W"};
@@ -62,7 +137,7 @@ public class JInputManager implements Runnable
 		{
 		System.out.println("Jinput running thread");
 		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment();
-		NewBinding.EvBindStatus status=new NewBinding.EvBindStatus();
+		JInputManager.EvJinputStatus status=new JInputManager.EvJinputStatus();
 		while(true)
 			{
 			try{Thread.sleep(20);}catch(Exception e){}
@@ -100,9 +175,9 @@ public class JInputManager implements Runnable
 						status.values.put(name,v);
 						
 						//Emit event?
-						for(NewBinding.EvBindListener listener:NewBinding.bindListeners.keySet())
-							listener.bindKeyPerformed(new NewBinding.EvBindKeyEvent(name,v,status));
-						
+						JInputMode mode=getGamepadMode();
+						if(mode!=null)
+							mode.bindKeyPerformed(new JInputManager.EvJinputButtonEvent(name,v,status));
 						
 						}
 
@@ -126,8 +201,12 @@ public class JInputManager implements Runnable
 						status.values.put(component.getName(),v);
 						}
 					*/
-					for(NewBinding.EvBindListener listener:NewBinding.bindListeners.keySet())
-						listener.bindAxisPerformed(status);
+					//for(NewBinding.EvBindListener listener:NewBinding.bindListeners.keySet())
+						//listener.bindAxisPerformed(status);
+					
+					JInputMode mode=getGamepadMode();
+					if(mode!=null)
+						mode.bindAxisPerformed(status);
 					
 					
 					break; //For now
@@ -140,3 +219,21 @@ public class JInputManager implements Runnable
 		}
 
 	}
+
+
+/*
+later idea: unification of jinput and awt events, somehow
+
+
+if(KeyBinding.get(KEY_GETCONSOLE).typed(e))
+	
+	vs
+	
+	if(KeyBinding.get(KEY_GETCONSOLE).typed(e)) //e now our own type of event?
+
+		
+		
+		KeyListener is hidden in attached BindKeyListener
+		
+		
+		*/
