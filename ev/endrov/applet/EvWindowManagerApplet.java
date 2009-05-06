@@ -100,5 +100,10 @@ public class EvWindowManagerApplet implements BasicWindow.EvWindowManagerMaker
 		EvWindowManager w=new Window(bw);
 		return w;
 		}
+
+	public BasicWindow getFocusWindow()
+		{
+		return null;
+		}
 	
 	}

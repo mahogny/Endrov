@@ -153,15 +153,16 @@ public class Stack3D extends StackInterface
 							evim=chsel.filterSeq.applyReturnImage(stack, evim);
 						
 						//Get image for this plane
-						BufferedImage bim=evim.getJavaImage();
+						EvPixels p=evim.getPixels();
+						BufferedImage bim=p.quickReadOnlyAWT();
 
 						//Set up slice if not done yet
 						if(os==null)
 							{
 							os=new VoxelStack();
 							os.tex=texture;
-							os.w=bim.getWidth();
-							os.h=bim.getHeight();
+							os.w=p.getWidth();
+							os.h=p.getHeight();
 							os.d=ceilPower2(stack.getDepth());
 
 							int bw=suitablePower2(os.w);

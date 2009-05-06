@@ -18,6 +18,8 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.data.GuiEvDataIO;
 import endrov.ev.*;
+import endrov.keyBinding.JInputManager;
+import endrov.keyBinding.JinputListener;
 import endrov.keyBinding.KeyBinding;
 
 import org.jdom.*;
@@ -45,6 +47,7 @@ public abstract class BasicWindow extends JPanel
 		{
 		public EvWindowManager createWindow(BasicWindow bw);
 		public List<BasicWindow> getAllWindows();
+		public BasicWindow getFocusWindow();
 		}
 
 	public static void initPlugin()
@@ -66,6 +69,9 @@ public abstract class BasicWindow extends JPanel
 						w.windowPersonalSettings(e);
 					}
 			});
+		
+		JInputManager.addGamepadMode("Active window", new JInputModeBasicWindow(), true);
+		
 		}
 
 	public static final int KEY_GETCONSOLE = KeyBinding.register(new KeyBinding(
@@ -717,17 +723,23 @@ public abstract class BasicWindow extends JPanel
 	public static void showErrorDialog(String error)
 		{
 		//Can get current window
-		//TODO icon
 		JOptionPane.showMessageDialog(null, error,"Error",JOptionPane.ERROR_MESSAGE);
 		}
 
 	public static void showWarningDialog(String error)
 		{
 		//Can get current window
-		//TODO icon
 		JOptionPane.showMessageDialog(null, error,"Warning",JOptionPane.WARNING_MESSAGE);
 		}
 
+	public WeakHashMap<JinputListener,Object> jinputListeners=new WeakHashMap<JinputListener,Object>();
+	
+	public void attachJinputListener(JinputListener listener)
+		{
+		jinputListeners.put(listener,null);
+		}
+	
+	
 	/******************************************************************************************************
 	 * Abstract Instance *
 	 *****************************************************************************************************/
@@ -751,4 +763,6 @@ public abstract class BasicWindow extends JPanel
 
 	public abstract void freeResources();
 
+	
+		
 	}

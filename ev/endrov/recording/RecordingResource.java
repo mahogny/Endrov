@@ -1,8 +1,14 @@
 package endrov.recording;
 
 
+import endrov.keyBinding.JInputManager;
 import endrov.util.EvSound;
 
+/**
+ * Resources associated with controlling microscope hardware 
+ * @author Johan Henriksson
+ *
+ */
 public class RecordingResource
 	{
 	public static EvSound soundCameraSnap=new EvSound(RecordingResource.class,"13658__LS__camera_click.wav");
@@ -11,6 +17,6 @@ public class RecordingResource
 	public static void initPlugin() {}
 	static
 		{
-		
+		JInputManager.addGamepadMode("Hardware", new JInputModeRecording(), false);
 		}
 	}

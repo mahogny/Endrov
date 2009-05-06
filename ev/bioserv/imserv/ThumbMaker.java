@@ -84,10 +84,10 @@ public class ThumbMaker
 //return SendFile.getBytesFromImage(im);
 
 	
-	private static boolean isImage(String name)
+	/*private static boolean isImage(String name)
 		{
 		return name.endsWith(".png") || name.endsWith(".jpg");
-		}
+		}*/
 	
 	
 	}

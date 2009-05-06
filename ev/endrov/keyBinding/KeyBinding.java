@@ -155,12 +155,12 @@ public class KeyBinding implements Comparable<KeyBinding>
 	 *****************************************************************************************************/
 	public static interface KeyBindingType
 		{
-		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je);
-		public boolean held(KeyEvent e, NewBinding.EvBindStatus je);
+		public boolean typed(KeyEvent e, JInputManager.EvJinputButtonEvent je);
+		public boolean held(KeyEvent e, JInputManager.EvJinputStatus je);
 		
 		public void writeXML(Element e);
 		public String keyDesc();
-		public float getAxis(NewBinding.EvBindStatus status);
+		public float getAxis(JInputManager.EvJinputStatus status);
 		}
 	
 	/**
@@ -170,11 +170,11 @@ public class KeyBinding implements Comparable<KeyBinding>
 		{
 		private char key;
 		public TypeChar(char key){this.key=key;}
-		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je)
+		public boolean typed(KeyEvent e, JInputManager.EvJinputButtonEvent je)
 			{
 			return e!=null && e.getKeyChar()==key;
 			}
-		public boolean held(KeyEvent e, NewBinding.EvBindStatus je)
+		public boolean held(KeyEvent e, JInputManager.EvJinputStatus je)
 			{
 			return false; //TODO
 			}
@@ -188,7 +188,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 			{
 			return (""+key).toLowerCase();
 			}
-		public float getAxis(NewBinding.EvBindStatus status)
+		public float getAxis(JInputManager.EvJinputStatus status)
 			{
 			return 0;
 			}
@@ -202,12 +202,12 @@ public class KeyBinding implements Comparable<KeyBinding>
 		private int keyCode;
 		private int modifierEx;
 		public TypeKeycode(int keyCode, int modifierEx){this.keyCode=keyCode;this.modifierEx=modifierEx;}
-		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je)
+		public boolean typed(KeyEvent e, JInputManager.EvJinputButtonEvent je)
 			{
 			//TODO: use modifier
 			return e!=null && e.getKeyCode()==keyCode;
 			}
-		public boolean held(KeyEvent e, NewBinding.EvBindStatus je)
+		public boolean held(KeyEvent e, JInputManager.EvJinputStatus je)
 			{
 			return false; //TODO
 			}
@@ -231,7 +231,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 				r=r+"+";
 			return (r+KeyEvent.getKeyText(keyCode)).toLowerCase();
 			}
-		public float getAxis(NewBinding.EvBindStatus status)
+		public float getAxis(JInputManager.EvJinputStatus status)
 			{return 0;}
 		}
 
@@ -249,14 +249,14 @@ public class KeyBinding implements Comparable<KeyBinding>
 			this.ident=ident;
 			this.value=value;
 			}
-		public boolean typed(KeyEvent e, NewBinding.EvBindKeyEvent je)
+		public boolean typed(KeyEvent e, JInputManager.EvJinputButtonEvent je)
 			{
 			if(je!=null && je.srcName.equals(ident))
 				return je.srcValue==1;
 			return false;
 //			return status.values.get(ident)==value;
 			}
-		public boolean held(KeyEvent e, NewBinding.EvBindStatus status)
+		public boolean held(KeyEvent e, JInputManager.EvJinputStatus status)
 			{
 			if(status!=null)
 				{
@@ -276,7 +276,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 			{
 			return "JI:"+ident+"="+value;
 			}
-		public float getAxis(NewBinding.EvBindStatus status)
+		public float getAxis(JInputManager.EvJinputStatus status)
 			{
 //			System.out.println("getaxis "+ident+" "+status.values.get(ident)+" "+status.values.get("x"));
 			Float v=status.values.get(ident);
@@ -368,7 +368,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 	/**
 	 * Has key been typed?
 	 */
-	public boolean held(NewBinding.EvBindStatus status)
+	public boolean held(JInputManager.EvJinputStatus status)
 		{
 		for(KeyBindingType kb:types)
 			if(kb.held(null,status))
@@ -400,7 +400,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 	
 	
 	/** Get axis value. NULL only on exception */
-	public float getAxis(NewBinding.EvBindStatus status)
+	public float getAxis(JInputManager.EvJinputStatus status)
 		{
 		float v=0;
 		for(KeyBindingType kb:types)
@@ -408,7 +408,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 		return v;
 		}
 	
-	public boolean typed(NewBinding.EvBindKeyEvent e)
+	public boolean typed(JInputManager.EvJinputButtonEvent e)
 		{
 		for(KeyBindingType kb:types)
 			if(kb.typed(null,e)) //TODO: any need to separate here?

@@ -95,8 +95,8 @@ public final class CalcThread extends BatchThread
 							dispY=stack.dispY;
 							binning=stack.binning;
 							
-							
-							BufferedImage bufi=imload.getJavaImage();
+							EvPixels pix=imload.getPixels();
+							BufferedImage bufi=pix.quickReadOnlyAWT();
 							if(bufi==null)
 								throw new Exception("Could not load image");
 							
