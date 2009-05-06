@@ -189,8 +189,11 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 	
 	public void dataChangedEvent()
 		{
-		String curMode=(String)mcombo.getSelectedItem();
-		extensionInstance.get(curMode).dataChangedEvent();
+		if(mcombo!=null)
+			{
+			String curMode=(String)mcombo.getSelectedItem();
+			extensionInstance.get(curMode).dataChangedEvent();
+			}
 		}
 
 	public void loadedFile(EvData data){}

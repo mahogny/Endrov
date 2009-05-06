@@ -24,6 +24,10 @@ public class JInputManager implements Runnable
 	public static class EvJinputStatus
 		{
 		public HashMap<String, Float> values=new HashMap<String, Float>();
+		public String toString()
+			{
+			return values.toString();
+			}
 		}
 
 
