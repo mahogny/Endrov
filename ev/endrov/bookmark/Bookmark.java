@@ -1,9 +1,13 @@
 package endrov.bookmark;
 
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.*;
+import endrov.imageWindow.ImageWindow;
 import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.ModelWindowExtension;
@@ -37,6 +41,33 @@ public class Bookmark extends EvObject
 				w.modelWindowHooks.add(new BookmarkModelWindowHook(w));
 				}
 		});
+		ImageWindow.addImageWindowExtension(new BookmarkImageWindowHook());
+		}
+	
+	/**
+	 * Ask user to give the bookmark a name. Will give an error if data=null.
+	 * @return A bookmark to fill with data if dialog worked, otherwise null
+	 */
+	public static Bookmark addBookmarkDialog(JComponent w, EvContainer data)
+		{
+		if(data==null)
+			BasicWindow.showErrorDialog("No container selected");
+		else
+			{
+			String name=JOptionPane.showInputDialog(w, "Name of bookmark");
+			if(name!=null)
+				{
+				if(data.metaObject.containsKey(name))
+					BasicWindow.showErrorDialog("Object with this name exists already");
+				else
+					{
+					Bookmark b=new Bookmark();
+					data.metaObject.put(name, b);
+					return b;
+					}
+				}
+			}
+		return null;
 		}
 
 	
