@@ -327,18 +327,34 @@ public class CellContactMap
 		
 		if(ov==null || ov.isEmpty())
 			return neighOverlaps;
-		EvDecimal firstFrame=lin.lin.nuc.get(nucName).getFirstFrame();
-		EvDecimal lastFrame=lin.lin.nuc.get(nucName).getLastFrame();
+		NucLineage.Nuc thisNuc=lin.lin.nuc.get(nucName);
+		EvDecimal firstFrame=thisNuc.getFirstFrame();
+		EvDecimal lastFrame=thisNuc.getLastFrame();
+		//This could be a potential fix for the last-frame-is-not-in-contact problem.
+		//Problem is, it does so by ignoring the last part which has other problems.
+		//EvDecimal lastFrame=thisNuc.pos.lastKey();
+		
+		
 		SortedMap<EvDecimal,Boolean> isNeighMap=new TreeMap<EvDecimal, Boolean>();
 		//Could restrict better using lifetime
 		for(EvDecimal f:lin.framesTested.tailSet(firstFrame))
-//		for(EvDecimal f:lin.framesTested.tailSet(lastFrame))    //WHY LAST FRAME??? TODO
 			if(f.lessEqual(lastFrame))
 				isNeighMap.put(f, false);
 		
+		//Consult map for all frames
 		for(EvDecimal f:ov)
 			isNeighMap.put(f, true);
-			
+
+		//It also exists at the last frame, given override etc.
+		//Hack for full self-contact. Often a cell has no keyframe at the frame of division.
+		//This causes a drop in contact.
+		//The problem is again discreteness, it has minor implications
+		//otherwise but a better solution would be nice
+		if(nucName.equals(nucName2))
+			isNeighMap.put(thisNuc.getLastFrame(),true);
+		
+		
+		
 
 		EvDecimal lifeLenFrames=(lastFrame.subtract(firstFrame));
 

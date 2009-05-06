@@ -131,7 +131,7 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 		for(Extension e:extensions)
 			{
 			ExtensionInstance ei=e.getInstance();
-			extensionInstance.put(ei.getName(), ei);
+			addMicroscopeWindowExtensionInstance(e.getName(), ei);
 			}
 		
 		mcombo=new JComboBox(new Vector<String>(extensionInstance.keySet()));
