@@ -67,6 +67,14 @@ public class DevicePath implements Comparable<DevicePath>
 			}
 		return defret;
 		}
+	
+	/**
+	 * Get device for this path
+	 */
+	public Device getDevice()
+		{
+		return EvHardware.getDevice(this);
+		}
 
 	
 	

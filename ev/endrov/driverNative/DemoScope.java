@@ -109,15 +109,14 @@ public class DemoScope extends DeviceProvider implements Device
 			}
 		public void setRelStagePos(double[] axis)
 			{
-			stagePos[0]+=axis[0];
-			stagePos[1]+=axis[1];
-			stagePos[2]+=axis[2];
+			for(int i=0;i<3;i++)
+				stagePos[i]+=axis[i];
+			//System.out.println("curpos "+stagePos[0]+"  "+stagePos[1]+"   "+stagePos[2]);
 			}
 		public void setStagePos(double[] axis)
 			{
-			stagePos[0]=axis[0];
-			stagePos[1]=axis[1];
-			stagePos[2]=axis[2];
+			for(int i=0;i<3;i++)
+				stagePos[i]=axis[i];
 			}
 		public void goHome()
 			{

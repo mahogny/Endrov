@@ -195,13 +195,11 @@ public class StagePanel implements ActionListener
 			}
 		public void mousePressed(MouseEvent e)
 			{
-			System.out.println("mouse pressed");
 			holdDigit=hitDigit(e.getX(), e.getY());
 			mouseLastTickY=e.getY();
 			}
 		public void mouseReleased(MouseEvent e)
 			{
-			System.out.println("mouse released");
 			holdDigit=null;
 			}
 		public void mouseDragged(MouseEvent e)
@@ -216,7 +214,6 @@ public class StagePanel implements ActionListener
 					if(ticks!=0)
 						{
 						double[] axis=hw.getStagePos();
-						System.out.println(axis+" "+holdDigit);
 						axis[axisid]-=ticks*Math.pow(10, holdDigit);
 						hw.setStagePos(axis);
 						repaint();
