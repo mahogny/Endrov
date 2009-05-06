@@ -442,7 +442,7 @@ public class ImageWindow extends BasicWindow
 			return null;
 		}
 	/** Get current metadata */
-	public EvData getData()
+	public EvData getSelectedData()
 		{
 		return getCurrentChannelWidget().comboChannel.getData();
 		}
@@ -712,7 +712,7 @@ public class ImageWindow extends BasicWindow
 		
 	//	if(!ScriptBinding.runScriptKey(e))
 			{
-		EvData data=getData();
+		EvData data=getSelectedData();
 		//Imageset rec=getImageset();
 		if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
 			{

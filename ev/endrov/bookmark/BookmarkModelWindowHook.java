@@ -17,7 +17,6 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
@@ -28,6 +27,11 @@ import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
+/**
+ * Bookmark integration with model window
+ * @author Johan Henriksson
+ *
+ */
 public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 	{
 	private final ModelWindow w;
@@ -124,7 +128,15 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 	
 	public void actionPerformed(ActionEvent e)
 		{
-		EvContainer data=w.getSelectedData();
+		//EvContainer data=w.getSelectedData();
+		Bookmark b=Bookmark.addBookmarkDialog(w, w.getSelectedData());
+		if(b!=null)
+			{
+			b.frame=w.frameControl.getFrame();
+			b.modelCamera=new Camera(w.view.camera);
+			BasicWindow.updateWindows();
+			}
+/*		
 		if(data==null)
 			BasicWindow.showErrorDialog("No container selected");
 		else
@@ -147,6 +159,7 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 			
 			
 			}
+			*/
 		}
 	
 	
