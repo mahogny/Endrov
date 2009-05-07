@@ -11,6 +11,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
+import endrov.util.PersistentGrowingCollection;
 import endrov.util.Vector3i;
 
 /**
@@ -21,14 +22,13 @@ import endrov.util.Vector3i;
  * @author Johan Henriksson
  *
  */
-public class LevelHierarchy
+public class CopyOfLevelHierarchy
 	{
 	
 	public static class Node
 		{
 		public int intensity;
 //		public PersistentGrowingCollection<Vector3i> pixels=null;//new PersistentGrowingCollection<Vector3i>();
-		public LinkedList<HashSet<Vector3i>> morePixels=new LinkedList<HashSet<Vector3i>>(); //For fast joining
 		public HashSet<Vector3i> pixels=new HashSet<Vector3i>();
 		public Node parent;
 		public HashSet<Node> children=new HashSet<Node>();
@@ -54,7 +54,7 @@ public class LevelHierarchy
 	/**
 	 * Form level hierarchy. O(#level log(#level) + w h d )
 	 */
-	public LevelHierarchy(EvStack stack)
+	public CopyOfLevelHierarchy(EvStack stack)
 		{
 		/* Take all pixels
 		 * Sort pixels
@@ -97,7 +97,7 @@ public class LevelHierarchy
 			for(Vector3i v:level.getValue())
 				{
 				countPixel++;
-				if(countPixel%1000==0)
+//				if(countPixel%1000==0)
 					System.out.println(countPixel);
 				
 				Node thisNode=null;
@@ -170,29 +170,20 @@ public class LevelHierarchy
 				else
 					{
 					//Need to join nodes. Eliminate thisNode.
-					//neighNode.pixels.addAll(thisNode.pixels);   //O(n), replaced by morePixels
-					neighNode.morePixels.add(thisNode.pixels); //O(1) join
-					
-					if(neighNode.morePixels.size()>5)
-						{
-						//PROBLEM!!!! might join multiple times, hence slow
-						//Solution: join groups as they grow
-						for(HashSet<Vector3i> p:thisNode.morePixels) //Additional pixel lists from joining
-							neighNode.pixels.addAll(p);
-						neighNode.morePixels.clear();
-						
-						}
-					
-					
+					//neighNode.pixels=new PersistentGrowingCollection<Vector3i>(v,neighNode.pixels);
+					neighNode.pixels.addAll(thisNode.pixels);
 					neighNode.children.addAll(thisNode.children);
 					for(Node n:thisNode.children)
 						n.parent=neighNode;
-					
+					/*Iterator<Vector3i> itu=PersistentGrowingCollection.iterator(thisNode.pixels);
+					while(itu.hasNext())
+						{
+						Vector3i u=itu.next();
+						pixelNode[u.z][u.y][u.x]=neighNode;
+						}*/
 					for(Vector3i u:thisNode.pixels)
 						pixelNode[u.z][u.y][u.x]=neighNode;
-					for(HashSet<Vector3i> p:thisNode.morePixels) //Additional pixel lists from joining
-						for(Vector3i u:p)
-							pixelNode[u.z][u.y][u.x]=neighNode;
+//					recursiveNewParent(thisNode, neighNode, pixelNode);
 					thisNode=neighNode;
 					
 					expensive++;
@@ -242,7 +233,7 @@ public class LevelHierarchy
 		return thisNode;
 		}
 	
-	/*
+	
 	private void recursiveNewParent(Node thisNode, Node neighNode, Node[][][] pixelNode)
 		{
 		for(Vector3i u:thisNode.pixels)
@@ -250,7 +241,7 @@ public class LevelHierarchy
 		for(Node cn:thisNode.children)
 			recursiveNewParent(cn, neighNode, pixelNode);
 		}
-	*/
+	
 	
 	/**
 	 * 
@@ -345,7 +336,7 @@ public class LevelHierarchy
 		stack.keySet().remove(new EvDecimal("34"));
 		System.out.println(stack.keySet());
 		
-		LevelHierarchy hi=new LevelHierarchy(stack);
+		CopyOfLevelHierarchy hi=new CopyOfLevelHierarchy(stack);
 		
 		System.out.println("hello");
 		
