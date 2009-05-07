@@ -107,7 +107,7 @@ public class MicroManager extends DeviceProvider implements Device
 
 			//Micro-manager has a defunct getDeviceType(), this is a work-around
 			//or is it? I think they have a different notion of filter
-			Collection<String> isMagnifier=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.MagnifierDevice));
+			//Collection<String> isMagnifier=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.MagnifierDevice));
 			Collection<String> isXY=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.XYStageDevice));
 			Collection<String> isStage=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.StageDevice));
 			Collection<String> isShutter=MMutil.convVector(core.getLoadedDevicesOfType(DeviceType.ShutterDevice));
@@ -123,8 +123,8 @@ public class MicroManager extends DeviceProvider implements Device
 				MMDeviceAdapter adp;
 				if(isCamera.contains(devName))
 					adp=new MMCamera(this,devName);
-				else if(isMagnifier.contains(devName))
-					adp=new MMMagnifier(this,devName);
+				//else if(isMagnifier.contains(devName))
+					//adp=new MMMagnifier(this,devName);
 				else if(isXY.contains(devName))
 					adp=new MMStage(this,devName,true);
 				else if(isStage.contains(devName))
@@ -133,10 +133,10 @@ public class MicroManager extends DeviceProvider implements Device
 					adp=new MMShutter(this,devName);
 				else if(isAutoFocus.contains(devName))
 					adp=new MMAutoFocus(this,devName);
-				else if(isState.contains(devName))
-					adp=new MMState(this,devName);
 				else if(isSerial.contains(devName))
 					adp=new MMSerial(this,devName);
+				else if(isState.contains(devName))
+					adp=new MMState(this,devName);
 				else
 					adp=new MMDeviceAdapter(this,devName);
 				System.out.println(devName+"---"+adp+" "+adp.getDescName()+" ???? "+core.getDeviceType(devName));

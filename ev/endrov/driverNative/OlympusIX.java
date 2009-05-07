@@ -12,6 +12,7 @@ import endrov.hardware.DeviceProvider;
 import endrov.hardware.PropertyType;
 import endrov.recording.HWSerial;
 import endrov.recording.HWShutter;
+import endrov.recording.RecordingResource;
 import endrov.recording.VirtualSerial;
 
 
@@ -104,6 +105,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			sendCommand("1SHUT"+shutterNum+" "+(state!=0?"IN":"OUT"));
 			//
 			}
+		public double getResMagX(){return 1;}
+		public double getResMagY(){return 1;}
 		}
 
 	/** Prism */
@@ -121,6 +124,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			sendCommand("1PRISM "+state);
 			//
 			}
+		public double getResMagX(){return 1;}
+		public double getResMagY(){return 1;}
 		}
 	
 	
@@ -139,6 +144,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			sendCommand("1MU "+state);
 			//
 			}
+		public double getResMagX(){return 1;}
+		public double getResMagY(){return 1;}
 		}
 	
 	/** Objective */
@@ -156,6 +163,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			sendCommand("1OB "+state);
 			//
 			}
+		public double getResMagX(){return RecordingResource.magFromLabel(getCurrentStateLabel());}
+		public double getResMagY(){return RecordingResource.magFromLabel(getCurrentStateLabel());}
 		}
 	
 	/** Condenser */
@@ -173,6 +182,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			sendCommand("1CD "+state);
 			//
 			}
+		public double getResMagX(){return 1;}
+		public double getResMagY(){return 1;}
 		}
 	
 	
@@ -191,6 +202,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			sendCommand("1LMPSEL "+state);
 			//
 			}
+		public double getResMagX(){return 1;}
+		public double getResMagY(){return 1;}
 		}
 	
 	/** Lamp intensity */
@@ -212,6 +225,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			sendCommand("1LMP "+state);
 			//
 			}
+		public double getResMagX(){return 1;}
+		public double getResMagY(){return 1;}
 		}
 	
 	

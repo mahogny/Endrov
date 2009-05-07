@@ -19,4 +19,14 @@ public class RecordingResource
 		{
 		JInputManager.addGamepadMode("Hardware", new JInputModeRecording(), false);
 		}
+	
+	/**
+	 * TODO
+	 * guess magnification by looking at state label
+	 */
+	public static double magFromLabel(String s)
+		{
+		return 1;
+		}
+	
 	}

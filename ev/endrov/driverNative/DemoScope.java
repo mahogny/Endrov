@@ -92,6 +92,14 @@ public class DemoScope extends DeviceProvider implements Device
 		public Boolean getPropertyValueBoolean(String prop){return null;}
 		public void setPropertyValue(String prop, boolean value){}
 		public void setPropertyValue(String prop, String value){}
+		public double getResMagX()
+			{
+			return 1;
+			}
+		public double getResMagY()
+			{
+			return 1;
+			}
 		}
 
 	/**
