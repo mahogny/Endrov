@@ -532,6 +532,7 @@ public class CellContactMap
 			OneLineage theCE=orderedLin.get("celegans2008.2");
 			OneLineage theA=orderedLin.get("AnglerUnixCoords");
 			LinkedList<Tuple<Double,String>> outDiffList=new LinkedList<Tuple<Double,String>>();
+			StringBuffer outDiffList2=new StringBuffer();
 			//LinkedList<String> listDiff=new LinkedList<String>();
 			for(String name:nucNames)
 				for(String name2:nucNames)
@@ -551,9 +552,13 @@ public class CellContactMap
 								{
 								int c1=countTrue(getOverlaps(theCE, name, name2));
 								int c2=countTrue(getOverlaps(theA, name, name2));
+								/*
 								double framediff=c1-c2;
 								if(framediff!=0)
 										outDiffList.add(new Tuple<Double, String>(framediff/(c1+c2),framediff/(c1+c2)+"\t"+name+"\t"+name2+"\n"));
+										*/
+								if(c1+c2!=0)
+									outDiffList2.append(""+c1/(double)clength+"\t"+c2/(double)clength+"\t"+name+"\t"+name2+"\n");
 								}
 						}
 					/*
@@ -576,6 +581,7 @@ public class CellContactMap
 						//listDiff.add();
 						 * */
 					}
+			/*
 			Collections.sort(outDiffList, new Comparator<Tuple<Double,String>>(){
 				public int compare(Tuple<Double, String> o1, Tuple<Double, String> o2)
 					{
@@ -586,6 +592,8 @@ public class CellContactMap
 			for(Tuple<Double,String> e:outDiffList)
 				outDiff.append(e.snd());
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiff.toString());
+			*/
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff2.txt"), outDiffList2.toString());
 			
 			
 			//Does children split?
