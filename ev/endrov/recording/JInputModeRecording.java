@@ -6,10 +6,8 @@ import java.util.Map;
 import endrov.basicWindow.BasicWindow;
 import endrov.hardware.Device;
 import endrov.hardware.DevicePath;
-import endrov.hardware.EvHardware;
 import endrov.keyBinding.JInputManager;
 import endrov.keyBinding.JInputMode;
-import endrov.keyBinding.JinputListener;
 import endrov.util.Tuple;
 
 
