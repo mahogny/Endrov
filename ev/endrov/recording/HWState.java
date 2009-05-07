@@ -4,7 +4,7 @@ import java.util.*;
 
 import endrov.hardware.Device;
 
-public interface HWState extends Device
+public interface HWState extends Device, HWMagnifier
 	{
 
 	public List<String> getStateNames();

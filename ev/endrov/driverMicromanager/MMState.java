@@ -95,4 +95,18 @@ public class MMState extends MMDeviceAdapter implements HWState
 		}
 	
 	
+	private double getRes()
+		{
+		return RecordingResource.magFromLabel(getCurrentStateLabel());
+		}
+	public double getResMagX()
+		{
+		return getRes();
+		}
+	public double getResMagY()
+		{
+		return getRes();
+		}
+
+	
 	}

@@ -28,6 +28,24 @@ public class MMCamera extends MMDeviceAdapter implements HWCamera
 			return null;
 			}
 		}
+
+	private double getRes()
+		{
+		return 1;
+		//TODO
+		//TODO
+		//TODO
+		}
+	
+	public double getResMagX()
+		{
+		return getRes();
+		}
+
+	public double getResMagY()
+		{
+		return getRes();
+		}
 	
 	
 	
