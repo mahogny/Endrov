@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+
 import javax.swing.*;
 
 import endrov.ev.EvBuild;
@@ -77,10 +78,26 @@ public class Start
 			System.exit(1);
 			}
 
-
+		/**
+		 * Have to add system extensions and libraries as well when the system class loader is not used
+		 */
+		StringTokenizer stok=new StringTokenizer(System.getProperty("java.library.path"),File.pathSeparator);
+		while(stok.hasMoreTokens())
+			{
+			String s=stok.nextToken();
+			if(!s.equals("."))
+				{
+				binfiles.add(s);
+				for(File f:new File(s).listFiles())
+					if(f.getName().endsWith(".jar") || f.getName().endsWith(".zip")) //QTJava is .zip
+						jarfiles.add(f.getAbsolutePath());
+				}
+			}
+		
 		//Collect jarfiles
 		jarfiles.add(path.getAbsolutePath());
 		collectJars(jarfiles, binfiles, new File(path,"libs"), platformExt);
+		System.out.println(binfiles);
 		}
 	
 	/**
@@ -504,7 +521,7 @@ public class Start
 //				URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),null);
 				//URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),new ResourceClassLoader());
 				System.out.println(binfiles);
-				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null);
+				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null, Start.class.getClassLoader());
 				System.out.println(cload);
 				
 				Class<?> cl=cload.loadClass(mainClass);
