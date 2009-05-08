@@ -24,4 +24,9 @@ public interface Device
 	public void setPropertyValue(String prop, String value);
 	public void setPropertyValue(String prop, boolean value);
 	
+	//Corresponds to MM config block
+	/*
+	public SortedMap<String,String> getInfoMap();
+	public String getInfoValue(String prop);
+	*/
 	}

@@ -17,6 +17,7 @@ import endrov.util.Vector3i;
  * Alternative representation of an image. The image is a tree. Every pixel belongs to one node.
  * Every subnode contains pixels of higher intensity that are surrounded by pixels in the current node.
  *  
+ * THIS CODE IS DIRT SLOW, likely due to memory locality
  * 
  * @author Johan Henriksson
  *
