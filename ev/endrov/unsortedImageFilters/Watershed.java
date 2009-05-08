@@ -73,15 +73,13 @@ public class Watershed
 		EvStack stackOut=new EvStack();
 		stackOut.getMetaFrom(stack);
 		
-		
+		//Start queue with seed pixels
 		PriorityQueue<PriPixel> q=new PriorityQueue<PriPixel>();
 		for(Vector3i s:seeds)
-			{
-			PriPixel seedp=new PriPixel(s.x,s.y,s.z,parr[s.z][s.y*w+s.x],0);
-			
-			
-			
-			}
+			q.add(new PriPixel(s.x,s.y,s.z,parr[s.z][s.y*w+s.x],0));
+
+		
+		
 		
 		
 		}
