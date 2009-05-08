@@ -11,6 +11,6 @@ public class StartGUInew
 		{
 		Start start=new Start();
 		start.mainClass="endrov.starter.MW";
-		start.runClassLoader(args);
+		start.run(args);
 		}
 	}
