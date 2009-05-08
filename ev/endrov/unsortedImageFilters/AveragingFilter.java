@@ -46,6 +46,18 @@ public class AveragingFilter
 	
 	
 	/**
+	 * Moving entropy. Entropy is taken over an area of size (2pw+1)x(2ph+1).
+	 * 
+	 * Entropy is defined as S=-sum_i P[i] log(i), where i is intensity
+	 * 
+	 * Complexity O(w*h)
+	 */
+	public static EvPixels movingEntropy(EvPixels in, int pw, int ph)
+		{
+		return ImageMath.times(movingAverage(ImageMath.log(in), pw, ph),-1.0);
+		}
+	
+	/**
 	 * Moving sum. Sum is taken over an area of size (2pw+1)x(2ph+1). r=0 hence corresponds
 	 * to the identity operation. Pixels outside assumed 0.
 	 * 
@@ -75,6 +87,9 @@ public class AveragingFilter
 			}
 		return out;
 		}
+	
+	
+	
 	
 	
 	

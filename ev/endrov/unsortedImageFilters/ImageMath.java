@@ -132,6 +132,23 @@ public class ImageMath
 		return out;
 		}
 	
+	public static EvPixels times(EvPixels a, double b)
+		{
+		//Should use the common higher type here
+		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		
+		int w=a.getWidth();
+		int h=a.getHeight();
+		EvPixels out=new EvPixels(a.getType(),w,h);
+		double[] aPixels=a.getArrayDouble();
+		double[] outPixels=out.getArrayDouble();
+		
+		for(int i=0;i<aPixels.length;i++)
+			outPixels[i]=aPixels[i]*b;
+		
+		return out;
+		}
+	
 	public static EvPixels div(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
@@ -168,6 +185,26 @@ public class ImageMath
 		return out;
 		}
 	
+	/**
+	 * log(a)
+	 */
+	public static EvPixels log(EvPixels a)
+		{
+		//Should use the common higher type here
+		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		
+		int w=a.getWidth();
+		int h=a.getHeight();
+		EvPixels out=new EvPixels(a.getType(),w,h);
+		double[] aPixels=a.getArrayDouble();
+		double[] outPixels=out.getArrayDouble();
+		
+		for(int i=0;i<aPixels.length;i++)
+			outPixels[i]=Math.log(aPixels[i]);
+		
+		return out;
+		}
+	
 	
 	/**
 	 * a*b+c
@@ -188,6 +225,8 @@ public class ImageMath
 		
 		return out;
 		}
+	
+	
 	
 	
 	/**

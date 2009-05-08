@@ -1,4 +1,4 @@
-set terminal postscript portrait "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
+set terminal postscript enhanced portrait "Helvetica" 8 monochrome dashed dashlength 0.2 linewidth 0.7 size 7cm,7cm
 
 set output 'traveldisthist.ps'
 set boxwidth 0.9 absolute #1.5
@@ -8,7 +8,7 @@ set ytic out nomirror 20 #500
 set bmargin 4 #bottom margin
 #set key off
 set border 3
-set xlabel "Travel distance [micrometer]"
+set xlabel "Travel distance [{/Symbol m}m]"
 set ylabel "Number of cells"
 
 set xrange [ -0.5 : 14] noreverse nowriteback
