@@ -36,7 +36,7 @@ public class MicroManager extends DeviceProvider implements Device
 			{
 			core=new CMMCore();
 			
-			core.enableStderrLog(true);
+			//core.enableStderrLog(true);
 			core.enableDebugLog(false);
 			
 			File fMMconfig1=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");

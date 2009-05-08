@@ -1,7 +1,7 @@
 %!PS-Adobe-2.0
 %%Title: traveldisthist.ps
 %%Creator: gnuplot 4.2 patchlevel 2 
-%%CreationDate: Thu Apr  2 15:52:47 2009
+%%CreationDate: Wed May  6 17:30:56 2009
 %%DocumentFonts: (atend)
 %%BoundingBox: 50 50 248 248
 %%Orientation: Portrait
@@ -50,7 +50,7 @@ SDict begin [
   /Author (Johan Henriksson,,,)
 %  /Producer (gnuplot)
 %  /Keywords ()
-  /CreationDate (Thu Apr  2 15:52:47 2009)
+  /CreationDate (Wed May  6 17:30:56 2009)
   /DOCINFO pdfmark
 end
 } ifelse
@@ -422,6 +422,33 @@ Level1 {Level1PatternFill} {Level2PatternFill} ifelse
 /Symbol-Oblique /Symbol findfont [1 0 .167 1 0 0] makefont
 dup length dict begin {1 index /FID eq {pop pop} {def} ifelse} forall
 currentdict end definefont pop
+/MFshow {
+   { dup 5 get 3 ge
+     { 5 get 3 eq {gsave} {grestore} ifelse }
+     {dup dup 0 get findfont exch 1 get scalefont setfont
+     [ currentpoint ] exch dup 2 get 0 exch R dup 5 get 2 ne {dup dup 6
+     get exch 4 get {show} {stringwidth pop 0 R} ifelse }if dup 5 get 0 eq
+     {dup 3 get {2 get neg 0 exch R pop} {pop aload pop M} ifelse} {dup 5
+     get 1 eq {dup 2 get exch dup 3 get exch 6 get stringwidth pop -2 div
+     dup 0 R} {dup 6 get stringwidth pop -2 div 0 R 6 get
+     show 2 index {aload pop M neg 3 -1 roll neg R pop pop} {pop pop pop
+     pop aload pop M} ifelse }ifelse }ifelse }
+     ifelse }
+   forall} bind def
+/MFwidth {0 exch { dup 5 get 3 ge { 5 get 3 eq { 0 } { pop } ifelse }
+ {dup 3 get{dup dup 0 get findfont exch 1 get scalefont setfont
+     6 get stringwidth pop add} {pop} ifelse} ifelse} forall} bind def
+/MLshow { currentpoint stroke M
+  0 exch R
+  Blacktext {gsave 0 setgray MFshow grestore} {MFshow} ifelse } bind def
+/MRshow { currentpoint stroke M
+  exch dup MFwidth neg 3 -1 roll R
+  Blacktext {gsave 0 setgray MFshow grestore} {MFshow} ifelse } bind def
+/MCshow { currentpoint stroke M
+  exch dup MFwidth -2 div 3 -1 roll R
+  Blacktext {gsave 0 setgray MFshow grestore} {MFshow} ifelse } bind def
+/XYsave    { [( ) 1 2 true false 3 ()] } bind def
+/XYrestore { [( ) 1 2 true false 4 ()] } bind def
 end
 %%EndProlog
 %%Page: 1 1
@@ -436,80 +463,106 @@ newpath
 LTb
 423 320 M
 -63 0 V
--48 0 R
-( 0) Rshow
+stroke
+312 320 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 0)]
+] -26.7 MRshow
 1.000 UL
 LTb
 423 712 M
 -63 0 V
--48 0 R
-( 20) Rshow
+stroke
+312 712 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 20)]
+] -26.7 MRshow
 1.000 UL
 LTb
 423 1104 M
 -63 0 V
--48 0 R
-( 40) Rshow
+stroke
+312 1104 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 40)]
+] -26.7 MRshow
 1.000 UL
 LTb
 423 1496 M
 -63 0 V
--48 0 R
-( 60) Rshow
+stroke
+312 1496 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 60)]
+] -26.7 MRshow
 1.000 UL
 LTb
 423 1888 M
 -63 0 V
--48 0 R
-( 80) Rshow
+stroke
+312 1888 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 80)]
+] -26.7 MRshow
 1.000 UL
 LTb
 472 320 M
 0 -63 V
-0 -80 R
-( 0) Cshow
+stroke
+472 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 0)]
+] -26.7 MCshow
 1.000 UL
 LTb
 669 320 M
 0 -63 V
-0 -80 R
-( 2) Cshow
+stroke
+669 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 2)]
+] -26.7 MCshow
 1.000 UL
 LTb
 865 320 M
 0 -63 V
-0 -80 R
-( 4) Cshow
+stroke
+865 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 4)]
+] -26.7 MCshow
 1.000 UL
 LTb
 1062 320 M
 0 -63 V
-0 -80 R
-( 6) Cshow
+stroke
+1062 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 6)]
+] -26.7 MCshow
 1.000 UL
 LTb
 1258 320 M
 0 -63 V
-0 -80 R
-( 8) Cshow
+stroke
+1258 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 8)]
+] -26.7 MCshow
 1.000 UL
 LTb
 1455 320 M
 0 -63 V
-0 -80 R
-( 10) Cshow
+stroke
+1455 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 10)]
+] -26.7 MCshow
 1.000 UL
 LTb
 1651 320 M
 0 -63 V
-0 -80 R
-( 12) Cshow
+stroke
+1651 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 12)]
+] -26.7 MCshow
 1.000 UL
 LTb
 1848 320 M
 0 -63 V
-0 -80 R
-( 14) Cshow
+stroke
+1848 177 M
+[ [(Helvetica) 80.0 0.0 true true 0 ( 14)]
+] -26.7 MCshow
 1.000 UL
 LTb
 1.000 UL
@@ -522,13 +575,17 @@ LTb
 stroke
 LCb setrgbcolor
 80 1104 M
-currentpoint gsave translate 90 rotate 0 0 M
-(Number of cells) Cshow
+currentpoint gsave translate 90 rotate 0 0 moveto
+[ [(Helvetica) 80.0 0.0 true true 0 (Number of cells)]
+] -26.7 MCshow
 grestore
 LTb
 LCb setrgbcolor
 1135 57 M
-(Travel distance [micrometer]) Cshow
+[ [(Helvetica) 80.0 0.0 true true 0 (Travel distance [)]
+[(Symbol) 80.0 0.0 true true 0 (m)]
+[(Helvetica) 80.0 0.0 true true 0 (m])]
+] -26.7 MCshow
 LTb
 1.000 UP
 1.000 UL
@@ -537,7 +594,8 @@ LTb
 LT0
 LTb
 1449 1785 M
-(Straight) Rshow
+[ [(Helvetica) 80.0 0.0 true true 0 (MS-ME)]
+] -26.7 MRshow
 LT0
 1.000 1497 1765 255 40 BoxColFill
 LTb
@@ -674,7 +732,8 @@ LT0
 LT0
 LTb
 1449 1705 M
-(+child) Rshow
+[ [(Helvetica) 80.0 0.0 true true 0 (MS-DS)]
+] -26.7 MRshow
 LT0
 1497 1685 255 40 BoxFill
 LTb
@@ -824,5 +883,5 @@ grestore
 end
 showpage
 %%Trailer
-%%DocumentFonts: Helvetica
+%%DocumentFonts: Symbol Helvetica
 %%Pages: 1
