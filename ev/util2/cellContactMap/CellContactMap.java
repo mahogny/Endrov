@@ -561,6 +561,8 @@ public class CellContactMap
 									outDiffList2.append(""+c1/(double)clength+"\t"+c2/(double)clength+"\t"+name+"\t"+name2+"\n");
 								}
 						}
+					
+					
 					/*
 					EvDecimal lifeLenFrames1=theCE.lin.nuc.get(name).pos.isEmpty() ? 
 							EvDecimal.ZERO : theCE.lin.nuc.get(name).lastFrame().subtract(theCE.lin.nuc.get(name).firstFrame());
@@ -593,7 +595,7 @@ public class CellContactMap
 				outDiff.append(e.snd());
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiff.toString());
 			*/
-			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff2.txt"), outDiffList2.toString());
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiffList2.toString());
 			
 			
 			//Does children split?
