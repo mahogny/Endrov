@@ -18,13 +18,13 @@ import endrov.util.EvFileUtil;
  * 
  * @author Johan Henriksson
  */
-public class Start
+public class OldStart
 	{
 	private static boolean printJar=false;	
 	
 	public static void main(String[] args)
 		{
-		new Start().run(args);
+		new OldStart().run(args);
 		}
 	
 	
@@ -87,15 +87,12 @@ public class Start
 			while(stok.hasMoreTokens())
 				{
 				String s=stok.nextToken();
-				if(!s.equals("."))          //TODO: or path? 
+				if(!s.equals("."))
 					{
 					binfiles.add(s);
-					System.out.println(s);
-					File root=new File(s);
-					if(root.exists())
-						for(File f:root.listFiles())
-							if(f.getName().endsWith(".jar") || f.getName().endsWith(".zip")) //QTJava is .zip
-								jarfiles.add(f.getAbsolutePath());
+					for(File f:new File(s).listFiles())
+						if(f.getName().endsWith(".jar") || f.getName().endsWith(".zip")) //QTJava is .zip
+							jarfiles.add(f.getAbsolutePath());
 					}
 				}
 			}
@@ -215,7 +212,6 @@ public class Start
 		File basedir=new File(".");
 		
 		boolean oldway=false;
-		boolean useClassLoad=false;
 		
 		int numNonflagArg=0;
 		List<String> args=new LinkedList<String>();
@@ -277,10 +273,6 @@ public class Start
 				{
 				oldway=true;
 				}
-			else if(curarg.equals("--classload"))
-				{
-				useClassLoad=true;
-				}
 			else
 				{
 				if(!curarg.startsWith("--"))
@@ -291,28 +283,155 @@ public class Start
 		
 		collectSystemInfo(basedir);
 		
+		if(oldway)
+			run2normal(hasSpecifiedLibdir, printCommand, printMacStarter, javaenvFile, basedir, argsa);
 		
+		
+		
+/*
+		//Continue if java 1.5+
 		if(javaVerMajor>1 || (javaVerMajor==1 && javaVerMinor>=5))
 			{
-
-			if(oldway)
-		;//		run2normal(hasSpecifiedLibdir, printCommand, printMacStarter, javaenvFile, basedir, args.toArray(new String[]{}));
-			else
+			try
 				{
 
-				if(useClassLoad)
-					run2cl(args.toArray(new String[]{}));
-				else
-//					run2n2(hasSpecifiedLibdir,printCommand, javaenvFile, basedir, args.toArray(new String[]{}));
-					run2n2(printCommand, javaenvFile, argsa);
+				//Generate command
+				LinkedList<String> cmdarg=new LinkedList<String>();
+				cmdarg.add(javaexe);
+				cmdarg.add("-cp");
+				cmdarg.add(getJarString());
+				String libdir=getBinString();
+				if(!libdir.equals("") && !hasSpecifiedLibdir)
+					cmdarg.add("-Djava.library.path="+libdir);
 
-				//Have to pass on more?
+				//Add arguments from environment file
+				if(javaenvFile==null)
+					javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
+				if(javaenvFile.exists())
+					{
+					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
+					String line=envReader.readLine();
+					if(line!=null)
+						{
+						StringTokenizer envTokenizer=new StringTokenizer(line," ");
+						while(envTokenizer.hasMoreTokens())
+							{
+							String tok=envTokenizer.nextToken();
+							cmdarg.add(tok);
+							System.out.println("Java environment flag: "+tok);
+							}
+						}
+					}
+				
+				//What to run? 
+				cmdarg.add(mainClass);
+				
+				//additional arguments?
+				for(String s:args)
+					cmdarg.add(s);
+
+				//Store jar-list in mac starter bundles
+				if(printMacStarter)
+					{
+					StringTokenizer t=new StringTokenizer(getJarString(),":");
+					File dot=new File(".");
+					int dotlen=dot.getAbsolutePath().length()-1;
+					String tot="";
+					//jarstring.replace //more efficient but it is a regexp!
+					while(t.hasMoreTokens())
+						{
+						String s=t.nextToken();
+						if(!tot.equals(""))
+							tot=tot+":";
+						tot=tot+"$APPLICATION/../"+s.substring(dotlen);
+						}
+					System.out.println(tot);
+
+					File dotdir=new File(".");
+					String loclibdir=libdir.replace(dotdir.getAbsolutePath()+"/", "");
+					
+					for(String app:new String[]{"Endrov.app","ImServ.app","OSTdaemon.app"})
+						{
+						String template=EvFileUtil.readFile(new File(app+"/Contents/Resources/preinfo.txt"));
+						File out=new File(app+"/Contents/Info.plist");
+						EvFileUtil.writeFile(out, template
+								.replace("JARLIST", tot)
+								.replace("SOLIST",loclibdir));
+						System.out.println("Wrote to "+out);
+						}
+					
+					FileWriter fw=new FileWriter(new File("Endrov.app/Contents/Resources/jars.txt"));
+					fw.write(tot);
+					fw.flush();
+					fw.close();
+					System.exit(0);
+					}
+
+				//Run process
+				ProcessBuilder pb=new ProcessBuilder("");
+				pb.environment().put("LD_LIBRARY_PATH", libdir);
+				pb.command(cmdarg);
+				if(printCommand)
+					{
+					String totalCmd="";
+					for(String s:pb.command())
+						totalCmd+=s+" ";
+					System.out.println(totalCmd);
+					}
+				final Process p=pb.start();
+
+				//Pass on errors
+				new Thread()
+					{
+					public synchronized void run()
+						{
+						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+						String line;
+						try
+							{
+							while ( (line = br.readLine()) != null)
+								{
+								if(line.startsWith("Could not create the Java Virtual Machine"))
+									{
+									JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
+									//normal output follows									
+									//Error occurred during initialization of VM
+									//Could not reserve enough space for object heap
+									}
+								System.err.println(line);
+								}
+							}
+						catch (IOException e)
+							{
+							e.printStackTrace();
+							}
+						}
+					}.start();
+
+					//Pass on output
+					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+					String line;
+					while ( (line = br.readLine()) != null)
+						System.out.println(line);
+					try
+						{
+						p.waitFor();
+						}
+					catch (InterruptedException e)
+						{
+						e.printStackTrace();
+						}
+					System.out.println("Process exited");
+
 				}
-
+			catch (IOException e)
+				{
+				JOptionPane.showMessageDialog(null, "Was unable to exec command. Full error:\n"+e.getMessage());
+				e.printStackTrace();
+				}
 			}
 		else
-			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
-
+			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");*/
 		}
 
 	
@@ -320,8 +439,7 @@ public class Start
 	/**
 	 * Proceed with an old startup by double-invoking java
 	 */
-	/*
-	private void run2normal(boolean hasSpecifiedLibdir, boolean printCommand, File javaenvFile, File basedir,
+	private void run2normal(boolean hasSpecifiedLibdir, boolean printCommand, boolean printMacStarter, File javaenvFile, File basedir,
 			String[] argsa)
 		{
 		
@@ -474,258 +592,6 @@ public class Start
 		
 		}
 	
-	*/
-	
-	
-	
-	/**
-	 * Proceed with an old startup by double-invoking java
-	 */
-	private void run2n2(boolean printCommand, File javaenvFile, String[] argsa)
-		{
-		
-		
-			try
-				{
-
-				//Generate command
-				LinkedList<String> cmdarg=new LinkedList<String>();
-				for(String s:argsa)
-					cmdarg.add(s);
-
-				//Add arguments from environment file
-				if(javaenvFile==null)
-					javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
-				if(javaenvFile.exists())
-					{
-					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
-					String line=envReader.readLine();
-					if(line!=null)
-						{
-						StringTokenizer envTokenizer=new StringTokenizer(line," ");
-						while(envTokenizer.hasMoreTokens())
-							{
-							String tok=envTokenizer.nextToken();
-							cmdarg.add(tok);
-							System.out.println("Java environment flag: "+tok);
-							}
-						}
-					}
-				
-				//Change to classloading mode
-				cmdarg.add("--classload");
-				
-				System.out.println(cmdarg);
-				
-				//Run process
-				ProcessBuilder pb=new ProcessBuilder(cmdarg);
-				//pb.command(cmdarg);
-				if(printCommand)
-					{
-					String totalCmd="";
-					for(String s:pb.command())
-						totalCmd+=s+" ";
-					System.out.println(totalCmd);
-					}
-				final Process p=pb.start();
-
-				//Pass on errors
-				new Thread()
-					{
-					public synchronized void run()
-						{
-						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-						String line;
-						try
-							{
-							while ( (line = br.readLine()) != null)
-								{
-								if(line.startsWith("Could not create the Java Virtual Machine"))
-									{
-									JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
-									//normal output follows									
-									//Error occurred during initialization of VM
-									//Could not reserve enough space for object heap
-									}
-								System.err.println(line);
-								}
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-						}
-					}.start();
-
-					//Pass on output
-					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-					String line;
-					while ( (line = br.readLine()) != null)
-						System.out.println(line);
-					try
-						{
-						p.waitFor();
-						}
-					catch (InterruptedException e)
-						{
-						e.printStackTrace();
-						}
-					System.out.println("Process exited");
-
-				}
-			catch (IOException e)
-				{
-				JOptionPane.showMessageDialog(null, "Was unable to exec command. Full error:\n"+e.getMessage());
-				e.printStackTrace();
-				}
-		
-		}	
-	
-	
-	
-	/**
-	 * Proceed with an old startup by double-invoking java
-	 */
-	private void run2n(boolean hasSpecifiedLibdir, boolean printCommand, File javaenvFile, File basedir,
-			String[] argsa)
-		{
-		
-		
-			try
-				{
-
-				//Generate command
-				LinkedList<String> cmdarg=new LinkedList<String>();
-				cmdarg.add(javaexe);
-				cmdarg.add("-cp");
-				cmdarg.add(".");
-
-				//Add arguments from environment file
-				if(javaenvFile==null)
-					javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
-				if(javaenvFile.exists())
-					{
-					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
-					String line=envReader.readLine();
-					if(line!=null)
-						{
-						StringTokenizer envTokenizer=new StringTokenizer(line," ");
-						while(envTokenizer.hasMoreTokens())
-							{
-							String tok=envTokenizer.nextToken();
-							cmdarg.add(tok);
-							System.out.println("Java environment flag: "+tok);
-							}
-						}
-					}
-				
-				//What to run? 
-				cmdarg.add("endrov.starter.StartGUInew"); //At the moment
-				
-				//Change to classloading mode
-				cmdarg.add("--main");
-				cmdarg.add(mainClass);
-				cmdarg.add("--classload");
-				
-				//additional arguments?
-				for(String s:argsa)
-					cmdarg.add(s);
-
-				//Run process
-				ProcessBuilder pb=new ProcessBuilder("");
-				pb.command(cmdarg);
-				if(printCommand)
-					{
-					String totalCmd="";
-					for(String s:pb.command())
-						totalCmd+=s+" ";
-					System.out.println(totalCmd);
-					}
-				final Process p=pb.start();
-
-				//Pass on errors
-				new Thread()
-					{
-					public synchronized void run()
-						{
-						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-						String line;
-						try
-							{
-							while ( (line = br.readLine()) != null)
-								{
-								if(line.startsWith("Could not create the Java Virtual Machine"))
-									{
-									JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
-									//normal output follows									
-									//Error occurred during initialization of VM
-									//Could not reserve enough space for object heap
-									}
-								System.err.println(line);
-								}
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-						}
-					}.start();
-
-					//Pass on output
-					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-					String line;
-					while ( (line = br.readLine()) != null)
-						System.out.println(line);
-					try
-						{
-						p.waitFor();
-						}
-					catch (InterruptedException e)
-						{
-						e.printStackTrace();
-						}
-					System.out.println("Process exited");
-
-				}
-			catch (IOException e)
-				{
-				JOptionPane.showMessageDialog(null, "Was unable to exec command. Full error:\n"+e.getMessage());
-				e.printStackTrace();
-				}
-		
-		}	
-	
-	
-	public void run2cl(String[] argsa)
-		{
-			try
-				{
-				LinkedList<URL> urls=new LinkedList<URL>();
-				for(String s:jarfiles)
-					urls.add(new File(s).toURI().toURL());
-
-
-				//Important: Must NOT use the system class loader - it will take over for current directory
-				//and fail to load JAR files
-//				URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),null);
-				//URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),new ResourceClassLoader());
-				System.out.println(binfiles);
-				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null, Start.class.getClassLoader());
-				System.out.println(cload);
-				
-				Class<?> cl=cload.loadClass(mainClass);
-				Method mMethod=cl.getMethod("main", String[].class);
-				mMethod.invoke(null, new Object[]{argsa});
-				}
-			catch (Exception e)
-				{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				}
-			
-		}
-	
-	
 	
 	/*
 	 * ******************************************************************************************
@@ -827,7 +693,7 @@ public class Start
 //				URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),null);
 				//URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),new ResourceClassLoader());
 				System.out.println(binfiles);
-				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null, Start.class.getClassLoader());
+				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null, OldStart.class.getClassLoader());
 				System.out.println(cload);
 				
 				Class<?> cl=cload.loadClass(mainClass);
