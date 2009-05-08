@@ -274,6 +274,17 @@ public class EvStack
 		return arr;
 		}
 	
+	/**
+	 * Return the pixel arrays for every plane with type int. Will do a read-only conversion automatically
+	 */
+	public int[][] getArraysInt()
+		{
+		EvPixels[] parr2=getPixels();
+		int[][] parr=new int[parr2.length][];
+		for(int i=0;i<parr2.length;i++)
+			parr[i]=parr2[i].convertTo(EvPixels.TYPE_INT, true).getArrayInt();
+		return parr;
+		}
 	
 	
 	

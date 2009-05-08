@@ -5,6 +5,8 @@ import java.util.*;
 
 import mmcorej.CMMCore;
 import mmcorej.DeviceType;
+import mmcorej.PropertyBlock;
+import mmcorej.PropertyPair;
 
 import org.jdom.Element;
 
@@ -34,6 +36,9 @@ public class MicroManager extends DeviceProvider implements Device
 			{
 			core=new CMMCore();
 			
+			core.enableStderrLog(true);
+			core.enableDebugLog(false);
+			
 			File fMMconfig1=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
 			File fMMconfig=fMMconfig1;
 			fMMconfig.getParentFile().mkdirs();
@@ -44,7 +49,7 @@ public class MicroManager extends DeviceProvider implements Device
 				System.out.println("No config file found ("+fMMconfig1+" nor "+fMMconfig+")");
 				return;
 				}
-			System.out.println("Loading "+fMMconfig.getAbsolutePath());
+			System.out.println("Micro-manager version "+core.getAPIVersionInfo()+" loading config "+fMMconfig.getAbsolutePath());
 			
 			core.loadSystemConfiguration(fMMconfig.getPath());
 			
@@ -150,8 +155,36 @@ public class MicroManager extends DeviceProvider implements Device
 			System.out.println("err:"+e.getMessage());
 			}
 		
-		
-		
+		/**
+		 * Read property blocks
+		 */
+		for(String blockName:MMutil.convVector(core.getAvailablePropertyBlocks()))
+			{
+			PropertyBlock b=core.getPropertyBlockData(blockName);
+			HashMap<String, String> prop=new HashMap<String, String>(); 
+			try
+				{
+				for(int i=0;i<b.size();i++)
+					{
+					PropertyPair pair=b.getPair(i);
+					prop.put(pair.getPropertyName(), pair.getPropertyValue());
+					}
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				System.out.println("This should never happen");
+				}
+
+			if(hw.containsKey(blockName))
+				{
+				/**
+				 * Associate with device, somehow
+				 */
+				
+				}
+			
+			}
 		
 		
 		}
@@ -227,6 +260,4 @@ public class MicroManager extends DeviceProvider implements Device
 		}
 	
 	
-	
-
 	}

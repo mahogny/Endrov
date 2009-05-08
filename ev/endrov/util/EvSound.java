@@ -63,6 +63,11 @@ public class EvSound
 				//
 				e.printStackTrace();
 				}
+			catch(Exception e)
+				{
+				e.printStackTrace();
+				System.out.println("Failed to load sound clip "+e.getMessage());
+				}
 			}
 		}
 	
@@ -104,7 +109,6 @@ public class EvSound
 	 */
 	public void start()
 		{
-		System.out.println("start play");
 		if(p!=null)
 			try
 				{
@@ -116,7 +120,6 @@ public class EvSound
 				}
 		else if(clip!=null)
 			clip.start();
-		System.out.println("end play");
 		}
 	
 	/**
