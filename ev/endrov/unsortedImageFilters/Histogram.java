@@ -48,24 +48,31 @@ public class Histogram
 	 */
 	public static Map<Integer,Integer> intHistogram(EvPixels in)
 		{
-		if(in.getType()==EvPixels.TYPE_INT)
-			{
+		in=in.convertTo(EvPixels.TYPE_INT, true);
 			int[] inPixels=in.getArrayInt();
 			Map<Integer,Integer> hist=new HashMap<Integer, Integer>(); 
 			for(int p:inPixels)
 				inc(hist,(Integer)p);
 			return hist;
-			}
-		else
-			{
-			in=in.convertTo(EvPixels.TYPE_INT, true);
-			int[] inPixels=in.getArrayInt();
-			Map<Integer,Integer> hist=new HashMap<Integer, Integer>(); 
-			for(int p:inPixels)
-				inc(hist,(Integer)p);
-			return hist;
-			}
 		}
+	
+	
+	/**
+	 * Use the original type of the pixels later? simplifies extraction, less conversion, only one function,
+	 * but the invoker will have less information.
+	 * 
+	 * NOTE! Does not return a sorted map. Invoker has to sort himself.
+	 */
+	public static Map<Double,Integer> doubleHistogram(EvPixels in)
+		{
+		in=in.convertTo(EvPixels.TYPE_DOUBLE, true);
+		double[] inPixels=in.getArrayDouble();
+		Map<Double,Integer> hist=new HashMap<Double, Integer>(); 
+		for(double p:inPixels)
+			inc(hist,(Double)p);
+		return hist;
+		}
+	
 
 	//Will we be forced to reification by metaprog ourselves?
 	//A<B> will generate AiiiB as a subclass. instanceof will be

@@ -8,13 +8,10 @@ import java.util.*;
 import javax.swing.*;
 
 import endrov.ev.EvBuild;
-import endrov.util.EvFileUtil;
-
 
 
 /**
- * Start EV, automatically collects which jar-files should be linked.
- * New version: use class loader to find jars
+ * Start Endrov
  * 
  * @author Johan Henriksson
  */
@@ -54,12 +51,13 @@ public class Start
 		{
 		platformExt.clear();
 		
-		//Detect OS
+		//Detect architecture
 		if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
 			platformExt.add("ppc");
 		else
 			platformExt.add("x86");
 		
+		//Detect OS
 		if(OS.equals("mac os x"))
 			platformExt.add("mac");
 		else if(OS.startsWith("windows"))
@@ -90,7 +88,6 @@ public class Start
 				if(!s.equals("."))          //TODO: or path? 
 					{
 					binfiles.add(s);
-					System.out.println(s);
 					File root=new File(s);
 					if(root.exists())
 						for(File f:root.listFiles())
@@ -103,7 +100,7 @@ public class Start
 		//Collect jarfiles
 		jarfiles.add(path.getAbsolutePath());
 		collectJars(jarfiles, binfiles, new File(path,"libs"), platformExt);
-		System.out.println(binfiles);
+		//System.out.println(binfiles);
 		}
 	
 	/**
@@ -204,18 +201,16 @@ public class Start
 	
 	/**
 	 * Run Endrov given command line.
-	 * This is done the old way, by running another instance of Java
 	 */
 	public void run(String[] argsa)
 		{
-		boolean printMacStarter=false;
+		//boolean printMacStarter=false;
 		boolean hasSpecifiedLibdir=false;
 		boolean printCommand=false;
+		boolean useClassLoader=false;
 		File javaenvFile=null;
 		File basedir=new File(".");
 		
-		boolean oldway=false;
-		boolean useClassLoad=false;
 		
 		int numNonflagArg=0;
 		List<String> args=new LinkedList<String>();
@@ -227,12 +222,13 @@ public class Start
 				printCommand=true;
 			else if(curarg.equals("--printjar"))
 				printJar=true;
-			else if(curarg.equals("--macstarter"))
+			/*
+			 * else if(curarg.equals("--macstarter"))
 				{
 				//Override detection to spit out mac directories
 				OS="mac os x"; 
 				printMacStarter=true;
-				}
+				}*/
 			else if(args.contains("--version"))
 				{
 				//Print current version. need to be put in starter jar to work
@@ -273,14 +269,8 @@ public class Start
 				//Show info about the system
 				System.out.println("This system runs OS:"+OS+" with java:"+javaver+" on arch:"+arch);
 				}
-			else if(curarg.equals("--oldway"))
-				{
-				oldway=true;
-				}
 			else if(curarg.equals("--classload"))
-				{
-				useClassLoad=true;
-				}
+				useClassLoader=true;
 			else
 				{
 				if(!curarg.startsWith("--"))
@@ -291,24 +281,12 @@ public class Start
 		
 		collectSystemInfo(basedir);
 		
-		
 		if(javaVerMajor>1 || (javaVerMajor==1 && javaVerMinor>=5))
 			{
-
-			if(oldway)
-		;//		run2normal(hasSpecifiedLibdir, printCommand, printMacStarter, javaenvFile, basedir, args.toArray(new String[]{}));
+			if(useClassLoader)
+				runWithClassLoader(args.toArray(new String[]{}));
 			else
-				{
-
-				if(useClassLoad)
-					run2cl(args.toArray(new String[]{}));
-				else
-//					run2n2(hasSpecifiedLibdir,printCommand, javaenvFile, basedir, args.toArray(new String[]{}));
-					run2n2(printCommand, javaenvFile, argsa);
-
-				//Have to pass on more?
-				}
-
+				runBootstrap(hasSpecifiedLibdir,printCommand, javaenvFile, basedir, args.toArray(new String[]{}));
 			}
 		else
 			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
@@ -318,411 +296,147 @@ public class Start
 	
 	
 	/**
-	 * Proceed with an old startup by double-invoking java
+	 * This is for convenience, those who run the .jar-file straight without a wrapper script. It reinvokes Endrov by running
+	 * a command, now with proper VM settings (memory), and tells it to run the classloader
 	 */
-	/*
-	private void run2normal(boolean hasSpecifiedLibdir, boolean printCommand, File javaenvFile, File basedir,
-			String[] argsa)
+	private void runBootstrap(boolean hasSpecifiedLibdir, boolean printCommand, File javaenvFile, File basedir, String[] argsa)
 		{
-		
-		
-		
-	//Continue if java 1.5+
-		if(javaVerMajor>1 || (javaVerMajor==1 && javaVerMinor>=5))
+
+		try
 			{
-			try
+			//Generate command
+			LinkedList<String> cmdarg=new LinkedList<String>();
+			cmdarg.add(javaexe);
+			cmdarg.add("-cp");
+			//cmdarg.add(".");
+			cmdarg.add(basedir.toString());
+
+			//Add arguments from environment file
+			if(javaenvFile==null)
+				javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
+			if(javaenvFile.exists())
 				{
-
-				//Generate command
-				LinkedList<String> cmdarg=new LinkedList<String>();
-				cmdarg.add(javaexe);
-				cmdarg.add("-cp");
-				cmdarg.add(getJarString());
-				String libdir=getBinString();
-				if(!libdir.equals("") && !hasSpecifiedLibdir)
-					cmdarg.add("-Djava.library.path="+libdir);
-
-				//Add arguments from environment file
-				if(javaenvFile==null)
-					javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
-				if(javaenvFile.exists())
+				BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
+				String line=envReader.readLine();
+				if(line!=null)
 					{
-					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
-					String line=envReader.readLine();
-					if(line!=null)
+					StringTokenizer envTokenizer=new StringTokenizer(line," ");
+					while(envTokenizer.hasMoreTokens())
 						{
-						StringTokenizer envTokenizer=new StringTokenizer(line," ");
-						while(envTokenizer.hasMoreTokens())
-							{
-							String tok=envTokenizer.nextToken();
-							cmdarg.add(tok);
-							System.out.println("Java environment flag: "+tok);
-							}
+						String tok=envTokenizer.nextToken();
+						cmdarg.add(tok);
+						System.out.println("Java environment flag: "+tok);
 						}
 					}
-				
-				//What to run? 
-				cmdarg.add(mainClass);
-				
-				//additional arguments?
-				for(String s:argsa)
-					cmdarg.add(s);
+				}
 
-				//Store jar-list in mac starter bundles
-				if(printMacStarter)
+			//What to run? Doesn't matter because we specify the main class
+			cmdarg.add("endrov.starter.StartGUI");
+
+			//Run the same main class
+			cmdarg.add("--main");
+			cmdarg.add(mainClass);
+			//Change to classloading mode
+			cmdarg.add("--classload");
+
+			//additional arguments?
+			for(String s:argsa)
+				cmdarg.add(s);
+
+			//Run process
+			ProcessBuilder pb=new ProcessBuilder("");
+			pb.command(cmdarg);
+			if(printCommand)
+				{
+				String totalCmd="";
+				for(String s:pb.command())
+					totalCmd+=s+" ";
+				System.out.println(totalCmd);
+				}
+			final Process p=pb.start();
+
+			//Pass on errors
+			new Thread()
+				{
+				public synchronized void run()
 					{
-					StringTokenizer t=new StringTokenizer(getJarString(),":");
-					File dot=new File(".");
-					int dotlen=dot.getAbsolutePath().length()-1;
-					String tot="";
-					//jarstring.replace //more efficient but it is a regexp!
-					while(t.hasMoreTokens())
-						{
-						String s=t.nextToken();
-						if(!tot.equals(""))
-							tot=tot+":";
-						tot=tot+"$APPLICATION/../"+s.substring(dotlen);
-						}
-					System.out.println(tot);
-
-					File dotdir=new File(".");
-					String loclibdir=libdir.replace(dotdir.getAbsolutePath()+"/", "");
-					
-					for(String app:new String[]{"Endrov.app","ImServ.app","OSTdaemon.app"})
-						{
-						String template=EvFileUtil.readFile(new File(app+"/Contents/Resources/preinfo.txt"));
-						File out=new File(app+"/Contents/Info.plist");
-						EvFileUtil.writeFile(out, template
-								.replace("JARLIST", tot)
-								.replace("SOLIST",loclibdir));
-						System.out.println("Wrote to "+out);
-						}
-					
-					FileWriter fw=new FileWriter(new File("Endrov.app/Contents/Resources/jars.txt"));
-					fw.write(tot);
-					fw.flush();
-					fw.close();
-					System.exit(0);
-					}
-
-				//Run process
-				ProcessBuilder pb=new ProcessBuilder("");
-				pb.environment().put("LD_LIBRARY_PATH", libdir);
-				pb.command(cmdarg);
-				if(printCommand)
-					{
-					String totalCmd="";
-					for(String s:pb.command())
-						totalCmd+=s+" ";
-					System.out.println(totalCmd);
-					}
-				final Process p=pb.start();
-
-				//Pass on errors
-				new Thread()
-					{
-					public synchronized void run()
-						{
-						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-						String line;
-						try
-							{
-							while ( (line = br.readLine()) != null)
-								{
-								if(line.startsWith("Could not create the Java Virtual Machine"))
-									{
-									JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
-									//normal output follows									
-									//Error occurred during initialization of VM
-									//Could not reserve enough space for object heap
-									}
-								System.err.println(line);
-								}
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-						}
-					}.start();
-
-					//Pass on output
-					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+					BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 					String line;
-					while ( (line = br.readLine()) != null)
-						System.out.println(line);
 					try
 						{
-						p.waitFor();
+						while ( (line = br.readLine()) != null)
+							{
+							if(line.startsWith("Could not create the Java Virtual Machine"))
+								{
+								JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
+								//normal output follows									
+								//Error occurred during initialization of VM
+								//Could not reserve enough space for object heap
+								}
+							System.err.println(line);
+							}
 						}
-					catch (InterruptedException e)
+					catch (IOException e)
 						{
 						e.printStackTrace();
 						}
-					System.out.println("Process exited");
+					}
+				}.start();
 
-				}
-			catch (IOException e)
-				{
-				JOptionPane.showMessageDialog(null, "Was unable to exec command. Full error:\n"+e.getMessage());
-				e.printStackTrace();
-				}
+				//Pass on output
+				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				String line;
+				while ( (line = br.readLine()) != null)
+					System.out.println(line);
+				try
+					{
+					p.waitFor();
+					}
+				catch (InterruptedException e)
+					{
+					e.printStackTrace();
+					}
+				System.out.println("Process exited");
+
 			}
-		else
-			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
-		
-		
-		}
-	
-	*/
-	
-	
-	
-	/**
-	 * Proceed with an old startup by double-invoking java
-	 */
-	private void run2n2(boolean printCommand, File javaenvFile, String[] argsa)
-		{
-		
-		
-			try
-				{
+		catch (IOException e)
+			{
+			JOptionPane.showMessageDialog(null, "Was unable to exec command. Full error:\n"+e.getMessage());
+			e.printStackTrace();
+			}
 
-				//Generate command
-				LinkedList<String> cmdarg=new LinkedList<String>();
-				for(String s:argsa)
-					cmdarg.add(s);
-
-				//Add arguments from environment file
-				if(javaenvFile==null)
-					javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
-				if(javaenvFile.exists())
-					{
-					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
-					String line=envReader.readLine();
-					if(line!=null)
-						{
-						StringTokenizer envTokenizer=new StringTokenizer(line," ");
-						while(envTokenizer.hasMoreTokens())
-							{
-							String tok=envTokenizer.nextToken();
-							cmdarg.add(tok);
-							System.out.println("Java environment flag: "+tok);
-							}
-						}
-					}
-				
-				//Change to classloading mode
-				cmdarg.add("--classload");
-				
-				System.out.println(cmdarg);
-				
-				//Run process
-				ProcessBuilder pb=new ProcessBuilder(cmdarg);
-				//pb.command(cmdarg);
-				if(printCommand)
-					{
-					String totalCmd="";
-					for(String s:pb.command())
-						totalCmd+=s+" ";
-					System.out.println(totalCmd);
-					}
-				final Process p=pb.start();
-
-				//Pass on errors
-				new Thread()
-					{
-					public synchronized void run()
-						{
-						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-						String line;
-						try
-							{
-							while ( (line = br.readLine()) != null)
-								{
-								if(line.startsWith("Could not create the Java Virtual Machine"))
-									{
-									JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
-									//normal output follows									
-									//Error occurred during initialization of VM
-									//Could not reserve enough space for object heap
-									}
-								System.err.println(line);
-								}
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-						}
-					}.start();
-
-					//Pass on output
-					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-					String line;
-					while ( (line = br.readLine()) != null)
-						System.out.println(line);
-					try
-						{
-						p.waitFor();
-						}
-					catch (InterruptedException e)
-						{
-						e.printStackTrace();
-						}
-					System.out.println("Process exited");
-
-				}
-			catch (IOException e)
-				{
-				JOptionPane.showMessageDialog(null, "Was unable to exec command. Full error:\n"+e.getMessage());
-				e.printStackTrace();
-				}
-		
 		}	
 	
-	
-	
 	/**
-	 * Proceed with an old startup by double-invoking java
+	 * Start Endrov through class loader. This is how the final step should be done.
+	 * * it allows better control of where files are loaded from and when, needed for plugin architecture
+	 * * single process - killing this process will kill everything, unlike when Endrov runs as a subprocess
+	 * * jar-files and shared objects need not be passed on the command line which makes Endrov difficult to start on Mac
+	 *   and creates a shitty ps -ax
+	 * but:
+	 * * memory settings cannot be changed since it is a VM option. This requires a startup script or the bootstrap run  
 	 */
-	private void run2n(boolean hasSpecifiedLibdir, boolean printCommand, File javaenvFile, File basedir,
-			String[] argsa)
+	private void runWithClassLoader(String[] argsa)
 		{
-		
-		
-			try
-				{
-
-				//Generate command
-				LinkedList<String> cmdarg=new LinkedList<String>();
-				cmdarg.add(javaexe);
-				cmdarg.add("-cp");
-				cmdarg.add(".");
-
-				//Add arguments from environment file
-				if(javaenvFile==null)
-					javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
-				if(javaenvFile.exists())
-					{
-					BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
-					String line=envReader.readLine();
-					if(line!=null)
-						{
-						StringTokenizer envTokenizer=new StringTokenizer(line," ");
-						while(envTokenizer.hasMoreTokens())
-							{
-							String tok=envTokenizer.nextToken();
-							cmdarg.add(tok);
-							System.out.println("Java environment flag: "+tok);
-							}
-						}
-					}
-				
-				//What to run? 
-				cmdarg.add("endrov.starter.StartGUInew"); //At the moment
-				
-				//Change to classloading mode
-				cmdarg.add("--main");
-				cmdarg.add(mainClass);
-				cmdarg.add("--classload");
-				
-				//additional arguments?
-				for(String s:argsa)
-					cmdarg.add(s);
-
-				//Run process
-				ProcessBuilder pb=new ProcessBuilder("");
-				pb.command(cmdarg);
-				if(printCommand)
-					{
-					String totalCmd="";
-					for(String s:pb.command())
-						totalCmd+=s+" ";
-					System.out.println(totalCmd);
-					}
-				final Process p=pb.start();
-
-				//Pass on errors
-				new Thread()
-					{
-					public synchronized void run()
-						{
-						BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-						String line;
-						try
-							{
-							while ( (line = br.readLine()) != null)
-								{
-								if(line.startsWith("Could not create the Java Virtual Machine"))
-									{
-									JOptionPane.showMessageDialog(null, "Trouble creating virtual machine. Try to reduce the ammount of memory allocated");
-									//normal output follows									
-									//Error occurred during initialization of VM
-									//Could not reserve enough space for object heap
-									}
-								System.err.println(line);
-								}
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-						}
-					}.start();
-
-					//Pass on output
-					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-					String line;
-					while ( (line = br.readLine()) != null)
-						System.out.println(line);
-					try
-						{
-						p.waitFor();
-						}
-					catch (InterruptedException e)
-						{
-						e.printStackTrace();
-						}
-					System.out.println("Process exited");
-
-				}
-			catch (IOException e)
-				{
-				JOptionPane.showMessageDialog(null, "Was unable to exec command. Full error:\n"+e.getMessage());
-				e.printStackTrace();
-				}
-		
-		}	
-	
-	
-	public void run2cl(String[] argsa)
-		{
-			try
-				{
-				LinkedList<URL> urls=new LinkedList<URL>();
-				for(String s:jarfiles)
-					urls.add(new File(s).toURI().toURL());
+		try
+			{
+			LinkedList<URL> urls=new LinkedList<URL>();
+			for(String s:jarfiles)
+				urls.add(new File(s).toURI().toURL());
 
 
-				//Important: Must NOT use the system class loader - it will take over for current directory
-				//and fail to load JAR files
-//				URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),null);
-				//URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),new ResourceClassLoader());
-				System.out.println(binfiles);
-				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null, Start.class.getClassLoader());
-				System.out.println(cload);
-				
-				Class<?> cl=cload.loadClass(mainClass);
-				Method mMethod=cl.getMethod("main", String[].class);
-				mMethod.invoke(null, new Object[]{argsa});
-				}
-			catch (Exception e)
-				{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				}
-			
+			//Important: Must NOT use the system class loader - it will take over for current directory
+			//and fail to load JAR files
+			ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null);
+
+			Class<?> cl=cload.loadClass(mainClass);
+			Method mMethod=cl.getMethod("main", String[].class);
+			mMethod.invoke(null, new Object[]{argsa});
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
 		}
 	
 	
@@ -734,7 +448,6 @@ public class Start
 	/**
 	 * Run Endrov given command line. Run through class loader
 	 * 
-	 * TODO
 	 * * -- cannot change memory allocation here. CRITICAL
 	 * * ++ can change classloader, prepare for better plugin support
 	 * * ++ can hide many entries on command line
@@ -742,6 +455,7 @@ public class Start
 	 * 
 	 * 
 	 */
+	/*
 	public void runClassLoader(String[] argsa)
 		{
 		boolean hasSpecifiedLibdir=false;
@@ -844,7 +558,7 @@ public class Start
 		else
 			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
 		}
-	
+	*/
 	
 
 	

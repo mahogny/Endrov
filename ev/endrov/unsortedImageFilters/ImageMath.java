@@ -1,6 +1,8 @@
 package endrov.unsortedImageFilters;
 
+import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
+import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * Math ops on images. with EvImage, use convenience functions to make a common size and position
@@ -265,6 +267,29 @@ public class ImageMath
 		for(int i=0;i<aPixels.length;i++)
 			sum+=aPixels[i];
 		return sum;
+		}
+
+	public static class TimesOp extends SliceOp
+		{
+		int b;
+		public TimesOp(int b)
+			{
+			this.b = b;
+			}
+		public EvPixels exec(EvPixels... p)
+			{
+			return times(p[0], b);
+			}
+		}
+	
+	public static EvChannel times(EvChannel ch, final int b)
+		{
+		return new SliceOp(){
+			public EvPixels exec(EvPixels... p)
+				{
+				return times(p[0], b);
+				}
+		}.exec(ch);
 		}
 	
 	}

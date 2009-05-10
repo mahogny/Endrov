@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.unfinished;
 
 import java.util.SortedMap;
 import java.util.TreeMap;

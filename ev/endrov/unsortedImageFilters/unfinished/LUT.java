@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.unfinished;
 
 /**
  * Lookup tables. These have been used a lot for 8-bit images but I suspect it's time to bury them.

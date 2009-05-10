@@ -59,6 +59,9 @@ public class WindowedPercentile
 						}
 					}
 				//Collections.sort(listPixels);
+				
+				//TODO EvListUtil can find percentile in O(log n) instead of O(n log n)
+				
 				Arrays.sort(gotpixels);
 				
 				
@@ -74,4 +77,6 @@ public class WindowedPercentile
 	
 	//TODO lazy evaluation, apply to imageset!
 
+	
+	
 	}

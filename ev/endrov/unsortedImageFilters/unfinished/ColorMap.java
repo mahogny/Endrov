@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.unfinished;
 
 /**
  * Given channels c_i, apply c'=A c for each pixel. 

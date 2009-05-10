@@ -9,7 +9,7 @@ import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-import endrov.unsortedImageFilters.OverlayClassLoader;
+import endrov.unsortedImageFilters.trash.OverlayClassLoader;
 
 /**
  * Dynamic loading of classes

@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.trash;
 
 
 
@@ -9,7 +9,7 @@ import java.net.URLClassLoader;
 import java.util.*;
 
 
-public class OverlayClassLoader extends URLClassLoader 
+public class OverlayClassLoaderOLD extends URLClassLoader 
 	{
 	private Map<String,Class<?>> classes = new HashMap<String, Class<?>>();
 
@@ -28,7 +28,7 @@ public class OverlayClassLoader extends URLClassLoader
 			}
 		}
 	
-	public OverlayClassLoader(URL[] urls,ClassLoader parent)
+	public OverlayClassLoaderOLD(URL[] urls,ClassLoader parent)
 		{
 		//Big point here: URLClassLoader has no parent, but this classloader has
 		super(urls,null);
@@ -129,10 +129,6 @@ public class OverlayClassLoader extends URLClassLoader
 		
 		}
 		*/
-	
-	
-	
-	
 	}
 	
 	
