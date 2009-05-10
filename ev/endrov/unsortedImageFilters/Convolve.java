@@ -62,4 +62,20 @@ public class Convolve
 		return out;
 		}
 	
+
+	/**
+	 * Optimization:
+	 * keep track of kernels, if they are separable or not. assume two separable kernels are applied:
+	 * x*y*X*Y*g = x*X*y*Y*g 
+	 * 
+	 * x*X is extremely cheap, this almost optimizes away both additional convolutions.
+	 * 
+	 * also, (a*b)*c=a*(b*c), it is very cheap to do a size analysis and figure out the optimal order
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	
+	
 	}

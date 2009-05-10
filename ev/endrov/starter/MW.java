@@ -4,7 +4,6 @@ import endrov.basicWindow.*;
 import endrov.ev.*;
 import endrov.imageWindow.*;
 
-import java.io.*;
 import java.lang.reflect.Method;
 
 //http://lopica.sourceforge.net/faq.html#nosandbox
@@ -51,13 +50,14 @@ public class MW
 		if(EvSplashScreen.isSplashEnabled())
 			ss=new EvSplashScreen();
 		
-		
+		/*
 		//if(!PluginInfo.storedInJar())
 			{
 			String javalib=System.getProperty("java.library.path");
 			File javalibfile=new File(javalib);
 			Log.printLog("Loading native libraries from "+javalibfile.getAbsolutePath());
 			}
+			*/
 		
 		try
 			{

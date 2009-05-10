@@ -6,7 +6,7 @@ import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
+//import java.util.StringTokenizer;
 
 /**
  * Classloader that can find both JARs, CLASSs (like a URLClassLoader) and also JNI
@@ -17,6 +17,7 @@ public class ResourceClassLoader extends URLClassLoader
 	{
 	private List<String> binfiles;
 
+	/*
 	private SpecialClassLoader parentResources;
 	
 	private static class SpecialClassLoader extends URLClassLoader
@@ -31,13 +32,13 @@ public class ResourceClassLoader extends URLClassLoader
 			return findLibrary(libname);
 			}
 		}
+	*/
 	
-	
-	public ResourceClassLoader(URL[] urls, Collection<String> binfiles, ClassLoader parent, ClassLoader libParent)
+	public ResourceClassLoader(URL[] urls, Collection<String> binfiles, ClassLoader parent)
 		{
 		super(urls,parent);
 		this.binfiles=new LinkedList<String>(binfiles);
-		parentResources=new SpecialClassLoader(libParent);
+		//parentResources=new SpecialClassLoader(libParent);
 		}
 	
 	protected String findLibrary(String libname)
@@ -62,7 +63,6 @@ public class ResourceClassLoader extends URLClassLoader
 			if(f.exists())
 				return f.getAbsolutePath();
 			}
-		
 		
 		return super.findLibrary(libname);
 		}

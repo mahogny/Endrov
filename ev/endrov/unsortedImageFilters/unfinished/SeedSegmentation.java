@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.unfinished;
 
 /**
  * Segmentation requiring a seeding point

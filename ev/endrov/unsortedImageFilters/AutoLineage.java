@@ -9,14 +9,14 @@ import javax.vecmath.Vector3d;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.imageset.EvChannel;
-import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
+import endrov.unsortedImageFilters.newcore.SliceOp;
+import endrov.unsortedImageFilters.newcore.StackOp;
 import endrov.util.EvDecimal;
-import endrov.util.Memoize;
 import endrov.util.Vector3i;
 
 /**
@@ -113,7 +113,7 @@ public class AutoLineage
 				im.channelImages.put("spotpixels2", greater(im.channelImages.get("minus2"),2));
 
 				im.channelImages.put("MA15", movingAverage(im.channelImages.get("RFP"), 5, 5));
-				im.channelImages.put("MA30-MA15", minus(times(im.channelImages.get("MA15"),2), im.channelImages.get("MA")));
+				im.channelImages.put("MA30-MA15", minus(ImageMath.times(im.channelImages.get("MA15"),2), im.channelImages.get("MA")));
 
 				
 				//EvPixels out=CompareImage.greater(MiscFilter.movingSum(spotpixels, 2, 2), 15);
@@ -147,28 +147,14 @@ public class AutoLineage
 		}
 	
 	
-	public interface SliceOp
-		{
-		public EvPixels exec(EvPixels... p);
-		}
-
-	public interface StackOp
-		{
-		//By necessity, stack operators have to deal with laziness manually.
-		//Example: avgZ only computes one slice and then duplicates it. other operands compute entire
-		//stack. cannot fit together. possible to make functions beneath this.
-		public EvStack exec(EvStack... p);
-		}
-
-	
 	public static EvChannel avgZ(EvChannel ch)
 		{
-		return applyStackOp(new EvChannel[]{ch},new StackOp(){
+		return new StackOp(){
 		public EvStack exec(EvStack... p)
 			{
 			return eagerAvgZ(p[0]);
 			}
-		});
+		}.exec(ch);
 		}
 	
 	public static EvStack eagerAvgZ(EvStack in)
@@ -204,12 +190,12 @@ public class AutoLineage
 	 */
 	public static EvChannel movingAverage(EvChannel ch, final int pw, final int ph)
 		{
-		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
+		return new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
 				return AveragingFilter.movingAverage(p[0], pw, ph);
 				}
-		});
+		}.exec(ch);
 		}
 	
 	
@@ -218,12 +204,12 @@ public class AutoLineage
 	 */
 	public static EvChannel axpy(EvChannel ch, final double b, final double c)
 		{
-		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
+		return new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
 				return ImageMath.axpy(p[0], b, c);
 				}
-		});
+		}.exec(ch);
 		}
 	
 	/**
@@ -231,12 +217,12 @@ public class AutoLineage
 	 */
 	public static EvChannel minus(EvChannel ch1, EvChannel ch2)
 		{
-		return applySliceOp(new EvChannel[]{ch1, ch2},new SliceOp(){
+		return new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
 				return ImageMath.minus(p[0], p[1]);
 				}
-		});
+		}.exec(ch1,ch2);
 		}
 	
 	/**
@@ -244,45 +230,35 @@ public class AutoLineage
 	 */
 	public static EvChannel greater(EvChannel ch1, EvChannel ch2)
 		{
-		return applySliceOp(new EvChannel[]{ch1, ch2},new SliceOp(){
+		return new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
 				return CompareImage.greater(p[0], p[1]);
 				}
-		});
+		}.exec(ch1,ch2);
 		}
 	public static EvChannel greater(EvChannel ch, final int b)
 		{
-		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
+		return new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
 				return CompareImage.greater(p[0], b);
 				}
-		});
+		}.exec(ch);
 		}
 	
-	
-	public static EvChannel times(EvChannel ch, final int b)
-		{
-		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
-			public EvPixels exec(EvPixels... p)
-				{
-				return ImageMath.times(p[0], b);
-				}
-		});
-		}
 	
 	/**
 	 * Lazy Moving sum.
 	 */
 	public static EvChannel movingSum(EvChannel ch, final int pw, final int ph)
 		{
-		return applySliceOp(new EvChannel[]{ch},new SliceOp(){
+		return new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
 				return AveragingFilter.movingSum(p[0], pw, ph);
 				}
-		});
+		}.exec(ch);
 		}
 	
 	/*
@@ -318,125 +294,6 @@ public class AutoLineage
 		return newch;
 		}
 		*/
-	
-	/**
-	 * Lazily create a channel using an operator that combines input channels
-	 */
-	public static EvChannel applySliceOp(EvChannel[] ch, final SliceOp op)
-		{
-		//Not quite final: what if changes should go back into the channel? how?
-		EvChannel newch=new EvChannel();
-		
-		//How to combine channels? if A & B, B not exist, make B black?
-		
-		//Currently operates on common subset of channels
-		
-		for(Map.Entry<EvDecimal, EvStack> se:ch[0].imageLoader.entrySet())
-			{
-			EvStack newstack=new EvStack();
-			EvStack stack=se.getValue();
-			newstack.getMetaFrom(stack);
-			for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
-				{
-				//final EvImage evim=pe.getValue();
-				EvImage newim=new EvImage();
-				newstack.put(pe.getKey(), newim);
-				
-				//TODO register lazy operation
-				
-				//TODO lazy stack operations would take us out of this mess.
-				//it would however force lazy slices to be in lazy stacks because the latter requires
-				//keys to be evaluated.
-				//if resolution goes into stack then no keys need be evaluated, but other things still.
-				
-				final EvImage[] imlist=new EvImage[ch.length];
-				int ci=0;
-				for(EvChannel cit:ch)
-					{
-					imlist[ci]=cit.imageLoader.get(se.getKey()).get(pe.getKey());
-					ci++;
-					}
-				
-				final Memoize<EvPixels> m=new Memoize<EvPixels>(){
-				protected EvPixels eval()
-					{
-					EvPixels[] plist=new EvPixels[imlist.length];
-					for(int i=0;i<plist.length;i++)
-						plist[i]=imlist[i].getPixels();
-					return op.exec(plist);
-					//return op.exec(evim.getPixels());
-					}};
-					
-				newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return m.get();}};
-				
-				newim.registerLazyOp(m);		
-						
-				}
-			newch.imageLoader.put(se.getKey(), newstack);
-			}
-		return newch;
-		}
-	
-	
-	/**
-	 * Lazily create a channel using an operator that combines input channels
-	 */
-	
-	public static EvChannel applyStackOp(EvChannel[] ch, final StackOp op)
-		{
-		//Not quite final: what if changes should go back into the channel? how?
-		EvChannel newch=new EvChannel();
-		
-		//How to combine channels? if A & B, B not exist, make B black?
-		
-		//Currently operates on common subset of channels
-		
-		for(Map.Entry<EvDecimal, EvStack> se:ch[0].imageLoader.entrySet())
-			{
-			EvStack newstack=new EvStack();
-			EvStack stack=se.getValue();
-			
-			
-
-			//TODO register lazy operation
-			
-			final EvStack[] imlist=new EvStack[ch.length];
-			int ci=0;
-			for(EvChannel cit:ch)
-				{
-				imlist[ci]=cit.imageLoader.get(se.getKey());
-				ci++;
-				}
-			
-			final Memoize<EvStack> ms=new Memoize<EvStack>(){
-			protected EvStack eval()
-				{
-				return op.exec(imlist);
-				}};
-			
-			//TODO without lazy stacks, prior stacks are forced to be evaluated.
-			//only fix is if the laziness is added directly at the source.
-			
-			for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
-				{
-				
-				//final EvImage evim=pe.getValue();
-				EvImage newim=new EvImage();
-				//newim.getMetaFrom(evim);
-				newstack.put(pe.getKey(), newim);
-				
-				final EvDecimal z=pe.getKey();
-					
-				newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return ms.get().get(z).getPixels();}};
-				
-				newim.registerLazyOp(ms);		
-						
-				}
-			newch.imageLoader.put(se.getKey(), newstack);
-			}
-		return newch;
-		}
-		
 	
 	public static void run(NucLineage lin, Imageset imageset, String channelName, EvDecimal frame)
 		{

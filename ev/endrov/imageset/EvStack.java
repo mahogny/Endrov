@@ -78,6 +78,20 @@ public class EvStack
 		dispY=o.dispY;
 		}
 	
+	/**
+	 * Allocate a 3d stack. ref will disappear later. instead have d.
+	 */
+	public void allocate(int w, int h, int type, EvStack ref)
+		{
+		for(EvDecimal z:ref.loaders.keySet())
+			{
+			EvImage evim=new EvImage();
+			evim.setPixelsReference(new EvPixels(w,h,type));
+			loaders.put(z, evim);
+			}
+		
+		}
+	
 	//TODO lazy generation of the stack
 	
 	//public EvStack(){}

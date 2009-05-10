@@ -1,8 +1,6 @@
 package endrov.starter;
 
 import java.io.*;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
 
 import javax.swing.*;
@@ -593,126 +591,6 @@ public class OldStart
 		}
 	
 	
-	/*
-	 * ******************************************************************************************
-	 */
-	
-	/**
-	 * Run Endrov given command line. Run through class loader
-	 * 
-	 * TODO
-	 * * -- cannot change memory allocation here. CRITICAL
-	 * * ++ can change classloader, prepare for better plugin support
-	 * * ++ can hide many entries on command line
-	 * * ?? can change shared objects dir
-	 * 
-	 * 
-	 */
-	public void runClassLoader(String[] argsa)
-		{
-		boolean hasSpecifiedLibdir=false;
-		boolean printCommand=false;
-		File javaenvFile=null;
-		File basedir=new File(".");
-		
-		int numNonflagArg=0;
-		List<String> args=new LinkedList<String>();
-		for(int argi=0;argi<argsa.length;argi++)
-			{
-			String curarg=argsa[argi];
-			
-			if(curarg.equals("--printcommand"))
-				printCommand=true;
-			else if(curarg.equals("--printjar"))
-				printJar=true;
-			else if(args.contains("--version"))
-				{
-				//Print current version. need to be put in starter jar to work
-				System.out.println("Endrov "+EvBuild.version);
-				System.exit(0);
-				}
-			else if(curarg.equals("--cp2"))
-				{
-				//Additional jars to add to classpath
-				jarfiles.add(argsa[argi+1]);
-				//cp2+=":"+;
-				argi++;
-				}
-			else if(curarg.equals("--libpath2"))
-				{
-				binfiles.add(argsa[argi+1]);
-				argi++;
-				}
-			else if(curarg.equals("--basedir"))
-				{
-				//Override current directory
-				basedir=new File(argsa[argi+1]);
-				argi++;
-				}
-			else if(curarg.equals("--main"))
-				{
-				//Start another main class
-				mainClass=argsa[argi+1];
-				argi++;
-				}
-			else if(curarg.equals("--javaenv"))
-				{
-				//Use another environment
-				javaenvFile=new File(argsa[argi+1]);
-				argi++;
-				}
-			else if(curarg.equals("--archinfo"))
-				{
-				//Show info about the system
-				System.out.println("This system runs OS:"+OS+" with java:"+javaver+" on arch:"+arch);
-				}
-			else
-				{
-				if(!curarg.startsWith("--"))
-					numNonflagArg++;
-				args.add(curarg);
-				}
-			}
-		
-		collectSystemInfo(basedir);
-		
-		
-
-		//Continue if java 1.5+
-		if(javaVerMajor>1 || (javaVerMajor==1 && javaVerMinor>=5))
-			{
-			try
-				{
-				LinkedList<URL> urls=new LinkedList<URL>();
-				for(String s:jarfiles)
-					urls.add(new File(s).toURI().toURL());
-
-
-				//Important: Must NOT use the system class loader - it will take over for current directory
-				//and fail to load JAR files
-//				URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),null);
-				//URLClassLoader cload=new URLClassLoader(urls.toArray(new URL[]{}),new ResourceClassLoader());
-				System.out.println(binfiles);
-				ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null, OldStart.class.getClassLoader());
-				System.out.println(cload);
-				
-				Class<?> cl=cload.loadClass(mainClass);
-				Method mMethod=cl.getMethod("main", String[].class);
-				mMethod.invoke(null, new Object[]{args.toArray(new String[]{})});
-				}
-			catch (Exception e)
-				{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				}
-			
-			}
-		else
-			JOptionPane.showMessageDialog(null, "Your version of Java is too old. It must be at least 1.5");
-		}
-	
-	
-
 	
 
 	
