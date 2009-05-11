@@ -13,12 +13,18 @@ import endrov.imageset.EvPixels;
 public class FindThreshold
 	{
 
-	
-	//max entropy, a related algorithm
-	//http://rsbweb.nih.gov/ij/plugins/entropy.html
 	/**
+	 * One of the best:
 	 * 
+	 * * Minimum error thresholding
+			J Kittler, J Illingworth - Pattern recognition, 1986 - Elsevier
+	 * 
+	 * 
+	 * * a new method for gray-level picture thresholding
+	 * 
+	 * * Threshold selection using Renyi's entropy 
 	 */
+	
 	
 	
 	//Look at this later

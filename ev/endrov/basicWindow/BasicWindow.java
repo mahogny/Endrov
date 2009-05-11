@@ -71,7 +71,6 @@ public abstract class BasicWindow extends JPanel
 			});
 		
 		JInputManager.addGamepadMode("Active window", new JInputModeBasicWindow(), true);
-		
 		}
 
 	public static final int KEY_GETCONSOLE = KeyBinding.register(new KeyBinding(
@@ -676,7 +675,7 @@ public abstract class BasicWindow extends JPanel
 	public static void dialogSysInfo()
 		{
 		String[] wf = ImageIO.getWriterFormatNames();
-		String jaiformats = "JAI supports extensions:";
+		String jaiformats = EvLang.printf("JAI supports extensions:");//"JAI supports extensions:";
 		for (String s : wf)
 			jaiformats += " "+s;
 

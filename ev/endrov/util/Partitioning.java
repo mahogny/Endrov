@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.util;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,8 +12,12 @@ import java.util.Set;
  * the total equivalence (compute transitivity) given a few equivalences.
  * 
  * Worst-case complexity: Upper bound, O(n) group joins, O(n) for one group join.
+ * Lookup is O(1).
  * 
  * For structured partitioning on images, likely O(n) group joins, but most joins cost only O(1), so linear cost. 
+ * 
+ * There is an alternative implementation with O(1) join and O(log n) lookup. It can be optimized (constant time)
+ * with path compression.
  * 
  * 
  * @author Johan Henriksson
@@ -113,15 +117,10 @@ public class Partitioning<E>
 				//Optimization: Make sure they are not already merged
 				if(pa!=pb)
 					{
-					
-				//if(!pa.members.contains(a))
-					//{
-					//Merge two partitions
+					//TODO put the smaller in the larger
 					pa.members.addAll(pb.members);
 					for(E e:pb.members)
 						ep.put(e,pa);
-					//partitions.remove(pb);
-					//}
 					}
 				}
 			}

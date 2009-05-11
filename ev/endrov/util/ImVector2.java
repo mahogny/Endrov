@@ -6,7 +6,7 @@ package endrov.util;
  * 
  * @author Johan Henriksson
  */
-public class Vector2D
+public class ImVector2
 	{
 	/**
 	 * Coordinate
@@ -18,7 +18,7 @@ public class Vector2D
 	 * @param x
 	 * @param y
 	 */
-	public Vector2D(double x, double y)
+	public ImVector2(double x, double y)
 		{
 		this.x=x;
 		this.y=y;
@@ -29,11 +29,11 @@ public class Vector2D
 	 * @param angle Angle in radians
 	 * @return Rotated vector
 	 */
-	public Vector2D rotate(double angle)
+	public ImVector2 rotate(double angle)
 		{
 		double nx= x*Math.cos(angle) + y*Math.sin(angle);
 		double ny=-x*Math.sin(angle) + y*Math.cos(angle);
-		return new Vector2D(nx,ny);
+		return new ImVector2(nx,ny);
 		}
 	
 	/**
@@ -41,9 +41,9 @@ public class Vector2D
 	 * @param v
 	 * @return this+v
 	 */
-	public Vector2D add(Vector2D v)
+	public ImVector2 add(ImVector2 v)
 		{
-		return new Vector2D(x+v.x, y+v.y);
+		return new ImVector2(x+v.x, y+v.y);
 		}
 
 	/**
@@ -51,9 +51,9 @@ public class Vector2D
 	 * @param v
 	 * @return this-v
 	 */
-	public Vector2D sub(Vector2D v)
+	public ImVector2 sub(ImVector2 v)
 		{
-		return new Vector2D(x-v.x, y-v.y);
+		return new ImVector2(x-v.x, y-v.y);
 		}
 	
 	/**
@@ -61,9 +61,9 @@ public class Vector2D
 	 * @param a
 	 * @return this*a
 	 */
-	public Vector2D mul(double a)
+	public ImVector2 mul(double a)
 		{
-		return new Vector2D(x*a,y*a);
+		return new ImVector2(x*a,y*a);
 		}
 	
 	/**
@@ -79,10 +79,10 @@ public class Vector2D
 	 * Normalize vector
 	 * @return Normalized vector
 	 */
-	public Vector2D normalize()
+	public ImVector2 normalize()
 		{
 		double len=length();
-		return new Vector2D(x/len,y/len);
+		return new ImVector2(x/len,y/len);
 		}
 
 	/**
@@ -90,7 +90,7 @@ public class Vector2D
 	 * @param v Other vector
 	 * @return this.v
 	 */
-	public double dot(Vector2D v)
+	public double dot(ImVector2 v)
 		{
 		return x*v.x + y*v.y;
 		}
@@ -101,9 +101,9 @@ public class Vector2D
 	 * @param a Angle
 	 * @return New vector
 	 */
-	public static Vector2D polar(double len, double a)
+	public static ImVector2 polar(double len, double a)
 		{
-		return new Vector2D(len*Math.cos(a), len*Math.sin(a));
+		return new ImVector2(len*Math.cos(a), len*Math.sin(a));
 		}
 	
 	}

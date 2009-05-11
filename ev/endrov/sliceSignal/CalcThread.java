@@ -8,7 +8,7 @@ import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.shell.*;
 import endrov.util.EvDecimal;
-import endrov.util.Vector2D;
+import endrov.util.ImVector2;
 
 
 /**
@@ -111,8 +111,8 @@ public final class CalcThread extends BatchThread
       			    		System.out.println("shell "+shell.midx+" "+shell.midy+" "+shell.major+" --- "+(ch.getMeta().chBinning/(double)rec.meta.resX)+
       			    				" "+(ch.getMeta().chBinning/(double)rec.meta.resY));
       			    		*/
-    								Vector2D dirvec=Vector2D.polar(shell.major, shell.angle);
-    								Vector2D startpos=dirvec.add(new Vector2D(shell.midx,shell.midy));
+    								ImVector2 dirvec=ImVector2.polar(shell.major, shell.angle);
+    								ImVector2 startpos=dirvec.add(new ImVector2(shell.midx,shell.midy));
     								dirvec=dirvec.normalize().mul(-1);
     								
     								//Calculate distances
@@ -125,7 +125,7 @@ public final class CalcThread extends BatchThread
     												(ax-dispX)*ch.getMeta().chBinning/(double)rec.meta.resX, 
     												(ay-dispY)*ch.getMeta().chBinning/(double)rec.meta.resY);
     										*/
-    										Vector2D pos=new Vector2D(
+    										ImVector2 pos=new ImVector2(
     												((ax)*ch.chBinning+dispX)/(double)rec.resX,  //TODO WTF??? 
     												((ay)*ch.chBinning+dispY)/(double)rec.resY);
 /*
@@ -134,7 +134,7 @@ public final class CalcThread extends BatchThread
     												(ay)*ch.getMeta().chBinning/(double)rec.meta.resY);
 */
     										//Check if this is within ellipse boundary
-    										Vector2D elip=pos.sub(new Vector2D(shell.midx, shell.midy)).rotate(shell.angle); //todo: angle?
+    										ImVector2 elip=pos.sub(new ImVector2(shell.midx, shell.midy)).rotate(shell.angle); //todo: angle?
     										if(1 >= elip.y*elip.y/(shell.minor*shell.minor) + elip.x*elip.x/(shell.major*shell.major) )
     											{
     											//xy . dirvecx = cos(alpha) ||xy|| ||dirvecx||

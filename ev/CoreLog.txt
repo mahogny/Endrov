@@ -745,3 +745,15 @@ LOG(15572, 3073739664:): -------->>
 LOG(15572, 3073739664:): Core session started on Sat May  9 2009 09:36:41.920789 by mahogny on venus
 LOG(15572, 3073739664:): Debug logging disabled
 LOG(15572, 3073739664:): Debug logging disabled
+LOG(6435, 3073055632:): -------->>
+LOG(6435, 3073055632:): Core session started on Sun May 10 2009 20:48:22.407702 by mahogny on venus
+LOG(6435, 3073055632:): Debug logging disabled
+LOG(6435, 3073055632:): Debug logging disabled
+LOG(6552, 3072945040:): -------->>
+LOG(6552, 3072945040:): Core session started on Sun May 10 2009 20:51:38.978311 by mahogny on venus
+LOG(6552, 3072945040:): Debug logging disabled
+LOG(6552, 3072945040:): Debug logging disabled
+LOG(6647, 3073121168:): -------->>
+LOG(6647, 3073121168:): Core session started on Sun May 10 2009 20:53:22.351013 by mahogny on venus
+LOG(6647, 3073121168:): Debug logging disabled
+LOG(6647, 3073121168:): Debug logging disabled

@@ -71,7 +71,7 @@ public class EvListUtil
 	
 	/**
 	 * Find percentile. q<-[0,1].
-	 * O(log n)
+	 * O(n)
 	 */
 	public static Integer findPercentileInt(Collection<Integer> set, double perc)
 		{
@@ -82,7 +82,7 @@ public class EvListUtil
 
 	
 	/**
-	 * Find value of given rank q (=value at position q in sorted list). O(log n)
+	 * Find value of given rank q (=value at position q in sorted list). O(n)
 	 */
 	public static Integer findRankInt(Collection<Integer> set, int q)
 		{

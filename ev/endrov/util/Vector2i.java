@@ -1,7 +1,7 @@
 package endrov.util;
 
 /**
- * 2D integer vector
+ * Mutable 2D integer vector
  * @author Johan Henriksson
  *
  */

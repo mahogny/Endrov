@@ -110,12 +110,36 @@ public class EvMathUtil
 	 * 
 	 * @return x=fst() +- snd() 
 	 */
-	public Tuple<Double,Double> solveQuadratic(double b, double c)
+	public static Tuple<Double,Double> solveQuadratic(double b, double c)
 		{
 		double out=b/2;
 		return Tuple.make(-out,Math.sqrt(out*out-c));
 		}
 	
+	
+	/**
+	 * Calculate unbiased sample variance
+	 * @param sum		Sum X
+	 * @param sum2	Sum X^2
+	 * @param n			Number of samples
+	 */
+	public static double unbiasedVariance(double sum, double sum2, int n)
+		{
+		int n1=n-1;
+		return sum2/n1 - sum*sum/(n1*n);
+		}
+
+	/**
+	 * Biased sample variance
+	 * @param sum		Sum X
+	 * @param sum2	Sum X^2
+	 * @param n			Number of samples
+	 */
+	public static double biasedVariance(double sum, double sum2, int n)
+		{
+		return sum2/n - sum*sum/(n*n);
+		}
+
 	
 	public static void main(String[] args)
 		{

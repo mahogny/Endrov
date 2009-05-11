@@ -1,7 +1,8 @@
 package endrov.util;
 
 /**
- * 3D vector, integer
+ * Mutable 3D integer vector
+ * @author Johan Henriksson
  */
 public class Vector3i
 	{
