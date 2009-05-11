@@ -1,0 +1,66 @@
+Zeiss cell observer
+===============
+
+* control of climate chamber during timelapse
+* duration window, add experiments
+
+* mark & find: multiwell. seems to be nothing but a system to calibrate positions of wells 
+* 1D graph window - this will be required. online graphs?
+* 3d deconv
+* autofocus
+* extended focus?
+* mosaic
+* HDR images
+* channel unmixing
+* tracking
+* coloc
+* Visual basic
+* interactive measurement - user selects. geometric measures
+
+
+Zeiss ZEN
+===========
+very vista lookalike
+* autoexposure
+* built-in list of fluorophores. offer linear unmixing from selection.
+choosing wavelengths, strength? shows overlap, calculates crosstalk. allows optimization
+of settings, automatic, with several recommended settings
+* shows light path to some extent
+
+for doing stacks, shows semi-3d view.
+num slices, interval "set first/last"
+
+
+
+Nicon elements
+==========
+realtime 2d deconv from autoquant
+3d blind deconv
+database! but screenshot tells it is thumbnails of recordings in a directory
+
+
+koheras lasers control software
+===========
+laser has power & wavelength
+
+
+
+oko vision
+==========
+avi maker: over time or z
+joystick. can control even over the web
+MW scan. seems one can turn wells on and off
+incubator control. allows incubator to be turned off - avoids thermal shock due to PID control once opened and closed 
+
+
+Siemens QVIA
+=======
+opencl renderer
+volumes and geometry
+shaded volume rendering (VRT)
+unshaded VRT
+render modes: MaxIP, MinIP, 2d MPR
+multiplanar reformatting (MPR)
+trilinear interpol
+transfer functions
+stereo rendering
