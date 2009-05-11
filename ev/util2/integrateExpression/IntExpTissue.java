@@ -18,7 +18,7 @@ import endrov.nuc.NucLineage;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
-import endrov.util.Vector2D;
+import endrov.util.ImVector2;
 
 public class IntExpTissue
 	{
@@ -152,8 +152,8 @@ public class IntExpTissue
 					lenMap=new EvPixels(EvPixels.TYPE_DOUBLE, pixels.getWidth(), pixels.getHeight());
 					lenMapArr=lenMap.getArrayDouble();
 
-					Vector2D dirvec=Vector2D.polar(shell.major, shell.angle);
-					Vector2D startpos=dirvec.add(new Vector2D(shell.midx,shell.midy));
+					ImVector2 dirvec=ImVector2.polar(shell.major, shell.angle);
+					ImVector2 startpos=dirvec.add(new ImVector2(shell.midx,shell.midy));
 					dirvec=dirvec.normalize().mul(-1);
 
 					//Calculate distances
@@ -163,10 +163,10 @@ public class IntExpTissue
 						for(int ax=0;ax<pixels.getWidth();ax++)
 							{
 							//Convert to world coordinates
-							Vector2D pos=new Vector2D(stack.transformImageWorldX(ax),stack.transformImageWorldY(ay));
+							ImVector2 pos=new ImVector2(stack.transformImageWorldX(ax),stack.transformImageWorldY(ay));
 
 							//Check if this is within ellipse boundary
-							Vector2D elip=pos.sub(new Vector2D(shell.midx, shell.midy)).rotate(shell.angle); //TODO angle? what?
+							ImVector2 elip=pos.sub(new ImVector2(shell.midx, shell.midy)).rotate(shell.angle); //TODO angle? what?
 							double len;
 							if(1 >= elip.y*elip.y/(shell.minor*shell.minor) + elip.x*elip.x/(shell.major*shell.major) )
 								len=pos.sub(startpos).dot(dirvec)/(2*shell.major);	//xy . dirvecx = cos(alpha) ||xy|| ||dirvecx||

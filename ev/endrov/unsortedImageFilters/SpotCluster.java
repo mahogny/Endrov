@@ -5,6 +5,7 @@ import java.util.*;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvPixels;
+import endrov.util.Partitioning;
 import endrov.util.Vector3i;
 
 /**

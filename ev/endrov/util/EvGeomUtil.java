@@ -7,8 +7,15 @@ import java.util.List;
 import javax.vecmath.Vector3d;
 
 
+/**
+ * Various equations used for geometry
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public class EvGeomUtil
 	{
+	
 	/**
 	 * Calculate area of a convex polygon
 	 */
@@ -28,6 +35,16 @@ public class EvGeomUtil
 		return area*0.5;
 		}
 	
+	/**
+	 * Calculate area of triangle given lengths of sides.
+	 * Uses Heron's formula.
+	 */
+	public static double triangleAreaUsingSides(double a, double b, double c)
+		{
+		double s=(a+b+c)/2;
+		return Math.sqrt(s*(s-a)*(s-b)*(s-c));
+		}
+	
 	
 	/**
 	 * Calculate angle at B, given 3 positions
@@ -42,12 +59,30 @@ public class EvGeomUtil
 		}
 	
 	
-	public static double interpolate(double x1, double y1, double x2, double y2, double x)
+	/**
+	 * Linear interpolation: Given (x1,y1) and (x2,y2), find y in (x,y)
+	 */
+	public static double interpolateLinear(double x1, double y1, double x2, double y2, double x)
 		{
 		double s=(x-x1)/(x2-x1);
 		return s*y2+(1.0-s)*y1;
 		}
 	
+	
+	/**
+	 * Fit y=ax^2+bx through (0,0), (x1,y1), (x2,y2). 
+	 * @return a,b
+	 */
+	public static Tuple<Double,Double> fitQuadratic(double x1, double y1, double x2, double y2)
+		{
+		double xSQ=x1*x1;
+		double dSQ=x2*x2;
+		double det=xSQ*x2-dSQ*x1;
+		
+		double a=(y1*x2-y2*x1)/det;
+		double b=(y2*xSQ-y1*dSQ)/det;
+		return Tuple.make(a, b);
+		}
 	
 	
 	/**
@@ -97,7 +132,7 @@ public class EvGeomUtil
 	
 	public static void main(String[] arg)
 		{
-		System.out.println(interpolate(10, 2, 20, 4, 50));
+		System.out.println(interpolateLinear(10, 2, 20, 4, 50));
 		
 		
 		Vector3d[] v=new Vector3d[]{new Vector3d(0,0,0), new Vector3d(1,0,0),

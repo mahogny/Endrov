@@ -12,7 +12,7 @@ import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
-import endrov.util.Vector3D;
+import endrov.util.ImVector3d;
 
 /**
  * Render one slice in 3d
@@ -176,13 +176,13 @@ public class Slice3D
 	 * Give suitable center of all objects
 	 * TODO currently useless requiring z. need to move this value
 	 */
-	public Collection<Vector3D> autoCenterMid(double z)
+	public Collection<ImVector3d> autoCenterMid(double z)
 		{
 		if(tex!=null)
 			{
 			double width=w/resX;
 			double height=h/resY;
-			return Collections.singleton(new Vector3D(width/2.0,height/2.0,z));
+			return Collections.singleton(new ImVector3d(width/2.0,height/2.0,z));
 			}
 		else
 			return Collections.emptySet();

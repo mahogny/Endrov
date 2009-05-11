@@ -357,8 +357,8 @@ public class NewIntExp
 						.getWidth(), integrator.pixels.getHeight());
 				lenMapArr = lenMap.getArrayDouble();
 
-				Vector2D dirvec = Vector2D.polar(shell.major, shell.angle);
-				Vector2D startpos = dirvec.add(new Vector2D(shell.midx, shell.midy));
+				ImVector2 dirvec = ImVector2.polar(shell.major, shell.angle);
+				ImVector2 startpos = dirvec.add(new ImVector2(shell.midx, shell.midy));
 				dirvec = dirvec.normalize().mul(-1);
 
 				// Calculate distances
@@ -368,11 +368,11 @@ public class NewIntExp
 					for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 						{
 						// Convert to world coordinates
-						Vector2D pos = new Vector2D(integrator.stack.transformImageWorldX(ax),
+						ImVector2 pos = new ImVector2(integrator.stack.transformImageWorldX(ax),
 								integrator.stack.transformImageWorldY(ay));
 
 						// Check if this is within ellipse boundary
-						Vector2D elip = pos.sub(new Vector2D(shell.midx, shell.midy))
+						ImVector2 elip = pos.sub(new ImVector2(shell.midx, shell.midy))
 								.rotate(shell.angle); // TODO angle? what?
 						double len;
 						if (1>=elip.y*elip.y/(shell.minor*shell.minor)+elip.x*elip.x

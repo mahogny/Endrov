@@ -6,7 +6,7 @@ package endrov.util;
  * 
  * @author Johan Henriksson
  */
-public class Vector3D
+public class ImVector3d
 	{
 	/**
 	 * Coordinate
@@ -18,7 +18,7 @@ public class Vector3D
 	 * @param x
 	 * @param y
 	 */
-	public Vector3D(double x, double y, double z)
+	public ImVector3d(double x, double y, double z)
 		{
 		this.x=x;
 		this.y=y;
@@ -44,9 +44,9 @@ public class Vector3D
 	 * @param v
 	 * @return this+v
 	 */
-	public Vector3D add(Vector3D v)
+	public ImVector3d add(ImVector3d v)
 		{
-		return new Vector3D(x+v.x, y+v.y, z+v.z);
+		return new ImVector3d(x+v.x, y+v.y, z+v.z);
 		}
 
 	/**
@@ -54,9 +54,9 @@ public class Vector3D
 	 * @param v
 	 * @return this-v
 	 */
-	public Vector3D sub(Vector3D v)
+	public ImVector3d sub(ImVector3d v)
 		{
-		return new Vector3D(x-v.x, y-v.y, z-v.z);
+		return new ImVector3d(x-v.x, y-v.y, z-v.z);
 		}
 	
 	/**
@@ -64,9 +64,9 @@ public class Vector3D
 	 * @param a
 	 * @return this*a
 	 */
-	public Vector3D mul(double a)
+	public ImVector3d mul(double a)
 		{
-		return new Vector3D(x*a,y*a,z*a);
+		return new ImVector3d(x*a,y*a,z*a);
 		}
 	
 	/**
@@ -92,11 +92,11 @@ public class Vector3D
 	 * Normalize vector
 	 * @return Normalized vector
 	 */
-	public Vector3D normalize()
+	public ImVector3d normalize()
 		{
 		double len=length();
 		double ilen=1.0/len;
-		return new Vector3D(x*ilen,y*ilen,z*ilen);
+		return new ImVector3d(x*ilen,y*ilen,z*ilen);
 		}
 
 	/**
@@ -104,7 +104,7 @@ public class Vector3D
 	 * @param v Other vector
 	 * @return this.v
 	 */
-	public double dot(Vector3D v)
+	public double dot(ImVector3d v)
 		{
 		return x*v.x + y*v.y + z*v.z;
 		}
@@ -113,9 +113,9 @@ public class Vector3D
 	 * Cross product
 	 * @return this x v
 	 */
-	public Vector3D cross(Vector3D v)
+	public ImVector3d cross(ImVector3d v)
 		{
-		return new Vector3D(
+		return new ImVector3d(
 				y*v.z - z*v.y,
 				z*v.x - x*v.z,
 				x*v.y - y*v.x);

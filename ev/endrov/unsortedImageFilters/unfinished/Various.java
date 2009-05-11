@@ -29,6 +29,10 @@ public class Various
 	 * 
 	 * classical snakes
 	 * 
+	 * 
+	 * http://www.optinav.com/Stack-Sorter.htm
+	 * used for what?
+	 * 
 	 */
 	
 	
