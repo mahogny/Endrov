@@ -12,6 +12,6 @@ public class StartImServ
 		{
 		Start start=new Start();
 		start.mainClass="bioserv.BioservGUI";
-		start.run(new String[]{});
+		start.run(args);
 		}
 	}

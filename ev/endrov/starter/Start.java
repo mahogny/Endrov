@@ -436,6 +436,7 @@ public class Start
 		catch (Exception e)
 			{
 			e.printStackTrace();
+			System.out.println("Failing to load \""+mainClass+"\"");
 			}
 		}
 	

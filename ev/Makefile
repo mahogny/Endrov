@@ -20,9 +20,9 @@ starters:
 	jar cfvm startViewer.jar endrov/starter/MANIFEST.STARTCEV endrov/starter/*.class endrov/ev/EvBuild.class
 	du -hc start*.jar
 
-macstarters:
+#macstarters:
 	#should only be run on a mac
-	java -jar startEndrov.jar --macstarter
+#	java -jar startEndrov.jar --macstarter
 
 macplugin:
 	jar cfv libs/bin_mac/macbinding.jar endrov/macBinding/*.class

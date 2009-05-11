@@ -10,6 +10,8 @@ public class StartOSTdaemon
 	{
 	public static void main(String[] args)
 		{
-		new Start().run(new String[]{"OSTdaemon.GUI"});
+		Start start=new Start();
+		start.mainClass="OSTdaemon.GUI";
+		start.run(args);
 		}
 	}
