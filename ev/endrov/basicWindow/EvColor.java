@@ -1,6 +1,15 @@
 package endrov.basicWindow;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+
+import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
 
 /**
  * Colors for EV. They come with a name unlike AWT colors.
@@ -10,6 +19,7 @@ public class EvColor
 	{
 	public static EvColor black=new EvColor("Black",new Color(0,0,0));
 	public static EvColor white=new EvColor("White",new Color(255,255,255));
+	public static EvColor redMedium=new EvColor("Red/Medium",new Color(255,0,0));
 	
 	public static Color makeCol(double r, double g, double b, double mul)
 		{
@@ -43,7 +53,7 @@ public class EvColor
 			new EvColor("Purple",new Color(200,0,255)),
 			
 			new EvColor("Red/Dark",new Color(128,0,0)),
-			new EvColor("Red/Medium",new Color(255,0,0)),
+			redMedium,
 			new EvColor("Red/Bright",new Color(255,128,128)),
 			new EvColor("Red/Green64",new Color(255,64,0)),
 			new EvColor("Red/Blue64",new Color(255,0,64)),
@@ -70,6 +80,50 @@ public class EvColor
 	public String toString()
 		{
 		return name;
+		}
+	
+	public double getRedDouble()
+		{
+		return c.getRed()/255.0;
+		}
+	
+	public double getGreenDouble()
+		{
+		return c.getGreen()/255.0;
+		}
+	
+	public double getBlueDouble()
+		{
+		return c.getBlue()/255.0;
+		}
+	
+	
+	public interface ColorMenuListener
+		{
+		public void setColor(EvColor c); 
+		}
+	
+	public static void addColorMenuEntries(JMenu menu, final ColorMenuListener list)
+		{
+		for(final EvColor c:EvColor.colorList)
+			{
+			BufferedImage bim=new BufferedImage(16,16,BufferedImage.TYPE_INT_BGR);
+			Graphics g=bim.getGraphics();
+			g.setColor(c.c);
+			g.fillRect(0, 0, 16, 16);
+			JMenuItem mi = new JMenuItem(c.name,new ImageIcon(bim));
+			mi.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					list.setColor(c);
+					}
+				});
+			menu.add(mi);
+			}
+		
+		
+		
 		}
 	
 	}

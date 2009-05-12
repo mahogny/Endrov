@@ -83,6 +83,10 @@ public class CoordinateSystem extends EvObject
 		cachedToSystem.invert(cachedFromSystem);
 		}
 	
+	
+	//TODO quite sure it is possible to apply everything but translation
+	//TODO make new function
+	
 	public String getMetaTypeDesc()
 		{
 		return metaType;
