@@ -259,6 +259,7 @@ public class ModelView extends GLCanvas
 			 //Set light to follow camera
 			float light_position[] = { 1.0f, 1.0f, 1.0f, 0.0f };
 			gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, light_position,0); //have no idea what 0 does
+	    ModelView.setupLight(gl);
 			
 			//Get camera into position
 			camera.transformGL(gl);
@@ -603,41 +604,118 @@ public class ModelView extends GLCanvas
 	
 	
 	/**
-	 * Draw the head of an arrow, with specified tip point and direction. Uses the currently selected color
+	 * Draw the head of an arrow, with specified tip point and direction. Uses the currently selected color.
+	 * Will turn on normalize. lighting should be enabled
+	 * 
+	 * TODO use vertex arrays, precalc arrow polygons. use model matrix to transform. use phong shading.
 	 */
-	public void renderArrowHead(GL gl, Vector3d tip, Vector3d direction)
+	public void renderArrowHead(GL gl, Vector3d tip, Vector3d direction, float colR, float colG, float colB)
 		{
 		CoordinateSystem cs=new CoordinateSystem();
+		CoordinateSystem csRot=new CoordinateSystem();
 	
+		
+		//System.out.println("render arrow");
+		
 		//Need to find a perpendicular vector
 		Vector3d up=new Vector3d(0,0,1);
 		Vector3d right=new Vector3d(1,0,0);
 		if(direction.equals(up))
+			{
 			cs.setFromTwoVectors(direction, right, 1, 1, 1, tip);
+			csRot.setFromTwoVectors(direction, right, 1, 1, 1, new Vector3d());
+			}
 		else
+			{
 			cs.setFromTwoVectors(direction, up, 1, 1, 1, tip);
-	
+			csRot.setFromTwoVectors(direction, up, 1, 1, 1, new Vector3d());
+			}
 		
-		int numAngle=6;
+		//gl.glShadeModel(GL.GL_SMOOTH); //temp
+		
+		int numAngle=10;
 		double r=representativeScale*0.04;
 		double length=r*2;;
 		
 		Vector3d[] points=new Vector3d[numAngle];
+		Vector3d[] normals=new Vector3d[numAngle];
+		
+//		gl.glEnable(GL.GL_AUTO_NORMAL);
+		//gl.glEnable(GL.GL_NORMALIZE);
+		
+  	gl.glColor3d(1,1,1);
+  	gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, new float[]{colR,colG,colB}, 0);
+
 		
 		for(int i=0;i<numAngle;i++)
 			{
 			double angle=2*Math.PI*i/numAngle;
-			points[i]=cs.transformFromSystem(new Vector3d(-length,r*Math.cos(angle),r*Math.sin(angle)));
+			double cos=Math.cos(angle);
+			double sin=Math.sin(angle);
+			points[i]=cs.transformFromSystem(new Vector3d(-length,r*cos,r*sin));
+			normals[i]=csRot.transformFromSystem(new Vector3d(r,length*cos,length*sin)); //Assume later normalization
+			normals[i].normalize(); //temp
+			//System.out.println(normals[i]);
 			}
 		
+		Vector3d normalBack=csRot.transformFromSystem(new Vector3d(-1,0,0));
+		
+		/*
 		gl.glBegin(GL.GL_TRIANGLE_FAN);
+		gl.glNormal3d(normals[0].x, normals[0].y, normals[0].z);
 		gl.glVertex3d(tip.x, tip.y, tip.z);
 		for(int i=0;i<numAngle;i++)
+			{
+			gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
 			gl.glVertex3d(points[i].x, points[i].y, points[i].z);
+			}
+		gl.glNormal3d(normals[0].x, normals[0].y, normals[0].z);
 		gl.glVertex3d(points[0].x, points[0].y, points[0].z);
+		gl.glEnd();*/
+		
+		
+//		for(int i=0;i<1;i++)
+		/*
+		gl.glBegin(GL.GL_TRIANGLES);
+		for(int i=0;i<numAngle;i++)
+			{
+//			gl.glBegin(GL.GL_LINE_LOOP);
+			int next=(i+1)%numAngle;
+			gl.glNormal3d(normals[i].x+normals[next].x, normals[i].y+normals[next].y, normals[i].z+normals[next].z);
+			gl.glVertex3d(tip.x, tip.y, tip.z);
+			gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
+			gl.glVertex3d(points[i].x, points[i].y, points[i].z);
+			
+			gl.glNormal3d(normals[next].x, normals[next].y, normals[next].z);
+			gl.glVertex3d(points[next].x, points[next].y, points[next].z);
+			}
+		gl.glEnd();
+		*/
+		
+		gl.glBegin(GL.GL_QUADS);
+		for(int i=0;i<numAngle;i++)
+			{
+			int next=(i+1)%numAngle;
+			
+			gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
+			gl.glVertex3d(tip.x, tip.y, tip.z);
+
+			
+			gl.glNormal3d(normals[next].x, normals[next].y, normals[next].z);
+			gl.glVertex3d(tip.x, tip.y, tip.z);
+			
+						
+			gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
+			gl.glVertex3d(points[i].x, points[i].y, points[i].z);
+			
+			gl.glNormal3d(normals[next].x, normals[next].y, normals[next].z);
+			gl.glVertex3d(points[next].x, points[next].y, points[next].z);
+			}
 		gl.glEnd();
 		
+		
 		gl.glBegin(GL.GL_POLYGON);
+		gl.glNormal3d(normalBack.x, normalBack.y, normalBack.z);
 		for(int i=numAngle-1;i>=0;i--)
 			gl.glVertex3d(points[i].x, points[i].y, points[i].z);
 		int lasta=numAngle-1;
@@ -651,6 +729,14 @@ public class ModelView extends GLCanvas
 		 */
 		
 		}
+	public static void setupLight(GL gl)
+	{
+	float lightDiffuse[]=new float[]{1,1,1};
+	float lightAmbient[] = { lightDiffuse[0]*0.3f, lightDiffuse[1]*0.3f, lightDiffuse[2]*0.3f, 0.0f };
+	gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
+	gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
+	gl.glEnable(GL.GL_LIGHT0);
+	}
 
 	//http://www.felixgers.de/teaching/jogl/imagingProg.html
 

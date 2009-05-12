@@ -64,3 +64,16 @@ multiplanar reformatting (MPR)
 trilinear interpol
 transfer functions
 stereo rendering
+
+
+
+imagej
+==========
+mosaicJ + turboreg to do stitching
+trackEM2 for stitch etc?
+
+micromanager
+==========
+user requested stitching with multiple cameras
+
+

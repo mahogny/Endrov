@@ -2,14 +2,11 @@ package endrov.nuc;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -19,6 +16,7 @@ import org.jdom.*;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvColor;
+import endrov.basicWindow.EvColor.ColorMenuListener;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
@@ -713,7 +711,7 @@ public class NucLineage extends EvObject implements Cloneable
 	 */
 	public static JMenu makeSetColorMenu(final EvColor... exclude)
 		{
-		JMenu m = new JMenu("Set color");
+		JMenu m = new JMenu("Set nuclei color");
 
 		JMenuItem miRemove = new JMenuItem("<Remove>");
 		miRemove.addActionListener(new ActionListener()
@@ -770,6 +768,7 @@ public class NucLineage extends EvObject implements Cloneable
 			});
 		m.add(miCustom);
 		
+		/*
 		for (final EvColor c : EvColor.colorList)
 			{
 			BufferedImage bim=new BufferedImage(16,16,BufferedImage.TYPE_INT_BGR);
@@ -790,6 +789,18 @@ public class NucLineage extends EvObject implements Cloneable
 				});
 			m.add(mi);
 			}
+		*/
+		
+		EvColor.addColorMenuEntries(m, new ColorMenuListener(){
+			public void setColor(EvColor c)
+				{
+				for (NucPair p : selectedNuclei)
+					p.fst().nuc.get(p.snd()).colorNuc = c.c;
+				BasicWindow.updateWindows();
+				}
+		});
+		
+		
 		return m;
 		}
 
@@ -1149,7 +1160,11 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	public int countNucAtFrame(EvDecimal frame)
 		{
-		return getInterpNuc(frame).size();
+		int num=0;
+		for(NucInterp i:getInterpNuc(frame).values())
+			if(i.isVisible())
+				num++;
+		return num;
 		}
 	
 	
