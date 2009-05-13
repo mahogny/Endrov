@@ -53,7 +53,8 @@ public class NucVoronoi
 
 		vneigh=new VoronoiNeigh(vor,selfNeigh,infinityCell);
 		
-		//Remove high angle neighbours facing infinity
+		//Remove high angle neighbours facing infinity.
+		//This is the Copan
 //		System.out.println(" ---- ");
 //		int angcut=0;
 		HashSet<Integer> atInf=new HashSet<Integer>();
