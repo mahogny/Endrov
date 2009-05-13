@@ -311,11 +311,21 @@ public class Start
 			//cmdarg.add(".");
 			cmdarg.add(basedir.toString());
 
-			//Add arguments from environment file
+			//Find java env file
 			if(javaenvFile==null)
-				javaenvFile=new File(new File("config"),"javaenv."+platformExt+".txt");
+				{
+				for(String s:platformExt)
+					{
+					javaenvFile=new File(new File("config"),"javaenv."+s+".txt");
+					if(javaenvFile.exists())
+						break;
+					}
+				}
+			
+			//Add arguments from environment file
 			if(javaenvFile.exists())
 				{
+				System.out.println("Using environment from "+javaenvFile);
 				BufferedReader envReader=new BufferedReader(new FileReader(javaenvFile));
 				String line=envReader.readLine();
 				if(line!=null)
@@ -329,7 +339,9 @@ public class Start
 						}
 					}
 				}
-
+			System.out.println("Using environment: "+javaenvFile);
+			
+			
 			//What to run? Doesn't matter because we specify the main class
 			cmdarg.add("endrov.starter.StartGUI");
 
