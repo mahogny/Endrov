@@ -24,8 +24,6 @@
 	<classpathentry kind="lib" path="libs/poi-3.0.1-FINAL-20070705.jar"/>
 	<classpathentry kind="lib" path="libs/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="libs/junit.jar"/>
-	<classpathentry kind="lib" path="libs/jinput.jar"/>
-	<classpathentry kind="lib" path="libs/jinput-test.jar"/>
 	<classpathentry kind="lib" path="libs/jfreechart-1.0.5.jar"/>
 	<classpathentry kind="lib" path="libs/jcommon-1.0.9.jar"/>
 	<classpathentry kind="lib" path="libs/hessian-3.2.1.jar"/>
@@ -58,5 +56,7 @@
 	<classpathentry kind="lib" path="libs/pcolt_inc/parallelcolt-0.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/jogl.jar"/>
+	<classpathentry kind="lib" path="libs/bin_mac/jinput-test.jar"/>
+	<classpathentry kind="lib" path="libs/bin_mac/jinput.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
