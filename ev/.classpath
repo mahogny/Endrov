@@ -6,8 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/bin_mac/jogl.jar"/>
-	<classpathentry kind="lib" path="libs/bin_mac/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="libs/bio-formats_inc/slf4j-jdk14.jar"/>
 	<classpathentry kind="lib" path="libs/bio-formats_inc/ome-xml.jar"/>
 	<classpathentry kind="lib" path="libs/bio-formats_inc/netcdf-4.0.jar"/>
@@ -58,5 +56,7 @@
 	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/bin_ppc/MMCoreJ.jar"/>
 	<classpathentry kind="lib" path="libs/jl1.0.jar"/>
 	<classpathentry kind="lib" path="libs/pcolt_inc/parallelcolt-0.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/bin_mac/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/bin_mac/jogl.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
