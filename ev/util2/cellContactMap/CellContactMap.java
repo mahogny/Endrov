@@ -606,10 +606,11 @@ public class CellContactMap
 						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2))
 							if(!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty())
 								{
+								/*
 								int c1=countTrue(getOverlaps(theCE, name, name2));
 								if(c1!=0)
 									outDuration.append(""+c1/(double)clength+"\n");
-								
+								*/
 								SortedSet<EvDecimal> s=theCE.contactsf.get(name).get(name2);
 								if(!s.isEmpty())
 									outDuration.append(""+(s.last().subtract(s.first()).add(1))+"\t"+s.first()+"\n");  //+1 Can be discussed
