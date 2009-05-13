@@ -54,6 +54,10 @@ public class Start
 		//Detect architecture
 		if(arch.equals("ppc")) //PowerPC (mac G4 and G5)
 			platformExt.add("ppc");
+		else if(arch.equals("x86_64")) 
+			platformExt.add("amd64");
+		else if(arch.equals("amd64")) 
+			platformExt.add("amd64");
 		else
 			platformExt.add("x86");
 		
