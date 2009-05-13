@@ -603,10 +603,8 @@ public class CellContactMap
 			for(String name:nucNames)
 				for(String name2:nucNames)
 					if(name.compareTo(name2)>0)
-//					if(!name.equals(name2))
-						{
-						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2))
-							if(!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty())
+						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
+							!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty())
 								{
 								/*
 								int c1=countTrue(getOverlaps(theCE, name, name2));
@@ -618,13 +616,13 @@ public class CellContactMap
 								if(!s.isEmpty())
 									outDuration.append(""+(s.last().subtract(s.first()).add(1))+"\t"+s.first()+"\n");  //+1 Can be discussed
 */
+								NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
 								
 								int c1=countTrue(getOverlaps(theCE, name, name2));
 								if(c1>0)
-									outDuration.append(""+c1/(double)clength+"\t"+s.first()+"\n");
+									outDuration.append(""+c1*(nuc.getLastFrame().subtract(nuc.getFirstFrame()).doubleValue())/(double)clength+"\t"+s.first()+"\n");
 								
 								}
-					}
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.txt"), outDuration.toString());
 			
 			
