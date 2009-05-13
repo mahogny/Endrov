@@ -1,4 +1,4 @@
-package endrov.imageWindow;
+package endrov.imageWindow.tools;
 
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -13,6 +13,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
+import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowTool;
 import endrov.util.EvFileUtil;
 
 //either send down variables or add accessors to imagewindow

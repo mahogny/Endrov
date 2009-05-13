@@ -103,14 +103,20 @@ public class EvColor
 		public void setColor(EvColor c); 
 		}
 	
+	public BufferedImage getSampleIcon()
+		{
+		BufferedImage bim=new BufferedImage(16,16,BufferedImage.TYPE_INT_BGR);
+		Graphics g=bim.getGraphics();
+		g.setColor(c);
+		g.fillRect(0, 0, 16, 16);
+		return bim;
+		}
+	
 	public static void addColorMenuEntries(JMenu menu, final ColorMenuListener list)
 		{
 		for(final EvColor c:EvColor.colorList)
 			{
-			BufferedImage bim=new BufferedImage(16,16,BufferedImage.TYPE_INT_BGR);
-			Graphics g=bim.getGraphics();
-			g.setColor(c.c);
-			g.fillRect(0, 0, 16, 16);
+			BufferedImage bim=c.getSampleIcon();
 			JMenuItem mi = new JMenuItem(c.name,new ImageIcon(bim));
 			mi.addActionListener(new ActionListener()
 				{

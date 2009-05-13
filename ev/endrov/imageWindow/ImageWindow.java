@@ -18,6 +18,8 @@ import endrov.consoleWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.filter.*;
+import endrov.imageWindow.tools.ImageWindowToolChannelDisp;
+import endrov.imageWindow.tools.ImageWindowToolScreenshot;
 import endrov.imageset.*;
 import endrov.keyBinding.*;
 import endrov.util.EvDecimal;
@@ -75,7 +77,7 @@ public class ImageWindow extends BasicWindow
 			{
 			public void newImageWindow(ImageWindow w)
 				{
-				w.imageWindowTools.add(new ToolChannelDisp(w));
+				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
 				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
 				}
 			});

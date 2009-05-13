@@ -734,7 +734,8 @@ public abstract class BasicWindow extends JPanel
 	public static String showInputDialog(String message, String value)
 		{
 //		JOptionPane.showInputDialog(message, value);
-		return JOptionPane.showInputDialog(null, message, EV.programName, JOptionPane.OK_OPTION);
+		return JOptionPane.showInputDialog(null, message, value);
+//		return JOptionPane.showInputDialog(null, message, EV.programName, JOptionPane.OK_OPTION);
 		}
 
 	

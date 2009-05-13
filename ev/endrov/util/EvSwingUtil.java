@@ -44,7 +44,7 @@ public class EvSwingUtil
 	/**
 	 * Add a component with two components to the left and right
 	 */
-	public static JComponent borderLR(JComponent left, JComponent center, JComponent right)
+	public static JComponent borderLCR(JComponent left, JComponent center, JComponent right)
 		{
 		JPanel p=new JPanel(new BorderLayout());
 		if(left!=null)   p.add(left,BorderLayout.WEST);
@@ -53,7 +53,37 @@ public class EvSwingUtil
 		return p;
 		}
 
-
+	/**
+	 * Compact horizontal layout. No restriction on equal size
+	 */
+	/*
+	public static JComponent compactHorizontal(JComponent left, JComponent right)
+		{
+		JPanel p=new JPanel(new BorderLayout());
+		p.add(left,BorderLayout.WEST);
+		p.add(right,BorderLayout.EAST);
+		return p;
+		}
+*/	
+	public static JComponent compactHorizontal(JComponent... list)
+		{
+		JComponent last=list[list.length-1];
+		for(int i=list.length-2;i>=0;i--)
+			{
+			JPanel p=new JPanel(new BorderLayout());
+			p.add(list[i],BorderLayout.WEST);
+			p.add(last,BorderLayout.EAST);
+			last=p;
+			}
+		return last;
+/*		JPanel p=new JPanel(new BorderLayout());
+		p.add(left,BorderLayout.WEST);
+		p.add(right,BorderLayout.EAST);
+		return p;*/
+		}
+	
+	
+	
 	/**
 	 * Add a component with two components to the above and below
 	 */

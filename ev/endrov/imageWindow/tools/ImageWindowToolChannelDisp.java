@@ -1,4 +1,4 @@
-package endrov.imageWindow;
+package endrov.imageWindow.tools;
 
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -12,6 +12,8 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
@@ -21,11 +23,11 @@ import endrov.util.EvDecimal;
  * 
  * @author Johan Henriksson
  */
-public class ToolChannelDisp implements ImageWindowTool
+public class ImageWindowToolChannelDisp implements ImageWindowTool
 	{
 	private final ImageWindow w;
 	
-	public ToolChannelDisp(ImageWindow w)
+	public ImageWindowToolChannelDisp(ImageWindow w)
 		{
 		this.w=w;
 		}
