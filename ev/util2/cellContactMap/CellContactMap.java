@@ -531,15 +531,16 @@ public class CellContactMap
 			//Compare CE and A model
 			OneLineage theCE=orderedLin.get("celegans2008.2");
 			OneLineage theA=orderedLin.get("AnglerUnixCoords");
-			LinkedList<Tuple<Double,String>> outDiffList=new LinkedList<Tuple<Double,String>>();
+			//LinkedList<Tuple<Double,String>> outDiffList=new LinkedList<Tuple<Double,String>>();
 			StringBuffer outDiffList2=new StringBuffer();
+			StringBuffer outDuration=new StringBuffer();
 			//LinkedList<String> listDiff=new LinkedList<String>();
 			for(String name:nucNames)
 				for(String name2:nucNames)
 					if(!name.equals(name2))
 //					if(name.compareTo(name2)>0)
 						{
-						System.out.println(name+"\t"+name2);
+						//System.out.println(name+"\t"+name2);
 //					int numFrames1=theCE.contactsf.get(name).get(name2).size();
 	//				int numFrames2=theA.contactsf.get(name).get(name2).size();
 					
@@ -547,27 +548,27 @@ public class CellContactMap
 
 						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
 								theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))
-							if(!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty() &&
-									!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty())
+							{
+							boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
+							boolean aHasChild=!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty();
+
+							double c1=countTrue(getOverlaps(theCE, name, name2))/clength;
+							double c2=countTrue(getOverlaps(theA, name, name2))/clength;
+
+							if(c1+c2!=0)
 								{
-								int c1=countTrue(getOverlaps(theCE, name, name2));
-								int c2=countTrue(getOverlaps(theA, name, name2));
-								/*
-								double framediff=c1-c2;
-								if(framediff!=0)
-										outDiffList.add(new Tuple<Double, String>(framediff/(c1+c2),framediff/(c1+c2)+"\t"+name+"\t"+name2+"\n"));
-								 */
-								
-								
-								
-								if(c1+c2!=0)
+								NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
+								double dur=nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
+								if(ceHasChild && aHasChild)
 									{
-									NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-									double dur=nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
-									outDiffList2.append(""+c1/(double)clength+"\t"+dur+"\t"+c2/(double)clength+"\t"+name+"\t"+name2+"\n");
+									outDiffList2.append(""+c1+"\t"+c2+"\t"+dur+"\t"+name+"\t"+name2+"\n");
 									}
+								if(c1>0)
+									outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceHasChild)+"\n");
 								}
 
+							}
+						}
 
 					/*
 					EvDecimal lifeLenFrames1=theCE.lin.nuc.get(name).pos.isEmpty() ? 
@@ -588,7 +589,6 @@ public class CellContactMap
 //									outDiff.append(framediff+"\t"+name+"\t"+name2+"\n");
 						//listDiff.add();
 						 * */
-					}
 			/*
 			Collections.sort(outDiffList, new Comparator<Tuple<Double,String>>(){
 				public int compare(Tuple<Double, String> o1, Tuple<Double, String> o2)
@@ -602,9 +602,10 @@ public class CellContactMap
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiff.toString());
 			*/
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiffList2.toString());
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.txt"), outDuration.toString());
 			
 			
-
+/*
 			//Figure out duration
 			StringBuffer outDuration=new StringBuffer();
 			for(String name:nucNames)
@@ -613,16 +614,7 @@ public class CellContactMap
 						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
 							!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty())
 								{
-								/*
-								int c1=countTrue(getOverlaps(theCE, name, name2));
-								if(c1!=0)
-									outDuration.append(""+c1/(double)clength+"\n");
-								*/
 								SortedSet<EvDecimal> s=theCE.contactsf.get(name).get(name2);
-								/*
-								if(!s.isEmpty())
-									outDuration.append(""+(s.last().subtract(s.first()).add(1))+"\t"+s.first()+"\n");  //+1 Can be discussed
-*/
 								NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
 								
 								int c1=countTrue(getOverlaps(theCE, name, name2));
@@ -631,6 +623,7 @@ public class CellContactMap
 								
 								}
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.txt"), outDuration.toString());
+			*/
 			
 			
 			//Does children split?

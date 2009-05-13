@@ -859,7 +859,13 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 		}
 
-	
+	public static Color representativeColor(Color nucColor)
+		{
+		if(nucColor==null)
+			return Color.WHITE;
+		else
+			return nucColor;
+		}
 	
 	
 	/******************************************************************************************************

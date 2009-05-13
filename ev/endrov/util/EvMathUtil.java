@@ -141,6 +141,14 @@ public class EvMathUtil
 		}
 
 	
+	public static int toInt(boolean b)
+		{
+		if(b)
+			return 1;
+		else
+			return 0;
+		}
+	
 	public static void main(String[] args)
 		{
 		LinkedList<Double> ys=new LinkedList<Double>();
