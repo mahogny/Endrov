@@ -369,6 +369,14 @@ public class NucModelExtension implements ModelWindowExtension
 				}
 			}
 		
+		private Color colorForNuc(NucPair pair)
+			{
+			Color col=traceColor.c;
+			if(col==null)
+				col=NucLineage.representativeColor(pair.fst().nuc.get(pair.snd()).colorNuc);
+			return col;
+			}
+		
 		/**
 		 * Render graphics
 		 */
@@ -484,7 +492,7 @@ public class NucModelExtension implements ModelWindowExtension
 					
 					if(traceCur && !traceSel && inter.get(nucPair).isVisible())
 						{
-						Color col=nucPair.fst().nuc.get(nucPair.snd()).colorNuc;
+						Color col=colorForNuc(nucPair);
 						NucLineage.Nuc nuc=nucPair.fst().nuc.get(nucPair.snd());
 						renderTrace(gl,nuc, tracesSimple, col);
 						}
@@ -512,10 +520,8 @@ public class NucModelExtension implements ModelWindowExtension
 			if(traceSel)
 				for(NucPair pair:NucLineage.selectedNuclei)
 					{
-					Color col=traceColor==null ? pair.fst().nuc.get(pair.snd()).colorNuc : traceColor.c;
-					
 					NucLineage.Nuc nuc=pair.fst().nuc.get(pair.snd());
-					renderTrace(gl,nuc, tracesSimple, col);
+					renderTrace(gl,nuc, tracesSimple, colorForNuc(pair));
 					}
 			
 			//Cell divisions
@@ -629,9 +635,10 @@ public class NucModelExtension implements ModelWindowExtension
 	    double showRadius=nuc.pos.r*nucMagnification;
 
 	    //Decide color based on if the nucleus is selected
+	    Color repColor=NucLineage.representativeColor(nuc.colorNuc);
 			float nucColor[];
 			if(nuc.colorNuc!=null)
-	    	nucColor=new float[]{nuc.colorNuc.getRed()/255.0f,nuc.colorNuc.getGreen()/255.0f,nuc.colorNuc.getBlue()/255.0f};
+	    	nucColor=new float[]{repColor.getRed()/255.0f,repColor.getGreen()/255.0f,repColor.getBlue()/255.0f};
 	    else
 	    	nucColor=new float[]{1,1,1};
 //			float lightAmbient[] = { nucColor[0]*0.3f, nucColor[1]*0.3f, nucColor[2]*0.3f, 0.0f };
