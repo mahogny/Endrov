@@ -40,7 +40,10 @@ public class BasicIcon
 	public static final ImageIcon iconImage=new ImageIcon(BasicIcon.class.getResource("gnome-image-x-generic.png"));
 
 	public static final ImageIcon programIcon=new ImageIcon(BasicIcon.class.getResource("programIcon.png"));
-	
+
+	public static final ImageIcon iconAdd=new ImageIcon(BasicIcon.class.getResource("oxygen-list-add.png"));
+	public static final ImageIcon iconRemove=new ImageIcon(BasicIcon.class.getResource("oxygen-list-remove.png"));
+
 	
 	public static JButton getButtonCopy()
 		{
