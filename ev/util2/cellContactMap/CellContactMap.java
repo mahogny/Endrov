@@ -557,8 +557,15 @@ public class CellContactMap
 								if(framediff!=0)
 										outDiffList.add(new Tuple<Double, String>(framediff/(c1+c2),framediff/(c1+c2)+"\t"+name+"\t"+name2+"\n"));
 								 */
+								
+								
+								
 								if(c1+c2!=0)
-									outDiffList2.append(""+c1/(double)clength+"\t"+c2/(double)clength+"\t"+name+"\t"+name2+"\n");
+									{
+									NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
+									double dur=nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
+									outDiffList2.append(""+c1/(double)clength+"\t"+dur+"\t"+c2/(double)clength+"\t"+name+"\t"+name2+"\n");
+									}
 								}
 
 
