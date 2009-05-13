@@ -1,5 +1,6 @@
 package endrov.nuc;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -82,7 +83,8 @@ public class NucModelExtension implements ModelWindowExtension
 		public JMenuItem miShowNucSizeCustom=new JMenuItem("Custom");
 		
 		
-		public EvColor traceColor=EvColor.redMedium;
+//		public EvColor traceColor=EvColor.redMedium;
+		public EvColor traceColor=null;
 		
 		//public JCheckBoxMenuItem miShowSmallNuclei=new JCheckBoxMenuItem("Nuclei 50% size"); 
 
@@ -96,7 +98,7 @@ public class NucModelExtension implements ModelWindowExtension
 		public JMenuItem miPrintCountNucAtFrame=new JMenuItem("Print nuclei count in frame");  
 		public JMenuItem miPrintCountNucUpTo=new JMenuItem("Print nuclei count up to frame");  
 
-		private void setTraveColor(EvColor c)
+		private void setTraceColor(EvColor c)
 			{
 			traceColor=c;
 			}
@@ -108,8 +110,11 @@ public class NucModelExtension implements ModelWindowExtension
 			JMenu miNuc=new JMenu("Nuclei/Lineage");
 
 			JMenu mTraceColor=new JMenu("Set trace color");
+			JMenuItem miColorSame=new JMenuItem("Same color as nucleus");
+			mTraceColor.add(miColorSame);
+			miColorSame.addActionListener(new ActionListener(){public void actionPerformed(ActionEvent e){setTraceColor(null);}});
 			EvColor.addColorMenuEntries(mTraceColor, new ColorMenuListener(){
-				public void setColor(EvColor c){setTraveColor(c);}
+				public void setColor(EvColor c){setTraceColor(c);}
 			});
 			
 			mShowTrace.add(miShowTraceNone);
@@ -309,7 +314,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render movement trace of nuc
 		 */
-		private void renderTrace(GL gl, NucLineage.Nuc nuc, boolean simple)
+		private void renderTrace(GL gl, NucLineage.Nuc nuc, boolean simple, Color col)
 			{
 			if(!nuc.pos.isEmpty())
 				{
@@ -479,8 +484,9 @@ public class NucModelExtension implements ModelWindowExtension
 					
 					if(traceCur && !traceSel && inter.get(nucPair).isVisible())
 						{
+						Color col=nucPair.fst().nuc.get(nucPair.snd()).colorNuc;
 						NucLineage.Nuc nuc=nucPair.fst().nuc.get(nucPair.snd());
-						renderTrace(gl,nuc, tracesSimple);
+						renderTrace(gl,nuc, tracesSimple, col);
 						}
 					
 					//Draw connecting line
@@ -506,8 +512,10 @@ public class NucModelExtension implements ModelWindowExtension
 			if(traceSel)
 				for(NucPair pair:NucLineage.selectedNuclei)
 					{
+					Color col=traceColor==null ? pair.fst().nuc.get(pair.snd()).colorNuc : traceColor.c;
+					
 					NucLineage.Nuc nuc=pair.fst().nuc.get(pair.snd());
-					renderTrace(gl,nuc, tracesSimple);
+					renderTrace(gl,nuc, tracesSimple, col);
 					}
 			
 			//Cell divisions
