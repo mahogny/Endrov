@@ -536,8 +536,8 @@ public class CellContactMap
 			//LinkedList<String> listDiff=new LinkedList<String>();
 			for(String name:nucNames)
 				for(String name2:nucNames)
-//					if(!name.equals(name2))
-					if(name.compareTo(name2)>0)
+					if(!name.equals(name2))
+//					if(name.compareTo(name2)>0)
 						{
 						System.out.println(name+"\t"+name2);
 //					int numFrames1=theCE.contactsf.get(name).get(name2).size();
@@ -620,7 +620,7 @@ public class CellContactMap
 								
 								int c1=countTrue(getOverlaps(theCE, name, name2));
 								if(c1>0)
-									outDuration.append(""+c1*(nuc.getLastFrame().subtract(nuc.getFirstFrame()).doubleValue())/(double)clength+"\t"+s.first()+"\n");
+									outDuration.append(""+c1*(nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue())/(double)clength+"\t"+s.first()+"\n");
 								
 								}
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.txt"), outDuration.toString());
