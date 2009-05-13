@@ -113,6 +113,17 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 			}
 		};*/
 	
+		
+	private GridBagConstraints editorConstraint(int x)
+		{
+		GridBagConstraints c=new GridBagConstraints();
+		c.gridx=x;
+		c.fill=GridBagConstraints.HORIZONTAL;
+//			c.fill=0;
+		//c.weightx=0;
+			c.weightx=1;
+		return c;
+		}
 	
 	private GridBagConstraints playButtonConstraint(int x)
 		{
@@ -120,8 +131,8 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		c.gridx=x;
 		c.fill=GridBagConstraints.HORIZONTAL;
 //		c.fill=0;
-//		c.weightx=0;
-		c.weightx=1;
+		c.weightx=0;
+//		c.weightx=1;
 		return c;
 		}
 	private GridBagConstraints smallButtonConstraint(int x)
@@ -189,7 +200,7 @@ public class FrameControlModel extends JPanel implements ActionListener, ChangeL
 		spinnerFrame.setEditor(frameEditor);
 		buttonFrameTime.addEditor(frameEditor);
 		
-		add(EvSwingUtil.withLabel("Frame:",spinnerFrame),playButtonConstraint(7));
+		add(EvSwingUtil.withLabel("Frame:",spinnerFrame),editorConstraint(7));
 		add(buttonFrameTime,playButtonConstraint(8));
 		add(EvSwingUtil.withLabel("Group",spinnerGroup),playButtonConstraint(9));
 		

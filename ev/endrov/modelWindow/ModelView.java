@@ -603,6 +603,11 @@ public class ModelView extends GLCanvas
 	
 	
 	
+	public double getArrowLength()
+		{
+		return representativeScale*0.04*2;
+		}
+	
 	/**
 	 * Draw the head of an arrow, with specified tip point and direction. Uses the currently selected color.
 	 * Will turn on normalize. lighting should be enabled
@@ -634,14 +639,19 @@ public class ModelView extends GLCanvas
 		//gl.glShadeModel(GL.GL_SMOOTH); //temp
 		
 		int numAngle=10;
-		double r=representativeScale*0.04;
-		double length=r*2;;
+//		double r=representativeScale*0.04;
+//		double length=r*2;
+	
+//		double length=representativeScale*0.04*2;
+		double length=getArrowLength();
+		double r=length/2;
+		
 		
 		Vector3d[] points=new Vector3d[numAngle];
 		Vector3d[] normals=new Vector3d[numAngle];
 		
 //		gl.glEnable(GL.GL_AUTO_NORMAL);
-		//gl.glEnable(GL.GL_NORMALIZE);
+		gl.glEnable(GL.GL_NORMALIZE); //used for normal at tip
 		
   	gl.glColor3d(1,1,1);
   	gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, new float[]{colR,colG,colB}, 0);
@@ -654,7 +664,7 @@ public class ModelView extends GLCanvas
 			double sin=Math.sin(angle);
 			points[i]=cs.transformFromSystem(new Vector3d(-length,r*cos,r*sin));
 			normals[i]=csRot.transformFromSystem(new Vector3d(r,length*cos,length*sin)); //Assume later normalization
-			normals[i].normalize(); //temp
+			//normals[i].normalize(); //temp
 			//System.out.println(normals[i]);
 			}
 		

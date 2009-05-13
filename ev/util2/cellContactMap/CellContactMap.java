@@ -202,6 +202,7 @@ public class CellContactMap
 			if(pw!=null)
 				pw.close();
 
+			/*
 			if(name.equals("celegans2008.2"))
 				{
 				try
@@ -210,13 +211,15 @@ public class CellContactMap
 					for(String n1:contactsf.keySet())
 						if(lin.nuc.containsKey(n1))
 							for(String n2:contactsf.get(n1).keySet())
-								if(lin.nuc.containsKey(n2) && n2.compareTo(n1)>0 && 
-										lin.nuc.get(n1).child.size()>1 && lin.nuc.get(n2).child.size()>1)
+								if(lin.nuc.containsKey(n2) && 
+										n2.compareTo(n1)>0 && //Remove duplicate and self-contacts 
+//										lin.nuc.get(n1).child.size()>1 && lin.nuc.get(n2).child.size()>1)
+									!lin.nuc.get(n1).child.isEmpty() && !lin.nuc.get(n2).child.isEmpty()) //For consistency with diff table
 									{
 									SortedSet<EvDecimal> s=contactsf.get(n1).get(n2);
 									if(!s.isEmpty())
 										{
-										cp.println(""+(s.last().subtract(s.first()).add(1))+"\t"+s.first());
+										cp.println(""+(s.last().subtract(s.first()).add(1))+"\t"+s.first());  //+1 Can be discussed
 										}
 									}
 					cp.close();
@@ -227,6 +230,7 @@ public class CellContactMap
 					e.printStackTrace();
 					}
 				}
+				*/
 
 			}
 		}
@@ -294,18 +298,14 @@ public class CellContactMap
 			return 0;
 		}
 	
+	/*
 	public static boolean maybeOverlaps(String name1, String name2)
 		{
 		if(name1.equals(name2))
 			return false;
 		return true;
-		/*
-		if(getDivRound(name1)!=getDivRound(name2))
-			return false;
-		return true;
-		*/
 		}
-	
+*/	
 	
 	
 
@@ -536,17 +536,16 @@ public class CellContactMap
 			//LinkedList<String> listDiff=new LinkedList<String>();
 			for(String name:nucNames)
 				for(String name2:nucNames)
-					{
-					System.out.println(name+"\t"+name2);
+					if(!name.equals(name2))
+						{
+						System.out.println(name+"\t"+name2);
 //					int numFrames1=theCE.contactsf.get(name).get(name2).size();
 	//				int numFrames2=theA.contactsf.get(name).get(name2).size();
 					
 					
-					
-					if(maybeOverlaps(name, name2))
-						{
+
 						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
-							theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))
+								theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))
 							if(!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty() &&
 									!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty())
 								{
@@ -556,13 +555,12 @@ public class CellContactMap
 								double framediff=c1-c2;
 								if(framediff!=0)
 										outDiffList.add(new Tuple<Double, String>(framediff/(c1+c2),framediff/(c1+c2)+"\t"+name+"\t"+name2+"\n"));
-										*/
+								 */
 								if(c1+c2!=0)
 									outDiffList2.append(""+c1/(double)clength+"\t"+c2/(double)clength+"\t"+name+"\t"+name2+"\n");
 								}
-						}
-					
-					
+
+
 					/*
 					EvDecimal lifeLenFrames1=theCE.lin.nuc.get(name).pos.isEmpty() ? 
 							EvDecimal.ZERO : theCE.lin.nuc.get(name).lastFrame().subtract(theCE.lin.nuc.get(name).firstFrame());
@@ -596,6 +594,29 @@ public class CellContactMap
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiff.toString());
 			*/
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiffList2.toString());
+			
+			
+
+			//Figure out 
+			StringBuffer outDuration=new StringBuffer();
+			for(String name:nucNames)
+				for(String name2:nucNames)
+					if(!name.equals(name2))
+						{
+						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2))
+							if(!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty())
+								{
+								int c1=countTrue(getOverlaps(theCE, name, name2));
+								if(c1!=0)
+									outDuration.append(""+c1/(double)clength+"\n");
+								
+								SortedSet<EvDecimal> s=theCE.contactsf.get(name).get(name2);
+								if(!s.isEmpty())
+									outDuration.append(""+(s.last().subtract(s.first()).add(1))+"\t"+s.first()+"\n");  //+1 Can be discussed
+								
+								}
+					}
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW.txt"), outDuration.toString());
 			
 			
 			//Does children split?

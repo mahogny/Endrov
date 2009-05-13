@@ -80,8 +80,24 @@ public class CoordinateSystem extends EvObject
 
 		cachedFromSystem=mt;
 		//System.out.println(cachedFromSystem);
-		cachedToSystem.invert(cachedFromSystem);
+		try
+			{
+			cachedToSystem.invert(cachedFromSystem);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			cachedToSystem.setIdentity(); //Safe choice, will at least stop things from crashing
+			}
 		}
+
+	/*
+	 * Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Logic error: imax < 0
+	at javax.vecmath.Matrix4d.luDecomposition(Matrix4d.java:2133)
+	at javax.vecmath.Matrix4d.invertGeneral(Matrix4d.java:1992)
+	at javax.vecmath.Matrix4d.invert(Matrix4d.java:1943)
+	at endrov.coordinateSystem.CoordinateSystem.updateCachedMatrices(CoordinateSystem.java:83)
+	 */
 	
 	
 	//TODO quite sure it is possible to apply everything but translation

@@ -13,6 +13,7 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.frameTime.*;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
+import endrov.util.EvSwingUtil;
 
 
 
@@ -173,28 +174,32 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		spinnerGroup.setValue(FrameControl.getUniqueGroup());
 		
 		//Build list of play buttons
-		setLayout(new GridLayout(1,2));
+		/*
 		JPanel playPanel=new JPanel(new GridLayout(1,6,0,0));
-		JPanel therest=new JPanel(new GridLayout(1,3,0,0));
-		add(playPanel);
-		add(therest);
 		playPanel.add(buttonBeginning);
 		playPanel.add(buttonEnd);
 		playPanel.add(buttonStepBack);
 		playPanel.add(buttonStepForward);
 		playPanel.add(buttonPlayBack);
 		playPanel.add(buttonPlayForward);
-
+		*/
 		
+		JComponent playPanel=EvSwingUtil.compactHorizontal(
+				buttonBeginning,buttonEnd,buttonStepBack,buttonStepForward,
+				buttonPlayBack,buttonPlayForward);
+		
+
+		/*
+		setLayout(new GridLayout(1,2));
+		add(playPanel);
+		add(therest);
+		*/
 		
 		spinnerFrame=new JSpinner(frameModel);
-//		spinnerFrame.setEditor(new EvDecimalEditor(spinnerFrame));
 		
 		EvFrameEditor frameEditor=new EvFrameEditor(spinnerFrame);
 		spinnerFrame.setEditor(frameEditor);
 		buttonFrameTime.addEditor(frameEditor);
-
-		
 		
 		spinnerZ=new JSpinner(zModel);
 		spinnerZ.setEditor(new EvDecimalEditor(spinnerZ));
@@ -204,7 +209,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		JPanel zPanel=new JPanel(new BorderLayout());
 		zPanel.add(new JLabel("Z:"), BorderLayout.WEST);
 		zPanel.add(spinnerZ, BorderLayout.CENTER);
-		zPanel.add(checkGroupSlice, BorderLayout.EAST);
+		//zPanel.add(checkGroupSlice, BorderLayout.EAST);
 		
 		JPanel fPanel=new JPanel(new BorderLayout());
 				
@@ -212,15 +217,20 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		fPanel.add(spinnerFrame, BorderLayout.CENTER);
 		fPanel.add(buttonFrameTime, BorderLayout.EAST);
 		
-		JPanel gPanel=new JPanel(new BorderLayout());
-		gPanel.add(new JLabel("Group:"), BorderLayout.WEST);
-		gPanel.add(spinnerGroup, BorderLayout.CENTER);
+		JComponent gPanel=EvSwingUtil.compactHorizontal(checkGroupSlice, EvSwingUtil.withLabel("Group:",spinnerGroup));
 		checkGroupSlice.setSelected(true);
 
+		JPanel therest=new JPanel(new GridLayout(1,2,0,0));
 		therest.add(fPanel);
 		therest.add(zPanel);
-		therest.add(gPanel);
+		//therest.add(gPanel);
 
+		setLayout(new BorderLayout());
+		add(playPanel,BorderLayout.WEST);
+		add(therest,BorderLayout.CENTER);
+		add(gPanel,BorderLayout.EAST);
+
+		
 		//Make this class listen to everything
 		buttonBeginning.addActionListener(this);
 		buttonPlayBack.addActionListener(this);

@@ -68,6 +68,9 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public JCheckBoxMenuItem miShowSimpleTraces=new JCheckBoxMenuItem("Straight traces"); 
 
+		private float traceWidth=3;
+		
+		public JMenuItem miSetTraceWidth=new JMenuItem("Set trace width");
 		
 		public JMenu mShowNucSize=new JMenu("Nuclei size");
 		
@@ -87,11 +90,11 @@ public class NucModelExtension implements ModelWindowExtension
 
 		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false);
 		
-		public JMenuItem miCalcAngle=new JMenuItem("Calculate angles");  
-		public JMenuItem miCalcPos=new JMenuItem("Show positions");  
+		public JMenuItem miPrintAngle=new JMenuItem("Print angles");  
+		public JMenuItem miPrintPos=new JMenuItem("Print positions");  
 
-		public JMenuItem miCountNucAtFrame=new JMenuItem("Count nuclei in frame");  
-		public JMenuItem miCountNucUpTo=new JMenuItem("Count nuclei up to frame");  
+		public JMenuItem miPrintCountNucAtFrame=new JMenuItem("Print nuclei count in frame");  
+		public JMenuItem miPrintCountNucUpTo=new JMenuItem("Print nuclei count up to frame");  
 
 		private void setTraveColor(EvColor c)
 			{
@@ -135,6 +138,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(mShowNucSize);
 			miNuc.add(mShowTrace);
 			miNuc.add(mTraceColor);
+			miNuc.add(miSetTraceWidth);
 			miNuc.add(miShowSimpleTraces);
 			miNuc.add(miShowSelectedNuc);
 			miNuc.add(miHideSelectedNuc);
@@ -143,10 +147,10 @@ public class NucModelExtension implements ModelWindowExtension
 			
 			miNuc.add(miShowDiv);
 			miNuc.add(miShowDelaunay);
-			miNuc.add(miCalcAngle);
-			miNuc.add(miCalcPos);
-			miNuc.add(miCountNucAtFrame);
-			miNuc.add(miCountNucUpTo);
+			miNuc.add(miPrintAngle);
+			miNuc.add(miPrintPos);
+			miNuc.add(miPrintCountNucAtFrame);
+			miNuc.add(miPrintCountNucUpTo);
 			w.menuModel.add(miNuc);
 			
 	//		miSaveColorScheme.addActionListener(this);
@@ -160,16 +164,17 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowTraceAll.addActionListener(this);
 			miShowDiv.addActionListener(this);
 			miShowDelaunay.addActionListener(this);
-			miCalcAngle.addActionListener(this);
-			miCalcPos.addActionListener(this);
-			miCountNucAtFrame.addActionListener(this);
-			miCountNucUpTo.addActionListener(this);
+			miPrintAngle.addActionListener(this);
+			miPrintPos.addActionListener(this);
+			miPrintCountNucAtFrame.addActionListener(this);
+			miPrintCountNucUpTo.addActionListener(this);
 			miShowNucSize0.addActionListener(this);
 			miShowNucSize25.addActionListener(this);
 			miShowNucSize50.addActionListener(this);
 			miShowNucSize75.addActionListener(this);
 			miShowNucSize100.addActionListener(this);
 			miShowNucSizeCustom.addActionListener(this);
+			miSetTraceWidth.addActionListener(this);
 
 			
 
@@ -207,23 +212,23 @@ public class NucModelExtension implements ModelWindowExtension
 					NucLineage.hiddenNuclei.add(p);
 				}
 //			else if(e.getSource()==miSaveColorScheme)
-			else if(e.getSource()==miCalcAngle)
+			else if(e.getSource()==miPrintAngle)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				NucLineage.calcAngle(frame);
 				}
-			else if(e.getSource()==miCalcPos)
+			else if(e.getSource()==miPrintPos)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				NucLineage.showPos(frame);
 				}
-			else if(e.getSource()==miCountNucAtFrame)
+			else if(e.getSource()==miPrintCountNucAtFrame)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
 					Log.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
 				}
-			else if(e.getSource()==miCountNucUpTo)
+			else if(e.getSource()==miPrintCountNucUpTo)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
@@ -244,6 +249,12 @@ public class NucModelExtension implements ModelWindowExtension
 				String inp=BasicWindow.showInputDialog("Enter magnification in percent", "100");
 				if(inp!=null)
 					nucMagnification=Double.parseDouble(inp)/100;
+				}
+			else if(e.getSource()==miSetTraceWidth)
+				{
+				String inp=BasicWindow.showInputDialog("Set trace width", ""+traceWidth);
+				if(inp!=null)
+					traceWidth=(float)Double.parseDouble(inp);
 				}
 			
 			w.view.repaint(); //TODO modw repaint
@@ -302,6 +313,7 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			if(!nuc.pos.isEmpty())
 				{
+				gl.glLineWidth(traceWidth);
 				float colR=(float)traceColor.getRedDouble();
 				float colG=(float)traceColor.getGreenDouble();
 				float colB=(float)traceColor.getBlueDouble();
@@ -314,8 +326,13 @@ public class NucModelExtension implements ModelWindowExtension
 					EvDecimal f2=nuc.pos.lastKey();
 					NucLineage.NucPos pos1=nuc.pos.get(f1);
 					NucLineage.NucPos pos2=nuc.pos.get(f2);
+					Vector3d v=new Vector3d(pos2.x-pos1.x,pos2.y-pos1.y,pos2.z-pos1.z);
+					double len=v.length();
+					v.scale((len-w.view.getArrowLength())/len);
+					//v.normalize();
 					gl.glVertex3d(pos1.x,pos1.y,pos1.z);
-					gl.glVertex3d(pos2.x,pos2.y,pos2.z);
+//					gl.glVertex3d(pos2.x,pos2.y,pos2.z);
+					gl.glVertex3d(pos1.x+v.x,pos1.y+v.y,pos1.z+v.z);
 					gl.glEnd();
 					
 					Vector3d direction=pos2.getPosCopy();
