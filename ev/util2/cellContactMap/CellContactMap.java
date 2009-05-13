@@ -536,7 +536,8 @@ public class CellContactMap
 			//LinkedList<String> listDiff=new LinkedList<String>();
 			for(String name:nucNames)
 				for(String name2:nucNames)
-					if(!name.equals(name2))
+//					if(!name.equals(name2))
+					if(name.compareTo(name2)>0)
 						{
 						System.out.println(name+"\t"+name2);
 //					int numFrames1=theCE.contactsf.get(name).get(name2).size();
@@ -597,11 +598,12 @@ public class CellContactMap
 			
 			
 
-			//Figure out 
+			//Figure out duration
 			StringBuffer outDuration=new StringBuffer();
 			for(String name:nucNames)
 				for(String name2:nucNames)
-					if(!name.equals(name2))
+					if(name.compareTo(name2)>0)
+//					if(!name.equals(name2))
 						{
 						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2))
 							if(!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty())
@@ -617,7 +619,7 @@ public class CellContactMap
 								
 								}
 					}
-			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW.txt"), outDuration.toString());
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.txt"), outDuration.toString());
 			
 			
 			//Does children split?
