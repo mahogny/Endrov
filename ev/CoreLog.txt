@@ -757,3 +757,19 @@ LOG(6647, 3073121168:): -------->>
 LOG(6647, 3073121168:): Core session started on Sun May 10 2009 20:53:22.351013 by mahogny on venus
 LOG(6647, 3073121168:): Debug logging disabled
 LOG(6647, 3073121168:): Debug logging disabled
+LOG(4722, 3073498000:): -------->>
+LOG(4722, 3073498000:): Core session started on Tue May 12 2009 23:32:12.635717 by mahogny on venus
+LOG(4722, 3073498000:): Debug logging disabled
+LOG(4722, 3073498000:): Debug logging disabled
+LOG(18225, 3073166224:): -------->>
+LOG(18225, 3073166224:): Core session started on Wed May 13 2009 21:22:33.548422 by mahogny on venus
+LOG(18225, 3073166224:): Debug logging disabled
+LOG(18225, 3073166224:): Debug logging disabled
+LOG(18417, 3072961424:): -------->>
+LOG(18417, 3072961424:): Core session started on Wed May 13 2009 21:26:25.698379 by mahogny on venus
+LOG(18417, 3072961424:): Debug logging disabled
+LOG(18417, 3072961424:): Debug logging disabled
+LOG(19168, 3073555344:): -------->>
+LOG(19168, 3073555344:): Core session started on Thu May 14 2009 00:04:40.695105 by mahogny on venus
+LOG(19168, 3073555344:): Debug logging disabled
+LOG(19168, 3073555344:): Debug logging disabled

@@ -23,6 +23,14 @@ public class EvPath implements Comparable<EvPath>
 		//Maybe make a copy?
 		this.path=path;
 		}
+	public EvPath(EvPath root, String child)
+		{
+		path=new String[root.path.length+1];
+		for(int i=0;i<root.path.length;i++)
+			path[i]=root.path[i];
+		path[root.path.length]=child;
+		}
+	
 	
 	/**
 	 * Get standard representation

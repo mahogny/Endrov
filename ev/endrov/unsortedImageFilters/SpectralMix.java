@@ -12,7 +12,7 @@ import endrov.imageset.EvPixels;
  */
 public class SpectralMix
 	{
-
+	
 	/**
 	 * Transform input colors by matrix.
 	 * Given channels c_i, apply c'=M c for each pixel. 

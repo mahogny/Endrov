@@ -39,7 +39,8 @@ public class BasicIcon
 	public static final ImageIcon iconKeyboard=new ImageIcon(BasicIcon.class.getResource("tango-input-keyboard.png"));
 	public static final ImageIcon iconImage=new ImageIcon(BasicIcon.class.getResource("gnome-image-x-generic.png"));
 
-	public static final ImageIcon programIcon=new ImageIcon(BasicIcon.class.getResource("programIcon.png"));
+	public static final ImageIcon iconEndrov=new ImageIcon(BasicIcon.class.getResource("programIcon.png"));
+	public static final ImageIcon iconData=new ImageIcon(BasicIcon.class.getResource("iconData.png"));
 
 	public static final ImageIcon iconAdd=new ImageIcon(BasicIcon.class.getResource("oxygen-list-add.png"));
 	public static final ImageIcon iconRemove=new ImageIcon(BasicIcon.class.getResource("oxygen-list-remove.png"));

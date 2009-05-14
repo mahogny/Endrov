@@ -53,7 +53,7 @@ public class EvWindowManagerFree extends JFrame implements WindowListener, EvWin
     //20x20 seems good on windows? or more?
 		//16x16 on gnome, but in alt+tab larger. can supply larger image
 		if(!EV.isMac())
-			setIconImage(BasicIcon.programIcon.getImage());
+			setIconImage(BasicIcon.iconEndrov.getImage());
 		
 		java15windowList.put(this,null);
 		}
