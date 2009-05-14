@@ -605,6 +605,8 @@ public class CellContactMap
 						double c1=getOverlapPercent(theCE, name, name2);
 						if(c1>0)
 							{
+							if(theCE.contactsf.get(name2).get(name2).isEmpty())
+								System.out.println("virtual contact!!!!! "+name+"  "+name2 );
 							outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceHasChild)+"\n");
 							}
 						}
