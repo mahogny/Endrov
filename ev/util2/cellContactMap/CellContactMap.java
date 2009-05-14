@@ -619,8 +619,9 @@ public class CellContactMap
 							{
 							double c1=getOverlapPercent(theCE, name, name2);
 							if(c1==0)
-								System.out.println("percent no contact!!!!! "+name+"  "+name2 +" "+theCE.contactsf.get(name).get(name2));
-							outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceBothHasChild)+"\n");
+								;//System.out.println("percent no contact!!!!! "+name+"  "+name2 +" "+theCE.contactsf.get(name).get(name2));
+							else	
+								outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceBothHasChild)+"\n");
 							}
 						}
 			
