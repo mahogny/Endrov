@@ -547,11 +547,12 @@ public class CellContactMap
 			
 			System.out.println("---- Cells in CE but not AE -----");
 			for(String s:theCE.lin.nuc.keySet())
-				if(!ceaNames.contains(s))
-					System.out.println(s);
+				if(!theCE.lin.nuc.get(s).pos.isEmpty())
+					if(!ceaNames.contains(s))
+						System.out.println(s);
 			System.out.println("---- Cells in AE but not CE -----");
 			for(String s:theA.lin.nuc.keySet())
-				if(theA.lin.nuc.get(s).pos.isEmpty())
+				if(!theA.lin.nuc.get(s).pos.isEmpty())
 					if(!ceaNames.contains(s))
 						System.out.println(s);
 			System.out.println("------");

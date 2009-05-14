@@ -10,9 +10,20 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.bookmark.Bookmark;
 import endrov.data.EvData;
 
-public class DataTreeView 
+/**
+ * Tree representation of Endrov container hierarchy
+ * @author Johan Henriksson
+ *
+ */
+public class DataTree extends JTree
 	{
+	private static final long serialVersionUID = 1L;
 
+	public DataTree()
+		{
+		super(new DataTreeModel());
+		setCellRenderer(new MyRenderer());
+		}
 	
 	/******************************************************************************************************
 	 *                               Custom appearance of tree nodes                                      *
@@ -31,7 +42,8 @@ public class DataTreeView
 				setIcon(BasicIcon.iconEndrov);
 			else
 				{
-				setIcon(BasicIcon.iconData);
+				setIcon(elem.getLeaf().getContainerIcon());
+//				setIcon(BasicIcon.iconData);
 				
 				//Need generic object icon
 				
@@ -55,9 +67,10 @@ public class DataTreeView
 		EvData.registerOpenedData(d);
 		EvData.registerOpenedData(new EvData());
 
-		JTree tree=new JTree(new DataTreeModel());
+	//	JTree tree=new JTree(new DataTreeModel());
+		DataTree tree=new DataTree();
 		frame.add(tree);
-		tree.setCellRenderer(new MyRenderer());
+//		tree.setCellRenderer(new MyRenderer());
 		//Tree must listen on data updates
 		
 		

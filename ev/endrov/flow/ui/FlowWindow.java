@@ -24,6 +24,7 @@ import endrov.basicWindow.BasicWindowHook;
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
+import endrov.data.tree.DataTree;
 import endrov.flow.*;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
@@ -110,6 +111,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	
 	private JTree unitTree;
 	
+	private DataTree dataTree=new DataTree();
 	
 	private JButton bCopy=BasicIcon.getButtonCopy();
 	private JButton bPaste=BasicIcon.getButtonPaste();
@@ -214,11 +216,18 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		bRepeat.addActionListener(this);
 		objectCombo.addActionListener(this);
 		
-		
+
 		JComponent unitTreeScroll=new JScrollPane(unitTree,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JComponent dataTreeScroll=new JScrollPane(dataTree,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+		JPanel leftPanel=new JPanel(new GridLayout(2,1));
+		leftPanel.add(unitTreeScroll);
+		leftPanel.add(dataTreeScroll);
+
 		setLayout(new BorderLayout());
-		add(unitTreeScroll,BorderLayout.WEST);
+		add(leftPanel,BorderLayout.WEST);
 		add(pTop,BorderLayout.NORTH);
 		add(fp,BorderLayout.CENTER);
 		

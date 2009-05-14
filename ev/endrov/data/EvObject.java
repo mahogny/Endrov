@@ -1,7 +1,10 @@
 package endrov.data;
 
 import javax.swing.*;
+
 import org.jdom.*;
+
+import endrov.basicWindow.icon.BasicIcon;
 
 /**
  * An endrov object. Very little is required, the class exists to great
@@ -37,5 +40,14 @@ public abstract class EvObject extends EvContainer
 	/** Attach menu entries specific for this type of object */
 	public abstract void buildMetamenu(JMenu menu);
 	
+	
+	/**
+	 * Generic icon. Objects should override with a more specific icon.
+	 */
+	public Icon getContainerIcon()
+		{
+		return BasicIcon.iconData;
+		}
+
 	
 	}
