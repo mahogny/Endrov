@@ -307,7 +307,10 @@ public class CellContactMap
 		}
 */	
 	
-	
+	public static double getOverlapPercent(OneLineage lin, String nucName, String nucName2)
+		{
+		return countTrue(getOverlaps(lin, nucName, nucName2))/clength;
+		}
 
 	/**
 	 * Calculate overlap array for two cells
@@ -535,8 +538,29 @@ public class CellContactMap
 			StringBuffer outDiffList2=new StringBuffer();
 			StringBuffer outDuration=new StringBuffer();
 			//LinkedList<String> listDiff=new LinkedList<String>();
-			for(String name:nucNames)
-				for(String name2:nucNames)
+			
+			//Find cells in common for AE and CE
+			HashSet<String> ceaNames=new HashSet<String>(theCE.lin.nuc.keySet());
+			ceaNames.retainAll(theA.lin.nuc.keySet());
+			for(String s:theA.lin.nuc.keySet())
+				if(theA.lin.nuc.get(s).pos.isEmpty())
+					ceaNames.remove(s);
+			
+			System.out.println("---- Cells in AE but not CE -----");
+			for(String s:theCE.lin.nuc.keySet())
+				if(!ceaNames.contains(s))
+					System.out.println(s);
+			System.out.println("---- Cells in CE but not AE -----");
+			for(String s:theA.lin.nuc.keySet())
+				if(!ceaNames.contains(s))
+					System.out.println(s);
+			System.out.println("------");
+			
+			
+			for(String name:ceaNames)
+				for(String name2:ceaNames)
+/*			for(String name:nucNames)
+				for(String name2:nucNames)*/
 					if(!name.equals(name2))
 //					if(name.compareTo(name2)>0)
 						{
@@ -547,33 +571,40 @@ public class CellContactMap
 					
 						//Only considers common parts of AE and CE!!
 						//This is why numbers do not add up
-						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
-								theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))
+/*						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
+								theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))*/
 							{
 							boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
 							boolean aHasChild=!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty();
 
-							double c1=countTrue(getOverlaps(theCE, name, name2))/clength;
-							double c2=countTrue(getOverlaps(theA, name, name2))/clength;
+							double c1=getOverlapPercent(theCE, name, name2);
+							double c2=getOverlapPercent(theA, name, name2);
 
 							if(c1+c2!=0)
 								{
 								NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
 								double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
 								if(ceHasChild && aHasChild)
-									{
 									outDiffList2.append(""+c1+"\t"+c2+"\t"+dur+"\t"+name+"\t"+name2+"\n");
-									}
-								if(c1>0 && dur!=0)
-									outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceHasChild)+"\n");
 								}
 
 							}
 						
-						
-						
 						}
 
+			
+			for(String name:nucNames)
+				for(String name2:nucNames)
+					if(!name.equals(name2))
+						{
+						boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
+						NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
+						double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
+						double c1=getOverlapPercent(theCE, name, name2);
+						if(c1>0 && dur!=0)
+							outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceHasChild)+"\n");
+						}
+			
 					/*
 					EvDecimal lifeLenFrames1=theCE.lin.nuc.get(name).pos.isEmpty() ? 
 							EvDecimal.ZERO : theCE.lin.nuc.get(name).lastFrame().subtract(theCE.lin.nuc.get(name).firstFrame());
