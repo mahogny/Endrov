@@ -575,34 +575,21 @@ public class CellContactMap
 /*			for(String name:nucNames)
 				for(String name2:nucNames)*/
 					if(!name.equals(name2))
-//					if(name.compareTo(name2)>0)
 						{
-						//System.out.println(name+"\t"+name2);
-//					int numFrames1=theCE.contactsf.get(name).get(name2).size();
-	//				int numFrames2=theA.contactsf.get(name).get(name2).size();
-					
-					
-						//Only considers common parts of AE and CE!!
-						//This is why numbers do not add up
-/*						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
-								theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))*/
+						boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
+						boolean aHasChild=!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty();
+
+						double c1=getOverlapPercent(theCE, name, name2);
+						double c2=getOverlapPercent(theA, name, name2);
+
+						if(c1+c2!=0)
 							{
-							boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
-							boolean aHasChild=!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty();
-
-							double c1=getOverlapPercent(theCE, name, name2);
-							double c2=getOverlapPercent(theA, name, name2);
-
-							if(c1+c2!=0)
-								{
-								NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-								double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
-								if(ceHasChild && aHasChild)
-									outDiffList2.append(""+c1+"\t"+c2+"\t"+dur+"\t"+name+"\t"+name2+"\n");
-								}
-
+							NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
+							double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
+							if(ceHasChild && aHasChild)
+								outDiffList2.append(""+c1+"\t"+c2+"\t"+dur+"\t"+name+"\t"+name2+"\n");
 							}
-						
+
 						}
 
 			//Durations of contacts
@@ -615,13 +602,15 @@ public class CellContactMap
 						NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
 						double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
 						//duration should never ==0!!!
-						if(!theCE.contactsf.get(name).get(name2).isEmpty()) //have frame in common
+						if(ceBothHasChild && nuc.getFirstFrame().less(lastFrame))
 							{
-							double c1=getOverlapPercent(theCE, name, name2);
-							if(c1==0)
-								;//System.out.println("percent no contact!!!!! "+name+"  "+name2 +" "+theCE.contactsf.get(name).get(name2));
-							else	
-								outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceBothHasChild)+"\n");
+							if(!theCE.contactsf.get(name).get(name2).isEmpty()) //have frame in common
+								{
+								double c1=getOverlapPercent(theCE, name, name2);
+								if(c1>0)
+									outDuration.append(""+dur*c1+"\t"+nuc.getFirstFrame()+"\t"+nuc.getLastFrame()+"\n");
+								//System.out.println("percent no contact!!!!! "+name+"  "+name2 +" "+theCE.contactsf.get(name).get(name2));
+								}
 							}
 						}
 			
