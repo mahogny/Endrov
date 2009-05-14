@@ -600,9 +600,10 @@ public class CellContactMap
 						{
 						boolean ceBothHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
 						NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
+						NucLineage.Nuc nuc2=theCE.lin.nuc.get(name);
 						double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
 						//duration should never ==0!!!
-						if(ceBothHasChild && nuc.getFirstFrame().less(lastFrame))
+						if(ceBothHasChild && nuc.getFirstFrame().less(lastFrame) && nuc.getFirstFrame().less(lastFrame))
 							{
 							if(!theCE.contactsf.get(name).get(name2).isEmpty()) //have frame in common
 								{
