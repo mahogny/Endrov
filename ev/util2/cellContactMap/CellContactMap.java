@@ -563,7 +563,7 @@ public class CellContactMap
 									{
 									outDiffList2.append(""+c1+"\t"+c2+"\t"+dur+"\t"+name+"\t"+name2+"\n");
 									}
-								if(c1>0)
+								if(c1>0 && dur!=0)
 									outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceHasChild)+"\n");
 								}
 
