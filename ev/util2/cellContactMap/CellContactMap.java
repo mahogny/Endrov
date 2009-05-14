@@ -552,8 +552,8 @@ public class CellContactMap
 						System.out.println(s);
 			System.out.println("---- Cells in AE but not CE -----");
 			for(String s:theA.lin.nuc.keySet())
-				if(!theA.lin.nuc.get(s).pos.isEmpty())
-					if(!ceaNames.contains(s))
+				if(!theA.lin.nuc.get(s).pos.isEmpty()) //true if has a child
+					if(!ceaNames.contains(s)) //true if not contains
 						System.out.println(s);
 			System.out.println("------");
 			
@@ -599,16 +599,16 @@ public class CellContactMap
 				for(String name2:nucNames)
 					if(!name.equals(name2))
 						{
-						boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
+						boolean ceBothHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
 						NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
 						double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
 						//duration should never ==0!!!
-						double c1=getOverlapPercent(theCE, name, name2);
-						if(c1>0)
+						if(!theCE.contactsf.get(name).get(name2).isEmpty()) //have frame in common
 							{
-							if(theCE.contactsf.get(name2).get(name2).isEmpty())
-								System.out.println("virtual contact!!!!! "+name+"  "+name2 );
-							outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceHasChild)+"\n");
+							double c1=getOverlapPercent(theCE, name, name2);
+							if(c1==0)
+								System.out.println("percent no contact!!!!! "+name+"  "+name2 );
+							outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceBothHasChild)+"\n");
 							}
 						}
 			
