@@ -603,7 +603,7 @@ public class CellContactMap
 						NucLineage.Nuc nuc2=theCE.lin.nuc.get(name);
 						double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
 						//duration should never ==0!!!
-						if(ceBothHasChild && nuc.getFirstFrame().less(lastFrame) && nuc.getFirstFrame().less(lastFrame))
+						if(ceBothHasChild && nuc.getFirstFrame().less(lastFrame) && nuc2.getFirstFrame().less(lastFrame))
 							{
 							if(!theCE.contactsf.get(name).get(name2).isEmpty()) //have frame in common
 								{
