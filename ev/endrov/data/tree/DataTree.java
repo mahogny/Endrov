@@ -23,6 +23,8 @@ public class DataTree extends JTree
 		{
 		super(new DataTreeModel());
 		setCellRenderer(new MyRenderer());
+		setShowsRootHandles(true);
+		setRootVisible(false);
 		}
 	
 	/******************************************************************************************************
@@ -53,6 +55,18 @@ public class DataTree extends JTree
 			
 			return this;
 			}
+		}
+	
+	
+	/**
+	 * The tree has been updated. should be passed through listeners rather, as it allows for a
+	 * more clever update.
+	 */
+	public void dataUpdated()
+		{
+		
+		
+		
 		}
 	
 	public static void main(String[] args)

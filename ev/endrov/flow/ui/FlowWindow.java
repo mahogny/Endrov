@@ -164,7 +164,10 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		
 		unitTree=new JTree(treeRoot);
 		unitTree.setCellRenderer(new MyRenderer());
+		unitTree.setShowsRootHandles(true);
+		unitTree.setRootVisible(false);
 		ToolTipManager.sharedInstance().registerComponent(unitTree);
+
 		
 		final FlowWindow wthis=this;
 		
