@@ -68,6 +68,10 @@ public class FlowUnitConstInteger extends FlowUnitConst
 		lastOutput.put("out", var);
 		}
 	
+	private void setVar(int s)
+		{
+		var=s;
+		}
 	
 	public Component getGUIcomponent(final FlowPanel p)
 		{
@@ -77,7 +81,7 @@ public class FlowUnitConstInteger extends FlowUnitConst
 			public void actionPerformed(ActionEvent arg0)
 				{
 				//Should maybe be change listener
-				var=Integer.parseInt(field.getText());
+				setVar(Integer.parseInt(field.getText()));
 				//should emit an update
 				}});
 		

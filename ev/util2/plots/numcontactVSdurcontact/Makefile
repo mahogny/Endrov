@@ -1,4 +1,6 @@
 all:
 	gnuplot contacthist.gnu 
-	ps2pdf *.ps
+	gnuplot contacthistNEW.gnu 
+	ps2pdf contacthist.ps
+	ps2pdf contacthistNEW.ps
 

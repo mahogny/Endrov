@@ -562,11 +562,11 @@ public class CellContactMap
 			
 			//Skip cells which are beyond a certain time
 			//Taken from /Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt  manually
-			EvDecimal lastFrame=new EvDecimal(8590);
+			EvDecimal cutoffFrame=new EvDecimal(8590);
 			for(String name:theCE.lin.nuc.keySet())
 				{
 				NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-				if(nuc.pos.isEmpty() || nuc.pos.firstKey().greater(lastFrame))
+				if(nuc.pos.isEmpty() || nuc.pos.firstKey().greater(cutoffFrame))
 					ceaNames.remove(name);
 				}
 			
@@ -600,10 +600,10 @@ public class CellContactMap
 						{
 						boolean ceBothHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
 						NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-						NucLineage.Nuc nuc2=theCE.lin.nuc.get(name);
+						NucLineage.Nuc nuc2=theCE.lin.nuc.get(name2);
 						double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
 						//duration should never ==0!!!
-						if(ceBothHasChild && nuc.getFirstFrame().less(lastFrame) && nuc2.getFirstFrame().less(lastFrame))
+						if(ceBothHasChild && nuc.getFirstFrame().less(cutoffFrame) && nuc2.getFirstFrame().less(cutoffFrame))
 							{
 							if(!theCE.contactsf.get(name).get(name2).isEmpty()) //have frame in common
 								{

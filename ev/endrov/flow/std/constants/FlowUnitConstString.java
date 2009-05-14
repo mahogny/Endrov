@@ -66,6 +66,11 @@ public class FlowUnitConstString extends FlowUnitConst
 		}
 	
 	
+	private void setVar(String s)
+		{
+		var=s;
+		}
+	
 	public Component getGUIcomponent(final FlowPanel p)
 		{
 		final JTextArea field=new JTextArea(var);
@@ -82,7 +87,7 @@ public class FlowUnitConstString extends FlowUnitConst
 			public void keyReleased(KeyEvent arg0){}
 			public void keyTyped(KeyEvent arg0)
 				{
-				var=field.getText();
+				setVar(field.getText());
 				p.repaint();
 				}
 		

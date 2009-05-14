@@ -24,7 +24,7 @@ import endrov.flow.std.math.FlowUnitMul;
 import endrov.flow.std.math.FlowUnitSub;
 import endrov.flow.std.objects.FlowUnitGetObject;
 import endrov.flow.std.objects.FlowUnitParent;
-import endrov.flow.std.objects.FlowUnitInOutObject;
+import endrov.flow.std.objects.FlowUnitObjectIO;
 import endrov.flow.std.objects.FlowUnitThisData;
 import endrov.flow.std.objects.FlowUnitThisFlow;
 import endrov.flow.ui.FlowWindow;
@@ -78,7 +78,7 @@ public class PLUGIN extends PluginDef
 				FlowUnitConcat.class,FlowUnitHeadTail.class,FlowUnitMap.class,FlowUnitSize.class,
 				
 				//Objects
-				FlowUnitGetObject.class,FlowUnitParent.class,FlowUnitInOutObject.class,FlowUnitThisData.class,FlowUnitThisFlow.class,
+				FlowUnitGetObject.class,FlowUnitParent.class,FlowUnitObjectIO.class,FlowUnitThisData.class,FlowUnitThisFlow.class,
 		};
 		
 		
