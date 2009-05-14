@@ -1,6 +1,9 @@
 clear
 %# contact vs duration of contact
 
+
+%%%%%%%%%%%%% this code is deprecated!!!! %%%%%%%%%%%%%%%%%%%%%%
+
 %set to 1 once we use OST4
 %may need to rescale times piecewise linear when building the model
 timestep=10; %[s]
@@ -20,13 +23,13 @@ size(dat,1)
 %lastframe=dat2(end,1);
 %length(dat)
 
-dur=dat(dat(:,2)<lastframe,1);
-dur2=dat(dat(:,3)<lastframe,1);
+dur=dat(dat(:,2)<lastframe,1);   
+dur2=dat(dat(:,3)<lastframe,1);  %wtf? must be with duration added?
 
 dur=dur.*timestep./60;
 dur2=dur2.*timestep./60;
 
-disp('tot num contacts1');
+disp('tot num contacts1');  
 length(dur)
 disp('num contact1 >2.5min');
 length(dur(dur>2.5))

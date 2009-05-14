@@ -560,6 +560,16 @@ public class CellContactMap
 			hasCellDiff.append("------\n");
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/hasCellDiff.txt"), hasCellDiff.toString());
 			
+			//Skip cells which are beyond a certain time
+			//Taken from /Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt  manually
+			EvDecimal lastFrame=new EvDecimal(8590);
+			for(String name:theCE.lin.nuc.keySet())
+				{
+				NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
+				if(nuc.pos.isEmpty() || nuc.pos.firstKey().greater(lastFrame))
+					ceaNames.remove(name);
+				}
+			
 			for(String name:ceaNames)
 				for(String name2:ceaNames)
 /*			for(String name:nucNames)
@@ -609,7 +619,7 @@ public class CellContactMap
 							{
 							double c1=getOverlapPercent(theCE, name, name2);
 							if(c1==0)
-								System.out.println("percent no contact!!!!! "+name+"  "+name2 );
+								System.out.println("percent no contact!!!!! "+name+"  "+name2 +" "+theCE.contactsf.get(name).get(name2));
 							outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceBothHasChild)+"\n");
 							}
 						}
