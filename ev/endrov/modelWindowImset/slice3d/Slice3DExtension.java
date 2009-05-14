@@ -188,9 +188,9 @@ public class Slice3DExtension implements ModelWindowExtension
 					im=new Imageset();
 				
 				String channelName=chanCombo.getChannel();
-				EvChannel ch=im.channelImages.get(channelName);
-				if(ch!=null)
+				if(channelName!=null)
 					{
+					EvChannel ch=im.channelImages.get(channelName);
 					EvDecimal cframe=ch.closestFrame(getFrame());
 					EvDecimal zplane=new EvDecimal((Integer)zplaneSpinner.getModel().getValue());
 

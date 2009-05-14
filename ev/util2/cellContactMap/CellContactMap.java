@@ -309,7 +309,7 @@ public class CellContactMap
 	
 	public static double getOverlapPercent(OneLineage lin, String nucName, String nucName2)
 		{
-		return countTrue(getOverlaps(lin, nucName, nucName2))/clength;
+		return countTrue(getOverlaps(lin, nucName, nucName2))/(double)clength;
 		}
 
 	/**
@@ -544,19 +544,21 @@ public class CellContactMap
 			for(String s:theA.lin.nuc.keySet())
 				if(theA.lin.nuc.get(s).pos.isEmpty())
 					ceaNames.remove(s);
-			
-			System.out.println("---- Cells in CE but not AE -----");
+
+			//Which cells are not in common? log
+			StringBuffer hasCellDiff=new StringBuffer();
+			hasCellDiff.append("---- Cells in CE but not AE -----\n");
 			for(String s:theCE.lin.nuc.keySet())
 				if(!theCE.lin.nuc.get(s).pos.isEmpty())
 					if(!ceaNames.contains(s))
-						System.out.println(s);
-			System.out.println("---- Cells in AE but not CE -----");
+						hasCellDiff.append(s+"\n");
+			hasCellDiff.append("---- Cells in AE but not CE -----\n");
 			for(String s:theA.lin.nuc.keySet())
 				if(!theA.lin.nuc.get(s).pos.isEmpty()) //true if has a child
 					if(!ceaNames.contains(s)) //true if not contains
-						System.out.println(s);
-			System.out.println("------");
-			
+						hasCellDiff.append(s+"\n");
+			hasCellDiff.append("------\n");
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/hasCellDiff.txt"), hasCellDiff.toString());
 			
 			for(String name:ceaNames)
 				for(String name2:ceaNames)
