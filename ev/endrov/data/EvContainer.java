@@ -2,8 +2,11 @@ package endrov.data;
 
 import java.util.*;
 
+import javax.swing.Icon;
+
 import org.jdom.Element;
 
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.util.EvDecimal;
@@ -18,6 +21,12 @@ public class EvContainer
 	/** All meta objects */
 	public TreeMap<String,EvObject> metaObject=new TreeMap<String,EvObject>();
 
+	/**
+	 * Icon representing this container or data type. Should be set by subtype
+	 * TODO better, provide a method. need class EvContainerEmpty
+	 */
+	public Icon containerIcon=BasicIcon.iconData;
+	
 	/**
 	 * Get one child
 	 */
@@ -290,7 +299,6 @@ public class EvContainer
 	
 	/**
 	 * Extract EvObjects from an element.
-	 * @deprecated
 	 */
 	/*
 	private static Map<String,EvObject> extractSubObjectsFromXML(Element element)
@@ -339,5 +347,11 @@ public class EvContainer
 		return obs;
 		}
 */
+	
+	
+	public Icon getContainerIcon()
+		{
+		return containerIcon;
+		}
 	
 	}

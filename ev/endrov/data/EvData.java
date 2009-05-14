@@ -297,7 +297,6 @@ public class EvData extends EvContainer
 
 
 
-
 	/**
 	 * Connection with disk for partial I/O etc
 	 */

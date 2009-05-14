@@ -249,9 +249,9 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				
 				//Get channel
 				String channelName=chanCombo.getChannel();
-				EvChannel ch=im.channelImages.get(channelName);
-				if(ch!=null)
+				if(channelName!=null)
 					{
+					EvChannel ch=im.channelImages.get(channelName);
 					EvDecimal cframe=ch.closestFrame(getFrame());
 
 					//Create surface if it wasn't there before
