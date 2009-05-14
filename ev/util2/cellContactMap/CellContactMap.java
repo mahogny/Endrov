@@ -545,7 +545,8 @@ public class CellContactMap
 	//				int numFrames2=theA.contactsf.get(name).get(name2).size();
 					
 					
-
+						//Only considers common parts of AE and CE!!
+						//This is why numbers do not add up
 						if(theCE.lin.nuc.containsKey(name) && theCE.lin.nuc.containsKey(name2) &&
 								theA.lin.nuc.containsKey(name) && theA.lin.nuc.containsKey(name2))
 							{
@@ -568,6 +569,9 @@ public class CellContactMap
 								}
 
 							}
+						
+						
+						
 						}
 
 					/*
