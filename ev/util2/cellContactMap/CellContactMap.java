@@ -558,7 +558,7 @@ public class CellContactMap
 							if(c1+c2!=0)
 								{
 								NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-								double dur=nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
+								double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
 								if(ceHasChild && aHasChild)
 									{
 									outDiffList2.append(""+c1+"\t"+c2+"\t"+dur+"\t"+name+"\t"+name2+"\n");
