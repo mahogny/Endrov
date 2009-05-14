@@ -64,17 +64,23 @@ public class EvHidableSidePane extends JPanel
 			int part=preferWidth/3;
 			int part2=2*part;
 			int dy=part*4;
-			int x1=visible ? part  : part2;
-			int x2=visible ? part2 : part;
-			for(int y=part;y+part2<h;y+=dy)
+			int x1=getPanelVisible() ? part  : part2;
+			int x2=getPanelVisible() ? part2 : part;
+			int y=h/2-dy*3/2;
+			for(int i=0;i<3;i++)
 				{
 				g.drawLine(x1, y, x2, y+part);
 				g.drawLine(x2, y+part, x1, y+part2);
+				y+=dy;
 				}
+			/*
+			for(int y=part;y+part2<h;y+=dy)
+				{
+				}*/
 			}
 		public void mouseClicked(MouseEvent e)
 			{
-			setPanelVisible(!visible);
+			setPanelVisible(!getPanelVisible());
 			}
 		public void mouseEntered(MouseEvent e){}
 		public void mouseExited(MouseEvent e){}

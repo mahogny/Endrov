@@ -26,6 +26,14 @@ public class EvContainer
 		return metaObject.get(name);
 		}
 	
+	public EvContainer getChild(EvPath path)
+		{
+		EvContainer c=this;
+		for(String s:path.path)
+			c=c.getChild(s);
+		return c;
+		}
+	
 	/**
 	 * Get the names of all children
 	 */
