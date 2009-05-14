@@ -536,7 +536,6 @@ public class CellContactMap
 			OneLineage theA=orderedLin.get("AnglerUnixCoords");
 			//LinkedList<Tuple<Double,String>> outDiffList=new LinkedList<Tuple<Double,String>>();
 			StringBuffer outDiffList2=new StringBuffer();
-			StringBuffer outDuration=new StringBuffer();
 			//LinkedList<String> listDiff=new LinkedList<String>();
 			
 			//Find cells in common for AE and CE
@@ -546,14 +545,15 @@ public class CellContactMap
 				if(theA.lin.nuc.get(s).pos.isEmpty())
 					ceaNames.remove(s);
 			
-			System.out.println("---- Cells in AE but not CE -----");
+			System.out.println("---- Cells in CE but not AE -----");
 			for(String s:theCE.lin.nuc.keySet())
 				if(!ceaNames.contains(s))
 					System.out.println(s);
-			System.out.println("---- Cells in CE but not AE -----");
+			System.out.println("---- Cells in AE but not CE -----");
 			for(String s:theA.lin.nuc.keySet())
-				if(!ceaNames.contains(s))
-					System.out.println(s);
+				if(theA.lin.nuc.get(s).pos.isEmpty())
+					if(!ceaNames.contains(s))
+						System.out.println(s);
 			System.out.println("------");
 			
 			
@@ -592,7 +592,8 @@ public class CellContactMap
 						
 						}
 
-			
+			//Durations of contacts
+			StringBuffer outDuration=new StringBuffer();
 			for(String name:nucNames)
 				for(String name2:nucNames)
 					if(!name.equals(name2))
@@ -600,9 +601,12 @@ public class CellContactMap
 						boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
 						NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
 						double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
+						//duration should never ==0!!!
 						double c1=getOverlapPercent(theCE, name, name2);
-						if(c1>0 && dur!=0)
+						if(c1>0)
+							{
 							outDuration.append(""+dur*c1+"\t-1\t"+EvMathUtil.toInt(ceHasChild)+"\n");
+							}
 						}
 			
 					/*
