@@ -20,15 +20,15 @@ import endrov.util.Maybe;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitPutObject extends FlowUnitBasic
+public class FlowUnitInOutObject extends FlowUnitBasic
 	{
-	private static final String metaType="putevobject";
-	private static final String showName="PutEvObject";
+	private static final String metaType="ioevobject";
+	private static final String showName="EvObject ref";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitPutObject.class, null,"Store object in a container. Container defaults to this flow."));		
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitInOutObject.class, null,"Store/load object in a container. Container defaults to parent of this flow."));		
 		}
 
 	
