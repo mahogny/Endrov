@@ -38,28 +38,11 @@ public abstract class Deconvolver3D extends StackOp
 		Log.printLog(s);
 		}
 
-	
+	/**
+	 * At the moment, the returned stack is rather fucked up. has to
+	 * be fixed before it is returned, done so by exec
+	 */
 	 protected abstract DeconvPixelsStack internalDeconvolve(EvStack s);
-   
-	 /*
-   public EvStack deconvolve(EvStack imB)
-   	{
-   	DeconvPixelsStack d=internalDeconvolve();
-   	
-   	EvStack s=new EvStack();
-   	s.getMetaFrom(imB);
-   	Iterator<EvDecimal> itz=imB.keySet().iterator();
-   	for(int i=0;i<d.p.size();i++)
-   		{
-   		EvImage im=new EvImage();
-   		im.setPixelsReference(d.p.get(i));
-   		EvDecimal z=itz.next();
-   		s.put(z, im);
-   		}
-   	
-   	return s;
-   	}
-*/
 
   /**
    * The only argument is the image to deconvolve
