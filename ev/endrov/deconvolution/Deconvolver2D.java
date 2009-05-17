@@ -34,7 +34,7 @@ public abstract class Deconvolver2D extends SliceOp
 		Log.printLog(s);
 		}
 	
-	public abstract EvPixels internalDeconvolve(EvPixels ipB);
+	protected abstract EvPixels internalDeconvolve(EvPixels ipB);
 
 	
 	/**
