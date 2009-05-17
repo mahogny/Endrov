@@ -294,7 +294,15 @@ public class EvPixels
 			}
 		}
 	
+	public EvPixels convertToFloat(boolean readOnly)
+		{
+		return convertTo(TYPE_FLOAT, readOnly);
+		}
 	
+	public EvPixels convertToDouble(boolean readOnly)
+		{
+		return convertTo(TYPE_DOUBLE, readOnly);
+		}
 	
 	/**
 	 * Get pixels in valid format. For performance the data will not be copied and converted unless needed. Use bit operations to put together valid types. 
