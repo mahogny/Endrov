@@ -9,7 +9,7 @@ import java.util.*;
 
 import loci.common.DataTools;
 import loci.formats.*;
-import loci.formats.meta.IMetadata;
+import loci.formats.meta.*;
 import endrov.data.*;
 import endrov.imageset.*;
 import endrov.imagesetOST.EvIODataOST;
@@ -334,10 +334,47 @@ public class EvIODataBioformats implements EvIOData
 		return new File(basedir.getParent(),basedir.getName()+".ostxml");
 		}
 	
+	/**
+	 * Save data to disk
+	 */
 	public void saveData(EvData d, EvData.FileIOStatusCallback cb)
 		{
 		try
 			{
+			/*
+			Imageset im=d.getObjects(Imageset.class).iterator().next();
+			
+			
+				
+				
+				
+				//Hoping this is enough to save metadata which I do not convert
+				writer.setMetadataRetrieve(retrieve);
+				writer.setId(basedir.getPath());
+				
+				
+				
+				
+				 saveImage(Image image, int series, boolean lastInSeries, boolean last)
+         Saves the given image to the given series in the current file.
+				
+				}
+			catch (FormatException e)
+				{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				}
+			*/
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			EvIODataOST.saveMeta(d, getMetaFile());
 			}
 		catch (IOException e)

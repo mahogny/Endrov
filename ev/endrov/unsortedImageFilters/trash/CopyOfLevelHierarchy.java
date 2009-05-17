@@ -12,7 +12,6 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.unsortedImageFilters.AutoLineage;
 import endrov.util.EvDecimal;
-import endrov.util.PersistentGrowingCollection;
 import endrov.util.Vector3i;
 
 /**

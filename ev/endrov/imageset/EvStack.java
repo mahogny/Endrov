@@ -288,6 +288,8 @@ public class EvStack
 		return arr;
 		}
 	
+	
+	
 	/**
 	 * Return the pixel arrays for every plane with type int. Will do a read-only conversion automatically
 	 */
