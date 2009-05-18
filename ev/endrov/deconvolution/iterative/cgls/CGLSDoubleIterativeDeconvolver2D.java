@@ -193,11 +193,11 @@ public class CGLSDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
             log("CGLS didn't converge. Reason: maximum number of iterations performed.");
         }
             if (useThreshold) {
-                DoubleCommon2D.assignPixelsToProcessor(ip, B, threshold);
+                return DoubleCommon2D.assignPixelsToProcessor(B, threshold);
             } else {
-                DoubleCommon2D.assignPixelsToProcessor(ip, B);
+                return DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, B);
             }
-            return ip;
+            //return ip;
     }
 
 }

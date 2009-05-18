@@ -217,9 +217,9 @@ public class HyBRDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
                         if (Math.abs((GCV.getQuick(k - 1) - GCV.getQuick(k - 2))) / GCV.get(begReg - 2) < flatTol) {
                             x = V.zMult(f, null);
                             if (useThreshold) {
-                                DoubleCommon2D.assignPixelsToProcessor(ip, x, threshold);
+                                ip=DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, x, threshold);
                             } else {
-                                DoubleCommon2D.assignPixelsToProcessor(ip, x);
+                                ip=DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, x);
                             }
                             //if (logConvergence) {
                                 work = A.times(x, false);
@@ -248,9 +248,9 @@ public class HyBRDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
                             if (bump == false) {
                                 x.assign(xSave);
                                 if (useThreshold) {
-                                    DoubleCommon2D.assignPixelsToProcessor(ip, x, threshold);
+                                    ip=DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, x, threshold);
                                 } else {
-                                    DoubleCommon2D.assignPixelsToProcessor(ip, x);
+                                    ip=DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, x);
                                 }
                                 //if (logConvergence) {
                                     work = A.times(x, false);
@@ -309,9 +309,9 @@ public class HyBRDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
             log("HyBR didn't converge. Reason: maximum number of iterations performed.");
         
             if (useThreshold) {
-                DoubleCommon2D.assignPixelsToProcessor(ip, x, threshold);
+                ip=DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, x, threshold);
             } else {
-                DoubleCommon2D.assignPixelsToProcessor(ip, x);
+                ip=DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, x);
             }
             return ip;
             

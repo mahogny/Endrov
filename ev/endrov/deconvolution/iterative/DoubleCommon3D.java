@@ -19,12 +19,18 @@ package endrov.deconvolution.iterative;
 
 import java.util.concurrent.Future;
 
+import cern.colt.matrix.tdcomplex.DComplexMatrix3D;
+import cern.colt.matrix.tdcomplex.impl.DenseDComplexMatrix3D;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.DoubleMatrix3D;
+import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
+import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.IterativeEnums.PaddingType;
+import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 
@@ -101,8 +107,8 @@ public class DoubleCommon3D {
         final int rows = X.rows();
         final int cols = X.columns();
         for (int s = 0; s < slices; s++) {
-            EvPixels ip = new EvPixels(EvPixels.TYPE_DOUBLE, cols, rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s));
+            //EvPixels ip = new EvPixels(EvPixels.TYPE_DOUBLE, cols, rows);
+        	EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(rows, cols, X.viewSlice(s));
             stack.addSlice(ip, s);
             
         }
@@ -125,12 +131,12 @@ public class DoubleCommon3D {
      */
     public static void assignPixelsToStack(final DeconvPixelsStack stack, final DoubleMatrix3D X, double threshold) {
         final int slices = X.slices();
-        final int rows = X.rows();
-        final int cols = X.columns();
+        //final int rows = X.rows();
+        //final int cols = X.columns();
         for (int s = 0; s < slices; s++) {
             //FloatProcessor ip = new FloatProcessor(cols, rows);
-            EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), threshold);
+            //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(X.viewSlice(s), threshold);
             stack.addSlice(ip, s);
         }
     }
@@ -160,8 +166,8 @@ public class DoubleCommon3D {
      */
     public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff) {
     for (int s = 0; s < slices; s++) {
-    			EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
-            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff);
+    			//EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    			EvPixels ip=DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff);
             stack.addSlice(ip, s);
         }
     }
@@ -195,8 +201,8 @@ public class DoubleCommon3D {
      */
     public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final double threshold) {
     for (int s = 0; s < slices; s++) {
-            EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
-            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, threshold);
+            //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff, threshold);
             stack.addSlice(ip, s);
         }
     }
@@ -213,12 +219,10 @@ public class DoubleCommon3D {
      * 
      */
     public static void updatePixelsInStack(final EvStack stack, final DoubleMatrix3D X) {
-    EvPixels[] p=stack.getPixels();    
+    EvImage[] p=stack.getImages();    
     final int slices = X.slices();
         for (int s = 0; s < slices; s++) {
-            //FloatProcessor ip = (FloatProcessor) stack.getProcessor(s + 1);
-            //DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY);
-            DoubleCommon2D.assignPixelsToProcessor(p[s], X.viewSlice(s));
+        		p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessor(X.rows(),X.columns(),X.viewSlice(s)));
         }
     }
 
@@ -249,13 +253,9 @@ public class DoubleCommon3D {
      * 
      */
     public static void updatePixelsInStackPadded(final EvStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, double threshold) {
-    EvPixels[] p=stack.getPixels();
+    EvImage[] p=stack.getImages();    
         for (int s = 0; s < slices; s++) {
-            //FloatProcessor ip = (FloatProcessor) stack.getProcessor(s + 1);
-            //DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY, threshold);
-            DoubleCommon2D.assignPixelsToProcessorPadded(p[s], X.viewSlice(s + sOff), rows, cols, rOff, cOff, threshold);
-            
-            
+        	p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff, threshold));
         }
     }
 
@@ -282,11 +282,9 @@ public class DoubleCommon3D {
      *            color model
      */
     public static void updatePixelsInStackPadded(final EvStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff) {
-    EvPixels[] p=stack.getPixels();    
+    EvImage[] p=stack.getImages();    
     for (int s = 0; s < slices; s++) {
-            //FloatProcessor ip = (FloatProcessor) stack.getProcessor(s + 1);
-            //DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY);
-            DoubleCommon2D.assignPixelsToProcessorPadded(p[s], X.viewSlice(s + sOff), rows, cols, rOff, cOff);
+            p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff));
         }
     }
 
@@ -305,12 +303,10 @@ public class DoubleCommon3D {
      * 
      */
     public static void updatePixelsInStack(final EvStack stack, final DoubleMatrix3D X, double threshold) {
+    EvImage[] p=stack.getImages();    
         final int slices = X.slices();
-        EvPixels[] p=stack.getPixels();
         for (int s = 0; s < slices; s++) {
-            //FloatProcessor ip = (FloatProcessor) stack.getProcessor(s + 1);
-            //DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY, threshold);
-            DoubleCommon2D.assignPixelsToProcessor(p[s], X.viewSlice(s), threshold);
+            p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessor(X.viewSlice(s), threshold));
         }
     }
 
@@ -336,10 +332,8 @@ public class DoubleCommon3D {
 
         for (int s = 0; s < slices; s++) {
             //FloatProcessor ip = new FloatProcessor(cols, rows);
-            EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewPart(s * sliceStride, sliceStride));
-            //ip.setColorModel(cmY);
-            //ip.setMinAndMax(0, 0);
+            //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(rows, cols, X.viewPart(s * sliceStride, sliceStride));
             stack.addSlice(ip, s);
         }
     }
@@ -369,8 +363,8 @@ public class DoubleCommon3D {
 
         for (int s = 0; s < slices; s++) {
             //FloatProcessor ip = new FloatProcessor(cols, rows);
-            EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewPart(s * sliceStride, sliceStride), threshold);
+            //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(rows, cols, X.viewPart(s * sliceStride, sliceStride), threshold);
             //ip.setColorModel(cmY);
             //ip.setMinAndMax(0, 0);
             stack.addSlice(ip, s);
@@ -395,10 +389,12 @@ public class DoubleCommon3D {
         final int rows = xsize3D[1];
         final int cols = xsize3D[2];
         final int sliceStride = rows * cols;
+        EvImage[] p=stack.getImages();    
 
         for (int s = 0; s < slices; s++) {
-            EvPixels ip = stack.getPixels()[s + 1];
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewPart(s * sliceStride, sliceStride));
+            //EvPixels ip = stack.getPixels()[s + 1];
+            p[s].setPixelsReference(DoubleCommon2D.assignPixelsToProcessor(rows,cols,X.viewPart(s * sliceStride, sliceStride)));
+            //Not that simple
         }
     }
 
@@ -425,8 +421,9 @@ public class DoubleCommon3D {
         final int sliceStride = rows * cols;
 
         for (int s = 0; s < slices; s++) {
-        		EvPixels ip = stack.getPixels()[s + 1];
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewPart(s * sliceStride, sliceStride), threshold);
+        		//EvPixels ip = stack.getPixels()[s + 1];
+            DoubleCommon2D.assignPixelsToProcessor(rows, cols, X.viewPart(s * sliceStride, sliceStride), threshold);
+//not that simple
         }
     }
 
@@ -816,6 +813,8 @@ public class DoubleCommon3D {
         return Xpad;
     }
 
+  
+    
     private static int mirror(int i, int n) {
         int ip = mod(i, 2 * n);
         if (ip < n) {
@@ -837,4 +836,484 @@ public class DoubleCommon3D {
             return (ip % n);
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    
+
+    /**
+     * Copies pixel values from image stack <code>stack</code> to matrix
+     * <code>X</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            matrix
+     */
+    public static void assignPixelsToMatrix(final DeconvPixelsStack stack, final DoubleMatrix3D X) {
+        int slices = X.slices();
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if ((np > 1) && (X.size() >= ConcurrencyUtils.getThreadsBeginN_3D())) {
+            Future<?>[] futures = new Future[np];
+            int k = slices / np;
+            for (int j = 0; j < np; j++) {
+                final int firstSlice = j * k;
+                final int lastSlice = (j == np - 1) ? slices : firstSlice + k;
+                futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                    public void run() {
+                        for (int s = firstSlice; s < lastSlice; s++) {
+                            ImageProcessor ip = stack.getProcessor(s + 1);
+                            DoubleCommon2D.assignPixelsToMatrix(X.viewSlice(s), ip);
+                        }
+                    }
+                });
+            }
+            ConcurrencyUtils.waitForCompletion(futures);
+        } else {
+            for (int s = 0; s < slices; s++) {
+                ImageProcessor ip = stack.getProcessor(s + 1);
+                DoubleCommon2D.assignPixelsToMatrix(X.viewSlice(s), ip);
+            }
+        }
+    }
+
+    /**
+     * Copies pixel values from real matrix <code>X</code> to image stack
+     * <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            real matrix
+     * @param cmY
+     *            color model
+     */
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DComplexMatrix3D X, final java.awt.image.ColorModel cmY) {
+        final int slices = X.slices();
+        final int rows = X.rows();
+        final int cols = X.columns();
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Copies pixel values from real matrix <code>X</code> to image stack
+     * <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            real matrix
+     * @param cmY
+     *            color model
+     * @param threshold
+     *            the smallest positive value assigned to the stack, all the
+     *            values less than the threshold are set to zero
+     * 
+     */
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DComplexMatrix3D X, final java.awt.image.ColorModel cmY, final double threshold) {
+        final int slices = X.slices();
+        final int rows = X.rows();
+        final int cols = X.columns();
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY, threshold);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Copies pixel values from real matrix <code>X</code> to image stack
+     * <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            real matrix
+     * @param cmY
+     *            color model
+     */
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DoubleMatrix3D X, final java.awt.image.ColorModel cmY) {
+        final int slices = X.slices();
+        final int rows = X.rows();
+        final int cols = X.columns();
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Copies pixel values from real matrix <code>X</code> to image stack
+     * <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            real matrix
+     * @param cmY
+     *            color model
+     * @param threshold
+     *            the smallest positive value assigned to the stack, all the
+     *            values less than the threshold are set to zero
+     * 
+     */
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DoubleMatrix3D X, final java.awt.image.ColorModel cmY, final double threshold) {
+        final int slices = X.slices();
+        final int rows = X.rows();
+        final int cols = X.columns();
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY, threshold);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Copies pixel values from complex padded matrix <code>X</code> to image
+     * stack <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            padded real matrix
+     * @param slices
+     *            original number of slices
+     * @param rows
+     *            original number of rows
+     * @param cols
+     *            original number of columns
+     * @param sOff
+     *            slice offset
+     * @param rOff
+     *            row offset
+     * @param cOff
+     *            column offset
+     * @param cmY
+     *            color model
+     */
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DComplexMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY) {
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Copies pixel values from complex padded matrix <code>X</code> to image
+     * stack <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            padded real matrix
+     * @param slices
+     *            original number of slices
+     * @param rows
+     *            original number of rows
+     * @param cols
+     *            original number of columns
+     * @param sOff
+     *            slice offset
+     * @param rOff
+     *            row offset
+     * @param cOff
+     *            column offset
+     * @param cmY
+     *            color model
+     * @param threshold
+     *            the smallest positive value assigned to the stack, all the
+     *            values less than the threshold are set to zero
+     * 
+     */
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DComplexMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY, final double threshold) {
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY, threshold);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Copies pixel values from real padded matrix <code>X</code> to image stack
+     * <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            padded real matrix
+     * @param slices
+     *            original number of slices
+     * @param rows
+     *            original number of rows
+     * @param cols
+     *            original number of columns
+     * @param sOff
+     *            slice offset
+     * @param rOff
+     *            row offset
+     * @param cOff
+     *            column offset
+     * @param cmY
+     *            color model
+     */
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY) {
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Copies pixel values from real padded matrix <code>X</code> to image stack
+     * <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            padded real matrix
+     * @param slices
+     *            original number of slices
+     * @param rows
+     *            original number of rows
+     * @param cols
+     *            original number of columns
+     * @param sOff
+     *            slice offset
+     * @param rOff
+     *            row offset
+     * @param cOff
+     *            column offset
+     * @param cmY
+     *            color model
+     * @param threshold
+     *            the smallest positive value assigned to the stack, all the
+     *            values less than the threshold are set to zero
+     * 
+     */
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY, final double threshold) {
+        for (int s = 0; s < slices; s++) {
+            FloatProcessor ip = new FloatProcessor(cols, rows);
+            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY, threshold);
+            stack.addSlice(null, ip, s);
+        }
+    }
+
+    /**
+     * Creates filtered output for complex input <code>S</code>
+     * 
+     * @param S
+     *            matrix to be filtered
+     * @param regParam
+     *            regularization parameter
+     * @return filtered matrix
+     */
+    public static DComplexMatrix3D createFilter(final DComplexMatrix3D S, final double regParam) {
+        final int slices = S.slices();
+        final int rows = S.rows();
+        final int cols = S.columns();
+        DenseDComplexMatrix3D Sfilt = new DenseDComplexMatrix3D(slices, rows, cols);
+        final double[] elemsSfilt = Sfilt.elements();
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if ((np > 1) && (S.size() >= ConcurrencyUtils.getThreadsBeginN_3D())) {
+            Future<?>[] futures = new Future[np];
+            int k = slices / np;
+            for (int j = 0; j < np; j++) {
+                final int firstSlice = j * k;
+                final int lastSlice = (j == np - 1) ? slices : firstSlice + k;
+                futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                    public void run() {
+                        double elem[];
+                        int idx = firstSlice * 2 * rows * cols;
+                        for (int s = firstSlice; s < lastSlice; s++) {
+                            for (int r = 0; r < rows; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    elem = S.getQuick(s, r, c);
+                                    if (DComplex.abs(elem) >= regParam) {
+                                        if (elem[1] != 0.0) {
+                                            double tmp = (elem[0] * elem[0]) + (elem[1] * elem[1]);
+                                            elem[0] = elem[0] / tmp;
+                                            elem[1] = -elem[1] / tmp;
+                                        } else {
+                                            elem[0] = 1 / elem[0];
+                                            elem[1] = 0;
+                                        }
+                                        elemsSfilt[idx] = elem[0];
+                                        elemsSfilt[idx + 1] = elem[1];
+                                    }
+                                    idx += 2;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            ConcurrencyUtils.waitForCompletion(futures);
+        } else {
+            double elem[];
+            int idx = 0;
+            for (int s = 0; s < slices; s++) {
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        elem = S.getQuick(s, r, c);
+                        if (DComplex.abs(elem) >= regParam) {
+                            if (elem[1] != 0.0) {
+                                double tmp = (elem[0] * elem[0]) + (elem[1] * elem[1]);
+                                elem[0] = elem[0] / tmp;
+                                elem[1] = -elem[1] / tmp;
+                            } else {
+                                elem[0] = 1 / elem[0];
+                                elem[1] = 0;
+                            }
+                            elemsSfilt[idx] = elem[0];
+                            elemsSfilt[idx + 1] = elem[1];
+                        }
+                        idx += 2;
+                    }
+                }
+            }
+        }
+        return Sfilt;
+    }
+
+    /**
+     * Creates filtered output for real input <code>S</code>
+     * 
+     * @param S
+     *            matrix to be filtered
+     * @param regParam
+     *            regularization parameter
+     * @return filtered matrix
+     */
+    public static DoubleMatrix3D createFilter(final DoubleMatrix3D S, final double regParam) {
+        final int slices = S.slices();
+        final int rows = S.rows();
+        final int cols = S.columns();
+        DenseDoubleMatrix3D Sfilt = new DenseDoubleMatrix3D(slices, rows, cols);
+        final double[] elemsSfilt = Sfilt.elements();
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if ((np > 1) && (S.size() >= ConcurrencyUtils.getThreadsBeginN_3D())) {
+            Future<?>[] futures = new Future[np];
+            int k = slices / np;
+            for (int j = 0; j < np; j++) {
+                final int firstSlice = j * k;
+                final int lastSlice = (j == np - 1) ? slices : firstSlice + k;
+                futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                    public void run() {
+                        int idx = firstSlice * rows * cols;
+                        double elem;
+                        for (int s = firstSlice; s < lastSlice; s++) {
+                            for (int r = 0; r < rows; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    elem = S.getQuick(s, r, c);
+                                    if (Math.abs(elem) >= regParam) {
+                                        elemsSfilt[idx] = 1.0 / elem;
+                                    }
+                                    idx++;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            ConcurrencyUtils.waitForCompletion(futures);
+        } else {
+            double elem;
+            int idx = 0;
+            for (int s = 0; s < slices; s++) {
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        elem = S.getQuick(s, r, c);
+                        if (Math.abs(elem) >= regParam) {
+                            elemsSfilt[idx] = 1.0 / elem;
+                        }
+                        idx++;
+                    }
+                }
+            }
+        }
+        return Sfilt;
+    }
+
+    /**
+     * Computes the DCT shift of <code>PSF</code> matrix.
+     * 
+     * @param PSF
+     *            matrix containing the point spread function.
+     * @param center
+     *            indices of center of <code>PSF</code>.
+     * @return shifted matrix
+     */
+    public static DoubleMatrix3D dctShift(DoubleMatrix3D PSF, int[] center) {
+        int slices = PSF.slices(); // must be > 1
+        int rows = PSF.rows();
+        int cols = PSF.columns();
+        int cs = center[0];
+        int cr = center[1];
+        int cc = center[2];
+        int k = Math.min(Math.min(Math.min(Math.min(Math.min(cs, slices - cs - 1), cr), rows - cr - 1), cc), cols - cc - 1);
+        int fslice = cs - k;
+        int lslice = cs + k;
+        int sliceSize = lslice - fslice + 1;
+        int frow = cr - k;
+        int lrow = cr + k;
+        int rowSize = lrow - frow + 1;
+        int fcol = cc - k;
+        int lcol = cc + k;
+        int colSize = lcol - fcol + 1;
+
+        DoubleMatrix3D PP = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+        DoubleMatrix3D P1 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+        DoubleMatrix3D P2 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+        DoubleMatrix3D P3 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+        DoubleMatrix3D P4 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+
+        DoubleMatrix3D P5 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+        DoubleMatrix3D P6 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+        DoubleMatrix3D P7 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+        DoubleMatrix3D P8 = new DenseDoubleMatrix3D(sliceSize, rowSize, colSize);
+
+        DoubleMatrix3D Ps = new DenseDoubleMatrix3D(slices, rows, cols);
+        PP.assign(PSF.viewPart(fslice, frow, fcol, sliceSize, rowSize, colSize));
+
+        P1.viewPart(0, 0, 0, sliceSize - cs + fslice, rowSize - cr + frow, colSize - cc + fcol).assign(PP.viewPart(cs - fslice, cr - frow, cc - fcol, sliceSize - cs + fslice, rowSize - cr + frow, colSize - cc + fcol));
+        P2.viewPart(0, 0, 0, sliceSize - cs + fslice, rowSize - cr + frow, colSize - cc + fcol - 1).assign(PP.viewPart(cs - fslice, cr - frow, cc - fcol + 1, sliceSize - cs + fslice, rowSize - cr + frow, colSize - cc + fcol - 1));
+        P3.viewPart(0, 0, 0, sliceSize - cs + fslice, rowSize - cr + frow - 1, colSize - cc + fcol).assign(PP.viewPart(cs - fslice, cr - frow + 1, cc - fcol, sliceSize - cs + fslice, rowSize - cr + frow - 1, colSize - cc + fcol));
+        P4.viewPart(0, 0, 0, sliceSize - cs + fslice, rowSize - cr + frow - 1, colSize - cc + fcol - 1).assign(PP.viewPart(cs - fslice, cr - frow + 1, cc - fcol + 1, sliceSize - cs + fslice, rowSize - cr + frow - 1, colSize - cc + fcol - 1));
+
+        P5.viewPart(0, 0, 0, sliceSize - cs + fslice - 1, rowSize - cr + frow, colSize - cc + fcol).assign(PP.viewPart(cs - fslice + 1, cr - frow, cc - fcol, sliceSize - cs + fslice - 1, rowSize - cr + frow, colSize - cc + fcol));
+        P6.viewPart(0, 0, 0, sliceSize - cs + fslice - 1, rowSize - cr + frow, colSize - cc + fcol - 1).assign(PP.viewPart(cs - fslice + 1, cr - frow, cc - fcol + 1, sliceSize - cs + fslice - 1, rowSize - cr + frow, colSize - cc + fcol - 1));
+        P7.viewPart(0, 0, 0, sliceSize - cs + fslice - 1, rowSize - cr + frow - 1, colSize - cc + fcol).assign(PP.viewPart(cs - fslice + 1, cr - frow + 1, cc - fcol, sliceSize - cs + fslice - 1, rowSize - cr + frow - 1, colSize - cc + fcol));
+        P8.viewPart(0, 0, 0, sliceSize - cs + fslice - 1, rowSize - cr + frow - 1, colSize - cc + fcol - 1).assign(PP.viewPart(cs - fslice + 1, cr - frow + 1, cc - fcol + 1, sliceSize - cs + fslice - 1, rowSize - cr + frow - 1, colSize - cc + fcol - 1));
+
+        P1.assign(P2, DoubleFunctions.plus);
+        P1.assign(P3, DoubleFunctions.plus);
+        P1.assign(P4, DoubleFunctions.plus);
+        P1.assign(P5, DoubleFunctions.plus);
+        P1.assign(P6, DoubleFunctions.plus);
+        P1.assign(P7, DoubleFunctions.plus);
+        P1.assign(P8, DoubleFunctions.plus);
+
+        Ps.viewPart(0, 0, 0, sliceSize, rowSize, colSize).assign(P1);
+        return Ps;
+
+    }
+    
 }

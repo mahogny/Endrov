@@ -288,7 +288,17 @@ public class EvStack
 		return arr;
 		}
 	
-	
+	/**
+	 * Get array of images
+	 */
+	public EvImage[] getImages()
+		{
+		EvImage[] arr=new EvImage[loaders.size()];
+		int i=0;
+		for(EvImage evim:loaders.values())
+			arr[i++]=evim;
+		return arr;
+		}
 	
 	/**
 	 * Return the pixel arrays for every plane with type int. Will do a read-only conversion automatically
