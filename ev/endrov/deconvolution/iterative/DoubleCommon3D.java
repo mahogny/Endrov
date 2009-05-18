@@ -26,6 +26,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.DoubleMatrix3D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
+import cern.jet.math.tdcomplex.DComplex;
 import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.deconvolution.DeconvPixelsStack;
@@ -365,8 +366,6 @@ public class DoubleCommon3D {
             //FloatProcessor ip = new FloatProcessor(cols, rows);
             //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
             EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(rows, cols, X.viewPart(s * sliceStride, sliceStride), threshold);
-            //ip.setColorModel(cmY);
-            //ip.setMinAndMax(0, 0);
             stack.addSlice(ip, s);
             
         }
@@ -873,7 +872,9 @@ public class DoubleCommon3D {
                 futures[j] = ConcurrencyUtils.submit(new Runnable() {
                     public void run() {
                         for (int s = firstSlice; s < lastSlice; s++) {
-                            ImageProcessor ip = stack.getProcessor(s + 1);
+                            //ImageProcessor ip = stack.getProcessor(s + 1);
+                            //s+1
+                        		EvPixels ip=stack.p.get(s);
                             DoubleCommon2D.assignPixelsToMatrix(X.viewSlice(s), ip);
                         }
                     }
@@ -882,7 +883,7 @@ public class DoubleCommon3D {
             ConcurrencyUtils.waitForCompletion(futures);
         } else {
             for (int s = 0; s < slices; s++) {
-                ImageProcessor ip = stack.getProcessor(s + 1);
+                EvPixels ip = stack.p.get(s); //s+1
                 DoubleCommon2D.assignPixelsToMatrix(X.viewSlice(s), ip);
             }
         }
@@ -899,14 +900,13 @@ public class DoubleCommon3D {
      * @param cmY
      *            color model
      */
-    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DComplexMatrix3D X, final java.awt.image.ColorModel cmY) {
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DComplexMatrix3D X) {
         final int slices = X.slices();
-        final int rows = X.rows();
-        final int cols = X.columns();
+        //final int rows = X.rows();
+        //final int cols = X.columns();
         for (int s = 0; s < slices; s++) {
-            FloatProcessor ip = new FloatProcessor(cols, rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY);
-            stack.addSlice(null, ip, s);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(X.viewSlice(s));
+            stack.addSlice(ip, s);
         }
     }
 
@@ -925,14 +925,13 @@ public class DoubleCommon3D {
      *            values less than the threshold are set to zero
      * 
      */
-    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DComplexMatrix3D X, final java.awt.image.ColorModel cmY, final double threshold) {
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DComplexMatrix3D X, final double threshold) {
         final int slices = X.slices();
-        final int rows = X.rows();
-        final int cols = X.columns();
+        //final int rows = X.rows();
+        //final int cols = X.columns();
         for (int s = 0; s < slices; s++) {
-            FloatProcessor ip = new FloatProcessor(cols, rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY, threshold);
-            stack.addSlice(null, ip, s);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(X.viewSlice(s), threshold);
+            stack.addSlice(ip, s);
         }
     }
 
@@ -947,16 +946,18 @@ public class DoubleCommon3D {
      * @param cmY
      *            color model
      */
-    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DoubleMatrix3D X, final java.awt.image.ColorModel cmY) {
+    /*
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DoubleMatrix3D X) {
         final int slices = X.slices();
         final int rows = X.rows();
         final int cols = X.columns();
         for (int s = 0; s < slices; s++) {
-            FloatProcessor ip = new FloatProcessor(cols, rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY);
-            stack.addSlice(null, ip, s);
+            //FloatProcessor ip = new FloatProcessor(cols, rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(rows, cols, X.viewSlice(s));
+            stack.addSlice(ip, s);
         }
     }
+    */
 
     /**
      * Copies pixel values from real matrix <code>X</code> to image stack
@@ -973,14 +974,47 @@ public class DoubleCommon3D {
      *            values less than the threshold are set to zero
      * 
      */
-    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DoubleMatrix3D X, final java.awt.image.ColorModel cmY, final double threshold) {
+    /*
+    public static void assignPixelsToStack(final DeconvPixelsStack stack, final DoubleMatrix3D X, final double threshold) {
         final int slices = X.slices();
-        final int rows = X.rows();
-        final int cols = X.columns();
+        //final int rows = X.rows();
+        //final int cols = X.columns();
         for (int s = 0; s < slices; s++) {
-            FloatProcessor ip = new FloatProcessor(cols, rows);
-            DoubleCommon2D.assignPixelsToProcessor(ip, X.viewSlice(s), cmY, threshold);
-            stack.addSlice(null, ip, s);
+            //FloatProcessor ip = new FloatProcessor(cols, rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessor(X.viewSlice(s), threshold);
+            stack.addSlice(ip, s);
+        }
+    }
+    */
+
+    /**
+     * Copies pixel values from complex padded matrix <code>X</code> to image
+     * stack <code>stack</code>
+     * 
+     * @param stack
+     *            image stack
+     * @param X
+     *            padded real matrix
+     * @param slices
+     *            original number of slices
+     * @param rows
+     *            original number of rows
+     * @param cols
+     *            original number of columns
+     * @param sOff
+     *            slice offset
+     * @param rOff
+     *            row offset
+     * @param cOff
+     *            column offset
+     * @param cmY
+     *            color model
+     */
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DComplexMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff) {
+        for (int s = 0; s < slices; s++) {
+            //FloatProcessor ip = new FloatProcessor(cols, rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff);
+            stack.addSlice(ip, s);
         }
     }
 
@@ -1006,47 +1040,16 @@ public class DoubleCommon3D {
      *            column offset
      * @param cmY
      *            color model
-     */
-    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DComplexMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY) {
-        for (int s = 0; s < slices; s++) {
-            FloatProcessor ip = new FloatProcessor(cols, rows);
-            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY);
-            stack.addSlice(null, ip, s);
-        }
-    }
-
-    /**
-     * Copies pixel values from complex padded matrix <code>X</code> to image
-     * stack <code>stack</code>
-     * 
-     * @param stack
-     *            image stack
-     * @param X
-     *            padded real matrix
-     * @param slices
-     *            original number of slices
-     * @param rows
-     *            original number of rows
-     * @param cols
-     *            original number of columns
-     * @param sOff
-     *            slice offset
-     * @param rOff
-     *            row offset
-     * @param cOff
-     *            column offset
-     * @param cmY
-     *            color model
      * @param threshold
      *            the smallest positive value assigned to the stack, all the
      *            values less than the threshold are set to zero
      * 
      */
-    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DComplexMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY, final double threshold) {
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DComplexMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final double threshold) {
         for (int s = 0; s < slices; s++) {
-            FloatProcessor ip = new FloatProcessor(cols, rows);
-            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY, threshold);
-            stack.addSlice(null, ip, s);
+            //FloatProcessor ip = new FloatProcessor(cols, rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff, threshold);
+            stack.addSlice(ip, s);
         }
     }
 
@@ -1073,14 +1076,15 @@ public class DoubleCommon3D {
      * @param cmY
      *            color model
      */
-    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY) {
+    /*
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff) {
         for (int s = 0; s < slices; s++) {
-            FloatProcessor ip = new FloatProcessor(cols, rows);
-            DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY);
-            stack.addSlice(null, ip, s);
+            //FloatProcessor ip = new FloatProcessor(cols, rows);
+            EvPixels ip=DoubleCommon2D.assignPixelsToProcessorPadded(X.viewSlice(s + sOff), rows, cols, rOff, cOff);
+            stack.addSlice(ip, s);
         }
     }
-
+*/
     /**
      * Copies pixel values from real padded matrix <code>X</code> to image stack
      * <code>stack</code>
@@ -1108,13 +1112,15 @@ public class DoubleCommon3D {
      *            values less than the threshold are set to zero
      * 
      */
-    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final java.awt.image.ColorModel cmY, final double threshold) {
+    /*
+    public static void assignPixelsToStackPadded(final DeconvPixelsStack stack, final DoubleMatrix3D X, final int slices, final int rows, final int cols, final int sOff, final int rOff, final int cOff, final double threshold) {
         for (int s = 0; s < slices; s++) {
             FloatProcessor ip = new FloatProcessor(cols, rows);
             DoubleCommon2D.assignPixelsToProcessorPadded(ip, X.viewSlice(s + sOff), rows, cols, rOff, cOff, cmY, threshold);
             stack.addSlice(null, ip, s);
         }
     }
+    */
 
     /**
      * Creates filtered output for complex input <code>S</code>

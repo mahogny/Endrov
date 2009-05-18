@@ -69,8 +69,8 @@ public class DoubleReflexiveGeneralizedTikhonov3D extends AbstractDoubleSpectral
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoubleReflexiveGeneralizedTikhonov3D(EvStack imB, EvStack imPSF, DoubleMatrix3D stencil, ResizingType resizing, double regParam, double threshold) {
-        super("Generalized Tikhonov", imB, imPSF, resizing, PaddingType.REFLEXIVE, regParam, threshold);
+    public DoubleReflexiveGeneralizedTikhonov3D(EvStack imPSF, DoubleMatrix3D stencil, ResizingType resizing, double regParam, double threshold) {
+        super("Generalized Tikhonov", imPSF, resizing, PaddingType.REFLEXIVE, regParam, threshold);
         if ((stencil.slices() != 3) || (stencil.rows() != 3) || (stencil.columns() != 3)) {
             throw new IllegalArgumentException("Illegal stencil for regularization operator");
         }
@@ -79,7 +79,7 @@ public class DoubleReflexiveGeneralizedTikhonov3D extends AbstractDoubleSpectral
     }
 
     public DeconvPixelsStack internalDeconvolve(EvStack imB) {
-        log(name + ": decolvolving");
+    later(imB);
         E1 = new DenseDoubleMatrix3D(bSlicesPad, bRowsPad, bColumnsPad);
         E1.setQuick(0, 0, 0, 1);
         ((DenseDoubleMatrix3D) E1).dct3(true);

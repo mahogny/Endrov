@@ -29,10 +29,12 @@ import cern.colt.matrix.tdouble.algo.DoubleSorting;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdcomplex.DComplexFunctions;
+import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon3D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver3D;
 import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.imageset.EvStack;
 
 /**
  * 3D Truncated SVD with periodic boundary conditions.
@@ -65,12 +67,12 @@ public class DoublePeriodicTruncatedSVD3D extends AbstractDoubleSpectralDeconvol
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoublePeriodicTruncatedSVD3D(ImagePlus imB, ImagePlus imPSF, ResizingType resizing, OutputType output, boolean showPadded, double regParam, double threshold) {
-        super("TSVD", imB, imPSF, resizing, output, PaddingType.PERIODIC, showPadded, regParam, threshold);
+    public DoublePeriodicTruncatedSVD3D(EvStack imPSF, ResizingType resizing, double regParam, double threshold) {
+        super("TSVD", imPSF, resizing, PaddingType.PERIODIC, regParam, threshold);
     }
 
-    public ImagePlus deconvolve() {
-        log(name + ": deconvolving");
+    public DeconvPixelsStack internalDeconvolve(EvStack imB) {
+    later(imB);
         S = DoubleCommon3D.circShift((DoubleMatrix3D) PSF, psfCenter);
         S = ((DenseDoubleMatrix3D) S).getFft3();
         B = ((DenseDoubleMatrix3D) B).getFft3();
@@ -84,26 +86,23 @@ public class DoublePeriodicTruncatedSVD3D extends AbstractDoubleSpectralDeconvol
         ((DComplexMatrix3D) PSF).assign(Sfilt, DComplexFunctions.mult);
         ((DenseDComplexMatrix3D) PSF).ifft3(true);
         log(name + ": deconvolving");
-        ImageStack stackOut = new ImageStack(bColumns, bRows);
+        DeconvPixelsStack stackOut=new DeconvPixelsStack();
         if (threshold == -1) {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) PSF, cmY);
+                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) PSF);
             }
         } else {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, threshold);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) PSF, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) PSF, threshold);
             }
         }
-        ImagePlus imX = new ImagePlus("Deblurred", stackOut);
-        DoubleCommon3D.convertImage(imX, output);
-        imX.setProperty("regParam", ragParam);
-        return imX;
+        return stackOut;
     }
-
+/*
     public void update(double regParam, double threshold, ImagePlus imX) {
         log(name + ": updating");
         DComplexMatrix3D Sfilt = DoubleCommon3D.createFilter((DComplexMatrix3D) S, regParam);
@@ -127,7 +126,7 @@ public class DoublePeriodicTruncatedSVD3D extends AbstractDoubleSpectralDeconvol
         }
         imX.setStack(imX.getTitle(), stackOut);
         DoubleCommon3D.convertImage(imX, output);
-    }
+    }*/
 
     private static double gcvTsvdFFT3D(DComplexMatrix3D S, DComplexMatrix3D Bhat) {
         int length = S.slices() * S.rows() * S.columns();

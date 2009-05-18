@@ -104,10 +104,6 @@ public abstract class AbstractDoubleSpectralDeconvolver3D extends Deconvolver3D 
      */
     protected boolean isPadded = false;
 
-    /**
-     * Type of restored image.
-     */
-    //protected OutputType output;
 
     /**
      * the smallest positive value assigned to the restored image, all the
@@ -125,6 +121,11 @@ public abstract class AbstractDoubleSpectralDeconvolver3D extends Deconvolver3D 
      */
     protected String name;
 
+    protected PaddingType padding;
+    protected ResizingType resizing;
+    
+    protected EvStack imPSF;
+    
     /**
      * Creates new instance of AbstractDoubleSpectralDeconvolver3D
      * 
@@ -147,82 +148,91 @@ public abstract class AbstractDoubleSpectralDeconvolver3D extends Deconvolver3D 
      * @param threshold
      *            the smallest positive value assigned to the restored image
      */
-    public AbstractDoubleSpectralDeconvolver3D(String name, EvStack imB, EvStack imPSF, ResizingType resizing, PaddingType padding, double regParam, double threshold) {
+    public AbstractDoubleSpectralDeconvolver3D(String name, EvStack imPSF, ResizingType resizing, PaddingType padding, double regParam, double threshold) {
         log(name + ": initializing");
         this.name = name;
-        EvStack isB = imB;
-        EvStack isPSF = imPSF;
-        int kSlices = isPSF.getDepth();
-        int kCols = isPSF.getWidth();
-        int kRows = isPSF.getHeight();
-        bSlices = isB.getDepth();
-        bColumns = isB.getWidth();
-        bRows = isB.getHeight();
-        if ((kSlices > bSlices) || (kRows > bRows) || (kCols > bColumns)) {
-            throw new IllegalArgumentException("The PSF image cannot be larger than the blurred image.");
-        }
-        log(name + ": initializing");
-        switch (resizing) {
-        case NEXT_POWER_OF_TWO:
-            if (ConcurrencyUtils.isPowerOf2(bSlices)) {
-                bSlicesPad = bSlices;
-            } else {
-                isPadded = true;
-                bSlicesPad = ConcurrencyUtils.nextPow2(bSlices);
-            }
-            if (ConcurrencyUtils.isPowerOf2(bRows)) {
-                bRowsPad = bRows;
-            } else {
-                isPadded = true;
-                bRowsPad = ConcurrencyUtils.nextPow2(bRows);
-            }
-            if (ConcurrencyUtils.isPowerOf2(bColumns)) {
-                bColumnsPad = bColumns;
-            } else {
-                isPadded = true;
-                bColumnsPad = ConcurrencyUtils.nextPow2(bColumns);
-            }
-            break;
-        case NONE:
-            bSlicesPad = bSlices;
-            bRowsPad = bRows;
-            bColumnsPad = bColumns;
-            break;
-        default:
-            throw new IllegalArgumentException("Unsupported resizing type.");
-        }
-        //EvStack ipB = imB;
-        B = new DenseDoubleMatrix3D(bSlices, bRows, bColumns);
-        DoubleCommon3D.assignPixelsToMatrix(isB, (DoubleMatrix3D) B);
-        if (isPadded) {
-            switch (padding) {
-            case PERIODIC:
-                B = DoubleCommon3D.padPeriodic((DoubleMatrix3D) B, bSlicesPad, bRowsPad, bColumnsPad);
-                break;
-            case REFLEXIVE:
-                B = DoubleCommon3D.padReflexive((DoubleMatrix3D) B, bSlicesPad, bRowsPad, bColumnsPad);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported padding type.");
-            }
-            bSlicesOff = (bSlicesPad - bSlices + 1) / 2;
-            bRowsOff = (bRowsPad - bRows + 1) / 2;
-            bColumnsOff = (bColumnsPad - bColumns + 1) / 2;
-        }
-        PSF = new DenseDoubleMatrix3D(kSlices, kRows, kCols);
-        DoubleCommon3D.assignPixelsToMatrix(isPSF, (DoubleMatrix3D) PSF);
-        double[] maxAndLoc = ((DoubleMatrix3D) PSF).getMaxLocation();
-        psfCenter = new int[] { (int) maxAndLoc[1], (int) maxAndLoc[2], (int) maxAndLoc[3] };
-        ((DoubleMatrix3D) PSF).normalize();
-        if (kSlices != bSlicesPad || kRows != bRowsPad || kCols != bColumnsPad) {
-            PSF = DoubleCommon3D.padZero((DoubleMatrix3D) PSF, bSlicesPad, bRowsPad, bColumnsPad);
-        }
-        psfCenter[0] += (bSlicesPad - kSlices + 1) / 2;
-        psfCenter[1] += (bRowsPad - kRows + 1) / 2;
-        psfCenter[2] += (bColumnsPad - kCols + 1) / 2;
+        this.padding=padding;
+
         this.ragParam = regParam;
         this.threshold = threshold;
-
+        this.resizing=resizing;
+        this.imPSF=imPSF;
     }
+    
+    
+    public void later(EvStack imB)
+    	{
+      EvStack isB = imB;
+      EvStack isPSF = imPSF;
+      int kSlices = isPSF.getDepth();
+      int kCols = isPSF.getWidth();
+      int kRows = isPSF.getHeight();
+      bSlices = isB.getDepth();
+      bColumns = isB.getWidth();
+      bRows = isB.getHeight();
+      if ((kSlices > bSlices) || (kRows > bRows) || (kCols > bColumns)) {
+          throw new IllegalArgumentException("The PSF image cannot be larger than the blurred image.");
+      }
+      log(name + ": initializing");
+      switch (resizing) {
+      case NEXT_POWER_OF_TWO:
+          if (ConcurrencyUtils.isPowerOf2(bSlices)) {
+              bSlicesPad = bSlices;
+          } else {
+              isPadded = true;
+              bSlicesPad = ConcurrencyUtils.nextPow2(bSlices);
+          }
+          if (ConcurrencyUtils.isPowerOf2(bRows)) {
+              bRowsPad = bRows;
+          } else {
+              isPadded = true;
+              bRowsPad = ConcurrencyUtils.nextPow2(bRows);
+          }
+          if (ConcurrencyUtils.isPowerOf2(bColumns)) {
+              bColumnsPad = bColumns;
+          } else {
+              isPadded = true;
+              bColumnsPad = ConcurrencyUtils.nextPow2(bColumns);
+          }
+          break;
+      case NONE:
+          bSlicesPad = bSlices;
+          bRowsPad = bRows;
+          bColumnsPad = bColumns;
+          break;
+      default:
+          throw new IllegalArgumentException("Unsupported resizing type.");
+      }
+      //EvStack ipB = imB;
+      B = new DenseDoubleMatrix3D(bSlices, bRows, bColumns);
+      DoubleCommon3D.assignPixelsToMatrix(isB, (DoubleMatrix3D) B);
+      if (isPadded) {
+          switch (padding) {
+          case PERIODIC:
+              B = DoubleCommon3D.padPeriodic((DoubleMatrix3D) B, bSlicesPad, bRowsPad, bColumnsPad);
+              break;
+          case REFLEXIVE:
+              B = DoubleCommon3D.padReflexive((DoubleMatrix3D) B, bSlicesPad, bRowsPad, bColumnsPad);
+              break;
+          default:
+              throw new IllegalArgumentException("Unsupported padding type.");
+          }
+          bSlicesOff = (bSlicesPad - bSlices + 1) / 2;
+          bRowsOff = (bRowsPad - bRows + 1) / 2;
+          bColumnsOff = (bColumnsPad - bColumns + 1) / 2;
+      }
+      PSF = new DenseDoubleMatrix3D(kSlices, kRows, kCols);
+      DoubleCommon3D.assignPixelsToMatrix(isPSF, (DoubleMatrix3D) PSF);
+      double[] maxAndLoc = ((DoubleMatrix3D) PSF).getMaxLocation();
+      psfCenter = new int[] { (int) maxAndLoc[1], (int) maxAndLoc[2], (int) maxAndLoc[3] };
+      ((DoubleMatrix3D) PSF).normalize();
+      if (kSlices != bSlicesPad || kRows != bRowsPad || kCols != bColumnsPad) {
+          PSF = DoubleCommon3D.padZero((DoubleMatrix3D) PSF, bSlicesPad, bRowsPad, bColumnsPad);
+      }
+      psfCenter[0] += (bSlicesPad - kSlices + 1) / 2;
+      psfCenter[1] += (bRowsPad - kRows + 1) / 2;
+      psfCenter[2] += (bColumnsPad - kCols + 1) / 2;
+    	}
+    
 
 }
