@@ -19,9 +19,12 @@ package endrov.deconvolution.iterative;
 
 import java.util.concurrent.Future;
 
+import cern.colt.matrix.tdcomplex.DComplexMatrix2D;
+import cern.colt.matrix.tdcomplex.impl.DenseDComplexMatrix2D;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
+import cern.jet.math.tdcomplex.DComplex;
 import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.deconvolution.iterative.IterativeEnums.PaddingType;
@@ -36,9 +39,6 @@ import endrov.imageset.EvPixels;
  * 
  */
 public class DoubleCommon2D {
-
-    private DoubleCommon2D() {
-    }
 
     /**
      * Tolerance for optimization.Fmin.fmin.
@@ -84,11 +84,30 @@ public class DoubleCommon2D {
      * @param cmY
      *            color model
      */
-    public static void assignPixelsToProcessor(final EvPixels ip, final DoubleMatrix1D x) {
-        final int rows = ip.getHeight();
-        final int cols = ip.getWidth();
+    public static EvPixels assignPixelsToProcessor(int rows, int cols, final DoubleMatrix1D x) {
+    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+        //final int rows = ip.getHeight();
+        //final int cols = ip.getWidth();
+    
         final int size = rows * cols;
-        final double[] px = ip.convertTo(EvPixels.TYPE_DOUBLE, true).getArrayDouble();
+        
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        final double[] px = ip.getArrayDouble();
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        //////////////////// TODO ///////////////// BUG //////////////////////////////////////////////
+        
+        
         int np = ConcurrencyUtils.getNumberOfThreads();
         if (x.isView()) {
             if ((np > 1) && (size >= ConcurrencyUtils.getThreadsBeginN_2D())) {
@@ -134,6 +153,7 @@ public class DoubleCommon2D {
                 }
             }
         }
+        return ip;
     }
 
     /**
@@ -151,11 +171,13 @@ public class DoubleCommon2D {
      *            all the values less than the threshold are set to zero
      * 
      */
-    public static void assignPixelsToProcessor(final EvPixels ip, final DoubleMatrix1D x, final double threshold) {
-        final int rows = ip.getHeight();
-        final int cols = ip.getWidth();
+    public static EvPixels assignPixelsToProcessor(int rows, int cols, final DoubleMatrix1D x, final double threshold) {
+    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    //final EvPixels ip;
+        //final int rows = ip.getHeight();
+        //final int cols = ip.getWidth();
         final int size = rows * cols;
-        final double[] px = ip.convertToDouble(true).getArrayDouble();
+        final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
         if (x.isView()) {
             if ((np > 1) && (size >= ConcurrencyUtils.getThreadsBeginN_2D())) {
@@ -225,6 +247,7 @@ public class DoubleCommon2D {
                 }
             }
         }
+        return ip;
     }
 
     /**
@@ -239,10 +262,12 @@ public class DoubleCommon2D {
      *            color model
      * 
      */
-    public static void assignPixelsToProcessor(final EvPixels ip, final DoubleMatrix2D X) {
-        final int rows = X.rows();
-        final int cols = X.columns();
-        final double[] px = ip.convertToDouble(true).getArrayDouble();
+    public static EvPixels assignPixelsToProcessor(final int rows, final int cols, final DoubleMatrix2D X) {
+    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    //final EvPixels ip;
+        //final int rows = X.rows();
+        //final int cols = X.columns();
+        final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
         if (X.isView()) {
             if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
@@ -300,6 +325,7 @@ public class DoubleCommon2D {
                 }
             }
         }
+        return ip;
     }
 
     /**
@@ -322,8 +348,10 @@ public class DoubleCommon2D {
      *            color model
      * 
      */
-    public static void assignPixelsToProcessorPadded(final EvPixels ip, final DoubleMatrix2D X, final int rows, final int cols, final int rOff, final int cOff) {
-        final double[] px = ip.convertToDouble(true).getArrayDouble();
+    public static EvPixels assignPixelsToProcessorPadded(final DoubleMatrix2D X, final int rows, final int cols, final int rOff, final int cOff) {
+    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    //final EvPixels ip;
+        final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
         if (X.isView()) {
             if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
@@ -383,6 +411,7 @@ public class DoubleCommon2D {
                 }
             }
         }
+        return ip;
     }
 
     /**
@@ -407,8 +436,10 @@ public class DoubleCommon2D {
      *            the smallest positive value assigned to the image processor,
      *            all the values less than the threshold are set to zero
      */
-    public static void assignPixelsToProcessorPadded(final EvPixels ip, final DoubleMatrix2D X, final int rows, final int cols, final int rOff, final int cOff, final double threshold) {
-        final double[] px = ip.convertToDouble(true).getArrayDouble();
+    public static EvPixels assignPixelsToProcessorPadded( final DoubleMatrix2D X, final int rows, final int cols, final int rOff, final int cOff, final double threshold) {
+    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    //final EvPixels ip;
+        final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
         if (X.isView()) {
             if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
@@ -487,6 +518,7 @@ public class DoubleCommon2D {
                 }
             }
         }
+        return ip;
     }
 
     /**
@@ -504,10 +536,12 @@ public class DoubleCommon2D {
      *            all the values less than the threshold are set to zero
      * 
      */
-    public static void assignPixelsToProcessor(final EvPixels ip, final DoubleMatrix2D X, final double threshold) {
+    public static EvPixels assignPixelsToProcessor(final DoubleMatrix2D X, final double threshold) {
+    //final EvPixels ip;
         final int rows = X.rows();
         final int cols = X.columns();
-        final double[] px = ip.convertToDouble(true).getArrayDouble();
+        final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+        final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
         if (X.isView()) {
             if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
@@ -585,6 +619,7 @@ public class DoubleCommon2D {
                 }
             }
         }
+        return ip;
     }
 
     /**
@@ -1102,4 +1137,538 @@ public class DoubleCommon2D {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /////////////////////////////////////////////////////////////////////////////////
+    
+
+    /**
+     * Copies pixel values from complex matrix <code>X</code> to image processor
+     * <code>ip</code>
+     * 
+     * @param ip
+     *            image processor
+     * @param X
+     *            matrix
+     * @param cmY
+     *            color model
+     * 
+     */
+    public static EvPixels assignPixelsToProcessor( final DComplexMatrix2D X) {
+//    final EvPixels ip;
+        final int rows = X.rows();
+        final int cols = X.columns();
+        
+        
+        final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+
+        final double[] px = ip.getArrayDouble();
+
+        
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if (X.isView()) {
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            double[] elem;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    elem = X.getQuick(r, c);
+                                    px[c + cols * r] = (float) elem[0];
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                double[] elem;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        elem = X.getQuick(r, c);
+                        px[c + cols * r] = (float) elem[0];
+                    }
+                }
+            }
+        } else {
+            final double[] elemsX = (double[]) X.elements();
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            int idx = firstRow * 2 * cols;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    px[c + cols * r] = (float) elemsX[idx];
+                                    idx += 2;
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                int idx = 0;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        px[c + cols * r] = (float) elemsX[idx];
+                        idx += 2;
+                    }
+                }
+            }
+        }
+        return ip;
+    }
+
+    /**
+     * Copies pixel values from complex matrix <code>X</code> to image processor
+     * <code>ip</code>
+     * 
+     * @param ip
+     *            image processor
+     * @param X
+     *            matrix
+     * @param cmY
+     *            color model
+     * @param threshold
+     *            the smallest positive value assigned to the image processor,
+     *            all the values less than the threshold are set to zero
+     * 
+     */
+    public static EvPixels assignPixelsToProcessor( final DComplexMatrix2D X, final double threshold) {
+    //final EvPixels ip;
+
+        final int rows = X.rows();
+        final int cols = X.columns();
+        
+        final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+        final double[] px = ip.getArrayDouble();
+        
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if (X.isView()) {
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            double[] elem;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    elem = X.getQuick(r, c);
+                                    if ((float) elem[0] >= threshold) {
+                                        px[c + cols * r] = (float) elem[0];
+                                    } else {
+                                        px[c + cols * r] = 0;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                double[] elem;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        elem = X.getQuick(r, c);
+                        if ((float) elem[0] >= threshold) {
+                            px[c + cols * r] = (float) elem[0];
+                        } else {
+                            px[c + cols * r] = 0;
+                        }
+                    }
+                }
+            }
+        } else {
+            final double[] elemsX = (double[]) X.elements();
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            int idx = firstRow * 2 * cols;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    if ((float) elemsX[idx] >= threshold) {
+                                        px[c + cols * r] = (float) elemsX[idx];
+                                    } else {
+                                        px[c + cols * r] = 0;
+                                    }
+                                    idx += 2;
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                int idx = 0;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        if ((float) elemsX[idx] >= threshold) {
+                            px[c + cols * r] = (float) elemsX[idx];
+                        } else {
+                            px[c + cols * r] = 0;
+                        }
+                        idx += 2;
+                    }
+                }
+            }
+        }
+        return ip;
+    }
+
+    /**
+     * Copies pixel values from complex matrix <code>X</code> to image processor
+     * <code>ip</code>
+     * 
+     * @param ip
+     *            image processor
+     * @param X
+     *            padded matrix
+     * @param rows
+     *            original number of rows
+     * @param cols
+     *            original number of columns
+     * @param rOff
+     *            row offset
+     * @param cOff
+     *            column offset
+     * @param cmY
+     *            color model
+     * 
+     */
+    public static EvPixels assignPixelsToProcessorPadded(final DComplexMatrix2D X, final int rows, final int cols, final int rOff, final int cOff) {
+//    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+
+        final double[] px = ip.getArrayDouble();
+        
+        
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if (X.isView()) {
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            double[] elem;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    elem = X.getQuick(r + rOff, c + cOff);
+                                    px[c + cols * r] = (float) elem[0];
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                double[] elem;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        elem = X.getQuick(r + rOff, c + cOff);
+                        px[c + cols * r] = (float) elem[0];
+                    }
+                }
+            }
+        } else {
+            final double[] elemsX = (double[]) X.elements();
+            final int rowStride = 2 * X.columns();
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            int idx;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    idx = (r + rOff) * rowStride + (c + cOff) * 2;
+                                    px[c + cols * r] = (float) elemsX[idx];
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                int idx;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        idx = (r + rOff) * rowStride + (c + cOff) * 2;
+                        px[c + cols * r] = (float) elemsX[idx];
+                    }
+                }
+            }
+        }
+        return ip;
+    }
+
+    /**
+     * Copies pixel values from complex matrix <code>X</code> to image processor
+     * <code>ip</code>
+     * 
+     * @param ip
+     *            image processor
+     * @param X
+     *            padded matrix
+     * @param rows
+     *            original number of rows
+     * @param cols
+     *            original number of columns
+     * @param rOff
+     *            row offset
+     * @param cOff
+     *            column offset
+     * @param cmY
+     *            color model
+     * @param threshold
+     *            the smallest positive value assigned to the image processor,
+     *            all the values less than the threshold are set to zero
+     * 
+     */
+    public static EvPixels assignPixelsToProcessorPadded(final DComplexMatrix2D X, final int rows, final int cols, final int rOff, final int cOff, final double threshold) {
+    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+
+        final double[] px = ip.getArrayDouble();
+        
+        
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if (X.isView()) {
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            double[] elem;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    elem = X.getQuick(r + rOff, c + cOff);
+                                    if ((float) elem[0] >= threshold) {
+                                        px[c + cols * r] = (float) elem[0];
+                                    } else {
+                                        px[c + cols * r] = 0;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                double[] elem;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        elem = X.getQuick(r + rOff, c + cOff);
+                        if ((float) elem[0] >= threshold) {
+                            px[c + cols * r] = (float) elem[0];
+                        } else {
+                            px[c + cols * r] = 0;
+                        }
+                    }
+                }
+            }
+        } else {
+            final double[] elemsX = (double[]) X.elements();
+            final int rowStride = 2 * X.columns();
+            if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+                Future<?>[] futures = new Future[np];
+                int k = rows / np;
+                for (int j = 0; j < np; j++) {
+                    final int firstRow = j * k;
+                    final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                    futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            int idx;
+                            for (int r = firstRow; r < lastRow; r++) {
+                                for (int c = 0; c < cols; c++) {
+                                    idx = (r + rOff) * rowStride + (c + cOff) * 2;
+                                    if ((float) elemsX[idx] >= threshold) {
+                                        px[c + cols * r] = (float) elemsX[idx];
+                                    } else {
+                                        px[c + cols * r] = 0;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                int idx;
+                for (int r = 0; r < rows; r++) {
+                    for (int c = 0; c < cols; c++) {
+                        idx = (r + rOff) * rowStride + (c + cOff) * 2;
+                        if ((float) elemsX[idx] >= threshold) {
+                            px[c + cols * r] = (float) elemsX[idx];
+                        } else {
+                            px[c + cols * r] = 0;
+                        }
+                    }
+                }
+            }
+        }
+        return ip;
+    }
+
+    
+    /**
+     * Creates filtered output for complex input <code>S</code>
+     * 
+     * @param S
+     *            matrix to be filtered
+     * @param regParam
+     *            regularization parameter
+     * @return filtered matrix
+     */
+    public static DComplexMatrix2D createFilter(final DComplexMatrix2D S, final double regParam) {
+        final int rows = S.rows();
+        final int cols = S.columns();
+        DenseDComplexMatrix2D Sfilt = new DenseDComplexMatrix2D(rows, cols);
+        final double[] elemsSfilt = Sfilt.elements();
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+            Future<?>[] futures = new Future[np];
+            int k = rows / np;
+            for (int j = 0; j < np; j++) {
+                final int firstRow = j * k;
+                final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                    public void run() {
+                        double elem[];
+                        int idx = firstRow * 2 * cols;
+                        for (int r = firstRow; r < lastRow; r++) {
+                            for (int c = 0; c < cols; c++) {
+                                elem = S.getQuick(r, c);
+                                if (DComplex.abs(elem) >= regParam) {
+                                    if (elem[1] != 0.0) {
+                                        double tmp = (elem[0] * elem[0]) + (elem[1] * elem[1]);
+                                        elem[0] = elem[0] / tmp;
+                                        elem[1] = -elem[1] / tmp;
+                                    } else {
+                                        elem[0] = 1 / elem[0];
+                                        elem[1] = 0;
+                                    }
+                                    elemsSfilt[idx] = elem[0];
+                                    elemsSfilt[idx + 1] = elem[1];
+                                }
+                                idx += 2;
+                            }
+                        }
+                    }
+                });
+            }
+            ConcurrencyUtils.waitForCompletion(futures);
+        } else {
+            double elem[];
+            int idx = 0;
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < cols; c++) {
+                    elem = S.getQuick(r, c);
+                    if (DComplex.abs(elem) >= regParam) {
+                        if (elem[1] != 0.0) {
+                            double tmp = (elem[0] * elem[0]) + (elem[1] * elem[1]);
+                            elem[0] = elem[0] / tmp;
+                            elem[1] = -elem[1] / tmp;
+                        } else {
+                            elem[0] = 1 / elem[0];
+                            elem[1] = 0;
+                        }
+                        elemsSfilt[idx] = elem[0];
+                        elemsSfilt[idx + 1] = elem[1];
+                    }
+                    idx += 2;
+                }
+            }
+        }
+        return Sfilt;
+    }
+
+    /**
+     * Creates filtered output for real input <code>S</code>
+     * 
+     * @param S
+     *            matrix to be filtered
+     * @param regParam
+     *            regularization parameter
+     * @return filtered matrix
+     */
+    public static DoubleMatrix2D createFilter(final DoubleMatrix2D S, final double regParam) {
+        final int rows = S.rows();
+        final int cols = S.columns();
+        DenseDoubleMatrix2D Sfilt = new DenseDoubleMatrix2D(rows, cols);
+        final double[] elemsSfilt = Sfilt.elements();
+        int np = ConcurrencyUtils.getNumberOfThreads();
+        if ((np > 1) && (rows * cols >= ConcurrencyUtils.getThreadsBeginN_2D())) {
+            Future<?>[] futures = new Future[np];
+            int k = rows / np;
+            for (int j = 0; j < np; j++) {
+                final int firstRow = j * k;
+                final int lastRow = (j == np - 1) ? rows : firstRow + k;
+                futures[j] = ConcurrencyUtils.submit(new Runnable() {
+                    public void run() {
+                        int idx = firstRow * cols;
+                        double elem;
+                        for (int r = firstRow; r < lastRow; r++) {
+                            for (int c = 0; c < cols; c++) {
+                                elem = S.getQuick(r, c);
+                                if (Math.abs(elem) >= regParam) {
+                                    elemsSfilt[idx] = 1.0 / elem;
+                                }
+                                idx++;
+                            }
+                        }
+                    }
+                });
+            }
+            ConcurrencyUtils.waitForCompletion(futures);
+        } else {
+            int idx = 0;
+            double elem;
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < cols; c++) {
+                    elem = S.getQuick(r, c);
+                    if (Math.abs(elem) >= regParam) {
+                        elemsSfilt[idx] = 1.0 / elem;
+                    }
+                    idx++;
+                }
+            }
+        }
+        return Sfilt;
+    }
+
+    
 }

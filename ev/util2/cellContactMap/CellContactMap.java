@@ -594,6 +594,7 @@ public class CellContactMap
 
 			//Durations of contacts
 			StringBuffer outDuration=new StringBuffer();
+			StringBuffer outDuration2=new StringBuffer();
 			for(String name:nucNames)
 				for(String name2:nucNames)
 					if(!name.equals(name2))
@@ -609,7 +610,10 @@ public class CellContactMap
 								{
 								double c1=getOverlapPercent(theCE, name, name2);
 								if(c1>0)
+									{
 									outDuration.append(""+dur*c1+"\t"+nuc.getFirstFrame()+"\t"+nuc.getLastFrame()+"\n");
+									outDuration2.append(name+"\t"+name2+"\t"+dur*c1+"\t"+nuc.getFirstFrame()+"\t"+nuc.getLastFrame()+"\n");
+									}
 								//System.out.println("percent no contact!!!!! "+name+"  "+name2 +" "+theCE.contactsf.get(name).get(name2));
 								}
 							}
@@ -648,6 +652,7 @@ public class CellContactMap
 			*/
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main03/userdata/cellcontactmap/CEAdiff.txt"), outDiffList2.toString());
 			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.txt"), outDuration.toString());
+			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.b.csv"), outDuration2.toString());
 			
 			
 /*

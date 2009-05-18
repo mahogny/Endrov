@@ -361,11 +361,10 @@ public class WPLDoubleIterativeDeconvolver2D {
         }
         
             if (threshold == -1.0) {
-                DoubleCommon2D.assignPixelsToProcessorPadded(ip, X, bRows, bColumns, rOff, cOff);
+                return DoubleCommon2D.assignPixelsToProcessorPadded(X, bRows, bColumns, rOff, cOff);
             } else {
-                DoubleCommon2D.assignPixelsToProcessorPadded(ip, X, bRows, bColumns, rOff, cOff, threshold);
+                return DoubleCommon2D.assignPixelsToProcessorPadded(X, bRows, bColumns, rOff, cOff, threshold);
             }
-            return ip;//new ImagePlus("(deblurred)", ip);
     }
 
     private static void convolveFD(final int rows, final int columns, DoubleMatrix2D H1, DoubleMatrix2D H2, DoubleMatrix2D Result) {
