@@ -23,10 +23,12 @@ import cern.colt.matrix.tdouble.algo.DoubleSorting;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdouble.DoubleFunctions;
+import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon3D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver3D;
 import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.imageset.EvStack;
 
 /**
  * 3D Truncated SVD with reflexive boundary conditions.
@@ -62,12 +64,12 @@ public class DoubleReflexiveTruncatedSVD3D extends AbstractDoubleSpectralDeconvo
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoubleReflexiveTruncatedSVD3D(ImagePlus imB, ImagePlus imPSF, ResizingType resizing, OutputType output, boolean showPadded, double regParam, double threshold) {
-        super("TSVD", imB, imPSF, resizing, output, PaddingType.REFLEXIVE, showPadded, regParam, threshold);
+    public DoubleReflexiveTruncatedSVD3D(EvStack imPSF, ResizingType resizing, double regParam, double threshold) {
+        super("TSVD", imPSF, resizing, PaddingType.REFLEXIVE, regParam, threshold);
     }
 
-    public ImagePlus deconvolve() {
-        log(name + ": deconvolving");
+    public DeconvPixelsStack internalDeconvolve(EvStack imB) {
+    later(imB);
         E1 = new DenseDoubleMatrix3D(bSlicesPad, bRowsPad, bColumnsPad);
         E1.setQuick(0, 0, 0, 1);
         ((DenseDoubleMatrix3D) E1).dct3(true);
@@ -85,26 +87,23 @@ public class DoubleReflexiveTruncatedSVD3D extends AbstractDoubleSpectralDeconvo
         ((DoubleMatrix3D) PSF).assign(E1, DoubleFunctions.mult);
         ((DenseDoubleMatrix3D) PSF).idct3(true);
         log(name + ": finalizing");
-        ImageStack stackOut = new ImageStack(bColumns, bRows);
+        DeconvPixelsStack stackOut=new DeconvPixelsStack();
         if (threshold == -1) {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DoubleMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DoubleMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, (DoubleMatrix3D) PSF, cmY);
+                DoubleCommon3D.assignPixelsToStack(stackOut, (DoubleMatrix3D) PSF);
             }
         } else {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DoubleMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DoubleMatrix3D) PSF, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, threshold);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, (DoubleMatrix3D) PSF, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStack(stackOut, (DoubleMatrix3D) PSF, threshold);
             }
         }
-        ImagePlus imX = new ImagePlus("Deblurred", stackOut);
-        DoubleCommon3D.convertImage(imX, output);
-        imX.setProperty("regParam", ragParam);
-        return imX;
+        return stackOut;
     }
-
+/*
     public void update(double regParam, double threshold, ImagePlus imX) {
         log(name + ": updating");
         E1 = DoubleCommon3D.createFilter(S, regParam);
@@ -128,7 +127,7 @@ public class DoubleReflexiveTruncatedSVD3D extends AbstractDoubleSpectralDeconvo
         }
         imX.setStack(imX.getTitle(), stackOut);
         DoubleCommon3D.convertImage(imX, output);
-    }
+    }*/
 
     private static double gcvTsvdDCT3D(DoubleMatrix3D S, DoubleMatrix3D Bhat) {
         int length = S.slices() * S.rows() * S.columns();

@@ -25,11 +25,13 @@ import cern.colt.matrix.tdouble.DoubleMatrix3D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdcomplex.DComplexFunctions;
 import cern.jet.math.tdouble.DoubleFunctions;
+import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.iterative.DoubleCommon3D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver3D;
 import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.imageset.EvStack;
 
 /**
  * 3D Tikhonov with periodic boundary conditions.
@@ -64,12 +66,12 @@ public class DoublePeriodicTikhonov3D extends AbstractDoubleSpectralDeconvolver3
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoublePeriodicTikhonov3D(ImagePlus imB, ImagePlus imPSF, ResizingType resizing, OutputType output, boolean showPadded, double regParam, double threshold) {
-        super("Tikhonov", imB, imPSF, resizing, output, PaddingType.PERIODIC, showPadded, regParam, threshold);
+    public DoublePeriodicTikhonov3D(EvStack imPSF, ResizingType resizing,  double regParam, double threshold) {
+        super("Tikhonov", imPSF, resizing, PaddingType.PERIODIC, regParam, threshold);
     }
 
-    public ImagePlus deconvolve() {
-        log(name + ": deconvolving");
+    public DeconvPixelsStack internalDeconvolve(EvStack imB){
+    later(imB);
         S = DoubleCommon3D.circShift((DoubleMatrix3D) PSF, psfCenter);
         S = ((DenseDoubleMatrix3D) S).getFft3();
         B = ((DenseDoubleMatrix3D) B).getFft3();
@@ -89,27 +91,24 @@ public class DoublePeriodicTikhonov3D extends AbstractDoubleSpectralDeconvolver3
         ConjS.assign((DComplexMatrix3D) PSF, DComplexFunctions.div);
         ((DenseDComplexMatrix3D) ConjS).ifft3(true);
         log(name + ": finalizing");
-        ImageStack stackOut = new ImageStack(bColumns, bRows);
+        DeconvPixelsStack stackOut=new DeconvPixelsStack();
         if (threshold == -1.0) {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS, cmY);
+                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS);
             }
         } else {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, threshold);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS, threshold);
             }
         }
-        ImagePlus imX = new ImagePlus("Deblurred", stackOut);
-        DoubleCommon3D.convertImage(imX, output);
-        imX.setProperty("regParam", ragParam);
-        return imX;
+        return stackOut;
     }
 
-    public ImagePlus deblur(double regParam, double threshold) {
+    public DeconvPixelsStack deblur(double regParam, double threshold) {
         log(name + ": deblurring");
         S = DoubleCommon3D.circShift((DoubleMatrix3D) PSF, psfCenter);
         S = ((DenseDoubleMatrix3D) S).getFft3();
@@ -125,25 +124,23 @@ public class DoublePeriodicTikhonov3D extends AbstractDoubleSpectralDeconvolver3
         ConjS.assign((DComplexMatrix3D) PSF, DComplexFunctions.div);
         ((DenseDComplexMatrix3D) ConjS).ifft3(true);
         log(name + ": finalizing");
-        ImageStack stackOut = new ImageStack(bColumns, bRows);
+        DeconvPixelsStack stackOut=new DeconvPixelsStack();
         if (threshold == -1.0) {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS, cmY);
+                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS);
             }
         } else {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, ConjS, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, threshold);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStack(stackOut, ConjS, threshold);
             }
         }
-        ImagePlus imX = new ImagePlus("Deblurred", stackOut);
-        DoubleCommon3D.convertImage(imX, output);
-        return imX;
+        return stackOut;
     }
-
+/*
     public void update(double regParam, double threshold, ImagePlus imX) {
         log(name + ": updating");
         PSF = ((DComplexMatrix3D) S).copy();
@@ -169,7 +166,7 @@ public class DoublePeriodicTikhonov3D extends AbstractDoubleSpectralDeconvolver3
         imX.setStack(imX.getTitle(), stackOut);
         DoubleCommon3D.convertImage(imX, output);
     }
-
+*/
     private static double gcvTikFFT3D(DComplexMatrix3D S, DComplexMatrix3D Bhat) {
         AbstractMatrix3D s = S.copy();
         AbstractMatrix3D bhat = Bhat.copy();

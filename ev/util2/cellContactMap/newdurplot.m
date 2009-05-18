@@ -1,13 +1,15 @@
 dat=load('/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/contactdurNEW2.txt');
 
 hist(dat(:,1)/60,50)
-%4331
+%4331 wrong!
 
 dat2=dat(:,1)/60;
 
+length(dat)
 length(dat2(dat2>2.5))
+% 3473
+% 3053
 
-%3473
 
 %dat=[dat(:,1)/60,dat(:,3)];
 

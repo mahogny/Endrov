@@ -25,11 +25,13 @@ import cern.colt.matrix.tdouble.DoubleMatrix3D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdcomplex.DComplexFunctions;
 import cern.jet.math.tdouble.DoubleFunctions;
+import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.iterative.DoubleCommon3D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver3D;
 import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.imageset.EvStack;
 
 /**
  * 3D Generalized Tikhonov with periodic boundary conditions.
@@ -72,8 +74,8 @@ public class DoublePeriodicGeneralizedTikhonov3D extends AbstractDoubleSpectralD
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoublePeriodicGeneralizedTikhonov3D(ImagePlus imB, ImagePlus imPSF, DoubleMatrix3D stencil, ResizingType resizing, OutputType output, boolean showPadded, double regParam, double threshold) {
-        super("Generalized Tikhonov", imB, imPSF, resizing, output, PaddingType.PERIODIC, showPadded, regParam, threshold);
+    public DoublePeriodicGeneralizedTikhonov3D(EvStack imPSF, DoubleMatrix3D stencil, ResizingType resizing, double regParam, double threshold) {
+        super("Generalized Tikhonov", imPSF, resizing, PaddingType.PERIODIC, regParam, threshold);
         if ((stencil.slices() != 3) || (stencil.rows() != 3) || (stencil.columns() != 3)) {
             throw new IllegalArgumentException("Illegal stencil for regularization operator");
         }
@@ -81,8 +83,8 @@ public class DoublePeriodicGeneralizedTikhonov3D extends AbstractDoubleSpectralD
         ((DoubleMatrix3D) Pd).viewPart(0, 0, 0, 3, 3, 3).assign(stencil);
     }
 
-    public ImagePlus deconvolve() {
-        log(name + ": deconvolving");
+    public DeconvPixelsStack internalDeconvolve(EvStack imB) {
+    later(imB);
         Sa = DoubleCommon3D.circShift((DoubleMatrix3D) PSF, psfCenter);
         Sd = DoubleCommon3D.circShift((DoubleMatrix3D) Pd, psfCenter);
         Sa = ((DenseDoubleMatrix3D) Sa).getFft3();
@@ -109,24 +111,21 @@ public class DoublePeriodicGeneralizedTikhonov3D extends AbstractDoubleSpectralD
         ((DComplexMatrix3D) Sa).assign((DComplexMatrix3D) PSF, DComplexFunctions.div);
         ((DenseDComplexMatrix3D) Sa).ifft3(true);
         log(name + ": finalizing");
-        ImageStack stackOut = new ImageStack(bColumns, bRows);
+        DeconvPixelsStack stackOut=new DeconvPixelsStack();
         if (threshold == -1.0) {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) Sa, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) Sa, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) Sa, cmY);
+                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) Sa);
             }
         } else {
             if (isPadded) {
-                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) Sa, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStackPadded(stackOut, (DComplexMatrix3D) Sa, bSlices, bRows, bColumns, bSlicesOff, bRowsOff, bColumnsOff, threshold);
             } else {
-                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) Sa, cmY, threshold);
+                DoubleCommon3D.assignPixelsToStack(stackOut, (DComplexMatrix3D) Sa, threshold);
             }
         }
-        ImagePlus imX = new ImagePlus("Deblurred", stackOut);
-        DoubleCommon3D.convertImage(imX, output);
-        imX.setProperty("regParam", ragParam);
-        return imX;
+        return stackOut;
     }
 
     /*
