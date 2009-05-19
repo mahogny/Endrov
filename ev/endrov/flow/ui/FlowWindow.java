@@ -25,7 +25,9 @@ import endrov.basicWindow.EvComboObjectOne;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.data.tree.DataTree;
+import endrov.data.tree.DataTreeElement;
 import endrov.flow.*;
+import endrov.flow.std.objects.FlowUnitObjectIO;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 
@@ -193,7 +195,19 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		//TODO: new tree model, disable multiple selection
 		
 		
-		
+		dataTree.addTreeSelectionListener(new TreeSelectionListener(){
+		public void valueChanged(TreeSelectionEvent e)
+			{
+			DataTreeElement node = (DataTreeElement)e.getPath().getLastPathComponent();
+			if(node!=null && !node.isRoot)
+				{
+				FlowUnitObjectIO unit=new FlowUnitObjectIO(node.getPath());
+				if(unit!=null)
+					wthis.fp.placingUnit=unit;
+				unitTree.setSelectionPath(null);
+				}
+			}
+	});
 		
 		
 		JPanel toolbar=new JPanel(new GridLayout(1,8));

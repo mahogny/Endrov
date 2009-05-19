@@ -12,7 +12,7 @@ import endrov.imageset.EvStack;
  * @author Johan Henriksson
  *
  */
-public class GeneralizedDoubleTikhonovDeconvolver3D extends Deconvolver3D
+public class GeneralizedTikhonovDeconvolver3D extends Deconvolver3D
 	{
 	private final EvStack imPSF;
 	private final DoubleMatrix3D stencil;
@@ -21,7 +21,7 @@ public class GeneralizedDoubleTikhonovDeconvolver3D extends Deconvolver3D
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public GeneralizedDoubleTikhonovDeconvolver3D(EvStack imPSF, DoubleMatrix3D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public GeneralizedTikhonovDeconvolver3D(EvStack imPSF, DoubleMatrix3D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
 		 this.stencil=stencil;

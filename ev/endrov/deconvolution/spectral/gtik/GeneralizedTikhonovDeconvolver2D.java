@@ -11,7 +11,7 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class GeneralizedDoubleTikhonovDeconvolver2D extends Deconvolver2D
+public class GeneralizedTikhonovDeconvolver2D extends Deconvolver2D
 	{
 	private final EvPixels imPSF;
 	private final DoubleMatrix2D stencil;
@@ -20,7 +20,7 @@ public class GeneralizedDoubleTikhonovDeconvolver2D extends Deconvolver2D
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public GeneralizedDoubleTikhonovDeconvolver2D(EvPixels imPSF, DoubleMatrix2D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public GeneralizedTikhonovDeconvolver2D(EvPixels imPSF, DoubleMatrix2D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
 		 this.stencil=stencil;

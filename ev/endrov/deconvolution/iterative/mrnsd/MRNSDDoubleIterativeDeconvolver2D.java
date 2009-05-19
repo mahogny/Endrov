@@ -139,7 +139,7 @@ public class MRNSDDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolve
             rnrm = Math.sqrt(gamma);
         }
 //        ImagePlus imX = null;
-        EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,bColumns,bRows);
+        //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,bColumns,bRows);
         /*
         if (showIteration == true) {
             DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY);

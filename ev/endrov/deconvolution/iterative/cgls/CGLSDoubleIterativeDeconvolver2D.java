@@ -126,7 +126,7 @@ public class CGLSDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
             gamma = rnrm;
             gamma *= gamma;
         }
-        EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,bColumns,bRows);
+        //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,bColumns,bRows);
         //ImagePlus imX = null;
         //FloatProcessor ip = new FloatProcessor(bColumns, bRows);
         /*

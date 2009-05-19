@@ -29,7 +29,12 @@ public class DataTreeElement
 		{
 		return data.get().getChild(path);
 		}
-	
+
+	public EvPath getPath()
+		{
+		return path;
+		}
+
 	public EvData getData()
 		{
 		return data.get();
