@@ -15,6 +15,7 @@ import org.jdom.Element;
 
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
+import endrov.data.EvPath;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
@@ -31,19 +32,19 @@ import endrov.util.Maybe;
 public class FlowUnitObjectIO extends FlowUnit
 	{
 	private static final String metaType="evobjectio";
-	private static final String showName="Object ref";
+	private static final String showName="ObjectRef";
 	
 	
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitObjectIO.class, null,"Store/load object"));		
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitObjectIO.class, null,"Load or store an object in the object hierarchy"));		
 		}
 
 	
 
-	String nameOfObject;
+	private String nameOfObject;
 	
 	
 	public String getLabel()
@@ -51,6 +52,14 @@ public class FlowUnitObjectIO extends FlowUnit
 		return showName;
 		}
 	
+	public FlowUnitObjectIO()
+		{
+		}
+	
+	public FlowUnitObjectIO(EvPath path)
+		{
+		nameOfObject=path.toString();
+		}
 	
 	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
@@ -185,42 +194,4 @@ public class FlowUnitObjectIO extends FlowUnit
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/*
-	
-	
-	
-	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
-	public Color getBackground(){return CategoryInfo.bgColor;}
-
-	String nameOfObject;
-	
-	public void getTypesIn(Map<String, FlowType> types, Flow flow)
-		{
-		types.put("objectIn", new FlowType(EvObject.class));
-		}
-	
-	public void getTypesOut(Map<String, FlowType> types, Flow flow)
-		{
-		types.put("objectOut", new FlowType(EvObject.class));
-		}
-	
-	*/
 	}

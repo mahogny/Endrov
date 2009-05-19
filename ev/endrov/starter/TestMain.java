@@ -6,7 +6,7 @@ public class TestMain
 	{
 	public static void main(String[] args)
 		{
-		Vector3d v=new Vector3d();
+		new Vector3d();
 		
 		}
 	}

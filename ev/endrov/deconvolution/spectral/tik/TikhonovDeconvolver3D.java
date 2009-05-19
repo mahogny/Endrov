@@ -1,4 +1,4 @@
-package endrov.deconvolution.spectral.tsvd;
+package endrov.deconvolution.spectral.tik;
 
 import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.Deconvolver3D;
@@ -7,11 +7,11 @@ import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvStack;
 
 /**
- * Deconvolution in 3D using truncated SVD
+ * Deconvolution in 3D using tikhonov
  * @author Johan Henriksson
  *
  */
-public class DoubleTruncatedSVDDeconvolver3D extends Deconvolver3D
+public class TikhonovDeconvolver3D extends Deconvolver3D
 	{
 	private final EvStack imPSF;
 	private final SpectralResizingType resizing;
@@ -19,7 +19,7 @@ public class DoubleTruncatedSVDDeconvolver3D extends Deconvolver3D
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public DoubleTruncatedSVDDeconvolver3D(EvStack imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public TikhonovDeconvolver3D(EvStack imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
 		 this.resizing=resizing;
@@ -32,12 +32,12 @@ public class DoubleTruncatedSVDDeconvolver3D extends Deconvolver3D
 		{
 		if(padding.equals(SpectralPaddingType.PERIODIC))
 			{
-			DoublePeriodicTruncatedSVD3D d=new DoublePeriodicTruncatedSVD3D(imPSF, resizing, regParam, threshold);
+			DoublePeriodicTikhonov3D d=new DoublePeriodicTikhonov3D(imPSF, resizing, regParam, threshold);
 			return d.internalDeconvolve(ipB);
 			}
 		else
 			{
-			DoubleReflexiveTruncatedSVD3D d=new DoubleReflexiveTruncatedSVD3D(imPSF, resizing, regParam, threshold);
+			DoubleReflexiveTikhonov3D d=new DoubleReflexiveTikhonov3D(imPSF, resizing, regParam, threshold);
 			return d.internalDeconvolve(ipB);
 			}
 		}

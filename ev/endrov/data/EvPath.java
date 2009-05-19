@@ -4,7 +4,11 @@ import java.util.List;
 
 
 /**
- * Path to an object
+ * Path to an object.
+ * 
+ * A path relative to (current) data is on the form ob1/ob2/ob3. To refer to another data, use
+ * e.g. #dataname/ob1/ob2  
+ * 
  * @author Johan Henriksson
  *
  */
