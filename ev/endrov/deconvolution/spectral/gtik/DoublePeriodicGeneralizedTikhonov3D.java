@@ -83,7 +83,10 @@ public class DoublePeriodicGeneralizedTikhonov3D extends AbstractDoubleSpectralD
         ((DoubleMatrix3D) Pd).viewPart(0, 0, 0, 3, 3, 3).assign(stencil);
     }
 
-    public DeconvPixelsStack internalDeconvolve(EvStack imB) {
+    /**
+     * synchronized makes it impossible to overwrite parameters if class used in multiple instances. hack for the moment
+     */
+    public synchronized DeconvPixelsStack internalDeconvolve(EvStack imB) {
     later(imB);
         Sa = DoubleCommon3D.circShift((DoubleMatrix3D) PSF, psfCenter);
         Sd = DoubleCommon3D.circShift((DoubleMatrix3D) Pd, psfCenter);

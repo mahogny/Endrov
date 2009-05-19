@@ -20,7 +20,6 @@ import cern.colt.matrix.AbstractMatrix2D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import endrov.deconvolution.Deconvolver2D;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
