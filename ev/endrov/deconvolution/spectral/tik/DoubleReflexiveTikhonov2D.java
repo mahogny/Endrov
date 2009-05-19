@@ -23,8 +23,8 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdouble.DoubleFunctions;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver2D;
-import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
-import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvPixels;
 
 /**
@@ -61,11 +61,11 @@ public class DoubleReflexiveTikhonov2D extends AbstractDoubleSpectralDeconvolver
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoubleReflexiveTikhonov2D(EvPixels imB, EvPixels imPSF, ResizingType resizing, double regParam, double threshold) {
-        super("Tikhonov", imB, imPSF, resizing, PaddingType.REFLEXIVE, regParam, threshold);
+    public DoubleReflexiveTikhonov2D(EvPixels imB, EvPixels imPSF, SpectralResizingType resizing, double regParam, double threshold) {
+        super("Tikhonov", imB, imPSF, resizing, SpectralPaddingType.REFLEXIVE, regParam, threshold);
     }
 
-    public EvPixels internalDeconvolve(EvPixels imB) {
+    public EvPixels internalDeconvolve() {
         log(name + ": deconvolving");
         E1 = new DenseDoubleMatrix2D(bRowsPad, bColumnsPad);
         E1.setQuick(0, 0, 1);

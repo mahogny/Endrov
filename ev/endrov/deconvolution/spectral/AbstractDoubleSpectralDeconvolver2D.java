@@ -22,8 +22,9 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.deconvolution.Deconvolver2D;
 import endrov.deconvolution.iterative.DoubleCommon2D;
-import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
-import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
+import endrov.ev.Log;
 import endrov.imageset.EvPixels;
 
 /**
@@ -32,7 +33,14 @@ import endrov.imageset.EvPixels;
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
  * 
  */
-public abstract class AbstractDoubleSpectralDeconvolver2D extends Deconvolver2D {
+public abstract class AbstractDoubleSpectralDeconvolver2D  {
+
+		
+		public static void log(String s)
+			{
+			Log.printLog(s);
+			}
+
 
     /**
      * Blurred image
@@ -44,10 +52,6 @@ public abstract class AbstractDoubleSpectralDeconvolver2D extends Deconvolver2D 
      */
     protected AbstractMatrix2D PSF;
 
-    /**
-     * Color model
-     */
-    //protected java.awt.image.ColorModel cmY;
 
     /**
      * Number of columns in the padded blurred image.
@@ -90,11 +94,6 @@ public abstract class AbstractDoubleSpectralDeconvolver2D extends Deconvolver2D 
     protected boolean isPadded = false;
 
     /**
-     * Type of restored image.
-     */
-    //protected OutputType output;
-
-    /**
      * the smallest positive value assigned to the restored image, all the
      * values less than the threshold are set to zero.
      */
@@ -132,7 +131,7 @@ public abstract class AbstractDoubleSpectralDeconvolver2D extends Deconvolver2D 
      * @param threshold
      *            the smallest positive value assigned to the restored image
      */
-    public AbstractDoubleSpectralDeconvolver2D(String name, EvPixels imB, EvPixels imPSF, ResizingType resizing, PaddingType padding, double regParam, double threshold) {
+    public AbstractDoubleSpectralDeconvolver2D(String name, EvPixels imB, EvPixels imPSF, SpectralResizingType resizing, SpectralPaddingType padding, double regParam, double threshold) {
         log(name + ": initializing");
         this.name = name;
         EvPixels ipB = imB;
@@ -196,5 +195,6 @@ public abstract class AbstractDoubleSpectralDeconvolver2D extends Deconvolver2D 
         this.regParam = regParam;
         this.threshold = threshold;
     }
+    
 
 }

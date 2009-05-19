@@ -23,8 +23,8 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdouble.DoubleFunctions;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver2D;
-import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
-import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvPixels;
 
 /**
@@ -67,8 +67,8 @@ public class DoubleReflexiveGeneralizedTikhonov2D extends AbstractDoubleSpectral
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoubleReflexiveGeneralizedTikhonov2D(EvPixels imB, EvPixels imPSF, DoubleMatrix2D stencil, ResizingType resizing, boolean showPadded, double regParam, double threshold) {
-        super("Generalized Tikhonov", imB, imPSF, resizing, PaddingType.REFLEXIVE, regParam, threshold);
+    public DoubleReflexiveGeneralizedTikhonov2D(EvPixels imB, EvPixels imPSF, DoubleMatrix2D stencil, SpectralResizingType resizing, double regParam, double threshold) {
+        super("Generalized Tikhonov", imB, imPSF, resizing, SpectralPaddingType.REFLEXIVE, regParam, threshold);
         if ((stencil.rows() != 3) || (stencil.columns() != 3)) {
             throw new IllegalArgumentException("Illegal stencil for regularization operator.");
         }
@@ -76,7 +76,7 @@ public class DoubleReflexiveGeneralizedTikhonov2D extends AbstractDoubleSpectral
         Pd.viewPart(0, 0, 3, 3).assign(stencil);
     }
 
-    public EvPixels internalDeconvolve(EvPixels imB) {
+    public EvPixels internalDeconvolve() {
         log(name + ": deconvolving");
         E1 = new DenseDoubleMatrix2D(bRowsPad, bColumnsPad);
         E1.setQuick(0, 0, 1);

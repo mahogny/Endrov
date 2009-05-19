@@ -31,8 +31,8 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdcomplex.DComplexFunctions;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver2D;
-import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
-import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvPixels;
 
 /**
@@ -67,11 +67,11 @@ public class DoublePeriodicTruncatedSVD2D extends AbstractDoubleSpectralDeconvol
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoublePeriodicTruncatedSVD2D(EvPixels imB, EvPixels imPSF, ResizingType resizing, double regParam, double threshold) {
-        super("TSVD", imB, imPSF, resizing, PaddingType.PERIODIC, regParam, threshold);
+    public DoublePeriodicTruncatedSVD2D(EvPixels imB, EvPixels imPSF, SpectralResizingType resizing, double regParam, double threshold) {
+        super("TSVD", imB, imPSF, resizing, SpectralPaddingType.PERIODIC, regParam, threshold);
     }
 
-    public EvPixels internalDeconvolve(EvPixels imB) {
+    public EvPixels internalDeconvolve() {
         log(name + ": deconvolving");
         S = DoubleCommon2D.circShift((DoubleMatrix2D) PSF, psfCenter);
         S = ((DenseDoubleMatrix2D) S).getFft2();

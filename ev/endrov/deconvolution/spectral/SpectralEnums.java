@@ -33,11 +33,11 @@ import cern.colt.matrix.tfloat.impl.DenseFloatMatrix3D;
  */
 public class SpectralEnums {
 
-    public enum ResizingType {
+    public enum SpectralResizingType {
         NONE, NEXT_POWER_OF_TWO
     };
 
-    public enum PaddingType {
+    public enum SpectralPaddingType {
         PERIODIC, REFLEXIVE
     };
 

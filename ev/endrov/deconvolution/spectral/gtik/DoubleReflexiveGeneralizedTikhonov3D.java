@@ -25,8 +25,8 @@ import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.iterative.DoubleCommon3D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver3D;
-import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
-import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvStack;
 
 /**
@@ -69,8 +69,8 @@ public class DoubleReflexiveGeneralizedTikhonov3D extends AbstractDoubleSpectral
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoubleReflexiveGeneralizedTikhonov3D(EvStack imPSF, DoubleMatrix3D stencil, ResizingType resizing, double regParam, double threshold) {
-        super("Generalized Tikhonov", imPSF, resizing, PaddingType.REFLEXIVE, regParam, threshold);
+    public DoubleReflexiveGeneralizedTikhonov3D(EvStack imPSF, DoubleMatrix3D stencil, SpectralResizingType resizing, double regParam, double threshold) {
+        super("Generalized Tikhonov", imPSF, resizing, SpectralPaddingType.REFLEXIVE, regParam, threshold);
         if ((stencil.slices() != 3) || (stencil.rows() != 3) || (stencil.columns() != 3)) {
             throw new IllegalArgumentException("Illegal stencil for regularization operator");
         }
