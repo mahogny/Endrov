@@ -22,8 +22,8 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.deconvolution.Deconvolver3D;
 import endrov.deconvolution.iterative.DoubleCommon3D;
-import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
-import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvStack;
 
 /**
@@ -121,8 +121,8 @@ public abstract class AbstractDoubleSpectralDeconvolver3D extends Deconvolver3D 
      */
     protected String name;
 
-    protected PaddingType padding;
-    protected ResizingType resizing;
+    protected SpectralPaddingType padding;
+    protected SpectralResizingType resizing;
     
     protected EvStack imPSF;
     
@@ -148,7 +148,7 @@ public abstract class AbstractDoubleSpectralDeconvolver3D extends Deconvolver3D 
      * @param threshold
      *            the smallest positive value assigned to the restored image
      */
-    public AbstractDoubleSpectralDeconvolver3D(String name, EvStack imPSF, ResizingType resizing, PaddingType padding, double regParam, double threshold) {
+    public AbstractDoubleSpectralDeconvolver3D(String name, EvStack imPSF, SpectralResizingType resizing, SpectralPaddingType padding, double regParam, double threshold) {
         log(name + ": initializing");
         this.name = name;
         this.padding=padding;

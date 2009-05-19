@@ -25,8 +25,8 @@ import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.iterative.DoubleCommon3D;
 import endrov.deconvolution.spectral.AbstractDoubleSpectralDeconvolver3D;
-import endrov.deconvolution.spectral.SpectralEnums.PaddingType;
-import endrov.deconvolution.spectral.SpectralEnums.ResizingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
+import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvStack;
 
 /**
@@ -63,8 +63,8 @@ public class DoubleReflexiveTikhonov3D extends AbstractDoubleSpectralDeconvolver
      *            all the values less than the threshold are set to zero. To
      *            disable thresholding use threshold = -1.
      */
-    public DoubleReflexiveTikhonov3D(EvStack imPSF, ResizingType resizing, double regParam, double threshold) {
-        super("Tikhonov", imPSF, resizing, PaddingType.REFLEXIVE, regParam, threshold);
+    public DoubleReflexiveTikhonov3D(EvStack imPSF, SpectralResizingType resizing, double regParam, double threshold) {
+        super("Tikhonov", imPSF, resizing, SpectralPaddingType.REFLEXIVE, regParam, threshold);
     }
 
     public DeconvPixelsStack internalDeconvolve(EvStack imB) {
