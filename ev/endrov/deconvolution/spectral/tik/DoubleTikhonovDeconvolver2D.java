@@ -1,24 +1,26 @@
-package endrov.deconvolution.spectral.gtik;
+package endrov.deconvolution.spectral.tik;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import endrov.deconvolution.Deconvolver2D;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvPixels;
 
-public class GeneralizedTikhonov2D extends Deconvolver2D
+/**
+ * Deconvolution in 2D using tikhonov
+ * @author Johan Henriksson
+ *
+ */
+public class DoubleTikhonovDeconvolver2D extends Deconvolver2D
 	{
 	private final EvPixels imPSF;
-	private final DoubleMatrix2D stencil;
 	private final SpectralResizingType resizing;
 	private final double regParam;
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public GeneralizedTikhonov2D(EvPixels imPSF, DoubleMatrix2D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public DoubleTikhonovDeconvolver2D(EvPixels imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
-		 this.stencil=stencil;
 		 this.resizing=resizing;
 		 this.regParam=regParam;
 		 this.threshold=threshold;
@@ -29,12 +31,12 @@ public class GeneralizedTikhonov2D extends Deconvolver2D
 		{
 		if(padding.equals(SpectralPaddingType.PERIODIC))
 			{
-			DoublePeriodicGeneralizedTikhonov2D d=new DoublePeriodicGeneralizedTikhonov2D(ipB, imPSF, stencil, resizing, regParam, threshold);
+			DoublePeriodicTikhonov2D d=new DoublePeriodicTikhonov2D(ipB, imPSF, resizing, regParam, threshold);
 			return d.internalDeconvolve();
 			}
 		else
 			{
-			DoubleReflexiveGeneralizedTikhonov2D d=new DoubleReflexiveGeneralizedTikhonov2D(ipB, imPSF, stencil, resizing, regParam, threshold);
+			DoubleReflexiveTikhonov2D d=new DoubleReflexiveTikhonov2D(ipB, imPSF, resizing, regParam, threshold);
 			return d.internalDeconvolve();
 			}
 		}

@@ -106,7 +106,7 @@ public class DoubleReflexiveGeneralizedTikhonov2D extends AbstractDoubleSpectral
         ((DenseDoubleMatrix2D) Sa).idct2(true);
         log(name + ": finalizing");
         //FloatProcessor ip = new FloatProcessor(bColumns, bRows);
-        EvPixels ip;
+        //EvPixels ip;
         if (threshold == -1.0) {
             if (isPadded) {
                 return DoubleCommon2D.assignPixelsToProcessorPadded(Sa, bRows, bColumns, bRowsOff, bColumnsOff);
