@@ -22,6 +22,14 @@ import endrov.util.Vector3i;
 /**
  * Automatic tracking of nuclei from spots
  * 
+ * TODO try a tophat
+ * also, code a tophat special case for square and filled tophats? do so for all cases?
+ * top hat 1:  =A(?)B-A = min_B(max_B(A))-A
+ * top hat 2:  =A-A(??)B = max_B(min_B(A))-A
+ * 
+ * squared max/min can be made fast. actually, decomposable dimensions!!!
+ * 
+ * 
  * @author Johan Henriksson
  *
  */
