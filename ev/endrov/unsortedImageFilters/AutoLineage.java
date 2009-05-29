@@ -101,35 +101,35 @@ public class AutoLineage
 			{
 			for(Imageset im:data.getIdObjectsRecursive(Imageset.class).values())
 				{
-				im.channelImages.put("MA", movingAverage(im.channelImages.get("RFP"), 30, 30));
+				im.metaObject.put("MA", movingAverage(im.getChannel("RFP"), 30, 30));
 				
-				im.channelImages.put("avgz", avgZ(im.channelImages.get("RFP")));
+				im.metaObject.put("avgz", avgZ(im.getChannel("RFP")));
 				
 				//Two input channels, one out
 	//			EvPixels c2=ImageMath.minus(in, average);
-				im.channelImages.put("minus", minus(im.channelImages.get("RFP"), im.channelImages.get("MA")));
+				im.metaObject.put("minus", minus(im.getChannel("RFP"), im.getChannel("MA")));
 
-				im.channelImages.put("minusAvgz", minus(im.channelImages.get("RFP"), im.channelImages.get("avgz")));
-				im.channelImages.put("minusAvgz#", axpy(im.channelImages.get("minusAvgz"),0.5,10));
+				im.metaObject.put("minusAvgz", minus(im.getChannel("RFP"), im.getChannel("avgz")));
+				im.metaObject.put("minusAvgz#", axpy(im.getChannel("minusAvgz"),0.5,10));
 
-				im.channelImages.put("MAavgz", movingAverage(im.channelImages.get("minusAvgz"), 30, 30));
-				im.channelImages.put("minus2", minus(im.channelImages.get("minusAvgz"), im.channelImages.get("MAavgz")));
+				im.metaObject.put("MAavgz", movingAverage(im.getChannel("minusAvgz"), 30, 30));
+				im.metaObject.put("minus2", minus(im.getChannel("minusAvgz"), im.getChannel("MAavgz")));
 
 				
 				//EvPixels spotpixels=CompareImage.greater(c2, 2);
-				im.channelImages.put("spotpixels", greater(im.channelImages.get("minus"),2));
-				im.channelImages.put("spotpixels2", greater(im.channelImages.get("minus2"),2));
+				im.metaObject.put("spotpixels", greater(im.getChannel("minus"),2));
+				im.metaObject.put("spotpixels2", greater(im.getChannel("minus2"),2));
 
-				im.channelImages.put("MA15", movingAverage(im.channelImages.get("RFP"), 5, 5));
-				im.channelImages.put("MA30-MA15", minus(ImageMath.times(im.channelImages.get("MA15"),2), im.channelImages.get("MA")));
+				im.metaObject.put("MA15", movingAverage(im.getChannel("RFP"), 5, 5));
+				im.metaObject.put("MA30-MA15", minus(ImageMath.times(im.getChannel("MA15"),2), im.getChannel("MA")));
 
 				
 				//EvPixels out=CompareImage.greater(MiscFilter.movingSum(spotpixels, 2, 2), 15);
-				im.channelImages.put("MS", movingSum(im.channelImages.get("spotpixels"), 2, 2));
-				im.channelImages.put("MSg", greater(im.channelImages.get("MS"),15));
+				im.metaObject.put("MS", movingSum(im.getChannel("spotpixels"), 2, 2));
+				im.metaObject.put("MSg", greater(im.getChannel("MS"),15));
 
-				im.channelImages.put("MS2", movingSum(im.channelImages.get("spotpixels2"), 2, 2));
-				im.channelImages.put("MSg2", greater(im.channelImages.get("MS2"),15));
+				im.metaObject.put("MS2", movingSum(im.getChannel("spotpixels2"), 2, 2));
+				im.metaObject.put("MSg2", greater(im.getChannel("MS2"),15));
 
 				
 				/*

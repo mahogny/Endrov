@@ -323,7 +323,7 @@ public class LevelHierarchy
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/TB2167_080416.ost"));
 		
 		Imageset im=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
-		im.channelImages.put("MA15", AutoLineage.movingAverage(im.channelImages.get("RFP"), 5, 5));
+		im.metaObject.put("MA15", AutoLineage.movingAverage(im.getChannel("RFP"), 5, 5));
 		
 		EvStack stack=im.getChannel("MA15").imageLoader.get(new EvDecimal(14050));
 		

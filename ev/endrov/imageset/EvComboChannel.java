@@ -185,7 +185,7 @@ public class EvComboChannel extends JPanel implements ActionListener
 		if(thisObj instanceof Imageset)
 			{
 			Imageset im=(Imageset)thisObj;
-			for(String chanName:im.channelImages.keySet())
+			for(String chanName:im.getIdObjects(EvChannel.class).keySet())//channelImages.keySet())
 				combo.addItem(new ComboItem(contPath,chanName,thisObj,data));
 			}
 		}

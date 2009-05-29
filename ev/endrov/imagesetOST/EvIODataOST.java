@@ -469,7 +469,7 @@ public class EvIODataOST implements EvIOData
 			for(Map.Entry<EvPath, Imageset> datae:dataImagesets.entrySet())
 				{
 				Imageset im=datae.getValue();
-				for(Map.Entry<String, EvChannel> ce:im.channelImages.entrySet())
+				for(Map.Entry<String, EvChannel> ce:im.getChannels().entrySet())
 					for(Map.Entry<EvDecimal, EvStack> fe:ce.getValue().imageLoader.entrySet())
 						for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 							{
@@ -626,7 +626,7 @@ public class EvIODataOST implements EvIOData
 					//Totally delete non-existing channel directories
 					File blobDir=blob.getDirectory();
 					for(String oldChannel:blob.diskImageLoader.keySet())
-						if(!im.channelImages.containsKey(oldChannel))
+						if(!im.metaObject.containsKey(oldChannel))
 							{
 							File chdir=new File(blobDir,"ch-"+oldChannel);
 							if(EV.debugMode)
@@ -634,7 +634,7 @@ public class EvIODataOST implements EvIOData
 							if(chdir.exists())
 								EvFileUtil.deleteRecursive(chdir);
 							}
-					blob.diskImageLoader.keySet().retainAll(im.channelImages.keySet());
+					blob.diskImageLoader.keySet().retainAll(im.getChannels().keySet());
 
 					//Partially delete existing channel directories
 					for(String channelName:blob.diskImageLoader.keySet())
@@ -674,7 +674,7 @@ public class EvIODataOST implements EvIOData
 				{
 				DiskBlob blob=getCreateBlob(im);
 				blob.diskImageLoader.clear();
-				for(Map.Entry<String, EvChannel> ce:im.channelImages.entrySet())
+				for(Map.Entry<String, EvChannel> ce:im.getChannels().entrySet())
 					{
 					HashMap<EvDecimal,HashMap<EvDecimal,File>> loaderFrames=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
 					blob.diskImageLoader.put(ce.getKey(), loaderFrames);

@@ -60,7 +60,7 @@ public class Filter2Invert extends FlowUnitFilter2
 			
 			//Can provide a ForAll ROI to reuse code
 			
-			for(Map.Entry<String, EvChannel> che:imin.channelImages.entrySet())
+			for(Map.Entry<String, EvChannel> che:imin.getChannels().entrySet())
 				{
 //				public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
 

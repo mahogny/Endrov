@@ -256,9 +256,10 @@ public class FilterSeq extends EvObject
 	 */
 	public void apply(Imageset rec)
 		{
-		for(String chan:rec.channelImages.keySet())
+		for(Map.Entry<String,EvChannel> entry:rec.getChannels().entrySet())
 			{
-			EvChannel ch=rec.channelImages.get(chan);
+			String chan=entry.getKey();
+			EvChannel ch=entry.getValue();
 			for(EvDecimal frame:ch.imageLoader.keySet())
 				{
 				EvStack stack=ch.imageLoader.get(frame);

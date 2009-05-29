@@ -144,7 +144,7 @@ public class EllipseROI extends ROI
 	public Set<String> getChannels(Imageset rec)
 		{
 		TreeSet<String> c=new TreeSet<String>();
-		for(String s:rec.channelImages.keySet())
+		for(String s:rec.getChannels().keySet())
 			if(regionChannels.channelInRange(s))
 				c.add(s);
 		return c;

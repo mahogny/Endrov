@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.swing.JMenu;
+
+import org.jdom.Element;
+
+import endrov.data.EvObject;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
 
@@ -11,7 +16,7 @@ import endrov.util.EvListUtil;
  * Images for one channel
  * @author Johan Henriksson
  */
-public class EvChannel
+public class EvChannel extends EvObject
 	{
 	/****************************************************************************************/
 	/******************************* Image data *********************************************/
@@ -270,5 +275,28 @@ public class EvChannel
 			metaFrame.put(fid, frame);
 			}
 		return frame;
+		}
+
+
+	public void buildMetamenu(JMenu menu)
+		{
+		}
+
+
+	public String getMetaTypeDesc()
+		{
+		return "Channel";
+		}
+
+
+	public void loadMetadata(Element e)
+		{
+		//TODO take from imageset later
+		}
+
+
+	public void saveMetadata(Element e)
+		{
+		//TODO take from imageset later
 		}
 	}

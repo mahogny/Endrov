@@ -471,7 +471,9 @@ public class EvIODataBioformats implements EvIOData
 			Imageset im=(Imageset)d.metaObject.get(imsetName);
 			if(im==null)
 				d.metaObject.put(imsetName, im=new Imageset());
-			im.channelImages.clear();
+			for(String s:im.getChannels().keySet())
+				im.metaObject.remove(s);
+			//im.channelImages.clear();
 			
 			
 			String creationDate = retrieve.getImageCreationDate(seriesIndex);
@@ -563,7 +565,7 @@ public class EvIODataBioformats implements EvIOData
 
 				//Fill up with image loaders
 				EvChannel c=new EvChannel();
-				im.channelImages.put(channelName,c);
+				im.metaObject.put(channelName,c);
 				for(int framenum=0;framenum<numt;framenum++)
 					{
 					for(int slicenum=0;slicenum<numz;slicenum++)

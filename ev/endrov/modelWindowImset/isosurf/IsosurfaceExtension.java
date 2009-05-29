@@ -251,7 +251,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				String channelName=chanCombo.getChannel();
 				if(channelName!=null)
 					{
-					EvChannel ch=im.channelImages.get(channelName);
+					EvChannel ch=im.getChannel(channelName);
 					EvDecimal cframe=ch.closestFrame(getFrame());
 
 					//Create surface if it wasn't there before
@@ -350,13 +350,13 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					float realw=0,realh=0,reald=0; //TODO: should be able to have different distances
 
 					float ptScalarField[]=null;
-					if(im.channelImages.containsKey(channelName) &&
-							im.channelImages.get(channelName).imageLoader.containsKey(cframe))
+					EvChannel chan=im.getChannel(channelName);
+					if(chan!=null && chan.imageLoader.containsKey(cframe))
 						{
 						//double resZ=im.meta.resZ;
 
 						
-						EvStack stack=im.channelImages.get(channelName).imageLoader.get(cframe);
+						EvStack stack=im.getChannel(channelName).imageLoader.get(cframe);
 						final int numSlices=stack.getDepth();
 						int curslice=0;
 						if(stack!=null)
