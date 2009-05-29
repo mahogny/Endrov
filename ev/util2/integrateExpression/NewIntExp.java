@@ -700,9 +700,9 @@ public class NewIntExp
 					for (int k = 0; k<numSubDiv; k++)
 						lin.getNucCreate("xyz_"+i+"_"+j+"_"+k);
 
-			integrator.imset.channelImages.remove("indX");
-			integrator.imset.channelImages.remove("indY");
-			integrator.imset.channelImages.remove("indZ");
+			integrator.imset.metaObject.remove("indX");
+			integrator.imset.metaObject.remove("indY");
+			integrator.imset.metaObject.remove("indZ");
 
 			}
 

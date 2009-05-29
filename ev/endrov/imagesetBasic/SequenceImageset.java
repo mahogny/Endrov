@@ -296,7 +296,13 @@ public class SequenceImageset implements EvIOData
 					}
 					
 				//Clear up old database
-				im.channelImages.keySet().retainAll(channelVector);
+				for(String s:im.getChannels().keySet())
+					{
+					if(!channelVector.contains(s))
+						im.metaObject.remove(s);
+					}
+				//im.channelImages.keySet().retainAll(channelVector);
+				
 				/*
 				for(Map.Entry<String, ChannelImages> entry:im.channelImages.entrySet())
 					{

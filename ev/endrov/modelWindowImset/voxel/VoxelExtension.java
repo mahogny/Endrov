@@ -403,7 +403,7 @@ public class VoxelExtension implements ModelWindowExtension
 //				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
 //				lastChannel=channelCombo.getChannelNotNull();
 
-				EvChannel images=channelCombo.getImagesetNotNull().channelImages.get(channelCombo.getChannel());
+				EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelCombo.getChannel());
 				lastChannelImages=new WeakReference<EvChannel>(images);
 				
 				System.out.println("voxel repaint");
@@ -420,7 +420,7 @@ public class VoxelExtension implements ModelWindowExtension
 				String channelName=channelCombo.getChannel();
 				if(channelName!=null)
 					{
-					EvChannel images=channelCombo.getImagesetNotNull().channelImages.get(channelName);
+					EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelName);
 					if(images!=lastChannelImages.get())
 	//				if(ims!=newImageset || !ch.equals(newChannel))
 						stackChanged();

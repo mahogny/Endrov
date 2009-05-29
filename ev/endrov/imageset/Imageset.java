@@ -38,9 +38,12 @@ public class Imageset extends EvObject
 
 
 	/** List of all channels belonging to this imageset */
-	public Map<String,EvChannel> channelImages=new TreeMap<String,EvChannel>();
+	//public Map<String,EvChannel> channelImages=new TreeMap<String,EvChannel>();
 //	public HashMap<String,EvChannel> channelImages=new HashMap<String,EvChannel>();
 	//Sorting only for viewing convenience. Can be done in controls otherwise
+	
+	
+	
 	
 	/** Common resolution [px/um] */
 	public double resX, resY, resZ; //TODO Deprecate Z once all OST converted. X and Y? or just keep these?
@@ -73,7 +76,20 @@ public class Imageset extends EvObject
 	 */
 	public EvChannel getChannel(String ch)
 		{
-		return channelImages.get(ch);
+		EvObject ob=metaObject.get(ch);
+		if(ob==null)
+			return null;
+		else if(ob instanceof EvChannel)
+			return (EvChannel)ob;
+		else return null;
+		}
+	
+	/**
+	 * Channels and their names directly below. Changes to the map will not be reflected down
+	 */
+	public Map<String,EvChannel> getChannels()
+		{
+		return getIdObjects(EvChannel.class);
 		}
 	
 	
@@ -82,9 +98,9 @@ public class Imageset extends EvObject
 	 */
 	public EvChannel getCreateChannel(String ch)
 		{
-		EvChannel im=channelImages.get(ch);
+		EvChannel im=getChannel(ch);
 		if(im==null)
-			channelImages.put(ch, im=new EvChannel());
+			metaObject.put(ch, im=new EvChannel());
 		return im;
 		}
 
@@ -96,7 +112,7 @@ public class Imageset extends EvObject
 	 */
 	public void removeChannel(String ch)
 		{
-		channelImages.remove(ch);
+		metaObject.remove(ch);
 		}
 	
 	
@@ -109,7 +125,7 @@ public class Imageset extends EvObject
 	 */
 	public EvImage getImageLoader(String channel, EvDecimal frame, EvDecimal z)
 		{
-		EvChannel chim=channelImages.get(channel);
+		EvChannel chim=getChannel(channel);
 		if(chim!=null)
 			return chim.getImageLoader(frame, z);
 		else
@@ -175,21 +191,25 @@ public class Imageset extends EvObject
 		saveFrameMetadata(metaFrame, e);
 		
 		//Channels
-		for(Map.Entry<String, EvChannel> entry:channelImages.entrySet())
+		for(Map.Entry<String, EvObject> entry:metaObject.entrySet())
+//		for(Map.Entry<String, EvChannel> entry:channelImages.entrySet())
 			{
-			EvChannel ch=entry.getValue();
-			
-			Element elOstChannel=new Element("channel");
-			elOstChannel.setAttribute("name", entry.getKey());
-			e.addContent(elOstChannel);
-			
-			elOstChannel.addContent(new Element("binning").addContent(""+ch.chBinning));
-			elOstChannel.addContent(new Element("dispX").addContent(""+ch.dispX));
-			elOstChannel.addContent(new Element("dispY").addContent(""+ch.dispY));
-			elOstChannel.addContent(new Element("comression").addContent(""+ch.compression));
-			for(String key:ch.metaOther.keySet())
-				elOstChannel.addContent(new Element(key).addContent(""+ch.metaOther.get(key)));
-			saveFrameMetadata(ch.metaFrame, elOstChannel);
+			if(entry.getValue() instanceof EvChannel)
+				{
+				EvChannel ch=(EvChannel)entry.getValue();
+				
+				Element elOstChannel=new Element("channel");
+				elOstChannel.setAttribute("name", entry.getKey());
+				e.addContent(elOstChannel);
+				
+				elOstChannel.addContent(new Element("binning").addContent(""+ch.chBinning));
+				elOstChannel.addContent(new Element("dispX").addContent(""+ch.dispX));
+				elOstChannel.addContent(new Element("dispY").addContent(""+ch.dispY));
+				elOstChannel.addContent(new Element("comression").addContent(""+ch.compression));
+				for(String key:ch.metaOther.keySet())
+					elOstChannel.addContent(new Element(key).addContent(""+ch.metaOther.get(key)));
+				saveFrameMetadata(ch.metaFrame, elOstChannel);
+				}
 			}
 		
 		}

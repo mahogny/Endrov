@@ -287,7 +287,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			commonDescript.setText(rec.metaDescript);
 			
 			//Add channel tabs
-			for(String channelName:rec.channelImages.keySet())
+			for(String channelName:rec.getChannels().keySet())
 				{
 				//System.out.println("meta123: "+channelName);
 				tabs.add(channelName, new ChannelTab(this,channelName,rec.getChannel(channelName)));

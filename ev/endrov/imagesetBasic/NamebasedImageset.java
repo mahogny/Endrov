@@ -278,7 +278,12 @@ public class NamebasedImageset implements EvIOData
 					}
 				
 				//Create channels, remove unneeded (for rebuild)
-				im.channelImages.keySet().retainAll(channelVector);
+				for(String s:im.getChannels().keySet())
+					{
+					if(!channelVector.contains(s))
+						im.metaObject.remove(s);
+					}
+				//im.channelImages.keySet().retainAll(channelVector);
 				for(String cname:channelVector)
 					im.getCreateChannel(cname);
 				/*
