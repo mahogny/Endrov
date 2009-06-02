@@ -17,5 +17,18 @@ public interface GeneralOp
 	public EvPixels exec(EvPixels... p);
 	public EvStack exec(EvStack... p);
 	public EvChannel exec(EvChannel... ch);
+	
+	
+	/**
+	 * Takes stacks and pixels. Matches these together, produces a stack
+	 */
+	/*
+	public EvStack execStack(EvObject... p)
+		{
+		
+		
+		return makeStackOp(this).exec(p);
+		}
+		*/
 	}
 

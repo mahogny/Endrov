@@ -8,7 +8,7 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class CumSum
+public class CumSumArea
 	{
 	/**
 	 * Cumulative sum image, in effect, the 2D integral.
@@ -104,7 +104,21 @@ public class CumSum
 		return inPixels[p22]+inPixels[p11]-(inPixels[p12]+inPixels[p21]);
 		}
 	
-	
+	/**
+	 * Equivalent to
+	 *		for(int ax=x1;ax<x2;ax++)
+	 *			sum+=...;
+	 *
+	 */
+	public static int integralLineFromCumSum(EvPixels in, int x1, int x2, int y)
+		{
+		int[] inPixels=in.getArrayInt();
+		int p11=in.getPixelIndex(x1, y);
+		int p12=in.getPixelIndex(x2, y);
+		int p21=in.getPixelIndex(x1, y+1);
+		int p22=in.getPixelIndex(x2, y+1);
+		return inPixels[p22]+inPixels[p11]-(inPixels[p12]+inPixels[p21]);
+		}
 	
 	
 	

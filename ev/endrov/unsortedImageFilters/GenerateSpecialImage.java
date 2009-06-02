@@ -1,6 +1,9 @@
 package endrov.unsortedImageFilters;
 
+import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvStack;
+import endrov.util.EvDecimal;
 
 /**
  * Generate special images useful for calculations
@@ -91,8 +94,39 @@ public class GenerateSpecialImage
 		return p;
 		}
 	
+	
+	
 	/**
 	 * Common kernels? gaussian, laplace etc
 	 */
 
+	
+	
+	/**
+	 * Copy an image over several focal planes. Adapts size according to a template stack, likely
+	 * the stack the new stack will be combined with 
+	 */
+	public static EvStack repeatImageZ(EvImage im, EvStack template)
+		{
+		EvStack s=new EvStack();
+		s.getMetaFrom(template);
+		for(EvDecimal d:template.keySet())
+			s.put(d, im.makeShadowCopy());
+		return s;
+		}
+	
+	
+	/**
+	 * Copy an image over several focal planes. Adapts size according to a template stack, likely
+	 * the stack the new stack will be combined with 
+	 */
+	public static EvStack repeatImageZ(EvPixels p, EvStack template)
+		{
+		EvImage im=new EvImage();
+		im.setPixelsReference(p);
+		return repeatImageZ(im, template);
+		}
+	
+	
+	
 	}

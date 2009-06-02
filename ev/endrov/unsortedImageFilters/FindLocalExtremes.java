@@ -129,7 +129,7 @@ public class FindLocalExtremes
 	public static List<Vector3i> findMinimas(EvStack stack)
 		{
 //		return findMaximas(NewImageSystem.makeStackOp(new ImageMath.TimesOp(-1)).exec(stack));
-		return findMaximas(new ImageMath.TimesOp(-1).exec(stack));
+		return findMaximas(new ImageMath.MulScalarOp(-1).exec(stack));
 		}
 	
 	

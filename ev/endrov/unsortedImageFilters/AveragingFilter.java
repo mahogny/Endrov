@@ -26,7 +26,7 @@ public class AveragingFilter
 		EvPixels out=new EvPixels(in.getType(),w,h);
 		int[] outPixels=out.getArrayInt();
 		
-		EvPixels cumsum=CumSum.cumsum(in);
+		EvPixels cumsum=CumSumArea.cumsum(in);
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -38,7 +38,7 @@ public class AveragingFilter
 				int fromy=Math.max(0,ay-ph);
 				int toy=Math.min(h,ay+ph+1);
 				int area=(tox-fromx)*(toy-fromy);
-				outPixels[out.getPixelIndex(ax, ay)]=CumSum.integralFromCumSum(cumsum, fromx, tox, fromy, toy)/(int)area;
+				outPixels[out.getPixelIndex(ax, ay)]=CumSumArea.integralFromCumSum(cumsum, fromx, tox, fromy, toy)/(int)area;
 				}
 			}
 		return out;
@@ -63,7 +63,7 @@ public class AveragingFilter
 	 * 
 	 * Complexity O(w*h)
 	 */
-	public static EvPixels movingSum(EvPixels in, int pw, int ph)
+	public static EvPixels movingSumQuad(EvPixels in, int pw, int ph)
 		{
 		in=in.convertTo(EvPixels.TYPE_INT, true);
 		int w=in.getWidth();
@@ -71,7 +71,7 @@ public class AveragingFilter
 		EvPixels out=new EvPixels(in.getType(),w,h);
 		int[] outPixels=out.getArrayInt();
 		
-		EvPixels cumsum=CumSum.cumsum(in);
+		EvPixels cumsum=CumSumArea.cumsum(in);
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -82,7 +82,7 @@ public class AveragingFilter
 				
 				int fromy=Math.max(0,ay-ph);
 				int toy=Math.min(h,ay+ph+1);
-				outPixels[out.getPixelIndex(ax, ay)]=CumSum.integralFromCumSum(cumsum, fromx, tox, fromy, toy);
+				outPixels[out.getPixelIndex(ax, ay)]=CumSumArea.integralFromCumSum(cumsum, fromx, tox, fromy, toy);
 				}
 			}
 		return out;
@@ -94,7 +94,7 @@ public class AveragingFilter
 	
 	
 	/**
-	 * Local average, but only average using pixels with threshold of current pixel value. This improves edge conservation
+	 * Local average, but only average using pixels within threshold of current pixel value. This improves edge conservation
 	 * 
 	 * O(w*h*pw*ph)
 	 * 
@@ -157,8 +157,8 @@ public class AveragingFilter
 		int[] outPixels=out.getArrayInt();
 		
 		
-		EvPixels cumsum=CumSum.cumsum(in);
-		EvPixels cumsum2=CumSum.cumsum2(in);
+		EvPixels cumsum=CumSumArea.cumsum(in);
+		EvPixels cumsum2=CumSumArea.cumsum2(in);
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -172,8 +172,8 @@ public class AveragingFilter
 				
 				//Var(x)=E(x^2)-(E(x))^2
 
-				int v1=CumSum.integralFromCumSum(cumsum2, fromx, tox, fromy, toy);
-				int v2=CumSum.integralFromCumSum(cumsum, fromx, tox, fromy, toy);
+				int v1=CumSumArea.integralFromCumSum(cumsum2, fromx, tox, fromy, toy);
+				int v2=CumSumArea.integralFromCumSum(cumsum, fromx, tox, fromy, toy);
 				
 				outPixels[out.getPixelIndex(ax, ay)]=v1 - v2*v2;
 				}
@@ -200,8 +200,8 @@ public class AveragingFilter
 		
 		//Var(x)=E(x^2)-(E(x))^2
 		
-		EvPixels cumsum=CumSum.cumsum(in);
-		EvPixels cumsum2=CumSum.cumsum2(in);
+		EvPixels cumsum=CumSumArea.cumsum(in);
+		EvPixels cumsum2=CumSumArea.cumsum2(in);
 		
 		
 		
