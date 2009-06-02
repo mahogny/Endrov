@@ -264,7 +264,7 @@ public class AutoLineage
 		return new SliceOp(){
 			public EvPixels exec(EvPixels... p)
 				{
-				return AveragingFilter.movingSum(p[0], pw, ph);
+				return AveragingFilter.movingSumQuad(p[0], pw, ph);
 				}
 		}.exec(ch);
 		}
@@ -328,7 +328,7 @@ public class AutoLineage
 			binmaskp[1]=binmaskp[0+3]=binmaskp[1+3]=binmaskp[2+3]=binmaskp[1+3*2]=1;
 			*/
 			
-			EvPixels out=CompareImage.greater(AveragingFilter.movingSum(spotpixels, 2, 2), 15);
+			EvPixels out=CompareImage.greater(AveragingFilter.movingSumQuad(spotpixels, 2, 2), 15);
 			
 			
 			

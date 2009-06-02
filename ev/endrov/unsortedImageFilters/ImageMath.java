@@ -269,10 +269,10 @@ public class ImageMath
 		return sum;
 		}
 
-	public static class TimesOp extends SliceOp
+	public static class MulScalarOp extends SliceOp
 		{
 		int b;
-		public TimesOp(int b)
+		public MulScalarOp(int b)
 			{
 			this.b = b;
 			}
@@ -282,6 +282,18 @@ public class ImageMath
 			}
 		}
 	
+	
+	public static class MulImageOp extends SliceOp
+		{
+		public EvPixels exec(EvPixels... p)
+			{
+			return times(p[0], p[1]);
+			}
+		}
+
+	
+	
+	//OLD!!!!!
 	public static EvChannel times(EvChannel ch, final int b)
 		{
 		return new SliceOp(){
