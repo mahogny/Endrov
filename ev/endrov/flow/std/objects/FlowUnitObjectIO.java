@@ -94,13 +94,13 @@ public class FlowUnitObjectIO extends FlowUnit
 	/** Get types of flows in */
 	public void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("objectIn", new FlowType(EvObject.class));
+		types.put("in", new FlowType(EvObject.class));
 		}
 	
 	/** Get types of flows out */
 	public void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("objectOut", new FlowType(EvObject.class));
+		types.put("out", new FlowType(EvContainer.class));
 		}
 
 	
@@ -172,34 +172,45 @@ public class FlowUnitObjectIO extends FlowUnit
 		{
 		EvContainer parent=exec.getParent();
 
-		Maybe<Object> con=flow.getInputValueMaybe(this, exec, "objectIn");
-		EvObject obvalue;
+		Maybe<Object> con=flow.getInputValueMaybe(this, exec, "in");
+		EvContainer obvalue;
+		
 		if(con.hasValue())
 			{
 			//Get value and store it
 			obvalue=(EvObject)con.get();
-			parent.metaObject.put(nameOfObject, obvalue);
+			parent.metaObject.put(nameOfObject, (EvObject)obvalue);  //TODO bad cast?
 			
 			//TODO replace with new path system
 			EvData currentData=exec.getData();
-			EvPath currentPath=exec.getCurrentPath();
+			EvPath currentPath=exec.getPath();
+			
+			
+			
 			
 			}
 		else
 			{
 			//Read value
-			obvalue=parent.metaObject.get(nameOfObject);
+			//obvalue=parent.metaObject.get(nameOfObject);
 			
 			//TODO replace with new path system
 			EvData currentData=exec.getData();
-			EvPath currentPath=exec.getCurrentPath();
+			EvPath currentPath=exec.getPath();
 
+			EvPath path=EvPath.parse(nameOfObject);
+			EvContainer c=path.getContainer(currentData, currentPath);
+			
+			obvalue=c;
+			System.out.println("got "+c);
+				
+			
 			}
 		
 		//Set output to the same value
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.clear();
-		lastOutput.put("objectOut", obvalue);
+		lastOutput.put("out", obvalue);
 		}
 
 	

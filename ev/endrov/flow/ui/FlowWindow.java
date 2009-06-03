@@ -282,7 +282,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 
 	public void loadData()
 		{
-		fp.setFlow(objectCombo.getSelectedObjectNotNull(), objectCombo.getData(), objectCombo.getRoot());
+		fp.setFlow(objectCombo.getSelectedObjectNotNull(), objectCombo.getData(), objectCombo.getRoot(), objectCombo.getSelectedRelativePath().getParent());
 		fp.repaint();
 		}
 	

@@ -72,6 +72,14 @@ public class FlowExec
 		}
 	
 	
+	/**
+	 * Set path
+	 */
+	public void setPath(EvPath path)
+		{
+		this.currentPath=path;
+		}
+	
 	public EvData getData()
 		{
 		return data.get();
@@ -84,7 +92,7 @@ public class FlowExec
 		}
 	
 	
-	public EvPath getCurrentPath()
+	public EvPath getPath()
 		{
 		return currentPath;
 		}
