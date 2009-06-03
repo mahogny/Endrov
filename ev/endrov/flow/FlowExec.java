@@ -7,6 +7,7 @@ import java.util.WeakHashMap;
 
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvPath;
 
 /**
  * To allow multiple instances of a running Flow, the state has to be separated from the flow declaration
@@ -20,6 +21,9 @@ public class FlowExec
 	private WeakReference<EvData> data=new WeakReference<EvData>(null);
 	private WeakReference<EvContainer> parent=new WeakReference<EvContainer>(null);
 	//It can be discussed if parent pointers should not be in the objects
+	
+	private EvPath currentPath;
+	
 	
 	/**
 	 * Connection to outside world
@@ -79,6 +83,11 @@ public class FlowExec
 		return parent.get();
 		}
 	
+	
+	public EvPath getCurrentPath()
+		{
+		return currentPath;
+		}
 	
 	/**
 	 * State of a unit

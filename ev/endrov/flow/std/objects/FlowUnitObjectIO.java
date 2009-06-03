@@ -14,6 +14,7 @@ import javax.swing.JTextArea;
 import org.jdom.Element;
 
 import endrov.data.EvContainer;
+import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.flow.Flow;
@@ -178,11 +179,21 @@ public class FlowUnitObjectIO extends FlowUnit
 			//Get value and store it
 			obvalue=(EvObject)con.get();
 			parent.metaObject.put(nameOfObject, obvalue);
+			
+			//TODO replace with new path system
+			EvData currentData=exec.getData();
+			EvPath currentPath=exec.getCurrentPath();
+			
 			}
 		else
 			{
 			//Read value
 			obvalue=parent.metaObject.get(nameOfObject);
+			
+			//TODO replace with new path system
+			EvData currentData=exec.getData();
+			EvPath currentPath=exec.getCurrentPath();
+
 			}
 		
 		//Set output to the same value

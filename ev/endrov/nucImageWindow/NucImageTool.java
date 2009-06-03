@@ -3,6 +3,7 @@ package endrov.nucImageWindow;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
 import java.util.Map;
 //import java.util.Collection;
 
@@ -10,12 +11,13 @@ import javax.vecmath.*;
 import javax.swing.*;
 
 import endrov.basicWindow.*;
+import endrov.data.EvSelection;
 import endrov.ev.Log;
 import endrov.imageWindow.*;
 import endrov.imageset.Imageset;
 import endrov.keyBinding.KeyBinding;
 import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
+import endrov.nuc.NucSel;
 import endrov.util.EvDecimal;
 
 /**
@@ -159,8 +161,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				if(Math.abs(so1.x-so2.x)>8)
 //				if(Math.abs(w.w2sx(pos.r)-w.w2sx(0))>8)
 					{
-					NucLineage.selectedNuclei.clear();
-					NucLineage.selectedNuclei.add(new NucPair(lin,nucName));
+					EvSelection.selectOnly(new NucSel(lin,nucName));
 					BasicWindow.updateWindows();
 					}
 				}
@@ -217,7 +218,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		else if(lin!=null && KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			{
 			//Divide nucleus
-			NucLineage.Nuc n=NucLineage.currentHover.fst().nuc.get(NucLineage.currentHover.snd());
+			NucLineage.Nuc n=NucLineage.currentHover.getNuc();
 			if(n!=null && r.interpNuc.containsKey(NucLineage.currentHover))
 				{
 				lin.divide(NucLineage.currentHover.snd(), curFramei);
@@ -227,18 +228,19 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		else if(KeyBinding.get(NucLineage.KEY_SETZ).typed(e))
 			{
 			//Bring nucleus to this Z
-			NucPair useNuc=NucLineage.currentHover;
+			NucSel useNuc=NucLineage.currentHover;
 
 			if(useNuc.fst()==null)
 				{
-				System.out.println("foo");
-				if(NucLineage.selectedNuclei.size()==1)
-					useNuc=NucLineage.selectedNuclei.iterator().next();
+				//System.out.println("foo");
+				HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+				if(selectedNuclei.size()==1)
+					useNuc=selectedNuclei.iterator().next();
 				}
 			
 			NucLineage.Nuc n=null;
-			if(useNuc.fst()!=null)
-				n=useNuc.fst().nuc.get(useNuc.snd());
+			if(useNuc.fst()!=null) //wtf?
+				n=useNuc.getNuc();
 			
 			if(n!=null && r.interpNuc.containsKey(useNuc))
 				{
@@ -292,7 +294,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			double x=0,y=0,z=0,r=0;
 			int num=0;
 			EvDecimal firstFrame=null;
-			for(NucPair childPair:NucLineage.selectedNuclei)
+			for(NucSel childPair:NucLineage.getSelectedNuclei())
 				{
 				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);

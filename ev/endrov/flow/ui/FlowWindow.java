@@ -202,6 +202,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			if(node!=null && !node.isRoot)
 				{
 				FlowUnitObjectIO unit=new FlowUnitObjectIO(node.getPath());
+				System.out.println("path "+node.getPath());
 				if(unit!=null)
 					wthis.fp.placingUnit=unit;
 				unitTree.setSelectionPath(null);

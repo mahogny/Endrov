@@ -10,7 +10,7 @@ import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
+import endrov.nuc.NucSel;
 import endrov.util.EvDecimal;
 
 
@@ -99,10 +99,10 @@ public class VolStats
 				System.out.println("frame "+curframe);
 
 			//Interpolate for this frame
-			Map<NucPair, NucLineage.NucInterp> interp=lin.getInterpNuc(curframe);
+			Map<NucSel, NucLineage.NucInterp> interp=lin.getInterpNuc(curframe);
 			//Only keep visible nuclei
-			Set<NucPair> visibleNuc=new HashSet<NucPair>();
-			for(Map.Entry<NucPair, NucLineage.NucInterp> e:interp.entrySet())
+			Set<NucSel> visibleNuc=new HashSet<NucSel>();
+			for(Map.Entry<NucSel, NucLineage.NucInterp> e:interp.entrySet())
 				if(e.getValue().isVisible())
 					visibleNuc.add(e.getKey());
 			interp.keySet().retainAll(visibleNuc);
@@ -112,7 +112,7 @@ public class VolStats
 			
 			//Total nuclei volume
 			double totNucVol=0;
-			for(Map.Entry<NucPair, NucLineage.NucInterp> entry:interp.entrySet())
+			for(Map.Entry<NucSel, NucLineage.NucInterp> entry:interp.entrySet())
 				{
 				double r=entry.getValue().pos.r;
 				totNucVol+=4*Math.PI*r*r*r/3;

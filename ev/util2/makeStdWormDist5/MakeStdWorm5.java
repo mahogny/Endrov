@@ -11,7 +11,7 @@ import endrov.data.*;
 import endrov.ev.*;
 import endrov.imagesetImserv.EvImserv;
 import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
+import endrov.nuc.NucSel;
 import endrov.nuc.NucLineage.NucInterp;
 import endrov.util.EvDecimal;
 
@@ -193,10 +193,10 @@ public class MakeStdWorm5
 	/**
 	 * Get names of nuclei that appear in an interpolated frame
 	 */
-	public static SortedSet<String> interpNucNames(Map<NucPair, NucLineage.NucInterp> inter)
+	public static SortedSet<String> interpNucNames(Map<NucSel, NucLineage.NucInterp> inter)
 		{
 		TreeSet<String> names=new TreeSet<String>();
-		for(NucPair p:inter.keySet())
+		for(NucSel p:inter.keySet())
 			names.add(p.snd());
 		return names;
 		}
@@ -323,16 +323,16 @@ public class MakeStdWorm5
 				NucLineage lin=entry2.getValue();
 				
 				//Interpolate for this frame
-				Map<NucPair, NucLineage.NucInterp> interp=lin.getInterpNuc(curframe);
+				Map<NucSel, NucLineage.NucInterp> interp=lin.getInterpNuc(curframe);
 				//Only keep visible nuclei
-				Set<NucPair> visibleNuc=new HashSet<NucPair>();
-				for(Map.Entry<NucPair, NucLineage.NucInterp> e:interp.entrySet())
+				Set<NucSel> visibleNuc=new HashSet<NucSel>();
+				for(Map.Entry<NucSel, NucLineage.NucInterp> e:interp.entrySet())
 					if(e.getValue().isVisible())
 						visibleNuc.add(e.getKey());
 				interp.keySet().retainAll(visibleNuc);
 
 				//Add coordinates
-				for(Map.Entry<NucPair, NucLineage.NucInterp> entry:interp.entrySet())
+				for(Map.Entry<NucSel, NucLineage.NucInterp> entry:interp.entrySet())
 					{
 					String nucname=entry.getKey().snd();
 					bf.lininfo.get(lin).untransformed.put(nucname, entry.getValue().pos.getPosCopy());
@@ -603,8 +603,8 @@ public class MakeStdWorm5
 					System.out.println(curframe);
 				for(NucLineage lin:lins.values())
 					{
-					Map<NucPair, NucInterp> inter=lin.getInterpNuc(curframe);
-					for(Map.Entry<NucPair, NucInterp> ie:inter.entrySet())
+					Map<NucSel, NucInterp> inter=lin.getInterpNuc(curframe);
+					for(Map.Entry<NucSel, NucInterp> ie:inter.entrySet())
 						{
 						String thisnucname=ie.getKey().snd();
 						NucInterp ni=ie.getValue();
