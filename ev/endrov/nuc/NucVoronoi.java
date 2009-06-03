@@ -28,11 +28,11 @@ public class NucVoronoi
 	public Map<String,Double> totArea=new HashMap<String, Double>();
 
 	
-	public NucVoronoi(Map<NucPair, NucLineage.NucInterp> inter, boolean selfNeigh) throws Exception
+	public NucVoronoi(Map<NucSel, NucLineage.NucInterp> inter, boolean selfNeigh) throws Exception
 		{
 		nucnames=new Vector<String>();
 		nmid=new Vector<Vector3d>();
-		for(Map.Entry<NucPair, NucLineage.NucInterp> entry:inter.entrySet())
+		for(Map.Entry<NucSel, NucLineage.NucInterp> entry:inter.entrySet())
 			{
 			//NucLineage.Nuc nuc=entry.getKey().fst().nuc.get(entry.getKey().snd());
 			//int curframe=100;

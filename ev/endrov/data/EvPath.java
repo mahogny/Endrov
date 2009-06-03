@@ -4,10 +4,11 @@ import java.util.List;
 
 
 /**
- * Path to an object.
+ * Path to an object.<br/>
  * 
- * A path relative to (current) data is on the form ob1/ob2/ob3. To refer to another data, use
- * e.g. #dataname/ob1/ob2  
+ * Relative path: ob1/ob2/ob3 <br/> 
+ * Absolute path: /ob1/ob2 <br/>
+ * Path into another EvData: #dataname/ob1/ob2 <br/>
  * 
  * @author Johan Henriksson
  *
@@ -84,5 +85,52 @@ public class EvPath implements Comparable<EvPath>
 			}
 		return defret;
 		}
+	
+	
+	/**
+	 * Recurse a container given path
+	 */
+	private EvContainer getContainerRecurse(EvContainer c, String[] path, int pos)
+		{
+		if(pos<path.length)
+			return getContainerRecurse(c.metaObject.get(path[pos]), path, pos+1);
+		else
+			return c;
+		}
+	
+	/**
+	 * Get the object the path points to
+	 * 
+	 * TODO should it throw an exception? 
+	 */
+	public EvContainer getContainer(EvData currentData, EvPath currentPath)
+		{
+		String s=path[0];
+		
+		if(s.startsWith("#"))
+			{
+			s=s.substring(1);
+			//Absolute path in another data
+			for(EvData d:EvData.openedData)
+				if(d.getMetadataName().equals(s))
+					return getContainerRecurse(d, path, 1);
+			return null;
+			}
+		else if(s.equals(""))
+			{
+			//Absolute path within data
+			return getContainerRecurse(currentData, path, 1);
+			}
+		else
+			{
+			//Relative path
+			EvContainer c=getContainerRecurse(currentData, currentPath.path, 0);
+			return getContainerRecurse(c, path, 0);
+			}
+		
+		
+		}
+	
+	
 	
 	}

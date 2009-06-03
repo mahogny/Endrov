@@ -6,10 +6,11 @@ import javax.vecmath.*;
 
 
 import endrov.basicWindow.*;
+import endrov.data.EvSelection;
 import endrov.ev.*;
 import endrov.imageWindow.*;
 import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
+import endrov.nuc.NucSel;
 import endrov.util.EvDecimal;
 
 /**
@@ -37,10 +38,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public ImageWindow w;
 	
 	/** Interpolated nuclei */
-	public Map<NucPair, NucLineage.NucInterp> interpNuc=new HashMap<NucPair, NucLineage.NucInterp>();
+	public Map<NucSel, NucLineage.NucInterp> interpNuc=new HashMap<NucSel, NucLineage.NucInterp>();
 
 	/** Nuclei currently being moved */
-	public NucPair modifyingNucName=null;
+	public NucSel modifyingNucName=null;
 	
 	
 	public NucImageRenderer(ImageWindow w)
@@ -63,17 +64,17 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public void draw(Graphics g)
 		{
 		//Update hover
-		NucPair lastHover=NucLineage.currentHover;			
+		NucSel lastHover=NucLineage.currentHover;			
 		if(w.mouseInWindow)
-			NucLineage.currentHover=new NucPair();
+			NucLineage.currentHover=new NucSel();
 	
 		interpNuc.clear();
 		for(NucLineage lin:getVisibleLineages())
 			{
-			Map<NucPair, NucLineage.NucInterp> interpNucPart=lin.getInterpNuc(w.frameControl.getFrame());
+			Map<NucSel, NucLineage.NucInterp> interpNucPart=lin.getInterpNuc(w.frameControl.getFrame());
 			interpNuc.putAll(interpNucPart);
 			}
-		for(NucPair nucPair:interpNuc.keySet())
+		for(NucSel nucPair:interpNuc.keySet())
 			{
 			NucLineage.NucInterp nuc=interpNuc.get(nucPair);
 			drawNuc(g,nucPair,nuc);
@@ -102,7 +103,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	/**
 	 * Draw a single nucleus
 	 */
-	private void drawNuc(Graphics g, NucPair nucPair, NucLineage.NucInterp nuc)
+	private void drawNuc(Graphics g, NucSel nucPair, NucLineage.NucInterp nuc)
 		{			
 		String nucName=nucPair.snd();
 		
@@ -121,7 +122,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			
 			//Pick color of nucleus
 			Color nucColor;
-			if(NucLineage.selectedNuclei.contains(nucPair))
+			if(EvSelection.isSelected(nucPair))
 				nucColor=Color.RED;
 			else
 				nucColor=Color.BLUE;
@@ -170,7 +171,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 					NucLineage.currentHover=nucPair;
 				
 				//Draw name of nucleus. maybe do this last
-				if(NucLineage.currentHover.equals(nucPair) || NucLineage.selectedNuclei.contains(nucPair))
+				if(NucLineage.currentHover.equals(nucPair) || EvSelection.isSelected(nucPair))
 					{
 					g.setColor(Color.RED);
 					g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);

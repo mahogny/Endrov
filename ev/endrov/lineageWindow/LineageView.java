@@ -10,6 +10,7 @@ import java.io.File;
 import javax.swing.*;
 
 import endrov.basicWindow.*;
+import endrov.data.EvSelection;
 import endrov.lineageWindow.print.Print2DtoPostScript;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
@@ -259,9 +260,10 @@ public class LineageView extends JPanel
 	 */
 	public void goSelected()
 		{
-		if(!NucLineage.selectedNuclei.isEmpty())
+		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+		if(!selectedNuclei.isEmpty())
 			{
-			String nucName=NucLineage.selectedNuclei.iterator().next().snd();
+			String nucName=selectedNuclei.iterator().next().snd();
 			Internal internal=getNucinfo(nucName);
 			goInternalNuc(internal, camera);
 			}
@@ -694,7 +696,7 @@ public class LineageView extends JPanel
 
 		//Draw name of nucleus. Warn if something is wrong
 		if((nuc.child.isEmpty() && showLeafLabel) || (!nuc.child.isEmpty() && showTreeLabel))
-			drawNucName(g, namePrefix, new NucPair(currentLin, nucName), midr, endc);
+			drawNucName(g, namePrefix, new NucSel(currentLin, nucName), midr, endc);
 		}
 
 	
@@ -720,14 +722,14 @@ public class LineageView extends JPanel
 	/**
 	 * Draw text name
 	 */
-	private void drawNucName(Graphics g, String prefix, NucPair nucPair, int midr, int endc)
+	private void drawNucName(Graphics g, String prefix, NucSel nucPair, int midr, int endc)
 		{
 		String nucName=nucPair.snd();
 		int fontHeight=g.getFontMetrics().getHeight();
 		int fontWidth=g.getFontMetrics().stringWidth(prefix+nucName);
 		int textc=endc+5;
 		Graphics2D g2=(Graphics2D)g;
-		if(NucLineage.selectedNuclei.contains(nucPair))
+		if(EvSelection.isSelected(nucPair))
 			g2.setColor(Color.RED);
 		else
 			g2.setColor(Color.BLUE);
@@ -887,7 +889,8 @@ public class LineageView extends JPanel
 		if(r!=null)
 			r.clickRegion(e);
 		else if(SwingUtilities.isLeftMouseButton(e))
-			NucLineage.selectedNuclei.clear();
+			EvSelection.unselectAll();
+			//NucLineage.selectedNuclei.clear();
 		BasicWindow.updateWindows();
 		}
 
@@ -935,7 +938,7 @@ public class LineageView extends JPanel
 				{
 				//System.out.println("here "+nucname+"   "+SwingUtilities.isLeftMouseButton(e)+"  "+currentLin);
 				if(SwingUtilities.isLeftMouseButton(e))
-					NucLineage.mouseSelectNuc(new NucPair(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					NucLineage.mouseSelectNuc(new NucSel(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 				}
 			BasicWindow.updateWindows();
 			}

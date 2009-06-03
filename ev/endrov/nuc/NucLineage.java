@@ -41,11 +41,16 @@ public class NucLineage extends EvObject implements Cloneable
 	private static final String metaType="nuclineage";
 
 	/** Currently hidden nuclei. currently no sample. needed? */
-	public static HashSet<NucPair> hiddenNuclei=new HashSet<NucPair>();
+	public static HashSet<NucSel> hiddenNuclei=new HashSet<NucSel>();
 	/** Currently selected nuclei. currently no sample. needed? */
-	public static HashSet<NucPair> selectedNuclei=new HashSet<NucPair>();
+	//public static HashSet<NucPair> selectedNuclei=new HashSet<NucPair>();
 	
-	public static NucPair currentHover=new NucPair(null,"");
+	public static HashSet<NucSel> getSelectedNuclei()
+		{
+		return EvSelection.getSelected(NucSel.class);
+		}
+	
+	public static NucSel currentHover=new NucSel(null,"");
 
 	public static final int KEY_TRANSLATE=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Translate",'z'));
 	public static final int KEY_CHANGE_RADIUS=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Change radius",'c'));
@@ -95,7 +100,7 @@ public class NucLineage extends EvObject implements Cloneable
 	 * @param nucPair Which nucleus, never null
 	 * @param shift True if shift-key held
 	 */
-	public static void mouseSelectNuc(NucPair nucPair, boolean shift)
+	public static void mouseSelectNuc(NucSel nucPair, boolean shift)
 		{
 		String nucname=nucPair.snd();
 		//Shift-key used to select multiple
@@ -103,17 +108,19 @@ public class NucLineage extends EvObject implements Cloneable
 			{
 			if(!nucname.equals(""))
 				{
-				if(selectedNuclei.contains(nucPair))
-					selectedNuclei.remove(nucPair);
+				if(EvSelection.isSelected(nucPair))
+					EvSelection.unselect(nucPair);
 				else
-					selectedNuclei.add(nucPair);
+					EvSelection.select(nucPair);
 				}
 			}
 		else
 			{
-			selectedNuclei.clear();				
+			EvSelection.unselectAll();
+//			selectedNuclei.clear();				
 			if(!nucname.equals(""))
-				selectedNuclei.add(nucPair);
+				EvSelection.select(nucPair);
+				//selectedNuclei.add(nucPair);
 			}
 		BasicWindow.updateWindows();
 		}
@@ -156,7 +163,8 @@ public class NucLineage extends EvObject implements Cloneable
 	 */
 	public static void createParentChildSelected()
 		{
-		if(NucLineage.selectedNuclei.isEmpty())
+		HashSet<NucSel> selectedNuclei=getSelectedNuclei();
+		if(selectedNuclei.isEmpty())
 			{
 			JOptionPane.showMessageDialog(null, "No nuclei selected");
 			return;
@@ -164,9 +172,9 @@ public class NucLineage extends EvObject implements Cloneable
 		String parentName=null;
 		EvDecimal parentFrame=new EvDecimal(0);
 		NucLineage.Nuc parent=null;
-		NucLineage lin=NucLineage.selectedNuclei.iterator().next().fst();
+		NucLineage lin=selectedNuclei.iterator().next().fst();
 		//Decide which is the parent
-		for(NucPair childPair:NucLineage.selectedNuclei)
+		for(NucSel childPair:selectedNuclei)
 			if(childPair.fst()==lin)
 				{
 				
@@ -184,7 +192,7 @@ public class NucLineage extends EvObject implements Cloneable
 		if(parent==null)
 			JOptionPane.showMessageDialog(null, "Could not decide on a parent");
 		else
-			for(NucPair childPair:NucLineage.selectedNuclei)
+			for(NucSel childPair:selectedNuclei)
 				if(childPair.fst()==lin)
 					{
 					String childName=childPair.snd();
@@ -567,15 +575,15 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Get all interpolated nuclei
 	 */
-	public Map<NucPair, NucInterp> getInterpNuc(EvDecimal frame)
+	public Map<NucSel, NucInterp> getInterpNuc(EvDecimal frame)
 		{
-		HashMap<NucPair, NucInterp> nucs=new HashMap<NucPair, NucInterp>();
+		HashMap<NucSel, NucInterp> nucs=new HashMap<NucSel, NucInterp>();
 		for(String nucName:nuc.keySet())
 			{
 			Nuc n=nuc.get(nucName);
 			NucInterp inter=n.interpolatePos(frame);
 			if(inter!=null)
-				nucs.put(new NucPair(this, nucName), inter);
+				nucs.put(new NucSel(this, nucName), inter);
 			}
 		return nucs;
 		}
@@ -664,11 +672,14 @@ public class NucLineage extends EvObject implements Cloneable
 				on.child.add(newName);
 				}
 			
-			NucPair oldref=new NucPair(this,oldName);
-			if(selectedNuclei.contains(oldref))
+			NucSel oldref=new NucSel(this,oldName);
+			//if(selectedNuclei.contains(oldref))
+			if(EvSelection.isSelected(oldref))
 				{
-				selectedNuclei.remove(oldref);
-				selectedNuclei.add(new NucPair(this,newName));
+				//selectedNuclei.remove(oldref);
+				EvSelection.unselect(oldref);
+				//selectedNuclei.add(new NucPair(this,newName));
+				EvSelection.select(new NucSel(this,newName));
 				}
 			}
 		setMetadataModified();
@@ -718,8 +729,8 @@ public class NucLineage extends EvObject implements Cloneable
 			{
 				public void actionPerformed(ActionEvent e)
 					{
-					for (NucPair p : selectedNuclei)
-						p.fst().nuc.get(p.snd()).colorNuc = null;
+					for (NucSel p : getSelectedNuclei())
+						p.getNuc().colorNuc = null;
 					BasicWindow.updateWindows();
 					}
 			});
@@ -735,10 +746,10 @@ public class NucLineage extends EvObject implements Cloneable
 					for (EvColor c : exclude)
 						colors.remove(c);
 					colors.remove(EvColor.black);
-					for (NucPair p : selectedNuclei)
+					for (NucSel p : getSelectedNuclei())
 						{
 						int pi = Math.abs(p.snd().hashCode())%colors.size();
-						p.fst().nuc.get(p.snd()).colorNuc = colors.get(pi).c;
+						p.getNuc().colorNuc = colors.get(pi).c;
 						}
 					BasicWindow.updateWindows();
 					}
@@ -761,8 +772,8 @@ public class NucLineage extends EvObject implements Cloneable
 				Color awtc=new Color(Integer.parseInt(sr),Integer.parseInt(sg),Integer.parseInt(sb));
 				EvColor c=new EvColor("Custom",awtc);
 				
-				for (NucPair p : selectedNuclei)
-					p.fst().nuc.get(p.snd()).colorNuc = c.c;
+				for (NucSel p : getSelectedNuclei())
+					p.getNuc().colorNuc = c.c;
 				BasicWindow.updateWindows();
 				}
 			});
@@ -794,8 +805,8 @@ public class NucLineage extends EvObject implements Cloneable
 		EvColor.addColorMenuEntries(m, new ColorMenuListener(){
 			public void setColor(EvColor c)
 				{
-				for (NucPair p : selectedNuclei)
-					p.fst().nuc.get(p.snd()).colorNuc = c.c;
+				for (NucSel p : getSelectedNuclei())
+					p.getNuc().colorNuc = c.c;
 				BasicWindow.updateWindows();
 				}
 		});
@@ -1114,15 +1125,16 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	public static void calcAngle(EvDecimal frame)
 		{
-		if(NucLineage.selectedNuclei.size()==3)
+		HashSet<NucSel> selectedNuclei=getSelectedNuclei();
+		if(selectedNuclei.size()==3)
 			{
-			Iterator<NucPair> it=NucLineage.selectedNuclei.iterator();
-			NucPair nucpA=it.next();
-			NucPair nucpB=it.next();
-			NucPair nucpC=it.next();
-			Vector3d pA=nucpA.fst().nuc.get(nucpA.snd()).interpolatePos(frame).pos.getPosCopy();
-			Vector3d pB=nucpB.fst().nuc.get(nucpB.snd()).interpolatePos(frame).pos.getPosCopy();
-			Vector3d pC=nucpC.fst().nuc.get(nucpC.snd()).interpolatePos(frame).pos.getPosCopy();
+			Iterator<NucSel> it=selectedNuclei.iterator();
+			NucSel nucpA=it.next();
+			NucSel nucpB=it.next();
+			NucSel nucpC=it.next();
+			Vector3d pA=nucpA.getNuc().interpolatePos(frame).pos.getPosCopy();
+			Vector3d pB=nucpB.getNuc().interpolatePos(frame).pos.getPosCopy();
+			Vector3d pC=nucpC.getNuc().interpolatePos(frame).pos.getPosCopy();
 			
 			double scale=360/(2*Math.PI);
 			
@@ -1134,7 +1146,7 @@ public class NucLineage extends EvObject implements Cloneable
 		else
 			{
 			Log.printLog("Select 3 nuclei first");
-			for(NucPair p:NucLineage.selectedNuclei)
+			for(NucSel p:selectedNuclei)
 				Log.printLog(p.toString());
 			}
 
@@ -1142,9 +1154,9 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	public static void showPos(EvDecimal frame)
 		{
-		for(NucPair p:selectedNuclei)
+		for(NucSel p:getSelectedNuclei())
 			{
-			NucLineage.NucPos npos=p.fst().nuc.get(p.snd()).interpolatePos(frame).pos;
+			NucLineage.NucPos npos=p.getNuc().interpolatePos(frame).pos;
 			//Vector3d pos=p.fst().nuc.get(p.snd()).interpolatePos(frame).pos.getPosCopy();
 			Log.printLog("pos "+p.snd()+": "+npos.x+" , "+npos.y+" , "+npos.z+"  r: "+npos.r);
 			}

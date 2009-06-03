@@ -4,7 +4,7 @@ import javax.vecmath.*;
 
 import endrov.basicWindow.*;
 import endrov.nuc.NucLineage;
-import endrov.nuc.NucPair;
+import endrov.nuc.NucSel;
 
 
 /**
@@ -16,7 +16,7 @@ public class CmdNucsnap
 	public int numArg()	{return 0;}
 	public void exec() throws Exception
 		{
-		for(NucPair nucPair:NucLineage.selectedNuclei)
+		for(NucSel nucPair:NucLineage.getSelectedNuclei())
 			{
 			NucLineage lin=nucPair.fst();
 			NucLineage.Nuc n=lin.nuc.get(nucPair.snd());

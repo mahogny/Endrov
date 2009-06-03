@@ -545,7 +545,7 @@ public class NewIntExp
 
 		Map<String, Double> expLevel;
 		Map<String, Integer> nucVol;
-		Map<NucPair, NucLineage.NucInterp> inter;
+		Map<NucSel, NucLineage.NucInterp> inter;
 		Map<EvDecimal, Double> bg;
 
 		public IntegratorCell(NewIntExp integrator, NucLineage lin,
@@ -569,7 +569,7 @@ public class NewIntExp
 			double imageZw = integrator.curZ.doubleValue();
 
 			// For all nuc
-			for (Map.Entry<NucPair, NucLineage.NucInterp> e : inter.entrySet())
+			for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
 			// if(e.getKey().getRight().equals("ABarappaa"))
 			// if(e.getKey().getRight().equals("AB"))
 				{

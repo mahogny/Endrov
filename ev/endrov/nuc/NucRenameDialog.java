@@ -34,7 +34,7 @@ public class NucRenameDialog extends JDialog implements ActionListener
 	private final String oldName;
 	
 	
-	private NucRenameDialog(Frame frame, NucPair pair)
+	private NucRenameDialog(Frame frame, NucSel pair)
 		{
 		super(frame,"EV Rename Nucleus: "+pair.snd(),false);
 		this.frame=frame;
@@ -153,11 +153,11 @@ public class NucRenameDialog extends JDialog implements ActionListener
 	 * Create rename dialog if possible
 	 * @param caller Window that calls or null
 	 */
-	public static void run(Collection<NucPair> nucs, Frame caller)
+	public static void run(Collection<NucSel> nucs, Frame caller)
 		{
 		if(nucs.size()==1) 
 			{
-			NucPair nucPair=nucs.iterator().next();
+			NucSel nucPair=nucs.iterator().next();
 			if(nucPair!=null)
 				new NucRenameDialog(caller,nucPair);
 			}

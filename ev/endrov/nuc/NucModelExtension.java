@@ -18,6 +18,7 @@ import endrov.basicWindow.EvColor;
 import endrov.basicWindow.EvColor.ColorMenuListener;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
+import endrov.data.EvSelection;
 import endrov.ev.*;
 import endrov.modelWindow.*;
 import endrov.nuc.NucLineage.NucInterp;
@@ -41,8 +42,8 @@ public class NucModelExtension implements ModelWindowExtension
 	
 	private static class NucModelWindowHook implements ModelWindowHook, ActionListener, ModelView.GLSelectListener
 		{
-		private final HashMap<Integer,NucPair> selectColorMap=new HashMap<Integer,NucPair>();
-		private Vector<Map<NucPair, NucLineage.NucInterp>> interpNuc=new Vector<Map<NucPair, NucLineage.NucInterp>>();
+		private final HashMap<Integer,NucSel> selectColorMap=new HashMap<Integer,NucSel>();
+		private Vector<Map<NucSel, NucLineage.NucInterp>> interpNuc=new Vector<Map<NucSel, NucLineage.NucInterp>>();
 		private final ModelWindow w;
 		
 		public void fillModelWindowMenus(){}
@@ -208,12 +209,12 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			if(e.getSource()==miShowSelectedNuc)
 				{
-				for(endrov.nuc.NucPair p:NucLineage.selectedNuclei)
+				for(endrov.nuc.NucSel p:NucLineage.getSelectedNuclei())
 					NucLineage.hiddenNuclei.remove(p);
 				}
 			else if(e.getSource()==miHideSelectedNuc)
 				{
-				for(endrov.nuc.NucPair p:NucLineage.selectedNuclei)
+				for(endrov.nuc.NucSel p:NucLineage.getSelectedNuclei())
 					NucLineage.hiddenNuclei.add(p);
 				}
 //			else if(e.getSource()==miSaveColorScheme)
@@ -300,8 +301,8 @@ public class NucModelExtension implements ModelWindowExtension
 			//boolean showSmallNuc=miShowSmallNuclei.isSelected();
 			if(EV.debugMode)
 				System.out.println("#nuc to render: "+interpNuc.size());
-			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
-				for(Map.Entry<NucPair, NucLineage.NucInterp> entry:inter.entrySet())
+			for(Map<NucSel, NucLineage.NucInterp> inter:interpNuc)
+				for(Map.Entry<NucSel, NucLineage.NucInterp> entry:inter.entrySet())
 					if(entry.getValue().isVisible())
 						{
 						int rawcol=w.view.reserveSelectColor(this);
@@ -369,11 +370,11 @@ public class NucModelExtension implements ModelWindowExtension
 				}
 			}
 		
-		private Color colorForNuc(NucPair pair)
+		private Color colorForNuc(NucSel pair)
 			{
 			Color col=traceColor.c;
 			if(col==null)
-				col=NucLineage.representativeColor(pair.fst().nuc.get(pair.snd()).colorNuc);
+				col=NucLineage.representativeColor(pair.getNuc().colorNuc);
 			return col;
 			}
 		
@@ -389,7 +390,7 @@ public class NucModelExtension implements ModelWindowExtension
 			boolean traceSel=miShowTraceSel.isSelected();
 			boolean tracesSimple=miShowSimpleTraces.isSelected();
 			
-			for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
+			for(Map<NucSel, NucLineage.NucInterp> inter:interpNuc)
 				{
 				//Draw neighbours. Need be calculated in the background and cached
 				if(miShowDelaunay.isSelected())
@@ -401,7 +402,7 @@ public class NucModelExtension implements ModelWindowExtension
 						
 //						r=600; //TODO consistent voronoi calc
 						
-						Map<NucPair, NucLineage.NucInterp> interX=new HashMap<NucPair, NucInterp>(inter);
+						Map<NucSel, NucLineage.NucInterp> interX=new HashMap<NucSel, NucInterp>(inter);
 						
 						NucLineage.NucInterp i1=new NucLineage.NucInterp();
 						i1.pos=new NucLineage.NucPos();
@@ -420,10 +421,10 @@ public class NucModelExtension implements ModelWindowExtension
 						i4.frameBefore=EvDecimal.ZERO;
 						i4.pos.y=-r;
 
-						interX.put(new NucPair(null,":::1"), i1);
-						interX.put(new NucPair(null,":::2"), i2);
-						interX.put(new NucPair(null,":::3"), i3);
-						interX.put(new NucPair(null,":::4"), i4);
+						interX.put(new NucSel(null,":::1"), i1);
+						interX.put(new NucSel(null,":::2"), i2);
+						interX.put(new NucSel(null,":::3"), i3);
+						interX.put(new NucSel(null,":::4"), i4);
 						///////////////////////////// TODO TODO TODO  BAD
 
 						
@@ -485,7 +486,7 @@ public class NucModelExtension implements ModelWindowExtension
 				
 				
 				
-				for(NucPair nucPair:inter.keySet())
+				for(NucSel nucPair:inter.keySet())
 					{
 					//Render nuc body
 					renderNuc(gl, nucPair, inter.get(nucPair));
@@ -493,13 +494,12 @@ public class NucModelExtension implements ModelWindowExtension
 					if(traceCur && !traceSel && inter.get(nucPair).isVisible())
 						{
 						Color col=colorForNuc(nucPair);
-						NucLineage.Nuc nuc=nucPair.fst().nuc.get(nucPair.snd());
-						renderTrace(gl,nuc, tracesSimple, col);
+						renderTrace(gl,nucPair.getNuc(), tracesSimple, col);
 						}
 					
 					//Draw connecting line
 					if(nucPair.snd().equals(NucLineage.connectNuc[0]))
-						for(NucPair nucPair2:inter.keySet())
+						for(NucSel nucPair2:inter.keySet())
 							if(nucPair2.snd().equals(NucLineage.connectNuc[1]))
 								{
 								NucInterp n=inter.get(nucPair);
@@ -513,14 +513,14 @@ public class NucModelExtension implements ModelWindowExtension
 					}
 			
 				//Render nuclei text
-				for(NucPair nucPair:inter.keySet())
+				for(NucSel nucPair:inter.keySet())
 					renderNucLabel(gl,transparentRenderers,nucPair, inter.get(nucPair));
 				}
 			
 			if(traceSel)
-				for(NucPair pair:NucLineage.selectedNuclei)
+				for(NucSel pair:NucLineage.getSelectedNuclei())
 					{
-					NucLineage.Nuc nuc=pair.fst().nuc.get(pair.snd());
+					NucLineage.Nuc nuc=pair.getNuc();
 					renderTrace(gl,nuc, tracesSimple, colorForNuc(pair));
 					}
 			
@@ -560,13 +560,13 @@ public class NucModelExtension implements ModelWindowExtension
 
 		
 		/** Keep track of what hover was before hover test started */
-		private NucPair lastHover=null;
+		private NucSel lastHover=null;
 		/** Called when hover test starts */
 		public void hoverInit(int pixelid)
 			{
 			//Update hover
 			lastHover=NucLineage.currentHover;
-			NucLineage.currentHover=new NucPair();
+			NucLineage.currentHover=new NucSel();
 			}
 		/** Called when nucleus hovered */
 		public void hover(int pixelid)
@@ -584,7 +584,7 @@ public class NucModelExtension implements ModelWindowExtension
 		public Collection<Double> adjustScale()
 			{
 			int count=0;
-			for(Map<NucPair, NucLineage.NucInterp> i:interpNuc)
+			for(Map<NucSel, NucLineage.NucInterp> i:interpNuc)
 				count+=i.size();
 			if(count>=2)
 				{
@@ -592,7 +592,7 @@ public class NucModelExtension implements ModelWindowExtension
 				double minx= 1000000,miny= 1000000,minz= 1000000;
 
 				//Calculate bounds
-				for(Map<NucPair, NucLineage.NucInterp> inter:interpNuc)
+				for(Map<NucSel, NucLineage.NucInterp> inter:interpNuc)
 					for(NucLineage.NucInterp nuc:inter.values())
 						{
 						if(maxx<nuc.pos.x) maxx=nuc.pos.x;
@@ -618,7 +618,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render body of one nucleus
 		 */
-		private void renderNuc(GL gl, NucPair nucPair, NucLineage.NucInterp nuc)
+		private void renderNuc(GL gl, NucSel nucPair, NucLineage.NucInterp nuc)
 			{
 			//Visibility rule
 			if(!nuc.isVisible())
@@ -646,7 +646,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    	
 	    if(NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
-		    if(NucLineage.selectedNuclei.contains(nucPair))
+		    if(EvSelection.isSelected(nucPair))
 		    	nucColor=new float[]{1,0,1};
 		    
 	    	//Hidden cell
@@ -656,7 +656,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    else
 	    	{
 	    	//Visible cell
-	    	drawVisibleSphere(gl, showRadius, NucLineage.selectedNuclei.contains(nucPair),nucColor[0], nucColor[1], nucColor[2]);
+	    	drawVisibleSphere(gl, showRadius, EvSelection.isSelected(nucPair),nucColor[0], nucColor[1], nucColor[2]);
 	    	}
 	    
 	    //Go back to world coordinates
@@ -752,7 +752,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render labe of one nucleus
 		 */
-		private void renderNucLabel(GL gl, List<TransparentRender> transparentRenderers, NucPair nucPair, NucLineage.NucInterp nuc)
+		private void renderNucLabel(GL gl, List<TransparentRender> transparentRenderers, NucSel nucPair, NucLineage.NucInterp nuc)
 			{
 			//Visibility rule
 			if(nuc.frameBefore==null)
@@ -770,7 +770,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    //Unrotate camera, then move a bit closer to the camera
 	    if(NucLineage.currentHover.equals(nucPair) 
 	    		|| miShowNamesAll.isSelected() 
-	    		|| (NucLineage.selectedNuclei.contains(nucPair) && miShowNamesSelected.isSelected()))
+	    		|| (EvSelection.isSelected(nucPair) && miShowNamesSelected.isSelected()))
 	    	{
 	    	w.view.camera.unrotateGL(gl);
 	    
@@ -791,7 +791,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render nucleus in the invisible selection channel
 		 */
-		private void renderNucSel(GL gl, NucPair nucPair, NucLineage.NucInterp nuc, double nucMagnification)
+		private void renderNucSel(GL gl, NucSel nucPair, NucLineage.NucInterp nuc, double nucMagnification)
 			{    
 			gl.glEnable(GL.GL_CULL_FACE);
 			
@@ -820,7 +820,7 @@ public class NucModelExtension implements ModelWindowExtension
 			int num=0;
 			for(NucLineage lin:getLineages())
 				{
-				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				Map<NucSel, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
 				num+=interpNuc.size();
 				for(NucLineage.NucInterp nuc:interpNuc.values()) //what about non-existing ones?
 					{
@@ -851,7 +851,7 @@ public class NucModelExtension implements ModelWindowExtension
 			boolean any=false;
 			for(NucLineage lin:getLineages())
 				{
-				Map<NucPair, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				Map<NucSel, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
 				any=true;
 				for(NucLineage.NucInterp nuc:interpNuc.values())
 					{

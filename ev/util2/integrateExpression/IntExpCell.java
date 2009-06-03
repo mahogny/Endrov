@@ -87,7 +87,7 @@ public class IntExpCell
 			System.out.println();
 			System.out.println("frame "+frame+" / "+lastFrame);
 
-			Map<NucPair,NucLineage.NucInterp> inter=lin.getInterpNuc(frame);
+			Map<NucSel,NucLineage.NucInterp> inter=lin.getInterpNuc(frame);
 
 			Map<String, Double> expLevel=new HashMap<String, Double>();
 			Map<String, Integer> nucVol=new HashMap<String, Integer>();
@@ -116,7 +116,7 @@ public class IntExpCell
 				
 				
 				//For all nuc
-				for(Map.Entry<NucPair,NucLineage.NucInterp> e:inter.entrySet())
+				for(Map.Entry<NucSel,NucLineage.NucInterp> e:inter.entrySet())
 //					if(e.getKey().getRight().equals("ABarappaa"))
 					//	if(e.getKey().getRight().equals("AB"))
 					{

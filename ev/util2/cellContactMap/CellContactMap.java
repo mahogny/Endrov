@@ -127,15 +127,15 @@ public class CellContactMap
                                   				////////////////////
                                   				
 				//interpolate
-				Map<NucPair, NucLineage.NucInterp> inter=lin.getInterpNuc(curframe);
+				Map<NucSel, NucLineage.NucInterp> inter=lin.getInterpNuc(curframe);
 				if(curframe.intValue()%100==0)
 					System.out.println(curframe);
 				try
 					{
 					//Eliminate cells not in official list or invisible
-					Map<NucPair, NucLineage.NucInterp> interclean=new HashMap<NucPair, NucLineage.NucInterp>();
+					Map<NucSel, NucLineage.NucInterp> interclean=new HashMap<NucSel, NucLineage.NucInterp>();
 					int numRealNuc=interclean.size();
-					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
+					for(Map.Entry<NucSel, NucLineage.NucInterp> e:inter.entrySet())
 						if(e.getValue().isVisible() && nucNames.contains(e.getKey().snd()))
 							interclean.put(e.getKey(), e.getValue());
 					int numcleancell=interclean.size();
@@ -166,10 +166,10 @@ public class CellContactMap
 						i4.frameBefore=EvDecimal.ZERO;
 						i4.pos.y=-r;
 
-						inter.put(new NucPair(null,":::1"), i1);
-						inter.put(new NucPair(null,":::2"), i2);
-						inter.put(new NucPair(null,":::3"), i3);
-						inter.put(new NucPair(null,":::4"), i4);
+						inter.put(new NucSel(null,":::1"), i1);
+						inter.put(new NucSel(null,":::2"), i2);
+						inter.put(new NucSel(null,":::3"), i3);
+						inter.put(new NucSel(null,":::4"), i4);
 						}
 					
 //					System.out.println("# inter "+inter.size());
@@ -183,7 +183,7 @@ public class CellContactMap
 					for(Tuple<String, String> e:nvor.getNeighPairSet())
 						addFrame(e.fst(),e.snd(),curframe);
 					//Calculate lifelen
-					for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
+					for(Map.Entry<NucSel, NucLineage.NucInterp> e:inter.entrySet())
 						addLifelen(e.getKey().snd());
 					
 					//Count neigh
@@ -243,9 +243,9 @@ public class CellContactMap
 		for(Map.Entry<EvDecimal, NucVoronoi> entry:lin.fcontacts.entrySet())
 			{
 //			NucLineage thelin=lins.get(0).lin;
-			Map<NucPair,NucLineage.NucInterp> inter=lin.lin.getInterpNuc(entry.getKey());
+			Map<NucSel,NucLineage.NucInterp> inter=lin.lin.getInterpNuc(entry.getKey());
 			Map<String,NucLineage.NucInterp> inters=new HashMap<String, NucLineage.NucInterp>();
-			for(Map.Entry<NucPair, NucLineage.NucInterp> e:inter.entrySet())
+			for(Map.Entry<NucSel, NucLineage.NucInterp> e:inter.entrySet())
 				inters.put(e.getKey().snd(),e.getValue());
 
 			boolean first=true;

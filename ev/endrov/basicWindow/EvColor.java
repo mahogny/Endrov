@@ -97,6 +97,10 @@ public class EvColor
 		return c.getBlue()/255.0;
 		}
 	
+	public Color getAWTColor()
+		{
+		return c;
+		}
 	
 	public interface ColorMenuListener
 		{
