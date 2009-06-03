@@ -53,6 +53,14 @@ public class ImageMath
 		return out;
 		}
 	
+
+	/**
+	 * TODO other types
+	 */
+	public static EvPixels plus(EvPixels a, Number b)
+		{
+		return plus(a,b.intValue());
+		}
 	
 	
 	public static EvPixels minus(EvPixels a, EvPixels b)
@@ -291,6 +299,20 @@ public class ImageMath
 			}
 		}
 
+	
+	
+	public static class AddScalarOp extends SliceOp
+	{
+	Number b;
+	public AddScalarOp(Number b)
+		{
+		this.b = b;
+		}
+	public EvPixels exec(EvPixels... p)
+		{
+		return plus(p[0], b);
+		}
+	}
 	
 	
 	//OLD!!!!!

@@ -20,6 +20,7 @@ import javax.vecmath.Vector2d;
 
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvPath;
 import endrov.flow.*;
 import endrov.util.Tuple;
 
@@ -78,13 +79,14 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	/**
 	 * Set which flow to edit
 	 */
-	public void setFlow(Flow flow, EvData data, EvContainer parent)
+	public void setFlow(Flow flow, EvData data, EvContainer parent, EvPath path)
 		{
-		if(flow!=this.flow || data!=flowExec.getData() || parent!=flowExec.getParent())
+		if(flow!=this.flow || data!=flowExec.getData() || parent!=flowExec.getParent() || !path.equals(flowExec.getPath()))
 			{
 			flowExec=new FlowExec();
 			flowExec.setData(data);
 			flowExec.setParent(parent);
+			flowExec.setPath(path);
 			}
 		this.flow = flow;
 		unitComponent.clear();
@@ -217,9 +219,20 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			connSegments.clear();
 			for(FlowConn conn:getFlow().conns)
 				{
-				Vector2d vFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg)).pos;
-				Vector2d vTo=connPoint.get(new Tuple<FlowUnit, String>(conn.toUnit, conn.toArg)).pos;
-				drawConnLine(g,vFrom,vTo,conn);
+				ConnPoint pFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg));
+				ConnPoint pTo=connPoint.get(new Tuple<FlowUnit, String>(conn.toUnit, conn.toArg));
+				if(pFrom==null || pTo==null)
+					{
+					System.out.println("Strange line BUG");
+					System.out.println(pFrom);
+					System.out.println(pTo);
+					}
+				else
+					{
+					Vector2d vFrom=pFrom.pos;
+					Vector2d vTo=pTo.pos;
+					drawConnLine(g,vFrom,vTo,conn);
+					}
 				}
 			
 			if(drawingConn!=null)

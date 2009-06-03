@@ -117,7 +117,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	 */
 	private static class ComboItem
 		{
-		EvPath path;
+		private EvPath path;
  		private WeakReference<EvContainer> ob; 
 		private WeakReference<EvData> data; 
 
@@ -128,6 +128,17 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		public EvData getData()
 			{
 			return data.get();
+			}
+		public EvPath getPath()
+			{
+			return path;
+			}
+		public EvPath getRelativePath()
+			{
+			LinkedList<String> list=new LinkedList<String>();
+			for(int i=1;i<path.path.length;i++)
+				list.add(path.path[i]);
+			return new EvPath(list.toArray(new String[]{}));
 			}
 		
 		public ComboItem(List<String> path, EvContainer ob, EvData data)
@@ -170,7 +181,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			for(EvData data:EvData.openedData)
 				{
 				LinkedList<String> paths=new LinkedList<String>();
-				paths.add(data.getMetadataName());
+				paths.add("#"+data.getMetadataName());
 				if(includeObject(data))
 					combo.addItem(new ComboItem(paths,data,data));
 				if(showChildren)
@@ -275,6 +286,28 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		return ci.getObject();
 		}
 	
+	public EvPath getSelectedPath()
+		{
+		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		//bug: I think ci was once null after unloading data. was nothing reselected?
+		if(ci==null)
+			{
+			System.out.println("ci null "+combo.getItemCount());
+			}
+		return ci.getPath();
+		}
+	public EvPath getSelectedRelativePath()
+		{
+		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		//bug: I think ci was once null after unloading data. was nothing reselected?
+		if(ci==null)
+			{
+			System.out.println("ci null "+combo.getItemCount());
+			}
+		return ci.getRelativePath();
+		}
+	
+	
 	private Map<EvContainer,ComboItem> getItemMap()
 		{
 		Map<EvContainer,ComboItem> itemMap=new HashMap<EvContainer, ComboItem>();
@@ -291,6 +324,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		combo.setSelectedItem(getItemMap().get(c));
 		//TODO should this emit an event?
 		}
+	
+	
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	

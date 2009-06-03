@@ -1,6 +1,8 @@
 package endrov.data;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 /**
@@ -64,6 +66,19 @@ public class EvPath implements Comparable<EvPath>
 		}
 	
 	/**
+	 * Get path to parent
+	 * TODO handle special cases
+	 */
+	public EvPath getParent()
+		{
+		LinkedList<String> list=new LinkedList<String>();
+		for(String s:path)
+			list.add(s);
+		list.removeLast();
+		return new EvPath(list.toArray(new String[]{}));
+		}
+	
+	/**
 	 * Ordering of paths
 	 */
 	public int compareTo(EvPath o)
@@ -93,7 +108,13 @@ public class EvPath implements Comparable<EvPath>
 	private EvContainer getContainerRecurse(EvContainer c, String[] path, int pos)
 		{
 		if(pos<path.length)
-			return getContainerRecurse(c.metaObject.get(path[pos]), path, pos+1);
+			{
+			System.out.println("torec "+path[pos]+"   --- "+pos);
+			EvContainer sub=c.metaObject.get(path[pos]);
+			if(sub==null)
+				throw new RuntimeException("Cannot find container "+path[pos]);
+			return getContainerRecurse(sub, path, pos+1);
+			}
 		else
 			return c;
 		}
@@ -132,5 +153,14 @@ public class EvPath implements Comparable<EvPath>
 		}
 	
 	
+	
+	public static EvPath parse(String s)
+		{
+		StringTokenizer st=new StringTokenizer(s,"/");
+		LinkedList<String> toks=new LinkedList<String>();
+		while(st.hasMoreElements())
+			toks.add(st.nextToken());
+		return new EvPath(toks.toArray(new String[]{}));
+		}
 	
 	}
