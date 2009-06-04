@@ -4,6 +4,7 @@ java -jar /usr/share/endrov/startEndrov.jar endrov.starter.MW \
 	--basedir /usr/share/endrov \
 	--cp2 $HOME/.endrov/ \
 	--javaenv $HOME/.endrov/javaenv.txt --libpath2 /usr/lib/jni \
+	--classload
 	$@
 
 
