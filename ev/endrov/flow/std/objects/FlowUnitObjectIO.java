@@ -10,9 +10,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import javax.swing.JTextArea;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
@@ -23,6 +28,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
+import endrov.util.EvSwingUtil;
 import endrov.util.Maybe;
 
 /**
@@ -131,6 +137,7 @@ public class FlowUnitObjectIO extends FlowUnit
 	public void setRef(String s)
 		{
 		nameOfObject=s;
+		System.out.println("set ref "+s);
 		}
 	
 	public Component getGUIcomponent(final FlowPanel p)
@@ -144,16 +151,14 @@ public class FlowUnitObjectIO extends FlowUnit
 				//should emit an update
 				}});*/
 		
-		field.addKeyListener(new KeyListener(){
-			public void keyPressed(KeyEvent arg0){}
-			public void keyReleased(KeyEvent arg0){}
-			public void keyTyped(KeyEvent arg0)
+		EvSwingUtil.textAreaChangeListener(field, new ChangeListener(){
+			public void stateChanged(ChangeEvent e)
 				{
 				setRef(field.getText());
 				p.repaint();
 				}
-		
 		});
+
 		return field;
 		}
 	
@@ -177,15 +182,23 @@ public class FlowUnitObjectIO extends FlowUnit
 		
 		if(con.hasValue())
 			{
-			//Get value and store it
-			obvalue=(EvObject)con.get();
-			parent.metaObject.put(nameOfObject, (EvObject)obvalue);  //TODO bad cast?
-			
 			//TODO replace with new path system
 			EvData currentData=exec.getData();
 			EvPath currentPath=exec.getPath();
 			
+			EvPath path=EvPath.parse(nameOfObject);
+			String childName=path.getLeafName();
+			EvContainer parentContainer=path.getParent().getContainer(currentData, currentPath);
 			
+			System.out.println("Parent: "+parentContainer);
+			System.out.println("leaf: "+childName);
+			
+			//Get value and store it
+			obvalue=(EvObject)con.get();
+			parentContainer.metaObject.put(childName, (EvObject)obvalue);  //TODO bad cast?
+
+			//Update windows about new object
+			BasicWindow.updateWindows();
 			
 			
 			}

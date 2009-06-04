@@ -18,6 +18,7 @@ import endrov.consoleWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.filter.*;
+import endrov.imageWindow.ImagePanel.ImagePanelImage;
 import endrov.imageWindow.tools.ImageWindowToolChannelDisp;
 import endrov.imageWindow.tools.ImageWindowToolScreenshot;
 import endrov.imageset.*;
@@ -267,6 +268,7 @@ public class ImageWindow extends BasicWindow
 	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
 	private final JMenuItem miReset=new JMenuItem("Reset view");
 	private final JMenuItem miMiddleSlice=new JMenuItem("Go to middle slice");
+	private final JMenuItem miSliceInfo=new JMenuItem("Get slice info");
 	private final JCheckBoxMenuItem miShowOverlay=new JCheckBoxMenuItem("Show overlay",true);
 
 	private final JPanel bottomPanelFirstRow=new JPanel(new BorderLayout());
@@ -396,6 +398,7 @@ public class ImageWindow extends BasicWindow
 		miReset.addActionListener(this);
 		miMiddleSlice.addActionListener(this);
 		miZoomToFit.addActionListener(this);
+		miSliceInfo.addActionListener(this);
 		miToolNone.addActionListener(this);
 		
 		
@@ -404,6 +407,7 @@ public class ImageWindow extends BasicWindow
 		menuImageWindow.add(miMiddleSlice);
 		menuImageWindow.add(miZoomToFit);
 		menuImageWindow.add(miShowOverlay);
+		menuImageWindow.add(miSliceInfo);
 		
 		menuImageWindow.addSeparator();
 		menuImageWindow.add(miToolNone);
@@ -691,6 +695,28 @@ public class ImageWindow extends BasicWindow
 			{
 			imagePanel.zoomToFit();
 			setZoom(imagePanel.zoom);
+			}
+		else if(e.getSource()==miSliceInfo)
+			{
+			StringBuffer sb=new StringBuffer();
+			for(ImagePanelImage im:imagePanel.images)
+				{
+				EvImage evim=im.getImage();
+				EvPixels pixels=evim.getPixels();
+				
+				EvStack stack=im.getStack();
+				
+				sb.append(
+						"ResX: "+stack.getResbinX()+
+						" ResY: "+stack.getResbinY()+
+						" Width(px): "+pixels.getWidth()+
+						" Height(px): "+pixels.getHeight());
+				sb.append("\n");
+				
+				}
+			String s=sb.toString();
+			if(!s.equals(""))
+				BasicWindow.showInformativeDialog(s);
 			}
 		else if(e.getSource()==miToolNone)
 			setTool(null);

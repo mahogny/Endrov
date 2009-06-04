@@ -8,6 +8,9 @@ import java.util.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTextArea;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.jdom.Element;
 
 import endrov.flow.Flow;
@@ -15,6 +18,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
+import endrov.util.EvSwingUtil;
 
 /**
  * Flow unit: input variable
@@ -72,16 +76,14 @@ public class FlowUnitConstClass extends FlowUnitConst
 		final JTextArea field=new JTextArea(getVar());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
 		
-		field.addKeyListener(new KeyListener(){
-			public void keyPressed(KeyEvent arg0){}
-			public void keyReleased(KeyEvent arg0){}
-			public void keyTyped(KeyEvent arg0)
-				{
-				setVar(field.getText());
-				p.repaint();
-				}
-		
+		EvSwingUtil.textAreaChangeListener(field, new ChangeListener(){
+		public void stateChanged(ChangeEvent e)
+			{
+			setVar(field.getText());
+			p.repaint();
+			}
 		});
+		
 		return field;
 		}
 

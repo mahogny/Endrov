@@ -47,6 +47,15 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	
 	private JComboBox combo=new JComboBox();
 	
+	/**
+	 * This item might not be needed but might solve a race condition. Sometimes this widget
+	 * is updated and the current object taken. it has been null. I think the GUI might have
+	 * to be updated before some calls are working.
+	 */
+	private ComboItem currentItem=null;
+	
+	
+	
 	public EvComboObject(List<EvObject> creators, boolean showChildren, boolean allowNoSelection)
 		{
 		this.showChildren=showChildren;
@@ -165,7 +174,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	public void updateList()
 		{
 		//Remember selection
-		ComboItem currentItem=(ComboItem)combo.getSelectedItem();
+		//ComboItem currentItem=(ComboItem)combo.getSelectedItem();
+		//ComboItem currentItem=currentItem;
 		EvContainer currentCont=currentItem==null ? null : currentItem.getObject();
 		
 		combo.removeActionListener(this);
@@ -203,20 +213,10 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		//If null-selection not allowed then reselect any item in the list
 		if(currentItem==null || (currentItem==emptyItem && !allowNoSelection) || !getItemMap().containsKey(currentCont))
 			currentCont=((ComboItem)combo.getItemAt(0)).getObject();
-
+		
 		//Reselect last item
-/*		Map<EvContainer,ComboItem> itemMap=new HashMap<EvContainer, ComboItem>();
-		for(int ci=0;ci<combo.getItemCount();ci++)
-			{
-			ComboItem item=(ComboItem)combo.getItemAt(ci);
-			itemMap.put(item.con,item);
-//			System.out.println("has item @ "+item.con+" - "+item);
-			}
-		combo.setSelectedItem(itemMap.get(currentCont));*/
 		setSelectedObject(currentCont);
 		
-	//	System.out.println("selected "+combo.getSelectedIndex());
-	//	System.out.println("sesected2 "+combo.getSelectedItem());
 		combo.addActionListener(this);
 		}
 
@@ -241,6 +241,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	
 	public void actionPerformed(ActionEvent e)
 		{
+		currentItem=(ComboItem)combo.getSelectedItem();
 		emitListener();
 		}
 	
@@ -265,7 +266,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		{
 		if(root==null)
 			{
-			ComboItem ci=(ComboItem)combo.getSelectedItem();
+			//ComboItem ci=(ComboItem)combo.getSelectedItem();
+			ComboItem ci=currentItem;
 			return ci.getData();
 			}
 		else
@@ -277,7 +279,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	 */
 	public EvContainer getSelectedObject()
 		{
-		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		//ComboItem ci=(ComboItem)combo.getSelectedItem();
+		ComboItem ci=currentItem;
 		//bug: I think ci was once null after unloading data. was nothing reselected?
 		if(ci==null)
 			{
@@ -288,7 +291,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	
 	public EvPath getSelectedPath()
 		{
-		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		//ComboItem ci=(ComboItem)combo.getSelectedItem();
+		ComboItem ci=currentItem;
 		//bug: I think ci was once null after unloading data. was nothing reselected?
 		if(ci==null)
 			{
@@ -298,7 +302,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		}
 	public EvPath getSelectedRelativePath()
 		{
-		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		//ComboItem ci=(ComboItem)combo.getSelectedItem();
+		ComboItem ci=currentItem;
 		//bug: I think ci was once null after unloading data. was nothing reselected?
 		if(ci==null)
 			{
@@ -322,6 +327,8 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	public void setSelectedObject(EvContainer c)
 		{
 		combo.setSelectedItem(getItemMap().get(c));
+		
+		currentItem=getItemMap().get(c);
 		//TODO should this emit an event?
 		}
 	

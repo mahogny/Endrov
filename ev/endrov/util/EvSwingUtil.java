@@ -11,6 +11,9 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * Utility functions for Swing
@@ -114,12 +117,12 @@ public class EvSwingUtil
 		}
 
 	public static void setClipBoardString(String s)
-	{
-	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), 
-			new ClipboardOwner(){
-			public void lostOwnership(Clipboard aClipboard, Transferable aContents){}
-			});
-	}
+		{
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(s), 
+				new ClipboardOwner(){
+				public void lostOwnership(Clipboard aClipboard, Transferable aContents){}
+				});
+		}
 
 	/**
 	 * Totally rip a menu apart, recursively. Action listeners are removed in a
@@ -141,4 +144,29 @@ public class EvSwingUtil
 		menu.removeAll();
 		}
 
+	/**
+	 * Reroute all document changes to a change listener
+	 */
+	public static void textAreaChangeListener(JTextArea a, final ChangeListener list)
+		{
+		a.getDocument().addDocumentListener(new DocumentListener(){
+			public void change(){list.stateChanged(null);}
+			public void changedUpdate(DocumentEvent e) {change();}
+			public void removeUpdate(DocumentEvent e) {change();}
+			public void insertUpdate(DocumentEvent e) {change();}
+		});
+		}
+	
+	/**
+	 * Reroute all document changes to a change listener
+	 */
+	public static void textAreaChangeListener(JTextField a, final ChangeListener list)
+		{
+		a.getDocument().addDocumentListener(new DocumentListener(){
+			public void change(){list.stateChanged(null);}
+			public void changedUpdate(DocumentEvent e) {change();}
+			public void removeUpdate(DocumentEvent e) {change();}
+			public void insertUpdate(DocumentEvent e) {change();}
+		});
+		}
 	}

@@ -74,7 +74,10 @@ public class EvPath implements Comparable<EvPath>
 		LinkedList<String> list=new LinkedList<String>();
 		for(String s:path)
 			list.add(s);
-		list.removeLast();
+		if(!list.isEmpty())
+			list.removeLast();
+		else
+			System.out.println("Unhandled case of getparent");
 		return new EvPath(list.toArray(new String[]{}));
 		}
 	
@@ -126,29 +129,35 @@ public class EvPath implements Comparable<EvPath>
 	 */
 	public EvContainer getContainer(EvData currentData, EvPath currentPath)
 		{
-		String s=path[0];
-		
-		if(s.startsWith("#"))
+		if(path.length==0)
 			{
-			s=s.substring(1);
-			//Absolute path in another data
-			for(EvData d:EvData.openedData)
-				if(d.getMetadataName().equals(s))
-					return getContainerRecurse(d, path, 1);
-			return null;
-			}
-		else if(s.equals(""))
-			{
-			//Absolute path within data
-			return getContainerRecurse(currentData, path, 1);
+			//Relative path special case: currentPath
+			return getContainerRecurse(currentData, currentPath.path, 0);
 			}
 		else
 			{
-			//Relative path
-			EvContainer c=getContainerRecurse(currentData, currentPath.path, 0);
-			return getContainerRecurse(c, path, 0);
+			String s=path[0];
+			if(s.startsWith("#"))
+				{
+				s=s.substring(1);
+				//Absolute path in another data
+				for(EvData d:EvData.openedData)
+					if(d.getMetadataName().equals(s))
+						return getContainerRecurse(d, path, 1);
+				return null;
+				}
+			else if(s.equals(""))
+				{
+				//Absolute path within data
+				return getContainerRecurse(currentData, path, 1);
+				}
+			else
+				{
+				//Relative path
+				EvContainer c=getContainerRecurse(currentData, currentPath.path, 0);
+				return getContainerRecurse(c, path, 0);
+				}
 			}
-		
 		
 		}
 	
