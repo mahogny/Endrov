@@ -43,7 +43,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 	
 	private Map<Tuple<FlowUnit, String>, ConnPoint> connPoint=new HashMap<Tuple<FlowUnit,String>, ConnPoint>();
-	private int mouseLastX, mouseLastY;
+	private int mouseLastX, mouseLastY; /* In camera coordinates */
 	private int mouseLastDragX=0, mouseLastDragY=0;
 	private Set<FlowUnit> movingUnits=new HashSet<FlowUnit>();
 	private DrawingConn drawingConn=null;
@@ -382,14 +382,15 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				{
 				if(hoverSegment!=null)
 					{
-					placingUnit.x=(int)hoverSegment.fst().x+cameraX;
-					placingUnit.y=(int)hoverSegment.fst().y+cameraY;
+					placingUnit.x=(int)hoverSegment.fst().x;//+cameraX;
+					placingUnit.y=(int)hoverSegment.fst().y;//+cameraY;
 					stickyConn=hoverSegment.snd();
 					}
 				else
 					{
 					placingUnit.x=mouseLastX+cameraX;
 					placingUnit.y=mouseLastY+cameraY;
+					stickyConn=null;
 					}
 				Dimension dim=placingUnit.getBoundingBox(getComponentForUnit(placingUnit), flow);
 				placingUnit.x-=dim.width/2;
@@ -420,11 +421,14 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(SwingUtilities.isLeftMouseButton(e))
 				{
 				getFlow().units.add(placingUnit);
+				
 				if(stickyConn!=null && !placingUnit.getTypesIn(flow).isEmpty() && !placingUnit.getTypesOut(flow).isEmpty())
 					{
 					String argin=placingUnit.getTypesIn(flow).keySet().iterator().next();
 					String argout=placingUnit.getTypesOut(flow).keySet().iterator().next();
-					
+
+					//System.out.println("Placing sticky unit "+argin+" "+argout+" "+stickyConn);
+
 					getFlow().conns.remove(stickyConn);
 					getFlow().conns.add(new FlowConn(stickyConn.fromUnit,stickyConn.fromArg,placingUnit,argin));
 					getFlow().conns.add(new FlowConn(placingUnit,argout,stickyConn.toUnit,stickyConn.toArg));
@@ -442,7 +446,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 			boolean hitAnything=false;
 			for(final FlowUnit u:getFlow().units)
-				if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u), flow))
+				if(!hitAnything && u.mouseHoverMoveRegion(mx,my,unitComponent.get(u), flow))
 					{
 					if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==1)
 						{
@@ -510,17 +514,23 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				
 				JPopupMenu popup = new JPopupMenu();
 				
-				JMenuItem itRemove=new JMenuItem("Remove connection");
-				itRemove.addActionListener(new ActionListener(){
-					public void actionPerformed(ActionEvent e)
-						{
-						getFlow().conns.remove(seg.snd());
-						repaint();
-						}
-				});
-				
-				popup.add(itRemove);
-				popup.show(this,e.getX(),e.getY());
+				if(seg!=null)
+					{
+					JMenuItem itRemove=new JMenuItem("Remove connection");
+					itRemove.addActionListener(new ActionListener(){
+						public void actionPerformed(ActionEvent e)
+							{
+							if(getFlow()==null || seg==null)
+								System.out.println("trouble "+getFlow()+"  "+seg);
+							getFlow().conns.remove(seg.snd());
+							repaint();
+							}
+					});
+					popup.add(itRemove);
+					}
+
+				if(popup.getComponentCount()>0)
+					popup.show(this,e.getX(),e.getY());
 				
 				}
 			}
@@ -814,11 +824,14 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		public FlowConn c;
 		public abstract Tuple<Vector2d,Integer> hitLine(int x, int y);
 		}
+	
+	
 	private class ConnLineSegmentH extends ConnLineSegment
 		{
-		public int x1,x2,y;
+		public int x1,x2,y; //Word coordinates
 		public ConnLineSegmentH(Graphics g, int x1, int x2, int y, FlowConn c)
 			{
+			//Reorder x for fast comparison
 			if(x1>x2)
 				{
 				this.x1=x2;
@@ -835,20 +848,23 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(c!=null)
 				connSegments.add(this);
 			}
-		public Tuple<Vector2d,Integer> hitLine(int x, int y)
+		public Tuple<Vector2d,Integer> hitLine(int mx, int my)
 			{
-			int dist=Math.abs(y-this.y);
-			if(x>x1 && x<x2)
-				return Tuple.make(new Vector2d(x,this.y), dist);
+			int dist=Math.abs(my-y);
+			if(mx>=x1 && mx<=x2)
+				return Tuple.make(new Vector2d(mx,this.y), dist);
 			else
 				return null;
 			}
 		}
+	
+	
 	private class ConnLineSegmentV extends ConnLineSegment
 		{
-		public int x,y1,y2;
+		public int x,y1,y2; //Word coordinates
 		public ConnLineSegmentV(Graphics g, int x, int y1, int y2, FlowConn c)
 			{
+			//Reorder y for fast comparison
 			if(y1>y2)
 				{
 				this.y1=y2;
@@ -865,13 +881,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(c!=null)
 				connSegments.add(this);
 			}		
-		
-
-		public Tuple<Vector2d,Integer> hitLine(int x, int y)
+		public Tuple<Vector2d,Integer> hitLine(int mx, int my)
 			{
-			int dist=Math.abs(x-this.x);
-			if(y>y1 && y<y2)
-				return Tuple.make(new Vector2d(this.x,y), dist);
+			int dist=Math.abs(mx-x);
+			if(my>=y1 && my<=y2)
+				return Tuple.make(new Vector2d(x,my), dist);
 			else
 				return null;
 			}
@@ -884,14 +898,18 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		Integer closestDist=null;
 		ConnLineSegment closestSeg=null;
 		Vector2d closestProj=null;
+//		System.out.println("Testing segments");
+		int mx=mouseLastX+cameraX;
+		int my=mouseLastY+cameraY;
 		for(ConnLineSegment seg:connSegments)
 			{
-			Tuple<Vector2d,Integer> hit=seg.hitLine(mouseLastX, mouseLastY);
+			Tuple<Vector2d,Integer> hit=seg.hitLine(mx, my);
+			//System.out.println(hit);
 			if(hit!=null && (closestDist==null || hit.snd()<closestDist))
 				{
+				closestProj=hit.fst();
 				closestDist=hit.snd();
 				closestSeg=seg;
-				closestProj=hit.fst();
 				}
 			}
 		if(closestDist!=null && closestDist<minLineHitDist)

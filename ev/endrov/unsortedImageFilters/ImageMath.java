@@ -155,7 +155,7 @@ public class ImageMath
 		
 		for(int i=0;i<aPixels.length;i++)
 			outPixels[i]=aPixels[i]*b;
-		
+		System.out.println("outp "+outPixels[0]+"    b "+b);
 		return out;
 		}
 	
@@ -279,14 +279,15 @@ public class ImageMath
 
 	public static class MulScalarOp extends SliceOp
 		{
-		int b;
-		public MulScalarOp(int b)
+		private Number b;
+		public MulScalarOp(Number b)
 			{
 			this.b = b;
 			}
 		public EvPixels exec(EvPixels... p)
 			{
-			return times(p[0], b);
+			System.out.println("Mul by "+b.doubleValue());
+			return times(p[0], b.doubleValue()); //TODO
 			}
 		}
 	

@@ -10,6 +10,8 @@ import java.util.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jdom.Element;
 
@@ -19,6 +21,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 import endrov.util.EvDecimal;
+import endrov.util.EvSwingUtil;
 
 /**
  * Flow unit: EvDecimal constant
@@ -75,20 +78,21 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 		{
 		final JTextField field=new JTextField(""+getVar());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
-		field.addActionListener(new ActionListener(){
+		/*field.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0)
 				{
 				//BUG
 				//Should maybe be change listener
 				setVar(new EvDecimal(field.getText()));
 				//should emit an update
-				}});
+				}});*/
 		
-		field.addKeyListener(new KeyListener(){
-			public void keyPressed(KeyEvent arg0){}
-			public void keyReleased(KeyEvent arg0){}
-			public void keyTyped(KeyEvent arg0){p.repaint();}
-		
+		EvSwingUtil.textAreaChangeListener(field, new ChangeListener(){
+		public void stateChanged(ChangeEvent e)
+			{
+			setVar(new EvDecimal(field.getText()));
+			p.repaint();
+			}
 		});
 		return field;
 		}

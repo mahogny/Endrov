@@ -737,6 +737,12 @@ public abstract class BasicWindow extends JPanel
 		return JOptionPane.showInputDialog(null, message, value);
 //		return JOptionPane.showInputDialog(null, message, EV.programName, JOptionPane.OK_OPTION);
 		}
+	
+	public static void showInformativeDialog(String text)
+		{
+		//Can get current window
+		JOptionPane.showMessageDialog(null, text);
+		}
 
 	
 	public WeakHashMap<JinputListener,Object> jinputListeners=new WeakHashMap<JinputListener,Object>();

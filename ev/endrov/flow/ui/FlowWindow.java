@@ -24,8 +24,11 @@ import endrov.basicWindow.BasicWindowHook;
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
+import endrov.data.EvPath;
 import endrov.data.tree.DataTree;
 import endrov.data.tree.DataTreeElement;
+import endrov.ev.EV;
+import endrov.ev.PersonalConfig;
 import endrov.flow.*;
 import endrov.flow.std.objects.FlowUnitObjectIO;
 import endrov.util.JImageButton;
@@ -50,7 +53,9 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	private static ImageIcon iconAlignVert=new ImageIcon(FlowWindow.class.getResource("labelAlignVert.png"));
 	private static ImageIcon iconButtonPlayCont=new ImageIcon(FlowWindow.class.getResource("labelRepeat.png"));
 	
-	
+
+	private static String pcWindowName="flowwindow";
+
 	public static void initPlugin() {}
 	static
 		{
@@ -77,8 +82,25 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			public void buildMenu(BasicWindow w){}
 			}
 			});
-		}
 
+		EV.personalConfigLoaders.put(pcWindowName,new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					/*FlowWindow w=*/new FlowWindow(r);
+					}
+				catch(Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
+	
 	
 	/******************************************************************************************************
 	 *                               Custom appearance of tree nodes                                      *
@@ -277,22 +299,27 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	public void dataChangedEvent()
 		{
 		objectCombo.updateList();
-		loadData();
+		loadData();  //TODO like here
 		}
 
 	public void loadData()
 		{
-		fp.setFlow(objectCombo.getSelectedObjectNotNull(), objectCombo.getData(), objectCombo.getRoot(), objectCombo.getSelectedRelativePath().getParent());
+		//TODO could be called at strange times
+		
+		fp.setFlow(objectCombo.getSelectedObjectNotNull(), objectCombo.getData(), objectCombo.getRoot(), 
+				objectCombo.getSelectedRelativePath().getParent());
 		fp.repaint();
 		}
 	
 	public void loadedFile(EvData data){}
 
-	public void windowPersonalSettings(Element e)
+	public void windowPersonalSettings(Element root)
 		{
-		// TODO Auto-generated method stub
-		
-		} 
+		Element e=new Element(pcWindowName);
+		setXMLbounds(e);
+		root.addContent(e);
+		}
+	
 	
 	public void freeResources(){}
 	

@@ -47,6 +47,11 @@ public class ImagePanel extends JPanel
 			{
 			return image;
 			}
+
+		public EvStack getStack()
+			{
+			return stack;
+			}
 		
 		public void update()
 			{
