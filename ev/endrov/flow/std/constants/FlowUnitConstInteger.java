@@ -2,10 +2,6 @@ package endrov.flow.std.constants;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.*;
 
 import javax.swing.ImageIcon;
@@ -20,7 +16,6 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
-import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
 /**

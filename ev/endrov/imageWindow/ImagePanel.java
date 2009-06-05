@@ -72,7 +72,7 @@ public class ImagePanel extends JPanel
 					//Load image if this has not already been done
 					if(bufi==null)
 						{
-						bufi=image.getJavaImage();
+						bufi=image.getPixels().quickReadOnlyAWT();
 						if(bufi==null)
 							throw new Exception("Got null image from I/O");
 						

@@ -24,7 +24,6 @@ import endrov.basicWindow.BasicWindowHook;
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
-import endrov.data.EvPath;
 import endrov.data.tree.DataTree;
 import endrov.data.tree.DataTreeElement;
 import endrov.ev.EV;
