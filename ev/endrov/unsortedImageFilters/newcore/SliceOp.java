@@ -76,8 +76,8 @@ public abstract class SliceOp implements GeneralOp //extends StackOp
 							
 					}
 					
-				
-				// TODO Auto-generated method stub
+
+				System.out.println("created stack "+newstack.getResbinX()+" "+newstack.getResbinY());
 				return newstack;
 				}
 			};

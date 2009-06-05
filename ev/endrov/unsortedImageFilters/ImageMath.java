@@ -1,6 +1,5 @@
 package endrov.unsortedImageFilters;
 
-import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.unsortedImageFilters.newcore.SliceOp;
 
@@ -196,7 +195,7 @@ public class ImageMath
 		}
 	
 	/**
-	 * log(a)
+	 * log(A)
 	 */
 	public static EvPixels log(EvPixels a)
 		{
@@ -217,7 +216,7 @@ public class ImageMath
 	
 	
 	/**
-	 * a*b+c
+	 * A*b+c
 	 */
 	public static EvPixels saxpy(EvPixels a, int b, int c)
 		{
@@ -240,7 +239,7 @@ public class ImageMath
 	
 	
 	/**
-	 * a*b+c
+	 * A*b+c
 	 * Can be used to implement contrast-brightness the old style
 	 */
 	public static EvPixels axpy(EvPixels a, double b, double c)
@@ -277,6 +276,11 @@ public class ImageMath
 		return sum;
 		}
 
+	/**
+	 * A * b
+	 * @author Johan Henriksson
+	 *
+	 */
 	public static class MulScalarOp extends SliceOp
 		{
 		private Number b;
@@ -291,7 +295,11 @@ public class ImageMath
 			}
 		}
 	
-	
+	/**
+	 * A * B
+	 * @author Johan Henriksson
+	 *
+	 */
 	public static class MulImageOp extends SliceOp
 		{
 		public EvPixels exec(EvPixels... p)
@@ -301,22 +309,27 @@ public class ImageMath
 		}
 
 	
-	
+	/**
+	 * A + B
+	 * @author Johan Henriksson
+	 *
+	 */
 	public static class AddScalarOp extends SliceOp
-	{
-	Number b;
-	public AddScalarOp(Number b)
 		{
-		this.b = b;
+		private Number b;
+		public AddScalarOp(Number b)
+			{
+			this.b = b;
+			}
+		public EvPixels exec(EvPixels... p)
+			{
+			return plus(p[0], b);
+			}
 		}
-	public EvPixels exec(EvPixels... p)
-		{
-		return plus(p[0], b);
-		}
-	}
 	
 	
 	//OLD!!!!!
+	/*
 	public static EvChannel times(EvChannel ch, final int b)
 		{
 		return new SliceOp(){
@@ -326,5 +339,8 @@ public class ImageMath
 				}
 		}.exec(ch);
 		}
+		*/
+	
+	
 	
 	}

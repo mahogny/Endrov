@@ -8,7 +8,6 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
 
 /**
  * Find pixels or classify areas using the Mean-shift algorithm 

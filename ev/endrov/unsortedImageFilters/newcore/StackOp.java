@@ -10,6 +10,11 @@ import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
 import endrov.util.Memoize;
 
+/**
+ * Image operation defined by operation on stacks
+ * @author Johan Henriksson
+ *
+ */
 public abstract class StackOp implements GeneralOp
 	{
 	//By necessity, stack operators have to deal with laziness manually.
@@ -81,6 +86,8 @@ public abstract class StackOp implements GeneralOp
 				EvImage newim=new EvImage();
 				//newim.getMetaFrom(evim);
 				newstack.put(pe.getKey(), newim);
+				
+				newstack.getMetaFrom(stack); //This design makes it impossible to generate resolution lazily
 				
 				final EvDecimal z=pe.getKey();
 					

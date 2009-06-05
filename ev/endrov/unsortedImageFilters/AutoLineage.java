@@ -121,7 +121,7 @@ public class AutoLineage
 				im.metaObject.put("spotpixels2", greater(im.getChannel("minus2"),2));
 
 				im.metaObject.put("MA15", movingAverage(im.getChannel("RFP"), 5, 5));
-				im.metaObject.put("MA30-MA15", minus(ImageMath.times(im.getChannel("MA15"),2), im.getChannel("MA")));
+				//im.metaObject.put("MA30-MA15", minus(ImageMath.times(im.getChannel("MA15"),2), im.getChannel("MA")));
 
 				
 				//EvPixels out=CompareImage.greater(MiscFilter.movingSum(spotpixels, 2, 2), 15);

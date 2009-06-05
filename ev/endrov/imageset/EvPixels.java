@@ -6,23 +6,32 @@ import java.awt.image.WritableRaster;
 
 
 /**
+ * <p>
  * One pixel plane. The Endrov philosophy is that there are no ranges, pixels are raw sensor readings. Only upon display need the range be adjusted
  * and is done so by various filters in real-time. This means that converting data e.g. from int to double will not rescale it. It is up to the user
- * to ensure the data range fits during unsafe conversions.
+ * to ensure the data range fits during unsafe conversions. 
+ * </p>
  * 
+ * <p>
  * Emphasis is on the need for filters. Filters cannot cope with all types so conversion will be needed. The getReadOnly() and getWritable()
  * will give images in formats according to bitflags of valid formats. getReadOnly() is designed to have zero overhead if no conversion is needed.
+ * </p>
  * 
+ * <p>
  * Safe conversions are
- * AWT -> --------------->
+ * <pre>
+ * AWT -> ---------------> 
  *        unsigned byte -> short -> int -> float -> double 
+ * </pre>
  * and these will be performed automatically if needed. When an unsafe conversion is enforced the least bad choice will be taken. The AWT format
  * can be of several bit depths and is given special treatment. 
+ * </p>
  * 
+ * <p>
  * This class is designed for performance. Depending on the type, different arrays will be used e.g. use getArrayInt when the data is of type int.
  * Data is stored in a 1D array as Java does not have truly 2D arrays/matrices. The index in the array is width*x+y. It can be calculated with
  * convenience functions but this will be slower than doing it manually.
- * 
+ * </p>
  *  
  * 
  * @author Johan Henriksson
