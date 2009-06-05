@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Class-Path: . epsgraphics.jar itext-1.1.jar
+Main-Class: logobar.LogoBar
