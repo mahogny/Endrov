@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import endrov.imageset.EvPixels;
+import endrov.unsortedImageFilters.imageMath.ImageSubImageOp;
 import endrov.util.Vector2i;
 
 //These operations can be made faster using RLE images
@@ -150,7 +151,7 @@ public class BinMorph
 		//TODO maybe only useful with graylevel morphology
 		
 		//This can be made about 50% faster by specializing the code
-		return ImageMath.minus(in, open(in,kernel,kcx,kcy));
+		return new ImageSubImageOp().exec(in, open(in,kernel,kcx,kcy));
 		}
 	
 	/**
@@ -162,7 +163,7 @@ public class BinMorph
 		//TODO maybe only useful with graylevel morphology
 		
 		//This can be made about 50% faster by specializing the code
-		return ImageMath.minus(close(in,kernel,kcx,kcy), in);
+		return new ImageSubImageOp().exec(close(in,kernel,kcx,kcy), in);
 		}
 
 
@@ -268,7 +269,7 @@ public class BinMorph
 	 */
 	public static EvPixels thin(EvPixels in, EvPixels kernelHit, int hitKcx, int hitKcy, EvPixels kernelMiss, int missKcx, int missKcy)
 		{
-		return ImageMath.minus(in, hitmiss(in,kernelHit,hitKcx,hitKcy,kernelMiss,missKcx,missKcy));
+		return new ImageSubImageOp().exec(in, hitmiss(in,kernelHit,hitKcx,hitKcy,kernelMiss,missKcx,missKcy));
 		
 		//could be made a lot faster for repeated application by keeping a front-set. Either way, probably want to return if there is more to do?
 		
@@ -281,7 +282,7 @@ public class BinMorph
 	 */
 	public static EvPixels thick(EvPixels in, EvPixels kernelHit, int hitKcx, int hitKcy, EvPixels kernelMiss, int missKcx, int missKcy)
 		{
-		return ImageMath.minus(in, hitmiss(in,kernelHit,hitKcx,hitKcy,kernelMiss,missKcx,missKcy));
+		return new ImageSubImageOp().exec(in, hitmiss(in,kernelHit,hitKcx,hitKcy,kernelMiss,missKcx,missKcy));
 		}
 	
 	/**

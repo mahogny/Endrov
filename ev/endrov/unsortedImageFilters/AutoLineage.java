@@ -14,6 +14,10 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
+import endrov.unsortedImageFilters.imageMath.ImageAddImageOp;
+import endrov.unsortedImageFilters.imageMath.ImageAxpyOp;
+import endrov.unsortedImageFilters.imageMath.ImageDivScalarOp;
+import endrov.unsortedImageFilters.imageMath.ImageSubImageOp;
 import endrov.unsortedImageFilters.newcore.SliceOp;
 import endrov.unsortedImageFilters.newcore.StackOp;
 import endrov.util.EvDecimal;
@@ -107,13 +111,17 @@ public class AutoLineage
 				
 				//Two input channels, one out
 	//			EvPixels c2=ImageMath.minus(in, average);
-				im.metaObject.put("minus", minus(im.getChannel("RFP"), im.getChannel("MA")));
+				//im.metaObject.put("minus", minus(im.getChannel("RFP"), im.getChannel("MA")));
+				im.metaObject.put("minus", new ImageSubImageOp().exec(im.getChannel("RFP"), im.getChannel("MA")));
 
-				im.metaObject.put("minusAvgz", minus(im.getChannel("RFP"), im.getChannel("avgz")));
-				im.metaObject.put("minusAvgz#", axpy(im.getChannel("minusAvgz"),0.5,10));
+				//im.metaObject.put("minusAvgz", minus(im.getChannel("RFP"), im.getChannel("avgz")));
+				im.metaObject.put("minusAvgz", new ImageSubImageOp().exec(im.getChannel("RFP"), im.getChannel("avgz")));
+//				im.metaObject.put("minusAvgz#", axpy(im.getChannel("minusAvgz"),0.5,10));
+				im.metaObject.put("minusAvgz#", new ImageAxpyOp(0.5,10).exec(im.getChannel("minusAvgz")));
 
 				im.metaObject.put("MAavgz", movingAverage(im.getChannel("minusAvgz"), 30, 30));
-				im.metaObject.put("minus2", minus(im.getChannel("minusAvgz"), im.getChannel("MAavgz")));
+				//im.metaObject.put("minus2", minus(im.getChannel("minusAvgz"), im.getChannel("MAavgz")));
+				im.metaObject.put("minus2", new ImageSubImageOp().exec(im.getChannel("minusAvgz"), im.getChannel("MAavgz")));
 
 				
 				//EvPixels spotpixels=CompareImage.greater(c2, 2);
@@ -175,9 +183,11 @@ public class AutoLineage
 		EvPixels ptot=new EvPixels(EvPixels.TYPE_INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
 		int numZ=in.getDepth();
 		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
-			ptot=ImageMath.plus(ptot, plane.getValue().getPixels());
+			ptot=new ImageAddImageOp().exec(ptot,plane.getValue().getPixels());
+			//ImageMath.plus(ptot, plane.getValue().getPixels());
 
-		ptot=ImageMath.div(ptot,numZ);
+		ptot=new ImageDivScalarOp(numZ).exec(ptot);
+		//ptot=ImageMath.div(ptot,numZ);
 		
 		EvImage imout=new EvImage();
 		out.getMetaFrom(in);
@@ -210,6 +220,7 @@ public class AutoLineage
 	/**
 	 * Lazy Axpy: ch*b+c
 	 */
+	/*
 	public static EvChannel axpy(EvChannel ch, final double b, final double c)
 		{
 		return new SliceOp(){
@@ -219,10 +230,12 @@ public class AutoLineage
 				}
 		}.exec(ch);
 		}
+	*/
 	
 	/**
 	 * Lazy Minus.
 	 */
+	/*
 	public static EvChannel minus(EvChannel ch1, EvChannel ch2)
 		{
 		return new SliceOp(){
@@ -232,6 +245,7 @@ public class AutoLineage
 				}
 		}.exec(ch1,ch2);
 		}
+	*/
 	
 	/**
 	 * Lazy Greater.
@@ -318,7 +332,8 @@ public class AutoLineage
 			EvImage evim=e.getValue().makeShadowCopy();
 			
 			
-			EvPixels c2=ImageMath.minus(in, average);
+			//EvPixels c2=ImageMath.minus(in, average);
+			EvPixels c2=new ImageSubImageOp().exec(in, average);
 			
 			EvPixels spotpixels=CompareImage.greater(c2, 2);
 			

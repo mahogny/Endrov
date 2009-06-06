@@ -1,6 +1,8 @@
 package endrov.unsortedImageFilters;
 
 import endrov.imageset.EvPixels;
+import endrov.unsortedImageFilters.imageMath.ImageLogOp;
+import endrov.unsortedImageFilters.imageMath.ImageMulScalarOp;
 
 /**
  * Different averaging filters
@@ -54,7 +56,7 @@ public class AveragingFilter
 	 */
 	public static EvPixels movingEntropy(EvPixels in, int pw, int ph)
 		{
-		return ImageMath.times(movingAverage(ImageMath.log(in), pw, ph),-1.0);
+		return new ImageMulScalarOp(-1.0).exec(movingAverage(new ImageLogOp().exec(in), pw, ph));
 		}
 	
 	/**

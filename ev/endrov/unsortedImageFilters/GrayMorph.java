@@ -3,6 +3,7 @@ package endrov.unsortedImageFilters;
 import java.util.*;
 
 import endrov.imageset.EvPixels;
+import endrov.unsortedImageFilters.imageMath.ImageSubImageOp;
 import endrov.util.Tuple;
 import endrov.util.Vector2i;
 
@@ -162,7 +163,7 @@ public class GrayMorph
 	public static EvPixels whitetophat(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
 		//This can be made about 50% faster by specializing the code
-		return ImageMath.minus(in, open(in,kernel,kcx,kcy));
+		return new ImageSubImageOp().exec(in, open(in,kernel,kcx,kcy));
 		}
 	
 	/**
@@ -172,7 +173,7 @@ public class GrayMorph
 	public static EvPixels blacktophat(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
 		//This can be made about 50% faster by specializing the code
-		return ImageMath.minus(close(in,kernel,kcx,kcy), in);
+		return new ImageSubImageOp().exec(close(in,kernel,kcx,kcy), in);
 		}
 	
 	
