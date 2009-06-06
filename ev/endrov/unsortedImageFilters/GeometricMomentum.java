@@ -1,6 +1,8 @@
 package endrov.unsortedImageFilters;
 
 import endrov.imageset.EvPixels;
+import endrov.unsortedImageFilters.imageMath.ImageMath;
+import endrov.unsortedImageFilters.imageMath.ImageMulImageOp;
 
 /**
  * 
@@ -35,7 +37,7 @@ public class GeometricMomentum
 		int h=in.getHeight();
 		EvPixels pq=GenerateSpecialImage.genXpYp(w, h, p, q);
 		
-		return ImageMath.sum(ImageMath.times(pq, in));
+		return ImageMath.sum(new ImageMulImageOp().exec(pq, in));
 		
 		/*
 		in=in.convertTo(EvPixels.TYPE_INT, true);

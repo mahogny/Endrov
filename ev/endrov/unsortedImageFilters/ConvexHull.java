@@ -40,13 +40,15 @@ public class ConvexHull
 		}
 	
 	/**
-	 * Convex hull. General case, allowing repetition of points. O(n log n)
+	 * Convex hull. General case, allowing repetition of points. O(n log n). graham scan.
 	 * 
 	 * For pixels I suspect one can write a special O(n) taking into account that pixels are on a grid, they are presorted.
 	 * All Atan2 would disappear and the special class would disappear. Most inner points could be ignored by only looking for the outermost
 	 * pixels. it would be *a lot* faster.
 	 * 
 	 * atan2 can be replaced by comparing slope, which can be done in integer with rewrites to multiplication
+	 * 
+	 * 
 	 * 
 	 * UNTESTED
 	 */
