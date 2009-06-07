@@ -8,6 +8,7 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
+import endrov.unsortedImageFilters.imageMath.ImageMulImageOp;
 import endrov.unsortedImageFilters.imageMath.ImageMulScalarOp;
 
 /**
@@ -60,6 +61,11 @@ public class FlowUnitMul extends FlowUnitMathBinop
 		else if(b instanceof EvChannel && a instanceof Number)
 			{
 			EvChannel ch=new ImageMulScalarOp((Number)a).exec((EvChannel)b);
+			lastOutput.put("C", ch);
+			}
+		else if(a instanceof EvChannel && b instanceof EvChannel)
+			{
+			EvChannel ch=new ImageMulImageOp().exec((EvChannel)a,(EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else

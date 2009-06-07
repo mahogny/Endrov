@@ -1,4 +1,4 @@
-package endrov.flow.std.math;
+package endrov.flow.std.logic;
 
 
 import java.util.Map;
@@ -8,27 +8,26 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
-import endrov.unsortedImageFilters.imageMath.ImageAddImageOp;
-import endrov.unsortedImageFilters.imageMath.ImageAddScalarOp;
+import endrov.unsortedImageFilters.imageLogic.AndImageOp;
 
 /**
- * Flow unit: add numbers
+ * Flow unit: and
  * @author Johan Henriksson
  *
  */
-public class FlowUnitAdd extends FlowUnitMathBinop
+public class FlowUnitAnd extends FlowUnitLogicBinop
 	{
 	private static final String metaType="add";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","+",metaType,FlowUnitAdd.class, null,"Add values"));
+		Flow.addUnitType(new FlowUnitDeclaration("Logic","&",metaType,FlowUnitAnd.class, null,"And"));
 		}
 	
-	public FlowUnitAdd()
+	public FlowUnitAnd()
 		{
-		super("A+B",metaType);
+		super("A & B",metaType);
 		}
 	
 	
@@ -43,23 +42,13 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 			{
 			throw new BadTypeFlowException("Null values "+a+" "+b);
 			}
-		else if(a instanceof Number && b instanceof Number)
+		else if(a instanceof Boolean && b instanceof Boolean)
 			{
-			lastOutput.put("C", NumberMath.plus((Number)a, (Number)b));
-			}
-		else if(a instanceof EvChannel && b instanceof Number)
-			{
-			EvChannel ch=new ImageAddScalarOp((Number)b).exec((EvChannel)a);
-			lastOutput.put("C", ch);
-			}
-		else if(b instanceof EvChannel && a instanceof Number)
-			{
-			EvChannel ch=new ImageAddScalarOp((Number)a).exec((EvChannel)b);
-			lastOutput.put("C", ch);
+			lastOutput.put("C", (Boolean)a && (Boolean)b);
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new ImageAddImageOp().exec((EvChannel)a, (EvChannel)b);
+			EvChannel ch=new AndImageOp().exec((EvChannel)a, (EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else
