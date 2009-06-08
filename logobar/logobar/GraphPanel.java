@@ -3,13 +3,6 @@ package logobar;
 import java.awt.*;
 import javax.swing.*;
 
-import org.jibble.epsgraphics.EpsGraphics2D;
-
-import java.text.*; // Contains the class NumberFormat.
-import java.util.*;
-import java.io.*; // For IOException
-import java.lang.String;
-
 public class GraphPanel extends JPanel{
     public PaintStyle iPaint;
     private Stat       iStat;

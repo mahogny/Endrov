@@ -4,10 +4,6 @@ import java.io.File;
 import javax.swing.JOptionPane;
 //import javax.swing.SwingUtilities;
 
-import com.apple.eawt.*;
-import com.apple.mrj.MRJApplicationUtils;
-import com.apple.mrj.MRJOpenDocumentHandler;
-
 
 
 public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHandler

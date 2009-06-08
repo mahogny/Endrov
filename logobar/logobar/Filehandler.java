@@ -14,7 +14,6 @@ package logobar;
 //package logoBar; // All files in the program must be declared to belong to the same package. Otherwise there's a problem when creating the jar file.
 import java.io.*; // for the BufferedReader
 import java.util.*; // contains the class Vector
-import java.text.*; // contains the NumberFormat class
 import javax.swing.*;
 
 public class Filehandler
