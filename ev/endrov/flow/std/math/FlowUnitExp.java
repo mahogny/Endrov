@@ -1,4 +1,4 @@
-package endrov.flow.std.logic;
+package endrov.flow.std.math;
 
 
 import java.awt.Color;
@@ -16,21 +16,23 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
 import endrov.unsortedImageFilters.imageLogic.XorImageOp;
+import endrov.unsortedImageFilters.imageMath.ImageExpOp;
+import endrov.unsortedImageFilters.imageMath.ImageSinOp;
 
 /**
  * Flow unit: not
  * @author Johan Henriksson
  *
  */
-public class FlowUnitNot extends FlowUnitBasic
+public class FlowUnitExp extends FlowUnitBasic
 	{
-	public static final String showName="Not";
-	private static final String metaType="not";
+	public static final String showName="Exp";
+	private static final String metaType="exp";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Logic","not",metaType,FlowUnitNot.class, null,"Not"));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","exp",metaType,FlowUnitExp.class, null,"e^a"));
 		}
 
 	
@@ -62,7 +64,7 @@ public class FlowUnitNot extends FlowUnitBasic
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("C", null);
+		types.put("B", null);
 		}
 	
 	
@@ -88,32 +90,22 @@ public class FlowUnitNot extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.clear();
 		Object a=flow.getInputValue(this, exec, "A");
-		Object b=flow.getInputValue(this, exec, "B");
 		
-		if(a==null || b==null)
+		if(a==null)
 			{
-			throw new BadTypeFlowException("Null values "+a+" "+b);
+			throw new BadTypeFlowException("Null values "+a);
 			}
-		else if(a instanceof Boolean && b instanceof Boolean)
+		else if(a instanceof Number)
 			{
-			lastOutput.put("C", (Boolean)a ^ (Boolean)b);
+			lastOutput.put("B", Math.exp(((Number)a).doubleValue()));
 			}
-		else if(a instanceof EvChannel && b instanceof EvChannel)
+		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new XorImageOp().exec((EvChannel)a, (EvChannel)b);
-			lastOutput.put("C", ch);
+			EvChannel ch=new ImageExpOp().exec((EvChannel)a);
+			lastOutput.put("B", ch);
 			}
 		else
-			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
-
-		/*
-		if(a instanceof Double)
-			lastOutput.put("C", ((Double)a)+toDouble(b));
-		else if(a instanceof Integer)
-			lastOutput.put("C", ((Integer)a)+((Integer)b));
-		else
-			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
-			*/
+			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass());
 		}
 
 	

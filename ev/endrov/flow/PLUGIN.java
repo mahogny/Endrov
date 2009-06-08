@@ -23,8 +23,11 @@ import endrov.flow.std.logic.FlowUnitNot;
 import endrov.flow.std.logic.FlowUnitOr;
 import endrov.flow.std.logic.FlowUnitXor;
 import endrov.flow.std.math.FlowUnitAdd;
+import endrov.flow.std.math.FlowUnitCos;
 import endrov.flow.std.math.FlowUnitDiv;
+import endrov.flow.std.math.FlowUnitExp;
 import endrov.flow.std.math.FlowUnitMul;
+import endrov.flow.std.math.FlowUnitSin;
 import endrov.flow.std.math.FlowUnitSub;
 import endrov.flow.std.objects.FlowUnitGetObject;
 import endrov.flow.std.objects.FlowUnitParent;
@@ -74,7 +77,8 @@ public class PLUGIN extends PluginDef
 				
 				//Math
 				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,FlowUnitMul.class,
-
+				FlowUnitSin.class, FlowUnitCos.class, FlowUnitExp.class,
+				
 				//Logic
 				FlowUnitAnd.class,FlowUnitOr.class,FlowUnitXor.class,FlowUnitNot.class,
 
