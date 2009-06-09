@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.binaryMorph;
 
 import java.util.LinkedList;
 import java.util.List;

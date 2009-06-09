@@ -10,8 +10,20 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class SpectralMix
+public class OpSpectralMix
 	{
+	private DoubleMatrix2D m;
+	public OpSpectralMix(DoubleMatrix2D m)
+		{
+		this.m = m;
+		}
+	public EvPixels exec(EvPixels... p)
+		{
+		return map(p, m)[0];
+		//TODO!!!!!! need to support multiple return arguments
+		}
+	
+	
 	
 	/**
 	 * Transform input colors by matrix.
