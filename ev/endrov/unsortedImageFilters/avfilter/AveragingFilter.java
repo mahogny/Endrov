@@ -1,8 +1,7 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.avfilter;
 
-import endrov.flow.std.math.OpImageLog;
-import endrov.flow.std.math.OpImageMulScalar;
 import endrov.imageset.EvPixels;
+import endrov.unsortedImageFilters.CumSumArea;
 
 /**
  * Different averaging filters
@@ -13,51 +12,6 @@ public class AveragingFilter
 	{
 
 	//	http://www.ph.tn.tudelft.nl/Courses/FIP/noframes/fip.html
-	
-	/**
-	 * Moving average. Average is taken over an area of size (2pw+1)x(2ph+1). r=0 hence corresponds
-	 * to the identity operation.
-	 * 
-	 * Complexity O(w*h)
-	 */
-	public static EvPixels movingAverage(EvPixels in, int pw, int ph)
-		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
-		int w=in.getWidth();
-		int h=in.getHeight();
-		EvPixels out=new EvPixels(in.getType(),w,h);
-		int[] outPixels=out.getArrayInt();
-		
-		EvPixels cumsum=CumSumArea.cumsum(in);
-		
-		for(int ay=0;ay<h;ay++)
-			{
-			for(int ax=0;ax<w;ax++)
-				{
-				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+pw+1);
-				
-				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+ph+1);
-				int area=(tox-fromx)*(toy-fromy);
-				outPixels[out.getPixelIndex(ax, ay)]=CumSumArea.integralFromCumSum(cumsum, fromx, tox, fromy, toy)/(int)area;
-				}
-			}
-		return out;
-		}
-	
-	
-	/**
-	 * Moving entropy. Entropy is taken over an area of size (2pw+1)x(2ph+1).
-	 * 
-	 * Entropy is defined as S=-sum_i P[i] log(i), where i is intensity
-	 * 
-	 * Complexity O(w*h)
-	 */
-	public static EvPixels movingEntropy(EvPixels in, int pw, int ph)
-		{
-		return new OpImageMulScalar(-1.0).exec(movingAverage(new OpImageLog().exec(in), pw, ph));
-		}
 	
 	/**
 	 * Moving sum. Sum is taken over an area of size (2pw+1)x(2ph+1). r=0 hence corresponds
@@ -93,55 +47,6 @@ public class AveragingFilter
 	
 	
 	
-	
-	
-	/**
-	 * Local average, but only average using pixels within threshold of current pixel value. This improves edge conservation
-	 * 
-	 * O(w*h*pw*ph)
-	 * 
-	 * http://www.roborealm.com/help/Bilateral.php
-	 */
-	public static EvPixels bilateralFilter(EvPixels in, int pw, int ph, int threshold)
-		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
-		int w=in.getWidth();
-		int h=in.getHeight();
-		EvPixels out=new EvPixels(in.getType(),w,h);
-		int[] inPixels=in.getArrayInt();
-		int[] outPixels=out.getArrayInt();
-		
-		for(int ay=0;ay<h;ay++)
-			{
-			for(int ax=0;ax<w;ax++)
-				{
-				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+pw+1);
-				
-				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+ph+1);
-				
-				int sum=0;
-				int num=0;
-
-				int curp=inPixels[in.getPixelIndex(ax, ay)];
-				for(int y=fromy;y<toy;y++)
-					for(int x=fromx;x<tox;x++)
-						{
-						
-						int p=inPixels[in.getPixelIndex(x, y)];
-						int dp=p-curp;
-						if(dp>-threshold && dp<threshold)
-							{
-							sum+=p;
-							num++;
-							}
-						}
-				outPixels[out.getPixelIndex(ax, ay)]=sum/num;
-				}
-			}
-		return out;
-		}
 	
 	
 	/**

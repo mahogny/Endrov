@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.fourier;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import endrov.imageset.EvPixels;

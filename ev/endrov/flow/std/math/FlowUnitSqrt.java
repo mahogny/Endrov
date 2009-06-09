@@ -14,19 +14,19 @@ import endrov.imageset.EvChannel;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitExp extends FlowUnitMathUniop
+public class FlowUnitSqrt extends FlowUnitMathUniop
 	{
-	private static final String metaType="exp";
+	private static final String metaType="sqrt";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","exp",metaType,FlowUnitExp.class, null,"Exponentiate values"));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","sqrt",metaType,FlowUnitSqrt.class, null,"Sqrt"));
 		}
 	
-	public FlowUnitExp()
+	public FlowUnitSqrt()
 		{
-		super("e^A",metaType);
+		super("Log",metaType);
 		}
 	
 	
@@ -42,11 +42,11 @@ public class FlowUnitExp extends FlowUnitMathUniop
 			}
 		else if(a instanceof Number)
 			{
-			lastOutput.put("B", Math.exp(((Number)a).doubleValue()));
+			lastOutput.put("B", Math.sqrt(((Number)a).doubleValue()));
 			}
 		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageExp().exec((EvChannel)a);
+			EvChannel ch=new OpImageSqrt().exec((EvChannel)a);
 			lastOutput.put("B", ch);
 			}
 		else

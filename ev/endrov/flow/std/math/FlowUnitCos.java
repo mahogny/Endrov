@@ -1,30 +1,21 @@
 package endrov.flow.std.math;
 
 
-import java.awt.Color;
 import java.util.Map;
-
-import javax.swing.ImageIcon;
-
-import org.jdom.Element;
 
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
-import endrov.flow.FlowType;
-import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.std.logic.OpXorImage;
 import endrov.imageset.EvChannel;
 
 /**
- * Flow unit: not
+ * Flow unit: add numbers
  * @author Johan Henriksson
  *
  */
-public class FlowUnitCos extends FlowUnitBasic
+public class FlowUnitCos extends FlowUnitMathUniop
 	{
-	public static final String showName="Cos";
 	private static final String metaType="cos";
 	
 	public static void initPlugin() {}
@@ -32,55 +23,11 @@ public class FlowUnitCos extends FlowUnitBasic
 		{
 		Flow.addUnitType(new FlowUnitDeclaration("Math","cos",metaType,FlowUnitCos.class, null,"Cosinus"));
 		}
-
 	
-	public String toXML(Element e)
+	public FlowUnitCos()
 		{
-		return metaType;
+		super("Cos",metaType);
 		}
-
-	public void fromXML(Element e)
-		{
-		}
-	
-	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
-	
-	public Color getBackground()
-		{
-		return new Color(200,255,200);
-		}
-
-	
-	
-	/** Get types of flows in */
-	
-	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
-		{
-		types.put("A", null);
-		}
-	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
-		{
-		types.put("B", null);
-		}
-	
-	
-	public static double toDouble(Object o) throws Exception
-		{
-		if(o instanceof Double)
-			return (Double)o;
-		else if(o instanceof Integer)
-			return (Integer)o;
-		else throw new BadTypeFlowException("Not a numerical type "+o.getClass());
-		}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception

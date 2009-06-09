@@ -1,21 +1,21 @@
-package endrov.flow.std.math;
+package endrov.unsortedImageFilters.imageMath;
 
 import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
 
 /**
- * A + B
- * @author Johan Henriksson
- *
+ * A>B
+ * 
+ * TODO what type to output? type parameter?
  */
-public class OpImageAddImage extends OpSlice
+public class OpImageGreaterThanImage extends OpSlice
 	{
 	public EvPixels exec(EvPixels... p)
 		{
-		return OpImageAddImage.plus(p[0], p[1]);
+		return greater(p[0],p[1]);
 		}
-
-	static EvPixels plus(EvPixels a, EvPixels b)
+	
+	public static EvPixels greater(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
 		a=a.convertTo(EvPixels.TYPE_INT, true);
@@ -29,8 +29,13 @@ public class OpImageAddImage extends OpSlice
 		int[] outPixels=out.getArrayInt();
 		
 		for(int i=0;i<aPixels.length;i++)
-			outPixels[i]=aPixels[i]+bPixels[i];
+			outPixels[i]=bool2int(aPixels[i]>bPixels[i]);
 		
 		return out;
+		}
+	
+	private static int bool2int(boolean b)
+		{
+		return b ? 1 : 0;
 		}
 	}

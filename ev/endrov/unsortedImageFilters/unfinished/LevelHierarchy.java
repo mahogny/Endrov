@@ -11,6 +11,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.unsortedImageFilters.AutoLineage;
+import endrov.unsortedImageFilters.avfilter.OpMovingAverage;
 import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 
@@ -323,7 +324,7 @@ public class LevelHierarchy
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/TB2167_080416.ost"));
 		
 		Imageset im=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
-		im.metaObject.put("MA15", AutoLineage.movingAverage(im.getChannel("RFP"), 5, 5));
+		im.metaObject.put("MA15", new OpMovingAverage(5,5).exec(im.getChannel("RFP")));
 		
 		EvStack stack=im.getChannel("MA15").imageLoader.get(new EvDecimal(14050));
 		
