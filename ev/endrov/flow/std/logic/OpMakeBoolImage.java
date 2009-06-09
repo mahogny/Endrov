@@ -1,13 +1,13 @@
-package endrov.unsortedImageFilters.imageLogic;
+package endrov.flow.std.logic;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
- * NOT a
+ * Turn A into boolean image ie non-zero pixels are set to 1
  * @author Johan Henriksson
  */
-public class NotImageOp extends SliceOp
+public class OpMakeBoolImage extends OpSlice
 	{
 	public EvPixels exec(EvPixels... p)
 		{
@@ -18,6 +18,7 @@ public class NotImageOp extends SliceOp
 		{
 		//Should use the common higher type here
 		a=a.convertTo(EvPixels.TYPE_INT, true);
+		//Know output range
 		
 		int w=a.getWidth();
 		int h=a.getHeight();
@@ -26,7 +27,7 @@ public class NotImageOp extends SliceOp
 		int[] outPixels=out.getArrayInt();
 		
 		for(int i=0;i<aPixels.length;i++)
-			outPixels[i]=aPixels[i]!=0 ? 0 : 1;
+			outPixels[i]=aPixels[i]!=0 ? 1 : 0;
 		return out;
 		}
 	}

@@ -8,9 +8,6 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
-import endrov.unsortedImageFilters.imageMath.ImageSubImageOp;
-import endrov.unsortedImageFilters.imageMath.ImageSubScalarOp;
-import endrov.unsortedImageFilters.imageMath.ScalarSubImageOp;
 
 /**
  * Flow unit: subtract
@@ -49,7 +46,7 @@ public class FlowUnitSub extends FlowUnitMathBinop
 			}
 		else if(a instanceof EvChannel && b instanceof Number)
 			{
-			EvChannel ch=new ImageSubScalarOp((Number)b).exec((EvChannel)a);
+			EvChannel ch=new OpImageSubScalar((Number)b).exec((EvChannel)a);
 			lastOutput.put("C", ch);
 			}
 		else if(b instanceof EvChannel && a instanceof Number)
@@ -59,7 +56,7 @@ public class FlowUnitSub extends FlowUnitMathBinop
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new ImageSubImageOp().exec((EvChannel)a, (EvChannel)a);
+			EvChannel ch=new OpImageSubImage().exec((EvChannel)a, (EvChannel)a);
 			lastOutput.put("C", ch);
 			}
 		else

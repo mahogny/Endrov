@@ -14,9 +14,8 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flow.std.logic.OpXorImage;
 import endrov.imageset.EvChannel;
-import endrov.unsortedImageFilters.imageLogic.XorImageOp;
-import endrov.unsortedImageFilters.imageMath.ImageSinOp;
 
 /**
  * Flow unit: not
@@ -100,7 +99,7 @@ public class FlowUnitSin extends FlowUnitBasic
 			}
 		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new ImageSinOp().exec((EvChannel)a);
+			EvChannel ch=new OpImageSin().exec((EvChannel)a);
 			lastOutput.put("B", ch);
 			}
 		else

@@ -1,13 +1,13 @@
-package endrov.unsortedImageFilters.imageLogic;
+package endrov.flow.std.logic;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * a AND b
  * @author Johan Henriksson
  */
-public class AndImageOp extends SliceOp
+public class OpAndImage extends OpSlice
 	{
 	public EvPixels exec(EvPixels... p)
 		{

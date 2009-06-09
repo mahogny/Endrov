@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.imageMath;
 
 import endrov.imageset.EvPixels;
 

@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.newcore;
+package endrov.flow;
 
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
@@ -12,7 +12,7 @@ import endrov.imageset.EvStack;
  * @author Johan Henriksson
  *
  */
-public interface GeneralOp
+public interface OpGeneral
 	{
 	public EvPixels exec(EvPixels... p);
 	public EvStack exec(EvStack... p);

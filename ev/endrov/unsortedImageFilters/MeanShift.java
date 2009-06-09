@@ -4,10 +4,10 @@ import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
+import endrov.flow.std.math.OpImageMulImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
-import endrov.unsortedImageFilters.imageMath.ImageMulImageOp;
 import endrov.util.EvDecimal;
 
 /**
@@ -47,8 +47,8 @@ public class MeanShift
 			
 			EvStack incX=GenerateSpecialImage.repeatImageZ(GenerateSpecialImage.genIncX(w, h),s);
 			EvStack incY=GenerateSpecialImage.repeatImageZ(GenerateSpecialImage.genIncY(w, h),s);
-			momentX=new ImageMulImageOp().exec(incX, s);
-			momentY=new ImageMulImageOp().exec(incY, s);
+			momentX=new OpImageMulImage().exec(incX, s);
+			momentY=new OpImageMulImage().exec(incY, s);
 			}
 		
 

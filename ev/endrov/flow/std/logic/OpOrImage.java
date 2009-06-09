@@ -1,20 +1,20 @@
-package endrov.unsortedImageFilters.imageLogic;
+package endrov.flow.std.logic;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
- * a XOR b
+ * a OR b
  * @author Johan Henriksson
  */
-public class XorImageOp extends SliceOp
+public class OpOrImage extends OpSlice
 	{
 	public EvPixels exec(EvPixels... p)
 		{
-		return xor(p[0], p[1]);
+		return or(p[0], p[1]);
 		}
 	
-	private static EvPixels xor(EvPixels a, EvPixels b)
+	private static EvPixels or(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
 		a=a.convertTo(EvPixels.TYPE_INT, true);
@@ -28,7 +28,7 @@ public class XorImageOp extends SliceOp
 		int[] outPixels=out.getArrayInt();
 		
 		for(int i=0;i<aPixels.length;i++)
-			outPixels[i]=(aPixels[i]!=0) ^ (bPixels[i]!=0) ? 1 : 0;
+			outPixels[i]=aPixels[i]!=0 || bPixels[i]!=0 ? 1 : 0;
 		return out;
 		}
 	}

@@ -1,14 +1,31 @@
 package endrov.unsortedImageFilters;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
+import endrov.unsortedImageFilters.imageMath.OpImageAxpy;
+
+
 
 /**
- * Convolving operations
+ * A*b+c
  * @author Johan Henriksson
  *
  */
-public class Convolve
+public class OpConvolve2D extends OpSlice
 	{
+	private Number kcx;
+	private Number kcy;
+	private EvPixels kernel;
+	public OpConvolve2D(EvPixels kernel, Number kcx, Number kcy)
+		{
+		this.kcx = kcx;
+		this.kcy = kcy;
+		this.kernel = kernel;
+		}
+	public EvPixels exec(EvPixels... p)
+		{
+		return convolve(p[0], kernel, kcx.intValue(), kcy.intValue());
+		}
 
 	/**
 	 * Convolve: in (*) kernel
@@ -62,6 +79,9 @@ public class Convolve
 		return out;
 		}
 	
+	
+	
+	
 
 	/**
 	 * Optimization:
@@ -76,6 +96,4 @@ public class Convolve
 	 * 
 	 * 
 	 */
-	
-	
 	}

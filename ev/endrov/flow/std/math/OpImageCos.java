@@ -1,18 +1,18 @@
-package endrov.unsortedImageFilters.imageMath;
+package endrov.flow.std.math;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * cos(A)
  * @author Johan Henriksson
  *
  */
-public class ImageSqrtOp extends SliceOp
+public class OpImageCos extends OpSlice
 	{
 	public EvPixels exec(EvPixels... p)
 		{
-		return ImageSqrtOp.log(p[0]);
+		return OpImageCos.log(p[0]);
 		}
 
 	/**
@@ -30,7 +30,7 @@ public class ImageSqrtOp extends SliceOp
 		double[] outPixels=out.getArrayDouble();
 		
 		for(int i=0;i<aPixels.length;i++)
-			outPixels[i]=Math.sqrt(aPixels[i]);
+			outPixels[i]=Math.cos(aPixels[i]);
 		
 		return out;
 		}

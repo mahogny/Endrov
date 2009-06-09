@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.newcore;
+package endrov.flow;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import endrov.util.Memoize;
  * @author Johan Henriksson
  *
  */
-public abstract class StackOp implements GeneralOp
+public abstract class OpStack implements OpGeneral
 	{
 	//By necessity, stack operators have to deal with laziness manually.
 	//Example: avgZ only computes one slice and then duplicates it. other operands compute entire
@@ -44,7 +44,7 @@ public abstract class StackOp implements GeneralOp
 	/**
 	 * Lazily create a channel using an operator that combines input channels
 	 */
-	public static EvChannel applyStackOp(EvChannel[] ch, final StackOp op)
+	public static EvChannel applyStackOp(EvChannel[] ch, final OpStack op)
 		{
 		//Not quite final: what if changes should go back into the channel? how?
 		EvChannel newch=new EvChannel();
