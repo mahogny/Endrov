@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.newcore;
+package endrov.flow;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ import endrov.util.Memoize;
  * @author Johan Henriksson
  *
  */
-public abstract class SliceOp implements GeneralOp //extends StackOp
+public abstract class OpSlice implements OpGeneral //extends StackOp
 	{
 	//Could have multiple output
 	//EvPixels or EvImage?
@@ -37,9 +37,9 @@ public abstract class SliceOp implements GeneralOp //extends StackOp
 	/**
 	 * Turn a slice op into a stack op
 	 */
-	public static StackOp makeStackOp(final SliceOp op)
+	public static OpStack makeStackOp(final OpSlice op)
 		{
-		return new StackOp()
+		return new OpStack()
 			{
 			public EvStack exec(EvStack... p)
 				{

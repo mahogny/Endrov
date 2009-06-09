@@ -1,23 +1,23 @@
-package endrov.unsortedImageFilters.imageMath;
+package endrov.flow.std.math;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * A - b
  * @author Johan Henriksson
  *
  */
-public class ImageSubScalarOp extends SliceOp
+public class OpImageSubScalar extends OpSlice
 	{
 	private Number b;
-	public ImageSubScalarOp(Number b)
+	public OpImageSubScalar(Number b)
 		{
 		this.b = b;
 		}
 	public EvPixels exec(EvPixels... p)
 		{
-		return ImageSubScalarOp.minus(p[0], b);
+		return OpImageSubScalar.minus(p[0], b);
 		}
 	static EvPixels minus(EvPixels a, Number bval)
 	{

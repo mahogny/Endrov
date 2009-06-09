@@ -1,18 +1,18 @@
-package endrov.unsortedImageFilters.imageMath;
+package endrov.flow.std.math;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * A * B
  * @author Johan Henriksson
  *
  */
-public class ImageMulImageOp extends SliceOp
+public class OpImageMulImage extends OpSlice
 	{
 	public EvPixels exec(EvPixels... p)
 		{
-		return ImageMulImageOp.times(p[0], p[1]);
+		return OpImageMulImage.times(p[0], p[1]);
 		}
 
 	/**

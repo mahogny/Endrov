@@ -1,26 +1,26 @@
-package endrov.unsortedImageFilters.imageMath;
+package endrov.flow.std.math;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * A * b
  * @author Johan Henriksson
  *
  */
-public class ImageMulScalarOp extends SliceOp
+public class OpImageMulScalar extends OpSlice
 	{
 	private Number b;
-	public ImageMulScalarOp(Number b)
+	public OpImageMulScalar(Number b)
 		{
 		this.b = b;
 		}
 	public EvPixels exec(EvPixels... p)
 		{
 		if(b instanceof Integer)
-			return ImageMulScalarOp.times(p[0], b.intValue()); //TODO
+			return OpImageMulScalar.times(p[0], b.intValue()); //TODO
 		else
-			return ImageMulScalarOp.times(p[0], b.doubleValue()); //TODO
+			return OpImageMulScalar.times(p[0], b.doubleValue()); //TODO
 		}
 	static EvPixels times(EvPixels a, double b)
 	{

@@ -1,9 +1,9 @@
 package endrov.unsortedImageFilters;
 
+import endrov.flow.std.math.OpImageMulImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
-import endrov.unsortedImageFilters.imageMath.ImageMulImageOp;
 import endrov.util.EvDecimal;
 
 /**
@@ -27,13 +27,13 @@ public class GenerateSpecialImage
 			{
 			EvPixels mul=GenerateSpecialImage.genIncX(w, h);
 			for(int i=0;i<p;i++)
-				out=new ImageMulImageOp().exec(out, mul);
+				out=new OpImageMulImage().exec(out, mul);
 			}
 		if(q>0)
 			{
 			EvPixels mul=GenerateSpecialImage.genIncY(w, h);
 			for(int i=0;i<q;i++)
-				out=new ImageMulImageOp().exec(out, mul);
+				out=new OpImageMulImage().exec(out, mul);
 			}
 		return out;
 		}

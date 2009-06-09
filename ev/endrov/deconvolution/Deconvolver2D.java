@@ -17,8 +17,8 @@
 package endrov.deconvolution;
 
 import endrov.ev.Log;
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * Deconvolver 2D.
@@ -26,7 +26,7 @@ import endrov.unsortedImageFilters.newcore.SliceOp;
  * @author Johan Henriksson
  * 
  */
-public abstract class Deconvolver2D extends SliceOp
+public abstract class Deconvolver2D extends OpSlice
 	{
 	
 	public static void log(String s)

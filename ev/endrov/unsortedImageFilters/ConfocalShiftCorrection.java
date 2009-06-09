@@ -1,7 +1,7 @@
 package endrov.unsortedImageFilters;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * Correct for horizontal shift when using a confocal microscope
@@ -12,7 +12,7 @@ public class ConfocalShiftCorrection
 	{
 
 	
-	public static class ConfocalShiftCorrectionOp extends SliceOp
+	public static class ConfocalShiftCorrectionOp extends OpSlice
 		{
 		//TODO interpolation for fractional shift not implemented
 		double shift;

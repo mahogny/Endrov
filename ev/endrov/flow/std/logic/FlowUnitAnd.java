@@ -8,7 +8,6 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.EvChannel;
-import endrov.unsortedImageFilters.imageLogic.AndImageOp;
 
 /**
  * Flow unit: and
@@ -48,7 +47,7 @@ public class FlowUnitAnd extends FlowUnitLogicBinop
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new AndImageOp().exec((EvChannel)a, (EvChannel)b);
+			EvChannel ch=new OpAndImage().exec((EvChannel)a, (EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else

@@ -1,18 +1,18 @@
-package endrov.unsortedImageFilters.imageMath;
+package endrov.flow.std.math;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.newcore.SliceOp;
 
 /**
  * sin(A)
  * @author Johan Henriksson
  *
  */
-public class ImageSinOp extends SliceOp
+public class OpImageSin extends OpSlice
 	{
 	public EvPixels exec(EvPixels... p)
 		{
-		return ImageSinOp.log(p[0]);
+		return OpImageSin.log(p[0]);
 		}
 
 	/**
