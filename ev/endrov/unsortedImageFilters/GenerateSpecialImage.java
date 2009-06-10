@@ -27,13 +27,13 @@ public class GenerateSpecialImage
 			{
 			EvPixels mul=GenerateSpecialImage.genIncX(w, h);
 			for(int i=0;i<p;i++)
-				out=new OpImageMulImage().exec(out, mul);
+				out=new OpImageMulImage().exec1(out, mul);
 			}
 		if(q>0)
 			{
 			EvPixels mul=GenerateSpecialImage.genIncY(w, h);
 			for(int i=0;i<q;i++)
-				out=new OpImageMulImage().exec(out, mul);
+				out=new OpImageMulImage().exec1(out, mul);
 			}
 		return out;
 		}

@@ -1,6 +1,6 @@
 package endrov.flow.std.math;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
@@ -8,14 +8,14 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class ScalarSubImageOp extends OpSlice
+public class ScalarSubImageOp extends OpSlice1
 	{
 	private Number b;
 	public ScalarSubImageOp(Number b)
 		{
 		this.b = b;
 		}
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return OpImageSubScalar.minus(b, p[0]);
 		}

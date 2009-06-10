@@ -2,19 +2,35 @@ package endrov.unsortedImageFilters;
 
 import java.util.*;
 
+import endrov.flow.OpStack1;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 
 /**
- * Find regions through watershedding. Output image will have pixels with value corresponding to the group they belong to.
+ * Segment image through watershedding. Output image will have pixels with value corresponding to the group they belong to.
  * Watershed grows in 6 directions
+ * <br/>
+ * Worst case up to O(whd log(whd)). More realistically closer to O(whd).
  * 
  * @author Johan Henriksson
  *
  */
-public class Watershed
+public class OpWatershed extends OpStack1
 	{
+	private List<Vector3i> seeds;
+
+	public OpWatershed(List<Vector3i> seeds)
+		{
+		this.seeds = seeds;
+		}
+
+	@Override
+	public EvStack exec1(EvStack... p)
+		{
+		return watershed(p[0], seeds);
+		}
+	
 	/**
 	 * Need seed points. Specify or use local maximas
 	 * 
@@ -26,7 +42,6 @@ public class Watershed
 	 */
 	
 	
-
 
 	/**
 	 * One point on the queue
@@ -83,11 +98,6 @@ public class Watershed
 	
 	//TODO seeds should maybe be groups?
 	
-	/**
-	 * Segment image through watershedding.
-	 * 
-	 * Worst case up to O(whd log(whd)). More realistically closer to O(whd).
-	 */
 	public static EvStack watershed(EvStack stack, List<Vector3i> seeds)
 		{
 		int w=stack.getWidth();
@@ -170,7 +180,5 @@ public class Watershed
 		else
 			return true;
 		}
-	
-	
-	
+
 	}

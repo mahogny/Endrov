@@ -46,7 +46,7 @@ public class FlowUnitExp extends FlowUnitMathUniop
 			}
 		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageExp().exec((EvChannel)a);
+			EvChannel ch=new OpImageExp().exec1((EvChannel)a);
 			lastOutput.put("B", ch);
 			}
 		else

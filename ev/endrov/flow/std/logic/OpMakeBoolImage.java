@@ -1,15 +1,15 @@
 package endrov.flow.std.logic;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
  * Turn A into boolean image ie non-zero pixels are set to 1
  * @author Johan Henriksson
  */
-public class OpMakeBoolImage extends OpSlice
+public class OpMakeBoolImage extends OpSlice1
 	{
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return not(p[0]);
 		}

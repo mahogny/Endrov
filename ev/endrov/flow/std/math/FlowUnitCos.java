@@ -46,7 +46,7 @@ public class FlowUnitCos extends FlowUnitMathUniop
 			}
 		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageCos().exec((EvChannel)a);
+			EvChannel ch=new OpImageCos().exec1((EvChannel)a);
 			lastOutput.put("B", ch);
 			}
 		else

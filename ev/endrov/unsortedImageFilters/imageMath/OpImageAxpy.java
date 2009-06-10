@@ -1,6 +1,6 @@
 package endrov.unsortedImageFilters.imageMath;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
@@ -8,7 +8,7 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class OpImageAxpy extends OpSlice
+public class OpImageAxpy extends OpSlice1
 	{
 	private Number b;
 	private Number c;
@@ -17,7 +17,7 @@ public class OpImageAxpy extends OpSlice
 		this.b = b;
 		this.c = c;
 		}
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return OpImageAxpy.axpy(p[0], b, c);
 		}

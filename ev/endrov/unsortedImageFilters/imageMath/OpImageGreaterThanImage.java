@@ -1,6 +1,6 @@
 package endrov.unsortedImageFilters.imageMath;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
@@ -8,9 +8,9 @@ import endrov.imageset.EvPixels;
  * 
  * TODO what type to output? type parameter?
  */
-public class OpImageGreaterThanImage extends OpSlice
+public class OpImageGreaterThanImage extends OpSlice1
 	{
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return greater(p[0],p[1]);
 		}

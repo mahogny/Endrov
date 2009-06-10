@@ -17,7 +17,7 @@
 package endrov.deconvolution;
 
 import endrov.ev.Log;
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
@@ -26,7 +26,7 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  * 
  */
-public abstract class Deconvolver2D extends OpSlice
+public abstract class Deconvolver2D extends OpSlice1
 	{
 	
 	public static void log(String s)
@@ -40,11 +40,12 @@ public abstract class Deconvolver2D extends OpSlice
 	/**
 	 * Only one argument: the image to deconvolve
 	 */
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		EvPixels out=internalDeconvolve(p[0]);
 		return out;
 		}
+	
 	
 	
 	}

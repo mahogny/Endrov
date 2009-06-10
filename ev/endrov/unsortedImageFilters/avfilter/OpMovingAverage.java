@@ -1,6 +1,6 @@
 package endrov.unsortedImageFilters.avfilter;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 import endrov.unsortedImageFilters.CumSumArea;
 
@@ -10,7 +10,7 @@ import endrov.unsortedImageFilters.CumSumArea;
  * 
  * Complexity O(w*h)
  */
-public class OpMovingAverage extends OpSlice
+public class OpMovingAverage extends OpSlice1
 	{
 	Number pw, ph;
 	
@@ -20,7 +20,7 @@ public class OpMovingAverage extends OpSlice
 		this.ph = ph;
 		}
 
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return movingAverage(p[0],pw.intValue(), ph.intValue());
 		}

@@ -3,7 +3,7 @@
  */
 package endrov.unsortedImageFilters;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
@@ -11,7 +11,7 @@ import endrov.imageset.EvPixels;
  * 
  * @author Johan Henriksson
  */
-public class OpConfocalShiftCorrection extends OpSlice
+public class OpConfocalShiftCorrection extends OpSlice1
 	{
 	//TODO interpolation for fractional shift not implemented
 	private double shift;
@@ -21,7 +21,7 @@ public class OpConfocalShiftCorrection extends OpSlice
 		this.shift = shift;
 		}
 	
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return shift(p[0], shift);
 		}

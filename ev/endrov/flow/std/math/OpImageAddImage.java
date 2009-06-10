@@ -1,6 +1,6 @@
 package endrov.flow.std.math;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
@@ -8,9 +8,9 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class OpImageAddImage extends OpSlice
+public class OpImageAddImage extends OpSlice1
 	{
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return OpImageAddImage.plus(p[0], p[1]);
 		}

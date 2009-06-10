@@ -12,10 +12,10 @@ public class CumSumArea
 	{
 	/**
 	 * Cumulative sum image, in effect, the 2D integral.
-	 * 
+	 * <br/>
 	 * The integral can boost many algorithms since sum f(x) from a to b = F(b)-F(a).
 	 * For convenience, the output is +1 larger in both directions. left and above are 0-filled.
-	 * 
+	 * <br/>
 	 * Complexity O(w*h)
 	 * 
 	 */
@@ -51,7 +51,7 @@ public class CumSumArea
 	/**
 	 * Special optimized version of cumsum. We have the property Var(x)=E(x^2)-(E(x))^2. Since it is used so much
 	 * to find local variance, this function exist and returns cumsum(x^2)
-	 * 
+	 * <br/>
 	 * Complexity O(w*h)
 	 * 
 	 */
