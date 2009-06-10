@@ -1,7 +1,7 @@
 /**
  * 
  */
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.misc;
 
 import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;

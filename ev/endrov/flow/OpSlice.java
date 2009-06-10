@@ -25,6 +25,8 @@ public abstract class OpSlice implements OpGeneral //extends StackOp
 	//EvPixels or EvImage?
 //	public abstract EvPixels[] exec(EvPixels... p);
 	
+	public abstract EvPixels[] exec(EvPixels... p);
+
 	
 	public EvPixels exec1(EvPixels... p)
 		{
