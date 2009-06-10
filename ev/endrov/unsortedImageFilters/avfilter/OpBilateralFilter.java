@@ -4,14 +4,14 @@ import endrov.imageset.EvPixels;
 
 /**
  * Local average, but only average using pixels within threshold of current pixel value. This improves edge conservation
- * 
+ * <br/>
  * O(w*h*pw*ph)
- * 
+ * <br/>
  * http://www.roborealm.com/help/Bilateral.php
  */
 public class OpBilateralFilter
 	{
-	Number pw, ph, threshold;
+	private Number pw, ph, threshold;
 	
 	public OpBilateralFilter(Number pw, Number ph, Number threshold)
 		{

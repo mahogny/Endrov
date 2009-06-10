@@ -99,7 +99,7 @@ public class FlowUnitNot extends FlowUnitBasic
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new OpXorImage().exec((EvChannel)a, (EvChannel)b);
+			EvChannel ch=new OpXorImage().exec1((EvChannel)a, (EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else

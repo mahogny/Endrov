@@ -12,14 +12,13 @@ public class CumSumLine
 	{
 	/**
 	 * Cumulative sum image, in effect, the 1D integral on each line
-	 * 
+	 * <br/>
 	 * The integral can boost many algorithms since sum f(x) from a to b = F(b)-F(a).
 	 * For convenience, the output is +1 larger in both directions. left and above are 0-filled.
-	 * 
+	 * <br/>
 	 * Note the difference between an area and line cumsum. An area cumsum can have better complexity
 	 * but a worse time constant.
-	 * 
-	 * 
+	 * <br/>
 	 * Complexity O(w*h)
 	 * 
 	 */

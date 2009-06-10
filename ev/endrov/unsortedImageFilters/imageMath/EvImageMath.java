@@ -10,7 +10,7 @@ import endrov.imageset.EvPixels;
  * @author Johan Henriksson
  *
  */
-public class ImageMath
+public class EvImageMath
 	{
 
 	

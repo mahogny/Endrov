@@ -1,6 +1,6 @@
 package endrov.unsortedImageFilters.avfilter;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.flow.std.math.OpImageLog;
 import endrov.flow.std.math.OpImageMulScalar;
 import endrov.imageset.EvPixels;
@@ -12,7 +12,7 @@ import endrov.imageset.EvPixels;
  * 
  * Complexity O(w*h)
  */
-public class OpMovingEntropy extends OpSlice
+public class OpMovingEntropy extends OpSlice1
 	{
 	Number pw, ph;
 	
@@ -22,8 +22,8 @@ public class OpMovingEntropy extends OpSlice
 		this.ph = ph;
 		}
 
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
-		return new OpImageMulScalar(-1.0).exec(new OpMovingAverage(pw,ph).exec(new OpImageLog().exec(p[0])));
+		return new OpImageMulScalar(-1.0).exec1(new OpMovingAverage(pw,ph).exec(new OpImageLog().exec(p[0])));
 		}
 	}

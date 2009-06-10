@@ -2,21 +2,21 @@ package endrov.unsortedImageFilters;
 
 import endrov.flow.std.math.OpImageMulImage;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.imageMath.ImageMath;
+import endrov.unsortedImageFilters.imageMath.EvImageMath;
 
 /**
  * 
  * Geometric momentum, defined as m_pq=sum_ij x^p y^q f(x,y), can be used for shape recognition and localization.
- * 
+ * <br/>
  * Central moment is calculated as: mu_pq=sum_ij (x-x_0)^p (y-y_0)^q f(x,y)   with (x_0,y_0)=(m_10,m_01)/m_00, that is, the geometric center.
- * 
+ * <br/>
  * See "Moment functions in image analysis", R Makundan, K R Ramakrishnan
- * 
+ * <br/>
  * Examples:
- * 
+ * <br/>
  * m_pq/(m_00^((p+q+2)/2)) is scale invariant
  * mu_pq/(mu_00^((p+q+2)/2)) is scale and translation invariant
- * 
+ * <br/>
  * rotation invariants exists.
  * 
  * @author Johan Henriksson
@@ -37,7 +37,7 @@ public class GeometricMomentum
 		int h=in.getHeight();
 		EvPixels pq=GenerateSpecialImage.genXpYp(w, h, p, q);
 		
-		return ImageMath.sum(new OpImageMulImage().exec(pq, in));
+		return EvImageMath.sum(new OpImageMulImage().exec1(pq, in));
 		
 		/*
 		in=in.convertTo(EvPixels.TYPE_INT, true);

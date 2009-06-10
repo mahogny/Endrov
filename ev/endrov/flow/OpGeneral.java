@@ -14,10 +14,17 @@ import endrov.imageset.EvStack;
  */
 public interface OpGeneral
 	{
-	public EvPixels exec(EvPixels... p);
-	public EvStack exec(EvStack... p);
-	public EvChannel exec(EvChannel... ch);
+	public EvPixels[] exec(EvPixels... p);
+	public EvPixels exec1(EvPixels... p);
 	
+	public EvStack[] exec(EvStack... p);
+	public EvStack exec1(EvStack... p);
+	
+	public EvChannel[] exec(EvChannel... ch);
+	public EvChannel exec1(EvChannel... ch);
+	
+	
+	public int getNumberChannels();
 	
 	/**
 	 * Takes stacks and pixels. Matches these together, produces a stack

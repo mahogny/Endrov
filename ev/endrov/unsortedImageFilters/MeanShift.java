@@ -47,8 +47,8 @@ public class MeanShift
 			
 			EvStack incX=GenerateSpecialImage.repeatImageZ(GenerateSpecialImage.genIncX(w, h),s);
 			EvStack incY=GenerateSpecialImage.repeatImageZ(GenerateSpecialImage.genIncY(w, h),s);
-			momentX=new OpImageMulImage().exec(incX, s);
-			momentY=new OpImageMulImage().exec(incY, s);
+			momentX=new OpImageMulImage().exec1(incX, s);
+			momentY=new OpImageMulImage().exec1(incY, s);
 			}
 		
 

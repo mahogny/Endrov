@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.floodfill;
 
 import java.util.*;
 

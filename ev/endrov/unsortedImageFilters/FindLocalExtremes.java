@@ -9,6 +9,7 @@ import endrov.util.Vector3i;
 
 /**
  * Find local extremes. Can handle flat areas - a region of the same value is the extreme, as opposed to a single pixel.
+ * <br/>
  * O(w h d)
  * 
  * 
@@ -130,7 +131,7 @@ public class FindLocalExtremes
 	public static List<Vector3i> findMinimas(EvStack stack)
 		{
 //		return findMaximas(NewImageSystem.makeStackOp(new ImageMath.TimesOp(-1)).exec(stack));
-		return findMaximas(new OpImageMulScalar(-1).exec(stack));
+		return findMaximas(new OpImageMulScalar(-1).exec1(stack));
 		}
 	
 	

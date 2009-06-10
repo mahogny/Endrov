@@ -1,16 +1,26 @@
 package endrov.unsortedImageFilters;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 
 
 /**
- * A*b+c
+ * Convolve: in (*) kernel
+ * 
+ * kernel and in assumed 0 outside area
+ * 
+ * Complexity O(w*h*kw*kh)
+ * 
+ * TODO test
+ * 
+ * @LEARNED need to specialize over multiple input formats
+ * @LEARNED when calling functions to be inlined, these need specialized versions too with tests already done by caller
+ * 
  * @author Johan Henriksson
- *
+ * 
  */
-public class OpConvolve2D extends OpSlice
+public class OpConvolve2D extends OpSlice1
 	{
 	private Number kcx;
 	private Number kcy;
@@ -21,24 +31,11 @@ public class OpConvolve2D extends OpSlice
 		this.kcy = kcy;
 		this.kernel = kernel;
 		}
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return convolve(p[0], kernel, kcx.intValue(), kcy.intValue());
 		}
 
-	/**
-	 * Convolve: in (*) kernel
-	 * 
-	 * kernel and in assumed 0 outside area
-	 * 
-	 * Complexity O(w*h*kw*kh)
-	 * 
-	 * TODO test
-	 * 
-	 * @LEARNED need to specialize over multiple input formats
-	 * @LEARNED when calling functions to be inlined, these need specialized versions too with tests already done by caller 
-	 * 
-	 */
 	public static EvPixels convolve(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
 		in=in.convertTo(EvPixels.TYPE_INT, true);

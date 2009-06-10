@@ -1,15 +1,15 @@
 package endrov.flow.std.logic;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
  * a OR b
  * @author Johan Henriksson
  */
-public class OpOrImage extends OpSlice
+public class OpOrImage extends OpSlice1
 	{
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return or(p[0], p[1]);
 		}

@@ -2,21 +2,42 @@ package endrov.unsortedImageFilters;
 
 import java.util.*;
 
+import endrov.flow.OpSlice;
 import endrov.imageset.EvPixels;
 
 /**
- * Compute percentile for a local square area around every pixel
+ * Compute percentile for a local square area around every pixel.
+ * <br/>
+ * Complexity O(w*h*pw*ph*log(pw*ph)*numPercentile)
  * @author Johan Henriksson
  *
  */
-public class WindowedPercentile
+public class OpWindowedPercentile2D extends OpSlice
 	{
+	private Number pw, ph;
+	private double[] percentile;
+	
+	public OpWindowedPercentile2D(Number pw, Number ph, double[] percentile)
+		{
+		this.pw = pw;
+		this.ph = ph;
+		this.percentile = percentile;
+		}
+	
+	public EvPixels[] exec(EvPixels... p)
+		{
+		//TODO need multiple return arguments
+		return run(p[0], pw.intValue(), ph.intValue(), percentile);
+		}
+	
+	public int getNumberChannels()
+		{
+		return percentile.length;
+		}
 	
 	
 	/**
 	 * Several percentiles can be calculated at the same time; this is because it's very cheap to do several
-	 * 
-	 * Complexity O(w*h*pw*ph*log(pw*ph)*numPercentile)
 	 * 
 	 * @param in Input image
 	 * @param pw Pixels to the left and right. 0=just middle
@@ -74,6 +95,8 @@ public class WindowedPercentile
 		
 		return out;
 		}
+
+
 	
 	//TODO lazy evaluation, apply to imageset!
 

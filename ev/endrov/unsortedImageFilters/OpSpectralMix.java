@@ -5,7 +5,11 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import endrov.imageset.EvPixels;
 
 /**
- * Spectral mixing 
+ * Spectral mixing: Transform input colors by matrix.
+ * Given channels c_i, apply c'=M c for each pixel. 
+ * Number of output channels need not be the same as number of input channels.
+ * <br/>
+ * O(numPixel numInputColors numOutputColors)
  * 
  * @author Johan Henriksson
  *
@@ -25,14 +29,6 @@ public class OpSpectralMix
 	
 	
 	
-	/**
-	 * Transform input colors by matrix.
-	 * Given channels c_i, apply c'=M c for each pixel. 
-	 * Number of output channels need not be the same as number of input channels.
-	 * 
-	 * O(numPixel numInputColors numOutputColors)
-	 * 
-	 */
 	public static EvPixels[] map(EvPixels[] in, DoubleMatrix2D m)
 		{
 		if(in.length==0)

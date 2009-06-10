@@ -46,7 +46,7 @@ public class FlowUnitSqrt extends FlowUnitMathUniop
 			}
 		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageSqrt().exec((EvChannel)a);
+			EvChannel ch=new OpImageSqrt().exec1((EvChannel)a);
 			lastOutput.put("B", ch);
 			}
 		else

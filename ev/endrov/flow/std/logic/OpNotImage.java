@@ -1,15 +1,15 @@
 package endrov.flow.std.logic;
 
-import endrov.flow.OpSlice;
+import endrov.flow.OpSlice1;
 import endrov.imageset.EvPixels;
 
 /**
  * NOT a
  * @author Johan Henriksson
  */
-public class OpNotImage extends OpSlice
+public class OpNotImage extends OpSlice1
 	{
-	public EvPixels exec(EvPixels... p)
+	public EvPixels exec1(EvPixels... p)
 		{
 		return not(p[0]);
 		}
