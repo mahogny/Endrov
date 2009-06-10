@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.specialImage;
 
 import endrov.flow.std.math.OpImageMulImage;
 import endrov.imageset.EvImage;

@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.unsortedImageFilters.misc;
 
 import java.util.*;
 

@@ -8,6 +8,7 @@ import endrov.flow.std.math.OpImageMulImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.unsortedImageFilters.specialImage.GenerateSpecialImage;
 import endrov.util.EvDecimal;
 
 /**

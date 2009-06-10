@@ -3,6 +3,7 @@ package endrov.unsortedImageFilters;
 import endrov.flow.std.math.OpImageMulImage;
 import endrov.imageset.EvPixels;
 import endrov.unsortedImageFilters.imageMath.EvImageMath;
+import endrov.unsortedImageFilters.specialImage.GenerateSpecialImage;
 
 /**
  * 

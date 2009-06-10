@@ -3,33 +3,35 @@ package endrov.unsortedImageFilters.projectionZ;
 import java.util.Map;
 
 import endrov.flow.OpStack1;
-import endrov.flow.std.math.OpImageAddImage;
-import endrov.flow.std.math.OpImageDivScalar;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
 
 /**
- * Projection: Average Z
+ * Projections along Z that can combine 2 images at a time
+ * 
+ * TODO with little work, could also project other axis (but slowly)
  * 
  * @author Johan Henriksson
  *
  */
-public class OpAverageZ extends OpStack1
+public abstract class OpProjectZ extends OpStack1
 	{
 	
-
+	
+	
 	@Override
 	public EvStack exec1(EvStack... p)
 		{
-		return averageZ(p[0]);
+		return project(p[0]);
 		}
 
 	
+	protected abstract EvPixels combine(EvPixels a, EvPixels b);
 	
 	
-	public static EvStack averageZ(EvStack in)
+	public EvStack project(EvStack in)
 		{
 		EvImage proto=in.firstEntry().snd();
 		
@@ -37,14 +39,10 @@ public class OpAverageZ extends OpStack1
 
 
 		EvPixels ptot=new EvPixels(EvPixels.TYPE_INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
-		int numZ=in.getDepth();
 		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
-			ptot=new OpImageAddImage().exec1(ptot,plane.getValue().getPixels());
+			ptot=combine(ptot,plane.getValue().getPixels());
 			//ImageMath.plus(ptot, plane.getValue().getPixels());
 
-		ptot=new OpImageDivScalar(numZ).exec1(ptot);
-		//ptot=ImageMath.div(ptot,numZ);
-		
 		EvImage imout=new EvImage();
 		out.getMetaFrom(in);
 		imout.setPixelsReference(ptot);
@@ -56,5 +54,4 @@ public class OpAverageZ extends OpStack1
 			
 		return out;
 		}
-
 	}
