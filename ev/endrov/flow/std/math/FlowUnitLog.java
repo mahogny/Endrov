@@ -46,7 +46,7 @@ public class FlowUnitLog extends FlowUnitMathUniop
 			}
 		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageLog().exec1((EvChannel)a);
+			EvChannel ch=new EvOpImageLog().exec1((EvChannel)a);
 			lastOutput.put("B", ch);
 			}
 		else

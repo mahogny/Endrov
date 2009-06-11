@@ -47,7 +47,7 @@ public class FlowUnitXor extends FlowUnitLogicBinop
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new OpXorImage().exec1((EvChannel)a, (EvChannel)b);
+			EvChannel ch=new EvOpXorImage().exec1((EvChannel)a, (EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else

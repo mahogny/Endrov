@@ -46,17 +46,17 @@ public class FlowUnitSub extends FlowUnitMathBinop
 			}
 		else if(a instanceof EvChannel && b instanceof Number)
 			{
-			EvChannel ch=new OpImageSubScalar((Number)b).exec1((EvChannel)a);
+			EvChannel ch=new EvOpImageSubScalar((Number)b).exec1((EvChannel)a);
 			lastOutput.put("C", ch);
 			}
 		else if(b instanceof EvChannel && a instanceof Number)
 			{
-			EvChannel ch=new ScalarSubImageOp((Number)a).exec1((EvChannel)b);
+			EvChannel ch=new EvOpScalarSubImage((Number)a).exec1((EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageSubImage().exec1((EvChannel)a, (EvChannel)a);
+			EvChannel ch=new EvOpImageSubImage().exec1((EvChannel)a, (EvChannel)a);
 			lastOutput.put("C", ch);
 			}
 		else

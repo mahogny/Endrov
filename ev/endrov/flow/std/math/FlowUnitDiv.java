@@ -46,17 +46,17 @@ public class FlowUnitDiv extends FlowUnitMathBinop
 			}
 		else if(a instanceof EvChannel && b instanceof Number)
 			{
-			EvChannel ch=new OpImageDivScalar((Number)b).exec1((EvChannel)a);
+			EvChannel ch=new EvOpImageDivScalar((Number)b).exec1((EvChannel)a);
 			lastOutput.put("C", ch);
 			}
 		else if(b instanceof EvChannel && a instanceof Number)
 			{
-			EvChannel ch=new ScalarDivImageOp((Number)a).exec1((EvChannel)b);
+			EvChannel ch=new EvOpScalarDivImage((Number)a).exec1((EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageDivImage().exec1((EvChannel)a, (EvChannel)b);
+			EvChannel ch=new EvOpImageDivImage().exec1((EvChannel)a, (EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else
