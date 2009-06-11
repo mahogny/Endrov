@@ -53,7 +53,7 @@ import endrov.imageset.EvStack;
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
  * 
  */
-public class WPLDoubleIterativeDeconvolver3D {
+public class OpDeconvolveWPLDoubleIterative3D {
     /**
      * Blurred image
      */
@@ -215,7 +215,7 @@ public class WPLDoubleIterativeDeconvolver3D {
      * @param options
      *            WPL options
      */
-    public WPLDoubleIterativeDeconvolver3D(EvStack imB, EvStack imPSF, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, WPLOptions options) {
+    public OpDeconvolveWPLDoubleIterative3D(EvStack imB, EvStack imPSF, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, WPLOptions options) {
         //ImageProcessor ipB = imB.getProcessor();
         EvStack isB = imB;
         //cmY = ipB.getColorModel();

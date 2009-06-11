@@ -16,26 +16,28 @@
  */
 package endrov.deconvolution.iterative.cgls;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
+import cern.colt.matrix.tdouble.DoubleMatrix3D;
+import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
 import cern.jet.math.tdouble.DoubleFunctions;
+import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon2D;
-import endrov.deconvolution.iterative.DoubleIterativeDeconvolver2D;
+import endrov.deconvolution.iterative.DoubleCommon3D;
+import endrov.deconvolution.iterative.DoubleIterativeDeconvolver3D;
 import endrov.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.deconvolution.iterative.IterativeEnums.PreconditionerType;
 import endrov.deconvolution.iterative.IterativeEnums.ResizingType;
-import endrov.deconvolution.iterative.preconditioner.DoublePreconditioner2D;
-import endrov.deconvolution.iterative.preconditioner.FFTDoublePreconditioner2D;
-import endrov.deconvolution.iterative.psf.DoublePSFMatrix2D;
-import endrov.imageset.EvPixels;
+import endrov.deconvolution.iterative.preconditioner.DoublePreconditioner3D;
+import endrov.deconvolution.iterative.preconditioner.FFTDoublePreconditioner3D;
+import endrov.deconvolution.iterative.psf.DoublePSFMatrix3D;
+import endrov.imageset.EvStack;
 
 /**
- * Conjugate Gradient for Least Squares 2D.
+ * Conjugate Gradient for Least Squares 3D.
  * 
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
  * 
  */
-public class CGLSDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver2D {
+public class OpDeconvolveCGLSDoubleIterative3D extends DoubleIterativeDeconvolver3D {
 
     /**
      * If true, then the stopping tolerance is computed automatically.
@@ -48,7 +50,7 @@ public class CGLSDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
     protected double stoppingTol;
 
     /**
-     * Creates a new instance of CGLSDoubleIterativeDeconvolver2D
+     * Creates a new instance of CGLSDoubleIterativeDeconvolver3D
      * 
      * @param imB
      *            blurred image
@@ -72,38 +74,38 @@ public class CGLSDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
      * @param options
      *            CGLS options
      */
-    public CGLSDoubleIterativeDeconvolver2D(EvPixels[][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, CGLSOptions options) {
-        super("CGLS", imPSF, preconditioner, preconditionerTol, boundary, resizing, options.getUseThreshold(), options.getThreshold(), maxIters);
+    public OpDeconvolveCGLSDoubleIterative3D(EvStack imB, EvStack[][][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, CGLSOptions options) {
+        super("CGLS",  imPSF, preconditioner, preconditionerTol, boundary, resizing, options.getUseThreshold(), options.getThreshold(), maxIters, options.getLogConvergence());
         this.autoStoppingTol = options.getAutoStoppingTol();
         this.stoppingTol = options.getStoppingTol();
-        //laterImage(imB, imPSF);
-
     }
 
-    public EvPixels internalDeconvolve(EvPixels ipB) {
+    public DeconvPixelsStack internalDeconvolve(EvStack imB) {
     
-	    DoublePreconditioner2D P;
-	    
-	    int bColumns = ipB.getWidth();
-	    int bRows = ipB.getHeight();
-	    DoubleMatrix2D B = new DenseDoubleMatrix2D(bRows, bColumns);
-	    DoublePSFMatrix2D A = new DoublePSFMatrix2D(imPSF, boundary, resizing, new int[] { bRows, bColumns });
-	    DoubleCommon2D.assignPixelsToMatrix(B, ipB);
-	    switch (preconditioner) 
-	      {
-	      case FFT:
-	          P = new FFTDoublePreconditioner2D(A, B, preconditionerTol);
-	          break;
-	      case NONE:
-	          P = null;
-	          break;
-	      default:
-	          throw new IllegalArgumentException("Unsupported preconditioner type.");
-	      }
-	    
-    ////
+    		//Set up data
+		    EvStack isB=imB;
+		    EvStack ipB = imB;
+		    int bSlices = isB.getDepth();
+		    int bColumns = ipB.getWidth();
+		    int bRows = ipB.getHeight();
+		    DoubleMatrix3D B = new DenseDoubleMatrix3D(bSlices, bRows, bColumns);
+		    DoublePSFMatrix3D A = new DoublePSFMatrix3D(imPSF, boundary, resizing, new int[] { bSlices, bRows, bColumns });
+		    DoubleCommon3D.assignPixelsToMatrix(isB, B);
+		    DoublePreconditioner3D P;
+		    switch (preconditioner) {
+		    case FFT:
+		        P = new FFTDoublePreconditioner3D(A, B, preconditionerTol);
+		        break;
+		    case NONE:
+		        P = null;
+		        break;
+		    default:
+		        throw new IllegalArgumentException("Unsupported preconditioner type.");
+		    }
     
-        DoubleMatrix2D p, q, r, s;
+    
+    		//Run algorithm
+        DoubleMatrix3D p, q, r, s;
         double alpha;
         double beta;
         double gamma;
@@ -126,13 +128,14 @@ public class CGLSDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
             gamma = rnrm;
             gamma *= gamma;
         }
-        //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,bColumns,bRows);
         //ImagePlus imX = null;
-        //FloatProcessor ip = new FloatProcessor(bColumns, bRows);
+        //ImageStack is = new ImageStack(bColumns, bRows);
+        //EvStack is=new EvStack();
+        DeconvPixelsStack is=new DeconvPixelsStack();
         /*
         if (showIteration == true) {
-            DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY);
-            imX = new ImagePlus("(deblurred)", ip);
+            DoubleCommon3D.assignPixelsToStack(is, B, cmY);
+            imX = new ImagePlus("(deblurred)", is);
             imX.show();
         }
         */
@@ -175,29 +178,32 @@ public class CGLSDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
                 gamma = rnrm;
                 gamma *= gamma;
             }
-            //if (logConvergence) 
+            if (logConvergence) {
                 log((k + 1) + ".  Norm of the residual = " + rnrm);
-            
+            }
             /*
             if (showIteration == true) {
                 if (useThreshold) {
-                    DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY, threshold);
+                    DoubleCommon3D.updatePixelsInStack(is, B, cmY, threshold);
                 } else {
-                    DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY);
+                    DoubleCommon3D.updatePixelsInStack(is, B, cmY);
                 }
+                ImageProcessor ip1 = imX.getProcessor();
+                ip1.setMinAndMax(0, 0);
+                ip1.setColorModel(cmY);
                 imX.updateAndDraw();
             }
             */
         }
-        if (/*logConvergence &&*/ k == maxIters) {
+        if (logConvergence && k == maxIters) {
             log("CGLS didn't converge. Reason: maximum number of iterations performed.");
         }
             if (useThreshold) {
-                return DoubleCommon2D.assignPixelsToProcessor(B, threshold);
+                DoubleCommon3D.assignPixelsToStack(is, B, threshold);
             } else {
-                return DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, B);
+                DoubleCommon3D.assignPixelsToStack(is, B);
             }
-            //return ip;
+            return is;
     }
 
 }

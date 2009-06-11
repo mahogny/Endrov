@@ -18,40 +18,40 @@ package endrov.deconvolution.iterative.mrnsd;
 
 import cern.colt.list.tdouble.DoubleArrayList;
 import cern.colt.list.tint.IntArrayList;
-import cern.colt.matrix.tdouble.DoubleMatrix3D;
-import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix3D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdouble.DoubleFunctions;
-import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.iterative.DoubleCommon2D;
-import endrov.deconvolution.iterative.DoubleCommon3D;
-import endrov.deconvolution.iterative.DoubleIterativeDeconvolver3D;
+import endrov.deconvolution.iterative.DoubleIterativeDeconvolver2D;
 import endrov.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.deconvolution.iterative.IterativeEnums.PreconditionerType;
 import endrov.deconvolution.iterative.IterativeEnums.ResizingType;
-import endrov.deconvolution.iterative.preconditioner.DoublePreconditioner3D;
-import endrov.deconvolution.iterative.preconditioner.FFTDoublePreconditioner3D;
-import endrov.deconvolution.iterative.psf.DoublePSFMatrix3D;
-import endrov.imageset.EvStack;
+import endrov.deconvolution.iterative.preconditioner.DoublePreconditioner2D;
+import endrov.deconvolution.iterative.preconditioner.FFTDoublePreconditioner2D;
+import endrov.deconvolution.iterative.psf.DoublePSFMatrix2D;
+import endrov.ev.Log;
+import endrov.imageset.EvPixels;
 
 /**
- * Modified Residual Norm Steepest Descent 3D. This is a nonnegatively
+ * Modified Residual Norm Steepest Descent 2D. This is a nonnegatively
  * constrained steepest descent method.
  * 
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
  * 
  */
-public class MRNSDDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolver3D {
+public class OpDeconvolveMRNSDDoubleIterative2D extends DoubleIterativeDeconvolver2D {
 
     /**
      * If true, then the stopping tolerance is computed automatically.
      */
-    protected boolean autoStoppingTol;
+    protected final boolean autoStoppingTol;
 
     /**
      * Stopping tolerance.
      */
     protected double stoppingTol;
 
+    
     /**
      * Creates a new instance of MRNSDDoubleIterativeDeconvolver2D
      * 
@@ -77,43 +77,40 @@ public class MRNSDDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolve
      * @param options
      *            MRNSD options
      */
-    public MRNSDDoubleIterativeDeconvolver3D(EvStack imB, EvStack[][][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, MRNSDOptions options) {
-        super("MRNSD", imPSF, preconditioner, preconditionerTol, boundary, resizing, options.getUseThreshold(), options.getThreshold(), maxIters, options.getLogConvergence());
+    public OpDeconvolveMRNSDDoubleIterative2D(EvPixels[][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, MRNSDOptions options) {
+        super("MRNSD", imPSF, preconditioner, preconditionerTol, boundary, resizing, options.getUseThreshold(), options.getThreshold(), maxIters);
         this.autoStoppingTol = options.getAutoStoppingTol();
         this.stoppingTol = options.getStoppingTol();
     }
 
-    public DeconvPixelsStack internalDeconvolve(EvStack imB) {
-
-				//Set up data
-		    EvStack isB=imB;
-		    EvStack ipB = imB;
-		    int bSlices = isB.getDepth();
+    public EvPixels internalDeconvolve(EvPixels ipB) {
+		    
+		  	//Set up data
 		    int bColumns = ipB.getWidth();
 		    int bRows = ipB.getHeight();
-		    DoubleMatrix3D B = new DenseDoubleMatrix3D(bSlices, bRows, bColumns);
-		    DoublePSFMatrix3D A = new DoublePSFMatrix3D(imPSF, boundary, resizing, new int[] { bSlices, bRows, bColumns });
-		    DoubleCommon3D.assignPixelsToMatrix(isB, B);
-		    DoublePreconditioner3D P;
-		    switch (preconditioner) {
-		    case FFT:
-		        P = new FFTDoublePreconditioner3D(A, B, preconditionerTol);
-		        break;
-		    case NONE:
-		        P = null;
-		        break;
-		    default:
-		        throw new IllegalArgumentException("Unsupported preconditioner type.");
-		    }
-		
-		
-				//Run algorithm
+		    DoubleMatrix2D B = new DenseDoubleMatrix2D(bRows, bColumns);
+		    DoublePSFMatrix2D A = new DoublePSFMatrix2D(imPSF, boundary, resizing, new int[] { bRows, bColumns });
+		    DoubleCommon2D.assignPixelsToMatrix(B, ipB);
+		    DoublePreconditioner2D P;
+		    switch (preconditioner) 
+		      {
+		      case FFT:
+		          P = new FFTDoublePreconditioner2D(A, B, preconditionerTol);
+		          break;
+		      case NONE:
+		          P = null;
+		          break;
+		      default:
+		          throw new IllegalArgumentException("Unsupported preconditioner type.");
+		      }
+		  
+		  	//Run algorithm
         double alpha;
         double gamma;
         double theta;
         double rnrm;
-        DoubleMatrix3D r, s, u, w;
-        IntArrayList sliceList, rowList, columnList;
+        DoubleMatrix2D r, s, u, w;
+        IntArrayList rowList, columnList;
         DoubleArrayList valueList;
         double tau = DoubleCommon2D.sqrteps;
         double sigsq = tau;
@@ -141,19 +138,16 @@ public class MRNSDDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolve
             gamma = B.aggregate(r, DoubleFunctions.plus, DoubleFunctions.multSquare);
             rnrm = Math.sqrt(gamma);
         }
-        //ImagePlus imX = null;
-        //ImageStack is = new ImageStack(bColumns, bRows);
-        DeconvPixelsStack is=new DeconvPixelsStack();
-        
+//        ImagePlus imX = null;
+        //EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,bColumns,bRows);
         /*
         if (showIteration == true) {
-            DoubleCommon3D.assignPixelsToStack(is, B, cmY);
-            imX = new ImagePlus("(deblurred)", is);
+            DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY);
+            imX = new ImagePlus("(deblurred)", ip);
             imX.show();
         }
         */
         int k;
-        sliceList = new IntArrayList(B.size() / 2);
         rowList = new IntArrayList(B.size() / 2);
         columnList = new IntArrayList(B.size() / 2);
         valueList = new DoubleArrayList(B.size() / 2);
@@ -162,7 +156,7 @@ public class MRNSDDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolve
                 log("MRNSD converged after " + k + "iterations.");
                 break;
             }
-            log(name + " iteration: " + (k + 1) + "/" + maxIters);
+            Log.printLog(name + " iteration: " + (k + 1) + "/" + maxIters);
             s = B.copy();
             s.assign(r, DoubleFunctions.multNeg);
             u = A.times(s, false);
@@ -170,10 +164,10 @@ public class MRNSDDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolve
                 u = P.solve(u, false);
             }
             theta = gamma / u.aggregate(DoubleFunctions.plus, DoubleFunctions.square);
-            s.getNegativeValues(sliceList, rowList, columnList, valueList);
+            s.getNegativeValues(rowList, columnList, valueList);
             w = B.copy();
-            w.assign(s, DoubleFunctions.divNeg, sliceList, rowList, columnList);
-            alpha = Math.min(theta, w.aggregate(DoubleFunctions.min, DoubleFunctions.identity, sliceList, rowList, columnList));
+            w.assign(s, DoubleFunctions.divNeg, rowList, columnList);
+            alpha = Math.min(theta, w.aggregate(DoubleFunctions.min, DoubleFunctions.identity, rowList, columnList));
             B.assign(s, DoubleFunctions.plusMultSecond(alpha));
             if (P != null) {
                 w = P.solve(u, true);
@@ -187,31 +181,27 @@ public class MRNSDDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolve
                 gamma = B.aggregate(r, DoubleFunctions.plus, DoubleFunctions.multSquare);
                 rnrm = Math.sqrt(gamma);
             }
-            if (logConvergence) {
+            //if (logConvergence) 
                 log((k + 1) + ".  Norm of the residual = " + rnrm);
-            }
+            
             /*
             if (showIteration == true) {
                 if (useThreshold) {
-                    DoubleCommon3D.updatePixelsInStack(is, B, cmY, threshold);
+                    DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY, threshold);
                 } else {
-                    DoubleCommon3D.updatePixelsInStack(is, B, cmY);
+                    DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY);
                 }
-                ImageProcessor ip1 = imX.getProcessor();
-                ip1.setMinAndMax(0, 0);
-                ip1.setColorModel(cmY);
                 imX.updateAndDraw();
             }
             */
         }
-        if (logConvergence && k == maxIters) {
+        if (/*logConvergence &&*/ k == maxIters) 
             log("MRNSD didn't converge. Reason: maximum number of iterations performed.");
-        }
+        
             if (useThreshold) {
-                DoubleCommon3D.assignPixelsToStack(is, B, threshold);
+                return DoubleCommon2D.assignPixelsToProcessor(B, threshold);
             } else {
-                DoubleCommon3D.assignPixelsToStack(is, B);
+                return DoubleCommon2D.assignPixelsToProcessor(bRows, bColumns, B);
             }
-            return is;
     }
 }

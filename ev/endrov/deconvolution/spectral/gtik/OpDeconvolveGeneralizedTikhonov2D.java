@@ -1,26 +1,29 @@
-package endrov.deconvolution.spectral.tik;
+package endrov.deconvolution.spectral.gtik;
 
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import endrov.deconvolution.Deconvolver2D;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvPixels;
 
 /**
- * Deconvolution in 2D using tikhonov
+ * Deconvolution in 2D using generalized tikhonov
  * @author Johan Henriksson
  *
  */
-public class TikhonovDeconvolver2D extends Deconvolver2D
+public class OpDeconvolveGeneralizedTikhonov2D extends Deconvolver2D
 	{
 	private final EvPixels imPSF;
+	private final DoubleMatrix2D stencil;
 	private final SpectralResizingType resizing;
 	private final double regParam;
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public TikhonovDeconvolver2D(EvPixels imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public OpDeconvolveGeneralizedTikhonov2D(EvPixels imPSF, DoubleMatrix2D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
+		 this.stencil=stencil;
 		 this.resizing=resizing;
 		 this.regParam=regParam;
 		 this.threshold=threshold;
@@ -31,12 +34,12 @@ public class TikhonovDeconvolver2D extends Deconvolver2D
 		{
 		if(padding.equals(SpectralPaddingType.PERIODIC))
 			{
-			DoublePeriodicTikhonov2D d=new DoublePeriodicTikhonov2D(ipB, imPSF, resizing, regParam, threshold);
+			DoublePeriodicGeneralizedTikhonov2D d=new DoublePeriodicGeneralizedTikhonov2D(ipB, imPSF, stencil, resizing, regParam, threshold);
 			return d.internalDeconvolve();
 			}
 		else
 			{
-			DoubleReflexiveTikhonov2D d=new DoubleReflexiveTikhonov2D(ipB, imPSF, resizing, regParam, threshold);
+			DoubleReflexiveGeneralizedTikhonov2D d=new DoubleReflexiveGeneralizedTikhonov2D(ipB, imPSF, stencil, resizing, regParam, threshold);
 			return d.internalDeconvolve();
 			}
 		}

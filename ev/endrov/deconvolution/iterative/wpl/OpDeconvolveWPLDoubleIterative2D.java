@@ -52,7 +52,7 @@ import endrov.imageset.EvPixels;
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
  * 
  */
-public class WPLDoubleIterativeDeconvolver2D {
+public class OpDeconvolveWPLDoubleIterative2D {
 
     /**
      * Blurred image
@@ -214,7 +214,7 @@ public class WPLDoubleIterativeDeconvolver2D {
      * @param options
      *            WPL options
      */
-    public WPLDoubleIterativeDeconvolver2D(EvPixels imB, EvPixels imPSF, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, WPLOptions options) {
+    public OpDeconvolveWPLDoubleIterative2D(EvPixels imB, EvPixels imPSF, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, WPLOptions options) {
         EvPixels ipB = imB;
         
         //cmY = ipB.getColorModel();

@@ -1,5 +1,6 @@
-package endrov.deconvolution.spectral.tik;
+package endrov.deconvolution.spectral.gtik;
 
+import cern.colt.matrix.tdouble.DoubleMatrix3D;
 import endrov.deconvolution.DeconvPixelsStack;
 import endrov.deconvolution.Deconvolver3D;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
@@ -7,21 +8,23 @@ import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvStack;
 
 /**
- * Deconvolution in 3D using tikhonov
+ * Deconvolution in 3D using generalized tikhonov
  * @author Johan Henriksson
  *
  */
-public class TikhonovDeconvolver3D extends Deconvolver3D
+public class OpDeconvolveGeneralizedTikhonov3D extends Deconvolver3D
 	{
 	private final EvStack imPSF;
+	private final DoubleMatrix3D stencil;
 	private final SpectralResizingType resizing;
 	private final double regParam;
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public TikhonovDeconvolver3D(EvStack imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public OpDeconvolveGeneralizedTikhonov3D(EvStack imPSF, DoubleMatrix3D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
+		 this.stencil=stencil;
 		 this.resizing=resizing;
 		 this.regParam=regParam;
 		 this.threshold=threshold;
@@ -32,12 +35,13 @@ public class TikhonovDeconvolver3D extends Deconvolver3D
 		{
 		if(padding.equals(SpectralPaddingType.PERIODIC))
 			{
-			DoublePeriodicTikhonov3D d=new DoublePeriodicTikhonov3D(imPSF, resizing, regParam, threshold);
+			DoublePeriodicGeneralizedTikhonov3D d=new DoublePeriodicGeneralizedTikhonov3D(imPSF, stencil, resizing, regParam, threshold);
+			//public DoublePeriodicGeneralizedTikhonov3D(EvStack imPSF, DoubleMatrix3D stencil, SpectralResizingType resizing, double regParam, double threshold) {
 			return d.internalDeconvolve(ipB);
 			}
 		else
 			{
-			DoubleReflexiveTikhonov3D d=new DoubleReflexiveTikhonov3D(imPSF, resizing, regParam, threshold);
+			DoubleReflexiveGeneralizedTikhonov3D d=new DoubleReflexiveGeneralizedTikhonov3D(imPSF, stencil, resizing, regParam, threshold);
 			return d.internalDeconvolve(ipB);
 			}
 		}
