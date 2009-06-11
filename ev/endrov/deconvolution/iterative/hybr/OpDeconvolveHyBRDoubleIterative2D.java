@@ -47,7 +47,7 @@ import endrov.imageset.EvPixels;
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
  * 
  */
-public class HyBRDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver2D {
+public class OpDeconvolveHyBRDoubleIterative2D extends DoubleIterativeDeconvolver2D {
 
     /**
      * Inner solver.
@@ -109,7 +109,7 @@ public class HyBRDoubleIterativeDeconvolver2D extends DoubleIterativeDeconvolver
      * @param options
      *            HyBR options
      */
-    public HyBRDoubleIterativeDeconvolver2D(EvPixels[][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, HyBROptions options) {
+    public OpDeconvolveHyBRDoubleIterative2D(EvPixels[][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, HyBROptions options) {
         super("HyBR", imPSF, preconditioner, preconditionerTol, boundary, resizing, options.getUseThreshold(), options.getThreshold(), maxIters);
         this.innerSolver = options.getInnerSolver();
         this.regMethod = options.getRegMethod();

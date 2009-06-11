@@ -1,29 +1,26 @@
-package endrov.deconvolution.spectral.gtik;
+package endrov.deconvolution.spectral.tsvd;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import endrov.deconvolution.Deconvolver2D;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
 import endrov.imageset.EvPixels;
 
 /**
- * Deconvolution in 2D using generalized tikhonov
+ * Deconvolution in 2D using truncated SVD
  * @author Johan Henriksson
  *
  */
-public class GeneralizedTikhonovDeconvolver2D extends Deconvolver2D
+public class OpDeconvolveTruncatedSVD2D extends Deconvolver2D
 	{
 	private final EvPixels imPSF;
-	private final DoubleMatrix2D stencil;
 	private final SpectralResizingType resizing;
 	private final double regParam;
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public GeneralizedTikhonovDeconvolver2D(EvPixels imPSF, DoubleMatrix2D stencil, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public OpDeconvolveTruncatedSVD2D(EvPixels imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
-		 this.stencil=stencil;
 		 this.resizing=resizing;
 		 this.regParam=regParam;
 		 this.threshold=threshold;
@@ -34,12 +31,12 @@ public class GeneralizedTikhonovDeconvolver2D extends Deconvolver2D
 		{
 		if(padding.equals(SpectralPaddingType.PERIODIC))
 			{
-			DoublePeriodicGeneralizedTikhonov2D d=new DoublePeriodicGeneralizedTikhonov2D(ipB, imPSF, stencil, resizing, regParam, threshold);
+			DoublePeriodicTruncatedSVD2D d=new DoublePeriodicTruncatedSVD2D(ipB, imPSF, resizing, regParam, threshold);
 			return d.internalDeconvolve();
 			}
 		else
 			{
-			DoubleReflexiveGeneralizedTikhonov2D d=new DoubleReflexiveGeneralizedTikhonov2D(ipB, imPSF, stencil, resizing, regParam, threshold);
+			DoubleReflexiveTruncatedSVD2D d=new DoubleReflexiveTruncatedSVD2D(ipB, imPSF, resizing, regParam, threshold);
 			return d.internalDeconvolve();
 			}
 		}

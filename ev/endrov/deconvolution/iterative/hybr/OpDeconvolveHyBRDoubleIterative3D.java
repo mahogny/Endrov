@@ -50,7 +50,7 @@ import endrov.imageset.EvStack;
  * @author Piotr Wendykier (piotr.wendykier@gmail.com)
  * 
  */
-public class HyBRDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolver3D {
+public class OpDeconvolveHyBRDoubleIterative3D extends DoubleIterativeDeconvolver3D {
 
     /**
      * Inner solver.
@@ -118,7 +118,7 @@ public class HyBRDoubleIterativeDeconvolver3D extends DoubleIterativeDeconvolver
      * @param options
      *            HyBR options
      */
-    public HyBRDoubleIterativeDeconvolver3D(EvStack imB, EvStack[][][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, HyBROptions options) {
+    public OpDeconvolveHyBRDoubleIterative3D(EvStack imB, EvStack[][][] imPSF, PreconditionerType preconditioner, double preconditionerTol, BoundaryType boundary, ResizingType resizing, int maxIters, boolean showIteration, HyBROptions options) {
         super("HyBR", imPSF, preconditioner, preconditionerTol, boundary, resizing, options.getUseThreshold(), options.getThreshold(), maxIters, options.getLogConvergence());
         this.innerSolver = options.getInnerSolver();
         this.regMethod = options.getRegMethod();

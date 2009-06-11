@@ -11,7 +11,7 @@ import endrov.imageset.EvStack;
  * @author Johan Henriksson
  *
  */
-public class TruncatedSVDDeconvolver3D extends Deconvolver3D
+public class OpDeconvolveTruncatedSVD3D extends Deconvolver3D
 	{
 	private final EvStack imPSF;
 	private final SpectralResizingType resizing;
@@ -19,7 +19,7 @@ public class TruncatedSVDDeconvolver3D extends Deconvolver3D
 	private final double threshold;
 	private final SpectralPaddingType padding;
 	
-	 public TruncatedSVDDeconvolver3D(EvStack imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
+	 public OpDeconvolveTruncatedSVD3D(EvStack imPSF, SpectralResizingType resizing,double regParam, double threshold, SpectralPaddingType padding) 
 		 {
 		 this.imPSF=imPSF;
 		 this.resizing=resizing;
