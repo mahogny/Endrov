@@ -19,7 +19,7 @@ package endrov.deconvolution;
 import java.util.Iterator;
 
 import endrov.ev.Log;
-import endrov.flow.OpStack1;
+import endrov.flow.EvOpStack1;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
@@ -30,7 +30,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  * 
  */
-public abstract class Deconvolver3D extends OpStack1
+public abstract class Deconvolver3D extends EvOpStack1
 	{
 	
 	public static void log(String s)

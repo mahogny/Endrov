@@ -53,17 +53,17 @@ public class FlowUnitMul extends FlowUnitMathBinop
 			}
 		else if(a instanceof EvChannel && b instanceof Number)
 			{
-			EvChannel ch=new OpImageMulScalar((Number)b).exec1((EvChannel)a);
+			EvChannel ch=new EvOpImageMulScalar((Number)b).exec1((EvChannel)a);
 			lastOutput.put("C", ch);
 			}
 		else if(b instanceof EvChannel && a instanceof Number)
 			{
-			EvChannel ch=new OpImageMulScalar((Number)a).exec1((EvChannel)b);
+			EvChannel ch=new EvOpImageMulScalar((Number)a).exec1((EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else if(a instanceof EvChannel && b instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageMulImage().exec1((EvChannel)a,(EvChannel)b);
+			EvChannel ch=new EvOpImageMulImage().exec1((EvChannel)a,(EvChannel)b);
 			lastOutput.put("C", ch);
 			}
 		else

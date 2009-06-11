@@ -46,7 +46,7 @@ public class FlowUnitSin extends FlowUnitMathUniop
 			}
 		else if(a instanceof EvChannel)
 			{
-			EvChannel ch=new OpImageSin().exec1((EvChannel)a);
+			EvChannel ch=new EvOpImageSin().exec1((EvChannel)a);
 			lastOutput.put("B", ch);
 			}
 		else

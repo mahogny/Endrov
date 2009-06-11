@@ -8,7 +8,7 @@ import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
-import endrov.flow.std.math.OpImageSubImage;
+import endrov.flow.std.math.EvOpImageSubImage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
@@ -16,11 +16,11 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
 import endrov.unsortedImageFilters.avfilter.AveragingFilter;
-import endrov.unsortedImageFilters.avfilter.OpMovingAverage;
-import endrov.unsortedImageFilters.avfilter.OpMovingSum;
-import endrov.unsortedImageFilters.imageMath.OpImageAxpy;
-import endrov.unsortedImageFilters.imageMath.OpImageGreaterThanScalar;
-import endrov.unsortedImageFilters.projectionZ.OpAverageZ;
+import endrov.unsortedImageFilters.avfilter.EvOpMovingAverage;
+import endrov.unsortedImageFilters.avfilter.EvOpMovingSum;
+import endrov.unsortedImageFilters.imageMath.EvOpImageAxpy;
+import endrov.unsortedImageFilters.imageMath.EvOpImageGreaterThanScalar;
+import endrov.unsortedImageFilters.projectionZ.EvOpAverageZ;
 import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 
@@ -108,37 +108,37 @@ public class AutoLineage
 				{
 				//im.metaObject.put("MA", movingAverage(im.getChannel("RFP"), 30, 30));
 				
-				im.metaObject.put("avgz", new OpAverageZ().exec1(im.getChannel("RFP")));
+				im.metaObject.put("avgz", new EvOpAverageZ().exec1(im.getChannel("RFP")));
 				
 				//Two input channels, one out
 	//			EvPixels c2=ImageMath.minus(in, average);
 				//im.metaObject.put("minus", minus(im.getChannel("RFP"), im.getChannel("MA")));
-				im.metaObject.put("minus", new OpImageSubImage().exec1(im.getChannel("RFP"), im.getChannel("MA")));
+				im.metaObject.put("minus", new EvOpImageSubImage().exec1(im.getChannel("RFP"), im.getChannel("MA")));
 
 				//im.metaObject.put("minusAvgz", minus(im.getChannel("RFP"), im.getChannel("avgz")));
-				im.metaObject.put("minusAvgz", new OpImageSubImage().exec1(im.getChannel("RFP"), im.getChannel("avgz")));
+				im.metaObject.put("minusAvgz", new EvOpImageSubImage().exec1(im.getChannel("RFP"), im.getChannel("avgz")));
 //				im.metaObject.put("minusAvgz#", axpy(im.getChannel("minusAvgz"),0.5,10));
-				im.metaObject.put("minusAvgz#", new OpImageAxpy(0.5,10).exec1(im.getChannel("minusAvgz")));
+				im.metaObject.put("minusAvgz#", new EvOpImageAxpy(0.5,10).exec1(im.getChannel("minusAvgz")));
 
 				//im.metaObject.put("MAavgz", movingAverage(im.getChannel("minusAvgz"), 30, 30));
 				//im.metaObject.put("minus2", minus(im.getChannel("minusAvgz"), im.getChannel("MAavgz")));
-				im.metaObject.put("minus2", new OpImageSubImage().exec1(im.getChannel("minusAvgz"), im.getChannel("MAavgz")));
+				im.metaObject.put("minus2", new EvOpImageSubImage().exec1(im.getChannel("minusAvgz"), im.getChannel("MAavgz")));
 
 				
 				//EvPixels spotpixels=CompareImage.greater(c2, 2);
-				im.metaObject.put("spotpixels", new OpImageGreaterThanScalar(2).exec1(im.getChannel("minus")));
-				im.metaObject.put("spotpixels2", new OpImageGreaterThanScalar(2).exec1(im.getChannel("minus2")));
+				im.metaObject.put("spotpixels", new EvOpImageGreaterThanScalar(2).exec1(im.getChannel("minus")));
+				im.metaObject.put("spotpixels2", new EvOpImageGreaterThanScalar(2).exec1(im.getChannel("minus2")));
 
 //				im.metaObject.put("MA15", movingAverage(im.getChannel("RFP"), 5, 5));
 				//im.metaObject.put("MA30-MA15", minus(ImageMath.times(im.getChannel("MA15"),2), im.getChannel("MA")));
 
 				
 				//EvPixels out=CompareImage.greater(MiscFilter.movingSum(spotpixels, 2, 2), 15);
-				im.metaObject.put("MS", new OpMovingSum(2,2).exec1(im.getChannel("spotpixels")));
-				im.metaObject.put("MSg", new OpImageGreaterThanScalar(15).exec1(im.getChannel("MS")));
+				im.metaObject.put("MS", new EvOpMovingSum(2,2).exec1(im.getChannel("spotpixels")));
+				im.metaObject.put("MSg", new EvOpImageGreaterThanScalar(15).exec1(im.getChannel("MS")));
 
-				im.metaObject.put("MS2", new OpMovingSum(2,2).exec1(im.getChannel("spotpixels2")));
-				im.metaObject.put("MSg2", new OpImageGreaterThanScalar(15).exec1(im.getChannel("MS2")));
+				im.metaObject.put("MS2", new EvOpMovingSum(2,2).exec1(im.getChannel("spotpixels2")));
+				im.metaObject.put("MSg2", new EvOpImageGreaterThanScalar(15).exec1(im.getChannel("MS2")));
 
 				
 				/*
@@ -294,14 +294,14 @@ public class AutoLineage
 		for(Map.Entry<EvDecimal, EvImage> e:origStack.entrySet())
 			{
 			EvPixels in=e.getValue().getPixels();
-			EvPixels average=new OpMovingAverage(30,30).exec1(in);
+			EvPixels average=new EvOpMovingAverage(30,30).exec1(in);
 			EvImage evim=e.getValue().makeShadowCopy();
 			
 			
 			//EvPixels c2=ImageMath.minus(in, average);
-			EvPixels c2=new OpImageSubImage().exec1(in, average);
+			EvPixels c2=new EvOpImageSubImage().exec1(in, average);
 			
-			EvPixels spotpixels=new OpImageGreaterThanScalar(2).exec1(c2);
+			EvPixels spotpixels=new EvOpImageGreaterThanScalar(2).exec1(c2);
 			
 			/*
 			EvPixels binmask=new EvPixels(EvPixels.TYPE_INT,3,3);
@@ -309,7 +309,7 @@ public class AutoLineage
 			binmaskp[1]=binmaskp[0+3]=binmaskp[1+3]=binmaskp[2+3]=binmaskp[1+3*2]=1;
 			*/
 			
-			EvPixels out=new OpImageGreaterThanScalar(15).exec1(AveragingFilter.movingSumQuad(spotpixels, 2, 2));
+			EvPixels out=new EvOpImageGreaterThanScalar(15).exec1(AveragingFilter.movingSumQuad(spotpixels, 2, 2));
 			
 			
 			

@@ -2,7 +2,7 @@ package endrov.unsortedImageFilters;
 
 import java.util.*;
 
-import endrov.flow.std.math.OpImageMulScalar;
+import endrov.flow.std.math.EvOpImageMulScalar;
 import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 
@@ -131,7 +131,7 @@ public class FindLocalExtremes
 	public static List<Vector3i> findMinimas(EvStack stack)
 		{
 //		return findMaximas(NewImageSystem.makeStackOp(new ImageMath.TimesOp(-1)).exec(stack));
-		return findMaximas(new OpImageMulScalar(-1).exec1(stack));
+		return findMaximas(new EvOpImageMulScalar(-1).exec1(stack));
 		}
 	
 	
