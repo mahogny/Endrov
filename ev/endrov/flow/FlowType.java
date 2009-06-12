@@ -2,6 +2,9 @@ package endrov.flow;
 
 import java.util.*;
 
+import endrov.imageset.AnyEvImage;
+import endrov.imageset.EvPixels;
+
 
 /**
  * The type of the data between two FlowUnits. Support for type inference etc 
@@ -118,6 +121,10 @@ public class FlowType
 	public static final FlowType TDOUBLE=new FlowType(Double.class);
 	public static final FlowType TSTRING=new FlowType(String.class);
 	public static final FlowType TBOOLEAN=new FlowType(Boolean.class);
+	public static final FlowType TNUMBER=new FlowType(Number.class);
+	public static final FlowType TEVPIXELS=new FlowType(EvPixels.class);
+	
+	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
 	
 	public static void main(String[] arg)
 		{

@@ -7,7 +7,7 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvChannel;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: add numbers
@@ -37,40 +37,17 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 		Object a=flow.getInputValue(this, exec, "A");
 		Object b=flow.getInputValue(this, exec, "B");
 		
-		if(a==null || b==null)
-			{
-			throw new BadTypeFlowException("Null values "+a+" "+b);
-			}
-		else if(a instanceof Number && b instanceof Number)
-			{
+		checkNotNull(a,b);
+		if(a instanceof Number && b instanceof Number)
 			lastOutput.put("C", NumberMath.plus((Number)a, (Number)b));
-			}
-		else if(a instanceof EvChannel && b instanceof Number)
-			{
-			EvChannel ch=new EvOpImageAddScalar((Number)b).exec1((EvChannel)a);
-			lastOutput.put("C", ch);
-			}
-		else if(b instanceof EvChannel && a instanceof Number)
-			{
-			EvChannel ch=new EvOpImageAddScalar((Number)a).exec1((EvChannel)b);
-			lastOutput.put("C", ch);
-			}
-		else if(a instanceof EvChannel && b instanceof EvChannel)
-			{
-			EvChannel ch=new EvOpImageAddImage().exec1((EvChannel)a, (EvChannel)b);
-			lastOutput.put("C", ch);
-			}
+		else if(a instanceof AnyEvImage && b instanceof Number)
+			lastOutput.put("C", new EvOpImageAddScalar((Number)b).exec1Untyped((AnyEvImage)a));
+		else if(b instanceof AnyEvImage && a instanceof Number)
+			lastOutput.put("C", new EvOpImageAddScalar((Number)a).exec1Untyped((AnyEvImage)b));
+		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
+			lastOutput.put("C", new EvOpImageAddImage().exec1Untyped((AnyEvImage)a, (AnyEvImage)b));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
-
-		/*
-		if(a instanceof Double)
-			lastOutput.put("C", ((Double)a)+toDouble(b));
-		else if(a instanceof Integer)
-			lastOutput.put("C", ((Integer)a)+((Integer)b));
-		else
-			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
-			*/
 		}
 
 	

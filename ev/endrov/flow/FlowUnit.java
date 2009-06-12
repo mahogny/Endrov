@@ -139,4 +139,35 @@ public abstract class FlowUnit
 	public abstract int getGUIcomponentOffsetY();
 
 	public abstract void editDialog();
+	
+
+
+	public void checkNotNull(Object... list) throws Exception
+		{
+		for(Object o:list)
+			if(o==null)
+				throw new BadTypeFlowException("Null values ");
+		}
+	
+	public void errUnsupportedTypes(Map<String,Object> lastOutput) throws Exception
+		{
+//		StringBuffer sb;
+		
+		throw new BadTypeFlowException("Unsupported numerical types");
+		}
+	
+	public void errNullValues(Map<String,Object> lastOutput) throws Exception
+		{
+		throw new BadTypeFlowException("Null values "+lastOutput);
+		}
+	
+
+	public static double toDouble(Object o) throws Exception
+		{
+		if(o instanceof Double)
+			return (Double)o;
+		else if(o instanceof Integer)
+			return (Integer)o;
+		else throw new BadTypeFlowException("Not a numerical type "+o.getClass());
+		}
 	}

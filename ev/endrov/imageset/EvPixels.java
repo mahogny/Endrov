@@ -37,7 +37,7 @@ import java.awt.image.WritableRaster;
  * @author Johan Henriksson
  *
  */
-public class EvPixels
+public class EvPixels implements AnyEvImage
 	{
 	/*
 	 * +- are the same for signed/unsigned. / is by all means not. * might give sensible results, one claims it won't, one claims it does.

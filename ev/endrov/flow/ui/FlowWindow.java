@@ -312,7 +312,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	
 	public void loadedFile(EvData data){}
 
-	public void windowPersonalSettings(Element root)
+	public void windowSavePersonalSettings(Element root)
 		{
 		Element e=new Element(pcWindowName);
 		setXMLbounds(e);

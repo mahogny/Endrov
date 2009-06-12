@@ -7,7 +7,7 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvChannel;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: add numbers
@@ -21,7 +21,7 @@ public class FlowUnitSin extends FlowUnitMathUniop
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","sin",metaType,FlowUnitSin.class, null,"Sinus"));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","Sin",metaType,FlowUnitSin.class, null,"Sinus"));
 		}
 	
 	public FlowUnitSin()
@@ -36,19 +36,11 @@ public class FlowUnitSin extends FlowUnitMathUniop
 		lastOutput.clear();
 		Object a=flow.getInputValue(this, exec, "A");
 		
-		if(a==null)
-			{
-			throw new BadTypeFlowException("Null values "+a);
-			}
-		else if(a instanceof Number)
-			{
+		checkNotNull(a);
+		if(a instanceof Number)
 			lastOutput.put("B", Math.sin(((Number)a).doubleValue()));
-			}
-		else if(a instanceof EvChannel)
-			{
-			EvChannel ch=new EvOpImageSin().exec1((EvChannel)a);
-			lastOutput.put("B", ch);
-			}
+		else if(a instanceof AnyEvImage)
+			lastOutput.put("B", new EvOpImageSin().exec1Untyped((AnyEvImage)a));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass());
 		}

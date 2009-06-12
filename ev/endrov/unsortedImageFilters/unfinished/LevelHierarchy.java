@@ -7,10 +7,10 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
+import endrov.flowAveraging.EvOpMovingAverage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
-import endrov.unsortedImageFilters.avfilter.EvOpMovingAverage;
 import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 

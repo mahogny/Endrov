@@ -62,7 +62,7 @@ public class BatchWindow extends BasicWindow implements ActionListener, BatchLis
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element e)
+	public void windowSavePersonalSettings(Element e)
 		{
 		}
 

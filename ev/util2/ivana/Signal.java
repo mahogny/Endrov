@@ -7,10 +7,10 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.Log;
 import endrov.ev.StdoutLog;
+import endrov.flowThreshold.EvOpThresholdOtsu2D;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.threshold.EvOpOtsuThreshold2D;
 import endrov.util.EvFileUtil;
 
 public class Signal 
@@ -48,7 +48,7 @@ public class Signal
 				EvPixels pixelsSig=getTheImage(EvData.loadFile(sigf));
 				double[] psig=pixelsSig.getArrayDouble();
 				
-				double dicThreshold=EvOpOtsuThreshold2D.findOtsuThreshold(pixelsDic);
+				double dicThreshold=EvOpThresholdOtsu2D.findOtsuThreshold(pixelsDic);
 
 				int count=0;
 				double sum=0;

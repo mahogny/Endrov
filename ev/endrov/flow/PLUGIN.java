@@ -15,10 +15,8 @@ import endrov.flow.std.constants.FlowUnitConstDouble;
 import endrov.flow.std.constants.FlowUnitConstEvDecimal;
 import endrov.flow.std.constants.FlowUnitConstInteger;
 import endrov.flow.std.constants.FlowUnitConstString;
-import endrov.flow.std.imserv.FlowUnitImserv;
-import endrov.flow.std.imserv.FlowUnitImservLoad;
-import endrov.flow.std.imserv.FlowUnitImservQuery;
 import endrov.flow.std.logic.FlowUnitAnd;
+import endrov.flow.std.logic.FlowUnitGreaterThan;
 import endrov.flow.std.logic.FlowUnitNot;
 import endrov.flow.std.logic.FlowUnitOr;
 import endrov.flow.std.logic.FlowUnitXor;
@@ -27,6 +25,8 @@ import endrov.flow.std.math.FlowUnitCos;
 import endrov.flow.std.math.FlowUnitDiv;
 import endrov.flow.std.math.FlowUnitExp;
 import endrov.flow.std.math.FlowUnitLog;
+import endrov.flow.std.math.FlowUnitMax;
+import endrov.flow.std.math.FlowUnitMin;
 import endrov.flow.std.math.FlowUnitMul;
 import endrov.flow.std.math.FlowUnitSin;
 import endrov.flow.std.math.FlowUnitSqrt;
@@ -80,13 +80,16 @@ public class PLUGIN extends PluginDef
 				//Math
 				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,FlowUnitMul.class,
 				FlowUnitSin.class, FlowUnitCos.class, FlowUnitExp.class, FlowUnitLog.class, FlowUnitSqrt.class,
+				FlowUnitMin.class,FlowUnitMax.class,
 				
 				//Logic
 				FlowUnitAnd.class,FlowUnitOr.class,FlowUnitXor.class,FlowUnitNot.class,
+				FlowUnitGreaterThan.class,
 
+				/*
 				//Imserv
 				FlowUnitImserv.class,FlowUnitImservLoad.class,FlowUnitImservQuery.class,
-				
+				*/
 				//Collection
 				FlowUnitConcat.class,FlowUnitHeadTail.class,FlowUnitMap.class,FlowUnitSize.class,
 				

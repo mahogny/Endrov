@@ -66,7 +66,7 @@ public abstract class BasicWindow extends JPanel
 					{
 					// Settings for individual windows
 					for (BasicWindow w : windowManager.getAllWindows())
-						w.windowPersonalSettings(e);
+						w.windowSavePersonalSettings(e);
 					}
 			});
 		
@@ -443,11 +443,17 @@ public abstract class BasicWindow extends JPanel
 		return getEvw().getBounds();
 		}
 
+	/**
+	 * Set title of this window
+	 */
 	public void setTitleEvWindow(String title)
 		{
 		getEvw().setTitle(title);
 		}
 
+	/**
+	 * Set visibility of this window
+	 */
 	public void setVisibleEvWindow(boolean b)
 		{
 		getEvw().setVisible(true);
@@ -766,7 +772,7 @@ public abstract class BasicWindow extends JPanel
 	 * Called to obtain personal settings for that window. Function has to create
 	 * new elements and add them to the given element.
 	 */
-	public abstract void windowPersonalSettings(Element e);
+	public abstract void windowSavePersonalSettings(Element e);
 
 	/**
 	 * Called when a file has just been loaded and should be displayed in all

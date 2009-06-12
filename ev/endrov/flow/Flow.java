@@ -191,6 +191,25 @@ public class Flow extends EvObject
 		}
 
 	/**
+	 * Get value that is on one input port. Verify that the value is ok
+	 */
+	@SuppressWarnings("unchecked")
+	public <E> E getInputValue(FlowUnit u, FlowExec exec, String arg, Class<E> cl, boolean canBeNull) throws Exception
+		{
+		Object o=getInputValue(u, exec, arg);
+		if(canBeNull && o==null)
+			return null;
+		else
+			{
+			if(cl.isInstance(o)) //False if o is null
+				return (E)o;
+			else
+				throw new BadTypeFlowException("Unsupported type, input value "+arg);
+			}
+			
+		}
+	
+	/**
 	 * Get value that is on one input port
 	 */
 	public Maybe<Object> getInputValueMaybe(FlowUnit u, FlowExec exec, String arg) throws Exception

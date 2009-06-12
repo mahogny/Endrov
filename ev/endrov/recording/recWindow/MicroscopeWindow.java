@@ -198,7 +198,7 @@ public class MicroscopeWindow extends BasicWindow implements ActionListener
 
 	public void loadedFile(EvData data){}
 
-	public void windowPersonalSettings(Element e)
+	public void windowSavePersonalSettings(Element e)
 		{
 		} 
 	public void freeResources(){}

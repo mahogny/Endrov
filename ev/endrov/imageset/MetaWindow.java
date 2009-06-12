@@ -202,7 +202,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element root)
+	public void windowSavePersonalSettings(Element root)
 		{
 		Element e=new Element("imagesetmetawindow");
 		setXMLbounds(e);

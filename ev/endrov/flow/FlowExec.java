@@ -134,6 +134,16 @@ public class FlowExec
 		return getCreateUnit(unit).lastOutputMap;
 		}
 
+	/**
+	 * Get the output map of the unit, clearing it to prepare for new output
+	 */
+	public Map<String,Object> getLastOutputCleared(FlowUnit unit)
+		{
+		Map<String,Object> map=getCreateUnit(unit).lastOutputMap;
+		map.clear();
+		return map;
+		}
+	
 	public String toString()
 		{
 		StringBuffer sb=new StringBuffer();

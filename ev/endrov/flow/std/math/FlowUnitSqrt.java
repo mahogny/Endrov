@@ -7,7 +7,7 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvChannel;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: add numbers
@@ -21,12 +21,12 @@ public class FlowUnitSqrt extends FlowUnitMathUniop
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","sqrt",metaType,FlowUnitSqrt.class, null,"Sqrt"));
+		Flow.addUnitType(new FlowUnitDeclaration("Math","Sqrt",metaType,FlowUnitSqrt.class, null,"Sqrt"));
 		}
 	
 	public FlowUnitSqrt()
 		{
-		super("Log",metaType);
+		super("Sqrt",metaType);
 		}
 	
 	
@@ -36,19 +36,11 @@ public class FlowUnitSqrt extends FlowUnitMathUniop
 		lastOutput.clear();
 		Object a=flow.getInputValue(this, exec, "A");
 		
-		if(a==null)
-			{
-			throw new BadTypeFlowException("Null values "+a);
-			}
-		else if(a instanceof Number)
-			{
+		checkNotNull(a);
+		if(a instanceof Number)
 			lastOutput.put("B", Math.sqrt(((Number)a).doubleValue()));
-			}
-		else if(a instanceof EvChannel)
-			{
-			EvChannel ch=new EvOpImageSqrt().exec1((EvChannel)a);
-			lastOutput.put("B", ch);
-			}
+		else if(a instanceof AnyEvImage)
+			lastOutput.put("B", new EvOpImageSqrt().exec1Untyped((AnyEvImage)a));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass());
 		}

@@ -8,13 +8,24 @@ import javax.swing.event.ChangeListener;
 
 import endrov.util.EvDecimal;
 
+/**
+ * Model of EvDecimal for JSpinner
+ * @author Johan Henriksson
+ *
+ */
 public class EvDecimalSpinnerModel implements SpinnerModel
 	{
 	private Vector<ChangeListener> listeners=new Vector<ChangeListener>();
 
-	public void addChangeListener(ChangeListener e){listeners.add(e);}
+	public void addChangeListener(ChangeListener e)
+		{
+		listeners.add(e);
+		}
 	
-	public void removeChangeListener(ChangeListener e){listeners.remove(e);}
+	public void removeChangeListener(ChangeListener e)
+		{
+		listeners.remove(e);
+		}
 	
 	public EvDecimal frame=new EvDecimal(0);
 	

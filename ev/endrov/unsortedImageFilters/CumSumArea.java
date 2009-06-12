@@ -94,7 +94,7 @@ public class CumSumArea
 	 * y1<=y2
 	 *
 	 */
-	public static int integralFromCumSum(EvPixels in, int x1, int x2, int y1, int y2)
+	public static int integralFromCumSumInteger(EvPixels in, int x1, int x2, int y1, int y2)
 		{
 		int[] inPixels=in.getArrayInt();
 		int p11=in.getPixelIndex(x1, y1);
@@ -103,6 +103,8 @@ public class CumSumArea
 		int p22=in.getPixelIndex(x2, y2);
 		return inPixels[p22]+inPixels[p11]-(inPixels[p12]+inPixels[p21]);
 		}
+	
+	
 	
 	/**
 	 * Equivalent to

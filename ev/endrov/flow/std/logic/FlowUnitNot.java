@@ -8,13 +8,12 @@ import javax.swing.ImageIcon;
 
 import org.jdom.Element;
 
-import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvChannel;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: not
@@ -61,23 +60,8 @@ public class FlowUnitNot extends FlowUnitBasic
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("C", null);
+		types.put("B", null);
 		}
-	
-	
-	public static double toDouble(Object o) throws Exception
-		{
-		if(o instanceof Double)
-			return (Double)o;
-		else if(o instanceof Integer)
-			return (Integer)o;
-		else throw new BadTypeFlowException("Not a numerical type "+o.getClass());
-		}
-	
-	
-	
-	
-	
 	
 	
 	
@@ -87,32 +71,13 @@ public class FlowUnitNot extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
 		lastOutput.clear();
 		Object a=flow.getInputValue(this, exec, "A");
-		Object b=flow.getInputValue(this, exec, "B");
 		
-		if(a==null || b==null)
-			{
-			throw new BadTypeFlowException("Null values "+a+" "+b);
-			}
-		else if(a instanceof Boolean && b instanceof Boolean)
-			{
-			lastOutput.put("C", (Boolean)a ^ (Boolean)b);
-			}
-		else if(a instanceof EvChannel && b instanceof EvChannel)
-			{
-			EvChannel ch=new EvOpXorImage().exec1((EvChannel)a, (EvChannel)b);
-			lastOutput.put("C", ch);
-			}
+		if(a==null)
+			errNullValues(lastOutput);
+		else if(a instanceof AnyEvImage)
+			lastOutput.put("B", new EvOpNotImage().exec1Untyped((AnyEvImage)a));
 		else
-			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
-
-		/*
-		if(a instanceof Double)
-			lastOutput.put("C", ((Double)a)+toDouble(b));
-		else if(a instanceof Integer)
-			lastOutput.put("C", ((Integer)a)+((Integer)b));
-		else
-			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
-			*/
+			errUnsupportedTypes(lastOutput);
 		}
 
 	
