@@ -2,8 +2,6 @@ package util2.ivana;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 import endrov.data.EvData;
 import endrov.ev.EV;
@@ -12,7 +10,6 @@ import endrov.ev.StdoutLog;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
-import endrov.imageset.Imageset;
 import endrov.unsortedImageFilters.threshold.EvOpOtsuThreshold2D;
 import endrov.util.EvFileUtil;
 
@@ -29,7 +26,7 @@ public class Signal
 		return pixels;
 		}
 	
-	public static void doDirectory(String basedir)
+	public static void doDirectory(String basedir, String basename)
 		{
 		try
 			{
@@ -38,8 +35,8 @@ public class Signal
 			for(int cf=2;/*cf<49*/;cf+=2)
 				{
 				
-				File dicf=new File(basedir + "010609_AT2633_D1_NR-"+EV.pad(cf, 4)+"-.tif");
-				File sigf=new File(basedir + "010609_AT2633_D1_NR-"+EV.pad(cf+1, 4)+"-.tif");
+				File dicf=new File(basedir + basename+EV.pad(cf, 4)+"-.tif");
+				File sigf=new File(basedir + basename+EV.pad(cf+1, 4)+"-.tif");
 				
 				//Stop if no more files
 				if(!dicf.exists())
@@ -52,7 +49,7 @@ public class Signal
 				double[] psig=pixelsSig.getArrayDouble();
 				
 				double dicThreshold=EvOpOtsuThreshold2D.findOtsuThreshold(pixelsDic);
-				
+
 				int count=0;
 				double sum=0;
 				for(int i=0;i<pdic.length;i++)
@@ -84,7 +81,8 @@ public class Signal
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
-		doDirectory("/home/ivana/lab_data/lab_journal/2009/data2009_06/Nile_Red_20C/01062009_Nilered/AT2633/AT2633_NR/");
+		doDirectory("/home/ivana/lab_data/lab_journal/2009/data2009_06/Nile_Red_20C/01062009_Nilered/AT2633/AT2633_NR/",
+				"010609_AT2633_D1_NR-");
 		
 		System.exit(0);
 		
