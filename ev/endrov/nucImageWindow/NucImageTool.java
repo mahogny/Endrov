@@ -80,6 +80,21 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				}
 		});
 		menu.add(miNew);
+		
+		JMenuItem miAuto=new JMenuItem("Autolineage...");
+		miAuto.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				
+				NucLineage lin=new NucLineage();
+				wims.get().addMetaObject(lin);
+				setEditLin(lin);
+				w.setTool(This);
+				}
+		});
+		menu.add(miNew);
+		
+		
 		return menu;
 		}
 	public void actionPerformed(ActionEvent e)
