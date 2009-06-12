@@ -15,7 +15,7 @@ import endrov.util.Memoize;
  * @author Johan Henriksson
  *
  */
-public abstract class EvOpStack1 implements EvOpGeneral
+public abstract class EvOpStack1 extends EvOpGeneral
 	{
 	//By necessity, stack operators have to deal with laziness manually.
 	//Example: avgZ only computes one slice and then duplicates it. other operands compute entire

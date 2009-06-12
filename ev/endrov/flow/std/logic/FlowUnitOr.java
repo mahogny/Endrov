@@ -7,7 +7,7 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvChannel;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: or
@@ -37,30 +37,14 @@ public class FlowUnitOr extends FlowUnitLogicBinop
 		Object a=flow.getInputValue(this, exec, "A");
 		Object b=flow.getInputValue(this, exec, "B");
 		
-		if(a==null || b==null)
-			{
-			throw new BadTypeFlowException("Null values "+a+" "+b);
-			}
-		else if(a instanceof Boolean && b instanceof Boolean)
-			{
+		checkNotNull(a,b);
+		if(a instanceof Boolean && b instanceof Boolean)
 			lastOutput.put("C", (Boolean)a || (Boolean)b);
-			}
-		else if(a instanceof EvChannel && b instanceof EvChannel)
-			{
-			EvChannel ch=new EvOpOrImage().exec1((EvChannel)a, (EvChannel)b);
-			lastOutput.put("C", ch);
-			}
+		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
+			lastOutput.put("C", new EvOpOrImage().exec1Untyped((AnyEvImage)a, (AnyEvImage)b));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
 
-		/*
-		if(a instanceof Double)
-			lastOutput.put("C", ((Double)a)+toDouble(b));
-		else if(a instanceof Integer)
-			lastOutput.put("C", ((Integer)a)+((Integer)b));
-		else
-			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
-			*/
 		}
 
 	

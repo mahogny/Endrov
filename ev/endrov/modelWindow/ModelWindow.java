@@ -374,7 +374,7 @@ public class ModelWindow extends BasicWindow
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element root)
+	public void windowSavePersonalSettings(Element root)
 		{
 		Element e=new Element("modelwindow");
 		setXMLbounds(e);
@@ -417,7 +417,7 @@ public class ModelWindow extends BasicWindow
 		else if(e.getSource()==miCopyState)
 			{
 			Element root=new Element("w");
-			windowPersonalSettings(root);
+			windowSavePersonalSettings(root);
 			try
 				{
 				String out=EvXmlUtil.xmlToString(new Document((Element)root.getChild("modelwindow").clone()));

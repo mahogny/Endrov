@@ -55,16 +55,6 @@ public abstract class FlowUnitMathUniop extends FlowUnitBasic
 		types.put("B", null);
 		}
 	
-	/*
-	public static double toDouble(Object o) throws Exception
-		{
-		if(o instanceof Double)
-			return (Double)o;
-		else if(o instanceof Integer)
-			return (Integer)o;
-		else throw new BadTypeFlowException("Not a numerical type "+o.getClass());
-		}
-	*/
-	
+
 	
 	}

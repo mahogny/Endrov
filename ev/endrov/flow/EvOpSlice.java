@@ -19,13 +19,13 @@ import endrov.util.Memoize;
  * @author Johan Henriksson
  *
  */
-public abstract class EvOpSlice implements EvOpGeneral //extends StackOp
+public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 	{
 	//Could have multiple output
 	//EvPixels or EvImage?
 //	public abstract EvPixels[] exec(EvPixels... p);
 	
-	public abstract EvPixels[] exec(EvPixels... p);
+	//public abstract EvPixels[] exec(EvPixels... p);
 
 	
 	public EvPixels exec1(EvPixels... p)

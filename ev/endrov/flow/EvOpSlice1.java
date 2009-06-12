@@ -10,14 +10,14 @@ import endrov.imageset.EvStack;
  * @author Johan Henriksson
  *
  */
-public abstract class EvOpSlice1 implements EvOpGeneral //extends StackOp
+public abstract class EvOpSlice1 extends EvOpGeneral //extends StackOp
 	{
 	//Could have multiple output
 	//EvPixels or EvImage?
 //	public abstract EvPixels[] exec(EvPixels... p);
 	
 
-	public abstract EvPixels exec1(EvPixels... p); //Override can be used on this, but not the interface
+//	public abstract EvPixels exec1(EvPixels... p); //Override can be used on this, but not the interface
 
 
 	public EvPixels[] exec(EvPixels... p)

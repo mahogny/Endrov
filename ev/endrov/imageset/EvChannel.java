@@ -16,7 +16,7 @@ import endrov.util.EvListUtil;
  * Images for one channel
  * @author Johan Henriksson
  */
-public class EvChannel extends EvObject
+public class EvChannel extends EvObject implements AnyEvImage
 	{
 	/****************************************************************************************/
 	/******************************* Image data *********************************************/

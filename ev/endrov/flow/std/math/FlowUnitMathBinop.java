@@ -48,13 +48,13 @@ public abstract class FlowUnitMathBinop extends FlowUnitBasic
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("A", null);
+		types.put("A", null); //TODO number of AnyEvImage
 		types.put("B", null);
 		}
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("C", null);
+		types.put("C", null); //TODO number of AnyEvImage
 		}
 	
 	public static double toDouble(Object o) throws Exception

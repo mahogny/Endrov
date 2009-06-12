@@ -100,6 +100,70 @@ public class NumberMath
 	
 	
 	/**
+	 * Generic max
+	 */
+	public static Number max(Number a, Number b)
+		{
+		int type=commonIndex(a, b);
+		if(type==0)
+			return (byte)Math.max(a.byteValue(),b.byteValue());
+		else if(type==1)
+			return (short)Math.max(a.shortValue(),b.shortValue());
+		else if(type==2)
+			return Math.max(a.intValue(),b.intValue());
+		else if(type==3)
+			return Math.max(a.floatValue(),b.floatValue());
+		else if(type==4)
+			return Math.max(a.doubleValue(),b.doubleValue());
+		else if(type==5)
+			return Math.max(a.longValue(),b.longValue());
+		else
+			throw new RuntimeException("Unsupported Number");
+		}
+	
+	public static boolean greaterThan(Number a, Number b)
+		{
+		int type=commonIndex(a, b);
+		if(type==0)
+			return a.byteValue()>b.byteValue();
+		else if(type==1)
+			return a.shortValue()>b.shortValue();
+		else if(type==2)
+			return a.intValue()>b.intValue();
+		else if(type==3)
+			return a.floatValue()>b.floatValue();
+		else if(type==4)
+			return a.doubleValue()>b.doubleValue();
+		else if(type==5)
+			return a.longValue()>b.longValue();
+		else
+			throw new RuntimeException("Unsupported Number");
+		}
+	
+	
+	/**
+	 * Generic min
+	 */
+	public static Number min(Number a, Number b)
+		{
+		int type=commonIndex(a, b);
+		if(type==0)
+			return (byte)Math.min(a.byteValue(),b.byteValue());
+		else if(type==1)
+			return (short)Math.min(a.shortValue(),b.shortValue());
+		else if(type==2)
+			return Math.min(a.intValue(),b.intValue());
+		else if(type==3)
+			return Math.min(a.floatValue(),b.floatValue());
+		else if(type==4)
+			return Math.min(a.doubleValue(),b.doubleValue());
+		else if(type==5)
+			return Math.min(a.longValue(),b.longValue());
+		else
+			throw new RuntimeException("Unsupported Number");
+		}
+	
+	/**
 	 * Generic /
 	 */
 	public static Number div(Number a, Number b)

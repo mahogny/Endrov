@@ -173,7 +173,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element root)
+	public void windowSavePersonalSettings(Element root)
 		{
 		Element e=new Element("consolewindow");
 		setXMLbounds(e);

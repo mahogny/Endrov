@@ -84,7 +84,7 @@ public class HardwareAddWindow extends BasicWindow
 
 	public void loadedFile(EvData data){}
 
-	public void windowPersonalSettings(Element e)
+	public void windowSavePersonalSettings(Element e)
 		{
 		// TODO Auto-generated method stub
 		

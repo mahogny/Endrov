@@ -14,7 +14,7 @@ import endrov.util.Tuple;
  * @author Johan Henriksson
  *
  */
-public class EvStack
+public class EvStack implements AnyEvImage
 	{
 	private TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
 	

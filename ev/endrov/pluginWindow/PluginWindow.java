@@ -71,7 +71,7 @@ public class PluginWindow extends BasicWindow
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element root)
+	public void windowSavePersonalSettings(Element root)
 		{
 		}
 

@@ -1,6 +1,7 @@
 package endrov.util;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -85,8 +86,39 @@ public class EvSwingUtil
 		return p;*/
 		}
 	
+	public static JComponent compactVertical(JComponent... list)
+		{
+		JComponent last=list[list.length-1];
+		for(int i=list.length-2;i>=0;i--)
+			{
+			JPanel p=new JPanel(new BorderLayout());
+			p.add(list[i],BorderLayout.NORTH);
+			p.add(last,BorderLayout.SOUTH);
+			last=p;
+			}
+		return last;
+/*		JPanel p=new JPanel(new BorderLayout());
+		p.add(left,BorderLayout.WEST);
+		p.add(right,BorderLayout.EAST);
+		return p;*/
+		}
 	
-	
+	public static JComponent packEvenHorizontal(JComponent... list)
+		{
+		JPanel p=new JPanel(new GridLayout(1,list.length));
+		for(JComponent c:list)
+			p.add(c);
+		return p;
+		}
+
+	public static JComponent packEvenVertical(JComponent... list)
+		{
+		JPanel p=new JPanel(new GridLayout(list.length,1));
+		for(JComponent c:list)
+			p.add(c);
+		return p;
+		}
+
 	/**
 	 * Add a component with two components to the above and below
 	 */

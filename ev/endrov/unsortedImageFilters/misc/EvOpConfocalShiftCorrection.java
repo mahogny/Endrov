@@ -14,16 +14,16 @@ import endrov.imageset.EvPixels;
 public class EvOpConfocalShiftCorrection extends EvOpSlice1
 	{
 	//TODO interpolation for fractional shift not implemented
-	private double shift;
+	private final Number shift;
 	
-	public EvOpConfocalShiftCorrection(double shift)
+	public EvOpConfocalShiftCorrection(Number shift)
 		{
 		this.shift = shift;
 		}
 	
 	public EvPixels exec1(EvPixels... p)
 		{
-		return shift(p[0], shift);
+		return shift(p[0], shift.doubleValue());
 		}
 	
 	public static EvPixels shift(EvPixels a, double shift)

@@ -39,11 +39,12 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
 	private Vector<JTextField> chanDesc=new Vector<JTextField>();
 	
-	private SpinnerModel startModel =new SpinnerNumberModel(0,0,1000000,1);
-	private JSpinner spinnerStart   =new JSpinner(startModel);
+	//private SpinnerModel startModel =new SpinnerNumberModel(0,0,1000000,1);
+//	private JSpinner spinnerStart   =new JSpinner(startModel);
+	private EvComboSimpleFrame spinnerStart   =new EvComboSimpleFrame();
 	
-	private SpinnerModel endModel   =new SpinnerNumberModel(100000,0,1000000,1);
-	private JSpinner spinnerEnd     =new JSpinner(endModel);
+	//private SpinnerModel endModel   =new SpinnerNumberModel(100000,0,1000000,1);
+	private EvComboSimpleFrame spinnerEnd     =new EvComboSimpleFrame();//new JSpinner(endModel);
 	
 	private SpinnerModel zModel =new SpinnerNumberModel(35,0,1000000,1);
 	private JSpinner spinnerZ   =new JSpinner(zModel);
@@ -60,15 +61,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	private JComboBox codecCombo = new JComboBox(EvMovieMakerFactory.makers);
 	private JComboBox qualityCombo = new JComboBox();
 	
-	/**
-	 * Make a new window at default location
-	 */
-	public MakeMovieWindow()
-		{
-		this(new Rectangle(20,20,700,300));
-		}
-	
-	public void updateQualityList()
+	private void updateQualityList()
 		{
 		EvMovieMakerFactory maker=(EvMovieMakerFactory)codecCombo.getSelectedItem();
 		qualityCombo.removeAllItems();		
@@ -84,13 +77,21 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 		}
 	
 	/**
+	 * Make a new window at default location
+	 */
+	public MakeMovieWindow()
+		{
+		this(new Rectangle(20,20,700,300));
+		}
+	
+	/**
 	 * Make a new window at some specific location
 	 */
 	public MakeMovieWindow(Rectangle bounds)
 		{
+		spinnerEnd.setFrame("1000h");
+		
 		updateQualityList();
-		//codecCombo.setSelectedItem(QTMovieMaker.codecs[QTMovieMaker.codecs.length-1]);
-//		qualityCombo.setSelectedItem(qualityStrings[2]);
 		for(int i=0;i<numChannelCombo;i++)
 			{
 			EvComboChannel c=new EvComboChannel(getCurrentImageset(),true);
@@ -195,7 +196,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element e)
+	public void windowSavePersonalSettings(Element e)
 		{
 		}
 
@@ -236,10 +237,10 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 					BasicWindow.showErrorDialog("No data selected");
 				else
 					{
-					Vector<CalcThread.MovieChannel> channelNames=new Vector<CalcThread.MovieChannel>();
+					Vector<MakeMovieThread.MovieChannel> channelNames=new Vector<MakeMovieThread.MovieChannel>();
 					for(int i=0;i<channelCombo.size();i++)
 						if(channelCombo.get(i).getChannel()!=null)
-							channelNames.add(new CalcThread.MovieChannel(channelCombo.get(i).getChannel(), filterSeq.get(i), chanDesc.get(i).getText()));
+							channelNames.add(new MakeMovieThread.MovieChannel(channelCombo.get(i).getChannel(), filterSeq.get(i), chanDesc.get(i).getText()));
 					
 					EvData data=metaCombo.getData();
 					
@@ -263,8 +264,11 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 							lastpart+="_"+channelNames.get(i).name;
 						File moviePath=new File(outdir,lastpart);
 						
-						BatchThread thread=new CalcThread(getCurrentImageset(), 
+/*						BatchThread thread=new CalcThread(getCurrentImageset(), 
 								(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), (Integer)spinnerZ.getValue(), channelNames, (Integer)spinnerW.getValue(),
+								(String) (String)qualityCombo.getSelectedItem(),moviePath, (EvMovieMakerFactory)codecCombo.getSelectedItem());*/
+						BatchThread thread=new MakeMovieThread(getCurrentImageset(), 
+								spinnerStart.getDecimalValue(), spinnerEnd.getDecimalValue(), (Integer)spinnerZ.getValue(), channelNames, (Integer)spinnerW.getValue(),
 								(String) (String)qualityCombo.getSelectedItem(),moviePath, (EvMovieMakerFactory)codecCombo.getSelectedItem());
 						new BatchWindow(thread);
 						}

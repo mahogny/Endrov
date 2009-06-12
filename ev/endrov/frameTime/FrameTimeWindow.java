@@ -81,7 +81,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element root)
+	public void windowSavePersonalSettings(Element root)
 		{
 		Element e=new Element("frametimewindow");
 		setXMLbounds(e);

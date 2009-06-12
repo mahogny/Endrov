@@ -5,6 +5,8 @@ import java.net.URL;
 import javax.sound.sampled.*;
 import javax.swing.*;
 
+import endrov.ev.Log;
+
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
@@ -60,8 +62,7 @@ public class EvSound
 				} 
 			catch (LineUnavailableException e) 
 				{
-				//
-				e.printStackTrace();
+				Log.printError("Java sound unavailable (line unavailable)", null);
 				}
 			catch(Exception e)
 				{

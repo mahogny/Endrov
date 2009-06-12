@@ -178,7 +178,7 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 	/**
 	 * Store down settings for window into personal config file
 	 */
-	public void windowPersonalSettings(Element root)
+	public void windowSavePersonalSettings(Element root)
 		{
 		}
 
