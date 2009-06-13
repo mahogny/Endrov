@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.binaryMorph;
+package endrov.flowBinaryMorph;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;

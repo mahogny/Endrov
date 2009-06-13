@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.binaryMorph;
+package endrov.flowBinaryMorph;
 
 import endrov.flow.EvOpSlice1;
 import endrov.flow.std.math.EvOpImageSubImage;
@@ -12,28 +12,28 @@ import endrov.imageset.EvPixels;
  */
 public class EvOpBinMorphWhiteTophat2D extends EvOpSlice1
 	{
-	private int kcx,kcy;
-	private EvPixels kernel;
-	public EvOpBinMorphWhiteTophat2D(int kcx, int kcy, EvPixels kernel)
+	private final BinMorphKernel kernel;
+	
+	public EvOpBinMorphWhiteTophat2D(BinMorphKernel kernel)
 		{
-		this.kcx = kcx;
-		this.kcy = kcy;
 		this.kernel = kernel;
 		}
-	
+
+
+
 	@Override
 	public EvPixels exec1(EvPixels... p)
 		{
-		return whitetophat(p[0],kernel, kcx, kcy);
+		return whitetophat(p[0],kernel);
 		}
 
 	
 
-	public static EvPixels whitetophat(EvPixels in, EvPixels kernel, int kcx, int kcy)
+	public static EvPixels whitetophat(EvPixels in, BinMorphKernel kernel)
 		{
 		//TODO maybe only useful with graylevel morphology
 		
 		//This can be made about 50% faster by specializing the code
-		return new EvOpImageSubImage().exec1(in, EvOpBinMorphOpen2D.open(in,kernel,kcx,kcy));
+		return new EvOpImageSubImage().exec1(in, EvOpBinMorphOpen2D.open(in,kernel));
 		}
 	}

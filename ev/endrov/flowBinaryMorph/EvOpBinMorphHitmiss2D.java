@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.binaryMorph;
+package endrov.flowBinaryMorph;
 
 import java.util.List;
 
@@ -14,31 +14,22 @@ import endrov.util.Vector2i;
  */
 public class EvOpBinMorphHitmiss2D extends EvOpSlice1
 	{
-	private EvPixels kernelHit;
-	private int hitKcx;
-	private int hitKcy;
-	private EvPixels kernelMiss;
-	private int missKcx;
-	private int missKcy;
+	private final BinMorphKernel kernelHit, kernelMiss;
 	
-	public EvOpBinMorphHitmiss2D(EvPixels kernelHit, int hitKcx, int hitKcy,
-			EvPixels kernelMiss, int missKcx, int missKcy)
+	
+	public EvOpBinMorphHitmiss2D(BinMorphKernel kernelHit,	BinMorphKernel kernelMiss)
 		{
 		this.kernelHit = kernelHit;
-		this.hitKcx = hitKcx;
-		this.hitKcy = hitKcy;
 		this.kernelMiss = kernelMiss;
-		this.missKcx = missKcx;
-		this.missKcy = missKcy;
 		}
-	
+
 	@Override
 	public EvPixels exec1(EvPixels... p)
 		{
-		return hitmiss(p[0], kernelHit, hitKcx, hitKcy, kernelMiss, missKcx, missKcy);
+		return hitmiss(p[0], kernelHit, kernelMiss);
 		}
 	
-	public static EvPixels hitmiss(EvPixels in, EvPixels kernelHit, int hitKcx, int hitKcy, EvPixels kernelMiss, int missKcx, int missKcy)
+	public static EvPixels hitmiss(EvPixels in, BinMorphKernel kernelHit, BinMorphKernel kernelMiss)
 		{
 		in=in.convertTo(EvPixels.TYPE_INT, true);
 		int w=in.getWidth();
@@ -47,8 +38,8 @@ public class EvOpBinMorphHitmiss2D extends EvOpSlice1
 		int[] inPixels=in.getArrayInt();
 		int[] outPixels=out.getArrayInt();
 		
-		List<Vector2i> hitkpos=BinMorph.kernelPos(kernelHit, hitKcx, hitKcy);
-		List<Vector2i> misskpos=BinMorph.kernelPos(kernelMiss, missKcx, missKcy);
+		List<Vector2i> hitkpos=kernelHit.kernel;
+		List<Vector2i> misskpos=kernelMiss.kernel;
 		
 		for(int ay=0;ay<h;ay++)
 			for(int ax=0;ax<w;ax++)

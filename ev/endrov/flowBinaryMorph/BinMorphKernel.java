@@ -1,8 +1,9 @@
-package endrov.unsortedImageFilters.binaryMorph;
+package endrov.flowBinaryMorph;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import endrov.flow.FlowType;
 import endrov.imageset.EvPixels;
 import endrov.util.Vector2i;
 
@@ -12,9 +13,16 @@ import endrov.util.Vector2i;
  * P.Soille - Morphological Image Analysis, Principles and applications. 2nd edition
  * @author Johan Henriksson
  */
-public class BinMorph
+public class BinMorphKernel
 	{
-
+	public List<Vector2i> kernel;
+	
+	public static final FlowType FLOWTYPE=new FlowType(BinMorphKernel.class);
+	
+	public BinMorphKernel(EvPixels kernel, int kcx, int kcy)
+		{
+		this.kernel=kernelPos(kernel, kcx, kcy);
+		}
 	
 	/**
 	 * Turn kernel image into a list of positions
