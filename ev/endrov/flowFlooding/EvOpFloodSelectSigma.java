@@ -1,5 +1,6 @@
-package endrov.unsortedImageFilters.floodfill;
+package endrov.flowFlooding;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 import endrov.flow.EvOpStack1;
@@ -13,13 +14,13 @@ import endrov.util.Vector3i;
  * 
  * @author Johan Henriksson
  */
-public class EvOpFloodFillSigma extends EvOpStack1
+public class EvOpFloodSelectSigma extends EvOpStack1
 	{
-	private final LinkedList<Vector3i> startv;
+	private final Collection<Vector3i> startv;
 	private final double f;
 	
 	
-	public EvOpFloodFillSigma(LinkedList<Vector3i> startv, double f)
+	public EvOpFloodSelectSigma(Collection<Vector3i> startv, double f)
 		{
 		this.startv = startv;
 		this.f = f;
@@ -28,10 +29,10 @@ public class EvOpFloodFillSigma extends EvOpStack1
 	@Override
 	public EvStack exec1(EvStack... p)
 		{
-		return inSigma(p[0], startv, f);
+		return fill(p[0], startv, f);
 		}
 	
-	public static EvStack inSigma(EvStack stack, LinkedList<Vector3i> startv, double f)
+	public static EvStack fill(EvStack stack, Collection<Vector3i> startv, double f)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();

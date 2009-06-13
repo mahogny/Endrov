@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.misc;
+package endrov.flowFlooding;
 
 import java.util.*;
 
@@ -18,9 +18,9 @@ import endrov.util.Vector3i;
  */
 public class EvOpWatershed extends EvOpStack1
 	{
-	private List<Vector3i> seeds;
+	private Collection<Vector3i> seeds;
 
-	public EvOpWatershed(List<Vector3i> seeds)
+	public EvOpWatershed(Collection<Vector3i> seeds)
 		{
 		this.seeds = seeds;
 		}
@@ -98,7 +98,7 @@ public class EvOpWatershed extends EvOpStack1
 	
 	//TODO seeds should maybe be groups?
 	
-	public static EvStack watershed(EvStack stack, List<Vector3i> seeds)
+	public static EvStack watershed(EvStack stack, Collection<Vector3i> seeds)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
