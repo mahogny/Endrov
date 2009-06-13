@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.floodfill;
+package endrov.flowFlooding;
 
 import java.util.*;
 
@@ -13,28 +13,24 @@ import endrov.util.Vector3i;
  * @author Johan Henriksson
  *
  */
-public class EvOpFloodFillSameColor extends EvOpStack1
+public class EvOpFloodSelectSameColor extends EvOpStack1
 	{
-	private final int startx;
-	private final int starty;
-	private final int startz;
+	private final Vector3i startpos;
 	
-	public EvOpFloodFillSameColor(int startx, int starty, int startz)
+	public EvOpFloodSelectSameColor(Vector3i startpos)
 		{
-		this.startx = startx;
-		this.starty = starty;
-		this.startz = startz;
+		this.startpos = startpos;
 		}
 
 
 	@Override
 	public EvStack exec1(EvStack... p)
 		{
-		return sameColor(p[0], startx, starty, startz);
+		return fill(p[0], startpos);
 		}
 	
 	
-	public static EvStack sameColor(EvStack stack, int startx, int starty, int startz)
+	public static EvStack fill(EvStack stack, Vector3i startpos)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -48,8 +44,8 @@ public class EvOpFloodFillSameColor extends EvOpStack1
 		int[][] outarr=markstack.getArraysInt();
 		
 		LinkedList<Vector3i> q=new LinkedList<Vector3i>();
-		q.add(new Vector3i(startx,starty,startz));
-		int startval=inarr[startz][starty*w+startx];
+		q.add(new Vector3i(startpos.x,startpos.y,startpos.z));
+		int startval=inarr[startpos.z][startpos.y*w+startpos.x];
 		
 		
 		while(!q.isEmpty())

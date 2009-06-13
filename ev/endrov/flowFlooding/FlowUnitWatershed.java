@@ -1,7 +1,8 @@
-package endrov.unsortedImageFilters.misc;
+package endrov.flowFlooding;
 
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -13,22 +14,24 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
+import endrov.util.Vector3i;
 
 /**
- * Flow unit: shift every second line to correct for confocal scanning
+ * Flow unit: Watershed
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
+public class FlowUnitWatershed extends FlowUnitBasic
 	{
-	public static final String showName="Confocal shift correction";
-	private static final String metaType="confocalShiftCorrection";
+	public static final String showName="Watershed";
+	private static final String metaType="watershed";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConfocalShiftCorrection.class, null,
-				"Shift every second line to correct for confocal scanning"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitWatershed.class, null,
+				"Segment image by watershedding, given start points"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -41,23 +44,25 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("shift", FlowType.TNUMBER);
+		types.put("pos", FlowType.TVECTOR3I); //TODO more than one
 		}
 	
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("out", FlowType.ANYIMAGE); //TODO same type as "image"
+		types.put("region", FlowType.ANYIMAGE); //TODO same type as "image"
 		}
 	
 	/** Execute algorithm */
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
-		Number b=(Number)flow.getInputValue(this, exec, "shift");
-		checkNotNull(a);
-		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(a));
+		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
+		Vector3i pos=(Vector3i)flow.getInputValue(this, exec, "pos");
+		checkNotNull(image,pos);
+		
+		//TODO
+		lastOutput.put("region", new EvOpWatershed(Collections.singleton(pos)).exec1Untyped(image));
 		}
 
 	

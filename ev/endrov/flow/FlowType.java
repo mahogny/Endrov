@@ -4,6 +4,7 @@ import java.util.*;
 
 import endrov.imageset.AnyEvImage;
 import endrov.imageset.EvPixels;
+import endrov.util.Vector3i;
 
 
 /**
@@ -123,6 +124,7 @@ public class FlowType
 	public static final FlowType TBOOLEAN=new FlowType(Boolean.class);
 	public static final FlowType TNUMBER=new FlowType(Number.class);
 	public static final FlowType TEVPIXELS=new FlowType(EvPixels.class);
+	public static final FlowType TVECTOR3I=new FlowType(Vector3i.class);
 	
 	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
 	

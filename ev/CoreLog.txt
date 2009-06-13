@@ -785,3 +785,7 @@ LOG(29319, 3073231760:): -------->>
 LOG(29319, 3073231760:): Core session started on Wed Jun  3 2009 11:31:17.124885 by mahogny on venus
 LOG(29319, 3073231760:): Debug logging disabled
 LOG(29319, 3073231760:): Debug logging disabled
+LOG(29800, 3072752528:): -------->>
+LOG(29800, 3072752528:): Core session started on Sat Jun 13 2009 12:52:18.429047 by mahogny on venus
+LOG(29800, 3072752528:): Debug logging disabled
+LOG(29800, 3072752528:): Debug logging disabled
