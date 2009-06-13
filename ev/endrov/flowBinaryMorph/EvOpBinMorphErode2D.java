@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.binaryMorph;
+package endrov.flowBinaryMorph;
 
 import java.util.List;
 
@@ -18,22 +18,20 @@ import endrov.util.Vector2i;
  */
 public class EvOpBinMorphErode2D extends EvOpSlice1
 	{
-	private int kcx,kcy;
-	private EvPixels kernel;
-	public EvOpBinMorphErode2D(int kcx, int kcy, EvPixels kernel)
+	private final BinMorphKernel kernel;
+	
+	public EvOpBinMorphErode2D(BinMorphKernel kernel)
 		{
-		this.kcx = kcx;
-		this.kcy = kcy;
 		this.kernel = kernel;
 		}
-	
+
 	@Override
 	public EvPixels exec1(EvPixels... p)
 		{
-		return erode(p[0],kernel, kcx, kcy);
+		return erode(p[0],kernel);
 		}
 
-	public static EvPixels erode(EvPixels in, EvPixels kernel, int kcx, int kcy)
+	public static EvPixels erode(EvPixels in, BinMorphKernel kernel)
 		{
 		in=in.convertTo(EvPixels.TYPE_INT, true);
 		int w=in.getWidth();
@@ -42,7 +40,7 @@ public class EvOpBinMorphErode2D extends EvOpSlice1
 		int[] inPixels=in.getArrayInt();
 		int[] outPixels=out.getArrayInt();
 		
-		List<Vector2i> kpos=BinMorph.kernelPos(kernel, kcx, kcy);
+		List<Vector2i> kpos=kernel.kernel;
 		
 		for(int ay=0;ay<h;ay++)
 			for(int ax=0;ax<w;ax++)

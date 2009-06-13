@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.binaryMorph;
+package endrov.flowBinaryMorph;
 
 import endrov.flow.EvOpSlice1;
 import endrov.flow.std.math.EvOpImageSubImage;
@@ -17,33 +17,23 @@ import endrov.imageset.EvPixels;
  */
 public class EvOpBinMorphThin2D extends EvOpSlice1
 	{
-	private EvPixels kernelHit;
-	private int hitKcx;
-	private int hitKcy;
-	private EvPixels kernelMiss;
-	private int missKcx;
-	private int missKcy;
-	
-	public EvOpBinMorphThin2D(EvPixels kernelHit, int hitKcx, int hitKcy,
-			EvPixels kernelMiss, int missKcx, int missKcy)
+	private final BinMorphKernel kernelHit, kernelMiss;
+
+	public EvOpBinMorphThin2D(BinMorphKernel kernelHit, BinMorphKernel kernelMiss)
 		{
 		this.kernelHit = kernelHit;
-		this.hitKcx = hitKcx;
-		this.hitKcy = hitKcy;
 		this.kernelMiss = kernelMiss;
-		this.missKcx = missKcx;
-		this.missKcy = missKcy;
 		}
 
 	@Override
 	public EvPixels exec1(EvPixels... p)
 		{
-		return thin(p[0], kernelHit, hitKcx, hitKcy, kernelMiss, missKcx, missKcy);
+		return thin(p[0], kernelHit, kernelMiss);
 		}
 	
-	public static EvPixels thin(EvPixels in, EvPixels kernelHit, int hitKcx, int hitKcy, EvPixels kernelMiss, int missKcx, int missKcy)
+	public static EvPixels thin(EvPixels in, BinMorphKernel kernelHit, BinMorphKernel kernelMiss)
 		{
-		return new EvOpImageSubImage().exec1(in, EvOpBinMorphHitmiss2D.hitmiss(in,kernelHit,hitKcx,hitKcy,kernelMiss,missKcx,missKcy));
+		return new EvOpImageSubImage().exec1(in, EvOpBinMorphHitmiss2D.hitmiss(in,kernelHit,kernelMiss));
 		
 		//could be made a lot faster for repeated application by keeping a front-set. Either way, probably want to return if there is more to do?
 		
