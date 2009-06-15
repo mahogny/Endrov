@@ -2,6 +2,7 @@ package endrov.data.tree;
 
 import java.util.LinkedList;
 
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -85,6 +86,12 @@ public class DataTreeModel implements TreeModel
 
 	public void valueForPathChanged(TreePath path, Object newValue)
 		{
+		}
+	
+	public void dataUpdated()
+		{
+		for(TreeModelListener list:listener)
+			list.treeStructureChanged(new TreeModelEvent(this,new Object[]{getRoot()}));
 		}
 
 	}

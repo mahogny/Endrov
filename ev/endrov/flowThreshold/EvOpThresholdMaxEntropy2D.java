@@ -69,6 +69,10 @@ public class EvOpThresholdMaxEntropy2D extends Threshold2D
 			
 			double a=curCumS/curNum + Math.log(curNum);
 			int numPixB=numPixels-curNum;
+			
+			if(numPixB==0)
+				continue;
+			
 			double b=(totalS-curCumS)/numPixB + Math.log(numPixB); 
 			
 			double curVal=a+b;
@@ -79,6 +83,7 @@ public class EvOpThresholdMaxEntropy2D extends Threshold2D
 				}
 			System.out.println(curVal);
 			}
+		System.out.println("threshold: "+maxThres);
 		
 		return maxThres;
 		}

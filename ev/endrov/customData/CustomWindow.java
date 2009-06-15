@@ -14,6 +14,7 @@ import javax.swing.filechooser.FileFilter;
 import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
+import endrov.util.EvXmlUtil;
 
 import org.jdom.*;
 
@@ -127,7 +128,9 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 		add(tabs, BorderLayout.CENTER);
 		
 		//Update GUI
-		fillTreeAttributesPane((CustomTreeElement)treeModel.getRoot());
+		treeModel.setMetaObject(objectCombo.getSelectedObject());
+		fillTreeAttributesPane();
+//		fillTreeAttributesPane((CustomTreeElement)treeModel.getRoot());
 		
 		//Window overall things
 		setTitleEvWindow("Custom Data");
@@ -146,17 +149,29 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 		TreePath p=tree.getSelectionPath();
 		if(p==null)
 			{
-			fillTreeAttributesPane(null);
-			tableModel.setRoot(objectCombo.getSelectedObject(), null);
+			//fillTreeAttributesPane(null);
+			tableModel.setRoot(objectCombo.getSelectedObject());
 			}
 		else
 			{
-			CustomTreeElement e=(CustomTreeElement)p.getLastPathComponent();
-			fillTreeAttributesPane(e);
-			tableModel.setRoot(objectCombo.getSelectedObject(), e.e);
+			//CustomTreeElement e=(CustomTreeElement)p.getLastPathComponent();
+			//fillTreeAttributesPane(e);
+			tableModel.setRoot(objectCombo.getSelectedObject());
 			}
+		fillTreeAttributesPane();
 		}
 
+	
+	
+	public void fillTreeAttributesPane()
+		{
+		TreePath path=tree.getSelectionPath();
+		if(path!=null)
+			fillTreeAttributesPane((CustomTreeElement)path.getLastPathComponent());
+		else
+			fillTreeAttributesPane(null);
+		
+		}
 	
 	/**
 	 * Update GUI: attribute pane for tree
@@ -172,10 +187,19 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 			//The value
 			//what about trimming?
 			JPanel p2=new JPanel(new BorderLayout());
-			JTextField cf=new JTextField(e.e.getText());
+			final JTextField cf=new JTextField(e.e.getText());
 			p2.add(new JLabel("Value:"));
 			p2.add(cf,BorderLayout.CENTER);
 			treeFields.add(cf);
+			
+			cf.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0)
+				{
+				e.e.setText(cf.getText());
+				treeModel.updateElement(e);
+				tableModel.fireTableStructureChanged();
+				}
+			});
 			
 			//Every attribute
 			for(Object o:attr)
@@ -183,7 +207,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 				final Attribute a=(Attribute)o;
 				JPanel p=new JPanel(new BorderLayout());
 				p.add(new JLabel(a.getName()+":"),BorderLayout.WEST);
-				JTextField tf=new JTextField(a.getValue());
+				final JTextField tf=new JTextField(a.getValue());
 				p.add(tf,BorderLayout.CENTER);
 				JButton bremove=new JButton("X");
 				p.add(bremove, BorderLayout.EAST);
@@ -193,12 +217,20 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 					{
 					public void actionPerformed(ActionEvent e2)
 						{
-						TreePath p=e.getPath();
 						e.e.removeAttribute(a.getName());
 						treeModel.updateElement(e);
-						tree.setSelectionPath(p);    //should not be needed
+						tableModel.fireTableStructureChanged();
 						}
 					});
+				
+				tf.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent arg0)
+						{
+						e.e.setAttribute(a.getName(), tf.getText());
+						treeModel.updateElement(e);
+						tableModel.fireTableStructureChanged();
+						}
+				});
 				}
 
 			
@@ -219,9 +251,10 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 					String name=JOptionPane.showInputDialog("Name of child");
 					if(name!=null)
 						{
-						TreePath p=e.getPath();
+						//TreePath p=e.getPath();
 						treeModel.addChild(e, new Element(name));
-						tree.setSelectionPath(p);    //should not be needed
+						tableModel.fireTableStructureChanged();
+						//tree.setSelectionPath(p);    //should not be needed
 						objectCombo.getSelectedObject().setMetadataModified();
 						}
 					}
@@ -235,9 +268,9 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 					if(name!=null)
 						{
 						e.e.setAttribute(name, "");
-						TreePath p=e.getPath();
 						treeModel.updateElement(e);
-						tree.setSelectionPath(p);    //should not be needed
+						tableModel.fireTableStructureChanged();
+						fillTreeAttributesPane();
 						objectCombo.getSelectedObject().setMetadataModified();
 						}
 					}
@@ -252,6 +285,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 						{
 						parent.e.removeContent(e.e);
 						treeModel.emitAllChanged();
+						tableModel.fireTableStructureChanged();
 						tree.setSelectionPath(parent.getPath());
 						objectCombo.getSelectedObject().setMetadataModified();
 						}
@@ -275,30 +309,47 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 		{
 		if(e.getSource()==objectCombo)
 			{
-			treeModel.setMetaObject(objectCombo.getSelectedObject());
-			
+			CustomObject cust=objectCombo.getSelectedObject();
+			treeModel.setMetaObject(cust);
+			//tableModel.setRoot(cust, treeModel.getRoot())
+			tableModel.setRoot(cust);
+			fillTreeAttributesPane();
 			}
 		else if(e.getSource()==btInsertEntry)
 			{
 			tableModel.insertRow();
+			treeModel.emitAllChanged();
+			objectCombo.getSelectedObject().setMetadataModified();
 			}
 		else if(e.getSource()==btRemoveEntry)
 			{
 			int row=table.getSelectedRow();
 			if(row!=-1)
+				{
 				tableModel.removeRow(row);
+				treeModel.emitAllChanged();
+				objectCombo.getSelectedObject().setMetadataModified();
+				}
 			}
 		else if(e.getSource()==btInsertColumn)
 			{
 			String name=JOptionPane.showInputDialog("Name of column");
 			if(name!=null)
+				{
 				tableModel.insertCol(name);
+				treeModel.emitAllChanged();
+				objectCombo.getSelectedObject().setMetadataModified();
+				}
 			}
 		else if(e.getSource()==btRemoveColumn)
 			{
 			int col=table.getSelectedColumn();
 			if(col!=-1)
+				{
 				tableModel.removeColumn(col);
+				treeModel.emitAllChanged();
+				objectCombo.getSelectedObject().setMetadataModified();
+				}
 			}
 		else if(e.getSource()==bImport)
 			{
@@ -310,18 +361,21 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 				EvData.setLastDataPath(fc.getSelectedFile().getParentFile());
 				File filename=fc.getSelectedFile();
 				
-				String elementName=JOptionPane.showInputDialog("Name of new elements");
-				if(elementName==null || elementName.equals(""))
-					return;
-				
 				try
 					{
 					if(filename.getName().endsWith(".xml"))
 						{
-						//TODO
+						Document doc=EvXmlUtil.readXML(filename);
+						CustomObject ob=objectCombo.getSelectedObject();
+						if(ob!=null)
+							ob.xml=doc.getRootElement();
 						}
 					else
 						{
+						String elementName=JOptionPane.showInputDialog("Name of new elements");
+						if(elementName==null || elementName.equals(""))
+							return;
+
 						ImportTable imp=new ImportTable();
 						if(filename.getName().endsWith(".csv"))
 							imp.importCSV(filename.getAbsolutePath(), ',', '\"');
@@ -330,9 +384,12 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 
 						//imp.show();
 						//A preview might be nice?
-						
-						imp.intoXML(tableModel.getRoot(), elementName);
+						CustomObject ob=objectCombo.getSelectedObject();
+						if(ob!=null)
+							imp.intoXML(ob.xml, elementName);
 						}
+					objectCombo.getSelectedObject().setMetadataModified();
+					dataChangedEvent();
 					treeModel.emitAllChanged();
 					tableModel.fireTableStructureChanged();
 					}
@@ -355,7 +412,7 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 			{
 			public boolean accept(File f)
 				{
-				return f.getName().toLowerCase().endsWith(".xml") || f.getName().toLowerCase().endsWith(".xls") || f.getName().toLowerCase().endsWith(".csv");
+				return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml") || f.getName().toLowerCase().endsWith(".xls") || f.getName().toLowerCase().endsWith(".csv");
 				}
 			public String getDescription()
 				{
@@ -371,8 +428,6 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 	 */
 	public void stateChanged(ChangeEvent e)
 		{
-		
-//		fillGraphpart();
 		}
 	
 	/*
@@ -382,27 +437,20 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 	public void dataChangedEvent()
 		{
 		objectCombo.updateList();
-		//copy list
-		fillTreeAttributesPane((CustomTreeElement)treeModel.getRoot());
+		CustomObject ob=objectCombo.getSelectedObject();
+		treeModel.setMetaObject(ob);
+		tableModel.setRoot(ob);
+		fillTreeAttributesPane();
 		}
 
 
 
 	public void tableChanged(TableModelEvent e)
 		{
-		if(e.getType()==TableModelEvent.INSERT)
-			{
-			
-			}
-		else if(e.getType()==TableModelEvent.DELETE)
-			{
-			
-			}
-		else if(e.getType()==TableModelEvent.UPDATE)
-			{
-			
-			}
-		//TODO: update tree
+		if(e.getType()==TableModelEvent.INSERT);
+		else if(e.getType()==TableModelEvent.DELETE);
+		else if(e.getType()==TableModelEvent.UPDATE);
+		treeModel.emitAllChanged();
 		}
 	
 	

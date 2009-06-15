@@ -21,12 +21,11 @@ public class CustomTreeElement
 	
 	public TreePath getPath()
 		{
-		List<Object> path=new LinkedList<Object>();
+		LinkedList<Object> path=new LinkedList<Object>();
 		CustomTreeElement e=this;
-		
 		while(e!=null)
 			{
-			path.add(0,e);
+			path.addFirst(e);
 			e=e.parent;
 			}
 		return new TreePath(path.toArray());
@@ -38,7 +37,7 @@ public class CustomTreeElement
 		if(e==null)
 			return true;
 		else
-			return e.getChildren().size()==0;
+			return e.getChildren().isEmpty();
 		}
 	
 	public String toString()
@@ -51,8 +50,6 @@ public class CustomTreeElement
 			out.append(e.getName());
 			out.append(" ");
 			out.append(e.getText().trim());
-			
-			
 			
 			for(Object alo:e.getAttributes())
 				{

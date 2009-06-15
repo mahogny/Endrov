@@ -16,8 +16,22 @@ public class CustomTreeModel implements TreeModel
 	HashSet<TreeModelListener> listener=new HashSet<TreeModelListener>();
 	private CustomObject meta=null;
 
+	/**
+	 * To keep paths stable, old tree elements corresponding to xml elements should be used. To avoid
+	 * memory management, use a weak hashmap to cache entries
+	 */
+	private WeakHashMap<Element, CustomTreeElement> cachedNodes=new WeakHashMap<Element, CustomTreeElement>();
 	
-	
+	/**
+	 * Get cached node or create a new node
+	 */
+	private CustomTreeElement getCachedNode(Element e, CustomTreeElement parent)
+		{
+		CustomTreeElement el=cachedNodes.get(e);
+		if(el==null)
+			cachedNodes.put(e,el=new CustomTreeElement(e, parent));
+		return el;
+		}
 	
 	public void setMetaObject(CustomObject o)
 		{
@@ -36,10 +50,10 @@ public class CustomTreeModel implements TreeModel
 
 	
 	
-	public Object getChild(Object arg0, int arg1)
+	public Object getChild(Object arg0, int childIndex)
 		{
-		CustomTreeElement e=(CustomTreeElement)arg0;
-		return new CustomTreeElement((Element)e.e.getChildren().get(arg1), e);
+		CustomTreeElement node=(CustomTreeElement)arg0;
+		return getCachedNode((Element)node.e.getChildren().get(childIndex), node);
 		}
 
 	public int getChildCount(Object arg0)
@@ -64,9 +78,10 @@ public class CustomTreeModel implements TreeModel
 	public Object getRoot()
 		{
 		if(meta==null)
-			return new CustomTreeElement(null,null);
+			return getCachedNode(null,null);
+//			return new CustomTreeElement(null,null);
 		else
-			return new CustomTreeElement(meta.xml, null);
+			return getCachedNode(meta.xml,null);
 		}
 
 	public boolean isLeaf(Object arg0)
@@ -99,7 +114,6 @@ public class CustomTreeModel implements TreeModel
 		{
 		for(TreeModelListener l:listener)
 			l.treeNodesChanged(new TreeModelEvent(this, e.getPath()));
-		
-		emitAllChanged();
+		//emitAllChanged();
 		}
 	}

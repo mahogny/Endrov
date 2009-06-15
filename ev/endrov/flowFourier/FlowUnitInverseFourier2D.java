@@ -14,6 +14,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
+import endrov.util.Maybe;
 
 /**
  * Flow unit: Inverse fourier transform 2D
@@ -22,8 +23,8 @@ import endrov.imageset.AnyEvImage;
  */
 public class FlowUnitInverseFourier2D extends FlowUnitBasic
 	{
-	public static final String showName="Fourier transform 2D";
-	private static final String metaType="transformFourier2D";
+	public static final String showName="Fourier inverse transform 2D";
+	private static final String metaType="transformInverseFourier2D";
 	
 	public static void initPlugin() {}
 	static
@@ -57,11 +58,12 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		Object inReal=flow.getInputValue(this, exec, "inReal");
-		Object inImag=flow.getInputValue(this, exec, "inImag");
+		Maybe<Object> inImag=flow.getInputValueMaybe(this, exec, "inImag");
+//		Object inImag=flow.getInputValue(this, exec, "inImag");
 		
-		checkNotNull(inReal);
+	//	checkNotNull(inReal);
 		
-		if(inImag==null)
+		if(!inImag.hasValue())
 			{
 			AnyEvImage[] outs=new EvOpFourierRealInverseFull2D(true).execUntyped(inReal);
 			lastOutput.put("outReal", outs[0]);
@@ -69,7 +71,7 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierCompexInverse2D(true).execUntyped(inReal, inImag);
+			AnyEvImage[] outs=new EvOpFourierCompexInverse2D(true).execUntyped(inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

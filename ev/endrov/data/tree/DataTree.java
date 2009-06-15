@@ -64,9 +64,12 @@ public class DataTree extends JTree
 	 */
 	public void dataUpdated()
 		{
-		
-		
-		
+		getModel().dataUpdated();
+		}
+	
+	public DataTreeModel getModel()
+		{
+		return (DataTreeModel)super.getModel(); 
 		}
 	
 	public static void main(String[] args)

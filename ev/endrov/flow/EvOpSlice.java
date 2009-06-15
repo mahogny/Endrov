@@ -21,13 +21,7 @@ import endrov.util.Memoize;
  */
 public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 	{
-	//Could have multiple output
-	//EvPixels or EvImage?
-//	public abstract EvPixels[] exec(EvPixels... p);
-	
-	//public abstract EvPixels[] exec(EvPixels... p);
 
-	
 	public EvPixels exec1(EvPixels... p)
 		{
 		return exec(p)[0];
@@ -72,19 +66,23 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 				{
 				HashMap<EvDecimal,Memoize<EvPixels[]>> mems=new HashMap<EvDecimal, Memoize<EvPixels[]>>(); 
 				EvStack[] retStack=new EvStack[op.getNumberChannels()];
+				EvStack referenceStack=p[0];
+				System.out.println("makestackop #chan "+op.getNumberChannels());
 				for(int ac=0;ac<op.getNumberChannels();ac++)
 					{
+					//Create one output channel. First argument decides shape of output stack
 					EvStack newstack=new EvStack();
-					EvStack stack=p[0];
-					newstack.getMetaFrom(stack);
+					newstack.getMetaFrom(referenceStack);
 					
-					
-					for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
+					//Set up each slice
+					System.out.println("stack got "+referenceStack.entrySet().size());
+					for(Map.Entry<EvDecimal, EvImage> pe:referenceStack.entrySet())
 						{
-						//final EvImage evim=pe.getValue();
 						EvImage newim=new EvImage();
 						newstack.put(pe.getKey(), newim);
+						System.out.println("%¤&/¤%& here1");
 						
+						//Collect slice from each input stack
 						final EvImage[] imlist=new EvImage[p.length];
 						int ci=0;
 						for(EvStack cit:p)
@@ -111,10 +109,9 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 						newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return m.get()[thisAc];}};
 						
 						newim.registerLazyOp(m);		
-								
-						retStack[ac]=newstack;
-						System.out.println("created stack "+newstack.getResbinX()+" "+newstack.getResbinY());
 						}
+					retStack[ac]=newstack;
+					System.out.println("created stack "+newstack.getResbinX()+" "+newstack.getResbinY());
 					}
 				return retStack;
 				}

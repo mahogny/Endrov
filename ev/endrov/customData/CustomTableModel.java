@@ -3,6 +3,7 @@ package endrov.customData;
 import java.util.*;
 import org.jdom.*;
 
+import endrov.data.CustomObject;
 import endrov.data.EvObject;
 
 import javax.swing.table.*;
@@ -17,17 +18,23 @@ public class CustomTableModel extends AbstractTableModel
 	static final long serialVersionUID=0; 
 	
 	public Vector<String> columnList=new Vector<String>();
-	private String elementName="";
-	private Element tableRoot=new Element("a");
+	private String elementName;
+	private Element tableRoot;
 	private EvObject ob;
 	
-	public void setRoot(EvObject ob, Element e)
+	public CustomTableModel()
+		{
+		setRoot(null);
+		}
+	
+	public void setRoot(CustomObject ob)
 		{
 		this.ob=ob;
-		if(e==null)
+		if(ob==null)
 			tableRoot=new Element("empty");
 		else
-			tableRoot=e;
+			tableRoot=ob.xml;
+			//tableRoot=e;
 		collectColumns();
 		fireTableStructureChanged();
 		}
@@ -41,18 +48,18 @@ public class CustomTableModel extends AbstractTableModel
 		{
 		columnList.clear();
 		List<?> ch=tableRoot.getChildren();
-		if(ch.size()>0)
+		elementName="elem";
+		if(!ch.isEmpty())
 			{
-			System.out.println("root "+tableRoot.getName());
 			Element e=(Element)ch.get(0);
 			elementName=e.getName();
 			for(Object o:e.getChildren())
 				{
 				Element ae=(Element)o;
 				columnList.add(ae.getName());
-				System.out.println("ae "+ae.getName());
 				}
 			}
+		fireTableStructureChanged();
 		}
 	
 

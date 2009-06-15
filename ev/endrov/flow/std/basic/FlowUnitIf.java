@@ -90,8 +90,8 @@ public class FlowUnitIf extends FlowUnit
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("cond", null);
-		types.put("true", null);
+		types.put("cond", FlowType.TBOOLEAN);
+		types.put("true", null); //TODO should be the same
 		types.put("false", null);
 		}
 	/** Get types of flows out */

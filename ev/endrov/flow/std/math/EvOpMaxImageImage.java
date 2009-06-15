@@ -5,15 +5,17 @@ import endrov.imageset.EvPixels;
 
 /**
  * max(A,B)
+ * @author Johan Henriksson
  */
 public class EvOpMaxImageImage extends EvOpSlice1
 	{
 	public EvPixels exec1(EvPixels... p)
 		{
-		return greater(p[0],p[1]);
+		return apply(p[0],p[1]);
 		}
 	
-	public static EvPixels greater(EvPixels a, EvPixels b)
+	/*
+	public static EvPixels apply(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
 		a=a.convertTo(EvPixels.TYPE_INT, true);
@@ -27,9 +29,29 @@ public class EvOpMaxImageImage extends EvOpSlice1
 		int[] outPixels=out.getArrayInt();
 		
 		for(int i=0;i<aPixels.length;i++)
-			outPixels[i]=aPixels[i]>bPixels[i] ? aPixels[i] : bPixels[i];
+			outPixels[i]=aPixels[i] > bPixels[i] ? aPixels[i] : bPixels[i];
 		
 		return out;
 		}
-	
+*/
+
+	public static EvPixels apply(EvPixels a, EvPixels b)
+		{
+		//Should use the common higher type here
+		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		b=b.convertTo(EvPixels.TYPE_DOUBLE, true);
+		
+		int w=a.getWidth();
+		int h=a.getHeight();
+		EvPixels out=new EvPixels(a.getType(),w,h);
+		double[] aPixels=a.getArrayDouble();
+		double[] bPixels=b.getArrayDouble();
+		double[] outPixels=out.getArrayDouble();
+		
+		for(int i=0;i<aPixels.length;i++)
+			outPixels[i]=aPixels[i] > bPixels[i] ? aPixels[i] : bPixels[i];
+		
+		return out;
+		}
+
 	}

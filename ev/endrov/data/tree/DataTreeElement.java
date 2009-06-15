@@ -6,6 +6,11 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 
+/**
+ * Node in the DataTree widget
+ * @author Johan Henriksson
+ *
+ */
 public class DataTreeElement
 	{
 	public final boolean isRoot;

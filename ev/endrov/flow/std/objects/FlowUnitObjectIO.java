@@ -177,25 +177,29 @@ public class FlowUnitObjectIO extends FlowUnit
 		
 		if(con.hasValue())
 			{
-			//TODO replace with new path system
-			EvData currentData=exec.getData();
-			EvPath currentPath=exec.getPath();
-			
-			EvPath path=EvPath.parse(nameOfObject);
-			String childName=path.getLeafName();
-			EvContainer parentContainer=path.getParent().getContainer(currentData, currentPath);
-			
-			System.out.println("Parent: "+parentContainer);
-			System.out.println("leaf: "+childName);
-			
-			//Get value and store it
-			obvalue=(EvObject)con.get();
-			parentContainer.metaObject.put(childName, (EvObject)obvalue);  //TODO bad cast?
-
-			//Update windows about new object
-			BasicWindow.updateWindows();
-			
-			
+			if(con.get()==null)
+				throw new RuntimeException("Object to store must not be null");
+			else
+				{
+				//TODO replace with new path system
+				EvData currentData=exec.getData();
+				EvPath currentPath=exec.getPath();
+				
+				EvPath path=EvPath.parse(nameOfObject);
+				String childName=path.getLeafName();
+				EvContainer parentContainer=path.getParent().getContainer(currentData, currentPath);
+				
+				System.out.println("Parent: "+parentContainer);
+				System.out.println("leaf: "+childName);
+				
+				//Get value and store it
+				obvalue=(EvObject)con.get();
+				
+				parentContainer.metaObject.put(childName, (EvObject)obvalue);  //TODO bad cast?
+	
+				//Update windows about new object
+				BasicWindow.updateWindows();
+				}
 			}
 		else
 			{

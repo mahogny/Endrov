@@ -72,6 +72,14 @@ public class EvPixels implements AnyEvImage
 		}
 
 	/**
+	 * Get string description of type of pixel format 
+	 */
+	public String getTypeString()
+		{
+		return type2string(type);
+		}
+	
+	/**
 	 * Get width of image
 	 */
 	public int getWidth()
@@ -288,6 +296,7 @@ public class EvPixels implements AnyEvImage
 					p=this;
 				else
 					p=helperConvertToInt();
+				
 				if(newType==TYPE_INT)
 					return p;
 				else
@@ -503,6 +512,8 @@ public class EvPixels implements AnyEvImage
 	 */
 	private EvPixels helperConvertToInt()
 		{
+		System.out.println("conv "+type2string(type)+" -> int");
+		
 		//There are some local variable optimizations(?).
 		int[] narr=null;
 		if(type==TYPE_UBYTE)
@@ -695,6 +706,9 @@ public class EvPixels implements AnyEvImage
 		return "EvPixels type:"+type2string(type)+" w:"+w+" h:"+h;
 		}
 
+	/**
+	 * Put image values into string. For debugging
+	 */
 	public String asciiImage()
 		{
 		StringBuffer sb=new StringBuffer();
@@ -716,8 +730,36 @@ public class EvPixels implements AnyEvImage
 				sb.append("\n");
 				}
 			}
+		else
+			return convertTo(TYPE_DOUBLE, true).asciiImage();
 		return sb.toString();
 		}
+	
+	/**
+	 * Put given line values into string. for debugging
+	 */
+	public String asciiPart(int y, int startX, int endX)
+		{
+		StringBuffer sb=new StringBuffer();
+		if(type==TYPE_UBYTE)
+			return convertTo(TYPE_INT, true).asciiPart(y, startX, endX);
+		if(type==TYPE_SHORT)
+			return convertTo(TYPE_INT, true).asciiPart(y, startX, endX);
+		else if(type==TYPE_INT)
+			{
+			for(int j=startX;j<endX;j++)
+				sb.append(arrayI[y*getWidth()+j]+"\t");
+			}
+		else if(type==TYPE_DOUBLE)
+			{
+			for(int j=startX;j<endX;j++)
+				sb.append(arrayD[y*getWidth()+j]+"\t");
+			}
+		else
+			return convertTo(TYPE_DOUBLE, true).asciiPart(y, startX, endX);
+		return sb.toString();
+		}
+	
 	
 	/*
 	public static void main(String[] arg)

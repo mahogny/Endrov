@@ -28,29 +28,38 @@ public abstract class EvOpProjectZ extends EvOpStack1
 		}
 
 	
+	/**
+	 * Function to combine 2 image planes
+	 */
 	protected abstract EvPixels combine(EvPixels a, EvPixels b);
 	
-	
+	/**
+	 * Project into a single-image stack
+	 */
 	public EvStack project(EvStack in)
 		{
-		EvImage proto=in.firstEntry().snd();
-		
 		EvStack out=new EvStack();
+		out.getMetaFrom(in);
 
-
+		EvImage proto=in.firstEntry().snd();
 		EvPixels ptot=new EvPixels(EvPixels.TYPE_INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
 		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
+			{
+			//System.out.println("plane type "+plane.getValue().getPixels().getTypeString());
 			ptot=combine(ptot,plane.getValue().getPixels());
-			//ImageMath.plus(ptot, plane.getValue().getPixels());
-
-		EvImage imout=new EvImage();
-		out.getMetaFrom(in);
-		imout.setPixelsReference(ptot);
+			System.out.println(">>>  "+plane.getValue().getPixels().asciiPart(120,50,80));
+			//System.out.println("ptot "+ptot.asciiPart(100,20,40));
+			}
+		//Should not include 0-image
 		
-		//Lazy stack op will use all planes!
+		
+		EvImage imout=new EvImage();
+		imout.setPixelsReference(ptot);
+		//out.put(EvDecimal.ZERO,imout);
 		
 		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
-			out.put(plane.getKey(), imout.makeShadowCopy());
+			out.put(plane.getKey(), imout); //incorrect TODO
+//			out.put(plane.getKey(), imout.makeShadowCopy());
 			
 		return out;
 		}
