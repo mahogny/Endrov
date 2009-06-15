@@ -37,30 +37,81 @@ public abstract class EvOpGeneral
 			throw new RuntimeException("Wrong type for unchecked exec: "+ch.getClass());
 		}*/
 	
+	/**
+	 * Execute operation on any level. Figure out level by the type
+	 */
 	public AnyEvImage exec1Untyped(Object... ch)
 		{
+		return execUntyped(ch)[0];
+		/*
 		Object fst=ch[0];
 		if(fst instanceof EvPixels)
-			return exec1((EvPixels[])ch);
+			{
+			EvPixels[] arr=new EvPixels[ch.length];
+			for(int i=0;i<ch.length;i++)
+				arr[i]=(EvPixels)ch[i];
+			return exec1(arr);
+			}
 		else if(fst instanceof EvStack)
-			return exec1((EvStack[])ch);
+			{
+			EvStack[] arr=new EvStack[ch.length];
+			for(int i=0;i<ch.length;i++)
+				arr[i]=(EvStack)ch[i];
+			return exec1(arr);
+			}
 		else if(fst instanceof EvChannel)
-			return exec1((EvChannel[])ch);
+			{
+			EvChannel[] arr=new EvChannel[ch.length];
+			for(int i=0;i<ch.length;i++)
+				arr[i]=(EvChannel)ch[i];
+			return exec1(arr);
+			}
 		else
-			throw new RuntimeException("Wrong type for unchecked exec: "+ch.getClass());
+			{
+			StringBuffer sb=new StringBuffer();
+			for(Object o:ch)
+				sb.append(ch.getClass()+": "+o+"\n");
+			throw new RuntimeException("Wrong type for unchecked exec\n"+sb);
+			}*/
 		}
-
+	
+	
+	
+	/**
+	 * Execute operation on any level. Figure out level by the type
+	 */
 	public AnyEvImage[] execUntyped(Object... ch)
 		{
 		Object fst=ch[0];
 		if(fst instanceof EvPixels)
-			return exec((EvPixels[])ch);
+			{
+			EvPixels[] arr=new EvPixels[ch.length];
+			for(int i=0;i<ch.length;i++)
+				arr[i]=(EvPixels)ch[i];
+			return exec(arr);
+			}
 		else if(fst instanceof EvStack)
-			return exec((EvStack[])ch);
+			{
+			EvStack[] arr=new EvStack[ch.length];
+			for(int i=0;i<ch.length;i++)
+				arr[i]=(EvStack)ch[i];
+			return exec(arr);
+			}
 		else if(fst instanceof EvChannel)
-			return exec((EvChannel[])ch);
+			{
+			System.out.println("===passing as evchannel");
+			EvChannel[] arr=new EvChannel[ch.length];
+			for(int i=0;i<ch.length;i++)
+				arr[i]=(EvChannel)ch[i];
+			return exec(arr);
+			}
 		else
-			throw new RuntimeException("Wrong type for unchecked exec: "+ch.getClass());
+			{
+			StringBuffer sb=new StringBuffer();
+			for(Object o:ch)
+				sb.append(ch.getClass()+": "+o+"\n");
+			throw new RuntimeException("Wrong type for unchecked exec\n"+sb);
+			}
 		}
 
 	

@@ -9,6 +9,7 @@ import javax.vecmath.Vector3d;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.flow.std.logic.EvOpImageGreaterThanScalar;
+import endrov.flow.std.math.EvOpImageAxpy;
 import endrov.flow.std.math.EvOpImageSubImage;
 import endrov.flowAveraging.AveragingFilter;
 import endrov.flowAveraging.EvOpMovingAverage;
@@ -20,7 +21,6 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
-import endrov.unsortedImageFilters.imageMath.EvOpImageAxpy;
 import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 

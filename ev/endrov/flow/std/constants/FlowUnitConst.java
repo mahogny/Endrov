@@ -12,6 +12,11 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.ui.FlowPanel;
 
+/**
+ * Common look for all flow constants
+ * @author Johan Henriksson
+ *
+ */
 public abstract class FlowUnitConst extends FlowUnit
 	{
 
@@ -23,7 +28,7 @@ public abstract class FlowUnitConst extends FlowUnit
 	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth()+1,comp.getHeight()+2);
+		Dimension d=new Dimension(3+w+3+comp.getWidth()+4,comp.getHeight()+2);
 		return d;
 		}
 	

@@ -59,7 +59,7 @@ public class FlowUnitScript extends FlowUnitBasic
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("in", null);
+		types.put("in", FlowType.TANY);
 		}
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)

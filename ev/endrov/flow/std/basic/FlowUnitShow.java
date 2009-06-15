@@ -22,6 +22,11 @@ import endrov.flow.ui.FlowPanel;
 import endrov.util.JMultilineLabel;
 import endrov.util.Maybe;
 
+/**
+ * Flow unit: show value
+ * @author Johan Henriksson
+ *
+ */
 public class FlowUnitShow extends FlowUnit
 	{
 	private static final String metaType="showValue";
@@ -76,7 +81,7 @@ public class FlowUnitShow extends FlowUnit
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("in", null);
+		types.put("in", FlowType.TANY);
 		}
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)

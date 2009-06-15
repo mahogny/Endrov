@@ -702,16 +702,21 @@ public class ImageWindow extends BasicWindow
 			for(ImagePanelImage im:imagePanel.images)
 				{
 				EvImage evim=im.getImage();
-				EvPixels pixels=evim.getPixels();
-				
-				EvStack stack=im.getStack();
-				
-				sb.append(
-						"ResX: "+stack.getResbinX()+" "+
-						"ResY: "+stack.getResbinY()+" "+
-						"Width(px): "+pixels.getWidth()+" "+
-						"Height(px): "+pixels.getHeight());
-				sb.append("\n");
+				if(evim==null)
+					sb.append("Null slice");
+				else
+					{
+					EvPixels pixels=evim.getPixels();
+					
+					EvStack stack=im.getStack();
+					
+					sb.append(
+							"ResX: "+stack.getResbinX()+" "+
+							"ResY: "+stack.getResbinY()+" "+
+							"Width(px): "+pixels.getWidth()+" "+
+							"Height(px): "+pixels.getHeight());
+					sb.append("\n");
+					}
 				}
 			String s=sb.toString();
 			if(!s.equals(""))

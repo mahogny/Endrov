@@ -42,6 +42,7 @@ public abstract class EvOpStack extends EvOpGeneral
 
 	public EvChannel[] exec(EvChannel... ch)
 		{
+		System.out.println("here1");
 		return applyStackOp(ch, this);
 		}
 	
@@ -57,6 +58,7 @@ public abstract class EvOpStack extends EvOpGeneral
 	
 	public EvChannel exec1(EvChannel... ch)
 		{
+		System.out.println("#### "+exec(ch)[0]);
 		return exec(ch)[0];
 		}
 
@@ -66,9 +68,15 @@ public abstract class EvOpStack extends EvOpGeneral
 	 */
 	public static EvChannel[] applyStackOp(EvChannel[] ch, final EvOpStack op)
 		{
+		System.out.println("here3 ");
+
 		//Not quite final: what if changes should go back into the channel? how?
 		EvChannel[] retch=new EvChannel[op.getNumberChannels()];
 		
+		//First argument decides which frames to apply for
+		EvChannel refChannel=ch[0];
+		
+		System.out.println("#chan "+retch.length+"  zzz "+refChannel.imageLoader);
 		for(int ac=0;ac<retch.length;ac++)
 			{
 			EvChannel newch=new EvChannel();
@@ -77,11 +85,12 @@ public abstract class EvOpStack extends EvOpGeneral
 			
 			//Currently operates on common subset of channels
 			
-			for(Map.Entry<EvDecimal, EvStack> se:ch[0].imageLoader.entrySet())
+			for(Map.Entry<EvDecimal, EvStack> se:refChannel.imageLoader.entrySet())
 				{
 				EvStack newstack=new EvStack();
 				EvStack stack=se.getValue();
 				
+				System.out.println("here4 "+se);
 				
 		
 				//TODO register lazy operation
@@ -122,8 +131,9 @@ public abstract class EvOpStack extends EvOpGeneral
 							
 					}
 				newch.imageLoader.put(se.getKey(), newstack);
-				retch[ac]=newch;
 				}
+			System.out.println("here2 "+newch);
+			retch[ac]=newch;
 			}
 		return retch;
 		}

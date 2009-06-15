@@ -146,7 +146,7 @@ public abstract class FlowUnit
 		{
 		for(Object o:list)
 			if(o==null)
-				throw new BadTypeFlowException("Null values ");
+				throw new BadTypeFlowException("Check failed, null values");
 		}
 	
 	public void errUnsupportedTypes(Map<String,Object> lastOutput) throws Exception

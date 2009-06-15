@@ -19,6 +19,10 @@ import endrov.util.Vector3i;
 public class FindLocalExtremes
 	{
 
+	//Could also generate this as a new channel. less efficient but good to see what is happening
+	//or - some simple way of superimposing the pixels on a channel
+	
+	
 	/**
 	 * Find local maximas
 	 */

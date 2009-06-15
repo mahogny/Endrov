@@ -25,14 +25,10 @@ import endrov.util.EvSwingUtil;
  */
 public class FlowUnitConstClass extends FlowUnitConst
 	{
-	
+	private static ImageIcon icon=new ImageIcon(FlowUnitConstClass.class.getResource("jhClass.png"));
+	private static final String metaType="constClass";
 
 	private String var="java.lang.String";
-	
-	private static ImageIcon icon=new ImageIcon(FlowUnitConstClass.class.getResource("jhClass.png"));
-
-	
-	private static final String metaType="constClass";
 	
 	public static void initPlugin() {}
 	static
@@ -87,12 +83,12 @@ public class FlowUnitConstClass extends FlowUnitConst
 
 	public void setVar(String var)
 		{
-			this.var = var;
+		this.var = var;
 		}
 
 	public String getVar()
 		{
-			return var;
+		return var;
 		}
 	
 	

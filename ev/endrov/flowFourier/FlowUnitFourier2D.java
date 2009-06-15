@@ -14,6 +14,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
+import endrov.util.Maybe;
 
 /**
  * Flow unit: Fourier transform 2D
@@ -57,11 +58,11 @@ public class FlowUnitFourier2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		Object inReal=flow.getInputValue(this, exec, "inReal");
-		Object inImag=flow.getInputValue(this, exec, "inImag");
+		Maybe<Object> inImag=flow.getInputValueMaybe(this, exec, "inImag");
 		
-		checkNotNull(inReal);
+		//checkNotNull(inReal);
 		
-		if(inImag==null)
+		if(!inImag.hasValue())
 			{
 			AnyEvImage[] outs=new EvOpFourierRealForwardFull2D().execUntyped(inReal);
 			lastOutput.put("outReal", outs[0]);
@@ -69,7 +70,7 @@ public class FlowUnitFourier2D extends FlowUnitBasic
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexForward2D().execUntyped(inReal, inImag);
+			AnyEvImage[] outs=new EvOpFourierComplexForward2D().execUntyped(inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

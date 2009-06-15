@@ -9,6 +9,7 @@ import org.jdom.Element;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
 import endrov.ev.Log;
+import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 
 
@@ -216,6 +217,8 @@ public class EvContainer
 			el.setAttribute("id",""+id);
 			if(o.ostBlobID!=null)
 				el.setAttribute("ostblobid",o.ostBlobID);
+			//else if(this instanceof Imageset)
+				//System.out.println("Warning: no blob id for imageset");
 			if(o.dateCreate!=null)
 				el.setAttribute("ostdatecreate",o.dateCreate.toString());
 			if(o.dateLastModify!=null)

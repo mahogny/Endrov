@@ -14,18 +14,19 @@ import endrov.imageset.EvPixels;
  */
 public abstract class Threshold2D extends EvOpSlice1
 	{
-	public abstract double getThreshold(EvPixels in);
+	protected abstract double getThreshold(EvPixels in);
+	
+	
 	public EvPixels exec1(EvPixels... p)
 		{
 		EvPixels in=p[0];
 		double thres=getThreshold(in);
-		return new EvOpImageGreaterThanScalar(thres).exec1(in);
+		EvPixels out=new EvOpImageGreaterThanScalar(thres).exec1(in);
+		System.out.println("========= out");
+		return out;
 		}
 	
 	
-	
-
-	///////////////////////////////////////////////////////////////////////
 	
 	//IJ thresholding methods. 
 	//http://www.dentistry.bham.ac.uk/landinig/software/auto_threshold.jar

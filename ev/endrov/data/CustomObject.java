@@ -9,33 +9,29 @@ import org.jdom.*;
  */
 public class CustomObject extends EvObject
 	{
-	public Element xml;
-	public String metaType;
+	public Element xml=new Element("custom");
+	//privateString metaType;
 	
-	/*
-	public CustomObject(Element xml)
+	public String getMetaType()
 		{
-		this.xml=xml;
-		metaType=xml.getName();
-		}*/
+		return xml.getName(); 
+		}
 	
 	public String getMetaTypeDesc()
 		{
-		return "unknown("+metaType+")";
+		return "unknown("+getMetaType()+")";
 		}
 
 	public void saveMetadata(Element e)
 		{
-		e.setName(xml.getName());
+		e.setName(getMetaType());
 		for(Object o:xml.getChildren())
 			e.addContent((Element)((Element)o).clone()); //potential need for clone
-		//added one later. xml to e. 
 		}
 	
 	public void loadMetadata(Element e)
 		{
 		xml=e;
-		metaType=xml.getName();
 		}
 	
 	public void buildMetamenu(JMenu menu)

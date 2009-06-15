@@ -1,4 +1,4 @@
-package endrov.flowThreshold;
+package endrov.flowBinaryMorph;
 
 
 import java.awt.Color;
@@ -13,23 +13,23 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
+import endrov.imageset.EvPixels;
 
 /**
- * Flow unit: black tophat 2D
+ * Flow unit: create kernel by drawing one
  * @author Johan Henriksson
  *
  */
-public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
+public class FlowUnitBinMorphDrawKernel2D extends FlowUnitBasic
 	{
-	public static final String showName="Otsu threshold";
-	private static final String metaType="thresholdOtsu";
+	public static final String showName="Binary Draw Kernel 2D";
+	private static final String metaType="binaryDrawKernel2d";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitThresholdOtsu2D.class, null,
-				"Find optimal threshold which minimizes signal and background variance, slice by slice"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitBinMorphDrawKernel2D.class, null,
+				"Draw kernel for binary morphology"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -41,26 +41,26 @@ public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("image", FlowType.ANYIMAGE);
 		}
 	
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("out", FlowType.ANYIMAGE); //TODO same type as "image"
+		types.put("out", BinMorphKernel.FLOWTYPE); //TODO same type as "image"
 		}
 	
 	/** Execute algorithm */
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
-		checkNotNull(a);
-		System.out.println("??????here");
 		
-		AnyEvImage out=new EvOpThresholdOtsu2D().exec1Untyped(a);
-		System.out.println("/////"+out);
-		lastOutput.put("out", out);
+		
+		//TODO
+		//TODO
+		//TODO
+		//TODO
+		
+		lastOutput.put("out", null);
 		}
 
 	

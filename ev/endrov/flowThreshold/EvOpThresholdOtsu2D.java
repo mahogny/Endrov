@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import endrov.imageset.EvPixels;
 import endrov.unsortedImageFilters.Histogram;
 
+
 /**
  * Otsu thresholding
  * <br/>
@@ -16,7 +17,7 @@ import endrov.unsortedImageFilters.Histogram;
  */
 public class EvOpThresholdOtsu2D extends Threshold2D
 	{
-	public double getThreshold(EvPixels in)
+	protected double getThreshold(EvPixels in)
 		{
 		return findOtsuThreshold(in);
 		}
@@ -79,6 +80,7 @@ public class EvOpThresholdOtsu2D extends Threshold2D
 			//System.out.println("nb"+n_b+"   no"+n_o+"  nT"+n_T);
 			//System.out.println("sigmab "+sigma_b+"     thr "+T);
 			}
+		System.out.println("threshold: "+maxSigmaThres);
 		
 		return maxSigmaThres;
 		}

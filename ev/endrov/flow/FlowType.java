@@ -3,7 +3,9 @@ package endrov.flow;
 import java.util.*;
 
 import endrov.imageset.AnyEvImage;
+import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 
 
@@ -18,17 +20,20 @@ public class FlowType
 	public Set<Class<?>> type=new HashSet<Class<?>>();
 	//good enough? what about List<....>? java removes <>. how to restore? manually annotate?
 	
-	public FlowType(){}
-	
-	public FlowType(Class<?> c)
+	public FlowType(Class<?>... c)
 		{
-		type.add(c);
+		for(Class<?> cc:c)
+			type.add(cc);
+		if(type.isEmpty())
+			type.add(Object.class);
 		}
-	
-	/*public boolean isUnknown()
+
+	public FlowType(Collection<Class<?>> c)
 		{
-		return isUnknown;
-		}*/
+		type.addAll(c);
+		if(type.isEmpty())
+			type.add(Object.class);
+		}
 	
 	public boolean isEmptyType()
 		{
@@ -109,10 +114,17 @@ public class FlowType
 		return out;
 		}
 	
+	/**
+	 * Check if the given class is accepted for this type
+	 */
 	public boolean supports(Class<?> c)
 		{
+		//Class<?> classes[]=c.getClasses();
+		//HashSet<Class<?>> classes2=new HashSet<Class<?>>();
+		List<Class<?>> list=Arrays.asList(c.getClasses()); //getclasses might have problems
 		for(Class<?> oc:type)
-			if(c.isInstance(oc)) //TODO wrong, this is not how isinstance works
+			if(list.contains(oc))
+			//if(oc.c.isInstance(oc)) //TODO wrong, this is not how isinstance works
 				return true;
 		return false;
 		}
@@ -125,8 +137,35 @@ public class FlowType
 	public static final FlowType TNUMBER=new FlowType(Number.class);
 	public static final FlowType TEVPIXELS=new FlowType(EvPixels.class);
 	public static final FlowType TVECTOR3I=new FlowType(Vector3i.class);
+	public static final FlowType TANY=new FlowType();
 	
-	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
+//	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
+	public static final FlowType ANYIMAGE=new FlowType(EvChannel.class, EvStack.class, EvPixels.class);
+	
+	/**
+	 * Any of these types
+	 */
+	public FlowType or(FlowType b)
+		{
+		LinkedList<Class<?>> list=new LinkedList<Class<?>>();
+		list.addAll(type);
+		list.addAll(b.type);
+		return new FlowType(list);
+		}
+	
+	public String toString()
+		{
+		StringBuffer sb=new StringBuffer();
+		boolean first=true;
+		for(Class<?> c:type)
+			{
+			if(!first)
+				sb.append(" or ");
+			first=false;
+			sb.append(c.getSimpleName());
+			}
+		return sb.toString();
+		}
 	
 	public static void main(String[] arg)
 		{
@@ -143,5 +182,7 @@ public class FlowType
 		
 		
 		}
+	
+	
 	
 	}

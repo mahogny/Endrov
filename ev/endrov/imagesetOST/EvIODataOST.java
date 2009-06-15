@@ -162,11 +162,14 @@ public class EvIODataOST implements EvIOData
 			{
 			if(currentDir==null)
 				{
+				//Try one name
 				boolean taken=false;
 				String dir="imset-"+keyName.getLeafName();
 				for(DiskBlob blob:mapBlobs.values())
-					if(blob.currentDir.equals(dir))
-						taken=true;
+					if(blob.currentDir!=null)
+						if(blob.currentDir.equals(dir))
+							taken=true;
+				//If name taken, try other names
 				if(taken)
 					{
 					int cnt=0;
@@ -175,8 +178,9 @@ public class EvIODataOST implements EvIOData
 						taken=false;
 						dir="imset-x"+cnt;
 						for(DiskBlob blob:mapBlobs.values())
-							if(blob.currentDir.equals(dir))
-								taken=true;
+							if(blob.currentDir!=null)
+								if(blob.currentDir.equals(dir))
+									taken=true;
 						cnt++;
 						}while(taken);
 					}
@@ -377,12 +381,13 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Save all data
 	 */
-	public void saveData(EvData d, EvData.FileIOStatusCallback cb)
+	public void saveData(EvData data, EvData.FileIOStatusCallback cb)
 		{
 		try
 			{
-			saveMetaDataOnly(d, cb);
-			saveImages(d);
+			allocateBlobs(data);
+			saveMetaDataOnly(data, cb);
+			saveImages(data);
 			}
 		catch (IOException e)
 			{
@@ -390,18 +395,44 @@ public class EvIODataOST implements EvIOData
 			}
 		}
 		
-	
-	
+	/**
+	 * Before writing data each imageset need a blob ID
+	 */
+	private void allocateBlobs(EvData data)
+		{
+		Map<EvPath,Imageset> dataImagesets=data.getIdObjectsRecursive(Imageset.class);
+		for(Map.Entry<EvPath, Imageset> datae:dataImagesets.entrySet())
+			{
+			Imageset im=datae.getValue();
+			DiskBlob blob=getCreateBlob(im);
+			blob.allocate(datae.getKey());
+			datae.getValue().ostBlobID=blob.currentDir;
+			if(blob.currentDir==null)
+				System.out.println("Warning: set blobid=null when saving");
+/*				if(blob.currentDir==null)
+				{
+				blob.currentDir="imset-"+datae.getKey();
+				System.out.println("allocating blob "+blob.currentDir);
+				new File(basedir,blob.currentDir).mkdirs();
+				}*/
+			
+			System.out.println("id "+datae.getKey()+"    "+datae.getValue().ostBlobID);
+			}
+		
+		
+		}
 	
 	/**
-	 * Save images
+	 * Save images.
+	 * 
+   * This code looks complicated but solves the following problem:
+   * if an image has been moved then it might have to be read into
+   * memory or it will be overwritten before it is loaded. cannot
+   * always consider this case because it is uncommon and will *eat* memory.
+	 * 
 	 */
 	private void saveImages(EvData data)
 		{
-		//This code looks complicated but solves the following problem:
-		//if an image has been moved then it might have to be read into
-		//memory or it will be overwritten before it is loaded. cannot
-		//always consider this case because it is uncommon and will *eat* memory.
 		
 		//Map<String,Imageset> dataImagesets=data.getIdObjects(Imageset.class);
 		Map<EvPath,Imageset> dataImagesets=data.getIdObjectsRecursive(Imageset.class);
@@ -449,19 +480,7 @@ public class EvIODataOST implements EvIOData
 					}
 			
 			//Newly created imagesets might not have a blob. Need to create these.
-			for(Map.Entry<EvPath, Imageset> datae:dataImagesets.entrySet())
-				{
-				Imageset im=datae.getValue();
-				DiskBlob blob=getCreateBlob(im);
-				blob.allocate(datae.getKey());
-				datae.getValue().ostBlobID=blob.currentDir;
-/*				if(blob.currentDir==null)
-					{
-					blob.currentDir="imset-"+datae.getKey();
-					System.out.println("allocating blob "+blob.currentDir);
-					new File(basedir,blob.currentDir).mkdirs();
-					}*/
-				}
+			//allocateBlobs();
 			
 			//Which images are dirty and need be written?
 			//Dirty image := an image that has been modified or has not been written to this OST

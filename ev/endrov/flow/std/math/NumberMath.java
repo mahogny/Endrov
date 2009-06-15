@@ -1,5 +1,7 @@
 package endrov.flow.std.math;
 
+import endrov.util.EvDecimal;
+
 
 /**
  * Scalar with upconversion semantics
@@ -10,8 +12,10 @@ public class NumberMath
 	{
 
 	
-	
-	public static int typeIndex(Number a)
+	/**
+	 * Order of types. One type fits in the next type
+	 */
+	private static int typeIndex(Number a)
 		{
 		if(a instanceof Byte)
 			return 0;
@@ -19,12 +23,14 @@ public class NumberMath
 			return 1;
 		else if(a instanceof Integer)
 			return 2;
-		else if(a instanceof Float)
-			return 3;
-		else if(a instanceof Double)
-			return 4;
 		else if(a instanceof Long)
+			return 3;
+		else if(a instanceof Float)
+			return 4;
+		else if(a instanceof Double)
 			return 5;
+		else if(a instanceof EvDecimal)
+			return 5; //TODO
 		else
 			throw new RuntimeException("Unsupported Number");
 		}
@@ -42,11 +48,13 @@ public class NumberMath
 		else if(type==2)
 			return a.intValue()+b.intValue();
 		else if(type==3)
-			return a.floatValue()+b.floatValue();
-		else if(type==4)
-			return a.doubleValue()+b.doubleValue();
-		else if(type==5)
 			return a.longValue()+b.longValue();
+		else if(type==4)
+			return a.floatValue()+b.floatValue();
+		else if(type==5)
+			return a.doubleValue()+b.doubleValue();
+		else if(type==6)
+			return ((EvDecimal)a).add((EvDecimal)b);
 		else
 			throw new RuntimeException("Unsupported Number");
 		}
@@ -65,11 +73,13 @@ public class NumberMath
 		else if(type==2)
 			return a.intValue()-b.intValue();
 		else if(type==3)
-			return a.floatValue()-b.floatValue();
-		else if(type==4)
-			return a.doubleValue()-b.doubleValue();
-		else if(type==5)
 			return a.longValue()-b.longValue();
+		else if(type==4)
+			return a.floatValue()-b.floatValue();
+		else if(type==5)
+			return a.doubleValue()-b.doubleValue();
+		else if(type==6)
+			return ((EvDecimal)a).subtract((EvDecimal)b);
 		else
 			throw new RuntimeException("Unsupported Number");
 		}
@@ -89,11 +99,13 @@ public class NumberMath
 		else if(type==2)
 			return a.intValue()*b.intValue();
 		else if(type==3)
-			return a.floatValue()*b.floatValue();
-		else if(type==4)
-			return a.doubleValue()*b.doubleValue();
-		else if(type==5)
 			return a.longValue()*b.longValue();
+		else if(type==4)
+			return a.floatValue()*b.floatValue();
+		else if(type==5)
+			return a.doubleValue()*b.doubleValue();
+		else if(type==6)
+			return ((EvDecimal)a).multiply((EvDecimal)b);
 		else
 			throw new RuntimeException("Unsupported Number");
 		}
@@ -112,11 +124,13 @@ public class NumberMath
 		else if(type==2)
 			return Math.max(a.intValue(),b.intValue());
 		else if(type==3)
-			return Math.max(a.floatValue(),b.floatValue());
-		else if(type==4)
-			return Math.max(a.doubleValue(),b.doubleValue());
-		else if(type==5)
 			return Math.max(a.longValue(),b.longValue());
+		else if(type==4)
+			return Math.max(a.floatValue(),b.floatValue());
+		else if(type==5)
+			return Math.max(a.doubleValue(),b.doubleValue());
+		else if(type==6)
+			return ((EvDecimal)a).max((EvDecimal)b);
 		else
 			throw new RuntimeException("Unsupported Number");
 		}
@@ -131,11 +145,13 @@ public class NumberMath
 		else if(type==2)
 			return a.intValue()>b.intValue();
 		else if(type==3)
-			return a.floatValue()>b.floatValue();
-		else if(type==4)
-			return a.doubleValue()>b.doubleValue();
-		else if(type==5)
 			return a.longValue()>b.longValue();
+		else if(type==4)
+			return a.floatValue()>b.floatValue();
+		else if(type==5)
+			return a.doubleValue()>b.doubleValue();
+		else if(type==6)
+			return ((EvDecimal)a).greater((EvDecimal)b);
 		else
 			throw new RuntimeException("Unsupported Number");
 		}
@@ -154,11 +170,13 @@ public class NumberMath
 		else if(type==2)
 			return Math.min(a.intValue(),b.intValue());
 		else if(type==3)
-			return Math.min(a.floatValue(),b.floatValue());
-		else if(type==4)
-			return Math.min(a.doubleValue(),b.doubleValue());
-		else if(type==5)
 			return Math.min(a.longValue(),b.longValue());
+		else if(type==4)
+			return Math.min(a.floatValue(),b.floatValue());
+		else if(type==5)
+			return Math.min(a.doubleValue(),b.doubleValue());
+		else if(type==6)
+			return ((EvDecimal)a).min((EvDecimal)b);
 		else
 			throw new RuntimeException("Unsupported Number");
 		}
@@ -176,11 +194,13 @@ public class NumberMath
 		else if(type==2)
 			return a.intValue()/b.intValue();
 		else if(type==3)
-			return a.floatValue()/b.floatValue();
-		else if(type==4)
-			return a.doubleValue()/b.doubleValue();
-		else if(type==5)
 			return a.longValue()/b.longValue();
+		else if(type==4)
+			return a.floatValue()/b.floatValue();
+		else if(type==5)
+			return a.doubleValue()/b.doubleValue();
+		else if(type==6)
+			return ((EvDecimal)a).divide((EvDecimal)b);
 		else
 			throw new RuntimeException("Unsupported Number");
 		}

@@ -33,14 +33,13 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	{
 	static final long serialVersionUID=0;
 
-	public int cameraX, cameraY;
+	private static final int connPointSnapDistance=10;
+	private static final int lineSnapDistance=10;
+
+	private int cameraX, cameraY;
 	private Flow flow=new Flow();
 	private FlowExec flowExec=new FlowExec();
-
-	public FlowExec getFlowExec()
-		{
-		return flowExec;
-		}
+	private boolean enabled=false;
 	
 	private Map<Tuple<FlowUnit, String>, ConnPoint> connPoint=new HashMap<Tuple<FlowUnit,String>, ConnPoint>();
 	private int mouseLastX, mouseLastY; /* In camera coordinates */
@@ -48,15 +47,15 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private Set<FlowUnit> movingUnits=new HashSet<FlowUnit>();
 	private DrawingConn drawingConn=null;
 
-	public FlowUnit placingUnit=null;
-	public FlowConn stickyConn=null;
-	public Rectangle2D selectRect=null;
+	private FlowUnit placingUnit=null;
+	private FlowConn stickyConn=null;
+	private Rectangle2D selectRect=null;
 	
 	public Set<FlowUnit> selectedUnits=new HashSet<FlowUnit>();
 
 	/**
-	 * Every unit can have an assigned visible component. it should be created for every flow and instance once only
-	 * and will be stored here.
+	 * Every unit can have an assigned visible component. it should be created for every
+	 * flow and instance once only and will be stored here.
 	 */
 	private HashMap<FlowUnit, Component> unitComponent=new HashMap<FlowUnit, Component>();
 	
@@ -69,7 +68,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addMouseWheelListener(this);
-	setEnabled(true);
+		setEnabled(true);
 		setFocusable(true);
 /*		addKeyListener(this);*/
 		setLayout(null);
@@ -81,6 +80,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void setFlow(Flow flow, EvData data, EvContainer parent, EvPath path)
 		{
+		enabled=flow!=null;
+		if(flow==null)
+			flow=new Flow();
 		if(flow!=this.flow || data!=flowExec.getData() || parent!=flowExec.getParent() || !path.equals(flowExec.getPath()))
 			{
 			flowExec=new FlowExec();
@@ -93,12 +95,29 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		removeAll();
 		}
 
-
+	/**
+	 * Get currently edited flow
+	 */
 	public Flow getFlow()
 		{
 		return flow;
 		}
 
+	public FlowExec getFlowExec()
+		{
+		return flowExec;
+		}
+	
+	/**
+	 * Assign a flow unit to be placed
+	 */
+	public void setUnitToPlace(FlowUnit u)
+		{
+		System.out.println("want to place "+u);
+		if(enabled)
+			placingUnit=u;
+		}
+	
 	
 	/**
 	 * Call whenever component is panned, an object is added or removed
@@ -133,20 +152,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			//Set position and size of all components
 			for(FlowUnit unit:allUnit)
 				setUnitSize(unit);
-			
-			//Placing need special treatment to be invisible
-			/*
-			if(placingUnit!=null)
-				{
-				Component c=placingUnit.getGUIcomponent();
-				if(c!=null)
-					{
-					c.setSize(c.getPreferredSize());
-					c.setLocation(0, -10000);
-					c.validate();
-					}
-				}
-				*/
 			}
 		
 		
@@ -191,7 +196,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		}
 	
-	
+	/**
+	 * Render everything
+	 */
 	protected void paintComponent(Graphics g)
 		{
 		g.setColor(Color.WHITE);
@@ -201,9 +208,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 		if(flow!=null)
 			{
-		
-	
-			
 			Graphics2D g2=(Graphics2D)g;
 			g2.translate(-cameraX, -cameraY);
 			
@@ -252,25 +256,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(placingUnit!=null)
 				{
 				placingUnit.paint(g2,this,unitComponent.get(placingUnit));
-				//Component c=placingUnit.getGUIcomponent();
-				//Can render just the border
-				/*
-				BufferedImage im=new BufferedImage(spin.getWidth(),spin.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
-	//		Graphics2D g2=(Graphics2D)g;
-			Graphics2D g2=(Graphics2D)im.getGraphics();
-			//g2.translate(20,20);
-			
-	
-			
-			Rectangle clipr=g.getClipBounds();
-			g2.setClip(spin.getX(),spin.getY(),spin.getWidth(),spin.getHeight());
-			spin.paint(g2);
-			g2.setClip(clipr);
-			
-			//g2.translate(-20,-20);
-	
-				
-				*/
 				}
 			
 			//so, do NOT add 
@@ -285,25 +270,23 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						(int)selectRect.getWidth(), (int)selectRect.getHeight());
 				}
 			
-			
 			g2.translate(cameraX, cameraY);
-			
-			//Was a component forgotten for some reason? need to repaint in that case.
-			//This is a hack to fix that swing need to set locations of components *outside*
-			//paintComponent and in many cases the flow will be updated without knowing this.
-			//observers would rescue but that comes later.
-	/*		if(addSwingComponents())
-				{
-	//			doFlowSwingLayout();
-				repaint();
-				}
-	*/
 			}
 		}
 	
 	
 	
 
+	/**
+	 * Move camera
+	 */
+	public void pan(int dx, int dy)
+		{
+		cameraX-=dx;
+		cameraY-=dy;
+		repaint();
+		}
+	
 
 	public void mouseWheelMoved(MouseWheelEvent e){}
 
@@ -359,16 +342,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		setToolTipText(null);
 		}
 
-	/**
-	 * Move camera
-	 */
-	public void pan(int dx, int dy)
-		{
-		cameraX-=dx;
-		cameraY-=dy;
-		repaint();
-		}
-	
+
 	public void mouseMoved(MouseEvent e)
 		{
 		mouseLastX=e.getX();
@@ -376,6 +350,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(flow!=null)
 			{
 			Tuple<Vector2d, FlowConn> hoverSegment=getHoverSegment();
+
+			
 			
 			//Update current position of the unit to be placed
 			if(placingUnit!=null)
@@ -397,12 +373,37 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				placingUnit.y-=dim.height/2;
 				repaint();
 				}
-	
-			//TODO If the mouse hovers a connection it should tell the type
-			if(hoverSegment!=null)
+
+			int mx=e.getX()+cameraX;
+			int my=e.getY()+cameraY;
+			Tuple<FlowUnit,String> t=findHoverConnPoint(mx, my);
+
+			
+			if(t!=null)
 				{
+				//Tell the mandated type if hovering a connection point
+				FlowUnit hoverUnit=t.fst();
+				Map<String,FlowType> types=hoverUnit.getTypesIn(flow);
+				if(!types.containsKey(t.snd()))
+					types=hoverUnit.getTypesOut(flow);
+				if(types.containsKey(t.snd()))
+					{
+					FlowType type=types.get(t.snd());
+					if(type!=null)
+						setToolTipText("Should be "+type.toString());
+					}
+				else
+					System.out.println("Error: Non-existing connection");
+				}
+			else if(hoverSegment!=null)
+				{
+				//Tell the type and value if hovering a segment
 				FlowConn conn=hoverSegment.snd();
-				setToolTipText(""+conn.fromArg+" - "+conn.toArg+ "(...type...)");
+				Object output=flowExec.getLastOutput(conn.fromUnit).get(conn.fromArg);
+				String typeString="";
+				if(output!=null)
+					typeString="("+output.getClass().getSimpleName()+": "+output+")";
+				setToolTipText(""+conn.fromArg+" - "+conn.toArg+ " "+typeString);
 				}
 			else
 				setToolTipText(null);
@@ -411,7 +412,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 
 
-
+	/**
+	 * Mouse button clicked
+	 */
 	public void mouseClicked(MouseEvent e)
 		{
 		int mx=e.getX()+cameraX;
@@ -426,8 +429,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					{
 					String argin=placingUnit.getTypesIn(flow).keySet().iterator().next();
 					String argout=placingUnit.getTypesOut(flow).keySet().iterator().next();
-
-					//System.out.println("Placing sticky unit "+argin+" "+argout+" "+stickyConn);
 
 					getFlow().conns.remove(stickyConn);
 					getFlow().conns.add(new FlowConn(stickyConn.fromUnit,stickyConn.fromArg,placingUnit,argin));
@@ -535,9 +536,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				}
 			}
 		
-		
-		
-		
 		}
 
 
@@ -578,7 +576,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					}
 				}
 			
-			//Find component. TODO: containers?
+			//Find component the user is trying to click. TODO: containers?
 			if(!found && SwingUtilities.isLeftMouseButton(e))
 				for(FlowUnit u:getFlow().units)
 					if(u.mouseHoverMoveRegion(mx,my,unitComponent.get(u), flow))
@@ -587,14 +585,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 							movingUnits.addAll(selectedUnits);
 						else
 							movingUnits.add(u);
-						/*
-						if(!selectedUnits.contains(u))
-							{
-							selectedUnits.clear();
-							selectedUnits.add(u);
-							}
-							*/
-						
 						found=true;
 						break;
 						}
@@ -672,38 +662,34 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 *                               Operations on flow                                                   *
 	 *****************************************************************************************************/
 
-	
-	private static class SortUnitY implements Comparable<SortUnitY>
-		{
-		public FlowUnit u;
-		public SortUnitY(FlowUnit u){this.u=u;}
-		public int compareTo(SortUnitY o){return new Integer(u.y).compareTo(new Integer(o.u.y));}
-		}
-	
-	
+	/**
+	 * Align selected units as a vertical stack
+	 */
 	public void alignVert(Set<FlowUnit> sel)
 		{
-		List<SortUnitY> order=new LinkedList<SortUnitY>();
+		List<FlowUnit> order=new LinkedList<FlowUnit>();
 		Integer maxh=null;
 		for(FlowUnit u:sel)
-			{
-			order.add(new SortUnitY(u));
 			if(maxh==null || u.getBoundingBox(unitComponent.get(u), flow).height>maxh)
 				maxh=u.getBoundingBox(unitComponent.get(u), flow).height;
-			}
-		Collections.sort(order);
-		FlowUnit fu=order.iterator().next().u;
+		order.addAll(sel);
+		Collections.sort(order, new Comparator<FlowUnit>(){
+			public int compare(FlowUnit a, FlowUnit b){return new Integer(a.y).compareTo(new Integer(b.y));}});
+		FlowUnit fu=order.iterator().next();
 		int starty=fu.getMidPos(unitComponent.get(fu),flow).y;
 		for(int i=0;i<order.size();i++)
 			{
-			FlowUnit au=order.get(i).u;
+			FlowUnit au=order.get(i);
 			int cy=au.getMidPos(unitComponent.get(au),flow).y;
 			int ny=starty+i*(int)(maxh*1.3);
-			order.get(i).u.y+=ny-cy;
+			order.get(i).y+=ny-cy;
 			}
 		repaint();
 		}
 	
+	/**
+	 * Align selected units to have the same right side
+	 */
 	public void alignRight(Set<FlowUnit> sel)
 		{
 		Map<FlowUnit,Double> xmap=new HashMap<FlowUnit, Double>();
@@ -739,6 +725,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		repaint();
 		}
+	
 
 	
 	
@@ -758,6 +745,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		boolean isFrom;
 		}
 	
+	/**
+	 * Draw a connection point on the left side of a flow unit
+	 */
 	public void drawConnPointLeft(Graphics g,FlowUnit unit, String arg, int x, int y)
 		{
 		g.setColor(Color.BLACK);
@@ -779,6 +769,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		}
 	
+	/**
+	 * Draw a connection point on the right side of a flow unit
+	 */
 	public void drawConnPointRight(Graphics g,FlowUnit unit, String arg, int x, int y)
 		{
 		g.setColor(Color.BLACK);
@@ -804,11 +797,12 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	private Tuple<FlowUnit,String> findHoverConnPoint(int mx, int my)
 		{
+		int sq=connPointSnapDistance*connPointSnapDistance;
 		for(Map.Entry<Tuple<FlowUnit, String>, ConnPoint> entry:connPoint.entrySet())
 			{
 			Vector2d diff=new Vector2d(mx,my);
 			diff.sub(entry.getValue().pos);
-			if(diff.lengthSquared()<4*4)
+			if(diff.lengthSquared()<sq)
 				return entry.getKey();
 			}
 		return null;
@@ -826,6 +820,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		}
 	
 	
+	/**
+	 * Horizontal line segment
+	 */
 	private class ConnLineSegmentH extends ConnLineSegment
 		{
 		public int x1,x2,y; //Word coordinates
@@ -858,7 +855,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		}
 	
-	
+	/**
+	 * Vertical line segment
+	 */
 	private class ConnLineSegmentV extends ConnLineSegment
 		{
 		public int x,y1,y2; //Word coordinates
@@ -891,20 +890,19 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		}
 
-	
-	private static final int minLineHitDist=10;
+	/**
+	 * Get line segment the mouse currently hovers
+	 */
 	private Tuple<Vector2d,FlowConn> getHoverSegment()
 		{
 		Integer closestDist=null;
 		ConnLineSegment closestSeg=null;
 		Vector2d closestProj=null;
-//		System.out.println("Testing segments");
 		int mx=mouseLastX+cameraX;
 		int my=mouseLastY+cameraY;
 		for(ConnLineSegment seg:connSegments)
 			{
 			Tuple<Vector2d,Integer> hit=seg.hitLine(mx, my);
-			//System.out.println(hit);
 			if(hit!=null && (closestDist==null || hit.snd()<closestDist))
 				{
 				closestProj=hit.fst();
@@ -912,7 +910,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				closestSeg=seg;
 				}
 			}
-		if(closestDist!=null && closestDist<minLineHitDist)
+		if(closestDist!=null && closestDist<lineSnapDistance)
 			return Tuple.make(closestProj,closestSeg.c);
 		else
 			return null;
@@ -924,8 +922,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void drawConnLine(Graphics g,Vector2d vFrom, Vector2d vTo, FlowConn c)
 		{
 		int spacing=15;
-		//g.drawLine(x2, (int)vTo.y,x2, midy);
-		
 
 		int midy=(int)(vFrom.y+vTo.y)/2;
 		int x1=(int)(vFrom.x+vTo.x)/2;

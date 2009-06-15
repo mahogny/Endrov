@@ -30,6 +30,7 @@ import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
 import endrov.flow.*;
 import endrov.flow.std.objects.FlowUnitObjectIO;
+import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 
@@ -202,13 +203,13 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			public void valueChanged(TreeSelectionEvent e)
 				{
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.getPath().getLastPathComponent();
-				if(node!=null && node.isLeaf())//node.getUserObject() instanceof FlowUnitDeclaration)
+				if(node!=null && node.isLeaf())
 					{
 					FlowUnitDeclaration decl=(FlowUnitDeclaration)node.getUserObject();
 					System.out.println(decl);
 					FlowUnit unit=decl.createInstance();
 					if(unit!=null)
-						wthis.fp.placingUnit=unit;
+						wthis.fp.setUnitToPlace(unit);
 					unitTree.setSelectionPath(null);
 					}
 				}
@@ -225,14 +226,16 @@ public class FlowWindow extends BasicWindow implements ActionListener
 				FlowUnitObjectIO unit=new FlowUnitObjectIO(node.getPath());
 				System.out.println("path "+node.getPath());
 				if(unit!=null)
-					wthis.fp.placingUnit=unit;
-				unitTree.setSelectionPath(null);
+					wthis.fp.setUnitToPlace(unit);
+				dataTree.setSelectionPath(null);
 				}
 			}
-	});
+		});
 		
 		
-		JPanel toolbar=new JPanel(new GridLayout(1,8));
+		JComponent toolbar=EvSwingUtil.compactHorizontal(bCopy,bPaste,bDelete,bSwap,bAlignRight,bAlignVert,bPlayOnce,bRepeat);
+		/*
+		new JPanel(new GridLayout(1,8));
 		toolbar.add(bCopy);
 		toolbar.add(bPaste);
 		toolbar.add(bDelete);
@@ -241,6 +244,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		toolbar.add(bAlignVert);
 		toolbar.add(bPlayOnce);
 		toolbar.add(bRepeat);
+		*/
 		JPanel pTop=new JPanel(new BorderLayout());
 		pTop.add(objectCombo,BorderLayout.CENTER);
 		pTop.add(toolbar,BorderLayout.WEST);
@@ -305,7 +309,9 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		{
 		//TODO could be called at strange times
 		
-		fp.setFlow(objectCombo.getSelectedObjectNotNull(), objectCombo.getData(), objectCombo.getRoot(), 
+		dataTree.dataUpdated();
+		
+		fp.setFlow(objectCombo.getSelectedObject(), objectCombo.getData(), objectCombo.getRoot(), 
 				objectCombo.getSelectedRelativePath().getParent());
 		fp.repaint();
 		}
