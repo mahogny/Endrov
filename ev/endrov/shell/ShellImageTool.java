@@ -24,7 +24,7 @@ public class ShellImageTool implements ImageWindowTool
 	private boolean holdTranslate=false;
 	private boolean holdRotate=false;
 
-	public void unselected() {}
+	public void deselected() {}
 	
 	public ShellImageTool(ImageWindow w, ShellImageRenderer r)
 		{

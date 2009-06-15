@@ -363,5 +363,5 @@ public class ToolMakeLine implements ImageWindowTool
 		}
 
 	
-	public void unselected() {}
+	public void deselected() {}
 	}

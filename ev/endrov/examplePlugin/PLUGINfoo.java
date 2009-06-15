@@ -1,11 +1,16 @@
-package endrov.imageset;
+package endrov.examplePlugin;
 import endrov.ev.PluginDef;
 
-public class PLUGIN extends PluginDef
+/**
+ * Should be named PLUGIN to work
+ * @author Johan Henriksson
+ *
+ */
+public class PLUGINfoo extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Imageset system";
+		return "Example plugin";
 		}
 
 	public String getAuthor()
@@ -30,7 +35,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{MetaWindow.class,Imageset.class, EvChannel.class};
+		return new Class[]{ExampleObject.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

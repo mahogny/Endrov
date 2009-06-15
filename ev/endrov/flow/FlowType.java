@@ -2,7 +2,6 @@ package endrov.flow;
 
 import java.util.*;
 
-import endrov.imageset.AnyEvImage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;

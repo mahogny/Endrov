@@ -199,5 +199,5 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 		}
 
 	
-	public void unselected() {}
+	public void deselected() {}
 	}

@@ -157,5 +157,5 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		}
 
 	
-	public void unselected() {}
+	public void deselected() {}
 	}

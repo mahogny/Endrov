@@ -100,7 +100,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		w.setTool(this);
 		}
 	
-	public void unselected()
+	public void deselected()
 		{
 		}
 

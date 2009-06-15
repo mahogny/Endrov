@@ -304,7 +304,6 @@ public class EvIODataBioformats implements EvIOData
 	public EvIODataBioformats(EvData d, File basedir) throws Exception
 		{
 		this.basedir=basedir;
-//		this.imageset=(new File(basedir)).getName();
 		if(!basedir.exists())
 			throw new Exception("File does not exist");
 
@@ -436,6 +435,15 @@ public class EvIODataBioformats implements EvIOData
 	public void buildDatabase(EvData d)
 		{
 
+		//Load metadata from added OSTXML-file. This has to be done first or all image loaders
+		//are screwed
+		File metaFile=getMetaFile();
+		if(metaFile.exists())
+			d.loadXmlMetadata(metaFile);
+
+		
+		
+		
 		//Bioformats has ImageIndex and imagePlaneIndex
 		//MetadataRetrieve retrieve = (MetadataRetrieve)imageReader.getMetadataStore();
 
@@ -652,10 +660,6 @@ public class EvIODataBioformats implements EvIOData
 			
 			}
 
-		//Load metadata from added OSTXML-file
-		File metaFile=getMetaFile();
-		if(metaFile.exists())
-			d.loadXmlMetadata(metaFile);
 
 		//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/components/bio-formats/src/loci/formats/meta/MetadataRetrieve.java
 		
