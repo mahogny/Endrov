@@ -724,19 +724,28 @@ public abstract class BasicWindow extends JPanel
 				*/
 		freeResources();
 		}
-	
+
+	/**
+	 * Show error dialog
+	 */
 	public static void showErrorDialog(String error)
 		{
 		//Can get current window
 		JOptionPane.showMessageDialog(null, error,"Error",JOptionPane.ERROR_MESSAGE);
 		}
 
-	public static void showWarningDialog(String error)
+	/**
+	 * Show warning dialog
+	 */
+	public static void showWarningDialog(String warning)
 		{
 		//Can get current window
-		JOptionPane.showMessageDialog(null, error,"Warning",JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(null, warning,"Warning",JOptionPane.WARNING_MESSAGE);
 		}
 
+	/**
+	 * Ask for input
+	 */
 	public static String showInputDialog(String message, String value)
 		{
 //		JOptionPane.showInputDialog(message, value);
@@ -744,10 +753,22 @@ public abstract class BasicWindow extends JPanel
 //		return JOptionPane.showInputDialog(null, message, EV.programName, JOptionPane.OK_OPTION);
 		}
 	
-	public static void showInformativeDialog(String text)
+	/**
+	 * Show informative dialog
+	 */
+	public static void showInformativeDialog(String message)
 		{
 		//Can get current window
-		JOptionPane.showMessageDialog(null, text);
+		JOptionPane.showMessageDialog(null, message);
+		}
+
+	/**
+	 * Show dialog asking Yes/No to a question
+	 * */
+	public static boolean showConfirmDialog(String question)
+		{
+		int option = JOptionPane.showConfirmDialog(null, question, EV.programName, JOptionPane.YES_NO_OPTION);
+		return option==JOptionPane.YES_OPTION;
 		}
 
 	

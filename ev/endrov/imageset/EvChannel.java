@@ -1,16 +1,19 @@
 package endrov.imageset;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.imageWindow.ImageWindow;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
 
@@ -287,9 +290,23 @@ public class EvChannel extends EvObject implements AnyEvImage
 		return frame;
 		}
 
-
+	/**
+	 * Additional menu items for channel object
+	 */
 	public void buildMetamenu(JMenu menu)
 		{
+		JMenuItem miSwapTZ=new JMenuItem("Swap TZ-dimension");
+		miSwapTZ.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				if(BasicWindow.showConfirmDialog("Do you really want to replace TZ?"))
+					{
+					StackHacks.replaceLoaders(StackHacks.swapTZ(EvChannel.this),EvChannel.this);
+					BasicWindow.updateWindows();
+					}
+				}
+		});
+		menu.add(miSwapTZ);
 		}
 
 
