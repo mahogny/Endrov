@@ -1,7 +1,6 @@
 package endrov.imageset;
 
 import java.util.Map;
-import endrov.data.EvData;
 import endrov.util.EvDecimal;
 
 /**
@@ -17,7 +16,7 @@ public class StackHacks
 	 * Swap Z and time
 	 * @param ch
 	 */
-	public EvChannel swapTZ(EvChannel ch)
+	public static EvChannel swapTZ(EvChannel ch)
 		{
 		EvChannel newch=new EvChannel();
 		
@@ -31,7 +30,10 @@ public class StackHacks
 				//EvDecimal z=ze.getKey();
 				EvStack newStack=newch.imageLoader.get(new EvDecimal(zi));
 				if(newStack==null)
+					{
 					newch.imageLoader.put(new EvDecimal(zi),newStack=new EvStack());
+					newStack.getMetaFrom(se.getValue());
+					}
 				newStack.put(new EvDecimal(si), ze.getValue());
 				zi++;
 				}
