@@ -131,7 +131,7 @@ public class CollectImages2
 									midy+=Math.sin(ang)*r*2;
 									}
 								
-								BufferedImage jim=im.getJavaImage();
+								BufferedImage jim=im.getPixels().quickReadOnlyAWT();
 								BufferedImage subim=new BufferedImage(2*rr, 2*rr, jim.getType());
 								
 								int ulx=midx-rr;

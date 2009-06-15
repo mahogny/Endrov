@@ -58,7 +58,7 @@ public class ImageWindowToolScreenshot implements ImageWindowTool
 		return mi;
 		}
 	
-	public void unselected(){}
+	public void deselected(){}
 	
 	public void mouseClicked(MouseEvent e){}
 	public void mousePressed(MouseEvent e){}

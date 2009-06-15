@@ -142,7 +142,7 @@ public class BookmarkImageWindowHook implements ImageWindowExtension
 				{
 				}
 
-			public void unselected()
+			public void deselected()
 				{
 				}
 			

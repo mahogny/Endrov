@@ -224,7 +224,7 @@ public class ImageWindow extends BasicWindow
 	public void setTool(ImageWindowTool tool)
 		{
 		if(this.tool!=null)
-			this.tool.unselected();
+			this.tool.deselected();
 		this.tool=tool;  
 		buildMenu();
 		}

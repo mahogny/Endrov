@@ -6,18 +6,20 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JMenuItem;
 
-//either send down variables or add accessors to imagewindow
-
-
+/**
+ * A selectable tool in the image window
+ */
 public interface ImageWindowTool
 	{
+	/**
+	 * Get the menu item to be placed in the tools menu
+	 */
 	public JMenuItem getMenuItem();
-	
-	/*
-	public boolean isToggleable();
-	public String toolCaption();
-	public boolean enabled();*/
-	public void unselected();
+
+	/**
+	 * Called when the tool has been deselected
+	 */
+	public void deselected();
 	
 	public void mouseClicked(MouseEvent e);
 	public void mousePressed(MouseEvent e);

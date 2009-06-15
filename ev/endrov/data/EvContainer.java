@@ -9,7 +9,6 @@ import org.jdom.Element;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
 import endrov.ev.Log;
-import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 
 
@@ -204,6 +203,9 @@ public class EvContainer
 
 	
 	private static final String tagOstblobid="ostblobid";
+	private static final String tagChild="_ostchild";
+	
+	private final static String tempString="__TEMPNAME__";
 	
 	/**
 	 * Serialize object and all children
@@ -213,22 +215,23 @@ public class EvContainer
 		for(String id:metaObject.keySet())
 			{
 			EvObject o=metaObject.get(id);
-			Element el=new Element("TEMPNAME");
+			Element el=new Element(tempString);
 			el.setAttribute("id",""+id);
 			if(o.ostBlobID!=null)
 				el.setAttribute("ostblobid",o.ostBlobID);
-			//else if(this instanceof Imageset)
-				//System.out.println("Warning: no blob id for imageset");
 			if(o.dateCreate!=null)
 				el.setAttribute("ostdatecreate",o.dateCreate.toString());
 			if(o.dateLastModify!=null)
 				el.setAttribute("ostdatemodify",o.dateLastModify.toString());
 			o.saveMetadata(el);
 
-			//subobjects
+			if(el.getName().equals(tempString))
+				throw new RuntimeException("Plugin for "+o.getClass()+" does not save properly");
+			
+			//also save subobjects
 			if(!o.metaObject.isEmpty())
 				{
-				Element sube=new Element(tagOstblobid);
+				Element sube=new Element(tagChild);
 				o.recursiveSaveMetadata(sube);
 				el.addContent(sube);
 				}
@@ -287,6 +290,8 @@ public class EvContainer
 				o.dateLastModify=new EvDecimal(dateModify);
 			
 			Element subob=child.getChild(tagOstblobid);
+			if(subob==null)
+				subob=child.getChild(tagChild); //This fixes a bug
 			if(subob!=null)
 				{
 				o.recursiveLoadMetadata(subob);

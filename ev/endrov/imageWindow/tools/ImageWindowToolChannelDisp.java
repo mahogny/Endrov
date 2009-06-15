@@ -75,7 +75,7 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 	public void keyPressed(KeyEvent e) {}
 	public void keyReleased(KeyEvent e) {}
 	public void paintComponent(Graphics g) {}
-	public void unselected() {}
+	public void deselected() {}
 	}
 
 //TODO: for channel displacement. mark dirty imageset, save

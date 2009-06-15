@@ -22,7 +22,7 @@ public class ImageToolROI implements ImageWindowTool
 	private final ImageWindow w;
 	private final ImageRendererROI r;
 	
-	public void unselected() {}
+	public void deselected() {}
 	
 	public ImageToolROI(ImageWindow w, ImageRendererROI r)
 		{

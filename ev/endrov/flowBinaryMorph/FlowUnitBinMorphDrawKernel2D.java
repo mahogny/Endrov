@@ -13,7 +13,6 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.EvPixels;
 
 /**
  * Flow unit: create kernel by drawing one

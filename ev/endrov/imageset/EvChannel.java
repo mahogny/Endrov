@@ -8,7 +8,9 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.imageWindow.ImageWindow;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
 
@@ -18,6 +20,14 @@ import endrov.util.EvListUtil;
  */
 public class EvChannel extends EvObject implements AnyEvImage
 	{
+	private final static String metaType="channel";
+
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,EvChannel.class);
+		}
+
 	/****************************************************************************************/
 	/******************************* Image data *********************************************/
 	/****************************************************************************************/
@@ -297,6 +307,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 	public void saveMetadata(Element e)
 		{
+		e.setName(metaType);
 		//TODO take from imageset later
 		}
 	}
