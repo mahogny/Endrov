@@ -120,7 +120,8 @@ public class FlowType
 		{
 		//Class<?> classes[]=c.getClasses();
 		//HashSet<Class<?>> classes2=new HashSet<Class<?>>();
-		List<Class<?>> list=Arrays.asList(c.getClasses()); //getclasses might have problems
+//		List<Class<?>> list=Arrays.asList(c.getClasses()); //getclasses might have problems
+		List<?> list=Arrays.asList(c.getClasses()); //getclasses might have problems
 		for(Class<?> oc:type)
 			if(list.contains(oc))
 			//if(oc.c.isInstance(oc)) //TODO wrong, this is not how isinstance works
