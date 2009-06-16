@@ -32,7 +32,7 @@ public class FilemakerToImserv
 				Set<String> tags=new TreeSet<String>();
 				Map<String,String> attr=new HashMap<String, String>();
 
-				String recID=rowe.getChildText("recordingID",sp);
+				//String recID=rowe.getChildText("recordingID",sp);
 				String entryDate=rowe.getChildText("entry_date",sp);
 				String univGeneName=rowe.getChildText("universal_gene_name",sp);
 				String comment=rowe.getChildText("comment",sp);

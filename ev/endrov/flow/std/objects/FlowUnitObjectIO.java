@@ -170,7 +170,7 @@ public class FlowUnitObjectIO extends FlowUnit
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
-		EvContainer parent=exec.getParent();
+		//EvContainer parent=exec.getParent();
 
 		Maybe<Object> con=flow.getInputValueMaybe(this, exec, "in");
 		EvContainer obvalue;

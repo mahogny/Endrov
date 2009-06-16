@@ -1,10 +1,19 @@
 package endrov.imageset;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import endrov.util.EvDecimal;
 
 /**
  * Methods for fixing improperly saved data
+ * 
+ * TODO
+ * * splitting channels at some time
+ * * joining channels (concatenate, plain map join)
+ * * splitting interleaved channels
+ * 
+ * 
  * 
  * @author Johan Henriksson
  *
@@ -12,11 +21,12 @@ import endrov.util.EvDecimal;
 public class StackHacks
 	{
 
+	
+	
 	/**
-	 * Swap Z and time
-	 * @param ch
+	 * Swap Z and time. Does not make copy of objects, only returns new references!
 	 */
-	public static EvChannel swapTZ(EvChannel ch)
+	public static void swapTZ(EvChannel ch)
 		{
 		EvChannel newch=new EvChannel();
 		
@@ -39,7 +49,9 @@ public class StackHacks
 				}
 			si++;
 			}
-		return newch;
+		
+		ch.imageLoader.clear();
+		ch.imageLoader.putAll(newch.imageLoader);
 		}
 
 	
@@ -53,6 +65,46 @@ public class StackHacks
 		}
 	
 	
+	/**
+	 * Set spatial resolution
+	 */
+	public static void setResXYZ(EvChannel ch, double resX, double resY, EvDecimal resZ)
+		{
+		for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+			{
+			EvStack stack=se.getValue();
+			stack.resX=resX;
+			stack.resY=resY;
+			//TODO stack.resZ=resZ;
+			
+			List<EvImage> images=new ArrayList<EvImage>();
+			for(EvImage im:stack.getImages())
+				images.add(im);
+			
+			stack.entrySet().clear();
+			for(int i=0;i<images.size();i++)
+				stack.put(resZ.multiply(i), images.get(i));
+			}
+		}
+	
+	/**
+	 * Set time resolution
+	 */
+	public static void setResT(EvChannel ch, EvDecimal dt)
+		{
+		EvChannel newch=new EvChannel();
+		
+		EvDecimal time=EvDecimal.ZERO;
+		for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+			{
+			EvStack stack=se.getValue();
+			newch.imageLoader.put(time, stack);
+			time=time.add(dt);
+			}
+		
+		ch.imageLoader.clear();
+		ch.imageLoader.putAll(newch.imageLoader);
+		}
 	
 	
 	}

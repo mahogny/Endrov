@@ -14,7 +14,7 @@ import endrov.util.ImVector2;
 /**
  * The thread for doing calculations
  */
-public final class CalcThread extends BatchThread
+public final class SliceSignalCalcThread extends BatchThread
 	{
 	private final Imageset rec;
 	private final double stripevar;
@@ -25,7 +25,7 @@ public final class CalcThread extends BatchThread
 	private final File signalfilename;	
 	private final Shell shell;
 	
-	public CalcThread(Imageset rec,	Shell shell,
+	public SliceSignalCalcThread(Imageset rec,	Shell shell,
 										double stripevar, int numstripes,	String channelName,	
 										int startFrame,	int endFrame,	
 										File signalfilename)
@@ -92,7 +92,7 @@ public final class CalcThread extends BatchThread
   						EvImage imload=ch.getImageLoader(curframe, z);
       				if(imload!=null)
     						{
-    						BufferedImage bufi=imload.getJavaImage();
+    						BufferedImage bufi=imload.getPixels().quickReadOnlyAWT();
     						if(bufi!=null)
     							{
     							Raster r=bufi.getData();

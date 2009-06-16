@@ -141,7 +141,7 @@ public class SliceSignalWindow extends BasicWindow implements ActionListener
 		    int returnVal = chooser.showSaveDialog(this);
 		    if(returnVal == JFileChooser.APPROVE_OPTION)
 		    	{
-					BatchThread thread=new CalcThread(channelCombo.getImageset(), metaCombo.getSelectedObject(), 
+					BatchThread thread=new SliceSignalCalcThread(channelCombo.getImageset(), metaCombo.getSelectedObject(), 
 							(Double)spinnerStripevar.getValue(), (Integer)spinnerNumstripe.getValue(), channelCombo.getChannel(),
 							(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), 
 							chooser.getSelectedFile());

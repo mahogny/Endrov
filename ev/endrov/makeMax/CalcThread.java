@@ -129,7 +129,8 @@ public final class CalcThread extends BatchThread
 						EvStack stack=new EvStack();
 						
 						EvImage toim=new EvImage();
-						toim.setImage(makeBI(maxim));
+						
+						toim.setPixelsReference(new EvPixels(makeBI(maxim)));
 						stack.resX=resX;
 						stack.resY=resY;
 						stack.dispX=dispX;

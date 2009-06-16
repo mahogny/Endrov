@@ -301,12 +301,44 @@ public class EvChannel extends EvObject implements AnyEvImage
 				{
 				if(BasicWindow.showConfirmDialog("Do you really want to replace TZ?"))
 					{
-					StackHacks.replaceLoaders(StackHacks.swapTZ(EvChannel.this),EvChannel.this);
+					StackHacks.swapTZ(EvChannel.this);
 					BasicWindow.updateWindows();
 					}
 				}
 		});
 		menu.add(miSwapTZ);
+		
+		JMenuItem miSetResXYZ=new JMenuItem("Set XYZ-resolution");
+		miSetResXYZ.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				String resX=BasicWindow.showInputDialog("Resolution X [px/um]", "");
+				if(resX==null) return;
+				String resY=BasicWindow.showInputDialog("Resolution Y [px/um]", "");
+				if(resY==null) return;
+				String resZ=BasicWindow.showInputDialog("Resolution Z [um/px] (opposite!)", "");
+				if(resZ==null) return;
+				
+				StackHacks.setResXYZ(EvChannel.this, Double.parseDouble(resX), Double.parseDouble(resY), new EvDecimal(resZ));
+				BasicWindow.updateWindows();
+				}
+		});
+		menu.add(miSetResXYZ);
+
+		JMenuItem miSetResT=new JMenuItem("Set T-resolution");
+		miSetResT.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				String resT=BasicWindow.showInputDialog("Resolution dt, time between stacks [s]", "");
+				if(resT==null) return;
+				
+				StackHacks.setResT(EvChannel.this, new EvDecimal(resT));
+				BasicWindow.updateWindows();
+				}
+		});
+		menu.add(miSetResT);
+		
+		
 		}
 
 
