@@ -55,8 +55,8 @@ public abstract class Print2DtoPostScript implements Printable{
 			Graphics2D g2d = (Graphics2D)g;
 			g2d.translate(pf.getImageableX(), pf.getImageableY());
 			
-			double pw=pf.getImageableWidth();
-			double ph=pf.getImageableHeight();
+			//double pw=pf.getImageableWidth();
+			//double ph=pf.getImageableHeight();
 			
 			//scale here
 

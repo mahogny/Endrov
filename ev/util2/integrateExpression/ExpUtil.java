@@ -138,6 +138,7 @@ public class ExpUtil
 			}
 		return historyKM;
 		}
+	/*
 	private static List<Double> helperGetAverageForFrameNew(NucLineage lin, String expName, EvDecimal frame)
 		{
 		LinkedList<Double> list=new LinkedList<Double>();
@@ -152,7 +153,7 @@ public class ExpUtil
 				}
 			}
 		return list;
-		}
+		}*/
 	
 	
 	
