@@ -65,8 +65,6 @@ clGetImageInfo(cl_mem           image,
               void *           param_value,
               size_t *         param_value_size_ret) ;
 
-
-
 */
 	
 	
