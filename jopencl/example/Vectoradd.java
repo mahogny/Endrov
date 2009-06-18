@@ -55,9 +55,9 @@ public class Vectoradd
 	 * 
 	size_t ParmDataBytes;
 	clGetContextInfo(GPUContext, CL_CONTEXT_DEVICES, 0, NULL, &ParmDataBytes);
-	
-	cl_device_id* GPUDevices = (cl_device_id*)malloc(ParmDataBytes);
-	
+	*/
+	cl_device_id* GPUDevices[] = (cl_device_id*)malloc(ParmDataBytes);
+	/*
 	clGetContextInfo(GPUContext, CL_CONTEXT_DEVICES, ParmDataBytes,
 	      GPUDevices, NULL);
 	      */
