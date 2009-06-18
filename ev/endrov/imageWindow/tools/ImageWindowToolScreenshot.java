@@ -20,42 +20,44 @@ import endrov.util.EvFileUtil;
 //either send down variables or add accessors to imagewindow
 
 
-public class ImageWindowToolScreenshot implements ImageWindowTool
+public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListener
 	{
 	JMenuItem mi=new JMenuItem("Screenshot");
 
+	final ImageWindow w;
 	
 	public ImageWindowToolScreenshot(final ImageWindow w)
 		{
-		mi.addActionListener(new ActionListener()
-			{
-			public void actionPerformed(ActionEvent arg0)
-				{
-				BufferedImage image=w.getScreenshot();
-				
-				JFileChooser fc=new JFileChooser();
-				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-				int ret=fc.showSaveDialog(w);
-				if(ret==JFileChooser.APPROVE_OPTION)
-					{
-					File f=fc.getSelectedFile();
-					try
-						{
-						ImageIO.write(image, "png", EvFileUtil.makeFileEnding(f, ".png"));
-						}
-					catch (IOException e2)
-						{
-						e2.printStackTrace();
-						}
-					}
-				}
-		});
+		this.w=w;
 		}
 	
 	public JMenuItem getMenuItem()
 		{
+		mi.removeActionListener(this);
+		mi.addActionListener(this);
 		return mi;
+		}
+	
+	public void actionPerformed(ActionEvent arg0)
+		{
+		BufferedImage image=w.getScreenshot();
+		
+		JFileChooser fc=new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+		int ret=fc.showSaveDialog(w);
+		if(ret==JFileChooser.APPROVE_OPTION)
+			{
+			File f=fc.getSelectedFile();
+			try
+				{
+				ImageIO.write(image, "png", EvFileUtil.makeFileEnding(f, ".png"));
+				}
+			catch (IOException e2)
+				{
+				e2.printStackTrace();
+				}
+			}
 		}
 	
 	public void deselected(){}
