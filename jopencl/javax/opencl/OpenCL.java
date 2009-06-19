@@ -10,7 +10,7 @@ public class OpenCL
 	//Load the native code
   static
   	{
-    System.loadLibrary("OpenCL");
+    //System.loadLibrary("OpenCL");
     System.loadLibrary("jopencl");
   	}
 

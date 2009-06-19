@@ -8,8 +8,6 @@ package javax.opencl;
  */
 public class CLContext extends OpenCL
 	{
-	//Store context id here, int?
-	
 	int id;
 	
 	/**
@@ -38,6 +36,7 @@ public class CLContext extends OpenCL
 	private native int _createContext(int deviceType) ;
 	private native int _retainContext(int contextID);
 	private native int _releaseContext(int contextID);
+	private native int[] _getContextInfoDevices(int contextID);
 	
 
 	
@@ -73,12 +72,6 @@ public class CLContext extends OpenCL
 		}
 	
 	
-
-	
-	private native int[] _getContextInfoDevices(int contextID);
-	
-	
-	
 	public CLCommandQueue createCommandQueue(CLDevice deviceID)
 		{
 		return new CLCommandQueue(this, deviceID);
@@ -93,8 +86,6 @@ public class CLContext extends OpenCL
 		{
 		return new CLMem(this,memFlags,cls, numElem);
 		}
-
-	
 	
 	public CLProgram createProgram(String source)
 		{

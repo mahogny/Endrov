@@ -34,6 +34,7 @@ public class Vectoradd
     int[] hostVector2=new int[SIZE];
     
     
+    
     // Lets initialize them with some interesting repeating data
     for(int c = 0;c<SIZE;c++)
     	{
@@ -41,7 +42,11 @@ public class Vectoradd
       hostVector2[c] = InitialData2[c%14];
     	}
 		
+    System.out.println("foo0");
+    
 		CLContext clc=OpenCL.createContext(OpenCL.CL_DEVICE_TYPE_GPU);		
+		
+		System.out.println("foo1");
 		
 		// Then we can get the list of GPU devices associated with this context
 		CLDevice[] GPUdevices=clc.getContextDevices();
