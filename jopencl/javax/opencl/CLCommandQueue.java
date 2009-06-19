@@ -1,11 +1,17 @@
 package javax.opencl;
 
+/**
+ * OpenCL command queue
+ * @author Johan Henriksson
+ *
+ */
 public class CLCommandQueue extends OpenCL
 	{
-
-	public CLCommandQueue(CLContext context, int deviceID)
+	int id;
+	
+	public CLCommandQueue(CLContext context, CLDevice deviceID)
 		{
-		int ret=_createCommandQueue(context.context, deviceID);
+		int ret=_createCommandQueue(context.id, deviceID.device_id);
 		assertSuccess(ret);
 		}
 
@@ -20,14 +26,27 @@ public class CLCommandQueue extends OpenCL
 	                    cl_int *                       errcode_ret) ;
 	*/
 	
+	
+	public void retain()
+		{
+		int ret=_retain(id);
+		assertSuccess(ret);
+		}
+	
+	public void release()
+		{
+		int ret=_release(id);
+		assertSuccess(ret);
+		}
+	
+	
+	
+	private native int _retain(int id);
+	private native int _release(int id);
+
+	
 	/*
 	 * 
-extern  cl_int 
-clRetainCommandQueue(cl_command_queue command_queue) ;
-
-extern  cl_int 
-clReleaseCommandQueue(cl_command_queue command_queue) ;
-
 extern  cl_int 
 clGetCommandQueueInfo(cl_command_queue      command_queue,
                       cl_command_queue_info param_name,
@@ -45,19 +64,42 @@ clSetCommandQueueProperty(cl_command_queue              command_queue,
 
 	 */
 	
-  /*
-  
-//Flush and Finish APIs
-extern  cl_int 
-clFlush(cl_command_queue command_queue) ;
+	
+	public void flush()
+		{
+		int ret=_flush(id);
+		assertSuccess(ret);
+		}
+	
+	private native int _flush(int cqid);
+	
 
-extern  cl_int 
-clFinish(cl_command_queue command_queue) ;
+	public void finish()
+		{
+		int ret=_finish(id);
+		assertSuccess(ret);
+		}
+	
+	private native int _finish(int cqid);
 
+	private int[] waitforToID(CLEvent[] waitFor)
+		{
+		int[] await=new int[waitFor.length];
+		for(int i=0;i<await.length;i++)
+			await[i]=waitFor[i].id;
+		return await;
+		}
+	
+	public void enqueueReadBuffer(CLMem mem, boolean blocking, int offset, int numElem, int[] buffer, CLEvent[] waitFor)
+		{
+		int ret=_enqueueReadBuffer(id, mem.id, blocking, offset, numElem, buffer, waitforToID(waitFor));
+		assertSuccess(ret);
+		}
+	
+	private native int _enqueueReadBuffer(int cqid, int mem, boolean blocking, int offset, int numElem, int[] buffer, int[] waitFor);
+	
 
-
-
-
+	/*
 
 
 //Enqueued Commands APIs
@@ -93,7 +135,10 @@ clEnqueueCopyBuffer(cl_command_queue    command_queue,
                    cl_uint             num_events_in_wait_list,
                    const cl_event *    event_wait_list,
                    cl_event *          event) ;
-                           
+                */
+
+	
+	/*
 extern  cl_int 
 clEnqueueReadImage(cl_command_queue     command_queue,
                   cl_mem               image,
@@ -186,18 +231,18 @@ clEnqueueUnmapMemObject(cl_command_queue command_queue,
                        cl_uint          num_events_in_wait_list,
                        const cl_event *  event_wait_list,
                        cl_event *        event) ;
+*/
+	
+	public void enqueueNDRangeKernel(CLKernel kernel, int numDim, int[] globalOffset, int[] globalSize, int[] localSize, CLEvent[] waitFor)
+		{
+		int ret=_enqueueNDRangeKernel(id,kernel.id, numDim, globalOffset, globalSize, localSize, waitforToID(waitFor));
+		assertSuccess(ret);
+		}
 
-extern  cl_int 
-clEnqueueNDRangeKernel(cl_command_queue command_queue,
-                      cl_kernel        kernel,
-                      cl_uint          work_dim,
-                      const size_t *   global_work_offset,
-                      const size_t *   global_work_size,
-                      const size_t *   local_work_size,
-                      cl_uint          num_events_in_wait_list,
-                      const cl_event * event_wait_list,
-                      cl_event *       event) ;
-
+	private native int _enqueueNDRangeKernel(int cqid, int kernel, int numDim, int[] globalOffset, int[] globalSize, int[] localSize, int[] waitFor);
+	
+	
+	/*
 extern  cl_int 
 clEnqueueTask(cl_command_queue  command_queue,
              cl_kernel         kernel,

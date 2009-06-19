@@ -507,19 +507,35 @@ extern "C" {
 #define javax_opencl_CLKernel_CL_PROFILING_COMMAND_END 4739L
 /*
  * Class:     javax_opencl_CLKernel
+ * Method:    _createKernel
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLKernel__1createKernel
+  (JNIEnv *, jobject, jint, jstring);
+
+/*
+ * Class:     javax_opencl_CLKernel
  * Method:    _retainKernel
- * Signature: ()I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_javax_opencl_CLKernel__1retainKernel
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     javax_opencl_CLKernel
  * Method:    _releaseKernel
- * Signature: ()I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_javax_opencl_CLKernel__1releaseKernel
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     javax_opencl_CLKernel
+ * Method:    _setKernelArg4
+ * Signature: (III)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLKernel__1setKernelArg4
+  (JNIEnv *, jobject, jint, jint, jint);
 
 #ifdef __cplusplus
 }

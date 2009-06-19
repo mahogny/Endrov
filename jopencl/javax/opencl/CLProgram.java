@@ -1,11 +1,38 @@
 package javax.opencl;
 
+/**
+ * OpenCL program
+ * @author Johan Henriksson
+ *
+ */
 public class CLProgram extends OpenCL
 	{
+	int id;
+	
+	public CLProgram(CLContext context, String source)
+		{
+		int ret=_createProgram(context.id,source);
+		if(ret!=CL_SUCCESS)
+			throw new CLException(ret);
+		}
+	
+	
+	private native int _createProgram(int context, String source);
+	/*
+	cl_program clCreateProgramWithSource (cl_context context,
+      cl_uint count,
+      const char **strings,
+      const size_t *lengths,
+      cl_int *errcode_ret)
+*/
 	
 
+	public CLKernel createKernel(String kernelName)
+		{
+		return new CLKernel(this, kernelName);
+		}
 	
-	//public Kernel createKernel(String kernelName) throws RuntimeException;
+	
 	
   /*
 //Kernel Object APIs
@@ -39,7 +66,14 @@ clRetainProgram(cl_program program) ;
 
 extern  cl_int 
 clReleaseProgram(cl_program program) ;
-
+*/
+	
+	public void build()
+		{
+		
+		}
+	
+	/*
 extern  cl_int 
 clBuildProgram(cl_program           program,
               cl_uint              num_devices,

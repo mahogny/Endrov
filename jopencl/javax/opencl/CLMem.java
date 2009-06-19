@@ -8,7 +8,41 @@ package javax.opencl;
  */
 public class CLMem extends OpenCL
 	{
-	int mem;
+	int id;
+	
+	final CLContext context;
+	
+	//int elementSize;
+	
+	CLMem(CLContext context, int memFlags, int[] initData)
+		{
+		this.context=context;
+		int ret=_createBufferFromInt(context.id, memFlags, initData);
+		if(ret!=CL_SUCCESS)
+			throw new CLException(ret);
+		}
+		
+	CLMem(CLContext context, int memFlags, Class<?> c, int numElem)
+		{
+		this.context=context;
+		int elsize;
+		if(c==Integer.class)
+			elsize=4;
+		else
+			throw new CLException("Unsupported memory type");
+	//	elementSize=elsize;
+		
+		int ret=_createBuffer(context.id, memFlags, elsize*numElem);
+		if(ret!=CL_SUCCESS)
+			throw new CLException(ret);
+		}
+	
+	
+	private native int _createBufferFromInt(int contextID, int memFlags, int[] initData);
+
+	private native int _createBuffer(int contextID, int memFlags, int size);
+
+	
 	
 	
 /*
@@ -70,19 +104,19 @@ clGetImageInfo(cl_mem           image,
 	
 	public void retain()
 		{
-		int ret=_retainMem();
+		int ret=_retainMem(id);
 		assertSuccess(ret);
 		}
 	
 	public void release()
 		{
-		int ret=_releaseMem();
+		int ret=_releaseMem(id);
 		assertSuccess(ret);
 		}
 	
 	
 	
-	private native int _retainMem();
-	private native int _releaseMem();
+	private native int _retainMem(int mid);
+	private native int _releaseMem(int mid);
 	
 	}

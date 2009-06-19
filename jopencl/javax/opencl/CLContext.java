@@ -10,7 +10,7 @@ public class CLContext extends OpenCL
 	{
 	//Store context id here, int?
 	
-	int context;
+	int id;
 	
 	/**
 	 * Create an OpenCL context
@@ -25,19 +25,19 @@ public class CLContext extends OpenCL
 	
 	public void retain()
 		{
-		int ret=_retainContext();
+		int ret=_retainContext(id);
 		assertSuccess(ret);
 		}
 	
 	public void release()
 		{
-		int ret=_releaseContext();
+		int ret=_releaseContext(id);
 		assertSuccess(ret);
 		}
 
 	private native int _createContext(int deviceType) ;
-	private native int _retainContext();
-	private native int _releaseContext();
+	private native int _retainContext(int contextID);
+	private native int _releaseContext(int contextID);
 	
 
 	
@@ -61,44 +61,43 @@ public class CLContext extends OpenCL
 
 */
 	
-	public int[] getContextDevices()
+	public CLDevice[] getContextDevices()
 		{
-		int[] d=_getContextDevices();
+		int[] d=_getContextInfoDevices(id);
 		if(d==null)
-			throw new CLException();
-		return d;
+			throw new CLException("failing to get info");
+		CLDevice[] devs=new CLDevice[d.length];
+		for(int i=0;i<d.length;i++)
+			devs[i]=new CLDevice(d[i]);
+		return devs;
 		}
 	
-	private native int[] _getContextDevices();
 	
-	/**
-	 *                      cl_uint                 Return the context reference count.
-CL_CONTEXT_REFERENCE_
-COUNT6
-                    cl_device_id[]          Return the list of devices in context.
-CL_CONTEXT_DEVICES
-                    cl_context_properties[] Return the properties argument
-CL_CONTEXT_PROPERTIES
-                                            specified in clCreateContext.
 
-	 */
-	/*
-
-	extern  cl_int 
-	clGetContextInfo(cl_context         context, 
-	                 cl_context_info    param_name, 
-	                 size_t             param_value_size, 
-	                 void *             param_value, 
-	                 size_t *           param_value_size_ret) ;
-*/
+	
+	private native int[] _getContextInfoDevices(int contextID);
 	
 	
 	
-	
-	public CLCommandQueue createCommandQueue(int deviceID)
+	public CLCommandQueue createCommandQueue(CLDevice deviceID)
 		{
 		return new CLCommandQueue(this, deviceID);
 		}
 	
+	public CLMem createBuffer(int memFlags, int[] initData)
+		{
+		return new CLMem(this,memFlags,initData);
+		}
+
+	public CLMem createBuffer(int memFlags, Class<?> cls, int numElem)
+		{
+		return new CLMem(this,memFlags,cls, numElem);
+		}
+
 	
+	
+	public CLProgram createProgram(String source)
+		{
+		return new CLProgram(this, source);
+		}
 	}

@@ -11,13 +11,15 @@ public class CLException extends RuntimeException
 	
 	private final int ret;
 	
+	private String msg;
 	
 	public CLException(int ret)
 		{
 		this.ret=ret;
+		this.msg="";
 		}
 	
-	public CLException()
+	public CLException(String msg)
 		{
 		this.ret=666;
 		}
@@ -29,6 +31,6 @@ public class CLException extends RuntimeException
 	
 	public String toString()
 		{
-		return "OpenCL error, code "+ret;
+		return "OpenCL error, code "+ret+msg;
 		}
 	}
