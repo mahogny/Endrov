@@ -507,19 +507,35 @@ extern "C" {
 #define javax_opencl_CLMem_CL_PROFILING_COMMAND_END 4739L
 /*
  * Class:     javax_opencl_CLMem
- * Method:    _retain
- * Signature: ()I
+ * Method:    _createBufferFromInt
+ * Signature: (II[I)I
  */
-JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1retain
-  (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1createBufferFromInt
+  (JNIEnv *, jobject, jint, jint, jintArray);
 
 /*
  * Class:     javax_opencl_CLMem
- * Method:    _release
- * Signature: ()I
+ * Method:    _createBuffer
+ * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1release
-  (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1createBuffer
+  (JNIEnv *, jobject, jint, jint, jint);
+
+/*
+ * Class:     javax_opencl_CLMem
+ * Method:    _retainMem
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1retainMem
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     javax_opencl_CLMem
+ * Method:    _releaseMem
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1releaseMem
+  (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus
 }

@@ -1,12 +1,13 @@
 all:
-	gcc -c wrapper.c -I/usr/lib/jvm/java-6-openjdk/include/ -I ~/NVIDIA_GPU_Computing_SDK/OpenCL/common/inc/
+	gcc -std=c99 -c wrapper.c -I/usr/lib/jvm/java-6-openjdk/include/ -I ./include -I ~/NVIDIA_GPU_Computing_SDK/OpenCL/common/inc/ -lOpenCL
+	ld -G wrapper.o  -o libjopencl.so
 
 javah:
-	javah -jni javax.opencl.CLKernel
-	javah -jni javax.opencl.CLContext
-	javah -jni javax.opencl.CLMem
-	javah -jni javax.opencl.CLProgram
-	javah -jni javax.opencl.CLCommandQueue
+	javah -d include -jni javax.opencl.CLKernel
+	javah -d include -jni javax.opencl.CLContext
+	javah -d include -jni javax.opencl.CLMem
+	javah -d include -jni javax.opencl.CLProgram
+	javah -d include -jni javax.opencl.CLCommandQueue
 
 
 #all:
@@ -20,4 +21,9 @@ lib:
 
 ex:
 	g++ -L ~/NVIDIA_GPU_Computing_SDK/OpenCL/common/lib/Linux32/ -I ~/NVIDIA_GPU_Computing_SDK/OpenCL/common/inc/ -lOpenCL vectoradd.cpp -o vectoradd
+
+run:
+	java -Djava.library.path=/home/mahogny/javaproj/jopencl example.Vectoradd
+
+#java -Djava.library.path=/home/mahogny/javaproj/jopencl:/home/mahogny/NVIDIA_GPU_Computing_SDK/OpenCL/common/lib/Linux32/ example.Vectoradd
 

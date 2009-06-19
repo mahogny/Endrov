@@ -516,26 +516,26 @@ JNIEXPORT jint JNICALL Java_javax_opencl_CLContext__1createContext
 /*
  * Class:     javax_opencl_CLContext
  * Method:    _retainContext
- * Signature: ()I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_javax_opencl_CLContext__1retainContext
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     javax_opencl_CLContext
  * Method:    _releaseContext
- * Signature: ()I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_javax_opencl_CLContext__1releaseContext
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     javax_opencl_CLContext
- * Method:    _getContextDevices
- * Signature: ()[I
+ * Method:    _getContextInfoDevices
+ * Signature: (I)[I
  */
-JNIEXPORT jintArray JNICALL Java_javax_opencl_CLContext__1getContextDevices
-  (JNIEnv *, jobject);
+JNIEXPORT jintArray JNICALL Java_javax_opencl_CLContext__1getContextInfoDevices
+  (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus
 }

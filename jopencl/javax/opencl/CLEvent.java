@@ -1,12 +1,15 @@
 package javax.opencl;
 
 /**
- * 
+ * OpenCL event
  * @author Johan Henriksson
  *
  */
 public class CLEvent extends OpenCL
 	{
+	int id;
+	
+	
 	/**
 	 * 
 // Event Object APIs

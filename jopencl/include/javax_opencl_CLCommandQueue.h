@@ -513,6 +513,54 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_javax_opencl_CLCommandQueue__1createCommandQueue
   (JNIEnv *, jobject, jint, jint);
 
+/*
+ * Class:     javax_opencl_CLCommandQueue
+ * Method:    _retain
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLCommandQueue__1retain
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     javax_opencl_CLCommandQueue
+ * Method:    _release
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLCommandQueue__1release
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     javax_opencl_CLCommandQueue
+ * Method:    _flush
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLCommandQueue__1flush
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     javax_opencl_CLCommandQueue
+ * Method:    _finish
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLCommandQueue__1finish
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     javax_opencl_CLCommandQueue
+ * Method:    _enqueueReadBuffer
+ * Signature: (IIZII[I[I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLCommandQueue__1enqueueReadBuffer
+  (JNIEnv *, jobject, jint, jint, jboolean, jint, jint, jintArray, jintArray);
+
+/*
+ * Class:     javax_opencl_CLCommandQueue
+ * Method:    _enqueueNDRangeKernel
+ * Signature: (III[I[I[I[I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLCommandQueue__1enqueueNDRangeKernel
+  (JNIEnv *, jobject, jint, jint, jint, jintArray, jintArray, jintArray, jintArray);
+
 #ifdef __cplusplus
 }
 #endif
