@@ -80,7 +80,6 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 						{
 						EvImage newim=new EvImage();
 						newstack.put(pe.getKey(), newim);
-						System.out.println("%¤&/¤%& here1");
 						
 						//Collect slice from each input stack
 						final EvImage[] imlist=new EvImage[p.length];

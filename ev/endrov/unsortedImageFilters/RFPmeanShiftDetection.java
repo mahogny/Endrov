@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.unfinished;
+package endrov.unsortedImageFilters;
 
 public class RFPmeanShiftDetection
 	{

@@ -1,5 +1,6 @@
 package endrov.flow.std.constants;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.*;
@@ -73,20 +74,21 @@ public class FlowUnitConstDouble extends FlowUnitConst
 		{
 		final JTextField field=new JTextField(""+getVar());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
-		/*field.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0)
-				{
-				
-				//Should maybe be change listener
-				setVar(Double.parseDouble(field.getText()));
-				//should emit an update
-				}});*/
+		final Color colorOk=field.getForeground();
 		
 		EvSwingUtil.textAreaChangeListener(field, new ChangeListener(){
 		public void stateChanged(ChangeEvent e)
 			{
-			System.out.println("Current text: "+field.getText());
-			setVar(Double.parseDouble(field.getText()));
+			try
+				{
+				field.setForeground(colorOk);
+				setVar(Double.parseDouble(field.getText()));
+				}
+			catch (NumberFormatException e1)
+				{
+				field.setForeground(colorBadValue);
+				setVar(0);
+				}
 			p.repaint();
 			}
 		});

@@ -22,10 +22,10 @@ public class EvOpMovingAverage extends EvOpSlice1
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return movingAverage(p[0],pw.intValue(), ph.intValue());
+		return apply(p[0],pw.intValue(), ph.intValue());
 		}
 	
-	public static EvPixels movingAverage(EvPixels in, int pw, int ph)
+	public static EvPixels apply(EvPixels in, int pw, int ph)
 		{
 		in=in.convertTo(EvPixels.TYPE_INT, true);
 		int w=in.getWidth();

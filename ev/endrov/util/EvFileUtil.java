@@ -1,7 +1,9 @@
 package endrov.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,6 +50,17 @@ public class EvFileUtil
 			}
 		//TODO: should read file exactly as is. do not use readline!
 		return bf.toString();
+		}
+	
+	public static byte[] readFileRaw(File file) throws IOException
+		{
+		ByteArrayOutputStream os=new ByteArrayOutputStream();
+		FileInputStream is=new FileInputStream(file);
+		byte[] buf=new byte[1024];
+		int ret;
+		while((ret=is.read(buf))!=-1)
+			os.write(buf, 0, ret);
+		return os.toByteArray();
 		}
 	
 	/**

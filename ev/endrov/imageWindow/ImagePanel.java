@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.vecmath.Vector2d;
 
 import endrov.ev.*;
-import endrov.filterBasic.ContrastBrightnessOp;
+//import endrov.filterBasic.ContrastBrightnessOp;
 import endrov.imageset.*;
 import endrov.util.Matrix2d;
 
@@ -72,25 +72,19 @@ public class ImagePanel extends JPanel
 					//Load image if this has not already been done
 					if(bufi==null)
 						{
+						/*
 						bufi=image.getPixels().quickReadOnlyAWT();
 						if(bufi==null)
 							throw new Exception("Got null image from I/O");
 						
-						
-						//int numBits=src.getSampleModel().getSampleSize(0);
-						
 						ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
-						
 						
 						WritableRaster wr = Raster.createWritableRaster(bufi.getSampleModel(),new Point(0,0));
 						BufferedImage bufo = new BufferedImage(bufi.getColorModel(),wr,true,new Hashtable<Object,Object>());
-						
-/*						int newImType=bufi.getType();
-						BufferedImage bufo=new BufferedImage(bufi.getWidth(), bufi.getHeight(), newImType);*/
 						bcfilter.filter(bufi,bufo);
-						bufi=bufo;
-						
-						//System.out.println("t"+bufi.getType()+" "+BufferedImage.TYPE_INT_RGB+" "+BufferedImage.TYPE_3BYTE_BGR+" "+BufferedImage.TYPE_BYTE_GRAY);
+						bufi=bufo;*/
+
+						bufi=EvOpImageMapScreen.apply(image.getPixels(), contrast, brightness).quickReadOnlyAWT();
 						}
 					}
 				}
