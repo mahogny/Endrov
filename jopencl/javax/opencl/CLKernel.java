@@ -20,46 +20,60 @@ public class CLKernel extends OpenCL
 		}
 	
 	
-	private native int _createKernel(int pid, String kernelName);
-
-	
-	//Maybe not needed
-	/*
-extern  cl_int 
-clCreateKernelsInProgram(cl_program     program,
-                        cl_uint        num_kernels,
-                        cl_kernel *    kernels,
-                        cl_uint *      num_kernels_ret) ;
-*/
-	
-	
-
-	public void retainKernel()
+	public void retain()
 		{
 		int ret=_retainKernel(id);
 		assertSuccess(ret);
 		}
 	
-	public void releaseKernel()
+	public void release()
 		{
 		int ret=_releaseKernel(id);
 		assertSuccess(ret);
 		}
 	
-	
-	
-	private native int _retainKernel(int id);
-	private native int _releaseKernel(int id);
-
 
 	public void setKernelArg(int index, CLMem mem)
 		{
 		int ret=_setKernelArg4(id, index, mem.id);
 		assertSuccess(ret);
 		}
+
+	public void setKernelArg(int index, int i)
+		{
+		int ret=_setKernelArg4(id, index, i);
+		assertSuccess(ret);
+		}
+
+	public <E> void setKernelArg(int index, Class<E> cls, int numElem)
+		{
+		int s=sizeForType(cls);
+		int ret=_setKernelArgNull(id, index, s*numElem);
+		assertSuccess(ret);
+		}
+
+	
+	public int getKernelNumArgs()
+		{
+		return _getKernelNumArgs(id);
+		}
+
+	public int getRefCount()
+		{
+		return _getRefCount(id);
+		}
 	
 	
-	private native int _setKernelArg4(int kernelID, int index, int value);
+
+	private native int _createKernel(int pid, String kernelName);
+	private native int _retainKernel(int kid);
+	private native int _releaseKernel(int kid);
+	private native int _setKernelArg4(int kid, int index, int value);
+	private native int _setKernelArgNull(int kid, int index, int size);
+	private native int _getKernelNumArgs(int kid);
+	private native int _getRefCount(int kid);
+	
+	
 	
 	/*
 

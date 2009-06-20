@@ -10,59 +10,11 @@ public class OpenCL
 	//Load the native code
   static
   	{
-    //System.loadLibrary("OpenCL");
     System.loadLibrary("jopencl");
   	}
 
 	public final static int CL_SUCCESS = 0;
 	
-  public final static int CL_DEVICE_NOT_FOUND = -1;
-  public final static int CL_DEVICE_NOT_AVAILABLE = -2;
-  public final static int CL_DEVICE_COMPILER_NOT_AVAILABLE = -3;
-  
-  public final static int CL_MEM_OBJECT_ALLOCATION_FAILURE = -4;
-  public final static int CL_OUT_OF_RESOURCES = -5;
-  public final static int CL_OUT_OF_HOST_MEMORY = -6;
-  public final static int CL_PROFILING_INFO_NOT_AVAILABLE = -7;
-  public final static int CL_MEM_COPY_OVERLAP = -8;
-  public final static int CL_IMAGE_FORMAT_MISMATCH = -9;
-  public final static int CL_IMAGE_FORMAT_NOT_SUPPORTED = -10;
-  public final static int CL_BUILD_PROGRAM_FAILURE = -11;
-  public final static int CL_MAP_FAILURE = -12;
-  
-  public final static int CL_INVALID_VALUE = -30;
-  public final static int CL_INVALID_DEVICE_TYPE = -31;
-  public final static int CL_INVALID_PLATFORM = -32;
-  public final static int CL_INVALID_DEVICE = -33;
-  public final static int CL_INVALID_CONTEXT = -34;
-  public final static int CL_INVALID_QUEUE_PROPERTIES = -35;
-  public final static int CL_INVALID_COMMAND_QUEUE = -36;
-  public final static int CL_INVALID_HOST_PTR = -37;
-  public final static int CL_INVALID_MEM_OBJECT = -38;
-  public final static int CL_INVALID_IMAGE_FORMAT_DESCRIPTOR = -39;
-  public final static int CL_INVALID_IMAGE_SIZE = -40;
-  public final static int CL_INVALID_SAMPLER = -41;
-  public final static int CL_INVALID_BINARY = -42;
-  public final static int CL_INVALID_BUILD_OPTIONS = -43;
-  public final static int CL_INVALID_PROGRAM = -44;
-  public final static int CL_INVALID_PROGRAM_EXECUTABLE = -45;
-  public final static int CL_INVALID_KERNEL_NAME = -46;
-  public final static int CL_INVALID_KERNEL_DEFINITION = -47;
-  public final static int CL_INVALID_KERNEL = -48;
-  public final static int CL_INVALID_ARG_INDEX = -49;
-  public final static int CL_INVALID_ARG_VALUE = -50;
-  public final static int CL_INVALID_ARG_SIZE = -51;
-  public final static int CL_INVALID_KERNEL_ARGS = -52;
-  public final static int CL_INVALID_WORK_DIMENSION = -53;
-  public final static int CL_INVALID_WORK_GROUP_SIZE = -54;
-  public final static int CL_INVALID_WORK_ITEM_SIZE = -55;
-  public final static int CL_INVALID_GLOBAL_OFFSET = -56;
-  public final static int CL_INVALID_EVENT_WAIT_LIST = -57;
-  public final static int CL_INVALID_EVENT = -58;
-  public final static int CL_INVALID_OPERATION = -59;
-  public final static int CL_INVALID_GL_OBJECT = -60;
-  public final static int CL_INVALID_BUFFER_SIZE = -61;
-  public final static int CL_INVALID_MIP_LEVEL = -62;
   
   public final static int CL_VERSION_1_0 = 1;
   
@@ -230,10 +182,12 @@ public class OpenCL
   public final static int CL_PROGRAM_BUILD_STATUS = 0x1181;
   public final static int CL_PROGRAM_BUILD_OPTIONS = 0x1182;
   public final static int CL_PROGRAM_BUILD_LOG = 0x1183;
+  
   public final static int CL_BUILD_SUCCESS = 0;
   public final static int CL_BUILD_NONE = -1;
   public final static int CL_BUILD_ERROR = -2;
   public final static int CL_BUILD_IN_PROGRESS = -3;
+  
   public final static int CL_KERNEL_FUNCTION_NAME = 0x1190;
   public final static int CL_KERNEL_NUM_ARGS = 0x1191;
   public final static int CL_KERNEL_REFERENCE_COUNT = 0x1192;
@@ -242,6 +196,7 @@ public class OpenCL
   public final static int CL_KERNEL_WORK_GROUP_SIZE = 0x11B0;
   public final static int CL_KERNEL_COMPILE_WORK_GROUP_SIZE = 0x11B1;
   public final static int CL_KERNEL_LOCAL_MEM_SIZE = 0x11B2;
+  
   public final static int CL_EVENT_COMMAND_QUEUE = 0x11D0;
   public final static int CL_EVENT_COMMAND_TYPE = 0x11D1;
   public final static int CL_EVENT_REFERENCE_COUNT = 0x11D2;
@@ -276,6 +231,15 @@ public class OpenCL
   public final static int CL_PROFILING_COMMAND_END = 0x1283;
   
   
+	public static int sizeForType(Class<?> c)
+		{
+		if(c==Integer.class || c==Float.class)
+			return 4;
+		else
+			throw new CLException("Unsupported memory type");
+		}
+
+  
 	protected void assertSuccess(int ret)
 		{
 		if(ret!=CL_SUCCESS)
@@ -287,35 +251,17 @@ public class OpenCL
 		return new CLContext(deviceType);
 		}
 	
+
+	public static CLPlatform[] getPlatforms()
+		{
+		int[] ids=_getPlatforms();
+		CLPlatform platform[]=new CLPlatform[ids.length];
+		for(int i=0;i<ids.length;i++)
+			platform[i]=new CLPlatform(ids[i]);
+		return platform;
+		}
 	
-/*
-//Platform API
-extern  cl_int 
-clGetPlatformIDs(cl_uint          numEtries,
-                cl_platform_id * platforms,
-                cl_uint *        numPlatforms ) ;
-
-extern  cl_int  
-clGetPlatformInfo(cl_platform_id   platform, 
-                 cl_platform_info param_name,
-                 size_t           param_value_size, 
-                 void *           param_value,
-                 size_t *         param_value_size_ret) ;
-
-//Device APIs
-extern  cl_int 
-clGetDeviceIDs(cl_platform_id   platform,
-              cl_device_type   device_type, 
-              cl_uint          num_entries, 
-              cl_device_id *   devices, 
-              cl_uint *        num_devices) ;
-
-extern  cl_int 
-clGetDeviceInfo(cl_device_id    device,
-               cl_device_info  param_name, 
-               size_t          param_value_size, 
-               void *          param_value,
-               size_t *        param_value_size_ret) ;
-*/
+	private static native int[] _getPlatforms();
+	
 	
 	}

@@ -81,6 +81,10 @@ public class CLContext extends OpenCL
 		{
 		return new CLMem(this,memFlags,initData);
 		}
+	public CLMem createBuffer(int memFlags, float[] initData)
+		{
+		return new CLMem(this,memFlags,initData);
+		}
 
 	public CLMem createBuffer(int memFlags, Class<?> cls, int numElem)
 		{

@@ -3,7 +3,7 @@
 #include <CL/cl.h>
 // OpenCL source code
 const char* OpenCLSource[] = {
-       "__kernel void VectorAdd(__global int* c, __global int* a,\n",
+       "q__kernel void VectorAdd(__global int* c, __global int* a,\n",
        "                         __global int* b)\n",
        "{\n",
        "      // Index of the elements to add\n",
@@ -61,10 +61,20 @@ GPUOutputVector = clCreateBuffer(GPUContext, CL_MEM_WRITE_ONLY,
 // program from source code
 cl_program OpenCLProgram = clCreateProgramWithSource(GPUContext, 8,
       OpenCLSource, NULL, NULL);
-clBuildProgram(OpenCLProgram,0,NULL,NULL,NULL,NULL);
+cl_int err;
+err=clBuildProgram(OpenCLProgram,0,NULL,NULL,NULL,NULL);
+printf("build err %d\n",err);
 // Then we can create a handle to the compiled OpenCL function (Kernel)
 cl_kernel OpenCLVectorAdd = clCreateKernel(OpenCLProgram, "VectorAdd",
-      NULL);
+      &err);
+
+printf("createk err %d\n",err);
+
+ cl_uint args2;
+        cl_int ret=clGetKernelInfo 
+(OpenCLVectorAdd,CL_KERNEL_NUM_ARGS,sizeof(args2),&args2,NULL);
+printf("# arg: %d\n",args2);
+
 // In the next step we associate the GPU memory with the Kernel arguments
 clSetKernelArg(OpenCLVectorAdd, 0, sizeof(cl_mem),
       (void*)&GPUOutputVector);

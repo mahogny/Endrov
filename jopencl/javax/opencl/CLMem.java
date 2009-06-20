@@ -18,27 +18,31 @@ public class CLMem extends OpenCL
 		{
 		this.context=context;
 		int ret=_createBufferFromInt(context.id, memFlags, initData);
-		if(ret!=CL_SUCCESS)
-			throw new CLException(ret);
+		assertSuccess(ret);
 		}
-		
+
+	CLMem(CLContext context, int memFlags, float[] initData)
+		{
+		this.context=context;
+		int ret=_createBufferFromFloat(context.id, memFlags, initData);
+		assertSuccess(ret);
+		}
+
+
+	
 	CLMem(CLContext context, int memFlags, Class<?> c, int numElem)
 		{
 		this.context=context;
-		int elsize;
-		if(c==Integer.class)
-			elsize=4;
-		else
-			throw new CLException("Unsupported memory type");
+		int elsize=sizeForType(c);
 	//	elementSize=elsize;
 		
 		int ret=_createBuffer(context.id, memFlags, elsize*numElem);
-		if(ret!=CL_SUCCESS)
-			throw new CLException(ret);
+		assertSuccess(ret);
 		}
 	
 	
 	private native int _createBufferFromInt(int contextID, int memFlags, int[] initData);
+	private native int _createBufferFromFloat(int contextID, int memFlags, float[] initData);
 
 	private native int _createBuffer(int contextID, int memFlags, int size);
 
@@ -84,13 +88,7 @@ clGetSupportedImageFormats(cl_context           context,
                           cl_uint              num_entries,
                           cl_image_format *    image_formats,
                           cl_uint *            num_image_formats) ;
-                                   
-extern  cl_int 
-clGetMemObjectInfo(cl_mem           memobj,
-                  cl_mem_info      param_name, 
-                  size_t           param_value_size,
-                  void *           param_value,
-                  size_t *         param_value_size_ret) ;
+                                  
 
 extern  cl_int 
 clGetImageInfo(cl_mem           image,
@@ -100,6 +98,14 @@ clGetImageInfo(cl_mem           image,
               size_t *         param_value_size_ret) ;
 
 */
+	
+	
+	public int getMemObjectSize()
+		{
+		return _getSize(id);
+		}
+	
+	private native int _getSize(int mid);
 	
 	
 	public void retain()
