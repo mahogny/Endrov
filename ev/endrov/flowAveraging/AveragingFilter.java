@@ -14,7 +14,7 @@ public class AveragingFilter
 	//	http://www.ph.tn.tudelft.nl/Courses/FIP/noframes/fip.html
 	
 	/**
-	 * Moving sum. Sum is taken over an area of size (2pw+1)x(2ph+1). r=0 hence corresponds
+	 * Moving sum. Sum is taken over an area of size (2pw+1)x(2ph+1). pw=ph=0 hence corresponds
 	 * to the identity operation. Pixels outside assumed 0.
 	 * 
 	 * Complexity O(w*h)
@@ -45,53 +45,6 @@ public class AveragingFilter
 		}
 	
 	
-	
-	
-	
-	
-	/**
-	 * Kuwahara filter
-	 * 
-	 * http://www.ph.tn.tudelft.nl/Courses/FIP/noframes/fip-Smoothin.html#Heading88
-	 * 
-	 * TODO implement properly
-	 * 
-	 * Complexity O(w*h)
-	 */
-	public static EvPixels kuwahara(EvPixels in, int pw, int ph) //Note strange notation L
-		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
-		int w=in.getWidth();
-		int h=in.getHeight();
-		EvPixels out=new EvPixels(in.getType(),w,h);
-		int[] outPixels=out.getArrayInt();
-		
-		//Var(x)=E(x^2)-(E(x))^2
-		
-		EvPixels cumsum=CumSumArea.cumsum(in);
-		EvPixels cumsum2=CumSumArea.cumsum2(in);
-		
-		
-		
-		//TODO
-		
-		
-		/*
-		for(int ay=0;ay<h;ay++)
-			{
-			for(int ax=0;ax<w;ax++)
-				{
-				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+pw+1);
-				
-				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+ph+1);
-				outPixels[out.getPixelIndex(ax, ay)]=CumSum.integralFromCumSum(cumsum, fromx, tox, fromy, toy);
-				}
-			}
-		*/
-		return out;
-		}
 	
 	
 	/*

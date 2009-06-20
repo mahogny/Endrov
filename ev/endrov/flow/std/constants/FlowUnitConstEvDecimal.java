@@ -1,5 +1,6 @@
 package endrov.flow.std.constants;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.*;
@@ -74,19 +75,21 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 		{
 		final JTextField field=new JTextField(""+getVar());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
-		/*field.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent arg0)
-				{
-				//BUG
-				//Should maybe be change listener
-				setVar(new EvDecimal(field.getText()));
-				//should emit an update
-				}});*/
+		final Color colorOk=field.getForeground();
 		
 		EvSwingUtil.textAreaChangeListener(field, new ChangeListener(){
 		public void stateChanged(ChangeEvent e)
 			{
-			setVar(new EvDecimal(field.getText()));
+			try
+				{
+				field.setForeground(colorOk);
+				setVar(new EvDecimal(field.getText()));
+				}
+			catch (NumberFormatException e1)
+				{
+				field.setForeground(colorBadValue);
+				setVar(EvDecimal.ZERO);
+				}
 			p.repaint();
 			}
 		});

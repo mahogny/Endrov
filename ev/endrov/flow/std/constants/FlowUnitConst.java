@@ -21,7 +21,7 @@ public abstract class FlowUnitConst extends FlowUnit
 	{
 
 	
-	
+	protected Color colorBadValue=Color.RED; 
 
 	protected abstract String getLabel();
 	
