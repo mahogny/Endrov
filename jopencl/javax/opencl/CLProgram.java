@@ -17,30 +17,11 @@ public class CLProgram extends OpenCL
 		}
 	
 	
-	private native int _createProgram(int context, String source);
-	/*
-	cl_program clCreateProgramWithSource (cl_context context,
-      cl_uint count,
-      const char **strings,
-      const size_t *lengths,
-      cl_int *errcode_ret)
-*/
 	
-
 	public CLKernel createKernel(String kernelName)
 		{
 		return new CLKernel(this, kernelName);
 		}
-	
-	
-	
-  /*
-//Kernel Object APIs
-extern  cl_kernel 
-clCreateKernel(cl_program      program,
-              const char *    kernel_name,
-              cl_int *        errcode_ret) ;
-*/
 	
 	/*
   
@@ -60,37 +41,53 @@ clCreateProgramWithBinary(cl_context                     context,
                          const unsigned char **         binaries,
                          cl_int *                       binary_status,
                          cl_int *                       errcode_ret) ;
-
-extern  cl_int 
-clRetainProgram(cl_program program) ;
-
-extern  cl_int 
-clReleaseProgram(cl_program program) ;
 */
 	
 	public void build()
 		{
-		
+		int ret=_build(id);
+		assertSuccess(ret);
 		}
 	
+	public void retain()
+		{
+		int ret=_retain(id);
+		assertSuccess(ret);
+		}
+	
+	public void release()
+		{
+		int ret=_release(id);
+		assertSuccess(ret);
+		}
+	
+
+	private native int _createProgram(int context, String source);
+	private native int _retain(int pid);
+	private native int _release(int pid);
+	private native int _build(int pid);
+	
+	
+	public int getNumDevices()
+		{
+		return _getNumDevices(id);
+		}
+	
+	private native int _getNumDevices(int pid);
+	
+	public int getBuildStatus(CLDevice device)
+		{
+		return _getBuildStatus(id,device.device_id);
+		}
+	
+	private native int _getBuildStatus(int pid, int did);
+	
+	
 	/*
-extern  cl_int 
-clBuildProgram(cl_program           program,
-              cl_uint              num_devices,
-              const cl_device_id * device_list,
-              const char *         options, 
-              void (*pfn_notify)(cl_program program, void * user_data),
-              void *               user_data) ;
 
 extern  cl_int 
 clUnloadCompiler(void) ;
 
-extern  cl_int 
-clGetProgramInfo(cl_program         program,
-                cl_program_info    param_name,
-                size_t             param_value_size,
-                void *             param_value,
-                size_t *           param_value_size_ret) ;
 
 extern  cl_int 
 clGetProgramBuildInfo(cl_program            program,

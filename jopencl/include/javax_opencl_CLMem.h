@@ -9,96 +9,6 @@ extern "C" {
 #endif
 #undef javax_opencl_CLMem_CL_SUCCESS
 #define javax_opencl_CLMem_CL_SUCCESS 0L
-#undef javax_opencl_CLMem_CL_DEVICE_NOT_FOUND
-#define javax_opencl_CLMem_CL_DEVICE_NOT_FOUND -1L
-#undef javax_opencl_CLMem_CL_DEVICE_NOT_AVAILABLE
-#define javax_opencl_CLMem_CL_DEVICE_NOT_AVAILABLE -2L
-#undef javax_opencl_CLMem_CL_DEVICE_COMPILER_NOT_AVAILABLE
-#define javax_opencl_CLMem_CL_DEVICE_COMPILER_NOT_AVAILABLE -3L
-#undef javax_opencl_CLMem_CL_MEM_OBJECT_ALLOCATION_FAILURE
-#define javax_opencl_CLMem_CL_MEM_OBJECT_ALLOCATION_FAILURE -4L
-#undef javax_opencl_CLMem_CL_OUT_OF_RESOURCES
-#define javax_opencl_CLMem_CL_OUT_OF_RESOURCES -5L
-#undef javax_opencl_CLMem_CL_OUT_OF_HOST_MEMORY
-#define javax_opencl_CLMem_CL_OUT_OF_HOST_MEMORY -6L
-#undef javax_opencl_CLMem_CL_PROFILING_INFO_NOT_AVAILABLE
-#define javax_opencl_CLMem_CL_PROFILING_INFO_NOT_AVAILABLE -7L
-#undef javax_opencl_CLMem_CL_MEM_COPY_OVERLAP
-#define javax_opencl_CLMem_CL_MEM_COPY_OVERLAP -8L
-#undef javax_opencl_CLMem_CL_IMAGE_FORMAT_MISMATCH
-#define javax_opencl_CLMem_CL_IMAGE_FORMAT_MISMATCH -9L
-#undef javax_opencl_CLMem_CL_IMAGE_FORMAT_NOT_SUPPORTED
-#define javax_opencl_CLMem_CL_IMAGE_FORMAT_NOT_SUPPORTED -10L
-#undef javax_opencl_CLMem_CL_BUILD_PROGRAM_FAILURE
-#define javax_opencl_CLMem_CL_BUILD_PROGRAM_FAILURE -11L
-#undef javax_opencl_CLMem_CL_MAP_FAILURE
-#define javax_opencl_CLMem_CL_MAP_FAILURE -12L
-#undef javax_opencl_CLMem_CL_INVALID_VALUE
-#define javax_opencl_CLMem_CL_INVALID_VALUE -30L
-#undef javax_opencl_CLMem_CL_INVALID_DEVICE_TYPE
-#define javax_opencl_CLMem_CL_INVALID_DEVICE_TYPE -31L
-#undef javax_opencl_CLMem_CL_INVALID_PLATFORM
-#define javax_opencl_CLMem_CL_INVALID_PLATFORM -32L
-#undef javax_opencl_CLMem_CL_INVALID_DEVICE
-#define javax_opencl_CLMem_CL_INVALID_DEVICE -33L
-#undef javax_opencl_CLMem_CL_INVALID_CONTEXT
-#define javax_opencl_CLMem_CL_INVALID_CONTEXT -34L
-#undef javax_opencl_CLMem_CL_INVALID_QUEUE_PROPERTIES
-#define javax_opencl_CLMem_CL_INVALID_QUEUE_PROPERTIES -35L
-#undef javax_opencl_CLMem_CL_INVALID_COMMAND_QUEUE
-#define javax_opencl_CLMem_CL_INVALID_COMMAND_QUEUE -36L
-#undef javax_opencl_CLMem_CL_INVALID_HOST_PTR
-#define javax_opencl_CLMem_CL_INVALID_HOST_PTR -37L
-#undef javax_opencl_CLMem_CL_INVALID_MEM_OBJECT
-#define javax_opencl_CLMem_CL_INVALID_MEM_OBJECT -38L
-#undef javax_opencl_CLMem_CL_INVALID_IMAGE_FORMAT_DESCRIPTOR
-#define javax_opencl_CLMem_CL_INVALID_IMAGE_FORMAT_DESCRIPTOR -39L
-#undef javax_opencl_CLMem_CL_INVALID_IMAGE_SIZE
-#define javax_opencl_CLMem_CL_INVALID_IMAGE_SIZE -40L
-#undef javax_opencl_CLMem_CL_INVALID_SAMPLER
-#define javax_opencl_CLMem_CL_INVALID_SAMPLER -41L
-#undef javax_opencl_CLMem_CL_INVALID_BINARY
-#define javax_opencl_CLMem_CL_INVALID_BINARY -42L
-#undef javax_opencl_CLMem_CL_INVALID_BUILD_OPTIONS
-#define javax_opencl_CLMem_CL_INVALID_BUILD_OPTIONS -43L
-#undef javax_opencl_CLMem_CL_INVALID_PROGRAM
-#define javax_opencl_CLMem_CL_INVALID_PROGRAM -44L
-#undef javax_opencl_CLMem_CL_INVALID_PROGRAM_EXECUTABLE
-#define javax_opencl_CLMem_CL_INVALID_PROGRAM_EXECUTABLE -45L
-#undef javax_opencl_CLMem_CL_INVALID_KERNEL_NAME
-#define javax_opencl_CLMem_CL_INVALID_KERNEL_NAME -46L
-#undef javax_opencl_CLMem_CL_INVALID_KERNEL_DEFINITION
-#define javax_opencl_CLMem_CL_INVALID_KERNEL_DEFINITION -47L
-#undef javax_opencl_CLMem_CL_INVALID_KERNEL
-#define javax_opencl_CLMem_CL_INVALID_KERNEL -48L
-#undef javax_opencl_CLMem_CL_INVALID_ARG_INDEX
-#define javax_opencl_CLMem_CL_INVALID_ARG_INDEX -49L
-#undef javax_opencl_CLMem_CL_INVALID_ARG_VALUE
-#define javax_opencl_CLMem_CL_INVALID_ARG_VALUE -50L
-#undef javax_opencl_CLMem_CL_INVALID_ARG_SIZE
-#define javax_opencl_CLMem_CL_INVALID_ARG_SIZE -51L
-#undef javax_opencl_CLMem_CL_INVALID_KERNEL_ARGS
-#define javax_opencl_CLMem_CL_INVALID_KERNEL_ARGS -52L
-#undef javax_opencl_CLMem_CL_INVALID_WORK_DIMENSION
-#define javax_opencl_CLMem_CL_INVALID_WORK_DIMENSION -53L
-#undef javax_opencl_CLMem_CL_INVALID_WORK_GROUP_SIZE
-#define javax_opencl_CLMem_CL_INVALID_WORK_GROUP_SIZE -54L
-#undef javax_opencl_CLMem_CL_INVALID_WORK_ITEM_SIZE
-#define javax_opencl_CLMem_CL_INVALID_WORK_ITEM_SIZE -55L
-#undef javax_opencl_CLMem_CL_INVALID_GLOBAL_OFFSET
-#define javax_opencl_CLMem_CL_INVALID_GLOBAL_OFFSET -56L
-#undef javax_opencl_CLMem_CL_INVALID_EVENT_WAIT_LIST
-#define javax_opencl_CLMem_CL_INVALID_EVENT_WAIT_LIST -57L
-#undef javax_opencl_CLMem_CL_INVALID_EVENT
-#define javax_opencl_CLMem_CL_INVALID_EVENT -58L
-#undef javax_opencl_CLMem_CL_INVALID_OPERATION
-#define javax_opencl_CLMem_CL_INVALID_OPERATION -59L
-#undef javax_opencl_CLMem_CL_INVALID_GL_OBJECT
-#define javax_opencl_CLMem_CL_INVALID_GL_OBJECT -60L
-#undef javax_opencl_CLMem_CL_INVALID_BUFFER_SIZE
-#define javax_opencl_CLMem_CL_INVALID_BUFFER_SIZE -61L
-#undef javax_opencl_CLMem_CL_INVALID_MIP_LEVEL
-#define javax_opencl_CLMem_CL_INVALID_MIP_LEVEL -62L
 #undef javax_opencl_CLMem_CL_VERSION_1_0
 #define javax_opencl_CLMem_CL_VERSION_1_0 1L
 #undef javax_opencl_CLMem_CL_FALSE
@@ -515,11 +425,27 @@ JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1createBufferFromInt
 
 /*
  * Class:     javax_opencl_CLMem
+ * Method:    _createBufferFromFloat
+ * Signature: (II[F)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1createBufferFromFloat
+  (JNIEnv *, jobject, jint, jint, jfloatArray);
+
+/*
+ * Class:     javax_opencl_CLMem
  * Method:    _createBuffer
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1createBuffer
   (JNIEnv *, jobject, jint, jint, jint);
+
+/*
+ * Class:     javax_opencl_CLMem
+ * Method:    _getSize
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_javax_opencl_CLMem__1getSize
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     javax_opencl_CLMem

@@ -9,23 +9,12 @@ public class CLCommandQueue extends OpenCL
 	{
 	int id;
 	
-	public CLCommandQueue(CLContext context, CLDevice deviceID)
+	CLCommandQueue(CLContext context, CLDevice deviceID)
 		{
 		int ret=_createCommandQueue(context.id, deviceID.device_id);
 		assertSuccess(ret);
 		}
 
-	private native int _createCommandQueue(int context, int deviceID);
-	
-	/*
-	//Command Queue APIs
-	extern  cl_command_queue 
-	clCreateCommandQueue(cl_context                     context, 
-	                    cl_device_id                   device, 
-	                    cl_command_queue_properties    properties,
-	                    cl_int *                       errcode_ret) ;
-	*/
-	
 	
 	public void retain()
 		{
@@ -41,8 +30,16 @@ public class CLCommandQueue extends OpenCL
 	
 	
 	
+	private native int _createCommandQueue(int context, int deviceID);
 	private native int _retain(int id);
 	private native int _release(int id);
+	private native int _flush(int cqid);
+	private native int _finish(int cqid);
+	private native int _enqueueReadBufferInt(int cqid, int mem, boolean blocking, int offset, int numElem, int[] buffer, int[] waitFor);
+	private native int _enqueueReadBufferFloat(int cqid, int mem, boolean blocking, int offset, int numElem, float[] buffer, int[] waitFor);
+	private native int _enqueueNDRangeKernel(int cqid, int kernel, int workDim, int[] globalOffset, int[] globalSize, int[] localSize, int[] waitFor);
+	private native int _enqueueBarrier(int cqid);
+
 
 	
 	/*
@@ -71,19 +68,23 @@ clSetCommandQueueProperty(cl_command_queue              command_queue,
 		assertSuccess(ret);
 		}
 	
-	private native int _flush(int cqid);
 	
-
+	/**
+	 * Blocks until all previously queued OpenCL commands in command queue are issued to the
+	 * associated device and have completed. clFinish does not return until all queued commands in 
+	 * command queue have been processed and completed. clFinish is also a synchronization point.
+	 */ 
 	public void finish()
 		{
 		int ret=_finish(id);
 		assertSuccess(ret);
 		}
 	
-	private native int _finish(int cqid);
 
 	private int[] waitforToID(CLEvent[] waitFor)
 		{
+		if(waitFor==null)
+			return null;
 		int[] await=new int[waitFor.length];
 		for(int i=0;i<await.length;i++)
 			await[i]=waitFor[i].id;
@@ -92,27 +93,19 @@ clSetCommandQueueProperty(cl_command_queue              command_queue,
 	
 	public void enqueueReadBuffer(CLMem mem, boolean blocking, int offset, int numElem, int[] buffer, CLEvent[] waitFor)
 		{
-		int ret=_enqueueReadBuffer(id, mem.id, blocking, offset, numElem, buffer, waitforToID(waitFor));
+		int ret=_enqueueReadBufferInt(id, mem.id, blocking, offset, numElem, buffer, waitforToID(waitFor));
 		assertSuccess(ret);
 		}
-	
-	private native int _enqueueReadBuffer(int cqid, int mem, boolean blocking, int offset, int numElem, int[] buffer, int[] waitFor);
+
+	public void enqueueReadBuffer(CLMem mem, boolean blocking, int offset, int numElem, float[] buffer, CLEvent[] waitFor)
+		{
+		int ret=_enqueueReadBufferFloat(id, mem.id, blocking, offset, numElem, buffer, waitforToID(waitFor));
+		assertSuccess(ret);
+		}
+
 	
 
 	/*
-
-
-//Enqueued Commands APIs
-extern  cl_int 
-clEnqueueReadBuffer(cl_command_queue    command_queue,
-                   cl_mem              buffer,
-                   cl_bool             blocking_read,
-                   size_t              offset,
-                   size_t              cb, 
-                   void *              ptr,
-                   cl_uint             num_events_in_wait_list,
-                   const cl_event *    event_wait_list,
-                   cl_event *          event) ;
                            
 extern  cl_int 
 clEnqueueWriteBuffer(cl_command_queue   command_queue, 
@@ -233,13 +226,12 @@ clEnqueueUnmapMemObject(cl_command_queue command_queue,
                        cl_event *        event) ;
 */
 	
-	public void enqueueNDRangeKernel(CLKernel kernel, int numDim, int[] globalOffset, int[] globalSize, int[] localSize, CLEvent[] waitFor)
+	public void enqueueNDRangeKernel(CLKernel kernel, int workDim, int[] globalOffset, int[] globalSize, int[] localSize, CLEvent[] waitFor)
 		{
-		int ret=_enqueueNDRangeKernel(id,kernel.id, numDim, globalOffset, globalSize, localSize, waitforToID(waitFor));
+		int ret=_enqueueNDRangeKernel(id,kernel.id, workDim, globalOffset, globalSize, localSize, waitforToID(waitFor));
 		assertSuccess(ret);
 		}
 
-	private native int _enqueueNDRangeKernel(int cqid, int kernel, int numDim, int[] globalOffset, int[] globalSize, int[] localSize, int[] waitFor);
 	
 	
 	/*
@@ -271,7 +263,13 @@ clEnqueueWaitForEvents(cl_command_queue command_queue,
                       cl_uint          num_events,
                       const cl_event * event_list) ;
 
-extern  cl_int 
-clEnqueueBarrier(cl_command_queue command_queue) ;
 */
+	
+	
+	public void enqueueBarrier()
+		{
+		int ret=_enqueueBarrier(id);
+		assertSuccess(ret);
+		}
+	
 	}
