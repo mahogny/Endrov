@@ -56,6 +56,14 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 	
 	/**
+	 * Get the first stack. Convenience method; meant mainly to be used when the channel contains a single stack
+	 */
+	public EvStack getFirstStack()
+		{
+		return imageLoader.values().iterator().next();
+		}
+	
+	/**
 	 * Get access to a frame
 	 */
 	public EvStack getCreateFrame(EvDecimal frame)

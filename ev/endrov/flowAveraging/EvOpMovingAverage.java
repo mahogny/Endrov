@@ -30,10 +30,12 @@ public class EvOpMovingAverage extends EvOpSlice1
 		in=in.convertTo(EvPixels.TYPE_INT, true);
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels out=new EvPixels(in.getType(),w,h);
-		int[] outPixels=out.getArrayInt();
+		EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		double[] outPixels=out.getArrayDouble();
 		
-		EvPixels cumsum=CumSumArea.cumsum(in);
+		//EvPixels cumsum=CumSumArea.cumsum(in);
+		CumSumArea cumsum=new CumSumArea(in);
+		
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -45,7 +47,8 @@ public class EvOpMovingAverage extends EvOpSlice1
 				int fromy=Math.max(0,ay-ph);
 				int toy=Math.min(h,ay+ph+1);
 				int area=(tox-fromx)*(toy-fromy);
-				outPixels[out.getPixelIndex(ax, ay)]=CumSumArea.integralFromCumSumInteger(cumsum, fromx, tox, fromy, toy)/(int)area;
+				//outPixels[out.getPixelIndex(ax, ay)]=CumSumArea.integralFromCumSumInteger(cumsum, fromx, tox, fromy, toy)/(int)area;
+				outPixels[out.getPixelIndex(ax, ay)]=cumsum.integralFromCumSumInteger(fromx, tox, fromy, toy)/(int)area;
 				}
 			}
 		return out;
