@@ -7,6 +7,9 @@ import javax.vecmath.Vector3d;
 
 /**
  * Interface to Qhull - Voronoi
+ * 
+ * TODO must be installed in a path without spaces
+ * 
  * @author Johan Henriksson
  */
 public class Voronoi
@@ -30,10 +33,14 @@ public class Voronoi
 		File dir=new File(Voronoi.class.getResource(".").getFile());
 		File executable=new File(new File(dir,"bin_"+platform),"qvoronoi");
 		
+		//String execString=executable.toString();
+		//execString="."+File.separator+"qhull"+File.separator+"bin_"+platform+File.separator+"qvoronoi";
+		
 		// /usr/bin/qvoronoi
 		
 		int nump=points.length;
-		
+		//might need to replace / for \ on windows
+		//Process process = Runtime.getRuntime().exec(execString,"o"});
     Process process = Runtime.getRuntime().exec(executable.toString()+" o");
     
     PrintWriter pw=new PrintWriter(process.getOutputStream());
