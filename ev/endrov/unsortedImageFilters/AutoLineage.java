@@ -11,7 +11,6 @@ import endrov.data.EvData;
 import endrov.flow.std.logic.EvOpImageGreaterThanScalar;
 import endrov.flow.std.math.EvOpImageAxpy;
 import endrov.flow.std.math.EvOpImageSubImage;
-import endrov.flowAveraging.AveragingFilter;
 import endrov.flowAveraging.EvOpMovingAverage;
 import endrov.flowAveraging.EvOpMovingSum;
 import endrov.flowProjection.EvOpAverageZ;
@@ -309,11 +308,11 @@ public class AutoLineage
 			binmaskp[1]=binmaskp[0+3]=binmaskp[1+3]=binmaskp[2+3]=binmaskp[1+3*2]=1;
 			*/
 			
-			EvPixels out=new EvOpImageGreaterThanScalar(15).exec1(AveragingFilter.movingSumQuad(spotpixels, 2, 2));
+			//EvPixels out=new EvOpImageGreaterThanScalar(15).exec1(AveragingFilter.movingSumQuad(spotpixels, 2, 2));
 			
 			
 			
-			evim.setPixelsReference(out);
+			//evim.setPixelsReference(out);
 			newStack.put(e.getKey(), evim);
 			}
 		

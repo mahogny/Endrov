@@ -33,9 +33,9 @@ public class EvOpMovingVariance extends EvOpSlice1
 		EvPixels out=new EvPixels(in.getType(),w,h);
 		int[] outPixels=out.getArrayInt();
 		
-		
-		EvPixels cumsum=CumSumArea.cumsum(in);
-		EvPixels cumsum2=CumSumArea.cumsum2(in);
+		CumSumArea cumsum=new CumSumArea(in);
+//		EvPixels cumsum=CumSumArea.cumsum(in);
+		CumSumArea cumsum2=CumSumArea.cumsum2(in);
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -49,8 +49,10 @@ public class EvOpMovingVariance extends EvOpSlice1
 				
 				//Var(x)=E(x^2)-(E(x))^2
 
-				int v1=CumSumArea.integralFromCumSumInteger(cumsum2, fromx, tox, fromy, toy);
-				int v2=CumSumArea.integralFromCumSumInteger(cumsum, fromx, tox, fromy, toy);
+//				int v1=CumSumArea.integralFromCumSumInteger(cumsum2, fromx, tox, fromy, toy);
+	//			int v2=CumSumArea.integralFromCumSumInteger(cumsum, fromx, tox, fromy, toy);
+				int v1=cumsum2.integralFromCumSumInteger(fromx, tox, fromy, toy);
+				int v2=cumsum.integralFromCumSumInteger(fromx, tox, fromy, toy);
 				
 				outPixels[out.getPixelIndex(ax, ay)]=v1 - v2*v2;
 				}

@@ -1,8 +1,5 @@
 package endrov.flowAveraging;
 
-import endrov.imageset.EvPixels;
-import endrov.unsortedImageFilters.CumSumArea;
-
 /**
  * Different averaging filters
  * @author Johan Henriksson
@@ -12,14 +9,13 @@ public class AveragingFilter
 	{
 
 	//	http://www.ph.tn.tudelft.nl/Courses/FIP/noframes/fip.html
+
+
 	
-	/**
-	 * Moving sum. Sum is taken over an area of size (2pw+1)x(2ph+1). pw=ph=0 hence corresponds
-	 * to the identity operation. Pixels outside assumed 0.
+	/* out: int
 	 * 
-	 * Complexity O(w*h)
-	 */
-	public static EvPixels movingSumQuad(EvPixels in, int pw, int ph)
+	 * 
+	 * 	public static EvPixels movingSumQuad(EvPixels in, int pw, int ph)
 		{
 		in=in.convertTo(EvPixels.TYPE_INT, true);
 		int w=in.getWidth();
@@ -43,8 +39,8 @@ public class AveragingFilter
 			}
 		return out;
 		}
-	
-	
+
+	 */
 	
 	
 	/*

@@ -41,8 +41,9 @@ public class EvOpKuwahara extends EvOpSlice1
 		
 		//Var(x)=E(x^2)-(E(x))^2
 		
-		EvPixels cumsum=CumSumArea.cumsum(in);
-		EvPixels cumsum2=CumSumArea.cumsum2(in);
+		CumSumArea cumsum=new CumSumArea(in);
+//		EvPixels cumsum=CumSumArea.cumsum(in);
+		CumSumArea cumsum2=CumSumArea.cumsum2(in);
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -63,7 +64,8 @@ public class EvOpKuwahara extends EvOpSlice1
 				 * When comparing variance, can compare without the division.
 				 * This is useful for summing variance between the regions
 				 */
-				
+
+				/*
 				double var1=CumSumArea.integralFromCumSumInteger(cumsum2, fromx, ax, fromy, ay);
 				double var2=CumSumArea.integralFromCumSumInteger(cumsum2, ax, ax+1, fromy, ay);
 				double var3=CumSumArea.integralFromCumSumInteger(cumsum2, ax+1, tox, fromy, ay);
@@ -75,8 +77,21 @@ public class EvOpKuwahara extends EvOpSlice1
 				double var7=CumSumArea.integralFromCumSumInteger(cumsum2, fromx, ax, ay+1, toy);
 				double var8=CumSumArea.integralFromCumSumInteger(cumsum2, ax, ax+1, ay+1, toy);
 				double var9=CumSumArea.integralFromCumSumInteger(cumsum2, ax+1, tox, ay+1, toy);
-
+*/
+				double var1=cumsum2.integralFromCumSumInteger(fromx, ax, fromy, ay);
+				double var2=cumsum2.integralFromCumSumInteger(ax, ax+1, fromy, ay);
+				double var3=cumsum2.integralFromCumSumInteger(ax+1, tox, fromy, ay);
 				
+				double var4=cumsum2.integralFromCumSumInteger(fromx, ax, ay, ay+1);
+				double var5=cumsum2.integralFromCumSumInteger(ax, ax+1, ay, ay+1);
+				double var6=cumsum2.integralFromCumSumInteger(ax+1, tox, ay, ay+1);
+
+				double var7=cumsum2.integralFromCumSumInteger(fromx, ax, ay+1, toy);
+				double var8=cumsum2.integralFromCumSumInteger(ax, ax+1, ay+1, toy);
+				double var9=cumsum2.integralFromCumSumInteger(ax+1, tox, ay+1, toy);
+
+
+/*				
 				double sum1=CumSumArea.integralFromCumSumInteger(cumsum, fromx, ax, fromy, ay);
 				double sum2=CumSumArea.integralFromCumSumInteger(cumsum, ax, ax+1, fromy, ay);
 				double sum3=CumSumArea.integralFromCumSumInteger(cumsum, ax+1, tox, fromy, ay);
@@ -88,7 +103,20 @@ public class EvOpKuwahara extends EvOpSlice1
 				double sum7=CumSumArea.integralFromCumSumInteger(cumsum, fromx, ax, ay+1, toy);
 				double sum8=CumSumArea.integralFromCumSumInteger(cumsum, ax, ax+1, ay+1, toy);
 				double sum9=CumSumArea.integralFromCumSumInteger(cumsum, ax+1, tox, ay+1, toy);
+	*/
+				double sum1=cumsum.integralFromCumSumInteger(fromx, ax, fromy, ay);
+				double sum2=cumsum.integralFromCumSumInteger(ax, ax+1, fromy, ay);
+				double sum3=cumsum.integralFromCumSumInteger(ax+1, tox, fromy, ay);
 				
+				double sum4=cumsum.integralFromCumSumInteger(fromx, ax, ay, ay+1);
+				double sum5=cumsum.integralFromCumSumInteger(ax, ax+1, ay, ay+1);
+				double sum6=cumsum.integralFromCumSumInteger(ax+1, tox, ay, ay+1);
+
+				double sum7=cumsum.integralFromCumSumInteger(fromx, ax, ay+1, toy);
+				double sum8=cumsum.integralFromCumSumInteger(ax, ax+1, ay+1, toy);
+				double sum9=cumsum.integralFromCumSumInteger(ax+1, tox, ay+1, toy);
+				
+
 				//Find kuwahara region with least variance
 				double varArr[]=new double[]{
 						var1+var2+var4+var5,
