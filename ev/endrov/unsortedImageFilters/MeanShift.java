@@ -13,7 +13,6 @@ import endrov.ev.Log;
 import endrov.ev.StdoutLog;
 import endrov.flow.EvOpGeneral;
 import endrov.flow.std.math.EvOpImageMulImage;
-import endrov.flowAveraging.EvOpMovingAverage;
 import endrov.flowAveraging.EvOpMovingSum;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
@@ -21,7 +20,6 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.unsortedImageFilters.specialImage.GenerateSpecialImage;
 import endrov.util.EvDecimal;
-import endrov.util.Partitioning;
 import endrov.util.Vector3i;
 
 /**
@@ -53,7 +51,7 @@ public class MeanShift
 		double sigmaZ;
 		double szsz2;
 		
-		public MeanShiftPreProcess(EvStack s, double sigmaZ, int pw, int ph)
+		public MeanShiftPreProcess(EvStack s, double sigmaZ, int pw, int ph,   int roiSX, int roiEX, int roiSY, int roiEY)
 			{
 			int w=s.getWidth();
 			int h=s.getHeight();
@@ -87,13 +85,15 @@ public class MeanShift
 			System.out.println("start");
 			//for(int i=0;i<500;i++)
 			int az=0;
-			for(int ay=0;ay<h;ay++)
-				for(int ax=0;ax<w;ax++)
+			for(int ay=roiSY;ay<h && ay<roiEY;ay++)
+				for(int ax=roiSX;ax<w && ax<roiEX;ax++)
+//			for(int ay=0;ay<h;ay++)
+	//			for(int ax=0;ax<w;ax++)
 					{
 					Vector3d pos=iterate(new Vector3d(ax,ay,0));
 					Vector3i posi=new Vector3i((int)Math.round(pos.x),(int)Math.round(pos.y),(int)Math.round(pos.z));
 					mids.add(posi);
-					//System.out.println(posi);
+//					System.out.println(posi);
 
 					pmid[az][ax+ay*w]=posi;
 					//Vector3i index=new Vector3i(ax,ay,0); //az
@@ -103,13 +103,15 @@ public class MeanShift
 //			iterate(new Vector3d(0,0,0));
 			
 			//Assign a color for each group of pixels
-			int curLevel=0;
+			int curLevel=1;
 			for(Vector3i v:mids)
 				assignLevel.put(v,(Integer)(curLevel++));
 			
 			//Output colored image
 			EvStack outs=new EvStack();
 			outs.getMetaFrom(s);
+//			outs.allocate(w, h, EvPixels.TYPE_INT, s);
+			//int[][] outarr=outs.getArraysInt();
 			int cz=0;
 			for(Map.Entry<EvDecimal, EvImage> entry:s.entrySet())
 				{
@@ -117,7 +119,11 @@ public class MeanShift
 				int[] pa=p.getArrayInt();
 				Vector3i[] curpmid=pmid[cz];
 				for(int i=0;i<curpmid.length;i++)
-					pa[i]=assignLevel.get(curpmid[i]);
+					{
+					Integer lev=assignLevel.get(curpmid[i]);
+					if(lev!=null)
+						pa[i]=lev;
+					}
 				outs.put(entry.getKey(),new EvImage(p));
 				cz++;
 				}
@@ -147,7 +153,7 @@ public class MeanShift
 			//int h=momentX.getHeight();
 
 			int xyIndex=(int)(Math.round(pos.x)+Math.round(pos.y)*w);
-
+			
 			for(Map.Entry<EvDecimal, EvImage> entry:momentX.entrySet())
 				{
 				double dz=entry.getKey().doubleValue()-pos.z;
@@ -230,14 +236,24 @@ public class MeanShift
 		Log.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
-		EvData data=EvData.loadFile(new File("testimages/smoothvariation.png"));
-	
+//		EvData data=EvData.loadFile(new File("testimages/smoothvariation.png"));
+		// /Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/
+		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/imset-im/ch-RFP/00014750/00000010.jpg"));
 		EvChannel chan=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
-		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 8, 8);
+//		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 8, 8);
+		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 10, 10,   50, 230, 50, 150);
 		
 		System.exit(0);
 		
+		///Volumes/TBU_main02/ost4dgood/TB2164_080118.ost
 		
+		/*
+		"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/imset-im/ch-RFP/00014750/00000010.jpg"
+
+		"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/imset-im/ch-RFP/00012790/00000008.5.jpg" 
+
+		"/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/imset-im/ch-RFP/00013210/00000010.jpg"
+*/
 		}
 	
 	

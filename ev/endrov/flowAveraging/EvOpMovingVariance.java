@@ -27,37 +27,67 @@ public class EvOpMovingVariance extends EvOpSlice1
 	
 	public static EvPixels localVariance(EvPixels in, int pw, int ph)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
-		int w=in.getWidth();
-		int h=in.getHeight();
-		EvPixels out=new EvPixels(in.getType(),w,h);
-		int[] outPixels=out.getArrayInt();
-		
-		CumSumArea cumsum=new CumSumArea(in);
-//		EvPixels cumsum=CumSumArea.cumsum(in);
-		CumSumArea cumsum2=CumSumArea.cumsum2(in);
-		
-		for(int ay=0;ay<h;ay++)
+		if(in.getType()==EvPixels.TYPE_INT)
 			{
-			for(int ax=0;ax<w;ax++)
+			in=in.convertTo(EvPixels.TYPE_INT, true);
+			int w=in.getWidth();
+			int h=in.getHeight();
+			EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+			double[] outPixels=out.getArrayDouble();
+			
+			CumSumArea cumsum=new CumSumArea(in);
+			CumSumArea cumsum2=CumSumArea.cumsum2(in);
+			
+			for(int ay=0;ay<h;ay++)
 				{
-				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+pw+1);
-				
-				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+ph+1);
-				
-				//Var(x)=E(x^2)-(E(x))^2
-
-//				int v1=CumSumArea.integralFromCumSumInteger(cumsum2, fromx, tox, fromy, toy);
-	//			int v2=CumSumArea.integralFromCumSumInteger(cumsum, fromx, tox, fromy, toy);
-				int v1=cumsum2.integralFromCumSumInteger(fromx, tox, fromy, toy);
-				int v2=cumsum.integralFromCumSumInteger(fromx, tox, fromy, toy);
-				
-				outPixels[out.getPixelIndex(ax, ay)]=v1 - v2*v2;
+				for(int ax=0;ax<w;ax++)
+					{
+					int fromx=Math.max(0,ax-pw);
+					int tox=Math.min(w,ax+pw+1);
+					int fromy=Math.max(0,ay-ph);
+					int toy=Math.min(h,ay+ph+1);
+					int area=(tox-fromx)*(toy-fromy);
+					
+					//Var(x)=E(x^2)-(E(x))^2
+					int v1=cumsum2.integralFromCumSumInteger(fromx, tox, fromy, toy);
+					int v2=cumsum.integralFromCumSumInteger(fromx, tox, fromy, toy);
+					
+					outPixels[out.getPixelIndex(ax, ay)]=(v1 - v2*v2/(double)area)/area;
+					}
 				}
+			return out;
 			}
-		return out;
+		else
+			{
+			in=in.convertTo(EvPixels.TYPE_DOUBLE, true);
+			int w=in.getWidth();
+			int h=in.getHeight();
+			EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+			double[] outPixels=out.getArrayDouble();
+			
+			CumSumArea cumsum=new CumSumArea(in);
+			CumSumArea cumsum2=CumSumArea.cumsum2(in);
+			
+			for(int ay=0;ay<h;ay++)
+				{
+				for(int ax=0;ax<w;ax++)
+					{
+					int fromx=Math.max(0,ax-pw);
+					int tox=Math.min(w,ax+pw+1);
+					int fromy=Math.max(0,ay-ph);
+					int toy=Math.min(h,ay+ph+1);
+					int area=(tox-fromx)*(toy-fromy);
+					
+					//Var(x)=E(x^2)-(E(x))^2
+					double v1=cumsum2.integralFromCumSumDouble(fromx, tox, fromy, toy);
+					double v2=cumsum.integralFromCumSumDouble(fromx, tox, fromy, toy);
+					
+					outPixels[out.getPixelIndex(ax, ay)]=(v1 - v2*v2/(double)area)/area;
+					}
+				}
+			return out;
+
+			}
 		}
 	
 	}
