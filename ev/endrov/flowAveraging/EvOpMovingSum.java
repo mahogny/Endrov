@@ -26,6 +26,19 @@ public class EvOpMovingSum extends EvOpSlice1
 		}
 	
 	
+	/**
+	 * TODO +
+	 * 
+	 *  !
+	 * #!#
+	 *  !
+	 *  
+	 * r radius
+	 * b width of strip
+	 * 
+	 * b = (pi/2-1) r ~=0.57 r
+	 * 
+	 */
 	
 	
 	/**
@@ -43,8 +56,6 @@ public class EvOpMovingSum extends EvOpSlice1
 		double[] outPixels=out.getArrayDouble();
 		
 		CumSumArea cumsum=new CumSumArea(in);
-		//EvPixels cumsum=CumSumArea.cumsum(in);
-		
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -55,7 +66,6 @@ public class EvOpMovingSum extends EvOpSlice1
 				
 				int fromy=Math.max(0,ay-ph);
 				int toy=Math.min(h,ay+ph+1);
-//				outPixels[out.getPixelIndex(ax, ay)]=CumSumArea.integralFromCumSumDouble(cumsum, fromx, tox, fromy, toy);
 				outPixels[out.getPixelIndex(ax, ay)]=cumsum.integralFromCumSumDouble(fromx, tox, fromy, toy);
 				}
 			}

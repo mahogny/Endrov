@@ -107,7 +107,15 @@ public class EvImage
 	public EvImage()
 		{
 		}
-	
+
+	/**
+	 * Create an image and setPixelsReference
+	 */
+	public EvImage(EvPixels p)
+		{
+		setPixelsReference(p);
+		}
+
 	/**
 	 * Register a lazy operation. Before this image is changed, it will be executed
 	 */
