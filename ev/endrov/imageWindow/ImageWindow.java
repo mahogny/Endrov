@@ -149,8 +149,8 @@ public class ImageWindow extends BasicWindow
 		
 		public final JRadioButton rSelect=new JRadioButton();
 		public final EvComboChannel comboChannel=new EvComboChannel(null,false);
-		public final JSlider sliderContrast=new JSlider(-4000,4000,0);
-		public final JSlider sliderBrightness=new JSlider(-100,100,0);
+		public final JSlider sliderContrast=new JSlider(-10000,10000,0);
+		public final JSlider sliderBrightness=new JSlider(-200,200,0);
 		public final JButton bFilterSequence=FilterSeq.createFilterSeqButton();
 
 		public final FilterSeq filterSeq=new FilterSeq();

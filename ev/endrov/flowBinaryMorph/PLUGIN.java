@@ -45,6 +45,9 @@ public class PLUGIN extends PluginDef
 				
 				FlowUnitBinMorphMakeKernel2D.class,
 				FlowUnitBinMorphDrawKernel2D.class,
+				
+				FlowUnitBinMorphFillHoles2D.class,
+				FlowUnitBinMorphFillHoles3D.class,
 				};
 		}
 	

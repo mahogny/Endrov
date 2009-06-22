@@ -1,41 +1,17 @@
 package endrov.flow;
 import endrov.ev.PluginDef;
-import endrov.flow.std.basic.FlowUnitIf;
-import endrov.flow.std.basic.FlowUnitInput;
-import endrov.flow.std.basic.FlowUnitMap;
-import endrov.flow.std.basic.FlowUnitOutput;
-import endrov.flow.std.basic.FlowUnitScript;
-import endrov.flow.std.basic.FlowUnitShow;
+import endrov.flow.std.basic.*;
 import endrov.flow.std.collection.FlowUnitConcat;
 import endrov.flow.std.collection.FlowUnitHeadTail;
 import endrov.flow.std.collection.FlowUnitSize;
-import endrov.flow.std.constants.FlowUnitConstBoolean;
-import endrov.flow.std.constants.FlowUnitConstClass;
-import endrov.flow.std.constants.FlowUnitConstDouble;
-import endrov.flow.std.constants.FlowUnitConstEvDecimal;
-import endrov.flow.std.constants.FlowUnitConstInteger;
-import endrov.flow.std.constants.FlowUnitConstString;
+import endrov.flow.std.constants.*;
 import endrov.flow.std.logic.FlowUnitAnd;
 import endrov.flow.std.logic.FlowUnitGreaterThan;
 import endrov.flow.std.logic.FlowUnitNot;
 import endrov.flow.std.logic.FlowUnitOr;
 import endrov.flow.std.logic.FlowUnitXor;
-import endrov.flow.std.math.FlowUnitAdd;
-import endrov.flow.std.math.FlowUnitCos;
-import endrov.flow.std.math.FlowUnitDiv;
-import endrov.flow.std.math.FlowUnitExp;
-import endrov.flow.std.math.FlowUnitLog;
-import endrov.flow.std.math.FlowUnitMax;
-import endrov.flow.std.math.FlowUnitMin;
-import endrov.flow.std.math.FlowUnitMul;
-import endrov.flow.std.math.FlowUnitSin;
-import endrov.flow.std.math.FlowUnitSqrt;
-import endrov.flow.std.math.FlowUnitSub;
-import endrov.flow.std.objects.FlowUnitGetObject;
-import endrov.flow.std.objects.FlowUnitParent;
-import endrov.flow.std.objects.FlowUnitObjectIO;
-import endrov.flow.std.objects.FlowUnitThisData;
-import endrov.flow.std.objects.FlowUnitThisFlow;
+import endrov.flow.std.math.*;
+import endrov.flow.std.objects.*;
 import endrov.flow.ui.FlowWindow;
 
 public class PLUGIN extends PluginDef
@@ -80,7 +56,7 @@ public class PLUGIN extends PluginDef
 				//Math
 				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,FlowUnitMul.class,
 				FlowUnitSin.class, FlowUnitCos.class, FlowUnitExp.class, FlowUnitLog.class, FlowUnitSqrt.class,
-				FlowUnitMin.class,FlowUnitMax.class,
+				FlowUnitMin.class,FlowUnitMax.class, FlowUnitAbs.class,
 				
 				//Logic
 				FlowUnitAnd.class,FlowUnitOr.class,FlowUnitXor.class,FlowUnitNot.class,
