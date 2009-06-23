@@ -14,6 +14,10 @@ import endrov.util.EvDecimal;
  */
 public class GenerateSpecialImage
 	{
+	
+	
+	
+	
 
 	/**
 	 * Return an image of given size: im(x,y)=x^p*y^q.
@@ -48,6 +52,25 @@ public class GenerateSpecialImage
 		{
 		EvPixels p=new EvPixels(EvPixels.TYPE_INT,w,h);
 		int[] aPixels=p.getArrayInt();
+		for(int y=0;y<h;y++)
+			{
+			int base=y*w;
+			for(int x=0;x<w;x++)
+				aPixels[base+x]=c;
+			}
+		return p;
+		}
+	
+	/**
+	 * Return an image of given size: im(x,y)=c
+	 * c c c
+	 * c c c
+	 * c c c
+	 */
+	public static EvPixels genConstant(int w, int h, double c)
+		{
+		EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		double[] aPixels=p.getArrayDouble();
 		for(int y=0;y<h;y++)
 			{
 			int base=y*w;
