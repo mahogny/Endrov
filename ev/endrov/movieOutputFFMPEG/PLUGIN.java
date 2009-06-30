@@ -1,11 +1,11 @@
-package endrov.makeMovieFFMPEG;
+package endrov.movieOutputFFMPEG;
 import endrov.ev.*;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Make Movies: FFMPEG";
+		return "Movie output: FFMPEG";
 		}
 
 	public String getAuthor()

@@ -1,4 +1,4 @@
-package endrov.makeMovieImageSeries;
+package endrov.movieOutputImageSeries;
 
 import java.awt.image.*;
 import java.io.*;

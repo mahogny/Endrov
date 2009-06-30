@@ -1,11 +1,11 @@
-package endrov.makeMovieImageSeries;
+package endrov.movieOutputImageSeries;
 import endrov.ev.*;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Make Movies: image series";
+		return "Movie output: image series";
 		}
 
 	public String getAuthor()

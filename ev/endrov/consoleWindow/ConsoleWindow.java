@@ -372,13 +372,12 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		}
 
 	/**
-	 * Give focus to console
+	 * Give focus to console. Open console if needed.
 	 * @param me Component with current focus
 	 */
 	public static void focusConsole(BasicWindow frame, Component me)
 		{
-		ConsoleWindow c=getConsole();
-		if(c==null) c=new ConsoleWindow();
+		ConsoleWindow c=openConsole();
 		c.getEvw().toFront();
 		c.lastFocusComponent=new WeakReference<Component>(me);
 		c.lastFocusFrame=new WeakReference<BasicWindow>(frame);
@@ -386,7 +385,19 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		}
 
 
-	//TODO: free from basicwindow? 
+	/**
+	 * Open console if not already open
+	 */
+	public static ConsoleWindow openConsole()
+		{
+		ConsoleWindow c=getConsole();
+		if(c==null) c=new ConsoleWindow();
+		return c;
+		}
+
+	//TODO: free from basicwindow?
+	
+	
 	/**
 	 * Get a handle to the console
 	 * @return The console or null if none is open

@@ -1,4 +1,4 @@
-package endrov.makeMovieFFMPEG;
+package endrov.movieOutputFFMPEG;
 
 import java.io.File;
 import java.util.Arrays;
