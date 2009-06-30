@@ -201,7 +201,7 @@ public class NucLineage extends EvObject implements Cloneable
 						NucLineage.Nuc n=lin.nuc.get(childName);
 						n.parent=parentName;
 						parent.child.add(childName);
-						Log.printLog("new PC, parent: "+parentName+"child: "+childName);
+						EvLog.printLog("new PC, parent: "+parentName+"child: "+childName);
 						assignedChild=true;
 						}
 					}
@@ -438,7 +438,7 @@ public class NucLineage extends EvObject implements Cloneable
 				{
 				Nuc child=nuc.get(childName);
 				if(child==null)
-					Log.printError("Missing child: "+childName, null);
+					EvLog.printError("Missing child: "+childName, null);
 				child.parent=parentName;
 				}
 			}
@@ -466,7 +466,7 @@ public class NucLineage extends EvObject implements Cloneable
 		{
 		removePosAfter(parentName, frame, true);
 		Nuc n=nuc.get(parentName);
-		Log.printLog("divide:"+parentName);
+		EvLog.printLog("divide:"+parentName);
 		if(n!=null)
 			{
 			String c1n=getUniqueNucName();
@@ -1138,16 +1138,16 @@ public class NucLineage extends EvObject implements Cloneable
 			
 			double scale=360/(2*Math.PI);
 			
-			Log.printLog("angles "+nucpB.snd()+"-"+nucpC.snd()+"-"+nucpA.snd()+"  "+
+			EvLog.printLog("angles "+nucpB.snd()+"-"+nucpC.snd()+"-"+nucpA.snd()+"  "+
 					(scale*EvGeomUtil.midAngle(pA, pB, pC))+" "+
 					(scale*EvGeomUtil.midAngle(pB, pC, pA))+" "+
 					(scale*EvGeomUtil.midAngle(pC, pA, pB)));
 			}
 		else
 			{
-			Log.printLog("Select 3 nuclei first");
+			EvLog.printLog("Select 3 nuclei first");
 			for(NucSel p:selectedNuclei)
-				Log.printLog(p.toString());
+				EvLog.printLog(p.toString());
 			}
 
 		}
@@ -1158,7 +1158,7 @@ public class NucLineage extends EvObject implements Cloneable
 			{
 			NucLineage.NucPos npos=p.getNuc().interpolatePos(frame).pos;
 			//Vector3d pos=p.fst().nuc.get(p.snd()).interpolatePos(frame).pos.getPosCopy();
-			Log.printLog("pos "+p.snd()+": "+npos.x+" , "+npos.y+" , "+npos.z+"  r: "+npos.r);
+			EvLog.printLog("pos "+p.snd()+": "+npos.x+" , "+npos.y+" , "+npos.z+"  r: "+npos.r);
 			}
 			
 		}

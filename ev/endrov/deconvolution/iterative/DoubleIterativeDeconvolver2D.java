@@ -21,7 +21,7 @@ import endrov.deconvolution.Deconvolver2D;
 import endrov.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.deconvolution.iterative.IterativeEnums.PreconditionerType;
 import endrov.deconvolution.iterative.IterativeEnums.ResizingType;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageset.EvPixels;
 
 /**
@@ -34,7 +34,7 @@ public abstract class DoubleIterativeDeconvolver2D extends Deconvolver2D{
 
 		public static void log(String s)
 			{
-			Log.printLog(s);
+			EvLog.printLog(s);
 			
 			}
 

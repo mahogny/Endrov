@@ -6,7 +6,7 @@ import java.util.Map;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.ev.EV;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.ev.StdoutLog;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
@@ -70,7 +70,7 @@ public class FixOSTendframe
 	 */
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
 		for(File f:new File("/Volumes3/TBU_main01/ost4dgood/").listFiles())

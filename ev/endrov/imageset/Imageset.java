@@ -7,7 +7,7 @@ import javax.swing.JMenu;
 import org.jdom.*;
 
 import endrov.data.*;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageWindow.ImageWindow;
 import endrov.util.EvDecimal;
 
@@ -287,7 +287,7 @@ public class Imageset extends EvObject
 				}
 			catch (NumberFormatException e1)
 				{
-				Log.printError("Parse error, gracefully ignoring and resuming", e1);
+				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
 			}
 		
@@ -335,7 +335,7 @@ public class Imageset extends EvObject
 				}
 			catch (NumberFormatException e1)
 				{
-				Log.printError("Parse error, gracefully ignoring and resuming", e1);
+				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
 			}
 		

@@ -8,7 +8,7 @@ import java.util.*;
  * 
  * @author Johan Henriksson
  */
-public abstract class Log
+public abstract class EvLog
 	{
 	/******************************************************************************************************
 	 *                               Interface                                                            *
@@ -23,7 +23,7 @@ public abstract class Log
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 
-	public static HashSet<Log> listeners=new HashSet<Log>();
+	public static HashSet<EvLog> listeners=new HashSet<EvLog>();
 
 	/**
 	 * Keep track of what has happen in memory in case one wants to look at it aposteriori
@@ -39,7 +39,7 @@ public abstract class Log
 	 */
 	public static void printDebug(String s)
 		{
-		for(Log l:listeners)
+		for(EvLog l:listeners)
 			l.listenDebug(s);
 		}
 
@@ -50,7 +50,7 @@ public abstract class Log
 	 */
 	public static void printError(String s, Exception e)
 		{
-		for(Log l:listeners)
+		for(EvLog l:listeners)
 			l.listenError(s,e);
 		}
 
@@ -59,7 +59,7 @@ public abstract class Log
 	 */
 	public static void printLog(String s)
 		{
-		for(Log l:listeners)
+		for(EvLog l:listeners)
 			l.listenLog(s);
 		}
 

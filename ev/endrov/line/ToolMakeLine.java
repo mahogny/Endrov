@@ -13,7 +13,7 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
 import endrov.ev.EV;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageWindow.*;
 import endrov.util.EvDecimal;
 
@@ -266,7 +266,7 @@ public class ToolMakeLine implements ImageWindowTool
 			distances.append(Double.toString(d));
 			distances.append(" ");
 			}
-		Log.printLog("Length [um]: "+line.getTotalDistance()+ " ( "+distances+")");
+		EvLog.printLog("Length [um]: "+line.getTotalDistance()+ " ( "+distances+")");
 		}
 	
 

@@ -8,7 +8,7 @@ import org.jdom.Element;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.util.EvDecimal;
 
 
@@ -300,7 +300,7 @@ public class EvContainer
 			o.loadMetadata(child);
 			metaObject.put(id, o);
 			if(EV.debugMode)
-				Log.printLog("Found meta object of type "+child.getName());
+				EvLog.printLog("Found meta object of type "+child.getName());
 			}
 		}
 	

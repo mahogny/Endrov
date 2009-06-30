@@ -189,14 +189,14 @@ public class ModelView extends GLCanvas
 	    if(true)
 	    	{
 	    	//crashed here, started working after syso. postpone swing?
-				Log.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
-				Log.printLog("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
-				Log.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
-				Log.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
-				Log.printLog("clipping planes supported: "+numClipPlanesSupported);
-				Log.printLog("max 3D texture size: "+max3DTextureSize);
-				Log.printLog("num texture units: "+numTextureUnits);
-				Log.printLog("VBO supported: "+VBOsupported);
+				EvLog.printLog("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
+				EvLog.printLog("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
+				EvLog.printLog("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
+				EvLog.printLog("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
+				EvLog.printLog("clipping planes supported: "+numClipPlanesSupported);
+				EvLog.printLog("max 3D texture size: "+max3DTextureSize);
+				EvLog.printLog("num texture units: "+numTextureUnits);
+				EvLog.printLog("VBO supported: "+VBOsupported);
 	    	}
 			}
 

@@ -756,12 +756,12 @@ public class ImageWindow extends BasicWindow
 		else if(e.getKeyCode()==KeyEvent.VK_S && holdModifier1(e))
 			{
 			data.saveData();
-			Log.printLog("Saving "+data.getMetadataName());
+			EvLog.printLog("Saving "+data.getMetadataName());
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_W && holdModifier1(e))
 			{
 			data.unregisterOpenedData();
-			Log.printLog("Closing "+data.getMetadataName());
+			EvLog.printLog("Closing "+data.getMetadataName());
 			}
 		else if(e.getKeyCode()==KeyEvent.VK_0)
 			{

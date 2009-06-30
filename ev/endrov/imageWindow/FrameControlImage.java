@@ -218,6 +218,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		fPanel.add(buttonFrameTime, BorderLayout.EAST);
 		
 		JComponent gPanel=EvSwingUtil.compactHorizontal(checkGroupSlice, EvSwingUtil.withLabel("Group:",spinnerGroup));
+		checkGroupSlice.setToolTipText("Synchronize current Z");
 		checkGroupSlice.setSelected(true);
 
 		JPanel therest=new JPanel(new GridLayout(1,2,0,0));

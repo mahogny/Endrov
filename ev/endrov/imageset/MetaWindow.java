@@ -528,7 +528,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 				}
 			catch (NumberFormatException e)
 				{
-				Log.printError("NF exception in fieldsToMeta",e);
+				EvLog.printError("NF exception in fieldsToMeta",e);
 				}
 			}
 		}

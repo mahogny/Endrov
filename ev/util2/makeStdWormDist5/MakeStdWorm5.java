@@ -550,7 +550,7 @@ public class MakeStdWorm5
 		{
 		try
 			{
-			Log.listeners.add(new StdoutLog());
+			EvLog.listeners.add(new StdoutLog());
 			EV.loadPlugins();
 			
 			String outputName="/Volumes/TBU_main02/ost4dgood/celegans2008.new.ost";

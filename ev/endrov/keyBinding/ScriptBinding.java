@@ -53,7 +53,7 @@ public class ScriptBinding
 					}
 				catch (EvalError e1)
 					{
-					Log.printError("ScriptBinding", e1);
+					EvLog.printError("ScriptBinding", e1);
 					}
 				return true;
 				}

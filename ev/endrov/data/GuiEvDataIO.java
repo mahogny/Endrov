@@ -14,7 +14,7 @@ import javax.swing.JProgressBar;
 
 import org.jdesktop.swingworker.SwingWorker;
 
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 
 
 /**
@@ -54,7 +54,7 @@ public class GuiEvDataIO
 			if(proc>=0 && proc<=1)
 				setProgress((int)(100*nowAt+proc*100)/path.size());
 			else
-				Log.printError("fileIOstatus range should be 0-1", null);
+				EvLog.printError("fileIOstatus range should be 0-1", null);
 			}
 		
 		}
@@ -89,7 +89,7 @@ public class GuiEvDataIO
 			if(proc>=0 && proc<=1)
 				setProgress((int)(100*nowAt+proc*100)/datas.size());
 			else
-				Log.printError("fileIOstatus range should be 0-1", null);
+				EvLog.printError("fileIOstatus range should be 0-1", null);
 			}
 		
 		}

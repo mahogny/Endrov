@@ -63,7 +63,7 @@ public class PluginInfo
 			{
 			if(pdef.systemSupported())
 				{
-				Log.printLog("Loading plugin "+pdef.getPluginName());
+				EvLog.printLog("Loading plugin "+pdef.getPluginName());
 				for(Class<?> foo:pdef.getInitClasses())
 					{
 					try
@@ -80,7 +80,7 @@ public class PluginInfo
 					}
 				}
 			else
-				Log.printLog("Skipping unsupported plugin "+pdef.getPluginName());
+				EvLog.printLog("Skipping unsupported plugin "+pdef.getPluginName());
 			}
 		}
 	

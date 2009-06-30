@@ -281,7 +281,7 @@ public class EvIODataBioformats implements EvIOData
 				}
 			catch(Exception e)
 				{
-				endrov.ev.Log.printError("Failed to read image "+sourceName(),e);
+				endrov.ev.EvLog.printError("Failed to read image "+sourceName(),e);
 				return null;
 				}
 			}

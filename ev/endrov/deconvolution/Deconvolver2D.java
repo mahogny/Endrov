@@ -16,7 +16,7 @@
  */
 package endrov.deconvolution;
 
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
 
@@ -31,7 +31,7 @@ public abstract class Deconvolver2D extends EvOpSlice1
 	
 	public static void log(String s)
 		{
-		Log.printLog(s);
+		EvLog.printLog(s);
 		}
 	
 	protected abstract EvPixels internalDeconvolve(EvPixels ipB);

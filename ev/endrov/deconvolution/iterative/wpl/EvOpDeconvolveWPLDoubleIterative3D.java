@@ -42,7 +42,7 @@ import endrov.deconvolution.iterative.DoubleCommon3D;
 import endrov.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.deconvolution.iterative.IterativeEnums.PaddingType;
 import endrov.deconvolution.iterative.IterativeEnums.ResizingType;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageset.EvStack;
 
 
@@ -281,7 +281,7 @@ public class EvOpDeconvolveWPLDoubleIterative3D {
     
     public static void status(String s)
     	{
-    	Log.printLog(s);
+    	EvLog.printLog(s);
     	}
     
     

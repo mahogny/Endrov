@@ -57,7 +57,7 @@ public class ContrastBrightnessOp
 		
 		if(f==null || src==null || dst==null)
 			{
-			Log.printError(""+(f==null)+" "+(src==null)+" "+(dst==null),null);
+			EvLog.printError(""+(f==null)+" "+(src==null)+" "+(dst==null),null);
 			return dst;
 			}
 		else

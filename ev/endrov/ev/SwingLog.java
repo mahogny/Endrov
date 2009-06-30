@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
  * 
  * @author Johan Henriksson
  */
-public class SwingLog extends Log
+public class SwingLog extends EvLog
 	{
 	/**
 	 * Log debugging information

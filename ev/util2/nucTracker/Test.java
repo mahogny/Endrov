@@ -11,7 +11,7 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.EV;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.ev.StdoutLog;
 import endrov.imageset.EvImage;
 import endrov.imageset.Imageset;
@@ -35,7 +35,7 @@ public class Test
 	
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
 		EvDecimal startFrame=new EvDecimal(1500);
