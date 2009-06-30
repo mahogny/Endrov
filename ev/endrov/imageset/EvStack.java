@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.vecmath.Vector2d;
+
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
@@ -55,7 +57,16 @@ public class EvStack implements AnyEvImage
 	public double scaleWorldImageX(double c){return c*resX/binning;}
 	public double scaleWorldImageY(double c){return c*resY/binning;}
 	
-	
+	public Vector2d transformImageWorld(Vector2d v)
+		{
+		return new Vector2d(transformImageWorldX(v.x),transformImageWorldY(v.y));
+		}
+
+	public Vector2d transformWorldImage(Vector2d v)
+		{
+		return new Vector2d(transformWorldImageX(v.x),transformWorldImageY(v.y));
+		}
+
 	/*
 	public double transformImageWorldZ(double c)
 		{

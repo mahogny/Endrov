@@ -20,6 +20,7 @@ import endrov.ev.*;
 import endrov.filter.*;
 import endrov.imageWindow.ImagePanel.ImagePanelImage;
 import endrov.imageWindow.tools.ImageWindowToolChannelDisp;
+import endrov.imageWindow.tools.ImageWindowToolPixelInfo;
 import endrov.imageWindow.tools.ImageWindowToolScreenshot;
 import endrov.imageset.*;
 import endrov.keyBinding.*;
@@ -80,6 +81,7 @@ public class ImageWindow extends BasicWindow
 				{
 				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
 				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
+				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
 				}
 			});
 		}
@@ -492,10 +494,14 @@ public class ImageWindow extends BasicWindow
 
 	
 
-	/** Scale screen vector to world vector 
-	 * */
+	/** 
+	 * Scale screen vector to world vector 
+	 */
 	public double scaleS2w(double s) {return s/(getImageset().resY*getZoom());}
-	/** Scale world to screen vector */
+	
+	/**
+	 * Scale world to screen vector 
+	 */
 	public double scaleW2s(double w) {return w*getImageset().resY*getZoom();}
 
 	

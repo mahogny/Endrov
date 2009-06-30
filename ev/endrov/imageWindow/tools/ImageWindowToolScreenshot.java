@@ -19,12 +19,15 @@ import endrov.util.EvFileUtil;
 
 //either send down variables or add accessors to imagewindow
 
-
+/**
+ * Get a screenshot of the current display
+ * @author Johan Henriksson
+ */
 public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListener
 	{
 	JMenuItem mi=new JMenuItem("Screenshot");
 
-	final ImageWindow w;
+	private final ImageWindow w;
 	
 	public ImageWindowToolScreenshot(final ImageWindow w)
 		{

@@ -1,4 +1,4 @@
-package endrov.makeMovieFFMPEG;
+package endrov.movieOutputFFMPEG;
 
 import java.awt.image.*;
 import java.io.*;
@@ -77,7 +77,7 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 			{
 			Process proc=Runtime.getRuntime().exec(arg);
 			BufferedReader os=new BufferedReader(new InputStreamReader(proc.getInputStream()));
-			String line;
+			//String line;
 			//while((line=os.readLine())!=null)
 				//System.out.println(line);
 			while(os.readLine()!=null);

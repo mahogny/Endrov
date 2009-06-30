@@ -1,4 +1,4 @@
-package endrov.makeMovieImageSeries;
+package endrov.movieOutputImageSeries;
 
 import java.io.File;
 import java.util.Arrays;
