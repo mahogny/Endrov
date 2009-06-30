@@ -242,6 +242,7 @@ public class ImagePanel extends JPanel
 		Matrix2d rotmat=new Matrix2d();
 		rotmat.rot(rotation);
 		rotmat.transform(v);
+		
 		v.add(new Vector2d(transX,transY));
 		v.scale(zoom);
 		v.add(new Vector2d(getWidth()/2.0, getHeight()/2.0));
@@ -252,11 +253,12 @@ public class ImagePanel extends JPanel
 	public Vector2d transformS2I(Vector2d u)
 		{
 		Vector2d v=new Vector2d(u);
-		Matrix2d rotmat=new Matrix2d();
-		rotmat.rot(-rotation);
 		v.add(new Vector2d(-getWidth()/2.0, -getHeight()/2.0));
 		v.scale(1.0/zoom);
 		v.add(new Vector2d(-transX,-transY));
+		
+		Matrix2d rotmat=new Matrix2d();
+		rotmat.rot(-rotation);
 		rotmat.transform(v);
 		return v;
 		}
@@ -272,6 +274,26 @@ public class ImagePanel extends JPanel
 			images.get(0).zoomToFit(this);
 		repaint();
 		}
+	
+	
+	public void rotateCamera(double angle)
+		{
+		//Where is the middle of the screen now?
+		Vector2d v1=transformS2I(new Vector2d(getWidth()/2,getHeight()/2)); 
+		rotation+=angle;
+		//Where is it after rotation?
+		v1=transformI2S(v1); 
+		//How much has it moved?
+		Vector2d v2=new Vector2d(getWidth()/2,getHeight()/2);
+		//Vector2d v2=transformS2I(new Vector2d(getWidth()/2,getHeight()/2));
+		v2.sub(v1);
+		//Move back
+		pan(v2.x,v2.y);
+		//transX-=v2.x;
+		//transY-=v2.y;
+		repaint();
+		}
+
 	}
 
 

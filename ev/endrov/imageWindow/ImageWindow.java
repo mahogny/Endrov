@@ -26,6 +26,7 @@ import endrov.imageset.*;
 import endrov.keyBinding.*;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
+import endrov.util.SnapBackSlider;
 
 /**
  * Image window - Displays imageset with overlays. Data can be edited with tools, filters can be applied.
@@ -255,7 +256,11 @@ public class ImageWindow extends BasicWindow
 
 	//GUI components
 	private final JSlider sliderZoom=new JSlider(JSlider.VERTICAL, -10000,10000,-1000); //2^n	
-	private final JSlider sliderRotate=new JSlider(JSlider.VERTICAL, -10000,10000,0); //2^n	
+	//private final JSlider sliderRotate=new JSlider(JSlider.VERTICAL, -10000,10000,0); //2^n
+	private SnapBackSlider sliderRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
+
+	//private double camRotation=0;
+	
 	private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
 	
 	private final ButtonGroup rChannelGroup=new ButtonGroup();
@@ -305,9 +310,19 @@ public class ImageWindow extends BasicWindow
 		imagePanel.addMouseMotionListener(this);
 		imagePanel.addMouseWheelListener(this);
 		sliderZoom.addChangeListener(chListenerNoInvalidate);
-		sliderRotate.addChangeListener(chListenerNoInvalidate);
+		//sliderRotate.addChangeListener(chListenerNoInvalidate);
 		miShowOverlay.addChangeListener(chListenerNoInvalidate);
 		bShow3colors.addActionListener(this);
+		
+		
+		sliderRotate.addSnapListener(new SnapBackSlider.SnapChangeListener(){
+		public void slideChange(int change)
+			{
+			imagePanel.rotateCamera(change/200.0);
+			//ImageWindow.this.repaint();
+			}
+	});
+
 		
 		//Piece GUI together
 		JPanel bottomRight=new JPanel(new GridLayout(1,2));
@@ -476,12 +491,14 @@ public class ImageWindow extends BasicWindow
 	/** Get rotation of image, in radians */
 	public double getRotation()
 		{
-		return sliderRotate.getValue()*Math.PI/10000.0;
+		return imagePanel.rotation;
+		//return sliderRotate.getValue()*Math.PI/10000.0;
 		}
 	/** Set rotation of image, in radians */
 	public void setRotation(double angle)
 		{
-		sliderRotate.setValue((int)(angle*10000.0/Math.PI));
+		imagePanel.rotation=angle;
+//		sliderRotate.setValue((int)(angle*10000.0/Math.PI));
 		}
 	/** Check if overlay should be hidden */
 	public boolean overlayHidden()
@@ -489,6 +506,7 @@ public class ImageWindow extends BasicWindow
 		return temporarilyHideMarkings;
 		}
 
+	
 
 
 
