@@ -20,14 +20,15 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 	
 	private int curframe=1;
 
-	File tempFile;
+	private File tempFile;
 
 	public FFMPEGMovieMaker(File path, int w, int h, String quality)
 		{
 		this.path=path;
 		try
 			{
-			tempFile=File.createTempFile("", "");
+			tempFile=File.createTempFile("ev_ffmpeg", "");
+			tempFile.delete(); //Not that great
 			tempFile.mkdirs();
 			}
 		catch (IOException e)
@@ -43,23 +44,42 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 		curframe++;
 
 		ImageIO.write(im, "png", thisFile);
+		System.out.println(thisFile);
 		}
 
 	public void done() throws Exception
 		{
-		runUntilQuit(EncodeFFMPEG.program.toString(),"-i","%d.png",path.toString()+".avi");
+		File output=new File(path.toString()+".avi");
+		output.delete();
+		System.out.println("Output to "+output);
+		//System.out.println(""+tempFile);
+		runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png",output.toString());
 		// ffmpeg -i %08d.png out.mpg
 		// ffmpeg -i %08d.png out.avi
 		EvFileUtil.deleteRecursive(tempFile);
+		
+
+		/*
+		`-r fps'
+	  Set frame rate (Hz value, fraction or abbreviation), (default = 25). 
+	  */
+		
+		
 		}	
 	
 	
 	public static void runUntilQuit(String... arg)
 		{
+		for(String s:arg)
+			System.out.println(s);
+				
 		try
 			{
 			Process proc=Runtime.getRuntime().exec(arg);
 			BufferedReader os=new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			String line;
+			//while((line=os.readLine())!=null)
+				//System.out.println(line);
 			while(os.readLine()!=null);
 			proc.waitFor();
 			}
