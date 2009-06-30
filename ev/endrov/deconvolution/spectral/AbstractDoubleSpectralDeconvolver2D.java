@@ -23,7 +23,7 @@ import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.deconvolution.iterative.DoubleCommon2D;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralPaddingType;
 import endrov.deconvolution.spectral.SpectralEnums.SpectralResizingType;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageset.EvPixels;
 
 /**
@@ -37,7 +37,7 @@ public abstract class AbstractDoubleSpectralDeconvolver2D  {
 		
 		public static void log(String s)
 			{
-			Log.printLog(s);
+			EvLog.printLog(s);
 			}
 
 

@@ -7,7 +7,6 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flow.std.math.EvOpMaxImageScalar;
 import endrov.flow.std.math.NumberMath;
 import endrov.imageset.AnyEvImage;
 

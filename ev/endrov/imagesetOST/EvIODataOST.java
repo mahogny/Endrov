@@ -10,7 +10,7 @@ import org.jdom.output.XMLOutputter;
 
 import endrov.data.*;
 import endrov.ev.EV;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageset.*;
 import endrov.util.*;
 
@@ -718,7 +718,7 @@ public class EvIODataOST implements EvIOData
 			}
 		catch (Exception e)
 			{
-			Log.printError("Error saving OST", e);
+			EvLog.printError("Error saving OST", e);
 			}
 		}
 
@@ -743,7 +743,7 @@ public class EvIODataOST implements EvIOData
 		{
 		File metaFile=new File(basedir,"rmd.ostxml");
 		if(!metaFile.exists())
-			Log.printError("PROBLEM! There is no rmd.ostxml. This is not conforming to the OST standard",null);
+			EvLog.printError("PROBLEM! There is no rmd.ostxml. This is not conforming to the OST standard",null);
 
 		if(basedir.exists())
 			{
@@ -760,13 +760,13 @@ public class EvIODataOST implements EvIOData
 				}
 			catch (FileNotFoundException e)
 				{
-				Log.printError("Could not load OST", e);
+				EvLog.printError("Could not load OST", e);
 				}
 
 			
 			}
 		else
-			Log.printError("Fatal: Imageset base directory does not exist",null);
+			EvLog.printError("Fatal: Imageset base directory does not exist",null);
 		}
 	
 
@@ -804,7 +804,7 @@ public class EvIODataOST implements EvIOData
 					if(chanf.isDirectory() && chanf.getName().startsWith("ch-"))
 						{
 						String channelName=chanf.getName().substring("ch-".length());
-						Log.printLog("Found channel: "+channelName);
+						EvLog.printLog("Found channel: "+channelName);
 						scanFilesChannel(im, channelName, blob);
 						}
 				}
@@ -893,7 +893,7 @@ public class EvIODataOST implements EvIOData
 							}
 						catch (NumberFormatException e)
 							{
-							Log.printError("partname: "+partname+" filename "+f.getName()+" framenum "+framenum,e);
+							EvLog.printError("partname: "+partname+" filename "+f.getName()+" framenum "+framenum,e);
 							System.exit(1);
 							}
 						}
@@ -924,7 +924,7 @@ public class EvIODataOST implements EvIOData
 			String line=in.readLine();
 			if(!line.equals("version1")) //version1
 				{
-				Log.printLog("Image cache wrong version, ignoring");
+				EvLog.printLog("Image cache wrong version, ignoring");
 				return false;
 				}
 			else
@@ -1066,7 +1066,7 @@ public class EvIODataOST implements EvIOData
 					}
 				w.close();
 				if(EV.debugMode)
-					Log.printLog("Wrote cache file "+cFile);
+					EvLog.printLog("Wrote cache file "+cFile);
 				}
 			}
 		catch (IOException e)
@@ -1135,7 +1135,7 @@ public class EvIODataOST implements EvIOData
 		if(curv.less(new EvDecimal("3.2")) || chExists)
 			{
 			cb.fileIOStatus(0.9, "Converting to OST 3.2, this might take a while");
-			Log.printLog("Updating files 3->3.2");
+			EvLog.printLog("Updating files 3->3.2");
 			//With SSHFS+mac there is a problem: renames hang the system!
 			
 			mapBlobs.clear(); //Make sure blob gets the right blobid

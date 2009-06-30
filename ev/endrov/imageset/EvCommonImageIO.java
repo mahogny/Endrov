@@ -14,7 +14,7 @@ import loci.formats.FormatException;
 import loci.formats.ImageReader;
 import loci.formats.ImageWriter;
 
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.util.EvFileUtil;
 
 /**
@@ -69,7 +69,7 @@ public class EvCommonImageIO
 			}
 		catch (FormatException e)
 			{
-			Log.printError("Bioformats failed to read image "+file, null);
+			EvLog.printError("Bioformats failed to read image "+file, null);
 			}
 		catch (IOException e)
 			{

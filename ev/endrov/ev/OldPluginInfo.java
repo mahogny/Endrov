@@ -73,7 +73,7 @@ public class OldPluginInfo
 				}
 			catch (IOException e) 
 				{
-				Log.printError("plugin read error", e);
+				EvLog.printError("plugin read error", e);
 				}
 			if(className.size()!=0)
 				exists=true;
@@ -88,7 +88,7 @@ public class OldPluginInfo
 		{
 		if(supported())
 			{
-			Log.printLog("Loading plugin "+classPath);
+			EvLog.printLog("Loading plugin "+classPath);
 			for(String cn:className)
 				{
 				try
@@ -110,7 +110,7 @@ public class OldPluginInfo
 				}
 			}
 		else
-			Log.printLog("Skipping plugin "+classPath+" as it is not supported");
+			EvLog.printLog("Skipping plugin "+classPath+" as it is not supported");
 		}
 	
 
@@ -150,7 +150,7 @@ public class OldPluginInfo
 					}
 				catch (IOException e) 
 					{  
-					Log.printError("plugin read error",e); 
+					EvLog.printError("plugin read error",e); 
 					}
 
 				}
@@ -178,11 +178,11 @@ public class OldPluginInfo
 					{
 					if(EV.isMac())
 						{
-						Log.printLog("Requires Mac OS X: Ok");
+						EvLog.printLog("Requires Mac OS X: Ok");
 						return true;
 						}
 					else
-						Log.printLog("Requires Mac OS X: No");
+						EvLog.printLog("Requires Mac OS X: No");
 					}
 				}
 			return false;

@@ -232,13 +232,13 @@ public class NucModelExtension implements ModelWindowExtension
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
-					Log.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
+					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
 				}
 			else if(e.getSource()==miPrintCountNucUpTo)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
-					Log.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucUpTo(frame));
+					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucUpTo(frame));
 				}
 			else if(e.getSource()==miShowNucSize0)
 				nucMagnification=0;

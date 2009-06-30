@@ -37,7 +37,7 @@ import endrov.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.deconvolution.iterative.IterativeEnums.PSFType;
 import endrov.deconvolution.iterative.IterativeEnums.PaddingType;
 import endrov.deconvolution.iterative.psf.DoublePSFMatrix3D;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 
 /**
  * 3D preconditioner based on the Fast Fourier Transform.
@@ -232,7 +232,7 @@ public class FFTDoublePreconditioner3D implements DoublePreconditioner3D {
         final double maxE = maxAndLoc[0];
 
         if (tol == -1) { 
-            Log.printLog("Computing tolerance for preconditioner..."); //TODO status
+            EvLog.printLog("Computing tolerance for preconditioner..."); //TODO status
             double[] minAndLoc = ((DoubleMatrix3D) E).getMinLocation();
             double minE = minAndLoc[0];
             if (maxE / minE < 100) {
@@ -240,7 +240,7 @@ public class FFTDoublePreconditioner3D implements DoublePreconditioner3D {
             } else {
                 tol = defaultTol2(((DoubleMatrix3D) E), Bpad);
             }
-            Log.printLog("Computing tolerance for preconditioner...done.");
+            EvLog.printLog("Computing tolerance for preconditioner...done.");
         }
 
         final double[] one = new double[] { 1, 0 };

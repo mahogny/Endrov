@@ -25,7 +25,7 @@ public class CEviewer
 	 */
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 
 		//Log.listeners.add(new SwingLog());
 
@@ -58,7 +58,7 @@ public class CEviewer
 			{
 			String javalib=System.getProperty("java.library.path");
 			File javalibfile=new File(javalib);
-			Log.printLog("Loading native libraries from "+javalibfile.getAbsolutePath());
+			EvLog.printLog("Loading native libraries from "+javalibfile.getAbsolutePath());
 			}
 		
 		try
@@ -82,7 +82,7 @@ public class CEviewer
 			}
 		catch (Exception e)
 			{
-			Log.printError("EVGUI", e);
+			EvLog.printError("EVGUI", e);
 			}
 		
 		//Help memory debugging; remove dead objects

@@ -16,7 +16,7 @@ import endrov.data.EvData;
 import endrov.data.EvIOData;
 import endrov.data.EvPath;
 import endrov.data.RecentReference;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
@@ -119,12 +119,12 @@ public class EvIODataImserv implements EvIOData
 			String line=in.readLine();
 			if(!line.equals("version1"))
 				{
-				Log.printLog("Image cache wrong version, ignoring");
+				EvLog.printLog("Image cache wrong version, ignoring");
 				return false;
 				}
 			else
 				{
-				Log.printLog("Loading imagelist cache");
+				EvLog.printLog("Loading imagelist cache");
 
 				//TODO don't clear, check if channels are gone
 				//channelImages.clear();

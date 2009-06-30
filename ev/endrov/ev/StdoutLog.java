@@ -7,7 +7,7 @@ package endrov.ev;
  * 
  * @author Johan Henriksson
  */
-public class StdoutLog extends Log
+public class StdoutLog extends EvLog
 	{
 	/**
 	 * Log debugging information

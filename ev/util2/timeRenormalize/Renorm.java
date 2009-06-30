@@ -6,7 +6,7 @@ import java.util.List;
 
 import endrov.data.EvData;
 import endrov.ev.EV;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.ev.StdoutLog;
 import endrov.frameTime.FrameTime;
 import endrov.nuc.NucLineage;
@@ -22,7 +22,7 @@ public class Renorm
 	 */
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost"));

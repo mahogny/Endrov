@@ -90,7 +90,7 @@ public class ImagePanel extends JPanel
 				}
 			catch(Exception e)
 				{
-				Log.printError("image failed to load",e);
+				EvLog.printError("image failed to load",e);
 				}
 			}
 		

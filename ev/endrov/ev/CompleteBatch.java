@@ -35,11 +35,11 @@ public class CompleteBatch implements BatchListener
 	
 	public void batchLog(String s)
 		{
-		Log.printLog(s);
+		EvLog.printLog(s);
 		}
 	public void batchError(String s)
 		{
-		Log.printError(s,null);
+		EvLog.printError(s,null);
 		}
 	public void batchDone()
 		{

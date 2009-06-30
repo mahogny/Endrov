@@ -22,7 +22,7 @@ public class MW
 	 */
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 
 		//Log.listeners.add(new SwingLog());
 
@@ -78,7 +78,7 @@ public class MW
 			}
 		catch (Exception e)
 			{
-			Log.printError("EVGUI", e);
+			EvLog.printError("EVGUI", e);
 			}
 		
 		//Help memory debugging; remove dead objects

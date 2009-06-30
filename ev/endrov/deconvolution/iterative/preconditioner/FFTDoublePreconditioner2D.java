@@ -37,7 +37,7 @@ import endrov.deconvolution.iterative.IterativeEnums.BoundaryType;
 import endrov.deconvolution.iterative.IterativeEnums.PSFType;
 import endrov.deconvolution.iterative.IterativeEnums.PaddingType;
 import endrov.deconvolution.iterative.psf.DoublePSFMatrix2D;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 
 /**
  * 2D preconditioner based on the Fast Fourier Transform.
@@ -212,7 +212,7 @@ public class FFTDoublePreconditioner2D implements DoublePreconditioner2D {
         final double maxE = maxAndLoc[0];
 
         if (tol == -1) {
-            Log.printLog("Computing tolerance for preconditioner...");  //TODO status
+            EvLog.printLog("Computing tolerance for preconditioner...");  //TODO status
             double[] minAndLoc = ((DoubleMatrix2D) E).getMinLocation();
             double minE = minAndLoc[0];
             if (maxE / minE < 100) {
@@ -220,7 +220,7 @@ public class FFTDoublePreconditioner2D implements DoublePreconditioner2D {
             } else {
                 tol = defaultTol2(((DoubleMatrix2D) E), Bpad);
             }
-            Log.printLog("Computing tolerance for preconditioner...done."); //TODO status
+            EvLog.printLog("Computing tolerance for preconditioner...done."); //TODO status
         }
 
         final double[] one = new double[] { 1, 0 };

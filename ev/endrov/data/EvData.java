@@ -15,7 +15,7 @@ import org.jdom.input.SAXBuilder;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.ev.EV;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.ev.PersonalConfig;
 import endrov.util.EvDecimal;
 
@@ -444,7 +444,7 @@ public class EvData extends EvContainer
 				{
 				o=new CustomObject();
 				o.loadMetadata(child);
-				Log.printLog("Found unknown meta object of type "+child.getName());
+				EvLog.printLog("Found unknown meta object of type "+child.getName());
 				}
 			else
 				{
@@ -453,7 +453,7 @@ public class EvData extends EvContainer
 					o=ext.newInstance();
 					o.loadMetadata(child);
 					if(EV.debugMode)
-						Log.printLog("Found meta object of type "+child.getName());
+						EvLog.printLog("Found meta object of type "+child.getName());
 					}
 				catch (InstantiationException e)
 					{

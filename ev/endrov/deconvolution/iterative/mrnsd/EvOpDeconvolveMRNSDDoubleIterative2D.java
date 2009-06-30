@@ -29,7 +29,7 @@ import endrov.deconvolution.iterative.IterativeEnums.ResizingType;
 import endrov.deconvolution.iterative.preconditioner.DoublePreconditioner2D;
 import endrov.deconvolution.iterative.preconditioner.FFTDoublePreconditioner2D;
 import endrov.deconvolution.iterative.psf.DoublePSFMatrix2D;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageset.EvPixels;
 
 /**
@@ -156,7 +156,7 @@ public class EvOpDeconvolveMRNSDDoubleIterative2D extends DoubleIterativeDeconvo
                 log("MRNSD converged after " + k + "iterations.");
                 break;
             }
-            Log.printLog(name + " iteration: " + (k + 1) + "/" + maxIters);
+            EvLog.printLog(name + " iteration: " + (k + 1) + "/" + maxIters);
             s = B.copy();
             s.assign(r, DoubleFunctions.multNeg);
             u = A.times(s, false);

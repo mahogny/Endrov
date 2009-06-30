@@ -24,7 +24,7 @@ public class ConvertToOST
 				}
 
 			//Init
-			Log.listeners.add(new StdoutLog());
+			EvLog.listeners.add(new StdoutLog());
 			EV.loadPlugins();
 			
 			//For every input file

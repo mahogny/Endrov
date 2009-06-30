@@ -38,7 +38,7 @@ import endrov.deconvolution.iterative.IterativeEnums.ResizingType;
 import endrov.deconvolution.iterative.preconditioner.DoublePreconditioner2D;
 import endrov.deconvolution.iterative.preconditioner.FFTDoublePreconditioner2D;
 import endrov.deconvolution.iterative.psf.DoublePSFMatrix2D;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageset.EvPixels;
 
 /**
@@ -194,7 +194,7 @@ public class EvOpDeconvolveHyBRDoubleIterative2D extends DoubleIterativeDeconvol
             v = new DenseDoubleMatrix1D(U.rows());
             v.setQuick(0, beta);
             if (k >= 1) {
-                Log.printLog("HyBR iteration: " + k + "/" + maxIters);
+                EvLog.printLog("HyBR iteration: " + k + "/" + maxIters);
                 if (k >= begReg - 1) {
                     inSolver = innerSolver;
                 }

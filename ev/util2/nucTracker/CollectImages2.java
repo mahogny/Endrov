@@ -36,7 +36,7 @@ public class CollectImages2
 	
 	public static void main(String[] args)
 		{
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 		
 		String channelName="DIC";

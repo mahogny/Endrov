@@ -44,7 +44,7 @@ public class AppletGUI extends JApplet
 			}
 		catch (IOException e){e.printStackTrace();}
 		//Run
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 		AppletGUI.init(null);
 		}
 
@@ -75,7 +75,7 @@ public class AppletGUI extends JApplet
 			}
 		catch (Exception e)
 			{
-			Log.printError("EVGUI", e);
+			EvLog.printError("EVGUI", e);
 			}
 		}
 	

@@ -7,7 +7,7 @@ import javax.swing.*;
 
 import endrov.ev.EV;
 import endrov.ev.EvBuild;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 
 
 public class EvSplashScreen extends JFrame 
@@ -29,7 +29,7 @@ public class EvSplashScreen extends JFrame
 	
 	private JLabel logLabel=new JLabel("");
 	
-	private Log log=new Log(){
+	private EvLog log=new EvLog(){
 		public void listenDebug(String s)
 			{
 			logLabel.setText(s);
@@ -61,12 +61,12 @@ public class EvSplashScreen extends JFrame
 		setVisible(true);
 		toFront();
 		
-		Log.listeners.add(log);
+		EvLog.listeners.add(log);
 		}
 	
 	public void disableLog()
 		{
-		Log.listeners.remove(log);
+		EvLog.listeners.remove(log);
 		}
 	
 	

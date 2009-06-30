@@ -18,7 +18,7 @@ package endrov.deconvolution;
 
 import java.util.Iterator;
 
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
@@ -35,7 +35,7 @@ public abstract class Deconvolver3D extends EvOpStack1
 	
 	public static void log(String s)
 		{
-		Log.printLog(s);
+		EvLog.printLog(s);
 		}
 
 	/**

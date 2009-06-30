@@ -12,7 +12,7 @@ import javax.swing.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
-import endrov.ev.Log;
+import endrov.ev.EvLog;
 import endrov.imageWindow.*;
 import endrov.imageset.Imageset;
 import endrov.keyBinding.KeyBinding;
@@ -321,7 +321,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			NucLineage.NucPos pos=new NucLineage.NucPos();
 			pos.x=x; pos.y=y; pos.z=z; pos.r=r;
 			parent.pos.put(firstFrame.subtract(EvDecimal.ONE),pos); //TODO bd will not work
-			Log.printLog("Made parent "+parentName);
+			EvLog.printLog("Made parent "+parentName);
 			
 			this.r.w.frameControl.setFrame(firstFrame.subtract(EvDecimal.ONE));
 			BasicWindow.updateWindows();

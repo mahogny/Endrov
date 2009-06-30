@@ -168,7 +168,7 @@ public class EV
 	  			if(p!=null)
 	  				p.loadPersonalConfig(child);
 	  			else
-	  				Log.printError("Could not find loader for id "+id,null);
+	  				EvLog.printError("Could not find loader for id "+id,null);
 	  			}
 	    	} 
 	    catch (Exception e) 
@@ -177,7 +177,7 @@ public class EV
 	    	} 
 			}
 		else
-			Log.printLog("No personal config file");
+			EvLog.printLog("No personal config file");
 		}
 	
 	/**
@@ -238,7 +238,7 @@ public class EV
 			}
 		
 		if(EV.debugMode)
-			Log.printLog(s);
+			EvLog.printLog(s);
 		}
 
 	

@@ -9,7 +9,7 @@ import java.io.*;
  * 
  * @author Johan Henriksson
  */
-public class MemoryLog extends Log
+public class MemoryLog extends EvLog
 	{
 	private StringBuffer past=new StringBuffer("");
 	

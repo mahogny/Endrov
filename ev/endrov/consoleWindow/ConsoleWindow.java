@@ -89,7 +89,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	/**
 	 * Take new log events and put them in console history
 	 */
-	private Log consoleLog=new Log()
+	private EvLog consoleLog=new EvLog()
 		{
 		//TODO probably need to postpone for swing
 		private void appendDate()
@@ -145,7 +145,7 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		public void windowActivated(WindowEvent e){}
 		public void windowClosed(WindowEvent e)
 			{
-			Log.listeners.remove(consoleLog);
+			EvLog.listeners.remove(consoleLog);
 			}
 		public void windowClosing(WindowEvent e){}
 		public void windowDeactivated(WindowEvent e)
@@ -246,9 +246,9 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 		add(commandLine,BorderLayout.SOUTH);
 		
 		//Log handling
-		Log.listeners.add(consoleLog);
+		EvLog.listeners.add(consoleLog);
 		getEvw().addWindowListener(wlist);
-		history.append(Log.memoryLog.get());
+		history.append(EvLog.memoryLog.get());
 		
 		//Window overall things
 		setTitleEvWindow("Console Window");

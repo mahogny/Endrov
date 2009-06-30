@@ -435,7 +435,7 @@ public class CellContactMap
 		{
 		try
 			{
-			Log.listeners.add(new StdoutLog());
+			EvLog.listeners.add(new StdoutLog());
 			EV.loadPlugins();
 
 			NumberFormat percentFormat=NumberFormat.getInstance();

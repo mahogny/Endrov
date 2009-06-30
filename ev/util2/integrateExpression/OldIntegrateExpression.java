@@ -58,7 +58,7 @@ public class OldIntegrateExpression
 
 	public static void main(String arg[])
 		{
-		Log.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new StdoutLog());
 		EV.loadPlugins();
 
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_xeon01_500GB01/ost4dgood/TB2141070621b/"));
