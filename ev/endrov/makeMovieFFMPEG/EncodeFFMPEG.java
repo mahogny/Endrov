@@ -15,12 +15,6 @@ public class EncodeFFMPEG
 	{
 	public static File program=new File("/usr/bin/ffmpeg");
 	
-	/*
-	`-r fps'
-  Set frame rate (Hz value, fraction or abbreviation), (default = 25). 
-  */
-	
-	
 	public static void initPlugin()	{}
 	static
 		{

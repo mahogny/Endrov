@@ -79,14 +79,16 @@ public final class MakeMovieThread extends BatchThread
 					throw new Exception("Missing channels");
 			
 			
-			System.out.println(" "+moviePath);
+			//System.out.println(" "+moviePath);
 			
+			/*
+			 * strange behaviour
 			if(moviePath.exists())
 				{
 				batchLog("Skipping. Movie already exists");
 				batchDone();
 				return;
-				}
+				}*/
 
 			//Quicktime movie to be made
 			EvMovieMaker movieMaker=null;

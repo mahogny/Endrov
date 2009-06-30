@@ -2,6 +2,7 @@ package endrov.basicWindow;
 
 import javax.swing.JSpinner;
 
+import endrov.frameTime.EvFrameEditor;
 import endrov.util.EvDecimal;
 
 /**
@@ -16,7 +17,8 @@ public class EvComboSimpleFrame extends JSpinner
 	public EvComboSimpleFrame()
 		{
 		setModel(new EvDecimalSpinnerModel());
-		setEditor(new EvDecimalEditor(this));
+		setEditor(new EvFrameEditor(this));
+		
 		}
 	
 	public EvDecimal getDecimalValue()

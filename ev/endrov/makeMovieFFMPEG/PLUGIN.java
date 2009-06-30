@@ -5,7 +5,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Make Movies: MEncoder";
+		return "Make Movies: FFMPEG";
 		}
 
 	public String getAuthor()
