@@ -107,7 +107,15 @@ public class EV
 		{
 		return new File(getGlobalConfigEndrovDir(),"config.xml");
 		}
-	
+
+	/**
+	 * Get name of log file
+	 */
+	public static File getLogFileName()
+		{
+		return new File(getGlobalConfigEndrovDir(),"log.txt");
+		}
+
 	/**
 	 * Load personal config file or load defaults if it does not exist
 	 */

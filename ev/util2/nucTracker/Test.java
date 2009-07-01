@@ -12,7 +12,7 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 import endrov.imageset.EvImage;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
@@ -35,7 +35,7 @@ public class Test
 	
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
 		EvDecimal startFrame=new EvDecimal(1500);

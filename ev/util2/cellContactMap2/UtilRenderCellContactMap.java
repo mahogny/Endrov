@@ -25,7 +25,7 @@ public class UtilRenderCellContactMap
 		{
 		try
 			{
-			EvLog.listeners.add(new StdoutLog());
+			EvLog.listeners.add(new EvLogStdout());
 			EV.loadPlugins();
 
 			NumberFormat percentFormat=NumberFormat.getInstance();

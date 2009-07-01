@@ -1,23 +1,20 @@
 package endrov.ev;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
-import javax.swing.JOptionPane;
 
 /**
  * Log listener: Print to console
  * 
  * @author Johan Henriksson
  */
-public class SwingLog extends EvLog
+public class EvLogStdout extends EvLog
 	{
 	/**
 	 * Log debugging information
 	 */
 	public void listenDebug(String s)
 		{
-		JOptionPane.showMessageDialog(null, s);
+		System.out.println(s);
 		}
 
 	/**
@@ -28,14 +25,11 @@ public class SwingLog extends EvLog
 	public void listenError(String s, Exception e)
 		{
 		if(s!=null)
-			JOptionPane.showMessageDialog(null, s);
+			System.out.println(s);
 		if(e!=null)
 			{
-			StringWriter sw=new StringWriter();
-			PrintWriter s2=new PrintWriter(sw);
-			e.printStackTrace(s2);
-			s2.flush();
-			JOptionPane.showMessageDialog(null, e.getMessage()+sw.toString());
+			System.out.println("Exception message: "+e.getMessage());
+			e.printStackTrace();
 			}
 		}
 
@@ -44,7 +38,7 @@ public class SwingLog extends EvLog
 	 */
 	public void listenLog(String s)
 		{
-		JOptionPane.showMessageDialog(null, s);
+		System.out.println(s);
 		}
 	
 	}

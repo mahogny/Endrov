@@ -19,7 +19,7 @@ public class TUI
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 
 		EV.loadPlugins();
 		Scanner in=new Scanner(System.in);

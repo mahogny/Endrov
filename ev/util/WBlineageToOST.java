@@ -10,7 +10,7 @@ import org.jdom.Element;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
@@ -27,7 +27,7 @@ public class WBlineageToOST
 	{
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
 		NucLineage lin=new NucLineage();

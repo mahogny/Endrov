@@ -8,7 +8,7 @@ import util2.ConnectImserv;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 import endrov.imageset.Imageset;
 import endrov.imagesetImserv.EvImserv;
 import endrov.shell.Shell;
@@ -76,7 +76,7 @@ public class MakeProfiles
 	
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
 	//	EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
@@ -108,7 +108,7 @@ public class MakeProfiles
 		{
 		try
 			{
-			EvLog.listeners.add(new StdoutLog());
+			EvLog.listeners.add(new EvLogStdout());
 			EV.loadPlugins();
 
 			

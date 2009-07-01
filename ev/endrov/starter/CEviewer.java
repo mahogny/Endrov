@@ -25,7 +25,7 @@ public class CEviewer
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 
 		//Log.listeners.add(new SwingLog());
 

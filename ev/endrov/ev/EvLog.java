@@ -1,5 +1,7 @@
 package endrov.ev;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 
@@ -63,4 +65,16 @@ public abstract class EvLog
 			l.listenLog(s);
 		}
 
+	
+	/**
+	 * Take an exception and print the error to a string
+	 */
+	public static String logPrintString(Exception e)
+		{
+		StringWriter sw=new StringWriter();
+		PrintWriter s2=new PrintWriter(sw);
+		e.printStackTrace(s2);
+		s2.flush();
+		return sw.toString();
+		}
 	}

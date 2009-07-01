@@ -12,7 +12,7 @@ import javax.vecmath.Vector3d;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
@@ -85,7 +85,7 @@ public class TravelDist
 	
 	public static void one(String linname)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 
 		
@@ -221,7 +221,7 @@ public class TravelDist
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 	
 		one("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost");
