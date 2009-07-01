@@ -16,7 +16,6 @@ import endrov.lineageWindow.LineageView.ClickRegion;
 import endrov.lineageWindow.LineageView.ClickRegionName;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
-import endrov.util.Tuple;
 
 
 /**
@@ -73,22 +72,7 @@ public class LineageWindow extends BasicWindow
 	
 	
 	public JMenu menuLineage=new JMenu("Lineage");
-	public JMenuItem miRename=new JMenuItem("Rename nucleus");
-	public JMenuItem miNewNuc=new JMenuItem("Create empty nucleus");
-	public JMenuItem miMerge=new JMenuItem("Merge nuclei");
-	public JMenuItem miPC=new JMenuItem("Associate parent");
-	public JMenuItem miUnparent=new JMenuItem("Unassociate from parent");
-	public JMenuItem miSwapChildren=new JMenuItem("Swap children names*");
-	public JMenuItem miFate=new JMenuItem("Set fate");
-	public JMenuItem miSetDesc=new JMenuItem("Set description");
-	public JMenuItem miStartFrame=new JMenuItem("Set override start frame");
-	public JMenuItem miEndFrame=new JMenuItem("Set override end frame");
-	public JMenuItem miDeleteNucleus=new JMenuItem("Delete nucleus");
 	public JMenuItem miExportImage=new JMenuItem("Export Image");
-	public JMenuItem miSelectChildren=new JMenuItem("Select children");
-	public JMenuItem miSelectParents=new JMenuItem("Select parents");
-	public JMenuItem miSelectAll=new JMenuItem("Select all in this lineage");
-	public JMenuItem miSelectAllName=new JMenuItem("Select all w/ the same name");
 	
 	public JMenuItem miRotate=new JMenuItem("Rotate tree");
 	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
@@ -139,26 +123,11 @@ public class LineageWindow extends BasicWindow
 		miShowExpNone.addActionListener(this);
 		miShowTreeLabel.addActionListener(this);
 		miShowLeafLabel.addActionListener(this);
-		miRename.addActionListener(this);
-		miNewNuc.addActionListener(this);
-		miMerge.addActionListener(this);
-		miPC.addActionListener(this);
-		miUnparent.addActionListener(this);
-		miSwapChildren.addActionListener(this);
 		miExportImage.addActionListener(this);
-		miFate.addActionListener(this);
-		miSetDesc.addActionListener(this);
-		miStartFrame.addActionListener(this);
-		miEndFrame.addActionListener(this);
-		miDeleteNucleus.addActionListener(this);
 		miShowFrameLines.addActionListener(this);
 		miShowKeyFrames.addActionListener(this);
 		miFoldAll.addActionListener(this);
 		miUnfoldAll.addActionListener(this);
-		miSelectChildren.addActionListener(this);
-		miSelectParents.addActionListener(this);
-		miSelectAll.addActionListener(this);
-		miSelectAllName.addActionListener(this);
 		miRotate.addActionListener(this);
 		miShowScale.addActionListener(this);
 		
@@ -197,18 +166,7 @@ public class LineageWindow extends BasicWindow
 		c.gridx++;
 		
 		addMenubar(menuLineage);
-		menuLineage.add(miRename);
-		menuLineage.add(miNewNuc);
-		menuLineage.add(miMerge);
-		menuLineage.add(miPC);
-		menuLineage.add(miUnparent);
-		menuLineage.add(miSwapChildren);
-		menuLineage.add(miFate);
-		menuLineage.add(miSetDesc);
-		menuLineage.add(miStartFrame);
-		menuLineage.add(miEndFrame);
-		menuLineage.add(miDeleteNucleus);
-		menuLineage.add(NucLineage.makeSetColorMenu());
+		new NucCommonUI(this).addToMenu(menuLineage, true);
 		menuLineage.addSeparator();
 		menuLineage.add(miExportImage);
 		menuLineage.addSeparator();
@@ -228,15 +186,9 @@ public class LineageWindow extends BasicWindow
 		menuLineage.addSeparator();
 		menuLineage.add(miFoldAll);
 		menuLineage.add(miUnfoldAll);
-		menuLineage.addSeparator();
-		menuLineage.add(miSelectChildren);
-		menuLineage.add(miSelectParents);
-		menuLineage.add(miSelectAll);
-		menuLineage.add(miSelectAllName);
 		
-		miRename.setAccelerator(KeyStroke.getKeyStroke("R"));  //'R',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
-		miPC.setAccelerator(KeyStroke.getKeyStroke("P"));  //'P',Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false));
-		miDeleteNucleus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+		
+		
 		
 		
 		//Window overall things
@@ -290,93 +242,10 @@ public class LineageWindow extends BasicWindow
 			view.camera.showHorizontalTree=!view.camera.showHorizontalTree;
 			view.repaint();
 			}
-		else if(e.getSource()==miRename)
-			NucRenameDialog.run(NucLineage.getSelectedNuclei(), null);
-		else if(e.getSource()==miNewNuc)
-			{
-			String nucName=JOptionPane.showInputDialog("Name of new nucleus");
-			if(nucName!=null)
-				{
-				if(getLineage().nuc.containsKey(nucName))
-					showErrorDialog("Name already taken");
-				else
-					{
-					getLineage().getNucCreate(nucName);
-					repaint();
-					}
-				}
-			}
-		else if(e.getSource()==miMerge)
-			{
-			HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
-			if(!selectedNuclei.isEmpty())
-				{
-				Iterator<NucSel> nucit=selectedNuclei.iterator();
-				NucSel target=nucit.next();
-				NucLineage theLineage=target.fst();
-//				Vector<String> nucToMerge=new Vector<String>();
-//				nucToMerge.add(target.getRight());
-//				String suggestName=target.getRight();
-				while(nucit.hasNext())
-					{
-					NucSel source=nucit.next();
-					if(theLineage==source.fst())
-						{
-//						nucToMerge.add(source.getRight());
-						if(!target.snd().startsWith(":"))
-							{
-							NucSel temp=target;
-							target=source;
-							source=temp;
-							}
-						target.fst().mergeNuclei(source.snd(), target.snd());
-						}
-					}
-//				suggestName=JOptionPane.showInputDialog("Give name of merged nucleus:", suggestName);
-//				if(suggestName)
-				BasicWindow.updateWindows();
-				}
-			else
-				JOptionPane.showMessageDialog(this, "Must select nuclei first");
-			}
-		else if(e.getSource()==miPC)
-			{
-			HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
-			if(!selectedNuclei.isEmpty())
-				NucLineage.createParentChildSelected();
-			BasicWindow.updateWindows();
-			}
-		else if(e.getSource()==miUnparent)
-			{
-			for(Tuple<NucLineage,String> nuc:NucLineage.getSelectedNuclei())
-				(nuc.fst()).removeParentReference(nuc.snd());
-			BasicWindow.updateWindows();
-			}
-		else if(e.getSource()==miSwapChildren)
-			{
-			
-			}
 		else if(e.getSource()==miExportImage)
 			{
 			view.saveToDisk();
 			}
-		else if(e.getSource()==miFate)
-			{
-			HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
-			if(selectedNuclei.size()==1)
-//				new FateDialog(evw, NucLineage.selectedNuclei.iterator().next()); need Frame
-				new FateDialog(null, selectedNuclei.iterator().next());
-			else
-				JOptionPane.showMessageDialog(this, "Select 1 nucleus first");
-			}
-		else if(e.getSource()==miSetDesc)
-			actionSetDesc(NucLineage.getSelectedNuclei());
-		else if(e.getSource()==miStartFrame)
-			actionSetStartFrame(NucLineage.getSelectedNuclei());
-		else if(e.getSource()==miEndFrame)
-			actionSetEndFrame(NucLineage.getSelectedNuclei());
-		else if(e.getSource()==miDeleteNucleus)
-			actionRemove(NucLineage.getSelectedNuclei());
 		else if(e.getSource()==miShowFrameLines)
 			{
 			view.showFrameLines=miShowFrameLines.isSelected();
@@ -401,38 +270,6 @@ public class LineageWindow extends BasicWindow
 			view.unfoldAll();
 		else if(e.getSource()==miFoldAll)
 			view.foldAll();
-		else if(e.getSource()==miSelectChildren)
-			{
-			Set<NucSel> parents=new HashSet<NucSel>(NucLineage.getSelectedNuclei());
-			for(NucSel p:parents)
-				recursiveSelectChildren(p.fst(), p.snd());
-			BasicWindow.updateWindows();
-			}
-		else if(e.getSource()==miSelectParents)
-			{
-			Set<NucSel> children=new HashSet<NucSel>(NucLineage.getSelectedNuclei());
-			for(NucSel p:children)
-				recursiveSelectParent(p.fst(), p.snd());
-			BasicWindow.updateWindows();
-			}
-		else if(e.getSource()==miSelectAll)
-			{
-			if(view.currentLin!=null)
-				selectAll(view.currentLin);
-			BasicWindow.updateWindows();
-			}
-		else if(e.getSource()==miSelectAllName)
-			{
-			HashSet<String> names=new HashSet<String>();
-			for(NucSel p:NucLineage.getSelectedNuclei())
-				names.add(p.snd());
-			for(EvData data:EvData.openedData)
-				for(NucLineage lin:data.getObjects(NucLineage.class))
-					for(String n:names)
-						if(lin.nuc.containsKey(n))
-							EvSelection.select(new NucSel(lin,n));
-			BasicWindow.updateWindows();
-			}
 		else if(e.getSource()==objectCombo)
 			{
 			System.out.println("objectcombo");
@@ -459,101 +296,6 @@ public class LineageWindow extends BasicWindow
 		}
 	
 	
-	/**
-	 * Set override end frame of nuclei
-	 */
-	public static void actionSetEndFrame(Collection<NucSel> nucs)
-		{
-		if(!nucs.isEmpty())
-			{
-			String sFrame=JOptionPane.showInputDialog("End frame or empty for none");
-			if(sFrame!=null)
-				{
-				for(NucSel nucPair:nucs)
-					{
-					NucLineage.Nuc n=nucPair.getNuc();
-					if(n!=null)
-						{
-						if(sFrame.equals(""))
-							n.overrideEnd=null;
-						else
-							{
-							EvDecimal frame=new EvDecimal(sFrame);
-							n.overrideEnd=frame;
-							nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), frame, false);
-							}
-						}
-					}
-				BasicWindow.updateWindows();
-				}
-			}
-		}
-
-	/**
-	 * Set override start frame
-	 */
-	public static void actionSetStartFrame(Collection<NucSel> nucs)
-		{
-		if(!nucs.isEmpty())
-			{
-			String sFrame=JOptionPane.showInputDialog("Start frame or empty for none");
-			if(sFrame!=null)
-				{
-				for(NucSel nucPair:nucs)
-					{
-					NucLineage.Nuc n=nucPair.getNuc();
-					if(n!=null)
-						{
-						if(sFrame.equals(""))
-							n.overrideStart=null;
-						else
-							{
-							EvDecimal frame=FrameControl.parseTime(sFrame);
-							n.overrideStart=frame;
-							nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), frame, false);
-							}
-						}
-					}
-				BasicWindow.updateWindows();
-				}
-			}
-		}
-	
-	public static void actionRemove(Collection<NucSel> nucs)
-		{
-		if(!nucs.isEmpty())
-			{
-			String nucNames="";
-			for(NucSel nucName:nucs)
-				nucNames=nucNames+nucName.snd()+" ";
-			int option = JOptionPane.showConfirmDialog(null, "Really want to delete: "+nucNames, "Remove?", JOptionPane.YES_NO_OPTION);
-			if (option == JOptionPane.YES_OPTION)
-				for(NucSel nucPair:nucs)
-					nucPair.fst().removeNuc(nucPair.snd());
-			BasicWindow.updateWindows();
-			}
-
-		}
-	
-	public static void actionSetDesc(Collection<NucSel> nucs)
-		{
-		for(NucSel nucPair:nucs)
-			{
-			String nucName=nucPair.snd();
-			NucLineage.Nuc n=nucPair.getNuc();
-			if(n!=null)
-				{
-				String newDesc=JOptionPane.showInputDialog("Description for "+nucName);
-				if(newDesc!=null)
-					{
-					if(newDesc.equals(""))
-						newDesc=null;
-					n.description=newDesc;
-					}
-				}
-			}
-		BasicWindow.updateWindows();
-		}
 	
 	public void updateShowExp()
 		{
@@ -563,37 +305,6 @@ public class LineageWindow extends BasicWindow
 		}
 	
 
-	/**
-	 * Recursively select children
-	 */
-	public static void recursiveSelectChildren(NucLineage lin, String nucName)
-		{
-		NucLineage.Nuc nuc=lin.nuc.get(nucName);
-		//NucLineage.selectedNuclei.add(new NucPair(lin, nucName));
-		EvSelection.select(new NucSel(lin, nucName));
-		for(String childName:nuc.child)
-			recursiveSelectChildren(lin, childName);
-		}
-	
-	/**
-	 * Recursively select parent
-	 */
-	public static void recursiveSelectParent(NucLineage lin, String nucName)
-		{
-		String pname=lin.nuc.get(nucName).parent;
-		if(pname!=null)
-			{
-			//NucLineage.selectedNuclei.add(new NucPair(lin, pname));
-			EvSelection.select(new NucSel(lin, pname));
-			recursiveSelectParent(lin, pname);
-			}
-		}
-
-	private static void selectAll(NucLineage lin)
-		{
-		for(String s:lin.nuc.keySet())
-			EvSelection.select(new NucSel(lin,s));
-		}
 	
 	/*
 	 * (non-Javadoc)
@@ -809,12 +520,12 @@ public class LineageWindow extends BasicWindow
 			miSetStartFrame.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{actionSetStartFrame(Collections.singleton(new NucSel(getLineage(),nucName)));}
+					{NucCommonUI.actionSetStartFrame(Collections.singleton(new NucSel(getLineage(),nucName)));}
 				});
 			miSetEndFrame.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{actionSetEndFrame(Collections.singleton(new NucSel(getLineage(),nucName)));}
+					{NucCommonUI.actionSetEndFrame(Collections.singleton(new NucSel(getLineage(),nucName)));}
 				});
 			miRename.addActionListener(new ActionListener()
 				{
@@ -824,12 +535,12 @@ public class LineageWindow extends BasicWindow
 			miSetDesc.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{actionSetDesc(Collections.singleton(new NucSel(getLineage(),nucName)));}
+					{NucCommonUI.actionSetDesc(Collections.singleton(new NucSel(getLineage(),nucName)));}
 				});
 			miDelete.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{actionRemove(Collections.singleton(new NucSel(getLineage(),nucName)));}
+					{NucCommonUI.actionRemove(Collections.singleton(new NucSel(getLineage(),nucName)));}
 				});
 			miCreateEmptyChild.addActionListener(new ActionListener()
 				{

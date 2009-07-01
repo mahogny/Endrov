@@ -17,6 +17,7 @@ import endrov.imageWindow.*;
 import endrov.imageset.Imageset;
 import endrov.keyBinding.KeyBinding;
 import endrov.nuc.NucLineage;
+import endrov.nuc.NucCommonUI;
 import endrov.nuc.NucSel;
 import endrov.util.EvDecimal;
 
@@ -53,9 +54,12 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 	public JMenuItem getMenuItem()
 		{
 		JMenu menu=new JMenu("Nucleus");
-		
-		JMenu setColor=NucLineage.makeSetColorMenu();
-		menu.add(setColor);
+
+		new NucCommonUI(w).addToMenu(menu, false);
+		menu.addSeparator();
+
+		//JMenu setColor=NucCommonUI.makeSetColorMenu();
+		//menu.add(setColor);
 		
 		Imageset ims=w.getImageset();
 		final WeakReference<Imageset> wims=new WeakReference<Imageset>(ims);
@@ -87,9 +91,10 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				{
 				new WindowAutoLineaging();
 				}
-		});
+		});		
 		menu.add(miAuto);
 		
+
 		
 		return menu;
 		}

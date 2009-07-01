@@ -139,7 +139,8 @@ public class NucModelExtension implements ModelWindowExtension
 			mShowNucSize.add(miShowNucSize100);
 			mShowNucSize.add(miShowNucSizeCustom);
 
-			miNuc.add(NucLineage.makeSetColorMenu());
+
+			//miNuc.add(NucCommonUI.makeSetColorMenu());
 			miNuc.add(mShowNames);
 			miNuc.add(mShowNucSize);
 			miNuc.add(mShowTrace);
@@ -157,7 +158,14 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miPrintPos);
 			miNuc.add(miPrintCountNucAtFrame);
 			miNuc.add(miPrintCountNucUpTo);
+			
+			miNuc.addSeparator();
+			new NucCommonUI(w).addToMenu(miNuc, false);
+
+			
 			w.menuModel.add(miNuc);
+
+			
 			
 	//		miSaveColorScheme.addActionListener(this);
 		//	miLoadColorScheme.addActionListener(this);
@@ -221,12 +229,12 @@ public class NucModelExtension implements ModelWindowExtension
 			else if(e.getSource()==miPrintAngle)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
-				NucLineage.calcAngle(frame);
+				NucCommonUI.calcAngle(frame);
 				}
 			else if(e.getSource()==miPrintPos)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
-				NucLineage.showPos(frame);
+				NucCommonUI.actionShowPos(frame);
 				}
 			else if(e.getSource()==miPrintCountNucAtFrame)
 				{

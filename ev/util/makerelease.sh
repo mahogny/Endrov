@@ -30,7 +30,11 @@ mv $name.zip release/
 
 #linecount
 wc -l $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java  $name/*/*/*/*.glsl
-du -hc --max-depth=2 $name
+du -hc --max-depth=1 $name
+echo "Num classes"
+ls -1 $name/*/*.class $name/*/*/*.class $name/*/*/*/*.class | wc -l
+echo "Num top-level classes"
+ls -1 $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java | wc -l
 
 echo "claimed version"
 cat $name/endrov/ev/version.txt

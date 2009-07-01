@@ -285,12 +285,9 @@ public class ImagePanel extends JPanel
 		v1=transformI2S(v1); 
 		//How much has it moved?
 		Vector2d v2=new Vector2d(getWidth()/2,getHeight()/2);
-		//Vector2d v2=transformS2I(new Vector2d(getWidth()/2,getHeight()/2));
 		v2.sub(v1);
 		//Move back
 		pan(v2.x,v2.y);
-		//transX-=v2.x;
-		//transY-=v2.y;
 		repaint();
 		}
 
