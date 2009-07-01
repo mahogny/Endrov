@@ -24,7 +24,7 @@ public class LoadAll
 	 */
 	public static void main(String[] arg)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 
 		/**

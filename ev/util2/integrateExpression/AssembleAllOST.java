@@ -4,7 +4,7 @@ import java.io.File;
 
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 import endrov.util.*;
 
 /**
@@ -28,7 +28,7 @@ public class AssembleAllOST
 		htmlOutdir.mkdirs();
 		
 		
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
 	//	EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));

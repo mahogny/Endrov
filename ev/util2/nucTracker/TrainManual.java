@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 
 
 /**
@@ -36,7 +36,7 @@ public class TrainManual
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
 		File trueDir =new File("/Volumes/TBU_main03/userdata/henriksson/traintrack/dic/images/true/");

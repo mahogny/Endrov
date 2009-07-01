@@ -34,7 +34,7 @@ public class NewIntExp
 
 	public static void main2(String arg[])
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 
 		EvParallel.map_(Arrays.asList(new File("/Volumes2/TBU_main01/ost4dgood")
@@ -57,7 +57,7 @@ public class NewIntExp
 
 	public static void main(String arg[])
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 
 		//doOne(new File("/home/tbudev3/TB2141_070621_b.ost"));

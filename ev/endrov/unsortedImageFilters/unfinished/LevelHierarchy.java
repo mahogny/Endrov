@@ -6,7 +6,7 @@ import java.util.*;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 import endrov.flowAveraging.EvOpMovingAverage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
@@ -316,7 +316,7 @@ public class LevelHierarchy
 	
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
 		

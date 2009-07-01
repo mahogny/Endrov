@@ -10,7 +10,7 @@ import javax.vecmath.Vector3d;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 import endrov.flow.EvOpGeneral;
 import endrov.flow.std.math.EvOpImageMulImage;
 import endrov.flowAveraging.EvOpMovingSum;
@@ -233,7 +233,7 @@ public class MeanShift
 	public static void main(String[] args)
 		{
 		//Init
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		
 //		EvData data=EvData.loadFile(new File("testimages/smoothvariation.png"));

@@ -1,6 +1,5 @@
 package endrov.ev;
 
-import java.io.*;
 
 //maybe it should be line oriented rather than size oriented?
 
@@ -31,17 +30,7 @@ public class MemoryLog extends EvLog
 		cut();
 		}
 
-	/**
-	 * Take an exception and print the error to a string
-	 */
-	public static String logPrintString(Exception e)
-		{
-		StringWriter sw=new StringWriter();
-		PrintWriter s2=new PrintWriter(sw);
-		e.printStackTrace(s2);
-		s2.flush();
-		return sw.toString();
-		}
+
 	
 	/**
 	 * Log an error

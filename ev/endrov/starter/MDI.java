@@ -23,7 +23,7 @@ public class MDI
 	 */
 	public static void main(String[] args)
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 
 		EvSplashScreen ss=null;
 		if(EvSplashScreen.isSplashEnabled())

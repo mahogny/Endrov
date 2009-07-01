@@ -7,7 +7,7 @@ import java.util.*;
 
 import endrov.ev.EV;
 import endrov.ev.EvLog;
-import endrov.ev.StdoutLog;
+import endrov.ev.EvLogStdout;
 
 import bioserv.auth.Auth;
 
@@ -34,7 +34,7 @@ public class BioservDaemon extends Thread
 	
 	public BioservDaemon()
 		{
-		EvLog.listeners.add(new StdoutLog());
+		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		}
 	

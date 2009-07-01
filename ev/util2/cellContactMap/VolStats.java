@@ -133,7 +133,7 @@ public class VolStats
 		{
 		try
 			{
-			EvLog.listeners.add(new StdoutLog());
+			EvLog.listeners.add(new EvLogStdout());
 			EV.loadPlugins();
 			
 			calcVolStat(loadLin());
