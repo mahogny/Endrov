@@ -15,14 +15,11 @@ import javax.vecmath.Vector3d;
 import org.jdom.*;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.basicWindow.EvColor;
-import endrov.basicWindow.EvColor.ColorMenuListener;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
 import endrov.util.EvDecimal;
-import endrov.util.EvGeomUtil;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
 
@@ -718,105 +715,6 @@ public class NucLineage extends EvObject implements Cloneable
 	 *****************************************************************************************************/
 
 	/**
-	 * Generate a menu for setting color on nuclei
-	 */
-	public static JMenu makeSetColorMenu(final EvColor... exclude)
-		{
-		JMenu m = new JMenu("Set nuclei color");
-
-		JMenuItem miRemove = new JMenuItem("<Remove>");
-		miRemove.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-					{
-					for (NucSel p : getSelectedNuclei())
-						p.getNuc().colorNuc = null;
-					BasicWindow.updateWindows();
-					}
-			});
-		m.add(miRemove);
-		
-		JMenuItem miRainbow = new JMenuItem("<Rainbow>");
-		miRainbow.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-					{
-					ArrayList<EvColor> colors = new ArrayList<EvColor>(Arrays
-							.asList(EvColor.colorList));
-					for (EvColor c : exclude)
-						colors.remove(c);
-					colors.remove(EvColor.black);
-					for (NucSel p : getSelectedNuclei())
-						{
-						int pi = Math.abs(p.snd().hashCode())%colors.size();
-						p.getNuc().colorNuc = colors.get(pi).c;
-						}
-					BasicWindow.updateWindows();
-					}
-			});
-		m.add(miRainbow);
-
-		
-		JMenuItem miCustom = new JMenuItem("<Enter RGB>");
-		miCustom.addActionListener(new ActionListener()
-			{
-			public void actionPerformed(ActionEvent e)
-				{
-				String sr=JOptionPane.showInputDialog("Red 0-255");
-				if(sr==null) return;
-				String sg=JOptionPane.showInputDialog("Green 0-255");
-				if(sg==null) return;
-				String sb=JOptionPane.showInputDialog("Blue 0-255");
-				if(sb==null) return;
-				
-				Color awtc=new Color(Integer.parseInt(sr),Integer.parseInt(sg),Integer.parseInt(sb));
-				EvColor c=new EvColor("Custom",awtc);
-				
-				for (NucSel p : getSelectedNuclei())
-					p.getNuc().colorNuc = c.c;
-				BasicWindow.updateWindows();
-				}
-			});
-		m.add(miCustom);
-		
-		/*
-		for (final EvColor c : EvColor.colorList)
-			{
-			BufferedImage bim=new BufferedImage(16,16,BufferedImage.TYPE_INT_BGR);
-			Graphics g=bim.getGraphics();
-			g.setColor(c.c);
-			g.fillRect(0, 0, 16, 16);
-			
-			JMenuItem mi = new JMenuItem(c.name,new ImageIcon(bim));
-			
-			mi.addActionListener(new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-						{
-						for (NucPair p : selectedNuclei)
-							p.fst().nuc.get(p.snd()).colorNuc = c.c;
-						BasicWindow.updateWindows();
-						}
-				});
-			m.add(mi);
-			}
-		*/
-		
-		EvColor.addColorMenuEntries(m, new ColorMenuListener(){
-			public void setColor(EvColor c)
-				{
-				for (NucSel p : getSelectedNuclei())
-					p.getNuc().colorNuc = c.c;
-				BasicWindow.updateWindows();
-				}
-		});
-		
-		
-		return m;
-		}
-
-
-	/**
 	 * Position key frame
 	 */
 	public static class NucPos
@@ -1122,48 +1020,9 @@ public class NucLineage extends EvObject implements Cloneable
 		
 		}
 	
-	
-	public static void calcAngle(EvDecimal frame)
-		{
-		HashSet<NucSel> selectedNuclei=getSelectedNuclei();
-		if(selectedNuclei.size()==3)
-			{
-			Iterator<NucSel> it=selectedNuclei.iterator();
-			NucSel nucpA=it.next();
-			NucSel nucpB=it.next();
-			NucSel nucpC=it.next();
-			Vector3d pA=nucpA.getNuc().interpolatePos(frame).pos.getPosCopy();
-			Vector3d pB=nucpB.getNuc().interpolatePos(frame).pos.getPosCopy();
-			Vector3d pC=nucpC.getNuc().interpolatePos(frame).pos.getPosCopy();
-			
-			double scale=360/(2*Math.PI);
-			
-			EvLog.printLog("angles "+nucpB.snd()+"-"+nucpC.snd()+"-"+nucpA.snd()+"  "+
-					(scale*EvGeomUtil.midAngle(pA, pB, pC))+" "+
-					(scale*EvGeomUtil.midAngle(pB, pC, pA))+" "+
-					(scale*EvGeomUtil.midAngle(pC, pA, pB)));
-			}
-		else
-			{
-			EvLog.printLog("Select 3 nuclei first");
-			for(NucSel p:selectedNuclei)
-				EvLog.printLog(p.toString());
-			}
-
-		}
-	
-	public static void showPos(EvDecimal frame)
-		{
-		for(NucSel p:getSelectedNuclei())
-			{
-			NucLineage.NucPos npos=p.getNuc().interpolatePos(frame).pos;
-			//Vector3d pos=p.fst().nuc.get(p.snd()).interpolatePos(frame).pos.getPosCopy();
-			EvLog.printLog("pos "+p.snd()+": "+npos.x+" , "+npos.y+" , "+npos.z+"  r: "+npos.r);
-			}
-			
-		}
-	
-	
+	/**
+	 * Count how many nuclei exist up to and equal the frame
+	 */
 	public int countNucUpTo(EvDecimal frame)
 		{
 		int count=0;
@@ -1175,7 +1034,10 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 		return count;
 		}
-	
+
+	/**
+	 * Count how many nuclei exist at a given frame
+	 */
 	public int countNucAtFrame(EvDecimal frame)
 		{
 		int num=0;
