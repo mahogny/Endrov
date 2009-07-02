@@ -14,11 +14,11 @@ import endrov.ev.EvLogStdout;
 import endrov.flow.EvOpGeneral;
 import endrov.flow.std.math.EvOpImageMulImage;
 import endrov.flowAveraging.EvOpMovingSum;
+import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
-import endrov.unsortedImageFilters.specialImage.GenerateSpecialImage;
 import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 

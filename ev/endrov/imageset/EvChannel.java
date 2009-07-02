@@ -121,32 +121,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 		{
 		return EvListUtil.closestFrame(imageLoader, frame); 
 		}
-	/*
-	public EvDecimal closestFrame(EvDecimal frame)
-		{
-		if(imageLoader.get(frame)!=null || imageLoader.size()==0)
-			return frame;
-		else
-			{
-			SortedMap<EvDecimal, EvStack> before=imageLoader.headMap(frame);
-			SortedMap<EvDecimal, EvStack> after=imageLoader.tailMap(frame);
-			if(before.size()==0)
-				return imageLoader.firstKey();
-			else if(after.size()==0)
-				return imageLoader.lastKey();
-			else
-				{
-				EvDecimal afterkey=after.firstKey();
-				EvDecimal beforekey=before.lastKey();
-				
-				if(afterkey.subtract(frame).less(frame.subtract(beforekey)))
-					return afterkey;
-				else
-					return beforekey;
-				}
-			}
-		}*/
-	
+
 	/**
 	 * Get the frame before
 	 * @param frame Current frame

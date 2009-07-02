@@ -97,23 +97,14 @@ public class EvStack implements AnyEvImage
 		for(EvDecimal z:ref.loaders.keySet())
 			{
 			EvImage evim=new EvImage();
-			evim.setPixelsReference(new EvPixels(w,h,type));
+			evim.setPixelsReference(new EvPixels(type,w,h));
 			loaders.put(z, evim);
 			}
-		
 		}
 	
 	//TODO lazy generation of the stack
 	
-	//public EvStack(){}
-	
-	/*
-	//Temp, can be removed later
-	public EvStack(TreeMap<EvDecimal, EvImage> l)
-		{
-		loaders.putAll(l);
-		}*/
-	
+
 	/**
 	 * Get one image plane
 	 */
@@ -128,6 +119,14 @@ public class EvStack implements AnyEvImage
 	public void put(EvDecimal z, EvImage im)
 		{
 		loaders.put(z,im);
+		}
+	
+	/**
+	 * Set one image plane
+	 */
+	public void put(int z, EvImage im)
+		{
+		loaders.put(new EvDecimal(z),im);
 		}
 
 	/**
@@ -323,6 +322,38 @@ public class EvStack implements AnyEvImage
 		return parr;
 		}
 	
+	/**
+	 * Return the pixel arrays for every plane with type int. Will do a read-only conversion automatically
+	 */
+	public double[][] getArraysDouble()
+		{
+		EvPixels[] parr2=getPixels();
+		double[][] parr=new double[parr2.length][];
+		for(int i=0;i<parr2.length;i++)
+			parr[i]=parr2[i].convertTo(EvPixels.TYPE_DOUBLE, true).getArrayDouble();
+		return parr;
+		}
+
+	
+	/**
+	 * Set an arbitrary resolution, enough metadata to make it displayable. Useful for generated data such as kernels. 
+	 */
+	public void setTrivialResolution()
+		{
+		resX=1;
+		resY=1;
+		binning=1;
+		//resZ
+		}
+	
+	/**
+	 * Calculate the pixel position in the middle, with decimals if needed.
+	 * I have done minor (but relevant) mistakes in this calculation before so here it is, once and for all.
+	 */
+	public static double calcMidWidth(int w)
+		{
+		return (w-1)/2.0;
+		}
 	
 	
 	}
