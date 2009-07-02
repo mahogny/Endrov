@@ -17,20 +17,20 @@ import endrov.imageset.AnyEvImage;
 import endrov.util.Maybe;
 
 /**
- * Flow unit: Inverse fourier transform 2D
+ * Flow unit: Fourier transform 3D
  * @author Johan Henriksson
  *
  */
-public class FlowUnitInverseFourier2D extends FlowUnitBasic
+public class FlowUnitFourier3D extends FlowUnitBasic
 	{
-	public static final String showName="Fourier inverse transform 2D";
-	private static final String metaType="transformInverseFourier2D";
+	public static final String showName="Fourier transform 3D";
+	private static final String metaType="transformFourier3D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitInverseFourier2D.class, null,
-				"Inverse fourier transform, slice by slice"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitFourier3D.class, null,
+				"Fourier transform, stack by stack"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -59,19 +59,18 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		Object inReal=flow.getInputValue(this, exec, "inReal");
 		Maybe<Object> inImag=flow.getInputValueMaybe(this, exec, "inImag");
-//		Object inImag=flow.getInputValue(this, exec, "inImag");
 		
-	//	checkNotNull(inReal);
+		//checkNotNull(inReal);
 		
 		if(!inImag.hasValue())
 			{
-			AnyEvImage[] outs=new EvOpFourierRealInverseFull2D(true).execUntyped(inReal);
+			AnyEvImage[] outs=new EvOpFourierRealForwardFull3D().execUntyped(inReal);
 			lastOutput.put("outReal", outs[0]);
-			lastOutput.put("outImag", outs[1]); //Could use half-inverse and generate special image?
+			lastOutput.put("outImag", outs[1]);
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexInverse2D(true).execUntyped(inReal, inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexForward3D().execUntyped(inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

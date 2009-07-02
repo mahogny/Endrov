@@ -43,6 +43,6 @@ public class EvOpFourierRealForwardFull2D extends EvOpSlice
 		transform.realForwardFull(swizzle);
 		
 		//Get data back on normal form
-		return FourierTransform.unswizzle(swizzle, w, h);
+		return FourierTransform.unswizzle2d(swizzle, w, h);
 		}
 	}

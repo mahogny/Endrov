@@ -3,6 +3,7 @@ import endrov.ev.PluginDef;
 import endrov.recording.camWindow.CamWindow;
 import endrov.recording.recWindow.MicroscopeWindow;
 import endrov.recording.recmetManual.ManualExtension;
+import endrov.recording.recmetMultidim.RecWindowMultiDim;
 import endrov.recording.recmetStack.StackExtension;
 
 public class PLUGIN extends PluginDef
@@ -34,7 +35,8 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{MicroscopeWindow.class,ManualExtension.class,StackExtension.class,CamWindow.class, RecordingResource.class};
+		return new Class[]{MicroscopeWindow.class,ManualExtension.class,StackExtension.class,CamWindow.class, RecordingResource.class,
+				RecWindowMultiDim.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

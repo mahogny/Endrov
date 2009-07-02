@@ -71,6 +71,7 @@ public class PLUGIN extends PluginDef
 				
 				//Objects
 				FlowUnitGetObject.class,FlowUnitParent.class,FlowUnitObjectIO.class,FlowUnitThisData.class,FlowUnitThisFlow.class,
+				FlowUnitWrapInChannel.class,
 		};
 		
 		

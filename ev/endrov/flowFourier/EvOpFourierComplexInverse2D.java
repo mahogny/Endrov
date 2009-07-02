@@ -11,11 +11,11 @@ import endrov.util.Tuple;
  * 
  * @author Johan Henriksson
  */
-public class EvOpFourierCompexInverse2D extends EvOpSlice
+public class EvOpFourierComplexInverse2D extends EvOpSlice
 	{
 	private final boolean scale;
 	
-	public EvOpFourierCompexInverse2D(boolean scale)
+	public EvOpFourierComplexInverse2D(boolean scale)
 		{
 		this.scale = scale;
 		}
@@ -41,13 +41,13 @@ public class EvOpFourierCompexInverse2D extends EvOpSlice
 			inIm=inIm.convertTo(EvPixels.TYPE_DOUBLE, true);
 			
 			//Library requires that data is stored swizzled
-			double[] swizzle=FourierTransform.swizzle(inRe, inIm, w, h);
+			double[] swizzle=FourierTransform.swizzle2d(inRe, inIm, w, h);
 			
 			//Transform
 			DoubleFFT_2D transform=new DoubleFFT_2D(h,w);
 			transform.complexInverse(swizzle, scale);
 			
 			//Get data back on normal form
-			return FourierTransform.unswizzle(swizzle, w, h);
+			return FourierTransform.unswizzle2d(swizzle, w, h);
 			}
 	}

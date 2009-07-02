@@ -1,11 +1,11 @@
-package endrov.flowFourier;
+package endrov.flowGenerateImage;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Flows: Fourier transform";
+		return "Flows: filters";
 		}
 
 	public String getAuthor()
@@ -31,11 +31,8 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				FlowUnitFourier2D.class,
-				FlowUnitInverseFourier2D.class,
-				FlowUnitFourier3D.class,
-				FlowUnitInverseFourier3D.class,
-				};
+				FlowUnitGenGaussian3D.class,
+};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

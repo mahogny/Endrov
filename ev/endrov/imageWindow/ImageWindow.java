@@ -124,10 +124,15 @@ public class ImageWindow extends BasicWindow
 			super.paintComponent(g);
 			if(!overlayHidden() && miShowOverlay.isSelected())
 				{
-				for(ImageWindowRenderer r:imageWindowRenderers)
-					r.draw(g);
-				if(tool!=null)
-					tool.paintComponent(g);
+				if(checkIfTransformOk())
+					{
+					for(ImageWindowRenderer r:imageWindowRenderers)
+						r.draw(g);
+					if(tool!=null)
+						tool.paintComponent(g);
+					}
+				else
+					EvLog.printError("Bad scale of image", null);
 				}
 			}
 		};

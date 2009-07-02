@@ -17,19 +17,19 @@ import endrov.imageset.AnyEvImage;
 import endrov.util.Maybe;
 
 /**
- * Flow unit: Inverse fourier transform 2D
+ * Flow unit: Inverse fourier transform 3D
  * @author Johan Henriksson
  *
  */
-public class FlowUnitInverseFourier2D extends FlowUnitBasic
+public class FlowUnitInverseFourier3D extends FlowUnitBasic
 	{
-	public static final String showName="Fourier inverse transform 2D";
-	private static final String metaType="transformInverseFourier2D";
+	public static final String showName="Fourier inverse transform 3D";
+	private static final String metaType="transformInverseFourier3D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitInverseFourier2D.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitInverseFourier3D.class, null,
 				"Inverse fourier transform, slice by slice"));
 		}
 	
@@ -65,13 +65,13 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 		
 		if(!inImag.hasValue())
 			{
-			AnyEvImage[] outs=new EvOpFourierRealInverseFull2D(true).execUntyped(inReal);
+			AnyEvImage[] outs=new EvOpFourierRealInverseFull3D(true).execUntyped(inReal);
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]); //Could use half-inverse and generate special image?
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexInverse2D(true).execUntyped(inReal, inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexInverse3D(true).execUntyped(inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

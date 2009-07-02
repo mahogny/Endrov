@@ -6,6 +6,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.vecmath.Vector2d;
 
+import ome.model.enums.Binning;
+
 import endrov.ev.*;
 //import endrov.filterBasic.ContrastBrightnessOp;
 import endrov.imageset.*;
@@ -145,6 +147,11 @@ public class ImagePanel extends JPanel
 		}
 	
 	
+	public boolean checkIfTransformOk()
+		{
+		return zoom!=0; 
+		}
+	
 	/**
 	 * Tell that images need be reloaded from disk.
 	 * Better register callbacks from images instead
@@ -176,8 +183,6 @@ public class ImagePanel extends JPanel
 	 */
 	public void paintComponent(Graphics g)
 		{
-//		long ma=System.currentTimeMillis();
-		
 		loadImage();
 		if(images.size()==1)
 			{
@@ -217,9 +222,6 @@ public class ImagePanel extends JPanel
 				}
 			g.drawImage(temporaryTotal,0,0,null);
 			}
-			
-	//	System.out.println("   "+(System.currentTimeMillis()-ma));
-		
 		}
 
 	/**

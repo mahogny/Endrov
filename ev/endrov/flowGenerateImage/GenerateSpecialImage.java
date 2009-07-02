@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.specialImage;
+package endrov.flowGenerateImage;
 
 import endrov.flow.std.math.EvOpImageMulImage;
 import endrov.imageset.EvImage;
@@ -118,10 +118,97 @@ public class GenerateSpecialImage
 		return p;
 		}
 	
+
+	/**
+	 * 2D Gaussian function placed in the middle. Follows the equation with a cut-off at the border so it might
+	 * not be 100% normalized but closed to for a large kernel
+	 */
+	public static EvPixels genGaussian2D(int w, int h, double sigmaX, double sigmaY)
+		{
+		EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		double[] aPixels=p.getArrayDouble();
+		
+		double mul1=1/(sigmaX*Math.sqrt(2*Math.PI)) * 1/(sigmaY*Math.sqrt(2*Math.PI));
+		double mul2x=-1/(2*sigmaX*sigmaX);
+		double mul2y=-1/(2*sigmaY*sigmaY);
+		
+		double midx=w/2;
+		double midy=h/2;
+		
+		//If exp is expensive then it need only be O(max(w,h)) times.
+		//This comes at others costs however
+		
+		for(int y=0;y<h;y++)
+			{
+			int base=y*w;
+			double dy2=y-midy;
+			dy2=dy2*dy2*mul2y;
+			for(int x=0;x<w;x++)
+				{
+				double dx2=x-midx;
+				dx2=dx2*dx2*mul2x;
+				aPixels[base+x]=mul1*Math.exp(dx2+dy2);
+				}
+			}
+		return p;
+		}
+
+	
+	/**
+	 * 3D Gaussian function placed in the middle. Follows the equation with a cut-off at the border so it might
+	 * not be 100% normalized but closed to for a large kernel
+	 */
+	public static EvStack genGaussian3D(double sigmaX, double sigmaY, double sigmaZ, int w, int h, int d)
+		{
+		EvStack s=new EvStack();
+		s.setTrivialResolution();
+		
+		double mul1=1/(sigmaX*Math.sqrt(2*Math.PI)) * 1/(sigmaY*Math.sqrt(2*Math.PI)) * 1/(sigmaZ*Math.sqrt(2*Math.PI));
+		double mul2x=-1/(2*sigmaX*sigmaX);
+		double mul2y=-1/(2*sigmaY*sigmaY);
+		double mul2z=-1/(2*sigmaZ*sigmaZ);
+		
+		double midx=EvStack.calcMidWidth(w);
+		double midy=EvStack.calcMidWidth(h);
+		double midz=EvStack.calcMidWidth(d);
+		
+		//Could generate a single plane and multiply by Math.exp(mul2 dz2) if it makes any difference
+		
+		for(int curd=0;curd<d;curd++)
+		//int curd=0;
+		//for(EvDecimal decd:template.keySet())
+			{
+			EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+			double[] aPixels=p.getArrayDouble();
+			
+			double dz2=curd-midz;
+			dz2=dz2*dz2*mul2z;
+			
+			for(int y=0;y<h;y++)
+				{
+				int base=y*w;
+				double dy2=y-midy;
+				dy2=dy2*dy2*mul2y;
+				double dyz2=dy2+dz2;
+				for(int x=0;x<w;x++)
+					{
+					double dx2=x-midx;
+					dx2=dx2*dx2;
+					aPixels[base+x]=mul1*Math.exp(mul2x*dx2+dyz2);
+					}
+				}
+			
+			s.put(curd, new EvImage(p));
+//			s.put(decd, new EvImage(p));
+			//curd++;
+			}
+		
+		return s;
+		}
 	
 	
 	/**
-	 * Common kernels? gaussian, laplace etc
+	 * Common kernels? laplace etc
 	 */
 
 	
