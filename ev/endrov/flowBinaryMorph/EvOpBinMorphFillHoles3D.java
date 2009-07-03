@@ -29,7 +29,7 @@ public class EvOpBinMorphFillHoles3D extends EvOpStack1
 
 		EvStack markstack=new EvStack();
 		markstack.getMetaFrom(stack);
-		markstack.allocate(w, h, EvPixels.TYPE_INT, stack);
+		markstack.allocate(w, h, d, EvPixels.TYPE_INT, stack);
 		
 		int[][] inarr=stack.getArraysInt();
 		int[][] markarr=markstack.getArraysInt();

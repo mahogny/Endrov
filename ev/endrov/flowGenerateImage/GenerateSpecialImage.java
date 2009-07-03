@@ -120,15 +120,14 @@ public class GenerateSpecialImage
 	
 
 	/**
-	 * 2D Gaussian function placed in the middle. Follows the equation with a cut-off at the border so it might
-	 * not be 100% normalized but closed to for a large kernel
+	 * 2D Gaussian function placed in the middle
 	 */
-	public static EvPixels genGaussian2D(int w, int h, double sigmaX, double sigmaY)
+	public static EvPixels genGaussian2D(double sigmaX, double sigmaY, int w, int h)
 		{
 		EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
 		double[] aPixels=p.getArrayDouble();
 		
-		double mul1=1/(sigmaX*Math.sqrt(2*Math.PI)) * 1/(sigmaY*Math.sqrt(2*Math.PI));
+		//double mul1=1/(sigmaX*sigmaY*Math.sqrt(2*Math.PI));
 		double mul2x=-1/(2*sigmaX*sigmaX);
 		double mul2y=-1/(2*sigmaY*sigmaY);
 		
@@ -138,6 +137,7 @@ public class GenerateSpecialImage
 		//If exp is expensive then it need only be O(max(w,h)) times.
 		//This comes at others costs however
 		
+		double sum=0;
 		for(int y=0;y<h;y++)
 			{
 			int base=y*w;
@@ -147,23 +147,28 @@ public class GenerateSpecialImage
 				{
 				double dx2=x-midx;
 				dx2=dx2*dx2*mul2x;
-				aPixels[base+x]=mul1*Math.exp(dx2+dy2);
+				double t=Math.exp(dx2+dy2);
+				sum+=t;
+				aPixels[base+x]=t;
 				}
 			}
+		sum=1/sum;
+		for(int i=0;i<aPixels.length;i++)
+			aPixels[i]*=sum;
+			
 		return p;
 		}
 
 	
 	/**
-	 * 3D Gaussian function placed in the middle. Follows the equation with a cut-off at the border so it might
-	 * not be 100% normalized but closed to for a large kernel
+	 * 3D Gaussian function placed in the middle
 	 */
 	public static EvStack genGaussian3D(double sigmaX, double sigmaY, double sigmaZ, int w, int h, int d)
 		{
 		EvStack s=new EvStack();
 		s.setTrivialResolution();
 		
-		double mul1=1/(sigmaX*Math.sqrt(2*Math.PI)) * 1/(sigmaY*Math.sqrt(2*Math.PI)) * 1/(sigmaZ*Math.sqrt(2*Math.PI));
+//		double mul1=1/(sigmaX*sigmaY*sigmaZ*Math.sqrt(2*Math.PI));
 		double mul2x=-1/(2*sigmaX*sigmaX);
 		double mul2y=-1/(2*sigmaY*sigmaY);
 		double mul2z=-1/(2*sigmaZ*sigmaZ);
@@ -174,6 +179,7 @@ public class GenerateSpecialImage
 		
 		//Could generate a single plane and multiply by Math.exp(mul2 dz2) if it makes any difference
 		
+		double sum=0;
 		for(int curd=0;curd<d;curd++)
 		//int curd=0;
 		//for(EvDecimal decd:template.keySet())
@@ -194,14 +200,24 @@ public class GenerateSpecialImage
 					{
 					double dx2=x-midx;
 					dx2=dx2*dx2;
-					aPixels[base+x]=mul1*Math.exp(mul2x*dx2+dyz2);
+					double t=Math.exp(mul2x*dx2+dyz2);
+					aPixels[base+x]=t;
+					sum+=t;
 					}
 				}
 			
-			s.put(curd, new EvImage(p));
+			s.putInt(curd, new EvImage(p));
 //			s.put(decd, new EvImage(p));
 			//curd++;
 			}
+		sum=1/sum;
+		for(EvPixels p:s.getPixels())
+			{
+			double[] aPixels=p.getArrayDouble();
+			for(int i=0;i<aPixels.length;i++)
+				aPixels[i]*=sum;
+			}
+
 		
 		return s;
 		}

@@ -33,16 +33,21 @@ public class EvOpFourierRealForwardFull3D extends EvOpStack
 		int h=inRe.getHeight();
 		int d=inRe.getDepth();
 		
+		//Copy out resolution so inRe can be GC:ed early
+		EvStack stackMeta=new EvStack();
+		stackMeta.getMetaFrom(inRe);
+
+		//Change memory layout
 		double[][] arr=inRe.getArraysDouble();
 		double[] swizzle=new double[w*h*d*2];
 		for(int az=0;az<d;az++)
 			System.arraycopy(arr[az],0,swizzle, w*h*az,w*h);
 		
 		//Transform
-		DoubleFFT_3D transform=new DoubleFFT_3D(h,w,d);
+		DoubleFFT_3D transform=new DoubleFFT_3D(d, h,w);
 		transform.realForwardFull(swizzle);
 		
 		//Get data back on normal form
-		return FourierTransform.unswizzle3d(swizzle, w, h, d, inRe);
+		return FourierTransform.unswizzle3d(swizzle, w, h, d, stackMeta);
 		}
 	}

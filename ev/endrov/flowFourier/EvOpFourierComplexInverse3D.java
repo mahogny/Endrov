@@ -38,14 +38,16 @@ public class EvOpFourierComplexInverse3D extends EvOpStack
 		int h=inRe.getHeight();
 		int d=inRe.getDepth();
 		
-		//Library requires that data is stored swizzled
-		double[] swizzle=FourierTransform.swizzle3d(inRe, inIm, w, h, d);
+		//Copy out resolution so inRe can be GC:ed early
+		EvStack stackMeta=new EvStack();
+		stackMeta.getMetaFrom(inRe);
 		
 		//Transform
-		DoubleFFT_3D transform=new DoubleFFT_3D(h,w,d);
+		double[] swizzle=FourierTransform.swizzle3d(inRe, inIm, w, h, d);
+		DoubleFFT_3D transform=new DoubleFFT_3D(d,h,w);
 		transform.complexInverse(swizzle, scale);
 		
 		//Get data back on normal form
-		return FourierTransform.unswizzle3d(swizzle, w, h, d, inRe);
+		return FourierTransform.unswizzle3d(swizzle, w, h, d, stackMeta);
 		}
 	}

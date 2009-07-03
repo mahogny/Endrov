@@ -35,6 +35,9 @@ public class PLUGIN extends PluginDef
 				FlowUnitInverseFourier2D.class,
 				FlowUnitFourier3D.class,
 				FlowUnitInverseFourier3D.class,
+				
+				FlowUnitRotateImage2D.class,
+				FlowUnitRotateImage3D.class,
 				};
 		}
 	

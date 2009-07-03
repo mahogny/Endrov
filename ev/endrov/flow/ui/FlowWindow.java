@@ -234,17 +234,6 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		
 		
 		JComponent toolbar=EvSwingUtil.compactHorizontal(bCopy,bPaste,bDelete,bSwap,bAlignRight,bAlignVert,bPlayOnce,bRepeat);
-		/*
-		new JPanel(new GridLayout(1,8));
-		toolbar.add(bCopy);
-		toolbar.add(bPaste);
-		toolbar.add(bDelete);
-		toolbar.add(bSwap);
-		toolbar.add(bAlignRight);
-		toolbar.add(bAlignVert);
-		toolbar.add(bPlayOnce);
-		toolbar.add(bRepeat);
-		*/
 		JPanel pTop=new JPanel(new BorderLayout());
 		pTop.add(objectCombo,BorderLayout.CENTER);
 		pTop.add(toolbar,BorderLayout.WEST);
@@ -297,6 +286,10 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			}
 		else if(e.getSource()==objectCombo)
 			loadData();
+		else if(e.getSource()==bCopy)
+			fp.copy();
+		else if(e.getSource()==bPaste)
+			fp.paste();
 		}
 	
 	public void dataChangedEvent()

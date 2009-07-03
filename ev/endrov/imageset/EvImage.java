@@ -239,11 +239,6 @@ public class EvImage
 		{
 		return memoryPixels;
 		}
-	/*
-	public BufferedImage getMemoryImage()
-		{
-		return im;
-		}*/
 
 	
 	/**
@@ -252,7 +247,6 @@ public class EvImage
 	public void setMemoryImage(BufferedImage im)
 		{
 		this.memoryPixels.setPixels(im);
-//		this.im=im;
 		}
 	public void setMemoryImage(EvPixels im)
 		{
@@ -284,54 +278,7 @@ public class EvImage
 	 */
 	public BufferedImage getJavaImage()
 		{
-		/*
-		//Use in-memory image
-		if(im!=null)
-			return im;
-		else
-			{
-			//Use cache-memory
-			BufferedImage loaded=cachedImage.get();
-			if(loaded!=null)
-				{
-				CacheImages.addToCache(this);
-				return loaded;
-				}
-			else
-				{
-				//Use swap memory
-				if(swapIm!=null)
-					{
-					try
-						{
-						im=ImageIO.read(swapIm);
-						swapIm=null;
-						return im;
-						}
-					catch (IOException e)
-						{
-						e.printStackTrace();
-						return null;
-						}
-					}
-				else
-					{
-					//Use shadow image
-					if(shadowedImage!=null)
-						return shadowedImage.getJavaImage();
-					else
-						{
-						//Use IO
-						loaded=io.loadJavaImage();
-						cachedImage=new SoftReference<BufferedImage>(loaded);
-						return loaded;
-						}
-					}
-				}
-			}
-			*/
-		EvPixels p=getPixels();
-		return p.convertTo(EvPixels.TYPE_AWT, true).getAWT();
+		return getPixels().convertTo(EvPixels.TYPE_AWT, true).getAWT();
 		}
 	
 	/**
@@ -402,16 +349,6 @@ public class EvImage
 	public double[][] getArrayImage()
 		{
 		return getPixels().getArrayDouble2D();
-/*		BufferedImage bim=getJavaImage();
-		int w=bim.getWidth();
-		int h=bim.getHeight();
-		double[][] aim=new double[h][w];
-		Raster r=bim.getRaster();
-		for(int i=0;i<h;i++)
-			r.getSamples(0, i, w, 1, 0, aim[i]);
-		
-		//I get 0-255. wtf? 0-1 better
-		return aim;*/
 		}
 	
 	/**
@@ -452,49 +389,9 @@ public class EvImage
 	//what to do about this? now it points to io
 	
 	
-	
-	//Is this the final solution? Probably not, it will be moved to Stack level(?). or homogenized.
-	//but it's a quick patch
-	
-	/*
-	public double getResX()
-		{
-		return resX;
-		}
-	public double getResY()
-		{
-		return resY;
-		}
-	public double getBinning()
-		{
-		return binning;
-		}
-	
-	public double getDispX()
-		{
-		return dispX;
-		}
-	public double getDispY()
-		{
-		return dispY;
-		}*/
-	
 	public String toString()
 		{
 		return "EvImage mempxl: "+memoryPixels+" shdw:"+shadowedImage+" shdwBy#:"+shadowedBy.size();
 		}
-	
-	/**
-	 * Get all parameters from another image. once stack gets parameters, this one can be killed
-	 */
-	/*
-	public void getMetaFrom(EvImage a)
-		{
-		resX=a.resX;
-		resY=a.resY;
-		dispX=a.dispX;
-		dispY=a.dispY;
-		binning=a.binning;
-		}
-	*/
+
 	}

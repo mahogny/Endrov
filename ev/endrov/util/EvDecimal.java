@@ -153,7 +153,7 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		}
 	public EvDecimal min(EvDecimal val)
 		{
-		return new EvDecimal(dec.max(val.dec));
+		return new EvDecimal(dec.min(val.dec));
 		}
 	
 

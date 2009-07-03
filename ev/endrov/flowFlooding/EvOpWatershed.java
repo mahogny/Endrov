@@ -106,7 +106,7 @@ public class EvOpWatershed extends EvOpStack1
 		
 		EvStack stackOut=new EvStack();
 		stackOut.getMetaFrom(stack);
-		stackOut.allocate(w, h, EvPixels.TYPE_INT, stack);
+		stackOut.allocate(w, h, d, EvPixels.TYPE_INT, stack);
 		
 		int[][] inarr=stack.getArraysInt();
 		int[][] outarr=stackOut.getArraysInt();

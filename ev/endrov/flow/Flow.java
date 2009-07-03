@@ -8,6 +8,7 @@ import org.jdom.Element;
 
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.ev.EvLog;
 import endrov.util.Maybe;
 
 
@@ -30,67 +31,11 @@ public class Flow extends EvObject
 		unitDeclarations.add(dec);
 		}
 	
-	private static final String metaType="flow";
+	public static final String metaType="flow";
 	
 	public static void initPlugin() {}
 	static
 		{
-		
-		/*
-		addUnitType(new FlowUnitDeclarationTrivial("Math","*",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","x^y",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","x²",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","Mod",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","Expression",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","Floor",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","Ceil",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","ToInteger,metaType"){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Math","ToDouble",metaType){
-		public FlowUnit createInstance(){return null;}});*/
-
-		/*
-		addUnitType(new FlowUnitDeclarationTrivial("Stats","Average",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Stats","Variance",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Stats","Median",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Stats","t-test",metaType){
-		public FlowUnit createInstance(){return null;}});*/
-
-		/*
-		addUnitType(new FlowUnitDeclarationTrivial("I/O","Read CSV",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("I/O","Read XML",metaType){
-		public FlowUnit createInstance(){return null;}});
-
-		addUnitType(new FlowUnitDeclarationTrivial("Im.Enhance","Contrast",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Im.Math","Convolve",metaType){
-		public FlowUnit createInstance(){return null;}});*/
-		
-		/*addUnitType(new FlowUnitDeclarationTrivial("Collection","GetByKey",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Collection","GetBy#",metaType){
-		public FlowUnit createInstance(){return null;}});
-		addUnitType(new FlowUnitDeclarationTrivial("Collection","Fold1",metaType){
-		public FlowUnit createInstance(){return null;}});*/
-		
-		
-
-		/*addUnitType(new FlowUnitDeclarationTrivial("Line","TotalLength",metaType){
-			public FlowUnit createInstance(){return null;}});*/
-
-
-
 		EvData.supportedMetadataFormats.put(metaType,Flow.class);
 		}
 
@@ -119,28 +64,41 @@ public class Flow extends EvObject
 				//TODO handle unknown units
 				String unitname=sube.getAttributeValue("unitname");
 				FlowUnitDeclaration dec=map.get(unitname);
-				FlowUnit unit=dec.createInstance();
-				unit.x=Integer.parseInt(sube.getAttributeValue("unitx"));
-				unit.y=Integer.parseInt(sube.getAttributeValue("unity"));
-				numMap.put(nexti++, unit);
-				unit.fromXML(sube);
-				units.add(unit);
+				if(dec!=null)
+					{
+					FlowUnit unit=dec.createInstance();
+					unit.x=Integer.parseInt(sube.getAttributeValue("unitx"));
+					unit.y=Integer.parseInt(sube.getAttributeValue("unity"));
+					numMap.put(nexti++, unit);
+					unit.fromXML(sube);
+					units.add(unit);
+					}
+				else
+					{
+					EvLog.printError("Warning: unrecognized flow unit "+unitname, null);
+					numMap.put(nexti++, null);
+					}
 				}
 			else if(sube.getName().equals("conn"))
 				{
 				FlowUnit fromUnit=numMap.get(Integer.parseInt(sube.getAttributeValue("fromUnit")));
 				FlowUnit toUnit=numMap.get(Integer.parseInt(sube.getAttributeValue("toUnit")));
-				String fromArg=sube.getAttributeValue("fromArg");
-				String toArg=sube.getAttributeValue("toArg");
-				FlowConn c=new FlowConn(fromUnit,fromArg,toUnit,toArg);
-				conns.add(c);
+				if(fromUnit!=null && toUnit!=null)
+					{
+					String fromArg=sube.getAttributeValue("fromArg");
+					String toArg=sube.getAttributeValue("toArg");
+					FlowConn c=new FlowConn(fromUnit,fromArg,toUnit,toArg);
+					conns.add(c);
+					}
 				}
 			}
 		}
 
 	public void saveMetadata(Element e)
 		{
-		e.setName(metaType);
+		//e.setName(metaType);
+		saveMetadata(e,units);
+		/*
 		Map<FlowUnit, Integer> numMap=new HashMap<FlowUnit, Integer>();
 		int nexti=0;
 		//Save all units
@@ -165,9 +123,44 @@ public class Flow extends EvObject
 			ne.setAttribute("toArg",c.toArg);
 			e.addContent(ne);
 			}
-		
+		*/
 		}
 
+	/**
+	 * Save a subset of the metadata. Useful for copy-paste
+	 */
+	public void saveMetadata(Element e, Collection<FlowUnit> selection)
+		{
+		e.setName(metaType);
+		Map<FlowUnit, Integer> numMap=new HashMap<FlowUnit, Integer>();
+		int nexti=0;
+		//Save all units
+		for(FlowUnit u:units)
+			if(selection.contains(u))
+				{
+				numMap.put(u,nexti++);
+				Element ne=new Element("unit");
+				String uname=u.toXML(ne);
+				ne.setAttribute("unitname",uname);
+				ne.setAttribute("unitx",""+u.x);
+				ne.setAttribute("unity",""+u.y);
+				e.addContent(ne);
+				}
+		
+		//Save all connections
+		for(FlowConn c:conns)
+			if(selection.contains(c.fromUnit) && selection.contains(c.toUnit))
+				{
+				Element ne=new Element("conn");
+				ne.setAttribute("fromUnit", ""+numMap.get(c.fromUnit));
+				ne.setAttribute("toUnit", ""+numMap.get(c.toUnit));
+				ne.setAttribute("fromArg",c.fromArg);
+				ne.setAttribute("toArg",c.toArg);
+				e.addContent(ne);
+				}
+		}
+	
+	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
@@ -279,5 +272,14 @@ public class Flow extends EvObject
 			removeUnit(u);
 		}
 	
+	
+	/**
+	 * Paste units another flow. It will make a shallow copy so the other flow should be discarded subsequentially
+	 */
+	public void pasteFrom(Flow other)
+		{
+		units.addAll(other.units);
+		conns.addAll(other.conns);
+		}
 	
 	}

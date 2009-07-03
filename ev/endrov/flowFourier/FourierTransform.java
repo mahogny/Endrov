@@ -27,8 +27,8 @@ public class FourierTransform
 		
 		//Library requires that data is stored swizzled
 		double[] swizzle=new double[w*h*2];
-		int numPix=w*h;
 		int pos=0;
+		int numPix=w*h;
 		for(int i=0;i<numPix;i++)
 			{
 			swizzle[pos]=pinReal[i];
@@ -98,8 +98,8 @@ public class FourierTransform
 		EvStack outRe=new EvStack();
 		EvStack outIm=new EvStack();
 
-		outRe.allocate(w, h, EvPixels.TYPE_DOUBLE, template);
-		outIm.allocate(w, h, EvPixels.TYPE_DOUBLE, template);
+		outRe.allocate(w, h, d, EvPixels.TYPE_DOUBLE, template);
+		outIm.allocate(w, h, d, EvPixels.TYPE_DOUBLE, template);
 		
 		EvPixels[] pRe=outRe.getPixels();
 		EvPixels[] pIm=outIm.getPixels();
@@ -108,8 +108,6 @@ public class FourierTransform
 			{
 			double[] outRePixels=pRe[az].getArrayDouble();
 			double[] outImPixels=pIm[az].getArrayDouble();
-			
-			System.out.println("az "+outRePixels);
 			
 			int numPix=w*h;
 			for(int i=0;i<numPix;i++)

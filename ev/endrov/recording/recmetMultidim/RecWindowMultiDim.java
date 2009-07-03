@@ -2,22 +2,15 @@ package endrov.recording.recmetMultidim;
 
 
 import java.awt.BorderLayout;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.util.*;
-
 import javax.swing.*;
 
 import org.jdom.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvData;
-import endrov.hardware.*;
-import endrov.recording.CameraImage;
-import endrov.recording.HWCamera;
 
 /**
  * Multi-dimension acquisition

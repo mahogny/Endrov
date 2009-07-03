@@ -1,5 +1,6 @@
 package endrov.imageset;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -26,6 +27,8 @@ public class EvStack implements AnyEvImage
 	 */
 	public double resX, resY;
 	
+	public EvDecimal resZ;
+	
 	/**
 	 * Binning. 4 would mean the image is 4 times smaller than what it depicts.
 	 */
@@ -48,6 +51,29 @@ public class EvStack implements AnyEvImage
 		return resY/binning;
 		}
 
+	public EvDecimal getResbinZ()
+		{
+		if(resZ==null)
+			{
+			//This is a temporary hack until we have moved completely to a new file format
+			if(loaders.size()>=2)
+				{
+				Iterator<EvDecimal> f=loaders.keySet().iterator();
+				EvDecimal z1=f.next();
+				EvDecimal z2=f.next();
+				resZ=z2.subtract(z1);
+				}
+			else
+				{
+				resZ=EvDecimal.ONE;
+				System.out.println("Warning: getting resolution but there are no image planes to calculate it from");
+				}
+			}
+		
+		
+		return resZ;
+		}
+	
 	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
 	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
 	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
@@ -87,20 +113,49 @@ public class EvStack implements AnyEvImage
 		binning=o.binning;
 		dispX=o.dispX;
 		dispY=o.dispY;
+		resZ=o.getResbinZ();
 		}
 	
 	/**
 	 * Allocate a 3d stack. ref will disappear later. instead have d.
 	 */
-	public void allocate(int w, int h, int type, EvStack ref)
+	public void allocate(int w, int h, int d, int type, EvStack ref)
 		{
+		resX=ref.resX;
+		resY=ref.resY;
+		resZ=ref.resZ;
+		binning=ref.binning;
+		for(int i=0;i<d;i++)
+			{
+			EvImage evim=new EvImage();
+			evim.setPixelsReference(new EvPixels(type,w,h));
+			putInt(i, evim);
+			}
+/*
+		
 		for(EvDecimal z:ref.loaders.keySet())
 			{
 			EvImage evim=new EvImage();
 			evim.setPixelsReference(new EvPixels(type,w,h));
 			loaders.put(z, evim);
+			}*/
+		}
+	
+	/**
+	 * Allocate a 3d stack
+	 */
+	/*
+	public void allocate(int w, int h, int d, int type)
+		{
+		setTrivialResolution();
+		for(int i=0;i<d;i++)
+			{
+			EvImage evim=new EvImage();
+			evim.setPixelsReference(new EvPixels(type,w,h));
+			putInt(i, evim);
 			}
 		}
+*/
 	
 	//TODO lazy generation of the stack
 	
@@ -124,9 +179,9 @@ public class EvStack implements AnyEvImage
 	/**
 	 * Set one image plane
 	 */
-	public void put(int z, EvImage im)
+	public void putInt(int z, EvImage im)
 		{
-		loaders.put(new EvDecimal(z),im);
+		loaders.put(new EvDecimal(z).multiply(getResbinZ()),im);
 		}
 
 	/**
@@ -256,6 +311,13 @@ public class EvStack implements AnyEvImage
 		return Tuple.make(k, loaders.get(k));
 		}
 	
+	/**
+	 * Get first (lowest) image in stack. Meant to be used when stack only contains one image (no z). 
+	 */
+	public EvImage getFirstImage()
+		{
+		return loaders.get(loaders.firstKey());
+		}
 	
 	
 	/**
@@ -311,7 +373,7 @@ public class EvStack implements AnyEvImage
 		}
 	
 	/**
-	 * Return the pixel arrays for every plane with type int. Will do a read-only conversion automatically
+	 * Return the pixel arrays for every plane. Will do a read-only conversion automatically
 	 */
 	public int[][] getArraysInt()
 		{
@@ -323,7 +385,7 @@ public class EvStack implements AnyEvImage
 		}
 	
 	/**
-	 * Return the pixel arrays for every plane with type int. Will do a read-only conversion automatically
+	 * Return the pixel arrays for every plane. Will do a read-only conversion automatically
 	 */
 	public double[][] getArraysDouble()
 		{
@@ -343,7 +405,7 @@ public class EvStack implements AnyEvImage
 		resX=1;
 		resY=1;
 		binning=1;
-		//resZ
+		resZ=EvDecimal.ONE;
 		}
 	
 	/**
@@ -354,6 +416,25 @@ public class EvStack implements AnyEvImage
 		{
 		return (w-1)/2.0;
 		}
+	
+	
+	public void forceEvaluation()
+		{
+		for(EvImage im:getImages())
+			im.getPixels();
+//			im.forceEvaluation();
+		}
+	
+	
+	@Override
+	protected void finalize() throws Throwable
+		{
+		super.finalize();
+		if(!loaders.isEmpty())
+			System.out.println("-----------------------------finalize stack "+this);
+		}
+	
+	
 	
 	
 	}
