@@ -35,7 +35,9 @@ public class FlowUnitShow extends FlowUnit
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Show",metaType,FlowUnitShow.class, icon,"Show value"));
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Show",metaType,FlowUnitShow.class, icon,"Show value");
+		Flow.addUnitType(decl);
+		FlowType.registerSuggestCreateUnitOutput(Object.class, decl);
 		}
 	
 	public String toXML(Element e)

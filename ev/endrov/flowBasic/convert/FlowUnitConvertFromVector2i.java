@@ -31,6 +31,7 @@ public class FlowUnitConvertFromVector2i extends FlowUnitBasic
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvertFromVector2i.class, null,
 		"Convert from Vector2i");
 		Flow.addUnitType(decl);
+		FlowType.registerSuggestCreateUnitOutput(Vector2i.class, decl);
 		}
 	
 	public String toXML(Element e){return metaType;}

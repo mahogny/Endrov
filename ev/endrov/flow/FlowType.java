@@ -119,21 +119,9 @@ public class FlowType
 	 */
 	public boolean supports(Class<?> c)
 		{
-		/*
-		//Class<?> classes[]=c.getClasses();
-		//HashSet<Class<?>> classes2=new HashSet<Class<?>>();
-//		List<Class<?>> list=Arrays.asList(c.getClasses()); //getclasses might have problems
-		List<?> list=Arrays.asList(c.getClasses()); //getclasses might have problems
-		for(Class<?> oc:type)
-			if(list.contains(oc))
-			//if(oc.c.isInstance(oc)) //TODO wrong, this is not how isinstance works
-				return true;
-		*/
 		for(Class<?> t:type)
 			if(t.isAssignableFrom(c))
 				return true;
-		
-		
 		return false;
 		}
 	
@@ -155,12 +143,25 @@ public class FlowType
 	/**
 	 * Suggested units for a given type
 	 */
-	private static Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnit=new HashMap<Class<?>, Set<FlowUnitDeclaration>>();
+	private static Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnitInput=new HashMap<Class<?>, Set<FlowUnitDeclaration>>();
+	private static Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnitOutput=new HashMap<Class<?>, Set<FlowUnitDeclaration>>();
 	
 	/**
-	 * Register a unit that should be suggested to be automatically created in the right-click list on a connection
+	 * Register a unit that should be suggested to be automatically created in the right-click list on an input connection
 	 */
-	public static synchronized void registerSuggestCreateUnit(Class<?> type, FlowUnitDeclaration unit)
+	public static synchronized void registerSuggestCreateUnitInput(Class<?> type, FlowUnitDeclaration unit)
+		{
+		registerSuggestCreateUnit(suggestCreateUnitInput, type, unit);
+		}
+	/**
+	 * Register a unit that should be suggested to be automatically created in the right-click list on an output connection
+	 */
+	public static synchronized void registerSuggestCreateUnitOutput(Class<?> type, FlowUnitDeclaration unit)
+		{
+		registerSuggestCreateUnit(suggestCreateUnitOutput, type, unit);
+		}
+	public static synchronized void registerSuggestCreateUnit(Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnit,
+			Class<?> type, FlowUnitDeclaration unit)
 		{
 		synchronized (suggestCreateUnit)
 			{
@@ -171,11 +172,56 @@ public class FlowType
 			}
 		}
 	
+	
 	/**
-	 * Get suggested units to create for a given type
+	 * Get suggested units to create for a given input type
 	 */
-	public static Collection<FlowUnitDeclaration> getSuggestCreateUnit(FlowType type)
+	public static Collection<FlowUnitDeclaration> getSuggestCreateUnitInput(FlowType type)
 		{
+		return getSuggestCreateUnit(suggestCreateUnitInput, type);
+		}
+	/**
+	 * Get suggested units to create for a given output type
+	 */
+	public static Collection<FlowUnitDeclaration> getSuggestCreateUnitOutput(FlowType type)
+		{
+		if(type==null)
+			{
+			System.out.println("type is null!");
+			return Collections.emptySet();
+			}
+//		return getSuggestCreateUnit(suggestCreateUnitOutput, type);
+		synchronized (suggestCreateUnitOutput)
+			{
+			Set<FlowUnitDeclaration> set=new HashSet<FlowUnitDeclaration>();
+			System.out.println(type);
+			for(Map.Entry<Class<?>, Set<FlowUnitDeclaration>> e:suggestCreateUnitOutput.entrySet())
+				{
+				boolean supported=false;
+				for(Class<?> c:type.type)
+					if(e.getKey().isAssignableFrom(c))
+						supported=true;
+				if(supported)
+					set.addAll(e.getValue());
+				}
+			ArrayList<FlowUnitDeclaration> sortedset=new ArrayList<FlowUnitDeclaration>(set);
+			Collections.sort(sortedset, new Comparator<FlowUnitDeclaration>(){
+				public int compare(FlowUnitDeclaration arg0, FlowUnitDeclaration arg1)
+					{
+					return arg0.name.compareTo(arg1.name);
+					}
+			});
+			return sortedset;
+			}
+		}
+	private static Collection<FlowUnitDeclaration> getSuggestCreateUnit(
+			Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnit, FlowType type)
+		{
+		if(type==null)
+			{
+			System.out.println("type is null!");
+			return Collections.emptySet();
+			}
 		synchronized (suggestCreateUnit)
 			{
 			Set<FlowUnitDeclaration> set=new HashSet<FlowUnitDeclaration>();

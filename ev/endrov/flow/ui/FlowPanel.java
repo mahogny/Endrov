@@ -528,17 +528,19 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					{
 					final Tuple<FlowUnit,String> t=tt.fst();
 					final ConnPoint connpoint=tt.snd();
-					Map<String,FlowType> types=t.fst().getTypesIn(flow);
+					Map<String,FlowType> typesIn=t.fst().getTypesIn(flow);
+					Map<String,FlowType> typesOut=t.fst().getTypesOut(flow);
 					
 					boolean connected=false;
 					for(FlowConn conn:flow.conns)
 						if(conn.toUnit==t.fst() && conn.toArg.equals(t.snd()))
 							connected=true;
 					
-					if(types.containsKey(t.snd()) && !connected)
+					//Input connection
+					if(typesIn.containsKey(t.snd()) && !connected)
 						{
-						FlowType type=types.get(t.snd());
-						Collection<FlowUnitDeclaration> suggestUnits=FlowType.getSuggestCreateUnit(type);
+						FlowType type=typesIn.get(t.snd());
+						Collection<FlowUnitDeclaration> suggestUnits=FlowType.getSuggestCreateUnitInput(type);
 						for(final FlowUnitDeclaration decl:suggestUnits)
 							{
 							JMenuItem mi=new JMenuItem("Create "+decl.name);
@@ -552,7 +554,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 								flow.conns.add(newconn);
 								flow.units.add(newu);
 
-								//doFlowSwingLayout();
 								Dimension dim=newu.getBoundingBox(getComponentForUnit(newu), flow);
 								newu.x=(int)connpoint.pos.x-dim.width-50;
 								newu.y=(int)connpoint.pos.y-dim.height/2;
@@ -563,6 +564,39 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 							popup.add(mi);
 							}
 						}
+					
+					//Output connection
+					//Converters etc, could easily have them here too
+					if(typesOut.containsKey(t.snd()))
+						{
+						FlowType type=typesOut.get(t.snd());
+						Collection<FlowUnitDeclaration> suggestUnits=FlowType.getSuggestCreateUnitOutput(type);
+						for(final FlowUnitDeclaration decl:suggestUnits)
+							{
+							JMenuItem mi=new JMenuItem("Create "+decl.name);
+							mi.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e)
+								{
+								FlowUnit newu=decl.createInstance();
+								String newuArg=newu.getTypesIn(flow).keySet().iterator().next();
+
+								FlowConn newconn=new FlowConn(t.fst(),t.snd(),newu,newuArg);
+								flow.conns.add(newconn);
+								flow.units.add(newu);
+
+								Dimension dim=newu.getBoundingBox(getComponentForUnit(newu), flow);
+								newu.x=(int)connpoint.pos.x+50;
+								newu.y=(int)connpoint.pos.y-dim.height/2;
+								
+								FlowPanel.this.repaint();
+								}
+							});
+							popup.add(mi);
+							}
+						}
+					
+					
+					
 					}
 				
 				
