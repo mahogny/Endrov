@@ -2,7 +2,7 @@ package endrov.unsortedImageFilters;
 
 import java.util.*;
 
-import endrov.flow.std.math.EvOpImageMulScalar;
+import endrov.flowBasic.math.EvOpImageMulScalar;
 import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 

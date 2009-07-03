@@ -1,6 +1,6 @@
 package endrov.flowGenerateImage;
 
-import endrov.flow.std.math.EvOpImageMulImage;
+import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;

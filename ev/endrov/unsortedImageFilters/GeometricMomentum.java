@@ -1,6 +1,6 @@
 package endrov.unsortedImageFilters;
 
-import endrov.flow.std.math.EvOpImageMulImage;
+import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvPixels;
 import endrov.unsortedImageFilters.imageMath.EvImageMath;

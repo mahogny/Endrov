@@ -5,6 +5,7 @@ import java.util.*;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.util.Vector2i;
 import endrov.util.Vector3i;
 
 
@@ -118,6 +119,7 @@ public class FlowType
 	 */
 	public boolean supports(Class<?> c)
 		{
+		/*
 		//Class<?> classes[]=c.getClasses();
 		//HashSet<Class<?>> classes2=new HashSet<Class<?>>();
 //		List<Class<?>> list=Arrays.asList(c.getClasses()); //getclasses might have problems
@@ -126,6 +128,12 @@ public class FlowType
 			if(list.contains(oc))
 			//if(oc.c.isInstance(oc)) //TODO wrong, this is not how isinstance works
 				return true;
+		*/
+		for(Class<?> t:type)
+			if(t.isAssignableFrom(c))
+				return true;
+		
+		
 		return false;
 		}
 	
@@ -136,11 +144,56 @@ public class FlowType
 	public static final FlowType TBOOLEAN=new FlowType(Boolean.class);
 	public static final FlowType TNUMBER=new FlowType(Number.class);
 	public static final FlowType TEVPIXELS=new FlowType(EvPixels.class);
+	public static final FlowType TEVSTACK=new FlowType(EvStack.class);
+	public static final FlowType TVECTOR2I=new FlowType(Vector2i.class);
 	public static final FlowType TVECTOR3I=new FlowType(Vector3i.class);
 	public static final FlowType TANY=new FlowType();
 	
 //	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
 	public static final FlowType ANYIMAGE=new FlowType(EvChannel.class, EvStack.class, EvPixels.class);
+	
+	/**
+	 * Suggested units for a given type
+	 */
+	private static Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnit=new HashMap<Class<?>, Set<FlowUnitDeclaration>>();
+	
+	/**
+	 * Register a unit that should be suggested to be automatically created in the right-click list on a connection
+	 */
+	public static synchronized void registerSuggestCreateUnit(Class<?> type, FlowUnitDeclaration unit)
+		{
+		synchronized (suggestCreateUnit)
+			{
+			Set<FlowUnitDeclaration> set=suggestCreateUnit.get(type);
+			if(set==null)
+				suggestCreateUnit.put(type, set=new HashSet<FlowUnitDeclaration>());
+			set.add(unit);
+			}
+		}
+	
+	/**
+	 * Get suggested units to create for a given type
+	 */
+	public static Collection<FlowUnitDeclaration> getSuggestCreateUnit(FlowType type)
+		{
+		synchronized (suggestCreateUnit)
+			{
+			Set<FlowUnitDeclaration> set=new HashSet<FlowUnitDeclaration>();
+			System.out.println(type);
+			for(Map.Entry<Class<?>, Set<FlowUnitDeclaration>> e:suggestCreateUnit.entrySet())
+				if(type.supports(e.getKey()))
+					set.addAll(e.getValue());
+			ArrayList<FlowUnitDeclaration> sortedset=new ArrayList<FlowUnitDeclaration>(set);
+			Collections.sort(sortedset, new Comparator<FlowUnitDeclaration>(){
+				public int compare(FlowUnitDeclaration arg0, FlowUnitDeclaration arg1)
+					{
+					return arg0.name.compareTo(arg1.name);
+					}
+			});
+			return sortedset;
+			}
+		}
+	
 	
 	/**
 	 * Any of these types

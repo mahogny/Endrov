@@ -1,6 +1,6 @@
 package endrov.flowProjection;
 
-import endrov.flow.std.math.EvOpMaxImageImage;
+import endrov.flowBasic.math.EvOpMaxImageImage;
 import endrov.imageset.EvPixels;
 
 /**

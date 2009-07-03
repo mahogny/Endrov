@@ -8,11 +8,11 @@ import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
-import endrov.flow.std.logic.EvOpImageGreaterThanScalar;
-import endrov.flow.std.math.EvOpImageAxpy;
-import endrov.flow.std.math.EvOpImageSubImage;
 import endrov.flowAveraging.EvOpMovingAverage;
 import endrov.flowAveraging.EvOpMovingSum;
+import endrov.flowBasic.logic.EvOpImageGreaterThanScalar;
+import endrov.flowBasic.math.EvOpImageAxpy;
+import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowProjection.EvOpAverageZ;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;

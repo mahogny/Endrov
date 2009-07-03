@@ -1,7 +1,7 @@
 package endrov.flowAveraging;
 
 import endrov.flow.EvOpSlice1;
-import endrov.flow.std.math.EvOpImageComplexMulImage;
+import endrov.flowBasic.math.EvOpImageComplexMulImage;
 import endrov.flowFourier.EvOpFourierComplexInverse2D;
 import endrov.flowFourier.EvOpFourierRealForwardFull2D;
 import endrov.flowFourier.EvOpRotateImage2D;

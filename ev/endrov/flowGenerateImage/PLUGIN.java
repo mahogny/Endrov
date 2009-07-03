@@ -5,7 +5,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Flows: filters";
+		return "Flows: Generate images";
 		}
 
 	public String getAuthor()
@@ -31,6 +31,7 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
+				FlowUnitGenGaussian2D.class,
 				FlowUnitGenGaussian3D.class,
 };
 		}

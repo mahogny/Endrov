@@ -1,7 +1,7 @@
 package endrov.flowBinaryMorph;
 
 import endrov.flow.EvOpSlice1;
-import endrov.flow.std.math.EvOpImageSubImage;
+import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.imageset.EvPixels;
 
 /**
