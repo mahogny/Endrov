@@ -14,6 +14,9 @@ public class MemoizeImmediate<E> extends Memoize<E>
 	
 	protected E eval()
 		{
+		//Potentially help GC, clear the reference
+		E e=this.e;
+		this.e=null;
 		return e;
 		}
 	
