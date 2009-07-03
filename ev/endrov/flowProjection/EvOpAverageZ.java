@@ -3,8 +3,8 @@ package endrov.flowProjection;
 import java.util.Map;
 
 import endrov.flow.EvOpStack1;
-import endrov.flow.std.math.EvOpImageAddImage;
-import endrov.flow.std.math.EvOpImageDivScalar;
+import endrov.flowBasic.math.EvOpImageAddImage;
+import endrov.flowBasic.math.EvOpImageDivScalar;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;

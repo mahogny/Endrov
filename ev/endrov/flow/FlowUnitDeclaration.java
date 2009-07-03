@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitDeclaration
+public class FlowUnitDeclaration //implements Comparable<FlowUnitDeclaration>
 	{
 	public final String name, category, metadata, description;
 	public final ImageIcon icon;
@@ -43,4 +43,16 @@ public class FlowUnitDeclaration
 		{
 		return name;
 		}
+
+/*
+	//Can be discussed if this method should be here at all
+	public int compareTo(FlowUnitDeclaration o)
+		{
+		int cmp=name.compareTo(o.name);
+		if(cmp==0)
+			return Double.compare(hashCode(), o.hashCode());
+		else
+			return cmp;
+		}
+	*/
 	}

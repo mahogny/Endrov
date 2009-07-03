@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.util.Vector3i;
 
 /**
  * Flow unit: generate gaussian in 3d
@@ -43,15 +44,13 @@ public class FlowUnitGenGaussian3D extends FlowUnitBasic
 		types.put("sigmaX", FlowType.TNUMBER);
 		types.put("sigmaY", FlowType.TNUMBER);
 		types.put("sigmaZ", FlowType.TNUMBER);
-		types.put("w", FlowType.TINTEGER);
-		types.put("h", FlowType.TINTEGER);
-		types.put("d", FlowType.TINTEGER);
+		types.put("dim", FlowType.TVECTOR3I);
 		}
 	
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("out", FlowType.ANYIMAGE); //TODO same type as "image"
+		types.put("out", FlowType.TEVSTACK);
 		}
 	
 	/** Execute algorithm */
@@ -63,13 +62,11 @@ public class FlowUnitGenGaussian3D extends FlowUnitBasic
 		Number sigmaX=(Number)flow.getInputValue(this, exec, "sigmaX");
 		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
 		Number sigmaZ=(Number)flow.getInputValue(this, exec, "sigmaZ");
-		Number w=(Number)flow.getInputValue(this, exec, "w");
-		Number h=(Number)flow.getInputValue(this, exec, "h");
-		Number d=(Number)flow.getInputValue(this, exec, "d");
+		Vector3i dim=(Vector3i)flow.getInputValue(this, exec, "dim");
 
 
-		lastOutput.put("out", GenerateSpecialImage.genGaussian3D(sigmaX.doubleValue(), sigmaY.doubleValue(), sigmaZ.doubleValue(), 
-				w.intValue(), h.intValue(), d.intValue()));
+		lastOutput.put("out", GenerateSpecialImage.genGaussian3D(sigmaX.doubleValue(), sigmaY.doubleValue(), sigmaZ.doubleValue(),
+				dim.x,dim.y,dim.z));
 		}
 
 	

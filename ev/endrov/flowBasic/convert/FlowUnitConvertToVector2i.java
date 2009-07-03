@@ -1,0 +1,68 @@
+package endrov.flowBasic.convert;
+
+
+import java.awt.Color;
+import java.util.Map;
+
+import javax.swing.ImageIcon;
+
+import org.jdom.Element;
+
+import endrov.flow.Flow;
+import endrov.flow.FlowExec;
+import endrov.flow.FlowType;
+import endrov.flow.FlowUnitBasic;
+import endrov.flow.FlowUnitDeclaration;
+import endrov.util.Vector2i;
+
+/**
+ * Flow unit: Convert to Vector2i
+ * @author Johan Henriksson
+ *
+ */
+public class FlowUnitConvertToVector2i extends FlowUnitBasic
+	{
+	public static final String showName="To Vector2i";
+	private static final String metaType="channelConvertToVector2i";
+	
+	public static void initPlugin() {}
+	static
+		{
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvertToVector2i.class, null,
+		"Convert to Vector2i");
+		Flow.addUnitType(decl);
+		FlowType.registerSuggestCreateUnit(Vector2i.class, decl);
+		}
+	
+	public String toXML(Element e){return metaType;}
+	public void fromXML(Element e){}
+	public String getBasicShowName(){return showName;}
+	public ImageIcon getIcon(){return null;}
+	public Color getBackground(){return CategoryInfo.bgColor;}
+	
+	/** Get types of flows in */
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("x", FlowType.TINTEGER); 
+		types.put("y", FlowType.TINTEGER); 
+		}
+	
+	/** Get types of flows out */
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("out", FlowType.TVECTOR2I);
+		}
+	
+	/** Execute algorithm */
+	public void evaluate(Flow flow, FlowExec exec) throws Exception
+		{
+		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
+		
+		int x=(Integer)flow.getInputValue(this, exec, "x");
+		int y=(Integer)flow.getInputValue(this, exec, "y");
+		
+		lastOutput.put("out", new Vector2i(x,y));
+		}
+
+	
+	}
