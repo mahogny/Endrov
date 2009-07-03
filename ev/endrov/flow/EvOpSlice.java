@@ -55,9 +55,10 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 	
 	
 	/**
-	 * Turn a slice op into a stack op
+	 * Turn a slice op into a stack op.
+	 * Should ONLY be used on SliceOp* 
 	 */
-	public static EvOpStack makeStackOp(final EvOpGeneral op)
+	static EvOpStack makeStackOp(final EvOpGeneral op)
 		{
 		return new EvOpStack()
 			{
@@ -67,16 +68,16 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 				HashMap<EvDecimal,Memoize<EvPixels[]>> mems=new HashMap<EvDecimal, Memoize<EvPixels[]>>(); 
 				EvStack[] retStack=new EvStack[op.getNumberChannels()];
 				EvStack referenceStack=p[0];
-				System.out.println("makestackop #chan "+op.getNumberChannels());
+				//System.out.println("makestackop #chan "+op.getNumberChannels());
 				
-				EvImage[][] stackImages=new EvImage[op.getNumberChannels()][];
+				EvImage[][] inputStackImages=new EvImage[p.length][];
 				for(int ac=0;ac<op.getNumberChannels();ac++)
-					stackImages[ac]=p[ac].getImages();
+					inputStackImages[ac]=p[ac].getImages();
 				
 //				referenceStack.getImages()
 				
 				
-				for(int ac=0;ac<op.getNumberChannels();ac++)
+				for(int currentReturnChannel=0;currentReturnChannel<op.getNumberChannels();currentReturnChannel++)
 					{
 					//Create one output channel. First argument decides shape of output stack
 					EvStack newstack=new EvStack();
@@ -84,46 +85,39 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 					
 					//Set up each slice
 					System.out.println("stack got "+referenceStack.entrySet().size());
+					int currentSliceIndex=0;
 					for(Map.Entry<EvDecimal, EvImage> pe:referenceStack.entrySet())
 						{
 						EvImage newim=new EvImage();
 						newstack.put(pe.getKey(), newim);
 						
 						//Collect slice from each input stack
-						final EvImage[] imlist=new EvImage[p.length];
-						int ci=0;
+						EvImage[] imlist=new EvImage[p.length];
+						int currentInputChannel=0;
 						for(EvStack cit:p)
 							{
-//							imlist[ci]=cit.get(pe.getKey());
-							imlist[ci]=stackImages[ac][ci];
-							if(imlist[ci]==null)
+							imlist[currentInputChannel]=inputStackImages[currentInputChannel][currentSliceIndex];
+							if(imlist[currentInputChannel]==null)
 								{
 								System.out.println("BAD! null values in imlist!");
-								System.out.println("ci "+ci+" "+pe.getKey()+" "+cit.keySet());
+								System.out.println("ci "+currentInputChannel+" "+pe.getKey()+" "+cit.keySet());
 								}
-							ci++;
+							currentInputChannel++;
 							}
 						
 						//Memoize multiple returns
 						Memoize<EvPixels[]> maybe=mems.get(pe.getKey());
 						if(maybe==null)
-							mems.put(pe.getKey(),maybe=new Memoize<EvPixels[]>(){
-							protected EvPixels[] eval()
-								{
-								EvPixels[] plist=new EvPixels[imlist.length];
-								for(int i=0;i<plist.length;i++)
-									plist[i]=imlist[i].getPixels();
-								return op.exec(plist);
-								//return op.exec(evim.getPixels());
-								}});
+							mems.put(pe.getKey(),maybe=new MemoizeExec(imlist, op));
 						
 						final Memoize<EvPixels[]> m=maybe;
-						final int thisAc=ac;
+						final int thisAc=currentReturnChannel;
 						newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return m.get()[thisAc];}};
 						
 						newim.registerLazyOp(m);		
+						currentSliceIndex++;
 						}
-					retStack[ac]=newstack;
+					retStack[currentReturnChannel]=newstack;
 					System.out.println("created stack "+newstack.getResbinX()+" "+newstack.getResbinY());
 					}
 				return retStack;
@@ -134,5 +128,33 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 				return op.getNumberChannels();
 				}
 			};
+		}
+	
+	
+	private static class MemoizeExec extends Memoize<EvPixels[]>
+		{
+		private EvImage[] imlist;
+		private EvOpGeneral op;
+		
+		public MemoizeExec(EvImage[] imlist, EvOpGeneral op)
+			{
+			this.imlist = imlist;
+			this.op = op;
+			}
+
+		@Override
+		protected EvPixels[] eval()
+			{
+			EvPixels[] plist=new EvPixels[imlist.length];
+			for(int i=0;i<plist.length;i++)
+				plist[i]=imlist[i].getPixels();
+			EvPixels[] ret=op.exec(plist);
+			//GC cannot know that this function will only be called once. Hence manually remove
+			//the references.
+			op=null;
+			imlist=null;
+			return ret;
+			}
+	
 		}
 	}

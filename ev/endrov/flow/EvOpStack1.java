@@ -1,14 +1,10 @@
 package endrov.flow;
 
-import java.util.Map;
-
 import endrov.imageset.EvChannel;
-import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
-import endrov.util.Memoize;
 
 /**
  * Image operation defined by operation on stacks
@@ -41,7 +37,8 @@ public abstract class EvOpStack1 extends EvOpGeneral
 	
 	public EvChannel[] exec(EvChannel... ch)
 		{
-		return applyStackOp(ch, this);
+//		return applyStackOp(ch, this);
+		return EvOpStack.applyStackOp(ch, this);
 		}
 	
 
@@ -62,6 +59,7 @@ public abstract class EvOpStack1 extends EvOpGeneral
 	/**
 	 * Lazily create a channel using an operator that combines input channels
 	 */
+	/*
 	public static EvChannel[] applyStackOp(EvChannel[] ch, final EvOpStack1 op)
 		{
 		//Not quite final: what if changes should go back into the channel? how?
@@ -121,7 +119,7 @@ public abstract class EvOpStack1 extends EvOpGeneral
 				}
 			}
 		return retch;
-		}
+		}*/
 	
 	public int getNumberChannels()
 		{

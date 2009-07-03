@@ -64,11 +64,14 @@ public abstract class EvOpStack extends EvOpGeneral
 
 	
 	/**
-	 * Lazily create a channel using an operator that combines input channels
+	 * Lazily create a channel using an operator that combines input channels.
+	 * 
+	 * Should ONLY be used for EvOpStack and EvOpStack1 
+	 * 
 	 */
-	public static EvChannel[] applyStackOp(EvChannel[] ch, final EvOpStack op)
+	static EvChannel[] applyStackOp(EvChannel[] ch, EvOpGeneral op)
 		{
-		System.out.println("here3 ");
+		//System.out.println("here3 ");
 
 		//Not quite final: what if changes should go back into the channel? how?
 		EvChannel[] retch=new EvChannel[op.getNumberChannels()];
@@ -76,7 +79,7 @@ public abstract class EvOpStack extends EvOpGeneral
 		//First argument decides which frames to apply for
 		EvChannel refChannel=ch[0];
 		
-		System.out.println("#chan "+retch.length+"  zzz "+refChannel.imageLoader);
+		//System.out.println("#chan "+retch.length+"  zzz "+refChannel.imageLoader);
 		for(int ac=0;ac<retch.length;ac++)
 			{
 			EvChannel newch=new EvChannel();
@@ -90,9 +93,6 @@ public abstract class EvOpStack extends EvOpGeneral
 				EvStack newstack=new EvStack();
 				EvStack stack=se.getValue();
 				
-				System.out.println("here4 "+se);
-				
-		
 				//TODO register lazy operation
 				
 				final EvStack[] imlist=new EvStack[ch.length];
@@ -103,11 +103,8 @@ public abstract class EvOpStack extends EvOpGeneral
 					ci++;
 					}
 				
-				final Memoize<EvStack[]> ms=new Memoize<EvStack[]>(){
-				protected EvStack[] eval()
-					{
-					return op.exec(imlist);
-					}};
+				final Memoize<EvStack[]> ms=new MemoizeExec(imlist, op);
+				
 				
 				//TODO without lazy stacks, prior stacks are forced to be evaluated.
 				//only fix is if the laziness is added directly at the source.
@@ -134,4 +131,29 @@ public abstract class EvOpStack extends EvOpGeneral
 			}
 		return retch;
 		}
+	
+	
+	private static class MemoizeExec extends Memoize<EvStack[]>
+		{
+		private EvStack[] imlist;
+		private EvOpGeneral op;
+		
+		public MemoizeExec(EvStack[] imlist, EvOpGeneral op)
+			{
+			this.imlist = imlist;
+			this.op = op;
+			}
+
+		@Override
+		protected EvStack[] eval()
+			{
+			EvStack[] ret=op.exec(imlist);
+			//Help GC. There might be space leaks without this.
+			op=null;
+			imlist=null;
+			return ret;
+			}
+	
+		}
+	
 	}
