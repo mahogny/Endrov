@@ -40,8 +40,7 @@ public class FlowUnitConstDouble extends FlowUnitConst
 		{
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Double",metaType,FlowUnitConstDouble.class, icon,"Constant double");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnit(Double.class, decl);
-		//FlowType.registerSuggestCreateUnit(FlowType.TDOUBLE, decl);
+		FlowType.registerSuggestCreateUnitInput(Double.class, decl);
 		}
 	
 	public String toXML(Element e)

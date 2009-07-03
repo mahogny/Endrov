@@ -13,7 +13,6 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.util.Vector2i;
 import endrov.util.Vector3i;
 
 /**
@@ -32,7 +31,7 @@ public class FlowUnitConvertToVector3i extends FlowUnitBasic
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvertToVector3i.class, null,
 		"Convert to Vector3i");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnit(Vector3i.class, decl);
+		FlowType.registerSuggestCreateUnitInput(Vector3i.class, decl);
 		}
 	
 	public String toXML(Element e){return metaType;}

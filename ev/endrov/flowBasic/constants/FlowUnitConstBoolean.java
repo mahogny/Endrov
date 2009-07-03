@@ -35,7 +35,7 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 		{
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Boolean",metaType,FlowUnitConstBoolean.class, icon,"Constant boolean");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnit(Boolean.class, decl);
+		FlowType.registerSuggestCreateUnitInput(Boolean.class, decl);
 		}
 	
 	public String toXML(Element e)

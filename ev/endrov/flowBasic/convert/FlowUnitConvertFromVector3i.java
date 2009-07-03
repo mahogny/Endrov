@@ -28,8 +28,10 @@ public class FlowUnitConvertFromVector3i extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvertFromVector3i.class, null,
-				"Convert from Vector3i"));
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvertFromVector3i.class, null,
+		"Convert from Vector3i");
+		Flow.addUnitType(decl);
+		FlowType.registerSuggestCreateUnitOutput(Vector3i.class, decl);
 		}
 	
 	public String toXML(Element e){return metaType;}

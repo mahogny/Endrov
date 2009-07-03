@@ -41,7 +41,7 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 		{
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Decimal",metaType,FlowUnitConstEvDecimal.class, icon,"Constant EvDecimal");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnit(EvDecimal.class, decl);
+		FlowType.registerSuggestCreateUnitInput(EvDecimal.class, decl);
 		}
 	
 	public String toXML(Element e)

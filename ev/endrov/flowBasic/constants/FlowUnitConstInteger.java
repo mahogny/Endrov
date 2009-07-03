@@ -39,7 +39,7 @@ public class FlowUnitConstInteger extends FlowUnitConst
 		{
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Integer",metaType,FlowUnitConstInteger.class, icon,"Constant integer");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnit(Integer.class, decl);
+		FlowType.registerSuggestCreateUnitInput(Integer.class, decl);
 		}
 	
 	public String toXML(Element e)
