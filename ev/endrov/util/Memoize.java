@@ -15,7 +15,10 @@ public abstract class Memoize<E>
 	public E get()
 		{
 		if(!evaluated)
+			{
+			evaluated=true;
 			value=eval();
+			}
 		return value;
 		}
 

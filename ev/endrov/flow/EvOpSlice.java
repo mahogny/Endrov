@@ -68,6 +68,14 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 				EvStack[] retStack=new EvStack[op.getNumberChannels()];
 				EvStack referenceStack=p[0];
 				System.out.println("makestackop #chan "+op.getNumberChannels());
+				
+				EvImage[][] stackImages=new EvImage[op.getNumberChannels()][];
+				for(int ac=0;ac<op.getNumberChannels();ac++)
+					stackImages[ac]=p[ac].getImages();
+				
+//				referenceStack.getImages()
+				
+				
 				for(int ac=0;ac<op.getNumberChannels();ac++)
 					{
 					//Create one output channel. First argument decides shape of output stack
@@ -86,7 +94,13 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 						int ci=0;
 						for(EvStack cit:p)
 							{
-							imlist[ci]=cit.get(pe.getKey());
+//							imlist[ci]=cit.get(pe.getKey());
+							imlist[ci]=stackImages[ac][ci];
+							if(imlist[ci]==null)
+								{
+								System.out.println("BAD! null values in imlist!");
+								System.out.println("ci "+ci+" "+pe.getKey()+" "+cit.keySet());
+								}
 							ci++;
 							}
 						

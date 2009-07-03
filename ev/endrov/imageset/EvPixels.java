@@ -158,13 +158,15 @@ public class EvPixels implements AnyEvImage
 	 */
 	private EvPixels()
 		{
+		count(1);
 		}
 
 	/**
-	 * Deep copy of image
+	 * Deep copy of another image
 	 */
 	public EvPixels(EvPixels p)
 		{
+		count(1);
 		setPixels(p);
 		
 		/*
@@ -191,6 +193,7 @@ public class EvPixels implements AnyEvImage
 	 */
 	public EvPixels(BufferedImage awt)
 		{
+		count(1);
 		setPixels(awt);
 		}
 	
@@ -200,6 +203,7 @@ public class EvPixels implements AnyEvImage
 	 */
 	public EvPixels(int type, int w, int h)
 		{
+		count(1);
 		allocate(type,w,h);
 		}
 	
@@ -857,4 +861,31 @@ public class EvPixels implements AnyEvImage
 			}
 		return b;		
 		}
+
+	@Override
+	protected void finalize() throws Throwable
+		{
+		super.finalize();
+		count(-1);
+		}
+	
+	
+	private static int livePixels=0;
+	
+	private synchronized void count(int c)
+		{
+		livePixels+=c;
+		/*
+		if(c>0)
+			System.out.println("creating pixels, live "+livePixels);
+		else
+			System.out.println("--##---- finalize evpixel, live: "+livePixels);
+			*/
+		}
+	
+	public static int getNumLiveImages()
+		{
+		return livePixels;
+		}
+	
 	}

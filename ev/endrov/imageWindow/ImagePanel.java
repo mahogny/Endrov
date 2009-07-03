@@ -6,8 +6,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.vecmath.Vector2d;
 
-import ome.model.enums.Binning;
-
 import endrov.ev.*;
 //import endrov.filterBasic.ContrastBrightnessOp;
 import endrov.imageset.*;
@@ -92,7 +90,7 @@ public class ImagePanel extends JPanel
 				}
 			catch(Exception e)
 				{
-				EvLog.printError("image failed to load",e);
+				EvLog.printError("image panel: image failed to load",e);
 				}
 			}
 		

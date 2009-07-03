@@ -104,10 +104,7 @@ public abstract class EvOpStack1 extends EvOpGeneral
 				final int thisAc=ac;
 				for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
 					{
-					
-					//final EvImage evim=pe.getValue();
 					EvImage newim=new EvImage();
-					//newim.getMetaFrom(evim);
 					newstack.put(pe.getKey(), newim);
 					
 					newstack.getMetaFrom(stack); //This design makes it impossible to generate resolution lazily
@@ -116,7 +113,7 @@ public abstract class EvOpStack1 extends EvOpGeneral
 						
 					newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return ms.get()[thisAc].get(z).getPixels();}};
 					
-					newim.registerLazyOp(ms);		
+					newim.registerLazyOp(ms);
 							
 					}
 				newch.imageLoader.put(se.getKey(), newstack);

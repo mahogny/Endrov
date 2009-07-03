@@ -18,10 +18,16 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.vecmath.Vector2d;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.ev.EvLog;
 import endrov.flow.*;
+import endrov.util.EvSwingUtil;
+import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
 
 /**
@@ -941,10 +947,74 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 
 
+	/**
+	 * Copy current selection to clipboard
+	 */
+	public void copy()
+		{
+		if(enabled)
+			try
+				{
+				Element root=new Element("temp");
+				Document doc=new Document(root);
+				flow.saveMetadata(root, selectedUnits);
+				EvSwingUtil.setClipBoardString(EvXmlUtil.xmlToString(doc));
+				}
+			catch (Exception e)
+				{
+				EvLog.printError("Error copying flow", e);
+				}
+		}
 
+	/**
+	 * Paste from clipboard
+	 */
+	public void paste()
+		{
+		if(enabled)
+			{
+			try
+				{
+				String cp=EvSwingUtil.getClipBoardString();
+				Element root=EvXmlUtil.stringToXml(cp);
+				if(root.getName().equals(Flow.metaType))
+					{
+					Flow n=new Flow();
+					n.loadMetadata(root);
+					flow.pasteFrom(n);
+					selectedUnits.clear();
+					selectedUnits.addAll(n.units);
 
-
-
+					//Put pasted units in the center of the screen
+					int avx=0;
+					int avy=0;
+					for(FlowUnit u:selectedUnits)
+						{
+						avx+=u.x;
+						avy+=u.y;
+						}
+					avx/=selectedUnits.size();
+					avy/=selectedUnits.size();
+					
+					int midsx=cameraX+getWidth()/2;
+					int midsy=cameraY+getHeight()/2;
+					int dx=midsx-avx;
+					int dy=midsy-avy;
+					for(FlowUnit u:selectedUnits)
+						{
+						u.x+=dx;
+						u.y+=dy;
+						}
+					repaint();
+					}
+				}
+			catch (Exception e)
+				{
+				EvLog.printError("Error pasting flow", e);
+				}
+			}
+		}
+	
 
 
 	}
