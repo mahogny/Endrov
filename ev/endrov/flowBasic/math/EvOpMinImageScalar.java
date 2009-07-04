@@ -18,26 +18,45 @@ public class EvOpMinImageScalar extends EvOpSlice1
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return greater(p[0],b);
+		return apply(p[0],b);
 		}
 	
-	public static EvPixels greater(EvPixels a, Number b)
+	public static EvPixels apply(EvPixels a, Number bVal)
 		{
-		//Should use the common higher type here
-		a=a.getReadOnly(EvPixelsType.INT);
-		
-		int tb=b.intValue();
-		
-		int w=a.getWidth();
-		int h=a.getHeight();
-		EvPixels out=new EvPixels(a.getType(),w,h);
-		int[] aPixels=a.getArrayInt();
-		int[] outPixels=out.getArrayInt();
-		
-		for(int i=0;i<aPixels.length;i++)
-			outPixels[i]=aPixels[i]<tb ? aPixels[i] : tb;
-		
-		return out;
+		if(a.getType()==EvPixelsType.INT && bVal instanceof Integer)
+			{
+			//Should use the common higher type here
+			a=a.getReadOnly(EvPixelsType.INT);
+			int b=bVal.intValue();
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			int[] aPixels=a.getArrayInt();
+			int[] outPixels=out.getArrayInt();
+			
+			for(int i=0;i<aPixels.length;i++)
+				outPixels[i]=aPixels[i]<b ? aPixels[i] : b;
+			
+			return out;
+			}
+		else
+			{
+			//Should use the common higher type here
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
+			double b=bVal.doubleValue();
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			double[] aPixels=a.getArrayDouble();
+			double[] outPixels=out.getArrayDouble();
+			
+			for(int i=0;i<aPixels.length;i++)
+				outPixels[i]=aPixels[i]<b ? aPixels[i] : b;
+			
+			return out;			
+			}
 		}
 	
 	}

@@ -20,7 +20,6 @@ public class EvOpImageSubImage extends EvOpSlice1
 		{
 		if(a.getType()==EvPixelsType.INT && b.getType()==EvPixelsType.INT)
 			{
-			
 			//Should use the common higher type here
 			a=a.getReadOnly(EvPixelsType.INT);
 			b=b.getReadOnly(EvPixelsType.INT);

@@ -18,9 +18,11 @@ public class EvOpImageSubScalar extends EvOpSlice1
 		}
 	public EvPixels exec1(EvPixels... p)
 		{
-		return EvOpImageSubScalar.minus(p[0], b);
+		return EvOpImageSubScalar.apply(p[0], b);
 		}
-	public static EvPixels minus(EvPixels a, Number bval)
+	
+	
+	public static EvPixels apply(EvPixels a, Number bval)
 		{
 		if(a.getType()==EvPixelsType.INT && bval instanceof Integer)
 			{
