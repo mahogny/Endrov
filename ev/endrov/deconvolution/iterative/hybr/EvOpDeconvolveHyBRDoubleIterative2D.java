@@ -40,6 +40,7 @@ import endrov.deconvolution.iterative.preconditioner.FFTDoublePreconditioner2D;
 import endrov.deconvolution.iterative.psf.DoublePSFMatrix2D;
 import endrov.ev.EvLog;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Hybrid Bidiagonalization Regularization 2D.
@@ -177,7 +178,7 @@ public class EvOpDeconvolveHyBRDoubleIterative2D extends DoubleIterativeDeconvol
             lbd = new DoublePLBD(P, A, U, reorth);
         }
         //ImagePlus imX = null;
-        EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,bColumns,bRows);
+        EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,bColumns,bRows);
         //FloatProcessor ip = new FloatProcessor(bColumns, bRows);
         /*if (showIteration) {
             DoubleCommon2D.assignPixelsToProcessor(ip, B, cmY);

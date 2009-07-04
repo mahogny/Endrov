@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Moving entropy. Entropy is taken over an area of size (2pw+1)x(2ph+1).
@@ -47,7 +48,7 @@ public class EvOpMovingEntropy extends EvOpSlice1
 	
 	public static EvPixels apply(EvPixels in, int pw, int ph)
 		{
-		in=in.convertTo(EvPixels.TYPE_DOUBLE, true);
+		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		double[] inPixels=in.getArrayDouble();
 		int w=in.getWidth();
 		int h=in.getHeight();

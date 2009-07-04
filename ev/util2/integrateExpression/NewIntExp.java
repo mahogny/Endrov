@@ -200,7 +200,7 @@ public class NewIntExp
 		{
 		if (pixels==null)
 			{
-			pixels = im.getPixels().getReadOnly(EvPixels.TYPE_INT);
+			pixels = im.getPixels().getReadOnly(EvPixelsType.INT);
 			pixelsLine = pixels.getArrayInt();
 			}
 		}
@@ -217,7 +217,7 @@ public class NewIntExp
 		/*
 		 * //Test: write image EvChannel ch=imset.getCreateChannel("XYZ"); EvImage
 		 * evim=ch.createImageLoader(imset.getChannel("GFP").imageLoader.firstKey(),
-		 * new EvDecimal("0")); EvPixels p=new EvPixels(EvPixels.TYPE_INT,10,10);
+		 * new EvDecimal("0")); EvPixels p=new EvPixels(EvPixelsType.TYPE_INT,10,10);
 		 * evim.setPixelsReference(p); data.saveData(); System.exit(0);
 		 */
 
@@ -353,7 +353,7 @@ public class NewIntExp
 				}
 			else
 				{
-				lenMap = new EvPixels(EvPixels.TYPE_DOUBLE, integrator.pixels
+				lenMap = new EvPixels(EvPixelsType.DOUBLE, integrator.pixels
 						.getWidth(), integrator.pixels.getHeight());
 				lenMapArr = lenMap.getArrayDouble();
 
@@ -789,9 +789,9 @@ public class NewIntExp
 				EvStack stackZ=chIndexZ.imageLoader.get(EvDecimal.ZERO);
 				int w = integrator.pixels.getWidth();
 				int h = integrator.pixels.getHeight();
-				pX = new EvPixels(EvPixels.TYPE_INT, w, h);
-				pY = new EvPixels(EvPixels.TYPE_INT, w, h);
-				pZ = new EvPixels(EvPixels.TYPE_INT, w, h);
+				pX = new EvPixels(EvPixelsType.INT, w, h);
+				pY = new EvPixels(EvPixelsType.INT, w, h);
+				pZ = new EvPixels(EvPixelsType.INT, w, h);
 				indX.setPixelsReference(pX);
 				indY.setPixelsReference(pY);
 				indZ.setPixelsReference(pZ);
@@ -914,8 +914,8 @@ public class NewIntExp
 					{
 					EvImage evim = chanxyz.createImageLoader(frame, new EvDecimal(az));
 					EvStack stack = chanxyz.imageLoader.get(frame);
-					EvPixels p = new EvPixels(EvPixels.TYPE_INT, numSubDiv, numSubDiv);
-					// EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE, numSubDiv,
+					EvPixels p = new EvPixels(EvPixelsType.INT, numSubDiv, numSubDiv);
+					// EvPixels p=new EvPixels(EvPixelsType.TYPE_DOUBLE, numSubDiv,
 					// numSubDiv);
 					evim.setPixelsReference(p);
 					stack.resX = stack.resY = 1;

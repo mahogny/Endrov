@@ -2,6 +2,7 @@ package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * cos(A)
@@ -21,7 +22,7 @@ public class EvOpImageSqrt extends EvOpSlice1
 	static EvPixels log(EvPixels a)
 		{
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		a=a.getReadOnly(EvPixelsType.DOUBLE);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();

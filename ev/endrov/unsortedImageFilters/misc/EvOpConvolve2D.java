@@ -2,6 +2,7 @@ package endrov.unsortedImageFilters.misc;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 
 
@@ -38,8 +39,8 @@ public class EvOpConvolve2D extends EvOpSlice1
 
 	public static EvPixels convolve(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
-		kernel=kernel.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
+		kernel=kernel.getReadOnly(EvPixelsType.INT);
 		int w=in.getWidth();
 		int h=in.getHeight();
 		int kw=kernel.getWidth();

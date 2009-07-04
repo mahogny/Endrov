@@ -18,6 +18,7 @@ import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
@@ -110,12 +111,12 @@ public class MeanShift
 			//Output colored image
 			EvStack outs=new EvStack();
 			outs.getMetaFrom(s);
-//			outs.allocate(w, h, EvPixels.TYPE_INT, s);
+//			outs.allocate(w, h, EvPixelsType.TYPE_INT, s);
 			//int[][] outarr=outs.getArraysInt();
 			int cz=0;
 			for(Map.Entry<EvDecimal, EvImage> entry:s.entrySet())
 				{
-				EvPixels p=new EvPixels(EvPixels.TYPE_INT,w,h);
+				EvPixels p=new EvPixels(EvPixelsType.INT,w,h);
 				int[] pa=p.getArrayInt();
 				Vector3i[] curpmid=pmid[cz];
 				for(int i=0;i<curpmid.length;i++)
@@ -161,9 +162,9 @@ public class MeanShift
 				double thisw=Math.exp(-dz*dz/szsz2);
 				//Later, can use a cut-off. should make it a lot faster. might run into convergence problems!!!
 				
-				EvPixels pX=entry.getValue().getPixels().convertTo(EvPixels.TYPE_DOUBLE, true);
-				EvPixels pY=momentY.get(entry.getKey()).getPixels().convertTo(EvPixels.TYPE_DOUBLE, true);
-				EvPixels p0=moment0.get(entry.getKey()).getPixels().convertTo(EvPixels.TYPE_DOUBLE, true);
+				EvPixels pX=entry.getValue().getPixels().getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels pY=momentY.get(entry.getKey()).getPixels().getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels p0=moment0.get(entry.getKey()).getPixels().getReadOnly(EvPixelsType.DOUBLE);
 				double[] apX=pX.getArrayDouble();
 				double[] apY=pY.getArrayDouble();
 				double[] ap0=p0.getArrayDouble();

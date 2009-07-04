@@ -9,6 +9,7 @@ import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flowAveraging.EvOpMovingAverage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
@@ -267,7 +268,7 @@ public class LevelHierarchy
 		
 		for(int z=0;z<parr.length;z++)
 			{
-			EvPixels p=parr[z].convertTo(EvPixels.TYPE_INT, true);
+			EvPixels p=parr[z].getReadOnly(EvPixelsType.INT);
 			int[] arr=p.getArrayInt();
 			for(int y=0;y<p.getHeight();y++)
 				for(int x=0;x<p.getWidth();x++)

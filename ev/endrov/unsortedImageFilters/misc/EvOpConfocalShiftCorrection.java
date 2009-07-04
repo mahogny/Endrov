@@ -5,6 +5,7 @@ package endrov.unsortedImageFilters.misc;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Correct for horizontal shift when using a confocal microscope
@@ -31,7 +32,7 @@ public class EvOpConfocalShiftCorrection extends EvOpSlice1
 		int b=(int)shift;
 		
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		a=a.getReadOnly(EvPixelsType.DOUBLE);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();

@@ -7,6 +7,7 @@ import endrov.flowBasic.math.EvOpImageAddImage;
 import endrov.flowBasic.math.EvOpImageDivScalar;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
 
@@ -36,7 +37,7 @@ public class EvOpAverageZ extends EvOpStack1
 		EvStack out=new EvStack();
 
 
-		EvPixels ptot=new EvPixels(EvPixels.TYPE_INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
+		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
 		int numZ=in.getDepth();
 		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
 			ptot=new EvOpImageAddImage().exec1(ptot,plane.getValue().getPixels());

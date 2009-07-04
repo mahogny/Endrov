@@ -1,6 +1,7 @@
 package endrov.unsortedImageFilters.imageMath;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Math ops on images. with EvImage, use convenience functions to make a common size and position
@@ -22,7 +23,7 @@ public class EvImageMath
 	public static double sum(EvPixels a)
 		{
 		//support all types
-		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		a=a.getReadOnly(EvPixelsType.DOUBLE);
 		
 		double[] aPixels=a.getArrayDouble();
 		double sum=0;

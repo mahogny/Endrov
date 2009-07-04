@@ -2,6 +2,7 @@ package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * A - B
@@ -17,12 +18,12 @@ public class EvOpImageSubImage extends EvOpSlice1
 
 	public static EvPixels minus(EvPixels a, EvPixels b)
 		{
-		if(a.getType()==EvPixels.TYPE_INT && b.getType()==EvPixels.TYPE_INT)
+		if(a.getType()==EvPixelsType.INT && b.getType()==EvPixelsType.INT)
 			{
 			
 			//Should use the common higher type here
-			a=a.convertTo(EvPixels.TYPE_INT, true);
-			b=b.convertTo(EvPixels.TYPE_INT, true);
+			a=a.getReadOnly(EvPixelsType.INT);
+			b=b.getReadOnly(EvPixelsType.INT);
 			
 			int w=a.getWidth();
 			int h=a.getHeight();
@@ -39,8 +40,8 @@ public class EvOpImageSubImage extends EvOpSlice1
 		else
 			{
 			//Should use the common higher type here
-			a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
-			b=b.convertTo(EvPixels.TYPE_DOUBLE, true);
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
+			b=b.getReadOnly(EvPixelsType.DOUBLE);
 			
 			int w=a.getWidth();
 			int h=a.getHeight();

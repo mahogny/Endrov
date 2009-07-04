@@ -2,6 +2,7 @@ package endrov.flowBinaryMorph;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Image^c
@@ -21,7 +22,7 @@ public class EvOpBinMorphComplement extends EvOpSlice1
 
 public static EvPixels complement(EvPixels in)
 	{
-	in=in.convertTo(EvPixels.TYPE_INT, true);
+	in=in.getReadOnly(EvPixelsType.INT);
 	int w=in.getWidth();
 	int h=in.getHeight();
 	EvPixels out=new EvPixels(in.getType(),w,h);

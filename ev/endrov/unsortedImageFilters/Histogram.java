@@ -7,6 +7,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Calculate histograms
@@ -48,7 +49,7 @@ public class Histogram
 	 */
 	public static Map<Integer,Integer> intHistogram(EvPixels in)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 			int[] inPixels=in.getArrayInt();
 			Map<Integer,Integer> hist=new HashMap<Integer, Integer>(); 
 			for(int p:inPixels)
@@ -65,7 +66,7 @@ public class Histogram
 	 */
 	public static Map<Double,Integer> doubleHistogram(EvPixels in)
 		{
-		in=in.convertTo(EvPixels.TYPE_DOUBLE, true);
+		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		double[] inPixels=in.getArrayDouble();
 		Map<Double,Integer> hist=new HashMap<Double, Integer>(); 
 		for(double p:inPixels)

@@ -5,6 +5,7 @@ import java.util.*;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.util.Partitioning;
 import endrov.util.Vector3i;
 
@@ -45,7 +46,7 @@ public class SpotCluster
 	 */
 	public static Partitioning<Vector3i> exec2d(EvPixels in, int z)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 		int w=in.getWidth();
 		int h=in.getHeight();
 		int[] inPixels=in.getArrayInt();
@@ -103,7 +104,7 @@ public class SpotCluster
 		int d=in.size();
 		int[][] inPixels=new int[d][];
 		for(int az=0;az<in.size();az++)
-			inPixels[az]=in.get(az).convertTo(EvPixels.TYPE_INT, true).getArrayInt();
+			inPixels[az]=in.get(az).getReadOnly(EvPixelsType.INT).getArrayInt();
 		
 		Partitioning<Vector3i> part=new Partitioning<Vector3i>();
 		
@@ -185,7 +186,7 @@ public class SpotCluster
 	
 	public static void main(String[] args)
 		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_INT,50,50);
+		EvPixels p=new EvPixels(EvPixelsType.INT,50,50);
 		
 		for(int x=10;x<15;x++)
 			p.getArrayInt()[20*50+x]=1;

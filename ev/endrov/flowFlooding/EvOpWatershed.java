@@ -3,7 +3,7 @@ package endrov.flowFlooding;
 import java.util.*;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 
@@ -106,7 +106,7 @@ public class EvOpWatershed extends EvOpStack1
 		
 		EvStack stackOut=new EvStack();
 		stackOut.getMetaFrom(stack);
-		stackOut.allocate(w, h, d, EvPixels.TYPE_INT, stack);
+		stackOut.allocate(w, h, d, EvPixelsType.INT, stack);
 		
 		int[][] inarr=stack.getArraysInt();
 		int[][] outarr=stackOut.getArraysInt();

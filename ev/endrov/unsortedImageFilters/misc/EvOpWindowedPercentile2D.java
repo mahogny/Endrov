@@ -4,6 +4,7 @@ import java.util.*;
 
 import endrov.flow.EvOpSlice;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Compute percentile for a local square area around every pixel.
@@ -46,7 +47,7 @@ public class EvOpWindowedPercentile2D extends EvOpSlice
 	 */
 	public static EvPixels[] run(EvPixels in, int pw, int ph, double... percentile)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 		int w=in.getWidth();
 		int h=in.getHeight();
 		EvPixels out[]=new EvPixels[percentile.length];

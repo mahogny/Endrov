@@ -2,6 +2,7 @@ package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * A*b+c
@@ -37,7 +38,7 @@ public class EvOpImageAxpy extends EvOpSlice1
 	static EvPixels axpy(EvPixels a, double b, double c)
 		{
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+		a=a.getReadOnly(EvPixelsType.DOUBLE);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();
@@ -56,7 +57,7 @@ public class EvOpImageAxpy extends EvOpSlice1
 	static EvPixels axpy(EvPixels a, int b, int c)
 		{
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_INT, true);
+		a=a.getReadOnly(EvPixelsType.INT);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();

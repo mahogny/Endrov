@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.unsortedImageFilters.Histogram;
 
 
@@ -24,7 +25,7 @@ public class EvOpThresholdOtsu2D extends Threshold2D
 	
 	public static double findOtsuThreshold(EvPixels in)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 		
 		int numPixels=in.getWidth()*in.getHeight();
 		

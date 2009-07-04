@@ -2,6 +2,7 @@ package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * max(A,B)
@@ -38,8 +39,8 @@ public class EvOpMaxImageImage extends EvOpSlice1
 	public static EvPixels apply(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
-		b=b.convertTo(EvPixels.TYPE_DOUBLE, true);
+		a=a.getReadOnly(EvPixelsType.DOUBLE);
+		b=b.getReadOnly(EvPixelsType.DOUBLE);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();

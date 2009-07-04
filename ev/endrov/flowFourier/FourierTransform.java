@@ -1,6 +1,7 @@
 package endrov.flowFourier;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.Tuple;
 
@@ -20,8 +21,8 @@ public class FourierTransform
 	 */
 	public static double[] swizzle2d(EvPixels inRe, EvPixels inIm, int w, int h)
 		{
-		inRe=inRe.convertTo(EvPixels.TYPE_DOUBLE, true);
-		inIm=inIm.convertTo(EvPixels.TYPE_DOUBLE, true);
+		inRe=inRe.getReadOnly(EvPixelsType.DOUBLE);
+		inIm=inIm.getReadOnly(EvPixelsType.DOUBLE);
 		double[] pinReal=inRe.getArrayDouble();
 		double[] pinComplex=inIm.getArrayDouble();
 		
@@ -72,8 +73,8 @@ public class FourierTransform
 	 */
 	public static Tuple<EvPixels,EvPixels> unswizzle2d(double[] swizzle, int w, int h)
 		{
-		EvPixels outRe=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
-		EvPixels outIm=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		EvPixels outRe=new EvPixels(EvPixelsType.DOUBLE,w,h);
+		EvPixels outIm=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] outRePixels=outRe.getArrayDouble();
 		double[] outImPixels=outIm.getArrayDouble();
 		
@@ -98,8 +99,8 @@ public class FourierTransform
 		EvStack outRe=new EvStack();
 		EvStack outIm=new EvStack();
 
-		outRe.allocate(w, h, d, EvPixels.TYPE_DOUBLE, template);
-		outIm.allocate(w, h, d, EvPixels.TYPE_DOUBLE, template);
+		outRe.allocate(w, h, d, EvPixelsType.DOUBLE, template);
+		outIm.allocate(w, h, d, EvPixelsType.DOUBLE, template);
 		
 		EvPixels[] pRe=outRe.getPixels();
 		EvPixels[] pIm=outIm.getPixels();

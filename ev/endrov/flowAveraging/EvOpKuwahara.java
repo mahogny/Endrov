@@ -2,6 +2,7 @@ package endrov.flowAveraging;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.unsortedImageFilters.CumSumArea;
 
 /**
@@ -33,10 +34,10 @@ public class EvOpKuwahara extends EvOpSlice1
 
 	public static EvPixels apply(EvPixels in, int pw, int ph) //Note strange notation L
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] outPixels=out.getArrayDouble();
 		
 		//Var(x)=E(x^2)-(E(x))^2

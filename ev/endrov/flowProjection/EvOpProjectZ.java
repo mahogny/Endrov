@@ -5,6 +5,7 @@ import java.util.Map;
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
 
@@ -42,7 +43,7 @@ public abstract class EvOpProjectZ extends EvOpStack1
 		out.getMetaFrom(in);
 
 		EvImage proto=in.firstEntry().snd();
-		EvPixels ptot=new EvPixels(EvPixels.TYPE_INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
+		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
 		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
 			{
 			//System.out.println("plane type "+plane.getValue().getPixels().getTypeString());

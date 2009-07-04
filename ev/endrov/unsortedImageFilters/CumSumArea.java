@@ -1,6 +1,7 @@
 package endrov.unsortedImageFilters;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Operations to work with cumulative sums
@@ -26,12 +27,12 @@ public class CumSumArea
 	 */
 	public CumSumArea(EvPixels in)
 		{
-		if(in.getType()==EvPixels.TYPE_INT)
+		if(in.getType()==EvPixelsType.INT)
 			{
-			in=in.convertTo(EvPixels.TYPE_INT, true);
+			in=in.getReadOnly(EvPixelsType.INT);
 			int w=in.getWidth();
 			int h=in.getHeight();
-			EvPixels out=new EvPixels(EvPixels.TYPE_INT,w+1,h+1); //Must be able to fit. Need not be original type.
+			EvPixels out=new EvPixels(EvPixelsType.INT,w+1,h+1); //Must be able to fit. Need not be original type.
 			int[] inPixels=in.getArrayInt();
 			int[] outPixels=out.getArrayInt();
 			
@@ -57,10 +58,10 @@ public class CumSumArea
 			}
 		else
 			{
-			in=in.convertTo(EvPixels.TYPE_DOUBLE, true);
+			in=in.getReadOnly(EvPixelsType.DOUBLE);
 			int w=in.getWidth();
 			int h=in.getHeight();
-			EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w+1,h+1); //Must be able to fit. Need not be original type.
+			EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w+1,h+1); //Must be able to fit. Need not be original type.
 			double[] inPixels=in.getArrayDouble();
 			double[] outPixels=out.getArrayDouble();
 			
@@ -96,10 +97,10 @@ public class CumSumArea
 	 */
 	public static CumSumArea cumsum2(EvPixels in)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels out=new EvPixels(EvPixels.TYPE_INT,w+1,h+1); //Must be able to fit. Need not be original type.
+		EvPixels out=new EvPixels(EvPixelsType.INT,w+1,h+1); //Must be able to fit. Need not be original type.
 		int[] inPixels=in.getArrayInt();
 		int[] outPixels=out.getArrayInt();
 		
@@ -140,7 +141,7 @@ public class CumSumArea
 	 */
 	private static int integralFromCumSumInteger(EvPixels in, int x1, int x2, int y1, int y2)
 		{
-		if(in.getType()==EvPixels.TYPE_DOUBLE)
+		if(in.getType()==EvPixelsType.DOUBLE)
 			return (int)integralFromCumSumDouble(in, x1, x2, y1, y2);
 		int[] inPixels=in.getArrayInt();
 		int p11=in.getPixelIndex(x1, y1);
@@ -168,7 +169,7 @@ public class CumSumArea
 	 */
 	private static double integralFromCumSumDouble(EvPixels in, int x1, int x2, int y1, int y2)
 		{
-		if(in.getType()==EvPixels.TYPE_INT)
+		if(in.getType()==EvPixelsType.INT)
 			return integralFromCumSumInteger(in, x1, x2, y1, y2); //TODO this is a mess
 		double[] inPixels=in.getArrayDouble();
 		int p11=in.getPixelIndex(x1, y1);

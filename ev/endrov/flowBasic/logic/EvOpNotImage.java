@@ -2,6 +2,7 @@ package endrov.flowBasic.logic;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * NOT a
@@ -17,7 +18,7 @@ public class EvOpNotImage extends EvOpSlice1
 	private static EvPixels not(EvPixels a)
 		{
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_INT, true);
+		a=a.getReadOnly(EvPixelsType.INT);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();

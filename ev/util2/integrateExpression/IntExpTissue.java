@@ -11,6 +11,7 @@ import endrov.ev.EvLogStdout;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
@@ -129,7 +130,7 @@ public class IntExpTissue
 					BufferedImage b=im.getJavaImage();
 					pixels=new EvPixels(b);
 					pixels=pixels.getReadOnly(EvPixels.TYPE_INT);*/
-					pixels=im.getPixels().getReadOnly(EvPixels.TYPE_INT);
+					pixels=im.getPixels().getReadOnly(EvPixelsType.INT);
 					pixelsLine=pixels.getArrayInt();
 
 					//Integrate background
@@ -149,7 +150,7 @@ public class IntExpTissue
 					}
 				else
 					{
-					lenMap=new EvPixels(EvPixels.TYPE_DOUBLE, pixels.getWidth(), pixels.getHeight());
+					lenMap=new EvPixels(EvPixelsType.DOUBLE, pixels.getWidth(), pixels.getHeight());
 					lenMapArr=lenMap.getArrayDouble();
 
 					ImVector2 dirvec=ImVector2.polar(shell.major, shell.angle);

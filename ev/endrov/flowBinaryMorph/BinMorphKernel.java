@@ -5,6 +5,7 @@ import java.util.List;
 
 import endrov.flow.FlowType;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.util.Vector2i;
 
 //These operations can be made faster using RLE images
@@ -30,7 +31,7 @@ public class BinMorphKernel
 	public static List<Vector2i> kernelPos(EvPixels kernel, int kcx, int kcy)
 		{
 		LinkedList<Vector2i> list=new LinkedList<Vector2i>();
-		kernel=kernel.convertTo(EvPixels.TYPE_INT, true);
+		kernel=kernel.getReadOnly(EvPixelsType.INT);
 		int w=kernel.getWidth();
 		int h=kernel.getHeight();
 		int[] inPixels=kernel.getArrayInt();

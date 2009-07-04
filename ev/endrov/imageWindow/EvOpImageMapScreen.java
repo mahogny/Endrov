@@ -11,6 +11,7 @@ import java.util.Hashtable;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Map values to show on screen
@@ -36,7 +37,8 @@ public class EvOpImageMapScreen extends EvOpSlice1
 
 	static EvPixels apply(EvPixels a, double contrast, double brightness)
 		{
-		if(a.getType()==EvPixels.TYPE_AWT)
+		/*
+		if(a.getType()==EvPixelsType.TYPE_AWT)
 			{
 			BufferedImage src=a.getAWT();
 			
@@ -72,7 +74,9 @@ public class EvOpImageMapScreen extends EvOpSlice1
 		else
 			{
 			
-			a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
+			}
+			*/
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
 			
 			int w=a.getWidth();
 			int h=a.getHeight();
@@ -89,10 +93,10 @@ public class EvOpImageMapScreen extends EvOpSlice1
 				}
 			
 			return out;
-			}
+			//}
 		}
 	
-	
+	/*
 	private static final byte clampByte(int i)
 		{
 		if(i > 255)
@@ -112,5 +116,5 @@ public class EvOpImageMapScreen extends EvOpSlice1
 		else
 			return (byte)i;
 		}
-	
+	*/
 	}

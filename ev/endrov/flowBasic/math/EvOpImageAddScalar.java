@@ -2,6 +2,7 @@ package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * A + b
@@ -19,27 +20,49 @@ public class EvOpImageAddScalar extends EvOpSlice1
 		{
 		return EvOpImageAddScalar.plus(p[0], b);
 		}
-	/**
-	 * TODO other types
-	 */
-	static EvPixels plus(EvPixels a, Number b)
+	
+
+	
+
+	public static EvPixels plus(EvPixels a, Number bVal)
 		{
-		return plus(a,b.intValue());
+		if(a.getType()==EvPixelsType.INT && bVal instanceof Integer)
+			{
+			//Should use the common higher type here
+			a=a.getReadOnly(EvPixelsType.INT);
+			
+			int b=bVal.intValue();
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			int[] aPixels=a.getArrayInt();
+			int[] outPixels=out.getArrayInt();
+			
+			for(int i=0;i<aPixels.length;i++)
+				outPixels[i]=aPixels[i]+b;
+			
+			return out;
+			}
+		else
+			{
+		//Should use the common higher type here
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
+			
+			double b=bVal.doubleValue();
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			double[] aPixels=a.getArrayDouble();
+			double[] outPixels=out.getArrayDouble();
+			
+			for(int i=0;i<aPixels.length;i++)
+				outPixels[i]=aPixels[i]+b;
+			
+			return out;
+			}
+		
 		}
-	static EvPixels plus(EvPixels a, int b)
-	{
-	//Should use the common higher type here
-	a=a.convertTo(EvPixels.TYPE_INT, true);
-	
-	int w=a.getWidth();
-	int h=a.getHeight();
-	EvPixels out=new EvPixels(a.getType(),w,h);
-	int[] aPixels=a.getArrayInt();
-	int[] outPixels=out.getArrayInt();
-	
-	for(int i=0;i<aPixels.length;i++)
-		outPixels[i]=aPixels[i]+b;
-	
-	return out;
-	}
+
 	}

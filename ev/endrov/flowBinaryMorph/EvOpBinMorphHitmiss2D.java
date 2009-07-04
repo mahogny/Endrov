@@ -4,6 +4,7 @@ import java.util.List;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.util.Vector2i;
 
 /**
@@ -31,7 +32,7 @@ public class EvOpBinMorphHitmiss2D extends EvOpSlice1
 	
 	public static EvPixels hitmiss(EvPixels in, BinMorphKernel kernelHit, BinMorphKernel kernelMiss)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 		int w=in.getWidth();
 		int h=in.getHeight();
 		EvPixels out=new EvPixels(in.getType(),w,h);
