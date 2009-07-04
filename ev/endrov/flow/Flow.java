@@ -88,7 +88,10 @@ public class Flow extends EvObject
 					String fromArg=sube.getAttributeValue("fromArg");
 					String toArg=sube.getAttributeValue("toArg");
 					FlowConn c=new FlowConn(fromUnit,fromArg,toUnit,toArg);
-					conns.add(c);
+					if(c.fromUnit!=null && c.toUnit!=null)
+						conns.add(c);
+					else
+						EvLog.printError("Removed incomplete connection line", null);
 					}
 				}
 			}

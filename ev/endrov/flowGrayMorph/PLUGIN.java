@@ -31,7 +31,7 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				FlowUnitGrayBlackTophat2D.class,
+				FlowUnitGrayMorphBlackTophat2D.class,
 				FlowUnitGrayMorphClose2D.class,
 				FlowUnitGrayMorphDilate2D.class,
 				FlowUnitGrayMorphErode2D.class,

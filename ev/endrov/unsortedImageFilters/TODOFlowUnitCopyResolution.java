@@ -1,4 +1,4 @@
-package endrov.flowBasic.images;
+package endrov.unsortedImageFilters;
 
 
 import java.awt.Color;
@@ -13,30 +13,26 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.flowBasic.images.CategoryInfo;
+import endrov.flowBasic.images.FlowUnitChannelDim2D;
 import endrov.imageset.AnyEvImage;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixels;
-import endrov.imageset.EvStack;
-import endrov.util.Vector2i;
-import endrov.util.Vector3i;
 
 /**
- * Flow unit: Get dimensions of any image object
+ * Flow unit: Copy resolution (XYZ) from one channel to another
  * @author Johan Henriksson
  *
  */
-public class FlowUnitChannelDim3D extends FlowUnitBasic
+public class TODOFlowUnitCopyResolution extends FlowUnitBasic
 	{
-	public static final String showName="Channel dim 3D";
-	private static final String metaType="channelDim3D";
+	public static final String showName="Copy resolution";
+	private static final String metaType="copyResolution";
 	
 	public static void initPlugin() {}
 	static
 		{
-		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitChannelDim3D.class, FlowUnitChannelDim2D.icon,
-		"Get width, height and depth of channel, in pixels");
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,TODOFlowUnitCopyResolution.class, FlowUnitChannelDim2D.icon,
+		"Copy resolution (XYZ) from source to destination. Might make viewing of generated images easier");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnitInput(Vector2i.class, decl);
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -48,13 +44,14 @@ public class FlowUnitChannelDim3D extends FlowUnitBasic
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("image", FlowType.ANYIMAGE);
+		types.put("source", FlowType.ANYIMAGE);
+		types.put("destination", FlowType.ANYIMAGE);
 		}
 	
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("dim", FlowType.TVECTOR3I); 
+		types.put("out", FlowType.ANYIMAGE); //TODO same as destination 
 		}
 	
 	/** Execute algorithm */
@@ -62,8 +59,10 @@ public class FlowUnitChannelDim3D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
-		AnyEvImage in=(AnyEvImage)flow.getInputValue(this, exec, "image");
+		AnyEvImage src=(AnyEvImage)flow.getInputValue(this, exec, "source");
+		AnyEvImage dest=(AnyEvImage)flow.getInputValue(this, exec, "destination");
 
+		/*
 		if(in instanceof EvPixels)
 			{
 			EvPixels s=(EvPixels)in;
@@ -80,6 +79,7 @@ public class FlowUnitChannelDim3D extends FlowUnitBasic
 			EvStack s=c.getFirstStack();
 			lastOutput.put("dim", new Vector3i(s.getWidth(),s.getHeight(),s.getDepth()));
 			}
+		*/
 		}
 
 	

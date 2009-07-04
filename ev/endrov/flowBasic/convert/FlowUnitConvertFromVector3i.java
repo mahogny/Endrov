@@ -28,7 +28,7 @@ public class FlowUnitConvertFromVector3i extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvertFromVector3i.class, null,
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvertFromVector3i.class, CategoryInfo.icon,
 		"Convert from Vector3i");
 		Flow.addUnitType(decl);
 		FlowType.registerSuggestCreateUnitOutput(Vector3i.class, decl);
@@ -37,7 +37,7 @@ public class FlowUnitConvertFromVector3i extends FlowUnitBasic
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return CategoryInfo.icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */
