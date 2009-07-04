@@ -9,9 +9,9 @@ import endrov.flowBasic.convert.FlowUnitConvertFromVector2i;
 import endrov.flowBasic.convert.FlowUnitConvertFromVector3i;
 import endrov.flowBasic.convert.FlowUnitConvertToVector2i;
 import endrov.flowBasic.convert.FlowUnitConvertToVector3i;
+import endrov.flowBasic.convert.FlowUnitWrapInChannel;
 import endrov.flowBasic.images.FlowUnitChannelDim2D;
 import endrov.flowBasic.images.FlowUnitChannelDim3D;
-import endrov.flowBasic.images.FlowUnitWrapInChannel;
 import endrov.flowBasic.logic.FlowUnitAnd;
 import endrov.flowBasic.logic.FlowUnitGreaterThan;
 import endrov.flowBasic.logic.FlowUnitNot;
@@ -86,7 +86,8 @@ public class PLUGIN extends PluginDef
 				FlowUnitConvertToVector3i.class,
 				
 				//Images
-				FlowUnitChannelDim2D.class,FlowUnitChannelDim3D.class,
+				FlowUnitChannelDim2D.class,
+				FlowUnitChannelDim3D.class,
 		};
 		
 		

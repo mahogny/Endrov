@@ -779,6 +779,24 @@ public abstract class BasicWindow extends JPanel
 		jinputListeners.put(listener,null);
 		}
 	
+	//TODO put to use
+	public static void setAcceleratorCopy(JMenuItem mi)
+		{
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK));
+		}
+	public static void setAcceleratorPaste(JMenuItem mi)
+		{
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK));
+		}
+	public static void setAcceleratorCut(JMenuItem mi)
+		{
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,ActionEvent.CTRL_MASK));
+		}
+	public static void setAcceleratorDelete(JMenuItem mi)
+		{
+		mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0));
+		}
+	
 	
 	/******************************************************************************************************
 	 * Abstract Instance *

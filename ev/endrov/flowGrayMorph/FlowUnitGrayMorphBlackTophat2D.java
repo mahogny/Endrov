@@ -1,4 +1,4 @@
-package endrov.flowBinaryMorph;
+package endrov.flowGrayMorph;
 
 
 import java.awt.Color;
@@ -13,22 +13,23 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.EvPixels;
 
 /**
  * Flow unit: black tophat 2D
  * @author Johan Henriksson
  *
  */
-public class FlowUnitBinBlackTophat2D extends FlowUnitBasic
+public class FlowUnitGrayMorphBlackTophat2D extends FlowUnitBasic
 	{
-	public static final String showName="Binary black Tophat 2D";
-	private static final String metaType="binaryBlackTophat2d";
+	public static final String showName="Gray Black Tophat 2D";
+	private static final String metaType="grayBlackTophat2d";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitBinBlackTophat2D.class, null,
-				"Binary morphological black tophat operation, slice by slice"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitGrayMorphBlackTophat2D.class, null,
+				"Gray morphological black tophat operation, slice by slice"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -41,7 +42,9 @@ public class FlowUnitBinBlackTophat2D extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("kernel", BinMorphKernel.FLOWTYPE);
+		types.put("pw", FlowType.TNUMBER);
+		types.put("ph", FlowType.TNUMBER);
+		types.put("kernel", FlowType.TEVPIXELS);
 		}
 	
 	/** Get types of flows out */
@@ -56,10 +59,13 @@ public class FlowUnitBinBlackTophat2D extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
 		Object a=flow.getInputValue(this, exec, "image");
-		BinMorphKernel kernel=(BinMorphKernel)flow.getInputValue(this, exec, "kernel");
-		checkNotNull(a,kernel);
+		Number pw=(Number)flow.getInputValue(this, exec, "pw");
+		Number ph=(Number)flow.getInputValue(this, exec, "ph");
+		EvPixels kernel=(EvPixels)flow.getInputValue(this, exec, "kernel");
+		
+		checkNotNull(a,pw,ph,kernel);
 
-		lastOutput.put("out", new EvOpBinMorphBlackTophat2D(kernel).exec1Untyped(a));
+		lastOutput.put("out", new EvOpGrayMorphBlackTophat2D(pw.intValue(),ph.intValue(),kernel).exec1Untyped(a));
 		}
 
 	

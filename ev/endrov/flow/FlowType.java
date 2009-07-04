@@ -149,18 +149,18 @@ public class FlowType
 	/**
 	 * Register a unit that should be suggested to be automatically created in the right-click list on an input connection
 	 */
-	public static synchronized void registerSuggestCreateUnitInput(Class<?> type, FlowUnitDeclaration unit)
+	public static synchronized void registerSuggestCreateUnitInput(Class<?> type, FlowUnitDeclaration decl)
 		{
-		registerSuggestCreateUnit(suggestCreateUnitInput, type, unit);
+		registerSuggestCreateUnit(suggestCreateUnitInput, type, decl);
 		}
 	/**
 	 * Register a unit that should be suggested to be automatically created in the right-click list on an output connection
 	 */
-	public static synchronized void registerSuggestCreateUnitOutput(Class<?> type, FlowUnitDeclaration unit)
+	public static synchronized void registerSuggestCreateUnitOutput(Class<?> type, FlowUnitDeclaration decl)
 		{
-		registerSuggestCreateUnit(suggestCreateUnitOutput, type, unit);
+		registerSuggestCreateUnit(suggestCreateUnitOutput, type, decl);
 		}
-	public static synchronized void registerSuggestCreateUnit(Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnit,
+	private static synchronized void registerSuggestCreateUnit(Map<Class<?>, Set<FlowUnitDeclaration>> suggestCreateUnit,
 			Class<?> type, FlowUnitDeclaration unit)
 		{
 		synchronized (suggestCreateUnit)

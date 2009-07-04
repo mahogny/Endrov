@@ -13,7 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.util.Vector3i;
+import endrov.util.Vector2i;
 
 /**
  * Flow unit: generate gaussian in 2d
@@ -60,7 +60,7 @@ public class FlowUnitGenGaussian2D extends FlowUnitBasic
 		//Object a=flow.getInputValue(this, exec, "image");
 		Number sigmaX=(Number)flow.getInputValue(this, exec, "sigmaX");
 		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
-		Vector3i dim=(Vector3i)flow.getInputValue(this, exec, "dim");
+		Vector2i dim=(Vector2i)flow.getInputValue(this, exec, "dim");
 
 
 		lastOutput.put("out", GenerateSpecialImage.genGaussian2D(sigmaX.doubleValue(), sigmaY.doubleValue(), dim.x,dim.y));

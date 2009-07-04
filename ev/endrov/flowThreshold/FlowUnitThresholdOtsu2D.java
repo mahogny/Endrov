@@ -28,14 +28,14 @@ public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitThresholdOtsu2D.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitThresholdOtsu2D.class, CategoryInfo.icon,
 				"Find optimal threshold which minimizes signal and background variance, slice by slice"));
 		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return CategoryInfo.icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */

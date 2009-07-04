@@ -226,15 +226,15 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			//All connection points should now be in the list
 			//Draw connection arrows
 			connSegments.clear();
+			LinkedList<FlowConn> delconn=new LinkedList<FlowConn>();
 			for(FlowConn conn:getFlow().conns)
 				{
 				ConnPoint pFrom=connPoint.get(new Tuple<FlowUnit, String>(conn.fromUnit, conn.fromArg));
 				ConnPoint pTo=connPoint.get(new Tuple<FlowUnit, String>(conn.toUnit, conn.toArg));
 				if(pFrom==null || pTo==null)
 					{
-					System.out.println("Strange line BUG");
-					System.out.println(pFrom);
-					System.out.println(pTo);
+					EvLog.printError("Bad line, removing: "+conn,null);
+					delconn.add(conn);
 					}
 				else
 					{
@@ -243,6 +243,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					drawConnLine(g,vFrom,vTo,conn);
 					}
 				}
+			getFlow().conns.removeAll(delconn);
+			
 			
 			if(drawingConn!=null)
 				{

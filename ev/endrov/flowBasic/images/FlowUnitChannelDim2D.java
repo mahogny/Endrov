@@ -29,17 +29,21 @@ public class FlowUnitChannelDim2D extends FlowUnitBasic
 	public static final String showName="Channel dim 2D";
 	private static final String metaType="channelDim2D";
 	
+	public static final ImageIcon icon=new ImageIcon(FlowUnitChannelDim2D.class.getResource("jhFlowChannelDim.png"));
+
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitChannelDim2D.class, null,
-				"Get width and height of channel, in pixels"));
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitChannelDim2D.class, icon,
+		"Get width and height of channel, in pixels");
+		Flow.addUnitType(decl);
+		FlowType.registerSuggestCreateUnitInput(Vector2i.class, decl);
 		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */

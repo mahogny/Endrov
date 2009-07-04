@@ -38,6 +38,8 @@ public class PLUGIN extends PluginDef
 				
 				FlowUnitRotateImage2D.class,
 				FlowUnitRotateImage3D.class,
+				
+				FlowUnitCircConv2D.class,
 				};
 		}
 	

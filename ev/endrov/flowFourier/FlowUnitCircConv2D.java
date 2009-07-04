@@ -1,4 +1,4 @@
-package endrov.flowBasic.images;
+package endrov.flowFourier;
 
 
 import java.awt.Color;
@@ -14,25 +14,23 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
+import endrov.imageset.EvPixels;
 
 /**
- * Flow unit: turn image or stack into channel
+ * Flow unit: Circular convolution 2D
  * @author Johan Henriksson
  *
  */
-public class FlowUnitWrapInChannel extends FlowUnitBasic
+public class FlowUnitCircConv2D extends FlowUnitBasic
 	{
-	public static final String showName="Wrap in channel";
-	private static final String metaType="wrapInChannel";
+	public static final String showName="Circular convolution 2D";
+	private static final String metaType="circConv2D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitWrapInChannel.class, null,
-				"Put stack or pixels into a channel so it can be displayed"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitCircConv2D.class, null,
+				"Circular convolution"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -44,6 +42,7 @@ public class FlowUnitWrapInChannel extends FlowUnitBasic
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
+		types.put("kernel", FlowType.TEVPIXELS);
 		types.put("image", FlowType.ANYIMAGE);
 		}
 	
@@ -57,16 +56,10 @@ public class FlowUnitWrapInChannel extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
+		EvPixels kernel=(EvPixels)flow.getInputValue(this, exec, "kernel");
+		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		
-		//Object a=flow.getInputValue(this, exec, "image");
-		AnyEvImage in=(AnyEvImage)flow.getInputValue(this, exec, "image");
-
-		if(in instanceof EvStack)
-			{
-			EvChannel chan=new EvChannel();
-			chan.imageLoader.put(new EvDecimal(0), (EvStack)in);
-			lastOutput.put("out", chan);
-			}
+		lastOutput.put("out", new EvOpCircConv2D(kernel).exec1Untyped(image));
 		}
 
 	
