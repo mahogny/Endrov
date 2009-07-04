@@ -18,41 +18,45 @@ public class EvOpImageMulScalar extends EvOpSlice1
 		}
 	public EvPixels exec1(EvPixels... p)
 		{
-		if(b instanceof Integer)
-			return EvOpImageMulScalar.times(p[0], b.intValue()); //TODO
-		else
-			return EvOpImageMulScalar.times(p[0], b.doubleValue()); //TODO
+		return EvOpImageMulScalar.times(p[0], b);
 		}
-	static EvPixels times(EvPixels a, double b)
-	{
-	//Should use the common higher type here
-	a=a.getReadOnly(EvPixelsType.DOUBLE);
 	
-	int w=a.getWidth();
-	int h=a.getHeight();
-	EvPixels out=new EvPixels(a.getType(),w,h);
-	double[] aPixels=a.getArrayDouble();
-	double[] outPixels=out.getArrayDouble();
+	public static EvPixels times(EvPixels a, Number bVal)
+		{
+		if(a.getType()==EvPixelsType.INT && bVal instanceof Integer)
+			{
+			//Should use the common higher type here
+			a=a.getReadOnly(EvPixelsType.INT);
+			int b=bVal.intValue();
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			int[] aPixels=a.getArrayInt();
+			int[] outPixels=out.getArrayInt();
+			
+			for(int i=0;i<aPixels.length;i++)
+				outPixels[i]=aPixels[i]*b;
+			
+			return out;
+			}
+		else
+			{
+			//Should use the common higher type here
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
+			double b=bVal.doubleValue();
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			double[] aPixels=a.getArrayDouble();
+			double[] outPixels=out.getArrayDouble();
+			
+			for(int i=0;i<aPixels.length;i++)
+				outPixels[i]=aPixels[i]*b;
+			System.out.println("outp "+outPixels[0]+"    b "+b);
+			return out;
+			}
+		}
 	
-	for(int i=0;i<aPixels.length;i++)
-		outPixels[i]=aPixels[i]*b;
-	System.out.println("outp "+outPixels[0]+"    b "+b);
-	return out;
-	}
-	static EvPixels times(EvPixels a, int b)
-	{
-	//Should use the common higher type here
-	a=a.getReadOnly(EvPixelsType.INT);
-	
-	int w=a.getWidth();
-	int h=a.getHeight();
-	EvPixels out=new EvPixels(a.getType(),w,h);
-	int[] aPixels=a.getArrayInt();
-	int[] outPixels=out.getArrayInt();
-	
-	for(int i=0;i<aPixels.length;i++)
-		outPixels[i]=aPixels[i]*b;
-	
-	return out;
-	}
 	}
