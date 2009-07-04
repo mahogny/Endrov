@@ -29,6 +29,7 @@ import cern.jet.math.tdouble.DoubleFunctions;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import endrov.deconvolution.iterative.IterativeEnums.PaddingType;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Common methods for 2D iterative deblurring. Some code is from Bob Dougherty's Iterative
@@ -65,12 +66,12 @@ public class DoubleCommon2D {
      *            image processor
      */
     public static void assignPixelsToMatrix(final DoubleMatrix2D X, final EvPixels ip) {
-    	if(ip.getType()==EvPixels.TYPE_DOUBLE)
+    	if(ip.getType()==EvPixelsType.DOUBLE)
     		X.assign(ip.getArrayDouble());
-    	else if(ip.getType()==EvPixels.TYPE_FLOAT)
+    	else if(ip.getType()==EvPixelsType.FLOAT)
     		X.assign(ip.getArrayFloat());
     	else
-    		X.assign(ip.convertTo(EvPixels.TYPE_DOUBLE, true).getArrayDouble());
+    		X.assign(ip.getReadOnly(EvPixelsType.DOUBLE).getArrayDouble());
     }
 
     /**
@@ -85,7 +86,7 @@ public class DoubleCommon2D {
      *            color model
      */
     public static EvPixels assignPixelsToProcessor(int rows, int cols, final DoubleMatrix1D x) {
-    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
         //final int rows = ip.getHeight();
         //final int cols = ip.getWidth();
     
@@ -172,7 +173,7 @@ public class DoubleCommon2D {
      * 
      */
     public static EvPixels assignPixelsToProcessor(int rows, int cols, final DoubleMatrix1D x, final double threshold) {
-    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
     //final EvPixels ip;
         //final int rows = ip.getHeight();
         //final int cols = ip.getWidth();
@@ -263,7 +264,7 @@ public class DoubleCommon2D {
      * 
      */
     public static EvPixels assignPixelsToProcessor(final int rows, final int cols, final DoubleMatrix2D X) {
-    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
     //final EvPixels ip;
         //final int rows = X.rows();
         //final int cols = X.columns();
@@ -349,7 +350,7 @@ public class DoubleCommon2D {
      * 
      */
     public static EvPixels assignPixelsToProcessorPadded(final DoubleMatrix2D X, final int rows, final int cols, final int rOff, final int cOff) {
-    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
     //final EvPixels ip;
         final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
@@ -437,7 +438,7 @@ public class DoubleCommon2D {
      *            all the values less than the threshold are set to zero
      */
     public static EvPixels assignPixelsToProcessorPadded( final DoubleMatrix2D X, final int rows, final int cols, final int rOff, final int cOff, final double threshold) {
-    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
     //final EvPixels ip;
         final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
@@ -540,7 +541,7 @@ public class DoubleCommon2D {
     //final EvPixels ip;
         final int rows = X.rows();
         final int cols = X.columns();
-        final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+        final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
         final double[] px = ip.getArrayDouble();
         int np = ConcurrencyUtils.getNumberOfThreads();
         if (X.isView()) {
@@ -1168,7 +1169,7 @@ public class DoubleCommon2D {
         final int cols = X.columns();
         
         
-        final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+        final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
 
         final double[] px = ip.getArrayDouble();
 
@@ -1258,7 +1259,7 @@ public class DoubleCommon2D {
         final int rows = X.rows();
         final int cols = X.columns();
         
-        final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+        final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
         final double[] px = ip.getArrayDouble();
         
         int np = ConcurrencyUtils.getNumberOfThreads();
@@ -1362,8 +1363,8 @@ public class DoubleCommon2D {
      * 
      */
     public static EvPixels assignPixelsToProcessorPadded(final DComplexMatrix2D X, final int rows, final int cols, final int rOff, final int cOff) {
-//    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
-    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+//    final EvPixels ip=new EvPixels(EvPixelsType.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
 
         final double[] px = ip.getArrayDouble();
         
@@ -1457,7 +1458,7 @@ public class DoubleCommon2D {
      * 
      */
     public static EvPixels assignPixelsToProcessorPadded(final DComplexMatrix2D X, final int rows, final int cols, final int rOff, final int cOff, final double threshold) {
-    final EvPixels ip=new EvPixels(EvPixels.TYPE_DOUBLE,cols,rows);
+    final EvPixels ip=new EvPixels(EvPixelsType.DOUBLE,cols,rows);
 
         final double[] px = ip.getArrayDouble();
         

@@ -11,6 +11,7 @@ import endrov.flowThreshold.EvOpThresholdOtsu2D;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.util.EvFileUtil;
 
 public class Signal 
@@ -22,7 +23,7 @@ public class Signal
 			System.out.println("No such file");
 		EvChannel im=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
 		EvImage evim=im.imageLoader.values().iterator().next().entrySet().iterator().next().getValue();
-		EvPixels pixels=evim.getPixels().convertTo(EvPixels.TYPE_DOUBLE, true);
+		EvPixels pixels=evim.getPixels().getReadOnly(EvPixelsType.DOUBLE);
 		return pixels;
 		}
 	

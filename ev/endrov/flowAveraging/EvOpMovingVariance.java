@@ -2,6 +2,7 @@ package endrov.flowAveraging;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.unsortedImageFilters.CumSumArea;
 
 /**
@@ -27,12 +28,12 @@ public class EvOpMovingVariance extends EvOpSlice1
 	
 	public static EvPixels localVariance(EvPixels in, int pw, int ph)
 		{
-		if(in.getType()==EvPixels.TYPE_INT)
+		if(in.getType()==EvPixelsType.INT)
 			{
-			in=in.convertTo(EvPixels.TYPE_INT, true);
+			in=in.getReadOnly(EvPixelsType.INT);
 			int w=in.getWidth();
 			int h=in.getHeight();
-			EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+			EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
 			double[] outPixels=out.getArrayDouble();
 			
 			CumSumArea cumsum=new CumSumArea(in);
@@ -59,10 +60,10 @@ public class EvOpMovingVariance extends EvOpSlice1
 			}
 		else
 			{
-			in=in.convertTo(EvPixels.TYPE_DOUBLE, true);
+			in=in.getReadOnly(EvPixelsType.DOUBLE);
 			int w=in.getWidth();
 			int h=in.getHeight();
-			EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+			EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
 			double[] outPixels=out.getArrayDouble();
 			
 			CumSumArea cumsum=new CumSumArea(in);

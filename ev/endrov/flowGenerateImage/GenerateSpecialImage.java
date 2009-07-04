@@ -3,6 +3,7 @@ package endrov.flowGenerateImage;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
 
@@ -50,7 +51,7 @@ public class GenerateSpecialImage
 	 */
 	public static EvPixels genConstant(int w, int h, int c)
 		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_INT,w,h);
+		EvPixels p=new EvPixels(EvPixelsType.INT,w,h);
 		int[] aPixels=p.getArrayInt();
 		for(int y=0;y<h;y++)
 			{
@@ -69,7 +70,7 @@ public class GenerateSpecialImage
 	 */
 	public static EvPixels genConstant(int w, int h, double c)
 		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		EvPixels p=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] aPixels=p.getArrayDouble();
 		for(int y=0;y<h;y++)
 			{
@@ -88,7 +89,7 @@ public class GenerateSpecialImage
 	 */
 	public static EvPixels genIncY(int w, int h)
 		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_INT,w,h);
+		EvPixels p=new EvPixels(EvPixelsType.INT,w,h);
 		int[] aPixels=p.getArrayInt();
 		for(int y=0;y<h;y++)
 			{
@@ -107,7 +108,7 @@ public class GenerateSpecialImage
 	 */
 	public static EvPixels genIncX(int w, int h)
 		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_INT,w,h);
+		EvPixels p=new EvPixels(EvPixelsType.INT,w,h);
 		int[] aPixels=p.getArrayInt();
 		for(int y=0;y<h;y++)
 			{
@@ -124,7 +125,7 @@ public class GenerateSpecialImage
 	 */
 	public static EvPixels genGaussian2D(double sigmaX, double sigmaY, int w, int h)
 		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		EvPixels p=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] aPixels=p.getArrayDouble();
 		
 		//double mul1=1/(sigmaX*sigmaY*Math.sqrt(2*Math.PI));
@@ -184,7 +185,7 @@ public class GenerateSpecialImage
 		//int curd=0;
 		//for(EvDecimal decd:template.keySet())
 			{
-			EvPixels p=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+			EvPixels p=new EvPixels(EvPixelsType.DOUBLE,w,h);
 			double[] aPixels=p.getArrayDouble();
 			
 			double dz2=curd-midz;

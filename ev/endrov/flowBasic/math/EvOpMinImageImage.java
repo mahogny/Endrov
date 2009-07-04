@@ -2,6 +2,7 @@ package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * min(A,B)
@@ -16,8 +17,8 @@ public class EvOpMinImageImage extends EvOpSlice1
 	public static EvPixels greater(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_INT, true);
-		b=b.convertTo(EvPixels.TYPE_INT, true);
+		a=a.getReadOnly(EvPixelsType.INT);
+		b=b.getReadOnly(EvPixelsType.INT);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();

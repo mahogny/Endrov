@@ -2,6 +2,7 @@ package endrov.flowBasic.logic;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * A>B
@@ -19,8 +20,8 @@ public class EvOpImageGreaterThanImage extends EvOpSlice1
 		{
 	/*	
 		//TODO Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_INT, true);
-		b=b.convertTo(EvPixels.TYPE_INT, true);
+		a=a.convertTo(EvPixelsType.TYPE_INT, true);
+		b=b.convertTo(EvPixelsType.TYPE_INT, true);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();
@@ -35,12 +36,12 @@ public class EvOpImageGreaterThanImage extends EvOpSlice1
 		return out;
 */		
 		//TODO Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_DOUBLE, true);
-		b=b.convertTo(EvPixels.TYPE_DOUBLE, true);
+		a=a.getReadOnly(EvPixelsType.DOUBLE);
+		b=b.getReadOnly(EvPixelsType.DOUBLE);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();
-		EvPixels out=new EvPixels(EvPixels.TYPE_INT,w,h);
+		EvPixels out=new EvPixels(EvPixelsType.INT,w,h);
 		double[] aPixels=a.getArrayDouble();
 		double[] bPixels=b.getArrayDouble();
 		int[] outPixels=out.getArrayInt();

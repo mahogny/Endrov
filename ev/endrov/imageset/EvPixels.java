@@ -3,6 +3,9 @@ package endrov.imageset;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 
 /**
@@ -57,7 +60,8 @@ public class EvPixels implements AnyEvImage
 	 */
 	
 	/** Type of data, any of TYPE_* */
-	private int type;
+	//private int type;
+	private EvPixelsType type;
 		/** Width */
 	private int w;
 	/** Height */ 
@@ -66,17 +70,9 @@ public class EvPixels implements AnyEvImage
 	/**
 	 * Get type of pixel format
 	 */
-	public int getType()
+	public EvPixelsType getType()
 		{
 		return type;
-		}
-
-	/**
-	 * Get string description of type of pixel format 
-	 */
-	public String getTypeString()
-		{
-		return type2string(type);
 		}
 	
 	/**
@@ -201,7 +197,7 @@ public class EvPixels implements AnyEvImage
 	/**
 	 * Allocate a new pixel plane
 	 */
-	public EvPixels(int type, int w, int h)
+	public EvPixels(EvPixelsType type, int w, int h)
 		{
 		count(1);
 		allocate(type,w,h);
@@ -210,7 +206,7 @@ public class EvPixels implements AnyEvImage
 	public static EvPixels createFromUByte(int w, int h, byte[] a)
 		{
 		EvPixels p=new EvPixels();
-		p.type=TYPE_UBYTE;
+		p.type=EvPixelsType.UBYTE;
 		p.w=w;
 		p.h=h;
 		p.arrayB=a;
@@ -220,7 +216,7 @@ public class EvPixels implements AnyEvImage
 	public static EvPixels createFromShort(int w, int h, short[] a)
 		{
 		EvPixels p=new EvPixels();
-		p.type=TYPE_SHORT;
+		p.type=EvPixelsType.SHORT;
 		p.w=w;
 		p.h=h;
 		p.arrayS=a;
@@ -230,7 +226,7 @@ public class EvPixels implements AnyEvImage
 	public static EvPixels createFromInt(int w, int h, int[] a)
 		{
 		EvPixels p=new EvPixels();
-		p.type=TYPE_INT;
+		p.type=EvPixelsType.INT;
 		p.w=w;
 		p.h=h;
 		p.arrayI=a;
@@ -240,7 +236,7 @@ public class EvPixels implements AnyEvImage
 	public static EvPixels createFromFloat(int w, int h, float[] a)
 		{
 		EvPixels p=new EvPixels();
-		p.type=TYPE_FLOAT;
+		p.type=EvPixelsType.FLOAT;
 		p.w=w;
 		p.h=h;
 		p.arrayF=a;
@@ -250,7 +246,7 @@ public class EvPixels implements AnyEvImage
 	public static EvPixels createFromDouble(int w, int h, double[] a)
 		{
 		EvPixels p=new EvPixels();
-		p.type=TYPE_DOUBLE;
+		p.type=EvPixelsType.DOUBLE;
 		p.w=w;
 		p.h=h;
 		p.arrayD=a;
@@ -258,50 +254,27 @@ public class EvPixels implements AnyEvImage
 		}
 	
 	
-	/**
-	 * Is some sort of integer
-	 */
-	public boolean isIntegral()
-		{
-		return (type & TYPES_INTEGRAL) != 0;
-		}
-	
-	/**
-	 * Is signed
-	 */
-	public boolean isSigned()
-		{
-		return (type & TYPES_SIGNED) != 0;
-		}
-	
-	/**
-	 * Is some sort of floating point
-	 */
-	public boolean isFP()
-		{
-		return (type & TYPES_FP) != 0;
-		}
 	
 	/**
 	 * Convert to a different type. 
 	 */
-	public EvPixels convertTo(int newType, boolean readOnly)
+	private EvPixels convertTo(EvPixelsType newType, boolean readOnly)
 		{
 		//Only convert if needed
 		if(type!=newType)
 			{
 			//Conversion is coded to be slow but short at the moment. Metaprogramming would help!
-			if(type==TYPE_AWT)
+			if(type==EvPixelsType.AWT)
 				return helperConvertFromAwt(newType);
 			else
 				{
 				EvPixels p;
-				if(type==TYPE_INT)
+				if(type==EvPixelsType.INT)
 					p=this;
 				else
 					p=helperConvertToInt();
 				
-				if(newType==TYPE_INT)
+				if(newType==EvPixelsType.INT)
 					return p;
 				else
 					return p.helperConvertFromInt(newType);
@@ -318,67 +291,53 @@ public class EvPixels implements AnyEvImage
 	
 	public EvPixels convertToFloat(boolean readOnly)
 		{
-		return convertTo(TYPE_FLOAT, readOnly);
+		return convertTo(EvPixelsType.FLOAT, readOnly);
 		}
 	
 	public EvPixels convertToDouble(boolean readOnly)
 		{
-		return convertTo(TYPE_DOUBLE, readOnly);
+		return convertTo(EvPixelsType.DOUBLE, readOnly);
 		}
 	
 	/**
 	 * Get pixels in valid format. For performance the data will not be copied and converted unless needed. Use bit operations to put together valid types. 
 	 */
-	public EvPixels getReadOnly(int validTypes)
+	public EvPixels getReadOnly(EvPixelsType... validTypes)
 		{
-		return get(validTypes, true);
+		return get(Arrays.asList(validTypes), true);
 		}
 	
 	/**
 	 * Get a copy of the image in a valid format. Writing on copy will not modify the original. Use bit operations to put together valid types
 	 */
-	public EvPixels getWritable(int validTypes)
+	public EvPixels getWritable(EvPixelsType... validTypes)
 		{
-		return get(validTypes, false);
+		return get(Arrays.asList(validTypes), false);
 		}
 
-	public static String type2string(int type)
-		{
-		if(type==0)
-			return "no type";
-		else if(type==TYPE_AWT)
-			return "AWT";
-		else if(type==TYPE_UBYTE)
-			return "ubyte";
-		else if(type==TYPE_SHORT)
-			return "short";
-		else if(type==TYPE_INT)
-			return "int";
-		else if(type==TYPE_FLOAT)
-			return "float";
-		else if(type==TYPE_DOUBLE)
-			return "double";
-		else
-			return "<???>";
-		}
+
 	
 	/**
 	 * Get pixels in suitable format
 	 */
-	public EvPixels get(int validTypes, boolean readOnly)
+	public EvPixels get(Collection<EvPixelsType> validTypes, boolean readOnly)
 		{
+		//System.out.println("Wanting "+validTypes);
+		HashSet<EvPixelsType> validT=new HashSet<EvPixelsType>();
+		validT.addAll(validTypes);
+		
 		//Quick check: can current type be kept?
 		//Needed to keep AWT in particular
-		if((validTypes & type)!=0)
+		if(validT.contains(type))
 			{
-			System.out.println("keep type"+type2string(type));
+			//System.out.println("keep type"+type);
 			if(readOnly)
 				return this;
 			else
 				return new EvPixels(this);
 			}
 		
-		int[] typeOrder=new int[]{TYPE_AWT,TYPE_UBYTE,TYPE_SHORT,TYPE_INT,TYPE_FLOAT,TYPE_DOUBLE};
+		EvPixelsType[] typeOrder=new EvPixelsType[]{EvPixelsType.AWT,EvPixelsType.UBYTE,EvPixelsType.SHORT,EvPixelsType.INT,EvPixelsType.FLOAT,EvPixelsType.DOUBLE};
 
 		//Current type in list
 		int curtypei=0;
@@ -386,22 +345,22 @@ public class EvPixels implements AnyEvImage
 			curtypei++;
 		
 		//AWT has to be treated specially
-		if(type==TYPE_AWT)
+		if(type==EvPixelsType.AWT)
 			curtypei=2;
 		
 		//Try to upconvert to satisfy
 		for(int i=curtypei;i<typeOrder.length;i++)
-			if((typeOrder[i] & validTypes)!=0)
+			if(validT.contains(typeOrder[i]))
 				{
-				//System.out.println("Upconvert "+type2string(typeOrder[i]));
+				//System.out.println("Upconvert "+typeOrder[i]);
 				return convertTo(typeOrder[i], readOnly);
 				}
 		
 		//Try to downconvert. Best-effort, use the least destructible option
 		for(int i=curtypei;i>=0;i--)
-			if((typeOrder[i] & validTypes)!=0)
+			if(validT.contains(typeOrder[i]))
 				{
-				//System.out.println("Downconvert "+type2string(typeOrder[i]));
+				//System.out.println("Downconvert "+typeOrder[i]);
 				return convertTo(typeOrder[i], readOnly);
 				}
 
@@ -415,7 +374,7 @@ public class EvPixels implements AnyEvImage
 	 * Convert from AWT into any other format.
 	 * Assumes it is not AWT so conversion will always be needed
 	 */
-	private EvPixels helperConvertFromAwt(int newType)
+	private EvPixels helperConvertFromAwt(EvPixelsType newType)
 		{
 		EvPixels p=new EvPixels();
 		WritableRaster r=awt.getRaster();
@@ -423,52 +382,54 @@ public class EvPixels implements AnyEvImage
 		p.h=awt.getHeight();
 		p.type=newType;
 		
+		//System.out.println("convertAWT -> "+newType);
+		
 		EvPixels q;
 		switch(newType)
 			{
-			case TYPE_UBYTE:
-				q=helperConvertFromAwt(TYPE_INT);
+			case UBYTE:
+				q=helperConvertFromAwt(EvPixelsType.INT);
 				return q.helperConvertFromInt(newType);
 			
-			case TYPE_SHORT:
-				q=helperConvertFromAwt(TYPE_INT);
+			case SHORT:
+				q=helperConvertFromAwt(EvPixelsType.INT);
 				return q.helperConvertFromInt(newType);
 			
-			case TYPE_INT:
+			case INT:
 				p.arrayI=new int[r.getWidth()*r.getHeight()];
 				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, p.arrayI);
 				return p;
 				
-			case TYPE_FLOAT:
+			case FLOAT:
 				p.arrayF=new float[r.getWidth()*r.getHeight()];
 				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, p.arrayF);
 				return p;
 				
-			case TYPE_DOUBLE:
+			case DOUBLE:
 				p.arrayD=new double[r.getWidth()*r.getHeight()];
 				r.getSamples(0, 0, r.getWidth(), r.getHeight(), 0, p.arrayD);
 				return p;
 			
 			default:
-				System.out.println("Conversion error in fromawt");
+				throw new RuntimeException("convert from awt to "+newType.getDesc()+" not supported by this function");
 			}
-		throw new RuntimeException("convert from awt to "+type2string(newType)+" not supported by this function");
 		}
 	
 	/**
 	 * Convert from Int to any other format. 
 	 * Assumes it is not int so conversion will always be needed
 	 */
-	private EvPixels helperConvertFromInt(int newType)
+	private EvPixels helperConvertFromInt(EvPixelsType newType)
 		{
 		EvPixels p=new EvPixels();
 		p.w=w;
 		p.h=h;
 		p.type=newType;
-		System.out.println("conv int->"+type2string(newType));
+		
+		//System.out.println("convINT -> "+newType);
 		
 		int[] larr=arrayI;
-		if(newType==TYPE_UBYTE)
+		if(newType==EvPixelsType.UBYTE)
 			{
 			byte[] narr=new byte[larr.length];
 			for(int i=0;i<larr.length;i++)
@@ -476,7 +437,7 @@ public class EvPixels implements AnyEvImage
 			p.arrayB=narr;
 			return p;
 			}
-		else if(newType==TYPE_SHORT)
+		else if(newType==EvPixelsType.SHORT)
 			{
 			short[] narr=new short[larr.length];
 			for(int i=0;i<larr.length;i++)
@@ -484,7 +445,7 @@ public class EvPixels implements AnyEvImage
 			p.arrayS=narr;
 			return p;
 			}
-		else if(newType==TYPE_FLOAT)
+		else if(newType==EvPixelsType.FLOAT)
 			{
 			float[] narr=new float[larr.length];
 			for(int i=0;i<larr.length;i++)
@@ -492,7 +453,7 @@ public class EvPixels implements AnyEvImage
 			p.arrayF=narr;
 			return p;
 			}
-		else if(newType==TYPE_DOUBLE)
+		else if(newType==EvPixelsType.DOUBLE)
 			{
 			double[] narr=new double[larr.length];
 			for(int i=0;i<larr.length;i++)
@@ -500,14 +461,14 @@ public class EvPixels implements AnyEvImage
 			p.arrayD=narr;
 			return p;
 			}
-		else if(newType==TYPE_AWT)
+		else if(newType==EvPixelsType.AWT)
 			{
 			//Can be made faster
 			p.awt=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
 			p.awt.getRaster().setPixels(0, 0, w, h, arrayI);
 			return p;
 			}
-		throw new RuntimeException("convert from int to "+type2string(newType)+" not supported by this function");
+		throw new RuntimeException("convert from int to "+newType+" not supported by this function");
 		}
 	
 	/**
@@ -516,39 +477,39 @@ public class EvPixels implements AnyEvImage
 	 */
 	private EvPixels helperConvertToInt()
 		{
-		System.out.println("conv "+type2string(type)+" -> int");
+		//System.out.println("conv "+type+" -> INT");
 		
 		//There are some local variable optimizations(?).
 		int[] narr=null;
-		if(type==TYPE_UBYTE)
+		if(type==EvPixelsType.UBYTE)
 			{
 			byte[] larr=arrayB;
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(int)(larr[i] & 0xff); //Kill off sign
 			}
-		else if(type==TYPE_SHORT)
+		else if(type==EvPixelsType.SHORT)
 			{
 			short[] larr=arrayS;
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=larr[i];
 			}
-		else if(type==TYPE_FLOAT)
+		else if(type==EvPixelsType.FLOAT)
 			{
 			float[] larr=arrayF;
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(int)larr[i];
 			}
-		else if(type==TYPE_DOUBLE)
+		else if(type==EvPixelsType.DOUBLE)
 			{
 			double[] larr=arrayD;
 			narr=new int[larr.length];
 			for(int i=0;i<larr.length;i++)
 				narr[i]=(int)larr[i];
 			}
-		else if(type==TYPE_AWT)
+		else if(type==EvPixelsType.AWT)
 			{
 			WritableRaster r=awt.getRaster();
 			narr=new int[awt.getWidth()*awt.getHeight()];
@@ -560,13 +521,13 @@ public class EvPixels implements AnyEvImage
 			{
 			EvPixels p=new EvPixels();
 			p.arrayI=narr;
-			p.type=TYPE_INT;
+			p.type=EvPixelsType.INT;
 			p.w=w;
 			p.h=h;
 			return p;
 			}
 		else
-			throw new RuntimeException("convert to int from "+type2string(type)+" not supported by this function");
+			throw new RuntimeException("convert to int from "+type+" not supported by this function");
 		}
 	
 	
@@ -575,7 +536,7 @@ public class EvPixels implements AnyEvImage
 	 */
 	private void unallocate()
 		{
-		if(type!=0)
+		if(type!=null)
 			{
 			arrayF=null;
 			arrayD=null;
@@ -583,7 +544,7 @@ public class EvPixels implements AnyEvImage
 			arrayS=null;
 			arrayI=null;
 			awt=null;
-			type=0;
+			type=null;
 			}
 		}
 	
@@ -593,7 +554,7 @@ public class EvPixels implements AnyEvImage
 	public void setPixels(BufferedImage im)
 		{
 		unallocate();
-		type=TYPE_AWT;
+		type=EvPixelsType.AWT;
 		w=im.getWidth();
 		h=im.getHeight();
 		awt=im;
@@ -659,7 +620,7 @@ public class EvPixels implements AnyEvImage
 	/**
 	 * Set type and allocate space for image. All pixels will be set to 0
 	 */
-	public void allocate(int type, int w, int h)
+	public void allocate(EvPixelsType type, int w, int h)
 		{
 		int s=w*h;
 		this.w=w;
@@ -667,24 +628,26 @@ public class EvPixels implements AnyEvImage
 		this.type=type;
 		switch(type)
 			{
-			case TYPE_UBYTE:
+			case UBYTE:
 				arrayB=new byte[s];
 				break;
-			case TYPE_SHORT:
+			case SHORT:
 				arrayS=new short[s];
 				break;
-			case TYPE_INT:
+			case INT:
 				arrayI=new int[s];
 				break;
-			case TYPE_FLOAT:
+			case FLOAT:
 				arrayF=new float[s];
 				break;
-			case TYPE_DOUBLE:
+			case DOUBLE:
 				arrayD=new double[s];
 				break;
-			case TYPE_AWT:
+			case AWT:
 				awt=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
 				break;
+			default:
+				throw new RuntimeException("Provided bad type to allocate, "+type);
 			}
 		}
 	
@@ -702,12 +665,12 @@ public class EvPixels implements AnyEvImage
 	
 	public BufferedImage quickReadOnlyAWT()
 		{
-		return convertTo(EvPixels.TYPE_AWT, true).getAWT();
+		return convertTo(EvPixelsType.AWT, true).getAWT();
 		}
 	
 	public String toString()
 		{
-		return "EvPixels type:"+type2string(type)+" w:"+w+" h:"+h;
+		return "EvPixels type:"+type+" w:"+w+" h:"+h;
 		}
 
 	/**
@@ -716,7 +679,7 @@ public class EvPixels implements AnyEvImage
 	public String asciiImage()
 		{
 		StringBuffer sb=new StringBuffer();
-		if(type==TYPE_INT)
+		if(type==EvPixelsType.INT)
 			{
 			for(int i=0;i<getHeight();i++)
 				{
@@ -725,7 +688,7 @@ public class EvPixels implements AnyEvImage
 				sb.append("\n");
 				}
 			}
-		else if(type==TYPE_DOUBLE)
+		else if(type==EvPixelsType.DOUBLE)
 			{
 			for(int i=0;i<getHeight();i++)
 				{
@@ -735,7 +698,7 @@ public class EvPixels implements AnyEvImage
 				}
 			}
 		else
-			return convertTo(TYPE_DOUBLE, true).asciiImage();
+			return convertTo(EvPixelsType.DOUBLE, true).asciiImage();
 		return sb.toString();
 		}
 	
@@ -745,22 +708,22 @@ public class EvPixels implements AnyEvImage
 	public String asciiPart(int y, int startX, int endX)
 		{
 		StringBuffer sb=new StringBuffer();
-		if(type==TYPE_UBYTE)
-			return convertTo(TYPE_INT, true).asciiPart(y, startX, endX);
-		if(type==TYPE_SHORT)
-			return convertTo(TYPE_INT, true).asciiPart(y, startX, endX);
-		else if(type==TYPE_INT)
+		if(type==EvPixelsType.UBYTE)
+			return convertTo(EvPixelsType.INT, true).asciiPart(y, startX, endX);
+		if(type==EvPixelsType.SHORT)
+			return convertTo(EvPixelsType.INT, true).asciiPart(y, startX, endX);
+		else if(type==EvPixelsType.INT)
 			{
 			for(int j=startX;j<endX;j++)
 				sb.append(arrayI[y*getWidth()+j]+"\t");
 			}
-		else if(type==TYPE_DOUBLE)
+		else if(type==EvPixelsType.DOUBLE)
 			{
 			for(int j=startX;j<endX;j++)
 				sb.append(arrayD[y*getWidth()+j]+"\t");
 			}
 		else
-			return convertTo(TYPE_DOUBLE, true).asciiPart(y, startX, endX);
+			return convertTo(EvPixelsType.DOUBLE, true).asciiPart(y, startX, endX);
 		return sb.toString();
 		}
 	
@@ -768,10 +731,10 @@ public class EvPixels implements AnyEvImage
 	/*
 	public static void main(String[] arg)
 		{
-		EvPixels p=new EvPixels(EvPixels.TYPE_INT, 200, 100);
+		EvPixels p=new EvPixels(EvPixelsType.TYPE_INT, 200, 100);
 		int[] arr=p.getArrayInt();
 		arr[5]=1;
-		EvPixels q=p.getReadOnly(TYPE_AWT);
+		EvPixels q=p.getReadOnly(EvPixelsType.TYPE_AWT);
 		
 		//but what if I want a copy of a different type? why the need to duplicate *and* convert?
 		
@@ -787,7 +750,7 @@ public class EvPixels implements AnyEvImage
 		{
 		double[][] aim=new double[h][w];
 
-		if(type==TYPE_INT)
+		if(type==EvPixelsType.INT)
 			{
 			int curi=0;
 			for(int ay=0;ay<h;ay++)
@@ -803,7 +766,7 @@ public class EvPixels implements AnyEvImage
 			
 			//TODO support other types
 			
-			BufferedImage bim=convertTo(EvPixels.TYPE_AWT, true).getAWT();
+			BufferedImage bim=convertTo(EvPixelsType.AWT, true).getAWT();
 	
 			Raster r=bim.getRaster();
 			for(int i=0;i<h;i++)
@@ -818,7 +781,7 @@ public class EvPixels implements AnyEvImage
 	 */
 	public void setArrayDouble2D(double[][] arr)
 		{
-		type=TYPE_DOUBLE;
+		type=EvPixelsType.DOUBLE;
 		h=arr.length;
 		w=arr[0].length;
 		arrayD=new double[w*h];

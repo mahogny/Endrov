@@ -2,6 +2,7 @@ package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * a / B
@@ -24,7 +25,7 @@ public class EvOpScalarDivImage extends EvOpSlice1
 	static EvPixels div(int a, EvPixels b)
 		{
 		// Should use the common higher type here
-		b = b.convertTo(EvPixels.TYPE_INT, true);
+		b = b.getReadOnly(EvPixelsType.INT);
 
 		int w = b.getWidth();
 		int h = b.getHeight();

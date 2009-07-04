@@ -3,6 +3,7 @@ package endrov.flowGrayMorph;
 import java.util.*;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.util.Tuple;
 import endrov.util.Vector2i;
 
@@ -24,7 +25,7 @@ public class GrayMorph
 	public static List<Tuple<Vector2i,Integer>> kernelPos(EvPixels kernel, int kcx, int kcy)
 		{
 		LinkedList<Tuple<Vector2i,Integer>> list=new LinkedList<Tuple<Vector2i,Integer>>();
-		kernel=kernel.convertTo(EvPixels.TYPE_INT, true);
+		kernel=kernel.getReadOnly(EvPixelsType.INT);
 		int w=kernel.getWidth();
 		int h=kernel.getHeight();
 		int[] inPixels=kernel.getArrayInt();

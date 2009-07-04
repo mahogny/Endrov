@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.util.Vector3i;
 
 /**
@@ -26,7 +27,7 @@ public class EvOpBinMorphFillHoles2D extends EvOpSlice1
 		int w=pixels.getWidth();
 		int h=pixels.getHeight();
 
-		EvPixels markstack=new EvPixels(EvPixels.TYPE_INT, w, h); 
+		EvPixels markstack=new EvPixels(EvPixelsType.INT, w, h); 
 		
 		int[] inarr=pixels.getArrayInt();
 		int[] markarr=markstack.getArrayInt();

@@ -16,6 +16,7 @@ import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
 
@@ -69,7 +70,7 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 			EvImage image=stack.get(slice);
 			if(image!=null && px<stack.getWidth() && py<stack.getHeight() && px>=0 && py>=0)
 				{
-				EvPixels pix=image.getPixels().convertTo(EvPixels.TYPE_DOUBLE, true);
+				EvPixels pix=image.getPixels().getReadOnly(EvPixelsType.DOUBLE);
 				EvLog.printLog("Pixel ("+px+" "+py+") Intensity: "+pix.getArrayDouble()[pix.getPixelIndex(px, py)]);
 				}
 			else

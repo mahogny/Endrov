@@ -119,7 +119,7 @@ public class EvStack implements AnyEvImage
 	/**
 	 * Allocate a 3d stack. ref will disappear later. instead have d.
 	 */
-	public void allocate(int w, int h, int d, int type, EvStack ref)
+	public void allocate(int w, int h, int d, EvPixelsType type, EvStack ref)
 		{
 		resX=ref.resX;
 		resY=ref.resY;
@@ -380,7 +380,7 @@ public class EvStack implements AnyEvImage
 		EvPixels[] parr2=getPixels();
 		int[][] parr=new int[parr2.length][];
 		for(int i=0;i<parr2.length;i++)
-			parr[i]=parr2[i].convertTo(EvPixels.TYPE_INT, true).getArrayInt();
+			parr[i]=parr2[i].getReadOnly(EvPixelsType.INT).getArrayInt();
 		return parr;
 		}
 	
@@ -392,7 +392,7 @@ public class EvStack implements AnyEvImage
 		EvPixels[] parr2=getPixels();
 		double[][] parr=new double[parr2.length][];
 		for(int i=0;i<parr2.length;i++)
-			parr[i]=parr2[i].convertTo(EvPixels.TYPE_DOUBLE, true).getArrayDouble();
+			parr[i]=parr2[i].getReadOnly(EvPixelsType.DOUBLE).getArrayDouble();
 		return parr;
 		}
 

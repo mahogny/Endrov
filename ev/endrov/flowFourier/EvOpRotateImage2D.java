@@ -2,6 +2,7 @@ package endrov.flowFourier;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Rotate image
@@ -51,9 +52,9 @@ public class EvOpRotateImage2D extends EvOpSlice1
 		else
 			py=py2;
 		
-		in=in.convertTo(EvPixels.TYPE_DOUBLE, true);
+		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		double[] inPixels=in.getArrayDouble();
-		EvPixels out=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] outPixels=out.getArrayDouble();
 		
 		for(int ay=0;ay<h;ay++)

@@ -3,6 +3,7 @@ package endrov.flowFourier;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import endrov.flow.EvOpSlice;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.util.Tuple;
 
 /**
@@ -32,7 +33,7 @@ public class EvOpFourierRealForwardFull2D extends EvOpSlice
 		int w=inRe.getWidth();
 		int h=inRe.getHeight();
 		
-		inRe=inRe.convertTo(EvPixels.TYPE_DOUBLE, true);
+		inRe=inRe.getReadOnly(EvPixelsType.DOUBLE);
 		
 		//Library requires that data is stored swizzled
 		double[] swizzle=new double[w*h*2];

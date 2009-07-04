@@ -278,7 +278,7 @@ public class EvImage
 	 */
 	public BufferedImage getJavaImage()
 		{
-		return getPixels().convertTo(EvPixels.TYPE_AWT, true).getAWT();
+		return getPixels().getReadOnly(EvPixelsType.AWT).getAWT();
 		}
 	
 	/**

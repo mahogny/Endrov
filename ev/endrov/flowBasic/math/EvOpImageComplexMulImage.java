@@ -3,6 +3,7 @@ package endrov.flowBasic.math;
 import endrov.flow.EvOpSlice;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.Tuple;
 
@@ -25,10 +26,10 @@ public class EvOpImageComplexMulImage extends EvOpSlice
 	public static Tuple<EvPixels,EvPixels> times(EvPixels aReal, EvPixels aImag, EvPixels bReal, EvPixels bImag)
 		{
 		//Should use the common higher type here
-		aReal=aReal.convertTo(EvPixels.TYPE_DOUBLE, true);
-		aImag=aImag.convertTo(EvPixels.TYPE_DOUBLE, true);
-		bReal=bReal.convertTo(EvPixels.TYPE_DOUBLE, true);
-		bImag=bImag.convertTo(EvPixels.TYPE_DOUBLE, true);
+		aReal=aReal.getReadOnly(EvPixelsType.DOUBLE);
+		aImag=aImag.getReadOnly(EvPixelsType.DOUBLE);
+		bReal=bReal.getReadOnly(EvPixelsType.DOUBLE);
+		bImag=bImag.getReadOnly(EvPixelsType.DOUBLE);
 	
 		int w=aReal.getWidth();
 		int h=aReal.getHeight();
@@ -38,9 +39,9 @@ public class EvOpImageComplexMulImage extends EvOpSlice
 		double[] bRealPixels=bReal.getArrayDouble();
 		double[] bImagPixels=bImag.getArrayDouble();
 	
-		EvPixels outReal=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		EvPixels outReal=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] outRealPixels=outReal.getArrayDouble();
-		EvPixels outImag=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+		EvPixels outImag=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] outImagPixels=outImag.getArrayDouble();
 	
 	

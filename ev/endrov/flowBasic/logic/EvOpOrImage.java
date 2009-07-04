@@ -2,6 +2,7 @@ package endrov.flowBasic.logic;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * a OR b
@@ -17,8 +18,8 @@ public class EvOpOrImage extends EvOpSlice1
 	private static EvPixels or(EvPixels a, EvPixels b)
 		{
 		//Should use the common higher type here
-		a=a.convertTo(EvPixels.TYPE_INT, true);
-		b=b.convertTo(EvPixels.TYPE_INT, true);
+		a=a.getReadOnly(EvPixelsType.INT);
+		b=b.getReadOnly(EvPixelsType.INT);
 		
 		int w=a.getWidth();
 		int h=a.getHeight();

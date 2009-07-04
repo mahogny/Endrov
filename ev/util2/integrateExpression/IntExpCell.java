@@ -144,7 +144,7 @@ public class IntExpCell
 								BufferedImage b=im.getJavaImage();
 								pixels=new EvPixels(b);
 								pixels=pixels.getReadOnly(EvPixels.TYPE_INT);*/
-								pixels=im.getPixels().getReadOnly(EvPixels.TYPE_INT);
+								pixels=im.getPixels().getReadOnly(EvPixelsType.INT);
 								line=pixels.getArrayInt();
 								
 								//Integrate background

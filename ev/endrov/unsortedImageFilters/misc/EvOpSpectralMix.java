@@ -3,6 +3,7 @@ package endrov.unsortedImageFilters.misc;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Spectral mixing: Transform input colors by matrix.
@@ -45,8 +46,8 @@ public class EvOpSpectralMix
 		int numpix=w*h;
 		for(int i=0;i<in.length;i++)
 			{
-			pin[i]=in[i].convertTo(EvPixels.TYPE_DOUBLE, true).getArrayDouble();
-			out[i]=new EvPixels(EvPixels.TYPE_DOUBLE,w,h);
+			pin[i]=in[i].getReadOnly(EvPixelsType.DOUBLE).getArrayDouble();
+			out[i]=new EvPixels(EvPixelsType.DOUBLE,w,h);
 			pout[i]=out[i].getArrayDouble();
 			}
 		

@@ -1,6 +1,7 @@
 package endrov.unsortedImageFilters;
 
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Operations to work with cumulative sums
@@ -24,10 +25,10 @@ public class CumSumLine
 	 */
 	public static EvPixels cumsum(EvPixels in)
 		{
-		in=in.convertTo(EvPixels.TYPE_INT, true);
+		in=in.getReadOnly(EvPixelsType.INT);
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels out=new EvPixels(EvPixels.TYPE_INT,w+1,h+1); //Must be able to fit. Need not be original type.
+		EvPixels out=new EvPixels(EvPixelsType.INT,w+1,h+1); //Must be able to fit. Need not be original type.
 		int[] inPixels=in.getArrayInt();
 		int[] outPixels=out.getArrayInt();
 		

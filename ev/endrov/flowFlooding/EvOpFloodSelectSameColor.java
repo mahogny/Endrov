@@ -3,7 +3,7 @@ package endrov.flowFlooding;
 import java.util.*;
 
 import endrov.flow.EvOpStack1;
-import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 
@@ -38,7 +38,7 @@ public class EvOpFloodSelectSameColor extends EvOpStack1
 
 		EvStack markstack=new EvStack();
 		markstack.getMetaFrom(stack);
-		markstack.allocate(w, h, d, EvPixels.TYPE_INT, stack);
+		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
 		int[][] inarr=stack.getArraysInt();
 		int[][] outarr=markstack.getArraysInt();

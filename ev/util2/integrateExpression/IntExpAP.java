@@ -170,7 +170,7 @@ public class IntExpAP
 					pixels=new EvPixels(b);
 					pixels=pixels.getReadOnly(EvPixels.TYPE_INT);
 					*/
-					pixels=im.getPixels().getReadOnly(EvPixels.TYPE_INT);
+					pixels=im.getPixels().getReadOnly(EvPixelsType.INT);
 					pixelsLine=pixels.getArrayInt();
 
 					//Integrate background
@@ -190,7 +190,7 @@ public class IntExpAP
 					}
 				else
 					{
-					lenMap=new EvPixels(EvPixels.TYPE_DOUBLE, pixels.getWidth(), pixels.getHeight());
+					lenMap=new EvPixels(EvPixelsType.DOUBLE, pixels.getWidth(), pixels.getHeight());
 					lenMapArr=lenMap.getArrayDouble();
 
 					ImVector2 dirvec=ImVector2.polar(shell.major, shell.angle);
