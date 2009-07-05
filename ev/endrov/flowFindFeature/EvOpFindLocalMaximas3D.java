@@ -1,14 +1,17 @@
-package endrov.unsortedImageFilters;
+package endrov.flowFindFeature;
 
 import java.util.*;
 
+import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageMulScalar;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 
 
 /**
  * Find local extremes. Can handle flat areas - a region of the same value is the extreme, as opposed to a single pixel.
+ * Does not consider border.
  * <br/>
  * O(w h d)
  * 
@@ -16,13 +19,8 @@ import endrov.util.Vector3i;
  * @author Johan Henriksson
  *
  */
-public class FindLocalExtremes
+public class EvOpFindLocalMaximas3D extends EvOpStack1
 	{
-
-	//Could also generate this as a new channel. less efficient but good to see what is happening
-	//or - some simple way of superimposing the pixels on a channel
-	
-	
 	/**
 	 * Find local maximas
 	 */
@@ -46,7 +44,7 @@ public class FindLocalExtremes
 		int d=stack.getDepth();
 		
 		
-		int[][] inarr=stack.getArraysInt();
+		double[][] inarr=stack.getArraysDouble();
 		for(int z=1;z<d-1;z++)
 			for(int y=1;y<h-1;y++)
 				for(int x=1;x<w-1;x++)
@@ -54,16 +52,18 @@ public class FindLocalExtremes
 					Vector3i here=new Vector3i(x,y,z);
 					if(!visited.contains(here))
 						{
-						int thisValue=inarr[z][y*w+x];
+						double thisValue=inarr[z][y*w+x];
 						
 						LinkedList<Vector3i> eqVal=new LinkedList<Vector3i>();
 						
+						/*
 						if(isHigher(eqVal, inarr, thisValue, w, thisValue, d, x-1, y, z) ||
 								isHigher(eqVal, inarr, thisValue, w, thisValue, d, x+1, y, z) ||
 								isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y-1, z) ||
 								isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y+1, z) ||
 								isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y, z-1) ||
-								isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y, z+1))
+								isHigher(eqVal, inarr, thisValue, w, thisValue, d, x, y, z+1))*/
+						if(isAnyHigher(eqVal, inarr, thisValue, w, h, d, x, y, z))
 							{
 							//One value is higher for sure. Can ignore this pixel
 							}
@@ -83,19 +83,22 @@ public class FindLocalExtremes
 									continue;
 								
 								//Increase locality
-								int vx=v.x;
-								int vy=v.y;
-								int vz=v.z;
 								
 								//Find a pixel which is higher. 
 								//Cannot simply stop here; if this area is not completely marked as
 								//visited then problems can arise later
+								/*
+								int vx=v.x;
+								int vy=v.y;
+								int vz=v.z;
 								if(isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx-1, vy, vz) ||
 										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx+1, vy, vz) ||
 										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy-1, vz) ||
 										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy+1, vz) ||
 										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy, vz-1) ||
-										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy, vz+1))
+										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy, vz+1))*/
+								
+								if(isAnyHigher(eqVal, inarr, thisValue, w, h, d, v.x, v.y, v.z))
 									foundHigher=true;
 								}
 							if(!foundHigher)
@@ -117,11 +120,25 @@ public class FindLocalExtremes
 		}
 	
 	/**
+	 * Is any higher?
+	 */
+	private static boolean isAnyHigher(LinkedList<Vector3i> eqVal, double[][] inarr, double thisValue, int w, int h, int d, int x, int y, int z)
+		{
+		return 
+		isHigher(eqVal, inarr, thisValue, w, h, d, x-1, y, z) ||
+		isHigher(eqVal, inarr, thisValue, w, h, d, x+1, y, z) ||
+		isHigher(eqVal, inarr, thisValue, w, h, d, x, y-1, z) ||
+		isHigher(eqVal, inarr, thisValue, w, h, d, x, y+1, z) ||
+		isHigher(eqVal, inarr, thisValue, w, h, d, x, y, z-1) ||
+		isHigher(eqVal, inarr, thisValue, w, h, d, x, y, z+1);
+		}
+	
+	/**
 	 * Helper function: check if a pixel has a higher value. add to queue if value is equal
 	 */
-	private static boolean isHigher(LinkedList<Vector3i> eqVal, int[][] inarr, int thisValue, int w, int h, int d, int x, int y, int z)
+	private static boolean isHigher(LinkedList<Vector3i> eqVal, double[][] inarr, double thisValue, int w, int h, int d, int x, int y, int z)
 		{
-		int newValue=inarr[z][y*w+x];
+		double newValue=inarr[z][y*w+x];
 		if(newValue>thisValue)
 			return true;
 		else if(newValue==thisValue)
@@ -137,6 +154,27 @@ public class FindLocalExtremes
 //		return findMaximas(NewImageSystem.makeStackOp(new ImageMath.TimesOp(-1)).exec(stack));
 		return findMaximas(new EvOpImageMulScalar(-1).exec1(stack));
 		}
+	
+	
+
+	public EvStack exec1(EvStack... p)
+		{
+		return apply(p[0]);
+		}
+	
+	public static EvStack apply(EvStack p)
+		{
+		EvStack pout=new EvStack();
+		pout.allocate(p.getWidth(), p.getHeight(), p.getDepth(), EvPixelsType.INT, p);
+		
+		int[][] arr=pout.getOrigArraysInt();
+		int w=p.getWidth();
+		for(Vector3i v:findMaximas(p))
+			arr[v.z][v.y*w+v.x]=1;
+		
+		return pout;
+		}
+	
 	
 	
 	

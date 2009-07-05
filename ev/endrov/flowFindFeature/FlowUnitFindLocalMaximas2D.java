@@ -1,0 +1,65 @@
+package endrov.flowFindFeature;
+
+
+import java.awt.Color;
+import java.util.Map;
+
+import javax.swing.ImageIcon;
+
+import org.jdom.Element;
+
+import endrov.flow.Flow;
+import endrov.flow.FlowExec;
+import endrov.flow.FlowType;
+import endrov.flow.FlowUnitBasic;
+import endrov.flow.FlowUnitDeclaration;
+
+/**
+ * Flow unit: Find local maximas
+ * @author Johan Henriksson
+ *
+ */
+public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
+	{
+	public static final String showName="Find local maximas 2D";
+	private static final String metaType="findLocalMaximas2D";
+	
+	public static final ImageIcon icon=new ImageIcon(CategoryInfo.class.getResource("jhFlowCategoryFindMaximas.png"));
+
+	public static void initPlugin() {}
+	static
+		{
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitFindLocalMaximas2D.class, icon,
+				"Graphical display of local maximas in each plane"));
+		}
+	
+	public String toXML(Element e){return metaType;}
+	public void fromXML(Element e){}
+	public String getBasicShowName(){return showName;}
+	public ImageIcon getIcon(){return icon;}
+	public Color getBackground(){return CategoryInfo.bgColor;}
+	
+	/** Get types of flows in */
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("image", FlowType.ANYIMAGE);
+		}
+	
+	/** Get types of flows out */
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("out", FlowType.ANYIMAGE); //TODO same type as "image"
+		}
+	
+	/** Execute algorithm */
+	public void evaluate(Flow flow, FlowExec exec) throws Exception
+		{
+		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
+		
+		Object a=flow.getInputValue(this, exec, "image");
+
+		lastOutput.put("out", new EvOpFindLocalMaximas2D().exec1Untyped(a));
+		}
+
+	
+	}

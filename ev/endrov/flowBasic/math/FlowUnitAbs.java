@@ -38,7 +38,7 @@ public class FlowUnitAbs extends FlowUnitMathUniop
 
 		checkNotNull(a);
 		if(a instanceof Number)
-			lastOutput.put("B", Math.abs(((Number)a).doubleValue()));
+			lastOutput.put("B", NumberMath.abs((Number)a));
 		else if(a instanceof AnyEvImage)
 			lastOutput.put("B", new EvOpImageAbs().exec1Untyped((AnyEvImage)a));
 		else

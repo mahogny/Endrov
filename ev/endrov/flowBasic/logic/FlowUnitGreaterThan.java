@@ -38,7 +38,7 @@ public class FlowUnitGreaterThan extends FlowUnitLogicBinop
 
 		checkNotNull(a,b);
 		if(a instanceof Number && b instanceof Number)
-			lastOutput.put("C", NumberMath.greaterThan((Number)a, (Number)b));
+			lastOutput.put("C", NumberMath.greater((Number)a, (Number)b));
 		
 //		else if(a instanceof Number && b instanceof Number)
 //			lastOutput.put("C", new EvOpMaxImageScalar((Number)b).exec1Untyped((AnyEvImage)a));

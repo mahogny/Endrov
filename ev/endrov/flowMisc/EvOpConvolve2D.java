@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.misc;
+package endrov.flowMisc;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;

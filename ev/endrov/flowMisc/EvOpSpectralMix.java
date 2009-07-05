@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.misc;
+package endrov.flowMisc;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
