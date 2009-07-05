@@ -29,6 +29,7 @@ import endrov.flow.*;
 import endrov.util.EvSwingUtil;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
+import endrov.util.Vector2i;
 
 /**
  * Panel showing flow
@@ -42,7 +43,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private static final int connPointSnapDistance=10;
 	private static final int lineSnapDistance=10;
 
-	private int cameraX, cameraY;
+	//private int camera.x, camera.y;
 	private Flow flow=new Flow();
 	private FlowExec flowExec=new FlowExec();
 	private boolean enabled=false;
@@ -65,6 +66,16 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	private HashMap<FlowUnit, Component> unitComponent=new HashMap<FlowUnit, Component>();
 	
+	
+	
+	private WeakHashMap<Flow, Vector2i> camera=new WeakHashMap<Flow, Vector2i>();
+	private Vector2i getCamera()
+		{
+		Vector2i cam=camera.get(flow);
+		if(cam==null)
+			camera.put(flow,cam=new Vector2i());
+		return cam;
+		}
 	
 	/**
 	 * Constructor
@@ -99,6 +110,18 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		this.flow = flow;
 		unitComponent.clear();
 		removeAll();
+		
+		Vector2i camera=getCamera();
+		
+		//If flow outside camera, move it into focus
+		Rectangle2D flowbounds=getFlowBounds();
+		Rectangle2D showing=new Rectangle(camera.x,camera.y,getWidth(),getHeight());
+		Rectangle2D intersect=flowbounds.createIntersection(showing);
+		if(intersect.getWidth()<=0 || intersect.getHeight()<=0)
+			{
+			camera.x=(int)flowbounds.getCenterX()-getWidth()/2;
+			camera.y=(int)flowbounds.getCenterY()-getHeight()/2;
+			}
 		}
 
 	/**
@@ -165,6 +188,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	private void setUnitSize(FlowUnit unit)
 		{
+		Vector2i camera=getCamera();
 		Component c=unitComponent.get(unit);
 		if(c!=null)
 			{
@@ -178,7 +202,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(unit==placingUnit)
 				c.setLocation(0, -dim.height-1000);
 			else
-				c.setLocation(unit.x-cameraX+unit.getGUIcomponentOffsetX(), unit.y-cameraY+unit.getGUIcomponentOffsetY());
+				c.setLocation(unit.x-camera.x+unit.getGUIcomponentOffsetX(), unit.y-camera.y+unit.getGUIcomponentOffsetY());
 			c.validate();
 			}
 		}
@@ -206,6 +230,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	protected void paintComponent(Graphics g)
 		{
+		Vector2i camera=getCamera();
 		g.setColor(Color.WHITE);
 		g.fillRect(0,0,getWidth(),getHeight());
 		
@@ -214,7 +239,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(flow!=null)
 			{
 			Graphics2D g2=(Graphics2D)g;
-			g2.translate(-cameraX, -cameraY);
+			g2.translate(-camera.x, -camera.y);
 			
 			//hm. clean up map of connection points?
 			
@@ -277,7 +302,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						(int)selectRect.getWidth(), (int)selectRect.getHeight());
 				}
 			
-			g2.translate(cameraX, cameraY);
+			g2.translate(camera.x, camera.y);
 			}
 		}
 	
@@ -289,8 +314,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void pan(int dx, int dy)
 		{
-		cameraX-=dx;
-		cameraY-=dy;
+		Vector2i camera=getCamera();
+		camera.x-=dx;
+		camera.y-=dy;
 		repaint();
 		}
 	
@@ -299,6 +325,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public void mouseDragged(MouseEvent e)
 		{
+		Vector2i camera=getCamera();
 		int dx=(e.getX()-mouseLastDragX);
 		int dy=(e.getY()-mouseLastDragY);
 		mouseLastX=e.getX();
@@ -309,7 +336,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 			int x=(int)selectRect.getX();
 			int y=(int)selectRect.getY();
-			selectRect=new Rectangle(x,y,e.getX()+cameraX-x,e.getY()+cameraY-y);
+			selectRect=new Rectangle(x,y,e.getX()+camera.x-x,e.getY()+camera.y-y);
 			repaint();
 			}
 		
@@ -337,8 +364,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		//Update shape of connection currently drawed
 		if(drawingConn!=null)
 			{
-			int mx=e.getX()+cameraX;
-			int my=e.getY()+cameraY;
+			int mx=e.getX()+camera.x;
+			int my=e.getY()+camera.y;
 			drawingConn.toPoint=new Vector2d(mx,my);
 			repaint();
 			}
@@ -352,6 +379,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public void mouseMoved(MouseEvent e)
 		{
+		Vector2i camera=getCamera();
 		mouseLastX=e.getX();
 		mouseLastY=e.getY();
 		if(flow!=null)
@@ -365,14 +393,14 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				{
 				if(hoverSegment!=null)
 					{
-					placingUnit.x=(int)hoverSegment.fst().x;//+cameraX;
-					placingUnit.y=(int)hoverSegment.fst().y;//+cameraY;
+					placingUnit.x=(int)hoverSegment.fst().x;//+camera.x;
+					placingUnit.y=(int)hoverSegment.fst().y;//+camera.y;
 					stickyConn=hoverSegment.snd();
 					}
 				else
 					{
-					placingUnit.x=mouseLastX+cameraX;
-					placingUnit.y=mouseLastY+cameraY;
+					placingUnit.x=mouseLastX+camera.x;
+					placingUnit.y=mouseLastY+camera.y;
 					stickyConn=null;
 					}
 				Dimension dim=placingUnit.getBoundingBox(getComponentForUnit(placingUnit), flow);
@@ -381,8 +409,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				repaint();
 				}
 
-			int mx=e.getX()+cameraX;
-			int my=e.getY()+cameraY;
+			int mx=e.getX()+camera.x;
+			int my=e.getY()+camera.y;
 			Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=findHoverConnPoint(mx, my);
 
 			
@@ -425,8 +453,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void mouseClicked(MouseEvent e)
 		{
-		final int mx=e.getX()+cameraX;
-		final int my=e.getY()+cameraY;
+		Vector2i camera=getCamera();
+		final int mx=e.getX()+camera.x;
+		final int my=e.getY()+camera.y;
 		if(placingUnit!=null)
 			{
 			if(SwingUtilities.isLeftMouseButton(e))
@@ -639,10 +668,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void mousePressed(MouseEvent e)
 		{
+		Vector2i camera=getCamera();
 		mouseLastDragX=e.getX();
 		mouseLastDragY=e.getY();
-		int mx=e.getX()+cameraX;
-		int my=e.getY()+cameraY;
+		int mx=e.getX()+camera.x;
+		int my=e.getY()+camera.y;
 
 		if(placingUnit!=null)
 			{
@@ -681,7 +711,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			
 			if(!found && SwingUtilities.isLeftMouseButton(e))
 				{
-				selectRect=new Rectangle(e.getX()+cameraX,e.getY()+cameraY,0,0);
+				selectRect=new Rectangle(e.getX()+camera.x,e.getY()+camera.y,0,0);
 				repaint();
 				}
 			
@@ -694,6 +724,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void mouseReleased(MouseEvent e)
 		{
+		Vector2i camera=getCamera();
 		movingUnits.clear();
 		if(selectRect!=null && SwingUtilities.isLeftMouseButton(e))
 			{
@@ -709,8 +740,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		else if(drawingConn!=null && SwingUtilities.isLeftMouseButton(e))
 			{
-			int mx=e.getX()+cameraX;
-			int my=e.getY()+cameraY;
+			int mx=e.getX()+camera.x;
+			int my=e.getY()+camera.y;
 			Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=findHoverConnPoint(mx, my);
 			Tuple<FlowUnit,String> v=drawingConn.t;
 			
@@ -987,11 +1018,12 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	private Tuple<Vector2d,FlowConn> getHoverSegment()
 		{
+		Vector2i camera=getCamera();
 		Integer closestDist=null;
 		ConnLineSegment closestSeg=null;
 		Vector2d closestProj=null;
-		int mx=mouseLastX+cameraX;
-		int my=mouseLastY+cameraY;
+		int mx=mouseLastX+camera.x;
+		int my=mouseLastY+camera.y;
 		for(ConnLineSegment seg:connSegments)
 			{
 			Tuple<Vector2d,Integer> hit=seg.hitLine(mx, my);
@@ -1057,6 +1089,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void paste()
 		{
+		Vector2i camera=getCamera();
 		if(enabled)
 			{
 			try
@@ -1082,8 +1115,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					avx/=selectedUnits.size();
 					avy/=selectedUnits.size();
 					
-					int midsx=cameraX+getWidth()/2;
-					int midsy=cameraY+getHeight()/2;
+					int midsx=camera.x+getWidth()/2;
+					int midsy=camera.y+getHeight()/2;
 					int dx=midsx-avx;
 					int dy=midsy-avy;
 					for(FlowUnit u:selectedUnits)
@@ -1101,6 +1134,25 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		}
 	
-
+	/**
+	 * Get current bounds of the flow, in world coordinates
+	 */
+	public Rectangle2D getFlowBounds()
+		{
+		Rectangle2D bounds=null;
+		for(FlowUnit u:flow.units)
+			{
+			Dimension d=u.getBoundingBox(getComponentForUnit(u), flow);
+			Rectangle2D r=new Rectangle(new Point(u.x,u.y),d);
+			if(bounds==null)
+				bounds=r;
+			else
+				bounds.add(r);
+			}
+		if(bounds==null)
+			return new Rectangle();
+		else
+			return bounds;
+		}
 
 	}

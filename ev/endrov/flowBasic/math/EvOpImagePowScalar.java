@@ -5,40 +5,44 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
 /**
- * min(A,b)
+ * A^b
+ * @author Johan Henriksson
+ *
  */
-public class EvOpMinImageScalar extends EvOpSlice1
+public class EvOpImagePowScalar extends EvOpSlice1
 	{
 	private final Number b;
 	
-	public EvOpMinImageScalar(Number b)
+	public EvOpImagePowScalar(Number b)
 		{
 		this.b = b;
 		}
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return apply(p[0],b);
+		return EvOpImagePowScalar.apply(p[0], b);
 		}
-	
+
 	public static EvPixels apply(EvPixels a, Number bVal)
 		{
-		if(a.getType()==EvPixelsType.INT && bVal instanceof Integer)
+		if(bVal.doubleValue()==2)
 			{
 			//Should use the common higher type here
-			a=a.getReadOnly(EvPixelsType.INT);
-			int b=bVal.intValue();
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
 			
 			int w=a.getWidth();
 			int h=a.getHeight();
 			EvPixels out=new EvPixels(a.getType(),w,h);
-			int[] aPixels=a.getArrayInt();
-			int[] outPixels=out.getArrayInt();
+			double[] aPixels=a.getArrayDouble();
+			double[] outPixels=out.getArrayDouble();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=aPixels[i]<b ? aPixels[i] : b;
+				{
+				double val=aPixels[i];
+				outPixels[i]=val*val;
+				}
 			
-			return out;
+			return out;			
 			}
 		else
 			{
@@ -53,10 +57,9 @@ public class EvOpMinImageScalar extends EvOpSlice1
 			double[] outPixels=out.getArrayDouble();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=aPixels[i]<b ? aPixels[i] : b;
+				outPixels[i]=Math.pow(aPixels[i],b);
 			
-			return out;			
+			return out;
 			}
 		}
-	
 	}

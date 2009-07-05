@@ -5,18 +5,16 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
 /**
- * max(A,B)
- * @author Johan Henriksson
+ * min(A,B)
  */
-public class EvOpMaxImageImage extends EvOpSlice1
+public class EvOpImageMinImage extends EvOpSlice1
 	{
 	public EvPixels exec1(EvPixels... p)
 		{
-		return apply(p[0],p[1]);
+		return greater(p[0],p[1]);
 		}
-
-
-	public static EvPixels apply(EvPixels a, EvPixels b)
+	
+	public static EvPixels greater(EvPixels a, EvPixels b)
 		{
 		if(a.getType()==EvPixelsType.INT && b.getType()==EvPixelsType.INT)
 			{
@@ -32,7 +30,7 @@ public class EvOpMaxImageImage extends EvOpSlice1
 			int[] outPixels=out.getArrayInt();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=aPixels[i] > bPixels[i] ? aPixels[i] : bPixels[i];
+				outPixels[i]=aPixels[i] < bPixels[i] ? aPixels[i] : bPixels[i];
 			
 			return out;
 			}
@@ -50,10 +48,10 @@ public class EvOpMaxImageImage extends EvOpSlice1
 			double[] outPixels=out.getArrayDouble();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=aPixels[i] > bPixels[i] ? aPixels[i] : bPixels[i];
+				outPixels[i]=aPixels[i] < bPixels[i] ? aPixels[i] : bPixels[i];
 			
 			return out;
 			}
 		}
-
+	
 	}

@@ -1,6 +1,6 @@
 package endrov.flowProjection;
 
-import endrov.flowBasic.math.EvOpMaxImageImage;
+import endrov.flowBasic.math.EvOpImageMaxImage;
 import endrov.imageset.EvPixels;
 
 /**
@@ -14,6 +14,6 @@ public class EvOpProjectMaxZ extends EvOpProjectZ
 	@Override
 	protected EvPixels combine(EvPixels a, EvPixels b)
 		{
-		return new EvOpMaxImageImage().exec1(a,b);
+		return new EvOpImageMaxImage().exec1(a,b);
 		}
 	}

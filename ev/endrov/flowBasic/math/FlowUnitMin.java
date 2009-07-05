@@ -39,11 +39,11 @@ public class FlowUnitMin extends FlowUnitMathBinop
 		if(a instanceof Number && b instanceof Number)
 			lastOutput.put("C", NumberMath.min((Number)a, (Number)b));
 		else if(a instanceof AnyEvImage && b instanceof Number)
-			lastOutput.put("C", new EvOpMinImageScalar((Number)b).exec1Untyped((AnyEvImage)a));
+			lastOutput.put("C", new EvOpImageMinScalar((Number)b).exec1Untyped((AnyEvImage)a));
 		else if(b instanceof AnyEvImage && a instanceof Number)
-			lastOutput.put("C", new EvOpMinImageScalar((Number)a).exec1Untyped((AnyEvImage)b));
+			lastOutput.put("C", new EvOpImageMinScalar((Number)a).exec1Untyped((AnyEvImage)b));
 		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
-			lastOutput.put("C", new EvOpMinImageImage().exec1Untyped((AnyEvImage)a,(AnyEvImage)b));
+			lastOutput.put("C", new EvOpImageMinImage().exec1Untyped((AnyEvImage)a,(AnyEvImage)b));
 		else
 			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
 
