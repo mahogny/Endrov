@@ -135,6 +135,33 @@ public class NumberMath
 			throw new RuntimeException("Unsupported Number");
 		}
 	
+	/**
+	 * Generic pow
+	 */
+	public static Number pow(Number a, Number b)
+		{
+		//int type=commonIndex(a, b);
+		return Math.pow(a.doubleValue(), b.doubleValue());
+		/*
+		if(type==0)
+			return (byte)Math.pow(a.byteValue(),b.byteValue());
+		else if(type==1)
+			return (short)Math.max(a.shortValue(),b.shortValue());
+		else if(type==2)
+			return Math.max(a.intValue(),b.intValue());
+		else if(type==3)
+			return Math.max(a.longValue(),b.longValue());
+		else if(type==4)
+			return Math.max(a.floatValue(),b.floatValue());
+		else if(type==5)
+			return Math.max(a.doubleValue(),b.doubleValue());
+		else if(type==6)
+			return ((EvDecimal)a).max((EvDecimal)b);
+		else
+			throw new RuntimeException("Unsupported Number");
+			*/
+		}
+	
 	public static boolean greaterThan(Number a, Number b)
 		{
 		int type=commonIndex(a, b);

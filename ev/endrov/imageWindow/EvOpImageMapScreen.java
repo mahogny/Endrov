@@ -37,8 +37,7 @@ public class EvOpImageMapScreen extends EvOpSlice1
 
 	static EvPixels apply(EvPixels a, double contrast, double brightness)
 		{
-		/*
-		if(a.getType()==EvPixelsType.TYPE_AWT)
+		if(a.getType()==EvPixelsType.AWT)
 			{
 			BufferedImage src=a.getAWT();
 			
@@ -73,9 +72,6 @@ public class EvOpImageMapScreen extends EvOpSlice1
 			}
 		else
 			{
-			
-			}
-			*/
 			a=a.getReadOnly(EvPixelsType.DOUBLE);
 			
 			int w=a.getWidth();
@@ -93,10 +89,10 @@ public class EvOpImageMapScreen extends EvOpSlice1
 				}
 			
 			return out;
-			//}
+			}
 		}
 	
-	/*
+	
 	private static final byte clampByte(int i)
 		{
 		if(i > 255)
@@ -116,5 +112,5 @@ public class EvOpImageMapScreen extends EvOpSlice1
 		else
 			return (byte)i;
 		}
-	*/
+	
 	}

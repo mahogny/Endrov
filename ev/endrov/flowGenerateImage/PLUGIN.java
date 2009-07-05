@@ -33,7 +33,7 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				FlowUnitGenGaussian2D.class,
 				FlowUnitGenGaussian3D.class,
-};
+		};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

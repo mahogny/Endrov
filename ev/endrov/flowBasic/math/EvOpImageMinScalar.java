@@ -5,23 +5,23 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
 /**
- * max(A,b)
+ * min(A,b)
  */
-public class EvOpMaxImageScalar extends EvOpSlice1
+public class EvOpImageMinScalar extends EvOpSlice1
 	{
 	private final Number b;
 	
-	public EvOpMaxImageScalar(Number b)
+	public EvOpImageMinScalar(Number b)
 		{
 		this.b = b;
 		}
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return greater(p[0],b);
+		return apply(p[0],b);
 		}
 	
-	public static EvPixels greater(EvPixels a, Number bVal)
+	public static EvPixels apply(EvPixels a, Number bVal)
 		{
 		if(a.getType()==EvPixelsType.INT && bVal instanceof Integer)
 			{
@@ -36,7 +36,7 @@ public class EvOpMaxImageScalar extends EvOpSlice1
 			int[] outPixels=out.getArrayInt();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=aPixels[i]>b ? aPixels[i] : b;
+				outPixels[i]=aPixels[i]<b ? aPixels[i] : b;
 			
 			return out;
 			}
@@ -53,11 +53,10 @@ public class EvOpMaxImageScalar extends EvOpSlice1
 			double[] outPixels=out.getArrayDouble();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=aPixels[i]>b ? aPixels[i] : b;
+				outPixels[i]=aPixels[i]<b ? aPixels[i] : b;
 			
 			return out;			
 			}
-		
 		}
 	
 	}
