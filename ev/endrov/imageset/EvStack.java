@@ -106,24 +106,28 @@ public class EvStack implements AnyEvImage
 	public double scaleImageWorldZ(double c){}
 	*/
 	
+	/**
+	 * Copy metadata (resolution) from another stack
+	 */
 	public void getMetaFrom(EvStack o)
 		{
 		resX=o.resX;
 		resY=o.resY;
+		resZ=o.getResbinZ();
 		binning=o.binning;
 		dispX=o.dispX;
 		dispY=o.dispY;
-		resZ=o.getResbinZ();
 		}
 	
 	/**
 	 * Allocate a 3d stack. ref will disappear later. instead have d.
+	 * Covers getMetaFrom as well.
 	 */
 	public void allocate(int w, int h, int d, EvPixelsType type, EvStack ref)
 		{
 		resX=ref.resX;
 		resY=ref.resY;
-		resZ=ref.resZ;
+		resZ=ref.getResbinZ();
 		binning=ref.binning;
 		for(int i=0;i<d;i++)
 			{
@@ -384,6 +388,21 @@ public class EvStack implements AnyEvImage
 		return parr;
 		}
 	
+
+	/**
+	 * Return the pixel arrays for every plane. This is the original pixel data; meant for the
+	 * time when you write it
+	 */
+	public int[][] getOrigArraysInt()
+		{
+		EvPixels[] parr2=getPixels();
+		int[][] parr=new int[parr2.length][];
+		for(int i=0;i<parr2.length;i++)
+			parr[i]=parr2[i].getArrayInt();
+		return parr;
+		}
+
+	
 	/**
 	 * Return the pixel arrays for every plane. Will do a read-only conversion automatically
 	 */
@@ -425,7 +444,7 @@ public class EvStack implements AnyEvImage
 //			im.forceEvaluation();
 		}
 	
-	
+	/*
 	@Override
 	protected void finalize() throws Throwable
 		{
@@ -433,7 +452,7 @@ public class EvStack implements AnyEvImage
 		if(!loaders.isEmpty())
 			System.out.println("-----------------------------finalize stack "+this);
 		}
-	
+*/	
 	
 	
 	

@@ -162,25 +162,12 @@ public class NumberMath
 			*/
 		}
 	
-	public static boolean greaterThan(Number a, Number b)
+	/**
+	 * Generic abs
+	 */
+	public static Number abs(Number a)
 		{
-		int type=commonIndex(a, b);
-		if(type==0)
-			return a.byteValue()>b.byteValue();
-		else if(type==1)
-			return a.shortValue()>b.shortValue();
-		else if(type==2)
-			return a.intValue()>b.intValue();
-		else if(type==3)
-			return a.longValue()>b.longValue();
-		else if(type==4)
-			return a.floatValue()>b.floatValue();
-		else if(type==5)
-			return a.doubleValue()>b.doubleValue();
-		else if(type==6)
-			return ((EvDecimal)a).greater((EvDecimal)b);
-		else
-			throw new RuntimeException("Unsupported Number");
+		return Math.abs(a.doubleValue());
 		}
 	
 	
@@ -233,7 +220,29 @@ public class NumberMath
 		}
 	
 	
-	
+	/**
+	 * Generic >
+	 */
+	public static boolean greater(Number a, Number b)
+		{
+		int type=commonIndex(a, b);
+		if(type==0)
+			return a.byteValue()>b.byteValue();
+		else if(type==1)
+			return a.shortValue()>b.shortValue();
+		else if(type==2)
+			return a.intValue()>b.intValue();
+		else if(type==3)
+			return a.longValue()>b.longValue();
+		else if(type==4)
+			return a.floatValue()>b.floatValue();
+		else if(type==5)
+			return a.doubleValue()>b.doubleValue();
+		else if(type==6)
+			return ((EvDecimal)a).greater((EvDecimal)b);
+		else
+			throw new RuntimeException("Unsupported Number");
+		}
 	
 	
 	

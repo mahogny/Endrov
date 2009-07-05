@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters.misc;
+package endrov.flowFindFeature;
 
 
 import java.awt.Color;
@@ -15,33 +15,32 @@ import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 
 /**
- * Flow unit: shift every second line to correct for confocal scanning
+ * Flow unit: Find local maximas
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
+public class FlowUnitFindLocalMaximas3D extends FlowUnitBasic
 	{
-	public static final String showName="Confocal shift correction";
-	private static final String metaType="confocalShiftCorrection";
+	public static final String showName="Find local maximas 3D";
+	private static final String metaType="findLocalMaximas3D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConfocalShiftCorrection.class, null,
-				"Shift every second line to correct for confocal scanning"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitFindLocalMaximas3D.class, FlowUnitFindLocalMaximas2D.icon,
+				"Graphical display of local maximas in each stack"));
 		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return FlowUnitFindLocalMaximas2D.icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("shift", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -54,10 +53,10 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
+		
 		Object a=flow.getInputValue(this, exec, "image");
-		Number b=(Number)flow.getInputValue(this, exec, "shift");
-		checkNotNull(a);
-		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(a));
+
+		lastOutput.put("out", new EvOpFindLocalMaximas3D().exec1Untyped(a));
 		}
 
 	

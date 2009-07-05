@@ -71,11 +71,16 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 				//System.out.println("makestackop #chan "+op.getNumberChannels());
 				
 				EvImage[][] inputStackImages=new EvImage[p.length][];
-				for(int ac=0;ac<op.getNumberChannels();ac++)
+				for(int ac=0;ac<p.length;ac++)
+//				for(int ac=0;ac<op.getNumberChannels();ac++)
+					{
 					inputStackImages[ac]=p[ac].getImages();
-				
-//				referenceStack.getImages()
-				
+					//Consistency checks
+					if(inputStackImages[ac]==null)
+						throw new RuntimeException("Input plane "+ac+" is null");
+					if(inputStackImages[ac].length!=inputStackImages[0].length)
+						throw new RuntimeException("Input plane "+ac+" has different z-size");
+					}
 				
 				for(int currentReturnChannel=0;currentReturnChannel<op.getNumberChannels();currentReturnChannel++)
 					{
