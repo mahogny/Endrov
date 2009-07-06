@@ -28,6 +28,10 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 		{
 		LinkedList<Vector3i> list=new LinkedList<Vector3i>();
 
+		int w=stack.getWidth();
+		int h=stack.getHeight();
+		int d=stack.getDepth();
+
 		/*
 		 * Keep list of visited pixels to avoid double reporting. 
 		 * This solution is optimized for few areas and/or with the same value: 
@@ -37,20 +41,19 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 		 *
 		 * No single-pixel areas will be added to the list.
 		 */
-		HashSet<Vector3i> visited=new HashSet<Vector3i>();
-		
-		int w=stack.getWidth();
-		int h=stack.getHeight();
-		int d=stack.getDepth();
-		
+		//HashSet<Vector3i> visited=new HashSet<Vector3i>();
+		boolean visited[][][]=new boolean[d][h][w];
+		//TODO faster with hashset?
 		
 		double[][] inarr=stack.getArraysDouble();
 		for(int z=1;z<d-1;z++)
 			for(int y=1;y<h-1;y++)
 				for(int x=1;x<w-1;x++)
 					{
+					//Dismiss pixels that has been used already
 					Vector3i here=new Vector3i(x,y,z);
-					if(!visited.contains(here))
+					if(!visited[z][y][x])
+					//if(!visited.contains(here))
 						{
 						double thisValue=inarr[z][y*w+x];
 						
@@ -71,35 +74,49 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 							{
 							//No value is higher but some are equal. have to explore neighbourhood.
 							//Mark current pixel
-							visited.add(here);
+							//visited.add(here);
+							visited[z][y][x]=true;
 							
 							boolean foundHigher=false;
 							while(!eqVal.isEmpty())
 								{
 								Vector3i v=eqVal.poll();
 								
-								//Ignore already tested pixels
-								if(visited.contains(v))
-									continue;
-								
-								//Increase locality
-								
-								//Find a pixel which is higher. 
-								//Cannot simply stop here; if this area is not completely marked as
-								//visited then problems can arise later
-								/*
-								int vx=v.x;
-								int vy=v.y;
-								int vz=v.z;
-								if(isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx-1, vy, vz) ||
-										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx+1, vy, vz) ||
-										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy-1, vz) ||
-										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy+1, vz) ||
-										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy, vz-1) ||
-										isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy, vz+1))*/
-								
-								if(isAnyHigher(eqVal, inarr, thisValue, w, h, d, v.x, v.y, v.z))
+								try
+									{
+									//Ignore already tested pixels
+									if(visited[v.z][v.y][v.x])
+									//if(visited.contains(v))
+										continue;
+									visited[v.z][v.y][v.x]=true;
+									
+									//Increase locality
+									
+									//Find a pixel which is higher. 
+									//Cannot simply stop here; if this area is not completely marked as
+									//visited then problems can arise later
+									
+									int vx=v.x;
+									int vy=v.y;
+									int vz=v.z;
+									if(
+											(vx>0    && isHigher(eqVal, inarr, thisValue, w, h, d, vx-1, vy, vz)) ||
+											(vx<w-1  && isHigher(eqVal, inarr, thisValue, w, h, d, vx+1, vy, vz)) ||
+											(vy>0    && isHigher(eqVal, inarr, thisValue, w, h, d, vx, vy-1, vz)) ||
+											(vy<h-1  && isHigher(eqVal, inarr, thisValue, w, h, d, vx, vy+1, vz)) ||
+											(vz>0    && isHigher(eqVal, inarr, thisValue, w, h, d, vx, vy, vz-1)) ||
+											(vz<d-1  && isHigher(eqVal, inarr, thisValue, w, h, d, vx, vy, vz+1)))
 									foundHigher=true;
+									}
+								catch (Exception e)
+									{
+									e.printStackTrace();
+									System.out.println(v);
+									System.exit(1);
+									}
+								
+//								if(isAnyHigher(eqVal, inarr, thisValue, w, h, d, v.x, v.y, v.z))
+	//								foundHigher=true;
 								}
 							if(!foundHigher)
 								{
