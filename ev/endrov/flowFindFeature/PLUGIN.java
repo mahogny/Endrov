@@ -32,6 +32,7 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{
 				FlowUnitFindLocalMaximas2D.class,
+				FlowUnitFindLocalMaximas3D.class,
 				};
 		}
 	

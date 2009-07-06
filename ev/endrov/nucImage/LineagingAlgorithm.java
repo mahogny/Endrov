@@ -23,9 +23,11 @@ public interface LineagingAlgorithm
 	 * Called by algorithm for user feedback
 	 * @author Johan Henriksson
 	 */
-	public interface LineageListener
+	public interface LineageSession
 		{
 		public void nowAtFrame(EvDecimal f);
+		public EvDecimal getStartFrame();
+		public NucLineage getLineage();
 		}
 	
 	/**
@@ -58,21 +60,15 @@ public interface LineagingAlgorithm
 	 */
 	public JComponent getComponent();
 
-
-	/**
-	 * Set up the algorithm to work with given channel and lineage object. Only called once.
-	 */
-	public void init(EvChannel chan, NucLineage lin);
-	
 	/**
 	 * User-enforced stop of lineaging algorithm thread
 	 */
 	public void stop();
 	
 	/**
-	 * Run algorithm, starting at given frame
+	 * Run algorithm
 	 */
-	public void run(EvDecimal startFrame, LineageListener listener);
+	public void run(LineageSession listener);
 	
 	
 	

@@ -1,6 +1,8 @@
 package endrov.util;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -55,6 +57,32 @@ public class EvSwingUtil
 		if(center!=null) p.add(center,BorderLayout.CENTER);
 		if(right!=null)  p.add(right,BorderLayout.EAST);
 		return p;
+		}
+	
+	/**
+	 * Table with two columnets: one compact, one wide (filling). Give list of components
+	 * as alternating left, right
+	 */
+	public static JComponent tableCompactWide(JComponent... list)
+		{
+		int numrow=list.length/2;
+		JPanel top=new JPanel(new GridBagLayout());
+		GridBagConstraints c=new GridBagConstraints();
+		c.fill=GridBagConstraints.HORIZONTAL;
+		for(int i=0;i<numrow;i++)
+			{
+			c.gridy=i; 
+			top.add(list[i*2],c);
+			}
+		c.fill=GridBagConstraints.HORIZONTAL;
+		c.gridx=1;
+		c.weightx=1;
+		for(int i=0;i<numrow;i++)
+			{
+			c.gridy=i; 
+			top.add(list[i*2+1],c);
+			}
+		return top;
 		}
 
 	/**

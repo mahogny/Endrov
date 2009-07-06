@@ -7,6 +7,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.vecmath.Vector2d;
+import javax.vecmath.Vector3d;
 
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
@@ -26,7 +27,9 @@ public class EvStack implements AnyEvImage
 	 * Binning not taken into account
 	 */
 	public double resX, resY;
-	
+	/**
+	 * Resolution [um/px]. Do not use this variable directly
+	 */
 	public EvDecimal resZ;
 	
 	/**
@@ -51,7 +54,7 @@ public class EvStack implements AnyEvImage
 		return resY/binning;
 		}
 
-	public EvDecimal getResbinZ()
+	public EvDecimal getResbinZinverted()
 		{
 		if(resZ==null)
 			{
@@ -76,8 +79,12 @@ public class EvStack implements AnyEvImage
 	
 	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
 	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
+	public double transformImageWorldZ(double c){return c*getResbinZinverted().doubleValue();}
+	
 	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
 	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
+	public double transformWorldImageZ(double c){return c/getResbinZinverted().doubleValue();}
+	
 	public double scaleImageWorldX(double c){return c/(resX/binning);}
 	public double scaleImageWorldY(double c){return c/(resY/binning);}
 	public double scaleWorldImageX(double c){return c*resX/binning;}
@@ -87,12 +94,22 @@ public class EvStack implements AnyEvImage
 		{
 		return new Vector2d(transformImageWorldX(v.x),transformImageWorldY(v.y));
 		}
+	
+	public Vector3d transformImageWorld(Vector3d v)
+		{
+		return new Vector3d(transformImageWorldX(v.x),transformImageWorldY(v.y),transformImageWorldZ(v.z));
+		}
 
 	public Vector2d transformWorldImage(Vector2d v)
 		{
 		return new Vector2d(transformWorldImageX(v.x),transformWorldImageY(v.y));
 		}
 
+	public Vector3d transformWorldImage(Vector3d v)
+		{
+		return new Vector3d(transformWorldImageX(v.x),transformWorldImageY(v.y), transformWorldImageZ(v.z));
+		}
+	
 	/*
 	public double transformImageWorldZ(double c)
 		{
@@ -113,7 +130,7 @@ public class EvStack implements AnyEvImage
 		{
 		resX=o.resX;
 		resY=o.resY;
-		resZ=o.getResbinZ();
+		resZ=o.getResbinZinverted();
 		binning=o.binning;
 		dispX=o.dispX;
 		dispY=o.dispY;
@@ -127,7 +144,7 @@ public class EvStack implements AnyEvImage
 		{
 		resX=ref.resX;
 		resY=ref.resY;
-		resZ=ref.getResbinZ();
+		resZ=ref.getResbinZinverted();
 		binning=ref.binning;
 		for(int i=0;i<d;i++)
 			{
@@ -185,7 +202,7 @@ public class EvStack implements AnyEvImage
 	 */
 	public void putInt(int z, EvImage im)
 		{
-		loaders.put(new EvDecimal(z).multiply(getResbinZ()),im);
+		loaders.put(new EvDecimal(z).multiply(getResbinZinverted()),im);
 		}
 
 	/**

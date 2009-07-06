@@ -75,6 +75,14 @@ public class EvChannel extends EvObject implements AnyEvImage
 		}
 
 	/**
+	 * Get a frame
+	 */
+	public EvStack getFrame(EvDecimal frame)
+		{
+		return imageLoader.get(frame);
+		}
+
+	/**
 	 * Get or create an image
 	 */
 	public EvImage createImageLoader(EvDecimal frame, EvDecimal z)
@@ -136,7 +144,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 			return before.lastKey();
 		}
 	/**
-	 * Get the frame after
+	 * Get the frame strictly after. If there is no frame after, then frame is returned
 	 * @param frame Current frame
 	 * @return The frame after or the same frame if no frame after found
 	 */
