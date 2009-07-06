@@ -41,6 +41,7 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 		 * No single-pixel areas will be added to the list.
 		 */
 		HashSet<Vector3i> visited=new HashSet<Vector3i>();
+		//TODO faster with an array?
 		
 		int w=p.getWidth();
 		int h=p.getHeight();
@@ -82,24 +83,21 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 							//Ignore already tested pixels
 							if(visited.contains(v))
 								continue;
+							visited.add(v);
 							
 							//Increase locality
+							int vx=v.x;
+							int vy=v.y;
+							int vz=v.z;
 							
 							//Find a pixel which is higher. 
 							//Cannot simply stop here; if this area is not completely marked as
 							//visited then problems can arise later
-							/*
-							int vx=v.x;
-							int vy=v.y;
-							int vz=v.z;
-							if(isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx-1, vy, vz) ||
-									isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx+1, vy, vz) ||
-									isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy-1, vz) ||
-									isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy+1, vz) ||
-									isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy, vz-1) ||
-									isHigher(eqVal, inarr, thisValue, w, thisValue, d, vx, vy, vz+1))*/
-							
-							if(isAnyHigher(eqVal, inarr, thisValue, w, h, v.x, v.y, v.z))
+							if(
+									(vx>0   && isHigher(eqVal, inarr, thisValue, w, h, vx-1, vy, vz)) ||
+									(vx<w-1 && isHigher(eqVal, inarr, thisValue, w, h, vx+1, vy, vz)) ||
+									(vy>0   && isHigher(eqVal, inarr, thisValue, w, h, vx, vy-1, vz)) ||
+									(vy<h-1 && isHigher(eqVal, inarr, thisValue, w, h, vx, vy+1, vz)))
 								foundHigher=true;
 							}
 						if(!foundHigher)
