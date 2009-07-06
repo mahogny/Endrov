@@ -2,6 +2,8 @@ package endrov.nucImage;
 
 import java.util.Vector;
 
+import javax.swing.JComponent;
+
 import endrov.imageset.EvChannel;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
@@ -51,7 +53,11 @@ public interface LineagingAlgorithm
 
 		}
 	
-	
+	/**
+	 * Get component to show in GUI
+	 */
+	public JComponent getComponent();
+
 
 	/**
 	 * Set up the algorithm to work with given channel and lineage object. Only called once.

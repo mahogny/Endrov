@@ -1,0 +1,31 @@
+try 2009-07-06
+
+=== RFP ===
+
+4h1m10s
+(5,10)  = great   (2,4) seems to work
+7h59m10s 1nuc=
+(2,4) a good start
+10h. not 10.    1nuc=18px
+
+late: 1nuc=10px.   (2.5,5) seems to work
+
+during division, 
+
+linw: centering, different coordinates for each lin
+bug in framecontrol!!! cannot write in frame?
+
+=== DIC (box var) ===
+
+box var size I, upper sigma, lower sigma
+
+2h47m10s
+20,(30,10)?
+3h4
+20,(40,10),1,2?
+
+
+
+
+
+

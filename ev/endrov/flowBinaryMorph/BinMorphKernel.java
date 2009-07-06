@@ -27,6 +27,9 @@ public class BinMorphKernel
 	
 	/**
 	 * Turn kernel image into a list of positions
+	 * 
+	 * TODO some operations might be faster if the order is randomized due to spatial correlation
+	 * 
 	 */
 	public static List<Vector2i> kernelPos(EvPixels kernel, int kcx, int kcy)
 		{

@@ -263,6 +263,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					}
 				else
 					{
+					g.setColor(getColorFor(conn));
 					Vector2d vFrom=pFrom.pos;
 					Vector2d vTo=pTo.pos;
 					drawConnLine(g,vFrom,vTo,conn);
@@ -306,7 +307,27 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		}
 	
-	
+	/**
+	 * Get color for a connection, assign a color if needed
+	 */
+	private Color getColorFor(FlowConn conn)
+		{
+		if(conn.color==null)
+			{
+			//Colors from the same unit and output should have the same color
+			for(FlowConn c:flow.conns)
+				if(c.fromUnit==conn.fromUnit && c.fromArg.equals(conn.fromArg) && c.color!=null)
+					{
+					conn.color=c.color;
+					return conn.color;
+					}
+			int r=(int)(Math.random()*128);
+			int g=(int)(Math.random()*128);
+			int b=(int)(Math.random()*128);
+			conn.color=new Color(50+r,50+g,50+b);
+			}
+		return conn.color;
+		}
 	
 
 	/**
@@ -810,6 +831,30 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		repaint();
 		}
 	
+	
+	/**
+	 * Align selected units along a horizontal line
+	 */
+	public void alignHoriz(Set<FlowUnit> sel)
+		{
+		Integer maxy=null;
+		Integer miny=null;
+		for(FlowUnit u:sel)
+			{
+			if(miny==null || u.y<miny)
+				miny=u.y;
+			if(maxy==null || u.getBoundingBox(unitComponent.get(u), flow).height+u.y>maxy)
+				maxy=u.getBoundingBox(unitComponent.get(u), flow).height+u.y;
+			}
+		int avgy=(miny+maxy)/2;
+		for(FlowUnit u:sel)
+			{
+			int thish=u.getBoundingBox(unitComponent.get(u), flow).height;
+			u.y=avgy-thish/2;
+			}
+		repaint();
+		}
+	
 	/**
 	 * Align selected units to have the same right side
 	 */
@@ -949,8 +994,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private class ConnLineSegmentH extends ConnLineSegment
 		{
 		public int x1,x2,y; //Word coordinates
-		public ConnLineSegmentH(Graphics g, int x1, int x2, int y, FlowConn c)
+		//public boolean isEnd;
+		public ConnLineSegmentH(Graphics g, int x1, int x2, int y, FlowConn c, boolean drawEndArrow)
 			{
+			//this.isEnd=isEnd;
 			//Reorder x for fast comparison
 			if(x1>x2)
 				{
@@ -965,6 +1012,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			this.y=y;
 			this.c=c;
 			g.drawLine(x1,y,x2,y);
+			
+			if(drawEndArrow)
+				for(int i=1;i<4;i++)
+					g.drawLine(x1-i,y-i,x1-i,y+i);
+			
 			if(c!=null)
 				connSegments.add(this);
 			}
@@ -1056,11 +1108,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			if(x2>vTo.x-spacing) x2=(int)vTo.x-spacing;
 			}
 		
-		new ConnLineSegmentH(g, (int)vFrom.x, x1, (int)vFrom.y,c);
+		new ConnLineSegmentH(g, (int)vFrom.x+3, x1, (int)vFrom.y,c,false);
 		new ConnLineSegmentV(g, x1, (int)vFrom.y, midy,c);
-		new ConnLineSegmentH(g,x1,x2,midy,c);
+		new ConnLineSegmentH(g,x1,x2,midy,c,false);
 		new ConnLineSegmentV(g,x2,(int)vTo.y,midy,c);
-		new ConnLineSegmentH(g,(int)vTo.x,x2,(int)vTo.y,c);
+		new ConnLineSegmentH(g,(int)vTo.x-4,x2,(int)vTo.y,c, true);
 		}
 
 

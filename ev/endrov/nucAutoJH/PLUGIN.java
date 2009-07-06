@@ -1,11 +1,11 @@
-package endrov.flowThreshold;
+package endrov.nucAutoJH;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Flows: Thresholding";
+		return "Nucleus/Lineage autolineage/JH";
 		}
 
 	public String getAuthor()
@@ -30,11 +30,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{
-				FlowUnitThresholdMaxEntropy2D.class,
-				FlowUnitThresholdOtsu2D.class,
-				FlowUnitThresholdPercentile2D.class,
-				};
+		return new Class[]{AutolineageJH1.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

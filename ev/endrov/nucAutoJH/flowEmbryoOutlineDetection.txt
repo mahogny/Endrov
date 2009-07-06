@@ -1,0 +1,36 @@
+
+==== using DIC ====
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<flow>
+
+  <unit unitname="thresholdPercentile2D" unitx="1470" unity="1329" />
+
+  <unit value="0.8" unitname="constDouble" unitx="1401" unity="1314" />
+
+  <unit ref="im/DICvarT" unitname="evobjectio" unitx="1698" unity="1334" />
+
+  <unit ref="im/DIC" unitname="evobjectio" unitx="1126" unity="1319" />
+
+  <unit unitname="movingVariance" unitx="1271" unity="1325" />
+
+  <unit value="10" unitname="constInteger" unitx="1148" unity="1356" />
+
+  <unit unitname="binaryFillHoles2D" unitx="1603" unity="1406" />
+
+  <conn fromUnit="1" toUnit="0" fromArg="out" toArg="percentile" />
+
+  <conn fromUnit="3" toUnit="4" fromArg="out" toArg="image" />
+
+  <conn fromUnit="5" toUnit="4" fromArg="out" toArg="pw" />
+
+  <conn fromUnit="5" toUnit="4" fromArg="out" toArg="ph" />
+
+  <conn fromUnit="4" toUnit="0" fromArg="out" toArg="image" />
+
+  <conn fromUnit="0" toUnit="6" fromArg="out" toArg="image" />
+
+  <conn fromUnit="6" toUnit="2" fromArg="out" toArg="in" />
+
+</flow>

@@ -1,9 +1,9 @@
 package endrov.flowAveraging;
 
 import endrov.flow.EvOpSlice1;
+import endrov.flowBasic.CumSumArea;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
-import endrov.unsortedImageFilters.CumSumArea;
 
 /**
  * Moving average. Average is taken over an area of size (2pw+1)x(2ph+1). r=0 hence corresponds

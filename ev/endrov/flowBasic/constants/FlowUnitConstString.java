@@ -27,7 +27,7 @@ public class FlowUnitConstString extends FlowUnitConst
 	{
 	
 
-	public String var="foo";
+	public String var="";
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstString.class.getResource("jhString.png"));
 

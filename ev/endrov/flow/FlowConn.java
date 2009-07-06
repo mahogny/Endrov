@@ -1,5 +1,7 @@
 package endrov.flow;
 
+import java.awt.Color;
+
 /**
  * Connection between two flow units
  * @author Johan Henriksson
@@ -9,6 +11,8 @@ public class FlowConn
 	{
 	public final FlowUnit fromUnit, toUnit;
 	public final String fromArg, toArg;
+	
+	public Color color;
 	
 	public FlowConn(FlowUnit fromUnit, String fromArg, FlowUnit toUnit, String toArg)
 		{

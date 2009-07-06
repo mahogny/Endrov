@@ -29,7 +29,7 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 	{
 	
 	
-	private EvDecimal var=new EvDecimal(123);
+	private EvDecimal var=new EvDecimal(1);
 	
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstEvDecimal.class.getResource("jhNumber.png"));

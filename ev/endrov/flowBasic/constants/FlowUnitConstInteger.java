@@ -27,7 +27,7 @@ import endrov.util.EvSwingUtil;
 public class FlowUnitConstInteger extends FlowUnitConst
 	{
 	
-	public int var=123;
+	public int var=1;
 	
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstInteger.class.getResource("jhNumber.png"));

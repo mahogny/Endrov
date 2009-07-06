@@ -7,7 +7,7 @@ import java.util.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import endrov.unsortedImageFilters.Histogram;
+import endrov.flowBasic.Histogram;
 import endrov.unsortedImageFilters.unfinished.HistogramTransform;
 
 public class HistogramEqWidget extends JPanel
