@@ -51,6 +51,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	//private static ImageIcon iconButtonStop=new ImageIcon(FlowWindow.class.getResource("labelPlayStop.png"));
 	private static ImageIcon iconAlignRight=new ImageIcon(FlowWindow.class.getResource("labelAlignRight.png"));
 	private static ImageIcon iconAlignVert=new ImageIcon(FlowWindow.class.getResource("labelAlignVert.png"));
+	private static ImageIcon iconAlignHoriz=new ImageIcon(FlowWindow.class.getResource("labelAlignHoriz.png"));
 	private static ImageIcon iconButtonPlayCont=new ImageIcon(FlowWindow.class.getResource("labelRepeat.png"));
 	
 
@@ -148,6 +149,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	//private JButton bStop=new JImageButton(iconButtonStop,"Stop execution of flow");
 	private JButton bAlignRight=new JImageButton(iconAlignRight,"Align right");
 	private JButton bAlignVert=new JImageButton(iconAlignVert,"Align vertical");
+	private JButton bAlignHoriz=new JImageButton(iconAlignHoriz,"Align horizontal");
 	
 	private EvComboObjectOne<Flow> objectCombo=new EvComboObjectOne<Flow>(new Flow(),false,true);
 	
@@ -233,7 +235,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		});
 		
 		
-		JComponent toolbar=EvSwingUtil.compactHorizontal(bCopy,bPaste,bDelete,bSwap,bAlignRight,bAlignVert,bPlayOnce,bRepeat);
+		JComponent toolbar=EvSwingUtil.compactHorizontal(bCopy,bPaste,bDelete,bSwap,bAlignRight,bAlignVert,bAlignHoriz,bPlayOnce,bRepeat);
 		JPanel pTop=new JPanel(new BorderLayout());
 		pTop.add(objectCombo,BorderLayout.CENTER);
 		pTop.add(toolbar,BorderLayout.WEST);
@@ -244,6 +246,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		bSwap.addActionListener(this);
 		bAlignRight.addActionListener(this);
 		bAlignVert.addActionListener(this);
+		bAlignHoriz.addActionListener(this);
 		bPlayOnce.addActionListener(this);
 		bRepeat.addActionListener(this);
 		objectCombo.addActionListener(this);
@@ -279,6 +282,8 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			fp.alignRight(fp.selectedUnits);
 		else if(e.getSource()==bAlignVert)
 			fp.alignVert(fp.selectedUnits);
+		else if(e.getSource()==bAlignHoriz)
+			fp.alignHoriz(fp.selectedUnits);
 		else if(e.getSource()==bDelete)
 			{
 			fp.getFlow().removeUnits(fp.selectedUnits);

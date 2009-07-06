@@ -160,6 +160,7 @@ public class GenerateSpecialImage
 		return p;
 		}
 
+
 	
 	/**
 	 * 3D Gaussian function placed in the middle
@@ -223,6 +224,39 @@ public class GenerateSpecialImage
 		return s;
 		}
 	
+	
+	
+	
+	/**
+	 * 2D filled circle
+	 * TODO make faster
+	 * TODO unfilled? maybe faster and good enough for conv
+	 */
+	public static EvPixels genFilledCircle(double r, int w, int h)
+		{
+		EvPixels p=new EvPixels(EvPixelsType.INT,w,h);
+		int[] aPixels=p.getArrayInt();
+		
+		double midx=w/2;
+		double midy=h/2;
+		double r2=r*r;
+		
+		for(int y=0;y<h;y++)
+			{
+			int base=y*w;
+			double dy2=y-midy;
+			dy2=dy2*dy2;
+			for(int x=0;x<w;x++)
+				{
+				double dx2=x-midx;
+				dx2=dx2*dx2;
+				if(dx2+dy2<=r2)
+					aPixels[base+x]=1;
+				}
+			}
+		return p;
+		}
+
 	
 	/**
 	 * Common kernels? laplace etc

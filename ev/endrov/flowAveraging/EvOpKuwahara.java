@@ -1,9 +1,9 @@
 package endrov.flowAveraging;
 
 import endrov.flow.EvOpSlice1;
+import endrov.flowBasic.CumSumArea;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
-import endrov.unsortedImageFilters.CumSumArea;
 
 /**
  * Kuwahara filter

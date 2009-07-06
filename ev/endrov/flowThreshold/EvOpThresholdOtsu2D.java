@@ -4,9 +4,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import endrov.flowBasic.Histogram;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
-import endrov.unsortedImageFilters.Histogram;
 
 
 /**

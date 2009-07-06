@@ -35,6 +35,8 @@ echo "Num classes"
 ls -1 $name/*/*.class $name/*/*/*.class $name/*/*/*/*.class | wc -l
 echo "Num top-level classes"
 ls -1 $name/*/*.java $name/*/*/*.java $name/*/*/*/*.java | wc -l
+echo "Num images"
+ls -1 $name/*/*.png $name/*/*/*.png $name/*/*/*/*.png | wc -l
 
 echo "claimed version"
 cat $name/endrov/ev/version.txt

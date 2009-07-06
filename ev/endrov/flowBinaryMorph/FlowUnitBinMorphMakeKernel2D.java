@@ -60,7 +60,6 @@ public class FlowUnitBinMorphMakeKernel2D extends FlowUnitBasic
 		EvPixels a=(EvPixels)flow.getInputValue(this, exec, "image");
 		Number centerX=(Number)flow.getInputValue(this, exec, "centerx");
 		Number centerY=(Number)flow.getInputValue(this, exec, "centery");
-		checkNotNull(a,centerX,centerY);
 		
 		lastOutput.put("out", new BinMorphKernel(a,centerX.intValue(),centerY.intValue()));
 		}

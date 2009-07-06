@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.flowBasic;
 
 import java.util.HashMap;
 import java.util.Iterator;

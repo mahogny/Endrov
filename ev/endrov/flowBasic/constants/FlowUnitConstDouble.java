@@ -28,7 +28,7 @@ public class FlowUnitConstDouble extends FlowUnitConst
 	{
 	
 	
-	private double var=123;
+	private double var=1;
 	
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstDouble.class.getResource("jhNumber.png"));

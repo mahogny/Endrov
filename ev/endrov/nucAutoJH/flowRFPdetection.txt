@@ -1,0 +1,44 @@
+			
+<?xml version="1.0" encoding="UTF-8"?>
+<flow>
+  <unit unitname="genGaussian2D" unitx="713" unity="1171" />
+  <unit ref="im/RFP" unitname="evobjectio" unitx="389" unity="1111" />
+  <unit unitname="channelDim2D" unitx="529" unity="1147" />
+  <unit value="5" unitname="constEvDecimal" unitx="622" unity="1198" />
+  <unit unitname="genGaussian2D" unitx="713" unity="1321" />
+  <unit value="10" unitname="constEvDecimal" unitx="622" unity="1348" />
+  <unit unitname="sub" unitx="928" unity="1262" />
+  <unit unitname="circConv2D" unitx="1009" unity="1143" />
+  <unit ref="im/RFPdog" unitname="evobjectio" unitx="1033" unity="1262" />
+  <unit unitname="findLocalMaximas2D" unitx="1200" unity="1316" />
+  <unit ref="im/RFPmax" unitname="evobjectio" unitx="1397" unity="1315" />
+  <unit unitname="thresholdOtsu" unitx="1190" unity="1214" />
+  <unit ref="im/RFPdogT" unitname="evobjectio" unitx="1399" unity="1213" />
+  <unit ref="im/RFPmaxT" unitname="evobjectio" unitx="1666" unity="1273" />
+  <unit unitname="mul" unitx="1571" unity="1263" />
+  <unit unitname="mul" unitx="1560" unity="1353" />
+  <unit value="1.0" unitname="constDouble" unitx="1454" unity="1368" />
+  <conn fromUnit="1" toUnit="2" fromArg="out" toArg="image" />
+  <conn fromUnit="2" toUnit="0" fromArg="dim" toArg="dim" />
+  <conn fromUnit="3" toUnit="0" fromArg="out" toArg="sigmaY" />
+  <conn fromUnit="3" toUnit="0" fromArg="out" toArg="sigmaX" />
+  <conn fromUnit="2" toUnit="4" fromArg="dim" toArg="dim" />
+  <conn fromUnit="5" toUnit="4" fromArg="out" toArg="sigmaY" />
+  <conn fromUnit="5" toUnit="4" fromArg="out" toArg="sigmaX" />
+  <conn fromUnit="0" toUnit="6" fromArg="out" toArg="A" />
+  <conn fromUnit="4" toUnit="6" fromArg="out" toArg="B" />
+  <conn fromUnit="6" toUnit="7" fromArg="C" toArg="kernel" />
+  <conn fromUnit="1" toUnit="7" fromArg="out" toArg="image" />
+  <conn fromUnit="7" toUnit="8" fromArg="out" toArg="in" />
+  <conn fromUnit="9" toUnit="10" fromArg="out" toArg="in" />
+  <conn fromUnit="11" toUnit="12" fromArg="out" toArg="in" />
+  <conn fromUnit="10" toUnit="15" fromArg="out" toArg="A" />
+  <conn fromUnit="15" toUnit="14" fromArg="C" toArg="B" />
+  <conn fromUnit="16" toUnit="15" fromArg="out" toArg="B" />
+  <conn fromUnit="12" toUnit="14" fromArg="out" toArg="A" />
+  <conn fromUnit="14" toUnit="13" fromArg="C" toArg="in" />
+  <conn fromUnit="8" toUnit="9" fromArg="out" toArg="image" />
+  <conn fromUnit="8" toUnit="11" fromArg="out" toArg="image" />
+</flow>
+
+			
