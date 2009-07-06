@@ -730,6 +730,10 @@ public class NucLineage extends EvObject implements Cloneable
 			{
 			return new Vector3d(x,y,z);
 			}
+		
+		/**
+		 * Set position. Copy coordinates from v
+		 */
 		public void setPosCopy(Vector3d v)
 			{
 			x=v.x;
