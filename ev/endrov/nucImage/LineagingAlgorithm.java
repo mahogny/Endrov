@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 
-import endrov.imageset.EvChannel;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 

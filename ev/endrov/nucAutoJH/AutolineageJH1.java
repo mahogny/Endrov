@@ -5,7 +5,6 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
-import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.EvComboObjectOne;
@@ -105,8 +104,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				double expectRadius=Double.parseDouble(inpRadius.getText());
 				double bgMulSize=Double.parseDouble(inpNucBgSize.getText());
-				double bgMulValue=Double.parseDouble(inpNucBgMul.getText());
+				//double bgMulValue=Double.parseDouble(inpNucBgMul.getText());
 				
+				/*
 				double resXhis=stackHis.getResbinX();
 				double resYhis=stackHis.getResbinY();
 				double resZhis=stackHis.getResbinZinverted().doubleValue();
@@ -114,7 +114,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				double resXDIC=stackDIC.getResbinX();
 				double resYDIC=stackDIC.getResbinY();
 				double resZDIC=stackDIC.getResbinZinverted().doubleValue();
-
+*/
 				
 				///// Find candidate coordinates ////
 				double sigmaHis1=expectRadius;
@@ -138,27 +138,39 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				
 				//// Choose candidates ////
-				
-				double[][] pixEmbryoMask=stackEmbryoMask.getArraysDouble();
-
+				int[][] pixEmbryoMask=stackEmbryoMask.getArraysInt();
+				int wdic=stackEmbryoMask.getWidth();
+				int hdic=stackEmbryoMask.getHeight();
+				int ddic=stackEmbryoMask.getDepth();
 				int i=0;
 				for(Vector3i v:maximas)
 					{
 					Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
+					Vector3d dicPos=stackDIC.transformWorldImage(wpos);
 					
-					NucLineage.Nuc nuc=lin.getNucCreate(""+i);
-					NucLineage.NucPos pos=nuc.getPosCreate(frame);
 					
 					System.out.println("r should be "+stackHis.scaleImageWorldX(20));
 					
-					pos.r=5;
-					pos.setPosCopy(wpos);
-					
-					Vector3d dicPos=stackDIC.transformWorldImage(wpos);
 					
 					System.out.println("in his: "+v);
 					System.out.println("in dic: "+dicPos);
 					System.out.println("in world: "+wpos);
+					
+					
+					NucLineage.Nuc nuc=lin.getNucCreate(""+i);
+					NucLineage.NucPos pos=nuc.getPosCreate(frame);
+					pos.r=5;
+					pos.setPosCopy(wpos);
+
+					Vector3i dicPosi=new Vector3i((int)dicPos.x,(int)dicPos.y,(int)dicPos.z); 
+					if(dicPosi.x>=0 && dicPosi.x<whis-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi.z>=0 && dicPosi.z<ddic)
+						{
+						int val=pixEmbryoMask[dicPosi.z][dicPosi.y*wdic+dicPosi.x];
+						System.out.println("dic mask "+val);
+						
+						}
+					else
+						System.out.println("outside DIC");
 					
 					i++;
 					}
