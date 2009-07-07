@@ -168,7 +168,6 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 	 */
 	public static List<Vector3i> findMinimas(EvStack stack)
 		{
-//		return findMaximas(NewImageSystem.makeStackOp(new ImageMath.TimesOp(-1)).exec(stack));
 		return findMaximas(new EvOpImageMulScalar(-1).exec1(stack));
 		}
 	

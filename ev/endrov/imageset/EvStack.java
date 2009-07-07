@@ -39,6 +39,7 @@ public class EvStack implements AnyEvImage
 	
 	/**
 	 * Displacement in micrometer
+	 * TODO would simplify if they were in pixels
 	 */
 	public double dispX, dispY;
 
@@ -85,10 +86,14 @@ public class EvStack implements AnyEvImage
 	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
 	public double transformWorldImageZ(double c){return c/getResbinZinverted().doubleValue();}
 	
-	public double scaleImageWorldX(double c){return c/(resX/binning);}
-	public double scaleImageWorldY(double c){return c/(resY/binning);}
-	public double scaleWorldImageX(double c){return c*resX/binning;}
-	public double scaleWorldImageY(double c){return c*resY/binning;}
+	public double scaleImageWorldX(double c){return c/getResbinX();}
+	public double scaleImageWorldY(double c){return c/getResbinY();}
+	public double scaleImageWorldZ(double c){return c*getResbinZinverted().doubleValue();}
+	
+	public double scaleWorldImageX(double c){return c*getResbinX();}
+	public double scaleWorldImageY(double c){return c*getResbinY();}
+	public double scaleWorldImageZ(double c){return c/getResbinZinverted().doubleValue();}
+	
 	
 	public Vector2d transformImageWorld(Vector2d v)
 		{
@@ -110,18 +115,6 @@ public class EvStack implements AnyEvImage
 		return new Vector3d(transformWorldImageX(v.x),transformWorldImageY(v.y), transformWorldImageZ(v.z));
 		}
 	
-	/*
-	public double transformImageWorldZ(double c)
-		{
-		//TODO
-		}
-	public double transformWorldImageZ(double c)
-		{
-		//TODO
-		}
-	public double scaleWorldImageZ(double c){}
-	public double scaleImageWorldZ(double c){}
-	*/
 	
 	/**
 	 * Copy metadata (resolution) from another stack
