@@ -73,72 +73,88 @@ public abstract class EvOpStack extends EvOpGeneral
 		{
 		//System.out.println("here3 ");
 
+		int numInputChannels=ch.length;
+		int numOutputChannels=op.getNumberChannels();
+		
 		//Not quite final: what if changes should go back into the channel? how?
-		EvChannel[] retch=new EvChannel[op.getNumberChannels()];
+		EvChannel[] retch=new EvChannel[numOutputChannels];
 		
 		//First argument decides which frames to apply for
 		EvChannel refChannel=ch[0];
 		
 		//System.out.println("#chan "+retch.length+"  zzz "+refChannel.imageLoader);
-		for(int ac=0;ac<retch.length;ac++)
+		for(int curOutputChanIndex=0;curOutputChanIndex<retch.length;curOutputChanIndex++)
 			{
-			EvChannel newch=new EvChannel();
+			EvChannel curReturnChan=new EvChannel();
+			retch[curOutputChanIndex]=curReturnChan;
 			
 			//How to combine channels? if A & B, B not exist, make B black?
 			
 			//Currently operates on common subset of channels
-			
-			for(Map.Entry<EvDecimal, EvStack> se:refChannel.imageLoader.entrySet())
+			for(Map.Entry<EvDecimal, EvStack> channelEntry:refChannel.imageLoader.entrySet())
 				{
-				EvStack newstack=new EvStack();
-				EvStack stack=se.getValue();
+				final EvStack curReturnStack=new EvStack();
+				final EvStack curInputStack=channelEntry.getValue();
+				curReturnChan.imageLoader.put(channelEntry.getKey(), curReturnStack);
 				
 				//TODO register lazy operation
 				
-				final EvStack[] imlist=new EvStack[ch.length];
+				final EvStack[] imlist=new EvStack[numInputChannels];
 				int ci=0;
 				for(EvChannel cit:ch)
 					{
-					imlist[ci]=cit.imageLoader.get(se.getKey());
+					imlist[ci]=cit.imageLoader.get(channelEntry.getKey());
 					ci++;
 					}
 				
-				final Memoize<EvStack[]> ms=new MemoizeExec(imlist, op);
+				final Memoize<EvStack[]> ms=new MemoizeExecStack(imlist, op);
 				
 				
 				//TODO without lazy stacks, prior stacks are forced to be evaluated.
 				//only fix is if the laziness is added directly at the source.
 				
-				final int thisAc=ac;
-				for(Map.Entry<EvDecimal, EvImage> pe:stack.entrySet())
+				final int finalCurReturnChanIndex=curOutputChanIndex;
+				for(final Map.Entry<EvDecimal, EvImage> stackEntry:curInputStack.entrySet())
 					{
 					EvImage newim=new EvImage();
-					newstack.put(pe.getKey(), newim);
+					curReturnStack.put(stackEntry.getKey(), newim);
 					
-					newstack.getMetaFrom(stack); //This design makes it impossible to generate resolution lazily
+					curReturnStack.getMetaFrom(curInputStack); //This design makes it impossible to generate resolution lazily
 					
-					final EvDecimal z=pe.getKey();
+					final EvDecimal z=stackEntry.getKey();
 						
-					newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return ms.get()[thisAc].get(z).getPixels();}};
+					newim.io=new EvIOImage(){public EvPixels loadJavaImage(){
+					try
+						{
+						EvStack[] chans=ms.get();
+						EvStack chan=chans[finalCurReturnChanIndex];
+						return chan.get(z).getPixels();
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						System.out.println(ms.get()[finalCurReturnChanIndex].keySet());
+						System.out.println("z: "+z);
+						System.out.println("Incoming z set "+curInputStack.keySet());
+						throw new RuntimeException("failed in lazy execution");
+						}
+					}};
 					
 					newim.registerLazyOp(ms);		
-							
 					}
-				newch.imageLoader.put(se.getKey(), newstack);
 				}
-			System.out.println("here2 "+newch);
-			retch[ac]=newch;
+//			System.out.println("here2 "+curReturnChan.imageLoader);
 			}
 		return retch;
 		}
 	
 	
-	private static class MemoizeExec extends Memoize<EvStack[]>
+	private static class MemoizeExecStack extends Memoize<EvStack[]>
 		{
 		private EvStack[] imlist;
 		private EvOpGeneral op;
 		
-		public MemoizeExec(EvStack[] imlist, EvOpGeneral op)
+		public MemoizeExecStack(EvStack[] imlist, EvOpGeneral op)
 			{
 			this.imlist = imlist;
 			this.op = op;
@@ -148,6 +164,13 @@ public abstract class EvOpStack extends EvOpGeneral
 		protected EvStack[] eval()
 			{
 			EvStack[] ret=op.exec(imlist);
+			System.out.println("----- "+op.getClass());
+			for(EvStack s:ret)
+				{
+				System.out.println("one stack: "+s);
+				System.out.println(s.entrySet());
+				}
+			
 			//Help GC. There might be space leaks without this.
 			op=null;
 			imlist=null;

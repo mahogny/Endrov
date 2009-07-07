@@ -12,7 +12,7 @@ public abstract class Memoize<E>
 	/**
 	 * Get value, evaluate if required. Evaluation occurs at most once
 	 */
-	public E get()
+	public synchronized E get() //Can make a cheaper lock
 		{
 		if(!evaluated)
 			{

@@ -113,7 +113,7 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 						//Memoize multiple returns
 						Memoize<EvPixels[]> maybe=mems.get(pe.getKey());
 						if(maybe==null)
-							mems.put(pe.getKey(),maybe=new MemoizeExec(imlist, op));
+							mems.put(pe.getKey(),maybe=new MemoizeExecSlice(imlist, op));
 						
 						final Memoize<EvPixels[]> m=maybe;
 						final int thisAc=currentReturnChannel;
@@ -136,12 +136,12 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 		}
 	
 	
-	private static class MemoizeExec extends Memoize<EvPixels[]>
+	private static class MemoizeExecSlice extends Memoize<EvPixels[]>
 		{
 		private EvImage[] imlist;
 		private EvOpGeneral op;
 		
-		public MemoizeExec(EvImage[] imlist, EvOpGeneral op)
+		public MemoizeExecSlice(EvImage[] imlist, EvOpGeneral op)
 			{
 			this.imlist = imlist;
 			this.op = op;

@@ -1,5 +1,7 @@
 package endrov.nucAutoJH;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -103,22 +105,29 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				
 				double expectRadius=Double.parseDouble(inpRadius.getText());
-				double bgMulSize=Double.parseDouble(inpNucBgSize.getText());
+				double bgSize=Double.parseDouble(inpNucBgSize.getText());
 				//double bgMulValue=Double.parseDouble(inpNucBgMul.getText());
 				
-				/*
 				double resXhis=stackHis.getResbinX();
-				double resYhis=stackHis.getResbinY();
-				double resZhis=stackHis.getResbinZinverted().doubleValue();
+//				double resYhis=stackHis.getResbinY();
+				double resZhis=1/stackHis.getResbinZinverted().doubleValue();
+				/*
 				
 				double resXDIC=stackDIC.getResbinX();
 				double resYDIC=stackDIC.getResbinY();
 				double resZDIC=stackDIC.getResbinZinverted().doubleValue();
 */
 				
+				double resFrac=resXhis/resZhis;  //>1 means X has more pixels
+				
+				
+				
 				///// Find candidate coordinates ////
 				double sigmaHis1=expectRadius;
-				double sigmaHis2=sigmaHis1*bgMulSize;
+				double sigmaHis1z=sigmaHis1/resFrac;
+				
+				
+				double sigmaHis2=sigmaHis1*bgSize;
 				int whis=stackHis.getWidth();
 				int hhis=stackHis.getHeight();
 				EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigmaHis1, sigmaHis1, whis, hhis);
@@ -128,6 +137,23 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
 				List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);
 				
+//				System.out.println("# linjh maximas: "+maximas.size());
+
+				//TODO 3d convolution
+				//can make it faster
+				
+				
+				//TODO
+				/**
+				 * 
+				 * 
+				 * remove using mask.
+				 * sort by decreasing intensity.
+				 * take candidates
+				 *   ignore candidates which are too close to accepted candidates (cell radius)
+				 *   
+				 */
+				
 				
 				//// Detect where the embryo is ////
 				int dicVarSize=40;
@@ -136,6 +162,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				stackDICt=new EvOpBinMorphFillHoles2D().exec1(stackDICt);
 				EvStack stackEmbryoMask=stackDICt;
 				
+				
+				//Remove old coordinates at this keyframe
+				deleteKeyFrame(lin, frame);
 				
 				//// Choose candidates ////
 				int[][] pixEmbryoMask=stackEmbryoMask.getArraysInt();
@@ -149,28 +178,33 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					Vector3d dicPos=stackDIC.transformWorldImage(wpos);
 					
 					
-					System.out.println("r should be "+stackHis.scaleImageWorldX(20));
+					//System.out.println("r should be "+stackHis.scaleImageWorldX(20)); //5
 					
-					
+					/*
 					System.out.println("in his: "+v);
 					System.out.println("in dic: "+dicPos);
 					System.out.println("in world: "+wpos);
+					*/
 					
 					
-					NucLineage.Nuc nuc=lin.getNucCreate(""+i);
-					NucLineage.NucPos pos=nuc.getPosCreate(frame);
-					pos.r=5;
-					pos.setPosCopy(wpos);
 
 					Vector3i dicPosi=new Vector3i((int)dicPos.x,(int)dicPos.y,(int)dicPos.z); 
-					if(dicPosi.x>=0 && dicPosi.x<whis-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi.z>=0 && dicPosi.z<ddic)
+					if(dicPosi.x>=0 && dicPosi.x<wdic-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi.z>=0 && dicPosi.z<ddic)
 						{
 						int val=pixEmbryoMask[dicPosi.z][dicPosi.y*wdic+dicPosi.x];
-						System.out.println("dic mask "+val);
+						//System.out.println("dic mask "+val);
+
+						if(val>0)
+							{
+							NucLineage.Nuc nuc=lin.getNucCreate(""+i);
+							NucLineage.NucPos pos=nuc.getPosCreate(frame);
+							pos.r=3;
+							pos.setPosCopy(wpos);
+							}
 						
 						}
-					else
-						System.out.println("outside DIC");
+					//else
+						//System.out.println("outside DIC");
 					
 					i++;
 					}
@@ -188,6 +222,32 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			{
 			//TODO
 			}
+		
+		
+		
+		/**
+		 * Delete given keyframe from all nuclei. Delete nuclei without keyframe
+		 * 
+		 * TODO also delete after keyframe?
+		 */
+		private void deleteKeyFrame(NucLineage lin, EvDecimal frame)
+			{
+			List<String> toRemove=new LinkedList<String>();
+			for(String name:lin.nuc.keySet())
+				{
+				NucLineage.Nuc nuc=lin.nuc.get(name);
+				nuc.pos.remove(frame);
+				if(nuc.pos.isEmpty())
+					{
+					lin.nuc.remove(name);
+					if(nuc.parent!=null)
+						lin.nuc.get(nuc.parent).child.remove(name);
+					}
+				}
+			for(String name:toRemove)
+				lin.nuc.remove(name);
+			}
+		
 		
 		}
 	}

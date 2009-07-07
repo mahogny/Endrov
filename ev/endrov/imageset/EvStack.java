@@ -38,11 +38,17 @@ public class EvStack implements AnyEvImage
 	public double binning;
 	
 	/**
-	 * Displacement in micrometer
+	 * Displacement, [non-binned pixels]
 	 * TODO would simplify if they were in pixels
 	 */
 	public double dispX, dispY;
 
+	/**
+	 * ONLY used by putInt/getInt
+	 * [um]
+	 */
+	public EvDecimal dispZ=EvDecimal.ZERO;
+	
 	/**
 	 * Return combined resolution and binning. [px/um]
 	 */
@@ -66,6 +72,7 @@ public class EvStack implements AnyEvImage
 				EvDecimal z1=f.next();
 				EvDecimal z2=f.next();
 				resZ=z2.subtract(z1);
+				dispZ=z1;
 				}
 			else
 				{
@@ -80,11 +87,12 @@ public class EvStack implements AnyEvImage
 	
 	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
 	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
-	public double transformImageWorldZ(double c){return c*getResbinZinverted().doubleValue();}
+	public double transformImageWorldZ(double c){return c*getResbinZinverted().doubleValue()+dispZ.doubleValue();}
+	
 	
 	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
 	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
-	public double transformWorldImageZ(double c){return c/getResbinZinverted().doubleValue();}
+	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/getResbinZinverted().doubleValue();}
 	
 	public double scaleImageWorldX(double c){return c/getResbinX();}
 	public double scaleImageWorldY(double c){return c/getResbinY();}
@@ -127,6 +135,7 @@ public class EvStack implements AnyEvImage
 		binning=o.binning;
 		dispX=o.dispX;
 		dispY=o.dispY;
+		dispZ=o.dispZ;
 		}
 	
 	/**
@@ -138,6 +147,9 @@ public class EvStack implements AnyEvImage
 		resX=ref.resX;
 		resY=ref.resY;
 		resZ=ref.getResbinZinverted();
+		dispX=ref.dispX;
+		dispY=ref.dispY;
+		dispZ=ref.dispZ;
 		binning=ref.binning;
 		for(int i=0;i<d;i++)
 			{
@@ -195,7 +207,7 @@ public class EvStack implements AnyEvImage
 	 */
 	public void putInt(int z, EvImage im)
 		{
-		loaders.put(new EvDecimal(z).multiply(getResbinZinverted()),im);
+		loaders.put(new EvDecimal(z).multiply(getResbinZinverted()).add(dispZ),im);
 		}
 
 	/**
