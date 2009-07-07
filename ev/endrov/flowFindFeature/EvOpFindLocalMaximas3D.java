@@ -185,8 +185,11 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 		
 		int[][] arr=pout.getOrigArraysInt();
 		int w=p.getWidth();
-		for(Vector3i v:findMaximas(p))
+		List<Vector3i> vlist=findMaximas(p);
+		for(Vector3i v:vlist)
 			arr[v.z][v.y*w+v.x]=1;
+		
+		System.out.println("# max: "+vlist.size());
 		
 		return pout;
 		}

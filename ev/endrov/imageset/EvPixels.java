@@ -670,7 +670,7 @@ public class EvPixels implements AnyEvImage
 	
 	public String toString()
 		{
-		return "EvPixels type:"+type+" w:"+w+" h:"+h;
+		return "EvPixels "+type+" "+w+"x"+h;
 		}
 
 	/**

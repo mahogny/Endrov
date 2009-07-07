@@ -4,5 +4,7 @@ use /Volumes/TBU_main03/ost4dgood/TB2167_080416.ost
 TODO pixel intensity tool should NOT be affected by contrast&brightness!!!!
 TODO >, suggests boolean. wrong type
 
+
+
 4h1m10s =====================
 
