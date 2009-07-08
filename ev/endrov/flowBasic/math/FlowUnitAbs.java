@@ -10,23 +10,24 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: add numbers
+ * Flow unit: absolute value
  * @author Johan Henriksson
  *
  */
 public class FlowUnitAbs extends FlowUnitMathUniop
 	{
 	private static final String metaType="abs";
+	private static String showName="|A|";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Math","Abs",metaType,FlowUnitAbs.class, null,"Absolute value"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitAbs.class, CategoryInfo.icon,"Absolute value"));
 		}
 	
 	public FlowUnitAbs()
 		{
-		super("|A|",metaType);
+		super(showName,metaType);
 		}
 	
 	

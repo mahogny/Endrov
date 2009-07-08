@@ -19,15 +19,15 @@ import endrov.flow.FlowUnitDeclaration;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitKuwahara extends FlowUnitBasic
+public class FlowUnitKuwaharaFilter extends FlowUnitBasic
 	{
 	public static final String showName="Kuwahara";
-	private static final String metaType="movingKuwahara2d";
+	private static final String metaType="filterKuwahara2D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitKuwahara.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitKuwaharaFilter.class, null,
 				"Edge preserving non-linear filter"));
 		}
 	
@@ -62,7 +62,7 @@ public class FlowUnitKuwahara extends FlowUnitBasic
 		
 		checkNotNull(a,pw,ph);
 
-		lastOutput.put("out", new EvOpKuwahara(pw,ph).exec1Untyped(a));
+		lastOutput.put("out", new EvOpKuwaharaFilter2D(pw,ph).exec1Untyped(a));
 		}
 
 	

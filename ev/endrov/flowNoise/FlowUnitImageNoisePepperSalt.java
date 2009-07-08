@@ -1,4 +1,4 @@
-package endrov.flowMisc;
+package endrov.flowNoise;
 
 
 import java.awt.Color;
@@ -13,22 +13,23 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: shift every second line to correct for confocal scanning
+ * Flow unit: Apply pepper and salt noise
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
+public class FlowUnitImageNoisePepperSalt extends FlowUnitBasic
 	{
-	public static final String showName="Confocal shift correction";
-	private static final String metaType="confocalShiftCorrection";
+	public static final String showName="Pepper'n'salt image noise";
+	private static final String metaType="imageNoisePepperSalt";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConfocalShiftCorrection.class, null,
-				"Shift every second line to correct for confocal scanning"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitImageNoisePepperSalt.class, null,
+				"Apply salt and pepper noise - pixels fully black, fully white, or ok. 0<=P[pepper]+P[salt]<=1"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -41,7 +42,8 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("shift", FlowType.TNUMBER);
+		types.put("P[salt]", FlowType.TNUMBER);
+		types.put("P[pepper]", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -54,9 +56,11 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
-		Number b=(Number)flow.getInputValue(this, exec, "shift");
-		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(a));
+		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
+		Number pSalt=(Number)flow.getInputValue(this, exec, "P[salt]");
+		Number pPepper=(Number)flow.getInputValue(this, exec, "P[pepper]");
+		
+		lastOutput.put("out", new EvOpImageNoisePepperSalt(pPepper, pSalt).exec1Untyped(image));
 		}
 
 	

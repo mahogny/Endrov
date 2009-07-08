@@ -238,6 +238,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				nuc.pos.remove(frame);
 				if(nuc.pos.isEmpty())
 					{
+					toRemove.add(name);
 					lin.nuc.remove(name);
 					if(nuc.parent!=null)
 						lin.nuc.get(nuc.parent).child.remove(name);

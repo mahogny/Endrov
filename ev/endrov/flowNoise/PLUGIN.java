@@ -1,12 +1,11 @@
-package endrov.filterTransform;
+package endrov.flowNoise;
 import endrov.ev.PluginDef;
-
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Transform filters";
+		return "Flows: noise";
 		}
 
 	public String getAuthor()
@@ -32,12 +31,11 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				InvertFilter.class, 
+				FlowUnitImageNoiseExponential.class,
+				FlowUnitImageNoisePepperSalt.class,
+				FlowUnitImageNoisePoisson.class,
 				};
 		}
 	
-	public boolean isDefaultEnabled()
-		{
-		return true;
-		}
+	public boolean isDefaultEnabled(){return true;};
 	}

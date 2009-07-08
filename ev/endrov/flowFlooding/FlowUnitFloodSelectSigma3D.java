@@ -22,15 +22,15 @@ import endrov.util.Vector3i;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitFloodSelectSigma extends FlowUnitBasic
+public class FlowUnitFloodSelectSigma3D extends FlowUnitBasic
 	{
-	public static final String showName="Flood Select Within Sigma";
-	private static final String metaType="floodSelectSigma";
+	public static final String showName="Flood Select Within Sigma 3D";
+	private static final String metaType="floodSelectSigma3D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitFloodSelectSigma.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitFloodSelectSigma3D.class, null,
 				"Select region around point with the color in range [mu-f sigma, mu+f sigma]"));
 		}
 	
@@ -64,7 +64,7 @@ public class FlowUnitFloodSelectSigma extends FlowUnitBasic
 		checkNotNull(image,pos,f);
 		
 		//TODO
-		lastOutput.put("region", new EvOpFloodSelectSigma(Collections.singleton(pos),f.doubleValue()).exec1Untyped(image));
+		lastOutput.put("region", new EvOpFloodSelectSigma3D(Collections.singleton(pos),f.doubleValue()).exec1Untyped(image));
 		}
 
 	

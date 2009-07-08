@@ -24,12 +24,12 @@ public class EvOpConfocalShiftCorrection extends EvOpSlice1
 	
 	public EvPixels exec1(EvPixels... p)
 		{
-		return shift(p[0], shift.doubleValue());
+		return shift(p[0], shift);
 		}
 	
-	public static EvPixels shift(EvPixels a, double shift)
+	public static EvPixels shift(EvPixels a, Number shift)
 		{
-		int b=(int)shift;
+		int b=shift.intValue();
 		
 		//Should use the common higher type here
 		a=a.getReadOnly(EvPixelsType.DOUBLE);
@@ -42,18 +42,34 @@ public class EvOpConfocalShiftCorrection extends EvOpSlice1
 		
 		if(b>0)
 			for(int ay=0;ay<h;ay++)
-				for(int ax=b;ax<w;ax++)
+				{
+				if(ay%2==0)
+					for(int ax=b;ax<w;ax++)
+						{
+						int pos=a.getPixelIndex(ax, ay);
+						outPixels[pos-b]=aPixels[pos];
+						}
+				else
 					{
-					int pos=a.getPixelIndex(ax, ay);
-					outPixels[pos-b]=aPixels[pos];
+					int i=a.getPixelIndex(0, ay);
+					System.arraycopy(aPixels,i,outPixels,i,w);
 					}
+				}
 		else
 			for(int ay=0;ay<h;ay++)
+				{
+				if(ay%2==0)
 				for(int ax=0;ax<w+b;ax++)
 					{
 					int pos=a.getPixelIndex(ax, ay);
 					outPixels[pos-b]=aPixels[pos];
 					}
+				else
+					{
+					int i=a.getPixelIndex(0, ay);
+					System.arraycopy(aPixels,i,outPixels,i,w);
+					}
+				}
 			
 		return out;
 		}

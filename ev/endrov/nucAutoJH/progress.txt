@@ -8,3 +8,5 @@ TODO >, suggests boolean. wrong type
 
 4h1m10s =====================
 
+E[r]=5? or 10?
+

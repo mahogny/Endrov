@@ -5,18 +5,18 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
 /**
- * cos(A)
+ * abs(nabla_xy)^2
  * @author Johan Henriksson
  *
  */
-public class EvOpImageCos extends EvOpSlice1
+public class EvOpImageAbsGradXY2 extends EvOpSlice1
 	{
 	public EvPixels exec1(EvPixels... p)
 		{
-		return EvOpImageCos.log(p[0]);
+		return EvOpImageAbsGradXY2.apply(p[0]);
 		}
 
-	static EvPixels log(EvPixels a)
+	static EvPixels apply(EvPixels a)
 		{
 		//Should use the common higher type here
 		a=a.getReadOnly(EvPixelsType.DOUBLE);
@@ -27,8 +27,17 @@ public class EvOpImageCos extends EvOpSlice1
 		double[] aPixels=a.getArrayDouble();
 		double[] outPixels=out.getArrayDouble();
 		
-		for(int i=0;i<aPixels.length;i++)
-			outPixels[i]=Math.cos(aPixels[i]);
+		for(int y=0;y<h-1;y++)
+			for(int x=0;x<w-1;x++)
+				{
+				int index=y*w+x;
+				int indexRight=index+1;
+				int indexBelow=index+w;
+				double mid=aPixels[index];
+				double gradX=aPixels[indexRight]-mid;
+				double gradY=aPixels[indexBelow]-mid;
+				outPixels[index]=gradX*gradX+gradY*gradY;
+				}
 		
 		return out;
 		}

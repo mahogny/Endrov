@@ -40,7 +40,7 @@ public abstract class FlowUnitMathBinop extends FlowUnitBasic
 	
 	public Color getBackground()
 		{
-		return new Color(200,255,200);
+		return CategoryInfo.bgColor;
 		}
 
 	

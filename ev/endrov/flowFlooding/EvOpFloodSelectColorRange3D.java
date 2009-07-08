@@ -8,44 +8,56 @@ import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 
 /**
- * Floodfill area with the same color
+ * Floodfill area with the same color+-range
  * 
  * @author Johan Henriksson
  *
  */
-public class EvOpFloodSelectSameColor extends EvOpStack1
+public class EvOpFloodSelectColorRange3D extends EvOpStack1
 	{
 	private final Vector3i startpos;
+	private final Number rangeMinus, rangePlus;
 	
-	public EvOpFloodSelectSameColor(Vector3i startpos)
+	public EvOpFloodSelectColorRange3D(Vector3i startpos, Number rangeMinus, Number rangePlus)
 		{
 		this.startpos = startpos;
+		this.rangeMinus=rangeMinus;
+		this.rangePlus=rangePlus;
 		}
 
 
 	@Override
 	public EvStack exec1(EvStack... p)
 		{
-		return fill(p[0], startpos);
+		return fill(p[0], startpos, rangeMinus, rangePlus);
 		}
 	
-	
-	public static EvStack fill(EvStack stack, Vector3i startpos)
+	/**
+	 * If range==null then it is set to 0
+	 */
+	public static EvStack fill(EvStack stack, Vector3i startpos, Number rangeMinus, Number rangePlus)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
 		int d=stack.getDepth();
 
+		if(rangeMinus==null)
+			rangeMinus=0;
+		if(rangePlus==null)
+			rangePlus=0;
+		double vRangeMinus=rangeMinus.doubleValue();
+		double vRangePlus=rangePlus.doubleValue();
+		
 		EvStack markstack=new EvStack();
 		markstack.getMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		int[][] inarr=stack.getArraysInt();
+		double[][] inarr=stack.getArraysDouble();
 		int[][] outarr=markstack.getArraysInt();
 		
 		LinkedList<Vector3i> q=new LinkedList<Vector3i>();
 		q.add(new Vector3i(startpos.x,startpos.y,startpos.z));
-		int startval=inarr[startpos.z][startpos.y*w+startpos.x];
+		double startval=inarr[startpos.z][startpos.y*w+startpos.x];
 		
 		
 		while(!q.isEmpty())
@@ -59,10 +71,10 @@ public class EvOpFloodSelectSameColor extends EvOpStack1
 			//Check that this pixel has not been evaluated before
 			if(outarr[z][index]==0)
 				{
-				int thisval=inarr[z][index];
+				double thisval=inarr[z][index];
 				
 				//Test if this pixel should be included
-				if(thisval==startval)
+				if(thisval>=startval-vRangeMinus && thisval<=startval+vRangePlus)
 					{
 					outarr[z][index]=1;
 					
