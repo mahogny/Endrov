@@ -17,7 +17,6 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.consoleWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.filter.*;
 import endrov.imageWindow.ImagePanel.ImagePanelImage;
 import endrov.imageWindow.tools.ImageWindowToolChannelDisp;
 import endrov.imageWindow.tools.ImageWindowToolPixelInfo;
@@ -159,12 +158,13 @@ public class ImageWindow extends BasicWindow
 		public final EvComboChannel comboChannel=new EvComboChannel(null,false);
 		public final JSlider sliderContrast=new JSlider(-10000,10000,0);
 		public final JSlider sliderBrightness=new JSlider(-200,200,0);
-		public final JButton bFilterSequence=FilterSeq.createFilterSeqButton();
+		//public final JButton bFilterSequence=FilterSeq.createFilterSeqButton();
 
+		/*
 		public final FilterSeq filterSeq=new FilterSeq();
 		private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
 			{public void observerEvent(Object o){dataChangedEvent();}};
-		
+		*/
 		
 		public ChannelWidget()
 			{
@@ -184,7 +184,7 @@ public class ImageWindow extends BasicWindow
 			JPanel left=new JPanel(new BorderLayout());
 			left.add(rSelect,BorderLayout.WEST);
 			left.add(comboChannel,BorderLayout.CENTER);
-			left.add(bFilterSequence,BorderLayout.EAST);
+		//	left.add(bFilterSequence,BorderLayout.EAST);
 			
 			add(left);
 			add(contrastPanel);
@@ -193,9 +193,9 @@ public class ImageWindow extends BasicWindow
 			sliderContrast.addChangeListener(this);
 			sliderBrightness.addChangeListener(this);
 			comboChannel.addActionListener(this);
-			bFilterSequence.addActionListener(this);
+			//bFilterSequence.addActionListener(this);
 			
-			filterSeq.observer.addWeakListener(filterSeqObserver);
+			//filterSeq.observer.addWeakListener(filterSeqObserver);
 			}
 		
 		public void actionPerformed(ActionEvent e)
@@ -207,10 +207,10 @@ public class ImageWindow extends BasicWindow
 				frameControl.setAll(frameControl.getFrame(), frameControl.getZ());
 				updateImagePanel();
 				}
-			else if(e.getSource()==bFilterSequence)
+/*			else if(e.getSource()==bFilterSequence)
 				{
 				new WindowFilterSeq(filterSeq);
-				}
+				}*/
 			else
 				updateImagePanel();
 			}
@@ -602,9 +602,11 @@ public class ImageWindow extends BasicWindow
 				else
 					{
 					pi.setImage(stack,stack.get(z));
+					/*
 					FilterSeq fseq=channelWidget.get(i).filterSeq;
 					if(!fseq.isIdentity())
 						pi.setImage(stack, fseq.applyReturnImage(stack, pi.getImage()));
+						*/
 					}
 				imagePanel.images.add(pi);
 				}
