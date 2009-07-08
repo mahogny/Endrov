@@ -9,6 +9,8 @@ import endrov.data.*;
 import endrov.imageWindow.*;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.*;
+import endrov.util.ImVector2;
+import endrov.util.ImVector3d;
 
 /**
  * Shell metadata
@@ -93,6 +95,37 @@ public class Shell extends EvObject
 			}
 		}
 
+	
+	/**
+	 * Projected down: check if inside
+	 */
+	public boolean isInside(ImVector2 pos)
+		{
+		ImVector2 dirvec=ImVector2.polar(major, angle);
+		//ImVector2 startpos=dirvec.add(new ImVector2(midx,midy));
+		dirvec=dirvec.normalize().mul(-1);
+
+		//Check if this is within ellipse boundary
+		ImVector2 elip=pos.sub(new ImVector2(midx, midy)).rotate(angle); //todo: angle?
+		return 1 >= elip.y*elip.y/(minor*minor) + elip.x*elip.x/(major*major) ;
+		}
+	
+	/**
+	 * Projected down: check if inside
+	 */
+	public boolean isInside(ImVector3d pos)
+		{
+		//ImVector2 dirvec=ImVector2.polar(major, angle);
+		//ImVector2 startpos=dirvec.add(new ImVector2(midx,midy));
+		//dirvec=dirvec.normalize().mul(-1);
+
+		//ImVector2 foo=
+		
+		//Check if this is within ellipse boundary
+		ImVector2 foo=new ImVector2(pos.x,pos.y).sub(new ImVector2(midx, midy)).rotate(angle); //todo: angle?
+		ImVector3d elip=new ImVector3d(foo.x,foo.y,pos.z-midz);
+		return 1 >= elip.y*elip.y/(minor*minor) + elip.x*elip.x/(major*major) + elip.z*elip.z/(minor*minor);
+		}
 	
 	/**
 	 * Desciption of data
