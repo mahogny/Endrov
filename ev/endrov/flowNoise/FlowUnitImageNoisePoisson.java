@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowNoise;
 
 
 import java.awt.Color;
@@ -13,22 +13,23 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: bilateral filter
+ * Flow unit: Apply poisson noise
  * @author Johan Henriksson
  *
  */
-public class FlowUnitBilateralFilter extends FlowUnitBasic
+public class FlowUnitImageNoisePoisson extends FlowUnitBasic
 	{
-	public static final String showName="Bilateral filter";
-	private static final String metaType="not";
+	public static final String showName="Poisson image noise";
+	private static final String metaType="imageNoisePoisson";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitBilateralFilter.class, null,
-				"Local average, but only average using pixels within threshold of current pixel value. This improves edge conservation"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitImageNoisePoisson.class, null,
+				"Apply poisson noise"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -41,9 +42,7 @@ public class FlowUnitBilateralFilter extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("pw", FlowType.TNUMBER);
-		types.put("ph", FlowType.TNUMBER);
-		types.put("threshold", FlowType.TNUMBER);
+		types.put("lambda", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -56,15 +55,10 @@ public class FlowUnitBilateralFilter extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
+		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
+		Number lambda=(Number)flow.getInputValue(this, exec, "lambda");
 		
-		Object a=flow.getInputValue(this, exec, "image");
-		Number pw=(Number)flow.getInputValue(this, exec, "pw");
-		Number ph=(Number)flow.getInputValue(this, exec, "ph");
-		Number threshold=(Number)flow.getInputValue(this, exec, "threshold");
-		
-		checkNotNull(a,pw,ph,threshold);
-
-		lastOutput.put("out", new EvOpBilateralFilter(pw,ph,threshold).exec1Untyped(a));
+		lastOutput.put("out", new EvOpImageNoisePoisson(lambda).exec1Untyped(image));
 		}
 
 	

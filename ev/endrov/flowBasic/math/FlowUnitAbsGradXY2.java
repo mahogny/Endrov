@@ -1,4 +1,4 @@
-package endrov.flowFlooding;
+package endrov.flowBasic.math;
 
 
 import java.awt.Color;
@@ -13,55 +13,53 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
-import endrov.util.Vector3i;
 
 /**
- * Flow unit: Flood select same color
+ * Flow unit: abs(nabla_xy)^2
  * @author Johan Henriksson
  *
  */
-public class FlowUnitFloodSelectSameColor extends FlowUnitBasic
+public class FlowUnitAbsGradXY2 extends FlowUnitBasic
 	{
-	public static final String showName="Flood Select Same Color";
-	private static final String metaType="floodSelect2D";
+	public static final String showName="|∇xy|²";
+	private static final String metaType="absGradXY2";
 	
+	public static final ImageIcon icon=null;
+	//new ImageIcon(CategoryInfo.class.getResource("jhFlowCategoryFindMaximas.png"));
+
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitFloodSelectSameColor.class, null,
-				"Select region around point with the same color"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitAbsGradXY2.class, icon,
+				"Indicator of steep slope"));
 		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("pos", FlowType.TVECTOR3I);
 		}
 	
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("region", FlowType.ANYIMAGE); //TODO same type as "image"
+		types.put("out", FlowType.ANYIMAGE); //TODO same type as "image"
 		}
 	
 	/** Execute algorithm */
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Vector3i pos=(Vector3i)flow.getInputValue(this, exec, "pos");
-		checkNotNull(image,pos);
 		
-		lastOutput.put("region", new EvOpFloodSelectSameColor(pos).exec1Untyped(image));
+		Object a=flow.getInputValue(this, exec, "image");
+
+		lastOutput.put("out", new EvOpImageAbsGradXY2().exec1Untyped(a));
 		}
 
-	
 	}

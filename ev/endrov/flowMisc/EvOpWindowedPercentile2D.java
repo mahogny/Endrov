@@ -10,6 +10,9 @@ import endrov.imageset.EvPixelsType;
  * Compute percentile for a local square area around every pixel.
  * <br/>
  * Complexity O(w*h*pw*ph*log(pw*ph)*numPercentile)
+ * 
+ * TODO use linear time algorithm
+ * 
  * @author Johan Henriksson
  *
  */

@@ -64,7 +64,8 @@ public class PLUGIN extends PluginDef
 				FlowUnitSin.class, FlowUnitCos.class, FlowUnitExp.class, FlowUnitLog.class, FlowUnitSqrt.class,
 				FlowUnitMin.class,FlowUnitMax.class, FlowUnitPow.class, 
 				FlowUnitAbs.class,
-				
+				FlowUnitAbsGradXY2.class,
+
 				//Logic
 				FlowUnitAnd.class,FlowUnitOr.class,FlowUnitXor.class,FlowUnitNot.class,
 				FlowUnitGreaterThan.class,

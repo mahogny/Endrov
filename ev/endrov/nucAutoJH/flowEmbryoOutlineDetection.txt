@@ -1,5 +1,7 @@
 
-==== using DIC ====
+==== using DIC 1 ====
+
+this is based on variance. works ok.
 
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -34,3 +36,114 @@
   <conn fromUnit="6" toUnit="2" fromArg="out" toArg="in" />
 
 </flow>
+
+
+
+
+======using DIC 2 ========
+
+based on floodfilling DIC outside. color intensity increases near embryo
+so a lot of the outside comes with it. bg is not homogenous.
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<flow>
+  <unit ref="im/DIC" unitname="evobjectio" unitx="-416" unity="-40" />
+  <unit unitname="channelConvertToVector3i" unitx="-295" unity="-120" />
+  <unit value="1.0" unitname="constDouble" unitx="-193" unity="-171" />
+  <unit value="40" unitname="constInteger" unitx="-378" unity="-70" />
+  <unit value="4" unitname="constInteger" unitx="-380" unity="-145" />
+  <unit ref="im/DICf" unitname="evobjectio" unitx="190" unity="-133" />
+  <unit unitname="floodSelectColorRange2D" unitx="-40" unity="-148" />
+  <unit value="25" unitname="constInteger" unitx="-109" unity="-258" />
+  <unit value="200" unitname="constInteger" unitx="-380" unity="-108" />
+  <conn fromUnit="3" toUnit="1" fromArg="out" toArg="x" />
+  <conn fromUnit="4" toUnit="1" fromArg="out" toArg="z" />
+  <conn fromUnit="7" toUnit="6" fromArg="out" toArg="rplus" />
+  <conn fromUnit="7" toUnit="6" fromArg="out" toArg="rminus" />
+  <conn fromUnit="1" toUnit="6" fromArg="out" toArg="pos" />
+  <conn fromUnit="0" toUnit="6" fromArg="out" toArg="image" />
+  <conn fromUnit="6" toUnit="5" fromArg="region" toArg="in" />
+  <conn fromUnit="8" toUnit="1" fromArg="out" toArg="y" />
+</flow>
+
+========== using RFP ==========
+
+using floodfill. works quite well. suggests that a 3d threshold would do the job well.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<flow>
+  <unit ref="im/RFP" unitname="evobjectio" unitx="-416" unity="-40" />
+  <unit unitname="channelConvertToVector3i" unitx="-295" unity="-120" />
+  <unit value="1.0" unitname="constDouble" unitx="-193" unity="-171" />
+  <unit value="40" unitname="constInteger" unitx="-378" unity="-70" />
+  <unit value="18" unitname="constInteger" unitx="-380" unity="-145" />
+  <unit ref="im/RFPf" unitname="evobjectio" unitx="299" unity="-159" />
+  <unit unitname="floodSelectColorRange2D" unitx="-40" unity="-148" />
+  <unit value="5" unitname="constInteger" unitx="-109" unity="-258" />
+  <unit value="200" unitname="constInteger" unitx="-380" unity="-108" />
+  <unit unitname="not" unitx="211" unity="-214" />
+  <conn fromUnit="3" toUnit="1" fromArg="out" toArg="x" />
+  <conn fromUnit="4" toUnit="1" fromArg="out" toArg="z" />
+  <conn fromUnit="7" toUnit="6" fromArg="out" toArg="rplus" />
+  <conn fromUnit="7" toUnit="6" fromArg="out" toArg="rminus" />
+  <conn fromUnit="1" toUnit="6" fromArg="out" toArg="pos" />
+  <conn fromUnit="0" toUnit="6" fromArg="out" toArg="image" />
+  <conn fromUnit="8" toUnit="1" fromArg="out" toArg="y" />
+  <conn fromUnit="6" toUnit="9" fromArg="region" toArg="A" />
+  <conn fromUnit="9" toUnit="5" fromArg="B" toArg="in" />
+</flow>
+
+======= using RFP =========
+
+using percentile thres 2d. 
+* works well later
+* a lot of noise early, need something in addition
+
+<?xml version="1.0" encoding="UTF-8"?>
+<flow>
+  <unit unitname="thresholdPercentile2D" unitx="84" unity="51" />
+  <unit value="0.8" unitname="constDouble" unitx="15" unity="36" />
+  <unit ref="im/RFPf2" unitname="evobjectio" unitx="312" unity="56" />
+  <unit ref="im/RFP" unitname="evobjectio" unitx="-315" unity="42" />
+  <unit unitname="binaryFillHoles2D" unitx="217" unity="92" />
+  <conn fromUnit="1" toUnit="0" fromArg="out" toArg="percentile" />
+  <conn fromUnit="0" toUnit="4" fromArg="out" toArg="image" />
+  <conn fromUnit="3" toUnit="0" fromArg="out" toArg="image" />
+  <conn fromUnit="4" toUnit="2" fromArg="out" toArg="in" />
+</flow>
+
+
+====== using DIC ===========
+
+uses abs-grad on dic directly
+fill holes
+needs smoothing to fix jpeg artifacts
+
+<?xml version="1.0" encoding="UTF-8"?>
+<flow>
+  <unit ref="im/DIC" unitname="evobjectio" unitx="-288" unity="-271" />
+  <unit ref="im/DICf" unitname="evobjectio" unitx="157" unity="-218" />
+  <unit unitname="absGradXY2" unitx="72" unity="-236" />
+  <unit unitname="convGaussian2D" unitx="-84" unity="-294" />
+  <unit value="0.7" unitname="constDouble" unitx="-181" unity="-245" />
+  <unit ref="im/DICf2" unitname="evobjectio" unitx="333" unity="-236" />
+  <unit unitname="greaterThan" unitx="205" unity="-269" />
+  <unit value="6.0" unitname="constDouble" unitx="110" unity="-300" />
+  <unit unitname="binaryFillHoles2D" unitx="272" unity="-317" />
+  <conn fromUnit="2" toUnit="1" fromArg="out" toArg="in" />
+  <conn fromUnit="4" toUnit="3" fromArg="out" toArg="sigmaX" />
+  <conn fromUnit="4" toUnit="3" fromArg="out" toArg="sigmaY" />
+  <conn fromUnit="0" toUnit="3" fromArg="out" toArg="image" />
+  <conn fromUnit="3" toUnit="2" fromArg="out" toArg="image" />
+  <conn fromUnit="1" toUnit="6" fromArg="out" toArg="A" />
+  <conn fromUnit="7" toUnit="6" fromArg="out" toArg="B" />
+  <conn fromUnit="6" toUnit="8" fromArg="C" toArg="image" />
+  <conn fromUnit="8" toUnit="5" fromArg="out" toArg="in" />
+</flow>
+
+==== using DIC ==========
+
+bilateral filter. dim 2,2, interval 10
+
+

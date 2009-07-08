@@ -1,4 +1,4 @@
-package endrov.flowMisc;
+package endrov.flowNoise;
 
 
 import java.awt.Color;
@@ -13,22 +13,23 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: shift every second line to correct for confocal scanning
+ * Flow unit: Apply exponential noise
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
+public class FlowUnitImageNoiseExponential extends FlowUnitBasic
 	{
-	public static final String showName="Confocal shift correction";
-	private static final String metaType="confocalShiftCorrection";
+	public static final String showName="Exponential image noise";
+	private static final String metaType="imageNoiseExponential";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConfocalShiftCorrection.class, null,
-				"Shift every second line to correct for confocal scanning"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitImageNoiseExponential.class, null,
+				"Apply exponential noise"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -41,7 +42,7 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("shift", FlowType.TNUMBER);
+		types.put("lambda", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -54,9 +55,10 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
-		Number b=(Number)flow.getInputValue(this, exec, "shift");
-		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(a));
+		AnyEvImage image=(AnyEvImage)flow.getInputValue(this, exec, "image");
+		Number lambda=(Number)flow.getInputValue(this, exec, "lambda");
+		
+		lastOutput.put("out", new EvOpImageNoiseExponential(lambda).exec1Untyped(image));
 		}
 
 	

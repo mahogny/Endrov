@@ -11,29 +11,30 @@ import endrov.imageset.EvPixelsType;
  * <br/>
  * http://www.roborealm.com/help/Bilateral.php
  */
-public class EvOpBilateralFilter extends EvOpSlice1
+public class EvOpBilateralFilter2D extends EvOpSlice1
 	{
-	private Number pw, ph, threshold;
+	private final Number pw, ph, threshold;
 	
-	public EvOpBilateralFilter(Number pw, Number ph, Number threshold)
+	public EvOpBilateralFilter2D(Number pw, Number ph, Number threshold)
 		{
 		this.pw = pw;
 		this.ph = ph;
+		this.threshold=threshold;
 		}
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return bilateralFilter(p[0],pw.intValue(), ph.intValue(), threshold.intValue());
+		return bilateralFilter(p[0],pw.intValue(), ph.intValue(), threshold.doubleValue());
 		}
 	
-	public static EvPixels bilateralFilter(EvPixels in, int pw, int ph, int threshold)
+	public static EvPixels bilateralFilter(EvPixels in, int pw, int ph, double threshold)
 		{
-		in=in.getReadOnly(EvPixelsType.INT);
+		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels out=new EvPixels(in.getType(),w,h);
-		int[] inPixels=in.getArrayInt();
-		int[] outPixels=out.getArrayInt();
+		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
+		double[] inPixels=in.getArrayDouble();
+		double[] outPixels=out.getArrayDouble();
 		
 		for(int ay=0;ay<h;ay++)
 			{
@@ -45,17 +46,19 @@ public class EvOpBilateralFilter extends EvOpSlice1
 				int fromy=Math.max(0,ay-ph);
 				int toy=Math.min(h,ay+ph+1);
 				
-				int sum=0;
+				double sum=0;
 				int num=0;
 
-				int curp=inPixels[in.getPixelIndex(ax, ay)];
+				double curp=inPixels[in.getPixelIndex(ax, ay)];
+				double lower=curp-threshold;
+				double upper=curp+threshold;
 				for(int y=fromy;y<toy;y++)
 					for(int x=fromx;x<tox;x++)
 						{
 						
-						int p=inPixels[in.getPixelIndex(x, y)];
-						int dp=p-curp;
-						if(dp>-threshold && dp<threshold)
+						double p=inPixels[in.getPixelIndex(x, y)];
+//						double dp=p-curp;
+						if(p>=lower && p<=upper)
 							{
 							sum+=p;
 							num++;

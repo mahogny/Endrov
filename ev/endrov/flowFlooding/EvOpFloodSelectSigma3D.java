@@ -14,13 +14,13 @@ import endrov.util.Vector3i;
  * 
  * @author Johan Henriksson
  */
-public class EvOpFloodSelectSigma extends EvOpStack1
+public class EvOpFloodSelectSigma3D extends EvOpStack1
 	{
 	private final Collection<Vector3i> startv;
 	private final double f;
 	
 	
-	public EvOpFloodSelectSigma(Collection<Vector3i> startv, double f)
+	public EvOpFloodSelectSigma3D(Collection<Vector3i> startv, double f)
 		{
 		this.startv = startv;
 		this.f = f;
@@ -42,7 +42,7 @@ public class EvOpFloodSelectSigma extends EvOpStack1
 		markstack.getMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		int[][] inarr=stack.getArraysInt();
+		double[][] inarr=stack.getArraysDouble();
 		int[][] outarr=markstack.getArraysInt();
 
 		double sum=0;
@@ -57,7 +57,7 @@ public class EvOpFloodSelectSigma extends EvOpStack1
 			int y=v.y;
 			int z=v.z;
 			int index=y*w+x;
-			int thisval=inarr[z][index];
+			double thisval=inarr[z][index];
 			sum+=thisval;
 			sum2+=thisval*thisval;
 			count++;
@@ -78,10 +78,11 @@ public class EvOpFloodSelectSigma extends EvOpStack1
 				q.add(new Vector3i(x,y,z+1));
 			}
 		
-		
+		System.out.println("Flooding");
 		while(!q.isEmpty())
 			{
 			Vector3i v=q.poll();
+			//System.out.println("# in q "+q.size());
 			int x=v.x;
 			int y=v.y;
 			int z=v.z;
@@ -91,13 +92,14 @@ public class EvOpFloodSelectSigma extends EvOpStack1
 			if(outarr[z][index]==0)
 				{
 				//Calculate if this value is in range. Use a trick to avoid a Sqrt
-				int thisval=inarr[z][index];
+				double thisval=inarr[z][index];
 				double diff=thisval-sum/count;
 				diff*=diff;
 				double variance=EvMathUtil.unbiasedVariance(sum, sum2, count);
+				//System.out.println(diff+"   vs  "+variance+"  count= "+count);
 				
 				//Test if this pixel should be included
-				if(diff<variance*f)
+				if(diff<variance*f*f || count<=1)
 					{
 					//Include pixel
 					sum+=thisval;
@@ -122,6 +124,7 @@ public class EvOpFloodSelectSigma extends EvOpStack1
 				}
 			
 			}
+		System.out.println("end Flooding "+count);
 		return markstack;
 		}
 

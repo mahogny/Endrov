@@ -31,8 +31,8 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				FlowUnitFloodSelectSameColor.class,
-				FlowUnitFloodSelectSigma.class,
+				FlowUnitFloodSelectColorRange3D.class,
+				FlowUnitFloodSelectSigma3D.class,
 				FlowUnitWatershed.class
 				};
 		}

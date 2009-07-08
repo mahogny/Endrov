@@ -33,7 +33,8 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				FlowUnitConvGaussian2D.class,
 				FlowUnitConvGaussian3D.class,
-				FlowUnitBilateralFilter.class,
+				FlowUnitBilateralFilter2D.class,
+				FlowUnitKuwaharaFilter.class,
 				FlowUnitMovingAverage.class,
 				FlowUnitMovingEntropy.class,
 				FlowUnitMovingSum.class,
