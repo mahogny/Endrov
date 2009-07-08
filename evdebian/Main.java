@@ -44,6 +44,9 @@ public class Main
 			if(args.length==1)
 				zip=new File(args[0]);
 			
+			
+			File outDeb=new File(zip.getParentFile(),zip.getName().replace(".zip", ".deb"));
+			
 			File dPkg=new File("/tmp/endrov");
 			File dUsr=new File(dPkg,"usr");
 			File dEtc=new File(dPkg,"etc");
@@ -142,6 +145,8 @@ public class Main
 			pkgs.add(new DebPackage("libcommons-httpclient-java",new String[]{"commons-httpclient.jar"},new String[]{"commons-httpclient-3.0.1.jar"}));           
 			pkgs.add(new DebPackage("libcommons-logging-java",new String[]{"commons-logging.jar"},new String[]{"commons-logging-1.0.4.jar"}));                  
 
+			pkgs.add(DebPackage.recommends("ffmpeg"));
+			
 			//Unused
 			//pkgs.add(new DebPackage("lib-jline-java",new String[]{"jline-0.9.94.jar"}));
 			//pkgs.add(new DebPackage("libjsch-java",new String[]{"jsch-0.1.34.jar"}));
@@ -197,18 +202,30 @@ libjboss-webservices-java
 			System.out.println("Writing control file");
 			Scanner scanner = new Scanner(EvFileUtil.readFile(new File(dEndrov,"endrov/ev/version.txt")));
 			String version=scanner.nextLine();
-			String depString=makeDeps(pkgs);
 			int totalSize=(int)Math.ceil((recursiveSize(dUsr)+100000)/1000000.0);
 			
-			EvFileUtil.writeFile(new File(dControl,"control"), 
-					EvFileUtil.readFile(new File("debiancontrol-TEMPLATE")).
-					replace("DEPENDENCIES", depString).
-					replace("VERSION",version).
-					replace("SIZE",""+totalSize));
+			
+			String controlFile=EvFileUtil.readFile(new File("debiancontrol-TEMPLATE")).
+			replace("DEPENDENCIES", makeDeps(pkgs)).
+			replace("RECOMMENDS", makeRecommends(pkgs)).
+			replace("SUGGESTS", makeSuggests(pkgs)).
+			replace("VERSION",version).
+			replace("SIZE",""+totalSize);
+			System.out.println("--------------------------------------");
+			System.out.println(controlFile);
+			System.out.println("--------------------------------------");
+			EvFileUtil.writeFile(new File(dControl,"control"), controlFile);
 			
 			System.out.println("Debianizing");
+			if(outDeb.exists())
+				outDeb.delete();
 			runUntilQuit(new String[]{"/usr/bin/dpkg-deb","-b","/tmp/endrov"});
 			//dpkg-deb -b endrov
+			
+			runUntilQuit(new String[]{"/bin/mv","/tmp/endrov.deb",outDeb.toString()});
+			//boolean moveOk=new File("/tmp/endrov.deb").renameTo(outDeb);
+			System.out.println(outDeb);
+			
 			
 			System.out.println("Done");
 			}
@@ -251,7 +268,38 @@ libjboss-webservices-java
 		StringBuffer sb=new StringBuffer();
 		boolean first=true;
 		for(DebPackage p:pkgs)
-			if(p.name!=null)
+			if(p.name!=null && p.isDepends)
+				{
+				if(!first)
+					sb.append(",");
+				sb.append(p.name);
+				first=false;
+				}
+		return sb.toString();
+		}
+	
+	public static String makeSuggests(List<DebPackage> pkgs) throws Exception
+		{
+		StringBuffer sb=new StringBuffer();
+		boolean first=true;
+		for(DebPackage p:pkgs)
+			if(p.name!=null && p.isSuggestion)
+				{
+				if(!first)
+					sb.append(",");
+				sb.append(p.name);
+				first=false;
+				}
+		return sb.toString();
+		}
+	
+	
+	public static String makeRecommends(List<DebPackage> pkgs) throws Exception
+		{
+		StringBuffer sb=new StringBuffer();
+		boolean first=true;
+		for(DebPackage p:pkgs)
+			if(p.name!=null && p.isRecommended)
 				{
 				if(!first)
 					sb.append(",");
