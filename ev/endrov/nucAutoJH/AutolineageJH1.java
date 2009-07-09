@@ -149,6 +149,29 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				//can make it faster
 				
 				
+				/**
+				 * Lindebergs theory of finding kernel size
+				 * http://www.wisdom.weizmann.ac.il/~deniss/vision_spring04/files/mean_shift/mean_shift.ppt
+				 * gaussian pyramids?
+				 * can use for radius selection? O(n) for each level, need not test many. can calc approximate L-function from points
+				 * 
+				 * Lindeberg: ``Scale-space'', In: Encyclopedia of Computer Science and Engineering (Benjamin Wah, ed), John Wiley and Sons, Volume~IV, pages 2495--2504, Hoboken, New Jersey, Jan 2009. dx.doi.org/10.1002/9780470050118.ecse609 (Sep 2008) (PDF 1.2 Mb) 
+				 * ftp://ftp.nada.kth.se/CVAP/reports/Lin08-EncCompSci.pdf
+				 * 
+				 * Lindeberg
+				 * http://www.nada.kth.se/~tony/earlyvision.html
+				 * 
+				 */
+				
+				/**
+				 * http://en.wikipedia.org/wiki/Scale-invariant_feature_transform
+				 * also has equation for angle
+				 * 
+				 * www.ecs.syr.edu/faculty/lewalle/wavelets/mexhat.pdf 
+				 * doubling sigma is correct to approximate mexican hat
+				 * 
+				 * 
+				 */
 				//TODO
 				/**
 				 * 

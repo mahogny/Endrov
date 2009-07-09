@@ -1,4 +1,4 @@
-package endrov.unsortedImageFilters;
+package endrov.flowMeanshift;
 
 import java.io.File;
 import java.util.HashMap;
