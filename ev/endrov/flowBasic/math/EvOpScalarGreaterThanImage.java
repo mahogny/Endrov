@@ -1,4 +1,4 @@
-package endrov.flowBasic.logic;
+package endrov.flowBasic.math;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;
@@ -9,11 +9,11 @@ import endrov.imageset.EvPixelsType;
  * 
  * TODO what type to output? type parameter?
  */
-public class EvOpImageGreaterThanScalar extends EvOpSlice1
+public class EvOpScalarGreaterThanImage extends EvOpSlice1
 	{
 	private Number tb;
 	
-	public EvOpImageGreaterThanScalar(Number b)
+	public EvOpScalarGreaterThanImage(Number b)
 		{
 		this.tb = b;
 		}
@@ -40,7 +40,7 @@ public class EvOpImageGreaterThanScalar extends EvOpSlice1
 			int[] outPixels=out.getArrayInt();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=bool2int(aPixels[i]>b);
+				outPixels[i]=bool2int(b>aPixels[i]);
 			return out;
 			}
 		else
@@ -56,7 +56,7 @@ public class EvOpImageGreaterThanScalar extends EvOpSlice1
 			int[] outPixels=out.getArrayInt();
 			
 			for(int i=0;i<aPixels.length;i++)
-				outPixels[i]=bool2int(aPixels[i]>b);
+				outPixels[i]=bool2int(b>aPixels[i]);
 			return out;
 			}
 			

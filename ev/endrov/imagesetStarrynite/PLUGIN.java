@@ -1,11 +1,11 @@
-package endrov.imagesetOST;
+package endrov.imagesetStarrynite;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "OST fileformat";
+		return "Starrynite Imageset";
 		}
 
 	public String getAuthor()
@@ -30,7 +30,8 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{EvIODataOST.class,EvIODataXML.class};
+		return new Class[]{EvIODataStarrynite.class
+				};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

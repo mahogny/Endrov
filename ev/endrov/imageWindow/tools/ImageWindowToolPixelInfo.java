@@ -68,14 +68,18 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 			ConsoleWindow.openConsole();
 			
 			EvImage image=stack.get(slice);
-			if(image!=null && px<stack.getWidth() && py<stack.getHeight() && px>=0 && py>=0)
+			if(image!=null)
 				{
-				EvPixels pix=image.getPixels().getReadOnly(EvPixelsType.DOUBLE);
-				EvLog.printLog("Pixel ("+px+" "+py+") Intensity: "+pix.getArrayDouble()[pix.getPixelIndex(px, py)]);
+				if(px<stack.getWidth() && py<stack.getHeight() && px>=0 && py>=0)
+					{
+					EvPixels pix=image.getPixels().getReadOnly(EvPixelsType.DOUBLE);
+					EvLog.printLog("Pixel ("+px+" "+py+") Intensity: "+pix.getArrayDouble()[pix.getPixelIndex(px, py)]);
+					}
+				else
+					EvLog.printLog("Outside image, world coordinates: "+mpos+" image coordinates: "+ppos);
 				}
 			else
-				EvLog.printLog("Outside image");
-				
+				EvLog.printLog("No image at this Z");
 			}
 		}
 	public void mousePressed(MouseEvent e) {}

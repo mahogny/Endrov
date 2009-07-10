@@ -75,7 +75,7 @@ public class IntExpTissue
 
 		//Virtual nuc for AP
 		for(int i=0;i<numSubDivX;i++)
-			lin.getNucCreate("_slice"+i);
+			lin.getCreateNuc("_slice"+i);
 		
 		
 		
@@ -222,8 +222,8 @@ public class IntExpTissue
 				avg/=expTime;
 				
 		
-				NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
-				NucExp exp=nuc.getExpCreate(expName);
+				NucLineage.Nuc nuc=lin.getCreateNuc("_slice"+i);
+				NucExp exp=nuc.getCreateExp(expName);
 				exp.level.put(frame, avg);
 				
 				

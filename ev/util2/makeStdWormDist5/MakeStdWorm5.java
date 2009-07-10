@@ -76,7 +76,7 @@ public class MakeStdWorm5
 		for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
 			{
 			NucLineage.Nuc nuc=e.getValue();
-			NucLineage.Nuc newnuc=newlin.getNucCreate(e.getKey());
+			NucLineage.Nuc newnuc=newlin.getCreateNuc(e.getKey());
 			for(String s:nuc.child)
 				newnuc.child.add(s);
 			newnuc.parent=nuc.parent;
@@ -154,7 +154,7 @@ public class MakeStdWorm5
 			for(Map.Entry<String, NucLineage.Nuc> e:lin.nuc.entrySet())
 				{
 				NucLineage.Nuc nuc=e.getValue();
-				NucLineage.Nuc newnuc=newlin.getNucCreate(e.getKey());
+				NucLineage.Nuc newnuc=newlin.getCreateNuc(e.getKey());
 				NucStats.NucStatsOne one=nucstats.nuc.get(e.getKey());
 				EvDecimal thisDur;
 				EvDecimal thisFirstFrame=nuc.getFirstFrame();
@@ -244,7 +244,7 @@ public class MakeStdWorm5
 		{
 		for(String nucName:bf.lininfo.get(lin).untransformed.keySet())
 			{
-			NucLineage.NucPos npos=newlin.getNucCreate(nucName).getPosCreate(curframe);
+			NucLineage.NucPos npos=newlin.getCreateNuc(nucName).getCreatePos(curframe);
 			npos.setPosCopy(bf.lininfo.get(lin).transformed.get(nucName));
 			npos.r=bf.lininfo.get(lin).untransformedR.get(nucName);
 			}

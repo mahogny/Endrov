@@ -330,7 +330,7 @@ public class NewIntExp
 
 			// Virtual nuc for AP
 			for (int i = 0; i<numSubDiv; i++)
-				lin.getNucCreate("_slice"+i);
+				lin.getCreateNuc("_slice"+i);
 			}
 
 		public void integrateStackStart(NewIntExp integrator)
@@ -427,8 +427,8 @@ public class NewIntExp
 						-bg.get(integrator.frame);
 				avg /= integrator.expTime;
 
-				NucLineage.Nuc nuc = lin.getNucCreate("_slice"+i);
-				NucExp exp = nuc.getExpCreate(integrator.expName);
+				NucLineage.Nuc nuc = lin.getCreateNuc("_slice"+i);
+				NucExp exp = nuc.getCreateExp(integrator.expName);
 				exp.level.put(integrator.frame, avg);
 
 				}
@@ -441,7 +441,7 @@ public class NewIntExp
 			// Set override start and end times
 			for (int i = 0; i<numSubDiv; i++)
 				{
-				NucLineage.Nuc nuc = lin.getNucCreate("_slice"+i);
+				NucLineage.Nuc nuc = lin.getCreateNuc("_slice"+i);
 				nuc.overrideStart = integrator.ch.imageLoader.firstKey();
 				nuc.overrideEnd = integrator.ch.imageLoader.lastKey();
 				}
@@ -638,7 +638,7 @@ public class NewIntExp
 					double avg = expLevel.get(nucName)/vol-bg.get(integrator.frame);
 					avg /= integrator.expTime;
 					// System.out.println(nucName+" "+avg);
-					NucExp exp = lin.nuc.get(nucName).getExpCreate(integrator.expName);
+					NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
 					if (lin.nuc.get(nucName).pos.lastKey().greaterEqual(integrator.frame)
 							&&lin.nuc.get(nucName).pos.firstKey().lessEqual(integrator.frame))
 						exp.level.put(integrator.frame, avg);
@@ -698,7 +698,7 @@ public class NewIntExp
 			for (int i = 0; i<numSubDiv; i++)
 				for (int j = 0; j<numSubDiv; j++)
 					for (int k = 0; k<numSubDiv; k++)
-						lin.getNucCreate("xyz_"+i+"_"+j+"_"+k);
+						lin.getCreateNuc("xyz_"+i+"_"+j+"_"+k);
 
 			integrator.imset.metaObject.remove("indX");
 			integrator.imset.metaObject.remove("indY");
@@ -797,7 +797,7 @@ public class NewIntExp
 				indZ.setPixelsReference(pZ);
 
 				chIndexX.chBinning = chIndexY.chBinning = chIndexZ.chBinning = 4;
-				stackX.binning = stackY.binning = stackZ.binning = 4;
+				//stackX.binning = stackY.binning = stackZ.binning = 4;
 
 				int[] lineX = pX.getArrayInt();
 				int[] lineY = pY.getArrayInt();
@@ -876,7 +876,7 @@ public class NewIntExp
 						avg /= integrator.expTime;
 
 						NucLineage.Nuc nuc = lin.nuc.get("xyz_"+ax+"_"+ay+"_"+az);
-						NucExp exp = nuc.getExpCreate(integrator.expName);
+						NucExp exp = nuc.getCreateExp(integrator.expName);
 						exp.level.put(integrator.frame, avg);
 						// System.out.println(exp.level);
 						}
@@ -918,8 +918,8 @@ public class NewIntExp
 					// EvPixels p=new EvPixels(EvPixelsType.TYPE_DOUBLE, numSubDiv,
 					// numSubDiv);
 					evim.setPixelsReference(p);
-					stack.resX = stack.resY = 1;
-					stack.binning = binning;
+					stack.resX = stack.resY = 1.0/binning;
+					//stack.binning = binning;
 					int[] line = p.getArrayInt();
 					// double[] line=p.getArrayDouble();
 					for (int ay = 0; ay<numSubDiv; ay++)

@@ -16,17 +16,18 @@ import endrov.imageset.AnyEvImage;
  */
 public class FlowUnitAnd extends FlowUnitLogicBinop
 	{
-	private static final String metaType="add";
+	private static final String metaType="and";
+	private static final String showName="&";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Logic","&",metaType,FlowUnitAnd.class, null,"And"));
+		Flow.addUnitType(new FlowUnitDeclaration("Logic",showName,metaType,FlowUnitAnd.class, null,"And"));
 		}
 	
 	public FlowUnitAnd()
 		{
-		super("A & B",metaType);
+		super(showName,metaType);
 		}
 	
 	

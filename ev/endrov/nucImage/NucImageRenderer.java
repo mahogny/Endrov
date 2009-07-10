@@ -231,7 +231,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(modifyingNucName==null)
 			return null;
 		else
-			return modifyingNucName.fst().getNucCreate(modifyingNucName.snd());
+			return modifyingNucName.fst().getCreateNuc(modifyingNucName.snd());
 		}
 	
 	public NucLineage getModifyingLineage()

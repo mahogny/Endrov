@@ -10,8 +10,8 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
 import endrov.flowAveraging.EvOpMovingAverage;
 import endrov.flowAveraging.EvOpMovingSum;
-import endrov.flowBasic.logic.EvOpImageGreaterThanScalar;
 import endrov.flowBasic.math.EvOpImageAxpy;
+import endrov.flowBasic.math.EvOpImageGreaterThanScalar;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowProjection.EvOpAverageZ;
 import endrov.imageset.EvChannel;
@@ -373,10 +373,10 @@ public class AutoLineage
 				
 				double r=Math.pow(vol*3/(4*Math.PI),1.0/3.0);
 				
-				NucLineage.Nuc nuc=lin.getNucCreate(""+frame+":"+i);
+				NucLineage.Nuc nuc=lin.getCreateNuc(""+frame+":"+i);
 				
 				
-				NucLineage.NucPos pos=nuc.getPosCreate(frame);
+				NucLineage.NucPos pos=nuc.getCreatePos(frame);
 				
 				//Problem: uneven distances. Unsure of displacement 
 				Vector3d center=SpotCluster.calculateCenter(c);

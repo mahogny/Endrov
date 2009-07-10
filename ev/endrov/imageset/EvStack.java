@@ -35,7 +35,7 @@ public class EvStack implements AnyEvImage
 	/**
 	 * Binning. 4 would mean the image is 4 times smaller than what it depicts.
 	 */
-	public double binning;
+	//public double binning;
 	
 	/**
 	 * Displacement, [non-binned pixels]
@@ -54,11 +54,13 @@ public class EvStack implements AnyEvImage
 	 */
 	public double getResbinX()
 		{
-		return resX/binning;
+//		return resX/binning;
+		return resX;
 		}
 	public double getResbinY()
 		{
-		return resY/binning;
+//		return resY/binning;
+		return resY;
 		}
 
 	public EvDecimal getResbinZinverted()
@@ -85,13 +87,17 @@ public class EvStack implements AnyEvImage
 		return resZ;
 		}
 	
-	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
-	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
+//	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
+//	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
+	public double transformImageWorldX(double c){return (c+dispX)/resX;}
+	public double transformImageWorldY(double c){return (c+dispY)/resY;}			
 	public double transformImageWorldZ(double c){return c*getResbinZinverted().doubleValue()+dispZ.doubleValue();}
 	
 	
-	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
-	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
+//	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
+//	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
+	public double transformWorldImageX(double c){return (c*resX-dispX);}
+	public double transformWorldImageY(double c){return (c*resY-dispY);}
 	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/getResbinZinverted().doubleValue();}
 	
 	public double scaleImageWorldX(double c){return c/getResbinX();}
@@ -132,7 +138,7 @@ public class EvStack implements AnyEvImage
 		resX=o.resX;
 		resY=o.resY;
 		resZ=o.getResbinZinverted();
-		binning=o.binning;
+		//binning=o.binning;
 		dispX=o.dispX;
 		dispY=o.dispY;
 		dispZ=o.dispZ;
@@ -150,7 +156,7 @@ public class EvStack implements AnyEvImage
 		dispX=ref.dispX;
 		dispY=ref.dispY;
 		dispZ=ref.dispZ;
-		binning=ref.binning;
+		//binning=ref.binning;
 		for(int i=0;i<d;i++)
 			{
 			EvImage evim=new EvImage();
@@ -445,7 +451,7 @@ public class EvStack implements AnyEvImage
 		{
 		resX=1;
 		resY=1;
-		binning=1;
+		//binning=1;
 		resZ=EvDecimal.ONE;
 		}
 	

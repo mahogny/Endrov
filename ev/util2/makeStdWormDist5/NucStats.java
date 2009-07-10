@@ -317,7 +317,7 @@ public class NucStats
 		{
 		NucLineage lin=new NucLineage();
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
-			lin.getNucCreate(e.getKey());
+			lin.getCreateNuc(e.getKey());
 		for(Map.Entry<String, NucStatsOne> e:nuc.entrySet())
 			if(e.getValue().parent!=null && lin.nuc.get(e.getKey()).parent==null)
 				{
@@ -363,7 +363,7 @@ public class NucStats
 			if(e.getValue().curpos!=null && e.getValue().existAt(frame) /*&& !e.getValue().neigh.isEmpty()*/)
 				{
 				NucLineage.Nuc nuc=lin.nuc.get(e.getKey());
-				NucPos pos=nuc.getPosCreate(frame);
+				NucPos pos=nuc.getCreatePos(frame);
 				
 				NucStatsOne one=e.getValue();
 				pos.x=one.curpos.x;
@@ -388,7 +388,7 @@ public class NucStats
 				
 				if(one.curposAvg[0].getCount()>1)
 					{
-					NucExp expVarR=nuc.getExpCreate("posMeanDevR");
+					NucExp expVarR=nuc.getCreateExp("posMeanDevR");
 //					double var=one.curposAvg[0].getVar()+one.curposAvg[1].getVar()+one.curposAvg[2].getVar();
 					//Cannot add up!?
 					expVarR.level.put(frame, Math.sqrt(one.raverror));
@@ -403,7 +403,7 @@ public class NucStats
 						divstat.count(i.doubleValue());
 					if(divstat.count>1)
 						{
-						NucExp expVarDiv=nuc.getExpCreate("divDev");
+						NucExp expVarDiv=nuc.getCreateExp("divDev");
 						expVarDiv.level.put(EvDecimal.ZERO, Math.sqrt(divstat.getVar())/Math.sqrt(divstat.count));
 						}
 					}

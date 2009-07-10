@@ -520,40 +520,57 @@ public class ImageWindow extends BasicWindow
 	/** 
 	 * Scale screen vector to world vector 
 	 */
-	public double scaleS2w(double s) {return s/(getImageset().resY*getZoom());}
+	public double scaleS2w(double s) {return s/(getStrangeResX()*getZoom());}
 	
 	/**
 	 * Scale world to screen vector 
 	 */
-	public double scaleW2s(double w) {return w*getImageset().resY*getZoom();}
+	public double scaleW2s(double w) {return w*getStrangeResX()*getZoom();}
 
+
+	
+	private double getStrangeResX()
+		{
+		return getImageset().resX;
+		}
+	private double getStrangeResY()
+		{
+		return getImageset().resY;
+		}
+	
+	
 	
 	//New functions, should replace the ones above at some point
 
 	/** Transform world coordinate to screen coordinate */
+	
 	public Vector2d transformW2S(Vector2d u)
 		{
-		return imagePanel.transformI2S(new Vector2d(u.x*getImageset().resX,u.y*getImageset().resY));
+		return imagePanel.transformI2S(new Vector2d(u.x*getStrangeResX(),u.y*getStrangeResY()));
 		}
+		
 	/** Transform screen coordinate to world coordinate */
+
 	public Vector2d transformS2W(Vector2d u)
 		{
 		Vector2d v=imagePanel.transformS2I(u);
-		return new Vector2d(v.x/getImageset().resX, v.y/getImageset().resY);
+		return new Vector2d(v.x/getStrangeResX(), v.y/getStrangeResY());
 		}
+		
 	
 	/** Convert world to screen Z coordinate */
-	//public double w2sz(double z) {return z*getImageset().resZ;}
+	public double w2sz(double z) {return z*getImageset().resZ;}
 	/** Convert world to screen Z coordinate */
-	//public double s2wz(double sz) {return sz/((double)getImageset().resZ);} 
+	public double s2wz(double sz) {return sz/((double)getImageset().resZ);} 
 
 	
 	//are these useful?
+	/*
 	public void transformOverlay(Graphics2D g)
 		{
 		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getImageset().resX;
-		double zoomBinningY=imagePanel.zoom*getImageset().resY;
+		double zoomBinningX=imagePanel.zoom*getStrangeResX();
+		double zoomBinningY=imagePanel.zoom*getStrangeResY();
 		g.translate(trans.x,trans.y);
 		g.scale(zoomBinningX,zoomBinningY);
 		g.rotate(imagePanel.rotation);
@@ -561,12 +578,13 @@ public class ImageWindow extends BasicWindow
 	public void untransformOverlay(Graphics2D g)
 		{
 		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getImageset().resX;
-		double zoomBinningY=imagePanel.zoom*getImageset().resY;
+		double zoomBinningX=imagePanel.zoom*getStrangeResX();
+		double zoomBinningY=imagePanel.zoom*getStrangeResY();
 		g.rotate(-imagePanel.rotation);
 		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
 		g.translate(-trans.x,-trans.y);
 		}
+	*/
 	
 	/**
 	 * Take current settings of sliders and apply it to image

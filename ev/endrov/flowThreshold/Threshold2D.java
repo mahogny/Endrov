@@ -1,7 +1,7 @@
 package endrov.flowThreshold;
 
 import endrov.flow.EvOpSlice1;
-import endrov.flowBasic.logic.EvOpImageGreaterThanScalar;
+import endrov.flowBasic.math.EvOpImageGreaterThanScalar;
 import endrov.imageset.EvPixels;
 
 /**

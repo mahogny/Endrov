@@ -201,7 +201,7 @@ public class IntExpCell
 				double avg=expLevel.get(nucName)/nucVol.get(nucName);
 				avg/=expTime;
 //				System.out.println(nucName+" "+avg);
-				NucExp exp=lin.nuc.get(nucName).getExpCreate(expName);
+				NucExp exp=lin.nuc.get(nucName).getCreateExp(expName);
 				if(lin.nuc.get(nucName).pos.lastKey().greaterEqual(frame) && 
 						lin.nuc.get(nucName).pos.firstKey().lessEqual(frame)) 
 					exp.level.put(frame,avg);

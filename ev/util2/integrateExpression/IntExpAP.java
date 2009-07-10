@@ -111,7 +111,7 @@ public class IntExpAP
 		
 		//Virtual nuc for AP
 		for(int i=0;i<numSubDiv;i++)
-			lin.getNucCreate("_slice"+i);
+			lin.getCreateNuc("_slice"+i);
 		
 		
 		
@@ -264,8 +264,8 @@ public class IntExpAP
 				double avg=(double)sliceExp[i]/(double)sliceVol[i];
 				avg/=expTime;
 		
-				NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
-				NucExp exp=nuc.getExpCreate(expName);
+				NucLineage.Nuc nuc=lin.getCreateNuc("_slice"+i);
+				NucExp exp=nuc.getCreateExp(expName);
 				exp.level.put(frame, avg);
 				
 				}
@@ -276,7 +276,7 @@ public class IntExpAP
 		//Set override start and end times
 		for(int i=0;i<numSubDiv;i++)
 			{
-			NucLineage.Nuc nuc=lin.getNucCreate("_slice"+i);
+			NucLineage.Nuc nuc=lin.getCreateNuc("_slice"+i);
 			nuc.overrideStart=ch.imageLoader.firstKey();
 			nuc.overrideEnd=ch.imageLoader.lastKey();
 			}

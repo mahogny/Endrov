@@ -164,8 +164,8 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				{
 				//New name for this nucleus => null
 				String nucName=lin.getUniqueNucName();
-				NucLineage.Nuc n=lin.getNucCreate(nucName);
-				NucLineage.NucPos pos=n.getPosCreate(w.frameControl.getFrame());
+				NucLineage.Nuc n=lin.getCreateNuc(nucName);
+				NucLineage.NucPos pos=n.getCreatePos(w.frameControl.getFrame());
 				pos.x=(x1+x2)/2;
 				pos.y=(y1+y2)/2;
 				pos.z=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
@@ -261,7 +261,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			if(n!=null && r.interpNuc.containsKey(useNuc))
 				{
 				NucLineage.NucInterp inter=r.interpNuc.get(useNuc);
-				NucLineage.NucPos pos=n.getPosCreate(curFramei); 
+				NucLineage.NucPos pos=n.getCreatePos(curFramei); 
 				pos.x=inter.pos.x;
 				pos.y=inter.pos.y;
 				pos.z=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
@@ -305,7 +305,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			{
 			//Create parent for selected nucleus/nuclei
 			String parentName=lin.getUniqueNucName();
-			NucLineage.Nuc parent=lin.getNucCreate(parentName);
+			NucLineage.Nuc parent=lin.getCreateNuc(parentName);
 			
 			double x=0,y=0,z=0,r=0;
 			int num=0;

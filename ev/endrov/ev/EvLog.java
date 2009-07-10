@@ -56,6 +56,12 @@ public abstract class EvLog
 			l.listenError(s,e);
 		}
 
+	public static void printError(Exception e)
+		{
+		printError(null,e);
+		}
+	
+	
 	/**
 	 * Log normal/expected message
 	 */

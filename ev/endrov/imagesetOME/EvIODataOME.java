@@ -129,7 +129,7 @@ public class EvIODataOME implements EvIOData
 			for(int frame=0;frame<numframe;frame++)
 				{
 				EvStack stack=new EvStack();
-				stack.binning=1;
+				//stack.binning=1;
 				stack.resX=1;
 				stack.resY=1;
 				stack.dispX=0;
