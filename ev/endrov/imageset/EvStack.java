@@ -38,8 +38,7 @@ public class EvStack implements AnyEvImage
 	//public double binning;
 	
 	/**
-	 * Displacement, [non-binned pixels]
-	 * TODO would simplify if they were in pixels
+	 * Displacement [pixels]
 	 */
 	public double dispX, dispY;
 

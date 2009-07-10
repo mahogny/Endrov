@@ -83,7 +83,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		EvContainer data=w.getImageset();
+		EvContainer data=w.getRootObject();
 		if(data!=null)
 			{
 			ChromaCountKJ a=getHoverAnnot(e);
@@ -164,7 +164,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 		}
 	public void keyPressed(KeyEvent e)
 		{
-		EvContainer data=w.getImageset();
+		EvContainer data=w.getRootObject();
 		System.out.println("kp "+e.getKeyChar()+" "+data);
 		if(data!=null)
 			{
@@ -190,7 +190,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			EvContainer data=w.getImageset();
+			EvContainer data=w.getRootObject();
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot);
 			activeAnnot=null;

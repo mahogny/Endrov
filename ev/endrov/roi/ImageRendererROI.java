@@ -44,7 +44,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 	public void draw(Graphics g)
 		{
 		handleList.clear();
-		for(EvObject ob:w.getImageset().metaObject.values())
+		for(EvObject ob:w.getRootObject().metaObject.values())
 			if(ob instanceof ROI)
 				drawROI(g, (ROI)ob);
 		if(drawROI!=null)

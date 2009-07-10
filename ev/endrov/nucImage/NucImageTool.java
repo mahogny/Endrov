@@ -11,10 +11,10 @@ import javax.vecmath.*;
 import javax.swing.*;
 
 import endrov.basicWindow.*;
+import endrov.data.EvContainer;
 import endrov.data.EvSelection;
 import endrov.ev.EvLog;
 import endrov.imageWindow.*;
-import endrov.imageset.Imageset;
 import endrov.keyBinding.KeyBinding;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucCommonUI;
@@ -61,8 +61,8 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		//JMenu setColor=NucCommonUI.makeSetColorMenu();
 		//menu.add(setColor);
 		
-		Imageset ims=w.getImageset();
-		final WeakReference<Imageset> wims=new WeakReference<Imageset>(ims);
+		EvContainer ims=w.getRootObject();
+		final WeakReference<EvContainer> wims=new WeakReference<EvContainer>(ims);
 		if(ims!=null)
 			for(Map.Entry<String, NucLineage> e:ims.getIdObjects(NucLineage.class).entrySet())
 				{
@@ -101,7 +101,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 	public void actionPerformed(ActionEvent e)
 		{
 		String id=e.getActionCommand();
-		setEditLin((NucLineage)w.getImageset().getMetaObject(id));
+		setEditLin((NucLineage)w.getRootObject().getMetaObject(id));
 		w.setTool(this);
 		}
 	

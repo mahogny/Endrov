@@ -137,7 +137,7 @@ public class ToolMakeLine implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			EvContainer data=w.getImageset();
+			EvContainer data=w.getRootObject();
 			renameObjectDialog(data, activeAnnot.ob);
 			activeAnnot=null;
 			}
@@ -251,7 +251,7 @@ public class ToolMakeLine implements ImageWindowTool
 			
 			if(!activeAnnot.isAdded)
 				{
-				w.getImageset().addMetaObject(activeAnnot.ob);
+				w.getRootObject().addMetaObject(activeAnnot.ob);
 				activeAnnot.isAdded=true;
 				}
 			
@@ -352,7 +352,7 @@ public class ToolMakeLine implements ImageWindowTool
 //		if(e.getX()<0 || e.getY()<0 || e.getX()>=w.
 		if(activeAnnot!=null)
 			{
-			EvContainer data=w.getImageset();
+			EvContainer data=w.getRootObject();
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot.ob);
 			System.out.println("mouse exited "+e.getX()+" "+e.getY());

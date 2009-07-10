@@ -10,8 +10,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.data.EvContainer;
 import endrov.imageWindow.*;
-import endrov.imageset.*;
 import endrov.util.EvDecimal;
 
 /**
@@ -54,11 +54,11 @@ public class FrameTimeImageTool implements ImageWindowTool
 		String frametimes=JOptionPane.showInputDialog("What is the current time?");
 		if(frametimes!=null)
 			{
-			Imageset rec=w.getImageset();
+			EvContainer rec=w.getRootObject();
 			for(FrameTime f:rec.getObjects(FrameTime.class))
 				{
 				EvDecimal frametime=new EvDecimal(frametimes);
-				f.add(w.frameControl.getFrame(), frametime);  //TODO bad bd, but maybe deprecate frametime?
+				f.add(w.frameControl.getFrame(), frametime); 
 				BasicWindow.updateWindows();
 				}
 			}

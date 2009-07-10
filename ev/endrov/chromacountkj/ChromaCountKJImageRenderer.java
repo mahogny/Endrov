@@ -20,7 +20,7 @@ public class ChromaCountKJImageRenderer implements ImageWindowRenderer
 	public Collection<ChromaCountKJ> getVisible()
 		{
 		//TODO: pick out
-		return ChromaCountKJ.getObjects(w.getImageset());
+		return ChromaCountKJ.getObjects(w.getRootObject());
 		}
 	
 
