@@ -54,7 +54,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public Collection<NucLineage> getVisibleLineages()
 		{
 		//TODO: pick out
-		return NucLineage.getLineages(w.getImageset());
+		return NucLineage.getLineages(w.getRootObject());
 		}
 	
 

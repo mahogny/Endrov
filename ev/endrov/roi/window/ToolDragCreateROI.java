@@ -12,10 +12,10 @@ import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.data.EvContainer;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageWindow.ImageWindowTool;
-import endrov.imageset.Imageset;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
@@ -100,7 +100,7 @@ public class ToolDragCreateROI implements ImageWindowTool
 		{
 		if(SwingUtilities.isLeftMouseButton(e) && active)
 			{
-			Imageset rec=w.getImageset();
+			EvContainer rec=w.getRootObject();
 			rec.addMetaObject(roi);
 			roi.openEditWindow();
 			active=false;

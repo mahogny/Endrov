@@ -15,6 +15,7 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.consoleWindow.*;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageWindow.ImagePanel.ImagePanelImage;
@@ -26,6 +27,7 @@ import endrov.keyBinding.*;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.SnapBackSlider;
+import endrov.util.SnapBackSlider.SnapChangeListener;
 
 /**
  * Image window - Displays imageset with overlays. Data can be edited with tools, filters can be applied.
@@ -260,7 +262,7 @@ public class ImageWindow extends BasicWindow
 	private boolean show3color=true;
 
 	//GUI components
-	private final JSlider sliderZoom=new JSlider(JSlider.VERTICAL, -10000,10000,-1000); //2^n	
+	private final SnapBackSlider sliderZoom2=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
 	//private final JSlider sliderRotate=new JSlider(JSlider.VERTICAL, -10000,10000,0); //2^n
 	private SnapBackSlider sliderRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
 
@@ -314,7 +316,9 @@ public class ImageWindow extends BasicWindow
 		imagePanel.addMouseListener(this);
 		imagePanel.addMouseMotionListener(this);
 		imagePanel.addMouseWheelListener(this);
-		sliderZoom.addChangeListener(chListenerNoInvalidate);
+		sliderZoom2.addSnapListener(new SnapChangeListener(){
+			public void slideChange(int change){zoom(change/50.0);}
+		});
 		//sliderRotate.addChangeListener(chListenerNoInvalidate);
 		miShowOverlay.addChangeListener(chListenerNoInvalidate);
 		bShow3colors.addActionListener(this);
@@ -345,7 +349,7 @@ public class ImageWindow extends BasicWindow
 		
 		JPanel zoomPanel=new JPanel(new BorderLayout());
 		zoomPanel.add(new JLabel(BasicIcon.iconLabelZoom), BorderLayout.NORTH);
-		zoomPanel.add(sliderZoom,BorderLayout.CENTER);
+		zoomPanel.add(sliderZoom2,BorderLayout.CENTER);
 		
 		JPanel rotatePanel=new JPanel(new BorderLayout());
 		rotatePanel.add(new JLabel(BasicIcon.iconLabelRotate), BorderLayout.NORTH);
@@ -483,15 +487,32 @@ public class ImageWindow extends BasicWindow
 		else
 			return im;
 		}
-	/** Get the zoom factor not including binning */
+	
+	/**
+	 * Get root object - were all objects to be displayed are located
+	 */
+	public EvContainer getRootObject()
+		{
+		Imageset im=getCurrentChannelWidget().comboChannel.getImageset();
+		if(im==null)
+			return new Imageset();
+		else
+			return im;
+		}
+	
+
+	/** Get the zoom factor n */
 	public double getZoom()
 		{
-		return Math.pow(2,sliderZoom.getValue()/1000.0);
+		return imagePanel.zoom;
 		}
+	
+	
 	/** Set the zoom factor not including the binning */
 	public void setZoom(double zoom)
 		{
-		sliderZoom.setValue((int)(1000*Math.log(zoom)/Math.log(2)));
+		imagePanel.zoom=zoom;
+		repaint();
 		}
 	/** Get rotation of image, in radians */
 	public double getRotation()
@@ -516,78 +537,6 @@ public class ImageWindow extends BasicWindow
 
 
 	
-
-	private double getStrangeResX()
-		{
-		return getImageset().resX;
-		}
-	private double getStrangeResY()
-		{
-		return getImageset().resY;
-		}
-	private double getStrangeResZ()
-		{
-		return getImageset().resZ;
-		}
-	
-	
-	
-	
-	/** 
-	 * Scale screen vector to world vector 
-	 */
-	public double scaleS2w(double s) {return s/(getStrangeResX()*getZoom());}
-	
-	/**
-	 * Scale world to screen vector 
-	 */
-	public double scaleW2s(double w) {return w*getStrangeResX()*getZoom();}
-
-
-	
-	//New functions, should replace the ones above at some point
-
-	/** Transform world coordinate to screen coordinate */
-	public Vector2d transformW2S(Vector2d u)
-		{
-		return imagePanel.transformI2S(new Vector2d(u.x*getStrangeResX(),u.y*getStrangeResY()));
-		}
-		
-	/** Transform screen coordinate to world coordinate */
-	public Vector2d transformS2W(Vector2d u)
-		{
-		Vector2d v=imagePanel.transformS2I(u);
-		return new Vector2d(v.x/getStrangeResX(), v.y/getStrangeResY());
-		}
-		
-	
-	/** Convert world to screen Z coordinate */
-	public double w2sz(double z) {return z*getStrangeResZ();}
-	/** Convert world to screen Z coordinate */
-	public double s2wz(double sz) {return sz/((double)getStrangeResZ());} 
-
-	
-	//are these useful?
-	/*
-	public void transformOverlay(Graphics2D g)
-		{
-		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getStrangeResX();
-		double zoomBinningY=imagePanel.zoom*getStrangeResY();
-		g.translate(trans.x,trans.y);
-		g.scale(zoomBinningX,zoomBinningY);
-		g.rotate(imagePanel.rotation);
-		}
-	public void untransformOverlay(Graphics2D g)
-		{
-		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
-		double zoomBinningX=imagePanel.zoom*getStrangeResX();
-		double zoomBinningY=imagePanel.zoom*getStrangeResY();
-		g.rotate(-imagePanel.rotation);
-		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
-		g.translate(-trans.x,-trans.y);
-		}
-	*/
 	
 	/**
 	 * Take current settings of sliders and apply it to image
@@ -649,10 +598,6 @@ public class ImageWindow extends BasicWindow
 //		catch (Exception e)			{			e.printStackTrace();			}
 		
 		
-		//Copy settings into image panel
-		imagePanel.rotation=getRotation();
-		imagePanel.zoom=getZoom();
-		
 		//Check if recenter needed
 		boolean zoomToFit=false;
 		Imageset rec=getImageset();
@@ -669,7 +614,6 @@ public class ImageWindow extends BasicWindow
 		if(zoomToFit)
 			{
 			imagePanel.zoomToFit();
-			setZoom(imagePanel.zoom);
 			}
 			
 		//Update window title
@@ -746,7 +690,6 @@ public class ImageWindow extends BasicWindow
 		else if(e.getSource()==miZoomToFit)
 			{
 			imagePanel.zoomToFit();
-			setZoom(imagePanel.zoom);
 			}
 		else if(e.getSource()==miSliceInfo)
 			{
@@ -951,11 +894,17 @@ public class ImageWindow extends BasicWindow
 		{
 		//Self-note: linux machine at home (mahogny) uses UNIT_SCROLL
 		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
-			sliderZoom.setValue(sliderZoom.getValue()+e.getUnitsToScroll()*10);
+			zoom(e.getUnitsToScroll()/5.0);
 		else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
-			sliderZoom.setValue(sliderZoom.getValue()+e.getUnitsToScroll()*2);
+			zoom(e.getUnitsToScroll()*2);
 		}
 
+	
+	public void zoom(double val)
+		{
+		imagePanel.zoom*=Math.pow(10,val/10);
+		repaint();
+		}
 	
 	public void loadedFile(EvData data)
 		{
@@ -972,6 +921,85 @@ public class ImageWindow extends BasicWindow
 		System.out.println("removing image window");
 		}
 		
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//zoom must be able to move in another interval. use snap zoom
+	
+	
+	/** 
+	 * Scale screen vector to world vector 
+	 */
+	public double scaleS2w(double s) {return imagePanel.scaleS2w(s);}
+	
+	/**
+	 * Scale world to screen vector 
+	 */
+	public double scaleW2s(double w) {return imagePanel.scaleW2s(w);}
+
+
+	
+	//New functions, should replace the ones above at some point
+
+	/** Transform world coordinate to screen coordinate */
+	public Vector2d transformW2S(Vector2d u)
+		{
+		return imagePanel.transformW2S(u);
+		}
+		
+	/** Transform screen coordinate to world coordinate */
+	public Vector2d transformS2W(Vector2d u)
+		{
+		return imagePanel.transformS2W(u);
+		}
+		
+	
+	/** Convert world to screen Z coordinate */
+	public double w2sz(double z) {return z;} 
+	/** Convert world to screen Z coordinate */
+	public double s2wz(double sz) {return sz;} 
+
+	
+	//are these useful?
+	/*
+	public void transformOverlay(Graphics2D g)
+		{
+		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
+		double zoomBinningX=imagePanel.zoom*getStrangeResX();
+		double zoomBinningY=imagePanel.zoom*getStrangeResY();
+		g.translate(trans.x,trans.y);
+		g.scale(zoomBinningX,zoomBinningY);
+		g.rotate(imagePanel.rotation);
+		}
+	public void untransformOverlay(Graphics2D g)
+		{
+		Vector2d trans=imagePanel.transformI2S(new Vector2d(0,0));
+		double zoomBinningX=imagePanel.zoom*getStrangeResX();
+		double zoomBinningY=imagePanel.zoom*getStrangeResY();
+		g.rotate(-imagePanel.rotation);
+		g.scale(1.0/zoomBinningX, 1.0/zoomBinningY);
+		g.translate(-trans.x,-trans.y);
+		}
+	*/
+	
+	
 	
 	}
 

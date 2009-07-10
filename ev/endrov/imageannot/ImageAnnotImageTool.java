@@ -76,7 +76,7 @@ public class ImageAnnotImageTool implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
-		EvContainer data=w.getImageset();
+		EvContainer data=w.getRootObject();
 		if(data!=null)
 			{
 			ImageAnnot a=getHoverAnnot(e);
@@ -148,7 +148,7 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			EvContainer data=w.getImageset();
+			EvContainer data=w.getRootObject();
 			if(data!=null)
 				data.removeMetaObjectByValue(activeAnnot);
 			activeAnnot=null;

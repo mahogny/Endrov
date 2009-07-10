@@ -6,8 +6,6 @@ import java.awt.*;
 
 import javax.swing.*;
 import javax.vecmath.Vector2d;
-import util2.wormbase.GetWormbaseLineage;
-
 import endrov.ev.*;
 //import endrov.filterBasic.ContrastBrightnessOp;
 import endrov.imageset.*;
@@ -105,26 +103,19 @@ public class ImagePanel extends JPanel
 			loadImage();
 			if(bufi!=null)
 				{
-//				int w=(int)(bufi.getWidth()*stack.binning);
-	//			int h=(int)(bufi.getHeight()*stack.binning);
 				int w=(int)(bufi.getWidth());
 				int h=(int)(bufi.getHeight());
 							
-				
-				
 				//Adjust zoom
 				double zoom1=p.getWidth()/(double)w;
 				double zoom2=p.getHeight()/(double)h;
-				if(zoom1<zoom2)
-					p.zoom=zoom1;
-				else
-					p.zoom=zoom2;
+				p.zoom=Math.min(zoom1,zoom2);
 
 				//Place camera in the middle
-				Vector2d mid=p.transformI2S(new Vector2d(w/2,h/2));
+				Vector2d mid=transformI2S(p,new Vector2d(w/2,h/2));
 				mid.sub(new Vector2d(p.getWidth()/2,p.getHeight()/2));
 				p.transX-=(int)mid.x/p.zoom;
-				p.transY-=(int)mid.y/p.zoom; //TODO change order of zoom and trans
+				p.transY-=(int)mid.y/p.zoom;
 				}
 			}
 		
@@ -134,23 +125,61 @@ public class ImagePanel extends JPanel
 			if(bufi!=null)
 				{
 				//Calculate translation and zoom of image
-				Vector2d trans=p.transformI2S(new Vector2d(stack.dispX, stack.dispY));
+				Vector2d trans=transformI2S(p,new Vector2d(stack.dispX, stack.dispY));
 
+				
+				double scaleX=p.zoom/stack.resX;
+				double scaleY=p.zoom/stack.resY;
+				
 				g2.translate(trans.x,trans.y);
-				g2.scale(p.zoom,p.zoom);   //TODO change order of zoom and trans
-//				g2.scale(stack.binning,stack.binning); 
+				g2.scale(scaleX,scaleY);  
 				g2.rotate(p.rotation);
-
-				//TODO deprecate binning? combine into res?
-				
 				g2.drawImage(bufi, null, 0, 0);
-				
 				g2.rotate(-p.rotation);
-//				g2.scale(1/stack.binning,1/stack.binning); 
-				g2.scale(1/p.zoom,1/p.zoom);  //TODO change order of zoom and trans
+				g2.scale(1/scaleX,1/scaleY); 
 				g2.translate(-trans.x,-trans.y);
+				
+				//Reference area. This is what the transform decides on; the image above should be in it
+				/*
+				g2.setColor(Color.GREEN); //No displacement
+				Vector2d u1=transformI2S(p,new Vector2d(0,0));
+				Vector2d u2=transformI2S(p,new Vector2d(bufi.getWidth(),0));
+				Vector2d u3=transformI2S(p,new Vector2d(0,bufi.getHeight()));
+				Vector2d u4=transformI2S(p,new Vector2d(bufi.getWidth(),bufi.getHeight()));
+				g2.drawLine((int)u1.x, (int)u1.y, (int)u2.x, (int)u2.y);
+				g2.drawLine((int)u3.x, (int)u3.y, (int)u4.x, (int)u4.y);
+
+				g2.setColor(Color.RED); //with displacement
+				Vector2d v1=transformI2S(p,new Vector2d(stack.dispX,stack.dispY));
+				Vector2d v2=transformI2S(p,new Vector2d(bufi.getWidth()+stack.dispX,stack.dispY));
+				Vector2d v3=transformI2S(p,new Vector2d(0,bufi.getHeight()+stack.dispY));
+				Vector2d v4=transformI2S(p,new Vector2d(bufi.getWidth()+stack.dispX,bufi.getHeight()+stack.dispY));
+				g2.drawLine((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y);
+				g2.drawLine((int)v3.x, (int)v3.y, (int)v4.x, (int)v4.y);
+*/
 				} 
 			}
+		
+		
+
+
+		/** Convert image coordinate to screen coordinate (image scaled by binning) */
+		//Problem: should now be stack specific! currently ignores binning as stated above
+		public Vector2d transformI2S(ImagePanel p, Vector2d u)
+			{
+			return p.transformW2S(new Vector2d(stack.transformImageWorldX(u.x),stack.transformImageWorldY(u.y)));
+			}
+		
+		
+		
+		/** Convert screen coordinate to image coordinate (image scaled by binning) */
+		//Problem: should now be stack specific!
+		public Vector2d transformS2I(ImagePanel p, Vector2d u)
+			{
+			Vector2d v=p.transformS2W(u);
+			return new Vector2d(stack.transformWorldImageX(v.x),stack.transformWorldImageY(v.y));
+			}
+		
 		
 		}
 	
@@ -232,6 +261,9 @@ public class ImagePanel extends JPanel
 				}
 			g.drawImage(temporaryTotal,0,0,null);
 			}
+		
+		
+		
 		}
 
 	/**
@@ -241,44 +273,11 @@ public class ImagePanel extends JPanel
 	 */
 	public void pan(double dx, double dy)
 		{
-		transX+=(double)dx/zoom;  //TODO change order of zoom and trans
-		transY+=(double)dy/zoom;
+		transX+=dx/zoom;
+		transY+=dy/zoom;
 		}
 
 
-	
-	/** Convert image coordinate to screen coordinate (image scaled by binning) */
-	//Problem: should now be stack specific! currently ignores binning as stated above
-	public Vector2d transformI2S(Vector2d u)
-		{
-		Vector2d v=new Vector2d(u);
-		Matrix2d rotmat=new Matrix2d();
-		rotmat.rot(rotation);
-		rotmat.transform(v);
-		
-		
-		v.add(new Vector2d(transX,transY));  //TODO change order of zoom and trans
-		v.scale(zoom);
-		v.add(new Vector2d(getWidth()/2.0, getHeight()/2.0));
-		return v;
-		}
-	
-	
-	
-	/** Convert screen coordinate to image coordinate (image scaled by binning) */
-	//Problem: should now be stack specific!
-	public Vector2d transformS2I(Vector2d u)
-		{
-		Vector2d v=new Vector2d(u);
-		v.add(new Vector2d(-getWidth()/2.0, -getHeight()/2.0));
-		v.scale(1.0/zoom);
-		v.add(new Vector2d(-transX,-transY));  //TODO change order of zoom and trans
-		
-		Matrix2d rotmat=new Matrix2d();
-		rotmat.rot(-rotation);
-		rotmat.transform(v);
-		return v;
-		}
 	
 	
 	/**
@@ -291,15 +290,18 @@ public class ImagePanel extends JPanel
 			images.get(0).zoomToFit(this);
 		repaint();
 		}
+
 	
-	
+	/**
+	 * Rotate camera by given angle, with center point in the middle of the screen
+	 */
 	public void rotateCamera(double angle)
 		{
 		//Where is the middle of the screen now?
-		Vector2d v1=transformS2I(new Vector2d(getWidth()/2,getHeight()/2)); 
+		Vector2d v1=transformS2W(new Vector2d(getWidth()/2,getHeight()/2)); 
 		rotation+=angle;
 		//Where is it after rotation?
-		v1=transformI2S(v1); 
+		v1=transformW2S(v1); 
 		//How much has it moved?
 		Vector2d v2=new Vector2d(getWidth()/2,getHeight()/2);
 		v2.sub(v1);
@@ -308,6 +310,52 @@ public class ImagePanel extends JPanel
 		repaint();
 		}
 
+	
+	/** 
+	 * Scale screen vector to world vector 
+	 */
+	public double scaleS2w(double s) {return s/zoom;}
+	
+	/**
+	 * Scale world to screen vector 
+	 */
+	public double scaleW2s(double w) {return w*zoom;}
+
+	
+	
+	
+	
+	
+	/**
+	 * Transform world coordinate to screen coordinate 
+	 */
+	public Vector2d transformW2S(Vector2d u)
+		{
+		Vector2d v=new Vector2d(u);
+		Matrix2d rotmat=new Matrix2d();
+		rotmat.rot(rotation);
+		rotmat.transform(v);
+		
+		
+		v.add(new Vector2d(transX,transY));  //TODO change order of zoom and trans
+		v.scale(zoom);
+		v.add(new Vector2d(getWidth()/2.0, getHeight()/2.0));
+		return v;
+		}
+		
+	/** Transform screen coordinate to world coordinate */
+	public Vector2d transformS2W(Vector2d u)
+		{
+		Vector2d v=new Vector2d(u);
+		v.add(new Vector2d(-getWidth()/2.0, -getHeight()/2.0));
+		v.scale(1.0/zoom);
+		v.add(new Vector2d(-transX,-transY));  //TODO change order of zoom and trans
+		
+		Matrix2d rotmat=new Matrix2d();
+		rotmat.rot(-rotation);
+		rotmat.transform(v);
+		return v;
+		}
 	}
 
 

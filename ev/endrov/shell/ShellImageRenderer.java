@@ -35,7 +35,7 @@ public class ShellImageRenderer implements ImageWindowRenderer
 	
 	public List<Shell> getShells()
 		{
-		return w.getImageset().getObjects(Shell.class);
+		return w.getRootObject().getObjects(Shell.class);
 		}
 	
 

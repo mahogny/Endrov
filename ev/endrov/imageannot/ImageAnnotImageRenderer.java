@@ -19,7 +19,7 @@ public class ImageAnnotImageRenderer implements ImageWindowRenderer
 	
 	public Collection<ImageAnnot> getVisible()
 		{
-		return w.getImageset().getIdObjects(ImageAnnot.class).values();
+		return w.getRootObject().getIdObjects(ImageAnnot.class).values();
 		}
 	
 
