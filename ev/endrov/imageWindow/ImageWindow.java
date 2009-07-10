@@ -517,6 +517,22 @@ public class ImageWindow extends BasicWindow
 
 	
 
+	private double getStrangeResX()
+		{
+		return getImageset().resX;
+		}
+	private double getStrangeResY()
+		{
+		return getImageset().resY;
+		}
+	private double getStrangeResZ()
+		{
+		return getImageset().resZ;
+		}
+	
+	
+	
+	
 	/** 
 	 * Scale screen vector to world vector 
 	 */
@@ -529,28 +545,15 @@ public class ImageWindow extends BasicWindow
 
 
 	
-	private double getStrangeResX()
-		{
-		return getImageset().resX;
-		}
-	private double getStrangeResY()
-		{
-		return getImageset().resY;
-		}
-	
-	
-	
 	//New functions, should replace the ones above at some point
 
 	/** Transform world coordinate to screen coordinate */
-	
 	public Vector2d transformW2S(Vector2d u)
 		{
 		return imagePanel.transformI2S(new Vector2d(u.x*getStrangeResX(),u.y*getStrangeResY()));
 		}
 		
 	/** Transform screen coordinate to world coordinate */
-
 	public Vector2d transformS2W(Vector2d u)
 		{
 		Vector2d v=imagePanel.transformS2I(u);
@@ -559,9 +562,9 @@ public class ImageWindow extends BasicWindow
 		
 	
 	/** Convert world to screen Z coordinate */
-	public double w2sz(double z) {return z*getImageset().resZ;}
+	public double w2sz(double z) {return z*getStrangeResZ();}
 	/** Convert world to screen Z coordinate */
-	public double s2wz(double sz) {return sz/((double)getImageset().resZ);} 
+	public double s2wz(double sz) {return sz/((double)getStrangeResZ());} 
 
 	
 	//are these useful?
