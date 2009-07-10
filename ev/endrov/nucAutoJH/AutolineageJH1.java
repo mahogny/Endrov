@@ -10,13 +10,10 @@ import javax.swing.JTextArea;
 import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.EvComboObjectOne;
-import endrov.flowAveraging.EvOpMovingVariance;
 import endrov.flowBasic.math.EvOpImageSubImage;
-import endrov.flowBinaryMorph.EvOpBinMorphFillHoles2D;
 import endrov.flowFindFeature.EvOpFindLocalMaximas3D;
 import endrov.flowFourier.EvOpCircConv2D;
 import endrov.flowGenerateImage.GenerateSpecialImage;
-import endrov.flowThreshold.EvOpThresholdPercentile2D;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
@@ -26,7 +23,6 @@ import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
-import endrov.util.ImVector2;
 import endrov.util.ImVector3d;
 import endrov.util.Vector3i;
 
@@ -211,8 +207,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					
 					if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
 						{
-						NucLineage.Nuc nuc=lin.getNucCreate(""+i);
-						NucLineage.NucPos pos=nuc.getPosCreate(frame);
+						NucLineage.Nuc nuc=lin.getCreateNuc(""+i);
+						NucLineage.NucPos pos=nuc.getCreatePos(frame);
 						pos.r=3;
 						pos.setPosCopy(wpos);
 						}

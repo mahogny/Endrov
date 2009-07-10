@@ -10,4 +10,14 @@ package endrov.flowMeanshift;
 public class TODOEvOpImageMeanShiftSmooth2D
 	{
 
+	
+	/**
+	 * http://rsb.info.nih.gov/ij/plugins/download/Mean_Shift.java
+	 * 
+	 * weight is 0 or 1: 1 if intensity is within range of starting intensity
+	 * 
+	 * 
+	 * 
+	 */
+	
 	}

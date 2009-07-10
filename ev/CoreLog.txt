@@ -789,3 +789,1219 @@ LOG(29800, 3072752528:): -------->>
 LOG(29800, 3072752528:): Core session started on Sat Jun 13 2009 12:52:18.429047 by mahogny on venus
 LOG(29800, 3072752528:): Debug logging disabled
 LOG(29800, 3072752528:): Debug logging disabled
+LOG(4581, 3073227664:): -------->>
+LOG(4581, 3073227664:): Core session started on Sat Jun 13 2009 20:58:22.750183 by mahogny on venus
+LOG(4581, 3073227664:): Debug logging disabled
+LOG(4581, 3073227664:): Debug logging disabled
+LOG(5385, 3073575824:): -------->>
+LOG(5385, 3073575824:): Core session started on Sat Jun 13 2009 21:32:01.446370 by mahogny on venus
+LOG(5385, 3073575824:): Debug logging disabled
+LOG(5385, 3073575824:): Debug logging disabled
+LOG(5441, 3072904080:): -------->>
+LOG(5441, 3072904080:): Core session started on Sat Jun 13 2009 21:33:06.122922 by mahogny on venus
+LOG(5441, 3072904080:): Debug logging disabled
+LOG(5441, 3072904080:): Debug logging disabled
+LOG(5502, 3073338256:): -------->>
+LOG(5502, 3073338256:): Core session started on Sat Jun 13 2009 21:33:44.606031 by mahogny on venus
+LOG(5502, 3073338256:): Debug logging disabled
+LOG(5502, 3073338256:): Debug logging disabled
+LOG(5556, 3073301392:): -------->>
+LOG(5556, 3073301392:): Core session started on Sat Jun 13 2009 21:34:09.625399 by mahogny on venus
+LOG(5556, 3073301392:): Debug logging disabled
+LOG(5556, 3073301392:): Debug logging disabled
+LOG(5645, 3073706896:): -------->>
+LOG(5645, 3073706896:): Core session started on Sat Jun 13 2009 21:35:48.714335 by mahogny on venus
+LOG(5645, 3073706896:): Debug logging disabled
+LOG(5645, 3073706896:): Debug logging disabled
+LOG(5868, 3072850832:): -------->>
+LOG(5868, 3072850832:): Core session started on Sat Jun 13 2009 21:44:43.384739 by mahogny on venus
+LOG(5868, 3072850832:): Debug logging disabled
+LOG(5868, 3072850832:): Debug logging disabled
+LOG(6034, 3073522576:): -------->>
+LOG(6034, 3073522576:): Core session started on Sat Jun 13 2009 21:52:29.962918 by mahogny on venus
+LOG(6034, 3073522576:): Debug logging disabled
+LOG(6034, 3073522576:): Debug logging disabled
+LOG(6372, 3073514384:): -------->>
+LOG(6372, 3073514384:): Core session started on Sat Jun 13 2009 22:02:50.148181 by mahogny on venus
+LOG(6372, 3073514384:): Debug logging disabled
+LOG(6372, 3073514384:): Debug logging disabled
+LOG(6484, 3073760144:): -------->>
+LOG(6484, 3073760144:): Core session started on Sat Jun 13 2009 22:06:32.331185 by mahogny on venus
+LOG(6484, 3073760144:): Debug logging disabled
+LOG(6484, 3073760144:): Debug logging disabled
+LOG(6749, 3073305488:): -------->>
+LOG(6749, 3073305488:): Core session started on Sat Jun 13 2009 22:19:41.720222 by mahogny on venus
+LOG(6749, 3073305488:): Debug logging disabled
+LOG(6749, 3073305488:): Debug logging disabled
+LOG(6918, 3073387408:): -------->>
+LOG(6918, 3073387408:): Core session started on Sat Jun 13 2009 22:24:46.855569 by mahogny on venus
+LOG(6918, 3073387408:): Debug logging disabled
+LOG(6918, 3073387408:): Debug logging disabled
+LOG(7712, 3072797584:): -------->>
+LOG(7712, 3072797584:): Core session started on Sat Jun 13 2009 23:31:13.720576 by mahogny on venus
+LOG(7712, 3072797584:): Debug logging disabled
+LOG(7712, 3072797584:): Debug logging disabled
+LOG(7858, 3073211280:): -------->>
+LOG(7858, 3073211280:): Core session started on Sat Jun 13 2009 23:34:33.913080 by mahogny on venus
+LOG(7858, 3073211280:): Debug logging disabled
+LOG(7858, 3073211280:): Debug logging disabled
+LOG(7982, 3072945040:): -------->>
+LOG(7982, 3072945040:): Core session started on Sat Jun 13 2009 23:37:22.945037 by mahogny on venus
+LOG(7982, 3072945040:): Debug logging disabled
+LOG(7982, 3072945040:): Debug logging disabled
+LOG(8143, 3073538960:): -------->>
+LOG(8143, 3073538960:): Core session started on Sat Jun 13 2009 23:42:37.536878 by mahogny on venus
+LOG(8143, 3073538960:): Debug logging disabled
+LOG(8143, 3073538960:): Debug logging disabled
+LOG(8328, 3073006480:): -------->>
+LOG(8328, 3073006480:): Core session started on Sat Jun 13 2009 23:51:06.109047 by mahogny on venus
+LOG(8328, 3073006480:): Debug logging disabled
+LOG(8328, 3073006480:): Debug logging disabled
+LOG(8520, 3072773008:): -------->>
+LOG(8520, 3072773008:): Core session started on Sun Jun 14 2009 00:02:56.084662 by mahogny on venus
+LOG(8520, 3072773008:): Debug logging disabled
+LOG(8520, 3072773008:): Debug logging disabled
+LOG(8663, 3073694608:): -------->>
+LOG(8663, 3073694608:): Core session started on Sun Jun 14 2009 00:06:50.639479 by mahogny on venus
+LOG(8663, 3073694608:): Debug logging disabled
+LOG(8663, 3073694608:): Debug logging disabled
+LOG(8785, 3072764816:): -------->>
+LOG(8785, 3072764816:): Core session started on Sun Jun 14 2009 00:07:47.869753 by mahogny on venus
+LOG(8785, 3072764816:): Debug logging disabled
+LOG(8785, 3072764816:): Debug logging disabled
+LOG(9120, 3073371024:): -------->>
+LOG(9120, 3073371024:): Core session started on Sun Jun 14 2009 00:23:47.940811 by mahogny on venus
+LOG(9120, 3073371024:): Debug logging disabled
+LOG(9120, 3073371024:): Debug logging disabled
+LOG(9631, 3073317776:): -------->>
+LOG(9631, 3073317776:): Core session started on Sun Jun 14 2009 00:38:01.731427 by mahogny on venus
+LOG(9631, 3073317776:): Debug logging disabled
+LOG(9631, 3073317776:): Debug logging disabled
+LOG(10064, 3073305488:): -------->>
+LOG(10064, 3073305488:): Core session started on Sun Jun 14 2009 00:50:16.383548 by mahogny on venus
+LOG(10064, 3073305488:): Debug logging disabled
+LOG(10064, 3073305488:): Debug logging disabled
+LOG(10235, 3072785296:): -------->>
+LOG(10235, 3072785296:): Core session started on Sun Jun 14 2009 00:57:54.571583 by mahogny on venus
+LOG(10235, 3072785296:): Debug logging disabled
+LOG(10235, 3072785296:): Debug logging disabled
+LOG(10646, 3073657744:): -------->>
+LOG(10646, 3073657744:): Core session started on Sun Jun 14 2009 01:12:32.981419 by mahogny on venus
+LOG(10646, 3073657744:): Debug logging disabled
+LOG(10646, 3073657744:): Debug logging disabled
+LOG(10743, 3073047440:): -------->>
+LOG(10743, 3073047440:): Core session started on Sun Jun 14 2009 01:15:16.921503 by mahogny on venus
+LOG(10743, 3073047440:): Debug logging disabled
+LOG(10743, 3073047440:): Debug logging disabled
+LOG(10859, 3073678224:): -------->>
+LOG(10859, 3073678224:): Core session started on Sun Jun 14 2009 01:19:19.425055 by mahogny on venus
+LOG(10859, 3073678224:): Debug logging disabled
+LOG(10859, 3073678224:): Debug logging disabled
+LOG(10950, 3072785296:): -------->>
+LOG(10950, 3072785296:): Core session started on Sun Jun 14 2009 01:22:40.352189 by mahogny on venus
+LOG(10950, 3072785296:): Debug logging disabled
+LOG(10950, 3072785296:): Debug logging disabled
+LOG(11304, 3073739664:): -------->>
+LOG(11304, 3073739664:): Core session started on Sun Jun 14 2009 01:36:45.241863 by mahogny on venus
+LOG(11304, 3073739664:): Debug logging disabled
+LOG(11304, 3073739664:): Debug logging disabled
+LOG(11517, 3073653648:): -------->>
+LOG(11517, 3073653648:): Core session started on Sun Jun 14 2009 01:40:47.606789 by mahogny on venus
+LOG(11517, 3073653648:): Debug logging disabled
+LOG(11517, 3073653648:): Debug logging disabled
+LOG(11658, 3073723280:): -------->>
+LOG(11658, 3073723280:): Core session started on Sun Jun 14 2009 01:43:34.447731 by mahogny on venus
+LOG(11658, 3073723280:): Debug logging disabled
+LOG(11658, 3073723280:): Debug logging disabled
+LOG(11758, 3072756624:): -------->>
+LOG(11758, 3072756624:): Core session started on Sun Jun 14 2009 01:44:44.872960 by mahogny on venus
+LOG(11758, 3072756624:): Debug logging disabled
+LOG(11758, 3072756624:): Debug logging disabled
+LOG(12073, 3072953232:): -------->>
+LOG(12073, 3072953232:): Core session started on Sun Jun 14 2009 01:53:54.865377 by mahogny on venus
+LOG(12073, 3072953232:): Debug logging disabled
+LOG(12073, 3072953232:): Debug logging disabled
+LOG(12220, 3073727376:): -------->>
+LOG(12220, 3073727376:): Core session started on Sun Jun 14 2009 02:00:52.767536 by mahogny on venus
+LOG(12220, 3073727376:): Debug logging disabled
+LOG(12220, 3073727376:): Debug logging disabled
+LOG(12320, 3073006480:): -------->>
+LOG(12320, 3073006480:): Core session started on Sun Jun 14 2009 02:03:12.212636 by mahogny on venus
+LOG(12320, 3073006480:): Debug logging disabled
+LOG(12320, 3073006480:): Debug logging disabled
+LOG(12423, 3072822160:): -------->>
+LOG(12423, 3072822160:): Core session started on Sun Jun 14 2009 02:05:47.712875 by mahogny on venus
+LOG(12423, 3072822160:): Debug logging disabled
+LOG(12423, 3072822160:): Debug logging disabled
+LOG(14261, 3073112976:): -------->>
+LOG(14261, 3073112976:): Core session started on Sun Jun 14 2009 09:18:50.192324 by mahogny on venus
+LOG(14261, 3073112976:): Debug logging disabled
+LOG(14261, 3073112976:): Debug logging disabled
+LOG(14736, 3072760720:): -------->>
+LOG(14736, 3072760720:): Core session started on Sun Jun 14 2009 09:31:52.402026 by mahogny on venus
+LOG(14736, 3072760720:): Debug logging disabled
+LOG(14736, 3072760720:): Debug logging disabled
+LOG(14962, 3073788816:): -------->>
+LOG(14962, 3073788816:): Core session started on Sun Jun 14 2009 09:37:07.345088 by mahogny on venus
+LOG(14962, 3073788816:): Debug logging disabled
+LOG(14962, 3073788816:): Debug logging disabled
+LOG(15223, 3072949136:): -------->>
+LOG(15223, 3072949136:): Core session started on Sun Jun 14 2009 09:48:03.763052 by mahogny on venus
+LOG(15223, 3072949136:): Debug logging disabled
+LOG(15223, 3072949136:): Debug logging disabled
+LOG(15472, 3072813968:): -------->>
+LOG(15472, 3072813968:): Core session started on Sun Jun 14 2009 09:55:32.181932 by mahogny on venus
+LOG(15472, 3072813968:): Debug logging disabled
+LOG(15472, 3072813968:): Debug logging disabled
+LOG(15806, 3073674128:): -------->>
+LOG(15806, 3073674128:): Core session started on Sun Jun 14 2009 10:03:09.185810 by mahogny on venus
+LOG(15806, 3073674128:): Debug logging disabled
+LOG(15806, 3073674128:): Debug logging disabled
+LOG(18956, 3073764240:): -------->>
+LOG(18956, 3073764240:): Core session started on Sun Jun 14 2009 17:47:40.986684 by mahogny on venus
+LOG(18956, 3073764240:): Debug logging disabled
+LOG(18956, 3073764240:): Debug logging disabled
+LOG(19075, 3073293200:): -------->>
+LOG(19075, 3073293200:): Core session started on Sun Jun 14 2009 17:59:34.708359 by mahogny on venus
+LOG(19075, 3073293200:): Debug logging disabled
+LOG(19075, 3073293200:): Debug logging disabled
+LOG(19310, 3073518480:): -------->>
+LOG(19310, 3073518480:): Core session started on Sun Jun 14 2009 18:41:57.025740 by mahogny on venus
+LOG(19310, 3073518480:): Debug logging disabled
+LOG(19310, 3073518480:): Debug logging disabled
+LOG(19609, 3073268624:): -------->>
+LOG(19609, 3073268624:): Core session started on Sun Jun 14 2009 19:46:42.085774 by mahogny on venus
+LOG(19609, 3073268624:): Debug logging disabled
+LOG(19609, 3073268624:): Debug logging disabled
+LOG(19723, 3072818064:): -------->>
+LOG(19723, 3072818064:): Core session started on Sun Jun 14 2009 19:56:48.662811 by mahogny on venus
+LOG(19723, 3072818064:): Debug logging disabled
+LOG(19723, 3072818064:): Debug logging disabled
+LOG(20050, 3073203088:): -------->>
+LOG(20050, 3073203088:): Core session started on Sun Jun 14 2009 20:53:39.690875 by mahogny on venus
+LOG(20050, 3073203088:): Debug logging disabled
+LOG(20050, 3073203088:): Debug logging disabled
+LOG(20305, 3072969616:): -------->>
+LOG(20305, 3072969616:): Core session started on Sun Jun 14 2009 21:17:57.078401 by mahogny on venus
+LOG(20305, 3072969616:): Debug logging disabled
+LOG(20305, 3072969616:): Debug logging disabled
+LOG(25021, 3073567632:): -------->>
+LOG(25021, 3073567632:): Core session started on Mon Jun 15 2009 08:27:24.842779 by mahogny on venus
+LOG(25021, 3073567632:): Debug logging disabled
+LOG(25021, 3073567632:): Debug logging disabled
+LOG(25072, 3073272720:): -------->>
+LOG(25072, 3073272720:): Core session started on Mon Jun 15 2009 08:29:22.320793 by mahogny on venus
+LOG(25072, 3073272720:): Debug logging disabled
+LOG(25072, 3073272720:): Debug logging disabled
+LOG(25137, 3073547152:): -------->>
+LOG(25137, 3073547152:): Core session started on Mon Jun 15 2009 08:29:52.393601 by mahogny on venus
+LOG(25137, 3073547152:): Debug logging disabled
+LOG(25137, 3073547152:): Debug logging disabled
+LOG(25300, 3073600400:): -------->>
+LOG(25300, 3073600400:): Core session started on Mon Jun 15 2009 08:36:15.148500 by mahogny on venus
+LOG(25300, 3073600400:): Debug logging disabled
+LOG(25300, 3073600400:): Debug logging disabled
+LOG(25437, 3072904080:): -------->>
+LOG(25437, 3072904080:): Core session started on Mon Jun 15 2009 08:39:56.013806 by mahogny on venus
+LOG(25437, 3072904080:): Debug logging disabled
+LOG(25437, 3072904080:): Debug logging disabled
+LOG(25845, 3072949136:): -------->>
+LOG(25845, 3072949136:): Core session started on Mon Jun 15 2009 08:51:06.573576 by mahogny on venus
+LOG(25845, 3072949136:): Debug logging disabled
+LOG(25845, 3072949136:): Debug logging disabled
+LOG(25909, 3073780624:): -------->>
+LOG(25909, 3073780624:): Core session started on Mon Jun 15 2009 08:52:06.649260 by mahogny on venus
+LOG(25909, 3073780624:): Debug logging disabled
+LOG(25909, 3073780624:): Debug logging disabled
+LOG(26012, 3073313680:): -------->>
+LOG(26012, 3073313680:): Core session started on Mon Jun 15 2009 08:53:02.360072 by mahogny on venus
+LOG(26012, 3073313680:): Debug logging disabled
+LOG(26012, 3073313680:): Debug logging disabled
+LOG(26399, 3073592208:): -------->>
+LOG(26399, 3073592208:): Core session started on Mon Jun 15 2009 09:00:44.363362 by mahogny on venus
+LOG(26399, 3073592208:): Debug logging disabled
+LOG(26399, 3073592208:): Debug logging disabled
+LOG(26711, 3073440656:): -------->>
+LOG(26711, 3073440656:): Core session started on Mon Jun 15 2009 09:09:01.803471 by mahogny on venus
+LOG(26711, 3073440656:): Debug logging disabled
+LOG(26711, 3073440656:): Debug logging disabled
+LOG(27037, 3072883600:): -------->>
+LOG(27037, 3072883600:): Core session started on Mon Jun 15 2009 09:28:54.974160 by mahogny on venus
+LOG(27037, 3072883600:): Debug logging disabled
+LOG(27037, 3072883600:): Debug logging disabled
+LOG(27160, 3073354640:): -------->>
+LOG(27160, 3073354640:): Core session started on Mon Jun 15 2009 09:31:05.047996 by mahogny on venus
+LOG(27160, 3073354640:): Debug logging disabled
+LOG(27160, 3073354640:): Debug logging disabled
+LOG(27248, 3072822160:): -------->>
+LOG(27248, 3072822160:): Core session started on Mon Jun 15 2009 09:32:59.913035 by mahogny on venus
+LOG(27248, 3072822160:): Debug logging disabled
+LOG(27248, 3072822160:): Debug logging disabled
+LOG(27449, 3073526672:): -------->>
+LOG(27449, 3073526672:): Core session started on Mon Jun 15 2009 09:40:45.768556 by mahogny on venus
+LOG(27449, 3073526672:): Debug logging disabled
+LOG(27449, 3073526672:): Debug logging disabled
+LOG(28016, 3073747856:): -------->>
+LOG(28016, 3073747856:): Core session started on Mon Jun 15 2009 09:57:33.719142 by mahogny on venus
+LOG(28016, 3073747856:): Debug logging disabled
+LOG(28016, 3073747856:): Debug logging disabled
+LOG(28113, 3073137552:): -------->>
+LOG(28113, 3073137552:): Core session started on Mon Jun 15 2009 10:01:07.410189 by mahogny on venus
+LOG(28113, 3073137552:): Debug logging disabled
+LOG(28113, 3073137552:): Debug logging disabled
+LOG(28199, 3072813968:): -------->>
+LOG(28199, 3072813968:): Core session started on Mon Jun 15 2009 10:02:36.708829 by mahogny on venus
+LOG(28199, 3072813968:): Debug logging disabled
+LOG(28199, 3072813968:): Debug logging disabled
+LOG(20486, 3073559440:): -------->>
+LOG(20486, 3073559440:): Core session started on Sat Jun 20 2009 00:10:35.388131 by mahogny on venus
+LOG(20486, 3073559440:): Debug logging disabled
+LOG(20486, 3073559440:): Debug logging disabled
+LOG(24481, 3073620880:): -------->>
+LOG(24481, 3073620880:): Core session started on Sat Jun 20 2009 21:59:29.128825 by mahogny on venus
+LOG(24481, 3073620880:): Debug logging disabled
+LOG(24481, 3073620880:): Debug logging disabled
+LOG(25061, 3073563536:): -------->>
+LOG(25061, 3073563536:): Core session started on Sat Jun 20 2009 22:22:48.868413 by mahogny on venus
+LOG(25061, 3073563536:): Debug logging disabled
+LOG(25061, 3073563536:): Debug logging disabled
+LOG(25508, 3072752528:): -------->>
+LOG(25508, 3072752528:): Core session started on Sat Jun 20 2009 22:40:37.245511 by mahogny on venus
+LOG(25508, 3072752528:): Debug logging disabled
+LOG(25508, 3072752528:): Debug logging disabled
+LOG(27175, 3073153936:): -------->>
+LOG(27175, 3073153936:): Core session started on Sun Jun 21 2009 00:18:31.937191 by mahogny on venus
+LOG(27175, 3073153936:): Debug logging disabled
+LOG(27175, 3073153936:): Debug logging disabled
+LOG(7459, 3073043344:): -------->>
+LOG(7459, 3073043344:): Core session started on Sun Jun 21 2009 13:35:46.696003 by mahogny on venus
+LOG(7459, 3073043344:): Debug logging disabled
+LOG(7459, 3073043344:): Debug logging disabled
+LOG(8341, 3073489808:): -------->>
+LOG(8341, 3073489808:): Core session started on Sun Jun 21 2009 14:16:28.767538 by mahogny on venus
+LOG(8341, 3073489808:): Debug logging disabled
+LOG(8341, 3073489808:): Debug logging disabled
+LOG(8404, 3073485712:): -------->>
+LOG(8404, 3073485712:): Core session started on Sun Jun 21 2009 14:17:11.333148 by mahogny on venus
+LOG(8404, 3073485712:): Debug logging disabled
+LOG(8404, 3073485712:): Debug logging disabled
+LOG(8487, 3073223568:): -------->>
+LOG(8487, 3073223568:): Core session started on Sun Jun 21 2009 14:18:19.828781 by mahogny on venus
+LOG(8487, 3073223568:): Debug logging disabled
+LOG(8487, 3073223568:): Debug logging disabled
+LOG(8533, 3073448848:): -------->>
+LOG(8533, 3073448848:): Core session started on Sun Jun 21 2009 14:18:32.854544 by mahogny on venus
+LOG(8533, 3073448848:): Debug logging disabled
+LOG(8533, 3073448848:): Debug logging disabled
+LOG(8584, 3073612688:): -------->>
+LOG(8584, 3073612688:): Core session started on Sun Jun 21 2009 14:19:00.017394 by mahogny on venus
+LOG(8584, 3073612688:): Debug logging disabled
+LOG(8584, 3073612688:): Debug logging disabled
+LOG(8630, 3073383312:): -------->>
+LOG(8630, 3073383312:): Core session started on Sun Jun 21 2009 14:19:12.540933 by mahogny on venus
+LOG(8630, 3073383312:): Debug logging disabled
+LOG(8630, 3073383312:): Debug logging disabled
+LOG(8681, 3073018768:): -------->>
+LOG(8681, 3073018768:): Core session started on Sun Jun 21 2009 14:19:39.545276 by mahogny on venus
+LOG(8681, 3073018768:): Debug logging disabled
+LOG(8681, 3073018768:): Debug logging disabled
+LOG(8726, 3073125264:): -------->>
+LOG(8726, 3073125264:): Core session started on Sun Jun 21 2009 14:20:41.841806 by mahogny on venus
+LOG(8726, 3073125264:): Debug logging disabled
+LOG(8726, 3073125264:): Debug logging disabled
+LOG(9498, 3072830352:): -------->>
+LOG(9498, 3072830352:): Core session started on Sun Jun 21 2009 14:56:42.173854 by mahogny on venus
+LOG(9498, 3072830352:): Debug logging disabled
+LOG(9498, 3072830352:): Debug logging disabled
+LOG(9604, 3073215376:): -------->>
+LOG(9604, 3073215376:): Core session started on Sun Jun 21 2009 14:58:36.912407 by mahogny on venus
+LOG(9604, 3073215376:): Debug logging disabled
+LOG(9604, 3073215376:): Debug logging disabled
+LOG(9667, 3073117072:): -------->>
+LOG(9667, 3073117072:): Core session started on Sun Jun 21 2009 15:00:56.157125 by mahogny on venus
+LOG(9667, 3073117072:): Debug logging disabled
+LOG(9667, 3073117072:): Debug logging disabled
+LOG(9750, 3073387408:): -------->>
+LOG(9750, 3073387408:): Core session started on Sun Jun 21 2009 15:04:51.498702 by mahogny on venus
+LOG(9750, 3073387408:): Debug logging disabled
+LOG(9750, 3073387408:): Debug logging disabled
+LOG(9808, 3072891792:): -------->>
+LOG(9808, 3072891792:): Core session started on Sun Jun 21 2009 15:05:15.615706 by mahogny on venus
+LOG(9808, 3072891792:): Debug logging disabled
+LOG(9808, 3072891792:): Debug logging disabled
+LOG(9859, 3073690512:): -------->>
+LOG(9859, 3073690512:): Core session started on Sun Jun 21 2009 15:05:52.897494 by mahogny on venus
+LOG(9859, 3073690512:): Debug logging disabled
+LOG(9859, 3073690512:): Debug logging disabled
+LOG(9907, 3073686416:): -------->>
+LOG(9907, 3073686416:): Core session started on Sun Jun 21 2009 15:06:12.975521 by mahogny on venus
+LOG(9907, 3073686416:): Debug logging disabled
+LOG(9907, 3073686416:): Debug logging disabled
+LOG(9954, 3072797584:): -------->>
+LOG(9954, 3072797584:): Core session started on Sun Jun 21 2009 15:06:29.317523 by mahogny on venus
+LOG(9954, 3072797584:): Debug logging disabled
+LOG(9954, 3072797584:): Debug logging disabled
+LOG(10001, 3073534864:): -------->>
+LOG(10001, 3073534864:): Core session started on Sun Jun 21 2009 15:07:17.645126 by mahogny on venus
+LOG(10001, 3073534864:): Debug logging disabled
+LOG(10001, 3073534864:): Debug logging disabled
+LOG(10134, 3073686416:): -------->>
+LOG(10134, 3073686416:): Core session started on Sun Jun 21 2009 15:12:38.469480 by mahogny on venus
+LOG(10134, 3073686416:): Debug logging disabled
+LOG(10134, 3073686416:): Debug logging disabled
+LOG(14177, 3073338256:): -------->>
+LOG(14177, 3073338256:): Core session started on Mon Jun 22 2009 00:36:38.096929 by mahogny on venus
+LOG(14177, 3073338256:): Debug logging disabled
+LOG(14177, 3073338256:): Debug logging disabled
+LOG(14230, 3073211280:): -------->>
+LOG(14230, 3073211280:): Core session started on Mon Jun 22 2009 00:38:57.061741 by mahogny on venus
+LOG(14230, 3073211280:): Debug logging disabled
+LOG(14230, 3073211280:): Debug logging disabled
+LOG(14378, 3072969616:): -------->>
+LOG(14378, 3072969616:): Core session started on Mon Jun 22 2009 00:50:40.096298 by mahogny on venus
+LOG(14378, 3072969616:): Debug logging disabled
+LOG(14378, 3072969616:): Debug logging disabled
+LOG(14422, 3073055632:): -------->>
+LOG(14422, 3073055632:): Core session started on Mon Jun 22 2009 00:50:58.703966 by mahogny on venus
+LOG(14422, 3073055632:): Debug logging disabled
+LOG(14422, 3073055632:): Debug logging disabled
+LOG(14489, 3073211280:): -------->>
+LOG(14489, 3073211280:): Core session started on Mon Jun 22 2009 00:51:51.708686 by mahogny on venus
+LOG(14489, 3073211280:): Debug logging disabled
+LOG(14489, 3073211280:): Debug logging disabled
+LOG(14538, 3072764816:): -------->>
+LOG(14538, 3072764816:): Core session started on Mon Jun 22 2009 00:53:09.221083 by mahogny on venus
+LOG(14538, 3072764816:): Debug logging disabled
+LOG(14538, 3072764816:): Debug logging disabled
+LOG(20044, 3073207184:): -------->>
+LOG(20044, 3073207184:): Core session started on Mon Jun 22 2009 08:59:19.408282 by mahogny on venus
+LOG(20044, 3073207184:): Debug logging disabled
+LOG(20044, 3073207184:): Debug logging disabled
+LOG(20106, 3073375120:): -------->>
+LOG(20106, 3073375120:): Core session started on Mon Jun 22 2009 09:00:44.352804 by mahogny on venus
+LOG(20106, 3073375120:): Debug logging disabled
+LOG(20106, 3073375120:): Debug logging disabled
+LOG(20160, 3072908176:): -------->>
+LOG(20160, 3072908176:): Core session started on Mon Jun 22 2009 09:01:04.817868 by mahogny on venus
+LOG(20160, 3072908176:): Debug logging disabled
+LOG(20160, 3072908176:): Debug logging disabled
+LOG(20207, 3073055632:): -------->>
+LOG(20207, 3073055632:): Core session started on Mon Jun 22 2009 09:01:31.682244 by mahogny on venus
+LOG(20207, 3073055632:): Debug logging disabled
+LOG(20207, 3073055632:): Debug logging disabled
+LOG(20263, 3073166224:): -------->>
+LOG(20263, 3073166224:): Core session started on Mon Jun 22 2009 09:01:58.579547 by mahogny on venus
+LOG(20263, 3073166224:): Debug logging disabled
+LOG(20263, 3073166224:): Debug logging disabled
+LOG(20307, 3073076112:): -------->>
+LOG(20307, 3073076112:): Core session started on Mon Jun 22 2009 09:02:08.794534 by mahogny on venus
+LOG(20307, 3073076112:): Debug logging disabled
+LOG(20307, 3073076112:): Debug logging disabled
+LOG(20358, 3073682320:): -------->>
+LOG(20358, 3073682320:): Core session started on Mon Jun 22 2009 09:02:43.812586 by mahogny on venus
+LOG(20358, 3073682320:): Debug logging disabled
+LOG(20358, 3073682320:): Debug logging disabled
+LOG(20415, 3073555344:): -------->>
+LOG(20415, 3073555344:): Core session started on Mon Jun 22 2009 09:03:52.970802 by mahogny on venus
+LOG(20415, 3073555344:): Debug logging disabled
+LOG(20415, 3073555344:): Debug logging disabled
+LOG(20464, 3073379216:): -------->>
+LOG(20464, 3073379216:): Core session started on Mon Jun 22 2009 09:04:11.109351 by mahogny on venus
+LOG(20464, 3073379216:): Debug logging disabled
+LOG(20464, 3073379216:): Debug logging disabled
+LOG(20508, 3073076112:): -------->>
+LOG(20508, 3073076112:): Core session started on Mon Jun 22 2009 09:04:24.828965 by mahogny on venus
+LOG(20508, 3073076112:): Debug logging disabled
+LOG(20508, 3073076112:): Debug logging disabled
+LOG(24605, 3073375120:): -------->>
+LOG(24605, 3073375120:): Core session started on Tue Jun 30 2009 12:52:27.287874 by mahogny on venus
+LOG(24605, 3073375120:): Debug logging disabled
+LOG(24605, 3073375120:): Debug logging disabled
+LOG(25794, 3072801680:): -------->>
+LOG(25794, 3072801680:): Core session started on Tue Jun 30 2009 14:25:06.598676 by mahogny on venus
+LOG(25794, 3072801680:): Debug logging disabled
+LOG(25794, 3072801680:): Debug logging disabled
+LOG(25856, 3073514384:): -------->>
+LOG(25856, 3073514384:): Core session started on Tue Jun 30 2009 14:26:43.048179 by mahogny on venus
+LOG(25856, 3073514384:): Debug logging disabled
+LOG(25856, 3073514384:): Debug logging disabled
+LOG(27286, 3072981904:): -------->>
+LOG(27286, 3072981904:): Core session started on Tue Jun 30 2009 15:25:00.742515 by mahogny on venus
+LOG(27286, 3072981904:): Debug logging disabled
+LOG(27286, 3072981904:): Debug logging disabled
+LOG(27365, 3073747856:): -------->>
+LOG(27365, 3073747856:): Core session started on Tue Jun 30 2009 15:26:46.515062 by mahogny on venus
+LOG(27365, 3073747856:): Debug logging disabled
+LOG(27365, 3073747856:): Debug logging disabled
+LOG(27433, 3072998288:): -------->>
+LOG(27433, 3072998288:): Core session started on Tue Jun 30 2009 15:28:29.529028 by mahogny on venus
+LOG(27433, 3072998288:): Debug logging disabled
+LOG(27433, 3072998288:): Debug logging disabled
+LOG(27656, 3073059728:): -------->>
+LOG(27656, 3073059728:): Core session started on Tue Jun 30 2009 15:35:14.300930 by mahogny on venus
+LOG(27656, 3073059728:): Debug logging disabled
+LOG(27656, 3073059728:): Debug logging disabled
+LOG(27754, 3073457040:): -------->>
+LOG(27754, 3073457040:): Core session started on Tue Jun 30 2009 15:37:21.012467 by mahogny on venus
+LOG(27754, 3073457040:): Debug logging disabled
+LOG(27754, 3073457040:): Debug logging disabled
+LOG(27818, 3073055632:): -------->>
+LOG(27818, 3073055632:): Core session started on Tue Jun 30 2009 15:38:31.413858 by mahogny on venus
+LOG(27818, 3073055632:): Debug logging disabled
+LOG(27818, 3073055632:): Debug logging disabled
+LOG(27912, 3073162128:): -------->>
+LOG(27912, 3073162128:): Core session started on Tue Jun 30 2009 15:41:17.945608 by mahogny on venus
+LOG(27912, 3073162128:): Debug logging disabled
+LOG(27912, 3073162128:): Debug logging disabled
+LOG(28010, 3073473424:): -------->>
+LOG(28010, 3073473424:): Core session started on Tue Jun 30 2009 15:42:55.194188 by mahogny on venus
+LOG(28010, 3073473424:): Debug logging disabled
+LOG(28010, 3073473424:): Debug logging disabled
+LOG(28077, 3073686416:): -------->>
+LOG(28077, 3073686416:): Core session started on Tue Jun 30 2009 15:44:37.094267 by mahogny on venus
+LOG(28077, 3073686416:): Debug logging disabled
+LOG(28077, 3073686416:): Debug logging disabled
+LOG(28155, 3072813968:): -------->>
+LOG(28155, 3072813968:): Core session started on Tue Jun 30 2009 15:45:42.940494 by mahogny on venus
+LOG(28155, 3072813968:): Debug logging disabled
+LOG(28155, 3072813968:): Debug logging disabled
+LOG(28236, 3073133456:): -------->>
+LOG(28236, 3073133456:): Core session started on Tue Jun 30 2009 15:47:02.741766 by mahogny on venus
+LOG(28236, 3073133456:): Debug logging disabled
+LOG(28236, 3073133456:): Debug logging disabled
+LOG(32074, 3073571728:): -------->>
+LOG(32074, 3073571728:): Core session started on Tue Jun 30 2009 21:39:22.414844 by mahogny on venus
+LOG(32074, 3073571728:): Debug logging disabled
+LOG(32074, 3073571728:): Debug logging disabled
+LOG(1000, 3072973712:): -------->>
+LOG(1000, 3072973712:): Core session started on Tue Jun 30 2009 22:42:35.982428 by mahogny on venus
+LOG(1000, 3072973712:): Debug logging disabled
+LOG(1000, 3072973712:): Debug logging disabled
+LOG(1070, 3073375120:): -------->>
+LOG(1070, 3073375120:): Core session started on Tue Jun 30 2009 22:44:05.078436 by mahogny on venus
+LOG(1070, 3073375120:): Debug logging disabled
+LOG(1070, 3073375120:): Debug logging disabled
+LOG(3716, 3073330064:): -------->>
+LOG(3716, 3073330064:): Core session started on Wed Jul  1 2009 01:07:03.439266 by mahogny on venus
+LOG(3716, 3073330064:): Debug logging disabled
+LOG(3716, 3073330064:): Debug logging disabled
+LOG(3774, 3072924560:): -------->>
+LOG(3774, 3072924560:): Core session started on Wed Jul  1 2009 01:07:55.236315 by mahogny on venus
+LOG(3774, 3072924560:): Debug logging disabled
+LOG(3774, 3072924560:): Debug logging disabled
+LOG(3845, 3073563536:): -------->>
+LOG(3845, 3073563536:): Core session started on Wed Jul  1 2009 01:09:04.558773 by mahogny on venus
+LOG(3845, 3073563536:): Debug logging disabled
+LOG(3845, 3073563536:): Debug logging disabled
+LOG(3973, 3073108880:): -------->>
+LOG(3973, 3073108880:): Core session started on Wed Jul  1 2009 01:12:16.393290 by mahogny on venus
+LOG(3973, 3073108880:): Debug logging disabled
+LOG(3973, 3073108880:): Debug logging disabled
+LOG(4066, 3073657744:): -------->>
+LOG(4066, 3073657744:): Core session started on Wed Jul  1 2009 01:14:54.848876 by mahogny on venus
+LOG(4066, 3073657744:): Debug logging disabled
+LOG(4066, 3073657744:): Debug logging disabled
+LOG(4195, 3072768912:): -------->>
+LOG(4195, 3072768912:): Core session started on Wed Jul  1 2009 01:19:54.101473 by mahogny on venus
+LOG(4195, 3072768912:): Debug logging disabled
+LOG(4195, 3072768912:): Debug logging disabled
+LOG(7313, 3073383312:): -------->>
+LOG(7313, 3073383312:): Core session started on Wed Jul  1 2009 10:39:39.490370 by mahogny on venus
+LOG(7313, 3073383312:): Debug logging disabled
+LOG(7313, 3073383312:): Debug logging disabled
+LOG(7387, 3073571728:): -------->>
+LOG(7387, 3073571728:): Core session started on Wed Jul  1 2009 10:41:39.261426 by mahogny on venus
+LOG(7387, 3073571728:): Debug logging disabled
+LOG(7387, 3073571728:): Debug logging disabled
+LOG(8357, 3073485712:): -------->>
+LOG(8357, 3073485712:): Core session started on Wed Jul  1 2009 11:54:14.468769 by mahogny on venus
+LOG(8357, 3073485712:): Debug logging disabled
+LOG(8357, 3073485712:): Debug logging disabled
+LOG(8431, 3073178512:): -------->>
+LOG(8431, 3073178512:): Core session started on Wed Jul  1 2009 11:54:24.933669 by mahogny on venus
+LOG(8431, 3073178512:): Debug logging disabled
+LOG(8431, 3073178512:): Debug logging disabled
+LOG(8478, 3072834448:): -------->>
+LOG(8478, 3072834448:): Core session started on Wed Jul  1 2009 11:54:59.301611 by mahogny on venus
+LOG(8478, 3072834448:): Debug logging disabled
+LOG(8478, 3072834448:): Debug logging disabled
+LOG(8554, 3073264528:): -------->>
+LOG(8554, 3073264528:): Core session started on Wed Jul  1 2009 11:56:10.792279 by mahogny on venus
+LOG(8554, 3073264528:): Debug logging disabled
+LOG(8554, 3073264528:): Debug logging disabled
+LOG(8653, 3073059728:): -------->>
+LOG(8653, 3073059728:): Core session started on Wed Jul  1 2009 11:56:38.201630 by mahogny on venus
+LOG(8653, 3073059728:): Debug logging disabled
+LOG(8653, 3073059728:): Debug logging disabled
+LOG(8705, 3073571728:): -------->>
+LOG(8705, 3073571728:): Core session started on Wed Jul  1 2009 11:57:08.265084 by mahogny on venus
+LOG(8705, 3073571728:): Debug logging disabled
+LOG(8705, 3073571728:): Debug logging disabled
+LOG(8759, 3072953232:): -------->>
+LOG(8759, 3072953232:): Core session started on Wed Jul  1 2009 11:57:26.660009 by mahogny on venus
+LOG(8759, 3072953232:): Debug logging disabled
+LOG(8759, 3072953232:): Debug logging disabled
+LOG(8984, 3073043344:): -------->>
+LOG(8984, 3073043344:): Core session started on Wed Jul  1 2009 12:00:51.526739 by mahogny on venus
+LOG(8984, 3073043344:): Debug logging disabled
+LOG(8984, 3073043344:): Debug logging disabled
+LOG(18434, 3072760720:): -------->>
+LOG(18434, 3072760720:): Core session started on Thu Jul  2 2009 13:53:47.564775 by mahogny on venus
+LOG(18434, 3072760720:): Debug logging disabled
+LOG(18434, 3072760720:): Debug logging disabled
+LOG(20818, 3073133456:): -------->>
+LOG(20818, 3073133456:): Core session started on Thu Jul  2 2009 19:59:53.803470 by mahogny on venus
+LOG(20818, 3073133456:): Debug logging disabled
+LOG(20818, 3073133456:): Debug logging disabled
+LOG(21202, 3073489808:): -------->>
+LOG(21202, 3073489808:): Core session started on Thu Jul  2 2009 20:18:42.556622 by mahogny on venus
+LOG(21202, 3073489808:): Debug logging disabled
+LOG(21202, 3073489808:): Debug logging disabled
+LOG(21403, 3072842640:): -------->>
+LOG(21403, 3072842640:): Core session started on Thu Jul  2 2009 20:27:49.814499 by mahogny on venus
+LOG(21403, 3072842640:): Debug logging disabled
+LOG(21403, 3072842640:): Debug logging disabled
+LOG(21472, 3073276816:): -------->>
+LOG(21472, 3073276816:): Core session started on Thu Jul  2 2009 20:30:13.725205 by mahogny on venus
+LOG(21472, 3073276816:): Debug logging disabled
+LOG(21472, 3073276816:): Debug logging disabled
+LOG(23577, 3072760720:): -------->>
+LOG(23577, 3072760720:): Core session started on Thu Jul  2 2009 21:27:19.827293 by mahogny on venus
+LOG(23577, 3072760720:): Debug logging disabled
+LOG(23577, 3072760720:): Debug logging disabled
+LOG(23672, 3072994192:): -------->>
+LOG(23672, 3072994192:): Core session started on Thu Jul  2 2009 21:32:08.197650 by mahogny on venus
+LOG(23672, 3072994192:): Debug logging disabled
+LOG(23672, 3072994192:): Debug logging disabled
+LOG(23810, 3072973712:): -------->>
+LOG(23810, 3072973712:): Core session started on Thu Jul  2 2009 21:43:06.339081 by mahogny on venus
+LOG(23810, 3072973712:): Debug logging disabled
+LOG(23810, 3072973712:): Debug logging disabled
+LOG(23970, 3073182608:): -------->>
+LOG(23970, 3073182608:): Core session started on Thu Jul  2 2009 21:46:39.429322 by mahogny on venus
+LOG(23970, 3073182608:): Debug logging disabled
+LOG(23970, 3073182608:): Debug logging disabled
+LOG(25700, 3073137552:): -------->>
+LOG(25700, 3073137552:): Core session started on Thu Jul  2 2009 22:50:41.405509 by mahogny on venus
+LOG(25700, 3073137552:): Debug logging disabled
+LOG(25700, 3073137552:): Debug logging disabled
+LOG(27199, 3072949136:): -------->>
+LOG(27199, 3072949136:): Core session started on Thu Jul  2 2009 23:48:15.629203 by mahogny on venus
+LOG(27199, 3072949136:): Debug logging disabled
+LOG(27199, 3072949136:): Debug logging disabled
+LOG(27451, 3073706896:): -------->>
+LOG(27451, 3073706896:): Core session started on Fri Jul  3 2009 00:01:56.982204 by mahogny on venus
+LOG(27451, 3073706896:): Debug logging disabled
+LOG(27451, 3073706896:): Debug logging disabled
+LOG(28351, 3073559440:): -------->>
+LOG(28351, 3073559440:): Core session started on Fri Jul  3 2009 00:56:11.416650 by mahogny on venus
+LOG(28351, 3073559440:): Debug logging disabled
+LOG(28351, 3073559440:): Debug logging disabled
+LOG(28414, 3073100688:): -------->>
+LOG(28414, 3073100688:): Core session started on Fri Jul  3 2009 01:01:35.817349 by mahogny on venus
+LOG(28414, 3073100688:): Debug logging disabled
+LOG(28414, 3073100688:): Debug logging disabled
+LOG(29085, 3072801680:): -------->>
+LOG(29085, 3072801680:): Core session started on Fri Jul  3 2009 01:16:06.631379 by mahogny on venus
+LOG(29085, 3072801680:): Debug logging disabled
+LOG(29085, 3072801680:): Debug logging disabled
+LOG(29234, 3073088400:): -------->>
+LOG(29234, 3073088400:): Core session started on Fri Jul  3 2009 01:18:34.088305 by mahogny on venus
+LOG(29234, 3073088400:): Debug logging disabled
+LOG(29234, 3073088400:): Debug logging disabled
+LOG(29320, 3072867216:): -------->>
+LOG(29320, 3072867216:): Core session started on Fri Jul  3 2009 01:20:27.252025 by mahogny on venus
+LOG(29320, 3072867216:): Debug logging disabled
+LOG(29320, 3072867216:): Debug logging disabled
+LOG(29380, 3073198992:): -------->>
+LOG(29380, 3073198992:): Core session started on Fri Jul  3 2009 01:21:03.979426 by mahogny on venus
+LOG(29380, 3073198992:): Debug logging disabled
+LOG(29380, 3073198992:): Debug logging disabled
+LOG(29531, 3073629072:): -------->>
+LOG(29531, 3073629072:): Core session started on Fri Jul  3 2009 01:24:00.185604 by mahogny on venus
+LOG(29531, 3073629072:): Debug logging disabled
+LOG(29531, 3073629072:): Debug logging disabled
+LOG(29617, 3072863120:): -------->>
+LOG(29617, 3072863120:): Core session started on Fri Jul  3 2009 01:26:32.537816 by mahogny on venus
+LOG(29617, 3072863120:): Debug logging disabled
+LOG(29617, 3072863120:): Debug logging disabled
+LOG(29722, 3072928656:): -------->>
+LOG(29722, 3072928656:): Core session started on Fri Jul  3 2009 01:29:02.015801 by mahogny on venus
+LOG(29722, 3072928656:): Debug logging disabled
+LOG(29722, 3072928656:): Debug logging disabled
+LOG(29877, 3073198992:): -------->>
+LOG(29877, 3073198992:): Core session started on Fri Jul  3 2009 01:33:22.645478 by mahogny on venus
+LOG(29877, 3073198992:): Debug logging disabled
+LOG(29877, 3073198992:): Debug logging disabled
+LOG(29949, 3073489808:): -------->>
+LOG(29949, 3073489808:): Core session started on Fri Jul  3 2009 01:34:46.121875 by mahogny on venus
+LOG(29949, 3073489808:): Debug logging disabled
+LOG(29949, 3073489808:): Debug logging disabled
+LOG(30039, 3073469328:): -------->>
+LOG(30039, 3073469328:): Core session started on Fri Jul  3 2009 01:36:19.412203 by mahogny on venus
+LOG(30039, 3073469328:): Debug logging disabled
+LOG(30039, 3073469328:): Debug logging disabled
+LOG(30163, 3073186704:): -------->>
+LOG(30163, 3073186704:): Core session started on Fri Jul  3 2009 01:39:11.461335 by mahogny on venus
+LOG(30163, 3073186704:): Debug logging disabled
+LOG(30163, 3073186704:): Debug logging disabled
+LOG(30931, 3073260432:): -------->>
+LOG(30931, 3073260432:): Core session started on Fri Jul  3 2009 02:05:54.490957 by mahogny on venus
+LOG(30931, 3073260432:): Debug logging disabled
+LOG(30931, 3073260432:): Debug logging disabled
+LOG(31071, 3073059728:): -------->>
+LOG(31071, 3073059728:): Core session started on Fri Jul  3 2009 02:08:15.291277 by mahogny on venus
+LOG(31071, 3073059728:): Debug logging disabled
+LOG(31071, 3073059728:): Debug logging disabled
+LOG(31220, 3073129360:): -------->>
+LOG(31220, 3073129360:): Core session started on Fri Jul  3 2009 02:16:44.022024 by mahogny on venus
+LOG(31220, 3073129360:): Debug logging disabled
+LOG(31220, 3073129360:): Debug logging disabled
+LOG(31302, 3072945040:): -------->>
+LOG(31302, 3072945040:): Core session started on Fri Jul  3 2009 02:18:31.019708 by mahogny on venus
+LOG(31302, 3072945040:): Debug logging disabled
+LOG(31302, 3072945040:): Debug logging disabled
+LOG(32033, 3073584016:): -------->>
+LOG(32033, 3073584016:): Core session started on Fri Jul  3 2009 02:32:02.240771 by mahogny on venus
+LOG(32033, 3073584016:): Debug logging disabled
+LOG(32033, 3073584016:): Debug logging disabled
+LOG(32265, 3073399696:): -------->>
+LOG(32265, 3073399696:): Core session started on Fri Jul  3 2009 02:39:34.484650 by mahogny on venus
+LOG(32265, 3073399696:): Debug logging disabled
+LOG(32265, 3073399696:): Debug logging disabled
+LOG(32324, 3073461136:): -------->>
+LOG(32324, 3073461136:): Core session started on Fri Jul  3 2009 02:40:18.950371 by mahogny on venus
+LOG(32324, 3073461136:): Debug logging disabled
+LOG(32324, 3073461136:): Debug logging disabled
+LOG(32388, 3073588112:): -------->>
+LOG(32388, 3073588112:): Core session started on Fri Jul  3 2009 02:43:12.078943 by mahogny on venus
+LOG(32388, 3073588112:): Debug logging disabled
+LOG(32388, 3073588112:): Debug logging disabled
+LOG(1916, 3072879504:): -------->>
+LOG(1916, 3072879504:): Core session started on Fri Jul  3 2009 09:58:17.195951 by mahogny on venus
+LOG(1916, 3072879504:): Debug logging disabled
+LOG(1916, 3072879504:): Debug logging disabled
+LOG(2159, 3073182608:): -------->>
+LOG(2159, 3073182608:): Core session started on Fri Jul  3 2009 10:06:48.067299 by mahogny on venus
+LOG(2159, 3073182608:): Debug logging disabled
+LOG(2159, 3073182608:): Debug logging disabled
+LOG(2438, 3073334160:): -------->>
+LOG(2438, 3073334160:): Core session started on Fri Jul  3 2009 10:17:13.009739 by mahogny on venus
+LOG(2438, 3073334160:): Debug logging disabled
+LOG(2438, 3073334160:): Debug logging disabled
+LOG(2555, 3073026960:): -------->>
+LOG(2555, 3073026960:): Core session started on Fri Jul  3 2009 10:22:49.327941 by mahogny on venus
+LOG(2555, 3073026960:): Debug logging disabled
+LOG(2555, 3073026960:): Debug logging disabled
+LOG(2694, 3073145744:): -------->>
+LOG(2694, 3073145744:): Core session started on Fri Jul  3 2009 10:25:50.701563 by mahogny on venus
+LOG(2694, 3073145744:): Debug logging disabled
+LOG(2694, 3073145744:): Debug logging disabled
+LOG(2818, 3072969616:): -------->>
+LOG(2818, 3072969616:): Core session started on Fri Jul  3 2009 10:32:52.405472 by mahogny on venus
+LOG(2818, 3072969616:): Debug logging disabled
+LOG(2818, 3072969616:): Debug logging disabled
+LOG(3220, 3073522576:): -------->>
+LOG(3220, 3073522576:): Core session started on Fri Jul  3 2009 10:52:28.327288 by mahogny on venus
+LOG(3220, 3073522576:): Debug logging disabled
+LOG(3220, 3073522576:): Debug logging disabled
+LOG(3420, 3073076112:): -------->>
+LOG(3420, 3073076112:): Core session started on Fri Jul  3 2009 10:56:18.554843 by mahogny on venus
+LOG(3420, 3073076112:): Debug logging disabled
+LOG(3420, 3073076112:): Debug logging disabled
+LOG(3497, 3073203088:): -------->>
+LOG(3497, 3073203088:): Core session started on Fri Jul  3 2009 10:58:21.019245 by mahogny on venus
+LOG(3497, 3073203088:): Debug logging disabled
+LOG(3497, 3073203088:): Debug logging disabled
+LOG(3779, 3072908176:): -------->>
+LOG(3779, 3072908176:): Core session started on Fri Jul  3 2009 11:07:59.083761 by mahogny on venus
+LOG(3779, 3072908176:): Debug logging disabled
+LOG(3779, 3072908176:): Debug logging disabled
+LOG(3888, 3072965520:): -------->>
+LOG(3888, 3072965520:): Core session started on Fri Jul  3 2009 11:12:07.952685 by mahogny on venus
+LOG(3888, 3072965520:): Debug logging disabled
+LOG(3888, 3072965520:): Debug logging disabled
+LOG(4028, 3073215376:): -------->>
+LOG(4028, 3073215376:): Core session started on Fri Jul  3 2009 11:15:34.603427 by mahogny on venus
+LOG(4028, 3073215376:): Debug logging disabled
+LOG(4028, 3073215376:): Debug logging disabled
+LOG(4091, 3073514384:): -------->>
+LOG(4091, 3073514384:): Core session started on Fri Jul  3 2009 11:16:37.140598 by mahogny on venus
+LOG(4091, 3073514384:): Debug logging disabled
+LOG(4091, 3073514384:): Debug logging disabled
+LOG(4184, 3072981904:): -------->>
+LOG(4184, 3072981904:): Core session started on Fri Jul  3 2009 11:20:35.563279 by mahogny on venus
+LOG(4184, 3072981904:): Debug logging disabled
+LOG(4184, 3072981904:): Debug logging disabled
+LOG(4322, 3073784720:): -------->>
+LOG(4322, 3073784720:): Core session started on Fri Jul  3 2009 11:27:36.658273 by mahogny on venus
+LOG(4322, 3073784720:): Debug logging disabled
+LOG(4322, 3073784720:): Debug logging disabled
+LOG(4713, 3073342352:): -------->>
+LOG(4713, 3073342352:): Core session started on Fri Jul  3 2009 11:39:22.040687 by mahogny on venus
+LOG(4713, 3073342352:): Debug logging disabled
+LOG(4713, 3073342352:): Debug logging disabled
+LOG(4817, 3073772432:): -------->>
+LOG(4817, 3073772432:): Core session started on Fri Jul  3 2009 11:42:04.394003 by mahogny on venus
+LOG(4817, 3073772432:): Debug logging disabled
+LOG(4817, 3073772432:): Debug logging disabled
+LOG(5354, 3072789392:): -------->>
+LOG(5354, 3072789392:): Core session started on Fri Jul  3 2009 12:02:38.314717 by mahogny on venus
+LOG(5354, 3072789392:): Debug logging disabled
+LOG(5354, 3072789392:): Debug logging disabled
+LOG(5524, 3072744336:): -------->>
+LOG(5524, 3072744336:): Core session started on Fri Jul  3 2009 12:11:18.363127 by mahogny on venus
+LOG(5524, 3072744336:): Debug logging disabled
+LOG(5524, 3072744336:): Debug logging disabled
+LOG(5695, 3073641360:): -------->>
+LOG(5695, 3073641360:): Core session started on Fri Jul  3 2009 12:19:12.558831 by mahogny on venus
+LOG(5695, 3073641360:): Debug logging disabled
+LOG(5695, 3073641360:): Debug logging disabled
+LOG(6355, 3073391504:): -------->>
+LOG(6355, 3073391504:): Core session started on Fri Jul  3 2009 12:54:45.232558 by mahogny on venus
+LOG(6355, 3073391504:): Debug logging disabled
+LOG(6355, 3073391504:): Debug logging disabled
+LOG(6423, 3073440656:): -------->>
+LOG(6423, 3073440656:): Core session started on Fri Jul  3 2009 12:56:36.823962 by mahogny on venus
+LOG(6423, 3073440656:): Debug logging disabled
+LOG(6423, 3073440656:): Debug logging disabled
+LOG(6691, 3073055632:): -------->>
+LOG(6691, 3073055632:): Core session started on Fri Jul  3 2009 13:07:19.755476 by mahogny on venus
+LOG(6691, 3073055632:): Debug logging disabled
+LOG(6691, 3073055632:): Debug logging disabled
+LOG(6791, 3073092496:): -------->>
+LOG(6791, 3073092496:): Core session started on Fri Jul  3 2009 13:09:14.172556 by mahogny on venus
+LOG(6791, 3073092496:): Debug logging disabled
+LOG(6791, 3073092496:): Debug logging disabled
+LOG(9915, 3073579920:): -------->>
+LOG(9915, 3073579920:): Core session started on Sat Jul  4 2009 01:06:19.063849 by mahogny on venus
+LOG(9915, 3073579920:): Debug logging disabled
+LOG(9915, 3073579920:): Debug logging disabled
+LOG(10079, 3073174416:): -------->>
+LOG(10079, 3073174416:): Core session started on Sat Jul  4 2009 01:15:57.364970 by mahogny on venus
+LOG(10079, 3073174416:): Debug logging disabled
+LOG(10079, 3073174416:): Debug logging disabled
+LOG(10141, 3073260432:): -------->>
+LOG(10141, 3073260432:): Core session started on Sat Jul  4 2009 01:16:20.088364 by mahogny on venus
+LOG(10141, 3073260432:): Debug logging disabled
+LOG(10141, 3073260432:): Debug logging disabled
+LOG(10208, 3073227664:): -------->>
+LOG(10208, 3073227664:): Core session started on Sat Jul  4 2009 01:17:09.919675 by mahogny on venus
+LOG(10208, 3073227664:): Debug logging disabled
+LOG(10208, 3073227664:): Debug logging disabled
+LOG(10480, 3072822160:): -------->>
+LOG(10480, 3072822160:): Core session started on Sat Jul  4 2009 01:48:58.688662 by mahogny on venus
+LOG(10480, 3072822160:): Debug logging disabled
+LOG(10480, 3072822160:): Debug logging disabled
+LOG(10576, 3073076112:): -------->>
+LOG(10576, 3073076112:): Core session started on Sat Jul  4 2009 01:50:25.026061 by mahogny on venus
+LOG(10576, 3073076112:): Debug logging disabled
+LOG(10576, 3073076112:): Debug logging disabled
+LOG(10631, 3073129360:): -------->>
+LOG(10631, 3073129360:): Core session started on Sat Jul  4 2009 01:51:41.137030 by mahogny on venus
+LOG(10631, 3073129360:): Debug logging disabled
+LOG(10631, 3073129360:): Debug logging disabled
+LOG(10787, 3073342352:): -------->>
+LOG(10787, 3073342352:): Core session started on Sat Jul  4 2009 01:57:32.971917 by mahogny on venus
+LOG(10787, 3073342352:): Debug logging disabled
+LOG(10787, 3073342352:): Debug logging disabled
+LOG(10985, 3072805776:): -------->>
+LOG(10985, 3072805776:): Core session started on Sat Jul  4 2009 02:02:12.024223 by mahogny on venus
+LOG(10985, 3072805776:): Debug logging disabled
+LOG(10985, 3072805776:): Debug logging disabled
+LOG(11060, 3073334160:): -------->>
+LOG(11060, 3073334160:): Core session started on Sat Jul  4 2009 02:07:06.157277 by mahogny on venus
+LOG(11060, 3073334160:): Debug logging disabled
+LOG(11060, 3073334160:): Debug logging disabled
+LOG(13658, 3073551248:): -------->>
+LOG(13658, 3073551248:): Core session started on Sat Jul  4 2009 12:53:54.341662 by mahogny on venus
+LOG(13658, 3073551248:): Debug logging disabled
+LOG(13658, 3073551248:): Debug logging disabled
+LOG(13947, 3072818064:): -------->>
+LOG(13947, 3072818064:): Core session started on Sat Jul  4 2009 13:03:17.610726 by mahogny on venus
+LOG(13947, 3072818064:): Debug logging disabled
+LOG(13947, 3072818064:): Debug logging disabled
+LOG(14013, 3073067920:): -------->>
+LOG(14013, 3073067920:): Core session started on Sat Jul  4 2009 13:04:31.880014 by mahogny on venus
+LOG(14013, 3073067920:): Debug logging disabled
+LOG(14013, 3073067920:): Debug logging disabled
+LOG(14114, 3073313680:): -------->>
+LOG(14114, 3073313680:): Core session started on Sat Jul  4 2009 13:06:30.228013 by mahogny on venus
+LOG(14114, 3073313680:): Debug logging disabled
+LOG(14114, 3073313680:): Debug logging disabled
+LOG(14200, 3073289104:): -------->>
+LOG(14200, 3073289104:): Core session started on Sat Jul  4 2009 13:07:23.502320 by mahogny on venus
+LOG(14200, 3073289104:): Debug logging disabled
+LOG(14200, 3073289104:): Debug logging disabled
+LOG(14317, 3072883600:): -------->>
+LOG(14317, 3072883600:): Core session started on Sat Jul  4 2009 13:09:01.156464 by mahogny on venus
+LOG(14317, 3072883600:): Debug logging disabled
+LOG(14317, 3072883600:): Debug logging disabled
+LOG(14435, 3073399696:): -------->>
+LOG(14435, 3073399696:): Core session started on Sat Jul  4 2009 13:14:15.092198 by mahogny on venus
+LOG(14435, 3073399696:): Debug logging disabled
+LOG(14435, 3073399696:): Debug logging disabled
+LOG(14719, 3073305488:): -------->>
+LOG(14719, 3073305488:): Core session started on Sat Jul  4 2009 13:22:37.605620 by mahogny on venus
+LOG(14719, 3073305488:): Debug logging disabled
+LOG(14719, 3073305488:): Debug logging disabled
+LOG(20155, 3073121168:): -------->>
+LOG(20155, 3073121168:): Core session started on Sat Jul  4 2009 16:01:41.307658 by mahogny on venus
+LOG(20155, 3073121168:): Debug logging disabled
+LOG(20155, 3073121168:): Debug logging disabled
+LOG(20228, 3073231760:): -------->>
+LOG(20228, 3073231760:): Core session started on Sat Jul  4 2009 16:03:17.033488 by mahogny on venus
+LOG(20228, 3073231760:): Debug logging disabled
+LOG(20228, 3073231760:): Debug logging disabled
+LOG(20292, 3073215376:): -------->>
+LOG(20292, 3073215376:): Core session started on Sat Jul  4 2009 16:04:33.066796 by mahogny on venus
+LOG(20292, 3073215376:): Debug logging disabled
+LOG(20292, 3073215376:): Debug logging disabled
+LOG(20374, 3072854928:): -------->>
+LOG(20374, 3072854928:): Core session started on Sat Jul  4 2009 16:05:38.105945 by mahogny on venus
+LOG(20374, 3072854928:): Debug logging disabled
+LOG(20374, 3072854928:): Debug logging disabled
+LOG(20458, 3073530768:): -------->>
+LOG(20458, 3073530768:): Core session started on Sat Jul  4 2009 16:07:05.276206 by mahogny on venus
+LOG(20458, 3073530768:): Debug logging disabled
+LOG(20458, 3073530768:): Debug logging disabled
+LOG(20628, 3072752528:): -------->>
+LOG(20628, 3072752528:): Core session started on Sat Jul  4 2009 16:11:53.350265 by mahogny on venus
+LOG(20628, 3072752528:): Debug logging disabled
+LOG(20628, 3072752528:): Debug logging disabled
+LOG(20769, 3073035152:): -------->>
+LOG(20769, 3073035152:): Core session started on Sat Jul  4 2009 16:14:22.797835 by mahogny on venus
+LOG(20769, 3073035152:): Debug logging disabled
+LOG(20769, 3073035152:): Debug logging disabled
+LOG(20851, 3072879504:): -------->>
+LOG(20851, 3072879504:): Core session started on Sat Jul  4 2009 16:14:55.601376 by mahogny on venus
+LOG(20851, 3072879504:): Debug logging disabled
+LOG(20851, 3072879504:): Debug logging disabled
+LOG(21014, 3072940944:): -------->>
+LOG(21014, 3072940944:): Core session started on Sat Jul  4 2009 16:17:16.942890 by mahogny on venus
+LOG(21014, 3072940944:): Debug logging disabled
+LOG(21014, 3072940944:): Debug logging disabled
+LOG(755, 3073014672:): -------->>
+LOG(755, 3073014672:): Core session started on Sun Jul  5 2009 12:55:39.512013 by mahogny on venus
+LOG(755, 3073014672:): Debug logging disabled
+LOG(755, 3073014672:): Debug logging disabled
+LOG(900, 3073629072:): -------->>
+LOG(900, 3073629072:): Core session started on Sun Jul  5 2009 12:59:08.262865 by mahogny on venus
+LOG(900, 3073629072:): Debug logging disabled
+LOG(900, 3073629072:): Debug logging disabled
+LOG(1318, 3072969616:): -------->>
+LOG(1318, 3072969616:): Core session started on Sun Jul  5 2009 14:12:25.127565 by mahogny on venus
+LOG(1318, 3072969616:): Debug logging disabled
+LOG(1318, 3072969616:): Debug logging disabled
+LOG(1373, 3073670032:): -------->>
+LOG(1373, 3073670032:): Core session started on Sun Jul  5 2009 14:13:18.543128 by mahogny on venus
+LOG(1373, 3073670032:): Debug logging disabled
+LOG(1373, 3073670032:): Debug logging disabled
+LOG(1437, 3073719184:): -------->>
+LOG(1437, 3073719184:): Core session started on Sun Jul  5 2009 14:14:44.571698 by mahogny on venus
+LOG(1437, 3073719184:): Debug logging disabled
+LOG(1437, 3073719184:): Debug logging disabled
+LOG(2899, 3073100688:): -------->>
+LOG(2899, 3073100688:): Core session started on Sun Jul  5 2009 16:37:11.069938 by mahogny on venus
+LOG(2899, 3073100688:): Debug logging disabled
+LOG(2899, 3073100688:): Debug logging disabled
+LOG(2959, 3073784720:): -------->>
+LOG(2959, 3073784720:): Core session started on Sun Jul  5 2009 16:37:41.034549 by mahogny on venus
+LOG(2959, 3073784720:): Debug logging disabled
+LOG(2959, 3073784720:): Debug logging disabled
+LOG(3033, 3073280912:): -------->>
+LOG(3033, 3073280912:): Core session started on Sun Jul  5 2009 16:38:33.837208 by mahogny on venus
+LOG(3033, 3073280912:): Debug logging disabled
+LOG(3033, 3073280912:): Debug logging disabled
+LOG(3151, 3073141648:): -------->>
+LOG(3151, 3073141648:): Core session started on Sun Jul  5 2009 16:41:48.884773 by mahogny on venus
+LOG(3151, 3073141648:): Debug logging disabled
+LOG(3151, 3073141648:): Debug logging disabled
+LOG(3257, 3073325968:): -------->>
+LOG(3257, 3073325968:): Core session started on Sun Jul  5 2009 16:43:27.053602 by mahogny on venus
+LOG(3257, 3073325968:): Debug logging disabled
+LOG(3257, 3073325968:): Debug logging disabled
+LOG(3343, 3073518480:): -------->>
+LOG(3343, 3073518480:): Core session started on Sun Jul  5 2009 16:44:30.984430 by mahogny on venus
+LOG(3343, 3073518480:): Debug logging disabled
+LOG(3343, 3073518480:): Debug logging disabled
+LOG(3436, 3073059728:): -------->>
+LOG(3436, 3073059728:): Core session started on Sun Jul  5 2009 16:45:44.167700 by mahogny on venus
+LOG(3436, 3073059728:): Debug logging disabled
+LOG(3436, 3073059728:): Debug logging disabled
+LOG(3520, 3073145744:): -------->>
+LOG(3520, 3073145744:): Core session started on Sun Jul  5 2009 16:46:34.725053 by mahogny on venus
+LOG(3520, 3073145744:): Debug logging disabled
+LOG(3520, 3073145744:): Debug logging disabled
+LOG(3804, 3072809872:): -------->>
+LOG(3804, 3072809872:): Core session started on Sun Jul  5 2009 16:51:37.757743 by mahogny on venus
+LOG(3804, 3072809872:): Debug logging disabled
+LOG(3804, 3072809872:): Debug logging disabled
+LOG(3858, 3073596304:): -------->>
+LOG(3858, 3073596304:): Core session started on Sun Jul  5 2009 16:51:55.427694 by mahogny on venus
+LOG(3858, 3073596304:): Debug logging disabled
+LOG(3858, 3073596304:): Debug logging disabled
+LOG(4354, 3073706896:): -------->>
+LOG(4354, 3073706896:): Core session started on Sun Jul  5 2009 18:22:02.070502 by mahogny on venus
+LOG(4354, 3073706896:): Debug logging disabled
+LOG(4354, 3073706896:): Debug logging disabled
+LOG(4421, 3072953232:): -------->>
+LOG(4421, 3072953232:): Core session started on Sun Jul  5 2009 18:28:32.919074 by mahogny on venus
+LOG(4421, 3072953232:): Debug logging disabled
+LOG(4421, 3072953232:): Debug logging disabled
+LOG(6277, 3073026960:): -------->>
+LOG(6277, 3073026960:): Core session started on Sun Jul  5 2009 20:10:14.281507 by mahogny on venus
+LOG(6277, 3073026960:): Debug logging disabled
+LOG(6277, 3073026960:): Debug logging disabled
+LOG(6644, 3073522576:): -------->>
+LOG(6644, 3073522576:): Core session started on Sun Jul  5 2009 20:50:12.184342 by mahogny on venus
+LOG(6644, 3073522576:): Debug logging disabled
+LOG(6644, 3073522576:): Debug logging disabled
+LOG(7063, 3072990096:): -------->>
+LOG(7063, 3072990096:): Core session started on Sun Jul  5 2009 21:39:59.396550 by mahogny on venus
+LOG(7063, 3072990096:): Debug logging disabled
+LOG(7063, 3072990096:): Debug logging disabled
+LOG(7802, 3073653648:): -------->>
+LOG(7802, 3073653648:): Core session started on Sun Jul  5 2009 23:02:40.322731 by mahogny on venus
+LOG(7802, 3073653648:): Debug logging disabled
+LOG(7802, 3073653648:): Debug logging disabled
+LOG(7934, 3073715088:): -------->>
+LOG(7934, 3073715088:): Core session started on Sun Jul  5 2009 23:09:09.118133 by mahogny on venus
+LOG(7934, 3073715088:): Debug logging disabled
+LOG(7934, 3073715088:): Debug logging disabled
+LOG(11290, 3073260432:): -------->>
+LOG(11290, 3073260432:): Core session started on Mon Jul  6 2009 08:24:51.274453 by mahogny on venus
+LOG(11290, 3073260432:): Debug logging disabled
+LOG(11290, 3073260432:): Debug logging disabled
+LOG(11422, 3073100688:): -------->>
+LOG(11422, 3073100688:): Core session started on Mon Jul  6 2009 08:28:09.049225 by mahogny on venus
+LOG(11422, 3073100688:): Debug logging disabled
+LOG(11422, 3073100688:): Debug logging disabled
+LOG(11779, 3073518480:): -------->>
+LOG(11779, 3073518480:): Core session started on Mon Jul  6 2009 08:36:55.631539 by mahogny on venus
+LOG(11779, 3073518480:): Debug logging disabled
+LOG(11779, 3073518480:): Debug logging disabled
+LOG(11864, 3073678224:): -------->>
+LOG(11864, 3073678224:): Core session started on Mon Jul  6 2009 08:38:43.694021 by mahogny on venus
+LOG(11864, 3073678224:): Debug logging disabled
+LOG(11864, 3073678224:): Debug logging disabled
+LOG(11984, 3073514384:): -------->>
+LOG(11984, 3073514384:): Core session started on Mon Jul  6 2009 08:41:21.043733 by mahogny on venus
+LOG(11984, 3073514384:): Debug logging disabled
+LOG(11984, 3073514384:): Debug logging disabled
+LOG(12049, 3072891792:): -------->>
+LOG(12049, 3072891792:): Core session started on Mon Jul  6 2009 08:42:04.985095 by mahogny on venus
+LOG(12049, 3072891792:): Debug logging disabled
+LOG(12049, 3072891792:): Debug logging disabled
+LOG(12120, 3073239952:): -------->>
+LOG(12120, 3073239952:): Core session started on Mon Jul  6 2009 08:43:09.545684 by mahogny on venus
+LOG(12120, 3073239952:): Debug logging disabled
+LOG(12120, 3073239952:): Debug logging disabled
+LOG(12178, 3072752528:): -------->>
+LOG(12178, 3072752528:): Core session started on Mon Jul  6 2009 08:43:39.363136 by mahogny on venus
+LOG(12178, 3072752528:): Debug logging disabled
+LOG(12178, 3072752528:): Debug logging disabled
+LOG(12242, 3073645456:): -------->>
+LOG(12242, 3073645456:): Core session started on Mon Jul  6 2009 08:44:31.911254 by mahogny on venus
+LOG(12242, 3073645456:): Debug logging disabled
+LOG(12242, 3073645456:): Debug logging disabled
+LOG(12535, 3073235856:): -------->>
+LOG(12535, 3073235856:): Core session started on Mon Jul  6 2009 09:06:20.541296 by mahogny on venus
+LOG(12535, 3073235856:): Debug logging disabled
+LOG(12535, 3073235856:): Debug logging disabled
+LOG(12599, 3073018768:): -------->>
+LOG(12599, 3073018768:): Core session started on Mon Jul  6 2009 09:06:58.139783 by mahogny on venus
+LOG(12599, 3073018768:): Debug logging disabled
+LOG(12599, 3073018768:): Debug logging disabled
+LOG(12746, 3073280912:): -------->>
+LOG(12746, 3073280912:): Core session started on Mon Jul  6 2009 09:10:39.400506 by mahogny on venus
+LOG(12746, 3073280912:): Debug logging disabled
+LOG(12746, 3073280912:): Debug logging disabled
+LOG(13420, 3072949136:): -------->>
+LOG(13420, 3072949136:): Core session started on Mon Jul  6 2009 09:38:02.029553 by mahogny on venus
+LOG(13420, 3072949136:): Debug logging disabled
+LOG(13420, 3072949136:): Debug logging disabled
+LOG(13501, 3073764240:): -------->>
+LOG(13501, 3073764240:): Core session started on Mon Jul  6 2009 09:39:10.042520 by mahogny on venus
+LOG(13501, 3073764240:): Debug logging disabled
+LOG(13501, 3073764240:): Debug logging disabled
+LOG(14810, 3072957328:): -------->>
+LOG(14810, 3072957328:): Core session started on Mon Jul  6 2009 10:57:51.204559 by mahogny on venus
+LOG(14810, 3072957328:): Debug logging disabled
+LOG(14810, 3072957328:): Debug logging disabled
+LOG(10027, 3073190800:): -------->>
+LOG(10027, 3073190800:): Core session started on Mon Jul  6 2009 23:40:15.517347 by mahogny on venus
+LOG(10027, 3073190800:): Debug logging disabled
+LOG(10027, 3073190800:): Debug logging disabled
+LOG(10412, 3072899984:): -------->>
+LOG(10412, 3072899984:): Core session started on Tue Jul  7 2009 00:01:15.278904 by mahogny on venus
+LOG(10412, 3072899984:): Debug logging disabled
+LOG(10412, 3072899984:): Debug logging disabled
+LOG(10602, 3073301392:): -------->>
+LOG(10602, 3073301392:): Core session started on Tue Jul  7 2009 00:08:25.280793 by mahogny on venus
+LOG(10602, 3073301392:): Debug logging disabled
+LOG(10602, 3073301392:): Debug logging disabled
+LOG(10652, 3072863120:): -------->>
+LOG(10652, 3072863120:): Core session started on Tue Jul  7 2009 00:09:40.636564 by mahogny on venus
+LOG(10652, 3072863120:): Debug logging disabled
+LOG(10652, 3072863120:): Debug logging disabled
+LOG(10809, 3073629072:): -------->>
+LOG(10809, 3073629072:): Core session started on Tue Jul  7 2009 00:14:31.485678 by mahogny on venus
+LOG(10809, 3073629072:): Debug logging disabled
+LOG(10809, 3073629072:): Debug logging disabled
+LOG(10926, 3073055632:): -------->>
+LOG(10926, 3073055632:): Core session started on Tue Jul  7 2009 00:19:47.979959 by mahogny on venus
+LOG(10926, 3073055632:): Debug logging disabled
+LOG(10926, 3073055632:): Debug logging disabled
+LOG(10991, 3073739664:): -------->>
+LOG(10991, 3073739664:): Core session started on Tue Jul  7 2009 00:21:50.647974 by mahogny on venus
+LOG(10991, 3073739664:): Debug logging disabled
+LOG(10991, 3073739664:): Debug logging disabled
+LOG(20235, 3073031056:): -------->>
+LOG(20235, 3073031056:): Core session started on Tue Jul  7 2009 23:09:08.761993 by mahogny on venus
+LOG(20235, 3073031056:): Debug logging disabled
+LOG(20235, 3073031056:): Debug logging disabled
+LOG(21024, 3073567632:): -------->>
+LOG(21024, 3073567632:): Core session started on Tue Jul  7 2009 23:33:35.105750 by mahogny on venus
+LOG(21024, 3073567632:): Debug logging disabled
+LOG(21024, 3073567632:): Debug logging disabled
+LOG(21078, 3072777104:): -------->>
+LOG(21078, 3072777104:): Core session started on Tue Jul  7 2009 23:37:16.957332 by mahogny on venus
+LOG(21078, 3072777104:): Debug logging disabled
+LOG(21078, 3072777104:): Debug logging disabled
+LOG(21138, 3072940944:): -------->>
+LOG(21138, 3072940944:): Core session started on Tue Jul  7 2009 23:37:46.234106 by mahogny on venus
+LOG(21138, 3072940944:): Debug logging disabled
+LOG(21138, 3072940944:): Debug logging disabled
+LOG(21232, 3073309584:): -------->>
+LOG(21232, 3073309584:): Core session started on Tue Jul  7 2009 23:44:08.316891 by mahogny on venus
+LOG(21232, 3073309584:): Debug logging disabled
+LOG(21232, 3073309584:): Debug logging disabled
+LOG(21418, 3072887696:): -------->>
+LOG(21418, 3072887696:): Core session started on Wed Jul  8 2009 00:02:39.479927 by mahogny on venus
+LOG(21418, 3072887696:): Debug logging disabled
+LOG(21418, 3072887696:): Debug logging disabled
+LOG(21464, 3073448848:): -------->>
+LOG(21464, 3073448848:): Core session started on Wed Jul  8 2009 00:02:44.489804 by mahogny on venus
+LOG(21464, 3073448848:): Debug logging disabled
+LOG(21464, 3073448848:): Debug logging disabled
+LOG(21537, 3073158032:): -------->>
+LOG(21537, 3073158032:): Core session started on Wed Jul  8 2009 00:07:29.676646 by mahogny on venus
+LOG(21537, 3073158032:): Debug logging disabled
+LOG(21537, 3073158032:): Debug logging disabled
+LOG(21638, 3072953232:): -------->>
+LOG(21638, 3072953232:): Core session started on Wed Jul  8 2009 00:11:37.864889 by mahogny on venus
+LOG(21638, 3072953232:): Debug logging disabled
+LOG(21638, 3072953232:): Debug logging disabled
+LOG(14803, 3073452944:): -------->>
+LOG(14803, 3073452944:): Core session started on Fri Jul 10 2009 09:53:31.603985 by mahogny on venus
+LOG(14803, 3073452944:): Debug logging disabled
+LOG(14803, 3073452944:): Debug logging disabled
+LOG(15152, 3073493904:): -------->>
+LOG(15152, 3073493904:): Core session started on Fri Jul 10 2009 10:01:06.026911 by mahogny on venus
+LOG(15152, 3073493904:): Debug logging disabled
+LOG(15152, 3073493904:): Debug logging disabled
+LOG(15207, 3073268624:): -------->>
+LOG(15207, 3073268624:): Core session started on Fri Jul 10 2009 10:01:22.901428 by mahogny on venus
+LOG(15207, 3073268624:): Debug logging disabled
+LOG(15207, 3073268624:): Debug logging disabled
+LOG(15264, 3073739664:): -------->>
+LOG(15264, 3073739664:): Core session started on Fri Jul 10 2009 10:01:55.098599 by mahogny on venus
+LOG(15264, 3073739664:): Debug logging disabled
+LOG(15264, 3073739664:): Debug logging disabled
+LOG(15340, 3072887696:): -------->>
+LOG(15340, 3072887696:): Core session started on Fri Jul 10 2009 10:02:54.717983 by mahogny on venus
+LOG(15340, 3072887696:): Debug logging disabled
+LOG(15340, 3072887696:): Debug logging disabled
+LOG(15613, 3073342352:): -------->>
+LOG(15613, 3073342352:): Core session started on Fri Jul 10 2009 10:07:55.491106 by mahogny on venus
+LOG(15613, 3073342352:): Debug logging disabled
+LOG(15613, 3073342352:): Debug logging disabled
+LOG(15674, 3073756048:): -------->>
+LOG(15674, 3073756048:): Core session started on Fri Jul 10 2009 10:08:34.640394 by mahogny on venus
+LOG(15674, 3073756048:): Debug logging disabled
+LOG(15674, 3073756048:): Debug logging disabled
+LOG(15775, 3073186704:): -------->>
+LOG(15775, 3073186704:): Core session started on Fri Jul 10 2009 10:09:42.830240 by mahogny on venus
+LOG(15775, 3073186704:): Debug logging disabled
+LOG(15775, 3073186704:): Debug logging disabled
+LOG(15874, 3073489808:): -------->>
+LOG(15874, 3073489808:): Core session started on Fri Jul 10 2009 10:11:01.832348 by mahogny on venus
+LOG(15874, 3073489808:): Debug logging disabled
+LOG(15874, 3073489808:): Debug logging disabled
+LOG(15939, 3073289104:): -------->>
+LOG(15939, 3073289104:): Core session started on Fri Jul 10 2009 10:11:28.263980 by mahogny on venus
+LOG(15939, 3073289104:): Debug logging disabled
+LOG(15939, 3073289104:): Debug logging disabled
+LOG(16008, 3073223568:): -------->>
+LOG(16008, 3073223568:): Core session started on Fri Jul 10 2009 10:12:31.280026 by mahogny on venus
+LOG(16008, 3073223568:): Debug logging disabled
+LOG(16008, 3073223568:): Debug logging disabled
+LOG(16455, 3073342352:): -------->>
+LOG(16455, 3073342352:): Core session started on Fri Jul 10 2009 10:25:34.137796 by mahogny on venus
+LOG(16455, 3073342352:): Debug logging disabled
+LOG(16455, 3073342352:): Debug logging disabled
+LOG(16600, 3073342352:): -------->>
+LOG(16600, 3073342352:): Core session started on Fri Jul 10 2009 10:30:02.499531 by mahogny on venus
+LOG(16600, 3073342352:): Debug logging disabled
+LOG(16600, 3073342352:): Debug logging disabled
+LOG(16666, 3072891792:): -------->>
+LOG(16666, 3072891792:): Core session started on Fri Jul 10 2009 10:30:32.004238 by mahogny on venus
+LOG(16666, 3072891792:): Debug logging disabled
+LOG(16666, 3072891792:): Debug logging disabled
+LOG(16731, 3073670032:): -------->>
+LOG(16731, 3073670032:): Core session started on Fri Jul 10 2009 10:31:14.753081 by mahogny on venus
+LOG(16731, 3073670032:): Debug logging disabled
+LOG(16731, 3073670032:): Debug logging disabled
+LOG(16825, 3073145744:): -------->>
+LOG(16825, 3073145744:): Core session started on Fri Jul 10 2009 10:35:05.057927 by mahogny on venus
+LOG(16825, 3073145744:): Debug logging disabled
+LOG(16825, 3073145744:): Debug logging disabled
+LOG(17475, 3072863120:): -------->>
+LOG(17475, 3072863120:): Core session started on Fri Jul 10 2009 10:37:08.990234 by mahogny on venus
+LOG(17475, 3072863120:): Debug logging disabled
+LOG(17475, 3072863120:): Debug logging disabled
+LOG(17540, 3073629072:): -------->>
+LOG(17540, 3073629072:): Core session started on Fri Jul 10 2009 10:37:48.281020 by mahogny on venus
+LOG(17540, 3073629072:): Debug logging disabled
+LOG(17540, 3073629072:): Debug logging disabled
+LOG(17615, 3073297296:): -------->>
+LOG(17615, 3073297296:): Core session started on Fri Jul 10 2009 10:39:12.565404 by mahogny on venus
+LOG(17615, 3073297296:): Debug logging disabled
+LOG(17615, 3073297296:): Debug logging disabled
+LOG(17705, 3073104784:): -------->>
+LOG(17705, 3073104784:): Core session started on Fri Jul 10 2009 10:40:45.696399 by mahogny on venus
+LOG(17705, 3073104784:): Debug logging disabled
+LOG(17705, 3073104784:): Debug logging disabled
+LOG(17872, 3073428368:): -------->>
+LOG(17872, 3073428368:): Core session started on Fri Jul 10 2009 10:43:25.037854 by mahogny on venus
+LOG(17872, 3073428368:): Debug logging disabled
+LOG(17872, 3073428368:): Debug logging disabled
+LOG(17952, 3073301392:): -------->>
+LOG(17952, 3073301392:): Core session started on Fri Jul 10 2009 10:44:49.119107 by mahogny on venus
+LOG(17952, 3073301392:): Debug logging disabled
+LOG(17952, 3073301392:): Debug logging disabled
+LOG(18215, 3073448848:): -------->>
+LOG(18215, 3073448848:): Core session started on Fri Jul 10 2009 10:50:56.775144 by mahogny on venus
+LOG(18215, 3073448848:): Debug logging disabled
+LOG(18215, 3073448848:): Debug logging disabled
+LOG(19207, 3073764240:): -------->>
+LOG(19207, 3073764240:): Core session started on Fri Jul 10 2009 11:52:38.697798 by mahogny on venus
+LOG(19207, 3073764240:): Debug logging disabled
+LOG(19207, 3073764240:): Debug logging disabled
+LOG(19262, 3072912272:): -------->>
+LOG(19262, 3072912272:): Core session started on Fri Jul 10 2009 11:52:50.965252 by mahogny on venus
+LOG(19262, 3072912272:): Debug logging disabled
+LOG(19262, 3072912272:): Debug logging disabled
+LOG(19326, 3073620880:): -------->>
+LOG(19326, 3073620880:): Core session started on Fri Jul 10 2009 11:53:23.890439 by mahogny on venus
+LOG(19326, 3073620880:): Debug logging disabled
+LOG(19326, 3073620880:): Debug logging disabled
+LOG(19386, 3073555344:): -------->>
+LOG(19386, 3073555344:): Core session started on Fri Jul 10 2009 11:54:10.933894 by mahogny on venus
+LOG(19386, 3073555344:): Debug logging disabled
+LOG(19386, 3073555344:): Debug logging disabled
+LOG(19491, 3072965520:): -------->>
+LOG(19491, 3072965520:): Core session started on Fri Jul 10 2009 11:56:22.324026 by mahogny on venus
+LOG(19491, 3072965520:): Debug logging disabled
+LOG(19491, 3072965520:): Debug logging disabled

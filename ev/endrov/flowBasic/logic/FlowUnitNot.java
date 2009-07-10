@@ -22,13 +22,13 @@ import endrov.imageset.AnyEvImage;
  */
 public class FlowUnitNot extends FlowUnitBasic
 	{
-	public static final String showName="Not";
+	private static final String showName="Not";
 	private static final String metaType="not";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Logic","not",metaType,FlowUnitNot.class, null,"Not"));
+		Flow.addUnitType(new FlowUnitDeclaration("Logic",showName,metaType,FlowUnitNot.class, null,"Not"));
 		}
 
 	

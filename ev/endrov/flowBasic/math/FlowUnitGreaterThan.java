@@ -1,4 +1,4 @@
-package endrov.flowBasic.logic;
+package endrov.flowBasic.math;
 
 
 import java.util.Map;
@@ -7,7 +7,6 @@ import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.flowBasic.math.NumberMath;
 import endrov.imageset.AnyEvImage;
 
 /**
@@ -15,19 +14,20 @@ import endrov.imageset.AnyEvImage;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitGreaterThan extends FlowUnitLogicBinop
+public class FlowUnitGreaterThan extends FlowUnitMathBinop
 	{
 	private static final String metaType="greaterThan";
+	private static final String showName="A>B";
 	
 	public FlowUnitGreaterThan()
 		{
-		super("A>B",metaType);
+		super(showName,metaType);
 		}
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Logic",">",metaType,FlowUnitGreaterThan.class, null,"Check which is greater"));
+		Flow.addUnitType(new FlowUnitDeclaration("Logic",showName,metaType,FlowUnitGreaterThan.class, null,"Ask if A is greater (>) than B"));
 		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
@@ -36,16 +36,12 @@ public class FlowUnitGreaterThan extends FlowUnitLogicBinop
 		Object a=flow.getInputValue(this, exec, "A");
 		Object b=flow.getInputValue(this, exec, "B");
 
-		checkNotNull(a,b);
 		if(a instanceof Number && b instanceof Number)
 			lastOutput.put("C", NumberMath.greater((Number)a, (Number)b));
-		
-//		else if(a instanceof Number && b instanceof Number)
-//			lastOutput.put("C", new EvOpMaxImageScalar((Number)b).exec1Untyped((AnyEvImage)a));
-		
+		else if(a instanceof Number && b instanceof AnyEvImage)
+			lastOutput.put("C", new EvOpScalarGreaterThanImage((Number)a).exec1Untyped((AnyEvImage)b));
 		else if(a instanceof AnyEvImage && b instanceof Number)
 			lastOutput.put("C", new EvOpImageGreaterThanScalar((Number)b).exec1Untyped((AnyEvImage)a));
-		
 		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
 			lastOutput.put("C", new EvOpImageGreaterThanImage().exec1Untyped((AnyEvImage)a,(AnyEvImage)b));
 		else

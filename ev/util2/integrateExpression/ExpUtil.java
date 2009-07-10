@@ -58,7 +58,7 @@ public class ExpUtil
 		double correctionM=0;
 		
 		TreeMap<EvDecimal, Tuple<Double,Double>> historyKM=new TreeMap<EvDecimal, Tuple<Double,Double>>();
-		Nuc corrNuc=lin.getNucCreate("correctExp");
+		Nuc corrNuc=lin.getCreateNuc("correctExp");
 		
 		int framecount=0;
 		
@@ -104,7 +104,7 @@ public class ExpUtil
 			//Trigger correction
 			if(!lastExposure.equals(expTime))
 				{
-				corrNuc.getPosCreate(frame);
+				corrNuc.getCreatePos(frame);
 				
 				//NOTE! last frame has already been corrected. Hence correction does not depend on last correction!
 //				Tuple<Double,Double> newKM=EvMathUtil.fitLinear1D(lastFit, curFit);

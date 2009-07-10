@@ -339,7 +339,7 @@ public class ManualExtension
 							//TODO
 							stack.resX=1;
 							stack.resY=1;
-							stack.binning=1;
+//							stack.binning=1;
 							
 							EvImage evim=new EvImage();
 							evim.setPixelsReference(cim.getPixels());

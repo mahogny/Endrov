@@ -473,7 +473,7 @@ public class LineageWindow extends BasicWindow
 						if(!nuc.pos.tailMap(kf.frame).isEmpty())
 							{
 							String newname=lin.getUniqueNucName();
-							NucLineage.Nuc newnuc=lin.getNucCreate(newname);
+							NucLineage.Nuc newnuc=lin.getCreateNuc(newname);
 							newnuc.pos.putAll(nuc.pos.tailMap(kf.frame));
 							for(EvDecimal key:newnuc.pos.keySet())
 								nuc.pos.remove(key);
@@ -554,7 +554,7 @@ public class LineageWindow extends BasicWindow
 						else
 							{
 							getLineage().nuc.get(nucName).child.add(cname);
-							getLineage().getNucCreate(cname).parent=nucName;
+							getLineage().getCreateNuc(cname).parent=nucName;
 							BasicWindow.updateWindows();
 							}
 						}
@@ -569,9 +569,9 @@ public class LineageWindow extends BasicWindow
 					if(!getLineage().nuc.containsKey(nameA) && !getLineage().nuc.containsKey(nameP))
 						{
 						getLineage().nuc.get(nucName).child.add(nameA);
-						getLineage().getNucCreate(nameA).parent=nucName;
+						getLineage().getCreateNuc(nameA).parent=nucName;
 						getLineage().nuc.get(nucName).child.add(nameP);
-						getLineage().getNucCreate(nameP).parent=nucName;
+						getLineage().getCreateNuc(nameP).parent=nucName;
 						BasicWindow.updateWindows();
 						
 						String sFrame=JOptionPane.showInputDialog("Start frame or nothing for none");

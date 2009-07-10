@@ -5,7 +5,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "LOCI Bioformats";
+		return "LOCI Bioformats, fileformats";
 		}
 
 	public String getAuthor()

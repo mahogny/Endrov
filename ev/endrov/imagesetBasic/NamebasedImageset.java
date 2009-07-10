@@ -398,7 +398,7 @@ public class NamebasedImageset implements EvIOData
 				EvImage evim=new EvImage();
 				stack.dispX=0;
 				stack.dispY=0;
-				stack.binning=1;
+				//stack.binning=1;
 				stack.resX=resX; 
 				stack.resY=resY;
 				

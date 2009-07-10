@@ -17,16 +17,17 @@ import endrov.imageset.AnyEvImage;
 public class FlowUnitXor extends FlowUnitLogicBinop
 	{
 	private static final String metaType="xor";
+	private static final String showName="Xor";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Logic","^",metaType,FlowUnitXor.class, null,"Xor"));
+		Flow.addUnitType(new FlowUnitDeclaration("Logic",showName,metaType,FlowUnitXor.class, null,"(A and not B) or (not A and B)"));
 		}
 	
 	public FlowUnitXor()
 		{
-		super("A ^ B",metaType);
+		super(showName,metaType);
 		}
 	
 	
@@ -37,7 +38,6 @@ public class FlowUnitXor extends FlowUnitLogicBinop
 		Object a=flow.getInputValue(this, exec, "A");
 		Object b=flow.getInputValue(this, exec, "B");
 		
-		checkNotNull(a,b);
 		if(a instanceof Boolean && b instanceof Boolean)
 			lastOutput.put("C", (Boolean)a ^ (Boolean)b);
 		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)

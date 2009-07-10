@@ -86,8 +86,8 @@ public class Slice3D
 			BufferedImage bim=p.quickReadOnlyAWT();
 			w=p.getWidth();
 			h=p.getHeight();
-			resX=stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
-			resY=stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
+			resX=stack.getResbinX();//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
+			resY=stack.getResbinY();//stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
 			//resZ=im.meta.resZ;
 
 			//Load bitmap, scale down. Not needed, little data.

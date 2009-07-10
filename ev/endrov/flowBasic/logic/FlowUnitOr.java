@@ -17,16 +17,17 @@ import endrov.imageset.AnyEvImage;
 public class FlowUnitOr extends FlowUnitLogicBinop
 	{
 	private static final String metaType="or";
+	private static final String showName="Or";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration("Logic","|",metaType,FlowUnitOr.class, null,"Or"));
+		Flow.addUnitType(new FlowUnitDeclaration("Logic",showName,metaType,FlowUnitOr.class, null,"Or"));
 		}
 	
 	public FlowUnitOr()
 		{
-		super("A | B",metaType);
+		super(showName,metaType);
 		}
 	
 	

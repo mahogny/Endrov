@@ -819,11 +819,11 @@ public class EvIODataOST implements EvIOData
 					EvStack stack=new EvStack();
 					channel.imageLoader.put(fe.getKey(),stack);
 					//TODO properly move metadata
-					stack.resX=im.resX;
-					stack.resY=im.resY;
+					stack.resX=im.resX/channel.chBinning;
+					stack.resY=im.resY/channel.chBinning;
 					stack.dispX=channel.dispX;
 					stack.dispY=channel.dispY;
-					stack.binning=channel.chBinning;
+					//stack.binning=channel.chBinning;
 					for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
 						{
 						EvImage evim=new EvImage();

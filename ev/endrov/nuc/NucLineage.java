@@ -382,7 +382,7 @@ public class NucLineage extends EvObject implements Cloneable
 				String nucName=nuce.getAttributeValue("name");
 				String ends=nuce.getAttributeValue("end");
 				String starts=nuce.getAttributeValue("start");
-				Nuc n=getNucCreate(nucName);
+				Nuc n=getCreateNuc(nucName);
 				if(ends!=null) n.overrideEnd=new EvDecimal(ends);
 				if(starts!=null) n.overrideStart=new EvDecimal(starts);
 				n.description=nuce.getAttributeValue("desc");	
@@ -445,7 +445,7 @@ public class NucLineage extends EvObject implements Cloneable
 	/** 
 	 * Get a nucleus. Create if needed 
 	 */
-	public Nuc getNucCreate(String name)
+	public Nuc getCreateNuc(String name)
 		{
 		Nuc n=nuc.get(name);
 		if(n==null)
@@ -467,9 +467,9 @@ public class NucLineage extends EvObject implements Cloneable
 		if(n!=null)
 			{
 			String c1n=getUniqueNucName();
-			Nuc c1=getNucCreate(c1n);
+			Nuc c1=getCreateNuc(c1n);
 			String c2n=getUniqueNucName();
-			Nuc c2=getNucCreate(c2n);
+			Nuc c2=getCreateNuc(c2n);
 			n.child.add(c1n);
 			n.child.add(c2n);
 			c1.parent=parentName;
@@ -853,7 +853,7 @@ public class NucLineage extends EvObject implements Cloneable
 			} 
 		
 		/** Get position, create if it does not exist */
-		public NucPos getPosCreate(EvDecimal frame)
+		public NucPos getCreatePos(EvDecimal frame)
 			{
 			NucPos npos=pos.get(frame);
 			if(npos==null)
@@ -863,7 +863,7 @@ public class NucLineage extends EvObject implements Cloneable
 			}
 
 		/** Get expression level, create if it does not exist */
-		public NucExp getExpCreate(String n)
+		public NucExp getCreateExp(String n)
 			{
 			NucExp e=exp.get(n);
 			if(e==null)

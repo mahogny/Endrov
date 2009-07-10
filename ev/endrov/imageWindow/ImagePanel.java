@@ -3,8 +3,10 @@ package endrov.imageWindow;
 import java.util.*;
 import java.awt.image.*;
 import java.awt.*;
+
 import javax.swing.*;
 import javax.vecmath.Vector2d;
+import util2.wormbase.GetWormbaseLineage;
 
 import endrov.ev.*;
 //import endrov.filterBasic.ContrastBrightnessOp;
@@ -103,9 +105,13 @@ public class ImagePanel extends JPanel
 			loadImage();
 			if(bufi!=null)
 				{
-				int w=(int)(bufi.getWidth()*stack.binning);
-				int h=(int)(bufi.getHeight()*stack.binning);
+//				int w=(int)(bufi.getWidth()*stack.binning);
+	//			int h=(int)(bufi.getHeight()*stack.binning);
+				int w=(int)(bufi.getWidth());
+				int h=(int)(bufi.getHeight());
 							
+				
+				
 				//Adjust zoom
 				double zoom1=p.getWidth()/(double)w;
 				double zoom2=p.getHeight()/(double)h;
@@ -113,10 +119,12 @@ public class ImagePanel extends JPanel
 					p.zoom=zoom1;
 				else
 					p.zoom=zoom2;
-				
+
 				//Place camera in the middle
-				p.transX=-w/2-stack.dispX;
-				p.transY=-h/2-stack.dispY;
+				Vector2d mid=p.transformI2S(new Vector2d(w/2,h/2));
+				mid.sub(new Vector2d(p.getWidth()/2,p.getHeight()/2));
+				p.transX-=(int)mid.x/p.zoom;
+				p.transY-=(int)mid.y/p.zoom; //TODO change order of zoom and trans
 				}
 			}
 		
@@ -127,22 +135,26 @@ public class ImagePanel extends JPanel
 				{
 				//Calculate translation and zoom of image
 				Vector2d trans=p.transformI2S(new Vector2d(stack.dispX, stack.dispY));
-				double zoomBinning=p.zoom*stack.binning;
-				double invZoomBinning=1.0/zoomBinning;
 
 				g2.translate(trans.x,trans.y);
-				g2.scale(zoomBinning,zoomBinning);
+				g2.scale(p.zoom,p.zoom);   //TODO change order of zoom and trans
+//				g2.scale(stack.binning,stack.binning); 
 				g2.rotate(p.rotation);
+
+				//TODO deprecate binning? combine into res?
 				
 				g2.drawImage(bufi, null, 0, 0);
 				
 				g2.rotate(-p.rotation);
-				g2.scale(invZoomBinning,invZoomBinning);
+//				g2.scale(1/stack.binning,1/stack.binning); 
+				g2.scale(1/p.zoom,1/p.zoom);  //TODO change order of zoom and trans
 				g2.translate(-trans.x,-trans.y);
 				} 
 			}
 		
 		}
+	
+	
 	
 	
 	public boolean checkIfTransformOk()
@@ -229,33 +241,38 @@ public class ImagePanel extends JPanel
 	 */
 	public void pan(double dx, double dy)
 		{
-		transX+=(double)dx/zoom;
+		transX+=(double)dx/zoom;  //TODO change order of zoom and trans
 		transY+=(double)dy/zoom;
 		}
 
 
 	
 	/** Convert image coordinate to screen coordinate (image scaled by binning) */
-	public Vector2d transformI2S(Vector2d u) //ok
+	//Problem: should now be stack specific! currently ignores binning as stated above
+	public Vector2d transformI2S(Vector2d u)
 		{
 		Vector2d v=new Vector2d(u);
 		Matrix2d rotmat=new Matrix2d();
 		rotmat.rot(rotation);
 		rotmat.transform(v);
 		
-		v.add(new Vector2d(transX,transY));
+		
+		v.add(new Vector2d(transX,transY));  //TODO change order of zoom and trans
 		v.scale(zoom);
 		v.add(new Vector2d(getWidth()/2.0, getHeight()/2.0));
 		return v;
 		}
 	
+	
+	
 	/** Convert screen coordinate to image coordinate (image scaled by binning) */
+	//Problem: should now be stack specific!
 	public Vector2d transformS2I(Vector2d u)
 		{
 		Vector2d v=new Vector2d(u);
 		v.add(new Vector2d(-getWidth()/2.0, -getHeight()/2.0));
 		v.scale(1.0/zoom);
-		v.add(new Vector2d(-transX,-transY));
+		v.add(new Vector2d(-transX,-transY));  //TODO change order of zoom and trans
 		
 		Matrix2d rotmat=new Matrix2d();
 		rotmat.rot(-rotation);

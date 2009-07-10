@@ -411,7 +411,7 @@ public class SequenceImageset implements EvIOData
 						//TODO metadata?
 						stack.dispX=0;
 						stack.dispY=0;
-						stack.binning=1;
+						//stack.binning=1;
 						stack.resX=resX; 
 						stack.resY=resY; 
 						for(int i=0;i<numSlices;i+=skipSlices)

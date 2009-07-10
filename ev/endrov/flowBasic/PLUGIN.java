@@ -13,7 +13,6 @@ import endrov.flowBasic.convert.FlowUnitWrapInChannel;
 import endrov.flowBasic.images.FlowUnitChannelDim2D;
 import endrov.flowBasic.images.FlowUnitChannelDim3D;
 import endrov.flowBasic.logic.FlowUnitAnd;
-import endrov.flowBasic.logic.FlowUnitGreaterThan;
 import endrov.flowBasic.logic.FlowUnitNot;
 import endrov.flowBasic.logic.FlowUnitOr;
 import endrov.flowBasic.logic.FlowUnitXor;

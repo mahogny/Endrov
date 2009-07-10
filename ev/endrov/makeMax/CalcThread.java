@@ -4,6 +4,7 @@ package endrov.makeMax;
 
 import endrov.basicWindow.*;
 import endrov.ev.*;
+import endrov.flowProjection.EvOpProjectMaxZ;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
 
@@ -69,20 +70,30 @@ public final class CalcThread extends BatchThread
 				//Tell about progress
 				batchLog(""+curframe);
 
+				
 				EvDecimal z=chfrom.closestZ(curframe, EvDecimal.ZERO);
 				double resX=1,resY=1,dispX=0,dispY=0,binning=1;
 				try
 					{
 					int[][] maxim=null;
 
+					//Check for premature stop
+					if(die)
+						{
+						batchDone();
+						return;
+						}
+					
+					EvStack s=chfrom.getFrame(curframe);
+					EvStack max=new EvOpProjectMaxZ().project(s);
+
+
+					/*
 						for(;;)
 							{
-							//Check for premature stop
-							if(die)
-								{
-								batchDone();
-								return;
-								}
+							
+
+							
 	
 							//Load image
 							EvStack stack=chfrom.imageLoader.get(curframe);
@@ -115,7 +126,6 @@ public final class CalcThread extends BatchThread
 									if(p>maxim[ay][ax])
 										maxim[ay][ax]=p;
 									}
-	
 							//Go to next z
 							final EvDecimal nz=chfrom.closestZAbove(curframe, z);
 							if(nz.equals(z))
@@ -123,6 +133,9 @@ public final class CalcThread extends BatchThread
 							z=nz;
 							}
 
+						*/
+						
+					/*
 					//Write out max image
 					if(maxim!=null)
 						{
@@ -138,12 +151,12 @@ public final class CalcThread extends BatchThread
 						stack.binning=binning;
 						
 						stack.put(EvDecimal.ZERO,toim);
-						
-						chto.imageLoader.put(curframe,stack);
+						*/
+						chto.imageLoader.put(curframe,max);
 						
 						//chto.setImage(curframe, EvDecimal.ZERO, toim);
 						BasicWindow.updateWindows();
-						}
+//						}
 					
 					
 					}
