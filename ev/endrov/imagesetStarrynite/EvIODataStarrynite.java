@@ -53,12 +53,6 @@ public class EvIODataStarrynite implements EvIOData
 		});
 		}
 	
-	
-	/******************************************************************************************************
-	 *                               Image I/O class                                                      *
-	 *****************************************************************************************************/
-	
-
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
@@ -124,10 +118,9 @@ public class EvIODataStarrynite implements EvIOData
 			}
 		}
 
-	//TODO move?
-	double xy_res, z_res; //[um]? um/px?
-	EvDecimal time_interval; //[s], originally [min]
-	
+	//Parameters
+	private double xy_res, z_res; //[um/px]
+	private EvDecimal time_interval; //[s], originally [min]
 	
 	
 	/**
@@ -218,14 +211,18 @@ public class EvIODataStarrynite implements EvIOData
 		{
 		File fNuclei=new File(basedir,"nuclei");
 		
+
+		HashMap<Integer, String> indexNuc; //index -> nucname
+		HashMap<Integer, String> nextIndexNuc=new HashMap<Integer, String>();
+
 		for(int curi=1;;curi++)
 			{
+			indexNuc=nextIndexNuc;
+			nextIndexNuc=new HashMap<Integer, String>();
 			File f=new File(fNuclei,"t"+EV.pad(curi, 3)+"-nuclei");
 			if(!f.exists())
 				break;
-
-			//System.out.println("curi "+curi);
-			
+			System.out.println("curi "+curi);
 			String content=EvFileUtil.readFile(f);
 			StringTokenizer stok=new StringTokenizer(content, "\n");
 			while(stok.hasMoreTokens())
@@ -234,64 +231,80 @@ public class EvIODataStarrynite implements EvIOData
 				StringTokenizer linetok=new StringTokenizer(line, ",");
 				
 				String sIndex=linetok.nextToken();
-				String sStatus=linetok.nextToken();
-				String sPred=linetok.nextToken();				
-				String sSucc1=linetok.nextToken();				
-				String sSucc2=linetok.nextToken();				
-				String sX=linetok.nextToken();				
-				String sY=linetok.nextToken();				
-				String sZ=linetok.nextToken();				
-				String sDiam=linetok.nextToken();				
-				String sIdentity=linetok.nextToken();
-				String sUnknown=linetok.nextToken();				
-
-				//System.out.println(sIdentity);
+				String sStatus=linetok.nextToken().substring(1);
+				String sPred=linetok.nextToken().substring(1);				
+				String sSucc1=linetok.nextToken().substring(1);				
+				String sSucc2=linetok.nextToken().substring(1);				
+				String sX=linetok.nextToken().substring(1);				
+				String sY=linetok.nextToken().substring(1);				
+				String sZ=linetok.nextToken().substring(1);				
+				String sDiam=linetok.nextToken().substring(1);
+				String sIdentity=linetok.nextToken().substring(1);
+				/*String sAce=*/linetok.nextToken().substring(1);				
 				
+//				int iAce=Integer.parseInt(sAce);
+				int iSucc1=Integer.parseInt(sSucc1);
+				int iSucc2=Integer.parseInt(sSucc2);
+				int iIndex=Integer.parseInt(sIndex);
+//				int iPred=Integer.parseInt(sPred);
+
+
+				//Get this nuc
+				NucLineage.Nuc nuc;
+				String thisName=indexNuc.get(iIndex);
+				if(thisName==null)
+					{
+					thisName=lin.getUniqueNucName();
+					nuc=lin.getCreateNuc(thisName);
+					}
+				else
+					nuc=lin.nuc.get(thisName);
+
+				//Naming
+				if(thisName.startsWith(":") && !sIdentity.equals("nill"))
+					{
+					if(lin.nuc.containsKey(sIdentity))
+						System.out.println("Name collision "+sIdentity);
+					else
+						{
+						lin.renameNucleus(thisName, sIdentity);
+						thisName=sIdentity;
+						}
+					}
+				
+				//Show how to continue next frame
+				if(iSucc2!=-1)
+					{
+					//Split
+					String name1=lin.getUniqueNucName();
+					NucLineage.Nuc nuc1=lin.getCreateNuc(name1);
+					String name2=lin.getUniqueNucName();
+					NucLineage.Nuc nuc2=lin.getCreateNuc(name2);
+					nuc.child.add(name1);
+					nuc.child.add(name2);
+					nuc1.parent=thisName;
+					nuc2.parent=thisName;
+					nextIndexNuc.put(iSucc1, name1);
+					nextIndexNuc.put(iSucc2, name2);					
+					}
+				else if(iSucc1!=-1)
+					//Just add more coordinates
+					nextIndexNuc.put(iSucc1, thisName);
+				
+				//Position
 				EvDecimal frame=frame2time(curi);
-				
-				NucLineage.Nuc nuc=lin.getCreateNuc(sIdentity);
-
-				// image/Image3D.java    z uses getZPixRes, xy does not
-				
 				NucLineage.NucPos pos=nuc.getCreatePos(frame);
 				pos.x=Double.parseDouble(sX)*xy_res;
 				pos.y=Double.parseDouble(sY)*xy_res;
-				pos.z=Double.parseDouble(sZ)*z_res;
-				pos.r=Double.parseDouble(sDiam)*xy_res/2; //Think resolution comes in here
+				pos.z=Double.parseDouble(sZ)*z_res; // image/Image3D.java    z uses getZPixRes, xy does not
+				pos.r=Double.parseDouble(sDiam)*xy_res/2; 
+				
+				//Cell death
+				
 				}
-			
-			
-			/**
-			 * File format: Each file is a frame. Columns:
-			 * 
-			 * 2, 1, -1, 4, -1, X, Y, R, Z, NAME, ???score???
-			 * 1, 1, -1, 1, -1, 163, 343, 6.1, 36, polar1, 103162,
-			 * 
-			 */
-			
-			/**
-			 * 
-			 * 1, 1, -1, 1, -1, 163, 343, 6.1, 36, polar1, 103162,
-2, 1, -1, 4, -1, 380, 366, 16.1, 80, EMS, 2181015,
-3, 1, -1, 2, -1, 387, 153, 16.6, 86, ABp, 2836266,
-4, 1, -1, 3, -1, 189, 251, 17.2, 88, ABa, 2850348,
-5, 1, -1, 5, -1, 562, 269, 18.1, 80, P2, 2168825,
-
-			 * 
-			 * 
-			 */
-			
-			/**
-			 * 
-			 * 1, 1, 1, 5, -1, 163, 343, 6.1, 37, polar1, 105518,
-2, 1, 3, 2, -1, 395, 163, 16.1, 91, ABp, 3072069,
-3, 1, 4, 3, -1, 190, 226, 17.0, 91, ABa, 3056441,
-4, 1, 2, 1, -1, 365, 385, 17.1, 83, EMS, 2455074,
-5, 1, 5, 4, -1, 556, 254, 18.1, 83, P2, 2257600,
-
-			 */
-			
 			}
+		
+		
 		}
 
 	

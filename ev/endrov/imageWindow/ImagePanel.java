@@ -107,8 +107,8 @@ public class ImagePanel extends JPanel
 				int h=(int)(bufi.getHeight());
 							
 				//Adjust zoom
-				double zoom1=p.getWidth()/(double)w;
-				double zoom2=p.getHeight()/(double)h;
+				double zoom1=stack.getResbinX()*p.getWidth()/(double)w;
+				double zoom2=stack.getResbinY()*p.getHeight()/(double)h;
 				p.zoom=Math.min(zoom1,zoom2);
 
 				//Place camera in the middle
