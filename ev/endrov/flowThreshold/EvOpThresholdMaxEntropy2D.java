@@ -17,6 +17,11 @@ import endrov.imageset.EvPixels;
  */
 public class EvOpThresholdMaxEntropy2D extends Threshold2D
 	{
+	public EvOpThresholdMaxEntropy2D(int mode)
+		{
+		super(mode);
+		}
+	
 	public double getThreshold(EvPixels in)
 		{
 		return findThresholdMaxEntropy(in);

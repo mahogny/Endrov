@@ -2,6 +2,7 @@ package endrov.flowThreshold;
 
 import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageGreaterThanScalar;
+import endrov.flowBasic.math.EvOpImageSubScalar;
 import endrov.imageset.EvPixels;
 
 /**
@@ -16,14 +17,26 @@ public abstract class Threshold2D extends EvOpSlice1
 	{
 	protected abstract double getThreshold(EvPixels in);
 	
+	public static final int SUBTRACT=1, MASK=2;
 	
+	private final int mode;
+	
+	
+	public Threshold2D(int mode)
+		{
+		this.mode = mode;
+		}
+
+
+
 	public EvPixels exec1(EvPixels... p)
 		{
 		EvPixels in=p[0];
 		double thres=getThreshold(in);
-		EvPixels out=new EvOpImageGreaterThanScalar(thres).exec1(in);
-		System.out.println("========= out");
-		return out;
+		if(mode==MASK)
+			return new EvOpImageGreaterThanScalar(thres).exec1(in);
+		else
+			return new EvOpImageSubScalar(thres).exec1(in);
 		}
 	
 	

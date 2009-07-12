@@ -100,8 +100,7 @@ public abstract class BasicWindow extends JPanel
 		for (BasicWindow w : getWindowList())
 			if (w!=from)
 				{
-				for (endrov.basicWindow.BasicWindowHook h : w.basicWindowExtensionHook
-						.values())
+				for (endrov.basicWindow.BasicWindowHook h : w.basicWindowExtensionHook.values())
 					h.buildMenu(w);
 				w.dataChangedEvent();
 				}
@@ -548,22 +547,22 @@ public abstract class BasicWindow extends JPanel
 					EvSplashScreen.setSplashEnabled(b);
 					JOptionPane.showMessageDialog(null, "Show splash screen: "+b);
 					}
-
-				if (e.getSource()==miSavePluginList)
+				else if (e.getSource()==miSavePluginList)
 					EV.savePluginList();
-
-				if (e.getSource()==miWebHome)
+				else if (e.getSource()==miWebHome)
 					BrowserControl.displayURL(EV.website+"Main_Page");
-				if (e.getSource()==miWebUser)
+				else if (e.getSource()==miWebUser)
 					BrowserControl.displayURL(EV.website+"Users_Guide");
-				if (e.getSource()==miWebPlugins)
+				else if (e.getSource()==miWebPlugins)
 					BrowserControl.displayURL(EV.website+"Plugins");
-				if (e.getSource()==miAbout)
+				else if (e.getSource()==miAbout)
 					dialogAbout();
-				if (e.getSource()==miSysInfo)
+				else if (e.getSource()==miSysInfo)
 					dialogSysInfo();
-				if (e.getSource()==miSaveConfig)
+				else if (e.getSource()==miSaveConfig)
 					EV.savePersonalConfig();
+				else if (e.getSource()==miOpenConfig)
+					EV.openExternal(EV.getGlobalConfigEndrovDir());
 				}
 		};
 
@@ -577,6 +576,7 @@ public abstract class BasicWindow extends JPanel
 	private JMenuItem miResetPC = new JMenuItem("Reset personal config");
 	private JMenuItem miSavePluginList = new JMenuItem("Save plugin list");
 	private JMenuItem miToggleSplash = new JMenuItem("Toggle splash screen");
+	private JMenuItem miOpenConfig = new JMenuItem("Open config directory");
 
 	private JMenuItem miQuit = new JMenuItem("Exit", BasicIcon.iconMenuQuit);
 
@@ -627,6 +627,7 @@ public abstract class BasicWindow extends JPanel
 		menuMaintenance.add(miResetPC);
 		menuMaintenance.add(miSavePluginList);
 		menuMaintenance.add(miToggleSplash);
+		menuMaintenance.add(miOpenConfig);
 		menuMaintenance.add(miSaveConfig);
 		BasicWindow.addMenuItemSorted(menuFile, miQuit, "zquit");
 
@@ -650,6 +651,7 @@ public abstract class BasicWindow extends JPanel
 		miGC.addActionListener(listener);
 		miSavePluginList.addActionListener(listener);
 		miToggleSplash.addActionListener(listener);
+		miOpenConfig.addActionListener(listener);
 
 		miAbout.addActionListener(listener);
 		miWebHome.addActionListener(listener);
