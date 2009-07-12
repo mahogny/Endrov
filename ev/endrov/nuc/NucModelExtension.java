@@ -580,9 +580,14 @@ public class NucModelExtension implements ModelWindowExtension
 		public void hover(int pixelid)
 			{
 			NucLineage.currentHover=selectColorMap.get(pixelid);
+			System.out.println("New hover: "+NucLineage.currentHover);
+			System.out.println("Last hover: "+lastHover);
 			//Propagate hover. Avoid infinite recursion.
 			if(!NucLineage.currentHover.equals(lastHover))
+				{
+				System.out.println("nuc rerend");
 				BasicWindow.updateWindows(w);
+				}
 			}
 
 		

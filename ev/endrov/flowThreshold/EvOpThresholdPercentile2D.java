@@ -12,8 +12,9 @@ import endrov.util.EvListUtil;
 public class EvOpThresholdPercentile2D extends Threshold2D
 	{
 	private final double perc;
-	public EvOpThresholdPercentile2D(double perc)
+	public EvOpThresholdPercentile2D(int mode, double perc)
 		{
+		super(mode);
 		this.perc = perc;
 		}
 	

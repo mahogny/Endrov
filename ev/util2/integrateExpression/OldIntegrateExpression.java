@@ -117,8 +117,8 @@ public class OldIntegrateExpression
 							nucVol.put(nucName, 0);
 							}
 						if(bim==null)
-							bim=im.getJavaImage();
-
+							bim=im.getPixels().quickReadOnlyAWT();
+						
 						//Integrate this image
 						WritableRaster r=bim.getRaster();
 						int area=0;

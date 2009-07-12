@@ -58,7 +58,7 @@ public class FlowUnitThresholdPercentile2D extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number percentile=(Number)flow.getInputValue(this, exec, "percentile");
 		
-		AnyEvImage out=new EvOpThresholdPercentile2D(percentile.doubleValue()).exec1Untyped(a);
+		AnyEvImage out=new EvOpThresholdPercentile2D(Threshold2D.MASK,percentile.doubleValue()).exec1Untyped(a);
 		lastOutput.put("out", out);
 		}
 

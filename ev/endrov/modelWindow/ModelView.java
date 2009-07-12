@@ -93,7 +93,7 @@ public class ModelView extends GLCanvas
 		}
 	
 	private int selectColorNum;
-	final private HashMap<Integer,GLSelectListener> selectColorExtensionMap=new HashMap<Integer,GLSelectListener>();
+	private final HashMap<Integer,GLSelectListener> selectColorExtensionMap=new HashMap<Integer,GLSelectListener>();
 	private void resetSelectColor()
 		{
 		selectColorNum=0;
@@ -228,6 +228,7 @@ public class ModelView extends GLCanvas
 		 */
 		public void display(GLAutoDrawable drawable)
 			{
+			System.out.println("render model");
 			if(force)
 				System.out.println("===forced set===");
 			force=false;
@@ -372,18 +373,14 @@ public class ModelView extends GLCanvas
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
+			
+			System.out.println("end of render");
 			}
 
 		
 		};
 	
 
-/*	private cameraMoved
-	public void autoCenterIfNeeded()
-		{
-			TODO autocenter if needed not obvious how to implement
-			
-		}*/
 	
 	/**
 	 * Place camera at a distance, position and angle that makes the whole model fit
@@ -447,10 +444,8 @@ public class ModelView extends GLCanvas
 				{
 				if(data!=null)
 					System.out.println("## "+data);
-				//System.out.println("GL error: "+new GLU().gluErrorString(errcode));
 				e.printStackTrace();
 				}
-//			System.out.println("error ("+pos+") "+new GLU().gluErrorString(errcode));
 			}
 		}
 	
@@ -740,45 +735,17 @@ public class ModelView extends GLCanvas
 		
 		}
 	public static void setupLight(GL gl)
-	{
-	float lightDiffuse[]=new float[]{1,1,1};
-	float lightAmbient[] = { lightDiffuse[0]*0.3f, lightDiffuse[1]*0.3f, lightDiffuse[2]*0.3f, 0.0f };
-	gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
-	gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
-	gl.glEnable(GL.GL_LIGHT0);
-	}
+		{
+		float lightDiffuse[]=new float[]{1,1,1};
+		float lightAmbient[] = { lightDiffuse[0]*0.3f, lightDiffuse[1]*0.3f, lightDiffuse[2]*0.3f, 0.0f };
+		gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
+		gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);   
+		gl.glEnable(GL.GL_LIGHT0);
+		}
 
 	//http://www.felixgers.de/teaching/jogl/imagingProg.html
 
 
-	 
-	 /*
-	will never work
-	public BufferedImage getScreenshot()
-		{	
-
-		int w = getWidth();
-    int h = getHeight();
-    int type = BufferedImage.TYPE_INT_RGB;
-    BufferedImage image = new BufferedImage(w,h,type);
-    Graphics2D g2 = image.createGraphics();
-    paint(g2);
-    g2.dispose();
-    
-    try
-			{
-			ImageIO.write(image, "png", new File("/tmp/foo.png"));
-			}
-		catch (IOException e)
-			{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			}
-    
-    return image;
-		}
-		*/
-	
 	
 	}
 

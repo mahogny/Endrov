@@ -13,6 +13,8 @@ import endrov.util.JImageButton;
 public class BasicIcon
 	{
 
+	public static final ImageIcon iconButtonPreset=new ImageIcon(BasicIcon.class.getResource("icon-jhPreset.png"));
+
 	public static final ImageIcon iconButtonDelete=new ImageIcon(BasicIcon.class.getResource("gnome-edit-delete.png"));
 	public static final ImageIcon iconButtonDown=new ImageIcon(BasicIcon.class.getResource("tango-go-down.png"));
 	public static final ImageIcon iconButtonUp=new ImageIcon(BasicIcon.class.getResource("tango-go-up.png"));

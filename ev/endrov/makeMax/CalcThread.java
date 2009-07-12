@@ -8,8 +8,6 @@ import endrov.flowProjection.EvOpProjectMaxZ;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
 
-import java.awt.image.*;
-
 
 /**
  * The thread for doing calculations
@@ -71,11 +69,11 @@ public final class CalcThread extends BatchThread
 				batchLog(""+curframe);
 
 				
-				EvDecimal z=chfrom.closestZ(curframe, EvDecimal.ZERO);
-				double resX=1,resY=1,dispX=0,dispY=0,binning=1;
+//				EvDecimal z=chfrom.closestZ(curframe, EvDecimal.ZERO);
+	//			double resX=1,resY=1,dispX=0,dispY=0,binning=1;
 				try
 					{
-					int[][] maxim=null;
+		//			int[][] maxim=null;
 
 					//Check for premature stop
 					if(die)
@@ -188,6 +186,7 @@ public final class CalcThread extends BatchThread
 	/**
 	 * Turn array into buffered image
 	 */  
+	/*
 	private static BufferedImage makeBI(int im[][]) 
 		{
 		int w=im[0].length;
@@ -199,7 +198,7 @@ public final class CalcThread extends BatchThread
 				raster.setSample(ax,ay,0,im[ay][ax]);
 		return wim;
 		}
-
+*/
 
 	
 	

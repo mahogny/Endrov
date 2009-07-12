@@ -47,8 +47,9 @@ public class NucLineage extends EvObject implements Cloneable
 		return EvSelection.getSelected(NucSel.class);
 		}
 	
-	public static NucSel currentHover=new NucSel(null,"");
-
+	public static final NucSel emptyHover=new NucSel(null,"");
+	public static NucSel currentHover=emptyHover;
+	
 	public static final int KEY_TRANSLATE=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Translate",'z'));
 	public static final int KEY_CHANGE_RADIUS=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Change radius",'c'));
 	public static final int KEY_SETZ=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Set Z",'x'));

@@ -16,7 +16,7 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: black tophat 2D
+ * Flow unit: otsu thresholding
  * @author Johan Henriksson
  *
  */
@@ -31,6 +31,8 @@ public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
 		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitThresholdOtsu2D.class, CategoryInfo.icon,
 				"Find optimal threshold which minimizes signal and background variance, slice by slice"));
 		}
+	
+
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
@@ -55,11 +57,8 @@ public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		Object a=flow.getInputValue(this, exec, "image");
-		checkNotNull(a);
-		System.out.println("??????here");
 		
-		AnyEvImage out=new EvOpThresholdOtsu2D().exec1Untyped(a);
-		System.out.println("/////"+out);
+		AnyEvImage out=new EvOpThresholdOtsu2D(Threshold2D.MASK).exec1Untyped(a);
 		lastOutput.put("out", out);
 		}
 

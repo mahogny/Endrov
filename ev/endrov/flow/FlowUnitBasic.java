@@ -111,18 +111,6 @@ public abstract class FlowUnitBasic extends FlowUnit
 			i++;
 			}
 
-		
-//		int cnt=1;
-//		if(cnt<getTypesInCount()) cnt=getTypesInCount();
-		/*
-		for(int i=0;i<getTypesInCount();i++)
-			{
-			double py=y+(i+0.5)*fonth;
-			drawConnPointLeft(g, x, (int)py);
-			}*/
-
-		
-		
 		}
 
 	

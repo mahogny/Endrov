@@ -19,9 +19,14 @@ import endrov.imageset.EvPixelsType;
  */
 public class EvOpThresholdOtsu2D extends Threshold2D
 	{
+	public EvOpThresholdOtsu2D(int mode)
+		{
+		super(mode);
+		}
+
 	protected double getThreshold(EvPixels in)
 		{
-		return findOtsuThreshold(in);
+		return EvOpThresholdOtsu2D.findOtsuThreshold(in);
 		}
 	
 	public static double findOtsuThreshold(EvPixels in)
