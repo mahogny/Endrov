@@ -130,6 +130,8 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miCopyState=new JMenuItem("Copy");
 	private JMenuItem miPasteState=new JMenuItem("Paste");
 
+	private JCheckBoxMenuItem miShowAxis=new JCheckBoxMenuItem("Show axis directions");
+
 	private JMenu miSetBGColor=makeSetBGColorMenu();
 
 	private SnapBackSlider barZoom=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
@@ -201,8 +203,9 @@ public class ModelWindow extends BasicWindow
 		miWindowState.add(miCopyState);
 		miWindowState.add(miPasteState);
 		
-		//Build set BG coor menu
+		//Build other menu entries
 		menuModel.add(miSetBGColor);
+		menuModel.add(miShowAxis);
 		
 		//Add action listeners
 		miViewTop.addActionListener(this);
@@ -215,6 +218,7 @@ public class ModelWindow extends BasicWindow
 		metaCombo.addActionListener(this);
 		miCopyState.addActionListener(this);
 		miPasteState.addActionListener(this);
+		miShowAxis.addActionListener(this);
 		
 		//Add change listeners
 		objectDisplayList.addChangeListener(this);
@@ -248,8 +252,8 @@ public class ModelWindow extends BasicWindow
 //		updateToolPanels();
 
 		JPanel zoomrotPanel=new JPanel(new GridLayout(2,1));
-		zoomrotPanel.add(EvSwingUtil.borderAB(new JLabel(BasicIcon.iconLabelZoom), barZoom, null));
-		zoomrotPanel.add(EvSwingUtil.borderAB(new JLabel(BasicIcon.iconLabelRotate), barRotate, null));
+		zoomrotPanel.add(EvSwingUtil.layoutACB(new JLabel(BasicIcon.iconLabelZoom), barZoom, null));
+		zoomrotPanel.add(EvSwingUtil.layoutACB(new JLabel(BasicIcon.iconLabelRotate), barRotate, null));
 
 		
 		barZoom.addSnapListener(new SnapBackSlider.SnapChangeListener(){
@@ -288,6 +292,7 @@ public class ModelWindow extends BasicWindow
 		setBoundsEvWindow(bounds);
 		attachDragAndDrop(this);
 		view.autoCenter();
+		view.renderAxisArrows=miShowAxis.isSelected();
 		
 		//TODO dangerous, might be called before constructed
 		attachJinputListener(this);
@@ -438,6 +443,11 @@ public class ModelWindow extends BasicWindow
 				{
 				e1.printStackTrace();
 				}
+			repaint();
+			}
+		else if(e.getSource()==miShowAxis)
+			{
+			view.renderAxisArrows=miShowAxis.isSelected();
 			repaint();
 			}
 		}

@@ -68,7 +68,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		
 		public JComponent getComponent()
 			{
-			JComponent p=EvSwingUtil.tableCompactWide(
+			JComponent p=EvSwingUtil.layoutTableCompactWide(
 					new JLabel("His-channel"),comboChanHis,
 //					new JLabel("DIC-channel"),comboChanDIC,
 					new JLabel("Shell"),comboShell,

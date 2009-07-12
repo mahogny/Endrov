@@ -101,7 +101,7 @@ public class ImservWindow extends BasicWindow implements ActionListener
 		
 		
 		
-		add(EvSwingUtil.borderLCR(null, sComboPanel, EvSwingUtil.borderLCR(null, bLogout, bLogin)),BorderLayout.SOUTH);
+		add(EvSwingUtil.layoutLCR(null, sComboPanel, EvSwingUtil.layoutLCR(null, bLogout, bLogin)),BorderLayout.SOUTH);
 		
 		bLogin.addActionListener(this);
 		bLogout.addActionListener(this);

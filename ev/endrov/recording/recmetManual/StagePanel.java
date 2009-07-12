@@ -73,7 +73,7 @@ public class StagePanel implements ActionListener
 			pb.add(bController);
 
 			
-			hook.add1(EvSwingUtil.borderLCR(null, lab, EvSwingUtil.borderLCR(null, a, pb)));
+			hook.add1(EvSwingUtil.layoutLCR(null, lab, EvSwingUtil.layoutLCR(null, a, pb)));
 //			hook.add1(EvSwingTools.borderLR(lab, a, pb));
 //			p.add(EvSwingTools.borderLR(lab, a, pb));
 			}

@@ -9,6 +9,7 @@ import java.nio.*;
 
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
+import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.j2d.*;
@@ -70,6 +71,8 @@ public class ModelView extends GLCanvas
 	public int mouseX=-1, mouseY=-1;	
 	public TextRenderer renderer;
 
+	/** Render axis arrows in the corner */
+	public boolean renderAxisArrows=true;
 	
 	public Color bgColor=Color.BLACK;
 	
@@ -373,14 +376,82 @@ public class ModelView extends GLCanvas
 			
 			//Restore unaffected matrix
 			gl.glPopMatrix();
+
+			
+			//Axis rendering
+			//Overlays everything else, has to be done absolutely last
+			if(renderAxisArrows)
+				renderAxisArrows(gl);
 			
 			System.out.println("end of render");
 			}
 
 		
+		private void renderAxisArrows(GL gl)
+			{
+			gl.glMatrixMode(GL.GL_PROJECTION);
+			gl.glPushMatrix();
+			gl.glLoadIdentity();
+			GLU glu=new GLU();
+			gl.glTranslatef(-0.9f,-0.9f,0);
+			glu.gluPerspective(FOV*180.0/Math.PI,(float)getWidth()/(float)getHeight(),0.1,30000);
+			//glu.gluOrtho2D(arg0, arg1, arg2, arg3)
+			gl.glMatrixMode(GL.GL_MODELVIEW);
+			gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+			
+			gl.glColor3f(1,1,1);
+			Matrix3d camMat=new Matrix3d(camera.getRotationMatrixReadOnly());
+			camMat.invert();
+			double axisSize=0.05;
+			float axisScale=0.8f;
+			Vector3d axisX=new Vector3d(axisSize,0,0);
+			Vector3d axisY=new Vector3d(0,axisSize,0);
+			Vector3d axisZ=new Vector3d(0,0,axisSize);
+			camMat.transform(axisX);
+			camMat.transform(axisY);
+			camMat.transform(axisZ);
+			gl.glLineWidth(0);
+			gl.glBegin(GL.GL_LINES);
+			gl.glVertex3f(0.0f,0.0f,-1.0f);
+			gl.glVertex3f((float)axisX.x*axisScale,(float)axisX.y*axisScale,(float)(axisX.z*axisScale-1));
+			gl.glVertex3f(0.0f,0.0f,-1.0f);
+			gl.glVertex3f((float)axisY.x*axisScale,(float)axisY.y*axisScale,(float)(axisY.z*axisScale-1));
+			gl.glVertex3f(0.0f,0.0f,-1.0f);
+			gl.glVertex3f((float)axisZ.x*axisScale,(float)axisZ.y*axisScale,(float)(axisZ.z*axisScale-1));
+			gl.glEnd();
+
+			gl.glLineWidth(3f);
+			float fsize=0.007f;
+			gl.glColor3f(1,0,0);
+			gl.glBegin(GL.GL_LINES);
+			gl.glVertex3f((float)axisX.x-fsize,(float)axisX.y-fsize,(float)(axisX.z-1));
+			gl.glVertex3f((float)axisX.x+fsize,(float)axisX.y+fsize,(float)(axisX.z-1));
+			gl.glVertex3f((float)axisX.x+fsize,(float)axisX.y-fsize,(float)(axisX.z-1));
+			gl.glVertex3f((float)axisX.x-fsize,(float)axisX.y+fsize,(float)(axisX.z-1));
+			gl.glVertex3f((float)axisY.x,(float)axisY.y,(float)(axisY.z-1));
+			gl.glVertex3f((float)axisY.x-fsize,(float)axisY.y+fsize,(float)(axisY.z-1));
+			gl.glVertex3f((float)axisY.x,(float)axisY.y,(float)(axisY.z-1));
+			gl.glVertex3f((float)axisY.x+fsize,(float)axisY.y+fsize,(float)(axisY.z-1));
+			gl.glVertex3f((float)axisY.x,(float)axisY.y,(float)(axisY.z-1));
+			gl.glVertex3f((float)axisY.x,(float)axisY.y-fsize,(float)(axisY.z-1));
+			gl.glVertex3f((float)axisZ.x-fsize,(float)axisZ.y-fsize,(float)(axisZ.z-1));
+			gl.glVertex3f((float)axisZ.x+fsize,(float)axisZ.y+fsize,(float)(axisZ.z-1));
+			gl.glVertex3f((float)axisZ.x-fsize,(float)axisZ.y-fsize,(float)(axisZ.z-1));
+			gl.glVertex3f((float)axisZ.x+fsize,(float)axisZ.y-fsize,(float)(axisZ.z-1));
+			gl.glVertex3f((float)axisZ.x-fsize,(float)axisZ.y+fsize,(float)(axisZ.z-1));
+			gl.glVertex3f((float)axisZ.x+fsize,(float)axisZ.y+fsize,(float)(axisZ.z-1));
+			gl.glEnd();
+			
+			gl.glMatrixMode(GL.GL_PROJECTION);
+			gl.glPopMatrix();
+			gl.glMatrixMode(GL.GL_MODELVIEW);
+			}
+		
 		};
 	
 
+		
+		
 	
 	/**
 	 * Place camera at a distance, position and angle that makes the whole model fit
@@ -510,6 +581,7 @@ public class ModelView extends GLCanvas
 		rend.z=matarray[14];
 		transparentRenderers.add(rend);
 		}
+
 
 	
 	/**

@@ -37,6 +37,17 @@ public class EvSwingUtil
 		}
 
 	/**
+	 * Place content within a titled border
+	 */
+	public static JPanel withTitledBorder(String title, JComponent c)
+		{
+		JPanel p=new JPanel(new GridLayout(1,1));
+		p.setBorder(BorderFactory.createTitledBorder(title));
+		p.add(c);
+		return p;
+		}
+	
+	/**
 	 * Add a label above a swing component 
 	 */
 	public static JPanel withLabelAbove(String s, JComponent c)
@@ -50,7 +61,7 @@ public class EvSwingUtil
 	/**
 	 * Add a component with two components to the left and right
 	 */
-	public static JComponent borderLCR(JComponent left, JComponent center, JComponent right)
+	public static JComponent layoutLCR(JComponent left, JComponent center, JComponent right)
 		{
 		JPanel p=new JPanel(new BorderLayout());
 		if(left!=null)   p.add(left,BorderLayout.WEST);
@@ -63,7 +74,7 @@ public class EvSwingUtil
 	 * Table with two columnets: one compact, one wide (filling). Give list of components
 	 * as alternating left, right
 	 */
-	public static JComponent tableCompactWide(JComponent... list)
+	public static JComponent layoutTableCompactWide(JComponent... list)
 		{
 		int numrow=list.length/2;
 		JPanel top=new JPanel(new GridBagLayout());
@@ -97,7 +108,7 @@ public class EvSwingUtil
 		return p;
 		}
 */	
-	public static JComponent compactHorizontal(JComponent... list)
+	public static JComponent layoutCompactHorizontal(JComponent... list)
 		{
 		JComponent last=list[list.length-1];
 		for(int i=list.length-2;i>=0;i--)
@@ -114,7 +125,7 @@ public class EvSwingUtil
 		return p;*/
 		}
 	
-	public static JComponent compactVertical(JComponent... list)
+	public static JComponent layoutCompactVertical(JComponent... list)
 		{
 		JComponent last=list[list.length-1];
 		for(int i=list.length-2;i>=0;i--)
@@ -131,7 +142,7 @@ public class EvSwingUtil
 		return p;*/
 		}
 	
-	public static JComponent packEvenHorizontal(JComponent... list)
+	public static JComponent layoutEvenHorizontal(JComponent... list)
 		{
 		JPanel p=new JPanel(new GridLayout(1,list.length));
 		for(JComponent c:list)
@@ -150,7 +161,7 @@ public class EvSwingUtil
 	/**
 	 * Add a component with two components to the above and below
 	 */
-	public static JComponent borderAB(JComponent above, JComponent center, JComponent below)
+	public static JComponent layoutACB(JComponent above, JComponent center, JComponent below)
 		{
 		JPanel p=new JPanel(new BorderLayout());
 		if(above!=null)  p.add(above,BorderLayout.NORTH);

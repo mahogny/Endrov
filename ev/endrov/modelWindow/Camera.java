@@ -122,6 +122,14 @@ public class Camera
 		}
 
 	/**
+	 * Get the rotation matrix. May not be written
+	 */
+	public Matrix3d getRotationMatrixReadOnly()
+		{
+		return mat;
+		}
+	
+	/**
 	 * Do the GL transformation to move into camera coordinates
 	 */
 	public void transformGL(GL gl)
