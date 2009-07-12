@@ -10,11 +10,11 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class EvComboSimpleFrame extends JSpinner
+public class SpinnerSimpleEvFrame extends JSpinner
 	{
 	private static final long serialVersionUID = 1L;
 
-	public EvComboSimpleFrame()
+	public SpinnerSimpleEvFrame()
 		{
 		setModel(new EvDecimalSpinnerModel());
 		setEditor(new EvFrameEditor(this));

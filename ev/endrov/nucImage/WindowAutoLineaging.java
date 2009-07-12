@@ -15,7 +15,7 @@ import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvComboObjectOne;
-import endrov.basicWindow.EvComboSimpleFrame;
+import endrov.basicWindow.SpinnerSimpleEvFrame;
 import endrov.data.EvData;
 import endrov.nuc.NucLineage;
 import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
@@ -42,7 +42,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 	private JButton bStart=new JButton("Start");
 	private JButton bStop=new JButton("Stop");
 	
-	private EvComboSimpleFrame frameStart=new EvComboSimpleFrame();
+	private SpinnerSimpleEvFrame frameStart=new SpinnerSimpleEvFrame();
 	
 	
 	LineagingAlgorithm currentAlgo;
@@ -68,7 +68,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 //		c.gridy=1; top.add(comboChan,c);
 		c.gridy=1; top.add(comboAlgo,c);
 		*/
-		JComponent top=EvSwingUtil.tableCompactWide(
+		JComponent top=EvSwingUtil.layoutTableCompactWide(
 				new JLabel("Lineage "),comboLin,
 				new JLabel("Algorithm "),comboAlgo
 				);
@@ -76,12 +76,12 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		panelOptions.setBorder(BorderFactory.createTitledBorder("Options"));
 
 		
-		add(EvSwingUtil.compactVertical(
+		add(EvSwingUtil.layoutCompactVertical(
 				top,
 				panelOptions,
 				panelStatus,
 				EvSwingUtil.withLabel("Start frame", frameStart),
-				EvSwingUtil.packEvenHorizontal(bStart,bStop)));
+				EvSwingUtil.layoutEvenHorizontal(bStart,bStop)));
 		
 		setTitleEvWindow("Auto-lineage");
 		updateCurrentAlgo();

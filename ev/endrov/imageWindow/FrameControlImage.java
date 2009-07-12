@@ -184,7 +184,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		playPanel.add(buttonPlayForward);
 		*/
 		
-		JComponent playPanel=EvSwingUtil.compactHorizontal(
+		JComponent playPanel=EvSwingUtil.layoutCompactHorizontal(
 				buttonBeginning,buttonEnd,buttonStepBack,buttonStepForward,
 				buttonPlayBack,buttonPlayForward);
 		
@@ -217,7 +217,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		fPanel.add(spinnerFrame, BorderLayout.CENTER);
 		fPanel.add(buttonFrameTime, BorderLayout.EAST);
 		
-		JComponent gPanel=EvSwingUtil.compactHorizontal(checkGroupSlice, EvSwingUtil.withLabel("Group:",spinnerGroup));
+		JComponent gPanel=EvSwingUtil.layoutCompactHorizontal(checkGroupSlice, EvSwingUtil.withLabel("Group:",spinnerGroup));
 		checkGroupSlice.setToolTipText("Synchronize current Z");
 		checkGroupSlice.setSelected(true);
 

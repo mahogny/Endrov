@@ -13,6 +13,7 @@ import javax.swing.*;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvComboData;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.ev.JNumericField;
 import endrov.hardware.Device;
@@ -27,6 +28,7 @@ import endrov.recording.*;
 import endrov.recording.recWindow.MicroscopeWindow;
 import endrov.recording.recWindow.MicroscopeWindow.ExtensionInstance;
 import endrov.util.EvDecimal;
+import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 import endrov.util.JSmartToggleCombo;
 
@@ -311,7 +313,7 @@ public class ManualExtension
 				addComp("To channel",tChannel);
 				final EvComboData comboData=new EvComboData(false);
 				addComp("To data",comboData);
-				JButton bSnap=new JButton("Snap");
+				JButton bSnap=new JImageButton(BasicIcon.iconButtonRecord,"Acquire single image");//Button("Snap");
 				addComp("Manual", bSnap);
 
 				/**

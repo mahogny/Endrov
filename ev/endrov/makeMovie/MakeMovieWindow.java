@@ -39,8 +39,8 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
 	private Vector<JTextField> chanDesc=new Vector<JTextField>();
 	
-	private EvComboSimpleFrame spinnerStart   =new EvComboSimpleFrame();
-	private EvComboSimpleFrame spinnerEnd     =new EvComboSimpleFrame();
+	private SpinnerSimpleEvFrame spinnerStart   =new SpinnerSimpleEvFrame();
+	private SpinnerSimpleEvFrame spinnerEnd     =new SpinnerSimpleEvFrame();
 	
 	private SpinnerModel zModel =new SpinnerNumberModel(35,0,1000000,1);
 	private JSpinner spinnerZ   =new JSpinner(zModel);

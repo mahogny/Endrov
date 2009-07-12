@@ -235,7 +235,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		});
 		
 		
-		JComponent toolbar=EvSwingUtil.compactHorizontal(bCopy,bPaste,bDelete,bSwap,bAlignRight,bAlignVert,bAlignHoriz,bPlayOnce,bRepeat);
+		JComponent toolbar=EvSwingUtil.layoutCompactHorizontal(bCopy,bPaste,bDelete,bSwap,bAlignRight,bAlignVert,bAlignHoriz,bPlayOnce,bRepeat);
 		JPanel pTop=new JPanel(new BorderLayout());
 		pTop.add(objectCombo,BorderLayout.CENTER);
 		pTop.add(toolbar,BorderLayout.WEST);

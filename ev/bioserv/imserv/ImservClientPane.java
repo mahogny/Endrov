@@ -113,7 +113,7 @@ public class ImservClientPane extends JPanel implements ActionListener,TagListLi
 		JPanel rightBottom=new JPanel(new BorderLayout());
 		attrBorder.add(attrEditPane);
 		rightBottom.add(attrBorder,BorderLayout.CENTER);
-		rightBottom.add(EvSwingUtil.borderLCR(new JLabel("Filter:"),searchField,status),BorderLayout.SOUTH);
+		rightBottom.add(EvSwingUtil.layoutLCR(new JLabel("Filter:"),searchField,status),BorderLayout.SOUTH);
 		
 		JPanel right=new JPanel(new BorderLayout());
 		right.add(rightBottom,BorderLayout.SOUTH);
