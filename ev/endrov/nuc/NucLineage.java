@@ -1053,4 +1053,32 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 	
 	
+	
+	/**
+	 * Join single children with their parents. Useful if an algorithm generates one cell
+	 * for each time point
+	 */
+	public void flattenSingleChildren()
+		{
+		for(String name:new LinkedList<String>(nuc.keySet()))
+			{
+			Nuc n=nuc.get(name);
+			if(n!=null)
+				if(n.child.size()==1)
+					{
+					String childName=n.child.iterator().next();
+					Nuc child=nuc.get(childName);
+					nuc.remove(childName);
+					
+					n.pos.putAll(child.pos);
+					n.child.clear();
+					n.child.addAll(child.child);
+					for(String childchildName:child.child)
+						nuc.get(childchildName).parent=name;
+					}
+			}
+		
+		
+		}
+	
 	}

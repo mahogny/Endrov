@@ -410,7 +410,7 @@ public class ModelView extends GLCanvas
 			camMat.transform(axisX);
 			camMat.transform(axisY);
 			camMat.transform(axisZ);
-			gl.glLineWidth(0);
+			gl.glLineWidth(1);
 			gl.glBegin(GL.GL_LINES);
 			gl.glVertex3f(0.0f,0.0f,-1.0f);
 			gl.glVertex3f((float)axisX.x*axisScale,(float)axisX.y*axisScale,(float)(axisX.z*axisScale-1));
@@ -498,11 +498,11 @@ public class ModelView extends GLCanvas
 		}
 	
 	
-	public static void checkerr(GL gl)
+	public static boolean checkerr(GL gl)
 		{
-		checkerr(gl,null);
+		return checkerr(gl,null);
 		}
-	public static void checkerr(GL gl, Object data)
+	public static boolean checkerr(GL gl, Object data)
 		{
 		int errcode=gl.glGetError();
 		if(errcode!=GL.GL_NO_ERROR)
@@ -517,7 +517,10 @@ public class ModelView extends GLCanvas
 					System.out.println("## "+data);
 				e.printStackTrace();
 				}
+			return true;
 			}
+		else
+			return false;
 		}
 	
 	/**
@@ -575,6 +578,8 @@ public class ModelView extends GLCanvas
 			renderer.end3DRendering();
 			gl.glPopMatrix();
 			gl.glPopAttrib();
+			
+			checkerr(gl,h);
 			}
 		};
 		//Calculate z. Current coordinate: 0 0 0 1

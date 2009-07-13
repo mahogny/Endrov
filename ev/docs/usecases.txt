@@ -1,5 +1,10 @@
 things that need further study
 
+=====
+want to calibrate resolution
+=> integrate into line tool? point at line, as for distance
+should a function be added to each metaobject to allow for change? or do like now, ignore?
+
 ===== stereology
 http://www.liv.ac.uk/fetoxpath/quantoxpath/stereol.htm
 

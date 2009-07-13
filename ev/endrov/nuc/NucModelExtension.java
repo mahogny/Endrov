@@ -82,7 +82,9 @@ public class NucModelExtension implements ModelWindowExtension
 		public JMenuItem miShowNucSize75=new JMenuItem("75%");
 		public JMenuItem miShowNucSize100=new JMenuItem("100%");
 		public JMenuItem miShowNucSizeCustom=new JMenuItem("Custom");
-		
+
+		public JMenuItem miSelectVisible=new JMenuItem("Select visible nuclei"); 
+
 		
 //		public EvColor traceColor=EvColor.redMedium;
 		public EvColor traceColor=null;
@@ -159,6 +161,8 @@ public class NucModelExtension implements ModelWindowExtension
 			miNuc.add(miPrintCountNucAtFrame);
 			miNuc.add(miPrintCountNucUpTo);
 			
+			miNuc.add(miSelectVisible);
+			
 			miNuc.addSeparator();
 			new NucCommonUI(w).addToMenu(miNuc, false);
 
@@ -190,7 +194,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowNucSizeCustom.addActionListener(this);
 			miSetTraceWidth.addActionListener(this);
 
-			
+			miSelectVisible.addActionListener(this);
 
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
@@ -239,12 +243,14 @@ public class NucModelExtension implements ModelWindowExtension
 			else if(e.getSource()==miPrintCountNucAtFrame)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
+				//TODO replace with visible set
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
 					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
 				}
 			else if(e.getSource()==miPrintCountNucUpTo)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
+				//TODO replace with visible set
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
 					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucUpTo(frame));
 				}
@@ -269,6 +275,17 @@ public class NucModelExtension implements ModelWindowExtension
 				String inp=BasicWindow.showInputDialog("Set trace width", ""+traceWidth);
 				if(inp!=null)
 					traceWidth=(float)Double.parseDouble(inp);
+				}
+			else if(e.getSource()==miSelectVisible)
+				{
+				EvDecimal frame=w.frameControl.getFrame();
+				//TODO replace with visible set
+				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
+					{
+					for(NucSel i:entry.getValue().getInterpNuc(frame).keySet())
+						EvSelection.select(i);
+					BasicWindow.updateWindows();
+					}
 				}
 			
 			w.view.repaint(); //TODO modw repaint
@@ -380,7 +397,9 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		private Color colorForNuc(NucSel pair)
 			{
-			Color col=traceColor.c;
+			Color col=null;
+			if(traceColor!=null)
+				col=traceColor.c;
 			if(col==null)
 				col=NucLineage.representativeColor(pair.getNuc().colorNuc);
 			return col;

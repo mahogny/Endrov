@@ -28,7 +28,7 @@ import endrov.util.Vector3i;
  * @author Johan Henriksson
  *
  */
-public class MeanShift
+public class MeanShift3D
 	{
 
 	
@@ -52,7 +52,7 @@ public class MeanShift
 		double sigmaZ;
 		double szsz2;
 		
-		public MeanShiftPreProcess(EvStack s, double sigmaZ, int pw, int ph,   int roiSX, int roiEX, int roiSY, int roiEY)
+		public MeanShiftPreProcess(EvStack s, double sigmaZ, int pw, int ph)
 			{
 			int w=s.getWidth();
 			int h=s.getHeight();
@@ -77,8 +77,17 @@ public class MeanShift
 			
 			
 			
+			//return outs;
+			}
+		
+		
+		public void doAll(EvStack s, int roiSX, int roiEX, int roiSY, int roiEY)
+			{
+			int w=s.getWidth();
+			int h=s.getHeight();
+			int d=s.getDepth();
 			
-			Vector3i[][] pmid=new Vector3i[s.getDepth()][s.getWidth()*s.getHeight()];
+			Vector3i[][] pmid=new Vector3i[d][w*h];
 			HashSet<Vector3i> mids=new HashSet<Vector3i>();
 			HashMap<Vector3i, Integer> assignLevel=new HashMap<Vector3i, Integer>();
 			
@@ -135,7 +144,6 @@ public class MeanShift
 			System.out.println("end");
 			System.out.println("mids "+mids.size());
 			
-			//return outs;
 			}
 		
 
@@ -242,7 +250,8 @@ public class MeanShift
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main02/ost4dgood/TB2164_080118.ost/imset-im/ch-RFP/00014750/00000010.jpg"));
 		EvChannel chan=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
 //		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 8, 8);
-		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 10, 10,   50, 230, 50, 150);
+		MeanShiftPreProcess p=new MeanShiftPreProcess(chan.getFirstStack(),1, 10, 10);
+		p.doAll(chan.getFirstStack(), 50, 230, 50, 150);
 		
 		System.exit(0);
 		

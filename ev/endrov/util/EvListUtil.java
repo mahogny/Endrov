@@ -1,6 +1,7 @@
 package endrov.util;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -219,10 +220,45 @@ public class EvListUtil
 			return findRankDouble(part2, c2, q-c1-cmid);
 		}
 	
+	/**
+	 * Get index of element with largest value
+	 */
+	public static int getIndexOfMax(double[] t) 
+		{
+		double maximum = t[0];
+		int mi=0;
+		for (int i=1; i<t.length; i++)
+      if (t[i] > maximum)
+      	{
+        maximum = t[i];
+        mi=i;
+      	}
+		return mi;
+		}
+
 	
-	
-	
-	
+
+	/**
+	 * Get key of element with largest value
+	 */
+	public static <E,F extends Comparable<F>> E getKeyOfMax(Map<E,F> t) 
+		{
+		Iterator<Map.Entry<E,F>> it=t.entrySet().iterator();
+		Map.Entry<E, F> fst=it.next();
+		E index=fst.getKey();
+		F max=fst.getValue();
+		while(it.hasNext())
+			{
+			Map.Entry<E, F> next=it.next();
+			if(max.compareTo(next.getValue())<1)
+				{
+				index=next.getKey();
+				max=next.getValue();
+				}
+			}
+		return index;
+		}
+
 	public static void main(String[] args)
 		{
 		LinkedList<Integer> list=new LinkedList<Integer>();

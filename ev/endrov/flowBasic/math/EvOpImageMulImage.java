@@ -19,7 +19,7 @@ public class EvOpImageMulImage extends EvOpSlice1
 	/**
 	 * Add images. Assumes same size and position
 	 */
-	static EvPixels times(EvPixels a, EvPixels b)
+	public static EvPixels times(EvPixels a, EvPixels b)
 		{
 		if(a.getType()==EvPixelsType.INT && b.getType()==EvPixelsType.INT)
 			{

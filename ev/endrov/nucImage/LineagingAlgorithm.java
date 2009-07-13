@@ -70,6 +70,6 @@ public interface LineagingAlgorithm
 	public void run(LineageSession listener);
 	
 	
-	
+	public void dataChangedEvent();
 	
 	}

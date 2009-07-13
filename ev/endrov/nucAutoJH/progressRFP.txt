@@ -1,0 +1,47 @@
+use /Volumes/TBU_main03/ost4dgood/TB2167_080416.ost
+
+
+TODO pixel intensity tool should NOT be affected by contrast&brightness!!!!
+TODO >, suggests boolean. wrong type
+
+
+3h40m10s ===================
+turns on about here. impossible, too many false candidates.
+DIC autolin?
+
+
+
+4h1m10s =====================
+(27 cells?)
+
+
+E[r]=8 or so (manually),  6 from autodetect
+
+
+2009-07-09
+detects this perfectly, by finding all sigma, removing candidates with sigma<normalsigma/2
+normalsigma is the second largest sigma
+very effective against candidates due to too large shell
+
+not perfect after calculating sigma more precisely
+
+
+2009-07-13
+one nuclei created in an indentation in the edge
+
+5h 5h1m50s  ====== 
+(100 cells?)
+
+
+
+E[r]=5 or so
+
+
+6h ============
+(170-200 cells)
+
+E[r]=5 or so
+
+
+
+aim: 200 cells
