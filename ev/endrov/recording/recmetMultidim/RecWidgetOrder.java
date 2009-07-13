@@ -24,19 +24,39 @@ import endrov.util.JImageButton;
 public class RecWidgetOrder extends JPanel
 	{
 	private static final long serialVersionUID = 1L;
-
 	
+	/**
+	 * One ordered entry
+	 * @author Johan Henriksson
+	 *
+	 */
 	public static class OrderEntry
 		{
 		public final String id, desc;
 
-		private OrderEntry(String id, String desc)
+		public OrderEntry(String id, String desc)
 			{
 			this.id = id;
 			this.desc = desc;
 			}
 		}
 
+	/**
+	 * Recording dimension order settings
+	 * @author Johan Henriksson
+	 *
+	 */
+	public static class SettingsDimensionsOrder
+		{
+		public final ArrayList<OrderEntry> entrylist=new ArrayList<OrderEntry>();
+		
+		public SettingsDimensionsOrder(OrderEntry... entry)
+			{
+			entrylist.addAll(Arrays.asList(entry));
+			}
+		}
+
+	
 	//Standard entries
 	public static final OrderEntry entryChannel=new OrderEntry("channel","Channel");
 	public static final OrderEntry entryPosition=new OrderEntry("position","Position");
@@ -114,6 +134,14 @@ public class RecWidgetOrder extends JPanel
 		
 		
 		}
+	
+	public SettingsDimensionsOrder getSettings()
+		{
+		SettingsDimensionsOrder o=new SettingsDimensionsOrder();
+		o.entrylist.addAll(entrylist);
+		return o;
+		}
+	
 	
 
 	}

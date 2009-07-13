@@ -14,7 +14,11 @@ public class SpinnerSimpleInteger extends JSpinner
 
 	public SpinnerSimpleInteger()
 		{
-		SpinnerNumberModel m=new SpinnerNumberModel(0,0,10000,1);
+		this(0,0,10000,1);
+		}
+	public SpinnerSimpleInteger(int value, int min, int max, int step)
+		{
+		SpinnerNumberModel m=new SpinnerNumberModel(value, min, max, step);
 		setModel(m);
 		}
 	

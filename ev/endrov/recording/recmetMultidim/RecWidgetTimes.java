@@ -21,6 +21,10 @@ public class RecWidgetTimes extends JPanel
 	private static final long serialVersionUID = 1L;
 	
 	private SpinnerSimpleEvFrame spDt=new SpinnerSimpleEvFrame();
+	
+	private JRadioButton rbDt=new JRadioButton("∆t",true);
+	private JRadioButton rbMaxSpeed=new JRadioButton("min t");
+	
 	private JRadioButton rbNumFrames=new JRadioButton("#t");
 	private JRadioButton rbTotT=new JRadioButton("∑∆t");
 	private JRadioButton rbOneT=new JRadioButton("Once",true);
@@ -38,19 +42,26 @@ public class RecWidgetTimes extends JPanel
 		bgDtGroup.add(rbOneT);
 		spDt.setFrame("1s");
 
-		JLabel lDt=new JLabel("∆t");
-		lDt.setToolTipText("Time between frames");
+		
+		rbDt.setToolTipText("Time between frames");
 		
 		setLayout(new GridLayout(1,1));
 		
 		
 		add(
-			EvSwingUtil.withTitledBorder("Time",
-				EvSwingUtil.layoutTableCompactWide(
-						lDt, spDt,
-						rbNumFrames, spNumFrames,
-						rbTotT, spTotTime,
-						rbOneT, new JLabel("")
-			)));
+				EvSwingUtil.withTitledBorder("Time",
+						EvSwingUtil.layoutCompactVertical(
+								new JLabel("Frequency:"),
+								EvSwingUtil.layoutTableCompactWide(
+										rbDt, spDt,
+										rbMaxSpeed, new JLabel("")
+								),
+								new JLabel("Number:"),
+								EvSwingUtil.layoutTableCompactWide(
+										rbNumFrames, spNumFrames,
+										rbTotT, spTotTime,
+										rbOneT, new JLabel("")
+								)
+						)));
 		}
 	}

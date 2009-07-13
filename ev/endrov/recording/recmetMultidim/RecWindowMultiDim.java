@@ -66,6 +66,7 @@ public class RecWindowMultiDim extends BasicWindow
 		{
 		RecWidgetSlices wslices=new RecWidgetSlices();
 		RecWidgetTimes wtimes=new RecWidgetTimes();
+		RecWidgetChannels wchans=new RecWidgetChannels();
 		RecWidgetOrder worder=new RecWidgetOrder();
 		RecWidgetPositions wpos=new RecWidgetPositions();
 		RecWidgetRecDesc wdesc=new RecWidgetRecDesc();
@@ -73,11 +74,13 @@ public class RecWindowMultiDim extends BasicWindow
 		
 
 		JPanel leftright=new JPanel(new GridLayout(1,2));
-		leftright.add(EvSwingUtil.layoutCompactVertical(wslices,worder));
-		leftright.add(EvSwingUtil.layoutCompactVertical(wtimes,wpos,wacq));
+		leftright.add(EvSwingUtil.layoutCompactVertical(wslices,worder,wpos));
+		leftright.add(EvSwingUtil.layoutCompactVertical(wtimes,wacq));
 		
 		setLayout(new BorderLayout());
-		add(leftright,BorderLayout.NORTH);
+		add(EvSwingUtil.layoutCompactVertical(
+				leftright,wchans
+				),BorderLayout.NORTH);
 		add(
 				wdesc
 				,BorderLayout.CENTER);

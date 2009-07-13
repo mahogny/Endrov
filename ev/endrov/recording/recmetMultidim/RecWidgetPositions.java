@@ -3,6 +3,7 @@ package endrov.recording.recmetMultidim;
 import java.awt.GridLayout;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import endrov.util.EvSwingUtil;
 
@@ -28,8 +29,11 @@ public class RecWidgetPositions extends JPanel
 		setLayout(new GridLayout(1,1));
 		add(
 			EvSwingUtil.withTitledBorder("Positions",
-					cbAutofocus
+					EvSwingUtil.layoutCompactVertical(
+					cbAutofocus,
+					new JLabel("TODO")
 					
+					)
 					/*
 				EvSwingUtil.layoutTableCompactWide(
 						new JLabel("dt"), spDt,

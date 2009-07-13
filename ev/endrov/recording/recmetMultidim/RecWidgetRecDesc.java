@@ -51,4 +51,23 @@ public class RecWidgetRecDesc extends JPanel
 
 		
 		}
+	
+	
+	
+	
+	public static class SettingsRecDesc
+		{
+		public String author, comment, sample;
+		}
+	
+	
+	public SettingsRecDesc getSettings()
+		{
+		SettingsRecDesc settings=new SettingsRecDesc();
+		settings.author=tfAuthor.getText();
+		settings.comment=taComment.getText();
+		settings.sample=tfSample.getText();
+		return settings;
+		}
+	
 	}
