@@ -31,7 +31,8 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				FlowUnitConfocalShiftCorrection.class
+				FlowUnitConfocalShiftCorrection.class,
+				FlowUnitCorrectAttenuation.class
 				};
 		}
 	

@@ -199,6 +199,18 @@ public class EvStack implements AnyEvImage
 		return loaders.get(z);
 		}
 	
+	public EvImage getInt(int z)
+		{
+		int i=0;
+		for(EvImage evim:loaders.values())
+			{
+			if(i==z)
+				return evim;
+			i++;
+			}
+		throw new RuntimeException("Out of bounds");
+		}
+	
 	/**
 	 * Set one image plane
 	 */

@@ -41,6 +41,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 	
 	private JButton bStart=new JButton("Start");
 	private JButton bStop=new JButton("Stop");
+	private JButton bFlatten=new JButton("Flatten");
 	
 	private SpinnerSimpleEvFrame frameStart=new SpinnerSimpleEvFrame();
 	
@@ -81,7 +82,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 				panelOptions,
 				panelStatus,
 				EvSwingUtil.withLabel("Start frame", frameStart),
-				EvSwingUtil.layoutEvenHorizontal(bStart,bStop)));
+				EvSwingUtil.layoutEvenHorizontal(bStart,bStop,bFlatten)));
 		
 		setTitleEvWindow("Auto-lineage");
 		updateCurrentAlgo();
@@ -93,12 +94,15 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 			public void actionPerformed(ActionEvent e){updateCurrentAlgo();}});
 		
 		bStart.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e){start();}});
+			public void actionPerformed(ActionEvent e){start();}});
 
 		bStop.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent e){
 		
 		}});
+
+		bFlatten.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e){flatten();}});
 
 		}
 	
@@ -107,6 +111,16 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		{
 		if(currentAlgo!=null)
 			currentAlgo.run(this);
+		}
+	
+	private void flatten()
+		{
+		NucLineage lineage=comboLin.getSelectedObject();
+		if(lineage!=null)
+			{
+			lineage.flattenSingleChildren();
+			BasicWindow.updateWindows();
+			}
 		}
 	
 	private void updateCurrentAlgo()
@@ -133,6 +147,9 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 	
 	public void dataChangedEvent()
 		{
+		comboLin.updateList();
+		if(currentAlgo!=null)
+			currentAlgo.dataChangedEvent();
 		}
 
 	public void freeResources()

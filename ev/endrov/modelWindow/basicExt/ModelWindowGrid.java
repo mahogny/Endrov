@@ -98,7 +98,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 		 */
 		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
 			{
-			gl.glLineWidth(0);
+			gl.glLineWidth(1f);
 			gl.glPushMatrix(); 
 			gl.glRotatef(90,0,1,0); 
 			gl.glRotatef(90,1,0,0); 

@@ -2,6 +2,8 @@ package endrov.util;
 
 import java.util.*;
 
+import javax.vecmath.Vector2d;
+
 
 public class EvMathUtil
 	{
@@ -148,6 +150,55 @@ public class EvMathUtil
 		else
 			return 0;
 		}
+	
+	
+	/**
+	 * Given function x->y, find the x that maximizes y. The function is cubic interpolated
+	 */
+	public static double findXforMaxY(SortedMap<Double,Double> func)
+		{
+		Double xmid=EvListUtil.getKeyOfMax(func);
+		SortedMap<Double,Double> head=func.headMap(xmid);
+		if(head.isEmpty())
+			return xmid;
+		SortedMap<Double,Double> tail=func.tailMap(xmid);
+		Iterator<Double> tit=tail.keySet().iterator();
+		tit.next();
+		if(!tit.hasNext())
+			return xmid;
+		
+		double xbefore=head.lastKey();
+		double xafter=tit.next();
+		double ybefore=func.get(xbefore);
+		double ymid=func.get(xmid);
+		double yafter=func.get(xafter);
+		System.out.println("xs: "+xbefore+"   "+xmid+"   "+xafter);
+		
+		
+		double x0=xmid-xbefore;
+		double x1=xafter-xbefore;
+		double y0=ymid-ybefore;
+		double y1=yafter-ybefore;
+		
+		Matrix2d m=new Matrix2d(
+				x0*x0,x0,
+				x1*x1,x1);
+		Vector2d v=new Vector2d(y0,y1);
+		m.invert();
+		m.transform(v);
+		double optimalx=xbefore-v.y/(2*v.x);
+		if(optimalx<xbefore)
+			return xbefore;
+		else if(optimalx>xafter)
+			return xafter;
+		else
+			{
+			//This will always be a curve like /\ because y is smaller to the left and right.
+			//Hence this extreme point will always be better
+			return optimalx;
+			}
+		}
+	
 	
 	public static void main(String[] args)
 		{

@@ -1,0 +1,6 @@
+bilateral seems better than kuwahara
+
+alpha-shapes on nucleoli?
+
+
+
