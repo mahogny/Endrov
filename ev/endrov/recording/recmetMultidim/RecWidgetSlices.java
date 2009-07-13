@@ -60,4 +60,25 @@ public class RecWidgetSlices extends JPanel
 	
 		}
 	
+	
+	
+	public static class SettingsSlices
+		{
+		
+		
+		
+		public String author, comment, sample;
+		}
+	
+	
+	public SettingsSlices getSettings()
+		{
+		SettingsSlices settings=new SettingsSlices();
+		
+		
+		
+		
+		return settings;
+		}
+		
 	}

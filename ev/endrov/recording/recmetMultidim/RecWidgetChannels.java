@@ -1,19 +1,20 @@
 package endrov.recording.recmetMultidim;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import endrov.basicWindow.SpinnerSimpleEvDecimal;
+import endrov.basicWindow.SpinnerSimpleInteger;
 import endrov.basicWindow.icon.BasicIcon;
-import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
 /**
@@ -27,110 +28,122 @@ public class RecWidgetChannels extends JPanel
 
 	
 	/**
-	 * Current settings or
-	 * Channels===
-	 * 
-	 * select config groups
-	 * 
-	 * one Channel:
-	 * * which group
-	 * * exposure, or auto
-	 * * compensate exposure over Z
-	 * * z-skip
-	 * * z-start (offset)
-	 * * t-skip
+	 * * current settings, what to call channel?
+	 * * auto exposure?
 	 * * z-scan while recording? a la emilie
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 */
 	
-	public static class OrderEntry
+
+	private ArrayList<Row> entrylist=new ArrayList<Row>();
+	
+	private JComponent p=new JPanel();
+	
+	
+	public static class ChannelEntry
 		{
-		public final String id, desc;
-
-		private OrderEntry(String id, String desc)
-			{
-			this.id = id;
-			this.desc = desc;
-			}
+		
 		}
-
-	//Standard entries
-	public static final OrderEntry entryChannel=new OrderEntry("channel","Channel");
-	public static final OrderEntry entryPosition=new OrderEntry("position","Position");
-	public static final OrderEntry entrySlice=new OrderEntry("slice","Slice");
 	
-
-	public ArrayList<JLabel> wlist=new ArrayList<JLabel>();
-	public ArrayList<OrderEntry> entrylist=new ArrayList<OrderEntry>();
 	
-	public JComponent p=new JPanel();
+	private JButton bAdd=new JImageButton(BasicIcon.iconAdd,"Add channel to list");
+	
+	private static class Row
+		{
+		JComboBox comboChannel=new JComboBox(new Object[]{"foo"});
+		SpinnerSimpleEvDecimal spExposure=new SpinnerSimpleEvDecimal();
+		JCheckBox chLightCompensate=new JCheckBox();
+		JButton bUp=new JImageButton(BasicIcon.iconButtonUp,"Move toward first in order");
+		JButton bDown=new JImageButton(BasicIcon.iconButtonDown,"Move toward end in order");
+		
+		JButton bRemove=new JImageButton(BasicIcon.iconRemove,"Remove channel from list");
+		
+		SpinnerSimpleInteger spZinc=new SpinnerSimpleInteger(1,1,1000,1);
+		SpinnerSimpleInteger spZ0=new SpinnerSimpleInteger(0,0,1000,1);
+		SpinnerSimpleInteger spTinc=new SpinnerSimpleInteger(1,1,1000,1);
+		}
+	
+	
+	
+	
 	
 	public RecWidgetChannels()
 		{
-		this(entryPosition,entryChannel,entrySlice);
-		}
-	
-	public RecWidgetChannels(OrderEntry... entry)
-		{
-		setBorder(BorderFactory.createTitledBorder("Order"));
+		setBorder(BorderFactory.createTitledBorder("Channnels"));
 		setLayout(new BorderLayout());
+		add(new JLabel("TODO"),BorderLayout.NORTH);
 		add(p,BorderLayout.CENTER);
-		entrylist.addAll(Arrays.asList(entry));
-		layoutOrder();
+		addChannel();
+		addChannel();
+		addChannel();
+		layoutChannels();
 		}
 	
-	private void layoutOrder()
+	
+	private void addChannel()
 		{
-		wlist.clear();
+		Row row=new Row();
+		entrylist.add(row);
+		}
+	
+	private void layoutChannels()
+		{
 		p.removeAll();
-		p.setLayout(new GridLayout(entrylist.size(),1));
-		int row=0;
-		for(OrderEntry e:entrylist)
+		p.setLayout(new GridBagLayout());
+
+		//For each line and description
+		for(int i=-1;i<entrylist.size();i++)
 			{
-			JLabel label=new JLabel(e.desc);
-			wlist.add(label);
+			GridBagConstraints c=new GridBagConstraints();
+			c.gridy=i+1;
+			c.gridx=0;
 			
-			final int thisRow=row;
-			JButton bUp=new JImageButton(BasicIcon.iconButtonUp,"Move this entry up. Bottom-most entry is changed most times (think of it as nested for-loops).");
-			JButton bDown=new JImageButton(BasicIcon.iconButtonDown,"Move this entry down. Bottom-most entry is changed most times (think of it as nested for-loops).");
-			bUp.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e)
-					{
-					OrderEntry ee=entrylist.get(thisRow-1);
-					entrylist.set(thisRow-1,entrylist.get(thisRow));
-					entrylist.set(thisRow,ee);
-					wlist.get(thisRow-1).setText(entrylist.get(thisRow-1).desc);
-					wlist.get(thisRow).setText(entrylist.get(thisRow).desc);
-					//RecWidgetOrder.this.repaint();
-					}
-			});
-			bDown.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e)
-					{
-					OrderEntry ee=entrylist.get(thisRow+1);
-					entrylist.set(thisRow+1,entrylist.get(thisRow));
-					entrylist.set(thisRow,ee);
-					wlist.get(thisRow+1).setText(entrylist.get(thisRow+1).desc);
-					wlist.get(thisRow).setText(entrylist.get(thisRow).desc);
-					//RecWidgetOrder.this.repaint();
-					}
-			});
+			Row row=null;
+			if(i!=-1) row=entrylist.get(i);
+	
+			
+			if(i==-1) p.add(bAdd,c);
+			else p.add(row.bRemove,c);
+			c.gridx++;
+
+			if(i==-1) ;
+			else p.add(row.bUp,c);
+			c.gridx++;
+
+			if(i==-1) ;
+			else p.add(row.bDown,c);
+			c.gridx++;
+
+
+			c.fill=GridBagConstraints.HORIZONTAL;
+			c.weightx=1;
+			if(i==-1) p.add(new JLabel("Channel"),c);
+			else p.add(row.comboChannel,c);
+			c.gridx++;
+			
+			if(i==-1) p.add(new JLabel("Exp [s]"),c);
+			else p.add(row.spExposure,c);
+			c.weightx=0;
+			c.gridx++;
+			
+			if(i==-1) p.add(new JLabel("L.C"),c);
+			else p.add(row.chLightCompensate,c);
+			c.gridx++;
+			
+			if(i==-1)	p.add(new JLabel("Z++"),c);
+			else p.add(row.spZinc,c);
+			c.gridx++;
+			
+			if(i==-1)	p.add(new JLabel("Z0"),c);
+			else p.add(row.spZ0,c);
+			c.gridx++;
+			
+			if(i==-1)	p.add(new JLabel("t++"),c);
+			else p.add(row.spTinc,c);
+			c.gridx++;
+			
 
 			
 			
-			JComponent c;
-			if(row==0)
-				c=EvSwingUtil.layoutLCR(null, label, bDown);
-			else if(row==entrylist.size()-1)
-				c=EvSwingUtil.layoutLCR(null, label, bUp);
-			else
-				c=EvSwingUtil.layoutLCR(null, label, EvSwingUtil.layoutCompactHorizontal(bUp, bDown));
-			p.add(c);
-			row++;
 			}
 		
 		
