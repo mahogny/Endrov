@@ -637,7 +637,7 @@ public class EvIODataBioformats implements EvIOData
 						
 						im.resX=resX;
 						im.resY=resY;
-						im.resZ=resZ;
+						im.resZ=resZ; //Maybe invert?
 						
 //						System.out.println("resf  "+fdx+" "+fdy+" "+fdz);
 	//					System.out.println("resEV "+im.resX+" "+im.resY+" "+im.resZ+" "+frame);
@@ -650,6 +650,7 @@ public class EvIODataBioformats implements EvIOData
 						stack.dispY=0;
 						stack.resX=resX;
 						stack.resY=resY;
+//						stack.resZ=new EvDecimal(fdz);
 						
 						evim.io=new SliceIO(imageReader, curPixel, bandID, "");
 						}

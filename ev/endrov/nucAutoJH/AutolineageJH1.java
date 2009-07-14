@@ -28,6 +28,7 @@ import endrov.nucImage.LineagingAlgorithm;
 import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
+import endrov.util.EvMathUtil;
 import endrov.util.EvSwingUtil;
 import endrov.util.ImVector3d;
 import endrov.util.Tuple;
@@ -114,6 +115,46 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				}
 			
 			}
+		
+		
+		int id=0;
+		public List<Candidate> findCandidates(EvStack stackHis, Shell shell, double sigmaHis1)
+			{
+			int whis=stackHis.getWidth();
+			int hhis=stackHis.getHeight();
+			//int dhis=stackHis.getDepth();
+			EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigmaHis1, sigmaHis1, whis, hhis);
+			EvPixels kernel2=GenerateSpecialImage.genGaussian2D(sigmaHis1*2, sigmaHis1*2, whis, hhis);
+
+			EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
+			EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
+			List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);
+			
+			List<Candidate> candlist=new LinkedList<Candidate>();
+			for(Vector3i v:maximas)
+				{
+				Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
+//				Vector3d dicPos=stackDIC.transformWorldImage(wpos);
+				
+				if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
+					{
+					System.out.println("id=== "+id);
+					double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
+					System.out.println("Best fit sigma: "+bestSigma);
+
+					
+					Candidate cand=new Candidate();
+					cand.id=id++;
+					cand.pos=wpos;
+					cand.bestSigma=bestSigma;
+					cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
+							bestSigma, bestSigma, cand.pos.x, cand.pos.y);
+					candlist.add(cand);
+					}
+				}
+			return candlist;
+			}
+		
 
 		public void run(LineageSession session)
 			{
@@ -160,16 +201,18 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				///// Find candidate coordinates ////
 				double sigmaHis1=expectRadius;
 				
-				
+				/*
 				int whis=stackHis.getWidth();
 				int hhis=stackHis.getHeight();
 				int dhis=stackHis.getDepth();
+				*/
+				/*
 				EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigmaHis1, sigmaHis1, whis, hhis);
 				EvPixels kernel2=GenerateSpecialImage.genGaussian2D(sigmaHis1*2, sigmaHis1*2, whis, hhis);
 
 				EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
 				EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
-				List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);
+				List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);*/
 				
 				
 				//TODO run with several kernel sizes. merge candidates.
@@ -259,106 +302,19 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				int wdic=stackEmbryoMask.getWidth();
 				int hdic=stackEmbryoMask.getHeight();
 				int ddic=stackEmbryoMask.getDepth();*/
-				int id=0;
+				/**
+				 * Find candidates. 
+				 * Easy to filter out too small candidates.
+				 * Easy to get rid of overlapping candidates
+				 * Hard to recover if candidates does not cover all nuclei
+				 */
 				List<Candidate> candlist=new LinkedList<Candidate>();
-				for(Vector3i v:maximas)
-					{
-					Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
-//					Vector3d dicPos=stackDIC.transformWorldImage(wpos);
-					
-					if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
-						{
-						System.out.println("id=== "+id);
-						double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
-						System.out.println("Best fit sigma: "+bestSigma);
-						System.out.println("res "+resXhis);
-
-						//Use meanshift to get a better estimate of the XY-position
-						System.out.println("Old wpos "+wpos);
-						/*
-						//Square kernel
-						int mr=(int)(bestSigma*1.5);
-						MeanShift2D.MeanShiftPreProcess meanshift=
-						new MeanShift2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels(), mr, mr);
-						Vector2d mpos=meanshift.iterate(new Vector2d(v.x,v.y));
-						*/
-						/*
-						//Gauss kernel
-						double mul=1.2;
-						MeanShiftGauss2D.MeanShiftPreProcess meanshiftXY=
-						new MeanShiftGauss2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels());
-						Vector2d mpos=meanshiftXY.iterate(new Vector2d(v.x,v.y),bestSigma*mul,bestSigma*mul);
-						wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,v.z));
-						System.out.println("new wpos "+wpos);
-						*/
-						
-						/*
-						
-						//Do mean-shift in Z-direction
-						double sigmaHis1z=bestSigma/resFrac;  //Arbitrary factor for psfZ
-						double[] arr=new double[dhis];
-						for(int i=0;i<dhis;i++)
-							arr[i]=Multiscale.convolveGaussPoint2D(stackHis.getInt(i).getPixels(), 
-									bestSigma, bestSigma, mpos.x, mpos.y);
-						MeanShiftGauss1D.MeanShiftPreProcess meanshiftZ=new MeanShiftGauss1D.MeanShiftPreProcess(arr);
-						double nz=meanshiftZ.iterate(v.z, sigmaHis1z);
-						v.z=(int)Math.round(nz);
-						wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,nz));
-						System.out.println("new wpos "+wpos);
-						
-						bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),bestSigma, v.x, v.y);
-						System.out.println("better fit sigma: "+bestSigma);
-
-						*/
-						
-						
-						
-						Candidate cand=new Candidate();
-						cand.id=id++;
-						cand.pos=wpos;
-						cand.bestSigma=bestSigma;
-						cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
-								bestSigma, bestSigma, cand.pos.x, cand.pos.y);
-						candlist.add(cand);
-/*
-						=======
-						NucLineage.Nuc nuc=lin.getCreateNuc(""+i);
-						NucLineage.NucPos pos=nuc.getCreatePos(frame);
-						pos.r=3;
-						pos.setPosCopy(wpos);
->>>>>>> 1.10
-*/
-						}
+				candlist.addAll(findCandidates(stackHis, shell, sigmaHis1));
+				candlist.addAll(findCandidates(stackHis, shell, sigmaHis1*0.8));
+				candlist.addAll(findCandidates(stackHis, shell, sigmaHis1*1.2));
 					
 					
 
-					
-					//System.out.println("r should be "+stackHis.scaleImageWorldX(20)); //5
-					
-					/*
-					System.out.println("in his: "+v);
-					System.out.println("in dic: "+dicPos);
-					System.out.println("in world: "+wpos);
-					*/
-					
-					
-/*
-					Vector3i dicPosi=new Vector3i((int)dicPos.x,(int)dicPos.y,(int)dicPos.z); 
-					if(dicPosi.x>=0 && dicPosi.x<wdic-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi.z>=0 && dicPosi.z<ddic)
-						{
-						int val=pixEmbryoMask[dicPosi.z][dicPosi.y*wdic+dicPosi.x];
-						//System.out.println("dic mask "+val);
-
-						if(val>0)
-							{
-							}
-						
-						}
-					//else
-						//System.out.println("outside DIC");
-	
-					*/
-					}
 			
 				
 				double sigma2radiusFactor=0.55;
@@ -510,6 +466,24 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					 */
 					//
 					
+					
+					/**
+					 * Find out average sigma. Also variance?
+					 */
+					double sumSigma=0;
+					double sumSigma2=0;
+					int countSigma=0;
+					//EvMathUtil.
+					for(NucBefore nb:joiningNucBefore)
+						for(Candidate cand:nb.children)
+							{
+							sumSigma+=cand.bestSigma;
+							sumSigma2+=cand.bestSigma*cand.bestSigma;
+							countSigma++;
+							}
+					//double varSigma=EvMathUtil.unbiasedVariance(sumSigma, sumSigma2, countSigma);
+					double meanSigma=sumSigma/countSigma;
+					inpRadius.setText(""+meanSigma);
 					
 					
 					/**
@@ -666,3 +640,108 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		
 		}
 	}
+
+	/*
+	
+	
+	
+	for(Vector3i v:maximas)
+		{
+		Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
+//		Vector3d dicPos=stackDIC.transformWorldImage(wpos);
+		
+		if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
+			{
+			System.out.println("id=== "+id);
+			double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
+			System.out.println("Best fit sigma: "+bestSigma);
+			System.out.println("res "+resXhis);
+
+			//Use meanshift to get a better estimate of the XY-position
+			System.out.println("Old wpos "+wpos);*/
+			/*
+			//Square kernel
+			int mr=(int)(bestSigma*1.5);
+			MeanShift2D.MeanShiftPreProcess meanshift=
+			new MeanShift2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels(), mr, mr);
+			Vector2d mpos=meanshift.iterate(new Vector2d(v.x,v.y));
+			*/
+			/*
+			//Gauss kernel
+			double mul=1.2;
+			MeanShiftGauss2D.MeanShiftPreProcess meanshiftXY=
+			new MeanShiftGauss2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels());
+			Vector2d mpos=meanshiftXY.iterate(new Vector2d(v.x,v.y),bestSigma*mul,bestSigma*mul);
+			wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,v.z));
+			System.out.println("new wpos "+wpos);
+			*/
+			
+			/*
+			
+			//Do mean-shift in Z-direction
+			double sigmaHis1z=bestSigma/resFrac;  //Arbitrary factor for psfZ
+			double[] arr=new double[dhis];
+			for(int i=0;i<dhis;i++)
+				arr[i]=Multiscale.convolveGaussPoint2D(stackHis.getInt(i).getPixels(), 
+						bestSigma, bestSigma, mpos.x, mpos.y);
+			MeanShiftGauss1D.MeanShiftPreProcess meanshiftZ=new MeanShiftGauss1D.MeanShiftPreProcess(arr);
+			double nz=meanshiftZ.iterate(v.z, sigmaHis1z);
+			v.z=(int)Math.round(nz);
+			wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,nz));
+			System.out.println("new wpos "+wpos);
+			
+			bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),bestSigma, v.x, v.y);
+			System.out.println("better fit sigma: "+bestSigma);
+
+			*/
+			
+			/*
+			
+			Candidate cand=new Candidate();
+			cand.id=id++;
+			cand.pos=wpos;
+			cand.bestSigma=bestSigma;
+			cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
+					bestSigma, bestSigma, cand.pos.x, cand.pos.y);
+			candlist.add(cand);*/
+/*
+			=======
+			NucLineage.Nuc nuc=lin.getCreateNuc(""+i);
+			NucLineage.NucPos pos=nuc.getCreatePos(frame);
+			pos.r=3;
+			pos.setPosCopy(wpos);
+>>>>>>> 1.10
+*/
+			//}
+
+
+
+
+
+
+//System.out.println("r should be "+stackHis.scaleImageWorldX(20)); //5
+
+/*
+System.out.println("in his: "+v);
+System.out.println("in dic: "+dicPos);
+System.out.println("in world: "+wpos);
+*/
+
+
+/*
+Vector3i dicPosi=new Vector3i((int)dicPos.x,(int)dicPos.y,(int)dicPos.z); 
+if(dicPosi.x>=0 && dicPosi.x<wdic-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi.z>=0 && dicPosi.z<ddic)
+	{
+	int val=pixEmbryoMask[dicPosi.z][dicPosi.y*wdic+dicPosi.x];
+	//System.out.println("dic mask "+val);
+
+	if(val>0)
+		{
+		}
+	
+	}
+//else
+	//System.out.println("outside DIC");
+
+*/
+//		}
