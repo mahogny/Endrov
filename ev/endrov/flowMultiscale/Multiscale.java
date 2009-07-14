@@ -26,10 +26,32 @@ public class Multiscale
 		p=p.getReadOnly(EvPixelsType.DOUBLE);
 		SortedMap<Double,Double> dog=new TreeMap<Double, Double>(); //sigma -> dog
 
+		/*
 		findFeatureScale(p, sigmaGuess, x, y, dog);
 		findFeatureScale(p, sigmaGuess*0.75, x, y, dog);
 		findFeatureScale(p, sigmaGuess*(1+0.25*0.25), x, y, dog);
 		findFeatureScale(p, sigmaGuess*(1+0.25*0.25*0.25), x, y, dog);
+		findFeatureScale(p, sigmaGuess*(1+0.25*0.25*0.25*0.25), x, y, dog);
+		*/
+		for(double mul=0.8;mul<1.2;mul+=0.025)
+			findFeatureScale(p, sigmaGuess*mul, x, y, dog);
+		//An iterative method might be better
+		//interval 8-halving?
+		
+		
+		/*
+		findFeatureScale(p, sigmaGuess*0.85, x, y, dog);
+		findFeatureScale(p, sigmaGuess*0.95, x, y, dog); //
+		findFeatureScale(p, sigmaGuess*1.00, x, y, dog);
+		findFeatureScale(p, sigmaGuess*1.05, x, y, dog); //
+		findFeatureScale(p, sigmaGuess*1.10, x, y, dog);
+		findFeatureScale(p, sigmaGuess*1.15, x, y, dog); //
+		findFeatureScale(p, sigmaGuess*1.20, x, y, dog);
+		findFeatureScale(p, sigmaGuess*1.25, x, y, dog); //
+		findFeatureScale(p, sigmaGuess*1.30, x, y, dog);
+		findFeatureScale(p, sigmaGuess*1.37, x, y, dog); //
+		findFeatureScale(p, sigmaGuess*1.45, x, y, dog);
+*/
 		
 		//System.out.println("map: "+dog);
 		return EvListUtil.getKeyOfMax(dog);
