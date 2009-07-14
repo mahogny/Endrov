@@ -107,6 +107,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			double bestSigma;
 			double intensity;
 			
+			int numOverlap;
 			//double r;
 			
 			public String toString()
@@ -322,7 +323,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 
 				
 				/**
-				 * Filtering: take the 2 largest nuclei. average size.
+				 * Filtering: Statistics from the two largest nuclei
 				 * if any is smaller than half of this, then it is likely noise
 				 */
 				Collections.sort(candlist, new Comparator<Candidate>(){
@@ -333,6 +334,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				});
 				//double averageNormalRadius=(candlist.get(0).bestSigma+candlist.get(1).bestSigma)/2;
 				double normalSigma=candlist.get(1).bestSigma;
+				double normalIntensity=candlist.get(1).intensity;
+				/*
 				System.out.println("representative normal sigma "+normalSigma);
 				for(Candidate cand:candlist)
 					{
@@ -344,8 +347,14 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				candlist.clear();
 				candlist.addAll(okCandidates);
 				okCandidates.clear();
+				*/
+
+				reid(candlist); //Give new IDs based on sorted order
 				
-				
+
+
+
+
 				/**
 				 * Filtering: Whenever there is overlap, take the one with the strongest intensity
 				 */
@@ -365,7 +374,10 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 						double r1=sigma2radiusFactor*cand.bestSigma;
 						double r2=sigma2radiusFactor*other.bestSigma;
 						if(v.length()<r1+r2)
+							{
 							overlap=true;
+							other.numOverlap++;
+							}
 						}
 					if(!overlap)
 						okCandidates.add(cand);
@@ -377,7 +389,12 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				okCandidates.clear();
 
 				
-				
+				System.out.println("normalSigma: "+normalSigma);
+				System.out.println("normalIntensity: "+normalIntensity);
+				for(Candidate cand:candlist)
+					System.out.println(cand.id+"\t"+cand.bestSigma+"\t"+cand.intensity+"\t"+cand.numOverlap);
+				System.out.println("-------");
+
 	
 				
 				
@@ -466,25 +483,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					 */
 					//
 					
-					
-					/**
-					 * Find out average sigma. Also variance?
-					 */
-					double sumSigma=0;
-					double sumSigma2=0;
-					int countSigma=0;
-					//EvMathUtil.
-					for(NucBefore nb:joiningNucBefore)
-						for(Candidate cand:nb.children)
-							{
-							sumSigma+=cand.bestSigma;
-							sumSigma2+=cand.bestSigma*cand.bestSigma;
-							countSigma++;
-							}
-					//double varSigma=EvMathUtil.unbiasedVariance(sumSigma, sumSigma2, countSigma);
-					double meanSigma=sumSigma/countSigma;
-					inpRadius.setText(""+meanSigma);
-					
+				
 					
 					/**
 					 * Turn into nuclei
@@ -501,12 +500,34 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 							}
 						}
 					
-					
+					/**
+					 * Redo list of all candidates
+					 */
+					candlist.clear();
+					for(NucBefore nb:joiningNucBefore)
+						candlist.addAll(nb.children);
 					
 					}
 				
 				
 				
+				/**
+				 * Find out average sigma. Also variance?
+				 */
+				double sumSigma=0;
+				double sumSigma2=0;
+				int countSigma=0;
+				//EvMathUtil.
+					for(Candidate cand:candlist)
+						{
+						sumSigma+=cand.bestSigma;
+						sumSigma2+=cand.bestSigma*cand.bestSigma;
+						countSigma++;
+						}
+				//double varSigma=EvMathUtil.unbiasedVariance(sumSigma, sumSigma2, countSigma);
+				double meanSigma=sumSigma/countSigma;
+				inpRadius.setText(""+meanSigma);
+				System.out.println("new sigma "+meanSigma);
 				
 				
 				
@@ -586,6 +607,16 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			//TODO
 			}
 		
+		
+		
+		public void reid(Collection<Candidate> candlist)
+			{
+			id=0;
+			for(Candidate cand:candlist)
+				{
+				cand.id=id++;
+				}
+			}
 		
 		/**
 		 * Get names of nuclei that should get children or additional positions 
