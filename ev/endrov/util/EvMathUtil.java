@@ -137,7 +137,7 @@ public class EvMathUtil
 	 * @param sum2	Sum X^2
 	 * @param n			Number of samples
 	 */
-	public static double biasedVariance(double sum, double sum2, int n)
+	public static double biasedVariance(double sum, double sum2, double n)
 		{
 		return sum2/n - sum*sum/(n*n);
 		}
