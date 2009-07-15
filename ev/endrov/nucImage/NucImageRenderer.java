@@ -101,6 +101,23 @@ public class NucImageRenderer implements ImageWindowRenderer
 
 	
 	/**
+	 * Draw ovaloid axis'
+	 */
+	private void drawAxis(Graphics g, NucSel nucPair, NucLineage.NucInterp nuc, Vector2d so)
+		{
+		if(nuc.pos.ovaloidAxisLength!=null)
+			{
+			for(int i=0;i<nuc.pos.ovaloidAxisLength.length;i++)
+				{
+				double len=w.scaleW2s(nuc.pos.ovaloidAxisLength[i]);
+				//double len=w.scaleW2s(1);
+				Vector3d v=nuc.pos.ovaloidAxisVec[i];
+				g.drawLine((int)(so.x), (int)(so.y), (int)(so.x+v.x*len), (int)(so.y+v.y*len));
+				}
+			}
+		}
+	
+	/**
 	 * Draw a single nucleus
 	 */
 	private void drawNuc(Graphics g, NucSel nucPair, NucLineage.NucInterp nuc)
@@ -138,6 +155,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 					for(int i=0;i<360/2;i+=2)
 						g.drawArc((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor), i*20, 20);
 					isVisible=true;
+					drawAxis(g, nucPair, nuc, so);
 					}
 				}
 			else
@@ -145,20 +163,11 @@ public class NucImageRenderer implements ImageWindowRenderer
 				//Normal nucleus
 				g.drawOval((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor));
 				isVisible=true;
+				drawAxis(g, nucPair, nuc, so);
 				}
 			
 
-			//Draw ovaloid axis'
-			if(nuc.pos.ovaloidAxisLength!=null)
-				{
-				for(int i=0;i<nuc.pos.ovaloidAxisLength.length;i++)
-					{
-					double len=w.scaleW2s(nuc.pos.ovaloidAxisLength[i]);
-					//double len=w.scaleW2s(1);
-					Vector3d v=nuc.pos.ovaloidAxisVec[i];
-					g.drawLine((int)(so.x), (int)(so.y), (int)(so.x+v.x*len), (int)(so.y+v.y*len));
-					}
-				}
+			
 			
 			
 			

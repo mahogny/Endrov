@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
@@ -151,8 +152,40 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 
 					
 					//DoG or original image?
-					DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
-	//				DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
+//					DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
+					DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
+					
+					/**
+					 * Could also do local otsu threshold, do binary PCA?
+					 * method appears sensitive to varying background.
+					 * 
+					 * can try otsu on DoG?
+					 * DoG -> otsu seems insensitive to background. areas fuse rather badly; make new otsu = otsu*a+b?
+					 * peaks are missed since some peaks are very large.
+					 * 
+					 * 
+					 * local otsu on DoG? feature scale affects fusing a lot. use too small sigma.
+					 * feed list of pixels, get value.
+					 */
+					
+					/*
+					//DoG or original image?
+//					FitGaussian.Result result=FitGaussian.fitGaussian2D(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, v.x, v.y);
+					FitGaussian.Result result=FitGaussian.fitGaussian2D(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma, v.x, v.y);
+					DoubleEigenvalueDecomposition eig=new DoubleEigenvalueDecomposition(result.sigma);
+					Vector3d newWorldPos=stackHis.transformImageWorld(new Vector3d(result.mu0,result.mu1,v.z));
+					
+//					Vector3d diff=new Vector3d(newPos);
+	//				diff.sub(wpos);
+					Vector3d diff=new Vector3d(result.mu0,result.mu1,v.z);
+					diff.sub(new Vector3d(v.x,v.y,v.z));
+					System.out.println("Change: "+new Vector2d(v.x,v.y)+" "+new Vector2d(result.mu0,result.mu1)+"\t"+bestSigma+"\t"+eig.getRealEigenvalues().getQuick(0)+" D "+result.D);
+//					System.out.println("Change: "+diff+"\t"+bestSigma+"\t"+eig.getRealEigenvalues().getQuick(0));
+					
+					
+					wpos=newWorldPos;
+
+*/					
 					
 					
 					DoubleMatrix2D eigvec=eig.getV();
@@ -162,6 +195,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 							new Vector3d(eigvec.getQuick(0, 0),eigvec.getQuick(0, 1),0),
 							new Vector3d(eigvec.getQuick(1, 0),eigvec.getQuick(1, 1),0),
 							new Vector3d(0,0,0)};
+
+					//If we trust the fit more
+//					bestSigma=(eigvalv[0]+eigvalv[1])/2; 
 					
 					/*
 					System.out.println("--#");
@@ -177,7 +213,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					cand.eigval=eigvalv;
 					cand.eigvec=eigvecv;
 					cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
-							bestSigma, bestSigma, cand.pos.x, cand.pos.y);
+							bestSigma, bestSigma, stackHis.transformWorldImageX(cand.pos.x), stackHis.transformWorldImageY(cand.pos.y)); 
+					//Found bug! the random intensities explained
 					candlist.add(cand);
 					}
 				}
@@ -554,6 +591,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 						}
 				//double varSigma=EvMathUtil.unbiasedVariance(sumSigma, sumSigma2, countSigma);
 				double meanSigma=sumSigma/countSigma;
+				
+				
+				//TODO Cannot use mean sigma!!!!? too small
 				inpRadius.setText(""+meanSigma);
 				System.out.println("new sigma "+meanSigma);
 				
