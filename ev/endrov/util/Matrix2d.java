@@ -81,4 +81,9 @@ public final class Matrix2d
 		invert(this);
 		}
 	
+	
+	public String toString()
+		{
+		return "["+m00+" "+m01+"; "+m10+" "+m11+"]";
+		}
 	}

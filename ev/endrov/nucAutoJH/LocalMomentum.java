@@ -35,9 +35,11 @@ public class LocalMomentum
 		int extentY=(int)Math.round(3*sigmaY);
 		extentY=Math.max(extentY, 2);
 		
+		//For gauss
+		/*
 		double mul2x=-1/(2*sigmaX*sigmaX);
 		double mul2y=-1/(2*sigmaY*sigmaY);
-
+*/
 		
 		int sx=Math.max(0, (int)(midx-extentX));
 		int ex=Math.min(w,(int)(midx+extentX+1)); //+1 to the right?
@@ -50,14 +52,14 @@ public class LocalMomentum
 			{
 			int base=y*w;
 			double dy2=y-midy;
-			dy2=dy2*dy2*mul2y;
+			dy2=dy2*dy2;
 			for(int x=sx;x<ex;x++)
 				{
 				double dx2=x-midx;
-				dx2=dx2*dx2*mul2x;
+				dx2=dx2*dx2;
 				double t=arr[base+x];
 				if(dx2+dy2<=extentX*extentX)
-					if(minIntensity<t)
+					if(t<minIntensity)
 						minIntensity=t;
 				}
 			}
@@ -66,22 +68,28 @@ public class LocalMomentum
 			{
 			int base=y*w;
 			double dy2=y-midy;
-			dy2=dy2*dy2*mul2y;
+			//dy2=dy2*dy2*mul2y;  //For gauss
+			dy2=dy2*dy2;  //For unweighted circle
 			for(int x=sx;x<ex;x++)
 				{
-				double dx2=x-midx;
-				dx2=dx2*dx2*mul2x;
-				double gauss=Math.exp(dx2+dy2);
 				double thisIntensity=arr[base+x];
 				thisIntensity-=minIntensity;
-				double t=gauss*thisIntensity;
-
+				double dx2=x-midx;
+				double t;
+				
+				//For gauss
+				/*
+				dx2=dx2*dx2*mul2x;
+				double gauss=Math.exp(dx2+dy2);
+				t=gauss*thisIntensity;
+				*/
+				
+				//For unweighted circle
+				dx2=dx2*dx2;
 				if(dx2+dy2<=extentX*extentX)
 					t=arr[base+x];
 				else
 					t=0;
-				
-				
 				
 				sum  +=t;
 				sumx +=t*x;
@@ -92,7 +100,6 @@ public class LocalMomentum
 				}
 			}
 		
-		System.out.println(sumxy+" "+-2*sumx*sumy/sum+" "+sumx*sumy/sum);
 		double cross=(sumxy - 2*sumx*sumy/sum + sumx*sumy/sum)/sum;
 		double[][] arrS=new double[][]{
 					{EvMathUtil.biasedVariance(sumx, sumxx, sum),cross},
