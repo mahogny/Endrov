@@ -147,6 +147,22 @@ public class NucImageRenderer implements ImageWindowRenderer
 				isVisible=true;
 				}
 			
+
+			//Draw ovaloid axis'
+			if(nuc.pos.ovaloidAxisLength!=null)
+				{
+				for(int i=0;i<nuc.pos.ovaloidAxisLength.length;i++)
+					{
+					double len=w.scaleW2s(nuc.pos.ovaloidAxisLength[i]);
+					//double len=w.scaleW2s(1);
+					Vector3d v=nuc.pos.ovaloidAxisVec[i];
+					g.drawLine((int)(so.x), (int)(so.y), (int)(so.x+v.x*len), (int)(so.y+v.y*len));
+					}
+				}
+			
+			
+			
+			
 			//If it is visible then draw more things
 			if(isVisible)
 				{

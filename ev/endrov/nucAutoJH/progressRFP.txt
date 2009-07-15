@@ -45,3 +45,12 @@ E[r]=5 or so
 
 
 aim: 200 cells
+
+
+
+
+=======testing axis detection======
+using PCA
+
+
+4h36m10s perfect time

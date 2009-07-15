@@ -132,7 +132,7 @@ public class EvMathUtil
 		}
 
 	/**
-	 * Biased sample variance
+	 * Biased sample variance i.e. the plug-in estimate. Equals 0 for a single sample
 	 * @param sum		Sum X
 	 * @param sum2	Sum X^2
 	 * @param n			Number of samples
