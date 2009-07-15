@@ -14,6 +14,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.vecmath.Vector3d;
 
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition;
+
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowFindFeature.EvOpFindLocalMaximas3D;
@@ -28,7 +32,6 @@ import endrov.nucImage.LineagingAlgorithm;
 import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
 import endrov.util.EvSwingUtil;
 import endrov.util.ImVector3d;
 import endrov.util.Tuple;
@@ -107,6 +110,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			double bestSigma;
 			double intensity;
 			
+			double[] eigval;
+			Vector3d[] eigvec;
+
 			int numOverlap;
 			//double r;
 			
@@ -144,10 +150,32 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					System.out.println("Best fit sigma: "+bestSigma);
 
 					
+					//DoG or original image?
+					DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
+	//				DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
+					
+					
+					DoubleMatrix2D eigvec=eig.getV();
+					DoubleMatrix1D eigval=eig.getRealEigenvalues();
+					double[] eigvalv=new double[]{eigval.getQuick(0),eigval.getQuick(1),0};
+					Vector3d[] eigvecv=new Vector3d[]{
+							new Vector3d(eigvec.getQuick(0, 0),eigvec.getQuick(0, 1),0),
+							new Vector3d(eigvec.getQuick(1, 0),eigvec.getQuick(1, 1),0),
+							new Vector3d(0,0,0)};
+					
+					/*
+					System.out.println("--#");
+					System.out.println(eigvec.toString());
+					System.out.println(eigvecv[0]);
+					System.out.println(eig.getImagEigenvalues());
+					*/
+					
 					Candidate cand=new Candidate();
 					cand.id=id++;
 					cand.pos=wpos;
 					cand.bestSigma=bestSigma;
+					cand.eigval=eigvalv;
+					cand.eigvec=eigvecv;
 					cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
 							bestSigma, bestSigma, cand.pos.x, cand.pos.y);
 					candlist.add(cand);
@@ -598,6 +626,11 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			NucLineage.NucPos pos=nuc.getCreatePos(frame);
 			pos.r=cand.bestSigma*sigma2radiusFactor; //TODO: resolution need to go in here
 			pos.setPosCopy(cand.pos);
+			pos.ovaloidAxisLength=new double[]{
+					cand.eigval[0]*sigma2radiusFactor,
+					cand.eigval[1]*sigma2radiusFactor,
+					cand.eigval[2]*sigma2radiusFactor};
+			pos.ovaloidAxisVec=cand.eigvec;
 			return Tuple.make(name, nuc);
 			}
 		

@@ -721,6 +721,11 @@ public class NucLineage extends EvObject implements Cloneable
 	public static class NucPos
 		{
 		public double x,y,z,r;
+		
+		
+		public double[] ovaloidAxisLength;
+		public Vector3d[] ovaloidAxisVec;
+		
 		public NucPos(){}
 		public NucPos(NucPos p)
 			{
@@ -758,6 +763,8 @@ public class NucLineage extends EvObject implements Cloneable
 		public java.awt.Color colorNuc;
 		public boolean isEnd;
 		public boolean hasParent;
+		
+		
 		public boolean isKeyFrame(EvDecimal frame)
 			{
 			//double vs int ==. probably a bad idea
@@ -984,17 +991,6 @@ public class NucLineage extends EvObject implements Cloneable
 				NucPos after=pos.get(frameAfter);
 				
 				EvDecimal tdiff=frameAfter.subtract(frameBefore);
-				/*
-				if(tdiff.less(new EvDecimal(1e-6)))
-//				if(frameAfter.equals(frameBefore))
-					{
-					//Very strange case
-					return posToInterpol(frameAfter, frameBefore, frameAfter);
-					}
-				else
-					{
-					System.out.println(frameBefore+"   "+frameAfter+"   "+tdiff);
-				*/
 					double frac;
 					try
 						{
@@ -1017,8 +1013,12 @@ public class NucLineage extends EvObject implements Cloneable
 					inter.frameAfter=frameAfter;
 					inter.hasParent=parent!=null;
 					inter.colorNuc=colorNuc;
+					
+					//TODO interpolate?
+					inter.pos.ovaloidAxisLength=before.ovaloidAxisLength;
+					inter.pos.ovaloidAxisVec=before.ovaloidAxisVec;
+					
 					return inter;
-//					}
 				}
 			}
 		
