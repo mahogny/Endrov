@@ -7,7 +7,6 @@ import java.awt.image.RasterOp;*/
 import java.io.*;
 import java.util.*;
 
-import loci.common.DataTools;
 import loci.formats.*;
 import loci.formats.meta.*;
 import endrov.data.*;
@@ -85,212 +84,6 @@ public class EvIODataBioformats implements EvIOData
 	 *                               Image I/O class                                                      *
 	 *****************************************************************************************************/
 	
-	/**
-	 * Image I/O
-	 */
-	private class SliceIO implements EvIOImage
-		{
-		private int id;
-		//private Integer subid;
-		private IFormatReader imageReader;
-		private String sourceName;
-	
-		
-		public SliceIO(IFormatReader imageReader, int id, Integer subid, String sourceName)
-			{
-			this.imageReader=imageReader;
-			this.id=id;
-			//this.subid=subid;
-			this.sourceName=sourceName;
-			}
-	
-		
-		public String sourceName()
-			{
-			return sourceName;
-			}
-	
-		
-		
-		/**
-		 * Load the image
-		 */
-		public EvPixels loadJavaImage()
-			{
-			try
-				{
-				
-				
-				byte[] bytes=imageReader.openBytes(id);
-				
-				//FormatTools, DOUBLE, FLOAT, INT16, INT32, INT8, UINT16, UINT32, UINT8
-				
-				
-				int w=imageReader.getSizeX();
-				int h=imageReader.getSizeY();
-				//DataInputStream di=new DataInputStream(new ByteArrayInputStream(bytes));
-				
-				int type=imageReader.getPixelType();
-				int bpp=FormatTools.getBytesPerPixel(type);
-				boolean isFloat = type == FormatTools.FLOAT || type == FormatTools.DOUBLE;
-				boolean isLittle = imageReader.isLittleEndian();
-				boolean isSigned = type == FormatTools.INT8 || type == FormatTools.INT16 || type == FormatTools.INT32;
-				Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
-				
-				
-				//System.out.println(bfpixels.getClass()+"  "+isSigned);
-				
-				//Much of this code modified from bioformats IJ-plugin. I deem it functional and hence not copyrightable
-				//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/plugins/Util.java?rev=4289
-				//unsigned values have to be upconverted to fit into signed
-				if (bfpixels instanceof byte[]) 
-					{
-					byte[] q = (byte[]) bfpixels;
-					int len=w*h;
-					if(isSigned)
-						{
-						if (q.length > w * h) 
-							{
-							byte[] tmp = q;
-							q = new byte[w * h];
-							System.arraycopy(tmp, 0, q, 0, q.length);
-							}
-						q = DataTools.makeSigned(q);
-						return EvPixels.createFromUByte(w, h, q);
-						}
-					else
-						return EvPixels.createFromShort(w, h, EvPixels.convertUbyteToShort(q, len));
-					}
-				else if (bfpixels instanceof short[])
-					{
-					short[] q = (short[]) bfpixels;
-					
-					int len=w*h;
-					if(isSigned)
-						{
-						if (q.length > w * h) 
-							{
-							short[] tmp = q;
-							q = new short[w * h];
-							System.arraycopy(tmp, 0, q, 0, q.length);
-							}
-						q = DataTools.makeSigned(q);
-						return EvPixels.createFromShort(w, h, q);
-						}
-					else
-						return EvPixels.createFromInt(w, h, EvPixels.convertUshortToInt(q, len));
-					/*
-					if (q.length > w * h) 
-						{
-						short[] tmp = q;
-						q = new short[w * h];
-						System.arraycopy(tmp, 0, q, 0, q.length);
-						}
-
-					if (isSigned) 
-						q = DataTools.makeSigned(q);
-
-					
-					//TODO unsigned - upconvert
-					return EvPixels.createFromShort(w, h, q);*/
-					}
-				else if (bfpixels instanceof int[])
-					{
-					int[] q = (int[]) bfpixels;
-					if (q.length > w * h) 
-						{
-						int[] tmp = q;
-						q = new int[w * h];
-						System.arraycopy(tmp, 0, q, 0, q.length);
-						}
-
-					if (isSigned) 
-						q = DataTools.makeSigned(q);
-
-					//unsigned? - screw it. would have to convert to float/double, evil.
-					return EvPixels.createFromInt(w, h, q);
-					}
-				else if (bfpixels instanceof float[])
-					{
-					float[] q = (float[]) bfpixels;
-					if (q.length > w * h) 
-						{
-						float[] tmp = q;
-						q = new float[w * h];
-						System.arraycopy(tmp, 0, q, 0, q.length);
-						}
-					return EvPixels.createFromFloat(w, h, q);
-					}
-				else if (bfpixels instanceof double[]) 
-					{
-					double[] q = (double[]) bfpixels;
-					if (q.length > w * h) 
-						{
-						double[] tmp = q;
-						q = new double[w * h];
-						System.arraycopy(tmp, 0, q, 0, q.length);
-						}
-					return EvPixels.createFromDouble(w, h, q);
-					}
-				else
-					{
-					System.out.println("Bioformats returns unrecognized format");
-					System.out.println(bfpixels.getClass()+"  "+isSigned);
-					return null;
-					}
-
-
-
-				/*
-				BufferedImage i=imageReader.openImage(id);
-				
-				//int w=i.getWidth();
-				//int h=i.getHeight();
-				
-				System.out.println("bf got "+i);
-				
-				//Make sure it is 8-bit all the time
-				if(i.getType()!=BufferedImage.TYPE_BYTE_GRAY)
-					{
-					BufferedImage j=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-					j.getGraphics().drawImage(i,0,0,null);
-					i=j;
-					}
-	
-				if(subid!=null)
-					{
-				
-					BufferedImage im=new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-					
-					float matrix[][]={{0,0,0}};
-					if(i.getRaster().getNumBands()==1)
-						matrix=new float[][]{{0}};
-					else if(i.getRaster().getNumBands()==2)
-						matrix=new float[][]{{0,0/}};
-					else if(i.getRaster().getNumBands()==3)
-						matrix=new float[][]{{0,0,0}};
-					
-					matrix[0][subid]=1;
-					RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));
-					op.filter(i.getRaster(), im.getRaster());
-					
-					return new EvPixels(im);
-					}
-					
-				return new EvPixels(i);*/
-				}
-			catch(Exception e)
-				{
-				endrov.ev.EvLog.printError("Failed to read image "+sourceName(),e);
-				return null;
-				}
-			}
-		}
-
-	/******************************************************************************************************
-	 *                               Instance                                                             *
-	 *****************************************************************************************************/
-
 	/** Path to imageset */
 	public File basedir;
 
@@ -562,7 +355,11 @@ public class EvIODataBioformats implements EvIOData
 			System.out.println("BF # XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc);
 
 			
-
+			//It *must* be 0,0
+			Float fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
+			Float fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
+			Float fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
+			System.out.println("res "+fdx+" "+fdy+" "+fdz);
 			
 			//Enlist images
 			for(int channelnum=0;channelnum<numc;channelnum++)
@@ -605,10 +402,6 @@ public class EvIODataBioformats implements EvIOData
 							}
 						
 						
-						//It *must* be 0,0
-						Float fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
-						Float fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
-						Float fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
 						/*
 						if(fdx==null && imageReader.getMetadataValue("VoxelSizeX")!=null)
 							fdx=(float)(Double.parseDouble(""+imageReader.getMetadataValue("VoxelSizeX"))*1e6);
@@ -623,9 +416,9 @@ public class EvIODataBioformats implements EvIOData
 
 						//System.out.println("orig dz" +fdz);
 						
-						if(fdx==null) fdx=1.0f;
-						if(fdy==null) fdy=1.0f;
-						if(fdz==null) fdz=1.0f;
+						if(fdx==null || fdx==0) fdx=1.0f;
+						if(fdy==null || fdy==0) fdy=1.0f;
+						if(fdz==null || fdz==0) fdz=1.0f;
 
 						if(frame==null)
 							frame=new EvDecimal(framenum);
@@ -652,7 +445,7 @@ public class EvIODataBioformats implements EvIOData
 						stack.resY=resY;
 //						stack.resZ=new EvDecimal(fdz);
 						
-						evim.io=new SliceIO(imageReader, curPixel, bandID, "");
+						evim.io=new BioformatsSliceIO(imageReader, curPixel, bandID, "");
 						}
 					}
 				}
