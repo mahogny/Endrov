@@ -3,29 +3,26 @@ package qhull;
 import java.util.*;
 
 /**
- * Extract neighbours from voronoi
+ * Extract neighbours from voronoi i.e. the delaunay dual
+ * 
  * @author Johan Henriksson
  */
 public class VoronoiNeigh
 	{
-	/** Which are neighbours? index list */
-	public List<Set<Integer>> dneigh=new ArrayList<Set<Integer>>();
+	/** 
+	 * Which are neighbours? dneigh.get(i) is a list of neighbours of i. These are indices
+	 * into vertex list  
+	 */
+	public ArrayList<Set<Integer>> dneigh=new ArrayList<Set<Integer>>();
 	
 	
-	public VoronoiNeigh(Voronoi v, boolean selfNeigh, Set<Integer> infinityCell)
+	public VoronoiNeigh(Voronoi v, boolean selfNeigh, Collection<Integer> infinityCell)
 		{
-//		int used=0;
-		
 		int numsimplex=v.vsimplex.size();
 		for(int i=0;i<numsimplex;i++)
 			dneigh.add(new HashSet<Integer>());
 
 		//Set virtual infinity
-/*		Set<Integer> infinityVertex=new HashSet<Integer>();
-		infinityVertex.add(-1);
-		for(int c:infinityCell)
-			for(int i:v.vsimplex.get(c))
-				infinityVertex.add(i);*/
 		v.setInfinityCell(infinityCell);
 		
 		for(int i=0;i<numsimplex;i++) //Simplex A
@@ -49,15 +46,10 @@ public class VoronoiNeigh
 				faceB.retainAll(faceA);
 
 				//Ignore points at infinity
-//				boolean was=!faceB.isEmpty();
 				faceB.remove(-1);
 				//3 vert before. cuts too many.
 				
-//				if(!(faceB.size()>=1) && was)
-//					used++;
-				
 				//Face shared?
-//				if(!faceB.isEmpty())
 				if(faceB.size()>=1)
 					{
 					dneigh.get(i).add(j);
@@ -66,10 +58,7 @@ public class VoronoiNeigh
 
 				}
 
-			//			for(int j:v.vface.get(i))
-			//				dneigh.get(i).add(j);
 			}
-//		System.out.println("used "+used);
 		}
 
 	}

@@ -115,6 +115,9 @@ public class Voronoi
 		return bf.toString();
 		}
 	
+	/**
+	 * Does a simplex extend to infinity?
+	 */
 	public boolean isAtInfinity(int i)
 		{
 		for(int vi:vsimplex.get(i))
@@ -123,8 +126,11 @@ public class Voronoi
 		return false;
 		}
 	
-	
-	public void setInfinityCell(Set<Integer> infinityCell)
+
+	/**
+	 * Mark all vertices in a cell as at infinity
+	 */
+	public void setInfinityCell(Collection<Integer> infinityCell)
 		{
 		HashSet<Integer> infVert=new HashSet<Integer>();
 		for(int i:infinityCell)
