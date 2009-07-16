@@ -23,6 +23,8 @@ import loci.formats.ImageReader;
 
 import org.jdom.*;
 
+import endrov.imageset.BioformatsSliceIO;
+import endrov.imageset.EvCommonImageIO;
 import endrov.util.EvImageUtils;
 import endrov.util.EvXmlUtil;
 
@@ -467,7 +469,8 @@ public class OSTdaemon extends Thread
 		LinkedList<BufferedImage> list=new LinkedList<BufferedImage>();
 		for(int id=0;id<count;id++)
 			{
-			BufferedImage i=imageReader.openImage(id);
+			BufferedImage i=new BioformatsSliceIO(imageReader,id,0,"").loadJavaImage().quickReadOnlyAWT();
+//			BufferedImage i=imageReader.openImage(id);
 			int w=i.getWidth();
 			int h=i.getHeight();
 	

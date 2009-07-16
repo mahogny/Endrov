@@ -24,6 +24,7 @@ import endrov.util.EvFileUtil;
  */
 public class EvCommonImageIO
 	{
+	//TODO: 16-bit support
 	public static EvPixels loadPixels(File file, Integer z)
 		{
 		BufferedImage im=loadJavaImage(file, z);
@@ -64,7 +65,8 @@ public class EvCommonImageIO
 			reader.setId(file.getAbsolutePath());
 
 			int id=z==null?0:z;
-			BufferedImage bim=reader.openImage(id);
+			BufferedImage bim=new BioformatsSliceIO(reader,id,0,"").loadJavaImage().quickReadOnlyAWT();
+			//BufferedImage bim=reader.openImage(id);
 			return bim;
 			}
 		catch (FormatException e)

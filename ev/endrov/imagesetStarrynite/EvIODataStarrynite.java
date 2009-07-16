@@ -140,7 +140,7 @@ public class EvIODataStarrynite implements EvIOData
 				while(stok.hasMoreTokens())
 					{
 					String line=stok.nextToken();
-					if(!line.startsWith("#") && !line.isEmpty())
+					if(!line.startsWith("#") && !line.equals(""))
 						{
 						StringTokenizer linetok=new StringTokenizer(line, " ");
 						String key=linetok.nextToken();
