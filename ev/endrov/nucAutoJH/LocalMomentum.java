@@ -89,7 +89,8 @@ public class LocalMomentum
 				}
 			}
 		
-		double cross=(sumxy - 2*sumx*sumy/sum + sumx*sumy/sum)/sum;
+		double cross=EvMathUtil.biasedCovariance(sumx, sumy, sumxy, sum);
+		//;(sumxy - 2*sumx*sumy/sum + sumx*sumy/sum)/sum;
 		double[][] arrS=new double[][]{
 					{EvMathUtil.biasedVariance(sumx, sumxx, sum),cross},
 					{cross, EvMathUtil.biasedVariance(sumy, sumyy, sum)}};

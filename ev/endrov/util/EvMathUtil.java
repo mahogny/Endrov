@@ -133,16 +133,32 @@ public class EvMathUtil
 
 	/**
 	 * Biased sample variance i.e. the plug-in estimate. Equals 0 for a single sample
-	 * @param sum		Sum X
-	 * @param sum2	Sum X^2
+	 * @param sumx	Sum X
+	 * @param sumxx	Sum X^2
 	 * @param n			Number of samples
 	 */
-	public static double biasedVariance(double sum, double sum2, double n)
+	public static double biasedVariance(double sumx, double sumxx, double n)
 		{
-		return sum2/n - sum*sum/(n*n);
+		return (sumxx - sumx*sumx/n)/n;
+//		return sum2/n - sum*sum/(n*n);
 		}
 
+	/**
+	 * Biased sample covariance i.e. the plug-in estimate. Equals 0 for a single sample.
+	 * @param sumx  sum X
+	 * @param sumy  sum Y
+	 * @param sumxy sum XY
+	 * @param n     Number of samples
+	 */
+	public static double biasedCovariance(double sumx, double sumy, double sumxy, double n)
+		{
+//		return (sumxy - 2*sumx*sumy/n + sumx*sumy/n)/n;
+		return (sumxy - sumx*sumy/n)/n;
+		}
 	
+	/**
+	 * Turn boolean into 1 or 0
+	 */
 	public static int toInt(boolean b)
 		{
 		if(b)

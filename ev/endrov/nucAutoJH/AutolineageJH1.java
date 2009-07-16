@@ -12,8 +12,13 @@ import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
+
+import org.jgrapht.graph.SimpleWeightedGraph;
+
+import qhull.Voronoi;
+import qhull.VoronoiNeigh;
+import util.graphs.GreedyMaximumWeightedMatching;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
@@ -125,7 +130,74 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			}
 		
 		
-		int id=0;
+		private static class CandDivPair extends Tuple<Candidate, Candidate>
+			{
+			private static final long serialVersionUID = 1L;
+			public CandDivPair(Candidate fst, Candidate right)
+				{
+				super(fst, right);
+				
+				//TODO calc error
+				
+				}
+
+			public double error;
+			
+			
+			}
+		
+		private void findDividing(List<Candidate> candlist)
+			{
+			try
+				{
+				//Build basic network: two candidates must be delaunay neighbors to be considered
+				SimpleWeightedGraph<Candidate, CandDivPair> graph=new SimpleWeightedGraph<Candidate, CandDivPair>(CandDivPair.class);
+
+				Vector3d[] points=new Vector3d[candlist.size()]; 
+				int curi=0;
+				for(Candidate cand:candlist)
+					points[curi++]=cand.pos;
+				Voronoi voro=new Voronoi(points);
+				
+				VoronoiNeigh vneigh=new VoronoiNeigh(voro, false, new HashSet<Integer>());
+				Candidate[] candarray=candlist.toArray(new Candidate[]{});
+				for(int i=0;i<vneigh.dneigh.size();i++)
+					{
+					for(int j:vneigh.dneigh.get(i))
+						{
+						//CandDivPair p=new CandDivPair();
+						//graph.edgeSet().add(p);
+
+						
+								CandDivPair p1=graph.addEdge(candarray[i],candarray[j]);
+								graph.setEdgeWeight(p1,666);
+								CandDivPair p2=graph.addEdge(candarray[j],candarray[i]);
+								graph.setEdgeWeight(p2,666);
+						
+						}
+					
+					}
+
+				GreedyMaximumWeightedMatching<Candidate, CandDivPair> matching=new GreedyMaximumWeightedMatching<Candidate, CandDivPair>(graph);
+				for(CandDivPair e:matching.getEdges())
+					{
+					}
+				
+				
+				
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+
+
+			
+			
+			}
+		
+		
+		private int id=0;
 		public List<Candidate> findCandidates(EvStack stackHis, Shell shell, double sigmaHis1)
 			{
 			int whis=stackHis.getWidth();
@@ -462,6 +534,12 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				System.out.println("-------");
 
 	
+				/**
+				 * Find candidates likely to either divide or have divided
+				 */
+				findDividing(candlist);
+				
+				
 				
 				
 

@@ -1,4 +1,4 @@
-package util.munkresKuhn;
+package util.graphs;
 
 import java.util.*;
 

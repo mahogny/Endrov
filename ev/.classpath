@@ -59,5 +59,6 @@
 	<classpathentry kind="lib" path="libs/bin_mac/jinput-test.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/jinput.jar"/>
 	<classpathentry kind="lib" path="libs/commons-math-2.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

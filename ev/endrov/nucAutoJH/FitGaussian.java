@@ -3,19 +3,10 @@ package endrov.nucAutoJH;
 import javax.vecmath.Vector2d;
 
 import org.apache.commons.math.FunctionEvaluationException;
-import org.apache.commons.math.MaxIterationsExceededException;
-import org.apache.commons.math.analysis.DifferentiableMultivariateVectorialFunction;
-import org.apache.commons.math.analysis.MultivariateMatrixFunction;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
-import org.apache.commons.math.analysis.MultivariateVectorialFunction;
 import org.apache.commons.math.optimization.GoalType;
-import org.apache.commons.math.optimization.OptimizationException;
 import org.apache.commons.math.optimization.RealPointValuePair;
 import org.apache.commons.math.optimization.direct.NelderMead;
-import org.apache.commons.math.optimization.general.LevenbergMarquardtOptimizer;
-
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
