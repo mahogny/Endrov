@@ -153,7 +153,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					
 					//DoG or original image?
 //					DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
-					DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
+					DoubleEigenvalueDecomposition eig=LocalMomentum.applyCircle(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma*2, v.x, v.y);
+					//originally *3 for circle
 					
 					/**
 					 * Could also do local otsu threshold, do binary PCA?
@@ -457,7 +458,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				System.out.println("normalSigma: "+normalSigma);
 				System.out.println("normalIntensity: "+normalIntensity);
 				for(Candidate cand:candlist)
-					System.out.println(cand.id+"\t"+cand.bestSigma+"\t"+cand.intensity+"\t"+cand.numOverlap);
+					System.out.println(cand.id+"\t"+cand.bestSigma+"\t"+cand.intensity+"\t"+cand.numOverlap+"\t"+cand.eigval[0]/cand.eigval[1]);
 				System.out.println("-------");
 
 	
