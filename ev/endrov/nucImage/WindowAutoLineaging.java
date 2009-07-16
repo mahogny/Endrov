@@ -40,6 +40,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 	private JLabel panelStatus=new JLabel();
 	
 	private JButton bStart=new JButton("Start");
+	private JButton bStep=new JButton("Step");
 	private JButton bStop=new JButton("Stop");
 	private JButton bFlatten=new JButton("Flatten");
 	
@@ -81,8 +82,8 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 				top,
 				panelOptions,
 				panelStatus,
-				EvSwingUtil.withLabel("Start frame", frameStart),
-				EvSwingUtil.layoutEvenHorizontal(bStart,bStop,bFlatten)));
+				EvSwingUtil.withLabel("Frame", frameStart),
+				EvSwingUtil.layoutEvenHorizontal(bStart,bStep,bStop,bFlatten)));
 		
 		setTitleEvWindow("Auto-lineage");
 		updateCurrentAlgo();
@@ -96,6 +97,9 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		bStart.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){start();}});
 
+		bStep.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e){step();}});
+
 		bStop.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 		
@@ -108,6 +112,12 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 	
 	
 	private void start()
+		{
+		if(currentAlgo!=null)
+			currentAlgo.run(this);
+		}
+	
+	private void step()
 		{
 		if(currentAlgo!=null)
 			currentAlgo.run(this);

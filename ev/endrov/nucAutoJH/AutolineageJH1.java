@@ -1,5 +1,7 @@
 package endrov.nucAutoJH;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,9 +11,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -76,10 +81,11 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 	
 	private static class Algo implements LineagingAlgorithm
 		{
-		private EvComboObjectOne<EvChannel> comboChanHis=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false);
+		private EvComboObjectOne<EvChannel> comboChanHis=new EvComboObjectOne<EvChannel>(new EvChannel(), false, false);
 //		private EvComboObjectOne<EvChannel> comboChanDIC=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false);
-		private EvComboObjectOne<Shell> comboShell=new EvComboObjectOne<Shell>(new Shell(), true, false);
-		private JTextField inpRadius=new JTextField("40");
+		private EvComboObjectOne<Shell> comboShell=new EvComboObjectOne<Shell>(new Shell(), false, false);
+		private JTextField inpRadius=new JTextField("5");
+		private JButton bReassChildren=new JButton("Reass. p-children");
 		/*
 		private JTextField inpNucBgSize=new JTextField("2");
 		private JTextField inpNucBgMul=new JTextField("1");
@@ -100,7 +106,15 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					*/
 					);
 
-			return p;
+			bReassChildren.setToolTipText("Reassign parent-children relations in last frame");
+			bReassChildren.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e)
+					{
+					reassignChildren();
+					}
+			});
+			
+			return EvSwingUtil.layoutCompactVertical(p,bReassChildren);
 			}
 		
 		
@@ -130,19 +144,38 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			}
 		
 		
-		private static class CandDivPair extends Tuple<Candidate, Candidate>
+		private static class CandDivPair 
 			{
-			private static final long serialVersionUID = 1L;
-			public CandDivPair(Candidate fst, Candidate right)
+			public Candidate ca, cb;
+			public double error;
+
+			public CandDivPair(Candidate ca, Candidate cb)
 				{
-				super(fst, right);
+				this.ca = ca;
+				this.cb = cb;
 				
-				//TODO calc error
+				//Calculate error
+				//Compare angles using smallest principal component
+				Vector2d va=new Vector2d(ca.eigvec[0].x,ca.eigvec[0].y);
+				Vector2d vb=new Vector2d(cb.eigvec[0].x,cb.eigvec[0].y);
+				//double angleDiff=Math.acos(ca.eigvec[0].dot(cb.eigvec[0])); //For 3D PCA
+				double angleDiff=Math.acos(va.dot(vb));
+				double intensDiff=Math.abs(ca.intensity-cb.intensity); //relative scale?
+				double sigmaDiff=Math.abs(ca.bestSigma-cb.bestSigma);
+				
+				
 				
 				}
-
-			public double error;
 			
+			
+			
+			
+			
+			}
+		
+		
+		private void reassignChildren()
+			{
 			
 			}
 		
@@ -150,9 +183,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			{
 			try
 				{
-				//Build basic network: two candidates must be delaunay neighbors to be considered
-				SimpleWeightedGraph<Candidate, CandDivPair> graph=new SimpleWeightedGraph<Candidate, CandDivPair>(CandDivPair.class);
-
+				//Build basic network: two candidates must be delaunay neighbors to be considered at all
+				//If a bad candidate is predicted in between two dividing cells then this algorithm is in trouble
 				Vector3d[] points=new Vector3d[candlist.size()]; 
 				int curi=0;
 				for(Candidate cand:candlist)
@@ -161,28 +193,20 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				VoronoiNeigh vneigh=new VoronoiNeigh(voro, false, new HashSet<Integer>());
 				Candidate[] candarray=candlist.toArray(new Candidate[]{});
+				LinkedList<CandDivPair> pairs=new LinkedList<CandDivPair>();
 				for(int i=0;i<vneigh.dneigh.size();i++)
-					{
 					for(int j:vneigh.dneigh.get(i))
+						if(j>i)
+							pairs.add(new CandDivPair(candarray[i],candarray[j]));
+				//Greedy algorithm. Should rather use maximum weighted non-bipartite matching
+				Collections.sort(pairs, new Comparator<CandDivPair>(){
+					public int compare(CandDivPair o1, CandDivPair o2)
 						{
-						//CandDivPair p=new CandDivPair();
-						//graph.edgeSet().add(p);
-
-						
-								CandDivPair p1=graph.addEdge(candarray[i],candarray[j]);
-								graph.setEdgeWeight(p1,666);
-								CandDivPair p2=graph.addEdge(candarray[j],candarray[i]);
-								graph.setEdgeWeight(p2,666);
-						
+						return Double.compare(o1.error, o2.error);
 						}
-					
-					}
+				});
 
-				GreedyMaximumWeightedMatching<Candidate, CandDivPair> matching=new GreedyMaximumWeightedMatching<Candidate, CandDivPair>(graph);
-				for(CandDivPair e:matching.getEdges())
-					{
-					}
-				
+				//TODO do something useful
 				
 				
 				}
