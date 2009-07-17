@@ -1,4 +1,4 @@
-package util.graphs;
+package endrov.util.graphs;
 
 /**
  * @author http://algowiki.net/wiki/index.php/Node
