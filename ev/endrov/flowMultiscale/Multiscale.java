@@ -19,7 +19,9 @@ public class Multiscale
 
 	/**
 	 * Find scale of feature by maximizing RickerWavelet(sigma) at a given point.
-	 * Uses DoG approximation
+	 * Uses DoG approximation.<br/><br/>
+	 * 
+	 * Uses several 2^-series around the guessed sigma, supposedly very fast 
 	 */
 	public static double findFeatureScale(EvPixels p, double sigmaGuess, int x, int y)
 		{
@@ -96,7 +98,42 @@ public class Multiscale
 		}
 	
 	
+
 	
+	/**
+	 * Find scale of feature by maximizing RickerWavelet(sigma) at a given point.
+	 * Uses DoG approximation.<br/><br/>
+	 * 
+	 * Tries several sigma (sigmaDiv) within a range, then recursively looks within subintervals, numIt times.
+	 */
+	public static double findFeatureScale2(EvPixels p, int x, int y, double minSigma, double maxSigma, int sigmaDiv, int numIt)
+		{
+		double[] sigmaArr=new double[sigmaDiv];
+		double[] dogArr=new double[sigmaDiv];
+
+		int maxIndex=0;
+		for(int i=0;i<sigmaDiv;i++)
+			{
+			double sigma=(maxSigma-minSigma)*i/(sigmaDiv-1.0) + minSigma;
+			sigmaArr[i]=sigma;
+			dogArr[i]=convolveGaussPoint2D(p, sigma, sigma,x,y) - convolveGaussPoint2D(p, sigma*2, sigma*2,x,y);
+			if(i==0 || dogArr[maxIndex]<dogArr[i])
+				maxIndex=i;
+			}
+		if(numIt>0)
+			{
+			//Recurse
+			int fromi=Math.max(0, maxIndex-1);
+			int toi=Math.min(sigmaDiv-1, maxIndex+1);
+			return findFeatureScale2(p, x, y, sigmaArr[fromi], sigmaArr[toi], sigmaDiv, numIt-1);
+			}
+		else
+			{
+			//Done
+			return sigmaArr[maxIndex];
+			}
+		
+		}
 	
 	/**
 	 * Convolve with a gaussian at a single point

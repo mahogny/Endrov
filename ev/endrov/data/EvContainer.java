@@ -172,6 +172,17 @@ public class EvContainer
 		return metaObject.get(i);
 		}
 	
+	public EvContainer getMetaContainer(String... name)
+		{
+		return getMetaContainer(0, name);
+		}
+	private EvContainer getMetaContainer(int index,String... name)
+		{
+		if(index==name.length)
+			return this;
+		else
+			return ((EvContainer)metaObject.get(name[index])).getMetaContainer(index+1, name);
+		}
 	/**
 	 * Put a meta object into the collection
 	 */

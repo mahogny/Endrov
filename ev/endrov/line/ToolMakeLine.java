@@ -15,6 +15,7 @@ import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.imageWindow.*;
+import endrov.line.EvLine.Pos3dt;
 import endrov.util.EvDecimal;
 
 /**
@@ -154,10 +155,10 @@ public class ToolMakeLine implements ImageWindowTool
 		for(EvLine a:ann)
 			for(int i=0;i<a.pos.size();i++)
 				{
-				double dx=a.pos.get(i).x-v.x;
-				double dy=a.pos.get(i).y-v.y;
+				double dx=a.pos.get(i).v.x-v.x;
+				double dy=a.pos.get(i).v.y-v.y;
 				double dist=dx*dx + dy*dy;
-				if((cdist>dist || closest==null) && curFrame.doubleValue()==a.pos.get(i).w) //TODO bd bad compare
+				if((cdist>dist || closest==null) && curFrame.equals(a.pos.get(i).frame))
 					{
 					cdist=dist;
 					closest=a;
@@ -187,16 +188,16 @@ public class ToolMakeLine implements ImageWindowTool
 			EvLine line=new EvLine();
 			//w.getImageset().addMetaObject(line);
 			
-			Vector4d pos=new Vector4d();
+			Pos3dt pos=new Pos3dt();
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
-			pos.x=v.x;
-			pos.y=v.y;
-			pos.z=w.frameControl.getModelZ().doubleValue();
+			pos.v.x=v.x;
+			pos.v.y=v.y;
+			pos.v.z=w.frameControl.getModelZ().doubleValue();
 //			w.s2wz(w.frameControl.getZ()).doubleValue();
-			pos.w=w.frameControl.getFrame().doubleValue();
+			pos.frame=w.frameControl.getFrame();
 			
 			line.pos.add(pos);
-			line.pos.add(new Vector4d(pos));
+			line.pos.add(new Pos3dt(pos));
 			
 			a=new Hover();
 			a.ob=line;
@@ -222,7 +223,7 @@ public class ToolMakeLine implements ImageWindowTool
 			if(mouseHasMoved)
 	//		if(activeAnnot.ob.pos.get(activeAnnot.i).equals(activeAnnot.ob.pos.get(activeAnnot.i-1)))
 				{
-				Vector4d newpos=new Vector4d(activeAnnot.ob.pos.get(activeAnnot.i));
+				Pos3dt newpos=new Pos3dt(activeAnnot.ob.pos.get(activeAnnot.i));
 				activeAnnot.ob.pos.add(newpos);
 				activeAnnot.i++;
 //				activeAnnot.ob.pos.remove(activeAnnot.i);
@@ -240,14 +241,14 @@ public class ToolMakeLine implements ImageWindowTool
 			{
 			activeAnnot.ob.setMetadataModified();
 			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
-			activeAnnot.ob.pos.get(activeAnnot.i).x=v.x;
-			activeAnnot.ob.pos.get(activeAnnot.i).y=v.y;
-			activeAnnot.ob.pos.get(activeAnnot.i).z=w.frameControl.getModelZ().doubleValue();
+			activeAnnot.ob.pos.get(activeAnnot.i).v.x=v.x;
+			activeAnnot.ob.pos.get(activeAnnot.i).v.y=v.y;
+			activeAnnot.ob.pos.get(activeAnnot.i).v.z=w.frameControl.getModelZ().doubleValue();
 			//w.s2wz(w.frameControl.getZ()).doubleValue(); 
 	
 			EvDecimal curFrame=w.frameControl.getFrame();
-			for(Vector4d a:activeAnnot.ob.pos)
-				a.w=curFrame.doubleValue();
+			for(Pos3dt a:activeAnnot.ob.pos)
+				a.frame=curFrame;
 			
 			if(!activeAnnot.isAdded)
 				{
@@ -311,11 +312,10 @@ public class ToolMakeLine implements ImageWindowTool
 			EvLine line=activeAnnot.ob;
 			if(line.pos.size()>=2)
 				{
-				Vector4d a=new Vector4d(line.pos.get(line.pos.size()-1));
-				a.sub(line.pos.get(line.pos.size()-2));
-				a.w=0;
-//				System.out.println(" "+line.pos.size()+" "+w.scaleW2s(a.length()));
-				if(w.scaleW2s(a.length())>3)
+				Pos3dt a=new Pos3dt(line.pos.get(line.pos.size()-1));
+				a.v.sub(line.pos.get(line.pos.size()-2).v);
+				a.frame=EvDecimal.ZERO; //The right thing?
+				if(w.scaleW2s(a.v.length())>3)
 					makeNextPoint();
 				}
 			}

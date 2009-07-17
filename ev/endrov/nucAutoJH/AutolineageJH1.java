@@ -19,7 +19,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
-
 import qhull.Voronoi;
 import qhull.VoronoiNeigh;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
@@ -27,6 +26,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition;
 
 import endrov.basicWindow.EvComboObjectOne;
+import endrov.data.EvContainer;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowFindFeature.EvOpFindLocalMaximas3D;
 import endrov.flowFourier.EvOpCircConv2D;
@@ -35,11 +35,14 @@ import endrov.flowMultiscale.Multiscale;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.line.EvLine;
 import endrov.nuc.NucLineage;
 import endrov.nucImage.LineagingAlgorithm;
 import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
+import endrov.util.EvListUtil;
+import endrov.util.EvMathUtil;
 import endrov.util.EvSwingUtil;
 import endrov.util.ImVector3d;
 import endrov.util.Tuple;
@@ -81,12 +84,15 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		private EvComboObjectOne<EvChannel> comboChanHis=new EvComboObjectOne<EvChannel>(new EvChannel(), false, false);
 //		private EvComboObjectOne<EvChannel> comboChanDIC=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false);
 		private EvComboObjectOne<Shell> comboShell=new EvComboObjectOne<Shell>(new Shell(), false, false);
-		private JTextField inpRadius=new JTextField("5");
+		private JTextField inpRadiusExpected=new JTextField("5");
+		private JTextField inpRadiusCutoff=new JTextField("1");
 		private JButton bReassChildren=new JButton("Reassign parent-children");
 		/*
 		private JTextField inpNucBgSize=new JTextField("2");
 		private JTextField inpNucBgMul=new JTextField("1");
 		*/
+		
+		double sigma2radiusFactor=0.55;
 		
 
 		private boolean isStopping=true;
@@ -101,7 +107,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			JComponent p=EvSwingUtil.layoutTableCompactWide(
 					new JLabel("His-channel"),comboChanHis,
 					new JLabel("Shell"),comboShell,
-					new JLabel("E[r]"),inpRadius
+					new JLabel("E[r]"),inpRadiusExpected,
+					new JLabel("min[r]"),inpRadiusCutoff
 					);
 
 			bReassChildren.setToolTipText("Reassign parent-children relations in last frame");
@@ -124,7 +131,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		private static class Candidate
 			{
 			int id;
-			Vector3d pos;
+			Vector3d wpos;
 			double bestSigma;
 			double intensity;
 			
@@ -147,6 +154,30 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			public Candidate ca, cb;
 			public double error;
 
+			/**
+			 * Angle diff is within [0,1/4] lap
+			 */
+			double angleDiff;
+			double intensDiff;
+			/**
+			 * sigmaDiff>=1
+			 */
+			double sigmaRatio;
+			double dist;
+			
+			double aPCratio;
+			double bPCratio;
+			
+			double pcRatio;
+			
+			private double invert1(double x)
+				{
+				if(x<1)
+					return 1.0/x;
+				else
+					return x;
+				}
+			
 			public CandDivPair(Candidate ca, Candidate cb)
 				{
 				this.ca = ca;
@@ -157,10 +188,23 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				Vector2d va=new Vector2d(ca.eigvec[0].x,ca.eigvec[0].y);
 				Vector2d vb=new Vector2d(cb.eigvec[0].x,cb.eigvec[0].y);
 				//double angleDiff=Math.acos(ca.eigvec[0].dot(cb.eigvec[0])); //For 3D PCA
-				double angleDiff=Math.acos(va.dot(vb));
-				double intensDiff=Math.abs(ca.intensity-cb.intensity); //relative scale?
-				double sigmaDiff=Math.abs(ca.bestSigma-cb.bestSigma);
+				angleDiff=Math.acos(va.dot(vb));
+				va.scale(-1);
+				angleDiff=Math.min(angleDiff, Math.acos(va.dot(vb))); //Can be made faster
 				
+				intensDiff=Math.abs(ca.intensity-cb.intensity); //relative scale?
+				
+				//sigmaDiff=Math.abs(ca.bestSigma-cb.bestSigma);
+				sigmaRatio=invert1(ca.bestSigma/cb.bestSigma);
+				
+				aPCratio=invert1(ca.eigval[0]/ca.eigval[1]); //invert1 not really needed...
+				bPCratio=invert1(cb.eigval[0]/cb.eigval[1]);
+				pcRatio=invert1(aPCratio/bPCratio);
+				
+				Vector3d diff=new Vector3d(ca.wpos);
+				diff.sub(cb.wpos);
+				dist=diff.length();
+
 				/**
 				 * Distance? cells on the outer boundary might reach very far due to bad infinity-treatment of voronoi
 				 * 
@@ -168,8 +212,12 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				 */
 				
 				
-				System.out.println("cand pair");
+//				System.out.println("cand pair");
 				
+
+				
+				
+				error=intensDiff;
 				}
 			
 			
@@ -184,10 +232,14 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			
 			}
 		
-		private void findDividing(List<Candidate> candlist)
+		private void findDividing(EvContainer parentContainer, List<Candidate> candlist, EvDecimal frame)
 			{
 			try
 				{
+				/*
+				PROBLEM: way too sensitive to bad candidates. Need to include more candidates 
+				
+				
 				//Build basic network: two candidates must be delaunay neighbors to be considered at all.
 				//Delaunay graphs contains perfect matchings
 				//(toughness and delaunay triangulations Dillencourt)
@@ -195,7 +247,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				Vector3d[] points=new Vector3d[candlist.size()]; 
 				int curi=0;
 				for(Candidate cand:candlist)
-					points[curi++]=cand.pos;
+					points[curi++]=cand.wpos;
 				Voronoi voro=new Voronoi(points);
 				
 				VoronoiNeigh vneigh=new VoronoiNeigh(voro, false, new HashSet<Integer>());
@@ -205,15 +257,76 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					for(int j:vneigh.dneigh.get(i))
 						if(j>i)
 							pairs.add(new CandDivPair(candarray[i],candarray[j]));
+							
+							*/
+				
+				
+				//Generate candidate dividing pairs
+				LinkedList<CandDivPair> pairs=new LinkedList<CandDivPair>();
+				for(Candidate ca:candlist)
+					for(Candidate cb:candlist)
+						if(ca.hashCode()<cb.hashCode())
+							{
+							double ra=ca.bestSigma*sigma2radiusFactor;
+							double rb=cb.bestSigma*sigma2radiusFactor;
+							
+							CandDivPair p=new CandDivPair(ca,cb);
+							
+							
+							//Cut-offs can be optimized with SVM or online by comparing with all
+							//past values
+							
+							//Hard cut-offs
+							if(p.dist<3*(ra+rb))
+								{
+//								if(p.angleDiff<45.0/180.0*Math.PI) //angle has been up to 80deg once due to bad prediction!
+								if(p.angleDiff<70.0/180.0*Math.PI) 
+									if(p.sigmaRatio<1.7)
+										if(p.pcRatio<1.8)
+										pairs.add(p);
+								}
+							
+							}
+
+				
+				
 				//Greedy algorithm. Should rather use maximum weighted non-bipartite matching
 				Collections.sort(pairs, new Comparator<CandDivPair>(){
 					public int compare(CandDivPair o1, CandDivPair o2)
 						{
 						return Double.compare(o1.error, o2.error);
 						}
-				});
-
+				}); //Here we minimize?
+				System.out.println("Pairs first: "+pairs.size());
+				HashSet<Candidate> usedCand=new HashSet<Candidate>();
+				for(CandDivPair pair:new LinkedList<CandDivPair>(pairs))
+					{
+					if(usedCand.contains(pair.ca) || usedCand.contains(pair.cb))
+						pairs.remove(pair);
+					else
+						{
+						usedCand.add(pair.ca);
+						usedCand.add(pair.cb);
+						}
+					}
+				System.out.println("Pairs left: "+pairs.size());
 				//TODO do something useful
+
+				
+				/*
+				//Debug: draw lines for solution
+				for(CandDivPair pair:pairs)
+					{
+					EvLine line=new EvLine();
+					line.pos.add(new EvLine.Pos3dt(new Vector3d(pair.ca.wpos.x,pair.ca.wpos.y,pair.ca.wpos.z),frame));
+					line.pos.add(new EvLine.Pos3dt(new Vector3d(pair.cb.wpos.x,pair.cb.wpos.y,pair.cb.wpos.z),frame));
+					parentContainer.addMetaObject(line);
+					}
+				*/
+				
+				/**
+				 * TODO create virtual new nuclei
+				 */
 				
 				
 				}
@@ -257,7 +370,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
 					{
 					System.out.println("id=== "+id);
-					double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
+//					double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
+					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(), 
+							v.x, v.y, 0.3, sigmaHis1*1.5, 8, 3);
 					System.out.println("Best fit sigma: "+bestSigma);
 
 					
@@ -319,12 +434,12 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					
 					Candidate cand=new Candidate();
 					cand.id=id++;
-					cand.pos=wpos;
+					cand.wpos=wpos;
 					cand.bestSigma=bestSigma;
 					cand.eigval=eigvalv;
 					cand.eigvec=eigvecv;
 					cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
-							bestSigma, bestSigma, stackHis.transformWorldImageX(cand.pos.x), stackHis.transformWorldImageY(cand.pos.y)); 
+							bestSigma, bestSigma, stackHis.transformWorldImageX(cand.wpos.x), stackHis.transformWorldImageY(cand.wpos.y)); 
 					//Found bug! the random intensities explained
 					candlist.add(cand);
 					}
@@ -338,6 +453,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			EvDecimal frame=session.getStartFrame();
 			NucLineage lin=session.getLineage();
 			EvChannel channelHis=comboChanHis.getSelectedObject();
+			EvContainer parentContainer=session.getContainer();
 			//EvChannel channelDIC=comboChanDIC.getSelectedObject();
 			Shell shell=comboShell.getSelectedObject();
 			if(channelHis!=null && shell!=null && lin !=null)
@@ -357,7 +473,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				//EvStack stackDIC=channelDIC.getFrame(channelDIC.closestFrame(frame));
 				
 				
-				double expectRadius=Double.parseDouble(inpRadius.getText());
+				double expectRadius=Double.parseDouble(inpRadiusExpected.getText());
+				double cutoffRadius=Double.parseDouble(inpRadiusCutoff.getText());
 //				double bgSize=Double.parseDouble(inpNucBgSize.getText());
 				//double bgMulValue=Double.parseDouble(inpNucBgMul.getText());
 				
@@ -497,7 +614,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 
 			
 				
-				double sigma2radiusFactor=0.55;
 				List<Candidate> okCandidates=new LinkedList<Candidate>();
 
 				
@@ -550,8 +666,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					boolean overlap=false;
 					for(Candidate other:okCandidates)
 						{
-						Vector3d v=new Vector3d(cand.pos);
-						v.sub(other.pos);
+						Vector3d v=new Vector3d(cand.wpos);
+						v.sub(other.wpos);
 						double r1=sigma2radiusFactor*cand.bestSigma;
 						double r2=sigma2radiusFactor*other.bestSigma;
 						if(v.length()<r1+r2)
@@ -569,31 +685,33 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				candlist.addAll(okCandidates);
 				okCandidates.clear();
 
-				
+				/*
 				System.out.println("normalSigma: "+normalSigma);
 				System.out.println("normalIntensity: "+normalIntensity);
 				for(Candidate cand:candlist)
 					System.out.println(cand.id+"\t"+cand.bestSigma+"\t"+cand.intensity+"\t"+cand.numOverlap+"\t"+cand.eigval[0]/cand.eigval[1]);
 				System.out.println("-------");
-
+*/
 	
-				/**
-				 * Find candidates likely to either divide or have divided
-				 */
-				findDividing(candlist);
 				
 				
 				
 				if(isStopping)
 					return;
 
+				
+				//Remove candidates smaller than the cut-off radius
+				candlist=cutoffSigma(candlist, cutoffRadius);
+				
 
 				//Which are the nuclei to join with from before?
 				List<NucBefore> joiningNucBefore=new ArrayList<NucBefore>();
 				Collection<String> nucsBefore=collectNucleiToContinue(lin, frame);
 				for(String name:nucsBefore)
 					joiningNucBefore.add(new NucBefore(lin,name,frame));
+				int numNucFromLastFrame=joiningNucBefore.size();
 
+				
 				/**
 				 * Join coordinates
 				 */
@@ -603,13 +721,42 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					System.out.println("No nuclei since before");
 					
 					for(Candidate cand:candlist)
-						nucleusFromCandidate(lin, frame, sigma2radiusFactor, cand);
+						nucleusFromCandidate(lin, frame, cand);
 
 					}
 				else
 					{
+					System.out.println("Continuing lineage from before");
 					//There are nucs since before. Need to join
 
+					//Will not take more than twice as many nuclei than last frame.
+					//Sort by intensity, keep 2N nuclei
+					LinkedList<Candidate> newlist=new LinkedList<Candidate>();
+					for(int i=0;i<numNucFromLastFrame*2 && i<candlist.size();i++)
+						newlist.add(candlist.get(i));
+					candlist=newlist;
+					System.out.println("Cutting #nuc from "+numNucFromLastFrame+" to "+candlist.size());
+						
+						
+
+					
+					/**
+					 * Find candidates likely to either divide or have divided
+					 */
+					findDividing(parentContainer, candlist, frame);
+
+					System.out.println("candlist "+candlist.size());
+
+					//temp
+					for(Candidate cand:candlist)
+						nucleusFromCandidate(lin, frame, cand);
+
+					System.out.println("candlistt "+candlist.size());
+
+					/*
+					
+					
+					
 					//Collect all pairs of distances, sort the list to have the smallest distances first
 					ArrayList<DistancePair> distpairs=new ArrayList<DistancePair>();
 					for(NucBefore nameBefore:joiningNucBefore)
@@ -647,55 +794,32 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					//If there are candidates left over now, it means there are more than twice as many candidates
 					//as nuclei in the frame before. The rest of the candidates are assumed bad and discarded.
 					
-
 					
 					
 					
-					//Which nuclei are left over?
-					/*
-					Set<String> unusedAfter=new HashSet<String>(createdNuc);
-					Set<String> unusedBefore=new HashSet<String>(nucsBefore);
-					unusedAfter.removeAll(usedAfter);
-					unusedBefore.removeAll(usedBefore);
-					*/
-					/**
-					 * Unused nucs before might just not have been detected. In this case we
-					 * should try and find them optimistically
-					 */
-					
-					/**
-					 * Unused nucs after are either false positive or divided nuclei.
-					 * * can detect division using axis, PCA
-					 * * can use division likely timing
-					 * * Can use a stricter metric on radius
-					 * 
-					 */
-					//
 					
 				
 					
-					/**
-					 * Turn into nuclei
-					 */
+					// Turn into nuclei. Redo list of candidates
+					candlist.clear();
 					for(NucBefore nb:joiningNucBefore)
 						{
 						String parentName=nb.name;
 						NucLineage.Nuc parentNuc=lin.nuc.get(parentName);
 						for(Candidate cand:nb.children)
 							{
-							Tuple<String,NucLineage.Nuc> child=nucleusFromCandidate(lin, frame, sigma2radiusFactor, cand);
+							Tuple<String,NucLineage.Nuc> child=nucleusFromCandidate(lin, frame, cand);
 							parentNuc.child.add(child.fst());
 							child.snd().parent=parentName;
+							candlist.addAll(nb.children);
 							}
 						}
 					
-					/**
-					 * Redo list of all candidates
-					 */
-					candlist.clear();
+					//Redo list of all candidates
 					for(NucBefore nb:joiningNucBefore)
 						candlist.addAll(nb.children);
-					
+					*/
+
 					}
 				
 				if(isStopping)
@@ -707,26 +831,36 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				 */
 				double sumSigma=0;
 				double sumSigma2=0;
+				double maxSigma=Double.MIN_VALUE;
+				double minSigma=Double.MAX_VALUE;
 				int countSigma=0;
 				//EvMathUtil.
 					for(Candidate cand:candlist)
 						{
 						sumSigma+=cand.bestSigma;
 						sumSigma2+=cand.bestSigma*cand.bestSigma;
+						maxSigma=Math.max(maxSigma, cand.bestSigma);
+						minSigma=Math.min(minSigma, cand.bestSigma);
 						countSigma++;
 						}
 				//double varSigma=EvMathUtil.unbiasedVariance(sumSigma, sumSigma2, countSigma);
 				double meanSigma=sumSigma/countSigma;
 				
+				System.out.println("mean sigma "+meanSigma);
+				System.out.println("max sigma "+maxSigma);
+				System.out.println("min sigma "+minSigma);
+				System.out.println("# accepted "+candlist.size());
 				
 				//TODO Cannot use mean sigma!!!!? too small
-				final double setSigma=meanSigma;
+				final double setExpectSigma=maxSigma;
+				final double setMinSigma=minSigma*0.7;
 				try
 					{
 					SwingUtilities.invokeAndWait(new Runnable(){
 						public void run()
 							{
-							inpRadius.setText(""+setSigma);
+							inpRadiusExpected.setText(""+setExpectSigma);
+							inpRadiusCutoff.setText(""+setMinSigma);
 							}});
 					}
 				catch (Exception e)
@@ -747,6 +881,15 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				}
 			}
 		
+		private LinkedList<Candidate> cutoffSigma(List<Candidate> candlist, double sigma)
+			{
+			LinkedList<Candidate> newlist=new LinkedList<Candidate>();
+			for(Candidate cand:candlist)
+				if(cand.bestSigma>sigma)
+					newlist.add(cand);
+			return newlist;
+			}
+			
 		private static class NucBefore
 			{
 			String name;
@@ -781,7 +924,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				this.candAfter=candAfter;
 				this.nucBefore=nb;
 				//NucLineage.Nuc nucBefore=lin.nuc.get(nb.name);
-				Vector3d vAfter=new Vector3d(candAfter.pos);
+				Vector3d vAfter=new Vector3d(candAfter.wpos);
 				//Vector3d vBefore=nucBefore.pos.get(nucBefore.pos.headMap(frame).lastKey()).getPosCopy();
 				vAfter.sub(nb.pos.getPosCopy());
 				dist=vAfter.length();
@@ -797,13 +940,13 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			}
 
 
-		private Tuple<String,NucLineage.Nuc> nucleusFromCandidate(NucLineage lin, EvDecimal frame, double sigma2radiusFactor, Candidate cand)
+		private Tuple<String,NucLineage.Nuc> nucleusFromCandidate(NucLineage lin, EvDecimal frame, Candidate cand)
 			{
-			String name=":"+frame.toString()+"_"+cand.id;
+			String name=":"+frame.toString()+"_"+cand.id+"_s"+cand.bestSigma;
 			NucLineage.Nuc nuc=lin.getCreateNuc(name);
 			NucLineage.NucPos pos=nuc.getCreatePos(frame);
 			pos.r=cand.bestSigma*sigma2radiusFactor; //TODO: resolution need to go in here
-			pos.setPosCopy(cand.pos);
+			pos.setPosCopy(cand.wpos);
 			pos.ovaloidAxisLength=new double[]{
 					cand.eigval[0]*sigma2radiusFactor,
 					cand.eigval[1]*sigma2radiusFactor,
@@ -954,6 +1097,26 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 
 
 
+//Which nuclei are left over?
+/*
+Set<String> unusedAfter=new HashSet<String>(createdNuc);
+Set<String> unusedBefore=new HashSet<String>(nucsBefore);
+unusedAfter.removeAll(usedAfter);
+unusedBefore.removeAll(usedBefore);
+*/
+/**
+ * Unused nucs before might just not have been detected. In this case we
+ * should try and find them optimistically
+ */
+
+/**
+ * Unused nucs after are either false positive or divided nuclei.
+ * * can detect division using axis, PCA
+ * * can use division likely timing
+ * * Can use a stricter metric on radius
+ * 
+ */
+//
 
 //System.out.println("r should be "+stackHis.scaleImageWorldX(20)); //5
 

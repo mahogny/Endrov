@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 
+import endrov.data.EvContainer;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 
@@ -27,6 +28,7 @@ public interface LineagingAlgorithm
 		public void finishedAndNowAtFrame(EvDecimal f);
 		public EvDecimal getStartFrame();
 		public NucLineage getLineage();
+		public EvContainer getContainer();
 		}
 	
 	/**

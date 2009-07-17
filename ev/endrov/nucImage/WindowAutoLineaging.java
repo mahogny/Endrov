@@ -16,6 +16,7 @@ import org.jdom.Element;
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.basicWindow.SpinnerSimpleEvFrame;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.nuc.NucLineage;
 import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
@@ -252,6 +253,11 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		}
 
 
+	public EvContainer getContainer()
+		{
+		return comboLin.getSelectObjectParent();
+		}
+	
 	public EvDecimal getStartFrame()
 		{
 		return frameStart.getDecimalValue();
