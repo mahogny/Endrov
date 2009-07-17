@@ -161,7 +161,11 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				double intensDiff=Math.abs(ca.intensity-cb.intensity); //relative scale?
 				double sigmaDiff=Math.abs(ca.bestSigma-cb.bestSigma);
 				
-				
+				/**
+				 * Distance? cells on the outer boundary might reach very far due to bad infinity-treatment of voronoi
+				 * 
+				 * TODO draw lines on candidates, show score
+				 */
 				
 				
 				System.out.println("cand pair");
