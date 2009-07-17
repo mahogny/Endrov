@@ -16,15 +16,12 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
-import org.jgrapht.graph.SimpleWeightedGraph;
-
 import qhull.Voronoi;
 import qhull.VoronoiNeigh;
-import util.graphs.GreedyMaximumWeightedMatching;
-
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition;
@@ -85,25 +82,26 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 //		private EvComboObjectOne<EvChannel> comboChanDIC=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false);
 		private EvComboObjectOne<Shell> comboShell=new EvComboObjectOne<Shell>(new Shell(), false, false);
 		private JTextField inpRadius=new JTextField("5");
-		private JButton bReassChildren=new JButton("Reass. p-children");
+		private JButton bReassChildren=new JButton("Reassign parent-children");
 		/*
 		private JTextField inpNucBgSize=new JTextField("2");
 		private JTextField inpNucBgMul=new JTextField("1");
 		*/
 		
+
+		private boolean isStopping=true;
+		public void setStopping(boolean b)
+			{
+			isStopping=b;
+			}
+		
+		
 		public JComponent getComponent()
 			{
 			JComponent p=EvSwingUtil.layoutTableCompactWide(
 					new JLabel("His-channel"),comboChanHis,
-//					new JLabel("DIC-channel"),comboChanDIC,
 					new JLabel("Shell"),comboShell,
 					new JLabel("E[r]"),inpRadius
-					/*
-					,
-					
-					new JLabel("Nuc bg size"),inpNucBgSize,
-					new JLabel("Nuc bg mul"),inpNucBgMul
-					*/
 					);
 
 			bReassChildren.setToolTipText("Reassign parent-children relations in last frame");
@@ -164,6 +162,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				double sigmaDiff=Math.abs(ca.bestSigma-cb.bestSigma);
 				
 				
+				
+				
+				System.out.println("cand pair");
 				
 				}
 			
@@ -229,14 +230,21 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			//int dhis=stackHis.getDepth();
 			EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigmaHis1, sigmaHis1, whis, hhis);
 			EvPixels kernel2=GenerateSpecialImage.genGaussian2D(sigmaHis1*2, sigmaHis1*2, whis, hhis);
-
+			if(isStopping) return new LinkedList<Candidate>();
 			EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
+			if(isStopping) return new LinkedList<Candidate>();
 			EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
+			if(isStopping) return new LinkedList<Candidate>();
 			List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);
+			
 			
 			List<Candidate> candlist=new LinkedList<Candidate>();
 			for(Vector3i v:maximas)
 				{
+				if(isStopping)
+					return new LinkedList<Candidate>();
+				
+				
 				Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
 //				Vector3d dicPos=stackDIC.transformWorldImage(wpos);
 				
@@ -477,6 +485,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				candlist.addAll(findCandidates(stackHis, shell, sigmaHis1*1.2));
 					
 					
+				
+				if(isStopping)
+					return;
 
 			
 				
@@ -514,6 +525,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				reid(candlist); //Give new IDs based on sorted order
 				
 
+				if(isStopping)
+					return;
 
 
 
@@ -565,7 +578,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				
 				
-				
+				if(isStopping)
+					return;
+
 
 				//Which are the nuclei to join with from before?
 				List<NucBefore> joiningNucBefore=new ArrayList<NucBefore>();
@@ -677,7 +692,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					
 					}
 				
-				
+				if(isStopping)
+					return;
+
 				
 				/**
 				 * Find out average sigma. Also variance?
@@ -697,7 +714,19 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				
 				//TODO Cannot use mean sigma!!!!? too small
-				inpRadius.setText(""+meanSigma);
+				final double setSigma=meanSigma;
+				try
+					{
+					SwingUtilities.invokeAndWait(new Runnable(){
+						public void run()
+							{
+							inpRadius.setText(""+setSigma);
+							}});
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
 				System.out.println("new sigma "+meanSigma);
 				
 				
@@ -708,7 +737,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				//TODO command to flatten lineage i.e. join single-child nuclei with parents
 				
-				session.nowAtFrame(channelHis.closestFrameAfter(frame));
+				session.finishedAndNowAtFrame(channelHis.closestFrameAfter(frame));
 				}
 			}
 		
@@ -775,12 +804,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					cand.eigval[2]*sigma2radiusFactor};
 			pos.ovaloidAxisVec=cand.eigvec;
 			return Tuple.make(name, nuc);
-			}
-		
-		
-		public void stop()
-			{
-			//TODO
 			}
 		
 		

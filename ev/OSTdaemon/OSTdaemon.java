@@ -6,13 +6,6 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.*;
 import java.nio.channels.*;
-/*import com.sun.image.codec.jpeg.*; 
-import com.sun.media.jai.codec.FileSeekableStream;
-import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.ImageDecoder;
-import com.sun.media.jai.codec.SeekableStream;
-import com.sun.media.jai.codec.TIFFDecodeParam;
-*/
 
 import javax.imageio.*;
 import javax.imageio.stream.FileImageInputStream;
@@ -24,7 +17,6 @@ import loci.formats.ImageReader;
 import org.jdom.*;
 
 import endrov.imageset.BioformatsSliceIO;
-import endrov.imageset.EvCommonImageIO;
 import endrov.util.EvImageUtils;
 import endrov.util.EvXmlUtil;
 
