@@ -188,7 +188,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			{
 			try
 				{
-				//Build basic network: two candidates must be delaunay neighbors to be considered at all
+				//Build basic network: two candidates must be delaunay neighbors to be considered at all.
+				//Delaunay graphs contains perfect matchings
+				//(toughness and delaunay triangulations Dillencourt)
 				//If a bad candidate is predicted in between two dividing cells then this algorithm is in trouble
 				Vector3d[] points=new Vector3d[candlist.size()]; 
 				int curi=0;
