@@ -24,7 +24,7 @@ public interface LineagingAlgorithm
 	 */
 	public interface LineageSession
 		{
-		public void nowAtFrame(EvDecimal f);
+		public void finishedAndNowAtFrame(EvDecimal f);
 		public EvDecimal getStartFrame();
 		public NucLineage getLineage();
 		}
@@ -62,7 +62,7 @@ public interface LineagingAlgorithm
 	/**
 	 * User-enforced stop of lineaging algorithm thread
 	 */
-	public void stop();
+	public void setStopping(boolean b);
 	
 	/**
 	 * Run algorithm

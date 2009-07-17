@@ -3,13 +3,13 @@ package endrov.nucImage;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.jdom.Element;
 
@@ -39,15 +39,21 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 	private JPanel panelOptions=new JPanel(new GridLayout(1,1));
 	private JLabel panelStatus=new JLabel();
 	
-	private JButton bStart=new JButton("Start");
+	private JButton bStartStop=new JButton("Start");
 	private JButton bStep=new JButton("Step");
-	private JButton bStop=new JButton("Stop");
 	private JButton bFlatten=new JButton("Flatten");
 	
 	private SpinnerSimpleEvFrame frameStart=new SpinnerSimpleEvFrame();
 	
+	/**
+	 * Instance of the current algorithm. Has to be remembered since it might keep state.
+	 */
+	private LineagingAlgorithm currentAlgo;
+	private LineagingAlgorithm getCurrentAlgo()
+		{
+		return currentAlgo;
+		}
 	
-	LineagingAlgorithm currentAlgo;
 	
 	/**
 	 * Create and display window
@@ -83,7 +89,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 				panelOptions,
 				panelStatus,
 				EvSwingUtil.withLabel("Frame", frameStart),
-				EvSwingUtil.layoutEvenHorizontal(bStart,bStep,bStop,bFlatten)));
+				EvSwingUtil.layoutEvenHorizontal(bStartStop,bStep,bFlatten)));
 		
 		setTitleEvWindow("Auto-lineage");
 		updateCurrentAlgo();
@@ -94,16 +100,12 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		comboAlgo.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){updateCurrentAlgo();}});
 		
-		bStart.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){start();}});
+		bStartStop.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){startStop();}});
 
 		bStep.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e){step();}});
 
-		bStop.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-		
-		}});
 
 		bFlatten.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e){flatten();}});
@@ -111,18 +113,87 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		}
 	
 	
-	private void start()
+	
+	/**
+	 * Run the algorithm without interrupting the GUI
+	 */
+	private class SteppingThread extends Thread
 		{
-		if(currentAlgo!=null)
-			currentAlgo.run(this);
+		private boolean toStop=false;
+		public void run()
+			{
+			System.out.println("===start thread===");
+			try
+				{
+				do
+					getCurrentAlgo().run(WindowAutoLineaging.this);
+//				currentAlgo.run(this);
+//					step();
+					while(!toStop);
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+				{
+				bStartStop.setText("Start");
+				}});
+			System.out.println("===end thread===");
+			}
+		}
+	private SteppingThread thread=new SteppingThread();
+	
+	private boolean isRunning()
+		{
+		return thread.isAlive();
 		}
 	
+	/**
+	 * Start or stop calculation, depending on if it is running or not 
+	 */
+	private void startStop()
+		{
+		if(currentAlgo!=null)
+			{
+			if(isRunning())
+				{
+				bStartStop.setText("Stopping");
+				thread.toStop=true;
+				currentAlgo.setStopping(true);
+				}
+			else
+				{
+				thread=new SteppingThread();
+				bStartStop.setText("Stop");
+				thread.toStop=false;
+				currentAlgo.setStopping(false);
+				thread.start();
+				}
+			}
+		}
+	
+	/**
+	 * Run calculation for one frame
+	 */
 	private void step()
 		{
-		if(currentAlgo!=null)
-			currentAlgo.run(this);
+		if(currentAlgo!=null && !isRunning())
+			{
+			thread=new SteppingThread();
+			bStartStop.setText("Stepping");
+			thread.toStop=true;
+			currentAlgo.setStopping(false);
+			thread.start();
+//			currentAlgo.setStopping(false);
+//			currentAlgo.run(this);
+			}
 		}
 	
+	/**
+	 * Flatten lineage tree
+	 */
 	private void flatten()
 		{
 		NucLineage lineage=comboLin.getSelectedObject();
@@ -186,9 +257,29 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		return frameStart.getDecimalValue();
 		}
 
-	public void nowAtFrame(EvDecimal f)
+	/**
+	 * Call when frame has been completed and all data written.
+	 * Supply the next frame.
+	 */
+	public void finishedAndNowAtFrame(final EvDecimal f)
 		{
-		frameStart.setValue(f);
+		if(SwingUtilities.isEventDispatchThread())
+			frameStart.setValue(f);
+		else
+			{
+			try
+				{
+				SwingUtilities.invokeAndWait(new Runnable(){
+					public void run()
+						{
+						frameStart.setValue(f);
+						}});
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			}
 		}
 
 	
