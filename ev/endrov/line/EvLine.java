@@ -5,12 +5,14 @@ import org.jdom.*;
 import java.util.*;
 
 import javax.swing.JMenu;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
 import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
 import endrov.modelWindow.ModelWindow;
+import endrov.util.EvDecimal;
 
 /**
  * Meta object: Line 
@@ -58,8 +60,33 @@ public class EvLine extends EvObject implements Cloneable
 	 *                               Instance NucLineage                                                  *
 	 *****************************************************************************************************/
 	
+	public static class Pos3dt
+		{
+		public Vector3d v;
+		public EvDecimal frame;
+		
+		public Pos3dt()
+			{
+			v=new Vector3d();
+			frame=EvDecimal.ZERO;
+			}
+		
+		public Pos3dt(Pos3dt p)
+			{
+			v=new Vector3d(p.v);
+			frame=p.frame;
+			}
+
+		public Pos3dt(Vector3d v, EvDecimal frame)
+			{
+			this.v=new Vector3d(v);
+			this.frame=frame;
+			}
+
+		}
+	
 	/** Positions, in space and time (w) */
-	public Vector<Vector4d> pos=new Vector<Vector4d>();
+	public Vector<Pos3dt> pos=new Vector<Pos3dt>();
 	
 	/**
 	 * Calculate length of each segment
@@ -69,8 +96,8 @@ public class EvLine extends EvObject implements Cloneable
 		List<Double> distances=new LinkedList<Double>();
 		for(int i=1;i<pos.size();i++)
 			{
-			Vector4d p=new Vector4d(pos.get(i-1));
-			p.sub(pos.get(i));
+			Vector3d p=new Vector3d(pos.get(i-1).v);
+			p.sub(pos.get(i).v);
 			double len=p.length();
 			distances.add(len);
 			}
@@ -85,8 +112,8 @@ public class EvLine extends EvObject implements Cloneable
 		double totalDist=0;
 		for(int i=1;i<pos.size();i++)
 			{
-			Vector4d p=new Vector4d(pos.get(i-1));
-			p.sub(pos.get(i));
+			Vector3d p=new Vector3d(pos.get(i-1).v);
+			p.sub(pos.get(i).v);
 			double dx=p.x*p.x;
 			double dy=p.y*p.y;
 			double dz=p.z*p.z;
@@ -112,13 +139,13 @@ public class EvLine extends EvObject implements Cloneable
 		{
 		e.setName(metaType);
 
-		for(Vector4d p:pos)
+		for(Pos3dt p:pos)
 			{
 			Element ee=new Element("pos");
-			ee.setAttribute("x", ""+p.x);
-			ee.setAttribute("y", ""+p.y);
-			ee.setAttribute("z", ""+p.z);
-			ee.setAttribute("frame", ""+p.w);
+			ee.setAttribute("x", ""+p.v.x);
+			ee.setAttribute("y", ""+p.v.y);
+			ee.setAttribute("z", ""+p.v.z);
+			ee.setAttribute("frame", ""+p.frame);
 			e.addContent(ee);
 			}
 		}

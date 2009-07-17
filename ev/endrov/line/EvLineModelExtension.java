@@ -101,11 +101,11 @@ public class EvLineModelExtension implements ModelWindowExtension
 				EvDecimal curFrame=w.frameControl.getFrame();
 				
 				//TODO bad bd comparison. double
-				if(ia.pos.get(0).w==curFrame.doubleValue() && ia.pos.size()>1)
+				if(ia.pos.get(0).frame.equals(curFrame) && ia.pos.size()>1)
 					{
 					gl.glBegin(GL.GL_LINE_STRIP);
 					for(int i=0;i<ia.pos.size();i++)
-						gl.glVertex3d(ia.pos.get(i).x,ia.pos.get(i).y,ia.pos.get(i).z);
+						gl.glVertex3d(ia.pos.get(i).v.x,ia.pos.get(i).v.y,ia.pos.get(i).v.z);
 					gl.glEnd();
 					}
 				}

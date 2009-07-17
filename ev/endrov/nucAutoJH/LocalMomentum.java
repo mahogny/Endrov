@@ -124,7 +124,7 @@ public class LocalMomentum
 
 		
 		int extent=(int)Math.round(radius);
-		extent=Math.max(extent, 1);
+		extent=Math.max(extent, 4);
 		System.out.println("extent for circle "+extent);
 		
 		int sx=Math.max(0, (int)(midx-extent));
@@ -185,10 +185,21 @@ public class LocalMomentum
 		DenseDoubleMatrix2D matS=new DenseDoubleMatrix2D(arrS);
 		/*
 		System.out.println("-->");
-		System.out.println(matS.toString());*/
-		DoubleEigenvalueDecomposition de=new DoubleEigenvalueDecomposition(matS);
-		
-		return de;
+		System.out.println(matS.toString());
+		*/
+		try
+			{
+			DoubleEigenvalueDecomposition de=new DoubleEigenvalueDecomposition(matS);
+			
+			return de;
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			System.out.println("-->");
+			System.out.println(matS.toString());
+			return null;
+			}
 		}
 	
 	
