@@ -86,9 +86,11 @@ public class Multiscale
 		}
 	public static void findFeatureScale(EvPixels p, double sigmaGuess, int x, int y, Map<Double,Double> dog)
 		{
-		double[] arrsigma=new double[4];
-		for(int i=-2;i<2;i++)
-			arrsigma[i+2]=Math.pow(2,i)*sigmaGuess;
+		int mini=-4;
+		int maxi=2;
+		double[] arrsigma=new double[maxi-mini];
+		for(int i=mini;i<maxi;i++)
+			arrsigma[i-mini]=Math.pow(2,i)*sigmaGuess;
 		
 		double[] conv=new double[arrsigma.length];
 		for(int i=0;i<arrsigma.length;i++)
@@ -108,9 +110,10 @@ public class Multiscale
 	 */
 	public static double findFeatureScale2(EvPixels p, int x, int y, double minSigma, double maxSigma, int sigmaDiv, int numIt)
 		{
+		p=p.getReadOnly(EvPixelsType.DOUBLE);
 		double[] sigmaArr=new double[sigmaDiv];
 		double[] dogArr=new double[sigmaDiv];
-
+		
 		int maxIndex=0;
 		for(int i=0;i<sigmaDiv;i++)
 			{

@@ -254,7 +254,8 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 		}
 
 
-	public EvContainer getContainer()
+	
+	public EvContainer getEvContainer()
 		{
 		return comboLin.getSelectObjectParent();
 		}

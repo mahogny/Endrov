@@ -28,7 +28,7 @@ public interface LineagingAlgorithm
 		public void finishedAndNowAtFrame(EvDecimal f);
 		public EvDecimal getStartFrame();
 		public NucLineage getLineage();
-		public EvContainer getContainer();
+		public EvContainer getEvContainer();
 		}
 	
 	/**

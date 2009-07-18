@@ -28,6 +28,7 @@ import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition
 
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.data.EvContainer;
+import endrov.flowBasic.images.EvOpImageConvertPixel;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowFindFeature.EvOpFindLocalMaximas3D;
 import endrov.flowFourier.EvOpCircConv2D;
@@ -35,6 +36,7 @@ import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.flowMultiscale.Multiscale;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.line.EvLine;
 import endrov.nuc.NucLineage;
@@ -101,21 +103,12 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		private double resXY; //[px/um]
 		
 		private double scaleSigmaXY2radius(double sigma)
-			{
-			//sigma [px]
-			//radius=sigma*newfactor/resXY
-			//System.out.println("factor "+(sigmaXY2radiusFactor)*resXY);
-			
-			//return sigma*sigmaXY2radiusFactor;
-			
-			
+			{	
 			return sigma*newSigmaXY2radiusFactor/resXY;
 			}
 		
 		private double scaleRadius2sigmaXY(double radius)
 			{
-			System.out.println("resxy "+resXY);
-			
 			return radius*resXY/newSigmaXY2radiusFactor;
 			}
 		
@@ -385,7 +378,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			//TODO do something useful
 
 			//For debugging
-			//linesFromCandDiv(pairs, parentContainer, frame);
+			createLinesFromCandDiv(pairs, parentContainer, frame);
 
 
 			/**
@@ -432,41 +425,35 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		 */
 		public List<Candidate> findCandidatesDoG(EvStack stackHis, Shell shell, double sigmaHis1)
 			{
+			//stackHis=new EvOpImageConvertPixel(EvPixelsType.DOUBLE).exec1(stackHis);
 			int whis=stackHis.getWidth();
 			int hhis=stackHis.getHeight();
-			//int dhis=stackHis.getDepth();
 			EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigmaHis1, sigmaHis1, whis, hhis);
 			EvPixels kernel2=GenerateSpecialImage.genGaussian2D(sigmaHis1*2, sigmaHis1*2, whis, hhis);
-			if(isStopping) return new LinkedList<Candidate>();
+			if(isStopping()) return new LinkedList<Candidate>();
 			EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
-			if(isStopping) return new LinkedList<Candidate>();
+			if(isStopping()) return new LinkedList<Candidate>();
 			EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
-			if(isStopping) return new LinkedList<Candidate>();
+			if(isStopping()) return new LinkedList<Candidate>();
 			List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);
 			
 			
 			List<Candidate> candlist=new LinkedList<Candidate>();
 			for(Vector3i v:maximas)
 				{
-				if(isStopping) return new LinkedList<Candidate>();
+				if(isStopping()) return new LinkedList<Candidate>();
 				
 				
 				Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
-//				Vector3d dicPos=stackDIC.transformWorldImage(wpos);
 				
 				if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
 					{
-					//System.out.println("id=== "+nextCandidateID);
-//					double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
+					//double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
 					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(), 
 							v.x, v.y, 0.3, sigmaHis1*1.25, 8, 3);
 					System.out.println("Best fit sigma: "+bestSigma);
 
 					
-					//DoG or original image?
-//					DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
-					DoubleEigenvalueDecomposition eig=LocalMomentum.applyCircle(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma*2, v.x, v.y);
-					//originally *3 for circle
 					
 					/**
 					 * Could also do local otsu threshold, do binary PCA?
@@ -480,9 +467,15 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					 * local otsu on DoG? feature scale affects fusing a lot. use too small sigma.
 					 * feed list of pixels, get value.
 					 */
+	
 					
+					//DoG or original image?
+//				DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
+				DoubleEigenvalueDecomposition eig=LocalMomentum.applyCircle(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma*2, v.x, v.y);
+				//originally *3 for circle
 					
-					
+	
+				
 					DoubleMatrix2D eigvec=eig.getV();
 					DoubleMatrix1D eigval=eig.getRealEigenvalues();
 					double[] eigvalv=new double[]{eigval.getQuick(0),eigval.getQuick(1),0};
@@ -491,7 +484,14 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 							new Vector3d(eigvec.getQuick(1, 0),eigvec.getQuick(1, 1),0),
 							new Vector3d(0,0,0)};
 
-					
+/*
+					double[] eigvalv=new double[]{0,0,0};
+					Vector3d[] eigvecv=new Vector3d[]{
+							new Vector3d(0,0,0),
+							new Vector3d(0,0,0),
+							new Vector3d(0,0,0)};
+	*/						
+
 					Candidate cand=new Candidate();
 					cand.id=nextCandidateID++;
 					cand.wpos=wpos;
@@ -572,7 +572,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			EvDecimal frame=session.getStartFrame();
 			NucLineage lin=session.getLineage();
 			EvChannel channelHis=comboChanHis.getSelectedObject();
-			EvContainer parentContainer=session.getContainer();
+			EvContainer parentContainer=session.getEvContainer();
 			//EvChannel channelDIC=comboChanDIC.getSelectedObject();
 			final Shell shell=comboShell.getSelectedObject();
 			if(channelHis!=null && shell!=null && lin !=null)
@@ -612,6 +612,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				deleteKeyFrame(lin, frame, true);
 				
 				//Find candidates. Search at several resolutions
+				long startTime=System.currentTimeMillis();
 				/*
 				LinkedList<Candidate> candlist=new LinkedList<Candidate>();
 				candlist.addAll(findCandidatesDoG(stackHis, shell, expectedSigma));
@@ -621,20 +622,27 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				candlist.addAll(findCandidatesDoG(stackHis, shell, expectedSigma*0.65));
 				if(isStopping) return;*/
 				
+				
+				final EvStack finalStackHis=stackHis;//new EvOpImageConvertPixel(EvPixelsType.DOUBLE).exec1(stackHis);
+				
+				
 				LinkedList<Candidate> candlist=new LinkedList<Candidate>();
 				for(List<Candidate> list:EvParallel.map(
-						Arrays.asList(expectedSigma, expectedSigma*0.8, expectedSigma*0.65), 
+						Arrays.asList(expectedSigma, expectedSigma*0.65), 
+//						Arrays.asList(expectedSigma, expectedSigma*0.8, expectedSigma*0.65), 
 						new EvParallel.FuncAB<Double, List<Candidate>>()
 							{
 							public List<Candidate> func(Double in)
 								{
 								if(isStopping()) 
 									return new LinkedList<Candidate>();
-								return findCandidatesDoG(stackHis, shell, in);
+								return findCandidatesDoG(finalStackHis, shell, in);
 								}
 							}))
 					candlist.addAll(list);
 				if(isStopping) return;
+				long endTime=System.currentTimeMillis();
+				System.out.println("Total time to find features [s]: "+(endTime-startTime)/1000.0);
 				//Better to parallelize on single-slice level
 				
 				//Sort by sigma and give new IDs based on it
