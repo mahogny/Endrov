@@ -1,0 +1,142 @@
+3x search levels
+findfeatures2: div 8 rec 3
+
+Total time to find features [s]: 27.216
+Deleted candidate overlaps: 131 / 208
+Deleted candidate cutoff: 17 / 77
+No nuclei since before
+mean sigma 3.6094085797584348
+max sigma 4.8330799666805495
+min sigma 1.6814556434818824
+# accepted 60
+new sigma 3.6094085797584348
+
+
+
+==============
+
+
+
+3x search levels
+findfeatures2: div 8 rec 2
+
+Total time to find features [s]: 23.935
+Deleted candidate overlaps: 130 / 208
+Deleted candidate cutoff: 17 / 78
+No nuclei since before
+mean sigma 3.611158772642547
+max sigma 4.8216472303207
+min sigma 1.6738338192419824
+# accepted 61
+new sigma 3.611158772642547
+
+============
+
+3x search levels
+findfeatures2: div 6 rec 2
+
+Total time to find features [s]: 24.238
+Deleted candidate overlaps: 130 / 208
+Deleted candidate cutoff: 16 / 78
+No nuclei since before
+mean sigma 3.5873167741935483
+max sigma 4.82376
+min sigma 1.55904
+# accepted 62
+new sigma 3.5873167741935483
+
+=================
+
+time to calculate PCA: 3s for 3x search levels
+
+
+===============
+
+
+2 levels: Arrays.asList(expectedSigma, expectedSigma*0.65), 
+
+Total time to find features [s]: 19.97
+Deleted candidate overlaps: 67 / 140
+Deleted candidate cutoff: 13 / 73
+No nuclei since before
+mean sigma 3.6422808204914636
+max sigma 4.8330799666805495
+min sigma 1.6814556434818824
+# accepted 60
+new sigma 3.6422808204914636
+
+==================
+
+2 levels
+
+double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
+
+2^[-2,2)
+
+Total time to find features [s]: 9.891
+Deleted candidate overlaps: 67 / 140
+Deleted candidate cutoff: 6 / 73
+No nuclei since before
+mean sigma 3.4316417910447767
+max sigma 4.679999999999999
+min sigma 1.5600000000000003
+# accepted 67
+new sigma 3.4316417910447767
+
+====================
+
+2^[-4,2)
+
+
+Total time to find features [s]: 9.665
+Deleted candidate overlaps: 66 / 140
+Deleted candidate cutoff: 11 / 74
+No nuclei since before
+mean sigma 3.537321428571429
+max sigma 4.679999999999999
+min sigma 1.5600000000000003
+# accepted 63
+new sigma 3.537321428571429
+
+
+========================
+
+performance problem found: multiple conversions to double pixel.
+
+2x layers
+
+Total time to find features [s]: 10.025
+Deleted candidate overlaps: 67 / 140
+Deleted candidate cutoff: 13 / 73
+No nuclei since before
+mean sigma 3.6422808204914636
+max sigma 4.8330799666805495
+min sigma 1.6814556434818824
+# accepted 60
+new sigma 3.6422808204914636
+
+===============
+
+new performance test of PCA: 0.5s?
+
+===============
+
+testing with double conversion once and for all:
+
+Total time to find features [s]: 11.432
+Deleted candidate overlaps: 67 / 140
+Deleted candidate cutoff: 13 / 73
+No nuclei since before
+mean sigma 3.6422808204914636
+max sigma 4.8330799666805495
+min sigma 1.6814556434818824
+# accepted 60
+new sigma 3.6422808204914636
+
+got stuck once in a while??
+
+applied in each thread, still slow. large memory consumption, might reduce the speed.
+
+=============
+
+can we do one recording in 15min?
