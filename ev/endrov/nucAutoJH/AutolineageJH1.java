@@ -454,21 +454,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					System.out.println("Best fit sigma: "+bestSigma);
 
 					
-					
-					/**
-					 * Could also do local otsu threshold, do binary PCA?
-					 * method appears sensitive to varying background.
-					 * 
-					 * can try otsu on DoG?
-					 * DoG -> otsu seems insensitive to background. areas fuse rather badly; make new otsu = otsu*a+b?
-					 * peaks are missed since some peaks are very large.
-					 * 
-					 * 
-					 * local otsu on DoG? feature scale affects fusing a lot. use too small sigma.
-					 * feed list of pixels, get value.
-					 */
-	
-					
 					//DoG or original image?
 //				DoubleEigenvalueDecomposition eig=LocalMomentum.apply(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, bestSigma, v.x, v.y);
 				DoubleEigenvalueDecomposition eig=LocalMomentum.applyCircle(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma*2, v.x, v.y);

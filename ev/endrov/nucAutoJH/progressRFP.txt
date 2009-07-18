@@ -108,10 +108,48 @@ using PCA
 * strategy works well: no false negatives when finding candidates, rely on filtering of false positives
 * mean-shift is not very useful since it so closely resembles DoG in the search space
 * overlap intensity filtering is the a key thing
-* voronoi neighbour candidate pair generation is sensitive to false positives
+* voronoi neighbour candidate pair generation is sensitive to false positives. seems to work well otherwise.
+  alternative neighbour finding by distance works otherwise, but includes more contacts.
 * false positives tend to be high frequency and can be removed with a cut-off.
   it is important that the DoG can properly assign higher frequencies.
+* one lineage = 15min calculation?
 
+
+ideas:
+* analyze verified lineages, get statistics
+* analyze verified lineages, find better thresholds or scorings
+* use expected division times. at the same time, get names?
+  "load template"
+  or hard-code sulston naming scheme?
+* wanted: shell that can be rotated in all directions. how to draw in 2d?
+
+or find names by fitting model in 3d? difficult! if rotation is (quite) correct,
+then reduced to bipartite matching. have center of mass overlap at least.
+
+need to use hungarian algorithm, or modified dijkstra
+http://en.wikipedia.org/wiki/Maximum_cardinality_matching#Maximum_bipartite_matchings
+hungarian=Kuhn-Munkres algorithm, have it
+
+rotation: can find long axis easily. know direction of it, by hand. one rotation axis left,
+and to some extent time. dirty version: try many angles, it need not be fast. use average
+time with the same # of nuclei
+
+landmarks would speed up finding the last axis.
+
+iterative algorithm exists otherwise, developed by SPIM-people. uses neighbours somehow,
+polynomial time. no, not quite the same problem - they have less info. my problem is
+a hyperdimensional version. neighbours might not be correct.
+
+=> build table of neighbours for each cell. match between (kuhn-munkres). fit.
+(voronoi here. would really help to know contact area! ?)
+
+
+
+
+
+//not these. closely related, maximum cardinality
+http://en.wikipedia.org/wiki/Edmonds-Karp_algorithm   (exists in jgrapht)
+http://en.wikipedia.org/wiki/Relabel-to-front_algorithm
 
 
 ================== references =========================

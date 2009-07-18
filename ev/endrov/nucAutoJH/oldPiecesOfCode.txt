@@ -228,4 +228,20 @@ if(dicPosi.x>=0 && dicPosi.x<wdic-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi
 	
 				
 				
+					
+					/**
+					 * Could also do local otsu threshold, do binary PCA?
+					 * method appears sensitive to varying background.
+					 * 
+					 * can try otsu on DoG?
+					 * DoG -> otsu seems insensitive to background. areas fuse rather badly; make new otsu = otsu*a+b?
+					 * peaks are missed since some peaks are very large.
+					 * 
+					 * 
+					 * local otsu on DoG? feature scale affects fusing a lot. use too small sigma.
+					 * feed list of pixels, get value.
+					 */
+	
+					
+				
 				
