@@ -54,3 +54,75 @@ using PCA
 
 
 4h36m10s perfect time
+
+
+
+
+
+===================== feature scale detection ======================
+
+/**
+				 * Lindebergs theory of finding kernel size
+				 * http://www.wisdom.weizmann.ac.il/~deniss/vision_spring04/files/mean_shift/mean_shift.ppt
+				 * gaussian pyramids?
+				 * can use for radius selection? O(n) for each level, need not test many. can calc approximate L-function from points
+				 * 
+				 * Lindeberg: ``Scale-space'', In: Encyclopedia of Computer Science and Engineering (Benjamin Wah, ed), John Wiley and Sons, Volume~IV, pages 2495--2504, Hoboken, New Jersey, Jan 2009. dx.doi.org/10.1002/9780470050118.ecse609 (Sep 2008) (PDF 1.2 Mb) 
+				 * ftp://ftp.nada.kth.se/CVAP/reports/Lin08-EncCompSci.pdf
+				 * 
+				 * Lindeberg
+				 * http://www.nada.kth.se/~tony/earlyvision.html
+				 * 
+				 */
+			
+			
+				
+				/**
+				 * detecting the right sigma:
+				 * only do it with the middle plane so find it first.
+				 * then convolve a single point with ricker wavelet for multiple sigma
+				 * 
+				 * [2.^(1:5) , 0.75 * 2.^(1:5)]
+				 *  1.5000    2.0000    3.0000    4.0000    6.0000    8.0000   12.0000   16.0000 24.0000   32.0000
+				 *
+				 * ie two sequences of convolving with gaussian, then do differences afterwards.
+				 * find argmax and we know sigma, hence r
+				 * 
+				 * r=C*sigma*[some resolution]
+				 * C is related to PSF and should be given by user
+				 * 
+				 * 
+				 *
+				 * 
+				 * 
+				 * 
+				 * 
+				 */
+
+
+
+
+===================== Conclusions =================================
+
+* DoG is very efficient in 2D
+* strategy works well: no false negatives when finding candidates, rely on filtering of false positives
+* mean-shift is not very useful since it so closely resembles DoG in the search space
+* overlap intensity filtering is the a key thing
+* voronoi neighbour candidate pair generation is sensitive to false positives
+* false positives tend to be high frequency and can be removed with a cut-off.
+  it is important that the DoG can properly assign higher frequencies.
+
+
+
+================== references =========================
+
+ * http://en.wikipedia.org/wiki/Scale-invariant_feature_transform
+				 * also has equation for angle
+				 * 
+				 * www.ecs.syr.edu/faculty/lewalle/wavelets/mexhat.pdf 
+				 * doubling sigma is correct to approximate mexican hat
+				 
+				 
+				 
+
+

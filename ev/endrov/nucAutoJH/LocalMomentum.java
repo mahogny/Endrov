@@ -125,7 +125,7 @@ public class LocalMomentum
 		
 		int extent=(int)Math.round(radius);
 		extent=Math.max(extent, 4);
-		System.out.println("extent for circle "+extent);
+		//System.out.println("extent for circle "+extent);
 		
 		int sx=Math.max(0, (int)(midx-extent));
 		int ex=Math.min(w,(int)(midx+extent+1)); //+1 to the right?

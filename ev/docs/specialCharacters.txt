@@ -7,6 +7,8 @@ http://unicode.org/charts/PDF/U2200.pdf
 http://www.fileformat.info/info/unicode/category/Sm/list.htm
 
 
+http://en.wikipedia.org/wiki/Greek_alphabet
+
 ⊙
 ⊚
 
