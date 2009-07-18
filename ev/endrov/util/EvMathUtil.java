@@ -215,6 +215,17 @@ public class EvMathUtil
 			}
 		}
 	
+	/**
+	 * Return largest value of a/b and b/a, which has to be >=1 
+	 */
+	public static double ratioAbove1(double a, double b)
+		{
+		if(a<b)
+			return b/a;
+		else
+			return a/b;
+		}
+
 	
 	public static void main(String[] args)
 		{

@@ -1,0 +1,231 @@
+			/*
+					//DoG or original image?
+//					FitGaussian.Result result=FitGaussian.fitGaussian2D(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, v.x, v.y);
+					FitGaussian.Result result=FitGaussian.fitGaussian2D(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma, v.x, v.y);
+					DoubleEigenvalueDecomposition eig=new DoubleEigenvalueDecomposition(result.sigma);
+					Vector3d newWorldPos=stackHis.transformImageWorld(new Vector3d(result.mu0,result.mu1,v.z));
+					
+//					Vector3d diff=new Vector3d(newPos);
+	//				diff.sub(wpos);
+					Vector3d diff=new Vector3d(result.mu0,result.mu1,v.z);
+					diff.sub(new Vector3d(v.x,v.y,v.z));
+					System.out.println("Change: "+new Vector2d(v.x,v.y)+" "+new Vector2d(result.mu0,result.mu1)+"\t"+bestSigma+"\t"+eig.getRealEigenvalues().getQuick(0)+" D "+result.D);
+//					System.out.println("Change: "+diff+"\t"+bestSigma+"\t"+eig.getRealEigenvalues().getQuick(0));
+					
+					
+					wpos=newWorldPos;
+
+*/					
+		
+		
+		
+		
+		
+					//If we trust the fit more
+//					bestSigma=(eigvalv[0]+eigvalv[1])/2; 
+					
+					/*
+					System.out.println("--#");
+					System.out.println(eigvec.toString());
+					System.out.println(eigvecv[0]);
+					System.out.println(eig.getImagEigenvalues());
+					*/
+					
+					
+									/*
+				System.out.println("representative normal sigma "+normalSigma);
+				for(Candidate cand:candlist)
+					{
+					if(cand.bestSigma>normalSigma/2)
+						okCandidates.add(cand);
+					else
+						System.out.println("Removed size: "+cand);
+					}
+				candlist.clear();
+				candlist.addAll(okCandidates);
+				okCandidates.clear();
+				*/
+				
+				
+				
+				
+				
+	/*
+	
+	
+	
+	for(Vector3i v:maximas)
+		{
+		Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
+//		Vector3d dicPos=stackDIC.transformWorldImage(wpos);
+		
+		if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
+			{
+			System.out.println("id=== "+id);
+			double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
+			System.out.println("Best fit sigma: "+bestSigma);
+			System.out.println("res "+resXhis);
+
+			//Use meanshift to get a better estimate of the XY-position
+			System.out.println("Old wpos "+wpos);*/
+			/*
+			//Square kernel
+			int mr=(int)(bestSigma*1.5);
+			MeanShift2D.MeanShiftPreProcess meanshift=
+			new MeanShift2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels(), mr, mr);
+			Vector2d mpos=meanshift.iterate(new Vector2d(v.x,v.y));
+			*/
+			/*
+			//Gauss kernel
+			double mul=1.2;
+			MeanShiftGauss2D.MeanShiftPreProcess meanshiftXY=
+			new MeanShiftGauss2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels());
+			Vector2d mpos=meanshiftXY.iterate(new Vector2d(v.x,v.y),bestSigma*mul,bestSigma*mul);
+			wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,v.z));
+			System.out.println("new wpos "+wpos);
+			*/
+			
+			/*
+			
+			//Do mean-shift in Z-direction
+			double sigmaHis1z=bestSigma/resFrac;  //Arbitrary factor for psfZ
+			double[] arr=new double[dhis];
+			for(int i=0;i<dhis;i++)
+				arr[i]=Multiscale.convolveGaussPoint2D(stackHis.getInt(i).getPixels(), 
+						bestSigma, bestSigma, mpos.x, mpos.y);
+			MeanShiftGauss1D.MeanShiftPreProcess meanshiftZ=new MeanShiftGauss1D.MeanShiftPreProcess(arr);
+			double nz=meanshiftZ.iterate(v.z, sigmaHis1z);
+			v.z=(int)Math.round(nz);
+			wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,nz));
+			System.out.println("new wpos "+wpos);
+			
+			bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),bestSigma, v.x, v.y);
+			System.out.println("better fit sigma: "+bestSigma);
+
+			*/
+			
+			/*
+			
+			Candidate cand=new Candidate();
+			cand.id=id++;
+			cand.pos=wpos;
+			cand.bestSigma=bestSigma;
+			cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
+					bestSigma, bestSigma, cand.pos.x, cand.pos.y);
+			candlist.add(cand);*/
+/*
+			=======
+			NucLineage.Nuc nuc=lin.getCreateNuc(""+i);
+			NucLineage.NucPos pos=nuc.getCreatePos(frame);
+			pos.r=3;
+			pos.setPosCopy(wpos);
+>>>>>>> 1.10
+*/
+			//}
+
+
+
+
+
+//Which nuclei are left over?
+/*
+Set<String> unusedAfter=new HashSet<String>(createdNuc);
+Set<String> unusedBefore=new HashSet<String>(nucsBefore);
+unusedAfter.removeAll(usedAfter);
+unusedBefore.removeAll(usedBefore);
+*/
+/**
+ * Unused nucs before might just not have been detected. In this case we
+ * should try and find them optimistically
+ */
+
+/**
+ * Unused nucs after are either false positive or divided nuclei.
+ * * can detect division using axis, PCA
+ * * can use division likely timing
+ * * Can use a stricter metric on radius
+ * 
+ */
+//
+
+//System.out.println("r should be "+stackHis.scaleImageWorldX(20)); //5
+
+/*
+System.out.println("in his: "+v);
+System.out.println("in dic: "+dicPos);
+System.out.println("in world: "+wpos);
+*/
+
+
+/*
+Vector3i dicPosi=new Vector3i((int)dicPos.x,(int)dicPos.y,(int)dicPos.z); 
+if(dicPosi.x>=0 && dicPosi.x<wdic-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi.z>=0 && dicPosi.z<ddic)
+	{
+	int val=pixEmbryoMask[dicPosi.z][dicPosi.y*wdic+dicPosi.x];
+	//System.out.println("dic mask "+val);
+
+	if(val>0)
+		{
+		}
+	
+	}
+//else
+	//System.out.println("outside DIC");
+
+*/
+//		}
+
+
+
+	//// Detect where the embryo is ////
+				/*
+				int dicVarSize=40;
+				EvStack stackDICvar=new EvOpMovingVariance(dicVarSize,dicVarSize).exec1(stackDIC);
+				EvStack stackDICt=new EvOpThresholdPercentile2D(0.8).exec1(stackDICvar);
+				stackDICt=new EvOpBinMorphFillHoles2D().exec1(stackDICt);
+				EvStack stackEmbryoMask=stackDICt;
+				*/
+				
+				
+				
+					/*
+				int[][] pixEmbryoMask=stackEmbryoMask.getArraysInt();
+				int wdic=stackEmbryoMask.getWidth();
+				int hdic=stackEmbryoMask.getHeight();
+				int ddic=stackEmbryoMask.getDepth();*/
+				
+					/*
+				int whis=stackHis.getWidth();
+				int hhis=stackHis.getHeight();
+				int dhis=stackHis.getDepth();
+				*/
+				/*
+				EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigmaHis1, sigmaHis1, whis, hhis);
+				EvPixels kernel2=GenerateSpecialImage.genGaussian2D(sigmaHis1*2, sigmaHis1*2, whis, hhis);
+
+				EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
+				EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
+				List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);*/
+				
+				
+				
+								/*
+				
+				double resXDIC=stackDIC.getResbinX();
+				double resYDIC=stackDIC.getResbinY();
+				double resZDIC=stackDIC.getResbinZinverted().doubleValue();
+*/
+				
+				
+				
+				/*
+				System.out.println("normalSigma: "+normalSigma);
+				System.out.println("normalIntensity: "+normalIntensity);
+				for(Candidate cand:candlist)
+					System.out.println(cand.id+"\t"+cand.bestSigma+"\t"+cand.intensity+"\t"+cand.numOverlap+"\t"+cand.eigval[0]/cand.eigval[1]);
+				System.out.println("-------");
+*/
+	
+				
+				
+				

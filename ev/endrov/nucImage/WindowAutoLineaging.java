@@ -140,6 +140,7 @@ public class WindowAutoLineaging extends BasicWindow implements LineagingAlgorit
 			public void run()
 				{
 				bStartStop.setText("Start");
+				BasicWindow.updateWindows();
 				}});
 			System.out.println("===end thread===");
 			}

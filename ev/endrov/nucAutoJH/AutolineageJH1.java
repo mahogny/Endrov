@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -40,19 +41,12 @@ import endrov.nuc.NucLineage;
 import endrov.nucImage.LineagingAlgorithm;
 import endrov.nucImage.LineagingAlgorithm.LineageAlgorithmDef;
 import endrov.shell.Shell;
-import endrov.util.EvDecimal;
-import endrov.util.EvListUtil;
-import endrov.util.EvMathUtil;
-import endrov.util.EvSwingUtil;
-import endrov.util.ImVector3d;
-import endrov.util.Tuple;
-import endrov.util.Vector3i;
+import endrov.util.*;
 
 /**
- * Autolineage algorithm
+ * Autolineage algorithm: JH1 <br/>
  * 
- * Meant to be used with his::rfp or equivalent marker
- * 
+ * Meant to be used with his::rfp or equivalent marker. Optimized for wide-field fluorescence
  * 
  * @author Johan Henriksson
  *
@@ -78,112 +72,144 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		}
 
 	
-	
+	/**
+	 * Instance of the algorithm
+	 * @author Johan Henriksson
+	 *
+	 */
 	private static class Algo implements LineagingAlgorithm
 		{
 		private EvComboObjectOne<EvChannel> comboChanHis=new EvComboObjectOne<EvChannel>(new EvChannel(), false, false);
-//		private EvComboObjectOne<EvChannel> comboChanDIC=new EvComboObjectOne<EvChannel>(new EvChannel(), true, false);
 		private EvComboObjectOne<Shell> comboShell=new EvComboObjectOne<Shell>(new Shell(), false, false);
-		private JTextField inpRadiusExpected=new JTextField("5");
-		private JTextField inpRadiusCutoff=new JTextField("1");
+//		private JTextField inpRadiusExpectedMax=new JTextField("6");
+	//	private JTextField inpRadiusCutoff=new JTextField("1.5");
+		private JTextField inpRadiusExpectedMax=new JTextField("3.3");
+		private JTextField inpRadiusCutoff=new JTextField("0.83");
+		private JTextField inpSigmaXY2radiusFactor=new JTextField("2.12575");
 		private JButton bReassChildren=new JButton("Reassign parent-children");
-		/*
-		private JTextField inpNucBgSize=new JTextField("2");
-		private JTextField inpNucBgMul=new JTextField("1");
-		*/
+		private JButton bReestParameters=new JButton("Re-estimate parameters");
+		private JCheckBox cbForceNoDiv=new JCheckBox("");
+		//private JTextField inpNucBgSize=new JTextField("2");
+		//private JTextField inpNucBgMul=new JTextField("1");
 		
-		double sigma2radiusFactor=0.55;
-		
-
+		private int nextCandidateID=0;
 		private boolean isStopping=true;
+		private boolean isStopping(){return isStopping;}
+		
+		//private double sigmaXY2radiusFactor=0.55;
+		private double newSigmaXY2radiusFactor;//=2.12575;
+		private double resXY; //[px/um]
+		
+		private double scaleSigmaXY2radius(double sigma)
+			{
+			//sigma [px]
+			//radius=sigma*newfactor/resXY
+			//System.out.println("factor "+(sigmaXY2radiusFactor)*resXY);
+			
+			//return sigma*sigmaXY2radiusFactor;
+			
+			
+			return sigma*newSigmaXY2radiusFactor/resXY;
+			}
+		
+		private double scaleRadius2sigmaXY(double radius)
+			{
+			System.out.println("resxy "+resXY);
+			
+			return radius*resXY/newSigmaXY2radiusFactor;
+			}
+		
+		
+		/**
+		 * Set if to stop the algorithm prematurely
+		 */
 		public void setStopping(boolean b)
 			{
 			isStopping=b;
 			}
 		
-		
+		/**
+		 * Get custom GUI component
+		 */
 		public JComponent getComponent()
 			{
 			JComponent p=EvSwingUtil.layoutTableCompactWide(
 					new JLabel("His-channel"),comboChanHis,
 					new JLabel("Shell"),comboShell,
-					new JLabel("E[r]"),inpRadiusExpected,
-					new JLabel("min[r]"),inpRadiusCutoff
+					new JLabel("Max radius [um]"),inpRadiusExpectedMax,
+					new JLabel("Min radius [um]"),inpRadiusCutoff,
+					new JLabel("Force no div"),cbForceNoDiv,
+					new JLabel("σ to r"),inpSigmaXY2radiusFactor
 					);
 
 			bReassChildren.setToolTipText("Reassign parent-children relations in last frame");
 			bReassChildren.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e)
-					{
-					reassignChildren();
-					}
-			});
+				public void actionPerformed(ActionEvent e){reassignChildren();}});
 			
-			return EvSwingUtil.layoutCompactVertical(p,bReassChildren);
+			bReestParameters.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){reestParameters();}});
+
+			inpRadiusExpectedMax.setToolTipText("Largest radius that will be sought for, but larger radii will be accepted");
+			inpRadiusCutoff.setToolTipText("Smallest accepted radius");
+			cbForceNoDiv.setToolTipText("Tell that no divisions are expected");
+			inpSigmaXY2radiusFactor.setToolTipText("σ multiplied by this factor becomes radius. Depends on the marker and the PSF.");
+			
+			return EvSwingUtil.layoutCompactVertical(p,bReassChildren,bReestParameters);
 			}
 		
 		
+
 		/**
-		 * One candidate nuclei position
+		 * Re-assign parent-children from the last frame and the frame before
+		 */
+		private void reassignChildren()
+			{
+			
+			}
+
+		/**
+		 * Reestimate parameters using last frame
+		 */
+		private void reestParameters()
+			{
+			
+			}
+		
+		
+		/////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////// Candidate divisions ///////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////
+
+		
+		/**
+		 * Candidate pair of dividing nuclei
 		 * @author Johan Henriksson
 		 *
 		 */
-		private static class Candidate
-			{
-			int id;
-			Vector3d wpos;
-			double bestSigma;
-			double intensity;
-			
-			double[] eigval;
-			Vector3d[] eigvec;
-
-			int numOverlap;
-			//double r;
-			
-			public String toString()
-				{
-				return "id="+id+"  bestSigma="+bestSigma+"  intensity="+intensity;
-				}
-			
-			}
-		
-		
 		private static class CandDivPair 
 			{
 			public Candidate ca, cb;
+			
+			/** Error should be low for a good fit */
 			public double error;
 
-			/**
-			 * Angle diff is within [0,1/4] lap
-			 */
-			double angleDiff;
-			double intensDiff;
-			/**
-			 * sigmaDiff>=1
-			 */
-			double sigmaRatio;
-			double dist;
+			/** Angle diff is within [0,1/4] lap */
+			public double angleDiff;
+			public double intensDiff;
 			
-			double aPCratio;
-			double bPCratio;
+			public double distance;
 			
-			double pcRatio;
-			
-			private double invert1(double x)
-				{
-				if(x<1)
-					return 1.0/x;
-				else
-					return x;
-				}
+			//All ratios >= 1
+			public double sigmaRatio;
+			public double aPCratio;
+			public double bPCratio;
+			public double pcRatio;
 			
 			public CandDivPair(Candidate ca, Candidate cb)
 				{
 				this.ca = ca;
 				this.cb = cb;
 				
-				//Calculate error
 				//Compare angles using smallest principal component
 				Vector2d va=new Vector2d(ca.eigvec[0].x,ca.eigvec[0].y);
 				Vector2d vb=new Vector2d(cb.eigvec[0].x,cb.eigvec[0].y);
@@ -194,29 +220,16 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				intensDiff=Math.abs(ca.intensity-cb.intensity); //relative scale?
 				
-				//sigmaDiff=Math.abs(ca.bestSigma-cb.bestSigma);
-				sigmaRatio=invert1(ca.bestSigma/cb.bestSigma);
-				
-				aPCratio=invert1(ca.eigval[0]/ca.eigval[1]); //invert1 not really needed...
-				bPCratio=invert1(cb.eigval[0]/cb.eigval[1]);
-				pcRatio=invert1(aPCratio/bPCratio);
+				sigmaRatio=EvMathUtil.ratioAbove1(ca.bestSigma,cb.bestSigma);
+				aPCratio=EvMathUtil.ratioAbove1(ca.eigval[0],ca.eigval[1]); //invert1 not really needed...
+				bPCratio=EvMathUtil.ratioAbove1(cb.eigval[0],cb.eigval[1]);
+				pcRatio=EvMathUtil.ratioAbove1(aPCratio,bPCratio);
 				
 				Vector3d diff=new Vector3d(ca.wpos);
 				diff.sub(cb.wpos);
-				dist=diff.length();
+				distance=diff.length();
 
-				/**
-				 * Distance? cells on the outer boundary might reach very far due to bad infinity-treatment of voronoi
-				 * 
-				 * TODO draw lines on candidates, show score
-				 */
-				
-				
-//				System.out.println("cand pair");
-				
-
-				
-				
+				//TODO
 				error=intensDiff;
 				}
 			
@@ -227,19 +240,16 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			}
 		
 		
-		private void reassignChildren()
-			{
-			
-			}
 		
-		private void findDividing(EvContainer parentContainer, List<Candidate> candlist, EvDecimal frame)
+		/**
+		 * Generate candidate division pairs as the Delaunay edges. 
+		 * Turns out to be hypersensitive to false positives.
+		 */
+		public LinkedList<CandDivPair> generateCandDivVoronoi(List<Candidate> candlist)
 			{
+			LinkedList<CandDivPair> pairs=new LinkedList<CandDivPair>();
 			try
 				{
-				/*
-				PROBLEM: way too sensitive to bad candidates. Need to include more candidates 
-				
-				
 				//Build basic network: two candidates must be delaunay neighbors to be considered at all.
 				//Delaunay graphs contains perfect matchings
 				//(toughness and delaunay triangulations Dillencourt)
@@ -252,97 +262,175 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				VoronoiNeigh vneigh=new VoronoiNeigh(voro, false, new HashSet<Integer>());
 				Candidate[] candarray=candlist.toArray(new Candidate[]{});
-				LinkedList<CandDivPair> pairs=new LinkedList<CandDivPair>();
 				for(int i=0;i<vneigh.dneigh.size();i++)
 					for(int j:vneigh.dneigh.get(i))
 						if(j>i)
 							pairs.add(new CandDivPair(candarray[i],candarray[j]));
-							
-							*/
-				
-				
-				//Generate candidate dividing pairs
-				LinkedList<CandDivPair> pairs=new LinkedList<CandDivPair>();
-				for(Candidate ca:candlist)
-					for(Candidate cb:candlist)
-						if(ca.hashCode()<cb.hashCode())
-							{
-							double ra=ca.bestSigma*sigma2radiusFactor;
-							double rb=cb.bestSigma*sigma2radiusFactor;
-							
-							CandDivPair p=new CandDivPair(ca,cb);
-							
-							
-							//Cut-offs can be optimized with SVM or online by comparing with all
-							//past values
-							
-							//Hard cut-offs
-							if(p.dist<3*(ra+rb))
-								{
-//								if(p.angleDiff<45.0/180.0*Math.PI) //angle has been up to 80deg once due to bad prediction!
-								if(p.angleDiff<70.0/180.0*Math.PI) 
-									if(p.sigmaRatio<1.7)
-										if(p.pcRatio<1.8)
-										pairs.add(p);
-								}
-							
-							}
-
-				
-				
-				//Greedy algorithm. Should rather use maximum weighted non-bipartite matching
-				Collections.sort(pairs, new Comparator<CandDivPair>(){
-					public int compare(CandDivPair o1, CandDivPair o2)
-						{
-						return Double.compare(o1.error, o2.error);
-						}
-				}); //Here we minimize?
-				System.out.println("Pairs first: "+pairs.size());
-				HashSet<Candidate> usedCand=new HashSet<Candidate>();
-				for(CandDivPair pair:new LinkedList<CandDivPair>(pairs))
-					{
-					if(usedCand.contains(pair.ca) || usedCand.contains(pair.cb))
-						pairs.remove(pair);
-					else
-						{
-						usedCand.add(pair.ca);
-						usedCand.add(pair.cb);
-						}
-					}
-				System.out.println("Pairs left: "+pairs.size());
-				//TODO do something useful
-
-				
-				/*
-				//Debug: draw lines for solution
-				for(CandDivPair pair:pairs)
-					{
-					EvLine line=new EvLine();
-					line.pos.add(new EvLine.Pos3dt(new Vector3d(pair.ca.wpos.x,pair.ca.wpos.y,pair.ca.wpos.z),frame));
-					line.pos.add(new EvLine.Pos3dt(new Vector3d(pair.cb.wpos.x,pair.cb.wpos.y,pair.cb.wpos.z),frame));
-					parentContainer.addMetaObject(line);
-					}
-				*/
-				
-				/**
-				 * TODO create virtual new nuclei
-				 */
-				
-				
 				}
 			catch (Exception e)
 				{
 				e.printStackTrace();
 				}
-
-
-			
-			
+			return pairs;
 			}
 		
 		
-		private int id=0;
-		public List<Candidate> findCandidates(EvStack stackHis, Shell shell, double sigmaHis1)
+		/**
+		 * Generate every possible candidate division pair (except not the symmetric pair)
+		 */
+		public LinkedList<CandDivPair> generateCandDivAll(List<Candidate> candlist)
+			{
+			LinkedList<CandDivPair> pairs=new LinkedList<CandDivPair>();
+			for(Candidate ca:candlist)
+				for(Candidate cb:candlist)
+					if(ca.hashCode()<cb.hashCode())
+						pairs.add(new CandDivPair(ca,cb));
+			return pairs;
+			}
+		
+		
+		/**
+		 * Filter candidate division pairs using heuristics
+		 */
+		public LinkedList<CandDivPair> filterCandDivHeuristic(List<CandDivPair> candlist)
+			{
+			LinkedList<CandDivPair> out=new  LinkedList<CandDivPair>();
+			for(CandDivPair p:candlist)
+				{
+				double ra=scaleSigmaXY2radius(p.ca.bestSigma);//*sigma2radiusFactor;
+				double rb=scaleSigmaXY2radius(p.cb.bestSigma);//*sigma2radiusFactor;
+				
+				//Cut-offs can be optimized with SVM or online by comparing with all
+				//past values
+				
+				//Hard cut-offs
+				if(p.distance<3*(ra+rb))
+					{
+//					if(p.angleDiff<45.0/180.0*Math.PI) //angle has been up to 80deg once due to bad prediction!
+					if(p.angleDiff<70.0/180.0*Math.PI) 
+						if(p.sigmaRatio<1.7)
+							if(p.pcRatio<1.8)
+								out.add(p);
+					}
+				
+				}
+			return out;
+			}
+		
+		
+		
+		/**
+		 * Filter candidate divisions such that a nucleus is assigned to exactly 0 or 1
+		 * other candidate nucleus. It is done by finding (approximately) candidate pairs
+		 * such that the sum of error is minimized.
+		 * 
+		 * Also sort by error in fit.
+		 */
+		public LinkedList<CandDivPair> filterCandDivWeightedOverlap(LinkedList<CandDivPair> pairs)
+			{
+			int total=pairs.size();
+			//Greedy algorithm. Should rather use minimum weighted non-bipartite matching
+			pairs=new LinkedList<CandDivPair>(pairs);
+			Collections.sort(pairs, new Comparator<CandDivPair>(){
+				public int compare(CandDivPair o1, CandDivPair o2)
+					{return Double.compare(o1.error, o2.error);}
+			}); 
+			System.out.println("Pairs first: "+pairs.size());
+			HashSet<Candidate> usedCand=new HashSet<Candidate>();
+			for(CandDivPair pair:new LinkedList<CandDivPair>(pairs))
+				{
+				if(usedCand.contains(pair.ca) || usedCand.contains(pair.cb))
+					pairs.remove(pair);
+				else
+					{
+					usedCand.add(pair.ca);
+					usedCand.add(pair.cb);
+					}
+				}
+			System.out.println("Deleted divpair weight: "+(total-pairs.size())+" / "+total);
+			return pairs;
+			}
+		
+		
+		/**
+		 * Debugging: draw lines for candidate divisions
+		 */
+		public static void createLinesFromCandDiv(Collection<CandDivPair> pairs, EvContainer parentContainer, EvDecimal frame)
+			{
+			for(CandDivPair pair:pairs)
+				{
+				EvLine line=new EvLine();
+				line.pos.add(new EvLine.Pos3dt(new Vector3d(pair.ca.wpos.x,pair.ca.wpos.y,pair.ca.wpos.z),frame));
+				line.pos.add(new EvLine.Pos3dt(new Vector3d(pair.cb.wpos.x,pair.cb.wpos.y,pair.cb.wpos.z),frame));
+				parentContainer.addMetaObject(line);
+				}
+			}
+		
+		
+		/**
+		 * Find candidate dividing nuclei
+		 */
+		private LinkedList<CandDivPair> findDividing(EvContainer parentContainer, List<Candidate> candlist, EvDecimal frame)
+			{
+			//Get list of candidate pairs to filter
+			LinkedList<CandDivPair> pairs=generateCandDivAll(candlist);
+			
+			//Remove the most obvious candidate non-pairs
+			pairs=filterCandDivHeuristic(pairs);
+
+			//Globally optimized selection of candidate pairs
+			pairs=filterCandDivWeightedOverlap(pairs);
+
+			
+			//TODO do something useful
+
+			//For debugging
+			//linesFromCandDiv(pairs, parentContainer, frame);
+
+
+			/**
+			 * TODO create virtual new nuclei
+			 */
+				
+			return pairs;
+			}
+		
+		/////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////// Candidates ////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////
+		
+		/**
+		 * One candidate nuclei position
+		 * @author Johan Henriksson
+		 *
+		 */
+		private static class Candidate
+			{
+			public int id;
+			public Vector3d wpos;
+			public double bestSigma;
+			public double intensity;
+			
+			public double[] eigval;
+			public Vector3d[] eigvec;
+
+			public int numOverlap;
+			
+			public String toString()
+				{
+				return "id="+id+"  bestSigma="+bestSigma+"  intensity="+intensity;
+				}
+			}
+		
+		/**
+		 * Find candidate nuclei. These are the only candidates considered, and the final
+		 * selection is a filtered list.
+		 * 
+		 * Candidates are found by looking for features at several frequencies using
+		 * difference of gaussian (Rickert wavelet approximation). Candidates has to be
+		 * within the shell.
+		 */
+		public List<Candidate> findCandidatesDoG(EvStack stackHis, Shell shell, double sigmaHis1)
 			{
 			int whis=stackHis.getWidth();
 			int hhis=stackHis.getHeight();
@@ -360,8 +448,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			List<Candidate> candlist=new LinkedList<Candidate>();
 			for(Vector3i v:maximas)
 				{
-				if(isStopping)
-					return new LinkedList<Candidate>();
+				if(isStopping) return new LinkedList<Candidate>();
 				
 				
 				Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
@@ -369,10 +456,10 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
 					{
-					System.out.println("id=== "+id);
+					//System.out.println("id=== "+nextCandidateID);
 //					double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
 					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(), 
-							v.x, v.y, 0.3, sigmaHis1*1.5, 8, 3);
+							v.x, v.y, 0.3, sigmaHis1*1.25, 8, 3);
 					System.out.println("Best fit sigma: "+bestSigma);
 
 					
@@ -394,24 +481,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					 * feed list of pixels, get value.
 					 */
 					
-					/*
-					//DoG or original image?
-//					FitGaussian.Result result=FitGaussian.fitGaussian2D(stackHisDog.getPixels()[(int)Math.round(v.z)], bestSigma, v.x, v.y);
-					FitGaussian.Result result=FitGaussian.fitGaussian2D(stackHis.getPixels()[(int)Math.round(v.z)], bestSigma, v.x, v.y);
-					DoubleEigenvalueDecomposition eig=new DoubleEigenvalueDecomposition(result.sigma);
-					Vector3d newWorldPos=stackHis.transformImageWorld(new Vector3d(result.mu0,result.mu1,v.z));
-					
-//					Vector3d diff=new Vector3d(newPos);
-	//				diff.sub(wpos);
-					Vector3d diff=new Vector3d(result.mu0,result.mu1,v.z);
-					diff.sub(new Vector3d(v.x,v.y,v.z));
-					System.out.println("Change: "+new Vector2d(v.x,v.y)+" "+new Vector2d(result.mu0,result.mu1)+"\t"+bestSigma+"\t"+eig.getRealEigenvalues().getQuick(0)+" D "+result.D);
-//					System.out.println("Change: "+diff+"\t"+bestSigma+"\t"+eig.getRealEigenvalues().getQuick(0));
-					
-					
-					wpos=newWorldPos;
-
-*/					
 					
 					
 					DoubleMatrix2D eigvec=eig.getV();
@@ -422,18 +491,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 							new Vector3d(eigvec.getQuick(1, 0),eigvec.getQuick(1, 1),0),
 							new Vector3d(0,0,0)};
 
-					//If we trust the fit more
-//					bestSigma=(eigvalv[0]+eigvalv[1])/2; 
-					
-					/*
-					System.out.println("--#");
-					System.out.println(eigvec.toString());
-					System.out.println(eigvecv[0]);
-					System.out.println(eig.getImagEigenvalues());
-					*/
 					
 					Candidate cand=new Candidate();
-					cand.id=id++;
+					cand.id=nextCandidateID++;
 					cand.wpos=wpos;
 					cand.bestSigma=bestSigma;
 					cand.eigval=eigvalv;
@@ -447,7 +507,66 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			return candlist;
 			}
 		
+		
+		/**
+		 * Filter candidate list by removing candidates overlapped by another candidate that has
+		 * a stronger intensity. This is an extremely efficient filter and doesn't seem to
+		 * make any mistakes
+		 */
+		public LinkedList<Candidate> filterCandidatesStrongestIntensityOverlap(LinkedList<Candidate> candlist)
+			{
+			candlist=new LinkedList<Candidate>(candlist);
+			Collections.sort(candlist, new Comparator<Candidate>(){
+			public int compare(Candidate arg0, Candidate arg1)
+				{
+				return -Double.compare(arg0.intensity,arg1.intensity);
+				}
+			});
+			LinkedList<Candidate> outList=new LinkedList<Candidate>();
+			for(Candidate cand:candlist)
+				{
+				boolean overlap=false;
+				for(Candidate other:outList)
+					{
+					Vector3d v=new Vector3d(cand.wpos);
+					v.sub(other.wpos);
+					double r1=scaleSigmaXY2radius(cand.bestSigma);
+					double r2=scaleSigmaXY2radius(other.bestSigma);
+					if(v.length()<r1+r2)
+						{
+						overlap=true;
+						other.numOverlap++;
+						}
+					}
+				if(!overlap)
+					outList.add(cand);
+				}
+			System.out.println("Deleted candidate overlaps: "+
+					(candlist.size()-outList.size())+" / "+candlist.size());
+			return outList;
+			}
+		
+		
 
+		
+		/**
+		 * Filter candidates by removing those having sigma below threshold
+		 */
+		private LinkedList<Candidate> filterCandidatesCutoffSigma(List<Candidate> candlist, double sigma)
+			{
+			int total=candlist.size();
+			LinkedList<Candidate> outList=new LinkedList<Candidate>();
+			for(Candidate cand:candlist)
+				if(cand.bestSigma>sigma)
+					outList.add(cand);
+			System.out.println("Deleted candidate cutoff: "+(total-outList.size())+" / "+total);
+			return outList;
+			}
+			
+		
+		/**
+		 * Lineage one frame
+		 */
 		public void run(LineageSession session)
 			{
 			EvDecimal frame=session.getStartFrame();
@@ -455,7 +574,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			EvChannel channelHis=comboChanHis.getSelectedObject();
 			EvContainer parentContainer=session.getContainer();
 			//EvChannel channelDIC=comboChanDIC.getSelectedObject();
-			Shell shell=comboShell.getSelectedObject();
+			final Shell shell=comboShell.getSelectedObject();
 			if(channelHis!=null && shell!=null && lin !=null)
 				{
 				//Start from this frame (if it exists) or the first frame after
@@ -469,242 +588,72 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				
 				System.out.println("cur frame "+frame);
 				
-				EvStack stackHis=channelHis.getFrame(frame);
-				//EvStack stackDIC=channelDIC.getFrame(channelDIC.closestFrame(frame));
-				
-				
-				double expectRadius=Double.parseDouble(inpRadiusExpected.getText());
+				final EvStack stackHis=channelHis.getFrame(frame);
+				resXY=stackHis.getResbinX();
+
+				//Read parameters from the GUI
+				double expectRadius=Double.parseDouble(inpRadiusExpectedMax.getText());
 				double cutoffRadius=Double.parseDouble(inpRadiusCutoff.getText());
-//				double bgSize=Double.parseDouble(inpNucBgSize.getText());
-				//double bgMulValue=Double.parseDouble(inpNucBgMul.getText());
+				newSigmaXY2radiusFactor=Double.parseDouble(inpSigmaXY2radiusFactor.getText());
 				
-				double resXhis=stackHis.getResbinX();
-//				double resYhis=stackHis.getResbinY();
-				double resZhis=1/stackHis.getResbinZinverted().doubleValue();
-				/*
-				
-				double resXDIC=stackDIC.getResbinX();
-				double resYDIC=stackDIC.getResbinY();
-				double resZDIC=stackDIC.getResbinZinverted().doubleValue();
-*/
-				
-				double resFrac=resXhis/resZhis;  //>1 means X has more pixels
-				
-				
-				
-				///// Find candidate coordinates ////
-				double sigmaHis1=expectRadius;
-				
-				/*
-				int whis=stackHis.getWidth();
-				int hhis=stackHis.getHeight();
-				int dhis=stackHis.getDepth();
-				*/
-				/*
-				EvPixels kernel1=GenerateSpecialImage.genGaussian2D(sigmaHis1, sigmaHis1, whis, hhis);
-				EvPixels kernel2=GenerateSpecialImage.genGaussian2D(sigmaHis1*2, sigmaHis1*2, whis, hhis);
+				//double resXhis=stackHis.getResbinX();
+				//double resYhis=stackHis.getResbinY();
+				//double resZhis=1/stackHis.getResbinZinverted().doubleValue();
+				//double resFrac=resXhis/resZhis;  //>1 means X has more pixels
+//				double sigmaHis1=expectRadius;
 
-				EvPixels kernelDOG=EvOpImageSubImage.minus(kernel1, kernel2);
-				EvStack stackHisDog=new EvOpCircConv2D(kernelDOG).exec1(stackHis);
-				List<Vector3i> maximas=EvOpFindLocalMaximas3D.findMaximas(stackHisDog);*/
-				
-				
-				//TODO run with several kernel sizes. merge candidates.
-				//Principle that highest intensity is the feature
-				
-//				System.out.println("# linjh maximas: "+maximas.size());
+				double expectedSigma=scaleRadius2sigmaXY(expectRadius);
+				double cutoffSigma=scaleRadius2sigmaXY(cutoffRadius);
 
-				//TODO 3d convolution
-				//can make it faster
-				
-				
-				/**
-				 * Lindebergs theory of finding kernel size
-				 * http://www.wisdom.weizmann.ac.il/~deniss/vision_spring04/files/mean_shift/mean_shift.ppt
-				 * gaussian pyramids?
-				 * can use for radius selection? O(n) for each level, need not test many. can calc approximate L-function from points
-				 * 
-				 * Lindeberg: ``Scale-space'', In: Encyclopedia of Computer Science and Engineering (Benjamin Wah, ed), John Wiley and Sons, Volume~IV, pages 2495--2504, Hoboken, New Jersey, Jan 2009. dx.doi.org/10.1002/9780470050118.ecse609 (Sep 2008) (PDF 1.2 Mb) 
-				 * ftp://ftp.nada.kth.se/CVAP/reports/Lin08-EncCompSci.pdf
-				 * 
-				 * Lindeberg
-				 * http://www.nada.kth.se/~tony/earlyvision.html
-				 * 
-				 */
-				
-				/**
-				 * http://en.wikipedia.org/wiki/Scale-invariant_feature_transform
-				 * also has equation for angle
-				 * 
-				 * www.ecs.syr.edu/faculty/lewalle/wavelets/mexhat.pdf 
-				 * doubling sigma is correct to approximate mexican hat
-				 * 
-				 * 
-				 */
-				//TODO
-				/**
-				 * 
-				 * 
-				 * remove using mask.
-				 * sort by decreasing intensity.
-				 * take candidates
-				 *   ignore candidates which are too close to accepted candidates (cell radius)
-				 *   
-				 */
-				
-				/**
-				 * detecting the right sigma:
-				 * only do it with the middle plane so find it first.
-				 * then convolve a single point with ricker wavelet for multiple sigma
-				 * 
-				 * [2.^(1:5) , 0.75 * 2.^(1:5)]
-				 *  1.5000    2.0000    3.0000    4.0000    6.0000    8.0000   12.0000   16.0000 24.0000   32.0000
-				 *
-				 * ie two sequences of convolving with gaussian, then do differences afterwards.
-				 * find argmax and we know sigma, hence r
-				 * 
-				 * r=C*sigma*[some resolution]
-				 * C is related to PSF and should be given by user
-				 * 
-				 * 
-				 *
-				 * 
-				 * 
-				 * 
-				 * 
-				 */
-				
-				
-				
-				
-				//// Detect where the embryo is ////
-				/*
-				int dicVarSize=40;
-				EvStack stackDICvar=new EvOpMovingVariance(dicVarSize,dicVarSize).exec1(stackDIC);
-				EvStack stackDICt=new EvOpThresholdPercentile2D(0.8).exec1(stackDICvar);
-				stackDICt=new EvOpBinMorphFillHoles2D().exec1(stackDICt);
-				EvStack stackEmbryoMask=stackDICt;
-				*/
-				
-				
+				System.out.println("max[sigma]: "+expectedSigma);
+				System.out.println("min[sigma]: "+cutoffSigma);
+
 				//Remove old coordinates at this keyframe
 				deleteKeyFrame(lin, frame, true);
 				
-				//// Choose candidates ////
+				//Find candidates. Search at several resolutions
 				/*
-				int[][] pixEmbryoMask=stackEmbryoMask.getArraysInt();
-				int wdic=stackEmbryoMask.getWidth();
-				int hdic=stackEmbryoMask.getHeight();
-				int ddic=stackEmbryoMask.getDepth();*/
-				/**
-				 * Find candidates. 
-				 * Easy to filter out too small candidates.
-				 * Easy to get rid of overlapping candidates
-				 * Hard to recover if candidates does not cover all nuclei
-				 */
-				List<Candidate> candlist=new LinkedList<Candidate>();
-				candlist.addAll(findCandidates(stackHis, shell, sigmaHis1));
-				candlist.addAll(findCandidates(stackHis, shell, sigmaHis1*0.8));
-				candlist.addAll(findCandidates(stackHis, shell, sigmaHis1*1.2));
-					
-					
+				LinkedList<Candidate> candlist=new LinkedList<Candidate>();
+				candlist.addAll(findCandidatesDoG(stackHis, shell, expectedSigma));
+				if(isStopping) return;
+				candlist.addAll(findCandidatesDoG(stackHis, shell, expectedSigma*0.8));
+				if(isStopping) return;
+				candlist.addAll(findCandidatesDoG(stackHis, shell, expectedSigma*0.65));
+				if(isStopping) return;*/
 				
-				if(isStopping)
-					return;
-
-			
+				LinkedList<Candidate> candlist=new LinkedList<Candidate>();
+				for(List<Candidate> list:EvParallel.map(
+						Arrays.asList(expectedSigma, expectedSigma*0.8, expectedSigma*0.65), 
+						new EvParallel.FuncAB<Double, List<Candidate>>()
+							{
+							public List<Candidate> func(Double in)
+								{
+								if(isStopping()) 
+									return new LinkedList<Candidate>();
+								return findCandidatesDoG(stackHis, shell, in);
+								}
+							}))
+					candlist.addAll(list);
+				if(isStopping) return;
+				//Better to parallelize on single-slice level
 				
-				List<Candidate> okCandidates=new LinkedList<Candidate>();
-
-				
-				/**
-				 * Filtering: Statistics from the two largest nuclei
-				 * if any is smaller than half of this, then it is likely noise
-				 */
-				Collections.sort(candlist, new Comparator<Candidate>(){
-					public int compare(Candidate arg0, Candidate arg1)
-						{
-						return -Double.compare(arg0.bestSigma,arg1.bestSigma);
-						}
-				});
-				//double averageNormalRadius=(candlist.get(0).bestSigma+candlist.get(1).bestSigma)/2;
-				double normalSigma=candlist.get(1).bestSigma;
-				double normalIntensity=candlist.get(1).intensity;
-				/*
-				System.out.println("representative normal sigma "+normalSigma);
-				for(Candidate cand:candlist)
-					{
-					if(cand.bestSigma>normalSigma/2)
-						okCandidates.add(cand);
-					else
-						System.out.println("Removed size: "+cand);
-					}
-				candlist.clear();
-				candlist.addAll(okCandidates);
-				okCandidates.clear();
-				*/
-
-				reid(candlist); //Give new IDs based on sorted order
-				
-
-				if(isStopping)
-					return;
-
-
-
-				/**
-				 * Filtering: Whenever there is overlap, take the one with the strongest intensity
-				 */
+				//Sort by sigma and give new IDs based on it
 				Collections.sort(candlist, new Comparator<Candidate>(){
 				public int compare(Candidate arg0, Candidate arg1)
-					{
-					return -Double.compare(arg0.intensity,arg1.intensity);
-					}
+					{return -Double.compare(arg0.bestSigma,arg1.bestSigma);}
 				});
-				for(Candidate cand:candlist)
-					{
-					boolean overlap=false;
-					for(Candidate other:okCandidates)
-						{
-						Vector3d v=new Vector3d(cand.wpos);
-						v.sub(other.wpos);
-						double r1=sigma2radiusFactor*cand.bestSigma;
-						double r2=sigma2radiusFactor*other.bestSigma;
-						if(v.length()<r1+r2)
-							{
-							overlap=true;
-							other.numOverlap++;
-							}
-						}
-					if(!overlap)
-						okCandidates.add(cand);
-					else
-						System.out.println("Deleted overlap: "+cand);
-					}
-				candlist.clear();
-				candlist.addAll(okCandidates);
-				okCandidates.clear();
+				reassignID(candlist);
 
-				/*
-				System.out.println("normalSigma: "+normalSigma);
-				System.out.println("normalIntensity: "+normalIntensity);
-				for(Candidate cand:candlist)
-					System.out.println(cand.id+"\t"+cand.bestSigma+"\t"+cand.intensity+"\t"+cand.numOverlap+"\t"+cand.eigval[0]/cand.eigval[1]);
-				System.out.println("-------");
-*/
-	
+				//Remove overlapping candidates. Bulk removal.
+				candlist=filterCandidatesStrongestIntensityOverlap(candlist);
 				
+				if(isStopping) return;
 				
-				
-				if(isStopping)
-					return;
+				//Remove candidates smaller than the cut-off radius.
+				//Few but very annoying false positives
+				candlist=filterCandidatesCutoffSigma(candlist, cutoffSigma);
 
-				
-				//Remove candidates smaller than the cut-off radius
-				candlist=cutoffSigma(candlist, cutoffRadius);
-				
-
-				//Which are the nuclei to join with from before?
+				//Find nuclei to join with from frame before
 				List<NucBefore> joiningNucBefore=new ArrayList<NucBefore>();
 				Collection<String> nucsBefore=collectNucleiToContinue(lin, frame);
 				for(String name:nucsBefore)
@@ -721,13 +670,12 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					System.out.println("No nuclei since before");
 					
 					for(Candidate cand:candlist)
-						nucleusFromCandidate(lin, frame, cand);
-
+						createNucleusFromCandidate(lin, frame, cand);
 					}
 				else
 					{
-					System.out.println("Continuing lineage from before");
 					//There are nucs since before. Need to join
+					System.out.println("Continuing lineage from before");
 
 					//Will not take more than twice as many nuclei than last frame.
 					//Sort by intensity, keep 2N nuclei
@@ -736,26 +684,33 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 						newlist.add(candlist.get(i));
 					candlist=newlist;
 					System.out.println("Cutting #nuc from "+numNucFromLastFrame+" to "+candlist.size());
-						
-						
 
-					
-					/**
-					 * Find candidates likely to either divide or have divided
-					 */
+					//Find candidates likely to either divide or have divided
 					findDividing(parentContainer, candlist, frame);
 
 					System.out.println("candlist "+candlist.size());
 
 					//temp
 					for(Candidate cand:candlist)
-						nucleusFromCandidate(lin, frame, cand);
-
-					System.out.println("candlistt "+candlist.size());
+						createNucleusFromCandidate(lin, frame, cand);
 
 					/*
 					
-					
+						
+				 //Filtering: Statistics from the two largest nuclei
+				 // if any is smaller than half of this, then it is likely noise
+				 
+				Collections.sort(candlist, new Comparator<Candidate>(){
+					public int compare(Candidate arg0, Candidate arg1)
+						{
+						return -Double.compare(arg0.bestSigma,arg1.bestSigma);
+						}
+				});
+				//double averageNormalRadius=(candlist.get(0).bestSigma+candlist.get(1).bestSigma)/2;
+				//double normalSigma=candlist.get(1).bestSigma;
+				//double normalIntensity=candlist.get(1).intensity;
+
+
 					
 					//Collect all pairs of distances, sort the list to have the smallest distances first
 					ArrayList<DistancePair> distpairs=new ArrayList<DistancePair>();
@@ -822,74 +777,76 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 
 					}
 				
-				if(isStopping)
-					return;
+				if(isStopping) return;
 
+				estimateParameters(candlist);
+			
 				
-				/**
-				 * Find out average sigma. Also variance?
-				 */
+				//Prepare to do next frame
+				session.finishedAndNowAtFrame(channelHis.closestFrameAfter(frame));
+				}
+			}
+		
+		
+		/**
+		 * Estimate parameters to be used for the next frame
+		 */
+		public void estimateParameters(List<Candidate> candlist)
+			{
+			if(candlist.isEmpty())
+				System.out.println("No nuclei in list, not estimating parameters");
+			else
+				{
 				double sumSigma=0;
 				double sumSigma2=0;
 				double maxSigma=Double.MIN_VALUE;
 				double minSigma=Double.MAX_VALUE;
 				int countSigma=0;
-				//EvMathUtil.
-					for(Candidate cand:candlist)
-						{
-						sumSigma+=cand.bestSigma;
-						sumSigma2+=cand.bestSigma*cand.bestSigma;
-						maxSigma=Math.max(maxSigma, cand.bestSigma);
-						minSigma=Math.min(minSigma, cand.bestSigma);
-						countSigma++;
-						}
+				for(Candidate cand:candlist)
+					{
+					sumSigma+=cand.bestSigma;
+					sumSigma2+=cand.bestSigma*cand.bestSigma;
+					maxSigma=Math.max(maxSigma, cand.bestSigma);
+					minSigma=Math.min(minSigma, cand.bestSigma);
+					countSigma++;
+					}
 				//double varSigma=EvMathUtil.unbiasedVariance(sumSigma, sumSigma2, countSigma);
 				double meanSigma=sumSigma/countSigma;
-				
+
 				System.out.println("mean sigma "+meanSigma);
 				System.out.println("max sigma "+maxSigma);
 				System.out.println("min sigma "+minSigma);
 				System.out.println("# accepted "+candlist.size());
-				
+
 				//TODO Cannot use mean sigma!!!!? too small
-				final double setExpectSigma=maxSigma;
-				final double setMinSigma=minSigma*0.7;
+
+				//Set new parameters
+				final double setExpectRadius=scaleSigmaXY2radius(maxSigma);
+				final double setMinRadius=scaleSigmaXY2radius(minSigma*0.8);
 				try
 					{
 					SwingUtilities.invokeAndWait(new Runnable(){
-						public void run()
-							{
-							inpRadiusExpected.setText(""+setExpectSigma);
-							inpRadiusCutoff.setText(""+setMinSigma);
-							}});
+					public void run()
+						{
+						inpRadiusExpectedMax.setText(""+setExpectRadius);
+						inpRadiusCutoff.setText(""+setMinRadius);
+						}});
 					}
 				catch (Exception e)
 					{
 					e.printStackTrace();
 					}
 				System.out.println("new sigma "+meanSigma);
-				
-				
-				
-				
-				
-				
-				
-				//TODO command to flatten lineage i.e. join single-child nuclei with parents
-				
-				session.finishedAndNowAtFrame(channelHis.closestFrameAfter(frame));
 				}
 			}
+
 		
-		private LinkedList<Candidate> cutoffSigma(List<Candidate> candlist, double sigma)
-			{
-			LinkedList<Candidate> newlist=new LinkedList<Candidate>();
-			for(Candidate cand:candlist)
-				if(cand.bestSigma>sigma)
-					newlist.add(cand);
-			return newlist;
-			}
-			
+		
+		/**
+		 * A nucleus from the last frame
+		 * @author Johan Henriksson
+		 *
+		 */
 		private static class NucBefore
 			{
 			String name;
@@ -914,12 +871,17 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			
 			}
 		
-		private class DistancePair implements Comparable<DistancePair>
+		/**
+		 * Pairing of cell from last frame to candidates
+		 * @author Johan Henriksson
+		 */
+		public class BeforeAfterPair implements Comparable<BeforeAfterPair>
 			{
-			final NucBefore nucBefore;
-			final Candidate candAfter;
-			final double dist;
-			public DistancePair(NucLineage lin, NucBefore nb, Candidate candAfter, EvDecimal frame)
+			public final NucBefore nucBefore;
+			public final Candidate candAfter;
+			public final double dist;
+			
+			public BeforeAfterPair(NucLineage lin, NucBefore nb, Candidate candAfter, EvDecimal frame)
 				{
 				this.candAfter=candAfter;
 				this.nucBefore=nb;
@@ -933,43 +895,46 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			/**
 			 * Smallest distance first
 			 */
-			public int compareTo(DistancePair o)
+			public int compareTo(BeforeAfterPair o)
 				{
 				return Double.compare(dist, o.dist);
 				}
 			}
 
 
-		private Tuple<String,NucLineage.Nuc> nucleusFromCandidate(NucLineage lin, EvDecimal frame, Candidate cand)
+		/**
+		 * Turn a candidate into a new nucleus
+		 */
+		private Tuple<String,NucLineage.Nuc> createNucleusFromCandidate(NucLineage lin, EvDecimal frame, Candidate cand)
 			{
 			String name=":"+frame.toString()+"_"+cand.id+"_s"+cand.bestSigma;
 			NucLineage.Nuc nuc=lin.getCreateNuc(name);
 			NucLineage.NucPos pos=nuc.getCreatePos(frame);
-			pos.r=cand.bestSigma*sigma2radiusFactor; //TODO: resolution need to go in here
+			pos.r=scaleSigmaXY2radius(cand.bestSigma); 
 			pos.setPosCopy(cand.wpos);
 			pos.ovaloidAxisLength=new double[]{
-					cand.eigval[0]*sigma2radiusFactor,
-					cand.eigval[1]*sigma2radiusFactor,
-					cand.eigval[2]*sigma2radiusFactor};
+					scaleSigmaXY2radius(cand.eigval[0]),
+					scaleSigmaXY2radius(cand.eigval[1]),
+							scaleSigmaXY2radius(cand.eigval[2])};
 			pos.ovaloidAxisVec=cand.eigvec;
 			return Tuple.make(name, nuc);
 			}
 		
 		
-		
-		public void reid(Collection<Candidate> candlist)
+		/**
+		 * Redo all ID assignments
+		 */
+		public void reassignID(Collection<Candidate> candlist)
 			{
-			id=0;
+			nextCandidateID=0;
 			for(Candidate cand:candlist)
-				{
-				cand.id=id++;
-				}
+				cand.id=nextCandidateID++;
 			}
 		
 		/**
 		 * Get names of nuclei that should get children or additional positions 
 		 */
-		public Collection<String> collectNucleiToContinue(NucLineage lin, EvDecimal frame)
+		private static Collection<String> collectNucleiToContinue(NucLineage lin, EvDecimal frame)
 			{
 			List<String> names=new LinkedList<String>();
 			for(String name:lin.nuc.keySet())
@@ -984,7 +949,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		/**
 		 * Delete given keyframe from all nuclei. Delete nuclei without keyframe
 		 */
-		private void deleteKeyFrame(NucLineage lin, EvDecimal frame, boolean alsoAfter)
+		private static void deleteKeyFrame(NucLineage lin, EvDecimal frame, boolean alsoAfter)
 			{
 			List<String> toRemove=new LinkedList<String>();
 			for(String name:lin.nuc.keySet())
@@ -1019,128 +984,3 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		
 		}
 	}
-
-	/*
-	
-	
-	
-	for(Vector3i v:maximas)
-		{
-		Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
-//		Vector3d dicPos=stackDIC.transformWorldImage(wpos);
-		
-		if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
-			{
-			System.out.println("id=== "+id);
-			double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
-			System.out.println("Best fit sigma: "+bestSigma);
-			System.out.println("res "+resXhis);
-
-			//Use meanshift to get a better estimate of the XY-position
-			System.out.println("Old wpos "+wpos);*/
-			/*
-			//Square kernel
-			int mr=(int)(bestSigma*1.5);
-			MeanShift2D.MeanShiftPreProcess meanshift=
-			new MeanShift2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels(), mr, mr);
-			Vector2d mpos=meanshift.iterate(new Vector2d(v.x,v.y));
-			*/
-			/*
-			//Gauss kernel
-			double mul=1.2;
-			MeanShiftGauss2D.MeanShiftPreProcess meanshiftXY=
-			new MeanShiftGauss2D.MeanShiftPreProcess(stackHis.getInt(v.z).getPixels());
-			Vector2d mpos=meanshiftXY.iterate(new Vector2d(v.x,v.y),bestSigma*mul,bestSigma*mul);
-			wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,v.z));
-			System.out.println("new wpos "+wpos);
-			*/
-			
-			/*
-			
-			//Do mean-shift in Z-direction
-			double sigmaHis1z=bestSigma/resFrac;  //Arbitrary factor for psfZ
-			double[] arr=new double[dhis];
-			for(int i=0;i<dhis;i++)
-				arr[i]=Multiscale.convolveGaussPoint2D(stackHis.getInt(i).getPixels(), 
-						bestSigma, bestSigma, mpos.x, mpos.y);
-			MeanShiftGauss1D.MeanShiftPreProcess meanshiftZ=new MeanShiftGauss1D.MeanShiftPreProcess(arr);
-			double nz=meanshiftZ.iterate(v.z, sigmaHis1z);
-			v.z=(int)Math.round(nz);
-			wpos=stackHis.transformImageWorld(new Vector3d(mpos.x,mpos.y,nz));
-			System.out.println("new wpos "+wpos);
-			
-			bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),bestSigma, v.x, v.y);
-			System.out.println("better fit sigma: "+bestSigma);
-
-			*/
-			
-			/*
-			
-			Candidate cand=new Candidate();
-			cand.id=id++;
-			cand.pos=wpos;
-			cand.bestSigma=bestSigma;
-			cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
-					bestSigma, bestSigma, cand.pos.x, cand.pos.y);
-			candlist.add(cand);*/
-/*
-			=======
-			NucLineage.Nuc nuc=lin.getCreateNuc(""+i);
-			NucLineage.NucPos pos=nuc.getCreatePos(frame);
-			pos.r=3;
-			pos.setPosCopy(wpos);
->>>>>>> 1.10
-*/
-			//}
-
-
-
-
-
-//Which nuclei are left over?
-/*
-Set<String> unusedAfter=new HashSet<String>(createdNuc);
-Set<String> unusedBefore=new HashSet<String>(nucsBefore);
-unusedAfter.removeAll(usedAfter);
-unusedBefore.removeAll(usedBefore);
-*/
-/**
- * Unused nucs before might just not have been detected. In this case we
- * should try and find them optimistically
- */
-
-/**
- * Unused nucs after are either false positive or divided nuclei.
- * * can detect division using axis, PCA
- * * can use division likely timing
- * * Can use a stricter metric on radius
- * 
- */
-//
-
-//System.out.println("r should be "+stackHis.scaleImageWorldX(20)); //5
-
-/*
-System.out.println("in his: "+v);
-System.out.println("in dic: "+dicPos);
-System.out.println("in world: "+wpos);
-*/
-
-
-/*
-Vector3i dicPosi=new Vector3i((int)dicPos.x,(int)dicPos.y,(int)dicPos.z); 
-if(dicPosi.x>=0 && dicPosi.x<wdic-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi.z>=0 && dicPosi.z<ddic)
-	{
-	int val=pixEmbryoMask[dicPosi.z][dicPosi.y*wdic+dicPosi.x];
-	//System.out.println("dic mask "+val);
-
-	if(val>0)
-		{
-		}
-	
-	}
-//else
-	//System.out.println("outside DIC");
-
-*/
-//		}
