@@ -5,7 +5,7 @@ public class PLUGIN extends PluginDef
 	{
 	public String getPluginName()
 		{
-		return "Metadata";
+		return "Data support";
 		}
 
 	public String getAuthor()
@@ -30,7 +30,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{EvData.class};
+		return new Class[]{EvData.class, GroupObject.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};
