@@ -167,9 +167,20 @@ public class NucImageRenderer implements ImageWindowRenderer
 				}
 			
 
-			
-			
-			
+			/*
+			//Draw division lines
+			//TODO
+			g.setColor(Color.YELLOW);
+			NucLineage.Nuc n=nucPair.getNuc();
+			EvDecimal lastFrame=n.getLastFrame();
+			n.child
+			if()
+				{
+				
+				
+				
+				}
+			*/
 			
 			
 			//If it is visible then draw more things

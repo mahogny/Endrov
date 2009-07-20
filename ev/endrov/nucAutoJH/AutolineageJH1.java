@@ -90,6 +90,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		private JButton bReestParameters=new JButton("Re-estimate parameters");
 		private JCheckBox cbForceNoDiv=new JCheckBox("");
 		private JCheckBox cbCreateNew=new JCheckBox("");
+		private JCheckBox cbCreateLines=new JCheckBox("");
 		//private JTextField inpNucBgSize=new JTextField("2");
 		//private JTextField inpNucBgMul=new JTextField("1");
 		
@@ -133,7 +134,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					new JLabel(""),new JLabel("-------"),
 					new JLabel("σ to r"),inpSigmaXY2radiusFactor,
 					new JLabel("Force no div"),cbForceNoDiv,
-					new JLabel("No P-C link"),cbCreateNew
+					new JLabel("No P-C link"),cbCreateNew,
+					new JLabel("Create div lines"),cbCreateLines
 					);
 
 			bReassChildren.setToolTipText("Reassign parent-children relations in last frame");
@@ -148,6 +150,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			cbForceNoDiv.setToolTipText("Tell that no divisions are expected");
 			inpSigmaXY2radiusFactor.setToolTipText("σ multiplied by this factor becomes radius. Depends on the marker and the PSF.");
 			cbCreateNew.setToolTipText("Do not create parent-child links");
+			cbCreateLines.setToolTipText("Create lines showing possible divisions. For debugging.");
+			
 			
 			return EvSwingUtil.layoutCompactVertical(p,bReassChildren,bReestParameters);
 			}
@@ -200,6 +204,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			public double bPCratio;
 			public double pcRatio;
 			
+			
+			
 			public CandDivPair(Candidate ca, Candidate cb)
 				{
 				this.ca = ca;
@@ -223,9 +229,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				Vector3d diff=new Vector3d(ca.wpos);
 				diff.sub(cb.wpos);
 				distance=diff.length();
-
-				//TODO better metric
-				error=intensDiff;
 				}
 			
 			}
@@ -238,22 +241,33 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			//Get statistics about the candidates. To weight different errors,
 			//they should be normalized.
 			double maxIntensityDiff=Double.MIN_VALUE;
-			//double pcRatio=Double.MA
-			//double minIntensity=Double.MAX_VALUE;
+			double maxPcRatio=Double.MIN_VALUE;
+			double maxSigmaRatio=Double.MIN_VALUE;
 			for(CandDivPair p:divlist)
 				{
 				if(p.intensDiff>maxIntensityDiff)
 					maxIntensityDiff=p.intensDiff;
 				//p.angleDiff
-				//p.pcRatio
+				if(p.pcRatio>maxPcRatio)
+					maxPcRatio=p.pcRatio;
+				if(p.sigmaRatio>maxSigmaRatio)
+					maxSigmaRatio=p.sigmaRatio;
+				//p.angleDiff
 				}
 				
 				
-			//Calculate error of fit.
-			//
+			//Calculate error of fit
+			//* Small intensity -> intensity difference will be smaller and hence have smaller influence
 			for(CandDivPair p:divlist)
 				{
-				p.error=p.intensDiff/maxIntensityDiff;
+				double weightSigma=1;
+				double weightPC=1;
+				double weightIntensity=1;
+				
+				p.error
+				=weightIntensity*p.intensDiff/maxIntensityDiff
+				+weightSigma*p.sigmaRatio/maxSigmaRatio
+				+weightPC*p.pcRatio/maxPcRatio;
 				}
 			
 			//Do the sorting
@@ -402,7 +416,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			pairs=filterCandDivWeightedOverlap(pairs);
 
 			//For debugging
-			createLinesFromCandDiv(pairs, parentContainer, frame);
+			if(cbCreateLines.isSelected())
+				createLinesFromCandDiv(pairs, parentContainer, frame);
 
 			return pairs;
 			}
@@ -470,7 +485,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					//double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
 					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(), 
 							v.x, v.y, 0.3, sigmaHis1*1.25, 8, 3);
-					System.out.println("Best fit sigma: "+bestSigma);
+					//System.out.println("Best fit sigma: "+bestSigma);
 
 					
 					//DoG or original image?
@@ -487,14 +502,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 							new Vector3d(eigvec.getQuick(0, 0),eigvec.getQuick(0, 1),0),
 							new Vector3d(eigvec.getQuick(1, 0),eigvec.getQuick(1, 1),0),
 							new Vector3d(0,0,0)};
-
-/*
-					double[] eigvalv=new double[]{0,0,0};
-					Vector3d[] eigvecv=new Vector3d[]{
-							new Vector3d(0,0,0),
-							new Vector3d(0,0,0),
-							new Vector3d(0,0,0)};
-	*/						
 
 					Candidate cand=new Candidate();
 					cand.id=nextCandidateID++;
@@ -550,7 +557,18 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			return outList;
 			}
 		
-		
+		/**
+		 * Take #num first entries in list. Assumes list is sorted best to worst
+		 */
+		public LinkedList<Candidate> filterCandidatesTake(LinkedList<Candidate> candlist, int num)
+			{
+			LinkedList<Candidate> outList=new LinkedList<Candidate>();
+			for(int i=0;i<num && i<candlist.size();i++)
+				outList.add(candlist.get(i));
+			System.out.println("Deleted candidate overflow: "+
+					(candlist.size()-outList.size())+" / "+candlist.size());
+			return outList;
+			}
 
 		
 		/**
@@ -605,7 +623,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		 * Pairing of cell from last frame to candidates
 		 * @author Johan Henriksson
 		 */
-		public class BeforeAfterPair implements Comparable<BeforeAfterPair>
+		public class BeforeAfterPair //implements Comparable<BeforeAfterPair>
 			{
 			public final NucBefore nucBefore;
 			public final List<Candidate> candAfter;
@@ -628,12 +646,25 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			/**
 			 * Smallest distance first
 			 */
+			/*
 			public int compareTo(BeforeAfterPair o)
 				{
+				//TODO also compare size difference
 				return Double.compare(dist, o.dist);
-				}
+				}*/
 			}
 
+		
+		public static void sortBeforeAfter(LinkedList<BeforeAfterPair> baList)
+			{
+			Collections.sort(baList, new Comparator<BeforeAfterPair>(){
+				public int compare(BeforeAfterPair o1, BeforeAfterPair o2)
+					{
+					return Double.compare(o1.dist, o2.dist);
+					}
+			});
+			}
+		
 		/**
 		 * Generate complete list of candidate before-after matchings.
 		 */
@@ -652,7 +683,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		 * Assumes list of pairs is sorted best to worst
 		 * Return which candidates were used
 		 */
-		public LinkedList<BeforeAfterPair> findMatchingBeforeAfter(LinkedList<BeforeAfterPair> baPairs, Set<NucBefore> usedBefore, Set<Candidate> usedAfter)
+		public LinkedList<BeforeAfterPair> findBestMatchingBeforeAfter(LinkedList<BeforeAfterPair> baPairs, Set<NucBefore> usedBefore, Set<Candidate> usedAfter)
 			{
 			LinkedList<BeforeAfterPair> outBa=new LinkedList<BeforeAfterPair>();
 			
@@ -759,7 +790,8 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		 * 
 		 * @return Unused candidates and the best candidate divisions
 		 */
-		public Tuple<LinkedList<CandDivPair>,LinkedList<Candidate>> takeBestDivCandidates(Collection<Candidate> candlist, LinkedList<CandDivPair> divList, int numTake)
+		public Tuple<LinkedList<CandDivPair>,LinkedList<Candidate>> takeBestDivCandidates(
+				Collection<Candidate> candlist, LinkedList<CandDivPair> divList, int numTake)
 			{
 			LinkedList<CandDivPair> newDivPairs=new LinkedList<CandDivPair>();
 			Set<Candidate> usedCand=new HashSet<Candidate>();
@@ -780,7 +812,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			//Collect remaining candidates
 			LinkedList<Candidate> newcandlist=new LinkedList<Candidate>();
 			for(Candidate c:candlist)
-				if(!candlist.contains(c))
+				if(!usedCand.contains(c))
 					newcandlist.add(c);
 			
 			return Tuple.make(newDivPairs, newcandlist);
@@ -798,9 +830,10 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			{
 			if(forceNoDiv)
 				{
+				//Take the best 1-1 matches, ignore the rest
 				LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, candlist, frameBefore, lin);
-				Collections.sort(baPairs);
-				baPairs=findMatchingBeforeAfter(baPairs,null,null);
+				sortBeforeAfter(baPairs);
+				baPairs=findBestMatchingBeforeAfter(baPairs,null,null);
 				return baPairs;
 				}
 			else
@@ -811,18 +844,18 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 	
 				int numDivCreate=candlist.size()-joiningNucBefore.size();
 				numDivCreate=Math.min(numDivCreate, joiningNucBefore.size());
+				//System.out.println("Want # div "+numDivCreate);
 				Tuple<LinkedList<CandDivPair>,LinkedList<Candidate>> ret=takeBestDivCandidates(candlist, divList, numDivCreate);
+				//System.out.println("got # div" +ret.fst().size());
+				//System.out.println("unused # "+ret.snd().size());
 				
 				//Generate sorted candidate before<->after matchings
 				LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, ret.snd(), frameBefore, lin);
 				for(CandDivPair div:ret.fst())
 					for(NucBefore nb:joiningNucBefore)
-						{
-						BeforeAfterPair p=new BeforeAfterPair(lin, nb, Arrays.asList(div.ca,div.cb),frameBefore);
-						baPairs.add(p);
-						}
-				Collections.sort(baPairs);
-				baPairs=findMatchingBeforeAfter(baPairs,null,null);
+						baPairs.add(new BeforeAfterPair(lin, nb, Arrays.asList(div.ca,div.cb),frameBefore));
+				sortBeforeAfter(baPairs);
+				baPairs=findBestMatchingBeforeAfter(baPairs,null,null);
 				
 				return baPairs;
 				
@@ -908,7 +941,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		/**
 		 * Create nuclei and add new coordinates for the next frame
 		 */
-		public void createNucFromBeforeAfter(Collection<BeforeAfterPair> joiningNucBefore, NucLineage lin, EvDecimal frame)
+		public void createNucFromBeforeAfter(Collection<BeforeAfterPair> joiningNucBefore, NucLineage lin, EvDecimal currentFrame)
 			{
 			for(BeforeAfterPair nb:joiningNucBefore)
 				{
@@ -916,7 +949,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				NucLineage.Nuc parentNuc=lin.nuc.get(parentName);
 				for(Candidate cand:nb.candAfter)
 					{
-					Tuple<String,NucLineage.Nuc> child=createNucleusFromCandidate(lin, frame, cand);
+					Tuple<String,NucLineage.Nuc> child=createNucleusFromCandidate(lin, currentFrame, cand);
 					parentNuc.child.add(child.fst());
 					child.snd().parent=parentName;
 					}
@@ -1030,7 +1063,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				Collection<String> nucsBefore=collectNucleiToContinue(lin, frame);
 				for(String name:nucsBefore)
 					joiningNucBefore.add(new NucBefore(lin,name,frame));
-				int numNucFromLastFrame=joiningNucBefore.size();
 
 				
 				/**
@@ -1051,11 +1083,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 
 					//Will not take more than twice as many nuclei than last frame.
 					//Sort by intensity, keep 2N nuclei
-					LinkedList<Candidate> newlist=new LinkedList<Candidate>();
-					for(int i=0;i<numNucFromLastFrame*2 && i<candlist.size();i++)
-						newlist.add(candlist.get(i));
-					candlist=newlist;
-					System.out.println("Cutting #nuc from "+numNucFromLastFrame+" to "+candlist.size());
+					candlist=filterCandidatesTake(candlist, joiningNucBefore.size()*2);
 
 					//Find candidates likely to either divide or have divided
 					LinkedList<CandDivPair> divList=findDividing(parentContainer, candlist, frame);
@@ -1066,10 +1094,13 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					 */
 
 					//Choose how to link last frame to this frame
-					LinkedList<BeforeAfterPair> baPair=chooseBeforeAfter(joiningNucBefore, candlist, frameBefore, lin, divList, cbForceNoDiv.isSelected());
+					LinkedList<BeforeAfterPair> baPair=chooseBeforeAfter(
+							joiningNucBefore, candlist, frameBefore, lin, divList, cbForceNoDiv.isSelected());
+
+					//System.out.println("# pairs: "+baPair.size());
 					
 					// Turn before-after pairings into nuclei
-					createNucFromBeforeAfter(baPair, lin, frameBefore);
+					createNucFromBeforeAfter(baPair, lin, frame);
 					
 					//Redo list of all candidates
 					candlist.clear();
