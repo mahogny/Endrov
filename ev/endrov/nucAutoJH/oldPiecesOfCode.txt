@@ -245,3 +245,19 @@ if(dicPosi.x>=0 && dicPosi.x<wdic-1 && dicPosi.y>=0 && dicPosi.z<hdic && dicPosi
 					
 				
 				
+				/*
+					
+						
+				 //Filtering: Statistics from the two largest nuclei
+				 // if any is smaller than half of this, then it is likely noise
+				 
+				Collections.sort(candlist, new Comparator<Candidate>(){
+					public int compare(Candidate arg0, Candidate arg1)
+						{
+						return -Double.compare(arg0.bestSigma,arg1.bestSigma);
+						}
+				});
+				//double averageNormalRadius=(candlist.get(0).bestSigma+candlist.get(1).bestSigma)/2;
+				//double normalSigma=candlist.get(1).bestSigma;
+				//double normalIntensity=candlist.get(1).intensity;
+*/

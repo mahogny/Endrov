@@ -28,7 +28,6 @@ import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition
 
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.data.EvContainer;
-import endrov.flowBasic.images.EvOpImageConvertPixel;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowFindFeature.EvOpFindLocalMaximas3D;
 import endrov.flowFourier.EvOpCircConv2D;
@@ -36,7 +35,6 @@ import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.flowMultiscale.Multiscale;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.line.EvLine;
 import endrov.nuc.NucLineage;
@@ -91,6 +89,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		private JButton bReassChildren=new JButton("Reassign parent-children");
 		private JButton bReestParameters=new JButton("Re-estimate parameters");
 		private JCheckBox cbForceNoDiv=new JCheckBox("");
+		private JCheckBox cbCreateNew=new JCheckBox("");
 		//private JTextField inpNucBgSize=new JTextField("2");
 		//private JTextField inpNucBgMul=new JTextField("1");
 		
@@ -131,8 +130,10 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					new JLabel("Shell"),comboShell,
 					new JLabel("Max radius [um]"),inpRadiusExpectedMax,
 					new JLabel("Min radius [um]"),inpRadiusCutoff,
+					new JLabel(""),new JLabel("-------"),
+					new JLabel("σ to r"),inpSigmaXY2radiusFactor,
 					new JLabel("Force no div"),cbForceNoDiv,
-					new JLabel("σ to r"),inpSigmaXY2radiusFactor
+					new JLabel("No P-C link"),cbCreateNew
 					);
 
 			bReassChildren.setToolTipText("Reassign parent-children relations in last frame");
@@ -146,6 +147,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			inpRadiusCutoff.setToolTipText("Smallest accepted radius");
 			cbForceNoDiv.setToolTipText("Tell that no divisions are expected");
 			inpSigmaXY2radiusFactor.setToolTipText("σ multiplied by this factor becomes radius. Depends on the marker and the PSF.");
+			cbCreateNew.setToolTipText("Do not create parent-child links");
 			
 			return EvSwingUtil.layoutCompactVertical(p,bReassChildren,bReestParameters);
 			}
@@ -222,16 +224,44 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				diff.sub(cb.wpos);
 				distance=diff.length();
 
-				//TODO
+				//TODO better metric
 				error=intensDiff;
 				}
 			
-			
-			
-			
-			
 			}
 		
+		/**
+		 * Sort list of candidates best to worst
+		 */
+		public void sortCandDiv(List<CandDivPair> divlist)
+			{
+			//Get statistics about the candidates. To weight different errors,
+			//they should be normalized.
+			double maxIntensityDiff=Double.MIN_VALUE;
+			//double pcRatio=Double.MA
+			//double minIntensity=Double.MAX_VALUE;
+			for(CandDivPair p:divlist)
+				{
+				if(p.intensDiff>maxIntensityDiff)
+					maxIntensityDiff=p.intensDiff;
+				//p.angleDiff
+				//p.pcRatio
+				}
+				
+				
+			//Calculate error of fit.
+			//
+			for(CandDivPair p:divlist)
+				{
+				p.error=p.intensDiff/maxIntensityDiff;
+				}
+			
+			//Do the sorting
+			Collections.sort(divlist, new Comparator<CandDivPair>(){
+			public int compare(CandDivPair o1, CandDivPair o2)
+				{return Double.compare(o1.error, o2.error);}
+			}); 
+			}
 		
 		
 		/**
@@ -324,10 +354,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			int total=pairs.size();
 			//Greedy algorithm. Should rather use minimum weighted non-bipartite matching
 			pairs=new LinkedList<CandDivPair>(pairs);
-			Collections.sort(pairs, new Comparator<CandDivPair>(){
-				public int compare(CandDivPair o1, CandDivPair o2)
-					{return Double.compare(o1.error, o2.error);}
-			}); 
+			sortCandDiv(pairs);
 			System.out.println("Pairs first: "+pairs.size());
 			HashSet<Candidate> usedCand=new HashSet<Candidate>();
 			for(CandDivPair pair:new LinkedList<CandDivPair>(pairs))
@@ -374,17 +401,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			//Globally optimized selection of candidate pairs
 			pairs=filterCandDivWeightedOverlap(pairs);
 
-			
-			//TODO do something useful
-
 			//For debugging
 			createLinesFromCandDiv(pairs, parentContainer, frame);
 
-
-			/**
-			 * TODO create virtual new nuclei
-			 */
-				
 			return pairs;
 			}
 		
@@ -547,7 +566,367 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			System.out.println("Deleted candidate cutoff: "+(total-outList.size())+" / "+total);
 			return outList;
 			}
+
+		
+		/////////////////////////////////////////////////////////////////////////////////////
+		/////////////////// Candidate before-after pairing //////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////
+
+		
+		
+
+		
+		/**
+		 * A nucleus from the last frame
+		 * @author Johan Henriksson
+		 *
+		 */
+		private static class NucBefore
+			{
+			public final String name;
+			public final NucLineage.NucPos pos;
+			//public final Set<Candidate> children=new HashSet<Candidate>();
 			
+			public NucBefore(NucLineage lin, String name, EvDecimal frame)
+				{
+				this.name = name;
+				NucLineage.Nuc nuc=lin.nuc.get(name);
+//				pos=lin.nuc.get(name).pos.get(frame);
+				pos=nuc.pos.get(nuc.pos.headMap(frame).lastKey());
+				if(pos==null)
+					{
+					System.out.println("no pos");
+					System.out.println(nuc.pos);
+					}
+				}
+			}
+		
+		/**
+		 * Pairing of cell from last frame to candidates
+		 * @author Johan Henriksson
+		 */
+		public class BeforeAfterPair implements Comparable<BeforeAfterPair>
+			{
+			public final NucBefore nucBefore;
+			public final List<Candidate> candAfter;
+			public final double dist;
+			
+			public BeforeAfterPair(NucLineage lin, NucBefore nb, Collection<Candidate> candAfter, EvDecimal frame)
+				{
+				this.candAfter=new LinkedList<Candidate>(candAfter);
+				this.nucBefore=nb;
+				//NucLineage.Nuc nucBefore=lin.nuc.get(nb.name);
+				Vector3d vAfter=new Vector3d();
+				for(Candidate c:candAfter)
+					vAfter.add(new Vector3d(c.wpos));
+				vAfter.scale(1.0/candAfter.size());
+				//Vector3d vBefore=nucBefore.pos.get(nucBefore.pos.headMap(frame).lastKey()).getPosCopy();
+				vAfter.sub(nb.pos.getPosCopy());
+				dist=vAfter.length();
+				}
+			
+			/**
+			 * Smallest distance first
+			 */
+			public int compareTo(BeforeAfterPair o)
+				{
+				return Double.compare(dist, o.dist);
+				}
+			}
+
+		/**
+		 * Generate complete list of candidate before-after matchings.
+		 */
+		public LinkedList<BeforeAfterPair> generateAllBeforeAfter(Collection<NucBefore> joiningNucBefore, Collection<Candidate> candlist, EvDecimal frame, NucLineage lin)
+			{
+			LinkedList<BeforeAfterPair> baPairs=new LinkedList<BeforeAfterPair>();
+			for(NucBefore nameBefore:joiningNucBefore)
+				for(Candidate candAfter:candlist)
+					baPairs.add(new BeforeAfterPair(lin, nameBefore, Collections.singleton(candAfter), frame));
+			return baPairs;
+			}
+
+		
+		/**
+		 * Given a list of (candidate before) - (candidates after), find the optimal match.
+		 * Assumes list of pairs is sorted best to worst
+		 * Return which candidates were used
+		 */
+		public LinkedList<BeforeAfterPair> findMatchingBeforeAfter(LinkedList<BeforeAfterPair> baPairs, Set<NucBefore> usedBefore, Set<Candidate> usedAfter)
+			{
+			LinkedList<BeforeAfterPair> outBa=new LinkedList<BeforeAfterPair>();
+			
+			//TODO use algo for minimal weighted bipartite matching
+			//Since not the same elements before/after, not quite matching. By
+			//adding virtual elements of infinite distance, the bad ones are sorted out
+			//MunkresKuhn munkres=new MunkresKuhn();
+			if(usedBefore==null)
+				usedBefore=new HashSet<NucBefore>();
+			if(usedAfter==null)
+				usedAfter=new HashSet<Candidate>();
+			for(BeforeAfterPair p:baPairs)
+				if(!usedBefore.contains(p.nucBefore))
+					{
+					if(!EvSetUtil.containsAnyOf(usedAfter,p.candAfter))
+						{
+						outBa.add(p);
+						usedAfter.addAll(p.candAfter);
+						usedBefore.add(p.nucBefore);
+						//p.nucBefore.children.addAll(p.candAfter);
+						}
+					}
+			return outBa;
+			}
+			
+		
+
+		
+		
+		/*
+		public void oldMatchingBeforeAfter(LinkedList<BeforeAfterPair> distpairs)
+			{
+			//Improvement: use algo for minimal weighted bipartite matching
+			
+			//Join nuclei 1 before-1 after.
+			//Since not the same elements before/after, not quite matching. By
+			//adding virtual elements of infinite distance, the bad ones are sorted out
+			//MunkresKuhn munkres=new MunkresKuhn();
+			Set<NucBefore> usedBefore=new HashSet<NucBefore>();
+			Set<Candidate> usedAfter=new HashSet<Candidate>();
+			for(BeforeAfterPair p:distpairs)
+				if(!usedBefore.contains(p.nucBefore))
+					if(!usedAfter.contains(p.candAfter)) //no longer works
+						{
+						usedAfter.addAll(p.candAfter);
+						usedBefore.add(p.nucBefore);
+						p.nucBefore.children.addAll(p.candAfter);
+						}
+			
+			//Greedily join nuclei 1 before-max 2 after
+			usedBefore.clear();
+			for(BeforeAfterPair p:distpairs)
+				if(!usedBefore.contains(p.nucBefore))
+					if(!usedAfter.contains(p.candAfter)) //no longer works
+						{
+						usedAfter.addAll(p.candAfter);
+						usedBefore.add(p.nucBefore);
+						p.nucBefore.children.addAll(p.candAfter);
+						}
+			}*/
+
+		
+		/**
+		 * Filter list of divisions: get the list with unused candidates having the best link
+		 * 
+		 * This uses a greedy algorithm
+		 */
+		/*
+		 * This code is a mess and doesn't work as-is. has to be fixed if you want to use it
+		 * 
+		 * 
+		public LinkedList<CandDivPair> filterCandDivKeepUnused(LinkedList<CandDivPair> divList, Collection<Candidate> candlist, Set<Candidate> usedCandidate)
+			{
+			LinkedList<CandDivPair> keepDiv=new LinkedList<CandDivPair>();
+			Set<Candidate> toIterate=new HashSet<Candidate>(candlist);
+			toIterate.removeAll(usedCandidate);
+			
+			Set<Candidate> usedCandidateHere=new HashSet<Candidate>(); //beep???
+			for(Candidate cand:toIterate)
+					{
+					findOther: for(CandDivPair p:divList)
+						{
+						if(p.ca==cand || p.cb==cand)
+							{
+							Candidate otherCandidate=p.ca;
+							if(otherCandidate==cand)
+								otherCandidate=p.cb;
+							if(!usedCandidate.contains(otherCandidate))
+								{
+								keepDiv.add(p);
+								usedCandidate.add(otherCandidate);
+								break findOther;
+								}
+							}
+						}
+					}
+			return keepDiv;
+			}
+			*/
+		
+		/**
+		 * Take the numTake best candidate dividing nuclei.
+		 * Assumes divlist sorted best to worst
+		 * 
+		 * @return Unused candidates and the best candidate divisions
+		 */
+		public Tuple<LinkedList<CandDivPair>,LinkedList<Candidate>> takeBestDivCandidates(Collection<Candidate> candlist, LinkedList<CandDivPair> divList, int numTake)
+			{
+			LinkedList<CandDivPair> newDivPairs=new LinkedList<CandDivPair>();
+			Set<Candidate> usedCand=new HashSet<Candidate>();
+			int taken=0;
+			for(CandDivPair cp:divList)
+				{
+				if(!usedCand.contains(cp.ca) && !usedCand.contains(cp.cb))
+					{
+					usedCand.add(cp.ca);
+					usedCand.add(cp.cb);
+					newDivPairs.add(cp);
+					taken++;
+					if(taken==numTake)
+						break;
+					}
+				}
+			
+			//Collect remaining candidates
+			LinkedList<Candidate> newcandlist=new LinkedList<Candidate>();
+			for(Candidate c:candlist)
+				if(!candlist.contains(c))
+					newcandlist.add(c);
+			
+			return Tuple.make(newDivPairs, newcandlist);
+			}
+		
+		
+		/**
+		 * Fit together cell in last frame with cell in this frame.
+		 * 
+		 * Alternative not used strategy:
+		 * virtual candidates, join 1-1. there will be tons of virtual cand, need to filter them aggressively. no guarantee that all nuclei are used;
+		 * not very nice. if only 1 cell divides then hard to control aggression
+		 */
+		public LinkedList<BeforeAfterPair> chooseBeforeAfter(Collection<NucBefore> joiningNucBefore, Collection<Candidate> candlist, EvDecimal frameBefore, NucLineage lin, LinkedList<CandDivPair> divList, boolean forceNoDiv)
+			{
+			if(forceNoDiv)
+				{
+				LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, candlist, frameBefore, lin);
+				Collections.sort(baPairs);
+				baPairs=findMatchingBeforeAfter(baPairs,null,null);
+				return baPairs;
+				}
+			else
+				{
+				//We assume all candidates are real; we just don't know which are dividing or not. We know the number of dividing cells,
+				//it is |candlist| - |joiningNucBefore|. Hence we pick the cells most likely to divide and partition them.
+				//But: this approach is very sensitive to false positives
+	
+				int numDivCreate=candlist.size()-joiningNucBefore.size();
+				numDivCreate=Math.min(numDivCreate, joiningNucBefore.size());
+				Tuple<LinkedList<CandDivPair>,LinkedList<Candidate>> ret=takeBestDivCandidates(candlist, divList, numDivCreate);
+				
+				//Generate sorted candidate before<->after matchings
+				LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, ret.snd(), frameBefore, lin);
+				for(CandDivPair div:ret.fst())
+					for(NucBefore nb:joiningNucBefore)
+						{
+						BeforeAfterPair p=new BeforeAfterPair(lin, nb, Arrays.asList(div.ca,div.cb),frameBefore);
+						baPairs.add(p);
+						}
+				Collections.sort(baPairs);
+				baPairs=findMatchingBeforeAfter(baPairs,null,null);
+				
+				return baPairs;
+				
+				//Idea: it is possible at this stage to detect a bad fit. in that case, we would eliminate cells as long as the fit improves.
+				//This could kill some too large false positives. Detection would be based on sigmaRatio and intensityRatio. Latter requires background sub.
+	
+	
+				
+				//If there are candidates left over now, it means there are more than twice as many candidates
+				//as nuclei in the frame before. The rest of the candidates are assumed bad and discarded.
+				}
+			}
+		/*
+			{
+			//Generate sorted candidate before after matchings
+			LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfterSorted(joiningNucBefore, candlist, frameBefore, lin);
+
+			//Join nuclei 1 before<->1 after. If there are divisions then there will be left-overs
+			HashSet<Candidate> usedAfter=new HashSet<Candidate>(); //Will return content here
+			findMatchingBeforeAfter(baPairs,null,usedAfter);
+			
+			//Which nuclei are left? These must have divided. Find the optimal match for each.
+			//This assumes rather good locality in the divisions so that the 1-1 fit will leave the
+			//ones that divided.
+			LinkedList<CandDivPair> keepDiv=filterCandDivKeepUnused(divList, candlist, usedAfter);
+			//Partition nuclei
+			HashSet<Candidate> usedCand=new HashSet<Candidate>();
+			usedC
+			
+			
+			
+			
+			
+			//If locality breaks down then one additional step is to try local permutations.
+			//The problem is in fact to find to find N=A+B partitions, where A partions have 1 nuclei
+			//and B partitions have 2 such that the division matching score is maximized, weighted
+			//with the matching score from the last frame.
+			
+			// // Not done right now //
+			
+			//Join nuclei 1 before<->1 after. This time there should not be left-overs
+			
+			
+			
+			findMatchingBeforeAfter(baPairs,null,null);
+			
+			
+			
+
+			//////////////////////////////
+			
+
+			
+			//If there are candidates left over now, it means there are more than twice as many candidates
+			//as nuclei in the frame before. The rest of the candidates are assumed bad and discarded.
+			
+			
+			}*/
+		
+		
+		
+		
+		/**
+		 * Create nuclei and add new coordinates for the next frame
+		 */
+		/*
+		public void createNucFromPairing(Collection<NucBefore> joiningNucBefore, NucLineage lin, EvDecimal frame)
+			{
+			for(NucBefore nb:joiningNucBefore)
+				{
+				String parentName=nb.name;
+				NucLineage.Nuc parentNuc=lin.nuc.get(parentName);
+				for(Candidate cand:nb.children)
+					{
+					Tuple<String,NucLineage.Nuc> child=createNucleusFromCandidate(lin, frame, cand);
+					parentNuc.child.add(child.fst());
+					child.snd().parent=parentName;
+					}
+				}
+			}*/
+
+		
+		/**
+		 * Create nuclei and add new coordinates for the next frame
+		 */
+		public void createNucFromBeforeAfter(Collection<BeforeAfterPair> joiningNucBefore, NucLineage lin, EvDecimal frame)
+			{
+			for(BeforeAfterPair nb:joiningNucBefore)
+				{
+				String parentName=nb.nucBefore.name;
+				NucLineage.Nuc parentNuc=lin.nuc.get(parentName);
+				for(Candidate cand:nb.candAfter)
+					{
+					Tuple<String,NucLineage.Nuc> child=createNucleusFromCandidate(lin, frame, cand);
+					parentNuc.child.add(child.fst());
+					child.snd().parent=parentName;
+					}
+				}
+			}
+		
+		/////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////// Main code /////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////
+
 		
 		/**
 		 * Lineage one frame
@@ -657,7 +1036,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				/**
 				 * Join coordinates
 				 */
-				if(joiningNucBefore.isEmpty())
+				if(joiningNucBefore.isEmpty() || cbCreateNew.isSelected())
 					{
 					//There are no nucs before. Accept all candidates.
 					System.out.println("No nuclei since before");
@@ -679,101 +1058,27 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					System.out.println("Cutting #nuc from "+numNucFromLastFrame+" to "+candlist.size());
 
 					//Find candidates likely to either divide or have divided
-					findDividing(parentContainer, candlist, frame);
-
-					System.out.println("candlist "+candlist.size());
-
-					//temp
-					for(Candidate cand:candlist)
-						createNucleusFromCandidate(lin, frame, cand);
+					LinkedList<CandDivPair> divList=findDividing(parentContainer, candlist, frame);
 
 					/*
-					
-						
-				 //Filtering: Statistics from the two largest nuclei
-				 // if any is smaller than half of this, then it is likely noise
-				 
-				Collections.sort(candlist, new Comparator<Candidate>(){
-					public int compare(Candidate arg0, Candidate arg1)
-						{
-						return -Double.compare(arg0.bestSigma,arg1.bestSigma);
-						}
-				});
-				//double averageNormalRadius=(candlist.get(0).bestSigma+candlist.get(1).bestSigma)/2;
-				//double normalSigma=candlist.get(1).bestSigma;
-				//double normalIntensity=candlist.get(1).intensity;
+					for(Candidate cand:candlist)
+						createNucleusFromCandidate(lin, frame, cand);
+					 */
 
-
+					//Choose how to link last frame to this frame
+					LinkedList<BeforeAfterPair> baPair=chooseBeforeAfter(joiningNucBefore, candlist, frameBefore, lin, divList, cbForceNoDiv.isSelected());
 					
-					//Collect all pairs of distances, sort the list to have the smallest distances first
-					ArrayList<DistancePair> distpairs=new ArrayList<DistancePair>();
-					for(NucBefore nameBefore:joiningNucBefore)
-						for(Candidate candAfter:candlist)
-							distpairs.add(new DistancePair(lin, nameBefore, candAfter, frame));
-					Collections.sort(distpairs);
-					
-					//Join nuclei 1 before-1 after.
-					//TODO use algo for minimal weighted bipartite matching
-					//Since not the same elements before/after, not quite matching. By
-					//adding virtual elements of infinite distance, the bad ones are sorted out
-					//MunkresKuhn munkres=new MunkresKuhn();
-					Set<NucBefore> usedBefore=new HashSet<NucBefore>();
-					Set<Candidate> usedAfter=new HashSet<Candidate>();
-					for(DistancePair p:distpairs)
-						if(!usedBefore.contains(p.nucBefore))
-							if(!usedAfter.contains(p.candAfter))
-								{
-								usedAfter.add(p.candAfter);
-								usedBefore.add(p.nucBefore);
-								p.nucBefore.children.add(p.candAfter);
-								}
-					
-					//Greedily join nuclei 1 before-max 2 after
-					usedBefore.clear();
-					for(DistancePair p:distpairs)
-						if(!usedBefore.contains(p.nucBefore))
-							if(!usedAfter.contains(p.candAfter))
-								{
-								usedAfter.add(p.candAfter);
-								usedBefore.add(p.nucBefore);
-								p.nucBefore.children.add(p.candAfter);
-								}
-					
-					//If there are candidates left over now, it means there are more than twice as many candidates
-					//as nuclei in the frame before. The rest of the candidates are assumed bad and discarded.
-					
-					
-					
-					
-					
-				
-					
-					// Turn into nuclei. Redo list of candidates
-					candlist.clear();
-					for(NucBefore nb:joiningNucBefore)
-						{
-						String parentName=nb.name;
-						NucLineage.Nuc parentNuc=lin.nuc.get(parentName);
-						for(Candidate cand:nb.children)
-							{
-							Tuple<String,NucLineage.Nuc> child=nucleusFromCandidate(lin, frame, cand);
-							parentNuc.child.add(child.fst());
-							child.snd().parent=parentName;
-							candlist.addAll(nb.children);
-							}
-						}
+					// Turn before-after pairings into nuclei
+					createNucFromBeforeAfter(baPair, lin, frameBefore);
 					
 					//Redo list of all candidates
-					for(NucBefore nb:joiningNucBefore)
-						candlist.addAll(nb.children);
-					*/
-
+					candlist.clear();
+					for(BeforeAfterPair nb:baPair)
+						candlist.addAll(nb.candAfter);
 					}
 				
-				if(isStopping) return;
-
+				//Use list of candidates to estimate parameters for the next frame
 				estimateParameters(candlist);
-			
 				
 				//Prepare to do next frame
 				session.finishedAndNowAtFrame(channelHis.closestFrameAfter(frame));
@@ -811,8 +1116,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				System.out.println("min sigma "+minSigma);
 				System.out.println("# accepted "+candlist.size());
 
-				//TODO Cannot use mean sigma!!!!? too small
-
 				//Set new parameters
 				final double setExpectRadius=scaleSigmaXY2radius(maxSigma);
 				final double setMinRadius=scaleSigmaXY2radius(minSigma*0.8);
@@ -834,65 +1137,6 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			}
 
 		
-		
-		/**
-		 * A nucleus from the last frame
-		 * @author Johan Henriksson
-		 *
-		 */
-		private static class NucBefore
-			{
-			String name;
-			NucLineage.NucPos pos;
-			Set<Candidate> children=new HashSet<Candidate>();
-			
-			
-			public NucBefore(NucLineage lin, String name, EvDecimal frame)
-				{
-				this.name = name;
-				pos=lin.nuc.get(name).pos.get(frame);
-				NucLineage.Nuc nuc=lin.nuc.get(name);
-				pos=nuc.pos.get(nuc.pos.headMap(frame).lastKey());
-				if(pos==null)
-					{
-					System.out.println("no pos");
-					System.out.println(nuc.pos);
-					}
-				}
-			
-			
-			
-			}
-		
-		/**
-		 * Pairing of cell from last frame to candidates
-		 * @author Johan Henriksson
-		 */
-		public class BeforeAfterPair implements Comparable<BeforeAfterPair>
-			{
-			public final NucBefore nucBefore;
-			public final Candidate candAfter;
-			public final double dist;
-			
-			public BeforeAfterPair(NucLineage lin, NucBefore nb, Candidate candAfter, EvDecimal frame)
-				{
-				this.candAfter=candAfter;
-				this.nucBefore=nb;
-				//NucLineage.Nuc nucBefore=lin.nuc.get(nb.name);
-				Vector3d vAfter=new Vector3d(candAfter.wpos);
-				//Vector3d vBefore=nucBefore.pos.get(nucBefore.pos.headMap(frame).lastKey()).getPosCopy();
-				vAfter.sub(nb.pos.getPosCopy());
-				dist=vAfter.length();
-				}
-			
-			/**
-			 * Smallest distance first
-			 */
-			public int compareTo(BeforeAfterPair o)
-				{
-				return Double.compare(dist, o.dist);
-				}
-			}
 
 
 		/**
