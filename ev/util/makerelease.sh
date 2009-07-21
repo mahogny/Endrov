@@ -16,7 +16,7 @@ rm -Rf evplugin2 util2 util/myKeys
 make starters
 
 #remove crap
-rm -Rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
+rm -Rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS */*/*/*/*/CVS
 rm -Rf .cvsignore */.cvsignore */*/.cvsignore */*/*/.cvsignore */*/*/*/.cvsignore
 rm -Rf .project .classpath .metadata .settings
 rm *.log
