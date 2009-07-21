@@ -1,21 +1,12 @@
 package util;
 
-import endrov.ev.*;
-import endrov.filter.FilterSeq;
-import endrov.filter.FilterSlice;
-import endrov.filterBasic.ContrastBrightnessFilter;
-import endrov.imagesetOST.*;
-import endrov.makeQT.*;
-
-import java.util.*;
-import java.io.File;
-
 /**
  * Go through all imagesets in a directory and run the MakeQT plugin
  * @author Johan Henriksson
  */
 public class BatchMovie
 	{
+	/*
 	public static boolean first=true;
 	public static String getchdesc()
 		{
@@ -50,10 +41,6 @@ public class BatchMovie
 		System.out.println("Movie done");
 		}
 	
-	/**
-	 * Entry point
-	 * @param arg Command line arguments
-	 */
 	public static void main(String[] arg)
 		{
 		Log.listeners.add(new StdoutLog());
@@ -61,8 +48,6 @@ public class BatchMovie
 
 		if(arg.length==0)
 			arg=new String[]{
-/*					"/Volumes/TBU_xeon01_500GB01/ost3dfailed/",
-					"/Volumes/TBU_xeon01_500GB01/ost3dgood/",*/
 					"/Volumes/TBU_xeon01_500GB01/ost4dgood/",
 					"/Volumes/TBU_xeon01_500GB02/ost3dgood/",
 					"/Volumes/TBU_xeon01_500GB02/ost4dgood/"
@@ -77,4 +62,5 @@ public class BatchMovie
 					System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
 					}
 		}
+	*/
 	}

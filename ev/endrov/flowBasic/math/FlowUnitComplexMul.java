@@ -6,7 +6,6 @@ import java.util.Map;
 import endrov.flow.BadTypeFlowException;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
-import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
@@ -15,7 +14,7 @@ import endrov.imageset.AnyEvImage;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitComplexMul extends FlowUnitBasic
+public class FlowUnitComplexMul extends FlowUnitMathBinCompexOp
 	{
 	private static final String metaType="mul";
 	
@@ -33,20 +32,29 @@ public class FlowUnitComplexMul extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		Object a=flow.getInputValue(this, exec, "A");
-		Object b=flow.getInputValue(this, exec, "B");
-		checkNotNull(a,b);
+		Object aReal=flow.getInputValue(this, exec, "Areal");
+		Object aImag=flow.getInputValue(this, exec, "Aimag");
+		Object bReal=flow.getInputValue(this, exec, "Breal");
+		Object bImag=flow.getInputValue(this, exec, "Bimag");
 		
-		if(a instanceof Number && b instanceof Number)
-			lastOutput.put("C", NumberMath.mul((Number)a, (Number)b));
-		else if(a instanceof AnyEvImage && b instanceof Number)
-			lastOutput.put("C", new EvOpImageMulScalar((Number)b).exec1Untyped((AnyEvImage)a));
-		else if(b instanceof AnyEvImage && a instanceof Number)
-			lastOutput.put("C", new EvOpImageMulScalar((Number)a).exec1Untyped((AnyEvImage)b));
-		else if(a instanceof AnyEvImage && b instanceof AnyEvImage)
-			lastOutput.put("C", new EvOpImageMulImage().exec1Untyped((AnyEvImage)a,(AnyEvImage)b));
+		/*
+		if(aReal instanceof Number && bReal instanceof Number)
+			lastOutput.put("C", NumberMath.mul((Number)aReal, (Number)bReal));
+		else if(aReal instanceof AnyEvImage && bReal instanceof Number)
+			lastOutput.put("C", new EvOpImageMulScalar((Number)bReal).exec1Untyped((AnyEvImage)aReal));
+		else if(bReal instanceof AnyEvImage && aReal instanceof Number)
+			lastOutput.put("C", new EvOpImageMulScalar((Number)aReal).exec1Untyped((AnyEvImage)bReal));
+		
+		else */if(aReal instanceof AnyEvImage && aImag instanceof AnyEvImage
+				&& bReal instanceof AnyEvImage && bImag instanceof AnyEvImage)
+			{
+			AnyEvImage[] ret=new EvOpImageComplexMulImage().execUntyped(
+					(AnyEvImage)aReal,(AnyEvImage)aImag,(AnyEvImage)bReal,(AnyEvImage)bImag);
+			lastOutput.put("Creal", ret[0]);
+			lastOutput.put("Cimag", ret[1]);
+			}
 		else
-			throw new BadTypeFlowException("Unsupported numerical types "+a.getClass()+" & "+b.getClass());
+			throw new BadTypeFlowException("Unsupported numerical types "+aReal.getClass()+" & "+bReal.getClass());
 
 		
 		

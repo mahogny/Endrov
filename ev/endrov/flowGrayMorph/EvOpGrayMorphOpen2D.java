@@ -30,6 +30,6 @@ public EvPixels exec1(EvPixels... p)
 
 public static EvPixels open(EvPixels in, EvPixels kernel, int kcx, int kcy)
 	{
-	return EvOpGrayMorphErode2D.erode(EvOpGrayMorphDilate2D.dilate(in,kernel,kcx,kcy),kernel,kcx,kcy);
+	return EvOpGrayMorphErode2D.erode(EvOpGrayMorphDilate2D.apply(in,kernel,kcx,kcy),kernel,kcx,kcy);
 	}
 }

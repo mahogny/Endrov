@@ -10,7 +10,6 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
-import util2.cellContactMap2.UtilMakeCellContactMap;
 
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
@@ -79,10 +78,10 @@ public class RenderNeighmap
 			mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
 			}
 		EvFileUtil.writeFile(new File(targetdirNeigh,"index.htm"),
-				EvFileUtil.readFile(EvFileUtil.getFileFromURL(UtilMakeCellContactMap.class.getResource("main_single.htm")))
+				EvFileUtil.readFile(EvFileUtil.getFileFromURL(RenderNeighmap.class.getResource("main_single.htm")))
 				.replace("BODY", mainSingleOut));
 		EvFileUtil.writeFile(new File(targetdirTree,"index.htm"),
-				EvFileUtil.readFile(EvFileUtil.getFileFromURL(UtilMakeCellContactMap.class.getResource("main_tree.htm")))
+				EvFileUtil.readFile(EvFileUtil.getFileFromURL(RenderNeighmap.class.getResource("main_tree.htm")))
 				.replace("BODY", mainTreeOut));
 
 		//List datasets
@@ -92,7 +91,7 @@ public class RenderNeighmap
 
 		//Write out HTML, cell by cell. Reference lineage is the first one in the list
 		//nucName: everything in the file is about this cell
-		String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(UtilMakeCellContactMap.class.getResource("neigh.htm")));
+		String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(RenderNeighmap.class.getResource("neigh.htm")));
 		for(String nucName:nucNames)
 			{
 			StringBuffer bodyNeigh=new StringBuffer();
