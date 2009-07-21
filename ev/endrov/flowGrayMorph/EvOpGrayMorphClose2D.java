@@ -30,6 +30,6 @@ public class EvOpGrayMorphClose2D extends EvOpSlice1
 
 	public static EvPixels close(EvPixels in, EvPixels kernel, int kcx, int kcy)
 		{
-		return EvOpGrayMorphDilate2D.dilate(EvOpGrayMorphErode2D.erode(in,kernel,kcx,kcy),kernel,kcx,kcy);
+		return EvOpGrayMorphDilate2D.apply(EvOpGrayMorphErode2D.erode(in,kernel,kcx,kcy),kernel,kcx,kcy);
 		}
 	}

@@ -63,8 +63,6 @@ public class FlowUnitGrayMorphErode2D extends FlowUnitBasic
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 		EvPixels kernel=(EvPixels)flow.getInputValue(this, exec, "kernel");
 		
-		checkNotNull(a,pw,ph,kernel);
-
 		lastOutput.put("out", new EvOpGrayMorphErode2D(pw.intValue(),ph.intValue(),kernel).exec1Untyped(a));
 		}
 

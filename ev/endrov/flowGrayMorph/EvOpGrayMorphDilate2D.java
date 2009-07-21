@@ -19,58 +19,59 @@ import endrov.util.Vector2i;
  * @author Johan Henriksson
  */
 public class EvOpGrayMorphDilate2D extends EvOpSlice1
-{
-private int kcx,kcy;
-private EvPixels kernel;
-public EvOpGrayMorphDilate2D(int kcx, int kcy, EvPixels kernel)
 	{
-	this.kcx = kcx;
-	this.kcy = kcy;
-	this.kernel = kernel;
-	}
-
-@Override
-public EvPixels exec1(EvPixels... p)
-	{
-	return dilate(p[0],kernel, kcx, kcy);
-	}
-
-
-public static EvPixels dilate(EvPixels in, EvPixels kernel, int kcx, int kcy)
-	{
-	in=in.getReadOnly(EvPixelsType.INT);
-	int w=in.getWidth();
-	int h=in.getHeight();
-	EvPixels out=new EvPixels(in.getType(),w,h);
-	int[] inPixels=in.getArrayInt();
-	int[] outPixels=out.getArrayInt();
+	private final int kcx,kcy;
+	private final EvPixels kernel;
 	
-	List<Tuple<Vector2i,Integer>> kpos=GrayMorph.kernelPos(kernel, kcx, kcy);
+	public EvOpGrayMorphDilate2D(int kcx, int kcy, EvPixels kernel)
+		{
+		this.kcx = kcx;
+		this.kcy = kcy;
+		this.kernel = kernel;
+		}
 	
-	for(int ay=0;ay<h;ay++)
-		for(int ax=0;ax<w;ax++)
-			{
-			Integer outval=null;
-			for(Tuple<Vector2i,Integer> e:kpos)
+	@Override
+	public EvPixels exec1(EvPixels... p)
+		{
+		return apply(p[0],kernel, kcx, kcy);
+		}
+	
+	
+	public static EvPixels apply(EvPixels in, EvPixels kernel, int kcx, int kcy)
+		{
+		in=in.getReadOnly(EvPixelsType.INT);
+		int w=in.getWidth();
+		int h=in.getHeight();
+		EvPixels out=new EvPixels(in.getType(),w,h);
+		int[] inPixels=in.getArrayInt();
+		int[] outPixels=out.getArrayInt();
+		
+		List<Tuple<Vector2i,Integer>> kpos=GrayMorph.kernelPos(kernel, kcx, kcy);
+		
+		for(int ay=0;ay<h;ay++)
+			for(int ax=0;ax<w;ax++)
 				{
-				Vector2i v=e.fst();
-				int p=e.snd();
-				int kx=v.x+ax;
-				int ky=v.y+ay;
-				if(kx>=0 && kx<w && ky>=0 && ky<h)
+				Integer outval=null;
+				for(Tuple<Vector2i,Integer> e:kpos)
 					{
-					int c=inPixels[in.getPixelIndex(kx, ky)]+p;
-					if(outval==null || outval<c)
-						outval=c;
+					Vector2i v=e.fst();
+					int p=e.snd();
+					int kx=v.x+ax;
+					int ky=v.y+ay;
+					if(kx>=0 && kx<w && ky>=0 && ky<h)
+						{
+						int c=inPixels[in.getPixelIndex(kx, ky)]+p;
+						if(outval==null || outval<c)
+							outval=c;
+						}
 					}
+				int i=out.getPixelIndex(ax, ay);
+				if(outval==null)
+					outPixels[i]=0; //Here we would have a serious problem?
+				else
+					outPixels[i]=outval;
 				}
-			int i=out.getPixelIndex(ax, ay);
-			if(outval==null)
-				outPixels[i]=0; //Here we would have a serious problem?
-			else
-				outPixels[i]=outval;
-			}
-	
-	return out;
+		
+		return out;
+		}
 	}
-}

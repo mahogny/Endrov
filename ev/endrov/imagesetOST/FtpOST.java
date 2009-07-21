@@ -9,6 +9,7 @@ import java.awt.*;
 
 public class FtpOST
 	{
+	/*
 	public Session session;
 	public ChannelSftp c;
 	
@@ -177,5 +178,5 @@ public class FtpOST
 			 monitor.close();
 			 }
 		 }
-
+*/
 	}
