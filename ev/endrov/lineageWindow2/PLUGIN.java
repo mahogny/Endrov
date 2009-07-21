@@ -1,4 +1,4 @@
-package endrov.lineageWindow;
+package endrov.lineageWindow2;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
@@ -30,7 +30,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{/*LineageWindow.class*/};
+		return new Class[]{LineageWindow.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

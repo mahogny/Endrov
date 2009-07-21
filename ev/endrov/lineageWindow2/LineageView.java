@@ -1,4 +1,4 @@
-package endrov.lineageWindow;
+package endrov.lineageWindow2;
 
 import java.awt.*;
 import java.util.*;
@@ -64,28 +64,39 @@ public class LineageView extends JPanel
 	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// Cached tree /////////////////////////////////////////////
+	/////////////////////////// State of lineage for rendering //////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
-	private WeakHashMap<NucLineage, DrawCache> drawCache=new WeakHashMap<NucLineage, DrawCache>();
+	private WeakHashMap<NucLineage, LinState> linState=new WeakHashMap<NucLineage, LinState>();
 	
-	/** Cached information about nuclei */
-	private class DrawCache
+	/** 
+	 * Cached information about nuclei 
+	 */
+	private static class LinState
 		{
-		TreeMap<String, Internal> nucInternal=new TreeMap<String, Internal>();
+		public HierarchicalPainter.Camera cam=new HierarchicalPainter.Camera();
+		public TreeMap<String, Internal> nucInternal=new TreeMap<String, Internal>();
+		
+		
+		
+		//TODO
 		}
 
-	/** Get draw cache for currently selected lineage */
-	private DrawCache getDrawCache()
+	/** 
+	 * Get draw cache for currently selected lineage 
+	 */
+	private LinState getDrawCache()
 		{
-		return getDrawCache(currentLin);
+		return getLinState(currentLin);
 		}
 	
-	/** Get draw cache for a lineage */
-	private DrawCache getDrawCache(NucLineage lin)
+	/** 
+	 * Get draw cache for a lineage 
+	 */
+	private LinState getLinState(NucLineage lin)
 		{
-		DrawCache dc=drawCache.get(lin);
+		LinState dc=linState.get(lin);
 		if(dc==null)
-			drawCache.put(lin, dc=new DrawCache());
+			linState.put(lin, dc=new LinState());
 		return dc;
 		}
 	
@@ -93,6 +104,7 @@ public class LineageView extends JPanel
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Cached keyframes ////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
+	
 	private LinkedList<KeyFramePos> drawnKeyFrames=new LinkedList<KeyFramePos>();
 
 	public static class KeyFramePos
@@ -235,23 +247,6 @@ public class LineageView extends JPanel
 		Tuple<EvDecimal, String> found=currentLin.firstFrameOfLineage();
 		if(found!=null)
 			goInternalNuc(getNucinfo(found.snd()),camera);
-		/*
-		Camera cam=camera;
-		EvDecimal allMinFrame=null;
-		Set<String> roots=getRootNuc();
-		String rootName=null;
-		for(String nucName:roots)
-			{
-			NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
-			if((allMinFrame==null || nuc.firstFrame().less(allMinFrame)) && !nuc.pos.isEmpty())
-				{
-				allMinFrame=nuc.firstFrame();
-				rootName=nucName;
-				}
-			}
-		if(allMinFrame!=null)
-			goInternalNuc(getNucinfo(rootName),cam);
-			*/
 		}
 
 	/**
@@ -384,6 +379,7 @@ public class LineageView extends JPanel
 	
 	public void saveToDisk()
 		{
+	
 		}
 	
 	private void paintEverything(Graphics2D h, boolean toScreen, Camera cam)
