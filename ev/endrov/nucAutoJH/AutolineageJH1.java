@@ -86,6 +86,12 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		private JTextField inpRadiusExpectedMax=new JTextField("3.3");
 		private JTextField inpRadiusCutoff=new JTextField("0.83");
 		private JTextField inpSigmaXY2radiusFactor=new JTextField("2.12575");
+		
+		private JTextField inpWeightSigma=new JTextField("1");
+		private JTextField inpWeightPCeq=new JTextField("1");
+		private JTextField inpWeightPC=new JTextField("1");
+		private JTextField inpWeightIntensity=new JTextField("1");
+		
 		private JButton bReassChildren=new JButton("Reassign parent-children");
 		private JButton bReestParameters=new JButton("Re-estimate parameters");
 		private JCheckBox cbForceNoDiv=new JCheckBox("");
@@ -101,6 +107,14 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 		//private double sigmaXY2radiusFactor=0.55;
 		private double newSigmaXY2radiusFactor;//=2.12575;
 		private double resXY; //[px/um]
+		
+		double weightSigma;
+		double weightPCeq;
+		double weightPC;
+		double weightIntensity;
+		
+
+		
 		
 		private double scaleSigmaXY2radius(double sigma)
 			{	
@@ -129,8 +143,13 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			JComponent p=EvSwingUtil.layoutTableCompactWide(
 					new JLabel("His-channel"),comboChanHis,
 					new JLabel("Shell"),comboShell,
+					new JLabel(""),new JLabel("-------"),
 					new JLabel("Max radius [um]"),inpRadiusExpectedMax,
 					new JLabel("Min radius [um]"),inpRadiusCutoff,
+					new JLabel("weight sigma"),inpWeightSigma,
+					new JLabel("weight PCA eq"),inpWeightPCeq,
+					new JLabel("weight PCA"),inpWeightPC,
+					new JLabel("weight intensity"),inpWeightIntensity,
 					new JLabel(""),new JLabel("-------"),
 					new JLabel("σ to r"),inpSigmaXY2radiusFactor,
 					new JLabel("Force no div"),cbForceNoDiv,
@@ -138,6 +157,13 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					new JLabel("Create div lines"),cbCreateLines
 					);
 
+			/*
+			inpRadiusExpectedMax.setEditable(true);
+			inpRadiusCutoff.setEditable(true);
+			inpWeightSigma.setEditable(true);
+			inpWeightPCeq.setEditable(true);
+			*/
+			
 			bReassChildren.setToolTipText("Reassign parent-children relations in last frame");
 			bReassChildren.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e){reassignChildren();}});
@@ -243,6 +269,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			double maxIntensityDiff=Double.MIN_VALUE;
 			double maxPcRatio=Double.MIN_VALUE;
 			double maxSigmaRatio=Double.MIN_VALUE;
+			double maxPc=Double.MIN_VALUE;
 			for(CandDivPair p:divlist)
 				{
 				if(p.intensDiff>maxIntensityDiff)
@@ -252,6 +279,11 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					maxPcRatio=p.pcRatio;
 				if(p.sigmaRatio>maxSigmaRatio)
 					maxSigmaRatio=p.sigmaRatio;
+				if(p.aPCratio>maxPc)
+					maxPc=p.aPCratio;
+				if(p.bPCratio>maxPc)
+					maxPc=p.bPCratio;
+				
 				//p.angleDiff
 				}
 				
@@ -260,14 +292,11 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			//* Small intensity -> intensity difference will be smaller and hence have smaller influence
 			for(CandDivPair p:divlist)
 				{
-				double weightSigma=1;
-				double weightPC=1;
-				double weightIntensity=1;
-				
 				p.error
 				=weightIntensity*p.intensDiff/maxIntensityDiff
 				+weightSigma*p.sigmaRatio/maxSigmaRatio
-				+weightPC*p.pcRatio/maxPcRatio;
+				+weightPCeq*p.pcRatio/maxPcRatio
+				+weightPC*(maxPc/p.aPCratio+maxPc/p.bPCratio);
 				}
 			
 			//Do the sorting
@@ -654,7 +683,9 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				}*/
 			}
 
-		
+		/**
+		 * Sort before-after list, best to worst
+		 */
 		public static void sortBeforeAfter(LinkedList<BeforeAfterPair> baList)
 			{
 			Collections.sort(baList, new Comparator<BeforeAfterPair>(){
@@ -819,55 +850,109 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 			}
 		
 		
+		
+
 		/**
-		 * Fit together cell in last frame with cell in this frame.
+		 * Fit together cell in last frame with cell in this frame. Assume no divisions
+		 */
+		public LinkedList<BeforeAfterPair> chooseBeforeAfterNoDiv(Collection<NucBefore> joiningNucBefore, Collection<Candidate> candlist, EvDecimal frameBefore, NucLineage lin, LinkedList<CandDivPair> divList)
+			{
+			//Take the best 1-1 matches, ignore the rest
+			LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, candlist, frameBefore, lin);
+			sortBeforeAfter(baPairs);
+			baPairs=findBestMatchingBeforeAfter(baPairs,null,null);
+			return baPairs;
+			}
+		
+		/**
+		 * Fit together cell in last frame with cell in this frame. Relies mainly on division candidate list to find matchings.
 		 * 
 		 * Alternative not used strategy:
 		 * virtual candidates, join 1-1. there will be tons of virtual cand, need to filter them aggressively. no guarantee that all nuclei are used;
 		 * not very nice. if only 1 cell divides then hard to control aggression
 		 */
-		public LinkedList<BeforeAfterPair> chooseBeforeAfter(Collection<NucBefore> joiningNucBefore, Collection<Candidate> candlist, EvDecimal frameBefore, NucLineage lin, LinkedList<CandDivPair> divList, boolean forceNoDiv)
+		public LinkedList<BeforeAfterPair> chooseBeforeAfterGlobalMatch(Collection<NucBefore> joiningNucBefore, Collection<Candidate> candlist, EvDecimal frameBefore, NucLineage lin, LinkedList<CandDivPair> divList)
 			{
-			if(forceNoDiv)
-				{
-				//Take the best 1-1 matches, ignore the rest
-				LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, candlist, frameBefore, lin);
-				sortBeforeAfter(baPairs);
-				baPairs=findBestMatchingBeforeAfter(baPairs,null,null);
-				return baPairs;
-				}
-			else
-				{
-				//We assume all candidates are real; we just don't know which are dividing or not. We know the number of dividing cells,
-				//it is |candlist| - |joiningNucBefore|. Hence we pick the cells most likely to divide and partition them.
-				//But: this approach is very sensitive to false positives
-	
-				int numDivCreate=candlist.size()-joiningNucBefore.size();
-				numDivCreate=Math.min(numDivCreate, joiningNucBefore.size());
-				//System.out.println("Want # div "+numDivCreate);
-				Tuple<LinkedList<CandDivPair>,LinkedList<Candidate>> ret=takeBestDivCandidates(candlist, divList, numDivCreate);
-				//System.out.println("got # div" +ret.fst().size());
-				//System.out.println("unused # "+ret.snd().size());
-				
-				//Generate sorted candidate before<->after matchings
-				LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, ret.snd(), frameBefore, lin);
-				for(CandDivPair div:ret.fst())
-					for(NucBefore nb:joiningNucBefore)
-						baPairs.add(new BeforeAfterPair(lin, nb, Arrays.asList(div.ca,div.cb),frameBefore));
-				sortBeforeAfter(baPairs);
-				baPairs=findBestMatchingBeforeAfter(baPairs,null,null);
-				
-				return baPairs;
-				
-				//Idea: it is possible at this stage to detect a bad fit. in that case, we would eliminate cells as long as the fit improves.
-				//This could kill some too large false positives. Detection would be based on sigmaRatio and intensityRatio. Latter requires background sub.
-	
-	
-				
-				//If there are candidates left over now, it means there are more than twice as many candidates
-				//as nuclei in the frame before. The rest of the candidates are assumed bad and discarded.
-				}
+
+			//We assume all candidates are real; we just don't know which are dividing or not. We know the number of dividing cells,
+			//it is |candlist| - |joiningNucBefore|. Hence we pick the cells most likely to divide and partition them.
+			//But: this approach is very sensitive to false positives
+
+			int numDivCreate=candlist.size()-joiningNucBefore.size();
+			numDivCreate=Math.min(numDivCreate, joiningNucBefore.size());
+			//System.out.println("Want # div "+numDivCreate);
+			Tuple<LinkedList<CandDivPair>,LinkedList<Candidate>> ret=takeBestDivCandidates(candlist, divList, numDivCreate);
+			//System.out.println("got # div" +ret.fst().size());
+			//System.out.println("unused # "+ret.snd().size());
+
+			//Generate sorted candidate before<->after matchings
+			LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, ret.snd(), frameBefore, lin);
+			for(CandDivPair div:ret.fst())
+				for(NucBefore nb:joiningNucBefore)
+					baPairs.add(new BeforeAfterPair(lin, nb, Arrays.asList(div.ca,div.cb),frameBefore));
+			sortBeforeAfter(baPairs);
+			baPairs=findBestMatchingBeforeAfter(baPairs,null,null);
+
+			return baPairs;
+
+			//Idea: it is possible at this stage to detect a bad fit. in that case, we would eliminate cells as long as the fit improves.
+			//This could kill some too large false positives. Detection would be based on sigmaRatio and intensityRatio. Latter requires background sub.
+
+
+
+			//If there are candidates left over now, it means there are more than twice as many candidates
+			//as nuclei in the frame before. The rest of the candidates are assumed bad and discarded.
+
 			}
+		
+		/**
+		 * Fit together cell in last frame with cell in this frame. Relies mainly on distance before-after to find divisions.
+		 */
+		public LinkedList<BeforeAfterPair> chooseBeforeAfterLocalMatch(Collection<NucBefore> joiningNucBefore, Collection<Candidate> candlist, EvDecimal frameBefore, NucLineage lin, LinkedList<CandDivPair> divList)
+			{
+			//Generate sorted candidate before after matchings
+			LinkedList<BeforeAfterPair> baPairs=generateAllBeforeAfter(joiningNucBefore, candlist, frameBefore, lin);
+
+			//Join nuclei 1 before<->1 after. If there are divisions then there will be left-overs
+			HashSet<Candidate> usedAfterOneToOne=new HashSet<Candidate>(); //Will return content here
+			sortBeforeAfter(baPairs);
+			baPairs=findBestMatchingBeforeAfter(baPairs,null,usedAfterOneToOne);
+			
+			//Join nuclei 1 before<->one more after
+			//This is a bipartitete problem {usedAfter}-{notUsedAfter} over candidate division pairs
+			/*LinkedList<CandDivPair> newdivlist=new LinkedList<CandDivPair>();
+			for(CandDivPair div:divList)
+				if(usedAfterOneToOne.contains(div.ca) ^ usedAfterOneToOne.contains(div.cb))
+					newdivlist.add(div);*/
+			sortCandDiv(divList);
+			HashSet<Candidate> usedAfter2=new HashSet<Candidate>();
+			for(CandDivPair div:divList)
+				if(usedAfterOneToOne.contains(div.ca) ^ usedAfterOneToOne.contains(div.cb)) //Exactly one of them must have been used in 1-1
+					if(!usedAfter2.contains(div.ca) && !usedAfter2.contains(div.cb)) //None of them must have been used in this greedy search
+						{
+						//Find and augment the bapair with one more child
+						//Linear search: not nice but does the work and not used a lot
+						findTheBA: for(BeforeAfterPair bap:baPairs)
+							if(bap.candAfter.contains(div.ca) || bap.candAfter.contains(div.cb))
+								{
+								bap.candAfter.add(div.ca);
+								bap.candAfter.add(div.cb);
+								
+								//Possible to filter here: delete nuclei which are too far away, very different intensity or sigma, pca etc
+								
+								
+								break findTheBA;
+								}
+						usedAfter2.add(div.ca);
+						usedAfter2.add(div.cb);
+						}
+			
+			//Iterations to improve fit could go here
+			
+			return baPairs;
+			}
+		
+		
 		/*
 			{
 			//Generate sorted candidate before after matchings
@@ -992,7 +1077,11 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 				double expectRadius=Double.parseDouble(inpRadiusExpectedMax.getText());
 				double cutoffRadius=Double.parseDouble(inpRadiusCutoff.getText());
 				newSigmaXY2radiusFactor=Double.parseDouble(inpSigmaXY2radiusFactor.getText());
+				weightSigma=Double.parseDouble(inpWeightSigma.getText());
+				weightPCeq=Double.parseDouble(inpWeightPCeq.getText());
+				weightIntensity=Double.parseDouble(inpWeightIntensity.getText());
 				
+
 				//double resXhis=stackHis.getResbinX();
 				//double resYhis=stackHis.getResbinY();
 				//double resZhis=1/stackHis.getResbinZinverted().doubleValue();
@@ -1094,9 +1183,13 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 					 */
 
 					//Choose how to link last frame to this frame
-					LinkedList<BeforeAfterPair> baPair=chooseBeforeAfter(
-							joiningNucBefore, candlist, frameBefore, lin, divList, cbForceNoDiv.isSelected());
-
+					LinkedList<BeforeAfterPair> baPair;
+					if(cbForceNoDiv.isSelected())
+						baPair=chooseBeforeAfterNoDiv(joiningNucBefore, candlist, frameBefore, lin, divList);
+					else
+//						baPair=chooseBeforeAfterGlobalMatch(joiningNucBefore, candlist, frameBefore, lin, divList);
+						baPair=chooseBeforeAfterLocalMatch(joiningNucBefore, candlist, frameBefore, lin, divList);
+						
 					//System.out.println("# pairs: "+baPair.size());
 					
 					// Turn before-after pairings into nuclei

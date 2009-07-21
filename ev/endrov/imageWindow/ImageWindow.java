@@ -20,6 +20,7 @@ import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageWindow.ImagePanel.ImagePanelImage;
 import endrov.imageWindow.tools.ImageWindowToolChannelDisp;
+import endrov.imageWindow.tools.ImageWindowToolEditImage;
 import endrov.imageWindow.tools.ImageWindowToolPixelInfo;
 import endrov.imageWindow.tools.ImageWindowToolScreenshot;
 import endrov.imageset.*;
@@ -84,6 +85,7 @@ public class ImageWindow extends BasicWindow
 				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
 				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
 				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
+				w.imageWindowTools.add(new ImageWindowToolEditImage(w));
 				}
 			});
 		}
@@ -277,7 +279,7 @@ public class ImageWindow extends BasicWindow
 	private final JPanel channelPanel=new JPanel();
 
 	private final JMenu menuImageWindow=new JMenu("ImageWindow");
-	public final JMenu menuImage=new JMenu("Image");
+	//public final JMenu menuImage=new JMenu("Image");
 	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
 	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
 	private final JMenuItem miReset=new JMenuItem("Reset view");
@@ -368,7 +370,7 @@ public class ImageWindow extends BasicWindow
 		setShow3Color(bShow3colors.isSelected());
 		
 		addMenubar(menuImageWindow);
-		addMenubar(menuImage);
+		//addMenubar(menuImage);
 		buildMenu();
 		
 		attachDragAndDrop(imagePanel);
