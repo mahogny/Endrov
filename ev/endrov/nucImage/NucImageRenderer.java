@@ -68,16 +68,18 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(w.mouseInWindow)
 			NucLineage.currentHover=new NucSel();
 	
+		EvDecimal currentFrame=w.frameControl.getFrame();
+		
 		interpNuc.clear();
 		for(NucLineage lin:getVisibleLineages())
 			{
-			Map<NucSel, NucLineage.NucInterp> interpNucPart=lin.getInterpNuc(w.frameControl.getFrame());
+			Map<NucSel, NucLineage.NucInterp> interpNucPart=lin.getInterpNuc(currentFrame);
 			interpNuc.putAll(interpNucPart);
 			}
 		for(NucSel nucPair:interpNuc.keySet())
 			{
 			NucLineage.NucInterp nuc=interpNuc.get(nucPair);
-			drawNuc(g,nucPair,nuc);
+			drawNuc(g,nucPair,nuc,currentFrame);
 			}
 
 		if(!lastHover.equals(NucLineage.currentHover))
@@ -120,7 +122,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	/**
 	 * Draw a single nucleus
 	 */
-	private void drawNuc(Graphics g, NucSel nucPair, NucLineage.NucInterp nuc)
+	private void drawNuc(Graphics g, NucSel nucPair, NucLineage.NucInterp nuc, EvDecimal currentFrame)
 		{			
 		String nucName=nucPair.snd();
 		
@@ -136,6 +138,30 @@ public class NucImageRenderer implements ImageWindowRenderer
 			{
 			//Coordinate transformation
 			Vector2d so=w.transformW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
+			
+			
+
+			//Draw division lines
+			g.setColor(Color.YELLOW);
+			EvDecimal lastFrame=nucPair.getNuc().pos.lastKey();//getLastFrame();
+			if(lastFrame!=null && lastFrame.lessEqual(currentFrame))
+				{
+				for(String child:nucPair.getNuc().child)
+					{
+					NucLineage.Nuc nchild=nucPair.fst().nuc.get(child);
+					if(!nchild.pos.isEmpty())
+						{
+						EvDecimal firstFrame=nchild.pos.firstKey();
+						if(!nchild.pos.isEmpty() && firstFrame.greaterEqual(currentFrame))
+							{
+							NucLineage.NucPos cpos=nchild.pos.get(firstFrame);
+							Vector2d childso=w.transformW2S(new Vector2d(cpos.x,cpos.y));
+							g.drawLine((int)so.x,(int)so.y, (int)childso.x,(int)childso.y);
+							}
+						}
+					}
+				}
+			
 			
 			//Pick color of nucleus
 			Color nucColor;
@@ -167,21 +193,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 				}
 			
 
-			/*
-			//Draw division lines
-			//TODO
-			g.setColor(Color.YELLOW);
-			NucLineage.Nuc n=nucPair.getNuc();
-			EvDecimal lastFrame=n.getLastFrame();
-			n.child
-			if()
-				{
-				
-				
-				
-				}
-			*/
-			
+
 			
 			//If it is visible then draw more things
 			if(isVisible)

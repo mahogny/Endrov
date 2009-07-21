@@ -8,7 +8,6 @@ import org.jdom.*;
 
 import endrov.data.*;
 import endrov.ev.EvLog;
-import endrov.imageWindow.ImageWindow;
 import endrov.util.EvDecimal;
 
 /**
@@ -25,7 +24,6 @@ public class Imageset extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		ImageWindow.addImageWindowExtension(new ImagesetImageExtension());
 		EvData.supportedMetadataFormats.put(metaType,Imageset.class);
 		
 		

@@ -133,12 +133,13 @@ public class FilterImageExtension implements ImageWindowExtension
 		final JMenu miOnFrame=new JMenu("On frame");
 		final JMenu miOnSlice=new JMenu("On slice");
 		final JMenu miOnROI=new JMenu("On ROI");
+		/*
 		BasicWindow.addMenuItemSorted(w.menuImage, miOnImageset, miOnImageset.getText());
 		BasicWindow.addMenuItemSorted(w.menuImage, miOnChannel, miOnChannel.getText());
 		BasicWindow.addMenuItemSorted(w.menuImage, miOnFrame, miOnFrame.getText());
 		BasicWindow.addMenuItemSorted(w.menuImage, miOnSlice, miOnSlice.getText());
 		BasicWindow.addMenuItemSorted(w.menuImage, miOnROI, miOnROI.getText());
-		
+		*/
 		//ROI filter menu action listener
 		final BindListener bROI=new BindListener()
 			{

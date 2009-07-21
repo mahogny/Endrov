@@ -881,7 +881,7 @@ public class NucLineage extends EvObject implements Cloneable
 		
 		
 		/**
-		 * Get the last frame accounting for override
+		 * Get the last frame, accounting for override. null if it exists to infinity.
 		 */
 		public EvDecimal getLastFrame()
 			{
@@ -1022,8 +1022,13 @@ public class NucLineage extends EvObject implements Cloneable
 				}
 			}
 		
+
 		
 		}
+				
+				
+				
+				
 	
 	/**
 	 * Count how many nuclei exist up to and equal the frame
