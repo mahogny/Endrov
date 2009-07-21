@@ -19,7 +19,7 @@ import endrov.util.Tuple;
 /**
  * Support for Starrynite/Acetree fileformat
  * 
- * @author Johan Henriksson (binding to library only)
+ * @author Johan Henriksson
  */
 public class EvIODataStarrynite implements EvIOData
 	{
