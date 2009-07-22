@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 import endrov.imageset.EvPixels;
 
 /**
@@ -58,12 +59,10 @@ public class FlowUnitGrayMorphOpen2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 		EvPixels kernel=(EvPixels)flow.getInputValue(this, exec, "kernel");
-		
-		checkNotNull(a,pw,ph,kernel);
 
 		lastOutput.put("out", new EvOpGrayMorphOpen2D(pw.intValue(),ph.intValue(),kernel).exec1Untyped(a));
 		}

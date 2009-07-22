@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: moving variance
@@ -56,11 +57,9 @@ public class FlowUnitMovingVariance extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
-		
-		checkNotNull(a,pw,ph);
 
 		lastOutput.put("out", new EvOpMovingVariance(pw,ph).exec1Untyped(a));
 		}

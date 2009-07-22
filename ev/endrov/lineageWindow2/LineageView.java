@@ -6,12 +6,14 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
+import javax.vecmath.Vector2d;
 
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
 import endrov.lineageWindow2.HierarchicalPainter.Camera;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
+import endrov.util.Tuple;
 
 
 /**
@@ -37,17 +39,13 @@ public class LineageView extends JPanel
 	/** Size of key frame icon */
 	private static final int keyFrameSize=2;
 	
+	private static final double sizeOfBranch=32;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// State ///////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 	
 	public NucLineage currentLin=null;
-
-//	public double currentFrame=0;
-	
-	private double frameDist=5;
-	private double branchScale=1;
 
 	public double expScale=1;
 	
@@ -56,10 +54,24 @@ public class LineageView extends JPanel
 	public boolean showExpLine=true;
 	public boolean showExpSolid=true;
 	public boolean showExpDot=true;
-	public boolean showTreeLabel=true;
-	public boolean showLeafLabel=true;
+	public boolean showLabel=true;
 	public boolean showScale=true;
+	public boolean showHorizontalTree=true;	
 	
+	
+	public boolean getShowKeyFrames(){return showKeyFrames;}
+	public boolean getShowLabel(){return showLabel;}
+	
+	/**
+	 * Get width and height of the screen, taking rotation into account
+	 */
+	public Tuple<Integer,Integer> getRotatedWidthHeight()
+		{
+		if(showHorizontalTree)
+			return Tuple.make(getWidth(), getHeight());
+		else
+			return Tuple.make(getHeight(), getWidth());
+		}
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// State of lineage for rendering //////////////////////////
@@ -69,59 +81,78 @@ public class LineageView extends JPanel
 	/** 
 	 * Cached information about nuclei 
 	 */
-	private static class LinState
+	private class LinState
 		{
 		public HierarchicalPainter.Camera cam=new HierarchicalPainter.Camera();
-		public TreeMap<String, Internal> nucInternal=new TreeMap<String, Internal>();
+		public TreeMap<String, NucState> nucInternal=new TreeMap<String, NucState>();
 		
-		public boolean showHorizontalTree=true;	
 
 		
-		//Natural x-dimension: frames in seconds
-		
-		//No natural y-dimension
-		
-		//TODO
+		public LinState(NucLineage lin)
+			{
+			cam.zoomX=1.0/60;
+			zoomAll(lin);
+			}
+
+		/**
+		 * Zoom camera so that it shows everything
+		 */
+		public void zoomAll(NucLineage lin)
+			{
+			Tuple<Integer,Integer> wh=getRotatedWidthHeight();
+			HierarchicalPainter hpainter=new HierarchicalPainter();
+			layoutAllTrees(lin, this, hpainter, wh.fst(), wh.snd());
+			HierarchicalPainter.BoundingBox bb=hpainter.getTotalBoundingBox();
+			if(bb!=null)
+				cam.showArea(bb, wh.fst(),wh.snd());
+			else
+				System.out.println("No content to zoom at");
+			}
 		
 		/**
 		 * Get information structure about nucleus
 		 * @param nuc Name of nucleus
 		 * @return Existing structure or a new one
 		 */
-		public Internal getNucinfo(String nuc)
+		public NucState getNucState(String nuc)
 			{
-			Internal i=nucInternal.get(nuc);
+			NucState i=nucInternal.get(nuc);
 			if(i==null)
 				{
-				i=new Internal();
+				i=new NucState();
 				nucInternal.put(nuc, i);
 				}
 			return i;
 			}
 		
-		
+		/**
+		 * Recursively set expand status of branches
+		 */
 		public void recursiveExpand(String nucName, boolean expand, NucLineage currentLin)
 			{
 			if(currentLin!=null)
 				{
-				Internal internal=getNucinfo( nucName);
-				internal.expanded=expand;
+				NucState internal=getNucState( nucName);
+				internal.isExpanded=expand;
 				NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 				for(String childName:nuc.child)
 					recursiveExpand(childName, expand, currentLin);
 				}
 			}
 
+		
+		/**
+		 * Move camera to given position, repaint
+		 */
+		private void goToPosition(double frame, double y)
+			{
+			cam.panCorrespondenceX(getRotatedWidthHeight().fst()/2, frame);
+			cam.panCorrespondenceY(getRotatedWidthHeight().snd()/2, y);
+			repaint();
+			}
 
 		}
 
-	/** 
-	 * Get draw cache for currently selected lineage 
-	 */
-	private LinState getLinState()
-		{
-		return getLinState(currentLin);
-		}
 	
 	/** 
 	 * Get state of lineage, never null 
@@ -130,56 +161,146 @@ public class LineageView extends JPanel
 		{
 		LinState dc=linState.get(lin);
 		if(dc==null)
-			linState.put(lin, dc=new LinState()); //TODO should center it
+			linState.put(lin, dc=new LinState(lin)); 
 		return dc;
 		}
 	
 	
-	/*
-	public HierarchicalPainter.Camera getCamera()
-		{
-		return getLinState().cam;
-		}*/
-	
 	public EvDecimal getFrameFromCursor(int mx, int my)
 		{
-		LinState linstate=getLinState();
-		//HierarchicalPainter.Camera cam=getLinState().cam;
-		
-		if(linstate.showHorizontalTree)
+		NucLineage lin=getLineage();
+		LinState linstate=getLinState(lin);
+		if(showHorizontalTree)
 			return new EvDecimal(linstate.cam.toWorldY(my));
 		else
 			return new EvDecimal(linstate.cam.toWorldX(my));
 		}
 	
 	
-	//////////////////// TODO //////////////////
 	
-	public void setFrame(double frame){}
-	public EvDecimal getFrame(){return EvDecimal.ZERO;}
-	public void goRoot(){}
-	public void goSelected(){}
-
+	/**
+	 * Move camera. Does not redraw
+	 */
 	public void pan(int dx, int dy)
 		{
-		LinState linstate=getLinState();
+		NucLineage lin=getLineage();
+		LinState linstate=getLinState(lin);
 		linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(dx);
 		linstate.cam.cameraY-=linstate.cam.scaleScreenDistY(dy);
+		}
+
+
+	/**
+	 * General zooming relative to a point on the screen
+	 */
+	public void zoom(double factorX, int midx, double factorY, int midy)
+		{
+		NucLineage lin=getLineage();
+		LinState linstate=getLinState(lin);
+		if(!showHorizontalTree)
+			{
+			//Invert
+			int tempi=midx;
+			midx=midy;
+			midy=tempi;
+			
+			double tempd=factorX;
+			factorX=factorY;
+			factorY=tempd;
+			}
+
+		double worldx=linstate.cam.toWorldX(midx);
+		double worldy=linstate.cam.toWorldY(midy);
 		
+		linstate.cam.zoomX*=factorX;
+		linstate.cam.zoomY*=factorY;
+		
+		double worldx2=linstate.cam.toWorldX(midx);
+		double worldy2=linstate.cam.toWorldY(midy);
+	
+		linstate.cam.cameraX-=linstate.cam.scaleWorldDistX(worldx2-worldx);
+		linstate.cam.cameraY-=linstate.cam.scaleWorldDistY(worldy2-worldy);
 		}
+	
+	public void zoomX(double factor, int midx){zoom(factor,midx,1,0);}
+	public void zoomY(double factor, int midy){zoom(1,0,factor,midy);}
 
-	public void zoomX(double factor, int midx)
+	
+	/**
+	 * Set frame position
+	 */
+	public void setFrame(double frame)
 		{
-		LinState linstate=getLinState();
-		linstate.cam.zoomX*=factor;
+		NucLineage lin=getLineage();
+		LinState linstate=getLinState(lin);
+		linstate.cam.panCorrespondenceX(getRotatedWidthHeight().fst(), frame);
 		}
+	
+	
+	/**
+	 * Get frame position
+	 */
+	public EvDecimal getFrame()
+		{
+		NucLineage lin=getLineage();
+		LinState linstate=getLinState(lin);
+		linstate.cam.toWorldX(getRotatedWidthHeight().fst()/2);
+		return EvDecimal.ZERO;
+		}
+	
 
-	public void zoomY(double factor, int midy)
+	
+	/**
+	 * Move camera to root, repaint
+	 */
+	public void goToRoot()
 		{
-		//must rotate TODO
-		LinState linstate=getLinState();
-		linstate.cam.zoomY*=factor;
+		Tuple<EvDecimal, String> found=currentLin.firstFrameOfLineage();
+		if(found!=null)
+			{
+			LinState linstat=getLinState(currentLin);
+			double worldX=found.fst().doubleValue();
+			double worldY=linstat.getNucState(found.snd()).centerY;
+			linstat.goToPosition(worldX,worldY);
+			}
 		}
+		
+	/**
+	 * Move camera to selected nuclei, repaint
+	 */
+	public void goToSelected()
+		{
+		LinState linstat=getLinState(currentLin);
+		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+		Vector2d v=new Vector2d();
+		int cnt=0;
+		NucSel sel=selectedNuclei.iterator().next();
+		if(sel.fst()==currentLin)
+			{
+			NucLineage.Nuc nuc=sel.getNuc();
+			EvDecimal frame=nuc.getLastFrame();
+			v.add(new Vector2d(frame.doubleValue(),linstat.getNucState(sel.snd()).centerY));
+			cnt++;
+			}
+		if(cnt>0)
+			{
+			v.scale(1.0/cnt);
+			linstat.goToPosition(v.x, v.y);
+			}
+		}
+	
+	/**
+	 * Zoom to fit everything. Redraw.
+	 */
+	public void zoomAll()
+		{
+		NucLineage lin=getLineage();
+		getLinState(lin).zoomAll(lin);
+		repaint();
+		}
+	
+	
+
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Cached keyframes ////////////////////////////////////////
@@ -201,7 +322,8 @@ public class LineageView extends JPanel
 	 */
 	private void drawKeyFrame(Graphics g, int x, int y, String nuc, EvDecimal frame)
 		{
-		g.drawOval(x-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
+		//g.drawOval(x-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
+		g.drawLine(x, y-keyFrameSize, x, y+keyFrameSize);
 		KeyFramePos f=new KeyFramePos();
 		f.frame=frame;
 		f.x=x;
@@ -263,44 +385,17 @@ public class LineageView extends JPanel
 		});
 		}
 
-	/*
-	public void goRoot()
-		{	
-		Tuple<EvDecimal, String> found=currentLin.firstFrameOfLineage();
-		if(found!=null)
-			goInternalNuc(getNucinfo(found.snd()),camera);
-		}
-
-	public void goSelected()
-		{
-		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
-		if(!selectedNuclei.isEmpty())
-			{
-			String nucName=selectedNuclei.iterator().next().snd();
-			Internal internal=getNucinfo(nucName);
-			goInternalNuc(internal, camera);
-			}
-		}
-	private void goInternalNuc(Internal internal, Camera cam)
-		{
-		cam.camVY+=internal.getLastVY(cam)-cam.getVirtualHeight()/2;
-		cam.camVX+=internal.getLastVXstart(cam)-cam.getVirtualWidth()/2;
-		repaint();
-		}
-	*/
-	
-
 	
 	
 	public void foldAll()
 		{
-		for(String nucName:getRootNuc())
+		for(String nucName:getRootNuc(getLineage()))
 			getLinState(currentLin).recursiveExpand(nucName, false, currentLin);
 		repaint();
 		}
 	public void unfoldAll()
 		{
-		for(String nucName:getRootNuc())
+		for(String nucName:getRootNuc(getLineage()))
 			getLinState(currentLin).recursiveExpand(nucName, true, currentLin);
 		repaint();
 		}
@@ -310,12 +405,12 @@ public class LineageView extends JPanel
 	/**
 	 * Get all root nuclei
 	 */
-	private SortedSet<String> getRootNuc()
+	private static SortedSet<String> getRootNuc(NucLineage lin)
 		{
 		SortedSet<String> list=new TreeSet<String>();
-		if(currentLin!=null)
-			for(String nucName:currentLin.nuc.keySet())
-				if(currentLin.nuc.get(nucName).parent==null)
+		if(lin!=null)
+			for(String nucName:lin.nuc.keySet())
+				if(lin.nuc.get(nucName).parent==null)
 					list.add(nucName);
 		return list;
 		}
@@ -327,7 +422,8 @@ public class LineageView extends JPanel
 	 */
 	public void paintComponent(Graphics g)
 		{
-		LinState linstate=getLinState(getLineage());
+		NucLineage lin=getLineage();
+		LinState linstate=getLinState(lin);
 		
 		//Option: could also put a transform onto g2d
 		
@@ -337,7 +433,7 @@ public class LineageView extends JPanel
 		//Rotate image, part 1
 		Graphics2D h;
 		BufferedImage bim=null;
-		if(linstate.showHorizontalTree)
+		if(showHorizontalTree)
 			h=(Graphics2D)g;
 		else
 			{
@@ -348,7 +444,7 @@ public class LineageView extends JPanel
 			}
 
 		//paint everything
-		paintEverything((Graphics2D)h, true, linstate, width, height);
+		paintToGraphics((Graphics2D)h, true, lin, linstate, width, height);
 
 
 		//Rotate image part 2
@@ -363,8 +459,15 @@ public class LineageView extends JPanel
 		
 		}
 	
-	
-	private void paintEverything(Graphics2D h, boolean toScreen, LinState linstate, int width, int height)
+	/**
+	 * Render to graphics area
+	 * @param h
+	 * @param toScreen
+	 * @param linstate
+	 * @param width
+	 * @param height
+	 */
+	public void paintToGraphics(Graphics2D h, boolean toScreen, NucLineage lin, LinState linstate, int width, int height)
 		{
 		//Redo list of clickable regions
 		regionClickList.clear();
@@ -378,30 +481,317 @@ public class LineageView extends JPanel
 		if(toScreen)
 			drawFrameLines(h,linstate, width, height);
 
-		
-		HierarchicalPainter hpainter=new HierarchicalPainter();
-		
-		//Update tree structure
-		double displacement=0;
-		for(String nucName:getRootNuc())
-			{
-			HierarchicalPainter.DrawNode dnode=new HierarchicalPainter.DrawNodeContainer();
-			displacement+=updateTreeFormat(h,nucName,linstate, displacement,dnode);
-			hpainter.topNodes.add(dnode);
-			}
-		System.out.println("cam "+linstate.cam);
-		
 		//Draw all trees
+		HierarchicalPainter hpainter=new HierarchicalPainter();
+		layoutAllTrees(lin, linstate, hpainter, width, height);
 		hpainter.paint(h, width, height, linstate.cam);
-		
-		System.out.println("bb");
-		System.out.println(hpainter.getTotalBoundingBox());
+		//System.out.println("cam "+linstate.cam);
+		//System.out.println("bb "+hpainter.getTotalBoundingBox());
 		
 		//Draw scale bar
 		drawScalebar(h);
 		}
 	
+
 	
+	
+	private boolean showExpAtAll()
+		{
+		return showExpDot || showExpSolid || showExpLine;
+		}
+	
+
+	private void layoutAllTrees(NucLineage lin, LinState linstate, HierarchicalPainter hpainter, int width, int height)
+		{
+		double displacement=0;
+		for(String nucName:getRootNuc(getLineage()))
+			{
+			HierarchicalPainter.DrawNode dnode=new HierarchicalPainter.DrawNodeContainer();
+			displacement=layoutTreeRecursive(lin, nucName,linstate, displacement,dnode);
+			hpainter.topNodes.add(dnode);
+			}
+		}
+	
+	/**
+	 * Prepare rendering sizes
+	 */
+	private double layoutTreeRecursive(NucLineage lin, final String nucName, final LinState linstate, 
+			double displacement, HierarchicalPainter.DrawNode parentDrawNode)
+		{		
+		final NucState thisInternal=linstate.getNucState(nucName);
+		final NucLineage.Nuc nuc=lin.nuc.get(nucName);
+
+		HierarchicalPainter.DrawNodeContainer thisDrawNode=new HierarchicalPainter.DrawNodeContainer();
+
+		double y1=displacement;
+		
+		//Total width of children. 0 if none expanded
+		double curChildOffset=displacement;
+		
+		final double fontHeightAvailable;
+		
+		//Only recurse if children are visible
+		if(thisInternal.isExpanded && !nuc.child.isEmpty())
+			{
+			//Sum up total width for children
+			for(String cName:nuc.child)
+				{
+				double newDisp=layoutTreeRecursive(lin, cName,linstate, curChildOffset, thisDrawNode);
+				curChildOffset=newDisp;
+				}
+			//Set displacements
+			/*
+			if(nuc.child.size()==1)
+				{
+				Internal cInternal=linstate.getNucinfo(nuc.child.first());
+				thisInternal.centerY=cInternal.centerY; //TODO improve
+				}
+			else*/
+			
+				//Use the average
+				double sum=0;
+				double miny=Double.MAX_VALUE;
+				double maxy=Double.MIN_VALUE;
+				for(String cName:nuc.child)
+					{
+					NucState cInternal=linstate.nucInternal.get(cName);
+					if(cInternal.centerY<miny) miny=cInternal.centerY;
+					if(cInternal.centerY>maxy) maxy=cInternal.centerY;
+					sum+=cInternal.centerY;
+					}
+				thisInternal.centerY=sum/nuc.child.size();
+				fontHeightAvailable=maxy-miny;
+				
+				//TODO handle only 1 child
+
+				
+			}
+		else
+			{
+			thisInternal.centerY=curChildOffset+sizeOfBranch/2;
+			curChildOffset+=sizeOfBranch;
+			fontHeightAvailable=sizeOfBranch;
+			}
+		double y2=curChildOffset;
+		
+		EvDecimal firstFrame=nuc.getFirstFrame();
+		double x1;
+		if(firstFrame!=null)
+			x1=firstFrame.doubleValue();
+		else
+			{
+			if(nuc.parent==null)
+				x1=0;
+			else
+				{
+				x1=linstate.getNucState(nuc.parent).endX+60; //Better than nothing
+				}
+			}
+
+		
+		EvDecimal lastFrame=nuc.getLastFrame();
+		double x2;
+		if(lastFrame!=null)
+			x2=lastFrame.doubleValue();
+		else
+			x2=x1+60; //Better than nothing
+		
+		thisInternal.endX=x2;
+		thisInternal.startX=x1;
+
+		
+		/////////// need to extend x2 here to children start pos that is furthest away ////////////////
+		
+		//Attach a renderer of this branch
+		final NucSel nucsel=new NucSel(lin,nucName);
+		HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2){
+			public void paint(Graphics g, double width, double height, Camera cam)
+				{
+				int spaceAvailable=cam.toScreenY(fontHeightAvailable)-cam.toScreenY(0);
+				
+				g.setColor(Color.red);
+				int thisMidY=cam.toScreenY(thisInternal.centerY);
+				int thisStartX=cam.toScreenX(thisInternal.startX);
+				int thisEndX=cam.toScreenX(thisInternal.endX);
+
+				//Line and keyframes
+				g.drawLine(thisStartX, thisMidY, thisEndX, thisMidY);
+				if(nuc.getLastFrame()==null)
+					drawNucExtendsToInfinity(g, thisEndX, thisMidY);				
+				if(getShowKeyFrames())
+					{
+					//Possible to optimize, but not by much
+					for(EvDecimal frame:nuc.pos.keySet())
+						drawKeyFrame(g, cam.toScreenX(frame.doubleValue()), thisMidY, nucsel.snd(), frame);
+					}
+
+				//Lines to children
+				if(!nuc.child.isEmpty())
+					{
+					for(String cname:nuc.child)
+						{
+						NucState cstate=linstate.getNucState(cname);
+						int cStartX=cam.toScreenX(cstate.startX);
+						int cStartY=cam.toScreenY(cstate.centerY);
+						g.drawLine(thisEndX, thisMidY, cStartX, cStartY);
+						}
+					
+					drawExpanderSymbol(g, nucName, thisEndX, thisMidY, thisInternal.isExpanded, spaceAvailable);
+					}
+				
+				
+				//Label
+				if(getShowLabel())
+					{
+					boolean canDrawLabel=true;
+					if(spaceAvailable<16)
+						canDrawLabel=false;
+					if(canDrawLabel)
+						drawNucName(g, "", nucsel, thisMidY, thisEndX);
+					}
+
+				}
+		};
+		thisDrawNode.addSubNode(newnode);
+		
+		parentDrawNode.addSubNode(thisDrawNode);
+		return y2;
+		}
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// Tree pos ////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	
+	/**
+	 * Cached information about nuclei
+	 */
+	public static class NucState
+		{
+		public boolean isExpanded=true;
+		//public int sizer=0;
+		//public int centerDisplacement=0;
+		
+		public double centerY;
+		public double startX, endX;
+		}
+
+	
+
+	
+	/** List of all mouse click handlers */
+	LinkedList<ClickRegion> regionClickList=new LinkedList<ClickRegion>();
+	
+	/**
+	 * Handle mouse click in view
+	 */
+	public void clickRegion(MouseEvent e)
+		{
+//		long startTime=System.currentTimeMillis();
+		ClickRegion r=getClickRegion(e);
+		if(r!=null)
+			r.clickRegion(e);
+		else if(SwingUtilities.isLeftMouseButton(e))
+			EvSelection.unselectAll();
+			//NucLineage.selectedNuclei.clear();
+		}
+
+	public ClickRegion getClickRegion(MouseEvent e)
+		{
+		int mousex,mousey;
+		//NucLineage lin=getLineage();
+		if(/*getLinState(lin).*/showHorizontalTree)
+			{
+			mousex=e.getX();
+			mousey=e.getY();
+			}
+		else
+			{
+			mousex=e.getY();
+			mousey=e.getX();
+			}
+		for(ClickRegion r:regionClickList)
+			if(mousex>=r.x && mousey>=r.y && mousex<=r.x+r.w && mousey<=r.y+r.h)
+				return r;
+		return null;
+		}
+	
+	/**
+	 * Mouse click handler
+	 */
+	public static abstract class ClickRegion
+		{
+		public int x=0,y=0,w=0,h=0;
+		public abstract void clickRegion(MouseEvent e);
+		public abstract String getHoverString();
+		}
+
+	/**
+	 * Mouse click handler: on a name panel
+	 */
+	public class ClickRegionName extends ClickRegion
+		{
+		public String nucname;
+		public ClickRegionName(String nucname, int x, int y, int w, int h)
+			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
+		public void clickRegion(MouseEvent e)
+			{
+			if(currentLin!=null)
+				{
+				//System.out.println("here "+nucname+"   "+SwingUtilities.isLeftMouseButton(e)+"  "+currentLin);
+				//long startTime=System.currentTimeMillis();
+				if(SwingUtilities.isLeftMouseButton(e))
+					NucLineage.mouseSelectNuc(new NucSel(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+				//System.out.println("time "+(System.currentTimeMillis()-startTime));
+				}
+			}
+		public String getHoverString()
+			{
+			if(currentLin!=null)
+				{
+				NucLineage.Nuc nuc=currentLin.nuc.get(nucname);
+				if(nuc!=null)
+					return nuc.description;
+				}
+			return null;
+			}
+		}
+	
+	
+	/**
+	 * Mouse click handler: on an expander
+	 */
+	private class ClickRegionExpander extends ClickRegion
+		{
+		String nucname;
+		public ClickRegionExpander(String nucname, int x, int y, int w, int h)
+			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
+		public void clickRegion(MouseEvent e)
+			{
+			NucLineage lin=getLineage();
+			LinState linstate=getLinState(lin);
+			NucState internal=linstate.getNucState(nucname);
+			if(SwingUtilities.isLeftMouseButton(e))
+				internal.isExpanded=!internal.isExpanded;
+			else if(SwingUtilities.isRightMouseButton(e))
+				linstate.recursiveExpand(nucname, !internal.isExpanded, lin);
+			repaint();
+			}
+		public String getHoverString()
+			{
+			return null;
+			}
+		}
+
+
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// Helpers for rendering ///////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	
+
 	/**
 	 * Adaptively draw scale bar
 	 */
@@ -457,7 +847,7 @@ public class LineageView extends JPanel
 			//Use sane interval
 			int numSubDiv=2;
 			int pow=(int)Math.round(Math.log(impreciseDeltaFrame.doubleValue())/Math.log(numSubDiv));
-			System.out.println("pow "+pow);
+			//System.out.println("pow "+pow);
 			EvDecimal dF;
 			if(pow>=0)
 				{
@@ -491,73 +881,7 @@ public class LineageView extends JPanel
 			}
 		}
 	
-	/**
-	 * Draw expression profile
-	 */
-	private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, LinState linstate, int width, int height)
-		{
-//		int colorIndex=-1;
-//		EvColor colorList[]=EvColor.colorList;
-		if(showExpAtAll())
-			for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
-				if(!e.getValue().level.isEmpty())
-					{
-					if(e.getKey().equals("divDev")) //Division time deviation, special rendering
-						{
-						int y1=midr+expanderSize+2;
-						int y2=y1-1;
-						
-						double level=e.getValue().level.values().iterator().next()*frameDist;
-						int x1=endc-(int)level;
-						int x2=endc+(int)level;
-						
-						g.setColor(Color.BLACK);
-						g.drawLine(x1, y1, x2, y1);
-						g.drawLine(x1, y1, x1, y2);
-						g.drawLine(x2, y1, x2, y2);
-						}
-					else //Ordinary level curve
-						{
-//						colorIndex=(colorIndex+1)%colorList.length;
 
-						//Only draw if potentially visible
-						EvDecimal minframe=e.getValue().level.firstKey();
-						EvDecimal maxframe=e.getValue().level.lastKey();
-						boolean visible=(midr>=0 && linstate.cam.toScreenX(maxframe.doubleValue())>=0 && linstate.cam.toScreenX(minframe.doubleValue())<width &&
-								midr-e.getValue().getMaxLevel()*expScale<height) || !toScreen;
-						if(visible)
-							{
-							g.setColor(e.getValue().expColor);
-							boolean hasLastCoord=false;
-							int lastX=0, lastY=0;
-							for(Map.Entry<EvDecimal, Double> ve:e.getValue().level.entrySet())
-								{
-								int y=(int)(-ve.getValue()*expScale+midr);
-								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
-								if(hasLastCoord)
-									{
-									if(showExpLine)
-										g.drawLine(lastX, lastY, x, y);
-									if(showExpSolid)
-										g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
-									}
-								if(showExpDot)
-									g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
-								hasLastCoord=true;
-								lastX=x;
-								lastY=y;
-								}
-							}
-						}
-					}
-		}
-	
-	
-	private boolean showExpAtAll()
-		{
-		return showExpDot || showExpSolid || showExpLine;
-		}
-	
 	/**
 	 * Recursive function to draw a tree
 	 * @param internal Which node to recurse from
@@ -693,7 +1017,7 @@ public class LineageView extends JPanel
 	/**
 	 * Draw arrow pointing out that the nucleus continue existing
 	 */
-	private void drawNucEnd(Graphics g, int endc, int midr)
+	private void drawNucExtendsToInfinity(Graphics g, int endc, int midr)
 		{
 		int size=10;
 		g.setColor(Color.BLUE);
@@ -706,12 +1030,12 @@ public class LineageView extends JPanel
 	/**
 	 * Draw text name
 	 */
-	private void drawNucName(Graphics g, String prefix, NucSel nucPair, int midr, int endc)
+	private void drawNucName(Graphics g, String prefix, NucSel nucPair, int midy, int x)
 		{
 		String nucName=nucPair.snd();
 		int fontHeight=g.getFontMetrics().getHeight();
 		int fontWidth=g.getFontMetrics().stringWidth(prefix+nucName);
-		int textc=endc+5;
+		int textc=x+5;
 		Graphics2D g2=(Graphics2D)g;
 		if(EvSelection.isSelected(nucPair))
 			g2.setColor(Color.RED);
@@ -719,7 +1043,7 @@ public class LineageView extends JPanel
 			g2.setColor(Color.BLUE);
 		
 		//Graphics
-		int textr=midr+fontHeight/4;
+		int textr=midy+fontHeight/4+2;
 		g2.translate(textc, textr);
 		g2.drawString(nucName, 0, 0);
 		g2.translate(-textc, -textr);
@@ -734,250 +1058,90 @@ public class LineageView extends JPanel
 	 * @param y Mid y coordinate
 	 * @param expanded If a + or - should be shown
 	 */
-	private void drawExpanderSymbol(Graphics g, String nucname, int x, int y, boolean expanded)
+	private void drawExpanderSymbol(Graphics g, String nucname, int x, int y, boolean expanded, int spaceAvailable)
 		{
-		//Do graphics
-		g.setColor(Color.WHITE);
-		g.fillRect(x-expanderSize, y-expanderSize, 2*expanderSize, 2*expanderSize);
-		g.setColor(Color.BLACK);
-		g.drawRect(x-expanderSize, y-expanderSize, 2*expanderSize, 2*expanderSize);		
-		g.drawLine(x-expanderSize, y, x+expanderSize,y);
-		if(!expanded)
-			g.drawLine(x, y+expanderSize, x,y-expanderSize);
-		//Make it clickable
-		regionClickList.add(new ClickRegionExpander(nucname, x-expanderSize, y-expanderSize, 2*expanderSize,2*expanderSize));
+		if(spaceAvailable>expanderSize*2+1)
+			{
+			//Do graphics
+			g.setColor(Color.WHITE);
+			g.fillRect(x-expanderSize, y-expanderSize, 2*expanderSize, 2*expanderSize);
+			g.setColor(Color.BLACK);
+			g.drawRect(x-expanderSize, y-expanderSize, 2*expanderSize, 2*expanderSize);		
+			g.drawLine(x-expanderSize, y, x+expanderSize,y);
+			if(!expanded)
+				g.drawLine(x, y+expanderSize, x,y-expanderSize);
+			//Make it clickable
+			regionClickList.add(new ClickRegionExpander(nucname, x-expanderSize, y-expanderSize, 2*expanderSize,2*expanderSize));
+			}
 		}
 	
-
 	
-	/**
-	 * Prepare rendering sizes
-	 */
-	private double updateTreeFormat(Graphics g, String nucName, LinState linstate, double displacement, HierarchicalPainter.DrawNode parentDrawNode)
-		{		
-		final Internal thisInternal=linstate.getNucinfo(nucName);
-		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
+	
 
-		HierarchicalPainter.DrawNodeContainer thisDrawNode=new HierarchicalPainter.DrawNodeContainer();
 
-		double y1=displacement;
-		
-		
-		
-		//Total width of children. 0 if none expanded
-		double curChildOffset=displacement;
-		
-		curChildOffset+=2; //Temp
-		
-		//Only recurse if children are visible
-		if(thisInternal.expanded)
-			{
-			//Sum up total width for children
-			for(String cName:nuc.child)
+
+
+
+/**
+ * Draw expression profile
+ */
+private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, LinState linstate, int width, int height)
+	{
+//	int colorIndex=-1;
+//	EvColor colorList[]=EvColor.colorList;
+	if(showExpAtAll())
+		for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
+			if(!e.getValue().level.isEmpty())
 				{
-				double newDisp=updateTreeFormat(g,cName,linstate, curChildOffset, thisDrawNode);
-				curChildOffset+=newDisp;
-				}
-			//Set displacements
-			/*
-			if(nuc.child.size()==1)
-				{
-				Internal cInternal=linstate.getNucinfo(nuc.child.first());
-				thisInternal.centerY=cInternal.centerY; //TODO improve
-				}
-			else*/
-			if(nuc.child.isEmpty())
-				{
-				thisInternal.centerY=displacement;
-				}
-			else
-				{
-				//Use the average
-				double sum=0;
-				for(String cName:nuc.child)
+				if(e.getKey().equals("divDev")) //Division time deviation, special rendering
 					{
-					Internal cInternal=linstate.nucInternal.get(cName);
-					sum+=cInternal.centerY;
+					int y1=midr+expanderSize+2;
+					int y2=y1-1;
+					
+					double level=e.getValue().level.values().iterator().next();// *frameDist; TODO
+					int x1=endc-(int)level;
+					int x2=endc+(int)level;
+					
+					g.setColor(Color.BLACK);
+					g.drawLine(x1, y1, x2, y1);
+					g.drawLine(x1, y1, x1, y2);
+					g.drawLine(x2, y1, x2, y2);
 					}
-				thisInternal.centerY=sum/nuc.child.size();
+				else //Ordinary level curve
+					{
+//					colorIndex=(colorIndex+1)%colorList.length;
+
+					//Only draw if potentially visible
+					EvDecimal minframe=e.getValue().level.firstKey();
+					EvDecimal maxframe=e.getValue().level.lastKey();
+					boolean visible=(midr>=0 && linstate.cam.toScreenX(maxframe.doubleValue())>=0 && linstate.cam.toScreenX(minframe.doubleValue())<width &&
+							midr-e.getValue().getMaxLevel()*expScale<height) || !toScreen;
+					if(visible)
+						{
+						g.setColor(e.getValue().expColor);
+						boolean hasLastCoord=false;
+						int lastX=0, lastY=0;
+						for(Map.Entry<EvDecimal, Double> ve:e.getValue().level.entrySet())
+							{
+							int y=(int)(-ve.getValue()*expScale+midr);
+							int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
+							if(hasLastCoord)
+								{
+								if(showExpLine)
+									g.drawLine(lastX, lastY, x, y);
+								if(showExpSolid)
+									g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
+								}
+							if(showExpDot)
+								g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
+							hasLastCoord=true;
+							lastX=x;
+							lastY=y;
+							}
+						}
+					}
 				}
-			}
-		else
-			{
-			thisInternal.centerY=displacement;
-			}
-		double y2=curChildOffset;
-		
-		EvDecimal lastFrame=nuc.getLastFrame();
-		double x2;
-		if(lastFrame!=null)
-			x2=lastFrame.doubleValue();
-		else
-			x2=0; //Use child
-		
-		thisInternal.endX=x2;
-		
-		EvDecimal firstFrame=nuc.getFirstFrame();
-		double x1;
-		if(firstFrame!=null)
-			x1=firstFrame.doubleValue();
-		else
-			x1=x2-60; //Better than nothing
-
-		thisInternal.startX=x1;
-		
-		//Compute width for this node
-//		int fontHeight=g.getFontMetrics().getHeight()*2;
-		//TODO enlarge if needed.
-		
-		
-		
-		HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2){
-			public void paint(Graphics g, double width, double height, Camera cam)
-				{
-				g.setColor(Color.red);
-				int y=cam.toScreenY(thisInternal.centerY);
-				int x1=cam.toScreenX(thisInternal.startX);
-				int x2=cam.toScreenY(thisInternal.endX);
-
-				//System.out.println("y "+y+"  "+thisInternal.centerY);
-				
-				g.drawLine(x1, y, x2, y);
-				
-				}
-		};
-		thisDrawNode.addSubNode(newnode);
-		
-		parentDrawNode.addSubNode(thisDrawNode);
-		return y2;
-		}
-	
-	
-	/////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// Tree pos ////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////////
-
-	
-	/**
-	 * Cached information about nuclei
-	 */
-	public static class Internal
-		{
-		public boolean expanded=true;
-		//public int sizer=0;
-		//public int centerDisplacement=0;
-		
-		public double centerY;
-		public double startX, endX;
-		}
-
-	
-
-	
-	/** List of all mouse click handlers */
-	LinkedList<ClickRegion> regionClickList=new LinkedList<ClickRegion>();
-	
-	/**
-	 * Handle mouse click in view
-	 */
-	public void clickRegion(MouseEvent e)
-		{
-		ClickRegion r=getClickRegion(e);
-		if(r!=null)
-			r.clickRegion(e);
-		else if(SwingUtilities.isLeftMouseButton(e))
-			EvSelection.unselectAll();
-			//NucLineage.selectedNuclei.clear();
-		BasicWindow.updateWindows();
-		}
-
-	public ClickRegion getClickRegion(MouseEvent e)
-		{
-		int mousex,mousey;
-		NucLineage lin=getLineage();
-		if(getLinState(lin).showHorizontalTree)
-			{
-			mousex=e.getX();
-			mousey=e.getY();
-			}
-		else
-			{
-			mousex=e.getY();
-			mousey=e.getX();
-			}
-		for(ClickRegion r:regionClickList)
-			if(mousex>=r.x && mousey>=r.y && mousex<=r.x+r.w && mousey<=r.y+r.h)
-				return r;
-		return null;
-		}
-	
-	/**
-	 * Mouse click handler
-	 */
-	public static abstract class ClickRegion
-		{
-		public int x=0,y=0,w=0,h=0;
-		public abstract void clickRegion(MouseEvent e);
-		public abstract String getHoverString();
-		}
-
-	/**
-	 * Mouse click handler: on a name panel
-	 */
-	public class ClickRegionName extends ClickRegion
-		{
-		public String nucname;
-		public ClickRegionName(String nucname, int x, int y, int w, int h)
-			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
-		public void clickRegion(MouseEvent e)
-			{
-			if(currentLin!=null)
-				{
-				//System.out.println("here "+nucname+"   "+SwingUtilities.isLeftMouseButton(e)+"  "+currentLin);
-				if(SwingUtilities.isLeftMouseButton(e))
-					NucLineage.mouseSelectNuc(new NucSel(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
-				}
-			BasicWindow.updateWindows();
-			}
-		public String getHoverString()
-			{
-			if(currentLin!=null)
-				{
-				NucLineage.Nuc nuc=currentLin.nuc.get(nucname);
-				if(nuc!=null)
-					return nuc.description;
-				}
-			return null;
-			}
-		}
-	
-	
-	/**
-	 * Mouse click handler: on an expander
-	 */
-	private class ClickRegionExpander extends ClickRegion
-		{
-		String nucname;
-		public ClickRegionExpander(String nucname, int x, int y, int w, int h)
-			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
-		public void clickRegion(MouseEvent e)
-			{
-			NucLineage lin=getLineage();
-			LinState linstate=getLinState(lin);
-			Internal internal=linstate.getNucinfo(nucname);
-			if(SwingUtilities.isLeftMouseButton(e))
-				internal.expanded=!internal.expanded;
-			else if(SwingUtilities.isRightMouseButton(e))
-				linstate.recursiveExpand(nucname, !internal.expanded, lin);
-			repaint();
-			}
-		public String getHoverString()
-			{
-			return null;
-			}
-		}
-
-
-	
-	
 	}
+
+
+}

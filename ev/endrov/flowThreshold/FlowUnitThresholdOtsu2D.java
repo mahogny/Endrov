@@ -56,7 +56,7 @@ public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		
 		AnyEvImage out=new EvOpThresholdOtsu2D(Threshold2D.MASK).exec1Untyped(a);
 		lastOutput.put("out", out);
