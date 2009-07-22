@@ -34,7 +34,7 @@ public class HierarchicalPainter
 		
 		public int toScreenY(double y)
 			{
-			return (int)(y*zoomX-cameraY);
+			return (int)(y*zoomY-cameraY);
 			}
 		
 		public double toWorldX(double x)
@@ -55,13 +55,49 @@ public class HierarchicalPainter
 			{
 			return y;
 			}
-		
+
+		public double scaleWorldDistX(double x)
+			{
+			return x*zoomX;
+			}
+		public double scaleWorldDistY(double y)
+			{
+			return y*zoomY;
+			}
+
 		@Override
 		public String toString()
 			{
 			return "( xy "+cameraX+","+cameraY+" zoom "+zoomX+","+zoomY+")";
 			}
-		
+
+		/**
+		 * Set camera so that it covers given area
+		 */
+		public void showArea(BoundingBox bb, int width, int height)
+			{
+			cameraX=bb.x1*zoomX;
+			cameraY=bb.y1*zoomY;
+			zoomX=(width+cameraX)/bb.x2;
+			zoomY=(height+cameraY)/bb.y2;
+			}
+
+		/**
+		 * Make screen coordinate correspond to world coordinate by moving camera
+		 */
+		public void panCorrespondenceX(double screenX, double worldX)
+			{
+			cameraX=worldX*zoomX-screenX;
+			}
+
+		/**
+		 * Make screen coordinate correspond to world coordinate by moving camera
+		 */
+		public void panCorrespondenceY(double screenY, double worldY)
+			{
+			cameraY=worldY*zoomY-screenY;
+			}
+
 		}
 	
 	
@@ -89,7 +125,9 @@ public class HierarchicalPainter
 
 		public boolean isDisjunct(BoundingBox bb)
 			{
-			return bb.x1>x2 || bb.y1>y2 || bb.x2<x1 || bb.y2<y2;
+			return 
+			bb.x1>x2 || bb.x2<x1 || 
+			bb.y1>y2 || bb.y2<y1;
 			}
 		
 		public boolean isOverlapping(BoundingBox bb)
@@ -196,17 +234,18 @@ public class HierarchicalPainter
 	public void paint(Graphics g, double width, double height, Camera cam)
 		{
 		BoundingBox screen=new BoundingBox(cam.toWorldX(0),cam.toWorldY(0),cam.toWorldX(width),cam.toWorldY(height));
+		//System.out.println("screenbb "+screen);
 		int totDraw=0;
 		for(DrawNode n:topNodes)
 			totDraw+=paint_(g, width, height, cam, screen, n);
-		System.out.println("Drawn regions: "+totDraw);
+		//System.out.println("Drawn regions: "+totDraw);
 		}
 	
 	public int paint_(Graphics g, double width, double height, Camera cam, 
 			BoundingBox screenBB, DrawNode n)
 		{
 		int totDraw=0;
-		if(screenBB.isOverlapping(screenBB))
+		if(screenBB.isOverlapping(n.bb))
 			{
 			//Draw this component
 			n.paint(g, width, height, cam);

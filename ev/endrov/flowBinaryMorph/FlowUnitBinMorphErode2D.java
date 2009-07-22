@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: erode 2D
@@ -55,9 +56,8 @@ public class FlowUnitBinMorphErode2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		BinMorphKernel kernel=(BinMorphKernel)flow.getInputValue(this, exec, "kernel");
-		checkNotNull(a,kernel);
 
 		lastOutput.put("out", new EvOpBinMorphErode2D(kernel).exec1Untyped(a));
 		}

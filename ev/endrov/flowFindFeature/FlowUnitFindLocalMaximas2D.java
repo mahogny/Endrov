@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: Find local maximas
@@ -56,7 +57,7 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 
 		lastOutput.put("out", new EvOpFindLocalMaximas2D().exec1Untyped(a));
 		}

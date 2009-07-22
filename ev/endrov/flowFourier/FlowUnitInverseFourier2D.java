@@ -57,7 +57,7 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object inReal=flow.getInputValue(this, exec, "inReal");
+		AnyEvImage inReal=(AnyEvImage)flow.getInputValue(this, exec, "inReal");
 		Maybe<Object> inImag=flow.getInputValueMaybe(this, exec, "inImag");
 //		Object inImag=flow.getInputValue(this, exec, "inImag");
 		
@@ -71,7 +71,7 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexInverse2D(true).execUntyped(inReal, inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexInverse2D(true).execUntyped(inReal, (AnyEvImage)inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

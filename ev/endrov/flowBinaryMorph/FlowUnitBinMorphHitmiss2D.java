@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: white tophat 2D
@@ -56,10 +57,9 @@ public class FlowUnitBinMorphHitmiss2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		BinMorphKernel kernelHit=(BinMorphKernel)flow.getInputValue(this, exec, "kernelHit");
 		BinMorphKernel kernelMiss=(BinMorphKernel)flow.getInputValue(this, exec, "kernelHit");
-		checkNotNull(a,kernelHit,kernelMiss);
 
 		lastOutput.put("out", new EvOpBinMorphHitmiss2D(kernelHit,kernelMiss).exec1Untyped(a));
 		}

@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: average in Z direction
@@ -53,8 +54,7 @@ public class FlowUnitAverageZ extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
-		checkNotNull(a);
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		lastOutput.put("out", new EvOpAverageZ().exec1Untyped(a));
 		}
 

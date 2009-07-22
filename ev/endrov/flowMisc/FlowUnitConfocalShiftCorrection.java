@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: shift every second line to correct for confocal scanning
@@ -54,7 +55,7 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number b=(Number)flow.getInputValue(this, exec, "shift");
 		lastOutput.put("out", new EvOpConfocalShiftCorrection(b).exec1Untyped(a));
 		}

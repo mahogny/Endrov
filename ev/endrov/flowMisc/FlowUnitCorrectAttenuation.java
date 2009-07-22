@@ -13,6 +13,7 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.AnyEvImage;
 
 /**
  * Flow unit: correct for light attenuation
@@ -53,7 +54,7 @@ public class FlowUnitCorrectAttenuation extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object a=flow.getInputValue(this, exec, "image");
+		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		lastOutput.put("out", new EvOpCorrectAttenuation().exec1Untyped(a));
 		}
 

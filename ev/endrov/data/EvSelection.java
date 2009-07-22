@@ -5,7 +5,8 @@ import java.util.HashSet;
 import endrov.basicWindow.EvColor;
 
 /**
- * Common selection system.  
+ * Common selection system. Does not attempt to update windows, this is the
+ * duty of the callee.
  * 
  * @author Johan Henriksson
  *

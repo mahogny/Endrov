@@ -57,10 +57,8 @@ public class FlowUnitFourier3D extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
-		Object inReal=flow.getInputValue(this, exec, "inReal");
+		AnyEvImage inReal=(AnyEvImage)flow.getInputValue(this, exec, "inReal");
 		Maybe<Object> inImag=flow.getInputValueMaybe(this, exec, "inImag");
-		
-		//checkNotNull(inReal);
 		
 		if(!inImag.hasValue())
 			{
@@ -70,7 +68,7 @@ public class FlowUnitFourier3D extends FlowUnitBasic
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexForward3D().execUntyped(inReal, inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexForward3D().execUntyped(inReal, (AnyEvImage)inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}
