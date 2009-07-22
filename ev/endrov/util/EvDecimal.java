@@ -83,6 +83,13 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		return dec.compareTo(val.dec);
 		}
 
+	/**
+	 * Divide, keep the integral part (round down)
+	 */
+	public EvDecimal divideToIntegralValue(EvDecimal val)
+		{
+		return new EvDecimal(dec.divideToIntegralValue(val.dec));
+		}
 
 	public Tuple<EvDecimal,EvDecimal> divideRemainder(EvDecimal val)
 		{

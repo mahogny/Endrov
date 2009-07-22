@@ -5,15 +5,13 @@ import java.util.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
-
 import javax.swing.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
+import endrov.lineageWindow2.HierarchicalPainter.Camera;
 import endrov.nuc.*;
 import endrov.util.EvDecimal;
-import endrov.util.Tuple;
 
 
 /**
@@ -76,31 +74,113 @@ public class LineageView extends JPanel
 		public HierarchicalPainter.Camera cam=new HierarchicalPainter.Camera();
 		public TreeMap<String, Internal> nucInternal=new TreeMap<String, Internal>();
 		
+		public boolean showHorizontalTree=true;	
+
 		
+		//Natural x-dimension: frames in seconds
+		
+		//No natural y-dimension
 		
 		//TODO
+		
+		/**
+		 * Get information structure about nucleus
+		 * @param nuc Name of nucleus
+		 * @return Existing structure or a new one
+		 */
+		public Internal getNucinfo(String nuc)
+			{
+			Internal i=nucInternal.get(nuc);
+			if(i==null)
+				{
+				i=new Internal();
+				nucInternal.put(nuc, i);
+				}
+			return i;
+			}
+		
+		
+		public void recursiveExpand(String nucName, boolean expand, NucLineage currentLin)
+			{
+			if(currentLin!=null)
+				{
+				Internal internal=getNucinfo( nucName);
+				internal.expanded=expand;
+				NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
+				for(String childName:nuc.child)
+					recursiveExpand(childName, expand, currentLin);
+				}
+			}
+
+
 		}
 
 	/** 
 	 * Get draw cache for currently selected lineage 
 	 */
-	private LinState getDrawCache()
+	private LinState getLinState()
 		{
 		return getLinState(currentLin);
 		}
 	
 	/** 
-	 * Get draw cache for a lineage 
+	 * Get state of lineage, never null 
 	 */
 	private LinState getLinState(NucLineage lin)
 		{
 		LinState dc=linState.get(lin);
 		if(dc==null)
-			linState.put(lin, dc=new LinState());
+			linState.put(lin, dc=new LinState()); //TODO should center it
 		return dc;
 		}
 	
 	
+	/*
+	public HierarchicalPainter.Camera getCamera()
+		{
+		return getLinState().cam;
+		}*/
+	
+	public EvDecimal getFrameFromCursor(int mx, int my)
+		{
+		LinState linstate=getLinState();
+		//HierarchicalPainter.Camera cam=getLinState().cam;
+		
+		if(linstate.showHorizontalTree)
+			return new EvDecimal(linstate.cam.toWorldY(my));
+		else
+			return new EvDecimal(linstate.cam.toWorldX(my));
+		}
+	
+	
+	//////////////////// TODO //////////////////
+	
+	public void setFrame(double frame){}
+	public EvDecimal getFrame(){return EvDecimal.ZERO;}
+	public void goRoot(){}
+	public void goSelected(){}
+
+	public void pan(int dx, int dy)
+		{
+		LinState linstate=getLinState();
+		linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(dx);
+		linstate.cam.cameraY-=linstate.cam.scaleScreenDistY(dy);
+		
+		}
+
+	public void zoomX(double factor, int midx)
+		{
+		LinState linstate=getLinState();
+		linstate.cam.zoomX*=factor;
+		}
+
+	public void zoomY(double factor, int midy)
+		{
+		//must rotate TODO
+		LinState linstate=getLinState();
+		linstate.cam.zoomY*=factor;
+		}
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Cached keyframes ////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -155,62 +235,6 @@ public class LineageView extends JPanel
 	
 		
 	
-  /////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// Camera for view /////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////////
-	Camera camera=new Camera();
-	
-	public class Camera
-		{
-		public double camVY, camVX;
-		public boolean showHorizontalTree=true;	
-
-		/** Get width of view as if horizontal */
-		public int getVirtualWidth()
-			{
-			return showHorizontalTree ? getWidth() : getHeight();
-			}
-		/** Get height of view as if horizontal */
-		public int getVirtualHeight()
-			{
-			return showHorizontalTree ? getHeight() : getWidth();
-			}
-		/** Get frame from screen x,y coordinate */
-		public EvDecimal getFrameFromCursor(int x, int y)
-			{
-			return new EvDecimal(showHorizontalTree ? c2f(x) : c2f(y));
-			}
-		/** Convert frame position to coordinate */
-		public int f2c(double f)
-			{
-			return (int)(f*frameDist-camVX);
-			}	
-		/** Convert coordinate to frame position */
-		public int c2f(int c)
-			{
-			return (int)((c+camVX)/frameDist);
-			}
-		
-		
-		/**
-		 * Move according to mouse movement
-		 */
-		public void pan(int dx, int dy)
-			{
-			if(showHorizontalTree)
-				{
-				camVX-=dx;
-				camVY-=dy;
-				}
-			else
-				{
-				camVX-=dy;
-				camVY+=dx;
-				}
-			}
-
-		
-		}
 	
   /////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// The rest ////////////////////////////////////////////////
@@ -238,10 +262,8 @@ public class LineageView extends JPanel
 				}
 		});
 		}
-	
-	/**
-	 * Go to the first root
-	 */
+
+	/*
 	public void goRoot()
 		{	
 		Tuple<EvDecimal, String> found=currentLin.firstFrameOfLineage();
@@ -249,9 +271,6 @@ public class LineageView extends JPanel
 			goInternalNuc(getNucinfo(found.snd()),camera);
 		}
 
-	/**
-	 * Go to one selected nucleus
-	 */
 	public void goSelected()
 		{
 		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
@@ -268,51 +287,24 @@ public class LineageView extends JPanel
 		cam.camVX+=internal.getLastVXstart(cam)-cam.getVirtualWidth()/2;
 		repaint();
 		}
-	
+	*/
 	
 
 	
-	/**
-	 * Change the frame distance (*VX) without moving camera
-	 */
-	public void setFrameDist(double s)
-		{
-		Camera cam=camera;
-		if(s<0.1)	s=0.1; //Not allowed to happen, quick fix
-		double h=cam.getVirtualWidth()/2.0;
-		double curmid=(cam.camVX+h)/frameDist;
-		frameDist=s;
-		cam.camVX=curmid*frameDist-h;
-		}
 	
-	/**
-	 * Change branch scale (*VY) without moving camera
-	 */
-	public void setBranchScale(double s)
+	public void foldAll()
 		{
-		Camera cam=camera;
-		//TODO WRONG FORMULA?
-		double h=cam.getVirtualHeight()/2.0;
-		double curmid=(cam.camVY+h)/branchScale;
-		branchScale=s;
-		cam.camVY=curmid*branchScale-h;
-		}
-
-
-	
-	/** Move camera to show some frame */
-	public void setFrame(double frame)
-		{
-		Camera cam=camera;
-		cam.camVX=frame*frameDist-cam.getVirtualWidth()/2;
+		for(String nucName:getRootNuc())
+			getLinState(currentLin).recursiveExpand(nucName, false, currentLin);
 		repaint();
 		}
-	/** Get frame camera currently looks at */
-	public double getFrame()
+	public void unfoldAll()
 		{
-		Camera cam=camera;
-		return (cam.camVX+cam.getVirtualWidth()/2)/frameDist;
+		for(String nucName:getRootNuc())
+			getLinState(currentLin).recursiveExpand(nucName, true, currentLin);
+		repaint();
 		}
+
 	
 	
 	/**
@@ -327,48 +319,43 @@ public class LineageView extends JPanel
 					list.add(nucName);
 		return list;
 		}
-	
-	/** Fold all trees */
-	public void foldAll()
-		{
-		for(String nucName:getRootNuc())
-			recursiveExpand(nucName, false);
-		repaint();
-		}
-	/** Unfold all trees */
-	public void unfoldAll()
-		{
-		for(String nucName:getRootNuc())
-			recursiveExpand(nucName, true);
-		repaint();
-		}
 
+	
 	
 	/**
 	 * Draw everything
 	 */
 	public void paintComponent(Graphics g)
 		{
-		Camera cam=camera;
+		LinState linstate=getLinState(getLineage());
+		
+		//Option: could also put a transform onto g2d
+		
+		int width=getWidth();
+		int height=getHeight();
+		
 		//Rotate image, part 1
 		Graphics2D h;
 		BufferedImage bim=null;
-		if(cam.showHorizontalTree)
+		if(linstate.showHorizontalTree)
 			h=(Graphics2D)g;
 		else
 			{
-			bim=new BufferedImage(cam.getVirtualWidth(),cam.getVirtualHeight(),BufferedImage.TYPE_3BYTE_BGR);
+			bim=new BufferedImage(getHeight(),getWidth(),BufferedImage.TYPE_3BYTE_BGR);
 			h=(Graphics2D)bim.getGraphics();
+			width=getHeight();
+			height=getWidth();
 			}
-		
-		paintEverything((Graphics2D)h, true,cam);
+
+		//paint everything
+		paintEverything((Graphics2D)h, true, linstate, width, height);
 
 
 		//Rotate image part 2
 		if(bim!=null)
 			{
 			AffineTransform af = new AffineTransform(); 
-			af.translate(cam.getVirtualHeight(), 0);
+			af.translate(getWidth(), 0);
 			af.rotate(Math.PI/2.0);
 			((Graphics2D)g).drawImage(bim, af, null);
 			}
@@ -377,12 +364,7 @@ public class LineageView extends JPanel
 		}
 	
 	
-	public void saveToDisk()
-		{
-	
-		}
-	
-	private void paintEverything(Graphics2D h, boolean toScreen, Camera cam)
+	private void paintEverything(Graphics2D h, boolean toScreen, LinState linstate, int width, int height)
 		{
 		//Redo list of clickable regions
 		regionClickList.clear();
@@ -390,27 +372,31 @@ public class LineageView extends JPanel
 		
 		//Fill background
 		h.setColor(Color.WHITE);
-		h.fillRect(0, 0, cam.getVirtualWidth(), cam.getVirtualHeight());
+		h.fillRect(0, 0, width, height);
 
 		//Draw frame lines
 		if(toScreen)
-			drawFrameLines(h,cam);
+			drawFrameLines(h,linstate, width, height);
 
-		//Update tree structure
-		for(String nucName:getRootNuc())
-			updateTreeFormat(h,nucName);
 		
-		//Draw all trees
-		int displacement=0;
-		boolean first=true;
+		HierarchicalPainter hpainter=new HierarchicalPainter();
+		
+		//Update tree structure
+		double displacement=0;
 		for(String nucName:getRootNuc())
 			{
-			Internal nuc=getNucinfo(nucName);
-			if(first)	first=false; else displacement+=nuc.sizer/2; //I don't like this layout really
-			drawTree((Graphics2D)h, nucName,(int)(displacement+cam.getVirtualHeight()/2-cam.camVY),toScreen,cam); 
-			displacement+=nuc.sizer/2; //maybe really half this and half next?
+			HierarchicalPainter.DrawNode dnode=new HierarchicalPainter.DrawNodeContainer();
+			displacement+=updateTreeFormat(h,nucName,linstate, displacement,dnode);
+			hpainter.topNodes.add(dnode);
 			}
-
+		System.out.println("cam "+linstate.cam);
+		
+		//Draw all trees
+		hpainter.paint(h, width, height, linstate.cam);
+		
+		System.out.println("bb");
+		System.out.println(hpainter.getTotalBoundingBox());
+		
 		//Draw scale bar
 		drawScalebar(h);
 		}
@@ -456,34 +442,51 @@ public class LineageView extends JPanel
 	/**
 	 * Draw the lines for frames, in the background
 	 */
-	public void drawFrameLines(Graphics g, Camera cam)
+	
+	public void drawFrameLines(Graphics2D g, LinState linstate, int width, int height)
 		{
 		if(showFrameLines)
 			{
-			double frameLineSkip=(int)(20/frameDist);
-			if(frameLineSkip<1)
-				frameLineSkip=1;
-			double starti=cam.camVX/frameDist;
-			starti=((int)(starti/frameLineSkip))*frameLineSkip;
+			double startFrame=linstate.cam.toWorldX(0);
+			double endFrame=linstate.cam.toWorldX(width);
 			
-			Graphics2D g2=(Graphics2D)g;
-			double endi=cam.getVirtualWidth()/frameDist+1+frameLineSkip+cam.camVX/frameDist;
-			int height=cam.getVirtualHeight();
-			int textY=height-5;//5
-			for(double i=starti;i<endi;i+=frameLineSkip)
+			int fitMaxLines=width/40;
+			
+			EvDecimal impreciseDeltaFrame=new EvDecimal((endFrame-startFrame)/fitMaxLines);
+			
+			//Use sane interval
+			int numSubDiv=2;
+			int pow=(int)Math.round(Math.log(impreciseDeltaFrame.doubleValue())/Math.log(numSubDiv));
+			System.out.println("pow "+pow);
+			EvDecimal dF;
+			if(pow>=0)
 				{
-				int x=(int)(i*frameDist-cam.camVX);
+				dF=new EvDecimal(numSubDiv).pow(pow);
+				}
+			else 
+				{
+				pow=(int)Math.round(Math.log(impreciseDeltaFrame.doubleValue())/Math.log(10));
+				dF=new EvDecimal("0.1").pow(-pow);
+				}
+			EvDecimal itFirstFrame=new EvDecimal(startFrame).divideToIntegralValue(dF).multiply(dF);
+			EvDecimal itLastFrame=new EvDecimal(endFrame);
+			
+			int textY=height-5;//5
+			for(EvDecimal curFrame=itFirstFrame;curFrame.lessEqual(itLastFrame);curFrame=curFrame.add(dF))
+				{
+				int x=linstate.cam.toScreenX(curFrame.doubleValue());
 				g.setColor(frameLineColor);
 				g.drawLine(x, 0, x, height);
 				g.setColor(frameStringColor);
-				g2.translate(x, textY);
-				g2.rotate(-Math.PI/2);
-				g.drawString(""+(int)i, 0, 0);
-				g2.rotate(Math.PI/2);
-				g2.translate(-x, -textY);
+				g.translate(x, textY);
+				g.rotate(-Math.PI/2);
+				String fs=FrameControl.formatTime(curFrame);
+				g.drawString(fs, 0, 0);
+				g.rotate(Math.PI/2);
+				g.translate(-x, -textY);
 				}
 			g.setColor(curFrameLineColor);
-			int curFrameX=cam.getVirtualWidth()/2;
+			int curFrameX=width/2;
 			g.drawLine(curFrameX, 0, curFrameX, height);
 			}
 		}
@@ -491,7 +494,7 @@ public class LineageView extends JPanel
 	/**
 	 * Draw expression profile
 	 */
-	private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, Camera cam)
+	private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, LinState linstate, int width, int height)
 		{
 //		int colorIndex=-1;
 //		EvColor colorList[]=EvColor.colorList;
@@ -520,8 +523,8 @@ public class LineageView extends JPanel
 						//Only draw if potentially visible
 						EvDecimal minframe=e.getValue().level.firstKey();
 						EvDecimal maxframe=e.getValue().level.lastKey();
-						boolean visible=(midr>=0 && cam.f2c(maxframe.doubleValue())>=0 && cam.f2c(minframe.doubleValue())<cam.getVirtualWidth() &&
-								midr-e.getValue().getMaxLevel()*expScale<cam.getVirtualHeight()) || !toScreen;
+						boolean visible=(midr>=0 && linstate.cam.toScreenX(maxframe.doubleValue())>=0 && linstate.cam.toScreenX(minframe.doubleValue())<width &&
+								midr-e.getValue().getMaxLevel()*expScale<height) || !toScreen;
 						if(visible)
 							{
 							g.setColor(e.getValue().expColor);
@@ -530,7 +533,7 @@ public class LineageView extends JPanel
 							for(Map.Entry<EvDecimal, Double> ve:e.getValue().level.entrySet())
 								{
 								int y=(int)(-ve.getValue()*expScale+midr);
-								int x=cam.f2c(ve.getKey().doubleValue());
+								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
 								if(hasLastCoord)
 									{
 									if(showExpLine)
@@ -559,8 +562,11 @@ public class LineageView extends JPanel
 	 * Recursive function to draw a tree
 	 * @param internal Which node to recurse from
 	 */
-	private void drawTree(Graphics2D g, String nucName, int midr, boolean toScreen, Camera cam)
+	private void drawTree(Graphics2D g, String nucName, int midr, boolean toScreen, LinState linstate, int width, int height)
 		{
+		/*
+		HierarchicalPainter.Camera cam=linstate.cam;
+		
 		int childNoPosBranchLength=30;
 		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 		if(nuc==null)
@@ -568,11 +574,11 @@ public class LineageView extends JPanel
 			//This is a hack in my opinion. Better if it can be found during tree structure planner
 			//but this is more flexible right now. will give some artifacts
 			System.out.println(nucName+" not found while drawing. bug!!!?");
-			getDrawCache().nucInternal.remove(nucName);
+			getLinState().nucInternal.remove(nucName);
 			return;
 			}
 		
-		Internal internal=getNucinfo(nucName);
+		Internal internal=linstate.getNucinfo(nucName);
 
 		String namePrefix="";
 		if(nuc.overrideEnd!=null && nuc.child.size()>0)
@@ -587,25 +593,25 @@ public class LineageView extends JPanel
 			startc=0;
 			if(nuc.parent!=null)
 				{
-				Internal pInternal=getNucinfo(nuc.parent);
+				Internal pInternal=linstate.getNucinfo(nuc.parent);
 				startc=pInternal.getLastVXend(cam)+childNoPosBranchLength;
 				//System.out.println("warn: no coord");
 				namePrefix="!!! ";
 				}
 			}
 		else
-			startc=cam.f2c(firstFrame.doubleValue());
+			startc=cam.toScreenX(firstFrame.doubleValue());
 
 		EvDecimal lastFrame=nuc.getLastFrame();
 		if(lastFrame==null)
 			endc=startc;
 		else
-			endc=cam.f2c(lastFrame.doubleValue());
+			endc=cam.toScreenX(lastFrame.doubleValue());
 		
 		//System.out.println(nucName+"  "+firstFrame+" "+lastFrame);
 		
 		//Draw expression
-		drawExpression(g,nucName,endc,midr,nuc,toScreen,cam);
+		drawExpression(g,nucName,endc,midr,nuc,toScreen,linstate, width, height);
 		
 		//System.out.println(nucName+" "+firstFrame+"    -    "+lastFrame);
 		
@@ -623,26 +629,26 @@ public class LineageView extends JPanel
 			g.drawLine(startc, midr, endc, midr);
 			}
 		if(nuc.overrideEnd!=null && nuc.child.size()==0)
-			drawNucEnd(g, cam.f2c(nuc.overrideEnd.doubleValue()), midr);
-		internal.setLastVXstart(cam,startc);
-		internal.setLastVXend(cam,endc);
-		internal.setLastVY(cam,midr);
+			drawNucEnd(g, cam.toScreenX(nuc.overrideEnd.doubleValue()), midr);
+		internal.setLastVXstart(startc);
+		internal.setLastVXend(endc);
+		internal.setLastVY(midr);
 		
 		//Draw keyframes
-		int virtualWidth=cam.getVirtualWidth();
+		int virtualWidth=width;
 		if(showKeyFrames && 
-				((midr>-keyFrameSize && midr<cam.getVirtualHeight()+keyFrameSize &&
+				((midr>-keyFrameSize && midr<height+keyFrameSize &&
 				endc>=-keyFrameSize && startc<=virtualWidth+keyFrameSize) || !toScreen))
 			{
 			g.setColor(Color.RED);
 			//Test for complete visibility first, makes clipping cheap
 			if((startc>=-keyFrameSize && endc<virtualWidth+keyFrameSize) || !toScreen)
 				for(EvDecimal frame:nuc.pos.keySet())
-					drawKeyFrame(g,cam.f2c(frame.doubleValue()), midr, nucName, frame);
+					drawKeyFrame(g,cam.toScreenX(frame.doubleValue()), midr, nucName, frame);
 			else
 				for(EvDecimal frame:nuc.pos.keySet())
 					{
-					int x=cam.f2c(frame.doubleValue()); //This might be slower than just drawing though
+					int x=cam.toScreenX(frame.doubleValue()); //This might be slower than just drawing though
 					if(x>-keyFrameSize && x<virtualWidth+keyFrameSize)
 						drawKeyFrame(g,x, midr, nucName, frame);
 					}
@@ -654,16 +660,16 @@ public class LineageView extends JPanel
 				{
 				NucLineage.Nuc c=currentLin.nuc.get(cName);
 					{
-					Internal cInternal=getDrawCache().nucInternal.get(cName);
+					Internal cInternal=getLinState().nucInternal.get(cName);
 					//Draw connecting line
 					g.setColor(Color.BLACK);
 					EvDecimal cFirstFrame=c.getFirstFrame();
 					if(cFirstFrame!=null)
-						g.drawLine(endc,midr,cam.f2c(cFirstFrame.doubleValue()),midr+cInternal.centerDisplacement);
+						g.drawLine(endc,midr,cam.toScreenX(cFirstFrame.doubleValue()),midr+cInternal.centerDisplacement);
 					else
 						g.drawLine(endc,midr,endc+childNoPosBranchLength,midr+cInternal.centerDisplacement);
 					//Recurse down
-					drawTree(g,cName, midr+cInternal.centerDisplacement, toScreen, cam);
+					drawTree(g,cName, midr+cInternal.centerDisplacement, toScreen, linstate);
 					}
 				}
 		
@@ -674,6 +680,7 @@ public class LineageView extends JPanel
 		//Draw name of nucleus. Warn if something is wrong
 		if((nuc.child.isEmpty() && showLeafLabel) || (!nuc.child.isEmpty() && showTreeLabel))
 			drawNucName(g, namePrefix, new NucSel(currentLin, nucName), midr, endc);
+		*/
 		}
 
 	
@@ -746,53 +753,103 @@ public class LineageView extends JPanel
 	/**
 	 * Prepare rendering sizes
 	 */
-	private void updateTreeFormat(Graphics g, String nucName)
+	private double updateTreeFormat(Graphics g, String nucName, LinState linstate, double displacement, HierarchicalPainter.DrawNode parentDrawNode)
 		{		
-		Internal internal=getNucinfo(nucName);
+		final Internal thisInternal=linstate.getNucinfo(nucName);
 		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
 
+		HierarchicalPainter.DrawNodeContainer thisDrawNode=new HierarchicalPainter.DrawNodeContainer();
+
+		double y1=displacement;
+		
+		
+		
 		//Total width of children. 0 if none expanded
-		int totw=0;
+		double curChildOffset=displacement;
+		
+		curChildOffset+=2; //Temp
 		
 		//Only recurse if children are visible
-		if(internal.expanded)
+		if(thisInternal.expanded)
 			{
 			//Sum up total width for children
 			for(String cName:nuc.child)
 				{
-				Internal cInternal=getNucinfo(cName);
-				updateTreeFormat(g,cName);
-				totw+=cInternal.sizer;
+				double newDisp=updateTreeFormat(g,cName,linstate, curChildOffset, thisDrawNode);
+				curChildOffset+=newDisp;
 				}
 			//Set displacements
+			/*
 			if(nuc.child.size()==1)
 				{
-				Internal cInternal=getNucinfo(nuc.child.first());
-//				if(showTreeLabel)
-					cInternal.centerDisplacement=10;
-	//			else
-		//			cInternal.centerDisplacement=10;
+				Internal cInternal=linstate.getNucinfo(nuc.child.first());
+				thisInternal.centerY=cInternal.centerY; //TODO improve
+				}
+			else*/
+			if(nuc.child.isEmpty())
+				{
+				thisInternal.centerY=displacement;
 				}
 			else
 				{
-				int fromleft=0;
+				//Use the average
+				double sum=0;
 				for(String cName:nuc.child)
 					{
-					Internal cInternal=getDrawCache().nucInternal.get(cName);
-					cInternal.centerDisplacement=fromleft+cInternal.sizer/2-totw/2;
-					fromleft+=cInternal.sizer;
+					Internal cInternal=linstate.nucInternal.get(cName);
+					sum+=cInternal.centerY;
 					}
+				thisInternal.centerY=sum/nuc.child.size();
 				}
 			}
+		else
+			{
+			thisInternal.centerY=displacement;
+			}
+		double y2=curChildOffset;
+		
+		EvDecimal lastFrame=nuc.getLastFrame();
+		double x2;
+		if(lastFrame!=null)
+			x2=lastFrame.doubleValue();
+		else
+			x2=0; //Use child
+		
+		thisInternal.endX=x2;
+		
+		EvDecimal firstFrame=nuc.getFirstFrame();
+		double x1;
+		if(firstFrame!=null)
+			x1=firstFrame.doubleValue();
+		else
+			x1=x2-60; //Better than nothing
+
+		thisInternal.startX=x1;
 		
 		//Compute width for this node
-		internal.sizer=totw;
-		int fontHeight=g.getFontMetrics().getHeight()*2;
-		if(internal.sizer<fontHeight && nuc.child.isEmpty())
-			internal.sizer=fontHeight;
+//		int fontHeight=g.getFontMetrics().getHeight()*2;
+		//TODO enlarge if needed.
 		
-		//Scale
-		internal.sizer*=branchScale;
+		
+		
+		HierarchicalPainter.DrawNode newnode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2){
+			public void paint(Graphics g, double width, double height, Camera cam)
+				{
+				g.setColor(Color.red);
+				int y=cam.toScreenY(thisInternal.centerY);
+				int x1=cam.toScreenX(thisInternal.startX);
+				int x2=cam.toScreenY(thisInternal.endX);
+
+				//System.out.println("y "+y+"  "+thisInternal.centerY);
+				
+				g.drawLine(x1, y, x2, y);
+				
+				}
+		};
+		thisDrawNode.addSubNode(newnode);
+		
+		parentDrawNode.addSubNode(thisDrawNode);
+		return y2;
 		}
 	
 	
@@ -807,52 +864,15 @@ public class LineageView extends JPanel
 	public static class Internal
 		{
 		public boolean expanded=true;
-		public int sizer=0;
-		public int centerDisplacement=0;
-		private int lastVY, lastVXstart, lastVXend;
-		public int getLastVY(Camera cam)
-			{
-			return lastVY;
-			}
-		public int getLastVXstart(Camera cam)
-			{
-			return lastVXstart;
-			}
-		public int getLastVXend(Camera cam)
-			{
-			return lastVXend;
-			}
-		public void setLastVY(Camera cam, int x)
-			{
-			lastVY=x;
-			}
-		public void setLastVXstart(Camera cam, int x)
-			{
-			lastVXstart=x;
-			}
-		public void setLastVXend(Camera cam, int x)
-			{
-			lastVXend=x;
-			}
+		//public int sizer=0;
+		//public int centerDisplacement=0;
+		
+		public double centerY;
+		public double startX, endX;
 		}
 
 	
-	/**
-	 * Get information structure about nucleus
-	 * @param nuc Name of nucleus
-	 * @return Existing structure or a new one
-	 */
-	public Internal getNucinfo(String nuc)
-		{
-		Internal i=getDrawCache().nucInternal.get(nuc);
-		if(i==null)
-			{
-			i=new Internal();
-			getDrawCache().nucInternal.put(nuc, i);
-			}
-		return i;
-		}
-	
+
 	
 	/** List of all mouse click handlers */
 	LinkedList<ClickRegion> regionClickList=new LinkedList<ClickRegion>();
@@ -873,9 +893,9 @@ public class LineageView extends JPanel
 
 	public ClickRegion getClickRegion(MouseEvent e)
 		{
-		Camera cam=camera;
 		int mousex,mousey;
-		if(cam.showHorizontalTree)
+		NucLineage lin=getLineage();
+		if(getLinState(lin).showHorizontalTree)
 			{
 			mousex=e.getX();
 			mousey=e.getY();
@@ -942,11 +962,13 @@ public class LineageView extends JPanel
 			{this.nucname=nucname; this.x=x; this.y=y; this.w=w; this.h=h;}
 		public void clickRegion(MouseEvent e)
 			{
-			Internal internal=getNucinfo(nucname);
+			NucLineage lin=getLineage();
+			LinState linstate=getLinState(lin);
+			Internal internal=linstate.getNucinfo(nucname);
 			if(SwingUtilities.isLeftMouseButton(e))
 				internal.expanded=!internal.expanded;
 			else if(SwingUtilities.isRightMouseButton(e))
-				recursiveExpand(nucname, !internal.expanded);
+				linstate.recursiveExpand(nucname, !internal.expanded, lin);
 			repaint();
 			}
 		public String getHoverString()
@@ -955,20 +977,7 @@ public class LineageView extends JPanel
 			}
 		}
 
-	/**
-	 * Recursively expand/un-expand
-	 */
-	public void recursiveExpand(String nucName, boolean expand)
-		{
-		if(currentLin!=null)
-			{
-			Internal internal=getNucinfo(nucName);
-			internal.expanded=expand;
-			NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
-			for(String childName:nuc.child)
-				recursiveExpand(childName, expand);
-			}
-		}
+
 	
 	
 	}
