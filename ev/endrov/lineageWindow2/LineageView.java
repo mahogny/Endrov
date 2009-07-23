@@ -79,10 +79,10 @@ public class LineageView extends JPanel
 
 	public static class ExpRenderSetting
 		{
-		public final int typeGraphOnTop=0;
-		public final int typeColorIntensity=1;
-		public final int typeColorMinusIntensity=2;
-		public final int typeTimeDev=3;
+		public final static int typeGraphOnTop=0;
+		public final static int typeColorIntensity=1;
+		public final static int typeColorMinusIntensity=2;
+		public final static int typeTimeDev=3;
 		
 		
 		public int type;
