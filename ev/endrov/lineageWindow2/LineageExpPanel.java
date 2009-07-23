@@ -24,6 +24,7 @@ import endrov.basicWindow.EvComboColor;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
+import endrov.util.SnapBackSlider;
 
 /**
  * Select expressions and how they should be rendered
@@ -139,10 +140,15 @@ public class LineageExpPanel extends JPanel
 		public JButton bDown=new JImageButton(BasicIcon.iconButtonDown,"Move renderer down");
 		public JButton bRemoveRenderer=new JImageButton(BasicIcon.iconButtonDelete,"Remove renderer");
 		
+		public SnapBackSlider snapContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL,-10000,10000);
+		
+		public ComboExp cExp1=new ComboExp();
+		public ComboExp cExp2=new ComboExp();
+		
+		private JPanel firstLine=new JPanel(new GridBagLayout());
 		
 		public RenderEntry()
 			{
-			JPanel firstLine=new JPanel(new GridBagLayout());
 			GridBagConstraints c=new GridBagConstraints();
 			c.gridy = 0;
 			c.gridx = 0;
@@ -158,11 +164,36 @@ public class LineageExpPanel extends JPanel
 			c.gridx++;
 			firstLine.add(cColor,c);
 			c.gridx++;
-			setLayout(new GridLayout(1,1));
-			add(firstLine);
 			
+			
+			
+			
+			
+			setLayout(new BorderLayout());
+			doLayout();
 			setBorder(BorderFactory.createRaisedBevelBorder());
 			}
+		
+		
+		public void doLayout()
+			{
+			removeAll();
+			add(firstLine,BorderLayout.NORTH);
+			Integer type=cRenderType.getType();
+			if(type==null)
+				;
+			else if(type==LineageView.ExpRenderSetting.typeGraphOnTop)
+				{
+				JPanel secondLine=new JPanel(new GridLayout(1,2));
+				secondLine.add(snapContrast);
+				secondLine.add(cExp1);
+				
+				}
+			
+			
+			}
+		
+		
 		
 		}
 	
@@ -235,5 +266,16 @@ public class LineageExpPanel extends JPanel
 			return (Integer)getSelectedItem();
 			}
 		}
+	
+	private static class ComboExp extends JComboBox
+		{
+		private static final long serialVersionUID = 1L;
+
+		public ComboExp()
+			{
+			super(new Vector<String>(Arrays.asList("RFP","GFP")));
+			}
+		}
+	
 	
 	}
