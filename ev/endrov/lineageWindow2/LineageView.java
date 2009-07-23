@@ -79,11 +79,46 @@ public class LineageView extends JPanel
 
 	public static class ExpRenderSetting
 		{
+		public final int typeGraphOnTop=0;
+		public final int typeColorIntensity=1;
+		public final int typeColorMinusIntensity=2;
+		public final int typeTimeDev=3;
+		
+		
+		public int type;
+		public String expname1, expname2;
+		public double scale1;
 		
 		
 		
 		}
 		
+	public static class ExpRenderSettingOnTop extends ExpRenderSetting
+		{
+		boolean fill;
+		
+		}
+
+	public static class ExpRenderSettingColor extends ExpRenderSetting
+		{
+		double scale;
+		boolean fill;
+		
+		}
+
+	
+	/**
+	 * 1. has to modify bounding box
+	 * 
+	 * 
+	 * 2. has to render on tree
+	 * * can draw over black line, can keep
+	 * * 
+	 * 
+	 * 3. render elsewhere - scalebars
+	 * 
+	 * 
+	 */
 	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
