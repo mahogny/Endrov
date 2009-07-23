@@ -608,16 +608,20 @@ public class LineageView extends JPanel
 			public void paint(Graphics g, double width, double height, Camera cam)
 				{
 				int spaceAvailable=cam.toScreenY(fontHeightAvailable)-cam.toScreenY(0);
-				
-				g.setColor(Color.red);
+
 				int thisMidY=cam.toScreenY(thisInternal.centerY);
 				int thisStartX=cam.toScreenX(thisInternal.startX);
 				int thisEndX=cam.toScreenX(thisInternal.endX);
 
 				//Line and keyframes
+				if(nuc.colorNuc!=null)
+					g.setColor(nuc.colorNuc);
+				else
+					g.setColor(Color.black);
 				g.drawLine(thisStartX, thisMidY, thisEndX, thisMidY);
 				if(nuc.getLastFrame()==null)
 					drawNucExtendsToInfinity(g, thisEndX, thisMidY);				
+				g.setColor(Color.black);
 				if(getShowKeyFrames())
 					{
 					//Possible to optimize, but not by much
@@ -882,136 +886,7 @@ public class LineageView extends JPanel
 		}
 	
 
-	/**
-	 * Recursive function to draw a tree
-	 * @param internal Which node to recurse from
-	 */
-	private void drawTree(Graphics2D g, String nucName, int midr, boolean toScreen, LinState linstate, int width, int height)
-		{
-		/*
-		HierarchicalPainter.Camera cam=linstate.cam;
-		
-		int childNoPosBranchLength=30;
-		NucLineage.Nuc nuc=currentLin.nuc.get(nucName);
-		if(nuc==null)
-			{
-			//This is a hack in my opinion. Better if it can be found during tree structure planner
-			//but this is more flexible right now. will give some artifacts
-			System.out.println(nucName+" not found while drawing. bug!!!?");
-			getLinState().nucInternal.remove(nucName);
-			return;
-			}
-		
-		Internal internal=linstate.getNucinfo(nucName);
 
-		String namePrefix="";
-		if(nuc.overrideEnd!=null && nuc.child.size()>0)
-			namePrefix="!!! ";
-		
-		//If there are no first or last frames then handle it as well as possible 
-		int startc;
-		int endc;
-		EvDecimal firstFrame=nuc.getFirstFrame();
-		if(firstFrame==null)
-			{
-			startc=0;
-			if(nuc.parent!=null)
-				{
-				Internal pInternal=linstate.getNucinfo(nuc.parent);
-				startc=pInternal.getLastVXend(cam)+childNoPosBranchLength;
-				//System.out.println("warn: no coord");
-				namePrefix="!!! ";
-				}
-			}
-		else
-			startc=cam.toScreenX(firstFrame.doubleValue());
-
-		EvDecimal lastFrame=nuc.getLastFrame();
-		if(lastFrame==null)
-			endc=startc;
-		else
-			endc=cam.toScreenX(lastFrame.doubleValue());
-		
-		//System.out.println(nucName+"  "+firstFrame+" "+lastFrame);
-		
-		//Draw expression
-		drawExpression(g,nucName,endc,midr,nuc,toScreen,linstate, width, height);
-		
-		//System.out.println(nucName+" "+firstFrame+"    -    "+lastFrame);
-		
-		//Draw line spanning frames
-		if(nuc.colorNuc!=null)
-			{
-			g.setColor(nuc.colorNuc);
-			g.drawLine(startc, midr, endc, midr);
-			g.drawLine(startc, midr-1, endc, midr-1);
-			g.drawLine(startc, midr+1, endc, midr+1);
-			}
-		else
-			{
-			g.setColor(Color.BLACK);
-			g.drawLine(startc, midr, endc, midr);
-			}
-		if(nuc.overrideEnd!=null && nuc.child.size()==0)
-			drawNucEnd(g, cam.toScreenX(nuc.overrideEnd.doubleValue()), midr);
-		internal.setLastVXstart(startc);
-		internal.setLastVXend(endc);
-		internal.setLastVY(midr);
-		
-		//Draw keyframes
-		int virtualWidth=width;
-		if(showKeyFrames && 
-				((midr>-keyFrameSize && midr<height+keyFrameSize &&
-				endc>=-keyFrameSize && startc<=virtualWidth+keyFrameSize) || !toScreen))
-			{
-			g.setColor(Color.RED);
-			//Test for complete visibility first, makes clipping cheap
-			if((startc>=-keyFrameSize && endc<virtualWidth+keyFrameSize) || !toScreen)
-				for(EvDecimal frame:nuc.pos.keySet())
-					drawKeyFrame(g,cam.toScreenX(frame.doubleValue()), midr, nucName, frame);
-			else
-				for(EvDecimal frame:nuc.pos.keySet())
-					{
-					int x=cam.toScreenX(frame.doubleValue()); //This might be slower than just drawing though
-					if(x>-keyFrameSize && x<virtualWidth+keyFrameSize)
-						drawKeyFrame(g,x, midr, nucName, frame);
-					}
-			}
-		
-		//Draw children
-		if(internal.expanded)
-			for(String cName:nuc.child)
-				{
-				NucLineage.Nuc c=currentLin.nuc.get(cName);
-					{
-					Internal cInternal=getLinState().nucInternal.get(cName);
-					//Draw connecting line
-					g.setColor(Color.BLACK);
-					EvDecimal cFirstFrame=c.getFirstFrame();
-					if(cFirstFrame!=null)
-						g.drawLine(endc,midr,cam.toScreenX(cFirstFrame.doubleValue()),midr+cInternal.centerDisplacement);
-					else
-						g.drawLine(endc,midr,endc+childNoPosBranchLength,midr+cInternal.centerDisplacement);
-					//Recurse down
-					drawTree(g,cName, midr+cInternal.centerDisplacement, toScreen, linstate);
-					}
-				}
-		
-		//Draw expander
-		if(nuc.child.size()>0)
-			drawExpanderSymbol(g,nucName, endc,midr,internal.expanded);
-
-		//Draw name of nucleus. Warn if something is wrong
-		if((nuc.child.isEmpty() && showLeafLabel) || (!nuc.child.isEmpty() && showTreeLabel))
-			drawNucName(g, namePrefix, new NucSel(currentLin, nucName), midr, endc);
-		*/
-		}
-
-	
-	
-	
-
-	
 	
 	
 	/**
@@ -1079,37 +954,46 @@ public class LineageView extends JPanel
 	
 
 
-
-
-
-/**
- * Draw expression profile
- */
-private void drawExpression(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, LinState linstate, int width, int height)
-	{
-//	int colorIndex=-1;
-//	EvColor colorList[]=EvColor.colorList;
-	if(showExpAtAll())
+	/**
+	 * Draw expression profile: marker of time deviation
+	 */
+	private void drawExpressionTimeDev(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, LinState linstate, int width, int height)
+		{
+		//	if(showExpAtAll())
 		for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
 			if(!e.getValue().level.isEmpty())
+				//					if(e.getKey().equals("divDev")) //Division time deviation, special rendering
 				{
-				if(e.getKey().equals("divDev")) //Division time deviation, special rendering
+				int y1=midr+expanderSize+2;
+				int y2=y1-1;
+
+				double level=e.getValue().level.values().iterator().next();// *frameDist; TODO
+				int x1=endc-(int)level;
+				int x2=endc+(int)level;
+
+				g.setColor(Color.BLACK);
+				g.drawLine(x1, y1, x2, y1);
+				g.drawLine(x1, y1, x1, y2);
+				g.drawLine(x2, y1, x2, y2);
+				}
+		}
+
+
+
+	/**
+	 * Draw expression profile: graph on top
+	 */
+	private void drawExpressionGraphOnTop(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, LinState linstate, int width, int height)
+		{
+		//	int colorIndex=-1;
+		//	EvColor colorList[]=EvColor.colorList;
+		if(showExpAtAll())
+			for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
+				if(!e.getValue().level.isEmpty())
 					{
-					int y1=midr+expanderSize+2;
-					int y2=y1-1;
-					
-					double level=e.getValue().level.values().iterator().next();// *frameDist; TODO
-					int x1=endc-(int)level;
-					int x2=endc+(int)level;
-					
-					g.setColor(Color.BLACK);
-					g.drawLine(x1, y1, x2, y1);
-					g.drawLine(x1, y1, x1, y2);
-					g.drawLine(x2, y1, x2, y2);
-					}
-				else //Ordinary level curve
-					{
-//					colorIndex=(colorIndex+1)%colorList.length;
+
+
+					//					colorIndex=(colorIndex+1)%colorList.length;
 
 					//Only draw if potentially visible
 					EvDecimal minframe=e.getValue().level.firstKey();
@@ -1139,9 +1023,9 @@ private void drawExpression(Graphics g, String nucName, int endc, int midr, NucL
 							lastY=y;
 							}
 						}
+
 					}
-				}
+		}
+
+
 	}
-
-
-}
