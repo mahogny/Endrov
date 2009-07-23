@@ -54,7 +54,9 @@ public class LineageWindow extends BasicWindow
 			public void savePersonalConfig(Element e){}
 			});
 		}
+
 	
+
 	public static final ImageIcon iconShowRoot=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
 	public static final ImageIcon iconShowSelected=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
 	public static final ImageIcon iconZoomAll=new ImageIcon(LineageWindow.class.getResource("jhZoomAll.png"));
@@ -63,6 +65,8 @@ public class LineageWindow extends BasicWindow
 	public static final ImageIcon iconShowFrameLines=new ImageIcon(LineageWindow.class.getResource("jhShowFrameLines.png"));
 	public static final ImageIcon iconShowVerticalTree=new ImageIcon(LineageWindow.class.getResource("jhShowVerticalTree.png"));
 	
+	private final EvHidableSidePane sidePanelSplitPane;
+
 	
 	private SnapBackSlider sliderZoomX=new SnapBackSlider(JSlider.HORIZONTAL, -10000,10000); 
 	private SnapBackSlider sliderZoomY=new SnapBackSlider(JSlider.VERTICAL, -10000,10000);
@@ -116,6 +120,7 @@ public class LineageWindow extends BasicWindow
 		}
 	
 	
+	LineageExpPanel expPanel=new LineageExpPanel();
 	
 	/**
 	 * Make a new window at some location
@@ -156,14 +161,21 @@ public class LineageWindow extends BasicWindow
 		expGroup.add(miShowExpNone);
 		updateShowExp();
 		
+		
+
+		
+		
+		sidePanelSplitPane=new EvHidableSidePane(EvSwingUtil.layoutLCR(null, view, sliderZoomY), expPanel, true);
+		
+		
 		//Put GUI together
 		setLayout(new BorderLayout());
-		add(view,BorderLayout.CENTER);
+		add(sidePanelSplitPane,BorderLayout.CENTER);
 		
 		JPanel bottom = new JPanel(new GridBagLayout());
 		add(bottom,BorderLayout.SOUTH);
 
-		add(sliderZoomY,BorderLayout.EAST);
+//		add(sliderZoomY,BorderLayout.EAST);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
