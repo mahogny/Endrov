@@ -81,7 +81,7 @@ public class LineageView extends JPanel
 		{
 		public final static int typeGraphOnTop=0;
 		public final static int typeColorIntensity=1;
-		public final static int typeColorMinusIntensity=2;
+		public final static int typeColorIntensityDiff=2;
 		public final static int typeTimeDev=3;
 		
 		
