@@ -1,5 +1,6 @@
 package endrov.util;
 
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedList;
@@ -44,6 +45,7 @@ public class SnapBackSlider extends JSlider implements ChangeListener
 				snapback();
 				}
 		});
+		
 		}
 
 	
@@ -71,6 +73,31 @@ public class SnapBackSlider extends JSlider implements ChangeListener
 		listeners.add(c);
 		}
 	
+	
+	
+	
+	@Override
+	public Dimension getMinimumSize()
+		{
+		Dimension d=super.getMinimumSize();
+		if(getOrientation()==JSlider.HORIZONTAL)
+			return new Dimension(30,d.height);
+		else
+			return new Dimension(d.width,30);
+		}
+
+	@Override
+	public Dimension getPreferredSize()
+		{
+		Dimension d=super.getPreferredSize();
+		if(getOrientation()==JSlider.HORIZONTAL)
+			return new Dimension(60,d.height);
+		else
+			return new Dimension(d.width,60);
+		}
+
+
+
 	public static void main(String arg[])
 		{
 		SnapBackSlider bar=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);

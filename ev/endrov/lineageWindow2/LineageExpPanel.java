@@ -5,19 +5,24 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 
 import endrov.basicWindow.EvComboColor;
@@ -39,7 +44,7 @@ public class LineageExpPanel extends JPanel
 	public static final ImageIcon iconAddExpRenderOnTop=new ImageIcon(LineageExpPanel.class.getResource("jhAddGraphOnTop.png"));
 	public static final ImageIcon iconAddExpRenderIntensity=new ImageIcon(LineageExpPanel.class.getResource("jhAddIntensity.png"));
 	public static final ImageIcon iconAddExpRenderIntensityDiff=new ImageIcon(LineageExpPanel.class.getResource("jhAddIntensityDiff.png"));
-	public static final ImageIcon iconAddExpRenderTimeDiff=new ImageIcon(LineageExpPanel.class.getResource("jhAddTimeDiff.png"));
+	public static final ImageIcon iconAddExpRenderTimeDev=new ImageIcon(LineageExpPanel.class.getResource("jhAddTimeDiff.png"));
 	
 	/*
 	private JButton bAddExpRendererGraphOnTop=new JImageButton(iconAddExpRenderOnTop,"Add expression: graph on top");
@@ -61,21 +66,35 @@ public class LineageExpPanel extends JPanel
 	private JButton addRenderer=new JButton("Add expression"); 
 	
 	
-	private JPanel allRenderers=new JPanel(new GridLayout(1,1));
+	private JPanel panelAllRenderers=new JPanel(new GridLayout(1,1));
+	
+	private LinkedList<RenderEntry> listRenderers=new LinkedList<RenderEntry>();
 	
 	public LineageExpPanel()
 		{
 		setLayout(new BorderLayout());
 		
-		add(EvSwingUtil.layoutCompactVertical(addRenderer,allRenderers		
+		add(EvSwingUtil.layoutCompactVertical(addRenderer//,panelAllRenderers		
 			),BorderLayout.NORTH);
-		
+
+		add(addRenderer,BorderLayout.NORTH);
+
 //		add(addRenderer,BorderLayout.NORTH);
 	//	add(allRenderers,BorderLayout.CENTER);
 		
+		add(new JScrollPane(panelAllRenderers,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
+//		add(panelAllRenderers);
 		
 		
-		allRenderers.add(EvSwingUtil.layoutCompactVertical(new RenderEntry()));
+		addRenderer.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				listRenderers.add(new RenderEntry());
+				placeAllRenderers();
+				}});
+		
+		
+		//panelAllRenderers.add(EvSwingUtil.layoutCompactVertical(new RenderEntry()));
 		
 		/*		
 		setLayout(new GridLayout(2,1));
@@ -93,9 +112,32 @@ public class LineageExpPanel extends JPanel
 		//renderListPanel.add(EvSwingUtil.layoutEvenHorizontal(bExpRendererUp,bExpRendererDown),
 				//BorderLayout.SOUTH);
 */		
-		setAvailableExpressionsUpdate(Arrays.asList("GFP","RFP"));
+		//setAvailableExpressionsUpdate(Arrays.asList("GFP","RFP"));
+		
+		placeAllRenderers();
 		}
 	
+	
+	private void placeAllRenderers()
+		{
+		panelAllRenderers.removeAll();
+		JPanel p=new JPanel(new GridLayout(listRenderers.size(),1));
+		//panelAllRenderers.setLayout(new GridLayout(listRenderers.size(),1));
+		panelAllRenderers.setLayout(new BorderLayout());
+		System.out.println("siz "+listRenderers.size());
+		for(RenderEntry e:listRenderers)
+			{
+			p.add(e);
+			//e.setVisible(true);
+			}
+		//p.setVisible(true);
+		panelAllRenderers.add(p,BorderLayout.NORTH);
+		panelAllRenderers.add(new JLabel(""),BorderLayout.CENTER);
+		panelAllRenderers.setVisible(true);
+		revalidate();
+		//setVisible(false);
+		//setVisible(true);
+		}
 	
 	public void setAvailableExpressions(Collection<String> exps)
 		{
@@ -112,18 +154,17 @@ public class LineageExpPanel extends JPanel
 
 	private void setAvailableExpressionsUpdate(Collection<String> newAvailableExp)
 		{
+		//TODO
 		currentAvailableExp.clear();
 		currentAvailableExp.addAll(newAvailableExp);
+		/*
 		Vector<String> exps=new Vector<String>(currentAvailableExp);
 		Collections.sort(exps);
 		
-		/*
-		expList=new JList(exps);
-		pUpper.removeAll();
-		pUpper.add(new JScrollPane(expList,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-		*/
 		invalidate();
+		*/
 		}
+	
 	
 	
 	/**
@@ -131,7 +172,7 @@ public class LineageExpPanel extends JPanel
 	 * @author Johan Henriksson
 	 *
 	 */
-	private static class RenderEntry extends JPanel
+	private class RenderEntry extends JPanel implements ActionListener
 		{
 		private static final long serialVersionUID = 1L;
 		public ComboRenderType cRenderType=new ComboRenderType();
@@ -146,9 +187,9 @@ public class LineageExpPanel extends JPanel
 		public ComboExp cExp2=new ComboExp();
 		
 		private JPanel firstLine=new JPanel(new GridBagLayout());
-		
 		public RenderEntry()
 			{
+			
 			GridBagConstraints c=new GridBagConstraints();
 			c.gridy = 0;
 			c.gridx = 0;
@@ -165,35 +206,99 @@ public class LineageExpPanel extends JPanel
 			firstLine.add(cColor,c);
 			c.gridx++;
 			
+			bUp.addActionListener(this);
+			bDown.addActionListener(this);
+			bRemoveRenderer.addActionListener(this);
 			
-			
-			
-			
-			setLayout(new BorderLayout());
-			doLayout();
+			placeExpComponents();
 			setBorder(BorderFactory.createRaisedBevelBorder());
 			}
 		
 		
-		public void doLayout()
+		public void placeExpComponents()
 			{
-			removeAll();
+	//		removeAll();
+			setLayout(new BorderLayout());
 			add(firstLine,BorderLayout.NORTH);
 			Integer type=cRenderType.getType();
-			if(type==null)
-				;
-			else if(type==LineageView.ExpRenderSetting.typeGraphOnTop)
+			JComponent secondLine=null;
+			if(type==LineageView.ExpRenderSetting.typeGraphOnTop)
 				{
-				JPanel secondLine=new JPanel(new GridLayout(1,2));
+				//secondLine=EvSwingUtil.layoutCompactHorizontal(snapContrast,cExp1);
+				secondLine=new JPanel(new GridLayout(1,2));
 				secondLine.add(snapContrast);
 				secondLine.add(cExp1);
-				
 				}
+			else if(type==LineageView.ExpRenderSetting.typeColorIntensity)
+				{
+				secondLine=new JPanel(new GridLayout(1,2));
+				secondLine.add(snapContrast);
+				secondLine.add(cExp1);
+				}
+			else if(type==LineageView.ExpRenderSetting.typeColorIntensityDiff)
+				{
+				secondLine=new JPanel(new GridLayout(1,2));
+				secondLine.add(cExp1);
+				secondLine.add(cExp2);
+				}
+			else if(type==LineageView.ExpRenderSetting.typeTimeDev)
+				{
+				secondLine=new JPanel(new GridLayout(1,1));
+				secondLine.add(cExp1);
+				}
+			else
+				System.out.println("type wtf");
 			
+			if(secondLine!=null)
+				add(secondLine,BorderLayout.CENTER);
 			
 			}
 		
 		
+		private void setAvailableExpressionsUpdate(Collection<String> newAvailableExp)
+			{
+			//TODO
+			}
+		
+		
+		private void removeRenderer()
+			{
+			listRenderers.remove(this);
+			placeAllRenderers();
+			//todo
+			}
+
+		private void moveUp()
+			{
+			int i=listRenderers.indexOf(this);
+			listRenderers.remove(i);
+			i--;
+			if(i<0) i=0;
+			listRenderers.add(i,this);
+			placeAllRenderers();
+			//todo
+			}
+		
+		private void moveDown()
+			{
+			int i=listRenderers.indexOf(this);
+			listRenderers.remove(i);
+			i++;
+			if(i>listRenderers.size()) listRenderers.size();
+			listRenderers.add(i,this);
+			placeAllRenderers();
+			//todo
+			}
+		
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==bUp)
+				moveUp();
+			else if(e.getSource()==bDown)
+				moveDown();
+			else if(e.getSource()==bRemoveRenderer)
+				removeRenderer();
+			}
 		
 		}
 	
@@ -237,10 +342,17 @@ public class LineageExpPanel extends JPanel
 					}
 	
 				Integer type=(Integer)value;
-				if(type==null)
-					setIcon(null);
-				else
+
+				if(type==LineageView.ExpRenderSetting.typeGraphOnTop)
 					setIcon(iconAddExpRenderOnTop);
+				else if(type==LineageView.ExpRenderSetting.typeColorIntensity)
+					setIcon(iconAddExpRenderIntensity);
+				else if(type==LineageView.ExpRenderSetting.typeColorIntensityDiff)
+					setIcon(iconAddExpRenderIntensityDiff);
+				else if(type==LineageView.ExpRenderSetting.typeTimeDev)
+					setIcon(iconAddExpRenderTimeDev);
+				else
+					setIcon(null);
 				setText("");
 	
 				return this;
