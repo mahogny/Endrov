@@ -7,14 +7,17 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -24,12 +27,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.event.ListDataListener;
 
 import endrov.basicWindow.EvComboColor;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.SnapBackSlider;
+import endrov.util.SnapBackSlider.SnapChangeListener;
 
 /**
  * Select expressions and how they should be rendered
@@ -46,32 +51,19 @@ public class LineageExpPanel extends JPanel
 	public static final ImageIcon iconAddExpRenderIntensityDiff=new ImageIcon(LineageExpPanel.class.getResource("jhAddIntensityDiff.png"));
 	public static final ImageIcon iconAddExpRenderTimeDev=new ImageIcon(LineageExpPanel.class.getResource("jhAddTimeDiff.png"));
 	
-	/*
-	private JButton bAddExpRendererGraphOnTop=new JImageButton(iconAddExpRenderOnTop,"Add expression: graph on top");
-	private JButton bAddExpRendererIntensity=new JImageButton(iconAddExpRenderIntensity,"Add expression: color intensity");
-	private JButton bAddExpRendererIntensityDiff=new JImageButton(iconAddExpRenderIntensityDiff,"Add expression difference: color intensity");
-	private JButton bAddExpRendererTimeDiff=new JImageButton(iconAddExpRenderTimeDiff,"Add expression: Time variance");
-*/
-//	private JPanel pUpper=new JPanel(new GridLayout(1,1));
+	private final TreeSet<String> currentAvailableExp=new TreeSet<String>();
+	private final LinkedList<RenderEntry> listRenderers=new LinkedList<RenderEntry>();
 	
-	private HashSet<String> currentAvailableExp=new HashSet<String>();
-	
-//	private JList expList=new JList();
-/*
-	private JPanel availableListPanel=new JPanel(new BorderLayout());
-	private JPanel renderListPanel=new JPanel(new BorderLayout());
-
-	private JPanel renderedExpPanel=new JPanel();
-*/
 	private JButton addRenderer=new JButton("Add expression"); 
-	
-	
 	private JPanel panelAllRenderers=new JPanel(new GridLayout(1,1));
 	
-	private LinkedList<RenderEntry> listRenderers=new LinkedList<RenderEntry>();
+	private final LineageView view;
 	
-	public LineageExpPanel()
+	public LineageExpPanel(LineageView view)
 		{
+		this.view=view;
+		
+		
 		setLayout(new BorderLayout());
 		
 		add(EvSwingUtil.layoutCompactVertical(addRenderer//,panelAllRenderers		
@@ -79,68 +71,42 @@ public class LineageExpPanel extends JPanel
 
 		add(addRenderer,BorderLayout.NORTH);
 
-//		add(addRenderer,BorderLayout.NORTH);
-	//	add(allRenderers,BorderLayout.CENTER);
-		
 		add(new JScrollPane(panelAllRenderers,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
-//		add(panelAllRenderers);
-		
 		
 		addRenderer.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 				{
 				listRenderers.add(new RenderEntry());
 				placeAllRenderers();
+				updateLinView();
 				}});
-		
-		
-		//panelAllRenderers.add(EvSwingUtil.layoutCompactVertical(new RenderEntry()));
-		
-		/*		
-		setLayout(new GridLayout(2,1));
-		add(availableListPanel);
-		add(renderListPanel);
-
-		
-		availableListPanel.add(pUpper,BorderLayout.CENTER);
-		availableListPanel.add(EvSwingUtil.layoutEvenHorizontal(bAddExpRendererGraphOnTop,bAddExpRendererIntensity,bAddExpRendererIntensityDiff,bAddExpRendererTimeDiff),
-				BorderLayout.SOUTH);
-
-
-
-		renderListPanel.add(new JScrollPane(renderedExpPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
-		//renderListPanel.add(EvSwingUtil.layoutEvenHorizontal(bExpRendererUp,bExpRendererDown),
-				//BorderLayout.SOUTH);
-*/		
-		//setAvailableExpressionsUpdate(Arrays.asList("GFP","RFP"));
 		
 		placeAllRenderers();
 		}
 	
-	
+	/**
+	 * Put all renderers in the GUI, remove old
+	 */
 	private void placeAllRenderers()
 		{
 		panelAllRenderers.removeAll();
 		JPanel p=new JPanel(new GridLayout(listRenderers.size(),1));
-		//panelAllRenderers.setLayout(new GridLayout(listRenderers.size(),1));
 		panelAllRenderers.setLayout(new BorderLayout());
-		System.out.println("siz "+listRenderers.size());
 		for(RenderEntry e:listRenderers)
-			{
 			p.add(e);
-			//e.setVisible(true);
-			}
-		//p.setVisible(true);
 		panelAllRenderers.add(p,BorderLayout.NORTH);
 		panelAllRenderers.add(new JLabel(""),BorderLayout.CENTER);
 		panelAllRenderers.setVisible(true);
 		revalidate();
-		//setVisible(false);
-		//setVisible(true);
 		}
 	
+	/**
+	 * Set list of expression patterns available, only update GUI if needed
+	 */
 	public void setAvailableExpressions(Collection<String> exps)
 		{
+		System.out.println("Got "+exps);
+		
 		//Check if anything is different. Otherwise don't update
 		if(currentAvailableExp.containsAll(exps))
 			{
@@ -152,29 +118,90 @@ public class LineageExpPanel extends JPanel
 			setAvailableExpressionsUpdate(exps);
 		}
 
+	/**
+	 * Set list of expression patterns, force GUI update
+	 */
 	private void setAvailableExpressionsUpdate(Collection<String> newAvailableExp)
 		{
-		//TODO
+		System.out.println("gotu "+newAvailableExp);
+		
 		currentAvailableExp.clear();
 		currentAvailableExp.addAll(newAvailableExp);
-		/*
-		Vector<String> exps=new Vector<String>(currentAvailableExp);
-		Collections.sort(exps);
-		
-		invalidate();
-		*/
+		for(RenderEntry e:listRenderers)
+			e.setAvailableExpressionsUpdate();
+		revalidate();
 		}
 	
-	
+	/**
+	 * Send rendering settings to lineage view
+	 */
+	public void updateLinView()
+		{
+		LinkedList<LineageView.ExpRenderSetting> list=new LinkedList<LineageView.ExpRenderSetting>();
+		for(RenderEntry e:listRenderers)
+			list.add(e.exp);
+		view.setExpRenderSettings(list);
+		}
 	
 	/**
 	 * Settings panel for one renderer
 	 * @author Johan Henriksson
 	 *
 	 */
-	private class RenderEntry extends JPanel implements ActionListener
+	private class RenderEntry extends JPanel implements ActionListener, SnapChangeListener
 		{
 		private static final long serialVersionUID = 1L;
+		
+
+		
+		public final List<String> avail=new ArrayList<String>();
+
+		
+		private class CustomComboModel implements ComboBoxModel
+			{
+			public String selectedExp="";
+			public Object getSelectedItem()
+				{
+				System.out.println("get: "+selectedExp);
+				return selectedExp;
+				}
+	
+			public void setSelectedItem(Object anItem)
+				{
+				System.out.println("set: "+anItem);
+				selectedExp=(String)anItem;
+				}
+	
+			private LinkedList<ListDataListener> listener=new LinkedList<ListDataListener>();
+	
+			public void addListDataListener(ListDataListener arg)
+				{
+				listener.add(arg);
+				}
+	
+			public Object getElementAt(int i)
+				{
+				return avail.get(i);
+				}
+	
+			public int getSize()
+				{
+				return avail.size();
+				}
+	
+			public void removeListDataListener(ListDataListener arg)
+				{
+				listener.remove(arg);
+				}
+			}
+		
+		/**
+		 * Handle list of expressions
+		 */
+		private ComboBoxModel cm1=new CustomComboModel();
+		private ComboBoxModel cm2=new CustomComboModel();
+		
+		
 		public ComboRenderType cRenderType=new ComboRenderType();
 		public EvComboColor cColor=new EvComboColor(false);
 		public JButton bUp=new JImageButton(BasicIcon.iconButtonUp,"Move renderer up");
@@ -182,9 +209,14 @@ public class LineageExpPanel extends JPanel
 		public JButton bRemoveRenderer=new JImageButton(BasicIcon.iconButtonDelete,"Remove renderer");
 		
 		public SnapBackSlider snapContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL,-10000,10000);
+//		public ComboExp cExp1=new ComboExp();
+//		public ComboExp cExp2=new ComboExp();
+		public JComboBox cExp1=new JComboBox(cm1);
+		public JComboBox cExp2=new JComboBox(cm2);
 		
-		public ComboExp cExp1=new ComboExp();
-		public ComboExp cExp2=new ComboExp();
+		
+		
+		public LineageView.ExpRenderSetting exp=new LineageView.ExpRenderSetting();
 		
 		private JPanel firstLine=new JPanel(new GridBagLayout());
 		public RenderEntry()
@@ -206,18 +238,21 @@ public class LineageExpPanel extends JPanel
 			firstLine.add(cColor,c);
 			c.gridx++;
 			
-			bUp.addActionListener(this);
-			bDown.addActionListener(this);
-			bRemoveRenderer.addActionListener(this);
 			
-			placeExpComponents();
+			snapContrast.setToolTipText("Scale expression level");
+			
 			setBorder(BorderFactory.createRaisedBevelBorder());
+			setAvailableExpressionsUpdate();
+			placeExpComponents();
+			updateExp();
 			}
 		
-		
+		/**
+		 * Place components, remove old components
+		 */
 		public void placeExpComponents()
 			{
-	//		removeAll();
+			removeAll(); //Also removes all listeners!
 			setLayout(new BorderLayout());
 			add(firstLine,BorderLayout.NORTH);
 			Integer type=cRenderType.getType();
@@ -228,46 +263,74 @@ public class LineageExpPanel extends JPanel
 				secondLine=new JPanel(new GridLayout(1,2));
 				secondLine.add(snapContrast);
 				secondLine.add(cExp1);
+				cRenderType.setToolTipText("Draw expression graph on top of lineage");
 				}
 			else if(type==LineageView.ExpRenderSetting.typeColorIntensity)
 				{
 				secondLine=new JPanel(new GridLayout(1,2));
 				secondLine.add(snapContrast);
 				secondLine.add(cExp1);
+				cRenderType.setToolTipText("Draw expression as a color intensity on the lineage branches");
 				}
 			else if(type==LineageView.ExpRenderSetting.typeColorIntensityDiff)
 				{
 				secondLine=new JPanel(new GridLayout(1,2));
 				secondLine.add(cExp1);
 				secondLine.add(cExp2);
+				cRenderType.setToolTipText("Draw difference of expressions as a color intensity on the lineage branches");
 				}
 			else if(type==LineageView.ExpRenderSetting.typeTimeDev)
 				{
 				secondLine=new JPanel(new GridLayout(1,1));
 				secondLine.add(cExp1);
+				cRenderType.setToolTipText("Show single-valued expression as time deviation");
 				}
 			else
 				System.out.println("type wtf");
 			
+			
+			bUp.addActionListener(this);
+			bDown.addActionListener(this);
+			bRemoveRenderer.addActionListener(this);
+			cRenderType.addActionListener(this);
+			snapContrast.addSnapListener(this);
+			cColor.addActionListener(this);
+			
 			if(secondLine!=null)
 				add(secondLine,BorderLayout.CENTER);
-			
+			revalidate();
 			}
-		
-		
-		private void setAvailableExpressionsUpdate(Collection<String> newAvailableExp)
+
+		/**
+		 * Update list of available expression patterns
+		 */
+		private void setAvailableExpressionsUpdate()
 			{
-			//TODO
+			avail.clear();
+			avail.addAll(currentAvailableExp);
+			cExp1.setModel(cm1);
+			cExp2.setModel(cm2);
+			cExp1.removeActionListener(this);
+			cExp1.addActionListener(this);
+			cExp2.removeActionListener(this);
+			cExp2.addActionListener(this);
+			System.out.println("here "+avail);
+			revalidate();
 			}
 		
-		
+		/**
+		 * Remove this renderer from the list, update GUI
+		 */
 		private void removeRenderer()
 			{
 			listRenderers.remove(this);
 			placeAllRenderers();
-			//todo
+			updateLinView();
 			}
 
+		/**
+		 * Move renderer up in list, update GUI
+		 */
 		private void moveUp()
 			{
 			int i=listRenderers.indexOf(this);
@@ -276,9 +339,12 @@ public class LineageExpPanel extends JPanel
 			if(i<0) i=0;
 			listRenderers.add(i,this);
 			placeAllRenderers();
-			//todo
+			updateExp();
 			}
 		
+		/**
+		 * Move renderer down in list, update GUI
+		 */
 		private void moveDown()
 			{
 			int i=listRenderers.indexOf(this);
@@ -287,7 +353,7 @@ public class LineageExpPanel extends JPanel
 			if(i>listRenderers.size()) listRenderers.size();
 			listRenderers.add(i,this);
 			placeAllRenderers();
-			//todo
+			updateExp();
 			}
 		
 		public void actionPerformed(ActionEvent e)
@@ -298,6 +364,29 @@ public class LineageExpPanel extends JPanel
 				moveDown();
 			else if(e.getSource()==bRemoveRenderer)
 				removeRenderer();
+			else if(e.getSource()==cExp1 || e.getSource()==cExp2 || e.getSource()==cColor)
+				updateExp();
+			else if(e.getSource()==cRenderType)
+				{
+				placeExpComponents();
+				updateExp();
+				}
+			}
+
+		public void updateExp()
+			{
+			exp.type=(Integer)cRenderType.getSelectedItem();
+			exp.color=cColor.getEvColor();
+			exp.expname1=(String)cExp1.getSelectedItem();
+			exp.expname2=(String)cExp2.getSelectedItem();
+			//System.out.println("here "+exp.expname1);
+			updateLinView();
+			}
+		
+		public void slideChange(int change)
+			{
+			exp.scale1*=Math.exp(change/10000.0);
+			updateLinView();
 			}
 		
 		}
@@ -379,15 +468,16 @@ public class LineageExpPanel extends JPanel
 			}
 		}
 	
+	/*
 	private static class ComboExp extends JComboBox
 		{
 		private static final long serialVersionUID = 1L;
 
 		public ComboExp()
 			{
-			super(new Vector<String>(Arrays.asList("RFP","GFP")));
+			super(new Vector<String>(Arrays.asList("posMeanDevR","RFP","GFP")));
 			}
-		}
+		}*/
 	
 	
 	}

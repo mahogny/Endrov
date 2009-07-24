@@ -120,7 +120,7 @@ public class LineageWindow extends BasicWindow
 		}
 	
 	
-	LineageExpPanel expPanel=new LineageExpPanel();
+	LineageExpPanel expPanel=new LineageExpPanel(view);
 	
 	/**
 	 * Make a new window at some location
@@ -623,9 +623,13 @@ public class LineageWindow extends BasicWindow
 		objectCombo.updateList();
 //			view.currentFrame=frameControl.getFrame();
 		view.currentLin=getLineage();
+		expPanel.setAvailableExpressions(view.collectExpNames());
 		repaint();
 		}
 	
-	public void loadedFile(EvData data)	{}
+	public void loadedFile(EvData data)
+		{
+		dataChangedEvent();
+		}
 	public void freeResources(){}
 	}

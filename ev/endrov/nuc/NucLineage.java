@@ -1085,5 +1085,17 @@ public class NucLineage extends EvObject implements Cloneable
 		
 		
 		}
+
+	/**
+	 * Get names of all expressions mentioned
+	 */
+	public Set<String> getAllExpNames()
+		{
+		HashSet<String> expName=new HashSet<String>();
+		for(NucLineage.Nuc n:nuc.values())
+			expName.addAll(n.exp.keySet());
+		return expName;
+		}
+
 	
 	}

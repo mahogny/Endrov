@@ -47,6 +47,9 @@ public class HierarchicalPainter
 			return (cameraY+y)/zoomY;
 			}
 
+		/**
+		 * How much to add to screenX given distance in screen space
+		 */
 		public double scaleScreenDistX(double x)
 			{
 			return x;
@@ -56,6 +59,9 @@ public class HierarchicalPainter
 			return y;
 			}
 
+		/**
+		 * How much to add to screenX given distance in world space
+		 */
 		public double scaleWorldDistX(double x)
 			{
 			return x*zoomX;
