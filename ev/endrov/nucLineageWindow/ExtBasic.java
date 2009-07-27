@@ -1,4 +1,4 @@
-package endrov.lineageWindow;
+package endrov.nucLineageWindow;
 
 import endrov.basicWindow.*;
 

@@ -1,4 +1,4 @@
-package endrov.lineageWindow2;
+package endrov.nuc;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.util.*;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.nuc.*;
 import endrov.util.Tuple;
 
 /**

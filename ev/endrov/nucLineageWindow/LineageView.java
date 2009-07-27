@@ -1,4 +1,4 @@
-package endrov.lineageWindow2;
+package endrov.nucLineageWindow;
 
 import java.awt.*;
 import java.util.*;
@@ -11,8 +11,8 @@ import javax.vecmath.Vector2d;
 
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
-import endrov.lineageWindow2.HierarchicalPainter.Camera;
 import endrov.nuc.*;
+import endrov.nucLineageWindow.HierarchicalPainter.Camera;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
@@ -89,7 +89,7 @@ public class LineageView extends JPanel
 		
 		public int type;
 		public String expname1="", expname2="";
-		public double scale1=1;
+		public Double scale1; //If null, then calculate
 		}
 		
 	
@@ -104,24 +104,23 @@ public class LineageView extends JPanel
 		}
 
 	
-	/**
-	 * 1. has to modify bounding box
-	 * 
-	 * 
-	 * 2. has to render on tree
-	 * * can draw over black line, can keep
-	 * * 
-	 * 
-	 * 3. render elsewhere - scalebars
-	 * 
-	 * 
-	 */
-	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// State of lineage for rendering //////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 	private WeakHashMap<NucLineage, LinState> linState=new WeakHashMap<NucLineage, LinState>();
+	
+	
+	/**
+	 * Cached information about nuclei
+	 */
+	public static class NucState
+		{
+		public boolean isExpanded=true;
+		public double centerY;
+		public double startX, endX;
+		}
+
 	
 	/** 
 	 * Cached information about nuclei 
@@ -377,7 +376,6 @@ public class LineageView extends JPanel
 	 */
 	private void drawKeyFrame(Graphics g, int x, int y, String nuc, EvDecimal frame)
 		{
-		//g.drawOval(x-keyFrameSize, y-keyFrameSize, 2*keyFrameSize, 2*keyFrameSize);
 		g.drawLine(x, y-keyFrameSize, x, y+keyFrameSize);
 		KeyFramePos f=new KeyFramePos();
 		f.frame=frame;
@@ -501,7 +499,6 @@ public class LineageView extends JPanel
 		//paint everything
 		paintToGraphics((Graphics2D)h, true, lin, linstate, width, height);
 
-
 		//Rotate image part 2
 		if(bim!=null)
 			{
@@ -516,11 +513,6 @@ public class LineageView extends JPanel
 	
 	/**
 	 * Render to graphics area
-	 * @param h
-	 * @param toScreen
-	 * @param linstate
-	 * @param width
-	 * @param height
 	 */
 	public void paintToGraphics(Graphics2D h, boolean toScreen, NucLineage lin, LinState linstate, int width, int height)
 		{
@@ -538,12 +530,23 @@ public class LineageView extends JPanel
 		if(toScreen)
 			drawFrameLines(h,linstate, width, height);
 
+		//Find scales
+		for(final ExpRenderSetting expsetting:listExpRenderSettings)
+			{
+			Tuple<Double,Double> maxMin1=lin.getMaxMinExpLevel(expsetting.expname1);
+			if(maxMin1!=null)
+				{
+				double absmax=Math.max(Math.abs(maxMin1.fst()), Math.abs(maxMin1.snd()));
+				expsetting.scale1=sizeOfBranch/absmax;
+				}
+			else
+				expsetting.scale1=1.0;
+			}
+		
 		//Draw all trees
 		HierarchicalPainter hpainter=new HierarchicalPainter();
 		layoutAllTrees(lin, linstate, hpainter, width, height);
 		hpainter.paint(h, width, height, linstate.cam);
-		//System.out.println("cam "+linstate.cam);
-		//System.out.println("bb "+hpainter.getTotalBoundingBox());
 		
 		//Draw scale bar
 		drawScalebars(h);
@@ -551,13 +554,9 @@ public class LineageView extends JPanel
 	
 
 	
-	/*
-	private boolean showExpAtAll()
-		{
-		return showExpDot || showExpSolid || showExpLine;
-		}*/
-	
-
+	/**
+	 * Prepare rendering of tree
+	 */
 	private void layoutAllTrees(NucLineage lin, LinState linstate, HierarchicalPainter hpainter, int width, int height)
 		{
 		double displacement=0;
@@ -570,7 +569,7 @@ public class LineageView extends JPanel
 		}
 	
 	/**
-	 * Prepare rendering sizes
+	 * Prepare rendering of a tree branch
 	 */
 	private double layoutTreeRecursive(NucLineage lin, final String nucName, final LinState linstate, 
 			double displacement, HierarchicalPainter.DrawNode parentDrawNode)
@@ -742,38 +741,26 @@ public class LineageView extends JPanel
 							//int thisStartX=cam.toScreenX(thisInternal.startX);
 							//int thisEndX=cam.toScreenX(thisInternal.endX);
 
-							
-
 							double scale=cam.scaleWorldDistY(expsetting.scale1);
-
-							//Only draw if potentially visible
-							//EvDecimal minframe=nucexp.level.firstKey();
-//							EvDecimal maxframe=nucexp.level.lastKey();
-							//boolean visible=(midr>=0 && linstate.cam.toScreenX(maxframe.doubleValue())>=0 && linstate.cam.toScreenX(minframe.doubleValue())<width &&
-									//midr-nucexp.getMaxLevel()*scale<height);
-							//if(visible)
+							g.setColor(expsetting.color.getAWTColor());
+							boolean hasLastCoord=false;
+							int lastX=0, lastY=0;
+							for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
 								{
-//								g.setColor(nucexp.expColor);
-								g.setColor(expsetting.color.getAWTColor());
-								boolean hasLastCoord=false;
-								int lastX=0, lastY=0;
-								for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
+								int y=(int)(-ve.getValue()*scale+thisMidY);
+								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
+								if(hasLastCoord)
 									{
-									int y=(int)(-ve.getValue()*scale+thisMidY);
-									int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
-									if(hasLastCoord)
-										{
-										if(showExpLine)
-											g.drawLine(lastX, lastY, x, y);
-										if(showExpSolid)
-											g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{thisMidY,lastY,y,thisMidY}, 4);
-										}
-									if(showExpDot)
-										g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
-									hasLastCoord=true;
-									lastX=x;
-									lastY=y;
+									if(showExpLine)
+										g.drawLine(lastX, lastY, x, y);
+									if(showExpSolid)
+										g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{thisMidY,lastY,y,thisMidY}, 4);
 									}
+								if(showExpDot)
+									g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
+								hasLastCoord=true;
+								lastX=x;
+								lastY=y;
 								}
 
 
@@ -783,9 +770,7 @@ public class LineageView extends JPanel
 					}
 				else if(expsetting.type==ExpRenderSetting.typeColorIntensity)
 					{
-
-				//TODO bounds
-					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2)
+					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-5,x2,thisInternal.centerY+5)
 						{
 						public void paint(Graphics g, double width, double height, Camera cam)
 							{
@@ -817,14 +802,36 @@ public class LineageView extends JPanel
 						};
 					thisDrawNode.addSubNode(drawExpNode);
 					}
+				else if(expsetting.type==ExpRenderSetting.typeTimeDev)
+					{
+					//bounds TODO
+					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-5,x2,thisInternal.centerY+5)
+						{
+						public void paint(Graphics g, double width, double height, Camera cam)
+							{
+							int thisMidY=cam.toScreenY(thisInternal.centerY);
+							//int thisStartX=cam.toScreenX(thisInternal.startX);
+							int thisEndX=cam.toScreenX(thisInternal.endX);
+							
+							int y1=thisMidY+expanderSize+2;
+							int y2=y1-1;
 
+							double level=nucexp.level.get(nucexp.level.firstKey());
+							
+							int x1=thisEndX-(int)level;
+							int x2=thisEndX+(int)level;
+
+							g.setColor(expsetting.color.getAWTColor());
+							g.drawLine(x1, y1, x2, y1);
+							g.drawLine(x1, y1, x1, y2);
+							g.drawLine(x2, y1, x2, y2);
+							}
+						};
+					thisDrawNode.addSubNode(drawExpNode);
+					}
 				}
 
-
-
 			}
-		
-
 		
 		
 		parentDrawNode.addSubNode(thisDrawNode);
@@ -842,22 +849,8 @@ public class LineageView extends JPanel
 		}
 	
 	/////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////// Tree pos ////////////////////////////////////////////////
+	/////////////////////////// Click positions /////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
-
-	
-	/**
-	 * Cached information about nuclei
-	 */
-	public static class NucState
-		{
-		public boolean isExpanded=true;
-		//public int sizer=0;
-		//public int centerDisplacement=0;
-		
-		public double centerY;
-		public double startX, endX;
-		}
 
 	
 
@@ -1082,7 +1075,6 @@ public class LineageView extends JPanel
 		}
 	
 
-
 	
 	
 	/**
@@ -1147,83 +1139,6 @@ public class LineageView extends JPanel
 		}
 	
 	
-	
-
-
-	/**
-	 * Draw expression profile: marker of time deviation
-	 */
-	private void drawExpressionTimeDev(Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, boolean toScreen, LinState linstate, int width, int height)
-		{
-		for(Map.Entry<String, NucExp> e:nuc.exp.entrySet())
-			if(!e.getValue().level.isEmpty())
-				//					if(e.getKey().equals("divDev")) //Division time deviation, special rendering
-				{
-				int y1=midr+expanderSize+2;
-				int y2=y1-1;
-
-				double level=e.getValue().level.values().iterator().next();// *frameDist; TODO
-				int x1=endc-(int)level;
-				int x2=endc+(int)level;
-
-				g.setColor(Color.BLACK);
-				g.drawLine(x1, y1, x2, y1);
-				g.drawLine(x1, y1, x1, y2);
-				g.drawLine(x2, y1, x2, y2);
-				}
-		}
-
-
-
-	/**
-	 * Draw expression profile: graph on top
-	 */
-	/*
-	private void drawExpressionGraphOnTop(
-			Graphics g, String nucName, int endc, int midr, NucLineage.Nuc nuc, 
-			ExpRenderSetting expsetting,
-			LinState linstate, int width, int height)
-		{
-		//	int colorIndex=-1;
-		//	EvColor colorList[]=EvColor.colorList;
-		NucExp nucexp=nuc.exp.get(expsetting.expname1);
-		if(nucexp!=null && !nucexp.level.isEmpty())
-			{
-
-			double scale=expsetting.scale1;
-
-			//Only draw if potentially visible
-			EvDecimal minframe=nucexp.level.firstKey();
-			EvDecimal maxframe=nucexp.level.lastKey();
-			boolean visible=(midr>=0 && linstate.cam.toScreenX(maxframe.doubleValue())>=0 && linstate.cam.toScreenX(minframe.doubleValue())<width &&
-					midr-nucexp.getMaxLevel()*scale<height);
-			if(visible)
-				{
-				g.setColor(nucexp.expColor);
-				boolean hasLastCoord=false;
-				int lastX=0, lastY=0;
-				for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
-					{
-					int y=(int)(-ve.getValue()*scale+midr);
-					int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
-					if(hasLastCoord)
-						{
-						if(showExpLine)
-							g.drawLine(lastX, lastY, x, y);
-						if(showExpSolid)
-							g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{midr,lastY,y,midr}, 4);
-						}
-					if(showExpDot)
-						g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
-					hasLastCoord=true;
-					lastX=x;
-					lastY=y;
-					}
-				}
-
-			}
-		}
-	*/
 
 
 	}

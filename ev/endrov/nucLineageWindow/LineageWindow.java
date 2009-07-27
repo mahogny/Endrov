@@ -1,4 +1,4 @@
-package endrov.lineageWindow;
+package endrov.nucLineageWindow;
 
 import java.awt.event.*;
 import java.awt.*;
@@ -12,10 +12,15 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.lineageWindow.LineageView.ClickRegion;
-import endrov.lineageWindow.LineageView.ClickRegionName;
 import endrov.nuc.*;
+import endrov.nucLineageWindow.LineageView.ClickRegion;
+import endrov.nucLineageWindow.LineageView.ClickRegionName;
 import endrov.util.EvDecimal;
+import endrov.util.EvSwingUtil;
+import endrov.util.JImageButton;
+import endrov.util.JImageToggleButton;
+import endrov.util.SnapBackSlider;
+import endrov.util.SnapBackSlider.SnapChangeListener;
 
 
 /**
@@ -23,7 +28,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  */
 public class LineageWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, ChangeListener
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener
 	{
 	static final long serialVersionUID=0;
 	
@@ -49,13 +54,29 @@ public class LineageWindow extends BasicWindow
 			public void savePersonalConfig(Element e){}
 			});
 		}
+
 	
+
+	public static final ImageIcon iconShowRoot=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
+	public static final ImageIcon iconShowSelected=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
+	public static final ImageIcon iconZoomAll=new ImageIcon(LineageWindow.class.getResource("jhZoomAll.png"));
+	public static final ImageIcon iconShowKeyFrames=new ImageIcon(LineageWindow.class.getResource("jhShowKeyFrames.png"));
+	public static final ImageIcon iconShowLabel=new ImageIcon(LineageWindow.class.getResource("jhShowLabel.png"));
+	public static final ImageIcon iconShowFrameLines=new ImageIcon(LineageWindow.class.getResource("jhShowFrameLines.png"));
+	public static final ImageIcon iconShowVerticalTree=new ImageIcon(LineageWindow.class.getResource("jhShowVerticalTree.png"));
 	
+	private final EvHidableSidePane sidePanelSplitPane;
+
 	
-	private JSlider sliderFrameDist=new JSlider(-20000,31000,0); 
-	private JSlider sliderExpScale=new JSlider(JSlider.VERTICAL, -4000,4000,0); 
-	private JButton buttonGoRoot=new JButton("=> root");
-	private JButton buttonGoSelected=new JButton("=> selected");
+	private SnapBackSlider sliderZoomX=new SnapBackSlider(JSlider.HORIZONTAL, -10000,10000); 
+	private SnapBackSlider sliderZoomY=new SnapBackSlider(JSlider.VERTICAL, -10000,10000);
+	private JButton buttonGoToRoot=new JImageButton(iconShowRoot,"Go to root");
+	private JButton buttonGoToSelected=new JImageButton(iconShowRoot,"Go to selected");
+	private JButton buttonZoomAll=new JImageButton(iconZoomAll,"Fit everything into screen");
+	private JToggleButton buttonShowFrameLines=new JImageToggleButton(iconShowFrameLines,"Show frame lines",true);
+	private JToggleButton buttonShowKeyFrames=new JImageToggleButton(iconShowKeyFrames,"Show key frames");
+	private JToggleButton buttonShowLabels=new JImageToggleButton(iconShowLabel,"Show labels");
+	private JToggleButton buttonShowVerticalTree=new JImageToggleButton(iconShowVerticalTree,"Show vertical tree");
 	private LineageView view=new LineageView();
 	private FrameControlLineage frameControl=new FrameControlLineage(new ChangeListener()
 		{
@@ -74,12 +95,6 @@ public class LineageWindow extends BasicWindow
 	public JMenu menuLineage=new JMenu("Lineage");
 	public JMenuItem miExportImage=new JMenuItem("Export Image");
 	
-	public JMenuItem miRotate=new JMenuItem("Rotate tree");
-	public JCheckBoxMenuItem miShowFrameLines=new JCheckBoxMenuItem("Show frame lines",true);
-	public JCheckBoxMenuItem miShowKeyFrames=new JCheckBoxMenuItem("Show key frames",true);
-	public JCheckBoxMenuItem miShowTreeLabel=new JCheckBoxMenuItem("Show tree label",true);
-	public JCheckBoxMenuItem miShowLeafLabel=new JCheckBoxMenuItem("Show leaf label",true);
-	
 	public JCheckBoxMenuItem miShowExpDot=new JCheckBoxMenuItem("Show level dots",false);
 	public JMenu miShowExp=new JMenu("Level display");
 	public JRadioButtonMenuItem miShowExpNone=new JRadioButtonMenuItem("Off",false);
@@ -93,6 +108,9 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miUnfoldAll=new JMenuItem("Unfold all");
 
 	
+	
+	
+	
 	/**
 	 * Make window with standard geometry
 	 */
@@ -102,6 +120,7 @@ public class LineageWindow extends BasicWindow
 		}
 	
 	
+	LineageExpPanel expPanel=new LineageExpPanel(view);
 	
 	/**
 	 * Make a new window at some location
@@ -112,24 +131,29 @@ public class LineageWindow extends BasicWindow
 		view.addMouseListener(this);
 		view.addMouseMotionListener(this);
 		view.addMouseWheelListener(this);
-		buttonGoRoot.addActionListener(this);
-		buttonGoSelected.addActionListener(this);
-		sliderFrameDist.addChangeListener(this);
-		sliderExpScale.addChangeListener(this);
 		objectCombo.addActionListener(this);
 		miShowExpDot.addActionListener(this);
 		miShowExpLine.addActionListener(this);
 		miShowExpSolid.addActionListener(this);
 		miShowExpNone.addActionListener(this);
-		miShowTreeLabel.addActionListener(this);
-		miShowLeafLabel.addActionListener(this);
 		miExportImage.addActionListener(this);
-		miShowFrameLines.addActionListener(this);
-		miShowKeyFrames.addActionListener(this);
 		miFoldAll.addActionListener(this);
 		miUnfoldAll.addActionListener(this);
-		miRotate.addActionListener(this);
 		miShowScale.addActionListener(this);
+
+
+		buttonGoToRoot.addActionListener(this);
+		buttonGoToSelected.addActionListener(this);
+		buttonZoomAll.addActionListener(this);
+		buttonShowFrameLines.addActionListener(this);
+		buttonShowKeyFrames.addActionListener(this);
+		buttonShowLabels.addActionListener(this);
+		buttonShowVerticalTree.addActionListener(this);
+		
+
+
+		sliderZoomX.addSnapListener(new SnapChangeListener(){public void slideChange(int change){zoomX(change);repaint();}});
+		sliderZoomY.addSnapListener(new SnapChangeListener(){public void slideChange(int change){zoomY(change);repaint();}});
 		
 		ButtonGroup expGroup=new ButtonGroup();
 		expGroup.add(miShowExpLine);
@@ -137,14 +161,21 @@ public class LineageWindow extends BasicWindow
 		expGroup.add(miShowExpNone);
 		updateShowExp();
 		
+		
+
+		
+		
+		sidePanelSplitPane=new EvHidableSidePane(EvSwingUtil.layoutLCR(null, view, sliderZoomY), expPanel, true);
+		
+		
 		//Put GUI together
 		setLayout(new BorderLayout());
-		add(view,BorderLayout.CENTER);
+		add(sidePanelSplitPane,BorderLayout.CENTER);
 		
 		JPanel bottom = new JPanel(new GridBagLayout());
 		add(bottom,BorderLayout.SOUTH);
 
-		add(sliderExpScale,BorderLayout.EAST);
+//		add(sliderZoomY,BorderLayout.EAST);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
@@ -154,15 +185,16 @@ public class LineageWindow extends BasicWindow
 		bottom.add(objectCombo,c);
 		c.gridx++;
 		c.weightx=1;
-		bottom.add(sliderFrameDist,c);
+		bottom.add(sliderZoomX,c);
 		c.gridx++;
 		c.weightx=0;
 		c.fill = 0;
 		bottom.add(frameControl,c);
 		c.gridx++;
-		bottom.add(buttonGoRoot,c);
-		c.gridx++;
-		bottom.add(buttonGoSelected,c);
+		bottom.add(EvSwingUtil.layoutEvenHorizontal(
+				buttonGoToRoot, buttonGoToSelected, buttonZoomAll,
+				buttonShowVerticalTree, buttonShowFrameLines, buttonShowKeyFrames, buttonShowLabels
+				),c);
 		c.gridx++;
 		
 		addMenubar(menuLineage);
@@ -170,14 +202,9 @@ public class LineageWindow extends BasicWindow
 		menuLineage.addSeparator();
 		menuLineage.add(miExportImage);
 		menuLineage.addSeparator();
-		menuLineage.add(miShowFrameLines);
-		menuLineage.add(miShowKeyFrames);
 		menuLineage.add(miShowExpDot);
 		menuLineage.add(miShowExp);
 		menuLineage.add(miShowScale);
-		menuLineage.add(miShowTreeLabel);
-		menuLineage.add(miShowLeafLabel);
-		menuLineage.add(miRotate);
 		
 		miShowExp.add(miShowExpNone);
 		miShowExp.add(miShowExpLine);
@@ -188,8 +215,7 @@ public class LineageWindow extends BasicWindow
 		menuLineage.add(miUnfoldAll);
 		
 		
-		
-		
+		copyShowSettings();	
 		
 		//Window overall things
 		setTitleEvWindow("Lineage Window");
@@ -197,10 +223,7 @@ public class LineageWindow extends BasicWindow
 		setBoundsEvWindow(bounds);
 		setVisibleEvWindow(true);
 
-		stateChanged(null);
 		dataChangedEvent();
-		
-		
 		
 		}
 	
@@ -221,11 +244,18 @@ public class LineageWindow extends BasicWindow
 	private NucLineage getLineage()
 		{
 		return objectCombo.getSelectedObject();
-//		return lin==null?new NucL
-//		return objectCombo.getSelectedObjectNotNull();
 		}
 	
-
+	/**
+	 * Copy show settings from toggle buttons to view
+	 */
+	private void copyShowSettings()
+		{
+		view.showFrameLines=buttonShowFrameLines.isSelected();
+		view.showKeyFrames=buttonShowKeyFrames.isSelected();
+		view.showLabel=buttonShowLabels.isSelected();
+		view.showHorizontalTree=!buttonShowVerticalTree.isSelected();
+		}
 	
 	/*
 	 * (non-Javadoc)
@@ -233,37 +263,20 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void actionPerformed(ActionEvent e)
 		{
-		if(e.getSource()==buttonGoRoot)
-			view.goRoot();
-		else if(e.getSource()==buttonGoSelected)
-			view.goSelected();
-		else if(e.getSource()==miRotate)
-			{
-			view.camera.showHorizontalTree=!view.camera.showHorizontalTree;
-			view.repaint();
-			}
-		else if(e.getSource()==miExportImage)
+		if(e.getSource()==buttonGoToRoot)
+			view.goToRoot();
+		else if(e.getSource()==buttonGoToSelected)
+			view.goToSelected();
+		else if(e.getSource()==buttonZoomAll)
+			view.zoomAll();
+/*		else if(e.getSource()==miExportImage)
 			{
 			view.saveToDisk();
-			}
-		else if(e.getSource()==miShowFrameLines)
+			}*/
+		else if(e.getSource()==buttonShowFrameLines || e.getSource()==buttonShowKeyFrames || 
+				e.getSource()==buttonShowLabels || e.getSource()==buttonShowVerticalTree)
 			{
-			view.showFrameLines=miShowFrameLines.isSelected();
-			repaint();
-			}
-		else if(e.getSource()==miShowKeyFrames)
-			{
-			view.showKeyFrames=miShowKeyFrames.isSelected();
-			repaint();
-			}
-		else if(e.getSource()==miShowTreeLabel)
-			{
-			view.showTreeLabel=miShowTreeLabel.isSelected();
-			repaint();
-			}
-		else if(e.getSource()==miShowLeafLabel)
-			{
-			view.showLeafLabel=miShowLeafLabel.isSelected();
+			copyShowSettings();
 			repaint();
 			}
 		else if(e.getSource()==miUnfoldAll)
@@ -353,7 +366,7 @@ public class LineageWindow extends BasicWindow
 		mouseLastY=e.getY();
 		if(SwingUtilities.isRightMouseButton(e))
 			{
-			view.camera.pan(dx,dy);
+			view.pan(dx,dy);
 			view.repaint();
 			}
 		
@@ -373,26 +386,33 @@ public class LineageWindow extends BasicWindow
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e)
 		{
+		double dist;
 		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
-			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
-		else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
-			sliderFrameDist.setValue(sliderFrameDist.getValue()+e.getUnitsToScroll()*100);
+			{
+			dist=e.getUnitsToScroll()/10.0;
+			}
+		else //if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
+			{
+			dist=e.getUnitsToScroll()/10.0;
+			}
+		dist=Math.exp(dist);
+		view.zoom(dist, e.getX(), dist, e.getY());
 		view.repaint();
 		}
 
 	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-	 */
-	public void stateChanged(ChangeEvent e)
+	
+	public void zoomX(int numStep)
 		{
-		view.setFrameDist(Math.pow(10.0,sliderFrameDist.getValue()/30000.0));
-		//view.setBranchScale(Math.pow(10.0,sliderBranchScale.getValue()/30000.0));
-		view.expScale=Math.pow(10.0,sliderExpScale.getValue()/3000.0);
-		repaint();
+		double factor=Math.exp(-numStep/1000.0);
+		view.zoomX(factor, getWidth()/2);
 		}
-
+	
+	public void zoomY(int numStep)
+		{
+		double factor=Math.exp(-numStep/1000.0);
+		view.zoomY(factor, getHeight()/2);
+		}
 	
 	/**
 	 * Open popup menu on right-click
@@ -401,7 +421,7 @@ public class LineageWindow extends BasicWindow
 		{
 		JPopupMenu popup = new JPopupMenu();
 		
-		final EvDecimal hoverFrame=view.camera.getFrameFromCursor(e.getX(), e.getY());
+		final EvDecimal hoverFrame=view.getFrameFromCursor(e.getX(),e.getY());
 		popup.add(new JMenuItem("--Frame: "+hoverFrame));
 		JMenuItem miGoToFrame=new JMenuItem("Go to frame");
 		popup.add(miGoToFrame);
@@ -603,9 +623,13 @@ public class LineageWindow extends BasicWindow
 		objectCombo.updateList();
 //			view.currentFrame=frameControl.getFrame();
 		view.currentLin=getLineage();
+		expPanel.setAvailableExpressions(view.collectExpNames());
 		repaint();
 		}
 	
-	public void loadedFile(EvData data)	{}
+	public void loadedFile(EvData data)
+		{
+		dataChangedEvent();
+		}
 	public void freeResources(){}
 	}

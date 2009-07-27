@@ -1,4 +1,4 @@
-package endrov.lineageWindow2;
+package endrov.nucLineageWindow;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
