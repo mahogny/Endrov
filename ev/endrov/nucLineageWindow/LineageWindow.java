@@ -75,7 +75,7 @@ public class LineageWindow extends BasicWindow
 	private JButton buttonZoomAll=new JImageButton(iconZoomAll,"Fit everything into screen");
 	private JToggleButton buttonShowFrameLines=new JImageToggleButton(iconShowFrameLines,"Show frame lines",true);
 	private JToggleButton buttonShowKeyFrames=new JImageToggleButton(iconShowKeyFrames,"Show key frames");
-	private JToggleButton buttonShowLabels=new JImageToggleButton(iconShowLabel,"Show labels");
+	private JToggleButton buttonShowLabels=new JImageToggleButton(iconShowLabel,"Show labels",true);
 	private JToggleButton buttonShowVerticalTree=new JImageToggleButton(iconShowVerticalTree,"Show vertical tree");
 	private LineageView view=new LineageView();
 	private FrameControlLineage frameControl=new FrameControlLineage(new ChangeListener()
@@ -405,13 +405,13 @@ public class LineageWindow extends BasicWindow
 	public void zoomX(int numStep)
 		{
 		double factor=Math.exp(-numStep/1000.0);
-		view.zoomX(factor, getWidth()/2);
+		view.zoomX(factor, view.getWidth()/2);
 		}
 	
 	public void zoomY(int numStep)
 		{
 		double factor=Math.exp(-numStep/1000.0);
-		view.zoomY(factor, getHeight()/2);
+		view.zoomY(factor, view.getHeight()/2);
 		}
 	
 	/**

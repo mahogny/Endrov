@@ -73,7 +73,7 @@ public class Voronoi
     int numVert=Integer.parseInt(new StringTokenizer(line2).nextToken());
     
     //Vertices
-    br.readLine();//Skip infinity
+    br.readLine();//Skip infinity       (how does this affect indexing?)
     for(int i=1;i<numVert;i++)
     	{
     	StringTokenizer st=new StringTokenizer(br.readLine());

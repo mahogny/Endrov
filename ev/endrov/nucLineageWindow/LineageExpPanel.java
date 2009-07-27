@@ -105,8 +105,6 @@ public class LineageExpPanel extends JPanel
 	 */
 	public void setAvailableExpressions(Collection<String> exps)
 		{
-		System.out.println("Got "+exps);
-		
 		//Check if anything is different. Otherwise don't update
 		if(currentAvailableExp.containsAll(exps))
 			{
@@ -123,8 +121,6 @@ public class LineageExpPanel extends JPanel
 	 */
 	private void setAvailableExpressionsUpdate(Collection<String> newAvailableExp)
 		{
-		System.out.println("gotu "+newAvailableExp);
-		
 		currentAvailableExp.clear();
 		currentAvailableExp.addAll(newAvailableExp);
 		for(RenderEntry e:listRenderers)
@@ -162,13 +158,11 @@ public class LineageExpPanel extends JPanel
 			public String selectedExp="";
 			public Object getSelectedItem()
 				{
-				System.out.println("get: "+selectedExp);
 				return selectedExp;
 				}
 	
 			public void setSelectedItem(Object anItem)
 				{
-				System.out.println("set: "+anItem);
 				selectedExp=(String)anItem;
 				}
 	
@@ -216,7 +210,7 @@ public class LineageExpPanel extends JPanel
 		
 		
 		
-		public LineageView.ExpRenderSetting exp=new LineageView.ExpRenderSetting();
+		public final LineageView.ExpRenderSetting exp=new LineageView.ExpRenderSetting();
 		
 		private JPanel firstLine=new JPanel(new GridBagLayout());
 		public RenderEntry()
@@ -260,21 +254,21 @@ public class LineageExpPanel extends JPanel
 			if(type==LineageView.ExpRenderSetting.typeGraphOnTop)
 				{
 				//secondLine=EvSwingUtil.layoutCompactHorizontal(snapContrast,cExp1);
-				secondLine=new JPanel(new GridLayout(1,2));
-				secondLine.add(snapContrast);
+				secondLine=new JPanel(new GridLayout(2,1));
 				secondLine.add(cExp1);
+				secondLine.add(snapContrast);
 				cRenderType.setToolTipText("Draw expression graph on top of lineage");
 				}
 			else if(type==LineageView.ExpRenderSetting.typeColorIntensity)
 				{
-				secondLine=new JPanel(new GridLayout(1,2));
-				secondLine.add(snapContrast);
+				secondLine=new JPanel(new GridLayout(2,1));
 				secondLine.add(cExp1);
+				secondLine.add(snapContrast);
 				cRenderType.setToolTipText("Draw expression as a color intensity on the lineage branches");
 				}
 			else if(type==LineageView.ExpRenderSetting.typeColorIntensityDiff)
 				{
-				secondLine=new JPanel(new GridLayout(1,2));
+				secondLine=new JPanel(new GridLayout(2,1));
 				secondLine.add(cExp1);
 				secondLine.add(cExp2);
 				cRenderType.setToolTipText("Draw difference of expressions as a color intensity on the lineage branches");
@@ -314,7 +308,6 @@ public class LineageExpPanel extends JPanel
 			cExp1.addActionListener(this);
 			cExp2.removeActionListener(this);
 			cExp2.addActionListener(this);
-			System.out.println("here "+avail);
 			revalidate();
 			}
 		
@@ -364,10 +357,17 @@ public class LineageExpPanel extends JPanel
 				moveDown();
 			else if(e.getSource()==bRemoveRenderer)
 				removeRenderer();
-			else if(e.getSource()==cExp1 || e.getSource()==cExp2 || e.getSource()==cColor)
+			else if(e.getSource()==cExp1 || e.getSource()==cExp2)
+				{
+				System.out.println("here");
+				exp.scale1=null; //Re-scale
+				updateExp();
+				}
+			else if(e.getSource()==cColor)
 				updateExp();
 			else if(e.getSource()==cRenderType)
 				{
+				exp.scale1=null; //Re-scale
 				placeExpComponents();
 				updateExp();
 				}
@@ -385,7 +385,8 @@ public class LineageExpPanel extends JPanel
 		
 		public void slideChange(int change)
 			{
-			exp.scale1*=Math.exp(change/10000.0);
+			exp.scale1*=Math.exp(change/5000.0);
+			//System.out.println("new scale "+exp.scale1);
 			updateLinView();
 			}
 		
