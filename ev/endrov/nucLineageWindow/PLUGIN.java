@@ -1,4 +1,4 @@
-package endrov.lineageWindow2;
+package endrov.nucLineageWindow;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef

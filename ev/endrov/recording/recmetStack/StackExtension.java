@@ -29,7 +29,7 @@ public class StackExtension
 
 					public String getName()
 						{
-						return "Stacl";
+						return "Stack";
 						}
 				
 				}

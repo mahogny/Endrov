@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import endrov.basicWindow.*;
 import endrov.ev.*;
-import endrov.lineageWindow.LineageWindow;
 import endrov.modelWindow.ModelWindow;
 import endrov.starter.Start;
 
@@ -64,7 +63,7 @@ public class AppletGUI extends JApplet
 			
 			EvWindowManagerApplet manager=new EvWindowManagerApplet(2,applet==null);
 			BasicWindow.windowManager=manager;
-			new LineageWindow();
+			new endrov.nucLineageWindow.LineageWindow();
 			new ModelWindow();
 			
 			//Set display settings

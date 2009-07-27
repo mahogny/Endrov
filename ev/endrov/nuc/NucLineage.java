@@ -1098,4 +1098,37 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 
 	
+	/**
+	 * Get maximum and minimum level of expression
+	 */
+	public Tuple<Double,Double> getMaxMinExpLevel(String expName)
+		{
+		boolean first=true;
+		double max=0, min=0;
+		for(Nuc n:nuc.values())
+			{
+			NucExp e=n.exp.get(expName);
+			if(e!=null)
+				{
+				for(double v:e.level.values())
+					if(first)
+						{
+						max=min=v;
+						}
+					else
+						{
+						if(v>max)
+							max=v;
+						else if(v<min)
+							min=v;
+						}
+				}
+			}
+		if(first)
+			return null;
+		else
+			return Tuple.make(max, min);
+		}
+	
+	
 	}

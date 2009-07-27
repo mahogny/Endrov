@@ -3,7 +3,6 @@ package endrov.starter;
 import endrov.basicWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.lineageWindow.LineageWindow;
 import endrov.modelWindow.ModelWindow;
 
 import java.io.*;
@@ -69,7 +68,7 @@ public class CEviewer
 			EV.setHasStartedUp();
 			if(BasicWindow.getWindowList().size()==0)
 				{
-				new LineageWindow();
+				new endrov.nucLineageWindow.LineageWindow();
 				new ModelWindow();
 				}
 			EvData.registerOpenedData(EvData.loadFile(new File("angler.ost")));

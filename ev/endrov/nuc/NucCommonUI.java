@@ -26,7 +26,6 @@ import endrov.consoleWindow.ConsoleWindow;
 import endrov.data.EvData;
 import endrov.data.EvSelection;
 import endrov.ev.EvLog;
-import endrov.lineageWindow.FateDialog;
 import endrov.util.EvDecimal;
 import endrov.util.EvGeomUtil;
 import endrov.util.Tuple;

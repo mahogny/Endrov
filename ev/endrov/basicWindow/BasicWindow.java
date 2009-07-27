@@ -592,7 +592,10 @@ public abstract class BasicWindow extends JPanel
 	 */
 	public void addMenuWindow(JMenuItem ni)
 		{
-		addMenuItemSorted(menuWindows, ni);
+		synchronized (ni)
+			{
+			addMenuItemSorted(menuWindows, ni);
+			}
 		}
 
 	/**
