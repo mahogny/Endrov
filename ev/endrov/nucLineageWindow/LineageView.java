@@ -533,15 +533,30 @@ public class LineageView extends JPanel
 		//Find scales
 		for(final ExpRenderSetting expsetting:listExpRenderSettings)
 			{
-			Tuple<Double,Double> maxMin1=lin.getMaxMinExpLevel(expsetting.expname1);
-			if(maxMin1!=null)
+			if(expsetting.scale1==null && lin!=null)
 				{
-				double absmax=Math.max(Math.abs(maxMin1.fst()), Math.abs(maxMin1.snd()));
-				expsetting.scale1=sizeOfBranch/absmax;
+				Tuple<Double,Double> maxMin1=lin.getMaxMinExpLevel(expsetting.expname1);
+				if(maxMin1!=null)
+					{
+					double absmax=Math.max(Math.abs(maxMin1.fst()), Math.abs(maxMin1.snd()));
+					expsetting.scale1=sizeOfBranch/absmax;
+					}
+				else
+					expsetting.scale1=1.0;
 				}
-			else
-				expsetting.scale1=1.0;
 			}
+		
+		//Add scalebars
+		for(final ExpRenderSetting expsetting:listExpRenderSettings)
+			if(expsetting.scale1!=null)
+				if(expsetting.type==ExpRenderSetting.typeGraphOnTop)
+					{
+					ScaleBar sb=new ScaleBar();
+					sb.name=expsetting.expname1;
+					sb.scale=expsetting.scale1;
+					sb.unit=""; //TODO (no scalebar if no unit?)
+					listScaleBars.add(sb);
+					}
 		
 		//Draw all trees
 		HierarchicalPainter hpainter=new HierarchicalPainter();
@@ -549,7 +564,7 @@ public class LineageView extends JPanel
 		hpainter.paint(h, width, height, linstate.cam);
 		
 		//Draw scale bar
-		drawScalebars(h);
+		drawScalebars(h,linstate.cam);
 		}
 	
 
@@ -600,7 +615,7 @@ public class LineageView extends JPanel
 			if(nuc.child.size()==1)
 				{
 				Internal cInternal=linstate.getNucinfo(nuc.child.first());
-				thisInternal.centerY=cInternal.centerY; //TODO improve
+				thisInternal.centerY=cInternal.centerY; //TODO handle 1 child
 				}
 			else*/
 			
@@ -617,10 +632,6 @@ public class LineageView extends JPanel
 					}
 				thisInternal.centerY=sum/nuc.child.size();
 				fontHeightAvailable=maxy-miny;
-				
-				//TODO handle only 1 child
-
-				
 			}
 		else
 			{
@@ -686,7 +697,7 @@ public class LineageView extends JPanel
 					}
 
 				//Lines to children
-				if(!nuc.child.isEmpty())
+				if(thisInternal.isExpanded && !nuc.child.isEmpty())
 					{
 					for(String cname:nuc.child)
 						{
@@ -695,7 +706,9 @@ public class LineageView extends JPanel
 						int cStartY=cam.toScreenY(cstate.centerY);
 						g.drawLine(thisEndX, thisMidY, cStartX, cStartY);
 						}
-					
+					}
+				if(!nuc.child.isEmpty())
+					{
 					drawExpanderSymbol(g, nucName, thisEndX, thisMidY, thisInternal.isExpanded, spaceAvailable);
 					}
 				
@@ -770,7 +783,7 @@ public class LineageView extends JPanel
 					}
 				else if(expsetting.type==ExpRenderSetting.typeColorIntensity)
 					{
-					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-5,x2,thisInternal.centerY+5)
+					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,thisInternal.centerY-2,x2,thisInternal.centerY+2)
 						{
 						public void paint(Graphics g, double width, double height, Camera cam)
 							{
@@ -778,10 +791,10 @@ public class LineageView extends JPanel
 							//int thisStartX=cam.toScreenX(thisInternal.startX);
 							//int thisEndX=cam.toScreenX(thisInternal.endX);
 							
-							double scale=expsetting.scale1;
-							double colR=expsetting.color.getRedDouble();
-							double colG=expsetting.color.getGreenDouble();
-							double colB=expsetting.color.getBlueDouble();
+							float scale=(float)(double)expsetting.scale1;
+							float colR=(float)expsetting.color.getRedDouble();
+							float colG=(float)expsetting.color.getGreenDouble();
+							float colB=(float)expsetting.color.getBlueDouble();
 							
 							boolean hasLastCoord=false;
 							int lastX=0;
@@ -789,7 +802,7 @@ public class LineageView extends JPanel
 								{
 								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
 								double level=ve.getValue()*scale;
-								Color nextCol=new Color((float)(colR*level),(float)(colG*level),(float)(colB*level));
+								Color nextCol=new Color(clamp01((float)(colR*level)),clamp01((float)(colG*level)),clamp01((float)(colB*level)));
 								g.setColor(nextCol);
 								if(hasLastCoord)
 									g.drawLine(lastX, thisMidY, x, thisMidY);
@@ -816,7 +829,7 @@ public class LineageView extends JPanel
 							int y1=thisMidY+expanderSize+2;
 							int y2=y1-1;
 
-							double level=nucexp.level.get(nucexp.level.firstKey());
+							double level=cam.scaleWorldDistX(nucexp.level.get(nucexp.level.firstKey()));
 							
 							int x1=thisEndX-(int)level;
 							int x2=thisEndX+(int)level;
@@ -838,7 +851,7 @@ public class LineageView extends JPanel
 		return y2;
 		}
 	
-	public static float bound01(float x)
+	public static float clamp01(float x)
 		{
 		if(x<0)
 			return 0;
@@ -979,7 +992,7 @@ public class LineageView extends JPanel
 	/**
 	 * Draw all scalebars
 	 */
-	public void drawScalebars(Graphics g)
+	public void drawScalebars(Graphics g, HierarchicalPainter.Camera cam)
 		{
 		int x=20;
 		int xdelta=50;
@@ -989,7 +1002,7 @@ public class LineageView extends JPanel
 				int yshift=10;
 				int sh=2*getHeight()/3;
 				
-				double scale=sb.scale; //TODO
+				double scale=cam.scaleWorldDistY(sb.scale);
 				
 				double upper=Math.pow(10, (int)Math.log10(sh/scale));
 				int toti=10;
