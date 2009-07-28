@@ -60,5 +60,11 @@ when using endrov for acquisition, the flow can be autocreated
 ===== 
 ===== 
 ===== 
-===== 
-===== 
+===== segmentation of EM images
+classic method: lines on 2d pictures, join them. can use morphing for this. isosurf not as good
+
+
+===== export mesh for blender
+particularly isosurf. but also specific plugins can do better exports. 
+trackEM2 has custom export after annotating regions.
+

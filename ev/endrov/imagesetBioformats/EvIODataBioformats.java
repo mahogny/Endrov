@@ -16,6 +16,8 @@ import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
 
+//how to write the files:
+//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/utils/MinimumWriter.java
 
 
 //metaretriever getPixelsBigEndian

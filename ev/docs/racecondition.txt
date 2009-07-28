@@ -1,3 +1,9 @@
+this might be a bug in the JVM, linux specific
+
+
+
+===
+
 Loading plugin ROI system
 Loading plugin Metadata
 Loading plugin Line
