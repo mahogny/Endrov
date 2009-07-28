@@ -11,6 +11,10 @@ import endrov.imageset.EvPixelsType;
  */
 public class CumSumLine
 	{
+	
+	public EvPixels result; 
+	
+	
 	/**
 	 * Cumulative sum image, in effect, the 1D integral on each line
 	 * <br/>
@@ -23,32 +27,62 @@ public class CumSumLine
 	 * Complexity O(w*h)
 	 * 
 	 */
-	public static EvPixels cumsum(EvPixels in)
+	public CumSumLine(EvPixels in)
 		{
-		in=in.getReadOnly(EvPixelsType.INT);
-		int w=in.getWidth();
-		int h=in.getHeight();
-		EvPixels out=new EvPixels(EvPixelsType.INT,w+1,h+1); //Must be able to fit. Need not be original type.
-		int[] inPixels=in.getArrayInt();
-		int[] outPixels=out.getArrayInt();
-		
-		int curin=0;
-		for(int ay=0;ay<h;ay++)
+		if(in.getType()==EvPixelsType.INT)
 			{
-			int sum=0;
-			for(int ax=0;ax<w;ax++)
+			in=in.getReadOnly(EvPixelsType.INT);
+			int w=in.getWidth();
+			int h=in.getHeight();
+			EvPixels out=new EvPixels(EvPixelsType.INT,w+1,h+1); //Must be able to fit. Need not be original type.
+			int[] inPixels=in.getArrayInt();
+			int[] outPixels=out.getArrayInt();
+			
+			int curin=0;
+			for(int ay=0;ay<h;ay++)
 				{
-				//int curin=in.getPixelIndex(ax, ay);
-				
-				sum+=inPixels[curin];
-				
-				int outnext=out.getPixelIndex(ax+1, ay+1);
-				outPixels[outnext]=sum;
-				curin++;
+				int sum=0;
+				for(int ax=0;ax<w;ax++)
+					{
+					//int curin=in.getPixelIndex(ax, ay);
+					
+					sum+=inPixels[curin];
+					
+					int outnext=out.getPixelIndex(ax+1, ay+1);
+					outPixels[outnext]=sum;
+					curin++;
+					}
 				}
+			
+			result=out;
 			}
-		
-		return out;
+		else
+			{
+			in=in.getReadOnly(EvPixelsType.DOUBLE);
+			int w=in.getWidth();
+			int h=in.getHeight();
+			EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w+1,h+1); //Must be able to fit. Need not be original type.
+			double[] inPixels=in.getArrayDouble();
+			double[] outPixels=out.getArrayDouble();
+			
+			int curin=0;
+			for(int ay=0;ay<h;ay++)
+				{
+				double sum=0;
+				for(int ax=0;ax<w;ax++)
+					{
+					//int curin=in.getPixelIndex(ax, ay);
+					
+					sum+=inPixels[curin];
+					
+					int outnext=out.getPixelIndex(ax+1, ay+1);
+					outPixels[outnext]=sum;
+					curin++;
+					}
+				}
+			
+			result=out;
+			}
 		}
 	
 	
@@ -58,15 +92,29 @@ public class CumSumLine
 	 *			sum+=...;
 	 *
 	 */
-	public static int integralLineFromCumSum(EvPixels in, int x1, int x2, int y)
+	public int integralLineFromCumSumInt(int x1, int x2, int y)
 		{
-		int[] inPixels=in.getArrayInt();
-		int p11=in.getPixelIndex(x1, y);
-		int p12=in.getPixelIndex(x2, y);
+		int[] inPixels=result.getArrayInt();
+		int p11=result.getPixelIndex(x1, y);
+		int p12=result.getPixelIndex(x2, y);
 		return inPixels[p12]-inPixels[p11];
 		}
 	
 	
+	/**
+	 * Equivalent to
+	 *		for(int ax=x1;ax<x2;ax++)
+	 *			sum+=...;
+	 *
+	 */
+	public double integralLineFromCumSumDouble(int x1, int x2, int y)
+		{
+		double[] inPixels=result.getArrayDouble();
+		int p11=result.getPixelIndex(x1, y);
+		int p12=result.getPixelIndex(x2, y);
+		return inPixels[p12]-inPixels[p11];
+		}
+
 	
 	/**
 	 * Create cumulative image

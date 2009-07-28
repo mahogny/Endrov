@@ -16,8 +16,8 @@ public abstract class Memoize<E>
 		{
 		if(!evaluated)
 			{
-			evaluated=true;
 			value=eval();
+			evaluated=true;
 			}
 		return value;
 		}

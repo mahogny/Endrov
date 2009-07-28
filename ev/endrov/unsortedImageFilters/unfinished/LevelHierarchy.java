@@ -7,7 +7,7 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.flowAveraging.EvOpMovingAverage;
+import endrov.flowAveraging.EvOpAverageRect;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
@@ -324,7 +324,7 @@ public class LevelHierarchy
 		EvData data=EvData.loadFile(new File("/Volumes/TBU_main03/ost4dgood/TB2167_080416.ost"));
 		
 		Imageset im=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
-		im.metaObject.put("MA15", new EvOpMovingAverage(5,5).exec1(im.getChannel("RFP")));
+		im.metaObject.put("MA15", new EvOpAverageRect(5,5).exec1(im.getChannel("RFP")));
 		
 		EvStack stack=im.getChannel("MA15").imageLoader.get(new EvDecimal(14050));
 		

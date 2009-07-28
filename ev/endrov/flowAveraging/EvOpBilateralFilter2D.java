@@ -24,10 +24,10 @@ public class EvOpBilateralFilter2D extends EvOpSlice1
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return bilateralFilter(p[0],pw.intValue(), ph.intValue(), threshold.doubleValue());
+		return apply(p[0],pw.intValue(), ph.intValue(), threshold.doubleValue());
 		}
 	
-	public static EvPixels bilateralFilter(EvPixels in, int pw, int ph, double threshold)
+	public static EvPixels apply(EvPixels in, int pw, int ph, double threshold)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();

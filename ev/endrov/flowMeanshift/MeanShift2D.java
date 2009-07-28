@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import javax.vecmath.Vector2d;
 import endrov.flow.EvOpGeneral;
-import endrov.flowAveraging.EvOpMovingSum;
+import endrov.flowAveraging.EvOpSumRect;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvPixels;
@@ -47,7 +47,7 @@ public class MeanShift2D
 			EvPixels incY=GenerateSpecialImage.genIncY(w, h);
 
 			//Different kernel? +?
-			EvOpGeneral op=new EvOpMovingSum(pw,ph);
+			EvOpGeneral op=new EvOpSumRect(pw,ph);
 
 			//Pre-convolve all positions
 			momentX=op.exec1(new EvOpImageMulImage().exec1(incX, s));

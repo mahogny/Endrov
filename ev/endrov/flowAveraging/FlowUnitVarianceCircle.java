@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: moving average
+ * Flow unit: moving variance
  * @author Johan Henriksson
  *
  */
-public class FlowUnitMovingAverage extends FlowUnitBasic
+public class FlowUnitVarianceCircle extends FlowUnitBasic
 	{
-	public static final String showName="Moving average";
-	private static final String metaType="movingAverage";
+	public static final String showName="Moving variance (circ)";
+	private static final String metaType="varianceCircle";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitMovingAverage.class, null,
-				"Local average of square region moving over image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitVarianceCircle.class, null,
+				"Local variance of square region moving over image"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -42,8 +42,7 @@ public class FlowUnitMovingAverage extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("pw", FlowType.TNUMBER);
-		types.put("ph", FlowType.TNUMBER);
+		types.put("r", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -58,11 +57,9 @@ public class FlowUnitMovingAverage extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Number pw=(Number)flow.getInputValue(this, exec, "pw");
-		Number ph=(Number)flow.getInputValue(this, exec, "ph");
-		
+		Number r=(Number)flow.getInputValue(this, exec, "r");
 
-		lastOutput.put("out", new EvOpMovingAverage(pw,ph).exec1Untyped(a));
+		lastOutput.put("out", new EvOpVarianceCircle(r).exec1Untyped(a));
 		}
 
 	

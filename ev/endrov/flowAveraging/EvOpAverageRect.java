@@ -11,11 +11,11 @@ import endrov.imageset.EvPixelsType;
  * 
  * Complexity O(w*h)
  */
-public class EvOpMovingAverage extends EvOpSlice1
+public class EvOpAverageRect extends EvOpSlice1
 	{
-	Number pw, ph;
+	private final Number pw, ph;
 	
-	public EvOpMovingAverage(Number pw, Number ph)
+	public EvOpAverageRect(Number pw, Number ph)
 		{
 		this.pw = pw;
 		this.ph = ph;

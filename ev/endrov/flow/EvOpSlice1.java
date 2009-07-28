@@ -27,7 +27,7 @@ public abstract class EvOpSlice1 extends EvOpGeneral //extends StackOp
 	
 	public EvStack[] exec(EvStack... p)
 		{
-		return EvOpSlice.makeStackOp(this).exec(p);
+		return EvOpSlice.makeStackOpFromSliceOp(this).exec(p);
 		}
 	
 	public EvStack exec1(EvStack... p)
@@ -38,13 +38,11 @@ public abstract class EvOpSlice1 extends EvOpGeneral //extends StackOp
 	public EvChannel[] exec(EvChannel... ch)
 		{
 		
-		return EvOpSlice.makeStackOp(this).exec(ch);
+		return EvOpSlice.makeStackOpFromSliceOp(this).exec(ch);
 		}
 	
 	public EvChannel exec1(EvChannel... ch)
 		{
-		System.out.println("####slice1 "+exec(ch)[0]);
-
 		return exec(ch)[0];
 		}
 	

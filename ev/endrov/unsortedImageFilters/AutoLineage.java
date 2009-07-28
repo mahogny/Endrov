@@ -8,8 +8,8 @@ import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
-import endrov.flowAveraging.EvOpMovingAverage;
-import endrov.flowAveraging.EvOpMovingSum;
+import endrov.flowAveraging.EvOpAverageRect;
+import endrov.flowAveraging.EvOpSumRect;
 import endrov.flowBasic.math.EvOpImageAxpy;
 import endrov.flowBasic.math.EvOpImageGreaterThanScalar;
 import endrov.flowBasic.math.EvOpImageSubImage;
@@ -133,10 +133,10 @@ public class AutoLineage
 
 				
 				//EvPixels out=CompareImage.greater(MiscFilter.movingSum(spotpixels, 2, 2), 15);
-				im.metaObject.put("MS", new EvOpMovingSum(2,2).exec1(im.getChannel("spotpixels")));
+				im.metaObject.put("MS", new EvOpSumRect(2,2).exec1(im.getChannel("spotpixels")));
 				im.metaObject.put("MSg", new EvOpImageGreaterThanScalar(15).exec1(im.getChannel("MS")));
 
-				im.metaObject.put("MS2", new EvOpMovingSum(2,2).exec1(im.getChannel("spotpixels2")));
+				im.metaObject.put("MS2", new EvOpSumRect(2,2).exec1(im.getChannel("spotpixels2")));
 				im.metaObject.put("MSg2", new EvOpImageGreaterThanScalar(15).exec1(im.getChannel("MS2")));
 
 				
@@ -293,7 +293,7 @@ public class AutoLineage
 		for(Map.Entry<EvDecimal, EvImage> e:origStack.entrySet())
 			{
 			EvPixels in=e.getValue().getPixels();
-			EvPixels average=new EvOpMovingAverage(30,30).exec1(in);
+			EvPixels average=new EvOpAverageRect(30,30).exec1(in);
 			EvImage evim=e.getValue().makeShadowCopy();
 			
 			

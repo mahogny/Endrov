@@ -29,7 +29,7 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 	
 	public EvStack[] exec(EvStack... p)
 		{
-		return makeStackOp(this).exec(p);
+		return makeStackOpFromSliceOp(this).exec(p);
 		}
 	
 	public EvStack exec1(EvStack... p)
@@ -39,7 +39,7 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 	
 	public EvChannel[] exec(EvChannel... ch)
 		{
-		return makeStackOp(this).exec(ch);
+		return makeStackOpFromSliceOp(this).exec(ch);
 		}
 	public EvChannel exec1(EvChannel... ch)
 		{
@@ -58,7 +58,7 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 	 * Turn a slice op into a stack op.
 	 * Should ONLY be used on SliceOp* 
 	 */
-	static EvOpStack makeStackOp(final EvOpGeneral op)
+	static EvOpStack makeStackOpFromSliceOp(final EvOpGeneral op)
 		{
 		return new EvOpStack()
 			{
@@ -117,13 +117,21 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 						
 						final Memoize<EvPixels[]> m=maybe;
 						final int thisAc=currentReturnChannel;
-						newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return m.get()[thisAc];}};
+						newim.io=new EvIOImage(){public EvPixels loadJavaImage()
+							{
+							EvPixels[] parr=m.get();
+							if(parr==null)
+								throw new RuntimeException("EvOp programming error: Slice operation returns null array of channels");
+							if(thisAc>=parr.length)
+								throw new RuntimeException("EvOp programming error: Trying to get channel "+thisAc+" but only "+parr.length+" channels were returned");
+							return parr[thisAc];
+							}};
 						
 						newim.registerLazyOp(m);		
 						currentSliceIndex++;
 						}
 					retStack[currentReturnChannel]=newstack;
-					System.out.println("created stack "+newstack.getResbinX()+" "+newstack.getResbinY());
+//					System.out.println("created stack "+newstack.getResbinX()+" "+newstack.getResbinY());
 					}
 				return retStack;
 				}
@@ -154,6 +162,8 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 			for(int i=0;i<plist.length;i++)
 				plist[i]=imlist[i].getPixels();
 			EvPixels[] ret=op.exec(plist);
+			if(ret==null)
+				throw new RuntimeException("EvOp programming error (2): Slice operation returns null array of channels");
 			//GC cannot know that this function will only be called once. Hence manually remove
 			//the references.
 			op=null;

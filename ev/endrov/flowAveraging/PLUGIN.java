@@ -35,10 +35,14 @@ public class PLUGIN extends PluginDef
 				FlowUnitConvGaussian3D.class,
 				FlowUnitBilateralFilter2D.class,
 				FlowUnitKuwaharaFilter.class,
-				FlowUnitMovingAverage.class,
-				FlowUnitMovingEntropy.class,
-				FlowUnitMovingSum.class,
-				FlowUnitMovingVariance.class};
+				FlowUnitAverageRect.class,
+				FlowUnitEntropyRect.class,
+				FlowUnitSumRect.class,
+				FlowUnitVarianceRect.class,FlowUnitVarianceCircle.class,
+				
+				FlowUnitAutoContrastBrightness2D.class
+				
+		};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};
