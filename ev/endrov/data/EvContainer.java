@@ -233,27 +233,30 @@ public class EvContainer
 		for(String id:metaObject.keySet())
 			{
 			EvObject o=metaObject.get(id);
-			Element el=new Element(tempString);
-			el.setAttribute("id",""+id);
-			if(o.ostBlobID!=null)
-				el.setAttribute("ostblobid",o.ostBlobID);
-			if(o.dateCreate!=null)
-				el.setAttribute("ostdatecreate",o.dateCreate.toString());
-			if(o.dateLastModify!=null)
-				el.setAttribute("ostdatemodify",o.dateLastModify.toString());
-			o.saveMetadata(el);
-
-			if(el.getName().equals(tempString))
-				throw new RuntimeException("Plugin for "+o.getClass()+" does not save properly");
-			
-			//also save subobjects
-			if(!o.metaObject.isEmpty())
+			if(!o.isGeneratedData) //Generated data is never saved
 				{
-				Element sube=new Element(tagChild);
-				o.recursiveSaveMetadata(sube);
-				el.addContent(sube);
+				Element el=new Element(tempString);
+				el.setAttribute("id",""+id);
+				if(o.ostBlobID!=null)
+					el.setAttribute("ostblobid",o.ostBlobID);
+				if(o.dateCreate!=null)
+					el.setAttribute("ostdatecreate",o.dateCreate.toString());
+				if(o.dateLastModify!=null)
+					el.setAttribute("ostdatemodify",o.dateLastModify.toString());
+				o.saveMetadata(el);
+	
+				if(el.getName().equals(tempString))
+					throw new RuntimeException("Plugin for "+o.getClass()+" does not save properly");
+				
+				//also save subobjects
+				if(!o.metaObject.isEmpty())
+					{
+					Element sube=new Element(tagChild);
+					o.recursiveSaveMetadata(sube);
+					el.addContent(sube);
+					}
+				root.addContent(el);
 				}
-			root.addContent(el);
 			}
 		}
 

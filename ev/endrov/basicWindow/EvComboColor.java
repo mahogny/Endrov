@@ -80,6 +80,7 @@ public class EvComboColor extends JComboBox
 		{
 		super(EvColor.colorList);
 		setRenderer(new Renderer(showText));	
+		setSelectedItem(EvColor.grayMedium);
 		}
 	
 	/**
