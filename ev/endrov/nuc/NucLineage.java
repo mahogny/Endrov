@@ -1120,7 +1120,7 @@ public class NucLineage extends EvObject implements Cloneable
 						{
 						if(v>max)
 							max=v;
-						else if(v<min)
+						if(v<min)
 							min=v;
 						}
 				}

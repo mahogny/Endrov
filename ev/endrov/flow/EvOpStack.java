@@ -127,15 +127,23 @@ public abstract class EvOpStack extends EvOpGeneral
 					try
 						{
 						EvStack[] chans=ms.get();
+						if(finalCurReturnChanIndex>=chans.length)
+							throw new RuntimeException("Trying to use index "+finalCurReturnChanIndex+" but there are only "+chans.length+" entries in chans");
 						EvStack chan=chans[finalCurReturnChanIndex];
-						return chan.get(z).getPixels();
+						if(chan==null)
+							throw new RuntimeException("EvOp programming error: got null stack");
+						EvImage evim=chan.get(z);
+						if(evim==null)
+							throw new RuntimeException("There is no image for this z: "+z);
+						return evim.getPixels();
 						}
 					catch (Exception e)
 						{
 						e.printStackTrace();
-						System.out.println(ms.get()[finalCurReturnChanIndex].keySet());
-						System.out.println("z: "+z);
+						System.out.println("want to get z: "+z);
+						System.out.println("index "+finalCurReturnChanIndex);
 						System.out.println("Incoming z set "+curInputStack.keySet());
+						System.out.println(ms.get()[finalCurReturnChanIndex].keySet());
 						throw new RuntimeException("failed in lazy execution");
 						}
 					}};
@@ -164,13 +172,15 @@ public abstract class EvOpStack extends EvOpGeneral
 		protected EvStack[] eval()
 			{
 			EvStack[] ret=op.exec(imlist);
-			System.out.println("----- "+op.getClass());
-			for(EvStack s:ret)
+			//System.out.println("----- "+op.getClass());
+			/*for(EvStack s:ret)
 				{
 				System.out.println("one stack: "+s);
 				System.out.println(s.entrySet());
-				}
-			
+				}*/
+			if(ret==null)
+				throw new RuntimeException("EvOp programming error (2): Stack operation returns null array of channels");
+
 			//Help GC. There might be space leaks without this.
 			op=null;
 			imlist=null;

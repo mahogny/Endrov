@@ -12,7 +12,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flow.EvOpGeneral;
-import endrov.flowAveraging.EvOpMovingSum;
+import endrov.flowAveraging.EvOpSumRect;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvChannel;
@@ -66,7 +66,7 @@ public class MeanShift3D
 			EvStack incY=GenerateSpecialImage.repeatImageZ(GenerateSpecialImage.genIncY(w, h),s);
 
 			//Different kernel? +?
-			EvOpGeneral op=new EvOpMovingSum(pw,ph);
+			EvOpGeneral op=new EvOpSumRect(pw,ph);
 
 			//Pre-convolve all positions
 			momentX=op.exec1(new EvOpImageMulImage().exec1(incX, s));

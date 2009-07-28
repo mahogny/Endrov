@@ -20,15 +20,15 @@ import endrov.imageset.AnyEvImage;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitMovingEntropy extends FlowUnitBasic
+public class FlowUnitEntropyRect extends FlowUnitBasic
 	{
-	public static final String showName="Moving entropy";
-	private static final String metaType="movingEntropy";
+	public static final String showName="Moving entropy (rect)";
+	private static final String metaType="entropyRect";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitMovingEntropy.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitEntropyRect.class, null,
 				"Local entropy of square region moving over image"));
 		}
 	
@@ -61,7 +61,7 @@ public class FlowUnitMovingEntropy extends FlowUnitBasic
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 		
-		lastOutput.put("out", new EvOpMovingEntropy(pw,ph).exec1Untyped(a));
+		lastOutput.put("out", new EvOpEntropyRect(pw,ph).exec1Untyped(a));
 		}
 
 	

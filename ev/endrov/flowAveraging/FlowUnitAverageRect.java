@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: moving sum
+ * Flow unit: moving average
  * @author Johan Henriksson
  *
  */
-public class FlowUnitMovingSum extends FlowUnitBasic
+public class FlowUnitAverageRect extends FlowUnitBasic
 	{
 	public static final String showName="Moving average";
-	private static final String metaType="movingSum";
+	private static final String metaType="movingAverage";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitMovingSum.class, null,
-				"Local sum of square region moving over image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitAverageRect.class, null,
+				"Local average of square region moving over image"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -60,8 +60,9 @@ public class FlowUnitMovingSum extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
+		
 
-		lastOutput.put("out", new EvOpMovingAverage(pw,ph).exec1Untyped(a));
+		lastOutput.put("out", new EvOpAverageRect(pw,ph).exec1Untyped(a));
 		}
 
 	

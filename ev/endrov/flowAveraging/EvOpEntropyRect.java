@@ -14,11 +14,11 @@ import endrov.imageset.EvPixelsType;
  * Complexity O(w*h*pw*ph), could be made faster with a method similar to huangs median calculator
  * 
  */
-public class EvOpMovingEntropy extends EvOpSlice1
+public class EvOpEntropyRect extends EvOpSlice1
 	{
-	Number pw, ph;
+	private final Number pw, ph;
 	
-	public EvOpMovingEntropy(Number pw, Number ph)
+	public EvOpEntropyRect(Number pw, Number ph)
 		{
 		this.pw = pw;
 		this.ph = ph;

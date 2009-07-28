@@ -8,14 +8,13 @@ import endrov.imageset.EvPixelsType;
 /**
  * Moving variance
  * 
- * TODO should maybe output floating point due to division
  * @author Johan Henriksson
  */
-public class EvOpMovingVariance extends EvOpSlice1
+public class EvOpVarianceRect extends EvOpSlice1
 	{
 	private final int pw, ph;
 
-	public EvOpMovingVariance(Number pw, Number ph)
+	public EvOpVarianceRect(Number pw, Number ph)
 		{
 		this.pw = pw.intValue();
 		this.ph = ph.intValue();
@@ -23,10 +22,10 @@ public class EvOpMovingVariance extends EvOpSlice1
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return localVariance(p[0], pw, ph);
+		return localVarianceRect(p[0], pw, ph);
 		}
 	
-	public static EvPixels localVariance(EvPixels in, int pw, int ph)
+	public static EvPixels localVarianceRect(EvPixels in, int pw, int ph)
 		{
 		if(in.getType()==EvPixelsType.INT)
 			{
