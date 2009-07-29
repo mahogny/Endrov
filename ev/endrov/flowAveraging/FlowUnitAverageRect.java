@@ -22,7 +22,7 @@ import endrov.imageset.AnyEvImage;
  */
 public class FlowUnitAverageRect extends FlowUnitBasic
 	{
-	public static final String showName="Moving average";
+	public static final String showName="Moving average (rect)";
 	private static final String metaType="movingAverage";
 	
 	public static void initPlugin() {}

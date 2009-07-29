@@ -120,7 +120,7 @@ public class FlowUnitShow extends FlowUnit
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
-		Maybe<Object> in=flow.getInputValueMaybe(this, exec, "in");
+		Maybe<Object> in=flow.getInputValueMaybe(this, exec, "in", Object.class);
 		for(Map.Entry<ThisComponent, FlowExec> entry:knowComponents.entrySet())
 			{
 			if(entry.getValue()==exec)

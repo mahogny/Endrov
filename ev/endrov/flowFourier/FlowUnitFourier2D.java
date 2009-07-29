@@ -58,7 +58,7 @@ public class FlowUnitFourier2D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		AnyEvImage inReal=(AnyEvImage)flow.getInputValue(this, exec, "inReal");
-		Maybe<Object> inImag=flow.getInputValueMaybe(this, exec, "inImag");
+		Maybe<AnyEvImage> inImag=flow.getInputValueMaybe(this, exec, "inImag", AnyEvImage.class);
 		
 		
 		if(!inImag.hasValue())
@@ -69,7 +69,7 @@ public class FlowUnitFourier2D extends FlowUnitBasic
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexForward2D().execUntyped(inReal, (AnyEvImage)inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexForward2D().execUntyped(inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}

@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowFourier;
 
 
 import java.awt.Color;
@@ -17,20 +17,20 @@ import endrov.imageset.AnyEvImage;
 import endrov.util.Maybe;
 
 /**
- * Flow unit: automatically adjust contrast brightness
+ * Flow unit: Differenc of gaussian 2D
  * @author Johan Henriksson
  *
  */
-public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
+public class FlowUnitDoG2D extends FlowUnitBasic
 	{
-	public static final String showName="Auto contrast/brightness 2D";
-	private static final String metaType="autoCB2D";
+	public static final String showName="Difference of gaussian 2D";
+	private static final String metaType="DoG2D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitAutoContrastBrightness2D.class, null,
-				"Scale image to be within 0-255"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitDoG2D.class, null,
+				"Difference of two gaussians, slice by slice. Approximates the Ricker wavelet transform"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -42,8 +42,8 @@ public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("image", FlowType.ANYIMAGE);
-		types.put("invert", FlowType.TBOOLEAN); //TODO should show default value
+		types.put("in", FlowType.ANYIMAGE);
+		types.put("sigma", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -56,16 +56,10 @@ public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
+		AnyEvImage in=(AnyEvImage)flow.getInputValue(this, exec, "in");
+		Number sigma=(Number)flow.getInputValue(this, exec, "sigma");
 		
-		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Maybe<Boolean> invert=flow.getInputValueMaybe(this, exec, "invert", Boolean.class);
-		boolean b;
-		if(invert.hasValue())
-			b=invert.get();
-		else
-			b=false;
-		
-		lastOutput.put("out", new EvOpAutoContrastBrightness2D(b).exec1Untyped(a));
+		lastOutput.put("out", new EvOpDifferenceOfGaussian2D(sigma).exec1Untyped(in));
 		}
 
 	

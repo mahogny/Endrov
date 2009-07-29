@@ -15,7 +15,18 @@ if too large, variance will never be low. if too small, there will be many local
 jpeg artifacts have no impact with round detector?
 
 
+== restart 2 ==
 
+philosophy: detect granules
+
+A. DoG (s=1.5, 1 to 2) will detect them, but sign might be wrong
+B. |A| will correct sign. there will be a lot of valleys where sign changes, but average is right
+C. auto-cb + invert
+D. Just DoG from here
+
+danger: valleys might screw up feature size detection. an averaging step in between here helps.
+
+valleys might be possible to remove! percentile, use 50%?
 
 
 

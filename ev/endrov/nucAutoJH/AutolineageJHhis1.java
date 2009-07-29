@@ -44,19 +44,19 @@ import endrov.shell.Shell;
 import endrov.util.*;
 
 /**
- * Autolineage algorithm: JH1 <br/>
+ * Autolineage algorithm: JH-his-1 <br/>
  * 
  * Meant to be used with his::rfp or equivalent marker. Optimized for wide-field fluorescence
  * 
  * @author Johan Henriksson
  *
  */
-public class AutolineageJH1 extends LineageAlgorithmDef
+public class AutolineageJHhis1 extends LineageAlgorithmDef
 	{
 	public static void initPlugin() {}
 	static
 		{
-		LineageAlgorithmDef.listAlgorithms.add(new AutolineageJH1());
+		LineageAlgorithmDef.listAlgorithms.add(new AutolineageJHhis1());
 		}
 	
 	@Override
@@ -68,7 +68,7 @@ public class AutolineageJH1 extends LineageAlgorithmDef
 	@Override
 	public String getName()
 		{
-		return "JH1";
+		return "JH-his-1";
 		}
 
 	

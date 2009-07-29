@@ -58,7 +58,7 @@ public class FlowUnitInverseFourier3D extends FlowUnitBasic
 		{
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		AnyEvImage inReal=(AnyEvImage)flow.getInputValue(this, exec, "inReal");
-		Maybe<Object> inImag=flow.getInputValueMaybe(this, exec, "inImag");
+		Maybe<AnyEvImage> inImag=flow.getInputValueMaybe(this, exec, "inImag", AnyEvImage.class);
 //		Object inImag=flow.getInputValue(this, exec, "inImag");
 		
 	//	checkNotNull(inReal);
@@ -71,7 +71,7 @@ public class FlowUnitInverseFourier3D extends FlowUnitBasic
 			}
 		else
 			{
-			AnyEvImage[] outs=new EvOpFourierComplexInverse3D(true).execUntyped(inReal, (AnyEvImage)inImag.get());
+			AnyEvImage[] outs=new EvOpFourierComplexInverse3D(true).execUntyped(inReal, inImag.get());
 			lastOutput.put("outReal", outs[0]);
 			lastOutput.put("outImag", outs[1]);
 			}
