@@ -208,15 +208,16 @@ public class Flow extends EvObject
 	/**
 	 * Get value that is on one input port
 	 */
-	public Maybe<Object> getInputValueMaybe(FlowUnit u, FlowExec exec, String arg) throws Exception
+	@SuppressWarnings("unchecked")
+	public <E> Maybe<E> getInputValueMaybe(FlowUnit u, FlowExec exec, String arg, Class<E> obj) throws Exception
 		{
 		for(FlowConn c:conns)
 			if(c.toUnit==u && c.toArg.equals(arg))
 				{
 				Map<String,Object> lastOutput=exec.getLastOutput(c.fromUnit);
-				return Maybe.just(lastOutput.get(c.fromArg));
+				return (Maybe<E>)(Maybe<?>)Maybe.just(lastOutput.get(c.fromArg));
 				}
-		return new Maybe<Object>();
+		return new Maybe<E>();
 		}
 
 	/**

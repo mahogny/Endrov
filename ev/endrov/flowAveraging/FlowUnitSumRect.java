@@ -22,7 +22,7 @@ import endrov.imageset.AnyEvImage;
  */
 public class FlowUnitSumRect extends FlowUnitBasic
 	{
-	public static final String showName="Moving average (rect)";
+	public static final String showName="Moving sum (rect)";
 	private static final String metaType="sumRect";
 	
 	public static void initPlugin() {}
@@ -61,7 +61,7 @@ public class FlowUnitSumRect extends FlowUnitBasic
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 
-		lastOutput.put("out", new EvOpAverageRect(pw,ph).exec1Untyped(a));
+		lastOutput.put("out", new EvOpSumRect(pw,ph).exec1Untyped(a));
 		}
 
 	

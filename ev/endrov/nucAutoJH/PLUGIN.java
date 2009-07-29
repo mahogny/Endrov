@@ -30,7 +30,10 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{AutolineageJH1.class};
+		return new Class[]{
+				AutolineageJHhis1.class,
+				AutolineageJHdic1.class
+				};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

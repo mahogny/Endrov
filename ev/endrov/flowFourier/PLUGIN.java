@@ -41,6 +41,8 @@ public class PLUGIN extends PluginDef
 				
 				FlowUnitCircConv2D.class,
 				FlowUnitCircConv3D.class,
+				
+				FlowUnitDoG2D.class,
 				};
 		}
 	

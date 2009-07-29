@@ -28,7 +28,7 @@ public class EvOpAverageRect extends EvOpSlice1
 	
 	public static EvPixels apply(EvPixels in, int pw, int ph)
 		{
-		in=in.getReadOnly(EvPixelsType.INT);
+		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();
 		int h=in.getHeight();
 		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
@@ -49,7 +49,7 @@ public class EvOpAverageRect extends EvOpSlice1
 				int toy=Math.min(h,ay+ph+1);
 				int area=(tox-fromx)*(toy-fromy);
 				//outPixels[out.getPixelIndex(ax, ay)]=CumSumArea.integralFromCumSumInteger(cumsum, fromx, tox, fromy, toy)/(int)area;
-				outPixels[out.getPixelIndex(ax, ay)]=cumsum.integralFromCumSumInteger(fromx, tox, fromy, toy)/(int)area;
+				outPixels[out.getPixelIndex(ax, ay)]=cumsum.integralFromCumSumDouble(fromx, tox, fromy, toy)/(int)area;
 				}
 			}
 		return out;
