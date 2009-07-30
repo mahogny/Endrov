@@ -1,29 +1,27 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 import endrov.flow.EvOpSlice1;
-import endrov.flowBasic.CumSumArea;
+import endrov.flowBasic.CumSumLine;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
 /**
- * Moving sum. Sum is taken over an area of size (2pw+1)x(2ph+1). r=0 hence corresponds
- * to the identity operation.
+ * Moving sum. Sum is taken over a circle with given radius.
  * 
- * Complexity O(w*h)
+ * Complexity O(w*h*r)
  */
-public class EvOpSumRect extends EvOpSlice1
+public class EvOpSumCircle extends EvOpSlice1
 	{
-	private final Number pw, ph;
+	private final Number pw;
 	
-	public EvOpSumRect(Number pw, Number ph)
+	public EvOpSumCircle(Number pw)
 		{
 		this.pw = pw;
-		this.ph = ph;
 		}
 
 	public EvPixels exec1(EvPixels... p)
 		{
-		return movingSumRect(p[0], pw.intValue(), ph.intValue());
+		return apply(p[0], pw.intValue());
 		}
 	
 	
@@ -48,7 +46,7 @@ public class EvOpSumRect extends EvOpSlice1
 	 * 
 	 * Complexity O(w*h)
 	 */
-	public static EvPixels movingSumRect(EvPixels in, int pw, int ph)
+	public static EvPixels apply(EvPixels in, int iradius)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
 		int w=in.getWidth();
@@ -56,18 +54,29 @@ public class EvOpSumRect extends EvOpSlice1
 		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
 		double[] outPixels=out.getArrayDouble();
 		
-		CumSumArea cumsum=new CumSumArea(in);
+		CumSumLine cumsum=new CumSumLine(in);
+		
 		
 		for(int ay=0;ay<h;ay++)
 			{
 			for(int ax=0;ax<w;ax++)
 				{
-				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+pw+1);
+
+				double sum=0;
+				for(int dy=-iradius;dy<iradius;dy++)
+					{
+					int toty=ay-dy;
+					if(toty<0 || toty>=h)
+						continue;
+					int dx=(int)Math.sqrt(iradius*iradius-dy*dy);
+					
+					int fromx=Math.max(0,ax-dx);
+					int tox=Math.min(w,ax+dx+1);
+					
+					sum+=cumsum.integralLineFromCumSumDouble(fromx, tox, toty);
+					}
 				
-				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+ph+1);
-				outPixels[out.getPixelIndex(ax, ay)]=cumsum.integralFromCumSumDouble(fromx, tox, fromy, toy);
+				outPixels[out.getPixelIndex(ax, ay)]=sum;
 				}
 			}
 		return out;

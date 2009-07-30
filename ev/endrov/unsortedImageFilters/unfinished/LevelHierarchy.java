@@ -7,7 +7,7 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.flowAveraging.EvOpAverageRect;
+import endrov.flowImageStats.EvOpAverageRect;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;

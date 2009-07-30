@@ -28,12 +28,11 @@ import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition
 
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.data.EvContainer;
-import endrov.flowAveraging.EvOpAutoContrastBrightness2D;
-import endrov.flowAveraging.EvOpVarianceRect;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowFindFeature.EvOpFindLocalMaximas3D;
 import endrov.flowFourier.EvOpCircConv2D;
 import endrov.flowGenerateImage.GenerateSpecialImage;
+import endrov.flowMisc.EvOpAutoContrastBrightness2D;
 import endrov.flowMultiscale.Multiscale;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
@@ -488,7 +487,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 			{
 			int varianceRadius=30;
 //			return new EvOpAutoContrastBrightness2D(true).exec1(new EvOpVarianceCircle(varianceRadius).exec1(stackDIC));
-			return new EvOpAutoContrastBrightness2D(true).exec1(new EvOpVarianceRect(varianceRadius,varianceRadius).exec1(stackDIC));
+			return new EvOpAutoContrastBrightness2D(true).exec1(new endrov.flowImageStats.EvOpVarianceRect(varianceRadius,varianceRadius).exec1(stackDIC));
 			}
 		
 		/**

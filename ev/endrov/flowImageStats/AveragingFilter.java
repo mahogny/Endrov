@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 /**
  * Different averaging filters

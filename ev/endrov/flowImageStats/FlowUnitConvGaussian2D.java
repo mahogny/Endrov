@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 
 import java.awt.Color;
@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: moving variance
+ * Flow unit: convolve by gaussian
  * @author Johan Henriksson
  *
  */
-public class FlowUnitVarianceCircle extends FlowUnitBasic
+public class FlowUnitConvGaussian2D extends FlowUnitBasic
 	{
-	public static final String showName="Moving variance (circ)";
-	private static final String metaType="varianceCircle";
+	public static final String showName="Gaussian filter 2D";
+	private static final String metaType="convGaussian2D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitVarianceCircle.class, null,
-				"Local variance of square region moving over image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvGaussian2D.class, null,
+				"Gaussian filter (convolution): smoothens the image"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -42,7 +42,8 @@ public class FlowUnitVarianceCircle extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("r", FlowType.TNUMBER);
+		types.put("sigmaX", FlowType.TNUMBER);
+		types.put("sigmaY", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -57,9 +58,10 @@ public class FlowUnitVarianceCircle extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Number r=(Number)flow.getInputValue(this, exec, "r");
-
-		lastOutput.put("out", new EvOpVarianceCircle(r).exec1Untyped(a));
+		Number sigmaX=(Number)flow.getInputValue(this, exec, "sigmaX");
+		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
+		
+		lastOutput.put("out", new EvOpConvGaussian2D(sigmaX,sigmaY).exec1Untyped(a));
 		}
 
 	
