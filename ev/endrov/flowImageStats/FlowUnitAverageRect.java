@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 
 import java.awt.Color;
@@ -14,23 +14,22 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
-import endrov.util.Maybe;
 
 /**
- * Flow unit: automatically adjust contrast brightness
+ * Flow unit: moving average
  * @author Johan Henriksson
  *
  */
-public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
+public class FlowUnitAverageRect extends FlowUnitBasic
 	{
-	public static final String showName="Auto contrast/brightness 2D";
-	private static final String metaType="autoCB2D";
+	public static final String showName="Moving average (rect)";
+	private static final String metaType="averageRect";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitAutoContrastBrightness2D.class, null,
-				"Scale image to be within 0-255"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitAverageRect.class, null,
+				"Local average of square region moving over image"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -43,7 +42,8 @@ public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("invert", FlowType.TBOOLEAN); //TODO should show default value
+		types.put("pw", FlowType.TNUMBER);
+		types.put("ph", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -58,14 +58,11 @@ public class FlowUnitAutoContrastBrightness2D extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Maybe<Boolean> invert=flow.getInputValueMaybe(this, exec, "invert", Boolean.class);
-		boolean b;
-		if(invert.hasValue())
-			b=invert.get();
-		else
-			b=false;
+		Number pw=(Number)flow.getInputValue(this, exec, "pw");
+		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 		
-		lastOutput.put("out", new EvOpAutoContrastBrightness2D(b).exec1Untyped(a));
+
+		lastOutput.put("out", new EvOpAverageRect(pw,ph).exec1Untyped(a));
 		}
 
 	

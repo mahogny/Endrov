@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 
 import java.awt.Color;
@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: moving sum
+ * Flow unit: moving average
  * @author Johan Henriksson
  *
  */
-public class FlowUnitSumRect extends FlowUnitBasic
+public class FlowUnitEntropyRect extends FlowUnitBasic
 	{
-	public static final String showName="Moving sum (rect)";
-	private static final String metaType="sumRect";
+	public static final String showName="Moving entropy (rect)";
+	private static final String metaType="entropyRect";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitSumRect.class, null,
-				"Local sum of square region moving over image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitEntropyRect.class, null,
+				"Local entropy of square region moving over image"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -60,8 +60,8 @@ public class FlowUnitSumRect extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
-
-		lastOutput.put("out", new EvOpSumRect(pw,ph).exec1Untyped(a));
+		
+		lastOutput.put("out", new EvOpEntropyRect(pw,ph).exec1Untyped(a));
 		}
 
 	

@@ -32,7 +32,8 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{
 				FlowUnitConfocalShiftCorrection.class,
-				FlowUnitCorrectAttenuation.class
+				FlowUnitCorrectAttenuation.class,
+				FlowUnitAutoContrastBrightness2D.class,
 				};
 		}
 	

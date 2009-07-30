@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageComplexMulImage;

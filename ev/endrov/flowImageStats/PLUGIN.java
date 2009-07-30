@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef
@@ -39,8 +39,7 @@ public class PLUGIN extends PluginDef
 				FlowUnitEntropyRect.class,
 				FlowUnitSumRect.class,
 				FlowUnitVarianceRect.class,FlowUnitVarianceCircle.class,
-				
-				FlowUnitAutoContrastBrightness2D.class
+				FlowUnitPercentileRect.class,
 				
 		};
 		}

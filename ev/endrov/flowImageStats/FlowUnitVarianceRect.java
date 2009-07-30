@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 
 import java.awt.Color;
@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: convolve by gaussian
+ * Flow unit: moving variance
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConvGaussian2D extends FlowUnitBasic
+public class FlowUnitVarianceRect extends FlowUnitBasic
 	{
-	public static final String showName="Gaussian filter 2D";
-	private static final String metaType="convGaussian2D";
+	public static final String showName="Moving variance (rect)";
+	private static final String metaType="varianceRect";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvGaussian2D.class, null,
-				"Gaussian filter (convolution): smoothens the image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitVarianceRect.class, null,
+				"Local variance of square region moving over image"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -42,8 +42,8 @@ public class FlowUnitConvGaussian2D extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("sigmaX", FlowType.TNUMBER);
-		types.put("sigmaY", FlowType.TNUMBER);
+		types.put("pw", FlowType.TNUMBER);
+		types.put("ph", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -58,10 +58,10 @@ public class FlowUnitConvGaussian2D extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Number sigmaX=(Number)flow.getInputValue(this, exec, "sigmaX");
-		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
-		
-		lastOutput.put("out", new EvOpConvGaussian2D(sigmaX,sigmaY).exec1Untyped(a));
+		Number pw=(Number)flow.getInputValue(this, exec, "pw");
+		Number ph=(Number)flow.getInputValue(this, exec, "ph");
+
+		lastOutput.put("out", new EvOpVarianceRect(pw,ph).exec1Untyped(a));
 		}
 
 	

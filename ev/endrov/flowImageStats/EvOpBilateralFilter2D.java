@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 import endrov.flow.EvOpSlice1;
 import endrov.imageset.EvPixels;

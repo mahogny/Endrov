@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 
 import java.awt.Color;
@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: moving average
+ * Flow unit: kuwahara filter
  * @author Johan Henriksson
  *
  */
-public class FlowUnitAverageRect extends FlowUnitBasic
+public class FlowUnitKuwaharaFilter extends FlowUnitBasic
 	{
-	public static final String showName="Moving average (rect)";
-	private static final String metaType="movingAverage";
+	public static final String showName="Kuwahara";
+	private static final String metaType="filterKuwahara2D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitAverageRect.class, null,
-				"Local average of square region moving over image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitKuwaharaFilter.class, null,
+				"Edge preserving non-linear filter"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -61,8 +61,7 @@ public class FlowUnitAverageRect extends FlowUnitBasic
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
 		
-
-		lastOutput.put("out", new EvOpAverageRect(pw,ph).exec1Untyped(a));
+		lastOutput.put("out", new EvOpKuwaharaFilter2D(pw,ph).exec1Untyped(a));
 		}
 
 	

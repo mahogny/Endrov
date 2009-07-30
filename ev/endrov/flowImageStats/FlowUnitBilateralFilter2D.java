@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 
 import java.awt.Color;
@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: moving average
+ * Flow unit: bilateral filter
  * @author Johan Henriksson
  *
  */
-public class FlowUnitEntropyRect extends FlowUnitBasic
+public class FlowUnitBilateralFilter2D extends FlowUnitBasic
 	{
-	public static final String showName="Moving entropy (rect)";
-	private static final String metaType="entropyRect";
+	public static final String showName="Bilateral filter";
+	private static final String metaType="filterBilateral2D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitEntropyRect.class, null,
-				"Local entropy of square region moving over image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitBilateralFilter2D.class, null,
+				"Local average, but only average using pixels within threshold of current pixel value. This improves edge conservation"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -44,6 +44,7 @@ public class FlowUnitEntropyRect extends FlowUnitBasic
 		types.put("image", FlowType.ANYIMAGE);
 		types.put("pw", FlowType.TNUMBER);
 		types.put("ph", FlowType.TNUMBER);
+		types.put("threshold", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -60,8 +61,11 @@ public class FlowUnitEntropyRect extends FlowUnitBasic
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		Number pw=(Number)flow.getInputValue(this, exec, "pw");
 		Number ph=(Number)flow.getInputValue(this, exec, "ph");
+		Number threshold=(Number)flow.getInputValue(this, exec, "threshold");
 		
-		lastOutput.put("out", new EvOpEntropyRect(pw,ph).exec1Untyped(a));
+		checkNotNull(a,pw,ph,threshold);
+
+		lastOutput.put("out", new EvOpBilateralFilter2D(pw,ph,threshold).exec1Untyped(a));
 		}
 
 	

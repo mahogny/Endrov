@@ -1,4 +1,4 @@
-package endrov.flowAveraging;
+package endrov.flowImageStats;
 
 
 import java.awt.Color;
@@ -16,20 +16,20 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: moving variance
+ * Flow unit: convolve by gaussian
  * @author Johan Henriksson
  *
  */
-public class FlowUnitVarianceRect extends FlowUnitBasic
+public class FlowUnitConvGaussian3D extends FlowUnitBasic
 	{
-	public static final String showName="Moving variance (rect)";
-	private static final String metaType="varianceRect";
+	public static final String showName="Gaussian filter 3D";
+	private static final String metaType="convGaussian3D";
 	
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitVarianceRect.class, null,
-				"Local variance of square region moving over image"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitConvGaussian3D.class, null,
+				"Gaussian filter (convolution): smoothens the image"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -42,8 +42,9 @@ public class FlowUnitVarianceRect extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("pw", FlowType.TNUMBER);
-		types.put("ph", FlowType.TNUMBER);
+		types.put("sigmaX", FlowType.TNUMBER);
+		types.put("sigmaY", FlowType.TNUMBER);
+		types.put("sigmaZ", FlowType.TNUMBER);
 		}
 	
 	/** Get types of flows out */
@@ -58,10 +59,11 @@ public class FlowUnitVarianceRect extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Number pw=(Number)flow.getInputValue(this, exec, "pw");
-		Number ph=(Number)flow.getInputValue(this, exec, "ph");
-
-		lastOutput.put("out", new EvOpVarianceRect(pw,ph).exec1Untyped(a));
+		Number sigmaX=(Number)flow.getInputValue(this, exec, "sigmaX");
+		Number sigmaY=(Number)flow.getInputValue(this, exec, "sigmaY");
+		Number sigmaZ=(Number)flow.getInputValue(this, exec, "sigmaZ");
+		
+		lastOutput.put("out", new EvOpConvGaussian3D(sigmaX,sigmaY,sigmaZ).exec1Untyped(a));
 		}
 
 	

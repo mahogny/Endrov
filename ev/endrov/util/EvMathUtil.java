@@ -238,4 +238,19 @@ public class EvMathUtil
 		System.out.println(fitLinear1D(ys, xs));
 		
 		}
+
+	
+
+	/**
+	 * Clamp value within limits i.e. return value, changed to closest limit if outside
+	 */
+	public static double clamp(double percentile, double min, double max)
+		{
+		if(percentile<min)
+			return min;
+		else if(percentile>max)
+			return max;
+		else
+			return percentile;
+		}
 	}

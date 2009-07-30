@@ -5,9 +5,9 @@ import java.util.HashSet;
 
 import javax.vecmath.Vector2d;
 import endrov.flow.EvOpGeneral;
-import endrov.flowAveraging.EvOpSumRect;
 import endrov.flowBasic.math.EvOpImageMulImage;
 import endrov.flowGenerateImage.GenerateSpecialImage;
+import endrov.flowImageStats.EvOpSumRect;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.util.Vector2i;
