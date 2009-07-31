@@ -28,11 +28,12 @@ import cern.colt.matrix.tdouble.algo.decomposition.DoubleEigenvalueDecomposition
 
 import endrov.basicWindow.EvComboObjectOne;
 import endrov.data.EvContainer;
+import endrov.flowBasic.math.EvOpImageAbs;
 import endrov.flowBasic.math.EvOpImageSubImage;
 import endrov.flowFindFeature.EvOpFindLocalMaximas3D;
 import endrov.flowFourier.EvOpCircConv2D;
+import endrov.flowFourier.EvOpDifferenceOfGaussian2D;
 import endrov.flowGenerateImage.GenerateSpecialImage;
-import endrov.flowMisc.EvOpAutoContrastBrightness2D;
 import endrov.flowMultiscale.Multiscale;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
@@ -485,9 +486,15 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 		 */
 		public EvStack convertDICtoHisFluo(EvStack stackDIC)
 			{
+			/*
 			int varianceRadius=30;
 //			return new EvOpAutoContrastBrightness2D(true).exec1(new EvOpVarianceCircle(varianceRadius).exec1(stackDIC));
 			return new EvOpAutoContrastBrightness2D(true).exec1(new endrov.flowImageStats.EvOpVarianceRect(varianceRadius,varianceRadius).exec1(stackDIC));
+			*/
+			
+			return new EvOpImageAbs().exec1(new EvOpDifferenceOfGaussian2D(1.5).exec1(stackDIC));
+			
+			
 			}
 		
 		/**
@@ -1138,7 +1145,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 				
 				
 				LinkedList<Candidate> candlist=new LinkedList<Candidate>();
-				for(List<Candidate> list:EvParallel.map(1,
+				for(List<Candidate> list:EvParallel.map(1, //TODO
 						Arrays.asList(expectedSigma, expectedSigma*0.65), 
 //						Arrays.asList(expectedSigma, expectedSigma*0.8, expectedSigma*0.65), 
 						new EvParallel.FuncAB<Double, List<Candidate>>()

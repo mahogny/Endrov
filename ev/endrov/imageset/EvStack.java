@@ -33,11 +33,6 @@ public class EvStack implements AnyEvImage
 	public EvDecimal resZ;
 	
 	/**
-	 * Binning. 4 would mean the image is 4 times smaller than what it depicts.
-	 */
-	//public double binning;
-	
-	/**
 	 * Displacement [pixels]
 	 */
 	public double dispX, dispY;
@@ -53,12 +48,10 @@ public class EvStack implements AnyEvImage
 	 */
 	public double getResbinX()
 		{
-//		return resX/binning;
 		return resX;
 		}
 	public double getResbinY()
 		{
-//		return resY/binning;
 		return resY;
 		}
 
@@ -137,7 +130,6 @@ public class EvStack implements AnyEvImage
 		resX=o.resX;
 		resY=o.resY;
 		resZ=o.getResbinZinverted();
-		//binning=o.binning;
 		dispX=o.dispX;
 		dispY=o.dispY;
 		dispZ=o.dispZ;
@@ -155,21 +147,12 @@ public class EvStack implements AnyEvImage
 		dispX=ref.dispX;
 		dispY=ref.dispY;
 		dispZ=ref.dispZ;
-		//binning=ref.binning;
 		for(int i=0;i<d;i++)
 			{
 			EvImage evim=new EvImage();
 			evim.setPixelsReference(new EvPixels(type,w,h));
 			putInt(i, evim);
 			}
-/*
-		
-		for(EvDecimal z:ref.loaders.keySet())
-			{
-			EvImage evim=new EvImage();
-			evim.setPixelsReference(new EvPixels(type,w,h));
-			loaders.put(z, evim);
-			}*/
 		}
 	
 	/**
@@ -470,7 +453,7 @@ public class EvStack implements AnyEvImage
 	 * Calculate the pixel position in the middle, with decimals if needed.
 	 * I have done minor (but relevant) mistakes in this calculation before so here it is, once and for all.
 	 */
-	public static double calcMidWidth(int w)
+	public static double calcMidCoordinate(int w)
 		{
 		return (w-1)/2.0;
 		}

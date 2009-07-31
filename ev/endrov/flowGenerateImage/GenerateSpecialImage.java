@@ -175,9 +175,9 @@ public class GenerateSpecialImage
 		double mul2y=-1/(2*sigmaY*sigmaY);
 		double mul2z=-1/(2*sigmaZ*sigmaZ);
 		
-		double midx=EvStack.calcMidWidth(w);
-		double midy=EvStack.calcMidWidth(h);
-		double midz=EvStack.calcMidWidth(d);
+		double midx=EvStack.calcMidCoordinate(w);
+		double midy=EvStack.calcMidCoordinate(h);
+		double midz=EvStack.calcMidCoordinate(d);
 		
 		//Could generate a single plane and multiply by Math.exp(mul2 dz2) if it makes any difference
 		

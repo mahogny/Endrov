@@ -13,13 +13,10 @@ public class EvOpImageAbs extends EvOpSlice1
 	{
 	public EvPixels exec1(EvPixels... p)
 		{
-		return EvOpImageAbs.log(p[0]);
+		return EvOpImageAbs.apply(p[0]);
 		}
 
-	/**
-	 * log(A)
-	 */
-	static EvPixels log(EvPixels a)
+	public static EvPixels apply(EvPixels a)
 		{
 		//Should use the common higher type here
 		a=a.getReadOnly(EvPixelsType.DOUBLE);

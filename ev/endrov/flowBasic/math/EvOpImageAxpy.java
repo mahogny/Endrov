@@ -11,8 +11,8 @@ import endrov.imageset.EvPixelsType;
  */
 public class EvOpImageAxpy extends EvOpSlice1
 	{
-	private Number b;
-	private Number c;
+	private final Number b;
+	private final Number c;
 	public EvOpImageAxpy(Number b, Number c)
 		{
 		this.b = b;
@@ -20,22 +20,22 @@ public class EvOpImageAxpy extends EvOpSlice1
 		}
 	public EvPixels exec1(EvPixels... p)
 		{
-		return EvOpImageAxpy.axpy(p[0], b, c);
+		return apply(p[0], b, c);
 		}
 	/**
 	 * A*b+c
 	 */
-	static EvPixels axpy(EvPixels a, Number b, Number c)
+	static EvPixels apply(EvPixels a, Number b, Number c)
 		{
 		if(b instanceof Integer && c instanceof Integer)
-			return axpy(a,b.intValue(),c.intValue());
+			return apply(a,b.intValue(),c.intValue());
 		else
-			return axpy(a,b.doubleValue(),c.doubleValue());
+			return apply(a,b.doubleValue(),c.doubleValue());
 		}
 	/**
 	 * A*b+c
 	 */
-	static EvPixels axpy(EvPixels a, double b, double c)
+	static EvPixels apply(EvPixels a, double b, double c)
 		{
 		//Should use the common higher type here
 		a=a.getReadOnly(EvPixelsType.DOUBLE);
@@ -54,7 +54,7 @@ public class EvOpImageAxpy extends EvOpSlice1
 	/**
 	 * A*b+c
 	 */
-	static EvPixels axpy(EvPixels a, int b, int c)
+	static EvPixels apply(EvPixels a, int b, int c)
 		{
 		//Should use the common higher type here
 		a=a.getReadOnly(EvPixelsType.INT);

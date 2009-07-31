@@ -13,13 +13,13 @@ public class EvOpImageMulImage extends EvOpSlice1
 	{
 	public EvPixels exec1(EvPixels... p)
 		{
-		return EvOpImageMulImage.times(p[0], p[1]);
+		return EvOpImageMulImage.apply(p[0], p[1]);
 		}
 
 	/**
 	 * Add images. Assumes same size and position
 	 */
-	public static EvPixels times(EvPixels a, EvPixels b)
+	public static EvPixels apply(EvPixels a, EvPixels b)
 		{
 		if(a.getType()==EvPixelsType.INT && b.getType()==EvPixelsType.INT)
 			{

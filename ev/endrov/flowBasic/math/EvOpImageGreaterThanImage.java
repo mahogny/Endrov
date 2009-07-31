@@ -13,10 +13,10 @@ public class EvOpImageGreaterThanImage extends EvOpSlice1
 	{
 	public EvPixels exec1(EvPixels... p)
 		{
-		return greater(p[0],p[1]);
+		return apply(p[0],p[1]);
 		}
 	
-	public static EvPixels greater(EvPixels a, EvPixels b)
+	public static EvPixels apply(EvPixels a, EvPixels b)
 		{
 	/*	
 		//TODO Should use the common higher type here

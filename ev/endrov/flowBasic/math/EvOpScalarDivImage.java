@@ -11,18 +11,18 @@ import endrov.imageset.EvPixelsType;
  */
 public class EvOpScalarDivImage extends EvOpSlice1
 	{
-	private Number a;
+	private final Number a;
 	public EvOpScalarDivImage(Number a)
 		{
 		this.a = a;
 		}
 	public EvPixels exec1(EvPixels... p)
 		{
-		return div(a, p[0]);
+		return apply(a, p[0]);
 		}
 	
 	
-	static EvPixels div(Number aVal, EvPixels b)
+	static EvPixels apply(Number aVal, EvPixels b)
 		{
 		if(aVal instanceof Integer && b.getType()==EvPixelsType.INT)
 			{

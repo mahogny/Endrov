@@ -41,7 +41,6 @@ import endrov.util.Memoize;
  * @author Johan Henriksson
  *
  */
-
 public class EvImage  
 	{
 
@@ -51,18 +50,15 @@ public class EvImage
 	//to permanently force evaluation such as when the source will become unavailable.
 	
 	
-	
-	
-	
 	/** memory lock counter */
 	private int locks=0;
 	
 	/** Image this image shadows */
 	private EvImage shadowedImage=null;
 	/** Images shadowing this image */
-	private WeakHashMap<EvImage, Object> shadowedBy=new WeakHashMap<EvImage, Object>();
+	private WeakHashMap<EvImage, Object> shadowedBy=new WeakHashMap<EvImage, Object>(1,1.0f);
 	/** Pending lazy operations */
-	private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>();
+	private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>(1,1.0f);
 		
 	/** 
 	 * Connection to I/O. Allows lazy reading by postponing load operation. Also allows lazy generation by putting a generator as a loader.
@@ -84,22 +80,6 @@ public class EvImage
 	 */
 	private SoftReference<EvPixels> cachedPixels=new SoftReference<EvPixels>(null);
 
-	/**
-	 * Resolution [px/um].
-	 * Binning not taken into account
-	 */
-	//public double resX, resY;
-	
-	/**
-	 * Binning. 4 would mean the image is 4 times smaller than what it depicts.
-	 */
-//	public double binning;
-	
-	/**
-	 * Displacement in micrometer
-	 */
-//	public double dispX, dispY;
-	
 	//Changes in resolution might screw up pending operations. Need to encapsulate!
 	//TODO
 
@@ -175,12 +155,6 @@ public class EvImage
 		EvImage copy=new EvImage();
 		copy.shadowedImage=this;
 		shadowedBy.put(copy, null);
-		/*copy.resX=resX;
-		copy.resY=resY;
-		copy.dispX=dispX;
-		copy.dispY=dispY;
-		copy.binning=binning;*/
-
 		return copy;
 		}
 	
@@ -302,7 +276,7 @@ public class EvImage
 				}
 			else
 				{
-				//Use swap memory
+				//Load from swap memory if previously unloaded
 				if(swapIm!=null)
 					{
 					try
@@ -319,12 +293,12 @@ public class EvImage
 					}
 				else
 					{
-					//Use shadow image
+					//If this image shadows another one, use it
 					if(shadowedImage!=null)
 						return shadowedImage.getPixels();
 					else
 						{
-						//Use IO
+						//Use IO to load image (might also execute operation)
 						loaded=new EvPixels(io.loadJavaImage());
 						cachedPixels=new SoftReference<EvPixels>(loaded);
 						return loaded;

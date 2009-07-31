@@ -1113,7 +1113,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 				
 				
 				LinkedList<Candidate> candlist=new LinkedList<Candidate>();
-				for(List<Candidate> list:EvParallel.map(
+				for(List<Candidate> list:EvParallel.map(1, //TODO
 						Arrays.asList(expectedSigma, expectedSigma*0.65), 
 //						Arrays.asList(expectedSigma, expectedSigma*0.8, expectedSigma*0.65), 
 						new EvParallel.FuncAB<Double, List<Candidate>>()
