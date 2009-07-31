@@ -5,7 +5,7 @@ import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
 /**
- * cos(A)
+ * sqrt(A)
  * @author Johan Henriksson
  *
  */
@@ -13,13 +13,10 @@ public class EvOpImageSqrt extends EvOpSlice1
 	{
 	public EvPixels exec1(EvPixels... p)
 		{
-		return EvOpImageSqrt.log(p[0]);
+		return EvOpImageSqrt.apply(p[0]);
 		}
 
-	/**
-	 * log(A)
-	 */
-	static EvPixels log(EvPixels a)
+	static EvPixels apply(EvPixels a)
 		{
 		//Should use the common higher type here
 		a=a.getReadOnly(EvPixelsType.DOUBLE);

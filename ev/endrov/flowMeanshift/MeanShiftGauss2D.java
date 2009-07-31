@@ -35,8 +35,8 @@ public class MeanShiftGauss2D
 			{
 			int w=s.getWidth();
 			int h=s.getHeight();
-			EvPixels incX=EvOpImageMulImage.times(GenerateSpecialImage.genIncX(w, h),s);
-			EvPixels incY=EvOpImageMulImage.times(GenerateSpecialImage.genIncY(w, h),s);
+			EvPixels incX=EvOpImageMulImage.apply(GenerateSpecialImage.genIncX(w, h),s);
+			EvPixels incY=EvOpImageMulImage.apply(GenerateSpecialImage.genIncY(w, h),s);
 			moment0=s.getReadOnly(EvPixelsType.DOUBLE);
 			momentX=incX.getReadOnly(EvPixelsType.DOUBLE);
 			momentY=incY.getReadOnly(EvPixelsType.DOUBLE);

@@ -14,7 +14,6 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
-import endrov.util.Maybe;
 
 /**
  * Flow unit: Differenc of gaussian 2D
