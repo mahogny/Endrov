@@ -264,11 +264,14 @@ public class NewIntExp
 
 			// For all z
 			stack=ch.imageLoader.get(frame);
-			for (Map.Entry<EvDecimal, EvImage> eim : stack.entrySet())
+			EvImage[] imArr=stack.getImages();
+			for(int az=0;az<imArr.length;az++)
+			//for (Map.Entry<EvDecimal, EvImage> eim : stack.entrySet())
 				{
-				curZ = eim.getKey();
+				curZ = new EvDecimal(stack.transformImageWorldZ(az));//eim.getKey();
 				// Load images lazily (for AP not really needed)
-				im = eim.getValue();
+				//im = eim.getValue();
+				im = imArr[az]; 
 				// EvPixels pixels=null;
 				// int[] pixelsLine=null;
 
@@ -377,11 +380,8 @@ public class NewIntExp
 						double len;
 						if (1>=elip.y*elip.y/(shell.minor*shell.minor)+elip.x*elip.x
 								/(shell.major*shell.major))
-							len = pos.sub(startpos).dot(dirvec)/(2*shell.major); // xy .
-																																		// dirvecx =
-																																		// cos(alpha)
-																																		// ||xy||
-																																		// ||dirvecx||
+							len = pos.sub(startpos).dot(dirvec)/(2*shell.major); 
+						// xy . dirvecx = cos(alpha) ||xy|| ||dirvecx||
 						else
 							len = -1;
 						lenMapArr[lineIndex+ax] = len;
@@ -797,7 +797,6 @@ public class NewIntExp
 				indZ.setPixelsReference(pZ);
 
 				chIndexX.chBinning = chIndexY.chBinning = chIndexZ.chBinning = 4;
-				//stackX.binning = stackY.binning = stackZ.binning = 4;
 
 				int[] lineX = pX.getArrayInt();
 				int[] lineY = pY.getArrayInt();
@@ -933,9 +932,6 @@ public class NewIntExp
 							}
 					}
 				}
-
-			// System.exit(0); ///////////
-
 			}
 
 		}

@@ -89,7 +89,6 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 					newstack.getMetaFrom(referenceStack);
 					
 					//Set up each slice
-					System.out.println("stack got "+referenceStack.entrySet().size());
 					int currentSliceIndex=0;
 					for(Map.Entry<EvDecimal, EvImage> pe:referenceStack.entrySet())
 						{

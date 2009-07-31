@@ -44,11 +44,11 @@ public abstract class EvOpProjectZ extends EvOpStack1
 
 		EvImage proto=in.firstEntry().snd();
 		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
-		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
+		for(EvImage plane:in.getImages())
 			{
 			//System.out.println("plane type "+plane.getValue().getPixels().getTypeString());
-			ptot=combine(ptot,plane.getValue().getPixels());
-			System.out.println(">>>  "+plane.getValue().getPixels().asciiPart(120,50,80));
+			ptot=combine(ptot,plane.getPixels());
+			//System.out.println(">>>  "+plane.getValue().getPixels().asciiPart(120,50,80));
 			//System.out.println("ptot "+ptot.asciiPart(100,20,40));
 			}
 		//Should not include 0-image
@@ -58,8 +58,12 @@ public abstract class EvOpProjectZ extends EvOpStack1
 		imout.setPixelsReference(ptot);
 		//out.put(EvDecimal.ZERO,imout);
 		
-		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
-			out.put(plane.getKey(), imout); //incorrect TODO
+		int numZ=in.getDepth();
+		for(int cz=0;cz<numZ;cz++)
+			out.putInt(cz,imout.makeShadowCopy());
+
+//		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
+//			out.put(plane.getKey(), imout); //incorrect TODO
 //			out.put(plane.getKey(), imout.makeShadowCopy());
 			
 		return out;
