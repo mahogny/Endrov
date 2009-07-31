@@ -118,7 +118,7 @@ public class IntExpAP
 		//TreeMap<EvDecimal, Double> bgLevel=new TreeMap<EvDecimal, Double>();
 		
 		
-		HashMap<EvDecimal, EvPixels> distanceMap=new HashMap<EvDecimal, EvPixels>();
+		HashMap<Double, EvPixels> distanceMap=new HashMap<Double, EvPixels>();
 		
 		
 		
@@ -155,10 +155,13 @@ public class IntExpAP
 
 			//For all z
 			EvStack stack=ch.imageLoader.get(frame);
-			for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
+			EvImage[] imArr=stack.getImages();
+			for(int cz=0;cz<imArr.length;cz++)
+			//for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
 				{
-				EvDecimal curZ=eim.getKey();
-				EvImage im=eim.getValue();
+				//EvDecimal curZ=eim.getKey();
+				double curZ=stack.transformImageWorldZ(cz);
+				EvImage im=imArr[cz];//eim.getValue();
 				EvPixels pixels=null;
 				int[] pixelsLine=null;
 							

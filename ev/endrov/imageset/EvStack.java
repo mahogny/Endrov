@@ -22,6 +22,8 @@ public class EvStack implements AnyEvImage
 	{
 	private TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
 	
+//	private EvImage[] loaders;
+	
 	/**
 	 * Resolution [px/um].
 	 * Binning not taken into account

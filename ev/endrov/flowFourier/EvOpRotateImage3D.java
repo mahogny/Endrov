@@ -52,13 +52,13 @@ public class EvOpRotateImage3D extends EvOpStack1
 		else
 			thepz=pz;
 
-		int az=0;
-		for(Map.Entry<EvDecimal, EvImage> e:in.entrySet())
+		EvImage[] inIm=in.getImages();
+		for(int az=0;az<inIm.length;az++)
 			{
 			int to=(az+thepz)%d;
-			EvImage rot2d=new EvImage(EvOpRotateImage2D.apply(e.getValue().getPixels(), px, py));
+			EvImage rot2d=new EvImage(EvOpRotateImage2D.apply(inIm[az].getPixels(), px, py));
 			out.putInt(to, rot2d);
-			az++;
+			//az++;
 			}
 		return out;
 		}

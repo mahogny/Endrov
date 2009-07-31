@@ -122,8 +122,10 @@ public class MeanShift3D
 			outs.getMetaFrom(s);
 //			outs.allocate(w, h, EvPixelsType.TYPE_INT, s);
 			//int[][] outarr=outs.getArraysInt();
-			int cz=0;
-			for(Map.Entry<EvDecimal, EvImage> entry:s.entrySet())
+			//int cz=0;
+			EvImage[] inArr=s.getImages();
+			for(int cz=0;cz<inArr.length;cz++)
+			//for(Map.Entry<EvDecimal, EvImage> entry:s.entrySet())
 				{
 				EvPixels p=new EvPixels(EvPixelsType.INT,w,h);
 				int[] pa=p.getArrayInt();
@@ -134,8 +136,8 @@ public class MeanShift3D
 					if(lev!=null)
 						pa[i]=lev;
 					}
-				outs.put(entry.getKey(),new EvImage(p));
-				cz++;
+				outs.putInt(cz,new EvImage(p));
+				//cz++;
 				}
 			
 			
@@ -163,23 +165,27 @@ public class MeanShift3D
 
 			int xyIndex=(int)(Math.round(pos.x)+Math.round(pos.y)*w);
 			
-			for(Map.Entry<EvDecimal, EvImage> entry:momentX.entrySet())
+			EvImage[] imArr=momentX.getImages();
+			for(int az=0;az<imArr.length;az++)
+			//for(Map.Entry<EvDecimal, EvImage> entry:momentX.entrySet())
 				{
-				double dz=entry.getKey().doubleValue()-pos.z;
+				//double dz=entry.getKey().doubleValue()-pos.z;
+				double thisZ=momentX.transformImageWorldZ(az);
+				double dz=thisZ-pos.z;
 				
 				double thisw=Math.exp(-dz*dz/szsz2);
 				//Later, can use a cut-off. should make it a lot faster. might run into convergence problems!!!
 				
-				EvPixels pX=entry.getValue().getPixels().getReadOnly(EvPixelsType.DOUBLE);
-				EvPixels pY=momentY.get(entry.getKey()).getPixels().getReadOnly(EvPixelsType.DOUBLE);
-				EvPixels p0=moment0.get(entry.getKey()).getPixels().getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels pX=imArr[az].getPixels().getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels pY=momentY.getInt(az).getPixels().getReadOnly(EvPixelsType.DOUBLE);
+				EvPixels p0=moment0.getInt(az).getPixels().getReadOnly(EvPixelsType.DOUBLE);
 				double[] apX=pX.getArrayDouble();
 				double[] apY=pY.getArrayDouble();
 				double[] ap0=p0.getArrayDouble();
 
 				sumX+=apX[xyIndex]*thisw;
 				sumY+=apY[xyIndex]*thisw;
-				sumZ+=ap0[xyIndex]*entry.getKey().doubleValue()*thisw; //Z-integral calculated on the fly
+				sumZ+=ap0[xyIndex]*thisZ*thisw; //Z-integral calculated on the fly
 				
 				sum0+=ap0[xyIndex]*thisw;
 				//sumweight+=thisw;

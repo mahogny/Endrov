@@ -91,11 +91,15 @@ public class OldIntegrateExpression
 
 			//For all images
 			EvStack stack=ost.getChannel(channelName).imageLoader.get(frame);
-			for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
+			
+			EvImage imArr[]=stack.getImages();
+			for(int az=0;az<imArr.length;az++)
+			//for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
 				{
-				EvImage im=eim.getValue();
+				EvImage im=imArr[az];//eim.getValue();
 				BufferedImage bim=null;
-				double imageZw=eim.getKey().doubleValue();///ost.meta.resZ; //TODO bd, res no more
+				double imageZw=stack.transformImageWorldZ(az);
+				//eim.getKey().doubleValue();///ost.meta.resZ; //TODO bd, res no more
 
 				//For all nuc
 				for(Map.Entry<NucSel,NucLineage.NucInterp> e:inter.entrySet())

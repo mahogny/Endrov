@@ -105,12 +105,14 @@ public class IntExpCell
 			
 			//For all images
 			EvStack stack=ch.imageLoader.get(frame);
-			for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
+			EvImage[] imArr=stack.getImages();
+			for(int cz=0;cz<imArr.length;cz++)
+			//for(Map.Entry<EvDecimal, EvImage> eim:stack.entrySet())
 				{
-				EvImage im=eim.getValue();
+				EvImage im=imArr[cz];//eim.getValue();
 				EvPixels pixels=null;
 				int[] line=null;
-				double imageZw=eim.getKey().doubleValue();
+				double imageZw=stack.transformImageWorldZ(cz);//eim.getKey().doubleValue();
 
 				
 				

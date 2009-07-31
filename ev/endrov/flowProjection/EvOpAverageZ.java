@@ -39,8 +39,8 @@ public class EvOpAverageZ extends EvOpStack1
 
 		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
 		int numZ=in.getDepth();
-		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
-			ptot=new EvOpImageAddImage().exec1(ptot,plane.getValue().getPixels());
+		for(EvImage plane:in.getImages())
+			ptot=new EvOpImageAddImage().exec1(ptot,plane.getPixels());
 			//ImageMath.plus(ptot, plane.getValue().getPixels());
 
 		ptot=new EvOpImageDivScalar(numZ).exec1(ptot);
@@ -52,8 +52,10 @@ public class EvOpAverageZ extends EvOpStack1
 		
 		//Lazy stack op will use all planes!
 		
-		for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
-			out.put(plane.getKey(), imout.makeShadowCopy());
+		for(int cz=0;cz<numZ;cz++)
+			out.putInt(cz,imout.makeShadowCopy());
+		//for(Map.Entry<EvDecimal, EvImage> plane:in.entrySet())
+//			out.put(plane.getKey(), imout.makeShadowCopy());
 			
 		return out;
 		}
