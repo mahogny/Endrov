@@ -28,14 +28,14 @@ public class FlowUnitImageNoisePepperSalt extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitImageNoisePepperSalt.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitImageNoisePepperSalt.class, CategoryInfo.icon,
 				"Apply salt and pepper noise - pixels fully black, fully white, or ok. 0<=P[pepper]+P[salt]<=1"));
 		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return CategoryInfo.icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */

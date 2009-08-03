@@ -45,7 +45,7 @@ public class EvOpFindLocalMaximas3D extends EvOpStack1
 		boolean visited[][][]=new boolean[d][h][w];
 		//TODO faster with hashset?
 		
-		double[][] inarr=stack.getArraysDouble();
+		double[][] inarr=stack.getReadOnlyArraysDouble();
 		for(int z=1;z<d-1;z++)
 			for(int y=1;y<h-1;y++)
 				for(int x=1;x<w-1;x++)

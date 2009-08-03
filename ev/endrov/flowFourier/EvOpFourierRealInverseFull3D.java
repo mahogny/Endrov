@@ -38,7 +38,7 @@ public class EvOpFourierRealInverseFull3D extends EvOpStack
 		int h=inRe.getHeight();
 		int d=inRe.getDepth();
 		
-		double[][] arr=inRe.getArraysDouble();
+		double[][] arr=inRe.getReadOnlyArraysDouble();
 		double[] swizzle=new double[w*h*d*2];
 		for(int az=0;az<d;az++)
 			System.arraycopy(arr[az],0,swizzle, w*h*az,w*h);

@@ -29,7 +29,7 @@ public class EvOpCircConv2D extends EvOpSlice1
 	
 	public static EvPixels apply(EvPixels ima, EvPixels imb)
 		{
-		ima=new EvOpRotateImage2D(null,null).exec1(ima);
+		ima=new EvOpWrapImage2D(null,null).exec1(ima);
 		
 		EvPixels[] ckernel=new EvOpFourierRealForwardFull2D().exec(ima);
 		EvPixels[] cin=new EvOpFourierRealForwardFull2D().exec(imb);

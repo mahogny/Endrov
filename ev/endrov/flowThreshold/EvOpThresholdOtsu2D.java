@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import endrov.flowBasic.Histogram;
+import endrov.flowBasic.EvImageHistogram;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
@@ -35,7 +35,7 @@ public class EvOpThresholdOtsu2D extends Threshold2D
 		
 		int numPixels=in.getWidth()*in.getHeight();
 		
-		SortedMap<Integer,Integer> hist=new TreeMap<Integer,Integer>(Histogram.intHistogram(in));
+		SortedMap<Integer,Integer> hist=new TreeMap<Integer,Integer>(EvImageHistogram.intHistogram(in));
 
 		//The goal is to maximize sigma_b
 

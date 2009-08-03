@@ -125,7 +125,12 @@ public class PluginInfo
 				System.out.println("Plugin directory does not exist! "+pluginDir);
 				}
 			else
-				for(File subdir:pluginDir.listFiles())
+				{
+				//By sorting list, start-up becomes more reproducable
+				List<File> pluginDirListing=new LinkedList<File>(Arrays.asList(pluginDir.listFiles()));
+				Collections.sort(pluginDirListing);
+				for(File subdir:pluginDirListing)
+//				for(File subdir:pluginDir.listFiles())
 						{
 						if(new File(subdir,"PLUGIN.class").exists())
 							{
@@ -139,6 +144,7 @@ public class PluginInfo
 								p.add(pi);
 							}
 						}
+				}
 			}
 //		JOptionPane.showMessageDialog(null, "now here "+p.size());
 		return p;

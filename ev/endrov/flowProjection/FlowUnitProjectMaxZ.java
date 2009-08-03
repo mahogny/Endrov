@@ -28,14 +28,14 @@ public class FlowUnitProjectMaxZ extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitProjectMaxZ.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitProjectMaxZ.class, CategoryInfo.icon,
 				"Calculate max intensity in Z-direction"));
 		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return CategoryInfo.icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */

@@ -4,7 +4,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageComplexMulImage;
 import endrov.flowFourier.EvOpFourierComplexInverse2D;
 import endrov.flowFourier.EvOpFourierRealForwardFull2D;
-import endrov.flowFourier.EvOpRotateImage2D;
+import endrov.flowFourier.EvOpWrapImage2D;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvPixels;
 
@@ -34,7 +34,7 @@ public class EvOpConvGaussian2D extends EvOpSlice1
 		int h=in.getHeight();
 		
 		EvPixels kernel=GenerateSpecialImage.genGaussian2D(sigmaX, sigmaY, w, h);
-		kernel=new EvOpRotateImage2D(null,null).exec1(kernel);
+		kernel=new EvOpWrapImage2D(null,null).exec1(kernel);
 		
 		EvPixels[] ckernel=new EvOpFourierRealForwardFull2D().exec(kernel);
 //		EvPixels[] ckernel=new EvOpFourierComplexForward2D().exec(kernel,GenerateSpecialImage.genConstant(w, h, 0));

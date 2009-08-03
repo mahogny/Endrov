@@ -1,0 +1,62 @@
+package endrov.flowFourier;
+
+import endrov.flow.EvOpStack1;
+import endrov.imageset.EvImage;
+import endrov.imageset.EvStack;
+
+/**
+ * Rotate image
+ * 
+ * Complexity O(w*h)
+ */
+public class EvOpWrapImage3D extends EvOpStack1
+	{
+	Number px, py, pz;
+	
+	public EvOpWrapImage3D(Number px, Number py, Number pz)
+		{
+		this.px = px;
+		this.py = py;
+		this.pz = pz;
+		}
+
+	public EvStack exec1(EvStack... p)
+		{
+		return apply(p[0],intValue(px), intValue(py), intValue(pz));
+		}
+	
+	private static Integer intValue(Number n)
+		{
+		if(n!=null)
+			return n.intValue();
+		else
+			return null;
+		}
+	
+	/**
+	 * Rotate image. If rotation is null, then rotate half-way
+	 */
+	public static EvStack apply(EvStack in, Integer px, Integer py, Integer pz)
+		{		
+		int d=in.getDepth();
+
+		EvStack out=new EvStack();
+		out.getMetaFrom(in);
+
+		int thepz;
+		if(pz==null)
+			thepz=d/2;
+		else
+			thepz=pz;
+
+		EvImage[] inIm=in.getImages();
+		for(int az=0;az<inIm.length;az++)
+			{
+			int to=(az+thepz)%d;
+			EvImage rot2d=new EvImage(EvOpWrapImage2D.apply(inIm[az].getPixels(), px, py));
+			out.putInt(to, rot2d);
+			//az++;
+			}
+		return out;
+		}
+	}

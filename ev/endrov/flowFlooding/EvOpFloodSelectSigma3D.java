@@ -42,8 +42,8 @@ public class EvOpFloodSelectSigma3D extends EvOpStack1
 		markstack.getMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		double[][] inarr=stack.getArraysDouble();
-		int[][] outarr=markstack.getArraysInt();
+		double[][] inarr=stack.getReadOnlyArraysDouble();
+		int[][] outarr=markstack.getReadOnlyArraysInt();
 
 		double sum=0;
 		double sum2=0;

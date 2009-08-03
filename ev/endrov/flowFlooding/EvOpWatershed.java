@@ -108,8 +108,8 @@ public class EvOpWatershed extends EvOpStack1
 		stackOut.getMetaFrom(stack);
 		stackOut.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		int[][] inarr=stack.getArraysInt();
-		int[][] outarr=stackOut.getArraysInt();
+		int[][] inarr=stack.getReadOnlyArraysInt();
+		int[][] outarr=stackOut.getOrigArraysInt();
 		
 		//Start queue with seed pixels
 		PriorityQueue<PriPixel> q=new PriorityQueue<PriPixel>();

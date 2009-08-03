@@ -28,14 +28,14 @@ public class FlowUnitImageNoisePoisson extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitImageNoisePoisson.class, null,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitImageNoisePoisson.class, CategoryInfo.icon,
 				"Apply poisson noise"));
 		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
-	public ImageIcon getIcon(){return null;}
+	public ImageIcon getIcon(){return CategoryInfo.icon;}
 	public Color getBackground(){return CategoryInfo.bgColor;}
 	
 	/** Get types of flows in */

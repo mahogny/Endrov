@@ -1,0 +1,28 @@
+package endrov.flowMorphology;
+
+import endrov.flow.EvOpSlice1;
+import endrov.imageset.EvPixels;
+
+/**
+ * Internal gradient: image-erode(image)
+ * <br/>
+ * P.Soille - Morphological Image Analysis, Principles and applications. 2nd edition
+ * @author Johan Henriksson
+ */
+public class EvOpMorphGradientInternal2D extends EvOpSlice1
+	{
+	private final MorphKernel kernel;
+	
+	public EvOpMorphGradientInternal2D(MorphKernel kernel)
+		{
+		this.kernel = kernel;
+		}
+
+	@Override
+	public EvPixels exec1(EvPixels... p)
+		{
+		return kernel.internalGradient(p[0]);
+		}
+
+	
+	}

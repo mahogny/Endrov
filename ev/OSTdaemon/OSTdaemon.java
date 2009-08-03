@@ -17,7 +17,7 @@ import loci.formats.ImageReader;
 import org.jdom.*;
 
 import endrov.imageset.BioformatsSliceIO;
-import endrov.util.EvImageUtils;
+import endrov.util.EvImageIOUtils;
 import endrov.util.EvXmlUtil;
 
 
@@ -735,7 +735,7 @@ public class OSTdaemon extends Thread
 		String fileEnding=getFileEnding(toFile.getName());
 		if(fileEnding.equals("jpg") || fileEnding.equals("jpeg"))
 			{
-			EvImageUtils.saveJPEG(im, toFile, quality);
+			EvImageIOUtils.saveJPEG(im, toFile, quality);
 /*	    FileOutputStream toStream = new FileOutputStream(toFile); 
 	    JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(toStream); 
 	    JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(im); 

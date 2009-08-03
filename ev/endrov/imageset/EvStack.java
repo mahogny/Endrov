@@ -403,7 +403,7 @@ public class EvStack implements AnyEvImage
 	/**
 	 * Return the pixel arrays for every plane. Will do a read-only conversion automatically
 	 */
-	public int[][] getArraysInt()
+	public int[][] getReadOnlyArraysInt()
 		{
 		EvPixels[] parr2=getPixels();
 		int[][] parr=new int[parr2.length][];
@@ -426,11 +426,24 @@ public class EvStack implements AnyEvImage
 		return parr;
 		}
 
+	/**
+	 * Return the pixel arrays for every plane. This is the original pixel data; meant for the
+	 * time when you write it
+	 */
+	public double[][] getOrigArraysDouble()
+		{
+		EvPixels[] parr2=getPixels();
+		double[][] parr=new double[parr2.length][];
+		for(int i=0;i<parr2.length;i++)
+			parr[i]=parr2[i].getArrayDouble();
+		return parr;
+		}
+
 	
 	/**
 	 * Return the pixel arrays for every plane. Will do a read-only conversion automatically
 	 */
-	public double[][] getArraysDouble()
+	public double[][] getReadOnlyArraysDouble()
 		{
 		EvPixels[] parr2=getPixels();
 		double[][] parr=new double[parr2.length][];

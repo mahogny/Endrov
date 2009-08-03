@@ -6,15 +6,12 @@ import endrov.imageset.EvStack;
 import endrov.util.Tuple;
 
 /**
- * Fourier transform
- * 
- * TODO add the other transforms
- * 
+ * Fourier transform helper functions
  * 
  * @author Johan Henriksson
  *
  */
-public class FourierTransform
+class FourierTransform
 	{
 	/**
 	 * Numerical libraries prefer swizzled real and complex data
@@ -45,8 +42,8 @@ public class FourierTransform
 	 */
 	public static double[] swizzle3d(EvStack inRe, EvStack inIm, int w, int h, int d)
 		{
-		double[][] arrRe=inRe.getArraysDouble();
-		double[][] arrIm=inIm.getArraysDouble();
+		double[][] arrRe=inRe.getReadOnlyArraysDouble();
+		double[][] arrIm=inIm.getReadOnlyArraysDouble();
 
 		double[] swizzle=new double[w*h*d*2];
 
