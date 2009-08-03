@@ -4,7 +4,7 @@ import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageComplexMulImage;
 import endrov.flowFourier.EvOpFourierComplexInverse3D;
 import endrov.flowFourier.EvOpFourierRealForwardFull3D;
-import endrov.flowFourier.EvOpRotateImage3D;
+import endrov.flowFourier.EvOpWrapImage3D;
 import endrov.flowGenerateImage.GenerateSpecialImage;
 import endrov.imageset.EvStack;
 import endrov.util.Tuple;
@@ -86,7 +86,7 @@ public class EvOpConvGaussian3D extends EvOpStack1
 		System.gc();
 		
 		System.out.println("Rotating");
-		kernel=EvOpRotateImage3D.apply(kernel, null,null, null); //old kernel is collected here
+		kernel=EvOpWrapImage3D.apply(kernel, null,null, null); //old kernel is collected here
 		System.gc();
 		
 		System.out.println("fft kernel");

@@ -52,8 +52,8 @@ public class EvOpFloodSelectColorRange3D extends EvOpStack1
 		markstack.getMetaFrom(stack);
 		markstack.allocate(w, h, d, EvPixelsType.INT, stack);
 		
-		double[][] inarr=stack.getArraysDouble();
-		int[][] outarr=markstack.getArraysInt();
+		double[][] inarr=stack.getReadOnlyArraysDouble();
+		int[][] outarr=markstack.getReadOnlyArraysInt();
 		
 		LinkedList<Vector3i> q=new LinkedList<Vector3i>();
 		q.add(new Vector3i(startpos.x,startpos.y,startpos.z));

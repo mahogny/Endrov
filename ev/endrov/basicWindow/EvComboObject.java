@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,6 +21,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 
 import endrov.basicWindow.icon.BasicIcon;
@@ -26,6 +32,7 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
+import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
 /**
@@ -95,7 +102,6 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 
 			
 			//hm. should have used class instead
-			
 			//TODO
 			}
 
@@ -359,7 +365,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 	//extended object can be parameterized. get method without cast can then be introduced
 	
 	
-	public class NewObjectWindow extends JFrame implements ActionListener
+	public class NewObjectWindow extends JFrame implements ActionListener, WindowFocusListener
 		{
 		static final long serialVersionUID=0;
 		private EvTreeObject tree=new EvTreeObject();
@@ -368,7 +374,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 		private JButton bCancel=new JButton("Cancel");
 		private EvObject newObject;
 		
-		//TODO enter and esc
+		//TODO esc key
 		
 		public NewObjectWindow(EvObject newObject)
 			{
@@ -394,10 +400,18 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 			int minh=150;
 //			if(getHeight()<minh)
 			setSize(getWidth(), minh);
+			addWindowFocusListener(this);
+			
+			bOk.setEnabled(canOk());
+			EvSwingUtil.textAreaChangeListener(fName, new ChangeListener(){
+				public void stateChanged(ChangeEvent e){bOk.setEnabled(canOk());}
+				});
+			
+			tree.addTreeSelectionListener(new TreeSelectionListener(){
+				public void valueChanged(TreeSelectionEvent e){bOk.setEnabled(canOk());}
+				});
 			}
 
-		//TODO could gray the ok until really ok
-		
 		public void actionPerformed(ActionEvent e)
 			{
 			if(e.getSource()==bCancel)
@@ -406,7 +420,7 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 				{
 				EvContainer con=tree.getSelectedContainer();
 				String name=fName.getText();
-				if(con!=null && !name.equals("") && con.getMetaObject(name)==null)
+				if(canOk())
 					{
 					dispose();
 					con.metaObject.put(name,newObject);
@@ -416,6 +430,22 @@ public abstract class EvComboObject extends JPanel implements ActionListener
 					}
 				}
 				
+			}
+
+		public boolean canOk()
+			{
+			EvContainer con=tree.getSelectedContainer();
+			String name=fName.getText();
+			return (con!=null && !name.equals("") && con.getMetaObject(name)==null);
+			}
+		
+		public void windowGainedFocus(WindowEvent arg0)
+			{
+			}
+
+		public void windowLostFocus(WindowEvent arg0)
+			{
+			dispose();
 			}
 		
 		

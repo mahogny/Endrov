@@ -1,13 +1,10 @@
 package endrov.flowProjection;
 
-import java.util.Map;
-
 import endrov.flow.EvOpStack1;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
 
 /**
  * Projections along Z that can combine 2 images at a time

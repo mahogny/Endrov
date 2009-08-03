@@ -1,7 +1,6 @@
 package endrov.flowAveraging;
 
 import endrov.flow.EvOpStack1;
-import endrov.flowBasic.CumSumArea;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
@@ -22,45 +21,20 @@ public class EvOpDownsampleIntegral extends EvOpStack1
 
 	public EvStack exec1(EvStack... p)
 		{
-		return movingSumRect(p[0], scaleX, scaleY);
+		return apply(p[0], scaleX, scaleY);
 		}
 	
 	
-	public static EvStack movingSumRect(EvStack in, int scaleX, int scaleY)
+	public static EvStack apply(EvStack in, int scaleX, int scaleY)
 		{
 		
 		EvStack out=new EvStack();
 		out.getMetaFrom(in);
-		out.resX/=scaleX;
+		out.resX/=scaleX; //not quite
 		out.resY/=scaleY;
 		
+		//TODO
 		
-		
-		
-		
-		
-		
-		/*
-		in=in.getReadOnly(EvPixelsType.DOUBLE);
-		int w=in.getWidth();
-		int h=in.getHeight();
-		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
-		double[] outPixels=out.getArrayDouble();
-		
-		CumSumArea cumsum=new CumSumArea(in);
-		
-		for(int ay=0;ay<h;ay++)
-			{
-			for(int ax=0;ax<w;ax++)
-				{
-				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+pw+1);
-				
-				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+ph+1);
-				outPixels[out.getPixelIndex(ax, ay)]=cumsum.integralFromCumSumDouble(fromx, tox, fromy, toy);
-				}
-			}*/
 		return out;
 		}
 	
@@ -68,42 +42,56 @@ public class EvOpDownsampleIntegral extends EvOpStack1
 	public static EvPixels downSample(EvPixels in, int scaleX, int scaleY)
 		{
 		in=in.getReadOnly(EvPixelsType.DOUBLE);
+		double[] inPixels=in.getArrayDouble();
 		int w=in.getWidth();
 		int h=in.getHeight();
-		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,w,h);
+		
+		int outw=w/scaleX; //Rounds down. note! affects resolution!!
+		EvPixels out=new EvPixels(EvPixelsType.DOUBLE,outw,h);
 		double[] outPixels=out.getArrayDouble();
 		
-		CumSumArea cumsum=new CumSumArea(in);
+		//Could do it with cumsum. which is faster?
+//		CumSumArea cumsum=new CumSumArea(in);
 		
-		
-		
-		
+		//First resample in X-direction
 		for(int ay=0;ay<h;ay++)
 			{
-			for(int ax=0;ax<w;ax++)
+			int ax=0;
+			for(int aox=0;aox<outw;aox++)
 				{
-				
-				
-				
-				
-				//from ax*scaleX to
-				
-				
-				
-				
-				
-				
-				
-				/*
-				int fromx=Math.max(0,ax-pw);
-				int tox=Math.min(w,ax+pw+1);
-				
-				int fromy=Math.max(0,ay-ph);
-				int toy=Math.min(h,ay+ph+1);
-				outPixels[out.getPixelIndex(ax, ay)]=cumsum.integralFromCumSumDouble(fromx, tox, fromy, toy);
-				*/
+				double sum=0;
+				for(int i=0;i<scaleX;i++)
+					{
+					sum+=inPixels[ax+ay*w];
+					ax++;
+					}
+				outPixels[aox+ay*outw]=sum;
 				}
 			}
+
+		//Make current out the new input
+		inPixels=outPixels;
+		w=outw;
+		int outh=h/scaleY;
+		out=new EvPixels(EvPixelsType.DOUBLE,outw,outh);
+		outPixels=out.getArrayDouble();
+		
+		//Resample in Y, now with fewer pixels so memory locality should be higher
+		for(int ax=0;ax<w;ax++)
+			{
+			int ay=0;
+			for(int aoy=0;aoy<outh;aoy++)
+				{
+				double sum=0;
+				for(int i=0;i<scaleY;i++)
+					{
+					sum+=inPixels[ax+ay*w];
+					ay++;
+					}
+				outPixels[ax+aoy*outw]=sum;
+				}
+			}
+		
 		return out;
 		}
 	

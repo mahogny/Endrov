@@ -7,7 +7,7 @@ import java.util.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import endrov.flowBasic.Histogram;
+import endrov.flowBasic.EvImageHistogram;
 import endrov.unsortedImageFilters.unfinished.HistogramTransform;
 
 public class HistogramEqWidget extends JPanel
@@ -34,7 +34,7 @@ public class HistogramEqWidget extends JPanel
 		hist.put(new Integer(15), new Integer(40));
 		hist.put(new Integer(25), new Integer(20));
 		
-		cumHist=Histogram.makeHistCumulative(hist);
+		cumHist=EvImageHistogram.makeHistCumulative(hist);
 		}
 
 	
@@ -77,7 +77,7 @@ public class HistogramEqWidget extends JPanel
 		Double maxY=eq.points.get(eq.points.lastKey());
 
 		//Histogram limits
-		if(Histogram.isIntegerHist(cumHist))
+		if(EvImageHistogram.isIntegerHist(cumHist))
 			{
 			SortedMap<Integer, Integer> cum=(SortedMap<Integer, Integer>) cumHist;
 			Integer start2=cum.firstKey();
@@ -112,7 +112,7 @@ public class HistogramEqWidget extends JPanel
 		//Render histogram
 		if(renderHistogram)
 			{
-			if(Histogram.isIntegerHist(cumHist))
+			if(EvImageHistogram.isIntegerHist(cumHist))
 				{
 				SortedMap<Integer, Integer> cum=(SortedMap<Integer, Integer>) cumHist;
 				

@@ -3,7 +3,7 @@ package endrov.flowMisc;
 import java.util.LinkedList;
 import java.util.List;
 import endrov.flow.EvOpStack1;
-import endrov.flowBasic.EvImageMath;
+import endrov.flowBasic.EvImageUtil;
 import endrov.flowBasic.math.EvOpImageAddScalar;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
@@ -35,7 +35,7 @@ public class EvOpCorrectAttenuation extends EvOpStack1
 		for(int i=0;i<p.length;i++)
 			{
 			p[i]=p[i].getReadOnly(EvPixelsType.DOUBLE);
-			avg[i]=EvImageMath.sum(p[i])/(w*h);
+			avg[i]=EvImageUtil.sum(p[i])/(w*h);
 			zList.add((double)i);
 			intensityList.add(avg[i]);
 			}

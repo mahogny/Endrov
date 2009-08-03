@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import endrov.flowBasic.Histogram;
+import endrov.flowBasic.EvImageHistogram;
 import endrov.imageset.EvPixels;
 
 /**
@@ -30,8 +30,8 @@ public class EvOpThresholdMaxEntropy2D extends Threshold2D
 		{
 		int numPixels=in.getWidth()*in.getHeight();
 		
-		SortedMap<Integer,Integer> hist=new TreeMap<Integer,Integer>(Histogram.intHistogram(in));
-		SortedMap<Integer,Integer> cumHist=Histogram.makeHistCumulative(hist);
+		SortedMap<Integer,Integer> hist=new TreeMap<Integer,Integer>(EvImageHistogram.intHistogram(in));
+		SortedMap<Integer,Integer> cumHist=EvImageHistogram.makeHistCumulative(hist);
 		
 		
 		/**

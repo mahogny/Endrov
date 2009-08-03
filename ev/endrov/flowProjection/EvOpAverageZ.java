@@ -1,7 +1,5 @@
 package endrov.flowProjection;
 
-import java.util.Map;
-
 import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageAddImage;
 import endrov.flowBasic.math.EvOpImageDivScalar;
@@ -9,7 +7,6 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
 
 /**
  * Projection: Average Z

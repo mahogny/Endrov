@@ -32,7 +32,7 @@ public class EvOpCircConv3D extends EvOpStack1
 		int d=ima.getDepth();
 
 		//Change memory layout
-		double[][] arr=ima.getArraysDouble();
+		double[][] arr=ima.getReadOnlyArraysDouble();
 		double[] swizzle=new double[w*h*d*2];
 		for(int az=0;az<d;az++)
 			System.arraycopy(arr[az],0,swizzle, w*h*az,w*h);
@@ -56,7 +56,7 @@ public class EvOpCircConv3D extends EvOpStack1
 		stackMeta.getMetaFrom(imb);
 		
 		//Into fourier space
-		kernel=new EvOpRotateImage3D(null,null,null).exec1(kernel);
+		kernel=new EvOpWrapImage3D(null,null,null).exec1(kernel);
 		double[] arrayA=forward(transform,kernel);
 		double[] arrayB=forward(transform,imb);
 		

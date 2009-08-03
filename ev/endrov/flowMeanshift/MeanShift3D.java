@@ -3,8 +3,6 @@ package endrov.flowMeanshift;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-
 import javax.vecmath.Vector3d;
 
 import endrov.data.EvData;
@@ -20,7 +18,6 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
 import endrov.util.Vector3i;
 
 /**
