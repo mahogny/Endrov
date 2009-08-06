@@ -150,7 +150,7 @@ public class EvSwingUtil
 		return p;
 		}
 
-	public static JComponent packEvenVertical(JComponent... list)
+	public static JComponent layoutEvenVertical(JComponent... list)
 		{
 		JPanel p=new JPanel(new GridLayout(list.length,1));
 		for(JComponent c:list)
