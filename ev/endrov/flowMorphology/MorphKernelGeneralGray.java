@@ -20,45 +20,62 @@ import endrov.util.Vector2i;
  */
 public class MorphKernelGeneralGray extends MorphKernel
 	{
-	private List<Vector2i> kernelPixelList;
+	private List<Vector2i> kernelPixelHitList;
+	private List<Vector2i> kernelPixelMissList;
 	
 	/**
 	 * Turn kernel image into a list of positions
 	 * 
+	 * Idea: some operations might be faster if the order is randomized due to spatial correlation.
+	 * But: less memory locality
+	 * 
 	 */
-	public MorphKernelGeneralGray(EvPixels kernel, int kcx, int kcy)
+	public MorphKernelGeneralGray(EvPixels kernelHit, int kcx, int kcy)
 		{
 		LinkedList<Vector2i> list=new LinkedList<Vector2i>();
-		kernel=kernel.getReadOnly(EvPixelsType.INT);
-		int w=kernel.getWidth();
-		int h=kernel.getHeight();
-		int[] inPixels=kernel.getArrayInt();
+		kernelHit=kernelHit.getReadOnly(EvPixelsType.DOUBLE);
+		int w=kernelHit.getWidth();
+		int h=kernelHit.getHeight();
+		double[] inPixels=kernelHit.getArrayDouble();
 		
 		for(int ay=0;ay<h;ay++)
 			for(int ax=0;ax<w;ax++)
-				if(inPixels[kernel.getPixelIndex(ax, ay)]!=0)
+				if(inPixels[kernelHit.getPixelIndex(ax, ay)]!=0)
 					list.add(new Vector2i(ax-kcx,ay-kcy));
 
-		this.kernelPixelList=list;
+		this.kernelPixelHitList=list;
 		}
-
-
-	public MorphKernelGeneralGray(Collection<Vector2i> list)
+	
+	public MorphKernelGeneralGray(Collection<Vector2i> listHit, Collection<Vector2i> listMiss)
 		{
-		this.kernelPixelList=new LinkedList<Vector2i>(list);
+		this.kernelPixelHitList=new LinkedList<Vector2i>(listHit);
+		this.kernelPixelMissList=new LinkedList<Vector2i>(listMiss);
 		}
 	
 	public MorphKernelGeneralGray reflect()
 		{
-		LinkedList<Vector2i> list=new LinkedList<Vector2i>();
-		for(Vector2i v:kernelPixelList)
-			list.add(new Vector2i(-v.x,-v.y));
-		return new MorphKernelGeneralGray(list);
+		LinkedList<Vector2i> listHit=new LinkedList<Vector2i>();
+		for(Vector2i v:kernelPixelHitList)
+			listHit.add(new Vector2i(-v.x,-v.y));
+		LinkedList<Vector2i> listMiss=new LinkedList<Vector2i>();
+		for(Vector2i v:kernelPixelMissList)
+			listMiss.add(new Vector2i(-v.x,-v.y));
+		return new MorphKernelGeneralGray(listHit, listMiss);
+		}
+
+	/**
+	 * Hit and miss transform
+	 * <br/>
+	 * Complexity O(w*h*#kernelPixels)
+	 */
+	public EvPixels hitmiss(EvPixels in)
+		{
+		return hitmissBinary(new MorphKernelGeneralBinary(kernelPixelMissList,new LinkedList<Vector2i>()), in);
 		}
 	
 	public List<Vector2i> getKernelPos()
 		{
-		return kernelPixelList;
+		return kernelPixelHitList;
 		}
 	
 	
@@ -68,7 +85,7 @@ public class MorphKernelGeneralGray extends MorphKernel
  * <br/>
  * Kernel has a specified center kcx,kcy. Outside image assumed empty. 
  * <br/>
- * Complexity O(w*h*kw*kh)
+ * Complexity O(w*h*#kernelPixels)
 	 */
 	public EvPixels dilate(EvPixels in)
 		{
@@ -85,7 +102,7 @@ public class MorphKernelGeneralGray extends MorphKernel
 			for(int ax=0;ax<w;ax++)
 				{
 				double found=outsideValue;
-				for(Vector2i v:kernelPixelList)
+				for(Vector2i v:kernelPixelHitList)
 					{
 					int kx=v.x+ax;
 					int ky=v.y+ay;
@@ -111,7 +128,7 @@ public class MorphKernelGeneralGray extends MorphKernel
 	 * <br/>
 	 * Kernel has a specified center kcx,kcy. Outside image assumed empty. 
 	 * <br/>
-	 * Complexity O(w*h*kw*kh)
+	 * Complexity O(w*h*#kernelPixels)
 	 */
 	public EvPixels erode(EvPixels in)
 		{
@@ -128,7 +145,7 @@ public class MorphKernelGeneralGray extends MorphKernel
 			for(int ax=0;ax<w;ax++)
 				{
 				double found=outsideValue;
-				for(Vector2i v:kernelPixelList)
+				for(Vector2i v:kernelPixelHitList)
 					{
 					int kx=v.x+ax;
 					int ky=v.y+ay;

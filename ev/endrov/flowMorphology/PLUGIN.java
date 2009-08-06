@@ -50,6 +50,7 @@ public class PLUGIN extends PluginDef
 				FlowUnitMorphReflect.class,
 				FlowUnitMorphConvertToKernel2D.class,
 				FlowUnitMorphDrawKernel2D.class,
+				FlowUnitMorphConstKernel.class,
 				
 				FlowUnitMorphFillHolesBinary2D.class,
 				FlowUnitMorphFillHolesBinary3D.class,
