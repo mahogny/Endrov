@@ -25,7 +25,7 @@ public class Vector2i
 		{
 		if(obj instanceof Vector2i)
 			{
-			Vector3i a=(Vector3i)obj;
+			Vector2i a=(Vector2i)obj;
 			return x==a.x && y==a.y;
 			}
 		else
@@ -37,6 +37,11 @@ public class Vector2i
 		return x^y;
 		}
 	
+	@Override
+	public String toString()
+		{
+		return "{"+x+","+y+"}";
+		}
 	
 	
 	}
