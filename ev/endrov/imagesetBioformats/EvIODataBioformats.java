@@ -251,6 +251,8 @@ public class EvIODataBioformats implements EvIOData
 			}*/
 
 		
+		HashSet<String> usedChannelNames=new HashSet<String>();
+		
 		for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
 			{
 			//String getImageDescription(int imageIndex);
@@ -268,15 +270,19 @@ public class EvIODataBioformats implements EvIOData
 			//Some names might be awful. Might be a bad idea
 			String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
 			
-			if(d.metaObject.containsKey(imsetName))
+//			if(d.metaObject.containsKey(imsetName))
+			if(usedChannelNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it
 				imsetName="im-"+imageName;
+			usedChannelNames.add(imsetName);
 			
 			Imageset im=(Imageset)d.metaObject.get(imsetName);
 			if(im==null)
 				d.metaObject.put(imsetName, im=new Imageset());
 			for(String s:im.getChannels().keySet())
+				{
+				//Keep metaobjects below channel?
 				im.metaObject.remove(s);
-			//im.channelImages.clear();
+				}
 			
 			
 			String creationDate = retrieve.getImageCreationDate(seriesIndex);

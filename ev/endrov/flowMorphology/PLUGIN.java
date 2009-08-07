@@ -49,7 +49,6 @@ public class PLUGIN extends PluginDef
 				FlowUnitMorphBinarize.class,
 				FlowUnitMorphReflect.class,
 				FlowUnitMorphConvertToKernel2D.class,
-				FlowUnitMorphDrawKernel2D.class,
 				FlowUnitMorphConstKernel.class,
 				
 				FlowUnitMorphFillHolesBinary2D.class,

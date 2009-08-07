@@ -66,6 +66,7 @@ public class EvOpMorphFillHolesGray2D extends EvOpSlice1
 	
 	public static EvPixels apply(EvPixels in)
 		{
+		in=in.convertToDouble(true);
 		int w=in.getWidth();
 		int h=in.getHeight();
 
