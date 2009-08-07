@@ -139,7 +139,7 @@ public class MorphKernelGeneralGray extends MorphKernel
 		double[] inPixels=in.getArrayDouble();
 		double[] outPixels=out.getArrayDouble();
 
-		double outsideValue=EvImageUtil.minValue(in);
+		double outsideValue=EvImageUtil.maxValue(in);
 		
 		for(int ay=0;ay<h;ay++)
 			for(int ax=0;ax<w;ax++)

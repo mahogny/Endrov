@@ -1,0 +1,435 @@
+http://cvs.openmicroscopy.org.uk/svn/specification/Documentation/Generated/OME-2008-09/ome.xsd.html
+
+
+
+
+========= keep =======================================================
+
+
+
+---- The Contact element describes the contact person for a group of experimenters - typically a project leader or lab manager. This person is specified as a reference to an OME experimenter.
+<Contact
+ID=" ExperimenterID [1]"/> 
+
+
+
+-- The coating applied to the lens
+<Correction>   xsd:string (value comes from list: {'UV'|'PlanApo'|'PlanFluor'|'SuperFluor'|'VioletCorrected'|'Unknown'}) </Correction>
+
+
+<Detector
+Manufacturer=" xsd:string [0..1]"
+Model=" xsd:string [0..1]"
+SerialNumber=" xsd:string [0..1]"
+Gain=" xsd:float [0..1]"
+Voltage=" xsd:float [0..1]"
+Offset=" xsd:float [0..1]"
+Zoom=" xsd:float [0..1]"
+AmplificationGain=" xsd:float [0..1]"
+ID=" DetectorID [1]"
+Type=" xsd:string (value comes from list: {'CCD'|'IntensifiedCCD'|'AnalogVideo'|'PMT'|'Photodiode'|'Spectroscopy'|'LifetimeImaging'|'CorrelationSpectroscopy'|'FTIR'|'EM-CCD'|'APD'|'CMOS'|'Unknown'}) [1]"/> 
+
+
+
+
+--- The dichromatic beamsplitter or dichroic mirror used for this filter combination.
+<Dichroic
+Manufacturer=" xsd:string [1]"
+Model=" xsd:string [1]"
+LotNumber=" xsd:string [0..1]"
+ID=" DichroicID [1]"/> 
+
+
+
+
+
+---- This element describes a person who performed an imaging experiment. This person may also be a user of the OME system, in which case the OMEName element contains their login name. Experimenters may belong to one or more groups which are specified using one or more GroupRef elements. Note while FirstName, LastName, Email and OMEName are all optional to be valid an Experimenter must have AT LEAST ONE present
+<Experimenter
+ID=" ExperimenterID [1]">
+-- 'At lease one of (FirstName, LastName, Email, OMEName)'
+{
+<FirstName> ... </FirstName> [1]
+<LastName> ... </LastName> [0..1]
+<Email> ... </Email> [0..1]
+or
+<Institution> ... </Institution> [0..1]
+<OMEName> ... </OMEName> [0..1]
+<LastName> ... </LastName> [1]
+<Email> ... </Email> [0..1]
+or
+<Institution> ... </Institution> [0..1]
+<OMEName> ... </OMEName> [0..1]
+<Email> ... </Email> [1]
+or
+<Institution> ... </Institution> [0..1]
+<OMEName> ... </OMEName> [0..1]
+<Institution> ... </Institution> [0..1]
+<OMEName> ... </OMEName> [1]
+}
+and
+<GroupRef> ... </GroupRef> [0..*]
+</Experimenter>
+
+
+
+
+---- A filter is either an excitation or emission filters. There should be one filter element specified per wavelength in the image. The channel number associated with a filter set is specified in LogicalChannel's required ChannelComponent element and its Index attribute. It is based on the FilterSpec type, so has the required attributes Manufacturer, Model, and LotNumber. It may also contain a Type attribute which may be set to 'LongPass', 'ShortPass', 'BandPass', or 'MultiPass'. It can be associated with an optional FilterWheel - Note: this is not the same as a FilterSet
+<Filter
+Manufacturer=" xsd:string [1]"
+Model=" xsd:string [1]"
+LotNumber=" xsd:string [0..1]"
+-- [JH] type is better stored in a database separate from metadata
+Type=" xsd:string (value comes from list: {'LongPass'|'ShortPass'|'BandPass'|'MultiPass'}) [0..1]"
+FilterWheel=" xsd:string [0..1]
+--'A filter \'wheel\' in OME can refer to any arrangement of filters in a filter holder of any shape. It could, for example, be a filter slider.'
+"
+ID=" FilterID [1]">
+<TransmittanceRange> ... </TransmittanceRange> [0..1]
+</Filter>
+
+
+
+---- The Group ID and Name attributes are required. Contact information should be specified for the leader of the group and a contact person. The Leader and/or Contact are themselves experimenters defined in OME, but they need not have OMENames. 
+<Group
+Name=" xsd:string [0..1]"
+ID=" GroupID [1]">
+<Leader> ... </Leader> [0..1]
+<Contact> ... </Contact> [0..1]
+</Group>
+
+
+---- The Temperature is in Celsius, AirPressure is in millibars, Humidity and CO2Percent are percent-fractions from 0.0 to 1.0.
+<ImagingEnvironment
+Temperature=" xsd:float [0..1]"
+AirPressure=" xsd:float [0..1]"
+Humidity=" PercentFraction [0..1]"
+CO2Percent=" PercentFraction [0..1]"/> 
+
+
+
+----- The immersion medium the lens is designed for
+-- [JH] I would rather have vendor name etc for the oil
+<Immersion>   xsd:string (value comes from list: {'Oil'|'Water'|'WaterDipping'|'Air'|'Multi'|'Glycerol'|'Other'|'Unknown'}) </Immersion>
+-- TODO
+
+
+----- The organizing structure that people belong to other than groups. A university, or company, etc. We do not specify a department element, and do not mean for Institution to be used in this way. We simply wish to say XXX at YYY. Where YYY has a better chance of being tied to a geographically fixed location and of being more recognizable than a group of experimenters. 
+<Institution>  xsd:string </Institution>
+
+
+
+<Instrument
+ID=" InstrumentID [1]">
+<Microscope> ... </Microscope> [0..1]
+<LightSource> ... </LightSource> [0..*]
+<Detector> ... </Detector> [0..*]
+<Objective> ... </Objective> [0..*]
+<FilterSet> ... </FilterSet> [0..*]
+<Filter> ... </Filter> [0..*]
+<Dichroic> ... </Dichroic> [0..*]
+<OTF> ... </OTF> [0..*]
+</Instrument>
+
+
+
+
+----- Laser types are specified using two attributes - the Type and the lasing medium (Medium). Type is a string which may be set to: 'Excimer','Gas','Metal Vapor','Solid State','Dye','Semiconductor', or 'Free Electron'. The Medium attribute specifies the actual lasing medium for a given laser type (for example, 'Nd-YAG'). Additionally, the Wavelength (in nm), whether or not the laser is Tuneable, and any FrequencyMultiplication that may be specified. The Pulse attribute can be set to 'CW' (Continuous Wave),','Single','Q-Switched','Repetitive','Mode-Locked'. The Power attribute specifies the nominal laser power in watts. The Laser element may contain a Pump sub-element which refers to a LightSource used as a laser pump. Removed Power - ajp Added RepetitionRate - The is the rate in Hz at which the laser pulses. ajp Added PockelCell attribute - ajp
+
+<Laser
+Type=" xsd:string (value comes from list: {'Excimer'|'Gas'|'MetalVapor'|'SolidState'|'Dye'|'Semiconductor'|'FreeElectron'|'Unknown'}) [1]"
+LaserMedium=" LaserMedia [1]"
+Wavelength=" xsd:positiveInteger [0..1]"
+FrequencyMultiplication=" xsd:positiveInteger [0..1]"
+Tuneable=" xsd:boolean [0..1]"
+Pulse=" xsd:string (value comes from list: {'CW'|'Single'|'QSwitched'|'Repetitive'|'ModeLocked'}) [0..1]"
+PockelCell=" xsd:boolean [0..1]"
+RepetitionRate=" xsd:boolean [0..1]
+
+'The is the rate in Hz at which the laser pulses if the Pulse type is \'Repetitive\''
+">
+<Pump> ... </Pump> [0..1]
+</Laser>
+
+
+<LightSource
+Manufacturer=" xsd:string [0..1]"
+Model=" xsd:string [0..1]"
+SerialNumber=" xsd:string [0..1]"
+ID=" LightSourceID [1]"
+Power=" xsd:float [0..1]">    --[JH] unit?
+Start Choice [1]
+ <Laser> ... </Laser> [1]
+ <Filament> ... </Filament> [1]
+ <Arc> ... </Arc> [1]
+ <LightEmittingDiode> ... </LightEmittingDiode> [1]
+End Choice
+</LightSource>
+
+
+The magnification of the lens as specified by the manufacturer - i.e. '60' is a 60X lens.
+<NominalMagnification>  xsd:integer </NominalMagnification>   --[JH] by all means a float, not integer
+
+<Microscope
+Manufacturer=" xsd:string [0..1]"
+Model=" xsd:string [0..1]"
+SerialNumber=" xsd:string [0..1]"
+Type=" xsd:string (value comes from list: {'Upright'|'Inverted'|'Dissection'|'Electrophysiology'|'Unknown'}) [1]"/> 
+
+
+
+--- A description of the microscope's objective lens. Required elements include the lens numerical aperture, and the magnification, both of which a floating point (real) numbers. The values are those that are fixed for a particular objective: either because it has been manufactured to this specification or the value has been measured on this particular objective. Correction: This is the type of correction coating applied to this lens. Immersion: This is the types of immersion medium the lens is designed to work with. It is not the same as 'Medium' in ObjectiveRef (a single type) as here Immersion can have compound values like 'Multi'. LensNA: The numerical aperture of the lens (as a float) NominalMagnification: The specified magnification e.g. x10 CalibratedMagnification: The measured magnification e.g. x10.3 WorkingDistance: WorkingDistance of the lense. The Units are um. 
+<Objective
+Manufacturer=" xsd:string [0..1]"
+Model=" xsd:string [0..1]"
+SerialNumber=" xsd:string [0..1]"
+ID=" ObjectiveID [1]">
+<Correction> ... </Correction> [1]
+<Immersion> ... </Immersion> [1]
+<LensNA> ... </LensNA> [0..1]
+<NominalMagnification> ... </NominalMagnification> [0..1]
+<CalibratedMagnification> ... </CalibratedMagnification> [0..1]
+<WorkingDistance> ... </WorkingDistance> [0..1]
+</Objective>
+
+
+
+--- This holds the setting applied to an objective as well as a reference to the objective. The ID is the objective used in this case. The CorrectionCollar is it normal an adjustable ring on the objective. Each has an arbitrary scale on it so the values is unit-less. The Medium is the actual immersion medium used in this case. The RefractiveIndex is that of the immersion medium. This is a ratio so it also unit-less. 
+<ObjectiveRef
+ID=" ObjectiveID [1]"
+CorrectionCollar=" xsd:float [0..1]"
+Medium=" Medium [0..1]"
+RefractiveIndex=" xsd:float [0..1]
+
+'This is unit-less, it is a ratio.'
+"/> 
+
+
+<Project
+Name=" xsd:string [0..1]"
+ID=" ProjectID [1]">
+<Description> ... </Description> [0..1]
+<ExperimenterRef> ... </ExperimenterRef> [0..1]
+<GroupRef> ... </GroupRef> [0..1]
+</Project>
+
+
+
+
+The working distance of the lens expressed as a floating point (real) number. Units are um.
+<WorkingDistance>  xsd:float </WorkingDistance>
+
+
+============ replacing ============================================
+
+The creation date of the Image - when the Image was acquired. The element contains a string in the ISO 8601 dateTime format (i.e. 1988-04-07T18:39:09) 
+<CreationDate>  xsd:dateTime </CreationDate>
+
+-------> use unix time, simpler to handle
+
+
+<MicrobeamManipulation
+ID=" MicrobeamManipulationID [1]"
+Type="list of: [ xsd:string (value comes from list: {'FRAP'|'Photoablation'|'Photoactivation'|'Uncaging'|'OpticalTrapping'|'Other'}) ] [1]">
+<ROIRef> ... </ROIRef> [1..*]
+<ExperimenterRef> ... </ExperimenterRef> [1]
+<LightSourceRef> ... </LightSourceRef> [0..*]
+</MicrobeamManipulation>
+
+-------> new ev object likely
+
+
+
+---- [JH] has to be made into a channel
+<OTF
+ID=" OTFID [1]"
+PixelType=" ExtendedPixelTypes [1]"
+OpticalAxisAveraged=" xsd:boolean [1]"
+SizeX=" xsd:positiveInteger [1]"
+SizeY=" xsd:positiveInteger [1]">
+<ObjectiveRef> ... </ObjectiveRef> [1]
+<FilterSetRef> ... </FilterSetRef> [0..1]
+<Bin:BinaryFile> ... </Bin:BinaryFile> [1]
+</OTF>
+
+============ candidates for replacement ===========================
+
+
+
+
+
+
+
+
+<Arc
+Type=" xsd:string (value comes from list: {'Hg'|'Xe'|'HgXe'|'Unknown'}) [1]"/> 
+
+<CalibratedMagnification>  xsd:float </CalibratedMagnification>
+eg 59 for 60x
+
+
+
+
+============ removed =====
+
+
+what is not listed
+
+
+
+
+
+--- [JH] used in Filter. Since we can get the entire spectrum tested, why bother with this approximation?
+<TransmittanceRange
+CutIn=" xsd:integer [1]"
+CutOut=" xsd:integer [1]"
+CutInTolerance=" xsd:integer [0..1]"
+CutOutTolerance=" xsd:integer [0..1]"
+Transmittance=" xsd:integer [1]"/> 
+
+
+=========== need compatibility ============
+
+<Dataset
+Name=" xsd:string [0..1]"
+ID=" DatasetID [1]"
+Locked=" xsd:boolean [0..1]">
+<Description> ... </Description> [0..1]
+<ExperimenterRef> ... </ExperimenterRef> [0..1]
+<GroupRef> ... </GroupRef> [0..1]
+<ProjectRef> ... </ProjectRef> [0..*]
+<CA:CustomAttributes> ... </CA:CustomAttributes> [0..1]
+</Dataset>
+
+
+
+---- used everwhere: image, experiment, project, dataset
+<Description
+xml:lang="[0..1]">
+xsd:string
+</Description>
+
+
+
+---- overlaps
+<DetectorRef
+ID=" DetectorID [1]"
+Offset=" xsd:float [0..1]"
+Gain=" xsd:float [0..1]"
+Voltage=" xsd:float [0..1]"
+ReadOutRate=" xsd:float [0..1]
+
+
+
+---- used everywhere
+<Email>  xsd:string </Email>
+
+
+
+---- This element describes the type of experiment. The required Type attribute must contain one or more entries from the following list: FP FRET Time-lapse 4-D+ Screen Immunocytochemistry FISH Electrophysiology Ion-Imaging Colocalization PGI/Documentation FRAP Photoablation Optical-Trapping Photoactivation Fluorescence-Lifetime Spectral-Imaging Other FP refers to fluorescent proteins, PGI/Docuemntation is not a 'data' image. The optional Description element may contain free text to further describe the experiment. Added Type Photobleaching - ajp
+-- [JH] type useful for searching? there are better ways, this is a very narrow-minded view
+<Experiment
+Type="list of: [ xsd:string (value comes from list: {'FP'|'FRET'|'TimeLapse'|'FourDPlus'|'Screen'|'Immunocytochemistry'|'Immunofluorescence'|'FISH'|'Electrophysiology'|'IonImaging'|'Colocalization'|'PGIDocumentation'|'FluorescenceLifetime'|'SpectralImaging'|'Photobleaching'|'Other'}) ] [1]"
+ID=" ExperimentID [1]">
+<Description> ... </Description> [0..1]
+<ExperimenterRef> ... </ExperimenterRef> [0..1]
+
+'This is a link to the Experimenter who conducted the experiment - ajp'
+<MicrobeamManipulationRef> ... </MicrobeamManipulationRef> [0..*]
+</Experiment>
+
+
+
+--[JH] unsure what to do here. makes sense if lot# is different, or set holder is broken
+<FilterSet
+Manufacturer=" xsd:string [1]"
+Model=" xsd:string [1]"
+LotNumber=" xsd:string [0..1]"
+ExFilterRef=" FilterID [0..1]"
+DichroicRef=" DichroicID [0..1]"
+EmFilterRef=" FilterID [0..1]"
+ID=" FilterSetID [1]"/> 
+
+
+
+
+
+
+
+
+---- [JH] expected information about one image
+<Image
+ID=" ImageID [1]"
+Name=" xsd:string [0..1]"
+DefaultPixels=" PixelsID [1]
+'More than one Pixels element may be associated with an Image. An Image will however have one \"primary\" set of Pixels specified with this attribute.'
+"
+AcquiredPixels=" PixelsID [0..1]
+'Optional. More than one Pixels element may be associated with an Image. This attribute indicates the original acquired pixels.'
+">
+<CreationDate> ... </CreationDate> [0..1]
+<ExperimenterRef> ... </ExperimenterRef> [0..1]
+<Description> ... </Description> [0..1]
+<ExperimentRef> ... </ExperimentRef> [0..1]
+<GroupRef> ... </GroupRef> [0..1]
+<DatasetRef> ... </DatasetRef> [0..*]
+<InstrumentRef> ... </InstrumentRef> [0..1]
+<ObjectiveRef> ... </ObjectiveRef> [0..1]
+<ImagingEnvironment> ... </ImagingEnvironment> [0..1]
+<Thumbnail> ... </Thumbnail> [0..1]
+<LogicalChannel> ... </LogicalChannel> [0..*]
+<DisplayOptions> ... </DisplayOptions> [0..1]
+<StageLabel> ... </StageLabel> [0..1]
+<Pixels> ... </Pixels> [1..*]
+<Region> ... </Region> [0..*]
+<CA:CustomAttributes> ... </CA:CustomAttributes> [0..1]
+<ROI> ... </ROI> [0..*]
+<MicrobeamManipulation> ... </MicrobeamManipulation> [0..*]
+</Image>
+
+
+
+
+<LogicalChannel
+ID=" LogicalChannelID [1]"
+Name=" xsd:string [0..1]"
+SamplesPerPixel=" xsd:integer [0..1]"
+SecondaryEmissionFilter=" FilterID [0..1]"
+SecondaryExcitationFilter=" FilterID [0..1]"
+IlluminationType=" xsd:string (value comes from list: {'Transmitted'|'Epifluorescence'|'Oblique'|'NonLinear'}) [0..1]
+
+'Attribute is called Illumination in EA diagram - ajp Added NonLinear - ajp'
+"
+PinholeSize=" xsd:float [0..1]"
+PhotometricInterpretation=" xsd:string (value comes from list: {'Monochrome'|'RGB'|'ARGB'|'CMYK'|'HSV'|'ColorMap'}) [0..1]
+
+'To Do - Add more documentation - ajp Added ColorMap - ajp'
+"
+Mode=" xsd:string (value comes from list: {'WideField'|'LaserScanningMicroscopy'|'LaserScanningConfocal'|'SpinningDiskConfocal'|'SlitScanConfocal'|'MultiPhotonMicroscopy'|'StructuredIllumination'|'SingleMoleculeImaging'|'TotalInternalReflection'|'FluorescenceLifetime'|'SpectralImaging'|'FluorescenceCorrelationSpectroscopy'|'NearFieldScanningOpticalMicroscopy'|'SecondHarmonicGenerationImaging'|'Other'}) [0..1]"
+ContrastMethod=" xsd:string (value comes from list: {'Brightfield'|'Phase'|'DIC'|'HoffmanModulation'|'ObliqueIllumination'|'PolarizedLight'|'Darkfield'|'Fluorescence'}) [0..1]"
+ExWave=" xsd:positiveInteger [0..1]"
+EmWave=" xsd:positiveInteger [0..1]"
+Fluor=" xsd:string [0..1]"
+NdFilter=" xsd:float [0..1]"
+PockelCellSetting=" xsd:integer [0..1]">
+<LightSourceRef> ... </LightSourceRef> [0..1]
+<OTFRef> ... </OTFRef> [0..1]
+<DetectorRef> ... </DetectorRef> [0..1]
+<FilterSetRef> ... </FilterSetRef> [0..1]
+<ChannelComponent> ... </ChannelComponent> [1..*]
+</LogicalChannel>
+
+---- All units are in the microscope reference frame
+-- [JH] what is the unit? um? 
+<...
+PositionX=" xsd:float [0..1]"
+PositionY=" xsd:float [0..1]"
+PositionZ=" xsd:float [0..1]"/> 
+
+binning: value comes from list: {'1x1'|'2x2'|'4x4'|'8x8'}
+
+================================================
+
+hierarchical structure: anything can be changed from one image to another.
+*can* employ compression on file but data will still be large in memory (DOM). 
+
+ 

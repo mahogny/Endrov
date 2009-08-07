@@ -6,12 +6,9 @@ import endrov.imageset.EvPixels;
 
 /**
  * Thin(image)=image-hitmiss(image). 
- * <br/>
- * 
- * Can be used to skeletonize images by application until convergence. 
- * 
+ * <p>
  * There are other versions that could be implemented
- * <br/>
+ * <p>
  * P.Soille - Morphological Image Analysis, Principles and applications. 2nd edition
  * @author Johan Henriksson
  */

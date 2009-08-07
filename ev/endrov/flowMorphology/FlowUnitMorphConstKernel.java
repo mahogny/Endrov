@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 import endrov.basicWindow.icon.BasicIcon;
@@ -79,7 +80,7 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 		}
 	
 	//private static ImageIcon icon=null;//new ImageIcon(FlowUnitMorphConstKernel.class.getResource("jhBoolean.png"));
-	private static final String metaType="constMorphKernel";
+	private static final String metaType="constMorphKernel2D";
 	
 	public static void initPlugin() {}
 	static
@@ -92,13 +93,43 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 	
 	public String toXML(Element e)
 		{
-//		e.setAttribute("value", ""+isVar());
+		for(Vector2i v:hitlist)
+			{
+			Element ne=new Element("hit");
+			ne.setAttribute("x", ""+v.x);
+			ne.setAttribute("y", ""+v.y);
+			e.addContent(ne);
+			}
+		for(Vector2i v:misslist)
+			{
+			Element ne=new Element("miss");
+			ne.setAttribute("x", ""+v.x);
+			ne.setAttribute("y", ""+v.y);
+			e.addContent(ne);
+			}
+		for(int i=0;i<4;i++)
+			e.setAttribute("extent"+i, ""+extent[i]);
+		e.setAttribute("isBinary",""+isBinary);
 		return metaType;
 		}
 
 	public void fromXML(Element e)
 		{
-//		setVar(Boolean.parseBoolean(e.getAttributeValue("value")));
+		for(int i=0;i<4;i++)
+			extent[i]=Integer.parseInt(e.getAttributeValue("extent"+i));
+		for(Object one:e.getChildren())
+			{
+			Element ne=(Element)one;
+			if(ne.getName().equals("hit"))
+				hitlist.add(new Vector2i(
+						Integer.parseInt(ne.getAttributeValue("x")),
+						Integer.parseInt(ne.getAttributeValue("y"))));
+			else if(ne.getName().equals("miss"))
+				misslist.add(new Vector2i(
+						Integer.parseInt(ne.getAttributeValue("x")),
+						Integer.parseInt(ne.getAttributeValue("y"))));
+			}
+		isBinary=Boolean.parseBoolean(e.getAttributeValue("isBinary"));
 		}
 
 	

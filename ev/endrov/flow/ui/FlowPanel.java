@@ -195,8 +195,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			//offset?
 			Dimension dim=c.getPreferredSize();
 			Dimension dimMin=c.getMinimumSize();
-			if(dim.width<dimMin.width)   dim.width=dimMin.width;
-			if(dim.height<dimMin.height) dim.height=dimMin.height;
+			dim.width=Math.max(dim.width,dimMin.width);
+			dim.height=Math.max(dim.height,dimMin.height);
 				
 			c.setSize(dim);
 			if(unit==placingUnit)
@@ -204,7 +204,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			else
 				c.setLocation(unit.x-camera.x+unit.getGUIcomponentOffsetX(), unit.y-camera.y+unit.getGUIcomponentOffsetY());
 			c.validate();
+			//System.out.println("size "+c.getMinimumSize());
 			}
+		//System.out.println();
 		}
 	
 	/**

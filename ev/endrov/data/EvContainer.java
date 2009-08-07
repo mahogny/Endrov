@@ -257,6 +257,8 @@ public class EvContainer
 					}
 				root.addContent(el);
 				}
+			else
+				System.out.println("Skipping saving metadata "+id);
 			}
 		}
 

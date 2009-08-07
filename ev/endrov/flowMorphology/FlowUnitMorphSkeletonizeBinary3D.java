@@ -16,7 +16,7 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: fill holes 3D
+ * Flow unit: Skeletonize binary 3D
  * @author Johan Henriksson
  *
  */
@@ -28,7 +28,7 @@ public class FlowUnitMorphSkeletonizeBinary3D extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitMorphFillHolesGray3D.class, CategoryInfo.icon,
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitMorphSkeletonizeBinary3D.class, CategoryInfo.icon,
 				"Binary morphological skeletonize 3D"));
 		}
 	

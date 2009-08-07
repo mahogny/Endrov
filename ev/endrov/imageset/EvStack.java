@@ -57,6 +57,10 @@ public class EvStack implements AnyEvImage
 		return resY;
 		}
 
+	/**
+	 * Get combined resolution and binning. [um/px]
+	 * @return
+	 */
 	public EvDecimal getResbinZinverted()
 		{
 		if(resZ==null)
