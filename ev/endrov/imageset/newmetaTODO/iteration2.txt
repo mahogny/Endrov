@@ -41,6 +41,10 @@ channel has: (can be overriden)
 	<hardware name="openlab.temperature1" prop="temp">21</>    <--- property of some equipment. what is used by micromanager?
 	<hardware name="openlab.camera" prop="exposuretime">21</>     <--- micromanager decides EV property name and unit
 
+	OR:
+	<hardware name="openlab.temperature1" temp="21"/>    <--- more compact
+
+
 	<timestamp>1195295075</>
 
 	<frame>
@@ -50,6 +54,9 @@ channel has: (can be overriden)
 			????
 
 
+
+--- save method so that the acquisition can be repeated. 
+--- this would log our data as well
 <recordmethod id="j">
 	<minexp>
 	<maxexp>
@@ -67,6 +74,21 @@ custom tags, there is no equivalent in OME. but I thought there was
  
  
  
+===================== every hardware 
+ 
+ 
+Manufacturer=" xsd:string [1]"
+ModelName=" xsd:string [1]"
+LotNumber=" xsd:string [0..1]"
+SerialNumber=" xsd:string [0..1]"
+
+
+then there should be a database with all hardware
+
+
+
+ 
+ 
 ========== use case
 
 want graph of some property. want to know which properties exist.
@@ -80,6 +102,151 @@ data and graph are separate things. graph settings refer to data object.
 
 data providers? overkill?
 
+
+
+Manufacturer=" xsd:string [1]"
+ModelName=" xsd:string [1]"
+LotNumber=" xsd:string [0..1]"
+SerialNumber=" xsd:string [0..1]"
+
+
+=========== our spec
+
+
+
+ 
+<hardware name="stand"
+Manufacturer="Zeiss"
+ModelName="Axioplan 2ie"
+SerialNumber="000403"/>
+
+<hardware name="100x"
+Manufacturer="Zeiss"
+ModelName="Apochromat 100x/1.4 oil DIC"
+ModelNumber="440782-1094-813"    //listed on site:   440782-9902-000
+WorkingDistance="0.17"
+CoverglassThickness="0.17" 
+Immersion="Oil"
+Transmittance="600,0.85"
+NA="1.4"
+Magnification="63"/>
+
+<hardware name="63x"
+Manufacturer="Zeiss"
+ModelName="Plan-Apochromat 63x/1.4 oil DIC"
+ModelNumber="440762-1101-326"    //listed on site: 440762-9904-000   
+WorkingDistance="0.19"
+CoverglassThickness="0.17" 
+ParfocalLength="45.06"
+Immersion="Oil"
+Transmittance="600,0.85"
+NA="1.4"
+Magnification="63"/>
+
+<hardware name="40x"
+Manufacturer="Zeiss"
+ModelName="Plan-neofluar 40x/1.3 oil DIC"
+Immersion="Oil"
+Transmittance="600,0.85"
+NA="1.3"
+Magnification="63"/>
+
+<hardware name="20x"
+Manufacturer="Zeiss"
+ModelName="Plan-neofluar 20x/0.5"
+CoverglassThickness="0.17" 
+NA="0.5"
+Magnification="63"/>
+
+<hardware name="5x"
+Manufacturer="Zeiss"
+ModelName="Achrostigmat 5x/0.12"
+ModelNumber="440120"
+Immersion="Oil"
+NA="0.12"
+Magnification="5"/>
+
+<hardware name="stageController"
+Manufacturer="ASI"
+ModelName="PZM-2000"
+ModelNumber="12VDC-1A-R"
+SerialNumber="061206-021"/>
+
+<hardware name="stage"
+Manufacturer="ASI"
+ModelName="ASI-S1630"/>
+
+
+<hardware
+Manufacturer="Hamamatsu"
+ModelName="ORCA II"
+ModelNumber="C4442-95-12ER"
+SerialNumber="940355"
+PixelSize="6.45"
+/>
+
+<hardware
+Manufacturer="Zeiss"
+ModelName="Axiocam color"
+ModelNumber="Axiocam color r1.4 412-312"
+SerialNumber="210023862"
+PixelSize="6.45"
+/>
+
+========
+
+
+unit -> multiple hw
+
+e.g. objective turret -> prism, objective
+
+
+also, each DIC prism has an ID etc
+
+
+
+=========== variables and units
+
+* The constant Unknown is rather useless. Rather specify null in this case.
+* New constants can be added at need, there is no need for Other
+* variable names should be chosen so units do not clash between different types of hardware
+
+
+ModelName
+ModelNumber
+Manufacturer
+SerialNumber
+LotNumber 
+WorkingDistance			mm
+CoverglassThickness		mm
+Immersion				Oil | Water | WaterDipping | Air | Multi | Glycerol
+Transmittance			"{wavelength [nm],fraction,}" // https://www.micro-shop.zeiss.com/us/us_en/objektive.php?cp_sid=&f=od&p[]=440762-9904-000
+Emittance				"{wavelength [nm],fraction,}" 
+NA						[-]
+Magnification			[-]
+CalibratedMagnification	[-]
+Temperature				C
+Time					unixtime, seconds
+Pulse					CW | Single | QSwitched | Repetitive | ModeLocked
+Binning					#x#   two numbers 
+LaserMedia				GaAs | GaAlAs | NdGlass | NdYAG | ErGlass | ErYAG | HoYLF | HoYAG | Ruby | TiSapphire | Alexandrite 
+ArcType					Hg | Xe | HgXe
+ContrastMethod			Brightfield | Phase | DIC | HoffmanModulation | ObliqueIllumination | PolarizedLight | Darkfield | Fluorescence
+IlluminationType		Transmitted | Epifluorescence | Oblique | NonLinear 
+PhotometricInterpretation	Monochrome | RGB | ARGB | CMYK | HSV | ColorMap
+DetectionMethod			CCD | IntensifiedCCD | AnalogVideo | PMT | Photodiode | Spectroscopy | LifetimeImaging | CorrelationSpectroscopy | FTIR | EM-CCD | APD | CMOS 
+Gain					[-]
+DigitalGain				[-]
+Voltage					V
+Filament				Incandescent | Halogen
+ParfocalLength			mm
+
+use whenever applicable:
+
+{'WideField'|'LaserScanningMicroscopy'|'LaserScanningConfocal'|'SpinningDiskConfocal'|'SlitScanConfocal'|'MultiPhotonMicroscopy'|'StructuredIllumination'|'SingleMoleculeImaging'|'TotalInternalReflection'|'FluorescenceLifetime'|'SpectralImaging'|'FluorescenceCorrelationSpectroscopy'|'NearFieldScanningOpticalMicroscopy'|'SecondHarmonicGenerationImaging'|'Other'}) [0..1]"
+
+
+Type="list of: [  xsd:string (value comes from list: {'FRAP'|'Photoablation'|'Photoactivation'|'Uncaging'|'OpticalTrapping'|'Other'}) ] [1]"> 
 
  
  ====== 

@@ -1,0 +1,52 @@
+Hello,
+remember I was talking about adding more metainfo about the hardware? I'm revamping my file format and it turned out I should deal with this at the same time. the question is if you want this in micromanager so you can use it too, or if I should keep it in Endrov. I think it would be nice if the drivers one day could query the hardware about this information, e.g. including a small chip on the filters with the transmission spectrum, production date, batch and serial number etc. but for now there isn't much to gain by having it in the driver except simpler configuration.
+
+what I'm working on now is a product database. I have weeded through the OME-XML spec and kept whatever they did right. they have specific classes of hardware, I'm removing this and keeping it property style like with MM (more info can be added ad-hoc). property names and their units will however be standardized, this is what I have so far:
+
+ModelName
+ModelNumber
+Manufacturer
+SerialNumber
+LotNumber
+WorkingDistance            mm
+CoverglassThickness        mm
+Immersion                Oil | Water | WaterDipping | Air | Multi | Glycerol
+Transmittance            "{wavelength [nm],fraction,}" // https://www.micro-shop.zeiss.com/us/us_en/objektive.php?cp_sid=&f=od&p[]=440762-9904-000
+Emittance                "{wavelength [nm],fraction,}"
+NA                        [-]
+Magnification            [-]
+CalibratedMagnification    [-]
+Temperature                C
+Time                    unixtime, seconds
+Pulse                    CW | Single | QSwitched | Repetitive | ModeLocked
+Binning                    #x#   two numbers
+LaserMedia                GaAs | GaAlAs | NdGlass | NdYAG | ErGlass | ErYAG | HoYLF | HoYAG | Ruby | TiSapphire | Alexandrite
+ArcType                    Hg | Xe | HgXe
+ContrastMethod            Brightfield | Phase | DIC | HoffmanModulation | ObliqueIllumination | PolarizedLight | Darkfield | Fluorescence
+IlluminationType        Transmitted | Epifluorescence | Oblique | NonLinear
+PhotometricInterpretation    Monochrome | RGB | ARGB | CMYK | HSV | ColorMap
+DetectionMethod            CCD | IntensifiedCCD | AnalogVideo | PMT | Photodiode | Spectroscopy | LifetimeImaging | CorrelationSpectroscopy | FTIR | EM-CCD | APD | CMOS
+Gain                    [-]
+DigitalGain                [-]
+Voltage                    V
+Filament                Incandescent | Halogen
+ParfocalLength            mm
+
+string values are recommendations, not enforced. Devices are identified by
+ModelName
+ModelNumber
+Manufacturer
+
+I think of particular interest is Transmittance for the sake of controlling bleed-over and do spectral deconvolution. I think Zeiss software has some function to optimize the parameters based on this. I have also gotten hold of tons of fluorophore data that I will include.
+
+one complication is that a state might include multiple products e.g. an objective turrent chooses both objective and in our case, DIC prism. I'm working at this but it means it is not as simple as just adding additional properties to MM devices e.g. the DIC prism is not even listed. I think I will stew multiple XML-tags into property blocks, one tag being one product. or it might
+
+finally, I consider building a schema to describe how the hardware is connected. this will mainly be used to display things for the user. this will be tied to endrov most likely.
+
+/Johan
+
+-- 
+-----------------------------------------------------------
+Johan Henriksson
+PhD student, Karolinska Institutet
+http://mahogny.areta.org  http://www.endrov.net
