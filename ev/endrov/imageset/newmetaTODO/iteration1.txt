@@ -146,5 +146,20 @@ evchannel:
       {override if needed}
   
   
+==========================
 
-    
+to edit, need a general form system? 
+type -> [(low level name, high level name, description, value, type)]
+
+*ref -> (type,ID)
+
+
+
+============================
+
+metadata we have in addition:
+optivar
+sample
+desc
+
+
