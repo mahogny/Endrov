@@ -16,7 +16,7 @@ ID=" ExperimenterID [1]"/>
 -- The coating applied to the lens
 <Correction>   xsd:string (value comes from list: {'UV'|'PlanApo'|'PlanFluor'|'SuperFluor'|'VioletCorrected'|'Unknown'}) </Correction>
 
-
+---- [JH] only image detector?
 <Detector
 Manufacturer=" xsd:string [0..1]"
 Model=" xsd:string [0..1]"
@@ -98,12 +98,6 @@ ID=" GroupID [1]">
 </Group>
 
 
----- The Temperature is in Celsius, AirPressure is in millibars, Humidity and CO2Percent are percent-fractions from 0.0 to 1.0.
-<ImagingEnvironment
-Temperature=" xsd:float [0..1]"
-AirPressure=" xsd:float [0..1]"
-Humidity=" PercentFraction [0..1]"
-CO2Percent=" PercentFraction [0..1]"/> 
 
 
 
@@ -299,6 +293,15 @@ Locked=" xsd:boolean [0..1]">
 <ProjectRef> ... </ProjectRef> [0..*]
 <CA:CustomAttributes> ... </CA:CustomAttributes> [0..1]
 </Dataset>
+
+
+---- The Temperature is in Celsius, AirPressure is in millibars, Humidity and CO2Percent are percent-fractions from 0.0 to 1.0.
+-- [JH] only one sensor of each allowed
+<ImagingEnvironment
+Temperature=" xsd:float [0..1]"
+AirPressure=" xsd:float [0..1]"
+Humidity=" PercentFraction [0..1]"
+CO2Percent=" PercentFraction [0..1]"/> 
 
 
 
