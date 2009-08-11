@@ -205,6 +205,61 @@ also, each DIC prism has an ID etc
 
 
 
+
+own config file to deal with advanced properties and 1024-limit in MM.
+
+
+if multiple device providers, need to start them all first before loading devices. how?
+1. load Hardware plugin
+2. register HardwareProvider plugins
+3. Hardware loads config
+how??
+
+
+=> be happy with separate stacks for now?
+
+<micromanager>
+ <adapter name="" >
+  <device name="" id="mycamera">
+   <label num="1" alias="">
+    <hardware Manufacturer=.../>
+    <hardware Manufacturer=.../>
+   </label>
+   <set property="" value=""/>
+  </device>
+ </adapter>
+</micromanager>
+
+
+<hardware>
+ <configgroup name="Camera">    <----- should be seen as a device
+  <option name="MedRes">
+   <set device="ix.camera" property="Binning" value="2"/>
+   <set device="ix.camera" property="" value=""/>
+  </option>
+ </configgroup>
+</hardware>
+
+ConfigGroup,Camera,MedRes,Camera,Binning,2
+
+* hardware that doesn't fit anywhere, like stand, can be put in core device or similar 
+* order must be stored down. or at least COM ports must go first
+
+Delay settings?
+synch settings?
+Properties at startup?
+COM port settings?
+config groups?
+
+!!! !!!Do not rely on database for lookup, just to set up device initially!!! !!!
+
+
+=========== mm prop blocks
+
+void 	definePropertyBlock (const char *blockName, const char *propertyName, const char *propertyValue)
+std::vector< std::string > 	getAvailablePropertyBlocks () const
+PropertyBlock 	getPropertyBlockData (const char *blockName) const 
+
 =========== variables and units
 
 * The constant Unknown is rather useless. Rather specify null in this case.
