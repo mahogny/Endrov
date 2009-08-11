@@ -3,7 +3,7 @@ package endrov.hardware;
 import java.util.*;
 
 /**
- * Path to hardware. Internally a list of strings, for the user seen as a dot-separated string
+ * Path to hardware. Internally a list of strings, for the user seen as a /-separated string
  * @author Johan Henriksson
  */
 public class DevicePath implements Comparable<DevicePath>
@@ -11,7 +11,7 @@ public class DevicePath implements Comparable<DevicePath>
 	public String[] path;
 	
 	/**
-	 * Construct from dot-separated path
+	 * Construct from string
 	 */
 	public DevicePath(String dotPath)
 		{

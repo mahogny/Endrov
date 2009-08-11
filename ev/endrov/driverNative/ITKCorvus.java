@@ -191,6 +191,9 @@ public class ITKCorvus extends DeviceProvider implements Device
 		public Boolean getPropertyValueBoolean(String prop){return null;}
 		public void setPropertyValue(String prop, boolean value){}
 		public void setPropertyValue(String prop, String value){}
+		
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 	}
 	
 	
@@ -260,4 +263,8 @@ public class ITKCorvus extends DeviceProvider implements Device
 		{
 		}
 	
+	
+	public boolean hasConfigureDialog(){return false;}
+	public void openConfigureDialog(){}
+
 	}

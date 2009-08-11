@@ -108,5 +108,7 @@ public class EvSerialTCP implements HWSerial
 		}
 
 	
-	
+	public boolean hasConfigureDialog(){return false;}
+	public void openConfigureDialog(){}
+
 	}

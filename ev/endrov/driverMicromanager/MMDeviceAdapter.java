@@ -127,5 +127,11 @@ public class MMDeviceAdapter implements Device
 		}
 
 	
+	public boolean hasConfigureDialog()
+		{
+		return false;
+		}
 	
+	public void openConfigureDialog(){}
+
 	}

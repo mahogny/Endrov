@@ -10,6 +10,7 @@ import mmcorej.PropertyPair;
 
 import org.jdom.Element;
 
+import endrov.driverMicromanager.conf.ConfiguratorDlg;
 import endrov.ev.EV;
 import endrov.hardware.*;
 
@@ -30,6 +31,9 @@ public class MicroManager extends DeviceProvider implements Device
 	
 	CMMCore core;
 
+	
+	File configFile;
+	
 	public MicroManager()
 		{
 		try
@@ -47,58 +51,38 @@ public class MicroManager extends DeviceProvider implements Device
 			if(!fMMconfig.exists())
 				{
 				System.out.println("No config file found ("+fMMconfig1+" nor "+fMMconfig+")");
+				configFile=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
+				configFile.createNewFile();
 				return;
 				}
 			System.out.println("Micro-manager version "+core.getAPIVersionInfo()+" loading config "+fMMconfig.getAbsolutePath());
 			
+			configFile=fMMconfig;
 			core.loadSystemConfiguration(fMMconfig.getPath());
+
 			
-	/*
-			// add devices
-			core.loadDevice("Camera", "DemoCamera", "DCam");
-			core.loadDevice("Emission", "DemoCamera", "DWheel");
-			core.loadDevice("Excitation", "DemoCamera", "DWheel");
-			core.loadDevice("Dichroic", "DemoCamera", "DWheel");
-			core.loadDevice("Objective", "DemoCamera", "DObjective");
-			core.loadDevice("X", "DemoCamera", "DStage");
-			core.loadDevice("Y", "DemoCamera", "DStage");
-			core.loadDevice("Z", "DemoCamera", "DStage");
-	
-			core.initializeAllDevices();
-	
-			// Set labels for state devices
-			//
-			// emission filter
-			core.defineStateLabel("Emission", 0, "Chroma-D460");
-			core.defineStateLabel("Emission", 1, "Chroma-HQ620");
-			core.defineStateLabel("Emission", 2, "Chroma-HQ535");
-			core.defineStateLabel("Emission", 3, "Chroma-HQ700");
-	
-			// excitation filter
-			core.defineStateLabel("Excitation", 2, "Chroma-D360");
-			core.defineStateLabel("Excitation", 3, "Chroma-HQ480");
-			core.defineStateLabel("Excitation", 4, "Chroma-HQ570");
-			core.defineStateLabel("Excitation", 5, "Chroma-HQ620");
-	
-			// excitation dichroic
-			core.defineStateLabel("Dichroic", 0, "400DCLP");
-			core.defineStateLabel("Dichroic", 1, "Q505LP");
-			core.defineStateLabel("Dichroic", 2, "Q585LP");
-	
-			// objective
-			core.defineStateLabel("Objective", 1, "Objective-1");
-			core.defineStateLabel("Objective", 3, "Nikon 20X Plan Fluor ELWD");
-			core.defineStateLabel("Objective", 5, "Zeiss 4X Plan Apo");
-	
-			// set initial imaging mode
-			core.setProperty("Camera", "Exposure", "55");
-//			core.setProperty("Objective", "Label", "Nikon 10X S Fluor"); //Need to use state otherwise!
-			core.setProperty("Objective", "Label", "Objective-1"); //overwritten by defineStateLabel
-			//statelabel extends list!
+			populateFromCore();
 			
-	*/
-			// list devices
-			
+
+			}
+		catch (Exception e) 
+			{
+			e.printStackTrace();
+			System.out.println("err:"+e.getMessage());
+			}
+		
+		
+		
+		
+		}
+	
+	
+	private void populateFromCore()
+		{
+		// list devices
+		
+		try
+			{
 			System.out.println("Device status:");
 			for (String device:MMutil.getLoadedDevices(core))
 				{
@@ -144,53 +128,50 @@ public class MicroManager extends DeviceProvider implements Device
 					adp=new MMState(this,devName);
 				else
 					adp=new MMDeviceAdapter(this,devName);
-				System.out.println(devName+"---"+adp+" "+adp.getDescName()+" ???? "+core.getDeviceType(devName));
+				//System.out.println(devName+"---"+adp+" "+adp.getDescName()+" ???? "+core.getDeviceType(devName));
 				
 				hw.put(devName,adp);
 				}
-			}
-		catch (Exception e) 
-			{
-			e.printStackTrace();
-			System.out.println("err:"+e.getMessage());
-			}
-		
-		/**
-		 * Read property blocks
-		 */
-		for(String blockName:MMutil.convVector(core.getAvailablePropertyBlocks()))
-			{
-			PropertyBlock b=core.getPropertyBlockData(blockName);
-			HashMap<String, String> prop=new HashMap<String, String>(); 
-			try
+			
+			
+			
+			/**
+			 * Read property blocks
+			 */
+			for(String blockName:MMutil.convVector(core.getAvailablePropertyBlocks()))
 				{
-				for(int i=0;i<b.size();i++)
+				PropertyBlock b=core.getPropertyBlockData(blockName);
+				HashMap<String, String> prop=new HashMap<String, String>(); 
+				try
 					{
-					PropertyPair pair=b.getPair(i);
-					prop.put(pair.getPropertyName(), pair.getPropertyValue());
+					for(int i=0;i<b.size();i++)
+						{
+						PropertyPair pair=b.getPair(i);
+						prop.put(pair.getPropertyName(), pair.getPropertyValue());
+						}
 					}
-				}
-			catch (Exception e)
-				{
-				e.printStackTrace();
-				System.out.println("This should never happen");
-				}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					System.out.println("This should never happen");
+					}
 
-			if(hw.containsKey(blockName))
-				{
-				/**
-				 * Associate with device, somehow
-				 */
+				if(hw.containsKey(blockName))
+					{
+					/**
+					 * Associate with device, somehow
+					 */
+					
+					}
 				
 				}
-			
 			}
-		
-		
+		catch (Exception e)
+			{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
 		}
-	
-	
-
 	
 	
 	public Set<Device> autodetect()
@@ -260,4 +241,12 @@ public class MicroManager extends DeviceProvider implements Device
 		}
 	
 	
+	public boolean hasConfigureDialog(){return true;}
+	public void openConfigureDialog()
+		{
+		ConfiguratorDlg dlg=new ConfiguratorDlg(core,configFile.getAbsolutePath());
+		dlg.setVisible(true);
+		populateFromCore();
+		}
+
 	}

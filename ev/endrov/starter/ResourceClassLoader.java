@@ -67,4 +67,27 @@ public class ResourceClassLoader extends URLClassLoader
 		return super.findLibrary(libname);
 		}
 	
+	
+	public static Collection<String> getBinDirs(ClassLoader cl)
+		{
+		try
+			{
+			//There is some magic that disallows this
+			if(cl instanceof ResourceClassLoader)
+			//if(cl.getClass().getCanonicalName().equals("endrov.starter.ResourceClassLoader"))
+				return new LinkedList<String>(((ResourceClassLoader)cl).binfiles);
+			else
+				{
+				System.out.println(cl);
+				return getBinDirs(cl.getParent());
+				}
+			}
+		catch (Exception e)
+			{
+			//e.printStackTrace();
+			return new LinkedList<String>();
+			}
+		}
+
+
 	}

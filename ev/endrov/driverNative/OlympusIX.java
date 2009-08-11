@@ -107,6 +107,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			}
 		public double getResMagX(){return 1;}
 		public double getResMagY(){return 1;}
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 		}
 
 	/** Prism */
@@ -126,6 +128,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			}
 		public double getResMagX(){return 1;}
 		public double getResMagY(){return 1;}
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 		}
 	
 	
@@ -146,6 +150,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			}
 		public double getResMagX(){return 1;}
 		public double getResMagY(){return 1;}
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 		}
 	
 	/** Objective */
@@ -165,6 +171,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			}
 		public double getResMagX(){return RecordingResource.magFromLabel(getCurrentStateLabel());}
 		public double getResMagY(){return RecordingResource.magFromLabel(getCurrentStateLabel());}
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 		}
 	
 	/** Condenser */
@@ -184,6 +192,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			}
 		public double getResMagX(){return 1;}
 		public double getResMagY(){return 1;}
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 		}
 	
 	
@@ -204,6 +214,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			}
 		public double getResMagX(){return 1;}
 		public double getResMagY(){return 1;}
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 		}
 	
 	/** Lamp intensity */
@@ -227,6 +239,8 @@ public class OlympusIX extends DeviceProvider implements Device
 			}
 		public double getResMagX(){return 1;}
 		public double getResMagY(){return 1;}
+		public boolean hasConfigureDialog(){return false;}
+		public void openConfigureDialog(){}
 		}
 	
 	
@@ -288,7 +302,9 @@ public class OlympusIX extends DeviceProvider implements Device
 		}
 	
 	
-	
+	public boolean hasConfigureDialog(){return false;}
+	public void openConfigureDialog(){}
+
 	
 	
 	
