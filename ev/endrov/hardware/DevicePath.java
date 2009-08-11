@@ -76,7 +76,14 @@ public class DevicePath implements Comparable<DevicePath>
 		return EvHardware.getDevice(this);
 		}
 
-	
+	@Override
+	public int hashCode()
+		{
+		int h=0;
+		for(String s:path)
+			h^=s.hashCode();
+		return h;
+		}
 	
 	/**
 	 * testing
