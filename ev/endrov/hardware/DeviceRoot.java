@@ -62,5 +62,7 @@ public class DeviceRoot extends DeviceProvider implements Device
 		}
 	
 	
-	
+	public boolean hasConfigureDialog(){return false;}
+	public void openConfigureDialog(){}
+
 	}

@@ -111,4 +111,8 @@ public class EvNativeHardware extends DeviceProvider implements Device
 		{
 		}
 	
+	
+	public boolean hasConfigureDialog(){return false;}
+	public void openConfigureDialog(){}
+
 	}

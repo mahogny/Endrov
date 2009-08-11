@@ -125,6 +125,8 @@ public class ConfigGroupDevice implements Device, HWState
 		return 1;
 		}
 
-	
+	public boolean hasConfigureDialog(){return false;}
+	public void openConfigureDialog(){}
+
 
 	}

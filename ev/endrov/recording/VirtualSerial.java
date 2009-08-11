@@ -193,4 +193,6 @@ public abstract class VirtualSerial implements HWSerial
 		}
 	
 	
+	public boolean hasConfigureDialog(){return false;}
+	public void openConfigureDialog(){}
 	}

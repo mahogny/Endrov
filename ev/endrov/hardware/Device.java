@@ -29,4 +29,8 @@ public interface Device
 	public SortedMap<String,String> getInfoMap();
 	public String getInfoValue(String prop);
 	*/
+	
+	
+	public boolean hasConfigureDialog();
+	public void openConfigureDialog();
 	}

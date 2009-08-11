@@ -82,11 +82,12 @@ public class HardwareConfigWindow extends BasicWindow
 		}
 	
 	
-	JButton bAdd=new JButton("Add");
-	JButton bRemove=new JButton("Remove");
-	JButton bLoad=new JButton("Load");
-	JButton bSave=new JButton("Save");
-	JButton bAutodetect=new JButton("Autodetect");
+	//JButton bAdd=new JButton("Add");
+	//JButton bRemove=new JButton("Remove");
+	JButton bImport=new JButton("Import");
+	JButton bExport=new JButton("Export");
+	JButton bConfig=new JButton("Config");
+	//JButton bAutodetect=new JButton("Autodetect");
 	
 	
 	private static class HWListItem
@@ -113,24 +114,41 @@ public class HardwareConfigWindow extends BasicWindow
 			hwNames.add(item);
 			}
 		
-		JList hwList=new JList(hwNames);
+		final JList hwList=new JList(hwNames);
 		JScrollPane spane=new JScrollPane(hwList,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
-		JPanel bpu=new JPanel(new GridLayout(1,2));
-		bpu.add(bAdd);
-		bpu.add(bRemove);
+		JPanel bpu=new JPanel(new GridLayout(1,3));
+		bpu.add(bImport);
+		bpu.add(bExport);
+		bpu.add(bConfig);
+		/*
 		JPanel bpl=new JPanel(new GridLayout(1,3));
 		bpl.add(bLoad);
 		bpl.add(bSave);
 		bpl.add(bAutodetect);
-
-		JPanel bp=new JPanel(new GridLayout(2,1));
+*/
+		JPanel bp=new JPanel(new GridLayout(1,1));
 		bp.add(bpu);
-		bp.add(bpl);
+		//bp.add(bpl);
 		
 		setLayout(new BorderLayout());
 		add(spane,BorderLayout.CENTER);
 		add(bp,BorderLayout.SOUTH);
+		
+		
+		
+		bConfig.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e)
+			{
+			HWListItem o=(HWListItem)hwList.getSelectedValue();
+			Device dev=o.name.getDevice();
+			if(dev!=null && dev.hasConfigureDialog())
+				dev.openConfigureDialog();
+			}
+		});
+		
+		
+		
 		
 		//Window overall things
 		setTitleEvWindow("Hardware Configuration");

@@ -218,6 +218,8 @@ how??
 
 => be happy with separate stacks for now?
 
+* does order of devices matter for MM? maybe not
+
 <micromanager>
  <adapter name="" >
   <device name="" id="mycamera">
@@ -228,10 +230,22 @@ how??
    <set property="" value=""/>
   </device>
  </adapter>
+ <synchro>
+  <device id=""/>
+ </syncho>
 </micromanager>
 
 
+
+ImageSynchro,ZeissObjectives
+ImageSynchro,ZeissShutter
+
 <hardware>
+
+ <device class="endrov.driverMicromanager.">
+
+
+
  <configgroup name="Camera">    <----- should be seen as a device
   <option name="MedRes">
    <set device="ix.camera" property="Binning" value="2"/>
@@ -244,12 +258,21 @@ ConfigGroup,Camera,MedRes,Camera,Binning,2
 
 * hardware that doesn't fit anywhere, like stand, can be put in core device or similar 
 * order must be stored down. or at least COM ports must go first
+* device name as property
+* MM name same as EV name, MM can handle dots
+* mmstudio is BSD license
+* java code exists to load config file! MicroscopeModel.java
+* special setup for micromanager
+
+
+Delay device someTime
 
 Delay settings?
 synch settings?
 Properties at startup?
 COM port settings?
 config groups?
+MM Roles: won't be any?
 
 !!! !!!Do not rely on database for lookup, just to set up device initially!!! !!!
 
