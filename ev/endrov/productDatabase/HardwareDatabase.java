@@ -1,11 +1,7 @@
 package endrov.productDatabase;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -25,7 +21,7 @@ public class HardwareDatabase
 	/**
 	 * List of all known hardware
 	 */
-	public static LinkedList<Entry> entries=new LinkedList<Entry>();
+	public static LinkedList<HardwareMetadata> entries=new LinkedList<HardwareMetadata>();
 	
 	
 	public static void initPlugin() {}
@@ -54,7 +50,7 @@ public class HardwareDatabase
 			{
 			Element oe=(Element)o;
 
-			Entry dbe=new Entry();
+			HardwareMetadata dbe=new HardwareMetadata();
 			entries.add(dbe);
 			
 			for(Object m:oe.getAttributes())
@@ -64,47 +60,6 @@ public class HardwareDatabase
 				}
 			
 			}
-		}
-	
-	
-	
-	
-	/**
-	 * One entry in the database
-	 * @author Johan Henriksson
-	 *
-	 */
-	public static class Entry
-		{
-		/**
-		 * Properties, Name -> Value
-		 */
-		public HashMap<String, String> property=new HashMap<String, String>();
-		
-		public String getManufacturer()
-			{
-			return property.get("Manufacturer");
-			}
-		
-		public String getModel()
-			{
-			return property.get("Model");
-			}
-		
-		public String getModelNumber()
-			{
-			return property.get("ModelNumber");
-			}
-		
-		/**
-		 * Wavelength -> fraction transmitted
-		 */
-		public Map<Double,Double> getTransmittance()
-			{
-			return new TreeMap<Double, Double>();
-			//TODO
-			}
-		
 		}
 	
 	

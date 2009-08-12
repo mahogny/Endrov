@@ -51,7 +51,7 @@ public class StagePanel implements ActionListener
 	private HWStage hw;
 	//private String devName;
 	
-	public StagePanel(DevicePath devName,final HWStage hw, ManualExtension.Hook hook)
+	public StagePanel(DevicePath devName,final HWStage hw, RecWindowManual hook)
 		{
 		this.hw=hw;
 	//	this.devName=devName;
