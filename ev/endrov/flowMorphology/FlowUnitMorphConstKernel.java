@@ -15,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 
 import endrov.basicWindow.icon.BasicIcon;

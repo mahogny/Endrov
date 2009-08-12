@@ -5,14 +5,20 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
 import javax.swing.*;
 
+import org.jdom.Element;
+
 import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.BasicWindowExtension;
+import endrov.basicWindow.BasicWindowHook;
 import endrov.basicWindow.EvComboData;
+import endrov.basicWindow.EvComboObject;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 import endrov.ev.JNumericField;
@@ -25,8 +31,6 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.*;
-import endrov.recording.recWindow.MicroscopeWindow;
-import endrov.recording.recWindow.MicroscopeWindow.ExtensionInstance;
 import endrov.util.EvDecimal;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
@@ -37,53 +41,140 @@ import endrov.util.JSmartToggleCombo;
  * 
  * @author Johan Henriksson
  */
-public class ManualExtension
+public class RecWindowManual extends BasicWindow
 	{
-	public static final ImageIcon iconShutterOpen = new ImageIcon(
-			ManualExtension.class.getResource("iconShutterOpen.png"));
-	public static final ImageIcon iconShutterClosed = new ImageIcon(
-			ManualExtension.class.getResource("iconShutterClosed.png"));
+	/******************************************************************************************************
+	 *                               Static                                                               *
+	 *****************************************************************************************************/
+	static final long serialVersionUID=0;
 
-	public static final ImageIcon iconGoAllUp = new ImageIcon(
-			ManualExtension.class.getResource("iconGoAllUp.png"));
-	public static final ImageIcon iconGoAllDown = new ImageIcon(
-			ManualExtension.class.getResource("iconGoAllDown.png"));
-	public static final ImageIcon iconGoAllMid = new ImageIcon(
-			ManualExtension.class.getResource("iconGoMid.png"));
-
-	public static void initPlugin()
-		{
-		}
-
+	
+	public static void initPlugin() {}
 	static
 		{
-		MicroscopeWindow.addMicroscopeWindowExtension(
-				new MicroscopeWindow.Extension(){
-					public ExtensionInstance getInstance()
-						{
-						return new Hook();
-						}
-
-					public String getName()
-						{
-						return "Manual Mode";
-						}
-				
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
 				}
-				);
+			class Hook implements BasicWindowHook, ActionListener
+			{
+			public void createMenus(BasicWindow w)
+				{
+				JMenuItem mi=new JMenuItem("Manual Control",new ImageIcon(getClass().getResource("iconWindow.png")));
+				mi.addActionListener(this);
+				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+				}
+
+			public void actionPerformed(ActionEvent e) 
+				{
+				new RecWindowManual();
+				}
+
+			public void buildMenu(BasicWindow w){}
+			}
+			});
+		
+		
+/*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new ConsoleWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+			*/
+		}
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+
+	
+	public WeakHashMap<EvComboObject,Object> listComboObject=new WeakHashMap<EvComboObject, Object>();
+	
+	
+	public RecWindowManual()
+		{
+		this(null);
+		}
+	
+	public RecWindowManual(Rectangle bounds)
+		{
+		setLayout(new BorderLayout());
+		add(p, BorderLayout.NORTH);
+
+		p.setLayout(new GridBagLayout());
+
+		for (Map.Entry<DevicePath, Device> entry : EvHardware
+				.getDeviceMap().entrySet())
+			{
+			if (entry.getValue() instanceof HWCamera)
+				new CameraPanel(entry.getKey(), (HWCamera) entry.getValue());
+			if (entry.getValue() instanceof HWShutter)
+				new ShutterPanel(entry.getKey(), (HWShutter) entry.getValue());
+			else if (entry.getValue() instanceof HWState)
+				new StateDevicePanel(entry.getKey(), (HWState) entry
+						.getValue());
+			else if (entry.getValue() instanceof HWStage)
+				new StagePanel(entry.getKey(), (HWStage) entry.getValue(),
+						this);
+			}
+		
+		//Window overall things
+		setTitleEvWindow("Microscope Control");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(bounds);
+		}
+	
+	
+	
+	
+	public void dataChangedEvent()
+		{
+		for(EvComboObject ob:listComboObject.keySet())
+			ob.updateList();
 		}
 
+	public void loadedFile(EvData data){}
 
-	// /////////////////////////////////////////////////////////////////////
-	public static class Hook extends MicroscopeWindow.ExtensionInstance
+	public void windowSavePersonalSettings(Element e)
 		{
-		static final long serialVersionUID = 0;
+		} 
+	public void freeResources(){}
+	
+	
 
-		/*
-		 * GroupLayout lay=null; GroupLayout.SequentialGroup hgroup=null;
-		 * GroupLayout.SequentialGroup vgroup=null; GroupLayout.ParallelGroup
-		 * leftcol=null; GroupLayout.ParallelGroup rightcol=null;
-		 */
+	
+	
+	public static final ImageIcon iconShutterOpen = new ImageIcon(
+			RecWindowManual.class.getResource("iconShutterOpen.png"));
+	public static final ImageIcon iconShutterClosed = new ImageIcon(
+			RecWindowManual.class.getResource("iconShutterClosed.png"));
+
+	public static final ImageIcon iconGoAllUp = new ImageIcon(
+			RecWindowManual.class.getResource("iconGoAllUp.png"));
+	public static final ImageIcon iconGoAllDown = new ImageIcon(
+			RecWindowManual.class.getResource("iconGoAllDown.png"));
+	public static final ImageIcon iconGoAllMid = new ImageIcon(
+			RecWindowManual.class.getResource("iconGoMid.png"));
+
+	
+	
 
 		JPanel p = new JPanel();
 		int row = 0;
@@ -93,7 +184,6 @@ public class ManualExtension
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridy = row;
 			c.anchor = GridBagConstraints.LINE_START;
-			// c.anchor=GridBagConstraints.BASELINE_LEADING;
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.weightx = 0;
 			p.add(left, c);
@@ -113,56 +203,6 @@ public class ManualExtension
 			row++;
 			}
 
-		public Hook()
-			{
-			// List<JComponent> hw=new Vector<JComponent>();
-			// boolean isEven=true;
-
-			// JPanel p=new JPanel();
-			setLayout(new BorderLayout());
-			add(p, BorderLayout.NORTH);
-
-			p.setLayout(new GridBagLayout());
-
-			for (Map.Entry<DevicePath, Device> entry : EvHardware
-					.getDeviceMap().entrySet())
-				{
-				// isEven=!isEven;
-				// JComponent c=null;
-
-				if (entry.getValue() instanceof HWCamera)
-					/* c= */
-					new CameraPanel(entry.getKey(), (HWCamera) entry.getValue());
-				// else
-				if (entry.getValue() instanceof HWShutter)
-					/* c= */new ShutterPanel(entry.getKey(), (HWShutter) entry.getValue());
-				else if (entry.getValue() instanceof HWState)
-					/* c= */new StateDevicePanel(entry.getKey(), (HWState) entry
-							.getValue());
-				else if (entry.getValue() instanceof HWStage)
-					/* c= */new StagePanel(entry.getKey(), (HWStage) entry.getValue(),
-							this);
-				/*
-				 * if(c!=null) { hw.add(c);
-				 */
-				/*
-				 * if(isEven) { Color col=c.getBackground(); c.setBackground(new
-				 * Color(col.getRed()97/100,col.getGreen()97/100,col.getBlue()97/100));
-				 * c.setOpaque(true); }
-				 */
-				// }
-				// else
-				// System.out.println("manual extension ignoring "+entry.getValue().getDescName()+" "+entry.getValue().getClass());
-				}
-
-			/*
-			 * int counta=0; JPanel p=new JPanel(new GridBagLayout()); for(JComponent
-			 * c:hw) { GridBagConstraints cr=new GridBagConstraints();
-			 * cr.gridy=counta; cr.fill=GridBagConstraints.HORIZONTAL; cr.weightx=1;
-			 * p.add(c,cr); counta++; }
-			 */
-
-			}
 
 		/******************************************************************************************************
 		 * Shutter *
@@ -312,13 +352,11 @@ public class ManualExtension
 				final JTextField tChannel=new JTextField("ch0");
 				addComp("To channel",tChannel);
 				final EvComboData comboData=new EvComboData(false);
+				listComboObject.put(comboData,null);
 				addComp("To data",comboData);
-				JButton bSnap=new JImageButton(BasicIcon.iconButtonRecord,"Acquire single image");//Button("Snap");
+				JButton bSnap=new JImageButton(BasicIcon.iconButtonRecord,"Acquire single image");
 				addComp("Manual", bSnap);
 
-				/**
-				 * TODO combo need to fetch updates
-				 */
 				bSnap.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent arg0)
 						{
@@ -341,6 +379,7 @@ public class ManualExtension
 							//TODO
 							stack.resX=1;
 							stack.resY=1;
+							stack.resZ=new EvDecimal(1);
 //							stack.binning=1;
 							
 							EvImage evim=new EvImage();
@@ -379,9 +418,11 @@ public class ManualExtension
 				}
 			}
 
-		/******************************************************************************************************
-		 * Dot panel *
-		 *****************************************************************************************************/
+		/**
+		 * Panel horizontally separating with dots: [. . . . . . .]
+		 * @author Johan Henriksson
+		 *
+		 */
 		public static class DotPanel extends JPanel
 			{
 			static final long serialVersionUID = 0;
@@ -398,13 +439,6 @@ public class ManualExtension
 
 			}
 
-		//TODO not the greatest way of getting to know data updates. add events
-		public void dataChangedEvent()
-			{
-			// TODO Auto-generated method stub
-			
-			}
-
-		}
+		
 
 	}

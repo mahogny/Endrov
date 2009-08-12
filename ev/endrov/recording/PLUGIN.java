@@ -2,11 +2,9 @@ package endrov.recording;
 import endrov.ev.PluginDef;
 import endrov.recording.camWindow.CamWindow;
 import endrov.recording.lightpathWindow.LightpathWindow;
-import endrov.recording.recWindow.MicroscopeWindow;
 import endrov.recording.recmetBurst.RecWindowBurst;
-import endrov.recording.recmetManual.ManualExtension;
+import endrov.recording.recmetManual.RecWindowManual;
 import endrov.recording.recmetMultidim.RecWindowMultiDim;
-import endrov.recording.recmetStack.StackExtension;
 
 public class PLUGIN extends PluginDef
 	{
@@ -38,7 +36,7 @@ public class PLUGIN extends PluginDef
 	public Class<?>[] getInitClasses()
 		{
 		return new Class[]{
-				MicroscopeWindow.class,ManualExtension.class,StackExtension.class,CamWindow.class, RecordingResource.class,
+				RecWindowManual.class,CamWindow.class, RecordingResource.class,
 				RecWindowMultiDim.class,RecWindowBurst.class,
 				LightpathWindow.class};
 		}

@@ -39,9 +39,9 @@ public class RecWindowMultiDim extends BasicWindow
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Multi-dim acq Window",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Multi-dim acquisition",new ImageIcon(getClass().getResource("jhMultidimWindow.png")));
 					mi.addActionListener(this);
-					w.addMenuWindow(mi);
+					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 

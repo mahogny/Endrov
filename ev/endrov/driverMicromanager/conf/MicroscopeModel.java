@@ -19,7 +19,7 @@
 //               CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 //               INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
 //
-// CVS:          $Id: MicroscopeModel.java,v 1.1 2009-08-11 15:47:35 mahogny Exp $
+// CVS:          $Id: MicroscopeModel.java,v 1.2 2009-08-12 14:45:01 mahogny Exp $
 //
 
 package endrov.driverMicromanager.conf;
@@ -37,8 +37,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import endrov.ev.EV;
-import endrov.starter.ResourceClassLoader;
-
 import mmcorej.CMMCore;
 import mmcorej.Configuration;
 import mmcorej.MMCoreJ;

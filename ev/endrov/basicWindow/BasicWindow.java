@@ -1,5 +1,6 @@
 package endrov.basicWindow;
 
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -592,11 +593,32 @@ public abstract class BasicWindow extends JPanel
 	 */
 	public void addMenuWindow(JMenuItem ni)
 		{
-		synchronized (ni)
+		synchronized (ni) //TODO why on ni? not on menuWindows?
 			{
 			addMenuItemSorted(menuWindows, ni);
 			}
 		}
+	
+	
+	public JMenu getCreateMenuWindowCategory(String category)
+		{
+		/*
+		synchronized (ni)
+			{
+			
+			}*/
+		for(Component c:menuWindows.getMenuComponents())
+			if(c instanceof JMenu)
+				{
+				JMenu m=(JMenu)c;
+				if(m.getText().equals(category))
+					return m;
+				}
+		JMenu m=new JMenu(category);
+		addMenuWindow(m);
+		return m;
+		}
+	
 
 	/**
 	 * Add to the menu Batch
