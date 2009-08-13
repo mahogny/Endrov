@@ -54,9 +54,29 @@ public class Imageset extends EvObject
 	public double metaOptivar=1;
 	public double metaCampix=1;
 	public double metaSlicespacing=1;
-	public String metaSample="";
-	public String metaDescript="";
+	//public String metaSampleID="";
+	//public String metaDescription="";
 	
+	public String getSampleID()
+		{
+		return metaOther.get("sampleID");
+		}
+
+	public String getDescription()
+		{
+		return metaOther.get("description");
+		}
+
+	public void setSampleID(String s)
+		{
+		metaOther.put("sampleID",s);
+		}
+
+	public void setDescription(String s)
+		{
+		metaOther.put("description",s);
+		}
+
 	/** Other */
 	public HashMap<String,String> metaOther=new HashMap<String,String>();
 	
@@ -172,44 +192,9 @@ public class Imageset extends EvObject
 		{
 		e.setName(metaType);
 		
-		//Common
-		e.addContent(new Element("resX").addContent(""+resX));
-		e.addContent(new Element("resY").addContent(""+resY));
-		e.addContent(new Element("resZ").addContent(""+resZ));
-		e.addContent(new Element("timestep").addContent(""+metaTimestep));
-		e.addContent(new Element("NA").addContent(""+metaNA));
-		e.addContent(new Element("objective").addContent(""+metaObjective));
-		e.addContent(new Element("optivar").addContent(""+metaOptivar));
-		e.addContent(new Element("campix").addContent(""+metaCampix));
-		e.addContent(new Element("slicespacing").addContent(""+metaSlicespacing));
-		e.addContent(new Element("sample").addContent(""+metaSample));
-		e.addContent(new Element("description").addContent(""+metaDescript));
 		for(String key:metaOther.keySet())
 			e.addContent(new Element(key).addContent(""+metaOther.get(key)));
 		saveFrameMetadata(metaFrame, e);
-		
-		//Channels
-		for(Map.Entry<String, EvObject> entry:metaObject.entrySet())
-//		for(Map.Entry<String, EvChannel> entry:channelImages.entrySet())
-			{
-			if(entry.getValue() instanceof EvChannel)
-				{
-				EvChannel ch=(EvChannel)entry.getValue();
-				
-				Element elOstChannel=new Element("channel");
-				elOstChannel.setAttribute("name", entry.getKey());
-				e.addContent(elOstChannel);
-				
-				elOstChannel.addContent(new Element("binning").addContent(""+ch.chBinning));
-				elOstChannel.addContent(new Element("dispX").addContent(""+ch.dispX));
-				elOstChannel.addContent(new Element("dispY").addContent(""+ch.dispY));
-				elOstChannel.addContent(new Element("comression").addContent(""+ch.compression));
-				for(String key:ch.metaOther.keySet())
-					elOstChannel.addContent(new Element(key).addContent(""+ch.metaOther.get(key)));
-				saveFrameMetadata(ch.metaFrame, elOstChannel);
-				}
-			}
-		
 		}
 	
 
@@ -273,9 +258,12 @@ public class Imageset extends EvObject
 				else if(i.getName().equals("slicespacing"))
 					metaSlicespacing=Double.parseDouble(i.getValue());
 				else if(i.getName().equals("sample"))
-					metaSample=i.getValue();
+					metaOther.put("sampleID", i.getValue());
+				/*
+				else if(i.getName().equals("sample"))
+					metaSampleID=i.getValue();
 				else if(i.getName().equals("description"))
-					metaDescript=i.getValue();
+					metaDescription=i.getValue();*/
 				else if(i.getName().equals("channel"))
 					extractChannel(i);
 				else if(i.getName().equals("frame"))
@@ -287,6 +275,21 @@ public class Imageset extends EvObject
 				{
 				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
+			}
+		
+		/**
+		 * For 3.2 -> 3.3: move hardware meta
+		 */
+		for(EvChannel chan:getChannels().values())
+			{
+			if(!chan.metaOther.containsKey("tbu_NA"))
+				chan.metaOther.put("tbu_NA", ""+metaNA);
+			if(!chan.metaOther.containsKey("tbu_Objective"))
+				chan.metaOther.put("tbu_Objective", ""+metaObjective);
+			if(!chan.metaOther.containsKey("tbu_Optivar"))
+				chan.metaOther.put("tbu_Optivar", ""+metaOptivar);
+			if(!chan.metaOther.containsKey("tbu_Campix"))
+				chan.metaOther.put("tbu_Campix", ""+metaCampix);
 			}
 		
 		//Handle fucked up imagesets. Should not be used!
@@ -309,6 +312,7 @@ public class Imageset extends EvObject
 
 		EvChannel ch=getCreateChannel(chname);
 
+		//only needed for 3.2->3.3
 		for(Object oi:e.getChildren())
 			{
 			Element i=(Element)oi;
@@ -317,12 +321,14 @@ public class Imageset extends EvObject
 				{
 				if(i.getName().equals("dispX"))
 					{
-					ch.dispX=Double.parseDouble(i.getValue());
+					ch.defaultDispX=Double.parseDouble(i.getValue());
 					//System.out.println("dispX =" +ch.dispX);
 					}
 				else if(i.getName().equals("dispY"))
-					ch.dispY=Double.parseDouble(i.getValue());
+					ch.defaultDispY=Double.parseDouble(i.getValue());
 				else if(i.getName().equals("binning"))
+					ch.chBinning=Integer.parseInt(i.getValue());
+				else if(i.getName().equals("tbu_Binning"))
 					ch.chBinning=Integer.parseInt(i.getValue());
 				else if(i.getName().equals("compression"))
 					ch.compression=Integer.parseInt(i.getValue());
@@ -336,7 +342,6 @@ public class Imageset extends EvObject
 				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
 			}
-		
 //		System.out.println("chanframemeta "+ch.metaFrame);
 		}
 
@@ -355,6 +360,10 @@ public class Imageset extends EvObject
 				frame=new HashMap<String,String>();
 				metaFrame.put(fid, frame);
 				}
+			
+			if(i.getName().equals("date")) //Throw away
+				continue;
+				
 			frame.put(i.getName(), i.getValue());
 			}
 

@@ -55,8 +55,8 @@ public final class CalcThread extends BatchThread
 				
 				//should anything else be copied? copy entire meta? TODO
 				chto.chBinning=chfrom.chBinning;
-				chto.dispX=chfrom.dispX;
-				chto.dispY=chfrom.dispY;
+				chto.defaultDispX=chfrom.defaultDispX;
+				chto.defaultDispY=chfrom.defaultDispY;
 				}
 			else
 				throw new Exception("Max-channel already exists");

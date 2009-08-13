@@ -126,6 +126,10 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		{
 		return new EvDecimal(dec.divide(new BigDecimal(val),MathContext.DECIMAL64));
 		}
+	public EvDecimal divide(int val)
+		{
+		return new EvDecimal(dec.divide(new BigDecimal(val),MathContext.DECIMAL64));
+		}
 	public double doubleValue()
 		{
 		return dec.doubleValue();

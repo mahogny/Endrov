@@ -220,7 +220,7 @@ public class EvContainer
 	
 
 	
-	private static final String tagOstblobid="ostblobid";
+	//private static final String tagOstblobid="ostblobid";
 	private static final String tagChild="_ostchild";
 	
 	private final static String tempString="__TEMPNAME__";
@@ -243,8 +243,13 @@ public class EvContainer
 					el.setAttribute("ostdatecreate",o.dateCreate.toString());
 				if(o.dateLastModify!=null)
 					el.setAttribute("ostdatemodify",o.dateLastModify.toString());
-				o.saveMetadata(el);
-	
+				
+				Element eData=new Element("data");
+				o.saveMetadata(eData);
+				el.setName(eData.getName());
+				eData.setName("data");
+				el.addContent(eData);
+				
 				if(el.getName().equals(tempString))
 					throw new RuntimeException("Plugin for "+o.getClass()+" does not save properly");
 				
@@ -269,7 +274,7 @@ public class EvContainer
 		{
 		//Extract objects
 		for(Element child:EV.castIterableElement(element.getChildren()))
-			{
+			{			
 			Class<? extends EvObject> ext=EvData.supportedMetadataFormats.get(child.getName());
 			EvObject o=null;
 			if(ext==null)
@@ -312,15 +317,14 @@ public class EvContainer
 			if(dateModify!=null)
 				o.dateLastModify=new EvDecimal(dateModify);
 			
-			Element subob=child.getChild(tagOstblobid);
-			if(subob==null)
-				subob=child.getChild(tagChild); //This fixes a bug
+			Element subob=child.getChild(tagChild); 
 			if(subob!=null)
 				{
 				o.recursiveLoadMetadata(subob);
 				child.removeContent(subob);
 				}
-			o.loadMetadata(child);
+			o.loadMetadata(child.getChild("data"));
+
 			metaObject.put(id, o);
 			if(EV.debugMode)
 				EvLog.printLog("Found meta object of type "+child.getName());

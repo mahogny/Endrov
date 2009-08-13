@@ -25,8 +25,7 @@ public class EvStack implements AnyEvImage
 //	private EvImage[] loaders;
 	
 	/**
-	 * Resolution [px/um].
-	 * Binning not taken into account
+	 * Resolution [um/px]
 	 */
 	public double resX, resY;
 	/**
@@ -50,11 +49,11 @@ public class EvStack implements AnyEvImage
 	 */
 	public double getResbinX()
 		{
-		return resX;
+		return 1.0/resX;
 		}
 	public double getResbinY()
 		{
-		return resY;
+		return 1.0/resY;
 		}
 
 	/**
@@ -87,15 +86,15 @@ public class EvStack implements AnyEvImage
 	
 //	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
 //	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
-	public double transformImageWorldX(double c){return (c+dispX)/resX;}
-	public double transformImageWorldY(double c){return (c+dispY)/resY;}			
+	public double transformImageWorldX(double c){return (c+dispX)*resX;}
+	public double transformImageWorldY(double c){return (c+dispY)*resY;}			
 	public double transformImageWorldZ(double c){return c*getResbinZinverted().doubleValue()+dispZ.doubleValue();}
 	
 	
 //	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
 //	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
-	public double transformWorldImageX(double c){return (c*resX-dispX);}
-	public double transformWorldImageY(double c){return (c*resY-dispY);}
+	public double transformWorldImageX(double c){return (c/resX-dispX);}
+	public double transformWorldImageY(double c){return (c/resY-dispY);}
 	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/getResbinZinverted().doubleValue();}
 	
 	public double scaleImageWorldX(double c){return c/getResbinX();}

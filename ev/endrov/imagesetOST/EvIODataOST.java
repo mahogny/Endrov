@@ -757,6 +757,7 @@ public class EvIODataOST implements EvIOData
 				convert3_3d2(d,cb);
 				cb.fileIOStatus(0.6, "loading images...");
 				scanFiles(d, cb);
+				convert3d2_3d3(d,cb);
 				}
 			catch (FileNotFoundException e)
 				{
@@ -813,16 +814,54 @@ public class EvIODataOST implements EvIOData
 			for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:blob.diskImageLoader.entrySet())
 				{
 				EvChannel channel=im.getCreateChannel(ce.getKey());
-				
+
+
 				for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
 					{
+					
+					double useResX=(1.0/im.resX)/channel.chBinning; //TODO: not needed for 4.0
+					double useResY=(1.0/im.resY)/channel.chBinning; //TODO: not needed for 4.0
+					
+					HashMap<String,String> frameKeys=channel.metaFrame.get(fe.getKey());
+					if(frameKeys==null)
+						frameKeys=new HashMap<String, String>();
+					
+					//Override channel resolution
+					if(channel.defaultResX!=null)
+						useResX=channel.defaultResX;
+					if(channel.defaultResY!=null)
+						useResY=channel.defaultResY;
+					EvDecimal useResZ=channel.defaultResZ;
+
+					//Override frame resolution
+					if(frameKeys.containsKey("resX"))
+						useResX=Double.parseDouble(frameKeys.get("resX"));
+					if(frameKeys.containsKey("resY"))
+						useResY=Double.parseDouble(frameKeys.get("resY"));
+					if(frameKeys.containsKey("resZ"))
+						useResZ=new EvDecimal(frameKeys.get("resZ"));
+
+					//Default displacement
+					double useDispX=channel.defaultDispX;
+					double useDispY=channel.defaultDispY;
+					EvDecimal useDispZ=channel.defaultDispZ;
+
+					//Override for each stack
+					if(frameKeys.containsKey("dispX"))
+						useDispX=Double.parseDouble(frameKeys.get("dispX"));
+					if(frameKeys.containsKey("dispY"))
+						useDispY=Double.parseDouble(frameKeys.get("dispY"));
+					if(frameKeys.containsKey("dispZ"))
+						useDispZ=new EvDecimal(frameKeys.get("dispZ"));
+					
 					EvStack stack=new EvStack();
 					channel.imageLoader.put(fe.getKey(),stack);
-					//TODO properly move metadata
-					stack.resX=im.resX/channel.chBinning;
-					stack.resY=im.resY/channel.chBinning;
-					stack.dispX=channel.dispX;
-					stack.dispY=channel.dispY;
+					stack.resX=useResX;
+					stack.resY=useResY;
+					stack.resZ=useResZ;
+					stack.dispX=useDispX;
+					stack.dispY=useDispY;
+					stack.dispZ=useDispZ;
 					//stack.binning=channel.chBinning;
 					for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
 						{
@@ -1241,6 +1280,21 @@ public class EvIODataOST implements EvIOData
 			}
 		}
 	
-	
+	/**
+	 * Only an extra save. Must be done AFTER all files have been indexed
+	 */
+	public void convert3d2_3d3(EvData d,EvData.FileIOStatusCallback cb)
+		{
+		try
+			{
+			System.out.println("Saving meta 3.3");
+			saveMetaDataOnly(d, null);
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		
+		}
 	
 	}

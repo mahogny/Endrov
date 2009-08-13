@@ -917,7 +917,7 @@ public class NewIntExp
 					// EvPixels p=new EvPixels(EvPixelsType.TYPE_DOUBLE, numSubDiv,
 					// numSubDiv);
 					evim.setPixelsReference(p);
-					stack.resX = stack.resY = 1.0/binning;
+					stack.resX = stack.resY = binning;
 					//stack.binning = binning;
 					int[] line = p.getArrayInt();
 					// double[] line=p.getArrayDouble();

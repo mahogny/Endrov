@@ -431,8 +431,8 @@ public class EvIODataBioformats implements EvIOData
 						if(frame==null)
 							frame=new EvDecimal(framenum);
 						
-						double resX=1.0/fdx; //[px/um]
-						double resY=1.0/fdy; //[px/um]
+						double resX=fdx; //[px/um]
+						double resY=fdy; //[px/um]
 						double resZ=fdz;
 						EvDecimal zpos=new EvDecimal(fdz).multiply(slicenum);
 						

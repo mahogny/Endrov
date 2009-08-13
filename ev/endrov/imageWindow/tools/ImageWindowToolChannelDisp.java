@@ -52,8 +52,8 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 			double ddy=dy/w.getZoom();
 			if(c!=null)
 				{
-				c.dispX+=ddx;
-				c.dispY+=ddy;
+				c.defaultDispX+=ddx;
+				c.defaultDispY+=ddy;
 				
 				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
 					{

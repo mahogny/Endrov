@@ -18,6 +18,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.PersonalConfig;
 import endrov.util.EvDecimal;
+import endrov.util.EvXmlUtil;
 
 /**
  * Root of container tree, handler of types
@@ -362,6 +363,51 @@ public class EvData extends EvContainer
 			e.setAttribute(name,new EvDecimal(s).multiply(timestep).toString());
 		}
 	
+	
+	private static void help32to33(Element e)
+		{
+		
+		//Assume this is a listing of objects
+		LinkedList<Element> newList=new LinkedList<Element>();
+		List<Object> oldelem=new LinkedList<Object>(e.getChildren());
+		for(Element childData:EV.castIterableElement(oldelem))
+			{
+			childData.detach();
+			
+			Element newObject=new Element(childData.getName());
+			if(childData.getAttributeValue("ostblobid")!=null)
+				newObject.setAttribute("ostblobid",childData.getAttributeValue("ostblobid"));
+			if(childData.getAttributeValue("id")!=null)
+				newObject.setAttribute("id",childData.getAttributeValue("id"));
+			if(childData.getAttributeValue("ostdatecreate")!=null)
+				newObject.setAttribute("ostdatecreate",childData.getAttributeValue("ostdatecreate"));
+			childData.setName("data");
+			childData.removeAttribute("ostblobid");
+			childData.removeAttribute("id");
+			childData.removeAttribute("ostdatecreate");
+			
+			newObject.addContent(childData);
+			
+			Element eSubob=childData.getChild("ostblobid");
+			if(eSubob==null)
+				eSubob=childData.getChild("_ostchild");
+			if(eSubob!=null)
+				{
+				eSubob.detach();
+				eSubob.setName("_ostchild");
+				newObject.addContent(eSubob);
+				help32to33(eSubob);
+				}
+			
+			newList.add(newObject);
+			
+			//System.out.println(EvXmlUtil.prettyPrint(newObject));
+			}
+		for(Element liste:newList)
+			e.addContent(liste);
+		}
+	
+	
 	public void loadXmlMetadata(InputStream is)
 		{
 		metaObject.clear();
@@ -374,51 +420,30 @@ public class EvData extends EvContainer
 
   		if(element.getAttribute("version")!=null)
   			metadataVersion=element.getAttributeValue("version");
-  		
+
   		//metadata 3->3.2
-  		if(!metadataVersion.equals("3.2"))
-	  		{
-	  		System.out.println("Updating metadata to 3.2");
-	  		Element eIm=element.getChild("imageset");
-	  		EvDecimal timestep=EvDecimal.ONE;
-	  		if(eIm!=null)
-	  			{
-		  		Element timestepe=eIm.getChild("timestep");
-		  		if(timestepe!=null)
-		  			timestep=new EvDecimal(timestepe.getText());
-	  			}
-	  		help331(element, timestep);
-	  		}
+  		if(new EvDecimal(metadataVersion).less(new EvDecimal("3.2")))
+  			{
+  			System.out.println("Updating metadata to 3.2");
+  			Element eIm=element.getChild("imageset");
+  			EvDecimal timestep=EvDecimal.ONE;
+  			if(eIm!=null)
+  				{
+  				Element timestepe=eIm.getChild("timestep");
+  				if(timestepe!=null)
+  					timestep=new EvDecimal(timestepe.getText());
+  				}
+  			help331(element, timestep);
+  			}
+	  		
+  		//metadata 3.2->3.3
+  		if(new EvDecimal(metadataVersion).less(new EvDecimal("3.3")))
+  			{
+  			System.out.println("Updating metadata to 3.3");
+  			help32to33(element);
+  			}
   		
   		recursiveLoadMetadata(element);
-  		/*
-  		//Extract objects
-  		for(Element child:EV.castIterableElement(element.getChildren()))
-  			{
-  			EvObjectType ext=extensions.get(child.getName());
-  			EvObject o;
-  			if(ext==null)
-  				{
-  				o=new CustomObject(child);
-  				Log.printLog("Found unknown meta object of type "+child.getName());
-  				}
-  			else
-  				{
-  				o=ext.extractObjects(child);
-  				Log.printLog("Found meta object of type "+child.getName());
-					}
-  			String sid=child.getAttributeValue("id");
-  			String id;
-  			if(sid==null) 
-  				//This is only needed for imagesets without the EV extended attributes
-  				//should maybe grab a free one (detect)
-  				//id=""+-1;
-  				id="im"; //This is for the OST3 transition
-  			else
-  				id=sid;
- 				metaObject.put(id, o);
-  			}
-  			*/
     	} 
     catch (Exception e) 
     	{
@@ -475,7 +500,7 @@ public class EvData extends EvContainer
 	public Document saveXmlMetadata() 
 		{
 		Element ostElement=new Element("ost");
-		ostElement.setAttribute("version","3.2");
+		ostElement.setAttribute("version","3.3");
 		Document doc = new Document(ostElement);
 //		save
 		recursiveSaveMetadata(ostElement);
