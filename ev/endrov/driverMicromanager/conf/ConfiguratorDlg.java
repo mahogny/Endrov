@@ -19,7 +19,7 @@
 //               CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 //               INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
 //
-// CVS:          $Id: ConfiguratorDlg.java,v 1.2 2009-08-12 14:45:01 mahogny Exp $
+// CVS:          $Id: ConfiguratorDlg.java,v 1.3 2009-08-13 11:19:23 mahogny Exp $
 //
 
 package endrov.driverMicromanager.conf;
@@ -135,7 +135,7 @@ public class ConfiguratorDlg extends JDialog {
       getContentPane().add(pagesLabel_);
       
       // add page panels
-      pages_ = new PagePanel[10];
+      pages_ = new PagePanel[9];
       pages_[0] = new IntroPage(prefs_);
       pages_[1] = new ComPortsPage(prefs_);
       pages_[2] = new DevicesPage(prefs_);
@@ -144,8 +144,8 @@ public class ConfiguratorDlg extends JDialog {
       pages_[5] = new DelayPage(prefs_);
       pages_[6] = new SynchroPage(prefs_);
       pages_[7] = new LabelsPage(prefs_);
-      pages_[8] = new StateMetaPage(prefs_);
-      pages_[9] = new FinishPage(prefs_);
+      //pages_[8] = new StateMetaPage(prefs_);
+      pages_[8] = new FinishPage(prefs_);
             
       microModel_ = new MicroscopeModel();
       microModel_.loadAvailableDeviceList(core_);
