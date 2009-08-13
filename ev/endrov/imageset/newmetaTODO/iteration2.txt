@@ -16,10 +16,18 @@ channel has: (can be overriden)
 	<experimentID></>
 	<description>N2: Caenorhabditis elegans wild type for rotation analysis, DIC only</description>
 
-	????
-	<sample>N2_071116</sample>  <--------- what is the need?
-	????
 
+	<-- not in OME, but for our convenience
+	<sampleID>N2_071116</sampleID>  
+	<rnaiID></rnaiID>
+	<entry_date>20.05.2008</>
+	
+	<tag name="4d"/>  <--- plain tags with no value
+	
+</imageset>
+
+
+// imageset should be mirrored into imserv.txt
 
 <channel id="DIC" ostblobid="">
 
@@ -290,21 +298,21 @@ PropertyBlock 	getPropertyBlockData (const char *blockName) const
 * variable names should be chosen so units do not clash between different types of hardware
 
 
-ModelName
-ModelNumber
-Manufacturer
-SerialNumber
-LotNumber 
-WorkingDistance			mm
-CoverglassThickness		mm
+ModelName				[string, -]
+ModelNumber				[string, -]
+Manufacturer			[string, -]
+SerialNumber			[string, -]
+LotNumber 				[string, -]
+WorkingDistance			[mm]
+CoverglassThickness		[mm]
 Immersion				Oil | Water | WaterDipping | Air | Multi | Glycerol
 Transmittance			"{wavelength [nm],fraction,}" // https://www.micro-shop.zeiss.com/us/us_en/objektive.php?cp_sid=&f=od&p[]=440762-9904-000
 Emittance				"{wavelength [nm],fraction,}" 
 NA						[-]
 Magnification			[-]
 CalibratedMagnification	[-]
-Temperature				C
-Time					unixtime, seconds
+Temperature				[C]
+Time					[unixtime, seconds]
 Pulse					CW | Single | QSwitched | Repetitive | ModeLocked
 Binning					#x#   two numbers 
 LaserMedia				GaAs | GaAlAs | NdGlass | NdYAG | ErGlass | ErYAG | HoYLF | HoYAG | Ruby | TiSapphire | Alexandrite 
@@ -315,9 +323,9 @@ PhotometricInterpretation	Monochrome | RGB | ARGB | CMYK | HSV | ColorMap
 DetectionMethod			CCD | IntensifiedCCD | AnalogVideo | PMT | Photodiode | Spectroscopy | LifetimeImaging | CorrelationSpectroscopy | FTIR | EM-CCD | APD | CMOS 
 Gain					[-]
 DigitalGain				[-]
-Voltage					V
+Voltage					[V]
 Filament				Incandescent | Halogen
-ParfocalLength			mm
+ParfocalLength			[mm]
 
 use whenever applicable:
 
@@ -333,4 +341,69 @@ Type="list of: [  xsd:string (value comes from list: {'FRAP'|'Photoablation'|'Ph
  
  
 
+ 
+================================ externalizing XML
+
+<imageset ostext="1">
+</imageset>
+
+then all data goes in rmd-1.xml. 
+ 
+One XML-file is 500kb with just basic 4d. 28kb compressed.
+Really quick loading: externalize everything. let it be EvCustomObject first that can lazily load
+content. hmmm...
+
+<imageset>
+ <datablock name="data" ostext="1">
+ </datablock>
+</imageset>
+
+any object can lazily load content this way. no need to go through Custom!
+can mark objects as modified, no need to rewrite content of externalized data.
+objects can hint if they should be externalized. or use a metric based on returned Element.
+
+ 
+==============================================================
+UPGRADE STRATEGY
+==============================================================
+ 
+
+1. make sure can write OST 4.0
+2. upgrade 3.2 -> 4.0
+3. new OSTdaemon 4.0
+ 
+* move rmd.txt in channel directories into data/
+   # part of 3.2 -> 4.0
+ 
+ 
+* OSTdaemon should output image files correctly.
+   # Just need to change base directory for slices, name is ok
+   
+* OSTdaemon, output correct RMD?
+   # currently it outputs the very first stoneage format.
+   # one file for each channel. copies rmd.txt into each channel directory
+   # NEW:
+   # copy instead to data/channelRMD-CHANNELNAME
+   # write rmd.xml from data/channelRMD-*
+
+
+
+* Endrov need to batch-update existing files
+   # Next endrov will support OST 3.2 -> 4.0 conversion only
+      => rename files
+      => temperature as sensor reading
+      => exposure as camera setting AND <exposure>
+      
+      but also choose 
+      
+      
+   # 
+
+
+# if Channel has no blob, make it blob-CHANNELNAME. 
+ 
+ 
+ 
+ 
+ 
  
