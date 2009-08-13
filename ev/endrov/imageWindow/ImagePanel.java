@@ -128,8 +128,8 @@ public class ImagePanel extends JPanel
 				Vector2d trans=transformI2S(p,new Vector2d(stack.dispX, stack.dispY));
 
 				
-				double scaleX=p.zoom/stack.resX;
-				double scaleY=p.zoom/stack.resY;
+				double scaleX=p.zoom/stack.getResbinX();
+				double scaleY=p.zoom/stack.getResbinY();
 				
 				g2.translate(trans.x,trans.y);
 				g2.scale(scaleX,scaleY);  

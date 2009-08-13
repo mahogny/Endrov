@@ -371,6 +371,28 @@ UPGRADE STRATEGY
 1. make sure can write OST 4.0
 2. upgrade 3.2 -> 4.0
 3. new OSTdaemon 4.0
+
+
+DONE===
+* version 3.3
+   => data/ and _ostchildren/ ok
+   => resXY has the right unit
+   => resxyz, dispxyz stored, override supported
+   => no resxyz in imageset
+   => no channel inside imageset
+   => remove imageset.timestep, slicespacing
+   => move NA, objective, optivar, campix, slicespacing, 
+   => rename sample, description
+   
+TODO
+
+* version 4.0
+   => one blob for each channel
+   => in file: slice# instead of z-pos  
+
+   
+* channel & stack has resXY with the right unit
+
  
 * move rmd.txt in channel directories into data/
    # part of 3.2 -> 4.0

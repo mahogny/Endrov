@@ -104,8 +104,8 @@ public final class SliceSignalCalcThread extends BatchThread
     							if(lengthmap==null)
     								{
     								lengthmap=new double[h][w];
-      			    		final int dispX=(int)ch.dispX;
-      			    		final int dispY=(int)ch.dispY;
+      			    		final int dispX=(int)ch.defaultDispX;
+      			    		final int dispY=(int)ch.defaultDispY;
       			    		/*
       			    		System.out.println("Displaced "+dispX+" "+dispY+" / size "+w+" "+h);
       			    		System.out.println("shell "+shell.midx+" "+shell.midy+" "+shell.major+" --- "+(ch.getMeta().chBinning/(double)rec.meta.resX)+

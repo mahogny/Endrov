@@ -283,8 +283,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			commonOptivar.setText(""+rec.metaOptivar);
 			commonCampix.setText(""+rec.metaCampix);
 			commonTimestep.setText(""+rec.metaTimestep);
-			commonSample.setText(rec.metaSample);
-			commonDescript.setText(rec.metaDescript);
+			commonSample.setText(rec.getSampleID());
+			commonDescript.setText(rec.getDescription());
 			
 			//Add channel tabs
 			for(String channelName:rec.getChannels().keySet())
@@ -298,8 +298,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			for(ChannelTab t:channels)
 				{
 				EvChannel cm=rec.getChannel(t.channelName);
-				t.iDispX.setText(""+cm.dispX);
-				t.iDispY.setText(""+cm.dispY);			
+				t.iDispX.setText(""+cm.defaultDispX);
+				t.iDispY.setText(""+cm.defaultDispY);			
 				t.iBinning.setText(""+cm.chBinning);
 				t.iCompression.setText(""+cm.compression);
 				t.iOther.setText(cm.metaOther.get("evother"));
@@ -509,15 +509,15 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 				rec.metaOptivar=Double.parseDouble(commonOptivar.getText());
 				rec.metaCampix=Double.parseDouble(commonCampix.getText());
 				rec.metaTimestep=Double.parseDouble(commonTimestep.getText());
-				rec.metaSample=commonSample.getText();
-				rec.metaDescript=commonDescript.getText();
+				rec.setSampleID(commonSample.getText());
+				rec.setDescription(commonDescript.getText());
 				
 				for(ChannelTab t:channels)
 					{
 					EvChannel ch=rec.getChannel(t.channelName);
 					
-					ch.dispX=Double.parseDouble(t.iDispX.getText());
-					ch.dispY=Double.parseDouble(t.iDispY.getText());
+					ch.defaultDispX=Double.parseDouble(t.iDispX.getText());
+					ch.defaultDispY=Double.parseDouble(t.iDispY.getText());
 					ch.chBinning=Integer.parseInt(t.iBinning.getText());
 					ch.compression=Integer.parseInt(t.iCompression.getText());
 					ch.metaOther.put("evother",t.iOther.getText());

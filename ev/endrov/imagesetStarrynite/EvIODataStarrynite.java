@@ -190,8 +190,8 @@ public class EvIODataStarrynite implements EvIOData
 					String sPlane=name.substring(name.indexOf("-")+2);
 					
 					EvStack s=ch.getCreateFrame(frame2time(Integer.parseInt(sFrame)));
-					s.resY=s.resX=1.0/xy_res; //?
-					s.resZ=new EvDecimal(z_res); //?
+					s.resY=s.resX=xy_res;
+					s.resZ=new EvDecimal(z_res);
 					//s.binning=1;
 					
 					EvImage evim=new EvImage();

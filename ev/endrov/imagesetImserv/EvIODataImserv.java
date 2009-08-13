@@ -149,10 +149,10 @@ public class EvIODataImserv implements EvIOData
 						//TODO proper metadata
 //						stack.resX=imageset.resX;
 	//					stack.resY=imageset.resY;
-						stack.resX=imageset.resX/c.chBinning;
-						stack.resY=imageset.resY/c.chBinning;
-						stack.dispX=c.dispX;
-						stack.dispY=c.dispY;
+						stack.resX=(1.0/imageset.resX)/c.chBinning;
+						stack.resY=(1.0/imageset.resY)/c.chBinning;
+						stack.dispX=c.defaultDispX;
+						stack.dispY=c.defaultDispY;
 //						stack.binning=c.chBinning;
 						
 						for(int k=0;k<numSlice;k++)
