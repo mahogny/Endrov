@@ -3,7 +3,6 @@ package endrov.imageset;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -386,7 +385,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 					defaultDispZ = new EvDecimal(i.getValue());
 
 				
-				if (i.getName().equals("resX"))
+				else if (i.getName().equals("resX"))
 					defaultResX = Double.parseDouble(i.getValue());
 				else if (i.getName().equals("resY"))
 					defaultResY = Double.parseDouble(i.getValue());
@@ -450,7 +449,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 			
 			}
 
-		e.addContent(new Element("tbu_binning").addContent(""+chBinning));
+		e.addContent(new Element("tbu_Binning").addContent(""+chBinning));
 		e.addContent(new Element("comression").addContent(""+compression));
 		for(String key:metaOther.keySet())
 			e.addContent(new Element(key).addContent(""+metaOther.get(key)));

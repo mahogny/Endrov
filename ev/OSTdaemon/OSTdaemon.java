@@ -229,7 +229,7 @@ public class OSTdaemon extends Thread
 	
 	public File getChannelFile(String imageset, String channel)
 		{
-		return new File(getImagesetFile(imageset),"ch-"+channel);
+		return new File(getImagesetFile(imageset),"blob-ch"+channel);
 		}
 	
 	/**
@@ -241,7 +241,7 @@ public class OSTdaemon extends Thread
 			{
 			File toDir = new File(getChannelFile(argImageset, argChannel),pad(argStack,8));
 			toDir.mkdirs();
-			File toFile = new File(toDir, pad(slice,8)+"."+ext); 
+			File toFile = new File(toDir, "b"+pad(slice,8)+"."+ext); //b: requires transform to get Z coordinate 
 			return toFile;
 			}
 		else
@@ -273,12 +273,17 @@ public class OSTdaemon extends Thread
 		
 		log("Reading metafile for "+argImageset+" / "+argChannel);
 		
-		File to=getChannelFile(argImageset, argChannel);
+
+		File to=new File(getImagesetFile(argImageset),"data");
+		
+		
+//		File to=getChannelFile(argImageset, argChannel);
 		if(to.exists() || to.mkdirs())
 			{
 			try
 				{
-				copyFile(from, new File(to,"rmd.txt"));
+				copyFile(from, new File(to,"rmd-"+argChannel+".txt"));
+				/*
 				if(makeMaxChannel.contains(argChannel))
 					{
 //					File tomax=new File(pathOutput+"/"+argImageset+"/"+argImageset+"-"+argChannel+"max");
@@ -287,6 +292,7 @@ public class OSTdaemon extends Thread
 					copyFile(from, new File(tomax,"rmd.txt"));
 					//copyMaxMeta(argImageset, argChannel); //not here
 					}
+					*/
 				moveToConverted(from);
 				}
 			catch (Exception e)

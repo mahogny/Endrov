@@ -59,12 +59,20 @@ public class Imageset extends EvObject
 	
 	public String getSampleID()
 		{
-		return metaOther.get("sampleID");
+		String val=metaOther.get("sampleID");
+		if(val==null)
+			return "";
+		else
+			return val;
 		}
 
 	public String getDescription()
 		{
-		return metaOther.get("description");
+		String val=metaOther.get("description");
+		if(val==null)
+			return "";
+		else
+			return val;
 		}
 
 	public void setSampleID(String s)
@@ -193,7 +201,11 @@ public class Imageset extends EvObject
 		e.setName(metaType);
 		
 		for(String key:metaOther.keySet())
-			e.addContent(new Element(key).addContent(""+metaOther.get(key)));
+			{
+			String val=metaOther.get(key);
+			if(val!=null)
+				e.addContent(new Element(key).addContent(val));
+			}
 		saveFrameMetadata(metaFrame, e);
 		}
 	
@@ -276,7 +288,18 @@ public class Imageset extends EvObject
 				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
 			}
+
 		
+		//Handle fucked up imagesets. Should not be used!
+		if(resZ==0)
+			resZ=1;
+		if(resX==0)
+			resX=1;
+		if(resY==0)
+			resY=1;
+		if(metaTimestep==0)
+			metaTimestep=1;
+
 		/**
 		 * For 3.2 -> 3.3: move hardware meta
 		 */
@@ -290,17 +313,13 @@ public class Imageset extends EvObject
 				chan.metaOther.put("tbu_Optivar", ""+metaOptivar);
 			if(!chan.metaOther.containsKey("tbu_Campix"))
 				chan.metaOther.put("tbu_Campix", ""+metaCampix);
+			
+			if(chan.defaultResX==null)
+				chan.defaultResX=resX;
+			if(chan.defaultResY==null)
+				chan.defaultResY=resY;
 			}
 		
-		//Handle fucked up imagesets. Should not be used!
-		if(resZ==0)
-			resZ=1;
-		if(resX==0)
-			resX=1;
-		if(resY==0)
-			resY=1;
-		if(metaTimestep==0)
-			metaTimestep=1;
 		}
 
 	/**
