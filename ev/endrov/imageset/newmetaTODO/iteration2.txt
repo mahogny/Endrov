@@ -383,8 +383,12 @@ DONE===
    => remove imageset.timestep, slicespacing
    => move NA, objective, optivar, campix, slicespacing, 
    => rename sample, description
+   => channel rmd.txt removed
    
 TODO
+   => one blob for each channel    = this would be enough to solve the flow problem! 
+   blob-ch<channelname>
+
 
 * version 4.0
    => one blob for each channel

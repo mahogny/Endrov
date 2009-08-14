@@ -18,7 +18,6 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.PersonalConfig;
 import endrov.util.EvDecimal;
-import endrov.util.EvXmlUtil;
 
 /**
  * Root of container tree, handler of types
