@@ -2,6 +2,7 @@ package util;
 import java.io.*;
 
 import endrov.data.EvData;
+import endrov.ev.*;
 
 
 /**
@@ -24,6 +25,10 @@ public class BatchOST
 	
 	public static void main(String[] arg)
 		{
+		EvLog.listeners.add(new EvLogStdout());
+		EV.loadPlugins();
+
+		
 //		if(arg.length==0)
 		arg=new String[]{
 				"/Volumes/TBU_main01/ost3dfailed/","/Volumes/TBU_main01/ost4dfailed/",
