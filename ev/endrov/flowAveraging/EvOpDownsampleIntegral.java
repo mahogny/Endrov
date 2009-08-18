@@ -8,6 +8,10 @@ import endrov.imageset.EvStack;
 /**
  * Downsample image. This will change the number of pixels but not the size of the total image.
  * Complexity O(w*h)
+ * 
+ * 
+ * Alternative way would be:
+ * http://pacific.mpi-cbg.de/wiki/index.php/Downsample
  */
 public class EvOpDownsampleIntegral extends EvOpStack1
 	{

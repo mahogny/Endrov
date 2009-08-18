@@ -1086,6 +1086,11 @@ public class EvIODataOST implements EvIOData
 		blob.diskImageLoader33.clear();
 		
 		File chandir=blob.getDirectory();
+		if(!chandir.exists())
+			{
+			System.out.println("Chan dir not found: "+chandir);
+			return;
+			}
 		File[] framedirs=chandir.listFiles();
 		for(File framedir:framedirs)
 			if(framedir.isDirectory() && !framedir.getName().startsWith("."))
@@ -1447,6 +1452,11 @@ public class EvIODataOST implements EvIOData
 					DiskBlob blob=b.getValue();
 					String lastExt="";
 					File cFile=getDatabaseCacheFile(blob);
+					if(!blob.getDirectory().exists())
+						{
+						System.out.println("Not creating cache because "+blob.getDirectory()+" does not exist");
+						return;
+						}
 					BufferedWriter w=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cFile),"UTF-8"));
 
 					//w.write("version2\n");
