@@ -873,6 +873,9 @@ public class EvIODataOST implements EvIOData
 				for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
 					{
 
+//					double useResX=(1.0/channel.preresX)/channel.chBinning; //TODO: not needed for 4.0
+	//				double useResY=(1.0/channel.preresY)/channel.chBinning; //TODO: not needed for 4.0
+
 					double useResX=(1.0/im.resX)/channel.chBinning; //TODO: not needed for 4.0
 					double useResY=(1.0/im.resY)/channel.chBinning; //TODO: not needed for 4.0
 
@@ -966,6 +969,8 @@ public class EvIODataOST implements EvIOData
 				Double useResY=channel.defaultResY;
 				EvDecimal useResZ=channel.defaultResZ;
 
+					
+				
 				HashMap<String,String> frameKeys=channel.metaFrame.get(fe.getKey());
 				if(frameKeys==null)
 					frameKeys=new HashMap<String, String>();
