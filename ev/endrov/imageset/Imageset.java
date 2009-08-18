@@ -305,6 +305,7 @@ public class Imageset extends EvObject
 		 */
 		for(EvChannel chan:getChannels().values())
 			{
+			System.out.println("Copying resolution to channel");
 			if(!chan.metaOther.containsKey("tbu_NA"))
 				chan.metaOther.put("tbu_NA", ""+metaNA);
 			if(!chan.metaOther.containsKey("tbu_Objective"))
@@ -314,10 +315,17 @@ public class Imageset extends EvObject
 			if(!chan.metaOther.containsKey("tbu_Campix"))
 				chan.metaOther.put("tbu_Campix", ""+metaCampix);
 			
+
+			
+			
+			//chan.preresX=resX;
+			//chan.preresY=resY;
+
+			
 			if(chan.defaultResX==null)
-				chan.defaultResX=resX;
+				chan.defaultResX=chan.chBinning/resX;
 			if(chan.defaultResY==null)
-				chan.defaultResY=resY;
+				chan.defaultResY=chan.chBinning/resY;
 			}
 		
 		}

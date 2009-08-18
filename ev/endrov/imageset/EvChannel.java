@@ -240,6 +240,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 	public double defaultDispX = 0, defaultDispY = 0;
 	public EvDecimal defaultDispZ = new EvDecimal(0);
 
+	//public Double preresX=null, preresY=null;//, preresZ=null;
+	
 	public Double defaultResX = null, defaultResY = null;
 	public EvDecimal defaultResZ = null;
 
@@ -417,6 +419,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
 			}
+		
+		
 
 		}
 
