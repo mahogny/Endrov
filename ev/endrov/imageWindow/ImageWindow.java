@@ -708,8 +708,12 @@ public class ImageWindow extends BasicWindow
 					EvStack stack=im.getStack();
 					
 					sb.append(
-							"ResX: "+stack.getResbinX()+" "+
-							"ResY: "+stack.getResbinY()+" "+
+							"ResX: "+stack.resX + " "+
+							"ResY: "+stack.resY + " "+
+							"ResZ: "+stack.getResbinZinverted() + " "+
+							"DX: "+stack.dispX + " "+
+							"DY: "+stack.dispY + " "+
+							"DZ: "+stack.dispZ + " "+
 							"Width(px): "+pixels.getWidth()+" "+
 							"Height(px): "+pixels.getHeight());
 					sb.append("\n");
