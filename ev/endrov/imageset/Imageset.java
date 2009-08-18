@@ -245,6 +245,8 @@ public class Imageset extends EvObject
 
 	public void loadMetadata(Element e)
 		{
+		boolean isOld=false;
+		
 		for(Object oi:e.getChildren())
 			{
 			Element i=(Element)oi;
@@ -254,11 +256,20 @@ public class Imageset extends EvObject
 				if(i.getName().equals("timestep"))
 					metaTimestep=Double.parseDouble(i.getValue());
 				else if(i.getName().equals("resX"))
+					{
 					resX=Double.parseDouble(i.getValue());
+					isOld=true;
+					}
 				else if(i.getName().equals("resY"))
+					{
 					resY=Double.parseDouble(i.getValue());
+					isOld=true;
+					}
 				else if(i.getName().equals("resZ"))
+					{
 					resZ=Double.parseDouble(i.getValue());
+					isOld=true;
+					}
 				else if(i.getName().equals("NA"))
 					metaNA=Double.parseDouble(i.getValue());
 				else if(i.getName().equals("objective"))
@@ -300,33 +311,41 @@ public class Imageset extends EvObject
 		if(metaTimestep==0)
 			metaTimestep=1;
 
+		
+			
 		/**
 		 * For 3.2 -> 3.3: move hardware meta
 		 */
-		for(EvChannel chan:getChannels().values())
-			{
-			System.out.println("Copying resolution to channel");
-			if(!chan.metaOther.containsKey("tbu_NA"))
-				chan.metaOther.put("tbu_NA", ""+metaNA);
-			if(!chan.metaOther.containsKey("tbu_Objective"))
-				chan.metaOther.put("tbu_Objective", ""+metaObjective);
-			if(!chan.metaOther.containsKey("tbu_Optivar"))
-				chan.metaOther.put("tbu_Optivar", ""+metaOptivar);
-			if(!chan.metaOther.containsKey("tbu_Campix"))
-				chan.metaOther.put("tbu_Campix", ""+metaCampix);
-			
-
-			
-			
-			//chan.preresX=resX;
-			//chan.preresY=resY;
-
-			
-			if(chan.defaultResX==null)
-				chan.defaultResX=chan.chBinning/resX;
-			if(chan.defaultResY==null)
-				chan.defaultResY=chan.chBinning/resY;
-			}
+		if(isOld)
+			for(EvChannel chan:getChannels().values())
+				{
+				System.out.println("Copying resolution to channel");
+				if(!chan.metaOther.containsKey("tbu_NA"))
+					chan.metaOther.put("tbu_NA", ""+metaNA);
+				if(!chan.metaOther.containsKey("tbu_Objective"))
+					chan.metaOther.put("tbu_Objective", ""+metaObjective);
+				if(!chan.metaOther.containsKey("tbu_Optivar"))
+					chan.metaOther.put("tbu_Optivar", ""+metaOptivar);
+				if(!chan.metaOther.containsKey("tbu_Campix"))
+					chan.metaOther.put("tbu_Campix", ""+metaCampix);
+				
+	
+				
+				
+				//chan.preresX=resX;
+				//chan.preresY=resY;
+	
+				
+				if(chan.defaultResX==null)
+					chan.defaultResX=chan.chBinning/resX;
+				if(chan.defaultResY==null)
+					chan.defaultResY=chan.chBinning/resY;
+	
+				//Empirically shown to make sense
+				chan.defaultDispX*=chan.defaultResX/chan.chBinning;
+				chan.defaultDispY*=chan.defaultResY/chan.chBinning;
+				
+				}
 		
 		}
 
