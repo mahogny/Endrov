@@ -18,6 +18,7 @@ import endrov.data.EvPath;
 import endrov.data.RecentReference;
 import endrov.ev.EvLog;
 import endrov.imageset.*;
+import endrov.imagesetOST.EvIODataOST;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
@@ -108,8 +109,17 @@ public class EvIODataImserv implements EvIOData
 		}
 	
 	
+	
+	/*
+	public void foo()
+		{
+		EvIODataOST.loadDatabaseCacheMap33(EvChannel ch, HashMap<EvDecimal,HashMap<EvDecimal,File>> c, InputStream cachefile, File blobFile)
+
+		}
+	*/
+	
 	//TODO share cache code with OST
-	public boolean loadDatabaseCache(Imageset imageset, InputStream inp)
+	public boolean loadDatabaseCacheV3d2(Imageset imageset, InputStream inp)
 		{
 		String blobid=imageset.ostBlobID;
 		try
@@ -138,6 +148,7 @@ public class EvIODataImserv implements EvIOData
 					for(int j=0;j<numFrame;j++)
 						{
 						EvDecimal frame=new EvDecimal(in.readLine());
+						Map<String,String> frameMeta=c.getMetaFrame(frame);
 						int numSlice=Integer.parseInt(in.readLine());
 						EvStack stack=c.imageLoader.get(frame);
 						if(stack==null)
@@ -149,10 +160,25 @@ public class EvIODataImserv implements EvIOData
 						//TODO proper metadata
 //						stack.resX=imageset.resX;
 	//					stack.resY=imageset.resY;
-						stack.resX=(1.0/imageset.resX)/c.chBinning;
-						stack.resY=(1.0/imageset.resY)/c.chBinning;
+//						stack.resX=(1.0/imageset.resX);///c.chBinning;
+//						stack.resY=(1.0/imageset.resY);///c.chBinning;
+						//resZ TODO
+						
+						stack.resX=c.defaultResX;
+						stack.resY=c.defaultResY;
+						stack.resZ=c.defaultResZ;
+						
+						//TODO override
+						if(frameMeta.get("resX")!=null)
+							stack.resX=Double.parseDouble(frameMeta.get("resX"));
+						if(frameMeta.get("resY")!=null)
+							stack.resY=Double.parseDouble(frameMeta.get("resY"));
+						if(frameMeta.get("resZ")!=null)
+							stack.resZ=new EvDecimal(frameMeta.get("resZ"));
+						
 						stack.dispX=c.defaultDispX;
 						stack.dispY=c.defaultDispY;
+						stack.dispZ=c.defaultDispZ;
 //						stack.binning=c.chBinning;
 						
 						for(int k=0;k<numSlice;k++)
@@ -204,6 +230,8 @@ public class EvIODataImserv implements EvIOData
 			System.out.println("Loading metadata");
 			data.loadXmlMetadata(ifdata.getMetadata().getInputStream());
 
+			
+			
 			//This is a big bottle neck. It would be nice if it could be postponed using new get/set mechanisms
 			System.out.println("building imageset");
 			for(Map.Entry<EvPath, Imageset> ime:data.getIdObjectsRecursive(Imageset.class).entrySet())
@@ -211,7 +239,7 @@ public class EvIODataImserv implements EvIOData
 				System.out.println("found imageset "+ime.getKey());
 				DataIF.CompressibleDataTransfer ilist=ifdata.getImageCache(ime.getValue().ostBlobID);
 				if(ilist!=null)
-					loadDatabaseCache(ime.getValue(), ilist.getInputStream());
+					loadDatabaseCacheV3d2(ime.getValue(), ilist.getInputStream());
 				else
 					System.out.println("Did not get database cache");
 				}

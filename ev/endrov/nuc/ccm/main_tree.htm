@@ -1,0 +1,25 @@
+<html><link rel="stylesheet" type="text/css" href="style.css" />
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="J. Hench, J. Henriksson">
+   <title>Neighbours</title>
+   <base target="frame1">
+<script>
+
+if(window == window.top) 
+{
+        var address=window.location;
+        var s='<html><head><title>Neighbours</title></head>'+
+        '<frameset cols="15%,85%" frameborder="4" onload="return true;" onunload="return true;">'+
+        '<frame src="'+address+'?" name="indexframe">'+
+		'<frame src="AB_neightime.htm" name="frame1">'+
+        '</frameset>'+
+        '</html>';
+
+        document.write(s);      
+}
+</script>
+
+BODY
+
+</body></html>
