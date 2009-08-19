@@ -10,8 +10,6 @@ import javax.swing.*;
 import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.filter.FilterSeq;
-import endrov.filter.WindowFilterSeq;
 import endrov.imageset.*;
 import endrov.util.EvSwingUtil;
 
@@ -36,7 +34,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	//GUI components
 	private JButton bStart=new JButton("Start");
 	private Vector<EvComboChannel> channelCombo=new Vector<EvComboChannel>();
-	private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
+	//private Vector<FilterSeq> filterSeq=new Vector<FilterSeq>();
 	private Vector<JTextField> chanDesc=new Vector<JTextField>();
 	
 	private SpinnerSimpleEvFrame spinnerStart   =new SpinnerSimpleEvFrame();
@@ -90,7 +88,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 			c.addActionListener(this);
 			channelCombo.add(c);
 			
-			filterSeq.add(new FilterSeq());
+			//filterSeq.add(new FilterSeq());
 			if(i==0)
 				chanDesc.add(new JTextField("<channel/> (<frame/>)"));
 			else
@@ -151,6 +149,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 				cpChan.add(new JLabel("Ch "+i+": "),cChan);
 				
 				//Filter sequence
+				/*
 				JButton bFS=FilterSeq.createFilterSeqButton();
 				final int fi=i;
 				bFS.addActionListener(new ActionListener(){
@@ -159,8 +158,9 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 						new WindowFilterSeq(filterSeq.get(fi));
 						}
 				});
+				*/
 				cChan.gridx++;
-				cpChan.add(bFS,cChan);
+				//cpChan.add(bFS,cChan);
 				
 				//Channel selector
 				cChan.gridx++;
@@ -232,7 +232,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 					Vector<MakeMovieThread.MovieChannel> channelNames=new Vector<MakeMovieThread.MovieChannel>();
 					for(int i=0;i<channelCombo.size();i++)
 						if(channelCombo.get(i).getChannel()!=null)
-							channelNames.add(new MakeMovieThread.MovieChannel(channelCombo.get(i).getChannel(), filterSeq.get(i), chanDesc.get(i).getText()));
+							channelNames.add(new MakeMovieThread.MovieChannel(channelCombo.get(i).getChannel(), /*filterSeq.get(i),*/ chanDesc.get(i).getText()));
 					if(channelNames.isEmpty())
 						{
 						showErrorDialog("No channel selected");

@@ -19,8 +19,6 @@ import org.jdom.Element;
 
 import endrov.data.*;
 import endrov.ev.*;
-import endrov.filter.FilterSeq;
-import endrov.filter.WindowFilterSeq;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
@@ -88,7 +86,7 @@ public class VoxelExtension implements ModelWindowExtension
 		{
 		public Imageset im;
 		public EvChannel ch;
-		public FilterSeq filterSeq;
+		//public FilterSeq filterSeq;
 		public Color color=new Color(0,0,0);
 		}
 	
@@ -287,7 +285,7 @@ public class VoxelExtension implements ModelWindowExtension
 									chsel.put(chim, sel=new ChannelSelection());
 								sel.im=im;
 								sel.ch=chim;
-								sel.filterSeq=oc.filterSeq;
+								//sel.filterSeq=oc.filterSeq;
 								sel.color=new Color(
 										sel.color.getRed()+oc.color.getRed(),
 										sel.color.getGreen()+oc.color.getGreen(),
@@ -353,10 +351,10 @@ public class VoxelExtension implements ModelWindowExtension
 		private class OneImageChannel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
-			private JButton bFs=FilterSeq.createFilterSeqButton();
+			//private JButton bFs=FilterSeq.createFilterSeqButton();
 			private EvComboChannel channelCombo=new EvComboChannel(null,true);
 			private Color color;
-			private FilterSeq filterSeq=new FilterSeq();
+			//private FilterSeq filterSeq=new FilterSeq();
 			
 			public OneImageChannel(String name,Color color)
 				{
@@ -364,10 +362,10 @@ public class VoxelExtension implements ModelWindowExtension
 				setLayout(new BorderLayout());
 				add(new JLabel(name),BorderLayout.WEST);
 				add(channelCombo,BorderLayout.CENTER);
-				add(bFs,BorderLayout.EAST);
+				//add(bFs,BorderLayout.EAST);
 				channelCombo.addActionListener(this);
-				bFs.addActionListener(this);
-				filterSeq.observer.addWeakListener(filterSeqObserver);
+				//bFs.addActionListener(this);
+				//filterSeq.observer.addWeakListener(filterSeqObserver);
 				}
 			
 			/** Invoked when filter sequence changed */
@@ -434,10 +432,11 @@ public class VoxelExtension implements ModelWindowExtension
 					stackChanged();
 //					System.out.println("call stack change");
 					}
+				/*
 				else if(e.getSource()==bFs)
 					{
 					new WindowFilterSeq(filterSeq);
-					}
+					}*/
 				}
 			
 			

@@ -203,33 +203,34 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 	 */
 	private static void runLevelsetInternal(int width, int height, int depth, 
 			double[][] Ddistance, byte[][] Sstate, Vector3i[][] Qorigin, double[][] W, double[][] H, double[][] L,
-			FibonacciHeapNode<Vector3i>[][] heap_pool,
-			FibonacciHeap<Vector3i> open_heap,
-			HashSet<Vector3i> endPointsHash)
+			FibonacciHeapNode<Vector3i>[][] heapPool,
+			FibonacciHeap<Vector3i> openHeap,
+			HashSet<Vector3i> endPoints)
 		{ 
 		
 		// perform the front propagation
-		int num_iter = 0;
-		int nb_iter_max=10000000;
-		while( !open_heap.isEmpty() && num_iter<nb_iter_max)
+		int numIterations = 0;
+		int maxNumberIterations=10000000;
+		while( !openHeap.isEmpty() && numIterations<maxNumberIterations)
 			{
-			num_iter++;
+			numIterations++;
 	
-			// remove from open list and set up state to dead
-			Vector3i cur_point = open_heap.removeMin().getData();
-			int i = cur_point.x;
-			int j = cur_point.y;
-			int k = cur_point.z;
-			heap_pool[k][j*width+i] = null;
+			//Take pixel with shortest distance. The idea of fast marching is that
+			//we're done once and for all with this position now.
+			Vector3i curPoint = openHeap.removeMin().getData();
+			int i = curPoint.x;
+			int j = curPoint.y;
+			int k = curPoint.z;
+			heapPool[k][j*width+i] = null;
 			Sstate[k][j*width+i] = stateDead;
 			
 			//System.out.println("Doing point "+cur_point+" Q "+Qorigin[k][j*width+i]);
 			
 			//Can stop already here if we are at the goal
-			if(endPointsHash.contains(cur_point))
+			if(endPoints.contains(curPoint))
 				break;
 	
-			// recurse on each neighbor
+			//Explore each neighbour
 			int[] nei_i = new int[]{i+1,i,i-1,i,i,i};
 			int[] nei_j = new int[]{j,j+1,j,j-1,j,j};
 			int[] nei_k = new int[]{k,k,k,k,k-1,k+1};
@@ -248,17 +249,20 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 					double P = W[kk][jj*width+ii]; //no longer inversed speed
 					//double P = 1.0/W[kk][jj*width+ii];
 					//double P = h/W[kk][jj*width+ii];
+					
 					// compute its neighboring values
 					double a1 = Double.MAX_VALUE;
 					if( ii<width-1 )
 						a1 = Ddistance[kk][jj*width+(ii+1)];
 					if( ii>0 )
 						a1 = Math.min( a1, Ddistance[kk][jj*width+(ii-1)] );
+					
 					double a2 = Double.MAX_VALUE;
 					if( jj<height-1 )
 						a2 = Ddistance[kk][(jj+1)*width+ii];
 					if( jj>0 )
 						a2 = Math.min( a2, Ddistance[kk][(jj-1)*width+ii] );
+					
 					double a3 = Double.MAX_VALUE;
 					if( kk<depth-1 )
 						a3 = Ddistance[kk+1][jj*width+ii];
@@ -285,18 +289,16 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 						a3=tmp;
 						}
 					
-					if(a1>a2 || a2>a3 || a1>a3)
-						System.out.println("Sort error"); //Debug
-					
-	
 					// update its distance
 					// now the equation is   (a-a1)^2+(a-a2)^2+(a-a3)^2 - P^2 = 0, with a >= a3 >= a2 >= a1.
 					// =>    3*a^2 - 2*(a2+a1+a3)*a - P^2 + a1^2 + a3^2 + a2^2
 					// => delta = (a2+a1+a3)^2 - 3*(a1^2 + a3^2 + a2^2 - P^2)
 					double delta = (a2+a1+a3)*(a2+a1+a3) - 3*(a1*a1 + a2*a2 + a3*a3 - P*P);
-					double A1 = 0;
+					double A1;
 					if( delta>=0 )
 						A1 = ( a2+a1+a3 + Math.sqrt(delta) )/3.0;
+					else
+						A1 = 0;
 					if( A1<=a3 )
 						{
 						// at least a3 is too large, so we have
@@ -314,11 +316,20 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 					// update the value
 					if( Sstate[kk][jj*width+ii] == stateDead )
 						{
-						if( A1<Ddistance[kk][jj*width+ii] )	// should not happen for fast marching
+						// should not happen for fast marching due to sorting
+						if( A1<Ddistance[kk][jj*width+ii] )
 							{
 							System.out.println("should not happen "+Ddistance[kk][jj*width+ii]+" => "+A1);
-							Ddistance[kk][jj*width+ii] = A1;
-							Qorigin[kk][jj*width+ii] = Qorigin[k][j*width+i];
+							Ddistance[kk][jj*width+ii] = A1; //Store new distance
+							Qorigin[kk][jj*width+ii] = Qorigin[k][j*width+i]; //Propagate origin
+
+							//BELOW IS POTENTIALLY DANGEROUS!!
+							
+							// Modify the value in the heap
+							FibonacciHeapNode<Vector3i> cur_el = heapPool[kk][jj*width+ii];
+							double key=getKeyFor(Ddistance, H, width, cur_el.getData());
+							openHeap.decreaseKey(cur_el, key);
+
 							}
 						}
 					else if( Sstate[kk][jj*width+ii] == stateOpen )
@@ -326,35 +337,40 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 						// check if this way is closer
 						if( A1<Ddistance[kk][jj*width+ii] )
 							{
-							Ddistance[kk][jj*width+ii] = A1;
-							Qorigin[kk][jj*width+ii] = Qorigin[k][j*width+i];
+							Ddistance[kk][jj*width+ii] = A1; //Store new distance
+							Qorigin[kk][jj*width+ii] = Qorigin[k][j*width+i]; //Propagate origin
+							
 							// Modify the value in the heap
-							FibonacciHeapNode<Vector3i> cur_el = heap_pool[kk][jj*width+ii];
-							if( cur_el==null ) //Debug
-								throw new RuntimeException("Error in heap pool allocation."); 							
-							open_heap.decreaseKey(cur_el, getKeyFor(Ddistance, H, width, cur_el.getData()));
+							FibonacciHeapNode<Vector3i> cur_el = heapPool[kk][jj*width+ii];
+							double key=getKeyFor(Ddistance, H, width, cur_el.getData());
+							openHeap.decreaseKey(cur_el, key);
 							}
 						}
-					else if( Sstate[kk][jj*width+ii] == stateFar )
+					else// if( Sstate[kk][jj*width+ii] == stateFar )
 						{
-						if( Ddistance[kk][jj*width+ii]!=Double.MAX_VALUE ) //Debug
-							throw new RuntimeException("Distance must be initialized to Inf");  
+						//First time this node is reached. No distance comparison needed
+						
+						//if( Ddistance[kk][jj*width+ii]!=Double.MAX_VALUE ) //Debug
+						//	throw new RuntimeException("Distance must be initialized to Inf"); //Debug  
+						
+						//Can use L to do heuristics
 						if( L==null || A1<=L[kk][jj*width+ii] )
 							{
 							Sstate[kk][jj*width+ii] = stateOpen;
 							// distance must have change.
 							Ddistance[kk][jj*width+ii] = A1;
 							Qorigin[kk][jj*width+ii] = Qorigin[k][j*width+i];
+							
 							// add to open list
 							Vector3i v=new Vector3i(ii,jj,kk);
 							double key=getKeyFor(Ddistance, H, width, v);
 							FibonacciHeapNode<Vector3i> pt = new FibonacciHeapNode<Vector3i>(v, key);
-							heap_pool[kk][jj*width+ii] = pt;
-							open_heap.insert(pt, key); 
+							heapPool[kk][jj*width+ii] = pt;
+							openHeap.insert(pt, key); 
 							}
 						}
-					else 
-						throw new RuntimeException("Unknown state"); 
+					//else 
+					//	throw new RuntimeException("Unknown state"); 
 					}	
 				}		
 			}			

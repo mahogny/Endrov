@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.List;
 
 import endrov.ev.*;
-import endrov.filter.FilterSeq;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
 
@@ -32,12 +31,12 @@ public final class MakeMovieThread extends BatchThread
 	public static class MovieChannel
 		{
 		public final String name;
-		public final FilterSeq fs;
+		//public final FilterSeq fs;
 		public final MovieDescString desc;
-		public MovieChannel(String nane, FilterSeq fs, String desc)
+		public MovieChannel(String nane,/* FilterSeq fs,*/ String desc)
 			{
 			this.name=nane;
-			this.fs=fs;
+			//this.fs=fs;
 			this.desc=new MovieDescString(desc);
 			}
 		}
@@ -124,7 +123,7 @@ public final class MakeMovieThread extends BatchThread
 					else
 						{
 						EvStack stack=ch.imageLoader.get(frame);
-						imload=cName.fs.applyReturnImage(stack, imload);
+						//imload=cName.fs.applyReturnImage(stack, imload);
 						BufferedImage ji=imload.getPixels().quickReadOnlyAWT();
 						if(ji==null)
 							{

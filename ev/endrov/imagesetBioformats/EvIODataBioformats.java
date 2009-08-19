@@ -7,7 +7,6 @@ import java.awt.image.RasterOp;*/
 import java.io.*;
 import java.util.*;
 
-import loci.common.DataTools;
 import loci.formats.*;
 import loci.formats.meta.*;
 import endrov.data.*;
