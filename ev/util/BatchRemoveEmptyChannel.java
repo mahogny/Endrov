@@ -22,6 +22,7 @@ public class BatchRemoveEmptyChannel
 			System.out.println("----- "+file);
 			EvData data=EvData.loadFile(file);
 			
+			boolean changed=false;
 			for(Map.Entry<EvPath, EvChannel> e:data.getIdObjectsRecursive(EvChannel.class).entrySet())
 				{
 				EvChannel ch=e.getValue();
@@ -33,12 +34,15 @@ public class BatchRemoveEmptyChannel
 					EvContainer cont=e.getKey().getParent().getContainer(data);
 					
 					cont.metaObject.remove(e.getKey().getLeafName());
-					System.out.println("now: "+cont.metaObject.keySet());
+					changed=true;
 					
 					}
 //				else
 	//				System.out.println("Would keep "+e.getKey());
 				}
+			
+			if(changed)
+				data.saveData();
 			
 			
 			}
@@ -58,7 +62,7 @@ public class BatchRemoveEmptyChannel
 				"/Volumes/TBU_main01/ost3dfailed/","/Volumes/TBU_main01/ost4dfailed/",
 				"/Volumes/TBU_main01/ost3dgood/","/Volumes/TBU_main01/ost4dgood",
 				
-
+/*
 				"/Volumes/TBU_main02/ost3dfailed/","/Volumes/TBU_main02/ost4dfailed/",
 				"/Volumes/TBU_main02/ost3dgood/","/Volumes/TBU_main02/ost4dgood",
 
@@ -68,6 +72,7 @@ public class BatchRemoveEmptyChannel
 
 				"/Volumes/TBU_main04/ost3dfailed/","/Volumes/TBU_main04/ost4dfailed/",
 				"/Volumes/TBU_main04/ost3dgood/","/Volumes/TBU_main04/ost4dgood",
+				*/
 				
 			};
 		for(String s:arg)
