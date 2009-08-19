@@ -121,6 +121,16 @@ public class EvPath implements Comparable<EvPath>
 		else
 			return c;
 		}
+
+	/**
+	 * Needs testing
+	 * @param currentData
+	 * @return
+	 */
+	public EvContainer getContainer(EvData currentData)
+		{
+		return getContainer(currentData,new EvPath());
+		}
 	
 	/**
 	 * Get the object the path points to
