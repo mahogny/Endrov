@@ -1000,7 +1000,9 @@ public class EvIODataOST implements EvIOData
 				channel.imageLoader.put(fe.getKey(),stack);
 				if(useResX==null)
 					{
-					System.out.println("Resolution problem for "+blob.currentDir+" frame "+fe.getKey());
+					System.out.println("!!!!! Resolution problem for "+blob.currentDir+" frame "+fe.getKey());
+					useResX=1.0;
+					useResY=1.0;
 					}
 				
 				
