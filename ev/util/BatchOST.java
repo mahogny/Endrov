@@ -47,7 +47,7 @@ public class BatchOST
 			};
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
-//				if(file.isDirectory())
+				if(file.isDirectory())
 					makeOST(file);
 		System.exit(0);
 		}
