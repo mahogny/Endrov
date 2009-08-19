@@ -1,0 +1,3 @@
+* kernel, which pixels to take.
+* then which order (rank) to pick out
+* ANOVA book?

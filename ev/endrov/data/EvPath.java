@@ -112,7 +112,7 @@ public class EvPath implements Comparable<EvPath>
 		{
 		if(pos<path.length)
 			{
-			System.out.println("torec "+path[pos]+"   --- "+pos);
+			//System.out.println("torecurse "+path[pos]+"   --- "+pos);
 			EvContainer sub=c.metaObject.get(path[pos]);
 			if(sub==null)
 				throw new RuntimeException("Cannot find container "+path[pos]);
