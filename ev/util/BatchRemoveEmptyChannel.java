@@ -32,7 +32,8 @@ public class BatchRemoveEmptyChannel
 					
 					EvContainer cont=e.getKey().getParent().getContainer(data);
 					
-					System.out.println("Parent: "+cont);
+					cont.metaObject.remove(e.getKey().getLeafName());
+					System.out.println("now: "+cont.metaObject.keySet());
 					
 					}
 //				else
