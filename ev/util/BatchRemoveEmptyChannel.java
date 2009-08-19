@@ -75,9 +75,10 @@ public class BatchRemoveEmptyChannel
 				
 			};
 		for(String s:arg)
-			for(File file:(new File(s)).listFiles())
-				if(file.isDirectory())
-					makeOST(file);
+			if(new File(s).isDirectory())
+				for(File file:(new File(s)).listFiles())
+					if(file.isDirectory())
+						makeOST(file);
 		System.exit(0);
 		}
 
