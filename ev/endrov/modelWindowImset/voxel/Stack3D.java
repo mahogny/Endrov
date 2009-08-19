@@ -149,8 +149,8 @@ public class Stack3D extends StackInterface
 
 						//Apply filter if needed
 						EvImage evim=stack.get(i);
-						if(!chsel.filterSeq.isIdentity())
-							evim=chsel.filterSeq.applyReturnImage(stack, evim);
+						//if(!chsel.filterSeq.isIdentity())
+						//	evim=chsel.filterSeq.applyReturnImage(stack, evim);
 						
 						//Get image for this plane
 						EvPixels p=evim.getPixels();

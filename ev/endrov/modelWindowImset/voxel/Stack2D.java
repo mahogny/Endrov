@@ -142,8 +142,8 @@ public class Stack2D extends StackInterface
 
 						skipcount=0;
 						EvImage evim=stack.get(i);
-						if(!chsel.filterSeq.isIdentity())
-							evim=chsel.filterSeq.applyReturnImage(stack, evim);
+						//if(!chsel.filterSeq.isIdentity())
+						//	evim=chsel.filterSeq.applyReturnImage(stack, evim);
 						Tuple<TextureRenderer,OneSlice> proc=processImage(stack, evim, i, chsel);
 						procList.add(proc);
 						}

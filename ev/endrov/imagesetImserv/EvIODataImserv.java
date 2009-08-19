@@ -18,7 +18,6 @@ import endrov.data.EvPath;
 import endrov.data.RecentReference;
 import endrov.ev.EvLog;
 import endrov.imageset.*;
-import endrov.imagesetOST.EvIODataOST;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
