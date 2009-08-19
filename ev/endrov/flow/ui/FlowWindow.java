@@ -226,6 +226,9 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			if(node!=null && !node.isRoot)
 				{
 				FlowUnitObjectIO unit=new FlowUnitObjectIO(node.getPath());
+				
+				//TODO relative path or absolute path
+				
 				System.out.println("path "+node.getPath());
 				if(unit!=null)
 					wthis.fp.setUnitToPlace(unit);
