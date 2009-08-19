@@ -1,4 +1,4 @@
-package endrov.filterMorphological;
+package endrov.flowMorphology;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -14,7 +14,7 @@ import java.util.Vector;
  * "Fast Algorithms for Binary Dilation and Erosion Using Run-Length Encoding"
  * - Wook-Joong Kim, Seong-Dae Kim, and Kyuheon Kim
  */
-public class RLEImage
+public class RLEImageUnused
 	{
 	private static class RLEstrip
 		{
@@ -23,10 +23,10 @@ public class RLEImage
 
 	private HashMap<Integer,List<RLEstrip>> strips=new HashMap<Integer, List<RLEstrip>>();
 	
-	public RLEImage(){}
+	public RLEImageUnused(){}
 
 	/** Generate from image */
-	public RLEImage(BufferedImage im)
+	public RLEImageUnused(BufferedImage im)
 		{
 		WritableRaster r=im.getRaster();
 		int width=r.getWidth();
@@ -40,7 +40,7 @@ public class RLEImage
 		}
 	
 	/** Turn a [] kernel into a [][] kernel directly */
-	public RLEImage(int[] kernel, int width, int centerx, int centery)
+	public RLEImageUnused(int[] kernel, int width, int centerx, int centery)
 		{
 		this(split(kernel,width), centerx, centery);
 		}
@@ -54,7 +54,7 @@ public class RLEImage
 		}
 
 	/** Build from kernel */
-	public RLEImage(int[][] kernel, int centerx, int centery)
+	public RLEImageUnused(int[][] kernel, int centerx, int centery)
 		{
 		int width=kernel[0].length;
 		int h=kernel.length;
@@ -83,9 +83,9 @@ public class RLEImage
 		}
 	
 	/** Dilate this (+) s and return new result */
-	public RLEImage dilate(RLEImage s)
+	public RLEImageUnused dilate(RLEImageUnused s)
 		{
-		RLEImage tot=new RLEImage();
+		RLEImageUnused tot=new RLEImageUnused();
 		for(Map.Entry<Integer, List<RLEstrip>> zstrip:strips.entrySet())
 			{
 			for(Map.Entry<Integer, List<RLEstrip>> sstrip:s.strips.entrySet())

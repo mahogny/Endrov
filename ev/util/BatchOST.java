@@ -34,12 +34,12 @@ public class BatchOST
 				/*
 				"/Volumes/TBU_main01/ost3dfailed/","/Volumes/TBU_main01/ost4dfailed/",
 				"/Volumes/TBU_main01/ost3dgood/","/Volumes/TBU_main01/ost4dgood",
-				*/
 				"/Volumes/TBU_main02/ost3dfailed/","/Volumes/TBU_main02/ost4dfailed/",
 				"/Volumes/TBU_main02/ost3dgood/","/Volumes/TBU_main02/ost4dgood",
 
 				
 				"/Volumes/TBU_main03/ost3dfailed/","/Volumes/TBU_main03/ost4dfailed/",
+				*/
 				"/Volumes/TBU_main03/ost3dgood/","/Volumes/TBU_main03/ost4dgood",
 
 				"/Volumes/TBU_main04/ost3dfailed/","/Volumes/TBU_main04/ost4dfailed/",

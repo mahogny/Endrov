@@ -1,0 +1,43 @@
+
+	public static ConvolutionKernel makeSharpen(float k)
+		{
+		return new ConvolutionKernel("Sharpen"+k+" 2D", true, 3, new float[]{-k, -k, -k,		-k,8*k+1, -k,		-k, -k, -k});
+		}
+	
+
+
+	public static ConvolutionKernel kernelLaplace8 = new ConvolutionKernel("Laplace8 2D", false, 3, new float[]{1, 1, 1,		1,-8, 1,		1, 1, 1});
+	
+	public static ConvolutionKernel[] premadeKernels=new ConvolutionKernel[]{
+			new ConvolutionKernel("Identity", true, 3, new float[]{0,0,0, 0,1,0, 0,0,0}),
+			new ConvolutionKernel("Mean 3x3", true, 3, new float[]{1,1,1, 1,1,1, 1,1,1}),
+			new ConvolutionKernel("Gaussian 3x3 2D", true, 3, new float[]{1, 2, 1,		2, 4, 2,		1, 2, 1}),
+			new ConvolutionKernel("Laplace4 2D", false, 3, new float[]{0, 1, 0,		1,-4, 1,		0, 1, 0}),
+			kernelLaplace8,
+			new ConvolutionKernel("Laplace X", false, 3, new float[]{1,-2, 1}),
+			new ConvolutionKernel("Laplace Y", false, 1, new float[]{1,		-2,		1}),
+			new ConvolutionKernel("PrewittX 2D",  false, 3, new float[]{1, 0,-1,		1, 0,-1,		1, 0,-1}),
+			new ConvolutionKernel("PrewittY 2D",  false, 3, new float[]{1, 1, 1,		0, 0, 0,		-1,-1,-1}),
+			new ConvolutionKernel("PrewittXY 2D", false, 3, new float[]{0, 1, 1,		-1, 0, 1,		-1,-1,0}),//(4.47)
+			new ConvolutionKernel("SobelX 2D", false, 3, new float[]{1, 0,-1,		2, 0,-2,		1, 0,-1}),
+			new ConvolutionKernel("SobelY 2D", false, 3, new float[]{1, 2, 1,		0, 0, 0,		-1,-2,-1}),
+			new ConvolutionKernel("RobinsonX 2D", false, 3, new float[]{1, -1,-1,		1, 2,-1,		1, -1,-1}),
+			new ConvolutionKernel("RobinsonY 2D", false, 3, new float[]{-1, -1,-1,		-1, 2,-1,		1, 1,1}),//(4.50)
+			//Kirsch operator 4.51 TODO
+			//Laplacian of gaussian 4.54 TODO
+			makeSharpen(1),
+			makeSharpen(2),
+			makeSharpen(3),
+	};
+	
+	
+	
+	//http://en.wikipedia.org/wiki/Sobel_operator
+	//emboss filters not implemented: http://www.gamedev.net/reference/programming/features/imageproc/page2.asp
+	//kuwahara TODO http://www.qi.tnw.tudelft.nl/Courses/FIP/noframes/fip-Smoothin.html
+	//Gaussian TODO
+	//category
+	//IJ filters
+	//http://de.wikipedia.org/wiki/Laplace-Operator
+
+	
