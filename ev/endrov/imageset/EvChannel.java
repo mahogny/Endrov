@@ -522,7 +522,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	public void extractFrame(HashMap<EvDecimal, HashMap<String, String>> metaFrame, Element e)
 		{
 		EvDecimal fid = new EvDecimal(e.getAttributeValue("frame"));
-		System.out.println("got frame "+fid);
+		//System.out.println("got frame "+fid);
 		for (Object oi : e.getChildren())
 			{
 			

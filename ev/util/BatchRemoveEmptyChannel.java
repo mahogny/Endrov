@@ -30,6 +30,8 @@ public class BatchRemoveEmptyChannel
 					
 					
 					}
+				else
+					System.out.println("Would keep "+e.getKey());
 				}
 			
 			
