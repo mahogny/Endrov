@@ -834,7 +834,7 @@ public class EvIODataOST implements EvIOData
 				scanFiles33(data, cb);
 				return;
 				}
-
+		System.out.println("Using 3.2 scanfile, #chan: "+data.getIdObjectsRecursive(EvChannel.class).size());
 
 		for(Imageset im:data.getIdObjectsRecursive(Imageset.class).values())
 			{
@@ -849,10 +849,16 @@ public class EvIODataOST implements EvIOData
 				if(EV.debugMode)
 					System.out.println("Found blob "+blob.currentDir);
 
+			
+			
 			//Get list of images, from cache or by listing files
 			if(!(getDatabaseCacheFile(blob).exists() && loadDatabaseCache(im, blob)))
 				{
 				File blobdir=blob.getDirectory();
+				
+				if(!blobdir.exists())
+					System.out.println("Does not exist: "+blobdir);
+				
 				if(EV.debugMode)
 					System.out.println("Scanning for images in "+blobdir);
 				for(File chanf:blobdir.listFiles())
