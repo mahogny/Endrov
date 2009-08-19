@@ -998,6 +998,12 @@ public class EvIODataOST implements EvIOData
 
 				EvStack stack=new EvStack();
 				channel.imageLoader.put(fe.getKey(),stack);
+				if(useResX==null)
+					{
+					System.out.println("Resolution problem for "+blob.currentDir+" frame "+fe.getKey());
+					}
+				
+				
 				stack.resX=useResX;
 				stack.resY=useResY;
 				stack.resZ=useResZ;
