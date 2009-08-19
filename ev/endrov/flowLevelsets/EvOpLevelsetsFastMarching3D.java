@@ -323,13 +323,13 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 							Ddistance[kk][jj*width+ii] = A1; //Store new distance
 							Qorigin[kk][jj*width+ii] = Qorigin[k][j*width+i]; //Propagate origin
 
+							/*
 							//BELOW IS POTENTIALLY DANGEROUS!!
-							
 							// Modify the value in the heap
 							FibonacciHeapNode<Vector3i> cur_el = heapPool[kk][jj*width+ii];
 							double key=getKeyFor(Ddistance, H, width, cur_el.getData());
 							openHeap.decreaseKey(cur_el, key);
-
+							*/
 							}
 						}
 					else if( Sstate[kk][jj*width+ii] == stateOpen )
