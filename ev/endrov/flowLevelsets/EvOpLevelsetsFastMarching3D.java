@@ -225,6 +225,8 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 			heap_pool[k][j*width+i] = null;
 			S[k][j*width+i] = kDead;
 			
+			System.out.println("Doing point "+cur_point+" Q "+Q[k][j*width+i]);
+			
 			//Can stop already here if we are at the goal
 			if(endPointsHash.contains(cur_point))
 				break;
@@ -241,6 +243,7 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 	
 				boolean bInsert = true;
 				//bInsert = callback_insert_node(i,j,k,ii,jj,kk);
+				//This can be used to implement early stopping
 	
 				if( ii>=0 && jj>=0 && ii<width && jj<height && kk>=0 && kk<depth && bInsert )
 					{
@@ -283,6 +286,10 @@ public class EvOpLevelsetsFastMarching3D extends EvOpStack
 						a2=a3;
 						a3=tmp;
 						}
+					
+					if(a1>a2 || a2>a3 || a1>a3)
+						System.out.println("Sort error"); //Debug
+					
 	
 					// update its distance
 					// now the equation is   (a-a1)^2+(a-a2)^2+(a-a3)^2 - P^2 = 0, with a >= a3 >= a2 >= a1.
