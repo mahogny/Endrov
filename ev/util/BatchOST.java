@@ -46,8 +46,8 @@ public class BatchOST
 				"/Volumes/TBU_main04/ost3dgood/","/Volumes/TBU_main04/ost4dgood",
 			};
 		for(String s:arg)
-			for(File file:(new File(s)).listFiles())
-				if(file.isDirectory())
+			if(new File(s).isDirectory())
+				for(File file:(new File(s)).listFiles())
 					makeOST(file);
 		System.exit(0);
 		}
