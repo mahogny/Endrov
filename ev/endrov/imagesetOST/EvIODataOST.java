@@ -1729,45 +1729,48 @@ public class EvIODataOST implements EvIOData
 	
 				//Move those irritating channel specific rmd.txt away
 				File fImset=new File(basedir,"imset-im");
-				for(File fCh:fImset.listFiles())
-					if(fCh.getName().startsWith("ch-"))
-						{
-						File fRMD=new File(fCh,"rmd.txt");
-						if(fRMD.exists())
+				if(fImset.exists())
+					{
+					for(File fCh:fImset.listFiles())
+						if(fCh.getName().startsWith("ch-"))
 							{
-							File newRMD=new File(new File(basedir,"data"),"rmd-"+fCh.getName()+".txt");
-							fRMD.renameTo(newRMD);
+							File fRMD=new File(fCh,"rmd.txt");
+							if(fRMD.exists())
+								{
+								File newRMD=new File(new File(basedir,"data"),"rmd-"+fCh.getName()+".txt");
+								fRMD.renameTo(newRMD);
+								}
 							}
-						}
-				
-				//Split imset blobs
-				for(Imageset im:d.getIdObjectsRecursive(Imageset.class).values())
-					if(im.ostBlobID!=null)
-						{
-						DiskBlob blobImageset=mapBlobs.get(im);
-						File imsetFile=blobImageset.getDirectory();
-
-						for(Map.Entry<String,EvChannel> ce:im.getChannels().entrySet())
+					
+					//Split imset blobs
+					for(Imageset im:d.getIdObjectsRecursive(Imageset.class).values())
+						if(im.ostBlobID!=null)
 							{
-							EvChannel ch=ce.getValue();
-							
-
-							DiskBlob blobChannel=getCreateBlob(ch);
-							blobChannel.allocate("ch"+ce.getKey());
-							ch.ostBlobID=blobChannel.currentDir;
-
-							
-							//Move files
-							File oldChannel=buildChannelPath(im, ce.getKey());
-							File newChannel=blobChannel.getDirectory();
-							System.out.println(">>> "+oldChannel+"  "+newChannel);
-							oldChannel.renameTo(newChannel);
+							DiskBlob blobImageset=mapBlobs.get(im);
+							File imsetFile=blobImageset.getDirectory();
+	
+							for(Map.Entry<String,EvChannel> ce:im.getChannels().entrySet())
+								{
+								EvChannel ch=ce.getValue();
+								
+	
+								DiskBlob blobChannel=getCreateBlob(ch);
+								blobChannel.allocate("ch"+ce.getKey());
+								ch.ostBlobID=blobChannel.currentDir;
+	
+								
+								//Move files
+								File oldChannel=buildChannelPath(im, ce.getKey());
+								File newChannel=blobChannel.getDirectory();
+								System.out.println(">>> "+oldChannel+"  "+newChannel);
+								oldChannel.renameTo(newChannel);
+								}
+	
+							//Delete old index. and directory
+							EvFileUtil.deleteRecursive(imsetFile);
+							im.ostBlobID=null;
+							mapBlobs.remove(im);
 							}
-
-						//Delete old index. and directory
-						EvFileUtil.deleteRecursive(imsetFile);
-						im.ostBlobID=null;
-						mapBlobs.remove(im);
 						}
 				scanFiles(d, cb);
 				
