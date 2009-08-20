@@ -430,6 +430,72 @@ TODO
  
  
  
+ ==========================================================
+ === new imserv
+ 
+ * improve OST, allow lazy loading also of XML data.
+rmd.ostxml should become really small, on the order of 4kb.
+use the tricks given above.
+
+=>
+
+eliminate imserv.txt, read the OST instead which should be very fast.
+store the stuff in imageset
  
  
+ 
+====== tbu update strategy ============
+
+* make sure everything ost 3.3
+* backup RMDs
+* eliminate empty channels
+
+* eliminate unwanted tags
+
+openlabtimeout
+objfactors
+maxtotalstacks
+framestart
+opvarfactors
+openlabautomation
+ORSversion
+slicenum
+
+* rename tags
+
+description -copy-> preDescription
+
+* later create hardware settings
+
+<objnumber> deleted, use
+<hardware objective bla bla bla state="5"> ?
+
+<objnumber> deleted, use
+<hardware optivar bla bla bla state="5"> ?
+
+* infer tags?
+<strainID></strainID>
+
+
+* store imserv data in <imageset>
+* extend <imageset> to be able to handle tags
+
+
+
+entry_date -> tbu_entry_date :: string
+author -> authorID
+tag -> tag
+tag desc -> description. concatenate with current description. 
+warn about other tags 
+ 
+ 
+ 
+ ?xml version="1.0" encoding="UTF-8"?>
+<imserv>
+  <tag name="good" />
+  <tag name="4d" />
+  <tag name="entry_date" value="20.05.2008" />
+  <tag name="desc" value="" />
+  <tag name="author" value="Yong-Guang Tong" />
+</imserv>
  

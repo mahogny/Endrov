@@ -40,7 +40,7 @@ public class Imageset extends EvObject
 //	public HashMap<String,EvChannel> channelImages=new HashMap<String,EvChannel>();
 	//Sorting only for viewing convenience. Can be done in controls otherwise
 	
-	
+	public Set<String> tags=new TreeSet<String>();
 	
 	
 	/** Common resolution [px/um] */
@@ -207,11 +207,21 @@ public class Imageset extends EvObject
 				e.addContent(new Element(key).addContent(val));
 			}
 		saveFrameMetadata(metaFrame, e);
+
+		//Add all tags
+		for(String tag:tags)
+			{
+			Element ne=new Element("tag");
+			ne.setAttribute("name", tag);
+			e.addContent(ne);
+			}
 		}
 	
 
 	/**
 	 * Save down frame data
+	 * 
+	 * TODO should this exist? first need to move to channel meta.
 	 */
 	private static void saveFrameMetadata(HashMap<EvDecimal,HashMap<String,String>> fd, Element e)
 		{
@@ -291,6 +301,8 @@ public class Imageset extends EvObject
 					extractChannel(i);
 				else if(i.getName().equals("frame"))
 					extractFrame(metaFrame, i);
+				else if(i.getName().equals("tag"))
+					tags.add(i.getAttributeValue("name"));
 				else
 					metaOther.put(i.getName(), i.getValue());
 				}
@@ -329,12 +341,6 @@ public class Imageset extends EvObject
 				if(!chan.metaOther.containsKey("tbu_Campix"))
 					chan.metaOther.put("tbu_Campix", ""+metaCampix);
 				
-	
-				
-				
-				//chan.preresX=resX;
-				//chan.preresY=resY;
-	
 				
 				if(chan.defaultResX==null)
 					chan.defaultResX=chan.chBinning/resX;
