@@ -25,8 +25,6 @@ public class Imageset extends EvObject
 	static
 		{
 		EvData.supportedMetadataFormats.put(metaType,Imageset.class);
-		
-		
 		}
 	
 	
@@ -34,28 +32,9 @@ public class Imageset extends EvObject
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-
-	/** List of all channels belonging to this imageset */
-	//public Map<String,EvChannel> channelImages=new TreeMap<String,EvChannel>();
-//	public HashMap<String,EvChannel> channelImages=new HashMap<String,EvChannel>();
-	//Sorting only for viewing convenience. Can be done in controls otherwise
 	
 	public Set<String> tags=new TreeSet<String>();
 	
-	
-	/** Common resolution [px/um] */
-	public double resX, resY, resZ; //TODO Deprecate Z once all OST converted. X and Y? or just keep these?
-	
-	/** Number of seconds each frame */
-	public double metaTimestep=1; //TODO deprecate
-	
-	public double metaNA=0;
-	public double metaObjective=1;
-	public double metaOptivar=1;
-	public double metaCampix=1;
-	public double metaSlicespacing=1;
-	//public String metaSampleID="";
-	//public String metaDescription="";
 	
 	public String getSampleID()
 		{
@@ -255,51 +234,13 @@ public class Imageset extends EvObject
 
 	public void loadMetadata(Element e)
 		{
-		boolean isOld=false;
-		
 		for(Object oi:e.getChildren())
 			{
 			Element i=(Element)oi;
 
 			try
 				{
-				if(i.getName().equals("timestep"))
-					metaTimestep=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("resX"))
-					{
-					resX=Double.parseDouble(i.getValue());
-					isOld=true;
-					}
-				else if(i.getName().equals("resY"))
-					{
-					resY=Double.parseDouble(i.getValue());
-					isOld=true;
-					}
-				else if(i.getName().equals("resZ"))
-					{
-					resZ=Double.parseDouble(i.getValue());
-					isOld=true;
-					}
-				else if(i.getName().equals("NA"))
-					metaNA=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("objective"))
-					metaObjective=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("optivar"))
-					metaOptivar=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("campix"))
-					metaCampix=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("slicespacing"))
-					metaSlicespacing=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("sample"))
-					metaOther.put("sampleID", i.getValue());
-				/*
-				else if(i.getName().equals("sample"))
-					metaSampleID=i.getValue();
-				else if(i.getName().equals("description"))
-					metaDescription=i.getValue();*/
-				else if(i.getName().equals("channel"))
-					extractChannel(i);
-				else if(i.getName().equals("frame"))
+				if(i.getName().equals("frame"))
 					extractFrame(metaFrame, i);
 				else if(i.getName().equals("tag"))
 					tags.add(i.getAttributeValue("name"));
@@ -313,89 +254,11 @@ public class Imageset extends EvObject
 			}
 
 		
-		//Handle fucked up imagesets. Should not be used!
-		if(resZ==0)
-			resZ=1;
-		if(resX==0)
-			resX=1;
-		if(resY==0)
-			resY=1;
-		if(metaTimestep==0)
-			metaTimestep=1;
 
 		
-			
-		/**
-		 * For 3.2 -> 3.3: move hardware meta
-		 */
-		if(isOld)
-			for(EvChannel chan:getChannels().values())
-				{
-				System.out.println("Copying resolution to channel");
-				if(!chan.metaOther.containsKey("tbu_NA"))
-					chan.metaOther.put("tbu_NA", ""+metaNA);
-				if(!chan.metaOther.containsKey("tbu_Objective"))
-					chan.metaOther.put("tbu_Objective", ""+metaObjective);
-				if(!chan.metaOther.containsKey("tbu_Optivar"))
-					chan.metaOther.put("tbu_Optivar", ""+metaOptivar);
-				if(!chan.metaOther.containsKey("tbu_Campix"))
-					chan.metaOther.put("tbu_Campix", ""+metaCampix);
-				
-				
-				if(chan.defaultResX==null)
-					chan.defaultResX=chan.chBinning/resX;
-				if(chan.defaultResY==null)
-					chan.defaultResY=chan.chBinning/resY;
-	
-				//Empirically shown to make sense
-				chan.defaultDispX*=chan.defaultResX/chan.chBinning;
-				chan.defaultDispY*=chan.defaultResY/chan.chBinning;
-				
-				}
 		
 		}
 
-	/**
-	 * Extract channel XML data
-	 */
-	public void extractChannel(Element e)
-		{
-		String chname=e.getAttributeValue("name");
-
-		EvChannel ch=getCreateChannel(chname);
-
-		//only needed for 3.2->3.3
-		for(Object oi:e.getChildren())
-			{
-			Element i=(Element)oi;
-
-			try
-				{
-				if(i.getName().equals("dispX"))
-					{
-					ch.defaultDispX=Double.parseDouble(i.getValue());
-					//System.out.println("dispX =" +ch.dispX);
-					}
-				else if(i.getName().equals("dispY"))
-					ch.defaultDispY=Double.parseDouble(i.getValue());
-				else if(i.getName().equals("binning"))
-					ch.chBinning=Integer.parseInt(i.getValue());
-				else if(i.getName().equals("tbu_Binning"))
-					ch.chBinning=Integer.parseInt(i.getValue());
-				else if(i.getName().equals("compression"))
-					ch.compression=Integer.parseInt(i.getValue());
-				else if(i.getName().equals("frame"))
-					extractFrame(ch.metaFrame, i);
-				else
-					ch.metaOther.put(i.getName(), i.getValue());
-				}
-			catch (NumberFormatException e1)
-				{
-				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
-				}
-			}
-//		System.out.println("chanframemeta "+ch.metaFrame);
-		}
 
 	/**
 	 * Get frame metadata
@@ -412,9 +275,6 @@ public class Imageset extends EvObject
 				frame=new HashMap<String,String>();
 				metaFrame.put(fid, frame);
 				}
-			
-			if(i.getName().equals("date")) //Throw away
-				continue;
 				
 			frame.put(i.getName(), i.getValue());
 			}

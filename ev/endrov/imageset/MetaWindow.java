@@ -273,6 +273,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			//Create common tab
 			createCommon();		
 	
+			/*
 			commonManResX.setText(""+rec.resX);
 			commonManResY.setText(""+rec.resY);
 			commonManResZ.setText(""+rec.resZ);
@@ -283,6 +284,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			commonOptivar.setText(""+rec.metaOptivar);
 			commonCampix.setText(""+rec.metaCampix);
 			commonTimestep.setText(""+rec.metaTimestep);
+			*/
 			commonSample.setText(rec.getSampleID());
 			commonDescript.setText(rec.getDescription());
 			
@@ -363,7 +365,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			{
 			updatingFields=true;
 			Imageset rec=metaCombo.getSelectedObjectNotNull();
-			
+		
+			/*
 			double calcResX=rec.metaObjective*rec.metaOptivar/rec.metaCampix; //[]*[]/[um/px]
 			double calcResY=calcResX;
 			double calcResZ=1.0/rec.metaSlicespacing;
@@ -382,10 +385,12 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			if(manResX==0) rec.resX=calcResX; else rec.resX=manResX;
 			if(manResY==0) rec.resY=calcResY; else rec.resY=manResY;
 			if(manResZ==0) rec.resZ=calcResZ; else rec.resZ=manResZ;
-	
+			
+			
 			commonResX.setText(""+rec.resX);
 			commonResY.setText(""+rec.resY);
 			commonResZ.setText(""+rec.resZ);
+	*/
 			updatingFields=false;
 			}
 		}
@@ -499,6 +504,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			try
 				{
 				updateRes();
+				/*
 				rec.resX=Double.parseDouble(commonResX.getText());
 				rec.resY=Double.parseDouble(commonResY.getText());
 				rec.resZ=Double.parseDouble(commonResZ.getText());
@@ -509,6 +515,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 				rec.metaOptivar=Double.parseDouble(commonOptivar.getText());
 				rec.metaCampix=Double.parseDouble(commonCampix.getText());
 				rec.metaTimestep=Double.parseDouble(commonTimestep.getText());
+				*/
 				rec.setSampleID(commonSample.getText());
 				rec.setDescription(commonDescript.getText());
 				

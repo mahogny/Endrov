@@ -15,9 +15,7 @@ import org.jdom.input.SAXBuilder;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.ev.EV;
-import endrov.ev.EvLog;
 import endrov.ev.PersonalConfig;
-import endrov.util.EvDecimal;
 
 /**
  * Root of container tree, handler of types
@@ -340,71 +338,7 @@ public class EvData extends EvContainer
 			e.printStackTrace();
 			}
 		}
-	private static void help331(Element e, EvDecimal timestep)
-		{
-		mulAttrib331(e, "f", timestep);
-		mulAttrib331(e, "frame", timestep);
-		mulAttrib331(e, "start", timestep);
-		mulAttrib331(e, "end", timestep);
-/*		String aF=e.getAttributeValue("f");
-		if(aF!=null)
-			e.setAttribute("f",new EvDecimal(aF).multiply(timestep).toString());
-		String aFrame=e.getAttributeValue("frame");
-		if(aFrame!=null)
-			e.setAttribute("frame",new EvDecimal(aFrame).multiply(timestep).toString());*/
-		for(Element child:EV.castIterableElement(e.getChildren()))
-			help331(child, timestep);
-		}
-	private static void mulAttrib331(Element e, String name, EvDecimal timestep)
-		{
-		String s=e.getAttributeValue(name);
-		if(s!=null)
-			e.setAttribute(name,new EvDecimal(s).multiply(timestep).toString());
-		}
 	
-	
-	private static void help32to33(Element e)
-		{
-		
-		//Assume this is a listing of objects
-		LinkedList<Element> newList=new LinkedList<Element>();
-		List<Object> oldelem=new LinkedList<Object>(e.getChildren());
-		for(Element childData:EV.castIterableElement(oldelem))
-			{
-			childData.detach();
-			
-			Element newObject=new Element(childData.getName());
-			if(childData.getAttributeValue("ostblobid")!=null)
-				newObject.setAttribute("ostblobid",childData.getAttributeValue("ostblobid"));
-			if(childData.getAttributeValue("id")!=null)
-				newObject.setAttribute("id",childData.getAttributeValue("id"));
-			if(childData.getAttributeValue("ostdatecreate")!=null)
-				newObject.setAttribute("ostdatecreate",childData.getAttributeValue("ostdatecreate"));
-			childData.setName("data");
-			childData.removeAttribute("ostblobid");
-			childData.removeAttribute("id");
-			childData.removeAttribute("ostdatecreate");
-			
-			newObject.addContent(childData);
-			
-			Element eSubob=childData.getChild("ostblobid");
-			if(eSubob==null)
-				eSubob=childData.getChild("_ostchild");
-			if(eSubob!=null)
-				{
-				eSubob.detach();
-				eSubob.setName("_ostchild");
-				newObject.addContent(eSubob);
-				help32to33(eSubob);
-				}
-			
-			newList.add(newObject);
-			
-			//System.out.println(EvXmlUtil.prettyPrint(newObject));
-			}
-		for(Element liste:newList)
-			e.addContent(liste);
-		}
 	
 	
 	public void loadXmlMetadata(InputStream is)
@@ -420,27 +354,8 @@ public class EvData extends EvContainer
   		if(element.getAttribute("version")!=null)
   			metadataVersion=element.getAttributeValue("version");
 
-  		//metadata 3->3.2
-  		if(new EvDecimal(metadataVersion).less(new EvDecimal("3.2")))
-  			{
-  			System.out.println("Updating metadata to 3.2");
-  			Element eIm=element.getChild("imageset");
-  			EvDecimal timestep=EvDecimal.ONE;
-  			if(eIm!=null)
-  				{
-  				Element timestepe=eIm.getChild("timestep");
-  				if(timestepe!=null)
-  					timestep=new EvDecimal(timestepe.getText());
-  				}
-  			help331(element, timestep);
-  			}
+  		
 	  		
-  		//metadata 3.2->3.3
-  		if(new EvDecimal(metadataVersion).less(new EvDecimal("3.3")))
-  			{
-  			System.out.println("Updating metadata to 3.3");
-  			help32to33(element);
-  			}
   		
   		recursiveLoadMetadata(element);
     	} 
@@ -457,6 +372,7 @@ public class EvData extends EvContainer
 	 * TODO can extractsubobject replace this function?
 	 * @deprecated
 	 */
+	/*
 	public static Vector<EvObject> getChildObXML(Element element)
 		{
 		Vector<EvObject> obs=new Vector<EvObject>();
@@ -491,7 +407,7 @@ public class EvData extends EvContainer
 			obs.add(o);
 			}
 		return obs;
-		}
+		}*/
 	
 	/**
 	 * Put all meta objects into an XML document
