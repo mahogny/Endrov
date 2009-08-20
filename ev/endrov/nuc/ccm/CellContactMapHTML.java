@@ -8,14 +8,7 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import javax.imageio.ImageIO;
-import javax.vecmath.Vector3d;
-
-//import util2.ConnectImserv;
-
-//import endrov.data.*;
-import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.nuc.*;
 import endrov.util.*;
 
 
@@ -37,88 +30,25 @@ public class CellContactMapHTML
 	public static final int clength=50; //[px]
 	public static final int cheight=13; //[px]
 	
-	public static void writeLineageNeighDistances(CellContactMap lin) throws IOException
-		{
-		PrintWriter pw=new PrintWriter(new FileWriter(new File("/Volumes/TBU_main03/userdata/cellcontactmap/dist.csv")));
-		for(Map.Entry<EvDecimal, NucVoronoi> entry:lin.fcontacts.entrySet())
-			{
-			Map<NucSel,NucLineage.NucInterp> inter=lin.lin.getInterpNuc(entry.getKey());
-			Map<String,NucLineage.NucInterp> inters=new HashMap<String, NucLineage.NucInterp>();
-			for(Map.Entry<NucSel, NucLineage.NucInterp> e:inter.entrySet())
-				inters.put(e.getKey().snd(),e.getValue());
-
-			boolean first=true;
-			for(Tuple<String,String> pair:entry.getValue().getNeighPairSet())
-				if(inters.containsKey(pair.fst()) && inters.containsKey(pair.snd()) && !pair.fst().startsWith(":") && !pair.snd().startsWith(":"))
-					{
-					if(!first)
-						pw.print(',');
-					Vector3d vA=inters.get(pair.fst()).pos.getPosCopy();
-					Vector3d vB=inters.get(pair.snd()).pos.getPosCopy();
-					vA.sub(vB);
-					pw.print(vA.length());
-					first=false;
-					}
-			pw.println();
-			}
-		pw.close();
-		}
-	
-	public static int countTrue(boolean[] b)
-		{
-		int count=0;
-		for(boolean c:b)
-			if(c)
-				count++;
-		return count;
-		}
-	
-	public static int getDivRound(String name)
-		{
-		if(name.startsWith("AB"))
-			return name.length()-2+0;
-		else if(name.startsWith("C"))
-			return name.length()-1+2;
-		else if(name.startsWith("D"))
-			return name.length()-1+3;
-		else if(name.endsWith("'"))
-			return Integer.parseInt(name.substring(1, 2))-1;
-		else if(name.equals("EMS"))
-			return 1;
-		else if(name.startsWith("E"))
-			return name.length()-1+2;
-		else if(name.startsWith("Z"))
-			return name.length()-1+4;
-		else if(name.startsWith("MS"))
-			return name.length()-2+2;
-		else
-			return 0;
-		}
-
-	
-	public static double getOverlapPercent(CellContactMap lin, String nucName, String nucName2)
-		{
-		return countTrue(getOverlaps(lin, nucName, nucName2))/(double)clength;
-		}
 
 	/**
 	 * Calculate overlap array for two cells
 	 */
-	private static boolean[] getOverlaps(CellContactMap lin, String nucName, String nucName2)
+	private static boolean[] getOverlaps(CellContactMap ccm, String nucName, String nucName2)
 		{
 		boolean[] neighOverlaps=new boolean[clength];
 		
-		if(lin.contactsf.get(nucName)==null)
+		if(ccm.contactsf.get(nucName)==null)
 			return neighOverlaps;
 		
 		
-		Set<EvDecimal> ov=lin.contactsf.get(nucName).get(nucName2);
+		Set<EvDecimal> ov=ccm.contactsf.get(nucName).get(nucName2);
 		
 		if(ov==null || ov.isEmpty())
 			return neighOverlaps;
-		NucLineage.Nuc thisNuc=lin.lin.nuc.get(nucName);
-		EvDecimal firstFrame=thisNuc.getFirstFrame();
-		EvDecimal lastFrame=thisNuc.getLastFrame();
+		//NucLineage.Nuc thisNuc=ccm.lin.nuc.get(nucName);
+		EvDecimal firstFrame=ccm.firstFrame.get(nucName);
+		EvDecimal lastFrame=ccm.lastFrame.get(nucName);
 		//This could be a potential fix for the last-frame-is-not-in-contact problem.
 		//Problem is, it does so by ignoring the last part which has other problems.
 		//EvDecimal lastFrame=thisNuc.pos.lastKey();
@@ -126,7 +56,7 @@ public class CellContactMapHTML
 		
 		SortedMap<EvDecimal,Boolean> isNeighMap=new TreeMap<EvDecimal, Boolean>();
 		//Could restrict better using lifetime
-		for(EvDecimal f:lin.framesTested.tailSet(firstFrame))
+		for(EvDecimal f:ccm.framesTested.tailSet(firstFrame))
 			if(f.lessEqual(lastFrame))
 				isNeighMap.put(f, false);
 		
@@ -140,7 +70,7 @@ public class CellContactMapHTML
 		//The problem is again discreteness, it has minor implications
 		//otherwise but a better solution would be nice
 		if(nucName.equals(nucName2))
-			isNeighMap.put(thisNuc.getLastFrame(),true);
+			isNeighMap.put(lastFrame,true);
 
 		EvDecimal lifeLenFrames=(lastFrame.subtract(firstFrame));
 
@@ -161,34 +91,7 @@ public class CellContactMapHTML
 	
 	
 	
-	
-	
-	public static void doesChildrenSplit(CellContactMap theCE, File f, Set<String> nucNames) throws IOException
-		{
-		StringBuffer outSplitChild=new StringBuffer();
-		for(String name:nucNames)
-			{
-			NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-			if(nuc!=null && nuc.child.size()==2)
-				{
-				String cn1=nuc.child.first();
-				String cn2=nuc.child.last();
-				if(EvArrayUtil.all(getOverlaps(theCE, cn1, cn2)) || EvArrayUtil.all(getOverlaps(theCE, cn2, cn1)))
-					;
-				else
-					outSplitChild.append(cn1+"\t"+cn2+"\n");
-				}
-			}
-		EvFileUtil.writeFile(f, outSplitChild.toString());
-
-		}
-	
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	
-	public static void main(String[] args)
+	public static void generateHTML(Map<String,CellContactMap> orderedCCM, File targetdirTree)
 		{
 		try
 			{
@@ -200,122 +103,27 @@ public class CellContactMapHTML
 			percentFormat.setMaximumFractionDigits(1);
 
 
-			////
-			new LinkedList<CellContactMap>();
 
-			NucLineage reflin=null;//TODO
-			//////////
-			
-			
-			List<EvData> inlins=new LinkedList<EvData>(); //TODO
-					
-			final TreeSet<String> nucNames=new TreeSet<String>(reflin.nuc.keySet());
-
-
-
-			//Calc neigh
-			List<CellContactMap> lins=EvParallel.map(inlins, new EvParallel.FuncAB<EvData, CellContactMap>(){
-			public CellContactMap func(EvData data)
-				{
-				//String url="foo"; //TODO
-				//System.out.println("loading "+s);
-				//EvData data=EvData.loadFile(url+s);
-				CellContactMap olin=new CellContactMap(
-						data.getIdObjectsRecursive(NucLineage.class).values().iterator().next(),
-						data.getMetadataName(),
-						nucNames);
-				if(olin.name.equals("AnglerUnixCoords"))
-					olin.frameInc=new EvDecimal("1"); //One cell can be like 20 frames
-				//lins.add(olin);
-				
-//				in.calcneigh(nucNames);
-				return olin;
-				}
-			});
-
-			//Output distances
-//			writeLineageNeighDistances(lins.get(0));
+			Map<CellContactMap,Integer> numidMap=new HashMap<CellContactMap, Integer>();
 			
 			//Order by name
-			Map<String,CellContactMap> orderedLin=new TreeMap<String, CellContactMap>();
-			for(CellContactMap lin:lins)
-				orderedLin.put(lin.name, lin);
 			int numid=1;
-			lins=new LinkedList<CellContactMap>();
-			for(CellContactMap lin:orderedLin.values())
+			for(CellContactMap lin:orderedCCM.values())
 				{
-				lin.numid=numid++;
-				lins.add(lin);
+				numidMap.put(lin,numid);
+				numid++;
 				}
 
-			System.out.println("Writing files");
-
-			//Compare CE and A model
-			CellContactMap theCE=orderedLin.get("celegans2008.2");
-			CellContactMap theA=orderedLin.get("AnglerUnixCoords");
-			StringBuffer outDiffList2=new StringBuffer();
-
-			
-			//Find cells in common for AE and CE
-			HashSet<String> ceaNames=new HashSet<String>(theCE.lin.nuc.keySet());
-			ceaNames.retainAll(theA.lin.nuc.keySet());
-			for(String s:theA.lin.nuc.keySet())
-				if(theA.lin.nuc.get(s).pos.isEmpty())
-					ceaNames.remove(s);
-
-			//Which cells are not in common? log
-			StringBuffer hasCellDiff=new StringBuffer();
-			hasCellDiff.append("---- Cells in CE but not AE -----\n");
-			for(String s:theCE.lin.nuc.keySet())
-				if(!theCE.lin.nuc.get(s).pos.isEmpty())
-					if(!ceaNames.contains(s))
-						hasCellDiff.append(s+"\n");
-			hasCellDiff.append("---- Cells in AE but not CE -----\n");
-			for(String s:theA.lin.nuc.keySet())
-				if(!theA.lin.nuc.get(s).pos.isEmpty()) //true if has a child
-					if(!ceaNames.contains(s)) //true if not contains
-						hasCellDiff.append(s+"\n");
-			hasCellDiff.append("------\n");
-			EvFileUtil.writeFile(new File("/Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/hasCellDiff.txt"), hasCellDiff.toString());
-			
-			//Skip cells which are beyond a certain time
-			//Taken from /Volumes/TBU_main02/ost4dgood/celegans2008.2.ost/data/volstats.txt  manually
-			EvDecimal cutoffFrame=new EvDecimal(8590);
-			for(String name:theCE.lin.nuc.keySet())
-				{
-				NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-				if(nuc.pos.isEmpty() || nuc.pos.firstKey().greater(cutoffFrame))
-					ceaNames.remove(name);
-				}
-			
-			for(String name:ceaNames)
-				for(String name2:ceaNames)
-					if(!name.equals(name2))
-						{
-						boolean ceHasChild=!theCE.lin.nuc.get(name).child.isEmpty() && !theCE.lin.nuc.get(name2).child.isEmpty();
-						boolean aHasChild=!theA.lin.nuc.get(name).child.isEmpty() && !theA.lin.nuc.get(name2).child.isEmpty();
-
-						double c1=getOverlapPercent(theCE, name, name2);
-						double c2=getOverlapPercent(theA, name, name2);
-
-						if(c1+c2!=0)
-							{
-							NucLineage.Nuc nuc=theCE.lin.nuc.get(name);
-							double dur=nuc.pos.isEmpty() ? 0 : nuc.getLastFrame().add(EvDecimal.ONE).subtract(nuc.getFirstFrame()).doubleValue();
-							if(ceHasChild && aHasChild)
-								outDiffList2.append(""+c1+"\t"+c2+"\t"+dur+"\t"+name+"\t"+name2+"\n");
-							}
-
-						}
+			//Which nuclei are covered, in total?
+			TreeSet<String> nucNames=new TreeSet<String>();
+			for(CellContactMap e:orderedCCM.values())
+				nucNames.addAll(e.allNuc);
 
 			
 			/////// HTML files for all contacts
-
-			File targetdirTree=new File("/Volumes/TBU_main03/userdata/cellcontactmap/tree/");
 			targetdirTree.mkdirs();
 			
 			String updateTime=new Date().toString();
-
 
 			//Images for bars
 			writeBar(new File(targetdirTree,"n_bar.png"),Color.black);
@@ -324,7 +132,7 @@ public class CellContactMapHTML
 			//Write cell list files
 			StringBuffer mainSingleOut=new StringBuffer();
 			StringBuffer mainTreeOut=new StringBuffer();
-			for(String nucName:nucNames)
+			for(String nucName:orderedCCM.keySet())
 				{
 				mainSingleOut.append("<a href=\""+nucName+"_neigh.htm\">"+nucName+"</a></br>");
 				mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
@@ -337,24 +145,24 @@ public class CellContactMapHTML
 
 			//List datasets
 			StringBuffer outDatasets=new StringBuffer();
-			for(CellContactMap lin:lins)
-				outDatasets.append(""+lin.numid+": "+lin.name+" <br/>");
+			for(Map.Entry<String,CellContactMap> e:orderedCCM.entrySet())
+				outDatasets.append(""+numidMap.get(e.getValue())+": "+e.getKey()+" <br/>");
 
 			//Write out HTML, cell by cell. Reference lineage is the first one in the list
 			//nucName: everything in the file is about this cell
 			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapHTML.class.getResource("neigh.htm")));
 			for(String nucName:nucNames)
 				{
-				StringBuffer bodyNeigh=new StringBuffer();
+				//StringBuffer bodyNeigh=new StringBuffer();
 				StringBuffer bodyTime=new StringBuffer();
 
 				//Sub header: lin# & cell name
-				StringBuffer subhMain=new StringBuffer();
+				//StringBuffer subhMain=new StringBuffer();
 				StringBuffer subhTime=new StringBuffer(); //f2
-				for(CellContactMap lin:lins)
+				for(Map.Entry<String,CellContactMap> e:orderedCCM.entrySet())
 					{
-					subhMain.append("<td><tt>"+lin.numid+"</tt></td>");
-					subhTime.append("<td width=\""+clength+"\"><tt>"+lin.numid+"</tt></td>");
+					//subhMain.append("<td><tt>"+numidMap.get(lin)+"</tt></td>");
+					subhTime.append("<td width=\""+clength+"\"><tt>"+numidMap.get(e.getValue())+"</tt></td>");
 					}
 
 				//Compare with all other nuclei
@@ -364,15 +172,18 @@ public class CellContactMapHTML
 					//Get annotation statistics
 					int notAnnotated=0; //# not annotated
 					int sa=0; //# co-occurance
-					for(CellContactMap lin:lins)
-						if(isAnnotated(lin.lin, nucName2))
+					for(Map.Entry<String,CellContactMap> e:orderedCCM.entrySet())
+						{
+						CellContactMap lin=e.getValue();
+						if(isAnnotated(lin, nucName2))
 							{
 							if(!lin.contactsf.get(nucName).get(nucName2).isEmpty())
 								sa++;
 							}
 						else
 							notAnnotated++;
-					int annotated=lins.size()-notAnnotated;
+						}
+					int annotated=orderedCCM.size()-notAnnotated;
 
 					//Do this cell only if any recording has it as a neighbour
 					if(sa!=0)
@@ -389,25 +200,26 @@ public class CellContactMapHTML
 
 						//Name in table
 						String line="<tr><td bgcolor=\""+scoreColor+"\"><tt><a href=\"FILE\">"+nucName2+"</a></tt></td><td bgcolor=\""+scoreColor+"\"><tt>"+sa+"/"+annotated+"</tt></td>\n";
-						bodyNeigh.append(line.replace("FILE",nucName2+"_neigh.htm"));
 						bodyTime.append(line.replace("FILE",nucName2+"_neightime.htm"));
 
 						//Contact map itself
-						for(CellContactMap lin:lins)
+						for(Map.Entry<String,CellContactMap> e:orderedCCM.entrySet())
 							{
-							double percLifeLen=100*(double)lin.contactsf.get(nucName).get(nucName2).size()/lin.lifelen.get(nucName);
-							if(lin.lifelen.get(nucName)==0)// || percLifeLen<1)
+							CellContactMap ccm=e.getValue();
+							
+							double percLifeLen=100*(double)ccm.contactsf.get(nucName).get(nucName2).size()/ccm.lifelen.get(nucName);
+							if(ccm.lifelen.get(nucName)==0)// || percLifeLen<1)
 								percLifeLen=0;
 
 							//Formatting for non-time CCM
 							String neighColor;
 							String neighString;
-							if(!isAnnotated(lin.lin,nucName))	//this (nucname) not annotated
+							if(!isAnnotated(ccm,nucName))	//this (nucname) not annotated
 								{
 								neighColor=htmlColorNT;
 								neighString="<font color=\"#ffffff\">n.t.</font>";
 								}
-							else if(!isAnnotated(lin.lin,nucName2))	//nucname2 not annotated
+							else if(!isAnnotated(ccm,nucName2))	//nucname2 not annotated
 								{
 								neighColor=htmlColorNA;
 								neighString="n.a.";
@@ -430,11 +242,11 @@ public class CellContactMapHTML
 							String timeString=neighString;
 
 							//Format time based on when there is overlap
-							if(!lin.contactsf.get(nucName).get(nucName2).isEmpty())
+							if(!ccm.contactsf.get(nucName).get(nucName2).isEmpty())
 								{
 								if(percLifeLen!=0)
 									{
-									boolean[] neighOverlaps=getOverlaps(lin, nucName, nucName2);
+									boolean[] neighOverlaps=getOverlaps(ccm, nucName, nucName2);
 									//Convert frame overlap to image
 									timeString=getOverlapBar(neighOverlaps).toString();
 									}
@@ -442,7 +254,7 @@ public class CellContactMapHTML
 									timeString=neighString="&nbsp;";
 								}
 
-							bodyNeigh.append("<td bgcolor=\""+neighColor+"\"><tt>"+neighString+"</tt></td>\n");
+							//bodyNeigh.append("<td bgcolor=\""+neighColor+"\"><tt>"+neighString+"</tt></td>\n");
 							bodyTime.append("<td bgcolor=\""+timeColor+"\"><tt>"+timeString+"</tt></td>\n");
 							}
 
@@ -455,7 +267,7 @@ public class CellContactMapHTML
 					.replace("UPDATETIME",updateTime)
 					.replace("NUCNAME", nucName)
 					.replace("DATASETS", outDatasets)
-					.replace("COLSPAN",""+lins.size());
+					.replace("COLSPAN",""+orderedCCM.size());
 				EvFileUtil.writeFile(new File(targetdirTree,nucName+"_neightime.htm"), 
 						out
 							.replace("CONTACTTABLE", bodyTime)
@@ -470,9 +282,11 @@ public class CellContactMapHTML
 		System.exit(0);
 		}
 	
-	public static boolean isAnnotated(NucLineage lin, String nucname)
+	
+	//TODO only add nucs which are not pos-empty
+	public static boolean isAnnotated(CellContactMap lin, String nucname)
 		{
-		return lin.nuc.containsKey(nucname) && !lin.nuc.get(nucname).pos.isEmpty();
+		return lin.allNuc.contains(nucname);
 		}
 	
 

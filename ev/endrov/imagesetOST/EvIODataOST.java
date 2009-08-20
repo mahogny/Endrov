@@ -38,16 +38,10 @@ public class EvIODataOST implements EvIOData
 			public Integer loadSupports(String fileS)
 				{
 				File file=new File(fileS);
-				if(file.isDirectory())
-					{
-					if(file.getName().endsWith(".ost")) //OST3+
-						return 10;
-					else //OST2
-						for(File f:file.listFiles())
-							if(f.isFile() && (f.getName().equals("rmd.xml") || f.getName().equals("rmd.ostxml")))
-								return 10;
-					}
-				return null;
+				if(file.isDirectory() && file.getName().endsWith(".ost"))
+					return 10;
+				else
+					return null;
 				}
 			public List<Tuple<String,String[]>> getLoadFormats()
 				{
@@ -66,9 +60,10 @@ public class EvIODataOST implements EvIOData
 			public Integer saveSupports(String fileS)
 				{
 				File file=new File(fileS);
-				if(file.getName().endsWith(".ost")) //OST3+
+				if(file.getName().endsWith(".ost"))
 					return 10;
-				return null;
+				else
+					return null;
 				}
 			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
 			public EvIOData getSaver(EvData d, String file) throws IOException
@@ -146,7 +141,6 @@ public class EvIODataOST implements EvIOData
 		 * An entry is not removed unless it is also deleted. By comparing this list to the dirty image list,
 		 * it is possible to figure out what files to delete. 
 		 */
-		public HashMap<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> diskImageLoader=new HashMap<String, HashMap<EvDecimal,HashMap<EvDecimal,File>>>();
 		public HashMap<EvDecimal,HashMap<EvDecimal,File>> diskImageLoader33=new HashMap<EvDecimal,HashMap<EvDecimal,File>>();
 		
 		public File getDirectory()
@@ -230,7 +224,6 @@ public class EvIODataOST implements EvIOData
 
 	public void initialLoad(EvData d,EvData.FileIOStatusCallback cb)
 		{
-		convert2_3();
 		buildDatabase(d, cb);
 		}
 
@@ -276,20 +269,6 @@ public class EvIODataOST implements EvIOData
 	
 	
 	
-	/**
-	 * What is the current filename for an image?
-	 */
-	private File getCurrentFileFor(Imageset im,String channelName, EvDecimal frame, EvDecimal slice)
-		{
-		HashMap<EvDecimal,HashMap<EvDecimal,File>> ce=mapBlobs.get(im).diskImageLoader.get(channelName);
-		if(ce!=null)
-			{
-			HashMap<EvDecimal,File> fe=ce.get(frame);
-			if(fe!=null)
-				return fe.get(slice);
-			}
-		return null;
-		}
 	
 	
 	/**
@@ -306,18 +285,7 @@ public class EvIODataOST implements EvIOData
 			}
 		return null;
 		}
-	
-	/**
-	 * What should the filename be, given the compression?
-	 */
-	/*
-	private File fileShouldBe(Imageset im, String channel, EvDecimal frame, EvDecimal z)
-		{
-		if(im.getChannel(channel).compression==100)
-			return buildImagePath(im, channel, frame,z,".png");
-		else
-			return buildImagePath(im, channel, frame,z,".jpg"); //TODO jpeg2000 support
-		}*/
+
 
 	/**
 	 * What should the filename be, given the compression?
@@ -341,10 +309,7 @@ public class EvIODataOST implements EvIOData
 		{
 		return new File(mapBlobs.get(im).getDirectory(),"ch-"+channelName);
 		}
-	private static File buildChannelPath(File blobpath, String channelName)
-		{
-		return new File(blobpath,"ch-"+channelName);
-		}
+
 	
 	/** Internal: piece together a path to a frame */
 	private static File buildFramePath(File channelPath, EvDecimal frame)
@@ -796,12 +761,8 @@ public class EvIODataOST implements EvIOData
 				d.metaObject.clear();
 				cb.fileIOStatus(0, "loading meta...");
 				d.loadXmlMetadata(new FileInputStream(metaFile));
-				cb.fileIOStatus(0.3, "conversion if needed...");
-				convert3_3d2(d,cb);
 				cb.fileIOStatus(0.6, "loading images...");
-				//convert3d2_3d3pre(d,cb);
-				scanFiles(d, cb);
-				convert3d2_3d3post(d,cb);
+				scanFiles33(d, cb);
 				}
 			catch (FileNotFoundException e)
 				{
@@ -815,135 +776,6 @@ public class EvIODataOST implements EvIOData
 		}
 	
 
-	
-	
-	
-	/**
-	 * Scan files for all channels and build a database
-	 */
-	private void scanFiles(EvData data, EvData.FileIOStatusCallback cb)
-		{
-		//Create blobs
-		mapBlobs.clear();
-
-		//If channels have ostblobids then this format is 3.3. Should scan files differently
-		for(EvChannel ch:data.getIdObjectsRecursive(EvChannel.class).values())
-			if(ch.ostBlobID!=null)
-				{
-				System.out.println("Using 3.3 scanfile");
-				scanFiles33(data, cb);
-				return;
-				}
-		System.out.println("Using 3.2 scanfile, #chan: "+data.getIdObjectsRecursive(EvChannel.class).size());
-
-		for(Imageset im:data.getIdObjectsRecursive(Imageset.class).values())
-			{
-			DiskBlob blob=getCreateBlob(im);
-			blob.currentDir=im.ostBlobID;
-			if(blob.currentDir==null)
-				{
-				System.out.println("Fixed blob id. this should only occur during 3->3.2 transition");
-				blob.currentDir=".";
-				}
-			else
-				if(EV.debugMode)
-					System.out.println("Found blob "+blob.currentDir);
-
-			
-			
-			//Get list of images, from cache or by listing files
-			if(!(getDatabaseCacheFile(blob).exists() && loadDatabaseCache(im, blob)))
-				{
-				File blobdir=blob.getDirectory();
-				
-				if(!blobdir.exists())
-					System.out.println("Does not exist: "+blobdir);
-				
-				if(EV.debugMode)
-					System.out.println("Scanning for images in "+blobdir);
-				for(File chanf:blobdir.listFiles())
-					if(chanf.isDirectory() && chanf.getName().startsWith("ch-"))
-						{
-						String channelName=chanf.getName().substring("ch-".length());
-						EvLog.printLog("Found channel: "+channelName);
-						scanFilesChannel(im, channelName, blob);
-						}
-				}
-
-			//Update the list of images in the imageset object
-			for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:blob.diskImageLoader.entrySet())
-				{
-				EvChannel channel=im.getCreateChannel(ce.getKey());
-
-
-				for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ce.getValue().entrySet())
-					{
-
-//					double useResX=(1.0/channel.preresX)/channel.chBinning; //TODO: not needed for 4.0
-	//				double useResY=(1.0/channel.preresY)/channel.chBinning; //TODO: not needed for 4.0
-
-					double useResX=(1.0/im.resX)/channel.chBinning; //TODO: not needed for 4.0
-					double useResY=(1.0/im.resY)/channel.chBinning; //TODO: not needed for 4.0
-
-					HashMap<String,String> frameKeys=channel.metaFrame.get(fe.getKey());
-					if(frameKeys==null)
-						frameKeys=new HashMap<String, String>();
-
-					//Override channel resolution
-					if(channel.defaultResX!=null)
-						useResX=channel.defaultResX;
-					if(channel.defaultResY!=null)
-						useResY=channel.defaultResY;
-					EvDecimal useResZ=channel.defaultResZ;
-
-					//Override frame resolution
-					if(frameKeys.containsKey("resX"))
-						useResX=Double.parseDouble(frameKeys.get("resX"));
-					if(frameKeys.containsKey("resY"))
-						useResY=Double.parseDouble(frameKeys.get("resY"));
-					if(frameKeys.containsKey("resZ"))
-						useResZ=new EvDecimal(frameKeys.get("resZ"));
-
-					//Default displacement
-					double useDispX=channel.defaultDispX;
-					double useDispY=channel.defaultDispY;
-					EvDecimal useDispZ=channel.defaultDispZ;
-
-					//Override for each stack
-					if(frameKeys.containsKey("dispX"))
-						useDispX=Double.parseDouble(frameKeys.get("dispX"));
-					if(frameKeys.containsKey("dispY"))
-						useDispY=Double.parseDouble(frameKeys.get("dispY"));
-					if(frameKeys.containsKey("dispZ"))
-						useDispZ=new EvDecimal(frameKeys.get("dispZ"));
-
-					EvStack stack=new EvStack();
-					channel.imageLoader.put(fe.getKey(),stack);
-					stack.resX=useResX;
-					stack.resY=useResY;
-					stack.resZ=useResZ;
-					stack.dispX=useDispX;
-					stack.dispY=useDispY;
-					stack.dispZ=useDispZ;
-					//stack.binning=channel.chBinning;
-					for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
-						{
-						EvImage evim=new EvImage();
-						evim.io=new SliceIO(this,getCurrentFileFor(im,ce.getKey(), fe.getKey(), se.getKey()));
-
-						stack.put(se.getKey(),evim);
-						}
-					}
-				}
-			}
-		
-		saveDatabaseCache();
-		}
-	
-	
-	
-	
-	
 	/**
 	 * Scan files for all channels and build a database
 	 */
@@ -1033,66 +865,6 @@ public class EvIODataOST implements EvIOData
 		saveDatabaseCache();
 		}
 	
-	/**
-	 * Scan all files for this channel and build a database
-	 */
-	private void scanFilesChannel(Imageset imset, String channelName, DiskBlob blob)
-		{
-		//Rebuild this channel in diskimageloader. note that it is totally separate from metadata
-		HashMap<EvDecimal,HashMap<EvDecimal,File>> channelSet=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
-		blob.diskImageLoader.put(channelName, channelSet);
-		
-		File chandir=buildChannelPath(imset, channelName);
-		File[] framedirs=chandir.listFiles();
-		for(File framedir:framedirs)
-			if(framedir.isDirectory() && !framedir.getName().startsWith("."))
-				{
-				//Backwards compat
-				if(framedir.getName().indexOf('-')!=-1)
-					{
-					//Somehow this is a really old OST. remove chan-
-					File nf=new File(framedir.getParentFile(),framedir.getName().substring(framedir.getName().indexOf('-')+1));
-					if(EV.debugMode)
-						System.out.println(nf);
-					framedir.renameTo(nf);
-					framedir=nf;
-					}				
-				
-				EvDecimal framenum=new EvDecimal(framedir.getName());
-				
-				HashMap<EvDecimal,File> loaderset=new HashMap<EvDecimal,File>();
-				channelSet.put(framenum, loaderset);
-				File[] slicefiles=framedir.listFiles();
-				for(File f:slicefiles)
-					{
-					String partname=f.getName();
-					if(!partname.startsWith("."))
-						{
-						if(partname.lastIndexOf('-')!=-1)
-							{
-							//Somehow this is a really old OST. remove xxx-
-							File nf=new File(f.getParentFile(),partname.substring(partname.lastIndexOf('-')+1));
-							f.renameTo(nf);
-							f=nf;
-							partname=f.getName();
-							}
-						
-						
-						partname=partname.substring(0,partname.lastIndexOf('.'));
-						try
-							{
-							EvDecimal slice=new EvDecimal(partname);
-							loaderset.put(slice, f);
-							}
-						catch (NumberFormatException e)
-							{
-							EvLog.printError("partname: "+partname+" filename "+f.getName()+" framenum "+framenum,e);
-							System.exit(1);
-							}
-						}
-					}
-				}
-		}
 
 	
 	
@@ -1144,8 +916,6 @@ public class EvIODataOST implements EvIOData
 							else
 								slice=new EvDecimal(partname);
 							
-							
-							//EvDecimal slice=new EvDecimal(partname);
 							loaderset.put(slice, f);
 							}
 						catch (NumberFormatException e)
@@ -1174,80 +944,6 @@ public class EvIODataOST implements EvIOData
 		}
 	
 
-	public static boolean loadDatabaseCacheMap(HashMap<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> diskImageLoader, InputStream cachefile, File blobFile)
-		{
-		try
-			{
-			String ext="";
-			BufferedReader in = new BufferedReader(new InputStreamReader(cachefile,"UTF-8"));
-			String line=in.readLine();
-			if(!line.equals("version1")) //version1
-				{
-				EvLog.printLog("Image cache wrong version, ignoring");
-				return false;
-				}
-			else
-				{
-				//Log.printLog("Loading imagelist cache "+blobFile);
-				int numChannels=Integer.parseInt(in.readLine());
-				for(int i=0;i<numChannels;i++)
-					{
-					String channelName=in.readLine();
-					int numFrame=Integer.parseInt(in.readLine());
-
-					HashMap<EvDecimal,HashMap<EvDecimal,File>> c=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
-					diskImageLoader.put(channelName, c);
-
-					
-					
-					String channeldirName=buildChannelPath(blobFile,channelName).getAbsolutePath();
-
-					for(int j=0;j<numFrame;j++)
-						{
-						EvDecimal frame=new EvDecimal(in.readLine());
-						int numSlice=Integer.parseInt(in.readLine());
-						HashMap<EvDecimal,File> loaderset=new HashMap<EvDecimal, File>();
-						c.put(frame,loaderset);
-
-						//Generate name of frame directory, optimized. windows support?
-						StringBuffer framedirName=new StringBuffer(channeldirName);
-						framedirName.append('/');
-						EV.pad(frame, 8, framedirName);  
-						framedirName.append('/');
-
-
-						for(int k=0;k<numSlice;k++)
-							{
-							String s=in.readLine();
-							if(s.startsWith("ext"))
-								{
-								ext=s.substring(3);
-								s=in.readLine();
-								}
-							EvDecimal slice=new EvDecimal(s);
-
-							//Generate name of image file, optimized
-							StringBuffer imagefilename=new StringBuffer(framedirName);
-							EV.pad(slice, 8, imagefilename); 
-							imagefilename.append(ext);
-
-							loaderset.put(slice,new File(imagefilename.toString()));
-							}
-						}
-					}
-				}
-			return true;
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
-			return false;
-			}
-
-		
-		}
-	
-	
 	
 	public static boolean loadDatabaseCacheMap33(EvChannel ch, HashMap<EvDecimal,HashMap<EvDecimal,File>> c, InputStream cachefile, File blobFile)
 		{
@@ -1327,46 +1023,6 @@ public class EvIODataOST implements EvIOData
 		
 		}
 	
-	
-	/**
-	 * Load database from cache into file-list. Return if it succeeded. Does not update imageset objects
-	 */
-	public boolean loadDatabaseCache(Imageset im, DiskBlob blob)
-		{
-		blob.diskImageLoader.clear();
-		try
-			{
-			File cacheFile=getDatabaseCacheFile(blob);
-			if(EV.debugMode)
-				System.out.println("Attempting to load image cache "+cacheFile);
-			return loadDatabaseCacheMap(blob.diskImageLoader, new FileInputStream(cacheFile), mapBlobs.get(im).getDirectory());
-			}
-		catch (FileNotFoundException e)
-			{
-			return false;
-			}
-		}
-	
-	
-	/**
-	 * Load database from cache into file-list. Return if it succeeded. Does not update imageset objects
-	 */
-	/*
-	public boolean loadDatabaseCache33(Imageset im, DiskBlob blob)
-		{
-		blob.diskImageLoader33.clear();
-		try
-			{
-			File cacheFile=getDatabaseCacheFile(blob);
-			if(EV.debugMode)
-				System.out.println("Attempting to load image cache "+cacheFile);
-			return loadDatabaseCacheMap33(blob.diskImageLoader33, new FileInputStream(cacheFile), mapBlobs.get(im).getDirectory());
-			}
-		catch (FileNotFoundException e)
-			{
-			return false;
-			}
-		}*/
 	
 	/**
 	 * Load database from cache into file-list. Return if it succeeded. Does not update imageset objects
@@ -1524,270 +1180,5 @@ public class EvIODataOST implements EvIOData
 	 *                               Converters for upgrading                                             *
 	 *****************************************************************************************************/
 	
-	/**
-	 * Convert OST2 -> OST3
-	 */
-	public void convert2_3()
-		{
-		String ostname=basedir.getName();
-		if(ostname.endsWith(".ost"))
-			ostname=ostname.substring(0,ostname.length()-".ost".length());
-		File rmdfile=new File(basedir,"rmd.xml");
-		if(rmdfile.exists())
-			{
-			System.out.println("Detected OST2.x. Updating to 3");
-			
-			//Rename rmd
-			rmdfile.renameTo(new File(basedir,"rmd.ostxml"));
-			
-			//Rename channels
-			for(File child:basedir.listFiles())
-				{
-				String n=child.getName();
-				if(child.isDirectory() && n.startsWith(ostname))
-					{
-					n=n.substring((ostname+"-").length());
-					File newname;
-					if(n.equals("data"))
-						newname=new File(basedir,"data");
-					else
-						newname=new File(basedir,"ch-"+n);
-					child.renameTo(newname);
-					}
-				}
-
-			}
-		
-		
-		}
-	
-	/**
-	 * Convert 3 -> 3.2
-	 * Timestep and resZ deleted, major file renaming. imageset directories
-	 */
-	public void convert3_3d2(EvData d,EvData.FileIOStatusCallback cb)
-		{
-		EvDecimal curv=new EvDecimal(d.metadataVersion);
-		
-		boolean chExists=false;
-		for(File f:basedir.listFiles())
-			if(f.getName().startsWith("ch-"))
-				chExists=true;
-		
-		if(curv.less(new EvDecimal("3.2")) || chExists)
-			{
-			cb.fileIOStatus(0.9, "Converting to OST 3.2, this might take a while");
-			EvLog.printLog("Updating files 3->3.2");
-			//With SSHFS+mac there is a problem: renames hang the system!
-			
-			mapBlobs.clear(); //Make sure blob gets the right blobid
-
-			File oldcache=new File(basedir,"imagecache.txt");
-			if(oldcache.exists())
-				oldcache.delete();
-
-			//Hack when there is no imageset object
-			if(d.getObjects(Imageset.class).isEmpty())
-				{
-				Imageset im=new Imageset();
-				d.metaObject.put("im", im);
-				im.resX=im.resY=im.resZ=1;
-				im.metaTimestep=1;
-				}
-			
-			//There is only one imageset in these dated formats
-			List<Imageset> ims=d.getObjects(Imageset.class);
-			if(ims.size()>0)
-				{
-				Imageset im=ims.get(0);
-				im.ostBlobID="imset-im";
-				DiskBlob blob=getCreateBlob(im);
-				blob.currentDir=im.ostBlobID;
-				
-				//For all channels
-				for(File fchan:basedir.listFiles())
-					if(fchan.isDirectory() && fchan.getName().startsWith("ch-"))
-						{
-						
-						//For all frames, prepend "n"
-						for(File fframe:fchan.listFiles())
-							if(fframe.isDirectory() && !fframe.getName().startsWith("."))
-								{
-								File newframe=new File(fchan,"n"+fframe.getName());
-								fframe.renameTo(newframe);
-								}
-						//For all frames, remove "n" and multiply
-						for(File fframe:fchan.listFiles())
-							if(fframe.isDirectory() && fframe.getName().startsWith("n"))
-								{
-								String s=fframe.getName();
-								EvDecimal cur=new EvDecimal(s.substring(1));
-								File newframe=new File(fchan, EV.pad(cur.multiply(new EvDecimal(im.metaTimestep)), 8));
-								fframe.renameTo(newframe);
-								}
-						
-						//For all frames
-						for(File fframe:fchan.listFiles())
-							if(fframe.isDirectory() && !fframe.getName().startsWith("."))
-								{
-								//For all slices, prepend "n"
-								for(File fslice:fframe.listFiles())
-									if(fslice.isFile() && !fslice.getName().startsWith("."))
-										{
-										File newslice=new File(fframe,"n"+fslice.getName());
-										fslice.renameTo(newslice);
-										}
-								//For all slices, remove "n" and divide
-								for(File fslice:fframe.listFiles())
-									if(fslice.isFile() && fslice.getName().startsWith("n"))
-										{
-										String s=fslice.getName().substring(1);
-										String ext=s.substring(s.lastIndexOf("."));
-										s=s.substring(0,s.lastIndexOf("."));
-										File newslice=new File(fframe,EV.pad(new EvDecimal(s).divide(im.resZ),8)+ext);
-										fslice.renameTo(newslice);
-										}
-								}
-						}
-	
-				//Move all files under imset-im
-				File imdir=new File(basedir,"imset-im");
-				imdir.mkdir();
-				for(File child:basedir.listFiles())
-					if(child.getName().startsWith("ch-"))
-						child.renameTo(new File(imdir,child.getName()));
-	
-				//All objects go beneath im as this is what was the old intention
-				d.metaObject.remove("im");
-				im.metaObject.putAll(d.metaObject);
-				d.metaObject.clear();
-				d.metaObject.put("im",im);
-				}
-			else
-				System.out.println("No imageset found");
-			
-			System.out.println("Saving meta 3.2");
-			try
-				{
-				saveMetaDataOnly(d, null);
-				}
-			catch (IOException e)
-				{
-				e.printStackTrace();
-				}
-			//			saveData(d, null);
-			invalidateDatabaseCache();
-//			System.out.println("Reloading file listing");
-//			scanFiles(d,EvData.deafFileIOCB);
-				
-			}
-		}
-
-	
-	/**
-	 * Crack imset- blob into multiple channel blobs
-	 */
-	public void convert3d2_3d3pre(EvData d,EvData.FileIOStatusCallback cb)
-		{
-		EvDecimal curv=new EvDecimal(d.metadataVersion);
-		if(curv.less(new EvDecimal("3.3")))
-			try
-				{
-				System.out.println("Saving meta 3.3");
-				saveMetaDataOnly(d, null);
-	
-				//Move those irritating channel specific rmd.txt away
-				File fImset=new File(basedir,"imset-im");
-				for(File fCh:fImset.listFiles())
-					if(fCh.getName().startsWith("ch-"))
-						{
-						File fRMD=new File(fCh,"rmd.txt");
-						if(fRMD.exists())
-							{
-							File newRMD=new File(new File(basedir,"data"),"rmd-"+fCh.getName()+".txt");
-							fRMD.renameTo(newRMD);
-							}
-						}
-				
-				}
-			catch (IOException e)
-				{
-				e.printStackTrace();
-				}
-			
-		}
-
-	/**
-	 * 3.2 -> 3.3
-	 */
-	public void convert3d2_3d3post(EvData d,EvData.FileIOStatusCallback cb)
-		{
-		EvDecimal curv=new EvDecimal(d.metadataVersion);
-		if(curv.less(new EvDecimal("3.3")))
-			try
-				{
-	
-				//Move those irritating channel specific rmd.txt away
-				File fImset=new File(basedir,"imset-im");
-				if(fImset.exists())
-					{
-					for(File fCh:fImset.listFiles())
-						if(fCh.getName().startsWith("ch-"))
-							{
-							File fRMD=new File(fCh,"rmd.txt");
-							if(fRMD.exists())
-								{
-								File newRMD=new File(new File(basedir,"data"),"rmd-"+fCh.getName()+".txt");
-								fRMD.renameTo(newRMD);
-								}
-							}
-					
-					//Split imset blobs
-					for(Imageset im:d.getIdObjectsRecursive(Imageset.class).values())
-						if(im.ostBlobID!=null)
-							{
-							DiskBlob blobImageset=mapBlobs.get(im);
-							File imsetFile=blobImageset.getDirectory();
-	
-							for(Map.Entry<String,EvChannel> ce:im.getChannels().entrySet())
-								{
-								EvChannel ch=ce.getValue();
-								
-	
-								DiskBlob blobChannel=getCreateBlob(ch);
-								blobChannel.allocate("ch"+ce.getKey());
-								ch.ostBlobID=blobChannel.currentDir;
-	
-								
-								//Move files
-								File oldChannel=buildChannelPath(im, ce.getKey());
-								File newChannel=blobChannel.getDirectory();
-								System.out.println(">>> "+oldChannel+"  "+newChannel);
-								oldChannel.renameTo(newChannel);
-								}
-	
-							//Delete old index. and directory
-							EvFileUtil.deleteRecursive(imsetFile);
-							im.ostBlobID=null;
-							mapBlobs.remove(im);
-							}
-						}
-				scanFiles(d, cb);
-				
-				System.out.println("Saving meta 3.3");
-				saveMetaDataOnly(d, null);
-
-				
-				//Scan files again
-				scanFiles(d, cb);
-
-				
-				}
-			catch (IOException e)
-				{
-				e.printStackTrace();
-				}
-			
-		}
 	
 	}

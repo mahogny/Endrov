@@ -218,17 +218,14 @@ public class EvContainer
 			metaObject.remove(id);
 		}	
 	
-
 	
-	//private static final String tagOstblobid="ostblobid";
 	private static final String tagChild="_ostchild";
-	
 	private final static String tempString="__TEMPNAME__";
 	
 	/**
 	 * Serialize object and all children
 	 */
-	public void recursiveSaveMetadata(Element root)
+	void recursiveSaveMetadata(Element root)
 		{
 		for(String id:metaObject.keySet())
 			{
@@ -270,7 +267,7 @@ public class EvContainer
 	/**
 	 * Load object and all children
 	 */
-	public void recursiveLoadMetadata(Element element)
+	void recursiveLoadMetadata(Element element)
 		{
 		//Extract objects
 		for(Element child:EV.castIterableElement(element.getChildren()))
@@ -294,16 +291,7 @@ public class EvContainer
 					e.printStackTrace();
 					}
 				}
-			String sid=child.getAttributeValue("id");
-			String id;
-			if(sid==null) 
-				//TODO this should disappear once all OST is 3.2
-				//This is only needed for imagesets without the EV extended attributes
-				//should maybe grab a free one (detect)
-				//id=""+-1;
-				id="im"; //This is for the OST3 transition
-			else
-				id=sid;
+			String id=child.getAttributeValue("id");
 			
 			//Common data for all OST objects
 			o.ostBlobID=child.getAttributeValue("ostblobid");
@@ -370,7 +358,6 @@ public class EvContainer
 			String sid=child.getAttributeValue("id");
 			String id;
 			if(sid==null) 
-				//TODO this should disappear once all OST is 3.2
 				//This is only needed for imagesets without the EV extended attributes
 				//should maybe grab a free one (detect)
 				//id=""+-1;
