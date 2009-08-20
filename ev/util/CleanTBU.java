@@ -40,6 +40,18 @@ public class CleanTBU
 					changed=true;
 					
 					}
+				
+				
+				for(String s:new String[]{
+						"endtime",
+						"uniblitz",
+					})
+					if(ch.metaOther.containsKey(s))
+						{
+						changed=true;
+						ch.metaOther.remove(s);
+						}
+				
 				}
 			
 			if(data.getObjects(Imageset.class).isEmpty())
@@ -103,6 +115,7 @@ public class CleanTBU
 			for(String s:new String[]{
 					"openlabtimeout",
 					"objfactors",
+					"objpixels",
 					"maxtotalstacks",
 					"framestart",
 					"opvarfactors",
