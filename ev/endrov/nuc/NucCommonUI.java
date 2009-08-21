@@ -62,7 +62,7 @@ public class NucCommonUI implements ActionListener
 		this.parent=parent;
 		}
 	
-	public void addToMenu(JMenu menuLineage, boolean addAccel)
+	public void addToMenu(JComponent menuLineage, boolean addAccel)
 		{
 
 
@@ -213,7 +213,11 @@ public class NucCommonUI implements ActionListener
 							EvSelection.select(new NucSel(lin,n));
 			BasicWindow.updateWindows();
 			}
-			
+		else if(e.getSource()==miRename)
+			{
+			NucRenameDialog.run(EvSelection.getSelected(NucSel.class), null);
+			BasicWindow.updateWindows();
+			}
 			
 		}
 	
