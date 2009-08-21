@@ -312,7 +312,6 @@ public class EvData extends EvContainer
 	public void saveData(EvData.FileIOStatusCallback cb)
 		{
 		io.saveData(this, cb);
-		setMetadataModified(false);
 		}
 	
 	

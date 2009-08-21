@@ -531,7 +531,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 					}
 				
 				BasicWindow.updateWindows(this);
-				rec.setMetadataModified(true);
+				rec.setMetadataModified();
 				}
 			catch (NumberFormatException e)
 				{

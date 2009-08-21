@@ -89,28 +89,24 @@ public class EvContainer
 		}
 	
 	/**
-	 * Set if metadata has been modified
+	 * Set that metadata is not modified (recursively). This is done
+	 * after the data has been stored.
 	 */
-	public void setMetadataModified(boolean flag)
+	public void setMetadataNotModified()
 		{
-		if(flag)
-			{
-			coreMetadataModified=true;
-			dateLastModify=new EvDecimal(System.currentTimeMillis());
-			}
-		else
-			{
-			coreMetadataModified=false;
-			for(EvContainer ob:metaObject.values())
-				ob.coreMetadataModified=false;
-			}
+		coreMetadataModified=true;
+		for(EvContainer ob:metaObject.values())
+			ob.setMetadataNotModified();
 		}
+	
 	/**
 	 * State that metadata has been modified
 	 */
 	public void setMetadataModified()
 		{
-		setMetadataModified(true);
+//		setMetadataModified(true);
+		coreMetadataModified=true;
+		dateLastModify=new EvDecimal(System.currentTimeMillis());
 		}
 	
 	/**

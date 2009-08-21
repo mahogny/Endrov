@@ -209,7 +209,7 @@ public class EvDataMenu implements BasicWindowExtension
 								{
 								thisMeta.metaObject.remove(obId);
 								BasicWindow.updateWindows();
-								thisMeta.setMetadataModified(true);
+								thisMeta.setMetadataModified();
 								}
 							}
 						};
@@ -295,7 +295,8 @@ public class EvDataMenu implements BasicWindowExtension
 						for(EvData thisMeta:EvData.openedData)
 							if(thisMeta.isMetadataModified())
 								anyMod=true;
-
+						
+						
 						int option=!anyMod ? JOptionPane.NO_OPTION : JOptionPane.showConfirmDialog(null, 
 								"Metadata has been modified. Save before closing all?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
 						if (option == JOptionPane.CANCEL_OPTION)
@@ -306,7 +307,7 @@ public class EvDataMenu implements BasicWindowExtension
 								for(EvData thisMeta:EvData.openedData)
 									{
 									thisMeta.saveData();
-									thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+									thisMeta.setMetadataNotModified(); //this might be wrong if save not supported
 									}
 							EvData.openedData.clear();
 							BasicWindow.updateWindows();
@@ -352,7 +353,7 @@ public class EvDataMenu implements BasicWindowExtension
 							{
 							GuiEvDataIO.saveFile(thisMeta);
 							//thisMeta.saveData();
-							thisMeta.setMetadataModified(false);
+							thisMeta.setMetadataNotModified();
 							}
 						};
 					miSave.addActionListener(metaListenerSave);
@@ -368,7 +369,7 @@ public class EvDataMenu implements BasicWindowExtension
 						{
 						GuiEvDataIO.saveFileDialog(thisMeta);
 						//thisMeta.saveFileDialog(null);
-						thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+						thisMeta.setMetadataNotModified();//this might be wrong if save not supported
 						BasicWindow.updateWindows();
 						}
 					};
@@ -407,7 +408,7 @@ public class EvDataMenu implements BasicWindowExtension
 							if (option==JOptionPane.YES_OPTION)
 								{
 								thisMeta.saveData();
-								thisMeta.setMetadataModified(false);//this might be wrong if save not supported
+								//thisMeta.setMetadataNotModified();//this might be wrong if save not supported
 								}
 							else if (option == JOptionPane.CANCEL_OPTION)
 								return;

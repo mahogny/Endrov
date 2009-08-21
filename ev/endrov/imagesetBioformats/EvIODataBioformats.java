@@ -239,6 +239,7 @@ public class EvIODataBioformats implements EvIOData
 			
 			
 			EvIODataOST.saveMeta(d, getMetaFile());
+			d.setMetadataNotModified();
 			}
 		catch (IOException e)
 			{

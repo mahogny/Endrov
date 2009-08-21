@@ -97,7 +97,7 @@ public class EvIODataXML implements EvIOData
 		try
 			{
 			EvXmlUtil.writeXmlData(document, filename);
-			d.setMetadataModified(false);
+			d.setMetadataNotModified();
 			}
 		catch (Exception e)
 			{

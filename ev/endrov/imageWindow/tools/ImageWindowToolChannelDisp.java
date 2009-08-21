@@ -70,7 +70,7 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 					}
 				
 				BasicWindow.updateWindows();
-				rec.setMetadataModified(true);
+				rec.setMetadataModified();
 				}
 			}
 		}

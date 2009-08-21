@@ -94,7 +94,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 				a.group=curGroup;
 				setPos(a,e);
 				data.addMetaObject(a);
-				data.setMetadataModified(true);
+				data.setMetadataModified();
 				w.updateImagePanel();
 				}
 			else if(SwingUtilities.isRightMouseButton(e))
