@@ -22,8 +22,6 @@ public class EvStack implements AnyEvImage
 	{
 	private TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
 	
-//	private EvImage[] loaders;
-	
 	/**
 	 * Resolution [um/px]
 	 */
@@ -84,15 +82,11 @@ public class EvStack implements AnyEvImage
 		return resZ;
 		}
 	
-//	public double transformImageWorldX(double c){return (c*binning+dispX)/resX;}
-//	public double transformImageWorldY(double c){return (c*binning+dispY)/resY;}			
 	public double transformImageWorldX(double c){return (c+dispX)*resX;}
 	public double transformImageWorldY(double c){return (c+dispY)*resY;}			
 	public double transformImageWorldZ(double c){return c*getResbinZinverted().doubleValue()+dispZ.doubleValue();}
 	
 	
-//	public double transformWorldImageX(double c){return (c*resX-dispX)/binning;}
-//	public double transformWorldImageY(double c){return (c*resY-dispY)/binning;}
 	public double transformWorldImageX(double c){return (c/resX-dispX);}
 	public double transformWorldImageY(double c){return (c/resY-dispY);}
 	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/getResbinZinverted().doubleValue();}
