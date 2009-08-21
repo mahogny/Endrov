@@ -1,4 +1,4 @@
-package endrov.nuc.ccm;
+package endrov.nuc.util;
 
 import java.io.File;
 import java.util.HashMap;
@@ -15,6 +15,8 @@ import endrov.ev.EvLogStdout;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucSel;
 import endrov.nuc.NucVoronoi;
+import endrov.nuc.ccm.CellContactMap;
+import endrov.nuc.ccm.CellContactMapToHTML;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
@@ -24,7 +26,7 @@ import endrov.util.Tuple;
  * @author Johan Henriksson
  *
  */
-public class NucToCCM
+public class NucLineageToCCM
 	{
 
 	
@@ -141,6 +143,8 @@ public class NucToCCM
 	
 	
 	
+	//public static void calcCCM(EvData data)
+	
 	public static void main(String[] args)
 		{
 		EvLog.listeners.add(new EvLogStdout());
@@ -168,7 +172,7 @@ public class NucToCCM
 		HashMap<String,CellContactMap> maps=new HashMap<String, CellContactMap>();
 		maps.put("ref",ccm);
 		
-		CellContactMapHTML.generateHTML(maps, ccmFile);
+		CellContactMapToHTML.generateHTML(maps, ccmFile);
 		
 		
 		System.exit(0);

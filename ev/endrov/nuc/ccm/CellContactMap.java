@@ -44,8 +44,7 @@ public class CellContactMap extends EvObject
 	
 	public static class NucInfo
 		{
-		EvDecimal firstFrame, lastFrame;
-		//int lifeLen=0; //TODO Think this could be excluded. Remove nuc with 0 life len
+		public EvDecimal firstFrame, lastFrame;
 		}
 	
 	public NucInfo getCreateInfo(String name)
