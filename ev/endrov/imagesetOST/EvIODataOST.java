@@ -362,7 +362,7 @@ public class EvIODataOST implements EvIOData
 	  Format format=Format.getPrettyFormat();
 	  XMLOutputter outputter = new XMLOutputter(format);
 	  outputter.output(document, os);
-	  d.setMetadataModified(false);
+	  d.setMetadataNotModified();
 	  }
 	public static void saveMeta(EvData d, File outfile) throws IOException
 	  {
@@ -381,7 +381,7 @@ public class EvIODataOST implements EvIOData
 		for(Map.Entry<EvObject, DiskBlob> e:mapBlobs.entrySet())
 			e.getKey().ostBlobID=e.getValue().currentDir;
 		saveMeta(d,getMetaFile());  
-		d.setMetadataModified(false);
+		//d.setMetadataModified(false);
 		}
 		
 	/**

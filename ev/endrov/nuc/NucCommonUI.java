@@ -64,9 +64,6 @@ public class NucCommonUI implements ActionListener
 	
 	public void addToMenu(JComponent menuLineage, boolean addAccel)
 		{
-
-
-		
 		miRename.addActionListener(this);
 		miNewNuc.addActionListener(this);
 		miMerge.addActionListener(this);
