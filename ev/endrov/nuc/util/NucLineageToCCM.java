@@ -53,11 +53,8 @@ public class NucLineageToCCM
 				{
 				ccm.getCreateInfo(name).firstFrame=nuc.getFirstFrame();
 				ccm.getCreateInfo(name).lastFrame=nuc.getLastFrame();
-				//ccm.firstFrame.put(name, nuc.getFirstFrame());
-				//ccm.lastFrame.put(name, nuc.getLastFrame());
 				}
 			}
-		//ccm.allNuc=nucNames;
 		
 		//Prepare different indexing
 		for(String n:nucNames)
@@ -127,11 +124,6 @@ public class NucLineageToCCM
 				//Turn into more suitable index ordering for later use
 				for(Tuple<String, String> e:nvor.getNeighPairSet())
 					ccm.addFrame(e.fst(),e.snd(),curframe);
-				/*
-				//Calculate lifelen
-				for(Map.Entry<NucSel, NucLineage.NucInterp> e:inter.entrySet())
-					ccm.addLifelen(e.getKey().snd());
-				*/
 				}
 			catch (Exception e)
 				{
