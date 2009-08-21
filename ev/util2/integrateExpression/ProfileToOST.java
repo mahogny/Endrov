@@ -12,10 +12,19 @@ import endrov.util.*;
  * @author Johan Henriksson
  *
  */
-public class AssembleAllOST
+public class ProfileToOST
 	{
 	
-	
+	/**
+	 * 
+	 * WHAT IS THIS USED FOR??????
+	 * 
+	 * appears not used
+	 * 
+	 * I believe it is for putting all data into one OST
+	 * 
+	 * 
+	 */
 	
 	
 	public static void main(String[] args)
@@ -41,7 +50,7 @@ public class AssembleAllOST
 					{
 					File APfile=new File(new File(f,"data"),"AP20-GFPb");
 //					File APfile=new File(new File(f,"data"),"AP20-GFP");
-					Tuple<String, String> nameDate=AssembleAllHTML.nameDateFromOSTName(f.getName());
+					Tuple<String, String> nameDate=ProfileToHTML.nameDateFromOSTName(f.getName());
 					
 					////////////////////////// AP-profile //////////////////////////////
 					if(APfile.exists())

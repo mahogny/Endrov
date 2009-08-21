@@ -19,7 +19,7 @@ import endrov.util.Tuple;
  * @author Johan Henriksson
  *
  */
-public class AssembleAllHTML
+public class ProfileToHTML
 	{
 	
 	public static boolean isNumber(String s)
@@ -178,19 +178,19 @@ public class AssembleAllHTML
 
 		try
 			{
-			String ap3dTotTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap3d.html"));
-			String ap3dCellTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap3dcell.html"));
-			String ap2dTotTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap2d.html"));
-			String ap2dCellTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap2dcell.html"));
-			String tTotTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("t.html"));
-			String tCellTemplate=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("tcell.html"));
+			String ap3dTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3d.html"));
+			String ap3dCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3dcell.html"));
+			String ap2dTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2d.html"));
+			String ap2dCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2dcell.html"));
+			String tTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("t.html"));
+			String tCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("tcell.html"));
 			StringBuffer sbAp3dCells=new StringBuffer();
 			StringBuffer sbAp2dCells=new StringBuffer();
 			StringBuffer sbTCells=new StringBuffer();
 			
-			String gnuplotAP3d=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap3d.gnu"));
-			String gnuplotAP2d=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("ap2d.gnu"));
-			String gnuplotT=EvFileUtil.readStream(AssembleAllHTML.class.getResourceAsStream("t.gnu"));
+			String gnuplotAP3d=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3d.gnu"));
+			String gnuplotAP2d=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2d.gnu"));
+			String gnuplotT=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("t.gnu"));
 			
 			File tempdatFile=File.createTempFile("surface", ".dat");
 			System.out.println(tempdatFile);

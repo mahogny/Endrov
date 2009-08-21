@@ -50,14 +50,15 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		}
 	
 	
-
-	public JMenuItem getMenuItem()
+	
+	
+	private void fillMenu(JComponent menu)
 		{
-		JMenu menu=new JMenu("Nucleus");
-
 		new NucCommonUI(w).addToMenu(menu, false);
-		menu.addSeparator();
+		//menu.addSeparator();
 
+		menu.add(new JSeparator());
+		
 		//JMenu setColor=NucCommonUI.makeSetColorMenu();
 		//menu.add(setColor);
 		
@@ -93,9 +94,12 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				}
 		});		
 		menu.add(miAuto);
-		
+		}
 
-		
+	public JMenuItem getMenuItem()
+		{
+		JMenu menu=new JMenu("Nucleus");
+		fillMenu(menu);
 		return menu;
 		}
 	public void actionPerformed(ActionEvent e)
@@ -115,6 +119,12 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		{
 		if(SwingUtilities.isLeftMouseButton(e) && !r.getVisibleLineages().isEmpty())
 			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+		else if(SwingUtilities.isRightMouseButton(e))
+			{
+			JPopupMenu popup=new JPopupMenu();
+			fillMenu(popup);
+			popup.show(e.getComponent(),e.getX(),e.getY());
+			}
 		}
 	
 	public void mouseDragged(MouseEvent e, int dx, int dy)

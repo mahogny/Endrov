@@ -8,6 +8,7 @@ import javax.vecmath.Vector3d;
 
 import endrov.coordinateSystem.CoordinateSystem;
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.ev.*;
 import endrov.imageset.*;
@@ -63,7 +64,18 @@ public class NewIntExp
 		//doOne(new File("/home/tbudev3/TB2141_070621_b.ost"));
 		// doOne(new File("/Volumes2/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 
-		doOne(new File("/Volumes/TBU_main03/daemon/output/TB2111_090123.ost"));
+//		doOne(new File("/Volumes/TBU_main03/daemon/output/TB2111_090123.ost"));
+		
+		for(File parent:new File[]{
+				new File("/Volumes/TBU_main01/ost4dgood"),
+				new File("/Volumes/TBU_main02/ost4dgood"),
+				new File("/Volumes/TBU_main03/ost4dgood"),
+		})
+			for(File f:parent.listFiles())
+				if(f.getName().endsWith(".ost"))
+					doOne(f);
+			
+		
 	/*	
 		for(File f:new File("/Volumes/TBU_main03/daemon/output").listFiles())
 			if(f.getName().endsWith(".ost"))
@@ -77,6 +89,40 @@ public class NewIntExp
 		{
 		EvData data = EvData.loadFile(f);
 
+		
+		
+		
+		/////////////
+		//temp. this is for finding work
+		
+		Map<EvPath,EvChannel> obs=data.getIdObjectsRecursive(EvChannel.class);
+		boolean toInclude=false;
+		
+		for(EvPath p:obs.keySet())
+			if(p.getLeafName().equals("GFP"))
+				toInclude=true;
+		
+		if(toInclude)
+			{
+			boolean hasShell=!data.getIdObjectsRecursive(EvChannel.class).isEmpty();
+			boolean hasLineage=!data.getIdObjectsRecursive(NucLineage.class).isEmpty();
+			System.out.println("Include: "+f+"    "+(hasShell?"shell":"")+"    "+(hasLineage?"lineage":""));
+			
+			
+			}
+		
+		
+		
+		
+		if(1==1)
+		return;
+		//////////
+		
+		
+		
+		
+		
+		
 		int numSubDiv = 20;
 		String channelName = "GFP";
 		String expName = "exp"; // Neutral name

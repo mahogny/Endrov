@@ -49,8 +49,8 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 			Imageset rec=w.getImageset();
 			EvChannel c=w.getSelectedChannel();
 			
-			double ddx=dx/w.getZoom();
-			double ddy=dy/w.getZoom();
+			double ddx=dx/w.getZoom(); //To world coordinates
+			double ddy=dy/w.getZoom(); 
 			if(c!=null)
 				{
 				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
