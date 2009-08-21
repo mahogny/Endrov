@@ -8,7 +8,6 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import javax.imageio.ImageIO;
-import endrov.ev.*;
 import endrov.util.*;
 
 
@@ -47,8 +46,8 @@ public class CellContactMapHTML
 		if(ov==null || ov.isEmpty())
 			return neighOverlaps;
 		//NucLineage.Nuc thisNuc=ccm.lin.nuc.get(nucName);
-		EvDecimal firstFrame=ccm.firstFrame.get(nucName);
-		EvDecimal lastFrame=ccm.lastFrame.get(nucName);
+		EvDecimal firstFrame=ccm.nucInfo.get(nucName).firstFrame;
+		EvDecimal lastFrame=ccm.nucInfo.get(nucName).lastFrame;
 		//This could be a potential fix for the last-frame-is-not-in-contact problem.
 		//Problem is, it does so by ignoring the last part which has other problems.
 		//EvDecimal lastFrame=thisNuc.pos.lastKey();
@@ -90,19 +89,16 @@ public class CellContactMapHTML
 	
 	
 	
-	
+	/**
+	 * Generate HTML representation, place in given directory
+	 */
 	public static void generateHTML(Map<String,CellContactMap> orderedCCM, File targetdirTree)
 		{
 		try
 			{
-			EvLog.listeners.add(new EvLogStdout());
-			EV.loadPlugins();
-
 			NumberFormat percentFormat=NumberFormat.getInstance();
 			percentFormat.setMinimumFractionDigits(1);
 			percentFormat.setMaximumFractionDigits(1);
-
-
 
 			Map<CellContactMap,Integer> numidMap=new HashMap<CellContactMap, Integer>();
 			
@@ -117,11 +113,14 @@ public class CellContactMapHTML
 			//Which nuclei are covered, in total?
 			TreeSet<String> nucNames=new TreeSet<String>();
 			for(CellContactMap e:orderedCCM.values())
-				nucNames.addAll(e.allNuc);
-
+				nucNames.addAll(e.nucInfo.keySet());
 			
 			/////// HTML files for all contacts
+			if(targetdirTree.exists())
+				EvFileUtil.deleteRecursive(targetdirTree);
 			targetdirTree.mkdirs();
+			
+			
 			
 			String updateTime=new Date().toString();
 
@@ -130,11 +129,11 @@ public class CellContactMapHTML
 			writeBar(new File(targetdirTree,"a_bar.png"),Color.white);
 
 			//Write cell list files
-			StringBuffer mainSingleOut=new StringBuffer();
+			//StringBuffer mainSingleOut=new StringBuffer();
 			StringBuffer mainTreeOut=new StringBuffer();
-			for(String nucName:orderedCCM.keySet())
+			for(String nucName:nucNames)
 				{
-				mainSingleOut.append("<a href=\""+nucName+"_neigh.htm\">"+nucName+"</a></br>");
+				//mainSingleOut.append("<a href=\""+nucName+"_neigh.htm\">"+nucName+"</a></br>");
 				mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
 				}
 			EvFileUtil.writeFile(new File(targetdirTree,"index.htm"),
@@ -160,10 +159,7 @@ public class CellContactMapHTML
 				//StringBuffer subhMain=new StringBuffer();
 				StringBuffer subhTime=new StringBuffer(); //f2
 				for(Map.Entry<String,CellContactMap> e:orderedCCM.entrySet())
-					{
-					//subhMain.append("<td><tt>"+numidMap.get(lin)+"</tt></td>");
 					subhTime.append("<td width=\""+clength+"\"><tt>"+numidMap.get(e.getValue())+"</tt></td>");
-					}
 
 				//Compare with all other nuclei
 				for(String nucName2:nucNames)
@@ -174,10 +170,10 @@ public class CellContactMapHTML
 					int sa=0; //# co-occurance
 					for(Map.Entry<String,CellContactMap> e:orderedCCM.entrySet())
 						{
-						CellContactMap lin=e.getValue();
-						if(isAnnotated(lin, nucName2))
+						CellContactMap ccm=e.getValue();
+						if(isAnnotated(ccm, nucName2))
 							{
-							if(!lin.contactsf.get(nucName).get(nucName2).isEmpty())
+							if(!ccm.contactsf.get(nucName).get(nucName2).isEmpty())
 								sa++;
 							}
 						else
@@ -207,13 +203,19 @@ public class CellContactMapHTML
 							{
 							CellContactMap ccm=e.getValue();
 							
-							double percLifeLen=100*(double)ccm.contactsf.get(nucName).get(nucName2).size()/ccm.lifelen.get(nucName);
-							if(ccm.lifelen.get(nucName)==0)// || percLifeLen<1)
+							EvDecimal lifeLen=ccm.nucInfo.get(nucName).lastFrame.subtract(ccm.nucInfo.get(nucName).firstFrame);
+//							double percLifeLen=100*(double)ccm.contactsf.get(nucName).get(nucName2).size()/ccm.nucInfo.get(nucName).lifeLen;
+							double percLifeLen=100*(double)ccm.contactsf.get(nucName).get(nucName2).size()/lifeLen.doubleValue();
+							/*
+							if(ccm.nucInfo.get(nucName).lifeLen==0)// || percLifeLen<1)
 								percLifeLen=0;
+								*/
 
+							
 							//Formatting for non-time CCM
 							String neighColor;
 							String neighString;
+							
 							if(!isAnnotated(ccm,nucName))	//this (nucname) not annotated
 								{
 								neighColor=htmlColorNT;
@@ -254,7 +256,6 @@ public class CellContactMapHTML
 									timeString=neighString="&nbsp;";
 								}
 
-							//bodyNeigh.append("<td bgcolor=\""+neighColor+"\"><tt>"+neighString+"</tt></td>\n");
 							bodyTime.append("<td bgcolor=\""+timeColor+"\"><tt>"+timeString+"</tt></td>\n");
 							}
 
@@ -278,22 +279,19 @@ public class CellContactMapHTML
 			{
 			e.printStackTrace();
 			}
-		System.out.println("done");
-		System.exit(0);
 		}
 	
 	
-	//TODO only add nucs which are not pos-empty
-	public static boolean isAnnotated(CellContactMap lin, String nucname)
+	private static boolean isAnnotated(CellContactMap lin, String nucName)
 		{
-		return lin.allNuc.contains(nucname);
+		return lin.nucInfo.containsKey(nucName);
 		}
 	
 
 	/**
 	 * Generate optimized HTML for overlaps by using RLE
 	 */
-	public static String getOverlapBar(boolean[] neighOverlaps)	
+	private static String getOverlapBar(boolean[] neighOverlaps)	
 		{
 		StringBuffer imgcode=new StringBuffer();
 
@@ -320,7 +318,7 @@ public class CellContactMapHTML
 		return imgcode.toString();
 		}
 
-	public static String getOverlapImage(int len, boolean current)
+	private static String getOverlapImage(int len, boolean current)
 		{
 		return "<img width=\""+len+"\" height=\""+cheight+"\" src=\""+(current ? 'n' : 'a')+"_bar.png\">";
 		}
@@ -329,7 +327,7 @@ public class CellContactMapHTML
 	/**
 	 * Write bar image
 	 */
-	public static void writeBar(File file, Color col) throws IOException
+	private static void writeBar(File file, Color col) throws IOException
 		{
 		BufferedImage bim=new BufferedImage(1,cheight,BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D g=bim.createGraphics();
