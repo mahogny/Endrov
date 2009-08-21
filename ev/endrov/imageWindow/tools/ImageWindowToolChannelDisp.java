@@ -48,18 +48,25 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 			{
 			Imageset rec=w.getImageset();
 			EvChannel c=w.getSelectedChannel();
+			
 			double ddx=dx/w.getZoom();
 			double ddy=dy/w.getZoom();
 			if(c!=null)
 				{
-				c.defaultDispX+=ddx;
-				c.defaultDispY+=ddy;
-				
 				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
 					{
 					EvStack stack=frames.getValue();
-					stack.dispX+=ddx;
-					stack.dispY+=ddy;
+					stack.dispX+=stack.scaleWorldImageX(ddx); 
+					stack.dispY+=stack.scaleWorldImageY(ddy); 
+			
+					//stack.dispX+=ddx;
+					//stack.dispY+=ddy;
+					
+					
+					c.defaultDispX=stack.dispX;
+					c.defaultDispY=stack.dispY;
+					
+					//mark metadata dirty?
 					}
 				
 				BasicWindow.updateWindows();
@@ -78,4 +85,3 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 	public void deselected() {}
 	}
 
-//TODO: for channel displacement. mark dirty imageset, save
