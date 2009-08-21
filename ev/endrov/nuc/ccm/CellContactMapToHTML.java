@@ -12,22 +12,19 @@ import endrov.util.*;
 
 
 /**
- * Calculate cell contact map.
- * Output number of contacts for each frame.
- * 
- * about 40min on xeon
+ * Generate HTML from CCMs
  * 
  * @author Johan Henriksson, Jurgen Hench
  *
  */
-public class CellContactMapHTML
+public class CellContactMapToHTML
 	{
-	public static String htmlColorNotNeigh="#ffffff";
-	public static String htmlColorNA="#cccccc";
-	public static String htmlColorNT="#666666";
-	public static String htmlColorSelf="#33ccff";
-	public static final int clength=50; //[px]
-	public static final int cheight=13; //[px]
+	private static String htmlColorNotNeigh="#ffffff";
+	private static String htmlColorNA="#cccccc";
+	private static String htmlColorNT="#666666";
+	private static String htmlColorSelf="#33ccff";
+	private static final int clength=50; //[px]
+	private static final int cheight=13; //[px]
 	
 
 	/**
@@ -137,10 +134,10 @@ public class CellContactMapHTML
 				mainTreeOut.append("<a href=\""+nucName+"_neightime.htm\">"+nucName+"</a></br>");
 				}
 			EvFileUtil.writeFile(new File(targetdirTree,"index.htm"),
-					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapHTML.class.getResource("main_tree.htm")))
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapToHTML.class.getResource("main_tree.htm")))
 					.replace("BODY", mainTreeOut));
 			EvFileUtil.writeFile(new File(targetdirTree,"style.css"),
-					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapHTML.class.getResource("style.css"))));
+					EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapToHTML.class.getResource("style.css"))));
 
 			//List datasets
 			StringBuffer outDatasets=new StringBuffer();
@@ -149,7 +146,7 @@ public class CellContactMapHTML
 
 			//Write out HTML, cell by cell. Reference lineage is the first one in the list
 			//nucName: everything in the file is about this cell
-			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapHTML.class.getResource("neigh.htm")));
+			String neighTemplate=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CellContactMapToHTML.class.getResource("neigh.htm")));
 			for(String nucName:nucNames)
 				{
 				//StringBuffer bodyNeigh=new StringBuffer();
@@ -203,57 +200,26 @@ public class CellContactMapHTML
 							{
 							CellContactMap ccm=e.getValue();
 							
-							EvDecimal lifeLen=ccm.nucInfo.get(nucName).lastFrame.subtract(ccm.nucInfo.get(nucName).firstFrame);
-//							double percLifeLen=100*(double)ccm.contactsf.get(nucName).get(nucName2).size()/ccm.nucInfo.get(nucName).lifeLen;
-							double percLifeLen=100*(double)ccm.contactsf.get(nucName).get(nucName2).size()/lifeLen.doubleValue();
-							/*
-							if(ccm.nucInfo.get(nucName).lifeLen==0)// || percLifeLen<1)
-								percLifeLen=0;
-								*/
-
-							
 							//Formatting for non-time CCM
-							String neighColor;
-							String neighString;
+							String timeColor;
+							String timeString;
 							
 							if(!isAnnotated(ccm,nucName))	//this (nucname) not annotated
 								{
-								neighColor=htmlColorNT;
-								neighString="<font color=\"#ffffff\">n.t.</font>";
+								timeColor=htmlColorNT;
+								timeString="<font color=\"#ffffff\">n.t.</font>";
 								}
 							else if(!isAnnotated(ccm,nucName2))	//nucname2 not annotated
 								{
-								neighColor=htmlColorNA;
-								neighString="n.a.";
+								timeColor=htmlColorNA;
+								timeString="n.a.";
 								}
-							else if(percLifeLen!=0) //Is neighbour
+							else
 								{
-								neighColor=scoreColor;
-								neighString=percentFormat.format(percLifeLen);
-								}
-							else //Is not neighbour
-								{
-								neighColor=htmlColorNotNeigh;
-								neighString="&nbsp;";
-								}
-
-							//Basic formatting for time CCM based on non-time CCM
-							String timeColor=neighColor;
-							if(timeColor==scoreColor)
 								timeColor=htmlColorNotNeigh;
-							String timeString=neighString;
-
-							//Format time based on when there is overlap
-							if(!ccm.contactsf.get(nucName).get(nucName2).isEmpty())
-								{
-								if(percLifeLen!=0)
-									{
-									boolean[] neighOverlaps=getOverlaps(ccm, nucName, nucName2);
-									//Convert frame overlap to image
-									timeString=getOverlapBar(neighOverlaps).toString();
-									}
-								else
-									timeString=neighString="&nbsp;";
+								timeString="&nbsp;";
+								boolean[] neighOverlaps=getOverlaps(ccm, nucName, nucName2);
+								timeString=getOverlapBar(neighOverlaps).toString();
 								}
 
 							bodyTime.append("<td bgcolor=\""+timeColor+"\"><tt>"+timeString+"</tt></td>\n");

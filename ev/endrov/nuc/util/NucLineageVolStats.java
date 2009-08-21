@@ -1,4 +1,4 @@
-package endrov.nuc.ccm;
+package endrov.nuc.util;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -18,7 +18,7 @@ import endrov.util.EvDecimal;
  * Calculate volume statistics
  * @author Johan Henriksson
  */
-public class VolStats
+public class NucLineageVolStats
 	{
 	public static boolean showNeigh=false;
 	public static boolean saveNormalized=true;
