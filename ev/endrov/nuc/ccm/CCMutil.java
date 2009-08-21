@@ -1,6 +1,7 @@
 package endrov.nuc.ccm;
 
 /**
+ * Various helper routines
  * 
  * @author Johan Henriksson
  *

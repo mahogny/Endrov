@@ -35,7 +35,7 @@ public class EvData extends EvContainer
 	/**
 	 * Registered types of metadata
 	 */
-	public static TreeMap<String,Class<? extends EvObject>> supportedMetadataFormats=new TreeMap<String,Class<? extends EvObject>>();
+	public static Map<String,Class<? extends EvObject>> supportedMetadataFormats=Collections.synchronizedMap(new TreeMap<String,Class<? extends EvObject>>());
 	
 	/**
 	 * Data opened by the user and hence visible as a working data set

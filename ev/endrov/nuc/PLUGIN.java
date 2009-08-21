@@ -1,5 +1,6 @@
 package endrov.nuc;
 import endrov.ev.PluginDef;
+import endrov.nuc.ccm.CellContactMap;
 
 public class PLUGIN extends PluginDef
 	{
@@ -30,7 +31,10 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{NucLineage.class};
+		return new Class[]{
+				NucLineage.class,
+				CellContactMap.class,
+				};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};
