@@ -10,7 +10,9 @@ import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.ev.*;
 import endrov.imageset.EvChannel;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
+import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 
 
@@ -18,12 +20,13 @@ import endrov.util.EvXmlUtil;
  * Fix TBU data
  * @author Johan Henriksson
  */
-public class CleanTBU2
+public class CleanTBUfixRes
 	{
 	public static void makeOST(File file)
 		{
 		if(file.getName().endsWith(".ost"))
 			{
+			
 			System.out.println("----- "+file);
 			EvData data=EvData.loadFile(file);
 			
@@ -46,7 +49,19 @@ public class CleanTBU2
 			
 			
 			 
-			
+			EvChannel ch=(EvChannel)im.metaObject.get("DIC");
+			if(ch!=null)
+				{
+				EvStack stack=ch.getFirstStack();
+				
+				
+				if(stack.lastZ().greater(new EvDecimal(40)))
+					{
+					System.out.println("Resolution detected wrong");
+					
+					}
+				
+				}
 			
 			
 			
@@ -82,10 +97,12 @@ public class CleanTBU2
 				
 			};
 		for(String s:arg)
-			if(new File(s).isDirectory())
-				for(File file:(new File(s)).listFiles())
-					if(file.isDirectory())
-						makeOST(file);
+			if(s.contains("4d"))
+				if(new File(s).isDirectory())
+					for(File file:(new File(s)).listFiles())
+						if(file.getName().startsWith("TB"))
+							if(file.isDirectory())
+								makeOST(file);
 		System.exit(0);
 		}
 

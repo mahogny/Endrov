@@ -71,6 +71,9 @@ public class NucRenameDialog extends JDialog implements ActionListener
 		bOk.addActionListener(this);
 		bCancel.addActionListener(this);
 
+//		inputName.setfoc
+		//TODO give focus, select text
+		 
 		pack();
 		setLocationRelativeTo(frame);
 		setVisible(true);
