@@ -97,10 +97,10 @@ public class Flow extends EvObject
 			}
 		}
 
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
 		//e.setName(metaType);
-		saveMetadata(e,units);
+		return saveMetadata(e,units);
 		/*
 		Map<FlowUnit, Integer> numMap=new HashMap<FlowUnit, Integer>();
 		int nexti=0;
@@ -132,9 +132,8 @@ public class Flow extends EvObject
 	/**
 	 * Save a subset of the metadata. Useful for copy-paste
 	 */
-	public void saveMetadata(Element e, Collection<FlowUnit> selection)
+	public String saveMetadata(Element e, Collection<FlowUnit> selection)
 		{
-		e.setName(metaType);
 		Map<FlowUnit, Integer> numMap=new HashMap<FlowUnit, Integer>();
 		int nexti=0;
 		//Save all units
@@ -161,6 +160,8 @@ public class Flow extends EvObject
 				ne.setAttribute("toArg",c.toArg);
 				e.addContent(ne);
 				}
+		
+		return metaType;
 		}
 	
 	

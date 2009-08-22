@@ -424,10 +424,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 		}
 
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
-		
 		//Retrieve default stack settings
 		if(!imageLoader.isEmpty())
 			{
@@ -513,6 +511,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 				}
 			
 			}
+		
+		return metaType;
 		}
 
 

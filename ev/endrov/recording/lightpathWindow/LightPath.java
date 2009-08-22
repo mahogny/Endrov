@@ -23,7 +23,7 @@ import endrov.hardware.DevicePath;
  */
 public class LightPath extends EvObject
 	{
-
+	private static final String metaType="lightpath";
 	
 	public Map<DevicePath,UnitInfo> units=new HashMap<DevicePath, UnitInfo>();
 	
@@ -57,9 +57,9 @@ public class LightPath extends EvObject
 		}
 
 
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		// TODO Auto-generated method stub
+		return metaType;
 		}
 	
 	

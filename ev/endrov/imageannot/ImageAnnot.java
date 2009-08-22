@@ -81,15 +81,15 @@ public class ImageAnnot extends EvObject implements Cloneable
 	/**
 	 * Save data
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
-		
 		e.setAttribute("x", ""+pos.x);
 		e.setAttribute("y", ""+pos.y);
 		e.setAttribute("z", ""+pos.z);
 		e.setAttribute("frame", ""+frame);
 		e.setAttribute("text", ""+text);
+		
+		return metaType;
 		}
 	
 	/**

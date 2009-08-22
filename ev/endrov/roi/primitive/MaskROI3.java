@@ -187,8 +187,9 @@ public class MaskROI3 extends ROI
 		}
 	
 	
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
+		return metaType;
 		}
 	
 	public void loadMetadata(Element e)

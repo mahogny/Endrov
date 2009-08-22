@@ -65,13 +65,13 @@ public class ExampleObject extends EvObject
 		}
 
 	@Override
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType); //Minimal requirement
-		
 		Element someData=new Element("extendedData");
 		someData.setAttribute("foo",myValue);
 		e.addContent(someData);
+		
+		return metaType; //Minimum requirement
 		}
 
 	}

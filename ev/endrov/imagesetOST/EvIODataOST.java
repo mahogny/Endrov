@@ -286,22 +286,50 @@ public class EvIODataOST implements EvIOData
 		return null;
 		}
 
-
 	/**
-	 * What should the filename be, given the compression?
+	 * Acceptable path, but not the right location
 	 */
-	private File fileShouldBe(EvChannel ch, EvDecimal frame, EvDecimal z)
+	/*
+	private File fileShouldBeOld(EvChannel ch, EvDecimal frame, EvDecimal z)
 		{
 		if(ch.compression==100)
 			return buildImagePath33(ch, frame,z,".png");
 		else
 			return buildImagePath33(ch, frame,z,".jpg"); //TODO jpeg2000 support
+		}*/
+
+	/**
+	 * What should the filename be, given the compression?
+	 */
+	private File fileShouldBe(EvChannel ch, EvDecimal frame, EvDecimal z, EvDecimal resZ, EvDecimal dispZ)
+		{
+		int d=(int)Math.round(z.subtract(dispZ).divide(resZ).doubleValue());
+		//TODO don't like the (int), can it all be done with evdecimal?
+		String zs="b"+EV.pad(d, 8);
+		
+		/*
+		if(ch.compression==100)
+			return buildImagePath33(ch, frame,z,".png");
+		else
+			return buildImagePath33(ch, frame,z,".jpg"); //TODO jpeg2000 support
+		*/
+		if(ch.compression==100)
+			return buildImagePath33(ch, frame,zs,".png");
+		else
+			return buildImagePath33(ch, frame,zs,".jpg"); //TODO jpeg2000 support
+
 		}
 	
 	/** Internal: piece together a path to an image */
+	/*
 	private File buildImagePath33(EvChannel ch, EvDecimal frame, EvDecimal slice, String ext)
 		{
 		return buildImagePath(buildFramePath(mapBlobs.get(ch).getDirectory(), frame), slice, ext);
+		}
+	*/
+	private File buildImagePath33(EvChannel ch, EvDecimal frame, String slice, String ext)
+		{
+		return new File(buildFramePath(mapBlobs.get(ch).getDirectory(), frame), slice+ext);
 		}
 	
 	/** Internal: piece together a path to a channel */
@@ -381,7 +409,6 @@ public class EvIODataOST implements EvIOData
 		for(Map.Entry<EvObject, DiskBlob> e:mapBlobs.entrySet())
 			e.getKey().ostBlobID=e.getValue().currentDir;
 		saveMeta(d,getMetaFile());  
-		//d.setMetadataModified(false);
 		}
 		
 	/**
@@ -393,7 +420,7 @@ public class EvIODataOST implements EvIOData
 			{
 			allocateBlobs(data);
 			saveMetaDataOnly(data, cb);
-			saveImages(data);
+			saveImages(data); //Important that this is done after saving meta
 			}
 		catch (IOException e)
 			{
@@ -415,8 +442,6 @@ public class EvIODataOST implements EvIOData
 			datae.getValue().ostBlobID=blob.currentDir;
 			if(blob.currentDir==null)
 				System.out.println("Warning: set blobid=null when saving");
-			
-//			System.out.println("id "+datae.getKey()+"    "+datae.getValue().ostBlobID);
 			}
 		
 		
@@ -433,9 +458,6 @@ public class EvIODataOST implements EvIOData
 	 */
 	private void saveImages(EvData data)
 		{
-		
-		//Map<String,Imageset> dataImagesets=data.getIdObjects(Imageset.class);
-		//Map<EvPath,Imageset> dataImagesets=data.getIdObjectsRecursive(Imageset.class);
 		Map<EvPath,EvChannel> dataChannels=data.getIdObjectsRecursive(EvChannel.class);
 		
 		try
@@ -493,17 +515,21 @@ public class EvIODataOST implements EvIOData
 				{
 				//Imageset im=datae.getValue();
 				EvChannel ch=datae.getValue();
+
 				//for(Map.Entry<String, EvChannel> ce:im.getChannels().entrySet())
 					for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
 						for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 							{
+							EvStack stack=fe.getValue();
+							
 							//Does the image belong to this IO?
 							EvIOImage oldio=ie.getValue().io;
 							boolean belongsToThisDatasetIO = oldio!=null && oldio instanceof SliceIO && ((SliceIO)oldio).ost==this;
 							//System.out.println("belongs to imageset "+belongsToThisDatasetIO);
 
 							//Where should new file be written?
-							File newFile=fileShouldBe(ch, fe.getKey(),ie.getKey());
+							File newFile=fileShouldBe(ch, fe.getKey(),ie.getKey(), stack.resZ, stack.dispZ);
+
 
 							//Check if dirty
 							boolean dirty=!belongsToThisDatasetIO;
@@ -646,51 +672,32 @@ public class EvIODataOST implements EvIOData
 					{
 					DiskBlob blob=ime.getValue();
 					EvChannel ch=(EvChannel)ime.getKey();
-//					Imageset im=(Imageset)ime.getKey();
 
-					/*
-					//Totally delete non-existing channel directories
-					File blobDir=blob.getDirectory();
-					for(String oldChannel:blob.diskImageLoader.keySet())
-						if(!im.metaObject.containsKey(oldChannel))
-							{
-							File chdir=new File(blobDir,"ch-"+oldChannel);
-							if(EV.debugMode)
-								System.out.println("Deleting entire channel: "+oldChannel);
-							if(chdir.exists())
-								EvFileUtil.deleteRecursive(chdir);
-							}
-					blob.diskImageLoader.keySet().retainAll(im.getChannels().keySet());
-*/
-					
 					//Partially delete existing channel directories
-					//for(String channelName:blob.diskImageLoader.keySet())
+					File chanPath=blob.getDirectory();
+
+					//Delete entire frames
+					HashSet<EvDecimal> removeFrame=new HashSet<EvDecimal>(blob.diskImageLoader33.keySet());
+					removeFrame.removeAll(ch.imageLoader.keySet());
+					for(EvDecimal frame:removeFrame)
 						{
-						File chanPath=blob.getDirectory();//buildChannelPath(im,channelName);
-						
-						//Delete entire frames
-						HashSet<EvDecimal> removeFrame=new HashSet<EvDecimal>(blob.diskImageLoader33.keySet());
-						removeFrame.removeAll(ch.imageLoader.keySet());
-						for(EvDecimal frame:removeFrame)
+						File f=buildFramePath(chanPath, frame);
+						if(EV.debugMode)
+							System.out.println("Totally deleting frame "+frame);
+						if(f.exists())
+							EvFileUtil.deleteRecursive(f);
+						}
+					blob.diskImageLoader33.keySet().retainAll(ch.imageLoader.keySet());
+
+					//Delete slices
+					for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> framee:blob.diskImageLoader33.entrySet())
+						{
+						framee.getValue().keySet().removeAll(ch.imageLoader.get(framee.getKey()).keySet());
+						for(File f:framee.getValue().values())
 							{
-							File f=buildFramePath(chanPath, frame);
 							if(EV.debugMode)
-								System.out.println("Totally deleting frame "+frame);
-							if(f.exists())
-								EvFileUtil.deleteRecursive(f);
-							}
-						blob.diskImageLoader33.keySet().retainAll(ch.imageLoader.keySet());
-						
-						//Delete slices
-						for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> framee:blob.diskImageLoader33.entrySet())
-							{
-							framee.getValue().keySet().removeAll(ch.imageLoader.get(framee.getKey()).keySet());
-							for(File f:framee.getValue().values())
-								{
-								if(EV.debugMode)
-									System.out.println("deleting slice "+f);
-								f.delete();
-								}
+								System.out.println("deleting slice "+f);
+							f.delete();
 							}
 						}
 					}
@@ -701,20 +708,18 @@ public class EvIODataOST implements EvIOData
 				{
 				DiskBlob blob=getCreateBlob(ch);
 				blob.diskImageLoader33.clear();
-				//for(Map.Entry<String, EvChannel> ce:im.getChannels().entrySet())
+				
+				HashMap<EvDecimal,HashMap<EvDecimal,File>> loaderFrames=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
+				blob.diskImageLoader33=loaderFrames;//.clear();//.put(ce.getKey(), loaderFrames);
+				for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
 					{
-					HashMap<EvDecimal,HashMap<EvDecimal,File>> loaderFrames=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
-					blob.diskImageLoader33=loaderFrames;//.clear();//.put(ce.getKey(), loaderFrames);
-					for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
+					HashMap<EvDecimal,File> loaderSlices=new HashMap<EvDecimal, File>();
+					loaderFrames.put(fe.getKey(),loaderSlices);
+					for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 						{
-						HashMap<EvDecimal,File> loaderSlices=new HashMap<EvDecimal, File>();
-						loaderFrames.put(fe.getKey(),loaderSlices);
-						for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
-							{
-							SliceIO sio=(SliceIO)ie.getValue().io;
-							sio.oldio=null;
-							loaderSlices.put(ie.getKey(), sio.f);
-							}
+						SliceIO sio=(SliceIO)ie.getValue().io;
+						sio.oldio=null;
+						loaderSlices.put(ie.getKey(), sio.f);
 						}
 					}
 				}
@@ -722,7 +727,7 @@ public class EvIODataOST implements EvIOData
 			System.out.println("done saving");
 
 			//Update the fast-load cache
-			saveDatabaseCache();
+			saveDatabaseCache33();
 			}
 		catch (Exception e)
 			{
@@ -761,8 +766,10 @@ public class EvIODataOST implements EvIOData
 				d.metaObject.clear();
 				cb.fileIOStatus(0, "loading meta...");
 				d.loadXmlMetadata(new FileInputStream(metaFile));
-				cb.fileIOStatus(0.6, "loading images...");
+				cb.fileIOStatus(0.3, "loading images...");
 				scanFiles33(d, cb);
+				cb.fileIOStatus(0.6, "conversion...");
+				convertSlicesToB(d);
 				}
 			catch (FileNotFoundException e)
 				{
@@ -862,7 +869,7 @@ public class EvIODataOST implements EvIOData
 			}
 
 		
-		saveDatabaseCache();
+		saveDatabaseCache33();
 		}
 	
 
@@ -905,11 +912,20 @@ public class EvIODataOST implements EvIOData
 								{
 								//Need to calculate position
 								EvDecimal resZ=ch.defaultResZ;
-								String overrideZ=ch.metaFrame.get(framenum).get("resZ");
-								if(overrideZ!=null)
-									resZ=new EvDecimal(overrideZ);
-								//TODO: handle offset
-								slice=new EvDecimal(partname.substring(1)).multiply(resZ);
+								EvDecimal dispZ=ch.defaultDispZ;
+								if(ch.metaFrame.containsKey(framenum))
+									{
+									String overrideResZ=ch.metaFrame.get(framenum).get("resZ");
+									if(overrideResZ!=null)
+										resZ=new EvDecimal(overrideResZ);
+									
+									String overrideDispZ=ch.metaFrame.get(framenum).get("DispZ");
+									if(overrideDispZ!=null)
+										dispZ=new EvDecimal(overrideDispZ);
+									}
+								
+
+								slice=new EvDecimal(partname.substring(1)).multiply(resZ).add(dispZ);
 								
 								System.out.println("Found file "+partname);
 								}
@@ -993,11 +1009,18 @@ public class EvIODataOST implements EvIOData
 							{
 							//Need to calculate position
 							EvDecimal resZ=ch.defaultResZ;
-							String overrideZ=ch.metaFrame.get(frame).get("resZ");
-							if(overrideZ!=null)
-								resZ=new EvDecimal(overrideZ);
-							//TODO: handle offset
-							slice=new EvDecimal(s.substring(1)).multiply(resZ);
+							EvDecimal dispZ=ch.defaultDispZ;
+							if(ch.metaFrame.containsKey(frame))
+								{
+								String overrideZ=ch.metaFrame.get(frame).get("resZ");
+								if(overrideZ!=null)
+									resZ=new EvDecimal(overrideZ);
+								
+								String overrideDispZ=ch.metaFrame.get(frame).get("DispZ");
+								if(overrideDispZ!=null)
+									dispZ=new EvDecimal(overrideDispZ);
+								}
+							slice=new EvDecimal(s.substring(1)).multiply(resZ).add(dispZ);
 							}
 						else
 							slice=new EvDecimal(s);
@@ -1053,65 +1076,7 @@ public class EvIODataOST implements EvIOData
 		}
 
 	
-	/**
-	 * Save database as a cache file
-	 */
-	public void saveDatabaseCache()
-		{
-		saveDatabaseCache33();
-		/*
-		try
-			{
-			//System.out.println("# blobs "+mapBlobs.size());
-			for(DiskBlob blob:mapBlobs.values())
-				{
-				String lastExt="";
-				File cFile=getDatabaseCacheFile(blob);
-				BufferedWriter w=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cFile),"UTF-8"));
 	
-				//w.write("version2\n");
-				w.write("version1\n");
-	
-				w.write(blob.diskImageLoader.size()+"\n");
-	
-				for(Map.Entry<String, HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:blob.diskImageLoader.entrySet())
-					{
-					w.write(ce.getKey()+"\n");
-					w.write(""+ce.getValue().size()+"\n");
-					for(EvDecimal frame:ce.getValue().keySet())
-						{
-						//EvDecimal diskFrame=frame.divide(meta.metaTimestep);
-						//w.write(""+diskFrame+"\n");
-						w.write(""+frame+"\n");
-						w.write(""+ce.getValue().get(frame).size()+"\n");
-						for(Map.Entry<EvDecimal, File> fe:ce.getValue().get(frame).entrySet())
-							{
-							File imagefile=fe.getValue();
-							String filename=imagefile.getName();
-							String ext="";
-							if(filename.lastIndexOf('.')!=-1)
-								ext=filename.substring(filename.lastIndexOf('.'));
-							if(!ext.equals(lastExt))
-								{
-								w.write("ext"+ext+"\n");
-								lastExt=ext;
-								}
-							w.write(""+fe.getKey()+"\n");
-							}
-						}
-					}
-				w.close();
-				if(EV.debugMode)
-					EvLog.printLog("Wrote cache file "+cFile);
-				}
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
-			*/
-		}
-
 	
 	/**
 	 * Save database as a cache file
@@ -1179,6 +1144,60 @@ public class EvIODataOST implements EvIOData
 	/******************************************************************************************************
 	 *                               Converters for upgrading                                             *
 	 *****************************************************************************************************/
+	
+	
+	public void convertSlicesToB(EvData data)
+		{
+		boolean changed=false;
+		for(EvChannel ch:data.getIdObjectsRecursive(EvChannel.class).values())
+			{
+			for(EvStack stack:ch.imageLoader.values())
+				{
+				for(Map.Entry<EvDecimal,EvImage> e:stack.entrySet())
+					{
+					EvImage evim=e.getValue();
+					SliceIO io=(SliceIO)evim.io;
+					
+					String curName=io.f.getName();
+					if(!curName.startsWith("b"))
+						{
+						EvDecimal d=e.getKey().subtract(stack.dispZ).divide(stack.resZ);
+						int v=(int)Math.round(d.doubleValue());
+//						String s="b"+EV.pad(d, 8);
+						String s="b"+EV.pad(v, 8);
+
+						File newFile;
+
+						if(curName.endsWith(".jpg") || curName.endsWith(".jpeg"))
+							newFile=new File(io.f.getParentFile(),s+".jpg");
+						else if(curName.endsWith(".png"))
+							newFile=new File(io.f.getParentFile(),s+".png");
+						else
+							{
+							System.out.println("AIIIIEEEEE");
+							newFile=null;
+							}
+		
+						if(newFile!=null)
+							{
+							if(!changed)
+								{								
+								invalidateDatabaseCache();
+								changed=true;
+								}
+							io.f.renameTo(newFile);
+							io.f=newFile;
+							System.out.println(io.f+"  ->  "+newFile);
+							}
+						}
+					
+					
+					}
+				
+				}
+
+			}
+		}
 	
 	
 	}

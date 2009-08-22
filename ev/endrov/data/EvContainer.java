@@ -238,9 +238,9 @@ public class EvContainer
 					el.setAttribute("ostdatemodify",o.dateLastModify.toString());
 				
 				Element eData=new Element("data");
-				o.saveMetadata(eData);
-				el.setName(eData.getName());
-				eData.setName("data");
+				String metatypeName=o.saveMetadata(eData);
+				el.setName(metatypeName);
+//				eData.setName("data");
 				el.addContent(eData);
 				
 				if(el.getName().equals(tempString))

@@ -200,10 +200,8 @@ public class CellContactMap extends EvObject
 		}
 
 	@Override
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
-		
 		Element elTestedFrame=new Element("tf");
 		elTestedFrame.setText(decimalToString(framesTested).toString());
 		e.addContent(elTestedFrame);
@@ -231,7 +229,7 @@ public class CellContactMap extends EvObject
 				}
 			
 			}
-		
+		return metaType;
 		}
 	
 	

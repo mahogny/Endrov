@@ -1,0 +1,20 @@
+1. graceful move to b*.jpg etc
+2. disallow jumps in Z series, gaps makes life difficult. search for jumps on disk
+3. change EvStack to use [], or List<>.
+3.b. change all I/O to load into new format
+3.c. OPs helper code need to be changed
+4. fix broken plugins
+5. zipped imagecache
+6. optionally zipped main file
+
+=> consider this to be part of OST 3.3, no version change needed
+
+==== 
+
+* dispXY should be like dispZ
+* allow split of RMD
+* lazy loading for the heaviest plugins
+    * how automatic can this be?
+    * should return metatype, not set name
+
+=> OST 3.4

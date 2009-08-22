@@ -49,9 +49,8 @@ public class FrameTime extends EvObject
 	/**
 	 * Save down data
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
 		for(Tuple<EvDecimal,EvDecimal> p:list)
 			{
 			Element f=new Element(metaElement);
@@ -59,6 +58,8 @@ public class FrameTime extends EvObject
 			f.setAttribute("time",  ""+p.snd());
 			e.addContent(f);
 			}
+		
+		return metaType;
 		}
 
 	public void loadMetadata(Element e)

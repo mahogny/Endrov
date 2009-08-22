@@ -46,14 +46,14 @@ public class BoxROI extends ROI
 	
 	
 	
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
 		regionFrames.saveRange(e, "f");
 		regionX.saveRange(e, "x");
 		regionY.saveRange(e, "y");
 		regionZ.saveRange(e, "z");
 		regionChannels.saveRange(e, "channel");
+		return metaType;
 		}
 
 	public void loadMetadata(Element e)

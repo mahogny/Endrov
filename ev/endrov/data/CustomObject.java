@@ -22,11 +22,11 @@ public class CustomObject extends EvObject
 		return "unknown("+getMetaType()+")";
 		}
 
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(getMetaType());
 		for(Object o:xml.getChildren())
 			e.addContent((Element)((Element)o).clone()); //potential need for clone
+		return getMetaType();
 		}
 	
 	public void loadMetadata(Element e)

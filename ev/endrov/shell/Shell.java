@@ -61,10 +61,9 @@ public class Shell extends EvObject
 	/**
 	 * Save to XML
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
-		
+		//TODO NO! do not store straight in e
 		e.setAttribute("x", ""+midx);
 		e.setAttribute("y", ""+midy);
 		e.setAttribute("z", ""+midz);
@@ -74,6 +73,8 @@ public class Shell extends EvObject
 
 		e.setAttribute("angle", ""+angle);
 		e.setAttribute("angleinside", ""+angleinside);
+		
+		return metaType;
 		}
 
 	

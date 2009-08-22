@@ -87,9 +87,8 @@ public class Bookmark extends EvObject
 	/**
 	 * Save down data
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
 		if(frame!=null)
 			e.setAttribute("frame",frame.toString());
 		if(z!=null)
@@ -100,8 +99,7 @@ public class Bookmark extends EvObject
 			modelCamera.toElement(sub);
 			e.addContent(sub);
 			}
-		
-		
+		return metaType;
 		}
 
 
