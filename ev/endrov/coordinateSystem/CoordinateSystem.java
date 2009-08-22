@@ -111,9 +111,8 @@ public class CoordinateSystem extends EvObject
 	/**
 	 * Save down data
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
 		Element mide=new Element("midpoint");
 		mide.setAttribute("x",""+midpoint.x);
 		mide.setAttribute("y",""+midpoint.y);
@@ -127,6 +126,7 @@ public class CoordinateSystem extends EvObject
 			ce.setAttribute("z",""+base[i].z);
 			e.addContent(ce);
 			}
+		return metaType;
 		}
 
 	public void loadMetadata(Element e)

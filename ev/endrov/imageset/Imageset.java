@@ -175,10 +175,8 @@ public class Imageset extends EvObject
 	/**
 	 * Save down data
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
-		
 		for(String key:metaOther.keySet())
 			{
 			String val=metaOther.get(key);
@@ -194,6 +192,8 @@ public class Imageset extends EvObject
 			ne.setAttribute("name", tag);
 			e.addContent(ne);
 			}
+		
+		return metaType;
 		}
 	
 

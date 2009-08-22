@@ -146,9 +146,8 @@ public class NeighMap extends EvObject
 			}
 		}
 	
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
 		for(String aname:lifetime.keySet())
 			{
 			Element ael=new Element("cell");
@@ -175,6 +174,7 @@ public class NeighMap extends EvObject
 						}
 					}
 			}
+		return metaType;
 		}
 	
 	

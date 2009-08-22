@@ -47,7 +47,6 @@ public class CleanTBUfixRes
 			 * 
 			 */
 			
-			
 			 
 			EvChannel ch=(EvChannel)im.metaObject.get("DIC");
 			if(ch!=null)
@@ -58,6 +57,9 @@ public class CleanTBUfixRes
 				if(stack.lastZ().greater(new EvDecimal(40)))
 					{
 					System.out.println("Resolution detected wrong");
+					
+					System.out.println("resz: "+stack.resZ);
+					//Not always 1! 
 					
 					}
 				

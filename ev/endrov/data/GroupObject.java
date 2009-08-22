@@ -28,9 +28,9 @@ public class GroupObject extends EvObject
 		return "Group";
 		}
 
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(getMetaType());
+		return getMetaType();
 		}
 	
 	public void loadMetadata(Element e)

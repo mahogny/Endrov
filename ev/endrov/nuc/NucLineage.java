@@ -323,9 +323,8 @@ public class NucLineage extends EvObject implements Cloneable
 	/**
 	 * Save down data
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
 		for(String nucName:nuc.keySet())
 			{
 			Nuc n=nuc.get(nucName);
@@ -372,6 +371,7 @@ public class NucLineage extends EvObject implements Cloneable
 				}
 			
 			}
+		return metaType;
 		}
 
 	public void loadMetadata(Element e)

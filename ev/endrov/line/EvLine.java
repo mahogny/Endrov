@@ -135,10 +135,8 @@ public class EvLine extends EvObject implements Cloneable
 	/**
 	 * Save down data
 	 */
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
-
 		for(Pos3dt p:pos)
 			{
 			Element ee=new Element("pos");
@@ -148,6 +146,8 @@ public class EvLine extends EvObject implements Cloneable
 			ee.setAttribute("frame", ""+p.frame);
 			e.addContent(ee);
 			}
+		
+		return metaType;
 		}
 	
 	public void loadMetadata(Element e)

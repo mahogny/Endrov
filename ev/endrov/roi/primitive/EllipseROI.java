@@ -29,14 +29,14 @@ public class EllipseROI extends ROI
 		ROI.addType(new ROIType(icon, EllipseROI.class, true,false,metaDesc));
 		}
 	
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
 		regionFrames.saveRange(e, "f");
 		regionX.saveRange(e, "x");
 		regionY.saveRange(e, "y");
 		regionZ.saveRange(e, "z");
 		regionChannels.saveRange(e, "channel");
+		return metaType;
 		}
 	
 	public void loadMetadata(Element e)

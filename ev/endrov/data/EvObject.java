@@ -29,7 +29,7 @@ public abstract class EvObject extends EvContainer
 	
 	
 	/** Serialize object */
-	public abstract void saveMetadata(Element e);
+	public abstract String saveMetadata(Element e);
 	
 	/** Unserialize object */
 	public abstract void loadMetadata(Element e);

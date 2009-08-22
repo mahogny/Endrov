@@ -243,9 +243,9 @@ public class UnionROI extends CompoundROI
 		}
 	
 	
-	public void saveMetadata(Element e)
+	public String saveMetadata(Element e)
 		{
-		e.setName(metaType);
+		return metaType;
 		}
 	public void loadMetadata(Element e)
 		{
