@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvData;
@@ -48,12 +49,17 @@ public class NucRenameDialog extends JDialog implements ActionListener
 				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 		setRootPane(rootPane);
 		
-		//String oldName=pair.getRight();
 		inputName.setEditable(true);
 		inputName.setSelectedItem(oldName);
 
 		fillCombo();
-		
+
+		//Focus and select current text
+		inputName.requestFocusInWindow();
+		JTextComponent editor = (JTextComponent)inputName.getEditor().getEditorComponent();
+		editor.setSelectionStart(0);
+		editor.setSelectionEnd(editor.getText().length());
+
 		JPanel up=new JPanel(new BorderLayout());
 		up.add(new JLabel("New name:"),BorderLayout.WEST);
 		up.add(inputName);
@@ -70,9 +76,6 @@ public class NucRenameDialog extends JDialog implements ActionListener
 		bLoad.addActionListener(this);
 		bOk.addActionListener(this);
 		bCancel.addActionListener(this);
-
-//		inputName.setfoc
-		//TODO give focus, select text
 		 
 		pack();
 		setLocationRelativeTo(frame);

@@ -3,6 +3,7 @@ package endrov.movieOutputFFMPEG;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 import endrov.makeMovie.EvMovieMaker;
 import endrov.makeMovie.EvMovieMakerFactory;
@@ -14,6 +15,8 @@ import endrov.makeMovie.EvMovieMakerFactory;
 public class EncodeFFMPEG
 	{
 	public static File program=new File("/usr/bin/ffmpeg");
+	
+	public static Vector<String> formats=new Vector<String>(); 
 	
 	public static void initPlugin()	{}
 	static
@@ -38,7 +41,7 @@ public class EncodeFFMPEG
 				
 				public List<String> getQualities() 
 					{
-					return Arrays.asList("Default");
+					return formats;//Arrays.asList("Default");
 					}
 
 				public String getDefaultQuality()
@@ -48,6 +51,10 @@ public class EncodeFFMPEG
 				
 				
 			});
+		
+		formats.add("Default");
+		//formats.add("mpeg4");
+		//formats.add("ffv1");
 		}
 	
 	
