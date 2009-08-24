@@ -1187,7 +1187,7 @@ public class EvIODataOST implements EvIOData
 								}
 							io.f.renameTo(newFile);
 							io.f=newFile;
-							System.out.println(io.f+"  ->  "+newFile);
+							System.out.println(curName+"  "+io.f+"  ->  "+newFile);
 							}
 						}
 					
