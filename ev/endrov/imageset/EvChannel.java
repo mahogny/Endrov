@@ -41,8 +41,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 	/****************************************************************************************/
 
 	/** Image loaders */
-	// public TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>> imageLoader=new
-	// TreeMap<EvDecimal, TreeMap<EvDecimal, EvImage>>();
 	public TreeMap<EvDecimal, EvStack> imageLoader = new TreeMap<EvDecimal, EvStack>();
 
 	/**
@@ -240,8 +238,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 	public double defaultDispX = 0, defaultDispY = 0;
 	public EvDecimal defaultDispZ = new EvDecimal(0);
 
-	//public Double preresX=null, preresY=null;//, preresZ=null;
-	
 	public Double defaultResX = null, defaultResY = null;
 	public EvDecimal defaultResZ = null;
 
@@ -385,7 +381,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 					defaultDispY = Double.parseDouble(i.getValue());
 				else if (i.getName().equals("dispZ"))
 					defaultDispZ = new EvDecimal(i.getValue());
-
 				
 				else if (i.getName().equals("resX"))
 					defaultResX = Double.parseDouble(i.getValue());
@@ -393,15 +388,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 					defaultResY = Double.parseDouble(i.getValue());
 				else if (i.getName().equals("resZ"))
 					defaultResZ = new EvDecimal(i.getValue());
-
-				/*
-				 * else if(i.getName().equals("resX"))
-				 * metaOther.put("resX",i.getValue()); else
-				 * if(i.getName().equals("resY"))
-				 * defaultResY=Double.parseDouble(i.getValue()); else
-				 * if(i.getName().equals("resZ")) defaultResZ=new
-				 * EvDecimal(i.getValue());
-				 */
 
 				else if (i.getName().equals("binning"))
 					chBinning = Integer.parseInt(i.getValue());
@@ -477,7 +463,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 				otherMeta.put("resY", ""+stack.resY);
 			else
 				otherMeta.remove("resY");
-			if(stack.resZ!=defaultResZ)
+			if(!stack.resZ.equals(defaultResZ))
 				otherMeta.put("resZ", ""+stack.resZ);
 			else
 				otherMeta.remove("resZ");
@@ -490,7 +476,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 				otherMeta.put("dispY", ""+stack.dispY);
 			else
 				otherMeta.remove("dispY");
-			if(stack.dispZ!=defaultDispZ)
+			if(!stack.dispZ.equals(defaultDispZ))
 				otherMeta.put("dispZ", ""+stack.dispZ);
 			else
 				otherMeta.remove("dispZ");
