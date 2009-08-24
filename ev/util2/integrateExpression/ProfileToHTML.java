@@ -292,6 +292,7 @@ public class ProfileToHTML
 					new File("/Volumes/TBU_main01/ost4dgood"),
 					new File("/Volumes/TBU_main02/ost4dgood"),
 					new File("/Volumes/TBU_main03/ost4dgood"),
+					new File("/Volumes/TBU_main04/ost4dgood"),
 			})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost")) 
