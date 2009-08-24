@@ -69,13 +69,12 @@ public class NewIntExp
 				new File("/Volumes/TBU_main01/ost4dgood"),
 				new File("/Volumes/TBU_main02/ost4dgood"),
 				new File("/Volumes/TBU_main03/ost4dgood"),
+				new File("/Volumes/TBU_main04/ost4dgood"),
 		})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost"))
-					{
 					if(new File(f,"tagDone4d.txt").exists())
 						doOne(f);
-					}
 		
 		System.exit(0);
 		}
@@ -84,36 +83,28 @@ public class NewIntExp
 		{
 		EvData data = EvData.loadFile(f);
 
-		
-		
-		
-		/////////////
-		//temp. this is for finding work
-		
-		Map<EvPath,EvChannel> obs=data.getIdObjectsRecursive(EvChannel.class);
-		boolean toInclude=false;
-		
-		for(EvPath p:obs.keySet())
-			if(p.getLeafName().equals("GFP"))
-				toInclude=true;
-		
-		if(toInclude)
+		///////////// only find work /////////////////////
+		if(true)
 			{
-			boolean hasShell=!data.getIdObjectsRecursive(EvChannel.class).isEmpty();
-			boolean hasLineage=!data.getIdObjectsRecursive(NucLineage.class).isEmpty();
-			System.out.println("Include: "+f+"    "+(hasShell?"shell":"")+"    "+(hasLineage?"lineage":""));
+			Map<EvPath,EvChannel> obs=data.getIdObjectsRecursive(EvChannel.class);
+			boolean toInclude=false;
 			
+			for(EvPath p:obs.keySet())
+				if(p.getLeafName().equals("GFP"))
+					toInclude=true;
 			
+			if(toInclude)
+				{
+				boolean hasShell=!data.getIdObjectsRecursive(EvChannel.class).isEmpty();
+				boolean hasLineage=!data.getIdObjectsRecursive(NucLineage.class).isEmpty();
+				System.out.println("Include: "+f+"    "+(hasShell?"shell":"")+"    "+(hasLineage?"lineage":""));
+				}
+			
+			if(1==1)
+			return;
 			}
-		
-		
-		
-		
-		if(1==1)
-		return;
-		//////////
-		
-		
+		///////////////////////////////////////////////
+			
 		
 		
 		
