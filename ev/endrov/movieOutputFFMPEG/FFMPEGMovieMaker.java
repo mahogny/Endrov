@@ -5,6 +5,7 @@ import java.io.*;
 
 import javax.imageio.ImageIO;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.ev.EvLog;
 import endrov.makeMovie.EvMovieMaker;
 import endrov.util.EvFileUtil;
@@ -56,8 +57,17 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 		runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png",output.toString());
 		// ffmpeg -i %08d.png out.mpg
 		// ffmpeg -i %08d.png out.avi
-		EvFileUtil.deleteRecursive(tempFile);
 		
+		if(!output.exists() || output.length()==0)
+			{
+			BasicWindow.showErrorDialog(
+					"File was not created due to FFMPEG error. Likely missing codec support.\n" +
+					"Intermediate files in "+tempFile);
+			}
+		else
+			EvFileUtil.deleteRecursive(tempFile);
+		
+			
 
 		/*
 		 * -v format
@@ -86,9 +96,9 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 			{
 			Process proc=Runtime.getRuntime().exec(arg);
 			BufferedReader os=new BufferedReader(new InputStreamReader(proc.getInputStream()));
-			//String line;
-			//while((line=os.readLine())!=null)
-				//System.out.println(line);
+			String line;
+			while((line=os.readLine())!=null)
+				System.out.println(line);
 			while(os.readLine()!=null);
 			proc.waitFor();
 			}
