@@ -21,6 +21,41 @@ import endrov.util.Tuple;
  */
 public class ProfileToHTML
 	{
+	public static String ap3dTotTemplate;
+	public static String ap3dCellTemplate;
+	public static String ap2dTotTemplate;
+	public static String ap2dCellTemplate;
+	public static String tTotTemplate;
+	public static String tCellTemplate;
+	
+	public static String gnuplotAP3d;
+	public static String gnuplotAP2d;
+	public static String gnuplotT;
+	
+	static
+		{
+		try
+			{
+			ap3dTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3d.html"));
+			ap3dCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3dcell.html"));
+			ap2dTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2d.html"));
+			ap2dCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2dcell.html"));
+			tTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("t.html"));
+			tCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("tcell.html"));
+			
+			gnuplotAP3d=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3d.gnu"));
+			gnuplotAP2d=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2d.gnu"));
+			gnuplotT=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("t.gnu"));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			throw new RuntimeException("Problem loading resource");
+			}
+		}
+	
+	
+	
 	
 	public static boolean isNumber(String s)
 		{
@@ -160,14 +195,86 @@ public class ProfileToHTML
 		}
 	
 	
-	
+
+	private static void plotOne(File f, 
+			StringBuffer sbAp2dCells, StringBuffer sbAp3dCells, StringBuffer sbTCells) throws IOException
+	{
+	File APfile=new File(new File(f,"data"),"AP20-GFPb");
+	//	File APfile=new File(new File(f,"data"),"AP20-GFP");
+	Tuple<String, String> nameDate=nameDateFromOSTName(f.getName());
+
+	////////////////////////// AP-profile //////////////////////////////
+	if(APfile.exists())
+		{
+		System.out.println(APfile);
+		System.out.println(nameDate);
+
+		File tempdatFile=File.createTempFile("surface", ".dat");
+		System.out.println("tempfile: "+tempdatFile);
+
+		//Turn matrix into GNU dat-file
+		makeTempSurfaceFile(APfile,tempdatFile);
+
+		String imgap3d=APfile.toString()+"b.png";
+		String thisCmd=gnuplotAP3d
+		.replace("TITLE", nameDate.fst())
+		.replace("#INFILE", tempdatFile.toString())
+		.replace("#START","set terminal png\nset output '"+imgap3d+"'\n");
+		//		.replace("#START","set terminal png\nset output '"+APfile.toString()+".png'\n");
+		//		System.out.println(thisCmd);
+		gnuplot(thisCmd);
+
+		String imgap2d=APfile.toString()+"b.2d.png";
+		String thisCmd2d=gnuplotAP2d
+		.replace("TITLE", nameDate.fst())
+		.replace("#INFILE", tempdatFile.toString())
+		.replace("#START","set terminal png size 128,350\nset output '"+imgap2d+"'\n");
+		//		.replace("#START","set terminal png size 128,350\nset output '"+APfile.toString()+".2d.png'\n");
+		//		System.out.println(thisCmd2d);
+		gnuplot(thisCmd2d);
+
+
+		sbAp3dCells.append(ap3dCellTemplate
+				.replace("STRAIN",nameDate.fst())
+				.replace("OSTURL", f.toString())
+				.replace("IMGURL",imgap3d));
+
+		sbAp2dCells.append(ap2dCellTemplate
+				.replace("STRAIN",nameDate.fst())
+				.replace("OSTURL", f.toString())
+				.replace("IMGURL",imgap2d));
+
+		}
+
+
+	//////////////////////// T-profile ////////////////////////////
+	File Tfile=new File(new File(f,"data"),"AP1-GFPb");
+	if(Tfile.exists())
+		{
+
+		String imgt=Tfile.toString()+"b.png";
+		String thisCmd=gnuplotT
+		.replace("TITLE", nameDate.fst())
+		.replace("#INFILE", Tfile.toString())
+		.replace("#START","set terminal png\nset output '"+imgt+"'\n");
+		//		System.out.println(thisCmd);
+		gnuplot(thisCmd);
+
+
+		sbTCells.append(tCellTemplate
+				.replace("STRAIN",nameDate.fst())
+				.replace("OSTURL", f.toString())
+				.replace("IMGURL",imgt));
+
+		}
+	}
+
 	
 	public static void main(String[] args)
 		{
-		
-		
-		File htmlOutdir=new File("/Volumes/TBU_main03/userdata/henriksson/geneProfilesAPT_lois");
-		htmlOutdir.mkdirs();
+		StringBuffer sbAp3dCells=new StringBuffer();
+		StringBuffer sbAp2dCells=new StringBuffer();
+		StringBuffer sbTCells=new StringBuffer();
 		
 		
 //		Log.listeners.add(new StdoutLog());
@@ -178,93 +285,19 @@ public class ProfileToHTML
 
 		try
 			{
-			String ap3dTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3d.html"));
-			String ap3dCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3dcell.html"));
-			String ap2dTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2d.html"));
-			String ap2dCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2dcell.html"));
-			String tTotTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("t.html"));
-			String tCellTemplate=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("tcell.html"));
-			StringBuffer sbAp3dCells=new StringBuffer();
-			StringBuffer sbAp2dCells=new StringBuffer();
-			StringBuffer sbTCells=new StringBuffer();
+			File htmlOutdir=new File("/Volumes/TBU_main03/userdata/henriksson/geneProfilesAPT_lois");
+			htmlOutdir.mkdirs();
 			
-			String gnuplotAP3d=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap3d.gnu"));
-			String gnuplotAP2d=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("ap2d.gnu"));
-			String gnuplotT=EvFileUtil.readStream(ProfileToHTML.class.getResourceAsStream("t.gnu"));
-			
-			File tempdatFile=File.createTempFile("surface", ".dat");
-			System.out.println(tempdatFile);
-			
-			for(File f:new File("/Volumes/TBU_main03/daemon/output").listFiles())
-//			for(File f:new File("/Volumes2/TBU_main01/ost4dgood").listFiles())
+			for(File parent:new File[]{
+					new File("/Volumes/TBU_main01/ost4dgood"),
+					new File("/Volumes/TBU_main02/ost4dgood"),
+					new File("/Volumes/TBU_main03/ost4dgood"),
+			})
+			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost")) 
-					{
-					File APfile=new File(new File(f,"data"),"AP20-GFPb");
-//					File APfile=new File(new File(f,"data"),"AP20-GFP");
-					Tuple<String, String> nameDate=nameDateFromOSTName(f.getName());
-					
-					////////////////////////// AP-profile //////////////////////////////
-					if(APfile.exists())
-						{
-						System.out.println(APfile);
-						System.out.println(nameDate);
-						
-						//Turn matrix into GNU dat-file
-						makeTempSurfaceFile(APfile,tempdatFile);
-						
-						String imgap3d=APfile.toString()+"b.png";
-						String thisCmd=gnuplotAP3d
-						.replace("TITLE", nameDate.fst())
-						.replace("#INFILE", tempdatFile.toString())
-						.replace("#START","set terminal png\nset output '"+imgap3d+"'\n");
-//						.replace("#START","set terminal png\nset output '"+APfile.toString()+".png'\n");
-//						System.out.println(thisCmd);
-						gnuplot(thisCmd);
-
-						String imgap2d=APfile.toString()+"b.2d.png";
-						String thisCmd2d=gnuplotAP2d
-						.replace("TITLE", nameDate.fst())
-						.replace("#INFILE", tempdatFile.toString())
-						.replace("#START","set terminal png size 128,350\nset output '"+imgap2d+"'\n");
-//						.replace("#START","set terminal png size 128,350\nset output '"+APfile.toString()+".2d.png'\n");
-//						System.out.println(thisCmd2d);
-						gnuplot(thisCmd2d);
-
-						
-						sbAp3dCells.append(ap3dCellTemplate
-								.replace("STRAIN",nameDate.fst())
-								.replace("OSTURL", f.toString())
-								.replace("IMGURL",imgap3d));
-
-						sbAp2dCells.append(ap2dCellTemplate
-								.replace("STRAIN",nameDate.fst())
-								.replace("OSTURL", f.toString())
-								.replace("IMGURL",imgap2d));
-
-						}
-					
-					
-					//////////////////////// T-profile ////////////////////////////
-					File Tfile=new File(new File(f,"data"),"AP1-GFPb");
-					if(Tfile.exists())
-						{
-						
-						String imgt=Tfile.toString()+"b.png";
-						String thisCmd=gnuplotT
-						.replace("TITLE", nameDate.fst())
-						.replace("#INFILE", Tfile.toString())
-						.replace("#START","set terminal png\nset output '"+imgt+"'\n");
-//						System.out.println(thisCmd);
-						gnuplot(thisCmd);
-						
-						
-						sbTCells.append(tCellTemplate
-								.replace("STRAIN",nameDate.fst())
-								.replace("OSTURL", f.toString())
-								.replace("IMGURL",imgt));
-						
-						}
-					}
+					if(new File(f,"tagDone4d.txt").exists())
+						plotOne(f, sbAp2dCells, sbAp3dCells, sbTCells);
+			
 			EvFileUtil.writeFile(new File(htmlOutdir,"ap3d.html"), ap3dTotTemplate
 					.replace("TABLECONTENT", sbAp3dCells.toString()));
 			EvFileUtil.writeFile(new File(htmlOutdir,"ap2d.html"), ap2dTotTemplate
@@ -274,12 +307,10 @@ public class ProfileToHTML
 			}
 		catch (IOException e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		
 		System.out.println("done");
 		System.exit(0);
-		
 		}
 	}

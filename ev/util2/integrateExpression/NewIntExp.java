@@ -32,7 +32,7 @@ import endrov.util.*;
  */
 public class NewIntExp
 	{
-
+/*
 	public static void main2(String arg[])
 		{
 		EvLog.listeners.add(new EvLogStdout());
@@ -54,7 +54,7 @@ public class NewIntExp
 			});
 
 		System.exit(0);
-		}
+		}*/
 
 	public static void main(String arg[])
 		{
@@ -63,7 +63,6 @@ public class NewIntExp
 
 		//doOne(new File("/home/tbudev3/TB2141_070621_b.ost"));
 		// doOne(new File("/Volumes2/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
-
 //		doOne(new File("/Volumes/TBU_main03/daemon/output/TB2111_090123.ost"));
 		
 		for(File parent:new File[]{
@@ -73,14 +72,10 @@ public class NewIntExp
 		})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost"))
-					doOne(f);
-			
-		
-	/*	
-		for(File f:new File("/Volumes/TBU_main03/daemon/output").listFiles())
-			if(f.getName().endsWith(".ost"))
-				doOne(f);
-*/		
+					{
+					if(new File(f,"tagDone4d.txt").exists())
+						doOne(f);
+					}
 		
 		System.exit(0);
 		}
