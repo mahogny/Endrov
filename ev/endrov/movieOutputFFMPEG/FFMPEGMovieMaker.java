@@ -60,6 +60,15 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 		
 
 		/*
+		 * -v format
+		 * 
+		 * 3.14 Which are good parameters for encoding high quality MPEG-4?
+'-mbd rd -flags +4mv+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 -pass 1/2', things to try: '-bf 2', '-flags qprd', '-flags mv0', '-flags skiprd'.
+
+3.15 Which are good parameters for encoding high quality MPEG-1/MPEG-2?
+'-mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -pass 1/2' but beware the '-g 100' might cause problems with some decoders. Things to try: '-bf 2', '-flags qprd', '-flags mv0', '-flags skiprd. 
+		 * 
+		 * 
 		`-r fps'
 	  Set frame rate (Hz value, fraction or abbreviation), (default = 25). 
 	  */
