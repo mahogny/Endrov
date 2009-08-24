@@ -447,7 +447,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 			HashMap<String,String> otherMeta=metaFrame.get(frame);
 			if(otherMeta==null)
 				{
-				System.out.println("No meta for frame "+frame);
+//				System.out.println("No meta for frame "+frame);
+				//TODO: look for data elsewhere and repair?
 				otherMeta=new HashMap<String, String>();
 				}
 			
