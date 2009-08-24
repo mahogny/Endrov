@@ -927,7 +927,7 @@ public class EvIODataOST implements EvIOData
 
 								slice=new EvDecimal(partname.substring(1)).multiply(resZ).add(dispZ);
 								
-								System.out.println("Found file "+partname);
+								//System.out.println("Found file "+partname);
 								}
 							else
 								slice=new EvDecimal(partname);
