@@ -1185,9 +1185,9 @@ public class EvIODataOST implements EvIOData
 								invalidateDatabaseCache();
 								changed=true;
 								}
+//							System.out.println(curName+"  "+io.f+"  ->  "+newFile);
 							io.f.renameTo(newFile);
 							io.f=newFile;
-							System.out.println(curName+"  "+io.f+"  ->  "+newFile);
 							}
 						}
 					
