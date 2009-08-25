@@ -329,11 +329,14 @@ public class OSTdaemon extends Thread
 			for(Object e:ostchild.getChildren())
 				{
 				Element ee=(Element)e;
+				System.out.println("N "+ee.getName());
 				if(ee.getName().equals("channel"))
 					{
 					String thisName=ee.getAttributeValue("id");
 					if(thisName.equals(argChannel))
 						elFP=ostchild.getChild(argChannel);
+					else
+						System.out.println("s "+ee.getAttributeValue("id"));
 					}
 				}
 			
