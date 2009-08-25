@@ -331,7 +331,7 @@ public class OSTdaemon extends Thread
 				Element ee=(Element)e;
 				if(ee.getName().equals("channel"))
 					{
-					String thisName=ee.getAttributeValue("name");
+					String thisName=ee.getAttributeValue("id");
 					if(thisName.equals(argChannel))
 						elFP=ostchild.getChild(argChannel);
 					}
