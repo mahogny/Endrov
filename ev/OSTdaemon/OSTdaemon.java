@@ -318,10 +318,6 @@ public class OSTdaemon extends Thread
 			Document rmd=EvXmlUtil.readXML(totalFile);
 			Element root=rmd.getRootElement();
 			Element imagesetEl=root.getChild("imageset");
-//			Element newImageset=new Element("imageset");
-
-			//newImageset.removeContent could partially replace mess below
-			
 	
 			Element ostchild=imagesetEl.getChild("_ostchild");
 			
@@ -329,14 +325,11 @@ public class OSTdaemon extends Thread
 			for(Object e:ostchild.getChildren())
 				{
 				Element ee=(Element)e;
-				System.out.println("N "+ee.getName());
 				if(ee.getName().equals("channel"))
 					{
 					String thisName=ee.getAttributeValue("id");
 					if(thisName.equals(argChannel))
-						elFP=ostchild.getChild(argChannel);
-					else
-						System.out.println("s "+ee.getAttributeValue("id"));
+						elFP=ee;
 					}
 				}
 			
@@ -350,33 +343,6 @@ public class OSTdaemon extends Thread
 			elFP.setAttribute("id",argChannel+"max");
 			ostchild.addContent(elFP);
 
-			
-			
-
-			/*
-			//Filter out max channel
-			for(Object e:ostchild.getChildren())
-				{
-				Element ee=(Element)e;
-				if(ee.getName().equals("channel"))
-					{
-					String thisName=ee.getAttributeValue("name");
-					if(thisName.equals(argChannel))
-						{
-						Element maxEl=(Element)ee.clone();
-						maxEl.setAttribute("name",maxchannel);
-						newImageset.addContent((Element)ee.clone());
-						newImageset.addContent(maxEl);
-						}
-					else if(!thisName.equals(maxchannel))
-						newImageset.addContent((Element)ee.clone());
-					}
-				else
-					newImageset.addContent((Element)ee.clone());
-				}
-			root.removeChild("imageset");
-			root.addContent(newImageset);
-			*/
 			EvXmlUtil.writeXmlData(rmd, totalFile);
 			}
 		}
@@ -442,7 +408,6 @@ public class OSTdaemon extends Thread
 		try 
 			{
 			Document newrmd=EvXmlUtil.readXML(from);
-			System.out.println(EvXmlUtil.prettyPrint(newrmd.getRootElement()));
 			EvXmlUtil.writeXmlData(newrmd, totalFile);
 			moveToConverted(from);
 			for(String ch:makeMaxChannel)
