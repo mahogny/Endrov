@@ -327,6 +327,11 @@ public class OSTdaemon extends Thread
 			
 			
 			Element elFP=ostchild.getChild(argChannel);
+			if(elFP==null)
+				{
+				System.out.println("No "+argChannel);
+				return;
+				}
 			elFP=(Element)elFP.clone();
 			elFP.setAttribute("ostblobid","blob-ch"+argChannel);
 			elFP.setAttribute("id",argChannel+"max");
