@@ -907,7 +907,7 @@ public class EvIODataOST implements EvIOData
 						try
 							{
 							
-							EvDecimal slice;
+							EvDecimal sliceZ;
 							if(partname.startsWith("b"))
 								{
 								//Need to calculate position
@@ -925,14 +925,14 @@ public class EvIODataOST implements EvIOData
 									}
 								
 
-								slice=new EvDecimal(partname.substring(1)).multiply(resZ).add(dispZ);
+								sliceZ=new EvDecimal(partname.substring(1)).multiply(resZ).add(dispZ);
 								
 								//System.out.println("Found file "+partname);
 								}
 							else
-								slice=new EvDecimal(partname);
+								sliceZ=new EvDecimal(partname);
 							
-							loaderset.put(slice, f);
+							loaderset.put(sliceZ, f);
 							}
 						catch (NumberFormatException e)
 							{
@@ -1023,13 +1023,17 @@ public class EvIODataOST implements EvIOData
 							slice=new EvDecimal(s.substring(1)).multiply(resZ).add(dispZ);
 							}
 						else
+							{
 							slice=new EvDecimal(s);
+							}
 
 						//Generate name of image file, optimized
 						StringBuffer imagefilename=new StringBuffer(framedirName);
+						if(s.startsWith("b"))
+							imagefilename.append("b");
 						EV.pad(slice, 8, imagefilename); 
 						imagefilename.append(ext);
-
+						
 						loaderset.put(slice,new File(imagefilename.toString()));
 						}
 					}

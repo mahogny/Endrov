@@ -53,7 +53,7 @@ public class IntegratorCell implements Integrator
 			String nucName = e.getKey().snd();
 			NucLineage.NucPos pos = e.getValue().pos;
 
-			Double pr = IntExp.projectSphere(pos.r, pos.z, imageZw);
+			Double pr = projectSphere(pos.r, pos.z, imageZw);
 			if (pr!=null)
 				{
 				int midSx = (int) integrator.stack.transformWorldImageX(pos.x);
@@ -137,6 +137,25 @@ public class IntegratorCell implements Integrator
 			ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
 			}
 
+		}
+
+
+	/**
+	 * Project sphere onto plane. Assumes resx=resy
+	 * 
+	 * @param nucRw
+	 *          Radius
+	 * @param nucZw
+	 *          Relative z
+	 */
+	public static Double projectSphere(double nucRw, double nucZw, double imageZw)
+		{
+		double dz = nucZw-imageZw;
+		double tf = nucRw*nucRw-dz*dz;
+		if (tf>0)
+			return Math.sqrt(tf);
+		else
+			return null;
 		}
 
 
