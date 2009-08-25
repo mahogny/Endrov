@@ -325,8 +325,18 @@ public class OSTdaemon extends Thread
 	
 			Element ostchild=imagesetEl.getChild("_ostchild");
 			
+			Element elFP=null;
+			for(Object e:ostchild.getChildren())
+				{
+				Element ee=(Element)e;
+				if(ee.getName().equals("channel"))
+					{
+					String thisName=ee.getAttributeValue("name");
+					if(thisName.equals(argChannel))
+						elFP=ostchild.getChild(argChannel);
+					}
+				}
 			
-			Element elFP=ostchild.getChild(argChannel);
 			if(elFP==null)
 				{
 				System.out.println("No "+argChannel);
@@ -336,6 +346,9 @@ public class OSTdaemon extends Thread
 			elFP.setAttribute("ostblobid","blob-ch"+argChannel);
 			elFP.setAttribute("id",argChannel+"max");
 			ostchild.addContent(elFP);
+
+			
+			
 
 			/*
 			//Filter out max channel
