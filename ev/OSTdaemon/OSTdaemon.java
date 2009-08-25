@@ -412,8 +412,10 @@ public class OSTdaemon extends Thread
 			System.out.println(EvXmlUtil.prettyPrint(newrmd.getRootElement()));
 			EvXmlUtil.writeXmlData(newrmd, totalFile);
 			moveToConverted(from);
+			/*
 			for(String ch:makeMaxChannel)
 				copyMaxMeta(argImageset,ch);
+				*/
 			}
 		catch(Exception e)
 			{
