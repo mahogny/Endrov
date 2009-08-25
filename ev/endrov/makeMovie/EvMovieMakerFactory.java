@@ -9,26 +9,40 @@ import java.util.Vector;
  * @author Johan Henriksson
  *
  */
-public interface EvMovieMakerFactory
+public abstract class EvMovieMakerFactory
 	{
 	public static Vector<EvMovieMakerFactory> makers=new Vector<EvMovieMakerFactory>();
 	
 	/** Also implement toString. or just tostring? */
-	public String getName();
+	public abstract String getName();
 	
 	/**
 	 * File rename is allowed to make it fit format
 	 */
-	public EvMovieMaker getInstance(File path, int w, int h, String quality) throws Exception;
+	public abstract EvMovieMaker getInstance(File path, int w, int h, String quality) throws Exception;
 
 	/**
 	 * Get a list of associated quality levels
 	 */
-	public List<String> getQualities();
+	public abstract List<String> getQualities();
 	
 	/**
 	 * Get the default quality. Should be the same pointer as in qualities list
 	 * OR NOT
 	 */
-	public String getDefaultQuality();
+	public abstract String getDefaultQuality();
+	
+	
+	/**
+	 * Get maker given name
+	 */
+	public static EvMovieMakerFactory getFactory(String s)
+		{
+		for(EvMovieMakerFactory f:makers)
+			{
+			if(f.getName().equals(s))
+				return f;
+			}
+		return null;
+		}
 	}
