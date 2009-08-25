@@ -309,7 +309,7 @@ public class OSTdaemon extends Thread
 	
 	public void copyMaxMeta(String argImageset, String argChannel) throws Exception
 		{
-		String maxchannel=argChannel+"max";
+		//String maxchannel=argChannel+"max";
 		
 		File imagesetDir=getImagesetFile(argImageset);
 		if(imagesetDir.exists())
@@ -318,12 +318,23 @@ public class OSTdaemon extends Thread
 			Document rmd=EvXmlUtil.readXML(totalFile);
 			Element root=rmd.getRootElement();
 			Element imagesetEl=root.getChild("imageset");
-			Element newImageset=new Element("imageset");
+//			Element newImageset=new Element("imageset");
 
 			//newImageset.removeContent could partially replace mess below
 			
+	
+			Element ostchild=imagesetEl.getChild("_ostchild");
+			
+			
+			Element elFP=ostchild.getChild(argChannel);
+			elFP=(Element)elFP.clone();
+			elFP.setAttribute("ostblobid","blob-ch"+argChannel);
+			elFP.setAttribute("id",argChannel+"max");
+			ostchild.addContent(elFP);
+
+			/*
 			//Filter out max channel
-			for(Object e:imagesetEl.getChildren())
+			for(Object e:ostchild.getChildren())
 				{
 				Element ee=(Element)e;
 				if(ee.getName().equals("channel"))
@@ -344,6 +355,7 @@ public class OSTdaemon extends Thread
 				}
 			root.removeChild("imageset");
 			root.addContent(newImageset);
+			*/
 			EvXmlUtil.writeXmlData(rmd, totalFile);
 			}
 		}
@@ -412,10 +424,9 @@ public class OSTdaemon extends Thread
 			System.out.println(EvXmlUtil.prettyPrint(newrmd.getRootElement()));
 			EvXmlUtil.writeXmlData(newrmd, totalFile);
 			moveToConverted(from);
-			/*
 			for(String ch:makeMaxChannel)
 				copyMaxMeta(argImageset,ch);
-				*/
+				
 			}
 		catch(Exception e)
 			{
