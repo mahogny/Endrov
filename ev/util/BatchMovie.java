@@ -45,7 +45,9 @@ public class BatchMovie
 				return;
 				}
 			
-			
+			File outfile=new File(file.getParent(),file.getName()+".mov");
+			if(outfile.exists())
+				return;
 			
 			System.out.println("Imageset "+file.getPath());
 			
@@ -61,7 +63,7 @@ public class BatchMovie
 			System.out.println("Now making movie");
 			
 			BatchThread c=new MakeMovieThread(imset, EvDecimal.ZERO, new EvDecimal("1000000"), 15, 
-					channelNames, 336, "Maximum", new File(file.getParent(),file.getName()+".mov"),
+					channelNames, 336, "Maximum", outfile,
 					factory);
 			
 			new CompleteBatch(c); 
@@ -79,18 +81,19 @@ public class BatchMovie
 		
 		if(arg.length==0)
 			arg=new String[]{
-					"/Volumes/TBU_xeon01_500GB01/ost4dgood/",
-					"/Volumes/TBU_xeon01_500GB02/ost3dgood/",
-					"/Volumes/TBU_xeon01_500GB02/ost4dgood/"
+					"/Volumes/TBU_main01/ost4dgood/",
+					"/Volumes/TBU_main02/ost4dgood/",
+					"/Volumes/TBU_main03/ost4dgood/",
+					"/Volumes/TBU_main04/ost4dgood/",
 					
 		};
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
-				if(file.isDirectory())
+//				if(file.isDirectory())
 					{
-					long currentTime=System.currentTimeMillis();
+	//				long currentTime=System.currentTimeMillis();
 					makeMovie(file);
-					System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
+		//			System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
 					}
 		}
 	
