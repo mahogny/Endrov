@@ -409,6 +409,7 @@ public class OSTdaemon extends Thread
 		try 
 			{
 			Document newrmd=EvXmlUtil.readXML(from);
+			System.out.println(EvXmlUtil.prettyPrint(newrmd.getRootElement()));
 			EvXmlUtil.writeXmlData(newrmd, totalFile);
 			moveToConverted(from);
 			for(String ch:makeMaxChannel)

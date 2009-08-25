@@ -38,7 +38,15 @@ public class BatchMovie
 			return;
 		else
 			{
-		
+			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("h.264 (MPEG-4)");
+			if(factory==null)
+				{
+				System.out.println("Cannot get movie maker");
+				return;
+				}
+			
+			
+			
 			System.out.println("Imageset "+file.getPath());
 			
 			List<MakeMovieThread.MovieChannel> channelNames=new LinkedList<MakeMovieThread.MovieChannel>();
@@ -54,7 +62,7 @@ public class BatchMovie
 			
 			BatchThread c=new MakeMovieThread(imset, EvDecimal.ZERO, new EvDecimal("1000000"), 15, 
 					channelNames, 336, "Maximum", new File(file.getParent(),file.getName()+".mov"),
-					EvMovieMakerFactory.getFactory("h.264 (MPEG-4)"));
+					factory);
 			
 			new CompleteBatch(c); 
 			System.out.println("Movie done");
