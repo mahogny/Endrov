@@ -60,17 +60,34 @@ public class CleanTBUfixRes
 					
 					System.out.println("resz: "+stack.resZ);
 					//Not always 1! 
+
 					
+					if(stack.resZ.equals(EvDecimal.ONE))
+						{
+						//Also GFP resolution need upgrade
+						
+						//DIC 0.5 -> GFP 1.5?? or 1?
+						//Can check ratio of # files
+						//GFPC has DIC resolution??? use ratio.
+						//also need to do RFP resolution
+						
+						}
+					
+
 					}
 				
 				}
 			
 			
 			
-			
+	//create better metadata		
 			if(changed)
+				{
 				data.saveData();
+
+				}
 			}
+		
 		
 		
 		}
@@ -99,10 +116,10 @@ public class CleanTBUfixRes
 				
 			};
 		for(String s:arg)
-			if(s.contains("4d"))
+//			if(s.contains("4d"))
 				if(new File(s).isDirectory())
 					for(File file:(new File(s)).listFiles())
-						if(file.getName().startsWith("TB"))
+//						if(file.getName().startsWith("TB"))
 							if(file.isDirectory())
 								makeOST(file);
 		System.exit(0);
