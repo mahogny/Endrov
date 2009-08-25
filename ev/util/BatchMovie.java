@@ -67,8 +67,7 @@ public class BatchMovie
 			System.out.println("Now making movie");
 			
 			BatchThread c=new MakeMovieThread(imset, EvDecimal.ZERO, new EvDecimal("1000000"), 15, 
-					channelNames, 336, "Maximum", outfile,
-					factory);
+					channelNames, 336, "Maximum", outfile, factory);
 			
 			new CompleteBatch(c); 
 			System.out.println("Movie done");
