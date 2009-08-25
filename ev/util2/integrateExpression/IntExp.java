@@ -28,16 +28,19 @@ import endrov.util.*;
 public class IntExp
 	{
 	
-
+	/**
+	 * Integrator of expression. Integrating every type at the same time saves a lot of I/O
+	 * @author Johan Henriksson
+	 *
+	 */
 	public interface Integrator
 		{
 		public void integrateStackStart(IntExp images);
-
 		public void integrateImage(IntExp images);
-
 		public void integrateStackDone(IntExp images);
 		}
 
+	
 	public EvDecimal frame;
 	public EvDecimal curZ;
 	public EvStack stack;
@@ -46,7 +49,6 @@ public class IntExp
 	public int[] pixelsLine;
 	public double expTime = 1; // For missing frames, use last frame
 	public EvData data;
-	// public String newLinName;
 	public String expName;
 	public String channelName;
 	public EvChannel ch;
@@ -141,8 +143,8 @@ public class IntExp
 		// => forced to apply when merging, and searching if searching in original
 		// => output both frames and model time in gnuplot files?
 
-		String newLinNameT = linFor(1, channelName);
-		String newLinNameAP = linFor(numSubDiv, channelName);
+		String newLinNameT = linForAP(1, channelName);
+		String newLinNameAP = linForAP(numSubDiv, channelName);
 
 		// Not the optimal way of finding the lineage
 		NucLineage lin = null;
@@ -158,39 +160,43 @@ public class IntExp
 				}
 		// lin=null;
 
-		// Decide on integrators
+		//Decide on integrators
 		LinkedList<Integrator> ints = new LinkedList<Integrator>();
 
 //		boolean hasShell=!data.getIdObjects(Shell.class).isEmpty();
 		
 		IntExp integrator = new IntExp(data, expName, channelName);
-		
+
+		//AP-level expression. A single slice gives expression over time
 		IntegratorAP intAP = new IntegratorAP(integrator, newLinNameAP, numSubDiv, null);
 		IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
-
-		IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
-				numSubDiv, intAP.bg);
-
 		ints.add(intAP);
 		ints.add(intT);
 
-		if (lin!=null&&intXYZ.setupCS(lin))
+		//XYZ cube level expression
+		IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
+				numSubDiv, intAP.bg);
+		if (lin!=null && intXYZ.setupCS(lin))
 			ints.add(intXYZ);
 		else
 			intXYZ = null;
 
+		
+		
+		
+		//Cell level expression if there is a lineage 
+		//TODO: no! check if the lineage is complete enough
 		IntegratorCell intC = null;
-		if (lin!=null)
+		if(lin!=null)
 			{
 			intC = new IntegratorCell(integrator, lin, intAP.bg);
 			ints.add(intC);
 			}
 
-		// todo check which lin to use, add to list if one exists
+		// TODO check which lin to use, add to list if one exists
 
 		// Run integrators
 		integrator.doProfile(ints);
-		// integrator.doProfile(intAP,intT);
 
 		// Wrap up, store in OST
 		// Use common correction factors for exposure
@@ -202,7 +208,7 @@ public class IntExp
 			intC.done(integrator, intAP.correctedExposure);
 
 		// Put integral in file for use by Gnuplot
-		intAP.profileForGnuplot(integrator, fileFor(data, numSubDiv, channelName));
+		intAP.profileForGnuplot(integrator, fileForAP(data, numSubDiv, channelName));
 
 		// TODO
 		// compression?
@@ -211,12 +217,12 @@ public class IntExp
 
 		}
 
-	public static String linFor(int numSubDiv, String channelName)
+	public static String linForAP(int numSubDiv, String channelName)
 		{
 		return "AP"+numSubDiv+"-"+channelName;
 		}
 
-	public static File fileFor(EvData data, int numSubDiv, String channelName)
+	public static File fileForAP(EvData data, int numSubDiv, String channelName)
 		{
 		// TODO: later, use blobs or similar?
 		File datadir = data.io.datadir();
@@ -325,24 +331,6 @@ public class IntExp
 
 		}
 
-
-	/**
-	 * Project sphere onto plane. Assumes resx=resy
-	 * 
-	 * @param nucRw
-	 *          Radius
-	 * @param nucZw
-	 *          Relative z
-	 */
-	public static Double projectSphere(double nucRw, double nucZw, double imageZw)
-		{
-		double dz = nucZw-imageZw;
-		double tf = nucRw*nucRw-dz*dz;
-		if (tf>0)
-			return Math.sqrt(tf);
-		else
-			return null;
-		}
 
 
 	}
