@@ -1004,6 +1004,8 @@ public class EvIODataOST implements EvIOData
 							s=in.readLine();
 							}
 						
+						StringBuffer imagefilename;
+						
 						EvDecimal slice;
 						if(s.startsWith("b"))
 							{
@@ -1021,18 +1023,23 @@ public class EvIODataOST implements EvIOData
 									dispZ=new EvDecimal(overrideDispZ);
 								}
 							slice=new EvDecimal(s.substring(1)).multiply(resZ).add(dispZ);
+							
+							//Generate name of image file, optimized
+							imagefilename=new StringBuffer(framedirName);
+							imagefilename.append(s);
+							imagefilename.append(ext);
 							}
 						else
 							{
 							slice=new EvDecimal(s);
+							
+							//Generate name of image file, optimized
+							imagefilename=new StringBuffer(framedirName);
+							imagefilename.append("b");
+							EV.pad(slice, 8, imagefilename); 
+							imagefilename.append(ext);
 							}
 
-						//Generate name of image file, optimized
-						StringBuffer imagefilename=new StringBuffer(framedirName);
-						if(s.startsWith("b"))
-							imagefilename.append("b");
-						EV.pad(slice, 8, imagefilename); 
-						imagefilename.append(ext);
 						
 						loaderset.put(slice,new File(imagefilename.toString()));
 						}
