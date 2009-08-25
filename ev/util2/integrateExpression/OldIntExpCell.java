@@ -14,7 +14,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class IntExpCell
+public class OldIntExpCell
 	{
 	
 	

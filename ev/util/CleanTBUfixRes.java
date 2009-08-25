@@ -1,19 +1,11 @@
 package util;
 import java.io.*;
-import java.util.Map;
-
-import org.jdom.Document;
-import org.jdom.Element;
-
-import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.data.EvPath;
 import endrov.ev.*;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
-import endrov.util.EvXmlUtil;
 
 
 /**
