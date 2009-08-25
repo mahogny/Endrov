@@ -1123,7 +1123,7 @@ public class EvIODataOST implements EvIOData
 						for(Map.Entry<EvDecimal, File> fe:blob.diskImageLoader33.get(frame).entrySet())
 							{
 							File imagefile=fe.getValue();
-							System.out.println("want to write down "+fe.getValue());
+							//System.out.println("want to write down "+fe.getValue());
 							String filename=imagefile.getName();
 							String ext="";
 							if(filename.lastIndexOf('.')!=-1)
