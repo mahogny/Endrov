@@ -38,10 +38,14 @@ public class BatchMovie
 			return;
 		else
 			{
-			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("h.264 (MPEG-4)");
+			
+			
+			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("QT: h.264 (MPEG-4)");
 			if(factory==null)
 				{
 				System.out.println("Cannot get movie maker");
+				for(EvMovieMakerFactory f:EvMovieMakerFactory.makers)
+					System.out.println(">"+f.getName());
 				return;
 				}
 			
