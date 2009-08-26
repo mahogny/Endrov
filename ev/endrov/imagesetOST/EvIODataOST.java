@@ -1037,7 +1037,6 @@ public class EvIODataOST implements EvIOData
 								
 								//Generate name of image file, optimized
 								imagefilename=new StringBuffer(framedirName);
-								imagefilename.append("b");
 								EV.pad(slice, 8, imagefilename); 
 								imagefilename.append(ext);
 								}
