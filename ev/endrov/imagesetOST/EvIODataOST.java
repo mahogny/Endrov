@@ -998,50 +998,61 @@ public class EvIODataOST implements EvIOData
 					for(int k=0;k<numSlice;k++)
 						{
 						String s=in.readLine();
-						if(s.startsWith("ext"))
+						try
 							{
-							ext=s.substring(3);
-							s=in.readLine();
-							}
-						
-						StringBuffer imagefilename;
-						
-						EvDecimal slice;
-						if(s.startsWith("b"))
-							{
-							//Need to calculate position
-							EvDecimal resZ=ch.defaultResZ;
-							EvDecimal dispZ=ch.defaultDispZ;
-							if(ch.metaFrame.containsKey(frame))
+							if(s.startsWith("ext"))
 								{
-								String overrideZ=ch.metaFrame.get(frame).get("resZ");
-								if(overrideZ!=null)
-									resZ=new EvDecimal(overrideZ);
-								
-								String overrideDispZ=ch.metaFrame.get(frame).get("DispZ");
-								if(overrideDispZ!=null)
-									dispZ=new EvDecimal(overrideDispZ);
+								ext=s.substring(3);
+								s=in.readLine();
 								}
-							slice=new EvDecimal(s.substring(1)).multiply(resZ).add(dispZ);
 							
-							//Generate name of image file, optimized
-							imagefilename=new StringBuffer(framedirName);
-							imagefilename.append(s);
-							imagefilename.append(ext);
-							}
-						else
-							{
-							slice=new EvDecimal(s);
+							StringBuffer imagefilename;
 							
-							//Generate name of image file, optimized
-							imagefilename=new StringBuffer(framedirName);
-							imagefilename.append("b");
-							EV.pad(slice, 8, imagefilename); 
-							imagefilename.append(ext);
-							}
+							EvDecimal slice;
+							if(s.startsWith("b"))
+								{
+								//Need to calculate position
+								EvDecimal resZ=ch.defaultResZ;
+								EvDecimal dispZ=ch.defaultDispZ;
+								if(ch.metaFrame.containsKey(frame))
+									{
+									String overrideZ=ch.metaFrame.get(frame).get("resZ");
+									if(overrideZ!=null)
+										resZ=new EvDecimal(overrideZ);
+									
+									String overrideDispZ=ch.metaFrame.get(frame).get("DispZ");
+									if(overrideDispZ!=null)
+										dispZ=new EvDecimal(overrideDispZ);
+									}
+								slice=new EvDecimal(s.substring(1)).multiply(resZ).add(dispZ);
+								
+								//Generate name of image file, optimized
+								imagefilename=new StringBuffer(framedirName);
+								imagefilename.append(s);
+								imagefilename.append(ext);
+								}
+							else
+								{
+								slice=new EvDecimal(s);
+								
+								//Generate name of image file, optimized
+								imagefilename=new StringBuffer(framedirName);
+								imagefilename.append("b");
+								EV.pad(slice, 8, imagefilename); 
+								imagefilename.append(ext);
+								}
 
-						
-						loaderset.put(slice,new File(imagefilename.toString()));
+							
+							loaderset.put(slice,new File(imagefilename.toString()));
+							}
+						catch (Exception e)
+							{
+							c.clear();
+							e.printStackTrace();
+							System.out.println("Bad line: "+s);
+							System.out.println("Gracefully giving up on cache file");
+							return false;
+							}
 						}
 					}
 
