@@ -46,6 +46,15 @@ public class ResourceClassLoader extends URLClassLoader
 		//System.out.println("-----------Trying to find library "+libname);
 
 		
+		String above=super.findLibrary(libname);
+		
+		if(above!=null)
+			{
+			System.out.println("Found already "+above);
+			return above;
+			}
+		
+		
 		//Figure out operating system
 		String OS=System.getProperty("os.name").toLowerCase();
 
