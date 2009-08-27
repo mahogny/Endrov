@@ -109,10 +109,16 @@ public class BatchMovie
 				if(!file.getName().endsWith(".mov"))
 //				if(file.isDirectory())
 					{
+					System.out.println(file);
 	//				long currentTime=System.currentTimeMillis();
 					makeMovie(file);
 		//			System.out.println(" timeY "+(System.currentTimeMillis()-currentTime));
 					}
+		
+		System.exit(0);
+		
 		}
+	
+	
 	
 	}
