@@ -9,6 +9,9 @@ import endrov.ev.CompleteBatch;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
+import endrov.imageset.EvChannel;
+import endrov.imageset.EvPixels;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.makeMovie.EvMovieMakerFactory;
 import endrov.makeMovie.MakeMovieThread;
@@ -60,14 +63,25 @@ public class BatchMovie
 			
 			Imageset imset=ost.getIdObjectsRecursive(Imageset.class).values().iterator().next();
 	
+			int width=336;
+			
+			
 			for(String name:new String[]{"GFPmax","ch0","DIC"})
 				if(imset.metaObject.containsKey(name))
+					{
 					channelNames.add(new MakeMovieThread.MovieChannel(name,""));
+					
+					//Get original image size
+					EvChannel ch=(EvChannel)imset.metaObject.get(name);
+					EvStack stack=ch.getFirstStack();
+					EvPixels p=stack.firstEntry().snd().getPixels();
+					width=p.getWidth();
+					}
 			
 			System.out.println("Now making movie");
 			
 			BatchThread c=new MakeMovieThread(imset, EvDecimal.ZERO, new EvDecimal("1000000"), 15, 
-					channelNames, 336, "Maximum", outfile, factory);
+					channelNames, width, "Maximum", outfile, factory);
 			
 			new CompleteBatch(c); 
 			System.out.println("Movie done");
