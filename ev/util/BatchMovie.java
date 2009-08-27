@@ -106,6 +106,7 @@ public class BatchMovie
 		};
 		for(String s:arg)
 			for(File file:(new File(s)).listFiles())
+				if(!file.getName().endsWith(".mov"))
 //				if(file.isDirectory())
 					{
 	//				long currentTime=System.currentTimeMillis();
