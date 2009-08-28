@@ -390,7 +390,7 @@ public class EvIODataOST implements EvIOData
 	  Format format=Format.getPrettyFormat();
 	  XMLOutputter outputter = new XMLOutputter(format);
 	  outputter.output(document, os);
-	  d.setMetadataNotModified();
+	  //d.setMetadataNotModified();
 	  }
 	public static void saveMeta(EvData d, File outfile) throws IOException
 	  {
@@ -421,6 +421,7 @@ public class EvIODataOST implements EvIOData
 			allocateBlobs(data);
 			saveMetaDataOnly(data, cb);
 			saveImages(data); //Important that this is done after saving meta
+			data.setMetadataNotModified();
 			}
 		catch (IOException e)
 			{
