@@ -133,6 +133,7 @@ public class IntegratorXYZ implements Integrator
 		EvPixels pZ;
 		if (indX==null)
 			{
+			System.out.println("XYZ setting up index channels");
 			indX = chIndexX.createImageLoader(EvDecimal.ZERO, integrator.curZ);
 			stackX=chIndexX.imageLoader.get(EvDecimal.ZERO);
 			EvImage indY = chIndexY.createImageLoader(EvDecimal.ZERO,	integrator.curZ);
@@ -185,12 +186,10 @@ public class IntegratorXYZ implements Integrator
 			}
 		else
 			{
-			pX = chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ)
-					.getPixels();
-			pY = chIndexY.getImageLoader(EvDecimal.ZERO, integrator.curZ)
-					.getPixels();
-			pZ = chIndexZ.getImageLoader(EvDecimal.ZERO, integrator.curZ)
-					.getPixels();
+			//Load precalculated index
+			pX = chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
+			pY = chIndexY.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
+			pZ = chIndexZ.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
 			}
 
 		// Integrate this area

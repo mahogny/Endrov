@@ -1,6 +1,7 @@
 package util2.integrateExpression;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -98,40 +99,54 @@ public class IntExp
 		})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost"))
+					{
 					if(new File(f,"tagDone4d.txt").exists())
 						doOne(f);
+					else
+						System.out.println("Skipping: "+f);
+					}
+		
 		
 		System.exit(0);
+		}
+	
+	/**
+	 * Check if it really should be included
+	 */
+	public static void checkToInclude(File f)
+		{
+		EvData data = EvData.loadFile(f);
+
+		Map<EvPath,EvChannel> obs=data.getIdObjectsRecursive(EvChannel.class);
+		boolean toInclude=false;
+
+		for(EvPath p:obs.keySet())
+			if(p.getLeafName().equals("GFP"))
+				toInclude=true;
+
+		if(toInclude)
+			{
+			boolean hasShell=!data.getIdObjectsRecursive(EvChannel.class).isEmpty();
+			boolean hasLineage=!data.getIdObjectsRecursive(NucLineage.class).isEmpty();
+			System.out.println("Include: "+f+"    "+(hasShell?"shell":"")+"    "+(hasLineage?"lineage":""));
+			}
+			
 		}
 
 	public static void doOne(File f)
 		{
-		EvData data = EvData.loadFile(f);
-
-		///////////// only find work /////////////////////
-		if(true)
+		File ftagCalcDone=new File(f, "tagCalcDone4d.txt");
+		
+		if(ftagCalcDone.exists())
 			{
-			Map<EvPath,EvChannel> obs=data.getIdObjectsRecursive(EvChannel.class);
-			boolean toInclude=false;
-			
-			for(EvPath p:obs.keySet())
-				if(p.getLeafName().equals("GFP"))
-					toInclude=true;
-			
-			if(toInclude)
-				{
-				boolean hasShell=!data.getIdObjectsRecursive(EvChannel.class).isEmpty();
-				boolean hasLineage=!data.getIdObjectsRecursive(NucLineage.class).isEmpty();
-				System.out.println("Include: "+f+"    "+(hasShell?"shell":"")+"    "+(hasLineage?"lineage":""));
-				}
-			
-			if(1==1)
+			System.out.println("Already done: "+f);
 			return;
 			}
-		///////////////////////////////////////////////
-			
 		
 		
+		EvData data = EvData.loadFile(f);
+
+		System.out.println("Doing: "+f);
 		
 		
 		int numSubDiv = 20;
@@ -210,11 +225,18 @@ public class IntExp
 		// Put integral in file for use by Gnuplot
 		intAP.profileForGnuplot(integrator, fileForAP(data, numSubDiv, channelName));
 
-		// TODO
-		// compression?
-
+		System.out.println("Saving OST");
 		data.saveData();
+		System.out.println("ok");
 
+		try
+			{
+			ftagCalcDone.createNewFile();
+			}
+		catch (IOException e1)
+			{
+			e1.printStackTrace();
+			}
 		}
 
 	public static String linForAP(int numSubDiv, String channelName)
@@ -289,8 +311,8 @@ public class IntExp
 			{
 			this.frame = frame;
 
-			System.out.println();
-			System.out.println(data+"    frame "+frame+" / "+firstframe+" - "
+			//System.out.println();
+			System.out.println(data+"    integrating frame "+frame+" / "+firstframe+" - "
 					+lastFrame);
 
 			// Get exposure time
@@ -312,11 +334,7 @@ public class IntExp
 				{
 				curZ = new EvDecimal(stack.transformImageWorldZ(az));//eim.getKey();
 				// Load images lazily (for AP not really needed)
-				//im = eim.getValue();
 				im = imArr[az]; 
-				// EvPixels pixels=null;
-				// int[] pixelsLine=null;
-
 				pixels = null;
 
 				for(Integrator i : ints)
