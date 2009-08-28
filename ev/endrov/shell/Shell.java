@@ -1,6 +1,7 @@
 package endrov.shell;
 
 import javax.swing.JMenu;
+import javax.vecmath.Vector3d;
 
 import org.jdom.DataConversionException;
 import org.jdom.Element;
@@ -140,6 +141,18 @@ public class Shell extends EvObject
 	public void buildMetamenu(JMenu menu)
 		{
 		}
+	
+	
+	public Vector3d getMajorAxis()
+		{
+		ImVector2 dirvec=ImVector2.polar(major, angle);
+		return new Vector3d(dirvec.x,dirvec.y,0);
+		}
 
+	public Vector3d getMinorAxis()
+		{
+		ImVector2 dirvec=ImVector2.polar(minor, angle+Math.PI/2.0);
+		return new Vector3d(dirvec.x,dirvec.y,0);
+		}
 	
 	}
