@@ -94,7 +94,7 @@ public class EvContainer
 	 */
 	public void setMetadataNotModified()
 		{
-		coreMetadataModified=true;
+		coreMetadataModified=false;
 		for(EvContainer ob:metaObject.values())
 			ob.setMetadataNotModified();
 		}

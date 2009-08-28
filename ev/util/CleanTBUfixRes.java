@@ -93,6 +93,7 @@ public class CleanTBUfixRes
 //		if(arg.length==0)
 		arg=new String[]{
 				
+				
 				"/Volumes/TBU_main01/ost3dfailed/","/Volumes/TBU_main01/ost4dfailed/",
 				"/Volumes/TBU_main01/ost3dgood/","/Volumes/TBU_main01/ost4dgood",
 				
