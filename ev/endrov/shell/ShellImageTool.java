@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import javax.vecmath.Vector2d;
+import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.*;
 import endrov.data.*;
@@ -31,21 +32,7 @@ public class ShellImageTool implements ImageWindowTool
 		this.w=w;
 		this.r=r;
 		}
-	/*
-	public boolean isToggleable()
-		{
-		return true;
-		}
-	public String toolCaption()
-		{
-		return "Shell/Define";
-		}
-	
-	public boolean enabled()
-		{
-		return true;
-		}
-		*/
+
 	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Shell/Define");
@@ -113,8 +100,19 @@ public class ShellImageTool implements ImageWindowTool
 			if(shell!=null)
 				{
 				//Resize
-				shell.major+=w.scaleS2w(dx);
-				shell.minor+=w.scaleS2w(dy);
+				Vector3d dv=new Vector3d(w.scaleS2w(dx),w.scaleS2w(dy),0);
+				Vector3d ma=shell.getMajorAxis();
+				ma.normalize();
+				Vector3d majora=shell.getMajorAxis();
+				majora.normalize();
+				Vector3d minora=shell.getMinorAxis();
+				minora.normalize();
+				
+				shell.major+=dv.dot(majora);
+				shell.minor+=dv.dot(minora);
+				
+//				shell.major+=w.scaleS2w(dx);
+	//			shell.minor+=w.scaleS2w(dy);
 				if(shell.major<0) shell.major=0;
 				if(shell.minor<0) shell.minor=0;
 				w.updateImagePanel();
