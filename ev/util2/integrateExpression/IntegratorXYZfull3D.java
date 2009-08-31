@@ -17,27 +17,26 @@ import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
-import endrov.util.Vector3i;
 
 /**
- * Integrate expression on an overlaid cube
+ * Integrate expression on an overlaid cube. Goes into a full stack in the end,
+ * but this might be difficult to visualize.
+ * 
  * @author Johan Henriksson
  *
  */
-public class IntegratorXYZ implements Integrator
+public class IntegratorXYZfull3D implements Integrator
 	{
-	int numSubDiv;
-	HashMap<EvDecimal, Vector3i[][]> indexMap = new HashMap<EvDecimal, Vector3i[][]>(); // z->y,x
-	int[][][] sliceExp; // z,y,x
-	int[][][] sliceVol; // z,y,x
-	NucLineage lin;
+	private int numSubDiv;
+	private double[][][] sliceExp; // z,y,x
+	private int[][][] sliceVol; // z,y,x
+	private NucLineage lin;
 
-	Map<EvDecimal, Double> bg = new HashMap<EvDecimal, Double>();
-	TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
+	private Map<EvDecimal, Double> bg = new HashMap<EvDecimal, Double>();
 
-	CoordinateSystem cs;
+	private CoordinateSystem cs;
 
-	public IntegratorXYZ(IntExp integrator, String newLinName,
+	public IntegratorXYZfull3D(IntExp integrator, String newLinName,
 			int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
@@ -55,7 +54,6 @@ public class IntegratorXYZ implements Integrator
 		integrator.imset.metaObject.remove("indX");
 		integrator.imset.metaObject.remove("indY");
 		integrator.imset.metaObject.remove("indZ");
-
 		}
 
 	/**
@@ -100,12 +98,10 @@ public class IntegratorXYZ implements Integrator
 		mid.add(posP2);
 		mid.scale(0.25);
 
-		// Enlarge by 20%
+		// Create coordinate system. Enlarge by 20%
 		cs = new CoordinateSystem();
 		double scale = 1.35;
-		cs.setFromTwoVectors(v1, v2, v1.length()*scale, v2.length()*scale, v2
-				.length()
-				*scale, mid);
+		cs.setFromTwoVectors(v1, v2, v1.length()*scale, v2.length()*scale, v2.length()*scale, mid);
 
 		return true;
 		}
@@ -113,7 +109,7 @@ public class IntegratorXYZ implements Integrator
 	public void integrateStackStart(IntExp integrator)
 		{
 		// Zero out arrays
-		sliceExp = new int[numSubDiv][numSubDiv][numSubDiv];
+		sliceExp = new double[numSubDiv][numSubDiv][numSubDiv];
 		sliceVol = new int[numSubDiv][numSubDiv][numSubDiv];
 		}
 
@@ -126,44 +122,34 @@ public class IntegratorXYZ implements Integrator
 		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
 
 		// Calculate index map lazily
-		EvStack stackX=chIndexX.imageLoader.get(EvDecimal.ZERO);
 		EvImage indX = chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ);
 		EvPixels pX;
 		EvPixels pY;
 		EvPixels pZ;
-		if (indX==null)
+		if(indX==null)
 			{
 			System.out.println("XYZ setting up index channels");
 			indX = chIndexX.createImageLoader(EvDecimal.ZERO, integrator.curZ);
-			stackX=chIndexX.imageLoader.get(EvDecimal.ZERO);
 			EvImage indY = chIndexY.createImageLoader(EvDecimal.ZERO,	integrator.curZ);
 			EvImage indZ = chIndexZ.createImageLoader(EvDecimal.ZERO,	integrator.curZ);
-			EvStack stackY=chIndexY.imageLoader.get(EvDecimal.ZERO);
-			EvStack stackZ=chIndexZ.imageLoader.get(EvDecimal.ZERO);
 			int w = integrator.pixels.getWidth();
 			int h = integrator.pixels.getHeight();
-			pX = new EvPixels(EvPixelsType.INT, w, h);
-			pY = new EvPixels(EvPixelsType.INT, w, h);
-			pZ = new EvPixels(EvPixelsType.INT, w, h);
-			indX.setPixelsReference(pX);
-			indY.setPixelsReference(pY);
-			indZ.setPixelsReference(pZ);
-
-			chIndexX.chBinning = chIndexY.chBinning = chIndexZ.chBinning = 4;
+			indX.setPixelsReference(pX = new EvPixels(EvPixelsType.INT, w, h));
+			indY.setPixelsReference(pY = new EvPixels(EvPixelsType.INT, w, h));
+			indZ.setPixelsReference(pZ = new EvPixels(EvPixelsType.INT, w, h));
 
 			int[] lineX = pX.getArrayInt();
 			int[] lineY = pY.getArrayInt();
 			int[] lineZ = pZ.getArrayInt();
 
 			// Calculate indices
-			for (int ay = 0; ay<integrator.pixels.getHeight(); ay++)
+			for(int ay = 0; ay<integrator.pixels.getHeight(); ay++)
 				{
-				for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
+				for(int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 					{
 					// Convert to world coordinates
 					Vector3d pos = new Vector3d(integrator.stack.transformImageWorldX(ax),
-							integrator.stack.transformImageWorldY(ay), integrator.curZ
-									.doubleValue());
+							integrator.stack.transformImageWorldY(ay), integrator.curZ.doubleValue());
 
 					Vector3d insys = cs.transformToSystem(pos);
 
@@ -172,7 +158,8 @@ public class IntegratorXYZ implements Integrator
 					int cz = (int) ((insys.z+0.5)*numSubDiv);
 
 					int index = pX.getPixelIndex(ax, ay);
-					if (cx>=0&&cy>=0&&cz>=0&&cx<numSubDiv&&cy<numSubDiv&&cz<numSubDiv)
+					if (cx>=0 && cy>=0 && cz>=0 && 
+							cx<numSubDiv && cy<numSubDiv && cz<numSubDiv)
 						{
 						lineX[index] = cx;
 						lineY[index] = cy;
@@ -222,31 +209,31 @@ public class IntegratorXYZ implements Integrator
 					{
 					double curbg = bg.get(integrator.frame);
 					double vol = sliceVol[az][ay][ax];
-					double avg = vol==0 ? 0 : (double) sliceExp[az][ay][ax]/vol-curbg;
-					avg /= integrator.expTime;
+					double avg;
+					
+					if(vol==0)
+						avg=0;
+					else
+						avg=(sliceExp[az][ay][ax]/vol-curbg)/integrator.expTime;
 
 					NucLineage.Nuc nuc = lin.nuc.get("xyz_"+ax+"_"+ay+"_"+az);
 					NucExp exp = nuc.getCreateExp(integrator.expName);
 					exp.level.put(integrator.frame, avg);
-					// System.out.println(exp.level);
 					}
-
 		}
 
 	/**
 	 * All frames processed
 	 */
-	public void done(IntExp integrator,
-			TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
+	public void done(IntExp integrator, TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
 		// Normalization is needed before exposure correction to make sure the
-		// threshold for
-		// detecting jumps always works
+		// threshold for detecting jumps always works
 		ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(
 				lin, integrator.expName), 0, 1);
 		ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
 
-		int binning = 16;
+		double outImRes = 16;
 
 		// This is only for the eye
 		double sigMax = ExpUtil.getSignalMax(lin, integrator.expName);
@@ -255,31 +242,24 @@ public class IntegratorXYZ implements Integrator
 
 		// Store expression as a new channel
 		EvChannel chanxyz = integrator.imset.getCreateChannel("XYZ");
-		chanxyz.chBinning = binning;
-		for (EvDecimal frame : lin.nuc.get("xyz_0_0_0").exp
-				.get(integrator.expName).level.keySet())
+		//chanxyz.chBinning = outImRes;
+		for (EvDecimal frame : lin.nuc.get("xyz_0_0_0").exp.get(integrator.expName).level.keySet())
 			{
 			System.out.println("frame "+frame);
 			for (int az = 0; az<numSubDiv; az++)
 				{
 				EvImage evim = chanxyz.createImageLoader(frame, new EvDecimal(az));
 				EvStack stack = chanxyz.imageLoader.get(frame);
-				EvPixels p = new EvPixels(EvPixelsType.INT, numSubDiv, numSubDiv);
-				// EvPixels p=new EvPixels(EvPixelsType.TYPE_DOUBLE, numSubDiv,
-				// numSubDiv);
+				EvPixels p = new EvPixels(EvPixelsType.DOUBLE, numSubDiv, numSubDiv);
 				evim.setPixelsReference(p);
-				stack.resX = stack.resY = binning;
-				//stack.binning = binning;
-				int[] line = p.getArrayInt();
-				// double[] line=p.getArrayDouble();
+				stack.resX = stack.resY = outImRes;
+				double[] line = p.getArrayDouble();
 				for (int ay = 0; ay<numSubDiv; ay++)
 					for (int ax = 0; ax<numSubDiv; ax++)
 						{
 						NucLineage.Nuc nuc = lin.nuc.get("xyz_"+ax+"_"+ay+"_"+az);
-						line[p.getPixelIndex(ax, ay)] = (int) (double) nuc.exp
-								.get(integrator.expName).level.get(frame);
-						// line[p.getPixelIndex(x,
-						// y)]=(double)nuc.exp.get(integrator.expName).level.get(frame);
+						line[p.getPixelIndex(ax, ay)] = 
+						/*(int)*/ (double) nuc.exp.get(integrator.expName).level.get(frame);
 						}
 				}
 			}

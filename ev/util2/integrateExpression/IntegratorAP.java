@@ -24,35 +24,37 @@ import endrov.util.Tuple;
  * Integrate expression along AP-axis
  * @author Johan Henriksson
  *
- */public class IntegratorAP implements Integrator
+ */
+public class IntegratorAP implements Integrator
 	{
-	int numSubDiv;
-	HashMap<EvDecimal, EvPixels> distanceMap = new HashMap<EvDecimal, EvPixels>();
-	Shell shell;
-	int[] sliceExp;
-	int[] sliceVol;
-	NucLineage lin = new NucLineage();;
-	String newLinName;
+	private int numSubDiv;
+	private HashMap<EvDecimal, EvPixels> distanceMap = new HashMap<EvDecimal, EvPixels>();
+	private Shell shell;
+	private int[] sliceExp;
+	private int[] sliceVol;
+	private NucLineage lin = new NucLineage();
+	private String newLinName;
 	
-	Map<EvDecimal, Double> bg = new HashMap<EvDecimal, Double>();
-	TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
-	boolean updateBG = true; // variable if to update bg
+	public Map<EvDecimal, Double> bg = new HashMap<EvDecimal, Double>();
+	public TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
+	private boolean updateBG = true; // variable if to update bg
 	
-	double curBgInt = 0;
-	int curBgVol = 0;
+	private double curBgInt = 0;
+	private int curBgVol = 0;
 	
-	public IntegratorAP(IntExp integrator, String newLinName, int numSubDiv,
-			Map<EvDecimal, Double> bg)
+	public IntegratorAP(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
 		this.newLinName = newLinName;
+		sliceExp = new int[numSubDiv];
+		sliceVol = new int[numSubDiv];
+		
+		//Use pre-calculated value for BG
 		if (bg!=null)
 			{
 			this.bg = bg;
 			updateBG = false;
 			}
-		sliceExp = new int[numSubDiv];
-		sliceVol = new int[numSubDiv];
 	
 		// TODO need to group lineage and shell. introduce a new object?
 		integrator.imset.metaObject.put(newLinName, lin);
@@ -130,8 +132,7 @@ import endrov.util.Tuple;
 				double len = lenMapArr[i];
 				if (len>-1)
 					{
-					int sliceNum = (int) (len*numSubDiv); // may need to bound in
-																								// addition
+					int sliceNum = (int) (len*numSubDiv); // may need to bound in addition
 					sliceExp[sliceNum] += integrator.pixelsLine[i];
 					sliceVol[sliceNum]++;
 					}
