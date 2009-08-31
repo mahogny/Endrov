@@ -189,15 +189,13 @@ public class IntExp
 		ints.add(intT);
 
 		//XYZ cube level expression
-		IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
+		IntegratorXYZnew2 intXYZ = new IntegratorXYZnew2(integrator, newLinNameAP,
 				numSubDiv, intAP.bg);
 		if (lin!=null && intXYZ.setupCS(lin))
 			ints.add(intXYZ);
 		else
 			intXYZ = null;
 
-		
-		
 		
 		//Cell level expression if there is a lineage 
 		//TODO: no! check if the lineage is complete enough

@@ -1,5 +1,6 @@
 package util2.integrateExpression;
 
+import java.text.NumberFormat;
 import java.util.*;
 
 import endrov.imageset.Imageset;
@@ -343,6 +344,60 @@ public class ExpUtil
 			}
 		return min;
 		}
+
+
+
+
+	public static Tuple<String, String> nameDateFromOSTName(String n)
+	{
+	//String orig=n;
+	n=n.substring(0,n.indexOf(".ost"));
+	
+	int u1=n.indexOf('_');
+	String strainName;
+	if(u1==-1)
+		{
+		strainName=n;
+		n="";
+		}
+	else
+		{
+		strainName=n.substring(0, u1);
+		n=n.substring(u1+1);
+		}
+	
+	int u2=n.indexOf('_');
+	String date;
+	if(u2==-1)
+		{
+		date=n;
+		n="";
+		}
+	else
+		{
+		date=n.substring(0, u2);
+		}
+	
+	
+	if(ProfileToHTML.isNumber(date) && date.length()==6)
+		{
+		NumberFormat nf=NumberFormat.getInstance();
+		nf.setMinimumIntegerDigits(2);
+		int year=2000+Integer.parseInt(date.substring(0,2));
+		int month=Integer.parseInt(date.substring(2,4));
+		int day=Integer.parseInt(date.substring(4,6));
+	
+		date=year+""+nf.format(month)+""+nf.format(day);
+		}
+	else
+		date="20060101";
+	
+	
+	//TODO
+	//Fallback: actually name of gene
+	
+	return new Tuple<String, String>(strainName,date);
+	}
 	
 	
 	}

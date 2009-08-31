@@ -117,7 +117,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			private EvComboChannel chanCombo=new EvComboChannel(null,true);
 			private JButton bDelete=BasicIcon.getButtonDelete();
 			private JCheckBox zProject=new JCheckBox("@Z=0");
-			private EvComboColor colorCombo=new EvComboColor(true);
+			private EvComboColor colorCombo=new EvComboColor(false);
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
 			public Slice3D slice=new Slice3D();
 			

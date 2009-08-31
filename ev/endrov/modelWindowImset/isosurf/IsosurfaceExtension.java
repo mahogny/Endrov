@@ -146,7 +146,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			private JSpinner blurxySpinner=new JSpinner(new SpinnerNumberModel((int)1.0,(int)0.0,(int)10.0,(int)1));
 			private EvComboChannel chanCombo=new EvComboChannel(null,true);
 			private JButton bDelete=BasicIcon.getButtonDelete();
-			private EvComboColor colorCombo=new EvComboColor(true);
+			private EvComboColor colorCombo=new EvComboColor(false);
 			private WeakReference<Imageset> lastImageset=new WeakReference<Imageset>(null);
 			private HashMap<EvDecimal,Vector<IsosurfaceRenderer>> surfaces=new HashMap<EvDecimal,Vector<IsosurfaceRenderer>>(); 
 			

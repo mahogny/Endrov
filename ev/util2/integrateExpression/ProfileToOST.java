@@ -50,7 +50,7 @@ public class ProfileToOST
 					{
 					File APfile=new File(new File(f,"data"),"AP20-GFPb");
 //					File APfile=new File(new File(f,"data"),"AP20-GFP");
-					Tuple<String, String> nameDate=ProfileToHTML.nameDateFromOSTName(f.getName());
+					Tuple<String, String> nameDate=ExpUtil.nameDateFromOSTName(f.getName());
 					
 					////////////////////////// AP-profile //////////////////////////////
 					if(APfile.exists())
