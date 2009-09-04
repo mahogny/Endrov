@@ -14,6 +14,21 @@ import endrov.util.Tuple;
 public class FindAnnotatedStrains
 	{
 
+	public static Set<File> getAnnotated()
+		{
+		Set<File> doneStrains=new TreeSet<File>();
+		for(File parent:new File[]{new File("/Volumes/TBU_main06/ost4dgood")})
+			for(File f:parent.listFiles())
+				if(f.getName().endsWith(".ost"))
+					{
+					if(new File(f,"tagDone4d.txt").exists())
+						doneStrains.add(f);
+					}
+		return doneStrains;
+		}
+
+	
+	
 	
 	public static void main(String[] args)
 		{
