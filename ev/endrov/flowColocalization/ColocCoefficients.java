@@ -59,7 +59,7 @@ public class ColocCoefficients
 	/**
 	 * Variance of X
 	 */
-	public double varX()
+	public double getVarX()
 		{
 		return (sumXX - sumX*sumX/n)/n;
 		}
@@ -67,7 +67,7 @@ public class ColocCoefficients
 	/**
 	 * Variance of Y
 	 */
-	public double varY()
+	public double getVarY()
 		{
 		return (sumYY - sumY*sumY/n)/n;
 		}
@@ -75,7 +75,7 @@ public class ColocCoefficients
 	/**
 	 * Covariance(X,Y)
 	 */
-	public double covXY()
+	public double getCovXY()
 		{
 		return (sumXY - sumX*sumY/n)/n;
 		}
@@ -83,15 +83,15 @@ public class ColocCoefficients
 	/**
 	 * Pearsons coefficient
 	 */
-	public double pearson()
+	public double getPearson()
 		{
-		return covXY()/(Math.sqrt(varX()*varY()));
+		return getCovXY()/(Math.sqrt(getVarX()*getVarY()));
 		}
 	
 	/**
 	 * Pearsons coefficient, assume mean=0
 	 */
-	public double pearsonMean0()
+	public double getPearsonMean0()
 		{
 		return sumXY/(Math.sqrt(sumXX*sumYY));
 		}
@@ -99,7 +99,7 @@ public class ColocCoefficients
 	/**
 	 * kX=k1
 	 */
-	public double kX()
+	public double getKX()
 		{
 		return sumXY/sumXX;
 		}
@@ -107,7 +107,7 @@ public class ColocCoefficients
 	/**
 	 * kY=k2
 	 */
-	public double kY()
+	public double getKY()
 		{
 		return sumXY/sumYY;
 		}
@@ -115,7 +115,7 @@ public class ColocCoefficients
 	/**
 	 * Mander coefficient X or 1
 	 */
-	public double mandersX()
+	public double getMandersX()
 		{
 		return sumXcoloc/sumX;
 		}
@@ -124,7 +124,7 @@ public class ColocCoefficients
 	/**
 	 * Mander coefficient Y or 2
 	 */
-	public double mandersY()
+	public double getMandersY()
 		{
 		return sumYcoloc/sumY;
 		}

@@ -2005,3 +2005,142 @@ LOG(19491, 3072965520:): -------->>
 LOG(19491, 3072965520:): Core session started on Fri Jul 10 2009 11:56:22.324026 by mahogny on venus
 LOG(19491, 3072965520:): Debug logging disabled
 LOG(19491, 3072965520:): Debug logging disabled
+LOG(Wed Sep  2 2009 15:23:06.590481, 5811, 2961182720:): -------->>
+LOG(Wed Sep  2 2009 15:23:06.601601, 5811, 2961182720:): Core session started on Wed Sep  2 2009 15:23:06.601608 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Wed Sep  2 2009 15:23:06.601652, 5811, 2961182720:): Debug logging disabled
+LOG(Wed Sep  2 2009 15:23:06.602163, 5811, 2961182720:): Debug logging disabled
+LOG(Wed Sep  2 2009 15:23:31.776081, 5813, 2961182720:): -------->>
+LOG(Wed Sep  2 2009 15:23:31.776801, 5813, 2961182720:): Core session started on Wed Sep  2 2009 15:23:31.776808 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Wed Sep  2 2009 15:23:31.776859, 5813, 2961182720:): Debug logging disabled
+LOG(Wed Sep  2 2009 15:23:31.777630, 5813, 2961182720:): Debug logging disabled
+LOG(Wed Sep  2 2009 15:23:31.789608, 5813, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 09:47:36.635459, 10774, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 09:47:36.690742, 10774, 2961182720:): Core session started on Fri Sep  4 2009 09:47:36.690751 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 09:47:36.690799, 10774, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 09:47:36.706291, 10774, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 09:47:36.719655, 10774, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 10:04:34.770346, 10831, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 10:04:34.770991, 10831, 2961182720:): Core session started on Fri Sep  4 2009 10:04:34.770996 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 10:04:34.771038, 10831, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 10:04:34.771519, 10831, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 10:04:34.772496, 10831, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 10:39:04.655432, 10935, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 10:39:04.656094, 10935, 2961182720:): Core session started on Fri Sep  4 2009 10:39:04.656100 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 10:39:04.656153, 10935, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 10:39:04.656871, 10935, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 10:39:04.658342, 10935, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 10:40:11.725825, 10941, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 10:40:11.726413, 10941, 2961182720:): Core session started on Fri Sep  4 2009 10:40:11.726419 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 10:40:11.726463, 10941, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 10:40:11.727027, 10941, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 10:40:11.728429, 10941, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 11:02:03.816848, 10990, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 11:02:03.817422, 10990, 2961182720:): Core session started on Fri Sep  4 2009 11:02:03.817428 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 11:02:03.817471, 10990, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:02:03.818022, 10990, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:02:03.819348, 10990, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 11:05:22.368147, 11000, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 11:05:22.368784, 11000, 2961182720:): Core session started on Fri Sep  4 2009 11:05:22.368790 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 11:05:22.368840, 11000, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:05:22.369516, 11000, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:05:22.371071, 11000, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 11:05:46.256093, 11004, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 11:05:46.256717, 11004, 2961182720:): Core session started on Fri Sep  4 2009 11:05:46.256724 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 11:05:46.256771, 11004, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:05:46.257394, 11004, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:05:46.258810, 11004, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 11:06:08.676753, 11006, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 11:06:08.677415, 11006, 2961182720:): Core session started on Fri Sep  4 2009 11:06:08.677421 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 11:06:08.677469, 11006, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:06:08.678164, 11006, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 11:06:08.679461, 11006, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 13:52:59.278363, 11286, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 13:52:59.278949, 11286, 2961182720:): Core session started on Fri Sep  4 2009 13:52:59.278955 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 13:52:59.278999, 11286, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:52:59.279588, 11286, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:52:59.280947, 11286, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 13:55:05.512916, 11290, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 13:55:05.513585, 11290, 2961182720:): Core session started on Fri Sep  4 2009 13:55:05.513592 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 13:55:05.513645, 11290, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:55:05.514306, 11290, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:55:05.515649, 11290, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 13:56:17.767079, 11294, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 13:56:17.767676, 11294, 2961182720:): Core session started on Fri Sep  4 2009 13:56:17.767682 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 13:56:17.767726, 11294, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:56:17.768286, 11294, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:56:17.770963, 11294, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 13:56:54.228450, 11296, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 13:56:54.229045, 11296, 2961182720:): Core session started on Fri Sep  4 2009 13:56:54.229050 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 13:56:54.229099, 11296, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:56:54.229738, 11296, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 13:56:54.232462, 11296, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 14:03:29.906642, 11307, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 14:03:29.907320, 11307, 2961182720:): Core session started on Fri Sep  4 2009 14:03:29.907327 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 14:03:29.907378, 11307, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:03:29.908090, 11307, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:03:29.909536, 11307, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 14:04:00.412429, 11309, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 14:04:00.413073, 11309, 2961182720:): Core session started on Fri Sep  4 2009 14:04:00.413080 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 14:04:00.413133, 11309, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:04:00.413862, 11309, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:04:00.415415, 11309, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 14:04:30.985543, 11315, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 14:04:30.986221, 11315, 2961182720:): Core session started on Fri Sep  4 2009 14:04:30.986228 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 14:04:30.986276, 11315, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:04:30.986937, 11315, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:04:30.988509, 11315, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 14:05:42.457002, 11318, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 14:05:42.457592, 11318, 2961182720:): Core session started on Fri Sep  4 2009 14:05:42.457598 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 14:05:42.457639, 11318, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:05:42.458209, 11318, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 14:05:42.460870, 11318, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:12:09.237091, 11537, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:12:09.237674, 11537, 2961182720:): Core session started on Fri Sep  4 2009 16:12:09.237681 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:12:09.237733, 11537, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:12:09.238328, 11537, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:12:09.239823, 11537, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:12:56.888879, 11539, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:12:56.889567, 11539, 2961182720:): Core session started on Fri Sep  4 2009 16:12:56.889573 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:12:56.889620, 11539, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:12:56.890243, 11539, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:12:56.891628, 11539, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:14:07.239070, 11541, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:14:07.239670, 11541, 2961182720:): Core session started on Fri Sep  4 2009 16:14:07.239676 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:14:07.239728, 11541, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:14:07.240343, 11541, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:14:07.242981, 11541, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:14:38.690276, 11543, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:14:38.690929, 11543, 2961182720:): Core session started on Fri Sep  4 2009 16:14:38.690936 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:14:38.690988, 11543, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:14:38.691654, 11543, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:14:38.693163, 11543, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:15:13.607954, 11545, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:15:13.608581, 11545, 2961182720:): Core session started on Fri Sep  4 2009 16:15:13.608587 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:15:13.608631, 11545, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:15:13.609218, 11545, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:15:13.610618, 11545, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:16:24.134848, 11551, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:16:24.135477, 11551, 2961182720:): Core session started on Fri Sep  4 2009 16:16:24.135484 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:16:24.135532, 11551, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:16:24.136146, 11551, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:16:24.137484, 11551, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:17:02.248102, 11554, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:17:02.248778, 11554, 2961182720:): Core session started on Fri Sep  4 2009 16:17:02.248785 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:17:02.248876, 11554, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:17:02.249536, 11554, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:17:02.250885, 11554, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:19:01.483080, 11556, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:19:01.483687, 11556, 2961182720:): Core session started on Fri Sep  4 2009 16:19:01.483692 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:19:01.483737, 11556, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:19:01.484310, 11556, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:19:01.485628, 11556, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:19:58.193434, 11558, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:19:58.194059, 11558, 2961182720:): Core session started on Fri Sep  4 2009 16:19:58.194065 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:19:58.194112, 11558, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:19:58.194751, 11558, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:19:58.196153, 11558, 2961182720:): System state cache updated.
+LOG(Fri Sep  4 2009 16:20:57.014571, 11561, 2961182720:): -------->>
+LOG(Fri Sep  4 2009 16:20:57.015181, 11561, 2961182720:): Core session started on Fri Sep  4 2009 16:20:57.015187 by tbuadmin on tbuadmins-mac-pro.local
+LOG(Fri Sep  4 2009 16:20:57.015235, 11561, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:20:57.015862, 11561, 2961182720:): Debug logging disabled
+LOG(Fri Sep  4 2009 16:20:57.017336, 11561, 2961182720:): System state cache updated.
