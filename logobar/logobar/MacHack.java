@@ -1,14 +1,9 @@
 package logobar;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class MacHack
 	{
-
-	// THIS IS SPECIAL MAC OPTIONS
-	// REMOVE IF COMPLING FOR ALL
-	// PLATFORMS
 	public static void addMacAbout()
 		{
 		if (isMac())
