@@ -1,4 +1,8 @@
 package logobar;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class MacHack
 	{
 
@@ -7,10 +11,19 @@ public class MacHack
 	// PLATFORMS
 	public static void addMacAbout()
 		{
-		if(isMac())
+		if (isMac())
 			{
-			OSXAdapter ad=new OSXAdapter();
-			ad.registerMacOSXApplication();
+			try
+				{
+				Class<?> c = Class.forName("logobar.OSXAdapter");
+				Object ob = c.newInstance();
+				Method m = c.getMethod("registerMacOSXApplication");
+				m.invoke(ob);
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
 			}
 
 		}
