@@ -253,4 +253,54 @@ public class EvMathUtil
 		else
 			return percentile;
 		}
+	
+	
+	
+	
+	
+
+	/**
+	 * Interpolate x given x->yTuple<EvDecimal,EvDecimal>. Returns null if x outside.
+	 * 
+	 * NEEDS TESTING
+	 * 
+	 */
+	public EvDecimal interpolate(SortedMap<EvDecimal, EvDecimal> map, EvDecimal x)
+		{
+		EvDecimal preciseY=map.get(x);
+		if(preciseY!=null)
+			return preciseY;
+		
+		if(map.size()>2)
+			{
+			SortedMap<EvDecimal, EvDecimal> hmap=map.headMap(x);
+			SortedMap<EvDecimal, EvDecimal> tmap=map.tailMap(x);
+			
+			if(hmap.isEmpty() || tmap.isEmpty())
+				return null;
+			else
+				{
+				EvDecimal lastX=hmap.lastKey();
+				EvDecimal nextX=tmap.firstKey();
+				EvDecimal lastY=hmap.get(lastX);
+				EvDecimal nextY=tmap.get(nextX);
+				return linInterpolate(lastX, nextX, lastY, nextY, x);
+				}
+			}
+		else
+			return null;
+		}
+	
+	/**
+	 * Linear interpolation
+	 */
+	private EvDecimal linInterpolate(EvDecimal lastX,EvDecimal nextX, EvDecimal lastY, EvDecimal nextY, EvDecimal x)
+		{
+		EvDecimal frac=x.subtract(lastX).divide(nextX.subtract(lastX));
+		EvDecimal frac1=EvDecimal.ONE.subtract(frac);
+		return frac1.multiply(lastY).add(
+				frac.multiply(nextY));
+		}
+	
+	
 	}

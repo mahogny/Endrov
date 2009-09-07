@@ -58,21 +58,24 @@ public class LineageWindow extends BasicWindow
 	
 
 	public static final ImageIcon iconShowRoot=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
-	public static final ImageIcon iconShowSelected=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
+	public static final ImageIcon iconShowSelected=new ImageIcon(LineageWindow.class.getResource("jhToSelected.png"));
 	public static final ImageIcon iconZoomAll=new ImageIcon(LineageWindow.class.getResource("jhZoomAll.png"));
 	public static final ImageIcon iconShowKeyFrames=new ImageIcon(LineageWindow.class.getResource("jhShowKeyFrames.png"));
 	public static final ImageIcon iconShowLabel=new ImageIcon(LineageWindow.class.getResource("jhShowLabel.png"));
 	public static final ImageIcon iconShowFrameLines=new ImageIcon(LineageWindow.class.getResource("jhShowFrameLines.png"));
 	public static final ImageIcon iconShowVerticalTree=new ImageIcon(LineageWindow.class.getResource("jhShowVerticalTree.png"));
-	
+
+	public static final ImageIcon iconSelectByName=new ImageIcon(LineageWindow.class.getResource("jhSelectByName.png"));
+
 	private final EvHidableSidePane sidePanelSplitPane;
 
 	
 	private SnapBackSlider sliderZoomX=new SnapBackSlider(JSlider.HORIZONTAL, -10000,10000); 
 	private SnapBackSlider sliderZoomY=new SnapBackSlider(JSlider.VERTICAL, -10000,10000);
 	private JButton buttonGoToRoot=new JImageButton(iconShowRoot,"Go to root");
-	private JButton buttonGoToSelected=new JImageButton(iconShowRoot,"Go to selected");
+	private JButton buttonGoToSelected=new JImageButton(iconShowSelected,"Go to selected");
 	private JButton buttonZoomAll=new JImageButton(iconZoomAll,"Fit everything into screen");
+	private JButton buttonSelectByName=new JImageButton(iconSelectByName,"Select by name of cell, or tissue. Regular expression possible");
 	private JToggleButton buttonShowFrameLines=new JImageToggleButton(iconShowFrameLines,"Show frame lines",true);
 	private JToggleButton buttonShowKeyFrames=new JImageToggleButton(iconShowKeyFrames,"Show key frames");
 	private JToggleButton buttonShowLabels=new JImageToggleButton(iconShowLabel,"Show labels",true);
@@ -108,7 +111,7 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miUnfoldAll=new JMenuItem("Unfold all");
 
 	
-	
+	private JTextField inpSelectByName=new JTextField();
 	
 	
 	/**
@@ -172,8 +175,13 @@ public class LineageWindow extends BasicWindow
 		setLayout(new BorderLayout());
 		add(sidePanelSplitPane,BorderLayout.CENTER);
 		
-		JPanel bottom = new JPanel(new GridBagLayout());
-		add(bottom,BorderLayout.SOUTH);
+		
+		
+		JComponent bottomLower = EvSwingUtil.layoutLCR(buttonSelectByName, inpSelectByName, null);
+		
+		JPanel bottomUpper = new JPanel(new GridBagLayout());
+//		add(bottomUpper,BorderLayout.SOUTH);
+		add(EvSwingUtil.layoutEvenVertical(bottomUpper,bottomLower),BorderLayout.SOUTH);
 
 //		add(sliderZoomY,BorderLayout.EAST);
 		
@@ -182,16 +190,16 @@ public class LineageWindow extends BasicWindow
 		c.gridx = 0;
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
-		bottom.add(objectCombo,c);
+		bottomUpper.add(objectCombo,c);
 		c.gridx++;
 		c.weightx=1;
-		bottom.add(sliderZoomX,c);
+		bottomUpper.add(sliderZoomX,c);
 		c.gridx++;
 		c.weightx=0;
 		c.fill = 0;
-		bottom.add(frameControl,c);
+		bottomUpper.add(frameControl,c);
 		c.gridx++;
-		bottom.add(EvSwingUtil.layoutEvenHorizontal(
+		bottomUpper.add(EvSwingUtil.layoutEvenHorizontal(
 				buttonGoToRoot, buttonGoToSelected, buttonZoomAll,
 				buttonShowVerticalTree, buttonShowFrameLines, buttonShowKeyFrames, buttonShowLabels
 				),c);

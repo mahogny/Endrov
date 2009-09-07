@@ -1,11 +1,10 @@
-package util2.integrateExpression;
+package endrov.nuc;
 
 import java.io.File;
 
 import org.jdom.Document;
 import org.jdom.Element;
 
-import endrov.nuc.CellGrouping;
 import endrov.util.EvXmlUtil;
 
 /**
@@ -13,7 +12,7 @@ import endrov.util.EvXmlUtil;
  * @author Johan Henriksson
  *
  */
-public class WblinTissue
+public class ImportWBcellgroups
 	{
 	
 	public static void main(String[] args)
