@@ -50,6 +50,9 @@ public class NucModelExtension implements ModelWindowExtension
 		private final HashMap<Integer,NucSel> selectColorMap=new HashMap<Integer,NucSel>();
 		private Vector<Map<NucSel, NucLineage.NucInterp>> interpNuc=new Vector<Map<NucSel, NucLineage.NucInterp>>();
 		final ModelWindow w;
+	
+		
+		
 		
 		public void fillModelWindowMenus()
 			{
