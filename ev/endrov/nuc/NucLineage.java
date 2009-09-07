@@ -19,6 +19,7 @@ import endrov.data.*;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
+import endrov.nuc.modw.NucModelExtension;
 import endrov.util.EvDecimal;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
@@ -942,6 +943,7 @@ public class NucLineage extends EvObject implements Cloneable
 			inter.colorNuc=colorNuc;
 			return inter;
 			}
+		
 		
 		
 		/**

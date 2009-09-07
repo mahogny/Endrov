@@ -1,4 +1,4 @@
-package endrov.nuc;
+package endrov.nuc.modw;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -21,6 +21,11 @@ import endrov.data.EvPath;
 import endrov.data.EvSelection;
 import endrov.ev.*;
 import endrov.modelWindow.*;
+import endrov.nuc.NucCommonUI;
+import endrov.nuc.NucExp;
+import endrov.nuc.NucLineage;
+import endrov.nuc.NucSel;
+import endrov.nuc.NucVoronoi;
 import endrov.nuc.NucLineage.NucInterp;
 import endrov.util.*;
 
@@ -40,13 +45,19 @@ public class NucModelExtension implements ModelWindowExtension
 		w.modelWindowHooks.add(new NucModelWindowHook(w));
 		}
 	
-	private static class NucModelWindowHook implements ModelWindowHook, ActionListener, ModelView.GLSelectListener
+	static class NucModelWindowHook implements ModelWindowHook, ActionListener, ModelView.GLSelectListener
 		{
 		private final HashMap<Integer,NucSel> selectColorMap=new HashMap<Integer,NucSel>();
 		private Vector<Map<NucSel, NucLineage.NucInterp>> interpNuc=new Vector<Map<NucSel, NucLineage.NucInterp>>();
-		private final ModelWindow w;
+		final ModelWindow w;
 		
-		public void fillModelWindowMenus(){}
+		public void fillModelWindowMenus()
+			{
+			w.sidePanelItems.add(bAddExpPattern);
+			for(ModwPanelExpPattern ti:expsettings)
+				w.sidePanelItems.add(ti);
+
+			}
 		
 		public double nucMagnification=1;
 		
@@ -101,6 +112,11 @@ public class NucModelExtension implements ModelWindowExtension
 		public JMenuItem miPrintCountNucAtFrame=new JMenuItem("Print nuclei count in frame");  
 		public JMenuItem miPrintCountNucUpTo=new JMenuItem("Print nuclei count up to frame");  
 
+		
+		Vector<ModwPanelExpPattern> expsettings=new Vector<ModwPanelExpPattern>();
+		private JButton bAddExpPattern=new JButton("Add exp.pattern");
+
+		
 		private void setTraceColor(EvColor c)
 			{
 			traceColor=c;
@@ -195,6 +211,7 @@ public class NucModelExtension implements ModelWindowExtension
 			miSetTraceWidth.addActionListener(this);
 
 			miSelectVisible.addActionListener(this);
+			bAddExpPattern.addActionListener(this);
 
 			
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
@@ -215,7 +232,16 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
-		public void datachangedEvent(){}
+		
+		public void datachangedEvent()
+			{
+			//Update list of expression patterns
+			Set<String> v=new TreeSet<String>();
+			for(NucLineage lin:NucLineage.getLineages(w.getSelectedData()))
+				v.addAll(lin.getAllExpNames());
+			for(ModwPanelExpPattern panel:expsettings)
+				panel.setAvailableExpressions(v);
+			}
 		
 		public void actionPerformed(ActionEvent e)
 			{
@@ -286,6 +312,11 @@ public class NucModelExtension implements ModelWindowExtension
 						EvSelection.select(i);
 					BasicWindow.updateWindows();
 					}
+				}
+			else if(e.getSource()==bAddExpPattern)
+				{
+				expsettings.add(new ModwPanelExpPattern(this));
+				w.updateToolPanels();
 				}
 			
 			w.view.repaint(); //TODO modw repaint
@@ -413,9 +444,40 @@ public class NucModelExtension implements ModelWindowExtension
 			initDrawSphere(gl);
 			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
 			
+			EvDecimal curFrame=w.frameControl.getFrame();
+
 			boolean traceCur=miShowTraceAll.isSelected();
 			boolean traceSel=miShowTraceSel.isSelected();
 			boolean tracesSimple=miShowSimpleTraces.isSelected();
+			
+		
+			//Set suitable scaling for expression patterns
+			for(ModwPanelExpPattern panel:expsettings)
+				if(panel.scale1==null)
+					{
+					//Find lineage with this expression pattern
+					String expName=panel.getSelectedExp();
+					for(NucLineage lin:NucLineage.getLineages(w.getSelectedData()))
+						if(lin.getAllExpNames().contains(expName))
+							{
+							Tuple<Double,Double> maxMin1=lin.getMaxMinExpLevel(expName);
+							if(maxMin1!=null)
+								{
+								double absmax=Math.max(Math.abs(maxMin1.fst()), Math.abs(maxMin1.snd()));
+								panel.scale1=1.0/absmax;
+								}
+							break;
+							}
+					
+					}
+			
+			//Update list of expression patterns
+			Set<String> v=new TreeSet<String>();
+			for(NucLineage lin:NucLineage.getLineages(w.getSelectedData()))
+				v.addAll(lin.getAllExpNames());
+			for(ModwPanelExpPattern panel:expsettings)
+				panel.setAvailableExpressions(v);
+
 			
 			for(Map<NucSel, NucLineage.NucInterp> inter:interpNuc)
 				{
@@ -516,7 +578,7 @@ public class NucModelExtension implements ModelWindowExtension
 				for(NucSel nucPair:inter.keySet())
 					{
 					//Render nuc body
-					renderNuc(gl, nucPair, inter.get(nucPair));
+					renderNuc(gl, nucPair, inter.get(nucPair), curFrame);
 					
 					if(traceCur && !traceSel && inter.get(nucPair).isVisible())
 						{
@@ -554,7 +616,6 @@ public class NucModelExtension implements ModelWindowExtension
 			//Cell divisions
 			if(miShowDiv.isSelected())
 				{
-				EvDecimal curFrame=w.frameControl.getFrame();
 				gl.glLineWidth(3);
 				for(NucLineage lin:getLineages())
 					{
@@ -650,7 +711,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render body of one nucleus
 		 */
-		private void renderNuc(GL gl, NucSel nucPair, NucLineage.NucInterp nuc)
+		private void renderNuc(GL gl, NucSel nucPair, NucLineage.NucInterp nuc, EvDecimal curFrame)
 			{
 			//Visibility rule
 			if(!nuc.isVisible())
@@ -669,13 +730,44 @@ public class NucModelExtension implements ModelWindowExtension
 	    //Decide color based on if the nucleus is selected
 	    Color repColor=NucLineage.representativeColor(nuc.colorNuc);
 			float nucColor[];
-			if(nuc.colorNuc!=null)
+			if(!expsettings.isEmpty())
+				{
+				//Add color from expression patterns
+				nucColor=new float[]{0.1f,0.1f,0.1f};
+	    	for(ModwPanelExpPattern panel:expsettings)
+	    		{
+	    		String expName=panel.getSelectedExp();
+	    		NucExp n=nucPair.getNuc().exp.get(expName);
+	    		if(n!=null)
+	    			{
+	    			double level=n.interpolateLevel(curFrame);
+	    			double scale=panel.scale1;
+	    			nucColor[0]+=(float)panel.colR*level*scale;
+	    			nucColor[1]+=(float)panel.colG*level*scale;
+	    			nucColor[2]+=(float)panel.colB*level*scale;
+	    			//System.out.println("here"+level+" ");
+	    			}
+	    		else
+	    			{
+	    			System.out.println("no "+expName);
+	    			}
+	    		}
+	    	for(int i=0;i<3;i++)
+	    		if(nucColor[i]>1f)
+	    			nucColor[i]=1f;
+				}
+			else if(nuc.colorNuc!=null)
 	    	nucColor=new float[]{repColor.getRed()/255.0f,repColor.getGreen()/255.0f,repColor.getBlue()/255.0f};
 	    else
 	    	nucColor=new float[]{1,1,1};
+			
+    	
+			
 //			float lightAmbient[] = { nucColor[0]*0.3f, nucColor[1]*0.3f, nucColor[2]*0.3f, 0.0f };
 //    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, nucColor, 0);   
 	    	
+			
+			
 	    if(NucLineage.hiddenNuclei.contains(nucPair))
 	    	{
 		    if(EvSelection.isSelected(nucPair))
