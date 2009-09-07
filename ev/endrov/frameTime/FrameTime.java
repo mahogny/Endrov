@@ -91,7 +91,7 @@ public class FrameTime extends EvObject
 	
 
 	/**
-	 * Interpolate x given x->yTuple<EvDecimal,EvDecimal>
+	 * Interpolate x given x->yTuple<EvDecimal,EvDecimal>. Richardson extrapolate
 	 */
 	private EvDecimal interpolate(SortedMap<EvDecimal, EvDecimal> map, EvDecimal x)
 		{

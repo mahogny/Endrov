@@ -10,7 +10,6 @@ import java.util.TreeSet;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import util2.cellContactMap.CellContactMap;
 import util2.integrateExpression.FindAnnotatedStrains;
 import util2.integrateExpression.IntExp;
 
