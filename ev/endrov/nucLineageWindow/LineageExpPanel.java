@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -106,6 +105,17 @@ public class LineageExpPanel extends JPanel
 	public void setAvailableExpressions(Collection<String> exps)
 		{
 		//Check if anything is different. Otherwise don't update
+		//Untested
+		if(!currentAvailableExp.equals(exps))
+			{
+			currentAvailableExp.clear();
+			currentAvailableExp.addAll(exps);
+			for(RenderEntry e:listRenderers)
+				e.setAvailableExpressionsUpdate();
+			revalidate();
+			}
+
+/*		
 		if(currentAvailableExp.containsAll(exps))
 			{
 			HashSet<String> newAvailableExp=new HashSet<String>(exps);
@@ -114,11 +124,13 @@ public class LineageExpPanel extends JPanel
 			}
 		else
 			setAvailableExpressionsUpdate(exps);
+			*/
 		}
 
 	/**
 	 * Set list of expression patterns, force GUI update
 	 */
+	/*
 	private void setAvailableExpressionsUpdate(Collection<String> newAvailableExp)
 		{
 		currentAvailableExp.clear();
@@ -126,7 +138,7 @@ public class LineageExpPanel extends JPanel
 		for(RenderEntry e:listRenderers)
 			e.setAvailableExpressionsUpdate();
 		revalidate();
-		}
+		}*/
 	
 	/**
 	 * Send rendering settings to lineage view
@@ -203,8 +215,6 @@ public class LineageExpPanel extends JPanel
 		public JButton bRemoveRenderer=new JImageButton(BasicIcon.iconButtonDelete,"Remove renderer");
 		
 		public SnapBackSlider snapContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL,-10000,10000);
-//		public ComboExp cExp1=new ComboExp();
-//		public ComboExp cExp2=new ComboExp();
 		public JComboBox cExp1=new JComboBox(cm1);
 		public JComboBox cExp2=new JComboBox(cm2);
 		
