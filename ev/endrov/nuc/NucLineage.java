@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import javax.swing.JFileChooser;
@@ -21,6 +22,7 @@ import endrov.keyBinding.KeyBinding;
 import endrov.modelWindow.ModelWindow;
 import endrov.nuc.modw.NucModelExtension;
 import endrov.util.EvDecimal;
+import endrov.util.EvFileUtil;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
 
@@ -51,6 +53,8 @@ public class NucLineage extends EvObject implements Cloneable
 	public static final NucSel emptyHover=new NucSel(null,"");
 	public static NucSel currentHover=emptyHover;
 	
+	public static CellGrouping cellGroups=new CellGrouping();
+	
 	public static final int KEY_TRANSLATE=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Translate",'z'));
 	public static final int KEY_CHANGE_RADIUS=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Change radius",'c'));
 	public static final int KEY_SETZ=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Set Z",'x'));
@@ -68,6 +72,15 @@ public class NucLineage extends EvObject implements Cloneable
 		{
 		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
 		EvData.supportedMetadataFormats.put(metaType,NucLineage.class);
+		
+		try
+			{
+			cellGroups.importXML(EvFileUtil.getFileFromURL(NucLineage.class.getResource("cellgroups.cgrp")));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
 		}
 
 	/** Additions to the object-specific menu */
