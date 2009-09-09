@@ -107,7 +107,6 @@ public class ModelWindowScreenshot implements ModelWindowExtension
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}
-		public void select(int id){}
 		public void fillModelWindowMenus(){}
 		public void datachangedEvent(){}
 

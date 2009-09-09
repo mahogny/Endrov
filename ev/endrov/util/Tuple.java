@@ -39,7 +39,7 @@ public class Tuple<L, R> implements Serializable
 
 	public final boolean equals(Object o) 
 		{
-		if (!(o instanceof Tuple))
+		if (!(o instanceof Tuple<?,?>))
 			return false;
 		final Tuple<?, ?> other = (Tuple<?, ?>) o;
 		return equal(fst(), other.fst()) && equal(snd(), other.snd());

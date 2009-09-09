@@ -135,7 +135,7 @@ public class EvIODataBioformats implements EvIOData
 		{
 		try
 			{
-			
+			/*
 			Map<EvPath,EvChannel> channels=d.getIdObjectsRecursive(EvChannel.class);
 			
 			for(Map.Entry<EvPath, EvChannel> ch:channels.entrySet())
@@ -150,7 +150,7 @@ public class EvIODataBioformats implements EvIOData
 				
 				}
 			
-			
+			*/
 			
 			/*
 			

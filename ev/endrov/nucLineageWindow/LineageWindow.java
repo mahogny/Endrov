@@ -3,6 +3,7 @@ package endrov.nucLineageWindow;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -17,6 +18,7 @@ import endrov.nucLineageWindow.LineageView.ClickRegion;
 import endrov.nucLineageWindow.LineageView.ClickRegionName;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
+import endrov.util.EvUtilRegexp;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 import endrov.util.SnapBackSlider;
@@ -75,7 +77,7 @@ public class LineageWindow extends BasicWindow
 	private JButton buttonGoToRoot=new JImageButton(iconShowRoot,"Go to root");
 	private JButton buttonGoToSelected=new JImageButton(iconShowSelected,"Go to selected");
 	private JButton buttonZoomAll=new JImageButton(iconZoomAll,"Fit everything into screen");
-	private JButton buttonSelectByName=new JImageButton(iconSelectByName,"Select by name of cell, or tissue. Regular expression possible");
+	//private JButton buttonSelectByName=new JImageButton(iconSelectByName,"Select by name of cell, or tissue. Regular expression possible");
 	private JToggleButton buttonShowFrameLines=new JImageToggleButton(iconShowFrameLines,"Show frame lines",true);
 	private JToggleButton buttonShowKeyFrames=new JImageToggleButton(iconShowKeyFrames,"Show key frames");
 	private JToggleButton buttonShowLabels=new JImageToggleButton(iconShowLabel,"Show labels",true);
@@ -111,10 +113,46 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miUnfoldAll=new JMenuItem("Unfold all");
 
 	
+	
 	private JComboBox inpSelectByName;
+	private JComboBox getInpSelectByName()
+		{
+		return inpSelectByName;
+		}
+	private ActionListener listenerSelectByName=new ActionListener()
+		{
+		public void actionPerformed(ActionEvent e)
+			{
+			String inp=(String)getInpSelectByName().getSelectedItem();
+			if(inp==null || inp.equals("")) 
+				return;
+			getInpSelectByName().removeActionListener(this);
+			getInpSelectByName().setSelectedItem("");
+			Set<String> gnucs=NucLineage.cellGroups.groups.get(inp);
+			NucLineage lin=getLineage();
+			EvSelection.unselectAll();
+			if(gnucs!=null && lin!=null)
+				{
+				//LinkedList<NucSel> sels=new LinkedList<NucSel>();
+				for(String name:gnucs)
+					if(lin.nuc.containsKey(name))
+						EvSelection.select(new NucSel(lin,name));
+				//EvSelection.selectOnly(sels.toArray(new NucSel[]{}));
+				}
+			
+			Pattern match=EvUtilRegexp.wildcardToRegex(inp);
+			for(String name:lin.nuc.keySet())
+				if(match.matcher(name).matches())
+					EvSelection.select(new NucSel(lin,name));
+			getInpSelectByName().addActionListener(this);
+			BasicWindow.updateWindows();
+			}
+		};
 	
-	
-	
+
+	private LineageExpPanel expPanel=new LineageExpPanel(view);
+
+		
 	/**
 	 * Make window with standard geometry
 	 */
@@ -124,7 +162,9 @@ public class LineageWindow extends BasicWindow
 		}
 	
 	
-	LineageExpPanel expPanel=new LineageExpPanel(view);
+	
+	
+	
 	
 	/**
 	 * Make a new window at some location
@@ -135,8 +175,12 @@ public class LineageWindow extends BasicWindow
 		Vector<String> groupNames=new Vector<String>();
 		groupNames.addAll(NucLineage.cellGroups.groups.keySet());
 		
-		inpSelectByName=new JComboBox();
-		
+		Vector<String> comboNames=new Vector<String>();
+		comboNames.add("");
+		comboNames.addAll(NucLineage.cellGroups.groups.keySet());
+		inpSelectByName=new JComboBox(comboNames);
+		inpSelectByName.setEditable(true);
+		inpSelectByName.addActionListener(listenerSelectByName);
 		
 		
 		//Add listeners
@@ -186,7 +230,7 @@ public class LineageWindow extends BasicWindow
 		
 		
 		
-		JComponent bottomLower = EvSwingUtil.layoutLCR(buttonSelectByName, inpSelectByName, null);
+		JComponent bottomLower = EvSwingUtil.layoutLCR(null, inpSelectByName, null);
 		
 		JPanel bottomUpper = new JPanel(new GridBagLayout());
 //		add(bottomUpper,BorderLayout.SOUTH);
@@ -649,4 +693,7 @@ public class LineageWindow extends BasicWindow
 		dataChangedEvent();
 		}
 	public void freeResources(){}
+
+
+
 	}
