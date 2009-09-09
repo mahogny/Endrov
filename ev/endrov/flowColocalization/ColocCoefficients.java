@@ -1,5 +1,8 @@
 package endrov.flowColocalization;
 
+import org.jdom.DataConversionException;
+import org.jdom.Element;
+
 
 /**
  * Colocalization calculation. Assumes two images X and Y. Add all pixels,
@@ -20,9 +23,8 @@ public class ColocCoefficients
 	{
 
 	public double sumX, sumXX, sumY, sumYY, sumXY;
-	public int n;
-
 	public double sumXcoloc, sumYcoloc;
+	public int n;
 	
 	
 	/**
@@ -38,7 +40,7 @@ public class ColocCoefficients
 			sumX+=x;
 			sumY+=y;
 			sumXX+=x*x;
-			sumXY+=y*y;
+			sumXY+=x*y;
 			sumYY+=y*y;
 			
 			if(!isBackground(y))
@@ -129,6 +131,45 @@ public class ColocCoefficients
 		return sumYcoloc/sumY;
 		}
 	
+	
+	
+	public static void main(String[] args)
+		{
+		ColocCoefficients c=new ColocCoefficients();
+		
+		c.add(
+				new double[]{1,1,1,1,1,1,1,1,2}, 
+				new double[]{2,2,2,2,2,2,2,2,4});
+		
+		System.out.println("Pearson: "+c.getPearson());
+		
+		
+		}
+
+	
+	public void toXML(Element e)
+		{
+		e.setAttribute("sumX", ""+sumX);
+		e.setAttribute("sumY", ""+sumY);
+		e.setAttribute("sumXX", ""+sumXX);
+		e.setAttribute("sumXY", ""+sumXY);
+		e.setAttribute("sumYY", ""+sumYY);
+		e.setAttribute("sumXcoloc", ""+sumXcoloc);
+		e.setAttribute("sumYcoloc", ""+sumYcoloc);
+		e.setAttribute("n", ""+n);
+		}
+	
+	public void fromXML(Element e) throws DataConversionException
+		{
+		sumX=e.getAttribute("sumX").getDoubleValue();
+		sumY=e.getAttribute("sumY").getDoubleValue();
+		sumXX=e.getAttribute("sumXX").getDoubleValue();
+		sumXY=e.getAttribute("sumXY").getDoubleValue();
+		sumYY=e.getAttribute("sumYY").getDoubleValue();
+		sumXcoloc=e.getAttribute("sumXcoloc").getDoubleValue();
+		sumYcoloc=e.getAttribute("sumYcoloc").getDoubleValue();
+		n=e.getAttribute("sumX").getIntValue();
+		}
 	
 	
 	}
