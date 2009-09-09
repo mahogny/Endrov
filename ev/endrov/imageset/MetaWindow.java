@@ -364,7 +364,7 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 		if(!updatingFields)
 			{
 			updatingFields=true;
-			Imageset rec=metaCombo.getSelectedObjectNotNull();
+			//Imageset rec=metaCombo.getSelectedObjectNotNull();
 		
 			/*
 			double calcResX=rec.metaObjective*rec.metaOptivar/rec.metaCampix; //[]*[]/[um/px]
@@ -398,11 +398,12 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 	/**
 	 * Parse a string as double. Return 0 if it fails
 	 */
+	/*
 	private double parseDoubleOr0(String s)
 		{
 		try {return Double.parseDouble(s);}
 		catch(Exception e) {return 0;}
-		}
+		}*/
 	
 	
 	

@@ -231,7 +231,7 @@ public class EvIODataStarrynite implements EvIOData
 				StringTokenizer linetok=new StringTokenizer(line, ",");
 				
 				String sIndex=linetok.nextToken();
-				String sStatus=linetok.nextToken().substring(1);
+				/*String sStatus=*/linetok.nextToken().substring(1);
 				/*String sPred=*/linetok.nextToken().substring(1);				
 				String sSucc1=linetok.nextToken().substring(1);				
 				String sSucc2=linetok.nextToken().substring(1);				

@@ -721,6 +721,8 @@ public class LineageView extends JPanel
 						canDrawLabel=false;
 					if(canDrawLabel)
 						drawNucName(g, "", nucsel, thisMidY, thisEndX);
+					else
+						drawNucNameUnexpanded(g, "", nucsel, thisMidY, thisEndX);
 					}
 
 				}
@@ -1126,7 +1128,27 @@ public class LineageView extends JPanel
 		//Make it clickable
 		regionClickList.add(new ClickRegionName(nucName, textc, textr-3*fontHeight/4, fontWidth,fontHeight));
 		}
-	
+
+	/**
+	 * Draw text name replacement, when selected
+	 */
+	private void drawNucNameUnexpanded(Graphics g, String prefix, NucSel nucPair, int midy, int x)
+		{
+		if(EvSelection.isSelected(nucPair))
+			{
+			int fontWidth=20;//g.getFontMetrics().stringWidth(prefix+nucName);
+			int textc=x+5;
+			Graphics2D g2=(Graphics2D)g;
+			
+			g2.setColor(Color.RED);
+			//Graphics
+			int textr=midy;
+			g2.translate(textc, textr);
+			g2.drawLine(0, 0, fontWidth, 0);
+			g2.translate(-textc, -textr);
+			}
+		}
+
 	/**
 	 * Draw the [+] and [-] symbol
 	 * @param nucname Name of corresponding nucleus

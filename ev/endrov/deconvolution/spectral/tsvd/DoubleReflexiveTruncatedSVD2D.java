@@ -170,8 +170,8 @@ public class DoubleReflexiveTruncatedSVD2D extends AbstractDoubleSpectralDeconvo
     }
 
     private final int compareNaN(double a, double b) {
-        if (a != a) {
-            if (b != b)
+        if (Double.isNaN(a)) {
+            if (Double.isNaN(b))
                 return 0; // NaN equals NaN
             else
                 return 1; // e.g. NaN > 5

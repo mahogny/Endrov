@@ -83,7 +83,6 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		public boolean canRender(EvObject ob){return false;}
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
-		public void select(int id){}
 		public void datachangedEvent(){}
 		public void fillModelWindowMenus()
 			{

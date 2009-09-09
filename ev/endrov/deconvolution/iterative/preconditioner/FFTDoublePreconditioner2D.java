@@ -418,13 +418,16 @@ public class FFTDoublePreconditioner2D implements DoublePreconditioner2D {
         return s.getQuick((int) G.getMinLocation()[1]);
     }
 
-    private final int compareNaN(double a, double b) {
-        if (a != a) {
-            if (b != b)
-                return 0; // NaN equals NaN
-            else
-                return 1; // e.g. NaN > 5
-        }
-        return -1; // e.g. 5 < NaN
-    }
+  	private static final int compareNaN(double a, double b)
+  		{
+  		if (Double.isNaN(a))
+  			{
+  			if (Double.isNaN(b))
+  				return 0; // NaN equals NaN
+  			else
+  				return 1; // e.g. NaN > 5
+  			}
+  		return -1; // e.g. 5 < NaN
+  		}
+
 }

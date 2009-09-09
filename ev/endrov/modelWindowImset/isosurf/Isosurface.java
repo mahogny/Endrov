@@ -319,7 +319,7 @@ public class Isosurface
 	
 	private static class POINT3DID
 		{
-		int newID;
+		//int newID;
 		float x, y, z;
 		}
 	

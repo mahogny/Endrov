@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.*;
 import javax.swing.*;
 
@@ -35,12 +34,12 @@ public class EvDataMenu implements BasicWindowExtension
 		private JMenuItem miOpenFile=new JMenuItem("Load File");
 		private JMenuItem miOpenFilePath=new JMenuItem("Load File by Path");
 
-		WeakReference<BasicWindow> w;
+		//WeakReference<BasicWindow> w;
 		
 		public void createMenus(BasicWindow w)
 			{
 			w.addMenubar(mData);
-			this.w=new WeakReference<BasicWindow>(null);
+			//this.w=new WeakReference<BasicWindow>(null);
 			JMenu mFile=w.menuFile;
 			
 			miNew.setIcon(BasicIcon.iconMenuNew);

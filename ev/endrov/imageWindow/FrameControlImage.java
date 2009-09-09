@@ -283,20 +283,20 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			stopStart(false);
 		else if(e.getSource()==timer)
 			{
-			if(true)
-				{
+			//if(true)
+				//{
 				if(playingForward)
 					stepForward();
 				else
 					stepBack();
-				}
+			/*	}
 			else
 				{
 				if(playingForward)
 					setFrame(getFrame().add(new EvDecimal(0.1)));
 				else
 					setFrame(getFrame().subtract(new EvDecimal(0.1)));
-				}
+				}*/
 			}
 		
 		}

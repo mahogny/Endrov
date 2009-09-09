@@ -103,7 +103,6 @@ public class IsosurfaceExtension implements ModelWindowExtension
 		public void displaySelect(GL gl){}
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
-		public void select(int id){}
 		public void datachangedEvent(){}
 		public void fillModelWindowMenus()
 			{
@@ -487,10 +486,6 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					{
 					generators.remove(this);
 					pm.done();
-					}
-				public void stopGenerate()
-					{
-					stopFlag=true;
 					}
 				}
 		

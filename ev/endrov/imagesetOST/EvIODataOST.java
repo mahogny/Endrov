@@ -105,10 +105,10 @@ public class EvIODataOST implements EvIOData
 				}
 			}
 		
-		public File outputFile(EvIODataOST ost, Imageset im, String channelName, EvDecimal frame, EvDecimal slice, String ext)
+		/*public File outputFile(EvIODataOST ost, Imageset im, String channelName, EvDecimal frame, EvDecimal slice, String ext)
 			{
 			return ost.buildImagePath(im, channelName, frame, slice, ext);
-			}
+			}*/
 		
 		public String toString()
 			{

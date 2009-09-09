@@ -1,5 +1,6 @@
 package endrov.modelWindowImset.voxel;
 
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +19,6 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.data.*;
-import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
@@ -198,7 +198,6 @@ public class VoxelExtension implements ModelWindowExtension
 		public void displaySelect(GL gl){}
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
-		public void select(int id){}
 		public void fillModelWindowMenus()
 			{
 			w.bottomPanelItems.add(totalPanel);
@@ -369,8 +368,8 @@ public class VoxelExtension implements ModelWindowExtension
 				}
 			
 			/** Invoked when filter sequence changed */
-			private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
-				{public void observerEvent(Object o){stackChanged();}};
+			/*private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
+				{public void observerEvent(Object o){stackChanged();}};*/
 			
 			public WeakReference<EvChannel> lastChannelImages=new WeakReference<EvChannel>(null);
 			
