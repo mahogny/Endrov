@@ -61,15 +61,18 @@ public class CompareAll
 			throw new RuntimeException("No lineage");
 		
 		//Reference nucleus
-		NucLineage.Nuc refNuc=lin.nuc.values().iterator().next();
+	//	String refnucName=lin.nuc.keySet().iterator().next();
 		
 		//Autodetect number of subdivisions
 		int numSubDiv=0;
 		for(String nn:lin.nuc.keySet())
-			{
-			int curnum=Integer.parseInt(nn.substring("_slice".length()));
-			numSubDiv=Math.max(curnum+1,numSubDiv);
-			}
+			if(nn.startsWith("_slice"))
+				{
+				int curnum=Integer.parseInt(nn.substring("_slice".length()));
+				numSubDiv=Math.max(curnum+1,numSubDiv);
+				}
+			else
+				System.out.println("Strange exp: "+nn);
 		System.out.println("Detected subdiv "+numSubDiv);
 		
 		int imageMaxTime=100; //Break down to 100 time points
@@ -105,8 +108,14 @@ public class CompareAll
 		// 2ftail 8h59m20s  32360     0.54
 		
 		
+		System.out.println("should be 0: "+ft.interpolateTime(nucABa.pos.firstKey()).doubleValue());
 		
-		
+		NucLineage.Nuc refNuc=lin.nuc.get("_slice0");
+		/*
+		if(refNuc==null)
+			System.out.println("Ref nuc is null");
+		if(refNuc.exp.get(expName)==null)
+			System.out.println("ref nuc does not have "+expName);*/
 		
 		//Fill in image
 		int lastTime=0;
@@ -183,11 +192,12 @@ public class CompareAll
 		//Find recordings to compare
 		Set<File> datas=FindAnnotatedStrains.getAnnotated();
 		System.out.println(datas);
-		Map<Tuple<File,File>, Double> comparison=new HashMap<Tuple<File,File>, Double>();
+		Map<Tuple<File,File>, ColocCoefficients> comparison=new HashMap<Tuple<File,File>, ColocCoefficients>();
 
 		//Read past calculated values from disk if they exist
-		if(cachedValuesFile.exists() && true)
+		if(cachedValuesFile.exists() && false)
 			{
+			System.out.println("Read stats calculated before");
 			try
 				{
 				Document doc=EvXmlUtil.readXML(cachedValuesFile);
@@ -198,7 +208,11 @@ public class CompareAll
 					File fa=new File(e.getAttributeValue("fa"));
 					File fb=new File(e.getAttributeValue("fb"));
 					if(datas.contains(fa) && datas.contains(fb))
-						comparison.put(Tuple.make(fa, fb), e.getAttribute("value").getDoubleValue());
+						{
+						ColocCoefficients c=new ColocCoefficients();
+						c.fromXML(e);
+						comparison.put(Tuple.make(fa, fb), c);
+						}
 					}
 				}
 			catch (Exception e)
@@ -209,57 +223,58 @@ public class CompareAll
 		
 		//Do pairwise. For user simplicity, can do symmetric and reflexive
 		//Each slice, different bg.
-		if(false)
-		for(File fa:datas)
-			for(File fb:datas)
-				{
-				Tuple<File,File> key=Tuple.make(fa, fb);
-				//Check if cached calculation does not exist
-				if(!comparison.containsKey(key))
+		System.out.println("Calculate pair-wise statistics");
+		if(true)
+			for(File fa:datas)
+				for(File fb:datas)
 					{
-					
-
-					ensureCalculated(fa);
-					ensureCalculated(fb);
-
-					EvData dataA=EvData.loadFile(fa);
-					EvData dataB=EvData.loadFile(fb);
-					
-					
-					System.out.println("Comparing: "+key);
-
-//					String nameAP="AP"+20+"-GFP";
-					String nameT="AP"+1+"-GFP";
-					String expName="exp";
-					
-					ColocCoefficients coeff=new ColocCoefficients();
-					double[][] imtA=apToArray(dataA, nameT, expName, coordLineageFor(dataA));
-					double[][] imtB=apToArray(dataB, nameT, expName, coordLineageFor(dataB));
-					for(int i=0;i<imtA.length;i++)
-						coeff.add(imtA[i], imtB[i]);
-					
-					System.out.println("coeff "+coeff.n+" "+coeff.sumX+" "+coeff.sumXX+" "+coeff.sumY);
-					
-					System.out.println("pearson "+ coeff.getPearson());
-					
-					comparison.put(Tuple.make(fa,fb), coeff.getPearson());
-
-					storeCache(comparison);
-					
-					//TODO maybe store more data
-					
-					//Load images
-//					File ima=new File(new File(fa,"data"),"foo.png");
-					
-					
-					
-					//coeff.add(arrX, arrY)
-					
-					
-					//TODO calc
-					
+					Tuple<File,File> key=Tuple.make(fa, fb);
+					//Check if cached calculation does not exist
+					if(!comparison.containsKey(key))
+						{
+						System.out.println("todo: "+key);
+	
+						ensureCalculated(fa);
+						ensureCalculated(fb);
+	
+						EvData dataA=EvData.loadFile(fa);
+						EvData dataB=EvData.loadFile(fb);
+						
+						
+						System.out.println("Comparing: "+key);
+	
+	//					String nameAP="AP"+20+"-GFP";
+						String nameT="AP"+1+"-GFP";
+						String expName="exp";
+						
+						ColocCoefficients coeff=new ColocCoefficients();
+						double[][] imtA=apToArray(dataA, nameT, expName, coordLineageFor(dataA));
+						double[][] imtB=apToArray(dataB, nameT, expName, coordLineageFor(dataB));
+						for(int i=0;i<imtA.length;i++)
+							coeff.add(imtA[i], imtB[i]);
+						
+						System.out.println("coeff "+coeff.n+" "+coeff.sumX+" "+coeff.sumXX+" "+coeff.sumY);
+						
+						System.out.println("pearson "+ coeff.getPearson());
+						
+						comparison.put(Tuple.make(fa,fb), coeff);
+	
+						storeCache(comparison);
+						
+						//TODO maybe store more data
+						
+						//Load images
+	//					File ima=new File(new File(fa,"data"),"foo.png");
+						
+						
+						
+						//coeff.add(arrX, arrY)
+						
+						
+						//TODO calc
+						
+						}
 					}
-				}
 		
 		
 		
@@ -277,7 +292,7 @@ public class CompareAll
 		try
 			{
 			Set<String> titles=new TreeSet<String>();
-			Map<Tuple<String,String>,Double> map=new HashMap<Tuple<String,String>, Double>();
+			Map<Tuple<String,String>,ColocCoefficients> map=new HashMap<Tuple<String,String>, ColocCoefficients>();
 			for(File d:datas)
 				titles.add(getName(d));
 			for(Tuple<File,File> t:comparison.keySet())
@@ -308,7 +323,7 @@ public class CompareAll
 	/**
 	 * Store calculated values for the next time
 	 */
-	public static void storeCache(Map<Tuple<File,File>, Double> comparison)
+	public static void storeCache(Map<Tuple<File,File>, ColocCoefficients> comparison)
 		{
 		try
 			{
@@ -319,7 +334,8 @@ public class CompareAll
 				Element e=new Element("c");
 				e.setAttribute("fa", t.fst().toString());
 				e.setAttribute("fb",t.snd().toString());
-				e.setAttribute("value",""+comparison.get(t));
+				comparison.get(t).toXML(e);
+//				e.setAttribute("value",""+comparison.get(t));
 				root.addContent(e);
 				}
 			Document doc=new Document(root);
@@ -350,7 +366,7 @@ public class CompareAll
 	 * @param targetFile
 	 * @throws IOException
 	 */
-	public static void writeHTML(Set<String> titles, Map<Tuple<String,String>,Double> map, File targetFile) throws IOException
+	public static void writeHTML(Set<String> titles, Map<Tuple<String,String>,ColocCoefficients> map, File targetFile) throws IOException
 		{
 		//rows,columns
 //		TreeSet<String> titles=new TreeSet<String>(map.keySet());
@@ -383,12 +399,12 @@ public class CompareAll
 			
 			for(String tb:titles)
 				{
-				Double val=map.get(Tuple.make(ta,tb));
+				ColocCoefficients val=map.get(Tuple.make(ta,tb));
 				sb.append("<td>");
 				if(val==null)
 					sb.append("?");
 				else
-					sb.append(""+val);
+					sb.append(""+val.getPearson());
 				sb.append("</td>");
 				}
 			sb.append("</tr>");
