@@ -24,7 +24,7 @@ public class CellGrouping
 	/**
 	 * group -> cells
 	 */
-	TreeMap<String,TreeSet<String>> groups=new TreeMap<String, TreeSet<String>>();
+	public TreeMap<String,TreeSet<String>> groups=new TreeMap<String, TreeSet<String>>();
 	
 	
 	

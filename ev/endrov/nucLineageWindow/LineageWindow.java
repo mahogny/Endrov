@@ -111,7 +111,8 @@ public class LineageWindow extends BasicWindow
 	public JMenuItem miUnfoldAll=new JMenuItem("Unfold all");
 
 	
-	private JTextField inpSelectByName=new JTextField();
+	private JComboBox inpSelectByName;
+	
 	
 	
 	/**
@@ -130,6 +131,14 @@ public class LineageWindow extends BasicWindow
 	 */
 	public LineageWindow(Rectangle bounds)
 		{
+		
+		Vector<String> groupNames=new Vector<String>();
+		groupNames.addAll(NucLineage.cellGroups.groups.keySet());
+		
+		inpSelectByName=new JComboBox();
+		
+		
+		
 		//Add listeners
 		view.addMouseListener(this);
 		view.addMouseMotionListener(this);

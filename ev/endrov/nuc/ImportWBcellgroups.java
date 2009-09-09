@@ -18,7 +18,7 @@ public class ImportWBcellgroups
 	public static void main(String[] args)
 		{
 		
-		File rootdir=new File("/Volumes/TBU_main03/userdata");
+		File rootdir=new File("/media/TBU_extra02/userdata/datasets");
 		
 		try
 			{
@@ -48,7 +48,7 @@ public class ImportWBcellgroups
 				
 				}
 			
-			grouping.exportXML(new File(rootdir, "cellgroups.cgrp"));
+			grouping.exportXML(new File("/tmp", "cellgroups.cgrp"));
 			
 			}
 		catch (Exception e)
