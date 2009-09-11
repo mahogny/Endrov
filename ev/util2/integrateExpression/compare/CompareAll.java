@@ -2,7 +2,9 @@ package util2.integrateExpression.compare;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,6 +23,8 @@ import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
 import endrov.frameTime.FrameTime;
+import endrov.imageset.EvChannel;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
@@ -36,54 +40,23 @@ import endrov.util.Tuple;
  */
 public class CompareAll
 	{
-	private final static File cachedValuesFile=new File("/tmp/comparison.xml");
+	private final static File cachedValuesFileT=new File("/tmp/comparisonT.xml");
+	private final static File cachedValuesFileAP=new File("/tmp/comparisonAP.xml");
 	
+	private final static int imageMaxTime=100; //Break down to 100 time points
+
 	
 	/**
-	 * Coloc calculation requires two images that can overlap. Generate these from the AP or T lineage
+	 * Normalize time between recordings
 	 */
-	public static double[][] apToArray(EvData data, String newLinName, String expName, NucLineage coordLin)
+	private static FrameTime buildFrametime(NucLineage coordLin)
 		{
-		Imageset imset = data.getObjects(Imageset.class).get(0);
-		NucLineage lin = null;
-
-		//Find lineage
-		for(Map.Entry<EvPath, NucLineage> e:imset.getIdObjectsRecursive(NucLineage.class).entrySet())
-			{
-			if(e.getKey().getLeafName().equals(newLinName))
-				{
-				System.out.println(e);
-				lin=e.getValue();
-				break;
-				}
-			}
-		if(lin==null)
-			throw new RuntimeException("No lineage");
-		
-		//Reference nucleus
-	//	String refnucName=lin.nuc.keySet().iterator().next();
-		
-		//Autodetect number of subdivisions
-		int numSubDiv=0;
-		for(String nn:lin.nuc.keySet())
-			if(nn.startsWith("_slice"))
-				{
-				int curnum=Integer.parseInt(nn.substring("_slice".length()));
-				numSubDiv=Math.max(curnum+1,numSubDiv);
-				}
-			else
-				System.out.println("Strange exp: "+nn);
-		System.out.println("Detected subdiv "+numSubDiv);
-		
-		int imageMaxTime=100; //Break down to 100 time points
-		
-		double[][] image=new double[imageMaxTime][numSubDiv];
-
 		//Fit model time using a few markers
 		//Times must be relative to a sane time, such that if e.g. venc is missing, linear interpolation still makes sense
 		FrameTime ft=new FrameTime();
+		System.out.println("has nucs: "+coordLin.nuc.keySet());
+		
 		NucLineage.Nuc nucABa=coordLin.nuc.get("ABa");
-		System.out.println(coordLin.nuc.keySet());
 		ft.add(nucABa.pos.firstKey(), new EvDecimal("0").multiply(imageMaxTime));
 
 		NucLineage.Nuc nucGast=coordLin.nuc.get("gast"); //Gastrulation
@@ -107,28 +80,65 @@ public class CompareAll
 		// venc 7h49m20s    28160     0.43
 		// 2ftail 8h59m20s  32360     0.54
 		
-		
 		System.out.println("should be 0: "+ft.interpolateTime(nucABa.pos.firstKey()).doubleValue());
+		//System.out.println("should be 0: "+ft.interpolateTime(nuc2ft.pos.firstKey()).doubleValue());
 		
-		NucLineage.Nuc refNuc=lin.nuc.get("_slice0");
-		/*
-		if(refNuc==null)
-			System.out.println("Ref nuc is null");
-		if(refNuc.exp.get(expName)==null)
-			System.out.println("ref nuc does not have "+expName);*/
+		return ft;
+		}
+	
+	
+	/**
+	 * Coloc calculation requires two images that can overlap. Generate these from the AP or T lineage
+	 */
+	public static double[][] apToArray(EvData data, String newLinName, String expName, NucLineage coordLin)
+		{
+		Imageset imset = data.getObjects(Imageset.class).get(0);
+		NucLineage lin = null;
+
+		//Find lineage
+		for(Map.Entry<EvPath, NucLineage> e:imset.getIdObjectsRecursive(NucLineage.class).entrySet())
+			{
+			if(e.getKey().getLeafName().equals(newLinName))
+				{
+				System.out.println(e);
+				lin=e.getValue();
+				break;
+				}
+			}
+		if(lin==null)
+			throw new RuntimeException("No lineage");
+		
+		//Autodetect number of subdivisions
+		int numSubDiv=0;
+		for(String nn:lin.nuc.keySet())
+			if(nn.startsWith("_slice"))
+				{
+				int curnum=Integer.parseInt(nn.substring("_slice".length()));
+				numSubDiv=Math.max(curnum+1,numSubDiv);
+				}
+			else
+				System.out.println("Strange exp: "+nn);
+		System.out.println("Detected subdiv "+numSubDiv);
+		
+		double[][] image=new double[imageMaxTime][numSubDiv];
+		
+		FrameTime ft=buildFrametime(coordLin);
 		
 		//Fill in image
 		int lastTime=0;
+		//System.out.println("curtime: ");
+		NucLineage.Nuc refNuc=lin.nuc.get("_slice0");
 		for (EvDecimal frame : refNuc.exp.get(expName).level.keySet())
 			{
 			//Map to image
 			int time=(int)ft.interpolateTime(frame).doubleValue();
-			System.out.println("curtime: "+time);
+			//System.out.println("curtime: "+time);
+			//System.out.print(time+" ");
 			if(time<0)
 				time=0;
 			else if(time>=imageMaxTime)
-				time=imageMaxTime-1;
-
+				break;
+			//time=imageMaxTime-1;
 			
 			//For each slice
 			for (int i = 0; i<numSubDiv; i++)
@@ -136,18 +146,17 @@ public class CompareAll
 				NucLineage.Nuc nuc = lin.nuc.get("_slice"+i);
 				NucExp nexp = nuc.exp.get(expName);
 				Double level = nexp.level.get(frame);
-//				if (level==null)   //SHOULD NOT HAPPEN
-//					continue here;
-				
 				for(int y=lastTime;y<time+1;y++)
 					image[time][i]=level;
 				}
 			lastTime=time;
 			}
+		//System.out.println();
 		
+		//System.out.println("numSubDiv: "+numSubDiv);
 		for(double[] d:image)
 			{
-			System.out.print(">");
+			System.out.print("im>");
 			for(double e:d)
 				System.out.print(" "+e);
 			System.out.println();
@@ -161,7 +170,58 @@ public class CompareAll
 		}
 	
 	
-	
+	/**
+	 * Coloc over XYZ
+	 */
+	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, String newLinName, String expName, NucLineage coordLinA, NucLineage coordLinB)
+		{
+		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
+		Imageset imsetB = dataA.getObjects(Imageset.class).get(0);
+
+		
+		FrameTime ftA=buildFrametime(coordLinA);
+		FrameTime ftB=buildFrametime(coordLinB);
+
+		EvChannel chanA=(EvChannel)imsetA.getChild("GFP"); 
+		EvChannel chanB=(EvChannel)imsetB.getChild("GFP");
+		
+		ColocCoefficients coloc=new ColocCoefficients();
+		
+		//Fill in image
+		//System.out.println("curtime: ");
+		for (EvDecimal frame : chanA.imageLoader.keySet())
+			{
+			//Map to image
+			int time=(int)ftA.interpolateTime(frame).doubleValue();
+			//System.out.println("curtime: "+time);
+			//System.out.print(time+" ");
+			if(time<0)
+				time=0;
+			else if(time>=imageMaxTime)
+				break;
+			//time=imageMaxTime-1;
+			
+			EvStack stackA=chanA.getFrame(frame);
+			
+			
+			
+			EvStack stackB=chanB.getFrame(frame); //TODO Does not work, different times
+			
+			//For each slice. Same number of slices since it has been normalized
+			int numz=stackA.getDepth();
+			for(int i=0;i<numz;i++)
+				{
+				double[] arrA=stackA.get(new EvDecimal(i)).getPixels().convertToDouble(true).getArrayDouble();
+				double[] arrB=stackB.get(new EvDecimal(i)).getPixels().convertToDouble(true).getArrayDouble();
+				coloc.add(arrA, arrB);
+				}
+			}
+
+		//If it doesn't go far enough, the rest of the values will be 0.
+		//The first values will be a replica of the first frame; should seldom
+		//be a problem
+		return coloc;
+		}
 	
 	
 	
@@ -184,18 +244,11 @@ public class CompareAll
 		}
 	
 	
-	public static void main(String[] args)
+	public static Map<Tuple<File,File>, ColocCoefficients> loadCache(Set<File> datas, File cachedValuesFile)
 		{
-		EvLog.listeners.add(new EvLogStdout());
-		EV.loadPlugins();
-		
-		//Find recordings to compare
-		Set<File> datas=FindAnnotatedStrains.getAnnotated();
-		System.out.println(datas);
-		Map<Tuple<File,File>, ColocCoefficients> comparison=new HashMap<Tuple<File,File>, ColocCoefficients>();
-
 		//Read past calculated values from disk if they exist
-		if(cachedValuesFile.exists() && false)
+		Map<Tuple<File,File>, ColocCoefficients> comparison=new HashMap<Tuple<File,File>, ColocCoefficients>();
+		if(cachedValuesFile.exists())
 			{
 			System.out.println("Read stats calculated before");
 			try
@@ -220,17 +273,42 @@ public class CompareAll
 				e.printStackTrace();
 				}
 			}
+		return comparison;
+		}
+	
+	public static void main(String[] args)
+		{
+		EvLog.listeners.add(new EvLogStdout());
+		EV.loadPlugins();
+		
+		Set<String> argsSet=new HashSet<String>();
+		for(String s:args)
+			argsSet.add(s);
+		
+		//Find recordings to compare
+		Set<File> datas=FindAnnotatedStrains.getAnnotated();
+		System.out.println(datas);
+
+		//Read past calculated values from disk 
+		Map<Tuple<File,File>, ColocCoefficients> comparisonT=new HashMap<Tuple<File,File>, ColocCoefficients>();
+		Map<Tuple<File,File>, ColocCoefficients> comparisonAP=new HashMap<Tuple<File,File>, ColocCoefficients>();
+		if(!argsSet.contains("nocache"))
+			{
+			comparisonT=loadCache(datas, cachedValuesFileT);
+			comparisonAP=loadCache(datas, cachedValuesFileAP);
+			}
+		//Map<Tuple<File,File>, ColocCoefficients> comparison=new HashMap<Tuple<File,File>, ColocCoefficients>();
 		
 		//Do pairwise. For user simplicity, can do symmetric and reflexive
 		//Each slice, different bg.
 		System.out.println("Calculate pair-wise statistics");
-		if(true)
+		if(!argsSet.contains("nocalc"))
 			for(File fa:datas)
 				for(File fb:datas)
 					{
 					Tuple<File,File> key=Tuple.make(fa, fb);
 					//Check if cached calculation does not exist
-					if(!comparison.containsKey(key))
+					if(!comparisonT.containsKey(key))
 						{
 						System.out.println("todo: "+key);
 	
@@ -243,23 +321,41 @@ public class CompareAll
 						
 						System.out.println("Comparing: "+key);
 	
-	//					String nameAP="AP"+20+"-GFP";
-						String nameT="AP"+1+"-GFP";
 						String expName="exp";
 						
-						ColocCoefficients coeff=new ColocCoefficients();
+						//Slices: T
+						String nameT="AP"+1+"-GFP";
+						ColocCoefficients coeffT=new ColocCoefficients();
 						double[][] imtA=apToArray(dataA, nameT, expName, coordLineageFor(dataA));
 						double[][] imtB=apToArray(dataB, nameT, expName, coordLineageFor(dataB));
 						for(int i=0;i<imtA.length;i++)
-							coeff.add(imtA[i], imtB[i]);
+							coeffT.add(imtA[i], imtB[i]);
+						comparisonT.put(Tuple.make(fa,fb), coeffT);
+
+						//Slices: AP
+						String nameAP="AP"+20+"-GFP";
+						ColocCoefficients coeffAP=new ColocCoefficients();
+						double[][] imapA=apToArray(dataA, nameAP, expName, coordLineageFor(dataA));
+						double[][] imapB=apToArray(dataB, nameAP, expName, coordLineageFor(dataB));
+						for(int i=0;i<imtA.length;i++)
+							coeffAP.add(imapA[i], imapB[i]);
+						comparisonAP.put(Tuple.make(fa,fb), coeffAP);
+
+						System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
+						System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
+						System.out.println("pearsonT "+ coeffT.getPearson());
 						
-						System.out.println("coeff "+coeff.n+" "+coeff.sumX+" "+coeff.sumXX+" "+coeff.sumY);
+						//Slices: XYZ
+						ColocCoefficients coeffXYZ=new ColocCoefficients();
+						/*EvChannel chan=hakaAz
 						
-						System.out.println("pearson "+ coeff.getPearson());
+						for(Map.Entry<K, V>)*/
 						
-						comparison.put(Tuple.make(fa,fb), coeff);
-	
-						storeCache(comparison);
+						
+						
+						
+						storeCache(comparisonT, cachedValuesFileT);
+						storeCache(comparisonAP, cachedValuesFileAP);
 						
 						//TODO maybe store more data
 						
@@ -276,33 +372,10 @@ public class CompareAll
 						}
 					}
 		
-		
-		
 	
+		writeHTMLfromFiles(datas, comparisonT, new File("/tmp/"));
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		//Turn into HTML
-		try
-			{
-			Set<String> titles=new TreeSet<String>();
-			Map<Tuple<String,String>,ColocCoefficients> map=new HashMap<Tuple<String,String>, ColocCoefficients>();
-			for(File d:datas)
-				titles.add(getName(d));
-			for(Tuple<File,File> t:comparison.keySet())
-				map.put(Tuple.make(getName(t.fst()), getName(t.snd())), comparison.get(t));
-			writeHTML(titles, map, new File("/tmp/table.html"));
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
 		
 		
 		System.exit(0);
@@ -323,7 +396,7 @@ public class CompareAll
 	/**
 	 * Store calculated values for the next time
 	 */
-	public static void storeCache(Map<Tuple<File,File>, ColocCoefficients> comparison)
+	public static void storeCache(Map<Tuple<File,File>, ColocCoefficients> comparison, File cachedValuesFile)
 		{
 		try
 			{
@@ -359,60 +432,117 @@ public class CompareAll
 		}
 	
 	
+	public static void writeHTMLfromFiles(Set<File> datas, Map<Tuple<File,File>, ColocCoefficients> comparison, File targetFile)
+		{
+		//Turn into HTML
+		try
+			{
+			Set<String> titles=new TreeSet<String>();
+			Map<Tuple<String,String>,ColocCoefficients> map=new HashMap<Tuple<String,String>, ColocCoefficients>();
+			for(File d:datas)
+				titles.add(getName(d));
+			for(Tuple<File,File> t:comparison.keySet())
+				map.put(Tuple.make(getName(t.fst()), getName(t.snd())), comparison.get(t));
+			writeHTML(titles, map, targetFile);
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		}
+	
+	
+	public abstract static class TableWriter
+		{
+		public StringBuffer sb=new StringBuffer();
+		
+		public TableWriter(Set<String> titles)
+			{
+			NumberFormat nf=NumberFormat.getInstance();
+			nf.setMaximumFractionDigits(2);
+			
+			//First line with only titles
+			sb.append("<tr>");
+			sb.append("<td>&nbsp;</td>");
+			for(String t:titles)
+				{
+				sb.append("<td valign=\"top\">");
+				for(char c:t.toCharArray())
+					{
+					sb.append(c);
+					sb.append("<br/>");
+					}
+				sb.append("</td>");
+				}
+			sb.append("</tr>\n");
+			
+			//All other lines
+			for(String ta:titles)
+				{
+				//Title
+				sb.append("<tr>");
+				sb.append("<td>");
+				sb.append(ta);
+				sb.append("</td>");
+				
+				for(String tb:titles)
+					{
+					Double val=getValue(ta, tb);
+					sb.append("<td>");
+					if(val==null)
+						sb.append("?");
+					else if(val.isInfinite())
+						sb.append("Inf");
+					else if(val.isNaN())
+						sb.append("NaN");
+					else
+						sb.append(""+nf.format(val));
+					sb.append("</td>");
+					}
+				sb.append("</tr>\n");
+				}
+			}
+		
+		public abstract Double getValue(String ta, String tb);
+		}
+
+	
 	/**
-	 * 
+	 * Write HTML-files
 	 * @param titles
 	 * @param map (row, column)
 	 * @param targetFile
-	 * @throws IOException
 	 */
-	public static void writeHTML(Set<String> titles, Map<Tuple<String,String>,ColocCoefficients> map, File targetFile) throws IOException
+	public static void writeHTML(Set<String> titles, final Map<Tuple<String,String>,ColocCoefficients> map, File targetFile) throws IOException
 		{
-		//rows,columns
-//		TreeSet<String> titles=new TreeSet<String>(map.keySet());
-		
-		StringBuffer sb=new StringBuffer();
-
-		//First line with only titles
-		sb.append("<tr>");
-		sb.append("<td>&nbsp;</td>");
-		for(String t:titles)
-			{
-			sb.append("<td valign=\"top\">");
-			for(char c:t.toCharArray())
-				{
-				sb.append(c);
-				sb.append("<br/>");
-				}
-			sb.append("</td>");
-			}
-		sb.append("</tr>");
-		
-		//All other lines
-		for(String ta:titles)
-			{
-			//Title
-			sb.append("<tr>");
-			sb.append("<td>");
-			sb.append(ta);
-			sb.append("</td>");
-			
-			for(String tb:titles)
+		TableWriter twPearson=new TableWriter(titles){
+			public Double getValue(String ta, String tb)
 				{
 				ColocCoefficients val=map.get(Tuple.make(ta,tb));
-				sb.append("<td>");
-				if(val==null)
-					sb.append("?");
-				else
-					sb.append(""+val.getPearson());
-				sb.append("</td>");
-				}
-			sb.append("</tr>");
-			}
+				return val==null ? null : val.getPearson();
+				}};
 
-		EvFileUtil.writeFile(targetFile,
-				EvFileUtil.readFile(EvFileUtil.getFileFromURL(CompareAll.class.getResource("templateCompare.html")))
-				.replace("BODY", sb.toString()));
+		TableWriter twManders1=new TableWriter(titles){
+		public Double getValue(String ta, String tb)
+			{
+			ColocCoefficients val=map.get(Tuple.make(ta,tb));
+			return val==null ? null : val.getMandersX();
+			}};
+
+		TableWriter twK1=new TableWriter(titles){
+		public Double getValue(String ta, String tb)
+			{
+			ColocCoefficients val=map.get(Tuple.make(ta,tb));
+			return val==null ? null : val.getKX();
+			}};
+			
+			
+
+		String template=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CompareAll.class.getResource("templateCompare.html")));
+		EvFileUtil.writeFile(new File(targetFile,"tablePearson.html"),template.replace("COEFF","Pearson").replace("BODY", twPearson.sb.toString()));
+		EvFileUtil.writeFile(new File(targetFile,"tableManders1.html"),template.replace("COEFF","Manders<sub>1</sub>").replace("BODY", twManders1.sb.toString()));
+		EvFileUtil.writeFile(new File(targetFile,"tableK1.html"),template.replace("COEFF","k<sub>1</sub>").replace("BODY", twK1.sb.toString()));
+
 		}
 	
 	

@@ -160,16 +160,16 @@ public class ExpUtil
 	
 	
 	/**
-	 * Correct for background etc. Use table of corrections
+	 * Correct for background etc. Use given table of corrections
 	 */
 	public static void correctExposureChange(TreeMap<EvDecimal, Tuple<Double,Double>> corrections, NucLineage lin, String expName)
 		{
-		int framecount=0;
+		//int framecount=0;
 		
 		//For all frames
 		for(EvDecimal frame:corrections.keySet())
 			{
-			framecount++;
+			//framecount++;
 
 			double correctionK=corrections.get(frame).fst();
 			double correctionM=corrections.get(frame).snd();
@@ -187,6 +187,17 @@ public class ExpUtil
 				}
 			}
 		}
+	
+	public static void correctExposureChange(TreeMap<EvDecimal, Tuple<Double,Double>> corrections, EvDecimal frame, double[] sig)
+		{
+		double correctionK=corrections.get(frame).fst();
+		double correctionM=corrections.get(frame).snd();
+		
+		for(int i=0;i<sig.length;i++)
+			sig[i]=correctionK*sig[i]+correctionM;
+		}
+	
+	
 	
 
 	
@@ -311,6 +322,15 @@ public class ExpUtil
 
 		}
 	
+	public static void normalizeSignal(double[] sig, double max, double min, double normalizedVal)
+		{
+//		Double max=getSignalMax(lin, expName);
+		double scale=normalizedVal/(max-min);
+		
+		for(int i=0;i<sig.length;i++)
+			sig[i]=(sig[i]-min)*scale;
+		}
+	
 	/**
 	 * Get maximum value for expression
 	 */
@@ -326,6 +346,21 @@ public class ExpUtil
 						max=level;
 			}
 		return max;
+		}
+	
+	/**
+	 * Get maximum value for expression
+	 */
+	public static Double getSignalMax(Collection<double[][][]> sig)
+		{
+		Double ret=null;
+		for(double[][][] v:sig)
+			for(double[][] vv:v)
+				for(double[] vvv:vv)
+					for(double level:vvv)
+						if(ret==null || level>ret)
+							ret=level;
+		return ret;
 		}
 	
 	/**
@@ -345,6 +380,20 @@ public class ExpUtil
 		return min;
 		}
 
+	/**
+	 * Get minimum value for expression
+	 */
+	public static Double getSignalMin(Collection<double[][][]> sig)
+		{
+		Double ret=null;
+		for(double[][][] v:sig)
+			for(double[][] vv:v)
+				for(double[] vvv:vv)
+					for(double level:vvv)
+						if(ret==null || level<ret)
+							ret=level;
+		return ret;
+		}
 
 
 

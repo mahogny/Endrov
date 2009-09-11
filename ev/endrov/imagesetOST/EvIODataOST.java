@@ -151,10 +151,10 @@ public class EvIODataOST implements EvIOData
 				return null;
 			}
 
-		public void allocate(EvPath keyName)
+		/*public void allocate(EvPath keyName)
 			{
 			allocate(keyName.getLeafName());
-			}
+			}*/
 		/**
 		 * Reserve a name for this blob
 		 */
@@ -201,11 +201,7 @@ public class EvIODataOST implements EvIOData
 		{
 		DiskBlob blob=mapBlobs.get(ob);
 		if(blob==null)
-			{
-			blob=new DiskBlob();
-			mapBlobs.put(ob,blob);
-			//listBlobs.add(blob);
-			}
+			mapBlobs.put(ob,blob=new DiskBlob());
 		return blob;
 		}
 	
@@ -321,47 +317,15 @@ public class EvIODataOST implements EvIOData
 		}
 	
 	/** Internal: piece together a path to an image */
-	/*
-	private File buildImagePath33(EvChannel ch, EvDecimal frame, EvDecimal slice, String ext)
-		{
-		return buildImagePath(buildFramePath(mapBlobs.get(ch).getDirectory(), frame), slice, ext);
-		}
-	*/
 	private File buildImagePath33(EvChannel ch, EvDecimal frame, String slice, String ext)
 		{
 		return new File(buildFramePath(mapBlobs.get(ch).getDirectory(), frame), slice+ext);
 		}
 	
-	/** Internal: piece together a path to a channel */
-	private File buildChannelPath(Imageset im, String channelName)
-		{
-		return new File(mapBlobs.get(im).getDirectory(),"ch-"+channelName);
-		}
-
-	
 	/** Internal: piece together a path to a frame */
 	private static File buildFramePath(File channelPath, EvDecimal frame)
 		{
 		return new File(channelPath, EV.pad(frame,8));
-		}
-	
-	
-	
-	private File buildFramePath(Imageset im, String channelName, EvDecimal frame)
-		{
-		return buildFramePath(buildChannelPath(im,channelName), frame);
-		}
-	
-	/** Internal: piece together a path to an image */
-	private File buildImagePath(Imageset im, String channelName, EvDecimal frame, EvDecimal slice, String ext)
-		{
-		return buildImagePath(buildFramePath(im, channelName, frame), slice, ext);
-		}
-	
-	/** Internal: piece together a path to an image */
-	private static File buildImagePath(File framePath, EvDecimal slice, String ext)
-		{
-		return new File(framePath,EV.pad(slice, 8)+ext);
 		}
 	
 	/** internal: name of metadata file */
@@ -432,14 +396,20 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Before writing data each imageset need a blob ID
 	 */
-	private void allocateBlobs(EvData data)
+	private void allocateBlobs(EvContainer data)
 		{
-		Map<EvPath,EvChannel> dataImagesets=data.getIdObjectsRecursive(EvChannel.class);
-		for(Map.Entry<EvPath, EvChannel> datae:dataImagesets.entrySet())
+		Map<EvPath,EvChannel> dataChannels=data.getIdObjectsRecursive(EvChannel.class);
+		for(Map.Entry<EvPath, EvChannel> datae:dataChannels.entrySet())
 			{
-			EvChannel im=datae.getValue();
-			DiskBlob blob=getCreateBlob(im);
-			blob.allocate("ch"+datae.getKey());
+			//Get a name for the blob. Must not contain special characters
+			StringBuffer sb=new StringBuffer("ch");
+			for(char c:datae.getKey().getLeafName().toCharArray())
+				if(Character.isLetterOrDigit(c))
+					sb.append(c);
+			
+			EvChannel ch=datae.getValue();
+			DiskBlob blob=getCreateBlob(ch);
+			blob.allocate(sb.toString());
 			datae.getValue().ostBlobID=blob.currentDir;
 			if(blob.currentDir==null)
 				System.out.println("Warning: set blobid=null when saving");
@@ -514,10 +484,8 @@ public class EvIODataOST implements EvIOData
 			//               or is saved in the wrong location
 			for(Map.Entry<EvPath, EvChannel> datae:dataChannels.entrySet())
 				{
-				//Imageset im=datae.getValue();
 				EvChannel ch=datae.getValue();
 
-				//for(Map.Entry<String, EvChannel> ce:im.getChannels().entrySet())
 					for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
 						for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 							{
@@ -530,8 +498,7 @@ public class EvIODataOST implements EvIOData
 
 							//Where should new file be written?
 							File newFile=fileShouldBe(ch, fe.getKey(),ie.getKey(), stack.resZ, stack.dispZ);
-
-
+							
 							//Check if dirty
 							boolean dirty=!belongsToThisDatasetIO;
 							if(ie.getValue().modified())
@@ -580,6 +547,8 @@ public class EvIODataOST implements EvIOData
 									}
 								
 								
+								//System.out.println("File should be "+newFile+" blob: "+getCreateBlob(ch).currentDir);
+								
 								SliceIO newio=new SliceIO(this,newFile);
 								newio.oldio=oldio;
 								evim.io=newio;
@@ -602,6 +571,8 @@ public class EvIODataOST implements EvIOData
 				}
 			
 			System.out.println("writing files...");
+			
+			HashSet<File> existingDirs=new HashSet<File>();
 			
 			//Write the files
 			while(!toWrite.isEmpty())
@@ -631,12 +602,20 @@ public class EvIODataOST implements EvIOData
 							}
 						}
 
+
+					//Create parent directory. To avoid excessive file tree I/O, cache which ones have already been created
+					File parentFile=io.f.getParentFile();
+					if(!existingDirs.contains(parentFile))
+						{
+						parentFile.mkdirs();
+						existingDirs.add(parentFile);
+						}
+
+					
 					//Write image to disk
 					BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
 					if(EV.debugMode)
 						System.out.println("write "+io.f);
-					io.f.getParentFile().mkdirs(); //TODO optimize. cache which exist?
-					
 					EvCommonImageIO.saveImage(bim, io.f, imCompression.get(evim));
 					
 					//Mark this image as done

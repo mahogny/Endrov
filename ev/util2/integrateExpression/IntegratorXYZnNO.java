@@ -19,24 +19,22 @@ import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
 /**
- * Integrate expression on an overlaid cube. Goes into a full stack in the end,
- * but this might be difficult to visualize.
- * 
+ * Integrate expression on an overlaid cube. Maps into a single slice
  * @author Johan Henriksson
  *
  */
-public class IntegratorXYZfull3D implements Integrator
+public class IntegratorXYZnNO implements Integrator
 	{
 	private int numSubDiv;
-	private double[][][] sliceExp; // z,y,x
-	private int[][][] sliceVol; // z,y,x
+	private double[][] sliceExp; // y,x
+	private int[][] sliceVol; // y,x
 	private NucLineage lin;
 
 	private Map<EvDecimal, Double> bg = new HashMap<EvDecimal, Double>();
 
 	private CoordinateSystem cs;
 
-	public IntegratorXYZfull3D(IntExp integrator, String newLinName,
+	public IntegratorXYZnNO(IntExp integrator, String newLinName,
 			int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
@@ -46,10 +44,13 @@ public class IntegratorXYZfull3D implements Integrator
 		lin = new NucLineage();
 
 		// Virtual nuc
-		for (int i = 0; i<numSubDiv; i++)
-			for (int j = 0; j<numSubDiv; j++)
-				for (int k = 0; k<numSubDiv; k++)
-					lin.getCreateNuc("xyz_"+i+"_"+j+"_"+k);
+		for (int ay = 0; ay<numSubDiv; ay++)
+			for (int ax = 0; ax<numSubDiv*numSubDiv; ax++)
+					{
+					NucLineage.Nuc nuc=lin.getCreateNuc("xyz2_"+ay+"_"+ax);
+					nuc.pos.clear();
+					nuc.exp.clear();
+					}
 
 		integrator.imset.metaObject.remove("indX");
 		integrator.imset.metaObject.remove("indY");
@@ -70,8 +71,7 @@ public class IntegratorXYZfull3D implements Integrator
 				||nucP2.pos.isEmpty()||nucABa.pos.isEmpty()||nucABp.pos.isEmpty()
 				||nucEMS.pos.isEmpty())
 			{
-			System.out
-					.println("Does not have required 4-cell stage marked, will not produce cube");
+			System.out.println("Does not have required 4-cell stage marked, will not produce cube");
 			return false;
 			}
 		else
@@ -109,8 +109,8 @@ public class IntegratorXYZfull3D implements Integrator
 	public void integrateStackStart(IntExp integrator)
 		{
 		// Zero out arrays
-		sliceExp = new double[numSubDiv][numSubDiv][numSubDiv];
-		sliceVol = new int[numSubDiv][numSubDiv][numSubDiv];
+		sliceExp = new double[numSubDiv][numSubDiv*numSubDiv];
+		sliceVol = new int[numSubDiv][numSubDiv*numSubDiv];
 		}
 
 	public void integrateImage(IntExp integrator)
@@ -119,28 +119,23 @@ public class IntegratorXYZfull3D implements Integrator
 
 		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
 		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
-		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
 
 		// Calculate index map lazily
 		EvImage indX = chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ);
 		EvPixels pX;
 		EvPixels pY;
-		EvPixels pZ;
 		if(indX==null)
 			{
 			System.out.println("XYZ setting up index channels");
 			indX = chIndexX.createImageLoader(EvDecimal.ZERO, integrator.curZ);
 			EvImage indY = chIndexY.createImageLoader(EvDecimal.ZERO,	integrator.curZ);
-			EvImage indZ = chIndexZ.createImageLoader(EvDecimal.ZERO,	integrator.curZ);
 			int w = integrator.pixels.getWidth();
 			int h = integrator.pixels.getHeight();
-			indX.setPixelsReference(pX = new EvPixels(EvPixelsType.INT, w, h));
-			indY.setPixelsReference(pY = new EvPixels(EvPixelsType.INT, w, h));
-			indZ.setPixelsReference(pZ = new EvPixels(EvPixelsType.INT, w, h));
+			indX.setPixelsReference(pX = new EvPixels(EvPixelsType.INT, w*numSubDiv, h));
+			indY.setPixelsReference(pY = new EvPixels(EvPixelsType.INT, w*numSubDiv, h));
 
 			int[] lineX = pX.getArrayInt();
 			int[] lineY = pY.getArrayInt();
-			int[] lineZ = pZ.getArrayInt();
 
 			// Calculate indices
 			for(int ay = 0; ay<integrator.pixels.getHeight(); ay++)
@@ -161,9 +156,8 @@ public class IntegratorXYZfull3D implements Integrator
 					if (cx>=0 && cy>=0 && cz>=0 && 
 							cx<numSubDiv && cy<numSubDiv && cz<numSubDiv)
 						{
-						lineX[index] = cx;
+						lineX[index] = cx+numSubDiv*cz;
 						lineY[index] = cy;
-						lineZ[index] = cz;
 						}
 					else
 						lineX[index] = -1;
@@ -176,22 +170,19 @@ public class IntegratorXYZfull3D implements Integrator
 			//Load precalculated index
 			pX = chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
 			pY = chIndexY.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
-			pZ = chIndexZ.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
 			}
 
 		// Integrate this area
 		int[] lineX = pX.getArrayInt();
 		int[] lineY = pY.getArrayInt();
-		int[] lineZ = pZ.getArrayInt();
 		for (int i = 0; i<integrator.pixelsLine.length; i++)
 			{
 			int cx = lineX[i];
 			if (cx!=-1)
 				{
 				int cy = lineY[i];
-				int cz = lineZ[i];
-				sliceExp[cz][cy][cx] += integrator.pixelsLine[i];
-				sliceVol[cz][cy][cx]++;
+				sliceExp[cy][cx] += integrator.pixelsLine[i];
+				sliceVol[cy][cx]++;
 				}
 			}
 
@@ -203,23 +194,22 @@ public class IntegratorXYZfull3D implements Integrator
 	public void integrateStackDone(IntExp integrator)
 		{
 		// Store pattern in lineage
-		for (int az = 0; az<numSubDiv; az++)
-			for (int ay = 0; ay<numSubDiv; ay++)
-				for (int ax = 0; ax<numSubDiv; ax++)
-					{
-					double curbg = bg.get(integrator.frame);
-					double vol = sliceVol[az][ay][ax];
-					double avg;
-					
-					if(vol==0)
-						avg=0;
-					else
-						avg=(sliceExp[az][ay][ax]/vol-curbg)/integrator.expTime;
+		for (int ay = 0; ay<numSubDiv; ay++)
+			for (int ax = 0; ax<numSubDiv*numSubDiv; ax++)
+				{
+				double curbg = bg.get(integrator.frame);
+				double vol = sliceVol[ay][ax];
+				double avg;
 
-					NucLineage.Nuc nuc = lin.nuc.get("xyz_"+ax+"_"+ay+"_"+az);
-					NucExp exp = nuc.getCreateExp(integrator.expName);
-					exp.level.put(integrator.frame, avg);
-					}
+				if(vol==0)
+					avg=0;
+				else
+					avg=(sliceExp[ay][ax]/vol-curbg)/integrator.expTime;
+
+				NucLineage.Nuc nuc = lin.nuc.get("xyz2_"+ax+"_"+ay);
+				NucExp exp = nuc.getCreateExp(integrator.expName);
+				exp.level.put(integrator.frame, avg);
+				}
 		}
 
 	/**
