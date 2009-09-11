@@ -115,7 +115,7 @@ public class ColocCoefficients
 		}
 	
 	/**
-	 * Mander coefficient X or 1
+	 * Mander coefficient X (=index 1)
 	 */
 	public double getMandersX()
 		{
@@ -124,7 +124,7 @@ public class ColocCoefficients
 	
 	
 	/**
-	 * Mander coefficient Y or 2
+	 * Mander coefficient Y (=index 2)
 	 */
 	public double getMandersY()
 		{
@@ -168,7 +168,7 @@ public class ColocCoefficients
 		sumYY=e.getAttribute("sumYY").getDoubleValue();
 		sumXcoloc=e.getAttribute("sumXcoloc").getDoubleValue();
 		sumYcoloc=e.getAttribute("sumYcoloc").getDoubleValue();
-		n=e.getAttribute("sumX").getIntValue();
+		n=e.getAttribute("n").getIntValue();
 		}
 	
 	

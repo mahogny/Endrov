@@ -81,11 +81,15 @@ public class FrameTime extends EvObject
 
 	
 	/**
-	 * Add new frame/frametime to this object
+	 * Add new frame/frametime to this object. Adds to maps so no need to update them.
 	 */
 	public void add(EvDecimal frame, EvDecimal time)
 		{
-		list.add(new Tuple<EvDecimal,EvDecimal>(frame, time));
+		Tuple<EvDecimal,EvDecimal> p=new Tuple<EvDecimal,EvDecimal>(frame, time);
+		list.add(p);
+		
+		mapFrame2time.put(p.fst(), p.snd());
+		mapTime2Frame.put(p.snd(), p.fst());
 		}
 	
 	
@@ -171,7 +175,7 @@ public class FrameTime extends EvObject
 		}
 	
 	/**
-	 * Update cached maps. Has to be done after list of points has been changed
+	 * Update cached maps. Has to be done if points list is manually accessed
 	 */
 	public void updateMaps()
 		{

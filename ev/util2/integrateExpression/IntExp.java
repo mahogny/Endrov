@@ -91,20 +91,24 @@ public class IntExp
 		// doOne(new File("/Volumes2/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
 //		doOne(new File("/Volumes/TBU_main03/daemon/output/TB2111_090123.ost"));
 		
-		for(File parent:new File[]{
-				new File("/Volumes/TBU_main01/ost4dgood"),
-				new File("/Volumes/TBU_main02/ost4dgood"),
-				new File("/Volumes/TBU_main03/ost4dgood"),
-				new File("/Volumes/TBU_main04/ost4dgood"),
-		})
-			for(File f:parent.listFiles())
-				if(f.getName().endsWith(".ost"))
-					{
-					if(new File(f,"tagDone4d.txt").exists())
-						doOne(f);
-					else
-						System.out.println("Skipping: "+f);
-					}
+		if(arg.length>0)
+			{
+			doOne(new File(arg[0]));
+			}
+		else
+			{
+			for(File parent:new File[]{
+					new File("/Volumes/TBU_main06/ost4dgood"),
+			})
+				for(File f:parent.listFiles())
+					if(f.getName().endsWith(".ost"))
+						if(new File(f,"tagDone4d.txt").exists())
+							doOne(f);
+						else
+							System.out.println("Skipping: "+f);
+			
+			}
+		
 		
 		
 		System.exit(0);
@@ -190,9 +194,9 @@ public class IntExp
 
 		
 		//XYZ cube level expression
-		IntegratorXYZnew2 intXYZ = new IntegratorXYZnew2(integrator, newLinNameAP,
+		IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
 				numSubDiv, intAP.bg);
-		if(false)
+		if(true)
 			{
 			if (lin!=null && intXYZ.setupCS(lin))
 				ints.add(intXYZ);
@@ -304,8 +308,8 @@ public class IntExp
 	public void doProfile(Integrator... ints)
 		{
 		// For all frames
-		System.out.println("num frames: "
-				+imset.getChannel(channelName).imageLoader.size());
+		System.out.println("num frames: "	+ch.imageLoader.size());
+		
 		EvDecimal firstframe = ch.imageLoader.firstKey();
 		EvDecimal lastFrame = ch.imageLoader.lastKey();
 		for (EvDecimal frame : ch.imageLoader.keySet())
@@ -315,8 +319,7 @@ public class IntExp
 			this.frame = frame;
 
 			//System.out.println();
-			System.out.println(data+"    integrating frame "+frame+" / "+firstframe+" - "
-					+lastFrame);
+			System.out.println(data+"    integrating frame "+frame+" / "+firstframe+" - "	+lastFrame);
 
 			// Get exposure time
 			//String sExpTime = imset.getMetaFrame(frame).get("exposuretime");
