@@ -42,6 +42,7 @@ public class CompareAll
 	{
 	private final static File cachedValuesFileT=new File("/tmp/comparisonT.xml");
 	private final static File cachedValuesFileAP=new File("/tmp/comparisonAP.xml");
+	private final static File cachedValuesFileXYZ=new File("/tmp/comparisonXYZ.xml");
 	
 	private final static int imageMaxTime=100; //Break down to 100 time points
 
@@ -154,13 +155,15 @@ public class CompareAll
 		//System.out.println();
 		
 		//System.out.println("numSubDiv: "+numSubDiv);
+		/*
 		for(double[] d:image)
 			{
 			System.out.print("im>");
 			for(double e:d)
 				System.out.print(" "+e);
 			System.out.println();
-			}
+			}*/
+		//TODO warn for bad recordings. maybe obvious from result?
 
 		//If it doesn't go far enough, the rest of the values will be 0.
 		//The first values will be a replica of the first frame; should seldom
@@ -169,45 +172,62 @@ public class CompareAll
 		return image;
 		}
 	
+	public static double channelAverageDt(EvChannel chan)
+		{
+		return chan.imageLoader.lastKey().subtract(chan.imageLoader.firstKey()).doubleValue()/chan.imageLoader.size();
+		}
+	
 	
 	/**
 	 * Coloc over XYZ
 	 */
-	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, String newLinName, String expName, NucLineage coordLinA, NucLineage coordLinB)
+	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB)
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		Imageset imsetB = dataA.getObjects(Imageset.class).get(0);
-
 		
 		FrameTime ftA=buildFrametime(coordLinA);
 		FrameTime ftB=buildFrametime(coordLinB);
 
+		if(ftA.getNumPoints()<2 || ftB.getNumPoints()<2)
+			{
+			//Bad data survival
+			ColocCoefficients coloc=new ColocCoefficients();
+			return coloc;
+			}
+		
 		EvChannel chanA=(EvChannel)imsetA.getChild("GFP"); 
 		EvChannel chanB=(EvChannel)imsetB.getChild("GFP");
 		
-		ColocCoefficients coloc=new ColocCoefficients();
+		//Figure out how many steps to take
+		double dt=channelAverageDt(chanA);
+		EvDecimal frame0A=ftA.interpolateFrame(new EvDecimal(0));
+		EvDecimal frame100A=ftA.interpolateFrame(new EvDecimal(100));
+		int numSteps=frame100A.subtract(frame0A).divide(new EvDecimal(dt)).intValue();
+		System.out.println("Num steps "+numSteps);
 		
-		//Fill in image
-		//System.out.println("curtime: ");
-		for (EvDecimal frame : chanA.imageLoader.keySet())
+		//Compare channels
+		ColocCoefficients coloc=new ColocCoefficients();
+		int cnt=0;
+		for(double time=0;time<imageMaxTime;time+=1.0/numSteps)
 			{
-			//Map to image
-			int time=(int)ftA.interpolateTime(frame).doubleValue();
-			//System.out.println("curtime: "+time);
-			//System.out.print(time+" ");
-			if(time<0)
-				time=0;
-			else if(time>=imageMaxTime)
-				break;
-			//time=imageMaxTime-1;
+			//Corresponding frames
+			EvDecimal frameA=ftA.interpolateFrame(new EvDecimal(time));
+			EvDecimal frameB=ftB.interpolateFrame(new EvDecimal(time));
 			
-			EvStack stackA=chanA.getFrame(frame);
+			//If outside range, stop calculating
+			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.firstKey()) ||
+					frameB.less(chanB.imageLoader.firstKey()) || frameB.greater(chanB.imageLoader.firstKey()))
+				{
+				//System.out.println("Skip: "+frameA+"\t"+frameB);
+				continue;
+				}
+			cnt++;
+			//Use closest frame in each
+			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
+			EvStack stackB=chanB.imageLoader.get(chanB.closestFrame(frameB));
 			
-			
-			
-			EvStack stackB=chanB.getFrame(frame); //TODO Does not work, different times
-			
-			//For each slice. Same number of slices since it has been normalized
+			//Compare each slice. Same number of slices since it has been normalized
 			int numz=stackA.getDepth();
 			for(int i=0;i<numz;i++)
 				{
@@ -216,10 +236,8 @@ public class CompareAll
 				coloc.add(arrA, arrB);
 				}
 			}
-
-		//If it doesn't go far enough, the rest of the values will be 0.
-		//The first values will be a replica of the first frame; should seldom
-		//be a problem
+		System.out.println("Num xyz compared: "+cnt);
+		
 		return coloc;
 		}
 	
@@ -292,10 +310,12 @@ public class CompareAll
 		//Read past calculated values from disk 
 		Map<Tuple<File,File>, ColocCoefficients> comparisonT=new HashMap<Tuple<File,File>, ColocCoefficients>();
 		Map<Tuple<File,File>, ColocCoefficients> comparisonAP=new HashMap<Tuple<File,File>, ColocCoefficients>();
+		Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ=new HashMap<Tuple<File,File>, ColocCoefficients>();
 		if(!argsSet.contains("nocache"))
 			{
 			comparisonT=loadCache(datas, cachedValuesFileT);
 			comparisonAP=loadCache(datas, cachedValuesFileAP);
+			comparisonXYZ=loadCache(datas, cachedValuesFileXYZ);
 			}
 		//Map<Tuple<File,File>, ColocCoefficients> comparison=new HashMap<Tuple<File,File>, ColocCoefficients>();
 		
@@ -308,7 +328,7 @@ public class CompareAll
 					{
 					Tuple<File,File> key=Tuple.make(fa, fb);
 					//Check if cached calculation does not exist
-					if(!comparisonT.containsKey(key))
+					if(!comparisonT.containsKey(key) || !comparisonAP.containsKey(key) || !comparisonXYZ.containsKey(key))
 						{
 						System.out.println("todo: "+key);
 	
@@ -317,7 +337,6 @@ public class CompareAll
 	
 						EvData dataA=EvData.loadFile(fa);
 						EvData dataB=EvData.loadFile(fb);
-						
 						
 						System.out.println("Comparing: "+key);
 	
@@ -341,39 +360,28 @@ public class CompareAll
 							coeffAP.add(imapA[i], imapB[i]);
 						comparisonAP.put(Tuple.make(fa,fb), coeffAP);
 
+						//Slices: XYZ
+						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB));
+						comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);
+												
+						//Store down this value too
+						storeCache(comparisonT, cachedValuesFileT);
+						storeCache(comparisonAP, cachedValuesFileAP);
+						storeCache(comparisonXYZ, cachedValuesFileXYZ);
+
+						//Temp
 						System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
 						System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
 						System.out.println("pearsonT "+ coeffT.getPearson());
-						
-						//Slices: XYZ
-						ColocCoefficients coeffXYZ=new ColocCoefficients();
-						/*EvChannel chan=hakaAz
-						
-						for(Map.Entry<K, V>)*/
-						
-						
-						
-						
-						storeCache(comparisonT, cachedValuesFileT);
-						storeCache(comparisonAP, cachedValuesFileAP);
-						
-						//TODO maybe store more data
-						
-						//Load images
-	//					File ima=new File(new File(fa,"data"),"foo.png");
-						
-						
-						
-						//coeff.add(arrX, arrY)
-						
-						
-						//TODO calc
-						
+
 						}
 					}
 		
+		
 	
-		writeHTMLfromFiles(datas, comparisonT, new File("/tmp/"));
+		writeHTMLfromFiles(datas, comparisonT, new File("/tmp/"),"T");
+		writeHTMLfromFiles(datas, comparisonAP, new File("/tmp/"),"AP");
+		writeHTMLfromFiles(datas, comparisonXYZ, new File("/tmp/"),"XYZ");
 		
 		
 		
@@ -432,7 +440,7 @@ public class CompareAll
 		}
 	
 	
-	public static void writeHTMLfromFiles(Set<File> datas, Map<Tuple<File,File>, ColocCoefficients> comparison, File targetFile)
+	public static void writeHTMLfromFiles(Set<File> datas, Map<Tuple<File,File>, ColocCoefficients> comparison, File targetFile, String profType)
 		{
 		//Turn into HTML
 		try
@@ -443,7 +451,7 @@ public class CompareAll
 				titles.add(getName(d));
 			for(Tuple<File,File> t:comparison.keySet())
 				map.put(Tuple.make(getName(t.fst()), getName(t.snd())), comparison.get(t));
-			writeHTML(titles, map, targetFile);
+			writeHTML(titles, map, targetFile, profType);
 			}
 		catch (IOException e)
 			{
@@ -511,9 +519,9 @@ public class CompareAll
 	 * Write HTML-files
 	 * @param titles
 	 * @param map (row, column)
-	 * @param targetFile
+	 * @param targetDir
 	 */
-	public static void writeHTML(Set<String> titles, final Map<Tuple<String,String>,ColocCoefficients> map, File targetFile) throws IOException
+	public static void writeHTML(Set<String> titles, final Map<Tuple<String,String>,ColocCoefficients> map, File targetDir, String profType) throws IOException
 		{
 		TableWriter twPearson=new TableWriter(titles){
 			public Double getValue(String ta, String tb)
@@ -539,9 +547,9 @@ public class CompareAll
 			
 
 		String template=EvFileUtil.readFile(EvFileUtil.getFileFromURL(CompareAll.class.getResource("templateCompare.html")));
-		EvFileUtil.writeFile(new File(targetFile,"tablePearson.html"),template.replace("COEFF","Pearson").replace("BODY", twPearson.sb.toString()));
-		EvFileUtil.writeFile(new File(targetFile,"tableManders1.html"),template.replace("COEFF","Manders<sub>1</sub>").replace("BODY", twManders1.sb.toString()));
-		EvFileUtil.writeFile(new File(targetFile,"tableK1.html"),template.replace("COEFF","k<sub>1</sub>").replace("BODY", twK1.sb.toString()));
+		EvFileUtil.writeFile(new File(targetDir,"table"+profType+"Pearson.html"),template.replace("COEFF","Pearson").replace("BODY", twPearson.sb.toString()));
+		EvFileUtil.writeFile(new File(targetDir,"table"+profType+"Manders1.html"),template.replace("COEFF","Manders<sub>1</sub>").replace("BODY", twManders1.sb.toString()));
+		EvFileUtil.writeFile(new File(targetDir,"table"+profType+"K1.html"),template.replace("COEFF","k<sub>1</sub>").replace("BODY", twK1.sb.toString()));
 
 		}
 	
