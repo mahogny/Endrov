@@ -92,7 +92,11 @@ public class FrameTime extends EvObject
 		mapTime2Frame.put(p.snd(), p.fst());
 		}
 	
-	
+
+	public int getNumPoints()
+		{
+		return list.size();
+		}
 
 	/**
 	 * Interpolate x given x->yTuple<EvDecimal,EvDecimal>. Richardson extrapolate
