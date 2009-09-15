@@ -97,15 +97,36 @@ public class IntExp
 			}
 		else
 			{
+			List<File> list=new ArrayList<File>();
 			for(File parent:new File[]{
 					new File("/Volumes/TBU_main06/ost4dgood"),
 			})
 				for(File f:parent.listFiles())
 					if(f.getName().endsWith(".ost"))
-						if(new File(f,"tagDone4d.txt").exists())
-							doOne(f);
-						else
-							System.out.println("Skipping: "+f);
+						list.add(f);
+			
+			//Cheap concurrency
+			Collections.shuffle(list);
+			
+			for(File f:list)
+				if(new File(f,"tagDone4d.txt").exists())
+					{
+					try
+						{
+						doOne(f);
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
+					
+					try{Thread.sleep(2000);}
+					catch (InterruptedException e){}
+					
+					System.gc();
+					}
+				else
+					System.out.println("Skipping: "+f);
 			
 			}
 		
@@ -139,6 +160,7 @@ public class IntExp
 
 	public static void doOne(File f)
 		{
+		System.gc();
 		File ftagCalcDone=new File(f, "tagCalcDone4d.txt");
 		
 		if(ftagCalcDone.exists())
@@ -285,6 +307,9 @@ public class IntExp
 		imset = data.getObjects(Imageset.class).get(0);
 		ch = imset.getChannel(channelName);
 
+		if(ch==null)
+			throw new RuntimeException("No such channel "+channelName);
+		
 		/*
 		 * //Test: write image EvChannel ch=imset.getCreateChannel("XYZ"); EvImage
 		 * evim=ch.createImageLoader(imset.getChannel("GFP").imageLoader.firstKey(),

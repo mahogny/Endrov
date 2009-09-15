@@ -301,6 +301,7 @@ public class EvImage
 						//Use IO to load image (might also execute operation)
 						loaded=new EvPixels(io.loadJavaImage());
 						cachedPixels=new SoftReference<EvPixels>(loaded);
+						CacheImages.addToCache(this);
 						return loaded;
 						}
 					}

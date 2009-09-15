@@ -58,7 +58,8 @@ public class CompareAll
 		System.out.println("has nucs: "+coordLin.nuc.keySet());
 		
 		NucLineage.Nuc nucABa=coordLin.nuc.get("ABa");
-		ft.add(nucABa.pos.firstKey(), new EvDecimal("0").multiply(imageMaxTime));
+		if(nucABa!=null)
+			ft.add(nucABa.pos.firstKey(), new EvDecimal("0").multiply(imageMaxTime));
 
 		NucLineage.Nuc nucGast=coordLin.nuc.get("gast"); //Gastrulation
 		if(nucGast!=null)
