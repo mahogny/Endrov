@@ -9,76 +9,144 @@ import java.util.Set;
 
 import javax.vecmath.Vector2d;
 
-import endrov.springGraph.GraphPanel.NodeRenderer;
 
 /**
  * Graph, positions given by springs
  * @author Johan Henriksson
  */
-public abstract class SpringGraphLayout<E> implements NodeRenderer<E>
+public abstract class SpringGraphLayout<V> implements NodeRenderer<V>
 	{
 	
 	
-	
-	public abstract static class SpringNode
+	/**
+	 * State of node 
+	 * @author Johan Henriksson
+	 *
+	 */
+	public static class SpringNode
 		{
 		public Vector2d pos=new Vector2d();
 		public Vector2d v=new Vector2d();
-		public Vector2d a=new Vector2d();
-	//	public E ref;
-		
 		private Vector2d f=new Vector2d();
 		}
 	
 	
-	Map<E,SpringNode> nodes=new HashMap<E, SpringNode>(); 
+	public Map<V,SpringNode> nodes=new HashMap<V, SpringNode>(); 
 	
+	public boolean bouncy=true;
+	
+	/**
+	 * Damping, only with bouncy movement 
+	 */
+	public double dampingCoefficient=1;
 	
 	public void iterate()
 		{
-		for(Map.Entry<E,SpringNode> n:nodes.entrySet())
+		//Calculate forces
+		for(Map.Entry<V,SpringNode> n:nodes.entrySet())
 			{
 			n.getValue().f.x=0;
 			n.getValue().f.y=0;
 			}
-		for(Map.Entry<E,SpringNode> ae:nodes.entrySet())
+		for(Map.Entry<V,SpringNode> ae:nodes.entrySet())
 			{
-			for(Map.Entry<E,SpringNode> be:nodes.entrySet())
+			SpringNode a=ae.getValue();
+			for(Map.Entry<V,SpringNode> be:nodes.entrySet())
+				if(ae!=be)
+					{
+					SpringNode b=be.getValue();
+					double dx=a.pos.x-b.pos.x;
+					double dy=a.pos.y-b.pos.y;
+					double len=Math.sqrt(dx*dx+dy*dy);
+					double thisf=calcForce(ae.getKey(), be.getKey(), len);
+					a.f.x+=dx*thisf/len;
+					a.f.y+=dy*thisf/len;
+					}
+			}
+		
+		
+		
+		//Move nodes
+		if(bouncy)
+			{
+			//Accelerate with dampening
+			double dt=0.005;
+			for(Map.Entry<V,SpringNode> n:nodes.entrySet())
 				{
-				SpringNode a=ae.getValue();
-				SpringNode b=be.getValue();
-				double dx=a.pos.x-b.pos.x;
-				double dy=a.pos.y-b.pos.y;
-
-				double len=Math.sqrt(dx*dx+dy*dy);
-
-				double thisf=calcForce(ae.getKey(), be.getKey(), len);
-				a.f.x+=dx*thisf/len;
-				a.f.y+=dy*thisf/len;
+				SpringNode sn=n.getValue();
+				//a=f/m
+				double mass=1;
+				sn.v.x+=dt*sn.f.x/mass;
+				sn.v.y+=dt*sn.f.y/mass;
+				sn.pos.x+=dt*sn.v.x;
+				sn.pos.y+=dt*sn.v.y;
+				
+				//Dampen
+				sn.v.x*=Math.exp(-dt*dampingCoefficient);
+				sn.v.y*=Math.exp(-dt*dampingCoefficient);
 				}
 			}
+		else
+			{
+			//No acceleration, move in direction of force
+			double dt=0.01;
+			for(Map.Entry<V,SpringNode> n:nodes.entrySet())
+				{
+				SpringNode sn=n.getValue();
+				sn.pos.x+=dt*sn.f.x;
+				sn.pos.y+=dt*sn.f.y;
+				}
+			}
+		
+		/*
+		
+*/
 		}
 	
-	public abstract double calcForce(E from, E to, double distance);
 	
-	public double getX(E e)
+	public double getX(V e)
 		{
 		return nodes.get(e).pos.x;
 		}
 
-	public double getY(E e)
+	public double getY(V e)
 		{
 		return nodes.get(e).pos.y;
 		}
 	
-	public void paintComponent(Graphics g, E e)
+	
+	
+	
+	public void paintComponent(Graphics g, Vector2d cam)
 		{
-		g.setColor(Color.blue);
+		for(V e:nodes.keySet())
+			{
+		
 		SpringNode sn=nodes.get(e);
-		g.fillOval((int)sn.pos.x, (int)sn.pos.y, 10, 10);
+		g.setColor(Color.blue);
+		g.fillOval((int)(sn.pos.x-cam.x), (int)(sn.pos.y-cam.y), 21, 21);
+			}
 		}
 
 	
+	
+	
+	public void initGraph(Graph<V> graph)
+		{
+		for(V v:graph.nodes)
+			{
+			if(!nodes.containsKey(v))
+				{
+				SpringNode sn=new SpringNode();
+				sn.pos.x=Math.random()*10;
+				sn.pos.y=Math.random()*10;
+				nodes.put(v, sn);
+				}
+			}
+		
+		}
 
 	
+	public abstract double calcForce(V from, V to, double distance);
+
 	}
