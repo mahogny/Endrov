@@ -1,7 +1,6 @@
 package endrov.springGraph;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import endrov.util.Tuple;
@@ -10,13 +9,15 @@ import endrov.util.Tuple;
  * 
  * @author Johan Henriksson
  *
- * @param <E>
+ * @param <V>
  */
-public class Graph<E>
+public class Graph<V>
 	{
-	Set<E> nodes=new HashSet<E>();
-	Set<Tuple<E,E>> edges=new HashSet<Tuple<E,E>>();
+	public Set<V> nodes=new HashSet<V>();
+	public Set<Tuple<V,V>> edges=new HashSet<Tuple<V,V>>();
 
-	//One of many possible graph structures
+	//Or map, V,V -> E?
+	
+	//One of many possible graph structures. how to generalize?
 	
 	}

@@ -24,6 +24,7 @@ import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
 import endrov.frameTime.FrameTime;
 import endrov.imageset.EvChannel;
+import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
@@ -40,9 +41,9 @@ import endrov.util.Tuple;
  */
 public class CompareAll
 	{
-	private final static File cachedValuesFileT=new File("/tmp/comparisonT.xml");
-	private final static File cachedValuesFileAP=new File("/tmp/comparisonAP.xml");
-	private final static File cachedValuesFileXYZ=new File("/tmp/comparisonXYZ.xml");
+	public final static File cachedValuesFileT=new File("/home/tbudev3/intstats/comparisonT.xml");
+	public final static File cachedValuesFileAP=new File("/home/tbudev3/intstats/comparisonAP.xml");
+	public final static File cachedValuesFileXYZ=new File("/home/tbudev3/intstats/comparisonXYZ.xml");
 	
 	private final static int imageMaxTime=100; //Break down to 100 time points
 
@@ -82,7 +83,7 @@ public class CompareAll
 		// venc 7h49m20s    28160     0.43
 		// 2ftail 8h59m20s  32360     0.54
 		
-		System.out.println("should be 0: "+ft.interpolateTime(nucABa.pos.firstKey()).doubleValue());
+		//System.out.println("should be 0: "+ft.interpolateTime(nucABa.pos.firstKey()).doubleValue());
 		//System.out.println("should be 0: "+ft.interpolateTime(nuc2ft.pos.firstKey()).doubleValue());
 		
 		return ft;
@@ -227,13 +228,22 @@ public class CompareAll
 			//Use closest frame in each
 			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
 			EvStack stackB=chanB.imageLoader.get(chanB.closestFrame(frameB));
+
+			if(stackA.getDepth()!=stackB.getDepth())
+				System.out.println("Different number of slices in Z from frames "+frameA+" vs "+frameB);
 			
 			//Compare each slice. Same number of slices since it has been normalized
 			int numz=stackA.getDepth();
 			for(int i=0;i<numz;i++)
 				{
-				double[] arrA=stackA.get(new EvDecimal(i)).getPixels().convertToDouble(true).getArrayDouble();
-				double[] arrB=stackB.get(new EvDecimal(i)).getPixels().convertToDouble(true).getArrayDouble();
+//				EvPixels pA=stackA.get(new EvDecimal(i)).getPixels();
+//				EvPixels pB=stackB.get(new EvDecimal(i)).getPixels();
+				EvPixels pA=stackA.getInt(i).getPixels();
+				EvPixels pB=stackB.getInt(i).getPixels();
+				if(pA==null || pB==null)
+					System.out.println("Null pixels at frame "+frameA+" vs "+frameB);
+				double[] arrA=pA.convertToDouble(true).getArrayDouble();
+				double[] arrB=pB.convertToDouble(true).getArrayDouble();
 				coloc.add(arrA, arrB);
 				}
 			}
@@ -257,9 +267,9 @@ public class CompareAll
 	 */
 	
 	
-	public static void ensureCalculated(File f)
+	public static boolean ensureCalculated(File f)
 		{
-		IntExp.doOne(f);
+		return IntExp.doOne(f);
 		}
 	
 	
@@ -333,56 +343,59 @@ public class CompareAll
 						{
 						System.out.println("todo: "+key);
 	
-						ensureCalculated(fa);
-						ensureCalculated(fb);
+						boolean calculated=ensureCalculated(fa);
+						calculated&=ensureCalculated(fb);
 	
-						EvData dataA=EvData.loadFile(fa);
-						EvData dataB=EvData.loadFile(fb);
-						
-						System.out.println("Comparing: "+key);
-	
-						String expName="exp";
-						
-						//Slices: T
-						String nameT="AP"+1+"-GFP";
-						ColocCoefficients coeffT=new ColocCoefficients();
-						double[][] imtA=apToArray(dataA, nameT, expName, coordLineageFor(dataA));
-						double[][] imtB=apToArray(dataB, nameT, expName, coordLineageFor(dataB));
-						for(int i=0;i<imtA.length;i++)
-							coeffT.add(imtA[i], imtB[i]);
-						comparisonT.put(Tuple.make(fa,fb), coeffT);
+						if(calculated)
+							{
+							EvData dataA=EvData.loadFile(fa);
+							EvData dataB=EvData.loadFile(fb);
+							
+							System.out.println("Comparing: "+key);
+		
+							String expName="exp";
+							
+							//Slices: T
+							String nameT="AP"+1+"-GFP";
+							ColocCoefficients coeffT=new ColocCoefficients();
+							double[][] imtA=apToArray(dataA, nameT, expName, coordLineageFor(dataA));
+							double[][] imtB=apToArray(dataB, nameT, expName, coordLineageFor(dataB));
+							for(int i=0;i<imtA.length;i++)
+								coeffT.add(imtA[i], imtB[i]);
+							comparisonT.put(Tuple.make(fa,fb), coeffT);
 
-						//Slices: AP
-						String nameAP="AP"+20+"-GFP";
-						ColocCoefficients coeffAP=new ColocCoefficients();
-						double[][] imapA=apToArray(dataA, nameAP, expName, coordLineageFor(dataA));
-						double[][] imapB=apToArray(dataB, nameAP, expName, coordLineageFor(dataB));
-						for(int i=0;i<imtA.length;i++)
-							coeffAP.add(imapA[i], imapB[i]);
-						comparisonAP.put(Tuple.make(fa,fb), coeffAP);
+							//Slices: AP
+							String nameAP="AP"+20+"-GFP";
+							ColocCoefficients coeffAP=new ColocCoefficients();
+							double[][] imapA=apToArray(dataA, nameAP, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, nameAP, expName, coordLineageFor(dataB));
+							for(int i=0;i<imtA.length;i++)
+								coeffAP.add(imapA[i], imapB[i]);
+							comparisonAP.put(Tuple.make(fa,fb), coeffAP);
 
-						//Slices: XYZ
-						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB));
-						comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);
-												
-						//Store down this value too
-						storeCache(comparisonT, cachedValuesFileT);
-						storeCache(comparisonAP, cachedValuesFileAP);
-						storeCache(comparisonXYZ, cachedValuesFileXYZ);
+							//Slices: XYZ
+							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB));
+							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);
+													
+							//Store down this value too
+							storeCache(comparisonT, cachedValuesFileT);
+							storeCache(comparisonAP, cachedValuesFileAP);
+							storeCache(comparisonXYZ, cachedValuesFileXYZ);
 
-						//Temp
-						System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
-						System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
-						System.out.println("pearsonT "+ coeffT.getPearson());
+							//Temp
+							System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
+							System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
+							System.out.println("pearsonT "+ coeffT.getPearson());
+							}
 
 						}
 					}
 		
 		
 	
-		writeHTMLfromFiles(datas, comparisonT, new File("/tmp/"),"T");
-		writeHTMLfromFiles(datas, comparisonAP, new File("/tmp/"),"AP");
-		writeHTMLfromFiles(datas, comparisonXYZ, new File("/tmp/"),"XYZ");
+		writeHTMLfromFiles(datas, comparisonT, new File("/home/tbudev3/intstats"),"T");
+		writeHTMLfromFiles(datas, comparisonAP, new File("/home/tbudev3/intstats"),"AP");
+		writeHTMLfromFiles(datas, comparisonXYZ, new File("/home/tbudev3/intstats"),"XYZ");
 		
 		
 		

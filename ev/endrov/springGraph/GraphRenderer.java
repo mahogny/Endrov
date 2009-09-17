@@ -14,14 +14,7 @@ import javax.vecmath.Vector2d;
  * 
  * @author Johan Henriksson
  */
-public interface NodeRenderer<E>
+public interface GraphRenderer<E>
 	{
-	public double getX(E e);
-	public double getY(E e);
-	
-	//public void paintComponent(Graphics g, E e, Vector2d cam);
-
 	public void paintComponent(Graphics g, Vector2d cam);
-
-	//and size
 	}

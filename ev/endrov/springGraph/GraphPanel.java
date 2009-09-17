@@ -8,41 +8,42 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.vecmath.Vector2d;
 
-import endrov.springGraph.SpringGraphLayout.SpringNode;
-
 
 /**
+ * Simple graph display
  * 
  * @author Johan Henriksson
  *
  */
-public class GraphPanel extends JPanel implements ActionListener, MouseMotionListener, MouseListener
+public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotionListener, MouseListener
 	{
 	private static final long serialVersionUID = 1L;
 
-	private Graph<MyNode> graph;
-	private SpringGraphLayout<MyNode> layout;
-	private NodeRenderer<MyNode> renderer;
+	//private Graph<MyNode> graph;
+	private GraphLayout<E> layout;
+	private GraphRenderer<E> renderer;
 
 	private Timer timer=new Timer(5, this);
 	
 	private Vector2d cam=new Vector2d(-100,-50);
 	
 	
-	public GraphPanel()
+	public GraphPanel(GraphRenderer<E> renderer, GraphLayout<E> layout)
 		{
+		this.renderer=renderer;
+		this.layout=layout;
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		}
 	
 	public void start()
 		{
+		timer.setRepeats(false);
 		timer.start();
 		}
 	
@@ -54,9 +55,12 @@ public class GraphPanel extends JPanel implements ActionListener, MouseMotionLis
 		
 		renderer.paintComponent(g, cam);
 		
+		timer.restart();
+
 //		for(MyNode n:graph.nodes)
 //			renderer.paintComponent(g, n, cam);
 			
+//		System.out.println("repaint "+System.currentTimeMillis());
 		}
 	
 	
@@ -67,9 +71,8 @@ public class GraphPanel extends JPanel implements ActionListener, MouseMotionLis
 		{
 		if(e.getSource()==timer)
 			{
-			layout.iterate();
+			layout.updatePositions();
 			repaint();
-			timer.restart();
 			}
 		}
 	
@@ -120,8 +123,6 @@ public class GraphPanel extends JPanel implements ActionListener, MouseMotionLis
 
 	public void mouseReleased(MouseEvent e)
 		{
-		// TODO Auto-generated method stub
-		
 		}
 	
 	
@@ -131,54 +132,4 @@ public class GraphPanel extends JPanel implements ActionListener, MouseMotionLis
 	
 	
 
-	public static void main(String[] args)
-		{
-		JFrame f=new JFrame();
-		GraphPanel p=new GraphPanel();
-		
-		SpringGraphLayout<MyNode> layout=new SpringGraphLayout<MyNode>(){
-		public double calcForce(MyNode from, MyNode to, double distance)
-			{
-			double restDistance=100;
-			double springConstant=5;
-			return -(distance-restDistance)*springConstant;
-			}
-		};
-		
-		Graph<MyNode> graph=new Graph<MyNode>();
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-
-		layout.initGraph(graph);
-		
-		
-		
-		
-		p.layout=layout;
-		p.renderer=layout;
-		p.graph=graph;
-		
-		
-		
-//		for(int i=0;i<100;i++)
-	//		layout.iterate();
-		
-		for(SpringNode sn:layout.nodes.values())
-			System.out.println(sn.pos);
-		
-		f.add(p);
-		f.setSize(400,300);
-		f.setVisible(true);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		p.start();
-		
-		}
 	}
