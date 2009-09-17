@@ -59,8 +59,7 @@ public class IntegratorAP implements Integrator
 		// TODO need to group lineage and shell. introduce a new object?
 		integrator.imset.metaObject.put(newLinName, lin);
 		// imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
-		shell = integrator.imset.getIdObjectsRecursive(Shell.class).values()
-				.iterator().next();
+		shell = integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
 	
 		integrator.imset.metaObject.put(newLinName, lin);
 	
