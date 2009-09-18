@@ -69,6 +69,7 @@ public class MW
 			if(BasicWindow.getWindowList().size()==0)
 				{
 				//Make sure at least one window is open
+				EvLog.printLog("Opening up first window");
 				new ImageWindow();
 				}
 			if(ss!=null)

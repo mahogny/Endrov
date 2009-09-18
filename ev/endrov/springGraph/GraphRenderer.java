@@ -16,5 +16,5 @@ import javax.vecmath.Vector2d;
  */
 public interface GraphRenderer<E>
 	{
-	public void paintComponent(Graphics g, Vector2d cam);
+	public void paintComponent(Graphics g, Vector2d cam, double zoom);
 	}

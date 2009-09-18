@@ -93,8 +93,15 @@ public abstract class SpringGraphLayout<V> implements GraphLayout<V>
 			for(Map.Entry<V,SpringNode> n:nodes.entrySet())
 				{
 				SpringNode sn=n.getValue();
-				sn.pos.x+=dt*sn.f.x;
-				sn.pos.y+=dt*sn.f.y;
+				
+				double dx=dt*sn.f.x;
+				double dy=dt*sn.f.y;
+				
+				if(dx*dx+dy*dy<100) //Limit speed
+					{
+					sn.pos.x+=dx;
+					sn.pos.y+=dy;
+					}
 				}
 			}
 		
