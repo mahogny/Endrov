@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.swing.JFrame;
 
+import util2.integrateExpression.ExpUtil;
 import util2.integrateExpression.FindAnnotatedStrains;
 
 
@@ -47,7 +48,6 @@ public class RenderComparison
 		SpringGraphLayout<MyVertex> layout=new SpringGraphLayout<MyVertex>(){
 		public double calcForce(MyVertex from, MyVertex to, double distance)
 			{
-			double springConstant=5;
 			ColocCoefficients coef=comparisonT.get(Tuple.make(from.name,to.name));
 			if(coef==null)
 				return 0;
@@ -59,7 +59,17 @@ public class RenderComparison
 				else
 					{
 //					System.out.println(cov);
-					return (distance-restDistance)*springConstant*Math.abs(cov*cov*cov*500);
+					//With cov for spring coeff
+					//double springConstant=5;
+					//return (distance-restDistance)*springConstant*Math.abs(cov*cov*cov*500);
+					
+					//With cov as rest distance
+					double springConstant=3;
+					
+					double newRestDist=500*(1-Math.abs(cov*cov*cov*cov));
+					//System.out.println(newRestDist);
+					
+					return (distance-newRestDist)*springConstant;
 					}
 				}
 			}
@@ -67,22 +77,28 @@ public class RenderComparison
 		
 		Graph<MyVertex> graph=new Graph<MyVertex>();
 		for(File f:datas)
-			{
 			graph.nodes.add(new MyVertex(f));
-			}
+		for(MyVertex f:graph.nodes)
+			for(MyVertex g:graph.nodes)
+				if(ExpUtil.nameDateFromOSTName(f.name.getName()).fst().equals(
+						ExpUtil.nameDateFromOSTName(g.name.getName()).fst()))
+					graph.edges.add(Tuple.make(f, g));
+		
+		
 		
 		//layout.initGraph(graph, restDistance);
-		layout.initGraph(graph, 10);
+//		layout.initGraph(graph, 10);
+		layout.initGraph(graph, 100);
 		
 		SimpleGraphRenderer<MyVertex> renderer=new SimpleGraphRenderer<MyVertex>(graph, layout){
 		public void paintNode(Graphics g, MyVertex v, int x, int y)
 			{
 			int radius=21;
 			g.setColor(Color.yellow);
-			g.fillOval(x,y, radius, radius);
+			g.fillOval(x-radius/2,y-radius/2, radius, radius);
 			g.setColor(Color.black);
-			g.drawOval(x,y, radius, radius);
-			g.drawString(v.name.getName(), x+6, y+15);
+			g.drawOval(x-radius/2,y-radius/2, radius, radius);
+			g.drawString(v.name.getName(), x-radius/2+6, y-radius/2+15);
 			}
 		};
 		

@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -20,7 +22,7 @@ import javax.vecmath.Vector2d;
  * @author Johan Henriksson
  *
  */
-public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotionListener, MouseListener
+public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotionListener, MouseListener, MouseWheelListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -31,7 +33,7 @@ public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotion
 	private Timer timer=new Timer(5, this);
 	
 	private Vector2d cam=new Vector2d(-100,-50);
-	
+	private double zoom=1;
 	
 	public GraphPanel(GraphRenderer<E> renderer, GraphLayout<E> layout)
 		{
@@ -39,6 +41,7 @@ public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotion
 		this.layout=layout;
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 		}
 	
 	public void start()
@@ -53,7 +56,7 @@ public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotion
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		
-		renderer.paintComponent(g, cam);
+		renderer.paintComponent(g, cam, zoom);
 		
 		timer.restart();
 
@@ -86,8 +89,8 @@ public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotion
 		//Pan
 		if(SwingUtilities.isRightMouseButton(e))
 			{
-			cam.x-=e.getX()-mouseLastX;
-			cam.y-=e.getY()-mouseLastY;
+			cam.x-=(e.getX()-mouseLastX)/zoom;
+			cam.y-=(e.getY()-mouseLastY)/zoom;
 			mouseLastX=e.getX();
 			mouseLastY=e.getY();
 			repaint();
@@ -123,6 +126,12 @@ public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotion
 
 	public void mouseReleased(MouseEvent e)
 		{
+		}
+
+	public void mouseWheelMoved(MouseWheelEvent e)
+		{
+		zoom*=Math.exp(0.3*e.getWheelRotation());
+		repaint();
 		}
 	
 	

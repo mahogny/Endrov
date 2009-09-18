@@ -36,9 +36,9 @@ public class PLUGIN extends PluginDef
 				FlowUnitBilateralFilter2D.class,
 				FlowUnitKuwaharaFilter.class,
 				FlowUnitAverageRect.class,
-				FlowUnitEntropyRect.class,
+				FlowUnitEntropyCircle.class,FlowUnitEntropyRect.class,
 				FlowUnitSumRect.class,
-				FlowUnitVarianceRect.class,FlowUnitVarianceCircle.class,
+				FlowUnitVarianceCircle.class,FlowUnitVarianceRect.class,
 				FlowUnitPercentileRect.class,
 				
 		};
