@@ -123,7 +123,7 @@ public class CompareAll
 				System.out.println("Strange exp: "+nn);
 		System.out.println("Detected subdiv "+numSubDiv);
 		
-		double[][] image=new double[imageMaxTime][numSubDiv];
+		double[][] image=new double[imageMaxTime][];//[numSubDiv];
 		
 		FrameTime ft=buildFrametime(coordLin);
 		
@@ -144,6 +144,7 @@ public class CompareAll
 			//time=imageMaxTime-1;
 			
 			//For each slice
+			image[time]=new double[numSubDiv];
 			for (int i = 0; i<numSubDiv; i++)
 				{
 				NucLineage.Nuc nuc = lin.nuc.get("_slice"+i);
@@ -164,10 +165,11 @@ public class CompareAll
 			for(double e:d)
 				System.out.print(" "+e);
 			System.out.println();
-			}*/
+			}
+		*/
 		//TODO warn for bad recordings. maybe obvious from result?
 
-		//If it doesn't go far enough, the rest of the values will be 0.
+		//If it doesn't go far enough, the rest of the arrays will be null.
 		//The first values will be a replica of the first frame; should seldom
 		//be a problem
 		
@@ -346,6 +348,7 @@ public class CompareAll
 						boolean calculated=ensureCalculated(fa);
 						calculated&=ensureCalculated(fb);
 	
+						System.out.println("-----calculated: "+calculated);
 						if(calculated)
 							{
 							EvData dataA=EvData.loadFile(fa);
@@ -361,9 +364,23 @@ public class CompareAll
 							double[][] imtA=apToArray(dataA, nameT, expName, coordLineageFor(dataA));
 							double[][] imtB=apToArray(dataB, nameT, expName, coordLineageFor(dataB));
 							for(int i=0;i<imtA.length;i++)
-								coeffT.add(imtA[i], imtB[i]);
+								if(imtA[i]!=null && imtB[i]!=null)
+									coeffT.add(imtA[i], imtB[i]);
 							comparisonT.put(Tuple.make(fa,fb), coeffT);
 
+							//File graphFileDir=new File("/home/tbudev3");
+							
+							
+							try
+								{
+								NewRenderHTML.toTimage(imtA, fa, ""+fa.getName());
+								NewRenderHTML.toTimage(imtB, fb, ""+fb.getName());
+								}
+							catch (IOException e)
+								{
+								e.printStackTrace();
+								}
+							
 							//Slices: AP
 							String nameAP="AP"+20+"-GFP";
 							ColocCoefficients coeffAP=new ColocCoefficients();
@@ -373,6 +390,20 @@ public class CompareAll
 								coeffAP.add(imapA[i], imapB[i]);
 							comparisonAP.put(Tuple.make(fa,fb), coeffAP);
 
+
+							try
+								{
+								NewRenderHTML.toAPimage(imapA, fa, ""+fa.getName());
+								NewRenderHTML.toAPimage(imapB, fb, ""+fb.getName());
+								}
+							catch (IOException e)
+								{
+								e.printStackTrace();
+								}
+							
+							//System.exit(1);
+
+							
 							//Slices: XYZ
 							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB));
 							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);

@@ -31,13 +31,8 @@ public class RenderComparison
 		
 		Set<File> datas=FindAnnotatedStrains.getAnnotated();
 
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonT;
-		//Map<Tuple<File,File>, ColocCoefficients> comparisonAP=new HashMap<Tuple<File,File>, ColocCoefficients>();
-		//Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ=new HashMap<Tuple<File,File>, ColocCoefficients>();
-		comparisonT=CompareAll.loadCache(datas, CompareAll.cachedValuesFileT);
-//		comparisonAP=CompareAll.loadCache(datas, CompareAll.cachedValuesFileAP);
-	//	comparisonXYZ=CompareAll.loadCache(datas, CompareAll.cachedValuesFileXYZ);
-
+		final Map<Tuple<File,File>, ColocCoefficients> comparison;
+		comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileAP);
 		
 		final double restDistance=200;
 		
@@ -48,7 +43,7 @@ public class RenderComparison
 		SpringGraphLayout<MyVertex> layout=new SpringGraphLayout<MyVertex>(){
 		public double calcForce(MyVertex from, MyVertex to, double distance)
 			{
-			ColocCoefficients coef=comparisonT.get(Tuple.make(from.name,to.name));
+			ColocCoefficients coef=comparison.get(Tuple.make(from.name,to.name));
 			if(coef==null)
 				return 0;
 			else
