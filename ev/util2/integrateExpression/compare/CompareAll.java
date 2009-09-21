@@ -387,7 +387,8 @@ public class CompareAll
 							double[][] imapA=apToArray(dataA, nameAP, expName, coordLineageFor(dataA));
 							double[][] imapB=apToArray(dataB, nameAP, expName, coordLineageFor(dataB));
 							for(int i=0;i<imtA.length;i++)
-								coeffAP.add(imapA[i], imapB[i]);
+								if(imapA[i]!=null && imapB[i]!=null)
+									coeffAP.add(imapA[i], imapB[i]);
 							comparisonAP.put(Tuple.make(fa,fb), coeffAP);
 
 
