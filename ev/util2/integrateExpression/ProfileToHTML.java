@@ -127,8 +127,11 @@ public class ProfileToHTML
 			pw.flush();
 			pw.close();
 			
+			String retLine;
 			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			while(br.readLine()!=null);
+			while((retLine=br.readLine())!=null)
+				System.out.println(retLine);
+				;
 			}
 		catch (IOException e)
 			{
@@ -143,6 +146,16 @@ public class ProfileToHTML
 	
 	
 
+	
+	/**
+	 * Alternative table format
+	 * 
+	 * http://t16web.lanl.gov/Kawano/gnuplot/gallery/cal6.html
+	 * 
+	 * file: x\ty\tz\n
+	 */
+	
+	
 	private static void plotOne(File f, 
 			StringBuffer sbAp2dCells, StringBuffer sbAp3dCells, StringBuffer sbTCells) throws IOException
 	{
@@ -232,14 +245,11 @@ public class ProfileToHTML
 
 		try
 			{
-			File htmlOutdir=new File("/Volumes/TBU_main03/userdata/henriksson/geneProfilesAPT_lois");
+			File htmlOutdir=new File("/Volumes/TBU_main06/userdata/henriksson/geneProfilesAPT");
 			htmlOutdir.mkdirs();
 			
 			for(File parent:new File[]{
-					new File("/Volumes/TBU_main01/ost4dgood"),
-					new File("/Volumes/TBU_main02/ost4dgood"),
-					new File("/Volumes/TBU_main03/ost4dgood"),
-					new File("/Volumes/TBU_main04/ost4dgood"),
+					new File("/Volumes/TBU_main06/ost4dgood"),
 			})
 			for(File f:parent.listFiles())
 				if(f.getName().endsWith(".ost")) 
