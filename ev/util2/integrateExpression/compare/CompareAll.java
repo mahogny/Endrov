@@ -423,7 +423,18 @@ public class CompareAll
 						}
 					}
 		
-		
+		if(true)
+			{
+			try
+				{
+				NewRenderHTML.makeSummaryAPT(new File("/home/tbudev3/expsummary"), datas);
+				NewRenderHTML.makeSummaryXYZ(new File("/home/tbudev3/expsummary"), datas);
+				}
+			catch (IOException e)
+				{
+				e.printStackTrace();
+				}
+			}
 	
 		writeHTMLfromFiles(datas, comparisonT, new File("/home/tbudev3/intstats"),"T");
 		writeHTMLfromFiles(datas, comparisonAP, new File("/home/tbudev3/intstats"),"AP");
