@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.LinkedList;
 import java.util.Set;
 
 import endrov.util.EvFileUtil;
@@ -17,29 +16,43 @@ import endrov.util.EvFileUtil;
  */
 public class NewRenderHTML
 	{
-
+/*
 	public static String ap3dTotTemplate;
 	public static String ap3dCellTemplate;
 	public static String ap2dTotTemplate;
 	public static String ap2dCellTemplate;
 	public static String tTotTemplate;
 	public static String tCellTemplate;
-	
+	*/
 	public static String gnuplotAP3d;
 	public static String gnuplotAP2d;
 	public static String gnuplotT;
 	
+	
+	public static String templateRecAPT;
+	public static String templateIndexAPT;
+
+	public static String templateRecXYZ;
+	public static String templateIndexXYZ;
+
 	static
 		{
 		try
 			{
+			/*
 			ap3dTotTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP3dIndex.html"));
 			ap3dCellTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP3dCell.html"));
 			ap2dTotTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP2dIndex.html"));
 			ap2dCellTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP2dCell.html"));
 			tTotTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateTIndex.html"));
 			tCellTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateTCell.html"));
-			
+*/			
+			templateRecAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateRecAPT.html"));
+			templateIndexAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateIndexAPT.html"));
+
+			templateRecXYZ=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateRecXYZ.html"));
+			templateIndexXYZ=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateIndexXYZ.html"));
+
 			gnuplotAP3d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP3d.gnu"));
 			gnuplotAP2d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP2d.gnu"));
 			gnuplotT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderT.gnu"));
@@ -76,6 +89,9 @@ public class NewRenderHTML
 		}
 	
 	
+	/**
+	 * Turn normalized array of AP into graph
+	 */
 	public static void toAPimage(double[][] exp, File ostFile, String title) throws IOException
 		{
 		StringBuffer sbData=new StringBuffer();
@@ -114,17 +130,9 @@ public class NewRenderHTML
 	
 	
 	
-/*
-	public static double[] squeezeDim1(double[][] arr)
-		{
-		double[] ret=new double[arr.length];
-		LinkedList<Double> arr=new LinkedList<Double>();
-		for(int i=0;i<arr.length;i++)
-			ret[i]=arr[i][0];
-		return ret;
-		}*/
-	
-	
+	/**
+	 * Turn normalized array of T into graph
+	 */
 	public static void toTimage(double[][] exp, File ostFile, String title) throws IOException
 		{
 		StringBuffer sbData=new StringBuffer();
@@ -134,13 +142,10 @@ public class NewRenderHTML
 			double[] line=exp[row];
 			if(line!=null)
 				for(int col=0;col<line.length;col++)
-					sbData.append(col+"\t"+line[col]+"\n"); //x y
-			sbData.append("\n");
+					sbData.append(row+"\t"+line[col]+"\n"); //x y
 			}
-//		for(int col=0;col<exp.length;col++)
-//			sbData.append(col+"\t"+exp[col]+"\n"); //x y?
 	
-		File tempdatFile=File.createTempFile("surface", ".dat");
+		File tempdatFile=File.createTempFile("series", ".dat");
 		EvFileUtil.writeFile(tempdatFile, sbData.toString());
 		File dataDir=new File(ostFile,"data");
 		dataDir.mkdirs();
@@ -155,45 +160,98 @@ public class NewRenderHTML
 	
 	
 	
+	private static File copyForSummary(File f, File htmlOutdir, File orig) throws IOException
+		{
+		File newFile=new File(htmlOutdir,f.getName()+"_"+orig.getName());
+		EvFileUtil.copy(orig, newFile);
+		return newFile;
+		}
+	
+	/**
+	 * Make the summary HTML. Assumes all images exist.
+	 */
+	public static void makeSummaryAPT(File htmlOutdir, Set<File> datas) throws IOException
+		{
+		htmlOutdir.mkdirs();
+
+		StringBuffer sb=new StringBuffer();
+		for(File f:datas)
+			{
+			File fAP2d=new File(new File(f,"data"),"expAP2d.png");
+			File fAP3d=new File(new File(f,"data"),"expAP3d.png");
+			File fT=new File(new File(f,"data"),"expT.png");
+
+			String recString=templateRecAPT
+			.replace("STRAIN", "teststrain")
+			.replace("OSTURL", ""+f);
+
+			/////
+			if(fAP2d.exists())
+				{
+				fAP2d=copyForSummary(f, htmlOutdir, fAP2d);
+				recString=recString.replace("IMGURL2d", fAP2d.toString());
+				}
+			else
+				recString=recString.replace("IMGURL2d", "");
+
+			/////
+			if(fAP3d.exists())
+				{
+				fAP3d=copyForSummary(f, htmlOutdir, fAP3d);
+				recString=recString.replace("IMGURL3d", fAP3d.toString());
+				}
+			else
+				recString=recString.replace("IMGURL3d", "");
+
+			/////
+			if(fT.exists())
+				{
+				fT=copyForSummary(f, htmlOutdir, fT);
+				recString=recString.replace("IMGURLt", fT.toString());
+				}
+			else
+				recString=recString.replace("IMGURLt", "");
+
+			sb.append(recString);
+			}
+
+		EvFileUtil.writeFile(new File(htmlOutdir,"index.html"), 
+				templateIndexAPT.replace("TABLECONTENT", sb.toString()));
+
+		}
+	
 	
 	
 	/**
-	 * Make the summary
+	 * Make the summary HTML. Assumes all images exist.
 	 */
-	public static void makeSummary(File htmlOutdir, Set<File> datas)
+	public static void makeSummaryXYZ(File htmlOutdir, Set<File> datas) throws IOException
 		{
-		StringBuffer sbAp3dCells=new StringBuffer();
-		StringBuffer sbAp2dCells=new StringBuffer();
-		StringBuffer sbTCells=new StringBuffer();
-		
-		
-//		Log.listeners.add(new StdoutLog());
-//		EV.loadPlugins();
-		
-	//	EvData data=EvData.loadFile(new File("/Volumes/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
-		//doProfile(data);
+		htmlOutdir.mkdirs();
 
-		try
+		StringBuffer sb=new StringBuffer();
+		for(File f:datas)
 			{
-			//File htmlOutdir=new File("/Volumes/TBU_main06/userdata/henriksson/geneProfilesAPT");
-			htmlOutdir.mkdirs();
-			
-			
-			
-			EvFileUtil.writeFile(new File(htmlOutdir,"ap3d.html"), ap3dTotTemplate
-					.replace("TABLECONTENT", sbAp3dCells.toString()));
-			EvFileUtil.writeFile(new File(htmlOutdir,"ap2d.html"), ap2dTotTemplate
-					.replace("TABLECONTENT", sbAp2dCells.toString()));
-			EvFileUtil.writeFile(new File(htmlOutdir,"t.html"), tTotTemplate
-					.replace("TABLECONTENT", sbTCells.toString()));
+			File fXYZ=new File(new File(f,"data"),"expXYZ.png");
+
+			String recString=templateRecAPT
+			.replace("STRAIN", "teststrain")
+			.replace("OSTURL", ""+f);
+
+			/////
+			if(fXYZ.exists())
+				{
+				fXYZ=copyForSummary(f, htmlOutdir, fXYZ);
+				recString=recString.replace("IMGURLxyz", fXYZ.toString());
+				}
+			else
+				recString=recString.replace("IMGURLxyz", "");
+
+			sb.append(recString);
 			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
-		
-		System.out.println("done");
-		System.exit(0);
+
+		EvFileUtil.writeFile(new File(htmlOutdir,"indexXYZ.html"), 
+				templateIndexAPT.replace("TABLECONTENT", sb.toString()));
+
 		}
-	
 	}
