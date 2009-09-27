@@ -1,13 +1,22 @@
 package util2.integrateExpression.compare;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.imageio.ImageIO;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -31,6 +40,7 @@ import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
+import endrov.util.EvMathUtil;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
 
@@ -41,9 +51,12 @@ import endrov.util.Tuple;
  */
 public class CompareAll
 	{
-	public final static File cachedValuesFileT=new File("/home/tbudev3/intstats/comparisonT.xml");
-	public final static File cachedValuesFileAP=new File("/home/tbudev3/intstats/comparisonAP.xml");
-	public final static File cachedValuesFileXYZ=new File("/home/tbudev3/intstats/comparisonXYZ.xml");
+	
+	public final static File outputBaseDir=new File("/home/tbudev3/expsummary");
+
+	public final static File cachedValuesFileT=new File(outputBaseDir,"comparisonT.xml");
+	public final static File cachedValuesFileAP=new File(outputBaseDir,"comparisonAP.xml");
+	public final static File cachedValuesFileXYZ=new File(outputBaseDir,"comparisonXYZ.xml");
 	
 	private final static int imageMaxTime=100; //Break down to 100 time points
 
@@ -103,13 +116,12 @@ public class CompareAll
 			{
 			if(e.getKey().getLeafName().equals(newLinName))
 				{
-				System.out.println(e);
 				lin=e.getValue();
 				break;
 				}
 			}
 		if(lin==null)
-			throw new RuntimeException("No lineage");
+			throw new RuntimeException("No lineage "+newLinName);
 		
 		//Autodetect number of subdivisions
 		int numSubDiv=0;
@@ -185,7 +197,7 @@ public class CompareAll
 	/**
 	 * Coloc over XYZ
 	 */
-	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB)
+	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB, String chanNameA, String chanNameB)
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		Imageset imsetB = dataA.getObjects(Imageset.class).get(0);
@@ -196,12 +208,19 @@ public class CompareAll
 		if(ftA.getNumPoints()<2 || ftB.getNumPoints()<2)
 			{
 			//Bad data survival
-			ColocCoefficients coloc=new ColocCoefficients();
-			return coloc;
+			System.out.println("!!!!! too few timepoints");
+			return new ColocCoefficients();
 			}
 		
-		EvChannel chanA=(EvChannel)imsetA.getChild("GFP"); 
-		EvChannel chanB=(EvChannel)imsetB.getChild("GFP");
+		EvChannel chanA=(EvChannel)imsetA.getChild(chanNameA); 
+		EvChannel chanB=(EvChannel)imsetB.getChild(chanNameB);
+
+		if(chanA==null || chanB==null)
+			{
+			//Bad data survival
+			System.out.println("!!!!! missing channels");
+			return new ColocCoefficients();
+			}
 		
 		//Figure out how many steps to take
 		double dt=channelAverageDt(chanA);
@@ -209,6 +228,8 @@ public class CompareAll
 		EvDecimal frame100A=ftA.interpolateFrame(new EvDecimal(100));
 		int numSteps=frame100A.subtract(frame0A).divide(new EvDecimal(dt)).intValue();
 		System.out.println("Num steps "+numSteps);
+		
+		//TODO verify that this idea is correct
 		
 		//Compare channels
 		ColocCoefficients coloc=new ColocCoefficients();
@@ -255,9 +276,144 @@ public class CompareAll
 		}
 	
 	
-	
+	/**
+	 * Code from ImageJ, fire LUT.
+	 * should if possible use the same as gnuplot
+	 * @param reds
+	 * @param greens
+	 * @param blues
+	 * @return
+	 */
+	int fire(byte[] reds, byte[] greens, byte[] blues) 
+		{
+		int[] r = {0,0,1,25,49,73,98,122,146,162,173,184,195,207,217,229,240,252,255,255,255,255,255,255,255,255,255,255,255,255,255,255};
+		int[] g = {0,0,0,0,0,0,0,0,0,0,0,0,0,14,35,57,79,101,117,133,147,161,175,190,205,219,234,248,255,255,255,255};
+		int[] b = {0,61,96,130,165,192,220,227,210,181,151,122,93,64,35,5,0,0,0,0,0,0,0,0,0,0,0,35,98,160,223,255};
+		for (int i=0; i<r.length; i++) 
+			{
+			reds[i] = (byte)r[i];
+			greens[i] = (byte)g[i];
+			blues[i] = (byte)b[i];
+			}
+		return r.length;
+		}
 	
 
+	
+	/**
+	 * Generate overview graph for XYZ expression. Graph size is fixed so it throws out a lot of information.
+	 * This is why this code is separate from coloc analysis
+	 */
+	public static void fancyGraphXYZ(EvData dataA, NucLineage coordLinA, File outputFile, String chanNameA) throws IOException
+		{
+		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
+		
+		FrameTime ftA=buildFrametime(coordLinA);
+
+		//Bad data survival
+		if(ftA.getNumPoints()<2)
+			{
+			System.out.println("Cannot make XYZ graph");
+			return;
+			}
+		else
+			System.out.println("Making XYZ summary file");
+		
+		EvChannel chanA=(EvChannel)imsetA.getChild(chanNameA); 
+
+		//Graph size is fixed
+		int numSteps=50; //?
+		
+		int xyzSize=20;
+		
+		//xyzSize x xyzSize xyzSize columns
+		BufferedImage bim=new BufferedImage((xyzSize+2)*xyzSize, numSteps*(xyzSize+2), BufferedImage.TYPE_3BYTE_BGR);
+		//Graphics gbim=bim.getGraphics();
+		
+		
+		//Compare channels
+		for(int time=0;time<numSteps;time++)
+			{
+			//Corresponding frame
+			EvDecimal modelTime=new EvDecimal(time*imageMaxTime/(double)numSteps);
+			System.out.println("Modeltime: "+modelTime);
+			EvDecimal frameA=ftA.interpolateFrame(modelTime);
+			
+			//If outside range, stop calculating
+			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.lastKey()))
+				{
+				//System.out.println("Skip fancy xyz: "+frameA);
+				continue;
+				}
+			//else
+				//System.out.println("doing "+frameA);
+			
+			//Use closest frame
+			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
+
+			//Compare each slice. Same number of slices since it has been normalized
+			int numz=stackA.getDepth();
+			if(numz!=xyzSize)
+				System.out.println("wtf. numz "+numz);
+			for(int cz=0;cz<xyzSize;cz++)
+				{
+				//BufferedImage thisPlane=stackA.getInt(cz).getPixels().quickReadOnlyAWT();
+				//gbim.drawImage(thisPlane, cz*(16+2), (16+2)*time, null);
+				
+
+				//System.out.println(""+time+"  "+cz);
+				EvPixels p=stackA.getInt(cz).getPixels().convertToDouble(true);
+				double[] inarr=p.getArrayDouble();
+				double arrmin=getMin(inarr);
+				double arrmax=getMax(inarr);
+				
+				
+				WritableRaster raster=bim.getRaster();
+				for(int ay=0;ay<xyzSize;ay++)
+					for(int ax=0;ax<xyzSize;ax++)
+						{
+//						System.out.println(""+ax+"  "+ay+"  "+time+"  "+cz);
+						double val=(inarr[ay*p.getWidth()+ax]-arrmin)/(arrmax-arrmin);
+						if(val>1)
+							System.out.println("val: val");
+						double scale=255;
+//						raster.setPixel(cz*(xyzSize+2)+ax, (xyzSize+2)*time+ay, new double[]{Math.sin(360*val),val*val*val,Math.sqrt(val)}); //bgr
+						raster.setPixel(cz*(xyzSize+2)+ax, (xyzSize+2)*time+ay, new double[]{scale*Math.sin(2*Math.PI*val),scale*val*val*val,scale*Math.sqrt(val)}); //bgr
+						/**
+						 * gnuplot palette equation:
+						 * rgb: 
+						 * sqrt(x) 
+						 * x³
+						 * sin(360x)
+						 */
+						}
+				
+				
+				}
+			}
+		
+		ImageIO.write(bim, "png", outputFile);
+		System.out.println("wrote "+outputFile);
+		}
+	
+	private static double getMin(double[] arr)
+		{
+		Double ret=null;
+		for(double d:arr)
+			if(ret==null || d<ret)
+				ret=d;
+		return ret;
+		}
+	
+	private static double getMax(double[] arr)
+		{
+		Double ret=null;
+		for(double d:arr)
+			if(ret==null || d>ret)
+				ret=d;
+		return ret;
+		}
+	
 	/**
 	 * Final graph from XYZ should be 2d with fixed dy/dt 
 	 */
@@ -307,6 +463,13 @@ public class CompareAll
 		return comparison;
 		}
 	
+	public static <E> Collection<E> randomOrder(Collection<E> in)
+		{
+		List<E> out=new ArrayList<E>(in);
+		Collections.shuffle(out);
+		return out;
+		}
+	
 	public static void main(String[] args)
 		{
 		EvLog.listeners.add(new EvLogStdout());
@@ -334,12 +497,14 @@ public class CompareAll
 		
 		//Do pairwise. For user simplicity, can do symmetric and reflexive
 		//Each slice, different bg.
-		System.out.println("Calculate pair-wise statistics");
 		if(!argsSet.contains("nocalc"))
-			for(File fa:datas)
-				for(File fb:datas)
+			{
+			System.out.println("Calculate pair-wise statistics");
+			for(File fa:randomOrder(datas))
+				for(File fb:randomOrder(datas))
 					{
 					Tuple<File,File> key=Tuple.make(fa, fb);
+					
 					//Check if cached calculation does not exist
 					if(!comparisonT.containsKey(key) || !comparisonAP.containsKey(key) || !comparisonXYZ.containsKey(key))
 						{
@@ -354,15 +519,41 @@ public class CompareAll
 							EvData dataA=EvData.loadFile(fa);
 							EvData dataB=EvData.loadFile(fb);
 							
+							
+							String chanNameA;
+							Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
+							if(imsetA.getChild("GFP")!=null)
+								chanNameA="GFP";
+							else
+								chanNameA="RFP";
+
+							String chanNameB;
+							Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
+							if(imsetB.getChild("GFP")!=null)
+								chanNameB="GFP";
+							else
+								chanNameB="RFP";
+							
+							//Check if XYZ summary generated. Only have to check the first image
+							try
+								{
+								File outputFileXYZimageA=new File(new File(key.fst(),"data"),"expXYZ.png");
+								if(!outputFileXYZimageA.exists())
+									fancyGraphXYZ(dataA, coordLineageFor(dataA), outputFileXYZimageA, chanNameA);
+								}
+							catch (IOException e1)
+								{
+								e1.printStackTrace();
+								}
+							
 							System.out.println("Comparing: "+key);
 		
 							String expName="exp";
 							
 							//Slices: T
-							String nameT="AP"+1+"-GFP";
 							ColocCoefficients coeffT=new ColocCoefficients();
-							double[][] imtA=apToArray(dataA, nameT, expName, coordLineageFor(dataA));
-							double[][] imtB=apToArray(dataB, nameT, expName, coordLineageFor(dataB));
+							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
 							for(int i=0;i<imtA.length;i++)
 								if(imtA[i]!=null && imtB[i]!=null)
 									coeffT.add(imtA[i], imtB[i]);
@@ -382,10 +573,9 @@ public class CompareAll
 								}
 							
 							//Slices: AP
-							String nameAP="AP"+20+"-GFP";
 							ColocCoefficients coeffAP=new ColocCoefficients();
-							double[][] imapA=apToArray(dataA, nameAP, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, nameAP, expName, coordLineageFor(dataB));
+							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
 							for(int i=0;i<imtA.length;i++)
 								if(imapA[i]!=null && imapB[i]!=null)
 									coeffAP.add(imapA[i], imapB[i]);
@@ -406,7 +596,7 @@ public class CompareAll
 
 							
 							//Slices: XYZ
-							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB));
+							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), chanNameA, chanNameB);
 							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);
 													
 							//Store down this value too
@@ -422,13 +612,14 @@ public class CompareAll
 
 						}
 					}
+			}
+		
 		
 		if(true)
 			{
 			try
 				{
-				NewRenderHTML.makeSummaryAPT(new File("/home/tbudev3/expsummary"), datas);
-				NewRenderHTML.makeSummaryXYZ(new File("/home/tbudev3/expsummary"), datas);
+				NewRenderHTML.makeSummaryAPT(new File(outputBaseDir,"exphtml"), datas);
 				}
 			catch (IOException e)
 				{
@@ -436,9 +627,11 @@ public class CompareAll
 				}
 			}
 	
-		writeHTMLfromFiles(datas, comparisonT, new File("/home/tbudev3/intstats"),"T");
-		writeHTMLfromFiles(datas, comparisonAP, new File("/home/tbudev3/intstats"),"AP");
-		writeHTMLfromFiles(datas, comparisonXYZ, new File("/home/tbudev3/intstats"),"XYZ");
+		File intStatsDir=new File(outputBaseDir,"intstats");
+		intStatsDir.mkdirs();
+		writeHTMLfromFiles(datas, comparisonT, intStatsDir,"T");
+		writeHTMLfromFiles(datas, comparisonAP, intStatsDir,"AP");
+		writeHTMLfromFiles(datas, comparisonXYZ, intStatsDir,"XYZ");
 		
 		
 		
@@ -453,7 +646,14 @@ public class CompareAll
 		//Find lineage
 		for(Map.Entry<EvPath, NucLineage> e:data.getIdObjectsRecursive(NucLineage.class).entrySet())
 			if(!e.getKey().getLeafName().startsWith("AP"))
-				lin=e.getValue();
+				{
+				if(e.getValue()==null)
+					System.out.println("!!!!! lineage is null in tree");
+				return e.getValue();
+				}
+//				lin=e.getValue();
+		if(lin!=null)
+			System.out.println("no lineage. got: "+data.getIdObjectsRecursive(NucLineage.class).keySet());
 		return lin;
 		}
 	
@@ -477,6 +677,7 @@ public class CompareAll
 				root.addContent(e);
 				}
 			Document doc=new Document(root);
+			cachedValuesFile.getParentFile().mkdirs();
 			EvXmlUtil.writeXmlData(doc, cachedValuesFile);
 			}
 		catch (Exception e1)

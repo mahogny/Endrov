@@ -174,12 +174,21 @@ public class IntExp
 			
 			EvData data = EvData.loadFile(f);
 
-			System.out.println("Doing: "+f);
-			
-			
+
+			//Do RFP or GFP?
+			boolean doGFP=false;
+			for(EvPath path:data.getIdObjectsRecursive(EvChannel.class).keySet())
+				{
+				System.out.println(path);
+				if(path.getLeafName().equals("GFP"))
+					doGFP=true;
+				}
+
+			System.out.println("Doing: "+f+"\t\tGFP:"+doGFP);
+
 			
 			int numSubDiv = 20;
-			String channelName = "GFP";
+			String channelName = doGFP ? "GFP" : "RFP";
 			String expName = "exp"; // Neutral name
 
 			
@@ -241,11 +250,10 @@ public class IntExp
 				intXYZ=null; //TODO temp
 			
 			//Cell level expression if there is a lineage 
-			//TODO: no! check if the lineage is complete enough
-			IntegratorCell intC = null;
-			if(lin!=null)
+			IntegratorCellClosest intC = null;
+			if(lin!=null && channelName.equals("RFP"))
 				{
-				intC = new IntegratorCell(integrator, lin, intAP.bg);
+				intC = new IntegratorCellClosest(integrator, lin, intAP.bg);
 				ints.add(intC);
 				}
 
@@ -368,7 +376,7 @@ public class IntExp
 
 			// Get exposure time
 			//String sExpTime = imset.getMetaFrame(frame).get("exposuretime");
-			String sExpTime = imset.getChannel("GFP").getMetaFrame(frame).get("exposuretime");
+			String sExpTime = imset.getChannel(channelName).getMetaFrame(frame).get("exposuretime");
 			if (sExpTime!=null)
 				expTime = Double.parseDouble(sExpTime);
 			else
