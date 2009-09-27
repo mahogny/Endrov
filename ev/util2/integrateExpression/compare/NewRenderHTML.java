@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Set;
 
+import util2.integrateExpression.ExpUtil;
+
 import endrov.util.EvFileUtil;
 
 /**
@@ -39,14 +41,6 @@ public class NewRenderHTML
 		{
 		try
 			{
-			/*
-			ap3dTotTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP3dIndex.html"));
-			ap3dCellTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP3dCell.html"));
-			ap2dTotTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP2dIndex.html"));
-			ap2dCellTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateAP2dCell.html"));
-			tTotTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateTIndex.html"));
-			tCellTemplate=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateTCell.html"));
-*/			
 			templateRecAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateRecAPT.html"));
 			templateIndexAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateIndexAPT.html"));
 
@@ -174,84 +168,74 @@ public class NewRenderHTML
 		{
 		htmlOutdir.mkdirs();
 
-		StringBuffer sb=new StringBuffer();
+		StringBuffer sbAPT=new StringBuffer();
+		StringBuffer sbXYZ=new StringBuffer();
 		for(File f:datas)
 			{
-			File fAP2d=new File(new File(f,"data"),"expAP2d.png");
-			File fAP3d=new File(new File(f,"data"),"expAP3d.png");
-			File fT=new File(new File(f,"data"),"expT.png");
 
-			String recString=templateRecAPT
-			.replace("STRAIN", "teststrain")
+			String strainName=ExpUtil.nameDateFromOSTName(f.getName()).fst();
+			
+			String recStringAPT=templateRecAPT
+			.replace("STRAIN", strainName)
+			.replace("OSTURL", ""+f);
+			String recStringXYZ=templateRecXYZ
+			.replace("STRAIN", strainName)
 			.replace("OSTURL", ""+f);
 
-			/////
+			////////////////// File 1 /////////////////
+			
+			File fAP2d=new File(new File(f,"data"),"expAP2d.png");
 			if(fAP2d.exists())
 				{
 				fAP2d=copyForSummary(f, htmlOutdir, fAP2d);
-				recString=recString.replace("IMGURL2d", fAP2d.toString());
+				recStringAPT=recStringAPT.replace("IMGURL2d", fAP2d.getName());
 				}
 			else
-				recString=recString.replace("IMGURL2d", "");
+				recStringAPT=recStringAPT.replace("IMGURL2d", "");
 
-			/////
+			File fAP3d=new File(new File(f,"data"),"expAP3d.png");
 			if(fAP3d.exists())
 				{
 				fAP3d=copyForSummary(f, htmlOutdir, fAP3d);
-				recString=recString.replace("IMGURL3d", fAP3d.toString());
+				recStringAPT=recStringAPT.replace("IMGURL3d", fAP3d.getName());
 				}
 			else
-				recString=recString.replace("IMGURL3d", "");
+				recStringAPT=recStringAPT.replace("IMGURL3d", "");
 
-			/////
+			File fT=new File(new File(f,"data"),"expT.png");
 			if(fT.exists())
 				{
 				fT=copyForSummary(f, htmlOutdir, fT);
-				recString=recString.replace("IMGURLt", fT.toString());
+				recStringAPT=recStringAPT.replace("IMGURLt", fT.getName());
 				}
 			else
-				recString=recString.replace("IMGURLt", "");
+				recStringAPT=recStringAPT.replace("IMGURLt", "");
 
-			sb.append(recString);
-			}
-
-		EvFileUtil.writeFile(new File(htmlOutdir,"index.html"), 
-				templateIndexAPT.replace("TABLECONTENT", sb.toString()));
-
-		}
-	
-	
-	
-	/**
-	 * Make the summary HTML. Assumes all images exist.
-	 */
-	public static void makeSummaryXYZ(File htmlOutdir, Set<File> datas) throws IOException
-		{
-		htmlOutdir.mkdirs();
-
-		StringBuffer sb=new StringBuffer();
-		for(File f:datas)
-			{
+			sbAPT.append(recStringAPT);
+			
+			////////////////// File 2 /////////////////
+			
 			File fXYZ=new File(new File(f,"data"),"expXYZ.png");
-
-			String recString=templateRecAPT
-			.replace("STRAIN", "teststrain")
-			.replace("OSTURL", ""+f);
-
-			/////
 			if(fXYZ.exists())
 				{
 				fXYZ=copyForSummary(f, htmlOutdir, fXYZ);
-				recString=recString.replace("IMGURLxyz", fXYZ.toString());
+				recStringXYZ=recStringXYZ.replace("IMGURLxyz", fXYZ.getName());
 				}
 			else
-				recString=recString.replace("IMGURLxyz", "");
+				recStringXYZ=recStringXYZ.replace("IMGURLxyz", "");
 
-			sb.append(recString);
+			sbXYZ.append(recStringXYZ);
+
 			}
 
+		//Write files
+		EvFileUtil.writeFile(new File(htmlOutdir,"indexAPT.html"), 
+				templateIndexAPT.replace("TABLECONTENT", sbAPT.toString()));
 		EvFileUtil.writeFile(new File(htmlOutdir,"indexXYZ.html"), 
-				templateIndexAPT.replace("TABLECONTENT", sb.toString()));
+				templateIndexXYZ.replace("TABLECONTENT", sbXYZ.toString()));
 
 		}
+	
+	
+	
 	}
