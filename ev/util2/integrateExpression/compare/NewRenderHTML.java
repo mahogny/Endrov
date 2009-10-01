@@ -18,24 +18,13 @@ import endrov.util.EvFileUtil;
  */
 public class NewRenderHTML
 	{
-/*
-	public static String ap3dTotTemplate;
-	public static String ap3dCellTemplate;
-	public static String ap2dTotTemplate;
-	public static String ap2dCellTemplate;
-	public static String tTotTemplate;
-	public static String tCellTemplate;
-	*/
 	public static String gnuplotAP3d;
 	public static String gnuplotAP2d;
 	public static String gnuplotT;
 	
-	
 	public static String templateRecAPT;
 	public static String templateIndexAPT;
 
-	public static String templateRecXYZ;
-	public static String templateIndexXYZ;
 
 	static
 		{
@@ -43,10 +32,7 @@ public class NewRenderHTML
 			{
 			templateRecAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateRecAPT.html"));
 			templateIndexAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateIndexAPT.html"));
-
-			templateRecXYZ=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateRecXYZ.html"));
-			templateIndexXYZ=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateIndexXYZ.html"));
-
+			
 			gnuplotAP3d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP3d.gnu"));
 			gnuplotAP2d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP2d.gnu"));
 			gnuplotT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderT.gnu"));
@@ -169,18 +155,26 @@ public class NewRenderHTML
 		htmlOutdir.mkdirs();
 
 		StringBuffer sbAPT=new StringBuffer();
-		StringBuffer sbXYZ=new StringBuffer();
+		StringBuffer sbXYZtitles=new StringBuffer();
+		StringBuffer sbXYZims=new StringBuffer();
 		for(File f:datas)
 			{
-
 			String strainName=ExpUtil.nameDateFromOSTName(f.getName()).fst();
 			
 			String recStringAPT=templateRecAPT
 			.replace("STRAIN", strainName)
 			.replace("OSTURL", ""+f);
-			String recStringXYZ=templateRecXYZ
+			String recStringXYZtitle=(
+					"<td>"+
+					"<center>"+
+					"STRAIN<br/>"+
+					"<small><small>OSTURL</small></small><br/>"+
+					"</center>"+
+					"</td>"
+					)
 			.replace("STRAIN", strainName)
 			.replace("OSTURL", ""+f);
+			String recStringXYZims="<td><a href=\"IMGURLxyz\"><img src=\"IMGURLxyz\" width=\"300\" border=\"0\"/></a></td>";
 
 			////////////////// File 1 /////////////////
 			
@@ -219,20 +213,28 @@ public class NewRenderHTML
 			if(fXYZ.exists())
 				{
 				fXYZ=copyForSummary(f, htmlOutdir, fXYZ);
-				recStringXYZ=recStringXYZ.replace("IMGURLxyz", fXYZ.getName());
+				recStringXYZtitle=recStringXYZtitle.replace("IMGURLxyz", fXYZ.getName());
 				}
 			else
-				recStringXYZ=recStringXYZ.replace("IMGURLxyz", "");
+				recStringXYZtitle=recStringXYZtitle.replace("IMGURLxyz", "");
 
-			sbXYZ.append(recStringXYZ);
-
+			sbXYZtitles.append(recStringXYZtitle);
+			sbXYZims.append(recStringXYZims);
 			}
 
 		//Write files
 		EvFileUtil.writeFile(new File(htmlOutdir,"indexAPT.html"), 
 				templateIndexAPT.replace("TABLECONTENT", sbAPT.toString()));
 		EvFileUtil.writeFile(new File(htmlOutdir,"indexXYZ.html"), 
-				templateIndexXYZ.replace("TABLECONTENT", sbXYZ.toString()));
+				(
+						"<html>"+
+						"<title>Expression patterns overview (XYZ)</title>"+
+						"<table>"+
+						"<tr>"+sbXYZtitles+"</tr>"+
+						"<tr>"+sbXYZims+"</tr>"+
+						"</table>"+
+						"</html>"		
+				));
 
 		}
 	
