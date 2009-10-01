@@ -42,12 +42,13 @@ public class NucExp implements Cloneable
 	 */
 	public Double interpolateLevel(EvDecimal frame)
 		{
-		if(frame.less(level.firstKey()))
+		if(frame.lessEqual(level.firstKey()))
 			return level.get(level.firstKey());
-		else if(frame.greater(level.lastKey()))
+		else if(frame.greaterEqual(level.lastKey()))
 			return level.get(level.lastKey());
 		else
 			{
+			//There must be more than two distinct points
 			SortedMap<EvDecimal,Double> hlevel=level.headMap(frame);
 			SortedMap<EvDecimal,Double> tlevel=level.tailMap(frame);
 			EvDecimal frameBefore=hlevel.lastKey();

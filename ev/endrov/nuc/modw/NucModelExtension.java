@@ -737,7 +737,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    		{
 	    		String expName=panel.getSelectedExp();
 	    		NucExp n=nucPair.getNuc().exp.get(expName);
-	    		if(n!=null)
+	    		if(n!=null && !n.level.isEmpty())
 	    			{
 	    			double level=n.interpolateLevel(curFrame);
 	    			double scale=panel.scale1;
