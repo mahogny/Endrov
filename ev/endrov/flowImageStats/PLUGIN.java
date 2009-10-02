@@ -35,6 +35,7 @@ public class PLUGIN extends PluginDef
 				FlowUnitConvGaussian3D.class,
 				FlowUnitBilateralFilter2D.class,
 				FlowUnitKuwaharaFilter.class,
+				FlowUnitKirschFilter2D.class,
 				FlowUnitAverageRect.class,
 				FlowUnitEntropyCircle.class,FlowUnitEntropyRect.class,
 				FlowUnitSumRect.class,
