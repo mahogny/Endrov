@@ -5,7 +5,6 @@ import java.awt.Graphics;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.vecmath.Vector2d;
 
 
 /**
