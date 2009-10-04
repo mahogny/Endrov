@@ -3,10 +3,7 @@ package endrov.springGraph;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
 import javax.vecmath.Vector2d;
 
 import endrov.springGraph.GraphPanel.NodeRenderer;
