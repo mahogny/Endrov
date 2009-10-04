@@ -50,6 +50,9 @@ public class IntegratorXYZ implements Integrator
 		integrator.imset.metaObject.remove("indZ");
 		}
 
+	
+	
+	
 	/**
 	 * Set up coordinate system, return if successful
 	 */
@@ -64,8 +67,7 @@ public class IntegratorXYZ implements Integrator
 				||nucP2.pos.isEmpty()||nucABa.pos.isEmpty()||nucABp.pos.isEmpty()
 				||nucEMS.pos.isEmpty())
 			{
-			System.out
-					.println("Does not have required 4-cell stage marked, will not produce cube");
+			System.out.println("Does not have enough cells marked, will not produce cube");
 			return false;
 			}
 		else

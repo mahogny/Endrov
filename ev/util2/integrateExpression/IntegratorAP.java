@@ -30,7 +30,7 @@ public class IntegratorAP implements Integrator
 	private int numSubDiv;
 	private HashMap<EvDecimal, EvPixels> distanceMap = new HashMap<EvDecimal, EvPixels>();
 	private Shell shell;
-	private int[] sliceExp;
+	private double[] sliceExp; //Must be double for values to fit
 	private int[] sliceVol;
 	private NucLineage lin = new NucLineage();
 	private String newLinName;
@@ -46,7 +46,7 @@ public class IntegratorAP implements Integrator
 		{
 		this.numSubDiv = numSubDiv;
 		this.newLinName = newLinName;
-		sliceExp = new int[numSubDiv];
+		sliceExp = new double[numSubDiv];
 		sliceVol = new int[numSubDiv];
 		
 		//Use pre-calculated value for BG
@@ -59,8 +59,7 @@ public class IntegratorAP implements Integrator
 		// TODO need to group lineage and shell. introduce a new object?
 		integrator.imset.metaObject.put(newLinName, lin);
 		// imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
-		shell = integrator.imset.getIdObjectsRecursive(Shell.class).values()
-				.iterator().next();
+		shell = integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
 	
 		integrator.imset.metaObject.put(newLinName, lin);
 	
@@ -89,8 +88,7 @@ public class IntegratorAP implements Integrator
 			}
 		else
 			{
-			lenMap = new EvPixels(EvPixelsType.DOUBLE, integrator.pixels
-					.getWidth(), integrator.pixels.getHeight());
+			lenMap = new EvPixels(EvPixelsType.DOUBLE, integrator.pixels.getWidth(), integrator.pixels.getHeight());
 			lenMapArr = lenMap.getArrayDouble();
 	
 			ImVector2 dirvec = ImVector2.polar(shell.major, shell.angle);
@@ -138,7 +136,7 @@ public class IntegratorAP implements Integrator
 					}
 				else
 					{
-					// Measure background
+					// Measure background. It's all pixels outside the embryo
 					curBgInt += integrator.pixelsLine[i];
 					curBgVol++;
 					}
@@ -148,21 +146,19 @@ public class IntegratorAP implements Integrator
 	
 	public void integrateStackDone(IntExp integrator)
 		{
-		// Store background
+		// Store background if this integrator is responsible for calculating it
 		if (updateBG)
 			bg.put(integrator.frame, curBgInt/curBgVol);
 	
 		// Store pattern in lineage
 		for (int i = 0; i<numSubDiv; i++)
 			{
-			double avg = (double) sliceExp[i]/(double) sliceVol[i]
-					-bg.get(integrator.frame);
+			double avg = (double) sliceExp[i]/(double) sliceVol[i] - bg.get(integrator.frame);
 			avg /= integrator.expTime;
 	
 			NucLineage.Nuc nuc = lin.getCreateNuc("_slice"+i);
 			NucExp exp = nuc.getCreateExp(integrator.expName);
 			exp.level.put(integrator.frame, avg);
-	
 			}
 	
 		}
@@ -177,29 +173,57 @@ public class IntegratorAP implements Integrator
 			nuc.overrideStart = integrator.ch.imageLoader.firstKey();
 			nuc.overrideEnd = integrator.ch.imageLoader.lastKey();
 			}
-	
+/*
+		System.out.println("---------------------------------------");
+		
+		System.out.println();
+		System.out.println("Removed bg: "+bg);
+		
+		System.out.println();
+		System.out.println("Before norm: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level);
+*/
 		// Normalization is needed before exposure correction to make sure the
 		// threshold for
 		// detecting jumps always works
-		ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(
-				lin, integrator.expName), 0, 1);
-	
+		ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(lin, integrator.expName), 0, 1);
+
+		/*
+		System.out.println();
+		System.out.println("After norm: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level);
+		*/
+		
 		if (correctedExposure!=null)
 			{
-			ExpUtil.correctExposureChange(correctedExposure, lin,
-					integrator.expName);
+			//Used for T-expression
+			/*
+			System.out.println();
+			System.out.println("Exp correction: "+correctedExposure);
+			*/
+			
+			ExpUtil.correctExposureChange(correctedExposure, lin,	integrator.expName);
 			}
 		else
 			{
+			//Used for AP
 			this.correctedExposure = ExpUtil.correctExposureChange(
 					integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(
 							integrator.ch.imageLoader.keySet()));
 			}
+		
+		/*
+		System.out.println();
+		System.out.println("After exp correct: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level);
+*/
 	
 		// This is only for the eye
 		double sigMax = ExpUtil.getSignalMax(lin, integrator.expName);
 		double sigMin = ExpUtil.getSignalMin(lin, integrator.expName);
 		ExpUtil.normalizeSignal(lin, integrator.expName, sigMax, sigMin, 1);
+	
+		/*
+		System.out.println();
+		System.out.println("final exp: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level.values());
+*/
 		}
 	
 	/**

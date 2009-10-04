@@ -83,6 +83,17 @@ public class EvImage
 	//Changes in resolution might screw up pending operations. Need to encapsulate!
 	//TODO
 
+	/**
+	 * For I/O manager only: The image has been written to disk and there is an io-object set up to read it.
+	 * Hence the image need not stay in image anymore. This unlocks the memory by placing the image in the cache.
+	 */
+	public void ioIsNowOnDisk()
+		{
+		cachedPixels=new SoftReference<EvPixels>(getPixels());
+		memoryPixels=null;
+		isDirty=false;
+		CacheImages.addToCache(this);
+		}
 	
 	public EvImage()
 		{
@@ -301,6 +312,7 @@ public class EvImage
 						//Use IO to load image (might also execute operation)
 						loaded=new EvPixels(io.loadJavaImage());
 						cachedPixels=new SoftReference<EvPixels>(loaded);
+						CacheImages.addToCache(this);
 						return loaded;
 						}
 					}

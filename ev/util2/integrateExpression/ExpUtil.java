@@ -90,20 +90,21 @@ public class ExpUtil
 					1.0,
 					helperGetAverageForFrame(lin, expName, lastFrame)-helperGetAverageForFrame(lin, expName, frame));
 			
-
-			
+			//Trigger correction based on sudden jumps
+			boolean suddenJump=false;
 			if(newKM!=null)
 				{
 				double jmp=Math.abs(newKM.snd()-correctionM);
-				if(jmp>0.02) //Better constant! TODO
+				if(jmp>0.02) //Better constant? Input is normalized, might work. Could use percentile stats 
 					{
 					System.out.println("Detected sudden jump: "+jmp);
-					lastExposure=-1.0;
+					suddenJump=true;
+					//lastExposure=-1.0;
 					}
 				}
 			
 			//Trigger correction
-			if(!lastExposure.equals(expTime))
+			if(!lastExposure.equals(expTime) || suddenJump)
 				{
 				corrNuc.getCreatePos(frame);
 				
@@ -164,17 +165,13 @@ public class ExpUtil
 	 */
 	public static void correctExposureChange(TreeMap<EvDecimal, Tuple<Double,Double>> corrections, NucLineage lin, String expName)
 		{
-		//int framecount=0;
-		
 		//For all frames
 		for(EvDecimal frame:corrections.keySet())
 			{
-			//framecount++;
-
 			double correctionK=corrections.get(frame).fst();
 			double correctionM=corrections.get(frame).snd();
 			
-			//Correct this frame. Also get 
+			//Correct this frame
 			for(NucLineage.Nuc nuc:lin.nuc.values())
 				{
 				NucExp nexp=nuc.exp.get(expName);
@@ -188,6 +185,9 @@ public class ExpUtil
 			}
 		}
 	
+	/**
+	 * Correct for background etc. Use given table of corrections
+	 */
 	public static void correctExposureChange(TreeMap<EvDecimal, Tuple<Double,Double>> corrections, EvDecimal frame, double[] sig)
 		{
 		double correctionK=corrections.get(frame).fst();

@@ -721,13 +721,14 @@ public class OSTdaemon extends Thread
 				}
 			*/	
 			
+			moveToConverted(from);
+			
 			}
 		catch (Exception e)
 			{
 			error(null,e);
 			}
 		
-		moveToConverted(from);
 		}
 
 	

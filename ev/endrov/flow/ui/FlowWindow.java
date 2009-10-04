@@ -205,7 +205,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 			public void valueChanged(TreeSelectionEvent e)
 				{
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.getPath().getLastPathComponent();
-				if(node!=null && node.isLeaf())
+				if(node!=null && node.isLeaf() && e!=null)
 					{
 					FlowUnitDeclaration decl=(FlowUnitDeclaration)node.getUserObject();
 					System.out.println(decl);
@@ -223,7 +223,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		public void valueChanged(TreeSelectionEvent e)
 			{
 			DataTreeElement node = (DataTreeElement)e.getPath().getLastPathComponent();
-			if(node!=null && !node.isRoot)
+			if(node!=null && !node.isRoot && e!=null)
 				{
 				FlowUnitObjectIO unit=new FlowUnitObjectIO(node.getPath());
 				

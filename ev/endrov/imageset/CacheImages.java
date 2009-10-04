@@ -14,6 +14,9 @@ public class CacheImages
 	private static int qsize=5;
 	private static LinkedList<WeakReference<EvImage>> queue=new LinkedList<WeakReference<EvImage>>();
 	
+	/**
+	 * Update image on cache queue. Also note that the image has a cache that can be removed
+	 */
 	public static synchronized void addToCache(EvImage im)
 		{
 		WeakReference<EvImage> ref=null;
