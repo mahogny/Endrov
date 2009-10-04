@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 
@@ -126,7 +128,10 @@ public class EvFileUtil
 			return new File(f.getParentFile(),f.getName()+end);
 		}
 	
-	
+
+	/**
+	 * Delete directory or file recursively
+	 */
 	public static void deleteRecursive(File f) throws IOException
 		{
 		if(f.isDirectory())
@@ -135,5 +140,19 @@ public class EvFileUtil
 		f.delete();
 		}
 
-	
+	/**
+	 * Copy file from one location to another
+	 */
+	public static void copy(File source, File destination) throws IOException 
+		{
+		InputStream in = new FileInputStream(source);
+		OutputStream out = new FileOutputStream(destination);
+		byte[] buffer = new byte[1024];
+		int len;
+		while ((len = in.read(buffer)) > 0) 
+			out.write(buffer, 0, len);
+		in.close();
+		out.close();
+		}
+
 	}

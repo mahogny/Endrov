@@ -38,7 +38,7 @@ public class RecWindowBurst extends BasicWindow
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Lightpath",new ImageIcon(getClass().getResource("jhLightpathWindow.png")));
+					JMenuItem mi=new JMenuItem("Lightpath",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}

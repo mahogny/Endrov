@@ -97,15 +97,36 @@ public class IntExp
 			}
 		else
 			{
+			List<File> list=new ArrayList<File>();
 			for(File parent:new File[]{
 					new File("/Volumes/TBU_main06/ost4dgood"),
 			})
 				for(File f:parent.listFiles())
 					if(f.getName().endsWith(".ost"))
-						if(new File(f,"tagDone4d.txt").exists())
-							doOne(f);
-						else
-							System.out.println("Skipping: "+f);
+						list.add(f);
+			
+			//Cheap concurrency
+			Collections.shuffle(list);
+			
+			for(File f:list)
+				if(new File(f,"tagDone4d.txt").exists())
+					{
+					try
+						{
+						doOne(f);
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
+					
+					try{Thread.sleep(2000);}
+					catch (InterruptedException e){}
+					
+					System.gc();
+					}
+				else
+					System.out.println("Skipping: "+f);
 			
 			}
 		
@@ -137,112 +158,141 @@ public class IntExp
 			
 		}
 
-	public static void doOne(File f)
+	public static boolean doOne(File f)
 		{
-		File ftagCalcDone=new File(f, "tagCalcDone4d.txt");
-		
-		if(ftagCalcDone.exists())
-			{
-			System.out.println("Already done: "+f);
-			return;
-			}
-		
-		
-		EvData data = EvData.loadFile(f);
-
-		System.out.println("Doing: "+f);
-		
-		
-		int numSubDiv = 20;
-		String channelName = "GFP";
-		String expName = "exp"; // Neutral name
-
-		// Fixing time is not done now. (what about gnuplot?).
-		// makes checking difficult if applied
-		// => forced to apply when merging, and searching if searching in original
-		// => output both frames and model time in gnuplot files?
-
-		String newLinNameT = linForAP(1, channelName);
-		String newLinNameAP = linForAP(numSubDiv, channelName);
-
-		// Not the optimal way of finding the lineage
-		NucLineage lin = null;
-		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
-		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
-			// if(!e.getKey().getLeafName().equals(newLinNameT) &&
-			// !e.getKey().getLeafName().equals(newLinNameAP))
-			if (!e.getKey().getLeafName().startsWith("AP"))
-				{
-				System.out.println("found lineage "+e.getKey());
-				lin = e.getValue();
-				System.out.println(lin);
-				}
-		// lin=null;
-
-		//Decide on integrators
-		LinkedList<Integrator> ints = new LinkedList<Integrator>();
-
-//		boolean hasShell=!data.getIdObjects(Shell.class).isEmpty();
-		
-		IntExp integrator = new IntExp(data, expName, channelName);
-
-		//AP-level expression. A single slice gives expression over time
-		IntegratorAP intAP = new IntegratorAP(integrator, newLinNameAP, numSubDiv, null);
-		IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
-		ints.add(intAP);
-		ints.add(intT);
-
-		
-		//XYZ cube level expression
-		IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
-				numSubDiv, intAP.bg);
-		if(true)
-			{
-			if (lin!=null && intXYZ.setupCS(lin))
-				ints.add(intXYZ);
-			else
-				intXYZ = null;
-			}
-		else
-			intXYZ=null; //TODO temp
-		
-		//Cell level expression if there is a lineage 
-		//TODO: no! check if the lineage is complete enough
-		IntegratorCell intC = null;
-		if(lin!=null)
-			{
-			intC = new IntegratorCell(integrator, lin, intAP.bg);
-			ints.add(intC);
-			}
-
-		// TODO check which lin to use, add to list if one exists
-
-		// Run integrators
-		integrator.doProfile(ints);
-
-		// Wrap up, store in OST
-		// Use common correction factors for exposure
-		intAP.done(integrator, null);
-		intT.done(integrator, intAP.correctedExposure);
-		if (intXYZ!=null)
-			intXYZ.done(integrator, intAP.correctedExposure);
-		if (intC!=null)
-			intC.done(integrator, intAP.correctedExposure);
-
-		// Put integral in file for use by Gnuplot
-		intAP.profileForGnuplot(integrator, fileForAP(data, numSubDiv, channelName));
-
-		System.out.println("Saving OST");
-		data.saveData();
-		System.out.println("ok");
-
 		try
 			{
-			ftagCalcDone.createNewFile();
+			System.gc();
+			File ftagCalcDone=new File(f, "tagCalcDone4d.txt");
+			
+			if(ftagCalcDone.exists())
+				{
+				System.out.println("Already done: "+f);
+				return true;
+				}
+			
+			
+			EvData data = EvData.loadFile(f);
+
+
+			//Do RFP or GFP?
+			boolean doGFP=false;
+			for(EvPath path:data.getIdObjectsRecursive(EvChannel.class).keySet())
+				{
+				System.out.println(path);
+				if(path.getLeafName().equals("GFP"))
+					doGFP=true;
+				}
+
+			System.out.println("Doing: "+f+"\t\tGFP:"+doGFP);
+
+			
+			int numSubDiv = 20;
+			String channelName = doGFP ? "GFP" : "RFP";
+			String expName = "exp"; // Neutral name
+
+			
+			if(!data.getIdObjectsRecursive(EvChannel.class).containsKey(new EvPath("im",channelName)))
+				{
+				System.out.println("Does not contain channel");
+				return false;
+				}
+			
+			
+			
+			// Fixing time is not done now. (what about gnuplot?).
+			// makes checking difficult if applied
+			// => forced to apply when merging, and searching if searching in original
+			// => output both frames and model time in gnuplot files?
+
+			String newLinNameT = linForAP(1, channelName);
+			String newLinNameAP = linForAP(numSubDiv, channelName);
+
+			// Not the optimal way of finding the lineage
+			NucLineage lin = null;
+			Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
+			for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+				// if(!e.getKey().getLeafName().equals(newLinNameT) &&
+				// !e.getKey().getLeafName().equals(newLinNameAP))
+				if (!e.getKey().getLeafName().startsWith("AP"))
+					{
+					System.out.println("found lineage "+e.getKey());
+					lin = e.getValue();
+					System.out.println(lin);
+					}
+			// lin=null;
+
+			//Decide on integrators
+			LinkedList<Integrator> ints = new LinkedList<Integrator>();
+
+//		boolean hasShell=!data.getIdObjects(Shell.class).isEmpty();
+			
+			IntExp integrator = new IntExp(data, expName, channelName);
+
+			//AP-level expression. A single slice gives expression over time
+			IntegratorAP intAP = new IntegratorAP(integrator, newLinNameAP, numSubDiv, null);
+			IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
+			ints.add(intAP);
+			ints.add(intT);
+
+			
+			//XYZ cube level expression
+			IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
+					numSubDiv, intAP.bg);
+			if(true)
+				{
+				if (lin!=null && intXYZ.setupCS(lin))
+					ints.add(intXYZ);
+				else
+					intXYZ = null;
+				}
+			else
+				intXYZ=null; //TODO temp
+			
+			//Cell level expression if there is a lineage 
+			IntegratorCellClosest intC = null;
+			if(lin!=null && channelName.equals("RFP"))
+				{
+				intC = new IntegratorCellClosest(integrator, lin, intAP.bg);
+				ints.add(intC);
+				}
+
+			// TODO check which lin to use, add to list if one exists
+
+			// Run integrators
+			integrator.doProfile(ints);
+
+			// Wrap up, store in OST
+			// Use common correction factors for exposure
+			intAP.done(integrator, null);
+			intT.done(integrator, intAP.correctedExposure);
+			if (intXYZ!=null)
+				intXYZ.done(integrator, intAP.correctedExposure);
+			if (intC!=null)
+				intC.done(integrator, intAP.correctedExposure);
+
+			// Put integral in file for use by Gnuplot
+			intAP.profileForGnuplot(integrator, fileForAP(data, numSubDiv, channelName));
+
+			System.out.println("Saving OST");
+			data.saveData();
+			System.out.println("ok");
+
+			try
+				{
+				ftagCalcDone.createNewFile();
+				}
+			catch (IOException e1)
+				{
+				e1.printStackTrace();
+				}
+			
+			return true;
 			}
-		catch (IOException e1)
+		catch (Exception e)
 			{
-			e1.printStackTrace();
+			e.printStackTrace();
+			return false;
 			}
 		}
 
@@ -285,6 +335,9 @@ public class IntExp
 		imset = data.getObjects(Imageset.class).get(0);
 		ch = imset.getChannel(channelName);
 
+		if(ch==null)
+			throw new RuntimeException("No such channel "+channelName);
+		
 		/*
 		 * //Test: write image EvChannel ch=imset.getCreateChannel("XYZ"); EvImage
 		 * evim=ch.createImageLoader(imset.getChannel("GFP").imageLoader.firstKey(),
@@ -323,7 +376,7 @@ public class IntExp
 
 			// Get exposure time
 			//String sExpTime = imset.getMetaFrame(frame).get("exposuretime");
-			String sExpTime = imset.getChannel("GFP").getMetaFrame(frame).get("exposuretime");
+			String sExpTime = imset.getChannel(channelName).getMetaFrame(frame).get("exposuretime");
 			if (sExpTime!=null)
 				expTime = Double.parseDouble(sExpTime);
 			else

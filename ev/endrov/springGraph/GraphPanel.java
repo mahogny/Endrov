@@ -2,23 +2,53 @@ package endrov.springGraph;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.vecmath.Vector2d;
 
 
 /**
+ * Simple graph display
  * 
  * @author Johan Henriksson
  *
  */
-public class GraphPanel extends JPanel
+public class GraphPanel<E> extends JPanel implements ActionListener, MouseMotionListener, MouseListener, MouseWheelListener
 	{
 	private static final long serialVersionUID = 1L;
 
-	private Graph<MyNode> graph;
-	private SpringGraphLayout<MyNode> layout;
-	private NodeRenderer<MyNode> renderer;
+	//private Graph<MyNode> graph;
+	private GraphLayout<E> layout;
+	private GraphRenderer<E> renderer;
+
+	private Timer timer=new Timer(5, this);
+	
+	private Vector2d cam=new Vector2d(-100,-50);
+	private double zoom=1;
+	
+	public GraphPanel(GraphRenderer<E> renderer, GraphLayout<E> layout)
+		{
+		this.renderer=renderer;
+		this.layout=layout;
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		addMouseWheelListener(this);
+		}
+	
+	public void start()
+		{
+		timer.setRepeats(false);
+		timer.start();
+		}
 	
 	protected void paintComponent(Graphics g)
 		{
@@ -26,78 +56,89 @@ public class GraphPanel extends JPanel
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		
+		renderer.paintComponent(g, cam, zoom);
 		
-		for(MyNode n:graph.nodes)
-			renderer.paintComponent(g, n);
-			
-		}
-	
-	/**
-	 * do GraphRenderer instead. 
-	 * separate from JPanel.
-	 * postscript output somehow.
-	 * 
-	 * graphrenderer, some system to allow feedback
-	 * 
-	 * 
-	 * @author Johan Henriksson
-	 */
-	public interface NodeRenderer<E>
-		{
-		public double getX(E e);
-		public double getY(E e);
-		
-		public void paintComponent(Graphics g, E e);
-		
-		//and size
-		}
-	
-	
-	/**
-	 * 
-	 * @author Johan Henriksson
-	 */
-	public static class MyNode
-		{
-		String name;
-		}
-		
-	
-	
-	
-	
-	public static void main(String[] args)
-		{
-		JFrame f=new JFrame();
-		GraphPanel p=new GraphPanel();
-		
-		SpringGraphLayout<MyNode> layout=new SpringGraphLayout<MyNode>(){
-		public double calcForce(MyNode from, MyNode to, double distance)
-			{
-			return (distance-50)*5;
-			}
-		};
-		
-		Graph<MyNode> graph=new Graph<MyNode>();
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
-		graph.nodes.add(new MyNode());
+		timer.restart();
 
-		
-		
-		
-		
-		
-		p.layout=layout;
-		p.renderer=layout;
-		
-		
-		f.add(p);
-		f.setSize(400,300);
-		f.setVisible(true);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+//		for(MyNode n:graph.nodes)
+//			renderer.paintComponent(g, n, cam);
+			
+//		System.out.println("repaint "+System.currentTimeMillis());
+		}
+	
+	
+	
+	
+	
+	public void actionPerformed(ActionEvent e)
+		{
+		if(e.getSource()==timer)
+			{
+			layout.updatePositions();
+			repaint();
+			}
+		}
+	
+	
+	
+	
+	public int mouseLastX, mouseLastY;
+	
+	public void mouseDragged(MouseEvent e)
+		{
+		//Pan
+		if(SwingUtilities.isRightMouseButton(e))
+			{
+			cam.x-=(e.getX()-mouseLastX)/zoom;
+			cam.y-=(e.getY()-mouseLastY)/zoom;
+			mouseLastX=e.getX();
+			mouseLastY=e.getY();
+			repaint();
+			}
 		
 		}
+
+	public void mouseMoved(MouseEvent e)
+		{
+		}
+	
+	
+	
+
+	public void mouseClicked(MouseEvent e)
+		{
+		}
+
+	public void mouseEntered(MouseEvent e)
+		{
+		}
+
+	public void mouseExited(MouseEvent e)
+		{
+		}
+
+	public void mousePressed(MouseEvent e)
+		{
+		System.out.println("here");
+		mouseLastX=e.getX();
+		mouseLastY=e.getY();
+		}
+
+	public void mouseReleased(MouseEvent e)
+		{
+		}
+
+	public void mouseWheelMoved(MouseWheelEvent e)
+		{
+		zoom*=Math.exp(0.3*e.getWheelRotation());
+		repaint();
+		}
+	
+	
+	
+	
+	
+	
+	
+
 	}
