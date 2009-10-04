@@ -2,6 +2,7 @@ package endrov.imagesetOST;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.ref.SoftReference;
 import java.util.*;
 
 import org.jdom.*;
@@ -91,7 +92,7 @@ public class EvIODataOST implements EvIOData
 
 		public EvPixels loadJavaImage()
 			{
-			//This overloading is important during the save stage
+			//This overloading is important during the save stage.
 			//with some recoding it would be possible to remove it
 			if(oldio!=null)
 				return oldio.loadJavaImage();
@@ -104,11 +105,6 @@ public class EvIODataOST implements EvIOData
 					return new EvPixels(im);
 				}
 			}
-		
-		/*public File outputFile(EvIODataOST ost, Imageset im, String channelName, EvDecimal frame, EvDecimal slice, String ext)
-			{
-			return ost.buildImagePath(im, channelName, frame, slice, ext);
-			}*/
 		
 		public String toString()
 			{
@@ -151,10 +147,6 @@ public class EvIODataOST implements EvIOData
 				return null;
 			}
 
-		/*public void allocate(EvPath keyName)
-			{
-			allocate(keyName.getLeafName());
-			}*/
 		/**
 		 * Reserve a name for this blob
 		 */
@@ -282,17 +274,6 @@ public class EvIODataOST implements EvIOData
 		return null;
 		}
 
-	/**
-	 * Acceptable path, but not the right location
-	 */
-	/*
-	private File fileShouldBeOld(EvChannel ch, EvDecimal frame, EvDecimal z)
-		{
-		if(ch.compression==100)
-			return buildImagePath33(ch, frame,z,".png");
-		else
-			return buildImagePath33(ch, frame,z,".jpg"); //TODO jpeg2000 support
-		}*/
 
 	/**
 	 * What should the filename be, given the compression?
@@ -303,12 +284,6 @@ public class EvIODataOST implements EvIOData
 		//TODO don't like the (int), can it all be done with evdecimal?
 		String zs="b"+EV.pad(d, 8);
 		
-		/*
-		if(ch.compression==100)
-			return buildImagePath33(ch, frame,z,".png");
-		else
-			return buildImagePath33(ch, frame,z,".jpg"); //TODO jpeg2000 support
-		*/
 		if(ch.compression==100)
 			return buildImagePath33(ch, frame,zs,".png");
 		else
@@ -583,7 +558,6 @@ public class EvIODataOST implements EvIOData
 					{
 					//Even an overwrite is equivalent to optional read, then delete.
 					//This is important if one slice is for example copied and the original modified.
-	
 					SliceIO io=(SliceIO)evim.io;
 
 					//Have all images dependent on this file read it into memory
@@ -596,14 +570,15 @@ public class EvIODataOST implements EvIOData
 						for(EvImage ci:needToRead)
 							{
 							ci.setMemoryImage(ci.getPixels());
-							if(EV.debugMode)
-								System.out.println("reading image. need write soon "+ci);
+//							if(EV.debugMode)
+							System.out.println("reading image. need write soon "+ci+" (for "+io.f+")");
 							toWrite.addFirst(ci);
 							}
 						}
 
 
-					//Create parent directory. To avoid excessive file tree I/O, cache which ones have already been created
+					//Create parent directory. 
+					//To avoid excessive file tree I/O, cache which ones have already been created
 					File parentFile=io.f.getParentFile();
 					if(!existingDirs.contains(parentFile))
 						{
@@ -614,12 +589,16 @@ public class EvIODataOST implements EvIOData
 					
 					//Write image to disk
 					BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
-					if(EV.debugMode)
-						System.out.println("write "+io.f);
+					//if(EV.debugMode)
+					System.out.println("write "+io.f);
 					EvCommonImageIO.saveImage(bim, io.f, imCompression.get(evim));
 					
-					//Mark this image as done
-					evim.isDirty=false;
+					
+					
+					//Mark image as on disk, safe to unload
+					evim.ioIsNowOnDisk();
+//					evim.isDirty=false;
+	//				private SoftReference<EvPixels> cachedPixels=new SoftReference<EvPixels>(null);
 					
 					//Do not delete this image. Just in case some other operation got a strange idea
 					toDelete.remove(io.f);
