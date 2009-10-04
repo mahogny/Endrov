@@ -174,7 +174,7 @@ public class NewRenderHTML
 					)
 			.replace("STRAIN", strainName)
 			.replace("OSTURL", ""+f);
-			String recStringXYZims="<td><a href=\"IMGURLxyz\"><img src=\"IMGURLxyz\" width=\"300\" border=\"0\"/></a></td>";
+			String recStringXYZims="<td><a href=\"IMGURLxyz\"><img src=\"IMGURLxyz\" border=\"0\"/></a></td>";
 
 			////////////////// File 1 /////////////////
 			
@@ -213,10 +213,10 @@ public class NewRenderHTML
 			if(fXYZ.exists())
 				{
 				fXYZ=copyForSummary(f, htmlOutdir, fXYZ);
-				recStringXYZtitle=recStringXYZtitle.replace("IMGURLxyz", fXYZ.getName());
+				recStringXYZims=recStringXYZims.replace("IMGURLxyz", fXYZ.getName());
 				}
 			else
-				recStringXYZtitle=recStringXYZtitle.replace("IMGURLxyz", "");
+				recStringXYZims=recStringXYZims.replace("IMGURLxyz", "");
 
 			sbXYZtitles.append(recStringXYZtitle);
 			sbXYZims.append(recStringXYZims);

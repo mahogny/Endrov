@@ -21,9 +21,11 @@ import javax.vecmath.Vector2d;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
+import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.flow.*;
 import endrov.util.EvSwingUtil;
@@ -142,8 +144,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void setUnitToPlace(FlowUnit u)
 		{
+		System.out.println("here, "+enabled);
 		if(enabled)
 			placingUnit=u;
+//		else
+//			BasicWindow.showErrorDialog("Create a new flow object first");
 		}
 	
 	
