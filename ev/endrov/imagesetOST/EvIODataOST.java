@@ -589,11 +589,7 @@ public class EvIODataOST implements EvIOData
 					
 					//Write image to disk
 					BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
-					//if(EV.debugMode)
-					System.out.println("write "+io.f);
 					EvCommonImageIO.saveImage(bim, io.f, imCompression.get(evim));
-					
-					
 					
 					//Mark image as on disk, safe to unload
 					evim.ioIsNowOnDisk();

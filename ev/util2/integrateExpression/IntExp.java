@@ -56,41 +56,11 @@ public class IntExp
 	public Imageset imset;
 	
 	
-	
-	
-/*
-	public static void main2(String arg[])
-		{
-		EvLog.listeners.add(new EvLogStdout());
-		EV.loadPlugins();
-
-		EvParallel.map_(Arrays.asList(new File("/Volumes2/TBU_main01/ost4dgood")
-				.listFiles()), new EvParallel.FuncAB<File, Object>()
-			{
-				public Object func(File f)
-					{
-					if (f.getName().endsWith(".ost"))
-						{
-						EvData data = EvData.loadFile(f);
-						if (!data.getObjects(Imageset.class).isEmpty())
-							doOne(f);
-						}
-					return null;
-					}
-			});
-
-		System.exit(0);
-		}*/
-
 	public static void main(String arg[])
 		{
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 
-		//doOne(new File("/home/tbudev3/TB2141_070621_b.ost"));
-		// doOne(new File("/Volumes2/TBU_main01/ost4dgood/TB2141_070621_b.ost/"));
-//		doOne(new File("/Volumes/TBU_main03/daemon/output/TB2111_090123.ost"));
-		
 		if(arg.length>0)
 			{
 			doOne(new File(arg[0]));
@@ -212,15 +182,12 @@ public class IntExp
 			NucLineage lin = null;
 			Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
 			for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
-				// if(!e.getKey().getLeafName().equals(newLinNameT) &&
-				// !e.getKey().getLeafName().equals(newLinNameAP))
 				if (!e.getKey().getLeafName().startsWith("AP"))
 					{
 					System.out.println("found lineage "+e.getKey());
 					lin = e.getValue();
 					System.out.println(lin);
 					}
-			// lin=null;
 
 			//Decide on integrators
 			LinkedList<Integrator> ints = new LinkedList<Integrator>();
@@ -234,20 +201,14 @@ public class IntExp
 			IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
 			ints.add(intAP);
 			ints.add(intT);
-
 			
 			//XYZ cube level expression
 			IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
 					numSubDiv, intAP.bg);
-			if(true)
-				{
-				if (lin!=null && intXYZ.setupCS(lin))
-					ints.add(intXYZ);
-				else
-					intXYZ = null;
-				}
+			if (lin!=null && intXYZ.setupCS(lin))
+				ints.add(intXYZ);
 			else
-				intXYZ=null; //TODO temp
+				intXYZ = null;
 			
 			//Cell level expression if there is a lineage 
 			IntegratorCellClosest intC = null;
@@ -256,8 +217,6 @@ public class IntExp
 				intC = new IntegratorCellClosest(integrator, lin, intAP.bg);
 				ints.add(intC);
 				}
-
-			// TODO check which lin to use, add to list if one exists
 
 			// Run integrators
 			integrator.doProfile(ints);
@@ -301,12 +260,11 @@ public class IntExp
 		return "AP"+numSubDiv+"-"+channelName;
 		}
 
+	
 	public static File fileForAP(EvData data, int numSubDiv, String channelName)
 		{
-		// TODO: later, use blobs or similar?
 		File datadir = data.io.datadir();
-		// return new File(datadir,"AP"+numSubDiv+"-"+channelName);
-		return new File(datadir, "AP"+numSubDiv+"-"+channelName+"c"); // TODO temp
+		return new File(datadir, "AP"+numSubDiv+"-"+channelName+"c");
 		}
 
 	
@@ -337,14 +295,6 @@ public class IntExp
 
 		if(ch==null)
 			throw new RuntimeException("No such channel "+channelName);
-		
-		/*
-		 * //Test: write image EvChannel ch=imset.getCreateChannel("XYZ"); EvImage
-		 * evim=ch.createImageLoader(imset.getChannel("GFP").imageLoader.firstKey(),
-		 * new EvDecimal("0")); EvPixels p=new EvPixels(EvPixelsType.TYPE_INT,10,10);
-		 * evim.setPixelsReference(p); data.saveData(); System.exit(0);
-		 */
-
 		}
 
 	/**
@@ -366,8 +316,6 @@ public class IntExp
 		EvDecimal firstframe = ch.imageLoader.firstKey();
 		EvDecimal lastFrame = ch.imageLoader.lastKey();
 		for (EvDecimal frame : ch.imageLoader.keySet())
-		// if(frame.less(new EvDecimal("30000")) && frame.greater(new
-		// EvDecimal("29000")))
 			{
 			this.frame = frame;
 
@@ -389,7 +337,6 @@ public class IntExp
 			stack=ch.imageLoader.get(frame);
 			EvImage[] imArr=stack.getImages();
 			for(int az=0;az<imArr.length;az++)
-			//for (Map.Entry<EvDecimal, EvImage> eim : stack.entrySet())
 				{
 				curZ = new EvDecimal(stack.transformImageWorldZ(az));//eim.getKey();
 				// Load images lazily (for AP not really needed)
