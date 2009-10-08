@@ -2,7 +2,6 @@ package endrov.imagesetOST;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.ref.SoftReference;
 import java.util.*;
 
 import org.jdom.*;

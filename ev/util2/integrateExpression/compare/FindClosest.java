@@ -1,27 +1,17 @@
 package util2.integrateExpression.compare;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JFrame;
-
-import util2.integrateExpression.ExpUtil;
 import util2.integrateExpression.FindAnnotatedStrains;
 
 
 import endrov.flowColocalization.ColocCoefficients;
-import endrov.springGraph.Graph;
-import endrov.springGraph.GraphPanel;
-import endrov.springGraph.SimpleGraphRenderer;
-import endrov.springGraph.SpringGraphLayout;
 import endrov.util.Tuple;
 
 public class FindClosest

@@ -1,6 +1,5 @@
 package util2.integrateExpression.compare;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -40,7 +39,6 @@ import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
-import endrov.util.EvMathUtil;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
 
