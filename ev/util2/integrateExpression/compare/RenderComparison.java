@@ -3,7 +3,6 @@ package util2.integrateExpression.compare;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 

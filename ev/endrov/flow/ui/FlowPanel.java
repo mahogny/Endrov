@@ -21,11 +21,9 @@ import javax.vecmath.Vector2d;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
-import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.flow.*;
 import endrov.util.EvSwingUtil;

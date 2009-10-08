@@ -1,7 +1,6 @@
 package endrov.flowImageStats;
 
 import endrov.flow.EvOpSlice1;
-import endrov.flowBasic.CumSumArea;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 
