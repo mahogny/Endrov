@@ -67,7 +67,7 @@ public class EvSound
 			catch(Exception e)
 				{
 				e.printStackTrace();
-				System.out.println("Failed to load sound clip "+e.getMessage());
+				System.out.println("Failed to load sound clip (but ignoring) "+e.getMessage());
 				}
 			}
 		}
