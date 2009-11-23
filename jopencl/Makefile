@@ -1,6 +1,8 @@
 all:
+	#gcc -g --std=c99 -c wrapper.c -I/usr/lib/jvm/java-6-openjdk/include/ -I ./include -I ~/NVIDIA_GPU_Computing_SDK/OpenCL/common/inc/
 	gcc -g --std=c99 -c wrapper.c -I/usr/lib/jvm/java-6-openjdk/include/ -I ./include -I ~/NVIDIA_GPU_Computing_SDK/OpenCL/common/inc/
-	ld -G wrapper.o -L /home/mahogny/NVIDIA_GPU_Computing_SDK/OpenCL/common/lib/Linux32/ -lOpenCL -o libjopencl.so
+	#ld -G wrapper.o -L /home/mahogny/NVIDIA_GPU_Computing_SDK/OpenCL/common/lib/Linux32/ -lOpenCL -o libjopencl.so
+	ld -G wrapper.o -L ~/NVIDIA_GPU_Computing_SDK/OpenCL/common/lib/Linux32/ -lOpenCL -o libjopencl.so
 
 #	ld -G wrapper.o  -o libjopencl.so
 #-lOpenCL
