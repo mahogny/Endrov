@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
@@ -198,7 +199,8 @@ public class CompareAll
 	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB, String chanNameA, String chanNameB)
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
-		Imageset imsetB = dataA.getObjects(Imageset.class).get(0);
+		//Imageset imsetB = dataA.getObjects(Imageset.class).get(0);
+		Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
 		
 		FrameTime ftA=buildFrametime(coordLinA);
 		FrameTime ftB=buildFrametime(coordLinB);
@@ -238,7 +240,7 @@ public class CompareAll
 			EvDecimal frameA=ftA.interpolateFrame(new EvDecimal(time));
 			EvDecimal frameB=ftB.interpolateFrame(new EvDecimal(time));
 			
-			//If outside range, stop calculating
+			//If outside range, do not bother with this time point
 			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.firstKey()) ||
 					frameB.less(chanB.imageLoader.firstKey()) || frameB.greater(chanB.imageLoader.firstKey()))
 				{
@@ -282,7 +284,8 @@ public class CompareAll
 	 * @param blues
 	 * @return
 	 */
-	int fire(byte[] reds, byte[] greens, byte[] blues) 
+	/*
+	private int fire(byte[] reds, byte[] greens, byte[] blues) 
 		{
 		int[] r = {0,0,1,25,49,73,98,122,146,162,173,184,195,207,217,229,240,252,255,255,255,255,255,255,255,255,255,255,255,255,255,255};
 		int[] g = {0,0,0,0,0,0,0,0,0,0,0,0,0,14,35,57,79,101,117,133,147,161,175,190,205,219,234,248,255,255,255,255};
@@ -295,6 +298,7 @@ public class CompareAll
 			}
 		return r.length;
 		}
+	*/
 	
 
 	
@@ -468,6 +472,18 @@ public class CompareAll
 		return out;
 		}
 	
+	/**
+	 * Calculate the colocalization given two processed AP images
+	 */
+	public static ColocCoefficients colocAP(double[][] imA, double[][] imB)
+		{
+		ColocCoefficients coeff=new ColocCoefficients();
+		for(int i=0;i<imA.length;i++)
+			if(imA[i]!=null && imB[i]!=null)
+				coeff.add(imA[i], imB[i]);
+		return coeff;
+		}
+	
 	public static void main(String[] args)
 		{
 		EvLog.listeners.add(new EvLogStdout());
@@ -482,16 +498,15 @@ public class CompareAll
 		System.out.println(datas);
 
 		//Read past calculated values from disk 
-		Map<Tuple<File,File>, ColocCoefficients> comparisonT=new HashMap<Tuple<File,File>, ColocCoefficients>();
-		Map<Tuple<File,File>, ColocCoefficients> comparisonAP=new HashMap<Tuple<File,File>, ColocCoefficients>();
-		Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ=new HashMap<Tuple<File,File>, ColocCoefficients>();
+		Map<Tuple<File,File>, ColocCoefficients> comparisonT=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+		Map<Tuple<File,File>, ColocCoefficients> comparisonAP=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+		Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ=new TreeMap<Tuple<File,File>, ColocCoefficients>();
 		if(!argsSet.contains("nocache"))
 			{
 			comparisonT=loadCache(datas, cachedValuesFileT);
 			comparisonAP=loadCache(datas, cachedValuesFileAP);
 			comparisonXYZ=loadCache(datas, cachedValuesFileXYZ);
 			}
-		//Map<Tuple<File,File>, ColocCoefficients> comparison=new HashMap<Tuple<File,File>, ColocCoefficients>();
 		
 		//Do pairwise. For user simplicity, can do symmetric and reflexive
 		//Each slice, different bg.
@@ -508,8 +523,7 @@ public class CompareAll
 						{
 						System.out.println("todo: "+key);
 	
-						boolean calculated=ensureCalculated(fa);
-						calculated&=ensureCalculated(fb);
+						boolean calculated=ensureCalculated(fa) && ensureCalculated(fb);
 	
 						System.out.println("-----calculated: "+calculated);
 						if(calculated)
@@ -517,22 +531,14 @@ public class CompareAll
 							EvData dataA=EvData.loadFile(fa);
 							EvData dataB=EvData.loadFile(fb);
 							
-							
-							String chanNameA;
 							Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
-							if(imsetA.getChild("GFP")!=null)
-								chanNameA="GFP";
-							else
-								chanNameA="RFP";
-
-							String chanNameB;
 							Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
-							if(imsetB.getChild("GFP")!=null)
-								chanNameB="GFP";
-							else
-								chanNameB="RFP";
 							
-							//Check if XYZ summary generated. Only have to check the first image
+							String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
+							String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
+							
+							//Check if XYZ summary generated. This should not be repeated as it is expensive! 
+							//Only have to check the first image
 							try
 								{
 								File outputFileXYZimageA=new File(new File(key.fst(),"data"),"expXYZ.png");
@@ -549,21 +555,18 @@ public class CompareAll
 							String expName="exp";
 							
 							//Slices: T
-							ColocCoefficients coeffT=new ColocCoefficients();
-							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
-							for(int i=0;i<imtA.length;i++)
-								if(imtA[i]!=null && imtB[i]!=null)
-									coeffT.add(imtA[i], imtB[i]);
-							comparisonT.put(Tuple.make(fa,fb), coeffT);
-
-							//File graphFileDir=new File("/home/tbudev3");
-							
-							
 							try
 								{
+								double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
+								double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
+								ColocCoefficients coeffT=colocAP(imtA, imtB);
+								comparisonT.put(Tuple.make(fa,fb), coeffT);
+								
 								NewRenderHTML.toTimage(imtA, fa, ""+fa.getName());
 								NewRenderHTML.toTimage(imtB, fb, ""+fb.getName());
+								
+								System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
+								System.out.println("pearsonT "+ coeffT.getPearson());
 								}
 							catch (IOException e)
 								{
@@ -571,27 +574,22 @@ public class CompareAll
 								}
 							
 							//Slices: AP
-							ColocCoefficients coeffAP=new ColocCoefficients();
-							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							for(int i=0;i<imtA.length;i++)
-								if(imapA[i]!=null && imapB[i]!=null)
-									coeffAP.add(imapA[i], imapB[i]);
-							comparisonAP.put(Tuple.make(fa,fb), coeffAP);
-
-
 							try
 								{
+								double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+								double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+								ColocCoefficients coeffAP=colocAP(imapA, imapB);
+								comparisonAP.put(Tuple.make(fa,fb), coeffAP);
+
 								NewRenderHTML.toAPimage(imapA, fa, ""+fa.getName());
 								NewRenderHTML.toAPimage(imapB, fb, ""+fb.getName());
+								
+								System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
 								}
 							catch (IOException e)
 								{
 								e.printStackTrace();
 								}
-							
-							//System.exit(1);
-
 							
 							//Slices: XYZ
 							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), chanNameA, chanNameB);
@@ -601,11 +599,6 @@ public class CompareAll
 							storeCache(comparisonT, cachedValuesFileT);
 							storeCache(comparisonAP, cachedValuesFileAP);
 							storeCache(comparisonXYZ, cachedValuesFileXYZ);
-
-							//Temp
-							System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
-							System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
-							System.out.println("pearsonT "+ coeffT.getPearson());
 							}
 
 						}

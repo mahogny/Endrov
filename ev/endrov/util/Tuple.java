@@ -8,7 +8,7 @@ import java.io.Serializable;
  * This code was taken from a forum post and modified. It is the only possible technical
  * implementation and hence not copyrightable.
  */
-public class Tuple<L, R> implements Serializable
+public class Tuple<L, R> implements Serializable, Comparable<Tuple<L,R>>
 	{
 	public static final long serialVersionUID=0;
 	private final L fst;
@@ -69,5 +69,18 @@ public class Tuple<L, R> implements Serializable
 	public String toString()
 		{
 		return "("+fst+","+snd+")";
+		}
+
+	@SuppressWarnings("unchecked")
+	public int compareTo(Tuple<L, R> o)
+		{
+		Comparable<L> nfst=(Comparable<L>)fst;
+		int ret=nfst.compareTo(o.fst);
+		if(ret==0)
+			{
+			Comparable<R> nsnd=(Comparable<R>)snd;
+			return nsnd.compareTo(o.snd);
+			}
+		return ret;
 		}
 	}
