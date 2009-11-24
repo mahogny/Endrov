@@ -58,6 +58,7 @@ public class ColocCoefficients
 		}
 
 	
+	
 	/**
 	 * Variance of X
 	 */
@@ -138,11 +139,15 @@ public class ColocCoefficients
 		ColocCoefficients c=new ColocCoefficients();
 		
 		c.add(
-				new double[]{1,1,1,1,1,1,1,1,2}, 
-				new double[]{2,2,2,2,2,2,2,2,4});
+				new double[]{1,1,1,1,1,1,1,1,1,1,1,20}, 
+				new double[]{2,2,2,2,2,2,2,2,2,2,2,21});
 		
+		System.out.println("variance X: "+c.getVarX());
+		System.out.println("variance Y: "+c.getVarY());
+		System.out.println("covariance: "+c.getCovXY());
 		System.out.println("Pearson: "+c.getPearson());
 		
+		System.out.println(c.sumX+"  "+c.sumXX+"  "+c.sumXY+"   "+c.n);
 		
 		}
 
