@@ -23,6 +23,7 @@ public class ColocCoefficients
 	{
 
 	public double sumX, sumXX, sumY, sumYY, sumXY;
+	public double sumXminusY2;
 	public double sumXcoloc, sumYcoloc;
 	public int n;
 	
@@ -42,6 +43,8 @@ public class ColocCoefficients
 			sumXX+=x*x;
 			sumXY+=x*y;
 			sumYY+=y*y;
+			double dx=x-y;
+			sumXminusY2+=dx*dx;
 			
 			if(!isBackground(y))
 				sumXcoloc+=x;
@@ -161,6 +164,7 @@ public class ColocCoefficients
 		e.setAttribute("sumYY", ""+sumYY);
 		e.setAttribute("sumXcoloc", ""+sumXcoloc);
 		e.setAttribute("sumYcoloc", ""+sumYcoloc);
+		e.setAttribute("sumXminusY2", ""+sumXminusY2);
 		e.setAttribute("n", ""+n);
 		}
 	
@@ -173,6 +177,7 @@ public class ColocCoefficients
 		sumYY=e.getAttribute("sumYY").getDoubleValue();
 		sumXcoloc=e.getAttribute("sumXcoloc").getDoubleValue();
 		sumYcoloc=e.getAttribute("sumYcoloc").getDoubleValue();
+		sumXminusY2=e.getAttribute("sumXminusY2").getDoubleValue();
 		n=e.getAttribute("n").getIntValue();
 		}
 	
