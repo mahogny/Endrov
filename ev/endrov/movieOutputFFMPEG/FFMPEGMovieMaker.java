@@ -54,7 +54,10 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 		output.delete();
 		System.out.println("Output to "+output);
 		//System.out.println(""+tempFile);
-		runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png",output.toString());
+		
+		//ffv1 is FFMPEGs lossless format
+		
+		runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","ffv1",output.toString());
 		// ffmpeg -i %08d.png out.mpg
 		// ffmpeg -i %08d.png out.avi
 		

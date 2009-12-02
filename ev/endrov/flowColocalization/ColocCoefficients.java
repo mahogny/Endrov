@@ -135,6 +135,11 @@ public class ColocCoefficients
 		return sumYcoloc/sumY;
 		}
 	
+	public double getL2()
+		{
+		return sumXminusY2/n;
+		}
+	
 	
 	
 	public static void main(String[] args)
