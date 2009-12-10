@@ -68,7 +68,7 @@ public class PLUGIN extends PluginDef
 
 				//Logic
 				FlowUnitAnd.class,FlowUnitOr.class,FlowUnitXor.class,FlowUnitNot.class,
-				FlowUnitGreaterThan.class,
+				FlowUnitGreaterThan.class,FlowUnitEquals.class,
 
 				/*
 				//Imserv
