@@ -1,7 +1,5 @@
 package endrov.frivolous;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
@@ -48,15 +46,24 @@ public class Frivolous extends DeviceProvider implements Device {
 		}
 
 		public SortedMap<String, String> getPropertyMap() {
-			return new TreeMap<String, String>();
+			TreeMap<String, String> p = new TreeMap<String, String>();
+			p.put("Numerical Aperture", ""+model.getSettings().na);
+			return p;
 		}
 
 		public SortedMap<String, PropertyType> getPropertyTypes() {
-			return new TreeMap<String, PropertyType>();
+			TreeMap<String, PropertyType> pt = new TreeMap<String, PropertyType>();
+			PropertyType p = new PropertyType();
+			p.rangeUpper = 0.95;
+			p.rangeLower = 0.25;
+			p.hasRange = true;
+			pt.put("Numerical Aperture", p);
+			return pt;
 		}
 
 		public String getPropertyValue(String prop) {
-			return null;
+			if (prop.equals("Numerical Aperture")) return ""+model.getSettings().na;
+			return getPropertyMap().get(prop);
 		}
 
 		public Boolean getPropertyValueBoolean(String prop) {
@@ -67,6 +74,8 @@ public class Frivolous extends DeviceProvider implements Device {
 		}
 
 		public void setPropertyValue(String prop, String value) {
+			if (prop.equals("Numerical Aperture")) model.getSettings().na = Double.parseDouble(value);
+			System.out.println(prop+" "+value);
 		}
 
 		public double getResMagX() {
@@ -85,24 +94,9 @@ public class Frivolous extends DeviceProvider implements Device {
 		}
 
 		public CameraImage snap() {
-			
-			
-			
-			/*BufferedImage im=new BufferedImage(320,200,BufferedImage.TYPE_BYTE_GRAY);
-			Graphics g=im.getGraphics();
-			
-			g.setColor(Color.WHITE);
-//			g.drawString(""+stagePos[0], 30, 30);
-*/
-			int r=(int)stagePos[2];
-			/*
-			
+
 			int r=(int)stagePos[2];
 
-			g.translate((int)stagePos[0], (int)stagePos[1]);
-			*/
-			
-			//g.fillOval(100-r, 100-r, 2*r, 2*r);
 			model.convolve();
 			BufferedImage im = model.getImage();
 			CameraImage cim=new CameraImage();
@@ -111,7 +105,6 @@ public class Frivolous extends DeviceProvider implements Device {
 			cim.h=im.getHeight();
 
 			cim.pixels=im;
-			System.out.println("Oh, snap...");
 			return cim;
 		}
 	}
@@ -135,6 +128,8 @@ public class Frivolous extends DeviceProvider implements Device {
 			{
 			for(int i=0;i<3;i++)
 				stagePos[i]=axis[i];
+			model.getSettings().offsetZ = stagePos[2];
+			model.updatePSF();
 			}
 		public void goHome()
 			{

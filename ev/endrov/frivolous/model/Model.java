@@ -51,5 +51,8 @@ public class Model {
 	public Settings_new getSettings(){
 		return cell.getSettings();
 	}
+	public void updatePSF(){
+		cell.updatePSF();
+	}
 	
 }
