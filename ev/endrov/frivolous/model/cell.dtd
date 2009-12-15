@@ -1,0 +1,34 @@
+<!ELEMENT cell (settings, slice+)>
+<!ELEMENT settings (psf, poisson_additive, poisson_distributed)>
+<!ELEMENT psf (lambda, index_refr, pixel_spacing, slice_spacing, numerical_aperture, spherical_abberation)>
+<!ATTLIST psf 
+	active CDATA #REQUIRED>
+
+<!ELEMENT lambda (#CDATA)>
+<!ELEMENT index_refr (#CDATA)>
+<!ELEMENT pixel_spacing (#CDATA)>
+<!ELEMENT slice_spacing (#CDATA)>
+<!ELEMENT numerical_aperture (#CDATA)>
+<!ELEMENT spherical_abberation (#CDATA)>
+
+<!ELEMENT poisson_additive (#CDATA)>
+<!ELEMENT poisson_distributed (#CDATA)>
+
+<!ELEMENT slice (fluorophore+)>
+<!ELEMENT fluorophore (spectra?, layer+)
+<!ATTLIST
+	name CDATA #REQIRED>
+	
+<!ELEMENT spectra (excitation, emitation)>
+<!ELEMENT excitation (#CDATA)>
+<!ELEMENT emitation (#CDATA)>
+
+<!ELEMENT staticlayer (image)>
+<!ELEMENT mobilelayer (image, stencil, speed)>
+<!ELEMENT image EMPTY>
+<!ATTLIST image
+	src CDATA #REQUIRED>
+<!ELEMENT stencil EMPTY>
+<!ATTLIST stencil
+	src CDATA #REQUIRED>
+<!ELEMENT speed (#CDATA)>

@@ -19,7 +19,7 @@ import org.xml.sax.InputSource;
 public class EvXmlUtil
 	{
 
-	public static Document readXML(File filename) throws Exception
+	public static Document readXML(File filename) throws IOException, JDOMException
 		{
 //		FileInputStream fileInputStream = new FileInputStream(filename);
 		SAXBuilder saxBuilder = new SAXBuilder();
