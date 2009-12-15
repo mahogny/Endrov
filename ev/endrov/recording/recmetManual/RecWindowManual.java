@@ -340,8 +340,30 @@ public class RecWindowManual extends BasicWindow
 						}
 					else if (pt.hasRange)
 						{
-						comp = new JNumericField(0.0);
+						JNumericField b=new JNumericField(Double.parseDouble(hw.getPropertyValue(propName)));
+						comp = b;
 						// Override: Exposure, Gain
+						
+						b.addActionListener(new ActionListener()
+						{
+							public void actionPerformed(ActionEvent e)
+								{
+								String value = ((JNumericField) e.getSource()).getText();
+								double d;
+								try{
+									d = Double.parseDouble(value);
+								} catch(NumberFormatException ex) {
+									((JNumericField) e.getSource()).setText(hw.getPropertyValue(propName));
+									return;}
+								if(pt.rangeLower<=d && pt.rangeUpper >=d)
+									hw.setPropertyValue(propName, value);
+								else { 
+									((JNumericField) e.getSource()).setText(hw.getPropertyValue(propName));
+									return;}
+								}
+						});
+						
+						
 						}
 					if (comp!=null)
 						addComp(entry.getKey(), comp);
