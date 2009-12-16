@@ -48,21 +48,35 @@ public class Frivolous extends DeviceProvider implements Device {
 		public SortedMap<String, String> getPropertyMap() {
 			TreeMap<String, String> p = new TreeMap<String, String>();
 			p.put("Numerical Aperture", ""+model.getSettings().na);
+			p.put("Wavelength", ""+model.getSettings().lambda);
 			return p;
 		}
 
 		public SortedMap<String, PropertyType> getPropertyTypes() {
 			TreeMap<String, PropertyType> pt = new TreeMap<String, PropertyType>();
-			PropertyType p = new PropertyType();
+			PropertyType p;
+			
+			// NA
+			p = new PropertyType();
 			p.rangeUpper = 0.95;
 			p.rangeLower = 0.25;
 			p.hasRange = true;
 			pt.put("Numerical Aperture", p);
+			
+			// wavelength
+			p = new PropertyType();
+			p.rangeUpper = 800;
+			p.rangeLower = 300;
+			p.hasRange = true;
+			pt.put("Wavelength", p);
 			return pt;
 		}
 
 		public String getPropertyValue(String prop) {
-			if (prop.equals("Numerical Aperture")) return ""+model.getSettings().na;
+			if (prop.equals("Numerical Aperture"))
+				return ""+model.getSettings().na;
+			else if (prop.equals("Wavelength"))
+				return ""+model.getSettings().lambda;
 			return getPropertyMap().get(prop);
 		}
 
@@ -74,7 +88,10 @@ public class Frivolous extends DeviceProvider implements Device {
 		}
 
 		public void setPropertyValue(String prop, String value) {
-			if (prop.equals("Numerical Aperture")) model.getSettings().na = Double.parseDouble(value);
+			if (prop.equals("Numerical Aperture"))
+				model.getSettings().na = Double.parseDouble(value);
+			else if (prop.equals("Wavelength"))
+				model.getSettings().lambda = Double.parseDouble(value);
 			System.out.println(prop+" "+value);
 		}
 
