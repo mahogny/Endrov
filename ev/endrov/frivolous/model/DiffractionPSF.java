@@ -38,9 +38,9 @@ Version 2	May 6, 2005.  Added spherical aberration.
 
 package endrov.frivolous.model;
 
-public class DiffractionPSF {
+public class DiffractionPSF extends PSF{
 	// Constants for Bessel function approximation.
-	private static double[] t = new double[] { 
+	private static final double[] t = new double[] { 
 		 1,
 		-2.2499997,
 		 1.2656208,
@@ -48,7 +48,7 @@ public class DiffractionPSF {
 		 0.0444479,
 		-0.0039444,
 		 0.0002100 };
-	private static double[] p = new double[] {
+	private static final double[] p = new double[] {
 		-0.78539816,
 		-0.04166397,
 		-0.00003954,
@@ -56,7 +56,7 @@ public class DiffractionPSF {
 		-0.00054125,
 		-0.00029333,
 		 0.00013558 };
-	private static double[] f = new double[] {
+	private static final double[] f = new double[] {
 		 0.79788456,
 		-0.00000077,
 		-0.00552740,
@@ -65,7 +65,7 @@ public class DiffractionPSF {
 		-0.00072805,
 		 0.00014476 };
 
-	public static float[] createPSF(Settings_new settings) {
+	public float[] createPSF(Settings_new settings) {
 
 		double lambda = settings.lambda;
 		double indexRefr = settings.indexRefr;
@@ -167,7 +167,7 @@ public class DiffractionPSF {
 		return pixels;
 	}
 
-	static float interp(float[] y, float x) {
+	private float interp(float[] y, float x) {
 		int i = (int) x;
 		float fract = x - i;
 		return (1 - fract) * y[i] + fract * y[i + 1];
@@ -176,7 +176,7 @@ public class DiffractionPSF {
 	// Bessel function J0(x). Uses the polynomial approximations on p. 369-70 of
 	// Abramowitz & Stegun
 	// The error in J0 is supposed to be less than or equal to 5 x 10^-8.
-	static double J0(double xIn) {
+	private double J0(double xIn) {
 		double x = xIn;
 		if (x < 0)
 			x *= -1;
@@ -207,30 +207,5 @@ public class DiffractionPSF {
 			r = Math.sqrt(1 / x) * f0 * Math.cos(theta0);
 		}
 		return r;
-	}
-
-	static void shiftQuadrants(int w, int h, float[] x) {
-		// TODO: göra en bättre shiftning!
-		int k1P, k2P;
-		float temp;
-		int wHalf = w / 2;
-		int hHalf = h / 2;
-
-		for (int k2 = 0; k2 < hHalf; k2++) {
-			k2P = k2 + hHalf;
-			for (int k1 = 0; k1 < w; k1++) {
-				temp = x[k1 + w * k2];
-				x[k1 + w * k2] = x[k1 + w * k2P];
-				x[k1 + w * k2P] = temp;
-			}
-		}
-		for (int k1 = 0; k1 < wHalf; k1++) {
-			k1P = k1 + wHalf;
-			for (int k2 = 0; k2 < h; k2++) {
-				temp = x[k1 + w * k2];
-				x[k1 + w * k2] = x[k1P + w * k2];
-				x[k1P + w * k2] = temp;
-			}
-		}
 	}
 }
