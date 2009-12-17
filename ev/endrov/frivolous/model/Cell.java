@@ -22,6 +22,7 @@ class Cell {
 	private Settings_new settings;
 	private int w, h;
 	Fourier fft;
+	PSF psf;
 	
 	public Cell(String path){
 		w = 512;
@@ -99,6 +100,7 @@ class Cell {
 		}
 
 		fft = new Fourier(w, h);
+		psf = new DiffractionPSF();
 		updatePSF();
 		for(i=0; i<diffusers.length;i++){
 			(new Thread(diffusers[i])).start();
@@ -119,7 +121,7 @@ class Cell {
 	}
 	
 	public void updatePSF(){
-		ComplexArray psf_array = new ComplexArray(DiffractionPSF.createPSF(settings), null, w, h);
+		ComplexArray psf_array = new ComplexArray(psf.createPSF(settings), null, w, h);
 		psf_fft = fft.forward(psf_array, true);
 	}
 	
