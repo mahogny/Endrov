@@ -22,9 +22,9 @@ public class EvOpThresholdMaxEntropy2D extends Threshold2D
 		super(mode);
 		}
 	
-	public double getThreshold(EvPixels in)
+	public double[] getThreshold(EvPixels in)
 		{
-		return findThresholdMaxEntropy(in);
+		return new double[]{findThresholdMaxEntropy(in)};
 		}
 	public static double findThresholdMaxEntropy(EvPixels in)
 		{

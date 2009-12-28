@@ -33,6 +33,7 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				FlowUnitThresholdMaxEntropy2D.class,
 				FlowUnitThresholdOtsu2D.class,
+				FlowUnitThresholdFukunaga2D.class,
 				FlowUnitThresholdPercentile2D.class,
 				};
 		}

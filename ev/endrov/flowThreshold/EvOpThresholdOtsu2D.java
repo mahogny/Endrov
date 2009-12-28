@@ -24,9 +24,9 @@ public class EvOpThresholdOtsu2D extends Threshold2D
 		super(mode);
 		}
 
-	protected double getThreshold(EvPixels in)
+	protected double[] getThreshold(EvPixels in)
 		{
-		return EvOpThresholdOtsu2D.findOtsuThreshold(in);
+		return new double[]{EvOpThresholdOtsu2D.findOtsuThreshold(in)};
 		}
 	
 	public static double findOtsuThreshold(EvPixels in)
