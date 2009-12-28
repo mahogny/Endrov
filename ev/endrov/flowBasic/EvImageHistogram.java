@@ -50,11 +50,11 @@ public class EvImageHistogram
 	public static Map<Integer,Integer> intHistogram(EvPixels in)
 		{
 		in=in.getReadOnly(EvPixelsType.INT);
-			int[] inPixels=in.getArrayInt();
-			Map<Integer,Integer> hist=new HashMap<Integer, Integer>(); 
-			for(int p:inPixels)
-				inc(hist,(Integer)p);
-			return hist;
+		int[] inPixels=in.getArrayInt();
+		Map<Integer,Integer> hist=new HashMap<Integer, Integer>(); 
+		for(int p:inPixels)
+			inc(hist,(Integer)p);
+		return hist;
 		}
 	
 	

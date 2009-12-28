@@ -33,7 +33,9 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				FlowUnitAverageZ.class,
 				FlowUnitProjectMaxZ.class,
-				FlowUnitProjectSumZ.class
+				FlowUnitProjectSumZ.class,
+				
+				FlowUnitExtendedFocusVariance.class
 				};
 		}
 	

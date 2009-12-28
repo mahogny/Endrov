@@ -45,7 +45,6 @@ public class Main
 				zip=new File(args[0]);
 			
 			
-			File outDeb=new File(zip.getParentFile(),zip.getName().replace(".zip", ".deb"));
 			
 			File dPkg=new File("/tmp/endrov");
 			File dUsr=new File(dPkg,"usr");
@@ -217,6 +216,12 @@ libjboss-webservices-java
 			EvFileUtil.writeFile(new File(dControl,"control"), controlFile);
 			
 			System.out.println("Debianizing");
+			
+			String datepart=zip.getName().substring(2,8);
+//			File outDeb=new File(zip.getParentFile(),zip.getName().replace(".zip", ".deb"));
+			File outDeb=new File(zip.getParentFile(),"endrov-"+version+"-"+datepart+".deb");
+
+			
 			if(outDeb.exists())
 				outDeb.delete();
 			runUntilQuit(new String[]{"/usr/bin/dpkg-deb","-b","/tmp/endrov"});
