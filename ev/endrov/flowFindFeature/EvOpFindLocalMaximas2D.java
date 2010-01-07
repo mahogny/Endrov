@@ -22,12 +22,18 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 
 	//Could also generate this as a new channel. less efficient but good to see what is happening
 	//or - some simple way of superimposing the pixels on a channel
+
+	private boolean alsoDiagonals;
 	
+	public EvOpFindLocalMaximas2D(boolean alsoDiagonals)
+		{
+		this.alsoDiagonals=alsoDiagonals;
+		}
 	
 	/**
 	 * Find local maximas
 	 */
-	public static List<Vector3i> findMaximas(EvPixels p, int z)
+	public static List<Vector3i> findMaximas(EvPixels p, int z, boolean alsoDiagonals)
 		{
 		LinkedList<Vector3i> list=new LinkedList<Vector3i>();
 
@@ -99,6 +105,15 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 									(vy>0   && isHigher(eqVal, inarr, thisValue, w, h, vx, vy-1, vz)) ||
 									(vy<h-1 && isHigher(eqVal, inarr, thisValue, w, h, vx, vy+1, vz)))
 								foundHigher=true;
+							
+							
+							if(alsoDiagonals)
+								if(
+										(vx>0   && vy>0   && isHigher(eqVal, inarr, thisValue, w, h, vx-1, vy-1, vz)) ||
+										(vx<w-1 && vy<h-1 && isHigher(eqVal, inarr, thisValue, w, h, vx+1, vy+1, vz)) ||
+										(vy>0   && vy<h-1 && isHigher(eqVal, inarr, thisValue, w, h, vx-1, vy+1, vz)) ||
+										(vy<h-1 && vy>0   && isHigher(eqVal, inarr, thisValue, w, h, vx+1, vy-1, vz)))
+									foundHigher=true;
 							}
 						if(!foundHigher)
 							{
@@ -149,13 +164,13 @@ public class EvOpFindLocalMaximas2D extends EvOpSlice1
 		return apply(p[0]);
 		}
 	
-	public static EvPixels apply(EvPixels p)
+	public EvPixels apply(EvPixels p)
 		{
 		EvPixels pout=new EvPixels(EvPixelsType.INT,p.getWidth(),p.getHeight());
 		int[] arr=pout.getArrayInt();
 		int w=p.getWidth();
 		
-		for(Vector3i v:findMaximas(p, 0))
+		for(Vector3i v:findMaximas(p, 0, alsoDiagonals))
 			arr[v.y*w+v.x]=1;
 		
 		return pout;

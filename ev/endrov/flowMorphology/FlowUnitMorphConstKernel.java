@@ -172,7 +172,14 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 			{
 			int numX=extent[0]+extent[1]+1;
 			int numY=extent[2]+extent[3]+1;
+			System.out.println("min size "+new Dimension(numX*gsize+1,numY*gsize+1));
 			return new Dimension(numX*gsize+1,numY*gsize+1);
+			}
+		
+		@Override
+		public Dimension getPreferredSize()
+			{
+			return getMinimumSize();
 			}
 		
 		private int getOffsetX()
@@ -318,12 +325,19 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 		private void newExtent()
 			{
 			removeOutside();
+			
 
 			//TODO
 			
-//			revalidate();
+			//getParent().remove(this);
+			//getParent().add(this);
+			
+			System.out.println("new extent!!!");
+			setSize(getMinimumSize());
 			invalidate();
-			repaint();
+			revalidate();
+			((FlowPanel)getParent()).doFlowSwingLayout();
+			getParent().repaint();
 			}
 		
 

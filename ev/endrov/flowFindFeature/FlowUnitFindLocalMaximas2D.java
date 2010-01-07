@@ -44,6 +44,7 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
+		types.put("alsoDiagonals", FlowType.TBOOLEAN);
 		}
 	
 	/** Get types of flows out */
@@ -59,7 +60,9 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 
-		lastOutput.put("out", new EvOpFindLocalMaximas2D().exec1Untyped(a));
+		Boolean b=(Boolean)flow.getInputValue(this, exec, "alsoDiagonals");
+		
+		lastOutput.put("out", new EvOpFindLocalMaximas2D(b).exec1Untyped(a));
 		}
 
 	
