@@ -153,7 +153,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	/**
 	 * Call whenever component is panned, an object is added or removed
 	 */
-	private void doFlowSwingLayout()
+	public void doFlowSwingLayout()
 		{
 		if(flow!=null)
 			{
@@ -411,8 +411,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(flow!=null)
 			{
 			Tuple<Vector2d, FlowConn> hoverSegment=getHoverSegment();
-
-			
 			
 			//Update current position of the unit to be placed
 			if(placingUnit!=null)
@@ -437,7 +435,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 
 			int mx=e.getX()+camera.x;
 			int my=e.getY()+camera.y;
-			Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=findHoverConnPoint(mx, my);
+			Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=getHoverConnPoint(mx, my);
 
 			
 			if(tt!=null)
@@ -479,6 +477,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void mouseClicked(MouseEvent e)
 		{
+		JPopupMenu popup = new JPopupMenu();
 		Vector2i camera=getCamera();
 		final int mx=e.getX()+camera.x;
 		final int my=e.getY()+camera.y;
@@ -531,7 +530,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						}
 					else if(SwingUtilities.isRightMouseButton(e))
 						{
-						JPopupMenu popup = new JPopupMenu();
 						
 						JMenuItem itEval=new JMenuItem("Evaluate");
 						itEval.addActionListener(new ActionListener(){
@@ -568,7 +566,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						
 						popup.add(itEval);
 						popup.add(itRemove);
-						popup.show(this,e.getX(),e.getY());
 						hitAnything=true;
 						}
 					}
@@ -577,10 +574,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			
 			if(!hitAnything && SwingUtilities.isRightMouseButton(e))
 				{
-				JPopupMenu popup = new JPopupMenu();
-				
 				////// Right-click on connection point
-				final Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=findHoverConnPoint(mx, my);
+				final Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=getHoverConnPoint(mx, my);
 				if(tt!=null)
 					{
 					final Tuple<FlowUnit,String> t=tt.fst();
@@ -675,12 +670,37 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 					popup.add(itRemove);
 					}
 
-				if(popup.getComponentCount()>0)
-					popup.show(this,e.getX(),e.getY());
 				
 				}
 			}
+
 		
+		//Show popup menu if it contains anything interesting
+		//if(popup.getComponentCount()!=0)
+		if(SwingUtilities.isRightMouseButton(e))
+			{
+			JMenuItem itCopy=new JMenuItem("Copy");
+			itCopy.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e)
+					{
+					copy();
+					repaint();
+					}
+			});
+			JMenuItem itPaste=new JMenuItem("Paste");
+			itPaste.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e)
+					{
+					System.out.println("paste");
+					paste();
+					repaint();
+					}
+			});
+			popup.add(itCopy);
+			popup.add(itPaste);
+			
+			popup.show(this,e.getX(),e.getY());
+			}
 		}
 
 
@@ -712,7 +732,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			//Find connection point
 			if(!found && SwingUtilities.isLeftMouseButton(e))
 				{
-				Tuple<Tuple<FlowUnit,String>,ConnPoint>	t=findHoverConnPoint(mx, my);
+				Tuple<Tuple<FlowUnit,String>,ConnPoint>	t=getHoverConnPoint(mx, my);
 				if(t!=null)
 					{
 					drawingConn=new DrawingConn();
@@ -768,7 +788,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			{
 			int mx=e.getX()+camera.x;
 			int my=e.getY()+camera.y;
-			Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=findHoverConnPoint(mx, my);
+			Tuple<Tuple<FlowUnit,String>,ConnPoint> tt=getHoverConnPoint(mx, my);
 			Tuple<FlowUnit,String> v=drawingConn.t;
 			
 			if(tt!=null)
@@ -968,17 +988,29 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	/**
 	 * Find connection point near given coordinate
 	 */
-	private Tuple<Tuple<FlowUnit,String>,ConnPoint> findHoverConnPoint(int mx, int my)
+	private Tuple<Tuple<FlowUnit,String>,ConnPoint> getHoverConnPoint(int mx, int my)
 		{
 		int sq=connPointSnapDistance*connPointSnapDistance;
+		Double minSq=null;
+		Tuple<FlowUnit, String> minTup=null;
+		ConnPoint minPoint=null;
+		
 		for(Map.Entry<Tuple<FlowUnit, String>, ConnPoint> entry:connPoint.entrySet())
 			{
 			Vector2d diff=new Vector2d(mx,my);
 			diff.sub(entry.getValue().pos);
-			if(diff.lengthSquared()<sq)
-				return Tuple.make(entry.getKey(),entry.getValue());
+			double thisSq=diff.lengthSquared();
+			if(minSq==null || thisSq<minSq)
+				{
+				minTup=entry.getKey();
+				minPoint=entry.getValue();
+				minSq=thisSq;
+				}
 			}
-		return null;
+		if(minSq!=null && minSq<sq)
+			return Tuple.make(minTup,minPoint);
+		else
+			return null;
 		}
 	
 
@@ -1081,8 +1113,16 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		Vector2d closestProj=null;
 		int mx=mouseLastX+camera.x;
 		int my=mouseLastY+camera.y;
-		for(ConnLineSegment seg:connSegments)
+		/*skipSegment: */for(ConnLineSegment seg:connSegments)
 			{
+			//Skip those connections already occupied
+			/*
+			if(notConnectedIncoming)
+				for(FlowConn otherConn:flow.conns)
+					if(otherConn.toUnit==seg.c.toUnit && 
+							otherConn.toArg==seg.c.toArg)
+						continue skipSegment;*/
+			
 			Tuple<Vector2d,Integer> hit=seg.hitLine(mx, my);
 			if(hit!=null && (closestDist==null || hit.snd()<closestDist))
 				{
