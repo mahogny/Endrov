@@ -25,12 +25,12 @@ public class CameraHistogramView extends JPanel
 	
 	private EvPixels currentImage;
 	private BufferedImage cachedImage=null; //cached image
-	
-	private int lastWidth=0;
 
 	private int height=50;
 	
-	
+	/**
+	 * Set pixels to calculate histogram from. #bits determines maximum range
+	 */
 	public void setImage(EvPixels p, int numBits)
 		{
 		cachedImage=null;
@@ -106,11 +106,8 @@ public class CameraHistogramView extends JPanel
 	protected void paintComponent(Graphics g)
 		{
 		//Recalculate histogram if component size changes
-		if(getWidth()!=lastWidth)
-			{
+		if(cachedImage!=null && getWidth()!=cachedImage.getWidth())
 			cachedImage=null;
-			lastWidth=getWidth();
-			}
 		if(cachedImage==null)
 			makeImage();
 		
