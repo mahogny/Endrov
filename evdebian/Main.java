@@ -110,7 +110,7 @@ public class Main
 			pkgs.add(new DebPackage("bsh",new String[]{"bsh.jar"},new String[]{"bsh-2.0b4.jar"}));
 			pkgs.add(new DebPackage("junit",new String[]{"junit.jar"},new String[]{"junit.jar"}));
 			pkgs.add(new DebPackage("libpg-java",new String[]{"postgresql.jar"},new String[]{"postgresql-8.2-505.jdbc3.jar"}));
-			pkgs.add(new DebPackage("libvecmath1.2-java",new String[]{"vecmath1.2.jar"},new String[]{"vecmath.jar"}));
+			//pkgs.add(new DebPackage("libvecmath1.2-java",new String[]{"vecmath1.2.jar"},new String[]{"vecmath.jar"}));
 			pkgs.add(new DebPackage("micromanager",new String[]{},new String[]{"umanager_inc"})); //rely on inc-file to add jar files
 			pkgs.add(new DebPackage("libbcel-java",new String[]{"bcel.jar"},new String[]{"bcel-5.2.jar"}));
 			pkgs.add(new DebPackage("libservlet2.3-java",new String[]{"servlet-2.3.jar"},new String[]{"servlet.jar"})); //2.4 also exists

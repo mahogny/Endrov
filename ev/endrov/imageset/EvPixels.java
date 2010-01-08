@@ -298,7 +298,12 @@ public class EvPixels implements AnyEvImage
 		{
 		return convertTo(EvPixelsType.DOUBLE, readOnly);
 		}
-	
+
+	public EvPixels convertToInt(boolean readOnly)
+		{
+		return convertTo(EvPixelsType.INT, readOnly);
+		}
+
 	/**
 	 * Get pixels in valid format. For performance the data will not be copied and converted unless needed. Use bit operations to put together valid types. 
 	 */

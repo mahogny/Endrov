@@ -564,6 +564,8 @@ public abstract class BasicWindow extends JPanel
 					EV.savePersonalConfig();
 				else if (e.getSource()==miOpenConfig)
 					EV.openExternal(EV.getGlobalConfigEndrovDir());
+				else if (e.getSource()==miReportBug)
+					BrowserControl.displayURL("http://sourceforge.net/tracker/?group_id=199554&atid=969958");
 				}
 		};
 
@@ -578,6 +580,7 @@ public abstract class BasicWindow extends JPanel
 	private JMenuItem miSavePluginList = new JMenuItem("Save plugin list");
 	private JMenuItem miToggleSplash = new JMenuItem("Toggle splash screen");
 	private JMenuItem miOpenConfig = new JMenuItem("Open config directory");
+	private JMenuItem miReportBug = new JMenuItem("Report bug");
 
 	private JMenuItem miQuit = new JMenuItem("Exit", BasicIcon.iconMenuQuit);
 
@@ -665,6 +668,7 @@ public abstract class BasicWindow extends JPanel
 		mHelp.add(miWebHome);
 		mHelp.add(miWebUser);
 		mHelp.add(miWebPlugins);
+		mHelp.add(miReportBug);
 		mHelp.add(miSysInfo);
 
 		menubar.add(Box.createHorizontalGlue());
@@ -682,6 +686,7 @@ public abstract class BasicWindow extends JPanel
 		miWebHome.addActionListener(listener);
 		miWebUser.addActionListener(listener);
 		miWebPlugins.addActionListener(listener);
+		miReportBug.addActionListener(listener);
 		miSysInfo.addActionListener(listener);
 		miSaveConfig.addActionListener(listener);
 		}

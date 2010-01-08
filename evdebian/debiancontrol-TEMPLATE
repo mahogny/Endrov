@@ -6,7 +6,7 @@ Architecture: all
 Essential: no
 Recommends: RECOMMENDS
 Depends: DEPENDENCIES
-Suggests: SUGGESTS
+#Suggests: SUGGESTS
 Installed-Size: SIZE
 Maintainer: Johan Henriksson [mahogny@areta.org]
 Description: Image processing and analysis tool.
