@@ -45,8 +45,8 @@ public class BrowserControl
 					//Fallback
 				
 					// cmd = 'netscape -remote openURL(http://www.javaworld.com)'
-					String cmd=UNIX_PATH + " " + UNIX_FLAG +" "+ url;
-					System.out.println(cmd);
+					String cmd=UNIX_PATH + " " + UNIX_FLAG +" -- "+ url;
+					System.out.println("Running command:" + cmd);
 					Process p = Runtime.getRuntime().exec(cmd);
 					try
 						{
