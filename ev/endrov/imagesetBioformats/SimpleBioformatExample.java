@@ -48,21 +48,21 @@ public class SimpleBioformatExample
 
 		imageReader.setSeries(seriesIndex);
 		int numz=imageReader.getSizeZ();
-		int numt=imageReader.getSizeT();
-		int numc=imageReader.getSizeC();
+		/*int numt=imageReader.getSizeT();
+		int numc=imageReader.getSizeC();*/
 
 		//It *must* be 0,0
-		Float fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
-		Float fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
-		Float fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
+		Double fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
+		Double fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
+		Double fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
 
 		//Enlist images
 		int channelnum=0;
 		int framenum=0;
 
-		if(fdx==null || fdx==0) fdx=1.0f;
-		if(fdy==null || fdy==0) fdy=1.0f;
-		if(fdz==null || fdz==0) fdz=1.0f;
+		if(fdx==null || fdx==0) fdx=1.0;
+		if(fdy==null || fdy==0) fdy=1.0;
+		if(fdz==null || fdz==0) fdz=1.0;
 		
 		stack=new double[numz][][];
 

@@ -37,8 +37,11 @@ public class ConvertToOST
 					{
 					System.out.println("Converting: "+file);
 					EvData data=EvData.loadFile(file);
-					File newFile=new File(file.getParent(),file.getName()+".ost");
-					data.saveDataAs(newFile);
+					if(data!=null)
+						{
+						File newFile=new File(file.getParent(),file.getName()+".ost");
+						data.saveDataAs(newFile);
+						}
 					}
 				}
 			}
@@ -46,6 +49,7 @@ public class ConvertToOST
 			{
 			e.printStackTrace();
 			}
+		System.exit(0);
 		}
 
 	}

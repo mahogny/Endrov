@@ -97,11 +97,7 @@ public class EvIODataOST implements EvIOData
 				return oldio.loadJavaImage();
 			else
 				{
-				BufferedImage im=EvCommonImageIO.loadJavaImage(f, null);
-				if(im==null)
-					return null;
-				else
-					return new EvPixels(im);
+				return EvCommonImageIO.loadJavaImage(f, null);
 				}
 			}
 		
@@ -586,9 +582,12 @@ public class EvIODataOST implements EvIOData
 						}
 
 					
-					//Write image to disk
-					BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
-					EvCommonImageIO.saveImage(bim, io.f, imCompression.get(evim));
+					//Write image to disk. It might turn out in the last minute that the file format
+					//does not work because of non-8 bits; then change
+					File fToWrite=io.f;
+					
+					//BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
+					fToWrite=EvCommonImageIO.saveImage(evim.getPixels(), io.f, imCompression.get(evim));
 					
 					//Mark image as on disk, safe to unload
 					evim.ioIsNowOnDisk();
@@ -597,6 +596,8 @@ public class EvIODataOST implements EvIOData
 					
 					//Do not delete this image. Just in case some other operation got a strange idea
 					toDelete.remove(io.f);
+					
+					io.f=fToWrite;
 					}
 				}
 						

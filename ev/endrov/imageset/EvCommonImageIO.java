@@ -11,8 +11,13 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.stream.FileImageOutputStream;
 
 import loci.formats.FormatException;
+import loci.formats.IFormatWriter;
 import loci.formats.ImageReader;
 import loci.formats.ImageWriter;
+import loci.formats.enums.PixelType;
+import loci.formats.meta.DummyMetadata;
+import loci.formats.meta.IMetadata;
+import loci.formats.ome.OMEXML200809Metadata;
 
 import endrov.ev.EvLog;
 import endrov.util.EvFileUtil;
@@ -27,15 +32,15 @@ public class EvCommonImageIO
 	//TODO: 16-bit support
 	public static EvPixels loadPixels(File file, Integer z)
 		{
-		BufferedImage im=loadJavaImage(file, z);
-		return im==null ? null : new EvPixels(im);
+		return loadJavaImage(file, z);
+		//return im==null ? null : new EvPixels(im);
 		}
 
 	
 	/**
 	 * Load image file
 	 */
-	public static BufferedImage loadJavaImage(File file, Integer z)
+	public static EvPixels loadJavaImage(File file, Integer z)
 		{
 		try
 			{
@@ -49,7 +54,10 @@ public class EvCommonImageIO
 					try
 						{
 						bim = ImageIO.read(file);
-						return bim;
+						if(bim==null)
+							return null;
+						else
+							return new EvPixels(bim);
 						}
 					catch (Exception e)
 						{
@@ -65,9 +73,10 @@ public class EvCommonImageIO
 			reader.setId(file.getAbsolutePath());
 
 			int id=z==null?0:z;
-			BufferedImage bim=new BioformatsSliceIO(reader,id,0,"").loadJavaImage().quickReadOnlyAWT();
+			//BufferedImage bim=new BioformatsSliceIO(reader,id,0,"").loadJavaImage().quickReadOnlyAWT();
+			return new BioformatsSliceIO(reader,id,0,"").loadJavaImage();
 			//BufferedImage bim=reader.openImage(id);
-			return bim;
+			//return bim;
 			}
 		catch (FormatException e)
 			{
@@ -80,6 +89,73 @@ public class EvCommonImageIO
 		return null;
 		}
 	
+	
+	private static File getTiffFile(File file)
+		{
+		String fend=EvFileUtil.fileEnding(file);
+		String fname=file.getName();
+		fname=fname.substring(0,fname.length()-fend.length())+"tiff";
+		return new File(file.getParentFile(),fname);
+		}
+	
+	
+	/**
+	 * Check if the image can be stored in an 8-bit file
+	 */
+	private static boolean fitsIn8bit(EvPixels p)
+		{
+		/*if(p.getType()==EvPixelsType.AWT)
+			return true;
+		if(!p.getType().isIntegral())
+			return false;*/
+		
+		p=p.convertToInt(true);
+		int[] arrayI=p.getArrayInt();
+
+		//TODO this can be made more efficient
+
+		//p=p.convertToShort(true);
+		//short[] arrayI=p.getArrayShort();
+		
+		for(int d:arrayI)
+			if(d>255 || d<0)
+				return false;
+		
+		return true;
+		}
+	
+	/**
+	 * Save image to disk
+	 * @return The actual filename used
+	 */
+	public static File saveImage(EvPixels p, File file, int compression)
+		{
+		if(p.getType()==EvPixelsType.AWT)
+			saveImage(p.quickReadOnlyAWT(), file, compression);
+		else if(p.getType().isIntegral())    
+			{
+			//Integers
+			if(fitsIn8bit(p))
+				saveImage(p.quickReadOnlyAWT(), file, compression);
+			else
+				{
+				file=getTiffFile(file);
+				BioformatsSliceIO.saveImageAsTiff(p, file);
+				}
+			}
+		else 
+			{
+			//Floats
+			p=p.convertToFloat(true);
+			file=getTiffFile(file);
+			BioformatsSliceIO.saveImageAsTiff(p, file);
+			}
+		return file;
+		}
+
+	/**
+	 * Save image to disk; it is an AWT image so gray-scale 8-bit
+	 */
 	public static void saveImage(BufferedImage im, File file, int compression)
 		{
 		try
@@ -118,7 +194,8 @@ public class EvCommonImageIO
 			for(String s:compTypes)
 				System.out.println(s);
 			writer.setCompression(arg0)*/
-			writer.saveImage(im, true);
+//			writer.saveImage(im, true);
+			System.out.println("Image could not be saved, no JAI!");
 			}
 		catch (IOException e)
 			{
@@ -131,10 +208,12 @@ public class EvCommonImageIO
 		}
 	
 	
+	/*
 	public static void main(String[] arg)
 		{
 		BufferedImage bim=new BufferedImage(10,10,BufferedImage.TYPE_3BYTE_BGR);
 		saveImage(bim, new File("foo.jp2"),100);
 		}
+		*/
 	
 	}
