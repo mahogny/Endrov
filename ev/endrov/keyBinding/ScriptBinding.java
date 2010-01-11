@@ -9,6 +9,11 @@ import org.jdom.Element;
 import endrov.ev.*;
 import endrov.script2.*;
 
+/**
+ * A key bound to execute a script in the console
+ * @author Johan Henriksson
+ *
+ */
 public class ScriptBinding
 	{
 	public static Vector<ScriptBinding> list=new Vector<ScriptBinding>(); 

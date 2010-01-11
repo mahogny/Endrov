@@ -21,6 +21,7 @@ import javax.vecmath.Vector2d;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
@@ -36,7 +37,7 @@ import endrov.util.Vector2i;
  * @author Johan Henriksson
  *
  */
-public class FlowPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener//, KeyListener
+public class FlowPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 	{
 	static final long serialVersionUID=0;
 
@@ -85,9 +86,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addMouseWheelListener(this);
-		setEnabled(true);
-		setFocusable(true);
-/*		addKeyListener(this);*/
+		
 		setLayout(null);
 		ToolTipManager.sharedInstance().registerComponent(this);
 		}
@@ -516,7 +515,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						{
 						if(!selectedUnits.contains(u))
 							{
-							selectedUnits.clear();
+							if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)==0)
+								selectedUnits.clear();
 							selectedUnits.add(u);
 							repaint();
 							}
@@ -714,6 +714,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	public void mousePressed(MouseEvent e)
 		{
+		requestFocus(); //This is to make sure the keyboard works
+		
 		Vector2i camera=getCamera();
 		mouseLastDragX=e.getX();
 		mouseLastDragY=e.getY();
@@ -774,7 +776,8 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		movingUnits.clear();
 		if(selectRect!=null && SwingUtilities.isLeftMouseButton(e))
 			{
-			selectedUnits.clear();
+			if((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)==0)
+				selectedUnits.clear();
 			for(FlowUnit u:getFlow().units)
 				{
 				Point p=u.getMidPos(unitComponent.get(u),flow);
@@ -1252,4 +1255,95 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			return bounds;
 		}
 
+	
+	/**
+	 * Delete currently selected units
+	 */
+	public void delete()
+		{
+		getFlow().removeUnits(selectedUnits);
+		repaint();
+		}
+	
+	/**
+	 * Swap two units
+	 */
+	public void swap()
+		{
+		if(selectedUnits.size()==2)
+			{
+			Iterator<FlowUnit> it=selectedUnits.iterator();
+			FlowUnit a=it.next();
+			FlowUnit b=it.next();
+			
+			for(FlowConn conn:flow.conns)
+				if((conn.fromUnit==a && conn.toUnit==b) || (conn.fromUnit==b && conn.toUnit==a))
+					{
+					//Build new connection
+					String newFromArg=swapFindArgument(conn.toUnit.getTypesOut(flow), conn.fromArg);
+					String newToArg=swapFindArgument(conn.fromUnit.getTypesIn(flow), conn.toArg);
+					FlowConn newConn=new FlowConn(conn.toUnit,newFromArg,conn.fromUnit,newToArg);
+					flow.conns.remove(conn);
+
+					//Move incoming to point to (to)
+					for(FlowConn extConn:flow.conns)
+						if(extConn.toUnit==newConn.toUnit)
+							{
+							String toArg=swapFindArgument(newConn.fromUnit.getTypesIn(flow), extConn.toArg);
+							FlowConn n=new FlowConn(extConn.fromUnit,extConn.fromArg, 
+									newConn.fromUnit, toArg);
+							flow.conns.remove(extConn);
+							flow.conns.add(n);
+							break;
+							}
+
+					//Move outgoing to point from (from)
+					for(FlowConn extConn:flow.conns)
+						if(extConn.fromUnit==newConn.fromUnit)
+							{
+							String fromArg=swapFindArgument(newConn.toUnit.getTypesOut(flow), extConn.fromArg);
+							FlowConn n=new FlowConn(newConn.toUnit, fromArg, 
+									extConn.toUnit, extConn.toArg);
+							flow.conns.remove(extConn);
+							flow.conns.add(n);
+							break;
+							}
+					
+					//Add new intermediate connection (to) -> (from)
+					flow.conns.add(newConn);
+					
+					//Swap positions
+					int tempX=b.x;
+					int tempY=b.y;
+					b.x=a.x;
+					b.y=a.y;
+					a.x=tempX;
+					a.y=tempY;
+					break;
+					}
+			
+			
+			repaint();
+			}
+		else
+			BasicWindow.showErrorDialog("Must have exactly two units selected");
+		}
+	
+	/**
+	 * Helper: find the best argument to link new connection to
+	 * 
+	 * TODO use type information
+	 * TODO do not use occupied inputs/outputs
+	 * 
+	 */
+	private String swapFindArgument(Map<String,FlowType> m, String lastArgName)
+		{
+		if(m.containsKey(lastArgName))
+			return lastArgName;
+		else
+			return m.keySet().iterator().next();
+		}
+	
+	
+	
 	}

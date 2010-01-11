@@ -25,7 +25,7 @@ public class BasicKeyBinding implements BasicWindowExtension
 		
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Key Bindings",BasicIcon.iconKeyboard);
+			JMenuItem mi=new JMenuItem("Key bindings",BasicIcon.iconKeyboard);
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			

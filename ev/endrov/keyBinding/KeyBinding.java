@@ -159,7 +159,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 		public boolean held(KeyEvent e, JInputManager.EvJinputStatus je);
 		
 		public void writeXML(Element e);
-		public String keyDesc();
+		public String getKeyDesc();
 		public float getAxis(JInputManager.EvJinputStatus status);
 		}
 	
@@ -184,7 +184,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 			ne.setAttribute("char",""+key);
 			e.addContent(ne);
 			}
-		public String keyDesc()
+		public String getKeyDesc()
 			{
 			return (""+key).toLowerCase();
 			}
@@ -224,8 +224,10 @@ public class KeyBinding implements Comparable<KeyBinding>
 			ne.setAttribute("modifier",""+modifierEx);
 			e.addContent(ne);
 			}
-		public String keyDesc()
+		public String getKeyDesc()
 			{
+			if(keyCode==0 && modifierEx==0)
+				return "<unassigned>";
 			String r=KeyEvent.getKeyModifiersText(modifierEx);
 			if(!r.equals(""))
 				r=r+"+";
@@ -272,7 +274,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 			ne.setAttribute("value",""+value);
 			e.addContent(ne);
 			}
-		public String keyDesc()
+		public String getKeyDesc()
 			{
 			return "JI:"+ident+"="+value;
 			}
@@ -380,12 +382,12 @@ public class KeyBinding implements Comparable<KeyBinding>
 	/**
 	 * Textual description of key
 	 */
-	public String keyDesc()
+	public String getKeyDesc()
 		{
 		if(types.isEmpty())
 			return "";
 		else
-			return types.get(0).keyDesc();
+			return types.get(0).getKeyDesc();
 		
 		//TODO: GUI need to handle several keys
 		

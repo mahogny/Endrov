@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
 
 import javax.swing.*;
@@ -39,7 +41,7 @@ import endrov.util.JImageToggleButton;
  * @author Johan Henriksson
  *
  */
-public class FlowWindow extends BasicWindow implements ActionListener
+public class FlowWindow extends BasicWindow implements ActionListener, KeyListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -54,6 +56,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 	private static ImageIcon iconAlignHoriz=new ImageIcon(FlowWindow.class.getResource("labelAlignHoriz.png"));
 	private static ImageIcon iconButtonPlayCont=new ImageIcon(FlowWindow.class.getResource("labelRepeat.png"));
 	
+	private static ImageIcon iconStdFlow=new ImageIcon(FlowWindow.class.getResource("standardFlowIcon.png"));
 
 	private static String pcWindowName="flowwindow";
 
@@ -119,6 +122,8 @@ public class FlowWindow extends BasicWindow implements ActionListener
 				FlowUnitDeclaration decl=(FlowUnitDeclaration)((DefaultMutableTreeNode)value).getUserObject();
 				if(decl.icon!=null)
 					setIcon(decl.icon);
+				else
+					setIcon(iconStdFlow);
 				setToolTipText(decl.description);
 				} 
 			else 
@@ -241,7 +246,7 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		JComponent toolbar=EvSwingUtil.layoutCompactHorizontal(bCopy,bPaste,bDelete,bSwap,bAlignRight,bAlignVert,bAlignHoriz,bPlayOnce,bRepeat);
 		JPanel pTop=new JPanel(new BorderLayout());
 		pTop.add(objectCombo,BorderLayout.CENTER);
-		pTop.add(toolbar,BorderLayout.WEST);
+		pTop.add(toolbar,BorderLayout.EAST);
 		
 		bCopy.addActionListener(this);
 		bPaste.addActionListener(this);
@@ -269,6 +274,12 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		add(pTop,BorderLayout.NORTH);
 		add(fp,BorderLayout.CENTER);
 		
+		addKeyListener(this);
+		setEnabled(true);
+		setFocusable(true);
+		fp.setFocusable(true);
+		fp.addKeyListener(this);
+		
 		//Window overall things
 		setTitleEvWindow("Flow");
 		packEvWindow();
@@ -288,10 +299,9 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		else if(e.getSource()==bAlignHoriz)
 			fp.alignHoriz(fp.selectedUnits);
 		else if(e.getSource()==bDelete)
-			{
-			fp.getFlow().removeUnits(fp.selectedUnits);
-			fp.repaint();
-			}
+			fp.delete();
+		else if(e.getSource()==bSwap)
+			fp.swap();
 		else if(e.getSource()==objectCombo)
 			loadData();
 		else if(e.getSource()==bCopy)
@@ -340,6 +350,36 @@ public class FlowWindow extends BasicWindow implements ActionListener
 		}
 
 	
-	
+
+	/**
+	 * Keyboard button pressed
+	 */
+	public void keyPressed(KeyEvent e)
+		{
+		}
+
+	/**
+	 * Keyboard button released
+	 */
+	public void keyReleased(KeyEvent e)
+		{
+		//TODO put in menu instead as accelerator
+		if(e.getKeyCode()==KeyEvent.VK_DELETE)
+			fp.delete();
+		/*
+		if(e.getKeyCode()==KeyEvent.VK_C && (e.getModifiersEx()&KeyEvent.META_DOWN_MASK)!=0)
+			{
+			System.out.println("copy ctrl+c");
+			fp.copy();
+			}*/
+		}
+
+	/**
+	 * Keyboard button typed
+	 */
+	public void keyTyped(KeyEvent e)
+		{
+		}
+
 	
 	}

@@ -42,7 +42,7 @@ public class HardwareConfigWindow extends BasicWindow
 			{
 			public void createMenus(BasicWindow w)
 				{
-				JMenuItem mi=new JMenuItem("Hardware Manager",new ImageIcon(getClass().getResource("gnomeHardwareCard.png")));
+				JMenuItem mi=new JMenuItem("Hardware manager",new ImageIcon(getClass().getResource("gnomeHardwareCard.png")));
 				mi.addActionListener(this);
 				w.addMenuWindow(mi);
 				}
