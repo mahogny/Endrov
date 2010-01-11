@@ -29,10 +29,10 @@ public class EvDataMenu implements BasicWindowExtension
 		{
 		private JMenu mData=new JMenu("Data");
 		private JMenuItem miNew=new JMenuItem("New");
-		private JMenu mRecent=new JMenu("Recent Files");
+		private JMenu mRecent=new JMenu("Recent files");
 
-		private JMenuItem miOpenFile=new JMenuItem("Load File");
-		private JMenuItem miOpenFilePath=new JMenuItem("Load File by Path");
+		private JMenuItem miOpenFile=new JMenuItem("Load file");
+		private JMenuItem miOpenFilePath=new JMenuItem("Load file by path");
 
 		//WeakReference<BasicWindow> w;
 		
@@ -275,7 +275,7 @@ public class EvDataMenu implements BasicWindowExtension
 			//Special entry: For all
 			if(!EvData.openedData.isEmpty())
 				{
-				JMenu menuMetadata=new JMenu("For All Data");
+				JMenu menuMetadata=new JMenu("For all data");
 				mData.add(menuMetadata);
 				mData.addSeparator();
 				

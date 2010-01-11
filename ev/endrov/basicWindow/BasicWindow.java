@@ -535,7 +535,7 @@ public abstract class BasicWindow extends JPanel
 					if (JOptionPane
 							.showConfirmDialog(
 									null,
-									"Do you really want to reset config? This requires a restart of EV.",
+									"Endrov will quit. Settings will be reset next time you start the program. Continue?",
 									"EV", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 						{
 						EV.resetPersonalConfig();
@@ -575,7 +575,7 @@ public abstract class BasicWindow extends JPanel
 	private JMenu menuWindows = new JMenu("Windows");
 	private JMenu menuBatch = new JMenu("Batch");
 	// private JMenu menuInfo=new JMenu("Info");
-	private JMenuItem miGC = new JMenuItem("Run GC");
+	private JMenuItem miGC = new JMenuItem("Run garbage collection");
 	private JMenuItem miResetPC = new JMenuItem("Reset personal config");
 	private JMenuItem miSavePluginList = new JMenuItem("Save plugin list");
 	private JMenuItem miToggleSplash = new JMenuItem("Toggle splash screen");
@@ -586,9 +586,9 @@ public abstract class BasicWindow extends JPanel
 
 	private JMenuItem miAbout = new JMenuItem("About");
 	private JMenuItem miWebHome = new JMenuItem(EV.programName+" Home");
-	private JMenuItem miWebUser = new JMenuItem("User Guide");
+	private JMenuItem miWebUser = new JMenuItem("User's guide");
 	private JMenuItem miWebPlugins = new JMenuItem("Plugins");
-	private JMenuItem miSysInfo = new JMenuItem("System Info");
+	private JMenuItem miSysInfo = new JMenuItem("System information");
 	private JMenuItem miSaveConfig = new JMenuItem("Save config now");
 
 	/**

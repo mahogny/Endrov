@@ -21,7 +21,7 @@ public class CustomBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Custom Data",new ImageIcon(getClass().getResource("iconWindow.png")));
+			JMenuItem mi=new JMenuItem("Custom data",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

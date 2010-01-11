@@ -4,24 +4,27 @@ import java.util.*;
 
 import endrov.flow.EvOpStack1;
 import endrov.flowBasic.math.EvOpImageMulScalar;
+import endrov.imageset.EvIOImage;
+import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.roi.primitive.BoxROI;
+import endrov.util.Memoize;
 import endrov.util.Vector3i;
 
 
 /**
- * Crop image to fit within 
+ * Crop image to fit within limits
  * 
  * @author Johan Henriksson
  *
  */
-public class EvOpCropImage extends EvOpStack1
+public class EvOpCropImage3D extends EvOpStack1
 	{
 	private BoxROI roi;
 	
-	public EvOpCropImage(BoxROI roi)
+	public EvOpCropImage3D(BoxROI roi)
 		{
 		this.roi=roi;
 		}
@@ -55,28 +58,37 @@ public class EvOpCropImage extends EvOpStack1
 	/**
 	 * Crop an entire stack. Takes pixels fromX <= x < toX etc. Limits must be within bounds.
 	 */
-	/*
-	public static EvStack crop(EvStack stack, int fromX, int toX, int fromY, int toY, int fromZ, int toZ)
+	public static EvStack crop(final EvStack stack,
+			final int fromX, final int toX, final int fromY, final int toY,	final int fromZ, final int toZ)
 		{
 		EvStack stackOut=new EvStack();
-		
-		stackOut.getMetaFrom(stack);
-		
-		
-		//TODO now need to change offset in the cut stack
-		
 
+		//Add offset
+		stackOut.getMetaFrom(stack);
+		stackOut.dispX+=fromX;
+		stackOut.dispY+=fromY;
+		stackOut.dispZ=stackOut.dispZ.add(stackOut.resZ.multiply(fromZ));
 		
+		//Crop images
+		for(int az=fromZ;az<toZ;az++)
+			{
+			EvImage newim=new EvImage();
+			final int inZ=az; 
+			final Memoize<EvPixels> m=new Memoize<EvPixels>(){
+				protected EvPixels eval()
+					{
+					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(stack.getInt(inZ).getPixels());
+					}
+				};
+			newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return m.get();}};
+			newim.registerLazyOp(m);
+			stackOut.putInt(az-fromZ, newim);
+			}
 		
-		
-		
-		
-		stack.
-		
-		
+		return stackOut;
 		}
 	
-	*/
+	
 	
 	/**
 	 * Crop one single 2D plane. Takes pixels fromX <= x < toX.
