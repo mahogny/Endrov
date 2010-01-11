@@ -105,9 +105,12 @@ public class EvIODataBioformats implements EvIOData
 		imageReader=new ImageReader();
 		retrieve=MetadataTools.createOMEXMLMetadata();
 		imageReader.setMetadataStore(retrieve);
-		imageReader.setId(basedir.getAbsolutePath());
-		imageReader=new ChannelSeparator(imageReader);
 		
+		System.out.println("bioformats set id "+basedir);
+		imageReader.setId(basedir.getAbsolutePath());
+		System.out.println("bioformats adding channel separator");
+		imageReader=new ChannelSeparator(imageReader);
+		System.out.println("bioformats building database");
 		buildDatabase(d);
 		}
 	
@@ -325,6 +328,8 @@ public class EvIODataBioformats implements EvIOData
 			imageReader.setSeries(seriesIndex);
 			//int imageIndex=imageReader.getSeries();
 			
+			System.out.println("bioformats looking at series "+seriesIndex);
+
 			String imageName=retrieve.getImageName(seriesIndex);
 			
 			
@@ -363,9 +368,9 @@ public class EvIODataBioformats implements EvIOData
 
 			
 			//It *must* be 0,0
-			Float fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
-			Float fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
-			Float fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
+			Double fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
+			Double fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
+			Double fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
 			//imageindex, pixelindex. is this the right place?
 			System.out.println("res "+fdx+" "+fdy+" "+fdz);
 
@@ -389,21 +394,21 @@ public class EvIODataBioformats implements EvIOData
 							imageReader.getIndex(0, 0, framenum) : imageReader.getIndex(0, channelnum, framenum);
 
 					EvDecimal frame=null;
-					Float deltaT=retrieve.getPlaneTimingDeltaT(seriesIndex,0,firstPixel);
+					Double deltaT=retrieve.getPlaneTimingDeltaT(seriesIndex,0,firstPixel);
 					if(deltaT!=null)
 						frame=new EvDecimal(deltaT);
 					if(frame!=null)
 						{
-						Float fdt=retrieve.getDimensionsTimeIncrement(0, 0);
+						Double fdt=retrieve.getDimensionsTimeIncrement(0, 0);
 						if(fdt!=null)
 							frame=new EvDecimal(framenum*fdt);
 						}
 					if(frame==null)
 						frame=new EvDecimal(framenum);
 
-					if(fdx==null || fdx==0) fdx=1.0f;
-					if(fdy==null || fdy==0) fdy=1.0f;
-					if(fdz==null || fdz==0) fdz=1.0f;
+					if(fdx==null || fdx==0) fdx=1.0;
+					if(fdy==null || fdy==0) fdy=1.0;
+					if(fdz==null || fdz==0) fdz=1.0;
 
 					Map<String,String> metaFrame=c.getMetaFrame(frame);
 
@@ -427,7 +432,7 @@ public class EvIODataBioformats implements EvIOData
 						else
 							curPixel=imageReader.getIndex(slicenum, channelnum, framenum);
 
-						Float expTime=retrieve.getPlaneTimingExposureTime(seriesIndex, 0, curPixel);
+						Double expTime=retrieve.getPlaneTimingExposureTime(seriesIndex, 0, curPixel);
 						EvDecimal zpos=new EvDecimal(fdz).multiply(slicenum);
 	
 						EvImage evim=new EvImage();
