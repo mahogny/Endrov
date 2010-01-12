@@ -1,4 +1,8 @@
 all:
+	javac -cp `java -jar startEndrov.jar --printcp` \
+	endrov/*/*.java \
+	endrov/*/*/*.java \
+	endrov/*/*/*/*.java \
 
 backup:
 	###!!!! FROM TO
