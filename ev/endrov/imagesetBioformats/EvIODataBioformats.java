@@ -336,10 +336,17 @@ public class EvIODataBioformats implements EvIOData
 			System.out.println("bioformats looking at series "+seriesIndex);
 
 			String imageName=retrieve.getImageName(seriesIndex);
+
+			//On windows, bio-formats uses the entire path. This is ugly so cut off the part
+			//until the last file
+			if(imageName.contains("\\"))
+				imageName=imageName.substring(imageName.lastIndexOf('\\'));
 			
 			
-			//Some names might be awful. Might be a bad idea
-			String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
+			//The image name usually sucks, don't do this anymore!
+			//String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
+			String imsetName="im"+seriesIndex;
+			
 			
 //			if(d.metaObject.containsKey(imsetName))
 			if(usedChannelNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it

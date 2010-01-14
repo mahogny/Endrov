@@ -5,6 +5,7 @@ all:
 	endrov/*/*/*/*.java \
 	util/*.java \
 	util/*/*.java
+#will not work if any of the files fail. have to exclude mac here!
 
 backup:
 	###!!!! FROM TO
