@@ -56,7 +56,6 @@ public class EvStack implements AnyEvImage
 
 	/**
 	 * Get combined resolution and binning. [um/px]
-	 * @return
 	 */
 	public EvDecimal getResbinZinverted()
 		{
@@ -356,7 +355,6 @@ public class EvStack implements AnyEvImage
 	
 	/**
 	 * Get height in number of pixels
-	 * @return
 	 */
 	public int getHeight()
 		{

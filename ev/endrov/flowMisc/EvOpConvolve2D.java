@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowMisc;
 
 import endrov.flow.EvOpSlice1;
@@ -15,8 +20,8 @@ import endrov.imageset.EvPixelsType;
  * 
  * TODO test
  * 
- * @LEARNED need to specialize over multiple input formats
- * @LEARNED when calling functions to be inlined, these need specialized versions too with tests already done by caller
+ * LEARNED need to specialize over multiple input formats
+ * LEARNED when calling functions to be inlined, these need specialized versions too with tests already done by caller
  * 
  * @author Johan Henriksson
  * 
