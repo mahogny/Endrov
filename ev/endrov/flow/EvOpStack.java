@@ -119,7 +119,9 @@ public abstract class EvOpStack extends EvOpGeneral
 					EvImage newim=new EvImage();
 					curReturnStack.put(stackEntry.getKey(), newim);
 					
-					curReturnStack.getMetaFrom(curInputStack); //This design makes it impossible to generate resolution lazily
+					curReturnStack.getMetaFrom(curInputStack); 
+					//TODO This design makes it impossible to generate resolution lazily
+					//TODO in particular, crop will not work nicely
 					
 					final EvDecimal z=stackEntry.getKey();
 						

@@ -715,7 +715,8 @@ public class ImageWindow extends BasicWindow
 							"DY: "+stack.dispY + " "+
 							"DZ: "+stack.dispZ + " "+
 							"Width(px): "+pixels.getWidth()+" "+
-							"Height(px): "+pixels.getHeight());
+							"Height(px): "+pixels.getHeight()
+							);
 					sb.append("\n");
 					}
 				}

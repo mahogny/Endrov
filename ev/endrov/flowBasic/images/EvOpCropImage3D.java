@@ -1,17 +1,12 @@
 package endrov.flowBasic.images;
 
-import java.util.*;
-
 import endrov.flow.EvOpStack1;
-import endrov.flowBasic.math.EvOpImageMulScalar;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.roi.primitive.BoxROI;
 import endrov.util.Memoize;
-import endrov.util.Vector3i;
 
 
 /**
@@ -36,7 +31,7 @@ public class EvOpCropImage3D extends EvOpStack1
 	
 	public EvStack apply(EvStack p)
 		{
-		return null;//crop(p,roi);
+		return crop(p,roi);
 		}
 	
 	
@@ -44,16 +39,41 @@ public class EvOpCropImage3D extends EvOpStack1
 	/**
 	 * Crop an entire stack to lie within ROI
 	 */
-	/*
 	public static EvStack crop(EvStack stack, BoxROI roi)
 		{
-		EvStack pout=new EvStack();
-		
-		
-		
-		
+		int fromX=0;
+		int fromY=0;
+		int toX=stack.getWidth();
+		int toY=stack.getHeight();
+		int fromZ=0;
+		int toZ=stack.getDepth();
+	
+		if(!roi.regionX.all)
+			{
+			int rXstart=(int)stack.transformWorldImageX(roi.regionX.start.doubleValue());
+			int rXend=(int)stack.transformWorldImageX(roi.regionX.end.doubleValue());
+			if(fromX<rXstart) fromX=rXstart;
+			if(toX>rXend) toX=rXend;
+			}
+		if(!roi.regionY.all)
+			{
+			int rStart=(int)stack.transformWorldImageY(roi.regionY.start.doubleValue());
+			int rEnd=(int)stack.transformWorldImageY(roi.regionY.end.doubleValue());
+			if(fromY<rStart)	fromY=rStart;
+			if(toY>rEnd) toY=rEnd;
+			}
+		if(!roi.regionZ.all)
+			{
+			int rStart=(int)stack.transformWorldImageZ(roi.regionZ.start.doubleValue());
+			int rEnd=(int)stack.transformWorldImageZ(roi.regionZ.end.doubleValue());
+			if(fromZ<rStart)	fromZ=rStart;
+			if(toZ>rEnd) toZ=rEnd;
+			}
+
+
+//		System.out.println("zzzzzzz "+fromX+"  "+toX+"      "+fromY+"  "+toY+"  "+fromZ+"  "+toZ);
+		return crop(stack, fromX,toX,  fromY,toY, fromZ,toZ);
 		}
-	*/
 	
 	/**
 	 * Crop an entire stack. Takes pixels fromX <= x < toX etc. Limits must be within bounds.
@@ -90,29 +110,6 @@ public class EvOpCropImage3D extends EvOpStack1
 	
 	
 	
-	/**
-	 * Crop one single 2D plane. Takes pixels fromX <= x < toX.
-	 * Area must be within bounds
-	 */
-	public static EvPixels crop(EvPixels p, int fromX, int toX, int fromY, int toY)
-		{
-		p=p.convertToDouble(true);
-		int width=p.getWidth();
-		
-		int newWidth=toX-fromX;
-		int newHeight=toY-fromY;
-		EvPixels newPixels=new EvPixels(EvPixelsType.DOUBLE, newWidth, newHeight);
-		
-		double[] inarr=p.getArrayDouble();
-		double[] outarr=newPixels.getArrayDouble();
-		for(int ay=0;ay<newWidth;ay++)
-			for(int ax=0;ax<newHeight;ax++)
-				outarr[ay*newWidth+ax]=inarr[(ay+fromY)*width+(ax+fromY)];
-		
-		return newPixels;
-		}
-	
-
 	
 	
 	}
