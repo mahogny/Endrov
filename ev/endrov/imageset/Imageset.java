@@ -86,6 +86,8 @@ public class Imageset extends EvObject
 	 */
 	public EvChannel getChannel(String ch)
 		{
+		if(ch==null)
+			return null;
 		EvObject ob=metaObject.get(ch);
 		if(ob==null)
 			return null;

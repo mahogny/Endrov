@@ -91,15 +91,18 @@ public class VoxelExtension implements ModelWindowExtension
 		{
 		public Imageset im;
 		public EvChannel ch;
-		//public FilterSeq filterSeq;
 		public Color color=new Color(0,0,0);
 		}
 	
+	/**
+	 * Instance for one model window
+	 * @author Johan Henriksson
+	 *
+	 */
 	private class Hook implements ModelWindowHook, ActionListener
 		{
 		private ModelWindow w;
 		private JPanel totalPanel=new JPanel(new GridLayout(1,3));
-		//private TreeMap<EvDecimal, StackInterface> currentStack=new TreeMap<EvDecimal, StackInterface>();
 		private StackInterface currentStack=null;
 		private StackInterface loadingStack=null;
 		private Vector<StackInterface> removableStacks=new Vector<StackInterface>();
@@ -217,7 +220,7 @@ public class VoxelExtension implements ModelWindowExtension
 
 		public void datachangedEvent()
 			{
-			//System.out.println("voxel datachanged event");
+			System.out.println("voxel datachanged event");
 			EvContainer data=w.getSelectedData();
 			Imageset im=data instanceof Imageset ? (Imageset)data : new Imageset();
 			
@@ -355,30 +358,23 @@ public class VoxelExtension implements ModelWindowExtension
 		private class OneImageChannel extends JPanel implements ActionListener
 			{
 			static final long serialVersionUID=0;
-			//private JButton bFs=FilterSeq.createFilterSeqButton();
 			private EvComboChannel channelCombo=new EvComboChannel(null,true);
 			private Color color;
-			//private FilterSeq filterSeq=new FilterSeq();
-			
+
+			public WeakReference<EvChannel> lastChannelImages=new WeakReference<EvChannel>(null);
+
 			public OneImageChannel(String name,Color color)
 				{
 				this.color=color;
 				setLayout(new BorderLayout());
 				add(new JLabel(name),BorderLayout.WEST);
 				add(channelCombo,BorderLayout.CENTER);
-				//add(bFs,BorderLayout.EAST);
 				channelCombo.addActionListener(this);
-				//bFs.addActionListener(this);
-				//filterSeq.observer.addWeakListener(filterSeqObserver);
 				}
 			
-			/** Invoked when filter sequence changed */
-			/*private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
-				{public void observerEvent(Object o){stackChanged();}};*/
-			
-			public WeakReference<EvChannel> lastChannelImages=new WeakReference<EvChannel>(null);
-			
-			/** Update stack */ 
+			/**
+			 * Update stack 
+			 */ 
 			public void stackChanged()
 				{
 				//TODO: when filter seq updated, a signal should be sent back
@@ -392,19 +388,8 @@ public class VoxelExtension implements ModelWindowExtension
 					currentStack.outOfDate=true;
 					}
 				
-//				removableStacks.add(currentStack);
 				System.out.println("new stack (changed)");
 	
-				//TODO good enough?
-				
-				
-/*				if(miRender3dTexture.isSelected()) 
-					currentStack=new Stack3D(); 
-				else
-					currentStack=new Stack2D();*/
-//				lastImageset=new WeakReference<Imageset>(channelCombo.getImagesetNull());
-//				lastChannel=channelCombo.getChannelNotNull();
-
 				EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelCombo.getChannel());
 				lastChannelImages=new WeakReference<EvChannel>(images);
 				
@@ -412,19 +397,21 @@ public class VoxelExtension implements ModelWindowExtension
 				w.view.repaint();
 				}
 			
-			/** Update stack if imageset or channel changed */
+			/**
+			 * Update stack if imageset or channel changed
+			 */
 			public void checkStackChanged()
 				{
-/*				Imageset ims=lastImageset.get();
-				String ch=lastChannel;
-				Imageset newImageset=channelCombo.getImagesetNull();
-				String newChannel=channelCombo.getChannelNotNull();*/
 				String channelName=channelCombo.getChannel();
 				if(channelName!=null)
 					{
 					EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelName);
 					if(images!=lastChannelImages.get())
-	//				if(ims!=newImageset || !ch.equals(newChannel))
+						stackChanged();
+					}
+				else if(channelName==null)
+					{
+					if(lastChannelImages.get()!=null)
 						stackChanged();
 					}
 				}
@@ -432,15 +419,8 @@ public class VoxelExtension implements ModelWindowExtension
 			public void actionPerformed(ActionEvent e)
 				{
 				if(e.getSource()==channelCombo)
-					{
 					stackChanged();
 //					System.out.println("call stack change");
-					}
-				/*
-				else if(e.getSource()==bFs)
-					{
-					new WindowFilterSeq(filterSeq);
-					}*/
 				}
 			
 			
