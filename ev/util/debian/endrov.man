@@ -1,0 +1,44 @@
+.TH ENDROV 1 "24 December 2008"
+.SH NAME
+endrov - Start the Endrov GUI
+.SH SYNOPSIS
+\fBendrov\fP [ [--main \fImain_class\fP] [--cp2 \fIclasspath\fP] 
+   [--libpath2 \fIdirectories\fP] [--printcommand] [--version] 
+   [--basedir \fIpath\fP]
+.SH DESCRIPTION
+\fBendrov\fP starts up the Endrov graphical user interface and can also
+run an alternate \fImain_class\fP if given.
+
+\fBEndrov\fP is a modular framework for life science imaging developed
+at Karolinska Institutet. The emphasis is on extensibility in form of
+plugins, scripts and flows. It was developed with all level of users
+in mind, from biologists with little computer experience to expert developers.
+.SS Options
+.TP
+\fB--main \fImain_class\fP
+Run another class with a main function
+\fB--cp2 \fIclasspath\fP
+Add additional jars to classpath, colon-separated
+\fB--libpath2 \fIclasspath\fP
+Add additional directories to java.library.path, colon-separated
+.TP
+\fB--basedir \fIpath\fP
+The directory in which the core plugins are installed
+.TP
+\fB--version\fP
+Print version
+.TP
+\fB--printcommand\fP
+Print the full internal java command to start up Endrov.
+.TP
+.SH FILES
+.TP
+\fC/usr/share/endrov/\fR
+System-wide endrov distribution
+\fC/HOME/.endrov/\fR
+User specific endrov configuration and plugins
+.SH "SEE ALSO"
+http://www.endrov.net
+.SH BUGS
+Bugs are documented on the Endrov website bug tracker.
+
