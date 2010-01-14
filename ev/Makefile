@@ -3,6 +3,8 @@ all:
 	endrov/*/*.java \
 	endrov/*/*/*.java \
 	endrov/*/*/*/*.java \
+	util/*.java \
+	util/*/*.java
 
 backup:
 	###!!!! FROM TO

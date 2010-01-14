@@ -1,3 +1,4 @@
+package util.debian;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
@@ -91,15 +92,17 @@ public class Main
 			proc.waitFor();
 			System.out.println("unzip done");
 
+			File dRes=new File("util/debian");
+			
 			System.out.println("Moving into place");
 			dZipTemp.listFiles()[0].renameTo(dEndrov);
 			new File(dEndrov,"docs").renameTo(new File(dShareDoc,"endrov"));
-			copyFile(new File("endrov.1"), new File(dMan,"endrov.1"));
-			copyFile(new File("icon.xpm"), fIcon);
-			copyFile(new File("endrov.sh"),fUsrBinEndrov);
-			copyFile(new File("usrShareMenuEndrov"),fUsrShareMenuEndrov);
-			copyFile(new File("endrov.desktop"),fUsrShareApplicationsEndrov);
-			copyFile(new File("bash_completion"),new File(dEtcBash,"endrov"));
+			copyFile(new File(dRes,"endrov.1"), new File(dMan,"endrov.1"));
+			copyFile(new File(dRes,"icon.xpm"), fIcon);
+			copyFile(new File(dRes,"endrov.sh"),fUsrBinEndrov);
+			copyFile(new File(dRes,"usrShareMenuEndrov"),fUsrShareMenuEndrov);
+			copyFile(new File(dRes,"endrov.desktop"),fUsrShareApplicationsEndrov);
+			copyFile(new File(dRes,"bash_completion"),new File(dEtcBash,"endrov"));
 			setExec(fUsrBinEndrov);
 			//fUsrEndrov.setExecutable(true);
 			
@@ -204,7 +207,7 @@ libjboss-webservices-java
 			int totalSize=(int)Math.ceil((recursiveSize(dUsr)+100000)/1000000.0);
 			
 			
-			String controlFile=EvFileUtil.readFile(new File("debiancontrol-TEMPLATE")).
+			String controlFile=EvFileUtil.readFile(new File(dRes,"debiancontrol-TEMPLATE")).
 			replace("DEPENDENCIES", makeDeps(pkgs)).
 			replace("RECOMMENDS", makeRecommends(pkgs)).
 			replace("SUGGESTS", makeSuggests(pkgs)).
