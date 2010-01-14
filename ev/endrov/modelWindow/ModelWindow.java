@@ -106,7 +106,6 @@ public class ModelWindow extends BasicWindow
 	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
 	private JProgressBar progress=new JProgressBar(0,1000);
-//	private JPanel progress=new JPanel(); 
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
