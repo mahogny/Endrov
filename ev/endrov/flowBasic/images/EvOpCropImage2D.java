@@ -1,16 +1,8 @@
 package endrov.flowBasic.images;
 
-import java.util.*;
-
 import endrov.flow.EvOpSlice1;
-import endrov.flow.EvOpStack1;
-import endrov.flowBasic.math.EvOpImageMulScalar;
-import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
-import endrov.roi.primitive.BoxROI;
-import endrov.util.Vector3i;
 
 
 /**
@@ -59,9 +51,9 @@ public class EvOpCropImage2D extends EvOpSlice1
 		
 		double[] inarr=p.getArrayDouble();
 		double[] outarr=newPixels.getArrayDouble();
-		for(int ay=0;ay<newWidth;ay++)
-			for(int ax=0;ax<newHeight;ax++)
-				outarr[ay*newWidth+ax]=inarr[(ay+fromY)*width+(ax+fromY)];
+		for(int ay=0;ay<newHeight;ay++)
+			for(int ax=0;ax<newWidth;ax++)
+				outarr[ay*newWidth+ax]=inarr[(ay+fromY)*width+(ax+fromX)];
 		
 		return newPixels;
 		}
