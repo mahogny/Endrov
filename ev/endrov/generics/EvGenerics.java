@@ -13,9 +13,6 @@ public abstract class EvGenerics
 	 * 
 	 * intermediates: EvGenericsAx   int or double, depending on context
 	 * 
-	 * @param a
-	 * @param b
-	 * @return
 	 */
 	public static EvGenerics add(EvGenerics a, EvGenerics b){return null;};
 	

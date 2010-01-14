@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package bioserv.imserv;
 
 //http://java.sun.com/j2se/1.5.0/docs/api/javax/rmi/ssl/package-summary.html
