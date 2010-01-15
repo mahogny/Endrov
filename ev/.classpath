@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/starter/StartOld.java|endrov/util/DynamicClass.java|endrov/flow/std/math/FlowUnitComplexMul.java|endrov/unsortedImageFilters/Skeletonize3D_.java|util/munkresKuhn/AssignmentProblem.java|util2/integrateExpression/IntExpTissue.java|util2/integrateExpression/MakeProfiles.java|util2/integrateExpression/OldIntegrateExpression.java|endrov/starter/MyURLClassLoader.java|endrov/driverMicromanager/conf/Configurator.java|util2/integrateExpression/OldIntExpAP.java|util2/integrateExpression/OldIntExpTissue.java|util2/integrateExpression/OldMakeProfiles.java|endrov/macBinding/" kind="src" path="">
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/starter/StartOld.java|endrov/util/DynamicClass.java|endrov/flow/std/math/FlowUnitComplexMul.java|endrov/unsortedImageFilters/Skeletonize3D_.java|util/munkresKuhn/AssignmentProblem.java|util2/integrateExpression/IntExpTissue.java|util2/integrateExpression/MakeProfiles.java|util2/integrateExpression/OldIntegrateExpression.java|endrov/starter/MyURLClassLoader.java|endrov/driverMicromanager/conf/Configurator.java|util2/integrateExpression/OldIntExpAP.java|util2/integrateExpression/OldIntExpTissue.java|util2/integrateExpression/OldMakeProfiles.java" kind="src" path="">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
@@ -50,7 +50,6 @@
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-codec-1.3.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/bin_ppc/MMCoreJ.jar"/>
 	<classpathentry kind="lib" path="libs/jl1.0.jar"/>
 	<classpathentry kind="lib" path="libs/pcolt_inc/parallelcolt-0.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/gluegen-rt.jar"/>
@@ -59,5 +58,6 @@
 	<classpathentry kind="lib" path="libs/bin_mac/jinput.jar"/>
 	<classpathentry kind="lib" path="libs/commons-math-2.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/jgrapht-jdk1.6.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/bin_ppc/MMCoreJ.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
