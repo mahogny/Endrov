@@ -58,6 +58,6 @@
 	<classpathentry kind="lib" path="libs/bin_mac/jinput.jar"/>
 	<classpathentry kind="lib" path="libs/commons-math-2.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/jgrapht-jdk1.6.jar"/>
-	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/bin_ppc/MMCoreJ.jar"/>
+	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/MMCoreJ.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
