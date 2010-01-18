@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import javax.swing.ImageIcon;
 
@@ -70,7 +69,6 @@ public abstract class FlowUnitBasic extends FlowUnit
 		{
 		g.setColor(Color.blue);
 		
-		
 		Dimension d=getBoundingBox(comp, panel.getFlow());
 
 //	g.drawRect(x,y,d.width,d.height);
@@ -94,7 +92,9 @@ public abstract class FlowUnitBasic extends FlowUnit
 
 //		drawConnPointRight(g,x+d.width,y+d.height/2);
 
+		helperDrawConnectors(g, panel, comp, d);
 		
+		/*
 		int cntIn=1;
 		if(cntIn<getTypesInCount(panel.getFlow())) cntIn=getTypesInCount(panel.getFlow());
 		int i=0;
@@ -104,7 +104,6 @@ public abstract class FlowUnitBasic extends FlowUnit
 			panel.drawConnPointLeft(g, this, entry.getKey(), x, (int)py);
 			i++;
 			}
-
 		
 		int cntOut=1;
 		if(cntOut<getTypesOutCount(panel.getFlow())) cntOut=getTypesOutCount(panel.getFlow());
@@ -114,19 +113,11 @@ public abstract class FlowUnitBasic extends FlowUnit
 			double py=y+(i+1)*d.height/(cntOut+1);
 			panel.drawConnPointRight(g, this, entry.getKey(), x+d.width, (int)py);
 			i++;
-			}
+			}*/
 
 		}
 
 	
-	public int getTypesInCount(Flow flow)
-		{
-		return getTypesIn(flow).size();
-		}
-	public int getTypesOutCount(Flow flow)
-		{
-		return getTypesOut(flow).size();
-		}
 
 	
 	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
