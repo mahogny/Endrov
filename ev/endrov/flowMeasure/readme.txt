@@ -1,4 +1,4 @@
-http://rsbweb.nih.gov/ij/plugins/track/objects.html
+://rsbweb.nih.gov/ij/plugins/track/objects.html
 
 
 This plug-in counts the number of 3D objects in a stack and displays 
@@ -69,6 +69,59 @@ later also (trajectory) after identification
 etc
 
 how general should it be, when to use normal objects?
+
+
+
+
+
+
+
+
+
+
+============================================
+
+http://imagejdocu.tudor.lu/doku.php?id=plugin:analysis:3d_object_counter:start
+
+   1.
+      counts the number of 3D objects in a stack.
+   2.
+      quantifies for each found object the following parameters:
+          *
+            Integrated density;
+          *
+            Mean of the gray values;
+          *
+            Standard deviation of the gray values;
+          *
+            Minimum gray value;
+          *
+            Maximum gray value;
+          *
+            Median of the gray values;
+          *
+            Mean distance from the geometrical centre of the object to surface;
+          *
+            Standard deviation of the distance to surface;
+          *
+            Median distance to surface;
+          *
+            Centroid;
+          *
+            Centre of mass;
+          *
+            Bounding box.
+   3.
+      generates results representations such as:
+          *
+            Objects' map;
+          *
+            Surface voxels' map;
+          *
+            Centroids' map;
+          *
+            Centres of masses' map.
+
 
 
 
