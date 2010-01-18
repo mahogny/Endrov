@@ -1178,7 +1178,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(enabled)
 			try
 				{
-				Element root=new Element("temp");
+				Element root=new Element(Flow.metaType);
 				Document doc=new Document(root);
 				flow.saveMetadata(root, selectedUnits);
 				EvSwingUtil.setClipBoardString(EvXmlUtil.xmlToString(doc));
@@ -1230,6 +1230,11 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 						u.y+=dy;
 						}
 					repaint();
+					}
+				else
+					{
+					EvLog.printError("Pasted data is not for flows", null);
+					System.out.println(cp);
 					}
 				}
 			catch (Exception e)
