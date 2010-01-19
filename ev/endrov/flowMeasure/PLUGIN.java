@@ -40,7 +40,8 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				ParticleData.class,
 				
-				FlowUnitMeasureParticle.class
+				FlowUnitIdentifyParticles3D.class,
+				FlowUnitMeasureParticle.class,
 		};
 		
 		

@@ -12,7 +12,6 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.*;
 
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -22,7 +21,6 @@ import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
-import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 import endrov.imageset.EvChannel;
