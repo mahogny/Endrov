@@ -30,63 +30,6 @@ public class RecWindowBurst extends BasicWindow
 	static final long serialVersionUID=0;
 
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-				{
-				public void createMenus(BasicWindow w)
-					{
-					JMenuItem mi=new JMenuItem("Lightpath",new ImageIcon(getClass().getResource("tangoCamera.png")));
-					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-					}
-	
-				public void actionPerformed(ActionEvent e) 
-					{
-					new LightpathWindow();
-					}
-	
-				public void buildMenu(BasicWindow w){}
-				}
-			});
-		
-		
-		
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-				{
-				public void createMenus(BasicWindow w)
-					{
-					JMenuItem mi=new JMenuItem("Burst acq Window",new ImageIcon(getClass().getResource("tangoCamera.png")));
-					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-					}
-	
-				public void actionPerformed(ActionEvent e) 
-					{
-					new RecWindowBurst();
-					}
-	
-				public void buildMenu(BasicWindow w){}
-				}
-			});
-		
-		}
-	
-	
-
 	public RecWindowBurst()
 		{
 		this(new Rectangle(400,300));
@@ -150,6 +93,66 @@ public class RecWindowBurst extends BasicWindow
 	public static void main(String[] args)
 		{
 		new RecWindowBurst();
+		
+		}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+				{
+				public void createMenus(BasicWindow w)
+					{
+					JMenuItem mi=new JMenuItem("Lightpath",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					mi.addActionListener(this);
+					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					}
+	
+				public void actionPerformed(ActionEvent e) 
+					{
+					new LightpathWindow();
+					}
+	
+				public void buildMenu(BasicWindow w){}
+				}
+			});
+		
+		
+		
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+				{
+				public void createMenus(BasicWindow w)
+					{
+					JMenuItem mi=new JMenuItem("Burst acq Window",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					mi.addActionListener(this);
+					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					}
+	
+				public void actionPerformed(ActionEvent e) 
+					{
+					new RecWindowBurst();
+					}
+	
+				public void buildMenu(BasicWindow w){}
+				}
+			});
 		
 		}
 	

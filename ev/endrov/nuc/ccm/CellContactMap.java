@@ -34,12 +34,6 @@ public class CellContactMap extends EvObject
 	{
 	private static final String metaType="ccm";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,CellContactMap.class);
-		}
-
 	
 	//nuc -> nuc -> frames
 	public Map<String,Map<String,SortedSet<EvDecimal>>> contactsf=new TreeMap<String, Map<String,SortedSet<EvDecimal>>>();
@@ -237,5 +231,15 @@ public class CellContactMap extends EvObject
 		return metaType;
 		}
 	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,CellContactMap.class);
+		}
+
+
 	}

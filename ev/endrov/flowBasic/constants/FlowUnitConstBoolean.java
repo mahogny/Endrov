@@ -35,6 +35,9 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 
 	private static final String metaType="constBoolean";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

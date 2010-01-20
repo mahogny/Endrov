@@ -28,6 +28,9 @@ public class FlowUnitDiv extends FlowUnitMathBinop
 		super("A/B",metaType);
 		}
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

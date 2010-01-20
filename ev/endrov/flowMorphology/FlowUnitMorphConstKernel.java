@@ -86,6 +86,9 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 	//private static ImageIcon icon=null;//new ImageIcon(FlowUnitMorphConstKernel.class.getResource("jhBoolean.png"));
 	private static final String metaType="constMorphKernel2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

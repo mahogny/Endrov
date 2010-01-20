@@ -30,6 +30,9 @@ public class FlowUnitImageNoisePepperSalt extends FlowUnitBasic
 	public static final String showName="Pepper'n'salt image noise";
 	private static final String metaType="imageNoisePepperSalt";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

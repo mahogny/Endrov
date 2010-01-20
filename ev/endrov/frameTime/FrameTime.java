@@ -29,11 +29,6 @@ public class FrameTime extends EvObject
 	
 	private static final String metaElement="ft";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,FrameTime.class);
-		}
 
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -197,5 +192,15 @@ public class FrameTime extends EvObject
 			}
 		//TODO emit changed
 		}
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,FrameTime.class);
+		}
+
 	}

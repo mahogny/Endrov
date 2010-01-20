@@ -30,6 +30,9 @@ public class FlowUnitMorphDilate2D extends FlowUnitBasic
 	public static final String showName="Dilate 2D";
 	private static final String metaType="morphologyDilate2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

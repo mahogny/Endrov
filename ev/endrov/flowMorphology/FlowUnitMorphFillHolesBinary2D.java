@@ -30,6 +30,9 @@ public class FlowUnitMorphFillHolesBinary2D extends FlowUnitBasic
 	public static final String showName="Fill holes (binary) 2D";
 	private static final String metaType="morphologyFillHolesBinary2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

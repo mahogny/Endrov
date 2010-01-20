@@ -30,6 +30,9 @@ public class FlowUnitMorphComplementGray2D extends FlowUnitBasic
 	public static final String showName="Complement (gray) 2D";
 	private static final String metaType="morphologyGrayComplement";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

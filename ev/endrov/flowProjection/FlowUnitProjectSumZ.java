@@ -30,6 +30,9 @@ public class FlowUnitProjectSumZ extends FlowUnitBasic
 	public static final String showName="Sum Z";
 	private static final String metaType="projectionSumZ";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

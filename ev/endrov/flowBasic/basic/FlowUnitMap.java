@@ -33,12 +33,6 @@ public class FlowUnitMap extends FlowUnitContainer
 	private static final String metaType="map";
 
 	private static ImageIcon icon=new ImageIcon(FlowUnitMap.class.getResource("jhMap.png"));
-
-	public static void initPlugin() {}
-	static
-		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Map",metaType,FlowUnitMap.class, icon,"Operate on all values element by element"));
-		}
 	
 	
 	public String getContainerName()
@@ -93,5 +87,14 @@ public class FlowUnitMap extends FlowUnitContainer
 	public Component getGUIcomponent(FlowPanel p){return null;}
 	public int getGUIcomponentOffsetX(){return 0;}
 	public int getGUIcomponentOffsetY(){return 0;}
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Map",metaType,FlowUnitMap.class, icon,"Operate on all values element by element"));
+		}
 
 	}

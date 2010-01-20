@@ -31,6 +31,9 @@ public class FlowUnitFourier3D extends FlowUnitBasic
 	public static final String showName="Fourier transform 3D";
 	private static final String metaType="transformFourier3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

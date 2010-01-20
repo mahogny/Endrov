@@ -26,20 +26,7 @@ public class MaskROI3 extends ROI
 	private static final String metaType="ROI_Mask";
 	private static final String metaDesc="Mask";
 	//private static ImageIcon icon=null;//new ImageIcon(UnionROI.class.getResource("iconUnion.png"));	
-	public static void initPlugin()
-		{
-		EvData.supportedMetadataFormats.put(metaType,MaskROI3.class);
-		/*
-		ROI.addType(new ROIType()
-			{
-			public boolean canPlace(){return false;}
-			public boolean isCompound(){return true;}
-			public String name(){return metaDesc;};
-			public ROI makeInstance(){return new UnionROI();}
-			public ImageIcon getIcon(){return icon;}
-			});*/
-		}
-
+	
 
 	/******************************************************************************************************
 	 *                               Iterator                                                             *
@@ -224,5 +211,23 @@ public class MaskROI3 extends ROI
 	
 	public Vector<ROI> getSubRoi(){return new Vector<ROI>();}
 	
-	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin()
+		{
+		EvData.supportedMetadataFormats.put(metaType,MaskROI3.class);
+		/*
+		ROI.addType(new ROIType()
+			{
+			public boolean canPlace(){return false;}
+			public boolean isCompound(){return true;}
+			public String name(){return metaDesc;};
+			public ROI makeInstance(){return new UnionROI();}
+			public ImageIcon getIcon(){return icon;}
+			});*/
+		}
+
 	}

@@ -30,6 +30,9 @@ public class FlowUnitMorphBlackTophat2D extends FlowUnitBasic
 	public static final String showName="Black Tophat 2D";
 	private static final String metaType="morphologyBlackTophat2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

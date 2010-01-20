@@ -30,6 +30,9 @@ public class FlowUnitGenGaussian3D extends FlowUnitBasic
 	public static final String showName="Generate gaussian 3D";
 	private static final String metaType="genGaussian3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

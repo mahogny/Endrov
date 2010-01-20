@@ -63,38 +63,6 @@ public class ImageWindow extends BasicWindow
 	
 	public static int snapDistance=10;
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ImageWindowBasic());
-		
-		EV.personalConfigLoaders.put("imagewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					ImageWindow win=new ImageWindow(BasicWindow.getXMLbounds(e));
-					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
-					}
-				catch (Exception e1){e1.printStackTrace();}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
-				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
-				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
-				w.imageWindowTools.add(new ImageWindowToolEditImage(w));
-				}
-			});
-		}
-	
 	/**
 	 * Store down settings for window into personal config file
 	 */
@@ -1011,7 +979,43 @@ public class ImageWindow extends BasicWindow
 		}
 	*/
 	
+
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ImageWindowBasic());
+		
+		EV.personalConfigLoaders.put("imagewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					ImageWindow win=new ImageWindow(BasicWindow.getXMLbounds(e));
+					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
+					win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
+					}
+				catch (Exception e1){e1.printStackTrace();}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
+				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
+				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
+				w.imageWindowTools.add(new ImageWindowToolEditImage(w));
+				}
+			});
+		}
 	
 	}
 

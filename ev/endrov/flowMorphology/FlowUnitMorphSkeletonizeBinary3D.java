@@ -30,6 +30,9 @@ public class FlowUnitMorphSkeletonizeBinary3D extends FlowUnitBasic
 	public static final String showName="Skeletonize (binary) 3D";
 	private static final String metaType="morphologySkeletonizeBinary3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

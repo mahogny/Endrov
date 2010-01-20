@@ -36,6 +36,9 @@ public class FlowUnitMeasureParticle extends FlowUnit
 
 	private static final String metaType="measureParticle3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

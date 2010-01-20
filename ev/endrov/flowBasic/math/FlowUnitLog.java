@@ -23,6 +23,9 @@ public class FlowUnitLog extends FlowUnitMathUniop
 	{
 	private static final String metaType="log";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

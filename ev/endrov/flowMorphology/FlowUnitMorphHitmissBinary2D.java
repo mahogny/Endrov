@@ -30,6 +30,9 @@ public class FlowUnitMorphHitmissBinary2D extends FlowUnitBasic
 	public static final String showName="Hit-miss (binary) 2D";
 	private static final String metaType="morphologyHitmissBinary2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

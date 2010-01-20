@@ -30,6 +30,9 @@ public class FlowUnitMorphErode2D extends FlowUnitBasic
 	public static final String showName="Erode 2D";
 	private static final String metaType="morphologyErode2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

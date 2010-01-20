@@ -39,52 +39,7 @@ public class EvIODataBioformats implements EvIOData
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
-			public Integer loadSupports(String fileS)
-				{
-				//ImageReader r=new ImageReader(); //Possible to get all suffixes and match
-				
-				File file=new File(fileS);
-				return file.isFile() ? 100 : null; //Low priority; need to find a way to check extensions
-				}
-			public List<Tuple<String,String[]>> getLoadFormats()
-				{
-				ImageReader r=new ImageReader();
-				//TreeSet<String> sufs=new TreeSet<String>();
-				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
-				for(IFormatHandler h:r.getReaders())
-					{
-					/*
-					StringBuffer sb=new StringBuffer();
-					sb.append(h.getFormat()+" (");
-					boolean first=true;
-					for(String suf:h.getSuffixes())
-						{
-						sufs.add(suf);
-						if(!first)
-							sb.append(", ");
-						first=false;
-						sb.append(suf);
-						}
-					sb.append(")");*/
-					formats.add(new Tuple<String,String[]>(h.getFormat(),h.getSuffixes()));
-					}				
-				return formats;
-				}
-			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
-				{
-				EvData d=new EvData();
-				d.io=new EvIODataBioformats(d, new File(file));
-				return d;
-				}
-			public Integer saveSupports(String file){return null;}
-			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
-			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
-		});
-		}
+	
 	
 	
 	/******************************************************************************************************
@@ -479,6 +434,58 @@ public class EvIODataBioformats implements EvIOData
 		{
 		String imageset=basedir.getName();
 		return imageset;
+		}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				//ImageReader r=new ImageReader(); //Possible to get all suffixes and match
+				
+				File file=new File(fileS);
+				return file.isFile() ? 100 : null; //Low priority; need to find a way to check extensions
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				ImageReader r=new ImageReader();
+				//TreeSet<String> sufs=new TreeSet<String>();
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				for(IFormatHandler h:r.getReaders())
+					{
+					/*
+					StringBuffer sb=new StringBuffer();
+					sb.append(h.getFormat()+" (");
+					boolean first=true;
+					for(String suf:h.getSuffixes())
+						{
+						sufs.add(suf);
+						if(!first)
+							sb.append(", ");
+						first=false;
+						sb.append(suf);
+						}
+					sb.append(")");*/
+					formats.add(new Tuple<String,String[]>(h.getFormat(),h.getSuffixes()));
+					}				
+				return formats;
+				}
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
+				{
+				EvData d=new EvData();
+				d.io=new EvIODataBioformats(d, new File(file));
+				return d;
+				}
+			public Integer saveSupports(String file){return null;}
+			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
+			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
+		});
 		}
 	
 	}

@@ -24,6 +24,9 @@ public class FlowUnitOr extends FlowUnitLogicBinop
 	private static final String metaType="or";
 	private static final String showName="Or";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -11,16 +11,6 @@ public class Script
 	{
 	public Interpreter bsh=new Interpreter();
 	
-	public static void initPlugin(){}
-	public Script()
-		{
-		//bsh.setStrictJava(true);
-		
-		
-		
-//	bsh.setErr
-//	bsh.setOut
-		}
 	
 	public Object eval(String s) throws EvalError
 		{
@@ -28,5 +18,16 @@ public class Script
 		}
 	
 	
-	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	public Script()
+		{
+		//bsh.setStrictJava(true);
+//	bsh.setErr
+//	bsh.setOut
+		}
 	}

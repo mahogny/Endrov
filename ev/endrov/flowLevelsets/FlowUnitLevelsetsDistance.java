@@ -30,6 +30,9 @@ public class FlowUnitLevelsetsDistance extends FlowUnitBasic
 	public static final String showName="Levelsets distance";
 	private static final String metaType="levelsetsDistance";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

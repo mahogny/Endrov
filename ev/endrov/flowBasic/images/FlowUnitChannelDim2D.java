@@ -36,6 +36,9 @@ public class FlowUnitChannelDim2D extends FlowUnitBasic
 	
 	public static final ImageIcon icon=new ImageIcon(FlowUnitChannelDim2D.class.getResource("jhFlowChannelDim.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

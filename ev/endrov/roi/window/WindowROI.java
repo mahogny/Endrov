@@ -54,17 +54,6 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 		}
 	
 	
-	public static void initPlugin()	{}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new ThisBasicHook());
-				}
-			});
-		}
 
 	
 	/**
@@ -340,5 +329,21 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
 
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin()	{}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new ThisBasicHook());
+				}
+			});
+		}
 	
 	}

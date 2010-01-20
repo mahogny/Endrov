@@ -42,11 +42,6 @@ import endrov.util.EvDecimal;
  */
 public class VoxelExtension implements ModelWindowExtension
 	{
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new VoxelExtension());
-		}
 
 	public void newModelWindow(ModelWindow w)
 		{
@@ -431,5 +426,15 @@ public class VoxelExtension implements ModelWindowExtension
 		public EvDecimal getLastFrame(){return null;}
 		
 		}
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new VoxelExtension());
+		}
+
 	}

@@ -30,6 +30,9 @@ public class FlowUnitMorphThinBinary2D extends FlowUnitBasic
 	public static final String showName="Thinen (binary) 2D";
 	private static final String metaType="binaryThin2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

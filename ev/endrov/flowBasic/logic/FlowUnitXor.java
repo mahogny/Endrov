@@ -24,6 +24,9 @@ public class FlowUnitXor extends FlowUnitLogicBinop
 	private static final String metaType="xor";
 	private static final String showName="Xor";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

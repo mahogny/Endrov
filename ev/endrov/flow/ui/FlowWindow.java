@@ -65,50 +65,6 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 
 	private static String pcWindowName="flowwindow";
 
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-			{
-			public void createMenus(BasicWindow w)
-				{
-				JMenuItem mi=new JMenuItem("Flow",new ImageIcon(getClass().getResource("labelFS.png")));
-				mi.addActionListener(this);
-				w.addMenuWindow(mi);
-				}
-
-			public void actionPerformed(ActionEvent e) 
-				{
-				new FlowWindow();
-				}
-
-			public void buildMenu(BasicWindow w){}
-			}
-			});
-
-		EV.personalConfigLoaders.put(pcWindowName,new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Rectangle r=BasicWindow.getXMLbounds(e);
-					/*FlowWindow w=*/new FlowWindow(r);
-					}
-				catch(Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
 	
 	
 	/******************************************************************************************************
@@ -386,5 +342,53 @@ public class FlowWindow extends BasicWindow implements ActionListener, KeyListen
 		{
 		}
 
-	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+			{
+			public void createMenus(BasicWindow w)
+				{
+				JMenuItem mi=new JMenuItem("Flow",new ImageIcon(getClass().getResource("labelFS.png")));
+				mi.addActionListener(this);
+				w.addMenuWindow(mi);
+				}
+
+			public void actionPerformed(ActionEvent e) 
+				{
+				new FlowWindow();
+				}
+
+			public void buildMenu(BasicWindow w){}
+			}
+			});
+
+		EV.personalConfigLoaders.put(pcWindowName,new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					/*FlowWindow w=*/new FlowWindow(r);
+					}
+				catch(Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
 	}

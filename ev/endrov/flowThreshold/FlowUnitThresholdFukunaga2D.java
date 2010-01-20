@@ -30,6 +30,9 @@ public class FlowUnitThresholdFukunaga2D extends FlowUnitBasic
 	public static final String showName="Fukunaga threshold";
 	private static final String metaType="thresholdFukunaga2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

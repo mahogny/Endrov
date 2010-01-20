@@ -30,6 +30,9 @@ public class FlowUnitConvGaussian2D extends FlowUnitBasic
 	public static final String showName="Gaussian filter 2D";
 	private static final String metaType="convGaussian2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

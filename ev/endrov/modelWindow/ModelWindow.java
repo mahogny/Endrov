@@ -44,29 +44,6 @@ public class ModelWindow extends BasicWindow
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ModelWindowBasic());
-		EV.personalConfigLoaders.put("modelwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Rectangle r=BasicWindow.getXMLbounds(e);
-					ModelWindow m=new ModelWindow(r);
-					m.setPersonalConfig(e);
-					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
-	
 	public static Vector<ModelWindowExtension> modelWindowExtensions=new Vector<ModelWindowExtension>();
 
 	
@@ -824,8 +801,31 @@ public class ModelWindow extends BasicWindow
 
 	
 	
-	
-	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ModelWindowBasic());
+		EV.personalConfigLoaders.put("modelwindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					ModelWindow m=new ModelWindow(r);
+					m.setPersonalConfig(e);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
 	
 	}

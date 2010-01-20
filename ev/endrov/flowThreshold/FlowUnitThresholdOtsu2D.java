@@ -30,6 +30,9 @@ public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
 	public static final String showName="Otsu threshold";
 	private static final String metaType="thresholdOtsu";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

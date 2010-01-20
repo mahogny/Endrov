@@ -26,11 +26,6 @@ public class Imageset extends EvObject
 	 *****************************************************************************************************/
 	private static final String metaType="imageset";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,Imageset.class);
-		}
 	
 	
 	/******************************************************************************************************
@@ -291,7 +286,15 @@ public class Imageset extends EvObject
 	
 	
 	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Imageset.class);
+		}	
 	
 	
 	}

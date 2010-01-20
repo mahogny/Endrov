@@ -30,6 +30,9 @@ public class FlowUnitSumRect extends FlowUnitBasic
 	public static final String showName="Moving average (rect)";
 	private static final String metaType="sumRect";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

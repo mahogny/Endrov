@@ -30,6 +30,9 @@ public class FlowUnitImageNoisePoisson extends FlowUnitBasic
 	public static final String showName="Poisson image noise";
 	private static final String metaType="imageNoisePoisson";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

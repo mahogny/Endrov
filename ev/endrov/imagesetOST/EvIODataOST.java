@@ -36,48 +36,6 @@ public class EvIODataOST implements EvIOData
 	 *****************************************************************************************************/
 	
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
-			public Integer loadSupports(String fileS)
-				{
-				File file=new File(fileS);
-				if(file.isDirectory() && file.getName().endsWith(".ost"))
-					return 10;
-				else
-					return null;
-				}
-			public List<Tuple<String,String[]>> getLoadFormats()
-				{
-				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
-				formats.add(new Tuple<String, String[]>("OST",new String[]{".ost"}));
-				return formats;
-				}
-			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
-				{
-				EvIODataOST io=new EvIODataOST(new File(file));
-				EvData d=new EvData();
-				io.initialLoad(d,cb);
-				d.io=io;
-				return d;
-				}
-			public Integer saveSupports(String fileS)
-				{
-				File file=new File(fileS);
-				if(file.getName().endsWith(".ost"))
-					return 10;
-				else
-					return null;
-				}
-			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
-			public EvIOData getSaver(EvData d, String file) throws IOException
-				{
-				return new EvIODataOST(new File(file));
-				}
-		});
-		
-		}
 	
 	/******************************************************************************************************
 	 *                               Slice I/O class                                                      *
@@ -1180,6 +1138,54 @@ public class EvIODataOST implements EvIOData
 
 			}
 		}
+
 	
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				File file=new File(fileS);
+				if(file.isDirectory() && file.getName().endsWith(".ost"))
+					return 10;
+				else
+					return null;
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				formats.add(new Tuple<String, String[]>("OST",new String[]{".ost"}));
+				return formats;
+				}
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
+				{
+				EvIODataOST io=new EvIODataOST(new File(file));
+				EvData d=new EvData();
+				io.initialLoad(d,cb);
+				d.io=io;
+				return d;
+				}
+			public Integer saveSupports(String fileS)
+				{
+				File file=new File(fileS);
+				if(file.getName().endsWith(".ost"))
+					return 10;
+				else
+					return null;
+				}
+			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
+			public EvIOData getSaver(EvData d, String file) throws IOException
+				{
+				return new EvIODataOST(new File(file));
+				}
+		});
+		
+		}
 	
 	}

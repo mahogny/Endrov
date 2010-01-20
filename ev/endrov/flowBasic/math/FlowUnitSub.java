@@ -23,6 +23,9 @@ public class FlowUnitSub extends FlowUnitMathBinop
 	{
 	private static final String metaType="sub";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

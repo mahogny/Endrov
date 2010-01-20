@@ -22,6 +22,9 @@ public class EncodeFFMPEG
 	
 	public static Vector<String> formats=new Vector<String>(); 
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin()	{}
 	static
 		{

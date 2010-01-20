@@ -32,66 +32,6 @@ import endrov.util.EvSwingUtil;
 public class NamebasedImageset implements EvIOData
 	{
 	/******************************************************************************************************
-	 *                               Static                                                               *
-	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		EvDataMenu.extensions.add(new DataMenuExtension()
-			{
-			public void buildData(JMenu menu)
-				{
-				
-				}
-			public void buildOpen(JMenu menu)
-				{
-				final JMenuItem miLoadNamebasedImageset=new JMenuItem("Load namebased imageset");
-				miLoadNamebasedImageset.setIcon(BasicIcon.iconMenuLoad);
-				BasicWindow.addMenuItemSorted(menu,miLoadNamebasedImageset,"data_open_namebased");
-				
-				
-				ActionListener listener=new ActionListener()
-					{
-					public void actionPerformed(ActionEvent e)
-						{
-						JFileChooser chooser = new JFileChooser();
-				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(EvData.getLastDataPath());
-				    int returnVal = chooser.showOpenDialog(null);
-				    if(returnVal == JFileChooser.APPROVE_OPTION)
-				    	{
-				    	File filename=chooser.getSelectedFile();
-				    	EvData.setLastDataPath(filename.getParentFile());
-				    	
-				    	EvData data=new EvData();
-				    	data.io=new NamebasedImageset(data,filename);
-				    	EvData.registerOpenedData(data);
-				    	}
-						}
-					};
-					
-				miLoadNamebasedImageset.addActionListener(listener);
-				}
-			
-			public void buildSave(JMenu menu, final EvData meta)
-				{
-				if(meta.io instanceof NamebasedImageset)
-					{
-					JMenuItem miSetup=new JMenuItem("Setup");
-					menu.add(miSetup);
-					miSetup.addActionListener(new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{((NamebasedImageset)meta.io).setup();}
-						});	
-					}
-				}
-			});
-		
-		}
-	
-	
-	/******************************************************************************************************
 	 *                               Static: Loading                                                      *
 	 *****************************************************************************************************/
 
@@ -181,9 +121,10 @@ public class NamebasedImageset implements EvIOData
 			{
 			setTitle(EV.programName+" Name based Import File Conventions");
 			
-			JPanel input=new JPanel(new GridLayout(6,1));
+			JPanel input=new JPanel(new GridLayout(7,1));
 			input.add(new JLabel(basedir.toString()));
 			input.add(EvSwingUtil.withLabel("Name:",eSequence));
+			input.add(new JLabel("Name is case-sensitive!"));
 			input.add(EvSwingUtil.withLabel("Channels:",eChannels));
 
 			input.add(EvSwingUtil.withLabel("Resolution X [px/um]:",eResX));
@@ -469,6 +410,66 @@ public class NamebasedImageset implements EvIOData
 		JOptionPane.showMessageDialog(null, "This image format does not support saving. Convert to e.g. OST instead");
 		}
 	
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvDataMenu.extensions.add(new DataMenuExtension()
+			{
+			public void buildData(JMenu menu)
+				{
+				
+				}
+			public void buildOpen(JMenu menu)
+				{
+				final JMenuItem miLoadNamebasedImageset=new JMenuItem("Load namebased imageset");
+				miLoadNamebasedImageset.setIcon(BasicIcon.iconMenuLoad);
+				BasicWindow.addMenuItemSorted(menu,miLoadNamebasedImageset,"data_open_namebased");
+				
+				
+				ActionListener listener=new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						JFileChooser chooser = new JFileChooser();
+				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				    chooser.setCurrentDirectory(EvData.getLastDataPath());
+				    int returnVal = chooser.showOpenDialog(null);
+				    if(returnVal == JFileChooser.APPROVE_OPTION)
+				    	{
+				    	File filename=chooser.getSelectedFile();
+				    	EvData.setLastDataPath(filename.getParentFile());
+				    	
+				    	EvData data=new EvData();
+				    	data.io=new NamebasedImageset(data,filename);
+				    	EvData.registerOpenedData(data);
+				    	}
+						}
+					};
+					
+				miLoadNamebasedImageset.addActionListener(listener);
+				}
+			
+			public void buildSave(JMenu menu, final EvData meta)
+				{
+				if(meta.io instanceof NamebasedImageset)
+					{
+					JMenuItem miSetup=new JMenuItem("Setup");
+					menu.add(miSetup);
+					miSetup.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{((NamebasedImageset)meta.io).setup();}
+						});	
+					}
+				}
+			});
+		
+		}
+		
 	
 	}

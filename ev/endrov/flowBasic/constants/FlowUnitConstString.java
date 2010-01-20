@@ -39,6 +39,9 @@ public class FlowUnitConstString extends FlowUnitConst
 	
 	private static final String metaType="constString";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

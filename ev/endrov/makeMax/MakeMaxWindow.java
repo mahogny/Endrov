@@ -25,21 +25,10 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 	static final long serialVersionUID=0;
 	
 
-	public static class MaxBasicHook implements BasicWindowHook, ActionListener
-		{
-		public void createMenus(BasicWindow w)
-			{
-			JMenuItem mi=new JMenuItem("Make Max Channel");
-			mi.addActionListener(this);
-			w.addMenuBatch(mi);
-			}
-		public void actionPerformed(ActionEvent e) 
-			{
-			new MakeMaxWindow();
-			}
-		public void buildMenu(BasicWindow w){}
-		}
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin()	{}
 	static
 		{
@@ -47,7 +36,21 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 			{
 			public void newBasicWindow(BasicWindow w)
 				{
-				w.basicWindowExtensionHook.put(this.getClass(),new MaxBasicHook());
+				w.basicWindowExtensionHook.put(this.getClass(), new BasicWindowHook()
+						{
+						public void createMenus(BasicWindow w)
+							{
+							JMenuItem mi=new JMenuItem("Make Max Channel");
+							mi.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e) 
+								{
+								new MakeMaxWindow();
+								}
+							});
+							w.addMenuBatch(mi);
+							}
+						public void buildMenu(BasicWindow w){}
+						});
 				}
 			});
 		}

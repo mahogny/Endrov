@@ -35,6 +35,9 @@ public class FlowUnitConstClass extends FlowUnitConst
 
 	private String var="java.lang.String";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -22,7 +22,6 @@ import endrov.util.EvDecimal;
 /**
  * Map of neigbours
  * 
- * 
  * @author Johan Henriksson
  *
  */
@@ -34,13 +33,10 @@ public class NeighMap extends EvObject
 
 	private static final String metaType="neighmap";
 
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,NeighMap.class);
-		}
 
-	
+	/**
+	 * Interval during which two cells are in contact
+	 */
 	public static class Interval
 		{
 		public Interval(EvDecimal start, EvDecimal end)
@@ -196,5 +192,13 @@ public class NeighMap extends EvObject
 	
 	
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,NeighMap.class);
+		}
 	
 	}

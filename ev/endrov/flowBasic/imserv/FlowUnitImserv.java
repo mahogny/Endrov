@@ -21,6 +21,9 @@ public class FlowUnitImserv extends FlowUnitBasic
 	{
 	private static final String metaType="imserv.imserv";
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

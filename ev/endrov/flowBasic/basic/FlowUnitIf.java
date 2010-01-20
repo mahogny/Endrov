@@ -34,12 +34,6 @@ public class FlowUnitIf extends FlowUnit
 	private static final String metaType="if";
 	private static ImageIcon icon=new ImageIcon(FlowUnitIf.class.getResource("jhIf.png"));
 
-	public static void initPlugin() {}
-	static
-		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"If",metaType,FlowUnitIf.class, icon,"Conditional flow"));
-		}
-
 	
 	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
@@ -131,5 +125,14 @@ public class FlowUnitIf extends FlowUnit
 	public Component getGUIcomponent(FlowPanel p){return null;}
 	public int getGUIcomponentOffsetX(){return 0;}
 	public int getGUIcomponentOffsetY(){return 0;}
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"If",metaType,FlowUnitIf.class, icon,"Conditional flow"));
+		}
 
 	}

@@ -30,6 +30,9 @@ public class FlowUnitKirschFilter2D extends FlowUnitBasic
 	public static final String showName="Kirsch";
 	private static final String metaType="filterKirsch2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

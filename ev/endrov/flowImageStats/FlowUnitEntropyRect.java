@@ -30,6 +30,9 @@ public class FlowUnitEntropyRect extends FlowUnitBasic
 	public static final String showName="Moving entropy (rect)";
 	private static final String metaType="entropyRect";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -24,6 +24,9 @@ public class FlowUnitAbs extends FlowUnitMathUniop
 	private static final String metaType="abs";
 	private static String showName="|A|";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

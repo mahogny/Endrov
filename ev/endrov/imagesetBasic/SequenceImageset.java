@@ -33,82 +33,6 @@ import endrov.util.EvSwingUtil;
  */
 public class SequenceImageset implements EvIOData
 	{	
-	public static void initPlugin() {}
-	static
-		{
-	//	BasicWindow.addBasicWindowExtension(new Basic());
-		
-		EvDataMenu.extensions.add(new DataMenuExtension()
-			{
-			public void buildData(JMenu menu)
-				{
-				}
-			public void buildOpen(JMenu menu)
-				{
-				JMenuItem miLoadSequenceImageset=new JMenuItem("Load sequence imageset");
-
-				
-				miLoadSequenceImageset.setIcon(BasicIcon.iconMenuLoad);
-				BasicWindow.addMenuItemSorted(menu,miLoadSequenceImageset,"data_open_namebased");
-				
-				
-				ActionListener listener=new ActionListener()
-					{
-					public void actionPerformed(ActionEvent e)
-						{
-						dialogSequenceLoadImageset();
-						}
-					
-					/**
-					 * Show dialog for opening a new sequence based imageset
-					 */
-					public void dialogSequenceLoadImageset()
-						{
-						JFileChooser chooser = new JFileChooser();
-				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				    chooser.setCurrentDirectory(EvData.getLastDataPath());
-				    int returnVal = chooser.showOpenDialog(null);
-				    if(returnVal == JFileChooser.APPROVE_OPTION)
-				    	{
-				    	File filename=chooser.getSelectedFile();
-				    	EvData.setLastDataPath(chooser.getSelectedFile().getParentFile());
-				    	EvData data=new EvData();
-				    	SequenceImageset io=new SequenceImageset(data,filename);
-				    	data.io=io;
-				    	EvData.registerOpenedData(data);
-				    	}
-						}
-					
-					
-				
-					};
-					
-				miLoadSequenceImageset.addActionListener(listener);
-				}
-			
-			public void buildSave(JMenu menu, final EvData meta)
-				{
-				if(meta.io instanceof SequenceImageset)
-					{
-					JMenuItem miSetup=new JMenuItem("Setup");
-					menu.add(miSetup);
-					miSetup.addActionListener(new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{((SequenceImageset)meta.io).setup(meta);}
-						});	
-					}
-				}
-			});
-		
-		}
-	
-	
-	
-	
-	
-	
-	
 	/** Path to imageset */
 	private File basedir;
 	private double resX=1;
@@ -491,5 +415,83 @@ public class SequenceImageset implements EvIOData
 		}
 
 
+
+	
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+	//	BasicWindow.addBasicWindowExtension(new Basic());
+		
+		EvDataMenu.extensions.add(new DataMenuExtension()
+			{
+			public void buildData(JMenu menu)
+				{
+				}
+			public void buildOpen(JMenu menu)
+				{
+				JMenuItem miLoadSequenceImageset=new JMenuItem("Load sequence imageset");
+
+				
+				miLoadSequenceImageset.setIcon(BasicIcon.iconMenuLoad);
+				BasicWindow.addMenuItemSorted(menu,miLoadSequenceImageset,"data_open_namebased");
+				
+				
+				ActionListener listener=new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						dialogSequenceLoadImageset();
+						}
+					
+					/**
+					 * Show dialog for opening a new sequence based imageset
+					 */
+					public void dialogSequenceLoadImageset()
+						{
+						JFileChooser chooser = new JFileChooser();
+				    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				    chooser.setCurrentDirectory(EvData.getLastDataPath());
+				    int returnVal = chooser.showOpenDialog(null);
+				    if(returnVal == JFileChooser.APPROVE_OPTION)
+				    	{
+				    	File filename=chooser.getSelectedFile();
+				    	EvData.setLastDataPath(chooser.getSelectedFile().getParentFile());
+				    	EvData data=new EvData();
+				    	SequenceImageset io=new SequenceImageset(data,filename);
+				    	data.io=io;
+				    	EvData.registerOpenedData(data);
+				    	}
+						}
+					
+					
+				
+					};
+					
+				miLoadSequenceImageset.addActionListener(listener);
+				}
+			
+			public void buildSave(JMenu menu, final EvData meta)
+				{
+				if(meta.io instanceof SequenceImageset)
+					{
+					JMenuItem miSetup=new JMenuItem("Setup");
+					menu.add(miSetup);
+					miSetup.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{((SequenceImageset)meta.io).setup(meta);}
+						});	
+					}
+				}
+			});
+		
+		}
+	
+	
+	
 	
 	}

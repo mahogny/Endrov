@@ -30,42 +30,6 @@ public class EvIODataXML implements EvIOData
 	 *****************************************************************************************************/
 	
 	
-	public static void initPlugin() {}
-	static
-		{		
-		//OST XML-support
-		EvData.supportedFileFormats.add(new EvDataSupport(){
-			public Integer loadSupports(String fileS)
-				{
-				File file=new File(fileS);
-				return file.isFile() && (/*file.getName().endsWith(".xml") ||*/
-						file.getName().endsWith(".ostxml")) ? 10 : null;
-				}
-			public List<Tuple<String,String[]>> getLoadFormats()
-				{
-				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
-				formats.add(new Tuple<String, String[]>("OST XML",new String[]{".ostxml"}));
-				return formats;
-				}
-			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
-				{
-				EvData d=new EvData();
-				EvIODataXML io=new EvIODataXML(d,file);
-				d.io=io;
-				io.buildDatabase(d);
-				return d;
-				}
-			public Integer saveSupports(String file){return loadSupports(file);}
-			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
-			public EvIOData getSaver(EvData d, String file) throws IOException
-				{
-				return new EvIODataXML(d,file);
-				}
-
-			
-		});
-		}
-	
 	
 	public File filename=null;
 	
@@ -206,5 +170,45 @@ public class EvIODataXML implements EvIOData
 
 	
 	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{		
+		//OST XML-support
+		EvData.supportedFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				File file=new File(fileS);
+				return file.isFile() && (/*file.getName().endsWith(".xml") ||*/
+						file.getName().endsWith(".ostxml")) ? 10 : null;
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				formats.add(new Tuple<String, String[]>("OST XML",new String[]{".ostxml"}));
+				return formats;
+				}
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
+				{
+				EvData d=new EvData();
+				EvIODataXML io=new EvIODataXML(d,file);
+				d.io=io;
+				io.buildDatabase(d);
+				return d;
+				}
+			public Integer saveSupports(String file){return loadSupports(file);}
+			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
+			public EvIOData getSaver(EvData d, String file) throws IOException
+				{
+				return new EvIODataXML(d,file);
+				}
+
+			
+		});
+		}
 	
 	}

@@ -30,6 +30,9 @@ public class FlowUnitMorphGradientExternal2D extends FlowUnitBasic
 	public static final String showName="External gradient 2D";
 	private static final String metaType="morphologyGradientExternal2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -30,35 +30,6 @@ public class LightpathWindow extends BasicWindow
 	private static final long serialVersionUID = 1L;
 
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-				{
-				public void createMenus(BasicWindow w)
-					{
-					JMenuItem mi=new JMenuItem("Lightpath",new ImageIcon(getClass().getResource("jhLightpathWindow.png")));
-					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-					}
-	
-				public void actionPerformed(ActionEvent e) 
-					{
-					new LightpathWindow();
-					}
-	
-				public void buildMenu(BasicWindow w){}
-				}
-			});
-		
-		}
-	
 	
 	LightpathView view=new LightpathView();
 	
@@ -109,4 +80,38 @@ public class LightpathWindow extends BasicWindow
 		new LightpathWindow();
 		}
 
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+				{
+				public void createMenus(BasicWindow w)
+					{
+					JMenuItem mi=new JMenuItem("Lightpath",new ImageIcon(getClass().getResource("jhLightpathWindow.png")));
+					mi.addActionListener(this);
+					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					}
+	
+				public void actionPerformed(ActionEvent e) 
+					{
+					new LightpathWindow();
+					}
+	
+				public void buildMenu(BasicWindow w){}
+				}
+			});
+		
+		}
+	
 	}

@@ -34,24 +34,6 @@ public class Shell extends EvObject
 	public static final int KEY_ROTATE=KeyBinding.register(new KeyBinding("Shell","Rotate",'c'));
 
 	
-	public static void initPlugin() {}
-	static
-		{
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				ShellImageRenderer r=new ShellImageRenderer(w);
-				w.imageWindowTools.add(new ShellImageTool(w,r));
-				w.imageWindowRenderers.add(r);
-				}
-			});
-		
-		ModelWindow.modelWindowExtensions.add(new ShellModelExtension());
-		
-		EvData.supportedMetadataFormats.put(metaType,Shell.class);
-		
-		}
 	
 
 	/******************************************************************************************************
@@ -159,5 +141,28 @@ public class Shell extends EvObject
 		ImVector2 dirvec=ImVector2.polar(minor, angle+Math.PI/2.0);
 		return new Vector3d(dirvec.x,dirvec.y,0);
 		}
+
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				ShellImageRenderer r=new ShellImageRenderer(w);
+				w.imageWindowTools.add(new ShellImageTool(w,r));
+				w.imageWindowRenderers.add(r);
+				}
+			});
+		
+		ModelWindow.modelWindowExtensions.add(new ShellModelExtension());
+		
+		EvData.supportedMetadataFormats.put(metaType,Shell.class);
+		
+		}
 	}

@@ -31,6 +31,9 @@ public class FlowUnitSize extends FlowUnitBasic
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitSize.class.getResource("jhSize.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

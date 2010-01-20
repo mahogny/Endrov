@@ -30,6 +30,9 @@ public class FlowUnitKuwaharaFilter extends FlowUnitBasic
 	public static final String showName="Kuwahara";
 	private static final String metaType="filterKuwahara2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{
