@@ -42,30 +42,6 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ConsoleBasic());
-		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ConsoleWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
 	
 	
 	/******************************************************************************************************
@@ -428,4 +404,34 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
 
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ConsoleBasic());
+		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new ConsoleWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
+
+	
 	}

@@ -38,9 +38,9 @@ public class EvOpAnalyzeParticle3D
 		}
 	
 	
-	public ParticleData exec(EvChannel regions, EvChannel image)
+	public ParticleMeasure exec(EvChannel regions, EvChannel image)
 		{
-		ParticleData data=new ParticleData();
+		ParticleMeasure data=new ParticleMeasure();
 		
 		return data;
 		}

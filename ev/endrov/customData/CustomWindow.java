@@ -35,22 +35,6 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 	{
 	static final long serialVersionUID=0;
 
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new CustomBasic());
-		
-		EV.personalConfigLoaders.put("CustomWindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try	{new CustomWindow(BasicWindow.getXMLbounds(e));}
-				catch (Exception e1) {e1.printStackTrace();}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		
-		}
 	
 	//GUI components
 	private EvComboObjectOne<CustomObject> objectCombo=new EvComboObjectOne<CustomObject>(new CustomObject(),false,true);
@@ -461,6 +445,28 @@ implements ActionListener, ChangeListener, TreeSelectionListener, TableModelList
 	
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
+
+	
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new CustomBasic());
+		
+		EV.personalConfigLoaders.put("CustomWindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try	{new CustomWindow(BasicWindow.getXMLbounds(e));}
+				catch (Exception e1) {e1.printStackTrace();}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		
+		}
 
 	
 	}
