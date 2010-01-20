@@ -30,6 +30,9 @@ public class FlowUnitConfocalShiftCorrection extends FlowUnitBasic
 	public static final String showName="Confocal shift correction";
 	private static final String metaType="confocalShiftCorrection";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

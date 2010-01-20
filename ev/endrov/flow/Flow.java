@@ -38,11 +38,7 @@ public class Flow extends EvObject
 	
 	public static final String metaType="flow";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,Flow.class);
-		}
+	
 
 	
 	/******************************************************************************************************
@@ -291,5 +287,14 @@ public class Flow extends EvObject
 		units.addAll(other.units);
 		conns.addAll(other.conns);
 		}
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Flow.class);
+		}
+
 	}

@@ -40,6 +40,9 @@ public class FlowUnitConstDouble extends FlowUnitConst
 
 	private static final String metaType="constDouble";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

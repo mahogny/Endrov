@@ -30,6 +30,9 @@ public class FlowUnitNot extends FlowUnitBasic
 	private static final String showName="Not";
 	private static final String metaType="not";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

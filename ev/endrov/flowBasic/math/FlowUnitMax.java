@@ -28,6 +28,9 @@ public class FlowUnitMax extends FlowUnitMathBinop
 		super("Max",metaType);
 		}
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

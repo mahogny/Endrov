@@ -35,6 +35,9 @@ public class FlowUnitWrapInChannel extends FlowUnitBasic
 	public static final String showName="Wrap in channel";
 	private static final String metaType="wrapInChannel";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

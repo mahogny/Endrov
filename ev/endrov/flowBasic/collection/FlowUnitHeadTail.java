@@ -23,6 +23,9 @@ public class FlowUnitHeadTail extends FlowUnitBasic
 
 	private static ImageIcon icon=new ImageIcon(FlowUnitHeadTail.class.getResource("jhHeadTail.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

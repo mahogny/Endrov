@@ -20,12 +20,6 @@ import endrov.ev.EV;
 
 public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHandler
 	{
-	public static void initPlugin() {}
-	static
-		{
-		registerMacOSXApplication();
-		//enablePrefs(true);
-		}
 	
 	//pseudo-singleton model; no point in making multiple instances
 	//of the EAWT application or our adapter
@@ -112,5 +106,14 @@ public class OSXAdapter extends ApplicationAdapter implements MRJOpenDocumentHan
 		}
 
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		registerMacOSXApplication();
+		//enablePrefs(true);
+		}
 
 	}

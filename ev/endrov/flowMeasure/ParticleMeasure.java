@@ -36,15 +36,6 @@ public class ParticleMeasure extends EvObject
 	protected static HashMap<String, ParticleMeasure.MeasurePropertyType> measures=new HashMap<String, ParticleMeasure.MeasurePropertyType>();
 	
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,ParticleMeasure.class);
-		
-		ParticleMeasure.registerMeasure("max value", new MeasureMaxIntensity3d());
-		ParticleMeasure.registerMeasure("sum value", new ParticleMeasureSumIntensity3d());
-		}
-
 	/**
 	 * One property to measure
 	 */
@@ -112,6 +103,17 @@ public class ParticleMeasure extends EvObject
 	
 	
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,ParticleMeasure.class);
+		
+		ParticleMeasure.registerMeasure("max value", new MeasureMaxIntensity3d());
+		ParticleMeasure.registerMeasure("sum value", new ParticleMeasureSumIntensity3d());
+		}
 	
 
 	}

@@ -30,6 +30,9 @@ public class FlowUnitBilateralFilter2D extends FlowUnitBasic
 	public static final String showName="Bilateral filter";
 	private static final String metaType="filterBilateral2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

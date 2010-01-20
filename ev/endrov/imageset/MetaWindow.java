@@ -30,146 +30,6 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	public static void initPlugin() {}
-	static
-		{
-		/******************************************************************************************************
-		 *                               BasicWindow extension                                                *
-		 *****************************************************************************************************/
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(final BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new BasicWindowHook()
-					{
-					public void createMenus(BasicWindow w)
-						{
-						JMenuItem miImagesetMeta=new JMenuItem("Imageset metadata",new ImageIcon(getClass().getResource("gnomeMetaWindow.png")));
-						w.addMenuWindow(miImagesetMeta);
-						miImagesetMeta.addActionListener(new ActionListener()
-							{public void actionPerformed(ActionEvent e){new MetaWindow();}});
-						buildMenu(w);
-						}
-
-					public void buildMenu(BasicWindow w)
-						{
-						}
-					});
-				}
-			});
-		
-
-		/******************************************************************************************************
-		 *                               Personal Config                                                      *
-		 *****************************************************************************************************/
-		EV.personalConfigLoaders.put("lastImagesetPath",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				EvData.setLastDataPath(new File(e.getAttributeValue("path")));
-				}
-			public void savePersonalConfig(Element root)
-				{
-				try
-					{
-					Element e=new Element("lastImagesetPath");
-					e.setAttribute("path",EvData.getLastDataPath().getPath());
-					root.addContent(e);
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-				}
-			});
-
-		EV.personalConfigLoaders.put("imagesetmetawindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Rectangle rect=getXMLbounds(e);
-					new MetaWindow(rect);
-					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				
-				String lastPath=e.getAttributeValue("path");
-				if(lastPath!=null)
-					EvData.setLastDataPath(new File(lastPath));
-				}
-			public void savePersonalConfig(Element root)
-				{
-				}
-			});
-		
-		
-		/******************************************************************************************************
-		 *                               Data menu extension                                                  *
-		 *****************************************************************************************************/
-		/*
-		EvDataMenu.extensions.add(new DataMenuExtension()
-			{
-			public void buildOpen(JMenu menu)
-				{
-				
-				}
-			public void buildSave(JMenu menu, final EvData meta)
-				{*/
-				//TODO recode reload
-				/*
-				if(meta instanceof OstImageset)
-					{
-					final Imageset rec=(Imageset)meta;
-					final JMenuItem miReload=new JMenuItem("Reload");
-					ActionListener listener=new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{
-							if(e.getSource()==miOpenDatadir)
-								EV.openExternal(rec.datadir());
-							else if(e.getSource()==miReload)
-								{
-								OstImageset ost=(OstImageset)rec;
-								ost.invalidateDatabaseCache();
-								ost.buildDatabase();
-								BasicWindow.updateWindows();
-								}
-							}
-						};
-					miOpenDatadir.addActionListener(listener);
-					miReload.addActionListener(listener);
-					menu.add(miOpenDatadir);					
-					menu.add(miReload);					
-					}
-					*/
-				//TODO Replace with more general Save as
-				/*
-				else if(meta instanceof Imageset)
-					{
-//					final Imageset rec=(Imageset)meta;
-					final JMenuItem miExportOST=new JMenuItem("Export to OST");
-					ActionListener listener=new ActionListener()
-						{
-						public void actionPerformed(ActionEvent e)
-							{
-							if(e.getSource()==miExportOST)
-								{
-								//Should maybe be registered instead?
-								new SaveOSTDialog((Imageset)meta);
-								}
-							}
-						};
-					miExportOST.addActionListener(listener);
-					menu.add(miExportOST);
-					}*/
-			/*	}
-			});*/
-		}
-
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -563,5 +423,150 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 	
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		/******************************************************************************************************
+		 *                               BasicWindow extension                                                *
+		 *****************************************************************************************************/
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(final BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new BasicWindowHook()
+					{
+					public void createMenus(BasicWindow w)
+						{
+						JMenuItem miImagesetMeta=new JMenuItem("Imageset metadata",new ImageIcon(getClass().getResource("gnomeMetaWindow.png")));
+						w.addMenuWindow(miImagesetMeta);
+						miImagesetMeta.addActionListener(new ActionListener()
+							{public void actionPerformed(ActionEvent e){new MetaWindow();}});
+						buildMenu(w);
+						}
+
+					public void buildMenu(BasicWindow w)
+						{
+						}
+					});
+				}
+			});
+		
+
+		/******************************************************************************************************
+		 *                               Personal Config                                                      *
+		 *****************************************************************************************************/
+		EV.personalConfigLoaders.put("lastImagesetPath",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				EvData.setLastDataPath(new File(e.getAttributeValue("path")));
+				}
+			public void savePersonalConfig(Element root)
+				{
+				try
+					{
+					Element e=new Element("lastImagesetPath");
+					e.setAttribute("path",EvData.getLastDataPath().getPath());
+					root.addContent(e);
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				}
+			});
+
+		EV.personalConfigLoaders.put("imagesetmetawindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					Rectangle rect=getXMLbounds(e);
+					new MetaWindow(rect);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				
+				String lastPath=e.getAttributeValue("path");
+				if(lastPath!=null)
+					EvData.setLastDataPath(new File(lastPath));
+				}
+			public void savePersonalConfig(Element root)
+				{
+				}
+			});
+		
+		
+		/******************************************************************************************************
+		 *                               Data menu extension                                                  *
+		 *****************************************************************************************************/
+		/*
+		EvDataMenu.extensions.add(new DataMenuExtension()
+			{
+			public void buildOpen(JMenu menu)
+				{
+				
+				}
+			public void buildSave(JMenu menu, final EvData meta)
+				{*/
+				//TODO recode reload
+				/*
+				if(meta instanceof OstImageset)
+					{
+					final Imageset rec=(Imageset)meta;
+					final JMenuItem miReload=new JMenuItem("Reload");
+					ActionListener listener=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							if(e.getSource()==miOpenDatadir)
+								EV.openExternal(rec.datadir());
+							else if(e.getSource()==miReload)
+								{
+								OstImageset ost=(OstImageset)rec;
+								ost.invalidateDatabaseCache();
+								ost.buildDatabase();
+								BasicWindow.updateWindows();
+								}
+							}
+						};
+					miOpenDatadir.addActionListener(listener);
+					miReload.addActionListener(listener);
+					menu.add(miOpenDatadir);					
+					menu.add(miReload);					
+					}
+					*/
+				//TODO Replace with more general Save as
+				/*
+				else if(meta instanceof Imageset)
+					{
+//					final Imageset rec=(Imageset)meta;
+					final JMenuItem miExportOST=new JMenuItem("Export to OST");
+					ActionListener listener=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							if(e.getSource()==miExportOST)
+								{
+								//Should maybe be registered instead?
+								new SaveOSTDialog((Imageset)meta);
+								}
+							}
+						};
+					miExportOST.addActionListener(listener);
+					menu.add(miExportOST);
+					}*/
+			/*	}
+			});*/
+		}
 
 	}

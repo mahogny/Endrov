@@ -30,6 +30,9 @@ public class FlowUnitImageNoiseExponential extends FlowUnitBasic
 	public static final String showName="Exponential image noise";
 	private static final String metaType="imageNoiseExponential";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

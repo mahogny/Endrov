@@ -23,6 +23,9 @@ public class FlowUnitExp extends FlowUnitMathUniop
 	{
 	private static final String metaType="exp";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

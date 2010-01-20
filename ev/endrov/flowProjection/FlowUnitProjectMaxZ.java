@@ -30,6 +30,9 @@ public class FlowUnitProjectMaxZ extends FlowUnitBasic
 	public static final String showName="Max Z";
 	private static final String metaType="projectionMaxZ";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

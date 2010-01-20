@@ -30,6 +30,9 @@ public class FlowUnitDoG2D extends FlowUnitBasic
 	public static final String showName="Difference of gaussian 2D";
 	private static final String metaType="DoG2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

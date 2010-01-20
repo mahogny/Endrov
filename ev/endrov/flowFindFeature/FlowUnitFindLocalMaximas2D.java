@@ -32,6 +32,9 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 	
 	public static final ImageIcon icon=new ImageIcon(CategoryInfo.class.getResource("jhFlowCategoryFindMaximas.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

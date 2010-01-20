@@ -23,6 +23,9 @@ public class FlowUnitSqrt extends FlowUnitMathUniop
 	{
 	private static final String metaType="sqrt";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

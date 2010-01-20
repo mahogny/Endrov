@@ -31,36 +31,6 @@ public class RecWindowMultiDim extends BasicWindow
 	static final long serialVersionUID=0;
 
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-				{
-				public void createMenus(BasicWindow w)
-					{
-					JMenuItem mi=new JMenuItem("Multi-dim acquisition",new ImageIcon(getClass().getResource("jhMultidimWindow.png")));
-					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-					}
-	
-				public void actionPerformed(ActionEvent e) 
-					{
-					new RecWindowMultiDim();
-					}
-	
-				public void buildMenu(BasicWindow w){}
-				}
-			});
-		
-		}
-	
-	
 
 	public RecWindowMultiDim()
 		{
@@ -132,5 +102,40 @@ public class RecWindowMultiDim extends BasicWindow
 		new RecWindowMultiDim();
 		
 		}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+				{
+				public void createMenus(BasicWindow w)
+					{
+					JMenuItem mi=new JMenuItem("Multi-dim acquisition",new ImageIcon(getClass().getResource("jhMultidimWindow.png")));
+					mi.addActionListener(this);
+					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					}
+	
+				public void actionPerformed(ActionEvent e) 
+					{
+					new RecWindowMultiDim();
+					}
+	
+				public void buildMenu(BasicWindow w){}
+				}
+			});
+		
+		}
+	
 	
 	}

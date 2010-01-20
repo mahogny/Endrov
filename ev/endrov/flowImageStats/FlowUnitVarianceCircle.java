@@ -30,6 +30,9 @@ public class FlowUnitVarianceCircle extends FlowUnitBasic
 	public static final String showName="Moving variance (circ)";
 	private static final String metaType="varianceCircle";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

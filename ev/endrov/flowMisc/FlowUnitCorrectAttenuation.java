@@ -30,6 +30,9 @@ public class FlowUnitCorrectAttenuation extends FlowUnitBasic
 	public static final String showName="Correct light attenuation";
 	private static final String metaType="correctLightAttenuation";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

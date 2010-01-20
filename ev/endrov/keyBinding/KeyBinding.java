@@ -31,43 +31,6 @@ public class KeyBinding implements Comparable<KeyBinding>
 	static JInputManager jinputManager=new JInputManager();
 	//TODO: how does this play with matlab?
 	
-	public static void initPlugin() {}
-	static
-		{
-		/*
-		try
-			{
-			Class testClass=Class.forName("net.java.games.input.Component");
-			testClass.newInstance();
-			jinputManager=new JInputManager();
-			}
-		catch (Exception e1)
-			{
-			e1.printStackTrace();
-			}
-		*/
-		
-		
-		BasicWindow.addBasicWindowExtension(new BasicKeyBinding());
-		
-		EV.personalConfigLoaders.put("keyBinding",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{register(readXML(e),true);}
-			public void savePersonalConfig(Element root)
-				{
-				for(KeyBinding b:bindings.values())
-					{
-					Element e=new Element("keyBinding");
-					b.writeXML(e);
-					root.addContent(e);
-					}
-				}
-			});
-		
-		}
-
-	
 	
 	
 
@@ -423,6 +386,49 @@ public class KeyBinding implements Comparable<KeyBinding>
 		return false;
 		}
 	
+
+	
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		/*
+		try
+			{
+			Class testClass=Class.forName("net.java.games.input.Component");
+			testClass.newInstance();
+			jinputManager=new JInputManager();
+			}
+		catch (Exception e1)
+			{
+			e1.printStackTrace();
+			}
+		*/
+		
+		
+		BasicWindow.addBasicWindowExtension(new BasicKeyBinding());
+		
+		EV.personalConfigLoaders.put("keyBinding",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{register(readXML(e),true);}
+			public void savePersonalConfig(Element root)
+				{
+				for(KeyBinding b:bindings.values())
+					{
+					Element e=new Element("keyBinding");
+					b.writeXML(e);
+					root.addContent(e);
+					}
+				}
+			});
+		
+		}
+
 	
 	
 	}

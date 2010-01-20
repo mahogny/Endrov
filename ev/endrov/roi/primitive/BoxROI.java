@@ -38,17 +38,6 @@ public class BoxROI extends ROI
 	{
 	private static final String metaType="ROI_Box";
 	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconBox.png"));
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,BoxROI.class);
-		
-		ROI.addType(new ROIType(icon, BoxROI.class, true,false,"Box"));
-		
-		
-		}
-	
-	
 	
 	
 	public String saveMetadata(Element e)
@@ -318,4 +307,19 @@ public class BoxROI extends ROI
 		{
 		return new Vector<ROI>();
 		}
+	
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,BoxROI.class);
+		
+		ROI.addType(new ROIType(icon, BoxROI.class, true,false,"Box"));
+		}
+	
+	
 	}

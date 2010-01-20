@@ -30,6 +30,9 @@ public class FlowUnitMorphClose2D extends FlowUnitBasic
 	public static final String showName="Close 2D";
 	private static final String metaType="morphologyClose2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

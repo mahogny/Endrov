@@ -30,6 +30,9 @@ public class FlowUnitFindLocalMaximas3D extends FlowUnitBasic
 	public static final String showName="Find local maximas 3D";
 	private static final String metaType="findLocalMaximas3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

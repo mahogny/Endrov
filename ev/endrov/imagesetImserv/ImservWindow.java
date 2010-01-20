@@ -35,29 +35,6 @@ public class ImservWindow extends BasicWindow implements ActionListener
 	{
 	public static final long serialVersionUID=0;
 	
-	public static void initPlugin() {}
-	static
-		{
-		EV.personalConfigLoaders.put("imservwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-//					System.out.println("load");
-					Rectangle r=getXMLbounds(e);
-					new ImservWindow(r);
-					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
-	
-	
 	
 	
 	private ImservClientPane pane=new ImservClientPane(null);
@@ -201,6 +178,33 @@ public class ImservWindow extends BasicWindow implements ActionListener
 	
 	public void freeResources(){}
 
+	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EV.personalConfigLoaders.put("imservwindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+//					System.out.println("load");
+					Rectangle r=getXMLbounds(e);
+					new ImservWindow(r);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
 	
 	
 	}

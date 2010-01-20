@@ -30,6 +30,9 @@ public class FlowUnitExtendedFocusVariance extends FlowUnitBasic
 	public static final String showName="Extended focus (var)";
 	private static final String metaType="extendedFocusVariance";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

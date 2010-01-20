@@ -32,13 +32,6 @@ public class TODOFlowUnitCopyResolution extends FlowUnitBasic
 	public static final String showName="Copy resolution";
 	private static final String metaType="copyResolution";
 	
-	public static void initPlugin() {}
-	static
-		{
-		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,TODOFlowUnitCopyResolution.class, FlowUnitChannelDim2D.icon,
-		"Copy resolution (XYZ) from source to destination. Might make viewing of generated images easier");
-		Flow.addUnitType(decl);
-		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
@@ -87,5 +80,16 @@ public class TODOFlowUnitCopyResolution extends FlowUnitBasic
 		*/
 		}
 
-	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,TODOFlowUnitCopyResolution.class, FlowUnitChannelDim2D.icon,
+		"Copy resolution (XYZ) from source to destination. Might make viewing of generated images easier");
+		Flow.addUnitType(decl);
+		}
 	}

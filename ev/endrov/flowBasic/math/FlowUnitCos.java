@@ -23,6 +23,9 @@ public class FlowUnitCos extends FlowUnitMathUniop
 	{
 	private static final String metaType="cos";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

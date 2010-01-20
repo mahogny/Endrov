@@ -30,6 +30,9 @@ public class FlowUnitEntropyCircle extends FlowUnitBasic
 	public static final String showName="Moving entropy (circle)";
 	private static final String metaType="entropyCircle";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

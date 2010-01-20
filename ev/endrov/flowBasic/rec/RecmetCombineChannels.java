@@ -29,12 +29,6 @@ public class RecmetCombineChannels extends FlowUnitRecmet
 	
 //	private static ImageIcon icon=new ImageIcon(FlowUnitConcat.class.getResource("jhConcat.png"));
 
-	public static void initPlugin() {}
-	static
-		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Combine Channels",metaType,RecmetCombineChannels.class, null,
-				"Combine several recording channels into one stack"));
-		}
 
 	
 	public String getBasicShowName(){return "Combine channels";}
@@ -65,6 +59,16 @@ public class RecmetCombineChannels extends FlowUnitRecmet
 			lastOutput.put("C", ((String)a)+((String)b));
 		else
 			throw new BadTypeFlowException("Unsupported collection type "+a.getClass()+" & "+b.getClass());*/
+		}
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Combine Channels",metaType,RecmetCombineChannels.class, null,
+				"Combine several recording channels into one stack"));
 		}
 
 	}

@@ -23,6 +23,9 @@ public class FlowUnitSin extends FlowUnitMathUniop
 	{
 	private static final String metaType="sin";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

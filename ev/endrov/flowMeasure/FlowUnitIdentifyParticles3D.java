@@ -30,6 +30,9 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 	public static final String showName="Identify particles 3D";
 	private static final String metaType="identifyParticles3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

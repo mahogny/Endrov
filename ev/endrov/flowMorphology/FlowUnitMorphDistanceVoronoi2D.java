@@ -30,6 +30,9 @@ public class FlowUnitMorphDistanceVoronoi2D extends FlowUnitBasic
 	public static final String showName="Distance/Voronoi 3D";
 	private static final String metaType="morphologyDistanceVoronoi3d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -36,15 +36,7 @@ public abstract class ROI extends EvObject
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	//private static final String metaType="ROI";
-	
-	public static void initPlugin() {}
-	static
-		{
-		ImageWindow.addImageWindowExtension(new ImageExtensionROI());
-		}
-
-	
-	
+		
 
 	/**
 	 * Set of all selected ROI:s
@@ -465,4 +457,13 @@ public abstract class ROI extends EvObject
 		
 	
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ImageWindow.addImageWindowExtension(new ImageExtensionROI());
+		}
+	
 	}

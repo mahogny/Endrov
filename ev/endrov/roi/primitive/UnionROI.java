@@ -24,14 +24,8 @@ public class UnionROI extends CompoundROI
 	{
 	private static final String metaType="ROI_Union";
 	private static final String metaDesc="Union";
-	private static ImageIcon icon=new ImageIcon(UnionROI.class.getResource("iconUnion.png"));	
-	public static void initPlugin(){}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,UnionROI.class);
-		
-		ROI.addType(new ROIType(icon, UnionROI.class, false,true,metaDesc));
-		}
+	private static ImageIcon icon=new ImageIcon(UnionROI.class.getResource("iconUnion.png"));
+	
 
 
 	/******************************************************************************************************
@@ -277,6 +271,16 @@ public class UnionROI extends CompoundROI
 	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
 	
 	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,UnionROI.class);
+		
+		ROI.addType(new ROIType(icon, UnionROI.class, false,true,metaDesc));
+		}	
 	
 	}

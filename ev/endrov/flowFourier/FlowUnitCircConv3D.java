@@ -31,6 +31,9 @@ public class FlowUnitCircConv3D extends FlowUnitBasic
 	public static final String showName="Circular convolution 3D";
 	private static final String metaType="circConv3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

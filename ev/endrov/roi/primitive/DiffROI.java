@@ -30,14 +30,6 @@ public class DiffROI extends CompoundROI
 	private static final String metaDesc="Difference";
 	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconDiff.png"));
 
-	public static void initPlugin(){}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,DiffROI.class);
-		
-		ROI.addType(new ROIType(icon, DiffROI.class, false,true,metaDesc));
-		}
-
 
 	/******************************************************************************************************
 	 *                               Iterator                                                             *
@@ -288,6 +280,17 @@ public class DiffROI extends CompoundROI
 	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
 	
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,DiffROI.class);
+		
+		ROI.addType(new ROIType(icon, DiffROI.class, false,true,metaDesc));
+		}
 	
 	
 	}

@@ -27,6 +27,9 @@ public class FlowUnitThisFlow extends FlowUnitBasic
 	private static final String metaType="getthisflow";
 	private static final String showName="ThisFlow";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

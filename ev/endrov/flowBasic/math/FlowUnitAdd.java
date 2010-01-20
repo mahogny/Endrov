@@ -23,6 +23,9 @@ public class FlowUnitAdd extends FlowUnitMathBinop
 	{
 	private static final String metaType="add";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

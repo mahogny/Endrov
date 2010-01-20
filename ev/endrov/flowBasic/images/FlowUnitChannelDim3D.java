@@ -35,6 +35,9 @@ public class FlowUnitChannelDim3D extends FlowUnitBasic
 	public static final String showName="Channel dim 3D";
 	private static final String metaType="channelDim3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

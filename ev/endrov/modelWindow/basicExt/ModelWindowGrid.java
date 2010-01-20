@@ -30,11 +30,6 @@ import endrov.util.EvDecimal;
  */
 public class ModelWindowGrid implements ModelWindowExtension
 	{
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new ModelWindowGrid());
-		}
 	
 	public void newModelWindow(final ModelWindow w)
 		{
@@ -178,5 +173,15 @@ public class ModelWindowGrid implements ModelWindowExtension
 		public EvDecimal getLastFrame(){return null;}
 		}
 	
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new ModelWindowGrid());
+		}
+
 	}

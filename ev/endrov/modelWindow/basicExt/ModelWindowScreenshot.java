@@ -35,11 +35,6 @@ import endrov.util.EvFileUtil;
  */
 public class ModelWindowScreenshot implements ModelWindowExtension
 	{
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new ModelWindowScreenshot());
-		}
 	
 	public void newModelWindow(final ModelWindow w)
 		{
@@ -127,5 +122,14 @@ public class ModelWindowScreenshot implements ModelWindowExtension
 		public EvDecimal getLastFrame(){return null;}
 		}
 	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new ModelWindowScreenshot());
+		}
+
 	}

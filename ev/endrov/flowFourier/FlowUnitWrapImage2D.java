@@ -30,6 +30,9 @@ public class FlowUnitWrapImage2D extends FlowUnitBasic
 	public static final String showName="Wrap image 2D";
 	private static final String metaType="wrapImage2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -31,6 +31,9 @@ public class FlowUnitCropImage extends FlowUnitBasic
 	public static final String showName="Crop image";
 	private static final String metaType="cropImage3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

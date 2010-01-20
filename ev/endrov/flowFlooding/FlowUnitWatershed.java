@@ -32,6 +32,9 @@ public class FlowUnitWatershed extends FlowUnitBasic
 	public static final String showName="Watershed";
 	private static final String metaType="watershed";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

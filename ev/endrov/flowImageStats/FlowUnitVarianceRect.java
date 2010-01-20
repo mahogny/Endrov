@@ -30,6 +30,9 @@ public class FlowUnitVarianceRect extends FlowUnitBasic
 	public static final String showName="Moving variance (rect)";
 	private static final String metaType="varianceRect";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

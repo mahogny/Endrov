@@ -30,6 +30,9 @@ public class FlowUnitMorphBinarize extends FlowUnitBasic
 	public static final String showName="Binarize";
 	private static final String metaType="morphologyBinarize";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -37,6 +37,9 @@ public class FlowUnitOutput extends FlowUnit
 	private static final String metaType="output";
 	private static ImageIcon icon=new ImageIcon(FlowUnitOutput.class.getResource("jhOutput.png"));
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -29,20 +29,6 @@ public class HardwareDatabase
 	public static LinkedList<HardwareMetadata> entries=new LinkedList<HardwareMetadata>();
 	
 	
-	public static void initPlugin() {}
-	static
-		{
-		try
-			{
-			readDatabase(EvFileUtil.getFileFromURL(HardwareDatabase.class.getResource("hardwareDatabase.xml")));
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
-			}
-		}
-	
-	
 	/**
 	 * Read file with hardware entries
 	 */
@@ -68,7 +54,19 @@ public class HardwareDatabase
 		}
 	
 	
-	
-	
-	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		try
+			{
+			readDatabase(EvFileUtil.getFileFromURL(HardwareDatabase.class.getResource("hardwareDatabase.xml")));
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}	
 	}

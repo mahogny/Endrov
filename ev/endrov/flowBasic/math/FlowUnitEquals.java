@@ -29,6 +29,9 @@ public class FlowUnitEquals extends FlowUnitMathBinop
 		super(showName,metaType);
 		}
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

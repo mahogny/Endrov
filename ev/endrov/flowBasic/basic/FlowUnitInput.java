@@ -35,13 +35,6 @@ public class FlowUnitInput extends FlowUnit
 	public FlowUnit varUnit;
 	private static final String metaType="input";
 	private static ImageIcon icon=new ImageIcon(FlowUnitInput.class.getResource("jhInput.png"));
-
-	public static void initPlugin() {}
-	static
-		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Input",metaType,FlowUnitInput.class, icon,"Input value from flow executor"));
-		}
-
 	
 	public String toXML(Element e)
 		{
@@ -128,5 +121,14 @@ public class FlowUnitInput extends FlowUnit
 	public Component getGUIcomponent(FlowPanel p){return null;}
 	public int getGUIcomponentOffsetX(){return 0;}
 	public int getGUIcomponentOffsetY(){return 0;}
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,"Input",metaType,FlowUnitInput.class, icon,"Input value from flow executor"));
+		}
 
 	}

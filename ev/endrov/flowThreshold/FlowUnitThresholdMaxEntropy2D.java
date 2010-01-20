@@ -30,6 +30,9 @@ public class FlowUnitThresholdMaxEntropy2D extends FlowUnitBasic
 	public static final String showName="Max entropy threshold";
 	private static final String metaType="thresholdMaxEntropy";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

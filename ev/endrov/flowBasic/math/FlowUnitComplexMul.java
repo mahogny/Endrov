@@ -28,6 +28,9 @@ public class FlowUnitComplexMul extends FlowUnitMathBinCompexOp
 		super("A*B",metaType);
 		}
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

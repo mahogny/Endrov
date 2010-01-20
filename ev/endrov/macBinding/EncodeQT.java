@@ -18,6 +18,9 @@ import endrov.makeMovie.EvMovieMakerFactory;
  */
 public class EncodeQT
 	{
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin()	{}
 	static
 		{

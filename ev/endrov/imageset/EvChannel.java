@@ -32,14 +32,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	{
 	private final static String metaType = "channel";
 
-	public static void initPlugin()
-		{
-		}
 
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType, EvChannel.class);
-		}
 
 	/****************************************************************************************/
 	/******************************* Image data *********************************************/
@@ -530,4 +523,14 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 		}
 
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType, EvChannel.class);
+		}
 	}

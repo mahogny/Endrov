@@ -29,6 +29,9 @@ public class FlowUnitGreaterThan extends FlowUnitMathBinop
 		super(showName,metaType);
 		}
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

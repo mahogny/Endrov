@@ -25,11 +25,6 @@ public class ExampleObject extends EvObject
 	//No spaces or funny characters
 	private static final String metaType="exampleObject";
 
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,ExampleObject.class);
-		}
 
 	//////////////////
 	// The meat
@@ -77,6 +72,15 @@ public class ExampleObject extends EvObject
 		e.addContent(someData);
 		
 		return metaType; //Minimum requirement
+		}
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,ExampleObject.class);
 		}
 
 	}

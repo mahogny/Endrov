@@ -29,6 +29,9 @@ public class FlowUnitMorphReflect extends FlowUnitBasic
 	public static final String showName="Reflect kernel";
 	private static final String metaType="morphologyReflect";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

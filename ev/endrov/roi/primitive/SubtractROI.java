@@ -28,13 +28,7 @@ public class SubtractROI extends CompoundROI
 	private static final String metaType="ROI_Subtract";
 	private static final String metaDesc="Subtract";
 	private static ImageIcon icon=new ImageIcon(SubtractROI.class.getResource("iconSub.png"));
-	public static void initPlugin(){}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,SubtractROI.class);
-		
-		ROI.addType(new ROIType(icon, SubtractROI.class, false,true,metaDesc));
-		}
+	
 
 
 	/******************************************************************************************************
@@ -281,7 +275,16 @@ public class SubtractROI extends CompoundROI
 	public Handle getPlacementHandle2(){return null;}
 	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
 	
-	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,SubtractROI.class);
+		
+		ROI.addType(new ROIType(icon, SubtractROI.class, false,true,metaDesc));
+		}	
 	
 	}

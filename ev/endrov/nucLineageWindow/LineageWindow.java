@@ -39,30 +39,6 @@ public class LineageWindow extends BasicWindow
 	{
 	static final long serialVersionUID=0;
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ExtBasic());
-		EV.personalConfigLoaders.put("lineagewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Rectangle r=BasicWindow.getXMLbounds(e);
-					LineageWindow w=new LineageWindow(r);
-					w.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					}
-				catch(Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
-
-	
 
 	public static final ImageIcon iconShowRoot=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
 	public static final ImageIcon iconShowSelected=new ImageIcon(LineageWindow.class.getResource("jhToSelected.png"));
@@ -700,5 +676,31 @@ public class LineageWindow extends BasicWindow
 	public void freeResources(){}
 
 
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ExtBasic());
+		EV.personalConfigLoaders.put("lineagewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					LineageWindow w=new LineageWindow(r);
+					w.frameControl.setGroup(e.getAttribute("group").getIntValue());
+					}
+				catch(Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
 
 	}

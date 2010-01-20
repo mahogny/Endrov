@@ -40,7 +40,10 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstEvDecimal.class.getResource("jhNumber.png"));
 
 	private static final String metaType="constEvDecimal";
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

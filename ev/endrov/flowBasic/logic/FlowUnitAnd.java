@@ -24,6 +24,9 @@ public class FlowUnitAnd extends FlowUnitLogicBinop
 	private static final String metaType="and";
 	private static final String showName="&";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

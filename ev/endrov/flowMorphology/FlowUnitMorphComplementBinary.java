@@ -30,6 +30,9 @@ public class FlowUnitMorphComplementBinary extends FlowUnitBasic
 	public static final String showName="Complement (binary)";
 	private static final String metaType="morphologyBinComplement";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

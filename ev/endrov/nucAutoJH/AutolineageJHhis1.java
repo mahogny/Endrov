@@ -58,12 +58,6 @@ import endrov.util.*;
  */
 public class AutolineageJHhis1 extends LineageAlgorithmDef
 	{
-	public static void initPlugin() {}
-	static
-		{
-		LineageAlgorithmDef.listAlgorithms.add(new AutolineageJHhis1());
-		}
-	
 	@Override
 	public LineagingAlgorithm getInstance()
 		{
@@ -1349,4 +1343,15 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 			}
 		
 		}
+	
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		LineageAlgorithmDef.listAlgorithms.add(new AutolineageJHhis1());
+		}
+	
 	}

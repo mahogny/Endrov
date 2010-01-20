@@ -28,6 +28,9 @@ public class FlowUnitGetObject extends FlowUnitBasic
 	private static final String metaType="getevobjectsoftype";
 	private static final String showName="GetEvObjectsOfType";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

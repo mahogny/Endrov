@@ -28,6 +28,9 @@ public class FlowUnitThisData extends FlowUnitBasic
 	private static final String metaType="getthisdata";
 	private static final String showName="ThisData";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

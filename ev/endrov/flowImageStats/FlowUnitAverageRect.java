@@ -30,6 +30,9 @@ public class FlowUnitAverageRect extends FlowUnitBasic
 	public static final String showName="Moving average (rect)";
 	private static final String metaType="averageRect";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

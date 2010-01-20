@@ -30,6 +30,9 @@ public class FlowUnitMorphOpen2D extends FlowUnitBasic
 	public static final String showName="Open 2D";
 	private static final String metaType="morphologyOpen2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -30,6 +30,9 @@ public class FlowUnitPercentileRect extends FlowUnitBasic
 	public static final String showName="Moving percentile (rect)";
 	private static final String metaType="percentileRect";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

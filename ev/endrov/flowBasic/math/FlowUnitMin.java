@@ -28,6 +28,9 @@ public class FlowUnitMin extends FlowUnitMathBinop
 		super("Min",metaType);
 		}
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

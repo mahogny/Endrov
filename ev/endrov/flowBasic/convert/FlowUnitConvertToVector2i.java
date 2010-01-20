@@ -30,6 +30,9 @@ public class FlowUnitConvertToVector2i extends FlowUnitBasic
 	public static final String showName="To Vector2i";
 	private static final String metaType="channelConvertToVector2i";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

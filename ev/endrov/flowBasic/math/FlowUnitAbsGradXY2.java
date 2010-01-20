@@ -33,6 +33,9 @@ public class FlowUnitAbsGradXY2 extends FlowUnitBasic
 	public static final ImageIcon icon=null;
 	//new ImageIcon(CategoryInfo.class.getResource("jhFlowCategoryFindMaximas.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

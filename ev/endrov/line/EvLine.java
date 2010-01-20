@@ -32,25 +32,6 @@ public class EvLine extends EvObject implements Cloneable
 	private static final String metaType="line";
 
 	
-	public static void initPlugin() {}
-	static
-		{
-
-		ModelWindow.modelWindowExtensions.add(new EvLineModelExtension());
-		
-		EvData.supportedMetadataFormats.put(metaType,EvLine.class);
-		
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				EvLineRenderer r=new EvLineRenderer(w);
-				w.imageWindowTools.add(new ToolMakeLine(w,r));
-				w.imageWindowRenderers.add(r);
-				}
-			});
-			
-		}
 
 	/** Additions to the object-specific menu */
 	public void buildMetamenu(JMenu menu)
@@ -175,5 +156,28 @@ public class EvLine extends EvObject implements Cloneable
 		}
 	
 	
-	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+
+		ModelWindow.modelWindowExtensions.add(new EvLineModelExtension());
+		
+		EvData.supportedMetadataFormats.put(metaType,EvLine.class);
+		
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				EvLineRenderer r=new EvLineRenderer(w);
+				w.imageWindowTools.add(new ToolMakeLine(w,r));
+				w.imageWindowRenderers.add(r);
+				}
+			});
+			
+		}
 	}

@@ -28,6 +28,9 @@ public class FlowUnitParent extends FlowUnitBasic
 	private static final String metaType="getthisparent";
 	private static final String showName="Parent";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

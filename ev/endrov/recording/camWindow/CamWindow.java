@@ -34,36 +34,6 @@ public class CamWindow extends BasicWindow
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
-
-	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-			{
-			public void createMenus(BasicWindow w)
-				{
-				JMenuItem mi=new JMenuItem("Live Camera",new ImageIcon(getClass().getResource("tangoCamera.png")));
-				mi.addActionListener(this);
-				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-				}
-
-			public void actionPerformed(ActionEvent e) 
-				{
-				new CamWindow();
-				}
-
-			public void buildMenu(BasicWindow w){}
-			}
-			});
-		
-		}
 	
 	public static TreeMap<String,Extension> extensions=new TreeMap<String,Extension>();
 	public static void addMicroscopeWindowExtension(String name, Extension e)
@@ -218,5 +188,38 @@ public class CamWindow extends BasicWindow
 		timer.stop();
 		}
 	
+
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+			{
+			public void createMenus(BasicWindow w)
+				{
+				JMenuItem mi=new JMenuItem("Live Camera",new ImageIcon(getClass().getResource("tangoCamera.png")));
+				mi.addActionListener(this);
+				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+				}
+
+			public void actionPerformed(ActionEvent e) 
+				{
+				new CamWindow();
+				}
+
+			public void buildMenu(BasicWindow w){}
+			}
+			});
+		
+		}
 	}

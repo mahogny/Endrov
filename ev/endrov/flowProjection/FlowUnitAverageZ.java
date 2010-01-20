@@ -30,6 +30,9 @@ public class FlowUnitAverageZ extends FlowUnitBasic
 	public static final String showName="Average Z";
 	private static final String metaType="projectionAvgZ";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -30,6 +30,9 @@ public class FlowUnitThresholdPercentile2D extends FlowUnitBasic
 	public static final String showName="Percentile threshold 2D";
 	private static final String metaType="thresholdPercentile2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -31,6 +31,9 @@ public class FlowUnitInverseFourier2D extends FlowUnitBasic
 	public static final String showName="Fourier inverse transform 2D";
 	private static final String metaType="transformInverseFourier2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

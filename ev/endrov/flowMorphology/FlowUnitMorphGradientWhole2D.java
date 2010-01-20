@@ -30,6 +30,9 @@ public class FlowUnitMorphGradientWhole2D extends FlowUnitBasic
 	public static final String showName="Whole gradient 2D";
 	private static final String metaType="morphologyGradientWhole2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{
