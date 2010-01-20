@@ -2,7 +2,7 @@ package endrov.flowMeasure;
 
 import endrov.imageset.EvStack;
 
-public class MeasureSumIntensity3d implements MeasureParticle.MeasurePropertyType 
+public class ParticleMeasureSumIntensity3d implements ParticleMeasure.MeasurePropertyType 
 	{
 
 	public void analyze(EvStack stack)

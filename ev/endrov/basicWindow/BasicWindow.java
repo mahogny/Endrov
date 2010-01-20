@@ -56,28 +56,6 @@ public abstract class BasicWindow extends JPanel
 		public BasicWindow getFocusWindow();
 		}
 
-	public static void initPlugin()
-		{
-		}
-
-	static
-		{
-		EV.personalConfigLoaders.put("basicwindow", new PersonalConfig()
-			{
-				public void loadPersonalConfig(Element e)
-					{
-					}
-
-				public void savePersonalConfig(Element e)
-					{
-					// Settings for individual windows
-					for (BasicWindow w : windowManager.getAllWindows())
-						w.windowSavePersonalSettings(e);
-					}
-			});
-		
-		JInputManager.addGamepadMode("Active window", new JInputModeBasicWindow(), true);
-		}
 
 	public static final int KEY_GETCONSOLE = KeyBinding.register(new KeyBinding(
 			"Basic Window", "Get console", KeyEvent.VK_ESCAPE, 0));
@@ -859,5 +837,27 @@ public abstract class BasicWindow extends JPanel
 	public abstract void freeResources();
 
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		EV.personalConfigLoaders.put("basicwindow", new PersonalConfig()
+			{
+				public void loadPersonalConfig(Element e)
+					{
+					}
+
+				public void savePersonalConfig(Element e)
+					{
+					// Settings for individual windows
+					for (BasicWindow w : windowManager.getAllWindows())
+						w.windowSavePersonalSettings(e);
+					}
+			});
 		
+		JInputManager.addGamepadMode("Active window", new JInputModeBasicWindow(), true);
+		}
 	}

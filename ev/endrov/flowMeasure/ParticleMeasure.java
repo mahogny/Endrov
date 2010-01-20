@@ -1,5 +1,6 @@
 package endrov.flowMeasure;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JMenu;
@@ -10,6 +11,7 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.flow.Flow;
 import endrov.flow.FlowUnitDeclaration;
+import endrov.imageset.EvStack;
 
 /**
  * 
@@ -19,27 +21,55 @@ import endrov.flow.FlowUnitDeclaration;
  * @author Johan Henriksson
  *
  */
-public class ParticleData extends EvObject
+public class ParticleMeasure extends EvObject
 	{
+	
+
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	public static final String metaType="TODO";
 	
+	/**
+	 * Property types
+	 */
+	protected static HashMap<String, ParticleMeasure.MeasurePropertyType> measures=new HashMap<String, ParticleMeasure.MeasurePropertyType>();
+	
+	
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedMetadataFormats.put(metaType,ParticleData.class);
+		EvData.supportedMetadataFormats.put(metaType,ParticleMeasure.class);
 		
-		MeasureParticle.registerMeasure("max value", new MeasureMaxIntensity3d());
-		MeasureParticle.registerMeasure("sum value", new MeasureSumIntensity3d());
+		ParticleMeasure.registerMeasure("max value", new MeasureMaxIntensity3d());
+		ParticleMeasure.registerMeasure("sum value", new ParticleMeasureSumIntensity3d());
 		}
 
+	/**
+	 * One property to measure
+	 */
+	public interface MeasurePropertyType
+		{
+		public String getDesc();
+		
+		
+		
+		public void analyze(EvStack stack);
+		}
 	
 	
-	
-	
-	
+
+	/**
+	 * Register one property that can be measured
+	 */
+	public static void registerMeasure(String name, ParticleMeasure.MeasurePropertyType t)
+		{
+		synchronized (measures)
+			{
+			measures.put(name, t);
+			}
+		}
+
 	
 	
 	

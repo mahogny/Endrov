@@ -28,11 +28,6 @@ public class CoordinateSystem extends EvObject
 	
 	private static final String metaType="coordinatesystem";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,CoordinateSystem.class);
-		}
 
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -241,5 +236,14 @@ public class CoordinateSystem extends EvObject
 		
 		updateCachedMatrices();
 		}
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,CoordinateSystem.class);
+		}
+
 	}

@@ -36,18 +36,6 @@ public class Bookmark extends EvObject
 	
 	//private static final String metaElement="bookmark";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,Bookmark.class);
-		ModelWindow.modelWindowExtensions.add(new ModelWindowExtension(){
-			public void newModelWindow(ModelWindow w)
-				{
-				w.modelWindowHooks.add(new BookmarkModelWindowHook(w));
-				}
-		});
-		ImageWindow.addImageWindowExtension(new BookmarkImageWindowHook());
-		}
 	
 	/**
 	 * Ask user to give the bookmark a name. Will give an error if data=null.
@@ -147,4 +135,19 @@ public class Bookmark extends EvObject
 		}
 
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Bookmark.class);
+		ModelWindow.modelWindowExtensions.add(new ModelWindowExtension(){
+			public void newModelWindow(ModelWindow w)
+				{
+				w.modelWindowHooks.add(new BookmarkModelWindowHook(w));
+				}
+		});
+		ImageWindow.addImageWindowExtension(new BookmarkImageWindowHook());
+		}
 	}

@@ -26,12 +26,6 @@ import endrov.hardware.*;
  */
 public class MicroManager extends DeviceProvider implements Device
 	{
-	public static void initPlugin() {}
-	static
-		{
-		EvHardware.root.hw.put("um", new MicroManager());
-//		HardwareManager.registerHardwareProvider(new MicroManager());
-		}
 	
 	
 	CMMCore core;
@@ -252,6 +246,17 @@ public class MicroManager extends DeviceProvider implements Device
 		ConfiguratorDlg dlg=new ConfiguratorDlg(core,configFile.getAbsolutePath());
 		dlg.setVisible(true);
 		populateFromCore();
+		}
+
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvHardware.root.hw.put("um", new MicroManager());
+//		HardwareManager.registerHardwareProvider(new MicroManager());
 		}
 
 	}

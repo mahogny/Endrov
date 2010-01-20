@@ -17,11 +17,6 @@ public class GroupObject extends EvObject
 	private static final String metaType="group";
 	
 
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,GroupObject.class);
-		}
 	
 	public String getMetaType()
 		{
@@ -45,4 +40,16 @@ public class GroupObject extends EvObject
 	public void buildMetamenu(JMenu menu)
 		{
 		}
+	
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,GroupObject.class);
+		}
+
+	
 	}

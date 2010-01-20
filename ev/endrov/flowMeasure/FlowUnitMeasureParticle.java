@@ -32,7 +32,7 @@ import endrov.imageset.EvChannel;
  */
 public class FlowUnitMeasureParticle extends FlowUnit
 	{
-	public static FlowType flowTypeMeasure=new FlowType(ParticleData.class);
+	public static FlowType flowTypeMeasure=new FlowType(ParticleMeasure.class);
 
 	private static final String metaType="measureParticle3D";
 	
@@ -100,12 +100,12 @@ public class FlowUnitMeasureParticle extends FlowUnit
 		
 		public TotalPanel()
 			{
-			int numCheck=MeasureParticle.measures.size();
+			int numCheck=ParticleMeasure.measures.size();
 			setLayout(new GridLayout(numCheck,1));
 			
-			for(String propName:MeasureParticle.measures.keySet())
+			for(String propName:ParticleMeasure.measures.keySet())
 				{
-				MeasureParticle.MeasurePropertyType type=MeasureParticle.measures.get(propName);
+				ParticleMeasure.MeasurePropertyType type=ParticleMeasure.measures.get(propName);
 				
 				JCheckBox cbox=new JCheckBox(propName);
 				cbox.setToolTipText(type.getDesc());

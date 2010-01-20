@@ -48,47 +48,6 @@ public class EvData extends EvContainer
 	public static Vector<EvData> openedData=new Vector<EvData>();
 	
 	
-	public static void initPlugin() {}
-	static
-		{		
-	
-		//Store recent entries in personal config
-		EV.personalConfigLoaders.put("recentlyLoaded",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				RecentReference rref=new RecentReference(e.getAttributeValue("desc"),e.getAttributeValue("url"));
-				recentlyLoadedFiles.add(rref);
-				BasicWindow.updateWindows(); //Semi-ugly. Done many times.
-				}
-			public void savePersonalConfig(Element root)
-				{
-				try
-					{
-					for(RecentReference rref:EvData.recentlyLoadedFiles)
-						{
-						Element e=new Element("recentlyLoaded");
-						e.setAttribute("desc",rref.descName);
-						e.setAttribute("url",rref.url);
-						root.addContent(e);
-						}
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-				}
-			});
-		
-		BasicWindow.addBasicWindowExtension(new EvDataMenu());
-//		BasicWindow.updateWindows();
-		//maybe update on new extension?
-		//priorities on update? windows should really go last. then the updateWindows call here is solved.
-		}
-	
-
-
-	
 	
 
 
@@ -457,5 +416,46 @@ public class EvData extends EvContainer
 			return io.getRecentEntry();
 		}
 
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{		
 	
+		//Store recent entries in personal config
+		EV.personalConfigLoaders.put("recentlyLoaded",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				RecentReference rref=new RecentReference(e.getAttributeValue("desc"),e.getAttributeValue("url"));
+				recentlyLoadedFiles.add(rref);
+				BasicWindow.updateWindows(); //Semi-ugly. Done many times.
+				}
+			public void savePersonalConfig(Element root)
+				{
+				try
+					{
+					for(RecentReference rref:EvData.recentlyLoadedFiles)
+						{
+						Element e=new Element("recentlyLoaded");
+						e.setAttribute("desc",rref.descName);
+						e.setAttribute("url",rref.url);
+						root.addContent(e);
+						}
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				}
+			});
+		
+		BasicWindow.addBasicWindowExtension(new EvDataMenu());
+//		BasicWindow.updateWindows();
+		//maybe update on new extension?
+		//priorities on update? windows should really go last. then the updateWindows call here is solved.
+		}
+
 	}
