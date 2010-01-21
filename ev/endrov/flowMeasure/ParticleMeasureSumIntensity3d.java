@@ -4,10 +4,15 @@ import java.util.Set;
 
 import endrov.imageset.EvStack;
 
+/**
+ * Measure: integral intensity
+ * @author Johan Henriksson
+ *
+ */
 public class ParticleMeasureSumIntensity3d implements ParticleMeasure.MeasurePropertyType 
 	{
 
-	public void analyze(EvStack stack, ParticleMeasure.FrameInfo info)
+	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
 		// TODO Auto-generated method stub
 		

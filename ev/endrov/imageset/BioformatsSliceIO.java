@@ -7,7 +7,6 @@ package endrov.imageset;
 
 import java.io.File;
 
-import endrov.util.EvFileUtil;
 import loci.common.DataTools;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;

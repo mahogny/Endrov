@@ -16,14 +16,8 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.stream.FileImageOutputStream;
 
 import loci.formats.FormatException;
-import loci.formats.IFormatWriter;
 import loci.formats.ImageReader;
 import loci.formats.ImageWriter;
-import loci.formats.enums.PixelType;
-import loci.formats.meta.DummyMetadata;
-import loci.formats.meta.IMetadata;
-import loci.formats.ome.OMEXML200809Metadata;
-
 import endrov.ev.EvLog;
 import endrov.util.EvFileUtil;
 

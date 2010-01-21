@@ -1,11 +1,12 @@
 package endrov.flowMeasure;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -15,10 +16,10 @@ import org.jdom.Element;
 
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.flow.FlowType;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
 import endrov.util.EvDecimal;
-import endrov.util.Memoize;
 
 /**
  * Measurements of particles - identified regions in stacks.
@@ -34,6 +35,9 @@ import endrov.util.Memoize;
  * Output data can not normally be modified - a special filter could do it.
  * Filters act by lazily rewriting one measure to another.
  * 
+ * TODO what about channel comparisons?
+ * 
+ * 
  * @author Johan Henriksson
  *
  */
@@ -44,22 +48,32 @@ public class ParticleMeasure extends EvObject
 	 *****************************************************************************************************/
 	public static final String metaType="TODO";
 	
+	
+	
 	/**
 	 * Property types
 	 */
 	protected static HashMap<String, ParticleMeasure.MeasurePropertyType> measures=new HashMap<String, ParticleMeasure.MeasurePropertyType>();
 	
 	/**
-	 * One property to measure
+	 * One property to measure. Columns must be fixed. 
+	 * 
 	 */
 	public interface MeasurePropertyType
 		{
 		public String getDesc();
+		
+		/**
+		 * Which properties, must be fixed and the same for all particles 
+		 */
 		public Set<String> getColumns();
-		public void analyze(EvStack stack, FrameInfo info);
+		
+		/**
+		 * Evaluate a stack, store in info. If a particle is not in the list it must be
+		 * created. All particles in the map must receive data.
+		 */
+		public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info);
 		}
-	
-	
 
 	/**
 	 * Register one property that can be measured
@@ -74,67 +88,29 @@ public class ParticleMeasure extends EvObject
 
 	
 	
-	
-	/******************************************************************************************************
-	 *            Class: XML Reader and writer of this type of meta object                                *
-	 *****************************************************************************************************/
 
-	@Override
-	public void loadMetadata(Element e)
+	/**
+	 * Measure lazily
+	 */
+	private interface CalcInfo
 		{
-		// TODO Auto-generated method stub
+		public void calc();
+		}
 		
-		}
-
-	@Override
-	public String saveMetadata(Element e)
+	/**
+	 * Information about one frame - Just a list of particles, with a lazy evaluator
+	 */
+	public static class FrameInfo extends HashMap<Integer,ParticleInfo>
 		{
-		// TODO Auto-generated method stub
-		return metaType;
-		}
-	
-	
-	/******************************************************************************************************
-	 *                               Instance                                                             *
-	 *****************************************************************************************************/
-
-	private Set<String> useMeasures=new HashSet<String>();
-	
-	public ParticleMeasure(EvStack stack, List<String> use)
-		{
-		useMeasures.addAll(use);
-		EvChannel ch=new EvChannel();
-		ch.imageLoader.put(EvDecimal.ZERO, stack);
-		setChannel(ch);
-		}
-	
-	
-	public ParticleMeasure(EvChannel ch, List<String> use)
-		{
-		useMeasures.addAll(use);
-		setChannel(ch);
-		}
-	
-	private void setChannel(EvChannel ch)
-		{
-		//Figure out columns
-		for(String s:useMeasures)
-			columns.addAll(measures.get(s).getColumns());
-
-		//Lazily evaluate stacks
-		for(Map.Entry<EvDecimal, EvStack> e:ch.imageLoader.entrySet())
+		private static final long serialVersionUID = 1L;
+		private CalcInfo calcInfo;
+		
+		public HashMap<String, Object> getCreate(int id)
 			{
-			final EvStack stack=e.getValue();
-			final FrameInfo info=new FrameInfo();
-			
-			info.calcInfo=new CalcInfo(){
-				public void calc()
-					{
-					for(String s:useMeasures)
-						measures.get(s).analyze(stack, info);
-					}
-				};
-			
+			ParticleInfo info=get(id);
+			if(info==null)
+				put(id,info=new ParticleInfo());
+			return info.map;
 			}
 		
 		
@@ -142,21 +118,12 @@ public class ParticleMeasure extends EvObject
 	
 	
 	
-	
-	private interface CalcInfo
-		{
-		public void calc();
-		}
-		
 	/**
-	 * Data for one frame
+	 * Data for one particle
 	 */
-	public static class FrameInfo
+	public static class ParticleInfo
 		{
-		private CalcInfo calcInfo;
-		//TODO something to fill in values
-		
-		public TreeMap<String, Object> map=new TreeMap<String, Object>();
+		private HashMap<String, Object> map=new HashMap<String, Object>();
 		
 		public Double getDouble(String s)
 			{
@@ -178,29 +145,132 @@ public class ParticleMeasure extends EvObject
 			return map.get(s);
 			}
 
+		
+		
 		}
 	
-	private TreeMap<EvDecimal, FrameInfo> foo=new TreeMap<EvDecimal, FrameInfo>();
+	
+	
+	/******************************************************************************************************
+	 *            Class: XML Reader and writer of this type of meta object                                *
+	 *****************************************************************************************************/
+
+	//TODO this barely qualifies as an object since it contains no data. is this fine?
+	
+	@Override
+	public void loadMetadata(Element e)
+		{
+		}
+
+	@Override
+	public String saveMetadata(Element e)
+		{
+		return metaType;
+		}
+	
+	
+	/******************************************************************************************************
+	 *                               Instance                                                             *
+	 *****************************************************************************************************/
+
+	/**
+	 * 
+	 */
+	private TreeMap<EvDecimal, FrameInfo> frameInfo=new TreeMap<EvDecimal, FrameInfo>();
+	
+	/**
+	 * Columns ie properties, for each particle
+	 */
 	private TreeSet<String> columns=new TreeSet<String>();
+
+	/**
+	 * Which measures to invoke
+	 */
+	private Set<String> useMeasures=new HashSet<String>();
+
+
+
+	public static final FlowType FLOWTYPE=new FlowType(ParticleMeasure.class);
+
+	/**
+	 * Empty measure
+	 */
+	public ParticleMeasure()
+		{
+		}
+
+	/**
+	 * Measure a stack
+	 */
+	public ParticleMeasure(EvStack stackValue, EvStack stackMask, List<String> use)
+		{
+		EvChannel chValue=new EvChannel();
+		chValue.imageLoader.put(EvDecimal.ZERO, stackValue);
+		EvChannel chMask=new EvChannel();
+		chMask.imageLoader.put(EvDecimal.ZERO, stackMask);
+		prepareEvaluate(chValue, chMask, use);
+		}
+	
+	/**
+	 * Measure one entire channel
+	 */
+	public ParticleMeasure(EvChannel chValue, EvChannel chMask, List<String> use)
+		{
+		prepareEvaluate(chValue, chMask, use);
+		}
+	
+	/**
+	 * Prepare all lazy evaluations. Measures should have been decided by this point
+	 */
+	private void prepareEvaluate(EvChannel chValue, final EvChannel chMask, List<String> use)
+		{
+		//Clear prior data
+		useMeasures.clear();
+		useMeasures.addAll(use);
+		columns.clear();
+		frameInfo.clear();
+		
+		//Figure out columns
+		for(String s:useMeasures)
+			columns.addAll(measures.get(s).getColumns());
+
+		//Lazily evaluate stacks
+		for(Map.Entry<EvDecimal, EvStack> e:chValue.imageLoader.entrySet())
+			{
+			final EvStack stackValue=e.getValue();
+			final FrameInfo info=new FrameInfo();
+			final EvDecimal frame=e.getKey();
+			
+			info.calcInfo=new CalcInfo(){
+				public void calc()
+					{
+					for(String s:useMeasures)
+						measures.get(s).analyze(stackValue, chMask.getFrame(frame),info);
+					}
+				};
+			
+			}
+		}
+	
+	
 	
 	/**
 	 * Get data for one frame
 	 */
-	public FrameInfo getFrame(EvDecimal frame)
+	public Map<Integer,ParticleInfo> getFrame(EvDecimal frame)
 		{
-		FrameInfo info=foo.get(frame);
-		if(info==null)
+		FrameInfo info=frameInfo.get(frame);
+		if(info!=null)
 			{
-			info=new FrameInfo();
-			foo.put(frame, info);
-			
-			for(MeasurePropertyType p:measures.values())
-				p.analyze(new EvStack(), info);
-			//TODO need to plug stack lazily - hence build for all frames
-			//
-			
+			if(info.calcInfo!=null)
+				{
+				info.calcInfo.calc();
+				info.calcInfo=null;
+				}
+			return Collections.unmodifiableMap(info);
 			}
-		return info;
+		else
+			return null;
 		}
 	
 	
@@ -208,16 +278,9 @@ public class ParticleMeasure extends EvObject
 	/**
 	 * Get the columns
 	 */
-	public Set<String> getColumns()
+	public SortedSet<String> getColumns()
 		{
-		//Cache columns
-		if(columns==null)
-			{
-			columns=new TreeSet<String>();
-			for(MeasurePropertyType p:measures.values())
-				columns.addAll(p.getColumns());
-			}
-		return columns;
+		return Collections.unmodifiableSortedSet(columns);
 		}
 	
 	

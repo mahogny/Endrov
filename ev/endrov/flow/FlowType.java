@@ -141,8 +141,7 @@ public class FlowType
 	public static final FlowType TVECTOR2I=new FlowType(Vector2i.class);
 	public static final FlowType TVECTOR3I=new FlowType(Vector3i.class);
 	public static final FlowType TANY=new FlowType();
-	
-//	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
+	//	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
 	public static final FlowType ANYIMAGE=new FlowType(EvChannel.class, EvStack.class, EvPixels.class);
 	
 	/**

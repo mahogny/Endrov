@@ -1,15 +1,58 @@
 package endrov.flowMeasure;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Set;
 
 import endrov.imageset.EvStack;
 
+/**
+ * Measure: maximum intensity
+ * @author Johan Henriksson
+ *
+ */
 public class MeasureMaxIntensity3d implements ParticleMeasure.MeasurePropertyType 
 	{
-
-	public void analyze(EvStack stack, ParticleMeasure.FrameInfo info)
+	private static String propertyName="maxIntensity";
+	
+	
+	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{
-		// TODO Auto-generated method stub
+		HashMap<Integer,Double> max=new HashMap<Integer, Double>();
+		//TODO: a special map for this case could speed up plenty.
+		//also: only accept integer IDs? this would speed up hashing and indexing.
+		//can be made even faster as a non-hash
+
+		//Find maximas
+		for(int az=0;az<stackValue.getDepth();az++)
+			{
+			double[] arrValue=stackValue.getInt(az).getPixels().convertToDouble(true).getArrayDouble();
+			int[] arrID=stackValue.getInt(az).getPixels().convertToDouble(true).getArrayInt();
+			
+			for(int i=0;i<arrValue.length;i++)
+				{
+				double v=arrValue[i];
+				int id=arrID[i];
+	
+				//TODO should 0 be ignored?
+//				if(m==0)
+				Double curmax=max.get(id);
+				if(curmax==null || curmax<v)
+					max.put(id, v);
+				
+				}
+			
+			
+			}
+		
+		//Write into particles
+		for(int id:max.keySet())
+			{
+			HashMap<String, Object> p=info.getCreate(id);
+			p.put(propertyName, max.get(id));
+			}
+		
+		
 		
 		}
 
@@ -20,8 +63,7 @@ public class MeasureMaxIntensity3d implements ParticleMeasure.MeasurePropertyTyp
 
 	public Set<String> getColumns()
 		{
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.singleton(propertyName);
 		}
 
 	

@@ -7,15 +7,12 @@ package endrov.flowMeasure;
 
 import java.util.*;
 
-import endrov.flow.EvOpGeneral;
-import endrov.flow.EvOpStack1;
 import endrov.imageset.EvChannel;
-import endrov.imageset.EvPixelsType;
-import endrov.imageset.EvStack;
-import endrov.util.Vector3i;
 
 /**
  * Analyze blobs in each stack over time.
+ * 
+ * evop vs the real class - are both needed?
  * 
  * 
  * @author Johan Henriksson
@@ -40,8 +37,7 @@ public class EvOpAnalyzeParticle3D
 	
 	public ParticleMeasure exec(EvChannel regions, EvChannel image)
 		{
-		ParticleMeasure data=null;//new ParticleMeasure();
-		
+		ParticleMeasure data=new ParticleMeasure(image, regions, new LinkedList<String>(enabled));
 		return data;
 		}
 	
