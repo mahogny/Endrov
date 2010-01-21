@@ -6,15 +6,12 @@
 package util2.integrateExpression.compare;
 
 import java.io.File;
-import java.io.IOException;
-
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
 import endrov.imageset.Imageset;
-import endrov.util.Tuple;
 
 public class ExtractAPtoImage
 	{

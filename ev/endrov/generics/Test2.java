@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
 import endrov.util.Vector3i;
 import static endrov.generics.EvGenerics.*;
 

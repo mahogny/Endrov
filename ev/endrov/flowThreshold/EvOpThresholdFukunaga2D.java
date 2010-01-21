@@ -7,16 +7,11 @@ package endrov.flowThreshold;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
-import endrov.flowBasic.EvImageHistogram;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
-import endrov.util.EvArrayUtil;
-import endrov.util.Tuple;
 
 
 /**

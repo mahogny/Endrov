@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import sun.misc.Compare;
 import util2.integrateExpression.FindAnnotatedStrains;
 
 

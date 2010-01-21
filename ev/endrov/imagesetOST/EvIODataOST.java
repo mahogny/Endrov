@@ -5,7 +5,6 @@
  */
 package endrov.imagesetOST;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
