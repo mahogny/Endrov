@@ -10,6 +10,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 
 import javax.swing.JCheckBox;
@@ -84,11 +86,9 @@ public class FlowUnitMeasureParticle extends FlowUnit
 		for(String s:enabledProperty)
 			op.enable(s);
 		
-		
 		Object regions=flow.getInputValue(this, exec, "regions");
 		Object values=flow.getInputValue(this, exec, "values");
 
-		
 		lastOutput.put("out", op.exec((EvChannel)regions,(EvChannel)values));
 		}
 	
@@ -106,15 +106,26 @@ public class FlowUnitMeasureParticle extends FlowUnit
 			int numCheck=ParticleMeasure.measures.size();
 			setLayout(new GridLayout(numCheck,1));
 			
-			for(String propName:ParticleMeasure.measures.keySet())
+			for(final String propName:ParticleMeasure.measures.keySet())
 				{
 				ParticleMeasure.MeasurePropertyType type=ParticleMeasure.measures.get(propName);
 				
-				JCheckBox cbox=new JCheckBox(propName);
+				final JCheckBox cbox=new JCheckBox(propName);
 				cbox.setToolTipText(type.getDesc());
 				cbox.setOpaque(false);
+				cbox.setSelected(enabledProperty.contains(propName));
 				add(cbox);
 				
+				cbox.addActionListener(new ActionListener()
+					{
+						public void actionPerformed(ActionEvent e)
+							{
+							if(cbox.isSelected())
+								enabledProperty.add(propName);
+							else
+								enabledProperty.remove(propName);
+							}
+					});
 				}
 			
 			setOpaque(false);

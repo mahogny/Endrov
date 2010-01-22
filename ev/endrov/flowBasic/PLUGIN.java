@@ -63,6 +63,7 @@ public class PLUGIN extends PluginDef
 				//Const
 				FlowUnitConstBoolean.class,FlowUnitConstDouble.class,FlowUnitConstInteger.class,
 				FlowUnitConstString.class,FlowUnitConstClass.class,FlowUnitConstEvDecimal.class,
+				FlowUnitConstFile.class,
 				
 				//Math
 				FlowUnitAdd.class,FlowUnitDiv.class,FlowUnitSub.class,FlowUnitMul.class,

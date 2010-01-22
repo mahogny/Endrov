@@ -38,6 +38,7 @@ public class EvSwingUtil
 		JPanel p=new JPanel(new BorderLayout());
 		p.add(new JLabel(s),BorderLayout.WEST);
 		p.add(c,BorderLayout.CENTER);
+		p.setOpaque(false);
 		return p;
 		}
 

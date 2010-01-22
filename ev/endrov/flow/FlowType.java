@@ -5,6 +5,7 @@
  */
 package endrov.flow;
 
+import java.io.File;
 import java.util.*;
 
 import endrov.imageset.EvChannel;
@@ -131,6 +132,7 @@ public class FlowType
 		}
 	
 	
+	public static final FlowType TFILE=new FlowType(File.class);
 	public static final FlowType TINTEGER=new FlowType(Integer.class);
 	public static final FlowType TDOUBLE=new FlowType(Double.class);
 	public static final FlowType TSTRING=new FlowType(String.class);

@@ -10,32 +10,27 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.util.*;
 
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.EvDecimalEditor;
 import endrov.basicWindow.SpinnerSimpleEvFrame;
-import endrov.basicWindow.SpinnerSimpleInteger;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnit;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
-import endrov.flowMeasure.ParticleMeasure.FrameInfo;
 import endrov.flowMeasure.ParticleMeasure.ParticleInfo;
-import endrov.frameTime.EvFrameEditor;
-import endrov.imageset.EvChannel;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
@@ -147,7 +142,7 @@ public class FlowUnitShowMeasure extends FlowUnit
 	
 	private String getLabel()
 		{
-		return "";
+		return " ";
 		}
 	
 	
@@ -241,8 +236,14 @@ public class FlowUnitShowMeasure extends FlowUnit
 					//EvSwingUtil.withLabel("ID ", spID)),
 					BorderLayout.NORTH);
 			
+			
+			
 			table=new JTable(this);
-			add(table,BorderLayout.CENTER);
+			JScrollPane sPane=new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			add(sPane,BorderLayout.CENTER);
+			
+/*			table=new JTable(this);
+			add(table,BorderLayout.CENTER);*/
 			
 			spFrame.addChangeListener(new ChangeListener()
 				{
@@ -253,6 +254,10 @@ public class FlowUnitShowMeasure extends FlowUnit
 				});
 			
 			setOpaque(false);
+			Dimension size=new Dimension(300,200);
+			setMaximumSize(size);
+			setSize(size);
+			setPreferredSize(size);
 			}
 		
 		
@@ -277,13 +282,15 @@ public class FlowUnitShowMeasure extends FlowUnit
 		 */
 		public void setMeasure(ParticleMeasure m)
 			{
-			measure=m;
-			
+			measure=m;			
 			mapToColumn.clear();
 			mapToColumn.addAll(measure.getColumns());
 			
 			//TODO update frame pointer
+
 			updateNewFrame();
+			
+//			doLayout();
 			}
 
 		/**
@@ -295,6 +302,12 @@ public class FlowUnitShowMeasure extends FlowUnit
 			Map<Integer, ParticleInfo> map=measure.getFrame(getCurrentFrame());
 			if(map!=null)
 				mapToID.addAll(map.keySet());
+			
+			for(TableModelListener l:listeners)
+				l.tableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+			
+//			System.out.println("new frame! "+mapToID.size()+"   "+mapToColumn.size());
+
 			}
 	
 		public Class<?> getColumnClass(int columnIndex)
@@ -317,7 +330,11 @@ public class FlowUnitShowMeasure extends FlowUnit
 	
 		public int getRowCount()
 			{
-			return measure.getFrame(getCurrentFrame()).size();
+			Map<Integer,ParticleInfo> m=measure.getFrame(getCurrentFrame());
+			if(m==null)
+				return 0;
+			else
+				return m.size();
 			}
 	
 		public Object getValueAt(int rowIndex, int columnIndex)

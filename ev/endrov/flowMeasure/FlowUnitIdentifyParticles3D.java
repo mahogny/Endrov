@@ -21,7 +21,7 @@ import endrov.flow.FlowUnitDeclaration;
 import endrov.imageset.AnyEvImage;
 
 /**
- * Flow unit: Find local maximas
+ * Flow unit: Identify particles i.e. give them a unique ID
  * @author Johan Henriksson
  *
  */
