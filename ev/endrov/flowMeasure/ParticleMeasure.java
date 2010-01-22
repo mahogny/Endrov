@@ -1,5 +1,6 @@
 package endrov.flowMeasure;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -237,18 +238,23 @@ public class ParticleMeasure extends EvObject
 		//Lazily evaluate stacks
 		for(Map.Entry<EvDecimal, EvStack> e:chValue.imageLoader.entrySet())
 			{
-			final EvStack stackValue=e.getValue();
-			final FrameInfo info=new FrameInfo();
+			FrameInfo info=new FrameInfo();
 			final EvDecimal frame=e.getKey();
+			
+			//final EvStack stackValue=e.getValue();
+			final WeakReference<EvStack> weakStackValue=new WeakReference<EvStack>(e.getValue());
+			final WeakReference<EvChannel> weakChMask=new WeakReference<EvChannel>(chMask);
+			final WeakReference<FrameInfo> weakInfo=new WeakReference<FrameInfo>(info);
 			
 			info.calcInfo=new CalcInfo(){
 				public void calc()
 					{
 					for(String s:useMeasures)
-						measures.get(s).analyze(stackValue, chMask.getFrame(frame),info);
+						measures.get(s).analyze(weakStackValue.get(), weakChMask.get().getFrame(frame),weakInfo.get());
 					}
 				};
 			
+			frameInfo.put(frame, info);
 			}
 		}
 	
@@ -307,8 +313,11 @@ public class ParticleMeasure extends EvObject
 		{
 		EvData.supportedMetadataFormats.put(metaType,ParticleMeasure.class);
 		
-		ParticleMeasure.registerMeasure("max value", new MeasureMaxIntensity3d());
-		ParticleMeasure.registerMeasure("sum value", new ParticleMeasureSumIntensity3d());
+		ParticleMeasure.registerMeasure("max value", new ParticleMeasureMaxIntensity());
+		ParticleMeasure.registerMeasure("sum value", new ParticleMeasureSumIntensity());
+		ParticleMeasure.registerMeasure("volume", new ParticleMeasureVolume());
+		ParticleMeasure.registerMeasure("mean value", new ParticleMeasureMeanIntensity());
+		ParticleMeasure.registerMeasure("center of mass", new ParticleMeasureMassCenter());
 		}
 	
 

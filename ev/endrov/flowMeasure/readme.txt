@@ -126,6 +126,32 @@ http://imagejdocu.tudor.lu/doku.php?id=plugin:analysis:3d_object_counter:start
 
 
 
+====================================== TODO =================================
 
 
-
+area
+standard deviation
+center of mass
+bounding rectangle
+circularity
+modal gray value
+perimeter
+fit ellipse
+ferets diameter
+the surface, 
+the centre of mass and 
+the centre of intensity 
+Mean of the gray values;
+Standard deviation of the gray values;
+Minimum gray value;
+Maximum gray value;
+Median of the gray values;
+Mean distance from the geometrical centre of the object to surface;
+Standard deviation of the distance to surface;
+Median distance to surface;
+Centroid;
+Bounding box.
+texture statistics
+euler number
+PCA
+            

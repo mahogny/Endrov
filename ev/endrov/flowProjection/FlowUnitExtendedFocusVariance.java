@@ -30,15 +30,6 @@ public class FlowUnitExtendedFocusVariance extends FlowUnitBasic
 	public static final String showName="Extended focus (var)";
 	private static final String metaType="extendedFocusVariance";
 	
-	/******************************************************************************************************
-	 * Plugin declaration
-	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitExtendedFocusVariance.class, CategoryInfo.icon,
-				"Merge slices in stack into one image that represents the best focus of them all. Estimates using local variance"));
-		}
 	
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
@@ -66,5 +57,15 @@ public class FlowUnitExtendedFocusVariance extends FlowUnitBasic
 		lastOutput.put("out", new EvOpExtendedFocusVariance().exec1Untyped(a));
 		}
 
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitExtendedFocusVariance.class, CategoryInfo.icon,
+				"Merge slices in stack into one image that represents the best focus of them all. Estimates using local variance"));
+		}
+
 	}
