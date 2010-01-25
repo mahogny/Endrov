@@ -55,7 +55,8 @@ public class FlowUnitConstClass extends FlowUnitConst
 		setVar(e.getAttributeValue("value"));
 		}
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
 		return "C";
 		}

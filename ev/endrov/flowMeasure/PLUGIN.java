@@ -43,7 +43,9 @@ public class PLUGIN extends PluginDef
 				FlowUnitIdentifyParticles3D.class,
 				FlowUnitMeasureParticle.class,
 				FlowUnitShowMeasure.class,
+				
 				FlowUnitMeasureToFile.class,
+				FlowUnitMeasureToSQL.class,
 				
 				FlowUnitConnectSQL.class,
 		};

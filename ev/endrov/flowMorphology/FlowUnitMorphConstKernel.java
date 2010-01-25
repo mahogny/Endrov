@@ -95,7 +95,6 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Kernel",metaType,FlowUnitMorphConstKernel.class, 
 				CategoryInfo.icon,"Constant kernel");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnitInput(Boolean.class, decl);
 		}
 	
 	public String toXML(Element e)
@@ -140,12 +139,6 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 		}
 
 	
-	
-	protected String getLabel()
-		{
-		return "K";
-		}
-
 	protected FlowType getConstType()
 		{
 		return MorphKernel.FLOWTYPE;
@@ -367,6 +360,12 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 	public Component getGUIcomponent(final FlowPanel p)
 		{
 		return new TotalPanel();
+		}
+
+	@Override
+	public String getBasicShowName()
+		{
+		return "Make kernel";
 		}
 
 

@@ -47,7 +47,7 @@ public class ParticleMeasureMeanIntensity implements ParticleMeasure.MeasureProp
 					Double lastVol=vol.get(id);
 					if(lastVol==null)
 						lastVol=0.0;
-					vol.put(id, lastVol++);
+					vol.put(id, lastVol+1);
 
 					}
 				

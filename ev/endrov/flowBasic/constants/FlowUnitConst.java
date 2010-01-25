@@ -6,30 +6,28 @@
 package endrov.flowBasic.constants;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+
+import javax.swing.ImageIcon;
+
 import endrov.flow.Flow;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
-import endrov.flow.ui.FlowPanel;
+import endrov.flow.FlowUnitBasic;
 
 /**
  * Common look for all flow constants
  * @author Johan Henriksson
  *
  */
-public abstract class FlowUnitConst extends FlowUnit
+public abstract class FlowUnitConst extends FlowUnitBasic
 	{
 
 	
 	protected Color colorBadValue=Color.RED; 
 
-	protected abstract String getLabel();
+	//protected abstract String getLabel();
 	
+	/*
 	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		int w=fm.stringWidth(getLabel());
@@ -57,7 +55,7 @@ public abstract class FlowUnitConst extends FlowUnit
 		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
 		}
 
-
+*/
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
@@ -69,7 +67,7 @@ public abstract class FlowUnitConst extends FlowUnit
 		}
 	
 	protected abstract FlowType getConstType();
-	
+	/*
 	public void editDialog()
 		{
 		}
@@ -90,6 +88,26 @@ public abstract class FlowUnitConst extends FlowUnit
 		return 3+w+3;
 		}
 	public int getGUIcomponentOffsetY(){return 1;}
+*/
+	
+	@Override
+	public Color getBackground()
+		{
+		return CategoryInfo.bgColor;
+		}
+	/*
 
+	@Override
+	public String getBasicShowName()
+		{
+		return "F";
+		}
+		*/
+
+	@Override
+	public ImageIcon getIcon()
+		{
+		return CategoryInfo.icon;
+		}
 	
 	}

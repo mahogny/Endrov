@@ -9,9 +9,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.StringWriter;
 import java.util.*;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -24,10 +28,11 @@ import javax.swing.table.TableModel;
 import org.jdom.Element;
 
 import endrov.basicWindow.SpinnerSimpleEvFrame;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 import endrov.flowMeasure.ParticleMeasure.ParticleInfo;
@@ -39,14 +44,19 @@ import endrov.util.EvSwingUtil;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitShowMeasure extends FlowUnit
+public class FlowUnitShowMeasure extends FlowUnitBasic
 	{
 	public static FlowType flowTypeMeasure=new FlowType(ParticleMeasure.class);
-
 	private static final String metaType="showMeasureParticle";
 	
 	
 	private WeakHashMap<FlowPanel, TotalPanel> listPanels=new WeakHashMap<FlowPanel, TotalPanel>();
+	
+	
+	public FlowUnitShowMeasure()
+		{
+		textPosition=TEXTABOVE;
+		}
 	
 	
 	public String toXML(Element e)
@@ -98,110 +108,34 @@ public class FlowUnitShowMeasure extends FlowUnit
 		types.put("out", flowTypeMeasure);
 		}
 	
+
 	
-	public Dimension getBoundingBox(Component comp, Flow flow)
+	@Override
+	public Color getBackground()
 		{
-		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth()+4,comp.getHeight()+2);
-		return d;
-		}
-	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
-		{
-		Dimension d=getBoundingBox(comp, panel.getFlow());
-		
-		g.setColor(Color.GREEN);
-		g.fillRect(x,y,d.width,d.height);
-		g.setColor(getBorderColor(panel));
-		g.drawRect(x,y,d.width,d.height);
-		g.setColor(getTextColor());
-		g.drawString(getLabel(), x+3, y+d.height/2+fonta/2);
-		
-		helperDrawConnectors(g, panel, comp, getBoundingBox(comp, panel.getFlow()));
+		return CategoryInfo.bgColor;
 		}
 
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
+	@Override
+	public String getBasicShowName()
 		{
-		Dimension dim=getBoundingBox(comp, flow);
-		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
+		return "Particle measures";
 		}
 
-	
-
-	
-	public void editDialog()
+	@Override
+	public ImageIcon getIcon()
 		{
+		return CategoryInfo.icon;
 		}
 
-	
-	public Collection<FlowUnit> getSubUnits(Flow flow)
-		{
-		return Collections.singleton((FlowUnit)this);
-		}
 
-	
-	private String getLabel()
-		{
-		return " ";
-		}
-	
-	
-	public int getGUIcomponentOffsetX()
-		{
-		int w=fm.stringWidth(getLabel());
-		return 3+w+3;
-		}
-	public int getGUIcomponentOffsetY(){return 1;}
 
-	
-
-	
-	
-	
-	/*
-			
-	private class TotalPanel extends JPanel implements TableModel
-		{
-		private static final long serialVersionUID = 1L;
-		
-		//TODO Replace with something that knows which frames there are
-		SpinnerSimpleEvFrame spFrame=new SpinnerSimpleEvFrame();
-		//SpinnerSimpleInteger spID=new SpinnerSimpleInteger();
-		
-		ParticleMeasure measure;
-		
-		
-		public TotalPanel()
-			{
-			setLayout(new BorderLayout());
-
-			add(//EvSwingUtil.layoutEvenVertical(
-					EvSwingUtil.withLabel("Frame ", spFrame),
-					//EvSwingUtil.withLabel("ID ", spID)),
-					BorderLayout.NORTH);
-			
-			JTable table=new JTable(this);
-			add(table,BorderLayout.CENTER);
-			
-			setOpaque(false);
-			}
-		
-
-	
-				
-		}
-			
-	}*/
-
-	
-	
-	
 
 	/*********************************************************************
 	 * The special swing component for this unit
 	 * @author Johan Henriksson
 	 */
-	private class TotalPanel extends JPanel implements TableModel
+	private class TotalPanel extends JPanel implements TableModel, ActionListener
 		{
 		private static final long serialVersionUID = 1L;
 
@@ -209,8 +143,6 @@ public class FlowUnitShowMeasure extends FlowUnit
 
 		//TODO Replace with something that knows which frames there are
 		private SpinnerSimpleEvFrame spFrame=new SpinnerSimpleEvFrame();
-		//SpinnerSimpleInteger spID=new SpinnerSimpleInteger();
-		
 		private ParticleMeasure measure=new ParticleMeasure();
 		
 		/**
@@ -225,25 +157,20 @@ public class FlowUnitShowMeasure extends FlowUnit
 
 		
 		private JTable table;
-
+		private JButton bCopyToClipboard=BasicIcon.getButtonCopy();
 		
 		public TotalPanel()
 			{
 			setLayout(new BorderLayout());
 	
-			add(//EvSwingUtil.layoutEvenVertical(
-					EvSwingUtil.withLabel("Frame ", spFrame),
-					//EvSwingUtil.withLabel("ID ", spID)),
+			add(EvSwingUtil.layoutLCR(bCopyToClipboard, EvSwingUtil.withLabel("Frame ", spFrame), null),
 					BorderLayout.NORTH);
 			
-			
+			bCopyToClipboard.addActionListener(this);
 			
 			table=new JTable(this);
 			JScrollPane sPane=new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			add(sPane,BorderLayout.CENTER);
-			
-/*			table=new JTable(this);
-			add(table,BorderLayout.CENTER);*/
 			
 			spFrame.addChangeListener(new ChangeListener()
 				{
@@ -289,8 +216,6 @@ public class FlowUnitShowMeasure extends FlowUnit
 			//TODO update frame pointer
 
 			updateNewFrame();
-			
-//			doLayout();
 			}
 
 		/**
@@ -305,9 +230,6 @@ public class FlowUnitShowMeasure extends FlowUnit
 			
 			for(TableModelListener l:listeners)
 				l.tableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
-			
-//			System.out.println("new frame! "+mapToID.size()+"   "+mapToColumn.size());
-
 			}
 	
 		public Class<?> getColumnClass(int columnIndex)
@@ -368,6 +290,16 @@ public class FlowUnitShowMeasure extends FlowUnit
 	
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex)
 			{
+			}
+
+		public void actionPerformed(ActionEvent e)
+			{
+			if(e.getSource()==bCopyToClipboard)
+				{
+				StringWriter sw=new StringWriter();
+				measure.saveCSV(sw, true, "\t");
+				EvSwingUtil.setClipBoardString(sw.getBuffer().toString());
+				}
 			}
 		}
 	
