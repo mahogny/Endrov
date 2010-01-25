@@ -1,6 +1,9 @@
 package endrov.flowMeasure;
 
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.ref.WeakReference;
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -280,9 +283,17 @@ public class ParticleMeasure extends EvObject
 		}
 	
 	
+	/**
+	 * Get which frames exist
+	 */
+	public SortedSet<EvDecimal> getFrames()
+		{
+		return Collections.unmodifiableSortedSet((SortedSet<EvDecimal>)frameInfo.keySet());
+		}
+		
 	
 	/**
-	 * Get the columns
+	 * Get which columns exist
 	 */
 	public SortedSet<String> getColumns()
 		{
@@ -302,6 +313,61 @@ public class ParticleMeasure extends EvObject
 		}
 
 
+	
+	/**
+	 * Write data as a CSV-style table
+	 */
+	public void saveCSV(Writer io, boolean addHeader, String fieldDelim)
+		{
+		PrintWriter pw=new PrintWriter(io);
+		
+		Set<String> col=getColumns();
+		
+		//Add header
+		if(addHeader)
+			{
+			pw.print("frame");
+			pw.print(fieldDelim);
+			for(String s:col)
+				{
+				pw.print(fieldDelim);
+				pw.print(s);
+				}
+			pw.println();
+			}
+
+		//Write the data
+		for(EvDecimal frame:getFrames())
+			{
+			pw.print(frame);
+			pw.print(fieldDelim);
+
+			for(Map.Entry<Integer, ParticleInfo> e:getFrame(frame).entrySet())
+				{
+				pw.print(e.getKey());
+				pw.print(fieldDelim);
+				Map<String,Object> props=e.getValue().map;
+				for(String columnName:col)
+					{
+					pw.print(fieldDelim);
+					pw.print(props.get(columnName));
+					}
+				
+				}
+			
+			}
+		
+		pw.flush();
+		}
+	
+	
+	
+	public void saveSQL(Connection conn)
+		{
+		
+		
+		
+		}
 	
 	
 	
