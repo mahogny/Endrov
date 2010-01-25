@@ -10,6 +10,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 
 import javax.swing.JCheckBox;
@@ -66,20 +68,12 @@ public class FlowUnitMeasureToFile extends FlowUnit
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
-		ParticleMeasure measure=(ParticleMeasure)flow.getInputValue(this, exec, "in");
+		File file=(File)flow.getInputValue(this, exec, "file");
+		ParticleMeasure measure=(ParticleMeasure)flow.getInputValue(this, exec, "measure");
 		lastOutput.put("out",measure);
-		saveToFile(measure);
-		}
-	
-	/**
-	 * Save data to file
-	 */
-	public void saveToFile(ParticleMeasure measure)
-		{
-		//TODO store in file
 		
-		
-		
+		FileWriter fw=new FileWriter(file); 
+		measure.saveCSV(fw, addHeaders, fieldDelim);
 		}
 			
 	
@@ -94,7 +88,7 @@ public class FlowUnitMeasureToFile extends FlowUnit
 	/** Get types of flows in */
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("in", flowTypeMeasure);
+		types.put("measure", flowTypeMeasure);
 		types.put("file", FlowType.TFILE);
 		}
 	

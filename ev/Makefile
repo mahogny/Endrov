@@ -7,6 +7,19 @@ all:
 	util/*/*.java
 #will not work if any of the files fail. have to exclude mac here!
 
+
+gitaddall:
+	git add \
+	endrov/*/*.java \
+	endrov/*/*/*.java \
+	endrov/*/*/*/*.java \
+	util/*.java \
+	util/*/*.java \
+	endrov/*/*.png \
+	endrov/*/*/*.png \
+	endrov/*/*.txt \
+	endrov/*/*/*.txt \
+
 backup:
 	###!!!! FROM TO
 	#./run.sh util.Backup /Volumes/TBU_xeon01_500GB01/final_recordings/ /Volumes/TBU_500GBusb01/final_recordings/ 
