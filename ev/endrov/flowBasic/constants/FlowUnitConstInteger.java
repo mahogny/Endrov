@@ -62,7 +62,8 @@ public class FlowUnitConstInteger extends FlowUnitConst
 		}
 
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
 		return "I";
 		}

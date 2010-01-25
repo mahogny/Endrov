@@ -63,7 +63,8 @@ public class FlowUnitConstDouble extends FlowUnitConst
 		}
 
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
 		return "D";
 		}

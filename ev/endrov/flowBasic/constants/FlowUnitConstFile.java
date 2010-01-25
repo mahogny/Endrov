@@ -36,16 +36,12 @@ import endrov.util.EvSwingUtil;
  *
  */
 public class FlowUnitConstFile extends FlowUnitConst
-	{
-	
+	{	
+	private static ImageIcon icon=new ImageIcon(FlowUnitConstFile.class.getResource("silkFile.png"));
+	private static final String metaType="constFile";
 
 	public String var="";
-	
-	private static ImageIcon icon=new ImageIcon(FlowUnitConstFile.class.getResource("silkFile.png"));
-
-	
-	private static final String metaType="constFile";
-		
+			
 	public String toXML(Element e)
 		{
 		e.setAttribute("value", ""+var);
@@ -55,11 +51,6 @@ public class FlowUnitConstFile extends FlowUnitConst
 	public void fromXML(Element e)
 		{
 		var=e.getAttributeValue("value");
-		}
-	
-	protected String getLabel()
-		{
-		return "F";
 		}
 
 	protected FlowType getConstType()
@@ -115,7 +106,18 @@ public class FlowUnitConstFile extends FlowUnitConst
 		}
 	
 	
-	
+
+	@Override
+	public String getBasicShowName()
+		{
+		return "";
+		}
+
+	@Override
+	public ImageIcon getIcon()
+		{
+		return icon;
+		}
 	
 	
 	
@@ -125,10 +127,12 @@ public class FlowUnitConstFile extends FlowUnitConst
 	public static void initPlugin() {}
 	static
 		{
-		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"File",metaType,FlowUnitConstFile.class, icon,"Specify file path");
+		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"File",metaType,
+				FlowUnitConstFile.class, icon,"Specify file path");
 		Flow.addUnitType(decl);
 		FlowType.registerSuggestCreateUnitInput(File.class, decl);
 		}
+	
 	
 	
 	}

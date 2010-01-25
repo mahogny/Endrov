@@ -73,6 +73,7 @@ public class EvSwingUtil
 		if(left!=null)   p.add(left,BorderLayout.WEST);
 		if(center!=null) p.add(center,BorderLayout.CENTER);
 		if(right!=null)  p.add(right,BorderLayout.EAST);
+		p.setOpaque(false);
 		return p;
 		}
 	

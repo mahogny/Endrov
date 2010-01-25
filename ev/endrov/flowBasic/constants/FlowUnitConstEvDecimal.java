@@ -64,9 +64,10 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 		}
 
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
-		return "D";
+		return "Dec";
 		}
 
 	protected FlowType getConstType()
@@ -83,7 +84,7 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 	
 	public Component getGUIcomponent(final FlowPanel p)
 		{
-		final JTextField field=new JTextField(""+getVar());
+		final JTextField field=new JTextField(getVar().toString());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
 		final Color colorOk=field.getForeground();
 		

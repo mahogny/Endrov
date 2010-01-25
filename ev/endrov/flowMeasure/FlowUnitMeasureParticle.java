@@ -7,13 +7,12 @@ package endrov.flowMeasure;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -22,7 +21,7 @@ import org.jdom.Element;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 import endrov.imageset.EvChannel;
@@ -32,7 +31,7 @@ import endrov.imageset.EvChannel;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitMeasureParticle extends FlowUnit
+public class FlowUnitMeasureParticle extends FlowUnitBasic
 	{
 	public static FlowType flowTypeMeasure=new FlowType(ParticleMeasure.class);
 
@@ -47,12 +46,16 @@ public class FlowUnitMeasureParticle extends FlowUnit
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Measure particle 3d",metaType,FlowUnitMeasureParticle.class, 
 				CategoryInfo.icon,"Measure various properties of regions");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnitInput(Boolean.class, decl);
 		}
 	
 	
 	private HashSet<String> enabledProperty=new HashSet<String>();
 	
+	
+	public FlowUnitMeasureParticle()
+		{
+		textPosition=TEXTABOVE;
+		}
 	
 	public String toXML(Element e)
 		{
@@ -75,7 +78,6 @@ public class FlowUnitMeasureParticle extends FlowUnit
 				}
 		}
 
-	
 
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
@@ -90,6 +92,45 @@ public class FlowUnitMeasureParticle extends FlowUnit
 		Object values=flow.getInputValue(this, exec, "values");
 
 		lastOutput.put("out", op.exec((EvChannel)regions,(EvChannel)values));
+		}
+	
+
+	public Component getGUIcomponent(final FlowPanel p)
+		{
+		return new TotalPanel();
+		}
+
+	
+	/** Get types of flows in */
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("regions", FlowType.ANYIMAGE);
+		types.put("values", FlowType.ANYIMAGE);
+		}
+	
+	/** Get types of flows out */
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("out", flowTypeMeasure);
+		}
+	
+	
+	@Override
+	public Color getBackground()
+		{
+		return CategoryInfo.bgColor;
+		}
+
+	@Override
+	public String getBasicShowName()
+		{
+		return "Measure particle";
+		}
+
+	@Override
+	public ImageIcon getIcon()
+		{
+		return CategoryInfo.icon;
 		}
 	
 	
@@ -133,81 +174,6 @@ public class FlowUnitMeasureParticle extends FlowUnit
 				
 		}
 
-
-	public Component getGUIcomponent(final FlowPanel p)
-		{
-		return new TotalPanel();
-		}
-
-	
-	
-	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
-		{
-		types.put("regions", FlowType.ANYIMAGE);
-		types.put("values", FlowType.ANYIMAGE);
-		}
-	
-	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
-		{
-		types.put("out", flowTypeMeasure);
-		}
-	
-	
-	public Dimension getBoundingBox(Component comp, Flow flow)
-		{
-		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth()+4,comp.getHeight()+2);
-		return d;
-		}
-	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
-		{
-		Dimension d=getBoundingBox(comp, panel.getFlow());
-		
-		g.setColor(Color.GREEN);
-		g.fillRect(x,y,d.width,d.height);
-		g.setColor(getBorderColor(panel));
-		g.drawRect(x,y,d.width,d.height);
-		g.setColor(getTextColor());
-		g.drawString(getLabel(), x+3, y+d.height/2+fonta/2);
-		
-		helperDrawConnectors(g, panel, comp, getBoundingBox(comp, panel.getFlow()));
-		}
-
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
-		{
-		Dimension dim=getBoundingBox(comp, flow);
-		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
-		}
-
-	
-
-	
-	public void editDialog()
-		{
-		}
-
-	
-	public Collection<FlowUnit> getSubUnits(Flow flow)
-		{
-		return Collections.singleton((FlowUnit)this);
-		}
-
-	
-	private String getLabel()
-		{
-		return "MP";
-		}
-	
-	
-	public int getGUIcomponentOffsetX()
-		{
-		int w=fm.stringWidth(getLabel());
-		return 3+w+3;
-		}
-	public int getGUIcomponentOffsetY(){return 1;}
 
 	
 	

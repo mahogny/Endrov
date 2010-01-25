@@ -7,8 +7,6 @@ package endrov.flowMeasure;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -27,7 +26,7 @@ import org.jdom.Element;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 import endrov.util.EvSwingUtil;
@@ -37,7 +36,7 @@ import endrov.util.EvSwingUtil;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitConnectSQL extends FlowUnit
+public class FlowUnitConnectSQL extends FlowUnitBasic
 	{
 	private static final String metaType="connectSQL";
 	
@@ -50,7 +49,7 @@ public class FlowUnitConnectSQL extends FlowUnit
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Connect to SQL",metaType,FlowUnitConnectSQL.class, 
 				CategoryInfo.icon,"Connect to an SQL database");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnitInput(Boolean.class, decl);
+		FlowType.registerSuggestCreateUnitInput(Connection.class, decl);
 		}
 	
 	//jdbc:postgresql://localhost/booktown
@@ -61,18 +60,45 @@ public class FlowUnitConnectSQL extends FlowUnit
 	private String connUser="";
 	private String connPass="";
 
+	public FlowUnitConnectSQL()
+		{
+		textPosition=TEXTABOVE;
+		}
+	
 	private void setValues(String connDriver, String connURL, String connUser, String connPass)
 		{
-		
+		this.connDriver=connDriver;
+		this.connURL=connURL;
+		this.connUser=connUser;
+		this.connPass=connPass;
 		}
 	
 	public String toXML(Element e)
 		{
+		Element eDriver=new Element("driver");
+		Element eUrl=new Element("URL");
+		Element eUser=new Element("user");
+		Element ePass=new Element("pass");
+		
+		eDriver.setText(connDriver);
+		eUrl.setText(connURL);
+		eUser.setText(connUser);
+		ePass.setText(connPass);
+		
+		e.addContent(eDriver);
+		e.addContent(eUrl);
+		e.addContent(eUser);
+		e.addContent(ePass);
+		
 		return metaType;
 		}
 
 	public void fromXML(Element e)
 		{
+		connDriver=e.getChildText("driver");
+		connURL=e.getChildText("URL");
+		connUser=e.getChildText("user");
+		connPass=e.getChildText("pass");
 		}
 
 	
@@ -159,63 +185,28 @@ public class FlowUnitConnectSQL extends FlowUnit
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("connection", FlowType.flowTypeConnection);
+		types.put("connection", FlowType.TCONNECTION);
 		}
-	
-	
-	public Dimension getBoundingBox(Component comp, Flow flow)
-		{
-		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth()+4,comp.getHeight()+2);
-		return d;
-		}
-	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
-		{
-		Dimension d=getBoundingBox(comp, panel.getFlow());
-		
-		g.setColor(Color.GREEN);
-		g.fillRect(x,y,d.width,d.height);
-		g.setColor(getBorderColor(panel));
-		g.drawRect(x,y,d.width,d.height);
-		g.setColor(getTextColor());
-		g.drawString(getLabel(), x+3, y+d.height/2+fonta/2);
-		
-		helperDrawConnectors(g, panel, comp, getBoundingBox(comp, panel.getFlow()));
-		}
-
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
-		{
-		Dimension dim=getBoundingBox(comp, flow);
-		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
-		}
-
 	
 
-	
-	public void editDialog()
+
+	@Override
+	public Color getBackground()
 		{
+		return CategoryInfo.bgColor;
 		}
 
-	
-	public Collection<FlowUnit> getSubUnits(Flow flow)
-		{
-		return Collections.singleton((FlowUnit)this);
-		}
-
-	
-	private String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
 		return "Connect to SQL";
 		}
-	
-	
-	public int getGUIcomponentOffsetX()
+
+	@Override
+	public ImageIcon getIcon()
 		{
-		int w=fm.stringWidth(getLabel());
-		return 3+w+3;
+		return CategoryInfo.icon;
 		}
-	public int getGUIcomponentOffsetY(){return 1;}
 
 	
 	

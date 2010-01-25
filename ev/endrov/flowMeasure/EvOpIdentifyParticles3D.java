@@ -17,6 +17,8 @@ import endrov.util.Vector3i;
  * Identify regions - A pre-step to analyze particles. Each continuous region with the same color
  * will be given an ID. However, it is really meant for binary images.  
  * <br/>
+ * The region of value 0 can optionally be ignored
+ * <br/>
  * O(w h d)
  * 
  * @author Johan Henriksson
@@ -24,6 +26,14 @@ import endrov.util.Vector3i;
  */
 public class EvOpIdentifyParticles3D extends EvOpStack1
 	{
+	private boolean ignore0;
+	
+	public EvOpIdentifyParticles3D(boolean ignore0)
+		{
+		this.ignore0=ignore0;
+		}
+	
+	
 	/**
 	 * Helper: see if neighbour is free. then mark and continue
 	 */
@@ -37,10 +47,10 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 	
 	public EvStack exec1(EvStack... p)
 		{
-		return apply(p[0]);
+		return apply(p[0], ignore0);
 		}
 	
-	public static EvStack apply(EvStack stack)
+	public static EvStack apply(EvStack stack, boolean ignore0)
 		{
 		int w=stack.getWidth();
 		int h=stack.getHeight();
@@ -53,7 +63,7 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 		//Keep track of pixels included so far
 		boolean visited[][][]=new boolean[d][h][w];
 		
-		int markid=0;
+		int markid=1;
 		
 		double[][] inarr=stack.getReadOnlyArraysDouble();
 		LinkedList<Vector3i> eqVal=new LinkedList<Vector3i>();
@@ -70,6 +80,9 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 						
 						//Flood fill all pixels with the same color
 						eqVal.add(new Vector3i(x,y,z));
+						int thisMarkID=markid;
+						if(thisValue==0 && ignore0)
+							thisMarkID=0;
 						while(!eqVal.isEmpty())
 							{
 							cnt++;
@@ -84,7 +97,7 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 								continue;
 							
 							visited[vz][vy][vx]=true;
-							mark[vz][vy*w+vx]=markid;
+							mark[vz][vy*w+vx]=thisMarkID;
 
 							if(vx>0)
 								tryadd(eqVal, inarr, thisValue, w, h, d, vx-1,vy,vz);

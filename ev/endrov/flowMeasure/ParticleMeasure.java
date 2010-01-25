@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.ref.WeakReference;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -319,6 +321,8 @@ public class ParticleMeasure extends EvObject
 	 */
 	public void saveCSV(Writer io, boolean addHeader, String fieldDelim)
 		{
+		System.out.println("field delim:"+fieldDelim+":");
+		
 		PrintWriter pw=new PrintWriter(io);
 		
 		Set<String> col=getColumns();
@@ -328,6 +332,7 @@ public class ParticleMeasure extends EvObject
 			{
 			pw.print("frame");
 			pw.print(fieldDelim);
+			pw.print("particle");
 			for(String s:col)
 				{
 				pw.print(fieldDelim);
@@ -339,20 +344,18 @@ public class ParticleMeasure extends EvObject
 		//Write the data
 		for(EvDecimal frame:getFrames())
 			{
-			pw.print(frame);
-			pw.print(fieldDelim);
-
 			for(Map.Entry<Integer, ParticleInfo> e:getFrame(frame).entrySet())
 				{
-				pw.print(e.getKey());
+				pw.print(frame);
 				pw.print(fieldDelim);
+				pw.print(e.getKey());
 				Map<String,Object> props=e.getValue().map;
 				for(String columnName:col)
 					{
 					pw.print(fieldDelim);
 					pw.print(props.get(columnName));
 					}
-				
+				pw.println();
 				}
 			
 			}
@@ -361,11 +364,73 @@ public class ParticleMeasure extends EvObject
 		}
 	
 	
-	
-	public void saveSQL(Connection conn)
+	/**
+	 * Save data to SQL database
+	 */
+	public void saveSQL(Connection conn, String dataid, String tablename) throws SQLException
 		{
+		Set<String> col=getColumns();
+
+		//TODO only delete if needed. DELETE FROM for this dataid
 		
+		StringBuffer dropTable=new StringBuffer();
+		dropTable.append("drop table "+tablename+";");
+		PreparedStatement stmDropTable=conn.prepareStatement(dropTable.toString());
+		stmDropTable.execute();
 		
+		//Create table if needed. Make sure it has the right columns
+		StringBuffer createTable=new StringBuffer();
+		createTable.append("create table "+tablename+" (");
+		createTable.append("dataid TEXT, frame DECIMAL, particle INTEGER");
+		for(String column:columns)
+			createTable.append(", "+column+" DECIMAL"); //TODO types
+		createTable.append(");");
+		System.out.println(createTable);
+		
+		PreparedStatement stmCreateTable=conn.prepareStatement(createTable.toString());
+		//for(String column:columns) //TODO also columns as ?
+		stmCreateTable.execute();
+		
+		//Insert all data
+		StringBuffer insert=new StringBuffer();
+		insert.append("insert into "+tablename+" (");
+		insert.append("dataid, frame, particle");
+		for(String column:col)
+			insert.append(","+column); //TODO types
+		insert.append(") VALUES (");
+		insert.append("?, ?, ?");
+		for(int i=0;i<col.size();i++)
+			insert.append(",?");
+		insert.append(");");
+		
+		System.out.println(insert);
+		PreparedStatement stmInsertTable=conn.prepareStatement(insert.toString());
+		
+		stmInsertTable.setString(1, dataid);
+		for(EvDecimal frame:getFrames())
+			{
+			stmInsertTable.setBigDecimal(2, frame.toBigDecimal());			
+			for(Map.Entry<Integer, ParticleInfo> e:getFrame(frame).entrySet())
+				{
+				stmInsertTable.setInt(3, e.getKey());
+				
+				Map<String,Object> props=e.getValue().map;
+				int colid=4;
+				for(String columnName:col)
+					{
+					Object p=props.get(columnName);
+					if(p instanceof Double)
+						stmInsertTable.setDouble(colid, (Double)p);
+					else if(p instanceof Integer)
+						stmInsertTable.setInt(colid, (Integer)p);
+					else
+						stmInsertTable.setInt(colid, (Integer)(-1));
+					colid++;
+					}
+				
+				stmInsertTable.execute();
+				}
+			}
 		
 		}
 	

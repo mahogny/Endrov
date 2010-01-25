@@ -7,22 +7,25 @@ package endrov.flowMeasure;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeListener;
+
 import org.jdom.Element;
 
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
-import endrov.flow.FlowUnit;
+import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
 import endrov.util.EvSwingUtil;
@@ -32,7 +35,7 @@ import endrov.util.EvSwingUtil;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitMeasureToFile extends FlowUnit
+public class FlowUnitMeasureToFile extends FlowUnitBasic
 	{
 	public static FlowType flowTypeMeasure=new FlowType(ParticleMeasure.class);
 
@@ -41,7 +44,23 @@ public class FlowUnitMeasureToFile extends FlowUnit
 	private String fieldDelim="\t";
 	private boolean addHeaders=true;
 	
+	private static Vector<Delim> delimiters=new Vector<Delim>();
+	{
+	delimiters.add(new Delim("<tab>","\t"));
+	delimiters.add(new Delim("<space>"," "));
+	delimiters.add(new Delim(",",","));
+	}
 	
+	public FlowUnitMeasureToFile()
+		{
+		textPosition=TEXTABOVE;
+		}
+	
+	public void setValues(String fieldDelim, boolean addHeaders)
+		{
+		this.fieldDelim=fieldDelim;
+		this.addHeaders=addHeaders;
+		}
 	
 	public String toXML(Element e)
 		{
@@ -61,10 +80,29 @@ public class FlowUnitMeasureToFile extends FlowUnit
 		fieldDelim=e.getChildText("fieldDelim");
 		addHeaders=Boolean.parseBoolean(e.getChildText("addHeaders"));
 		}
+	
+	
+
+	public Component getGUIcomponent(final FlowPanel p)
+		{
+		return new TotalPanel();
+		}
+
+	
+	
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("measure", flowTypeMeasure);
+		types.put("file", FlowType.TFILE);
+		}
+	
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("out", flowTypeMeasure);
+		}
 
 	
 
-	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
 		Map<String,Object> lastOutput=exec.getLastOutput(this);
@@ -75,130 +113,88 @@ public class FlowUnitMeasureToFile extends FlowUnit
 		FileWriter fw=new FileWriter(file); 
 		measure.saveCSV(fw, addHeaders, fieldDelim);
 		}
-			
 	
-	
-	public Component getGUIcomponent(final FlowPanel p)
-		{
-		return new TotalPanel();
-		}
+
 
 	
-	
-	/** Get types of flows in */
-	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
+	@Override
+	public Color getBackground()
 		{
-		types.put("measure", flowTypeMeasure);
-		types.put("file", FlowType.TFILE);
+		return CategoryInfo.bgColor;
+		}
+
+	@Override
+	public String getBasicShowName()
+		{
+		return "Measure to file";
+		}
+
+	@Override
+	public ImageIcon getIcon()
+		{
+		return CategoryInfo.icon;
 		}
 	
-	/** Get types of flows out */
-	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
-		{
-		types.put("out", flowTypeMeasure);
-		}
 	
 	
-	public Dimension getBoundingBox(Component comp, Flow flow)
+	private static class Delim
 		{
-		int w=fm.stringWidth(getLabel());
-		Dimension d=new Dimension(3+w+3+comp.getWidth()+4,comp.getHeight()+2);
-		return d;
-		}
-	
-	public void paint(Graphics g, FlowPanel panel, Component comp)
-		{
-		Dimension d=getBoundingBox(comp, panel.getFlow());
+		String show;
+		String delim;
 		
-		g.setColor(Color.GREEN);
-		g.fillRect(x,y,d.width,d.height);
-		g.setColor(getBorderColor(panel));
-		g.drawRect(x,y,d.width,d.height);
-		g.setColor(getTextColor());
-		g.drawString(getLabel(), x+3, y+d.height/2+fonta/2);
+		public Delim(String show, String delim)
+			{
+			this.show = show;
+			this.delim = delim;
+			}
 		
-		helperDrawConnectors(g, panel, comp, getBoundingBox(comp, panel.getFlow()));
-		}
-
-	public boolean mouseHoverMoveRegion(int x, int y, Component comp, Flow flow)
-		{
-		Dimension dim=getBoundingBox(comp, flow);
-		return x>=this.x && y>=this.y && x<=this.x+dim.width && y<=this.y+dim.height;
-		}
-
-	
-
-	
-	public void editDialog()
-		{
-		}
-
-	
-	public Collection<FlowUnit> getSubUnits(Flow flow)
-		{
-		return Collections.singleton((FlowUnit)this);
-		}
-
-	
-	private String getLabel()
-		{
-		return "  ";
+		@Override
+		public String toString()
+			{
+			return show;
+			}
 		}
 	
-	
-	public int getGUIcomponentOffsetX()
-		{
-		int w=fm.stringWidth(getLabel());
-		return 3+w+3;
-		}
-	public int getGUIcomponentOffsetY(){return 1;}
-
-	
-
-
 	/*********************************************************************
 	 * The special swing component for this unit
 	 * @author Johan Henriksson
 	 */
-	private class TotalPanel extends JPanel 
+	private class TotalPanel extends JPanel implements ActionListener
 		{
 		private static final long serialVersionUID = 1L;
 
-		
+		private JCheckBox cAddHeader=new JCheckBox();
+		private JComboBox cFieldDelim=new JComboBox(delimiters);
+
 		public TotalPanel()
 			{
 			setLayout(new GridLayout(2,1));
 	
-			Vector<String> delimiters=new Vector<String>();
-			delimiters.add("\t");
-			delimiters.add(" ");
-			delimiters.add(",");
 			
-			JCheckBox cAddHeader=new JCheckBox();
-			JComboBox cFieldDelim=new JComboBox(delimiters);
 			
 			add(EvSwingUtil.withLabel("Add header", cAddHeader));
 			add(EvSwingUtil.withLabel("Delimiter", cFieldDelim));
 			
 			cAddHeader.setSelected(addHeaders);
-			cFieldDelim.setSelectedItem(fieldDelim); //this might be strange
+//			cFieldDelim.setSelectedItem(fieldDelim); //this might be strange
+			for(Delim d:delimiters)
+				if(d.delim.equals(fieldDelim))
+					cFieldDelim.setSelectedItem(d);
 			
+			cAddHeader.addActionListener(this);
+			cFieldDelim.addActionListener(this);
 			
 			setOpaque(false);
 			cAddHeader.setOpaque(false);
 			cFieldDelim.setOpaque(false);
-			/*
-			Dimension size=new Dimension(300,200);
-			setMaximumSize(size);
-			setSize(size);
-			setPreferredSize(size);*/
+			}
+
+		public void actionPerformed(ActionEvent e)
+			{
+			setValues(((Delim)cFieldDelim.getSelectedItem()).delim, cAddHeader.isSelected());
 			}
 		
-		
-
 		}
-	
-	
 	
 	
 	
@@ -213,7 +209,7 @@ public class FlowUnitMeasureToFile extends FlowUnit
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Store measures in file",metaType,FlowUnitMeasureToFile.class, 
 				CategoryInfo.icon,"Store the results of measure particle in a file");
 		Flow.addUnitType(decl);
-		FlowType.registerSuggestCreateUnitInput(Boolean.class, decl);
 		}
+	
 
 	}

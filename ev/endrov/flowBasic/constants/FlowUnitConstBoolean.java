@@ -59,7 +59,8 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 
 	
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
 		return "B";
 		}

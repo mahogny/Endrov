@@ -23,6 +23,12 @@ import endrov.flow.ui.FlowPanel;
  */
 public abstract class FlowUnitBasic extends FlowUnit
 	{
+	protected static final int TEXTLEFT=0;
+	protected static final int TEXTABOVE=1;
+	
+	protected int textPosition=TEXTLEFT;
+	
+	
 	/**
 	 * Name to be shown on box
 	 */
@@ -42,24 +48,59 @@ public abstract class FlowUnitBasic extends FlowUnit
 	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		ImageIcon ico=getIcon();
-		
-		int w=fm.stringWidth(getBasicShowName());
-		if(ico!=null)
-			w+=ico.getIconWidth()+2;
+
+		//Height by default should be at least to cover in/out pins
 		int cnt=1;
 		if(cnt<getTypesInCount(flow)) cnt=getTypesInCount(flow);
 		if(cnt<getTypesOutCount(flow)) cnt=getTypesOutCount(flow);
-//		cnt++;
 		int h=fonth*cnt;
-		Dimension d=new Dimension(w+15,h);
-		if(comp!=null)
+		
+		if(textPosition==TEXTLEFT)
 			{
-			d.height+=comp.getHeight();
-			int cw=comp.getWidth();
-			if(cw>d.width)
-				d.width=cw;
+			int w=fm.stringWidth(getBasicShowName())+4;
+			
+			if(ico!=null)
+				w+=ico.getIconWidth()+2;
+
+			if(comp!=null)
+				{
+				if(fonta>h)
+					h=fonta;
+				if(ico!=null)
+					if(ico.getIconHeight()>h)
+						h=ico.getIconHeight();
+				if(comp!=null)
+					if(comp.getHeight()>h)
+						h=comp.getHeight();
+					
+				if(comp!=null)
+					w+=comp.getWidth();
+				}
+			
+			return new Dimension(w+2,h+2);
 			}
-		return d;
+		else //TEXTABOVE
+			{
+			int w=fm.stringWidth(getBasicShowName());
+			int fh=fonta;
+			if(ico!=null)
+				{
+				w+=ico.getIconWidth()+2;
+				if(ico.getIconHeight()>fh)
+					fh=ico.getIconHeight();
+				}
+			
+			if(comp!=null)
+				{
+				h+=comp.getHeight();
+
+				int cw=comp.getWidth()+3;
+				if(cw>w)
+					w=cw;
+				}
+
+			return new Dimension(w,h+2);
+			}
 		}
 	
 	
@@ -71,50 +112,33 @@ public abstract class FlowUnitBasic extends FlowUnit
 		
 		Dimension d=getBoundingBox(comp, panel.getFlow());
 
-//	g.drawRect(x,y,d.width,d.height);
-	
 		g.setColor(getBackground());
 		g.fillRect(x,y,d.width,d.height);
 		g.setColor(getBorderColor(panel));
 		g.drawRect(x,y,d.width,d.height);
 	
-		int iconW=0;
 		ImageIcon ico=getIcon();
+		int iconW=0;
 		if(ico!=null)
-			{
 			iconW=ico.getIconWidth()+2;
-			g.drawImage(ico.getImage(), x+3, y+(d.height-ico.getIconHeight())/2, null);
-			}
-		
+
 		g.setColor(getTextColor());
-		g.drawString(getBasicShowName(), x+iconW+5, y+(d.height+fonta)/2);
+		if(textPosition==TEXTLEFT)
+			{
+			if(ico!=null)
+				g.drawImage(ico.getImage(), x+3, y+(d.height-ico.getIconHeight())/2, null);
+			g.drawString(getBasicShowName(), x+iconW+5, y+d.height/2+fonta/2);
+			}
+		else //TEXTABOVE
+			{
+			int fw=fm.stringWidth(getBasicShowName())+iconW;
+			g.drawString(getBasicShowName(), x+(d.width-fw)/2+iconW, y+fonta);
 
-
-//		drawConnPointRight(g,x+d.width,y+d.height/2);
+			if(ico!=null)
+				g.drawImage(ico.getImage(), x+(d.width-fw)/2, y+1, null);
+			}
 
 		helperDrawConnectors(g, panel, comp, d);
-		
-		/*
-		int cntIn=1;
-		if(cntIn<getTypesInCount(panel.getFlow())) cntIn=getTypesInCount(panel.getFlow());
-		int i=0;
-		for(Map.Entry<String, FlowType> entry:getTypesIn(panel.getFlow()).entrySet())
-			{
-			double py=y+(i+1)*d.height/(cntIn+1);
-			panel.drawConnPointLeft(g, this, entry.getKey(), x, (int)py);
-			i++;
-			}
-		
-		int cntOut=1;
-		if(cntOut<getTypesOutCount(panel.getFlow())) cntOut=getTypesOutCount(panel.getFlow());
-		i=0;
-		for(Map.Entry<String, FlowType> entry:getTypesOut(panel.getFlow()).entrySet())
-			{
-			double py=y+(i+1)*d.height/(cntOut+1);
-			panel.drawConnPointRight(g, this, entry.getKey(), x+d.width, (int)py);
-			i++;
-			}*/
-
 		}
 
 	
@@ -141,13 +165,37 @@ public abstract class FlowUnitBasic extends FlowUnit
 		{
 		return null;
 		}
+	
+	
 	public int getGUIcomponentOffsetX()
 		{
-		return 0;
+		if(textPosition==TEXTABOVE)
+			return 2;
+		else
+			{
+			ImageIcon ico=getIcon();
+			int iconW=0;
+			if(ico!=null)
+				iconW=ico.getIconWidth()+2;
+			int fw=iconW+5+fm.stringWidth(getBasicShowName());
+			return fw;
+			}
 		}
+	
+	
 	public int getGUIcomponentOffsetY()
 		{
-		return fonta;
+		if(textPosition==TEXTABOVE)
+			{
+			int fh=fonta;
+			ImageIcon ico=getIcon();
+			if(ico!=null)
+				if(ico.getIconHeight()>fh)
+					fh=ico.getIconHeight();
+			return fh;
+			}
+		else
+			return 1;
 		}
 	
 	}
