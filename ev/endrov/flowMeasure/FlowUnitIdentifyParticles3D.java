@@ -84,7 +84,7 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
-		types.put("ignore0", FlowType.TBOOLEAN);
+//		types.put("ignore0", FlowType.TBOOLEAN);
 		}
 	
 	/** Get types of flows out */
@@ -105,7 +105,7 @@ public class FlowUnitIdentifyParticles3D extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
-		Boolean ignore0=(Boolean)flow.getInputValue(this, exec, "ignore0");
+//		Boolean ignore0=(Boolean)flow.getInputValue(this, exec, "ignore0");
 
 		lastOutput.put("out", new EvOpIdentifyParticles3D(ignore0).exec1Untyped(a));
 		}

@@ -369,29 +369,66 @@ public class ParticleMeasure extends EvObject
 	 */
 	public void saveSQL(Connection conn, String dataid, String tablename) throws SQLException
 		{
-		Set<String> col=getColumns();
+		dropSQLtable(conn, dataid, tablename);
 
-		//TODO only delete if needed. DELETE FROM for this dataid
-		
-		StringBuffer dropTable=new StringBuffer();
-		dropTable.append("drop table "+tablename+";");
-		PreparedStatement stmDropTable=conn.prepareStatement(dropTable.toString());
-		stmDropTable.execute();
+		//Clean up this dataid
+		deleteFromSQLtable(conn, dataid, tablename);
 		
 		//Create table if needed. Make sure it has the right columns
+		createSQLtable(conn, dataid, tablename);
+		
+		
+		//Insert all data
+		insertIntoSQLtable(conn, dataid, tablename);
+		
+		}
+
+	/**
+	 * Create the table
+	 */
+	public void createSQLtable(Connection conn, String dataid, String tablename) throws SQLException
+		{
 		StringBuffer createTable=new StringBuffer();
 		createTable.append("create table "+tablename+" (");
 		createTable.append("dataid TEXT, frame DECIMAL, particle INTEGER");
 		for(String column:columns)
 			createTable.append(", "+column+" DECIMAL"); //TODO types
 		createTable.append(");");
-		System.out.println(createTable);
-		
 		PreparedStatement stmCreateTable=conn.prepareStatement(createTable.toString());
 		//for(String column:columns) //TODO also columns as ?
 		stmCreateTable.execute();
+		}
+
+	/**
+	 * Drop the entire table
+	 */
+	public void dropSQLtable(Connection conn, String dataid, String tablename) throws SQLException
+		{
+		StringBuffer dropTable=new StringBuffer();
+		dropTable.append("drop table "+tablename+";");
+		PreparedStatement stmDropTable=conn.prepareStatement(dropTable.toString());
+		stmDropTable.execute();
+		}
+
+	/**
+	 * Delete these values from the SQL table
+	 */
+	public void deleteFromSQLtable(Connection conn, String dataid, String tablename) throws SQLException
+		{
+		StringBuffer deleteTable=new StringBuffer();
+		deleteTable.append("delete from "+tablename+" where dataid=?;");
+		PreparedStatement stmDeleteTable=conn.prepareStatement(deleteTable.toString());
+		stmDeleteTable.setString(1, dataid);
+		stmDeleteTable.execute();
+		}
 		
-		//Insert all data
+	/**
+	 * Insert values into table
+	 */
+	public void insertIntoSQLtable(Connection conn, String dataid, String tablename) throws SQLException
+		{
+		Set<String> col=getColumns();
+
 		StringBuffer insert=new StringBuffer();
 		insert.append("insert into "+tablename+" (");
 		insert.append("dataid, frame, particle");
@@ -431,10 +468,8 @@ public class ParticleMeasure extends EvObject
 				stmInsertTable.execute();
 				}
 			}
-		
 		}
-	
-	
+		
 	
 	/******************************************************************************************************
 	 * Plugin declaration

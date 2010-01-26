@@ -25,7 +25,7 @@ public class ParticleMeasureVolume implements ParticleMeasure.MeasurePropertyTyp
 		//Find maximas
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			int[] arrID=stackValue.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
 			
 			for(int i=0;i<arrID.length;i++)
 				{
