@@ -25,7 +25,7 @@ public class ParticleMeasureSumIntensity implements ParticleMeasure.MeasurePrope
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
 			double[] arrValue=stackValue.getInt(az).getPixels().convertToDouble(true).getArrayDouble();
-			int[] arrID=stackValue.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
 			
 			for(int i=0;i<arrValue.length;i++)
 				{

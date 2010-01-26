@@ -78,11 +78,15 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 
 						int cnt=0;
 						
-						//Flood fill all pixels with the same color
-						eqVal.add(new Vector3i(x,y,z));
+						//Select id to mark with
 						int thisMarkID=markid;
 						if(thisValue==0 && ignore0)
 							thisMarkID=0;
+						else
+							markid++; //Allocate next id
+						
+						//Flood fill all pixels with the same color
+						eqVal.add(new Vector3i(x,y,z));
 						while(!eqVal.isEmpty())
 							{
 							cnt++;
@@ -115,8 +119,6 @@ public class EvOpIdentifyParticles3D extends EvOpStack1
 								tryadd(eqVal, inarr, thisValue, w, h, d, vx,vy,vz+1);
 							}
 						
-						//Allocate next ID
-						markid++;
 						}
 					}
 		

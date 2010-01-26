@@ -30,7 +30,7 @@ public class ParticleMeasureCentroid implements ParticleMeasure.MeasurePropertyT
 
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
-			int[] arrID=stackValue.getInt(az).getPixels().convertToInt(true).getArrayInt();
+			int[] arrID=stackMask.getInt(az).getPixels().convertToInt(true).getArrayInt();
 			
 			int w=stackValue.getWidth();
 			int h=stackValue.getHeight();

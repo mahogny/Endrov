@@ -27,7 +27,7 @@ public class ParticleMeasureSurfaceArea implements ParticleMeasure.MeasureProper
 		//also: only accept integer IDs? this would speed up hashing and indexing.
 		//can be made even faster as a non-hash
 		
-		int[][] arrIDs=stackValue.getReadOnlyArraysInt();
+		int[][] arrIDs=stackMask.getReadOnlyArraysInt();
 
 		int d=arrIDs.length;
 		for(int az=0;az<stackValue.getDepth();az++)
