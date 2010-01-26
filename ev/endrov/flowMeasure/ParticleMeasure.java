@@ -449,6 +449,8 @@ public class ParticleMeasure extends EvObject
 		ParticleMeasure.registerMeasure("volume", new ParticleMeasureVolume());
 		ParticleMeasure.registerMeasure("mean value", new ParticleMeasureMeanIntensity());
 		ParticleMeasure.registerMeasure("center of mass", new ParticleMeasureMassCenter());
+		ParticleMeasure.registerMeasure("centroid", new ParticleMeasureCentroid());
+		ParticleMeasure.registerMeasure("surface area", new ParticleMeasureSurfaceArea());
 		}
 	
 

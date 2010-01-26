@@ -129,27 +129,19 @@ http://imagejdocu.tudor.lu/doku.php?id=plugin:analysis:3d_object_counter:start
 ====================================== TODO =================================
 
 
-area
-standard deviation
-center of mass
+standard deviation (intensity?)
 bounding rectangle
-circularity
+circularity   http://en.wikipedia.org/wiki/Compactness_measure_of_a_shape   sphericity
 modal gray value
 perimeter
 fit ellipse
 ferets diameter
 the surface, 
-the centre of mass and 
-the centre of intensity 
-Mean of the gray values;
 Standard deviation of the gray values;
-Minimum gray value;
-Maximum gray value;
 Median of the gray values;
 Mean distance from the geometrical centre of the object to surface;
 Standard deviation of the distance to surface;
 Median distance to surface;
-Centroid;
 Bounding box.
 texture statistics
 euler number
