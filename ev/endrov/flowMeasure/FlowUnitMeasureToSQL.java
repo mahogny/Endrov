@@ -9,26 +9,21 @@ package endrov.flowMeasure;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.SQLException;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.SpinnerSimpleEvFrame;
-import endrov.basicWindow.icon.BasicIcon;
+import endrov.basicWindow.BasicWindow;
+import endrov.ev.EvLog;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
@@ -117,14 +112,28 @@ public class FlowUnitMeasureToSQL extends FlowUnitBasic
 
 	
 
+	private Connection getLastConn()
+		{
+		return lastConn;
+		}
+
+	private ParticleMeasure getLastPM()
+		{
+		return lastPM;
+		}
+
+	private String getLastDataid()
+		{
+		return lastDataid;
+		}
+
+	private String getLastTablename()
+		{
+		return lastTablename;
+		}
+
 	public Component getGUIcomponent(final FlowPanel p)
 		{
-		/*
-		TotalPanel t=listPanels.get(p);
-		if(t==null)
-			listPanels.put(p, t=new TotalPanel());
-		return t;
-		*/
 		return new TotalPanel();
 		}
 	
@@ -141,14 +150,13 @@ public class FlowUnitMeasureToSQL extends FlowUnitBasic
 		private JButton bDeleteDataid=new JButton("Delete dataid");
 		
 		
-		
-		
 		public TotalPanel()
 			{
-			setLayout(new BorderLayout());
+			setLayout(new GridLayout(3,1));
 	
-			add(EvSwingUtil.layoutEvenVertical(bDropTable, bCreateTable, bDeleteDataid),
-					BorderLayout.SOUTH);
+			add(bDropTable);
+			add(bCreateTable);
+			add(bDeleteDataid);
 			
 			bDropTable.addActionListener(this);
 			bCreateTable.addActionListener(this);
@@ -157,21 +165,37 @@ public class FlowUnitMeasureToSQL extends FlowUnitBasic
 
 		public void actionPerformed(ActionEvent e)
 			{
-			if(e.getSource()==bDropTable)
+			try
 				{
-				
+				if(e.getSource()==bDropTable)
+					{
+					ParticleMeasure measure=getLastPM();
+					if(measure==null)
+						BasicWindow.showErrorDialog("Execute flow unit first");
+					else
+						getLastPM().dropSQLtable(getLastConn(), getLastDataid(), getLastTablename());
+					}
+				else if(e.getSource()==bCreateTable)
+					{
+					ParticleMeasure measure=getLastPM();
+					if(measure==null)
+						BasicWindow.showErrorDialog("Execute flow unit first");
+					else
+						getLastPM().createSQLtable(getLastConn(), getLastDataid(), getLastTablename());
+					}
+				else if(e.getSource()==bDeleteDataid)
+					{
+					ParticleMeasure measure=getLastPM();
+					if(measure==null)
+						BasicWindow.showErrorDialog("Execute flow unit first");
+					else
+						getLastPM().deleteFromSQLtable(getLastConn(), getLastDataid(), getLastTablename());
+					}
 				}
-			else if(e.getSource()==bCreateTable)
+			catch (SQLException e1)
 				{
-				
+				EvLog.printError(e1);
 				}
-			else if(e.getSource()==bDeleteDataid)
-				{
-				
-				}
-			
-			// TODO Auto-generated method stub
-			
 			}
 		}
 	

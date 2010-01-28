@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowBasic.basic;
+package endrov.flowBasic.control;
 
 import java.awt.Color;
 import java.awt.Component;

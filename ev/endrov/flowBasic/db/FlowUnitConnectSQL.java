@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.flowMeasure;
+package endrov.flowBasic.db;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -40,6 +40,8 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 	{
 	private static final String metaType="connectSQL";
 	
+	public static final ImageIcon icon=new ImageIcon(CategoryInfo.class.getResource("silkDatabaseConnect.png"));
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
@@ -47,7 +49,7 @@ public class FlowUnitConnectSQL extends FlowUnitBasic
 	static
 		{
 		FlowUnitDeclaration decl=new FlowUnitDeclaration(CategoryInfo.name,"Connect to SQL",metaType,FlowUnitConnectSQL.class, 
-				CategoryInfo.icon,"Connect to an SQL database");
+				icon,"Connect to an SQL database");
 		Flow.addUnitType(decl);
 		FlowType.registerSuggestCreateUnitInput(Connection.class, decl);
 		}

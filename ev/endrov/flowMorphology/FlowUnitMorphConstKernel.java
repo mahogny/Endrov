@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -26,9 +27,9 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.flow.Flow;
 import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
+import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
-import endrov.flowBasic.constants.FlowUnitConst;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.Vector2i;
@@ -38,7 +39,7 @@ import endrov.util.Vector2i;
  * @author Johan Henriksson
  *
  */
-public class FlowUnitMorphConstKernel extends FlowUnitConst
+public class FlowUnitMorphConstKernel extends FlowUnitBasic
 	{
 	private static final int[] extent=new int[]{2,2,2,2}; //Extension left, right, up, down
 	private static enum TypePixel{NONE,HIT,MISS}
@@ -46,6 +47,11 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 	private HashSet<Vector2i> hitlist=new HashSet<Vector2i>();
 	private HashSet<Vector2i> misslist=new HashSet<Vector2i>();
 	private boolean isBinary=false;
+
+	public FlowUnitMorphConstKernel()
+		{
+		textPosition=TEXTABOVE;
+		}
 	
 	private TypePixel getPixelType(Vector2i v)
 		{
@@ -139,10 +145,6 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 		}
 
 	
-	protected FlowType getConstType()
-		{
-		return MorphKernel.FLOWTYPE;
-		}
 	
 	public void evaluate(Flow flow, FlowExec exec) throws Exception
 		{
@@ -236,18 +238,17 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 						g.drawLine(px+2, py+2, px+gsize-1-2,py+gsize-1-2);
 						g.drawLine(px+2, py+gsize-1-2, px+gsize-1-2,py+2);
 						}
-						
-					
 					}
-			
 			}
 
+		/**
+		 * Mouse click: update position
+		 */
 		public void mouseClicked(MouseEvent e)
 			{
 			int x=(int)Math.ceil((e.getX()-getOffsetX())/(double)gsize);
 			int y=(int)Math.ceil((e.getY()-getOffsetY())/(double)gsize);
 			cyclePixelType(new Vector2i(x-1,y-1));
-//			System.out.println(new Vector2i(x,y));
 			removeOutside();
 			repaint();
 			}
@@ -258,6 +259,9 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 		public void mouseReleased(MouseEvent arg0){}
 		}
 
+	
+	
+	
 	/**
 	 * The special swing component for this unit
 	 * @author Johan Henriksson
@@ -323,12 +327,15 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 				}});
 			}
 
+		/**
+		 * Called whenever the size of the kernel has changed and the component should resize
+		 */
 		private void newExtent()
 			{
 			removeOutside();
 			
-
-			//TODO
+			//TODO actually works for other flows when they are moved!
+			//e.g. comment
 			
 			//getParent().remove(this);
 			//getParent().add(this);
@@ -366,6 +373,29 @@ public class FlowUnitMorphConstKernel extends FlowUnitConst
 	public String getBasicShowName()
 		{
 		return "Make kernel";
+		}
+
+	@Override
+	public Color getBackground()
+		{
+		return CategoryInfo.bgColor;
+		}
+
+	@Override
+	public ImageIcon getIcon()
+		{
+		return CategoryInfo.icon;
+		}
+
+	@Override
+	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
+		{
+		}
+
+	@Override
+	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
+		{
+		types.put("out", MorphKernel.FLOWTYPE);
 		}
 
 
