@@ -306,6 +306,17 @@ public class EvMathUtil
 		return frac1.multiply(lastY).add(
 				frac.multiply(nextY));
 		}
-	
+
+	/**
+	 * Get the maximum of a list
+	 */
+	public static int maxAll(int... v)
+		{
+		int r=v[0];
+		for(int i=1;i<v.length;i++)
+			if(v[i]<r)
+				r=v[i];
+		return r;
+		}
 	
 	}

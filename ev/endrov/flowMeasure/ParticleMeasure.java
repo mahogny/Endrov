@@ -470,6 +470,74 @@ public class ParticleMeasure extends EvObject
 			}
 		}
 		
+	/**
+	 * Filter of particle measure data
+	 *
+	 */
+	public static interface Filter
+		{
+		/**
+		 * Accept a frame? if false then all particles will be discarded
+		 */
+		public boolean acceptFrame(EvDecimal frame);
+		
+		/**
+		 * Accept a particle?
+		 */
+		public boolean acceptParticle(int id, ParticleInfo info);
+		}
+	
+	
+	/**
+	 * Get a new particle measure where particles and frames have been filtered.
+	 * Will execute lazily.
+	 */
+	public ParticleMeasure filter(final Filter filter)
+		{
+		ParticleMeasure out=new ParticleMeasure();
+		
+		//Copy all the columns
+		out.columns.addAll(columns);
+		
+		//Copy all frames
+		for(Map.Entry<EvDecimal, FrameInfo> f:frameInfo.entrySet())
+			if(filter.acceptFrame(f.getKey()))
+				{
+				//Create place-holder for frame
+				final FrameInfo oldInfo=f.getValue();
+				final FrameInfo newInfo=new FrameInfo();
+				out.frameInfo.put(f.getKey(), newInfo);
+
+				//Filter need to execute lazily as well
+				newInfo.calcInfo=new CalcInfo()
+					{
+					public void calc()
+						{
+						//Execute calculation if not done already
+						if(oldInfo.calcInfo!=null)
+							{
+							oldInfo.calcInfo.calc();
+							oldInfo.calcInfo=null;
+							}
+
+						//Filter particles
+						for(int id:oldInfo.keySet())
+							{
+							ParticleInfo pInfo=oldInfo.get(id);
+							if(filter.acceptParticle(id, pInfo))
+								newInfo.put(id,pInfo);
+							}
+						}
+					};
+				}
+		
+		return out;
+		}
+	
+	
+	
+	
+	
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -481,11 +549,16 @@ public class ParticleMeasure extends EvObject
 		
 		ParticleMeasure.registerMeasure("max value", new ParticleMeasureMaxIntensity());
 		ParticleMeasure.registerMeasure("sum value", new ParticleMeasureSumIntensity());
-		ParticleMeasure.registerMeasure("volume", new ParticleMeasureVolume());
 		ParticleMeasure.registerMeasure("mean value", new ParticleMeasureMeanIntensity());
-		ParticleMeasure.registerMeasure("center of mass", new ParticleMeasureMassCenter());
+		ParticleMeasure.registerMeasure("modal value", new ParticleMeasureModalIntensity());
+		ParticleMeasure.registerMeasure("median value", new ParticleMeasureMedianIntensity());
+		
+		ParticleMeasure.registerMeasure("volume", new ParticleMeasureVolume());
+		ParticleMeasure.registerMeasure("center of mass", new ParticleMeasureCenterOfMass());
 		ParticleMeasure.registerMeasure("centroid", new ParticleMeasureCentroid());
 		ParticleMeasure.registerMeasure("surface area", new ParticleMeasureSurfaceArea());
+		ParticleMeasure.registerMeasure("perimeter", new ParticleMeasurePerimeter());
+		ParticleMeasure.registerMeasure("Geometric PCA", new ParticleMeasureGeometricPCA());
 		}
 	
 

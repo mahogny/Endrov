@@ -13,9 +13,9 @@ import endrov.imageset.EvStack;
  * @author Johan Henriksson
  *
  */
-public class ParticleMeasureMassCenter implements ParticleMeasure.MeasurePropertyType 
+public class ParticleMeasureCenterOfMass implements ParticleMeasure.MeasurePropertyType 
 	{
-	private static String propertyName="massCenter";
+	private static String propertyName="com";
 
 	public void analyze(EvStack stackValue, EvStack stackMask, ParticleMeasure.FrameInfo info)
 		{

@@ -130,20 +130,47 @@ http://imagejdocu.tudor.lu/doku.php?id=plugin:analysis:3d_object_counter:start
 
 
 standard deviation (intensity?)
-bounding rectangle
-circularity   http://en.wikipedia.org/wiki/Compactness_measure_of_a_shape   sphericity
-modal gray value
-perimeter
+bounding box
+	bbX,Y,Z, bbW, bbH, bbD
+
+
+circularity   
+				http://rsb.info.nih.gov/ij/docs/menus/analyze.html
+		4π*area/sqrt(perimeter).   BEEP!!!! this seems wrong to me!
+
+sphericity
+		http://en.wikipedia.org/wiki/Compactness_measure_of_a_shape   sphericity
+		
+
+
 fit ellipse
-ferets diameter
-the surface, 
+ferets diameter = caliper max length
+		and: minimum length
+		and: angle for each
+
+solidity: area/convex area
+
+http://rsb.info.nih.gov/ij/plugins/moments.html
+
 Standard deviation of the gray values;
-Median of the gray values;
 Mean distance from the geometrical centre of the object to surface;
 Standard deviation of the distance to surface;
-Median distance to surface;
-Bounding box.
+Median distance to surface
+Bounding box
 texture statistics
 euler number
-PCA
+            
+            
+skewness
+kurtosis
+            
+            
+aspect ratio: majorAxis/minorAxis.
+			=> add a function to derive properties
+			            
+            
+            
+            
+===not todo?===            
+
             

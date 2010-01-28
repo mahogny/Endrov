@@ -1,4 +1,4 @@
-package endrov.flowTopology;
+package endrov.flowMeasure;
 /**
  * Original plugin, Copyright 2009 Michael Doube
  * GPL3 or later

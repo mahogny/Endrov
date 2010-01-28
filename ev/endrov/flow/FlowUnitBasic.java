@@ -15,6 +15,7 @@ import java.util.Collections;
 import javax.swing.ImageIcon;
 
 import endrov.flow.ui.FlowPanel;
+import endrov.util.EvMathUtil;
 
 /**
  * Basic shape flow unit
@@ -45,16 +46,26 @@ public abstract class FlowUnitBasic extends FlowUnit
 		this.hasComponent=hasComponent;
 		}
 	
+	/**
+	 * Calculate how big the box need to be
+	 */
 	public Dimension getBoundingBox(Component comp, Flow flow)
 		{
 		ImageIcon ico=getIcon();
 
 		//Height by default should be at least to cover in/out pins
-		int cnt=1;
+		int cnt=EvMathUtil.maxAll(
+				1,
+				getTypesInCount(flow),
+				getTypesOutCount(flow)
+				);
+		
+		/*1;
 		if(cnt<getTypesInCount(flow)) cnt=getTypesInCount(flow);
-		if(cnt<getTypesOutCount(flow)) cnt=getTypesOutCount(flow);
+		if(cnt<getTypesOutCount(flow)) cnt=getTypesOutCount(flow);*/
 		int h=fonth*cnt;
 		
+		//Title is on the left
 		if(textPosition==TEXTLEFT)
 			{
 			int w=fm.stringWidth(getBasicShowName())+4;
@@ -70,16 +81,16 @@ public abstract class FlowUnitBasic extends FlowUnit
 					if(ico.getIconHeight()>h)
 						h=ico.getIconHeight();
 				if(comp!=null)
+					{
 					if(comp.getHeight()>h)
 						h=comp.getHeight();
-					
-				if(comp!=null)
 					w+=comp.getWidth();
+					}
 				}
 			
 			return new Dimension(w+2,h+2);
 			}
-		else //TEXTABOVE
+		else //Title is above
 			{
 			int w=fm.stringWidth(getBasicShowName());
 			int fh=fonta;
@@ -92,20 +103,24 @@ public abstract class FlowUnitBasic extends FlowUnit
 			
 			if(comp!=null)
 				{
-				h+=comp.getHeight();
+				int insideH=comp.getHeight()+fh;
+				if(insideH>h)
+					h=insideH;
 
 				int cw=comp.getWidth()+3;
 				if(cw>w)
 					w=cw;
 				}
 
-			return new Dimension(w,h+2);
+			return new Dimension(w,h+1);
 			}
 		}
 	
 	
 	
-	
+	/**
+	 * Draw basic colored box with text and optional custom component
+	 */
 	public void paint(Graphics g, FlowPanel panel, Component comp)
 		{
 		g.setColor(Color.blue);

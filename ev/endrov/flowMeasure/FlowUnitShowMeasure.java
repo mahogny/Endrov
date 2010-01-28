@@ -155,7 +155,6 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 		 */
 		private List<String> mapToColumn=new ArrayList<String>();
 
-		
 		private JTable table;
 		private JButton bCopyToClipboard=BasicIcon.getButtonCopy();
 		
@@ -172,10 +171,10 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			JScrollPane sPane=new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			add(sPane,BorderLayout.CENTER);
 			
-			spFrame.addChangeListener(new ChangeListener()
-				{
-				public void stateChanged(ChangeEvent e)
-					{
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			
+			spFrame.addChangeListener(new ChangeListener(){
+				public void stateChanged(ChangeEvent e){
 					updateNewFrame();
 					}
 				});
@@ -213,9 +212,14 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 			mapToColumn.clear();
 			mapToColumn.addAll(measure.getColumns());
 			
+			//table.setMinimumSize(new Dimension((mapToColumn.size()+1)*40,10));
+
 			//TODO update frame pointer
 
 			updateNewFrame();
+			
+			for(TableModelListener l:listeners)
+				l.tableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
 			}
 
 		/**
@@ -229,7 +233,8 @@ public class FlowUnitShowMeasure extends FlowUnitBasic
 				mapToID.addAll(map.keySet());
 			
 			for(TableModelListener l:listeners)
-				l.tableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+				l.tableChanged(new TableModelEvent(this));
+//				l.tableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
 			}
 	
 		public Class<?> getColumnClass(int columnIndex)
