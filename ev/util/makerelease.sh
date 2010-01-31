@@ -1,5 +1,7 @@
 #Prepare the app for release. Run from ./
 
+if [ ! `ls makerelease.sh` ]; then exit -1; fi
+
 #decide on a name
 name="ev"`date +%g%m%d`
 echo $name
