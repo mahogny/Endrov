@@ -20,10 +20,10 @@ import endrov.util.EvDecimal;
  * This is an example of how coordinates can be extracted from Lineages and put into a simpler CSV file.
  * 
  * It can be run from inside Endrov with the command
- * NucQuickExtractCoordinates.forall();
+ * util.NucQuickExtractCoordinates.forall();
  * and will run on each loaded OST-file.
  * 
- * It can also be run from the command line. command line argument: <file to analyze
+ * It can also be run from the command line. command line argument: <file to analyze>
  * 
  * @author Johan Henriksson
  *
@@ -50,6 +50,7 @@ public class NucQuickExtractCoordinates
 	 */
 	public static void forall()
 		{
+    EvLog.printLog("Exporting for all lineages");
 		for(EvData data:EvData.openedData)
 			{
 			try
@@ -72,25 +73,28 @@ public class NucQuickExtractCoordinates
 		if(ddir==null)
 			throw new RuntimeException("Not saved as OST");
 
-			//For all lineages (assuming there is only one)
-			for(NucLineage lin:data.getIdObjectsRecursive(NucLineage.class).values())
+		//For all lineages (assuming there is only one)
+		for(NucLineage lin:data.getIdObjectsRecursive(NucLineage.class).values())
+			{
+			File f=new File(ddir,"quickLin.txt");
+			EvLog.printLog(f.toString());
+			PrintWriter pw=new PrintWriter(new FileWriter(f));
+			
+			//For every cell
+			for(String nucName:lin.nuc.keySet())
 				{
-				PrintWriter pw=new PrintWriter(new FileWriter(new File(ddir,"quickLin.txt")));
-				
-				//For every cell
-				for(String nucName:lin.nuc.keySet())
+				//For every time point
+				for(Map.Entry<EvDecimal, NucLineage.NucPos> e:lin.nuc.get(nucName).pos.entrySet())
 					{
-					//For every time point
-					for(Map.Entry<EvDecimal, NucLineage.NucPos> e:lin.nuc.get(nucName).pos.entrySet())
-						{
-						//Print coordinate
-						NucLineage.NucPos pos=e.getValue();
-						pw.println(nucName+"\t"+e.getKey()+"\t"+pos.x+"\t"+pos.y+"\t"+pos.z+"\t"+pos.r);
-						}
+					//Print coordinate
+					NucLineage.NucPos pos=e.getValue();
+					pw.println(nucName+"\t"+e.getKey()+"\t"+pos.x+"\t"+pos.y+"\t"+pos.z+"\t"+pos.r);
 					}
-				pw.close();
 				}
-		
+			pw.flush();
+			pw.close();
+			}
+	
 		
 		}
 	
