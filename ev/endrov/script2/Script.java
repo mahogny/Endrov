@@ -12,6 +12,7 @@ public class Script
 	public Interpreter bsh=new Interpreter();
 	
 	
+	
 	public Object eval(String s) throws EvalError
 		{
 		return bsh.eval(s);
@@ -29,5 +30,8 @@ public class Script
 		//bsh.setStrictJava(true);
 //	bsh.setErr
 //	bsh.setOut
+		
+		bsh.setClassLoader(Script.class.getClassLoader());
+		
 		}
 	}
