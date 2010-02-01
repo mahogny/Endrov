@@ -21,7 +21,7 @@ import endrov.basicWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
-import endrov.script2.*;
+import endrov.script.*;
 
 import org.jdom.*;
 

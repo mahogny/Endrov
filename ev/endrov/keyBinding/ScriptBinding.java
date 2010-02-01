@@ -12,7 +12,7 @@ import bsh.*;
 import org.jdom.Element;
 
 import endrov.ev.*;
-import endrov.script2.*;
+import endrov.script.*;
 
 /**
  * A key bound to execute a script in the console
