@@ -9,7 +9,7 @@ import java.util.*;
 import bsh.*;
 
 import endrov.ev.*;
-import endrov.script2.*;
+import endrov.script.*;
 
 /**
  * Text user interface / console
