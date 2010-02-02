@@ -71,6 +71,7 @@ public class CameraHistogramView extends JPanel
 		for(int v:p)
 			{
 			int i=v*screenWidth/rangeMax;
+			
 			bins[i]++;
 			}
 
@@ -113,11 +114,20 @@ public class CameraHistogramView extends JPanel
 		//Recalculate histogram if component size changes
 		if(cachedImage!=null && getWidth()!=cachedImage.getWidth())
 			cachedImage=null;
-		if(cachedImage==null)
-			makeImage();
 		
-		//Image is opaque, no need to clear background
-		g.drawImage(cachedImage, 0, 0, null);
+		if(currentImage!=null)
+			{
+			if(cachedImage==null)
+				makeImage();
+			
+			//Image is opaque, no need to clear background
+			g.drawImage(cachedImage, 0, 0, null);
+			}
+		else
+			{
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, getWidth(), getHeight());
+			}
 		}
 	
 	}
