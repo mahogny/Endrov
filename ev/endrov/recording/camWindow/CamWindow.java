@@ -8,6 +8,7 @@ package endrov.recording.camWindow;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -199,16 +200,23 @@ public class CamWindow extends BasicWindow implements ActionListener
 				BorderLayout.WEST);
 		pHisto.add(histoView, BorderLayout.CENTER);
 		
+
+		
+		
 		setLayout(new BorderLayout());
 		
+		JPanel pCenter=new JPanel(new BorderLayout());
 		
-		add(EvSwingUtil.layoutCompactHorizontal(mcombo, bSnap, tLive, tUpdateView, tHistoView)
+		pCenter.add(EvSwingUtil.layoutCompactHorizontal(mcombo, bSnap, tLive, tUpdateView/*, tHistoView*/)
 				,BorderLayout.SOUTH);
-		add(drawArea,BorderLayout.CENTER);
-		
-		add(pHisto,BorderLayout.NORTH);
+		pCenter.add(drawArea,BorderLayout.CENTER);
 		
 		
+		
+//		add(pHisto,BorderLayout.NORTH);
+		
+		EvHidableSidePaneBelow sidepanel=new EvHidableSidePaneBelow(pCenter, pHisto, true);
+		add(sidepanel,BorderLayout.CENTER);
 		
 		
 		

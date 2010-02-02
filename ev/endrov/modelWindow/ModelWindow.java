@@ -95,7 +95,7 @@ public class ModelWindow extends BasicWindow
 			}
 		};
 	private final JButton buttonCenter=new JButton("Center");
-	private final EvHidableSidePane sidePanelSplitPane;
+	private final EvHidableSidePaneRight sidePanelSplitPane;
 	
 	public JMenu menuModel=new JMenu("ModelWindow");
 	
@@ -254,7 +254,7 @@ public class ModelWindow extends BasicWindow
 
 
 		
-		sidePanelSplitPane = new EvHidableSidePane(view, toolPanel, true);
+		sidePanelSplitPane = new EvHidableSidePaneRight(view, toolPanel, true);
 		
 		setLayout(new BorderLayout());
 		add(sidePanelSplitPane,BorderLayout.CENTER);

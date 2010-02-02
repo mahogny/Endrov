@@ -16,19 +16,19 @@ import javax.swing.JPanel;
  * Attach a hidable panel to a center panel
  * @author Johan Henriksson
  */
-public class EvHidableSidePane extends JPanel
+public class EvHidableSidePaneBelow extends JPanel
 	{
 	static final long serialVersionUID=0; 
-	public static int preferWidth=15;
+	public static int preferHeight=15;
 	
 	private boolean visible=true;
 
 	
-	private Component /*center,*/ right;
+	private Component /*center,*/ extraPanel;
 	private final JPanel rest=new JPanel(new BorderLayout());
 
 
-	JComponent toggleButton=new HideButton();
+	private JComponent toggleButton=new HideButton();
 	
 	/**
 	 * Check if hidable panel is visible
@@ -44,9 +44,9 @@ public class EvHidableSidePane extends JPanel
 	public void setPanelVisible(boolean v)
 		{
 		if(v)
-			rest.add(right,BorderLayout.CENTER);
+			rest.add(extraPanel,BorderLayout.CENTER);
 		else
-			rest.remove(right);
+			rest.remove(extraPanel);
 		visible=v;
 		validate();
 		toggleButton.repaint();
@@ -58,25 +58,27 @@ public class EvHidableSidePane extends JPanel
 		static final long serialVersionUID=0; 
 		public HideButton()
 			{
-			setPreferredSize(new Dimension(preferWidth,1));
+			setPreferredSize(new Dimension(1,preferHeight));
 			addMouseListener(this);
 			}
 		protected void paintComponent(Graphics g)
 			{
 			super.paintComponent(g);
-			int h=getHeight();
+			int w=getWidth();
 			g.setColor(Color.BLACK);
-			int part=preferWidth/3;
+			int part=preferHeight/3;
 			int part2=2*part;
-			int dy=part*4;
-			int x1=getPanelVisible() ? part  : part2;
-			int x2=getPanelVisible() ? part2 : part;
-			int y=h/2-dy*3/2;
+			
+			int dx=part*4;
+			int y1=getPanelVisible() ? part  : part2;
+			int y2=getPanelVisible() ? part2 : part;
+			int x=w/2-dx*3/2;
+			
 			for(int i=0;i<3;i++)
 				{
-				g.drawLine(x1, y, x2, y+part);
-				g.drawLine(x2, y+part, x1, y+part2);
-				y+=dy;
+				g.drawLine(x, y1, x+part, y2);
+				g.drawLine(x+part, y2, x+part2, y1);
+				x+=dx;
 				}
 			/*
 			for(int y=part;y+part2<h;y+=dy)
@@ -96,14 +98,14 @@ public class EvHidableSidePane extends JPanel
 
 	
 	
-	public EvHidableSidePane(final Component center, final Component right, boolean visible)
+	public EvHidableSidePaneBelow(final Component center, final Component below, boolean visible)
 		{
-		this.right=right;
+		this.extraPanel=below;
 		setLayout(new BorderLayout());
-		rest.add(toggleButton,BorderLayout.WEST);
+		rest.add(toggleButton,BorderLayout.NORTH);
 //		rest.add(right,BorderLayout.CENTER);
 		add(center,BorderLayout.CENTER);
-		add(rest,BorderLayout.EAST);
+		add(rest,BorderLayout.SOUTH);
 
 		setPanelVisible(visible);
 		}

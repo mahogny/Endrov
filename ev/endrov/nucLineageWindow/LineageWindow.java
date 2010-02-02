@@ -50,7 +50,7 @@ public class LineageWindow extends BasicWindow
 
 	public static final ImageIcon iconSelectByName=new ImageIcon(LineageWindow.class.getResource("jhSelectByName.png"));
 
-	private final EvHidableSidePane sidePanelSplitPane;
+	private final EvHidableSidePaneRight sidePanelSplitPane;
 
 	
 	private SnapBackSlider sliderZoomX=new SnapBackSlider(JSlider.HORIZONTAL, -10000,10000); 
@@ -202,7 +202,7 @@ public class LineageWindow extends BasicWindow
 
 		
 		
-		sidePanelSplitPane=new EvHidableSidePane(EvSwingUtil.layoutLCR(null, view, sliderZoomY), expPanel, true);
+		sidePanelSplitPane=new EvHidableSidePaneRight(EvSwingUtil.layoutLCR(null, view, sliderZoomY), expPanel, true);
 		
 		
 		//Put GUI together
