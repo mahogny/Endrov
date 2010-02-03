@@ -21,8 +21,17 @@ public class PLUGIN extends PluginDef
 	
 	public boolean systemSupported()
 		{
-//		return EV.isLinux() || (EV.isMac() && EV.isX86());
-		return EV.isLinux() || EV.isMac();
+		try
+			{
+			Class.forName("mmcorej.CMMCore");
+			return EV.isLinux() || EV.isMac();
+			}
+		catch (ClassNotFoundException e)
+			{
+			System.out.println("Micro-manager not found");
+			return false;
+			}
+		
 		}
 	
 	public String cite()
