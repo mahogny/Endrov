@@ -19,6 +19,12 @@ public class DebPackage
 	
 	private DebPackage(){}
 	
+	/**
+	 * Normal dependency
+	 * @param name Name of required package
+	 * @param linkjar JAR-files to link to in the system
+	 * @param provides Files currently in libs/ that can be deleted
+	 */
 	public DebPackage(String name, String[] linkjar, String[] provides)
 		{
 		this.name=name;
@@ -29,9 +35,8 @@ public class DebPackage
 		if(provides!=null)
 			for(String s:provides)
 				providesFiles.add(s);
-		
-		
 		}
+	
 	
 	public static DebPackage suggest(String name)
 		{
@@ -40,11 +45,13 @@ public class DebPackage
 		pkg.isSuggestion=true;
 		return pkg;
 		}
-	
-	public static DebPackage recommends(String name)
+
+	/**
+	 * Recommended package dependency
+	 */
+	public static DebPackage recommends(String name, String[] linkjar, String[] provides)
 		{
-		DebPackage pkg=new DebPackage();
-		pkg.name=name;
+		DebPackage pkg=new DebPackage(name, linkjar, provides);
 		pkg.isRecommended=true;
 		return pkg;
 		}

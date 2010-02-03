@@ -119,7 +119,6 @@ public class Main
 			pkgs.add(new DebPackage("junit",new String[]{"junit.jar"},new String[]{"junit.jar"}));
 			pkgs.add(new DebPackage("libpg-java",new String[]{"postgresql.jar"},new String[]{"postgresql-8.2-505.jdbc3.jar"}));
 			//pkgs.add(new DebPackage("libvecmath1.2-java",new String[]{"vecmath1.2.jar"},new String[]{"vecmath.jar"}));
-			pkgs.add(new DebPackage("micromanager",new String[]{},new String[]{"umanager_inc"})); //rely on inc-file to add jar files
 			pkgs.add(new DebPackage("libbcel-java",new String[]{"bcel.jar"},new String[]{"bcel-5.2.jar"}));
 			pkgs.add(new DebPackage("libservlet2.3-java",new String[]{"servlet-2.3.jar"},new String[]{"servlet.jar"})); //2.4 also exists
 			pkgs.add(new DebPackage("libxalan2-java",new String[]{"xalan2.jar"},new String[]{"xalan.jar","xerces.jar","xml-apis.jar"}));
@@ -129,6 +128,9 @@ public class Main
 			pkgs.add(new DebPackage("libjakarta-poi-java",new String[]{"jakarta-poi-contrib.jar","jakarta-poi.jar","jakarta-poi-scratchpad.jar"},new String[]{"poi-contrib-3.0.1-FINAL-20070705.jar","poi-3.0.1-FINAL-20070705.jar","poi-scratchpad-3.0.1-FINAL-20070705.jar"}));
 			pkgs.add(new DebPackage("libjaxen-java",new String[]{"jaxen.jar"},new String[]{"jaxen-core.jar","jaxen-jdom.jar","saxpath.jar"}));
 			pkgs.add(new DebPackage("libjinput-java",new String[]{"jinput.jar"},new String[]{"libjinput-linux.so","jinput.jar","jinput-test.jar"}));
+
+			
+			pkgs.add(DebPackage.recommends("micromanager",new String[]{},new String[]{"umanager_inc"})); //rely on inc-file to add jar files
 
 			//JAI, seems to work without
 			//the filter system might need some operations, not sure
@@ -152,7 +154,7 @@ public class Main
 			pkgs.add(new DebPackage("libcommons-httpclient-java",new String[]{"commons-httpclient.jar"},new String[]{"commons-httpclient-3.0.1.jar"}));           
 			pkgs.add(new DebPackage("libcommons-logging-java",new String[]{"commons-logging.jar"},new String[]{"commons-logging-1.0.4.jar"}));                  
 
-			pkgs.add(DebPackage.recommends("ffmpeg"));
+			pkgs.add(DebPackage.recommends("ffmpeg",null,null));
 			
 			//Unused
 			//pkgs.add(new DebPackage("lib-jline-java",new String[]{"jline-0.9.94.jar"}));
