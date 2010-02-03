@@ -872,6 +872,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e)
 		{
+		//TODO use e.getWheelRotation() only
 		//Self-note: linux machine at home (mahogny) uses UNIT_SCROLL
 		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
 			zoom(e.getUnitsToScroll()/5.0);

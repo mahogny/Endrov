@@ -7,13 +7,10 @@ package endrov.recording.camWindow;
 
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.util.*;
 
 import javax.swing.*;
@@ -62,57 +59,82 @@ public class CamWindow extends BasicWindow implements ActionListener
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	
+
+	private EvPixels lastCameraImage=null;
+	private Dimension lastImageSize=null; 
+
 	private CamWindow This=this;
-	private JComboBox mcombo=new JComboBox();
+	private JComboBox cameraCombo;
+
+	//Update timer, busy loop for now. replace later by camera event listener	
+	private javax.swing.Timer timer=new javax.swing.Timer(10,this);
+
+	private JCheckBox tAutoRange=new JCheckBox("Auto", true);
+	private JButton bSetFullRange=new JButton("Full");
+	private CameraHistogramViewRanged histoView=new CameraHistogramViewRanged();
+	private JCheckBox tUpdateView=new JCheckBox("Update", true);
+	private JCheckBox tLive=new JCheckBox("Live", false);
+	private JButton bSnap=new JButton("Snap");
+	private EvHidableSidePaneBelow sidepanel;
+	private JPanel pHisto=new JPanel(new BorderLayout());
+
+	private JPanel drawArea=new CamWindowImageView()
+		{
+		private static final long serialVersionUID = 1L;
+		public int getUpper(){return histoView.upper;}
+		public int getLower(){return histoView.lower;}
+		public EvPixels getImage(){return This.lastCameraImage;}
+		};
 	
-	
-	private EvPixels fromCam=null;
 	
 	/**
-	 * Image area. Should show under- and over exposed regions
+	 * Find out how many bits the camera is
 	 */
-	private JPanel drawArea=new JPanel(){
-		static final long serialVersionUID=0;
-		protected void paintComponent(Graphics g)
-			{
-			g.setColor(new Color(0.3f, 0.1f, 0.3f));
-			g.fillRect(0, 0, getWidth(), getHeight());
-			
-			EvPixels p=This.fromCam;
-			if(p!=null)
-				{
-				
-				
-				
-				BufferedImage im=This.fromCam.quickReadOnlyAWT();
-				
-				
-				
-				//TODO show under and over exposure
-				
-				g.drawImage(im, 0, 0, null);
-				//System.out.println("isrepaint");
-				SwingUtilities.invokeLater(new Runnable(){
-					public void run()
-						{
-						//This actually slows it down!
-						//This.drawArea.repaint();
-						}
-				});
-				}
-			}
-	};
+	public Integer getNumCameraBits()
+		{
+		return 8;
+		}
 	
-	
-
-	
+	/**
+	 * Handle GUI interaction
+	 */
 	public void actionPerformed(ActionEvent e) 
 		{
-		if(e.getSource()==This.timer && This.tUpdateView.isSelected())
-			{
+		if(e.getSource()==timer && tLive.isSelected())
 			snapCamera();
+		else if(e.getSource()==bSnap)
+			snapCamera();
+		else if(e.getSource()==tAutoRange)
+			{
+			if(lastCameraImage!=null)
+				histoView.calcAutoRange(lastCameraImage);
+			histoView.repaint();
+			drawArea.repaint();
 			}
+		else if(e.getSource()==bSetFullRange)
+			{
+			histoView.lower=0;
+			histoView.upper=(int)Math.pow(2, getNumCameraBits())-1;
+			drawArea.repaint();
+			histoView.repaint();
+			}
+		else if(e.getSource()==histoView)
+			{
+			drawArea.repaint();
+			}
+		else if(e.getSource()==sidepanel)
+			{
+			Rectangle bounds=getBoundsEvWindow();
+			int dh=pHisto.getBounds().height;
+			if(!sidepanel.isPanelVisible())
+				dh=-dh;
+			setBoundsEvWindow(new Rectangle(
+					bounds.x,bounds.y,
+					(int)(bounds.getWidth()),
+					(int)(bounds.getHeight()+dh)
+					));
+			}
+		
 		}
 		
 		
@@ -124,53 +146,46 @@ public class CamWindow extends BasicWindow implements ActionListener
 		//this does not work later. have to synchronize all calls for an image
 		//so all targets gets it.
 		
-		DevicePath camname=(DevicePath)This.mcombo.getSelectedItem();
+		DevicePath camname=(DevicePath)cameraCombo.getSelectedItem();
 		if(camname!=null)
 			{
 			HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
 			CameraImage cim=cam.snap();
-			//EvPixels oldp=fromCam;
-			//EvPixels p=
-			fromCam=cim.getPixels();
-			/*
-					
+			lastCameraImage=cim.getPixels();
+
+			//Update range if needed
+			if(lastCameraImage!=null && tAutoRange.isSelected())
+				histoView.calcAutoRange(lastCameraImage);
+
+			int numBits=getNumCameraBits();
+			histoView.setImage(lastCameraImage, numBits);
+			
 			//Update size of this window if camera area size changes
-			if(oldp!=null && p!=null)
-				if(oldp.getWidth()!=p.getWidth() ||
-						oldp.getHeight()!=p.getHeight())
+			if(lastCameraImage!=null)
+				{
+				Dimension newDim=new Dimension(lastCameraImage.getWidth(), lastCameraImage.getHeight());
+				if(lastImageSize==null || !lastImageSize.equals(newDim))
 					{
-					//Might not work anymore!
+					Rectangle rect=drawArea.getBounds();
+					Dimension oldDim=new Dimension(rect.width,rect.height);
+					
 					Rectangle bounds=getBoundsEvWindow();
 					setBoundsEvWindow(new Rectangle(
 							bounds.x,bounds.y,
-							(int)(bounds.getWidth()+(oldp.getWidth()-p.getWidth())),
-							(int)(bounds.getHeight()+(oldp.getHeight()-p.getHeight()))
+							(int)(bounds.getWidth()+(newDim.getWidth()-oldDim.getWidth())),
+							(int)(bounds.getHeight()+(newDim.getHeight()-oldDim.getHeight()))
 							));
 					}
-*/
-			
-			//Here one could mark totally black or saturated areas
-				
+				lastImageSize=newDim;
+				}
+
+			//Update image
 			drawArea.repaint();
-			//System.out.println("do repaint");
 			}
 		
 		}
 		
 		
-
-	//Update timer, busy loop for now. replace later by camera event listener	
-	private javax.swing.Timer timer=new javax.swing.Timer(10,this);
-
-	private JCheckBox tAutoRange=new JCheckBox("Auto", true);
-	private JButton bSetFullRange=new JButton("Full");
-	private CameraHistogramView histoView=new CameraHistogramView();
-	private JCheckBox tUpdateView=new JCheckBox("Update", true);
-	private JCheckBox tLive=new JCheckBox("Live", false);
-	private JButton bSnap=new JButton("Snap");
-	private JCheckBox tHistoView=new JCheckBox("Histo", true);
-
-
 
 	public CamWindow()
 		{
@@ -180,42 +195,36 @@ public class CamWindow extends BasicWindow implements ActionListener
 	
 	public CamWindow(Rectangle bounds)
 		{
-
-		
-		
-		mcombo=new JComboBox(new Vector<DevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
-
-		
+		cameraCombo=new JComboBox(new Vector<DevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
 		
 		tLive.setToolTipText("Continuously take pictures");
-		bSnap.setToolTipText("Manually take a picture and update");
-		tHistoView.setToolTipText("Show histogram controls");
+		bSnap.setToolTipText("Manually take a picture and update. Does not save image.");
+		//tHistoView.setToolTipText("Show histogram controls");
 		tAutoRange.setToolTipText("Automatically adjust visible range");
 		bSetFullRange.setToolTipText("Set visible range of all of camera range");
+
+		tLive.addActionListener(this);
+		bSnap.addActionListener(this);
+		//tHistoView.addActionListener(this);
+		tAutoRange.addActionListener(this);
+		bSetFullRange.addActionListener(this);
+		histoView.addActionListener(this);
 		
-		JPanel pHisto=new JPanel(new BorderLayout());
-		pHisto.setBorder(BorderFactory.createTitledBorder("Range adjustment"));
+		//pHisto.setBorder(BorderFactory.createTitledBorder("Range adjustment"));
 		pHisto.add(
 				EvSwingUtil.layoutCompactVertical(tAutoRange, bSetFullRange),
 				BorderLayout.WEST);
 		pHisto.add(histoView, BorderLayout.CENTER);
 		
-
-		
-		
-		setLayout(new BorderLayout());
-		
 		JPanel pCenter=new JPanel(new BorderLayout());
-		
-		pCenter.add(EvSwingUtil.layoutCompactHorizontal(mcombo, bSnap, tLive, tUpdateView/*, tHistoView*/)
+		pCenter.add(EvSwingUtil.layoutCompactHorizontal(cameraCombo, bSnap, tLive, tUpdateView)
 				,BorderLayout.SOUTH);
 		pCenter.add(drawArea,BorderLayout.CENTER);
 		
+		sidepanel=new EvHidableSidePaneBelow(pCenter, pHisto, true);
+		sidepanel.addActionListener(this);
 		
-		
-//		add(pHisto,BorderLayout.NORTH);
-		
-		EvHidableSidePaneBelow sidepanel=new EvHidableSidePaneBelow(pCenter, pHisto, true);
+		setLayout(new BorderLayout());
 		add(sidepanel,BorderLayout.CENTER);
 		
 		
@@ -228,17 +237,6 @@ public class CamWindow extends BasicWindow implements ActionListener
 		timer.start();
 		//setResizable(false);
 		}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

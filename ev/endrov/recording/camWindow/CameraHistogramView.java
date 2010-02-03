@@ -26,7 +26,7 @@ public class CameraHistogramView extends JPanel
 	private static final long serialVersionUID = 1L;
 
 	//private int rangeMin;
-	private int rangeMax;
+	protected int rangeMax=255;
 	
 	private EvPixels currentImage;
 	private BufferedImage cachedImage=null; //cached image
@@ -44,6 +44,7 @@ public class CameraHistogramView extends JPanel
 		
 		//rangeMin=0;
 		rangeMax=2<<numBits-1;
+		repaint();
 		}
 
 	@Override
@@ -71,7 +72,6 @@ public class CameraHistogramView extends JPanel
 		for(int v:p)
 			{
 			int i=v*screenWidth/rangeMax;
-			
 			bins[i]++;
 			}
 

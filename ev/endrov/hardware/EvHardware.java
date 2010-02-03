@@ -6,6 +6,7 @@
 package endrov.hardware;
 
 import java.util.*;
+
 import org.jdom.Element;
 
 
@@ -98,6 +99,11 @@ public class EvHardware
 		return hwlist2;
 		}
 
+	@SuppressWarnings("unchecked")
+	public static <E> Map<DevicePath,E> getDeviceMapCast(Class<E> hw)
+		{
+		return (Map<DevicePath, E>) getDeviceMap(hw);
+		}
 	
 	/**
 	 * Get current configuration as XML

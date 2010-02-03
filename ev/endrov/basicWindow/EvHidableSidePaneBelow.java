@@ -6,8 +6,12 @@
 package endrov.basicWindow;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -33,7 +37,7 @@ public class EvHidableSidePaneBelow extends JPanel
 	/**
 	 * Check if hidable panel is visible
 	 */
-	public boolean getPanelVisible()
+	public boolean isPanelVisible()
 		{
 		return visible;
 		}
@@ -50,6 +54,9 @@ public class EvHidableSidePaneBelow extends JPanel
 		visible=v;
 		validate();
 		toggleButton.repaint();
+		
+		for(ActionListener l:actionListeners)
+			l.actionPerformed(new ActionEvent(this, 0, "toggledPanel"));
 		}
 	
 	
@@ -70,8 +77,8 @@ public class EvHidableSidePaneBelow extends JPanel
 			int part2=2*part;
 			
 			int dx=part*4;
-			int y1=getPanelVisible() ? part  : part2;
-			int y2=getPanelVisible() ? part2 : part;
+			int y1=isPanelVisible() ? part  : part2;
+			int y2=isPanelVisible() ? part2 : part;
 			int x=w/2-dx*3/2;
 			
 			for(int i=0;i<3;i++)
@@ -87,7 +94,7 @@ public class EvHidableSidePaneBelow extends JPanel
 			}
 		public void mouseClicked(MouseEvent e)
 			{
-			setPanelVisible(!getPanelVisible());
+			setPanelVisible(!isPanelVisible());
 			}
 		public void mouseEntered(MouseEvent e){}
 		public void mouseExited(MouseEvent e){}
@@ -110,6 +117,13 @@ public class EvHidableSidePaneBelow extends JPanel
 		setPanelVisible(visible);
 		}
 	
+
+	private List<ActionListener> actionListeners=new LinkedList<ActionListener>();
 	
+	public void addActionListener(ActionListener l)
+		{
+		actionListeners.add(l);
+		}
+
 	
 	}
