@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -21,6 +22,7 @@ import endrov.hardware.PropertyType;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
 import endrov.recording.HWStage;
+import endrov.util.EvMathUtil;
 
 /**
  * Demo microscope
@@ -44,6 +46,8 @@ public class DemoScope extends DeviceProvider implements Device
 	public double[] stagePos=new double[]{0,0,0};
 	
 	
+	private Random rand=new Random();
+	
 	/**
 	 * Demo camera
 	 */
@@ -51,7 +55,9 @@ public class DemoScope extends DeviceProvider implements Device
 		{
 		public CameraImage snap()
 			{
-			BufferedImage im=new BufferedImage(320,200,BufferedImage.TYPE_BYTE_GRAY);
+			int w=320;
+			int h=200;
+			BufferedImage im=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
 			Graphics g=im.getGraphics();
 			
 			g.setColor(Color.WHITE);
@@ -61,6 +67,11 @@ public class DemoScope extends DeviceProvider implements Device
 
 			g.translate((int)stagePos[0], (int)stagePos[1]);
 			
+			 
+			int[] arr=new int[w*h];
+			for(int i=0;i<arr.length;i++)
+				arr[i]=EvMathUtil.nextPoisson(rand, 10)*3;//(int)(Math.random()*30);
+			im.getRaster().setSamples(0, 0, w, h, 0, arr);
 			
 			g.fillOval(100-r, 100-r, 2*r, 2*r);
 			

@@ -307,6 +307,22 @@ public class EvMathUtil
 				frac.multiply(nextY));
 		}
 
+	public static int nextPoisson(Random r, double lambda) 
+	{
+	double elambda = Math.exp(-1*lambda);
+	double product = 1;
+	int count =  0;
+	int result=0;
+	while (product >= elambda)
+		{
+		product *= r.nextDouble();
+		result = count;
+		count++; // keep result one behind
+		}
+	return result;
+	}
+
+
 	/**
 	 * Get the maximum of a list
 	 */
