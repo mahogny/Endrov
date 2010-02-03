@@ -24,6 +24,8 @@ import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
 import endrov.util.EvSwingUtil;
+import endrov.util.JImageButton;
+import endrov.util.JImageToggleButton;
 
 /**
  * Camera live-feed window
@@ -35,6 +37,18 @@ public class CamWindow extends BasicWindow implements ActionListener
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
+	
+	
+	public static final ImageIcon iconCameraToROI=new ImageIcon(CamWindow.class.getResource("jhCameraToROI.png"));
+	public static final ImageIcon iconEllipseROI=new ImageIcon(CamWindow.class.getResource("jhEllipse.png"));
+	public static final ImageIcon iconFreehandROI=new ImageIcon(CamWindow.class.getResource("jhFreehand.png"));
+	public static final ImageIcon iconGoToROI=new ImageIcon(CamWindow.class.getResource("jhGoToROI.png"));
+	public static final ImageIcon iconLineROI=new ImageIcon(CamWindow.class.getResource("jhLine.png"));
+	public static final ImageIcon iconPointROI=new ImageIcon(CamWindow.class.getResource("jhPoint.png"));
+	public static final ImageIcon iconPolygonROI=new ImageIcon(CamWindow.class.getResource("jhPolygon.png"));
+	public static final ImageIcon iconRectROI=new ImageIcon(CamWindow.class.getResource("jhRect.png"));
+	public static final ImageIcon iconSelectROI=new ImageIcon(CamWindow.class.getResource("jhSelect.png"));
+
 	
 	/*
 	public static TreeMap<String,Extension> extensions=new TreeMap<String,Extension>();
@@ -78,6 +92,20 @@ public class CamWindow extends BasicWindow implements ActionListener
 	private EvHidableSidePaneBelow sidepanel;
 	private JPanel pHisto=new JPanel(new BorderLayout());
 
+	
+
+	private JButton bCameraToROI=new JImageButton(iconCameraToROI, "Adapt camera limits to ROI");	
+	private JButton bGoToROI=new JImageButton(iconEllipseROI, "Create ellipse ROI");
+	
+	private JToggleButton bEllipseROI=new JImageToggleButton(iconEllipseROI, "Create ellipse ROI");
+	private JToggleButton bFreehandROI=new JImageToggleButton(iconFreehandROI, "Create freehand ROI");
+	private JToggleButton bLineROI=new JImageToggleButton(iconLineROI, "Create line ROI");
+	private JToggleButton bPointROI=new JImageToggleButton(iconEllipseROI, "Create point ROI");
+	private JToggleButton bPolygonROI=new JImageToggleButton(iconPolygonROI, "Create polygon ROI");
+	private JToggleButton bRectROI=new JImageToggleButton(iconRectROI, "Create rectangle ROI");
+	private JToggleButton bSelectROI=new JImageToggleButton(iconSelectROI, "Select ROI");
+
+	
 	private JPanel drawArea=new CamWindowImageView()
 		{
 		private static final long serialVersionUID = 1L;
@@ -216,6 +244,16 @@ public class CamWindow extends BasicWindow implements ActionListener
 				BorderLayout.WEST);
 		pHisto.add(histoView, BorderLayout.CENTER);
 		
+		JComponent pLeft=EvSwingUtil.layoutCompactVertical(
+				EvSwingUtil.layoutEvenVertical(
+						bCameraToROI,
+						bGoToROI,
+						bSelectROI,
+						bEllipseROI, bFreehandROI, bLineROI, bPointROI, bPolygonROI, bRectROI
+						)
+				);
+		
+		
 		JPanel pCenter=new JPanel(new BorderLayout());
 		pCenter.add(EvSwingUtil.layoutCompactHorizontal(cameraCombo, bSnap, tLive, tUpdateView)
 				,BorderLayout.SOUTH);
@@ -226,6 +264,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 		
 		setLayout(new BorderLayout());
 		add(sidepanel,BorderLayout.CENTER);
+		add(pLeft,BorderLayout.WEST);
 		
 		
 		
@@ -243,14 +282,12 @@ public class CamWindow extends BasicWindow implements ActionListener
 	
 	public void dataChangedEvent()
 		{
-		
 		}
 
 	public void loadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element e)
 		{
-		
 		} 
 	public void freeResources()
 		{

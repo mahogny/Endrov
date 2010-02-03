@@ -35,8 +35,6 @@ public abstract class ROI extends EvObject
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	//private static final String metaType="ROI";
-		
 
 	/**
 	 * Set of all selected ROI:s
@@ -189,8 +187,6 @@ public abstract class ROI extends EvObject
 		System.out.println("editroi "+this);
 		}
 	
-	//name of ROI? = name of metaobject?
-	
 	/**
 	 * Description of this type of metadata. ROI's should implement getROIDesc instead to assure some sort of
 	 * consistency in the descriptions
@@ -200,33 +196,60 @@ public abstract class ROI extends EvObject
 		return "ROI ("+getROIDesc()+")";
 		}
 
-	/** Description/short name for this type of ROI */
+	/** 
+	 * Description/short name for this type of ROI 
+	 */
 	public abstract String getROIDesc();
 	
-	/** Get a widget to edit the parameters of this ROI */
+	/**
+	 * Get a widget to edit the parameters of this ROI 
+	 */
 	public abstract JComponent getROIWidget();
 	
-	
-	
-	
-	
+	/**
+	 * Get which channels might be relevant
+	 */
 	public abstract Set<String> getChannels(Imageset rec);
+	
+	/**
+	 * Get which frames might be relevant
+	 */
 	public abstract Set<EvDecimal> getFrames(Imageset rec, String channel);
+	
+	/**
+	 * Get which slices might be relevant
+	 */
 	public abstract Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame);
 
+	/**
+	 * Get handles for resizing ROI
+	 */
 	public abstract Handle[] getHandles();
-	
-	//only interesting for placeable ROIs
+
+	/**
+	 * Get first handle to place, if ROI can be placed
+	 */
 	public abstract Handle getPlacementHandle1();
+	
+	/**
+	 * Get second handle to place, if ROI can be placed
+	 */
 	public abstract Handle getPlacementHandle2();
+	
+	/**
+	 * First called when placing ROI
+	 */
 	public abstract void initPlacement(String chan, EvDecimal frame, EvDecimal z);
 	
+	/**
+	 * Check if an image might be relevant?
+	 */
 	public abstract boolean imageInRange(String channel, EvDecimal frame, EvDecimal z);
+	
+	/**
+	 * Get iterator over ROI
+	 */
 	public abstract LineIterator getLineIterator(EvStack stack, EvImage im, String channel, EvDecimal frame, EvDecimal z);
-	
-//	public abstract Vector<ROI> getSubRoi();
-	
-	
 	
 	
 	
