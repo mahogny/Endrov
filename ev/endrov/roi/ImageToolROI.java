@@ -34,20 +34,7 @@ public class ImageToolROI implements ImageWindowTool
 		this.w=w;
 		this.r=r;
 		}
-	/*
-	public boolean isToggleable()
-		{
-		return true;
-		}
-	public String toolCaption()
-		{
-		return "ROI/Edit";
-		}
-	public boolean enabled()
-		{
-		return true;
-		}
-*/
+
 	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("ROI/Edit");
@@ -145,10 +132,6 @@ public class ImageToolROI implements ImageWindowTool
 		}
 
 	
-	/*
-	 * (non-Javadoc)
-	 * @see client.ImageWindow.Tool#keyPressed(java.awt.event.KeyEvent)
-	 */
 	public void keyPressed(KeyEvent e)
 		{
 		}

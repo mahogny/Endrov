@@ -486,7 +486,7 @@ public abstract class ROI extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		ImageWindow.addImageWindowExtension(new ImageExtensionROI());
+		ImageWindow.addImageWindowExtension(new ImageWindowExtensionROI());
 		}
 	
 	}
