@@ -41,3 +41,11 @@ possibility: recode renderer to work with ROI etc from image window
 
 
 
+=======================
+
+* possibility of moving to lowest-res, tile-scan everything as an underlay for camwindow /ricardo
+* virtual data object good /ricardo
+* do not keep channel in ROIs
+* ROIs for recording 2d + mid position (for stage)
+
+
