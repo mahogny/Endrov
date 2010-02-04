@@ -22,13 +22,23 @@ import endrov.util.Matrix2d;
  * 
  * @author Johan Henriksson
  */
-public class ImagePanel extends JPanel
+public class ImageWindowView extends JPanel
 	{
 	static final long serialVersionUID=0;
 	public Vector<ImagePanelImage> images=new Vector<ImagePanelImage>();
 	public double zoom=1;
 	public double rotation=0;
 	public double transX=0, transY=0;
+
+	
+	/** Extension: Overlay renderers */
+	public final Vector<ImageWindowRenderer> imageWindowRenderers=new Vector<ImageWindowRenderer>();
+
+	public void dataChangedEvent()
+		{
+		for(ImageWindowRenderer r:imageWindowRenderers)
+			r.dataChangedEvent();
+		}
 
 	
 	/**
@@ -103,7 +113,7 @@ public class ImagePanel extends JPanel
 		/**
 		 * Zoom image to fit panel
 		 */
-		public void zoomToFit(ImagePanel p)
+		public void zoomToFit(ImageWindowView p)
 			{
 			loadImage();
 			if(bufi!=null)
@@ -124,7 +134,7 @@ public class ImagePanel extends JPanel
 				}
 			}
 		
-		public void paintComponent(Graphics g, ImagePanel p)
+		public void paintComponent(Graphics g, ImageWindowView p)
 			{
 			Graphics2D g2 = (Graphics2D)g; 			
 			if(bufi!=null)
@@ -170,7 +180,7 @@ public class ImagePanel extends JPanel
 
 		/** Convert image coordinate to screen coordinate (image scaled by binning) */
 		//Problem: should now be stack specific! currently ignores binning as stated above
-		public Vector2d transformI2S(ImagePanel p, Vector2d u)
+		public Vector2d transformI2S(ImageWindowView p, Vector2d u)
 			{
 			return p.transformW2S(new Vector2d(stack.transformImageWorldX(u.x),stack.transformImageWorldY(u.y)));
 			}
@@ -179,7 +189,7 @@ public class ImagePanel extends JPanel
 		
 		/** Convert screen coordinate to image coordinate (image scaled by binning) */
 		//Problem: should now be stack specific!
-		public Vector2d transformS2I(ImagePanel p, Vector2d u)
+		public Vector2d transformS2I(ImageWindowView p, Vector2d u)
 			{
 			Vector2d v=p.transformS2W(u);
 			return new Vector2d(stack.transformWorldImageX(v.x),stack.transformWorldImageY(v.y));

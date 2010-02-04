@@ -114,7 +114,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 				{
 				ImageAnnotImageRenderer r=new ImageAnnotImageRenderer(w);
 				w.imageWindowTools.add(new ImageAnnotImageTool(w,r));
-				w.imageWindowRenderers.add(r);
+				w.addImageWindowRenderer(r);
 				}
 			});
 		}

@@ -114,7 +114,7 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 				{
 				ChromaCountKJImageRenderer r=new ChromaCountKJImageRenderer(w);
 				w.imageWindowTools.add(new ChromaCountKJImageTool(w,r));
-				w.imageWindowRenderers.add(r);
+				w.addImageWindowRenderer(r);
 				}
 			});
 		}

@@ -26,13 +26,17 @@ import endrov.roi.window.*;
 /**
  * Image Window: ROI menu
  */
-public class ImageExtensionROI implements ImageWindowExtension
+public class ImageWindowExtensionROI implements ImageWindowExtension
 	{
 		
 	public void newImageWindow(final ImageWindow w)
 		{
 		JMenu miROI=new JMenu("ROI");
 		w.addMenubar(miROI);
+
+		final ImageRendererROI renderer=new ImageRendererROI(w);
+		w.addImageWindowRenderer(renderer);
+		w.imageWindowTools.add(new ImageToolROI(w,renderer));
 
 		//ROI
 		JMenu miNew=new JMenu("New");
@@ -60,7 +64,7 @@ public class ImageExtensionROI implements ImageWindowExtension
 				else
 					miNewROIthis=new JMenuItem(rt.name(),rt.getIcon());
 				miNewROIthis.addActionListener(new ActionListener()
-					{public void actionPerformed(ActionEvent e){w.setTool(new ToolDragCreateROI(w,rt.makeInstance()));}});
+					{public void actionPerformed(ActionEvent e){w.setTool(new ToolDragCreateROI(w,rt.makeInstance(),renderer));}});
 				BasicWindow.addMenuItemSorted(miNew, miNewROIthis);
 				}
 			}
@@ -128,9 +132,6 @@ public class ImageExtensionROI implements ImageWindowExtension
 */		
 		
 		
-		ImageRendererROI r=new ImageRendererROI(w);
-		w.imageWindowRenderers.add(r);
-		w.imageWindowTools.add(new ImageToolROI(w,r));
 		}
 
 	

@@ -9,6 +9,7 @@ import java.awt.*;
 import java.util.*;
 import javax.vecmath.*;
 
+import endrov.basicWindow.WSTransformer;
 import endrov.data.*;
 import endrov.ev.SimpleObserver;
 import endrov.imageWindow.*;
@@ -48,12 +49,16 @@ public class ImageRendererROI implements ImageWindowRenderer
 	 */
 	public void draw(Graphics g)
 		{
+		EvDecimal frame=w.frameControl.getFrame();
+		EvDecimal z=w.frameControl.getZ();
+		String channel=w.getCurrentChannelName();
+		
 		handleList.clear();
 		for(EvObject ob:w.getRootObject().metaObject.values())
 			if(ob instanceof ROI)
-				drawROI(g, (ROI)ob);
+				drawROI(w, g, (ROI)ob, frame, z, channel);
 		if(drawROI!=null)
-			drawROI(g, drawROI);
+			drawROI(w, g, drawROI, frame, z, channel);
 		}
 	
 	
@@ -62,12 +67,11 @@ public class ImageRendererROI implements ImageWindowRenderer
 		}
 
 
-	private void drawROI(Graphics g, ROI roiUncast)
+	
+	
+	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast,
+			EvDecimal frame, EvDecimal z, String channel)
 		{
-		EvDecimal frame=w.frameControl.getFrame();
-		EvDecimal z=w.frameControl.getZ();
-		String channel=w.getCurrentChannelName();
-		
 		if(roiUncast.imageInRange(channel, frame, z))
 			{
 			if(ROI.isSelected(roiUncast))
@@ -110,7 +114,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 			else if(roiUncast instanceof CompoundROI)
 				{
 				for(ROI subroi:((CompoundROI)roiUncast).getSubRoi())
-					drawROI(g,subroi);
+					drawROI(w, g,subroi, frame, z, channel);
 				}
 			}
 		
@@ -125,13 +129,6 @@ public class ImageRendererROI implements ImageWindowRenderer
 			Vector2d xy=w.transformW2S(new Vector2d(h.getX(), h.getY()));
 			g.setColor(Color.CYAN);
 			g.drawRect((int)xy.x-HANDLESIZE, (int)xy.y-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
-			//pixels huge. rather, there is a need for a general transform function. Scaling functions has to disappear
-			/*
-				w.transformOverlay((Graphics2D)g);		
-				g.drawRect((int)h.getX()-HANDLESIZE, (int)h.getY()-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
-				w.untransformOverlay((Graphics2D)g);		
-			 */
-			
 			}
 		
 		

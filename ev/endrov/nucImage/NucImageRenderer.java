@@ -293,7 +293,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 				{
 				NucImageRenderer r=new NucImageRenderer(w);
 				w.imageWindowTools.add(new NucImageTool(w,r));
-				w.imageWindowRenderers.add(r);
+				w.addImageWindowRenderer(r);
 				}
 			});
 		}

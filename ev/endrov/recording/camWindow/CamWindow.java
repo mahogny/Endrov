@@ -50,25 +50,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 	public static final ImageIcon iconSelectROI=new ImageIcon(CamWindow.class.getResource("jhSelect.png"));
 
 	
-	/*
-	public static TreeMap<String,Extension> extensions=new TreeMap<String,Extension>();
-	public static void addMicroscopeWindowExtension(String name, Extension e)
-		{
-		extensions.put(name,e);
-		}
-*/
 	
-	/******************************************************************************************************
-	 *                               Extension                                                            *
-	 *****************************************************************************************************/
-
-	/*
-	public static interface Extension
-		{
-		public JComponent addControls();
-		
-		}*/
-
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
@@ -95,7 +77,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 	
 
 	private JButton bCameraToROI=new JImageButton(iconCameraToROI, "Adapt camera limits to ROI");	
-	private JButton bGoToROI=new JImageButton(iconEllipseROI, "Create ellipse ROI");
+	private JButton bGoToROI=new JImageButton(iconGoToROI, "Move stage to focus on ROI");
 	
 	private JToggleButton bEllipseROI=new JImageToggleButton(iconEllipseROI, "Create ellipse ROI");
 	private JToggleButton bFreehandROI=new JImageToggleButton(iconFreehandROI, "Create freehand ROI");
@@ -105,6 +87,10 @@ public class CamWindow extends BasicWindow implements ActionListener
 	private JToggleButton bRectROI=new JImageToggleButton(iconRectROI, "Create rectangle ROI");
 	private JToggleButton bSelectROI=new JImageToggleButton(iconSelectROI, "Select ROI");
 
+	private JToggleButton[] toolButtons=new JToggleButton[]{
+			bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,bSelectROI,
+	}; 
+	
 	
 	private JPanel drawArea=new CamWindowImageView()
 		{
@@ -162,6 +148,23 @@ public class CamWindow extends BasicWindow implements ActionListener
 					(int)(bounds.getHeight()+dh)
 					));
 			}
+		else
+			for(JToggleButton b:toolButtons)
+				if(e.getSource()==b)
+					{
+					
+					//Make sure all other tool buttons are unselected
+					for(JToggleButton bb:toolButtons)
+						{
+						if(bb!=b)
+							{
+							bb.removeActionListener(this);
+							bb.setSelected(false);
+							bb.addActionListener(this);
+							}
+						}
+					
+					}
 		
 		}
 		
@@ -246,10 +249,9 @@ public class CamWindow extends BasicWindow implements ActionListener
 		
 		JComponent pLeft=EvSwingUtil.layoutCompactVertical(
 				EvSwingUtil.layoutEvenVertical(
+						bSelectROI,	bEllipseROI, bFreehandROI, bLineROI, bPointROI, bPolygonROI, bRectROI,
 						bCameraToROI,
-						bGoToROI,
-						bSelectROI,
-						bEllipseROI, bFreehandROI, bLineROI, bPointROI, bPolygonROI, bRectROI
+						bGoToROI
 						)
 				);
 		
@@ -266,7 +268,8 @@ public class CamWindow extends BasicWindow implements ActionListener
 		add(sidepanel,BorderLayout.CENTER);
 		add(pLeft,BorderLayout.WEST);
 		
-		
+		for(JToggleButton b:toolButtons)
+			b.addActionListener(this);
 		
 		//Window overall things
 		setTitleEvWindow("Camera Control");
