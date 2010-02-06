@@ -71,7 +71,7 @@ public class RecWindowMultiDim extends BasicWindow
 	
 	
 	/**
-	 * lacking, from micromanager
+	 * lacking, from micromanager:
 	 * 
 	 * positions: 
 	 * 		edit XY list

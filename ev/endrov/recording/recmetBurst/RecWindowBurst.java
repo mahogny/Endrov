@@ -38,6 +38,30 @@ public class RecWindowBurst extends BasicWindow
 		{
 
 		
+		
+		/**
+		 * From micromanager:
+		 * 
+		 * sequence length
+		 * directory root
+		 * name prefix
+		 * buffer status
+		 * disk status
+		 * interval [ms]
+		 * output to: disk/screen
+		 * [] display while acquiring
+		 * 
+		 * Start acq
+		 * Stop
+		 * stop saving
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		
+		
+		
 		///////////////// Acquire ///////////////////////////////////////
 
 		
