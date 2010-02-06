@@ -16,7 +16,6 @@ import org.jdom.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvData;
-import endrov.recording.lightpathWindow.LightpathWindow;
 
 /**
  * Burst acquisition
@@ -114,14 +113,14 @@ public class RecWindowBurst extends BasicWindow
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("Lightpath",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Burst acquisition",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 
 					{
-					new LightpathWindow();
+					new RecWindowBurst();
 					}
 	
 				public void buildMenu(BasicWindow w){}
