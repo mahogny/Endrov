@@ -70,7 +70,57 @@ public class RecWindowMultiDim extends BasicWindow
 	
 	
 	
-	
+	/**
+	 * lacking, from micromanager
+	 * 
+	 * positions: 
+	 * 		edit XY list
+	 * 
+	 * slices:
+	 * 		relative/absolute z
+	 * 		[] keep shutter open
+	 * 
+	 * 
+	 * autofocus:
+	 * 		skip frame (...   some numeric editor
+	 * 		options
+	 * 
+	 * 
+	 * save images
+	 * 		dir root
+	 * 		display, all+other options
+	 * 		name prefix
+	 * 		comment
+	 * 
+	 * save/load
+	 * 
+	 * 
+	 * this is how it got things:
+	 * 
+	 * 
+	 * Channels
+	 * 		channel group=
+	 *	and table
+	 *		configuration
+	 *		exposure
+	 *		z-offset
+	 *		z-stack 
+	 *
+	 * time points
+	 * 		number
+	 * 		interval #
+	 * 		interval unit		
+	 * 
+	 * 
+	 * 
+	 * 
+	 * **
+	 * mm has group editor. each property can be selected to be included.
+	 * hard to edit afterwards IMO, must select all properties right the first time. 
+	 * 
+	 * 
+	 * 
+	 */
 	
 	
 	
