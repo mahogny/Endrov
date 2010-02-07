@@ -39,6 +39,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 	static final long serialVersionUID=0;
 	
 	
+	public static final ImageIcon iconAutoFocus=new ImageIcon(CamWindow.class.getResource("jhAutoFocus.png"));
 	public static final ImageIcon iconCameraToROI=new ImageIcon(CamWindow.class.getResource("jhCameraToROI.png"));
 	public static final ImageIcon iconEllipseROI=new ImageIcon(CamWindow.class.getResource("jhEllipse.png"));
 	public static final ImageIcon iconFreehandROI=new ImageIcon(CamWindow.class.getResource("jhFreehand.png"));
@@ -76,6 +77,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 
 	
 
+	private JButton bAutoFocus=new JImageButton(iconAutoFocus, "Autofocus");
 	private JButton bCameraToROI=new JImageButton(iconCameraToROI, "Adapt camera limits to ROI");	
 	private JButton bGoToROI=new JImageButton(iconGoToROI, "Move stage to focus on ROI");
 	
@@ -240,6 +242,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 		tAutoRange.addActionListener(this);
 		bSetFullRange.addActionListener(this);
 		histoView.addActionListener(this);
+		bAutoFocus.addActionListener(this);
 		
 		//pHisto.setBorder(BorderFactory.createTitledBorder("Range adjustment"));
 		pHisto.add(
@@ -251,7 +254,8 @@ public class CamWindow extends BasicWindow implements ActionListener
 				EvSwingUtil.layoutEvenVertical(
 						bSelectROI,	bEllipseROI, bFreehandROI, bLineROI, bPointROI, bPolygonROI, bRectROI,
 						bCameraToROI,
-						bGoToROI
+						bGoToROI,
+						bAutoFocus
 						)
 				);
 		

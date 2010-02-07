@@ -49,12 +49,12 @@ public class RecWindowMultiDim extends BasicWindow
 		
 
 		JPanel leftright=new JPanel(new GridLayout(1,2));
-		leftright.add(EvSwingUtil.layoutCompactVertical(wslices,worder,wpos));
+		leftright.add(EvSwingUtil.layoutCompactVertical(wslices,worder));
 		leftright.add(EvSwingUtil.layoutCompactVertical(wtimes,wacq));
 		
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutCompactVertical(
-				leftright,wchans
+				leftright,wchans,wpos
 				),BorderLayout.NORTH);
 		add(
 				wdesc
