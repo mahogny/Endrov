@@ -6,6 +6,7 @@
 package endrov.util;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -149,6 +150,9 @@ public class EvSwingUtil
 		return p;*/
 		}
 	
+	/**
+	 * Layout components in evenly split horizontal boxes
+	 */
 	public static JComponent layoutEvenHorizontal(JComponent... list)
 		{
 		JPanel p=new JPanel(new GridLayout(1,list.length));
@@ -157,9 +161,24 @@ public class EvSwingUtil
 		return p;
 		}
 
+	/**
+	 * Layout components in evenly split vertical boxes
+	 */
 	public static JComponent layoutEvenVertical(JComponent... list)
 		{
 		JPanel p=new JPanel(new GridLayout(list.length,1));
+		for(JComponent c:list)
+			p.add(c);
+		return p;
+		}
+
+	
+	/**
+	 * Layout components using a flow layout
+	 */
+	public static JComponent layoutFlow(JComponent... list)
+		{
+		JPanel p=new JPanel(new FlowLayout());
 		for(JComponent c:list)
 			p.add(c);
 		return p;

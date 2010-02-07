@@ -6,14 +6,19 @@
 package endrov.data.tree;
 
 import java.awt.Component;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
 
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.bookmark.Bookmark;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvPath;
 
 /**
  * Tree representation of Endrov container hierarchy
@@ -102,5 +107,33 @@ public class DataTree extends JTree
 		
 		
 		}
+
+	
+	
+	
+	/**
+	 * Get the paths to all selected objects
+	 */
+	public List<EvPath> getSelectedPaths()
+		{
+		TreePath[] sel=getSelectionPaths();
+		LinkedList<EvPath> paths=new LinkedList<EvPath>();
+		for(TreePath o:sel)
+			paths.add(((DataTreeElement)o.getLastPathComponent()).getPath());
+		return paths;
+		}
+
+	/**
+	 * Get all selected objects
+	 */
+	public List<EvContainer> getSelectedObjects()
+		{
+		TreePath[] sel=getSelectionPaths();
+		LinkedList<EvContainer> paths=new LinkedList<EvContainer>();
+		for(TreePath o:sel)
+			paths.add(((DataTreeElement)o.getLastPathComponent()).getLeaf());
+		return paths;
+		}
+
 	
 	}
