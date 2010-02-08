@@ -36,15 +36,15 @@ public class RecWindowBurst extends BasicWindow
 	private JCheckBox cDuration=new JCheckBox("Duration");
 	private SpinnerSimpleEvDecimal spDuration=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
-	private JComboBox cDurationUnit=new JComboBox(new Object[]{"Frames","[s]"});
-	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","[ms]"});
+	private JComboBox cDurationUnit=new JComboBox(new Object[]{"Frames","Seconds"});
+	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","ms"});
 	private JButton bStartStop=new JButton("Start");
 	private JCheckBox cSwapEarly=new JCheckBox("Early swap to disk"); 
 	private JLabel labelStatus=new JLabel("Status: Stopped");
 	
 	public RecWindowBurst()
 		{
-		this(new Rectangle(400,300));
+		this(new Rectangle(300,120));
 		}
 	
 	public RecWindowBurst(Rectangle bounds)
@@ -57,20 +57,31 @@ public class RecWindowBurst extends BasicWindow
 
 		
 		
+		
+		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
-		add(EvSwingUtil.layoutCompactVertical(
+		add(EvSwingUtil.layoutEvenVertical(
 				
-				cDuration,
-				spDuration,
-				cDurationUnit,
+				EvSwingUtil.layoutLCR(
+						cDuration,
+						spDuration,
+						cDurationUnit
+						),
+
+				EvSwingUtil.layoutLCR(
+						new JLabel("Rate"),
+						spRate,
+						cRateUnit
+						),
+						
+				cSwapEarly,
 				
-				spRate,
-				cRateUnit,
-				
-				labelStatus,
-				
-				bStartStop
+				EvSwingUtil.layoutLCR(
+						bStartStop,
+						labelStatus,
+						null
+						)
 				
 				
 				
@@ -81,7 +92,7 @@ public class RecWindowBurst extends BasicWindow
 		setTitleEvWindow("Burst acquisition");
 		packEvWindow();
 		setVisibleEvWindow(true);
-		setBoundsEvWindow(bounds);
+		//setBoundsEvWindow(bounds);
 		}
 	
 	
