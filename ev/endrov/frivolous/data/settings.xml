@@ -1,0 +1,31 @@
+<cell>
+	<settings>
+		<psf active="true">
+			<lambda>530</lambda>
+			<index_refr>1.518</index_refr>
+			<pixel_spacing>30</pixel_spacing>
+			<slice_spacing>30</slice_spacing>
+			<numerical_aperture>1.4</numerical_aperture>
+			<spherical_abberation>0.0</spherical_abberation>
+		</psf>
+		
+		<poisson_additive>15</poisson_additive>
+		<poisson_distributed>false</poisson_distributed>
+	</settings>
+	<slice>
+		<fluorophore name="GFP">
+			<spectra>
+				<excitation></excitation>
+				<emitation></emitation>
+			</spectra>
+			<staticlayer>
+				<image src="static-layer.png" />
+			</staticlayer>
+			<mobilelayer>
+				<image src="mobile-layer.png" />
+				<stencil src="mobile-layer-alpha.png" />
+				<speed>1</speed>
+			</mobilelayer>
+		</fluorophore>
+	</slice>
+</cell>
