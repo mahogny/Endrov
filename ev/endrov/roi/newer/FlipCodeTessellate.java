@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 /**
  * Taken and converted from
  * http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml

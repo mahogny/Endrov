@@ -1,13 +1,21 @@
+/***
+ * Copyright (C) 2010 David Johansson & Arvid Johansson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.frivolous.model;
 
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
-public class Fourier
+/**
+ * @author David Johansson, Arvid Johansson
+ */
+public class FrivolousFourier
 	{
-	int w, h;
-	FloatFFT_2D fourierTransform;
+	private int w, h;
+	private FloatFFT_2D fourierTransform;
 
-	public Fourier(int w, int h)
+	public FrivolousFourier(int w, int h)
 		{
 		this.w = w;
 		this.h = h;
