@@ -57,6 +57,12 @@ public class RecWindowBurst extends BasicWindow
 
 		
 		
+		//Create new data
+		//Select root
+		//Select name of channel - only if not RGB
+		
+		
+		
 		
 		
 		////////////////////////////////////////////////////////////////////////

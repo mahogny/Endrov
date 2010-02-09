@@ -1,9 +1,17 @@
+/***
+ * Copyright (C) 2010 David Johansson & Arvid Johansson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.frivolous.model;
 
-public class GaussianPSF extends PSF {
+/**
+ * @author David Johansson, Arvid Johansson
+ */
+public class FrivolousGaussianPSF extends FrivolousPSF {
 
 	@Override
-	public float[] createPSF(Settings_new settings) {
+	public float[] createPSF(SettingsNew settings) {
 
 		int w = settings.w;
 		int h = settings.h;
@@ -20,8 +28,8 @@ public class GaussianPSF extends PSF {
 		
 		for(int x=0; x<w;x++)
 			for(int y=0; y<h;y++){
-				double d2=get_d2(x-wc,y-hc,z, settings.pixelSpacing);
-				double d22=get_d2(x-wc,y-hc,0, settings.pixelSpacing);
+				double d2=getD2(x-wc,y-hc,z, settings.pixelSpacing);
+				double d22=getD2(x-wc,y-hc,0, settings.pixelSpacing);
 				psf[x*h+y]=(float)Math.exp(-d2/twoS2);
 				total+=(float)Math.exp(-d22/twoS2);
 			}
@@ -36,7 +44,7 @@ public class GaussianPSF extends PSF {
 		return psf;
 	}
 
-	private double get_d2(int xPixel, int yPixel, double z, double pixelSpacing){
+	private static double getD2(int xPixel, int yPixel, double z, double pixelSpacing){
 		double x = xPixel * pixelSpacing;
 		double y = yPixel * pixelSpacing;
 		return (x*x+y*y+z*z);
