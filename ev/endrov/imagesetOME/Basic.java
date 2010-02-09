@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imagesetOME;
 
 import endrov.basicWindow.BasicWindow;
@@ -11,6 +16,9 @@ public class Basic
 	{
 	public static EVOME omesession=null;
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imagesetStarrynite;
 
 
@@ -26,32 +31,7 @@ public class EvIODataStarrynite implements EvIOData
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
-			public Integer loadSupports(String fileS)
-				{
-				File file=new File(fileS);
-				return file.isDirectory() & file.getName().endsWith(".starrynite") ? 100 : null; //Low priority; need to find a way to check extensions
-				}
-			public List<Tuple<String,String[]>> getLoadFormats()
-				{
-				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
-				formats.add(new Tuple<String,String[]>("Starrynite/Acetree",new String[]{".starrynite"}));
-				return formats;
-				}
-			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
-				{
-				EvData d=new EvData();
-				d.io=new EvIODataStarrynite(d, new File(file));
-				return d;
-				}
-			public Integer saveSupports(String file){return null;}
-			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
-			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
-		});
-		}
+	
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -320,6 +300,38 @@ public class EvIODataStarrynite implements EvIOData
 		{
 		String imageset=basedir.getName();
 		return imageset;
+		}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				File file=new File(fileS);
+				return file.isDirectory() & file.getName().endsWith(".starrynite") ? 100 : null; //Low priority; need to find a way to check extensions
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				formats.add(new Tuple<String,String[]>("Starrynite/Acetree",new String[]{".starrynite"}));
+				return formats;
+				}
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
+				{
+				EvData d=new EvData();
+				d.io=new EvIODataStarrynite(d, new File(file));
+				return d;
+				}
+			public Integer saveSupports(String file){return null;}
+			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
+			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
+		});
 		}
 	
 	}

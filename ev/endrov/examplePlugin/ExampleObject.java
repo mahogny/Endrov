@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.examplePlugin;
 
 import javax.swing.JMenu;
@@ -20,11 +25,6 @@ public class ExampleObject extends EvObject
 	//No spaces or funny characters
 	private static final String metaType="exampleObject";
 
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,ExampleObject.class);
-		}
 
 	//////////////////
 	// The meat
@@ -72,6 +72,15 @@ public class ExampleObject extends EvObject
 		e.addContent(someData);
 		
 		return metaType; //Minimum requirement
+		}
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,ExampleObject.class);
 		}
 
 	}

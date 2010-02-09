@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowThreshold;
 import endrov.ev.PluginDef;
 
@@ -33,6 +38,7 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				FlowUnitThresholdMaxEntropy2D.class,
 				FlowUnitThresholdOtsu2D.class,
+				FlowUnitThresholdFukunaga2D.class,
 				FlowUnitThresholdPercentile2D.class,
 				};
 		}

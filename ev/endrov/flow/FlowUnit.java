@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flow;
 
 import java.awt.Color;
@@ -60,6 +65,18 @@ public abstract class FlowUnit
 	 * @param flow TODO*/
 	protected abstract void getTypesOut(Map<String, FlowType> types, Flow flow);
 
+	
+	public int getTypesInCount(Flow flow)
+		{
+		return getTypesIn(flow).size();
+		}
+	public int getTypesOutCount(Flow flow)
+		{
+		return getTypesOut(flow).size();
+		}
+
+	
+	
 	public Map<String, FlowType> getTypesIn(Flow flow)
 		{
 		Map<String, FlowType> map = new HashMap<String, FlowType>();
@@ -170,4 +187,38 @@ public abstract class FlowUnit
 			return (Integer)o;
 		else throw new BadTypeFlowException("Not a numerical type "+o.getClass());
 		}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Draw connectors for a box-like flow unit
+	 */
+	protected void helperDrawConnectors(Graphics g, FlowPanel panel, Component comp, Dimension d)
+		{
+		int cntIn=1;
+		if(cntIn<getTypesInCount(panel.getFlow())) cntIn=getTypesInCount(panel.getFlow());
+		int i=0;
+		for(Map.Entry<String, FlowType> entry:getTypesIn(panel.getFlow()).entrySet())
+			{
+			double py=y+(i+1)*d.height/(cntIn+1);
+			panel.drawConnPointLeft(g, this, entry.getKey(), x, (int)py);
+			i++;
+			}
+		
+		int cntOut=1;
+		if(cntOut<getTypesOutCount(panel.getFlow())) cntOut=getTypesOutCount(panel.getFlow());
+		i=0;
+		for(Map.Entry<String, FlowType> entry:getTypesOut(panel.getFlow()).entrySet())
+			{
+			double py=y+(i+1)*d.height/(cntOut+1);
+			panel.drawConnPointRight(g, this, entry.getKey(), x+d.width, (int)py);
+			i++;
+			}
+		
+		}
+	
 	}

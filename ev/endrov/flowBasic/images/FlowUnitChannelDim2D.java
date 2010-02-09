@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.images;
 
 
@@ -31,6 +36,9 @@ public class FlowUnitChannelDim2D extends FlowUnitBasic
 	
 	public static final ImageIcon icon=new ImageIcon(FlowUnitChannelDim2D.class.getResource("jhFlowChannelDim.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

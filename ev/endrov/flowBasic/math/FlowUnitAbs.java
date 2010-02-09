@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.math;
 
 
@@ -19,6 +24,9 @@ public class FlowUnitAbs extends FlowUnitMathUniop
 	private static final String metaType="abs";
 	private static String showName="|A|";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

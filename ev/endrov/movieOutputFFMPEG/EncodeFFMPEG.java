@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.movieOutputFFMPEG;
 
 import java.io.File;
@@ -17,6 +22,9 @@ public class EncodeFFMPEG
 	
 	public static Vector<String> formats=new Vector<String>(); 
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin()	{}
 	static
 		{

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imagesetBioformats;
 
 /*import java.awt.RenderingHints;
@@ -34,52 +39,7 @@ public class EvIODataBioformats implements EvIOData
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
-			public Integer loadSupports(String fileS)
-				{
-				//ImageReader r=new ImageReader(); //Possible to get all suffixes and match
-				
-				File file=new File(fileS);
-				return file.isFile() ? 100 : null; //Low priority; need to find a way to check extensions
-				}
-			public List<Tuple<String,String[]>> getLoadFormats()
-				{
-				ImageReader r=new ImageReader();
-				//TreeSet<String> sufs=new TreeSet<String>();
-				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
-				for(IFormatHandler h:r.getReaders())
-					{
-					/*
-					StringBuffer sb=new StringBuffer();
-					sb.append(h.getFormat()+" (");
-					boolean first=true;
-					for(String suf:h.getSuffixes())
-						{
-						sufs.add(suf);
-						if(!first)
-							sb.append(", ");
-						first=false;
-						sb.append(suf);
-						}
-					sb.append(")");*/
-					formats.add(new Tuple<String,String[]>(h.getFormat(),h.getSuffixes()));
-					}				
-				return formats;
-				}
-			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
-				{
-				EvData d=new EvData();
-				d.io=new EvIODataBioformats(d, new File(file));
-				return d;
-				}
-			public Integer saveSupports(String file){return null;}
-			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
-			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
-		});
-		}
+	
 	
 	
 	/******************************************************************************************************
@@ -105,9 +65,12 @@ public class EvIODataBioformats implements EvIOData
 		imageReader=new ImageReader();
 		retrieve=MetadataTools.createOMEXMLMetadata();
 		imageReader.setMetadataStore(retrieve);
-		imageReader.setId(basedir.getAbsolutePath());
-		imageReader=new ChannelSeparator(imageReader);
 		
+		System.out.println("bioformats set id "+basedir);
+		imageReader.setId(basedir.getAbsolutePath());
+		System.out.println("bioformats adding channel separator");
+		imageReader=new ChannelSeparator(imageReader);
+		System.out.println("bioformats building database");
 		buildDatabase(d);
 		}
 	
@@ -325,11 +288,20 @@ public class EvIODataBioformats implements EvIOData
 			imageReader.setSeries(seriesIndex);
 			//int imageIndex=imageReader.getSeries();
 			
+			System.out.println("bioformats looking at series "+seriesIndex);
+
 			String imageName=retrieve.getImageName(seriesIndex);
+
+			//On windows, bio-formats uses the entire path. This is ugly so cut off the part
+			//until the last file
+			if(imageName.contains("\\"))
+				imageName=imageName.substring(imageName.lastIndexOf('\\'));
 			
 			
-			//Some names might be awful. Might be a bad idea
-			String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
+			//The image name usually sucks, don't do this anymore!
+			//String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
+			String imsetName="im"+seriesIndex;
+			
 			
 //			if(d.metaObject.containsKey(imsetName))
 			if(usedChannelNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it
@@ -363,9 +335,9 @@ public class EvIODataBioformats implements EvIOData
 
 			
 			//It *must* be 0,0
-			Float fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
-			Float fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
-			Float fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
+			Double fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
+			Double fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
+			Double fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
 			//imageindex, pixelindex. is this the right place?
 			System.out.println("res "+fdx+" "+fdy+" "+fdz);
 
@@ -389,21 +361,21 @@ public class EvIODataBioformats implements EvIOData
 							imageReader.getIndex(0, 0, framenum) : imageReader.getIndex(0, channelnum, framenum);
 
 					EvDecimal frame=null;
-					Float deltaT=retrieve.getPlaneTimingDeltaT(seriesIndex,0,firstPixel);
+					Double deltaT=retrieve.getPlaneTimingDeltaT(seriesIndex,0,firstPixel);
 					if(deltaT!=null)
 						frame=new EvDecimal(deltaT);
 					if(frame!=null)
 						{
-						Float fdt=retrieve.getDimensionsTimeIncrement(0, 0);
+						Double fdt=retrieve.getDimensionsTimeIncrement(0, 0);
 						if(fdt!=null)
 							frame=new EvDecimal(framenum*fdt);
 						}
 					if(frame==null)
 						frame=new EvDecimal(framenum);
 
-					if(fdx==null || fdx==0) fdx=1.0f;
-					if(fdy==null || fdy==0) fdy=1.0f;
-					if(fdz==null || fdz==0) fdz=1.0f;
+					if(fdx==null || fdx==0) fdx=1.0;
+					if(fdy==null || fdy==0) fdy=1.0;
+					if(fdz==null || fdz==0) fdz=1.0;
 
 					Map<String,String> metaFrame=c.getMetaFrame(frame);
 
@@ -427,7 +399,7 @@ public class EvIODataBioformats implements EvIOData
 						else
 							curPixel=imageReader.getIndex(slicenum, channelnum, framenum);
 
-						Float expTime=retrieve.getPlaneTimingExposureTime(seriesIndex, 0, curPixel);
+						Double expTime=retrieve.getPlaneTimingExposureTime(seriesIndex, 0, curPixel);
 						EvDecimal zpos=new EvDecimal(fdz).multiply(slicenum);
 	
 						EvImage evim=new EvImage();
@@ -462,6 +434,58 @@ public class EvIODataBioformats implements EvIOData
 		{
 		String imageset=basedir.getName();
 		return imageset;
+		}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				//ImageReader r=new ImageReader(); //Possible to get all suffixes and match
+				
+				File file=new File(fileS);
+				return file.isFile() ? 100 : null; //Low priority; need to find a way to check extensions
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				ImageReader r=new ImageReader();
+				//TreeSet<String> sufs=new TreeSet<String>();
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				for(IFormatHandler h:r.getReaders())
+					{
+					/*
+					StringBuffer sb=new StringBuffer();
+					sb.append(h.getFormat()+" (");
+					boolean first=true;
+					for(String suf:h.getSuffixes())
+						{
+						sufs.add(suf);
+						if(!first)
+							sb.append(", ");
+						first=false;
+						sb.append(suf);
+						}
+					sb.append(")");*/
+					formats.add(new Tuple<String,String[]>(h.getFormat(),h.getSuffixes()));
+					}				
+				return formats;
+				}
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
+				{
+				EvData d=new EvData();
+				d.io=new EvIODataBioformats(d, new File(file));
+				return d;
+				}
+			public Integer saveSupports(String file){return null;}
+			public List<Tuple<String,String[]>> getSaveFormats(){return new LinkedList<Tuple<String,String[]>>();};
+			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
+		});
 		}
 	
 	}

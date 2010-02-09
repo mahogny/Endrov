@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.driverNative;
 
 import java.util.*;
@@ -18,18 +23,6 @@ public class EvNativeHardware extends DeviceProvider implements Device
 	{
 	private static Map<String, Class<? extends Device>> hardwareProvided=new TreeMap<String, Class<? extends Device>>();
 	
-	
-	public static void initPlugin() {}
-	static
-		{
-		EvHardware.root.hw.put("ev",new EvNativeHardware());
-		
-		//TODO synchronize needed?
-		
-		hardwareProvided.put("OlympusIX", OlympusIX.class);
-		//hardwareProvided.put("ITKCorvus", ITKCorvus.class);
-		hardwareProvided.put("Demo", DemoScope.class);
-		}
 	
 	public EvNativeHardware()
 		{
@@ -114,5 +107,20 @@ public class EvNativeHardware extends DeviceProvider implements Device
 	
 	public boolean hasConfigureDialog(){return false;}
 	public void openConfigureDialog(){}
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvHardware.root.hw.put("ev",new EvNativeHardware());
+		
+		//TODO synchronize needed?
+		
+		hardwareProvided.put("OlympusIX", OlympusIX.class);
+		//hardwareProvided.put("ITKCorvus", ITKCorvus.class);
+		hardwareProvided.put("Demo", DemoScope.class);
+		}
 
 	}

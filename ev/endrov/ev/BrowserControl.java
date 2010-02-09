@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.ev;
 
 import java.io.*;
@@ -45,8 +50,8 @@ public class BrowserControl
 					//Fallback
 				
 					// cmd = 'netscape -remote openURL(http://www.javaworld.com)'
-					String cmd=UNIX_PATH + " " + UNIX_FLAG +" "+ url;
-					System.out.println(cmd);
+					String cmd=UNIX_PATH + " " + UNIX_FLAG +" -- "+ url;
+					System.out.println("Running command:" + cmd);
 					Process p = Runtime.getRuntime().exec(cmd);
 					try
 						{

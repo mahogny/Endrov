@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.convert;
 
 
@@ -25,6 +30,9 @@ public class FlowUnitConvertToVector2i extends FlowUnitBasic
 	public static final String showName="To Vector2i";
 	private static final String metaType="channelConvertToVector2i";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -1,12 +1,20 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.keyBinding;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.*;
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.icon.BasicIcon;
 import endrov.data.EvData;
 
 import org.jdom.*;
@@ -25,7 +33,7 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 	 */
 	public WindowKeyBinding()
 		{
-		this(50,100,500,600);
+		this(50,100,300,600);
 		}
 
 	private JPanel listPane=new JPanel();
@@ -51,8 +59,8 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		//Window overall things
 		setTitleEvWindow("Key Bindings");
 		packEvWindow();
-		setVisibleEvWindow(true);
 		setBoundsEvWindow(x,y,w,h);
+		setVisibleEvWindow(true);
 
 		fillList();
 		}
@@ -70,16 +78,17 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 	/**
 	 * Get a constraint for the layout
 	 */
-	private GridBagConstraints gconstraint(int x, int y, int w)
+	private GridBagConstraints gconstraint(int x, int y, int w, double weightx)
 		{
 		GridBagConstraints c=new GridBagConstraints();
 		c.gridx=x;
 		c.gridy=y;
 		c.gridwidth=w;
-		c.fill=GridBagConstraints.HORIZONTAL;
-		c.weightx=1;
+		c.fill=GridBagConstraints.HORIZONTAL;// | GridBagConstraints.VERTICAL;
+		c.weightx=weightx;
 		return c;
 		}
+
 	
 	/**
 	 * Fill list with key bindings
@@ -92,23 +101,40 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 		
 		int y=0;
 		
-		//All special key bindings
-		TreeSet<KeyBinding> sortedBindings=new TreeSet<KeyBinding>();
-		sortedBindings.addAll(KeyBinding.bindings.values());
-		for(final KeyBinding b:sortedBindings)
+		//Sort by plugin name
+		TreeMap<String,TreeSet<KeyBinding>> keyGroups=new TreeMap<String, TreeSet<KeyBinding>>();
+		for(KeyBinding b:KeyBinding.bindings.values())
 			{
-			listPane.add(new JLabel(b.pluginName),gconstraint(0,y,1));
-			listPane.add(new JLabel(b.description),gconstraint(1,y,1));
-			JButton key=new JButton(b.keyDesc());
-			listPane.add(key,gconstraint(2,y,1));
-			key.addActionListener(new ActionListener()
-				{
-				public void actionPerformed(ActionEvent e)
-					{
-					new SetKey(b);
-					}
-				});
+			TreeSet<KeyBinding> kg=keyGroups.get(b.pluginName);
+			if(kg==null)
+				keyGroups.put(b.pluginName, kg=new TreeSet<KeyBinding>());
+			kg.add(b);
+			}
+		
+		//Place all special key bindings
+		for(Map.Entry<String, TreeSet<KeyBinding>> e:keyGroups.entrySet())
+			{
+			JPanel p=new JPanel();
+			p.setBorder(BorderFactory.createTitledBorder(e.getKey()));
+			listPane.add(p,gconstraint(0,y,3,1));
 			y++;
+			p.setLayout(new GridLayout(e.getValue().size(),2));
+			
+			for(final KeyBinding b:e.getValue())
+				{
+				p.add(new JLabel(b.description));
+				JButton key=new JButton(b.getKeyDesc());
+				p.add(key);
+				key.addActionListener(new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						new SetKey(b);
+						}
+					});
+				}
+			
+			
 			}
 		
 		//All script key bindings
@@ -118,9 +144,13 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 			JButton field=new JButton(b.script);
 			if(b.script.equals(""))
 				field.setText(" ");
-			listPane.add(field,gconstraint(0,y,2));
-			JButton key=new JButton(b.key.keyDesc());
-			listPane.add(key,gconstraint(2,y,1));
+			listPane.add(field,gconstraint(0,y,1,1));
+			JButton key=new JButton(b.key.getKeyDesc());
+			listPane.add(key,gconstraint(1,y,1,1));
+			
+			JButton bDelete=BasicIcon.getButtonDelete();
+			listPane.add(bDelete,gconstraint(2,y,1,0));
+			
 			key.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
@@ -128,6 +158,15 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 					new SetKey(b.key);
 					}
 				});
+			bDelete.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					ScriptBinding.list.remove(b);
+					fillList();
+					}
+				});
+			
 			final int icopy=i;
 			field.addActionListener(new ActionListener()
 				{
@@ -148,8 +187,9 @@ public class WindowKeyBinding extends BasicWindow implements ActionListener
 				});
 			y++;
 			}
-
 		
+		 
+		//Make sure all new components are visible
 		setVisibleEvWindow(true);
 		repaint();
 		}

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imageannot;
 
 import org.jdom.*;
@@ -22,25 +27,6 @@ public class ImageAnnot extends EvObject implements Cloneable
 	
 	private static final String metaType="imageannot";
 
-
-	
-	public static void initPlugin() {}
-	static
-		{
-
-		ModelWindow.modelWindowExtensions.add(new ImageAnnotModelExtension());
-		
-		EvData.supportedMetadataFormats.put(metaType,ImageAnnot.class);
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				ImageAnnotImageRenderer r=new ImageAnnotImageRenderer(w);
-				w.imageWindowTools.add(new ImageAnnotImageTool(w,r));
-				w.imageWindowRenderers.add(r);
-				}
-			});
-		}
 
 	/** Additions to the object-specific menu */
 	public void buildMetamenu(JMenu menu)
@@ -110,5 +96,27 @@ public class ImageAnnot extends EvObject implements Cloneable
 	
 	
 	
+
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+
+		ModelWindow.modelWindowExtensions.add(new ImageAnnotModelExtension());
+		
+		EvData.supportedMetadataFormats.put(metaType,ImageAnnot.class);
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				ImageAnnotImageRenderer r=new ImageAnnotImageRenderer(w);
+				w.imageWindowTools.add(new ImageAnnotImageTool(w,r));
+				w.addImageWindowRenderer(r);
+				}
+			});
+		}
 	
 	}

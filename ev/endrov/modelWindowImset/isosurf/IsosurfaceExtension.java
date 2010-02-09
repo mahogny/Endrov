@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.modelWindowImset.isosurf;
 
 import java.awt.*;
@@ -41,11 +46,6 @@ import endrov.util.EvDecimal;
  */
 public class IsosurfaceExtension implements ModelWindowExtension
 	{
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new IsosurfaceExtension());
-		}
 	
 	public void newModelWindow(ModelWindow w)
 		{
@@ -496,5 +496,15 @@ public class IsosurfaceExtension implements ModelWindowExtension
 		public EvDecimal getFirstFrame(){return null;}
 		public EvDecimal getLastFrame(){return null;}
 		}
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new IsosurfaceExtension());
+		}
+
 	}

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.driverMicromanager;
 
 import java.io.File;
@@ -21,12 +26,6 @@ import endrov.hardware.*;
  */
 public class MicroManager extends DeviceProvider implements Device
 	{
-	public static void initPlugin() {}
-	static
-		{
-		EvHardware.root.hw.put("um", new MicroManager());
-//		HardwareManager.registerHardwareProvider(new MicroManager());
-		}
 	
 	
 	CMMCore core;
@@ -247,6 +246,17 @@ public class MicroManager extends DeviceProvider implements Device
 		ConfiguratorDlg dlg=new ConfiguratorDlg(core,configFile.getAbsolutePath());
 		dlg.setVisible(true);
 		populateFromCore();
+		}
+
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvHardware.root.hw.put("um", new MicroManager());
+//		HardwareManager.registerHardwareProvider(new MicroManager());
 		}
 
 	}

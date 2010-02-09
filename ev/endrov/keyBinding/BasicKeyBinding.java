@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.keyBinding;
 
 import endrov.basicWindow.*;
@@ -25,7 +30,7 @@ public class BasicKeyBinding implements BasicWindowExtension
 		
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Key Bindings",BasicIcon.iconKeyboard);
+			JMenuItem mi=new JMenuItem("Key bindings",BasicIcon.iconKeyboard);
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			

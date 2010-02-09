@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.hardware;
 
 
@@ -29,64 +34,13 @@ public class HardwareConfigWindow extends BasicWindow
 	static final long serialVersionUID=0;
 
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-			{
-			public void createMenus(BasicWindow w)
-				{
-				JMenuItem mi=new JMenuItem("Hardware Manager",new ImageIcon(getClass().getResource("gnomeHardwareCard.png")));
-				mi.addActionListener(this);
-				w.addMenuWindow(mi);
-				}
-
-			public void actionPerformed(ActionEvent e) 
-				{
-				new HardwareConfigWindow();
-				}
-
-			public void buildMenu(BasicWindow w){}
-			}
-			});
-		
-		
-		
-		
-/*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ConsoleWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-			*/
-		}
 	
 	
 	//JButton bAdd=new JButton("Add");
 	//JButton bRemove=new JButton("Remove");
-	JButton bImport=new JButton("Import");
-	JButton bExport=new JButton("Export");
-	JButton bConfig=new JButton("Config");
+	private JButton bImport=new JButton("Import");
+	private JButton bExport=new JButton("Export");
+	private JButton bConfig=new JButton("Config");
 	//JButton bAutodetect=new JButton("Autodetect");
 	
 	
@@ -185,5 +139,61 @@ public class HardwareConfigWindow extends BasicWindow
 		
 		} 
 	public void freeResources(){}
+
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+			{
+			public void createMenus(BasicWindow w)
+				{
+				JMenuItem mi=new JMenuItem("Hardware manager",new ImageIcon(getClass().getResource("gnomeHardwareCard.png")));
+				mi.addActionListener(this);
+				w.addMenuWindow(mi);
+				}
+
+			public void actionPerformed(ActionEvent e) 
+				{
+				new HardwareConfigWindow();
+				}
+
+			public void buildMenu(BasicWindow w){}
+			}
+			});
+		
+		
+		
+		
+/*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new ConsoleWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+			*/
+		}
 	}

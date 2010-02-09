@@ -1,5 +1,12 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flow;
 
+import java.io.File;
+import java.sql.Connection;
 import java.util.*;
 
 import endrov.imageset.EvChannel;
@@ -19,6 +26,7 @@ public class FlowType
 	//private boolean isUnknown;
 	public Set<Class<?>> type=new HashSet<Class<?>>();
 	//good enough? what about List<....>? java removes <>. how to restore? manually annotate?
+	public static FlowType TCONNECTION=new FlowType(Connection.class);
 	
 	public FlowType(Class<?>... c)
 		{
@@ -126,6 +134,7 @@ public class FlowType
 		}
 	
 	
+	public static final FlowType TFILE=new FlowType(File.class);
 	public static final FlowType TINTEGER=new FlowType(Integer.class);
 	public static final FlowType TDOUBLE=new FlowType(Double.class);
 	public static final FlowType TSTRING=new FlowType(String.class);
@@ -136,8 +145,7 @@ public class FlowType
 	public static final FlowType TVECTOR2I=new FlowType(Vector2i.class);
 	public static final FlowType TVECTOR3I=new FlowType(Vector3i.class);
 	public static final FlowType TANY=new FlowType();
-	
-//	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
+	//	public static final FlowType ANYIMAGE=new FlowType(AnyEvImage.class);
 	public static final FlowType ANYIMAGE=new FlowType(EvChannel.class, EvStack.class, EvPixels.class);
 	
 	/**

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowMorphology;
 
 
@@ -25,6 +30,9 @@ public class FlowUnitMorphThickBinary2D extends FlowUnitBasic
 	public static final String showName="Thicken (binary) 2D";
 	private static final String metaType="binaryThick2d";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

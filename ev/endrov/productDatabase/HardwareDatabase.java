@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.productDatabase;
 
 import java.io.File;
@@ -22,20 +27,6 @@ public class HardwareDatabase
 	 * List of all known hardware
 	 */
 	public static LinkedList<HardwareMetadata> entries=new LinkedList<HardwareMetadata>();
-	
-	
-	public static void initPlugin() {}
-	static
-		{
-		try
-			{
-			readDatabase(EvFileUtil.getFileFromURL(HardwareDatabase.class.getResource("hardwareDatabase.xml")));
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
-			}
-		}
 	
 	
 	/**
@@ -63,7 +54,19 @@ public class HardwareDatabase
 		}
 	
 	
-	
-	
-	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		try
+			{
+			readDatabase(EvFileUtil.getFileFromURL(HardwareDatabase.class.getResource("hardwareDatabase.xml")));
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}	
 	}

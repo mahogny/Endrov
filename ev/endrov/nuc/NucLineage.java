@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.nuc;
 
 import java.awt.Color;
@@ -66,45 +71,6 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	//A generalization would be nice
 	public static final String[] connectNuc=new String[]{"post","ant"};
-	
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
-		EvData.supportedMetadataFormats.put(metaType,NucLineage.class);
-		
-		try
-			{
-			cellGroups.importXML(EvFileUtil.getFileFromURL(NucLineage.class.getResource("cellgroups.cgrp")));
-			}
-		catch (IOException e)
-			{
-			e.printStackTrace();
-			}
-		}
-
-	/** Additions to the object-specific menu */
-	public void buildMetamenu(JMenu menu)
-		{
-		JMenuItem miSaveColorScheme=new JMenuItem("Save color scheme"); 
-		JMenuItem miLoadColorScheme=new JMenuItem("Load color scheme"); 
-		menu.add(miSaveColorScheme);
-		menu.add(miLoadColorScheme);
-		
-		final NucLineage nthis=this;
-		miSaveColorScheme.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){nthis.saveColorSchemeDialog(null);}
-		});
-		miLoadColorScheme.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e)
-				{
-				nthis.loadColorSchemeDialog(null);
-				BasicWindow.updateWindows(); //TODO emit object update
-				}
-		});
-		
-		}
-
 	
 	
 	/**
@@ -1145,6 +1111,51 @@ public class NucLineage extends EvObject implements Cloneable
 		else
 			return Tuple.make(max, min);
 		}
+
 	
+	
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
+		EvData.supportedMetadataFormats.put(metaType,NucLineage.class);
+		
+		try
+			{
+			cellGroups.importXML(EvFileUtil.getFileFromURL(NucLineage.class.getResource("cellgroups.cgrp")));
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		}
+
+	/** Additions to the object-specific menu */
+	public void buildMetamenu(JMenu menu)
+		{
+		JMenuItem miSaveColorScheme=new JMenuItem("Save color scheme"); 
+		JMenuItem miLoadColorScheme=new JMenuItem("Load color scheme"); 
+		menu.add(miSaveColorScheme);
+		menu.add(miLoadColorScheme);
+		
+		final NucLineage nthis=this;
+		miSaveColorScheme.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){nthis.saveColorSchemeDialog(null);}
+		});
+		miLoadColorScheme.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				nthis.loadColorSchemeDialog(null);
+				BasicWindow.updateWindows(); //TODO emit object update
+				}
+		});
+		
+		}
+
 	
 	}

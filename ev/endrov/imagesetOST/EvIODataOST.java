@@ -1,6 +1,10 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imagesetOST;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
@@ -31,48 +35,6 @@ public class EvIODataOST implements EvIOData
 	 *****************************************************************************************************/
 	
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedFileFormats.add(new EvDataSupport(){
-			public Integer loadSupports(String fileS)
-				{
-				File file=new File(fileS);
-				if(file.isDirectory() && file.getName().endsWith(".ost"))
-					return 10;
-				else
-					return null;
-				}
-			public List<Tuple<String,String[]>> getLoadFormats()
-				{
-				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
-				formats.add(new Tuple<String, String[]>("OST",new String[]{".ost"}));
-				return formats;
-				}
-			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
-				{
-				EvIODataOST io=new EvIODataOST(new File(file));
-				EvData d=new EvData();
-				io.initialLoad(d,cb);
-				d.io=io;
-				return d;
-				}
-			public Integer saveSupports(String fileS)
-				{
-				File file=new File(fileS);
-				if(file.getName().endsWith(".ost"))
-					return 10;
-				else
-					return null;
-				}
-			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
-			public EvIOData getSaver(EvData d, String file) throws IOException
-				{
-				return new EvIODataOST(new File(file));
-				}
-		});
-		
-		}
 	
 	/******************************************************************************************************
 	 *                               Slice I/O class                                                      *
@@ -97,11 +59,7 @@ public class EvIODataOST implements EvIOData
 				return oldio.loadJavaImage();
 			else
 				{
-				BufferedImage im=EvCommonImageIO.loadJavaImage(f, null);
-				if(im==null)
-					return null;
-				else
-					return new EvPixels(im);
+				return EvCommonImageIO.loadJavaImage(f, null);
 				}
 			}
 		
@@ -586,9 +544,12 @@ public class EvIODataOST implements EvIOData
 						}
 
 					
-					//Write image to disk
-					BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
-					EvCommonImageIO.saveImage(bim, io.f, imCompression.get(evim));
+					//Write image to disk. It might turn out in the last minute that the file format
+					//does not work because of non-8 bits; then change
+					File fToWrite=io.f;
+					
+					//BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
+					fToWrite=EvCommonImageIO.saveImage(evim.getPixels(), io.f, imCompression.get(evim));
 					
 					//Mark image as on disk, safe to unload
 					evim.ioIsNowOnDisk();
@@ -597,6 +558,8 @@ public class EvIODataOST implements EvIOData
 					
 					//Do not delete this image. Just in case some other operation got a strange idea
 					toDelete.remove(io.f);
+					
+					io.f=fToWrite;
 					}
 				}
 						
@@ -1174,6 +1137,54 @@ public class EvIODataOST implements EvIOData
 
 			}
 		}
+
 	
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedFileFormats.add(new EvDataSupport(){
+			public Integer loadSupports(String fileS)
+				{
+				File file=new File(fileS);
+				if(file.isDirectory() && file.getName().endsWith(".ost"))
+					return 10;
+				else
+					return null;
+				}
+			public List<Tuple<String,String[]>> getLoadFormats()
+				{
+				LinkedList<Tuple<String,String[]>> formats=new LinkedList<Tuple<String,String[]>>(); 
+				formats.add(new Tuple<String, String[]>("OST",new String[]{".ost"}));
+				return formats;
+				}
+			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
+				{
+				EvIODataOST io=new EvIODataOST(new File(file));
+				EvData d=new EvData();
+				io.initialLoad(d,cb);
+				d.io=io;
+				return d;
+				}
+			public Integer saveSupports(String fileS)
+				{
+				File file=new File(fileS);
+				if(file.getName().endsWith(".ost"))
+					return 10;
+				else
+					return null;
+				}
+			public List<Tuple<String,String[]>> getSaveFormats(){return getLoadFormats();}
+			public EvIOData getSaver(EvData d, String file) throws IOException
+				{
+				return new EvIODataOST(new File(file));
+				}
+		});
+		
+		}
 	
 	}

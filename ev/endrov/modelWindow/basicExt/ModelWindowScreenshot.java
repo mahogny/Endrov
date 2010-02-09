@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.modelWindow.basicExt;
 
 import java.awt.event.*;
@@ -30,11 +35,6 @@ import endrov.util.EvFileUtil;
  */
 public class ModelWindowScreenshot implements ModelWindowExtension
 	{
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new ModelWindowScreenshot());
-		}
 	
 	public void newModelWindow(final ModelWindow w)
 		{
@@ -122,5 +122,14 @@ public class ModelWindowScreenshot implements ModelWindowExtension
 		public EvDecimal getLastFrame(){return null;}
 		}
 	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new ModelWindowScreenshot());
+		}
+
 	}

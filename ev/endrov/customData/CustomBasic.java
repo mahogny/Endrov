@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.customData;
 
 import endrov.basicWindow.*;
@@ -21,7 +26,7 @@ public class CustomBasic implements BasicWindowExtension
 		{
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Custom Data",new ImageIcon(getClass().getResource("iconWindow.png")));
+			JMenuItem mi=new JMenuItem("Custom data",new ImageIcon(getClass().getResource("iconWindow.png")));
 			mi.addActionListener(this);
 			w.addMenuWindow(mi);
 			}

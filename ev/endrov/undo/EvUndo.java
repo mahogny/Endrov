@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.undo;
 
 import java.util.LinkedList;
@@ -28,32 +33,6 @@ import endrov.data.EvDataMenu;
 public class EvUndo
 	{
 	static final long serialVersionUID=0;
-
-	public static void initPlugin() {}
-	static
-		{
-		
-		EvDataMenu.extensions.add(new DataMenuExtension()
-			{
-			public void buildData(JMenu menu)
-				{
-				final JMenu miUndo=new JMenu("Undo");
-				addMetamenu(menu,miUndo);
-				
-				}
-			public void buildOpen(JMenu menu)
-				{
-
-				}
-			public void buildSave(JMenu menu, final EvData meta)
-				{
-				}
-			});
-		
-		
-		
-		}
-
 	
 	public static LinkedList<UndoOp> undoQueue=new LinkedList<UndoOp>();
 	public static LinkedList<UndoOp> redoQueue=new LinkedList<UndoOp>();
@@ -83,5 +62,32 @@ public class EvUndo
 	 */
 	
 
-	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		
+		EvDataMenu.extensions.add(new DataMenuExtension()
+			{
+			public void buildData(JMenu menu)
+				{
+				final JMenu miUndo=new JMenu("Undo");
+				addMetamenu(menu,miUndo);
+				
+				}
+			public void buildOpen(JMenu menu)
+				{
+
+				}
+			public void buildSave(JMenu menu, final EvData meta)
+				{
+				}
+			});
+		
+		}
+
 	}

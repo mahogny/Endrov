@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowThreshold;
 
 import java.util.Iterator;
@@ -24,9 +29,9 @@ public class EvOpThresholdOtsu2D extends Threshold2D
 		super(mode);
 		}
 
-	protected double getThreshold(EvPixels in)
+	protected double[] getThreshold(EvPixels in)
 		{
-		return EvOpThresholdOtsu2D.findOtsuThreshold(in);
+		return new double[]{EvOpThresholdOtsu2D.findOtsuThreshold(in)};
 		}
 	
 	public static double findOtsuThreshold(EvPixels in)

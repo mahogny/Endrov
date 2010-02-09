@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.modelWindow;
 
 import java.awt.*;
@@ -39,29 +44,6 @@ public class ModelWindow extends BasicWindow
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ModelWindowBasic());
-		EV.personalConfigLoaders.put("modelwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Rectangle r=BasicWindow.getXMLbounds(e);
-					ModelWindow m=new ModelWindow(r);
-					m.setPersonalConfig(e);
-					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
-	
 	public static Vector<ModelWindowExtension> modelWindowExtensions=new Vector<ModelWindowExtension>();
 
 	
@@ -101,7 +83,6 @@ public class ModelWindow extends BasicWindow
 	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
 	private JProgressBar progress=new JProgressBar(0,1000);
-//	private JPanel progress=new JPanel(); 
 	
 	public final ModelView view;
 	public final FrameControlModel frameControl;
@@ -114,7 +95,7 @@ public class ModelWindow extends BasicWindow
 			}
 		};
 	private final JButton buttonCenter=new JButton("Center");
-	private final EvHidableSidePane sidePanelSplitPane;
+	private final EvHidableSidePaneRight sidePanelSplitPane;
 	
 	public JMenu menuModel=new JMenu("ModelWindow");
 	
@@ -273,7 +254,7 @@ public class ModelWindow extends BasicWindow
 
 
 		
-		sidePanelSplitPane = new EvHidableSidePane(view, toolPanel, true);
+		sidePanelSplitPane = new EvHidableSidePaneRight(view, toolPanel, true);
 		
 		setLayout(new BorderLayout());
 		add(sidePanelSplitPane,BorderLayout.CENTER);
@@ -820,8 +801,31 @@ public class ModelWindow extends BasicWindow
 
 	
 	
-	
-	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ModelWindowBasic());
+		EV.personalConfigLoaders.put("modelwindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					ModelWindow m=new ModelWindow(r);
+					m.setPersonalConfig(e);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
 	
 	}

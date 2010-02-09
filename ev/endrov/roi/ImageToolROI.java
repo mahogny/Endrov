@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.roi;
 
 import java.awt.*;
@@ -29,20 +34,7 @@ public class ImageToolROI implements ImageWindowTool
 		this.w=w;
 		this.r=r;
 		}
-	/*
-	public boolean isToggleable()
-		{
-		return true;
-		}
-	public String toolCaption()
-		{
-		return "ROI/Edit";
-		}
-	public boolean enabled()
-		{
-		return true;
-		}
-*/
+
 	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("ROI/Edit");
@@ -140,10 +132,6 @@ public class ImageToolROI implements ImageWindowTool
 		}
 
 	
-	/*
-	 * (non-Javadoc)
-	 * @see client.ImageWindow.Tool#keyPressed(java.awt.event.KeyEvent)
-	 */
 	public void keyPressed(KeyEvent e)
 		{
 		}

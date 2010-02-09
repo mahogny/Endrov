@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.keyBinding;
 
 import java.awt.event.*;
@@ -25,43 +30,6 @@ public class KeyBinding implements Comparable<KeyBinding>
 
 	static JInputManager jinputManager=new JInputManager();
 	//TODO: how does this play with matlab?
-	
-	public static void initPlugin() {}
-	static
-		{
-		/*
-		try
-			{
-			Class testClass=Class.forName("net.java.games.input.Component");
-			testClass.newInstance();
-			jinputManager=new JInputManager();
-			}
-		catch (Exception e1)
-			{
-			e1.printStackTrace();
-			}
-		*/
-		
-		
-		BasicWindow.addBasicWindowExtension(new BasicKeyBinding());
-		
-		EV.personalConfigLoaders.put("keyBinding",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{register(readXML(e),true);}
-			public void savePersonalConfig(Element root)
-				{
-				for(KeyBinding b:bindings.values())
-					{
-					Element e=new Element("keyBinding");
-					b.writeXML(e);
-					root.addContent(e);
-					}
-				}
-			});
-		
-		}
-
 	
 	
 	
@@ -159,7 +127,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 		public boolean held(KeyEvent e, JInputManager.EvJinputStatus je);
 		
 		public void writeXML(Element e);
-		public String keyDesc();
+		public String getKeyDesc();
 		public float getAxis(JInputManager.EvJinputStatus status);
 		}
 	
@@ -184,7 +152,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 			ne.setAttribute("char",""+key);
 			e.addContent(ne);
 			}
-		public String keyDesc()
+		public String getKeyDesc()
 			{
 			return (""+key).toLowerCase();
 			}
@@ -224,8 +192,10 @@ public class KeyBinding implements Comparable<KeyBinding>
 			ne.setAttribute("modifier",""+modifierEx);
 			e.addContent(ne);
 			}
-		public String keyDesc()
+		public String getKeyDesc()
 			{
+			if(keyCode==0 && modifierEx==0)
+				return "<unassigned>";
 			String r=KeyEvent.getKeyModifiersText(modifierEx);
 			if(!r.equals(""))
 				r=r+"+";
@@ -272,7 +242,7 @@ public class KeyBinding implements Comparable<KeyBinding>
 			ne.setAttribute("value",""+value);
 			e.addContent(ne);
 			}
-		public String keyDesc()
+		public String getKeyDesc()
 			{
 			return "JI:"+ident+"="+value;
 			}
@@ -380,12 +350,12 @@ public class KeyBinding implements Comparable<KeyBinding>
 	/**
 	 * Textual description of key
 	 */
-	public String keyDesc()
+	public String getKeyDesc()
 		{
 		if(types.isEmpty())
 			return "";
 		else
-			return types.get(0).keyDesc();
+			return types.get(0).getKeyDesc();
 		
 		//TODO: GUI need to handle several keys
 		
@@ -416,6 +386,49 @@ public class KeyBinding implements Comparable<KeyBinding>
 		return false;
 		}
 	
+
+	
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		/*
+		try
+			{
+			Class testClass=Class.forName("net.java.games.input.Component");
+			testClass.newInstance();
+			jinputManager=new JInputManager();
+			}
+		catch (Exception e1)
+			{
+			e1.printStackTrace();
+			}
+		*/
+		
+		
+		BasicWindow.addBasicWindowExtension(new BasicKeyBinding());
+		
+		EV.personalConfigLoaders.put("keyBinding",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{register(readXML(e),true);}
+			public void savePersonalConfig(Element root)
+				{
+				for(KeyBinding b:bindings.values())
+					{
+					Element e=new Element("keyBinding");
+					b.writeXML(e);
+					root.addContent(e);
+					}
+				}
+			});
+		
+		}
+
 	
 	
 	}

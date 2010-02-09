@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.roi.window;
 
 import java.awt.*;
@@ -49,17 +54,6 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 		}
 	
 	
-	public static void initPlugin()	{}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new ThisBasicHook());
-				}
-			});
-		}
 
 	
 	/**
@@ -335,5 +329,21 @@ public class WindowROI extends BasicWindow implements ActionListener, TreeSelect
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
 
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin()	{}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new ThisBasicHook());
+				}
+			});
+		}
 	
 	}

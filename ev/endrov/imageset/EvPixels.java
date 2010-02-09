@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imageset;
 
 import java.awt.image.BufferedImage;
@@ -298,7 +303,17 @@ public class EvPixels implements AnyEvImage
 		{
 		return convertTo(EvPixelsType.DOUBLE, readOnly);
 		}
-	
+
+	public EvPixels convertToInt(boolean readOnly)
+		{
+		return convertTo(EvPixelsType.INT, readOnly);
+		}
+
+	public EvPixels convertToShort(boolean readOnly)
+		{
+		return convertTo(EvPixelsType.SHORT, readOnly);
+		}
+
 	/**
 	 * Get pixels in valid format. For performance the data will not be copied and converted unless needed. Use bit operations to put together valid types. 
 	 */
@@ -463,9 +478,17 @@ public class EvPixels implements AnyEvImage
 			}
 		else if(newType==EvPixelsType.AWT)
 			{
+			/*
+			for(int d:arrayI)
+				if(d<0 || d>300)
+					System.out.print(" "+d);
+			System.out.println();
+			System.out.println();
+			*/
 			//Can be made faster
 			p.awt=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
 			p.awt.getRaster().setPixels(0, 0, w, h, arrayI);
+			
 			return p;
 			}
 		throw new RuntimeException("convert from int to "+newType+" not supported by this function");
@@ -851,4 +874,12 @@ public class EvPixels implements AnyEvImage
 		return livePixels;
 		}
 	
+	
+	/**
+	 * Check if the pixel values theoretically could fit in 8 bits
+	 */
+	public boolean fitsIn8bit()
+		{
+		return getType()==EvPixelsType.AWT;
+		}
 	}

@@ -1,7 +1,17 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.ev;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * Numeric field linked to a mutable integer
+ * @author Johan Henriksson
+ *
+ */
 public class JNumericFieldMutableInteger extends JNumericField
 	{
 	static final long serialVersionUID=0;

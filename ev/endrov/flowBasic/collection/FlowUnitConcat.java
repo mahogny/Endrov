@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.collection;
 
 import java.awt.Color;
@@ -20,6 +25,9 @@ public class FlowUnitConcat extends FlowUnitBasic
 	
 	private static ImageIcon icon=new ImageIcon(FlowUnitConcat.class.getResource("jhConcat.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

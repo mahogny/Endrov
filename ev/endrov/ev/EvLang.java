@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.ev;
 
 import java.util.*;
@@ -72,7 +77,7 @@ public class EvLang
 	 * Format a string
 	 * 
 	 * @param format	Format. See Formatter
-	 * @format args		Arguments to format
+	 * @param args		Arguments to format
 	 */
 	public static String printf(/*Class<?> cl,*/ String format, Object... args)
 		{

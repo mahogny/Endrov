@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.constants;
 
 import java.awt.Component;
@@ -30,6 +35,9 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 
 	private static final String metaType="constBoolean";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{
@@ -51,7 +59,8 @@ public class FlowUnitConstBoolean extends FlowUnitConst
 
 	
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
 		return "B";
 		}

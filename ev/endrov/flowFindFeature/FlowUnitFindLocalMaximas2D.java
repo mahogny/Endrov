@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowFindFeature;
 
 
@@ -27,6 +32,9 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 	
 	public static final ImageIcon icon=new ImageIcon(CategoryInfo.class.getResource("jhFlowCategoryFindMaximas.png"));
 
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{
@@ -44,6 +52,7 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 	protected void getTypesIn(Map<String, FlowType> types, Flow flow)
 		{
 		types.put("image", FlowType.ANYIMAGE);
+		types.put("alsoDiagonals", FlowType.TBOOLEAN);
 		}
 	
 	/** Get types of flows out */
@@ -59,7 +68,9 @@ public class FlowUnitFindLocalMaximas2D extends FlowUnitBasic
 		
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 
-		lastOutput.put("out", new EvOpFindLocalMaximas2D().exec1Untyped(a));
+		Boolean b=(Boolean)flow.getInputValue(this, exec, "alsoDiagonals");
+		
+		lastOutput.put("out", new EvOpFindLocalMaximas2D(b).exec1Untyped(a));
 		}
 
 	

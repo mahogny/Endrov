@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.constants;
 
 import java.awt.Color;
@@ -35,7 +40,10 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 	private static ImageIcon icon=new ImageIcon(FlowUnitConstEvDecimal.class.getResource("jhNumber.png"));
 
 	private static final String metaType="constEvDecimal";
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{
@@ -56,9 +64,10 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 		}
 
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
-		return "D";
+		return "Dec";
 		}
 
 	protected FlowType getConstType()
@@ -75,7 +84,7 @@ public class FlowUnitConstEvDecimal extends FlowUnitConst
 	
 	public Component getGUIcomponent(final FlowPanel p)
 		{
-		final JTextField field=new JTextField(""+getVar());
+		final JTextField field=new JTextField(getVar().toString());
 		field.setMinimumSize(new Dimension(20,field.getPreferredSize().height));
 		final Color colorOk=field.getForeground();
 		
