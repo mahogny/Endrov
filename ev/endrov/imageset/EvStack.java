@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imageset;
 
 import java.util.Iterator;
@@ -56,7 +61,6 @@ public class EvStack implements AnyEvImage
 
 	/**
 	 * Get combined resolution and binning. [um/px]
-	 * @return
 	 */
 	public EvDecimal getResbinZinverted()
 		{
@@ -356,7 +360,6 @@ public class EvStack implements AnyEvImage
 	
 	/**
 	 * Get height in number of pixels
-	 * @return
 	 */
 	public int getHeight()
 		{

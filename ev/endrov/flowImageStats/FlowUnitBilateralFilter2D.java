@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowImageStats;
 
 
@@ -25,6 +30,9 @@ public class FlowUnitBilateralFilter2D extends FlowUnitBasic
 	public static final String showName="Bilateral filter";
 	private static final String metaType="filterBilateral2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

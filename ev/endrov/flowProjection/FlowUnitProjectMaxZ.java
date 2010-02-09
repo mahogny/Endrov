@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowProjection;
 
 
@@ -24,14 +29,7 @@ public class FlowUnitProjectMaxZ extends FlowUnitBasic
 	{
 	public static final String showName="Max Z";
 	private static final String metaType="projectionMaxZ";
-	
-	public static void initPlugin() {}
-	static
-		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitProjectMaxZ.class, CategoryInfo.icon,
-				"Calculate max intensity in Z-direction"));
-		}
-	
+		
 	public String toXML(Element e){return metaType;}
 	public void fromXML(Element e){}
 	public String getBasicShowName(){return showName;}
@@ -58,5 +56,15 @@ public class FlowUnitProjectMaxZ extends FlowUnitBasic
 		lastOutput.put("out", new EvOpProjectMaxZ().exec1Untyped(a));
 		}
 
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitProjectMaxZ.class, CategoryInfo.icon,
+				"Calculate max intensity in Z-direction"));
+		}
+
 	}

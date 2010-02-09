@@ -4,6 +4,7 @@ import endrov.flow.EvOpSlice1;
 import endrov.flowBasic.math.EvOpImageGreaterThanScalar;
 import endrov.flowBasic.math.EvOpImageSubScalar;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 
 /**
  * Find threshold given image statistics. Threshold is pixel>=thresholdValue. This class is not for end-users.
@@ -15,8 +16,9 @@ import endrov.imageset.EvPixels;
  */
 public abstract class Threshold2D extends EvOpSlice1
 	{
-	protected abstract double getThreshold(EvPixels in);
+	protected abstract double[] getThreshold(EvPixels in);
 	
+	//TODO should be an enum
 	public static final int SUBTRACT=1, MASK=2;
 	
 	private final int mode;
@@ -32,11 +34,39 @@ public abstract class Threshold2D extends EvOpSlice1
 	public EvPixels exec1(EvPixels... p)
 		{
 		EvPixels in=p[0];
-		double thres=getThreshold(in);
-		if(mode==MASK)
-			return new EvOpImageGreaterThanScalar(thres).exec1(in);
+		double[] thres=getThreshold(in);
+		
+		if(thres.length==1)
+			{
+			//TODO better maybe: output mask with threshold values. can be used to subtract bg.
+			//hm. fails user case "wants to remove bg". needs more thinking
+			
+			if(mode==MASK)
+				return new EvOpImageGreaterThanScalar(thres[0]).exec1(in);
+			else
+				return new EvOpImageSubScalar(thres[0]).exec1(in);
+			}
 		else
-			return new EvOpImageSubScalar(thres).exec1(in);
+			{
+			double[] arrIn=in.convertToDouble(true).getArrayDouble();
+			EvPixels ret=new EvPixels(EvPixelsType.INT, in.getWidth(),in.getHeight());
+			int[] arrOut=ret.getArrayInt();
+			
+			int numClass=thres.length;
+			for(int i=0;i<arrIn.length;i++)
+				{
+				double a=arrIn[i];
+				int decidedClass=0;
+				for(int j=numClass-1;j>=0;j--)
+					if(a>=thres[j])
+						{
+						decidedClass=j+1;
+						break;
+						}
+				arrOut[i]=decidedClass;
+				}
+			return ret;
+			}
 		}
 	
 	

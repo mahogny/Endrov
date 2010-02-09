@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.chromacountkj;
 
 import org.jdom.*;
@@ -25,25 +30,6 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 	private static final String metaType="chromacountkj";
 
 
-	
-	public static void initPlugin() {}
-	static
-		{
-
-		ModelWindow.modelWindowExtensions.add(new ChromaCountKJModelExtension());
-		
-		EvData.supportedMetadataFormats.put(metaType,ChromaCountKJ.class);
-		
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				ChromaCountKJImageRenderer r=new ChromaCountKJImageRenderer(w);
-				w.imageWindowTools.add(new ChromaCountKJImageTool(w,r));
-				w.imageWindowRenderers.add(r);
-				}
-			});
-		}
 
 	/** Additions to the object-specific menu */
 	public void buildMetamenu(JMenu menu)
@@ -109,6 +95,29 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 		catch (DataConversionException e1){e1.printStackTrace();}
 		}
 
+	
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+
+		ModelWindow.modelWindowExtensions.add(new ChromaCountKJModelExtension());
+		
+		EvData.supportedMetadataFormats.put(metaType,ChromaCountKJ.class);
+		
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				ChromaCountKJImageRenderer r=new ChromaCountKJImageRenderer(w);
+				w.imageWindowTools.add(new ChromaCountKJImageTool(w,r));
+				w.addImageWindowRenderer(r);
+				}
+			});
+		}
 	
 	
 	}

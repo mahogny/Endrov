@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.basicWindow;
 
 import java.awt.Component;
@@ -51,28 +56,6 @@ public abstract class BasicWindow extends JPanel
 		public BasicWindow getFocusWindow();
 		}
 
-	public static void initPlugin()
-		{
-		}
-
-	static
-		{
-		EV.personalConfigLoaders.put("basicwindow", new PersonalConfig()
-			{
-				public void loadPersonalConfig(Element e)
-					{
-					}
-
-				public void savePersonalConfig(Element e)
-					{
-					// Settings for individual windows
-					for (BasicWindow w : windowManager.getAllWindows())
-						w.windowSavePersonalSettings(e);
-					}
-			});
-		
-		JInputManager.addGamepadMode("Active window", new JInputModeBasicWindow(), true);
-		}
 
 	public static final int KEY_GETCONSOLE = KeyBinding.register(new KeyBinding(
 			"Basic Window", "Get console", KeyEvent.VK_ESCAPE, 0));
@@ -535,7 +518,7 @@ public abstract class BasicWindow extends JPanel
 					if (JOptionPane
 							.showConfirmDialog(
 									null,
-									"Do you really want to reset config? This requires a restart of EV.",
+									"Endrov will quit. Settings will be reset next time you start the program. Continue?",
 									"EV", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 						{
 						EV.resetPersonalConfig();
@@ -564,6 +547,8 @@ public abstract class BasicWindow extends JPanel
 					EV.savePersonalConfig();
 				else if (e.getSource()==miOpenConfig)
 					EV.openExternal(EV.getGlobalConfigEndrovDir());
+				else if (e.getSource()==miReportBug)
+					BrowserControl.displayURL("http://sourceforge.net/tracker/?group_id=199554&atid=969958");
 				}
 		};
 
@@ -573,19 +558,20 @@ public abstract class BasicWindow extends JPanel
 	private JMenu menuWindows = new JMenu("Windows");
 	private JMenu menuBatch = new JMenu("Batch");
 	// private JMenu menuInfo=new JMenu("Info");
-	private JMenuItem miGC = new JMenuItem("Run GC");
+	private JMenuItem miGC = new JMenuItem("Run garbage collection");
 	private JMenuItem miResetPC = new JMenuItem("Reset personal config");
 	private JMenuItem miSavePluginList = new JMenuItem("Save plugin list");
 	private JMenuItem miToggleSplash = new JMenuItem("Toggle splash screen");
 	private JMenuItem miOpenConfig = new JMenuItem("Open config directory");
+	private JMenuItem miReportBug = new JMenuItem("Report bug");
 
 	private JMenuItem miQuit = new JMenuItem("Exit", BasicIcon.iconMenuQuit);
 
 	private JMenuItem miAbout = new JMenuItem("About");
 	private JMenuItem miWebHome = new JMenuItem(EV.programName+" Home");
-	private JMenuItem miWebUser = new JMenuItem("User Guide");
+	private JMenuItem miWebUser = new JMenuItem("User's guide");
 	private JMenuItem miWebPlugins = new JMenuItem("Plugins");
-	private JMenuItem miSysInfo = new JMenuItem("System Info");
+	private JMenuItem miSysInfo = new JMenuItem("System information");
 	private JMenuItem miSaveConfig = new JMenuItem("Save config now");
 
 	/**
@@ -665,6 +651,7 @@ public abstract class BasicWindow extends JPanel
 		mHelp.add(miWebHome);
 		mHelp.add(miWebUser);
 		mHelp.add(miWebPlugins);
+		mHelp.add(miReportBug);
 		mHelp.add(miSysInfo);
 
 		menubar.add(Box.createHorizontalGlue());
@@ -682,6 +669,7 @@ public abstract class BasicWindow extends JPanel
 		miWebHome.addActionListener(listener);
 		miWebUser.addActionListener(listener);
 		miWebPlugins.addActionListener(listener);
+		miReportBug.addActionListener(listener);
 		miSysInfo.addActionListener(listener);
 		miSaveConfig.addActionListener(listener);
 		}
@@ -849,5 +837,27 @@ public abstract class BasicWindow extends JPanel
 	public abstract void freeResources();
 
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		EV.personalConfigLoaders.put("basicwindow", new PersonalConfig()
+			{
+				public void loadPersonalConfig(Element e)
+					{
+					}
+
+				public void savePersonalConfig(Element e)
+					{
+					// Settings for individual windows
+					for (BasicWindow w : windowManager.getAllWindows())
+						w.windowSavePersonalSettings(e);
+					}
+			});
 		
+		JInputManager.addGamepadMode("Active window", new JInputModeBasicWindow(), true);
+		}
 	}

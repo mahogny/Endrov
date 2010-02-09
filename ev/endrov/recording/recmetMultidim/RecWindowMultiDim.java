@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.recording.recmetMultidim;
 
 
@@ -26,36 +31,6 @@ public class RecWindowMultiDim extends BasicWindow
 	static final long serialVersionUID=0;
 
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-				{
-				public void createMenus(BasicWindow w)
-					{
-					JMenuItem mi=new JMenuItem("Multi-dim acquisition",new ImageIcon(getClass().getResource("jhMultidimWindow.png")));
-					mi.addActionListener(this);
-					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-					}
-	
-				public void actionPerformed(ActionEvent e) 
-					{
-					new RecWindowMultiDim();
-					}
-	
-				public void buildMenu(BasicWindow w){}
-				}
-			});
-		
-		}
-	
-	
 
 	public RecWindowMultiDim()
 		{
@@ -74,12 +49,12 @@ public class RecWindowMultiDim extends BasicWindow
 		
 
 		JPanel leftright=new JPanel(new GridLayout(1,2));
-		leftright.add(EvSwingUtil.layoutCompactVertical(wslices,worder,wpos));
+		leftright.add(EvSwingUtil.layoutCompactVertical(wslices,worder));
 		leftright.add(EvSwingUtil.layoutCompactVertical(wtimes,wacq));
 		
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutCompactVertical(
-				leftright,wchans
+				leftright,wchans,wpos
 				),BorderLayout.NORTH);
 		add(
 				wdesc
@@ -95,7 +70,57 @@ public class RecWindowMultiDim extends BasicWindow
 	
 	
 	
-	
+	/**
+	 * lacking, from micromanager:
+	 * 
+	 * positions: 
+	 * 		edit XY list
+	 * 
+	 * slices:
+	 * 		relative/absolute z
+	 * 		[] keep shutter open
+	 * 
+	 * 
+	 * autofocus:
+	 * 		skip frame (...   some numeric editor
+	 * 		options
+	 * 
+	 * 
+	 * save images
+	 * 		dir root
+	 * 		display, all+other options
+	 * 		name prefix
+	 * 		comment
+	 * 
+	 * save/load
+	 * 
+	 * 
+	 * this is how it got things:
+	 * 
+	 * 
+	 * Channels
+	 * 		channel group=
+	 *	and table
+	 *		configuration
+	 *		exposure
+	 *		z-offset
+	 *		z-stack 
+	 *
+	 * time points
+	 * 		number
+	 * 		interval #
+	 * 		interval unit		
+	 * 
+	 * 
+	 * 
+	 * 
+	 * **
+	 * mm has group editor. each property can be selected to be included.
+	 * hard to edit afterwards IMO, must select all properties right the first time. 
+	 * 
+	 * 
+	 * 
+	 */
 	
 	
 	
@@ -127,5 +152,40 @@ public class RecWindowMultiDim extends BasicWindow
 		new RecWindowMultiDim();
 		
 		}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+				{
+				public void createMenus(BasicWindow w)
+					{
+					JMenuItem mi=new JMenuItem("Multi-dim acquisition",new ImageIcon(getClass().getResource("jhMultidimWindow.png")));
+					mi.addActionListener(this);
+					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+					}
+	
+				public void actionPerformed(ActionEvent e) 
+					{
+					new RecWindowMultiDim();
+					}
+	
+				public void buildMenu(BasicWindow w){}
+				}
+			});
+		
+		}
+	
 	
 	}

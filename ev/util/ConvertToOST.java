@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package util;
 
 import java.io.File;
@@ -37,8 +42,11 @@ public class ConvertToOST
 					{
 					System.out.println("Converting: "+file);
 					EvData data=EvData.loadFile(file);
-					File newFile=new File(file.getParent(),file.getName()+".ost");
-					data.saveDataAs(newFile);
+					if(data!=null)
+						{
+						File newFile=new File(file.getParent(),file.getName()+".ost");
+						data.saveDataAs(newFile);
+						}
 					}
 				}
 			}
@@ -46,6 +54,7 @@ public class ConvertToOST
 			{
 			e.printStackTrace();
 			}
+		System.exit(0);
 		}
 
 	}

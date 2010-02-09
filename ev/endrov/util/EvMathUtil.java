@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.util;
 
 import java.util.*;
@@ -301,6 +306,33 @@ public class EvMathUtil
 		return frac1.multiply(lastY).add(
 				frac.multiply(nextY));
 		}
-	
+
+	public static int nextPoisson(Random r, double lambda) 
+	{
+	double elambda = Math.exp(-1*lambda);
+	double product = 1;
+	int count =  0;
+	int result=0;
+	while (product >= elambda)
+		{
+		product *= r.nextDouble();
+		result = count;
+		count++; // keep result one behind
+		}
+	return result;
+	}
+
+
+	/**
+	 * Get the maximum of a list
+	 */
+	public static int maxAll(int... v)
+		{
+		int r=v[0];
+		for(int i=1;i<v.length;i++)
+			if(v[i]<r)
+				r=v[i];
+		return r;
+		}
 	
 	}

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.frameTime;
 
 import java.util.*;
@@ -24,11 +29,6 @@ public class FrameTime extends EvObject
 	
 	private static final String metaElement="ft";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,FrameTime.class);
-		}
 
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -192,5 +192,15 @@ public class FrameTime extends EvObject
 			}
 		//TODO emit changed
 		}
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,FrameTime.class);
+		}
+
 	}

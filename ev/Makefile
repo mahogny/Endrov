@@ -1,4 +1,27 @@
 all:
+	javac -cp `java -jar startEndrov.jar --printcp` \
+	endrov/*/*.java \
+	endrov/*/*/*.java \
+	endrov/*/*/*/*.java \
+	endrov/*/*.png \
+	endrov/*/*/*.png \
+	endrov/*/*/*/*.png \
+	util/*.java \
+	util/*/*.java
+#will not work if any of the files fail. have to exclude mac here!
+
+
+gitaddall:
+	git add \
+	endrov/*/*.java \
+	endrov/*/*/*.java \
+	endrov/*/*/*/*.java \
+	util/*.java \
+	util/*/*.java \
+	endrov/*/*.png \
+	endrov/*/*/*.png \
+	endrov/*/*.txt \
+	endrov/*/*/*.txt \
 
 backup:
 	###!!!! FROM TO

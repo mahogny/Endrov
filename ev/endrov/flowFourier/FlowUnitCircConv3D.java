@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowFourier;
 
 
@@ -26,6 +31,9 @@ public class FlowUnitCircConv3D extends FlowUnitBasic
 	public static final String showName="Circular convolution 3D";
 	private static final String metaType="circConv3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

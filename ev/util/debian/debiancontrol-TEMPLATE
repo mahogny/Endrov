@@ -1,0 +1,16 @@
+Package: endrov
+Version: VERSION
+Section: contrib/science
+Priority: optional
+Architecture: all
+Essential: no
+Recommends: RECOMMENDS
+Depends: DEPENDENCIES
+#Suggests: SUGGESTS
+Installed-Size: SIZE
+Maintainer: Johan Henriksson [mahogny@areta.org]
+Description: Image processing and analysis tool.
+ Endrov is a modular framework for 5D image processing and
+ analysis. It is tailored towards the need of life sciences and e.g.
+ can control hardware such as microscopes.
+Homepage: http://www.endrov.net

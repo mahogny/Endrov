@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.consoleWindow;
 
 import java.awt.*;
@@ -16,7 +21,7 @@ import endrov.basicWindow.*;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
-import endrov.script2.*;
+import endrov.script.*;
 
 import org.jdom.*;
 
@@ -37,30 +42,6 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ConsoleBasic());
-		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ConsoleWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
 	
 	
 	/******************************************************************************************************
@@ -423,4 +404,34 @@ public class ConsoleWindow extends BasicWindow implements ActionListener, KeyLis
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
 
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ConsoleBasic());
+		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new ConsoleWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
+
+	
 	}

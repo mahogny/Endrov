@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.makeMovie;
 
 import java.awt.*;
@@ -23,12 +28,6 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	{
 	static final long serialVersionUID=0;
 	
-	public static void initPlugin()	{}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new MakeMovieBasic());
-		}
-
 	private int numChannelCombo=4;
 
 	//GUI components
@@ -288,5 +287,15 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 	
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin()	{}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new MakeMovieBasic());
+		}
+
 	}

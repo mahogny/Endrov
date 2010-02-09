@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.nucAutoJH;
 
 import java.awt.event.ActionEvent;
@@ -53,12 +58,6 @@ import endrov.util.*;
  */
 public class AutolineageJHhis1 extends LineageAlgorithmDef
 	{
-	public static void initPlugin() {}
-	static
-		{
-		LineageAlgorithmDef.listAlgorithms.add(new AutolineageJHhis1());
-		}
-	
 	@Override
 	public LineagingAlgorithm getInstance()
 		{
@@ -1344,4 +1343,15 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 			}
 		
 		}
+	
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		LineageAlgorithmDef.listAlgorithms.add(new AutolineageJHhis1());
+		}
+	
 	}

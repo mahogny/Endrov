@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.nucLineageWindow;
 
 import java.awt.event.*;
@@ -34,30 +39,6 @@ public class LineageWindow extends BasicWindow
 	{
 	static final long serialVersionUID=0;
 	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ExtBasic());
-		EV.personalConfigLoaders.put("lineagewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					Rectangle r=BasicWindow.getXMLbounds(e);
-					LineageWindow w=new LineageWindow(r);
-					w.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					}
-				catch(Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
-
-	
 
 	public static final ImageIcon iconShowRoot=new ImageIcon(LineageWindow.class.getResource("jhToRoot.png"));
 	public static final ImageIcon iconShowSelected=new ImageIcon(LineageWindow.class.getResource("jhToSelected.png"));
@@ -69,7 +50,7 @@ public class LineageWindow extends BasicWindow
 
 	public static final ImageIcon iconSelectByName=new ImageIcon(LineageWindow.class.getResource("jhSelectByName.png"));
 
-	private final EvHidableSidePane sidePanelSplitPane;
+	private final EvHidableSidePaneRight sidePanelSplitPane;
 
 	
 	private SnapBackSlider sliderZoomX=new SnapBackSlider(JSlider.HORIZONTAL, -10000,10000); 
@@ -221,7 +202,7 @@ public class LineageWindow extends BasicWindow
 
 		
 		
-		sidePanelSplitPane=new EvHidableSidePane(EvSwingUtil.layoutLCR(null, view, sliderZoomY), expPanel, true);
+		sidePanelSplitPane=new EvHidableSidePaneRight(EvSwingUtil.layoutLCR(null, view, sliderZoomY), expPanel, true);
 		
 		
 		//Put GUI together
@@ -695,5 +676,31 @@ public class LineageWindow extends BasicWindow
 	public void freeResources(){}
 
 
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ExtBasic());
+		EV.personalConfigLoaders.put("lineagewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					Rectangle r=BasicWindow.getXMLbounds(e);
+					LineageWindow w=new LineageWindow(r);
+					w.frameControl.setGroup(e.getAttribute("group").getIntValue());
+					}
+				catch(Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
 
 	}

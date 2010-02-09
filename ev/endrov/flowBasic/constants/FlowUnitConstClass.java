@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.constants;
 
 import java.awt.Component;
@@ -30,6 +35,9 @@ public class FlowUnitConstClass extends FlowUnitConst
 
 	private String var="java.lang.String";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{
@@ -47,7 +55,8 @@ public class FlowUnitConstClass extends FlowUnitConst
 		setVar(e.getAttributeValue("value"));
 		}
 	
-	protected String getLabel()
+	@Override
+	public String getBasicShowName()
 		{
 		return "C";
 		}

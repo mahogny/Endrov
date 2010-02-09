@@ -1,6 +1,12 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.hardware;
 
 import java.util.*;
+
 import org.jdom.Element;
 
 
@@ -93,6 +99,11 @@ public class EvHardware
 		return hwlist2;
 		}
 
+	@SuppressWarnings("unchecked")
+	public static <E> Map<DevicePath,E> getDeviceMapCast(Class<E> hw)
+		{
+		return (Map<DevicePath, E>) getDeviceMap(hw);
+		}
 	
 	/**
 	 * Get current configuration as XML

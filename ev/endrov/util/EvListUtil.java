@@ -1,12 +1,19 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 
 
 /**
@@ -219,6 +226,45 @@ public class EvListUtil
 			//Recurse right list
 			return findRankDouble(part2, c2, q-c1-cmid);
 		}
+	
+	/**
+	 * Find the modal (most common value)
+	 */
+	public static double modalValue(double[] set)
+		{
+		if(set.length==0)
+			throw new RuntimeException("Empty list");
+
+		//Count entries
+		HashMap<Double, Integer> dist=new HashMap<Double, Integer>();
+		for(double d:set)
+			{
+			Integer count=dist.get(d);
+			if(count==null)
+				dist.put(d,1);
+			else
+				dist.put(d,count+1);
+			}
+
+		//Find most common entry
+		Iterator<Map.Entry<Double,Integer>> it=dist.entrySet().iterator();
+		Map.Entry<Double,Integer> e=it.next();
+		int maxCount=e.getValue();
+		double maxValue=e.getKey();
+		while(it.hasNext())
+			{
+			e=it.next();
+			int thisCount=e.getValue();
+			if(thisCount>maxCount)
+				{
+				maxCount=thisCount;
+				maxValue=e.getKey();
+				}
+			}
+		
+		return maxValue;
+		}
+	
 	
 	/**
 	 * Get index of element with largest value

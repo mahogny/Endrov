@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.frameTime;
 
 import java.awt.*;
@@ -31,30 +36,6 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	{
 	static final long serialVersionUID=0;
 
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new FrameTimeBasic());
-		
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				w.imageWindowTools.add(new FrameTimeImageTool(w));
-				}
-			});
-		
-		EV.personalConfigLoaders.put("frametimewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try	{new FrameTimeWindow(BasicWindow.getXMLbounds(e));}
-				catch (Exception e1) {e1.printStackTrace();}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		
-		}
 	
 	/**
 	 * One entry line
@@ -360,5 +341,33 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
 
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new FrameTimeBasic());
+		
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				w.imageWindowTools.add(new FrameTimeImageTool(w));
+				}
+			});
+		
+		EV.personalConfigLoaders.put("frametimewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try	{new FrameTimeWindow(BasicWindow.getXMLbounds(e));}
+				catch (Exception e1) {e1.printStackTrace();}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		
+		}
+
 	}

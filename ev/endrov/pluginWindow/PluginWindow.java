@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.pluginWindow;
 
 
@@ -25,13 +30,7 @@ import org.jdom.*;
 public class PluginWindow extends BasicWindow 
 	{
 	static final long serialVersionUID=0;
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new PluginWindowBasic());
-		}
 	
-
 	
 	//GUI components
 	private JTextArea miscArea=new JTextArea();
@@ -154,5 +153,15 @@ public class PluginWindow extends BasicWindow
 
 	public void loadedFile(EvData data){}
 	public void freeResources(){}
+
+	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new PluginWindowBasic());
+		}
 
 	}

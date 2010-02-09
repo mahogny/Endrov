@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowImageStats;
 
 
@@ -25,6 +30,9 @@ public class FlowUnitKuwaharaFilter extends FlowUnitBasic
 	public static final String showName="Kuwahara";
 	private static final String metaType="filterKuwahara2D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

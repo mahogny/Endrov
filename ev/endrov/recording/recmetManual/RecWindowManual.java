@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.recording.recmetManual;
 
 import java.awt.BorderLayout;
@@ -48,56 +53,6 @@ public class RecWindowManual extends BasicWindow
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
-			{
-			public void newBasicWindow(BasicWindow w)
-				{
-				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
-				}
-			class Hook implements BasicWindowHook, ActionListener
-			{
-			public void createMenus(BasicWindow w)
-				{
-				JMenuItem mi=new JMenuItem("Manual Control",new ImageIcon(getClass().getResource("iconWindow.png")));
-				mi.addActionListener(this);
-				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
-				}
-
-			public void actionPerformed(ActionEvent e) 
-				{
-				new RecWindowManual();
-				}
-
-			public void buildMenu(BasicWindow w){}
-			}
-			});
-		
-		
-/*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ConsoleWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-			*/
-		}
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -463,4 +418,58 @@ public class RecWindowManual extends BasicWindow
 
 		
 
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new BasicWindowExtension()
+			{
+			public void newBasicWindow(BasicWindow w)
+				{
+				w.basicWindowExtensionHook.put(this.getClass(),new Hook());
+				}
+			class Hook implements BasicWindowHook, ActionListener
+			{
+			public void createMenus(BasicWindow w)
+				{
+				JMenuItem mi=new JMenuItem("Manual Control",new ImageIcon(getClass().getResource("iconWindow.png")));
+				mi.addActionListener(this);
+				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
+				}
+
+			public void actionPerformed(ActionEvent e) 
+				{
+				new RecWindowManual();
+				}
+
+			public void buildMenu(BasicWindow w){}
+			}
+			});
+		
+		
+/*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					int x=e.getAttribute("x").getIntValue();
+					int y=e.getAttribute("y").getIntValue();
+					int w=e.getAttribute("w").getIntValue();
+					int h=e.getAttribute("h").getIntValue();
+					new ConsoleWindow(x,y,w,h);
+					}
+				catch (DataConversionException e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+			*/
+		}
+	
 	}

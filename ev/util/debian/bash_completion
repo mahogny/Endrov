@@ -1,0 +1,21 @@
+# endrov(1) completion 
+
+have endrov &&
+_endrov()
+{
+        local cur
+
+        COMPREPLY=()
+        cur=${COMP_WORDS[COMP_CWORD]}
+
+        if [[ "$cur" == -* ]]; then
+                COMPREPLY=( $( compgen -W '--version \
+			--main --cp2 --libpath2 --printcommand --basedir \
+			--basedir' -- $cur ) ) 
+        else
+                _filedir '@(bmp|gif|jpe|jpeg|jpg|png|ppm|pnm|ras|targa|tga|tif|tiff|ost)'
+                #TODO add more formats
+        fi
+
+}
+[ "${have:-}" ] && complete -F _endrov $filenames endrov

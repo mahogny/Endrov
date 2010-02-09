@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.roi.primitive;
 
 import java.util.*;
@@ -24,14 +29,6 @@ public class DiffROI extends CompoundROI
 	private static final String metaType="ROI_Difference";
 	private static final String metaDesc="Difference";
 	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconDiff.png"));
-
-	public static void initPlugin(){}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,DiffROI.class);
-		
-		ROI.addType(new ROIType(icon, DiffROI.class, false,true,metaDesc));
-		}
 
 
 	/******************************************************************************************************
@@ -283,6 +280,17 @@ public class DiffROI extends CompoundROI
 	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
 	
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,DiffROI.class);
+		
+		ROI.addType(new ROIType(icon, DiffROI.class, false,true,metaDesc));
+		}
 	
 	
 	}

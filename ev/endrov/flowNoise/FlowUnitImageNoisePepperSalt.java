@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowNoise;
 
 
@@ -25,6 +30,9 @@ public class FlowUnitImageNoisePepperSalt extends FlowUnitBasic
 	public static final String showName="Pepper'n'salt image noise";
 	private static final String metaType="imageNoisePepperSalt";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imageset;
 
 import java.util.*;
@@ -21,11 +26,6 @@ public class Imageset extends EvObject
 	 *****************************************************************************************************/
 	private static final String metaType="imageset";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,Imageset.class);
-		}
 	
 	
 	/******************************************************************************************************
@@ -81,6 +81,8 @@ public class Imageset extends EvObject
 	 */
 	public EvChannel getChannel(String ch)
 		{
+		if(ch==null)
+			return null;
 		EvObject ob=metaObject.get(ch);
 		if(ob==null)
 			return null;
@@ -284,7 +286,15 @@ public class Imageset extends EvObject
 	
 	
 	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Imageset.class);
+		}	
 	
 	
 	}

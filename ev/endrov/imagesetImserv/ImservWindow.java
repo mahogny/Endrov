@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imagesetImserv;
 
 import endrov.basicWindow.BasicWindow;
@@ -29,29 +34,6 @@ import bioserv.imserv.ImservConnection;
 public class ImservWindow extends BasicWindow implements ActionListener
 	{
 	public static final long serialVersionUID=0;
-	
-	public static void initPlugin() {}
-	static
-		{
-		EV.personalConfigLoaders.put("imservwindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-//					System.out.println("load");
-					Rectangle r=getXMLbounds(e);
-					new ImservWindow(r);
-					}
-				catch (Exception e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		}
-	
 	
 	
 	
@@ -196,6 +178,33 @@ public class ImservWindow extends BasicWindow implements ActionListener
 	
 	public void freeResources(){}
 
+	
+
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EV.personalConfigLoaders.put("imservwindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+//					System.out.println("load");
+					Rectangle r=getXMLbounds(e);
+					new ImservWindow(r);
+					}
+				catch (Exception e1)
+					{
+					e1.printStackTrace();
+					}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		}
 	
 	
 	}

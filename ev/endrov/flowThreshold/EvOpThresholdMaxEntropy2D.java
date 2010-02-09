@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowThreshold;
 
 import java.util.Iterator;
@@ -22,9 +27,9 @@ public class EvOpThresholdMaxEntropy2D extends Threshold2D
 		super(mode);
 		}
 	
-	public double getThreshold(EvPixels in)
+	public double[] getThreshold(EvPixels in)
 		{
-		return findThresholdMaxEntropy(in);
+		return new double[]{findThresholdMaxEntropy(in)};
 		}
 	public static double findThresholdMaxEntropy(EvPixels in)
 		{

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.modelWindow.basicExt;
 
 import java.awt.*;
@@ -28,11 +33,6 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 	{
 	//OpenGL follows Ax+By+Cz+D=0 with ABC normalized
 	
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new ModelWindowClipPlane());
-		}
 	
 	public void newModelWindow(ModelWindow w)
 		{
@@ -353,6 +353,17 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 
 		public EvDecimal getFirstFrame(){return null;}
 		public EvDecimal getLastFrame(){return null;}
+		}
+
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new ModelWindowClipPlane());
 		}
 	
 	}

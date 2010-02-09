@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowThreshold;
 
 import endrov.imageset.EvPixels;
@@ -18,9 +23,9 @@ public class EvOpThresholdPercentile2D extends Threshold2D
 		this.perc = perc;
 		}
 	
-	public double getThreshold(EvPixels in)
+	public double[] getThreshold(EvPixels in)
 		{
-		return findThreshold(in, perc);
+		return new double[]{findThreshold(in, perc)};
 		}
 	public static double findThreshold(EvPixels in, double perc)
 		{

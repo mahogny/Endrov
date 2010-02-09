@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.roi.primitive;
 
 import java.util.*;
@@ -22,21 +27,7 @@ public class IntersectROI extends CompoundROI
 	private static final String metaType="ROI_Intersection";
 	private static final String metaDesc="Intersection";
 	private static ImageIcon icon=new ImageIcon(IntersectROI.class.getResource("iconIntersect.png"));
-	public static void initPlugin(){}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,IntersectROI.class);
-		
-		ROI.addType(new ROIType(icon, IntersectROI.class, false,true,metaDesc));
-
-		
-		//In common: Caused by: java.lang.NoClassDefFoundError: endrov/roi/primitive/IntersectROI$2 or 1
-		//this is a *Compound*ROI! first in plugin list
-		//not in a static{}. why does it make a difference?
-		
-		}
-
-
+	
 	/******************************************************************************************************
 	 *                               Iterator                                                             *
 	 *****************************************************************************************************/
@@ -270,4 +261,22 @@ public class IntersectROI extends CompoundROI
 	public Handle getPlacementHandle1(){return null;}
 	public Handle getPlacementHandle2(){return null;}
 	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin(){}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,IntersectROI.class);
+		
+		ROI.addType(new ROIType(icon, IntersectROI.class, false,true,metaDesc));
+		
+		//In common: Caused by: java.lang.NoClassDefFoundError: endrov/roi/primitive/IntersectROI$2 or 1
+		//this is a *Compound*ROI! first in plugin list
+		//not in a static{}. why does it make a difference?
+		
+		}
+
 	}

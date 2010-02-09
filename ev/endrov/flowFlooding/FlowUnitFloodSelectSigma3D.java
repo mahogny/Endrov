@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowFlooding;
 
 
@@ -27,6 +32,9 @@ public class FlowUnitFloodSelectSigma3D extends FlowUnitBasic
 	public static final String showName="Flood Select Within Sigma 3D";
 	private static final String metaType="floodSelectSigma3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

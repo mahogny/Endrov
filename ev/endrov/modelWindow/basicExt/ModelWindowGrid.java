@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.modelWindow.basicExt;
 
 import java.awt.event.*;
@@ -25,11 +30,6 @@ import endrov.util.EvDecimal;
  */
 public class ModelWindowGrid implements ModelWindowExtension
 	{
-	public static void initPlugin() {}
-	static
-		{
-		ModelWindow.modelWindowExtensions.add(new ModelWindowGrid());
-		}
 	
 	public void newModelWindow(final ModelWindow w)
 		{
@@ -173,5 +173,15 @@ public class ModelWindowGrid implements ModelWindowExtension
 		public EvDecimal getLastFrame(){return null;}
 		}
 	
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new ModelWindowGrid());
+		}
+
 	}

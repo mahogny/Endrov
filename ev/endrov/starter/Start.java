@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.starter;
 
 import java.io.*;
@@ -210,6 +215,7 @@ public class Start
 		boolean hasSpecifiedLibdir=false;
 		boolean printCommand=false;
 		boolean useClassLoader=false;
+		boolean printClassPath=false;
 		File javaenvFile=null;
 		File basedir=new File(".");
 		
@@ -273,6 +279,8 @@ public class Start
 				}
 			else if(curarg.equals("--classload"))
 				useClassLoader=true;
+			else if(curarg.equals("--printcp"))
+				printClassPath=true;
 			else
 				{
 				if(!curarg.startsWith("--"))
@@ -282,6 +290,15 @@ public class Start
 			}
 		
 		collectSystemInfo(basedir);
+		
+		if(printClassPath)
+			{
+			String out=".";
+			for(String s:jarfiles)
+				out=out+":"+s;
+			System.out.print(out);
+			System.exit(0);
+			}
 		
 		if(javaVerMajor>1 || (javaVerMajor==1 && javaVerMinor>=5))
 			{

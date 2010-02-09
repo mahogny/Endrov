@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.roi.primitive;
 
 import java.util.*;
@@ -21,13 +26,6 @@ public class EllipseROI extends ROI
 	private static final String metaType="ROI_Ellipse";
 	private static final String metaDesc="Ellipse";
 	private static ImageIcon icon=new ImageIcon(DiffROI.class.getResource("iconEllipse.png"));
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,EllipseROI.class);
-		
-		ROI.addType(new ROIType(icon, EllipseROI.class, true,false,metaDesc));
-		}
 	
 	public String saveMetadata(Element e)
 		{
@@ -299,4 +297,17 @@ public class EllipseROI extends ROI
 		{
 		return new Vector<ROI>();
 		}
+	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,EllipseROI.class);
+		
+		ROI.addType(new ROIType(icon, EllipseROI.class, true,false,metaDesc));
+		}
+	
 	}

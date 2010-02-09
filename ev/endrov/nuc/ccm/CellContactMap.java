@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.nuc.ccm;
 
 import java.util.Collection;
@@ -29,12 +34,6 @@ public class CellContactMap extends EvObject
 	{
 	private static final String metaType="ccm";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,CellContactMap.class);
-		}
-
 	
 	//nuc -> nuc -> frames
 	public Map<String,Map<String,SortedSet<EvDecimal>>> contactsf=new TreeMap<String, Map<String,SortedSet<EvDecimal>>>();
@@ -232,5 +231,15 @@ public class CellContactMap extends EvObject
 		return metaType;
 		}
 	
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,CellContactMap.class);
+		}
+
+
 	}

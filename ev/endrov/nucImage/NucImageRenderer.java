@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.nucImage;
 
 import java.awt.*;
@@ -20,21 +25,6 @@ import endrov.util.EvDecimal;
  */
 public class NucImageRenderer implements ImageWindowRenderer
 	{
-	public static void initPlugin() {}
-	static
-		{
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				NucImageRenderer r=new NucImageRenderer(w);
-				w.imageWindowTools.add(new NucImageTool(w,r));
-				w.imageWindowRenderers.add(r);
-				}
-			});
-		}
-	
-	
 	public ImageWindow w;
 	
 	/** Interpolated nuclei */
@@ -289,5 +279,23 @@ public class NucImageRenderer implements ImageWindowRenderer
 		else
 			return modifyingNucName.fst();
 		}
+
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				NucImageRenderer r=new NucImageRenderer(w);
+				w.imageWindowTools.add(new NucImageTool(w,r));
+				w.addImageWindowRenderer(r);
+				}
+			});
+		}
+
 	}

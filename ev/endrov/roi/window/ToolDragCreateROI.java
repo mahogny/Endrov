@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.roi.window;
 
 import java.awt.Graphics;
@@ -14,7 +19,6 @@ import javax.vecmath.Vector2d;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
@@ -29,28 +33,17 @@ public class ToolDragCreateROI implements ImageWindowTool
 	private final ImageWindow w;
 	private final ROI roi;
 	private boolean active=false;
+	private ImageRendererROI renderer;
 	
 	
-	
-	public ToolDragCreateROI(ImageWindow w, ROI roi)
+	public ToolDragCreateROI(ImageWindow w, ROI roi, ImageRendererROI renderer)
 		{
 		this.w=w;
 		this.roi=roi;
+		this.renderer=renderer;
 		}
 	
-	/*
-	public boolean isToggleable()
-		{
-		return true;
-		}
-	public String toolCaption()
-		{
-		return "Placing ROI";
-		}
-	public boolean enabled()
-		{
-		return true;
-		}*/
+	
 	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Placing ROI");
@@ -112,9 +105,7 @@ public class ToolDragCreateROI implements ImageWindowTool
 	
 	private void setRendererROI(ROI roi)
 		{
-		for(ImageWindowRenderer rend:w.imageWindowRenderers)
-			if(rend instanceof ImageRendererROI)
-				((ImageRendererROI)rend).drawROI=roi;
+		renderer.drawROI=roi;
 		}
 	
 	
@@ -132,4 +123,3 @@ public class ToolDragCreateROI implements ImageWindowTool
 	
 	}
 
-//TODO: for channel displacement. mark dirty imageset, save

@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic;
 
 import java.util.HashMap;
@@ -50,11 +55,11 @@ public class EvImageHistogram
 	public static Map<Integer,Integer> intHistogram(EvPixels in)
 		{
 		in=in.getReadOnly(EvPixelsType.INT);
-			int[] inPixels=in.getArrayInt();
-			Map<Integer,Integer> hist=new HashMap<Integer, Integer>(); 
-			for(int p:inPixels)
-				inc(hist,(Integer)p);
-			return hist;
+		int[] inPixels=in.getArrayInt();
+		Map<Integer,Integer> hist=new HashMap<Integer, Integer>(); 
+		for(int p:inPixels)
+			inc(hist,(Integer)p);
+		return hist;
 		}
 	
 	

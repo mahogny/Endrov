@@ -1,6 +1,12 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.util;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -33,6 +39,7 @@ public class EvSwingUtil
 		JPanel p=new JPanel(new BorderLayout());
 		p.add(new JLabel(s),BorderLayout.WEST);
 		p.add(c,BorderLayout.CENTER);
+		p.setOpaque(false);
 		return p;
 		}
 
@@ -67,6 +74,7 @@ public class EvSwingUtil
 		if(left!=null)   p.add(left,BorderLayout.WEST);
 		if(center!=null) p.add(center,BorderLayout.CENTER);
 		if(right!=null)  p.add(right,BorderLayout.EAST);
+		p.setOpaque(false);
 		return p;
 		}
 	
@@ -142,6 +150,9 @@ public class EvSwingUtil
 		return p;*/
 		}
 	
+	/**
+	 * Layout components in evenly split horizontal boxes
+	 */
 	public static JComponent layoutEvenHorizontal(JComponent... list)
 		{
 		JPanel p=new JPanel(new GridLayout(1,list.length));
@@ -150,9 +161,24 @@ public class EvSwingUtil
 		return p;
 		}
 
+	/**
+	 * Layout components in evenly split vertical boxes
+	 */
 	public static JComponent layoutEvenVertical(JComponent... list)
 		{
 		JPanel p=new JPanel(new GridLayout(list.length,1));
+		for(JComponent c:list)
+			p.add(c);
+		return p;
+		}
+
+	
+	/**
+	 * Layout components using a flow layout
+	 */
+	public static JComponent layoutFlow(JComponent... list)
+		{
+		JPanel p=new JPanel(new FlowLayout());
 		for(JComponent c:list)
 			p.add(c);
 		return p;

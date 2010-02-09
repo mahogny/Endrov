@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.imageWindow;
 
 import java.util.*;
@@ -14,11 +19,12 @@ import org.jdom.*;
 
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.chromacountkj.ChromaCountKJImageRenderer;
 import endrov.consoleWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.ev.*;
-import endrov.imageWindow.ImagePanel.ImagePanelImage;
+import endrov.imageWindow.ImageWindowView.ImagePanelImage;
 import endrov.imageWindow.tools.ImageWindowToolChannelDisp;
 import endrov.imageWindow.tools.ImageWindowToolEditImage;
 import endrov.imageWindow.tools.ImageWindowToolPixelInfo;
@@ -36,7 +42,8 @@ import endrov.util.SnapBackSlider.SnapChangeListener;
  * @author Johan Henriksson
  */
 public class ImageWindow extends BasicWindow 
-			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener
+			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener,
+			WSTransformer
 	{	
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -57,38 +64,6 @@ public class ImageWindow extends BasicWindow
 	
 	
 	public static int snapDistance=10;
-	
-	public static void initPlugin() {}
-	static
-		{
-		BasicWindow.addBasicWindowExtension(new ImageWindowBasic());
-		
-		EV.personalConfigLoaders.put("imagewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					ImageWindow win=new ImageWindow(BasicWindow.getXMLbounds(e));
-					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
-					win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
-					}
-				catch (Exception e1){e1.printStackTrace();}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-		
-		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
-			{
-			public void newImageWindow(ImageWindow w)
-				{
-				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
-				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
-				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
-				w.imageWindowTools.add(new ImageWindowToolEditImage(w));
-				}
-			});
-		}
 	
 	/**
 	 * Store down settings for window into personal config file
@@ -119,13 +94,13 @@ public class ImageWindow extends BasicWindow
 	/**
 	 * The image panel extended with more graphics
 	 */
-	private ImagePanel imagePanel=new ImagePanel()
+	private ImageWindowView imagePanel=new ImageWindowView()
 		{
 		static final long serialVersionUID=0;
 		public void paintComponent(Graphics g)
 			{
 			super.paintComponent(g);
-			if(!overlayHidden() && miShowOverlay.isSelected())
+			if(!isOverlayHidden() && miShowOverlay.isSelected())
 				{
 				if(checkIfTransformOk())
 					{
@@ -226,8 +201,6 @@ public class ImageWindow extends BasicWindow
 		}	
 
 		
-	/** Extension: Overlay renderers */
-	public final Vector<ImageWindowRenderer> imageWindowRenderers=new Vector<ImageWindowRenderer>();
 	/** Extension: Tool */
 	public final Vector<ImageWindowTool> imageWindowTools=new Vector<ImageWindowTool>();
 	/** Currently selected tool */
@@ -503,33 +476,35 @@ public class ImageWindow extends BasicWindow
 		}
 	
 
-	/** Get the zoom factor n */
+	/**
+	 * Get the zoom factor not including the binning
+	 */
 	public double getZoom()
 		{
 		return imagePanel.zoom;
 		}
 	
-	
-	/** Set the zoom factor not including the binning */
+	/**
+	 * Set the zoom factor not including the binning 
+	 */
 	public void setZoom(double zoom)
 		{
 		imagePanel.zoom=zoom;
 		repaint();
 		}
+	
 	/** Get rotation of image, in radians */
 	public double getRotation()
 		{
 		return imagePanel.rotation;
-		//return sliderRotate.getValue()*Math.PI/10000.0;
 		}
 	/** Set rotation of image, in radians */
 	public void setRotation(double angle)
 		{
 		imagePanel.rotation=angle;
-//		sliderRotate.setValue((int)(angle*10000.0/Math.PI));
 		}
 	/** Check if overlay should be hidden */
-	public boolean overlayHidden()
+	public boolean isOverlayHidden()
 		{
 		return temporarilyHideMarkings;
 		}
@@ -559,7 +534,7 @@ public class ImageWindow extends BasicWindow
 			if(rec2!=null && chname!=null)
 				{
 				EvChannel ch=rec2.getChannel(chname);
-				ImagePanel.ImagePanelImage pi=new ImagePanel.ImagePanelImage();
+				ImageWindowView.ImagePanelImage pi=new ImageWindowView.ImagePanelImage();
 				pi.brightness=channelWidget.get(i).sliderBrightness.getValue();
 				pi.contrast=Math.pow(2,channelWidget.get(i).sliderContrast.getValue()/1000.0);
 				
@@ -572,14 +547,7 @@ public class ImageWindow extends BasicWindow
 				if(stack==null)
 					pi.setImage(stack,null);
 				else
-					{
 					pi.setImage(stack,stack.get(z));
-					/*
-					FilterSeq fseq=channelWidget.get(i).filterSeq;
-					if(!fseq.isIdentity())
-						pi.setImage(stack, fseq.applyReturnImage(stack, pi.getImage()));
-						*/
-					}
 				imagePanel.images.add(pi);
 				}
 			}
@@ -594,12 +562,7 @@ public class ImageWindow extends BasicWindow
 	 * Update, but assume images are still ok
 	 */
 	public void updateImagePanelNoInvalidate()
-		{		
-		
-//		try			{			throw new Exception("");			}
-//		catch (Exception e)			{			e.printStackTrace();			}
-		
-		
+		{				
 		//Check if recenter needed
 		boolean zoomToFit=false;
 		Imageset rec=getImageset();
@@ -628,8 +591,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void dataChangedEvent()
 		{
-		for(ImageWindowRenderer r:imageWindowRenderers)
-			r.dataChangedEvent();
+		imagePanel.dataChangedEvent();
 		for(ChannelWidget w:channelWidget)
 			w.comboChannel.updateList();
 		frameControl.setChannel(getImageset(), getCurrentChannelName());//hm. does not cause cascade?
@@ -646,13 +608,6 @@ public class ImageWindow extends BasicWindow
 		updateImagePanel();
 		}	
 	
-	
-/**
- * 
- * 
- * call on filterseq callback
-	public void dataChangedEvent()
- */	
 	
 	
 	
@@ -715,7 +670,8 @@ public class ImageWindow extends BasicWindow
 							"DY: "+stack.dispY + " "+
 							"DZ: "+stack.dispZ + " "+
 							"Width(px): "+pixels.getWidth()+" "+
-							"Height(px): "+pixels.getHeight());
+							"Height(px): "+pixels.getHeight()
+							);
 					sb.append("\n");
 					}
 				}
@@ -898,6 +854,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e)
 		{
+		//TODO use e.getWheelRotation() only
 		//Self-note: linux machine at home (mahogny) uses UNIT_SCROLL
 		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
 			zoom(e.getUnitsToScroll()/5.0);
@@ -936,29 +893,21 @@ public class ImageWindow extends BasicWindow
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//zoom must be able to move in another interval. use snap zoom
-	
-	
 	/** 
 	 * Scale screen vector to world vector 
 	 */
-	public double scaleS2w(double s) {return imagePanel.scaleS2w(s);}
+	public double scaleS2w(double s)
+		{
+		return imagePanel.scaleS2w(s);
+		}
 	
 	/**
 	 * Scale world to screen vector 
 	 */
-	public double scaleW2s(double w) {return imagePanel.scaleW2s(w);}
+	public double scaleW2s(double w) 
+		{
+		return imagePanel.scaleW2s(w);
+		}
 
 
 	
@@ -978,9 +927,16 @@ public class ImageWindow extends BasicWindow
 		
 	
 	/** Convert world to screen Z coordinate */
-	public double w2sz(double z) {return z;} 
+	public double w2sz(double z)
+		{
+		return z;
+		}
+	
 	/** Convert world to screen Z coordinate */
-	public double s2wz(double sz) {return sz;} 
+	public double s2wz(double sz) 
+		{
+		return sz;
+		} 
 
 	
 	//are these useful?
@@ -1005,7 +961,48 @@ public class ImageWindow extends BasicWindow
 		}
 	*/
 	
+
 	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		BasicWindow.addBasicWindowExtension(new ImageWindowBasic());
+		
+		EV.personalConfigLoaders.put("imagewindow",new PersonalConfig()
+			{
+			public void loadPersonalConfig(Element e)
+				{
+				try
+					{
+					ImageWindow win=new ImageWindow(BasicWindow.getXMLbounds(e));
+					win.frameControl.setGroup(e.getAttribute("group").getIntValue());
+					win.channelWidget.get(0).comboChannel.lastSelectChannel=e.getAttributeValue("lastSelectChannel");
+					}
+				catch (Exception e1){e1.printStackTrace();}
+				}
+			public void savePersonalConfig(Element e){}
+			});
+		
+		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
+			{
+			public void newImageWindow(ImageWindow w)
+				{
+				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
+				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
+				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
+				w.imageWindowTools.add(new ImageWindowToolEditImage(w));
+				}
+			});
+		}
+	
+	public void addImageWindowRenderer(ImageWindowRenderer r)
+		{
+		imagePanel.imageWindowRenderers.add(r);
+		}
 	
 	}
 

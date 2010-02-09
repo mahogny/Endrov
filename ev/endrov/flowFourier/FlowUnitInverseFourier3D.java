@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowFourier;
 
 
@@ -26,6 +31,9 @@ public class FlowUnitInverseFourier3D extends FlowUnitBasic
 	public static final String showName="Fourier inverse transform 3D";
 	private static final String metaType="transformInverseFourier3D";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

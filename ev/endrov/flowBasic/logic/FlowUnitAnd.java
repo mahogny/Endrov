@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flowBasic.logic;
 
 
@@ -19,6 +24,9 @@ public class FlowUnitAnd extends FlowUnitLogicBinop
 	private static final String metaType="and";
 	private static final String showName="&";
 	
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
 	public static void initPlugin() {}
 	static
 		{

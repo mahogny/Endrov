@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.flow;
 
 import java.util.*;
@@ -33,11 +38,7 @@ public class Flow extends EvObject
 	
 	public static final String metaType="flow";
 	
-	public static void initPlugin() {}
-	static
-		{
-		EvData.supportedMetadataFormats.put(metaType,Flow.class);
-		}
+	
 
 	
 	/******************************************************************************************************
@@ -286,5 +287,14 @@ public class Flow extends EvObject
 		units.addAll(other.units);
 		conns.addAll(other.conns);
 		}
-	
+
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		EvData.supportedMetadataFormats.put(metaType,Flow.class);
+		}
+
 	}

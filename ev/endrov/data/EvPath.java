@@ -1,3 +1,8 @@
+/***
+ * Copyright (C) 2010 Johan Henriksson
+ * This code is under the Endrov / BSD license. See www.endrov.net
+ * for the full text and how to cite.
+ */
 package endrov.data;
 
 import java.util.LinkedList;
@@ -123,9 +128,8 @@ public class EvPath implements Comparable<EvPath>
 		}
 
 	/**
-	 * Needs testing
+	 * TODO Needs testing
 	 * @param currentData
-	 * @return
 	 */
 	public EvContainer getContainer(EvData currentData)
 		{
