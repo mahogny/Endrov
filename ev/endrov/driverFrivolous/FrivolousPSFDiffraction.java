@@ -36,9 +36,9 @@ Version 2	May 6, 2005.  Added spherical aberration.
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
-public class DiffractionPSF extends FrivolousPSF{
+public class FrivolousPSFDiffraction extends FrivolousPSF{
 	// Constants for Bessel function approximation.
 	private static final double[] t = new double[] { 
 		 1,
@@ -65,7 +65,7 @@ public class DiffractionPSF extends FrivolousPSF{
 		-0.00072805,
 		 0.00014476 };
 
-	public float[] createPSF(SettingsNew settings) {
+	public float[] createPSF(FrivolousSettingsNew settings) {
 
 		double lambda = settings.lambda;
 		double indexRefr = settings.indexRefr;
@@ -163,7 +163,7 @@ public class DiffractionPSF extends FrivolousPSF{
 		for (int ind = 0; ind < n; ind++) {
 			pixels[ind] /= area;
 		}
-		shiftQuadrants(w, h, pixels);
+		FrivolousFourier.shiftQuadrants(w, h, pixels);
 		return pixels;
 	}
 

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous;
+package endrov.driverFrivolous;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -15,7 +15,6 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.frivolous.model.FrivolousModel;
 import endrov.hardware.Device;
 import endrov.hardware.DeviceProvider;
 import endrov.hardware.EvHardware;

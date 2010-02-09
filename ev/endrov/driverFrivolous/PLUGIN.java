@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous;
+package endrov.driverFrivolous;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef

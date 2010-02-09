@@ -3,14 +3,13 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-import endrov.frivolous.FrivolousDeviceProvider;
 
 /**
  * @author David Johansson, Arvid Johansson, Johan Henriksson
@@ -45,7 +44,7 @@ public class FrivolousModel
 		model_action = listener;
 		}
 
-	public SettingsNew getSettings()
+	public FrivolousSettingsNew getSettings()
 		{
 		return cell.getSettings();
 		}

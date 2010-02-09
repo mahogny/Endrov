@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -26,7 +26,7 @@ public class FrivolousUtility
 	public static final int COLOR_GREEN = 1;
 	public static final int COLOR_BLUE = 2;
 
-	public static ComplexArray getComplexImage(String file_name, int color)
+	public static FrivolousComplexArray getComplexImage(String file_name, int color)
 		{
 		BufferedImage img = null;
 		try
@@ -40,14 +40,14 @@ public class FrivolousUtility
 		return getComplexImage(img, color);
 		}
 
-	public static ComplexArray getComplexImage(BufferedImage img, int color)
+	public static FrivolousComplexArray getComplexImage(BufferedImage img, int color)
 		{
 		int w = img.getWidth();
 		int h = img.getHeight();
-		return new ComplexArray(getColorArray(img, w, h, color), null, w, h);
+		return new FrivolousComplexArray(getColorArray(img, w, h, color), null, w, h);
 		}
 
-	public static ComplexArray getComplexImage(BufferedImage img)
+	public static FrivolousComplexArray getComplexImage(BufferedImage img)
 		{
 		return getComplexImage(img, COLOR_RED);
 		}
@@ -114,7 +114,7 @@ public class FrivolousUtility
 		return array;
 		}
 
-	public static BufferedImage getImageFromComplex(ComplexArray complex,	boolean fromImaginary)
+	public static BufferedImage getImageFromComplex(FrivolousComplexArray complex,	boolean fromImaginary)
 		{
 		float[] imgPxls = (!fromImaginary ? complex.real : complex.imag);
 		int w = complex.width;
@@ -136,7 +136,7 @@ public class FrivolousUtility
 	//private static double max_lambda = -1;
 	private static Random rnd;
 
-	public static ComplexArray addRealNoise(ComplexArray input, Settings settings)
+	public static FrivolousComplexArray addRealNoise(FrivolousComplexArray input, FrivolousSettings settings)
 		{
 		double lambda = settings.parameter_noise_lambda;
 		rnd = new Random();
@@ -152,7 +152,7 @@ public class FrivolousUtility
 				real[i] = 0;
 			}
 
-		return new ComplexArray(real, input.imag, input.width, input.height);
+		return new FrivolousComplexArray(real, input.imag, input.width, input.height);
 		}
 
 	

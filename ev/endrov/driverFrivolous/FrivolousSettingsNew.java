@@ -3,9 +3,9 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
-public class SettingsNew extends Settings{
+public class FrivolousSettingsNew extends FrivolousSettings{
 	public double	lambda			= 550; // 400 - 700nm
 	public double	indexRefr		= 1.0; // 1.0 - 1.56
 	public double	pixelSpacing	= 30;
