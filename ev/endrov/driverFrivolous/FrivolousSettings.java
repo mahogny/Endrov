@@ -3,9 +3,9 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
-public class Settings
+public class FrivolousSettings
 	{
 	public static final double UPPER_LIMIT_LAMBDA = 150;
 	public static final double LOWER_LIMIT_LAMBDA = 0;

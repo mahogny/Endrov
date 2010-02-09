@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -24,10 +24,10 @@ public class FrivolousCell
 	{
 
 	private Document document;
-	private ComplexArray immobile_sum_array, psf_fft, output_array;
-	private ComplexArray[] immobile_arrays, mobile_arrays;
+	private FrivolousComplexArray immobile_sum_array, psf_fft, output_array;
+	private FrivolousComplexArray[] immobile_arrays, mobile_arrays;
 	private FrivolousDiffusion[] diffusers;
-	private SettingsNew settings;
+	private FrivolousSettingsNew settings;
 	private int w, h;
 	private FrivolousFourier fft;
 	private FrivolousPSF psf;
@@ -54,8 +54,8 @@ public class FrivolousCell
 		List<Element> staticlayers = getLayersFromDocument(true);
 		List<Element> mobilelayers = getLayersFromDocument(false);
 
-		immobile_arrays = new ComplexArray[staticlayers.size()];
-		mobile_arrays = new ComplexArray[mobilelayers.size()];
+		immobile_arrays = new FrivolousComplexArray[staticlayers.size()];
+		mobile_arrays = new FrivolousComplexArray[mobilelayers.size()];
 		diffusers = new FrivolousDiffusion[mobilelayers.size()];
 
 		int i = 0;
@@ -73,11 +73,11 @@ public class FrivolousCell
 				System.out.println("Cannot read "+layer_filename);
 				}
 
-			immobile_arrays[i] = new ComplexArray(FrivolousUtility.getColorArray(
+			immobile_arrays[i] = new FrivolousComplexArray(FrivolousUtility.getColorArray(
 					layer_image, FrivolousUtility.COLOR_RED), null, w, h);
 			i++;
 			}
-		immobile_sum_array = ComplexLib.getRealSum(immobile_arrays);
+		immobile_sum_array = FrivolousComplexLib.getRealSum(immobile_arrays);
 
 		i = 0;
 		for (Element e : mobilelayers)
@@ -100,10 +100,10 @@ public class FrivolousCell
 				System.out.println("Cannot find:\n"+layer_filename+"\n"+mask_filename);
 				}
 
-			mobile_arrays[i] = new ComplexArray(FrivolousUtility.getColorArray(
+			mobile_arrays[i] = new FrivolousComplexArray(FrivolousUtility.getColorArray(
 					layer_image, FrivolousUtility.COLOR_RED), null, w, h);
 
-			diffusers[i] = new FrivolousDiffusion(ComplexLib.getFilledArray(
+			diffusers[i] = new FrivolousDiffusion(FrivolousComplexLib.getFilledArray(
 					mobile_arrays[i], 1f), FrivolousUtility.getIntColorArray(mask_image,
 					FrivolousUtility.COLOR_RED), speed);
 
@@ -111,7 +111,7 @@ public class FrivolousCell
 			}
 
 		fft = new FrivolousFourier(w, h);
-		psf = new DiffractionPSF();
+		psf = new FrivolousPSFDiffraction();
 		updatePSF();
 		for (i = 0; i<diffusers.length; i++)
 			{
@@ -121,7 +121,7 @@ public class FrivolousCell
 
 	private void parseSettings(Element settings)
 		{
-		this.settings = new SettingsNew();
+		this.settings = new FrivolousSettingsNew();
 		}
 
 	@SuppressWarnings("unchecked")
@@ -138,7 +138,7 @@ public class FrivolousCell
 
 	public void updatePSF()
 		{
-		ComplexArray psf_array = new ComplexArray(psf.createPSF(settings), null, w,h);
+		FrivolousComplexArray psf_array = new FrivolousComplexArray(psf.createPSF(settings), null, w,h);
 		psf_fft = fft.forward(psf_array, true);
 		}
 
@@ -147,28 +147,28 @@ public class FrivolousCell
 
 		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
 
-		ComplexArray[] diffused_arrays = new ComplexArray[diffusers.length];
+		FrivolousComplexArray[] diffused_arrays = new FrivolousComplexArray[diffusers.length];
 		for (int i = 0; i<diffusers.length; i++)
-			diffused_arrays[i] = ComplexLib.getRealMultiplication(diffusers[i]
+			diffused_arrays[i] = FrivolousComplexLib.getRealMultiplication(diffusers[i]
 					.getDiffusedArray(), mobile_arrays[i]);
 
-		ComplexArray diffused_sum_array = ComplexLib.getRealSum(diffused_arrays);
+		FrivolousComplexArray diffused_sum_array = FrivolousComplexLib.getRealSum(diffused_arrays);
 
 		timer.show("Mobile arrays calculated");
 
-		ComplexArray total_array = ComplexLib.getRealAddition(diffused_sum_array,
+		FrivolousComplexArray total_array = FrivolousComplexLib.getRealAddition(diffused_sum_array,
 				immobile_sum_array);
-		ComplexArray input_fft = fft.forward(total_array, true);
+		FrivolousComplexArray input_fft = fft.forward(total_array, true);
 
 		timer.show("FFT on image");
-		ComplexArray output_fft = ComplexLib.getComplexMultiplication(input_fft,
+		FrivolousComplexArray output_fft = FrivolousComplexLib.getComplexMultiplication(input_fft,
 				psf_fft);
 
 		timer.show("Complex mult");
 		output_array = fft.backward(output_fft);
 
 		timer.show("iFFT");
-		ComplexArray output_noise = FrivolousUtility.addRealNoise(output_array,
+		FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(output_array,
 				settings);
 
 		timer.show("Poisson noise");
@@ -176,7 +176,7 @@ public class FrivolousCell
 
 		}
 
-	public SettingsNew getSettings()
+	public FrivolousSettingsNew getSettings()
 		{
 		return settings;
 		}

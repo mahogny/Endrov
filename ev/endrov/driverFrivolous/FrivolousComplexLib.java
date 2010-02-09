@@ -3,15 +3,15 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
 /**
  * @author David Johansson, Arvid Johansson
  */
-public class ComplexLib
+public class FrivolousComplexLib
 	{
 
-	static public float[] getRealArray(ComplexArray complex)
+	static public float[] getRealArray(FrivolousComplexArray complex)
 		{
 		float[] result = new float[complex.length];
 		for (int i = 0; i<complex.length; i++)
@@ -20,7 +20,7 @@ public class ComplexLib
 		return result;
 		}
 
-	static public float[] getRealArrayFirstHalf(ComplexArray complex)
+	static public float[] getRealArrayFirstHalf(FrivolousComplexArray complex)
 		{
 		float[] result = new float[complex.length<<1];
 
@@ -30,7 +30,7 @@ public class ComplexLib
 		return result;
 		}
 
-	static public float[] getCombinedArray(ComplexArray complex)
+	static public float[] getCombinedArray(FrivolousComplexArray complex)
 		{
 		float[] result = new float[complex.length<<1];
 		for (int i = 0; i<complex.length; i++)
@@ -42,7 +42,7 @@ public class ComplexLib
 		return result;
 		}
 
-	static public float[] getImaginaryArray(ComplexArray complex)
+	static public float[] getImaginaryArray(FrivolousComplexArray complex)
 		{
 		float[] result = new float[complex.length];
 		for (int i = 0; i<complex.length; i++)
@@ -51,7 +51,7 @@ public class ComplexLib
 		return result;
 		}
 
-	public static ComplexArray getComplexArray(float[] combined, int w, int h)
+	public static FrivolousComplexArray getComplexArray(float[] combined, int w, int h)
 		{
 		float[] real = new float[combined.length>>1];
 		float[] imag = new float[combined.length>>1];
@@ -62,11 +62,11 @@ public class ComplexLib
 			imag[i] = combined[(i<<1)+1];
 			}
 
-		return new ComplexArray(real, imag, w, h);
+		return new FrivolousComplexArray(real, imag, w, h);
 		}
 
-	public static ComplexArray getComplexMultiplication(ComplexArray a,
-			ComplexArray b)
+	public static FrivolousComplexArray getComplexMultiplication(FrivolousComplexArray a,
+			FrivolousComplexArray b)
 		{
 		if (a.length!=b.length)
 			throw new IllegalArgumentException("Matrix sizes must agree!");
@@ -79,11 +79,11 @@ public class ComplexLib
 			imag[i] = a.real[i]*b.imag[i]+a.imag[i]*b.real[i];
 			}
 
-		return new ComplexArray(real, imag, a.width, a.height);
+		return new FrivolousComplexArray(real, imag, a.width, a.height);
 		}
 
-	public static ComplexArray getRealMultiplication(ComplexArray a,
-			ComplexArray b)
+	public static FrivolousComplexArray getRealMultiplication(FrivolousComplexArray a,
+			FrivolousComplexArray b)
 		{
 		if (a.length!=b.length)
 			throw new IllegalArgumentException("Matrix sizes must agree!");
@@ -92,10 +92,10 @@ public class ComplexLib
 		for (int i = 0; i<a.length; i++)
 			real[i] = a.real[i]*b.real[i];
 
-		return new ComplexArray(real, null, a.width, a.height);
+		return new FrivolousComplexArray(real, null, a.width, a.height);
 		}
 
-	public static ComplexArray getRealAddition(ComplexArray a, ComplexArray b)
+	public static FrivolousComplexArray getRealAddition(FrivolousComplexArray a, FrivolousComplexArray b)
 		{
 		if (a.length!=b.length)
 			throw new IllegalArgumentException("Matrix sizes must agree!");
@@ -104,20 +104,20 @@ public class ComplexLib
 		for (int i = 0; i<a.length; i++)
 			real[i] = a.real[i]+b.real[i];
 
-		return new ComplexArray(real, null, a.width, a.height);
+		return new FrivolousComplexArray(real, null, a.width, a.height);
 		}
 
-	public static ComplexArray getRealSum(ComplexArray[] c)
+	public static FrivolousComplexArray getRealSum(FrivolousComplexArray[] c)
 		{
 		float[] real = new float[c[0].length];
 		for (int i = 0; i<c[0].length; i++)
 			for (int j = 0; j<c.length; j++)
 				real[i] += c[j].real[i];
 
-		return new ComplexArray(real, null, c[0].width, c[0].height);
+		return new FrivolousComplexArray(real, null, c[0].width, c[0].height);
 		}
 
-	public static ComplexArray getRealDivision(ComplexArray a, ComplexArray b)
+	public static FrivolousComplexArray getRealDivision(FrivolousComplexArray a, FrivolousComplexArray b)
 		{
 		if (a.length!=b.length)
 			throw new IllegalArgumentException("Matrix sizes must agree!");
@@ -126,7 +126,7 @@ public class ComplexLib
 		for (int i = 0; i<a.length; i++)
 			real[i] = a.real[i]/b.real[i];
 
-		return new ComplexArray(real, null, a.width, a.height);
+		return new FrivolousComplexArray(real, null, a.width, a.height);
 		}
 
 	public static float[] copyArray(float[] array)
@@ -137,12 +137,12 @@ public class ComplexLib
 		return copy;
 		}
 
-	public static ComplexArray getFilledArray(ComplexArray sizeOf, float fillValue)
+	public static FrivolousComplexArray getFilledArray(FrivolousComplexArray sizeOf, float fillValue)
 		{
 		float[] real = new float[sizeOf.length];
 		for (int i = 1; i<real.length; i++) //TODO isn't this a bug?
 			real[i] = fillValue;
-		return new ComplexArray(real, null, sizeOf.width, sizeOf.height);
+		return new FrivolousComplexArray(real, null, sizeOf.width, sizeOf.height);
 		}
 
 	}

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.frivolous.model;
+package endrov.driverFrivolous;
 
 /**
  * Simulate diffusion
@@ -31,7 +31,7 @@ class FrivolousDiffusion implements Runnable
 	private float diffusionFactor = 1f;
 	private float bleachFactor = 0f;
 
-	public FrivolousDiffusion(ComplexArray input, int[] alpha, float speed)
+	public FrivolousDiffusion(FrivolousComplexArray input, int[] alpha, float speed)
 		{
 		width = input.width;
 		height = input.height;
@@ -206,9 +206,9 @@ class FrivolousDiffusion implements Runnable
 		return y*width+x;
 		}
 
-	public ComplexArray getDiffusedArray()
+	public FrivolousComplexArray getDiffusedArray()
 		{
-		return new ComplexArray(diffusion.clone(), null, width, height);
+		return new FrivolousComplexArray(diffusion.clone(), null, width, height);
 		}
 
 	public void bleach()
