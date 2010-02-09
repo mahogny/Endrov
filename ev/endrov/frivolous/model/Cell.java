@@ -100,7 +100,7 @@ class Cell {
 		}
 
 		fft = new Fourier(w, h);
-		psf = new GaussianPSF();
+		psf = new DiffractionPSF();
 		updatePSF();
 		for(i=0; i<diffusers.length;i++){
 			(new Thread(diffusers[i])).start();
