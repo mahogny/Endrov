@@ -57,7 +57,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 	 *****************************************************************************************************/
 
 
-	private EvPixels lastCameraImage=null;
+	private EvPixels[] lastCameraImage=null;
 	private Dimension lastImageSize=null; 
 
 	private CamWindow This=this;
@@ -99,7 +99,14 @@ public class CamWindow extends BasicWindow implements ActionListener
 		private static final long serialVersionUID = 1L;
 		public int getUpper(){return histoView.upper;}
 		public int getLower(){return histoView.lower;}
-		public EvPixels getImage(){return This.lastCameraImage;}
+		//TODO rgb
+		public EvPixels getImage()
+			{
+			if(This.lastCameraImage!=null)
+				return This.lastCameraImage[0];
+			else
+				return null;
+			}
 		};
 	
 	
@@ -196,7 +203,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 			//Update size of this window if camera area size changes
 			if(lastCameraImage!=null)
 				{
-				Dimension newDim=new Dimension(lastCameraImage.getWidth(), lastCameraImage.getHeight());
+				Dimension newDim=new Dimension(lastCameraImage[0].getWidth(), lastCameraImage[0].getHeight());
 				if(lastImageSize==null || !lastImageSize.equals(newDim))
 					{
 					Rectangle rect=drawArea.getBounds();

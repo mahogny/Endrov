@@ -18,6 +18,9 @@ import mmcorej.*;
  */
 public class MMutil
 	{
+	/**
+	 * STL vector to list of strings
+	 */
 	public static List<String> convVector(StrVector v)
 		{
 		ArrayList<String> al=new ArrayList<String>((int)v.size());
@@ -26,6 +29,9 @@ public class MMutil
 		return al;
 		}
 	
+	/**
+	 * STL vector to string
+	 */
 	public static String convVector(CharVector v)
 		{
 		StringBuffer bf=new StringBuffer();
@@ -33,7 +39,10 @@ public class MMutil
 			bf.append(v.get(j));
 		return bf.toString();
 		}
-	
+
+	/**
+	 * Produce STL vector
+	 */
 	public static CharVector convString(String s)
 		{
 		CharVector v=new CharVector();
@@ -55,14 +64,34 @@ public class MMutil
 		return map;
 		}
 	
-	public static CameraImage snap(CMMCore core) throws Exception
+	/**
+	 * Snap one image
+	 */
+	public static CameraImage snap(CMMCore core, String device) throws Exception
 		{
-		CameraImage im=new CameraImage();
+		if(!core.getCameraDevice().equals(device))
+			core.setCameraDevice(device);
+
+		System.out.println(device+" snap # components "+core.getNumberOfComponents());
+
 		core.snapImage();
-		im.w = (int)core.getImageWidth();
-		im.h = (int)core.getImageHeight();
-		im.bytesPerPixel=(int)core.getBytesPerPixel();
-		im.pixels=core.getImage();
+
+		Object arr;
+		if(core.getNumberOfComponents()==1)
+			arr=core.getImage();//core.getLastImage();//;
+		else
+			arr=core.getRGB32Image();
+
+		
+		
+		
+		CameraImage im=new CameraImage(
+				(int)core.getImageWidth(),
+				(int)core.getImageHeight(),
+				(int)core.getBytesPerPixel(),
+				arr,
+				(int)core.getNumberOfComponents()
+				);
 		return im;
 		}
 	

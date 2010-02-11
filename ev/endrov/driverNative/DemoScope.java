@@ -75,14 +75,7 @@ public class DemoScope extends DeviceProvider implements Device
 			
 			g.fillOval(100-r, 100-r, 2*r, 2*r);
 			
-			CameraImage cim=new CameraImage();
-			cim.bytesPerPixel=1;
-			cim.w=im.getWidth();
-			cim.h=im.getHeight();
-
-			cim.pixels=im;
-			
-			
+			CameraImage cim=new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1);
 			
 			/*
 			int[] allpi=new int[im.getWidth()];

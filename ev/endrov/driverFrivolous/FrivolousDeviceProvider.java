@@ -46,8 +46,6 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 	public FrivolousDeviceProvider()
 		{
 		model = new FrivolousModel();
-		hw.put("cam", new FrivolousCamera());
-		hw.put("stage", new FrivolousStage());
 		}
 
 	public double[] stagePos = new double[]{ 0, 0, 0 };
@@ -140,12 +138,7 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 //			int r = (int) stagePos[2];
 			model.convolve();
 			BufferedImage im = model.getImage();
-			CameraImage cim = new CameraImage();
-			cim.bytesPerPixel = 1;
-			cim.w = im.getWidth();
-			cim.h = im.getHeight();
-
-			cim.pixels = im;
+			CameraImage cim = new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1);
 			return cim;
 			}
 		}
@@ -301,11 +294,13 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 
 	public boolean hasConfigureDialog()
 		{
-		return false;
+		return true;
 		}
 
 	public void openConfigureDialog()
 		{
+		hw.put("cam", new FrivolousCamera());
+		hw.put("stage", new FrivolousStage());
 		}
 
 	}

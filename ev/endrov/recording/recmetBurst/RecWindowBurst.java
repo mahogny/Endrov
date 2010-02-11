@@ -18,7 +18,9 @@ import javax.swing.*;
 import org.jdom.*;
 
 import endrov.basicWindow.*;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.nuc.NucLineage;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -62,12 +64,25 @@ public class RecWindowBurst extends BasicWindow
 		//Select name of channel - only if not RGB
 		
 		
+		EvComboObject objectCombo=new EvComboObject(null, true, false)
+			{
+			private static final long serialVersionUID = 1L;
+			public boolean includeObject(EvContainer cont)
+				{
+				return cont instanceof EvData;
+				}
+			};
 		
+			
+		JTextArea tChannelName=new JTextArea("ch");
+		tChannelName.setToolTipText("Name of channel - Used as a prefix if the camera does RGB");
 		
 		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
+				
+				
 				
 				EvSwingUtil.layoutLCR(
 						cDuration,
@@ -84,11 +99,16 @@ public class RecWindowBurst extends BasicWindow
 				cSwapEarly,
 				
 				EvSwingUtil.layoutLCR(
-						bStartStop,
+						null,
 						labelStatus,
 						null
-						)
+						),
 				
+				EvSwingUtil.layoutLCR(
+						objectCombo,
+						tChannelName,
+						bStartStop
+						)
 				
 				
 				),

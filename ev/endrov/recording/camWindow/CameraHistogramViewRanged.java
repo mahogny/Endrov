@@ -80,15 +80,22 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 	/**
 	 * Calculate range automatically from image
 	 */
-	public void calcAutoRange(EvPixels p)
+	public void calcAutoRange(EvPixels[] p)
 		{
-		calcAutoRange(p.convertToInt(true).getArrayInt());
+		if(p.length==1)
+			calcAutoRange(p[0].convertToInt(true).getArrayInt());
+		else
+			{
+			calcAutoRange(p[0].convertToInt(true).getArrayInt());
+			extendAutoRange(p[1].convertToInt(true).getArrayInt());
+			extendAutoRange(p[2].convertToInt(true).getArrayInt());
+			}
 		}
 	
 	/**
 	 * Calculate range automatically from image
 	 */
-	public void calcAutoRange(int[] p)
+	private void calcAutoRange(int[] p)
 		{
 		int min=p[0], max=p[0];
 		for(int i=1;i<p.length;i++)
@@ -102,6 +109,23 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 		lower=min;
 		upper=max;
 		}
+	
+
+	private void extendAutoRange(int[] p)
+		{
+		int min=p[0], max=p[0];
+		for(int i=1;i<p.length;i++)
+			{
+			int v=p[i];
+			if(v<min)
+				min=v;
+			else if(v>max)
+				max=v;
+			}
+		lower=Math.min(min,lower);
+		upper=Math.max(max,upper);
+		}
+
 
 	public void mouseClicked(MouseEvent e)
 		{

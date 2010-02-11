@@ -19,7 +19,6 @@ import org.jdom.*;
 
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
-import endrov.chromacountkj.ChromaCountKJImageRenderer;
 import endrov.consoleWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
