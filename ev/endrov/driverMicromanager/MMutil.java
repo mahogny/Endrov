@@ -72,8 +72,17 @@ public class MMutil
 		if(!core.getCameraDevice().equals(device))
 			core.setCameraDevice(device);
 
-		System.out.println(device+" snap # components "+core.getNumberOfComponents());
+		
+		//System.out.println(device+" snap # components "+core.getNumberOfComponents()+ " bytes "+core.getBytesPerPixel()+"  "+p);
 
+		int bpp=(int)core.getBytesPerPixel();
+		int numComponent=(int)core.getNumberOfComponents();
+		
+		//bug workaround???
+		String p=core.getProperty(device, "PixelType");
+		if(p.equals("32bitRGB"))
+			numComponent=3;
+		
 		core.snapImage();
 
 		Object arr;
@@ -81,16 +90,13 @@ public class MMutil
 			arr=core.getImage();//core.getLastImage();//;
 		else
 			arr=core.getRGB32Image();
-
-		
-		
 		
 		CameraImage im=new CameraImage(
 				(int)core.getImageWidth(),
 				(int)core.getImageHeight(),
-				(int)core.getBytesPerPixel(),
+				bpp,
 				arr,
-				(int)core.getNumberOfComponents()
+				numComponent
 				);
 		return im;
 		}

@@ -94,8 +94,6 @@ public class CameraImage
 		else
 			{
 			
-			System.out.println("# component "+numComponents);
-			
 			if(numComponents==1)
 				{
 				
@@ -130,11 +128,10 @@ public class CameraImage
 						for(int i=0;i<p.length;i++)
 							{
 							r[i]=(p[i] & 0xFF);
-							/*
 							g[i]=(p[i] & 0xFF00)>>8;
 							b[i]=(p[i] & 0xFF0000)>>16; //TODO: negative values?
 							if(b[i]<0)
-								b[i]+=128;*/
+								b[i]+=128;
 							}
 						
 						return new EvPixels[]{
