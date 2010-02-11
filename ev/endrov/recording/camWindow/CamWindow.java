@@ -100,10 +100,10 @@ public class CamWindow extends BasicWindow implements ActionListener
 		public int getUpper(){return histoView.upper;}
 		public int getLower(){return histoView.lower;}
 		//TODO rgb
-		public EvPixels getImage()
+		public EvPixels[] getImage()
 			{
 			if(This.lastCameraImage!=null)
-				return This.lastCameraImage[0];
+				return This.lastCameraImage;
 			else
 				return null;
 			}
