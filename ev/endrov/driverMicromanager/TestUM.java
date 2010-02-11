@@ -109,8 +109,8 @@ public class TestUM
        
        core.snapImage();
 
-       CameraImage im=MMutil.snap(core);
-       System.out.println(im);
+//       CameraImage im=MMutil.snap(core);
+  //     System.out.println(im);
       
 			
        

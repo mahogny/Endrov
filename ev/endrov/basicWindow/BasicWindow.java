@@ -6,6 +6,7 @@
 package endrov.basicWindow;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -129,6 +130,26 @@ public abstract class BasicWindow extends JPanel
 		e.setAttribute("w", ""+r.width);
 		e.setAttribute("h", ""+r.height);
 		}
+
+	
+	/**
+	 * Get position of window from XML element. Returns upper-left corner if it fails
+	 */
+	public static Point getXMLposition(Element e) //throws Exception
+		{
+		try
+			{
+			int x = e.getAttribute("x").getIntValue();
+			int y = e.getAttribute("y").getIntValue();
+			return new Point(x, y);
+			}
+		catch (DataConversionException e1)
+			{
+			return new Point(0,0);
+			}
+		}
+
+	
 
 	/**
 	 * Add menu item to a menu, put it in alphabetical order
@@ -414,6 +435,12 @@ public abstract class BasicWindow extends JPanel
 	public void setBoundsEvWindow(int x, int y, int width, int height)
 		{
 		getEvw().setBounds(new Rectangle(x, y, width, height));
+		}
+
+	public void setLocationEvWindow(Point p)
+		{
+		if(p!=null)
+			getEvw().setLocation(p.x, p.y);
 		}
 
 	public void setLocationEvWindow(int x, int y)
@@ -826,7 +853,7 @@ public abstract class BasicWindow extends JPanel
 	 * Called to obtain personal settings for that window. Function has to create
 	 * new elements and add them to the given element.
 	 */
-	public abstract void windowSavePersonalSettings(Element e);
+	public abstract void windowSavePersonalSettings(Element root);
 
 	/**
 	 * Called when a file has just been loaded and should be displayed in all

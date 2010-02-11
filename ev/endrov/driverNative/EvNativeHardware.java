@@ -27,9 +27,11 @@ public class EvNativeHardware extends DeviceProvider implements Device
 	public EvNativeHardware()
 		{
 		//hw.put("IX", new OlympusIX());
-		hw.put("demo", new DemoScope());
 		
 		//hw.put("ITK", new ITKCorvus());
+		hardwareProvided.put("OlympusIX", OlympusIX.class);
+		//hardwareProvided.put("ITKCorvus", ITKCorvus.class);
+		hardwareProvided.put("Demo", DemoScope.class);
 		
 		}
 		
@@ -105,8 +107,14 @@ public class EvNativeHardware extends DeviceProvider implements Device
 		}
 	
 	
-	public boolean hasConfigureDialog(){return false;}
-	public void openConfigureDialog(){}
+	public boolean hasConfigureDialog()
+		{
+		return true;
+		}
+	public void openConfigureDialog()
+		{
+		hw.put("demo", new DemoScope());
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -118,9 +126,6 @@ public class EvNativeHardware extends DeviceProvider implements Device
 		
 		//TODO synchronize needed?
 		
-		hardwareProvided.put("OlympusIX", OlympusIX.class);
-		//hardwareProvided.put("ITKCorvus", ITKCorvus.class);
-		hardwareProvided.put("Demo", DemoScope.class);
 		}
 
 	}

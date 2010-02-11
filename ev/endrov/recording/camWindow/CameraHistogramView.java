@@ -28,7 +28,7 @@ public class CameraHistogramView extends JPanel
 	//private int rangeMin;
 	protected int rangeMax=255;
 	
-	private EvPixels currentImage;
+	private EvPixels[] currentImage;
 	private BufferedImage cachedImage=null; //cached image
 
 	private int height=50;
@@ -36,7 +36,7 @@ public class CameraHistogramView extends JPanel
 	/**
 	 * Set pixels to calculate histogram from. #bits determines maximum range
 	 */
-	public void setImage(EvPixels p, int numBits)
+	public void setImage(EvPixels[] p, int numBits)
 		{
 		cachedImage=null;
 		
@@ -98,14 +98,14 @@ public class CameraHistogramView extends JPanel
 	private void makeImage()
 		{
 		//Only int values will be fast for now. no floating point
-		currentImage=currentImage.convertToInt(true); 
+		currentImage[0]=currentImage[0].convertToInt(true); 
 
 		BufferedImage bim=cachedImage=new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_BYTE_GRAY);
 		Graphics g2=bim.getGraphics();
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, getWidth(), getHeight());
-		if(currentImage.getType()==EvPixelsType.INT)
-			renderBins(g2,calculateHistogram(currentImage.getArrayInt()));
+		if(currentImage[0].getType()==EvPixelsType.INT)
+			renderBins(g2,calculateHistogram(currentImage[0].getArrayInt()));
 		}
 	
 	@Override

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.recmetManual;
+package endrov.recording.controlWindow;
 
 
 import java.awt.*;
@@ -56,7 +56,7 @@ public class StagePanel implements ActionListener
 	private HWStage hw;
 	//private String devName;
 	
-	public StagePanel(DevicePath devName,final HWStage hw, RecWindowManual hook)
+	public StagePanel(DevicePath devName,final HWStage hw, RecControlWindow hook)
 		{
 		this.hw=hw;
 	//	this.devName=devName;

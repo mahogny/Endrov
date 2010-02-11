@@ -25,7 +25,7 @@ public class MMCamera extends MMDeviceAdapter implements HWCamera
 		{
 		try
 			{
-			return MMutil.snap(mm.core);
+			return MMutil.snap(mm.core, mmDeviceName);
 			}
 		catch (Exception e)
 			{
@@ -44,6 +44,7 @@ public class MMCamera extends MMDeviceAdapter implements HWCamera
 	
 	public double getResMagX()
 		{
+		//TODO find from micromanager calibration?
 		return getRes();
 		}
 
