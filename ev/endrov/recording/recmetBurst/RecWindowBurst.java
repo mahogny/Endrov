@@ -11,6 +11,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.swing.*;
@@ -20,14 +21,16 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.nuc.NucLineage;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
 /**
  * Burst acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowBurst extends BasicWindow
+public class RecWindowBurst extends BasicWindow implements ActionListener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -44,6 +47,21 @@ public class RecWindowBurst extends BasicWindow
 	private JCheckBox cSwapEarly=new JCheckBox("Early swap to disk"); 
 	private JLabel labelStatus=new JLabel("Status: Stopped");
 	
+	private EvBurstAcquisition acq=new EvBurstAcquisition();
+	private EvBurstAcquisition.AcqThread thread;
+
+	private EvComboObject objectCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
+		{
+		private static final long serialVersionUID = 1L;
+		public boolean includeObject(EvContainer cont)
+			{
+			return cont instanceof EvData;
+			}
+		};
+	
+	private JTextArea tChannelName=new JTextArea("ch");
+
+	
 	public RecWindowBurst()
 		{
 		this(new Rectangle(300,120));
@@ -52,8 +70,13 @@ public class RecWindowBurst extends BasicWindow
 	public RecWindowBurst(Rectangle bounds)
 		{
 
+		thread=acq.getThread();
+
 		cSwapEarly.setToolTipText("Helps for longer recordings, otherwise might affect performance negatively");
 		cDuration.setToolTipText("Limit duration or run indefinetely");
+		
+		spRate.setDecimalValue(new EvDecimal(10));
+		spDuration.setDecimalValue(new EvDecimal(10));
 		
 		///////////////// Acquire ///////////////////////////////////////
 
@@ -64,17 +87,7 @@ public class RecWindowBurst extends BasicWindow
 		//Select name of channel - only if not RGB
 		
 		
-		EvComboObject objectCombo=new EvComboObject(null, true, false)
-			{
-			private static final long serialVersionUID = 1L;
-			public boolean includeObject(EvContainer cont)
-				{
-				return cont instanceof EvData;
-				}
-			};
-		
 			
-		JTextArea tChannelName=new JTextArea("ch");
 		tChannelName.setToolTipText("Name of channel - Used as a prefix if the camera does RGB");
 		
 		
@@ -114,6 +127,8 @@ public class RecWindowBurst extends BasicWindow
 				),
 				BorderLayout.CENTER);
 		
+		bStartStop.addActionListener(this);
+		
 		//Window overall things
 		setTitleEvWindow("Burst acquisition");
 		packEvWindow();
@@ -122,6 +137,41 @@ public class RecWindowBurst extends BasicWindow
 		}
 	
 	
+	public void actionPerformed(ActionEvent e)
+		{
+		
+		if(e.getSource()==bStartStop)
+			{
+			
+			if(thread.isRunning())
+				{
+				thread.tryStop();
+				System.out.println("stop");
+				}
+			else
+				{
+				acq.channel=tChannelName.getText();
+				
+				if(cDuration.isSelected())
+					{
+					acq.duration=spDuration.getDecimalValue();
+					acq.durationUnit=(String)cDurationUnit.getSelectedItem();
+					}
+				
+				acq.rate=spRate.getDecimalValue();
+				acq.rateUnit=(String)cRateUnit.getSelectedItem();
+				
+				acq.earlySwap=cSwapEarly.isSelected();
+				acq.container=objectCombo.getSelectedObject();
+				
+				System.out.println("Start!");
+				
+				thread.startAcquisition();
+				}
+			
+			}
+		
+		}
 	
 	
 	
