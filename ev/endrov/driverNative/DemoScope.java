@@ -112,6 +112,42 @@ public class DemoScope extends DeviceProvider implements Device
 		
 		public boolean hasConfigureDialog(){return false;}
 		public void openConfigureDialog(){}
+		
+		
+		
+		
+		//TODO all below
+		
+		public double getSequenceCapacityFree()
+			{
+			return 1;
+			}
+		public boolean isDoingSequenceAcq()
+			{
+			// TODO Auto-generated method stub
+			return false;
+			}
+		public int numSequenceLeft()
+			{
+			// TODO Auto-generated method stub
+			return 0;
+			}
+		public CameraImage snapSequence() throws Exception
+			{
+			// TODO Auto-generated method stub
+			return null;
+			}
+		public void startSequenceAcq(double interval)
+				throws Exception
+			{
+			// TODO Auto-generated method stub
+			
+			}
+		public void stopSequenceAcq()
+			{
+			// TODO Auto-generated method stub
+			
+			}
 		}
 
 	/**

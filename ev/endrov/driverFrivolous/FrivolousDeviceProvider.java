@@ -7,6 +7,7 @@ package endrov.driverFrivolous;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,38 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 
 	private class FrivolousCamera implements HWCamera
 		{
+		
+		private LinkedList<CameraImage> seqBuffer=new LinkedList<CameraImage>();
+		private boolean runSequenceAcq=false;
+		private double duration;
+		
+		Thread seqAcqThread=new Thread()
+			{
+			public void run()
+				{
+				while(FrivolousCamera.this.runSequenceAcq)
+					{
+					try
+						{
+						if(duration<1)
+							Thread.sleep(100);
+						else
+							Thread.sleep((int)duration);
+						
+						synchronized (seqBuffer)
+							{
+							seqBuffer.addLast(snap());
+							}
+						}
+					catch (InterruptedException e)
+						{
+						e.printStackTrace();
+						}
+					}
+				}
+			};
+			
+		
 
 		public String getDescName()
 			{
@@ -140,6 +173,43 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 			BufferedImage im = model.getImage();
 			CameraImage cim = new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1);
 			return cim;
+			}
+
+		
+		
+		////////////// TODO
+		
+		
+		public double getSequenceCapacityFree()
+			{
+			return 1;
+			}
+
+		public boolean isDoingSequenceAcq()
+			{
+			return runSequenceAcq;
+			}
+
+		public CameraImage snapSequence() throws Exception
+			{
+			synchronized (seqBuffer)
+				{
+				if(seqBuffer.isEmpty())
+					return null;
+				else
+					return seqBuffer.pollFirst();
+				}
+			}
+
+		public void startSequenceAcq(double interval) throws Exception
+			{
+			seqBuffer.clear();
+			runSequenceAcq=true;
+			}
+
+		public void stopSequenceAcq()
+			{
+			runSequenceAcq=false;
 			}
 		}
 
@@ -299,7 +369,9 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 
 	public void openConfigureDialog()
 		{
-		hw.put("cam", new FrivolousCamera());
+		FrivolousCamera cam=new FrivolousCamera();
+		cam.seqAcqThread.start();
+		hw.put("cam", cam);
 		hw.put("stage", new FrivolousStage());
 		}
 

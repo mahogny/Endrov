@@ -72,9 +72,6 @@ public class MMutil
 		if(!core.getCameraDevice().equals(device))
 			core.setCameraDevice(device);
 
-		
-		//System.out.println(device+" snap # components "+core.getNumberOfComponents()+ " bytes "+core.getBytesPerPixel()+"  "+p);
-
 		int bpp=(int)core.getBytesPerPixel();
 		int numComponent=(int)core.getNumberOfComponents();
 		
@@ -100,5 +97,40 @@ public class MMutil
 				);
 		return im;
 		}
+	
+	
+	/**
+	 * Snap one image
+	 */
+	public static CameraImage snapSequence(CMMCore core, String device) throws Exception
+		{
+		if(!core.getCameraDevice().equals(device))
+			core.setCameraDevice(device);
+
+		if(core.getRemainingImageCount()==0)
+			return null;
+		
+		int bpp=(int)core.getBytesPerPixel();
+		int numComponent=(int)core.getNumberOfComponents();
+		
+		//bug workaround???
+		String p=core.getProperty(device, "PixelType");
+		if(p.equals("32bitRGB"))
+			numComponent=3;
+		
+		Object arr=core.popNextImage();
+		if(arr==null)
+			return null;
+
+		CameraImage im=new CameraImage(
+				(int)core.getImageWidth(),
+				(int)core.getImageHeight(),
+				bpp,
+				arr,
+				numComponent
+				);
+		return im;
+		}
+
 	
 	}

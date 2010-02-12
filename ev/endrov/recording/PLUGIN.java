@@ -8,6 +8,7 @@ import endrov.ev.PluginDef;
 import endrov.recording.camWindow.CamWindow;
 import endrov.recording.controlWindow.RecControlWindow;
 import endrov.recording.lightpathWindow.LightpathWindow;
+import endrov.recording.recmetBurst.EvBurstAcquisition;
 import endrov.recording.recmetBurst.RecWindowBurst;
 import endrov.recording.recmetMultidim.RecWindowMultiDim;
 
@@ -42,8 +43,13 @@ public class PLUGIN extends PluginDef
 		{
 		return new Class[]{
 				RecControlWindow.class,CamWindow.class, RecordingResource.class,
-				RecWindowMultiDim.class,RecWindowBurst.class,
-				LightpathWindow.class};
+				RecWindowMultiDim.class,
+				
+				RecWindowBurst.class,
+				EvBurstAcquisition.class,
+				
+				LightpathWindow.class
+				};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

@@ -22,17 +22,22 @@ public class SpinnerSimpleEvDecimal extends JSpinner
 		{
 		setModel(new EvDecimalSpinnerModel());
 		setEditor(new EvDecimalEditor(this));
-		
+		setValue(new EvDecimal(0));
 		}
 	
 	public EvDecimal getDecimalValue()
 		{
-		return (EvDecimal)getValue();
+		return (EvDecimal)super.getValue();
 		}
-	
+
+	public void setDecimalValue(EvDecimal v)
+		{
+		super.setValue(v);
+		}
+
 	public void setFrame(String f)
 		{
-		setValue(FrameControl.parseTime(f));
+		setDecimalValue(FrameControl.parseTime(f));
 		}
 	
 	}
