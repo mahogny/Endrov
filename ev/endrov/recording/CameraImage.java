@@ -40,47 +40,6 @@ public class CameraImage
 		return ""+w+" x "+h;
 		}
 	
-	/**
-	 * Make AWT image out of input
-	 * @deprecated
-	 */
-	/*
-	public BufferedImage getAWT()
-		{
-		//MM DOES NOT SUPPORT COLOR!!!
-		
-		BufferedImage im=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-		WritableRaster r=im.getRaster();
-		for(int y=0;y<h;y++)
-			{
-			//I'm sure this can be made faster, low-level if not otherwise
-			int p[]=new int[w];
-			if(pixels instanceof BufferedImage)
-				{
-				return (BufferedImage)pixels;
-				}
-			else if(bytesPerPixel==1)
-				{
-				int off=y*w;
-				byte[] in=(byte[])pixels;
-				for(int x=0;x<w;x++)
-					p[x]=in[x+off];
-				}
-			else if(bytesPerPixel==2)
-				{
-				int off=y*w;
-				short[] in=(short[])pixels;
-				for(int x=0;x<w;x++)
-					p[x]=in[x+off];
-				}
-			r.setPixels(0, y, w, 1, p);
-			}
-		
-		
-		return im;
-		}
-	*/
-	
 	
 	/**
 	 * Get pixel data from camera
@@ -96,21 +55,12 @@ public class CameraImage
 			
 			if(numComponents==1)
 				{
-				
 				if(bytesPerPixel==1)
-					{
 					return new EvPixels[]{EvPixels.createFromUByte(w, h, (byte[])pixels)};
-					}
 				else if(bytesPerPixel==2)
-					{
 					return new EvPixels[]{EvPixels.createFromShort(w, h, (short[])pixels)};
-//					return EvPixels.createFromShort(w, h, CastArray.toShort((byte[])pixels));
-					}
 				else if(bytesPerPixel==4)
-					{
 					return new EvPixels[]{EvPixels.createFromInt(w, h, (int[])pixels)};
-					}
-				
 				}
 			else
 				{
@@ -129,8 +79,8 @@ public class CameraImage
 							{
 							r[i]=(p[i] & 0xFF);
 							g[i]=(p[i] & 0xFF00)>>8;
-							b[i]=(p[i] & 0xFF0000)>>16; //TODO: negative values?
-							if(b[i]<0)
+							b[i]=(p[i] & 0xFF0000)>>16; 
+							if(b[i]<0) //TODO: negative values?
 								b[i]+=128;
 							}
 						
@@ -146,7 +96,7 @@ public class CameraImage
 				}
 			}
 		
-		System.out.println("Uncovered pixel type "+bytesPerPixel);
+		System.out.println("Uncovered pixel type "+bytesPerPixel+" "+numComponents);
 		return null;
 		}
 
