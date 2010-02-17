@@ -16,10 +16,10 @@ import org.jdom.Element;
  * @author Johan Henriksson
  *
  */
-public class DeviceRoot extends DeviceProvider implements Device
+public class EvDeviceRoot extends EvDeviceProvider implements EvDevice
 	{
 
-	public Set<Device> autodetect(){return null;}
+	public Set<EvDevice> autodetect(){return null;}
 
 	public void getConfig(Element root)
 		{
@@ -27,7 +27,7 @@ public class DeviceRoot extends DeviceProvider implements Device
 
 
 	public List<String> provides(){return null;}
-	public Device newProvided(String s){return null;}
+	public EvDevice newProvided(String s){return null;}
 
 	public void setConfig(Element root)
 		{
@@ -43,7 +43,7 @@ public class DeviceRoot extends DeviceProvider implements Device
 		return null;
 		}
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
 		return null;
 		}

@@ -11,14 +11,14 @@ import java.util.*;
  * Path to hardware. Internally a list of strings, for the user seen as a /-separated string
  * @author Johan Henriksson
  */
-public class DevicePath implements Comparable<DevicePath>
+public class EvDevicePath implements Comparable<EvDevicePath>
 	{
 	public String[] path;
 	
 	/**
 	 * Construct from string
 	 */
-	public DevicePath(String dotPath)
+	public EvDevicePath(String dotPath)
 		{
 		List<String> n=new LinkedList<String>();
 		StringTokenizer stok=new StringTokenizer(dotPath,"/");
@@ -30,7 +30,7 @@ public class DevicePath implements Comparable<DevicePath>
 	/**
 	 * Construct from raw path
 	 */
-	public DevicePath(String[] path)
+	public EvDevicePath(String[] path)
 		{
 		this.path=path;
 		}
@@ -53,7 +53,7 @@ public class DevicePath implements Comparable<DevicePath>
 	/**
 	 * Ordering of paths
 	 */
-	public int compareTo(DevicePath o)
+	public int compareTo(EvDevicePath o)
 		{
 		int checkLength=path.length;
 		int defret=-1;
@@ -76,7 +76,7 @@ public class DevicePath implements Comparable<DevicePath>
 	/**
 	 * Get device for this path
 	 */
-	public Device getDevice()
+	public EvDevice getDevice()
 		{
 		return EvHardware.getDevice(this);
 		}
@@ -95,8 +95,8 @@ public class DevicePath implements Comparable<DevicePath>
 	 */
 	public static void main(String[] arg)
 		{
-		DevicePath a=new DevicePath(new String[]{"a","c"});
-		DevicePath b=new DevicePath(new String[]{"a"});
+		EvDevicePath a=new EvDevicePath(new String[]{"a","c"});
+		EvDevicePath b=new EvDevicePath(new String[]{"a"});
 		System.out.println(a.compareTo(b));
 		System.out.println(a);
 		}

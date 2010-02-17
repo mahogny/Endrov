@@ -14,14 +14,14 @@ import org.jdom.Element;
  * @author Johan Henriksson
  *
  */
-public abstract class DeviceProvider
+public abstract class EvDeviceProvider
 	{
 	/** Return null if operation not supported 
 	 * TODO maybe not return but add it right away?
 	 * */
-	public abstract Set<Device> autodetect();
+	public abstract Set<EvDevice> autodetect();
 	
-	public Map<String, Device> hw=new HashMap<String, Device>();
+	public Map<String, EvDevice> hw=new HashMap<String, EvDevice>();
 	
 	
 	
@@ -29,5 +29,5 @@ public abstract class DeviceProvider
 	public abstract void setConfig(Element root);
 
 	public abstract List<String> provides();
-	public abstract Device newProvided(String s); 
+	public abstract EvDevice newProvided(String s); 
 	}

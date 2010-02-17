@@ -18,7 +18,7 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
-import endrov.hardware.DevicePath;
+import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvPixels;
 import endrov.recording.HWStage;
@@ -201,7 +201,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	
 	public static void moveAxis(String s, double dx)
 		{
-		for(Map.Entry<DevicePath,HWStage> e:EvHardware.getDeviceMapCast(HWStage.class).entrySet())
+		for(Map.Entry<EvDevicePath,HWStage> e:EvHardware.getDeviceMapCast(HWStage.class).entrySet())
 			{
 			HWStage stage=e.getValue();
 			for(int i=0;i<stage.getNumAxis();i++)

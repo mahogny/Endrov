@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import endrov.basicWindow.icon.BasicIcon;
-import endrov.hardware.DevicePath;
+import endrov.hardware.EvDevicePath;
 import endrov.recording.HWStage;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
@@ -56,7 +56,7 @@ public class StagePanel implements ActionListener
 	private HWStage hw;
 	//private String devName;
 	
-	public StagePanel(DevicePath devName,final HWStage hw, RecControlWindow hook)
+	public StagePanel(EvDevicePath devName,final HWStage hw, RecControlWindow hook)
 		{
 		this.hw=hw;
 	//	this.devName=devName;

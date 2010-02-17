@@ -5,9 +5,9 @@
  */
 package endrov.recording;
 
-import endrov.hardware.Device;
+import endrov.hardware.EvDevice;
 
-public interface HWAutoFocus extends Device
+public interface HWAutoFocus extends EvDevice
 	{
 
 	}

@@ -9,19 +9,19 @@ import java.util.*;
 
 import org.jdom.Element;
 
-import endrov.hardware.Device;
+import endrov.hardware.EvDevice;
 import endrov.hardware.EvHardware;
-import endrov.hardware.DeviceProvider;
-import endrov.hardware.PropertyType;
+import endrov.hardware.EvDeviceProvider;
+import endrov.hardware.DevicePropertyType;
 
 /**
  * Native device drivers
  * @author Johan Henriksson
  *
  */
-public class EvNativeHardware extends DeviceProvider implements Device
+public class EvNativeHardware extends EvDeviceProvider implements EvDevice
 	{
-	private static Map<String, Class<? extends Device>> hardwareProvided=new TreeMap<String, Class<? extends Device>>();
+	private static Map<String, Class<? extends EvDevice>> hardwareProvided=new TreeMap<String, Class<? extends EvDevice>>();
 	
 	
 	public EvNativeHardware()
@@ -37,7 +37,7 @@ public class EvNativeHardware extends DeviceProvider implements Device
 		
 	
 	
-	public Set<Device> autodetect()
+	public Set<EvDevice> autodetect()
 		{
 		return null;
 		}
@@ -49,7 +49,7 @@ public class EvNativeHardware extends DeviceProvider implements Device
 		{
 		return Arrays.asList("IXvirtual");
 		}
-	public Device newProvided(String s)
+	public EvDevice newProvided(String s)
 		{
 		try
 			{
@@ -79,9 +79,9 @@ public class EvNativeHardware extends DeviceProvider implements Device
 		}
 
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		return new TreeMap<String, PropertyType>();
+		return new TreeMap<String, DevicePropertyType>();
 		}
 
 

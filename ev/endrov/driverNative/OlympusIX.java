@@ -12,9 +12,9 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.hardware.Device;
-import endrov.hardware.DeviceProvider;
-import endrov.hardware.PropertyType;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceProvider;
+import endrov.hardware.DevicePropertyType;
 import endrov.recording.HWSerial;
 import endrov.recording.HWShutter;
 import endrov.recording.RecordingResource;
@@ -26,7 +26,7 @@ import endrov.recording.VirtualSerial;
  * @author Johan Henriksson
  *
  */
-public class OlympusIX extends DeviceProvider implements Device
+public class OlympusIX extends EvDeviceProvider implements EvDevice
 	{
 	public final static String newLine="\r\n";
 
@@ -251,7 +251,7 @@ public class OlympusIX extends DeviceProvider implements Device
 	
 	
 
-	public Set<Device> autodetect()
+	public Set<EvDevice> autodetect()
 		{
 		return null;
 		}
@@ -264,7 +264,7 @@ public class OlympusIX extends DeviceProvider implements Device
 		{
 		return null;
 		}
-	public Device newProvided(String s)
+	public EvDevice newProvided(String s)
 		{
 		return null; //TODO
 		}
@@ -283,9 +283,9 @@ public class OlympusIX extends DeviceProvider implements Device
 		return new TreeMap<String, String>();
 		}
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		return new TreeMap<String, PropertyType>();
+		return new TreeMap<String, DevicePropertyType>();
 		}
 
 	public String getPropertyValue(String prop)

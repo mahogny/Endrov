@@ -15,7 +15,7 @@ import java.util.*;
 
 import javax.swing.*;
 
-import endrov.hardware.PropertyType;
+import endrov.hardware.DevicePropertyType;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -177,9 +177,9 @@ public abstract class VirtualSerial implements HWSerial
 		TreeMap<String, String> m=new TreeMap<String, String>();
 		return m;
 		}
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		TreeMap<String, PropertyType> m=new TreeMap<String, PropertyType>();
+		TreeMap<String, DevicePropertyType> m=new TreeMap<String, DevicePropertyType>();
 		return m;
 		}
 	public String getPropertyValue(String prop)

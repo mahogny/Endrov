@@ -14,7 +14,7 @@ import endrov.recording.HWState;
  * @author Johan Henriksson
  *
  */
-public class ConfigGroupDevice implements Device, HWState
+public class TODO_ConfigGroupDevice implements EvDevice, HWState
 	{
 	
 	public int currentState=0;
@@ -33,7 +33,7 @@ public class ConfigGroupDevice implements Device, HWState
 		public String name;
 		
 		//Device -> Property -> Value
-		public Map<DevicePath,Map<String,String>> settings=new TreeMap<DevicePath, Map<String,String>>();
+		public Map<EvDevicePath,Map<String,String>> settings=new TreeMap<EvDevicePath, Map<String,String>>();
 		}
 
 	public String getDescName()
@@ -46,9 +46,9 @@ public class ConfigGroupDevice implements Device, HWState
 		return new TreeMap<String,String>();
 		}
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		return new TreeMap<String,PropertyType>();
+		return new TreeMap<String,DevicePropertyType>();
 		}
 
 	public String getPropertyValue(String prop)

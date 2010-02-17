@@ -186,7 +186,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 		//this does not work later. have to synchronize all calls for an image
 		//so all targets gets it.
 		
-		DevicePath camname=(DevicePath)cameraCombo.getSelectedItem();
+		EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
 		if(camname!=null)
 			{
 			HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
@@ -235,7 +235,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 	
 	public CamWindow(Rectangle bounds)
 		{
-		cameraCombo=new JComboBox(new Vector<DevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
+		cameraCombo=new JComboBox(new Vector<EvDevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
 		
 		tLive.setToolTipText("Continuously take pictures");
 		bSnap.setToolTipText("Manually take a picture and update. Does not save image.");

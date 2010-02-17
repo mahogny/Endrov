@@ -24,7 +24,7 @@ import endrov.hardware.*;
  * @author Johan Henriksson
  *
  */
-public class MicroManager extends DeviceProvider implements Device
+public class MicroManager extends EvDeviceProvider implements EvDevice
 	{
 	
 	
@@ -173,7 +173,7 @@ public class MicroManager extends DeviceProvider implements Device
 		}
 	
 	
-	public Set<Device> autodetect()
+	public Set<EvDevice> autodetect()
 		{
 		return null;
 		}
@@ -194,7 +194,7 @@ public class MicroManager extends DeviceProvider implements Device
 		
 		return list;
 		}
-	public Device newProvided(String s)
+	public EvDevice newProvided(String s)
 		{
 		return null;
 		}
@@ -208,13 +208,13 @@ public class MicroManager extends DeviceProvider implements Device
 
 	public SortedMap<String, String> getPropertyMap()
 		{
-		return null;
+		return new TreeMap<String, String>();
 		}
 
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		return null;
+		return new TreeMap<String, DevicePropertyType>();
 		}
 
 

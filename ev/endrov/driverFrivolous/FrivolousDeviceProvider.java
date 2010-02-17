@@ -16,10 +16,10 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.hardware.Device;
-import endrov.hardware.DeviceProvider;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
-import endrov.hardware.PropertyType;
+import endrov.hardware.DevicePropertyType;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
 import endrov.recording.HWStage;
@@ -29,10 +29,10 @@ import endrov.recording.HWStage;
  * 
  * @author David Johansson, Arvid Johansson, Johan Henriksson
  */
-public class FrivolousDeviceProvider extends DeviceProvider implements Device
+public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevice
 	{
 
-	private static Map<String, Class<? extends Device>> hardwareProvided = new TreeMap<String, Class<? extends Device>>();
+	private static Map<String, Class<? extends EvDevice>> hardwareProvided = new TreeMap<String, Class<? extends EvDevice>>();
 	private FrivolousModel model;
 
 	public static void initPlugin()
@@ -99,20 +99,20 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 			return p;
 			}
 
-		public SortedMap<String, PropertyType> getPropertyTypes()
+		public SortedMap<String, DevicePropertyType> getPropertyTypes()
 			{
-			TreeMap<String, PropertyType> pt = new TreeMap<String, PropertyType>();
-			PropertyType p;
+			TreeMap<String, DevicePropertyType> pt = new TreeMap<String, DevicePropertyType>();
+			DevicePropertyType p;
 
 			// NA
-			p = new PropertyType();
+			p = new DevicePropertyType();
 			p.rangeUpper = 0.95;
 			p.rangeLower = 0.25;
 			p.hasRange = true;
 			pt.put("Numerical Aperture", p);
 
 			// wavelength
-			p = new PropertyType();
+			p = new DevicePropertyType();
 			p.rangeUpper = 800;
 			p.rangeLower = 300;
 			p.hasRange = true;
@@ -263,9 +263,9 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 			return new TreeMap<String, String>();
 			}
 
-		public SortedMap<String, PropertyType> getPropertyTypes()
+		public SortedMap<String, DevicePropertyType> getPropertyTypes()
 			{
-			return new TreeMap<String, PropertyType>();
+			return new TreeMap<String, DevicePropertyType>();
 			}
 
 		public String getPropertyValue(String prop)
@@ -297,7 +297,7 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 
 		}
 
-	public Set<Device> autodetect()
+	public Set<EvDevice> autodetect()
 		{
 		return null;
 		}
@@ -311,7 +311,7 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 		return Arrays.asList("frivolous");
 		}
 
-	public Device newProvided(String s)
+	public EvDevice newProvided(String s)
 		{
 		try
 			{
@@ -339,9 +339,9 @@ public class FrivolousDeviceProvider extends DeviceProvider implements Device
 		return new TreeMap<String, String>();
 		}
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		return new TreeMap<String, PropertyType>();
+		return new TreeMap<String, DevicePropertyType>();
 		}
 
 	public String getPropertyValue(String prop)
