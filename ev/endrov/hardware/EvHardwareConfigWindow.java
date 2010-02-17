@@ -26,7 +26,7 @@ import endrov.data.EvData;
  * Hardware Configuration window
  * @author Johan Henriksson 
  */
-public class HardwareConfigWindow extends BasicWindow
+public class EvHardwareConfigWindow extends BasicWindow
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -46,22 +46,22 @@ public class HardwareConfigWindow extends BasicWindow
 	
 	private static class HWListItem
 		{
-		DevicePath name;
+		EvDevicePath name;
 		public String toString()
 			{
 			return name+" :: "+EvHardware.getDevice(name).getDescName();
 			}
 		}
 	
-	public HardwareConfigWindow()
+	public EvHardwareConfigWindow()
 		{
 		this(new Rectangle(400,300));
 		}
 	
-	public HardwareConfigWindow(Rectangle bounds)
+	public EvHardwareConfigWindow(Rectangle bounds)
 		{
 		Vector<HWListItem> hwNames=new Vector<HWListItem>();
-		for(DevicePath hw:EvHardware.getDeviceList())
+		for(EvDevicePath hw:EvHardware.getDeviceList())
 			{
 			HWListItem item=new HWListItem();
 			item.name=hw;
@@ -95,7 +95,7 @@ public class HardwareConfigWindow extends BasicWindow
 		public void actionPerformed(ActionEvent e)
 			{
 			HWListItem o=(HWListItem)hwList.getSelectedValue();
-			Device dev=o.name.getDevice();
+			EvDevice dev=o.name.getDevice();
 			if(dev!=null && dev.hasConfigureDialog())
 				dev.openConfigureDialog();
 			}
@@ -165,7 +165,7 @@ public class HardwareConfigWindow extends BasicWindow
 
 			public void actionPerformed(ActionEvent e) 
 				{
-				new HardwareConfigWindow();
+				new EvHardwareConfigWindow();
 				}
 
 			public void buildMenu(BasicWindow w){}
@@ -174,26 +174,5 @@ public class HardwareConfigWindow extends BasicWindow
 		
 		
 		
-		
-/*		EV.personalConfigLoaders.put("consolewindow",new PersonalConfig()
-			{
-			public void loadPersonalConfig(Element e)
-				{
-				try
-					{
-					int x=e.getAttribute("x").getIntValue();
-					int y=e.getAttribute("y").getIntValue();
-					int w=e.getAttribute("w").getIntValue();
-					int h=e.getAttribute("h").getIntValue();
-					new ConsoleWindow(x,y,w,h);
-					}
-				catch (DataConversionException e1)
-					{
-					e1.printStackTrace();
-					}
-				}
-			public void savePersonalConfig(Element e){}
-			});
-			*/
 		}
 	}

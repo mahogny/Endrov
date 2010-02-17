@@ -35,7 +35,9 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{HardwareConfigWindow.class};
+		return new Class[]{
+				EvHardwareConfigWindow.class,
+				EvHardwareConfigGroup.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

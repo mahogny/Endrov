@@ -11,7 +11,7 @@ import java.util.*;
  * Hardware device property type
  * @author Johan Henriksson
  */
-public class PropertyType
+public class DevicePropertyType
 	{
 	public boolean readOnly=false;
 	public TreeSet<String> categories=new TreeSet<String>();
@@ -24,34 +24,34 @@ public class PropertyType
 	
 	
 	
-	public static PropertyType getEditableBooleanState()
+	public static DevicePropertyType getEditableBooleanState()
 		{
-		PropertyType p=new PropertyType();
+		DevicePropertyType p=new DevicePropertyType();
 		p.categories.add("0");
 		p.categories.add("1");
 		p.isBoolean=true;
 		return p;
 		}
 
-	public static PropertyType getEditableIntState(int min,int max)
+	public static DevicePropertyType getEditableIntState(int min,int max)
 		{
-		PropertyType p=new PropertyType();
+		DevicePropertyType p=new DevicePropertyType();
 		for(int i=min;i<=max;i++)
 			p.categories.add(""+i);
 		return p;
 		}
 
-	public static PropertyType getEditableIntState(int[] state)
+	public static DevicePropertyType getEditableIntState(int[] state)
 		{
-		PropertyType p=new PropertyType();
+		DevicePropertyType p=new DevicePropertyType();
 		for(int s:state)
 			p.categories.add(""+s);
 		return p;
 		}
 
-	public static PropertyType getEditableCategoryState(String[] stateName)
+	public static DevicePropertyType getEditableCategoryState(String[] stateName)
 		{
-		PropertyType p=new PropertyType();
+		DevicePropertyType p=new DevicePropertyType();
 		p.categories.addAll(Arrays.asList(stateName));
 		return p;
 		}

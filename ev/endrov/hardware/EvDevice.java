@@ -7,21 +7,29 @@ package endrov.hardware;
 
 import java.util.*;
 
+import endrov.ev.SimpleObserver;
+
 
 /**
  * One hardware device/session
  * @author Johan Henriksson
  *
  */
-public interface Device
+public interface EvDevice
 	{
 	/** Descriptive name of hardware */
 	public String getDescName();
 		
 	
+	/**
+	 * Event management
+	 */
+	public SimpleObserver event=new SimpleObserver();
+	
+	
 	////// For devices
 	
-	public SortedMap<String,PropertyType> getPropertyTypes();
+	public SortedMap<String,DevicePropertyType> getPropertyTypes();
 	public SortedMap<String,String> getPropertyMap();
 	public String getPropertyValue(String prop);
 	public Boolean getPropertyValueBoolean(String prop);

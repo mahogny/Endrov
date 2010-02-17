@@ -5,7 +5,7 @@
  */
 package endrov.recording;
 
-import endrov.hardware.Device;
+import endrov.hardware.EvDevice;
 
 
 /**
@@ -13,7 +13,7 @@ import endrov.hardware.Device;
  * @author Johan Henriksson
  *
  */
-public interface HWStage extends Device
+public interface HWStage extends EvDevice
 	{
 
 	public int getNumAxis();

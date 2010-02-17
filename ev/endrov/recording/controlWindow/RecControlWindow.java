@@ -29,10 +29,10 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.JNumericField;
 import endrov.ev.PersonalConfig;
-import endrov.hardware.Device;
+import endrov.hardware.EvDevice;
 import endrov.hardware.EvHardware;
-import endrov.hardware.DevicePath;
-import endrov.hardware.PropertyType;
+import endrov.hardware.EvDevicePath;
+import endrov.hardware.DevicePropertyType;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
@@ -64,12 +64,14 @@ public class RecControlWindow extends BasicWindow
 	
 	public WeakHashMap<EvComboObject,Object> listComboObject=new WeakHashMap<EvComboObject, Object>();
 	
+	ConfigGroupPanel cp=new ConfigGroupPanel();
 	
 	public RecControlWindow()
 		{
 		this(null);
 		}
-	
+
+
 	public RecControlWindow(Point position)
 		{
 		setLayout(new BorderLayout());
@@ -77,7 +79,9 @@ public class RecControlWindow extends BasicWindow
 
 		p.setLayout(new GridBagLayout());
 
-		for (Map.Entry<DevicePath, Device> entry : EvHardware
+		add1(cp);
+		
+		for (Map.Entry<EvDevicePath, EvDevice> entry : EvHardware
 				.getDeviceMap().entrySet())
 			{
 			if (entry.getValue() instanceof HWCamera)
@@ -106,6 +110,7 @@ public class RecControlWindow extends BasicWindow
 		{
 		for(EvComboObject ob:listComboObject.keySet())
 			ob.updateList();
+		cp.dataChangedEvent();
 		}
 
 	public void loadedFile(EvData data){}
@@ -175,7 +180,7 @@ public class RecControlWindow extends BasicWindow
 		JToggleButton b = new JImageToggleButton(iconShutterClosed,
 				"Shutter status");
 
-		public ShutterPanel(DevicePath devName, HWShutter hw)
+		public ShutterPanel(EvDevicePath devName, HWShutter hw)
 			{
 			JLabel lTitle = new JLabel(devName.toString());
 			lTitle.setToolTipText(hw.getDescName()+" ");
@@ -218,7 +223,7 @@ public class RecControlWindow extends BasicWindow
 		private JSmartToggleCombo state;
 		private HWState hw;
 
-		public StateDevicePanel(DevicePath devName, HWState hw)
+		public StateDevicePanel(EvDevicePath devName, HWState hw)
 			{
 			this.hw = hw;
 			Vector<String> fs = new Vector<String>(hw.getStateNames());
@@ -256,17 +261,17 @@ public class RecControlWindow extends BasicWindow
 		static final long serialVersionUID = 0;
 
 		private int camrow=0;
-		public CameraPanel(DevicePath devName, final HWCamera hw)
+		public CameraPanel(EvDevicePath devName, final HWCamera hw)
 			{
 			setBorder(BorderFactory.createTitledBorder(devName.toString()));
 			setToolTipText(hw.getDescName());
 
 			setLayout(new GridBagLayout());
-			SortedMap<String, PropertyType> props = hw.getPropertyTypes();
-			for (Map.Entry<String, PropertyType> entry : props.entrySet())
+			SortedMap<String, DevicePropertyType> props = hw.getPropertyTypes();
+			for (Map.Entry<String, DevicePropertyType> entry : props.entrySet())
 				{
 				final String propName = entry.getKey();
-				final PropertyType pt = entry.getValue();
+				final DevicePropertyType pt = entry.getValue();
 				JComponent comp = null;
 				if (pt.readOnly)
 					;
@@ -363,7 +368,6 @@ public class RecControlWindow extends BasicWindow
 						stack.resX=1;
 						stack.resY=1;
 						stack.resZ=new EvDecimal(1);
-//							stack.binning=1;
 						
 						//TODO RGB support
 						

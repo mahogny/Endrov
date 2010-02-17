@@ -7,7 +7,7 @@ package endrov.driverNative;
 
 import java.util.*;
 
-import endrov.hardware.PropertyType;
+import endrov.hardware.DevicePropertyType;
 import endrov.recording.HWState;
 
 /**
@@ -19,18 +19,18 @@ public abstract class BasicNativeCachingStateDevice implements HWState
 	{
 	private int cachedState;
 
-	private PropertyType stateProp;
+	private DevicePropertyType stateProp;
 	private TreeMap<Integer, String> stateName=new TreeMap<Integer, String>();
 
 	public BasicNativeCachingStateDevice()
 		{
-		PropertyType.getEditableBooleanState();
+		DevicePropertyType.getEditableBooleanState();
 		cachedState=getCurrentStateHW();
 		}
 	
 	public BasicNativeCachingStateDevice(int min,int max)
 		{
-		stateProp=PropertyType.getEditableIntState(min, max);
+		stateProp=DevicePropertyType.getEditableIntState(min, max);
 		for(int i=0;i<=max;i++)
 			stateName.put(i,""+i);
 		cachedState=getCurrentStateHW();
@@ -38,7 +38,7 @@ public abstract class BasicNativeCachingStateDevice implements HWState
 
 	public BasicNativeCachingStateDevice(int[] state, String[] stateLabel)
 		{
-		stateProp=PropertyType.getEditableIntState(state);
+		stateProp=DevicePropertyType.getEditableIntState(state);
 		for(int i=0;i<state.length;i++)
 			stateName.put(state[i],stateLabel[i]);
 		cachedState=getCurrentStateHW();
@@ -113,9 +113,9 @@ public abstract class BasicNativeCachingStateDevice implements HWState
 			setCurrentState(Integer.parseInt(value));
 		}
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		TreeMap<String, PropertyType> m=new TreeMap<String, PropertyType>();
+		TreeMap<String, DevicePropertyType> m=new TreeMap<String, DevicePropertyType>();
 		m.put("state", stateProp);
 		return m;
 		}

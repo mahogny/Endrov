@@ -16,9 +16,9 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-import endrov.hardware.Device;
-import endrov.hardware.DeviceProvider;
-import endrov.hardware.PropertyType;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceProvider;
+import endrov.hardware.DevicePropertyType;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
 import endrov.recording.HWStage;
@@ -33,7 +33,7 @@ import endrov.util.EvMathUtil;
  * @author Johan Henriksson
  *
  */
-public class DemoScope extends DeviceProvider implements Device
+public class DemoScope extends EvDeviceProvider implements EvDevice
 	{
 
 	
@@ -96,7 +96,7 @@ public class DemoScope extends DeviceProvider implements Device
 			return "Demo camera";
 			}
 		public SortedMap<String, String> getPropertyMap(){return new TreeMap<String, String>();}
-		public SortedMap<String, PropertyType> getPropertyTypes(){return new TreeMap<String, PropertyType>();}
+		public SortedMap<String, DevicePropertyType> getPropertyTypes(){return new TreeMap<String, DevicePropertyType>();}
 		public String getPropertyValue(String prop){return null;}
 		public Boolean getPropertyValueBoolean(String prop){return null;}
 		public void setPropertyValue(String prop, boolean value){}
@@ -184,7 +184,7 @@ public class DemoScope extends DeviceProvider implements Device
 			return "Demo stage";
 			}
 		public SortedMap<String, String> getPropertyMap(){return new TreeMap<String, String>();}
-		public SortedMap<String, PropertyType> getPropertyTypes(){return new TreeMap<String, PropertyType>();}
+		public SortedMap<String, DevicePropertyType> getPropertyTypes(){return new TreeMap<String, DevicePropertyType>();}
 		public String getPropertyValue(String prop){return null;}
 		public Boolean getPropertyValueBoolean(String prop){return null;}
 		public void setPropertyValue(String prop, boolean value){}
@@ -198,7 +198,7 @@ public class DemoScope extends DeviceProvider implements Device
 
 
 
-	public Set<Device> autodetect()
+	public Set<EvDevice> autodetect()
 		{
 		return null;
 		}
@@ -211,7 +211,7 @@ public class DemoScope extends DeviceProvider implements Device
 		{
 		return null;
 		}
-	public Device newProvided(String s)
+	public EvDevice newProvided(String s)
 		{
 		return null; //TODO
 		}
@@ -230,9 +230,9 @@ public class DemoScope extends DeviceProvider implements Device
 		return new TreeMap<String, String>();
 		}
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		return new TreeMap<String, PropertyType>();
+		return new TreeMap<String, DevicePropertyType>();
 		}
 
 	public String getPropertyValue(String prop)

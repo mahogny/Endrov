@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.hardware.Device;
-import endrov.hardware.DevicePath;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDevicePath;
 import endrov.keyBinding.JInputManager;
 import endrov.keyBinding.JInputMode;
 import endrov.util.Tuple;
@@ -27,13 +27,13 @@ public class JInputModeRecording implements JInputMode
 	/**
 	 * Axis name TO DevicePath+axis
 	 */
-	Map<String, Tuple<DevicePath,String>> gpMap=new HashMap<String, Tuple<DevicePath,String>>();
+	Map<String, Tuple<EvDevicePath,String>> gpMap=new HashMap<String, Tuple<EvDevicePath,String>>();
 	
 	public JInputModeRecording()
 		{
-		gpMap.put("x", Tuple.make(new DevicePath("ev/demo/stage"),"x"));
-		gpMap.put("y", Tuple.make(new DevicePath("ev/demo/stage"),"y"));
-		gpMap.put("rz", Tuple.make(new DevicePath("ev/demo/stage"),"z"));
+		gpMap.put("x", Tuple.make(new EvDevicePath("ev/demo/stage"),"x"));
+		gpMap.put("y", Tuple.make(new EvDevicePath("ev/demo/stage"),"y"));
+		gpMap.put("rz", Tuple.make(new EvDevicePath("ev/demo/stage"),"z"));
 		//rz
 		}
 	
@@ -43,10 +43,10 @@ public class JInputModeRecording implements JInputMode
 		//System.out.println(status);
 		for(Map.Entry<String, Float> e:status.values.entrySet())
 			{
-			Tuple<DevicePath,String> t=gpMap.get(e.getKey());
+			Tuple<EvDevicePath,String> t=gpMap.get(e.getKey());
 			if(t!=null)
 				{
-				Device dev=t.fst().getDevice();
+				EvDevice dev=t.fst().getDevice();
 				if(dev instanceof HWStage)
 					{
 					HWStage stage=(HWStage)dev;

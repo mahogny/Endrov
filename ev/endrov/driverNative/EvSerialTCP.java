@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import endrov.hardware.PropertyType;
+import endrov.hardware.DevicePropertyType;
 import endrov.recording.HWSerial;
 
 /**
@@ -88,9 +88,9 @@ public class EvSerialTCP implements HWSerial
 		return map;
 		}
 
-	public SortedMap<String, PropertyType> getPropertyTypes()
+	public SortedMap<String, DevicePropertyType> getPropertyTypes()
 		{
-		TreeMap<String, PropertyType> map=new TreeMap<String, PropertyType>();
+		TreeMap<String, DevicePropertyType> map=new TreeMap<String, DevicePropertyType>();
 		return map;
 		}
 

@@ -7,9 +7,9 @@ package endrov.recording;
 
 import java.util.*;
 
-import endrov.hardware.Device;
+import endrov.hardware.EvDevice;
 
-public interface HWState extends Device, HWMagnifier
+public interface HWState extends EvDevice, HWMagnifier
 	{
 
 	public List<String> getStateNames();
