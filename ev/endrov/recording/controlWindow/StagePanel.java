@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.HWStage;
 import endrov.util.EvSwingUtil;
@@ -99,21 +101,25 @@ public class StagePanel implements ActionListener
 	/******************************************************************
 	 * Inner class: one axis
 	 ******************************************************************/
-	public class OneAxisPanel extends JPanel implements MouseListener,MouseMotionListener
+	public class OneAxisPanel extends JPanel implements MouseListener,MouseMotionListener, EvDeviceObserver.Listener
 		{
-		static final long serialVersionUID=0;
-		int axisid;
-		int tickDist=8;
-		int yOffset=0;
-		int xOffset=0;
+		private static final long serialVersionUID=0;
+		private int axisid;
+		private int tickDist=8;
+		private int yOffset=0;
+		private int xOffset=0;
 
-		Integer holdDigit=null;
-		int mouseLastTickY=0;
+		private Integer holdDigit=null;
+		private int mouseLastTickY=0;
 
+		
+		
+		
 		public OneAxisPanel()
 			{
 			addMouseListener(this);
 			addMouseMotionListener(this);
+			hw.addListener(this);
 			}
 		
 		/** Get position as x in 10^x */
@@ -295,6 +301,12 @@ public class StagePanel implements ActionListener
 
 		
 		
+			}
+
+		public void devicePropertyChange(Object source, EvDevice dev)
+			{
+			//if(source!=this)
+			repaint();
 			}
 		
 		

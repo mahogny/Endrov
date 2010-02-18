@@ -10,6 +10,7 @@ import java.util.*;
 import org.jdom.Element;
 
 import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvHardware;
 import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.DevicePropertyType;
@@ -116,6 +117,18 @@ public class EvNativeHardware extends EvDeviceProvider implements EvDevice
 		hw.put("demo", new DemoScope());
 		}
 
+	
+	public EvDeviceObserver event=new EvDeviceObserver();
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
+		}
+
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

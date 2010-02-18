@@ -9,6 +9,12 @@ import java.util.*;
 
 import endrov.hardware.EvDevice;
 
+/**
+ * State device: Has only one property and that is the state. It is numeric but can be mapped to labels 
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public interface HWState extends EvDevice, HWMagnifier
 	{
 

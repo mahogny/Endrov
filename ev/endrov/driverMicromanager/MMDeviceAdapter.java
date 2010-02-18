@@ -21,8 +21,8 @@ import endrov.hardware.*;
  */
 public class MMDeviceAdapter implements EvDevice
 	{
-	MicroManager mm;
-	String mmDeviceName;
+	protected MicroManager mm;
+	protected String mmDeviceName;
 
 		
 	public MMDeviceAdapter(MicroManager mm, String mmDeviceName)
@@ -85,9 +85,6 @@ public class MMDeviceAdapter implements EvDevice
 				map.put(propName,p);
 				}
 			
-			
-			
-			
 			return map;
 			}
 		catch (Exception e)
@@ -120,6 +117,7 @@ public class MMDeviceAdapter implements EvDevice
 		try
 			{
 			mm.core.setProperty(mmDeviceName, prop, value);
+			event.emit(null, this);
 			}
 		catch (Exception e)
 			{
@@ -138,5 +136,16 @@ public class MMDeviceAdapter implements EvDevice
 		}
 	
 	public void openConfigureDialog(){}
+
+	
+	public EvDeviceObserver event=new EvDeviceObserver();
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
+		}
 
 	}

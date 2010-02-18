@@ -249,6 +249,21 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 		}
 
 	
+	
+	public EvDeviceObserver event=new EvDeviceObserver();
+	
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	
+	
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
+		}
+
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

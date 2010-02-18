@@ -30,6 +30,7 @@ import endrov.ev.EV;
 import endrov.ev.JNumericField;
 import endrov.ev.PersonalConfig;
 import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvHardware;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.DevicePropertyType;
@@ -174,19 +175,32 @@ public class RecControlWindow extends BasicWindow
 	 * Shutter *
 	 *****************************************************************************************************/
 
-	public class ShutterPanel implements ActionListener
+	public class ShutterPanel implements ActionListener, EvDeviceObserver.Listener
 		{
 		static final long serialVersionUID = 0;
-		JToggleButton b = new JImageToggleButton(iconShutterClosed,
+		private JToggleButton b = new JImageToggleButton(iconShutterClosed,
 				"Shutter status");
-
+		private HWShutter hw;
+		
 		public ShutterPanel(EvDevicePath devName, HWShutter hw)
 			{
+			this.hw=hw;
 			JLabel lTitle = new JLabel(devName.toString());
 			lTitle.setToolTipText(hw.getDescName()+" ");
 
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+
+			System.out.println("+++++++++++ "+hw.getPropertyMap());
+			b.setSelected(hw.getCurrentState()==1);
 			b.setToolTipText("Open/Close shutter");
-			setOpen(b.isSelected());
+			setRightIcon();
 			b.addActionListener(this);
 
 			add2(lTitle, b);
@@ -194,11 +208,24 @@ public class RecControlWindow extends BasicWindow
 
 		public void actionPerformed(ActionEvent e)
 			{
-			setOpen(!b.isSelected());
+			setRightIcon();
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			hw.setCurrentState(b.isSelected()?1:0);
+			/*
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());
+			System.out.println("----------- "+hw.getStateNames());*/
+			hw.setPropertyValue("State", ""+(b.isSelected()?1:0));   //eh???? setcurrentstate does not work on demo??
+			
+			
 			System.out.println(b.isSelected());
 			}
 
-		public void setOpen(boolean isOpen)
+		private void setRightIcon()
 			{
 			if (b.isSelected())
 				b.setIcon(iconShutterClosed);
@@ -206,13 +233,22 @@ public class RecControlWindow extends BasicWindow
 				b.setIcon(iconShutterOpen);
 			b.repaint();
 			}
+
+		public void devicePropertyChange(Object source, EvDevice dev)
+			{
+			System.out.println("call shutter");
+			b.removeActionListener(this);
+			b.setSelected(hw.getCurrentState()==1);
+			setRightIcon();
+			b.addActionListener(this);
+			}
 		}
 
 	/******************************************************************************************************
 	 * State device *
 	 *****************************************************************************************************/
 
-	public class StateDevicePanel implements ActionListener
+	public class StateDevicePanel implements ActionListener, EvDeviceObserver.Listener
 		{
 		// Cannot separate out generic state devices from filters
 
@@ -248,13 +284,21 @@ public class RecControlWindow extends BasicWindow
 			{
 			hw.setCurrentState(state.getSelectedIndex());
 			}
+
+		public void devicePropertyChange(Object source, EvDevice dev)
+			{
+			//TODO no need to remove listener?
+			//TODO no need to remove listener?
+			//TODO no need to remove listener?
+			state.setSelectedIndex(hw.getCurrentState());
+			}
 		}
 
 	/******************************************************************************************************
 	 * Camera *
 	 *****************************************************************************************************/
 
-	public class CameraPanel extends JPanel implements ActionListener
+	public class CameraPanel extends JPanel implements ActionListener, EvDeviceObserver.Listener
 		{
 		// TODO: build a function to decompose not only menus but entire swing
 		// components?
@@ -404,6 +448,12 @@ public class RecControlWindow extends BasicWindow
 
 		public void actionPerformed(ActionEvent e)
 			{
+			}
+
+		public void devicePropertyChange(Object source, EvDevice dev)
+			{
+			// TODO Auto-generated method stub
+			
 			}
 		}
 

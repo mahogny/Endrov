@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
 
@@ -99,35 +100,48 @@ public class EvHardwareConfigGroup
 					Element eGroup=(Element)o;
 
 					EvHardwareConfigGroup group=new EvHardwareConfigGroup();
-					groups.put(eGroup.getAttributeValue("name"), group);
+					String groupName=eGroup.getAttributeValue("name");
+					groups.put(groupName, group);
 
-					for(Object oo:e.getChildren())
-						if(e.getName().equals("group"))
+					for(Object oo:eGroup.getChildren())
+						if(((Element)oo).getName().equals("state"))
 							{
-							//One stage group
+							//One state
 							Element eState=(Element)oo;
 							State state=new State();
-							EvDevicePropPath dev=new EvDevicePropPath(
-									new EvDevicePath(eState.getAttributeValue("device")),
-									eState.getAttributeValue("property"));
-							state.propMap.put(dev, 
-									eState.getAttributeValue("value"));
+							
+							for(Object ooo:eState.getChildren())
+								{
+								Element eSetting=(Element)ooo;
+								EvDevicePropPath dev=new EvDevicePropPath(
+										new EvDevicePath(eSetting.getAttributeValue("device")),
+										eSetting.getAttributeValue("property"));
+								state.propMap.put(dev, 
+										eSetting.getAttributeValue("value"));
+								}
+							group.states.put(eState.getAttributeValue("name"), state);
 							}
-						else if(e.getName().equals("include"))
+						else if(((Element)oo).getName().equals("include"))
 							{
-							//Properties to include
+							//Properties to include for new states
 							Element eState=(Element)oo;
-							EvDevicePropPath dev=new EvDevicePropPath(
-									new EvDevicePath(eState.getAttributeValue("device")),
-									eState.getAttributeValue("property"));
-							group.propsToInclude.add(dev);
+							for(Object ooo:eState.getChildren())
+								{
+								Element eSetting=(Element)ooo;
+								EvDevicePropPath dev=new EvDevicePropPath(
+										new EvDevicePath(eSetting.getAttributeValue("device")),
+										eSetting.getAttributeValue("property"));
+								group.propsToInclude.add(dev);
+								}
 							}
-
 					}
+				//May need to update GUI if windows already loaded
+				BasicWindow.updateWindows();
 				}
 			
 			public void savePersonalConfig(Element e)
 				{
+				Element eConfig=new Element("configgroups");
 				
 				for(Map.Entry<String,EvHardwareConfigGroup> ge:groups.entrySet())
 					{
@@ -163,9 +177,10 @@ public class EvHardwareConfigGroup
 							}
 						eGroup.addContent(eState);
 						}
-					e.addContent(eGroup);
+					eConfig.addContent(eGroup);
 					}
 				
+				e.addContent(eConfig);
 				}
 			});
 			

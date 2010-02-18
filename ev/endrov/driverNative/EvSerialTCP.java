@@ -13,6 +13,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import endrov.hardware.DevicePropertyType;
+import endrov.hardware.EvDeviceObserver;
 import endrov.recording.HWSerial;
 
 /**
@@ -115,5 +116,16 @@ public class EvSerialTCP implements HWSerial
 	
 	public boolean hasConfigureDialog(){return false;}
 	public void openConfigureDialog(){}
+
+	
+	public EvDeviceObserver event=new EvDeviceObserver();
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
+		}
 
 	}
