@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import org.jdom.Element;
 
 import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.DevicePropertyType;
 import endrov.recording.CameraImage;
@@ -148,6 +149,18 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 			// TODO Auto-generated method stub
 			
 			}
+		
+		
+		public EvDeviceObserver event=new EvDeviceObserver();
+		public void addListener(EvDeviceObserver.Listener listener)
+			{
+			event.addWeakListener(listener);
+			}
+		public void removeListener(EvDeviceObserver.Listener listener)
+			{
+			event.remove(listener);
+			}
+
 		}
 
 	/**
@@ -192,6 +205,16 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		
 		public boolean hasConfigureDialog(){return false;}
 		public void openConfigureDialog(){}
+
+		public EvDeviceObserver event=new EvDeviceObserver();
+		public void addListener(EvDeviceObserver.Listener listener)
+			{
+			event.addWeakListener(listener);
+			}
+		public void removeListener(EvDeviceObserver.Listener listener)
+			{
+			event.remove(listener);
+			}
 
 		}
 
@@ -261,5 +284,14 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 	
 	public void openConfigureDialog(){}
 
-	
+
+	public EvDeviceObserver event=new EvDeviceObserver();
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
+		}
 	}

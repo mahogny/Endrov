@@ -8,24 +8,25 @@ package endrov.hardware;
 import endrov.ev.GeneralObserver;
 
 /**
- * 
+ * Observe state changes in device
  * 
  * @author Johan Henriksson
  */
-public class DeviceObserver extends GeneralObserver<DeviceObserver.Listener>
+public class EvDeviceObserver extends GeneralObserver<EvDeviceObserver.Listener>
 	{
 	public static interface Listener
 		{
-		public void propertyChange(Object o);
+		public void devicePropertyChange(Object source, EvDevice dev);
 		}
 	
 	/**
 	 * Emit signal to all observers
 	 */
-	public void emit(Object o)
+	public void emit(Object source, EvDevice dev)
 		{
 		for(Listener l:getListeners())
-			l.propertyChange(o);
+			l.devicePropertyChange(source, dev);
 		}
+
 	}
 

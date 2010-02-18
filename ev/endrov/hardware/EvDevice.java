@@ -7,7 +7,6 @@ package endrov.hardware;
 
 import java.util.*;
 
-import endrov.ev.SimpleObserver;
 
 
 /**
@@ -24,7 +23,14 @@ public interface EvDevice
 	/**
 	 * Event management
 	 */
-	public SimpleObserver event=new SimpleObserver();
+	//public EvDeviceObserver event=new EvDeviceObserver();
+	
+	/**
+	 * Add a listener for updates. The pointer to the listener is weak
+	 */
+	public void addListener(EvDeviceObserver.Listener listener);
+	public void removeListener(EvDeviceObserver.Listener listener);
+	
 	
 	
 	////// For devices

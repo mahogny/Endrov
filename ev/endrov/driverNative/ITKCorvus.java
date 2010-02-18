@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import org.jdom.Element;
 
 import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvHardware;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvDeviceProvider;
@@ -199,7 +200,18 @@ public class ITKCorvus extends EvDeviceProvider implements EvDevice
 		
 		public boolean hasConfigureDialog(){return false;}
 		public void openConfigureDialog(){}
-	}
+		
+		
+		public EvDeviceObserver event=new EvDeviceObserver();
+		public void addListener(EvDeviceObserver.Listener listener)
+			{
+			event.addWeakListener(listener);
+			}
+		public void removeListener(EvDeviceObserver.Listener listener)
+			{
+			event.remove(listener);
+			}
+		}
 	
 	
 	
@@ -271,5 +283,16 @@ public class ITKCorvus extends EvDeviceProvider implements EvDevice
 	
 	public boolean hasConfigureDialog(){return false;}
 	public void openConfigureDialog(){}
+	
+	public EvDeviceObserver event=new EvDeviceObserver();
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
+		}
+
 
 	}

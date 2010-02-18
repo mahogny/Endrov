@@ -133,5 +133,14 @@ public class TODO_ConfigGroupDevice implements EvDevice, HWState
 	public boolean hasConfigureDialog(){return false;}
 	public void openConfigureDialog(){}
 
+	public EvDeviceObserver event=new EvDeviceObserver();
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
+		}
 
 	}

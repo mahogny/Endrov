@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import org.jdom.Element;
 
 import endrov.hardware.EvDevice;
+import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
 import endrov.hardware.DevicePropertyType;
@@ -211,6 +212,18 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			runSequenceAcq=false;
 			}
+		
+		
+		public EvDeviceObserver event=new EvDeviceObserver();
+		public void addListener(EvDeviceObserver.Listener listener)
+			{
+			event.addWeakListener(listener);
+			}
+		public void removeListener(EvDeviceObserver.Listener listener)
+			{
+			event.remove(listener);
+			}
+
 		}
 
 	private class FrivolousStage implements HWStage
@@ -295,6 +308,17 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			}
 
+		
+		public EvDeviceObserver event=new EvDeviceObserver();
+		public void addListener(EvDeviceObserver.Listener listener)
+			{
+			event.addWeakListener(listener);
+			}
+		public void removeListener(EvDeviceObserver.Listener listener)
+			{
+			event.remove(listener);
+			}
+
 		}
 
 	public Set<EvDevice> autodetect()
@@ -373,6 +397,17 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		cam.seqAcqThread.start();
 		hw.put("cam", cam);
 		hw.put("stage", new FrivolousStage());
+		}
+
+	
+	public EvDeviceObserver event=new EvDeviceObserver();
+	public void addListener(EvDeviceObserver.Listener listener)
+		{
+		event.addWeakListener(listener);
+		}
+	public void removeListener(EvDeviceObserver.Listener listener)
+		{
+		event.remove(listener);
 		}
 
 	}
