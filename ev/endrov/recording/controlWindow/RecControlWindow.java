@@ -339,7 +339,7 @@ public class RecControlWindow extends BasicWindow
 						});
 					comp = c;
 					}
-				else if (pt.hasRange)
+				else //if (pt.hasRange)
 					{
 					JNumericField b=new JNumericField(Double.parseDouble(hw.getPropertyValue(propName)));
 					comp = b;
@@ -356,11 +356,17 @@ public class RecControlWindow extends BasicWindow
 							} catch(NumberFormatException ex) {
 								((JNumericField) e.getSource()).setText(hw.getPropertyValue(propName));
 								return;}
-							if(pt.rangeLower<=d && pt.rangeUpper >=d)
-								hw.setPropertyValue(propName, value);
-							else { 
-								((JNumericField) e.getSource()).setText(hw.getPropertyValue(propName));
-								return;}
+							
+							if(pt.hasRange)
+								{
+								if(pt.rangeLower<=d && pt.rangeUpper >=d)
+									hw.setPropertyValue(propName, value);
+								else 
+									{ 
+									((JNumericField) e.getSource()).setText(hw.getPropertyValue(propName));
+									return;
+									}
+								}
 							}
 					});
 					
