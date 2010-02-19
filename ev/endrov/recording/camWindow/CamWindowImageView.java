@@ -67,6 +67,8 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 				int lower=getLower();
 				int upper=getUpper();
 				int diff=upper-lower;
+				if(diff==0)
+					diff=1; //Just to avoid divison by zero errors
 				int[] parr=p.convertToInt(true).getArrayInt();
 				int w=p.getWidth();
 				int h=p.getHeight();
@@ -112,6 +114,8 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 				int lower=getLower();
 				int upper=getUpper();
 				int diff=upper-lower;
+				if(diff==0)
+					diff=1; //Just to avoid divison by zero errors
 				
 				int[] parrR=pq[0].convertToInt(true).getArrayInt();
 				int[] parrG=pq[1].convertToInt(true).getArrayInt();

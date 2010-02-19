@@ -198,7 +198,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				if(seqBuffer.isEmpty())
 					return null;
 				else
-					return seqBuffer.pollFirst();
+					return seqBuffer.poll();
 				}
 			}
 

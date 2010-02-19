@@ -79,10 +79,12 @@ public class MMState extends MMDeviceAdapter implements HWState
 		{
 		try
 			{
+//			mm.core.setProperty(mmDeviceName, "State", state);
 			mm.core.setState(mmDeviceName, state);
 			}
 		catch (Exception e)
 			{
+			System.out.println("Failed to set state to "+state);
 			e.printStackTrace();
 			}
 		}
@@ -95,6 +97,7 @@ public class MMState extends MMDeviceAdapter implements HWState
 			}
 		catch (Exception e)
 			{
+			System.out.println("Failed to set label to "+label);
 			e.printStackTrace();
 			}
 		}
