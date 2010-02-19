@@ -188,16 +188,7 @@ public class RecControlWindow extends BasicWindow
 			JLabel lTitle = new JLabel(devName.toString());
 			lTitle.setToolTipText(hw.getDescName()+" ");
 
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-
-			System.out.println("+++++++++++ "+hw.getPropertyMap());
+			//use "State" property?
 			b.setSelected(hw.getCurrentState()==1);
 			b.setToolTipText("Open/Close shutter");
 			setRightIcon();
