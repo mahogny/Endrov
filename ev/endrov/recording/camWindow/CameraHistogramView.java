@@ -76,13 +76,13 @@ public class CameraHistogramView extends JPanel
 				max=v;
 		
 		if(max<256)
-			max=255;
+			max=256;
 		else if(max<1024)
 			max=1023;
 		else if(max<4096)
-			max=4095;
+			max=4096;
 		else if(max<65535)
-			max=65535;
+			max=65536;
 		else
 			max=(1<<32)-1;
 		rangeMax=max;
