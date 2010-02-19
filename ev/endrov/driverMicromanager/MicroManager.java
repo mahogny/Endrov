@@ -108,7 +108,7 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			for(String devName:MMutil.convVector(core.getLoadedDevices()))
 				{
 				//Device fundamentals
-				MMDeviceAdapter adp;
+				EvDevice adp;
 				if(isCamera.contains(devName))
 					adp=new MMCamera(this,devName);
 				//else if(isMagnifier.contains(devName))
