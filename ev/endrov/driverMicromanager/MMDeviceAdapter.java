@@ -21,8 +21,8 @@ import endrov.hardware.*;
  */
 public class MMDeviceAdapter implements EvDevice
 	{
-	MicroManager mm;
-	String mmDeviceName;
+	protected MicroManager mm;
+	protected String mmDeviceName;
 
 		
 	public MMDeviceAdapter(MicroManager mm, String mmDeviceName)
