@@ -72,9 +72,9 @@ public class ParticleMeasureCentroid implements ParticleMeasure.MeasurePropertyT
 			HashMap<String, Object> p=info.getCreate(id);
 			Vector3d s=sum.get(id);
 			double v=vol.get(id);
-			p.put(propertyName+"X", s.getX()/v);
-			p.put(propertyName+"Y", s.getY()/v);
-			p.put(propertyName+"Z", s.getZ()/v);
+			p.put(propertyName+"X", s.x/v);
+			p.put(propertyName+"Y", s.y/v);
+			p.put(propertyName+"Z", s.z/v);
 			}
 		}
 
