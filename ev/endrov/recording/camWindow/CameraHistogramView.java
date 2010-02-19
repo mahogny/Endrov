@@ -69,8 +69,33 @@ public class CameraHistogramView extends JPanel
 		int screenWidth=getWidth();
 		int[] bins=new int[screenWidth];
 		
+		//Figure out max range
+		int max=0;
+		for(int v:p)
+			if(v>max)
+				max=v;
+		
+		if(max<256)
+			max=255;
+		else if(max<1024)
+			max=1023;
+		else if(max<4096)
+			max=4095;
+		else if(max<65535)
+			max=65535;
+		else
+			max=(1<<32)-1;
+		rangeMax=max;
+		
+		//Calculate histogram
 		for(int v:p)
 			{
+			if(v<0)
+				{
+				v=0;
+//				System.out.print(v+" ");
+				}
+			
 			int i=v*screenWidth/rangeMax;
 			bins[i]++;
 			}
@@ -107,6 +132,27 @@ public class CameraHistogramView extends JPanel
 		if(currentImage[0].getType()==EvPixelsType.INT)
 			renderBins(g2,calculateHistogram(currentImage[0].getArrayInt()));
 		}
+	
+	
+
+	/**
+	 * Transform to screen coordinates
+	 */
+	public int toScreenX(int x)
+		{
+		int screenWidth=getWidth();
+		return x*screenWidth/rangeMax;
+		}
+
+	/**
+	 * Transform to world coordinates
+	 */
+	public int toWorldX(int x)
+		{
+		int screenWidth=getWidth();
+		return x*rangeMax/screenWidth;
+		}
+
 	
 	@Override
 	protected void paintComponent(Graphics g)

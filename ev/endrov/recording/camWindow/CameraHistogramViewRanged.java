@@ -38,35 +38,7 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 		addMouseMotionListener(this);
 		}
 	
-	@Override
-	protected void paintComponent(Graphics g)
-		{
-		super.paintComponent(g);
-		int xLower=toScreenX(lower);
-		int xUpper=toScreenX(upper);
-		g.setColor(rangeBarColor);
-		vertStitch(g, xLower);
-		vertStitch(g, xUpper);
-		}
 	
-	/**
-	 * Transform to screen coordinates
-	 */
-	private int toScreenX(int x)
-		{
-		int screenWidth=getWidth();
-		return x*screenWidth/rangeMax;
-		}
-
-	/**
-	 * Transform to world coordinates
-	 */
-	private int toWorldX(int x)
-		{
-		int screenWidth=getWidth();
-		return x*rangeMax/screenWidth;
-		}
-
 	/**
 	 * Vertical stitched line
 	 */
@@ -76,6 +48,20 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 		for(int y=0;y<h;y+=4)
 			g.drawLine(x, y, x, y);
 		}
+
+	
+	@Override
+	protected void paintComponent(Graphics g)
+		{
+		super.paintComponent(g);
+		int xLower=toScreenX(lower);
+		int xUpper=toScreenX(upper);
+		g.setColor(rangeBarColor);
+		vertStitch(g, xLower);
+		vertStitch(g, xUpper);		
+//		System.out.println("limit "+lower+"    "+upper);
+		}
+	
 	
 	/**
 	 * Calculate range automatically from image
@@ -162,11 +148,11 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 	 */
 	public void moveLimit(MouseEvent e)
 		{
-		int mx=toScreenX(e.getX());
-		int xLower=toScreenX(lower);
-		int xUpper=toScreenX(upper);
+		int mx=toWorldX(e.getX());
+//		int xLower=toScreenX(lower);
+	//	int xUpper=toScreenX(upper);
 		
-		if(Math.abs(mx-xLower) < Math.abs(mx-xUpper))
+		if(Math.abs(mx-lower) < Math.abs(mx-upper))
 			lower=toWorldX(mx);
 		else
 			upper=toWorldX(mx);
