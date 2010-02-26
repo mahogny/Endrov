@@ -105,6 +105,41 @@ public class MMStage extends MMDeviceAdapter implements HWStage
 		}
 
 	
+	public boolean hasSampleLoadPosition()
+		{
+		try
+			{
+			return MMutil.convVector(mm.core.getDevicePropertyNames(mmDeviceName)).contains("loadSample");
+			}
+		catch (Exception e)
+			{
+			return false;
+			}
+		}
+	
+	
+	public void setSampleLoadPosition(boolean b)
+		{
+		setPropertyValue("loadSample", b ? "1":"0");
+		}
+	
+	public boolean getSampleLoadPosition()
+		{
+		return getPropertyValue("loadSample").equals("1");
+		};
+
+	public void stop()
+		{
+		try
+			{
+			mm.core.stop(mmDeviceName);
+			}
+		catch (Exception e)
+			{
+			}
+		}
+
+	
 	//Not in interface yet
 	/*
 	public void setOrigin()

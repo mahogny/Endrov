@@ -124,14 +124,6 @@ public class ITKCorvus extends EvDeviceProvider implements EvDevice
 			return ITKCorvus.this.getNumAxis();
 			}
 		
-		public int getCurrentStateHW()
-			{
-			return 0;
-			}
-
-		public void setCurrentStateHW(int state)
-			{
-			}
 
 		public String[] getAxisName()
 			{
@@ -211,6 +203,15 @@ public class ITKCorvus extends EvDeviceProvider implements EvDevice
 			{
 			event.remove(listener);
 			}
+		
+		public boolean hasSampleLoadPosition(){return false;}
+		public void setSampleLoadPosition(boolean b){}
+		public boolean getSampleLoadPosition(){return false;}
+
+		public void stop()
+			{
+			}
+
 		}
 	
 	
@@ -294,5 +295,13 @@ public class ITKCorvus extends EvDeviceProvider implements EvDevice
 		event.remove(listener);
 		}
 
+
+	public boolean hasSampleLoadPosition(){return false;}
+	public void setSampleLoadPosition(boolean b){}
+	public boolean gsetSampleLoadPosition(){return false;}
+	
+	public void stop()
+		{
+		}
 
 	}

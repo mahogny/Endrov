@@ -27,4 +27,13 @@ public interface HWStage extends EvDevice
 	public void setRelStagePos(double axis[]);
 	
 	public void goHome();
+	
+	/**
+	 * Stop current movement
+	 */
+	public void stop();
+	
+	public boolean hasSampleLoadPosition();
+	public void setSampleLoadPosition(boolean b);
+	public boolean getSampleLoadPosition();
 	}

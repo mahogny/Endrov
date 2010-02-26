@@ -319,6 +319,14 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			event.remove(listener);
 			}
 
+		public boolean hasSampleLoadPosition(){return false;}
+		public void setSampleLoadPosition(boolean b){}
+		public boolean getSampleLoadPosition(){return false;};
+		
+		public void stop()
+			{
+			}
+
 		}
 
 	public Set<EvDevice> autodetect()
@@ -409,5 +417,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		{
 		event.remove(listener);
 		}
+
+	public boolean hasSampleLoadPosition(){return false;}
+	public void setSampleLoadPosition(boolean b){}
 
 	}

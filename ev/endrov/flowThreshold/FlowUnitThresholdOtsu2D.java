@@ -66,7 +66,7 @@ public class FlowUnitThresholdOtsu2D extends FlowUnitBasic
 		Map<String,Object> lastOutput=exec.getLastOutputCleared(this);
 		AnyEvImage a=(AnyEvImage)flow.getInputValue(this, exec, "image");
 		
-		AnyEvImage out=new EvOpThresholdOtsu2D(Threshold2D.MASK).exec1Untyped(a);
+		AnyEvImage out=new EvOpThresholdOtsu2D().exec1Untyped(a);
 		lastOutput.put("out", out);
 		}
 

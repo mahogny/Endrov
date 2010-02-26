@@ -128,11 +128,6 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 			// TODO Auto-generated method stub
 			return false;
 			}
-		public int numSequenceLeft()
-			{
-			// TODO Auto-generated method stub
-			return 0;
-			}
 		public CameraImage snapSequence() throws Exception
 			{
 			// TODO Auto-generated method stub
@@ -214,6 +209,14 @@ public class DemoScope extends EvDeviceProvider implements EvDevice
 		public void removeListener(EvDeviceObserver.Listener listener)
 			{
 			event.remove(listener);
+			}
+
+		public boolean hasSampleLoadPosition(){return false;}
+		public void setSampleLoadPosition(boolean b){}
+		public boolean getSampleLoadPosition(){return false;}
+		
+		public void stop()
+			{
 			}
 
 		}
