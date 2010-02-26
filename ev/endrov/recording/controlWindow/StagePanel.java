@@ -18,13 +18,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
-import endrov.basicWindow.icon.BasicIcon;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDevicePath;
 import endrov.recording.HWStage;
 import endrov.util.EvSwingUtil;
-import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
 
 /**
@@ -54,6 +52,7 @@ public class StagePanel implements ActionListener
 	}
 	public static ImageIcon iconStageAllDown=new ImageIcon(StagePanel.class.getResource("iconStageAllDown.png"));
 	
+	JToggleButton toggleStageDown=new JImageToggleButton(iconStageAllDown,"Move stage all the way down");
 	
 	private HWStage hw;
 	//private String devName;
@@ -61,9 +60,7 @@ public class StagePanel implements ActionListener
 	public StagePanel(EvDevicePath devName,final HWStage hw, RecControlWindow hook)
 		{
 		this.hw=hw;
-	//	this.devName=devName;
 		
-//		JPanel p=new JPanel(new GridLayout(hw.getNumAxis(),1));
 		for(int curaxis=0;curaxis<hw.getNumAxis();curaxis++)
 			{
 			JLabel lab=new JLabel("Axis "+hw.getAxisName()[curaxis]+" [um] ");
@@ -73,26 +70,37 @@ public class StagePanel implements ActionListener
 			a.axisid=curaxis;
 			
 			
-			JToggleButton toggleStageDown=new JImageToggleButton(iconStageAllDown,"Move stage all the way down");
+			/*
 			JImageButton bController=new JImageButton(BasicIcon.iconController,"Gamepad mapping");
-			JPanel pb=new JPanel(new GridLayout(1,2));
-			pb.add(toggleStageDown);
-			pb.add(bController);
+			JPanel pb=new JPanel(new GridLayout(1,1));
+			pb.add(bController);*/
 
 			
-			hook.add1(EvSwingUtil.layoutLCR(null, lab, EvSwingUtil.layoutLCR(null, a, pb)));
+			hook.add1(EvSwingUtil.layoutLCR(null, lab, EvSwingUtil.layoutLCR(null, a, null /*pb*/)));
 //			hook.add1(EvSwingTools.borderLR(lab, a, pb));
 //			p.add(EvSwingTools.borderLR(lab, a, pb));
 			}
-//		setLayout(new GridLayout(1,1));
-//		add(p);
+		
+		if(hw.hasSampleLoadPosition())
+			{
+			hook.add1(EvSwingUtil.layoutLCR(null, null, toggleStageDown));
+			toggleStageDown.setSelected(hw.getSampleLoadPosition());
+			toggleStageDown.addActionListener(this);
+			}
 	
 		}
 	
 
 	public void actionPerformed(ActionEvent e)
 		{
-	
+		if(e.getSource()==toggleStageDown)
+			{
+			hw.setSampleLoadPosition(hw.getSampleLoadPosition());
+			toggleStageDown.removeActionListener(this);
+			toggleStageDown.setSelected(hw.getSampleLoadPosition());
+			toggleStageDown.addActionListener(this);
+			}
+		
 		}
 
 	

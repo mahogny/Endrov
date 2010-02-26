@@ -25,9 +25,9 @@ public class EvOpThresholdFukunaga2D extends Threshold2D
 	{
 	private final int numClasses;
 	
-	public EvOpThresholdFukunaga2D(int mode, int numClasses)
+	public EvOpThresholdFukunaga2D(int numClasses)
 		{
-		super(mode);
+		super(MASK);
 		this.numClasses=numClasses;
 		}
 
