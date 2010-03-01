@@ -149,7 +149,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 			else
 				{
 				bStartStop.setText("Stop");
-				acq.channel=tChannelName.getText();
+				acq.channelName=tChannelName.getText();
 				
 				if(cDuration.isSelected())
 					{
