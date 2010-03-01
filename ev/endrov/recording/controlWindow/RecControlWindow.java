@@ -65,7 +65,7 @@ public class RecControlWindow extends BasicWindow
 	
 	public WeakHashMap<EvComboObject,Object> listComboObject=new WeakHashMap<EvComboObject, Object>();
 	
-	ConfigGroupPanel cp=new ConfigGroupPanel();
+	private ConfigGroupPanel cp=new ConfigGroupPanel();
 	
 	public RecControlWindow()
 		{
@@ -188,8 +188,7 @@ public class RecControlWindow extends BasicWindow
 			JLabel lTitle = new JLabel(devName.toString());
 			lTitle.setToolTipText(hw.getDescName()+" ");
 
-			//use "State" property?
-			b.setSelected(hw.getCurrentState()==1);
+			b.setSelected(!hw.isOpen());
 			b.setToolTipText("Open/Close shutter");
 			setRightIcon();
 			b.addActionListener(this);
@@ -200,20 +199,7 @@ public class RecControlWindow extends BasicWindow
 		public void actionPerformed(ActionEvent e)
 			{
 			setRightIcon();
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			hw.setCurrentState(b.isSelected()?1:0);
-			/*
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());
-			System.out.println("----------- "+hw.getStateNames());*/
-			hw.setPropertyValue("State", ""+(b.isSelected()?1:0));   //eh???? setcurrentstate does not work on demo??
-			
-			
-			System.out.println(b.isSelected());
+			hw.setOpen(!b.isSelected());
 			}
 
 		private void setRightIcon()
@@ -229,7 +215,8 @@ public class RecControlWindow extends BasicWindow
 			{
 			System.out.println("call shutter");
 			b.removeActionListener(this);
-			b.setSelected(hw.getCurrentState()==1);
+			b.setSelected(!hw.isOpen());
+			hw.setOpen(!b.isSelected());
 			setRightIcon();
 			b.addActionListener(this);
 			}
