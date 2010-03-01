@@ -8,12 +8,14 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
+import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
@@ -39,16 +41,43 @@ public class EvBurstAcquisition extends EvObject
 	 *****************************************************************************************************/
 	public EvDecimal duration;
 	public String durationUnit;
+	
 	public EvDecimal rate;
 	public String rateUnit;
 	
 	public boolean earlySwap;
 	
-	public String channel;
+	public String channelName;
 	public EvContainer container;
 	
 	
 	private List<Listener> listeners=new LinkedList<Listener>();
+
+	
+	public void setDurationSeconds(EvDecimal s)
+		{
+		this.duration=s;
+		durationUnit="Seconds";
+		}
+
+	public void setDurationFrames(EvDecimal frames)
+		{
+		this.duration=new EvDecimal(1).divide(frames);
+		durationUnit="Frames";
+		}
+
+	
+	public void setRateSeconds(EvDecimal rate)
+		{
+		this.rate=rate.multiply(1000);
+		rateUnit="ms";
+		}
+
+	public void setRateHz(EvDecimal rate)
+		{
+		this.rate=new EvDecimal(1).divide(rate);
+		rateUnit="Hz";
+		}
 
 	
 	/**
@@ -102,7 +131,6 @@ public class EvBurstAcquisition extends EvObject
 			{
 			//TODO need to choose camera, at least!
 			
-			//System.out.println("-----------start------------");
 			
 			Iterator<HWCamera> itcam=EvHardware.getDeviceMapCast(HWCamera.class).values().iterator();
 			HWCamera cam=null;
@@ -116,20 +144,40 @@ public class EvBurstAcquisition extends EvObject
 				interval=1000.0/settings.rate.doubleValue();
 			
 			
-			Imageset imset=new Imageset();
-			for(int i=0;;i++)
-				if(container.getChild("im"+i)==null)
-					{
-					container.metaObject.put("im"+i, imset);
-					imset.metaObject.put("ch0", new EvChannel());
-					break;
-					}
-
-			EvDecimal curFrame=new EvDecimal(0);
 			
-			
-			if(cam!=null)
+			//Check that there are enough parameters
+			if(cam!=null && container!=null)
 				{
+				
+				boolean isRGB=false;
+				
+				Imageset imset=new Imageset();
+				for(int i=0;;i++)
+					if(container.getChild("im"+i)==null)
+						{
+						container.metaObject.put("im"+i, imset);
+						
+						if(isRGB)
+							{
+							imset.metaObject.put(channelName+"R", new EvChannel());
+							imset.metaObject.put(channelName+"G", new EvChannel());
+							imset.metaObject.put(channelName+"B", new EvChannel());
+							}
+						else
+							imset.metaObject.put(channelName, new EvChannel());
+						break;
+						}
+
+				//TODO signal update on the object
+				BasicWindow.updateWindows();
+
+				
+				EvDecimal curFrame=new EvDecimal(0);
+
+				
+				
+				
+				
 				try
 					{
 					
@@ -138,8 +186,6 @@ public class EvBurstAcquisition extends EvObject
 					while(!toStop)
 						{
 
-						//System.out.println("---------------------");
-						
 						//Avoid busy loop
 						try
 							{
@@ -149,23 +195,45 @@ public class EvBurstAcquisition extends EvObject
 							{
 							e.printStackTrace();
 							}
-						
-						CameraImage im=cam.snapSequence();
-					//	System.out.println(im);
-						
 
-						EvImage evim=new EvImage();
-						evim.setMemoryImage(im.getPixels()[0]);
-						
-						EvDecimal frame=new EvDecimal("0");
-						EvDecimal z=new EvDecimal(0);
+						//See if another image is incoming
+						CameraImage camIm=cam.snapSequence();
+						if(camIm!=null)
+							{
+							EvChannel ch=(EvChannel)imset.getChild(channelName);
+							EvStack stack=ch.getCreateFrame(curFrame);
 
-
-						EvChannel ch=(EvChannel)imset.getChild("ch0");
-						ch.getCreateFrame(frame).put(z, evim);
+							if(isRGB)
+								{
+								//TODO
+								
+								}
+							else
+								{
+								//TODO resolution
+								stack.resX=1;
+								stack.resY=1;
+								stack.resZ=new EvDecimal(1);
+								
+								//TODO offset from stage?
+								
+								EvImage evim=new EvImage(camIm.getPixels()[0]);
+								
+								
+								
+								System.out.println(camIm.getPixels());
+								System.out.println(camIm.getNumComponents());
+								
+								EvDecimal z=new EvDecimal(0);
+								ch.getCreateFrame(curFrame).put(z, evim);
+								}
+								
+								
+							
+							
+							curFrame=curFrame.add(new EvDecimal(interval));
+							}
 						
-						
-						curFrame=curFrame.add(new EvDecimal(interval));
 						
 						}
 					
