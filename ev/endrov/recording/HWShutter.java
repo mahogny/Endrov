@@ -5,8 +5,11 @@
  */
 package endrov.recording;
 
+import endrov.hardware.EvDevice;
 
-public interface HWShutter extends HWState
+
+public interface HWShutter extends EvDevice
 	{
-
+	public void setOpen(boolean b);
+	public boolean isOpen();
 	}

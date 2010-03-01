@@ -1,6 +1,8 @@
 package endrov.recording.recmetBurst;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JMenu;
 
@@ -10,6 +12,9 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.hardware.EvHardware;
+import endrov.imageset.EvChannel;
+import endrov.imageset.EvImage;
+import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
 import endrov.util.EvDecimal;
@@ -42,13 +47,34 @@ public class EvBurstAcquisition extends EvObject
 	public String channel;
 	public EvContainer container;
 	
+	
+	private List<Listener> listeners=new LinkedList<Listener>();
 
+	
+	/**
+	 * Thread activity listener
+	 */
+	public interface Listener
+		{
+		public void acqStopped();
+		}
+	
+	
+	public void addListener(Listener l)
+		{
+		listeners.add(l);
+		}
+
+	public void removeListener(Listener l)
+		{
+		listeners.remove(l);
+		}
 	
 	
 	/**
 	 * Thread to perform acquisition
 	 */
-	public static class AcqThread extends Thread
+	public class AcqThread extends Thread
 		{
 		private EvBurstAcquisition settings;
 		private boolean toStop=true;
@@ -76,6 +102,8 @@ public class EvBurstAcquisition extends EvObject
 			{
 			//TODO need to choose camera, at least!
 			
+			//System.out.println("-----------start------------");
+			
 			Iterator<HWCamera> itcam=EvHardware.getDeviceMapCast(HWCamera.class).values().iterator();
 			HWCamera cam=null;
 			if(itcam.hasNext())
@@ -88,6 +116,18 @@ public class EvBurstAcquisition extends EvObject
 				interval=1000.0/settings.rate.doubleValue();
 			
 			
+			Imageset imset=new Imageset();
+			for(int i=0;;i++)
+				if(container.getChild("im"+i)==null)
+					{
+					container.metaObject.put("im"+i, imset);
+					imset.metaObject.put("ch0", new EvChannel());
+					break;
+					}
+
+			EvDecimal curFrame=new EvDecimal(0);
+			
+			
 			if(cam!=null)
 				{
 				try
@@ -98,7 +138,7 @@ public class EvBurstAcquisition extends EvObject
 					while(!toStop)
 						{
 
-						System.out.println("---------------------");
+						//System.out.println("---------------------");
 						
 						//Avoid busy loop
 						try
@@ -111,10 +151,21 @@ public class EvBurstAcquisition extends EvObject
 							}
 						
 						CameraImage im=cam.snapSequence();
-						System.out.println(im);
+					//	System.out.println(im);
+						
+
+						EvImage evim=new EvImage();
+						evim.setMemoryImage(im.getPixels()[0]);
+						
+						EvDecimal frame=new EvDecimal("0");
+						EvDecimal z=new EvDecimal(0);
+
+
+						EvChannel ch=(EvChannel)imset.getChild("ch0");
+						ch.getCreateFrame(frame).put(z, evim);
 						
 						
-						
+						curFrame=curFrame.add(new EvDecimal(interval));
 						
 						}
 					
@@ -126,8 +177,10 @@ public class EvBurstAcquisition extends EvObject
 					}
 				}
 			
+			//System.out.println("---------stop-----------");
 			toStop=false;
-			//TODO listener
+			for(Listener l:listeners)
+				l.acqStopped();
 			}
 		
 		
@@ -137,21 +190,29 @@ public class EvBurstAcquisition extends EvObject
 			}
 		
 		
-		public void startAcquisition()
+		private void startAcquisition()
 			{
-			toStop=false;
-			start();
+			if(!isRunning())
+				{
+				toStop=false;
+				start();
+				}
 			}
 		
 		}
 	
 	
+	
+	
+	
 	/**
 	 * Get acquisition thread that links to this data
 	 */
-	public AcqThread getThread()
+	public AcqThread startAcquisition()
 		{
-		return new AcqThread(this);
+		AcqThread th=new AcqThread(this);
+		th.startAcquisition();
+		return th;
 		}
 
 

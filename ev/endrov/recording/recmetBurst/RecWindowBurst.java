@@ -30,7 +30,7 @@ import endrov.util.EvSwingUtil;
  * Burst acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowBurst extends BasicWindow implements ActionListener
+public class RecWindowBurst extends BasicWindow implements ActionListener, EvBurstAcquisition.Listener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -69,9 +69,8 @@ public class RecWindowBurst extends BasicWindow implements ActionListener
 	
 	public RecWindowBurst(Rectangle bounds)
 		{
-
-		thread=acq.getThread();
-
+		acq.addListener(this);
+		
 		cSwapEarly.setToolTipText("Helps for longer recordings, otherwise might affect performance negatively");
 		cDuration.setToolTipText("Limit duration or run indefinetely");
 		
@@ -142,14 +141,14 @@ public class RecWindowBurst extends BasicWindow implements ActionListener
 		
 		if(e.getSource()==bStartStop)
 			{
-			
-			if(thread.isRunning())
+			if(thread!=null)
 				{
 				thread.tryStop();
-				System.out.println("stop");
+				//System.out.println("----stopping acquisition----");
 				}
 			else
 				{
+				bStartStop.setText("Stop");
 				acq.channel=tChannelName.getText();
 				
 				if(cDuration.isSelected())
@@ -163,10 +162,9 @@ public class RecWindowBurst extends BasicWindow implements ActionListener
 				
 				acq.earlySwap=cSwapEarly.isSelected();
 				acq.container=objectCombo.getSelectedObject();
-				
-				System.out.println("Start!");
-				
-				thread.startAcquisition();
+		
+				thread=acq.startAcquisition();
+				//thread.startAcquisition();
 				}
 			
 			}
@@ -208,6 +206,12 @@ public class RecWindowBurst extends BasicWindow implements ActionListener
 
 	
 
+	public void acqStopped()
+		{
+		bStartStop.setText("Start");
+		thread=null;
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
@@ -241,5 +245,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener
 		
 		
 		}
+	
+	
 	
 	}

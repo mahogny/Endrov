@@ -125,6 +125,13 @@ public class OlympusIX extends EvDeviceProvider implements EvDevice
 			{
 			event.remove(listener);
 			}
+		public boolean isOpen()
+			{
+			return false;
+			}
+		public void setOpen(boolean b)
+			{
+			}
 
 		}
 
