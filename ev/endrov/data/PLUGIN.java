@@ -35,7 +35,7 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{EvData.class, GroupObject.class};
+		return new Class[]{EvData.class, EvGroupObject.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};
