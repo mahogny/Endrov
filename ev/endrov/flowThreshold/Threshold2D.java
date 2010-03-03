@@ -34,7 +34,11 @@ public abstract class Threshold2D extends EvOpSlice1
 	public EvPixels exec1(EvPixels... p)
 		{
 		EvPixels in=p[0];
+		
+		System.out.println("calc thres");
 		double[] thres=getThreshold(in);
+		
+		System.out.println("got thres");
 		
 		if(thres.length==1)
 			{

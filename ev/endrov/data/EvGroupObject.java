@@ -12,7 +12,7 @@ import org.jdom.*;
  * A grouping of sub-objects
  * @author Johan Henriksson
  */
-public class GroupObject extends EvObject
+public class EvGroupObject extends EvObject
 	{
 	private static final String metaType="group";
 	
@@ -48,7 +48,7 @@ public class GroupObject extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedMetadataFormats.put(metaType,GroupObject.class);
+		EvData.supportedMetadataFormats.put(metaType,EvGroupObject.class);
 		}
 
 	
