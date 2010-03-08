@@ -59,13 +59,17 @@ public class RecWidgetOrder extends JPanel
 			{
 			entrylist.addAll(Arrays.asList(entry));
 			}
+		
+		public static SettingsDimensionsOrder createStandard()
+			{
+			return new SettingsDimensionsOrder(
+					new OrderEntry("position","Position"),
+					new OrderEntry("channel","Channel"),
+					new OrderEntry("slice","Slice"));
+			}
 		}
 
 	
-	//Standard entries
-	public static final OrderEntry entryChannel=new OrderEntry("channel","Channel");
-	public static final OrderEntry entryPosition=new OrderEntry("position","Position");
-	public static final OrderEntry entrySlice=new OrderEntry("slice","Slice");
 	
 
 	public ArrayList<JLabel> wlist=new ArrayList<JLabel>();
@@ -75,15 +79,15 @@ public class RecWidgetOrder extends JPanel
 	
 	public RecWidgetOrder()
 		{
-		this(entryPosition,entryChannel,entrySlice);
+		this(SettingsDimensionsOrder.createStandard());
 		}
 	
-	public RecWidgetOrder(OrderEntry... entry)
+	public RecWidgetOrder(SettingsDimensionsOrder data)
 		{
 		setBorder(BorderFactory.createTitledBorder("Order"));
 		setLayout(new BorderLayout());
 		add(p,BorderLayout.CENTER);
-		entrylist.addAll(Arrays.asList(entry));
+		entrylist.addAll(data.entrylist);
 		layoutOrder();
 		}
 	

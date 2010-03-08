@@ -1,4 +1,4 @@
-package endrov.recording.recmetBurst;
+package endrov.recording.recmetMultidim;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,41 +19,47 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
+import endrov.recording.recmetBurst.EvBurstAcquisition;
+import endrov.recording.recmetBurst.EvBurstAcquisition.AcqThread;
+import endrov.recording.recmetBurst.EvBurstAcquisition.Listener;
+import endrov.recording.recmetMultidim.RecWidgetOrder.SettingsDimensionsOrder;
 import endrov.util.EvDecimal;
 
+
 /**
+ * 
  * 
  * 
  * @author Johan Henriksson
  *
  */
-public class EvBurstAcquisition extends EvObject
+public class EvMultidimAcquisition extends EvObject
 	{
+
+	
+	
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	
-	private static final String metaType="burstAcq";
+	private static final String metaType="multidimAcq";
 	
 
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-	public EvDecimal duration;
-	public String durationUnit;
-	
-	public EvDecimal rate;
-	public String rateUnit;
-	
-	public boolean earlySwap;
-	
-	public String channelName;
 	public EvContainer container;
+	
+	
+	
+	
+	
+	RecWidgetOrder.SettingsDimensionsOrder order=SettingsDimensionsOrder.createStandard(); 
 	
 	
 	private List<Listener> listeners=new LinkedList<Listener>();
 
-	
+/*	
 	public void setDurationSeconds(EvDecimal s)
 		{
 		this.duration=s;
@@ -78,7 +84,7 @@ public class EvBurstAcquisition extends EvObject
 		this.rate=new EvDecimal(1).divide(rate);
 		rateUnit="Hz";
 		}
-
+*/
 	
 	/**
 	 * Thread activity listener
@@ -105,7 +111,7 @@ public class EvBurstAcquisition extends EvObject
 	 */
 	public class AcqThread extends Thread
 		{
-		private EvBurstAcquisition settings;
+		private EvMultidimAcquisition settings;
 		private boolean toStop=true;
 
 		
@@ -119,7 +125,7 @@ public class EvBurstAcquisition extends EvObject
 			toStop=true;
 			}
 		
-		private AcqThread(EvBurstAcquisition settings)
+		private AcqThread(EvMultidimAcquisition settings)
 			{
 			this.settings=settings;
 			}
@@ -137,18 +143,13 @@ public class EvBurstAcquisition extends EvObject
 			if(itcam.hasNext())
 				cam=itcam.next();
 			
-			double interval;
-			if(settings.rateUnit.equals("ms"))
-				interval=settings.rate.doubleValue();
-			else
-				interval=1000.0/settings.rate.doubleValue();
-			
 			
 			
 			//Check that there are enough parameters
 			if(cam!=null && container!=null)
 				{
-				
+	
+				/*
 				boolean isRGB=false;
 				
 				Imageset imset=new Imageset();
@@ -243,6 +244,8 @@ public class EvBurstAcquisition extends EvObject
 					{
 					e.printStackTrace();
 					}
+					
+					*/
 				}
 			
 			//System.out.println("---------stop-----------");
@@ -309,6 +312,7 @@ public class EvBurstAcquisition extends EvObject
 	@Override
 	public String saveMetadata(Element e)
 		{
+		/*
 		Element eRate=new Element("rate");
 		eRate.setAttribute("value",rate.toString());
 		eRate.setAttribute("unit",rateUnit);
@@ -318,6 +322,7 @@ public class EvBurstAcquisition extends EvObject
 		eDur.setAttribute("value",duration.toString());
 		eDur.setAttribute("unit",durationUnit);
 		e.addContent(eDur);
+		*/
 		return metaType;
 		}
 	
@@ -328,7 +333,16 @@ public class EvBurstAcquisition extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedMetadataFormats.put(metaType,EvBurstAcquisition.class);
+		EvData.supportedMetadataFormats.put(metaType,EvMultidimAcquisition.class);
 		}
+	
+
+	
+	
+	
+	
+	
+	
+	
 	
 	}
