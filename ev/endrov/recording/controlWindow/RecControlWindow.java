@@ -82,8 +82,7 @@ public class RecControlWindow extends BasicWindow
 
 		add1(cp);
 		
-		for (Map.Entry<EvDevicePath, EvDevice> entry : EvHardware
-				.getDeviceMap().entrySet())
+		for (Map.Entry<EvDevicePath, EvDevice> entry : EvHardware.getDeviceMap().entrySet())
 			{
 			if (entry.getValue() instanceof HWCamera)
 				new CameraPanel(entry.getKey(), (HWCamera) entry.getValue());

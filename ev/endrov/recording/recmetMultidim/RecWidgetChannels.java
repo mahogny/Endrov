@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 import endrov.basicWindow.SpinnerSimpleEvDecimal;
 import endrov.basicWindow.SpinnerSimpleInteger;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.recording.ComboMetaState;
+import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
 /**
@@ -44,10 +46,11 @@ public class RecWidgetChannels extends JPanel
 	private JComponent p=new JPanel();
 	
 	
+	/*
 	public static class ChannelEntry
 		{
 		
-		}
+		}*/
 	
 	
 	private JButton bAdd=new JImageButton(BasicIcon.iconAdd,"Add channel to list");
@@ -62,25 +65,29 @@ public class RecWidgetChannels extends JPanel
 		
 		JButton bRemove=new JImageButton(BasicIcon.iconRemove,"Remove channel from list");
 		
-		SpinnerSimpleInteger spZinc=new SpinnerSimpleInteger(1,1,1000,1);
+		SpinnerSimpleInteger spZskip=new SpinnerSimpleInteger(1,1,1000,1);
 		SpinnerSimpleInteger spZ0=new SpinnerSimpleInteger(0,0,1000,1);
-		SpinnerSimpleInteger spTinc=new SpinnerSimpleInteger(1,1,1000,1);
+		SpinnerSimpleInteger spTskip=new SpinnerSimpleInteger(1,1,1000,1);
 		}
 	
 	
-	
-	
+	private ComboMetaState cMetaStateGroup=new ComboMetaState();
+
 	
 	public RecWidgetChannels()
 		{
 		setBorder(BorderFactory.createTitledBorder("Channnels"));
 		setLayout(new BorderLayout());
-		add(new JLabel("TODO"),BorderLayout.NORTH);
+		add(EvSwingUtil.layoutLCR(EvSwingUtil.withLabel("Meta states: ", cMetaStateGroup),null,null),BorderLayout.NORTH);
+		
 		add(p,BorderLayout.CENTER);
 		addChannel();
 		addChannel();
 		addChannel();
 		layoutChannels();
+		
+		
+		
 		}
 	
 	
@@ -121,29 +128,35 @@ public class RecWidgetChannels extends JPanel
 
 			c.fill=GridBagConstraints.HORIZONTAL;
 			c.weightx=1;
-			if(i==-1) p.add(new JLabel("Channel"),c);
+			if(i==-1) p.add(new JLabel("Channel "),c);
 			else p.add(row.comboChannel,c);
 			c.gridx++;
 			
-			if(i==-1) p.add(new JLabel("Exp [s]"),c);
+			if(i==-1) p.add(new JLabel("Exp [ms] "),c);
 			else p.add(row.spExposure,c);
 			c.weightx=0;
 			c.gridx++;
 			
-			if(i==-1) p.add(new JLabel("L.C"),c);
+			//// For this, and other fancy options, might want a drop-down or something?
+			if(i==-1)
+				{
+				JLabel lab=new JLabel("LC ");
+				lab.setToolTipText("Automatic exposure time calibration");
+				p.add(lab,c);
+				}
 			else p.add(row.chLightCompensate,c);
 			c.gridx++;
 			
-			if(i==-1)	p.add(new JLabel("Z++"),c);
-			else p.add(row.spZinc,c);
+			if(i==-1)	p.add(new JLabel("Z-skip "),c);
+			else p.add(row.spZskip,c);
 			c.gridx++;
 			
-			if(i==-1)	p.add(new JLabel("Z0"),c);
+			if(i==-1)	p.add(new JLabel("Z0 "),c);
 			else p.add(row.spZ0,c);
 			c.gridx++;
 			
-			if(i==-1)	p.add(new JLabel("t++"),c);
-			else p.add(row.spTinc,c);
+			if(i==-1)	p.add(new JLabel("t-skip "),c);
+			else p.add(row.spTskip,c);
 			c.gridx++;
 			
 
