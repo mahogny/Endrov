@@ -236,7 +236,7 @@ public class ModelView extends GLCanvas
 		 */
 		public void display(GLAutoDrawable drawable)
 			{
-			System.out.println("render model");
+			//System.out.println("render model");
 			if(force)
 				System.out.println("===forced set===");
 			force=false;
@@ -261,9 +261,12 @@ public class ModelView extends GLCanvas
 			//Here it would be possible to auto-center the camera if it is totally out of range
 			
 			
+			
 			//Store away unaffected matrix
 			GL gl = drawable.getGL();
 			gl.glPushMatrix();
+			
+			checkerr(gl);
 			
 			 //Set light to follow camera
 			float light_position[] = { 1.0f, 1.0f, 1.0f, 0.0f };
@@ -388,7 +391,8 @@ public class ModelView extends GLCanvas
 			if(renderAxisArrows)
 				renderAxisArrows(gl);
 			
-			System.out.println("end of render");
+			checkerr(gl);
+			//System.out.println("end of render");
 			}
 
 		
