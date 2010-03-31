@@ -61,6 +61,8 @@ public class Start
 			platformExt.add("ppc");
 		else if(arch.equals("x86_64") || arch.equals("amd64")) 
 			platformExt.add("amd64");
+		else if(arch.equals("sparc"))
+			platformExt.add("sparc");
 		else
 			platformExt.add("x86");
 		
@@ -71,8 +73,8 @@ public class Start
 			platformExt.add("windows");
 		else if(OS.startsWith("linux"))
 			platformExt.add("linux");
-		else if(OS.startsWith("solaris"))
-			platformExt.add("solaris");
+		else if(OS.startsWith("sunos"))
+			platformExt.add("sunos");
 		else
 			{
 			JOptionPane.showMessageDialog(null, 
