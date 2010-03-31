@@ -107,8 +107,9 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 		
 		
 		
-		public void displayInit(GL gl)
+		public void displayInit(GL glin)
 			{
+			GL2 gl=glin.getGL2();
 			int i=0;
 			for(ToolSlab ti:isolayers)
 				{
@@ -116,7 +117,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 				i++;
 				}
 			for(;i<w.view.numClipPlanesSupported;i++)
-				gl.glDisable(GL.GL_CLIP_PLANE0+i);			
+				gl.glDisable(GL2.GL_CLIP_PLANE0+i);			
 			}
 		public void displaySelect(GL gl)
 			{
@@ -280,8 +281,9 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			
 		
 				
-			public void displayInit(GL gl, int slabid)
+			public void displayInit(GL glin, int slabid)
 				{
+				GL2 gl=glin.getGL2();
 				if(cVisible.isSelected())
 					{
 					Vector3d mid=new Vector3d();
@@ -310,30 +312,31 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					double D=-normal.dot(points[0]);
 					
 					//Draw plane
-					gl.glEnable(GL.GL_CLIP_PLANE0+slabid);
+					gl.glEnable(GL2.GL_CLIP_PLANE0+slabid);
 					double[] eq=new double[]{A,B,C,D};
-					gl.glClipPlane(GL.GL_CLIP_PLANE0+slabid, eq, 0);
+					gl.glClipPlane(GL2.GL_CLIP_PLANE0+slabid, eq, 0);
 					}
 				else
-					gl.glDisable(GL.GL_CLIP_PLANE0+slabid);
+					gl.glDisable(GL2.GL_CLIP_PLANE0+slabid);
 				}
 			
 		
 			/**
 			 * Render final
 			 */
-			public void renderFinal(GL gl, int slabid)
+			public void renderFinal(GL glin, int slabid)
 				{
+				GL2 gl=glin.getGL2();
 				if(cVisible.isSelected())
 					{
 					//If rendering done in one place, some state changes can be avoided
-					gl.glPushAttrib(GL.GL_ENABLE_BIT);
+					gl.glPushAttrib(GL2.GL_ENABLE_BIT);
 					
 					for(int i=0;i<w.view.numClipPlanesSupported;i++)
-						gl.glDisable(GL.GL_CLIP_PLANE0+i);
+						gl.glDisable(GL2.GL_CLIP_PLANE0+i);
 					
-//					gl.glDisable(GL.GL_CLIP_PLANE0+slabid);
-					gl.glBegin(GL.GL_LINE_LOOP);
+//					gl.glDisable(GL2.GL_CLIP_PLANE0+slabid);
+					gl.glBegin(GL2.GL_LINE_LOOP);
 					gl.glColor3f(1, 0, 0);
 					for(int i=0;i<3;i++)
 						gl.glVertex3f((float)points[i].x,(float)points[i].y,(float)points[i].z);
@@ -342,7 +345,7 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 					gl.glPopAttrib();
 					
 					if(cEnabled.isSelected())
-						gl.glEnable(GL.GL_CLIP_PLANE0+slabid);
+						gl.glEnable(GL2.GL_CLIP_PLANE0+slabid);
 					
 					
 					

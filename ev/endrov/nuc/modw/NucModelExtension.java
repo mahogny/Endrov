@@ -375,7 +375,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render movement trace of nuc
 		 */
-		private void renderTrace(GL gl, NucLineage.Nuc nuc, boolean simple, Color col)
+		private void renderTrace(GL2 gl, NucLineage.Nuc nuc, boolean simple, Color col)
 			{
 			if(!nuc.pos.isEmpty())
 				{
@@ -387,7 +387,7 @@ public class NucModelExtension implements ModelWindowExtension
 //				gl.glColor3d(1, 1, 1);
 				if(simple)
 					{
-					gl.glBegin(GL.GL_LINE_STRIP);
+					gl.glBegin(GL2.GL_LINE_STRIP);
 					EvDecimal f1=nuc.pos.firstKey();
 					EvDecimal f2=nuc.pos.lastKey();
 					NucLineage.NucPos pos1=nuc.pos.get(f1);
@@ -403,13 +403,13 @@ public class NucModelExtension implements ModelWindowExtension
 					
 					Vector3d direction=pos2.getPosCopy();
 					direction.sub(pos1.getPosCopy());
-		      gl.glEnable(GL.GL_LIGHTING);
+		      gl.glEnable(GL2.GL_LIGHTING);
 					w.view.renderArrowHead(gl, pos2.getPosCopy(), direction, colR, colG, colB);
-		      gl.glDisable(GL.GL_LIGHTING);
+		      gl.glDisable(GL2.GL_LIGHTING);
 					}
 				else
 					{
-					gl.glBegin(GL.GL_LINE_STRIP);
+					gl.glBegin(GL2.GL_LINE_STRIP);
 					//Vector3d last=null, secondLast=null;
 					for(NucLineage.NucPos pos:nuc.pos.values())
 						{
@@ -443,10 +443,12 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render graphics
 		 */
-		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
+		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
+			GL2 gl=glin.getGL2();
+
 			initDrawSphere(gl);
-			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
+			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 			
 			EvDecimal curFrame=w.frameControl.getFrame();
 
@@ -534,7 +536,7 @@ public class NucModelExtension implements ModelWindowExtension
 									isfinite=false;
 							if(isfinite)
 								{
-								gl.glBegin(GL.GL_LINE_LOOP);
+								gl.glBegin(GL2.GL_LINE_LOOP);
 								gl.glColor3d(1, 0, 0);
 								for(int i:facelist)
 									{
@@ -551,7 +553,7 @@ public class NucModelExtension implements ModelWindowExtension
 						//TODO The ::: is really ugly
 						if(miShowDelaunay.isSelected())
 							{
-							gl.glBegin(GL.GL_LINES);
+							gl.glBegin(GL2.GL_LINES);
 							gl.glColor3d(1, 0, 0);
 							int size=nvor.nucnames.size();
 							for(int i=0;i<size;i++)
@@ -597,7 +599,7 @@ public class NucModelExtension implements ModelWindowExtension
 								{
 								NucInterp n=inter.get(nucPair);
 								NucInterp m=inter.get(nucPair2);
-								gl.glBegin(GL.GL_LINES);
+								gl.glBegin(GL2.GL_LINES);
 								gl.glColor3d(1, 1, 1);
 								gl.glVertex3d(n.pos.x,n.pos.y,n.pos.z);
 								gl.glVertex3d(m.pos.x,m.pos.y,m.pos.z);
@@ -636,7 +638,7 @@ public class NucModelExtension implements ModelWindowExtension
 									NucLineage.NucPos npos=nuc.pos.get(tframe);
 									NucLineage.NucPos ppos=pnuc.pos.get(pframe);
 	
-									gl.glBegin(GL.GL_LINES);
+									gl.glBegin(GL2.GL_LINES);
 									gl.glColor3d(1, 1, 0);
 									gl.glVertex3d(npos.x,npos.y,npos.z);
 									gl.glVertex3d(ppos.x,ppos.y,ppos.z);
@@ -715,13 +717,13 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render body of one nucleus
 		 */
-		private void renderNuc(GL gl, NucSel nucPair, NucLineage.NucInterp nuc, EvDecimal curFrame)
+		private void renderNuc(GL2 gl, NucSel nucPair, NucLineage.NucInterp nuc, EvDecimal curFrame)
 			{
 			//Visibility rule
 			if(!nuc.isVisible())
 				return;
 			
-			gl.glEnable(GL.GL_CULL_FACE);
+			gl.glEnable(GL2.GL_CULL_FACE);
 
 			//Save world coordinate
 	    gl.glPushMatrix();
@@ -768,7 +770,7 @@ public class NucModelExtension implements ModelWindowExtension
     	
 			
 //			float lightAmbient[] = { nucColor[0]*0.3f, nucColor[1]*0.3f, nucColor[2]*0.3f, 0.0f };
-//    gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, nucColor, 0);   
+//    gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, nucColor, 0);   
 	    	
 			
 			
@@ -797,7 +799,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Generate vertex lists for spheres
 		 */
-		private void initDrawSphere(GL gl)
+		private void initDrawSphere(GL2 gl)
 			{
 			if(!madeDisplayLists)
 				{
@@ -806,20 +808,20 @@ public class NucModelExtension implements ModelWindowExtension
 				GLUquadric q=glu.gluNewQuadric();
 				
 				displayListVisibleSphere = gl.glGenLists(1);
-				gl.glNewList(displayListVisibleSphere, GL.GL_COMPILE);
+				gl.glNewList(displayListVisibleSphere, GL2.GL_COMPILE);
 				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
 				//drawSphereSolid(gl, 1.0, NUC_SHOW_DIV,NUC_SHOW_DIV);
 				gl.glEndList();
 				
 				displayListSelectSphere = gl.glGenLists(1);
-				gl.glNewList(displayListSelectSphere, GL.GL_COMPILE);
+				gl.glNewList(displayListSelectSphere, GL2.GL_COMPILE);
 				glu.gluSphere(q,1.0,NUC_SELECT_DIV,NUC_SELECT_DIV);
 				gl.glEndList();
 
 				glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
 				
 				displayListHiddenSphere = gl.glGenLists(1);
-				gl.glNewList(displayListHiddenSphere, GL.GL_COMPILE);
+				gl.glNewList(displayListHiddenSphere, GL2.GL_COMPILE);
 				glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
 				gl.glEndList();
 				
@@ -832,7 +834,7 @@ public class NucModelExtension implements ModelWindowExtension
 		private int displayListSelectSphere;
 		
 		
-		private void drawVisibleSphere(GL gl, double r, boolean selected, float colR, float colG, float colB)
+		private void drawVisibleSphere(GL2 gl, double r, boolean selected, float colR, float colG, float colB)
 			{
     	double ir=1.0/r;
 			gl.glScaled(r,r,r);
@@ -841,26 +843,26 @@ public class NucModelExtension implements ModelWindowExtension
 				{
 	    	gl.glColor3d(1,0,1);
 				gl.glLineWidth(5);
-				gl.glPolygonMode(GL.GL_BACK, GL.GL_LINE);
-				gl.glCullFace(GL.GL_FRONT);
-				gl.glDepthFunc(GL.GL_LEQUAL);
+				gl.glPolygonMode(GL2.GL_BACK, GL2.GL_LINE);
+				gl.glCullFace(GL2.GL_FRONT);
+				gl.glDepthFunc(GL2.GL_LEQUAL);
 	    	gl.glCallList(displayListVisibleSphere);
-				gl.glCullFace(GL.GL_BACK);
-				gl.glDepthFunc(GL.GL_LESS);
-				gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
+				gl.glCullFace(GL2.GL_BACK);
+				gl.glDepthFunc(GL2.GL_LESS);
+				gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
 				gl.glLineWidth(1);
 				}
 			
-      gl.glEnable(GL.GL_LIGHTING);
+      gl.glEnable(GL2.GL_LIGHTING);
     	gl.glColor3d(1,1,1);
-    	gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, new float[]{colR,colG,colB}, 0);
+    	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE, new float[]{colR,colG,colB}, 0);
 //    	gl.glColor3d(colR,colG,colB);
     	gl.glCallList(displayListVisibleSphere);
-      gl.glDisable(GL.GL_LIGHTING);
+      gl.glDisable(GL2.GL_LIGHTING);
 
     	gl.glScaled(ir,ir,ir);
 			}
-		private void drawHiddenSphere(GL gl, double r)
+		private void drawHiddenSphere(GL2 gl, double r)
 			{
     	double ir=1.0/r;
 			gl.glScaled(r,r,r);
@@ -868,7 +870,7 @@ public class NucModelExtension implements ModelWindowExtension
     	gl.glScaled(ir,ir,ir);
 			}
 		
-		public void drawSelectSphere(GL gl, double r)
+		public void drawSelectSphere(GL2 gl, double r)
 			{
     	double ir=1.0/r;
 			gl.glScaled(r,r,r);
@@ -880,7 +882,7 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render labe of one nucleus
 		 */
-		private void renderNucLabel(GL gl, List<TransparentRender> transparentRenderers, NucSel nucPair, NucLineage.NucInterp nuc)
+		private void renderNucLabel(GL2 gl, List<TransparentRender> transparentRenderers, NucSel nucPair, NucLineage.NucInterp nuc)
 			{
 			//Visibility rule
 			if(nuc.frameBefore==null)
@@ -919,9 +921,10 @@ public class NucModelExtension implements ModelWindowExtension
 		/**
 		 * Render nucleus in the invisible selection channel
 		 */
-		private void renderNucSel(GL gl, NucSel nucPair, NucLineage.NucInterp nuc, double nucMagnification)
+		private void renderNucSel(GL glin, NucSel nucPair, NucLineage.NucInterp nuc, double nucMagnification)
 			{    
-			gl.glEnable(GL.GL_CULL_FACE);
+			GL2 gl=glin.getGL2();
+			gl.glEnable(GL2.GL_CULL_FACE);
 			
 			//Save world coordinate && Move to cell center = local coordinate
 	    gl.glPushMatrix();

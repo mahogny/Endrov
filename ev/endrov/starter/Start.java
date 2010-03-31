@@ -40,8 +40,8 @@ public class Start
 
 	private String javaexe="java";
 	private LinkedList<String> platformExt=new LinkedList<String>();
-	public List<String> jarfiles=new LinkedList<String>();
-	public List<String> binfiles=new LinkedList<String>();
+	public LinkedList<String> jarfiles=new LinkedList<String>();
+	public LinkedList<String> binfiles=new LinkedList<String>();
 
 	
 	public void collectSystemInfo(String path)
@@ -82,6 +82,11 @@ public class Start
 			System.exit(1);
 			}
 
+		
+		
+		
+		System.out.println("before: "+binfiles);
+		
 		/**
 		 * Have to add system extensions and libraries as well when the system class loader is not used
 		 */
@@ -103,11 +108,20 @@ public class Start
 					}
 				}
 			}
-		
+
 		//Collect jarfiles
 		jarfiles.add(path.getAbsolutePath());
 		collectJars(jarfiles, binfiles, new File(path,"libs"), platformExt);
 		//System.out.println(binfiles);
+
+/*		
+		if(binfiles.contains("/usr/lib/jni"))
+			{
+			binfiles.remove("/usr/lib/jni");
+			binfiles.add("/usr/lib/jni");
+			}
+			*/
+		
 		}
 	
 	/**
@@ -145,9 +159,9 @@ public class Start
 	/**
 	 * Add jar file to list. Show it if requested
 	 */
-	private static void addJar(List<String> v, String toadd)
+	private static void addJar(LinkedList<String> v, String toadd)
 		{
-		v.add(toadd);
+		v.addFirst(toadd);
 		if(printJar)
 			System.out.println("Adding java library: "+toadd);
 		}
@@ -156,7 +170,7 @@ public class Start
 	 * Get all jars and add them with path to vector. 
 	 * Recurses when it finds a directory ending with _inc.
 	 */
-	private static void collectJars(List<String> v,List<String> binfiles,File p, Collection<String> platformExt)
+	private static void collectJars(LinkedList<String> v,LinkedList<String> binfiles,File p, Collection<String> platformExt)
 		{
 		if(p.exists())
 			for(File sub:p.listFiles())
@@ -176,7 +190,7 @@ public class Start
 							{
 							if(line.startsWith("j:"))
 								addJar(v,line.substring(2)); //j:
-							else
+							else if(line.startsWith("b:"))
 								binfiles.add(line.substring(2)); //b:
 							}
 						}
@@ -458,6 +472,9 @@ public class Start
 
 			//Important: Must NOT use the system class loader - it will take over for current directory
 			//and fail to load JAR files
+			
+			System.out.println("Bin files: "+binfiles);
+			
 			ResourceClassLoader cload=new ResourceClassLoader(urls.toArray(new URL[]{}),binfiles, null);
 
 			Class<?> cl=cload.loadClass(mainClass);
