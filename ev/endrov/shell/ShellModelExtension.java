@@ -8,6 +8,7 @@ package endrov.shell;
 import java.util.*;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
@@ -75,8 +76,9 @@ public class ShellModelExtension implements ModelWindowExtension
 			}
 		*/
 		
-		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
+		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
+			GL2 gl=glin.getGL2();
 			for(Shell shell:w.getVisibleObjects(Shell.class))
 				{
 				gl.glPushMatrix();
@@ -106,7 +108,7 @@ public class ShellModelExtension implements ModelWindowExtension
 		/**
 		 * Render an ellipse on xy-plane
 		 */
-		private void renderEllipse(GL gl, double major, double minor)
+		private void renderEllipse(GL2 gl, double major, double minor)
 			{
 			gl.glBegin(GL.GL_LINE_LOOP);
 			for(double alpha=0;alpha<2*Math.PI;alpha+=0.2)
