@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/starter/StartOld.java|endrov/util/DynamicClass.java|endrov/flow/std/math/FlowUnitComplexMul.java|endrov/unsortedImageFilters/Skeletonize3D_.java|util/munkresKuhn/AssignmentProblem.java|util2/integrateExpression/IntExpTissue.java|util2/integrateExpression/MakeProfiles.java|util2/integrateExpression/OldIntegrateExpression.java|endrov/starter/MyURLClassLoader.java|endrov/driverMicromanager/conf/Configurator.java|util2/integrateExpression/OldIntExpAP.java|util2/integrateExpression/OldIntExpTissue.java|util2/integrateExpression/OldMakeProfiles.java|endrov/macBinding/" kind="src" path="">
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/starter/StartOld.java|endrov/util/DynamicClass.java|endrov/flow/std/math/FlowUnitComplexMul.java|endrov/unsortedImageFilters/Skeletonize3D_.java|util/munkresKuhn/AssignmentProblem.java|util2/integrateExpression/IntExpTissue.java|util2/integrateExpression/MakeProfiles.java|util2/integrateExpression/OldIntegrateExpression.java|endrov/starter/MyURLClassLoader.java|endrov/driverMicromanager/conf/Configurator.java|util2/integrateExpression/OldIntExpAP.java|util2/integrateExpression/OldIntExpTissue.java|util2/integrateExpression/OldMakeProfiles.java" kind="src" path="">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
@@ -57,69 +57,44 @@
 	<classpathentry kind="lib" path="libs/commons-math-2.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="lib" path="libs/umanager_inc/bin_mac/MMCoreJ.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/gluegen-rt-cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.all-noawt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.all.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.all.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.awt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.cg.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.core.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.core.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.egl.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.egl.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2.dbg.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2.osx.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2.win.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2.x11.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2es12.osx.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2es12.osx.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2es12.win.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2es12.win.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2es12.x11.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gl2es12.x11.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles1.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles1.dbg.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles1.dbg.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles1.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles2.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles2.dbg.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles2.dbg.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.gles2.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.glu.gl2.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.glu.mipmap.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.glu.mipmap.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.glu.tess.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.glu.tess.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.sdk.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.util.awt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.util.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.util.fixedfuncemu.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.util.fixedfuncemu.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.util.gl2.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/jogl.util.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/nativewindow.all.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/nativewindow.all.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/nativewindow.awt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/nativewindow.core.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/nativewindow.core.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/nativewindow.x11.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/nativewindow.x11.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.all-noawt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.all.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.all.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.awt.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.broadcomegl.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.broadcomegl.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.core.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.core.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.ogl.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.ogl.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.osx.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.osx.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.win.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.win.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.x11.cdc.jar"/>
-	<classpathentry kind="lib" path="libs/bin_linux/jogl_inc/newt.x11.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.all-noawt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.all.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.awt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.cg.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.core.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.egl.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gl2.dbg.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gl2.osx.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gl2.win.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gl2.x11.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gl2es12.osx.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gl2es12.win.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gl2es12.x11.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gles1.dbg.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gles1.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gles2.dbg.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.gles2.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.glu.gl2.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.glu.mipmap.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.glu.tess.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.sdk.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.util.awt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.util.fixedfuncemu.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.util.gl2.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/jogl.util.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/nativewindow.all.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/nativewindow.awt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/nativewindow.core.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/nativewindow.x11.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.all-noawt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.all.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.awt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.broadcomegl.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.core.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.ogl.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.osx.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.win.jar"/>
+	<classpathentry kind="lib" path="libs/jogl_inc/newt.x11.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
