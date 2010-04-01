@@ -6,9 +6,7 @@
 package endrov.modelWindowImset.slice3d;
 
 import java.awt.*;
-import java.awt.image.*;
 import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.Collections;
 

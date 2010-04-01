@@ -71,7 +71,7 @@ public class Start
 			platformExt.add("windows");
 		else if(OS.startsWith("linux"))
 			platformExt.add("linux");
-		else if(OS.startsWith("solaris"))
+		else if(OS.startsWith("sunos"))
 			platformExt.add("solaris");
 		else
 			{

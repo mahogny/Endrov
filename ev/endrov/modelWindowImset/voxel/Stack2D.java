@@ -94,7 +94,7 @@ public class Stack2D extends StackInterface
 			for(Vector<OneSlice> osv:texSlices.values())
 				for(OneSlice os:osv)
 					{
-					os.tex.dispose();
+					os.tex.destroy(gl);
 					if(os.rend!=null)
 						os.rend.dispose();
 					}
@@ -327,7 +327,6 @@ public class Stack2D extends StackInterface
 	 */
 	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
 		{
-		GL2 gl=glin.getGL2();
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.transformedVector(0, 0, 1);
 		double camz=cam.pos.dot(camv);
