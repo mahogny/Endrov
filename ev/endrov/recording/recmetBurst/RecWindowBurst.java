@@ -10,10 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Vector;
-
 import javax.swing.*;
 
 import org.jdom.*;
@@ -22,7 +19,6 @@ import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
-import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 

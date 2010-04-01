@@ -5,10 +5,6 @@
  */
 package endrov.flowTexture;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import endrov.imageset.EvStack;
 import endrov.util.Vector3i;
 

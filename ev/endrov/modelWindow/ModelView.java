@@ -13,7 +13,6 @@ import java.awt.Font;
 import java.nio.*;
 
 import javax.media.opengl.*;
-import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Matrix3d;
