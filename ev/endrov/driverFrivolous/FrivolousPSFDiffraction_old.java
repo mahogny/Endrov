@@ -38,7 +38,7 @@ Version 2	May 6, 2005.  Added spherical aberration.
 
 package endrov.driverFrivolous;
 
-public class FrivolousPSFDiffraction extends FrivolousPSF{
+public class FrivolousPSFDiffraction_old extends FrivolousPSF{
 	// Constants for Bessel function approximation.
 	private static final double[] t = new double[] { 
 		 1,

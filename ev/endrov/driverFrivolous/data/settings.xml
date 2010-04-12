@@ -1,10 +1,10 @@
 <cell>
 	<settings>
 		<psf active="true">
-			<lambda>530</lambda>
+			<lambda>0.530</lambda>
 			<index_refr>1.518</index_refr>
-			<pixel_spacing>30</pixel_spacing>
-			<slice_spacing>30</slice_spacing>
+			<pixel_spacing>0.1</pixel_spacing>
+			<slice_spacing>0.1</slice_spacing>
 			<numerical_aperture>1.4</numerical_aperture>
 			<spherical_abberation>0.0</spherical_abberation>
 		</psf>
