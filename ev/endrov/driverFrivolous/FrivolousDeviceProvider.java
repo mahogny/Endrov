@@ -247,8 +247,10 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		public void setRelStagePos(double[] axis)
 			{
+			double[] tmp = stagePos.clone();
 			for (int i = 0; i<3; i++)
-				stagePos[i] += axis[i];
+				tmp[i] += axis[i];
+			setStagePos(tmp);
 			// System.out.println("curpos "+stagePos[0]+"  "+stagePos[1]+"   "+stagePos[2]);
 			}
 
@@ -256,7 +258,13 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			for (int i = 0; i<3; i++)
 				stagePos[i] = axis[i];
+			if (stagePos[2]<-10000)
+				stagePos[2]=-10000;
+			else if(stagePos[2]>10000)
+				stagePos[2]=10000;
+
 			model.getSettings().offsetZ = stagePos[2];
+				
 			model.updatePSF();
 			}
 
