@@ -67,100 +67,63 @@ public class FrivolousPSFDiffraction extends FrivolousPSF{
 
 	public float[] createPSF(FrivolousSettingsNew settings) {
 
-		double lambda = settings.lambda;
-		double indexRefr = settings.indexRefr;
-		double pixelSpacing = settings.pixelSpacing;
-		double na = settings.na;
-		double sa = settings.sa;
-		int w = settings.w;
-		int h = settings.h;
-		double offsetZ = settings.offsetZ;
+		double lambda = settings.lambda; //Wavelength in um
+		double n = settings.indexRefr; //Index of refraction
+		double dRho = settings.pixelSpacing; //Resolution XY (pixel spacing)
+		double na = settings.na; //Numerical aperture (na = n * sin(theta))
+		int w = settings.w; //PSF width in pixels
+		int h = settings.h; //PSF height in pixels
+		double offsetZ = settings.offsetZ; //Z offset in um
 
-		int stepsPerCycle = 8;
-
-		int ic = w / 2;
-		int jc = h / 2;
-
-		float[] pixels = new float[w * h];
-		int rMax = 2 + (int) Math.sqrt(ic * ic + jc * jc);
-		float[] integral = new float[rMax];
-		double upperLimit = Math.tan(Math.asin(na / indexRefr));
-		double waveNumber = 2 * Math.PI * indexRefr / lambda;
-		double kz = waveNumber * offsetZ;
-		for (int r = 0; r < rMax; r++) {
-			double kr = waveNumber * r * pixelSpacing;
-			int numCyclesJ = 1 + (int) (kr * upperLimit / 3);
-			int numCyclesCos = 1 + (int) (Math.abs(kz) * 0.36 * upperLimit / 6);
-			int numCycles = numCyclesJ;
-			if (numCyclesCos > numCycles)
-				numCycles = numCyclesCos;
-			int nStep = 2 * stepsPerCycle * numCycles;
-			int m = nStep / 2;
-			double step = upperLimit / nStep;
-			double sumR = 0;
-			double sumI = 0;
-			// Simpson's rule
-			// Assume that the sperical aberration varies with the (%
-			// aperture)^4
-			// f(a) = f(0) = 0, so no contribution
-			double u = 0;
-			double bessel = 1;
-			double root = 1;
-			double angle = kz;
-			// 2j terms
-			for (int j = 1; j < m; j++) {
-				u = 2 * j * step;
-				kz = waveNumber * (offsetZ + // (k - kc)*sliceSpacing +
-						sa * (u / upperLimit) * (u / upperLimit)
-								* (u / upperLimit) * (u / upperLimit));
-				root = Math.sqrt(1 + u * u);
-				bessel = J0(kr * u / root);
-				angle = kz / root;
-				sumR += 2 * Math.cos(angle) * u * bessel / 2;
-				sumI += 2 * Math.sin(angle) * u * bessel / 2;
+		int xMax = w / 2;
+		int yMax = h / 2;
+		int rMax = 2 + (int) Math.sqrt(xMax*xMax + yMax*yMax); //Maximal radius of PSF in pixels
+		double thetaMax = Math.asin(na / n); //The maximal angle (Theoretically between 0 < tM < pi/2
+		
+		int integralSteps = 100; //Smoothness of the integral
+		double k = 2 * Math.PI * n / lambda; //The wavenumber
+		
+		double[] sumR = new double[rMax]; //For storing the real part of the integral
+		double[] sumI = new double[rMax]; //For storing the imaginary part ot the integral
+				
+		for(int thetaIndex = 0; thetaIndex <= integralSteps; thetaIndex++) {
+			double theta = thetaIndex*thetaMax/integralSteps;
+			
+			double cosTheta = Math.cos(theta);
+			double sinTheta = Math.sin(theta);
+			double sqrCosTheta = Math.sqrt(cosTheta);
+			
+			double eR = Math.cos(k*offsetZ*cosTheta);
+			double eI = -Math.sin(k*offsetZ*cosTheta);
+			
+			for(int r = 0; r < rMax; r++) {
+				double rho = r*dRho;
+				
+				double j0 = J0(k*rho*sinTheta);
+				
+				sumR[r] += sqrCosTheta * j0 * eR * sinTheta;// * thetaMax / integralSteps;
+				sumI[r] += sqrCosTheta * j0 * eI * sinTheta;// * thetaMax / integralSteps;
 			}
-
-			// 2j - 1 terms
-			for (int j = 1; j <= m; j++) {
-				u = (2 * j - 1) * step;
-				kz = waveNumber * (offsetZ + // (k - kc)*sliceSpacing +
-						sa * (u / upperLimit) * (u / upperLimit)
-								* (u / upperLimit) * (u / upperLimit));
-				root = Math.sqrt(1 + u * u);
-				bessel = J0(kr * u / root);
-				angle = kz / root;
-				sumR += 4 * Math.cos(angle) * u * bessel / 2;
-				sumI += 4 * Math.sin(angle) * u * bessel / 2;
-			}
-
-			// f(b)
-			u = upperLimit;
-			kz = waveNumber * (offsetZ + sa);// (k - kc)*sliceSpacing + sa);
-			root = Math.sqrt(1 + u * u);
-			bessel = J0(kr * u / root);
-			angle = kz / root;
-			sumR += Math.cos(angle) * u * bessel / 2;
-			sumI += Math.sin(angle) * u * bessel / 2;
-
-			integral[r] = (float) (step * step * (sumR * sumR + sumI * sumI) / 9);
 		}
 
+		float[] line = new float[rMax];
+		
+		for(int r = 0; r < rMax; r++) {
+			line[r] = (float) (thetaMax/integralSteps * thetaMax/integralSteps * (sumR[r] * sumR[r] + sumI[r] * sumI[r]));		
+		}
+		
+		float[] pixels = new float[w * h];
+		float area = 0;
+		
 		for (int j = 0; j < h; j++) {
 			for (int i = 0; i < w; i++) {
-				double rPixels = Math.sqrt((i - ic) * (i - ic) + (j - jc)
-						* (j - jc));
-				pixels[i + w * j] = interp(integral, (float) rPixels);
+				double d = Math.sqrt((i-w/2)*(i-w/2) + (j-h/2)*(j-h/2));
+				pixels[i + w * j] = interp(line, (float) d);
+				area += pixels[i + w * j];
 			}
 		}
-
-		int n = w * h;
-
-		float area = 0;
-		for (int ind = 0; ind < n; ind++) {
-			area += pixels[ind];
-		}
 		System.out.println(area);
-		for (int ind = 0; ind < n; ind++) {
+		for (int ind = 0; ind < w*h; ind++) {
 			pixels[ind] /= area;
 		}
 		FrivolousFourier.shiftQuadrants(w, h, pixels);
