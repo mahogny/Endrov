@@ -147,15 +147,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				model.getSettings().lambda = Double.parseDouble(value);
 			System.out.println(prop+" "+value);
 			}
-
+		private double getRes()
+		{
+			return 0.1;
+		}
+		
 		public double getResMagX()
 			{
-			return 1;
+			return getRes();
 			}
 
 		public double getResMagY()
 			{
-			return 1;
+			return getRes();
 			}
 
 		public boolean hasConfigureDialog()
@@ -251,11 +255,12 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			for (int i = 0; i<3; i++)
 				tmp[i] += axis[i];
 			setStagePos(tmp);
-			// System.out.println("curpos "+stagePos[0]+"  "+stagePos[1]+"   "+stagePos[2]);
+			System.out.println("curpos "+stagePos[0]+"  "+stagePos[1]+"   "+stagePos[2]);
 			}
 
 		public void setStagePos(double[] axis)
 			{
+			double oldZ = stagePos[2];
 			for (int i = 0; i<3; i++)
 				stagePos[i] = axis[i];
 			if (stagePos[2]<-10000)
@@ -264,8 +269,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				stagePos[2]=10000;
 
 			model.getSettings().offsetZ = stagePos[2];
-				
-			model.updatePSF();
+			if(stagePos[2]!=oldZ)
+				model.updatePSF();
 			}
 
 		public void goHome()
