@@ -17,6 +17,7 @@ import java.awt.image.WritableRaster;
 import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
@@ -40,6 +41,13 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	public abstract EvPixels[] getImage();
 	public abstract int getLower();
 	public abstract int getUpper();
+	
+	public JToggleButton[] toolButtons;
+	
+	public CamWindowImageView(JToggleButton[] toolButtons){
+		this();
+		this.toolButtons = toolButtons;
+	}
 	
 	public CamWindowImageView()
 		{
@@ -182,6 +190,9 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		}
 	public void mouseDragged(MouseEvent e)
 		{
+		boolean move = true;
+		for(JToggleButton b:toolButtons)
+			if(b.isSelected()) move = false;
 		int dx=e.getX()-lastMousePosition.x;
 		int dy=e.getY()-lastMousePosition.y;
 		
@@ -197,9 +208,10 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		}
 		
 		//TODO update manual view
-		
-		moveAxis("x", dx*resMagX);
-		moveAxis("y", dy*resMagY);
+		if(move){
+			moveAxis("x", dx*resMagX);
+			moveAxis("y", dy*resMagY);
+		}
 		
 		lastMousePosition=new Vector2i(e.getX(),e.getY());
 		}

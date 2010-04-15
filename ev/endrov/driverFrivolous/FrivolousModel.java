@@ -24,12 +24,12 @@ public class FrivolousModel
 	public FrivolousModel()
 		{
 		cell = new FrivolousCell(new File(FrivolousDeviceProvider.class.getResource("data").getFile()));
-		convolve();
+		convolve(0,0);
 		}
 
-	public void convolve()
+	public void convolve(int offsetX, int offsetY)
 		{
-		output_image = cell.getImage();
+		output_image = cell.getImage(offsetX, offsetY);
 		if (model_action!=null)
 			model_action.actionPerformed(new ActionEvent(this, 0, "image_updated"));
 		}

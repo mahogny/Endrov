@@ -19,11 +19,11 @@
 				<emitation></emitation>
 			</spectra>
 			<staticlayer>
-				<image src="static-layer.png" />
+				<image src="static-layer-2.png" />
 			</staticlayer>
 			<mobilelayer>
-				<image src="mobile-layer.png" />
-				<stencil src="mobile-layer-alpha.png" />
+				<image src="mobile-layer-2.png" />
+				<stencil src="mobile-layer-alpha-2.png" />
 				<speed>1</speed>
 			</mobilelayer>
 		</fluorophore>

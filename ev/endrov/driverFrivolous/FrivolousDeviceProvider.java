@@ -149,7 +149,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			}
 		private double getRes()
 		{
-			return 0.1;
+			return 1;//0.1;
 		}
 		
 		public double getResMagX()
@@ -174,7 +174,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		public CameraImage snap()
 			{
 //			int r = (int) stagePos[2];
-			model.convolve();
+			model.convolve((int)stagePos[0],(int)stagePos[1]);
 			BufferedImage im = model.getImage();
 			CameraImage cim = new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1);
 			return cim;
