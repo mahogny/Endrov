@@ -216,11 +216,11 @@ class FrivolousDiffusion implements Runnable
 		// real[244+364*width] *= bleach_factor;
 		// real[297+396*width] *= bleach_factor;
 		// real[338+361*width] *= bleach_factor;
-		for (int i = 297; i<338; i++)
-			for (int j = 361; j<396; j++)
+		for (int i = 297+768; i<338+768; i++)
+			for (int j = 361+768; j<396+768; j++)
 				diffusion[i+j*width] *= bleachFactor;
-		for (int i = 150; i<170; i++)
-			for (int j = 230; j<250; j++)
+		for (int i = 150+768; i<170+768; i++)
+			for (int j = 230+768; j<250+768; j++)
 				diffusion[i+j*width] *= bleachFactor;
 		}
 

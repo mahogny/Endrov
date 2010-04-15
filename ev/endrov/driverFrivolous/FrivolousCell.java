@@ -74,7 +74,7 @@ public class FrivolousCell
 				}
 
 			immobile_arrays[i] = new FrivolousComplexArray(FrivolousUtility.getColorArray(
-					layer_image, FrivolousUtility.COLOR_RED), null, w, h);
+					layer_image, FrivolousUtility.COLOR_RED), null, layer_image.getWidth(), layer_image.getHeight());
 			i++;
 			}
 		immobile_sum_array = FrivolousComplexLib.getRealSum(immobile_arrays);
@@ -101,7 +101,7 @@ public class FrivolousCell
 				}
 
 			mobile_arrays[i] = new FrivolousComplexArray(FrivolousUtility.getColorArray(
-					layer_image, FrivolousUtility.COLOR_RED), null, w, h);
+					layer_image, FrivolousUtility.COLOR_RED), null, layer_image.getWidth(), layer_image.getHeight());
 
 			diffusers[i] = new FrivolousDiffusion(FrivolousComplexLib.getFilledArray(
 					mobile_arrays[i], 1f), FrivolousUtility.getIntColorArray(mask_image,
@@ -110,7 +110,7 @@ public class FrivolousCell
 			i++;
 			}
 
-		fft = new FrivolousFourier(w, h);
+		fft = new FrivolousFourier(1024, 1024);
 		psf = new FrivolousPSFDiffraction();
 		updatePSF();
 		for (i = 0; i<diffusers.length; i++)
@@ -119,6 +119,7 @@ public class FrivolousCell
 			}
 		}
 
+	//TODO: Parse the xml-file
 	private void parseSettings(Element settings)
 		{
 		this.settings = new FrivolousSettingsNew();
@@ -138,11 +139,11 @@ public class FrivolousCell
 
 	public void updatePSF()
 		{
-		FrivolousComplexArray psf_array = new FrivolousComplexArray(psf.createPSF(settings), null, w,h);
+		FrivolousComplexArray psf_array = new FrivolousComplexArray(psf.createPSF(settings), null, 1024,1024);
 		psf_fft = fft.forward(psf_array, true);
 		}
 
-	public BufferedImage getImage()
+	public BufferedImage getImage(int offsetX, int offsetY)
 		{
 
 		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
@@ -158,7 +159,10 @@ public class FrivolousCell
 
 		FrivolousComplexArray total_array = FrivolousComplexLib.getRealAddition(diffused_sum_array,
 				immobile_sum_array);
-		FrivolousComplexArray input_fft = fft.forward(total_array, true);
+		
+		FrivolousComplexArray crop_array = FrivolousComplexLib.getCrop(total_array,1024,1024,768-offsetX,768-offsetY);
+		
+		FrivolousComplexArray input_fft = fft.forward(crop_array, true);
 
 		timer.show("FFT on image");
 		FrivolousComplexArray output_fft = FrivolousComplexLib.getComplexMultiplication(input_fft,
@@ -172,8 +176,7 @@ public class FrivolousCell
 				settings);
 
 		timer.show("Poisson noise");
-		return FrivolousUtility.getImageFromComplex(output_noise, false);
-
+		return FrivolousUtility.getImageFromComplex(FrivolousComplexLib.getCrop(output_noise,512,512,0,0), false);
 		}
 
 	public FrivolousSettingsNew getSettings()

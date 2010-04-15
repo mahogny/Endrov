@@ -94,7 +94,7 @@ public class CamWindow extends BasicWindow implements ActionListener
 	}; 
 	
 	
-	private JPanel drawArea=new CamWindowImageView()
+	private JPanel drawArea=new CamWindowImageView(toolButtons)
 		{
 		private static final long serialVersionUID = 1L;
 		public int getUpper(){return histoView.upper;}
