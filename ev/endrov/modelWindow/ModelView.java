@@ -13,7 +13,7 @@ import java.awt.Font;
 import java.nio.*;
 
 import javax.media.opengl.*;
-import javax.media.opengl.awt.GLJPanel;
+import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
@@ -35,7 +35,7 @@ import endrov.util.EvDecimal;
 /**
  * A panel for displaying the model
  */
-public class ModelView extends GLJPanel
+public class ModelView extends GLCanvas
 	{
 	public static final long serialVersionUID=0;
 	
@@ -151,16 +151,12 @@ public class ModelView extends GLJPanel
 			{
 			//Get debug info
 			if(EV.debugMode)
-				{
-				
-				
 				drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
-				GL gl = drawable.getGL();
-				}
 			
 			//Get GL context
 			GL2 gl = drawable.getGL().getGL2();
 
+			checkerr(gl);
 			
 			//Switch off vertical synchronization. Might speed up
 			gl.setSwapInterval(1);
@@ -171,20 +167,28 @@ public class ModelView extends GLJPanel
 			gl.glEnable(GL2.GL_NORMALIZE);
 			gl.glShadeModel(GL2.GL_SMOOTH);
 			
+			checkerr(gl);
+			
 	    renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 72));
 
 	    //Number of clipping planes
 	    int[] queryArr=new int[1];
 	    gl.glGetIntegerv(GL2.GL_MAX_CLIP_PLANES, queryArr, 0);
 	    numClipPlanesSupported=queryArr[0];
-	    
+
+	    checkerr(gl);
+
 	    //3D texture support
 	    gl.glGetIntegerv(GL2.GL_MAX_3D_TEXTURE_SIZE, queryArr, 0);
 	    max3DTextureSize=queryArr[0];
 
+	    checkerr(gl);
+
 	    //Texture units
 	    gl.glGetIntegerv(GL2.GL_MAX_TEXTURE_UNITS, queryArr, 0);
 	    numTextureUnits=queryArr[0];
+	    
+	    checkerr(gl);
 	    
 	    //VBO support
 	    VBOsupported= 
@@ -217,6 +221,8 @@ public class ModelView extends GLJPanel
 				EvLog.printLog("num texture units: "+numTextureUnits);
 				EvLog.printLog("VBO supported: "+VBOsupported);
 	    	}
+	    
+	    checkerr(gl);
 			}
 
 		
@@ -272,7 +278,7 @@ public class ModelView extends GLJPanel
 			GL2 gl = drawable.getGL().getGL2();
 			gl.glPushMatrix();
 			
-			checkerr(gl);
+			checkerr(gl); //TODO upon start getting this
 			
 			 //Set light to follow camera
 			float light_position[] = { 1.0f, 1.0f, 1.0f, 0.0f };

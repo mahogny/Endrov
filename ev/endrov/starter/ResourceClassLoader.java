@@ -97,7 +97,7 @@ public class ResourceClassLoader extends URLClassLoader
 		else
 			libname="lib"+libname+".so";
 
-		System.out.println("findlibrary "+libname);
+		//System.out.println("findlibrary "+libname);
 		
 		for(String s:binfiles)
 			{
@@ -107,7 +107,7 @@ public class ResourceClassLoader extends URLClassLoader
 			}
 
 		String dellib=super.findLibrary(libname);
-		System.out.println("Delegating find library for "+libname+" , found "+dellib);
+		//System.out.println("Delegating find library for "+libname+" , found "+dellib);
 		return dellib;
 		}
 	
