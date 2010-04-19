@@ -13,6 +13,7 @@ import javax.vecmath.Vector3d;
 import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
+import endrov.imageWindow.ImageWindowInterface;
 import endrov.modelWindow.ModelWindow;
 
 /**
@@ -110,10 +111,10 @@ public class ImageAnnot extends EvObject implements Cloneable
 		EvData.supportedMetadataFormats.put(metaType,ImageAnnot.class);
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindow w)
+			public void newImageWindow(ImageWindowInterface w)
 				{
 				ImageAnnotImageRenderer r=new ImageAnnotImageRenderer(w);
-				w.imageWindowTools.add(new ImageAnnotImageTool(w,r));
+				w.addImageWindowTool(new ImageAnnotImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});

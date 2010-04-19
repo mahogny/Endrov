@@ -152,10 +152,10 @@ public class Shell extends EvObject
 		{
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindow w)
+			public void newImageWindow(ImageWindowInterface w)
 				{
 				ShellImageRenderer r=new ShellImageRenderer(w);
-				w.imageWindowTools.add(new ShellImageTool(w,r));
+				w.addImageWindowTool(new ShellImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});

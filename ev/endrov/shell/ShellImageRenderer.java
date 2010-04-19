@@ -18,11 +18,11 @@ import endrov.imageWindow.*;
  */
 public class ShellImageRenderer implements ImageWindowRenderer
 	{
-	private ImageWindow w;
+	private ImageWindowInterface w;
 	
 	public Shell currentShell=null;
 	
-	public ShellImageRenderer(ImageWindow w)
+	public ShellImageRenderer(ImageWindowInterface w)
 		{
 		this.w=w;
 		}

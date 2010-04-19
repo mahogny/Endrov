@@ -14,10 +14,10 @@ import endrov.util.EvDecimal;
 
 public class EvLineRenderer implements ImageWindowRenderer
 	{
-	public ImageWindow w;
+	public ImageWindowInterface w;
 	
 	
-	public EvLineRenderer(ImageWindow w)
+	public EvLineRenderer(ImageWindowInterface w)
 		{
 		this.w=w;
 		}

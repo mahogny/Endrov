@@ -25,7 +25,7 @@ import endrov.util.EvDecimal;
  */
 public class NucImageRenderer implements ImageWindowRenderer
 	{
-	public ImageWindow w;
+	public ImageWindowInterface w;
 	
 	/** Interpolated nuclei */
 	public Map<NucSel, NucLineage.NucInterp> interpNuc=new HashMap<NucSel, NucLineage.NucInterp>();
@@ -34,7 +34,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public NucSel modifyingNucName=null;
 	
 	
-	public NucImageRenderer(ImageWindow w)
+	public NucImageRenderer(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
@@ -289,10 +289,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 		{
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindow w)
+			public void newImageWindow(ImageWindowInterface w)
 				{
 				NucImageRenderer r=new NucImageRenderer(w);
-				w.imageWindowTools.add(new NucImageTool(w,r));
+				w.addImageWindowTool(new NucImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});

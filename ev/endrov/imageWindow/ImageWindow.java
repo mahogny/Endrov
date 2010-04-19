@@ -42,7 +42,7 @@ import endrov.util.SnapBackSlider.SnapChangeListener;
  */
 public class ImageWindow extends BasicWindow 
 			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener,
-			WSTransformer
+			ImageWindowInterface
 	{	
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -201,7 +201,7 @@ public class ImageWindow extends BasicWindow
 
 		
 	/** Extension: Tool */
-	public final Vector<ImageWindowTool> imageWindowTools=new Vector<ImageWindowTool>();
+	private final Vector<ImageWindowTool> imageWindowTools=new Vector<ImageWindowTool>();
 	/** Currently selected tool */
 	private ImageWindowTool tool;
 
@@ -216,6 +216,13 @@ public class ImageWindow extends BasicWindow
 		{
 		return tool;
 		}
+	
+	
+	public void addImageWindowTool(ImageWindowTool tool)
+		{
+		imageWindowTools.add(tool);
+		}
+	
 	
 	/** Hide all markings for now; to quickly show without overlay */
 	private boolean temporarilyHideMarkings=false;
@@ -988,12 +995,12 @@ public class ImageWindow extends BasicWindow
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindow w)
+			public void newImageWindow(ImageWindowInterface w)
 				{
-				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
-				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
-				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
-				w.imageWindowTools.add(new ImageWindowToolEditImage(w));
+				w.addImageWindowTool(new ImageWindowToolChannelDisp(w));
+				w.addImageWindowTool(new ImageWindowToolScreenshot(w));
+				w.addImageWindowTool(new ImageWindowToolPixelInfo(w));
+				w.addImageWindowTool(new ImageWindowToolEditImage(w));
 				}
 			});
 		}
