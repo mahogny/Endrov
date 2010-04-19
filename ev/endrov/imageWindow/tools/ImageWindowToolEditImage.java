@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.util.EvDecimal;
 
@@ -29,13 +30,13 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 	{
 	private final JMenu miRemove=new JMenu("Remove");
 
-	private final ImageWindow w;
+	private final ImageWindowInterface w;
 
 	private final JMenuItem miRemoveChannel=new JMenuItem("Channel");
 	private final JMenuItem miRemoveFrame=new JMenuItem("Frame");
 	private final JMenuItem miRemoveSlice=new JMenuItem("Slice");
 
-	public ImageWindowToolEditImage(final ImageWindow w)
+	public ImageWindowToolEditImage(final ImageWindowInterface w)
 		{
 		this.w=w;
 		
@@ -74,7 +75,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 				}
 			}
 		else if(e.getSource()==miRemoveFrame)
-			{
+			{ 
 			String ch=w.getCurrentChannelName();
 			EvDecimal frame=w.frameControl.getFrame();
 			

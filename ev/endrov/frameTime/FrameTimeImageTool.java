@@ -25,8 +25,8 @@ import endrov.util.EvDecimal;
  */
 public class FrameTimeImageTool implements ImageWindowTool
 	{
-	private final ImageWindow w;
-	public FrameTimeImageTool(ImageWindow w)
+	private final ImageWindowInterface w;
+	public FrameTimeImageTool(ImageWindowInterface w)
 		{
 		this.w=w;
 		}

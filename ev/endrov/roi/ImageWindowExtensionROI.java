@@ -36,7 +36,7 @@ public class ImageWindowExtensionROI implements ImageWindowExtension
 
 		final ImageRendererROI renderer=new ImageRendererROI(w);
 		w.addImageWindowRenderer(renderer);
-		w.imageWindowTools.add(new ImageToolROI(w,renderer));
+		w.addImageWindowTool(new ImageToolROI(w,renderer));
 
 		//ROI
 		JMenu miNew=new JMenu("New");

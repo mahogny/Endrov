@@ -19,6 +19,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
 import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.util.EvFileUtil;
 
@@ -32,9 +33,9 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 	{
 	JMenuItem mi=new JMenuItem("Screenshot");
 
-	private final ImageWindow w;
+	private final ImageWindowInterface w;
 	
-	public ImageWindowToolScreenshot(final ImageWindow w)
+	public ImageWindowToolScreenshot(final ImageWindowInterface w)
 		{
 		this.w=w;
 		}

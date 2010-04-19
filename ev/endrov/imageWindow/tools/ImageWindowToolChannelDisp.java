@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
@@ -30,9 +31,9 @@ import endrov.util.EvDecimal;
  */
 public class ImageWindowToolChannelDisp implements ImageWindowTool
 	{
-	private final ImageWindow w;
+	private final ImageWindowInterface w;
 	
-	public ImageWindowToolChannelDisp(ImageWindow w)
+	public ImageWindowToolChannelDisp(ImageWindowInterface w)
 		{
 		this.w=w;
 		}

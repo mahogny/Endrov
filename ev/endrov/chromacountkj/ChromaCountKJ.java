@@ -15,6 +15,7 @@ import javax.vecmath.Vector3d;
 import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
+import endrov.imageWindow.ImageWindowInterface;
 import endrov.modelWindow.ModelWindow;
 
 /**
@@ -110,10 +111,10 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindow w)
+			public void newImageWindow(ImageWindowInterface w)
 				{
 				ChromaCountKJImageRenderer r=new ChromaCountKJImageRenderer(w);
-				w.imageWindowTools.add(new ChromaCountKJImageTool(w,r));
+				w.addImageWindowTool(new ChromaCountKJImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});

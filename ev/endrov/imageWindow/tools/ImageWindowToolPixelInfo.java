@@ -17,6 +17,7 @@ import javax.vecmath.Vector2d;
 import endrov.consoleWindow.ConsoleWindow;
 import endrov.ev.EvLog;
 import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
@@ -31,9 +32,9 @@ import endrov.util.EvDecimal;
  */
 public class ImageWindowToolPixelInfo implements ImageWindowTool
 	{
-	private final ImageWindow w;
+	private final ImageWindowInterface w;
 	
-	public ImageWindowToolPixelInfo(ImageWindow w)
+	public ImageWindowToolPixelInfo(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
