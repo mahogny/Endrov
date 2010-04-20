@@ -172,7 +172,7 @@ public class EvLine extends EvObject implements Cloneable
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindowInterface w)
+			public void newImageWindow(ImageWindow w)
 				{
 				EvLineRenderer r=new EvLineRenderer(w);
 				

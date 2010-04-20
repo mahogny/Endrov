@@ -25,7 +25,7 @@ import endrov.util.EvDecimal;
  */
 public class NucImageRenderer implements ImageWindowRenderer
 	{
-	public ImageWindowInterface w;
+	public ImageWindow w;
 	
 	/** Interpolated nuclei */
 	public Map<NucSel, NucLineage.NucInterp> interpNuc=new HashMap<NucSel, NucLineage.NucInterp>();
@@ -34,7 +34,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public NucSel modifyingNucName=null;
 	
 	
-	public NucImageRenderer(ImageWindowInterface w)
+	public NucImageRenderer(ImageWindow w)
 		{
 		this.w=w;
 		}
@@ -58,7 +58,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(w.mouseInWindow)
 			NucLineage.currentHover=new NucSel();
 	
-		EvDecimal currentFrame=w.frameControl.getFrame();
+		EvDecimal currentFrame=w.getFrame();//frameControl.getFrame();
 		
 		interpNuc.clear();
 		for(NucLineage lin:getVisibleLineages())
@@ -189,7 +189,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			if(isVisible)
 				{
 				//Mark keyframe
-				if(nuc.isKeyFrame(w.frameControl.getFrame()))
+				if(nuc.isKeyFrame(w.getFrame()))
 					{
 					g.drawLine((int)(so.x-sor-1), (int)(so.y), (int)(so.x-sor+1), (int)(so.y));
 					g.drawLine((int)(so.x+sor-1), (int)(so.y), (int)(so.x+sor+1), (int)(so.y));					
@@ -232,7 +232,8 @@ public class NucImageRenderer implements ImageWindowRenderer
 	private double projectSphere(double r, double z)
 		{
 		//Currently assumes resx=resy. Maybe this should be specified harder?
-		double wz=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
+		//double wz=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
+		double wz=w.getModelZ().doubleValue(); 
 		double tf=r*r-(z-wz)*(z-wz);
 		if(tf>0)
 			{
@@ -252,7 +253,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			return null;
 		else
 			{
-			EvDecimal framei=w.frameControl.getFrame();
+			EvDecimal framei=w.getFrame(); //frameControl.getFrame();
 			if(n.pos.get(framei)==null)
 				{
 				NucLineage.NucInterp inter=n.interpolatePos(framei);
@@ -289,7 +290,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		{
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindowInterface w)
+			public void newImageWindow(ImageWindow w)
 				{
 				NucImageRenderer r=new NucImageRenderer(w);
 				w.addImageWindowTool(new NucImageTool(w,r));

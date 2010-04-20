@@ -32,9 +32,9 @@ import endrov.util.EvDecimal;
  */
 public class ImageWindowToolPixelInfo implements ImageWindowTool
 	{
-	private final ImageWindowInterface w;
+	private final ImageWindow w;
 	
-	public ImageWindowToolPixelInfo(ImageWindowInterface w)
+	public ImageWindowToolPixelInfo(ImageWindow w)
 		{
 		this.w=w;
 		}

@@ -63,7 +63,7 @@ public class FrameTimeImageTool implements ImageWindowTool
 			for(FrameTime f:rec.getObjects(FrameTime.class))
 				{
 				EvDecimal frametime=new EvDecimal(frametimes);
-				f.add(w.frameControl.getFrame(), frametime); 
+				f.add(w.getFrame(), frametime); 
 				BasicWindow.updateWindows();
 				}
 			}

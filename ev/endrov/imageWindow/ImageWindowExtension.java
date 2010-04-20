@@ -12,5 +12,5 @@ package endrov.imageWindow;
  */
 public interface ImageWindowExtension
 	{
-	public void newImageWindow(ImageWindowInterface w);
+	public void newImageWindow(ImageWindow w);
 	}

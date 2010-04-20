@@ -111,7 +111,7 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindowInterface w)
+			public void newImageWindow(ImageWindow w)
 				{
 				ChromaCountKJImageRenderer r=new ChromaCountKJImageRenderer(w);
 				w.addImageWindowTool(new ChromaCountKJImageTool(w,r));

@@ -15,6 +15,7 @@ public interface ImageWindowInterface extends WSTransformer
 	public double getRotation();
 	
 	public EvDecimal getModelZ();
+	public EvDecimal getFrame();
 	
 	
 	public <E> E getRendererClass(Class<E> cl);

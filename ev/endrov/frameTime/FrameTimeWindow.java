@@ -352,7 +352,7 @@ public class FrameTimeWindow extends BasicWindow implements ActionListener, Chan
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindowInterface w)
+			public void newImageWindow(ImageWindow w)
 				{
 				w.addImageWindowTool(new FrameTimeImageTool(w));
 				}

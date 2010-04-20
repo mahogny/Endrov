@@ -31,15 +31,14 @@ import endrov.util.EvDecimal;
  */
 public class ImageWindowToolChannelDisp implements ImageWindowTool
 	{
-	/*
-	private final ImageWindowInterface w;
+	private final ImageWindow w;
 	
-	public ImageWindowToolChannelDisp(ImageWindowInterface w)
+	public ImageWindowToolChannelDisp(ImageWindow w)
 		{
 		this.w=w;
 		}
-		*/
-	public JMenuItem getMenuItem(final ImageWindow w)
+	
+	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Channel/Displacement");
 		mi.setSelected(w.getTool()==this);
@@ -50,7 +49,7 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 		return mi;
 		}
 	
-	public void mouseDragged(ImageWindow w, MouseEvent e, int dx, int dy)
+	public void mouseDragged(MouseEvent e, int dx, int dy)
 		{
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
@@ -82,14 +81,14 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 				}
 			}
 		}
-	public void mouseClicked(ImageWindow w, MouseEvent e) {}
-	public void mousePressed(ImageWindow w, MouseEvent e) {}
-	public void mouseReleased(ImageWindow w, MouseEvent e) {}
-	public void mouseMoved(ImageWindow w, MouseEvent e, int dx, int dy) {}
-	public void mouseExited(ImageWindow w, MouseEvent e) {}
-	public void keyPressed(ImageWindow w, KeyEvent e) {}
-	public void keyReleased(ImageWindow w, KeyEvent e) {}
-	public void paintComponent(ImageWindow w, Graphics g) {}
-	public void deselected(ImageWindow w) {}
+	public void mouseClicked(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
+	public void mouseMoved(MouseEvent e, int dx, int dy) {}
+	public void mouseExited(MouseEvent e) {}
+	public void keyPressed(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
+	public void paintComponent(Graphics g) {}
+	public void deselected() {}
 	}
 

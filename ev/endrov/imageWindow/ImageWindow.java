@@ -106,7 +106,7 @@ public class ImageWindow extends BasicWindow
 					for(ImageWindowRenderer r:imageWindowRenderers)
 						r.draw(g);
 					if(tool!=null)
-						tool.paintComponent(ImageWindow.this, g);
+						tool.paintComponent(g);
 					}
 				else
 					EvLog.printError("Bad scale of image", null);
@@ -208,7 +208,7 @@ public class ImageWindow extends BasicWindow
 	public void setTool(ImageWindowTool tool)
 		{
 		if(this.tool!=null)
-			this.tool.deselected(ImageWindow.this);
+			this.tool.deselected();
 		this.tool=tool;  
 		buildMenu();
 		}
@@ -424,11 +424,11 @@ public class ImageWindow extends BasicWindow
 			if(t==null)
 				menuImageWindow.addSeparator();
 			else
-				menuImageWindow.add(t.getMenuItem(ImageWindow.this));
+				menuImageWindow.add(t.getMenuItem());
 	
 		//List custom tool as well
 		if(!imageWindowTools.contains(tool) && !miToolNone.isSelected())
-			menuImageWindow.add(tool.getMenuItem(ImageWindow.this));
+			menuImageWindow.add(tool.getMenuItem());
 		
 		}
 	
@@ -737,7 +737,7 @@ public class ImageWindow extends BasicWindow
 		else
 			{
 			if(tool!=null)
-				tool.keyPressed(this,e);
+				tool.keyPressed(e);
 			}
 			}
 		}
@@ -754,7 +754,7 @@ public class ImageWindow extends BasicWindow
 			repaint();
 			}
 		else if(tool!=null)
-			tool.keyReleased(this,e);
+			tool.keyReleased(e);
 			}
 		}
 	/**
@@ -777,7 +777,7 @@ public class ImageWindow extends BasicWindow
 	public void mouseClicked(MouseEvent e)
 		{
 		if(tool!=null)
-			tool.mouseClicked(this,e);
+			tool.mouseClicked(e);
 //		if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isMiddleMouseButton(e))
 		imagePanel.requestFocus();
 		}
@@ -788,7 +788,7 @@ public class ImageWindow extends BasicWindow
 		{
 		imagePanel.requestFocus();
 		if(tool!=null)
-			tool.mousePressed(this,e);
+			tool.mousePressed(e);
 		mouseLastDragX=e.getX();
 		mouseLastDragY=e.getY();
 		}
@@ -798,7 +798,7 @@ public class ImageWindow extends BasicWindow
 	public void mouseReleased(MouseEvent e)
 		{
 		if(tool!=null)
-			tool.mouseReleased(this,e);
+			tool.mouseReleased(e);
 		}
 	/**
 	 * Callback: Mouse pointer has entered window
@@ -814,7 +814,7 @@ public class ImageWindow extends BasicWindow
 		{
 		mouseInWindow=false;
 		if(tool!=null)
-			tool.mouseExited(this,e);
+			tool.mouseExited(e);
 		}
 	/**
 	 * Callback: Mouse moved
@@ -831,7 +831,7 @@ public class ImageWindow extends BasicWindow
 		
 		//Handle tool specific feedback
 		if(tool!=null)
-			tool.mouseMoved(this,e,dx,dy);
+			tool.mouseMoved(e,dx,dy);
 		
 		//Need to update currentHover so always repaint.
 		imagePanel.repaint();
@@ -853,7 +853,7 @@ public class ImageWindow extends BasicWindow
 			}
 
 		if(tool!=null)
-			tool.mouseDragged(this,e,dx,dy);
+			tool.mouseDragged(e,dx,dy);
 		}
 	/**
 	 * Callback: Mouse scrolls
@@ -995,7 +995,7 @@ public class ImageWindow extends BasicWindow
 		
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindowInterface w)
+			public void newImageWindow(ImageWindow w)
 				{
 				w.addImageWindowTool(new ImageWindowToolChannelDisp(w));
 				w.addImageWindowTool(new ImageWindowToolScreenshot(w));
@@ -1018,6 +1018,18 @@ public class ImageWindow extends BasicWindow
 			if(cl.isInstance(r))
 				return (E)r;
 		throw new RuntimeException("No such renderer exists - " + cl);
+		}
+
+
+	public EvDecimal getFrame()
+		{
+		return frameControl.getFrame();
+		}
+
+
+	public EvDecimal getModelZ()
+		{
+		return frameControl.getModelZ();
 		}
 	
 	}
