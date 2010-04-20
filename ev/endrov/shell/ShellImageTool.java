@@ -24,21 +24,22 @@ import endrov.keyBinding.KeyBinding;
  */
 public class ShellImageTool implements ImageWindowTool
 	{
-	private final ImageWindow w;
-	private final ShellImageRenderer r;
+	//private final ImageWindow w;
+	//private final ShellImageRenderer r;
 	
 	private boolean holdTranslate=false;
 	private boolean holdRotate=false;
 
-	public void deselected() {}
+	public void deselected(ImageWindow w) {}
 	
+	/*
 	public ShellImageTool(ImageWindow w, ShellImageRenderer r)
 		{
-		this.w=w;
-		this.r=r;
+		//this.w=w;
+		//this.r=r;
 		}
-
-	public JMenuItem getMenuItem()
+*/
+	public JMenuItem getMenuItem(final ImageWindow w)
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Shell/Define");
 		mi.setSelected(w.getTool()==this);
@@ -50,9 +51,16 @@ public class ShellImageTool implements ImageWindowTool
 		}
 
 	
-	private Shell getCurrentShell()
+	
+	private ShellImageRenderer getRenderer(ImageWindow w)
 		{
-		return r.currentShell;
+		return w.getRendererClass(ShellImageRenderer.class); 
+		}
+	
+	private Shell getCurrentShell(ImageWindow w)
+		{		
+		return getRenderer(w).currentShell;
+//		return r.currentShell;
 		}
 	
 	private double square(double x)
@@ -63,10 +71,11 @@ public class ShellImageTool implements ImageWindowTool
 	/**
 	 * Update currently "hovered" shell
 	 */
-	private void updateCurrentShell(int mx, int my, boolean acceptNull)
+	private void updateCurrentShell(final ImageWindow w, int mx, int my, boolean acceptNull)
 		{
 		Vector2d v=w.transformS2W(new Vector2d(mx,my));
 
+		ShellImageRenderer r=getRenderer(w);
 		
 		double wx=v.x;
 		double wy=v.y;
@@ -93,13 +102,13 @@ public class ShellImageTool implements ImageWindowTool
 		}
 
 	
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(final ImageWindow w, MouseEvent e)
 		{
 		}
 	
-	public void mouseDragged(MouseEvent e, int dx, int dy)
+	public void mouseDragged(final ImageWindow w, MouseEvent e, int dx, int dy)
 		{
-		Shell shell=getCurrentShell();
+		Shell shell=getCurrentShell(w);
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			if(shell!=null)
@@ -126,10 +135,11 @@ public class ShellImageTool implements ImageWindowTool
 		}
 	
 	
-	public void mousePressed(MouseEvent e)
+	public void mousePressed(final ImageWindow w, MouseEvent e)
 		{
-		updateCurrentShell(e.getX(), e.getY(),true);
-		Shell shell=getCurrentShell();
+		ShellImageRenderer r=getRenderer(w);
+		updateCurrentShell(w, e.getX(), e.getY(),true);
+		Shell shell=getCurrentShell(w);
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			if(shell==null)
@@ -158,16 +168,17 @@ public class ShellImageTool implements ImageWindowTool
 			}
 		}
 
-	public void mouseReleased(MouseEvent e)
+	public void mouseReleased(final ImageWindow w, MouseEvent e)
 		{
 		BasicWindow.updateWindows();
 		}
 
 	
-	public void mouseMoved(MouseEvent e, int dx, int dy)
+	public void mouseMoved(final ImageWindow w, MouseEvent e, int dx, int dy)
 		{
-		updateCurrentShell(e.getX(), e.getY(),false);
-		Shell shell=getCurrentShell();
+		//ShellImageRenderer r=getRenderer(w);
+		updateCurrentShell(w, e.getX(), e.getY(),false);
+		Shell shell=getCurrentShell(w);
 		if(shell!=null)
 			{
 			if(holdRotate)
@@ -185,16 +196,16 @@ public class ShellImageTool implements ImageWindowTool
 			}
 		}
 	
-	public void mouseExited(MouseEvent e) {}
+	public void mouseExited(final ImageWindow w, MouseEvent e) {}
 	
-	public void keyPressed(KeyEvent e)
+	public void keyPressed(final ImageWindow w, KeyEvent e)
 		{
 		if(KeyBinding.get(Shell.KEY_TRANSLATE).typed(e))
 			holdTranslate=true;
 		if(KeyBinding.get(Shell.KEY_ROTATE).typed(e))
 			holdRotate=true;
 
-		Shell shell=getCurrentShell();
+		Shell shell=getCurrentShell(w);
 		if(KeyBinding.get(Shell.KEY_SETZ).typed(e) && shell!=null)
 			{
 			//Bring shell to this Z
@@ -204,7 +215,7 @@ public class ShellImageTool implements ImageWindowTool
 			}
 		}
 
-	public void keyReleased(KeyEvent e)
+	public void keyReleased(final ImageWindow w, KeyEvent e)
 		{
 		if(KeyBinding.get(Shell.KEY_TRANSLATE).typed(e))
 			holdTranslate=false;
@@ -213,7 +224,7 @@ public class ShellImageTool implements ImageWindowTool
 		}
 
 	
-	public void paintComponent(Graphics g)
+	public void paintComponent(final ImageWindow w, Graphics g)
 		{
 		}
 		

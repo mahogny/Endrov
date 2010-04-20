@@ -1,6 +1,8 @@
 package endrov.imageWindow;
 
 import endrov.basicWindow.WSTransformer;
+import endrov.data.EvContainer;
+import endrov.util.EvDecimal;
 
 public interface ImageWindowInterface extends WSTransformer
 	{
@@ -9,7 +11,11 @@ public interface ImageWindowInterface extends WSTransformer
 	public void addImageWindowRenderer(ImageWindowRenderer renderer);
 	
 	
+	public EvContainer getRootObject();
+	public double getRotation();
 	
-	public void getRendererClass(Class<ImageWindowRenderer> cl);
-
+	public EvDecimal getModelZ();
+	
+	
+	public <E> E getRendererClass(Class<E> cl);
 	}
