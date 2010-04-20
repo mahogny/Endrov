@@ -24,22 +24,19 @@ import endrov.keyBinding.KeyBinding;
  */
 public class ShellImageTool implements ImageWindowTool
 	{
-	//private final ImageWindow w;
-	//private final ShellImageRenderer r;
+	private final ImageWindow w;
 	
 	private boolean holdTranslate=false;
 	private boolean holdRotate=false;
 
-	public void deselected(ImageWindow w) {}
 	
-	/*
-	public ShellImageTool(ImageWindow w, ShellImageRenderer r)
+	
+	public ShellImageTool(ImageWindow w)
 		{
-		//this.w=w;
-		//this.r=r;
+		this.w=w;
 		}
-*/
-	public JMenuItem getMenuItem(final ImageWindow w)
+
+	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Shell/Define");
 		mi.setSelected(w.getTool()==this);
@@ -50,6 +47,7 @@ public class ShellImageTool implements ImageWindowTool
 		return mi;
 		}
 
+	public void deselected() {}
 	
 	
 	private ShellImageRenderer getRenderer(ImageWindow w)
@@ -71,7 +69,7 @@ public class ShellImageTool implements ImageWindowTool
 	/**
 	 * Update currently "hovered" shell
 	 */
-	private void updateCurrentShell(final ImageWindow w, int mx, int my, boolean acceptNull)
+	private void updateCurrentShell(int mx, int my, boolean acceptNull)
 		{
 		Vector2d v=w.transformS2W(new Vector2d(mx,my));
 
@@ -102,11 +100,11 @@ public class ShellImageTool implements ImageWindowTool
 		}
 
 	
-	public void mouseClicked(final ImageWindow w, MouseEvent e)
+	public void mouseClicked(final  MouseEvent e)
 		{
 		}
 	
-	public void mouseDragged(final ImageWindow w, MouseEvent e, int dx, int dy)
+	public void mouseDragged(final  MouseEvent e, int dx, int dy)
 		{
 		Shell shell=getCurrentShell(w);
 		if(SwingUtilities.isLeftMouseButton(e))
@@ -135,10 +133,10 @@ public class ShellImageTool implements ImageWindowTool
 		}
 	
 	
-	public void mousePressed(final ImageWindow w, MouseEvent e)
+	public void mousePressed(MouseEvent e)
 		{
 		ShellImageRenderer r=getRenderer(w);
-		updateCurrentShell(w, e.getX(), e.getY(),true);
+		updateCurrentShell(e.getX(), e.getY(),true);
 		Shell shell=getCurrentShell(w);
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
@@ -168,16 +166,16 @@ public class ShellImageTool implements ImageWindowTool
 			}
 		}
 
-	public void mouseReleased(final ImageWindow w, MouseEvent e)
+	public void mouseReleased(MouseEvent e)
 		{
 		BasicWindow.updateWindows();
 		}
 
 	
-	public void mouseMoved(final ImageWindow w, MouseEvent e, int dx, int dy)
+	public void mouseMoved(MouseEvent e, int dx, int dy)
 		{
 		//ShellImageRenderer r=getRenderer(w);
-		updateCurrentShell(w, e.getX(), e.getY(),false);
+		updateCurrentShell(e.getX(), e.getY(),false);
 		Shell shell=getCurrentShell(w);
 		if(shell!=null)
 			{
@@ -196,9 +194,9 @@ public class ShellImageTool implements ImageWindowTool
 			}
 		}
 	
-	public void mouseExited(final ImageWindow w, MouseEvent e) {}
+	public void mouseExited(final  MouseEvent e) {}
 	
-	public void keyPressed(final ImageWindow w, KeyEvent e)
+	public void keyPressed(final  KeyEvent e)
 		{
 		if(KeyBinding.get(Shell.KEY_TRANSLATE).typed(e))
 			holdTranslate=true;
@@ -215,7 +213,7 @@ public class ShellImageTool implements ImageWindowTool
 			}
 		}
 
-	public void keyReleased(final ImageWindow w, KeyEvent e)
+	public void keyReleased(KeyEvent e)
 		{
 		if(KeyBinding.get(Shell.KEY_TRANSLATE).typed(e))
 			holdTranslate=false;
@@ -224,7 +222,7 @@ public class ShellImageTool implements ImageWindowTool
 		}
 
 	
-	public void paintComponent(final ImageWindow w, Graphics g)
+	public void paintComponent(Graphics g)
 		{
 		}
 		

@@ -33,9 +33,9 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 	{
 	JMenuItem mi=new JMenuItem("Screenshot");
 
-	private final ImageWindowInterface w;
+	private final ImageWindow w;
 	
-	public ImageWindowToolScreenshot(final ImageWindowInterface w)
+	public ImageWindowToolScreenshot(final ImageWindow w)
 		{
 		this.w=w;
 		}

@@ -14,10 +14,10 @@ import endrov.util.EvDecimal;
 
 public class EvLineRenderer implements ImageWindowRenderer
 	{
-	public ImageWindowInterface w;
+	public ImageWindow w;
 	
 	
-	public EvLineRenderer(ImageWindowInterface w)
+	public EvLineRenderer(ImageWindow w)
 		{
 		this.w=w;
 		}
@@ -34,7 +34,7 @@ public class EvLineRenderer implements ImageWindowRenderer
 	 */
 	public void draw(Graphics g)
 		{
-		EvDecimal curFrame=w.frameControl.getFrame();
+		EvDecimal curFrame=w.getFrame();
 		for(EvLine ann:getVisible())
 			{
 			//Draw the nucleus
@@ -49,7 +49,7 @@ public class EvLineRenderer implements ImageWindowRenderer
 					last=next;
 					}
 				}
-			EvDecimal curZ=w.frameControl.getModelZ();
+			EvDecimal curZ=w.getModelZ();
 //			w.s2wz(w.frameControl.getZ().doubleValue()); 
 			for(int i=0;i<ann.pos.size();i++)
 				if(ann.pos.get(i).frame.equals(curFrame))

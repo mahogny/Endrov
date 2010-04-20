@@ -111,7 +111,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 		EvData.supportedMetadataFormats.put(metaType,ImageAnnot.class);
 		ImageWindow.addImageWindowExtension(new ImageWindowExtension()
 			{
-			public void newImageWindow(ImageWindowInterface w)
+			public void newImageWindow(ImageWindow w)
 				{
 				ImageAnnotImageRenderer r=new ImageAnnotImageRenderer(w);
 				w.addImageWindowTool(new ImageAnnotImageTool(w,r));
