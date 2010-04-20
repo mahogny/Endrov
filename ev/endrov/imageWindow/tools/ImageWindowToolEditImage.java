@@ -30,20 +30,21 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 	{
 	private final JMenu miRemove=new JMenu("Remove");
 
-	private final ImageWindowInterface w;
+//	private final ImageWindowInterface w;
 
 	private final JMenuItem miRemoveChannel=new JMenuItem("Channel");
 	private final JMenuItem miRemoveFrame=new JMenuItem("Frame");
 	private final JMenuItem miRemoveSlice=new JMenuItem("Slice");
 
+	/*
 	public ImageWindowToolEditImage(final ImageWindowInterface w)
 		{
 		this.w=w;
 		
 		
-		}
+		}*/
 	
-	public JMenuItem getMenuItem()
+	public JMenuItem getMenuItem(ImageWindow w)
 		{
 		//Create menus
 		BasicWindow.addMenuItemSorted(miRemove, miRemove);
@@ -102,15 +103,15 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 		
 		}
 	
-	public void deselected(){}
+	public void deselected(ImageWindow w){}
 	
-	public void mouseClicked(MouseEvent e){}
-	public void mousePressed(MouseEvent e){}
-	public void mouseReleased(MouseEvent e){}
-	public void mouseDragged(MouseEvent e, int dx, int dy){}
-	public void paintComponent(Graphics g){}
-	public void mouseMoved(MouseEvent e, int dx, int dy){}
-	public void keyPressed(KeyEvent e){}
-	public void keyReleased(KeyEvent e){}
-	public void mouseExited(MouseEvent e){}
+	public void mouseClicked(ImageWindow w, MouseEvent e){}
+	public void mousePressed(ImageWindow w, MouseEvent e){}
+	public void mouseReleased(ImageWindow w, MouseEvent e){}
+	public void mouseDragged(ImageWindow w, MouseEvent e, int dx, int dy){}
+	public void paintComponent(ImageWindow w, Graphics g){}
+	public void mouseMoved(ImageWindow w, MouseEvent e, int dx, int dy){}
+	public void keyPressed(ImageWindow w, KeyEvent e){}
+	public void keyReleased(ImageWindow w, KeyEvent e){}
+	public void mouseExited(ImageWindow w, MouseEvent e){}
 	}

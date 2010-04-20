@@ -80,7 +80,8 @@ public class ShellImageRenderer implements ImageWindowRenderer
 	private double projectSphere(double r, double z)
 		{
 		//Currently assumes resx=resy. Maybe this should be specified harder?
-		double wz=w.frameControl.getModelZ().doubleValue();
+		//double wz=w.frameControl.getModelZ().doubleValue();
+		double wz=w.getModelZ().doubleValue();
 //		w.s2wz(w.frameControl.getZ());
 		double tf=r*r-(z-wz)*(z-wz);
 		if(tf>0)

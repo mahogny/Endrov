@@ -19,20 +19,20 @@ public interface ImageWindowTool
 	/**
 	 * Get the menu item to be placed in the tools menu
 	 */
-	public JMenuItem getMenuItem();
+	public JMenuItem getMenuItem(ImageWindow w);
 
 	/**
 	 * Called when the tool has been deselected
 	 */
-	public void deselected();
+	public void deselected(ImageWindow w);
 	
-	public void mouseClicked(MouseEvent e);
-	public void mousePressed(MouseEvent e);
-	public void mouseReleased(MouseEvent e);
-	public void mouseDragged(MouseEvent e, int dx, int dy);
-	public void paintComponent(Graphics g);
-	public void mouseMoved(MouseEvent e, int dx, int dy);
-	public void keyPressed(KeyEvent e);
-	public void keyReleased(KeyEvent e);
-	public void mouseExited(MouseEvent e);
+	public void mouseClicked(ImageWindow w, MouseEvent e);
+	public void mousePressed(ImageWindow w, MouseEvent e);
+	public void mouseReleased(ImageWindow w, MouseEvent e);
+	public void mouseDragged(ImageWindow w, MouseEvent e, int dx, int dy);
+	public void paintComponent(ImageWindow w, Graphics g);
+	public void mouseMoved(ImageWindow w, MouseEvent e, int dx, int dy);
+	public void keyPressed(ImageWindow w, KeyEvent e);
+	public void keyReleased(ImageWindow w, KeyEvent e);
+	public void mouseExited(ImageWindow w, MouseEvent e);
 	}
