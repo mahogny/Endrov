@@ -15,11 +15,13 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
+import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.HWStage;
 import endrov.util.Vector2i;
@@ -39,6 +41,10 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	public abstract EvPixels[] getImage();
 	public abstract int getLower();
 	public abstract int getUpper();
+	
+	
+	public final Vector<ImageWindowRenderer> imageWindowRenderers=new Vector<ImageWindowRenderer>();
+
 	
 	public CamWindowImageView()
 		{
@@ -159,6 +165,10 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 				}
 
 			}
+		
+		
+		for(ImageWindowRenderer r:imageWindowRenderers)
+			r.draw(g);
 		}
 	
 	
