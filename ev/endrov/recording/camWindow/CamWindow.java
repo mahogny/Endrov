@@ -14,15 +14,23 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 import javax.swing.*;
+import javax.vecmath.Vector2d;
 
 import org.jdom.*;
 
 import endrov.basicWindow.*;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.hardware.*;
+import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowInterface;
+import endrov.imageWindow.ImageWindowRenderer;
+import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
+import endrov.roi.primitive.BoxROI;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
@@ -31,7 +39,7 @@ import endrov.util.JImageToggleButton;
  * Camera live-feed window
  * @author Johan Henriksson 
  */
-public class CamWindow extends BasicWindow implements ActionListener
+public class CamWindow extends BasicWindow implements ActionListener, ImageWindowInterface
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -60,7 +68,6 @@ public class CamWindow extends BasicWindow implements ActionListener
 	private EvPixels[] lastCameraImage=null;
 	private Dimension lastImageSize=null; 
 
-	private CamWindow This=this;
 	private JComboBox cameraCombo;
 
 	//Update timer, busy loop for now. replace later by camera event listener	
@@ -93,8 +100,10 @@ public class CamWindow extends BasicWindow implements ActionListener
 			bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,bSelectROI,
 	}; 
 	
-	
-	private JPanel drawArea=new CamWindowImageView()
+	/**
+	 * Surface for the image
+	 */
+	private CamWindowImageView drawArea=new CamWindowImageView()
 		{
 		private static final long serialVersionUID = 1L;
 		public int getUpper(){return histoView.upper;}
@@ -102,8 +111,8 @@ public class CamWindow extends BasicWindow implements ActionListener
 		//TODO rgb
 		public EvPixels[] getImage()
 			{
-			if(This.lastCameraImage!=null)
-				return This.lastCameraImage;
+			if(CamWindow.this.lastCameraImage!=null)
+				return CamWindow.this.lastCameraImage;
 			else
 				return null;
 			}
@@ -226,6 +235,10 @@ public class CamWindow extends BasicWindow implements ActionListener
 		}
 		
 		
+	
+	//TODO
+	private EvContainer tempContainer=new EvData();
+
 
 	public CamWindow()
 		{
@@ -235,6 +248,9 @@ public class CamWindow extends BasicWindow implements ActionListener
 	
 	public CamWindow(Rectangle bounds)
 		{
+		for(ImageWindowRendererExtension e:ImageWindow.imageWindowRendererExtensions)
+			e.newImageWindow(this);
+		
 		cameraCombo=new JComboBox(new Vector<EvDevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
 		
 		tLive.setToolTipText("Continuously take pictures");
@@ -289,6 +305,13 @@ public class CamWindow extends BasicWindow implements ActionListener
 		setBoundsEvWindow(bounds);
 		timer.start();
 		//setResizable(false);
+		
+		
+		
+		BoxROI roi=new BoxROI();
+		roi.regionX.set(new EvDecimal(10), new EvDecimal(50));
+		roi.regionY.set(new EvDecimal(10), new EvDecimal(50));
+		tempContainer.addMetaObject(roi);
 		}
 	
 	
@@ -350,5 +373,104 @@ public class CamWindow extends BasicWindow implements ActionListener
 		
 		new CamWindow();
 		
+		}
+
+	
+	
+	
+	
+	public void addImageWindowRenderer(ImageWindowRenderer renderer)
+		{
+		drawArea.imageWindowRenderers.add(renderer);
+		}
+
+
+	public EvDecimal getFrame()
+		{
+		return EvDecimal.ZERO;
+		}
+
+	public EvDecimal getZ()
+		{
+		return EvDecimal.ZERO; //Unclear what is the best. 3D rois?
+		}
+
+	@SuppressWarnings("unchecked")
+	public <E> E getRendererClass(Class<E> cl)
+		{
+		for(ImageWindowRenderer r:drawArea.imageWindowRenderers)
+			if(cl.isInstance(r))
+				return (E)r;
+		throw new RuntimeException("No such renderer exists - " + cl);
+		}
+
+	
+	
+	
+	public EvContainer getRootObject()
+		{
+		return tempContainer;
+		}
+
+	public double getRotation()
+		{
+		//Never any rotation
+		return 0;
+		}
+
+	
+	public double getCameraResolution() // px/um
+		{
+		return 1;
+		}
+	
+	public double getStageX() // um
+		{
+		return 0;
+		}
+
+	public double getStageY() // um
+		{
+		return 0;
+		}
+
+	public double s2wz(double sz)
+		{
+		return sz;
+		}
+
+	public double scaleS2w(double s)
+		{
+		return s/getCameraResolution();
+		}
+
+	public double scaleW2s(double w)
+		{
+		return w*getCameraResolution();
+		}
+
+	public Vector2d transformS2W(Vector2d v)
+		{
+		return new Vector2d(v.x/getCameraResolution()-getStageX(), v.y/getCameraResolution()-getStageY()); //TODO offset by stage
+		}
+
+	public Vector2d transformW2S(Vector2d v)
+		{
+		return new Vector2d(v.x*getCameraResolution(), v.y*getCameraResolution()); //TODO offset by stage
+		}
+
+	public double w2sz(double z)
+		{
+		return z; //TODO
+		}
+
+	public String getCurrentChannelName()
+		{
+		return "cam";
+		}
+
+	public void updateImagePanel()
+		{
+		drawArea.repaint();
 		}
 	}

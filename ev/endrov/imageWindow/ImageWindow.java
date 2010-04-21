@@ -50,7 +50,7 @@ public class ImageWindow extends BasicWindow
 	static final long serialVersionUID=0;
 	/** Registered extensions */
 	private static final Vector<ImageWindowExtension> imageWindowExtensions=new Vector<ImageWindowExtension>();
-	private static final Vector<ImageWindowRendererExtension> imageWindowRendererExtensions=new Vector<ImageWindowRendererExtension>();
+	public static final Vector<ImageWindowRendererExtension> imageWindowRendererExtensions=new Vector<ImageWindowRendererExtension>();
 
 	private static final int KEY_STEP_BACK    =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
 	private static final int KEY_STEP_FORWARD =KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
