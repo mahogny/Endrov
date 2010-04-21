@@ -81,7 +81,7 @@ public class ShellImageRenderer implements ImageWindowRenderer
 		{
 		//Currently assumes resx=resy. Maybe this should be specified harder?
 		//double wz=w.frameControl.getModelZ().doubleValue();
-		double wz=w.getModelZ().doubleValue();
+		double wz=w.getZ().doubleValue();
 //		w.s2wz(w.frameControl.getZ());
 		double tf=r*r-(z-wz)*(z-wz);
 		if(tf>0)

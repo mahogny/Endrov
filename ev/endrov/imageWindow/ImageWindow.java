@@ -50,6 +50,7 @@ public class ImageWindow extends BasicWindow
 	static final long serialVersionUID=0;
 	/** Registered extensions */
 	private static final Vector<ImageWindowExtension> imageWindowExtensions=new Vector<ImageWindowExtension>();
+	private static final Vector<ImageWindowRendererExtension> imageWindowRendererExtensions=new Vector<ImageWindowRendererExtension>();
 
 	private static final int KEY_STEP_BACK    =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
 	private static final int KEY_STEP_FORWARD =KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
@@ -85,7 +86,13 @@ public class ImageWindow extends BasicWindow
 		{
 		imageWindowExtensions.add(e);
 		}
-	
+
+	/** Register an extension to image window */
+	public static void addImageWindowRendererExtension(ImageWindowRendererExtension e)
+		{
+		imageWindowRendererExtensions.add(e);
+		}
+
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
@@ -282,6 +289,8 @@ public class ImageWindow extends BasicWindow
 	 */
 	public ImageWindow(Rectangle bounds)
 		{
+		for(ImageWindowRendererExtension e:imageWindowRendererExtensions)
+			e.newImageWindow(this);
 		for(ImageWindowExtension e:imageWindowExtensions)
 			e.newImageWindow(this);
 				
@@ -1027,7 +1036,7 @@ public class ImageWindow extends BasicWindow
 		}
 
 
-	public EvDecimal getModelZ()
+	public EvDecimal getZ()
 		{
 		return frameControl.getModelZ();
 		}

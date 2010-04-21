@@ -31,7 +31,6 @@ import endrov.util.EvDecimal;
 public class ToolMakeLine implements ImageWindowTool
 	{
 	private final ImageWindow w;
-	private final EvLineRenderer r;
 	
 	public static final int SINGLESEGMENT=0;
 	public static final int MULTISEGMENT=1;
@@ -50,10 +49,9 @@ public class ToolMakeLine implements ImageWindowTool
 	
 	private Hover activeAnnot=null;
 	
-	public ToolMakeLine(ImageWindow w, EvLineRenderer r)
+	public ToolMakeLine(ImageWindow w)
 		{
 		this.w=w;
-		this.r=r;
 		}
 	
 	private void setMode(int toolMode)
@@ -111,6 +109,7 @@ public class ToolMakeLine implements ImageWindowTool
 	
 	private Collection<EvLine> getAnnots()
 		{
+		EvLineImageRenderer r=w.getRendererClass(EvLineImageRenderer.class);
 		return r.getVisible();
 		}
 	

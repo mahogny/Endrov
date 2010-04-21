@@ -16,6 +16,7 @@ import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
 import endrov.imageWindow.ImageWindowInterface;
+import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.modelWindow.ModelWindow;
 
 /**
@@ -113,11 +114,21 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 			{
 			public void newImageWindow(ImageWindow w)
 				{
+				//ChromaCountKJImageRenderer r=new ChromaCountKJImageRenderer(w);
+				w.addImageWindowTool(new ChromaCountKJImageTool(w));
+				//w.addImageWindowRenderer(r);
+				}
+			});
+		
+		ImageWindow.addImageWindowRendererExtension(new ImageWindowRendererExtension()
+			{
+			public void newImageWindow(ImageWindowInterface w)
+				{
 				ChromaCountKJImageRenderer r=new ChromaCountKJImageRenderer(w);
-				w.addImageWindowTool(new ChromaCountKJImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});
+		
 		}
 	
 	

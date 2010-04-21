@@ -12,12 +12,12 @@ import javax.vecmath.*;
 import endrov.imageWindow.*;
 import endrov.util.EvDecimal;
 
-public class EvLineRenderer implements ImageWindowRenderer
+public class EvLineImageRenderer implements ImageWindowRenderer
 	{
-	public ImageWindow w;
+	public ImageWindowInterface w;
 	
 	
-	public EvLineRenderer(ImageWindow w)
+	public EvLineImageRenderer(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
@@ -49,7 +49,7 @@ public class EvLineRenderer implements ImageWindowRenderer
 					last=next;
 					}
 				}
-			EvDecimal curZ=w.getModelZ();
+			EvDecimal curZ=w.getZ();
 //			w.s2wz(w.frameControl.getZ().doubleValue()); 
 			for(int i=0;i<ann.pos.size();i++)
 				if(ann.pos.get(i).frame.equals(curFrame))
