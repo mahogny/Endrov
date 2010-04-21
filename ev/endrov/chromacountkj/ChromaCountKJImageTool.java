@@ -23,7 +23,7 @@ import endrov.imageWindow.*;
 public class ChromaCountKJImageTool implements ImageWindowTool
 	{
 	private final ImageWindow w;
-	private final ChromaCountKJImageRenderer r;
+	//private final ChromaCountKJImageRenderer r;
 
 	private int vicinityR=3;
 
@@ -34,10 +34,10 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 	private int lastMouseX=0;
 	private int lastMouseY;
 	
-	public ChromaCountKJImageTool(ImageWindow w, ChromaCountKJImageRenderer r)
+	public ChromaCountKJImageTool(ImageWindow w/*, ChromaCountKJImageRenderer r*/)
 		{
 		this.w=w;
-		this.r=r;
+		//this.r=r;
 		}
 	
 
@@ -55,6 +55,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 	
 	private Collection<ChromaCountKJ> getAnnots()
 		{
+		ChromaCountKJImageRenderer r=w.getRendererClass(ChromaCountKJImageRenderer.class);
 		return r.getVisible();
 		}
 	

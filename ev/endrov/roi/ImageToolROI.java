@@ -25,14 +25,14 @@ public class ImageToolROI implements ImageWindowTool
 	private String currentHandle=null;
 
 	private final ImageWindow w;
-	private final ImageRendererROI r;
+	//private final ImageRendererROI r;
 	
 	public void deselected() {}
 	
-	public ImageToolROI(ImageWindow w, ImageRendererROI r)
+	public ImageToolROI(ImageWindow w/*, ImageRendererROI r*/)
 		{
 		this.w=w;
-		this.r=r;
+		//this.r=r;
 		}
 
 	public JMenuItem getMenuItem()
@@ -78,6 +78,9 @@ public class ImageToolROI implements ImageWindowTool
 	
 	public void mousePressed(MouseEvent e)
 		{
+		ImageRendererROI r=w.getRendererClass(ImageRendererROI.class);
+		//new ImageRendererROI(w);
+		
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			//Which handle?
