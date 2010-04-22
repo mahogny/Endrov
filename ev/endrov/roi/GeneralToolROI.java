@@ -18,23 +18,22 @@ import endrov.imageWindow.*;
  *
  * @author Johan Henriksson
  */
-public class ImageToolROI implements ImageWindowTool
+public class GeneralToolROI //implements ImageWindowTool
 	{
 	private boolean active=false;
 	private ROI currentROI=null;
 	private String currentHandle=null;
 
-	private final ImageWindow w;
-	//private final ImageRendererROI r;
+	private final ImageWindowInterface w;
 	
-	public void deselected() {}
+//	public void deselected() {}
 	
-	public ImageToolROI(ImageWindow w/*, ImageRendererROI r*/)
+	public GeneralToolROI(ImageWindow w)
 		{
 		this.w=w;
-		//this.r=r;
 		}
 
+	/*
 	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("ROI/Edit");
@@ -44,7 +43,7 @@ public class ImageToolROI implements ImageWindowTool
 			public void actionPerformed(ActionEvent e){w.setTool(This);}
 		});
 		return mi;
-		}
+		}*/
 	
 	
 	public void mouseClicked(MouseEvent e)
@@ -60,9 +59,6 @@ public class ImageToolROI implements ImageWindowTool
 					{
 					Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
 					h.setPos(v.x,v.y);
-					
-//					h.setX(w.s2wx(e.getX()));
-	//				h.setY(w.s2wy(e.getY()));
 					w.updateImagePanel();
 					return;
 					}
@@ -73,13 +69,11 @@ public class ImageToolROI implements ImageWindowTool
 		{
 		Vector2d so=w.transformW2S(new Vector2d(h.getX(),h.getY()));
 		return Math.abs(so.x-e.getX())<ImageRendererROI.HANDLESIZE && Math.abs(so.y-e.getY())<ImageRendererROI.HANDLESIZE;
-//		return Math.abs(w.w2sx(h.getX())-e.getX())<ImageRendererROI.HANDLESIZE && Math.abs(w.w2sy(h.getY())-e.getY())<ImageRendererROI.HANDLESIZE;
 		}
 	
 	public void mousePressed(MouseEvent e)
 		{
 		ImageRendererROI r=w.getRendererClass(ImageRendererROI.class);
-		//new ImageRendererROI(w);
 		
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
@@ -103,28 +97,6 @@ public class ImageToolROI implements ImageWindowTool
 		{
 		if(SwingUtilities.isLeftMouseButton(e) && active)
 			{
-			/*
-			//Make a nucleus if mouse has been dragged
-			NucLineage lin=getLineage();
-			if(x1!=x2 && y1!=y2 && lin!=null && r.modifyingNucName==null)
-				{
-				//New name for this nucleus => null
-				String nucName=lin.getUniqueNucName();
-				NucLineage.Nuc n=lin.getNucCreate(nucName);
-				NucLineage.NucPos pos=n.getPosCreate((int)w.frameControl.getFrame());
-				pos.x=(x1+x2)/2;
-				pos.y=(y1+y2)/2;
-				pos.z=w.s2wz(w.frameControl.getZ());
-				pos.r=Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))/2;
-				
-				if(Math.abs(w.w2sx(pos.r)-w.w2sx(0))>8)
-					{
-					NucLineage.selectedNuclei.clear();
-					NucLineage.selectedNuclei.add(new NucPair(lin,nucName));
-					BasicWindow.updateWindows();
-					}
-				}
-				*/
 			active=false;
 			w.updateImagePanel();
 			}

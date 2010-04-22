@@ -38,7 +38,7 @@ public class ImageWindowExtensionROI implements ImageWindowExtension
 		//w.addImageWindowRenderer(renderer);
 		
 		
-		w.addImageWindowTool(new ImageToolROI(w));
+		w.addImageWindowTool(new ImageWindowToolROI(w));
 
 		
 		
