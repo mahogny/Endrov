@@ -25,12 +25,12 @@ import endrov.util.ImVector3d;
  */
 public class Slice3D
 	{	
-	EvDecimal lastframe; 
+	private EvDecimal lastframe; 
 
-	int w, h;
-	double resX,resY,resZ;
-	Texture tex;      
-	boolean rebuild;
+	private int w, h;
+	private double resX,resY/*,resZ*/;
+	private Texture tex;      
+	private boolean rebuild;
 	
 	
 	/**
@@ -40,7 +40,7 @@ public class Slice3D
 		{
 		if(tex!=null)
 			{
-			tex.dispose();
+			tex.destroy(gl);
 			tex=null;
 			}
 		}

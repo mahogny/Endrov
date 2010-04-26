@@ -19,7 +19,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
 import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.util.EvFileUtil;
 
