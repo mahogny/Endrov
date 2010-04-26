@@ -17,7 +17,6 @@ import javax.vecmath.Vector2d;
 import endrov.consoleWindow.ConsoleWindow;
 import endrov.ev.EvLog;
 import endrov.imageWindow.ImageWindow;
-import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;

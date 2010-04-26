@@ -219,6 +219,12 @@ public class ImageWindow extends BasicWindow
 		this.tool=tool;  
 		buildMenu();
 		}
+	
+	public void unsetTool()
+		{
+		tool=null;
+		}
+	
 	public ImageWindowTool getTool()
 		{
 		return tool;

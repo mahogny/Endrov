@@ -13,7 +13,6 @@ import javax.vecmath.Vector3d;
 import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
-import endrov.imageWindow.ImageWindowInterface;
 import endrov.modelWindow.ModelWindow;
 
 /**

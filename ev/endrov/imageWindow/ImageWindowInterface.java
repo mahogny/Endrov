@@ -19,4 +19,8 @@ public interface ImageWindowInterface extends WSTransformer
 	public String getCurrentChannelName(); //Highly questionable function
 	
 	public <E> E getRendererClass(Class<E> cl);
+	
+	public void unsetTool();
+	
+	
 	}
