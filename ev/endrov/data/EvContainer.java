@@ -81,12 +81,17 @@ public class EvContainer
 	 * Date when object was created. Can be null. Unix time
 	 */
 	public EvDecimal dateCreate;
-	
+		
 	/**
 	 * Date when this object was last modified. Can be null. Unix time.
 	 */
 	public EvDecimal dateLastModify;
 	
+	/**
+	 * Who created the object. Can be null
+	 */
+	public String author;
+
 	
 	public EvContainer()
 		{
@@ -241,6 +246,8 @@ public class EvContainer
 					el.setAttribute("ostdatecreate",o.dateCreate.toString());
 				if(o.dateLastModify!=null)
 					el.setAttribute("ostdatemodify",o.dateLastModify.toString());
+				if(o.author!=null)
+					el.setAttribute("ostauthor",o.author);
 				
 				Element eData=new Element("data");
 				String metatypeName=o.saveMetadata(eData);
@@ -305,6 +312,8 @@ public class EvContainer
 			String dateModify=child.getAttributeValue("ostdatemodify");
 			if(dateModify!=null)
 				o.dateLastModify=new EvDecimal(dateModify);
+			o.author=child.getAttributeValue("ostauthor");
+			
 			
 			Element subob=child.getChild(tagChild); 
 			if(subob!=null)

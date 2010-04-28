@@ -30,6 +30,7 @@ import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
+import endrov.recording.RecordingResource;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
 import endrov.roi.primitive.BoxROI;
@@ -112,9 +113,6 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		};
 	
 	
-
-	//TODO
-	private EvContainer tempContainer=new EvData();
 
 	private Vector<JToggleButton> toolButtons=new Vector<JToggleButton>();
 	private JToggleButton bSelectROI=new JImageToggleButton(iconSelectROI, "Select ROI");
@@ -269,10 +267,6 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		
 		
 		
-		BoxROI roi=new BoxROI();
-		roi.regionX.set(new EvDecimal(10), new EvDecimal(50));
-		roi.regionY.set(new EvDecimal(10), new EvDecimal(50));
-		tempContainer.addMetaObject(roi);
 		}
 	
 	
@@ -489,7 +483,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	
 	public EvContainer getRootObject()
 		{
-		return tempContainer;
+		return RecordingResource.getData();
 		}
 
 	public double getRotation()
