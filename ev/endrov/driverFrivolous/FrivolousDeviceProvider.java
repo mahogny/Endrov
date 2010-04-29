@@ -147,15 +147,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				model.getSettings().lambda = Double.parseDouble(value);
 			System.out.println(prop+" "+value);
 			}
-
+		private double getRes()
+		{
+			return 0.1;
+		}
+		
 		public double getResMagX()
 			{
-			return 1;
+			return getRes();
 			}
 
 		public double getResMagY()
 			{
-			return 1;
+			return getRes();
 			}
 
 		public boolean hasConfigureDialog()
@@ -170,7 +174,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		public CameraImage snap()
 			{
 //			int r = (int) stagePos[2];
-			model.convolve();
+			model.convolve((int)stagePos[0],(int)stagePos[1]);
 			BufferedImage im = model.getImage();
 			CameraImage cim = new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1);
 			return cim;
@@ -247,17 +251,33 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		public void setRelStagePos(double[] axis)
 			{
+			double[] tmp = stagePos.clone();
 			for (int i = 0; i<3; i++)
-				stagePos[i] += axis[i];
-			// System.out.println("curpos "+stagePos[0]+"  "+stagePos[1]+"   "+stagePos[2]);
+				tmp[i] += axis[i];
+			setStagePos(tmp);
+			System.out.println("curpos "+stagePos[0]+"  "+stagePos[1]+"   "+stagePos[2]);
 			}
 
 		public void setStagePos(double[] axis)
 			{
+			double oldZ = stagePos[2];
+			if (axis[2]<-10000)
+				axis[2]=-10000;
+			else if(axis[2]>10000)
+				axis[2]=10000;
+			
+			for (int i = 0; i<2; i++)
+				if (axis[i]<-512*.1)
+					axis[i]=-512*.1;
+				else if (axis[i]>512*.1)
+					axis[i]=512*.1;	
+			
 			for (int i = 0; i<3; i++)
 				stagePos[i] = axis[i];
+
 			model.getSettings().offsetZ = stagePos[2];
-			model.updatePSF();
+			if(stagePos[2]!=oldZ)
+				model.updatePSF();
 			}
 
 		public void goHome()

@@ -124,10 +124,11 @@ public class FrivolousPSFDiffraction extends FrivolousPSF{
 		}
 		System.out.println(area);
 		for (int ind = 0; ind < w*h; ind++) {
-			pixels[ind] /= area;
+			pixels[ind] /= 36.701687;//TODO: area;
 		}
-		FrivolousFourier.shiftQuadrants(w, h, pixels);
-		return pixels;
+		float[] output = new float[1024*1024];
+		FrivolousFourier.shiftQuadrants(w, h, pixels, 1024, 1024, output);
+		return output;
 	}
 
 	private float interp(float[] y, float x) {
