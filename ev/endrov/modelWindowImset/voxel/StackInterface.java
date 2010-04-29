@@ -8,6 +8,7 @@ package endrov.modelWindowImset.voxel;
 import java.util.*;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvChannel;
@@ -59,7 +60,7 @@ public abstract class StackInterface
 	/**
 	 * Render the edges of the volume, assuming it is cube-like
 	 */
-	public void renderEdge(GL gl, double w, double h, double d)
+	public void renderEdge(GL2 gl, double w, double h, double d)
 		{
 		gl.glBegin(GL.GL_LINE_LOOP);
 		gl.glColor3f(0, 0, 1);

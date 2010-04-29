@@ -137,7 +137,7 @@ public class Camera
 	/**
 	 * Do the GL transformation to move into camera coordinates
 	 */
-	public void transformGL(GL gl)
+	public void transformGL(GL2 gl)
 		{
 		mulMatGL(gl, mat);
 		gl.glTranslated(-pos.x, -pos.y, -pos.z);
@@ -146,7 +146,7 @@ public class Camera
 	/**
 	 * Inverse GL camera rotation
 	 */
-	public void unrotateGL(GL gl)
+	public void unrotateGL(GL2 gl)
 		{
 		Matrix3d inv=new Matrix3d();
 		inv.invert(mat);
@@ -156,7 +156,7 @@ public class Camera
 	/**
 	 * Put a java media matrix on the GL stack
 	 */
-	private static void mulMatGL(GL gl, Matrix3d mat)
+	private static void mulMatGL(GL2 gl, Matrix3d mat)
 		{
 		gl.glMultMatrixd(new double[]{
 				mat.m00, mat.m01, mat.m02,0,

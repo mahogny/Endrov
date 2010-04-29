@@ -42,7 +42,7 @@ import endrov.util.SnapBackSlider.SnapChangeListener;
  */
 public class ImageWindow extends BasicWindow 
 			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener,
-			WSTransformer
+			ImageWindowInterface
 	{	
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -50,6 +50,7 @@ public class ImageWindow extends BasicWindow
 	static final long serialVersionUID=0;
 	/** Registered extensions */
 	private static final Vector<ImageWindowExtension> imageWindowExtensions=new Vector<ImageWindowExtension>();
+	public static final Vector<ImageWindowRendererExtension> imageWindowRendererExtensions=new Vector<ImageWindowRendererExtension>();
 
 	private static final int KEY_STEP_BACK    =KeyBinding.register(new KeyBinding("Image Window","Step back",'a'));
 	private static final int KEY_STEP_FORWARD =KeyBinding.register(new KeyBinding("Image Window","Step forward",'d'));
@@ -85,7 +86,13 @@ public class ImageWindow extends BasicWindow
 		{
 		imageWindowExtensions.add(e);
 		}
-	
+
+	/** Register an extension to image window */
+	public static void addImageWindowRendererExtension(ImageWindowRendererExtension e)
+		{
+		imageWindowRendererExtensions.add(e);
+		}
+
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
@@ -201,7 +208,7 @@ public class ImageWindow extends BasicWindow
 
 		
 	/** Extension: Tool */
-	public final Vector<ImageWindowTool> imageWindowTools=new Vector<ImageWindowTool>();
+	private final Vector<ImageWindowTool> imageWindowTools=new Vector<ImageWindowTool>();
 	/** Currently selected tool */
 	private ImageWindowTool tool;
 
@@ -212,10 +219,23 @@ public class ImageWindow extends BasicWindow
 		this.tool=tool;  
 		buildMenu();
 		}
+	
+	public void unsetTool()
+		{
+		tool=null;
+		}
+	
 	public ImageWindowTool getTool()
 		{
 		return tool;
 		}
+	
+	
+	public void addImageWindowTool(ImageWindowTool tool)
+		{
+		imageWindowTools.add(tool);
+		}
+	
 	
 	/** Hide all markings for now; to quickly show without overlay */
 	private boolean temporarilyHideMarkings=false;
@@ -275,6 +295,8 @@ public class ImageWindow extends BasicWindow
 	 */
 	public ImageWindow(Rectangle bounds)
 		{
+		for(ImageWindowRendererExtension e:imageWindowRendererExtensions)
+			e.newImageWindow(this);
 		for(ImageWindowExtension e:imageWindowExtensions)
 			e.newImageWindow(this);
 				
@@ -990,10 +1012,10 @@ public class ImageWindow extends BasicWindow
 			{
 			public void newImageWindow(ImageWindow w)
 				{
-				w.imageWindowTools.add(new ImageWindowToolChannelDisp(w));
-				w.imageWindowTools.add(new ImageWindowToolScreenshot(w));
-				w.imageWindowTools.add(new ImageWindowToolPixelInfo(w));
-				w.imageWindowTools.add(new ImageWindowToolEditImage(w));
+				w.addImageWindowTool(new ImageWindowToolChannelDisp(w));
+				w.addImageWindowTool(new ImageWindowToolScreenshot(w));
+				w.addImageWindowTool(new ImageWindowToolPixelInfo(w));
+				w.addImageWindowTool(new ImageWindowToolEditImage(w));
 				}
 			});
 		}
@@ -1001,6 +1023,28 @@ public class ImageWindow extends BasicWindow
 	public void addImageWindowRenderer(ImageWindowRenderer r)
 		{
 		imagePanel.imageWindowRenderers.add(r);
+		}
+
+
+	@SuppressWarnings("unchecked")
+	public <E> E getRendererClass(Class<E> cl)
+		{
+		for(ImageWindowRenderer r:imagePanel.imageWindowRenderers)
+			if(cl.isInstance(r))
+				return (E)r;
+		throw new RuntimeException("No such renderer exists - " + cl);
+		}
+
+
+	public EvDecimal getFrame()
+		{
+		return frameControl.getFrame();
+		}
+
+
+	public EvDecimal getZ()
+		{
+		return frameControl.getModelZ();
 		}
 	
 	}

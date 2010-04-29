@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
@@ -67,7 +68,7 @@ public class IsosurfaceRenderer
 	private static void checkGLerr(GL gl, String pos)
 		{
 		int errcode=gl.glGetError();
-		if(errcode!=GL.GL_NO_ERROR)
+		if(errcode!=GL2.GL_NO_ERROR)
 			System.out.println("error ("+pos+")"+new GLU().gluErrorString(errcode));
 		}
 	
@@ -129,8 +130,10 @@ public class IsosurfaceRenderer
 	/**
 	 * Render surface
 	 */
-	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, final float red, final float green, final float blue, final float trans)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, final float red, final float green, final float blue, final float trans)
 		{
+		GL2 gl=glin.getGL2();
+		
 		//Upload buffers if supported
 		if(VBOsupported && !hasVBO)
 			{
@@ -138,15 +141,15 @@ public class IsosurfaceRenderer
 			vertn.rewind();
 			int num=vertn.remaining();
 			//Vertices
-			gl.glGenBuffersARB(1, VBOVertices, 0);
-			gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBOVertices[0]);
-			gl.glBufferDataARB(GL.GL_ARRAY_BUFFER_ARB,num * 
-					BufferUtil.SIZEOF_FLOAT, vertb, GL.GL_STATIC_DRAW_ARB);
+			gl.glGenBuffers(1, VBOVertices, 0);
+			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices[0]);
+			gl.glBufferData(GL2.GL_ARRAY_BUFFER,num * 
+					BufferUtil.SIZEOF_FLOAT, vertb, GL2.GL_STATIC_DRAW);
 			//Normals
-			gl.glGenBuffersARB(1, VBONormals, 0);
-			gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBONormals[0]);
-			gl.glBufferDataARB(GL.GL_ARRAY_BUFFER_ARB, num * 
-					BufferUtil.SIZEOF_FLOAT, vertn, GL.GL_STATIC_DRAW_ARB);
+			gl.glGenBuffers(1, VBONormals, 0);
+			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBONormals[0]);
+			gl.glBufferData(GL2.GL_ARRAY_BUFFER, num * 
+					BufferUtil.SIZEOF_FLOAT, vertn, GL2.GL_STATIC_DRAW);
 			//vertb=vertn=null; //has to wait. vertn needed for z sort
 			hasVBO=true;
 			
@@ -159,14 +162,15 @@ public class IsosurfaceRenderer
 			final boolean doTransparent=trans<0.99;
 	
 			IsosurfRenderState renderState=new IsosurfRenderState(){
-				public void activate(GL gl)
+				public void activate(GL glin)
 					{
-					gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
+					GL2 gl=glin.getGL2();
+					gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 					
 					float lightDiffuse[]=new float[]{1f, 1f, 1f, 0};
 					float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0 }; 
-					gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
-					gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);
+					gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lightAmbient, 0);   
+					gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, lightDiffuse, 0);
 					//GL_LIGHT_MODEL_TWO_SIDE false right now
 
 					if(doTransparent)
@@ -176,46 +180,49 @@ public class IsosurfaceRenderer
 					if(!doTransparent)
 						{
 						enableArray(gl);
-						gl.glEnableClientState( GL.GL_VERTEX_ARRAY );
-						gl.glEnableClientState( GL.GL_NORMAL_ARRAY );
+						gl.glEnableClientState( GL2.GL_VERTEX_ARRAY );
+						gl.glEnableClientState( GL2.GL_NORMAL_ARRAY );
 						}
 						
-					gl.glDisable(GL.GL_CULL_FACE);
-					gl.glEnable(GL.GL_LIGHTING);
-					gl.glEnable(GL.GL_LIGHT0);
-					gl.glEnable ( GL.GL_COLOR_MATERIAL ) ;
+					gl.glDisable(GL2.GL_CULL_FACE);
+					gl.glEnable(GL2.GL_LIGHTING);
+					gl.glEnable(GL2.GL_LIGHT0);
+					gl.glEnable ( GL2.GL_COLOR_MATERIAL ) ;
 					gl.glColor4f(red,green,blue,trans);
 					}
-				public void enableBlend(GL gl)
+				public void enableBlend(GL glin)
 					{
+					GL2 gl=glin.getGL2();
 					//NEHE does additive instead
-					gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-					gl.glEnable(GL.GL_BLEND);
+					gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+					gl.glEnable(GL2.GL_BLEND);
 					gl.glDepthMask(false);
-					gl.glDisable(GL.GL_CULL_FACE);
-					gl.glColorMaterial ( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE ) ;
-					gl.glEnable(GL.GL_COLOR_MATERIAL);
+					gl.glDisable(GL2.GL_CULL_FACE);
+					gl.glColorMaterial ( GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE ) ;
+					gl.glEnable(GL2.GL_COLOR_MATERIAL);
 					}
-				public void enableArray(GL gl)
+				public void enableArray(GL glin)
 					{
+					GL2 gl=glin.getGL2();
 					if(hasVBO)
 						{
-						gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBOVertices[0]);
-						gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-						gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBONormals[0]);
-						gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
+						gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBOVertices[0]);
+						gl.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
+						gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, VBONormals[0]);
+						gl.glNormalPointer(GL2.GL_FLOAT, 0, 0);
 						checkGLerr(gl, "bind VBO");
 						}
 					else
 						{
 						vertb.rewind();
 						vertn.rewind();
-						gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertb);
-						gl.glNormalPointer(GL.GL_FLOAT, 0, vertn);
+						gl.glVertexPointer(3, GL2.GL_FLOAT, 0, vertb);
+						gl.glNormalPointer(GL2.GL_FLOAT, 0, vertn);
 						}
 					}
-				public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState)
+				public boolean optimizedSwitch(GL glin, TransparentRender.RenderState currentState)
 					{
+					GL2 gl=glin.getGL2();
 					if(currentState instanceof IsosurfRenderState)
 						{
 						if(!doTransparent)
@@ -226,11 +233,12 @@ public class IsosurfaceRenderer
 					else
 						return false;
 					}
-				public void deactivate(GL gl)
+				public void deactivate(GL glin)
 					{
+					GL2 gl=glin.getGL2();
 					if(hasVBO && !doTransparent)
 						{
-						gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, 0);
+						gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 						checkGLerr(gl, "unbind VBO");
 						}
 					gl.glPopAttrib();
@@ -271,9 +279,10 @@ public class IsosurfaceRenderer
 							}
 						
 						IsosurfTranspRenderer renderer=new IsosurfTranspRenderer(){
-						public void render(GL gl)
+						public void render(GL glin)
 							{
-							gl.glBegin(GL.GL_TRIANGLES);
+							GL2 gl=glin.getGL2();
+							gl.glBegin(GL2.GL_TRIANGLES);
 							for(int j=0;j<3;j++)
 								{
 								gl.glNormal3f(vn[j].x,vn[j].y,vn[j].z);
@@ -302,7 +311,7 @@ public class IsosurfaceRenderer
 				//If opaque, we do not postpone rendering
 				renderState.activate(gl);
 				indb.rewind();
-				gl.glDrawElements(GL.GL_TRIANGLES, indb.remaining(), GL.GL_UNSIGNED_INT, indb);
+				gl.glDrawElements(GL2.GL_TRIANGLES, indb.remaining(), GL2.GL_UNSIGNED_INT, indb);
 				renderState.deactivate(gl);
 				}
 			}
@@ -331,14 +340,14 @@ public class IsosurfaceRenderer
 			int num=vertn.remaining();
 			//Vertices
 			gl.glGenBuffersARB(1, VBOVertices, 0);
-			gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBOVertices[0]);
-			gl.glBufferDataARB(GL.GL_ARRAY_BUFFER_ARB,num * 
-					BufferUtil.SIZEOF_FLOAT, vertb, GL.GL_STATIC_DRAW_ARB);
+			gl.glBindBufferARB(GL2.GL_ARRAY_BUFFER_ARB, VBOVertices[0]);
+			gl.glBufferDataARB(GL2.GL_ARRAY_BUFFER_ARB,num * 
+					BufferUtil.SIZEOF_FLOAT, vertb, GL2.GL_STATIC_DRAW_ARB);
 			//Normals
 			gl.glGenBuffersARB(1, VBONormals, 0);
-			gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBONormals[0]);
-			gl.glBufferDataARB(GL.GL_ARRAY_BUFFER_ARB, num * 
-					BufferUtil.SIZEOF_FLOAT, vertn, GL.GL_STATIC_DRAW_ARB);
+			gl.glBindBufferARB(GL2.GL_ARRAY_BUFFER_ARB, VBONormals[0]);
+			gl.glBufferDataARB(GL2.GL_ARRAY_BUFFER_ARB, num * 
+					BufferUtil.SIZEOF_FLOAT, vertn, GL2.GL_STATIC_DRAW_ARB);
 			//vertb=vertn=null; //has to wait. vertn needed for z sort
 			hasVBO=true;
 			
@@ -353,12 +362,12 @@ public class IsosurfaceRenderer
 			IsosurfRenderState renderState=new IsosurfRenderState(){
 				public void activate(GL gl)
 					{
-					gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
+					gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 					
 					float lightDiffuse[]=new float[]{1f, 1f, 1f, 0};
 					float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 0 }; 
-					gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, lightAmbient, 0);   
-					gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, lightDiffuse, 0);
+					gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lightAmbient, 0);   
+					gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, lightDiffuse, 0);
 					//GL_LIGHT_MODEL_TWO_SIDE false right now
 
 					if(doTransparent)
@@ -367,40 +376,40 @@ public class IsosurfaceRenderer
 					//Decide on vertex buffer objects or vertex arrays
 					enableArray(gl);
 						
-					gl.glEnableClientState( GL.GL_VERTEX_ARRAY );
-					gl.glEnableClientState( GL.GL_NORMAL_ARRAY );
-					gl.glDisable(GL.GL_CULL_FACE);
-					gl.glEnable(GL.GL_LIGHTING);
-					gl.glEnable(GL.GL_LIGHT0);
-					gl.glEnable ( GL.GL_COLOR_MATERIAL ) ;
+					gl.glEnableClientState( GL2.GL_VERTEX_ARRAY );
+					gl.glEnableClientState( GL2.GL_NORMAL_ARRAY );
+					gl.glDisable(GL2.GL_CULL_FACE);
+					gl.glEnable(GL2.GL_LIGHTING);
+					gl.glEnable(GL2.GL_LIGHT0);
+					gl.glEnable ( GL2.GL_COLOR_MATERIAL ) ;
 					gl.glColor4f(red,green,blue,trans);
 					}
 				public void enableBlend(GL gl)
 					{
 					//NEHE does additive instead
-					gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-					gl.glEnable(GL.GL_BLEND);
+					gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+					gl.glEnable(GL2.GL_BLEND);
 					gl.glDepthMask(false);
-					gl.glDisable(GL.GL_CULL_FACE);
-					gl.glColorMaterial ( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE ) ;
-					gl.glEnable(GL.GL_COLOR_MATERIAL);
+					gl.glDisable(GL2.GL_CULL_FACE);
+					gl.glColorMaterial ( GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE ) ;
+					gl.glEnable(GL2.GL_COLOR_MATERIAL);
 					}
 				public void enableArray(GL gl)
 					{
 					if(hasVBO)
 						{
-						gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBOVertices[0]);
-						gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-						gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, VBONormals[0]);
-						gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
+						gl.glBindBufferARB(GL2.GL_ARRAY_BUFFER_ARB, VBOVertices[0]);
+						gl.glVertexPointer(3, GL2.GL_FLOAT, 0, 0);
+						gl.glBindBufferARB(GL2.GL_ARRAY_BUFFER_ARB, VBONormals[0]);
+						gl.glNormalPointer(GL2.GL_FLOAT, 0, 0);
 						checkGLerr(gl, "bind VBO");
 						}
 					else
 						{
 						vertb.rewind();
 						vertn.rewind();
-						gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertb);
-						gl.glNormalPointer(GL.GL_FLOAT, 0, vertn);
+						gl.glVertexPointer(3, GL2.GL_FLOAT, 0, vertb);
+						gl.glNormalPointer(GL2.GL_FLOAT, 0, vertn);
 						}
 					}
 				public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState)
@@ -413,7 +422,7 @@ public class IsosurfaceRenderer
 							if(isTransparent)
 								enableBlend(gl);
 							else
-								gl.glDisable(GL.GL_BLEND);
+								gl.glDisable(GL2.GL_BLEND);
 							}
 						enableArray(gl);
 						return true;
@@ -425,7 +434,7 @@ public class IsosurfaceRenderer
 					{
 					if(hasVBO)
 						{
-						gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, 0);
+						gl.glBindBufferARB(GL2.GL_ARRAY_BUFFER_ARB, 0);
 						checkGLerr(gl, "unbind VBO");
 						}
 					gl.glPopAttrib();
@@ -467,7 +476,7 @@ public class IsosurfaceRenderer
 						{
 						indb.rewind();
 						indb.position(fi);
-						gl.glDrawElements(GL.GL_TRIANGLES, 3, GL.GL_UNSIGNED_INT, indb);
+						gl.glDrawElements(GL2.GL_TRIANGLES, 3, GL2.GL_UNSIGNED_INT, indb);
 						}
 					};
 					renderer.renderState=renderState;
@@ -481,7 +490,7 @@ public class IsosurfaceRenderer
 				//If opaque, we do not postpone rendering
 				renderState.activate(gl);
 				indb.rewind();
-				gl.glDrawElements(GL.GL_TRIANGLES, indb.remaining(), GL.GL_UNSIGNED_INT, indb);
+				gl.glDrawElements(GL2.GL_TRIANGLES, indb.remaining(), GL2.GL_UNSIGNED_INT, indb);
 				renderState.deactivate(gl);
 				}
 			}

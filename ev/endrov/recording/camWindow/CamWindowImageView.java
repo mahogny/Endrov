@@ -15,11 +15,14 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
+import endrov.imageWindow.GeneralTool;
+import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.HWStage;
 import endrov.util.Vector2i;
@@ -35,10 +38,14 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	static final long serialVersionUID=0;
 	
 	private Vector2i lastMousePosition=new Vector2i();
+	public GeneralTool currentTool=null;
+	public final Vector<ImageWindowRenderer> imageWindowRenderers=new Vector<ImageWindowRenderer>();
 
+	
 	public abstract EvPixels[] getImage();
 	public abstract int getLower();
 	public abstract int getUpper();
+		
 	
 	public CamWindowImageView()
 		{
@@ -159,30 +166,43 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 				}
 
 			}
+		
+		
+		for(ImageWindowRenderer r:imageWindowRenderers)
+			r.draw(g);
 		}
 	
 	
 	
 	public void mouseClicked(MouseEvent e)
 		{
+		if(currentTool!=null)
+			currentTool.mouseClicked(e);
 		}
 	public void mouseEntered(MouseEvent e)
 		{
 		}
 	public void mouseExited(MouseEvent e)
 		{
+		if(currentTool!=null)
+			currentTool.mouseExited(e);
 		}
 	public void mousePressed(MouseEvent e)
 		{
 		lastMousePosition=new Vector2i(e.getX(),e.getY());
+		if(currentTool!=null)
+			currentTool.mousePressed(e);
 		}
 	public void mouseReleased(MouseEvent e)
 		{
+		if(currentTool!=null)
+			currentTool.mouseReleased(e);
 		}
 	public void mouseDragged(MouseEvent e)
 		{
 		int dx=e.getX()-lastMousePosition.x;
 		int dy=e.getY()-lastMousePosition.y;
+		lastMousePosition=new Vector2i(e.getX(),e.getY());
 		
 		//TODO magnification
 		
@@ -191,10 +211,17 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		moveAxis("x", dx);
 		moveAxis("y", dy);
 		
-		lastMousePosition=new Vector2i(e.getX(),e.getY());
+		if(currentTool!=null)
+			currentTool.mouseDragged(e, dx, dy);
 		}
 	public void mouseMoved(MouseEvent e)
 		{
+		int dx=e.getX()-lastMousePosition.x;
+		int dy=e.getY()-lastMousePosition.y;
+		lastMousePosition=new Vector2i(e.getX(),e.getY());
+		
+		if(currentTool!=null)
+			currentTool.mouseMoved(e, dx, dy);
 		}
 	public void mouseWheelMoved(MouseWheelEvent e)
 		{

@@ -5,7 +5,6 @@
  */
 package endrov.flowMeasure;
 import endrov.ev.PluginDef;
-import endrov.flowBasic.db.FlowUnitConnectSQL;
 
 public class PLUGIN extends PluginDef
 	{

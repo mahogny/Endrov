@@ -13,10 +13,10 @@ import endrov.imageWindow.*;
 
 public class ChromaCountKJImageRenderer implements ImageWindowRenderer
 	{
-	public ImageWindow w;
+	public ImageWindowInterface w;
 	
 	
-	public ChromaCountKJImageRenderer(ImageWindow w)
+	public ChromaCountKJImageRenderer(ImageWindowInterface w)
 		{
 		this.w=w;
 		}

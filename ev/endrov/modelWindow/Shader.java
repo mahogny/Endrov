@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 
 import com.sun.opengl.util.BufferUtil;
@@ -30,8 +31,9 @@ public class Shader
 	private Integer idv;
 	private int prog;
 	
-	private String uploadURL(GL gl, int thisid, URL src, String type) throws IOException
+	private String uploadURL(GL glin, int thisid, URL src, String type) throws IOException
 		{
+		GL2 gl=glin.getGL2();
 		BufferedReader brf = new BufferedReader(new InputStreamReader(src.openStream()));
 		String fsrc = "";
 		String line;
@@ -47,19 +49,20 @@ public class Shader
 	 * Create a shader. srcv and srcf can be null.
 	 * use .class.getResource(...) to obtain URL.
 	 */
-	public Shader(GL gl, URL srcv, URL srcf)
+	public Shader(GL glin, URL srcv, URL srcf)
 		{
+		GL2 gl=glin.getGL2();
 		try
 			{
 			ModelView.checkerr(gl);
 			if(srcv!=null)
 				{
-				idv=gl.glCreateShader(GL.GL_VERTEX_SHADER);
+				idv=gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 				uploadURL(gl, idv, srcv,"v");
 				}
 			if(srcf!=null)
 				{
-				idf=gl.glCreateShader(GL.GL_FRAGMENT_SHADER);
+				idf=gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
 				uploadURL(gl, idf, srcf,"f");
 				}
 			
@@ -85,7 +88,7 @@ public class Shader
 	private void checkerr(GL gl, String pos)
 		{
 		int errcode=gl.glGetError();
-		if(errcode!=GL.GL_NO_ERROR)
+		if(errcode!=GL2.GL_NO_ERROR)
 			{
 			try
 				{
@@ -101,10 +104,11 @@ public class Shader
 		}
 	*/
 	
-  private void checkLogInfo(GL gl, int obj, String type)
+  private void checkLogInfo(GL glin, int obj, String type)
   	{
+		GL2 gl=glin.getGL2();
   	IntBuffer iVal = BufferUtil.newIntBuffer(1);
-  	gl.glGetObjectParameterivARB(obj, GL.GL_OBJECT_INFO_LOG_LENGTH_ARB, iVal);
+  	gl.glGetObjectParameterivARB(obj, GL2.GL_OBJECT_INFO_LOG_LENGTH_ARB, iVal);
   	int length = iVal.get();
 
   	if (length > 2) 
@@ -121,22 +125,23 @@ public class Shader
   	}
 
 	
-	public void use(GL gl)
+	public void use(GL glin)
 		{
+		GL2 gl=glin.getGL2();
 //		int scaleLoc=gl.glGetUniformLocation(prog, "scale");
 //		gl.glUniform1f(scaleLoc, 1);
 
 
-//		gl.glEnable(GL.GL_VERTEX_PROGRAM_ARB);
+//		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 		ModelView.checkerr(gl);
-//		gl.glEnable(GL.GL_FRAGMENT_PROGRAM_ARB);
+//		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		ModelView.checkerr(gl);
 		gl.glUseProgram(prog);
 		ModelView.checkerr(gl);
 		
 		//before bind
 		int texUnit=0;
-//		gl.glActiveTexture(GL.GL_TEXTURE0 + texUnit);
+//		gl.glActiveTexture(GL2.GL_TEXTURE0 + texUnit);
 		
 		
 		ModelView.checkerr(gl);
@@ -151,18 +156,20 @@ public class Shader
 		
 		}
 	
-	public void stopUse(GL gl)
+	public void stopUse(GL glin)
 		{
-//		gl.glDisable(GL.GL_VERTEX_PROGRAM_ARB);
+		GL2 gl=glin.getGL2();
+//		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		ModelView.checkerr(gl);
-//		gl.glDisable(GL.GL_FRAGMENT_PROGRAM_ARB);
+//		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		ModelView.checkerr(gl);
 		gl.glUseProgram(0);
 		ModelView.checkerr(gl);
 		}
 	
-	public void delete(GL gl)
+	public void delete(GL glin)
 		{
+		GL2 gl=glin.getGL2();
 		if(idv!=null)	{gl.glDetachShader(prog, idv); gl.glDeleteShader(idv);}
 		if(idf!=null)	{gl.glDetachShader(prog, idf); gl.glDeleteShader(idf);}
 		gl.glDeleteProgram(prog);

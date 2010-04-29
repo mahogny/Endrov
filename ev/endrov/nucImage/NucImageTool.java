@@ -237,7 +237,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e))
 			holdRadius=true;
 		
-		EvDecimal curFramei=w.frameControl.getFrame();
+		EvDecimal curFramei=w.getFrame();
 		NucLineage lin=NucLineage.currentHover.fst();
 		
 		if(lin!=null && (KeyBinding.get(NucLineage.KEY_TRANSLATE).typed(e) || KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)))

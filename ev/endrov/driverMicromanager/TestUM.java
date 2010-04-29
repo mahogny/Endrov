@@ -7,8 +7,6 @@ package endrov.driverMicromanager;
 
 import java.util.Map;
 
-import endrov.recording.CameraImage;
-
 import mmcorej.*;
 
 public class TestUM

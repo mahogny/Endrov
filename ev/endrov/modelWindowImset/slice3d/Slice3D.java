@@ -6,7 +6,7 @@
 package endrov.modelWindowImset.slice3d;
 
 import java.awt.*;
-import java.awt.image.*;
+import java.nio.DoubleBuffer;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -25,12 +25,12 @@ import endrov.util.ImVector3d;
  */
 public class Slice3D
 	{	
-	EvDecimal lastframe; 
+	private EvDecimal lastframe; 
 
-	int w, h;
-	double resX,resY,resZ;
-	Texture tex;      
-	boolean rebuild;
+	private int w, h;
+	private double resX,resY/*,resZ*/;
+	private Texture tex;      
+	private boolean rebuild;
 	
 	
 	/**
@@ -40,7 +40,7 @@ public class Slice3D
 		{
 		if(tex!=null)
 			{
-			tex.dispose();
+			tex.destroy(gl);
 			tex=null;
 			}
 		}
@@ -88,7 +88,6 @@ public class Slice3D
 			EvStack stack=ch.imageLoader.get(cframe);
 			EvImage evim=stack.get(zplane);
 			EvPixels p=evim.getPixels();
-			BufferedImage bim=p.quickReadOnlyAWT();
 			w=p.getWidth();
 			h=p.getHeight();
 			resX=stack.getResbinX();//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
@@ -109,8 +108,19 @@ public class Slice3D
 			g.drawImage(bim,0,0,Color.BLACK,null);
 			bim=sim;
 			 */
+
+			DoubleBuffer buffer=DoubleBuffer.allocate(w*h);
+			buffer.put(p.convertToDouble(true).getArrayDouble());
 			
+			TextureData tdata=new TextureData(
+					GL2.GL_ALPHA, w,h, 0, GL2.GL_ALPHA, GL2.GL_FLOAT, false, false, false, buffer, null);
+			
+			
+			/*
+			BufferedImage bim=p.quickReadOnlyAWT();
 			tex=TextureIO.newTexture(bim,false);
+			*/
+			tex=TextureIO.newTexture(tdata);
 			}
 		}
 	
@@ -135,14 +145,15 @@ public class Slice3D
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl, Color color, EvDecimal zplane)
+	public void render(GL glin, Color color, EvDecimal zplane)
 		{
+		GL2 gl=glin.getGL2();
 		if(isBuilt())
 			{
 			double z=zplane.doubleValue();
-			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS); //bother to refine?
+			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS); //bother to refine?
 			
-			gl.glDisable(GL.GL_CULL_FACE);
+			gl.glDisable(GL2.GL_CULL_FACE);
 
 			//Select texture
 			tex.enable();
@@ -153,7 +164,7 @@ public class Slice3D
 			double h=this.h/resY;
 			TextureCoords tc=tex.getImageTexCoords();
 			
-			gl.glBegin(GL.GL_QUADS);
+			gl.glBegin(GL2.GL_QUADS);
 			gl.glColor3d(color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0);
 			
 			gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, z); //check

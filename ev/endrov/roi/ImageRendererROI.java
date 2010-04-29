@@ -26,15 +26,18 @@ public class ImageRendererROI implements ImageWindowRenderer
 	{
 	public static final int HANDLESIZE=3;
 
-	private final ImageWindow w;
+	private final ImageWindowInterface w;
 	public Map<ROI, Map<String,ROI.Handle>> handleList=new HashMap<ROI, Map<String,ROI.Handle>>();
 	
 	SimpleObserver.Listener listenSelelection=new SimpleObserver.Listener()
-		{public void observerEvent(Object src){w.updateImagePanel();}};
+		{public void observerEvent(Object src)
+			{
+			w.updateImagePanel();
+			}};
 	
 	public ROI drawROI=null;
 		
-	public ImageRendererROI(final ImageWindow w)
+	public ImageRendererROI(final ImageWindowInterface w)
 		{
 		this.w=w;
 		
@@ -49,8 +52,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 	 */
 	public void draw(Graphics g)
 		{
-		EvDecimal frame=w.frameControl.getFrame();
-		EvDecimal z=w.frameControl.getZ();
+		EvDecimal frame=w.getFrame();
+		EvDecimal z=w.getZ();
 		String channel=w.getCurrentChannelName();
 		
 		handleList.clear();

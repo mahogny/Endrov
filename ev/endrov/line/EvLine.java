@@ -16,6 +16,8 @@ import javax.vecmath.Vector4d;
 import endrov.data.*;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowExtension;
+import endrov.imageWindow.ImageWindowInterface;
+import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.modelWindow.ModelWindow;
 import endrov.util.EvDecimal;
 
@@ -173,11 +175,18 @@ public class EvLine extends EvObject implements Cloneable
 			{
 			public void newImageWindow(ImageWindow w)
 				{
-				EvLineRenderer r=new EvLineRenderer(w);
-				w.imageWindowTools.add(new ToolMakeLine(w,r));
+				w.addImageWindowTool(new ToolMakeLine(w));
+				}
+			});
+
+		ImageWindow.addImageWindowRendererExtension(new ImageWindowRendererExtension()
+			{
+			public void newImageWindow(ImageWindowInterface w)
+				{
+				EvLineImageRenderer r=new EvLineImageRenderer(w);
 				w.addImageWindowRenderer(r);
 				}
 			});
-			
+
 		}
 	}

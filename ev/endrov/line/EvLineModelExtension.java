@@ -83,8 +83,9 @@ public class EvLineModelExtension implements ModelWindowExtension
 		/**
 		 * Render graphics
 		 */
-		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
+		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
+			GL2 gl=glin.getGL2();
 			for(EvLine ia:getAnnot())
 				renderOne(gl, ia);
 			}
@@ -94,7 +95,7 @@ public class EvLineModelExtension implements ModelWindowExtension
 		/**
 		 * Render label of one nucleus
 		 */
-		private void renderOne(GL gl, EvLine ia)
+		private void renderOne(GL2 gl, EvLine ia)
 			{
 			//Save world coordinate
 			gl.glPushMatrix();

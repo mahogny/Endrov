@@ -25,17 +25,15 @@ import endrov.keyBinding.KeyBinding;
 public class ShellImageTool implements ImageWindowTool
 	{
 	private final ImageWindow w;
-	private final ShellImageRenderer r;
 	
 	private boolean holdTranslate=false;
 	private boolean holdRotate=false;
 
-	public void deselected() {}
 	
-	public ShellImageTool(ImageWindow w, ShellImageRenderer r)
+	
+	public ShellImageTool(ImageWindow w)
 		{
 		this.w=w;
-		this.r=r;
 		}
 
 	public JMenuItem getMenuItem()
@@ -49,10 +47,18 @@ public class ShellImageTool implements ImageWindowTool
 		return mi;
 		}
 
+	public void deselected() {}
 	
-	private Shell getCurrentShell()
+	
+	private ShellImageRenderer getRenderer(ImageWindow w)
 		{
-		return r.currentShell;
+		return w.getRendererClass(ShellImageRenderer.class); 
+		}
+	
+	private Shell getCurrentShell(ImageWindow w)
+		{		
+		return getRenderer(w).currentShell;
+//		return r.currentShell;
 		}
 	
 	private double square(double x)
@@ -67,6 +73,7 @@ public class ShellImageTool implements ImageWindowTool
 		{
 		Vector2d v=w.transformS2W(new Vector2d(mx,my));
 
+		ShellImageRenderer r=getRenderer(w);
 		
 		double wx=v.x;
 		double wy=v.y;
@@ -93,13 +100,13 @@ public class ShellImageTool implements ImageWindowTool
 		}
 
 	
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(final  MouseEvent e)
 		{
 		}
 	
-	public void mouseDragged(MouseEvent e, int dx, int dy)
+	public void mouseDragged(final  MouseEvent e, int dx, int dy)
 		{
-		Shell shell=getCurrentShell();
+		Shell shell=getCurrentShell(w);
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			if(shell!=null)
@@ -128,8 +135,9 @@ public class ShellImageTool implements ImageWindowTool
 	
 	public void mousePressed(MouseEvent e)
 		{
+		ShellImageRenderer r=getRenderer(w);
 		updateCurrentShell(e.getX(), e.getY(),true);
-		Shell shell=getCurrentShell();
+		Shell shell=getCurrentShell(w);
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			if(shell==null)
@@ -166,8 +174,9 @@ public class ShellImageTool implements ImageWindowTool
 	
 	public void mouseMoved(MouseEvent e, int dx, int dy)
 		{
+		//ShellImageRenderer r=getRenderer(w);
 		updateCurrentShell(e.getX(), e.getY(),false);
-		Shell shell=getCurrentShell();
+		Shell shell=getCurrentShell(w);
 		if(shell!=null)
 			{
 			if(holdRotate)
@@ -185,16 +194,16 @@ public class ShellImageTool implements ImageWindowTool
 			}
 		}
 	
-	public void mouseExited(MouseEvent e) {}
+	public void mouseExited(final  MouseEvent e) {}
 	
-	public void keyPressed(KeyEvent e)
+	public void keyPressed(final  KeyEvent e)
 		{
 		if(KeyBinding.get(Shell.KEY_TRANSLATE).typed(e))
 			holdTranslate=true;
 		if(KeyBinding.get(Shell.KEY_ROTATE).typed(e))
 			holdRotate=true;
 
-		Shell shell=getCurrentShell();
+		Shell shell=getCurrentShell(w);
 		if(KeyBinding.get(Shell.KEY_SETZ).typed(e) && shell!=null)
 			{
 			//Bring shell to this Z
