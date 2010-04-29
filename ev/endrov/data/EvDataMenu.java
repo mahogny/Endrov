@@ -195,6 +195,10 @@ public class EvDataMenu implements BasicWindowExtension
 					obmenu.add(miRemoveOb);
 					JMenuItem miRenameOb=new JMenuItem("Rename");
 					obmenu.add(miRenameOb);
+					JMenuItem miSetAuthor=new JMenuItem("Set author");
+					obmenu.add(miSetAuthor);
+					JMenuItem miGetMetainfo=new JMenuItem("Get metainfo");
+					obmenu.add(miGetMetainfo);
 					JMenu miMoveOb=buildMoveMenu(thisMeta, obId);
 					obmenu.add(miMoveOb);
 					
@@ -237,6 +241,42 @@ public class EvDataMenu implements BasicWindowExtension
 							}
 						};
 					miRenameOb.addActionListener(obListenerRename);
+
+					
+					ActionListener obListenerSetAuthor=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Set Author", 
+									JOptionPane.QUESTION_MESSAGE, null, null, thisMeta.author);
+							//Maybe use weak reference?
+							if(newId!=null)
+								{
+								thisMeta.author=newId;
+								thisMeta.setMetadataModified();
+								BasicWindow.updateWindows();
+								}
+							}
+						};
+					miSetAuthor.addActionListener(obListenerSetAuthor);
+					
+
+					ActionListener obListenerGetMetainfo=new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							String dateCreate=thisMeta.dateCreate==null ? "" : thisMeta.dateCreate + " " + (new Date(thisMeta.dateCreate.longValue()));
+							String dateMod=thisMeta.dateLastModify==null ? "" : thisMeta.dateLastModify + " " + (new Date(thisMeta.dateLastModify.longValue()));
+							JOptionPane.showMessageDialog(null, 
+									"Author: "+thisMeta.author+"\n"+
+									"Created: "+dateCreate+"\n"+
+									"Modified: "+dateMod
+									);
+							}
+						};
+					miGetMetainfo.addActionListener(obListenerGetMetainfo);
+
+					
 					
 					}
 				}

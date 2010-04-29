@@ -487,6 +487,14 @@ public abstract class ROI extends EvObject
 	static
 		{
 		ImageWindow.addImageWindowExtension(new ImageWindowExtensionROI());
+		
+		ImageWindow.addImageWindowRendererExtension(new ImageWindowRendererExtension()
+			{
+			public void newImageWindow(ImageWindowInterface w)
+				{
+				w.addImageWindowRenderer(new ImageRendererROI(w));
+				}
+			});
 		}
 	
 	}

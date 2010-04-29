@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector3d;
 
@@ -80,13 +81,14 @@ public class CrossHandler
 	/**
 	 * Display for selection
 	 */
-	public void displayCrossSelect(GL gl, ModelWindow w)
+	public void displayCrossSelect(GL glin, ModelWindow w)
 		{
+		GL2 gl=glin.getGL2();
 		crossListStartId=null;
 		ModelView view=w.view;
-		gl.glPushAttrib(GL.GL_ENABLE_BIT);
+		gl.glPushAttrib(GL2.GL_ENABLE_BIT);
 		for(int i=0;i<view.numClipPlanesSupported;i++)
-			gl.glDisable(GL.GL_CLIP_PLANE0+i);
+			gl.glDisable(GL2.GL_CLIP_PLANE0+i);
 		for(Cross c:crossList)
 			{
 			int col1=view.reserveSelectColor(crossListener);
@@ -100,7 +102,7 @@ public class CrossHandler
 			gl.glPushMatrix();
 			gl.glTranslated(c.v.x, c.v.y, c.v.z);
 			gl.glLineWidth(8);//can be made wider
-			gl.glBegin(GL.GL_LINES);
+			gl.glBegin(GL2.GL_LINES);
 			view.setReserveColor(gl, col1);
 			gl.glVertex3f(-size, 0, 0);gl.glVertex3f(size, 0, 0);
 			view.setReserveColor(gl, col2);
@@ -118,12 +120,12 @@ public class CrossHandler
 	/**
 	 * Display for viewing
 	 */
-	public void displayCrossFinal(GL gl, ModelWindow w)
+	public void displayCrossFinal(GL2 gl, ModelWindow w)
 		{
 		ModelView view=w.view;
-		gl.glPushAttrib(GL.GL_ENABLE_BIT);
+		gl.glPushAttrib(GL2.GL_ENABLE_BIT);
 		for(int i=0;i<view.numClipPlanesSupported;i++)
-			gl.glDisable(GL.GL_CLIP_PLANE0+i);
+			gl.glDisable(GL2.GL_CLIP_PLANE0+i);
 		for(Cross c:crossList)
 			{
 			gl.glPushMatrix();
@@ -131,7 +133,7 @@ public class CrossHandler
 			//float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(w);
 			float size=crossSizeFactor*(float)w.view.getRepresentativeScale();
 			gl.glLineWidth(4);
-			gl.glBegin(GL.GL_LINES);
+			gl.glBegin(GL2.GL_LINES);
 			gl.glColor3f(1,0,0);
 			gl.glVertex3f(-size, 0, 0);gl.glVertex3f(size, 0, 0);
 			gl.glColor3f(0,1,0);

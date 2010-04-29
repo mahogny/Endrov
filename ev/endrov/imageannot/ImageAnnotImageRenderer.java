@@ -13,10 +13,10 @@ import endrov.imageWindow.*;
 
 public class ImageAnnotImageRenderer implements ImageWindowRenderer
 	{
-	public ImageWindow w;
+	public ImageWindowInterface w;
 	
 	
-	public ImageAnnotImageRenderer(ImageWindow w)
+	public ImageAnnotImageRenderer(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
