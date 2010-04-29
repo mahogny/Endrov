@@ -31,9 +31,9 @@ import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
+import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
 import endrov.roi.ROI;
-import endrov.roi.primitive.BoxROI;
 import endrov.roi.window.GeneralToolDragCreateROI;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
@@ -149,6 +149,20 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		{
 		toolButtons.addAll(Arrays.asList(/*bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,*/bSelectROI));
 
+		
+		bSelectROI.addActionListener(new ActionListener()
+			{public void actionPerformed(ActionEvent e)
+				{
+				if(((JToggleButton)e.getSource()).isSelected())
+					{
+					//ImageRendererROI renderer=getRendererClass(ImageRendererROI.class);
+					setTool(new GeneralToolROI(CamWindow.this));
+					
+					//setTool(new GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
+					System.out.println("Hello!!!???");
+					}
+				}});
+		
 		for(final ROI.ROIType rt:ROI.getTypes())
 			{
 			if(rt.canPlace() && !rt.isCompound())
@@ -230,7 +244,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		blistleft.add(bCameraToROI);
 		blistleft.add(bGoToROI);
 		blistleft.add(bAutoFocus);
-		JComponent pLeft=EvSwingUtil.layoutCompactVertical(
+		JComponent pLeft=EvSwingUtil.layoutACB(
 				EvSwingUtil.layoutEvenVertical(
 						blistleft.toArray(new JComponent[0])
 						/*
@@ -238,7 +252,9 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 						bCameraToROI,
 						bGoToROI,
 						bAutoFocus*/
-						)
+						),
+						null,
+						null
 				);
 		
 		
@@ -329,9 +345,9 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 						{
 						if(bb!=b)
 							{
-							bb.removeActionListener(this);
+							//bb.removeActionListener(this);
 							bb.setSelected(false);
-							bb.addActionListener(this);
+							//bb.addActionListener(this);
 							}
 						}
 					
