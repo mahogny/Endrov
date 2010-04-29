@@ -14,7 +14,7 @@ public class FrivolousSettings
 	 * Parameters for distorting the image, the user should be able to change
 	 * these. (direct or indirect?)
 	 */
-	public double parameter_noise_lambda = 0;
+	public double parameter_noise_lambda = 50;
 
 	public boolean setNoiseLambda(String s) throws NumberFormatException,	IllegalValueException
 		{

@@ -74,4 +74,28 @@ public class FrivolousFourier
 			}
 		}
 	}
+	
+	protected static void shiftQuadrants(int inputWidth, int inputHeight, float[] input, int outputWidth, int outputHeight, float[] output )
+	{
+		//First quadrant
+		for(int i = inputWidth>>1;i<inputWidth;i++)
+			for(int j=inputHeight>>1;j<inputHeight;j++)
+				output[(i-(inputWidth>>1))+(j-(inputHeight>>1))*outputWidth] =
+					input[i+j*inputWidth];
+
+		//TODO: Second quadrant
+		for(int i = 0;i<inputWidth>>1;i++)
+			for(int j=inputHeight>>1;j<inputHeight;j++)
+				output[(i+outputWidth-(inputWidth>>1))+(j-(inputHeight>>1))*outputWidth] = input[i+j*inputWidth];
+		
+		//TODO: Third quadrant
+		for(int i = inputWidth>>1;i<inputWidth;i++)
+			for(int j=0;j<inputHeight>>1;j++)
+				output[(i-(inputWidth>>1))+(j+outputWidth-(inputHeight>>1))*outputWidth] = input[i+j*inputWidth];
+		
+		//TODO: Fourth quadrant
+		for(int i = 0;i<inputWidth>>1;i++)
+			for(int j=0;j<inputHeight>>1;j++)
+				output[(i+outputWidth-(inputWidth>>1))+(j+outputWidth-(inputHeight>>1))*outputWidth] = input[i+j*inputWidth];
 	}
+}

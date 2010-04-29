@@ -72,7 +72,6 @@ public class FrivolousComplexLib
 			throw new IllegalArgumentException("Matrix sizes must agree!");
 		float[] real = new float[a.length];
 		float[] imag = new float[b.length];
-
 		for (int i = 0; i<a.length; i++)
 			{
 			real[i] = a.real[i]*b.real[i]-a.imag[i]*b.imag[i];
@@ -140,9 +139,25 @@ public class FrivolousComplexLib
 	public static FrivolousComplexArray getFilledArray(FrivolousComplexArray sizeOf, float fillValue)
 		{
 		float[] real = new float[sizeOf.length];
-		for (int i = 1; i<real.length; i++) //TODO isn't this a bug?
+		for (int i = 0; i<real.length; i++)
 			real[i] = fillValue;
 		return new FrivolousComplexArray(real, null, sizeOf.width, sizeOf.height);
 		}
+
+	public static FrivolousComplexArray getCrop(
+		FrivolousComplexArray array, int width, int height, int offsetX, int offsetY) {
+		if(width+offsetX > array.width || offsetX < 0 ||
+		   height+offsetY > array.height || offsetY < 0)
+			throw new IllegalArgumentException("Can not crop an area outside the original picture!");
+		float[] real = new float[width*height];
+		float[] imag = new float[width*height];
+		for (int i = 0; i<width;i++)
+			for (int j = 0; j<height;j++){
+				real[i+j*width]=array.real[(i+offsetX)+(j+offsetY)*array.width];
+				imag[i+j*width]=array.imag[(i+offsetX)+(j+offsetY)*array.width];
+		}
+		
+		return new FrivolousComplexArray(real, imag, width, height);
+	}
 
 	}

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
@@ -25,6 +26,7 @@ import endrov.imageWindow.GeneralTool;
 import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.HWStage;
+import endrov.recording.HWCamera;
 import endrov.util.Vector2i;
 
 /**
@@ -46,6 +48,13 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	public abstract int getLower();
 	public abstract int getUpper();
 		
+	
+	public JToggleButton[] toolButtons;
+	
+	public CamWindowImageView(JToggleButton[] toolButtons){
+		this();
+		this.toolButtons = toolButtons;
+	}
 	
 	public CamWindowImageView()
 		{
@@ -200,16 +209,29 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		}
 	public void mouseDragged(MouseEvent e)
 		{
+		boolean move = true;
+		for(JToggleButton b:toolButtons)
+			if(b.isSelected()) move = false;
 		int dx=e.getX()-lastMousePosition.x;
 		int dy=e.getY()-lastMousePosition.y;
 		lastMousePosition=new Vector2i(e.getX(),e.getY());
 		
 		//TODO magnification
+		double resMagX = 1;
+		double resMagY = 1;
+		for(Map.Entry<EvDevicePath,HWCamera> cams:EvHardware.getDeviceMapCast(HWCamera.class).entrySet())
+		{
+			HWCamera camera = cams.getValue();
+			resMagX = camera.getResMagX();
+			resMagY = camera.getResMagY();
+			break;
+		}
 		
 		//TODO update manual view
-		
-		moveAxis("x", dx);
-		moveAxis("y", dy);
+		if(move){
+			moveAxis("x", dx*resMagX);
+			moveAxis("y", dy*resMagY);
+		}
 		
 		if(currentTool!=null)
 			currentTool.mouseDragged(e, dx, dy);
