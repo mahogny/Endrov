@@ -146,6 +146,9 @@ public class FrivolousComplexLib
 
 	public static FrivolousComplexArray getCrop(
 		FrivolousComplexArray array, int width, int height, int offsetX, int offsetY) {
+		if(width+offsetX > array.width || offsetX < 0 ||
+		   height+offsetY > array.height || offsetY < 0)
+			throw new IllegalArgumentException("Can not crop an area outside the original picture!");
 		float[] real = new float[width*height];
 		float[] imag = new float[width*height];
 		for (int i = 0; i<width;i++)

@@ -149,7 +149,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			}
 		private double getRes()
 		{
-			return 1;//0.1;
+			return 0.1;
 		}
 		
 		public double getResMagX()
@@ -261,12 +261,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		public void setStagePos(double[] axis)
 			{
 			double oldZ = stagePos[2];
+			if (axis[2]<-10000)
+				axis[2]=-10000;
+			else if(axis[2]>10000)
+				axis[2]=10000;
+			
+			for (int i = 0; i<2; i++)
+				if (axis[i]<-512*.1)
+					axis[i]=-512*.1;
+				else if (axis[i]>512*.1)
+					axis[i]=512*.1;	
+			
 			for (int i = 0; i<3; i++)
 				stagePos[i] = axis[i];
-			if (stagePos[2]<-10000)
-				stagePos[2]=-10000;
-			else if(stagePos[2]>10000)
-				stagePos[2]=10000;
 
 			model.getSettings().offsetZ = stagePos[2];
 			if(stagePos[2]!=oldZ)

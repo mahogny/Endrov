@@ -160,7 +160,7 @@ public class FrivolousCell
 		FrivolousComplexArray total_array = FrivolousComplexLib.getRealAddition(diffused_sum_array,
 				immobile_sum_array);
 		
-		FrivolousComplexArray crop_array = FrivolousComplexLib.getCrop(total_array,1024,1024,768-offsetX,768-offsetY);
+		FrivolousComplexArray crop_array = FrivolousComplexLib.getCrop(total_array,1024,1024,512-((int)(offsetX*10+0.5)),512-((int)(offsetY*10+0.5)));
 		
 		FrivolousComplexArray input_fft = fft.forward(crop_array, true);
 
@@ -172,11 +172,11 @@ public class FrivolousCell
 		output_array = fft.backward(output_fft);
 
 		timer.show("iFFT");
-		FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(output_array,
+		FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,512,512,256,256),
 				settings);
 
 		timer.show("Poisson noise");
-		return FrivolousUtility.getImageFromComplex(FrivolousComplexLib.getCrop(output_noise,512,512,0,0), false);
+		return FrivolousUtility.getImageFromComplex(output_noise, false);
 		}
 
 	public FrivolousSettingsNew getSettings()
