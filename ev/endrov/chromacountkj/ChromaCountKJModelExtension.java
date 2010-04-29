@@ -86,8 +86,9 @@ public class ChromaCountKJModelExtension implements ModelWindowExtension
 		/**
 		 * Render graphics
 		 */
-		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
+		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
+			GL2 gl=glin.getGL2();
 			for(ChromaCountKJ ia:getAnnot())
 				renderOne(gl, ia,transparentRenderers);
 			}
@@ -98,7 +99,7 @@ public class ChromaCountKJModelExtension implements ModelWindowExtension
 		 * Render label of one nucleus
 		 */
 		
-		private void renderOne(GL gl, ChromaCountKJ ia,List<TransparentRender> transparentRenderers)
+		private void renderOne(GL2 gl, ChromaCountKJ ia,List<TransparentRender> transparentRenderers)
 			{
 			//Save world coordinate
 			gl.glPushMatrix();

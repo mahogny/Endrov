@@ -6,7 +6,10 @@
 package endrov.recording;
 
 
+import endrov.data.EvData;
 import endrov.keyBinding.JInputManager;
+import endrov.roi.primitive.BoxROI;
+import endrov.util.EvDecimal;
 import endrov.util.EvSound;
 
 /**
@@ -27,6 +30,25 @@ public class RecordingResource
 		return 1;
 		}
 
+	
+	
+	private static EvData data=new EvData();
+	
+	//TODO
+	static
+	{
+	BoxROI roi=new BoxROI();
+	roi.regionX.set(new EvDecimal(10), new EvDecimal(50));
+	roi.regionY.set(new EvDecimal(10), new EvDecimal(50));
+	data.addMetaObject(roi);
+
+	}
+	
+	public static EvData getData()
+		{
+		return data;
+		}
+	
 
 	/******************************************************************************************************
 	 * Plugin declaration

@@ -8,22 +8,12 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
-import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.hardware.EvHardware;
-import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
-import endrov.imageset.EvStack;
-import endrov.imageset.Imageset;
-import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
-import endrov.recording.recmetBurst.EvBurstAcquisition;
-import endrov.recording.recmetBurst.EvBurstAcquisition.AcqThread;
-import endrov.recording.recmetBurst.EvBurstAcquisition.Listener;
 import endrov.recording.recmetMultidim.RecWidgetOrder.SettingsDimensionsOrder;
-import endrov.util.EvDecimal;
 
 
 /**

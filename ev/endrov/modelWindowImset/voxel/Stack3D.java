@@ -71,9 +71,10 @@ public class Stack3D extends StackInterface
 				this.depth=depth;
 				}
 			}
-		/** Upload texture to GL. can be called multiple times, action is only taken first time */
-		public void upload(GL gl)
+		/** Upload texture to GL2. can be called multiple times, action is only taken first time */
+		public void upload(GL glin)
 			{
+			GL2 gl=glin.getGL2();
 			if(id==null)
 				{
 				int ids[]=new int[1];
@@ -83,16 +84,16 @@ public class Stack3D extends StackInterface
 
 				System.out.println("size "+width+" "+height+" "+depth+" "+id);
 
-				gl.glEnable( GL.GL_TEXTURE_3D ); //does it have to be on here?
-				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
-				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
-				gl.glTexParameteri(GL.GL_TEXTURE_3D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP);
-				//gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b);
-				gl.glTexImage3D(GL.GL_TEXTURE_3D, 0, GL.GL_ALPHA, width, height, depth, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, b.rewind());
+				gl.glEnable( GL2.GL_TEXTURE_3D ); //does it have to be on here?
+				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
+				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
+				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
+				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
+				gl.glTexParameteri(GL2.GL_TEXTURE_3D, GL2.GL_TEXTURE_WRAP_R, GL2.GL_CLAMP);
+				//gl.glTexImage3D(GL2.GL_TEXTURE_3D, 0, GL2.GL_ALPHA, width, height, depth, 0, GL2.GL_ALPHA, GL2.GL_UNSIGNED_BYTE, b);
+				gl.glTexImage3D(GL2.GL_TEXTURE_3D, 0, GL2.GL_ALPHA, width, height, depth, 0, GL2.GL_ALPHA, GL2.GL_UNSIGNED_BYTE, b.rewind());
 //				System.out.println("error "+new GLU().gluErrorString(gl.glGetError()));
-				gl.glDisable( GL.GL_TEXTURE_3D );
+				gl.glDisable( GL2.GL_TEXTURE_3D );
 				}
 			}
 		public void dispose(GL gl)
@@ -104,7 +105,7 @@ public class Stack3D extends StackInterface
 			{
 			//here we can do all the multitexturing stuff! clever caching should be enough that different stack
 			//renderers need not know about each other
-			gl.glBindTexture(GL.GL_TEXTURE_3D, id);
+			gl.glBindTexture(GL2.GL_TEXTURE_3D, id);
 			}
 		}
 	
@@ -435,7 +436,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Draw point. Spatial coordinates given. Generates texture coordinates
 	 */
-	private void point(GL gl, VoxelStack os, double x, double y, double z) 
+	private void point(GL2 gl, VoxelStack os, double x, double y, double z) 
 		{
 		gl.glTexCoord3f((float)x/(float)os.realw, (float)y/(float)os.realh, (float)z/(float)os.reald); gl.glVertex3d(x,y,z);
 		}
@@ -444,7 +445,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render the place through one voxel stack given plane
 	 */
-	private void renderPlane(GL gl, Camera cam, VoxelStack os, Plane p)
+	private void renderPlane(GL2 gl, Camera cam, VoxelStack os, Plane p)
 		{
 		Vector3d[] points=new Vector3d[]{
 				intersectPlane1(p, os), intersectPlane2(p, os), intersectPlane4(p, os), intersectPlane3(p, os),
@@ -596,7 +597,7 @@ public class Stack3D extends StackInterface
 			}
 	
 		//Draw polygon
-		gl.glBegin(GL.GL_POLYGON);
+		gl.glBegin(GL2.GL_POLYGON);
 		gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
 		for(Vector3d po:points)
 			point(gl, os, po.x, po.y, po.z);
@@ -630,8 +631,10 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
 		{
+		GL2 gl=glin.getGL2();
+
 		//Draw edges
 		if(drawEdges)
 			for(VoxelStack os:texSlices)
@@ -653,7 +656,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render all planes through a voxel stack
 	 */
-	private void renderVoxelStack(GL gl,List<TransparentRender> transparentRenderers, final Camera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors)
+	private void renderVoxelStack(GL2 gl,List<TransparentRender> transparentRenderers, final Camera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors)
 		{
 		//Load shader
 		if(shader3d==null)
@@ -666,20 +669,20 @@ public class Stack3D extends StackInterface
 		Stack3DRenderState renderstate=new Stack3DRenderState(){
 			public void activate(GL gl)
 				{
-//			gl.glPushAttrib(GL.GL_ALL_ATTRIB_BITS);
+//			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 				if(!solidColor)
 					{
 					if(mixColors)
-						gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
+						gl.glBlendFunc(GL2.GL_SRC_COLOR, GL2.GL_ONE_MINUS_SRC_COLOR);
 					else
-						gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+						gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 					}
 				gl.glDepthMask(false);
-				gl.glDisable(GL.GL_CULL_FACE);
-				gl.glEnable(GL.GL_TEXTURE_3D);
-				gl.glEnable(GL.GL_BLEND);
+				gl.glDisable(GL2.GL_CULL_FACE);
+				gl.glEnable(GL2.GL_TEXTURE_3D);
+				gl.glEnable(GL2.GL_BLEND);
 					//int texUnit=0;  //NEW
-					//gl.glActiveTexture(GL.GL_TEXTURE0 + texUnit); //NEW
+					//gl.glActiveTexture(GL2.GL_TEXTURE0 + texUnit); //NEW
 				os.tex.bind(gl);
 				shader3d.use(gl);
 				}
@@ -695,10 +698,10 @@ public class Stack3D extends StackInterface
 			public void deactivate(GL gl)
 				{
 				shader3d.stopUse(gl);
-				gl.glDisable(GL.GL_TEXTURE_3D);
-				gl.glDisable(GL.GL_BLEND);
+				gl.glDisable(GL2.GL_TEXTURE_3D);
+				gl.glDisable(GL2.GL_BLEND);
 				gl.glDepthMask(true);
-				gl.glEnable(GL.GL_CULL_FACE);
+				gl.glEnable(GL2.GL_CULL_FACE);
 			//	gl.glPopAttrib();
 				}
 		}; 
@@ -740,7 +743,11 @@ public class Stack3D extends StackInterface
 				renderPlane(gl, cam, os, p);
 			else
 				{
-				TransparentRender renderer=new TransparentRender(){public void render(GL gl){renderPlane(gl, cam, os, p);}};
+				TransparentRender renderer=new TransparentRender(){public void render(GL glin)
+					{
+					GL2 gl=glin.getGL2();
+					renderPlane(gl, cam, os, p);
+					}};
 				renderer.renderState=renderstate;
 				renderer.z=q-camz;
 				transparentRenderers.add(renderer);

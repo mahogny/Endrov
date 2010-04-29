@@ -35,11 +35,10 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 	private final JMenuItem miRemoveFrame=new JMenuItem("Frame");
 	private final JMenuItem miRemoveSlice=new JMenuItem("Slice");
 
+	
 	public ImageWindowToolEditImage(final ImageWindow w)
 		{
 		this.w=w;
-		
-		
 		}
 	
 	public JMenuItem getMenuItem()
@@ -74,7 +73,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 				}
 			}
 		else if(e.getSource()==miRemoveFrame)
-			{
+			{ 
 			String ch=w.getCurrentChannelName();
 			EvDecimal frame=w.frameControl.getFrame();
 			

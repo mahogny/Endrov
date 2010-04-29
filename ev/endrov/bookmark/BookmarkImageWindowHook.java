@@ -32,7 +32,7 @@ public class BookmarkImageWindowHook implements ImageWindowExtension
 	{
 	public void newImageWindow(final ImageWindow w)
 		{
-		w.imageWindowTools.add(new ImageWindowTool(){
+		w.addImageWindowTool(new ImageWindowTool(){
 			JMenu miBookmark=new JMenu("Bookmarks");
 			JMenuItem miAddBookmark=new JMenuItem("Add bookmark");
 			

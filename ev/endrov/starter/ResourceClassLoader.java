@@ -6,9 +6,11 @@
 package endrov.starter;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 //import java.util.StringTokenizer;
@@ -46,20 +48,44 @@ public class ResourceClassLoader extends URLClassLoader
 		//parentResources=new SpecialClassLoader(libParent);
 		}
 	
+	
+	
+	
+	@Override
+	protected Class<?> findClass(String name) throws ClassNotFoundException
+		{
+		Class<?> cl=super.findClass(name);
+		//System.out.println("Find class: "+name+" got "+cl);
+		return cl;
+		}
+
+
+	
+
+
+	@Override
+	protected synchronized Class<?> loadClass(String arg0, boolean arg1)
+			throws ClassNotFoundException
+		{
+		//System.out.println("Load class "+arg0);
+		return super.loadClass(arg0, arg1);
+		}
+
+
+
+
+	@Override
+	public Class<?> loadClass(String name) throws ClassNotFoundException
+		{
+		//System.out.println("Load class "+name);
+		return super.loadClass(name);
+		}
+
+
+
+
 	protected String findLibrary(String libname)
 		{
-		//System.out.println("-----------Trying to find library "+libname);
-
-		/*
-		String above=super.findLibrary(libname);
-		
-		if(above!=null)
-			{
-			System.out.println("Found already "+above);
-			return above;
-			}
-		*/
-		
 		//Figure out operating system
 		String OS=System.getProperty("os.name").toLowerCase();
 
@@ -70,6 +96,8 @@ public class ResourceClassLoader extends URLClassLoader
 			libname=libname+".dll";
 		else
 			libname="lib"+libname+".so";
+
+		//System.out.println("findlibrary "+libname);
 		
 		for(String s:binfiles)
 			{
@@ -77,8 +105,10 @@ public class ResourceClassLoader extends URLClassLoader
 			if(f.exists())
 				return f.getAbsolutePath();
 			}
-		
-		return super.findLibrary(libname);
+
+		String dellib=super.findLibrary(libname);
+		//System.out.println("Delegating find library for "+libname+" , found "+dellib);
+		return dellib;
 		}
 	
 	
@@ -103,5 +133,22 @@ public class ResourceClassLoader extends URLClassLoader
 			}
 		}
 
+	@Override
+	public URL findResource(String name)
+		{
+		//System.out.println("find resource "+name);
+		return super.findResource(name);
+		}
 
+	@Override
+	public Enumeration<URL> findResources(String name) throws IOException
+		{
+		//System.out.println("find resources "+name);
+		return super.findResources(name);
+		}
+
+
+	
+	
+	
 	}
