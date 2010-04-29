@@ -36,17 +36,18 @@ public class FrivolousCell
 		{
 		w = 512;
 		h = 512;
+		File fSettings=new File(path, "settings.xml");
 		try
 			{
-			document = EvXmlUtil.readXML(new File(path, "settings.xml"));
+			document = EvXmlUtil.readXML(fSettings);
 			}
 		catch (IOException e)
 			{
-			System.out.println("Filen kunde inte läsas");
+			System.out.println(fSettings+ " could not be read");
 			}
 		catch (org.jdom.JDOMException e)
 			{
-			System.out.println("Filen innehåller fel");
+			System.out.println(fSettings+" contains errors");
 			}
 
 		parseSettings(document.getRootElement().getChild("settings"));

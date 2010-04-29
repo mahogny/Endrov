@@ -25,8 +25,8 @@ import endrov.util.EvDecimal;
  */
 public class FrameTimeImageTool implements ImageWindowTool
 	{
-	private final ImageWindow w;
-	public FrameTimeImageTool(ImageWindow w)
+	private final ImageWindowInterface w;
+	public FrameTimeImageTool(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
@@ -63,7 +63,7 @@ public class FrameTimeImageTool implements ImageWindowTool
 			for(FrameTime f:rec.getObjects(FrameTime.class))
 				{
 				EvDecimal frametime=new EvDecimal(frametimes);
-				f.add(w.frameControl.getFrame(), frametime); 
+				f.add(w.getFrame(), frametime); 
 				BasicWindow.updateWindows();
 				}
 			}

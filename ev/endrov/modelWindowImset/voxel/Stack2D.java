@@ -13,7 +13,7 @@ import java.util.List;
 import javax.media.opengl.*;
 import javax.vecmath.Vector3d;
 
-import com.sun.opengl.util.j2d.TextureRenderer;
+import com.sun.opengl.util.awt.TextureRenderer;
 import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
@@ -94,7 +94,7 @@ public class Stack2D extends StackInterface
 			for(Vector<OneSlice> osv:texSlices.values())
 				for(OneSlice os:osv)
 					{
-					os.tex.dispose();
+					os.tex.destroy(gl);
 					if(os.rend!=null)
 						os.rend.dispose();
 					}
@@ -244,8 +244,9 @@ public class Stack2D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, final boolean solidColor, final boolean drawEdges, final boolean mixColors)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, final boolean solidColor, final boolean drawEdges, final boolean mixColors)
 		{
+		GL2 gl=glin.getGL2();
 		if(isBuilt())
 			{
 			//Load shader
@@ -266,14 +267,14 @@ public class Stack2D extends StackInterface
 			TransparentRender.RenderState renderstate=new TransparentRender.RenderState(){
 			public void activate(GL gl)
 				{
-				gl.glDisable(GL.GL_CULL_FACE);
+				gl.glDisable(GL2.GL_CULL_FACE);
 				if(!solidColor)
 					{
 					if(mixColors)
-						gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+						gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 					else
-						gl.glBlendFunc(GL.GL_SRC_COLOR, GL.GL_ONE_MINUS_SRC_COLOR);
-					gl.glEnable(GL.GL_BLEND);
+						gl.glBlendFunc(GL2.GL_SRC_COLOR, GL2.GL_ONE_MINUS_SRC_COLOR);
+					gl.glEnable(GL2.GL_BLEND);
 					gl.glDepthMask(false);
 					//shader2d.use(gl); //currently not needed
 					}
@@ -281,9 +282,9 @@ public class Stack2D extends StackInterface
 			public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState){return false;}
 			public void deactivate(GL gl)
 				{
-				gl.glDisable(GL.GL_BLEND);
+				gl.glDisable(GL2.GL_BLEND);
 				gl.glDepthMask(true);
-				gl.glEnable(GL.GL_CULL_FACE);
+				gl.glEnable(GL2.GL_CULL_FACE);
 				//shader2d.stopUse(gl);
 				}
 			}; 
@@ -324,7 +325,7 @@ public class Stack2D extends StackInterface
 	/**
 	 * Render list of slices
 	 */
-	public void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
 		{
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.transformedVector(0, 0, 1);
@@ -339,8 +340,9 @@ public class Stack2D extends StackInterface
 				final double w=os.w/os.resX;
 				final double h=os.h/os.resY;
 				
-				TransparentRender renderer=new TransparentRender(){public void render(GL gl)
+				TransparentRender renderer=new TransparentRender(){public void render(GL glin)
 					{
+					GL2 gl=glin.getGL2();
 					//Select texture
 					os.tex.enable();
 					os.tex.bind();
@@ -348,7 +350,7 @@ public class Stack2D extends StackInterface
 					//Find size and position
 					TextureCoords tc=os.tex.getImageTexCoords();
 
-					gl.glBegin(GL.GL_QUADS);
+					gl.glBegin(GL2.GL_QUADS);
 					gl.glColor3d(os.color.getRed()/255.0, os.color.getGreen()/255.0, os.color.getBlue()/255.0);
 					gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, os.z);
 					gl.glTexCoord2f(tc.right(),tc.top());    gl.glVertex3d(w, 0, os.z);

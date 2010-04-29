@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.swing.*;
 import javax.vecmath.Vector3d;
 
@@ -95,8 +96,9 @@ public class ModelWindowGrid implements ModelWindowExtension
 		/**
 		 * Render all grid planes
 		 */
-		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)
+		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
+			GL2 gl=glin.getGL2();
 			gl.glLineWidth(1f);
 			gl.glPushMatrix(); 
 			gl.glRotatef(90,0,1,0); 
@@ -138,7 +140,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 		/**
 		 * Render one grid plane
 		 */
-		private void renderGridPlane(GL gl, double gsize)
+		private void renderGridPlane(GL2 gl, double gsize)
 			{
 			int gnum=10;
 			gl.glBegin(GL.GL_LINES);
@@ -156,7 +158,7 @@ public class ModelWindowGrid implements ModelWindowExtension
 		/**
 		 * Render scale
 		 */
-		public void renderRuler(GL gl,List<TransparentRender> transparentRenderers, double gsize)
+		public void renderRuler(GL2 gl,List<TransparentRender> transparentRenderers, double gsize)
 			{
 			int gnum=10;
 			for(int i=-gnum;i<=gnum;i++)

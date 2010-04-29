@@ -10,6 +10,8 @@ import java.util.*;
 
 import javax.vecmath.Vector3d;
 
+import endrov.util.EvFileUtil;
+
 /**
  * Interface to Qhull - Voronoi
  * 
@@ -35,7 +37,9 @@ public class Voronoi
 		else //assume linux?
 			platform="linux";
 		
-		File dir=new File(Voronoi.class.getResource(".").getFile());
+		//File dir=new File(Voronoi.class.getResource(".").getFile());
+		File dir=EvFileUtil.getFileFromURL(Voronoi.class.getResource(".").toURI().toURL());
+		
 		File executable=new File(new File(dir,"bin_"+platform),"qvoronoi");
 		
 		//String execString=executable.toString();

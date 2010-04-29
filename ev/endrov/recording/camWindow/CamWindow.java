@@ -14,15 +14,28 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 import javax.swing.*;
+import javax.vecmath.Vector2d;
 
 import org.jdom.*;
 
 import endrov.basicWindow.*;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.hardware.*;
+import endrov.imageWindow.GeneralTool;
+import endrov.imageWindow.ImageWindow;
+import endrov.imageWindow.ImageWindowInterface;
+import endrov.imageWindow.ImageWindowRenderer;
+import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
+import endrov.recording.RecordingResource;
+import endrov.roi.ImageRendererROI;
+import endrov.roi.ROI;
+import endrov.roi.primitive.BoxROI;
+import endrov.roi.window.GeneralToolDragCreateROI;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
@@ -31,7 +44,7 @@ import endrov.util.JImageToggleButton;
  * Camera live-feed window
  * @author Johan Henriksson 
  */
-public class CamWindow extends BasicWindow implements ActionListener
+public class CamWindow extends BasicWindow implements ActionListener, ImageWindowInterface
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -60,7 +73,6 @@ public class CamWindow extends BasicWindow implements ActionListener
 	private EvPixels[] lastCameraImage=null;
 	private Dimension lastImageSize=null; 
 
-	private CamWindow This=this;
 	private JComboBox cameraCombo;
 
 	//Update timer, busy loop for now. replace later by camera event listener	
@@ -81,20 +93,11 @@ public class CamWindow extends BasicWindow implements ActionListener
 	private JButton bCameraToROI=new JImageButton(iconCameraToROI, "Adapt camera limits to ROI");	
 	private JButton bGoToROI=new JImageButton(iconGoToROI, "Move stage to focus on ROI");
 	
-	private JToggleButton bEllipseROI=new JImageToggleButton(iconEllipseROI, "Create ellipse ROI");
-	private JToggleButton bFreehandROI=new JImageToggleButton(iconFreehandROI, "Create freehand ROI");
-	private JToggleButton bLineROI=new JImageToggleButton(iconLineROI, "Create line ROI");
-	private JToggleButton bPointROI=new JImageToggleButton(iconEllipseROI, "Create point ROI");
-	private JToggleButton bPolygonROI=new JImageToggleButton(iconPolygonROI, "Create polygon ROI");
-	private JToggleButton bRectROI=new JImageToggleButton(iconRectROI, "Create rectangle ROI");
-	private JToggleButton bSelectROI=new JImageToggleButton(iconSelectROI, "Select ROI");
-
-	private JToggleButton[] toolButtons=new JToggleButton[]{
-			bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,bSelectROI,
-	}; 
 	
-	
-	private JPanel drawArea=new CamWindowImageView(toolButtons)
+	/**
+	 * Surface for the image
+	 */
+	private CamWindowImageView drawArea=new CamWindowImageView()
 		{
 		private static final long serialVersionUID = 1L;
 		public int getUpper(){return histoView.upper;}
@@ -102,13 +105,172 @@ public class CamWindow extends BasicWindow implements ActionListener
 		//TODO rgb
 		public EvPixels[] getImage()
 			{
-			if(This.lastCameraImage!=null)
-				return This.lastCameraImage;
+			if(CamWindow.this.lastCameraImage!=null)
+				return CamWindow.this.lastCameraImage;
 			else
 				return null;
 			}
 		};
 	
+	
+
+	private Vector<JToggleButton> toolButtons=new Vector<JToggleButton>();
+	private JToggleButton bSelectROI=new JImageToggleButton(iconSelectROI, "Select ROI");
+
+	
+	
+	
+	public void setTool(GeneralTool tool)
+		{
+		//TODO?
+		drawArea.currentTool=tool;
+		}
+
+	public void unsetTool()
+		{
+		drawArea.currentTool=null;
+		
+		//Make sure all tool buttons are unselected
+		for(JToggleButton bb:toolButtons)
+			{
+			//bb.removeActionListener(this);
+			bb.setSelected(false);
+			//bb.addActionListener(this);
+			}
+		}
+	
+	public CamWindow()
+		{
+		this(new Rectangle(400,300));
+		}
+	
+	
+	public CamWindow(Rectangle bounds)
+		{
+		toolButtons.addAll(Arrays.asList(/*bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,*/bSelectROI));
+
+		for(final ROI.ROIType rt:ROI.getTypes())
+			{
+			if(rt.canPlace() && !rt.isCompound())
+				{
+				JToggleButton miNewROIthis;
+				
+				//toolButtons.addAll(Arrays.asList(bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,bSelectROI));
+
+				
+				if(rt.getIcon()==null)
+					miNewROIthis=new JToggleButton(rt.name());
+				else
+					miNewROIthis=new JImageToggleButton(rt.getIcon(),rt.name());
+				miNewROIthis.addActionListener(new ActionListener()
+					{public void actionPerformed(ActionEvent e)
+						{
+						if(((JToggleButton)e.getSource()).isSelected())
+							{
+							ImageRendererROI renderer=getRendererClass(ImageRendererROI.class);
+							setTool(new GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
+							System.out.println("Hello!!!");
+							}
+						}});
+				
+				//TODO would be best if it was sorted
+				toolButtons.add(miNewROIthis);
+				//BasicWindow.addMenuItemSorted(miNew, miNewROIthis);
+				}
+			}
+
+		
+		/*
+		private JToggleButton bEllipseROI=new JImageToggleButton(iconEllipseROI, "Create ellipse ROI");
+		private JToggleButton bFreehandROI=new JImageToggleButton(iconFreehandROI, "Create freehand ROI");
+		private JToggleButton bLineROI=new JImageToggleButton(iconLineROI, "Create line ROI");
+		private JToggleButton bPointROI=new JImageToggleButton(iconEllipseROI, "Create point ROI");
+		private JToggleButton bPolygonROI=new JImageToggleButton(iconPolygonROI, "Create polygon ROI");
+		private JToggleButton bRectROI=new JImageToggleButton(iconRectROI, "Create rectangle ROI");
+		*/
+
+
+
+		
+		///////////////////////
+		
+		
+		
+		
+		
+		
+		
+		for(ImageWindowRendererExtension e:ImageWindow.imageWindowRendererExtensions)
+			e.newImageWindow(this);
+		
+		cameraCombo=new JComboBox(new Vector<EvDevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
+		
+		tLive.setToolTipText("Continuously take pictures");
+		bSnap.setToolTipText("Manually take a picture and update. Does not save image.");
+		//tHistoView.setToolTipText("Show histogram controls");
+		tAutoRange.setToolTipText("Automatically adjust visible range");
+		bSetFullRange.setToolTipText("Set visible range of all of camera range");
+
+		tLive.addActionListener(this);
+		bSnap.addActionListener(this);
+		//tHistoView.addActionListener(this);
+		tAutoRange.addActionListener(this);
+		bSetFullRange.addActionListener(this);
+		histoView.addActionListener(this);
+		bAutoFocus.addActionListener(this);
+		
+		//pHisto.setBorder(BorderFactory.createTitledBorder("Range adjustment"));
+		pHisto.add(
+				EvSwingUtil.layoutCompactVertical(tAutoRange, bSetFullRange),
+				BorderLayout.WEST);
+		pHisto.add(histoView, BorderLayout.CENTER);
+		
+		List<JComponent> blistleft=new LinkedList<JComponent>();
+		blistleft.addAll(toolButtons);
+		blistleft.add(bCameraToROI);
+		blistleft.add(bGoToROI);
+		blistleft.add(bAutoFocus);
+		JComponent pLeft=EvSwingUtil.layoutCompactVertical(
+				EvSwingUtil.layoutEvenVertical(
+						blistleft.toArray(new JComponent[0])
+						/*
+						bSelectROI,	bEllipseROI, bFreehandROI, bLineROI, bPointROI, bPolygonROI, bRectROI,
+						bCameraToROI,
+						bGoToROI,
+						bAutoFocus*/
+						)
+				);
+		
+		
+		JPanel pCenter=new JPanel(new BorderLayout());
+		pCenter.add(EvSwingUtil.layoutCompactHorizontal(cameraCombo, bSnap, tLive, tUpdateView)
+				,BorderLayout.SOUTH);
+		pCenter.add(drawArea,BorderLayout.CENTER);
+		
+		sidepanel=new EvHidableSidePaneBelow(pCenter, pHisto, true);
+		sidepanel.addActionListener(this);
+		
+		setLayout(new BorderLayout());
+		add(sidepanel,BorderLayout.CENTER);
+		add(pLeft,BorderLayout.WEST);
+		
+		for(JToggleButton b:toolButtons)
+			b.addActionListener(this);
+		
+		//Window overall things
+		setTitleEvWindow("Camera Control");
+		packEvWindow();
+		setVisibleEvWindow(true);
+		setBoundsEvWindow(bounds);
+		timer.start();
+		//setResizable(false);
+		
+		
+		
+		}
+	
+	
+		
 	
 	/**
 	 * Find out how many bits the camera is
@@ -226,71 +388,6 @@ public class CamWindow extends BasicWindow implements ActionListener
 		}
 		
 		
-
-	public CamWindow()
-		{
-		this(new Rectangle(400,300));
-		}
-
-	
-	public CamWindow(Rectangle bounds)
-		{
-		cameraCombo=new JComboBox(new Vector<EvDevicePath>(EvHardware.getDeviceMap(HWCamera.class).keySet()));
-		
-		tLive.setToolTipText("Continuously take pictures");
-		bSnap.setToolTipText("Manually take a picture and update. Does not save image.");
-		//tHistoView.setToolTipText("Show histogram controls");
-		tAutoRange.setToolTipText("Automatically adjust visible range");
-		bSetFullRange.setToolTipText("Set visible range of all of camera range");
-
-		tLive.addActionListener(this);
-		bSnap.addActionListener(this);
-		//tHistoView.addActionListener(this);
-		tAutoRange.addActionListener(this);
-		bSetFullRange.addActionListener(this);
-		histoView.addActionListener(this);
-		bAutoFocus.addActionListener(this);
-		
-		//pHisto.setBorder(BorderFactory.createTitledBorder("Range adjustment"));
-		pHisto.add(
-				EvSwingUtil.layoutCompactVertical(tAutoRange, bSetFullRange),
-				BorderLayout.WEST);
-		pHisto.add(histoView, BorderLayout.CENTER);
-		
-		JComponent pLeft=EvSwingUtil.layoutCompactVertical(
-				EvSwingUtil.layoutEvenVertical(
-						bSelectROI,	bEllipseROI, bFreehandROI, bLineROI, bPointROI, bPolygonROI, bRectROI,
-						bCameraToROI,
-						bGoToROI,
-						bAutoFocus
-						)
-				);
-		
-		
-		JPanel pCenter=new JPanel(new BorderLayout());
-		pCenter.add(EvSwingUtil.layoutCompactHorizontal(cameraCombo, bSnap, tLive, tUpdateView)
-				,BorderLayout.SOUTH);
-		pCenter.add(drawArea,BorderLayout.CENTER);
-		
-		sidepanel=new EvHidableSidePaneBelow(pCenter, pHisto, true);
-		sidepanel.addActionListener(this);
-		
-		setLayout(new BorderLayout());
-		add(sidepanel,BorderLayout.CENTER);
-		add(pLeft,BorderLayout.WEST);
-		
-		for(JToggleButton b:toolButtons)
-			b.addActionListener(this);
-		
-		//Window overall things
-		setTitleEvWindow("Camera Control");
-		packEvWindow();
-		setVisibleEvWindow(true);
-		setBoundsEvWindow(bounds);
-		timer.start();
-		//setResizable(false);
-		}
-	
 	
 	
 	
@@ -350,5 +447,104 @@ public class CamWindow extends BasicWindow implements ActionListener
 		
 		new CamWindow();
 		
+		}
+
+	
+	
+	
+	
+	public void addImageWindowRenderer(ImageWindowRenderer renderer)
+		{
+		drawArea.imageWindowRenderers.add(renderer);
+		}
+
+
+	public EvDecimal getFrame()
+		{
+		return EvDecimal.ZERO;
+		}
+
+	public EvDecimal getZ()
+		{
+		return EvDecimal.ZERO; //Unclear what is the best. 3D rois?
+		}
+
+	@SuppressWarnings("unchecked")
+	public <E> E getRendererClass(Class<E> cl)
+		{
+		for(ImageWindowRenderer r:drawArea.imageWindowRenderers)
+			if(cl.isInstance(r))
+				return (E)r;
+		throw new RuntimeException("No such renderer exists - " + cl);
+		}
+
+	
+	
+	
+	public EvContainer getRootObject()
+		{
+		return RecordingResource.getData();
+		}
+
+	public double getRotation()
+		{
+		//Never any rotation
+		return 0;
+		}
+
+	
+	public double getCameraResolution() // px/um
+		{
+		return 1;
+		}
+	
+	public double getStageX() // um
+		{
+		return 0;
+		}
+
+	public double getStageY() // um
+		{
+		return 0;
+		}
+
+	public double s2wz(double sz)
+		{
+		return sz;
+		}
+
+	public double scaleS2w(double s)
+		{
+		return s/getCameraResolution();
+		}
+
+	public double scaleW2s(double w)
+		{
+		return w*getCameraResolution();
+		}
+
+	public Vector2d transformS2W(Vector2d v)
+		{
+		return new Vector2d(v.x/getCameraResolution()-getStageX(), v.y/getCameraResolution()-getStageY()); //TODO offset by stage
+		}
+
+	public Vector2d transformW2S(Vector2d v)
+		{
+		return new Vector2d(v.x*getCameraResolution(), v.y*getCameraResolution()); //TODO offset by stage
+		}
+
+	public double w2sz(double z)
+		{
+		return z; //TODO
+		}
+
+	public String getCurrentChannelName()
+		{
+		return "cam";
+		}
+
+	public void updateImagePanel()
+		{
+		drawArea.repaint();
 		}
 	}

@@ -154,11 +154,21 @@ public class Shell extends EvObject
 			{
 			public void newImageWindow(ImageWindow w)
 				{
+				//ShellImageRenderer r=new ShellImageRenderer(w);
+				w.addImageWindowTool(new ShellImageTool(w));
+				//w.addImageWindowRenderer(r);
+				}
+			});
+
+		ImageWindow.addImageWindowRendererExtension(new ImageWindowRendererExtension()
+			{
+			public void newImageWindow(ImageWindowInterface w)
+				{
 				ShellImageRenderer r=new ShellImageRenderer(w);
-				w.imageWindowTools.add(new ShellImageTool(w,r));
 				w.addImageWindowRenderer(r);
 				}
 			});
+
 		
 		ModelWindow.modelWindowExtensions.add(new ShellModelExtension());
 		

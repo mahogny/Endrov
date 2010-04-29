@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
+//import endrov.imageWindow.ImageWindowInterface;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
@@ -36,6 +37,7 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 		{
 		this.w=w;
 		}
+	
 	public JMenuItem getMenuItem()
 		{
 		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Channel/Displacement");

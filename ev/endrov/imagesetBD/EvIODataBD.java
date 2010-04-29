@@ -8,8 +8,6 @@ package endrov.imagesetBD;
 import java.io.*;
 import java.util.*;
 
-import loci.formats.*;
-import loci.formats.meta.*;
 import endrov.data.*;
 import endrov.ev.EV;
 import endrov.imageset.*;

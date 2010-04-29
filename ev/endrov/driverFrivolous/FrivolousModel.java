@@ -8,7 +8,8 @@ package endrov.driverFrivolous;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
+
+import endrov.util.EvFileUtil;
 
 
 /**
@@ -23,8 +24,17 @@ public class FrivolousModel
 
 	public FrivolousModel()
 		{
-		cell = new FrivolousCell(new File(FrivolousDeviceProvider.class.getResource("data").getFile()));
-		convolve(0,0);
+		//cell = new FrivolousCell(new File(FrivolousDeviceProvider.class.getResource("data").getFile()));
+		try
+			{
+			cell = new FrivolousCell(EvFileUtil.getFileFromURL(FrivolousDeviceProvider.class.getResource("data").toURI().toURL()));
+			convolve();
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+//		convolve(0,0);
 		}
 
 	public void convolve(int offsetX, int offsetY)
