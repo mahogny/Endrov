@@ -28,13 +28,12 @@ public class FrivolousModel
 		try
 			{
 			cell = new FrivolousCell(EvFileUtil.getFileFromURL(FrivolousDeviceProvider.class.getResource("data").toURI().toURL()));
-			convolve();
+			convolve(0,0);
 			}
 		catch (Exception e)
 			{
 			e.printStackTrace();
 			}
-//		convolve(0,0);
 		}
 
 	public void convolve(int offsetX, int offsetY)

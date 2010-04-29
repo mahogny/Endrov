@@ -18,7 +18,7 @@ import endrov.imageWindow.*;
  *
  * @author Johan Henriksson
  */
-public class GeneralToolROI //implements ImageWindowTool
+public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 	{
 	private boolean active=false;
 	private ROI currentROI=null;
@@ -28,7 +28,7 @@ public class GeneralToolROI //implements ImageWindowTool
 	
 //	public void deselected() {}
 	
-	public GeneralToolROI(ImageWindow w)
+	public GeneralToolROI(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
@@ -75,6 +75,8 @@ public class GeneralToolROI //implements ImageWindowTool
 		{
 		ImageRendererROI r=w.getRendererClass(ImageRendererROI.class);
 		
+		System.out.println("press");
+		
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			//Which handle?
@@ -90,6 +92,7 @@ public class GeneralToolROI //implements ImageWindowTool
 						}
 					}
 			}
+		System.out.println("press failed");
 		}
 
 	
