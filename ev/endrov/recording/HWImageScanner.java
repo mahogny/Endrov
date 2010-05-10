@@ -1,6 +1,5 @@
 package endrov.recording;
 
-import endrov.roi.ROI;
 
 
 /**
@@ -14,25 +13,36 @@ public interface HWImageScanner extends HWCamera
 	{
 	
 	
-	public void setNumberPixels(int width, int height);
+	/**
+	 * Set the size of the scanned area
+	 * @throws If the size is invalid or the operation is not supported
+	 */
+	public void setNumberPixels(int width, int height) throws Exception;
+	
 	public int getWidth();
 	public int getHeight();
 	
 	/**
 	 * Scan the entire area
+	 * @param status Can be null
 	 */
-	public void scan();
-	
-	
+	public void scan(ScanStatusListener status);
 	
 	/**
 	 * Scan ROI, which is a binary mask. non-null means to scan. 
+	 * @param status Can be null
 	 */
-	public void scan(int[] roi);
+	public void scan(ScanStatusListener status, int[] roi);
 
+
+	/**
+	 * Callback for scanner events
+	 * @author Johan Henriksson
+	 *
+	 */
+	public static interface ScanStatusListener
+		{
+		public void lineDone(int y);
+		}
 	
-	
-	
-	
-	//public static void foo(){}
 	}
