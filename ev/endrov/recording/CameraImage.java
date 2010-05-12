@@ -21,7 +21,7 @@ public class CameraImage
 	{
 	public int w,h;
 	public int bytesPerPixel;
-	public Object pixels; //byte[] or short[]
+	public Object pixels; //byte[] or short[] or int[]
 	public int numComponents;
 	
 	

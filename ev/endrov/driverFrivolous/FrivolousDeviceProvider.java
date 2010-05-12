@@ -23,6 +23,7 @@ import endrov.hardware.EvHardware;
 import endrov.hardware.DevicePropertyType;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
+import endrov.recording.HWImageScanner;
 import endrov.recording.HWStage;
 
 /**
@@ -52,7 +53,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	public double[] stagePos = new double[]{ 0, 0, 0 };
 
-	private class FrivolousCamera implements HWCamera
+	private class FrivolousCamera implements HWImageScanner
 		{
 		
 		private LinkedList<CameraImage> seqBuffer=new LinkedList<CameraImage>();
@@ -175,8 +176,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 //			int r = (int) stagePos[2];
 			model.convolve((int)stagePos[0],(int)stagePos[1]);
-			BufferedImage im = model.getImage();
-			CameraImage cim = new CameraImage(im.getWidth(), im.getHeight(), 1, im, 1);
+			int[]/*BufferedImage*/ im = model.getImage();
+			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 1, im, 1);
 			return cim;
 			}
 
@@ -226,6 +227,43 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		public void removeListener(EvDeviceObserver.Listener listener)
 			{
 			event.remove(listener);
+			}
+
+		
+		int height=512;
+		int width=512;
+		
+		public int getHeight()
+			{
+			return height;
+			}
+
+		public int getWidth()
+			{
+			return width;
+			}
+
+		public void scan(ScanStatusListener status)
+			{
+			//Infinitely fast scanning
+			snap();
+			
+			//Bleach everything
+			}
+
+		public void scan(ScanStatusListener status, int[] roi)
+			{
+			//Infinitely fast scanning
+			snap();
+			
+			//Bleach only the 
+			
+			}
+
+		public void setNumberPixels(int width, int height) throws Exception
+			{
+			// TODO Auto-generated method stub
+			
 			}
 
 		}

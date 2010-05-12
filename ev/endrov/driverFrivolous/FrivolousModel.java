@@ -19,7 +19,8 @@ public class FrivolousModel
 	{
 
 	private ActionListener model_action;
-	private BufferedImage output_image = null;
+	//private BufferedImage output_image = null;
+	private int[] output_image = null;
 	private FrivolousCell cell;
 
 	public FrivolousModel()
@@ -36,14 +37,17 @@ public class FrivolousModel
 			}
 		}
 
+	//area scanned by detectors. before changing, make sure code can handle it
+	public final int imageWidth=512, imageHeight=512; 
+
 	public void convolve(int offsetX, int offsetY)
 		{
-		output_image = cell.getImage(offsetX, offsetY);
+		output_image = cell.getImage(offsetX, offsetY, imageWidth, imageHeight);
 		if (model_action!=null)
 			model_action.actionPerformed(new ActionEvent(this, 0, "image_updated"));
 		}
 
-	public BufferedImage getImage()
+	public int[] /*BufferedImage*/ getImage()
 		{
 		return output_image;
 		}

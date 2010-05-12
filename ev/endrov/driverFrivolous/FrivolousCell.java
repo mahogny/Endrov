@@ -144,7 +144,8 @@ public class FrivolousCell
 		psf_fft = fft.forward(psf_array, true);
 		}
 
-	public BufferedImage getImage(int offsetX, int offsetY)
+	
+	public int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight)
 		{
 
 		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
@@ -173,11 +174,17 @@ public class FrivolousCell
 		output_array = fft.backward(output_fft);
 
 		timer.show("iFFT");
-		FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,512,512,256,256),
+		FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,imageWidth,imageHeight,256,256),
 				settings);
 
 		timer.show("Poisson noise");
-		return FrivolousUtility.getImageFromComplex(output_noise, false);
+		
+		int[] retarr=new int[output_noise.real.length];
+		for(int i=0;i<output_noise.real.length;i++)
+			retarr[i]=(int)output_noise.real[i];
+		
+		return retarr;
+		//return FrivolousUtility.getImageFromComplex(output_noise, false);
 		}
 
 	public FrivolousSettingsNew getSettings()
