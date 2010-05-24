@@ -5,7 +5,6 @@
  */
 package endrov.driverFrivolous;
 
-import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +21,6 @@ import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
 import endrov.hardware.DevicePropertyType;
 import endrov.recording.CameraImage;
-import endrov.recording.HWCamera;
 import endrov.recording.HWImageScanner;
 import endrov.recording.HWStage;
 
@@ -177,7 +175,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 //		int r = (int) stagePos[2];
 			model.convolve((int)stagePos[0],(int)stagePos[1]);
 			int[]/*BufferedImage*/ im = model.getImage();
-			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 1, im, 1);
+			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 4, im, 1);
 			return cim;
 			}
 
@@ -250,13 +248,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			return width;
 			}
 
+		/**
+		 * How much to bleach from one single laser scan
+		 * 
+		 * Not yet here: wavelength dependence. cross-talk.
+		 * 
+		 */
 		public double getBleachFactor()
 			{
-			double expTime=0.1;
+			double expTime=0.05;
 			double laserPower=1;
 			double c=1;
 			
-			return Math.exp(expTime*laserPower*c);
+			return Math.exp(-expTime*laserPower*c);
 			}
 		
 		public void scan(int[] buffer, ScanStatusListener status)
@@ -267,7 +271,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			for(int i=0;i<snapped.length;i++)
 					buffer[i]=snapped[i];
 			
-			//Bleach everything
+			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(width, height, 0, 0, (float)getBleachFactor());
 			}
@@ -281,16 +285,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				if(roi[i]!=0)
 					buffer[i]=snapped[i];
 			
-			//Bleach only the ROI 
+			//Bleach only the ROI
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(roi, width, height, 0, 0, (float)getBleachFactor()); 
-			
 			}
 
+		/**
+		 * Set how many pixels should be scanned
+		 */
 		public void setNumberPixels(int width, int height) throws Exception
 			{
-			// TODO Auto-generated method stub
-			
+			throw new Exception("Not supported yet");
+			//this.width=width;
+			//this.height=height;
 			}
 
 		}

@@ -90,11 +90,15 @@ public class EvHardware
 		TreeMap<EvDevicePath,EvDevice> hwlist2=new TreeMap<EvDevicePath,EvDevice>();
 		for(Map.Entry<EvDevicePath, EvDevice> hwe:getDeviceMap().entrySet())
 			{
+			
+			/*
 			boolean is=false;
 			for(Class<?> intf:hwe.getValue().getClass().getInterfaces())
 				if(intf==hw)
 					is=true;
 			if(is)
+				hwlist2.put(hwe.getKey(),hwe.getValue());*/
+			if(hw.isInstance(hwe.getValue()))
 				hwlist2.put(hwe.getKey(),hwe.getValue());
 			}
 		return hwlist2;
