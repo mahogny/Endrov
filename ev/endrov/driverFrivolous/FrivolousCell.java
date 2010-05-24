@@ -8,6 +8,7 @@ package endrov.driverFrivolous;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -23,10 +24,10 @@ import endrov.util.EvXmlUtil;
 public class FrivolousCell
 	{
 
-	private Document document;
+	
 	private FrivolousComplexArray immobile_sum_array, psf_fft, output_array;
 	private FrivolousComplexArray[] immobile_arrays, mobile_arrays;
-	private FrivolousDiffusion[] diffusers;
+	public FrivolousDiffusion[] diffusers;
 	private FrivolousSettingsNew settings;
 	private int w, h;
 	private FrivolousFourier fft;
@@ -37,9 +38,15 @@ public class FrivolousCell
 		w = 512;
 		h = 512;
 		File fSettings=new File(path, "settings.xml");
+		Document document;
+		List<Element> staticlayers=new LinkedList<Element>();
+		List<Element> mobilelayers=new LinkedList<Element>();
 		try
 			{
 			document = EvXmlUtil.readXML(fSettings);
+			parseSettings(document.getRootElement().getChild("settings"));
+			staticlayers = getLayersFromDocument(document, true);
+			mobilelayers = getLayersFromDocument(document, false);
 			}
 		catch (IOException e)
 			{
@@ -50,10 +57,7 @@ public class FrivolousCell
 			System.out.println(fSettings+" contains errors");
 			}
 
-		parseSettings(document.getRootElement().getChild("settings"));
 
-		List<Element> staticlayers = getLayersFromDocument(true);
-		List<Element> mobilelayers = getLayersFromDocument(false);
 
 		immobile_arrays = new FrivolousComplexArray[staticlayers.size()];
 		mobile_arrays = new FrivolousComplexArray[mobilelayers.size()];
@@ -127,7 +131,7 @@ public class FrivolousCell
 		}
 
 	@SuppressWarnings("unchecked")
-	private List<Element> getLayersFromDocument(boolean staticlayer)
+	private List<Element> getLayersFromDocument(Document document, boolean staticlayer)
 		{
 		Element root = document.getRootElement();
 		Element slice1 = root.getChild("slice");

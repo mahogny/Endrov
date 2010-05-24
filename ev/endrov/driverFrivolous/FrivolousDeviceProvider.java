@@ -149,9 +149,9 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			System.out.println(prop+" "+value);
 			}
 		private double getRes()
-		{
+			{
 			return 0.1;
-		}
+			}
 		
 		public double getResMagX()
 			{
@@ -172,12 +172,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			}
 
-		public CameraImage snap()
+		public CameraImage snapInternal()
 			{
-//			int r = (int) stagePos[2];
+//		int r = (int) stagePos[2];
 			model.convolve((int)stagePos[0],(int)stagePos[1]);
 			int[]/*BufferedImage*/ im = model.getImage();
 			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 1, im, 1);
+			return cim;
+			}
+
+		public CameraImage snap()
+			{
+			CameraImage cim=snapInternal();
+			//TODO bleach all
 			return cim;
 			}
 
@@ -243,20 +250,40 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			return width;
 			}
 
-		public void scan(ScanStatusListener status)
+		public double getBleachFactor()
+			{
+			double expTime=0.1;
+			double laserPower=1;
+			double c=1;
+			
+			return Math.exp(expTime*laserPower*c);
+			}
+		
+		public void scan(int[] buffer, ScanStatusListener status)
 			{
 			//Infinitely fast scanning
-			snap();
+			CameraImage im=snapInternal();
+			int[] snapped=(int[])im.pixels;
+			for(int i=0;i<snapped.length;i++)
+					buffer[i]=snapped[i];
 			
 			//Bleach everything
+			for(FrivolousDiffusion d:model.cell.diffusers)
+				d.bleach(width, height, 0, 0, (float)getBleachFactor());
 			}
 
-		public void scan(ScanStatusListener status, int[] roi)
+		public void scan(int[] buffer, ScanStatusListener status, int[] roi)
 			{
 			//Infinitely fast scanning
-			snap();
+			CameraImage im=snapInternal();
+			int[] snapped=(int[])im.pixels;
+			for(int i=0;i<roi.length;i++)
+				if(roi[i]!=0)
+					buffer[i]=snapped[i];
 			
-			//Bleach only the 
+			//Bleach only the ROI 
+			for(FrivolousDiffusion d:model.cell.diffusers)
+				d.bleach(roi, width, height, 0, 0, (float)getBleachFactor()); 
 			
 			}
 

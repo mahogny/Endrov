@@ -26,13 +26,13 @@ public interface HWImageScanner extends HWCamera
 	 * Scan the entire area
 	 * @param status Can be null
 	 */
-	public void scan(ScanStatusListener status);
+	public void scan(int[] buffer, ScanStatusListener status);
 	
 	/**
 	 * Scan ROI, which is a binary mask. non-null means to scan. 
 	 * @param status Can be null
 	 */
-	public void scan(ScanStatusListener status, int[] roi);
+	public void scan(int[] buffer, ScanStatusListener status, int[] roi);
 
 
 	/**
