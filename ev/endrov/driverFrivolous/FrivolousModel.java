@@ -7,7 +7,6 @@ package endrov.driverFrivolous;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 
 import endrov.util.EvFileUtil;
 
@@ -21,7 +20,7 @@ public class FrivolousModel
 	private ActionListener model_action;
 	//private BufferedImage output_image = null;
 	private int[] output_image = null;
-	private FrivolousCell cell;
+	public FrivolousCell cell;
 
 	public FrivolousModel()
 		{

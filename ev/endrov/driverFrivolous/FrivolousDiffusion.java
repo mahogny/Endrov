@@ -110,10 +110,9 @@ class FrivolousDiffusion implements Runnable
 		}
 
 	
-	public void diffuse()
+	public synchronized void diffuse()
 		{
 		float[] temp = diffusion.clone();
-		bleach();
 		/*
 		 * for(int x = 1; x<height-1; x++) for(int y = 1; y<width-1; y++){
 		 */
@@ -211,7 +210,7 @@ class FrivolousDiffusion implements Runnable
 		return new FrivolousComplexArray(diffusion.clone(), null, width, height);
 		}
 
-	public void bleach()
+	public synchronized void bleach(float bleachFactor)
 		{
 		// real[244+364*width] *= bleach_factor;
 		// real[297+396*width] *= bleach_factor;
@@ -224,15 +223,33 @@ class FrivolousDiffusion implements Runnable
 				diffusion[i+j*width] *= bleachFactor;
 		}
 
+	/**
+	 * Bleach an arbitrary ROI
+	 */
+	public synchronized void bleach(int[] roi, int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
+		{
+		for(int y=0;y<roiHeight;y++)
+			for(int x=0;x<roiWidth;x++)
+				if(roi[x+y*roiWidth]!=0)
+					diffusion[(x+offsetX) + (y+offsetY)*width] *= bleachFactor;
+		}
+
+	/**
+	 * Bleach a square ROI - typically the area the camera focuses on
+	 */
+	public synchronized void bleach(int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
+		{
+		for(int y=0;y<roiHeight;y++)
+			for(int x=0;x<roiWidth;x++)
+				diffusion[(x+offsetX) + (y+offsetY)*width] *= bleachFactor;
+		}
+
+	/*
 	// TODO: move out
 	private static class RleSegment
 		{
 		public int startx;
 		public int endx;
-		/*
-		 * public RleSegment(int startx, int endx){ this.startx = startx; this.endx
-		 * = endx; }
-		 */
 		}
 
 	public void bleach(java.util.List<RleSegment>[] roi) throws IndexOutOfBoundsException
@@ -243,6 +260,7 @@ class FrivolousDiffusion implements Runnable
 					diffusion[ax+ay*width] *= bleachFactor;
 
 		}
+	*/
 
 	public void run()
 		{
@@ -252,6 +270,7 @@ class FrivolousDiffusion implements Runnable
 			{
 			for (int i = 0; i<100; i++)
 				{
+				bleach(bleachFactor);
 				diffuse();
 				time += dt;
 				}
