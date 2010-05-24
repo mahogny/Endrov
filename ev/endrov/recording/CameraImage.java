@@ -25,8 +25,7 @@ public class CameraImage
 	public int numComponents;
 	
 	
-	public CameraImage(int w, int h, int bytesPerPixel, Object pixels,
-			int numComponents)
+	public CameraImage(int w, int h, int bytesPerPixel, Object pixels, int numComponents)
 		{
 		this.w = w;
 		this.h = h;
