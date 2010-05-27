@@ -20,7 +20,6 @@ import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.recording.RecordingResource;
-import endrov.recording.recmetBurst.EvBurstAcquisition;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
@@ -45,11 +44,6 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	private SpinnerSimpleEvDecimal spExpTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
 	
-	/*
-	private JComboBox cDurationUnit=new JComboBox(new Object[]{"Frames","Seconds"});
-	private JComboBox cRateUnit=new JComboBox(new Object[]{"Hz","ms"});
-	private JCheckBox cSwapEarly=new JCheckBox("Early swap to disk"); 
-	*/
 	private JLabel labelStatus=new JLabel("Status: Stopped");
 
 	private EvFRAPAcquisition acq=new EvFRAPAcquisition();
@@ -74,7 +68,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 			}
 		};
 	
-	private JTextArea tStoreName=new JTextArea("ch");
+	private JTextField tStoreName=new JTextField("frap");
 
 	
 	public RecWindowFRAP()
@@ -87,7 +81,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 		
 		roiCombo.setRoot(RecordingResource.getData());
 		
-//		acq.addListener(this);
+		acq.addListener(this);
 		
 		//cDuration.setToolTipText("Limit duration or run indefinetely");
 		
@@ -127,7 +121,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 
 				EvSwingUtil.layoutLCR(
 						new JLabel("Bleach time"),
-						spRate,
+						spBleachTime,
 						new JLabel("s")
 						),
 
@@ -138,29 +132,32 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 						),
 
 				EvSwingUtil.layoutLCR(
+						new JLabel("Sampling intervals"),
+						spRate,
+						new JLabel("s")
+						),
+								
+				EvSwingUtil.layoutLCR(
 						new JLabel("Exposure time"),
 						spExpTime,
 						new JLabel("ms")
 						),
 				
+
 				EvSwingUtil.layoutLCR(
-						new JLabel("Sampling intervals"),
-						spRate,
+						new JLabel("Store in"),
+						objectCombo,
 						new JLabel("ms")
 						),
-						
-				EvSwingUtil.layoutLCR(
-						null,
-						labelStatus,
-						null
-						),
+
 				
 				EvSwingUtil.layoutLCR(
-						objectCombo,
+						new JLabel("Object name"),
 						tStoreName,
 						bStartStop
-						)
+						),
 				
+				labelStatus
 				
 				),
 				BorderLayout.CENTER);
@@ -168,7 +165,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 		bStartStop.addActionListener(this);
 		
 		//Window overall things
-		setTitleEvWindow("Burst acquisition");
+		setTitleEvWindow("FRAP acquisition");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		//setBoundsEvWindow(bounds);
@@ -188,25 +185,17 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 			else
 				{
 				bStartStop.setText("Stop");
-				/*
-				acq.channelName=tStoreName.getText();
 				
+				acq.setBleachTime(spBleachTime.getDecimalValue());
+				acq.setContainer(objectCombo.getSelectedObject());
+				acq.setContainerStoreName(tStoreName.getText());
+				acq.setExpTime(spExpTime.getDecimalValue());
+				acq.setRate(spRate.getDecimalValue());
+				acq.setRecoveryTime(spRecoveryTime.getDecimalValue());
+				acq.setRoi((ROI)roiCombo.getSelectedObject());
 				
-				if(cDuration.isSelected())
-					{
-					acq.duration=spDuration.getDecimalValue();
-					acq.durationUnit=(String)cDurationUnit.getSelectedItem();
-					}
-				
-				acq.rate=spRate.getDecimalValue();
-				acq.rateUnit=(String)cRateUnit.getSelectedItem();
-				
-				acq.earlySwap=cSwapEarly.isSelected();
-				*/
-				acq.container=objectCombo.getSelectedObject();
-		
 				thread=acq.startAcquisition();
-				//thread.startAcquisition();
+
 				}
 			
 			}
@@ -228,7 +217,8 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	
 	public void dataChangedEvent()
 		{
-		
+		roiCombo.updateList();
+		objectCombo.updateList();
 		}
 
 	public void loadedFile(EvData data){}

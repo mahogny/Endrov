@@ -53,7 +53,10 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	private class FrivolousCamera implements HWImageScanner
 		{
+		//Properties
+		private double expTime=0.05;
 		
+		//
 		private LinkedList<CameraImage> seqBuffer=new LinkedList<CameraImage>();
 		private boolean runSequenceAcq=false;
 		private double duration;
@@ -96,6 +99,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			TreeMap<String, String> p = new TreeMap<String, String>();
 			p.put("Numerical Aperture", ""+model.getSettings().na);
 			p.put("Wavelength", ""+model.getSettings().lambda);
+			p.put("Exposure", ""+expTime);
 			return p;
 			}
 
@@ -117,6 +121,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			p.rangeLower = 300;
 			p.hasRange = true;
 			pt.put("Wavelength", p);
+			
+			// Exposure
+			p = new DevicePropertyType();
+			pt.put("Exposure", p);
+			
 			return pt;
 			}
 
@@ -126,6 +135,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				return ""+model.getSettings().na;
 			else if (prop.equals("Wavelength"))
 				return ""+model.getSettings().lambda;
+			else if (prop.equals("Exposure"))
+				return ""+expTime;
 			return getPropertyMap().get(prop);
 			}
 
@@ -181,8 +192,10 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		public CameraImage snap()
 			{
+			long startTime=System.currentTimeMillis();
 			CameraImage cim=snapInternal();
 			//TODO bleach all
+			waitInTotal(startTime, expTime);
 			return cim;
 			}
 
@@ -256,38 +269,71 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		 */
 		public double getBleachFactor()
 			{
-			double expTime=0.05;
 			double laserPower=1;
 			double c=1;
-			
+
 			return Math.exp(-expTime*laserPower*c);
 			}
+
+		/**
+		 * Wait at least a certain time - for simulating slow response
+		 */
+		public void waitInTotal(long startTime, double totalDuration)
+			{
+			long currentTime=System.currentTimeMillis();
+			long dt=startTime+(long)(totalDuration*1000)-currentTime;
+			if(dt>0)
+				{
+				try
+					{
+					Thread.sleep(dt);
+					}
+				catch (InterruptedException e)
+					{
+					}
+				}
+			}
+		
 		
 		public void scan(int[] buffer, ScanStatusListener status)
 			{
+			long startTime=System.currentTimeMillis();
+			
 			//Infinitely fast scanning
-			CameraImage im=snapInternal();
-			int[] snapped=(int[])im.pixels;
-			for(int i=0;i<snapped.length;i++)
-					buffer[i]=snapped[i];
+			if(buffer!=null)
+				{
+				CameraImage im=snapInternal();
+				int[] snapped=(int[])im.pixels;
+				for(int i=0;i<snapped.length;i++)
+						buffer[i]=snapped[i];
+				}
 			
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(width, height, 0, 0, (float)getBleachFactor());
+			
+			waitInTotal(startTime, expTime);
 			}
 
 		public void scan(int[] buffer, ScanStatusListener status, int[] roi)
 			{
+			long startTime=System.currentTimeMillis();
+			
 			//Infinitely fast scanning
-			CameraImage im=snapInternal();
-			int[] snapped=(int[])im.pixels;
-			for(int i=0;i<roi.length;i++)
-				if(roi[i]!=0)
-					buffer[i]=snapped[i];
+			if(buffer!=null)
+				{
+				CameraImage im=snapInternal();
+				int[] snapped=(int[])im.pixels;
+				for(int i=0;i<roi.length;i++)
+					if(roi[i]!=0)
+						buffer[i]=snapped[i];
+				}
 			
 			//Bleach only the ROI
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(roi, width, height, 0, 0, (float)getBleachFactor()); 
+			
+			waitInTotal(startTime, expTime);
 			}
 
 		/**

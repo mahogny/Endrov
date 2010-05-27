@@ -55,7 +55,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 			}
 		};
 	
-	private JTextArea tChannelName=new JTextArea("ch");
+	private JTextField tChannelName=new JTextField("ch");
 
 	
 	public RecWindowBurst()
@@ -181,7 +181,7 @@ public class RecWindowBurst extends BasicWindow implements ActionListener, EvBur
 	
 	public void dataChangedEvent()
 		{
-		
+		objectCombo.updateList();
 		}
 
 	public void loadedFile(EvData data){}

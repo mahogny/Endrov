@@ -20,7 +20,7 @@ import endrov.util.EvDecimal;
 public class HWImageScannerUtil 
 	{
 	
-	public int[] makeROI(HWImageScanner scanner, ROI roi, double stageX, double stageY)
+	public static int[] makeROI(HWImageScanner scanner, ROI roi, double stageX, double stageY)
 		{
 		int w=scanner.getWidth();
 		int h=scanner.getHeight();

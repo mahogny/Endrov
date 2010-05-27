@@ -18,7 +18,9 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
-import endrov.recording.HWCamera;
+import endrov.recording.HWImageScanner;
+import endrov.recording.HWImageScannerUtil;
+import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
 /**
@@ -39,46 +41,88 @@ public class EvFRAPAcquisition extends EvObject
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-	public EvDecimal duration;
-	public String durationUnit;
-	
-	public EvDecimal rate;
-	public String rateUnit;
-	
-	public boolean earlySwap;
-	
-	public String channelName;
-	public EvContainer container;
 	
 	
+	
+	public EvDecimal getRecoveryTime()
+		{
+		return recoveryTime;
+		}
+
+	public void setRecoveryTime(EvDecimal recoveryTime)
+		{
+		this.recoveryTime = recoveryTime;
+		}
+
+	public EvDecimal getBleachTime()
+		{
+		return bleachTime;
+		}
+
+	public void setBleachTime(EvDecimal bleachTime)
+		{
+		this.bleachTime = bleachTime;
+		}
+
+	public EvDecimal getExpTime()
+		{
+		return expTime;
+		}
+
+	public void setExpTime(EvDecimal expTime)
+		{
+		this.expTime = expTime;
+		}
+
+	public EvDecimal getRate()
+		{
+		return rate;
+		}
+
+	public void setRate(EvDecimal rate)
+		{
+		this.rate = rate;
+		}
+
+	public EvContainer getContainer()
+		{
+		return container;
+		}
+
+	public void setContainer(EvContainer container)
+		{
+		this.container = container;
+		}
+
+	public String getContainerStoreName()
+		{
+		return containerStoreName;
+		}
+
+	public void setContainerStoreName(String containerStoreName)
+		{
+		this.containerStoreName = containerStoreName;
+		}
+
+	public ROI getRoi()
+		{
+		return roi;
+		}
+
+	public void setRoi(ROI roi)
+		{
+		this.roi = roi;
+		}
+	
+	private EvDecimal recoveryTime;
+	private EvDecimal bleachTime;
+	private EvDecimal expTime;
+	private EvDecimal rate;
+	private EvContainer container;
+	private String containerStoreName;
+	private ROI roi;
+
 	private List<Listener> listeners=new LinkedList<Listener>();
-
-	
-	public void setDurationSeconds(EvDecimal s)
-		{
-		this.duration=s;
-		durationUnit="Seconds";
-		}
-
-	public void setDurationFrames(EvDecimal frames)
-		{
-		this.duration=new EvDecimal(1).divide(frames);
-		durationUnit="Frames";
-		}
-
-	
-	public void setRateSeconds(EvDecimal rate)
-		{
-		this.rate=rate.multiply(1000);
-		rateUnit="ms";
-		}
-
-	public void setRateHz(EvDecimal rate)
-		{
-		this.rate=new EvDecimal(1).divide(rate);
-		rateUnit="Hz";
-		}
-
 	
 	/**
 	 * Thread activity listener
@@ -132,123 +176,130 @@ public class EvFRAPAcquisition extends EvObject
 			//TODO need to choose camera, at least!
 			
 			
-			Iterator<HWCamera> itcam=EvHardware.getDeviceMapCast(HWCamera.class).values().iterator();
-			HWCamera cam=null;
-			if(itcam.hasNext())
-				cam=itcam.next();
-			
-			double interval;
-			if(settings.rateUnit.equals("ms"))
-				interval=settings.rate.doubleValue();
-			else
-				interval=1000.0/settings.rate.doubleValue();
-			
-			
-			
-			//Check that there are enough parameters
-			if(cam!=null && container!=null)
+			acqLoop: do
 				{
+				Iterator<HWImageScanner> itcam=EvHardware.getDeviceMapCast(HWImageScanner.class).values().iterator();
+				HWImageScanner cam=null;
+				if(itcam.hasNext())
+					cam=itcam.next();
 				
-				boolean isRGB=false;
+				double rate=settings.rate.doubleValue();
 				
-				Imageset imset=new Imageset();
-				for(int i=0;;i++)
-					if(container.getChild("im"+i)==null)
-						{
-						container.metaObject.put("im"+i, imset);
-						
-						if(isRGB)
-							{
-							imset.metaObject.put(channelName+"R", new EvChannel());
-							imset.metaObject.put(channelName+"G", new EvChannel());
-							imset.metaObject.put(channelName+"B", new EvChannel());
-							}
-						else
-							imset.metaObject.put(channelName, new EvChannel());
-						break;
-						}
-
-				//TODO signal update on the object
-				BasicWindow.updateWindows();
-
-				
-				EvDecimal curFrame=new EvDecimal(0);
-
+				/*
+				if(settings.rateUnit.equals("ms"))
+				else
+					interval=1000.0/settings.rate.doubleValue();
+				*/
 				
 				
-				
-				
-				try
+				//Check that there are enough parameters
+				if(cam!=null && container!=null)
 					{
+
+					Imageset imset=new Imageset();
+					for(int i=0;;i++)
+						if(container.getChild(containerStoreName+i)==null)
+							{
+							container.metaObject.put(containerStoreName+i, imset);
+							imset.metaObject.put("ch", new EvChannel());
+							break;
+							}
+
+					//TODO signal update on the object
+					BasicWindow.updateWindows();
+
 					
-					cam.startSequenceAcq(interval);
+					EvDecimal curFrame=new EvDecimal(0);
+
 					
-					while(!toStop)
+					
+					
+					
+					try
 						{
-
-						//Avoid busy loop
-						try
-							{
-							Thread.sleep((long)interval/3);
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//See if another image is incoming
-						CameraImage camIm=cam.snapSequence();
-						if(camIm!=null)
-							{
-							EvChannel ch=(EvChannel)imset.getChild(channelName);
-							EvStack stack=ch.getCreateFrame(curFrame);
-
-							if(isRGB)
-								{
-								//TODO
-								
-								}
-							else
-								{
-								//TODO resolution
-								stack.resX=1;
-								stack.resY=1;
-								stack.resZ=new EvDecimal(1);
-								
-								//TODO offset from stage?
-								
-								EvImage evim=new EvImage(camIm.getPixels()[0]);
-								
-								
-								
-								System.out.println(camIm.getPixels());
-								System.out.println(camIm.getNumComponents());
-								
-								EvDecimal z=new EvDecimal(0);
-								ch.getCreateFrame(curFrame).put(z, evim);
-								}
-								
-								
-							
-							
-							curFrame=curFrame.add(new EvDecimal(interval));
-							}
 						
+						
+						//Acquire image before bleaching
+						snapOneImage(imset, cam, curFrame);
+						
+						if(toStop)
+							break acqLoop;
+						
+						//Bleach ROI
+						double stageX=0;
+						double stageY=0;
+						String normalExposureTime=cam.getPropertyValue("Exposure");
+						cam.setPropertyValue("Exposure", "1"); //TODO
+						int[] roiArray=HWImageScannerUtil.makeROI(cam, roi, stageX, stageY);
+						cam.scan(null, null, roiArray);
+						cam.setPropertyValue("Exposure", normalExposureTime);
+						
+						
+						
+						//TODO
+						if(toStop)
+							break acqLoop;
+						
+						
+						//Acquire images as the intensity recovers
+						for(int i=0;i<recoveryTime.doubleValue()/rate;i++)
+							{
+							snapOneImage(imset, cam, curFrame);
+							
+							if(toStop)
+								break acqLoop;
+							yield(rate/10);
+							}
 						
 						}
-					
-					cam.stopSequenceAcq();
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
 					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
+			
 				}
+			while(false);
+		
 			
 			//System.out.println("---------stop-----------");
 			toStop=false;
 			for(Listener l:listeners)
 				l.acqStopped();
+			}
+		
+		/**
+		 * To avoid busy loops
+		 */
+		private void yield(double t)
+			{
+			try
+				{
+				Thread.sleep((long)t);
+				}
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			}
+		
+		private void snapOneImage(Imageset imset, HWImageScanner cam, EvDecimal curFrame)
+			{
+			EvChannel ch=imset.getCreateChannel("ch");
+			EvStack stack=ch.getCreateFrame(curFrame);
+			//TODO
+			stack.resX=1;
+			stack.resY=1;
+			stack.resZ=EvDecimal.ONE;
+			
+			CameraImage camIm=cam.snap();
+			EvImage evim=new EvImage(camIm.getPixels()[0]);
+
+			System.out.println(camIm.getPixels());
+			System.out.println(camIm.getNumComponents());
+			
+			EvDecimal z=new EvDecimal(0);
+			stack.put(z, evim);
 			}
 		
 		
