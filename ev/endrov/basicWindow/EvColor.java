@@ -49,7 +49,7 @@ public class EvColor
 			new EvColor("Gray/Bright",Color.LIGHT_GRAY),
 
 			new EvColor("Green/Dark",new Color(0,128,0)),
-			new EvColor("Green/Bright",new Color(0,255,0)),
+			new EvColor("Green/Medium",new Color(0,255,0)),
 			new EvColor("Green/Bright",new Color(128,255,128)),
 
 			new EvColor("Magenta/Dark",new Color(128,0,128)),
