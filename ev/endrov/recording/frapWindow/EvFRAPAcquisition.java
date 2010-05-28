@@ -64,16 +64,16 @@ public class EvFRAPAcquisition extends EvObject
 		this.bleachTime = bleachTime;
 		}
 
+	/*
 	public EvDecimal getExpTime()
 		{
 		return expTime;
 		}
-
 	public void setExpTime(EvDecimal expTime)
 		{
 		this.expTime = expTime;
 		}
-
+*/
 	public EvDecimal getRate()
 		{
 		return rate;
@@ -116,7 +116,7 @@ public class EvFRAPAcquisition extends EvObject
 	
 	private EvDecimal recoveryTime;
 	private EvDecimal bleachTime;
-	private EvDecimal expTime;
+	//private EvDecimal expTime;
 	private EvDecimal rate;
 	private EvContainer container;
 	private String containerStoreName;
@@ -183,7 +183,7 @@ public class EvFRAPAcquisition extends EvObject
 				if(itcam.hasNext())
 					cam=itcam.next();
 				
-				double rate=settings.rate.doubleValue();
+				//double rate=settings.rate.doubleValue();
 				
 				/*
 				if(settings.rateUnit.equals("ms"))
@@ -221,6 +221,7 @@ public class EvFRAPAcquisition extends EvObject
 						
 						//Acquire image before bleaching
 						snapOneImage(imset, cam, curFrame);
+						BasicWindow.updateWindows();
 						
 						if(toStop)
 							break acqLoop;
@@ -240,15 +241,19 @@ public class EvFRAPAcquisition extends EvObject
 						if(toStop)
 							break acqLoop;
 						
+						System.out.println("rec time "+settings.recoveryTime.doubleValue());
+						System.out.println("rate "+settings.rate.doubleValue());
 						
 						//Acquire images as the intensity recovers
-						for(int i=0;i<recoveryTime.doubleValue()/rate;i++)
+						for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
 							{
-							snapOneImage(imset, cam, curFrame);
+							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
 							
+							snapOneImage(imset, cam, curFrame);
+							BasicWindow.updateWindows();
 							if(toStop)
 								break acqLoop;
-							yield(rate/10);
+							yield(settings.rate.doubleValue()/10);
 							}
 						
 						}
@@ -294,9 +299,6 @@ public class EvFRAPAcquisition extends EvObject
 			
 			CameraImage camIm=cam.snap();
 			EvImage evim=new EvImage(camIm.getPixels()[0]);
-
-			System.out.println(camIm.getPixels());
-			System.out.println(camIm.getNumComponents());
 			
 			EvDecimal z=new EvDecimal(0);
 			stack.put(z, evim);
