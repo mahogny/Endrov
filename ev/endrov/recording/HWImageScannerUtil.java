@@ -33,8 +33,10 @@ public class HWImageScannerUtil
 
 		
 		//TODO invert resmag?
-		stack.resX=1.0/scanner.getResMagX();  //um/px
+		stack.resX=1.0/scanner.getResMagX();  //um/px //TODO seems wrong! wrong way!!!!!
 		stack.resY=1.0/scanner.getResMagY();
+//		stack.resX=scanner.getResMagX();  //um/px //TODO seems wrong! wrong way!!!!!
+//		stack.resY=scanner.getResMagY();
 		stack.resZ=EvDecimal.ONE;
 		
 		String channel="foo";
@@ -42,6 +44,7 @@ public class HWImageScannerUtil
 		EvDecimal z=EvDecimal.ZERO;
 		
 		//TODO how to offset?
+		//there is offset!!!!
 		
 		//Fill bitmap ROI
 		LineIterator it=roi.getLineIterator(stack, image, channel, frame, z);
@@ -51,6 +54,18 @@ public class HWImageScannerUtil
 			for(LineRange r:it.ranges)
 				for(int x=r.start;x<r.end;x++)  //< or <=?
 					ret[y*w+x]=1;
+			System.out.println("one line");
+			}
+		
+		//Debug
+		for(int y=0;y<h;y++)
+			{
+			for(int x=0;x<w;x++)
+				if(ret[y*w+x]!=0)
+					System.out.print("#");
+				else
+					System.out.print(".");
+			System.out.println();
 			}
 		
 		return ret;

@@ -26,8 +26,5 @@ public interface HWMagnifier
 	 * Y resolution or magnification, [px/um] or []
 	 */
 	public double getResMagY();
-
-	
-	
 	
 	}

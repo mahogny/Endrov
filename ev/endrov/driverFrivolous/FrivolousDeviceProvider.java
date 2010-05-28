@@ -162,6 +162,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		private double getRes()
 			{
 			return 0.1;
+			//return 1; //temp
 			}
 		
 		public double getResMagX()

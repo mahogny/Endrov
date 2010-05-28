@@ -25,11 +25,19 @@ public class RecordingResource
 	 * TODO
 	 * guess magnification by looking at state label
 	 */
+	/*
 	public static double magFromLabel(String s)
 		{
 		return 1;
-		}
+		}*/
 
+	/**
+	 * Get the total magnification for the entire light path, coming into a given camera
+	 */
+	public static double getCurrentTotalMagnification(HWCamera cam)
+		{
+		return cam.getResMagX();
+		}
 	
 	
 	private static EvData data=new EvData();
@@ -38,8 +46,8 @@ public class RecordingResource
 	static
 	{
 	BoxROI roi=new BoxROI();
-	roi.regionX.set(new EvDecimal(10), new EvDecimal(50));
-	roi.regionY.set(new EvDecimal(10), new EvDecimal(50));
+	roi.regionX.set(new EvDecimal(110), new EvDecimal(150));
+	roi.regionY.set(new EvDecimal(110), new EvDecimal(150));
 	data.addMetaObject(roi);
 
 	}

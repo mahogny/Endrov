@@ -51,11 +51,12 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	
 	public JToggleButton[] toolButtons;
 	
+	/*
 	public CamWindowImageView(JToggleButton[] toolButtons){
 		this();
 		this.toolButtons = toolButtons;
 	}
-	
+*/	
 	public CamWindowImageView()
 		{
 		addMouseListener(this);
@@ -63,6 +64,11 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		addMouseWheelListener(this);
 		}
 	
+	
+	public void setToolButtons(JToggleButton[] toolButtons)
+		{
+		this.toolButtons = toolButtons;
+		}
 	
 	protected void paintComponent(Graphics g)
 		{

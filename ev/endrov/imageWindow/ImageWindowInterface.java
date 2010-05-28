@@ -21,6 +21,4 @@ public interface ImageWindowInterface extends WSTransformer
 	public <E> E getRendererClass(Class<E> cl);
 	
 	public void unsetTool();
-	
-	
 	}
