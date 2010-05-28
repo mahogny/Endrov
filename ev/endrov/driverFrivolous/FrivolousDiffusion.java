@@ -227,10 +227,12 @@ class FrivolousDiffusion implements Runnable
 	 */
 	public synchronized void bleach(int[] roi, int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
 		{
+		offsetX+=768;//temp
+		offsetY+=768; 
 		System.out.println("bleach factor roi "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
 		for(int y=0;y<roiHeight;y++)
 			for(int x=0;x<roiWidth;x++)
-//				if(roi[x+y*roiWidth]!=0) //temp TODO
+				if(roi[x+y*roiWidth]!=0) //temp TODO
 					diffusion[(x+offsetX) + (y+offsetY)*width] *= bleachFactor;
 		}
 
@@ -239,30 +241,17 @@ class FrivolousDiffusion implements Runnable
 	 */
 	public synchronized void bleach(int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
 		{
+		offsetX+=768;//temp
+		offsetY+=768; 
 		System.out.println("bleach factor "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
 		for(int y=0;y<roiHeight;y++)
 			for(int x=0;x<roiWidth;x++)
 				diffusion[(x+offsetX) + (y+offsetY)*width] *= bleachFactor;
 		}
 
-	/*
-	// TODO: move out
-	private static class RleSegment
-		{
-		public int startx;
-		public int endx;
-		}
-
-	public void bleach(java.util.List<RleSegment>[] roi) throws IndexOutOfBoundsException
-		{
-		for (int ay = 0; ay<roi.length; ay++)
-			for (RleSegment seg : roi[ay])
-				for (int ax = seg.startx; ax<seg.endx; ax++)
-					diffusion[ax+ay*width] *= bleachFactor;
-
-		}
-	*/
-
+	/**
+	 * Continuously simulate the physics
+	 */
 	public void run()
 		{
 		float time = 0;
@@ -271,8 +260,8 @@ class FrivolousDiffusion implements Runnable
 			{
 			for (int i = 0; i<100; i++)
 				{
-				float bleachFactor = 0f;
-				bleach(bleachFactor);
+				//float bleachFactor = 0f;
+				//bleach(bleachFactor);
 				diffuse();
 				time += dt;
 				}

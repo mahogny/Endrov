@@ -150,6 +150,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		toolButtons.addAll(Arrays.asList(/*bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,*/bSelectROI));
 
 		
+		
 		bSelectROI.addActionListener(new ActionListener()
 			{public void actionPerformed(ActionEvent e)
 				{
@@ -210,7 +211,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		
 		
 		
-		
+		drawArea.setToolButtons(toolButtons.toArray(new JToggleButton[0]));
 		
 		
 		
@@ -355,7 +356,15 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		
 		}
 		
-		
+	private HWCamera getCurrentCamera()
+		{
+		EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
+		if(camname!=null)
+			return (HWCamera)EvHardware.getDevice(camname);
+		else
+			return null;
+		}
+	
 	/**
 	 * Take one picture from the camera	
 	 */
@@ -363,11 +372,11 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		{
 		//this does not work later. have to synchronize all calls for an image
 		//so all targets gets it.
-		
-		EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
-		if(camname!=null)
+		HWCamera cam=getCurrentCamera();
+		//EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
+		if(cam!=null)
 			{
-			HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
+			//HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
 			CameraImage cim=cam.snap();
 			lastCameraImage=cim.getPixels();
 
@@ -509,9 +518,16 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		}
 
 	
-	public double getCameraResolution() // px/um
+	/**
+	 * [um/px]
+	 */
+	public double getCameraResolution()
 		{
-		return 1;
+		HWCamera cam=getCurrentCamera();
+		if(cam!=null)
+			return RecordingResource.getCurrentTotalMagnification(cam);
+		else
+			return 1;
 		}
 	
 	public double getStageX() // um
@@ -531,22 +547,22 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 
 	public double scaleS2w(double s)
 		{
-		return s/getCameraResolution();
+		return s*getCameraResolution();
 		}
 
 	public double scaleW2s(double w)
 		{
-		return w*getCameraResolution();
+		return w/getCameraResolution();
 		}
 
 	public Vector2d transformS2W(Vector2d v)
 		{
-		return new Vector2d(v.x/getCameraResolution()-getStageX(), v.y/getCameraResolution()-getStageY()); //TODO offset by stage
+		return new Vector2d(v.x*getCameraResolution()-getStageX(), v.y*getCameraResolution()-getStageY()); 
 		}
 
 	public Vector2d transformW2S(Vector2d v)
 		{
-		return new Vector2d(v.x*getCameraResolution(), v.y*getCameraResolution()); //TODO offset by stage
+		return new Vector2d((v.x+getStageX())/getCameraResolution(), (v.y+getStageY())/getCameraResolution());
 		}
 
 	public double w2sz(double z)

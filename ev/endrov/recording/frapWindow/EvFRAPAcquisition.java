@@ -20,6 +20,7 @@ import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.HWImageScanner;
 import endrov.recording.HWImageScannerUtil;
+import endrov.recording.RecordingResource;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
@@ -290,17 +291,17 @@ public class EvFRAPAcquisition extends EvObject
 		
 		private void snapOneImage(Imageset imset, HWImageScanner cam, EvDecimal curFrame)
 			{
-			EvChannel ch=imset.getCreateChannel("ch");
-			EvStack stack=ch.getCreateFrame(curFrame);
-			//TODO
-			stack.resX=1;
-			stack.resY=1;
-			stack.resZ=EvDecimal.ONE;
-			
 			CameraImage camIm=cam.snap();
 			EvImage evim=new EvImage(camIm.getPixels()[0]);
-			
 			EvDecimal z=new EvDecimal(0);
+			
+			EvChannel ch=imset.getCreateChannel("ch");
+			EvStack stack=ch.getCreateFrame(curFrame);
+			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
+			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
+			stack.resZ=EvDecimal.ONE;
+			//TODO displacement?
+			
 			stack.put(z, evim);
 			}
 		
