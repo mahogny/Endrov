@@ -46,7 +46,6 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	public FrivolousDeviceProvider()
 		{
-		model = new FrivolousModel();
 		}
 
 	public double[] stagePos = new double[]{ 0, 0, 0 };
@@ -54,13 +53,14 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 	private class FrivolousCamera implements HWImageScanner
 		{
 		//Properties
-		private double expTime=0.05;
+		private double expTime=0.01;
 		
 		//
 		private LinkedList<CameraImage> seqBuffer=new LinkedList<CameraImage>();
 		private boolean runSequenceAcq=false;
 		private double duration;
 		
+		//Thread to capture images sequentially while there is a demand (burst acquisition)
 		Thread seqAcqThread=new Thread()
 			{
 			public void run()
@@ -155,6 +155,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				model.getSettings().na = Double.parseDouble(value);
 			else if (prop.equals("Wavelength"))
 				model.getSettings().lambda = Double.parseDouble(value);
+			else if (prop.equals("Exposure"))
+				expTime=Double.parseDouble(value);
 			System.out.println(prop+" "+value);
 			}
 		private double getRes()
@@ -194,7 +196,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			long startTime=System.currentTimeMillis();
 			CameraImage cim=snapInternal();
-			//TODO bleach all
+			
+			//Bleach everything visible at the moment
+			for(FrivolousDiffusion d:model.cell.diffusers)
+				d.bleach(width, height, 0, 0, (float)getBleachFactor());
+
 			waitInTotal(startTime, expTime);
 			return cim;
 			}
@@ -299,7 +305,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			long startTime=System.currentTimeMillis();
 			
-			//Infinitely fast scanning
+			//Scan
 			if(buffer!=null)
 				{
 				CameraImage im=snapInternal();
@@ -319,7 +325,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			long startTime=System.currentTimeMillis();
 			
-			//Infinitely fast scanning
+			//Scan
 			if(buffer!=null)
 				{
 				CameraImage im=snapInternal();
@@ -539,6 +545,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	public void openConfigureDialog()
 		{
+		model = new FrivolousModel();
 		FrivolousCamera cam=new FrivolousCamera();
 		cam.seqAcqThread.start();
 		hw.put("cam", cam);

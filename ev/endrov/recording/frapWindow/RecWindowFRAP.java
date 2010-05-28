@@ -41,7 +41,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	private JButton bStartStop=new JButton("Start");
 	private SpinnerSimpleEvDecimal spRecoveryTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
-	private SpinnerSimpleEvDecimal spExpTime=new SpinnerSimpleEvDecimal();
+	//private SpinnerSimpleEvDecimal spExpTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
 	
 	private JLabel labelStatus=new JLabel("Status: Stopped");
@@ -85,8 +85,10 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 		
 		//cDuration.setToolTipText("Limit duration or run indefinetely");
 		
-		spRate.setDecimalValue(new EvDecimal(10));
-		spBleachTime.setDecimalValue(new EvDecimal(10));
+		spRecoveryTime.setDecimalValue(new EvDecimal(10));
+		spRate.setDecimalValue(new EvDecimal(1));
+		spBleachTime.setDecimalValue(new EvDecimal(1));
+//		spExpTime.setDecimalValue(new EvDecimal(100));
 		
 		///////////////// Acquire ///////////////////////////////////////
 
@@ -136,12 +138,12 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 						spRate,
 						new JLabel("s")
 						),
-								
+								/*
 				EvSwingUtil.layoutLCR(
 						new JLabel("Exposure time"),
 						spExpTime,
 						new JLabel("ms")
-						),
+						),*/
 				
 
 				EvSwingUtil.layoutLCR(
@@ -189,7 +191,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 				acq.setBleachTime(spBleachTime.getDecimalValue());
 				acq.setContainer(objectCombo.getSelectedObject());
 				acq.setContainerStoreName(tStoreName.getText());
-				acq.setExpTime(spExpTime.getDecimalValue());
+				//acq.setExpTime(spExpTime.getDecimalValue());
 				acq.setRate(spRate.getDecimalValue());
 				acq.setRecoveryTime(spRecoveryTime.getDecimalValue());
 				acq.setRoi((ROI)roiCombo.getSelectedObject());

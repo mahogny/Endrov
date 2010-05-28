@@ -29,7 +29,6 @@ class FrivolousDiffusion implements Runnable
 	private int cnt = 0;
 	private int[] area;
 	private float diffusionFactor = 1f;
-	private float bleachFactor = 0f;
 
 	public FrivolousDiffusion(FrivolousComplexArray input, int[] alpha, float speed)
 		{
@@ -228,9 +227,10 @@ class FrivolousDiffusion implements Runnable
 	 */
 	public synchronized void bleach(int[] roi, int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
 		{
+		System.out.println("bleach factor roi "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
 		for(int y=0;y<roiHeight;y++)
 			for(int x=0;x<roiWidth;x++)
-				if(roi[x+y*roiWidth]!=0)
+//				if(roi[x+y*roiWidth]!=0) //temp TODO
 					diffusion[(x+offsetX) + (y+offsetY)*width] *= bleachFactor;
 		}
 
@@ -239,6 +239,7 @@ class FrivolousDiffusion implements Runnable
 	 */
 	public synchronized void bleach(int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
 		{
+		System.out.println("bleach factor "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
 		for(int y=0;y<roiHeight;y++)
 			for(int x=0;x<roiWidth;x++)
 				diffusion[(x+offsetX) + (y+offsetY)*width] *= bleachFactor;
@@ -270,6 +271,7 @@ class FrivolousDiffusion implements Runnable
 			{
 			for (int i = 0; i<100; i++)
 				{
+				float bleachFactor = 0f;
 				bleach(bleachFactor);
 				diffuse();
 				time += dt;
