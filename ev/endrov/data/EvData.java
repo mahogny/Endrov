@@ -316,9 +316,6 @@ public class EvData extends EvContainer
 
   		if(element.getAttribute("version")!=null)
   			metadataVersion=element.getAttributeValue("version");
-
-  		
-	  		
   		
   		recursiveLoadMetadata(element);
     	} 

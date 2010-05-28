@@ -160,7 +160,6 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 					setTool(new GeneralToolROI(CamWindow.this));
 					
 					//setTool(new GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
-					System.out.println("Hello!!!???");
 					}
 				}});
 		
