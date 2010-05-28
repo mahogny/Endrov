@@ -54,5 +54,21 @@ public abstract class EvObject extends EvContainer
 		return BasicIcon.iconData;
 		}
 
+	/**
+	 * Make a deep copy of the object - uses the serialization mechanism to do so
+	 */
+	public EvObject cloneBySerialize()
+		{
+		Element root=new Element("ost");
+		
+		EvGroupObject tempOb=new EvGroupObject();
+		
+		tempOb.addMetaObject(this);
+		tempOb.recursiveSaveMetadata(root);
+		EvGroupObject newOb=new EvGroupObject();
+		newOb.recursiveLoadMetadata(root);
+
+		return newOb.metaObject.values().iterator().next();
+		}
 	
 	}

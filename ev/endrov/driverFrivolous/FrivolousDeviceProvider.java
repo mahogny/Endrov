@@ -159,10 +159,13 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				expTime=Double.parseDouble(value);
 			System.out.println(prop+" "+value);
 			}
+		
+		//[um/px]
 		private double getRes()
 			{
-			return 0.1;
+			//return 0.1;
 			//return 1; //temp
+			return 10;
 			}
 		
 		public double getResMagX()

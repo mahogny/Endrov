@@ -19,7 +19,6 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.HWImageScanner;
-import endrov.recording.HWImageScannerUtil;
 import endrov.recording.RecordingResource;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
@@ -117,7 +116,6 @@ public class EvFRAPAcquisition extends EvObject
 	
 	private EvDecimal recoveryTime;
 	private EvDecimal bleachTime;
-	//private EvDecimal expTime;
 	private EvDecimal rate;
 	private EvContainer container;
 	private String containerStoreName;
@@ -232,7 +230,7 @@ public class EvFRAPAcquisition extends EvObject
 						double stageY=0;
 						String normalExposureTime=cam.getPropertyValue("Exposure");
 						cam.setPropertyValue("Exposure", "1"); //TODO
-						int[] roiArray=HWImageScannerUtil.makeROI(cam, roi, stageX, stageY);
+						int[] roiArray=RecordingResource.makeScanningROI(cam, roi, stageX, stageY);
 						cam.scan(null, null, roiArray);
 						cam.setPropertyValue("Exposure", normalExposureTime);
 						

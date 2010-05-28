@@ -222,7 +222,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		int dy=e.getY()-lastMousePosition.y;
 		lastMousePosition=new Vector2i(e.getX(),e.getY());
 		
-		//TODO magnification
+		//TODO magnification. must have access to camera variable
 		double resMagX = 1;
 		double resMagY = 1;
 		for(Map.Entry<EvDevicePath,HWCamera> cams:EvHardware.getDeviceMapCast(HWCamera.class).entrySet())
