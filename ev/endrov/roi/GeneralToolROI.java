@@ -75,8 +75,6 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 		{
 		ImageRendererROI r=w.getRendererClass(ImageRendererROI.class);
 		
-		System.out.println("press");
-		
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			//Which handle?
@@ -92,7 +90,6 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 						}
 					}
 			}
-		System.out.println("press failed");
 		}
 
 	

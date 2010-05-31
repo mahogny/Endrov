@@ -149,7 +149,7 @@ public class FrivolousCell
 		}
 
 	
-	public int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight)
+	public int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight, boolean simulatePSF)
 		{
 
 		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
@@ -163,21 +163,28 @@ public class FrivolousCell
 
 		timer.show("Mobile arrays calculated");
 
-		FrivolousComplexArray total_array = FrivolousComplexLib.getRealAddition(diffused_sum_array,
-				immobile_sum_array);
+		FrivolousComplexArray total_array = FrivolousComplexLib.getRealAddition(diffused_sum_array,	immobile_sum_array);
 		
-		FrivolousComplexArray crop_array = FrivolousComplexLib.getCrop(total_array,1024,1024,512-((int)(offsetX*10+0.5)),512-((int)(offsetY*10+0.5)));
+		FrivolousComplexArray crop_array = FrivolousComplexLib.getCrop(total_array,1024,1024,512-((int)(offsetX+0.5)),512-((int)(offsetY+0.5)));
 		
-		FrivolousComplexArray input_fft = fft.forward(crop_array, true);
+		//Can disable PSF simulation for performance
+		if(simulatePSF)
+			{
+			FrivolousComplexArray input_fft = fft.forward(crop_array, true);
 
-		timer.show("FFT on image");
-		FrivolousComplexArray output_fft = FrivolousComplexLib.getComplexMultiplication(input_fft,
-				psf_fft);
+			timer.show("FFT on image");
+			FrivolousComplexArray output_fft = FrivolousComplexLib.getComplexMultiplication(input_fft, psf_fft);
 
-		timer.show("Complex mult");
-		output_array = fft.backward(output_fft);
+			timer.show("Complex mult");
+			output_array = fft.backward(output_fft);
+			
+			timer.show("iFFT");
+			}
+		else
+			{
+			output_array = crop_array;
+			}
 
-		timer.show("iFFT");
 		FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,imageWidth,imageHeight,256,256),
 				settings);
 

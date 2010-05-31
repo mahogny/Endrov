@@ -193,7 +193,9 @@ public class BoxROI extends ROI
 
 	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
 		{
-		return regionChannels.channelInRange(channel) && regionFrames.inRange(frame) && regionZ.inRange(z);
+		//System.out.println("inrange "+regionChannels.channelInRange(channel) +"  "+regionFrames.inRange(frame) +"   "+ regionZ.inRange(z));
+		
+		return /*regionChannels.channelInRange(channel) &&*/ regionFrames.inRange(frame) && regionZ.inRange(z);
 		}
 	
 	/**

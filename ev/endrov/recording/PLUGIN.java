@@ -8,6 +8,7 @@ import endrov.ev.PluginDef;
 import endrov.recording.camWindow.CamWindow;
 import endrov.recording.controlWindow.RecControlWindow;
 import endrov.recording.frapWindow.EvFRAPAcquisition;
+import endrov.recording.frapWindow.FlowUnitCalcFRAP;
 import endrov.recording.frapWindow.RecWindowFRAP;
 import endrov.recording.lightpathWindow.LightpathWindow;
 import endrov.recording.recmetBurst.EvBurstAcquisition;
@@ -50,7 +51,7 @@ public class PLUGIN extends PluginDef
 				RecWindowBurst.class,
 				RecWindowFRAP.class,
 				EvBurstAcquisition.class,
-				EvFRAPAcquisition.class,
+				EvFRAPAcquisition.class,FlowUnitCalcFRAP.class,
 				
 				LightpathWindow.class
 				};

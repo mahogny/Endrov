@@ -31,6 +31,7 @@ import endrov.recording.HWStage;
  */
 public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevice
 	{
+	double resolution=10;
 
 	private static Map<String, Class<? extends EvDevice>> hardwareProvided = new TreeMap<String, Class<? extends EvDevice>>();
 	private FrivolousModel model;
@@ -50,10 +51,12 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	public double[] stagePos = new double[]{ 0, 0, 0 };
 
+	
 	private class FrivolousCamera implements HWImageScanner
 		{
 		//Properties
-		private double expTime=0.01;
+		private double expTime=0.003;
+		private boolean simulatePSF=true;
 		
 		//
 		private LinkedList<CameraImage> seqBuffer=new LinkedList<CameraImage>();
@@ -100,6 +103,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			p.put("Numerical Aperture", ""+model.getSettings().na);
 			p.put("Wavelength", ""+model.getSettings().lambda);
 			p.put("Exposure", ""+expTime);
+			p.put("SimulatePSF", simulatePSF?"1":"0");
 			return p;
 			}
 
@@ -126,6 +130,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			p = new DevicePropertyType();
 			pt.put("Exposure", p);
 			
+			// Simulate PSF
+			p = new DevicePropertyType();
+			p.isBoolean=true;
+			pt.put("SimulatePSF", p);
+			
 			return pt;
 			}
 
@@ -137,16 +146,21 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				return ""+model.getSettings().lambda;
 			else if (prop.equals("Exposure"))
 				return ""+expTime;
+			else if (prop.equals("SimulatePSF"))
+				return simulatePSF?"1":"0";
 			return getPropertyMap().get(prop);
 			}
 
 		public Boolean getPropertyValueBoolean(String prop)
 			{
+			if (prop.equals("SimulatePSF"))
+				return simulatePSF;
 			return null;
 			}
 
 		public void setPropertyValue(String prop, boolean value)
 			{
+			setPropertyValue(prop, value?"1":"0");
 			}
 
 		public void setPropertyValue(String prop, String value)
@@ -157,15 +171,15 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				model.getSettings().lambda = Double.parseDouble(value);
 			else if (prop.equals("Exposure"))
 				expTime=Double.parseDouble(value);
+			else if (prop.equals("SimulatePSF"))
+				simulatePSF=value.equals("1");
 			System.out.println(prop+" "+value);
 			}
 		
 		//[um/px]
 		private double getRes()
 			{
-			//return 0.1;
-			//return 1; //temp
-			return 10;
+			return resolution;
 			}
 		
 		public double getResMagX()
@@ -190,7 +204,10 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		public CameraImage snapInternal()
 			{
 //		int r = (int) stagePos[2];
-			model.convolve((int)stagePos[0],(int)stagePos[1]);
+			int stagePosPixelsX=(int)(stagePos[0]/getRes());
+			int stagePosPixelsY=(int)(stagePos[1]/getRes());
+			
+			model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF);
 			int[]/*BufferedImage*/ im = model.getImage();
 			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 4, im, 1);
 			return cim;
@@ -280,7 +297,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		public double getBleachFactor()
 			{
 			double laserPower=1;
-			double c=1;
+			double c=2;
 
 			return Math.exp(-expTime*laserPower*c);
 			}
@@ -383,7 +400,6 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			for (int i = 0; i<3; i++)
 				tmp[i] += axis[i];
 			setStagePos(tmp);
-			System.out.println("curpos "+stagePos[0]+"  "+stagePos[1]+"   "+stagePos[2]);
 			}
 
 		public void setStagePos(double[] axis)
@@ -394,11 +410,21 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			else if(axis[2]>10000)
 				axis[2]=10000;
 			
+			//TODO connect to magnification
+			/*
 			for (int i = 0; i<2; i++)
 				if (axis[i]<-512*.1)
 					axis[i]=-512*.1;
 				else if (axis[i]>512*.1)
-					axis[i]=512*.1;	
+					axis[i]=512*.1;
+					*/
+			
+			for (int i = 0; i<2; i++)
+				if (axis[i]<-512*resolution)
+					axis[i]=-512*resolution;
+				else if (axis[i]>512*resolution)
+					axis[i]=512*resolution;	
+
 			
 			for (int i = 0; i<3; i++)
 				stagePos[i] = axis[i];
