@@ -41,7 +41,7 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 		{
 		dec=new BigDecimal(val);
 		}
-	public EvDecimal(String val)
+	public EvDecimal(String val) 
 		{
 		dec=new BigDecimal(val);
 		}

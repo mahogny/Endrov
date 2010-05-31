@@ -28,35 +28,82 @@ public class EvDecimalEditor extends JTextField
 
 	public EvDecimalEditor(final JSpinner sp)
 		{
+		setText(""+(EvDecimal) sp.getModel().getValue());
 		addActionListener(new ActionListener()
 			{
 			public void actionPerformed(ActionEvent e)
 				{
-				sp.getModel().setValue(Integer.parseInt(getText()));
+				setFreeze(1);
+				try
+					{
+					sp.getModel().setValue(new EvDecimal(getText()));
+					}
+				catch (Exception e1)
+					{
+					}
+				setFreeze(-1);
 				}
 			});
 		getDocument().addDocumentListener(new DocumentListener()
 			{
 			public void removeUpdate(DocumentEvent arg0)
 				{
-				sp.getModel().setValue(Integer.parseInt(getText()));
+				setFreeze(1);
+				try
+					{
+					sp.getModel().setValue(new EvDecimal(getText()));
+					}
+				catch (Exception e1)
+					{
+					}
+				setFreeze(-1);
 				}
 			public void insertUpdate(DocumentEvent arg0)
 				{
-				sp.getModel().setValue(Integer.parseInt(getText()));
+				setFreeze(1);
+				try
+					{
+					sp.getModel().setValue(new EvDecimal(getText()));
+					}
+				catch (Exception e1)
+					{
+					}
+				setFreeze(-1);
 				}
 			public void changedUpdate(DocumentEvent arg0)
 				{
-				sp.getModel().setValue(Integer.parseInt(getText()));
+				setFreeze(1);
+				try
+					{
+					sp.getModel().setValue(new EvDecimal(getText()));
+					}
+				catch (Exception e1)
+					{
+					}
+				setFreeze(-1);
 				}
 			});
 		sp.getModel().addChangeListener(new ChangeListener()
 			{
 			public void stateChanged(ChangeEvent e)
 				{
-				setText(""+(EvDecimal) sp.getModel().getValue());
+				if(!getLock())
+					{
+					setFreeze(1);
+					setText(""+(EvDecimal) sp.getModel().getValue());
+					setFreeze(-1);
+					}
 				}
 			});
-		setText(""+(EvDecimal) sp.getModel().getValue());
+		}
+	
+	int lock=0;
+	private void setFreeze(int v)
+		{
+		lock+=v;
+		}
+	private boolean getLock()
+		{
+		return lock!=0;
 		}
 	}
