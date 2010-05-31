@@ -33,6 +33,13 @@ import endrov.util.EvSwingUtil;
 public class FlowUnitConstEvDecimal extends FlowUnitConst
 	{
 	
+	public FlowUnitConstEvDecimal()
+		{
+		}
+	public FlowUnitConstEvDecimal(EvDecimal var)
+		{
+		this.var=var;
+		}
 	
 	private EvDecimal var=new EvDecimal(1);
 	

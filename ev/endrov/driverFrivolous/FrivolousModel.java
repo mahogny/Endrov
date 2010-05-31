@@ -28,7 +28,7 @@ public class FrivolousModel
 		try
 			{
 			cell = new FrivolousCell(EvFileUtil.getFileFromURL(FrivolousDeviceProvider.class.getResource("data").toURI().toURL()));
-			convolve(0,0);
+			convolve(0,0, true);
 			}
 		catch (Exception e)
 			{
@@ -39,9 +39,9 @@ public class FrivolousModel
 	//area scanned by detectors. before changing, make sure code can handle it
 	public final int imageWidth=512, imageHeight=512; 
 
-	public void convolve(int offsetX, int offsetY)
+	public void convolve(int offsetX, int offsetY, boolean simulatePSF)
 		{
-		output_image = cell.getImage(offsetX, offsetY, imageWidth, imageHeight);
+		output_image = cell.getImage(offsetX, offsetY, imageWidth, imageHeight, simulatePSF);
 		if (model_action!=null)
 			model_action.actionPerformed(new ActionEvent(this, 0, "image_updated"));
 		}

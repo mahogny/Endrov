@@ -12,6 +12,7 @@ import java.util.*;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
+import endrov.roi.ROI;
 import endrov.util.Vector2i;
 import endrov.util.Vector3i;
 
@@ -142,6 +143,8 @@ public class FlowType
 	public static final FlowType TNUMBER=new FlowType(Number.class);
 	public static final FlowType TEVPIXELS=new FlowType(EvPixels.class);
 	public static final FlowType TEVSTACK=new FlowType(EvStack.class);
+	public static final FlowType TEVCHANNEL=new FlowType(EvChannel.class);
+	public static final FlowType TROI=new FlowType(ROI.class);
 	public static final FlowType TVECTOR2I=new FlowType(Vector2i.class);
 	public static final FlowType TVECTOR3I=new FlowType(Vector3i.class);
 	public static final FlowType TANY=new FlowType();

@@ -6,7 +6,9 @@
 package endrov.recording;
 
 
+
 import endrov.data.EvData;
+import endrov.hardware.EvHardware;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
@@ -15,7 +17,6 @@ import endrov.keyBinding.JInputManager;
 import endrov.roi.LineIterator;
 import endrov.roi.ROI;
 import endrov.roi.LineIterator.LineRange;
-import endrov.roi.primitive.BoxROI;
 import endrov.util.EvDecimal;
 import endrov.util.EvSound;
 
@@ -48,17 +49,57 @@ public class RecordingResource
 		}
 	
 	
+	public static double getCurrentStageX()
+		{
+		for(HWStage stage:EvHardware.getDeviceMapCast(HWStage.class).values())
+			{
+			String[] aname=stage.getAxisName();
+			for(int i=0;i<aname.length;i++)
+				if(aname[i].equals("x"))
+					return stage.getStagePos()[i];
+			}
+//		System.out.println("No stage for X found");
+		return 0;
+		}
+	
+	/*
+	public static void moveAxis(String s, double dx)
+		{
+		for(Map.Entry<EvDevicePath,HWStage> e:EvHardware.getDeviceMapCast(HWStage.class).entrySet())
+			{
+			HWStage stage=e.getValue();
+			for(int i=0;i<stage.getNumAxis();i++)
+				{
+				if(stage.getAxisName()[i].equals(s))
+					{
+					//TODO should if possible set both axis' at the same time. might make it faster
+					double[] da=new double[stage.getNumAxis()];
+					da[i]=dx;
+					stage.setRelStagePos(da);
+					return;
+					}
+				}
+			}
+		}*/
+
+	
+	
+	public static double getCurrentStageY()
+		{
+		for(HWStage stage:EvHardware.getDeviceMapCast(HWStage.class).values())
+			{
+			String[] aname=stage.getAxisName();
+			for(int i=0;i<aname.length;i++)
+				if(aname[i].equals("y"))
+					return stage.getStagePos()[i];
+			}
+//		System.out.println("No stage for Y found");
+		return 0;
+		}
+
+	
 	private static EvData data=new EvData();
 	
-	//TODO
-	static
-	{
-	BoxROI roi=new BoxROI();
-	roi.regionX.set(new EvDecimal(110), new EvDecimal(150));
-	roi.regionY.set(new EvDecimal(110), new EvDecimal(150));
-	data.addMetaObject(roi);
-
-	}
 	
 	public static EvData getData()
 		{
@@ -67,7 +108,8 @@ public class RecordingResource
 
 	
 	/**
-	 * Make a ROI mask for image scanners
+	 * Make a ROI mask for image scanners.
+	 * offset is in [um]
 	 */
 	public static int[] makeScanningROI(HWImageScanner scanner, ROI roi, double stageX, double stageY)
 		{
@@ -80,18 +122,10 @@ public class RecordingResource
 		EvImage image=new EvImage(p);
 		EvStack stack=new EvStack();
 
-		
-		//TODO invert resmag?
-		
-		stack.resX=getCurrentTotalMagnification(scanner);
-		stack.resY=getCurrentTotalMagnification(scanner);
+		double res=getCurrentTotalMagnification(scanner);
+		stack.resX=res;
+		stack.resY=res;
 
-		System.out.println("res for scannerutil " + getCurrentTotalMagnification(scanner));
-		
-//		stack.resX=1.0/scanner.getResMagX();  //um/px //TODO seems wrong! wrong way!!!!!
-//		stack.resY=1.0/scanner.getResMagY();
-//		stack.resX=scanner.getResMagX();  //um/px //TODO seems wrong! wrong way!!!!!
-//		stack.resY=scanner.getResMagY();
 		stack.resZ=EvDecimal.ONE;
 		
 		String channel="foo";
@@ -99,20 +133,19 @@ public class RecordingResource
 		EvDecimal z=EvDecimal.ZERO;
 		
 		//TODO how to offset?
+		stack.dispX=-stageX/res;
+		stack.dispY=-stageY/res;
 		//there is offset!!!!
 		
 		//Fill bitmap ROI
 		LineIterator it=roi.getLineIterator(stack, image, channel, frame, z);
-		System.out.println("----roi start");
 		while(it.next())
 			{
 			int y=it.y;
 			for(LineRange r:it.ranges)
 				for(int x=r.start;x<r.end;x++)  //< or <=?
 					ret[y*w+x]=1;
-			System.out.println("one line");
 			}
-		System.out.println("----roi end");
 		
 		//Debug
 		/*

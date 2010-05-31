@@ -27,6 +27,7 @@ import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
 import endrov.recording.HWStage;
 import endrov.recording.HWCamera;
+import endrov.recording.RecordingResource;
 import endrov.util.Vector2i;
 
 /**
@@ -222,22 +223,25 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		int dy=e.getY()-lastMousePosition.y;
 		lastMousePosition=new Vector2i(e.getX(),e.getY());
 		
-		//TODO magnification. must have access to camera variable
-		double resMagX = 1;
+		double resMagX = 1; //[um/px]
 		double resMagY = 1;
+		boolean foundCamera=false;
 		for(Map.Entry<EvDevicePath,HWCamera> cams:EvHardware.getDeviceMapCast(HWCamera.class).entrySet())
-		{
+			{
 			HWCamera camera = cams.getValue();
-			resMagX = camera.getResMagX();
-			resMagY = camera.getResMagY();
+			resMagX=resMagY=RecordingResource.getCurrentTotalMagnification(camera);
+			foundCamera=true;
 			break;
-		}
+			}
+		if(!foundCamera)
+			System.out.println("no camera to move");
 		
 		//TODO update manual view
-		if(move){
+		if(move)
+			{
 			moveAxis("x", dx*resMagX);
 			moveAxis("y", dy*resMagY);
-		}
+			}
 		
 		if(currentTool!=null)
 			currentTool.mouseDragged(e, dx, dy);
@@ -275,6 +279,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 					}
 				}
 			}
+		System.out.println("Did not find axis to move "+s);
 		}
 	
 	

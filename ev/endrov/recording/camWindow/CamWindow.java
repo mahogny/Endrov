@@ -7,6 +7,7 @@ package endrov.recording.camWindow;
 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,7 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.hardware.*;
 import endrov.imageWindow.GeneralTool;
 import endrov.imageWindow.ImageWindow;
@@ -30,6 +32,7 @@ import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
+import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
 import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
@@ -109,6 +112,38 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 				return CamWindow.this.lastCameraImage;
 			else
 				return null;
+			}
+		
+		protected void paintComponent(java.awt.Graphics g)
+			{
+			super.paintComponent(g);
+			
+			//For ROI debug
+			
+			for(EvObject ob:RecordingResource.getData().metaObject.values())
+				{
+				ROI roi=(ROI)ob;
+				
+				Iterator<HWImageScanner> itcam=EvHardware.getDeviceMapCast(HWImageScanner.class).values().iterator();
+				HWImageScanner cam=null;
+				if(itcam.hasNext())
+					cam=itcam.next();
+				
+				double stageX=RecordingResource.getCurrentStageX();
+				double stageY=RecordingResource.getCurrentStageY();
+
+				int w=cam.getWidth();
+				int h=cam.getHeight();
+				int arr[]=RecordingResource.makeScanningROI(cam, roi, stageX, stageY);
+				
+				g.setColor(Color.red);
+				for(int y=0;y<h;y++)
+					for(int x=0;x<w;x++)
+						if(arr[y*w+x]!=0)
+							g.drawLine(x, y, x, y);
+				}
+				
+			
 			}
 		};
 	
@@ -531,12 +566,12 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	
 	public double getStageX() // um
 		{
-		return 0;
+		return RecordingResource.getCurrentStageX();
 		}
 
 	public double getStageY() // um
 		{
-		return 0;
+		return RecordingResource.getCurrentStageY();
 		}
 
 	public double s2wz(double sz)
@@ -571,7 +606,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 
 	public String getCurrentChannelName()
 		{
-		return "cam";
+		return "";
 		}
 
 	public void updateImagePanel()

@@ -12,6 +12,14 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.data.EvPath;
+import endrov.flow.Flow;
+import endrov.flow.FlowConn;
+import endrov.flowBasic.constants.FlowUnitConstEvDecimal;
+import endrov.flowBasic.control.FlowUnitShow;
+import endrov.flowBasic.objects.FlowUnitGetObject;
+import endrov.flowBasic.objects.FlowUnitObjectIO;
+import endrov.flowBasic.objects.FlowUnitParent;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
@@ -175,7 +183,8 @@ public class EvFRAPAcquisition extends EvObject
 			//TODO need to choose camera, at least!
 			
 			
-			acqLoop: do
+			acqLoop: 
+			do
 				{
 				Iterator<HWImageScanner> itcam=EvHardware.getDeviceMapCast(HWImageScanner.class).values().iterator();
 				HWImageScanner cam=null;
@@ -226,19 +235,15 @@ public class EvFRAPAcquisition extends EvObject
 							break acqLoop;
 						
 						//Bleach ROI
-						double stageX=0;
-						double stageY=0;
+						double stageX=RecordingResource.getCurrentStageX();
+						double stageY=RecordingResource.getCurrentStageY();
 						String normalExposureTime=cam.getPropertyValue("Exposure");
 						cam.setPropertyValue("Exposure", "1"); //TODO
 						int[] roiArray=RecordingResource.makeScanningROI(cam, roi, stageX, stageY);
 						cam.scan(null, null, roiArray);
 						cam.setPropertyValue("Exposure", normalExposureTime);
-						
-						
-						
-						//TODO
-						if(toStop)
-							break acqLoop;
+						curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+
 						
 						System.out.println("rec time "+settings.recoveryTime.doubleValue());
 						System.out.println("rate "+settings.rate.doubleValue());
@@ -246,12 +251,13 @@ public class EvFRAPAcquisition extends EvObject
 						//Acquire images as the intensity recovers
 						for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
 							{
+							if(toStop)
+								break acqLoop;
+							
 							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
 							
 							snapOneImage(imset, cam, curFrame);
 							BasicWindow.updateWindows();
-							if(toStop)
-								break acqLoop;
 							yield(settings.rate.doubleValue()/10);
 							}
 						
@@ -260,10 +266,62 @@ public class EvFRAPAcquisition extends EvObject
 						{
 						e.printStackTrace();
 						}
+					
+					////// Build flow to analyze this experiment
+					Flow flow=new Flow();
+					
+					FlowUnitCalcFRAP frapUnit=new FlowUnitCalcFRAP();
+					flow.units.add(frapUnit);
+					
+					FlowUnitObjectIO frapUnitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
+					FlowUnitObjectIO frapUnitGetROI=new FlowUnitObjectIO(new EvPath("roi"));
+					FlowUnitConstEvDecimal frapUnitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
+
+					FlowUnitShow frapUnitShowLifetime=new FlowUnitShow();
+					FlowUnitShow frapUnitShowMobile=new FlowUnitShow();
+					
+					flow.units.add(frapUnitGetChan);
+					flow.units.add(frapUnitGetChan);
+					flow.units.add(frapUnitFrame);
+					flow.units.add(frapUnitShowLifetime);
+					flow.units.add(frapUnitShowMobile);
+
+					flow.conns.add(new FlowConn(frapUnitGetChan,"out",frapUnit,"ch"));
+					flow.conns.add(new FlowConn(frapUnitGetROI,"out",frapUnit,"roi"));
+					flow.conns.add(new FlowConn(frapUnitFrame,"out",frapUnit,"t1"));
+					flow.conns.add(new FlowConn(frapUnitFrame,"out",frapUnit,"t2"));
+					flow.conns.add(new FlowConn(frapUnit,"lifetime",frapUnitShowLifetime,"in"));
+					flow.conns.add(new FlowConn(frapUnit,"mobile",frapUnitShowMobile,"in"));
+					
+					frapUnit.x=100;
+					
+					frapUnitFrame.y=0;
+					frapUnitGetChan.y=30;
+					frapUnitGetROI.y=60;
+
+					frapUnitShowLifetime.x=200;
+					frapUnitShowMobile.x=200;
+					frapUnitShowMobile.y=30;
+					
+					EvOpCalcFRAP calc=new EvOpCalcFRAP(imset.getChannel("ch"), roi, EvDecimal.ZERO, EvDecimal.ZERO, "ch");
+					System.out.println("lifetime "+calc.lifetime);
+					System.out.println("initial conc "+calc.initialConcentration);
+					System.out.println("mob frac "+calc.mobileFraction);
+					System.out.println("curve "+calc.recoveryCurve);
+
+					imset.metaObject.put("roi",roi.cloneBySerialize());
+					imset.metaObject.put("flow",flow);
+					
+					BasicWindow.updateWindows();
 					}
 			
+
 				}
 			while(false);
+		
+		
+		
+		
 		
 			
 			//System.out.println("---------stop-----------");
