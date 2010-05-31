@@ -304,11 +304,11 @@ public class EvFRAPAcquisition extends EvObject
 					frapUnitShowMobile.y=30;
 					frapUnitShowSeries.y=60;
 
-					EvOpCalcFRAP calc=new EvOpCalcFRAP(imset.getChannel("ch"), roi, EvDecimal.ZERO, EvDecimal.ZERO, "ch");
+					/*EvOpCalcFRAP calc=new EvOpCalcFRAP(imset.getChannel("ch"), roi, EvDecimal.ZERO, EvDecimal.ZERO, "ch");
 					System.out.println("lifetime "+calc.lifetime);
 					System.out.println("initial conc "+calc.initialConcentration);
 					System.out.println("mob frac "+calc.mobileFraction);
-					System.out.println("curve "+calc.recoveryCurve);
+					System.out.println("curve "+calc.recoveryCurve);*/
 
 					imset.metaObject.put("roi",roi.cloneBySerialize());
 					imset.metaObject.put("flow",flow);
@@ -346,6 +346,7 @@ public class EvFRAPAcquisition extends EvObject
 				}
 			}
 		
+			
 		private void snapOneImage(Imageset imset, HWImageScanner cam, EvDecimal curFrame)
 			{
 			CameraImage camIm=cam.snap();
