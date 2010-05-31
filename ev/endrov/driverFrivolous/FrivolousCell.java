@@ -178,18 +178,18 @@ public class FrivolousCell
 			FrivolousComplexArray output_fft = FrivolousComplexLib.getComplexMultiplication(input_fft, psf_fft);
 
 			timer.show("Complex mult");
-			output_array = fft.backward(output_fft);
+			output_array = FrivolousComplexLib.getCrop(fft.backward(output_fft),imageWidth,imageHeight,256,256);
 			
 			timer.show("iFFT");
 			}
 		else
 			{
-			output_array = crop_array;
+			output_array = FrivolousComplexLib.getCrop(crop_array,imageWidth,imageHeight,256,256);
 			}
 
 		//FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,imageWidth,imageHeight,256,256), settings);
 		if(simulateNoise)
-			output_array = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,imageWidth,imageHeight,256,256), settings);
+			output_array = FrivolousUtility.addRealNoise(output_array, settings);
 
 		timer.show("Poisson noise");
 		
