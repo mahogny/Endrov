@@ -157,9 +157,9 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 						new JLabel("Object name"),
 						tStoreName,
 						bStartStop
-						),
+						)//,
 				
-				labelStatus
+				//labelStatus
 				
 				),
 				BorderLayout.CENTER);
