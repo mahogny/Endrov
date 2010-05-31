@@ -18,7 +18,6 @@ import endrov.flow.FlowExec;
 import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
-import endrov.imageset.AnyEvImage;
 import endrov.imageset.EvChannel;
 import endrov.roi.ROI;
 
@@ -63,6 +62,7 @@ public class FlowUnitCalcFRAP extends FlowUnitBasic
 		{
 		types.put("lifetime", FlowType.TDOUBLE); 
 		types.put("mobile", FlowType.TDOUBLE);
+		types.put("series", new FlowType(double[][].class));
 		}
 	
 	/** Execute algorithm */
@@ -77,8 +77,19 @@ public class FlowUnitCalcFRAP extends FlowUnitBasic
 		
 		EvOpCalcFRAP calc=new EvOpCalcFRAP(ch,roi,t1,t2,"foo");
 		
+		double[][] series=new double[2][calc.recoveryCurve.size()];
+		int i=0;
+		for(Map.Entry<Double, Double> e:calc.recoveryCurve.entrySet())
+			{
+			series[0][i]=e.getKey();
+			series[1][i]=e.getValue();
+			System.out.println(">>>> "+series[0][i]+"   "+series[1][i]);
+			i++;
+			}
+		
 		lastOutput.put("lifetime", calc.lifetime);
 		lastOutput.put("mobile", calc.mobileFraction);
+		lastOutput.put("series", series);
 		}
 
 	
