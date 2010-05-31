@@ -300,7 +300,7 @@ public class BoxROI extends ROI
 		regionX.all=false;
 		regionY.all=false;
 		regionChannels.add(chan);
-		regionFrames.set(frame);
+		//regionFrames.set(frame);
 		regionZ.set(z);
 		}
 	

@@ -55,8 +55,9 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 	private class FrivolousCamera implements HWImageScanner
 		{
 		//Properties
-		private double expTime=0.003;
+		private double expTime=0.001;
 		private boolean simulatePSF=true;
+		private boolean simulateNoise=true;
 		
 		//
 		private LinkedList<CameraImage> seqBuffer=new LinkedList<CameraImage>();
@@ -104,6 +105,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			p.put("Wavelength", ""+model.getSettings().lambda);
 			p.put("Exposure", ""+expTime);
 			p.put("SimulatePSF", simulatePSF?"1":"0");
+			p.put("SimulateNoise", simulatePSF?"1":"0");
 			return p;
 			}
 
@@ -134,7 +136,12 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			p = new DevicePropertyType();
 			p.isBoolean=true;
 			pt.put("SimulatePSF", p);
-			
+
+			// Simulate noise
+			p = new DevicePropertyType();
+			p.isBoolean=true;
+			pt.put("SimulateNoise", p);
+
 			return pt;
 			}
 
@@ -148,6 +155,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				return ""+expTime;
 			else if (prop.equals("SimulatePSF"))
 				return simulatePSF?"1":"0";
+			else if (prop.equals("SimulateNoise"))
+				return simulateNoise?"1":"0";
 			return getPropertyMap().get(prop);
 			}
 
@@ -155,6 +164,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			if (prop.equals("SimulatePSF"))
 				return simulatePSF;
+			else if (prop.equals("SimulateNoise"))
+				return simulateNoise;
 			return null;
 			}
 
@@ -173,6 +184,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				expTime=Double.parseDouble(value);
 			else if (prop.equals("SimulatePSF"))
 				simulatePSF=value.equals("1");
+			else if (prop.equals("SimulateNoise"))
+				simulateNoise=value.equals("1");
 			System.out.println(prop+" "+value);
 			}
 		
@@ -207,7 +220,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			int stagePosPixelsX=(int)(stagePos[0]/getRes());
 			int stagePosPixelsY=(int)(stagePos[1]/getRes());
 			
-			model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF);
+			model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF, simulateNoise);
 			int[]/*BufferedImage*/ im = model.getImage();
 			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 4, im, 1);
 			return cim;
@@ -221,7 +234,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(width, height, 0, 0, (float)getBleachFactor());
-
+			model.cell.bleachImmobile(width, height, 0, 0, (float)getBleachFactor());
 			waitInTotal(startTime, expTime);
 			return cim;
 			}
@@ -338,7 +351,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(width, height, 0, 0, (float)getBleachFactor());
-			
+			model.cell.bleachImmobile(width, height, 0, 0, (float)getBleachFactor());
 			waitInTotal(startTime, expTime);
 			}
 
@@ -359,7 +372,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			//Bleach only the ROI
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(roi, width, height, 0, 0, (float)getBleachFactor()); 
-			
+			model.cell.bleachImmobile(roi, width, height, 0, 0, (float)getBleachFactor()); 
 			waitInTotal(startTime, expTime);
 			}
 

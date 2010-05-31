@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
@@ -217,34 +218,41 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	public void mouseDragged(MouseEvent e)
 		{
 		boolean move = true;
-		for(JToggleButton b:toolButtons)
-			if(b.isSelected()) move = false;
+//		for(JToggleButton b:toolButtons)
+//			if(b.isSelected()) move = false;
 		int dx=e.getX()-lastMousePosition.x;
 		int dy=e.getY()-lastMousePosition.y;
 		lastMousePosition=new Vector2i(e.getX(),e.getY());
-		
-		double resMagX = 1; //[um/px]
-		double resMagY = 1;
-		boolean foundCamera=false;
-		for(Map.Entry<EvDevicePath,HWCamera> cams:EvHardware.getDeviceMapCast(HWCamera.class).entrySet())
+	
+		if(SwingUtilities.isLeftMouseButton(e))
 			{
-			HWCamera camera = cams.getValue();
-			resMagX=resMagY=RecordingResource.getCurrentTotalMagnification(camera);
-			foundCamera=true;
-			break;
+			//Left mouse button is for the tool
+			if(currentTool!=null)
+				currentTool.mouseDragged(e, dx, dy);
 			}
-		if(!foundCamera)
-			System.out.println("no camera to move");
-		
-		//TODO update manual view
-		if(move)
+		else if(SwingUtilities.isRightMouseButton(e))
 			{
-			moveAxis("x", dx*resMagX);
-			moveAxis("y", dy*resMagY);
+			double resMagX = 1; //[um/px]
+			double resMagY = 1;
+			boolean foundCamera=false;
+			for(Map.Entry<EvDevicePath,HWCamera> cams:EvHardware.getDeviceMapCast(HWCamera.class).entrySet())
+				{
+				HWCamera camera = cams.getValue();
+				resMagX=resMagY=RecordingResource.getCurrentTotalMagnification(camera);
+				foundCamera=true;
+				break;
+				}
+			if(!foundCamera)
+				System.out.println("no camera to move");
+			
+			//TODO update manual view
+			if(move)
+				{
+				moveAxis("x", dx*resMagX);
+				moveAxis("y", dy*resMagY);
+				}
 			}
 		
-		if(currentTool!=null)
-			currentTool.mouseDragged(e, dx, dy);
 		}
 	public void mouseMoved(MouseEvent e)
 		{
