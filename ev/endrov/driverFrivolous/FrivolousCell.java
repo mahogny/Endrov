@@ -25,7 +25,7 @@ public class FrivolousCell
 	{
 
 	
-	private FrivolousComplexArray immobile_sum_array, psf_fft, output_array;
+	private FrivolousComplexArray /*immobile_sum_array,*/ psf_fft, output_array;
 	private FrivolousComplexArray[] immobile_arrays, mobile_arrays;
 	public FrivolousDiffusion[] diffusers;
 	private FrivolousSettingsNew settings;
@@ -35,8 +35,8 @@ public class FrivolousCell
 
 	public FrivolousCell(File path)
 		{
-		w = 512;
-		h = 512;
+		//w = 512;
+		//h = 512;
 		File fSettings=new File(path, "settings.xml");
 		Document document;
 		List<Element> staticlayers=new LinkedList<Element>();
@@ -81,8 +81,9 @@ public class FrivolousCell
 			immobile_arrays[i] = new FrivolousComplexArray(FrivolousUtility.getColorArray(
 					layer_image, FrivolousUtility.COLOR_RED), null, layer_image.getWidth(), layer_image.getHeight());
 			i++;
+			w=layer_image.getWidth();
 			}
-		immobile_sum_array = FrivolousComplexLib.getRealSum(immobile_arrays);
+//		immobile_sum_array = FrivolousComplexLib.getRealSum(immobile_arrays);
 
 		i = 0;
 		for (Element e : mobilelayers)
@@ -149,7 +150,7 @@ public class FrivolousCell
 		}
 
 	
-	public int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight, boolean simulatePSF)
+	public int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight, boolean simulatePSF, boolean simulateNoise)
 		{
 
 		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
@@ -163,6 +164,7 @@ public class FrivolousCell
 
 		timer.show("Mobile arrays calculated");
 
+		FrivolousComplexArray immobile_sum_array = FrivolousComplexLib.getRealSum(immobile_arrays);
 		FrivolousComplexArray total_array = FrivolousComplexLib.getRealAddition(diffused_sum_array,	immobile_sum_array);
 		
 		FrivolousComplexArray crop_array = FrivolousComplexLib.getCrop(total_array,1024,1024,512-((int)(offsetX+0.5)),512-((int)(offsetY+0.5)));
@@ -185,19 +187,57 @@ public class FrivolousCell
 			output_array = crop_array;
 			}
 
-		FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,imageWidth,imageHeight,256,256),
-				settings);
+		//FrivolousComplexArray output_noise = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,imageWidth,imageHeight,256,256), settings);
+		if(simulateNoise)
+			output_array = FrivolousUtility.addRealNoise(FrivolousComplexLib.getCrop(output_array,imageWidth,imageHeight,256,256), settings);
 
 		timer.show("Poisson noise");
 		
+		int[] retarr=new int[output_array.real.length];
+		for(int i=0;i<output_array.real.length;i++)
+			retarr[i]=(int)output_array.real[i];
+
+		/*
 		int[] retarr=new int[output_noise.real.length];
 		for(int i=0;i<output_noise.real.length;i++)
 			retarr[i]=(int)output_noise.real[i];
+		*/
 		
 		return retarr;
 		//return FrivolousUtility.getImageFromComplex(output_noise, false);
 		}
 
+	/**
+	 * Bleach an arbitrary ROI
+	 */
+	public synchronized void bleachImmobile(int[] roi, int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
+		{
+		offsetX+=768;//temp
+		offsetY+=768; 
+//		System.out.println("bleach factor roi immobile 1 "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+w);
+		for(int y=0;y<roiHeight;y++)
+			for(int x=0;x<roiWidth;x++)
+				if(roi[x+y*roiWidth]!=0) 
+					for(FrivolousComplexArray c:immobile_arrays)
+						c.real[(x+offsetX) + (y+offsetY)*w] *= bleachFactor;
+		
+		}
+
+	/**
+	 * Bleach a square ROI - typically the area the camera focuses on
+	 */
+	public synchronized void bleachImmobile(int roiWidth, int roiHeight, int offsetX, int offsetY, float bleachFactor)
+		{
+		offsetX+=768;//temp
+		offsetY+=768; 
+//		System.out.println("bleach factor immobile 2 "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+w);
+		for(int y=0;y<roiHeight;y++)
+			for(int x=0;x<roiWidth;x++)
+				for(FrivolousComplexArray c:immobile_arrays)
+					c.real[(x+offsetX) + (y+offsetY)*w] *= bleachFactor;
+		}
+
+	
 	public FrivolousSettingsNew getSettings()
 		{
 		return settings;

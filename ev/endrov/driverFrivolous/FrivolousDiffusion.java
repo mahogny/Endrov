@@ -229,7 +229,7 @@ class FrivolousDiffusion implements Runnable
 		{
 		offsetX+=768;//temp
 		offsetY+=768; 
-		System.out.println("bleach factor roi "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
+//		System.out.println("bleach factor roi "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
 		for(int y=0;y<roiHeight;y++)
 			for(int x=0;x<roiWidth;x++)
 				if(roi[x+y*roiWidth]!=0) //temp TODO
@@ -243,7 +243,7 @@ class FrivolousDiffusion implements Runnable
 		{
 		offsetX+=768;//temp
 		offsetY+=768; 
-		System.out.println("bleach factor "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
+//		System.out.println("bleach factor "+bleachFactor+"   "+roiWidth+" "+roiHeight+" "+offsetX+"  "+offsetY+" "+width);
 		for(int y=0;y<roiHeight;y++)
 			for(int x=0;x<roiWidth;x++)
 				diffusion[(x+offsetX) + (y+offsetY)*width] *= bleachFactor;

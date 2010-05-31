@@ -223,8 +223,6 @@ public class EvFRAPAcquisition extends EvObject
 					
 					try
 						{
-						
-						
 						//Acquire image before bleaching
 						snapOneImage(imset, cam, curFrame);
 						BasicWindow.updateWindows();
@@ -274,15 +272,16 @@ public class EvFRAPAcquisition extends EvObject
 					FlowUnitObjectIO frapUnitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
 					FlowUnitObjectIO frapUnitGetROI=new FlowUnitObjectIO(new EvPath("roi"));
 					FlowUnitConstEvDecimal frapUnitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
-
 					FlowUnitShow frapUnitShowLifetime=new FlowUnitShow();
 					FlowUnitShow frapUnitShowMobile=new FlowUnitShow();
+					FlowUnitShowGraph frapUnitShowSeries=new FlowUnitShowGraph();
 					
 					flow.units.add(frapUnitGetChan);
-					flow.units.add(frapUnitGetChan);
+					flow.units.add(frapUnitGetROI);
 					flow.units.add(frapUnitFrame);
 					flow.units.add(frapUnitShowLifetime);
 					flow.units.add(frapUnitShowMobile);
+					flow.units.add(frapUnitShowSeries);
 
 					flow.conns.add(new FlowConn(frapUnitGetChan,"out",frapUnit,"ch"));
 					flow.conns.add(new FlowConn(frapUnitGetROI,"out",frapUnit,"roi"));
@@ -290,17 +289,21 @@ public class EvFRAPAcquisition extends EvObject
 					flow.conns.add(new FlowConn(frapUnitFrame,"out",frapUnit,"t2"));
 					flow.conns.add(new FlowConn(frapUnit,"lifetime",frapUnitShowLifetime,"in"));
 					flow.conns.add(new FlowConn(frapUnit,"mobile",frapUnitShowMobile,"in"));
+					flow.conns.add(new FlowConn(frapUnit,"series",frapUnitShowSeries,"in"));
 					
 					frapUnit.x=100;
 					
 					frapUnitFrame.y=0;
-					frapUnitGetChan.y=30;
-					frapUnitGetROI.y=60;
+					frapUnitGetROI.y=30;
+					frapUnitGetChan.y=60;
 
-					frapUnitShowLifetime.x=200;
-					frapUnitShowMobile.x=200;
-					frapUnitShowMobile.y=30;
+					frapUnitShowLifetime.x=300;
+					frapUnitShowMobile.x=300;
+					frapUnitShowSeries.x=300;
 					
+					frapUnitShowMobile.y=30;
+					frapUnitShowSeries.y=60;
+
 					EvOpCalcFRAP calc=new EvOpCalcFRAP(imset.getChannel("ch"), roi, EvDecimal.ZERO, EvDecimal.ZERO, "ch");
 					System.out.println("lifetime "+calc.lifetime);
 					System.out.println("initial conc "+calc.initialConcentration);

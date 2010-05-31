@@ -12,23 +12,51 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import endrov.util.EvDecimal;
 
-
 /**
- * Editor for EvDecimal spinners 
+ * Editor for EvDecimal spinners
+ * 
  * @author Johan Henriksson
- */	
+ */
 public class EvDecimalEditor extends JTextField
 	{
-	static final long serialVersionUID=0;
+	static final long serialVersionUID = 0;
+
 	public EvDecimalEditor(final JSpinner sp)
 		{
 		addActionListener(new ActionListener()
-			{public void actionPerformed(ActionEvent e){sp.getModel().setValue(Integer.parseInt(getText()));}});
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				sp.getModel().setValue(Integer.parseInt(getText()));
+				}
+			});
+		getDocument().addDocumentListener(new DocumentListener()
+			{
+			public void removeUpdate(DocumentEvent arg0)
+				{
+				sp.getModel().setValue(Integer.parseInt(getText()));
+				}
+			public void insertUpdate(DocumentEvent arg0)
+				{
+				sp.getModel().setValue(Integer.parseInt(getText()));
+				}
+			public void changedUpdate(DocumentEvent arg0)
+				{
+				sp.getModel().setValue(Integer.parseInt(getText()));
+				}
+			});
 		sp.getModel().addChangeListener(new ChangeListener()
-			{public void stateChanged(ChangeEvent e){setText(""+(EvDecimal)sp.getModel().getValue());}});
-		setText(""+(EvDecimal)sp.getModel().getValue());
+			{
+			public void stateChanged(ChangeEvent e)
+				{
+				setText(""+(EvDecimal) sp.getModel().getValue());
+				}
+			});
+		setText(""+(EvDecimal) sp.getModel().getValue());
 		}
 	}
