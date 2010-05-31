@@ -29,36 +29,43 @@ public class EvOpCalcFRAP
 	
 	public EvOpCalcFRAP(EvChannel ch, ROI roi, Number before, Number after, String channelName)
 		{
+		TreeMap<Double,Double> startOfCurve=new TreeMap<Double, Double>();
+		TreeMap<Double,Double> endOfCurve=new TreeMap<Double, Double>();
+		
 		//Collect curve
 		initialConcentration=0;
 		int framesBeforeCount=0;
 		for(EvDecimal f:ch.imageLoader.keySet())
 			if(f.doubleValue()<=before.doubleValue())
 				{
-				initialConcentration+=levelFromStack(ch.imageLoader.get(f), roi, channelName, f);
+				double sum=levelFromStack(ch.imageLoader.get(f), roi, channelName, f);
+				initialConcentration+=sum;
 				framesBeforeCount++;
+				startOfCurve.put(f.doubleValue(), sum);
 				}
 			else if(f.doubleValue()>after.doubleValue())
 				{
 				double sum=levelFromStack(ch.imageLoader.get(f), roi, channelName, f);
-				recoveryCurve.put(f.doubleValue(), sum);
+				endOfCurve.put(f.doubleValue(), sum);
 				}
 		initialConcentration/=framesBeforeCount;
 		
 
 		//Fit parameters
-		double minAfterFit=recoveryCurve.get(recoveryCurve.firstKey());
-		double maxAfterFit=recoveryCurve.get(recoveryCurve.lastKey());
+		double minAfterFit=endOfCurve.get(endOfCurve.firstKey());
+		double maxAfterFit=endOfCurve.get(endOfCurve.lastKey());
 
 		//Mobile fraction
 		mobileFraction=(maxAfterFit-minAfterFit)/(initialConcentration-minAfterFit);
+		
+		System.out.println("mobile "+mobileFraction);
 		
 		//Life-time
 		//y=a(1-exp(-t/tau)) + c
 		//From here I derived a condition on the half recovered concentration
 		double halfValue=(maxAfterFit+minAfterFit)/2;
 		double halfPos=0;
-		for(Map.Entry<Double, Double> e:recoveryCurve.entrySet())
+		for(Map.Entry<Double, Double> e:endOfCurve.entrySet())
 			if(e.getValue()>halfValue)
 				{
 				halfPos=e.getKey();
@@ -66,7 +73,16 @@ public class EvOpCalcFRAP
 				}
 		lifetime=-halfPos/Math.log(0.5);
 		
+		//Join with first values for presentation
+//		recoveryCurve.putAll(startOfCurve);
+		this.recoveryCurve.clear();
+		for(Map.Entry<Double, Double> e:endOfCurve.entrySet())
+			this.recoveryCurve.put(e.getKey(), e.getValue()-minAfterFit);
+		for(Map.Entry<Double, Double> e:startOfCurve.entrySet())
+			this.recoveryCurve.put(e.getKey(), e.getValue()-minAfterFit);
 		
+		
+		System.out.println(endOfCurve);
 		}
 	
 	
