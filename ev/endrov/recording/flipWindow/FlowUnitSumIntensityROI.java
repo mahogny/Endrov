@@ -23,14 +23,14 @@ import endrov.recording.CategoryInfo;
 import endrov.roi.ROI;
 
 /**
- * Flow unit: Calculate FRAP values
+ * Flow unit: Calculate sum of intensity in ROI for each time point
  * @author Johan Henriksson
  *
  */
-public class FlowUnitCalcFLIP extends FlowUnitBasic
+public class FlowUnitSumIntensityROI extends FlowUnitBasic
 	{
-	public static final String showName="Calculate FRAP";
-	private static final String metaType="calcFRAP";
+	public static final String showName="Sum intensity";
+	private static final String metaType="sumIntensity";
 	
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -38,8 +38,8 @@ public class FlowUnitCalcFLIP extends FlowUnitBasic
 	public static void initPlugin() {}
 	static
 		{
-		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitCalcFLIP.class, null,
-				"Calculate parameters from a FRAP experiment"));
+		Flow.addUnitType(new FlowUnitDeclaration(CategoryInfo.name,showName,metaType,FlowUnitSumIntensityROI.class, null,
+				"Sum intensity in a ROI for each time point"));
 		}
 	
 	public String toXML(Element e){return metaType;}
@@ -53,16 +53,12 @@ public class FlowUnitCalcFLIP extends FlowUnitBasic
 		{
 		types.put("ch", FlowType.TEVCHANNEL);
 		types.put("roi", FlowType.TROI);
-		types.put("t1", FlowType.TNUMBER);
-		types.put("t2", FlowType.TNUMBER);
 		
 		}
 	
 	/** Get types of flows out */
 	protected void getTypesOut(Map<String, FlowType> types, Flow flow)
 		{
-		types.put("lifetime", FlowType.TDOUBLE); 
-		types.put("mobile", FlowType.TDOUBLE);
 		types.put("series", new FlowType(double[][].class));
 		}
 	
@@ -73,10 +69,8 @@ public class FlowUnitCalcFLIP extends FlowUnitBasic
 		
 		EvChannel ch=(EvChannel)flow.getInputValue(this, exec, "ch");
 		ROI roi=(ROI)flow.getInputValue(this, exec, "roi");
-		Number t1=(Number)flow.getInputValue(this, exec, "t1");
-		Number t2=(Number)flow.getInputValue(this, exec, "t2");
 		
-		EvOpCalcFLIP calc=new EvOpCalcFLIP(ch,roi,t1,t2,"foo");
+		EvOpSumIntensityROI calc=new EvOpSumIntensityROI(ch,roi);
 		
 		double[][] series=new double[2][calc.recoveryCurve.size()];
 		int i=0;
@@ -88,8 +82,6 @@ public class FlowUnitCalcFLIP extends FlowUnitBasic
 			i++;
 			}
 		
-		lastOutput.put("lifetime", calc.lifetime);
-		lastOutput.put("mobile", calc.mobileFraction);
 		lastOutput.put("series", series);
 		}
 
