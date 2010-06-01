@@ -1,4 +1,4 @@
-package endrov.recording.frapWindow;
+package endrov.recording.flipWindow;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,6 +26,7 @@ import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
+import endrov.recording.frapWindow.FlowUnitShowGraph;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 
@@ -35,7 +36,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class EvFRAPAcquisition extends EvObject
+public class EvFLIPAcquisition extends EvObject
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -144,7 +145,7 @@ public class EvFRAPAcquisition extends EvObject
 	 */
 	public class AcqThread extends Thread
 		{
-		private EvFRAPAcquisition settings;
+		private EvFLIPAcquisition settings;
 		private boolean toStop=true;
 
 		
@@ -158,7 +159,7 @@ public class EvFRAPAcquisition extends EvObject
 			toStop=true;
 			}
 		
-		private AcqThread(EvFRAPAcquisition settings)
+		private AcqThread(EvFLIPAcquisition settings)
 			{
 			this.settings=settings;
 			}
@@ -243,7 +244,7 @@ public class EvFRAPAcquisition extends EvObject
 					////// Build flow to analyze this experiment
 					Flow flow=new Flow();
 					
-					FlowUnitCalcFRAP frapUnit=new FlowUnitCalcFRAP();
+					FlowUnitCalcFLIP frapUnit=new FlowUnitCalcFLIP();
 					flow.units.add(frapUnit);
 					
 					FlowUnitObjectIO frapUnitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
@@ -420,7 +421,7 @@ public class EvFRAPAcquisition extends EvObject
 	public static void initPlugin() {}
 	static
 		{
-		EvData.supportedMetadataFormats.put(metaType,EvFRAPAcquisition.class);
+		EvData.supportedMetadataFormats.put(metaType,EvFLIPAcquisition.class);
 		}
 	
 	}

@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.frapWindow;
+package endrov.recording.flipWindow;
 
 
 import java.awt.BorderLayout;
@@ -28,7 +28,7 @@ import endrov.util.EvSwingUtil;
  * FRAP acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAPAcquisition.Listener
+public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIPAcquisition.Listener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -40,8 +40,8 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
 
-	private EvFRAPAcquisition acq=new EvFRAPAcquisition();
-	private EvFRAPAcquisition.AcqThread thread;
+	private EvFLIPAcquisition acq=new EvFLIPAcquisition();
+	private EvFLIPAcquisition.AcqThread thread;
 	
 	private EvComboObject objectCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
@@ -65,12 +65,12 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	private JTextField tStoreName=new JTextField("frap");
 
 	
-	public RecWindowFRAP()
+	public RecWindowFLIP()
 		{
 		this(new Rectangle(300,120));
 		}
 	
-	public RecWindowFRAP(Rectangle bounds)
+	public RecWindowFLIP(Rectangle bounds)
 		{
 		
 		roiCombo.setRoot(RecordingResource.getData());
@@ -222,7 +222,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	
 	public static void main(String[] args)
 		{
-		new RecWindowFRAP();
+		new RecWindowFLIP();
 		
 		}
 
@@ -257,7 +257,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	
 				public void actionPerformed(ActionEvent e) 
 					{
-					new RecWindowFRAP();
+					new RecWindowFLIP();
 					}
 	
 				public void buildMenu(BasicWindow w){}

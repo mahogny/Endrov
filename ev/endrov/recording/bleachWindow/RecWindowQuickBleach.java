@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.frapWindow;
+package endrov.recording.bleachWindow;
 
 
 import java.awt.BorderLayout;
@@ -25,33 +25,23 @@ import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
 /**
- * FRAP acquisition
+ * Just bleach an area
  * @author Johan Henriksson 
  */
-public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAPAcquisition.Listener
+public class RecWindowQuickBleach extends BasicWindow implements ActionListener, QuickBleach.Listener
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	private JButton bStartStop=new JButton("Start");
-	private SpinnerSimpleEvDecimal spRecoveryTime=new SpinnerSimpleEvDecimal();
-	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
-	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
-
-	private EvFRAPAcquisition acq=new EvFRAPAcquisition();
-	private EvFRAPAcquisition.AcqThread thread;
 	
-	private EvComboObject objectCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
-		{
-		private static final long serialVersionUID = 1L;
-		public boolean includeObject(EvContainer cont)
-			{
-			return cont instanceof EvContainer;
-			}
-		};
+	private JButton bStartStop=new JButton("Start");
+	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
 
+	private QuickBleach acq=new QuickBleach();
+	private QuickBleach.AcqThread thread;
+	
 		
 	private EvComboObject roiCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
@@ -62,52 +52,24 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 			}
 		};
 	
-	private JTextField tStoreName=new JTextField("frap");
-
-	
-	public RecWindowFRAP()
+	public RecWindowQuickBleach()
 		{
 		this(new Rectangle(300,120));
 		}
 	
-	public RecWindowFRAP(Rectangle bounds)
+	public RecWindowQuickBleach(Rectangle bounds)
 		{
 		
 		roiCombo.setRoot(RecordingResource.getData());
 		
 		acq.addListener(this);
 		
-		//cDuration.setToolTipText("Limit duration or run indefinetely");
-		
-		spRecoveryTime.setDecimalValue(new EvDecimal(10));
-		spRate.setDecimalValue(new EvDecimal(1));
 		spBleachTime.setDecimalValue(new EvDecimal(1));
-//		spExpTime.setDecimalValue(new EvDecimal(100));
-		
-		///////////////// Acquire ///////////////////////////////////////
-
-		
-		
-		//Create new data
-		//Select root
-		//Select name of channel - only if not RGB
-		
-		
-			
-		//tChannelName.setToolTipText("Name of channel - Used as a prefix if the camera does RGB");
-		
+	
 		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
-				
-				//Camera
-				//ROI
-				//Bleach time
-				//Tot time
-				//Interval
-				
-				
 				
 				EvSwingUtil.layoutLCR(
 						new JLabel("ROI"),
@@ -119,34 +81,7 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 						new JLabel("Bleach time"),
 						spBleachTime,
 						new JLabel("s")
-						),
-
-				EvSwingUtil.layoutLCR(
-						new JLabel("Recovery time"),
-						spRecoveryTime,
-						new JLabel("s")
-						),
-
-				EvSwingUtil.layoutLCR(
-						new JLabel("Sampling intervals"),
-						spRate,
-						new JLabel("s")
-						),
-
-				EvSwingUtil.layoutLCR(
-						new JLabel("Store in"),
-						objectCombo,
-						new JLabel("ms")
-						),
-
-				
-				EvSwingUtil.layoutLCR(
-						new JLabel("Object name"),
-						tStoreName,
-						bStartStop
-						)//,
-				
-				//labelStatus
+						)
 				
 				),
 				BorderLayout.CENTER);
@@ -157,57 +92,34 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 		setTitleEvWindow("FRAP acquisition");
 		packEvWindow();
 		setVisibleEvWindow(true);
-		//setBoundsEvWindow(bounds);
 		}
 	
 	
 	public void actionPerformed(ActionEvent e)
 		{
-		
 		if(e.getSource()==bStartStop)
 			{
 			if(thread!=null)
 				{
 				thread.tryStop();
-				//System.out.println("----stopping acquisition----");
 				}
 			else
 				{
 				bStartStop.setText("Stop");
 				
 				acq.setBleachTime(spBleachTime.getDecimalValue());
-				acq.setContainer(objectCombo.getSelectedObject());
-				acq.setContainerStoreName(tStoreName.getText());
-				//acq.setExpTime(spExpTime.getDecimalValue());
-				acq.setRate(spRate.getDecimalValue());
-				acq.setRecoveryTime(spRecoveryTime.getDecimalValue());
 				acq.setRoi((ROI)roiCombo.getSelectedObject());
 				
 				thread=acq.startAcquisition();
 
 				}
-			
 			}
-			
-		
 		}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	public void dataChangedEvent()
 		{
 		roiCombo.updateList();
-		objectCombo.updateList();
 		}
 
 	public void loadedFile(EvData data){}
@@ -220,14 +132,6 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 		{
 		}
 	
-	public static void main(String[] args)
-		{
-		new RecWindowFRAP();
-		
-		}
-
-	
-
 	public void acqStopped()
 		{
 		bStartStop.setText("Start");
@@ -250,14 +154,14 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("FRAP acquisition",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("Quick bleach",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}
 	
 				public void actionPerformed(ActionEvent e) 
 					{
-					new RecWindowFRAP();
+					new RecWindowQuickBleach();
 					}
 	
 				public void buildMenu(BasicWindow w){}
