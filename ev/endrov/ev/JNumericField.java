@@ -93,6 +93,18 @@ public class JNumericField extends JTextField
 			}
 		}
 	
+	public Double getDouble()
+		{
+		try
+			{
+			return Double.parseDouble(getText());
+			}
+		catch (NumberFormatException e)
+			{
+			return null;
+			}
+		}
+	
 	public void set(int val)
 		{
 		setText(""+val);

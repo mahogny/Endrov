@@ -28,6 +28,7 @@ import endrov.flow.FlowType;
 import endrov.flow.FlowUnitBasic;
 import endrov.flow.FlowUnitDeclaration;
 import endrov.flow.ui.FlowPanel;
+import endrov.recording.CategoryInfo;
 
 /**
  * Flow unit: show graph

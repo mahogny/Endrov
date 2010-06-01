@@ -176,6 +176,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		public void setPropertyValue(String prop, String value)
 			{
+//			System.out.println("set friv prop "+prop+" = "+value);
 			if (prop.equals("Numerical Aperture"))
 				model.getSettings().na = Double.parseDouble(value);
 			else if (prop.equals("Wavelength"))
@@ -186,7 +187,6 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 				simulatePSF=value.equals("1");
 			else if (prop.equals("SimulateNoise"))
 				simulateNoise=value.equals("1");
-			System.out.println(prop+" "+value);
 			}
 		
 		//[um/px]
@@ -220,8 +220,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			int stagePosPixelsX=(int)(stagePos[0]/getRes());
 			int stagePosPixelsY=(int)(stagePos[1]/getRes());
 			
-			model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF, simulateNoise);
-			int[]/*BufferedImage*/ im = model.getImage();
+			int[] im = model.convolve(stagePosPixelsX, stagePosPixelsY, simulatePSF, simulateNoise);
+			//int[]/*BufferedImage*/ im = model.getImage();
 			CameraImage cim = new CameraImage(model.imageWidth, model.imageHeight, 4, im, 1);
 			return cim;
 			}
