@@ -5,9 +5,6 @@
  */
 package endrov.driverFrivolous;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import endrov.util.EvFileUtil;
 
 
@@ -16,19 +13,13 @@ import endrov.util.EvFileUtil;
  */
 public class FrivolousModel
 	{
-
-//	private ActionListener model_action;
-	//private BufferedImage output_image = null;
-	//private int[] output_image = null;
 	public FrivolousCell cell;
 
 	public FrivolousModel()
 		{
-		//cell = new FrivolousCell(new File(FrivolousDeviceProvider.class.getResource("data").getFile()));
 		try
 			{
 			cell = new FrivolousCell(EvFileUtil.getFileFromURL(FrivolousDeviceProvider.class.getResource("data").toURI().toURL()));
-//			convolve(0,0, true, true);
 			}
 		catch (Exception e)
 			{
@@ -42,21 +33,7 @@ public class FrivolousModel
 	public int[] convolve(int offsetX, int offsetY, boolean simulatePSF, boolean simulateNoise)
 		{
 		return cell.getImage(offsetX, offsetY, imageWidth, imageHeight, simulatePSF, simulateNoise);
-//		if (model_action!=null)
-//			model_action.actionPerformed(new ActionEvent(this, 0, "image_updated"));
 		}
-
-	/*
-	public int[] getImage()
-		{
-		return output_image;
-		}
-		*/
-/*
-	public void setActionListener(ActionListener listener)
-		{
-		model_action = listener;
-		}*/
 
 	public FrivolousSettingsNew getSettings()
 		{

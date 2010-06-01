@@ -36,12 +36,14 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 	static final long serialVersionUID=0;
 
 	private JButton bStartStop=new JButton("Start");
-	private SpinnerSimpleEvDecimal spRecoveryTime=new SpinnerSimpleEvDecimal();
+	private SpinnerSimpleEvDecimal spNumRepeats=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
 
 	private EvFLIPAcquisition acq=new EvFLIPAcquisition();
 	private EvFLIPAcquisition.AcqThread thread;
+	
+	private JLabel labelStatus=new JLabel(" ");
 	
 	private EvComboObject objectCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
@@ -51,9 +53,8 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 			return cont instanceof EvContainer;
 			}
 		};
-
 		
-	private EvComboObject roiCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
+	private EvComboObject roiBleachCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
 		private static final long serialVersionUID = 1L;
 		public boolean includeObject(EvContainer cont)
@@ -61,8 +62,17 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 			return cont instanceof ROI;
 			}
 		};
-	
-	private JTextField tStoreName=new JTextField("frap");
+
+	private EvComboObject roiObserveCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
+		{
+		private static final long serialVersionUID = 1L;
+		public boolean includeObject(EvContainer cont)
+			{
+			return cont instanceof ROI;
+			}
+		};
+
+	private JTextField tStoreName=new JTextField("flip");
 
 	
 	public RecWindowFLIP()
@@ -73,45 +83,30 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 	public RecWindowFLIP(Rectangle bounds)
 		{
 		
-		roiCombo.setRoot(RecordingResource.getData());
+		roiBleachCombo.setRoot(RecordingResource.getData());
+		roiObserveCombo.setRoot(RecordingResource.getData());
 		
 		acq.addListener(this);
 		
 		//cDuration.setToolTipText("Limit duration or run indefinetely");
 		
-		spRecoveryTime.setDecimalValue(new EvDecimal(10));
-		spRate.setDecimalValue(new EvDecimal(1));
-		spBleachTime.setDecimalValue(new EvDecimal(1));
-//		spExpTime.setDecimalValue(new EvDecimal(100));
-		
-		///////////////// Acquire ///////////////////////////////////////
-
-		
-		
-		//Create new data
-		//Select root
-		//Select name of channel - only if not RGB
-		
-		
-			
-		//tChannelName.setToolTipText("Name of channel - Used as a prefix if the camera does RGB");
-		
+		spNumRepeats.setDecimalValue(new EvDecimal(10));
+		spRate.setDecimalValue(new EvDecimal(2));
+		spBleachTime.setDecimalValue(new EvDecimal("0.1"));
 		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
 				
-				//Camera
-				//ROI
-				//Bleach time
-				//Tot time
-				//Interval
-				
-				
-				
 				EvSwingUtil.layoutLCR(
-						new JLabel("ROI"),
-						roiCombo,
+						new JLabel("Bleach ROI"),
+						roiBleachCombo,
+						null
+						),
+						
+				EvSwingUtil.layoutLCR(
+						new JLabel("Observe ROI"),
+						roiObserveCombo,
 						null
 						),
 
@@ -122,9 +117,9 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 						),
 
 				EvSwingUtil.layoutLCR(
-						new JLabel("Recovery time"),
-						spRecoveryTime,
-						new JLabel("s")
+						new JLabel("Num.repeats"),
+						spNumRepeats,
+						new JLabel("[-]")
 						),
 
 				EvSwingUtil.layoutLCR(
@@ -144,9 +139,9 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 						new JLabel("Object name"),
 						tStoreName,
 						bStartStop
-						)//,
+						),
 				
-				//labelStatus
+				labelStatus
 				
 				),
 				BorderLayout.CENTER);
@@ -167,24 +162,21 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 		if(e.getSource()==bStartStop)
 			{
 			if(thread!=null)
-				{
 				thread.tryStop();
-				//System.out.println("----stopping acquisition----");
-				}
 			else
 				{
 				bStartStop.setText("Stop");
 				
-				acq.setBleachTime(spBleachTime.getDecimalValue());
-				acq.setContainer(objectCombo.getSelectedObject());
-				acq.setContainerStoreName(tStoreName.getText());
-				//acq.setExpTime(spExpTime.getDecimalValue());
-				acq.setRate(spRate.getDecimalValue());
-				acq.setRecoveryTime(spRecoveryTime.getDecimalValue());
-				acq.setRoi((ROI)roiCombo.getSelectedObject());
+				acq.bleachTime=spBleachTime.getDecimalValue();
+				acq.container=objectCombo.getSelectedObject();
+				acq.containerStoreName=tStoreName.getText();
+				acq.rate=spRate.getDecimalValue();
+				acq.recoveryTime=spNumRepeats.getDecimalValue();
+				acq.roiBleach=(ROI)roiBleachCombo.getSelectedObject();
+				acq.roiObserve=(ROI)roiObserveCombo.getSelectedObject();
+				acq.numRepeats=spNumRepeats.getDecimalValue().intValue();
 				
 				thread=acq.startAcquisition();
-
 				}
 			
 			}
@@ -206,7 +198,7 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 	
 	public void dataChangedEvent()
 		{
-		roiCombo.updateList();
+		roiBleachCombo.updateList();
 		objectCombo.updateList();
 		}
 
@@ -230,9 +222,31 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 
 	public void acqStopped()
 		{
-		bStartStop.setText("Start");
-		thread=null;
+		SwingUtilities.invokeLater(new Runnable()
+			{
+			public void run()
+				{
+				bStartStop.setText("Start");
+				thread=null;
+				labelStatus.setText(" ");
+				}
+			});
 		}
+	
+
+	
+	public void newStatus(final String s)
+		{
+		SwingUtilities.invokeLater(new Runnable()
+			{
+			public void run()
+				{
+				labelStatus.setText(s);
+				}
+			});
+		}
+	
+	
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -267,7 +281,6 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 		
 		
 		}
-	
 	
 	
 	}

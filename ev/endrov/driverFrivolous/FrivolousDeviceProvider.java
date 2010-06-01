@@ -16,7 +16,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import org.jdom.Element;
@@ -593,46 +593,60 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		}
 
 	public void openConfigureDialog()
-	{
+		{
 		(new FrivolousConfig()).setVisible(true);
-	}
+		}
 
-	private class FrivolousConfig extends JDialog implements ActionListener {
+	
+	/*private FrivolousModel getModel()
+		{
+		return model;
+		}*/
+	
+	private class FrivolousConfig extends JFrame implements ActionListener 
+		{
+		private static final long serialVersionUID = 1L;
+		private JButton thebutton;
 
-		JButton thebutton;
-		
-		public FrivolousConfig(){
+		public FrivolousConfig()
+			{
 			super();
-			
-			thebutton = new JButton((model == null?"Start":"Stop"));
+
+			thebutton = new JButton((model==null ? "Start" : "Stop"));
 			thebutton.addActionListener(this);
 			this.add(thebutton);
 			this.setTitle("The Amazing Configuration Wizard!");
 			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			this.setModal(true);
-			this.setSize(400,100);
+			//this.setModal(true);
+			this.setSize(400, 100);
 
-		} //TODO If ever we implement the XML feature fully: Here would be a great place to choose the "cell";
-		
-		public void actionPerformed(ActionEvent e) {
-			if(model==null)
+			} // TODO If ever we implement the XML feature fully: Here would be a
+				// great place to choose the "cell";
+
+		public void actionPerformed(ActionEvent e)
 			{
+			if (model==null)
+				{
+				// FrivolousDeviceProvider.this.
 				model = new FrivolousModel();
+				// System.out.println(getModel());
 
-				FrivolousCamera cam=new FrivolousCamera();
+				FrivolousCamera cam = new FrivolousCamera();
 				cam.seqAcqThread.start();
 				hw.put("cam", cam);
 				hw.put("stage", new FrivolousStage());
-				
+
 				thebutton.setText("Stop");
-			} else {
+				}
+			else
+				{
 				model.stop();
 				model = null;
 				thebutton.setText("Start");
+				}
 			}
-		}
 
-	}
+		}
 
 	
 	public EvDeviceObserver event=new EvDeviceObserver();

@@ -50,72 +50,12 @@ public class EvFRAPAcquisition extends EvObject
 	
 	
 	
-	public EvDecimal getRecoveryTime()
-		{
-		return recoveryTime;
-		}
-
-	public void setRecoveryTime(EvDecimal recoveryTime)
-		{
-		this.recoveryTime = recoveryTime;
-		}
-
-	public EvDecimal getBleachTime()
-		{
-		return bleachTime;
-		}
-
-	public void setBleachTime(EvDecimal bleachTime)
-		{
-		this.bleachTime = bleachTime;
-		}
-
-	public EvDecimal getRate()
-		{
-		return rate;
-		}
-
-	public void setRate(EvDecimal rate)
-		{
-		this.rate = rate;
-		}
-
-	public EvContainer getContainer()
-		{
-		return container;
-		}
-
-	public void setContainer(EvContainer container)
-		{
-		this.container = container;
-		}
-
-	public String getContainerStoreName()
-		{
-		return containerStoreName;
-		}
-
-	public void setContainerStoreName(String containerStoreName)
-		{
-		this.containerStoreName = containerStoreName;
-		}
-
-	public ROI getRoi()
-		{
-		return roi;
-		}
-
-	public void setRoi(ROI roi)
-		{
-		this.roi = roi;
-		}
-	
-	private EvDecimal recoveryTime;
-	private EvDecimal bleachTime;
-	private EvDecimal rate;
-	private EvContainer container;
-	private String containerStoreName;
-	private ROI roi;
+	public EvDecimal recoveryTime;
+	public EvDecimal bleachTime;
+	public EvDecimal rate;
+	public EvContainer container;
+	public String containerStoreName;
+	public ROI roi;
 
 	private List<Listener> listeners=new LinkedList<Listener>();
 	
@@ -194,10 +134,8 @@ public class EvFRAPAcquisition extends EvObject
 
 					//TODO signal update on the object
 					BasicWindow.updateWindows();
-
 					
 					EvDecimal curFrame=new EvDecimal(0);
-
 					try
 						{
 						//Acquire image before bleaching
@@ -216,14 +154,12 @@ public class EvFRAPAcquisition extends EvObject
 						cam.scan(null, null, roiArray);
 						cam.setPropertyValue("Exposure", normalExposureTime);
 						curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
-
-						
-						System.out.println("rec time "+settings.recoveryTime.doubleValue());
-						System.out.println("rate "+settings.rate.doubleValue());
+						//TODO also, just bleach time
 						
 						//Acquire images as the intensity recovers
 						for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
 							{
+							long startTime=System.currentTimeMillis();
 							if(toStop)
 								break acqLoop;
 							
@@ -231,7 +167,8 @@ public class EvFRAPAcquisition extends EvObject
 							
 							snapOneImage(imset, cam, curFrame);
 							BasicWindow.updateWindows();
-							yield(settings.rate.doubleValue()/10);
+							
+							waitInTotal(startTime, settings.rate.doubleValue());
 							}
 						
 						}
@@ -243,49 +180,43 @@ public class EvFRAPAcquisition extends EvObject
 					////// Build flow to analyze this experiment
 					Flow flow=new Flow();
 					
-					FlowUnitCalcFRAP frapUnit=new FlowUnitCalcFRAP();
-					flow.units.add(frapUnit);
+					FlowUnitCalcFRAP unitCalc=new FlowUnitCalcFRAP();
+					flow.units.add(unitCalc);
 					
-					FlowUnitObjectIO frapUnitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
-					FlowUnitObjectIO frapUnitGetROI=new FlowUnitObjectIO(new EvPath("roi"));
-					FlowUnitConstEvDecimal frapUnitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
-					FlowUnitShow frapUnitShowLifetime=new FlowUnitShow();
-					FlowUnitShow frapUnitShowMobile=new FlowUnitShow();
-					FlowUnitShowGraph frapUnitShowSeries=new FlowUnitShowGraph();
+					FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
+					FlowUnitObjectIO unitGetROI=new FlowUnitObjectIO(new EvPath("roi"));
+					FlowUnitConstEvDecimal unitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
+					FlowUnitShow unitShowLifetime=new FlowUnitShow();
+					FlowUnitShow unitShowMobile=new FlowUnitShow();
+					FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
 					
-					flow.units.add(frapUnitGetChan);
-					flow.units.add(frapUnitGetROI);
-					flow.units.add(frapUnitFrame);
-					flow.units.add(frapUnitShowLifetime);
-					flow.units.add(frapUnitShowMobile);
-					flow.units.add(frapUnitShowSeries);
+					flow.units.add(unitGetChan);
+					flow.units.add(unitGetROI);
+					flow.units.add(unitFrame);
+					flow.units.add(unitShowLifetime);
+					flow.units.add(unitShowMobile);
+					flow.units.add(unitShowSeries);
 
-					flow.conns.add(new FlowConn(frapUnitGetChan,"out",frapUnit,"ch"));
-					flow.conns.add(new FlowConn(frapUnitGetROI,"out",frapUnit,"roi"));
-					flow.conns.add(new FlowConn(frapUnitFrame,"out",frapUnit,"t1"));
-					flow.conns.add(new FlowConn(frapUnitFrame,"out",frapUnit,"t2"));
-					flow.conns.add(new FlowConn(frapUnit,"lifetime",frapUnitShowLifetime,"in"));
-					flow.conns.add(new FlowConn(frapUnit,"mobile",frapUnitShowMobile,"in"));
-					flow.conns.add(new FlowConn(frapUnit,"series",frapUnitShowSeries,"in"));
+					flow.conns.add(new FlowConn(unitGetChan,"out",unitCalc,"ch"));
+					flow.conns.add(new FlowConn(unitGetROI,"out",unitCalc,"roi"));
+					flow.conns.add(new FlowConn(unitFrame,"out",unitCalc,"t1"));
+					flow.conns.add(new FlowConn(unitFrame,"out",unitCalc,"t2"));
+					flow.conns.add(new FlowConn(unitCalc,"lifetime",unitShowLifetime,"in"));
+					flow.conns.add(new FlowConn(unitCalc,"mobile",unitShowMobile,"in"));
+					flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
 					
-					frapUnit.x=100;
+					unitCalc.x=100;
 					
-					frapUnitFrame.y=0;
-					frapUnitGetROI.y=30;
-					frapUnitGetChan.y=60;
+					unitFrame.y=0;
+					unitGetROI.y=30;
+					unitGetChan.y=60;
 
-					frapUnitShowLifetime.x=300;
-					frapUnitShowMobile.x=300;
-					frapUnitShowSeries.x=300;
+					unitShowLifetime.x=300;
+					unitShowMobile.x=300;
+					unitShowSeries.x=300;
 					
-					frapUnitShowMobile.y=30;
-					frapUnitShowSeries.y=60;
-
-					/*EvOpCalcFRAP calc=new EvOpCalcFRAP(imset.getChannel("ch"), roi, EvDecimal.ZERO, EvDecimal.ZERO, "ch");
-					System.out.println("lifetime "+calc.lifetime);
-					System.out.println("initial conc "+calc.initialConcentration);
-					System.out.println("mob frac "+calc.mobileFraction);
-					System.out.println("curve "+calc.recoveryCurve);*/
+					unitShowMobile.y=30;
+					unitShowSeries.y=60;
 
 					imset.metaObject.put("roi",roi.cloneBySerialize());
 					imset.metaObject.put("flow",flow);
@@ -297,32 +228,10 @@ public class EvFRAPAcquisition extends EvObject
 				}
 			while(false);
 		
-		
-		
-		
-		
-			
-			//System.out.println("---------stop-----------");
 			toStop=false;
 			for(Listener l:listeners)
 				l.acqStopped();
 			}
-		
-		/**
-		 * To avoid busy loops
-		 */
-		private void yield(double t)
-			{
-			try
-				{
-				Thread.sleep((long)t);
-				}
-			catch (Exception e)
-				{
-				e.printStackTrace();
-				}
-			}
-		
 			
 		private void snapOneImage(Imageset imset, HWImageScanner cam, EvDecimal curFrame)
 			{
@@ -353,6 +262,32 @@ public class EvFRAPAcquisition extends EvObject
 				{
 				toStop=false;
 				start();
+				}
+			}
+		
+		/**
+		 * Wait at least a certain time
+		 */
+		public void waitInTotal(long startTime, double totalDuration)
+			{
+			for(;;)
+				{
+				long currentTime=System.currentTimeMillis();
+				long dt=startTime+(long)(totalDuration*1000)-currentTime;
+				if(dt>0 && !toStop)
+					{
+					if(dt>10)
+						dt=10;
+					try
+						{
+						Thread.sleep(dt);
+						}
+					catch (InterruptedException e)
+						{
+						}
+					}
+				else
+					break;
 				}
 			}
 		

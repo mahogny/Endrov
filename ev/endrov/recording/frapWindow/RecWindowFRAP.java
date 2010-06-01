@@ -118,25 +118,25 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 				EvSwingUtil.layoutLCR(
 						new JLabel("Bleach time"),
 						spBleachTime,
-						new JLabel("s")
+						new JLabel("[s]")
 						),
 
 				EvSwingUtil.layoutLCR(
 						new JLabel("Recovery time"),
 						spRecoveryTime,
-						new JLabel("s")
+						new JLabel("[s]")
 						),
 
 				EvSwingUtil.layoutLCR(
 						new JLabel("Sampling intervals"),
 						spRate,
-						new JLabel("s")
+						new JLabel("[s]")
 						),
 
 				EvSwingUtil.layoutLCR(
 						new JLabel("Store in"),
 						objectCombo,
-						new JLabel("ms")
+						null
 						),
 
 				
@@ -175,13 +175,13 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 				{
 				bStartStop.setText("Stop");
 				
-				acq.setBleachTime(spBleachTime.getDecimalValue());
-				acq.setContainer(objectCombo.getSelectedObject());
-				acq.setContainerStoreName(tStoreName.getText());
+				acq.bleachTime=spBleachTime.getDecimalValue();
+				acq.container=objectCombo.getSelectedObject();
+				acq.containerStoreName=tStoreName.getText();
 				//acq.setExpTime(spExpTime.getDecimalValue());
-				acq.setRate(spRate.getDecimalValue());
-				acq.setRecoveryTime(spRecoveryTime.getDecimalValue());
-				acq.setRoi((ROI)roiCombo.getSelectedObject());
+				acq.rate=spRate.getDecimalValue();
+				acq.recoveryTime=spRecoveryTime.getDecimalValue();
+				acq.roi=(ROI)roiCombo.getSelectedObject();
 				
 				thread=acq.startAcquisition();
 
@@ -230,8 +230,14 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 
 	public void acqStopped()
 		{
-		bStartStop.setText("Start");
-		thread=null;
+		SwingUtilities.invokeLater(new Runnable()
+			{
+			public void run()
+				{
+				bStartStop.setText("Start");
+				thread=null;
+				}
+			});
 		}
 
 	/******************************************************************************************************
