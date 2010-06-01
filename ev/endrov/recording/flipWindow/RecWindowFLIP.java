@@ -154,7 +154,7 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 		bStartStop.addActionListener(this);
 		
 		//Window overall things
-		setTitleEvWindow("FRAP acquisition");
+		setTitleEvWindow("FLIP acquisition");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		//setBoundsEvWindow(bounds);
