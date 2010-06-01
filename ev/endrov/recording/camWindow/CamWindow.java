@@ -7,7 +7,6 @@ package endrov.recording.camWindow;
 
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -22,7 +21,6 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.hardware.*;
 import endrov.imageWindow.GeneralTool;
 import endrov.imageWindow.ImageWindow;
@@ -32,7 +30,6 @@ import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
-import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
 import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
@@ -119,7 +116,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			super.paintComponent(g);
 			
 			//For ROI debug
-			
+			/*
 			for(EvObject ob:RecordingResource.getData().metaObject.values())
 				{
 				ROI roi=(ROI)ob;
@@ -142,6 +139,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 						if(arr[y*w+x]!=0)
 							g.drawLine(x, y, x, y);
 				}
+				*/
 				
 			
 			}
