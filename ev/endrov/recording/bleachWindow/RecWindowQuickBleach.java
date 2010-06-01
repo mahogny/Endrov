@@ -81,7 +81,9 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 						new JLabel("Bleach time"),
 						spBleachTime,
 						new JLabel("s")
-						)
+						),
+						
+				bStartStop
 				
 				),
 				BorderLayout.CENTER);
@@ -89,7 +91,7 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 		bStartStop.addActionListener(this);
 		
 		//Window overall things
-		setTitleEvWindow("FRAP acquisition");
+		setTitleEvWindow("Quick bleach");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		}
