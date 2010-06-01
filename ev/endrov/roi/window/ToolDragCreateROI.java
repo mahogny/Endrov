@@ -21,17 +21,17 @@ import endrov.roi.ROI;
 public class ToolDragCreateROI extends GeneralToolDragCreateROI implements ImageWindowTool 
 	{
 	private final ImageWindow w;
-	private final ROI roi;
-	private boolean active=false;
-	private ImageRendererROI renderer;
+	//private final ROI roi;
+	//private boolean active=false;
+	//private ImageRendererROI renderer;
 	
 	
 	public ToolDragCreateROI(ImageWindow w, ROI roi, ImageRendererROI renderer)
 		{
 		super(w,roi,renderer);
 		this.w=w;
-		this.roi=roi;
-		this.renderer=renderer;
+		//this.roi=roi;
+		//this.renderer=renderer;
 		}
 	
 	

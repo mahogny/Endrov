@@ -31,7 +31,6 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.JNumericField;
 import endrov.ev.PersonalConfig;
-import endrov.ev.JNumericField.JNumericListener;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvHardware;

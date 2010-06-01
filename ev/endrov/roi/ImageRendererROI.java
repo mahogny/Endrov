@@ -57,13 +57,27 @@ public class ImageRendererROI implements ImageWindowRenderer
 		String channel=w.getCurrentChannelName();
 		
 		handleList.clear();
+		/*
 		for(EvObject ob:w.getRootObject().metaObject.values())
 			if(ob instanceof ROI)
-				drawROI(w, g, (ROI)ob, frame, z, channel);
+				drawROI(w, g, (ROI)ob, frame, z, channel);*/
+		
+		recursiveDraw(g, frame, z, channel, w.getRootObject());
+		
 		if(drawROI!=null)
-			drawROI(w, g, drawROI, frame, z, channel);
+			drawROI(w, g, drawROI, "", frame, z, channel);
 		}
 	
+	
+	private void recursiveDraw(Graphics g, EvDecimal frame, EvDecimal z, String channel, EvContainer con)
+		{
+		for(Map.Entry<String, EvObject> e:con.metaObject.entrySet())
+			{
+			if(e.getValue() instanceof ROI)
+				drawROI(w, g, (ROI)e.getValue(), e.getKey(), frame, z, channel);
+			recursiveDraw(g, frame, z, channel, e.getValue());
+			}
+		}
 	
 	public void dataChangedEvent()
 		{
@@ -72,7 +86,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 	
 	
-	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast,
+	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast, String roiName, 
 			EvDecimal frame, EvDecimal z, String channel)
 		{
 		if(roiUncast.imageInRange(channel, frame, z))
@@ -114,24 +128,42 @@ public class ImageRendererROI implements ImageWindowRenderer
 				
 				g.drawOval((int)ul.x, (int)ul.y, (int)(lr.x-ul.x), (int)(lr.y-ul.y));
 				}
+			/*
 			else if(roiUncast instanceof CompoundROI)
 				{
 				for(ROI subroi:((CompoundROI)roiUncast).getSubRoi())
+					{
 					drawROI(w, g,subroi, frame, z, channel);
-				}
+					}
+				}*/
+			
 			}
 		
 		
 		
+		int numHandle=0;
+		Vector2d handleMid=new Vector2d();
+		
 		//Draw handles
 		HashMap<String,ROI.Handle> roimap=new HashMap<String,ROI.Handle>();
 		handleList.put(roiUncast,roimap);
+		g.setColor(Color.BLUE);
 		for(ROI.Handle h:roiUncast.getHandles())
 			{
 			roimap.put(h.getID(),h);
 			Vector2d xy=w.transformW2S(new Vector2d(h.getX(), h.getY()));
-			g.setColor(Color.CYAN);
 			g.drawRect((int)xy.x-HANDLESIZE, (int)xy.y-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
+			
+			handleMid.add(xy);
+			numHandle++;
+			}
+		
+		//Draw name
+		if(numHandle!=0)
+			{
+			handleMid.scale(1.0/numHandle);
+			int sw=g.getFontMetrics().stringWidth(roiName);
+			g.drawString(roiName, (int)handleMid.x-sw/2, (int)handleMid.y);
 			}
 		
 		
