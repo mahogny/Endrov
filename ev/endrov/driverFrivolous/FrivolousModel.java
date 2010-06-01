@@ -67,5 +67,10 @@ public class FrivolousModel
 		{
 		cell.updatePSF();
 		}
+	
+	public void stop()
+		{
+		cell.stop();
+		}
 
 	}

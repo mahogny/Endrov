@@ -24,18 +24,17 @@ class FrivolousDiffusion implements Runnable
 	private float dt = 0.25f;
 	private float dx, dy;
 	private float my;
-	private int[] alpha;  //TODO wut?
 	private Stencil[] stencils;
 	private int cnt = 0;
 	private int[] area;
 	private float diffusionFactor = 1f;
+	private boolean isAlive = true;
 
 	public FrivolousDiffusion(FrivolousComplexArray input, int[] alpha, float speed)
 		{
 		width = input.width;
 		height = input.height;
 		diffusion = input.real;
-		this.alpha = alpha;
 		diffusionFactor = speed;
 		area = new int[width*height];
 		stencils = new Stencil[width*height];
@@ -256,7 +255,7 @@ class FrivolousDiffusion implements Runnable
 		{
 		float time = 0;
 		long start_time = System.currentTimeMillis();
-		for(;;)
+		while(isAlive)
 			{
 			for (int i = 0; i<100; i++)
 				{
@@ -272,5 +271,10 @@ class FrivolousDiffusion implements Runnable
 				}
 			catch (Exception e){}
 			}
+		}
+	
+	public void stop()
+		{
+		isAlive = false;
 		}
 	}

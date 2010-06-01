@@ -237,6 +237,13 @@ public class FrivolousCell
 					c.real[(x+offsetX) + (y+offsetY)*w] *= bleachFactor;
 		}
 
+	public void stop()
+		{
+		for (int i = 0; i<diffusers.length; i++)
+			{
+			diffusers[i].stop();
+			}
+		}
 	
 	public FrivolousSettingsNew getSettings()
 		{

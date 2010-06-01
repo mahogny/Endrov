@@ -5,6 +5,8 @@
  */
 package endrov.driverFrivolous;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +14,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.WindowConstants;
 
 import org.jdom.Element;
 
@@ -587,13 +593,46 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		}
 
 	public void openConfigureDialog()
-		{
-		model = new FrivolousModel();
-		FrivolousCamera cam=new FrivolousCamera();
-		cam.seqAcqThread.start();
-		hw.put("cam", cam);
-		hw.put("stage", new FrivolousStage());
+	{
+		(new FrivolousConfig()).setVisible(true);
+	}
+
+	private class FrivolousConfig extends JDialog implements ActionListener {
+
+		JButton thebutton;
+		
+		public FrivolousConfig(){
+			super();
+			
+			thebutton = new JButton((model == null?"Start":"Stop"));
+			thebutton.addActionListener(this);
+			this.add(thebutton);
+			this.setTitle("The Amazing Configuration Wizard!");
+			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			this.setModal(true);
+			this.setSize(400,100);
+
+		} //TODO If ever we implement the XML feature fully: Here would be a great place to choose the "cell";
+		
+		public void actionPerformed(ActionEvent e) {
+			if(model==null)
+			{
+				model = new FrivolousModel();
+
+				FrivolousCamera cam=new FrivolousCamera();
+				cam.seqAcqThread.start();
+				hw.put("cam", cam);
+				hw.put("stage", new FrivolousStage());
+				
+				thebutton.setText("Stop");
+			} else {
+				model.stop();
+				model = null;
+				thebutton.setText("Start");
+			}
 		}
+
+	}
 
 	
 	public EvDeviceObserver event=new EvDeviceObserver();
