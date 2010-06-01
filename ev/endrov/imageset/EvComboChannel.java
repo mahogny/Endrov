@@ -264,7 +264,10 @@ public class EvComboChannel extends JPanel implements ActionListener
 	public Imageset getImageset()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
-		return (Imageset)ci.getCon();
+		if(ci==null)
+			return null; //This solves a strange bug when the combo has not been populated
+		else
+			return (Imageset)ci.getCon();
 //		 * TODO bug: getImageset has once been asked before it was ready
 		//ci was null
 		}
@@ -275,7 +278,11 @@ public class EvComboChannel extends JPanel implements ActionListener
 	public Imageset getImagesetNotNull()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
-		Imageset im=(Imageset)ci.getCon();
+		Imageset im;
+		if(ci==null)
+			im=null;
+		else
+			im=(Imageset)ci.getCon();
 		return im==null ? new Imageset() : im;
 		}
 
@@ -327,13 +334,18 @@ public class EvComboChannel extends JPanel implements ActionListener
 	public String getChannel()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
-		return ci.channelName;
+		if(ci==null)
+			return null;
+		else
+			return ci.channelName;
 		}
 
 	
 	public EvPath getSelectedObjectPath()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		if(ci==null)
+			return null;
 		return ci.path;
 //		getObjectPath().toString();
 		}

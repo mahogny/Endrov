@@ -250,7 +250,7 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 				{
 				public void createMenus(BasicWindow w)
 					{
-					JMenuItem mi=new JMenuItem("FRAP acquisition",new ImageIcon(getClass().getResource("tangoCamera.png")));
+					JMenuItem mi=new JMenuItem("FLIP acquisition",new ImageIcon(getClass().getResource("tangoCamera.png")));
 					mi.addActionListener(this);
 					BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 					}

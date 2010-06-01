@@ -16,6 +16,8 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.jdom.Element;
 
@@ -29,6 +31,7 @@ import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.JNumericField;
 import endrov.ev.PersonalConfig;
+import endrov.ev.JNumericField.JNumericListener;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvHardware;
@@ -327,21 +330,38 @@ public class RecControlWindow extends BasicWindow
 					}
 				else //if (pt.hasRange)
 					{
-					JNumericField b=new JNumericField(Double.parseDouble(hw.getPropertyValue(propName)));
+					final JNumericField b=new JNumericField(Double.parseDouble(hw.getPropertyValue(propName)));
+					final Color defaultBG=b.getBackground();
 					comp = b;
 					// Override: Exposure, Gain
+
+					b.getDocument().addDocumentListener(new DocumentListener()
+						{
+						public void changedUpdate(DocumentEvent e){sendAction();}
+						public void insertUpdate(DocumentEvent e){sendAction();}
+						public void removeUpdate(DocumentEvent e){sendAction();}
+						private void sendAction()
+							{
+							b.setBackground(Color.YELLOW);
+							}
+						});	
 					
 					b.addActionListener(new ActionListener()
 					{
 						public void actionPerformed(ActionEvent e)
 							{
+							b.setBackground(defaultBG);
 							String value = ((JNumericField) e.getSource()).getText();
 							double d;
-							try{
+							try
+								{
 								d = Double.parseDouble(value);
-							} catch(NumberFormatException ex) {
+								} 
+							catch(NumberFormatException ex) 
+								{
 								((JNumericField) e.getSource()).setText(hw.getPropertyValue(propName));
-								return;}
+								return;
+								}
 							
 							if(pt.hasRange)
 								{
@@ -352,6 +372,10 @@ public class RecControlWindow extends BasicWindow
 									((JNumericField) e.getSource()).setText(hw.getPropertyValue(propName));
 									return;
 									}
+								}
+							else
+								{
+								hw.setPropertyValue(propName, value);
 								}
 							}
 					});

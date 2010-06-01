@@ -150,7 +150,7 @@ public class FrivolousCell
 		}
 
 	
-	public int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight, boolean simulatePSF, boolean simulateNoise)
+	public synchronized int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight, boolean simulatePSF, boolean simulateNoise)
 		{
 
 		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");

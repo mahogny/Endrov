@@ -5,8 +5,11 @@
  */
 package endrov.recording;
 import endrov.ev.PluginDef;
+import endrov.recording.bleachWindow.RecWindowQuickBleach;
 import endrov.recording.camWindow.CamWindow;
 import endrov.recording.controlWindow.RecControlWindow;
+import endrov.recording.flipWindow.EvFLIPAcquisition;
+import endrov.recording.flipWindow.RecWindowFLIP;
 import endrov.recording.frapWindow.EvFRAPAcquisition;
 import endrov.recording.frapWindow.FlowUnitCalcFRAP;
 import endrov.recording.frapWindow.FlowUnitShowGraph;
@@ -53,6 +56,8 @@ public class PLUGIN extends PluginDef
 				RecWindowFRAP.class,
 				EvBurstAcquisition.class,
 				EvFRAPAcquisition.class,FlowUnitCalcFRAP.class,FlowUnitShowGraph.class,
+				RecWindowQuickBleach.class, 
+				RecWindowFLIP.class, EvFLIPAcquisition.class,
 				
 				LightpathWindow.class
 				};
