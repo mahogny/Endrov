@@ -199,6 +199,7 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 	public void dataChangedEvent()
 		{
 		roiBleachCombo.updateList();
+		roiObserveCombo.updateList();
 		objectCombo.updateList();
 		}
 
