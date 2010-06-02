@@ -8,10 +8,15 @@ package endrov.roi;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
 import javax.swing.*;
 import javax.vecmath.*;
 
+import endrov.basicWindow.WSTransformer;
+import endrov.data.EvContainer;
+import endrov.data.EvObject;
 import endrov.imageWindow.*;
+import endrov.util.EvDecimal;
 
 /**
  * Make nuclei by dragging an area. Also move nuclei.
@@ -48,20 +53,37 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 	
 	public void mouseClicked(MouseEvent e)
 		{
+		if(SwingUtilities.isRightMouseButton(e))
+			{
+			//If a ROI is beneath then open a pop-up menu
+			
+			
+			}
+
 		}
 	
 	public void mouseDragged(MouseEvent e, int dx, int dy)
 		{
 		if(active)
 			{
-			for(ROI.Handle h:currentROI.getHandles())
-				if(h.getID().equals(currentHandle))
-					{
-					Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
-					h.setPos(v.x,v.y);
-					w.updateImagePanel();
-					return;
-					}
+			if(currentHandle!=null)
+				{
+				for(ROI.Handle h:currentROI.getHandles())
+					if(h.getID().equals(currentHandle))
+						{
+						Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+						h.setPos(v.x,v.y);
+						w.updateImagePanel();
+						return;
+						}
+				}
+			else
+				{
+				//TODO be able to move an entire ROI
+
+				
+				}
+			
 			}
 		}
 	
@@ -86,12 +108,45 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 						active=true;
 						currentHandle=rh.getKey();
 						currentROI=re.getKey();
+						
+						//TODO select ROI as well
+						
 						return;
 						}
 					}
+			
+			//If no handle then maybe the user hit a ROI head on?
+			
+			
 			}
 		}
 
+	/*
+	public ROI hitROI()
+		{
+		ROI roi=hitROIrecursive(frame, z, channel, con);
+		}
+	
+	
+	private ROI hitROIrecursive(EvDecimal frame, EvDecimal z, String channel, EvContainer con)
+		{
+		for(Map.Entry<String, EvObject> e:con.metaObject.entrySet())
+			{
+			if(e.getValue() instanceof ROI)
+				if(testHitROI(w, (ROI)e.getValue(), e.getKey(), frame, z, channel))
+					return (ROI)e.getValue();
+			ROI roi=hitROIrecursive(frame, z, channel, e.getValue());
+			if(roi!=null)
+				return roi;
+			}
+		return null;
+		}
+	
+	private boolean testHitROI(WSTransformer w, ROI roiUncast, String roiName, EvDecimal frame, EvDecimal z, String channel)
+		{
+		
+		return false;
+		}*/
 	
 	public void mouseReleased(MouseEvent e)
 		{

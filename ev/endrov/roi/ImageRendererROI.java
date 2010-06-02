@@ -86,8 +86,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 	
 	
-	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast, String roiName, 
-			EvDecimal frame, EvDecimal z, String channel)
+	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast, String roiName, EvDecimal frame, EvDecimal z, String channel)
 		{
 		if(roiUncast.imageInRange(channel, frame, z))
 			{
@@ -126,7 +125,26 @@ public class ImageRendererROI implements ImageWindowRenderer
 				Vector2d ul=w.transformW2S(new Vector2d(roi.regionX.start.doubleValue(),roi.regionY.start.doubleValue()));
 				Vector2d lr=w.transformW2S(new Vector2d(roi.regionX.end.doubleValue(),roi.regionY.end.doubleValue()));
 				
-				g.drawOval((int)ul.x, (int)ul.y, (int)(lr.x-ul.x), (int)(lr.y-ul.y));
+				int x1=(int)ul.x;
+				int x2=(int)lr.x;
+				int y1=(int)ul.y;
+				int y2=(int)lr.y;
+				
+				if(x2<x1)
+					{
+					int temp=x1;
+					x1=x2;
+					x2=temp;
+					}
+				if(y2<y1)
+					{
+					int temp=y1;
+					y1=y2;
+					y2=temp;
+					}
+				
+				//g.drawOval((int)ul.x, (int)ul.y, (int)(lr.x-ul.x), (int)(lr.y-ul.y));
+				g.drawOval(x1, y1, x2-x1, y2-y1);
 				}
 			/*
 			else if(roiUncast instanceof CompoundROI)
