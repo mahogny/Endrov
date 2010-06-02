@@ -221,6 +221,12 @@ public class BoxROI extends ROI
 				{
 				int rXstart=(int)stack.transformWorldImageX(regionX.start.doubleValue());
 				int rXend=(int)stack.transformWorldImageX(regionX.end.doubleValue());
+				if(rXstart>rXend)
+					{
+					int temp=rXstart;
+					rXstart=rXend;
+					rXend=temp;
+					}
 				if(it.startX<rXstart)	it.startX=rXstart;
 				if(it.endX>rXend) it.endX=rXend;
 				}
@@ -228,11 +234,15 @@ public class BoxROI extends ROI
 				{
 				int rYstart=(int)stack.transformWorldImageY(regionY.start.doubleValue());
 				int rYend=(int)stack.transformWorldImageY(regionY.end.doubleValue());
+				if(rYstart>rYend)
+					{
+					int temp=rYstart;
+					rYstart=rYend;
+					rYend=temp;
+					}
 				if(it.y<rYstart)	it.y=rYstart;
 				if(it.endY>rYend) it.endY=rYend;
 				}
-			
-//			System.out.println("newit: "+it.startX+" "+it.endX+" "+it.y+" "+it.endY+"");
 			
 			//Sanity check
 			if(it.y>it.endY || it.startX>it.endX)

@@ -217,8 +217,8 @@ public class EllipseROI extends ROI
 			
 			it.midx=(stack.transformWorldImageX(regionX.start.doubleValue())+stack.transformWorldImageX(regionX.end.doubleValue()))/2.0;
 			it.midy=(stack.transformWorldImageY(regionY.start.doubleValue())+stack.transformWorldImageY(regionY.end.doubleValue()))/2.0;
-			it.rx=(stack.transformWorldImageX(regionX.end.doubleValue())-stack.transformWorldImageX(regionX.start.doubleValue()))/2.0;
-			it.ry=(stack.transformWorldImageY(regionY.end.doubleValue())-stack.transformWorldImageY(regionY.start.doubleValue()))/2.0;
+			it.rx=Math.abs((stack.transformWorldImageX(regionX.end.doubleValue())-stack.transformWorldImageX(regionX.start.doubleValue()))/2.0);
+			it.ry=Math.abs((stack.transformWorldImageY(regionY.end.doubleValue())-stack.transformWorldImageY(regionY.start.doubleValue()))/2.0);
 			
 			
 			//Sanity check
