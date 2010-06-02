@@ -132,51 +132,9 @@ public class EvFRAPAcquisition extends EvObject
 							break;
 							}
 
-					//TODO signal update on the object
-					BasicWindow.updateWindows();
-					
-					EvDecimal curFrame=new EvDecimal(0);
-					try
-						{
-						//Acquire image before bleaching
-						snapOneImage(imset, cam, curFrame);
-						BasicWindow.updateWindows();
-						
-						if(toStop)
-							break acqLoop;
-						
-						//Bleach ROI
-						double stageX=RecordingResource.getCurrentStageX();
-						double stageY=RecordingResource.getCurrentStageY();
-						String normalExposureTime=cam.getPropertyValue("Exposure");
-						cam.setPropertyValue("Exposure", ""+bleachTime);
-						int[] roiArray=RecordingResource.makeScanningROI(cam, roi, stageX, stageY);
-						cam.scan(null, null, roiArray);
-						cam.setPropertyValue("Exposure", normalExposureTime);
-						curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
-						//TODO also, just bleach time
-						
-						//Acquire images as the intensity recovers
-						for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
-							{
-							long startTime=System.currentTimeMillis();
-							if(toStop)
-								break acqLoop;
-							
-							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
-							
-							snapOneImage(imset, cam, curFrame);
-							BasicWindow.updateWindows();
-							
-							waitInTotal(startTime, settings.rate.doubleValue());
-							}
-						
-						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
-						}
-					
+					ROI copyROI=(ROI)roi.cloneBySerialize();
+
+
 					////// Build flow to analyze this experiment
 					Flow flow=new Flow();
 					
@@ -218,8 +176,54 @@ public class EvFRAPAcquisition extends EvObject
 					unitShowMobile.y=30;
 					unitShowSeries.y=60;
 
-					imset.metaObject.put("roi",roi.cloneBySerialize());
+					imset.metaObject.put("roi",copyROI);
 					imset.metaObject.put("flow",flow);
+					
+					
+					//TODO signal update on the object
+					BasicWindow.updateWindows();
+					
+					EvDecimal curFrame=new EvDecimal(0);
+					try
+						{
+						//Acquire image before bleaching
+						snapOneImage(imset, cam, curFrame);
+						BasicWindow.updateWindows();
+						
+						if(toStop)
+							break acqLoop;
+						
+						//Bleach ROI
+						double stageX=RecordingResource.getCurrentStageX();
+						double stageY=RecordingResource.getCurrentStageY();
+						String normalExposureTime=cam.getPropertyValue("Exposure");
+						cam.setPropertyValue("Exposure", ""+bleachTime);
+						int[] roiArray=RecordingResource.makeScanningROI(cam, copyROI, stageX, stageY);
+						cam.scan(null, null, roiArray);
+						cam.setPropertyValue("Exposure", normalExposureTime);
+						curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+						//TODO also, just bleach time
+						
+						//Acquire images as the intensity recovers
+						for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
+							{
+							long startTime=System.currentTimeMillis();
+							if(toStop)
+								break acqLoop;
+							
+							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+							
+							snapOneImage(imset, cam, curFrame);
+							BasicWindow.updateWindows();
+							
+							waitInTotal(startTime, settings.rate.doubleValue());
+							}
+						
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
 					
 					BasicWindow.updateWindows();
 					}

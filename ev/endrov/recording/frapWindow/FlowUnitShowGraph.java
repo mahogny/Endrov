@@ -143,7 +143,7 @@ public class FlowUnitShowGraph extends FlowUnitBasic
 			XYDataset xyDataset = new XYSeriesCollection(frametimeSeries);
 			
 			JFreeChart chart = ChartFactory.createXYLineChart
-	            ("","X","Y",xyDataset,PlotOrientation.HORIZONTAL,false/*legend*/, false/*tooltips*/, false/*urls*/);
+	            ("","X","Y",xyDataset,PlotOrientation.VERTICAL,false/*legend*/, false/*tooltips*/, false/*urls*/);
 			ChartPanel graphpanel = new ChartPanel(chart);
 
 			add(graphpanel,BorderLayout.CENTER);
@@ -172,7 +172,7 @@ public class FlowUnitShowGraph extends FlowUnitBasic
 				{
 				double[][] arr=(double[][])object;
 				for(int i=0;i<arr[0].length;i++)
-					frametimeSeries.add(arr[1][i],arr[0][i]);
+					frametimeSeries.add(arr[0][i],arr[1][i]);
 				}
 			repaint();
 			}

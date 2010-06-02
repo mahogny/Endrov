@@ -111,6 +111,7 @@ public class EvFLIPAcquisition extends EvObject
 			//TODO need to choose camera, at least!
 			
 			
+			
 			acqLoop: 
 			do
 				{
@@ -123,6 +124,9 @@ public class EvFLIPAcquisition extends EvObject
 				if(cam!=null && container!=null)
 					{
 
+					ROI copyRoiBleach=(ROI)roiBleach.cloneBySerialize();
+					ROI copyRoiObserve=(ROI)roiObserve.cloneBySerialize();
+
 					Imageset imset=new Imageset();
 					for(int i=0;;i++)
 						if(container.getChild(containerStoreName+i)==null)
@@ -131,52 +135,8 @@ public class EvFLIPAcquisition extends EvObject
 							imset.metaObject.put("ch", new EvChannel());
 							break;
 							}
-
-					//TODO signal update on the object
-					BasicWindow.updateWindows();
-
-					EvDecimal curFrame=new EvDecimal(0);
-					try
-						{
-						//Acquire image before bleaching
-						snapOneImage(imset, cam, curFrame);
-						BasicWindow.updateWindows();
-						
-						//Acquire images as the intensity recovers
-						for(int i=0;i<settings.numRepeats;i++)
-							{
-							long startTime=System.currentTimeMillis();
-
-							if(toStop)
-								break acqLoop;
-
-							//Bleach ROI
-							double stageX=RecordingResource.getCurrentStageX();
-							double stageY=RecordingResource.getCurrentStageY();
-							String normalExposureTime=cam.getPropertyValue("Exposure");
-							cam.setPropertyValue("Exposure", ""+bleachTime);
-							int[] roiArray=RecordingResource.makeScanningROI(cam, roiBleach, stageX, stageY);
-							cam.scan(null, null, roiArray);
-							cam.setPropertyValue("Exposure", normalExposureTime);
-							
-							if(toStop)
-								break acqLoop;
-
-							//Acquire an image for quantification
-							snapOneImage(imset, cam, curFrame);
-							BasicWindow.updateWindows();
-							yield(settings.rate.doubleValue()/10);
-							
-							waitInTotal(startTime, settings.rate.doubleValue());
-							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
-							}
-						
-						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
-						}
 					
+
 					////// Build flow to analyze this experiment
 					Flow flow=new Flow();
 					
@@ -203,9 +163,59 @@ public class EvFLIPAcquisition extends EvObject
 					unitShowSeries.x=300;
 					unitShowSeries.y=0;
 
-					imset.metaObject.put("roiBleach",roiBleach.cloneBySerialize());
-					imset.metaObject.put("roiObserve",roiBleach.cloneBySerialize());
+					
+					imset.metaObject.put("roiBleach",copyRoiBleach);
+					imset.metaObject.put("roiObserve",copyRoiObserve);
 					imset.metaObject.put("flow",flow);
+
+					//TODO signal update on the object
+					BasicWindow.updateWindows();
+
+					EvDecimal curFrame=new EvDecimal(0);
+					try
+						{
+						//Acquire image before bleaching
+						snapOneImage(imset, cam, curFrame);
+						BasicWindow.updateWindows();
+						
+						//Acquire images as the intensity recovers
+						for(int i=0;i<settings.numRepeats;i++)
+							{
+							long startTime=System.currentTimeMillis();
+
+							for(Listener l:listeners)
+								l.newStatus("Doing repeat "+(i+1));
+
+							if(toStop)
+								break acqLoop;
+
+							//Bleach ROI
+							double stageX=RecordingResource.getCurrentStageX();
+							double stageY=RecordingResource.getCurrentStageY();
+							String normalExposureTime=cam.getPropertyValue("Exposure");
+							cam.setPropertyValue("Exposure", ""+bleachTime);
+							int[] roiArray=RecordingResource.makeScanningROI(cam, copyRoiBleach, stageX, stageY);
+							cam.scan(null, null, roiArray);
+							cam.setPropertyValue("Exposure", normalExposureTime);
+							
+							if(toStop)
+								break acqLoop;
+
+							//Acquire an image for quantification
+							snapOneImage(imset, cam, curFrame);
+							BasicWindow.updateWindows();
+							yield(settings.rate.doubleValue()/10);
+							
+							waitInTotal(startTime, settings.rate.doubleValue());
+							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+							}
+						
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
+					
 					
 					BasicWindow.updateWindows();
 					}
