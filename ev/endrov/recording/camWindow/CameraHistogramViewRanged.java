@@ -15,6 +15,10 @@ import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+
 import endrov.imageset.EvPixels;
 
 
@@ -31,6 +35,7 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 	public int upper=255;
 	
 	private Color rangeBarColor=Color.RED;
+	
 	
 	public CameraHistogramViewRanged()
 		{
@@ -127,7 +132,22 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 
 	public void mousePressed(MouseEvent e)
 		{
-		moveLimit(e);
+		if(SwingUtilities.isLeftMouseButton(e))
+			moveLimit(e);
+		else if(SwingUtilities.isRightMouseButton(e))
+			{
+			JPopupMenu menu=new JPopupMenu();
+			JCheckBoxMenuItem miUseCDF=new JCheckBoxMenuItem("Show CDF", showCDF);
+			miUseCDF.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent arg0)
+					{
+					setShowCDF(!showCDF);
+					}
+				});
+			menu.add(miUseCDF);
+			menu.show(this, e.getX(), e.getY());
+			}
 		}
 
 	public void mouseReleased(MouseEvent e)
@@ -136,7 +156,8 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 
 	public void mouseDragged(MouseEvent e)
 		{
-		moveLimit(e);
+		if(SwingUtilities.isLeftMouseButton(e))
+			moveLimit(e);
 		}
 
 	public void mouseMoved(MouseEvent arg0)
@@ -153,9 +174,9 @@ public class CameraHistogramViewRanged extends CameraHistogramView implements Mo
 	//	int xUpper=toScreenX(upper);
 		
 		if(Math.abs(mx-lower) < Math.abs(mx-upper))
-			lower=toWorldX(mx);
+			lower=mx;
 		else
-			upper=toWorldX(mx);
+			upper=mx;
 		
 		if(lower<0)
 			lower=0;

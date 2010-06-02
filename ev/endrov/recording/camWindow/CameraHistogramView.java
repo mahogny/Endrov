@@ -33,6 +33,15 @@ public class CameraHistogramView extends JPanel
 
 	private int height=50;
 	
+	protected boolean showCDF=false;
+
+	public void setShowCDF(boolean b)
+		{
+		showCDF=b;
+		cachedImage=null;
+		repaint();
+		}
+	
 	/**
 	 * Set pixels to calculate histogram from. #bits determines maximum range
 	 */
@@ -100,10 +109,31 @@ public class CameraHistogramView extends JPanel
 			bins[i]++;
 			}
 
-		int totalNum=p.length;
+		//Show CDF rather than PDF
+		if(showCDF)
+			{
+			int totalSum=0;
+			for(int i=0;i<bins.length;i++)
+				{
+				totalSum+=bins[i];
+				bins[i]=totalSum;
+				}
+			}
+		
+		//Normalize according to largest possible peak
+		/*int totalNum=p.length;
 		for(int i=0;i<bins.length;i++)
-			bins[i]=bins[i]*height/totalNum;
+			bins[i]=bins[i]*height/totalNum;*/
 
+		//Normalize according to largest peak found
+		int maxH=1;
+		for(int i=0;i<bins.length;i++)
+			if(bins[i]>maxH)
+				maxH=bins[i];
+		for(int i=0;i<bins.length;i++)
+			bins[i]=bins[i]*height/maxH;
+		
+		
 		return bins;
 		}
 	

@@ -307,7 +307,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			b.addActionListener(this);
 		
 		//Window overall things
-		setTitleEvWindow("Camera Control");
+		setTitleEvWindow("Camera");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		setBoundsEvWindow(bounds);
@@ -481,7 +481,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			{
 			public void createMenus(BasicWindow w)
 				{
-				JMenuItem mi=new JMenuItem("Live Camera",new ImageIcon(getClass().getResource("tangoCamera.png")));
+				JMenuItem mi=new JMenuItem("Camera",new ImageIcon(getClass().getResource("tangoCamera.png")));
 				mi.addActionListener(this);
 				BasicWindow.addMenuItemSorted(w.getCreateMenuWindowCategory("Recording"), mi);
 				}
