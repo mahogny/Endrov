@@ -9,6 +9,7 @@ import endrov.recording.bleachWindow.RecWindowQuickBleach;
 import endrov.recording.camWindow.CamWindow;
 import endrov.recording.controlWindow.RecControlWindow;
 import endrov.recording.flipWindow.EvFLIPAcquisition;
+import endrov.recording.flipWindow.FlowUnitSumIntensityROI;
 import endrov.recording.flipWindow.RecWindowFLIP;
 import endrov.recording.frapWindow.EvFRAPAcquisition;
 import endrov.recording.frapWindow.FlowUnitCalcFRAP;
@@ -54,10 +55,12 @@ public class PLUGIN extends PluginDef
 				
 				RecWindowBurst.class,
 				RecWindowFRAP.class,
-				EvBurstAcquisition.class,
-				EvFRAPAcquisition.class,FlowUnitCalcFRAP.class,FlowUnitShowGraph.class,
+				RecWindowFLIP.class, 
 				RecWindowQuickBleach.class, 
-				RecWindowFLIP.class, EvFLIPAcquisition.class,
+				EvBurstAcquisition.class,
+				EvFRAPAcquisition.class,FlowUnitCalcFRAP.class,
+				EvFLIPAcquisition.class,FlowUnitSumIntensityROI.class,
+				FlowUnitShowGraph.class,
 				
 				LightpathWindow.class
 				};
