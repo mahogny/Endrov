@@ -277,7 +277,7 @@ public class ToolMakeLine implements ImageWindowTool
 
 	
 	
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(MouseEvent e, Component invoker)
 		{
 		}	
 	public void mousePressed(MouseEvent e)

@@ -94,6 +94,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 				g.setColor(Color.MAGENTA);
 			else
 				g.setColor(Color.WHITE);
+			
 			if(roiUncast instanceof BoxROI)
 				{
 				BoxROI roi=(BoxROI)roiUncast;

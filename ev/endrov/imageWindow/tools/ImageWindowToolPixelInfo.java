@@ -5,6 +5,7 @@
  */
 package endrov.imageWindow.tools;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,7 +53,7 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 		{
 		}
 	
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(MouseEvent e, Component invoker)
 		{
 		EvChannel c=w.getSelectedChannel();
 		if(c!=null)

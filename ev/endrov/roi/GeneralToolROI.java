@@ -12,11 +12,10 @@ import java.util.*;
 import javax.swing.*;
 import javax.vecmath.*;
 
-import endrov.basicWindow.WSTransformer;
-import endrov.data.EvContainer;
-import endrov.data.EvObject;
+import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.*;
 import endrov.util.EvDecimal;
+import endrov.util.Tuple;
 
 /**
  * Make nuclei by dragging an area. Also move nuclei.
@@ -30,32 +29,68 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 	private String currentHandle=null;
 
 	private final ImageWindowInterface w;
-	
-//	public void deselected() {}
+
 	
 	public GeneralToolROI(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
 
-	/*
-	public JMenuItem getMenuItem()
-		{
-		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("ROI/Edit");
-		mi.setSelected(w.getTool()==this);
-		final ImageWindowTool This=this;
-		mi.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){w.setTool(This);}
-		});
-		return mi;
-		}*/
 	
-	
-	public void mouseClicked(MouseEvent e)
+	public Tuple<String,ROI> getRoiBeneath(MouseEvent e)
 		{
-		if(SwingUtilities.isRightMouseButton(e))
+		Vector2d v=new Vector2d(e.getX(), e.getY());
+		v=w.transformS2W(v);
+		
+		EvDecimal z=w.getZ();
+		EvDecimal frame=w.getFrame();
+		String channel=w.getCurrentChannelName();
+		
+		for(Map.Entry<String,ROI> sr:w.getRootObject().getIdObjects(ROI.class).entrySet())
+			{
+//			System.out.println("testing "+sr.getKey());
+			if(sr.getValue().pointInRange(channel, frame, v.x, v.y, z))
+				return new Tuple<String, ROI>(sr.getKey(),sr.getValue());
+			}
+		return null;
+		}
+	
+	public void mouseClicked(MouseEvent e, Component invoker)
+		{
+		if(SwingUtilities.isLeftMouseButton(e))
+			{
+			Tuple<String,ROI> t=getRoiBeneath(e);
+			if(t!=null)
+				{
+				ROI.setSelected(Arrays.asList(t.snd()));
+				//BasicWindow.updateWindows();
+				}
+			}
+		else if(SwingUtilities.isRightMouseButton(e))
 			{
 			//If a ROI is beneath then open a pop-up menu
+			Tuple<String,ROI> t=getRoiBeneath(e);
+			if(t!=null)
+				{
+				JPopupMenu menu=new JPopupMenu();
+				final String roiName=t.fst();
+				
+				JMenuItem miDelete=new JMenuItem("Delete");
+				menu.add(miDelete);
+				
+				miDelete.addActionListener(new ActionListener()
+					{
+					public void actionPerformed(ActionEvent arg0)
+						{
+						w.getRootObject().metaObject.remove(roiName);
+						ROI.setSelected(new LinkedList<ROI>());
+						currentROI=null;
+						BasicWindow.updateWindows();
+						}
+					});
+		
+				menu.show(invoker, e.getX(), e.getY());
+				}
 			
 			
 			}
@@ -68,6 +103,7 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 			{
 			if(currentHandle!=null)
 				{
+				//Move a handle
 				for(ROI.Handle h:currentROI.getHandles())
 					if(h.getID().equals(currentHandle))
 						{
@@ -79,9 +115,24 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 				}
 			else
 				{
-				//TODO be able to move an entire ROI
-
-				
+				//Move an entire ROI
+				double wdx=w.scaleS2w(dx);
+				double wdy=w.scaleS2w(dy);
+				ROI.Handle h1=currentROI.getPlacementHandle1();
+				if(h1!=null)
+					{
+					double x=h1.getX();
+					double y=h1.getY();
+					h1.setPos(x+wdx, y+wdy);
+					}
+				ROI.Handle h2=currentROI.getPlacementHandle2();
+				if(h2!=null)
+					{
+					double x=h2.getX();
+					double y=h2.getY();
+					h2.setPos(x+wdx, y+wdy);
+					}
+				w.updateImagePanel();
 				}
 			
 			}
@@ -108,45 +159,22 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 						active=true;
 						currentHandle=rh.getKey();
 						currentROI=re.getKey();
-						
-						//TODO select ROI as well
-						
 						return;
 						}
 					}
 			
 			//If no handle then maybe the user hit a ROI head on?
-			
+			Tuple<String,ROI> t=getRoiBeneath(e);
+			if(t!=null)
+				{
+				active=true;
+				currentROI=t.snd();
+				currentHandle=null;
+				}
 			
 			}
 		}
 
-	/*
-	public ROI hitROI()
-		{
-		ROI roi=hitROIrecursive(frame, z, channel, con);
-		}
-	
-	
-	private ROI hitROIrecursive(EvDecimal frame, EvDecimal z, String channel, EvContainer con)
-		{
-		for(Map.Entry<String, EvObject> e:con.metaObject.entrySet())
-			{
-			if(e.getValue() instanceof ROI)
-				if(testHitROI(w, (ROI)e.getValue(), e.getKey(), frame, z, channel))
-					return (ROI)e.getValue();
-			ROI roi=hitROIrecursive(frame, z, channel, e.getValue());
-			if(roi!=null)
-				return roi;
-			}
-		return null;
-		}
-	
-	private boolean testHitROI(WSTransformer w, ROI roiUncast, String roiName, EvDecimal frame, EvDecimal z, String channel)
-		{
-		
-		return false;
-		}*/
 	
 	public void mouseReleased(MouseEvent e)
 		{

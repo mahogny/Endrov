@@ -5,6 +5,7 @@
  */
 package endrov.imageWindow;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -14,7 +15,7 @@ import java.awt.event.MouseEvent;
  */
 public interface GeneralTool
 	{
-	public void mouseClicked(MouseEvent e);
+	public void mouseClicked(MouseEvent e, Component invoker);
 	public void mousePressed(MouseEvent e);
 	public void mouseReleased(MouseEvent e);
 	public void mouseDragged(MouseEvent e, int dx, int dy);

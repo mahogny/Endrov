@@ -5,6 +5,7 @@
  */
 package endrov.roi.window;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -69,7 +70,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 			w.updateImagePanel();
 			}
 		}
-	public void mouseClicked(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e, Component invoker) {}
 	public void mousePressed(MouseEvent e)
 		{
 		if(SwingUtilities.isLeftMouseButton(e))

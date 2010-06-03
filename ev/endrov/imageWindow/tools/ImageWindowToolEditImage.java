@@ -5,6 +5,7 @@
  */
 package endrov.imageWindow.tools;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -102,7 +103,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 	
 	public void deselected(){}
 	
-	public void mouseClicked(MouseEvent e){}
+	public void mouseClicked(MouseEvent e, Component invoker){}
 	public void mousePressed(MouseEvent e){}
 	public void mouseReleased(MouseEvent e){}
 	public void mouseDragged(MouseEvent e, int dx, int dy){}

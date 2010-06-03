@@ -249,6 +249,16 @@ public class DiffROI extends CompoundROI
 			return new EmptyLineIterator();
 		}
 	
+	@Override
+	public boolean pointInRange(String channel,	EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		int count=0;
+		for(ROI roi:getSubRoi())
+			if(roi.pointInRange(channel, frame, x, y, z))
+				count++;
+		return count%2==1;
+		//http://en.wikipedia.org/wiki/Symmetric_difference
+		}
 	
 	
 	public String saveMetadata(Element e)

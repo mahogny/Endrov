@@ -230,4 +230,13 @@ public class MaskROI3 extends ROI
 			});*/
 		}
 
+
+
+	@Override
+	public boolean pointInRange(String channel,	EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		// TODO Auto-generated method stub
+		return false;
+		}
+
 	}

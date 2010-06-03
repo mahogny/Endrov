@@ -236,6 +236,25 @@ public class EllipseROI extends ROI
 		}
 	
 
+
+	@Override
+	public boolean pointInRange(String channel, EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		if(imageInRange(channel, frame, z))
+			{
+			double midx=(regionX.start.doubleValue()+regionX.end.doubleValue())/2.0;
+			double midy=(regionY.start.doubleValue()+regionY.end.doubleValue())/2.0;
+			double rx=Math.abs((regionX.end.doubleValue()-regionX.start.doubleValue())/2.0);
+			double ry=Math.abs((regionY.end.doubleValue()-regionY.start.doubleValue())/2.0);
+			
+			double dx=x-midx;
+			double dy=y-midy;
+			return dx*dx/(rx*rx) + dy*dy/(ry*ry)<1;
+			}
+		return false;
+		}
+
+	
 	
 	//ImageIterator?
 	

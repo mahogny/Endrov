@@ -53,13 +53,13 @@ public class IntersectROI extends CompoundROI
 				oneItRanges.addAll(it.ranges);
 				oneItY=it.y;
 				}
-			public void copyRange()
+			/*public void copyRange()
 				{
 				ranges.clear();
 				ranges.addAll(oneItRanges);
 				y=oneItY;
 				next();
-				}
+				}*/
 			}
 		
 		public ThisLineIterator(EvImage im, LineIterator ita, LineIterator itb, String channel, EvDecimal frame, EvDecimal z)
@@ -70,11 +70,11 @@ public class IntersectROI extends CompoundROI
 			}
 		
 		
-		public void addRest(LinkedList<LineRange> to, Iterator<LineRange> from)
+		/*public void addRest(LinkedList<LineRange> to, Iterator<LineRange> from)
 			{
 			while(from.hasNext())
 				to.add(from.next());
-			}
+			}*/
 		
 		public boolean next()
 			{
@@ -232,7 +232,16 @@ public class IntersectROI extends CompoundROI
 		else
 			return new EmptyLineIterator();
 		}
-	
+
+	@Override
+	public boolean pointInRange(String channel,	EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		for(ROI roi:getSubRoi())
+			if(!roi.pointInRange(channel, frame, x, y, z))
+				return false;
+		return true;
+		}
+
 	
 	public String saveMetadata(Element e)
 		{

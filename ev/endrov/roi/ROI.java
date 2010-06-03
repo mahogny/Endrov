@@ -36,6 +36,20 @@ public abstract class ROI extends EvObject
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 
+	/*
+	public static class ROISelect implements EvSelectable
+		{
+		ROI roi;
+		public ROISelect(ROI roi)
+			{
+			this.roi=roi;
+			}
+	
+		public void setColor(EvColor c)
+			{
+			}
+		}*/
+	
 	/**
 	 * Set of all selected ROI:s
 	 */
@@ -236,6 +250,7 @@ public abstract class ROI extends EvObject
 	 */
 	public abstract Handle getPlacementHandle2();
 	
+
 	/**
 	 * First called when placing ROI
 	 */
@@ -254,7 +269,7 @@ public abstract class ROI extends EvObject
 	/**
 	 * Check if a given point (world coordinates) is in a ROI
 	 */
-	public abstract boolean pointInRange(EvStack stack, EvImage im, String channel, EvDecimal frame, double x, double y, EvDecimal z);
+	public abstract boolean pointInRange(String channel, EvDecimal frame, double x, double y, EvDecimal z);
 	
 	
 	/******************************************************************************************************

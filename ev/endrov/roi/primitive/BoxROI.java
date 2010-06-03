@@ -260,7 +260,7 @@ public class BoxROI extends ROI
 	
 	
 	@Override
-	public boolean pointInRange(EvStack stack, EvImage im, String channel,
+	public boolean pointInRange(String channel,
 			EvDecimal frame, double x, double y, EvDecimal z)
 		{
 		if(imageInRange(channel, frame, z))
@@ -268,7 +268,7 @@ public class BoxROI extends ROI
 			if(!regionX.all)
 				{
 				double rXstart=regionX.start.doubleValue();
-				double rXend=regionY.end.doubleValue();
+				double rXend=regionX.end.doubleValue();
 				if(rXstart>rXend)
 					{
 					double temp=rXstart;
@@ -295,7 +295,7 @@ public class BoxROI extends ROI
 				else if(y>rYend)
 					return false;
 				}
-			
+			return true;
 			}
 		return false;
 		}
@@ -357,6 +357,16 @@ public class BoxROI extends ROI
 		regionZ.set(z);
 		}
 	
+	/*
+	public void moveROI(EvDecimal dx, EvDecimal dy, EvDecimal dz)
+		{
+		regionX.start=regionX.start.add(dx);
+		regionX.end=regionX.end.add(dx);
+		regionY.start=regionY.start.add(dy);
+		regionY.end=regionY.end.add(dy);
+		regionZ.start=regionZ.start.add(dz);
+		regionZ.end=regionZ.end.add(dz);
+		}*/
 	
 	public Vector<ROI> getSubRoi()
 		{
