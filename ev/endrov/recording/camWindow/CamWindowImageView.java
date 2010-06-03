@@ -194,7 +194,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	public void mouseClicked(MouseEvent e)
 		{
 		if(currentTool!=null)
-			currentTool.mouseClicked(e);
+			currentTool.mouseClicked(e, this);
 		}
 	public void mouseEntered(MouseEvent e)
 		{

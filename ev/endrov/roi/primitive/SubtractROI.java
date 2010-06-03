@@ -20,7 +20,7 @@ import endrov.util.EvDecimal;
 //TODO: restrict interval better
 
 /**
- * ROI: set theoretic union of other ROIs
+ * ROI: A - B
  * @author Johan Henriksson
  */
 public class SubtractROI extends CompoundROI
@@ -245,7 +245,21 @@ public class SubtractROI extends CompoundROI
 		else
 			return new EmptyLineIterator();
 		}
+
 	
+	@Override
+	public boolean pointInRange(String channel,	EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		List<ROI> subRoi=getSubRoi();
+		if(subRoi.size()>=2)
+			{
+			boolean a=subRoi.get(0).pointInRange(channel, frame, x, y, z);
+			boolean b=subRoi.get(1).pointInRange(channel, frame, x, y, z);
+			return a & !b;
+			}
+		return false;
+		}	
+
 	
 	public String saveMetadata(Element e)
 		{
@@ -285,6 +299,6 @@ public class SubtractROI extends CompoundROI
 		EvData.supportedMetadataFormats.put(metaType,SubtractROI.class);
 		
 		ROI.addType(new ROIType(icon, SubtractROI.class, false,true,metaDesc));
-		}	
+		}
 	
 	}

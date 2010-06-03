@@ -116,4 +116,11 @@ public class BitmapROI extends ROI
 		return metaType;
 		}
 
+	@Override
+	public boolean pointInRange(String channel,	EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		// TODO Auto-generated method stub
+		return false;
+		}
+
 	}

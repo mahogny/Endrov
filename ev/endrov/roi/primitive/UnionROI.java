@@ -241,6 +241,22 @@ public class UnionROI extends CompoundROI
 			return new EmptyLineIterator();
 		}
 	
+
+	@Override
+	public boolean pointInRange(String channel, EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		List<ROI> subRoi=getSubRoi();
+		if(!subRoi.isEmpty())
+			{
+			for(ROI roi:subRoi)
+				if(!roi.pointInRange(channel, frame, x, y, z))
+					return false;
+			return true;
+			}
+		else
+			return false;
+		}	
+
 	
 	public String saveMetadata(Element e)
 		{
@@ -281,6 +297,6 @@ public class UnionROI extends CompoundROI
 		EvData.supportedMetadataFormats.put(metaType,UnionROI.class);
 		
 		ROI.addType(new ROIType(icon, UnionROI.class, false,true,metaDesc));
-		}	
+		}
 	
 	}

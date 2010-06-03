@@ -792,7 +792,7 @@ public class ImageWindow extends BasicWindow
 	public void mouseClicked(MouseEvent e)
 		{
 		if(tool!=null)
-			tool.mouseClicked(e);
+			tool.mouseClicked(e,imagePanel);
 //		if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isMiddleMouseButton(e))
 		imagePanel.requestFocus();
 		}

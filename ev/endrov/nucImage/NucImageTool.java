@@ -120,7 +120,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 
 	
 	
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(MouseEvent e, Component invoker)
 		{
 		if(SwingUtilities.isLeftMouseButton(e) && !r.getVisibleLineages().isEmpty())
 			NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);

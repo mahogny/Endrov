@@ -87,7 +87,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 		}
 	
 	
-	public void mouseClicked(MouseEvent e)
+	public void mouseClicked(MouseEvent e, Component invoker)
 		{
 		EvContainer data=w.getRootObject();
 		if(data!=null)

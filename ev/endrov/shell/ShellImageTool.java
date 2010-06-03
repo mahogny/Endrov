@@ -100,7 +100,7 @@ public class ShellImageTool implements ImageWindowTool
 		}
 
 	
-	public void mouseClicked(final  MouseEvent e)
+	public void mouseClicked(final  MouseEvent e, Component invoker)
 		{
 		}
 	

@@ -5,6 +5,7 @@
  */
 package endrov.bookmark;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -119,7 +120,7 @@ public class BookmarkImageWindowHook implements ImageWindowExtension
 				{
 				}
 
-			public void mouseClicked(MouseEvent e)
+			public void mouseClicked(MouseEvent e, Component invoker)
 				{
 				}
 
