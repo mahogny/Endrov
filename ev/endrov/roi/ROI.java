@@ -251,6 +251,10 @@ public abstract class ROI extends EvObject
 	 */
 	public abstract LineIterator getLineIterator(EvStack stack, EvImage im, String channel, EvDecimal frame, EvDecimal z);
 	
+	/**
+	 * Check if a given point (world coordinates) is in a ROI
+	 */
+	public abstract boolean pointInRange(EvStack stack, EvImage im, String channel, EvDecimal frame, double x, double y, EvDecimal z);
 	
 	
 	/******************************************************************************************************
