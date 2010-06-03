@@ -134,9 +134,10 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 					}
 				w.updateImagePanel();
 				}
-			
 			}
 		}
+	
+	
 	
 	private boolean mouseOverHandle(MouseEvent e, ROI.Handle h)
 		{
