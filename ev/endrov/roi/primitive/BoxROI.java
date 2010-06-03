@@ -258,6 +258,49 @@ public class BoxROI extends ROI
 			return new EmptyLineIterator();
 		}
 	
+	
+	@Override
+	public boolean pointInRange(EvStack stack, EvImage im, String channel,
+			EvDecimal frame, double x, double y, EvDecimal z)
+		{
+		if(imageInRange(channel, frame, z))
+			{
+			if(!regionX.all)
+				{
+				double rXstart=regionX.start.doubleValue();
+				double rXend=regionY.end.doubleValue();
+				if(rXstart>rXend)
+					{
+					double temp=rXstart;
+					rXstart=rXend;
+					rXend=temp;
+					}
+				if(x<rXstart)
+					return false;
+				else if(x>rXend)
+					return false;
+				}
+			if(!regionY.all)
+				{
+				double rYstart=regionY.start.doubleValue();
+				double rYend=regionY.end.doubleValue();
+				if(rYstart>rYend)
+					{
+					double temp=rYstart;
+					rYstart=rYend;
+					rYend=temp;
+					}
+				if(y<rYstart)
+					return false;
+				else if(y>rYend)
+					return false;
+				}
+			
+			}
+		return false;
+		}
+
+	
 
 	/**
 	 * Get widget for editing this ROI
