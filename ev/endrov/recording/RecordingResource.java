@@ -136,6 +136,9 @@ public class RecordingResource
 		stack.dispX=-stageX/res;
 		stack.dispY=-stageY/res;
 		//there is offset!!!!
+
+
+		System.out.println("disp  "+stack.dispX+"     "+stack.dispY+"        stage "+stageX+"     "+stageY);
 		
 		//Fill bitmap ROI
 		LineIterator it=roi.getLineIterator(stack, image, channel, frame, z);

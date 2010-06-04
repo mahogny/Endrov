@@ -47,6 +47,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 
 	
 	public abstract EvPixels[] getImage();
+	public abstract Vector2i getOffset();
 	public abstract int getLower();
 	public abstract int getUpper();
 		
@@ -74,10 +75,14 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	
 	protected void paintComponent(Graphics g)
 		{
+		Vector2i offset=getOffset();
+		
 		//Make sure background is filled with something
 		g.setColor(new Color(0.3f, 0.1f, 0.3f));
 		g.fillRect(0, 0, getWidth(), getHeight());
-		
+
+		g.translate(offset.x, offset.y);
+
 		//Convert pixels into the right range. Mark under- and overflow
 		EvPixels[] pq=getImage();
 		if(pq!=null)
@@ -183,6 +188,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 				}
 
 			}
+		g.translate(-offset.x, -offset.y);
 		
 		
 		for(ImageWindowRenderer r:imageWindowRenderers)
@@ -250,9 +256,9 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 				{
 				moveAxis("x", dx*resMagX);
 				moveAxis("y", dy*resMagY);
+				repaint();
 				}
 			}
-		
 		}
 	public void mouseMoved(MouseEvent e)
 		{

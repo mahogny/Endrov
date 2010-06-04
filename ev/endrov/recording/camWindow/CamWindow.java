@@ -39,6 +39,7 @@ import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 import endrov.util.JImageToggleButton;
+import endrov.util.Vector2i;
 
 /**
  * Camera live-feed window
@@ -73,6 +74,8 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	private EvPixels[] lastCameraImage=null;
 	private Dimension lastImageSize=null; 
 
+	private Vector2d lastImageStagePos=new Vector2d();
+	
 	private JComboBox cameraCombo;
 
 	//Update timer, busy loop for now. replace later by camera event listener	
@@ -109,6 +112,13 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 				return CamWindow.this.lastCameraImage;
 			else
 				return null;
+			}
+		
+		public Vector2i getOffset()
+			{
+			double dx=getStageX()-lastImageStagePos.x;
+			double dy=getStageY()-lastImageStagePos.y;
+			return new Vector2i((int)(dx/getCameraResolution()), (int)(dy/getCameraResolution()));
 			}
 		
 		protected void paintComponent(java.awt.Graphics g)
@@ -436,6 +446,8 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 							));
 					}
 				lastImageSize=newDim;
+				
+				lastImageStagePos=new Vector2d(getStageX(),getStageY());
 				}
 
 			//Update image
