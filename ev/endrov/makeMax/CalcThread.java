@@ -91,9 +91,9 @@ public final class CalcThread extends BatchThread
 					EvStack max=new EvOpProjectMaxZ().project(s);
 					
 					//Pick out only one slice - in case we resave to disk
-					EvStack maxOneLayer=new EvStack();
+					/*EvStack maxOneLayer=new EvStack();
 					maxOneLayer.getMetaFrom(max);
-					max.putInt(0, max.getInt(0));
+					max.putInt(0, max.getInt(0));*/
 
 
 					/*
@@ -160,7 +160,7 @@ public final class CalcThread extends BatchThread
 						
 						stack.put(EvDecimal.ZERO,toim);
 						*/
-						chto.imageLoader.put(curframe,maxOneLayer);
+						chto.imageLoader.put(curframe,max);
 						
 						//chto.setImage(curframe, EvDecimal.ZERO, toim);
 						BasicWindow.updateWindows();

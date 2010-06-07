@@ -76,7 +76,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 	 */
 	public MakeMaxWindow()
 		{
-		this(600,300,500,150);
+		this(600,300,500,300);
 		}
 	
 	/**
@@ -90,7 +90,7 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 		//Put GUI together
 		setLayout(new BorderLayout());
 	
-		JPanel bottom=new JPanel(new GridLayout(2,4));
+		JPanel bottom=new JPanel(new GridLayout(4,2));
 		add(bottom, BorderLayout.CENTER);
 		
 		bottom.add(new JLabel("Start frame:"));
