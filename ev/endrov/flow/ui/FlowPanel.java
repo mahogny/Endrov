@@ -81,6 +81,28 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			camera.put(flow,cam=new Vector2i());
 		return cam;
 		}
+
+	
+	public Rectangle2D normalizeRect(Rectangle2D r)
+		{
+		int x1=(int)r.getX();
+		int w=(int)r.getWidth();
+		if(w<0)
+			{
+			x1=x1+w;
+			w=-w;
+			}
+		
+		int y1=(int)r.getY();
+		int h=(int)r.getHeight();
+		if(h<0)
+			{
+			y1=y1+h;
+			h=-h;
+			}
+
+		return new Rectangle(x1,y1,w,h);
+		}
 	
 	/**
 	 * Constructor
@@ -306,9 +328,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			
 			if(selectRect!=null)
 				{
+				Rectangle2D r=normalizeRect(selectRect);
 				g.setColor(Color.MAGENTA);
-				g.drawRect((int)selectRect.getX(), (int)selectRect.getY(), 
-						(int)selectRect.getWidth(), (int)selectRect.getHeight());
+				g.drawRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
 				}
 			
 			g2.translate(camera.x, camera.y);
@@ -784,8 +806,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				selectedUnits.clear();
 			for(FlowUnit u:getFlow().units)
 				{
+				Rectangle2D r=normalizeRect(selectRect);
+
 				Point p=u.getMidPos(unitComponent.get(u),flow);
-				if(p.x>selectRect.getX() && p.y>selectRect.getY() && p.x<selectRect.getMaxX() && p.y<selectRect.getMaxY())
+				if(p.x>r.getX() && p.y>r.getY() && p.x<r.getMaxX() && p.y<r.getMaxY())
 					selectedUnits.add(u);
 				}
 			selectRect=null;

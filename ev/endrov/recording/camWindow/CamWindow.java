@@ -11,7 +11,6 @@ package endrov.recording.camWindow;
 
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -27,7 +26,6 @@ import org.jdom.*;
 import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.hardware.*;
 import endrov.imageWindow.GeneralTool;
 import endrov.imageWindow.ImageWindow;
@@ -37,7 +35,6 @@ import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
-import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
 import endrov.roi.GeneralToolROI;
 import endrov.roi.ImageRendererROI;
@@ -195,61 +192,74 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 				if(stopSnapThread)
 					return;
 				
-				//this does not work later. have to synchronize all calls for an image
-				//so all targets gets it.
-				HWCamera cam=getCurrentCamera();
-				//EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
-				if(cam!=null)
+				
+				synchronized (RecordingResource.acquisitionLock)
 					{
-					//HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
-					Vector2d curStagePos=new Vector2d(getStageX(),getStageY());
-					CameraImage cim=cam.snap();
-					lastImageStagePos=curStagePos;
-					lastCameraImage=cim.getPixels();
-
-					//Update range if needed
-					if(lastCameraImage!=null && tAutoRange.isSelected())
-						histoView.calcAutoRange(lastCameraImage);
-
-					int numBits=getNumCameraBits();
-					histoView.setImage(lastCameraImage, numBits);
-					
-					//Update size of this window if camera area size changes
-					if(lastCameraImage!=null)
+					//this does not work later. have to synchronize all calls for an image
+					//so all targets gets it.
+					HWCamera cam=getCurrentCamera();
+					//EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
+					if(cam!=null)
 						{
-						Dimension newDim=new Dimension(lastCameraImage[0].getWidth(), lastCameraImage[0].getHeight());
-						if(lastImageSize==null || !lastImageSize.equals(newDim))
-							{
-							Rectangle rect=drawArea.getBounds();
-							Dimension oldDim=new Dimension(rect.width,rect.height);
-							
-							Rectangle bounds=getBoundsEvWindow();
-							setBoundsEvWindow(new Rectangle(
-									bounds.x,bounds.y,
-									(int)(bounds.getWidth()+(newDim.getWidth()-oldDim.getWidth())),
-									(int)(bounds.getHeight()+(newDim.getHeight()-oldDim.getHeight()))
-									));
-							}
-						lastImageSize=newDim;
-						}
+						//HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
+						Vector2d curStagePos=new Vector2d(getStageX(),getStageY());
+						CameraImage cim=cam.snap();
+						lastImageStagePos=curStagePos;
+						lastCameraImage=cim.getPixels();
 
-					//Update image
-					try
-						{
-						SwingUtilities.invokeAndWait(new Runnable() 
+						//Update range if needed
+						if(lastCameraImage!=null && tAutoRange.isSelected())
+							histoView.calcAutoRange(lastCameraImage);
+
+						int numBits=getNumCameraBits();
+						histoView.setImage(lastCameraImage, numBits);
+						
+						//Update size of this window if camera area size changes
+						if(lastCameraImage!=null)
 							{
-							public void run()
+							Dimension newDim=new Dimension(lastCameraImage[0].getWidth(), lastCameraImage[0].getHeight());
+							if(lastImageSize==null || !lastImageSize.equals(newDim))
 								{
-								drawArea.repaint();
+								Rectangle rect=drawArea.getBounds();
+								Dimension oldDim=new Dimension(rect.width,rect.height);
+								
+								Rectangle bounds=getBoundsEvWindow();
+								setBoundsEvWindow(new Rectangle(
+										bounds.x,bounds.y,
+										(int)(bounds.getWidth()+(newDim.getWidth()-oldDim.getWidth())),
+										(int)(bounds.getHeight()+(newDim.getHeight()-oldDim.getHeight()))
+										));
 								}
-							});
-						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
+							lastImageSize=newDim;
+							}
+
 						}
 					}
+				/*
+				//Do not snap if some acquisition has blocked the camera
+				if(RecordingResource.isLiveCameraBlocked())
+					{
+					try{Thread.sleep(10);}
+					catch (InterruptedException e){}
+					continue;
+					}*/
 				
+
+				//Update image
+				try
+					{
+					SwingUtilities.invokeAndWait(new Runnable() 
+						{
+						public void run()
+							{
+							drawArea.repaint();
+							}
+						});
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
 				
 				}
 			
