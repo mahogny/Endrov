@@ -19,6 +19,12 @@ import endrov.util.EvDecimal;
  */
 public class QuickBleach 
 	{
+	private EvDecimal bleachTime;
+	private ROI roi;
+	private List<Listener> listeners=new LinkedList<Listener>();
+	
+	
+	
 	public void setBleachTime(EvDecimal bleachTime)
 		{
 		this.bleachTime = bleachTime;
@@ -34,10 +40,6 @@ public class QuickBleach
 		this.roi = roi;
 		}
 	
-	private EvDecimal bleachTime;
-	private ROI roi;
-
-	private List<Listener> listeners=new LinkedList<Listener>();
 	
 	/**
 	 * Thread activity listener

@@ -197,12 +197,6 @@ public class FrivolousCell
 		for(int i=0;i<output_array.real.length;i++)
 			retarr[i]=(int)output_array.real[i];
 
-		/*
-		int[] retarr=new int[output_noise.real.length];
-		for(int i=0;i<output_noise.real.length;i++)
-			retarr[i]=(int)output_noise.real[i];
-		*/
-		
 		return retarr;
 		//return FrivolousUtility.getImageFromComplex(output_noise, false);
 		}
