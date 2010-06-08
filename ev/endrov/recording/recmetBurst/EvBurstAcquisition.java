@@ -19,6 +19,7 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
 import endrov.recording.HWCamera;
+import endrov.recording.RecordingResource;
 import endrov.util.EvDecimal;
 
 /**
@@ -148,101 +149,109 @@ public class EvBurstAcquisition extends EvObject
 			//Check that there are enough parameters
 			if(cam!=null && container!=null)
 				{
+				//Object lockCamera=RecordingResource.blockLiveCamera();
 				
-				boolean isRGB=false;
-				
-				Imageset imset=new Imageset();
-				for(int i=0;;i++)
-					if(container.getChild("im"+i)==null)
-						{
-						container.metaObject.put("im"+i, imset);
-						
-						if(isRGB)
-							{
-							imset.metaObject.put(channelName+"R", new EvChannel());
-							imset.metaObject.put(channelName+"G", new EvChannel());
-							imset.metaObject.put(channelName+"B", new EvChannel());
-							}
-						else
-							imset.metaObject.put(channelName, new EvChannel());
-						break;
-						}
-
-				//TODO signal update on the object
-				BasicWindow.updateWindows();
-
-				
-				EvDecimal curFrame=new EvDecimal(0);
-
-				
-				
-				
-				
-				try
+				synchronized (RecordingResource.acquisitionLock)
 					{
+
+					boolean isRGB=false;
 					
-					cam.startSequenceAcq(interval);
-					
-					while(!toStop)
-						{
-
-						//Avoid busy loop
-						try
+					Imageset imset=new Imageset();
+					for(int i=0;;i++)
+						if(container.getChild("im"+i)==null)
 							{
-							Thread.sleep((long)interval/3);
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//See if another image is incoming
-						CameraImage camIm=cam.snapSequence();
-						if(camIm!=null)
-							{
-							EvChannel ch=(EvChannel)imset.getChild(channelName);
-							EvStack stack=ch.getCreateFrame(curFrame);
-
+							container.metaObject.put("im"+i, imset);
+							
 							if(isRGB)
 								{
-								//TODO
-								
+								imset.metaObject.put(channelName+"R", new EvChannel());
+								imset.metaObject.put(channelName+"G", new EvChannel());
+								imset.metaObject.put(channelName+"B", new EvChannel());
 								}
 							else
+								imset.metaObject.put(channelName, new EvChannel());
+							break;
+							}
+
+					//TODO signal update on the object
+					BasicWindow.updateWindows();
+
+					
+					EvDecimal curFrame=new EvDecimal(0);
+
+					
+					
+					
+					
+					try
+						{
+						
+						cam.startSequenceAcq(interval);
+						
+						while(!toStop)
+							{
+
+							//Avoid busy loop
+							try
 								{
-								//TODO resolution
-								stack.resX=1;
-								stack.resY=1;
-								stack.resZ=new EvDecimal(1);
-								
-								//TODO offset from stage?
-								
-								EvImage evim=new EvImage(camIm.getPixels()[0]);
-								
-								
-								
-								System.out.println(camIm.getPixels());
-								System.out.println(camIm.getNumComponents());
-								
-								EvDecimal z=new EvDecimal(0);
-								ch.getCreateFrame(curFrame).put(z, evim);
+								Thread.sleep((long)interval/3);
 								}
+							catch (Exception e)
+								{
+								e.printStackTrace();
+								}
+
+							//See if another image is incoming
+							CameraImage camIm=cam.snapSequence();
+							if(camIm!=null)
+								{
+								EvChannel ch=(EvChannel)imset.getChild(channelName);
+								EvStack stack=ch.getCreateFrame(curFrame);
+
+								if(isRGB)
+									{
+									//TODO
+									
+									}
+								else
+									{
+									//TODO resolution
+									stack.resX=1;
+									stack.resY=1;
+									stack.resZ=new EvDecimal(1);
+									
+									//TODO offset from stage?
+									
+									EvImage evim=new EvImage(camIm.getPixels()[0]);
+									
+									
+									
+									System.out.println(camIm.getPixels());
+									System.out.println(camIm.getNumComponents());
+									
+									EvDecimal z=new EvDecimal(0);
+									ch.getCreateFrame(curFrame).put(z, evim);
+									}
+									
+									
 								
 								
+								curFrame=curFrame.add(new EvDecimal(interval));
+								}
 							
 							
-							curFrame=curFrame.add(new EvDecimal(interval));
 							}
 						
-						
+						cam.stopSequenceAcq();
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
 						}
 					
-					cam.stopSequenceAcq();
 					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
+				
+//				RecordingResource.unblockLiveCamera(lockCamera);
 				}
 			
 			//System.out.println("---------stop-----------");

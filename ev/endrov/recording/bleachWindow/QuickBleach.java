@@ -91,28 +91,34 @@ public class QuickBleach
 			//Check that there are enough parameters
 			if(cam!=null)
 				{
-				BasicWindow.updateWindows();
-
-				try
+				synchronized (RecordingResource.acquisitionLock)
 					{
-					//Acquire image before bleaching
+//				Object lockCamera=RecordingResource.blockLiveCamera();
+
+					try
+						{
+						//Acquire image before bleaching
+						BasicWindow.updateWindows();
+
+						//Bleach ROI
+						double stageX=RecordingResource.getCurrentStageX();
+						double stageY=RecordingResource.getCurrentStageY();
+						String normalExposureTime=cam.getPropertyValue("Exposure");
+						cam.setPropertyValue("Exposure", ""+bleachTime);
+						int[] roiArray=RecordingResource.makeScanningROI(cam, roi, stageX, stageY);
+						cam.scan(null, null, roiArray);
+						cam.setPropertyValue("Exposure", normalExposureTime);
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
+
+		//			RecordingResource.unblockLiveCamera(lockCamera);
+					
 					BasicWindow.updateWindows();
-
-					//Bleach ROI
-					double stageX=RecordingResource.getCurrentStageX();
-					double stageY=RecordingResource.getCurrentStageY();
-					String normalExposureTime=cam.getPropertyValue("Exposure");
-					cam.setPropertyValue("Exposure", ""+bleachTime);
-					int[] roiArray=RecordingResource.makeScanningROI(cam, roi, stageX, stageY);
-					cam.scan(null, null, roiArray);
-					cam.setPropertyValue("Exposure", normalExposureTime);
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
 					}
 
-				BasicWindow.updateWindows();
 				}
 
 

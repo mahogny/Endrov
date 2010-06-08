@@ -6,7 +6,6 @@
 package endrov.recording;
 
 
-
 import endrov.data.EvData;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvImage;
@@ -28,7 +27,12 @@ import endrov.util.EvSound;
 public class RecordingResource
 	{
 	public static EvSound soundCameraSnap;
-	
+
+	/**
+	 * Acquisition operations started by the user will lock all hardware to avoid overlap
+	 */
+	public static Object acquisitionLock=new Object();
+
 	/**
 	 * TODO
 	 * guess magnification by looking at state label
@@ -135,11 +139,7 @@ public class RecordingResource
 		//TODO how to offset?
 		stack.dispX=-stageX/res;
 		stack.dispY=-stageY/res;
-		//there is offset!!!!
 
-
-		System.out.println("disp  "+stack.dispX+"     "+stack.dispY+"        stage "+stageX+"     "+stageY);
-		
 		//Fill bitmap ROI
 		LineIterator it=roi.getLineIterator(stack, image, channel, frame, z);
 		while(it.next())
@@ -164,7 +164,8 @@ public class RecordingResource
 		*/
 		return ret;
 		}
-
+	
+	
 
 
 	/******************************************************************************************************
