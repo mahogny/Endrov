@@ -43,6 +43,8 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 	private EvFRAPAcquisition acq=new EvFRAPAcquisition();
 	private EvFRAPAcquisition.AcqThread thread;
 	
+	private JLabel labelStatus=new JLabel(" ");
+	
 	private EvComboObject objectCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
 		private static final long serialVersionUID = 1L;
@@ -84,30 +86,12 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 		spBleachTime.setDecimalValue(new EvDecimal(1));
 //		spExpTime.setDecimalValue(new EvDecimal(100));
 		
-		///////////////// Acquire ///////////////////////////////////////
-
-		
-		
-		//Create new data
-		//Select root
-		//Select name of channel - only if not RGB
-		
-		
-			
-		//tChannelName.setToolTipText("Name of channel - Used as a prefix if the camera does RGB");
+		labelStatus.setBorder(BorderFactory.createTitledBorder("Status"));
 		
 		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
-				
-				//Camera
-				//ROI
-				//Bleach time
-				//Tot time
-				//Interval
-				
-				
 				
 				EvSwingUtil.layoutLCR(
 						new JLabel("ROI"),
@@ -144,9 +128,9 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 						new JLabel("Object name"),
 						tStoreName,
 						bStartStop
-						)//,
+						),
 				
-				//labelStatus
+				labelStatus
 				
 				),
 				BorderLayout.CENTER);
@@ -183,7 +167,12 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 				acq.recoveryTime=spRecoveryTime.getDecimalValue();
 				acq.roi=(ROI)roiCombo.getSelectedObject();
 				
-				thread=acq.startAcquisition();
+				if(acq.container==null)
+					showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
+				else if(acq.roi==null)
+					showErrorDialog("Need to select a ROI");
+				else
+					thread=acq.startAcquisition();
 
 				}
 			
@@ -236,6 +225,18 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 				{
 				bStartStop.setText("Start");
 				thread=null;
+				labelStatus.setText(" ");
+				}
+			});
+		}
+	
+	public void newStatus(final String s)
+		{
+		SwingUtilities.invokeLater(new Runnable()
+			{
+			public void run()
+				{
+				labelStatus.setText(s);
 				}
 			});
 		}
