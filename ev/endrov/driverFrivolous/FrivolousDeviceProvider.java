@@ -43,19 +43,21 @@ import endrov.util.EvSwingUtil;
  */
 public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevice
 	{
-	double resolution=10;
-
+	private double resolution=10;
+	private int height=512;
+	private int width=512;
 	private static Map<String, Class<? extends EvDevice>> hardwareProvided = new TreeMap<String, Class<? extends EvDevice>>();
 	private FrivolousModel model;
-
-	public static void initPlugin()
-		{
-		}
 
 	static
 		{
 		EvHardware.root.hw.put("fr", new FrivolousDeviceProvider());
 		}
+		
+	public static void initPlugin()
+		{
+		}
+
 
 	public FrivolousDeviceProvider()
 		{
@@ -242,11 +244,14 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			long startTime=System.currentTimeMillis();
 			CameraImage cim=snapInternal();
-			
+
+			int offsetX=-(int)(stagePos[0]/getRes());
+			int offsetY=-(int)(stagePos[1]/getRes());
+
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(width, height, 0, 0, (float)getBleachFactor());
-			model.cell.bleachImmobile(width, height, 0, 0, (float)getBleachFactor());
+			model.cell.bleachImmobile(width, height, offsetX, offsetY, (float)getBleachFactor());
 			waitInTotal(startTime, expTime);
 			return cim;
 			}
@@ -300,8 +305,6 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			}
 
 		
-		int height=512;
-		int width=512;
 		
 		public int getHeight()
 			{
@@ -347,6 +350,9 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			}
 		
 		
+		/**
+		 * Scan the entire image
+		 */
 		public void scan(int[] buffer, ScanStatusListener status)
 			{
 			long startTime=System.currentTimeMillis();
@@ -360,13 +366,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 						buffer[i]=snapped[i];
 				}
 			
+			int offsetX=-(int)(stagePos[0]/getRes());
+			int offsetY=-(int)(stagePos[1]/getRes());
+			
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
-				d.bleach(width, height, 0, 0, (float)getBleachFactor());
-			model.cell.bleachImmobile(width, height, 0, 0, (float)getBleachFactor());
+				d.bleach(width, height, offsetX, offsetY, (float)getBleachFactor());
+			model.cell.bleachImmobile(width, height, offsetX, offsetY, (float)getBleachFactor());
 			waitInTotal(startTime, expTime);
 			}
 
+		/**
+		 * Scan only a ROI
+		 */
 		public void scan(int[] buffer, ScanStatusListener status, int[] roi)
 			{
 			long startTime=System.currentTimeMillis();
@@ -381,10 +393,13 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 						buffer[i]=snapped[i];
 				}
 			
+			int offsetX=-(int)(stagePos[0]/getRes());
+			int offsetY=-(int)(stagePos[1]/getRes());
+			
 			//Bleach only the ROI
 			for(FrivolousDiffusion d:model.cell.diffusers)
-				d.bleach(roi, width, height, 0, 0, (float)getBleachFactor()); 
-			model.cell.bleachImmobile(roi, width, height, 0, 0, (float)getBleachFactor()); 
+				d.bleach(roi, width, height, offsetX, offsetY, (float)getBleachFactor()); 
+			model.cell.bleachImmobile(roi, width, height, offsetX, offsetY, (float)getBleachFactor()); 
 			waitInTotal(startTime, expTime);
 			}
 
@@ -402,7 +417,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	private class FrivolousStage implements HWStage
 		{
-		// Simulate moving stage?
+		// TODO Simulate moving stage? takes time to move? 
 
 		public String[] getAxisName()
 			{
