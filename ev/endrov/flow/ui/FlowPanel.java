@@ -49,7 +49,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private static final int connPointSnapDistance=10;
 	private static final int lineSnapDistance=10;
 
-	//private int camera.x, camera.y;
 	private Flow flow=new Flow();
 	private FlowExec flowExec=new FlowExec();
 	private boolean enabled=false;
@@ -824,7 +823,17 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 							break;
 							}
 					if(!exists)
+						{
+						//Also delete other connections ending in this position - these make no sense
+						for(FlowConn c:getFlow().conns)
+							if(c.toUnit==t.fst() && c.toArg.equals(t.snd()))
+								{
+								getFlow().conns.remove(c);
+								break;
+								}
+						
 						getFlow().conns.add(nc);
+						}
 					}
 				}
 			drawingConn=null;

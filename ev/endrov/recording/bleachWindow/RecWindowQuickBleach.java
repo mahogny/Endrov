@@ -42,7 +42,8 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 	private QuickBleach acq=new QuickBleach();
 	private QuickBleach.AcqThread thread;
 	
-		
+	private JLabel labelStatus=new JLabel(" ");
+	
 	private EvComboObject roiCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
 		private static final long serialVersionUID = 1L;
@@ -66,7 +67,8 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 		
 		spBleachTime.setDecimalValue(new EvDecimal(1));
 	
-		
+		labelStatus.setBorder(BorderFactory.createTitledBorder("Status"));
+
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
@@ -80,10 +82,12 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 				EvSwingUtil.layoutLCR(
 						new JLabel("Bleach time"),
 						spBleachTime,
-						new JLabel("s")
+						new JLabel("[s]")
 						),
 						
-				bStartStop
+				bStartStop,
+
+				labelStatus
 				
 				),
 				BorderLayout.CENTER);
@@ -112,6 +116,8 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 				acq.setBleachTime(spBleachTime.getDecimalValue());
 				acq.setRoi((ROI)roiCombo.getSelectedObject());
 				
+				labelStatus.setText("Bleaching");
+				
 				thread=acq.startAcquisition();
 
 				}
@@ -137,6 +143,7 @@ public class RecWindowQuickBleach extends BasicWindow implements ActionListener,
 	public void acqStopped()
 		{
 		bStartStop.setText("Start");
+		labelStatus.setText("");
 		thread=null;
 		}
 

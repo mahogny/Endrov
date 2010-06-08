@@ -5,6 +5,8 @@
  */
 package endrov.driverFrivolous;
 
+import java.io.File;
+
 import endrov.util.EvFileUtil;
 
 
@@ -15,11 +17,25 @@ public class FrivolousModel
 	{
 	public FrivolousCell cell;
 
-	public FrivolousModel()
+	
+	public static File getStandardExperiment()
 		{
 		try
 			{
-			cell = new FrivolousCell(EvFileUtil.getFileFromURL(FrivolousDeviceProvider.class.getResource("data").toURI().toURL()));
+			return EvFileUtil.getFileFromURL(FrivolousDeviceProvider.class.getResource("data").toURI().toURL());
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			return null;
+			}
+		}
+	
+	public FrivolousModel(File f)
+		{
+		try
+			{
+			cell = new FrivolousCell(f);
 			}
 		catch (Exception e)
 			{

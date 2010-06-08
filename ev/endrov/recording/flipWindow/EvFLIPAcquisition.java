@@ -123,10 +123,8 @@ public class EvFLIPAcquisition extends EvObject
 				//Check that there are enough parameters
 				if(cam!=null && container!=null)
 					{
-
 					ROI copyRoiBleach=(ROI)roiBleach.cloneBySerialize();
-					ROI copyRoiObserve=(ROI)roiObserve.cloneBySerialize();
-
+					
 					Imageset imset=new Imageset();
 					for(int i=0;;i++)
 						if(container.getChild(containerStoreName+i)==null)
@@ -139,6 +137,8 @@ public class EvFLIPAcquisition extends EvObject
 					////// Build flow to analyze this experiment
 					if(roiObserve!=null)
 						{
+						ROI copyRoiObserve=(ROI)roiObserve.cloneBySerialize();
+						
 						Flow flow=new Flow();
 						
 						FlowUnitSumIntensityROI unitCalc=new FlowUnitSumIntensityROI();
