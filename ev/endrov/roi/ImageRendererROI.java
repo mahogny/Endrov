@@ -35,7 +35,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 			w.updateImagePanel();
 			}};
 	
-	public ROI drawROI=null;
+	public ROI alsoDrawROI=null;
 		
 	public ImageRendererROI(final ImageWindowInterface w)
 		{
@@ -64,8 +64,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 		
 		recursiveDraw(g, frame, z, channel, w.getRootObject());
 		
-		if(drawROI!=null)
-			drawROI(w, g, drawROI, "", frame, z, channel);
+		if(alsoDrawROI!=null)
+			drawROI(w, g, alsoDrawROI, "", frame, z, channel);
 		}
 	
 	

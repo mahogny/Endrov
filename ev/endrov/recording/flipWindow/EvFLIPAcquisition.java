@@ -136,37 +136,39 @@ public class EvFLIPAcquisition extends EvObject
 							break;
 							}
 					
-
 					////// Build flow to analyze this experiment
-					Flow flow=new Flow();
-					
-					FlowUnitSumIntensityROI unitCalc=new FlowUnitSumIntensityROI();
-					flow.units.add(unitCalc);
-					
-					FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
-					FlowUnitObjectIO unitGetRoiObserve=new FlowUnitObjectIO(new EvPath("roiObserve"));
-					FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
-					
-					flow.units.add(unitGetChan);
-					flow.units.add(unitGetRoiObserve);
-					flow.units.add(unitShowSeries);
+					if(roiObserve!=null)
+						{
+						Flow flow=new Flow();
+						
+						FlowUnitSumIntensityROI unitCalc=new FlowUnitSumIntensityROI();
+						flow.units.add(unitCalc);
+						
+						FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
+						FlowUnitObjectIO unitGetRoiObserve=new FlowUnitObjectIO(new EvPath("roiObserve"));
+						FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
+						
+						flow.units.add(unitGetChan);
+						flow.units.add(unitGetRoiObserve);
+						flow.units.add(unitShowSeries);
 
-					flow.conns.add(new FlowConn(unitGetChan,"out",unitCalc,"ch"));
-					flow.conns.add(new FlowConn(unitGetRoiObserve,"out",unitCalc,"roi"));
-					flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
-					
-					unitCalc.x=100;
-					
-					unitGetRoiObserve.y=0;
-					unitGetChan.y=30;
+						flow.conns.add(new FlowConn(unitGetChan,"out",unitCalc,"ch"));
+						flow.conns.add(new FlowConn(unitGetRoiObserve,"out",unitCalc,"roi"));
+						flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
+						
+						unitCalc.x=150;
+						
+						unitGetRoiObserve.y=0;
+						unitGetChan.y=30;
 
-					unitShowSeries.x=300;
-					unitShowSeries.y=0;
+						unitShowSeries.x=400;
+						unitShowSeries.y=0;
 
-					
-					imset.metaObject.put("roiBleach",copyRoiBleach);
-					imset.metaObject.put("roiObserve",copyRoiObserve);
-					imset.metaObject.put("flow",flow);
+						
+						imset.metaObject.put("roiBleach",copyRoiBleach);
+						imset.metaObject.put("roiObserve",copyRoiObserve);
+						imset.metaObject.put("flow",flow);
+						}
 
 					//TODO signal update on the object
 					BasicWindow.updateWindows();

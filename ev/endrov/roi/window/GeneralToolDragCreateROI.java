@@ -89,6 +89,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 			{
 			//Cancel making nucleus
 			active=false;
+			setRendererROI(null);
 			w.updateImagePanel();
 			w.unsetTool();
 			}
@@ -99,8 +100,9 @@ public class GeneralToolDragCreateROI implements GeneralTool
 			{
 			EvContainer rec=w.getRootObject();
 			rec.addMetaObject(roi);
-			roi.openEditWindow();
+			//roi.openEditWindow();
 			active=false;
+			setRendererROI(null);
 			w.unsetTool();
 			w.updateImagePanel();
 			BasicWindow.updateWindows();
@@ -109,7 +111,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 	
 	void setRendererROI(ROI roi)
 		{
-		renderer.drawROI=roi;
+		renderer.alsoDrawROI=roi;
 		}
 	
 	

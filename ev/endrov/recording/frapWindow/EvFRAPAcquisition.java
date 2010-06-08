@@ -65,6 +65,7 @@ public class EvFRAPAcquisition extends EvObject
 	public interface Listener
 		{
 		public void acqStopped();
+		public void newStatus(String s);
 		}
 	
 	
@@ -163,15 +164,15 @@ public class EvFRAPAcquisition extends EvObject
 					flow.conns.add(new FlowConn(unitCalc,"mobile",unitShowMobile,"in"));
 					flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
 					
-					unitCalc.x=100;
+					unitCalc.x=150;
 					
 					unitFrame.y=0;
 					unitGetROI.y=30;
 					unitGetChan.y=60;
 
-					unitShowLifetime.x=300;
-					unitShowMobile.x=300;
-					unitShowSeries.x=300;
+					unitShowLifetime.x=400;
+					unitShowMobile.x=400;
+					unitShowSeries.x=400;
 					
 					unitShowMobile.y=30;
 					unitShowSeries.y=60;
@@ -186,10 +187,16 @@ public class EvFRAPAcquisition extends EvObject
 					EvDecimal curFrame=new EvDecimal(0);
 					try
 						{
+						for(Listener l:listeners)
+							l.newStatus("Snap reference");
+						
 						//Acquire image before bleaching
 						snapOneImage(imset, cam, curFrame);
 						BasicWindow.updateWindows();
-						
+
+						for(Listener l:listeners)
+							l.newStatus("Bleaching");
+
 						if(toStop)
 							break acqLoop;
 						
@@ -204,12 +211,16 @@ public class EvFRAPAcquisition extends EvObject
 						curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
 						//TODO also, just bleach time
 						
+
 						//Acquire images as the intensity recovers
 						for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
 							{
 							long startTime=System.currentTimeMillis();
 							if(toStop)
 								break acqLoop;
+							
+							for(Listener l:listeners)
+								l.newStatus("Recover #"+(i+1));
 							
 							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
 							

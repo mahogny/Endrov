@@ -192,7 +192,8 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		{
 		toolButtons.addAll(Arrays.asList(/*bEllipseROI,bFreehandROI,bLineROI,bPointROI,bPolygonROI,bRectROI,*/bSelectROI));
 
-		
+		bSelectROI.setSelected(true);
+		setTool(new GeneralToolROI(CamWindow.this));
 		
 		bSelectROI.addActionListener(new ActionListener()
 			{public void actionPerformed(ActionEvent e)
@@ -205,6 +206,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 					//setTool(new GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
 					}
 				}});
+		
 		
 		for(final ROI.ROIType rt:ROI.getTypes())
 			{
@@ -226,7 +228,6 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 							{
 							ImageRendererROI renderer=getRendererClass(ImageRendererROI.class);
 							setTool(new GeneralToolDragCreateROI(CamWindow.this,rt.makeInstance(),renderer));
-							System.out.println("Hello!!!");
 							}
 						}});
 				

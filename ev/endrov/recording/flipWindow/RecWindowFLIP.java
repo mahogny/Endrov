@@ -94,6 +94,8 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 		spRate.setDecimalValue(new EvDecimal(2));
 		spBleachTime.setDecimalValue(new EvDecimal("0.1"));
 		
+		labelStatus.setBorder(BorderFactory.createTitledBorder("Status"));
+		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutEvenVertical(
@@ -131,9 +133,8 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 				EvSwingUtil.layoutLCR(
 						new JLabel("Store in"),
 						objectCombo,
-						new JLabel("ms")
+						null
 						),
-
 				
 				EvSwingUtil.layoutLCR(
 						new JLabel("Object name"),
@@ -176,7 +177,12 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 				acq.roiObserve=(ROI)roiObserveCombo.getSelectedObject();
 				acq.numRepeats=spNumRepeats.getDecimalValue().intValue();
 				
-				thread=acq.startAcquisition();
+				if(acq.container==null)
+					showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
+				else if(acq.roiBleach==null)
+					showErrorDialog("Need to select a ROI to bleach");
+				else
+					thread=acq.startAcquisition();
 				}
 			
 			}
