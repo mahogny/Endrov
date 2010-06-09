@@ -56,15 +56,20 @@ import endrov.util.Tuple;
 public class CompareAll
 	{
 	
-	public final static File outputBaseDir=new File("/home/tbudev3/expsummary");
-
-	public final static File cachedValuesFileT=new File(outputBaseDir,"comparisonT.xml");
-	public final static File cachedValuesFileAP=new File(outputBaseDir,"comparisonAP.xml");
-	public final static File cachedValuesFileXYZ=new File(outputBaseDir,"comparisonXYZ.xml");
 	
 	private final static int imageMaxTime=100; //Break down to 100 time points
 
 	
+	//In the end, we can choose to not compare all time points
+	private final static int imageStartTime=0; //unused
+	private final static int imageEndTime=60;   //must be less than max
+
+	public final static File outputBaseDir=new File("/home/tbudev3/expsummary-"+imageStartTime+"-"+imageEndTime);
+
+	public final static File cachedValuesFileT=new File(outputBaseDir,"comparisonT.xml");
+	public final static File cachedValuesFileAP=new File(outputBaseDir,"comparisonAP.xml");
+	public final static File cachedValuesFileXYZ=new File(outputBaseDir,"comparisonXYZ.xml");
+
 	/**
 	 * Normalize time between recordings
 	 */
@@ -239,7 +244,7 @@ public class CompareAll
 		//Compare channels
 		ColocCoefficients coloc=new ColocCoefficients();
 		int cnt=0;
-		for(double time=0;time<imageMaxTime;time+=1.0/numSteps)
+		for(double time=0;time<imageEndTime;time+=1.0/numSteps)
 			{
 			//Corresponding frames
 			EvDecimal frameA=ftA.interpolateFrame(new EvDecimal(time));
@@ -483,7 +488,7 @@ public class CompareAll
 	public static ColocCoefficients colocAP(double[][] imA, double[][] imB)
 		{
 		ColocCoefficients coeff=new ColocCoefficients();
-		for(int i=0;i<imA.length;i++)
+		for(int i=0;i<imageEndTime;i++)
 			if(imA[i]!=null && imB[i]!=null)
 				coeff.add(imA[i], imB[i]);
 		return coeff;
@@ -690,7 +695,11 @@ public class CompareAll
 
 	public static String getName(File data)
 		{
-		return data.getName();
+		String name=data.getName();
+		for(String tag:CompareSQL.tagsFor(data))
+			if(tag.startsWith("gfpgene:"))
+				name=tag.substring("gfpgene:".length());
+		return name;
 		}
 	
 	
