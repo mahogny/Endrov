@@ -32,6 +32,7 @@ public class FrivolousCell
 	private int w, h;
 	private FrivolousFourier fft;
 	private FrivolousPSF psf;
+	private boolean needNewPSF=true; 
 
 	public FrivolousCell(File path)
 		{
@@ -143,15 +144,25 @@ public class FrivolousCell
 			return fluorophore.getChildren("mobilelayer");
 		}
 
-	public void updatePSF()
+	public synchronized void updatePSF()
 		{
-		FrivolousComplexArray psf_array = new FrivolousComplexArray(psf.createPSF(settings), null, 1024,1024);
-		psf_fft = fft.forward(psf_array, true);
+		needNewPSF=true;
+		}
+	
+	private void calcPSF()
+		{
+		if(needNewPSF)
+			{
+			FrivolousComplexArray psf_array = new FrivolousComplexArray(psf.createPSF(settings), null, 1024,1024);
+			psf_fft = fft.forward(psf_array, true);
+			needNewPSF=false;
+			}
 		}
 
 	
 	public synchronized int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight, boolean simulatePSF, boolean simulateNoise)
 		{
+		calcPSF();
 
 		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
 
