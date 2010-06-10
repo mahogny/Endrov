@@ -3,9 +3,6 @@ all:
 	endrov/*/*.java \
 	endrov/*/*/*.java \
 	endrov/*/*/*/*.java \
-	endrov/*/*.png \
-	endrov/*/*/*.png \
-	endrov/*/*/*/*.png \
 	util/*.java \
 	util/*/*.java
 #will not work if any of the files fail. have to exclude mac here!

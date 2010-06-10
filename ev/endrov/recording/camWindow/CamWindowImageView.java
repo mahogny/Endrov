@@ -278,6 +278,11 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 	
 	public static void moveAxis(String s, double dx)
 		{
+		double resolution=1;
+		if(s.equals("z"))
+			resolution=10; //TODO
+		
+		
 		for(Map.Entry<EvDevicePath,HWStage> e:EvHardware.getDeviceMapCast(HWStage.class).entrySet())
 			{
 			HWStage stage=e.getValue();
@@ -287,7 +292,7 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 					{
 					//TODO should if possible set both axis' at the same time. might make it faster
 					double[] da=new double[stage.getNumAxis()];
-					da[i]=dx;
+					da[i]=dx*resolution;
 					stage.setRelStagePos(da);
 					return;
 					}
