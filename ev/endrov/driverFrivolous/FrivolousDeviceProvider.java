@@ -247,7 +247,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 			int offsetX=-(int)(stagePos[0]/getRes());
 			int offsetY=-(int)(stagePos[1]/getRes());
-
+			
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(width, height, 0, 0, (float)getBleachFactor());

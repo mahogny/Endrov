@@ -201,18 +201,23 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 					//EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
 					if(cam!=null)
 						{
+						//long curTime=System.currentTimeMillis();
 						//HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
 						Vector2d curStagePos=new Vector2d(getStageX(),getStageY());
 						CameraImage cim=cam.snap();
 						lastImageStagePos=curStagePos;
 						lastCameraImage=cim.getPixels();
 
+
 						//Update range if needed
 						if(lastCameraImage!=null && tAutoRange.isSelected())
 							histoView.calcAutoRange(lastCameraImage);
+						
+						//System.out.println("Acquiring live took - setimagehisto ms: "+(System.currentTimeMillis()-curTime));
 
 						int numBits=getNumCameraBits();
 						histoView.setImage(lastCameraImage, numBits);
+						//System.out.println("Acquiring live took ms: "+(System.currentTimeMillis()-curTime));
 						
 						//Update size of this window if camera area size changes
 						if(lastCameraImage!=null)
