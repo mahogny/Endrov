@@ -43,7 +43,7 @@ import endrov.util.EvSwingUtil;
  */
 public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevice
 	{
-	private double resolution=10;
+	private double resolution=1;
 	private int height=512;
 	private int width=512;
 	private static Map<String, Class<? extends EvDevice>> hardwareProvided = new TreeMap<String, Class<? extends EvDevice>>();

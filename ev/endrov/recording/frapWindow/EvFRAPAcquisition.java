@@ -267,6 +267,9 @@ public class EvFRAPAcquisition extends EvObject
 			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resZ=EvDecimal.ONE;
+			
+			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
+			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
 			//TODO displacement?
 			
 			stack.put(z, evim);

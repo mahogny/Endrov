@@ -269,7 +269,10 @@ public class EvFLIPAcquisition extends EvObject
 			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resZ=EvDecimal.ONE;
-			//TODO displacement?
+
+			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
+			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
+			//TODO displacement? maybe not the best way
 			
 			stack.put(z, evim);
 			}
