@@ -108,10 +108,10 @@ class FrivolousDiffusion implements Runnable
 		}
 
 	
-	public /*synchronized*/ void diffuse()
+	public synchronized void diffuse()
 		{
 		float[] temp;
-		synchronized (this)
+		//synchronized (this)
 			{
 			temp = diffusion.clone();
 			}
@@ -200,7 +200,7 @@ class FrivolousDiffusion implements Runnable
 		 * l=diffusion[idx-width]+diffusion[idx+width];
 		 * temp[idx]=diffusion[idx]+my(k+l-4diffusion[idx]); }
 		 */
-		synchronized (this)
+		//synchronized (this)
 			{
 			diffusion = temp;
 			
