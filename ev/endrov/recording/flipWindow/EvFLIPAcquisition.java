@@ -127,7 +127,6 @@ public class EvFLIPAcquisition extends EvObject
 						{
 					//Object lockCamera=RecordingResource.blockLiveCamera();
 						
-						ROI copyRoiBleach=(ROI)roiBleach.cloneBySerialize();
 						
 						Imageset imset=new Imageset();
 						for(int i=0;;i++)
@@ -137,7 +136,10 @@ public class EvFLIPAcquisition extends EvObject
 								imset.metaObject.put("ch", new EvChannel());
 								break;
 								}
-						
+
+						ROI copyRoiBleach=(ROI)roiBleach.cloneBySerialize();
+						imset.metaObject.put("roiBleach",copyRoiBleach);
+
 						////// Build flow to analyze this experiment
 						if(roiObserve!=null)
 							{
@@ -165,11 +167,10 @@ public class EvFLIPAcquisition extends EvObject
 							unitGetRoiObserve.y=0;
 							unitGetChan.y=30;
 
-							unitShowSeries.x=400;
+							unitShowSeries.x=420;
 							unitShowSeries.y=0;
 
 							
-							imset.metaObject.put("roiBleach",copyRoiBleach);
 							imset.metaObject.put("roiObserve",copyRoiObserve);
 							imset.metaObject.put("flow",flow);
 							}
@@ -272,6 +273,10 @@ public class EvFLIPAcquisition extends EvObject
 
 			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
 			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
+			
+			System.out.println("stage: "+RecordingResource.getCurrentStageX()+"  "+RecordingResource.getCurrentStageY());
+			System.out.println("disp: "+stack.dispX+" "+stack.dispY);
+			
 			//TODO displacement? maybe not the best way
 			
 			stack.put(z, evim);

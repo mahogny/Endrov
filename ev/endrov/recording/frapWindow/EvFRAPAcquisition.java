@@ -174,7 +174,7 @@ public class EvFRAPAcquisition extends EvObject
 
 						unitShowLifetime.x=400;
 						unitShowMobile.x=400;
-						unitShowSeries.x=400;
+						unitShowSeries.x=420;
 						
 						unitShowMobile.y=30;
 						unitShowSeries.y=60;

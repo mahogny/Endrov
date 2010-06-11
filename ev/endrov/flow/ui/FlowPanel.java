@@ -275,6 +275,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			
 			
 			//Draw all units
+			connPoint.clear();
 			for(FlowUnit u:getFlow().units)
 				u.paint(g2, this, unitComponent.get(u));
 			
