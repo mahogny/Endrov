@@ -70,7 +70,7 @@
 			<key>com.apple.hwaccel</key>
 			<string>true</string>
 			<key>com.apple.macos.useScreenMenuBar</key>
-			<string>true</string>
+			<string>false</string>
 			<key>com.apple.mrj.application.growbox.intrudes</key>
 			<string>false</string>
 			<key>com.apple.mrj.application.live-resize</key>
