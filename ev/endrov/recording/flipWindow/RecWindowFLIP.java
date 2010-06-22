@@ -63,7 +63,7 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 			}
 		};
 
-	private EvComboObject roiObserveCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
+	private EvComboObject roiObserveCombo=new EvComboObject(new LinkedList<EvObject>(), true, true)
 		{
 		private static final long serialVersionUID = 1L;
 		public boolean includeObject(EvContainer cont)
@@ -115,7 +115,7 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 				EvSwingUtil.layoutLCR(
 						new JLabel("Bleach time"),
 						spBleachTime,
-						new JLabel("s")
+						new JLabel("[s]")
 						),
 
 				EvSwingUtil.layoutLCR(
@@ -127,7 +127,7 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 				EvSwingUtil.layoutLCR(
 						new JLabel("Sampling intervals"),
 						spRate,
-						new JLabel("s")
+						new JLabel("[s]")
 						),
 
 				EvSwingUtil.layoutLCR(

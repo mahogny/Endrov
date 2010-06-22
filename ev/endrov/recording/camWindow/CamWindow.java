@@ -6,12 +6,17 @@
 package endrov.recording.camWindow;
 
 
+
+//TODO must stop thread at exit
+
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.*;
 import javax.vecmath.Vector2d;
@@ -149,8 +154,8 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 						if(arr[y*w+x]!=0)
 							g.drawLine(x, y, x, y);
 				}
-				*/
 				
+				*/
 			
 			}
 		};
@@ -160,6 +165,112 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	private Vector<JToggleButton> toolButtons=new Vector<JToggleButton>();
 	private JToggleButton bSelectROI=new JImageToggleButton(iconSelectROI, "Select ROI");
 
+	
+	
+	
+
+	private Semaphore sem=new Semaphore(0);
+	private boolean stopSnapThread=false;
+
+	
+	private Thread snapThread=new Thread()
+		{
+		public void run()
+			{
+			for(;;)
+				{
+				
+				try
+					{
+					sem.acquire();
+					}
+				catch (InterruptedException e)
+					{
+					e.printStackTrace();
+					}
+				
+				if(stopSnapThread)
+					return;
+				
+				
+				synchronized (RecordingResource.acquisitionLock)
+					{
+					//this does not work later. have to synchronize all calls for an image
+					//so all targets gets it.
+					HWCamera cam=getCurrentCamera();
+					//EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
+					if(cam!=null)
+						{
+						//long curTime=System.currentTimeMillis();
+						//HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
+						Vector2d curStagePos=new Vector2d(getStageX(),getStageY());
+						CameraImage cim=cam.snap();
+						lastImageStagePos=curStagePos;
+						lastCameraImage=cim.getPixels();
+
+
+						//Update range if needed
+						if(lastCameraImage!=null && tAutoRange.isSelected())
+							histoView.calcAutoRange(lastCameraImage);
+						
+						//System.out.println("Acquiring live took - setimagehisto ms: "+(System.currentTimeMillis()-curTime));
+
+						int numBits=getNumCameraBits();
+						histoView.setImage(lastCameraImage, numBits);
+						//System.out.println("Acquiring live took ms: "+(System.currentTimeMillis()-curTime));
+						
+						//Update size of this window if camera area size changes
+						if(lastCameraImage!=null)
+							{
+							Dimension newDim=new Dimension(lastCameraImage[0].getWidth(), lastCameraImage[0].getHeight());
+							if(lastImageSize==null || !lastImageSize.equals(newDim))
+								{
+								Rectangle rect=drawArea.getBounds();
+								Dimension oldDim=new Dimension(rect.width,rect.height);
+								
+								Rectangle bounds=getBoundsEvWindow();
+								setBoundsEvWindow(new Rectangle(
+										bounds.x,bounds.y,
+										(int)(bounds.getWidth()+(newDim.getWidth()-oldDim.getWidth())),
+										(int)(bounds.getHeight()+(newDim.getHeight()-oldDim.getHeight()))
+										));
+								}
+							lastImageSize=newDim;
+							}
+
+						}
+					}
+				/*
+				//Do not snap if some acquisition has blocked the camera
+				if(RecordingResource.isLiveCameraBlocked())
+					{
+					try{Thread.sleep(10);}
+					catch (InterruptedException e){}
+					continue;
+					}*/
+				
+
+				//Update image
+				try
+					{
+					SwingUtilities.invokeAndWait(new Runnable() 
+						{
+						public void run()
+							{
+							drawArea.repaint();
+							}
+						});
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				
+				}
+			
+			
+			}
+		};
 	
 	
 	
@@ -325,7 +436,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		timer.start();
 		//setResizable(false);
 		
-		
+		snapThread.start();
 		
 		}
 	
@@ -407,58 +518,18 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		else
 			return null;
 		}
-	
+
 	/**
 	 * Take one picture from the camera	
 	 */
 	private void snapCamera()
 		{
-		//this does not work later. have to synchronize all calls for an image
-		//so all targets gets it.
-		HWCamera cam=getCurrentCamera();
-		//EvDevicePath camname=(EvDevicePath)cameraCombo.getSelectedItem();
-		if(cam!=null)
-			{
-			//HWCamera cam=(HWCamera)EvHardware.getDevice(camname);
-			CameraImage cim=cam.snap();
-			lastCameraImage=cim.getPixels();
-
-			//Update range if needed
-			if(lastCameraImage!=null && tAutoRange.isSelected())
-				histoView.calcAutoRange(lastCameraImage);
-
-			int numBits=getNumCameraBits();
-			histoView.setImage(lastCameraImage, numBits);
-			
-			//Update size of this window if camera area size changes
-			if(lastCameraImage!=null)
-				{
-				Dimension newDim=new Dimension(lastCameraImage[0].getWidth(), lastCameraImage[0].getHeight());
-				if(lastImageSize==null || !lastImageSize.equals(newDim))
-					{
-					Rectangle rect=drawArea.getBounds();
-					Dimension oldDim=new Dimension(rect.width,rect.height);
-					
-					Rectangle bounds=getBoundsEvWindow();
-					setBoundsEvWindow(new Rectangle(
-							bounds.x,bounds.y,
-							(int)(bounds.getWidth()+(newDim.getWidth()-oldDim.getWidth())),
-							(int)(bounds.getHeight()+(newDim.getHeight()-oldDim.getHeight()))
-							));
-					}
-				lastImageSize=newDim;
-				
-				lastImageStagePos=new Vector2d(getStageX(),getStageY());
-				}
-
-			//Update image
-			drawArea.repaint();
-			}
-		
+		//This will allow the snapping thread to do one run
+		sem.drainPermits();
+		sem.release();
 		}
 		
-		
-	
+
 	
 	
 	public void dataChangedEvent()
@@ -473,6 +544,10 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	public void freeResources()
 		{
 		timer.stop();
+		
+		//Stop snapping thread 
+		stopSnapThread=true;
+		sem.release();
 		}
 	
 
@@ -511,14 +586,6 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		}
 	
 	
-
-	public static void main(String[] args)
-		{
-		
-		new CamWindow();
-		
-		}
-
 	
 	
 	

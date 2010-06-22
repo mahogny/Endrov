@@ -32,6 +32,7 @@ public class FrivolousCell
 	private int w, h;
 	private FrivolousFourier fft;
 	private FrivolousPSF psf;
+	private boolean needNewPSF=true; 
 
 	public FrivolousCell(File path)
 		{
@@ -143,17 +144,27 @@ public class FrivolousCell
 			return fluorophore.getChildren("mobilelayer");
 		}
 
-	public void updatePSF()
+	public synchronized void updatePSF()
 		{
-		FrivolousComplexArray psf_array = new FrivolousComplexArray(psf.createPSF(settings), null, 1024,1024);
-		psf_fft = fft.forward(psf_array, true);
+		needNewPSF=true;
+		}
+	
+	private void calcPSF()
+		{
+		if(needNewPSF)
+			{
+			FrivolousComplexArray psf_array = new FrivolousComplexArray(psf.createPSF(settings), null, 1024,1024);
+			psf_fft = fft.forward(psf_array, true);
+			needNewPSF=false;
+			}
 		}
 
 	
 	public synchronized int[] getImage(int offsetX, int offsetY, int imageWidth, int imageHeight, boolean simulatePSF, boolean simulateNoise)
 		{
+		calcPSF();
 
-		FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
+		//FrivolousTimer timer = new FrivolousTimer("Cell, getImage");
 
 		FrivolousComplexArray[] diffused_arrays = new FrivolousComplexArray[diffusers.length];
 		for (int i = 0; i<diffusers.length; i++)
@@ -162,25 +173,26 @@ public class FrivolousCell
 
 		FrivolousComplexArray diffused_sum_array = FrivolousComplexLib.getRealSum(diffused_arrays);
 
-		timer.show("Mobile arrays calculated");
+		//timer.show("Mobile arrays calculated");
 
 		FrivolousComplexArray immobile_sum_array = FrivolousComplexLib.getRealSum(immobile_arrays);
 		FrivolousComplexArray total_array = FrivolousComplexLib.getRealAddition(diffused_sum_array,	immobile_sum_array);
 		
 		FrivolousComplexArray crop_array = FrivolousComplexLib.getCrop(total_array,1024,1024,512-((int)(offsetX+0.5)),512-((int)(offsetY+0.5)));
 		
+		
 		//Can disable PSF simulation for performance
 		if(simulatePSF)
 			{
 			FrivolousComplexArray input_fft = fft.forward(crop_array, true);
 
-			timer.show("FFT on image");
+			//timer.show("FFT on image");
 			FrivolousComplexArray output_fft = FrivolousComplexLib.getComplexMultiplication(input_fft, psf_fft);
 
-			timer.show("Complex mult");
+			//timer.show("Complex mult");
 			output_array = FrivolousComplexLib.getCrop(fft.backward(output_fft),imageWidth,imageHeight,256,256);
 			
-			timer.show("iFFT");
+			//timer.show("iFFT");
 			}
 		else
 			{
@@ -191,18 +203,12 @@ public class FrivolousCell
 		if(simulateNoise)
 			output_array = FrivolousUtility.addRealNoise(output_array, settings);
 
-		timer.show("Poisson noise");
+		//timer.show("Poisson noise");
 		
 		int[] retarr=new int[output_array.real.length];
 		for(int i=0;i<output_array.real.length;i++)
 			retarr[i]=(int)output_array.real[i];
 
-		/*
-		int[] retarr=new int[output_noise.real.length];
-		for(int i=0;i<output_noise.real.length;i++)
-			retarr[i]=(int)output_noise.real[i];
-		*/
-		
 		return retarr;
 		//return FrivolousUtility.getImageFromComplex(output_noise, false);
 		}

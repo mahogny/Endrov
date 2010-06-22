@@ -123,103 +123,113 @@ public class EvFLIPAcquisition extends EvObject
 				//Check that there are enough parameters
 				if(cam!=null && container!=null)
 					{
-
-					ROI copyRoiBleach=(ROI)roiBleach.cloneBySerialize();
-					ROI copyRoiObserve=(ROI)roiObserve.cloneBySerialize();
-
-					Imageset imset=new Imageset();
-					for(int i=0;;i++)
-						if(container.getChild(containerStoreName+i)==null)
-							{
-							container.metaObject.put(containerStoreName+i, imset);
-							imset.metaObject.put("ch", new EvChannel());
-							break;
-							}
-					
-					////// Build flow to analyze this experiment
-					if(roiObserve!=null)
+					synchronized (RecordingResource.acquisitionLock)
 						{
-						Flow flow=new Flow();
+					//Object lockCamera=RecordingResource.blockLiveCamera();
 						
-						FlowUnitSumIntensityROI unitCalc=new FlowUnitSumIntensityROI();
-						flow.units.add(unitCalc);
 						
-						FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
-						FlowUnitObjectIO unitGetRoiObserve=new FlowUnitObjectIO(new EvPath("roiObserve"));
-						FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
-						
-						flow.units.add(unitGetChan);
-						flow.units.add(unitGetRoiObserve);
-						flow.units.add(unitShowSeries);
+						Imageset imset=new Imageset();
+						for(int i=0;;i++)
+							if(container.getChild(containerStoreName+i)==null)
+								{
+								container.metaObject.put(containerStoreName+i, imset);
+								imset.metaObject.put("ch", new EvChannel());
+								break;
+								}
 
-						flow.conns.add(new FlowConn(unitGetChan,"out",unitCalc,"ch"));
-						flow.conns.add(new FlowConn(unitGetRoiObserve,"out",unitCalc,"roi"));
-						flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
-						
-						unitCalc.x=150;
-						
-						unitGetRoiObserve.y=0;
-						unitGetChan.y=30;
-
-						unitShowSeries.x=400;
-						unitShowSeries.y=0;
-
-						
+						ROI copyRoiBleach=(ROI)roiBleach.cloneBySerialize();
 						imset.metaObject.put("roiBleach",copyRoiBleach);
-						imset.metaObject.put("roiObserve",copyRoiObserve);
-						imset.metaObject.put("flow",flow);
-						}
 
-					//TODO signal update on the object
-					BasicWindow.updateWindows();
-
-					EvDecimal curFrame=new EvDecimal(0);
-					try
-						{
-						//Acquire image before bleaching
-						snapOneImage(imset, cam, curFrame);
-						BasicWindow.updateWindows();
-						
-						//Acquire images as the intensity recovers
-						for(int i=0;i<settings.numRepeats;i++)
+						////// Build flow to analyze this experiment
+						if(roiObserve!=null)
 							{
-							long startTime=System.currentTimeMillis();
-
-							for(Listener l:listeners)
-								l.newStatus("Doing repeat "+(i+1));
-
-							if(toStop)
-								break acqLoop;
-
-							//Bleach ROI
-							double stageX=RecordingResource.getCurrentStageX();
-							double stageY=RecordingResource.getCurrentStageY();
-							String normalExposureTime=cam.getPropertyValue("Exposure");
-							cam.setPropertyValue("Exposure", ""+bleachTime);
-							int[] roiArray=RecordingResource.makeScanningROI(cam, copyRoiBleach, stageX, stageY);
-							cam.scan(null, null, roiArray);
-							cam.setPropertyValue("Exposure", normalExposureTime);
+							ROI copyRoiObserve=(ROI)roiObserve.cloneBySerialize();
 							
-							if(toStop)
-								break acqLoop;
+							Flow flow=new Flow();
+							
+							FlowUnitSumIntensityROI unitCalc=new FlowUnitSumIntensityROI();
+							flow.units.add(unitCalc);
+							
+							FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
+							FlowUnitObjectIO unitGetRoiObserve=new FlowUnitObjectIO(new EvPath("roiObserve"));
+							FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
+							
+							flow.units.add(unitGetChan);
+							flow.units.add(unitGetRoiObserve);
+							flow.units.add(unitShowSeries);
 
-							//Acquire an image for quantification
+							flow.conns.add(new FlowConn(unitGetChan,"out",unitCalc,"ch"));
+							flow.conns.add(new FlowConn(unitGetRoiObserve,"out",unitCalc,"roi"));
+							flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
+							
+							unitCalc.x=150;
+							
+							unitGetRoiObserve.y=0;
+							unitGetChan.y=30;
+
+							unitShowSeries.x=420;
+							unitShowSeries.y=0;
+
+							
+							imset.metaObject.put("roiObserve",copyRoiObserve);
+							imset.metaObject.put("flow",flow);
+							}
+
+						//TODO signal update on the object
+						BasicWindow.updateWindows();
+
+						EvDecimal curFrame=new EvDecimal(0);
+						try
+							{
+							//Acquire image before bleaching
 							snapOneImage(imset, cam, curFrame);
 							BasicWindow.updateWindows();
-							yield(settings.rate.doubleValue()/10);
 							
-							waitInTotal(startTime, settings.rate.doubleValue());
-							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+							//Acquire images as the intensity recovers
+							for(int i=0;i<settings.numRepeats;i++)
+								{
+								long startTime=System.currentTimeMillis();
+
+								for(Listener l:listeners)
+									l.newStatus("Doing repeat "+(i+1));
+
+								if(toStop)
+									break acqLoop;
+
+								//Bleach ROI
+								double stageX=RecordingResource.getCurrentStageX();
+								double stageY=RecordingResource.getCurrentStageY();
+								String normalExposureTime=cam.getPropertyValue("Exposure");
+								cam.setPropertyValue("Exposure", ""+bleachTime);
+								int[] roiArray=RecordingResource.makeScanningROI(cam, copyRoiBleach, stageX, stageY);
+								cam.scan(null, null, roiArray);
+								cam.setPropertyValue("Exposure", normalExposureTime);
+								
+								if(toStop)
+									break acqLoop;
+
+								//Acquire an image for quantification
+								snapOneImage(imset, cam, curFrame);
+								BasicWindow.updateWindows();
+								yield(settings.rate.doubleValue()/10);
+								
+								waitInTotal(startTime, settings.rate.doubleValue());
+								curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+								}
+							
+							
+							
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
 							}
 						
+						//RecordingResource.unblockLiveCamera(lockCamera);
+						
+						BasicWindow.updateWindows();
 						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
-						}
-					
-					
-					BasicWindow.updateWindows();
+						
 					}
 			
 
@@ -260,7 +270,14 @@ public class EvFLIPAcquisition extends EvObject
 			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resZ=EvDecimal.ONE;
-			//TODO displacement?
+
+			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
+			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
+			
+			System.out.println("stage: "+RecordingResource.getCurrentStageX()+"  "+RecordingResource.getCurrentStageY());
+			System.out.println("disp: "+stack.dispX+" "+stack.dispY);
+			
+			//TODO displacement? maybe not the best way
 			
 			stack.put(z, evim);
 			}
