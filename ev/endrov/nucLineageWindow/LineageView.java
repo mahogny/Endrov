@@ -292,7 +292,8 @@ public class LineageView extends JPanel
 		{
 		NucLineage lin=getLineage();
 		LinState linstate=getLinState(lin);
-		linstate.cam.panCorrespondenceX(getRotatedWidthHeight().fst(), frame);
+		linstate.cam.panCorrespondenceX(getRotatedWidthHeight().fst()/2, frame);
+		repaint();
 		}
 	
 	
