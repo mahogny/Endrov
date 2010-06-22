@@ -111,141 +111,149 @@ public class EvFRAPAcquisition extends EvObject
 			{
 			//TODO need to choose camera, at least!
 			
-			
-			acqLoop: 
-			do
+			synchronized (RecordingResource.acquisitionLock)
 				{
-				Iterator<HWImageScanner> itcam=EvHardware.getDeviceMapCast(HWImageScanner.class).values().iterator();
-				HWImageScanner cam=null;
-				if(itcam.hasNext())
-					cam=itcam.next();
-				
-				//Check that there are enough parameters
-				if(cam!=null && container!=null)
+
+				acqLoop: 
+				do
 					{
-
-					Imageset imset=new Imageset();
-					for(int i=0;;i++)
-						if(container.getChild(containerStoreName+i)==null)
-							{
-							container.metaObject.put(containerStoreName+i, imset);
-							imset.metaObject.put("ch", new EvChannel());
-							break;
-							}
-
-					ROI copyROI=(ROI)roi.cloneBySerialize();
-
-
-					////// Build flow to analyze this experiment
-					Flow flow=new Flow();
+					Iterator<HWImageScanner> itcam=EvHardware.getDeviceMapCast(HWImageScanner.class).values().iterator();
+					HWImageScanner cam=null;
+					if(itcam.hasNext())
+						cam=itcam.next();
 					
-					FlowUnitCalcFRAP unitCalc=new FlowUnitCalcFRAP();
-					flow.units.add(unitCalc);
-					
-					FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
-					FlowUnitObjectIO unitGetROI=new FlowUnitObjectIO(new EvPath("roi"));
-					FlowUnitConstEvDecimal unitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
-					FlowUnitShow unitShowLifetime=new FlowUnitShow();
-					FlowUnitShow unitShowMobile=new FlowUnitShow();
-					FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
-					
-					flow.units.add(unitGetChan);
-					flow.units.add(unitGetROI);
-					flow.units.add(unitFrame);
-					flow.units.add(unitShowLifetime);
-					flow.units.add(unitShowMobile);
-					flow.units.add(unitShowSeries);
-
-					flow.conns.add(new FlowConn(unitGetChan,"out",unitCalc,"ch"));
-					flow.conns.add(new FlowConn(unitGetROI,"out",unitCalc,"roi"));
-					flow.conns.add(new FlowConn(unitFrame,"out",unitCalc,"t1"));
-					flow.conns.add(new FlowConn(unitFrame,"out",unitCalc,"t2"));
-					flow.conns.add(new FlowConn(unitCalc,"lifetime",unitShowLifetime,"in"));
-					flow.conns.add(new FlowConn(unitCalc,"mobile",unitShowMobile,"in"));
-					flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
-					
-					unitCalc.x=150;
-					
-					unitFrame.y=0;
-					unitGetROI.y=30;
-					unitGetChan.y=60;
-
-					unitShowLifetime.x=400;
-					unitShowMobile.x=400;
-					unitShowSeries.x=400;
-					
-					unitShowMobile.y=30;
-					unitShowSeries.y=60;
-
-					imset.metaObject.put("roi",copyROI);
-					imset.metaObject.put("flow",flow);
-					
-					
-					//TODO signal update on the object
-					BasicWindow.updateWindows();
-					
-					EvDecimal curFrame=new EvDecimal(0);
-					try
+					//Check that there are enough parameters
+					if(cam!=null && container!=null)
 						{
-						for(Listener l:listeners)
-							l.newStatus("Snap reference");
+
+						Imageset imset=new Imageset();
+						for(int i=0;;i++)
+							if(container.getChild(containerStoreName+i)==null)
+								{
+								container.metaObject.put(containerStoreName+i, imset);
+								imset.metaObject.put("ch", new EvChannel());
+								break;
+								}
+
+						ROI copyROI=(ROI)roi.cloneBySerialize();
+
+
+						////// Build flow to analyze this experiment
+						Flow flow=new Flow();
 						
-						//Acquire image before bleaching
-						snapOneImage(imset, cam, curFrame);
+						FlowUnitCalcFRAP unitCalc=new FlowUnitCalcFRAP();
+						flow.units.add(unitCalc);
+						
+						FlowUnitObjectIO unitGetChan=new FlowUnitObjectIO(new EvPath("ch"));
+						FlowUnitObjectIO unitGetROI=new FlowUnitObjectIO(new EvPath("roi"));
+						FlowUnitConstEvDecimal unitFrame=new FlowUnitConstEvDecimal(EvDecimal.ZERO);
+						FlowUnitShow unitShowLifetime=new FlowUnitShow();
+						FlowUnitShow unitShowMobile=new FlowUnitShow();
+						FlowUnitShowGraph unitShowSeries=new FlowUnitShowGraph();
+						
+						flow.units.add(unitGetChan);
+						flow.units.add(unitGetROI);
+						flow.units.add(unitFrame);
+						flow.units.add(unitShowLifetime);
+						flow.units.add(unitShowMobile);
+						flow.units.add(unitShowSeries);
+
+						flow.conns.add(new FlowConn(unitGetChan,"out",unitCalc,"ch"));
+						flow.conns.add(new FlowConn(unitGetROI,"out",unitCalc,"roi"));
+						flow.conns.add(new FlowConn(unitFrame,"out",unitCalc,"t1"));
+						flow.conns.add(new FlowConn(unitFrame,"out",unitCalc,"t2"));
+						flow.conns.add(new FlowConn(unitCalc,"lifetime",unitShowLifetime,"in"));
+						flow.conns.add(new FlowConn(unitCalc,"mobile",unitShowMobile,"in"));
+						flow.conns.add(new FlowConn(unitCalc,"series",unitShowSeries,"in"));
+						
+						unitCalc.x=150;
+						
+						unitFrame.y=0;
+						unitGetROI.y=30;
+						unitGetChan.y=60;
+
+						unitShowLifetime.x=400;
+						unitShowMobile.x=400;
+						unitShowSeries.x=420;
+						
+						unitShowMobile.y=30;
+						unitShowSeries.y=60;
+
+						imset.metaObject.put("roi",copyROI);
+						imset.metaObject.put("flow",flow);
+						
+						
+						//TODO signal update on the object
 						BasicWindow.updateWindows();
-
-						for(Listener l:listeners)
-							l.newStatus("Bleaching");
-
-						if(toStop)
-							break acqLoop;
 						
-						//Bleach ROI
-						double stageX=RecordingResource.getCurrentStageX();
-						double stageY=RecordingResource.getCurrentStageY();
-						String normalExposureTime=cam.getPropertyValue("Exposure");
-						cam.setPropertyValue("Exposure", ""+bleachTime);
-						int[] roiArray=RecordingResource.makeScanningROI(cam, copyROI, stageX, stageY);
-						cam.scan(null, null, roiArray);
-						cam.setPropertyValue("Exposure", normalExposureTime);
-						curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
-						//TODO also, just bleach time
-						
-
-						//Acquire images as the intensity recovers
-						for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
+						EvDecimal curFrame=new EvDecimal(0);
+						try
 							{
-							long startTime=System.currentTimeMillis();
+							for(Listener l:listeners)
+								l.newStatus("Snap reference");
+							
+							//Acquire image before bleaching
+							snapOneImage(imset, cam, curFrame);
+							BasicWindow.updateWindows();
+
+							for(Listener l:listeners)
+								l.newStatus("Bleaching");
+
 							if(toStop)
 								break acqLoop;
 							
-							for(Listener l:listeners)
-								l.newStatus("Recover #"+(i+1));
-							
+							//Bleach ROI
+							double stageX=RecordingResource.getCurrentStageX();
+							double stageY=RecordingResource.getCurrentStageY();
+							String normalExposureTime=cam.getPropertyValue("Exposure");
+							cam.setPropertyValue("Exposure", ""+bleachTime);
+							int[] roiArray=RecordingResource.makeScanningROI(cam, copyROI, stageX, stageY);
+							cam.scan(null, null, roiArray);
+							cam.setPropertyValue("Exposure", normalExposureTime);
 							curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+							//TODO also, just bleach time
 							
-							snapOneImage(imset, cam, curFrame);
-							BasicWindow.updateWindows();
+
+							//Acquire images as the intensity recovers
+							for(int i=0;i<settings.recoveryTime.doubleValue()/settings.rate.doubleValue();i++)
+								{
+								long startTime=System.currentTimeMillis();
+								if(toStop)
+									break acqLoop;
+								
+								for(Listener l:listeners)
+									l.newStatus("Recover #"+(i+1));
+								
+								curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
+								
+								snapOneImage(imset, cam, curFrame);
+								BasicWindow.updateWindows();
+								
+								waitInTotal(startTime, settings.rate.doubleValue());
+								}
 							
-							waitInTotal(startTime, settings.rate.doubleValue());
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
 							}
 						
+						BasicWindow.updateWindows();
 						}
-					catch (Exception e)
-						{
-						e.printStackTrace();
-						}
-					
-					BasicWindow.updateWindows();
-					}
-			
+				
 
+					}
+				while(false);
+			
+//				RecordingResource.unblockLiveCamera(lockCamera);
+				
+				toStop=false;
+				for(Listener l:listeners)
+					l.acqStopped();
 				}
-			while(false);
-		
-			toStop=false;
-			for(Listener l:listeners)
-				l.acqStopped();
+//			Object lockCamera=RecordingResource.blockLiveCamera();
+			
+			
 			}
 			
 		private void snapOneImage(Imageset imset, HWImageScanner cam, EvDecimal curFrame)
@@ -259,6 +267,9 @@ public class EvFRAPAcquisition extends EvObject
 			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resZ=EvDecimal.ONE;
+			
+			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
+			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
 			//TODO displacement?
 			
 			stack.put(z, evim);

@@ -49,7 +49,6 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 	private static final int connPointSnapDistance=10;
 	private static final int lineSnapDistance=10;
 
-	//private int camera.x, camera.y;
 	private Flow flow=new Flow();
 	private FlowExec flowExec=new FlowExec();
 	private boolean enabled=false;
@@ -81,6 +80,28 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 		if(cam==null)
 			camera.put(flow,cam=new Vector2i());
 		return cam;
+		}
+
+	
+	public Rectangle2D normalizeRect(Rectangle2D r)
+		{
+		int x1=(int)r.getX();
+		int w=(int)r.getWidth();
+		if(w<0)
+			{
+			x1=x1+w;
+			w=-w;
+			}
+		
+		int y1=(int)r.getY();
+		int h=(int)r.getHeight();
+		if(h<0)
+			{
+			y1=y1+h;
+			h=-h;
+			}
+
+		return new Rectangle(x1,y1,w,h);
 		}
 	
 	/**
@@ -254,6 +275,7 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			
 			
 			//Draw all units
+			connPoint.clear();
 			for(FlowUnit u:getFlow().units)
 				u.paint(g2, this, unitComponent.get(u));
 			
@@ -307,9 +329,9 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 			
 			if(selectRect!=null)
 				{
+				Rectangle2D r=normalizeRect(selectRect);
 				g.setColor(Color.MAGENTA);
-				g.drawRect((int)selectRect.getX(), (int)selectRect.getY(), 
-						(int)selectRect.getWidth(), (int)selectRect.getHeight());
+				g.drawRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
 				}
 			
 			g2.translate(camera.x, camera.y);
@@ -785,8 +807,10 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 				selectedUnits.clear();
 			for(FlowUnit u:getFlow().units)
 				{
+				Rectangle2D r=normalizeRect(selectRect);
+
 				Point p=u.getMidPos(unitComponent.get(u),flow);
-				if(p.x>selectRect.getX() && p.y>selectRect.getY() && p.x<selectRect.getMaxX() && p.y<selectRect.getMaxY())
+				if(p.x>r.getX() && p.y>r.getY() && p.x<r.getMaxX() && p.y<r.getMaxY())
 					selectedUnits.add(u);
 				}
 			selectRect=null;
@@ -824,7 +848,17 @@ public class FlowPanel extends JPanel implements MouseListener, MouseMotionListe
 							break;
 							}
 					if(!exists)
+						{
+						//Also delete other connections ending in this position - these make no sense
+						for(FlowConn c:getFlow().conns)
+							if(c.toUnit==t.fst() && c.toArg.equals(t.snd()))
+								{
+								getFlow().conns.remove(c);
+								break;
+								}
+						
 						getFlow().conns.add(nc);
+						}
 					}
 				}
 			drawingConn=null;

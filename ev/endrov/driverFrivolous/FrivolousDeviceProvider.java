@@ -5,8 +5,10 @@
  */
 package endrov.driverFrivolous;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +18,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import org.jdom.Element;
@@ -29,6 +34,7 @@ import endrov.hardware.DevicePropertyType;
 import endrov.recording.CameraImage;
 import endrov.recording.HWImageScanner;
 import endrov.recording.HWStage;
+import endrov.util.EvSwingUtil;
 
 /**
  * Device provider for Frivolous virtual microscope
@@ -37,19 +43,21 @@ import endrov.recording.HWStage;
  */
 public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevice
 	{
-	double resolution=10;
-
+	private double resolution=1;
+	private int height=512;
+	private int width=512;
 	private static Map<String, Class<? extends EvDevice>> hardwareProvided = new TreeMap<String, Class<? extends EvDevice>>();
 	private FrivolousModel model;
-
-	public static void initPlugin()
-		{
-		}
 
 	static
 		{
 		EvHardware.root.hw.put("fr", new FrivolousDeviceProvider());
 		}
+		
+	public static void initPlugin()
+		{
+		}
+
 
 	public FrivolousDeviceProvider()
 		{
@@ -236,11 +244,14 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			{
 			long startTime=System.currentTimeMillis();
 			CameraImage cim=snapInternal();
+
+			int offsetX=-(int)(stagePos[0]/getRes());
+			int offsetY=-(int)(stagePos[1]/getRes());
 			
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
 				d.bleach(width, height, 0, 0, (float)getBleachFactor());
-			model.cell.bleachImmobile(width, height, 0, 0, (float)getBleachFactor());
+			model.cell.bleachImmobile(width, height, offsetX, offsetY, (float)getBleachFactor());
 			waitInTotal(startTime, expTime);
 			return cim;
 			}
@@ -294,8 +305,6 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			}
 
 		
-		int height=512;
-		int width=512;
 		
 		public int getHeight()
 			{
@@ -341,6 +350,9 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 			}
 		
 		
+		/**
+		 * Scan the entire image
+		 */
 		public void scan(int[] buffer, ScanStatusListener status)
 			{
 			long startTime=System.currentTimeMillis();
@@ -354,13 +366,19 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 						buffer[i]=snapped[i];
 				}
 			
+			int offsetX=-(int)(stagePos[0]/getRes());
+			int offsetY=-(int)(stagePos[1]/getRes());
+			
 			//Bleach everything visible at the moment
 			for(FrivolousDiffusion d:model.cell.diffusers)
-				d.bleach(width, height, 0, 0, (float)getBleachFactor());
-			model.cell.bleachImmobile(width, height, 0, 0, (float)getBleachFactor());
+				d.bleach(width, height, offsetX, offsetY, (float)getBleachFactor());
+			model.cell.bleachImmobile(width, height, offsetX, offsetY, (float)getBleachFactor());
 			waitInTotal(startTime, expTime);
 			}
 
+		/**
+		 * Scan only a ROI
+		 */
 		public void scan(int[] buffer, ScanStatusListener status, int[] roi)
 			{
 			long startTime=System.currentTimeMillis();
@@ -375,10 +393,13 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 						buffer[i]=snapped[i];
 				}
 			
+			int offsetX=-(int)(stagePos[0]/getRes());
+			int offsetY=-(int)(stagePos[1]/getRes());
+			
 			//Bleach only the ROI
 			for(FrivolousDiffusion d:model.cell.diffusers)
-				d.bleach(roi, width, height, 0, 0, (float)getBleachFactor()); 
-			model.cell.bleachImmobile(roi, width, height, 0, 0, (float)getBleachFactor()); 
+				d.bleach(roi, width, height, offsetX, offsetY, (float)getBleachFactor()); 
+			model.cell.bleachImmobile(roi, width, height, offsetX, offsetY, (float)getBleachFactor()); 
 			waitInTotal(startTime, expTime);
 			}
 
@@ -396,7 +417,7 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	private class FrivolousStage implements HWStage
 		{
-		// Simulate moving stage?
+		// TODO Simulate moving stage? takes time to move? 
 
 		public String[] getAxisName()
 			{
@@ -594,55 +615,74 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	public void openConfigureDialog()
 		{
-		(new FrivolousConfig()).setVisible(true);
+		new FrivolousConfig();
 		}
 
-	
-	/*private FrivolousModel getModel()
-		{
-		return model;
-		}*/
-	
+	/**
+	 * Configuration window
+	 */
 	private class FrivolousConfig extends JFrame implements ActionListener 
 		{
 		private static final long serialVersionUID = 1L;
-		private JButton thebutton;
-
+		private JButton bStartStop;
+		private JTextField tfFileName=new JTextField();
+		private JButton bBrowse=new JButton("Browse");
+		
 		public FrivolousConfig()
 			{
-			super();
+			super("Frivolous configuration");
 
-			thebutton = new JButton((model==null ? "Start" : "Stop"));
-			thebutton.addActionListener(this);
-			this.add(thebutton);
-			this.setTitle("The Amazing Configuration Wizard!");
-			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			//this.setModal(true);
-			this.setSize(400, 100);
+			tfFileName.setText(FrivolousModel.getStandardExperiment().getAbsolutePath());
 
-			} // TODO If ever we implement the XML feature fully: Here would be a
-				// great place to choose the "cell";
+			bStartStop = new JButton((model==null ? "Start" : "Stop"));
+			bStartStop.addActionListener(this);
+
+			bBrowse.addActionListener(this);
+			
+			setLayout(new GridLayout(1,1));
+			add(EvSwingUtil.layoutEvenVertical(
+					EvSwingUtil.layoutLCR(new JLabel("Experiment"), tfFileName, bBrowse),
+					bStartStop
+					));
+			
+			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			pack();
+			setVisible(true);
+			} 
 
 		public void actionPerformed(ActionEvent e)
 			{
-			if (model==null)
+			if(e.getSource()==bStartStop)
 				{
-				// FrivolousDeviceProvider.this.
-				model = new FrivolousModel();
-				// System.out.println(getModel());
+				if (model==null)
+					{
+					File f=new File(tfFileName.getText());
+					model = new FrivolousModel(f);
 
-				FrivolousCamera cam = new FrivolousCamera();
-				cam.seqAcqThread.start();
-				hw.put("cam", cam);
-				hw.put("stage", new FrivolousStage());
+					FrivolousCamera cam = new FrivolousCamera();
+					cam.seqAcqThread.start();
+					hw.put("cam", cam);
+					hw.put("stage", new FrivolousStage());
 
-				thebutton.setText("Stop");
+					bStartStop.setText("Stop");
+					}
+				else
+					{
+					model.stop();
+					model = null;
+					bStartStop.setText("Start");
+					}
 				}
-			else
+			else if(e.getSource()==bBrowse)
 				{
-				model.stop();
-				model = null;
-				thebutton.setText("Start");
+				JFileChooser fc=new JFileChooser();
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int ret=fc.showOpenDialog(this);
+				if(ret==JFileChooser.APPROVE_OPTION)
+					{
+					File f=fc.getSelectedFile();
+					tfFileName.setText(f.getAbsolutePath());
+					}
 				}
 			}
 

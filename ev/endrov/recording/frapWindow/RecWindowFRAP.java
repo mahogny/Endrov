@@ -122,7 +122,6 @@ public class RecWindowFRAP extends BasicWindow implements ActionListener, EvFRAP
 						objectCombo,
 						null
 						),
-
 				
 				EvSwingUtil.layoutLCR(
 						new JLabel("Object name"),
