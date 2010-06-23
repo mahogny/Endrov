@@ -181,8 +181,7 @@ public class EvFRAPAcquisition extends EvObject
 
 						imset.metaObject.put("roi",copyROI);
 						imset.metaObject.put("flow",flow);
-						
-						
+
 						//TODO signal update on the object
 						BasicWindow.updateWindows();
 						
@@ -270,7 +269,6 @@ public class EvFRAPAcquisition extends EvObject
 			
 			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
 			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
-			//TODO displacement?
 			
 			stack.put(z, evim);
 			}
