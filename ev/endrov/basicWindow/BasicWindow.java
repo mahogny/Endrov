@@ -572,6 +572,8 @@ public abstract class BasicWindow extends JPanel
 					dialogSysInfo();
 				else if (e.getSource()==miSaveConfig)
 					EV.savePersonalConfig();
+				else if (e.getSource()==miRegInfo)
+					EndrovRegistrationDialog.runDialogNoLock();
 				else if (e.getSource()==miOpenConfig)
 					EV.openExternal(EV.getGlobalConfigEndrovDir());
 				else if (e.getSource()==miReportBug)
@@ -600,6 +602,7 @@ public abstract class BasicWindow extends JPanel
 	private JMenuItem miWebPlugins = new JMenuItem("Plugins");
 	private JMenuItem miSysInfo = new JMenuItem("System information");
 	private JMenuItem miSaveConfig = new JMenuItem("Save config now");
+	private JMenuItem miRegInfo = new JMenuItem("Change registration information");
 
 	/**
 	 * Add to the menu Window
@@ -667,6 +670,8 @@ public abstract class BasicWindow extends JPanel
 		menuMaintenance.add(miToggleSplash);
 		menuMaintenance.add(miOpenConfig);
 		menuMaintenance.add(miSaveConfig);
+		menuMaintenance.add(miRegInfo);
+		 
 		BasicWindow.addMenuItemSorted(menuFile, miQuit, "zquit");
 
 		for (BasicWindowHook hook : basicWindowExtensionHook.values())
@@ -699,6 +704,7 @@ public abstract class BasicWindow extends JPanel
 		miReportBug.addActionListener(listener);
 		miSysInfo.addActionListener(listener);
 		miSaveConfig.addActionListener(listener);
+		miRegInfo.addActionListener(listener);
 		}
 
 	/**
