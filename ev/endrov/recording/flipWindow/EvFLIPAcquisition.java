@@ -274,11 +274,6 @@ public class EvFLIPAcquisition extends EvObject
 			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
 			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
 			
-			System.out.println("stage: "+RecordingResource.getCurrentStageX()+"  "+RecordingResource.getCurrentStageY());
-			System.out.println("disp: "+stack.dispX+" "+stack.dispY);
-			
-			//TODO displacement? maybe not the best way
-			
 			stack.put(z, evim);
 			}
 		
