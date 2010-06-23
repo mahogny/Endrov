@@ -31,7 +31,7 @@ public class EV
 	public static final String programName="EV";
 	public static boolean confirmQuit=true;
 
-	public static HashMap<String,PersonalConfig> personalConfigLoaders=new HashMap<String,PersonalConfig>();
+	public static Map<String,PersonalConfig> personalConfigLoaders=Collections.synchronizedMap(new HashMap<String,PersonalConfig>());
 
 	private static boolean useHomedirConfig=false;
 	

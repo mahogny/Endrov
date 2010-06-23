@@ -82,6 +82,11 @@ public class MW
 				ss.disableLog();
 				ss.dispose();
 				}
+			if(!EndrovRegistrationDialog.hasRegistered())
+				{
+				EndrovRegistrationDialog.runDialog();
+				EndrovRegistrationDialog.connectAndRegister();
+				}
 			}
 		catch (Exception e)
 			{
