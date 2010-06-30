@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,7 @@ import endrov.hardware.EvDeviceProvider;
 import endrov.hardware.EvHardware;
 import endrov.hardware.DevicePropertyType;
 import endrov.recording.CameraImage;
+import endrov.recording.HWAutoFocus;
 import endrov.recording.HWImageScanner;
 import endrov.recording.HWStage;
 import endrov.util.EvSwingUtil;
@@ -65,6 +67,9 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 	public double[] stagePos = new double[]{ 0, 0, 0 };
 
+	
+	
+	///////////////////
 	
 	private class FrivolousCamera implements HWImageScanner
 		{
@@ -415,6 +420,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		}
 
+	
+	//////////////////////////////////
+	
+	
+	
 	private class FrivolousStage implements HWStage
 		{
 		// TODO Simulate moving stage? takes time to move? 
@@ -543,6 +553,168 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 
 		}
 
+	
+	
+	
+	////////////
+	
+	
+	
+	private class FrivolousAutofocus implements HWAutoFocus
+		{
+	
+		public FrivolousStage stage;
+		
+		public FrivolousAutofocus(FrivolousStage stage)
+			{
+			this.stage=stage;
+			}
+		
+		public String getDescName()
+			{
+			return "Frivolous autofocus";
+			}
+	
+		public SortedMap<String, String> getPropertyMap()
+			{
+			return new TreeMap<String, String>();
+			}
+	
+		public SortedMap<String, DevicePropertyType> getPropertyTypes()
+			{
+			return new TreeMap<String, DevicePropertyType>();
+			}
+	
+		public String getPropertyValue(String prop)
+			{
+			return null;
+			}
+	
+		public Boolean getPropertyValueBoolean(String prop)
+			{
+			return null;
+			}
+	
+		public void setPropertyValue(String prop, boolean value)
+			{
+			}
+	
+		public void setPropertyValue(String prop, String value)
+			{
+			}
+	
+		public boolean hasConfigureDialog()
+			{
+			return false;
+			}
+	
+		public void openConfigureDialog()
+			{
+			}
+	
+		
+		public EvDeviceObserver event=new EvDeviceObserver();
+		public void addListener(EvDeviceObserver.Listener listener)
+			{
+			event.addWeakListener(listener);
+			}
+		public void removeListener(EvDeviceObserver.Listener listener)
+			{
+			event.remove(listener);
+			}
+	
+		public boolean contAutoFocus=false;
+		public boolean contFocusLock=false;
+		public double offset=0;
+		
+		public void enableContinuousFocus(boolean enable)
+			{
+			contAutoFocus=enable;
+			}
+	
+		public void fullFocus() throws IOException
+			{
+			double[] pos=stage.getStagePos();
+			pos[2]=offset;
+			stage.setStagePos(pos);
+			}
+	
+		public double getAutoFocusOffset()
+			{
+			return offset;
+			}
+	
+		public double getCurrentFocusScore()
+			{
+			return 0;
+			}
+	
+		public double getLastFocusScore()
+			{
+			return 0;
+			}
+	
+		public void incrementalFocus() throws IOException
+			{
+			double[] pos=stage.getStagePos();
+			pos[2]=0;
+			stage.setStagePos(pos);
+			}
+	
+		public boolean isContinuousFocusEnabled()
+			{
+			return contAutoFocus;
+			}
+	
+		public boolean isContinuousFocusLocked()
+			{
+			return contFocusLock;
+			}
+	
+		public void setAutoFocusOffset(double offset)
+			{
+			this.offset=offset;
+			}
+	
+		}
+	
+		
+	
+	//////////
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public Set<EvDevice> autodetect()
 		{
 		return null;
@@ -618,6 +790,10 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 		new FrivolousConfig();
 		}
 
+	
+	
+	
+	
 	/**
 	 * Configuration window
 	 */
@@ -660,9 +836,11 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 					model = new FrivolousModel(f);
 
 					FrivolousCamera cam = new FrivolousCamera();
+					FrivolousStage stage=new FrivolousStage();
 					cam.seqAcqThread.start();
 					hw.put("cam", cam);
-					hw.put("stage", new FrivolousStage());
+					hw.put("stage", stage);
+					hw.put("autofocus", new FrivolousAutofocus(stage));
 
 					bStartStop.setText("Stop");
 					}

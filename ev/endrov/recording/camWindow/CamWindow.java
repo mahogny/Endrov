@@ -15,6 +15,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
@@ -34,6 +35,7 @@ import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageWindow.ImageWindowRendererExtension;
 import endrov.imageset.EvPixels;
 import endrov.recording.CameraImage;
+import endrov.recording.HWAutoFocus;
 import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
 import endrov.roi.GeneralToolROI;
@@ -387,6 +389,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		bSetFullRange.addActionListener(this);
 		histoView.addActionListener(this);
 		bAutoFocus.addActionListener(this);
+		bGoToROI.addActionListener(this);
 		
 		//pHisto.setBorder(BorderFactory.createTitledBorder("Range adjustment"));
 		pHisto.add(
@@ -474,6 +477,10 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			drawArea.repaint();
 			histoView.repaint();
 			}
+		else if(e.getSource()==bAutoFocus)
+			autofocus();
+		else if(e.getSource()==bGoToROI)
+			moveStageFocusROI();
 		else if(e.getSource()==histoView)
 			{
 			drawArea.repaint();
@@ -691,4 +698,42 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		{
 		drawArea.repaint();
 		}
+	
+	
+	/**
+	 * Autofocus, with whatever device there is
+	 */
+	public void autofocus()
+		{
+		HWAutoFocus af=RecordingResource.getOneAutofocus();
+		if(af==null)
+			showErrorDialog("No autofocus device found");
+		else
+			{
+			try
+				{
+				af.fullFocus();
+				}
+			catch (IOException e)
+				{
+				e.printStackTrace();
+				showErrorDialog("Failed to focus");
+				}
+			}
+		
+		
+		}
+	
+	
+	/**
+	 * Move the stage such that one ROI is in focus
+	 */
+	public void moveStageFocusROI()
+		{
+		//TODO
+		//Probably useful in a wider context - put in resource
+		}
+		
+	
+	
 	}
