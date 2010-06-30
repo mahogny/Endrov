@@ -65,7 +65,15 @@ public class RecordingResource
 //		System.out.println("No stage for X found");
 		return 0;
 		}
+
 	
+	public static HWAutoFocus getOneAutofocus()
+		{
+		for(HWAutoFocus af:EvHardware.getDeviceMapCast(HWAutoFocus.class).values())
+			return af;
+		return null;
+		}
+
 	/*
 	public static void moveAxis(String s, double dx)
 		{
