@@ -5,9 +5,27 @@
  */
 package endrov.recording;
 
+import java.io.IOException;
+
 import endrov.hardware.EvDevice;
 
+/**
+ * 
+ * 
+ * @author Johan Henriksson
+ *
+ */
 public interface HWAutoFocus extends EvDevice
 	{
+	public double getLastFocusScore();
+	public double getCurrentFocusScore();
+	public void fullFocus() throws IOException;
+	public void incrementalFocus() throws IOException; //Another exception?
+	public void setAutoFocusOffset (double offset);// throw (CMMError)
+	public double getAutoFocusOffset ();// throw (CMMError)
 
+	
+	public void enableContinuousFocus(boolean enable);
+	public boolean isContinuousFocusEnabled();
+	public boolean isContinuousFocusLocked();
 	}
