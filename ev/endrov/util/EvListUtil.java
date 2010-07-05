@@ -158,7 +158,7 @@ public class EvListUtil
 	/**
 	 * Convert to scalar array
 	 */
-	public static int[] toDoubleArray(Collection<Integer> set)
+	public static int[] toIntArray(Collection<Integer> set)
 		{
 		int[] out=new int[set.size()];
 		int i=0;
