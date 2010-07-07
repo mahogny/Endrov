@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.Set;
 
 import util2.integrateExpression.ExpUtil;
@@ -159,12 +162,25 @@ public class NewRenderHTML
 		{
 		htmlOutdir.mkdirs();
 
+		LinkedList<File> sortedDatas=new LinkedList<File>();
+		sortedDatas.addAll(datas);
+		Collections.sort(sortedDatas, new Comparator<File>(){
+			public int compare(File o1, File o2)
+				{
+				String n1=CompareSQL.getGeneName(o1);
+				String n2=CompareSQL.getGeneName(o2);
+				return n1.compareTo(n2);
+				}
+			});
+		
 		StringBuffer sbAPT=new StringBuffer();
 		StringBuffer sbXYZtitles=new StringBuffer();
 		StringBuffer sbXYZims=new StringBuffer();
-		for(File f:datas)
+		for(File f:sortedDatas)
 			{
-			String strainName=ExpUtil.nameDateFromOSTName(f.getName()).fst();
+			//String strainName=ExpUtil.nameDateFromOSTName(f.getName()).fst();
+			
+			String strainName=CompareSQL.getGeneName(f);
 			
 			String recStringAPT=templateRecAPT
 			.replace("STRAIN", strainName)

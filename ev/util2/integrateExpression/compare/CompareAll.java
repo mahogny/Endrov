@@ -506,6 +506,7 @@ public class CompareAll
 		//Find recordings to compare
 		Set<File> datas=FindAnnotatedStrains.getAnnotated();
 		System.out.println(datas);
+		System.out.println("Number of annotated strains: "+datas.size());
 
 		//Read past calculated values from disk 
 		Map<Tuple<File,File>, ColocCoefficients> comparisonT=new TreeMap<Tuple<File,File>, ColocCoefficients>();
@@ -533,8 +534,15 @@ public class CompareAll
 						{
 						System.out.println("todo: "+key);
 	
-						boolean calculated=ensureCalculated(fa) && ensureCalculated(fb);
+						boolean calculatedA=ensureCalculated(fa);
+						boolean calculatedB=ensureCalculated(fb);
+						boolean calculated=calculatedA && calculatedB;
 	
+						if(!calculatedA)
+							System.out.println("Not calculated, there must be a problem: "+fa);
+						if(!calculatedB)
+							System.out.println("Not calculated, there must be a problem: "+fb);
+						
 						System.out.println("-----calculated: "+calculated);
 						if(calculated)
 							{
@@ -688,21 +696,6 @@ public class CompareAll
 		}
 	
 	
-	/**
-	 * How to get gene name from strain name?
-	 * genotype makes more sense. deffiz claims it exists as a field
-	 */
-
-	public static String getName(File data)
-		{
-		String name=data.getName();
-		for(String tag:CompareSQL.tagsFor(data))
-			if(tag.startsWith("gfpgene:"))
-				name=tag.substring("gfpgene:".length());
-		return name;
-		}
-	
-	
 	public static void writeHTMLfromFiles(Set<File> datas, Map<Tuple<File,File>, ColocCoefficients> comparison, File targetFile, String profType)
 		{
 		//Turn into HTML
@@ -711,9 +704,9 @@ public class CompareAll
 			Set<String> titles=new TreeSet<String>();
 			Map<Tuple<String,String>,ColocCoefficients> map=new HashMap<Tuple<String,String>, ColocCoefficients>();
 			for(File d:datas)
-				titles.add(getName(d));
+				titles.add(CompareSQL.getGeneName(d));
 			for(Tuple<File,File> t:comparison.keySet())
-				map.put(Tuple.make(getName(t.fst()), getName(t.snd())), comparison.get(t));
+				map.put(Tuple.make(CompareSQL.getGeneName(t.fst())+" ("+t.fst().getName()+")", CompareSQL.getGeneName(t.snd())+" ("+t.snd().getName()+")"), comparison.get(t));
 			writeHTML(titles, map, targetFile, profType);
 			}
 		catch (IOException e)

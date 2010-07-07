@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import util2.integrateExpression.FindAnnotatedStrains;
 
 
@@ -26,7 +28,8 @@ public class CompareSQL
 
 	static
 	{
-	connectPostgres("//celegans.sh.se/mahogny", "postgres", "");
+	String pass=JOptionPane.showInputDialog("Password?");
+	connectPostgres("//pompeii.biosci.ki.se/mahogny", "postgres", pass);
 	}
 
 	/**
@@ -150,6 +153,20 @@ public class CompareSQL
 		
 		for(File f:datas)
 			System.out.println(tagsFor(f));
+		}
+
+
+	/**
+	 * How to get gene name from strain name?
+	 * genotype makes more sense. deffiz claims it exists as a field
+	 */
+	public static String getGeneName(File data)
+		{
+		String name=data.getName();
+		for(String tag:tagsFor(data))
+			if(tag.startsWith("gfpgene:"))
+				name=tag.substring("gfpgene:".length());
+		return name;
 		}
 	
 	}
