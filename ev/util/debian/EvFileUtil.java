@@ -51,6 +51,7 @@ public class EvFileUtil
 			bf.append("\n");
 			}
 		//TODO: should read file exactly as is. do not use readline!
+		br.close();
 		return bf.toString();
 		}
 	
