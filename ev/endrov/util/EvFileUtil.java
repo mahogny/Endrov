@@ -56,6 +56,7 @@ public class EvFileUtil
 			bf.append("\n");
 			}
 		//TODO: should read file exactly as is. do not use readline!
+		br.close();
 		return bf.toString();
 		}
 	
@@ -67,11 +68,12 @@ public class EvFileUtil
 		int ret;
 		while((ret=is.read(buf))!=-1)
 			os.write(buf, 0, ret);
+		is.close();
 		return os.toByteArray();
 		}
 	
 	/**
-	 * Read file into string
+	 * Read stream into string
 	 */
 	public static String readStream(InputStream is) throws IOException
 		{
@@ -84,6 +86,7 @@ public class EvFileUtil
 			bf.append("\n");
 			}
 		//TODO: should read file exactly as is. do not use readline!
+		br.close();
 		return bf.toString();
 		}
 	
@@ -116,7 +119,6 @@ public class EvFileUtil
 			{
 			String fileEnd=fn.substring(doti+1);
 			return fileEnd;
-			
 			}
 		else
 			return null;

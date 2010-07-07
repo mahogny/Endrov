@@ -195,6 +195,7 @@ public class Start
 							else if(line.startsWith("b:"))
 								binfiles.add(line.substring(2)); //b:
 							}
+						input.close();
 						}
 					catch (Exception e)
 						{
