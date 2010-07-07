@@ -374,6 +374,7 @@ public class Start
 						System.out.println("Java environment flag: "+tok);
 						}
 					}
+				envReader.close();
 				}
 			System.out.println("Using environment: "+javaenvFile);
 			

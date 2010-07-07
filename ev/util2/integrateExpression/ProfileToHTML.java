@@ -105,6 +105,7 @@ public class ProfileToHTML
 					}
 					*/
 				}
+			br.close();
 			
 			EvFileUtil.writeFile(output, sb.toString());
 			}

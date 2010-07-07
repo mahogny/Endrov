@@ -192,6 +192,7 @@ public class OSTdaemon extends Thread
     		else
     			log("Unknown parameter in config file: "+cmd);
     		}
+    	input.close();
     	}
     catch(Exception e)
     	{
