@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -440,7 +441,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 		for(String key:metaOther.keySet())
 			e.addContent(new Element(key).addContent(""+metaOther.get(key)));
 		
-		for(EvDecimal frame:imageLoader.keySet())
+		for(EvDecimal frame:new TreeSet<EvDecimal>(imageLoader.keySet()))
 			{
 			HashMap<String,String> otherMeta=metaFrame.get(frame);
 			if(otherMeta==null)

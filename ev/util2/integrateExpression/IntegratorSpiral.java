@@ -224,7 +224,7 @@ public class IntegratorSpiral implements Integrator
 					if(vol==0)
 						avg=0;
 					else
-						avg=(sliceExp[az][ay][ax]/vol-curbg)/integrator.expTime;
+						avg=sliceExp[az][ay][ax]/vol;
 					
 					out[az][ay][ax]=avg;
 					}

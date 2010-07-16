@@ -22,6 +22,7 @@ import loci.formats.ImageReader;
 import org.jdom.*;
 
 import endrov.imageset.BioformatsSliceIO;
+import endrov.imageset.EvPixels;
 import endrov.util.EvImageIOUtils;
 import endrov.util.EvXmlUtil;
 
@@ -473,7 +474,8 @@ public class OSTdaemon extends Thread
 		LinkedList<BufferedImage> list=new LinkedList<BufferedImage>();
 		for(int id=0;id<count;id++)
 			{
-			BufferedImage i=new BioformatsSliceIO(imageReader,id,0,"").loadJavaImage().quickReadOnlyAWT();
+			EvPixels pixels=new BioformatsSliceIO(imageReader,id,0,"", false).loadJavaImage();
+			BufferedImage i=pixels.quickReadOnlyAWT();
 //			BufferedImage i=imageReader.openImage(id);
 			int w=i.getWidth();
 			int h=i.getHeight();
@@ -494,6 +496,7 @@ public class OSTdaemon extends Thread
 	
 			list.add(im);
 			}
+		imageReader.close();
 		return list;
 		}
 	

@@ -225,7 +225,7 @@ public class IntegratorXYZ implements Integrator
 					if(vol==0)
 						avg=0;
 					else
-						avg=(sliceExp[az][ay][ax]/vol-curbg)/integrator.expTime;
+						avg=sliceExp[az][ay][ax]/vol-curbg;    //(sliceExp[az][ay][ax]/vol-curbg)/integrator.expTime;   //normalization done later
 					
 					out[az][ay][ax]=avg;
 					}
@@ -237,7 +237,7 @@ public class IntegratorXYZ implements Integrator
 	 */
 	public void done(IntExp integrator, TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
-		System.out.println("converting im.frames");
+		System.out.println("xyz converting im.frames");
 
 		/*
 		// Normalization is needed before exposure correction to make sure the
@@ -270,16 +270,19 @@ public class IntegratorXYZ implements Integrator
 		EvChannel chanxyz = integrator.imset.getCreateChannel("XYZ");
 		for (EvDecimal frame : new LinkedList<EvDecimal>(expMap.keySet()))
 			{
+			EvStack stack = chanxyz.getCreateFrame(frame);
+			stack.allocate(numSubDiv, numSubDiv, numSubDiv, EvPixelsType.DOUBLE, null);
+			stack.resX = stack.resY = outImRes;
+			
 			//System.out.println("converting im.frame "+frame);
 			for (int az = 0; az<numSubDiv; az++)
 				{
 				double[][] planeExp=expMap.get(frame)[az];
 				
 				EvImage evim = chanxyz.createImageLoader(frame, new EvDecimal(az));
-				EvStack stack = chanxyz.imageLoader.get(frame);
+				
 				EvPixels p = new EvPixels(EvPixelsType.DOUBLE, numSubDiv, numSubDiv);
 				evim.setPixelsReference(p);
-				stack.resX = stack.resY = outImRes;
 				double[] line = p.getArrayDouble();
 				for (int ay = 0; ay<numSubDiv; ay++)
 					for (int ax = 0; ax<numSubDiv; ax++)

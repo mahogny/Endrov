@@ -209,7 +209,7 @@ public class IntegratorXYZnNO implements Integrator
 				if(vol==0)
 					avg=0;
 				else
-					avg=(sliceExp[ay][ax]/vol-curbg)/integrator.expTime;
+					avg=sliceExp[ay][ax]/vol;
 
 				NucLineage.Nuc nuc = lin.nuc.get("xyz2_"+ax+"_"+ay);
 				NucExp exp = nuc.getCreateExp(integrator.expName);

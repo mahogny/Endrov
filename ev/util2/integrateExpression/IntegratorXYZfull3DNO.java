@@ -222,7 +222,7 @@ public class IntegratorXYZfull3DNO implements Integrator
 					if(vol==0)
 						avg=0;
 					else
-						avg=(sliceExp[az][ay][ax]/vol-curbg)/integrator.expTime;
+						avg=sliceExp[az][ay][ax]/vol;
 
 					NucLineage.Nuc nuc = lin.nuc.get("xyz_"+ax+"_"+ay+"_"+az);
 					NucExp exp = nuc.getCreateExp(integrator.expName);

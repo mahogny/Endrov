@@ -51,8 +51,6 @@ public class IntegratorAP implements Integrator
 		{
 		this.numSubDiv = numSubDiv;
 		this.newLinName = newLinName;
-		sliceExp = new double[numSubDiv];
-		sliceVol = new int[numSubDiv];
 		
 		//Use pre-calculated value for BG
 		if (bg!=null)
@@ -77,13 +75,16 @@ public class IntegratorAP implements Integrator
 		{
 		curBgInt = 0;
 		curBgVol = 0;
+		// Zero out arrays
+		sliceExp = new double[numSubDiv];
+		sliceVol = new int[numSubDiv];
 		}
 	
 	public void integrateImage(IntExp integrator)
 		{
 		integrator.ensureImageLoaded();
 	
-		// Calculate distance mask lazily
+		// Calculate distance mask lazily. Assumes shell does not move over time.
 		EvPixels lenMap;
 		double[] lenMapArr;
 		if (distanceMap.containsKey(integrator.curZ))
@@ -125,7 +126,8 @@ public class IntegratorAP implements Integrator
 				}
 			}
 	
-		// Integrate this area
+		// Integrate area, separate into AP slices and background
+		//TODO: have we really really checked that this is done properly?
 		for (int y = 0; y<integrator.pixels.getHeight(); y++)
 			{
 			int lineIndex = integrator.pixels.getRowIndex(y);
@@ -158,8 +160,9 @@ public class IntegratorAP implements Integrator
 		// Store pattern in lineage
 		for (int i = 0; i<numSubDiv; i++)
 			{
+			//double avg = (double) sliceExp[i]/(double) sliceVol[i];
 			double avg = (double) sliceExp[i]/(double) sliceVol[i] - bg.get(integrator.frame);
-			avg /= integrator.expTime;
+		//	avg /= integrator.expTime;
 	
 			NucLineage.Nuc nuc = lin.getCreateNuc("_slice"+i);
 			NucExp exp = nuc.getCreateExp(integrator.expName);
@@ -197,23 +200,18 @@ public class IntegratorAP implements Integrator
 		System.out.println("After norm: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level);
 		*/
 		
-		if (correctedExposure!=null)
-			{
-			//Used for T-expression
-			/*
-			System.out.println();
-			System.out.println("Exp correction: "+correctedExposure);
-			*/
-			
-			ExpUtil.correctExposureChange(correctedExposure, lin,	integrator.expName);
-			}
-		else
+		if (correctedExposure==null)
 			{
 			//Used for AP
-			this.correctedExposure = ExpUtil.correctExposureChange(
+			correctedExposure = ExpUtil.calculateCorrectExposureChange20100709(
 					integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(
-							integrator.ch.imageLoader.keySet()));
+							integrator.ch.imageLoader.keySet()), bg);
 			}
+		this.correctedExposure=correctedExposure;
+
+		
+		ExpUtil.correctExposureChange(this.correctedExposure, lin,	integrator.expName);
+
 		
 		/*
 		System.out.println();

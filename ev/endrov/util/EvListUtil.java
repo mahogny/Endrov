@@ -305,6 +305,21 @@ public class EvListUtil
 		return index;
 		}
 
+	
+
+	/**
+	 * Get the product set, given two sets
+	 */
+	public static <E,F> Collection<Tuple<E,F>> productSet(Collection<E> a, Collection<F> b)
+		{
+		List<Tuple<E,F>> list=new LinkedList<Tuple<E,F>>();
+		for(E aa:a)
+			for(F bb:b)
+				list.add(Tuple.make(aa, bb));
+		return list;
+		}
+	
+	
 	public static void main(String[] args)
 		{
 		LinkedList<Integer> list=new LinkedList<Integer>();
@@ -323,5 +338,6 @@ public class EvListUtil
 		*/
 		//System.out.println(findRankInt(list, 10));
 		}
+
 	
 	}

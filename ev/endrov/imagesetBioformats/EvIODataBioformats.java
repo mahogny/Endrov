@@ -403,7 +403,7 @@ public class EvIODataBioformats implements EvIOData
 						EvDecimal zpos=new EvDecimal(fdz).multiply(slicenum);
 	
 						EvImage evim=new EvImage();
-						evim.io=new BioformatsSliceIO(imageReader, curPixel, bandID, "");
+						evim.io=new BioformatsSliceIO(imageReader, curPixel, bandID, "", false);
 						stack.put(zpos, evim);
 						metaFrame.put("exposure",""+expTime);
 						}
@@ -437,6 +437,18 @@ public class EvIODataBioformats implements EvIOData
 		}
 
 	
+
+	@Override
+	protected void finalize() throws Throwable
+		{
+		super.finalize();
+		if(imageReader!=null)
+			{
+			//System.out.println("Closed eviodatabioformats for "+basedir);
+			imageReader.close();
+			imageReader=null;
+			}
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -487,5 +499,6 @@ public class EvIODataBioformats implements EvIOData
 			public EvIOData getSaver(EvData d, String file) throws IOException{return null;}
 		});
 		}
+
 	
 	}

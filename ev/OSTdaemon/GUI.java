@@ -6,6 +6,10 @@
 package OSTdaemon;
 
 import javax.swing.*;
+
+import endrov.ev.EvLog;
+import endrov.ev.EvLogStdout;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -187,6 +191,7 @@ public class GUI extends JFrame implements ActionListener, WindowListener, Daemo
 	 */
 	public static void main(String[] arg)
 		{
+		EvLog.listeners.add(new EvLogStdout());
 		String daemonConfig="OSTdaemon/config.txt";
 		if(arg.length>0)
 			daemonConfig=arg[0];

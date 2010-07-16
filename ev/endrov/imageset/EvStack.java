@@ -144,12 +144,24 @@ public class EvStack implements AnyEvImage
 	 */
 	public void allocate(int w, int h, int d, EvPixelsType type, EvStack ref)
 		{
-		resX=ref.resX;
-		resY=ref.resY;
-		resZ=ref.getResbinZinverted();
-		dispX=ref.dispX;
-		dispY=ref.dispY;
-		dispZ=ref.dispZ;
+		if(ref==null)
+			{
+			resX=1;
+			resY=1;
+			resZ=EvDecimal.ONE;
+			dispX=0;
+			dispY=0;
+			dispZ=EvDecimal.ZERO;
+			}
+		else
+			{
+			resX=ref.resX;
+			resY=ref.resY;
+			resZ=ref.getResbinZinverted();
+			dispX=ref.dispX;
+			dispY=ref.dispY;
+			dispZ=ref.dispZ;
+			}
 		for(int i=0;i<d;i++)
 			{
 			EvImage evim=new EvImage();
