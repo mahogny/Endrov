@@ -33,6 +33,15 @@ public class FindAnnotatedStrains
 		}
 
 	
+	public static Set<File> getTestSet()
+		{
+		Set<File> doneStrains=new TreeSet<File>();
+		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/AH142_070827.ost"));
+		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/AH142_070828.ost"));
+		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/TB2098_080217.ost"));
+		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/TB2098_080324.ost"));
+		return doneStrains;
+		}
 	
 	
 	public static void main(String[] args)

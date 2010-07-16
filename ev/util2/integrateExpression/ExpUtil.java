@@ -8,10 +8,13 @@ package util2.integrateExpression;
 import java.text.NumberFormat;
 import java.util.*;
 
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.colt.matrix.tdouble.algo.DoubleAlgebra;
+import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
+
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
-import endrov.nuc.NucLineage.Nuc;
 import endrov.util.*;
 
 /**
@@ -50,6 +53,154 @@ public class ExpUtil
 		
 		}
 
+	
+
+	/**
+	 * Correct for background etc. 
+	 * Return table of correction values so it can be applied again. Will be used for non-AP
+	 */
+	public static TreeMap<EvDecimal, Tuple<Double,Double>> calculateCorrectExposureChange20100709(Imageset imset, NucLineage lin, String expName, String channelName, SortedSet<EvDecimal> frames, Map<EvDecimal, Double> bg)
+		{
+		Double minBG=null;
+		for(double d:bg.values())
+			if(minBG==null || d<minBG)
+				minBG=d;
+
+		//Initial correction: only subtract background. If signal is normalized then no subtraction is really needed
+		double correctionK=1;
+		double correctionM=0;//-minBG;
+		
+		TreeMap<EvDecimal, Tuple<Double,Double>> historyKM=new TreeMap<EvDecimal, Tuple<Double,Double>>();
+		//Nuc corrNuc=lin.getCreateNuc("correctExp");
+		
+		int framecount=0;
+
+		//Check if exposure time exists for any frames. Then jumps can be assumed to only occur during exposure time changes
+		boolean detectByJumps=true;
+		for(EvDecimal frame:frames)
+			if(imset.getChannel(channelName).getMetaFrame(frame).containsKey("exposuretime") ||
+					imset.getMetaFrame(frame).containsKey("exposuretime"))
+				{
+				detectByJumps=false;
+				break;
+				}
+		if(detectByJumps)
+			System.out.println("Exposure time does not exist - enabling jump detection");
+		
+		//For all frames
+		Double lastExposure=0.0;
+		EvDecimal lastFrame=frames.first();
+		for(EvDecimal frame:frames)
+			{
+			framecount++;
+			double expTime=1;
+			String sExpTime=imset.getChannel(channelName).getMetaFrame(frame).get("exposuretime");
+			if(sExpTime==null)
+				sExpTime=imset.getMetaFrame(frame).get("exposuretime");
+			if(sExpTime!=null)
+				expTime=Double.parseDouble(sExpTime);
+			
+			/*
+			//Trigger correction based on sudden jumps
+			boolean suddenJump=false;
+			if(newKM!=null)
+				{
+				double jmp=Math.abs(newKM.snd()-correctionM);
+				if(jmp>0.02) //Better constant? Input is normalized, might work. Could use percentile stats 
+					{
+					System.out.println("Detected sudden jump: "+jmp);
+					suddenJump=true;
+					}
+				}
+			*/
+			
+			Tuple<Double,Double> newKM=null;
+			
+			/////////////// for now do not try to detect sudden jumps!!!! ///////////////
+			boolean suddenJump=false;
+			
+			//Calculate new correction if needed
+			if(!lastExposure.equals(expTime) || suddenJump)
+				{
+				//corrNuc.getCreatePos(frame);
+				
+				/**
+				 * Model of correction: outsig=sig*k+m
+				 * Let ' be next time, then demand:
+				 * outsig=outsig'
+				 * bg=bg'
+				 */
+				double bg1=bg.get(lastFrame);
+				double bg2=bg.get(frame);
+				
+				bg1=bg2=0; //temp
+				
+				double s1=helperGetAverageForFrame(lin, expName, lastFrame);
+				double s2=helperGetAverageForFrame(lin, expName, frame);
+				double k1=correctionK;
+				double m1=correctionM;
+
+				//Solve as Ax=b. If it is singular, keep old correction. Singularity does not occur easily though.
+				DoubleMatrix2D A=new DenseDoubleMatrix2D(new double[][]{
+					{bg2,1},
+					{s2, 1}
+				});
+				DoubleMatrix2D b=new DenseDoubleMatrix2D(new double[][]{
+					{bg1*k1+m1},
+					{ s1*k1+m1}
+				});
+				DoubleAlgebra alg=new DoubleAlgebra();
+				DoubleMatrix2D x=alg.solve(A, b);
+				if(alg.det(A)!=0 
+						&& !Double.isNaN(x.getQuick(0, 0)) && !Double.isInfinite(x.getQuick(0, 0))
+						&& !Double.isNaN(x.getQuick(0, 1)) && !Double.isInfinite(x.getQuick(0, 1)))
+					newKM=Tuple.make(x.getQuick(0, 0), x.getQuick(0, 1));
+				
+				/*
+				//might crash!
+				System.out.println("         check1 "+(correctionK*bg1+correctionM)+"      orig value "+bg1);
+				System.out.println("         check1 "+(newKM.fst()*bg2+newKM.snd())+"      orig value "+bg2);
+				System.out.println("         check2 "+(correctionK*s1+correctionM)+"      orig value "+s1);
+				System.out.println("         check2 "+(newKM.fst()*s2+newKM.snd())+"      orig value "+s2);
+				*/
+				}
+
+			
+			//newKM=null; //temp: disable correction
+			//newKM=Tuple.make(Math.random(), 0.0);//temp: check that correction is applied
+			
+			if(newKM!=null)
+				{
+				correctionK=newKM.fst();
+				correctionM=newKM.snd();
+				System.out.println("------------Frame "+frame+"    Correction "+correctionK+"  "+correctionM);
+				}
+			else
+				System.out.println("------------Frame "+frame+"    no corr");
+			System.out.println("                                                                               BG now "+(correctionK*bg.get(frame)+correctionM)+"      orig value "+bg.get(frame));
+			
+			lastFrame=frame;
+			lastExposure=expTime;
+			
+			historyKM.put(frame,new Tuple<Double, Double>(correctionK,correctionM));
+			
+			/*
+			//Correct this frame
+			for(NucLineage.Nuc nuc:lin.nuc.values())
+				{
+				NucExp nexp=nuc.exp.get(expName);
+				if(nexp!=null)
+					{
+					Double level=nexp.level.get(frame);
+					if(level!=null)
+						nexp.level.put(frame,correctionK*level+correctionM);
+					}
+				}
+				*/
+			}
+		return historyKM;
+		}
+	
 
 	
 	
@@ -57,7 +208,8 @@ public class ExpUtil
 	 * Correct for background etc. 
 	 * Return table of correction values so it can be applied again. Will be used for non-AP
 	 */
-	public static TreeMap<EvDecimal, Tuple<Double,Double>> correctExposureChange(Imageset imset, NucLineage lin, String expName, String channelName, SortedSet<EvDecimal> frames)
+	/*
+	public static TreeMap<EvDecimal, Tuple<Double,Double>> correctExposureChangeOldPre20100709(Imageset imset, NucLineage lin, String expName, String channelName, SortedSet<EvDecimal> frames)
 		{
 		//Initital correction=none
 		double correctionK=1;
@@ -67,6 +219,9 @@ public class ExpUtil
 		Nuc corrNuc=lin.getCreateNuc("correctExp");
 		
 		int framecount=0;
+		
+		
+		//////////////////////////TODO any exposure times given at all?
 		
 		//For all frames
 		Double lastExposure=0.0;
@@ -78,18 +233,22 @@ public class ExpUtil
 			double expTime=1;
 			if(sExpTime!=null)
 				expTime=Double.parseDouble(sExpTime);
+			else
+				{
+				System.out.println("!!!!!!!!!! no exposure time for frame "+frame);
+				}
 
 //			Double lastAv=helperGetAverageForFrame(lin, expName, lastFrame);
 //			Double curAv=helperGetAverageForFrame(lin, expName, frame);
 
-	
+	*/
 			//Values to piece together. Model a*x+b
 			/*
 			List<Double> lastFit=helperGetAverageForFrameNew(lin, expName, lastFrame);
 			List<Double> curFit=helperGetAverageForFrameNew(lin, expName, frame);
 			Tuple<Double,Double> newKM=EvMathUtil.fitLinear1D(lastFit, curFit);
 			*/
-			
+		/*	
 			//Values to piece together. Model x+b
 			Tuple<Double,Double> newKM=new Tuple<Double, Double>(
 					1.0,
@@ -108,6 +267,10 @@ public class ExpUtil
 					}
 				}
 			
+			
+			/////////////// for now do not try to detect sudden jumps!!!! ///////////////
+			suddenJump=false;
+			
 			//Trigger correction
 			if(!lastExposure.equals(expTime) || suddenJump)
 				{
@@ -119,10 +282,10 @@ public class ExpUtil
 					{
 					correctionK=newKM.fst();
 					correctionM=newKM.snd();
-					System.out.println("------------Frame "+framecount+"   "+frame+"    Correction "+correctionK+"  "+correctionM);
+					System.out.println("------------Frame "+frame+"    Correction "+correctionK+"  "+correctionM);
 					}
 				else
-					System.out.println("------------Frame "+framecount+"    no corr");
+					System.out.println("------------Frame "+frame+"    no corr");
 				}
 			//else
 				//System.out.println("No corr change "+frame);
@@ -131,7 +294,7 @@ public class ExpUtil
 			
 			historyKM.put(frame,new Tuple<Double, Double>(correctionK,correctionM));
 			
-			//Correct this frame. Also get 
+			//Correct this frame
 			for(NucLineage.Nuc nuc:lin.nuc.values())
 				{
 				NucExp nexp=nuc.exp.get(expName);
@@ -144,7 +307,7 @@ public class ExpUtil
 				}
 			}
 		return historyKM;
-		}
+		}*/
 	/*
 	private static List<Double> helperGetAverageForFrameNew(NucLineage lin, String expName, EvDecimal frame)
 		{

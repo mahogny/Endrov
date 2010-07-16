@@ -68,6 +68,7 @@ public class EvParallel
 					}
 				}).start();
 				}
+			//System.out.println("----------- waiting for all threads to finish "+putsem.availablePermits());
 			putsem.acquire(numThread);
 			}
 		catch (InterruptedException e)

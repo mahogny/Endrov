@@ -15,11 +15,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
@@ -45,6 +45,8 @@ import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
+import endrov.util.EvListUtil;
+import endrov.util.EvParallel;
 import endrov.util.EvXmlUtil;
 import endrov.util.Tuple;
 
@@ -55,6 +57,7 @@ import endrov.util.Tuple;
  */
 public class CompareAll
 	{
+	private final static String expName="exp";
 	
 	
 	private final static int imageMaxTime=100; //Break down to 100 time points
@@ -218,7 +221,7 @@ public class CompareAll
 		if(ftA.getNumPoints()<2 || ftB.getNumPoints()<2)
 			{
 			//Bad data survival
-			System.out.println("!!!!! too few timepoints");
+			System.out.println("!!!!! too few timepoints for XYZ comparison "+ftA.getNumPoints() + "  "+ ftB.getNumPoints());
 			return new ColocCoefficients();
 			}
 		
@@ -366,7 +369,7 @@ public class CompareAll
 			//Compare each slice. Same number of slices since it has been normalized
 			int numz=stackA.getDepth();
 			if(numz!=xyzSize)
-				System.out.println("wtf. numz "+numz);
+				System.out.println("---------------------------------------------------------------- wtf. numz "+numz);
 			for(int cz=0;cz<xyzSize;cz++)
 				{
 				//BufferedImage thisPlane=stackA.getInt(cz).getPixels().quickReadOnlyAWT();
@@ -439,7 +442,7 @@ public class CompareAll
 	
 	public static boolean ensureCalculated(File f)
 		{
-		return IntExp.doOne(f);
+		return IntExp.doOne(f,false);   //Does not force recalculation
 		}
 	
 	
@@ -459,7 +462,7 @@ public class CompareAll
 					Element e=(Element)o;
 					File fa=new File(e.getAttributeValue("fa"));
 					File fb=new File(e.getAttributeValue("fb"));
-					if(datas.contains(fa) && datas.contains(fb))
+					if(datas==null || (datas.contains(fa) && datas.contains(fb)))
 						{
 						ColocCoefficients c=new ColocCoefficients();
 						c.fromXML(e);
@@ -493,134 +496,237 @@ public class CompareAll
 				coeff.add(imA[i], imB[i]);
 		return coeff;
 		}
+
+	public static String getChanFor(EvData data)
+		{
+		Imageset imsetA = data.getObjects(Imageset.class).get(0);
+		String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
+		return chanNameA;
+		}
 	
 	public static void main(String[] args)
 		{
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
+		new CompareSQL(); //Get password right away so it doesn't stop later
+
+		//Do things in parallel. Not too many CPUs, case memory issues
+		int numThread=EvParallel.numThread;
+		numThread=4;
+		System.out.println("Will use #threads  "+numThread);
+
 		
 		Set<String> argsSet=new HashSet<String>();
 		for(String s:args)
 			argsSet.add(s);
 		
 		//Find recordings to compare
-		Set<File> datas=FindAnnotatedStrains.getAnnotated();
+		Set<File> datas=FindAnnotatedStrains.getAnnotated(); 
+		
+		//Use only test set?
+		if(argsSet.contains("test"))
+			datas=FindAnnotatedStrains.getTestSet();
+		
+		//Use only calculated recordings?
+		if(argsSet.contains("onlycalculated"))
+			{
+			System.out.println("---- only calculated");
+			Set<File> datas2=new HashSet<File>();
+			for(File f:datas)
+				if(IntExp.isDone(f))
+					datas2.add(f);
+			datas=datas2;
+			}
+		
 		System.out.println(datas);
 		System.out.println("Number of annotated strains: "+datas.size());
 
 		//Read past calculated values from disk 
-		Map<Tuple<File,File>, ColocCoefficients> comparisonT=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-		Map<Tuple<File,File>, ColocCoefficients> comparisonAP=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-		Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonT;//=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonAP;//=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ;//=new TreeMap<Tuple<File,File>, ColocCoefficients>();
 		if(!argsSet.contains("nocache"))
 			{
-			comparisonT=loadCache(datas, cachedValuesFileT);
-			comparisonAP=loadCache(datas, cachedValuesFileAP);
-			comparisonXYZ=loadCache(datas, cachedValuesFileXYZ);
+			comparisonT=Collections.synchronizedMap(loadCache(datas, cachedValuesFileT));
+			comparisonAP=Collections.synchronizedMap(loadCache(datas, cachedValuesFileAP));
+			comparisonXYZ=Collections.synchronizedMap(loadCache(datas, cachedValuesFileXYZ));
 			}
+		else
+			{
+			comparisonT=Collections.synchronizedMap(new TreeMap<Tuple<File,File>, ColocCoefficients>());
+			comparisonAP=Collections.synchronizedMap(new TreeMap<Tuple<File,File>, ColocCoefficients>());
+			comparisonXYZ=Collections.synchronizedMap(new TreeMap<Tuple<File,File>, ColocCoefficients>());
+			}
+		/*
+		comparisonT=Collections.synchronizedMap(comparisonT);
+		comparisonAP=Collections.synchronizedMap(comparisonAP);
+		comparisonXYZ=Collections.synchronizedMap(comparisonXYZ);*/
+
+		//Quick listing what must be calculated
+		for(File f:datas)
+			if(!IntExp.isDone(f))
+				System.out.println("---- need to do: "+f);
+
+		///////////////// Integrate signal in each recording //////////////
+		if(!argsSet.contains("nocalc"))
+			EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
+				public Object func(File in)
+					{
+					//System.out.println("starting      "+in);
+					boolean needGraph=!IntExp.isDone(in);
+					if(ensureCalculated(in) && needGraph)
+						{
+						EvData data=EvData.loadFile(in);
+						String chanName=getChanFor(data);
+						
+						
+						//Check if XYZ summary generated. This should not be repeated as it is expensive! 
+						//Only have to check the first image
+						try
+							{
+							File outputFileXYZimageA=new File(new File(in,"data"),"expXYZ.png");
+							if(!outputFileXYZimageA.exists())
+								fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, chanName);
+							}
+						catch (IOException e1)
+							{
+							e1.printStackTrace();
+							}
+						
+						//Slices: T
+						try
+							{
+							double[][] imtA=apToArray(data, "AP"+1+"-"+chanName, expName, coordLineageFor(data));
+							NewRenderHTML.toTimage(imtA, in, ""+in.getName());
+							}
+						catch (IOException e)
+							{
+							e.printStackTrace();
+							}
+						
+						//Slices: AP
+						try
+							{
+							double[][] imapA=apToArray(data, "AP"+20+"-"+chanName, expName, coordLineageFor(data));
+							NewRenderHTML.toAPimage(imapA, in, ""+in.getName());
+							}
+						catch (IOException e)
+							{
+							e.printStackTrace();
+							}
+						}
+					//System.out.println("ending        "+in);
+					return null;
+					}
+			});
 		
-		//Do pairwise. For user simplicity, can do symmetric and reflexive
-		//Each slice, different bg.
+			
+
+		
+		
+		///////////////// Compare each two recordings //////////////////////////////
 		if(!argsSet.contains("nocalc"))
 			{
+			
+
+			
 			System.out.println("Calculate pair-wise statistics");
-			for(File fa:randomOrder(datas))
-				for(File fb:randomOrder(datas))
+			EvParallel.map(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
+			public Object func(Tuple<File,File> key)
+				{
+				File fa=key.fst();
+				File fb=key.snd();
+				
+				
+
+				//Check if cached calculation does not exist
+				if(!comparisonT.containsKey(key) || !comparisonAP.containsKey(key) || !comparisonXYZ.containsKey(key))
 					{
-					Tuple<File,File> key=Tuple.make(fa, fb);
+					System.out.println("todo: "+key);
+
 					
-					//Check if cached calculation does not exist
-					if(!comparisonT.containsKey(key) || !comparisonAP.containsKey(key) || !comparisonXYZ.containsKey(key))
+					
+					//boolean calculatedA=ensureCalculated(fa);
+					//boolean calculatedB=ensureCalculated(fb);
+					boolean calculatedA=IntExp.isDone(fa);//ensureCalculated(fa);
+					boolean calculatedB=IntExp.isDone(fb);//ensureCalculated(fb);
+					boolean calculated=calculatedA && calculatedB;
+
+					if(!calculatedA)
+						System.out.println("Not calculated, there must be a problem: "+fa);
+					if(!calculatedB)
+						System.out.println("Not calculated, there must be a problem: "+fb);
+					
+					System.out.println("-----calculated: "+calculated);
+					if(calculated)
 						{
-						System.out.println("todo: "+key);
-	
-						boolean calculatedA=ensureCalculated(fa);
-						boolean calculatedB=ensureCalculated(fb);
-						boolean calculated=calculatedA && calculatedB;
-	
-						if(!calculatedA)
-							System.out.println("Not calculated, there must be a problem: "+fa);
-						if(!calculatedB)
-							System.out.println("Not calculated, there must be a problem: "+fb);
+						EvData dataA=EvData.loadFile(fa);
+						EvData dataB=EvData.loadFile(fb);
 						
-						System.out.println("-----calculated: "+calculated);
-						if(calculated)
+						Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
+						Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
+						
+						String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
+						String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
+						
+						
+						System.out.println("Comparing: "+key);
+	
+						
+						//Slices: T
+						try
 							{
-							EvData dataA=EvData.loadFile(fa);
-							EvData dataB=EvData.loadFile(fb);
+							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeffT=colocAP(imtA, imtB);
+							comparisonT.put(Tuple.make(fa,fb), coeffT);
 							
-							Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
-							Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
+							//NewRenderHTML.toTimage(imtA, fa, ""+fa.getName());
+							//NewRenderHTML.toTimage(imtB, fb, ""+fb.getName());
 							
-							String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
-							String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
-							
-							//Check if XYZ summary generated. This should not be repeated as it is expensive! 
-							//Only have to check the first image
-							try
-								{
-								File outputFileXYZimageA=new File(new File(key.fst(),"data"),"expXYZ.png");
-								if(!outputFileXYZimageA.exists())
-									fancyGraphXYZ(dataA, coordLineageFor(dataA), outputFileXYZimageA, chanNameA);
-								}
-							catch (IOException e1)
-								{
-								e1.printStackTrace();
-								}
-							
-							System.out.println("Comparing: "+key);
-		
-							String expName="exp";
-							
-							//Slices: T
-							try
-								{
-								double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
-								double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
-								ColocCoefficients coeffT=colocAP(imtA, imtB);
-								comparisonT.put(Tuple.make(fa,fb), coeffT);
-								
-								NewRenderHTML.toTimage(imtA, fa, ""+fa.getName());
-								NewRenderHTML.toTimage(imtB, fb, ""+fb.getName());
-								
-								System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
-								System.out.println("pearsonT "+ coeffT.getPearson());
-								}
-							catch (IOException e)
-								{
-								e.printStackTrace();
-								}
-							
-							//Slices: AP
-							try
-								{
-								double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-								double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-								ColocCoefficients coeffAP=colocAP(imapA, imapB);
-								comparisonAP.put(Tuple.make(fa,fb), coeffAP);
-
-								NewRenderHTML.toAPimage(imapA, fa, ""+fa.getName());
-								NewRenderHTML.toAPimage(imapB, fb, ""+fb.getName());
-								
-								System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
-								}
-							catch (IOException e)
-								{
-								e.printStackTrace();
-								}
-							
-							//Slices: XYZ
-							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), chanNameA, chanNameB);
-							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);
-													
-							//Store down this value too
-							storeCache(comparisonT, cachedValuesFileT);
-							storeCache(comparisonAP, cachedValuesFileAP);
-							storeCache(comparisonXYZ, cachedValuesFileXYZ);
+							System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
+							System.out.println("pearsonT "+ coeffT.getPearson());
 							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+						
+						//Slices: AP
+						try
+							{
+							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeffAP=colocAP(imapA, imapB);
+							comparisonAP.put(Tuple.make(fa,fb), coeffAP);
 
+							//NewRenderHTML.toAPimage(imapA, fa, ""+fa.getName());
+							//NewRenderHTML.toAPimage(imapB, fb, ""+fb.getName());
+							
+							System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+						
+						//Slices: XYZ
+						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), chanNameA, chanNameB);
+						comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);
+												
+						//Store down this value too
+						storeCache(comparisonT, cachedValuesFileT);
+						storeCache(comparisonAP, cachedValuesFileAP);
+						storeCache(comparisonXYZ, cachedValuesFileXYZ);
 						}
+
 					}
+				
+				return null;
+				}
+			});
+			
+			
 			}
 		
 		
@@ -648,6 +754,7 @@ public class CompareAll
 		System.exit(0);
 		}
 
+	
 	
 	public static NucLineage coordLineageFor(EvContainer data)
 		{
@@ -701,13 +808,15 @@ public class CompareAll
 		//Turn into HTML
 		try
 			{
-			Set<String> titles=new TreeSet<String>();
-			Map<Tuple<String,String>,ColocCoefficients> map=new HashMap<Tuple<String,String>, ColocCoefficients>();
+			//Set<String> titles=new TreeSet<String>();
+			Map<String, File> titleMap=new TreeMap<String, File>(); 
+			//Map<Tuple<String,String>,ColocCoefficients> map=new HashMap<Tuple<String,String>, ColocCoefficients>();
 			for(File d:datas)
-				titles.add(CompareSQL.getGeneName(d));
-			for(Tuple<File,File> t:comparison.keySet())
-				map.put(Tuple.make(CompareSQL.getGeneName(t.fst())+" ("+t.fst().getName()+")", CompareSQL.getGeneName(t.snd())+" ("+t.snd().getName()+")"), comparison.get(t));
-			writeHTML(titles, map, targetFile, profType);
+				titleMap.put(CompareSQL.getGeneName(d)+" ("+d.getName()+")",d);
+				//titles.add(CompareSQL.getGeneName(d));
+			//for(Tuple<File,File> t:comparison.keySet())
+				//map.put(t, comparison.get(t));
+			writeHTML(titleMap, comparison, targetFile, profType);
 			}
 		catch (IOException e)
 			{
@@ -716,11 +825,11 @@ public class CompareAll
 		}
 	
 	
-	public abstract static class TableWriter
+	public abstract static class TableWriter<E>
 		{
 		public StringBuffer sb=new StringBuffer();
 		
-		public TableWriter(Set<String> titles)
+		public TableWriter(Map<String,E> titles)
 			{
 			NumberFormat nf=NumberFormat.getInstance();
 			nf.setMaximumFractionDigits(2);
@@ -728,7 +837,7 @@ public class CompareAll
 			//First line with only titles
 			sb.append("<tr>");
 			sb.append("<td>&nbsp;</td>");
-			for(String t:titles)
+			for(String t:titles.keySet())
 				{
 				sb.append("<td valign=\"top\">");
 				for(char c:t.toCharArray())
@@ -741,7 +850,7 @@ public class CompareAll
 			sb.append("</tr>\n");
 			
 			//All other lines
-			for(String ta:titles)
+			for(String ta:titles.keySet())
 				{
 				//Title
 				sb.append("<tr>");
@@ -749,9 +858,9 @@ public class CompareAll
 				sb.append(ta);
 				sb.append("</td>");
 				
-				for(String tb:titles)
+				for(String tb:titles.keySet())
 					{
-					Double val=getValue(ta, tb);
+					Double val=getValue(titles.get(ta), titles.get(tb));
 					sb.append("<td>");
 					if(val==null)
 						sb.append("?");
@@ -767,7 +876,7 @@ public class CompareAll
 				}
 			}
 		
-		public abstract Double getValue(String ta, String tb);
+		public abstract Double getValue(E ta, E tb);
 		}
 
 	
@@ -777,24 +886,24 @@ public class CompareAll
 	 * @param map (row, column)
 	 * @param targetDir
 	 */
-	public static void writeHTML(Set<String> titles, final Map<Tuple<String,String>,ColocCoefficients> map, File targetDir, String profType) throws IOException
+	public static void writeHTML(Map<String, File> titles, final Map<Tuple<File,File>,ColocCoefficients> map, File targetDir, String profType) throws IOException
 		{
-		TableWriter twPearson=new TableWriter(titles){
-			public Double getValue(String ta, String tb)
+		TableWriter<File> twPearson=new TableWriter<File>(titles){
+			public Double getValue(File ta, File tb)
 				{
 				ColocCoefficients val=map.get(Tuple.make(ta,tb));
 				return val==null ? null : val.getPearson();
 				}};
 
-		TableWriter twManders1=new TableWriter(titles){
-		public Double getValue(String ta, String tb)
+		TableWriter<File> twManders1=new TableWriter<File>(titles){
+		public Double getValue(File ta, File tb)
 			{
 			ColocCoefficients val=map.get(Tuple.make(ta,tb));
 			return val==null ? null : val.getMandersX();
 			}};
 
-		TableWriter twK1=new TableWriter(titles){
-		public Double getValue(String ta, String tb)
+		TableWriter<File> twK1=new TableWriter<File>(titles){
+		public Double getValue(File ta, File tb)
 			{
 			ColocCoefficients val=map.get(Tuple.make(ta,tb));
 			return val==null ? null : val.getKX();

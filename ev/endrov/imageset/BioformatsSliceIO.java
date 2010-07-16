@@ -24,14 +24,15 @@ public class BioformatsSliceIO implements EvIOImage
 	//private Integer subid;
 	private IFormatReader imageReader;
 	private String sourceName;
-
+	private boolean closeReaderOnFinalize;
 	
-	public BioformatsSliceIO(IFormatReader imageReader, int id, Integer subid, String sourceName)
+	public BioformatsSliceIO(IFormatReader imageReader, int id, Integer subid, String sourceName, boolean closeReaderOnFinalize)
 		{
-		this.imageReader=imageReader;
-		this.id=id;
-		//this.subid=subid;
 		this.sourceName=sourceName;
+		this.id=id;
+		this.imageReader=imageReader;
+		this.closeReaderOnFinalize=closeReaderOnFinalize;
+		//this.subid=subid;
 		}
 
 	
@@ -189,7 +190,7 @@ public class BioformatsSliceIO implements EvIOImage
 		{
 		//For Bio-formats usage, see
 		//loci-plugins/src/loci/plugins/exporter/Exporter.java
-		System.out.println(file);
+		//System.out.println(file);
 		
 		MetadataStore store = MetadataTools.createOMEXMLMetadata();
 		store.createRoot();
@@ -251,4 +252,17 @@ public class BioformatsSliceIO implements EvIOImage
 			e.printStackTrace();
 			}
 		}
+	
+	@Override
+	protected void finalize() throws Throwable
+		{
+		super.finalize();
+		if(imageReader!=null && closeReaderOnFinalize)
+			{
+			//System.out.println("Closed bioformatsSliceIO for \""+sourceName+"\"");
+			imageReader.close();
+			imageReader=null;
+			}
+		}
+
 	}

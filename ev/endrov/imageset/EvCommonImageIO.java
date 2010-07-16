@@ -73,7 +73,7 @@ public class EvCommonImageIO
 
 			int id=z==null?0:z;
 			//BufferedImage bim=new BioformatsSliceIO(reader,id,0,"").loadJavaImage().quickReadOnlyAWT();
-			return new BioformatsSliceIO(reader,id,0,"").loadJavaImage();
+			return new BioformatsSliceIO(reader,id,0,"", true).loadJavaImage();
 			//BufferedImage bim=reader.openImage(id);
 			//return bim;
 			}

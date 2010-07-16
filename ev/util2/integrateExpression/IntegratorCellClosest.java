@@ -192,8 +192,7 @@ public class IntegratorCellClosest implements Integrator
 				double vol = nucVol.get(nucName);
 				if (vol!=0)
 					{
-					double avg = expLevel.get(nucName)/vol-bg.get(integrator.frame);
-					avg /= integrator.expTime;
+					double avg = expLevel.get(nucName)/vol;
 					// System.out.println(nucName+" "+avg);
 					NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
 					if (lin.nuc.get(nucName).pos.lastKey().greaterEqual(integrator.frame)

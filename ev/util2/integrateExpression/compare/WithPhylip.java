@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
-import util2.integrateExpression.FindAnnotatedStrains;
 
-
+import endrov.ev.EV;
+import endrov.ev.EvLog;
+import endrov.ev.EvLogStdout;
 import endrov.flowColocalization.ColocCoefficients;
 import endrov.util.EvFileUtil;
 import endrov.util.Tuple;
@@ -22,19 +24,31 @@ import endrov.util.Tuple;
 public class WithPhylip
 	{
 
-	
+	/*
+	 * 
+	 *  /usr/lib/phylip/bin/kitsch
+	 * 
+	 */
 	
 
 	public static void main(String[] args)
 		{
-		Set<File> datas=FindAnnotatedStrains.getAnnotated();
-
+		EvLog.listeners.add(new EvLogStdout());
+		EV.loadPlugins();
+		new CompareSQL(); //Get password right away so it doesn't stop later
 		
-		
+		//Load similarities
 		final Map<Tuple<File,File>, ColocCoefficients> comparison;
-		comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileAP);
+		comparison=CompareAll.loadCache(null, CompareAll.cachedValuesFileAP);
 		//comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileT);
 
+		//Find out which files there are
+		Set<File> datas=new TreeSet<File>();//.getAnnotated();
+		for(Tuple<File,File> t:comparison.keySet())
+			datas.add(t.fst());
+
+
+		System.out.println(datas);
 		
 		Map<File,String> nameMap=new HashMap<File, String>();
 		int countName=0;
@@ -47,7 +61,9 @@ public class WithPhylip
 			nameMap.put(fa,tempName);
 			countName++;
 			
-			sbSed.append(" | sed 's/"+tempName+"/"+fa.getName()+"/'");
+			String newName=CompareSQL.getGeneName(fa)+" "+fa.getName();
+			
+			sbSed.append(" | sed 's/"+tempName+"/"+newName+"/'");
 			}
 		
 		System.out.println("# recordings: "+datas.size());
@@ -75,7 +91,8 @@ public class WithPhylip
 				for(File fb:datas)
 					{
 					ColocCoefficients coef=comparison.get(Tuple.make(fa,fb));
-					
+					if(coef==null)
+						System.out.println("Null for "+fa+"     "+fb);
 
 					Double v=null;
 					if(type.equals("pearson"))
@@ -107,7 +124,7 @@ public class WithPhylip
 				
 				String fSed=
 				"cat outfile"+sbSed+" > outfile2\n"+
-				"cat outtree"+sbSed+" > outtree2";
+				"cat outtree"+sbSed+" > outtree2\n";
 				
 				EvFileUtil.writeFile(new File(basedir, "fix.sh"), fSed);
 				}

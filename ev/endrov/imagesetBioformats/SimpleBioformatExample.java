@@ -84,7 +84,7 @@ public class SimpleBioformatExample
 			else
 				curPixel=imageReader.getIndex(slicenum, channelnum, framenum);
 
-			BioformatsSliceIO io=new BioformatsSliceIO(imageReader, curPixel, bandID, "");
+			BioformatsSliceIO io=new BioformatsSliceIO(imageReader, curPixel, bandID, "", false);
 			double[][] oneplane=io.loadJavaImage().getArrayDouble2D();
 			stack[slicenum]=oneplane;
 			}

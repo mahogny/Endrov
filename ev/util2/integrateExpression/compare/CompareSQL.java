@@ -29,7 +29,11 @@ public class CompareSQL
 	static
 	{
 	String pass=JOptionPane.showInputDialog("Password?");
-	connectPostgres("//pompeii.biosci.ki.se/mahogny", "postgres", pass);
+	if(!connectPostgres("//pompeii.biosci.ki.se/mahogny", "postgres", pass))
+		{
+		System.out.println("-------- failed to connect");
+		System.exit(1);
+		}
 	}
 
 	/**
@@ -108,6 +112,8 @@ public class CompareSQL
 		if(tags.isEmpty())
 			{
 			EvData data=EvData.loadFile(ost);
+			System.out.println("--"+ost+"--");
+			System.out.println(data);
 			java.util.Iterator<Imageset> it=data.getIdObjects(Imageset.class).values().iterator();
 			if(it.hasNext())
 				{
