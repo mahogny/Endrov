@@ -7,10 +7,13 @@ package util2.integrateExpression;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import cern.colt.list.tint.IntArrayList;
 
 import util2.integrateExpression.IntExp.Integrator;
 import endrov.imageset.EvChannel;
@@ -22,6 +25,8 @@ import endrov.nuc.NucLineage;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
+import endrov.util.EvListUtil;
+import endrov.util.EvMathUtil;
 import endrov.util.ImVector2;
 import endrov.util.Tuple;
 
@@ -40,12 +45,18 @@ public class IntegratorAP implements Integrator
 	private NucLineage lin = new NucLineage();
 	private String newLinName;
 	
-	public Map<EvDecimal, Double> bg = new HashMap<EvDecimal, Double>();
+	public Map<EvDecimal, Double> bg;
 	public TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
-	private boolean updateBG = true; // variable if to update bg
+	private boolean updateBG; // variable if to calculate bg
 	
 	private double curBgInt = 0;
 	private int curBgVol = 0;
+	
+	//List<Integer> curBg=new ArrayList<Integer>();
+	private IntArrayList curBgOutside=new IntArrayList(); 
+	private IntArrayList curBgInside=new IntArrayList();
+	
+	
 	
 	public IntegratorAP(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 		{
@@ -55,8 +66,13 @@ public class IntegratorAP implements Integrator
 		//Use pre-calculated value for BG
 		if (bg!=null)
 			{
-			this.bg = bg;
+			this.bg = Collections.unmodifiableMap(bg);   //bg;
 			updateBG = false;
+			}
+		else
+			{
+			this.bg = new HashMap<EvDecimal, Double>();
+			updateBG = true;
 			}
 	
 		// TODO need to group lineage and shell. introduce a new object?
@@ -73,6 +89,9 @@ public class IntegratorAP implements Integrator
 	
 	public void integrateStackStart(IntExp integrator)
 		{
+		curBgInside.clear();
+		curBgOutside.clear();
+		
 		curBgInt = 0;
 		curBgVol = 0;
 		// Zero out arrays
@@ -108,15 +127,14 @@ public class IntegratorAP implements Integrator
 				for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 					{
 					// Convert to world coordinates
-					ImVector2 pos = new ImVector2(integrator.stack.transformImageWorldX(ax),
+					ImVector2 pos = new ImVector2(
+							integrator.stack.transformImageWorldX(ax),
 							integrator.stack.transformImageWorldY(ay));
 	
 					// Check if this is within ellipse boundary
-					ImVector2 elip = pos.sub(new ImVector2(shell.midx, shell.midy))
-							.rotate(shell.angle); // TODO angle? what?
+					ImVector2 elip = pos.sub(new ImVector2(shell.midx, shell.midy)).rotate(shell.angle); // TODO angle? what?
 					double len;
-					if (1>=elip.y*elip.y/(shell.minor*shell.minor)+elip.x*elip.x
-							/(shell.major*shell.major))
+					if (1>=elip.y*elip.y/(shell.minor*shell.minor)+elip.x*elip.x/(shell.major*shell.major))
 						len = pos.sub(startpos).dot(dirvec)/(2*shell.major); 
 					// xy . dirvecx = cos(alpha) ||xy|| ||dirvecx||
 					else
@@ -140,12 +158,17 @@ public class IntegratorAP implements Integrator
 					int sliceNum = (int) (len*numSubDiv); // may need to bound in addition
 					sliceExp[sliceNum] += integrator.pixelsLine[i];
 					sliceVol[sliceNum]++;
+					
+					curBgInside.add(integrator.pixelsLine[i]);
 					}
 				else
 					{
 					// Measure background. It's all pixels outside the embryo
-					curBgInt += integrator.pixelsLine[i];
-					curBgVol++;
+					
+					curBgOutside.add(integrator.pixelsLine[i]);
+					
+					//curBgInt += integrator.pixelsLine[i];
+					//curBgVol++;
 					}
 				}
 			}
@@ -155,7 +178,16 @@ public class IntegratorAP implements Integrator
 		{
 		// Store background if this integrator is responsible for calculating it
 		if (updateBG)
-			bg.put(integrator.frame, curBgInt/curBgVol);
+			{
+			int medianOutside=EvListUtil.findPercentileInt(curBgOutside.elements(), 0.5, curBgOutside.size());
+			int medianInside=EvListUtil.findPercentileInt(curBgInside.elements(), 0.5, curBgInside.size());
+			double avg=(double)curBgInt/curBgVol;
+			
+			int thisBG=EvMathUtil.minAll(medianOutside,medianInside,(int)avg);
+			bg.put(integrator.frame, (double)thisBG);
+			//bg.put(integrator.frame, (double)median/curBg.size());
+			//bg.put(integrator.frame, curBgInt/curBgVol);
+			}
 	
 		// Store pattern in lineage
 		for (int i = 0; i<numSubDiv; i++)
@@ -171,8 +203,7 @@ public class IntegratorAP implements Integrator
 	
 		}
 	
-	public void done(IntExp integrator,
-			TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
+	public void done(IntExp integrator,	TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
 		// Set override start and end times
 		for (int i = 0; i<numSubDiv; i++)
@@ -181,35 +212,14 @@ public class IntegratorAP implements Integrator
 			nuc.overrideStart = integrator.ch.imageLoader.firstKey();
 			nuc.overrideEnd = integrator.ch.imageLoader.lastKey();
 			}
-/*
-		System.out.println("---------------------------------------");
 		
-		System.out.println();
-		System.out.println("Removed bg: "+bg);
-		
-		System.out.println();
-		System.out.println("Before norm: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level);
-*/
-		// Normalization is needed before exposure correction to make sure the
-		// threshold for
-		// detecting jumps always works
-		ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(lin, integrator.expName), 0, 1);
-
-		/*
-		System.out.println();
-		System.out.println("After norm: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level);
-		*/
-		
+		//For AP: calculate how to correct exposure
 		if (correctedExposure==null)
-			{
-			//Used for AP
 			correctedExposure = ExpUtil.calculateCorrectExposureChange20100709(
-					integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(
-							integrator.ch.imageLoader.keySet()), bg);
-			}
+					integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(integrator.ch.imageLoader.keySet()), bg);
 		this.correctedExposure=correctedExposure;
 
-		
+		//Correct for exposure changes
 		ExpUtil.correctExposureChange(this.correctedExposure, lin,	integrator.expName);
 
 		
@@ -221,7 +231,9 @@ public class IntegratorAP implements Integrator
 		// This is only for the eye
 		double sigMax = ExpUtil.getSignalMax(lin, integrator.expName);
 		double sigMin = ExpUtil.getSignalMin(lin, integrator.expName);
+	//	System.out.println("-----------old signal min: "+numSubDiv+"   "+ExpUtil.getSignalMin(lin, integrator.expName));
 		ExpUtil.normalizeSignal(lin, integrator.expName, sigMax, sigMin, 1);
+	//	System.out.println("-----------new signal min: "+numSubDiv+"   "+ExpUtil.getSignalMin(lin, integrator.expName));
 	
 		/*
 		System.out.println();

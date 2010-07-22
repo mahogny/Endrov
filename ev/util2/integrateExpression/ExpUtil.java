@@ -91,113 +91,109 @@ public class ExpUtil
 		Double lastExposure=0.0;
 		EvDecimal lastFrame=frames.first();
 		for(EvDecimal frame:frames)
-			{
-			framecount++;
-			double expTime=1;
-			String sExpTime=imset.getChannel(channelName).getMetaFrame(frame).get("exposuretime");
-			if(sExpTime==null)
-				sExpTime=imset.getMetaFrame(frame).get("exposuretime");
-			if(sExpTime!=null)
-				expTime=Double.parseDouble(sExpTime);
-			
-			/*
-			//Trigger correction based on sudden jumps
-			boolean suddenJump=false;
-			if(newKM!=null)
+			if(bg.containsKey(frame))
 				{
-				double jmp=Math.abs(newKM.snd()-correctionM);
-				if(jmp>0.02) //Better constant? Input is normalized, might work. Could use percentile stats 
-					{
-					System.out.println("Detected sudden jump: "+jmp);
-					suddenJump=true;
-					}
-				}
-			*/
-			
-			Tuple<Double,Double> newKM=null;
-			
-			/////////////// for now do not try to detect sudden jumps!!!! ///////////////
-			boolean suddenJump=false;
-			
-			//Calculate new correction if needed
-			if(!lastExposure.equals(expTime) || suddenJump)
-				{
-				//corrNuc.getCreatePos(frame);
-				
-				/**
-				 * Model of correction: outsig=sig*k+m
-				 * Let ' be next time, then demand:
-				 * outsig=outsig'
-				 * bg=bg'
-				 */
-				double bg1=bg.get(lastFrame);
-				double bg2=bg.get(frame);
-				
-				bg1=bg2=0; //temp
-				
-				double s1=helperGetAverageForFrame(lin, expName, lastFrame);
-				double s2=helperGetAverageForFrame(lin, expName, frame);
-				double k1=correctionK;
-				double m1=correctionM;
-
-				//Solve as Ax=b. If it is singular, keep old correction. Singularity does not occur easily though.
-				DoubleMatrix2D A=new DenseDoubleMatrix2D(new double[][]{
-					{bg2,1},
-					{s2, 1}
-				});
-				DoubleMatrix2D b=new DenseDoubleMatrix2D(new double[][]{
-					{bg1*k1+m1},
-					{ s1*k1+m1}
-				});
-				DoubleAlgebra alg=new DoubleAlgebra();
-				DoubleMatrix2D x=alg.solve(A, b);
-				if(alg.det(A)!=0 
-						&& !Double.isNaN(x.getQuick(0, 0)) && !Double.isInfinite(x.getQuick(0, 0))
-						&& !Double.isNaN(x.getQuick(0, 1)) && !Double.isInfinite(x.getQuick(0, 1)))
-					newKM=Tuple.make(x.getQuick(0, 0), x.getQuick(0, 1));
+				framecount++;
+				double expTime=1;
+				String sExpTime=imset.getChannel(channelName).getMetaFrame(frame).get("exposuretime");
+				if(sExpTime==null)
+					sExpTime=imset.getMetaFrame(frame).get("exposuretime");
+				if(sExpTime!=null)
+					expTime=Double.parseDouble(sExpTime);
 				
 				/*
-				//might crash!
-				System.out.println("         check1 "+(correctionK*bg1+correctionM)+"      orig value "+bg1);
-				System.out.println("         check1 "+(newKM.fst()*bg2+newKM.snd())+"      orig value "+bg2);
-				System.out.println("         check2 "+(correctionK*s1+correctionM)+"      orig value "+s1);
-				System.out.println("         check2 "+(newKM.fst()*s2+newKM.snd())+"      orig value "+s2);
-				*/
-				}
-
-			
-			//newKM=null; //temp: disable correction
-			//newKM=Tuple.make(Math.random(), 0.0);//temp: check that correction is applied
-			
-			if(newKM!=null)
-				{
-				correctionK=newKM.fst();
-				correctionM=newKM.snd();
-				System.out.println("------------Frame "+frame+"    Correction "+correctionK+"  "+correctionM);
-				}
-			else
-				System.out.println("------------Frame "+frame+"    no corr");
-			System.out.println("                                                                               BG now "+(correctionK*bg.get(frame)+correctionM)+"      orig value "+bg.get(frame));
-			
-			lastFrame=frame;
-			lastExposure=expTime;
-			
-			historyKM.put(frame,new Tuple<Double, Double>(correctionK,correctionM));
-			
-			/*
-			//Correct this frame
-			for(NucLineage.Nuc nuc:lin.nuc.values())
-				{
-				NucExp nexp=nuc.exp.get(expName);
-				if(nexp!=null)
+				//Trigger correction based on sudden jumps
+				boolean suddenJump=false;
+				if(newKM!=null)
 					{
-					Double level=nexp.level.get(frame);
-					if(level!=null)
-						nexp.level.put(frame,correctionK*level+correctionM);
+					double jmp=Math.abs(newKM.snd()-correctionM);
+					if(jmp>0.02) //Better constant? Input is normalized, might work. Could use percentile stats 
+						{
+						System.out.println("Detected sudden jump: "+jmp);
+						suddenJump=true;
+						}
 					}
-				}
 				*/
-			}
+				
+				Tuple<Double,Double> newKM=null;   
+				
+				/////////////// for now do not try to detect sudden jumps!!!! ///////////////
+				boolean suddenJump=false;
+				
+				//Calculate new correction if needed
+				if(!lastExposure.equals(expTime) || suddenJump)
+					{
+					/**
+					 * Model of correction: outsig=sig*k+m
+					 * Let ' be next time, then demand:
+					 * outsig=outsig'
+					 * bg=bg'
+					 */
+					double bg1=bg.get(lastFrame);
+					double bg2=bg.get(frame);
+					
+					bg1=bg2=0; //temp. the right thing?
+					
+					double s1=helperGetAverageForFrame(lin, expName, lastFrame);
+					double s2=helperGetAverageForFrame(lin, expName, frame);
+					double k1=correctionK;
+					double m1=correctionM;
+	
+					//Solve as Ax=b. If it is singular, keep old correction. Singularity does not occur easily though.
+					DoubleMatrix2D A=new DenseDoubleMatrix2D(new double[][]{
+						{bg2,1},
+						{s2, 1}
+					});
+					DoubleMatrix2D b=new DenseDoubleMatrix2D(new double[][]{
+						{bg1*k1+m1},
+						{ s1*k1+m1}
+					});
+					DoubleAlgebra alg=new DoubleAlgebra();
+					DoubleMatrix2D x=alg.solve(A, b);
+					
+					//Only accept new values if they appear to be sane
+					newKM=Tuple.make(x.getQuick(0, 0), x.getQuick(0, 1));
+					//Tuple<Double,Double> km=Tuple.make(x.getQuick(0, 0), x.getQuick(0, 1));
+					if(alg.det(A)!=0 
+							&& !Double.isNaN(newKM.fst()) && !Double.isInfinite(newKM.fst())
+							&& !Double.isNaN(newKM.snd()) && !Double.isInfinite(newKM.snd())
+							&& newKM.fst()>0)
+						;
+					else
+						{
+						System.out.println("BAAAAAAAAAAAAAAAD KM: "+newKM);
+						newKM=null;
+						}
+					
+					
+					//might crash!
+					/*
+					System.out.println("         check1 "+(correctionK*bg1+correctionM)+"      orig value "+bg1);
+					System.out.println("         check1 "+(newKM.fst()*bg2+newKM.snd())+"      orig value "+bg2);
+					System.out.println("         check2 "+(correctionK*s1+correctionM)+"      orig value "+s1);
+					System.out.println("         check2 "+(newKM.fst()*s2+newKM.snd())+"      orig value "+s2);
+					*/
+					}
+	
+				
+				//newKM=null; //temp: disable correction
+				//newKM=Tuple.make(Math.random(), 0.0);//temp: check that correction is applied
+				
+				if(newKM!=null)
+					{
+					correctionK=newKM.fst();
+					correctionM=newKM.snd();
+					System.out.println("------------Frame "+frame+"    Correction "+correctionK+"  "+correctionM);
+					}
+				else
+					System.out.println("------------Frame "+frame+"    no corr");
+				System.out.println("                                                                               BG now "+(correctionK*bg.get(frame)+correctionM)+"      orig value "+bg.get(frame));
+				
+				lastFrame=frame;
+				lastExposure=expTime;
+				
+				historyKM.put(frame,new Tuple<Double, Double>(correctionK,correctionM));
+				}
 		return historyKM;
 		}
 	
@@ -378,6 +374,7 @@ public class ExpUtil
 	 * Correct for background etc. Signal has already been divided by exposure time.
 	 * In addition, make it fit together by forcing average of last frame to be the average of this frame.
 	 */
+	/*
 	public static void correctExposureChangeOld(Imageset imset, NucLineage lin, String expName, SortedSet<EvDecimal> frames)
 		{
 		//Initital correction=none
@@ -433,6 +430,8 @@ public class ExpUtil
 				}
 			}
 		}
+		
+		*/
 	private static Double helperGetAverageForFrame(NucLineage lin, String expName, EvDecimal frame)
 		{
 		int count=0;
@@ -480,7 +479,7 @@ public class ExpUtil
 			if(nexp!=null)
 				{
 				nexp.unit=null;
-				HashMap<EvDecimal, Double> newlevel=new HashMap<EvDecimal, Double>();
+				Map<EvDecimal, Double> newlevel=new HashMap<EvDecimal, Double>();
 				for(Map.Entry<EvDecimal, Double> e:nexp.level.entrySet())
 					newlevel.put(e.getKey(),(e.getValue()-min)*scale);
 				nexp.level.clear();

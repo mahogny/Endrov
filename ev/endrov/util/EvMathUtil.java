@@ -334,5 +334,17 @@ public class EvMathUtil
 				r=v[i];
 		return r;
 		}
-	
+
+	/**
+	 * Get the minimum of a list
+	 */
+	public static int minAll(int... v)
+		{
+		int r=v[0];
+		for(int i=1;i<v.length;i++)
+			if(v[i]<r)
+				r=v[i];
+		return r;
+		}
+
 	}

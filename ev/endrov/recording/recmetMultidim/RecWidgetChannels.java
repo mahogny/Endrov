@@ -65,9 +65,10 @@ public class RecWidgetChannels extends JPanel
 		
 		JButton bRemove=new JImageButton(BasicIcon.iconRemove,"Remove channel from list");
 		
-		SpinnerSimpleInteger spZskip=new SpinnerSimpleInteger(1,1,1000,1);
+		SpinnerSimpleInteger spZinc=new SpinnerSimpleInteger(1,1,100,1);
 		SpinnerSimpleInteger spZ0=new SpinnerSimpleInteger(0,0,1000,1);
-		SpinnerSimpleInteger spTskip=new SpinnerSimpleInteger(1,1,1000,1);
+		SpinnerSimpleInteger spTinc=new SpinnerSimpleInteger(1,1,100,1);
+		SpinnerSimpleInteger spAveraging=new SpinnerSimpleInteger(1,1,10,1);
 		}
 	
 	
@@ -132,7 +133,12 @@ public class RecWidgetChannels extends JPanel
 			else p.add(row.comboChannel,c);
 			c.gridx++;
 			
-			if(i==-1) p.add(new JLabel("Exp [ms] "),c);
+			if(i==-1)
+				{
+				JLabel lab=new JLabel("Exposure ");
+				lab.setToolTipText("Exposure time [ms]");
+				p.add(lab,c);
+				}
 			else p.add(row.spExposure,c);
 			c.weightx=0;
 			c.gridx++;
@@ -141,24 +147,49 @@ public class RecWidgetChannels extends JPanel
 			if(i==-1)
 				{
 				JLabel lab=new JLabel("LC ");
-				lab.setToolTipText("Automatic exposure time calibration");
+				lab.setToolTipText("Enable automatic exposure time calibration");
 				p.add(lab,c);
 				}
 			else p.add(row.chLightCompensate,c);
 			c.gridx++;
 			
-			if(i==-1)	p.add(new JLabel("Z-skip "),c);
-			else p.add(row.spZskip,c);
+			if(i==-1)
+				{
+				JLabel lab=new JLabel("Z++ ");
+				lab.setToolTipText("Z-increment: more than 1 will skip slices");
+				p.add(lab,c);
+				}
+			else p.add(row.spZinc,c);
 			c.gridx++;
 			
-			if(i==-1)	p.add(new JLabel("Z0 "),c);
+			if(i==-1)
+				{
+				JLabel lab=new JLabel("First Z");
+				lab.setToolTipText("First Z-slice to acquire in stack");
+				p.add(lab,c);
+				}
 			else p.add(row.spZ0,c);
 			c.gridx++;
 			
-			if(i==-1)	p.add(new JLabel("t-skip "),c);
-			else p.add(row.spTskip,c);
+			if(i==-1)
+				{
+				JLabel lab=new JLabel("t++");
+				lab.setToolTipText("Time-increment: more than 1 will skip times");
+				p.add(lab,c);
+				}
+			else p.add(row.spTinc,c);
 			c.gridx++;
 			
+			if(i==-1)
+				{
+				JLabel lab=new JLabel("Averaging");
+				lab.setToolTipText("Acquire several images and keep the average. This increases SNR");
+				p.add(lab,c);
+				////////// If this was made a channel setting then it could also be used "live"
+				
+				}
+			else p.add(row.spAveraging,c);
+			c.gridx++;
 
 			
 			
