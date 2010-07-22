@@ -83,10 +83,18 @@ public class EvListUtil
 	 */
 	public static Integer findPercentileInt(int[] list, double perc)
 		{
-		int size=(int)(perc*(list.length-1));
-		return findRankInt(list,list.length, size);
+		return findPercentileInt(list, perc, list.length);
 		}
-
+	
+	/**
+	 * Find percentile. q<-[0,1].
+	 * O(n)
+	 */
+	public static Integer findPercentileInt(int[] list, double perc, int listLength)
+		{
+		int size=(int)(perc*(listLength-1));
+		return findRankInt(list,listLength, size);
+		}
 	
 	/**
 	 * Find value of given rank q (=value at position q in sorted list). O(n)

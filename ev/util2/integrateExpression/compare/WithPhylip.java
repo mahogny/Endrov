@@ -30,16 +30,13 @@ public class WithPhylip
 	 * 
 	 */
 	
-
-	public static void main(String[] args)
+	
+	public static void doFor(File comparisonFile, String base)
 		{
-		EvLog.listeners.add(new EvLogStdout());
-		EV.loadPlugins();
-		new CompareSQL(); //Get password right away so it doesn't stop later
 		
 		//Load similarities
 		final Map<Tuple<File,File>, ColocCoefficients> comparison;
-		comparison=CompareAll.loadCache(null, CompareAll.cachedValuesFileAP);
+		comparison=CompareAll.loadCache(null, comparisonFile);
 		//comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileT);
 
 		//Find out which files there are
@@ -118,7 +115,7 @@ public class WithPhylip
 			
 			try
 				{
-				File basedir=new File(new File(CompareAll.outputBaseDir,"phylip"),type);
+				File basedir=new File(new File(CompareAll.outputBaseDir,"phylip"),base+"-"+type);
 				basedir.mkdirs();
 				EvFileUtil.writeFile(new File(basedir,"infile"), sb.toString());
 				
@@ -134,6 +131,18 @@ public class WithPhylip
 				}
 			}
 		
+		
+		}
+	
+
+	public static void main(String[] args)
+		{
+		EvLog.listeners.add(new EvLogStdout());
+		EV.loadPlugins();
+		new CompareSQL(); //Get password right away so it doesn't stop later
+		
+		doFor(CompareAll.cachedValuesFileAP,"apt");
+		doFor(CompareAll.cachedValuesFileXYZ,"xyz");
 		
 		
 		

@@ -35,17 +35,12 @@ public class IntegratorXYZ implements Integrator
 	private int numSubDiv;
 	private double[][][] sliceExp; // z,y,x
 	private int[][][] sliceVol; // z,y,x
-	//private NucLineage lin;
 
-	private Map<EvDecimal, Double> bg = new HashMap<EvDecimal, Double>();
-
+	private Map<EvDecimal, Double> bg;// = new HashMap<EvDecimal, Double>();
 	private CoordinateSystem cs;
-
+	private Map<EvDecimal,double[][][]> expMap=new HashMap<EvDecimal, double[][][]>(); //z y x
 	
-	Map<EvDecimal,double[][][]> expMap=new HashMap<EvDecimal, double[][][]>(); //z y x
-	
-	public IntegratorXYZ(IntExp integrator, String newLinName,
-			int numSubDiv, Map<EvDecimal, Double> bg)
+	public IntegratorXYZ(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
 		this.bg = bg;
@@ -237,34 +232,20 @@ public class IntegratorXYZ implements Integrator
 	 */
 	public void done(IntExp integrator, TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
-		System.out.println("xyz converting im.frames");
-
-		/*
-		// Normalization is needed before exposure correction to make sure the
-		// threshold for detecting jumps always works
-		 //not needed: only when calculating bg
-		for(double[][][] v:expMap.values())
-			for(double[][] vv:v)
-				for(double[] vvv:vv)
-					ExpUtil.normalizeSignal(vvv, ExpUtil.getSignalMax(lin, integrator.expName), 0, 1);
-		ExpUtil.normalizeSignal(lin, integrator.expName, ExpUtil.getSignalMax(
-				lin, integrator.expName), 0, 1);
-		*/
 		for(Map.Entry<EvDecimal, double[][][]> e:expMap.entrySet())
 			for(double[][] vv:e.getValue())
 				for(double[] vvv:vv)
 					ExpUtil.correctExposureChange(correctedExposure, e.getKey(),vvv);
 
-		double outImRes = 16;
-
-		//Make in range for output
+		
+		
+		//Make in range for output                                     TODO does it here even matter if exposure was corrected????
 		double sigMax = ExpUtil.getSignalMax(expMap.values());
 		double sigMin = ExpUtil.getSignalMin(expMap.values());
 		for(double[][][] v:expMap.values())
 			for(double[][] vv:v)
 				for(double[] vvv:vv)
 					ExpUtil.normalizeSignal(vvv, sigMax, sigMin, 255);
-				
 		
 		// Store expression as a new channel
 		EvChannel chanxyz = integrator.imset.getCreateChannel("XYZ");
@@ -272,7 +253,7 @@ public class IntegratorXYZ implements Integrator
 			{
 			EvStack stack = chanxyz.getCreateFrame(frame);
 			stack.allocate(numSubDiv, numSubDiv, numSubDiv, EvPixelsType.DOUBLE, null);
-			stack.resX = stack.resY = outImRes;
+			stack.resX = stack.resY = 16; //Arbitrary
 			
 			//System.out.println("converting im.frame "+frame);
 			for (int az = 0; az<numSubDiv; az++)
@@ -286,9 +267,7 @@ public class IntegratorXYZ implements Integrator
 				double[] line = p.getArrayDouble();
 				for (int ay = 0; ay<numSubDiv; ay++)
 					for (int ax = 0; ax<numSubDiv; ax++)
-						{
 						line[p.getPixelIndex(ax, ay)] = planeExp[ay][ax];
-						}
 				}
 			
 			//To conserve memory it is now possible to remove the old array
@@ -296,4 +275,8 @@ public class IntegratorXYZ implements Integrator
 			}
 		}
 
+	
+	
+	
+	
 	}

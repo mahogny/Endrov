@@ -47,6 +47,7 @@ public class IntExp
 		public void integrateStackDone(IntExp images);
 		}
 
+	public static NucLineage refLin = null;
 	public EvDecimal frame;
 	public EvDecimal curZ;
 	public EvStack stack;
@@ -204,49 +205,47 @@ public class IntExp
 			String newLinNameAP = linForAP(numSubDiv, channelName);
 
 			// Not the optimal way of finding the lineage
-			NucLineage lin = null;
 			Map<EvPath, NucLineage> lins = data
 					.getIdObjectsRecursive(NucLineage.class);
 			for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
 				if (!e.getKey().getLeafName().startsWith("AP"))
 					{
 					System.out.println("found lineage "+e.getKey());
-					lin = e.getValue();
-					System.out.println(lin);
+					refLin = e.getValue();
+					System.out.println(refLin);
 					}
 
 			// Decide on integrators
-			LinkedList<Integrator> ints = new LinkedList<Integrator>();
+			LinkedList<Integrator> integrators = new LinkedList<Integrator>();
 
 			// boolean hasShell=!data.getIdObjects(Shell.class).isEmpty();
 
+			//Order of integrators matters!
 			IntExp integrator = new IntExp(data, expName, channelName);
 
 			// AP-level expression. A single slice gives expression over time
-			IntegratorAP intAP = new IntegratorAP(integrator, newLinNameAP,
-					numSubDiv, null);
+			IntegratorAP intAP = new IntegratorAP(integrator, newLinNameAP,	numSubDiv, null);
 			IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
-			ints.add(intAP);
-			ints.add(intT);
+			integrators.add(intAP);
+			integrators.add(intT);
 
 			// XYZ cube level expression
-			IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP,
-					numSubDiv, intAP.bg);
-			if (lin!=null&&intXYZ.setupCS(lin))
-				ints.add(intXYZ);
+			IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP, numSubDiv, intAP.bg);
+			if (refLin!=null && intXYZ.setupCS(refLin))
+				integrators.add(intXYZ);
 			else
 				intXYZ = null;
 
 			// Cell level expression if there is a lineage
 			IntegratorCellClosest intC = null;
-			if (lin!=null&&channelName.equals("RFP"))
+			if (refLin!=null && channelName.equals("RFP"))
 				{
-				intC = new IntegratorCellClosest(integrator, lin, intAP.bg);
-				ints.add(intC);
+				intC = new IntegratorCellClosest(integrator, refLin, intAP.bg);
+				integrators.add(intC);
 				}
 
 			// Run integrators
-			integrator.doProfile(ints);
+			integrator.doProfile(integrators);
 
 			// Wrap up, store in OST
 			// Use common correction factors for exposure
@@ -259,12 +258,11 @@ public class IntExp
 				intC.done(integrator, intAP.correctedExposure);
 
 			// Put integral in file for use by Gnuplot
-			intAP.profileForGnuplot(integrator, fileForAP(data, numSubDiv,
-					channelName));
+			intAP.profileForGnuplot(integrator, fileForAP(data, numSubDiv, channelName));
 
 			System.out.println("Saving OST");
 			data.saveData();
-			System.out.println("ok");
+			System.out.println("ok, done with "+f);
 
 			markDone(f);
 
@@ -348,45 +346,45 @@ public class IntExp
 
 		EvDecimal firstframe = ch.imageLoader.firstKey();
 		EvDecimal lastFrame = ch.imageLoader.lastKey();
-		for (EvDecimal frame : ch.imageLoader.keySet())
+		
+		if(refLin!=null)
 			{
-			this.frame = frame;
-
-			// System.out.println();
-			System.out.println(data+"    integrating frame "+frame+" / "+firstframe+" - "+lastFrame);
-
-			// Get exposure time
-			// String sExpTime = imset.getMetaFrame(frame).get("exposuretime");
-			/*
-			String sExpTime = imset.getChannel(channelName).getMetaFrame(frame).get("exposuretime");
-			if (sExpTime!=null)
-				expTime = Double.parseDouble(sExpTime);
-			else
-				System.out.println("No exposure time, frame "+frame);
-				*/
-
-			for (Integrator i : ints)
-				i.integrateStackStart(this);
-
-			// For all z
-			stack = ch.imageLoader.get(frame);
-			EvImage[] imArr = stack.getImages();
-			for (int az = 0; az<imArr.length; az++)
+			NucLineage.Nuc nuc=refLin.nuc.get("lastframe");
+			if(nuc!=null)
 				{
-				curZ = new EvDecimal(stack.transformImageWorldZ(az));// eim.getKey();
-				// Load images lazily (for AP not really needed)
-				im = imArr[az];
-				pixels = null;
-
-				for (Integrator i : ints)
-					i.integrateImage(this);
-
+				lastFrame=nuc.pos.firstKey();
 				}
-
-			for (Integrator i : ints)
-				i.integrateStackDone(this);
-
 			}
+		
+		
+		for (EvDecimal frame : ch.imageLoader.keySet())
+			if(frame.lessEqual(lastFrame))
+				{
+				this.frame = frame;
+	
+				System.out.println(data+"    integrating frame "+frame+" / "+firstframe+" - "+lastFrame);
+	
+				for (Integrator i : ints)
+					i.integrateStackStart(this);
+	
+				// For all z
+				stack = ch.imageLoader.get(frame);
+				EvImage[] imArr = stack.getImages();
+				for (int az = 0; az<imArr.length; az++)
+					{
+					curZ = new EvDecimal(stack.transformImageWorldZ(az));
+					// Load images lazily (for AP not really needed)
+					im = imArr[az];
+					pixels = null;
+	
+					for (Integrator i : ints)
+						i.integrateImage(this);
+					}
+	
+				for (Integrator i : ints)
+					i.integrateStackDone(this);
+	
+				}
 
 		}
 

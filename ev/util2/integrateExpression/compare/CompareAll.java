@@ -81,7 +81,7 @@ public class CompareAll
 		//Fit model time using a few markers
 		//Times must be relative to a sane time, such that if e.g. venc is missing, linear interpolation still makes sense
 		FrameTime ft=new FrameTime();
-		System.out.println("has nucs: "+coordLin.nuc.keySet());
+		//System.out.println("has nucs: "+coordLin.nuc.keySet());
 		
 		NucLineage.Nuc nucABa=coordLin.nuc.get("ABa");
 		if(nucABa!=null)
@@ -99,7 +99,7 @@ public class CompareAll
 		if(nuc2ft!=null)
 			ft.add(nuc2ft.pos.firstKey(), new EvDecimal("0.54").multiply(imageMaxTime));
 
-		System.out.println("ftmap "+ft.mapFrame2time);
+		//System.out.println("ftmap "+ft.mapFrame2time);
 		
 		//times from BC10075_070606
 		// "go to frame" seems buggy
@@ -145,7 +145,6 @@ public class CompareAll
 				}
 			else
 				System.out.println("Strange exp: "+nn);
-		System.out.println("Detected subdiv "+numSubDiv);
 		
 		double[][] image=new double[imageMaxTime][];//[numSubDiv];
 		
@@ -240,7 +239,7 @@ public class CompareAll
 		EvDecimal frame0A=ftA.interpolateFrame(new EvDecimal(0));
 		EvDecimal frame100A=ftA.interpolateFrame(new EvDecimal(100));
 		int numSteps=frame100A.subtract(frame0A).divide(new EvDecimal(dt)).intValue();
-		System.out.println("Num steps "+numSteps);
+		//System.out.println("Num steps for xyz "+numSteps);
 		
 		//TODO verify that this idea is correct
 		
@@ -542,31 +541,29 @@ public class CompareAll
 		System.out.println("Number of annotated strains: "+datas.size());
 
 		//Read past calculated values from disk 
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonT;//=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonAP;//=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ;//=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonT;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonAP;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ;
 		if(!argsSet.contains("nocache"))
 			{
-			comparisonT=Collections.synchronizedMap(loadCache(datas, cachedValuesFileT));
-			comparisonAP=Collections.synchronizedMap(loadCache(datas, cachedValuesFileAP));
-			comparisonXYZ=Collections.synchronizedMap(loadCache(datas, cachedValuesFileXYZ));
+			comparisonT=loadCache(datas, cachedValuesFileT);
+			comparisonAP=loadCache(datas, cachedValuesFileAP);
+			comparisonXYZ=loadCache(datas, cachedValuesFileXYZ);
 			}
 		else
 			{
-			comparisonT=Collections.synchronizedMap(new TreeMap<Tuple<File,File>, ColocCoefficients>());
-			comparisonAP=Collections.synchronizedMap(new TreeMap<Tuple<File,File>, ColocCoefficients>());
-			comparisonXYZ=Collections.synchronizedMap(new TreeMap<Tuple<File,File>, ColocCoefficients>());
+			comparisonT=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonAP=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonXYZ=new TreeMap<Tuple<File,File>, ColocCoefficients>();
 			}
-		/*
-		comparisonT=Collections.synchronizedMap(comparisonT);
-		comparisonAP=Collections.synchronizedMap(comparisonAP);
-		comparisonXYZ=Collections.synchronizedMap(comparisonXYZ);*/
 
 		//Quick listing what must be calculated
 		for(File f:datas)
 			if(!IntExp.isDone(f))
 				System.out.println("---- need to do: "+f);
 
+		
+		
 		///////////////// Integrate signal in each recording //////////////
 		if(!argsSet.contains("nocalc"))
 			EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
@@ -621,15 +618,12 @@ public class CompareAll
 			});
 		
 			
-
+		final Object comparisonLock=new Object();
 		
 		
 		///////////////// Compare each two recordings //////////////////////////////
 		if(!argsSet.contains("nocalc"))
 			{
-			
-
-			
 			System.out.println("Calculate pair-wise statistics");
 			EvParallel.map(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
 			public Object func(Tuple<File,File> key)
@@ -637,31 +631,40 @@ public class CompareAll
 				File fa=key.fst();
 				File fb=key.snd();
 				
-				
+				boolean containsKey;
+				synchronized(comparisonLock)
+					{
+					containsKey=!comparisonT.containsKey(key) || !comparisonAP.containsKey(key) || !comparisonXYZ.containsKey(key);
+					}
 
 				//Check if cached calculation does not exist
-				if(!comparisonT.containsKey(key) || !comparisonAP.containsKey(key) || !comparisonXYZ.containsKey(key))
+				if(containsKey)
 					{
 					System.out.println("todo: "+key);
-
 					
-					
-					//boolean calculatedA=ensureCalculated(fa);
-					//boolean calculatedB=ensureCalculated(fb);
-					boolean calculatedA=IntExp.isDone(fa);//ensureCalculated(fa);
-					boolean calculatedB=IntExp.isDone(fb);//ensureCalculated(fb);
-					boolean calculated=calculatedA && calculatedB;
+					boolean calculatedA=IntExp.isDone(fa);
+					boolean calculatedB=IntExp.isDone(fb);
 
 					if(!calculatedA)
 						System.out.println("Not calculated, there must be a problem: "+fa);
 					if(!calculatedB)
 						System.out.println("Not calculated, there must be a problem: "+fb);
 					
-					System.out.println("-----calculated: "+calculated);
-					if(calculated)
+					if(calculatedA && calculatedB)
 						{
-						EvData dataA=EvData.loadFile(fa);
-						EvData dataB=EvData.loadFile(fb);
+						System.out.println("Calculating "+key);
+						
+						//May not load one dataset twice at the same time. Can cause problems with cache files!!!!!! (probably minor ones)
+						EvData dataA;
+						EvData dataB;
+						synchronized (fa)
+							{
+							dataA=EvData.loadFile(fa);
+							}
+						synchronized (fb)
+							{
+							dataB=EvData.loadFile(fb);
+							}
 						
 						Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 						Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
@@ -679,13 +682,10 @@ public class CompareAll
 							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
 							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
 							ColocCoefficients coeffT=colocAP(imtA, imtB);
-							comparisonT.put(Tuple.make(fa,fb), coeffT);
-							
-							//NewRenderHTML.toTimage(imtA, fa, ""+fa.getName());
-							//NewRenderHTML.toTimage(imtB, fb, ""+fb.getName());
-							
-							System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
-							System.out.println("pearsonT "+ coeffT.getPearson());
+							synchronized (comparisonLock)
+								{
+								comparisonT.put(Tuple.make(fa,fb), coeffT);
+								}
 							}
 						catch (Exception e)
 							{
@@ -698,12 +698,10 @@ public class CompareAll
 							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
 							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
 							ColocCoefficients coeffAP=colocAP(imapA, imapB);
-							comparisonAP.put(Tuple.make(fa,fb), coeffAP);
-
-							//NewRenderHTML.toAPimage(imapA, fa, ""+fa.getName());
-							//NewRenderHTML.toAPimage(imapB, fb, ""+fb.getName());
-							
-							System.out.println("coeffAP "+coeffAP.n+" "+coeffAP.sumX+" "+coeffAP.sumXX+" "+coeffAP.sumY);
+							synchronized (comparisonLock)
+								{
+								comparisonAP.put(Tuple.make(fa,fb), coeffAP);
+								}
 							}
 						catch (Exception e)
 							{
@@ -712,12 +710,18 @@ public class CompareAll
 						
 						//Slices: XYZ
 						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), chanNameA, chanNameB);
-						comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);
+						synchronized (comparisonLock)
+							{
+							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
+							}
 												
 						//Store down this value too
-						storeCache(comparisonT, cachedValuesFileT);
-						storeCache(comparisonAP, cachedValuesFileAP);
-						storeCache(comparisonXYZ, cachedValuesFileXYZ);
+						synchronized (comparisonLock)
+							{
+							storeCache(comparisonT, cachedValuesFileT);
+							storeCache(comparisonAP, cachedValuesFileAP);
+							storeCache(comparisonXYZ, cachedValuesFileXYZ);
+							}
 						}
 
 					}
@@ -789,7 +793,6 @@ public class CompareAll
 				e.setAttribute("fa", t.fst().toString());
 				e.setAttribute("fb",t.snd().toString());
 				comparison.get(t).toXML(e);
-//				e.setAttribute("value",""+comparison.get(t));
 				root.addContent(e);
 				}
 			Document doc=new Document(root);
