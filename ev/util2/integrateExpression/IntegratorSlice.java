@@ -28,6 +28,7 @@ import endrov.util.EvFileUtil;
 import endrov.util.EvListUtil;
 import endrov.util.EvMathUtil;
 import endrov.util.ImVector2;
+import endrov.util.ImVector3d;
 import endrov.util.Tuple;
 
 /**
@@ -35,11 +36,11 @@ import endrov.util.Tuple;
  * @author Johan Henriksson
  *
  */
-public class IntegratorAP implements Integrator
+public abstract class IntegratorSlice implements Integrator
 	{
 	private int numSubDiv;
 	private HashMap<EvDecimal, EvPixels> distanceMap = new HashMap<EvDecimal, EvPixels>();
-	private Shell shell;
+	protected Shell shell;
 	private double[] sliceExp; //Must be double for values to fit
 	private int[] sliceVol;
 	private NucLineage lin = new NucLineage();
@@ -49,8 +50,8 @@ public class IntegratorAP implements Integrator
 	public TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
 	private boolean updateBG; // variable if to calculate bg
 	
-	//private double curBgInt = 0;
-	//private int curBgVol = 0;
+	private double curBgInt = 0;
+	private int curBgVol = 0;
 	
 	//List<Integer> curBg=new ArrayList<Integer>();
 	private IntArrayList curBgOutside=new IntArrayList(); 
@@ -58,7 +59,7 @@ public class IntegratorAP implements Integrator
 	
 	
 	
-	public IntegratorAP(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
+	public IntegratorSlice(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
 		this.newLinName = newLinName;
@@ -92,20 +93,32 @@ public class IntegratorAP implements Integrator
 		curBgInside.clear();
 		curBgOutside.clear();
 		
-		//curBgInt = 0;
-		//curBgVol = 0;
+		curBgInt = 0;
+		curBgVol = 0;
 		// Zero out arrays
 		sliceExp = new double[numSubDiv];
 		sliceVol = new int[numSubDiv];
 		}
 	
 	
+	//Normalized with inverse length of axis 
+	public abstract ImVector3d getDirVec();/*
+		{
+		double axisLength=2*shell.major;
+		ImVector2 dirvec=ImVector2.polar(shell.major, shell.angle).normalize().mul(-1.0/axisLength);
+		return new ImVector3d(dirvec.x, dirvec.y, 0);
+		}*/
+	
+	public ImVector3d getMidPos()
+		{
+		return new ImVector3d(shell.midx, shell.midy, shell.midz); 
+		}
 	
 	
 	public void integrateImage(IntExp integrator)
 		{
 		integrator.ensureImageLoaded();
-	
+		
 		// Calculate distance mask lazily. Assumes shell does not move over time.
 		EvPixels lenMap;
 		double[] lenMapArr;
@@ -119,9 +132,8 @@ public class IntegratorAP implements Integrator
 			lenMap = new EvPixels(EvPixelsType.DOUBLE, integrator.pixels.getWidth(), integrator.pixels.getHeight());
 			lenMapArr = lenMap.getArrayDouble();
 	
-			ImVector2 dirvec = ImVector2.polar(shell.major, shell.angle);
-			ImVector2 startpos = dirvec.add(new ImVector2(shell.midx, shell.midy));
-			dirvec = dirvec.normalize().mul(-1);
+			ImVector3d dirvec = getDirVec();
+			ImVector3d midpos3 = getMidPos();
 	
 			// Calculate distances
 			for (int ay = 0; ay<integrator.pixels.getHeight(); ay++)
@@ -129,17 +141,26 @@ public class IntegratorAP implements Integrator
 				int lineIndex = lenMap.getRowIndex(ay);
 				for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 					{
+					ImVector2 shellPos2=new ImVector2(shell.midx, shell.midy);
+
 					// Convert to world coordinates
-					ImVector2 pos = new ImVector2(
+					ImVector2 pos2 = new ImVector2(
 							integrator.stack.transformImageWorldX(ax),
 							integrator.stack.transformImageWorldY(ay));
+					ImVector3d pos3 = new ImVector3d(
+							pos2.x,
+							pos2.y,
+							integrator.curZ.doubleValue());
 	
 					// Check if this is within ellipse boundary
-					ImVector2 elip = pos.sub(new ImVector2(shell.midx, shell.midy)).rotate(shell.angle); // TODO angle? what?
+					ImVector2 elip = pos2.sub(shellPos2).rotate(shell.angle); // TODO angle? what?
 					double len;
 					if (1>=elip.y*elip.y/(shell.minor*shell.minor)+elip.x*elip.x/(shell.major*shell.major))
-						len = pos.sub(startpos).dot(dirvec)/(2*shell.major); 
-					// xy . dirvecx = cos(alpha) ||xy|| ||dirvecx||
+						{
+						// xy . dirvecx = cos(alpha) ||xy|| ||dirvecx||
+						len = pos3.sub(midpos3).dot(dirvec)+0.5;   
+						//goes from -0.5 to 0.5 before addition if using proper ellipse. projection makes it wrong!!!
+						}
 					else
 						len = -1;
 					lenMapArr[lineIndex+ax] = len;
@@ -156,22 +177,20 @@ public class IntegratorAP implements Integrator
 				{
 				int i = lineIndex+x;
 				double len = lenMapArr[i];
-				if (len>-1)
+				int sliceNum = (int) (len*numSubDiv); // may need to bound in addition
+				if(sliceNum>=0 && sliceNum<sliceExp.length)
 					{
-					int sliceNum = (int) (len*numSubDiv); // may need to bound in addition
 					sliceExp[sliceNum] += integrator.pixelsLine[i];
 					sliceVol[sliceNum]++;
-					
+
 					curBgInside.add(integrator.pixelsLine[i]);
 					}
-				else
+				else if(len==-1) //so things close the embryo will not be considered - likely too bright
 					{
-					// Measure background. It's all pixels outside the embryo
-					
+					// Measure background. It's all the pixels outside the embryo
 					curBgOutside.add(integrator.pixelsLine[i]);
-					
-					//curBgInt += integrator.pixelsLine[i];
-					//curBgVol++;
+					curBgInt += integrator.pixelsLine[i];
+					curBgVol++;
 					}
 				}
 			}
@@ -184,9 +203,9 @@ public class IntegratorAP implements Integrator
 			{
 			int medianOutside=EvListUtil.findPercentileInt(curBgOutside.elements(), 0.5, curBgOutside.size());
 			int medianInside=EvListUtil.findPercentileInt(curBgInside.elements(), 0.5, curBgInside.size());
-			//double avg=(double)curBgInt/curBgVol;
+			double avg=(double)curBgInt/curBgVol;
 			
-			int thisBG=EvMathUtil.minAll(medianOutside,medianInside/*,(int)avg*/);
+			int thisBG=EvMathUtil.minAll(medianOutside,medianInside,(int)avg);
 			bg.put(integrator.frame, (double)thisBG);
 			//bg.put(integrator.frame, (double)median/curBg.size());
 			//bg.put(integrator.frame, curBgInt/curBgVol);

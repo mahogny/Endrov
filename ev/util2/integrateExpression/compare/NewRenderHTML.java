@@ -25,24 +25,24 @@ import endrov.util.EvFileUtil;
  */
 public class NewRenderHTML
 	{
-	public static String gnuplotAP3d;
-	public static String gnuplotAP2d;
-	public static String gnuplotT;
+	public static String gnuplotSliceTime3d;
+	public static String gnuplotSliceTime2d;
+	public static String gnuplotTime;
 	
-	public static String templateRecAPT;
-	public static String templateIndexAPT;
+	public static String templateRecSliceTime;
+	public static String templateIndexSliceTime;
 
 
 	static
 		{
 		try
 			{
-			templateRecAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateRecAPT.html"));
-			templateIndexAPT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateIndexAPT.html"));
+			templateRecSliceTime=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateRecAPT.html"));
+			templateIndexSliceTime=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("templateIndexAPT.html"));
 			
-			gnuplotAP3d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP3d.gnu"));
-			gnuplotAP2d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP2d.gnu"));
-			gnuplotT=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderT.gnu"));
+			gnuplotSliceTime3d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP3d.gnu"));
+			gnuplotSliceTime2d=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderAP2d.gnu"));
+			gnuplotTime=EvFileUtil.readStream(NewRenderHTML.class.getResourceAsStream("renderT.gnu"));
 			}
 		catch (IOException e)
 			{
@@ -77,9 +77,9 @@ public class NewRenderHTML
 	
 	
 	/**
-	 * Turn normalized array of AP into graph
+	 * Turn normalized array of slice-time data into graph
 	 */
-	public static void toAPimage(double[][] exp, File ostFile, String title) throws IOException
+	public static void toSliceTimeImage(double[][] exp, File ostFile, String title, String prefix) throws IOException
 		{
 		StringBuffer sbData=new StringBuffer();
 		
@@ -98,15 +98,15 @@ public class NewRenderHTML
 		File dataDir=new File(ostFile,"data");
 		dataDir.mkdirs();
 		
-		String imgap3d=new File(dataDir,"expAP3d.png").toString();
-		String thisCmd3d=gnuplotAP3d
+		String imgap3d=new File(dataDir,"exp"+prefix+"3d.png").toString();
+		String thisCmd3d=gnuplotSliceTime3d
 		.replace("TITLE", title)
 		.replace("#INFILE", tempdatFile.toString())
 		.replace("#START","set terminal png\nset output '"+imgap3d+"'\n");
 		gnuplot(thisCmd3d);
 		
-		String imgap2d=new File(dataDir,"expAP2d.png").toString();
-		String thisCmd2d=gnuplotAP2d
+		String imgap2d=new File(dataDir,"exp"+prefix+"2d.png").toString();
+		String thisCmd2d=gnuplotSliceTime2d
 		.replace("TITLE", title)
 //		.replace("#INFILE", "/home/tbudev3/test.png")
 		.replace("#INFILE", tempdatFile.toString())
@@ -120,7 +120,7 @@ public class NewRenderHTML
 	/**
 	 * Turn normalized array of T into graph
 	 */
-	public static void toTimage(double[][] exp, File ostFile, String title) throws IOException
+	public static void toTimeImage(double[][] exp, File ostFile, String title) throws IOException
 		{
 		StringBuffer sbData=new StringBuffer();
 		
@@ -137,7 +137,7 @@ public class NewRenderHTML
 		File dataDir=new File(ostFile,"data");
 		dataDir.mkdirs();
 		String imgap3d=new File(dataDir,"expT.png").toString();
-		String thisCmd=gnuplotT
+		String thisCmd=gnuplotTime
 		.replace("TITLE", title)
 		.replace("#INFILE", tempdatFile.toString())
 		.replace("#START","set terminal png\nset output '"+imgap3d+"'\n");
@@ -157,7 +157,7 @@ public class NewRenderHTML
 	/**
 	 * Make the summary HTML. Assumes all images exist.
 	 */
-	public static void makeSummaryAPT(File htmlOutdir, Set<File> datas) throws IOException
+	public static void makeSummaryHTML(File htmlOutdir, Set<File> datas) throws IOException
 		{
 		htmlOutdir.mkdirs();
 
@@ -177,11 +177,9 @@ public class NewRenderHTML
 		StringBuffer sbXYZims=new StringBuffer();
 		for(File f:sortedDatas)
 			{
-			//String strainName=ExpUtil.nameDateFromOSTName(f.getName()).fst();
-			
 			String strainName=CompareSQL.getGeneName(f);
 			
-			String recStringAPT=templateRecAPT
+			String recStringAPT=templateRecSliceTime
 			.replace("STRAIN", strainName)
 			.replace("OSTURL", ""+f);
 			String recStringXYZtitle=(
@@ -194,57 +192,62 @@ public class NewRenderHTML
 					)
 			.replace("STRAIN", strainName)
 			.replace("OSTURL", ""+f);
-			String recStringXYZims="<td><a href=\"IMGURLxyz\"><img src=\"IMGURLxyz\" border=\"0\"/></a></td>";
+			String recStringXYZimages="<td><a href=\"IMGURLxyz\"><img src=\"IMGURLxyz\" border=\"0\"/></a></td>";
 
 			////////////////// File 1 /////////////////
 			
 			File fAP2d=new File(new File(f,"data"),"expAP2d.png");
-			if(fAP2d.exists())
+			recStringAPT=copyAndGetLink(f, fAP2d, htmlOutdir, recStringAPT, "IMGURL2d");
+			/*if(fAP2d.exists())
 				{
 				fAP2d=copyForSummary(f, htmlOutdir, fAP2d);
 				recStringAPT=recStringAPT.replace("IMGURL2d", fAP2d.getName());
 				}
 			else
-				recStringAPT=recStringAPT.replace("IMGURL2d", "");
+				recStringAPT=recStringAPT.replace("IMGURL2d", "");*/
 
 			File fAP3d=new File(new File(f,"data"),"expAP3d.png");
-			if(fAP3d.exists())
+			recStringAPT=copyAndGetLink(f, fAP3d, htmlOutdir, recStringAPT, "IMGURL3d");
+			/*if(fAP3d.exists())
 				{
 				fAP3d=copyForSummary(f, htmlOutdir, fAP3d);
 				recStringAPT=recStringAPT.replace("IMGURL3d", fAP3d.getName());
 				}
 			else
-				recStringAPT=recStringAPT.replace("IMGURL3d", "");
+				recStringAPT=recStringAPT.replace("IMGURL3d", "");*/
 
 			File fT=new File(new File(f,"data"),"expT.png");
+			recStringAPT=copyAndGetLink(f, fT, htmlOutdir, recStringAPT, "IMGURLt");
+			/*
 			if(fT.exists())
 				{
 				fT=copyForSummary(f, htmlOutdir, fT);
 				recStringAPT=recStringAPT.replace("IMGURLt", fT.getName());
 				}
 			else
-				recStringAPT=recStringAPT.replace("IMGURLt", "");
+				recStringAPT=recStringAPT.replace("IMGURLt", "");*/
 
 			sbAPT.append(recStringAPT);
 			
 			////////////////// File 2 /////////////////
 			
 			File fXYZ=new File(new File(f,"data"),"expXYZ.png");
-			if(fXYZ.exists())
+			recStringXYZimages=copyAndGetLink(f, fXYZ, htmlOutdir, recStringXYZimages, "IMGURLxyz");  
+			/*if(fXYZ.exists())
 				{
 				fXYZ=copyForSummary(f, htmlOutdir, fXYZ);
 				recStringXYZims=recStringXYZims.replace("IMGURLxyz", fXYZ.getName());
 				}
 			else
-				recStringXYZims=recStringXYZims.replace("IMGURLxyz", "");
+				recStringXYZims=recStringXYZims.replace("IMGURLxyz", "");*/
 
 			sbXYZtitles.append(recStringXYZtitle);
-			sbXYZims.append(recStringXYZims);
+			sbXYZims.append(recStringXYZimages);
 			}
 
 		//Write files
 		EvFileUtil.writeFile(new File(htmlOutdir,"indexAPT.html"), 
-				templateIndexAPT.replace("TABLECONTENT", sbAPT.toString()));
+				templateIndexSliceTime.replace("TABLECONTENT", sbAPT.toString()));
 		EvFileUtil.writeFile(new File(htmlOutdir,"indexXYZ.html"), 
 				(
 						"<html>"+
@@ -258,6 +261,19 @@ public class NewRenderHTML
 
 		}
 	
+	public static String copyAndGetLink(File f, File fAP2d, File htmlOutdir, String recStringAPT, String toReplace) throws IOException
+		{
+		if(fAP2d.exists())
+			{
+			fAP2d=copyForSummary(f, htmlOutdir, fAP2d);
+			recStringAPT=recStringAPT.replace(toReplace, fAP2d.getName());
+			}
+		else
+			recStringAPT=recStringAPT.replace(toReplace, "");
+		return recStringAPT;
+		}
 	
+	
+
 	
 	}

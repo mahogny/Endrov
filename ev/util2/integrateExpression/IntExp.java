@@ -203,12 +203,13 @@ public class IntExp
 
 			String newLinNameT = linForAP(1, channelName);
 			String newLinNameAP = linForAP(numSubDiv, channelName);
+			String newLinNameLR = linForLR(numSubDiv, channelName);
 
 			// Not the optimal way of finding the lineage
 			Map<EvPath, NucLineage> lins = data
 					.getIdObjectsRecursive(NucLineage.class);
 			for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
-				if (!e.getKey().getLeafName().startsWith("AP"))
+				if (!e.getKey().getLeafName().startsWith("AP") && !e.getKey().getLeafName().startsWith("LR") && !e.getKey().getLeafName().startsWith("DR"))
 					{
 					System.out.println("found lineage "+e.getKey());
 					refLin = e.getValue();
@@ -228,6 +229,10 @@ public class IntExp
 			IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
 			integrators.add(intAP);
 			integrators.add(intT);
+
+			// LR - requires an angle
+			IntegratorAP intLR = new IntegratorAP(integrator, newLinNameLR, 1, intAP.bg);
+			integrators.add(intLR);
 
 			// XYZ cube level expression
 			IntegratorXYZ intXYZ = new IntegratorXYZ(integrator, newLinNameAP, numSubDiv, intAP.bg);
@@ -252,6 +257,8 @@ public class IntExp
 			intAP.done(integrator, null);
 			storeCorrection(f, intAP.correctedExposure, intAP.bg);
 			intT.done(integrator, intAP.correctedExposure);
+			if(intLR!=null)
+				intLR.done(integrator, intAP.correctedExposure);
 			if (intXYZ!=null)
 				intXYZ.done(integrator, intAP.correctedExposure);
 			if (intC!=null)
@@ -296,11 +303,20 @@ public class IntExp
 		{
 		return "AP"+numSubDiv+"-"+channelName;
 		}
+	public static String linForLR(int numSubDiv, String channelName)
+		{
+		return "LR"+numSubDiv+"-"+channelName;
+		}
 
 	public static File fileForAP(EvData data, int numSubDiv, String channelName)
 		{
 		File datadir = data.io.datadir();
 		return new File(datadir, "AP"+numSubDiv+"-"+channelName+"c");
+		}
+	public static File fileForLR(EvData data, int numSubDiv, String channelName)
+		{
+		File datadir = data.io.datadir();
+		return new File(datadir, "LR"+numSubDiv+"-"+channelName+"c");
 		}
 
 	/**

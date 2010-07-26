@@ -258,7 +258,7 @@ public class ComparePhylip
 		try
 			{
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/apt-l2/outtree2"));
-			//evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/apt-pearson/outtree2")); //trouble
+			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/apt-pearson/outtree2"));
 			
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/xyz-l2/outtree2"));
 			
