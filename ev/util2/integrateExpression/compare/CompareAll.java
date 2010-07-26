@@ -594,7 +594,7 @@ public class CompareAll
 						try
 							{
 							double[][] imtA=apToArray(data, "AP"+1+"-"+chanName, expName, coordLineageFor(data));
-							NewRenderHTML.toTimage(imtA, in, ""+in.getName());
+							NewRenderHTML.toTimeImage(imtA, in, ""+in.getName());
 							}
 						catch (IOException e)
 							{
@@ -605,12 +605,24 @@ public class CompareAll
 						try
 							{
 							double[][] imapA=apToArray(data, "AP"+20+"-"+chanName, expName, coordLineageFor(data));
-							NewRenderHTML.toAPimage(imapA, in, ""+in.getName());
+							NewRenderHTML.toSliceTimeImage(imapA, in, ""+in.getName(),"AP");
 							}
 						catch (IOException e)
 							{
 							e.printStackTrace();
 							}
+						
+						//Slices: LR
+						try
+							{
+							double[][] imlrA=apToArray(data, "LR"+20+"-"+chanName, expName, coordLineageFor(data));
+							NewRenderHTML.toSliceTimeImage(imlrA, in, ""+in.getName(),"LR");
+							}
+						catch (IOException e)
+							{
+							e.printStackTrace();
+							}
+
 						}
 					//System.out.println("ending        "+in);
 					return null;
@@ -738,7 +750,7 @@ public class CompareAll
 			{
 			try
 				{
-				NewRenderHTML.makeSummaryAPT(new File(outputBaseDir,"exphtml"), datas);
+				NewRenderHTML.makeSummaryHTML(new File(outputBaseDir,"exphtml"), datas);
 				}
 			catch (IOException e)
 				{

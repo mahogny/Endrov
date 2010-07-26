@@ -89,16 +89,17 @@ public class WithPhylip
 					{
 					ColocCoefficients coef=comparison.get(Tuple.make(fa,fb));
 					if(coef==null)
-						System.out.println("Null for "+fa+"     "+fb);
+						System.out.println("-----------------Null for "+fa+"     "+fb);
 
 					Double v=null;
 					if(type.equals("pearson"))
 						{
-						v=coef.getPearson();
+						
+						v=1.0-Math.abs(coef.getPearson());
+						if(fa.equals(fb))
+							System.out.println(v); //may need to force 0
 						if(v==null || Double.isInfinite(v) || Double.isNaN(v))
 							v=0.0;
-						if(fa.equals(fb))
-							v=1.0;
 						}
 					else if(type.equals("l2"))
 						{
@@ -142,7 +143,7 @@ public class WithPhylip
 		new CompareSQL(); //Get password right away so it doesn't stop later
 		
 		doFor(CompareAll.cachedValuesFileAP,"apt");
-		doFor(CompareAll.cachedValuesFileXYZ,"xyz");
+//		doFor(CompareAll.cachedValuesFileXYZ,"xyz");          //note!
 		
 		
 		
