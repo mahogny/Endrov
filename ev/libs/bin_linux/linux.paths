@@ -1,4 +1,4 @@
-b:/usr/lib/jni
+#b:/usr/lib/jni
 x:/usr/share/java/jogl.jar
 j:/usr/share/java/jinput.jar
 x:/usr/share/java/gluegen-rt.jar

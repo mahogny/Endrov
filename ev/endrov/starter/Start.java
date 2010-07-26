@@ -22,8 +22,6 @@ import endrov.ev.EvBuild;
  */
 public class Start
 	{
-	private static boolean printJar=false;	
-	
 	public static void main(String[] args)
 		{
 		new Start().run(args);
@@ -86,9 +84,6 @@ public class Start
 
 		
 		
-		
-		System.out.println("before: "+binfiles);
-		
 		/**
 		 * Have to add system extensions and libraries as well when the system class loader is not used
 		 */
@@ -101,7 +96,6 @@ public class Start
 				String s=stok.nextToken();
 				if(!s.equals("."))          //TODO: or path? 
 					{
-					binfiles.add(s);
 					File root=new File(s);
 					if(root.exists())
 						for(File f:root.listFiles())
@@ -111,18 +105,29 @@ public class Start
 				}
 			}
 
+
 		//Collect jarfiles
 		jarfiles.add(path.getAbsolutePath());
 		collectJars(jarfiles, binfiles, new File(path,"libs"), platformExt);
-		//System.out.println(binfiles);
 
-/*		
-		if(binfiles.contains("/usr/lib/jni"))
+		if(libpath!=null)
 			{
-			binfiles.remove("/usr/lib/jni");
-			binfiles.add("/usr/lib/jni");
+			StringTokenizer stok=new StringTokenizer(libpath,File.pathSeparator);
+			while(stok.hasMoreTokens())
+				{
+				String s=stok.nextToken();
+				if(!s.equals("."))          //TODO: or path? 
+					{
+					binfiles.add(s);
+/*					File root=new File(s);
+					if(root.exists())
+						for(File f:root.listFiles())
+							if(f.getName().endsWith(".jar") || f.getName().endsWith(".zip")) //QTJava is .zip
+								jarfiles.add(f.getAbsolutePath());*/
+					}
+				}
 			}
-			*/
+
 		
 		}
 	
@@ -164,8 +169,6 @@ public class Start
 	private static void addJar(LinkedList<String> v, String toadd)
 		{
 		v.addFirst(toadd);
-		if(printJar)
-			System.out.println("Adding java library: "+toadd);
 		}
 	
 	/**
@@ -212,8 +215,6 @@ public class Start
 							collectJars(v,binfiles, sub, platformExt);
 							String toadd=sub.getAbsolutePath();
 							binfiles.add(toadd);
-							if(printJar)
-								System.out.println("Adding binary directory: "+toadd);
 							}
 					}
 				}
@@ -245,15 +246,6 @@ public class Start
 			
 			if(curarg.equals("--printcommand"))
 				printCommand=true;
-			else if(curarg.equals("--printjar"))
-				printJar=true;
-			/*
-			 * else if(curarg.equals("--macstarter"))
-				{
-				//Override detection to spit out mac directories
-				OS="mac os x"; 
-				printMacStarter=true;
-				}*/
 			else if(args.contains("--version"))
 				{
 				//Print current version. need to be put in starter jar to work
@@ -293,11 +285,17 @@ public class Start
 				{
 				//Show info about the system
 				System.out.println("This system runs OS:"+OS+" with java:"+javaver+" on arch:"+arch);
+				System.exit(0);
 				}
 			else if(curarg.equals("--classload"))
 				useClassLoader=true;
 			else if(curarg.equals("--printcp"))
 				printClassPath=true;
+			else if(curarg.equals("--help"))
+				{
+				System.out.println("--printcommand, version, cp2, libpath2, basedir, main, javaenv, archinfo, classload, printcp, help");
+				System.exit(0);
+				}
 			else
 				{
 				if(!curarg.startsWith("--"))
