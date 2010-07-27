@@ -1,7 +1,0 @@
-celegans2008.2 in old format with frametime
-linear with sulston except AB, P1'. this is a rather expected result.
-
-
-
-
-code frametime properly?

@@ -51,7 +51,7 @@ public class MencoderMovieMaker implements EvMovieMaker
 		curframe++;
 
 		ImageIO.write(im, "png", thisFile);
-		System.out.println(thisFile);
+		//System.out.println(thisFile);
 		}
 
 	public void done() throws Exception
