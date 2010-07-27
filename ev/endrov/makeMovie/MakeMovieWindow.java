@@ -16,6 +16,7 @@ import endrov.basicWindow.*;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.imageset.*;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
 import org.jdom.*;
@@ -257,7 +258,7 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 						File moviePath=new File(outdir,lastpart);
 						
 						BatchThread thread=new MakeMovieThread(getCurrentImageset(), 
-								spinnerStart.getDecimalValue(), spinnerEnd.getDecimalValue(), (Integer)spinnerZ.getValue(), channelNames, (Integer)spinnerW.getValue(),
+								spinnerStart.getDecimalValue(), spinnerEnd.getDecimalValue(), new EvDecimal((Integer)spinnerZ.getValue()), channelNames, (Integer)spinnerW.getValue(),
 								(String)qualityCombo.getSelectedItem(),moviePath, (EvMovieMakerFactory)codecCombo.getSelectedItem());
 						new BatchWindow(thread);
 						}
