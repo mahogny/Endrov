@@ -35,6 +35,8 @@ public class IntExpFileUtil
 		System.out.println("-------- failed to connect");
 		System.exit(1);
 		}
+	else
+		System.out.println("-------- connected to sql");
 	}
 
 	/**
@@ -177,10 +179,17 @@ public class IntExpFileUtil
 	public static Set<File> getTestSet()
 		{
 		Set<File> doneStrains=new TreeSet<File>();
-		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/AH142_070827.ost"));
-		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/AH142_070828.ost"));
+//		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/AH142_070827.ost"));
+//		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/AH142_070828.ost"));
 		//doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/TB2098_080217.ost"));
 		//doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/TB2098_080324.ost"));
+		
+		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/BC10721_071109.ost"));
+		
+		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/TB2161_071119.ost"));
+		doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/BC15197i3_070417.ost"));
+		/*doneStrains.add(new File("/Volumes/TBU_main06/ost4dgood/BC10075_070612.ost"));*/
+		
 		return doneStrains;
 		}
 

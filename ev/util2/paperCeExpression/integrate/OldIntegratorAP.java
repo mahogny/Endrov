@@ -7,6 +7,7 @@ package util2.paperCeExpression.integrate;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ import endrov.util.Tuple;
  * @author Johan Henriksson
  *
  */
-public class IntegratorAP implements Integrator
+public class OldIntegratorAP implements Integrator
 	{
 	private int numSubDiv;
 	private HashMap<EvDecimal, EvPixels> distanceMap = new HashMap<EvDecimal, EvPixels>();
@@ -49,8 +50,8 @@ public class IntegratorAP implements Integrator
 	public TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
 	private boolean updateBG; // variable if to calculate bg
 	
-	//private double curBgInt = 0;
-	//private int curBgVol = 0;
+	private double curBgInt = 0;
+	private int curBgVol = 0;
 	
 	//List<Integer> curBg=new ArrayList<Integer>();
 	private IntArrayList curBgOutside=new IntArrayList(); 
@@ -58,7 +59,7 @@ public class IntegratorAP implements Integrator
 	
 	
 	
-	public IntegratorAP(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
+	public OldIntegratorAP(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
 		this.newLinName = newLinName;
@@ -92,8 +93,8 @@ public class IntegratorAP implements Integrator
 		curBgInside.clear();
 		curBgOutside.clear();
 		
-		//curBgInt = 0;
-		//curBgVol = 0;
+		curBgInt = 0;
+		curBgVol = 0;
 		// Zero out arrays
 		sliceExp = new double[numSubDiv];
 		sliceVol = new int[numSubDiv];
@@ -170,24 +171,85 @@ public class IntegratorAP implements Integrator
 					
 					curBgOutside.add(integrator.pixelsLine[i]);
 					
-					//curBgInt += integrator.pixelsLine[i];
-					//curBgVol++;
+					curBgInt += integrator.pixelsLine[i];
+					curBgVol++;
 					}
 				}
 			}
 		}
+	
+
+	/**
+	 * Stable median calculation. Relies on bucket-sorting. It should be perfectly possible to write a linear-time stable median
+	 * based on the normal linear-time median algorithm. This is needed to handle non-8bit images.
+	 * Value might be off a bit but not much (need to think of indexing), and it doesn't matter for this application
+	 */
+	public double calcStableMedian(double lowerFrac, double upperFrac, int[] elem, int numElem)
+		{
+		//Calculate histogram
+		int[] histogram=new int[256];
+		//int[] elem=curBgOutside.elements();
+		//int numElem=curBgOutside.size();
+		for(int i=0;i<numElem;i++)
+			histogram[elem[i]]++;
+		
+		int jumpElem=0;
+		int lowerIndex=(int)(numElem*lowerFrac);
+		int upperIndex=(int)(numElem*upperFrac);
+		int sum=0;
+		int cnt=0;
+		for(int i=0;i<256;i++)
+			{
+			int thisNum=histogram[i];
+			int take=Math.min(upperIndex,jumpElem+thisNum)-Math.max(lowerIndex, jumpElem);
+			if(take>0)
+				{
+				sum+=take*i;
+				cnt+=take;
+				}
+			jumpElem+=thisNum;
+			}
+		return (double)sum/cnt;
+		}
+
+	/*
+	//Slow but straight-forward. O(n log n)
+	public double calcStableMedian(double lowerFrac, double upperFrac)
+		{
+		int[] tempArr=new int[curBgOutside.size()];
+		System.arraycopy(curBgOutside.elements(), 0, tempArr, 0, tempArr.length);
+		Arrays.sort(tempArr);
+		int cnt=0;
+		int sum=0;
+		for(int i=(int)(tempArr.length*lowerFrac);i<tempArr.length*upperFrac;i++)
+			{
+			sum+=tempArr[i];
+			cnt++;
+			}
+		return (double)sum/cnt;
+		}
+		*/
 	
 	public void integrateStackDone(IntExp integrator)
 		{
 		// Store background if this integrator is responsible for calculating it
 		if (updateBG)
 			{
-			int medianOutside=EvListUtil.findPercentileInt(curBgOutside.elements(), 0.5, curBgOutside.size());
-			int medianInside=EvListUtil.findPercentileInt(curBgInside.elements(), 0.5, curBgInside.size());
-			//double avg=(double)curBgInt/curBgVol;
+			double stableMedianOutside=calcStableMedian(0.4,0.6, curBgOutside.elements(), curBgOutside.size());
+			double stableMedianInside=calcStableMedian(0.4,0.6, curBgInside.elements(), curBgInside.size());
 			
-			int thisBG=EvMathUtil.minAll(medianOutside,medianInside/*,(int)avg*/);
-			bg.put(integrator.frame, (double)thisBG);
+//			int medianOutside=EvListUtil.findPercentileInt(curBgOutside.elements(), 0.5, curBgOutside.size());
+			//int medianOutside=EvListUtil.findPercentileInt(curBgOutside.elements(), 0.51, curBgOutside.size());
+//			int medianInside=EvListUtil.findPercentileInt(curBgInside.elements(), 0.5, curBgInside.size());
+//			double avg=(double)curBgInt/curBgVol;
+			
+			//double thisBG=EvMathUtil.minAllInt(medianOutside,medianInside,(int)avg);
+			//double thisBG=EvMathUtil.minAll(medianOutside,medianInside,avg);
+			double thisBG=Math.min(stableMedianOutside, stableMedianInside);
+//			System.out.println("bgs "+medianOutside+"   "+medianInside+"     "+avg+"           "+thisBG);
+
+			System.out.println("bgs "+stableMedianOutside+"      "+stableMedianInside);
+			bg.put(integrator.frame, thisBG);
 			//bg.put(integrator.frame, (double)median/curBg.size());
 			//bg.put(integrator.frame, curBgInt/curBgVol);
 			}

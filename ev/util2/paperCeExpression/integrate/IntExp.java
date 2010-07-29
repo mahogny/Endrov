@@ -231,7 +231,7 @@ public class IntExp
 			integrators.add(intAP);
 			
 			//T-level expression
-			IntegratorAP intT = new IntegratorAP(integrator, newLinNameT, 1, intAP.bg);
+			OldIntegratorAP intT = new OldIntegratorAP(integrator, newLinNameT, 1, intAP.bg);
 			integrators.add(intT);
 
 			// DV - requires an angle

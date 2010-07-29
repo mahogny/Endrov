@@ -31,6 +31,14 @@ public class BatchMovie
 	{
 	public static void makeMovie(File file)
 		{
+		//File outfile=new File(file.getParent(),file.getName()+".mov");
+		//File outfile=new File(file.getParent(),file.getName()); //file ending added automatically
+		File outfile=new File(new File(file,"data"),"thumbnail"); //file ending added automatically
+		File outfile2=new File(new File(file,"data"),"thumbnail.avi");
+		if(outfile2.exists())
+			return;
+		
+		System.out.println("Doing imageset "+file.getPath());
 		EvData ost=EvData.loadFile(file);
 	
 		if(ost==null)
@@ -52,21 +60,14 @@ public class BatchMovie
 			//String quality="Maximum";
 			String quality="Default";
 	
-			//File outfile=new File(file.getParent(),file.getName()+".mov");
-			//File outfile=new File(file.getParent(),file.getName()); //file ending added automatically
-			File outfile=new File(new File(file,"data"),"thumbnail"); //file ending added automatically
-			/*
-			if(outfile.exists())
-				return;*/
 	
-			System.out.println("Imageset "+file.getPath());
 	
 			List<MakeMovieThread.MovieChannel> channelNames=new LinkedList<MakeMovieThread.MovieChannel>();
 	
-	
+			//Get the imageset
+			if(ost.getIdObjectsRecursive(Imageset.class).isEmpty())
+				return;
 			Imageset imset=ost.getIdObjectsRecursive(Imageset.class).values().iterator().next();
-	
-	
 			
 			//Generate max channels
 			EvChannel chGFP=(EvChannel)imset.metaObject.get("GFP");
@@ -79,10 +80,13 @@ public class BatchMovie
 
 			//Add channels that should be in the movie. Figure out best width (original width)
 			int width=336;
-			for(String name:new String[]{"GFPmax",/*"ch0",*/"DIC","RFPmax"})
+			for(String name:new String[]{"DIC","GFPmax","RFPmax"})
 				if(imset.metaObject.containsKey(name) && !((EvChannel)imset.metaObject.get(name)).imageLoader.isEmpty())
 					{
-					channelNames.add(new MakeMovieThread.MovieChannel(name,""));
+					String desc="<channel/>";
+					if(name.equals("DIC"))
+						desc="<channel/> (<frame/>)";
+					channelNames.add(new MakeMovieThread.MovieChannel(name,desc));
 	
 					System.out.println(name);
 					//Get original image size
@@ -115,7 +119,7 @@ public class BatchMovie
 					};
 			for(String s:arg)
 				for(File file:(new File(s)).listFiles())
-					if(!file.getName().startsWith("."))
+					if(!file.getName().startsWith(".") && !file.getName().contains("celegans"))
 						makeMovie(file);
 			
 			

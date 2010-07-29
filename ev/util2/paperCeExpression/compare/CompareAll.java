@@ -148,23 +148,23 @@ public class CompareAll
 		
 		double[][] image=new double[imageMaxTime][];//[numSubDiv];
 		
+		NucLineage.Nuc refNuc=lin.nuc.get("_slice0");
+		NucExp expressionPattern=refNuc.exp.get(expName);
+		if(expressionPattern==null)
+			return image;
+		
 		FrameTime ft=buildFrametime(coordLin);
 		
 		//Fill in image
 		int lastTime=0;
-		//System.out.println("curtime: ");
-		NucLineage.Nuc refNuc=lin.nuc.get("_slice0");
-		for (EvDecimal frame : refNuc.exp.get(expName).level.keySet())
+		for (EvDecimal frame : expressionPattern.level.keySet())
 			{
 			//Map to image
 			int time=(int)ft.interpolateTime(frame).doubleValue();
-			//System.out.println("curtime: "+time);
-			//System.out.print(time+" ");
 			if(time<0)
 				time=0;
 			else if(time>=imageMaxTime)
 				break;
-			//time=imageMaxTime-1;
 			
 			//For each slice
 			image[time]=new double[numSubDiv];
@@ -508,7 +508,7 @@ public class CompareAll
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
 		new IntExpFileUtil(); //Get password right away so it doesn't stop later
-
+		
 		//Do things in parallel. Not too many CPUs, case memory issues
 		int numThread=EvParallel.numThread;
 //		numThread=1;   ///////////////4 seems optimal
