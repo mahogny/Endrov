@@ -38,9 +38,9 @@ public final class MakeMovieThread extends BatchThread
 		public final String name;
 		//public final FilterSeq fs;
 		public final MovieDescString desc;
-		public MovieChannel(String nane,/* FilterSeq fs,*/ String desc)
+		public MovieChannel(String name,/* FilterSeq fs,*/ String desc)
 			{
-			this.name=nane;
+			this.name=name;
 			//this.fs=fs;
 			this.desc=new MovieDescString(desc);
 			}
@@ -219,9 +219,7 @@ public final class MakeMovieThread extends BatchThread
 			
 			g.setColor(Color.WHITE);
 			
-			g.drawString(
-			channels.get(i).desc.decode(rec, channels.get(i).name,frame),
-			 oneW*i, h-1);
+			g.drawString(channels.get(i).desc.decode(rec, channels.get(i).name,frame), oneW*i, h-1);
 			/*
 			if(i==0)
 				g.drawString(ch.name+" ("+frame+")", oneW*i, h-1);

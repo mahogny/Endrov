@@ -52,7 +52,7 @@ public class IntegratorCellClosest implements Integrator
 		shell = integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
 		
 		ExpUtil.clearExp(lin, integrator.expName);
-		ExpUtil.clearExp(lin, "CEH-5"); // TEMP
+		//ExpUtil.clearExp(lin, "CEH-5"); // TEMP
 		
 		linStart=specialFirstFrame(lin);
 		linEnd=specialLastFrame(lin);
@@ -60,7 +60,7 @@ public class IntegratorCellClosest implements Integrator
 
 	private static boolean considerCell(String name)
 		{
-		return !(name.equals("lastframe") || name.equals("gast") || name.equals("venc") || name.equals("2ftail")); //TODO
+		return !(name.equals("lastframe") || name.equals("gast") || name.equals("venc") || name.equals("2ftail") || name.startsWith("shell"));
 		}
 
 	private static EvDecimal specialLastFrame(NucLineage lin)
@@ -175,7 +175,8 @@ public class IntegratorCellClosest implements Integrator
 						
 						//Find closest nucleus
 						for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
-							if(e.getValue().isVisible())
+							{
+							if(e.getValue().isVisible() && considerCell(e.getKey().snd()))
 								{
 								NucLineage.NucPos pos = e.getValue().pos;
 								double dx=thisPosWorld.x-pos.x;
@@ -188,6 +189,7 @@ public class IntegratorCellClosest implements Integrator
 									closestNuc=e.getKey().snd();
 									}
 								}
+							}
 
 						// Sum up volume and area
 						nucVol.put(closestNuc, nucVol.get(closestNuc)+1);

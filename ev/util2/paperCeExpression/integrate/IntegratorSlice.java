@@ -25,8 +25,6 @@ import endrov.nuc.NucLineage;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
-import endrov.util.EvListUtil;
-import endrov.util.EvMathUtil;
 import endrov.util.ImVector2;
 import endrov.util.ImVector3d;
 import endrov.util.Tuple;
@@ -129,28 +127,26 @@ public abstract class IntegratorSlice implements Integrator
 	
 			ImVector3d dirvec = getDirVec();
 			ImVector3d midpos3 = getMidPos();
-	
+			ImVector2 shellPos2=new ImVector2(shell.midx, shell.midy);
+			double invShellMajor2=1.0/(shell.major*shell.major);
+			double invShellMinor2=1.0/(shell.minor*shell.minor);
+			double curZ=integrator.curZ.doubleValue();
+			
 			// Calculate distances
 			for (int ay = 0; ay<integrator.pixels.getHeight(); ay++)
 				{
 				int lineIndex = lenMap.getRowIndex(ay);
+				double worldAY=integrator.stack.transformImageWorldY(ay);
 				for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 					{
-					ImVector2 shellPos2=new ImVector2(shell.midx, shell.midy);
-
-					// Convert to world coordinates
-					ImVector2 pos2 = new ImVector2(
-							integrator.stack.transformImageWorldX(ax),
-							integrator.stack.transformImageWorldY(ay));
-					ImVector3d pos3 = new ImVector3d(
-							pos2.x,
-							pos2.y,
-							integrator.curZ.doubleValue());
+					double worldAX=integrator.stack.transformImageWorldX(ax);
+					final ImVector2 pos2 = new ImVector2(worldAX,worldAY);
+					final ImVector3d pos3 = new ImVector3d(pos2.x,pos2.y,curZ);
 	
 					// Check if this is within ellipse boundary
-					ImVector2 elip = pos2.sub(shellPos2).rotate(shell.angle); // TODO angle? what?
+					final ImVector2 elip = pos2.sub(shellPos2).rotate(shell.angle); // TODO angle? what?
 					double len;
-					if (1>=elip.y*elip.y/(shell.minor*shell.minor)+elip.x*elip.x/(shell.major*shell.major))
+					if (1>=elip.y*elip.y*invShellMinor2+elip.x*elip.x*invShellMajor2)
 						{
 						// xy . dirvecx = cos(alpha) ||xy|| ||dirvecx||
 						len = pos3.sub(midpos3).dot(dirvec)+0.5;   
@@ -173,22 +169,56 @@ public abstract class IntegratorSlice implements Integrator
 				int i = lineIndex+x;
 				double len = lenMapArr[i];
 				int sliceNum = (int) (len*numSubDiv); // may need to bound in addition
+				int thisPixelValue=integrator.pixelsLine[i];
 				if(sliceNum>=0 && sliceNum<sliceExp.length)
 					{
-					sliceExp[sliceNum] += integrator.pixelsLine[i];
+					sliceExp[sliceNum] += thisPixelValue;
 					sliceVol[sliceNum]++;
 
-					curBgInside.add(integrator.pixelsLine[i]);
+					curBgInside.add(thisPixelValue);
 					}
 				else if(len==-1) //so things close the embryo will not be considered - likely too bright
 					{
 					// Measure background. It's all the pixels outside the embryo
-					curBgOutside.add(integrator.pixelsLine[i]);
-					curBgInt += integrator.pixelsLine[i];
+					curBgOutside.add(thisPixelValue);
+					curBgInt += thisPixelValue;
 					curBgVol++;
 					}
 				}
 			}
+		}
+	
+	/**
+	 * Stable median calculation. Relies on bucket-sorting. It should be perfectly possible to write a linear-time stable median
+	 * based on the normal linear-time median algorithm. This is needed to handle non-8bit images.
+	 * Value might be off a bit but not much (need to think of indexing), and it doesn't matter for this application
+	 */
+	public double calcStableMedian(double lowerFrac, double upperFrac, int[] elem, int numElem)
+		{
+		//Calculate histogram
+		int[] histogram=new int[256];
+		//int[] elem=curBgOutside.elements();
+		//int numElem=curBgOutside.size();
+		for(int i=0;i<numElem;i++)
+			histogram[elem[i]]++;
+		
+		int jumpElem=0;
+		int lowerIndex=(int)(numElem*lowerFrac);
+		int upperIndex=(int)(numElem*upperFrac);
+		int sum=0;
+		int cnt=0;
+		for(int i=0;i<256;i++)
+			{
+			int thisNum=histogram[i];
+			int take=Math.min(upperIndex,jumpElem+thisNum)-Math.max(lowerIndex, jumpElem);
+			if(take>0)
+				{
+				sum+=take*i;
+				cnt+=take;
+				}
+			jumpElem+=thisNum;
+			}
+		return (double)sum/cnt;
 		}
 	
 	public void integrateStackDone(IntExp integrator)
@@ -196,13 +226,20 @@ public abstract class IntegratorSlice implements Integrator
 		// Store background if this integrator is responsible for calculating it
 		if (updateBG)
 			{
+			double stableMedianOutside=calcStableMedian(0.4,0.6, curBgOutside.elements(), curBgOutside.size());
+			double stableMedianInside=calcStableMedian(0.4,0.6, curBgInside.elements(), curBgInside.size());
+			/*
 			int medianOutside=EvListUtil.findPercentileInt(curBgOutside.elements(), 0.5, curBgOutside.size());
 			int medianInside=EvListUtil.findPercentileInt(curBgInside.elements(), 0.5, curBgInside.size());
-			//double avg=(double)curBgInt/curBgVol;
+			double avg=(double)curBgInt/curBgVol;
 			
-			//int thisBG=EvMathUtil.minAll(medianOutside,medianInside,(int)avg);
-			int thisBG=EvMathUtil.minAll(medianOutside,medianInside);   //average decreased value in a bad value for one recording!!! I think
-			bg.put(integrator.frame, (double)thisBG);
+			double thisBG=EvMathUtil.minAll(medianOutside,medianInside,avg);
+			*/
+			
+			double thisBG=Math.min(stableMedianOutside, stableMedianInside);
+			
+			//int thisBG=EvMathUtil.minAll(medianOutside,medianInside);   //average decreased value in a bad value for one recording!!! I think
+			bg.put(integrator.frame, thisBG);
 			//bg.put(integrator.frame, (double)median/curBg.size());
 			//bg.put(integrator.frame, curBgInt/curBgVol);
 			}
