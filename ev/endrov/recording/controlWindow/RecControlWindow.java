@@ -91,11 +91,9 @@ public class RecControlWindow extends BasicWindow
 			if (entry.getValue() instanceof HWShutter)
 				new ShutterPanel(entry.getKey(), (HWShutter) entry.getValue());
 			else if (entry.getValue() instanceof HWState)
-				new StateDevicePanel(entry.getKey(), (HWState) entry
-						.getValue());
+				new StateDevicePanel(entry.getKey(), (HWState) entry.getValue());
 			else if (entry.getValue() instanceof HWStage)
-				new StagePanel(entry.getKey(), (HWStage) entry.getValue(),
-						this);
+				new StagePanel(entry.getKey(), (HWStage) entry.getValue(),	this);
 			}
 		
 		//Window overall things
@@ -165,6 +163,7 @@ public class RecControlWindow extends BasicWindow
 		{
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = row;
+		c.weightx = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridwidth = 2;
 		p.add(center, c);

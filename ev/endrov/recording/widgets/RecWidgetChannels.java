@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.recording.recmetMultidim;
+package endrov.recording.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -20,7 +20,6 @@ import javax.swing.JPanel;
 import endrov.basicWindow.SpinnerSimpleEvDecimal;
 import endrov.basicWindow.SpinnerSimpleInteger;
 import endrov.basicWindow.icon.BasicIcon;
-import endrov.recording.ComboMetaState;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
@@ -72,7 +71,7 @@ public class RecWidgetChannels extends JPanel
 		}
 	
 	
-	private ComboMetaState cMetaStateGroup=new ComboMetaState();
+	private RecWidgetComboMetastateGroup cMetaStateGroup=new RecWidgetComboMetastateGroup();
 
 	
 	public RecWidgetChannels()

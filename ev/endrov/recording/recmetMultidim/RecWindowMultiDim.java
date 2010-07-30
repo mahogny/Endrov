@@ -17,6 +17,12 @@ import org.jdom.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvData;
+import endrov.recording.widgets.RecWidgetChannels;
+import endrov.recording.widgets.RecWidgetOrder;
+import endrov.recording.widgets.RecWidgetPositions;
+import endrov.recording.widgets.RecWidgetRecDesc;
+import endrov.recording.widgets.RecWidgetSlices;
+import endrov.recording.widgets.RecWidgetTimes;
 import endrov.util.EvSwingUtil;
 
 /**
