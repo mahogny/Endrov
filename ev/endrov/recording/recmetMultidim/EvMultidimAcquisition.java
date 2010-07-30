@@ -13,7 +13,8 @@ import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.hardware.EvHardware;
 import endrov.recording.HWCamera;
-import endrov.recording.recmetMultidim.RecWidgetOrder.SettingsDimensionsOrder;
+import endrov.recording.widgets.RecWidgetOrder;
+import endrov.recording.widgets.RecWidgetOrder.SettingsDimensionsOrder;
 
 
 /**
