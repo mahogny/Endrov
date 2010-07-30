@@ -1,5 +1,6 @@
 package endrov.recording.widgets;
 
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
@@ -19,21 +20,28 @@ public class RecWidgetComboMetastate extends JComboBox
 	
 	public RecWidgetComboMetastate()
 		{
-		makeLayout();
+		//makeLayout();
 		}
 
+	public void setMetastateGroup(String s)
+		{
+		currentMetastate=s;
+		makeLayout();
+		}
+	
 	public void makeLayout()
 		{
 		DefaultComboBoxModel modelState=(DefaultComboBoxModel)getModel();
 		modelState.removeAllElements();
 		
-		EvHardwareConfigGroup g=EvHardwareConfigGroup.groups.get(currentMetastate);
-		if(g!=null)
+		if(currentMetastate!=null)
 			{
-			for(String s:g.states.keySet())
-				modelState.addElement(s);
+			EvHardwareConfigGroup g=EvHardwareConfigGroup.groups.get(currentMetastate);
+			if(g!=null)
+				for(String s:g.states.keySet())
+					modelState.addElement(s);
+			repaint();
 			}
-		
 		}
 	
 	public EvHardwareConfigGroup getConfigGroup()
@@ -41,5 +49,7 @@ public class RecWidgetComboMetastate extends JComboBox
 		String name=(String)getSelectedItem();
 		return EvHardwareConfigGroup.groups.get(name);
 		}
+	
+	
 	
 	}

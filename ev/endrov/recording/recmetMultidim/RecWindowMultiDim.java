@@ -40,7 +40,7 @@ public class RecWindowMultiDim extends BasicWindow
 
 	public RecWindowMultiDim()
 		{
-		this(new Rectangle(400,300));
+		this(new Rectangle(650,700));
 		}
 	
 	public RecWindowMultiDim(Rectangle bounds)
@@ -54,9 +54,10 @@ public class RecWindowMultiDim extends BasicWindow
 		RecWidgetAcquireMultidim wacq=new RecWidgetAcquireMultidim();
 		
 
-		JPanel leftright=new JPanel(new GridLayout(1,2));
-		leftright.add(EvSwingUtil.layoutCompactVertical(wslices,worder));
-		leftright.add(EvSwingUtil.layoutCompactVertical(wtimes,wacq));
+		JPanel leftright=new JPanel(new GridLayout(1,3));
+		leftright.add(EvSwingUtil.layoutCompactVertical(wslices));
+		leftright.add(EvSwingUtil.layoutCompactVertical(wtimes));
+		leftright.add(EvSwingUtil.layoutCompactVertical(worder,wacq));
 		
 		setLayout(new BorderLayout());
 		add(EvSwingUtil.layoutCompactVertical(
@@ -69,15 +70,21 @@ public class RecWindowMultiDim extends BasicWindow
 		
 		//Window overall things
 		setTitleEvWindow("Multidimensional acquisition");
-		packEvWindow();
+//		packEvWindow();
+		setBoundsEvWindow(bounds);
 		setVisibleEvWindow(true);
-//		setBoundsEvWindow(bounds);
 		}
 	
 	
 	
 	/**
+	 * also: compensate for light loss in Z?
+	 * 
+	 * 
 	 * lacking, from micromanager:
+	 * 
+	 * 
+	 * 
 	 * 
 	 * positions: 
 	 * 		edit XY list
