@@ -229,10 +229,12 @@ public class LineageView extends JPanel
 		{
 		NucLineage lin=getLineage();
 		LinState linstate=getLinState(lin);
-		if(showHorizontalTree)
-			return new EvDecimal(linstate.cam.toWorldY(my));
+		Vector2d uv=xyToUV(new Vector2d(mx,my));
+		return new EvDecimal(linstate.cam.toWorldX(uv.x));
+/*		if(showHorizontalTree)
+			return new EvDecimal(linstate.cam.toWorldX(mx));
 		else
-			return new EvDecimal(linstate.cam.toWorldX(my));
+			return new EvDecimal(linstate.cam.toWorldX(my));*/
 		}
 	
 	
@@ -244,11 +246,43 @@ public class LineageView extends JPanel
 		{
 		NucLineage lin=getLineage();
 		LinState linstate=getLinState(lin);
-		linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(dx);
-		linstate.cam.cameraY-=linstate.cam.scaleScreenDistY(dy);
+	//	Vector2d duv=xyToUV(new Vector2d(dx,dy));
+		
+		if(showHorizontalTree)
+			{
+			linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(dx);
+			linstate.cam.cameraY-=linstate.cam.scaleScreenDistY(dy);
+			}
+		else
+			{
+			linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(dy);
+			linstate.cam.cameraY+=linstate.cam.scaleScreenDistY(dx);
+			}
+//		linstate.cam.cameraX-=linstate.cam.scaleScreenDistX(duv.x);
+//		linstate.cam.cameraY-=linstate.cam.scaleScreenDistY(duv.y);
 		}
 
 
+	/**
+	 * UV are coordinates after the tree has optionally been rotated.
+	 * untested!!
+	 */
+	public Vector2d xyToUV(Vector2d v)
+		{
+		if(showHorizontalTree)
+			return v;
+		else
+			return new Vector2d(v.y,v.x);
+		}
+	public Vector2d uvToXY(Vector2d v)
+		{
+		if(showHorizontalTree)
+			return v;
+		else
+			return new Vector2d(v.y,v.x);
+		}
+		
+	
 	/**
 	 * General zooming relative to a point on the screen
 	 */
