@@ -8,6 +8,8 @@ package util2.paperCeExpression.integrate;
 import java.text.NumberFormat;
 import java.util.*;
 
+import javax.vecmath.Vector3d;
+
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.algo.DoubleAlgebra;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
@@ -624,5 +626,58 @@ public class ExpUtil
 				return false;
 		return true;
 		}
+
+
+
+	public static Vector3d getLastPosABp(NucLineage refLin)
+		{
+		NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
+		if (nucABp!=null && !nucABp.pos.isEmpty())
+			{
+			Vector3d posABp = nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
+			return posABp;
+			}
+		else 
+			{
+			NucLineage.Nuc nucABpl = refLin.nuc.get("ABpl");
+			NucLineage.Nuc nucABpr = refLin.nuc.get("ABpr");
+			if (nucABpl!=null && nucABpr!=null  && !nucABpl.pos.isEmpty() && !nucABpr.pos.isEmpty())
+				{
+				Vector3d a = nucABpl.pos.get(nucABpl.pos.lastKey()).getPosCopy();
+				Vector3d b = nucABpr.pos.get(nucABpr.pos.lastKey()).getPosCopy();
+				a.add(b);
+				a.scale(0.5);
+				return a;
+				}
+			else
+				return null;
+			}
+		}
+	
+	public static Vector3d getLastPosABa(NucLineage refLin)
+		{
+		NucLineage.Nuc nucABa = refLin.nuc.get("ABa");
+		if (nucABa!=null && !nucABa.pos.isEmpty())
+			{
+			Vector3d posABa = nucABa.pos.get(nucABa.pos.lastKey()).getPosCopy();
+			return posABa;
+			}
+		else 
+			{
+			NucLineage.Nuc nucABal = refLin.nuc.get("ABal");
+			NucLineage.Nuc nucABar = refLin.nuc.get("ABar");
+			if (nucABal!=null && nucABar!=null  && !nucABal.pos.isEmpty() && !nucABar.pos.isEmpty())
+				{
+				Vector3d a = nucABal.pos.get(nucABal.pos.lastKey()).getPosCopy();
+				Vector3d b = nucABar.pos.get(nucABar.pos.lastKey()).getPosCopy();
+				a.add(b);
+				a.scale(0.5);
+				return a;
+				}
+			else
+				return null;
+			}
+		}
+	
 	
 	}

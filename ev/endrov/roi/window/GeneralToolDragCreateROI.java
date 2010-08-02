@@ -65,7 +65,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 		{
 		if(active)
 			{
-			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			roi.getPlacementHandle2().setPos(v.x, v.y);
 			w.updateImagePanel();
 			}
@@ -78,7 +78,7 @@ public class GeneralToolDragCreateROI implements GeneralTool
 			//Start making a nucleus
 			active=true;
 			setRendererROI(roi);
-			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			roi.getPlacementHandle1().setPos(v.x, v.y);
 			roi.getPlacementHandle2().setPos(v.x, v.y);
 			EvDecimal curFrame=w.getFrame();

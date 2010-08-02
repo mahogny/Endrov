@@ -41,10 +41,10 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 			g.setColor(Color.GREEN);
 			if(ann.pos.size()>0 && ann.pos.get(0).frame.equals(curFrame))
 				{
-				Vector2d last=w.transformW2S(new Vector2d(ann.pos.get(0).v.x,ann.pos.get(0).v.y));
+				Vector2d last=w.transformPointW2S(new Vector2d(ann.pos.get(0).v.x,ann.pos.get(0).v.y));
 				for(int i=1;i<ann.pos.size();i++)
 					{
-					Vector2d next=w.transformW2S(new Vector2d(ann.pos.get(i).v.x,ann.pos.get(i).v.y));
+					Vector2d next=w.transformPointW2S(new Vector2d(ann.pos.get(i).v.x,ann.pos.get(i).v.y));
 					g.drawLine((int)last.x, (int)last.y, (int)next.x, (int)next.y);
 					last=next;
 					}
@@ -54,7 +54,7 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 			for(int i=0;i<ann.pos.size();i++)
 				if(ann.pos.get(i).frame.equals(curFrame))
 					{
-					Vector2d pos=w.transformW2S(new Vector2d(ann.pos.get(i).v.x,ann.pos.get(i).v.y));
+					Vector2d pos=w.transformPointW2S(new Vector2d(ann.pos.get(i).v.x,ann.pos.get(i).v.y));
 					int midx=(int)pos.x;
 					int midy=(int)pos.y;
 					

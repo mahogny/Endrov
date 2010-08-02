@@ -136,7 +136,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		{
 		if(active)
 			{
-			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			x2=v.x;
 			y2=v.y;
 			w.updateImagePanel();
@@ -149,7 +149,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			{
 			//Start making a nucleus
 			active=true;
-			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			x1=x2=v.x;
 			y1=y2=v.y;
 			}
@@ -186,8 +186,8 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				pos.z=w.frameControl.getZ().doubleValue();//w.s2wz(w.frameControl.getZ().doubleValue());
 				pos.r=Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))/2;
 				
-				Vector2d so1=w.transformW2S(new Vector2d(pos.r,0));
-				Vector2d so2=w.transformW2S(new Vector2d(0,0));
+				Vector2d so1=w.transformPointW2S(new Vector2d(pos.r,0));
+				Vector2d so2=w.transformPointW2S(new Vector2d(0,0));
 
 				if(Math.abs(so1.x-so2.x)>8)
 //				if(Math.abs(w.w2sx(pos.r)-w.w2sx(0))>8)
@@ -211,8 +211,13 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			if(holdTranslate)
 				{
 				//Translate
-				pos.x+=w.scaleS2w(dx);
-				pos.y+=w.scaleS2w(dy);
+//				pos.x+=w.scaleS2w(dx);
+//				pos.y+=w.scaleS2w(dy);
+				Vector2d v2=w.transformVectorS2W(new Vector2d(dx,dy));
+				//Vector2d v1=w.transformVectorS2W(new Vector2d(0,0));
+				//v2.sub(v1);
+				pos.x+=v2.x;
+				pos.y+=v2.y;
 				}
 			//else if(KeyBinding.get(NucLineage.KEY_CHANGE_RADIUS).typed(e)) //KEYBIND
 			else if(holdRadius)
@@ -330,16 +335,25 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				String childName=childPair.snd();
 				NucLineage.Nuc n=lin.nuc.get(childName);
 				NucLineage.NucPos pos=n.pos.get(n.getFirstFrame());
-				x+=pos.x;				y+=pos.y;				z+=pos.z;				r+=pos.r;
+				x+=pos.x;				
+				y+=pos.y;				
+				z+=pos.z;				
+				r+=pos.r;
 				if(firstFrame==null || n.getFirstFrame().less(firstFrame))
 					firstFrame=n.getFirstFrame();
 				num++;
 				n.parent=parentName;
 				parent.child.add(childName);
 				}
-			x/=num;			y/=num;			z/=num;			r/=num;
+			x/=num;			
+			y/=num;			
+			z/=num;			
+			r/=num;
 			NucLineage.NucPos pos=new NucLineage.NucPos();
-			pos.x=x; pos.y=y; pos.z=z; pos.r=r;
+			pos.x=x; 
+			pos.y=y; 
+			pos.z=z; 
+			pos.r=r;
 			parent.pos.put(firstFrame.subtract(EvDecimal.ONE),pos); //TODO bd will not work
 			EvLog.printLog("Made parent "+parentName);
 			
@@ -363,7 +377,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			double midx=(x2+x1)/2;
 			double midy=(y2+y1)/2;
 			double r=Math.sqrt((x1-midx)*(x1-midx)+(y1-midy)*(y1-midy));
-			Vector2d omid=w.transformW2S(new Vector2d(midx,midy));
+			Vector2d omid=w.transformPointW2S(new Vector2d(midx,midy));
 //			double omidx=w.w2sx(midx);
 //			double omidy=w.w2sy(midy);
 			double or=w.scaleW2s(r);

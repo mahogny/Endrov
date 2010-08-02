@@ -155,7 +155,7 @@ public class ToolMakeLine implements ImageWindowTool
 		EvLine closest=null;
 		int closesti=0;
 		double cdist=0;
-		Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+		Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 		for(EvLine a:ann)
 			for(int i=0;i<a.pos.size();i++)
 				{
@@ -193,7 +193,7 @@ public class ToolMakeLine implements ImageWindowTool
 			//w.getImageset().addMetaObject(line);
 			
 			Pos3dt pos=new Pos3dt();
-			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			pos.v.x=v.x;
 			pos.v.y=v.y;
 			pos.v.z=w.frameControl.getModelZ().doubleValue();
@@ -244,7 +244,7 @@ public class ToolMakeLine implements ImageWindowTool
 		if(activeAnnot!=null)
 			{
 			activeAnnot.ob.setMetadataModified();
-			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			activeAnnot.ob.pos.get(activeAnnot.i).v.x=v.x;
 			activeAnnot.ob.pos.get(activeAnnot.i).v.y=v.y;
 			activeAnnot.ob.pos.get(activeAnnot.i).v.z=w.frameControl.getModelZ().doubleValue();

@@ -71,7 +71,7 @@ public class ShellImageTool implements ImageWindowTool
 	 */
 	private void updateCurrentShell(int mx, int my, boolean acceptNull)
 		{
-		Vector2d v=w.transformS2W(new Vector2d(mx,my));
+		Vector2d v=w.transformPointS2W(new Vector2d(mx,my));
 
 		ShellImageRenderer r=getRenderer(w);
 		
@@ -148,7 +148,7 @@ public class ShellImageTool implements ImageWindowTool
 					//Create new shell
 					shell=new Shell();
 					
-					Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+					Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 
 					shell.midx=v.x;
 					shell.midy=v.y;

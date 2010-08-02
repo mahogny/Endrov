@@ -127,7 +127,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 		if(sor>=0)
 			{
 			//Coordinate transformation
-			Vector2d so=w.transformW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
+			Vector2d so=w.transformPointW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
 			
 			
 
@@ -145,7 +145,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 						if(!nchild.pos.isEmpty() && firstFrame.greaterEqual(currentFrame))
 							{
 							NucLineage.NucPos cpos=nchild.pos.get(firstFrame);
-							Vector2d childso=w.transformW2S(new Vector2d(cpos.x,cpos.y));
+							Vector2d childso=w.transformPointW2S(new Vector2d(cpos.x,cpos.y));
 							g.drawLine((int)so.x,(int)so.y, (int)childso.x,(int)childso.y);
 							}
 						}

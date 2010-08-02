@@ -66,7 +66,7 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 			EvStack stack=c.imageLoader.get(frame);
 			slice=stack.closestZ(slice);
 			
-			Vector2d mpos=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d mpos=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			Vector2d ppos=stack.transformWorldImage(mpos);
 			int px=(int)ppos.x;
 			int py=(int)ppos.y;

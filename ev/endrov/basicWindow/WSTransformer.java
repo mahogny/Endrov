@@ -9,8 +9,8 @@ import javax.vecmath.Vector2d;
 
 public interface WSTransformer
 	{
-	public Vector2d transformW2S(Vector2d v);
-	public Vector2d transformS2W(Vector2d v);
+	public Vector2d transformPointW2S(Vector2d v);
+	public Vector2d transformPointS2W(Vector2d v);
 	
 	/** 
 	 * Scale screen vector to world vector 

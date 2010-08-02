@@ -186,7 +186,7 @@ public class ImageWindowView extends JPanel
 		//Problem: should now be stack specific! currently ignores binning as stated above
 		public static Vector2d transformI2S(ImageWindowView p, EvStack stack, Vector2d u)
 			{
-			return p.transformW2S(new Vector2d(stack.transformImageWorldX(u.x),stack.transformImageWorldY(u.y)));
+			return p.transformPointW2S(new Vector2d(stack.transformImageWorldX(u.x),stack.transformImageWorldY(u.y)));
 			}
 		
 		
@@ -195,7 +195,7 @@ public class ImageWindowView extends JPanel
 		//Problem: should now be stack specific!
 		public static Vector2d transformS2I(ImageWindowView p, EvStack stack, Vector2d u)
 			{
-			Vector2d v=p.transformS2W(u);
+			Vector2d v=p.transformPointS2W(u);
 			return new Vector2d(stack.transformWorldImageX(v.x),stack.transformWorldImageY(v.y));
 			}
 		
@@ -317,10 +317,10 @@ public class ImageWindowView extends JPanel
 	public void rotateCamera(double angle)
 		{
 		//Where is the middle of the screen now?
-		Vector2d v1=transformS2W(new Vector2d(getWidth()/2,getHeight()/2)); 
+		Vector2d v1=transformPointS2W(new Vector2d(getWidth()/2,getHeight()/2)); 
 		rotation+=angle;
 		//Where is it after rotation?
-		v1=transformW2S(v1); 
+		v1=transformPointW2S(v1); 
 		//How much has it moved?
 		Vector2d v2=new Vector2d(getWidth()/2,getHeight()/2);
 		v2.sub(v1);
@@ -348,7 +348,7 @@ public class ImageWindowView extends JPanel
 	/**
 	 * Transform world coordinate to screen coordinate 
 	 */
-	public Vector2d transformW2S(Vector2d u)
+	public Vector2d transformPointW2S(Vector2d u)
 		{
 		Vector2d v=new Vector2d(u);
 		Matrix2d rotmat=new Matrix2d();
@@ -363,12 +363,24 @@ public class ImageWindowView extends JPanel
 		}
 		
 	/** Transform screen coordinate to world coordinate */
-	public Vector2d transformS2W(Vector2d u)
+	public Vector2d transformPointS2W(Vector2d u)
 		{
 		Vector2d v=new Vector2d(u);
 		v.add(new Vector2d(-getWidth()/2.0, -getHeight()/2.0));
 		v.scale(1.0/zoom);
 		v.add(new Vector2d(-transX,-transY));  //TODO change order of zoom and trans
+		
+		Matrix2d rotmat=new Matrix2d();
+		rotmat.rot(-rotation);
+		rotmat.transform(v);
+		return v;
+		}
+	
+	/** Transform screen vector to world vector */
+	public Vector2d transformVectorS2W(Vector2d u)
+		{
+		Vector2d v=new Vector2d(u);
+		v.scale(1.0/zoom);
 		
 		Matrix2d rotmat=new Matrix2d();
 		rotmat.rot(-rotation);

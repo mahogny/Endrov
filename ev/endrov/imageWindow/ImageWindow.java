@@ -935,17 +935,23 @@ public class ImageWindow extends BasicWindow
 	//New functions, should replace the ones above at some point
 
 	/** Transform world coordinate to screen coordinate */
-	public Vector2d transformW2S(Vector2d u)
+	public Vector2d transformPointW2S(Vector2d u)
 		{
-		return imagePanel.transformW2S(u);
+		return imagePanel.transformPointW2S(u);
 		}
 		
 	/** Transform screen coordinate to world coordinate */
-	public Vector2d transformS2W(Vector2d u)
+	public Vector2d transformPointS2W(Vector2d u)
 		{
-		return imagePanel.transformS2W(u);
+		return imagePanel.transformPointS2W(u);
 		}
-		
+
+	/** Transform screen vector to world vector */
+	public Vector2d transformVectorS2W(Vector2d u)
+		{
+		return imagePanel.transformVectorS2W(u);
+		}
+
 	
 	/** Convert world to screen Z coordinate */
 	public double w2sz(double z)

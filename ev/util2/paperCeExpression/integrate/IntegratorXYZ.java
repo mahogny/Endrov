@@ -59,12 +59,15 @@ public class IntegratorXYZ implements Integrator
 	public boolean setupCS(NucLineage refLin)
 		{
 		NucLineage.Nuc nucP2 = refLin.nuc.get("P2'");
-		NucLineage.Nuc nucABa = refLin.nuc.get("ABa");
-		NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
+//		NucLineage.Nuc nucABa = refLin.nuc.get("ABa");
+//		NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
 		NucLineage.Nuc nucEMS = refLin.nuc.get("EMS");
 
-		if (nucP2==null||nucABa==null||nucABp==null||nucEMS==null
-				||nucP2.pos.isEmpty()||nucABa.pos.isEmpty()||nucABp.pos.isEmpty()
+		Vector3d posABp = ExpUtil.getLastPosABp(refLin);
+		Vector3d posABa = ExpUtil.getLastPosABa(refLin);
+
+		if (nucP2==null||posABa==null||posABp==null||nucEMS==null
+				||nucP2.pos.isEmpty()
 				||nucEMS.pos.isEmpty())
 			{
 			System.out.println("Does not have enough cells marked, will not produce cube");
@@ -76,8 +79,8 @@ public class IntegratorXYZ implements Integrator
 			}
 
 		Vector3d posP2 = nucP2.pos.get(nucP2.pos.lastKey()).getPosCopy();
-		Vector3d posABa = nucABa.pos.get(nucABa.pos.lastKey()).getPosCopy();
-		Vector3d posABp = nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
+		//Vector3d posABa = nucABa.pos.get(nucABa.pos.lastKey()).getPosCopy();
+		//Vector3d posABp = nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
 		Vector3d posEMS = nucEMS.pos.get(nucEMS.pos.lastKey()).getPosCopy();
 
 		Vector3d v1 = new Vector3d();

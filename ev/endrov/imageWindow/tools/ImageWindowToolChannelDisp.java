@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
+import javax.vecmath.Vector2d;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
@@ -57,24 +58,17 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 			Imageset rec=w.getImageset();
 			EvChannel c=w.getSelectedChannel();
 			
-			double ddx=dx/w.getZoom(); //To world coordinates
-			double ddy=dy/w.getZoom(); 
+			Vector2d diff=w.transformVectorS2W(new Vector2d(dx,dy));
+			
 			if(c!=null)
 				{
 				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
 					{
 					EvStack stack=frames.getValue();
-					stack.dispX+=stack.scaleWorldImageX(ddx); 
-					stack.dispY+=stack.scaleWorldImageY(ddy); 
-			
-					//stack.dispX+=ddx;
-					//stack.dispY+=ddy;
-					
-					
+					stack.dispX+=stack.scaleWorldImageX(diff.x); 
+					stack.dispY+=stack.scaleWorldImageY(diff.y); 
 					c.defaultDispX=stack.dispX;
 					c.defaultDispY=stack.dispY;
-					
-					//mark metadata dirty?
 					}
 				
 				BasicWindow.updateWindows();

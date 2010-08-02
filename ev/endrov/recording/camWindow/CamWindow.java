@@ -674,12 +674,12 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		return w/getCameraResolution();
 		}
 
-	public Vector2d transformS2W(Vector2d v)
+	public Vector2d transformPointS2W(Vector2d v)
 		{
 		return new Vector2d(v.x*getCameraResolution()-getStageX(), v.y*getCameraResolution()-getStageY()); 
 		}
 
-	public Vector2d transformW2S(Vector2d v)
+	public Vector2d transformPointW2S(Vector2d v)
 		{
 		return new Vector2d((v.x+getStageX())/getCameraResolution(), (v.y+getStageY())/getCameraResolution());
 		}

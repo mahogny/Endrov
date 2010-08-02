@@ -109,10 +109,10 @@ public class ImageRendererROI implements ImageWindowRenderer
 					y1=roi.regionY.start.doubleValue();
 					y2=roi.regionY.end.doubleValue();
 					}
-				Vector2d ul=w.transformW2S(new Vector2d(x1,y1));
-				Vector2d ll=w.transformW2S(new Vector2d(x1,y2));
-				Vector2d ur=w.transformW2S(new Vector2d(x2,y1));
-				Vector2d lr=w.transformW2S(new Vector2d(x2,y2));
+				Vector2d ul=w.transformPointW2S(new Vector2d(x1,y1));
+				Vector2d ll=w.transformPointW2S(new Vector2d(x1,y2));
+				Vector2d ur=w.transformPointW2S(new Vector2d(x2,y1));
+				Vector2d lr=w.transformPointW2S(new Vector2d(x2,y2));
 				
 				g.drawLine((int)ul.x, (int)ul.y, (int)ll.x, (int)ll.y);
 				g.drawLine((int)ur.x, (int)ur.y, (int)lr.x, (int)lr.y);
@@ -123,8 +123,8 @@ public class ImageRendererROI implements ImageWindowRenderer
 				{
 				EllipseROI roi=(EllipseROI)roiUncast;
 				
-				Vector2d ul=w.transformW2S(new Vector2d(roi.regionX.start.doubleValue(),roi.regionY.start.doubleValue()));
-				Vector2d lr=w.transformW2S(new Vector2d(roi.regionX.end.doubleValue(),roi.regionY.end.doubleValue()));
+				Vector2d ul=w.transformPointW2S(new Vector2d(roi.regionX.start.doubleValue(),roi.regionY.start.doubleValue()));
+				Vector2d lr=w.transformPointW2S(new Vector2d(roi.regionX.end.doubleValue(),roi.regionY.end.doubleValue()));
 				
 				int x1=(int)ul.x;
 				int x2=(int)lr.x;
@@ -170,7 +170,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 		for(ROI.Handle h:roiUncast.getHandles())
 			{
 			roimap.put(h.getID(),h);
-			Vector2d xy=w.transformW2S(new Vector2d(h.getX(), h.getY()));
+			Vector2d xy=w.transformPointW2S(new Vector2d(h.getX(), h.getY()));
 			g.drawRect((int)xy.x-HANDLESIZE, (int)xy.y-HANDLESIZE, HANDLESIZE*2, HANDLESIZE*2);
 			
 			handleMid.add(xy);

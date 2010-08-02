@@ -90,11 +90,18 @@ public class RenderHTML
 			double[] line=exp[row];
 			if(line!=null)
 				for(int col=0;col<line.length;col++)
-					sbData.append(col+"\t"+row+"\t"+line[col]+"\n"); //x y z?
+					{
+					double val=line[col];
+					if(Double.isInfinite(val) || Double.isNaN(val))
+						val=0;
+					sbData.append(col+"\t"+row+"\t"+val+"\n"); //x y z?
+					}
 			sbData.append("\n");
 			}
 
-		File tempdatFile=new File("/tmp/surface.dat");
+		
+		File tempdatFile=new File("/tmp/surface_"+prefix+".dat");
+		//System.out.println(tempdatFile);
 //		File tempdatFile=File.createTempFile("surface", ".dat");
 		EvFileUtil.writeFile(tempdatFile, sbData.toString());
 		File dataDir=new File(ostFile,"data");
@@ -131,7 +138,12 @@ public class RenderHTML
 			double[] line=exp[row];
 			if(line!=null)
 				for(int col=0;col<line.length;col++)
-					sbData.append(row+"\t"+line[col]+"\n"); //x y
+					{
+					double val=line[col];
+					if(Double.isInfinite(val) || Double.isNaN(val))
+						val=0;
+					sbData.append(row+"\t"+val+"\n"); //x y
+					}
 			}
 	
 		File tempdatFile=File.createTempFile("series", ".dat");
