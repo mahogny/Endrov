@@ -35,7 +35,7 @@ public class RecWidgetSlices extends JPanel
 	private SpinnerSimpleEvDecimal spEndZ=new SpinnerSimpleEvDecimal();
 	private JRadioButton rbTotSlices=new JRadioButton("#Z");
 	private JRadioButton rbDZ=new JRadioButton("∆Z");
-	private JRadioButton rbOneZ=new JRadioButton("Once",true);
+	private JRadioButton rbOneZ=new JRadioButton("Single slice",true);
 	private ButtonGroup bgDZgroup=new ButtonGroup();
 	private JButton bSetStartZ=new JImageButton(iconSetFromStage,"Set position using current stage position");
 	private JButton bSetEndZ=new JImageButton(iconSetFromStage,"Set position using current stage position");
@@ -55,13 +55,18 @@ public class RecWidgetSlices extends JPanel
 		setLayout(new GridLayout(1,1));
 		add(
 			EvSwingUtil.withTitledBorder("Slices",
-				EvSwingUtil.layoutTableCompactWide(
-						new JLabel("Z start"), EvSwingUtil.layoutLCR(null, spStartZ, bSetStartZ),
-						new JLabel("Z end"), EvSwingUtil.layoutLCR(null, spEndZ, bSetEndZ),
-						rbTotSlices, spNumZ,
-						rbDZ, spDZ,
-						rbOneZ, new JLabel("")
-				)));
+					EvSwingUtil.layoutCompactVertical(
+						EvSwingUtil.layoutTableCompactWide(
+							new JLabel("Z start"), EvSwingUtil.layoutLCR(null, spStartZ, bSetStartZ),
+							new JLabel("Z end"), EvSwingUtil.layoutLCR(null, spEndZ, bSetEndZ)
+							),
+						EvSwingUtil.layoutTableCompactWide(
+							rbTotSlices, spNumZ,
+							rbDZ, spDZ
+					),
+					rbOneZ
+					)				
+			));
 	
 		}
 	

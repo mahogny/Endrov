@@ -28,12 +28,13 @@ public class RecWidgetTimes extends JPanel
 	private SpinnerSimpleEvFrame spDt=new SpinnerSimpleEvFrame();
 	
 	private JRadioButton rbDt=new JRadioButton("∆t",true);
-	private JRadioButton rbMaxSpeed=new JRadioButton("min t");
+	private JRadioButton rbMaxSpeed=new JRadioButton("Maximum rate");
 	
 	private JRadioButton rbNumFrames=new JRadioButton("#t");
 	private JRadioButton rbTotT=new JRadioButton("∑∆t");
 	private JRadioButton rbOneT=new JRadioButton("Once",true);
-	private ButtonGroup bgDtGroup=new ButtonGroup();
+	private ButtonGroup bgTotalTimeGroup=new ButtonGroup();
+	private ButtonGroup bgRateGroup=new ButtonGroup();
 	private SpinnerSimpleInteger spNumFrames=new SpinnerSimpleInteger();
 	private SpinnerSimpleEvFrame spTotTime=new SpinnerSimpleEvFrame();
 		
@@ -42,9 +43,11 @@ public class RecWidgetTimes extends JPanel
 		rbNumFrames.setToolTipText("Specify number of frames to capture");
 		rbTotT.setToolTipText("Specify total acquisition time");
 		rbOneT.setToolTipText("Acquire a single time point");
-		bgDtGroup.add(rbNumFrames);
-		bgDtGroup.add(rbTotT);
-		bgDtGroup.add(rbOneT);
+		bgTotalTimeGroup.add(rbNumFrames);
+		bgTotalTimeGroup.add(rbTotT);
+		bgTotalTimeGroup.add(rbOneT);
+		bgRateGroup.add(rbDt);
+		bgRateGroup.add(rbMaxSpeed);
 		spDt.setFrame("1s");
 
 		
@@ -58,15 +61,15 @@ public class RecWidgetTimes extends JPanel
 						EvSwingUtil.layoutCompactVertical(
 								new JLabel("Frequency:"),
 								EvSwingUtil.layoutTableCompactWide(
-										rbDt, spDt,
-										rbMaxSpeed, new JLabel("")
+										rbDt, spDt
 								),
+								rbMaxSpeed,
 								new JLabel("Number:"),
 								EvSwingUtil.layoutTableCompactWide(
 										rbNumFrames, spNumFrames,
-										rbTotT, spTotTime,
-										rbOneT, new JLabel("")
-								)
+										rbTotT, spTotTime
+								),
+								rbOneT
 						)));
 		}
 	}
