@@ -7,6 +7,7 @@ package endrov.nucLineageWindow;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -463,8 +464,12 @@ public class LineageWindow extends BasicWindow
 		{
 		JPopupMenu popup = new JPopupMenu();
 		
-		final EvDecimal hoverFrame=view.getFrameFromCursor(e.getX(),e.getY());
-		popup.add(new JMenuItem("--Frame: "+hoverFrame));
+		//Round frame to something sensible
+		final EvDecimal hoverFrame2=view.getFrameFromCursor(e.getX(),e.getY());
+		final EvDecimal hoverFrame=new EvDecimal(hoverFrame2.toBigDecimal().divideToIntegralValue(BigDecimal.ONE));
+		
+		System.out.println("Hover frame "+hoverFrame);
+		popup.add(new JMenuItem("--Frame: "+FrameControl.formatTime(hoverFrame)));
 		JMenuItem miGoToFrame=new JMenuItem("Go to frame");
 		popup.add(miGoToFrame);
 		
