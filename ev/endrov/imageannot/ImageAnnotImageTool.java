@@ -61,7 +61,7 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		Collection<ImageAnnot> ann=getAnnots();
 		ImageAnnot closest=null;
 		double cdist=0;
-		Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+		Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 		for(ImageAnnot a:ann)
 			{
 			double dist=(a.pos.x-v.x)*(a.pos.x-v.x) + (a.pos.y-v.y)*(a.pos.y-v.y);
@@ -109,7 +109,7 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		{
 		if(activeAnnot!=null)
 			{
-			Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			activeAnnot.pos.x=v.x;
 			activeAnnot.pos.y=v.y;
 			w.updateImagePanel(); //more than this. emit
@@ -138,7 +138,7 @@ public class ImageAnnotImageTool implements ImageWindowTool
 
 	private void setPos(ImageAnnot a, MouseEvent e)
 		{
-		Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+		Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 		a.pos.x=v.x;
 		a.pos.y=v.y;
 		a.pos.z=w.frameControl.getZ().doubleValue();

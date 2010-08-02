@@ -34,7 +34,7 @@ public class ColocCoefficients
 	
 	
 	/**
-	 * Add pixels from arrays
+	 * Compare several pixels
 	 */
 	public void add(double[] arrX, double[] arrY)
 		{
@@ -42,23 +42,31 @@ public class ColocCoefficients
 			{
 			double x=arrX[i];
 			double y=arrY[i];
-			
-			sumX+=x;
-			sumY+=y;
-			sumXX+=x*x;
-			sumXY+=x*y;
-			sumYY+=y*y;
-			double dx=x-y;
-			sumXminusY2+=dx*dx;
-			
-			if(!isBackground(y))
-				sumXcoloc+=x;
-			if(!isBackground(x))
-				sumYcoloc+=y;
+			add(x,y);
 			}
-		n+=arrX.length;
 		}
 	
+	/**
+	 * Compare one pixel
+	 */
+	public void add(double x, double y)
+		{
+		add(x,y);
+		sumX+=x;
+		sumY+=y;
+		sumXX+=x*x;
+		sumXY+=x*y;
+		sumYY+=y*y;
+		double dx=x-y;
+		sumXminusY2+=dx*dx;
+		
+		if(!isBackground(y))
+			sumXcoloc+=x;
+		if(!isBackground(x))
+			sumYcoloc+=y;
+		
+		n++;
+		}
 	
 	private boolean isBackground(double v)
 		{

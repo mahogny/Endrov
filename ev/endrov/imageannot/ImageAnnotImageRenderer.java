@@ -36,7 +36,7 @@ public class ImageAnnotImageRenderer implements ImageWindowRenderer
 		for(ImageAnnot ann:getVisible())
 			{
 			//Coordinate transformation
-			Vector2d so=w.transformW2S(new Vector2d(ann.pos.x,ann.pos.y));
+			Vector2d so=w.transformPointW2S(new Vector2d(ann.pos.x,ann.pos.y));
 
 			//Draw the nucleus
 			g.setColor(Color.RED);

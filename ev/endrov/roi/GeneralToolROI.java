@@ -40,7 +40,7 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 	public Tuple<String,ROI> getRoiBeneath(MouseEvent e)
 		{
 		Vector2d v=new Vector2d(e.getX(), e.getY());
-		v=w.transformS2W(v);
+		v=w.transformPointS2W(v);
 		
 		EvDecimal z=w.getZ();
 		EvDecimal frame=w.getFrame();
@@ -107,7 +107,7 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 				for(ROI.Handle h:currentROI.getHandles())
 					if(h.getID().equals(currentHandle))
 						{
-						Vector2d v=w.transformS2W(new Vector2d(e.getX(),e.getY()));
+						Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 						h.setPos(v.x,v.y);
 						w.updateImagePanel();
 						return;
@@ -141,7 +141,7 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 	
 	private boolean mouseOverHandle(MouseEvent e, ROI.Handle h)
 		{
-		Vector2d so=w.transformW2S(new Vector2d(h.getX(),h.getY()));
+		Vector2d so=w.transformPointW2S(new Vector2d(h.getX(),h.getY()));
 		return Math.abs(so.x-e.getX())<ImageRendererROI.HANDLESIZE && Math.abs(so.y-e.getY())<ImageRendererROI.HANDLESIZE;
 		}
 	

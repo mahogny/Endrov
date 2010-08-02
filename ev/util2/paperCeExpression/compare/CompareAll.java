@@ -86,6 +86,14 @@ public class CompareAll
 		NucLineage.Nuc nucABa=coordLin.nuc.get("ABa");
 		if(nucABa!=null)
 			ft.add(nucABa.pos.firstKey(), new EvDecimal("0").multiply(imageMaxTime));
+		else
+			{
+			//Best possible replacement, almost same time
+			NucLineage.Nuc nucEMS=coordLin.nuc.get("EMS");
+			if(nucEMS!=null)
+				ft.add(nucEMS.pos.firstKey(), new EvDecimal("0").multiply(imageMaxTime));
+			
+			}
 
 		NucLineage.Nuc nucGast=coordLin.nuc.get("gast"); //Gastrulation
 		if(nucGast!=null)
@@ -492,7 +500,18 @@ public class CompareAll
 		ColocCoefficients coeff=new ColocCoefficients();
 		for(int i=0;i<imageEndTime;i++)
 			if(imA[i]!=null && imB[i]!=null)
-				coeff.add(imA[i], imB[i]);
+				{
+				double[] a=imA[i];
+				double[] b=imB[i];
+				for(int j=0;j<a.length;j++)
+					{
+					double aa=a[j], bb=b[j];
+					if(!(Double.isInfinite(aa) || Double.isNaN(aa) || 
+							Double.isInfinite(bb) || Double.isNaN(bb)))
+						coeff.add(aa, bb);
+					}
+				}
+				//coeff.add(imA[i], imB[i]);
 		return coeff;
 		}
 
@@ -577,65 +596,7 @@ public class CompareAll
 						{
 						EvData data=EvData.loadFile(in);
 						String chanName=getChanFor(data);
-						
-						
-						//Check if XYZ summary generated. This should not be repeated as it is expensive! 
-						//Only have to check the first image
-						try
-							{
-							File outputFileXYZimageA=new File(new File(in,"data"),"expXYZ.png");
-							if(!outputFileXYZimageA.exists())
-								fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, chanName);
-							}
-						catch (IOException e1)
-							{
-							e1.printStackTrace();
-							}
-						
-						//Slices: T
-						try
-							{
-							double[][] imArray=apToArray(data, "AP"+1+"-"+chanName, expName, coordLineageFor(data));
-							RenderHTML.toTimeImage(imArray, in, ""+in.getName());
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-						
-						//Slices: AP
-						try
-							{
-							double[][] imArray=apToArray(data, "AP"+20+"-"+chanName, expName, coordLineageFor(data));
-							RenderHTML.toSliceTimeImage(imArray, in, ""+in.getName(),"AP");
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-						
-						//Slices: LR
-						try
-							{
-							double[][] imArray=apToArray(data, "LR"+20+"-"+chanName, expName, coordLineageFor(data));
-							RenderHTML.toSliceTimeImage(imArray, in, ""+in.getName(),"LR");
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-
-						//Slices: DV
-						try
-							{
-							double[][] imArray=apToArray(data, "DV"+20+"-"+chanName, expName, coordLineageFor(data));
-							RenderHTML.toSliceTimeImage(imArray, in, ""+in.getName(),"DV");
-							}
-						catch (IOException e)
-							{
-							e.printStackTrace();
-							}
-
+						doGraphsFor(in, data, chanName);
 						}
 					//System.out.println("ending        "+in);
 					return null;
@@ -783,6 +744,66 @@ public class CompareAll
 		System.exit(0);
 		}
 
+	
+	public static void doGraphsFor(File in, EvData data, String chanName)
+		{
+		//Check if XYZ summary generated. This should not be repeated as it is expensive! 
+		//Only have to check the first image
+		try
+			{
+			File outputFileXYZimageA=new File(new File(in,"data"),"expXYZ.png");
+			if(!outputFileXYZimageA.exists())
+				fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, chanName);
+			}
+		catch (IOException e1)
+			{
+			e1.printStackTrace();
+			}
+		
+		//Slices: T
+		try
+			{
+			double[][] imArray=apToArray(data, "AP"+1+"-"+chanName, expName, coordLineageFor(data));
+			RenderHTML.toTimeImage(imArray, in, ""+in.getName());
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		
+		//Slices: AP
+		try
+			{
+			double[][] imArray=apToArray(data, "AP"+20+"-"+chanName, expName, coordLineageFor(data));
+			RenderHTML.toSliceTimeImage(imArray, in, ""+in.getName(),"AP");
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		
+		//Slices: LR
+		try
+			{
+			double[][] imArray=apToArray(data, "LR"+20+"-"+chanName, expName, coordLineageFor(data));
+			RenderHTML.toSliceTimeImage(imArray, in, ""+in.getName(),"LR");
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+
+		//Slices: DV
+		try
+			{
+			double[][] imArray=apToArray(data, "DV"+20+"-"+chanName, expName, coordLineageFor(data));
+			RenderHTML.toSliceTimeImage(imArray, in, ""+in.getName(),"DV");
+			}
+		catch (IOException e)
+			{
+			e.printStackTrace();
+			}
+		}
 	
 	
 	public static NucLineage coordLineageFor(EvContainer data)
