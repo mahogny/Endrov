@@ -644,21 +644,35 @@ public class LineageView extends JPanel
 		//Only recurse if children are visible
 		if(thisInternal.isExpanded && !nuc.child.isEmpty())
 			{
+			
+			
+			
 			//Sum up total width for children
 			for(String cName:nuc.child)
 				{
 				double newDisp=layoutTreeRecursive(lin, cName,linstate, curChildOffset, thisDrawNode);
 				curChildOffset=newDisp;
 				}
-			//Set displacements
-			/*
+			
+			
+			//Set displacement of this node
 			if(nuc.child.size()==1)
 				{
-				Internal cInternal=linstate.getNucinfo(nuc.child.first());
-				thisInternal.centerY=cInternal.centerY; //TODO handle 1 child
+				//
+				thisInternal.centerY=linstate.nucInternal.get(nuc.child.first()).centerY+sizeOfBranch/2;
+				curChildOffset+=sizeOfBranch/2;
+				
+				//curChildOffset+sizeOfBranch/2;
+				
+				
+				//curChildOffset+=sizeOfBranch;
+				fontHeightAvailable=sizeOfBranch;
+				
+//				Internal cInternal=linstate.getNucinfo(nuc.child.first());
+	//			thisInternal.centerY=cInternal.centerY; //TODO handle 1 child
 				}
-			else*/
-			
+			else
+				{
 				//Use the average
 				double sum=0;
 				double miny=Double.MAX_VALUE;
@@ -672,6 +686,8 @@ public class LineageView extends JPanel
 					}
 				thisInternal.centerY=sum/nuc.child.size();
 				fontHeightAvailable=maxy-miny;
+				}
+			
 			}
 		else
 			{
