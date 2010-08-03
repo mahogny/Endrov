@@ -187,8 +187,9 @@ public class ShellImageTool implements ImageWindowTool
 			else if(holdTranslate)
 				{
 				//Translate
-				shell.midx+=w.scaleS2w(dx);
-				shell.midy+=w.scaleS2w(dy);
+				Vector2d diff=w.transformVectorS2W(new Vector2d(dx,dy));
+				shell.midx+=diff.x;
+				shell.midy+=diff.y;
 				}
 			BasicWindow.updateWindows();
 			}
