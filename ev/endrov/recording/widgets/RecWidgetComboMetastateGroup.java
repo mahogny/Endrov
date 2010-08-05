@@ -50,10 +50,14 @@ public class RecWidgetComboMetastateGroup extends JComboBox
 	
 	public EvHardwareConfigGroup getConfigGroup()
 		{
-		String name=(String)getSelectedItem();
+		String name=getConfigGroupName();
 		return EvHardwareConfigGroup.groups.get(name);
 		}
 	
+	public String getConfigGroupName()
+		{
+		return (String)getSelectedItem();
+		}
 
 	
 	

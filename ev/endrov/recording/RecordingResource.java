@@ -109,6 +109,33 @@ public class RecordingResource
 		return 0;
 		}
 
+
+	public static double getCurrentStageZ()
+		{
+		for(HWStage stage:EvHardware.getDeviceMapCast(HWStage.class).values())
+			{
+			String[] aname=stage.getAxisName();
+			for(int i=0;i<aname.length;i++)
+				if(aname[i].equals("z"))
+					return stage.getStagePos()[i];
+			}
+		return 0;
+		}
+
+	public static void setCurrentStageZ(double z)
+		{
+		for(HWStage stage:EvHardware.getDeviceMapCast(HWStage.class).values())
+			{
+			String[] aname=stage.getAxisName();
+			for(int i=0;i<aname.length;i++)
+				if(aname[i].equals("z"))
+					{
+					double[] pos=stage.getStagePos();
+					pos[i]=z;
+					}
+			}
+		}
+
 	
 	private static EvData data=new EvData();
 	

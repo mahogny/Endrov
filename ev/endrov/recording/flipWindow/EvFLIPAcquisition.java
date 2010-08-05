@@ -1,17 +1,13 @@
 package endrov.recording.flipWindow;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JMenu;
 
 import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
@@ -22,6 +18,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
+import endrov.recording.EvAcquisition;
 import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
 import endrov.recording.frapWindow.FlowUnitShowGraph;
@@ -34,7 +31,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class EvFLIPAcquisition extends EvObject
+public class EvFLIPAcquisition extends EvAcquisition
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -51,38 +48,13 @@ public class EvFLIPAcquisition extends EvObject
 	public EvDecimal bleachTime;
 	public EvDecimal rate;
 	public int numRepeats;
-	public EvContainer container;
-	public String containerStoreName;
 	public ROI roiBleach;
 	public ROI roiObserve;
-	
-	private List<Listener> listeners=new LinkedList<Listener>();
-	
-	/**
-	 * Thread activity listener
-	 */
-	public interface Listener
-		{
-		public void acqStopped();
-		public void newStatus(String s);
-		}
-	
-	
-	public void addListener(Listener l)
-		{
-		listeners.add(l);
-		}
-
-	public void removeListener(Listener l)
-		{
-		listeners.remove(l);
-		}
-	
 	
 	/**
 	 * Thread to perform acquisition
 	 */
-	public class AcqThread extends Thread
+	public class AcqThread extends Thread implements EvAcquisition.AcquisitionThread
 		{
 		private EvFLIPAcquisition settings;
 		private boolean toStop=true;
@@ -190,8 +162,8 @@ public class EvFLIPAcquisition extends EvObject
 								{
 								long startTime=System.currentTimeMillis();
 
-								for(Listener l:listeners)
-									l.newStatus("Doing repeat "+(i+1));
+								for(EvAcquisition.AcquisitionListener l:listeners)
+									l.newAcquisitionStatus("Doing repeat "+(i+1));
 
 								if(toStop)
 									break acqLoop;
@@ -239,7 +211,7 @@ public class EvFLIPAcquisition extends EvObject
 		
 		
 			toStop=false;
-			for(Listener l:listeners)
+			for(EvAcquisition.AcquisitionListener l:listeners)
 				l.acqStopped();
 			}
 		

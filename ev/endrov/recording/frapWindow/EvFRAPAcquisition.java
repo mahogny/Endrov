@@ -1,17 +1,13 @@
 package endrov.recording.frapWindow;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JMenu;
 
 import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
@@ -24,6 +20,7 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.recording.CameraImage;
+import endrov.recording.EvAcquisition;
 import endrov.recording.HWImageScanner;
 import endrov.recording.RecordingResource;
 import endrov.roi.ROI;
@@ -35,7 +32,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class EvFRAPAcquisition extends EvObject
+public class EvFRAPAcquisition extends EvAcquisition
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -53,58 +50,25 @@ public class EvFRAPAcquisition extends EvObject
 	public EvDecimal recoveryTime;
 	public EvDecimal bleachTime;
 	public EvDecimal rate;
-	public EvContainer container;
-	public String containerStoreName;
 	public ROI roi;
 
-	private List<Listener> listeners=new LinkedList<Listener>();
-	
-	/**
-	 * Thread activity listener
-	 */
-	public interface Listener
-		{
-		public void acqStopped();
-		public void newStatus(String s);
-		}
-	
-	
-	public void addListener(Listener l)
-		{
-		listeners.add(l);
-		}
-
-	public void removeListener(Listener l)
-		{
-		listeners.remove(l);
-		}
-	
-	
 	/**
 	 * Thread to perform acquisition
 	 */
-	public class AcqThread extends Thread
+	public class AcqThread extends Thread implements EvAcquisition.AcquisitionThread
 		{
 		private EvFRAPAcquisition settings;
 		private boolean toStop=true;
 
-		
 		public boolean isRunning()
 			{
 			return !toStop || isAlive();
-			}
-		
-		public void tryStop()
-			{
-			toStop=true;
 			}
 		
 		private AcqThread(EvFRAPAcquisition settings)
 			{
 			this.settings=settings;
 			}
-
-		
 		
 		@Override
 		public void run()
@@ -188,15 +152,15 @@ public class EvFRAPAcquisition extends EvObject
 						EvDecimal curFrame=new EvDecimal(0);
 						try
 							{
-							for(Listener l:listeners)
-								l.newStatus("Snap reference");
+							for(EvAcquisition.AcquisitionListener l:listeners)
+								l.newAcquisitionStatus("Snap reference");
 							
 							//Acquire image before bleaching
 							snapOneImage(imset, cam, curFrame);
 							BasicWindow.updateWindows();
 
-							for(Listener l:listeners)
-								l.newStatus("Bleaching");
+							for(EvAcquisition.AcquisitionListener l:listeners)
+								l.newAcquisitionStatus("Bleaching");
 
 							if(toStop)
 								break acqLoop;
@@ -220,8 +184,8 @@ public class EvFRAPAcquisition extends EvObject
 								if(toStop)
 									break acqLoop;
 								
-								for(Listener l:listeners)
-									l.newStatus("Recover #"+(i+1));
+								for(EvAcquisition.AcquisitionListener l:listeners)
+									l.newAcquisitionStatus("Recover #"+(i+1));
 								
 								curFrame=curFrame.add(settings.rate); //If frames are missed then this will suck. better base it on real time 
 								
@@ -247,7 +211,7 @@ public class EvFRAPAcquisition extends EvObject
 //				RecordingResource.unblockLiveCamera(lockCamera);
 				
 				toStop=false;
-				for(Listener l:listeners)
+				for(EvAcquisition.AcquisitionListener l:listeners)
 					l.acqStopped();
 				}
 //			Object lockCamera=RecordingResource.blockLiveCamera();
@@ -324,7 +288,7 @@ public class EvFRAPAcquisition extends EvObject
 	/**
 	 * Get acquisition thread that links to this data
 	 */
-	public AcqThread startAcquisition()
+	public EvAcquisition.AcquisitionThread startAcquisition()
 		{
 		AcqThread th=new AcqThread(this);
 		th.startAcquisition();

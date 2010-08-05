@@ -1,8 +1,6 @@
 package endrov.recording.recmetMultidim;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JMenu;
 
@@ -10,21 +8,26 @@ import org.jdom.Element;
 
 import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.data.EvObject;
 import endrov.hardware.EvHardware;
+import endrov.recording.EvAcquisition;
 import endrov.recording.HWCamera;
-import endrov.recording.widgets.RecWidgetOrder;
-import endrov.recording.widgets.RecWidgetOrder.SettingsDimensionsOrder;
+import endrov.recording.RecordingResource;
+import endrov.recording.widgets.RecSettingsChannel;
+import endrov.recording.widgets.RecSettingsDimensionsOrder;
+import endrov.recording.widgets.RecSettingsPositions;
+import endrov.recording.widgets.RecSettingsRecDesc;
+import endrov.recording.widgets.RecSettingsSlices;
+import endrov.recording.widgets.RecSettingsTimes;
+import endrov.util.EvDecimal;
 
 
 /**
- * 
- * 
+ * Simple multidimensional acquisition - positions, times, stacks, channels
  * 
  * @author Johan Henriksson
  *
  */
-public class EvMultidimAcquisition extends EvObject
+public class EvMultidimAcquisition extends EvAcquisition
 	{
 
 	
@@ -39,72 +42,195 @@ public class EvMultidimAcquisition extends EvObject
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
-	public EvContainer container;
 	
-	
-	
-	
-	
-	RecWidgetOrder.SettingsDimensionsOrder order=SettingsDimensionsOrder.createStandard(); 
-	
-	
-	private List<Listener> listeners=new LinkedList<Listener>();
+	public RecSettingsDimensionsOrder order;
+	public RecSettingsChannel channel;
+	public RecSettingsRecDesc desc;
+	public RecSettingsSlices slices;
+	public RecSettingsTimes times;
+	public RecSettingsPositions positions;
 
-/*	
-	public void setDurationSeconds(EvDecimal s)
-		{
-		this.duration=s;
-		durationUnit="Seconds";
-		}
-
-	public void setDurationFrames(EvDecimal frames)
-		{
-		this.duration=new EvDecimal(1).divide(frames);
-		durationUnit="Frames";
-		}
-
-	
-	public void setRateSeconds(EvDecimal rate)
-		{
-		this.rate=rate.multiply(1000);
-		rateUnit="ms";
-		}
-
-	public void setRateHz(EvDecimal rate)
-		{
-		this.rate=new EvDecimal(1).divide(rate);
-		rateUnit="Hz";
-		}
-*/
-	
-	/**
-	 * Thread activity listener
-	 */
-	public interface Listener
-		{
-		public void acqStopped();
-		}
-	
-	
-	public void addListener(Listener l)
-		{
-		listeners.add(l);
-		}
-
-	public void removeListener(Listener l)
-		{
-		listeners.remove(l);
-		}
 	
 	
 	/**
 	 * Thread to perform acquisition
 	 */
-	public class AcqThread extends Thread
+	public class AcqThread extends Thread implements EvAcquisition.AcquisitionThread
 		{
 		private EvMultidimAcquisition settings;
 		private boolean toStop=true;
 
+		
+		private int currentFrameNumber=0;
+		
+		
+
+		//////////////////////////////
+		//////////////////////////////
+		//////////////////////////////
+		
+		
+		/**
+		 * Handle dimensions by recursing
+		 */
+		private abstract class RecOp
+			{
+			public RecOp recurse;
+			public abstract void exec();
+			}
+
+		/**
+		 * Takes the actual picture
+		 */
+		private class RecOpSnap extends RecOp	
+			{
+			@Override
+			public void exec()
+				{
+				System.out.println("Snap!");
+				}
+			}
+		
+		/**
+		 * Change channel and recurse
+		 */
+		private class RecOpChannel extends RecOp
+			{
+			public void exec()
+				{
+				for(RecSettingsChannel.OneChannel ch:channel.channels)
+					{
+					System.out.println("Channel "+ch.name);
+					
+					recurse.exec();
+					}
+				}
+			
+			}
+
+		/**
+		 * Slice dimension: move to the next Z, recurse
+		 */
+		private class RecOpStack extends RecOp
+			{
+			public void exec()
+				{
+				if(slices.zType==RecSettingsSlices.ZType.ONEZ)
+					{
+					//Do not move anything in Z
+					recurse.exec();
+					}
+				else if(slices.zType==RecSettingsSlices.ZType.NUMZ)
+					{
+					EvDecimal dz;
+					int numz;
+					if(slices.zType==RecSettingsSlices.ZType.NUMZ)
+						{
+						dz=slices.end.subtract(slices.start).divide(new EvDecimal(slices.numZ));
+						numz=slices.numZ;
+						}
+					else //DZ
+						{
+						numz=slices.end.subtract(slices.start).divide(slices.dz).intValue();
+						dz=slices.dz;
+						}
+
+					//Iterate through planes
+					for(int az=0;az<numz;az++)
+						{
+						RecordingResource.setCurrentStageZ(slices.start.add(dz.multiply(az)).doubleValue());
+						System.out.println("move z");
+						recurse.exec();
+						}
+					
+					
+					
+					}
+				}
+			
+			}
+
+		/**
+		 * Only makes sure to wait until the next frame
+		 */
+		private class RecOpTime extends RecOp
+			{
+			public void exec()
+				{
+				if(times.tType==RecSettingsTimes.TimeType.ONET)
+					{
+					recurse.exec();
+					}
+				else
+					{
+					if(times.freq==null)
+						{
+						//Maximum rate - best effort
+						for(int i=0;i<100;i++)
+							recurse.exec();
+						}
+					else
+						{
+						//Controlled rate
+						EvDecimal dt=times.freq;
+						int numt;
+						
+						if(times.tType==RecSettingsTimes.TimeType.NUMT)
+							numt=times.numT;
+						else
+							numt=times.sumTime.divide(dt).intValue();
+						
+						for(int at=0;at<numt;at++)
+							{
+							long timeBefore=System.currentTimeMillis();
+							
+							System.out.println("time "+timeBefore);
+							
+							recurse.exec();
+							
+							long timeAfter;
+							do
+								{
+								timeAfter=System.currentTimeMillis();
+								}while(dt.less(new EvDecimal(timeAfter-timeBefore)));
+							}
+						
+						}
+					
+					
+					}
+				
+				}
+			}
+
+		/**
+		 * Move to the next position, recurse
+		 */
+		private class RecOpPos extends RecOp
+			{
+			public void exec()
+				{
+				//TODO
+				recurse.exec();
+				}
+			}
+		
+		
+		//////////////////////////////
+		//////////////////////////////
+		//////////////////////////////
+		
+
+		/**
+		 * Build a call stack out of the operations. Returns the first operation.
+		 */
+		public RecOp chainOps(final RecOp... ops)
+			{
+			for(int i=0;i<ops.length-1;i++)
+				ops[i].recurse=ops[i+1];
+			return ops[0];
+			}
+		
 		
 		public boolean isRunning()
 			{
@@ -127,19 +253,67 @@ public class EvMultidimAcquisition extends EvObject
 		public void run()
 			{
 			//TODO need to choose camera, at least!
-			
-			
 			Iterator<HWCamera> itcam=EvHardware.getDeviceMapCast(HWCamera.class).values().iterator();
 			HWCamera cam=null;
 			if(itcam.hasNext())
 				cam=itcam.next();
 			
 			
-			
 			//Check that there are enough parameters
 			if(cam!=null && container!=null)
 				{
 	
+				
+				//Iterator for all different orders!!!! there are 6. function composition possible?
+				//Pass an iterator to an iterator to an iterator
+
+				/**
+				 * One iterator for each dimensional order
+				 */
+				RecOp preop[]=new RecOp[4];
+				for(int i=0;i<3;i++)
+					if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_POSITION))
+						preop[i]=new RecOpPos();
+					else if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_CHANNEL))
+						preop[i]=new RecOpChannel();
+					else if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_SLICE))
+						preop[i]=new RecOpStack();
+				preop[3]=new RecOpSnap();
+
+				/**
+				 * -----time refers to----
+				 * pos, chan, slice: one position
+				 * pos, slice, chan: one position
+				 * chan, pos, slice: all positions
+				 * chan, slice, pos: all positions
+				 * slice, chan, pos: all positions
+				 * slice, pos, chan: all positions
+				 */
+				RecOp timeOp=new RecOpTime();
+				RecOp ops[];
+				if(order.entrylist.get(0).id.equals(RecSettingsDimensionsOrder.ID_POSITION))
+					ops=new RecOp[]{preop[0],timeOp,preop[1],preop[2],preop[3]};
+				else
+					ops=new RecOp[]{timeOp, preop[0],preop[1],preop[2],preop[3]};
+				
+				
+				
+				
+				/** ----Autofocus----
+				 * 
+				 * 
+				 * 
+				 * ------------
+				 * 
+				 * 
+				 */
+
+				/**
+				 * Set up stack and run recording
+				 */
+				chainOps(ops);
+				ops[0].exec();
+				
 				/*
 				boolean isRGB=false;
 				
@@ -238,10 +412,12 @@ public class EvMultidimAcquisition extends EvObject
 					
 					*/
 				}
+			else
+				System.out.println("No camera no container");
 			
 			//System.out.println("---------stop-----------");
 			toStop=false;
-			for(Listener l:listeners)
+			for(EvAcquisition.AcquisitionListener l:listeners)
 				l.acqStopped();
 			}
 		
@@ -264,13 +440,18 @@ public class EvMultidimAcquisition extends EvObject
 		}
 	
 	
+	public void setStoreLocation(EvContainer con, String name)
+		{
+		container=con;
+		containerStoreName=name;
+		}
 	
 	
 	
 	/**
 	 * Get acquisition thread that links to this data
 	 */
-	public AcqThread startAcquisition()
+	public EvAcquisition.AcquisitionThread startAcquisition()
 		{
 		AcqThread th=new AcqThread(this);
 		th.startAcquisition();
@@ -326,7 +507,6 @@ public class EvMultidimAcquisition extends EvObject
 		{
 		EvData.supportedMetadataFormats.put(metaType,EvMultidimAcquisition.class);
 		}
-	
 
 	
 	

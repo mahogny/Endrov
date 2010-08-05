@@ -10,7 +10,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -46,32 +45,6 @@ public class RecWidgetOrder extends JPanel
 			}
 		}
 
-	/**
-	 * Recording dimension order settings
-	 * @author Johan Henriksson
-	 *
-	 */
-	public static class SettingsDimensionsOrder
-		{
-		public final ArrayList<OrderEntry> entrylist=new ArrayList<OrderEntry>();
-		
-		public SettingsDimensionsOrder(OrderEntry... entry)
-			{
-			entrylist.addAll(Arrays.asList(entry));
-			}
-		
-		public static SettingsDimensionsOrder createStandard()
-			{
-			return new SettingsDimensionsOrder(
-					new OrderEntry("position","Position"),
-					new OrderEntry("channel","Channel"),
-					new OrderEntry("slice","Slice"));
-			}
-		}
-
-	
-	
-
 	public ArrayList<JLabel> wlist=new ArrayList<JLabel>();
 	public ArrayList<OrderEntry> entrylist=new ArrayList<OrderEntry>();
 	
@@ -79,10 +52,10 @@ public class RecWidgetOrder extends JPanel
 	
 	public RecWidgetOrder()
 		{
-		this(SettingsDimensionsOrder.createStandard());
+		this(RecSettingsDimensionsOrder.createStandard());
 		}
 	
-	public RecWidgetOrder(SettingsDimensionsOrder data)
+	public RecWidgetOrder(RecSettingsDimensionsOrder data)
 		{
 		setBorder(BorderFactory.createTitledBorder("Order"));
 		setLayout(new BorderLayout());
@@ -144,9 +117,9 @@ public class RecWidgetOrder extends JPanel
 		
 		}
 	
-	public SettingsDimensionsOrder getSettings()
+	public RecSettingsDimensionsOrder getSettings()
 		{
-		SettingsDimensionsOrder o=new SettingsDimensionsOrder();
+		RecSettingsDimensionsOrder o=new RecSettingsDimensionsOrder();
 		o.entrylist.addAll(entrylist);
 		return o;
 		}

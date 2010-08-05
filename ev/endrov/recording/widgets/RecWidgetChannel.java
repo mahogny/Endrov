@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -21,6 +22,7 @@ import javax.swing.JPanel;
 import endrov.basicWindow.SpinnerSimpleEvDecimal;
 import endrov.basicWindow.SpinnerSimpleInteger;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
@@ -29,7 +31,7 @@ import endrov.util.JImageButton;
  * @author Johan Henriksson
  *
  */
-public class RecWidgetChannels extends JPanel implements ActionListener
+public class RecWidgetChannel extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +43,7 @@ public class RecWidgetChannels extends JPanel implements ActionListener
 	 */
 	
 
-	private ArrayList<OneChannel> entrylist=new ArrayList<OneChannel>();
+	private ArrayList<OneChannelWidget> entrylist=new ArrayList<OneChannelWidget>();
 	
 	private JComponent p=new JPanel();
 	private JButton bAdd=new JImageButton(BasicIcon.iconAdd,"Add channel to list");
@@ -49,10 +51,11 @@ public class RecWidgetChannels extends JPanel implements ActionListener
 
 	private RecWidgetComboMetastateGroup cMetaStateGroup=new RecWidgetComboMetastateGroup();
 
-	private class OneChannel implements ActionListener
+	
+	private class OneChannelWidget implements ActionListener
 		{
 		RecWidgetComboMetastate comboChannel=new RecWidgetComboMetastate();
-		SpinnerSimpleEvDecimal spExposure=new SpinnerSimpleEvDecimal();
+		SpinnerSimpleEvDecimal spExposure=new SpinnerSimpleEvDecimal(new EvDecimal(100));
 		JCheckBox chLightCompensate=new JCheckBox();
 		JButton bUp=new JImageButton(BasicIcon.iconButtonUp,"Move toward first in order");
 		JButton bDown=new JImageButton(BasicIcon.iconButtonDown,"Move toward end in order");
@@ -64,12 +67,14 @@ public class RecWidgetChannels extends JPanel implements ActionListener
 		SpinnerSimpleInteger spTinc=new SpinnerSimpleInteger(1,1,100,1);
 		SpinnerSimpleInteger spAveraging=new SpinnerSimpleInteger(1,1,10,1);
 		
-		public OneChannel()
+		public OneChannelWidget()
 			{
 			bUp.addActionListener(this);
 			bDown.addActionListener(this);
 			bRemove.addActionListener(this);
 			}
+		
+	
 		
 		public void actionPerformed(ActionEvent e)
 			{
@@ -105,7 +110,7 @@ public class RecWidgetChannels extends JPanel implements ActionListener
 	
 	
 	
-	public RecWidgetChannels()
+	public RecWidgetChannel()
 		{
 		setBorder(BorderFactory.createTitledBorder("Channnels"));
 		setLayout(new BorderLayout());
@@ -119,9 +124,15 @@ public class RecWidgetChannels extends JPanel implements ActionListener
 		}
 	
 	
+	public void dataChangedEvent()
+		{
+		cMetaStateGroup.makeLayout();
+		}
+	
+	
 	private void addChannel()
 		{
-		OneChannel row=new OneChannel();
+		OneChannelWidget row=new OneChannelWidget();
 		cMetaStateGroup.registerWeakMetastateGroup(row.comboChannel);
 		entrylist.add(row);
 		}
@@ -138,7 +149,7 @@ public class RecWidgetChannels extends JPanel implements ActionListener
 			c.gridy=i+1;
 			c.gridx=0;
 			
-			OneChannel row=null;
+			OneChannelWidget row=null;
 			if(i!=-1) row=entrylist.get(i);
 			
 			if(i==-1) p.add(bAdd,c);
@@ -231,5 +242,28 @@ public class RecWidgetChannels extends JPanel implements ActionListener
 			}
 		}
 	
+	
+	/**
+	 * Get channel settings
+	 */
+	public RecSettingsChannel getSettings()
+		{
+		RecSettingsChannel settings=new RecSettingsChannel();
+		settings.metaStateGroup=cMetaStateGroup.getConfigGroupName();
+		for(OneChannelWidget e:entrylist)
+			{
+			RecSettingsChannel.OneChannel ch=new RecSettingsChannel.OneChannel();
+			
+			ch.averaging=e.spAveraging.getIntValue();
+			ch.name=e.comboChannel.getConfigGroupName();
+			ch.exposure=e.spExposure.getDecimalValue();
+			ch.lightCompensate=e.chLightCompensate.isSelected();
+			ch.tinc=e.spTinc.getIntValue();
+			ch.z0=e.spZ0.getIntValue();
+			
+			settings.channels.add(ch);
+			}
+		return settings;
+		}
 
 	}

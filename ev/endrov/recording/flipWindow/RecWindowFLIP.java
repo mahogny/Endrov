@@ -19,41 +19,30 @@ import endrov.basicWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.recording.EvAcquisition;
 import endrov.recording.RecordingResource;
+import endrov.recording.recmetMultidim.RecWidgetAcquire;
 import endrov.roi.ROI;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 
 /**
- * FRAP acquisition
+ * FLIP acquisition
  * @author Johan Henriksson 
  */
-public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIPAcquisition.Listener
+public class RecWindowFLIP extends BasicWindow 
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
 	 *****************************************************************************************************/
 	static final long serialVersionUID=0;
 
-	private JButton bStartStop=new JButton("Start");
 	private SpinnerSimpleEvDecimal spNumRepeats=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spBleachTime=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spRate=new SpinnerSimpleEvDecimal();
 
 	private EvFLIPAcquisition acq=new EvFLIPAcquisition();
-	private EvFLIPAcquisition.AcqThread thread;
 	
-	private JLabel labelStatus=new JLabel(" ");
-	
-	private EvComboObject objectCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
-		{
-		private static final long serialVersionUID = 1L;
-		public boolean includeObject(EvContainer cont)
-			{
-			return cont instanceof EvContainer;
-			}
-		};
-		
 	private EvComboObject roiBleachCombo=new EvComboObject(new LinkedList<EvObject>(), true, false)
 		{
 		private static final long serialVersionUID = 1L;
@@ -72,7 +61,43 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 			}
 		};
 
-	private JTextField tStoreName=new JTextField("flip");
+//	private JTextField tStoreName=new JTextField("flip");
+
+		
+	private RecWidgetAcquire wAcq=new RecWidgetAcquire()
+			{
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public boolean getAcquisitionSettings()
+					{
+					acq.bleachTime=spBleachTime.getDecimalValue();
+					acq.rate=spRate.getDecimalValue();
+					acq.recoveryTime=spNumRepeats.getDecimalValue();
+					acq.roiBleach=(ROI)roiBleachCombo.getSelectedObject();
+					acq.roiObserve=(ROI)roiObserveCombo.getSelectedObject();
+					acq.numRepeats=spNumRepeats.getDecimalValue().intValue();
+					
+					if(acq.container==null)
+						{
+						showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
+						return false;
+						}
+					else if(acq.roiBleach==null)
+						{
+						showErrorDialog("Need to select a ROI to bleach");
+						return false;
+						}
+					else
+						return true;
+					}
+				
+				@Override
+				public EvAcquisition getAcquisition()
+					{
+					return acq;
+					}
+			};
 
 	
 	public RecWindowFLIP()
@@ -86,68 +111,54 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 		roiBleachCombo.setRoot(RecordingResource.getData());
 		roiObserveCombo.setRoot(RecordingResource.getData());
 		
-		acq.addListener(this);
-		
-		//cDuration.setToolTipText("Limit duration or run indefinetely");
+		wAcq.setStoreName("flip");
 		
 		spNumRepeats.setDecimalValue(new EvDecimal(10));
 		spRate.setDecimalValue(new EvDecimal(2));
 		spBleachTime.setDecimalValue(new EvDecimal("0.1"));
 		
-		labelStatus.setBorder(BorderFactory.createTitledBorder("Status"));
-		
 		////////////////////////////////////////////////////////////////////////
 		setLayout(new BorderLayout());
-		add(EvSwingUtil.layoutEvenVertical(
+		add(EvSwingUtil.layoutCompactVertical(
 				
-				EvSwingUtil.layoutLCR(
-						new JLabel("Bleach ROI"),
-						roiBleachCombo,
-						null
-						),
+				EvSwingUtil.withTitledBorder("Settings", 
+						EvSwingUtil.layoutCompactVertical(
+								EvSwingUtil.layoutLCR(
+										new JLabel("Bleach ROI"),
+										roiBleachCombo,
+										null
+										),
+										
+								EvSwingUtil.layoutLCR(
+										new JLabel("Observe ROI"),
+										roiObserveCombo,
+										null
+										),
+
+								EvSwingUtil.layoutLCR(
+										new JLabel("Bleach time"),
+										spBleachTime,
+										new JLabel("[s]")
+										),
+
+								EvSwingUtil.layoutLCR(
+										new JLabel("Num.repeats"),
+										spNumRepeats,
+										new JLabel("[-]")
+										),
+
+								EvSwingUtil.layoutLCR(
+										new JLabel("Sampling intervals"),
+										spRate,
+										new JLabel("[s]")
+										)
+								)
 						
-				EvSwingUtil.layoutLCR(
-						new JLabel("Observe ROI"),
-						roiObserveCombo,
-						null
-						),
-
-				EvSwingUtil.layoutLCR(
-						new JLabel("Bleach time"),
-						spBleachTime,
-						new JLabel("[s]")
-						),
-
-				EvSwingUtil.layoutLCR(
-						new JLabel("Num.repeats"),
-						spNumRepeats,
-						new JLabel("[-]")
-						),
-
-				EvSwingUtil.layoutLCR(
-						new JLabel("Sampling intervals"),
-						spRate,
-						new JLabel("[s]")
-						),
-
-				EvSwingUtil.layoutLCR(
-						new JLabel("Store in"),
-						objectCombo,
-						null
 						),
 				
-				EvSwingUtil.layoutLCR(
-						new JLabel("Object name"),
-						tStoreName,
-						bStartStop
-						),
-				
-				labelStatus
-				
+				wAcq
 				),
 				BorderLayout.CENTER);
-		
-		bStartStop.addActionListener(this);
 		
 		//Window overall things
 		setTitleEvWindow("FLIP acquisition");
@@ -157,56 +168,12 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 		}
 	
 	
-	public void actionPerformed(ActionEvent e)
-		{
-		
-		if(e.getSource()==bStartStop)
-			{
-			if(thread!=null)
-				thread.tryStop();
-			else
-				{
-				bStartStop.setText("Stop");
-				
-				acq.bleachTime=spBleachTime.getDecimalValue();
-				acq.container=objectCombo.getSelectedObject();
-				acq.containerStoreName=tStoreName.getText();
-				acq.rate=spRate.getDecimalValue();
-				acq.recoveryTime=spNumRepeats.getDecimalValue();
-				acq.roiBleach=(ROI)roiBleachCombo.getSelectedObject();
-				acq.roiObserve=(ROI)roiObserveCombo.getSelectedObject();
-				acq.numRepeats=spNumRepeats.getDecimalValue().intValue();
-				
-				if(acq.container==null)
-					showErrorDialog("Need to select a place to store the acquisition (e.g. File -> New)");
-				else if(acq.roiBleach==null)
-					showErrorDialog("Need to select a ROI to bleach");
-				else
-					thread=acq.startAcquisition();
-				}
-			
-			}
-			
-		
-		}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	public void dataChangedEvent()
 		{
 		roiBleachCombo.updateList();
 		roiObserveCombo.updateList();
-		objectCombo.updateList();
+		wAcq.dataChangedEvent();
 		}
 
 	public void loadedFile(EvData data){}
@@ -218,41 +185,6 @@ public class RecWindowFLIP extends BasicWindow implements ActionListener, EvFLIP
 	public void freeResources()
 		{
 		}
-	
-	public static void main(String[] args)
-		{
-		new RecWindowFLIP();
-		
-		}
-
-	
-
-	public void acqStopped()
-		{
-		SwingUtilities.invokeLater(new Runnable()
-			{
-			public void run()
-				{
-				bStartStop.setText("Start");
-				thread=null;
-				labelStatus.setText(" ");
-				}
-			});
-		}
-	
-
-	
-	public void newStatus(final String s)
-		{
-		SwingUtilities.invokeLater(new Runnable()
-			{
-			public void run()
-				{
-				labelStatus.setText(s);
-				}
-			});
-		}
-	
 	
 
 	/******************************************************************************************************

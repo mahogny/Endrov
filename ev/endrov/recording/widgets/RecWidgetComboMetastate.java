@@ -29,6 +29,8 @@ public class RecWidgetComboMetastate extends JComboBox
 		makeLayout();
 		}
 	
+	
+	
 	public void makeLayout()
 		{
 		DefaultComboBoxModel modelState=(DefaultComboBoxModel)getModel();
@@ -46,10 +48,13 @@ public class RecWidgetComboMetastate extends JComboBox
 	
 	public EvHardwareConfigGroup getConfigGroup()
 		{
-		String name=(String)getSelectedItem();
+		String name=getConfigGroupName();
 		return EvHardwareConfigGroup.groups.get(name);
 		}
 	
-	
+	public String getConfigGroupName()
+		{
+		return (String)getSelectedItem();
+		}
 	
 	}
