@@ -51,7 +51,6 @@ public class ColocCoefficients
 	 */
 	public void add(double x, double y)
 		{
-		add(x,y);
 		sumX+=x;
 		sumY+=y;
 		sumXX+=x*x;
