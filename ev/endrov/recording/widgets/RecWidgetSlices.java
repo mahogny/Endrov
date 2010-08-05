@@ -6,6 +6,9 @@
 package endrov.recording.widgets;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -16,6 +19,8 @@ import javax.swing.JRadioButton;
 
 import endrov.basicWindow.SpinnerSimpleEvDecimal;
 import endrov.basicWindow.SpinnerSimpleInteger;
+import endrov.recording.RecordingResource;
+import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.JImageButton;
 
@@ -24,7 +29,7 @@ import endrov.util.JImageButton;
  * @author Johan Henriksson
  *
  */
-public class RecWidgetSlices extends JPanel
+public class RecWidgetSlices extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 	
@@ -33,23 +38,25 @@ public class RecWidgetSlices extends JPanel
 	
 	private SpinnerSimpleEvDecimal spStartZ=new SpinnerSimpleEvDecimal();
 	private SpinnerSimpleEvDecimal spEndZ=new SpinnerSimpleEvDecimal();
-	private JRadioButton rbTotSlices=new JRadioButton("#Z");
+	private JRadioButton rbNumSlices=new JRadioButton("#Z");
 	private JRadioButton rbDZ=new JRadioButton("∆Z");
 	private JRadioButton rbOneZ=new JRadioButton("Single slice",true);
 	private ButtonGroup bgDZgroup=new ButtonGroup();
 	private JButton bSetStartZ=new JImageButton(iconSetFromStage,"Set position using current stage position");
 	private JButton bSetEndZ=new JImageButton(iconSetFromStage,"Set position using current stage position");
-	private SpinnerSimpleInteger spNumZ=new SpinnerSimpleInteger();
+	private SpinnerSimpleInteger spNumZ=new SpinnerSimpleInteger(1,1,1000,1);
 	private SpinnerSimpleEvDecimal spDZ=new SpinnerSimpleEvDecimal();
 	
 	public RecWidgetSlices()
 		{
-		rbTotSlices.setToolTipText("Specify number of slices in Z-direction");
-		rbDZ.setToolTipText("Specify spacing beetween slices in micrometer");
+		rbNumSlices.setToolTipText("Specify number of slices in Z-direction");
+		rbDZ.setToolTipText("Specify spacing beetween slices [um]");
 		rbOneZ.setToolTipText("Do not acquire multiple slices");
-		bgDZgroup.add(rbTotSlices);
-		rbTotSlices.add(rbDZ);
-		rbTotSlices.add(rbOneZ);
+		bgDZgroup.add(rbNumSlices);
+		bgDZgroup.add(rbDZ);
+		bgDZgroup.add(rbOneZ);
+		rbNumSlices.add(rbDZ);
+		rbNumSlices.add(rbOneZ);
 
 		
 		setLayout(new GridLayout(1,1));
@@ -61,34 +68,69 @@ public class RecWidgetSlices extends JPanel
 							new JLabel("Z end"), EvSwingUtil.layoutLCR(null, spEndZ, bSetEndZ)
 							),
 						EvSwingUtil.layoutTableCompactWide(
-							rbTotSlices, spNumZ,
+							rbNumSlices, spNumZ,
 							rbDZ, spDZ
 					),
 					rbOneZ
 					)				
 			));
+		
+		
+		bSetStartZ.addActionListener(this);
+		bSetEndZ.addActionListener(this);
 	
 		}
 	
 	
 	
-	public static class SettingsSlices
+	/**
+	 * Get settings from widget
+	 */
+	public RecSettingsSlices getSettings()
 		{
-		
-		
-		
-		public String author, comment, sample;
-		}
-	
-	
-	public SettingsSlices getSettings()
-		{
-		SettingsSlices settings=new SettingsSlices();
-		
-		
-		
+		RecSettingsSlices settings=new RecSettingsSlices();
+		if(rbNumSlices.isSelected())
+			{
+			settings.zType=RecSettingsSlices.ZType.NUMZ;
+			settings.numZ=spNumZ.getIntValue();
+			}
+		else if(rbDZ.isSelected())
+			{
+			settings.zType=RecSettingsSlices.ZType.DZ;
+			settings.dz=spDZ.getDecimalValue();
+			}
+		else
+			{
+			settings.zType=RecSettingsSlices.ZType.ONEZ;
+			settings.numZ=1;
+			}
+
+		settings.start=spStartZ.getDecimalValue();
+		settings.end=spEndZ.getDecimalValue();
 		
 		return settings;
 		}
+
+	private EvDecimal getStagePos()
+		{
+		double pos=RecordingResource.getCurrentStageZ();
+		return new EvDecimal(new BigDecimal(pos*1000).divideToIntegralValue(new BigDecimal(1000)));
+		}
+
+	public void actionPerformed(ActionEvent e)
+		{
+		if(e.getSource()==bSetEndZ)
+			{
+			spEndZ.setDecimalValue(getStagePos());
+			}
+		else if(e.getSource()==bSetStartZ)
+			{
+			spStartZ.setDecimalValue(getStagePos());
+			}
+		
+		}
+	
+	
+	
 		
 	}

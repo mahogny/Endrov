@@ -18,7 +18,6 @@ import java.util.TreeSet;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
@@ -38,7 +37,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener
 	{
 	private static final long serialVersionUID = 1L;
 	
-	JCheckBox cbAutofocus=new JCheckBox("Autofocus");
+	JCheckBox cbAutofocus=new JCheckBox("Use Autofocus");
 	//which device here
 	//MM: switch of hw autofocus while moving xy
 	//MM: switch of hw autofocus while moving z
@@ -86,6 +85,12 @@ public class RecWidgetPositions extends JPanel implements ActionListener
 	private JList listUseROIs=new JList(listModelAdded);
 	
 	
+	public RecSettingsPositions getSettings()
+		{
+		RecSettingsPositions settings=new RecSettingsPositions();
+		return settings;
+		}
+	
 	public RecWidgetPositions()
 		{
 		bAdd.addActionListener(this);
@@ -105,7 +110,7 @@ public class RecWidgetPositions extends JPanel implements ActionListener
 		c.weightx=0;
 		c.gridx=1;
 		roiPanel.add(EvSwingUtil.layoutCompactVertical(
-				new JLabel("ROIs"),
+				//new JLabel("ROIs"),
 				bAdd,
 				bRemove),c);
 		
@@ -158,4 +163,12 @@ public class RecWidgetPositions extends JPanel implements ActionListener
 			}
 		
 		}
+	
+	
+	public void dataChangedEvent()
+		{
+		//TODO
+		//roiList.
+		}
+	
 	}
