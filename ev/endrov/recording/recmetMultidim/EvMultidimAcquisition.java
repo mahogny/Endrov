@@ -12,6 +12,7 @@ import endrov.data.EvData;
 import endrov.flowBasic.math.EvOpImageAddImage;
 import endrov.flowBasic.math.EvOpImageDivScalar;
 import endrov.hardware.EvHardware;
+import endrov.hardware.EvHardwareConfigGroup;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
@@ -110,8 +111,6 @@ public class EvMultidimAcquisition extends EvAcquisition
 						(currentZCount-currentChannel.z0)%currentChannel.zInc==0 &&
 						currentFrameCount%currentChannel.tinc==0)
 					{
-					System.out.println("Snap!");
-
 					//Snap image, average if needed
 					CameraImage camIm=cam.snap();
 					EvPixels pix=camIm.getPixels()[0];
@@ -140,6 +139,12 @@ public class EvMultidimAcquisition extends EvAcquisition
 					stack.put(dz.multiply(currentZCount),evim);
 					//int zpos=currentZCount-currentChannel.z0;
 					//stack.putInt(zpos, evim);
+					
+					//Update the GUI
+					BasicWindow.updateWindows(); //TODO use hooks
+					for(AcquisitionListener listener:listeners)
+						listener.newAcquisitionStatus(""+currentChannel.name+"/"+currentFrameCount+"/"+dz.multiply(currentZCount));
+					
 					}
 				
 				}
@@ -159,6 +164,10 @@ public class EvMultidimAcquisition extends EvAcquisition
 					{
 					System.out.println("Channel "+ch.name);
 					currentChannel=ch;
+
+					//TODO test with proper groups
+					EvHardwareConfigGroup.groups.get(channel.metaStateGroup).states.get(ch.name).activate();
+					
 					recurse.exec();
 					}
 				}
@@ -199,7 +208,6 @@ public class EvMultidimAcquisition extends EvAcquisition
 					for(int az=0;az<numz;az++)
 						{
 						RecordingResource.setCurrentStageZ(slices.start.add(dz.multiply(az)).doubleValue());
-						System.out.println("move z");
 						currentZCount=az;
 						//currentZ=dz.multiply(az);
 						recurse.exec();
@@ -258,11 +266,8 @@ public class EvMultidimAcquisition extends EvAcquisition
 						for(int at=0;at<numt;at++)
 							{
 							long timeBefore=System.currentTimeMillis();
-							
-							
 							currentFrameCount=at;
 							currentFrame=dt.multiply(at);
-							System.out.println("time "+currentFrame);
 
 							recurse.exec();
 							
