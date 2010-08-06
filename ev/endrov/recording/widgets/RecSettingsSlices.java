@@ -15,4 +15,10 @@ public class RecSettingsSlices
 	public EvDecimal dz;
 	public Integer numZ;
 	public RecSettingsSlices.ZType zType;
+	
+	@Override
+	public String toString()
+		{
+		return ""+start+" "+end+"  "+dz+"  "+numZ+"  "+zType;
+		}
 	}

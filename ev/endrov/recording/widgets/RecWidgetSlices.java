@@ -108,6 +108,7 @@ public class RecWidgetSlices extends JPanel implements ActionListener
 		settings.start=spStartZ.getDecimalValue();
 		settings.end=spEndZ.getDecimalValue();
 		
+		
 		return settings;
 		}
 
