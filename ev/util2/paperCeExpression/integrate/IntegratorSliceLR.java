@@ -48,10 +48,12 @@ public class IntegratorSliceLR extends IntegratorSlice
 	 */
 	public boolean setupCS(NucLineage refLin)
 		{
-		NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
+		//NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
 		NucLineage.Nuc nucEMS = refLin.nuc.get("EMS");
 
-		if (nucABp==null||nucEMS==null||nucABp.pos.isEmpty()||nucEMS.pos.isEmpty())
+		Vector3d posABp=ExpUtil.getLastPosABp(refLin);
+		
+		if (posABp==null||nucEMS==null||nucEMS.pos.isEmpty())
 			{
 			System.out.println("Does not have enough cells marked, will not produce LR");
 			return false;
@@ -59,7 +61,7 @@ public class IntegratorSliceLR extends IntegratorSlice
 		else
 			System.out.println("Will do LR");
 
-		Vector3d posABp = nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
+//		Vector3d posABp = nucABp.pos.get(nucABp.pos.lastKey()).getPosCopy();
 		Vector3d posEMS = nucEMS.pos.get(nucEMS.pos.lastKey()).getPosCopy();
 
 		ImVector2 dirvec=ImVector2.polar(shell.major, shell.angle);

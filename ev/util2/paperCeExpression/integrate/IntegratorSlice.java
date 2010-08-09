@@ -7,9 +7,11 @@ package util2.paperCeExpression.integrate;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -77,7 +79,10 @@ public abstract class IntegratorSlice implements Integrator
 		// TODO need to group lineage and shell. introduce a new object?
 		integrator.imset.metaObject.put(newLinName, lin);
 		// imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
-		shell = integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
+		Collection<Shell> shells=integrator.imset.getIdObjectsRecursive(Shell.class).values();
+		if(shells.isEmpty())
+			throw new RuntimeException("No shell found");
+		shell = shells.iterator().next();
 	
 		integrator.imset.metaObject.put(newLinName, lin);
 	
@@ -254,7 +259,12 @@ public abstract class IntegratorSlice implements Integrator
 			NucLineage.Nuc nuc = lin.getCreateNuc("_slice"+i);
 			NucExp exp = nuc.getCreateExp(integrator.expName);
 			exp.level.put(integrator.frame, avg);
+			
+			if(Double.isInfinite(avg) || Double.isNaN(avg))
+				System.out.println("Slice inf or nan, frame: "+integrator.frame+"    "+getClass().getSimpleName());
+//			System.out.println(" "+avg);
 			}
+//		System.out.println();
 	
 		}
 	

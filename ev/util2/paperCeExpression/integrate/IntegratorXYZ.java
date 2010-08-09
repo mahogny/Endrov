@@ -59,8 +59,6 @@ public class IntegratorXYZ implements Integrator
 	public boolean setupCS(NucLineage refLin)
 		{
 		NucLineage.Nuc nucP2 = refLin.nuc.get("P2'");
-//		NucLineage.Nuc nucABa = refLin.nuc.get("ABa");
-//		NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
 		NucLineage.Nuc nucEMS = refLin.nuc.get("EMS");
 
 		Vector3d posABp = ExpUtil.getLastPosABp(refLin);
