@@ -46,7 +46,6 @@ public class IntegratorSliceDV extends IntegratorSlice
 	 */
 	public boolean setupCS(NucLineage refLin)
 		{
-		//NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
 		NucLineage.Nuc nucEMS = refLin.nuc.get("EMS");
 
 		Vector3d posABp = ExpUtil.getLastPosABp(refLin);
