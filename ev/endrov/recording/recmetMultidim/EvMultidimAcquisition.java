@@ -6,9 +6,19 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.flowBasic.math.EvOpImageAddImage;
+import endrov.flowBasic.math.EvOpImageDivScalar;
 import endrov.hardware.EvHardware;
+import endrov.hardware.EvHardwareConfigGroup;
+import endrov.imageset.EvChannel;
+import endrov.imageset.EvImage;
+import endrov.imageset.EvPixels;
+import endrov.imageset.EvStack;
+import endrov.imageset.Imageset;
+import endrov.recording.CameraImage;
 import endrov.recording.EvAcquisition;
 import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
@@ -18,6 +28,7 @@ import endrov.recording.widgets.RecSettingsPositions;
 import endrov.recording.widgets.RecSettingsRecDesc;
 import endrov.recording.widgets.RecSettingsSlices;
 import endrov.recording.widgets.RecSettingsTimes;
+import endrov.recording.widgets.RecSettingsTimes.TimeType;
 import endrov.util.EvDecimal;
 
 
@@ -60,8 +71,16 @@ public class EvMultidimAcquisition extends EvAcquisition
 		private EvMultidimAcquisition settings;
 		private boolean toStop=true;
 
+		private Imageset imset=new Imageset();
+		private HWCamera cam=null;
+		private int currentFrameCount;
+		private EvDecimal currentFrame;
 		
-		private int currentFrameNumber=0;
+		private int currentZCount;
+		private EvDecimal dz;
+		
+		private RecSettingsChannel.OneChannel currentChannel;
+		
 		
 		
 
@@ -80,16 +99,59 @@ public class EvMultidimAcquisition extends EvAcquisition
 			}
 
 		/**
-		 * Takes the actual picture
+		 * Acquire one plane
 		 */
 		private class RecOpSnap extends RecOp	
 			{
 			@Override
 			public void exec()
 				{
-				System.out.println("Snap!");
+				//Check if this frame should be included
+				if(currentChannel.z0>=currentZCount &&
+						(currentZCount-currentChannel.z0)%currentChannel.zInc==0 &&
+						currentFrameCount%currentChannel.tinc==0)
+					{
+					//Snap image, average if needed
+					CameraImage camIm=cam.snap();
+					EvPixels pix=camIm.getPixels()[0];
+					if(currentChannel.averaging!=1)
+						{
+						for(int i=1;i<currentChannel.averaging;i++)
+							{
+							camIm=cam.snap();
+							EvPixels pix2=camIm.getPixels()[0];
+							pix=new EvOpImageAddImage().exec1(pix,pix2);
+							}
+						pix=new EvOpImageDivScalar(currentChannel.averaging).exec1(pix);
+						}
+					EvImage evim=new EvImage(pix);
+
+					//Get a stack, fill in metadata
+					EvChannel ch=imset.getCreateChannel("ch");
+					EvStack stack=ch.getCreateFrame(currentFrame);
+
+					stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
+					stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
+					stack.resZ=dz.multiply(currentChannel.zInc);
+					stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;   //always do this?
+					stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
+					stack.dispZ=dz.multiply(currentChannel.z0); //scary!!!
+					stack.put(dz.multiply(currentZCount),evim);
+					//int zpos=currentZCount-currentChannel.z0;
+					//stack.putInt(zpos, evim);
+					
+					//Update the GUI
+					BasicWindow.updateWindows(); //TODO use hooks
+					for(AcquisitionListener listener:listeners)
+						listener.newAcquisitionStatus(""+currentChannel.name+"/"+currentFrameCount+"/"+dz.multiply(currentZCount));
+					
+					}
+				
 				}
 			}
+		
+		
+		
 		
 		/**
 		 * Change channel and recurse
@@ -101,6 +163,10 @@ public class EvMultidimAcquisition extends EvAcquisition
 				for(RecSettingsChannel.OneChannel ch:channel.channels)
 					{
 					System.out.println("Channel "+ch.name);
+					currentChannel=ch;
+
+					//TODO test with proper groups
+					EvHardwareConfigGroup.groups.get(channel.metaStateGroup).states.get(ch.name).activate();
 					
 					recurse.exec();
 					}
@@ -117,12 +183,15 @@ public class EvMultidimAcquisition extends EvAcquisition
 				{
 				if(slices.zType==RecSettingsSlices.ZType.ONEZ)
 					{
-					//Do not move anything in Z
+					//Do not move along Z
+					currentZCount=0;
+					dz=EvDecimal.ONE;
+					//currentZ=EvDecimal.ZERO;
 					recurse.exec();
 					}
 				else if(slices.zType==RecSettingsSlices.ZType.NUMZ)
 					{
-					EvDecimal dz;
+					//Figure out number of slices and spacing
 					int numz;
 					if(slices.zType==RecSettingsSlices.ZType.NUMZ)
 						{
@@ -139,12 +208,12 @@ public class EvMultidimAcquisition extends EvAcquisition
 					for(int az=0;az<numz;az++)
 						{
 						RecordingResource.setCurrentStageZ(slices.start.add(dz.multiply(az)).doubleValue());
-						System.out.println("move z");
+						currentZCount=az;
+						//currentZ=dz.multiply(az);
 						recurse.exec();
+						if(toStop)
+							return;
 						}
-					
-					
-					
 					}
 				}
 			
@@ -159,19 +228,33 @@ public class EvMultidimAcquisition extends EvAcquisition
 				{
 				if(times.tType==RecSettingsTimes.TimeType.ONET)
 					{
+					currentFrameCount=0;
+					currentFrame=EvDecimal.ZERO;
 					recurse.exec();
 					}
 				else
 					{
 					if(times.freq==null)
 						{
-						//Maximum rate - best effort
-						for(int i=0;i<100;i++)
+						//Run at maximum rate - best effort
+						long startTime=System.currentTimeMillis();
+						for(int i=0;;i++)
+							{
+							long thisTime=System.currentTimeMillis();
+							currentFrame=new EvDecimal(thisTime-startTime).divide(1000);
+							currentFrameCount=i;
+							
+							if((times.tType==RecSettingsTimes.TimeType.NUMT && i==times.numT) ||
+									(times.tType==TimeType.SUMT && currentFrame.greaterEqual(currentFrame)) ||
+									toStop)
+								return;
+
 							recurse.exec();
+							}
 						}
 					else
 						{
-						//Controlled rate
+						//Run at fixed controlled rate
 						EvDecimal dt=times.freq;
 						int numt;
 						
@@ -183,16 +266,19 @@ public class EvMultidimAcquisition extends EvAcquisition
 						for(int at=0;at<numt;at++)
 							{
 							long timeBefore=System.currentTimeMillis();
-							
-							System.out.println("time "+timeBefore);
-							
+							currentFrameCount=at;
+							currentFrame=dt.multiply(at);
+
 							recurse.exec();
 							
+							//Wait until next frame
 							long timeAfter;
 							do
 								{
 								timeAfter=System.currentTimeMillis();
-								}while(dt.less(new EvDecimal(timeAfter-timeBefore)));
+								if(toStop)
+									return;
+								}while((new EvDecimal(timeAfter-timeBefore)).less(dt.multiply(1000)));
 							}
 						
 						}
@@ -254,166 +340,109 @@ public class EvMultidimAcquisition extends EvAcquisition
 			{
 			//TODO need to choose camera, at least!
 			Iterator<HWCamera> itcam=EvHardware.getDeviceMapCast(HWCamera.class).values().iterator();
-			HWCamera cam=null;
 			if(itcam.hasNext())
 				cam=itcam.next();
 			
 			
-			//Check that there are enough parameters
-			if(cam!=null && container!=null)
+			try
 				{
-	
-				
-				//Iterator for all different orders!!!! there are 6. function composition possible?
-				//Pass an iterator to an iterator to an iterator
-
-				/**
-				 * One iterator for each dimensional order
-				 */
-				RecOp preop[]=new RecOp[4];
-				for(int i=0;i<3;i++)
-					if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_POSITION))
-						preop[i]=new RecOpPos();
-					else if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_CHANNEL))
-						preop[i]=new RecOpChannel();
-					else if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_SLICE))
-						preop[i]=new RecOpStack();
-				preop[3]=new RecOpSnap();
-
-				/**
-				 * -----time refers to----
-				 * pos, chan, slice: one position
-				 * pos, slice, chan: one position
-				 * chan, pos, slice: all positions
-				 * chan, slice, pos: all positions
-				 * slice, chan, pos: all positions
-				 * slice, pos, chan: all positions
-				 */
-				RecOp timeOp=new RecOpTime();
-				RecOp ops[];
-				if(order.entrylist.get(0).id.equals(RecSettingsDimensionsOrder.ID_POSITION))
-					ops=new RecOp[]{preop[0],timeOp,preop[1],preop[2],preop[3]};
-				else
-					ops=new RecOp[]{timeOp, preop[0],preop[1],preop[2],preop[3]};
-				
-				
-				
-				
-				/** ----Autofocus----
-				 * 
-				 * 
-				 * 
-				 * ------------
-				 * 
-				 * 
-				 */
-
-				/**
-				 * Set up stack and run recording
-				 */
-				chainOps(ops);
-				ops[0].exec();
-				
-				/*
-				boolean isRGB=false;
-				
-				Imageset imset=new Imageset();
-				for(int i=0;;i++)
-					if(container.getChild("im"+i)==null)
-						{
-						container.metaObject.put("im"+i, imset);
-						
-						if(isRGB)
-							{
-							imset.metaObject.put(channelName+"R", new EvChannel());
-							imset.metaObject.put(channelName+"G", new EvChannel());
-							imset.metaObject.put(channelName+"B", new EvChannel());
-							}
-						else
-							imset.metaObject.put(channelName, new EvChannel());
-						break;
-						}
-
-				//TODO signal update on the object
-				BasicWindow.updateWindows();
-
-				
-				EvDecimal curFrame=new EvDecimal(0);
-
-				
-				
-				
-				
-				try
+				//Check that there are enough parameters
+				if(cam!=null && container!=null)
 					{
+
 					
-					cam.startSequenceAcq(interval);
+					//Iterator for all different orders!!!! there are 6. function composition possible?
+					//Pass an iterator to an iterator to an iterator
+
+					/**
+					 * One iterator for each dimensional order
+					 */
+					RecOp preop[]=new RecOp[4];
+					for(int i=0;i<3;i++)
+						if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_POSITION))
+							preop[i]=new RecOpPos();
+						else if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_CHANNEL))
+							preop[i]=new RecOpChannel();
+						else if(order.entrylist.get(i).id.equals(RecSettingsDimensionsOrder.ID_SLICE))
+							preop[i]=new RecOpStack();
+					preop[3]=new RecOpSnap();
+
+					/**
+					 * -----time refers to----
+					 * pos, chan, slice: one position
+					 * pos, slice, chan: one position
+					 * chan, pos, slice: all positions
+					 * chan, slice, pos: all positions
+					 * slice, chan, pos: all positions
+					 * slice, pos, chan: all positions
+					 */
+					RecOp timeOp=new RecOpTime();
+					RecOp ops[];
+					if(order.entrylist.get(0).id.equals(RecSettingsDimensionsOrder.ID_POSITION))
+						ops=new RecOp[]{preop[0],timeOp,preop[1],preop[2],preop[3]};
+					else
+						ops=new RecOp[]{timeOp, preop[0],preop[1],preop[2],preop[3]};
 					
-					while(!toStop)
-						{
+					
+					
+					
+					/** ----Autofocus----
+					 * 
+					 * 
+					 * 
+					 * ------------
+					 * 
+					 * 
+					 */
 
-						//Avoid busy loop
-						try
+					
+					/**
+					 * Prepare object etc
+					 */
+					String channelName=settings.containerStoreName;
+					boolean isRGB=false;
+					for(int i=0;;i++)
+						if(container.getChild("im"+i)==null)
 							{
-							Thread.sleep((long)interval/3);
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//See if another image is incoming
-						CameraImage camIm=cam.snapSequence();
-						if(camIm!=null)
-							{
-							EvChannel ch=(EvChannel)imset.getChild(channelName);
-							EvStack stack=ch.getCreateFrame(curFrame);
-
+							container.metaObject.put("im"+i, imset);
+							
 							if(isRGB)
 								{
-								//TODO
-								
+								imset.metaObject.put(channelName+"R", new EvChannel());
+								imset.metaObject.put(channelName+"G", new EvChannel());
+								imset.metaObject.put(channelName+"B", new EvChannel());
 								}
 							else
-								{
-								//TODO resolution
-								stack.resX=1;
-								stack.resY=1;
-								stack.resZ=new EvDecimal(1);
-								
-								//TODO offset from stage?
-								
-								EvImage evim=new EvImage(camIm.getPixels()[0]);
-								
-								
-								
-								System.out.println(camIm.getPixels());
-								System.out.println(camIm.getNumComponents());
-								
-								EvDecimal z=new EvDecimal(0);
-								ch.getCreateFrame(curFrame).put(z, evim);
-								}
-								
-								
-							
-							
-							curFrame=curFrame.add(new EvDecimal(interval));
+								imset.metaObject.put(channelName, new EvChannel());
+							break;
 							}
-						
-						
-						}
+
+					//TODO signal update on the object
+					BasicWindow.updateWindows();
+
 					
-					cam.stopSequenceAcq();
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
 					
-					*/
+					
+					/**
+					 * Set up stack and run recording
+					 */
+					chainOps(ops);
+					ops[0].exec();
+					
+
+					
+					}
+				else
+					System.out.println("No camera no container");
+				
 				}
-			else
-				System.out.println("No camera no container");
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
+			
+			
+			
 			
 			//System.out.println("---------stop-----------");
 			toStop=false;

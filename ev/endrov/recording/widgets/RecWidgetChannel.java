@@ -260,6 +260,7 @@ public class RecWidgetChannel extends JPanel implements ActionListener
 			ch.lightCompensate=e.chLightCompensate.isSelected();
 			ch.tinc=e.spTinc.getIntValue();
 			ch.z0=e.spZ0.getIntValue();
+			ch.zInc=e.spZinc.getIntValue();
 			
 			settings.channels.add(ch);
 			}
