@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+
+
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.ev.*;
@@ -158,7 +160,8 @@ public class IntExp
 			e1.printStackTrace();
 			}
 		}
-
+	
+	
 	public static boolean doOne(File f, boolean forceDo)
 		{
 		try
@@ -206,16 +209,7 @@ public class IntExp
 			String newLinNameLR = linForLR(numSubDiv, channelName);
 			String newLinNameDV = linForDV(numSubDiv, channelName);
 
-			// Not the optimal way of finding the lineage
-			Map<EvPath, NucLineage> lins = data
-					.getIdObjectsRecursive(NucLineage.class);
-			for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
-				if (!e.getKey().getLeafName().startsWith("AP") && !e.getKey().getLeafName().startsWith("LR") && !e.getKey().getLeafName().startsWith("DV"))
-					{
-					System.out.println("found lineage "+e.getKey());
-					refLin = e.getValue();
-					System.out.println(refLin);
-					}
+			refLin=getRefLin(data);
 
 			// Decide on integrators
 			LinkedList<Integrator> integrators = new LinkedList<Integrator>();
@@ -257,12 +251,34 @@ public class IntExp
 
 			// Cell level expression if there is a lineage
 			IntegratorCellClosest intC = null;
-			if (refLin!=null && channelName.equals("RFP"))
+			if (refLin!=null)
 				{
-				intC = new IntegratorCellClosest(integrator, refLin, intAP.bg);
-				integrators.add(intC);
+				if (channelName.equals("RFP"))
+					{
+					intC = new IntegratorCellClosest(integrator, refLin, intAP.bg);
+					integrators.add(intC);
+					}
+				else
+					{
+					//Just superimpose the model, normalized!
+					
+					NucLineage newlin=ExpUtil.mapModelToRec(refLin);
+					
+					Imageset imset=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
+					imset.metaObject.put("estcell", newlin);
+					
+					intC = new IntegratorCellClosest(integrator, newlin, intAP.bg);
+					integrators.add(intC);
+					}
 				}
-
+			
+			//Disable integration
+			/*intXYZ=null;
+			intDV=null;
+			intLR=null;
+			intC=null;*/
+			///
+			
 			// Run integrators
 			integrator.doProfile(integrators);
 
@@ -331,6 +347,18 @@ public class IntExp
 		{
 		return "DV"+numSubDiv+"-"+channelName;
 		}
+	
+	public static NucLineage getRefLin(EvData data)
+		{
+		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
+		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+			if (!e.getKey().getLeafName().startsWith("AP") && !e.getKey().getLeafName().startsWith("LR") && !e.getKey().getLeafName().startsWith("DV") && !e.getKey().getLeafName().startsWith("estcell"))
+				{
+				System.out.println("found lineage "+e.getKey());
+				return e.getValue();
+				}
+		return null;
+		}
 
 	public static File fileForAP(EvData data, int numSubDiv, String channelName)
 		{
@@ -391,6 +419,8 @@ public class IntExp
 
 		EvDecimal firstframe = ch.imageLoader.firstKey();
 		EvDecimal lastFrame = ch.imageLoader.lastKey();
+	
+		//lastFrame=new EvDecimal("14400");  ///temp!!!
 		
 		if(refLin!=null)
 			{

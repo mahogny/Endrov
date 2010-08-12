@@ -110,7 +110,7 @@ public class StdCeRenorm
 			System.out.println(
 					sec.get(i)+"\t"+
 					frame.get(i)+"\t"+
-					ft.interpolateTime(new EvDecimal(frame.get(i)))+"\t"+
+					ft.mapFrame2Time(new EvDecimal(frame.get(i)))+"\t"+
 					cell.get(i));
 		System.out.println();
 		

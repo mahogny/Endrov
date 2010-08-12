@@ -165,15 +165,15 @@ public class FrameTime extends EvObject
 	/**
 	 * Figure out time from frame
 	 */
-	public EvDecimal interpolateTime(EvDecimal frame)
+	public EvDecimal mapFrame2Time(EvDecimal frame)
 		{
 		return interpolate(mapFrame2time, frame);
 		}
 	
 	/**
-	 * Figure out time from frame
+	 * Figure out frame from time
 	 */
-	public EvDecimal interpolateFrame(EvDecimal time)
+	public EvDecimal mapTime2Frame(EvDecimal time)
 		{
 		return interpolate(mapTime2Frame, time);
 		}

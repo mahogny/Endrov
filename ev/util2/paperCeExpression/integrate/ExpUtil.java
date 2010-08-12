@@ -5,15 +5,23 @@
  */
 package util2.paperCeExpression.integrate;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.*;
 
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
+
+import util2.paperCeExpression.compare.CompareAll;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.algo.DoubleAlgebra;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 
+import endrov.coordinateSystem.CoordinateSystem;
+import endrov.data.EvData;
+import endrov.frameTime.FrameTime;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
@@ -677,6 +685,105 @@ public class ExpUtil
 			else
 				return null;
 			}
+		}
+
+
+
+	/**
+	 * Super-impose standard model onto recording by rotation, scaling and changing times 
+	 */
+	public static NucLineage mapModelToRec(NucLineage reflin)
+		{
+		EvData stdcelegans=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
+		NucLineage stdlin=stdcelegans.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+
+		//Time normalization
+		FrameTime ftRef=CompareAll.buildFrametime(IntExp.refLin);
+		FrameTime ftStd=CompareAll.buildFrametime(stdlin);
+		
+		//Coordinate transform
+		CoordinateSystem csRef=ExpUtil.singlecellCSfromLin(reflin);
+		CoordinateSystem csStd=ExpUtil.singlecellCSfromLin(stdlin);
+		Matrix4d mStd=csStd.getTransformToSystem();
+		Matrix4d mRef=csRef.getTransformFromSystem();
+		Matrix4d transform=new Matrix4d();
+		transform.mul(mRef, mStd);
+		
+		//For all nuclei
+		for(NucLineage.Nuc n:stdlin.nuc.values())
+			{
+			Map<EvDecimal,NucLineage.NucPos> newpos=new HashMap<EvDecimal, NucLineage.NucPos>();
+			for(Map.Entry<EvDecimal, NucLineage.NucPos> e:new HashMap<EvDecimal, NucLineage.NucPos>(n.pos).entrySet())
+				{
+				NucLineage.NucPos nucpos=e.getValue();
+	
+				//Normalize coordinate
+				Vector4d pos=new Vector4d(nucpos.x,nucpos.y,nucpos.z,1);
+				transform.transform(pos);
+				nucpos.x=pos.x;
+				nucpos.y=pos.y;
+				nucpos.z=pos.z;
+	
+				//Normalize time
+				EvDecimal oldframe=e.getKey();
+				EvDecimal newframe=ftRef.mapTime2Frame(ftStd.mapFrame2Time(oldframe));	
+				newpos.put(newframe,nucpos);
+				}
+			n.pos.clear();
+			n.pos.putAll(newpos);
+			}
+	
+		//Remove other "expression patterns" from model
+		for(NucLineage.Nuc n:stdlin.nuc.values())
+			n.exp.clear();
+		
+		return stdlin;
+		}
+
+
+
+	/**
+	 * Set up coordinate system
+	 */
+	public static CoordinateSystem singlecellCSfromLin(NucLineage refLin)
+		{
+		NucLineage.Nuc nucP2 = refLin.nuc.get("P2'");
+		NucLineage.Nuc nucEMS = refLin.nuc.get("EMS");
+	
+		Vector3d posABp = getLastPosABp(refLin);
+		Vector3d posABa = getLastPosABa(refLin);
+	
+		if (nucP2==null||posABa==null||posABp==null||nucEMS==null
+				||nucP2.pos.isEmpty()
+				||nucEMS.pos.isEmpty())
+			{
+			System.out.println("Does not have enough cells marked, no single-cell");
+			return null;
+			}
+	
+		Vector3d posP2 = nucP2.pos.get(nucP2.pos.lastKey()).getPosCopy();
+		Vector3d posEMS = nucEMS.pos.get(nucEMS.pos.lastKey()).getPosCopy();
+	
+		Vector3d v1 = new Vector3d();
+		Vector3d v2 = new Vector3d();
+		v1.sub(posABa, posP2);
+		v2.sub(posEMS, posABp);
+	
+		// By using all 4 cells for mid it should be less sensitive to
+		// abberrations
+		Vector3d mid = new Vector3d();
+		mid.add(posABa);
+		mid.add(posABp);
+		mid.add(posEMS);
+		mid.add(posP2);
+		mid.scale(0.25);
+	
+		// Create coordinate system. Enlarge by 20%
+		CoordinateSystem cs = new CoordinateSystem();
+		double scale = 1.35;
+		cs.setFromTwoVectors(v1, v2, v1.length()*scale, v2.length()*scale, v2.length()*scale, mid);
+	
+		return cs;
 		}
 	
 	
