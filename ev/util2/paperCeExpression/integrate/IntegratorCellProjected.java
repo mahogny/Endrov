@@ -146,7 +146,7 @@ public class IntegratorCellProjected implements Integrator
 				double vol = nucVol.get(nucName);
 				if (vol!=0)
 					{
-					double avg = expLevel.get(nucName)/vol;
+					double avg = expLevel.get(nucName)/vol - bg.get(integrator.frame);
 					// System.out.println(nucName+" "+avg);
 					NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
 					if (lin.nuc.get(nucName).pos.lastKey().greaterEqual(integrator.frame)
@@ -162,8 +162,7 @@ public class IntegratorCellProjected implements Integrator
 	/**
 	 * Done with all stacks
 	 */
-	public void done(IntExp integrator,
-			TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
+	public void done(IntExp integrator,	TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
 
 		// Use prior correction on this expression as well

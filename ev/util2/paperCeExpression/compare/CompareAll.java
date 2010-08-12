@@ -76,7 +76,7 @@ public class CompareAll
 	/**
 	 * Normalize time between recordings
 	 */
-	private static FrameTime buildFrametime(NucLineage coordLin)
+	public static FrameTime buildFrametime(NucLineage coordLin)
 		{
 		//Fit model time using a few markers
 		//Times must be relative to a sane time, such that if e.g. venc is missing, linear interpolation still makes sense
@@ -107,6 +107,10 @@ public class CompareAll
 		if(nuc2ft!=null)
 			ft.add(nuc2ft.pos.firstKey(), new EvDecimal("0.54").multiply(imageMaxTime));
 
+		NucLineage.Nuc nucMSppapp=coordLin.nuc.get("MSppapp"); //MSppapp
+		if(nucMSppapp!=null)
+			ft.add(nucMSppapp.pos.firstKey(), new EvDecimal("0.27").multiply(imageMaxTime));
+
 		//System.out.println("ftmap "+ft.mapFrame2time);
 		
 		//times from BC10075_070606
@@ -115,6 +119,9 @@ public class CompareAll
 		// gast 4h7m40s     14860     0.1
 		// venc 7h49m20s    28160     0.43
 		// 2ftail 8h59m20s  32360     0.54
+		
+		//to be used for the model since there is no gast nor venc		
+		// MSppapp 0.27
 		
 		//System.out.println("should be 0: "+ft.interpolateTime(nucABa.pos.firstKey()).doubleValue());
 		//System.out.println("should be 0: "+ft.interpolateTime(nuc2ft.pos.firstKey()).doubleValue());
@@ -168,7 +175,7 @@ public class CompareAll
 		for (EvDecimal frame : expressionPattern.level.keySet())
 			{
 			//Map to image
-			int time=(int)ft.interpolateTime(frame).doubleValue();
+			int time=(int)ft.mapFrame2Time(frame).doubleValue();
 			if(time<0)
 				time=0;
 			else if(time>=imageMaxTime)
@@ -244,8 +251,8 @@ public class CompareAll
 		
 		//Figure out how many steps to take
 		double dt=channelAverageDt(chanA);
-		EvDecimal frame0A=ftA.interpolateFrame(new EvDecimal(0));
-		EvDecimal frame100A=ftA.interpolateFrame(new EvDecimal(100));
+		EvDecimal frame0A=ftA.mapTime2Frame(new EvDecimal(0));
+		EvDecimal frame100A=ftA.mapTime2Frame(new EvDecimal(100));
 		int numSteps=frame100A.subtract(frame0A).divide(new EvDecimal(dt)).intValue();
 		//System.out.println("Num steps for xyz "+numSteps);
 		
@@ -257,8 +264,8 @@ public class CompareAll
 		for(double time=0;time<imageEndTime;time+=1.0/numSteps)
 			{
 			//Corresponding frames
-			EvDecimal frameA=ftA.interpolateFrame(new EvDecimal(time));
-			EvDecimal frameB=ftB.interpolateFrame(new EvDecimal(time));
+			EvDecimal frameA=ftA.mapTime2Frame(new EvDecimal(time));
+			EvDecimal frameB=ftB.mapTime2Frame(new EvDecimal(time));
 			
 			//If outside range, do not bother with this time point
 			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.firstKey()) ||
@@ -359,7 +366,7 @@ public class CompareAll
 			//Corresponding frame
 			EvDecimal modelTime=new EvDecimal(time*imageMaxTime/(double)numSteps);
 			System.out.println("Modeltime: "+modelTime);
-			EvDecimal frameA=ftA.interpolateFrame(modelTime);
+			EvDecimal frameA=ftA.mapTime2Frame(modelTime);
 			
 			//If outside range, stop calculating
 			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.lastKey()))

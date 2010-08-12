@@ -75,7 +75,7 @@ public class EvFrameEditor extends JTextField
 	private void setFrame(EvDecimal d)
 		{
 		if(currentFrameTime!=null)
-			d=currentFrameTime.interpolateTime(d);		
+			d=currentFrameTime.mapFrame2Time(d);		
 		if(d!=null)
 			{
 			newSetText(d);
@@ -107,7 +107,7 @@ public class EvFrameEditor extends JTextField
 		{
 		EvDecimal d=FrameControl.parseTime(getText());
 		if(currentFrameTime!=null)
-			d=currentFrameTime.interpolateFrame(d);
+			d=currentFrameTime.mapTime2Frame(d);
 		return d;
 		}
 

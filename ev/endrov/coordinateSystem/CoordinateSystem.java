@@ -167,7 +167,7 @@ public class CoordinateSystem extends EvObject
 		}
 
 	/**
-	 * Get read-only matrix going TO this system
+	 * Get read-only matrix going TO this system i.e. inversion of matrix bases as columns
 	 */
 	public Matrix4d getTransformToSystem()
 		{
@@ -175,13 +175,18 @@ public class CoordinateSystem extends EvObject
 		}
 	
 	/**
-	 * Get read-only matrix going FROM this system
+	 * Get read-only matrix going FROM this system i.e. matrix with bases as columns
 	 */
 	public Matrix4d getTransformFromSystem()
 		{
 		return cachedFromSystem;
 		}
 	
+	/**
+	 * Equivalent to a multiplication with a matrix where the base vectors are the columns. Equivalent to projecting down on base vectors.
+	 * @param v
+	 * @return
+	 */
 	public Vector3d transformFromSystem(Vector3d v)
 		{
 		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
@@ -189,6 +194,11 @@ public class CoordinateSystem extends EvObject
 		return new Vector3d(w.x,w.y,w.z);
 		}
 
+	/**
+	 * Equivalent to a multiplication with the inverse of a matrix where the base vectors are the columns
+	 * @param v
+	 * @return
+	 */
 	public Vector3d transformToSystem(Vector3d v)
 		{
 		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
