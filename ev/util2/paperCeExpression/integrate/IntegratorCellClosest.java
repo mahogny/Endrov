@@ -35,7 +35,7 @@ public class IntegratorCellClosest implements Integrator
 	{
 	private NucLineage lin;
 
-	private Map<String, Double> expLevel;
+	private Map<String, Double> nucSumExp;
 	private Map<String, Integer> nucVol;
 	private Map<NucSel, NucLineage.NucInterp> inter;
 	private Map<EvDecimal, Double> bg;
@@ -86,7 +86,7 @@ public class IntegratorCellClosest implements Integrator
 	
 	public void integrateStackStart(IntExp integrator)
 		{
-		expLevel = new HashMap<String, Double>();
+		nucSumExp = new HashMap<String, Double>();
 		nucVol = new HashMap<String, Integer>();
 		inter = lin.getInterpNuc(integrator.frame);
 
@@ -94,7 +94,7 @@ public class IntegratorCellClosest implements Integrator
 		for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
 			if(e.getValue().isVisible())
 				{
-				expLevel.put(e.getKey().snd(), 0.0);
+				nucSumExp.put(e.getKey().snd(), 0.0);
 				nucVol.put(e.getKey().snd(), 0);
 				}
 		}
@@ -193,7 +193,7 @@ public class IntegratorCellClosest implements Integrator
 
 						// Sum up volume and area
 						nucVol.put(closestNuc, nucVol.get(closestNuc)+1);
-						expLevel.put(closestNuc, expLevel.get(closestNuc)+thisExp);
+						nucSumExp.put(closestNuc, nucSumExp.get(closestNuc)+thisExp);
 						}
 					}
 				}
@@ -212,7 +212,7 @@ public class IntegratorCellClosest implements Integrator
 			double curBg=bg.get(integrator.frame);
 			
 			// Store value in XML
-			for (String nucName : expLevel.keySet())
+			for (String nucName : nucSumExp.keySet())
 				{
 				// Assumption: a cell does not move to vol=0 in the mid so it is fine to
 				// throw away these values.
@@ -220,12 +220,17 @@ public class IntegratorCellClosest implements Integrator
 				double vol = nucVol.get(nucName);
 				if (vol!=0)
 					{
-					double avg = expLevel.get(nucName)/vol-curBg;
-					// System.out.println(nucName+" "+avg);
-					NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
-					if (lin.nuc.get(nucName).pos.lastKey().greaterEqual(integrator.frame)
-							&&lin.nuc.get(nucName).pos.firstKey().lessEqual(integrator.frame))
+					EvDecimal lastFrame=lin.nuc.get(nucName).getLastFrame();
+					if(lastFrame==null)
+						lin.nuc.get(nucName).pos.lastKey();
+					EvDecimal firstFrame=lin.nuc.get(nucName).getFirstFrame();
+					
+					if (lastFrame.greaterEqual(integrator.frame) && firstFrame.lessEqual(integrator.frame))
+						{
+						double avg = nucSumExp.get(nucName)/vol-curBg;
+						NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
 						exp.level.put(integrator.frame, avg);
+						}
 					}
 				
 				}

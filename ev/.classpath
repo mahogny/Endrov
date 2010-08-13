@@ -50,7 +50,6 @@
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/apachecommons_inc/commons-codec-1.3.jar"/>
-	<classpathentry kind="lib" path="libs/jl1.0.jar"/>
 	<classpathentry kind="lib" path="libs/pcolt_inc/parallelcolt-0.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/jinput-test.jar"/>
 	<classpathentry kind="lib" path="libs/bin_mac/jinput.jar"/>
@@ -96,5 +95,7 @@
 	<classpathentry kind="lib" path="libs/jogl_inc/newt.osx.jar"/>
 	<classpathentry kind="lib" path="libs/jogl_inc/newt.win.jar"/>
 	<classpathentry kind="lib" path="libs/jogl_inc/newt.x11.jar"/>
+	<classpathentry kind="lib" path="libs/jogg-0.0.17.jar"/>
+	<classpathentry kind="lib" path="libs/jorbis-0.0.17.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

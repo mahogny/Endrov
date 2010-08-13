@@ -210,7 +210,7 @@ public class RecordingResource
 	static
 		{
 		JInputManager.addGamepadMode("Hardware", new JInputModeRecording(), false);
-		soundCameraSnap=new EvSound(RecordingResource.class,"13658__LS__camera_click.wav");
+		soundCameraSnap=new EvSound(RecordingResource.class,"camera_click.ogg");
 		}
 
 	}
