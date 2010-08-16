@@ -593,11 +593,12 @@ public class CompareAll
 		
 		
 		///////////////// Integrate signal in each recording //////////////
-		if(!argsSet.contains("nocalc"))
-			EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
-				public Object func(File in)
+		EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
+			public Object func(File in)
+				{
+				//System.out.println("starting      "+in);
+				try
 					{
-					//System.out.println("starting      "+in);
 					boolean needGraph=!IntExp.isDone(in);
 					if(ensureCalculated(in) && needGraph)
 						{
@@ -606,9 +607,14 @@ public class CompareAll
 						doGraphsFor(in, data, chanName);
 						}
 					//System.out.println("ending        "+in);
-					return null;
 					}
-			});
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				return null;
+				}
+		});
 		
 			
 		final Object comparisonLock=new Object();

@@ -766,13 +766,13 @@ public class ModelView extends GLCanvas
 			double angle=2*Math.PI*i/numAngle;
 			double cos=Math.cos(angle);
 			double sin=Math.sin(angle);
-			points[i]=cs.transformFromSystem(new Vector3d(-length,r*cos,r*sin));
-			normals[i]=csRot.transformFromSystem(new Vector3d(r,length*cos,length*sin)); //Assume later normalization
+			points[i]=cs.transformToSystem(new Vector3d(-length,r*cos,r*sin));
+			normals[i]=csRot.transformToSystem(new Vector3d(r,length*cos,length*sin)); //Assume later normalization
 			//normals[i].normalize(); //temp
 			//System.out.println(normals[i]);
 			}
 		
-		Vector3d normalBack=csRot.transformFromSystem(new Vector3d(-1,0,0));
+		Vector3d normalBack=csRot.transformToSystem(new Vector3d(-1,0,0));
 		
 		/*
 		gl.glBegin(GL2.GL_TRIANGLE_FAN);
