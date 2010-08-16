@@ -40,7 +40,7 @@ public class CoordinateSystem extends EvObject
 	public final Vector3d[] base=new Vector3d[]{new Vector3d(1,0,0), new Vector3d(0,1,0), new Vector3d(0,0,1)};
 	
 	
-	private Matrix4d cachedFromSystem, cachedToSystem=new Matrix4d();
+	private Matrix4d cachedToSystem, cachedToWorld=new Matrix4d();
 	
 	public CoordinateSystem()
 		{
@@ -78,16 +78,16 @@ public class CoordinateSystem extends EvObject
 		mt.setTranslation(midpoint);
 		mt.mul(m);
 
-		cachedFromSystem=mt;
+		cachedToSystem=mt;
 		//System.out.println(cachedFromSystem);
 		try
 			{
-			cachedToSystem.invert(cachedFromSystem);
+			cachedToWorld.invert(cachedToSystem);
 			}
 		catch (Exception e)
 			{
 			e.printStackTrace();
-			cachedToSystem.setIdentity(); //Safe choice, will at least stop things from crashing
+			cachedToWorld.setIdentity(); //Safe choice, will at least stop things from crashing
 			}
 		}
 
@@ -167,7 +167,15 @@ public class CoordinateSystem extends EvObject
 		}
 
 	/**
-	 * Get read-only matrix going TO this system i.e. inversion of matrix bases as columns
+	 * Get read-only matrix going FROM this system i.e. inversion of matrix bases as columns
+	 */
+	public Matrix4d getTransformToWorld()
+		{
+		return cachedToWorld;
+		}
+	
+	/**
+	 * Get read-only matrix going TO this system i.e. matrix with bases as columns
 	 */
 	public Matrix4d getTransformToSystem()
 		{
@@ -175,27 +183,7 @@ public class CoordinateSystem extends EvObject
 		}
 	
 	/**
-	 * Get read-only matrix going FROM this system i.e. matrix with bases as columns
-	 */
-	public Matrix4d getTransformFromSystem()
-		{
-		return cachedFromSystem;
-		}
-	
-	/**
 	 * Equivalent to a multiplication with a matrix where the base vectors are the columns. Equivalent to projecting down on base vectors.
-	 * @param v
-	 * @return
-	 */
-	public Vector3d transformFromSystem(Vector3d v)
-		{
-		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
-		cachedFromSystem.transform(w);
-		return new Vector3d(w.x,w.y,w.z);
-		}
-
-	/**
-	 * Equivalent to a multiplication with the inverse of a matrix where the base vectors are the columns
 	 * @param v
 	 * @return
 	 */
@@ -206,6 +194,18 @@ public class CoordinateSystem extends EvObject
 		return new Vector3d(w.x,w.y,w.z);
 		}
 
+	/**
+	 * Equivalent to a multiplication with the inverse of a matrix where the base vectors are the columns
+	 * @param v
+	 * @return
+	 */
+	public Vector3d transformToWorld(Vector3d v)
+		{
+		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
+		cachedToWorld.transform(w);
+		return new Vector3d(w.x,w.y,w.z);
+		}
+
 	public static void main(String[] args)
 		{
 		
@@ -213,7 +213,7 @@ public class CoordinateSystem extends EvObject
 		
 		Vector3d v=new Vector3d(1,0,0);
 		
-		Vector3d w=cs.transformToSystem(v);
+		Vector3d w=cs.transformToWorld(v);
 		System.out.println(w);
 		
 		}

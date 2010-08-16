@@ -702,10 +702,10 @@ public class ExpUtil
 		FrameTime ftStd=CompareAll.buildFrametime(stdlin);
 		
 		//Coordinate transform
-		CoordinateSystem csRef=ExpUtil.singlecellCSfromLin(reflin);
 		CoordinateSystem csStd=ExpUtil.singlecellCSfromLin(stdlin);
-		Matrix4d mStd=csStd.getTransformToSystem();
-		Matrix4d mRef=csRef.getTransformFromSystem();
+		CoordinateSystem csRef=ExpUtil.singlecellCSfromLin(reflin);
+		Matrix4d mStd=csStd.getTransformToWorld();
+		Matrix4d mRef=csRef.getTransformToSystem();
 		Matrix4d transform=new Matrix4d();
 		transform.mul(mRef, mStd);
 		

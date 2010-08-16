@@ -46,76 +46,71 @@ public class EvParallel
 		return map(numThread, in,func);
 		}
 	
+	
 	/**
 	 * Map :: [A] -> (A->B) -> [B]
 	 */
-	public static <A,B> List<B> map(int numThread, List<A> in, final FuncAB<A,B> func)
+	public static <A,B> List<B> map(final int numThread, Collection<A> in, final FuncAB<A,B> func)
 		{
+		final Semaphore putsem=new Semaphore(numThread);
+		final LinkedList<RuntimeException> ex=new LinkedList<RuntimeException>();
 		final LinkedList<B> out=new LinkedList<B>();
 		try
 			{
 //			System.out.println("#CPU "+numThread);
-			final Semaphore putsem=new Semaphore(numThread);
 			for(final A e:in)
 				{
+				synchronized (ex)
+					{
+					if(!ex.isEmpty())
+						break;
+					}
 				putsem.acquire();
 				new Thread(new Runnable(){
-				public void run()
-					{
-					B b=func.func(e);
-					synchronized (out){out.add(b);}
-					putsem.release();
-					}
-				}).start();
+					public void run()
+						{
+						B b;
+						try
+							{
+							b = func.func(e);
+							synchronized (out){out.add(b);}
+							}
+						catch (RuntimeException e)
+							{
+							synchronized (ex)
+								{
+								ex.add(e);
+								}
+							}
+						putsem.release();
+						}
+					}).start();
 				}
-			//System.out.println("----------- waiting for all threads to finish "+putsem.availablePermits());
 			putsem.acquire(numThread);
 			}
 		catch (InterruptedException e)
 			{
 			e.printStackTrace();
 			}
+		synchronized (ex)
+			{
+			//All threads have stopped executing, well-defined state. Did any of them fail?
+			if(!ex.isEmpty())
+				throw ex.getFirst();
+			}
 		return out;
 		}
 
+	
 	/**
 	 * Map_ :: [A] -> (A->_) -> []
 	 */
 	public static <A> void map_(Collection<A> in, final FuncAB<A,Object> func)
 		{
-		map_(numThread, in, func);
+		map(numThread, in, func);
 		}
 	
-	/**
-	 * Map_ :: [A] -> (A->_) -> []
-	 */
-	public static <A> void map_(int numThread, Collection<A> in, final FuncAB<A,Object> func)
-		{
-		try
-			{
-//			System.out.println("#CPU "+numThread);
-			final Semaphore putsem=new Semaphore(numThread);
-			for(final A e:in)
-				{
-				putsem.acquire();
-				new Thread(new Runnable(){
-				public void run()
-					{
-					func.func(e);
-					putsem.release();
-					}
-				}).start();
-				}
-			putsem.acquire(numThread);
-			}
-		catch (InterruptedException e)
-			{
-			e.printStackTrace();
-			}
-		}
-	
-	
-	
+		
 	/**
 	 * Map :: SortedMap A,B -> (B->C) -> SortedMap A,C
 	 */

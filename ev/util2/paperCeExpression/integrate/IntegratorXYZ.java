@@ -156,7 +156,7 @@ public class IntegratorXYZ implements Integrator
 					Vector3d pos = new Vector3d(integrator.stack.transformImageWorldX(ax),
 							integrator.stack.transformImageWorldY(ay), integrator.curZ.doubleValue());
 
-					Vector3d insys = cs.transformToSystem(pos);
+					Vector3d insys = cs.transformToWorld(pos);
 
 					int cx = (int) ((insys.x+0.5)*numSubDiv);
 					int cy = (int) ((insys.y+0.5)*numSubDiv);
