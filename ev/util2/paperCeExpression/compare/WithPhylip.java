@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import util2.paperCeExpression.integrate.ExpUtil;
 import util2.paperCeExpression.integrate.IntExpFileUtil;
 
 
@@ -42,10 +43,20 @@ public class WithPhylip
 		//comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileT);
 
 		//Find out which files there are
-		Set<File> datas=new TreeSet<File>();//.getAnnotated();
+		Set<File> datas=IntExpFileUtil.getAnnotated();//new TreeSet<File>();//.getAnnotated();
+		/*
 		for(Tuple<File,File> t:comparison.keySet())
-			datas.add(t.fst());
+			IntExpFileUtil.getAnnotated()
+			if(t.fst().exists())
+				datas.add(t.fst());*/
 
+		//Only keep those actually calculated
+		Set<File> found=new TreeSet<File>();
+		for(Tuple<File,File> a:comparison.keySet())
+			found.add(a.fst());
+		datas.retainAll(found);
+		
+		
 
 		System.out.println(datas);
 		
@@ -99,7 +110,7 @@ public class WithPhylip
 						
 						v=1.0-Math.abs(coef.getPearson());
 						if(fa.equals(fb))
-							System.out.println(v); //may need to force 0
+							System.out.println("should be 0: "+v); //may need to force 0
 						if(v==null || Double.isInfinite(v) || Double.isNaN(v))
 							v=0.0;
 						}
@@ -145,7 +156,8 @@ public class WithPhylip
 		new IntExpFileUtil(); //Get password right away so it doesn't stop later
 		
 		doFor(CompareAll.cachedValuesFileAP,"apt");
-//		doFor(CompareAll.cachedValuesFileXYZ,"xyz");          //note!
+		doFor(CompareAll.cachedValuesFileXYZ,"xyz");          //note!
+		doFor(CompareAll.cachedValuesFileSS,"ss");
 		
 		
 		

@@ -57,7 +57,7 @@ import endrov.util.Tuple;
  */
 public class CompareAll
 	{
-	private final static String expName="exp";
+	public final static String expName="exp";
 	
 	
 	private final static int imageMaxTime=100; //Break down to 100 time points
@@ -72,6 +72,7 @@ public class CompareAll
 	public final static File cachedValuesFileT=new File(outputBaseDir,"comparisonT.xml");
 	public final static File cachedValuesFileAP=new File(outputBaseDir,"comparisonAP.xml");
 	public final static File cachedValuesFileXYZ=new File(outputBaseDir,"comparisonXYZ.xml");
+	public final static File cachedValuesFileSS=new File(outputBaseDir,"comparisonSS.xml");
 
 	/**
 	 * Normalize time between recordings
@@ -616,16 +617,16 @@ public class CompareAll
 				}
 		});
 		
-			
 		final Object comparisonLock=new Object();
 		
 		
 		///////////////// Compare each two recordings //////////////////////////////
-		if(!argsSet.contains("nocalc"))
+
+		System.out.println("Calculate pair-wise statistics");
+		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
+		public Object func(Tuple<File,File> key)
 			{
-			System.out.println("Calculate pair-wise statistics");
-			EvParallel.map(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
-			public Object func(Tuple<File,File> key)
+			try
 				{
 				File fa=key.fst();
 				File fb=key.snd();
@@ -673,7 +674,7 @@ public class CompareAll
 						
 						
 						System.out.println("Comparing: "+key);
-	
+
 						
 						//Slices: T
 						try
@@ -724,13 +725,18 @@ public class CompareAll
 						}
 
 					}
-				
-				return null;
 				}
-			});
+			catch (Exception e)
+				{
+				e.printStackTrace();
+				}
 			
-			
+			return null;
 			}
+		});
+		
+			
+			
 		
 		
 		if(true)

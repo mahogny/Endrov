@@ -238,7 +238,7 @@ public class PhylipStatistics
 		averageDistanceSameGene/=totalWeightSameGene;
 		System.out.println("same gene: "+averageDistanceSameGene);
 		
-		System.out.println("Ratio to random: "+(averageDistanceSameGene/averageDistanceAnyGene));
+		System.out.println("Ratio to random: "+((averageDistanceSameGene-2)/(averageDistanceAnyGene-2)));
 		
 		//Precision is at least within 0.1 or so. Could do CI
 		
@@ -259,7 +259,10 @@ public class PhylipStatistics
 			{
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/apt-l2/outtree2"));
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/apt-pearson/outtree2"));
-			
+
+			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/ss-l2/outtree2"));
+			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/ss-pearson/outtree2"));
+
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/xyz-l2/outtree2"));
 			
 			}
