@@ -110,6 +110,14 @@ public class EvParallel
 		map(numThread, in, func);
 		}
 	
+	/**
+	 * Map_ :: [A] -> (A->_) -> []
+	 */
+	public static <A> void map_(int numThread, Collection<A> in, final FuncAB<A,Object> func)
+		{
+		map(numThread, in, func);
+		}
+	
 		
 	/**
 	 * Map :: SortedMap A,B -> (B->C) -> SortedMap A,C

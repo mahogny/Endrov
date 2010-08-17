@@ -237,12 +237,19 @@ public class NucModelExtension implements ModelWindowExtension
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
 		
-		public void datachangedEvent()
+		private Collection<String> getAllExpPatterns()
 			{
 			//Update list of expression patterns
 			Set<String> v=new TreeSet<String>();
 			for(NucLineage lin:NucLineage.getLineages(w.getSelectedData()))
 				v.addAll(lin.getAllExpNames());
+			return v;
+			}
+		
+		public void datachangedEvent()
+			{
+			//Update list of expression patterns
+			Collection<String> v=getAllExpPatterns();
 			for(ModwPanelExpPattern panel:expsettings)
 				panel.setAvailableExpressions(v);
 			}
@@ -319,7 +326,9 @@ public class NucModelExtension implements ModelWindowExtension
 				}
 			else if(e.getSource()==bAddExpPattern)
 				{
-				expsettings.add(new ModwPanelExpPattern(this));
+				ModwPanelExpPattern p=new ModwPanelExpPattern(this);
+				p.setAvailableExpressions(getAllExpPatterns());
+				expsettings.add(p);
 				w.updateToolPanels();
 				}
 			
