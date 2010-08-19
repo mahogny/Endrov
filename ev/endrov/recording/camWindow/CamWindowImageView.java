@@ -14,6 +14,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -26,7 +27,6 @@ import endrov.hardware.EvHardware;
 import endrov.imageWindow.GeneralTool;
 import endrov.imageWindow.ImageWindowRenderer;
 import endrov.imageset.EvPixels;
-import endrov.recording.HWStage;
 import endrov.recording.HWCamera;
 import endrov.recording.RecordingResource;
 import endrov.util.Vector2i;
@@ -223,7 +223,6 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		}
 	public void mouseDragged(MouseEvent e)
 		{
-		boolean move = true;
 //		for(JToggleButton b:toolButtons)
 //			if(b.isSelected()) move = false;
 		int dx=e.getX()-lastMousePosition.x;
@@ -250,13 +249,14 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 				}
 			if(!foundCamera)
 				System.out.println("no camera to move");
-			
-			//TODO update manual view
-			if(move)
+			else
 				{
-				moveAxis("x", dx*resMagX);
-				moveAxis("y", dy*resMagY);
+				Map<String, Double> diff=new HashMap<String, Double>();
+				diff.put("x",dx*resMagX);
+				diff.put("y",dy*resMagY);
+				RecordingResource.setRelStagePos(diff);
 				repaint();
+				//TODO update manual view
 				}
 			}
 		}
@@ -273,32 +273,9 @@ public abstract class CamWindowImageView extends JPanel implements MouseListener
 		{
 		//TODO magnification
 		int dz=e.getWheelRotation();
-		moveAxis("z", dz);
-		}
-	
-	public static void moveAxis(String s, double dx)
-		{
-		double resolution=1;
-		if(s.equals("z"))
-			resolution=10; //TODO
-		
-		
-		for(Map.Entry<EvDevicePath,HWStage> e:EvHardware.getDeviceMapCast(HWStage.class).entrySet())
-			{
-			HWStage stage=e.getValue();
-			for(int i=0;i<stage.getNumAxis();i++)
-				{
-				if(stage.getAxisName()[i].equals(s))
-					{
-					//TODO should if possible set both axis' at the same time. might make it faster
-					double[] da=new double[stage.getNumAxis()];
-					da[i]=dx*resolution;
-					stage.setRelStagePos(da);
-					return;
-					}
-				}
-			}
-		System.out.println("Did not find axis to move "+s);
+		Map<String, Double> diff=new HashMap<String, Double>();
+		diff.put("z",dz*10.0);
+		RecordingResource.setRelStagePos(diff);
 		}
 	
 	

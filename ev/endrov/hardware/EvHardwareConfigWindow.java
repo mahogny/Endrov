@@ -7,7 +7,6 @@ package endrov.hardware;
 
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +20,7 @@ import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.BasicWindowExtension;
 import endrov.basicWindow.BasicWindowHook;
 import endrov.data.EvData;
+import endrov.util.EvSwingUtil;
 
 /**
  * Hardware Configuration window
@@ -34,24 +34,46 @@ public class EvHardwareConfigWindow extends BasicWindow
 	static final long serialVersionUID=0;
 
 	
+	private JList hwList;
 	
 	
 	//JButton bAdd=new JButton("Add");
 	//JButton bRemove=new JButton("Remove");
-	private JButton bImport=new JButton("Import");
-	private JButton bExport=new JButton("Export");
-	private JButton bConfig=new JButton("Config");
+	//private JButton bImport=new JButton("Import settings");
+	//private JButton bExport=new JButton("Export settings");
+	private JButton bConfig=new JButton("Configure device");
 	//JButton bAutodetect=new JButton("Autodetect");
 	
 	
-	private static class HWListItem
+	private static class HWListItem 
 		{
 		EvDevicePath name;
 		public String toString()
 			{
 			return name+" :: "+EvHardware.getDevice(name).getDescName();
 			}
+		
+		@Override
+		public boolean equals(Object obj)
+			{
+			if(obj instanceof HWListItem)
+				{
+				HWListItem o=(HWListItem)obj;
+				return o.name.equals(name);
+				}
+			else
+				return false;
+			}
+		
+		@Override
+		public int hashCode()
+			{
+			return name.hashCode();
+			}
+		
+		
 		}
+	
 	
 	public EvHardwareConfigWindow()
 		{
@@ -60,37 +82,21 @@ public class EvHardwareConfigWindow extends BasicWindow
 	
 	public EvHardwareConfigWindow(Rectangle bounds)
 		{
-		Vector<HWListItem> hwNames=new Vector<HWListItem>();
-		for(EvDevicePath hw:EvHardware.getDeviceList())
-			{
-			HWListItem item=new HWListItem();
-			item.name=hw;
-			hwNames.add(item);
-			}
+		hwList=new JList();
+		updateHardwareList();
 		
-		final JList hwList=new JList(hwNames);
 		JScrollPane spane=new JScrollPane(hwList,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		
-		JPanel bpu=new JPanel(new GridLayout(1,3));
-		bpu.add(bImport);
-		bpu.add(bExport);
-		bpu.add(bConfig);
-		/*
-		JPanel bpl=new JPanel(new GridLayout(1,3));
-		bpl.add(bLoad);
-		bpl.add(bSave);
-		bpl.add(bAutodetect);
-*/
-		JPanel bp=new JPanel(new GridLayout(1,1));
-		bp.add(bpu);
-		//bp.add(bpl);
 		
 		setLayout(new BorderLayout());
 		add(spane,BorderLayout.CENTER);
-		add(bp,BorderLayout.SOUTH);
-		
-		
-		
+		add(
+				EvSwingUtil.layoutEvenVertical
+				(
+						//bImport, bExport,
+						bConfig
+				),
+				BorderLayout.SOUTH);
+
 		bConfig.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e)
 			{
@@ -101,9 +107,6 @@ public class EvHardwareConfigWindow extends BasicWindow
 			}
 		});
 		
-		
-		
-		
 		//Window overall things
 		setTitleEvWindow("Hardware Configuration");
 		packEvWindow();
@@ -112,8 +115,35 @@ public class EvHardwareConfigWindow extends BasicWindow
 		}
 	
 	
+	private Vector<HWListItem> getHardwareList()
+		{
+		Vector<HWListItem> hwNames=new Vector<HWListItem>();
+		for(EvDevicePath hw:EvHardware.getDeviceList())
+			{
+			HWListItem item=new HWListItem();
+			item.name=hw;
+			hwNames.add(item);
+			}
+		return hwNames;
+		}
 	
-	
+	/**
+	 * Some listener would be better
+	 */
+	private void updateHardwareList()
+		{
+		Vector<HWListItem> curItems=new Vector<HWListItem>();
+		for(int i=0;i<hwList.getModel().getSize();i++)
+			curItems.add((HWListItem)hwList.getModel().getElementAt(i));
+
+		Vector<HWListItem> newItems=getHardwareList();
+		if(!newItems.equals(curItems))
+			{
+			hwList.setListData(newItems);
+			hwList.repaint();
+			}
+		
+		}
 	
 	
 	
@@ -127,16 +157,13 @@ public class EvHardwareConfigWindow extends BasicWindow
 	
 	public void dataChangedEvent()
 		{
-		// TODO Auto-generated method stub
-		
+		updateHardwareList();
 		}
 
 	public void loadedFile(EvData data){}
 
 	public void windowSavePersonalSettings(Element e)
 		{
-		// TODO Auto-generated method stub
-		
 		} 
 	public void freeResources(){}
 

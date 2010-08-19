@@ -250,21 +250,21 @@ public class IntegratorXYZ implements Integrator
 		
 		// Store expression as a new channel
 		EvChannel chanxyz = integrator.imset.getCreateChannel("XYZ");
+		chanxyz.imageLoader.clear();
 		for (EvDecimal frame : new LinkedList<EvDecimal>(expMap.keySet()))
 			{
 			EvStack stack = chanxyz.getCreateFrame(frame);
 			stack.allocate(numSubDiv, numSubDiv, numSubDiv, EvPixelsType.DOUBLE, null);
 			stack.resX = stack.resY = 16; //Arbitrary
 			
-			//System.out.println("converting im.frame "+frame);
 			for (int az = 0; az<numSubDiv; az++)
 				{
 				double[][] planeExp=expMap.get(frame)[az];
 				
-				EvImage evim = chanxyz.createImageLoader(frame, new EvDecimal(az));
+				//EvImage evim = chanxyz.createImageLoader(frame, new EvDecimal(az));
 				
-				EvPixels p = new EvPixels(EvPixelsType.DOUBLE, numSubDiv, numSubDiv);
-				evim.setPixelsReference(p);
+				EvPixels p = stack.getInt(az).getPixels();//new EvPixels(EvPixelsType.DOUBLE, numSubDiv, numSubDiv);
+				//evim.setPixelsReference(p);
 				double[] line = p.getArrayDouble();
 				for (int ay = 0; ay<numSubDiv; ay++)
 					for (int ax = 0; ax<numSubDiv; ax++)

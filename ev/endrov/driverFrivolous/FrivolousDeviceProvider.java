@@ -27,6 +27,7 @@ import javax.swing.WindowConstants;
 
 import org.jdom.Element;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.hardware.EvDevice;
 import endrov.hardware.EvDeviceObserver;
 import endrov.hardware.EvDeviceProvider;
@@ -842,6 +843,8 @@ public class FrivolousDeviceProvider extends EvDeviceProvider implements EvDevic
 					hw.put("stage", stage);
 					hw.put("autofocus", new FrivolousAutofocus(stage));
 
+					BasicWindow.updateWindows();
+					
 					bStartStop.setText("Stop");
 					}
 				else

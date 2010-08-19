@@ -257,6 +257,9 @@ public class PhylipStatistics
 		
 		try
 			{
+			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/t-l2/outtree2"));
+			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/t-pearson/outtree2"));
+			
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/apt-l2/outtree2"));
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/apt-pearson/outtree2"));
 
@@ -264,6 +267,7 @@ public class PhylipStatistics
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/ss-pearson/outtree2"));
 
 			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/xyz-l2/outtree2"));
+			evaluateTree(new File("/home/tbudev3/expsummary-0-60/phylip/xyz-pearson/outtree2"));
 			
 			}
 		catch (IOException e)

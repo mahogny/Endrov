@@ -3,12 +3,14 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperCeExpression.integrate;
+package util2.paperCeExpression.old;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import util2.paperCeExpression.integrate.ExpUtil;
+import util2.paperCeExpression.integrate.IntExp;
 import util2.paperCeExpression.integrate.IntExp.Integrator;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;

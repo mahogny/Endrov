@@ -6,7 +6,10 @@
 package endrov.recording;
 
 
+import java.util.Map;
+
 import endrov.data.EvData;
+import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
@@ -200,8 +203,60 @@ public class RecordingResource
 		return ret;
 		}
 	
-	
 
+	/**
+	 * Move relative any device with right axis names
+	 */
+	public static void setRelStagePos(Map<String, Double> axisDiff)
+		{
+		for(Map.Entry<EvDevicePath,HWStage> e:EvHardware.getDeviceMapCast(HWStage.class).entrySet())
+			{
+			HWStage stage=e.getValue();
+			boolean foundHere=false;
+			double[] da=new double[stage.getNumAxis()];
+			for(int i=0;i<stage.getNumAxis();i++)
+				{
+				Double v=axisDiff.get(stage.getAxisName()[i]);
+				if(v!=null)
+					{
+					foundHere=true;
+					da[i]=v;
+					}
+				}
+			if(foundHere)
+				stage.setRelStagePos(da);
+			}
+		}
+
+	
+	/**
+	 * Move any device with right axis names
+	 */
+	public static void setStagePos(Map<String, Double> axisPos)
+		{
+		int found=0;
+		for(Map.Entry<EvDevicePath,HWStage> e:EvHardware.getDeviceMapCast(HWStage.class).entrySet())
+			{
+			HWStage stage=e.getValue();
+			boolean foundHere=false;
+			double[] da=new double[stage.getNumAxis()];
+			for(int i=0;i<stage.getNumAxis();i++)
+				{
+				Double v=axisPos.get(stage.getAxisName()[i]);
+				if(v!=null)
+					{
+					found++;
+					foundHere=true;
+					da[i]=v;
+					}
+				}
+			if(foundHere)
+				stage.setStagePos(da);
+			if(found==axisPos.size())
+				return;
+			}
+		}
+	
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -212,5 +267,6 @@ public class RecordingResource
 		JInputManager.addGamepadMode("Hardware", new JInputModeRecording(), false);
 		soundCameraSnap=new EvSound(RecordingResource.class,"camera_click.ogg");
 		}
+	
 
 	}

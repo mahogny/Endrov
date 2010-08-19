@@ -382,6 +382,7 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 		tAutoRange.setToolTipText("Automatically adjust visible range");
 		bSetFullRange.setToolTipText("Set visible range of all of camera range");
 
+		bCameraToROI.addActionListener(this);
 		tLive.addActionListener(this);
 		bSnap.addActionListener(this);
 		//tHistoView.addActionListener(this);
@@ -481,6 +482,8 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 			autofocus();
 		else if(e.getSource()==bGoToROI)
 			moveStageFocusROI();
+		else if(e.getSource()==bCameraToROI)
+			showErrorDialog("Not implemented yet");
 		else if(e.getSource()==histoView)
 			{
 			drawArea.repaint();
@@ -730,8 +733,29 @@ public class CamWindow extends BasicWindow implements ActionListener, ImageWindo
 	 */
 	public void moveStageFocusROI()
 		{
-		//TODO
-		//Probably useful in a wider context - put in resource
+		Set<ROI> rois=new HashSet<ROI>(ROI.getSelected());
+		
+		if(rois.size()!=1)
+			showErrorDialog("Select 1 ROI first");
+		else
+			{
+			ROI roi=rois.iterator().next();
+			
+			double x=roi.getPlacementHandle1().getX();
+			double y=roi.getPlacementHandle2().getY();
+			//Best would be to be able to get a bounding box
+			
+			Map<String, Double> pos=new HashMap<String, Double>();
+			pos.put("x",x);
+			pos.put("y",y);
+			RecordingResource.setStagePos(pos);
+			
+			//TODO move to center. must take into account camera etc in that case 
+			
+			//TODO
+			//Probably useful in a wider context - put in resource
+			}
+			
 		}
 		
 	
