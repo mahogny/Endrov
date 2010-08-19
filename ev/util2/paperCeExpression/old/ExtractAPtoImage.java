@@ -92,7 +92,7 @@ public class ExtractAPtoImage
 		
 		
 		System.out.println();
-		ColocCoefficients coeffT=CompareAll.colocAP(imtA, imtB);
+		ColocCoefficients coeffT=CompareAll.colocSliceTime(imtA, imtB);
 		System.out.println("coeffT "+coeffT.n+" "+coeffT.sumX+" "+coeffT.sumXX+" "+coeffT.sumY);
 		System.out.println("pearsonT "+ coeffT.getPearson());
 

@@ -162,6 +162,9 @@ public class EvStack implements AnyEvImage
 			dispY=ref.dispY;
 			dispZ=ref.dispZ;
 			}
+		
+		//Remove old images. Add up new image planes
+		loaders.clear();
 		for(int i=0;i<d;i++)
 			{
 			EvImage evim=new EvImage();

@@ -13,9 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import util2.paperCeExpression.integrate.ExpUtil;
 import util2.paperCeExpression.integrate.IntExpFileUtil;
-
 
 import endrov.ev.EV;
 import endrov.ev.EvLog;
@@ -155,8 +153,9 @@ public class WithPhylip
 		EV.loadPlugins();
 		new IntExpFileUtil(); //Get password right away so it doesn't stop later
 		
+		doFor(CompareAll.cachedValuesFileT,"t");
 		doFor(CompareAll.cachedValuesFileAP,"apt");
-		doFor(CompareAll.cachedValuesFileXYZ,"xyz");          //note!
+		doFor(CompareAll.cachedValuesFileXYZ,"xyz");          
 		doFor(CompareAll.cachedValuesFileSS,"ss");
 		
 		

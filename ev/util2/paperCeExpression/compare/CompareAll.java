@@ -71,6 +71,8 @@ public class CompareAll
 
 	public final static File cachedValuesFileT=new File(outputBaseDir,"comparisonT.xml");
 	public final static File cachedValuesFileAP=new File(outputBaseDir,"comparisonAP.xml");
+	public final static File cachedValuesFileDV=new File(outputBaseDir,"comparisonDV.xml");
+	public final static File cachedValuesFileLR=new File(outputBaseDir,"comparisonLR.xml");
 	public final static File cachedValuesFileXYZ=new File(outputBaseDir,"comparisonXYZ.xml");
 	public final static File cachedValuesFileSS=new File(outputBaseDir,"comparisonSS.xml");
 
@@ -221,14 +223,24 @@ public class CompareAll
 		}
 	
 	
+	/*
+	public static Imageset getXYZimset(EvData data)
+		{
+		for(Map.Entry<EvPath, Imageset> e:data.getIdObjectsRecursive(Imageset.class).entrySet())
+			if(e.getKey().getLeafName().equals("XYZ"))
+				return e.getValue();
+		return null;
+		}*/
+	
 	/**
 	 * Coloc over XYZ
 	 */
 	public static ColocCoefficients colocXYZ(EvData dataA, EvData dataB, NucLineage coordLinA, NucLineage coordLinB, String chanNameA, String chanNameB)
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
-		//Imageset imsetB = dataA.getObjects(Imageset.class).get(0);
 		Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
+		//Imageset imsetA = getXYZimset(dataA);
+		//Imageset imsetB = getXYZimset(dataB);
 		
 		FrameTime ftA=buildFrametime(coordLinA);
 		FrameTime ftB=buildFrametime(coordLinB);
@@ -251,44 +263,52 @@ public class CompareAll
 			}
 		
 		//Figure out how many steps to take
-		double dt=channelAverageDt(chanA);
+		/*double dt=channelAverageDt(chanA);
 		EvDecimal frame0A=ftA.mapTime2Frame(new EvDecimal(0));
 		EvDecimal frame100A=ftA.mapTime2Frame(new EvDecimal(100));
 		int numSteps=frame100A.subtract(frame0A).divide(new EvDecimal(dt)).intValue();
-		//System.out.println("Num steps for xyz "+numSteps);
+		System.out.println("Num steps for xyz "+numSteps);*/
+		
+		int numSteps=100; //Alternative version!
 		
 		//TODO verify that this idea is correct
 		
 		//Compare channels
 		ColocCoefficients coloc=new ColocCoefficients();
 		int cnt=0;
-		for(double time=0;time<imageEndTime;time+=1.0/numSteps)
+		for(double time=0;time<imageEndTime;time+=imageMaxTime/(double)numSteps)   
 			{
 			//Corresponding frames
 			EvDecimal frameA=ftA.mapTime2Frame(new EvDecimal(time));
 			EvDecimal frameB=ftB.mapTime2Frame(new EvDecimal(time));
 			
 			//If outside range, do not bother with this time point
-			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.firstKey()) ||
-					frameB.less(chanB.imageLoader.firstKey()) || frameB.greater(chanB.imageLoader.firstKey()))
+			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.lastKey()) ||
+					frameB.less(chanB.imageLoader.firstKey()) || frameB.greater(chanB.imageLoader.lastKey()))
 				{
 				//System.out.println("Skip: "+frameA+"\t"+frameB);
 				continue;
 				}
+			//else
+				//System.out.println("do: "+frameA+"\t"+frameB);
 			cnt++;
 			//Use closest frame in each
 			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
 			EvStack stackB=chanB.imageLoader.get(chanB.closestFrame(frameB));
 
 			if(stackA.getDepth()!=stackB.getDepth())
-				System.out.println("Different number of slices in Z from frames "+frameA+" vs "+frameB);
+				{
+				System.out.println("Different number of slices in Z from frames "+frameA+" vs "+frameB+"    --    "+stackA.getDepth()+"    "+stackB.getDepth());
+				throw new RuntimeException("Different number of slices in Z from frames "+frameA+" vs "+frameB+"    --    "+stackA.getDepth()+" vs "+stackB.getDepth());
+				}
 			
 			//Compare each slice. Same number of slices since it has been normalized
 			int numz=stackA.getDepth();
+			
+
+
 			for(int i=0;i<numz;i++)
 				{
-//				EvPixels pA=stackA.get(new EvDecimal(i)).getPixels();
-//				EvPixels pB=stackB.get(new EvDecimal(i)).getPixels();
 				EvPixels pA=stackA.getInt(i).getPixels();
 				EvPixels pB=stackB.getInt(i).getPixels();
 				if(pA==null || pB==null)
@@ -503,7 +523,7 @@ public class CompareAll
 	/**
 	 * Calculate the colocalization given two processed AP images
 	 */
-	public static ColocCoefficients colocAP(double[][] imA, double[][] imB)
+	public static ColocCoefficients colocSliceTime(double[][] imA, double[][] imB)
 		{
 		ColocCoefficients coeff=new ColocCoefficients();
 		for(int i=0;i<imageEndTime;i++)
@@ -572,17 +592,23 @@ public class CompareAll
 		//Read past calculated values from disk 
 		final Map<Tuple<File,File>, ColocCoefficients> comparisonT;
 		final Map<Tuple<File,File>, ColocCoefficients> comparisonAP;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonDV;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonLR;
 		final Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ;
 		if(!argsSet.contains("nocache"))
 			{
 			comparisonT=loadCache(datas, cachedValuesFileT);
 			comparisonAP=loadCache(datas, cachedValuesFileAP);
+			comparisonDV=loadCache(datas, cachedValuesFileDV);
+			comparisonLR=loadCache(datas, cachedValuesFileLR);
 			comparisonXYZ=loadCache(datas, cachedValuesFileXYZ);
 			}
 		else
 			{
 			comparisonT=new TreeMap<Tuple<File,File>, ColocCoefficients>();
 			comparisonAP=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonDV=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonLR=new TreeMap<Tuple<File,File>, ColocCoefficients>();
 			comparisonXYZ=new TreeMap<Tuple<File,File>, ColocCoefficients>();
 			}
 
@@ -626,11 +652,10 @@ public class CompareAll
 		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
 		public Object func(Tuple<File,File> key)
 			{
+			File fa=key.fst();
+			File fb=key.snd();
 			try
 				{
-				File fa=key.fst();
-				File fb=key.snd();
-				
 				boolean containsKey;
 				synchronized(comparisonLock)
 					{
@@ -681,7 +706,7 @@ public class CompareAll
 							{
 							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
 							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeffT=colocAP(imtA, imtB);
+							ColocCoefficients coeffT=colocSliceTime(imtA, imtB);
 							synchronized (comparisonLock)
 								{
 								comparisonT.put(Tuple.make(fa,fb), coeffT);
@@ -697,10 +722,10 @@ public class CompareAll
 							{
 							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
 							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeffAP=colocAP(imapA, imapB);
+							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
 							synchronized (comparisonLock)
 								{
-								comparisonAP.put(Tuple.make(fa,fb), coeffAP);
+								comparisonAP.put(Tuple.make(fa,fb), coeff);
 								}
 							}
 						catch (Exception e)
@@ -708,8 +733,42 @@ public class CompareAll
 							e.printStackTrace();
 							}
 						
+						//Slices: DV
+						try
+							{
+							double[][] imapA=apToArray(dataA, "DV"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, "DV"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+							synchronized (comparisonLock)
+								{
+								comparisonDV.put(Tuple.make(fa,fb), coeff);
+								}
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+
+						
+						//Slices: LR
+						try
+							{
+							double[][] imapA=apToArray(dataA, "LR"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, "LR"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+							synchronized (comparisonLock)
+								{
+								comparisonLR.put(Tuple.make(fa,fb), coeff);
+								}
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+
+						
 						//Slices: XYZ
-						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), chanNameA, chanNameB);
+						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
 						synchronized (comparisonLock)
 							{
 							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
@@ -720,6 +779,8 @@ public class CompareAll
 							{
 							storeCache(comparisonT, cachedValuesFileT);
 							storeCache(comparisonAP, cachedValuesFileAP);
+							storeCache(comparisonDV, cachedValuesFileDV);
+							storeCache(comparisonLR, cachedValuesFileLR);
 							storeCache(comparisonXYZ, cachedValuesFileXYZ);
 							}
 						}
@@ -728,6 +789,7 @@ public class CompareAll
 				}
 			catch (Exception e)
 				{
+				System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
 				e.printStackTrace();
 				}
 			
@@ -735,7 +797,6 @@ public class CompareAll
 			}
 		});
 		
-			
 			
 		
 		

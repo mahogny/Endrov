@@ -19,11 +19,9 @@ import endrov.data.EvPath;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
-import endrov.flowColocalization.ColocCoefficients;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
-import endrov.util.Tuple;
 
 /**
  * Pairwise comparison of recordings
