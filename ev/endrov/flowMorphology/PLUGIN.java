@@ -35,13 +35,14 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
+		//I think the JRE has issues with so many classes listed here(?). what would happen if I create a list first?
 		return new Class[]{
-				FlowUnitMorphBlackTophat2D.class,
-				FlowUnitMorphWhiteTophat2D.class,
 				FlowUnitMorphClose2D.class,
 				FlowUnitMorphOpen2D.class,
 				FlowUnitMorphDilate2D.class,
 				FlowUnitMorphErode2D.class,
+				FlowUnitMorphBlackTophat2D.class,
+				FlowUnitMorphWhiteTophat2D.class,
 				
 				FlowUnitMorphComplementBinary.class,
 				FlowUnitMorphComplementGray2D.class,

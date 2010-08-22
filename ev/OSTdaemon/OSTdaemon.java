@@ -460,8 +460,9 @@ public class OSTdaemon extends Thread
 		}
 	
 
+	
 	/**
-	 * Read a stack using Bioformats
+	 * Read a stack using Bioformats. Would be better if it relied on the Endrov common API! 
 	 */
 	public static List<BufferedImage> readStackBioformats(File filename) throws Exception
 		{
@@ -474,7 +475,7 @@ public class OSTdaemon extends Thread
 		LinkedList<BufferedImage> list=new LinkedList<BufferedImage>();
 		for(int id=0;id<count;id++)
 			{
-			EvPixels pixels=new BioformatsSliceIO(imageReader,id,0,"", false).loadJavaImage();
+			EvPixels pixels=new BioformatsSliceIO(imageReader,id,filename, false).loadJavaImage();
 			BufferedImage i=pixels.quickReadOnlyAWT();
 //			BufferedImage i=imageReader.openImage(id);
 			int w=i.getWidth();
@@ -484,11 +485,11 @@ public class OSTdaemon extends Thread
 	
 			float matrix[][]={{0,0,0}};
 			if(i.getRaster().getNumBands()==1)
-				matrix=new float[][]{{0/*,0*/}};
+				matrix=new float[][]{{0}};
 			else if(i.getRaster().getNumBands()==2)
-				matrix=new float[][]{{0,0/*,0*/}};
+				matrix=new float[][]{{0,0}};
 			else if(i.getRaster().getNumBands()==3)
-				matrix=new float[][]{{0,0,0/*,0*/}};
+				matrix=new float[][]{{0,0,0}};
 	
 			matrix[0][subid]=1;
 			RasterOp op=new BandCombineOp(matrix,new RenderingHints(null));

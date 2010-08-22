@@ -50,6 +50,7 @@ public class EvParallel
 	/**
 	 * Map :: [A] -> (A->B) -> [B]
 	 */
+	/*
 	public static <A,B> List<B> map(final int numThread, Collection<A> in, final FuncAB<A,B> func)
 		{
 		final Semaphore putsem=new Semaphore(numThread);
@@ -98,6 +99,93 @@ public class EvParallel
 			if(!ex.isEmpty())
 				throw ex.getFirst();
 			}
+		return out;
+		}*/
+
+	//Version that spawns fewer threads
+	
+	/**
+	 * Map :: [A] -> (A->B) -> [B]
+	 */
+	public static <A,B> List<B> map(final int numThread, Collection<A> in, final FuncAB<A,B> func)
+		{
+		//final LinkedList<B> out = new LinkedList<B>();
+		final ArrayList<B> out = new ArrayList<B>(in.size());
+		for(int i=0;i<in.size();i++)
+			out.add(null);
+		final LinkedList<RuntimeException> ex = new LinkedList<RuntimeException>();
+		final StrongReference<Integer> jobcounter = new StrongReference<Integer>(0);
+		try
+			{
+			final Iterator<A> inIterator=in.iterator();
+			final Semaphore putsem=new Semaphore(0);
+			for(int curThread=0;curThread<numThread;curThread++)
+				{
+				final int fcurThread=curThread;
+				new Thread()
+					{
+					public void run()
+						{
+						A a;
+						for(;;)
+							{
+							long startTime=System.currentTimeMillis();
+							System.out.println("-------- Starting job in thread #"+fcurThread);
+							int jobnum;
+							//Get a job
+							synchronized (inIterator)
+								{
+								if(inIterator.hasNext())
+									{
+									a=inIterator.next();
+									jobnum=jobcounter.get();
+									jobcounter.set(jobnum+1);
+									}
+								else
+									break;
+								}
+							//Execute function, handle potential error
+							try
+								{
+								B b=func.func(a);
+								synchronized (out)
+									{
+									out.set(jobnum,b);
+									}
+								}
+							catch (RuntimeException e)
+								{
+								//Finish off all elements
+								synchronized (inIterator)
+									{
+									while(inIterator.hasNext())
+										inIterator.next();
+									}
+								//Store the error
+								synchronized (ex)
+									{
+									ex.add(e);
+									break;
+									}
+								}
+							long endTime=System.currentTimeMillis();
+							System.out.println("-------- Finished job in thread #"+fcurThread+"  time "+(endTime-startTime));
+							}
+						putsem.release();
+						}
+					}.start();
+				}
+				
+			putsem.acquire(numThread);
+			}
+		catch (InterruptedException e)
+			{
+			e.printStackTrace();
+			}
+		
+		//All threads have stopped executing, well-defined state. Did any of them fail?
+		if(!ex.isEmpty())
+			throw ex.getFirst();
 		return out;
 		}
 

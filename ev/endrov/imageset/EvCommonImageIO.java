@@ -67,15 +67,21 @@ public class EvCommonImageIO
 					//System.out.println("bim   "+bim);
 					}
 			
+
+			//BufferedImage bim=new BioformatsSliceIO(reader,id,0,"").loadJavaImage().quickReadOnlyAWT();
+			//BufferedImage bim=reader.openImage(id);
+			//return bim;
+			
+			
 			//Rely on Bioformats in the worst case
 			ImageReader reader=new ImageReader();
 			reader.setId(file.getAbsolutePath());
-
 			int id=z==null?0:z;
-			//BufferedImage bim=new BioformatsSliceIO(reader,id,0,"").loadJavaImage().quickReadOnlyAWT();
-			return new BioformatsSliceIO(reader,id,0,"", true).loadJavaImage();
-			//BufferedImage bim=reader.openImage(id);
-			//return bim;
+			return new BioformatsSliceIO(reader,id,file, true).loadJavaImage();
+
+			
+			
+			
 			}
 		catch (FormatException e)
 			{
@@ -139,7 +145,7 @@ public class EvCommonImageIO
 			else
 				{
 				file=getTiffFile(file);
-				BioformatsSliceIO.saveImageAsTiff(p, file);
+				BioformatsUtil.saveImageAsTiff(p, file);
 				}
 			}
 		else 
@@ -147,7 +153,7 @@ public class EvCommonImageIO
 			//Floats
 			p=p.convertToFloat(true);
 			file=getTiffFile(file);
-			BioformatsSliceIO.saveImageAsTiff(p, file);
+			BioformatsUtil.saveImageAsTiff(p, file);
 			}
 		return file;
 		}

@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/starter/StartOld.java|endrov/util/DynamicClass.java|endrov/flow/std/math/FlowUnitComplexMul.java|endrov/unsortedImageFilters/Skeletonize3D_.java|util/munkresKuhn/AssignmentProblem.java|util2/integrateExpression/IntExpTissue.java|util2/integrateExpression/MakeProfiles.java|util2/integrateExpression/OldIntegrateExpression.java|endrov/starter/MyURLClassLoader.java|endrov/driverMicromanager/conf/Configurator.java|util2/integrateExpression/OldIntExpAP.java|util2/integrateExpression/OldIntExpTissue.java|util2/integrateExpression/OldMakeProfiles.java|endrov/macBinding/|util2/paperStdCelegans/oldMakeStdWorm/|util2/paperStdCelegans/makeCellContactMap/CellContactMapLevel.java|endrov/recording/OldComboMetaState.java" kind="src" path="">
+	<classpathentry excluding="evplugin/makeQT/CalcThreadOld.java|evplugin/imageWindow/BlendComposite.java|util/BatchExtractAP.java|evplugin/modelWindow/voxels/CopyOfIsotest.java|evplugin/modelWindow/isosurf/CopyOfIsotest.java|util/BatchExtractIntens.java|evplugin/roi/primitive/CopyOfUnionROI.java|evplugin/script/parser/|util2/makeStdWormDistFast2/|util2/BatchExtractNormalizeDVAP.java|evplugin/makeQT/|evplugin/macBinding/|endrov/makeMax/CalcThreadOld.java|util2/misc/BatchExtractNormalizeDVAP.java|util2/cellContactMap/CellContactMapLevel.java|util2/makeStdWormDist4/|util2/misc/|endrov/imagesetOST/FtpOST.java|util/BatchMax.java|endrov/starter/StartOld.java|endrov/util/DynamicClass.java|endrov/flow/std/math/FlowUnitComplexMul.java|endrov/unsortedImageFilters/Skeletonize3D_.java|util/munkresKuhn/AssignmentProblem.java|util2/integrateExpression/IntExpTissue.java|util2/integrateExpression/MakeProfiles.java|util2/integrateExpression/OldIntegrateExpression.java|endrov/starter/MyURLClassLoader.java|endrov/driverMicromanager/conf/Configurator.java|util2/integrateExpression/OldIntExpAP.java|util2/integrateExpression/OldIntExpTissue.java|util2/integrateExpression/OldMakeProfiles.java|endrov/macBinding/|util2/paperStdCelegans/oldMakeStdWorm/|util2/paperStdCelegans/makeCellContactMap/CellContactMapLevel.java|endrov/recording/OldComboMetaState.java|endrov/imagesetBioformats/EvIODataBioformatsOld.java" kind="src" path="">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="ev/libs/bin_linux"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/bio-formats_inc/slf4j-jdk14.jar"/>
 	<classpathentry kind="lib" path="libs/bio-formats_inc/netcdf-4.0.jar"/>
 	<classpathentry kind="lib" path="libs/bio-formats_inc/mdbtools-java.jar"/>
 	<classpathentry kind="lib" path="libs/bio-formats_inc/loci-common.jar"/>
-	<classpathentry kind="lib" path="libs/bio-formats_inc/grib-5.1.03.jar"/>
-	<classpathentry kind="lib" path="libs/bio-formats_inc/bufr-1.1.00.jar"/>
 	<classpathentry kind="lib" path="libs/bio-formats_inc/bio-formats.jar"/>
 	<classpathentry kind="lib" path="libs/vecmath.jar"/>
 	<classpathentry kind="lib" path="libs/swing-worker-1.2.jar"/>
