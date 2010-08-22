@@ -48,6 +48,22 @@ public class ColocCoefficients
 			}
 		}
 	
+	
+	/**
+	 * Compare several pixels
+	 */
+	public void add(float[] arrX, float[] arrY)
+		{
+		if(arrX.length!=arrY.length)
+			throw new RuntimeException("coloc arrays have different length");
+		for(int i=0;i<arrX.length;i++)
+			{
+			double x=arrX[i];
+			double y=arrY[i];
+			add(x,y);
+			}
+		}
+	
 	/**
 	 * Compare one pixel
 	 */

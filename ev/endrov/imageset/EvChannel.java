@@ -266,6 +266,15 @@ public class EvChannel extends EvObject implements AnyEvImage
 		return framedata.get(prop);
 		}
 
+	public void setFrameMeta(EvDecimal frame, String prop, String value)
+		{
+		HashMap<String, String> framedata = metaFrame.get(frame);
+		if (framedata==null)
+			metaFrame.put(frame, framedata=new HashMap<String, String>());
+		framedata.put(prop, value);
+		}
+
+	
 	/** Get (other) meta data in form of a string (default="") */
 	public String getMetaValueString(String s)
 		{

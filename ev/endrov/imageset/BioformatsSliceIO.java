@@ -5,15 +5,10 @@
  */
 package endrov.imageset;
 
-import java.io.File;
 
 import loci.common.DataTools;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
-import loci.formats.MetadataTools;
-import loci.formats.meta.MetadataRetrieve;
-import loci.formats.meta.MetadataStore;
-import loci.formats.out.TiffWriter;
 
 /**
  * Image I/O
@@ -21,27 +16,18 @@ import loci.formats.out.TiffWriter;
 public class BioformatsSliceIO implements EvIOImage
 	{
 	private int id;
-	//private Integer subid;
 	private IFormatReader imageReader;
-	private String sourceName;
+	private Object sourceName;
 	private boolean closeReaderOnFinalize;
-	
-	public BioformatsSliceIO(IFormatReader imageReader, int id, Integer subid, String sourceName, boolean closeReaderOnFinalize)
+
+	public BioformatsSliceIO(IFormatReader imageReader, int id, Object sourceName, boolean closeReaderOnFinalize)
 		{
 		this.sourceName=sourceName;
 		this.id=id;
 		this.imageReader=imageReader;
 		this.closeReaderOnFinalize=closeReaderOnFinalize;
-		//this.subid=subid;
 		}
 
-	
-	public String sourceName()
-		{
-		return sourceName;
-		}
-
-	
 	
 	/**
 	 * Load the image
@@ -176,83 +162,13 @@ public class BioformatsSliceIO implements EvIOImage
 			}
 		catch(Exception e)
 			{
-			endrov.ev.EvLog.printError("Failed to read image "+sourceName(),e);
+			endrov.ev.EvLog.printError("Failed to read image, sourcename="+sourceName+"  id="+id,e);
 			return null;
 			}
 		}
 
 	
 
-	/**
-	 * Save single image as TIFF. 
-	 */
-	public static void saveImageAsTiff(EvPixels p, File file)
-		{
-		//For Bio-formats usage, see
-		//loci-plugins/src/loci/plugins/exporter/Exporter.java
-		//System.out.println(file);
-		
-		MetadataStore store = MetadataTools.createOMEXMLMetadata();
-		store.createRoot();
-		
-		store.setPixelsSizeX(p.getWidth(), 0, 0);
-		store.setPixelsSizeY(p.getHeight(), 0, 0);
-		store.setPixelsSizeZ(1, 0, 0);
-		store.setPixelsSizeC(1, 0, 0);
-		store.setPixelsSizeT(1, 0, 0);
-		
-		//Convert to byte array
-		int ptype;
-		byte[] barr;
-		if(p.getType()==EvPixelsType.SHORT)
-			{
-			short[] array=p.getArrayShort();
-			ptype=FormatTools.INT16;
-			barr=DataTools.shortsToBytes(array, true);
-			}
-		else if(p.getType()==EvPixelsType.FLOAT)
-			{
-			float[] array=p.getArrayFloat();
-			ptype=FormatTools.FLOAT;
-			barr=DataTools.floatsToBytes(array, true);
-			}
-		else
-			//TODO Double
-			{
-			p=p.convertToInt(true);
-			int[] array=p.getArrayInt();
-			ptype=FormatTools.INT32;
-			barr=DataTools.intsToBytes(array, true);
-			}
-		
-		store.setPixelsPixelType(FormatTools.getPixelTypeString(ptype),0,0);
-		
-		store.setPixelsBigEndian(Boolean.FALSE, 0, 0);
-		store.setPixelsDimensionOrder("XYCZT", 0, 0);
-		store.setLogicalChannelSamplesPerPixel(new Integer(1), 0, 0);
-		
-		MetadataRetrieve retrieve = MetadataTools.asRetrieve(store);
-		//If file is not deleted first then the TIFF-writer will append on it
-		file.delete();
-		TiffWriter writer=new TiffWriter();
-		writer.setMetadataRetrieve(retrieve);
-		try
-			{
-			writer.setCompression(TiffWriter.COMPRESSION_LZW);
-			//writer.setCompression(TiffWriter.COMPRESSION_UNCOMPRESSED);
-			writer.setId(file.getPath());
-			writer.saveBytes(barr, true);
-			writer.close();
-			
-			//for(int i=0;i<barr.length;i+=4)
-			//	System.out.println("  "+barr[i]+" "+barr[i+1]+" "+barr[i+2]+" "+barr[i+3]);
-			}
-		catch (Exception e)
-			{
-			e.printStackTrace();
-			}
-		}
-	
 	@Override
 	protected void finalize() throws Throwable
 		{

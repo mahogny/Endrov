@@ -13,6 +13,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
@@ -39,6 +41,7 @@ import endrov.flowColocalization.ColocCoefficients;
 import endrov.frameTime.FrameTime;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
+import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
@@ -196,20 +199,7 @@ public class CompareAll
 				}
 			lastTime=time;
 			}
-		//System.out.println();
 		
-		//System.out.println("numSubDiv: "+numSubDiv);
-		/*
-		for(double[] d:image)
-			{
-			System.out.print("im>");
-			for(double e:d)
-				System.out.print(" "+e);
-			System.out.println();
-			}
-		*/
-		//TODO warn for bad recordings. maybe obvious from result?
-
 		//If it doesn't go far enough, the rest of the arrays will be null.
 		//The first values will be a replica of the first frame; should seldom
 		//be a problem
@@ -223,14 +213,6 @@ public class CompareAll
 		}
 	
 	
-	/*
-	public static Imageset getXYZimset(EvData data)
-		{
-		for(Map.Entry<EvPath, Imageset> e:data.getIdObjectsRecursive(Imageset.class).entrySet())
-			if(e.getKey().getLeafName().equals("XYZ"))
-				return e.getValue();
-		return null;
-		}*/
 	
 	/**
 	 * Coloc over XYZ
@@ -239,8 +221,6 @@ public class CompareAll
 		{
 		Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 		Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
-		//Imageset imsetA = getXYZimset(dataA);
-		//Imageset imsetB = getXYZimset(dataB);
 		
 		FrameTime ftA=buildFrametime(coordLinA);
 		FrameTime ftB=buildFrametime(coordLinB);
@@ -263,15 +243,7 @@ public class CompareAll
 			}
 		
 		//Figure out how many steps to take
-		/*double dt=channelAverageDt(chanA);
-		EvDecimal frame0A=ftA.mapTime2Frame(new EvDecimal(0));
-		EvDecimal frame100A=ftA.mapTime2Frame(new EvDecimal(100));
-		int numSteps=frame100A.subtract(frame0A).divide(new EvDecimal(dt)).intValue();
-		System.out.println("Num steps for xyz "+numSteps);*/
-		
-		int numSteps=100; //Alternative version!
-		
-		//TODO verify that this idea is correct
+		int numSteps=100;
 		
 		//Compare channels
 		ColocCoefficients coloc=new ColocCoefficients();
@@ -282,41 +254,46 @@ public class CompareAll
 			EvDecimal frameA=ftA.mapTime2Frame(new EvDecimal(time));
 			EvDecimal frameB=ftB.mapTime2Frame(new EvDecimal(time));
 			
+			if(chanA.imageLoader.isEmpty())
+				throw new RuntimeException("No images in channel from A");
+			if(chanB.imageLoader.isEmpty())
+				throw new RuntimeException("No images in channel from B");
+			
 			//If outside range, do not bother with this time point
 			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.lastKey()) ||
 					frameB.less(chanB.imageLoader.firstKey()) || frameB.greater(chanB.imageLoader.lastKey()))
-				{
-				//System.out.println("Skip: "+frameA+"\t"+frameB);
 				continue;
-				}
-			//else
-				//System.out.println("do: "+frameA+"\t"+frameB);
-			cnt++;
+			
 			//Use closest frame in each
 			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
 			EvStack stackB=chanB.imageLoader.get(chanB.closestFrame(frameB));
 
-			if(stackA.getDepth()!=stackB.getDepth())
-				{
-				System.out.println("Different number of slices in Z from frames "+frameA+" vs "+frameB+"    --    "+stackA.getDepth()+"    "+stackB.getDepth());
-				throw new RuntimeException("Different number of slices in Z from frames "+frameA+" vs "+frameB+"    --    "+stackA.getDepth()+" vs "+stackB.getDepth());
-				}
-			
 			//Compare each slice. Same number of slices since it has been normalized
+			if(stackA.getDepth()!=stackB.getDepth())
+				throw new RuntimeException("Different number of slices in Z from frames "+frameA+" vs "+frameB+"    --    "+stackA.getDepth()+" vs "+stackB.getDepth());
 			int numz=stackA.getDepth();
-			
-
-
 			for(int i=0;i<numz;i++)
 				{
 				EvPixels pA=stackA.getInt(i).getPixels();
 				EvPixels pB=stackB.getInt(i).getPixels();
 				if(pA==null || pB==null)
 					System.out.println("Null pixels at frame "+frameA+" vs "+frameB);
-				double[] arrA=pA.convertToDouble(true).getArrayDouble();
-				double[] arrB=pB.convertToDouble(true).getArrayDouble();
-				coloc.add(arrA, arrB);
+				if(pA.getType()==EvPixelsType.FLOAT && pB.getType()==EvPixelsType.FLOAT)
+					{
+					//Optimized case
+					float[] arrA=pA.getArrayFloat();
+					float[] arrB=pB.getArrayFloat();
+					coloc.add(arrA, arrB);
+					}
+				else
+					{
+					//General case
+					double[] arrA=pA.convertToDouble(true).getArrayDouble();
+					double[] arrB=pB.convertToDouble(true).getArrayDouble();
+					coloc.add(arrA, arrB);
+					}
 				}
+			cnt++;
 			}
 		System.out.println("Num xyz compared: "+cnt);
 		
@@ -378,8 +355,6 @@ public class CompareAll
 		
 		//xyzSize x xyzSize xyzSize columns
 		BufferedImage bim=new BufferedImage((xyzSize+2)*xyzSize, numSteps*(xyzSize+2), BufferedImage.TYPE_3BYTE_BGR);
-		//Graphics gbim=bim.getGraphics();
-		
 		
 		//Compare channels
 		for(int time=0;time<numSteps;time++)
@@ -391,12 +366,7 @@ public class CompareAll
 			
 			//If outside range, stop calculating
 			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.lastKey()))
-				{
-				//System.out.println("Skip fancy xyz: "+frameA);
 				continue;
-				}
-			//else
-				//System.out.println("doing "+frameA);
 			
 			//Use closest frame
 			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
@@ -407,27 +377,19 @@ public class CompareAll
 				System.out.println("---------------------------------------------------------------- wtf. numz "+numz);
 			for(int cz=0;cz<xyzSize;cz++)
 				{
-				//BufferedImage thisPlane=stackA.getInt(cz).getPixels().quickReadOnlyAWT();
-				//gbim.drawImage(thisPlane, cz*(16+2), (16+2)*time, null);
-				
-
-				//System.out.println(""+time+"  "+cz);
 				EvPixels p=stackA.getInt(cz).getPixels().convertToDouble(true);
 				double[] inarr=p.getArrayDouble();
 				double arrmin=getMin(inarr);
 				double arrmax=getMax(inarr);
 				
-				
 				WritableRaster raster=bim.getRaster();
 				for(int ay=0;ay<xyzSize;ay++)
 					for(int ax=0;ax<xyzSize;ax++)
 						{
-//						System.out.println(""+ax+"  "+ay+"  "+time+"  "+cz);
 						double val=(inarr[ay*p.getWidth()+ax]-arrmin)/(arrmax-arrmin);
 						if(val>1)
 							System.out.println("val: val");
 						double scale=255;
-//						raster.setPixel(cz*(xyzSize+2)+ax, (xyzSize+2)*time+ay, new double[]{Math.sin(360*val),val*val*val,Math.sqrt(val)}); //bgr
 						raster.setPixel(cz*(xyzSize+2)+ax, (xyzSize+2)*time+ay, new double[]{scale*Math.sin(2*Math.PI*val),scale*val*val*val,scale*Math.sqrt(val)}); //bgr
 						/**
 						 * gnuplot palette equation:
@@ -437,8 +399,6 @@ public class CompareAll
 						 * sin(360x)
 						 */
 						}
-				
-				
 				}
 			}
 		
@@ -464,22 +424,10 @@ public class CompareAll
 		return ret;
 		}
 	
-	/**
-	 * Final graph from XYZ should be 2d with fixed dy/dt 
-	 */
-	
-	
-	/**
-	 * BG calculation: otsu? could use for first frame at least.
-	 * actually follows automatically. solved?
-	 */
-	
-	
 	public static boolean ensureCalculated(File f)
 		{
 		return IntExp.doOne(f,false);   //Does not force recalculation
 		}
-	
 	
 	public static Map<Tuple<File,File>, ColocCoefficients> loadCache(Set<File> datas, File cachedValuesFile)
 		{
@@ -579,7 +527,7 @@ public class CompareAll
 		if(argsSet.contains("onlycalculated"))
 			{
 			System.out.println("---- only calculated");
-			Set<File> datas2=new HashSet<File>();
+			Set<File> datas2=new TreeSet<File>();
 			for(File f:datas)
 				if(IntExp.isDone(f))
 					datas2.add(f);
@@ -618,7 +566,9 @@ public class CompareAll
 				System.out.println("---- need to do: "+f);
 
 		
-		
+		numThread=4;
+		System.out.println("for integration, Will use #threads  "+numThread);
+
 		///////////////// Integrate signal in each recording //////////////
 		EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
 			public Object func(File in)
@@ -648,25 +598,31 @@ public class CompareAll
 		
 		///////////////// Compare each two recordings //////////////////////////////
 
+		numThread=4;
+		System.out.println("for comparison, Will use #threads  "+numThread);
+
 		System.out.println("Calculate pair-wise statistics");
 		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
 		public Object func(Tuple<File,File> key)
 			{
 			File fa=key.fst();
 			File fb=key.snd();
-			try
+			boolean containsKey;
+			synchronized(comparisonLock)
 				{
-				boolean containsKey;
-				synchronized(comparisonLock)
-					{
-					containsKey=!comparisonT.containsKey(key) || !comparisonAP.containsKey(key) || !comparisonXYZ.containsKey(key);
-					}
+				containsKey=comparisonT.containsKey(key) && comparisonAP.containsKey(key) && comparisonXYZ.containsKey(key);
+				//what about the other ones?
+				}
 
-				//Check if cached calculation does not exist
-				if(containsKey)
+			//Check if cached calculation does not exist
+			if(!containsKey)
+				{
+				try
 					{
-					System.out.println("todo: "+key);
-					
+
+
+					System.out.println("doing "+fa+"   "+fb+"    "+new Date());
+
 					boolean calculatedA=IntExp.isDone(fa);
 					boolean calculatedB=IntExp.isDone(fb);
 
@@ -674,14 +630,15 @@ public class CompareAll
 						System.out.println("Not calculated, there must be a problem: "+fa);
 					if(!calculatedB)
 						System.out.println("Not calculated, there must be a problem: "+fb);
-					
+
 					if(calculatedA && calculatedB)
 						{
 						System.out.println("Calculating "+key);
-						
+
 						//May not load one dataset twice at the same time. Can cause problems with cache files!!!!!! (probably minor ones)
 						EvData dataA;
 						EvData dataB;
+						System.out.println("loading "+fa+"   "+fb);
 						synchronized (fa)
 							{
 							dataA=EvData.loadFile(fa);
@@ -690,17 +647,16 @@ public class CompareAll
 							{
 							dataB=EvData.loadFile(fb);
 							}
-						
+						System.out.println("done loading "+fa+"   "+fb);
+
 						Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
 						Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
-						
+
 						String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
 						String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
-						
-						
+
 						System.out.println("Comparing: "+key);
 
-						
 						//Slices: T
 						try
 							{
@@ -716,7 +672,7 @@ public class CompareAll
 							{
 							e.printStackTrace();
 							}
-						
+
 						//Slices: AP
 						try
 							{
@@ -732,7 +688,7 @@ public class CompareAll
 							{
 							e.printStackTrace();
 							}
-						
+
 						//Slices: DV
 						try
 							{
@@ -749,7 +705,6 @@ public class CompareAll
 							e.printStackTrace();
 							}
 
-						
 						//Slices: LR
 						try
 							{
@@ -766,14 +721,13 @@ public class CompareAll
 							e.printStackTrace();
 							}
 
-						
 						//Slices: XYZ
 						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
 						synchronized (comparisonLock)
 							{
 							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
 							}
-												
+
 						//Store down this value too
 						synchronized (comparisonLock)
 							{
@@ -786,12 +740,17 @@ public class CompareAll
 						}
 
 					}
+				catch (Exception e)
+					{
+					System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
+					e.printStackTrace();
+					}
 				}
-			catch (Exception e)
-				{
-				System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
-				e.printStackTrace();
-				}
+			else
+				System.out.println("Already compared "+key);
+
+			System.gc();
+			System.out.println("total mem "+Runtime.getRuntime().totalMemory());
 			
 			return null;
 			}

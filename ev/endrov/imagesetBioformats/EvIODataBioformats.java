@@ -12,8 +12,15 @@ import java.awt.image.RasterOp;*/
 import java.io.*;
 import java.util.*;
 
+import ome.xml.model.primitives.NonNegativeInteger;
+
+import loci.common.services.DependencyException;
+import loci.common.services.ServiceException;
+import loci.common.services.ServiceFactory;
 import loci.formats.*;
+import loci.formats.in.OMETiffReader;
 import loci.formats.meta.*;
+import loci.formats.services.OMEXMLService;
 import endrov.data.*;
 import endrov.imageset.*;
 import endrov.imagesetOST.EvIODataOST;
@@ -62,14 +69,34 @@ public class EvIODataBioformats implements EvIOData
 		if(!basedir.exists())
 			throw new Exception("File does not exist");
 
+		
 		imageReader=new ImageReader();
-		retrieve=MetadataTools.createOMEXMLMetadata();
-		imageReader.setMetadataStore(retrieve);
+		
+		//Populate OME-XML i.e. actually parse metadata
+		imageReader.setOriginalMetadataPopulated(true);
+		try 
+			{
+			ServiceFactory factory = new ServiceFactory();
+			OMEXMLService service = factory.getInstance(OMEXMLService.class);
+			retrieve=service.createOMEXMLMetadata(null, null);
+			imageReader.setMetadataStore(retrieve);
+			}
+		catch (DependencyException de) 
+			{
+			throw new MissingLibraryException(OMETiffReader.NO_OME_XML_MSG, de);
+			}
+		catch (ServiceException se) 
+			{
+			throw new FormatException(se);
+			}
 		
 		System.out.println("bioformats set id "+basedir);
 		imageReader.setId(basedir.getAbsolutePath());
 		System.out.println("bioformats adding channel separator");
 		imageReader=new ChannelSeparator(imageReader);
+		
+		
+		
 		System.out.println("bioformats building database");
 		buildDatabase(d);
 		}
@@ -98,105 +125,6 @@ public class EvIODataBioformats implements EvIOData
 		{
 		try
 			{
-			/*
-			Map<EvPath,EvChannel> channels=d.getIdObjectsRecursive(EvChannel.class);
-			
-			for(Map.Entry<EvPath, EvChannel> ch:channels.entrySet())
-				{
-				//imageindex, pixelindex
-				
-				
-				
-				
-				
-				
-				
-				}
-			
-			*/
-			
-			/*
-			
-			int pixelType=FormatTools.DOUBLE;
-			
-			
-			// create metadata object with minimum required metadata fields
-			IMetadata meta = MetadataTools.createOMEXMLMetadata();
-			meta.createRoot();
-			
-			//meta.getDimensionsPhysicalSizeX(arg0, arg1);
-			
-			
-			meta.setPixelsBigEndian(Boolean.TRUE, 0, 0);
-			meta.setPixelsDimensionOrder("XYZCT", 0, 0);
-			meta.setPixelsPixelType(FormatTools.getPixelTypeString(pixelType), 0, 0);
-			meta.setPixelsSizeX(w, 0, 0);
-			meta.setPixelsSizeY(h, 0, 0);
-			meta.setPixelsSizeZ(1, 0, 0);
-			meta.setPixelsSizeC(1, 0, 0);
-			meta.setPixelsSizeT(1, 0, 0);
-			meta.setLogicalChannelSamplesPerPixel(1, 0, 0);
-			
-			
-			 // write image plane to disk
-			IFormatWriter writer = new ImageWriter();
-			writer.setMetadataRetrieve(meta);
-			writer.setId(basedir.getAbsolutePath());
-			boolean isLast=true;
-			writer.saveBytes(img, isLast);
-			writer.close();
-			*/
-			
-			
-
-			
-			
-			//FormatTools, DOUBLE, FLOAT, INT16, INT32, INT8, UINT16, UINT32, UINT8
-			
-			
-			//DataInputStream di=new DataInputStream(new ByteArrayInputStream(bytes));
-/*
-			DataTools.floatsToBytes(arg0, arg1);
-			
-			int type=imageReader.getPixelType();
-			int bpp=FormatTools.getBytesPerPixel(type);
-			boolean isFloat = type == FormatTools.FLOAT || type == FormatTools.DOUBLE;
-			boolean isLittle = imageReader.isLittleEndian();
-			boolean isSigned = type == FormatTools.INT8 || type == FormatTools.INT16 || type == FormatTools.INT32;
-			Object bfpixels = DataTools.makeDataArray(bytes, bpp, isFloat, isLittle);
-			
-	*/		
-			
-			/*
-			Imageset im=d.getObjects(Imageset.class).iterator().next();
-			
-			
-				
-				
-				
-				//Hoping this is enough to save metadata which I do not convert
-				writer.setMetadataRetrieve(retrieve);
-				writer.setId(basedir.getPath());
-				
-				
-				
-				
-				 saveImage(Image image, int series, boolean lastInSeries, boolean last)
-         Saves the given image to the given series in the current file.
-				
-				}
-			catch (FormatException e)
-				{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				}
-			*/
-			
-			
-			
-			
-			
-			
 			
 			
 			
@@ -267,26 +195,11 @@ public class EvIODataBioformats implements EvIOData
 		if(metaFile.exists())
 			d.loadXmlMetadata(metaFile);
 
-		
-		//Bioformats has ImageIndex and imagePlaneIndex
-		//MetadataRetrieve retrieve = (MetadataRetrieve)imageReader.getMetadataStore();
-
-		/*for(Object o:(Set)imageReader.getMetadata().entrySet())
-			{
-			Map.Entry e=(Map.Entry)o;
-			System.out.println("> \""+e.getKey()+"\" \""+e.getValue()+"\"");
-			}*/
-
-		
-		HashSet<String> usedChannelNames=new HashSet<String>();
-		
+		HashSet<String> usedImsetNames=new HashSet<String>();
 		for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
 			{
-			//String getImageDescription(int imageIndex);
-			//String getPixelsDimensionOrder(int imageIndex, int pixelsIndex);
-			
+			//Setting series will re-populate the metadata store as well
 			imageReader.setSeries(seriesIndex);
-			//int imageIndex=imageReader.getSeries();
 			
 			System.out.println("bioformats looking at series "+seriesIndex);
 
@@ -297,130 +210,105 @@ public class EvIODataBioformats implements EvIOData
 			if(imageName.contains("\\"))
 				imageName=imageName.substring(imageName.lastIndexOf('\\'));
 			
-			
 			//The image name usually sucks, don't do this anymore!
 			//String imsetName=imageName==null || imageName.equals("") ? "im"+seriesIndex : "im-"+imageName;
 			String imsetName="im"+seriesIndex;
 			
 			
 //			if(d.metaObject.containsKey(imsetName))
-			if(usedChannelNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it
+			if(usedImsetNames.contains(imsetName)) //In case channel already exist in XML, do not overwrite it
 				imsetName="im-"+imageName;
-			usedChannelNames.add(imsetName);
+			usedImsetNames.add(imsetName);
 			
-			Imageset im=(Imageset)d.metaObject.get(imsetName);
-			if(im==null)
-				d.metaObject.put(imsetName, im=new Imageset());
-			for(String s:im.getChannels().keySet())
+			Imageset imset=(Imageset)d.metaObject.get(imsetName);
+			if(imset==null)
+				d.metaObject.put(imsetName, imset=new Imageset());
+			for(String s:new LinkedList<String>(imset.getChannels().keySet()))
 				{
-				//Keep metaobjects below channel?
-				im.metaObject.remove(s);
+				//TODO Keep metaobjects below channel?
+				imset.metaObject.remove(s);
 				}
-			
-			
-			String creationDate = retrieve.getImageCreationDate(seriesIndex);
-			if(creationDate!=null)
-				im.dateCreate=parseBFDate(creationDate);
-				
-			
-			int numx=imageReader.getSizeX();
-			int numy=imageReader.getSizeY();
-			int numz=imageReader.getSizeZ();
-			int numt=imageReader.getSizeT();
-			int numc=imageReader.getSizeC();
 
-			//Read meta data from original imageset
-			System.out.println("BF # XYZ "+numx+" "+numy+" "+numz+ " T "+numt+" C "+numc+
-					" pixel count "+retrieve.getPixelsCount(seriesIndex));
-
-			
-			//It *must* be 0,0
-			Double fdx=retrieve.getDimensionsPhysicalSizeX(0, 0); //um/px
-			Double fdy=retrieve.getDimensionsPhysicalSizeY(0, 0); //um/px
-			Double fdz=retrieve.getDimensionsPhysicalSizeZ(0, 0); //um/px
-			//imageindex, pixelindex. is this the right place?
-			System.out.println("res "+fdx+" "+fdy+" "+fdz);
-
-//		System.out.println("f" + frame+" z "+zpos+" resf  "+fdx+" "+fdy+" "+fdz);
-//		System.out.println("resEV "+im.resX+" "+im.resY+" "+im.resZ+" "+frame);
-
-			//Enlist images
-			for(int channelnum=0;channelnum<numc;channelnum++)
+			//For all images (an image can have channels and planes)
+			for(int imageIndex=0;imageIndex<retrieve.getImageCount();imageIndex++)
 				{
-				String channelName="ch"+channelnum;
-				EvChannel mc=im.getCreateChannel(channelName);
-				mc.chBinning=1;
+				//Read resolution
+				//Note: values are optional!!!
+				Double resX=retrieve.getPixelsPhysicalSizeX(imageIndex); //[um/px]
+				Double resY=retrieve.getPixelsPhysicalSizeY(imageIndex); //[um/px]
+				Double resZ=retrieve.getPixelsPhysicalSizeZ(imageIndex); //[um/px]
+				if(resX==null || resX==0) resX=1.0;
+				if(resY==null || resY==0) resY=1.0;
+				if(resZ==null || resZ==0) resZ=1.0;
 
-				//Fill up with image loaders
-				EvChannel c=new EvChannel();
-				im.metaObject.put(channelName,c);
-				for(int framenum=0;framenum<numt;framenum++)
+				int planeCount=retrieve.getPlaneCount(imageIndex);
+				for(int planeIndex=0;planeIndex<planeCount;planeIndex++)
 					{
-					//Get all stack information from the first plane
-					int firstPixel = imageReader.isRGB() ?  
-							imageReader.getIndex(0, 0, framenum) : imageReader.getIndex(0, channelnum, framenum);
+					NonNegativeInteger c=retrieve.getPlaneTheC(imageIndex, planeIndex);
+					NonNegativeInteger framenum=retrieve.getPlaneTheT(imageIndex, planeIndex);
+					NonNegativeInteger z=retrieve.getPlaneTheZ(imageIndex, planeIndex);
 
-					EvDecimal frame=null;
-					Double deltaT=retrieve.getPlaneTimingDeltaT(seriesIndex,0,firstPixel);
-					if(deltaT!=null)
-						frame=new EvDecimal(deltaT);
-					if(frame!=null)
-						{
-						Double fdt=retrieve.getDimensionsTimeIncrement(0, 0);
-						if(fdt!=null)
-							frame=new EvDecimal(framenum*fdt);
-						}
-					if(frame==null)
-						frame=new EvDecimal(framenum);
-
-					if(fdx==null || fdx==0) fdx=1.0;
-					if(fdy==null || fdy==0) fdy=1.0;
-					if(fdz==null || fdz==0) fdz=1.0;
-
-					Map<String,String> metaFrame=c.getMetaFrame(frame);
-
-					EvStack stack=c.getCreateFrame(frame);
-					stack.dispX=0;
-					stack.dispY=0;
-					stack.resX=fdx;
-					stack.resY=fdy;
-					//stack.resZ=new EvDecimal(fdz); 
 					
-					//For every slice
-					for(int slicenum=0;slicenum<numz;slicenum++)
+					//Calculate which frame this is. Note that we only consider the time of the first plane!
+					EvDecimal frame=null;
+					Double timeIncrement=retrieve.getPixelsTimeIncrement(imageIndex);   //TODO ?????
+					if(timeIncrement!=null)
+						//Time increment [s] is optional
+						frame=new EvDecimal(framenum.getValue()*timeIncrement);
+					else
 						{
-						int curPixel;
-						Integer bandID=null;
-						if(imageReader.isRGB())
-							{
-							curPixel=imageReader.getIndex(slicenum, 0, framenum);
-							bandID=channelnum;
-							}
+						//Time since beginning of experiment [s] is optional
+						Double deltaT=retrieve.getPlaneDeltaT(imageIndex, 0);
+						if(deltaT!=null)
+							frame=new EvDecimal(deltaT);
 						else
-							curPixel=imageReader.getIndex(slicenum, channelnum, framenum);
-
-						Double expTime=retrieve.getPlaneTimingExposureTime(seriesIndex, 0, curPixel);
-						EvDecimal zpos=new EvDecimal(fdz).multiply(slicenum);
-	
-						EvImage evim=new EvImage();
-						evim.io=new BioformatsSliceIO(imageReader, curPixel, bandID, "", false);
-						stack.put(zpos, evim);
-						metaFrame.put("exposure",""+expTime);
+							frame=new EvDecimal(framenum.getValue());
 						}
+					
+					//int numChannel=retrieve.getChannelCount(imageIndex);
+					//System.out.println("# channel "+numChannel);
+					
+					//TODO channel metadata
+					EvChannel ch=imset.getCreateChannel("ch"+c);
+					
+					String creationDate = retrieve.getImageAcquiredDate(0);  //TODO. per-image data, throwing away data here!
+					if(creationDate!=null)
+						ch.dateCreate=parseBFDate(creationDate);
+
+					//Populate stack metadata
+					EvStack stack=ch.imageLoader.get(frame);
+					if(stack==null)
+						{
+						stack=ch.getCreateFrame(frame);
+						stack.resX=resX;
+						stack.resY=resY;
+						stack.resZ=new EvDecimal(resZ);
+						
+						/*Double stagePosX=retrieve.getPlanePositionX(imageIndex, planeIndex);
+						Double stagePosY=retrieve.getPlanePositionY(imageIndex, planeIndex);
+						Double stagePosZ=retrieve.getPlanePositionZ(imageIndex, planeIndex);*/
+						}
+					
+					
+					
+					EvDecimal zpos=new EvDecimal(resZ).multiply(new EvDecimal(z.getValue()));
+
+					EvImage evim=new EvImage();
+					evim.io=new BioformatsSliceIO(imageReader, imageReader.getIndex(z.getValue(), c.getValue(), framenum.getValue()), basedir, false);
+					stack.put(zpos, evim);
+					
+					//Optional, [s]. Note: per-plane. Data thrown away!
+					Double expTime=retrieve.getPlaneExposureTime(imageIndex, planeIndex); 
+					if(expTime!=null)
+						ch.setFrameMeta(frame, "exposure",""+(expTime*1000));
+					
 					}
+				
+				
 				}
-			
-			
-			
 			}
-
-
-		//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/components/bio-formats/src/loci/formats/meta/MetadataRetrieve.java
 		
-		//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/loci/formats/meta/MetadataRetrieve.java?rev=4058
-		//https://skyking.microscopy.wisc.edu/trac/java/browser/trunk/components/loci-plugins/src/loci/plugins/LociFunctions.java
-//		imageReader.get
-//		retrieve.getDimensionsPhysicalSizeX(seriesIndex, arg1)
+		// http://hudson.openmicroscopy.org.uk/job/LOCI/javadoc/
 		
 		}
 

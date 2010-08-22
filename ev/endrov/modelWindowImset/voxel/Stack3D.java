@@ -489,6 +489,7 @@ public class Stack3D extends StackInterface
 			case 578: points=new Vector3d[]{points[9],points[1],points[6]}; break;
 			case 589: points=new Vector3d[]{points[0],points[9],points[6],points[2],points[3]}; break;
 			case 625: points=new Vector3d[]{points[4],points[0],points[9],points[6],points[5]}; break;
+			case 640: points=new Vector3d[]{}; break;
 			case 641: points=new Vector3d[]{points[0],points[9],points[7]}; break;
 			case 654: points=new Vector3d[]{points[7],points[9],points[1],points[2],points[3]}; break;
 			case 690: points=new Vector3d[]{points[9],points[1],points[5],points[4],points[7]}; break;
