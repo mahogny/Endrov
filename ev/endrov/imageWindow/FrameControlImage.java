@@ -447,7 +447,8 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			{
 			frame=ch.closestFrame(frame);
 			EvStack stack=ch.getFrame(frame);
-			z=stack.resZ.multiply(stack.closestZ(z.doubleValue()));
+			if(stack!=null)
+				z=stack.resZ.multiply(stack.closestZ(z.doubleValue())).add(stack.dispZ);
 			}
 		removeChangeListener();
 		spinnerFrame.setValue(frame);

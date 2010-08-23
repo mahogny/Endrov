@@ -783,7 +783,7 @@ public class EvIODataOST implements EvIOData
 					EvImage evim=new EvImage();
 					evim.io=new SliceIO(this,getCurrentFileFor33(channel, fe.getKey(), se.getKey()));
 					//System.out.println("file: "+getCurrentFileFor33(channel, fe.getKey(), se.getKey()));
-					stack.put(se.getKey(),evim);
+					stack.loaders.put(se.getKey(),evim);
 					}
 				}
 			}

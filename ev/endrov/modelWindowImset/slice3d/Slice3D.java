@@ -95,24 +95,8 @@ public class Slice3D
 			EvPixels p=evim.getPixels();
 			w=p.getWidth();
 			h=p.getHeight();
-			resX=stack.getResbinX();//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
-			resY=stack.getResbinY();//stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
-			//resZ=im.meta.resZ;
-
-			//Load bitmap, scale down. Not needed, little data.
-			/*
-			int bw=suitablePower2(w);
-			resX/=w/(double)bw;
-			w=bw;
-			int bh=suitablePower2(h);
-			resY/=h/(double)bh;
-			h=bh;
-			BufferedImage sim=new BufferedImage(w,h,bim.getType());
-			Graphics2D g=(Graphics2D)sim.getGraphics();
-			g.scale(w/(double)bim.getWidth(), h/(double)bim.getHeight()); //0.5 sec tot maybe
-			g.drawImage(bim,0,0,Color.BLACK,null);
-			bim=sim;
-			 */
+			resX=stack.resX;
+			resY=stack.resY;
 
 			DoubleBuffer buffer=DoubleBuffer.allocate(w*h);
 			buffer.put(p.convertToDouble(true).getArrayDouble());
@@ -167,8 +151,8 @@ public class Slice3D
 			tex.bind();
 			
 			//Find size and position
-			double w=this.w/resX;
-			double h=this.h/resY;
+			double w=this.w*resX;
+			double h=this.h*resY;
 			TextureCoords tc=tex.getImageTexCoords();
 			
 			gl.glBegin(GL2.GL_QUADS);

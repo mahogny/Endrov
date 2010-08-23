@@ -117,12 +117,12 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 		
 		private double scaleSigmaXY2radius(double sigma)
 			{	
-			return sigma*newSigmaXY2radiusFactor/resXY;
+			return sigma*newSigmaXY2radiusFactor*resXY;
 			}
 		
 		private double scaleRadius2sigmaXY(double radius)
 			{
-			return radius*resXY/newSigmaXY2radiusFactor;
+			return radius*(1/resXY)/newSigmaXY2radiusFactor;
 			}
 		
 		
@@ -1070,7 +1070,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 				System.out.println("cur frame "+frame);
 				
 				final EvStack stackHis=channelHis.getFrame(frame);
-				resXY=stackHis.getResbinX();
+				resXY=stackHis.resX;
 
 				//Read parameters from the GUI
 				double expectRadius=Double.parseDouble(inpRadiusExpectedMax.getText());

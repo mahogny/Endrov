@@ -136,7 +136,11 @@ public class EvMultidimAcquisition extends EvAcquisition
 					stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;   //always do this?
 					stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
 					stack.dispZ=dz.multiply(currentChannel.z0); //scary!!!
-					stack.put(dz.multiply(currentZCount),evim);
+					
+					
+					int zpos=(currentZCount-currentChannel.z0)/currentChannel.zInc;
+					
+					stack.putInt(zpos,evim);   //Need to account for the possibility to skip slices!!! and offset!!!
 					//int zpos=currentZCount-currentChannel.z0;
 					//stack.putInt(zpos, evim);
 					

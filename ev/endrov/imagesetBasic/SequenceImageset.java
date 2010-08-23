@@ -343,6 +343,7 @@ public class SequenceImageset implements EvIOData
 						//stack.binning=1;
 						stack.resX=resX; 
 						stack.resY=resY; 
+						stack.resZ=spacingZ;
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
 							{
@@ -351,7 +352,7 @@ public class SequenceImageset implements EvIOData
 							evim.io=new BasicSliceIO(f,i);
 							//TODO is this the way to go? only works with TIFF stacks
 							
-							stack.put(new EvDecimal(i).multiply(spacingZ), evim); 
+							stack.putInt(i, evim); 
 							}
 						
 						EvChannel ch=imset.getCreateChannel(channelName);

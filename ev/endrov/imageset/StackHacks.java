@@ -49,7 +49,7 @@ public class StackHacks
 					newch.imageLoader.put(new EvDecimal(zi),newStack=new EvStack());
 					newStack.getMetaFrom(se.getValue());
 					}
-				newStack.put(new EvDecimal(si), ze.getValue());
+				newStack.putInt(si, ze.getValue());
 				zi++;
 				}
 			si++;
@@ -80,6 +80,7 @@ public class StackHacks
 			EvStack stack=se.getValue();
 			stack.resX=resX;
 			stack.resY=resY;
+			stack.resZ=resZ;
 			//TODO stack.resZ=resZ;
 			
 			List<EvImage> images=new ArrayList<EvImage>();
@@ -88,7 +89,7 @@ public class StackHacks
 			
 			stack.entrySet().clear();
 			for(int i=0;i<images.size();i++)
-				stack.put(resZ.multiply(i), images.get(i));
+				stack.putInt(i, images.get(i));
 			}
 		}
 	

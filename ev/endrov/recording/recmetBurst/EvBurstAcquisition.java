@@ -229,8 +229,7 @@ public class EvBurstAcquisition extends EvObject
 									System.out.println(camIm.getPixels());
 									System.out.println(camIm.getNumComponents());
 									
-									EvDecimal z=new EvDecimal(0);
-									ch.getCreateFrame(curFrame).put(z, evim);
+									ch.getCreateFrame(curFrame).putInt(0, evim);
 									}
 									
 									

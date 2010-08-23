@@ -223,7 +223,6 @@ public class EvFRAPAcquisition extends EvAcquisition
 			{
 			CameraImage camIm=cam.snap();
 			EvImage evim=new EvImage(camIm.getPixels()[0]);
-			EvDecimal z=new EvDecimal(0);
 			
 			EvChannel ch=imset.getCreateChannel("ch");
 			EvStack stack=ch.getCreateFrame(curFrame);
@@ -234,7 +233,7 @@ public class EvFRAPAcquisition extends EvAcquisition
 			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
 			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
 			
-			stack.put(z, evim);
+			stack.putInt(0, evim);
 			}
 		
 		
