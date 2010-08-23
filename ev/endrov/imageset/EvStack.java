@@ -46,22 +46,9 @@ public class EvStack implements AnyEvImage
 	public double dispX, dispY;
 
 	/**
-	 * ONLY used by putInt/getInt
-	 * [um]
+	 * Displacement [um]
 	 */
 	public EvDecimal dispZ=EvDecimal.ZERO;
-	
-	/**
-	 * Return combined resolution and binning. [px/um]
-	 */
-	public double getResbinX()
-		{
-		return 1.0/resX;
-		}
-	public double getResbinY()
-		{
-		return 1.0/resY;
-		}
 
 	/**
 	 * Get combined resolution and binning. [um/px]
@@ -99,12 +86,12 @@ public class EvStack implements AnyEvImage
 	public double transformWorldImageY(double c){return (c/resY-dispY);}
 	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/getResbinZinverted().doubleValue();}
 	
-	public double scaleImageWorldX(double c){return c/getResbinX();}
-	public double scaleImageWorldY(double c){return c/getResbinY();}
+	public double scaleImageWorldX(double c){return c*resX;}
+	public double scaleImageWorldY(double c){return c*resY;}
 	public double scaleImageWorldZ(double c){return c*getResbinZinverted().doubleValue();}
 	
-	public double scaleWorldImageX(double c){return c*getResbinX();}
-	public double scaleWorldImageY(double c){return c*getResbinY();}
+	public double scaleWorldImageX(double c){return c/resX;}
+	public double scaleWorldImageY(double c){return c/resY;}
 	public double scaleWorldImageZ(double c){return c/getResbinZinverted().doubleValue();}
 	
 	
@@ -177,39 +164,20 @@ public class EvStack implements AnyEvImage
 			}
 		}
 	
-	/**
-	 * Allocate a 3d stack
-	 */
-	/*
-	public void allocate(int w, int h, int d, int type)
-		{
-		setTrivialResolution();
-		for(int i=0;i<d;i++)
-			{
-			EvImage evim=new EvImage();
-			evim.setPixelsReference(new EvPixels(type,w,h));
-			putInt(i, evim);
-			}
-		}
-*/
 	
 	//TODO lazy generation of the stack
 	
 	public int closestZ(double worldZ)
 		{
-		int closestZ=(int)EvMathUtil.clamp((worldZ-dispZ.doubleValue())/resZ.doubleValue(),0,getDepth()-1);
+		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-dispZ.doubleValue())/resZ.doubleValue()),0,getDepth()-1);
 		return closestZ;
 		}
 	
+	
 	/**
 	 * Get one image plane
+	 * TODO should be O(1)
 	 */
-	/*
-	public EvImage get(EvDecimal z)
-		{
-		return loaders.get(z);
-		}*/
-	
 	public EvImage getInt(int z)
 		{
 		int i=0;
@@ -221,15 +189,7 @@ public class EvStack implements AnyEvImage
 			}
 		throw new RuntimeException("Out of bounds");
 		}
-	
-	/**
-	 * Set one image plane
-	 */
-	public void put(EvDecimal z, EvImage im)
-		{
-		loaders.put(z,im);
-		}
-	
+
 	/**
 	 * Set one image plane
 	 */
@@ -324,23 +284,6 @@ public class EvStack implements AnyEvImage
 			}
 		}		
 	
-	/**
-	 * First (lowest) value of Z, or null
-	 */
-	/*public EvDecimal firstZ()
-		{
-		return loaders.firstKey();
-		}*/
-	
-	 
-
-	/**
-	 * Last (largest) value of Z, or null
-	 */
-	/*public EvDecimal lastZ()
-		{
-		return loaders.lastKey();
-		}*/
 
 	/**
 	 * Z's. This set can be modified and changes will be reflected.
@@ -486,7 +429,6 @@ public class EvStack implements AnyEvImage
 		{
 		resX=1;
 		resY=1;
-		//binning=1;
 		resZ=EvDecimal.ONE;
 		}
 	

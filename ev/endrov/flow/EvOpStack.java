@@ -34,7 +34,7 @@ public abstract class EvOpStack extends EvOpGeneral
 		EvImage im=new EvImage();
 		im.setPixelsReference(p[0]);
 		EvStack stack[]=new EvStack[]{new EvStack()};
-		stack[0].put(EvDecimal.ZERO, im);
+		stack[0].putInt(0, im);
 		stack=exec(stack);
 		EvPixels[] ret=new EvPixels[stack.length];
 		for(int ac=0;ac<ret.length;ac++)

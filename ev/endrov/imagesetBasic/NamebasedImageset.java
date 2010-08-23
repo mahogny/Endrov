@@ -347,12 +347,11 @@ public class NamebasedImageset implements EvIOData
 				//stack.binning=1;
 				stack.resX=resX; 
 				stack.resY=resY;
+				stack.resZ=spacingZ;
 				
 				evim.io=new BasicSliceIO(f);
 				
-				EvDecimal realSlice=new EvDecimal(slice).multiply(spacingZ);
-				
-				stack.put(realSlice, evim); 
+				stack.putInt(slice, evim); 
 				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
 				System.out.println(newLogEntry);
 				rebuildLog+=newLogEntry;

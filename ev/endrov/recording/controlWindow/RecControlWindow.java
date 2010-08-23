@@ -422,7 +422,7 @@ public class RecControlWindow extends BasicWindow
 						
 						EvImage evim=new EvImage();
 						evim.setPixelsReference(cim.getPixels()[0]);
-						stack.put(new EvDecimal(0),evim);
+						stack.putInt(0,evim);
 						
 						BasicWindow.updateWindows(); //TODO trigger on data
 						

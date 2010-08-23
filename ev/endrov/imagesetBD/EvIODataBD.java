@@ -147,7 +147,7 @@ public class EvIODataBD implements EvIOData
 							return EvCommonImageIO.loadPixels(fname, 0);
 							}
 						};
-					stack.put(EvDecimal.ZERO, evim);
+					stack.putInt(0, evim);
 					
 					
 					stack.resX=1;

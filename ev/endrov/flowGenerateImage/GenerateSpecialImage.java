@@ -10,7 +10,6 @@ import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
 
 /**
  * Generate special images useful for calculations
@@ -277,8 +276,9 @@ public class GenerateSpecialImage
 		{
 		EvStack s=new EvStack();
 		s.getMetaFrom(template);
-		for(EvDecimal d:template.keySet())
-			s.put(d, im.makeShadowCopy());
+		//for(EvDecimal d:template.keySet())
+		for(int az=0;az<template.getDepth();az++)
+			s.putInt(az, im.makeShadowCopy());
 		return s;
 		}
 	

@@ -9,7 +9,6 @@ import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
 
 /**
  * Image operation defined by operation on stacks
@@ -30,7 +29,7 @@ public abstract class EvOpStack1 extends EvOpGeneral
 		EvImage im=new EvImage();
 		im.setPixelsReference(p[0]);
 		EvStack stack=new EvStack();
-		stack.put(EvDecimal.ZERO, im);
+		stack.putInt(0, im);
 		stack=exec1(stack);
 		return stack.getInt(0).getPixels();
 		}

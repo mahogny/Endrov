@@ -122,8 +122,8 @@ public class ImageWindowView extends JPanel
 				int h=(int)(bufi.getHeight());
 							
 				//Adjust zoom
-				double zoom1=stack.getResbinX()*p.getWidth()/(double)w;
-				double zoom2=stack.getResbinY()*p.getHeight()/(double)h;
+				double zoom1=p.getWidth()/(double)(w*stack.resX);
+				double zoom2=p.getHeight()/(double)(h*stack.resY);
 				p.zoom=Math.min(zoom1,zoom2);
 
 				//Place camera in the middle
@@ -144,8 +144,8 @@ public class ImageWindowView extends JPanel
 				Vector2d trans=transformI2S(p,stack,new Vector2d(0, 0));
 
 				
-				double scaleX=p.zoom/stack.getResbinX();
-				double scaleY=p.zoom/stack.getResbinY();
+				double scaleX=p.zoom*stack.resX;
+				double scaleY=p.zoom*stack.resY;
 				
 				g2.translate(trans.x,trans.y);
 				g2.scale(scaleX,scaleY);  

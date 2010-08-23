@@ -114,14 +114,6 @@ public class EvIODataImserv implements EvIOData
 	
 	
 	
-	/*
-	public void foo()
-		{
-		EvIODataOST.loadDatabaseCacheMap33(EvChannel ch, HashMap<EvDecimal,HashMap<EvDecimal,File>> c, InputStream cachefile, File blobFile)
-
-		}
-	*/
-	
 	//TODO share cache code with OST
 	public boolean loadDatabaseCacheV3d2(Imageset imageset, InputStream inp)
 		{
@@ -197,7 +189,7 @@ public class EvIODataImserv implements EvIOData
 							SliceIO io=new SliceIO(blobid, slice,frame,channelName);
 							evim.io=io;
 //							System.out.println("Got image "+evim+" ch "+channelName);
-							stack.put(slice, evim);
+							stack.loaders.put(slice, evim);
 							}
 						}
 					}

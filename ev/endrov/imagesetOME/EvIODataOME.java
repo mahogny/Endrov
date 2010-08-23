@@ -145,7 +145,7 @@ public class EvIODataOME implements EvIOData
 					{
 					EvImage evim=new EvImage();
 					evim.io=new EvImageOME(pixel, z, frame, c);
-					stack.put(new EvDecimal(z), evim);
+					stack.putInt(z, evim);
 					}
 				ch.imageLoader.put(new EvDecimal(frame), stack);
 				}

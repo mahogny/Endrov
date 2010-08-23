@@ -171,8 +171,8 @@ public class Stack2D extends StackInterface
 		
 		os.w=p.getWidth();
 		os.h=p.getHeight();
-		os.resX=stack.getResbinX();//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
-		os.resY=stack.getResbinY();//stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
+		os.resX=1.0/stack.resX;//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
+		os.resY=1.0/stack.resY;//stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
 		os.z=stack.resZ.doubleValue()*az;
 		os.color=chsel.color;
 

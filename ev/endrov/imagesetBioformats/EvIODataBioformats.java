@@ -290,12 +290,9 @@ public class EvIODataBioformats implements EvIOData
 						}
 					
 					
-					
-					EvDecimal zpos=new EvDecimal(resZ).multiply(new EvDecimal(z.getValue()));
-
 					EvImage evim=new EvImage();
 					evim.io=new BioformatsSliceIO(imageReader, imageReader.getIndex(z.getValue(), c.getValue(), framenum.getValue()), basedir, false);
-					stack.put(zpos, evim);
+					stack.putInt(z.getValue(), evim);
 					
 					//Optional, [s]. Note: per-plane. Data thrown away!
 					Double expTime=retrieve.getPlaneExposureTime(imageIndex, planeIndex); 

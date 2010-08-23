@@ -6,14 +6,11 @@
 package endrov.flow;
 
 import java.util.HashMap;
-import java.util.Map;
-
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvStack;
-import endrov.util.EvDecimal;
 import endrov.util.Memoize;
 
 
@@ -70,7 +67,7 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 			@Override
 			public EvStack[] exec(EvStack... p)
 				{
-				HashMap<EvDecimal,Memoize<EvPixels[]>> mems=new HashMap<EvDecimal, Memoize<EvPixels[]>>(); 
+				HashMap<Integer,Memoize<EvPixels[]>> mems=new HashMap<Integer, Memoize<EvPixels[]>>(); 
 				EvStack[] retStack=new EvStack[op.getNumberChannels()];
 				EvStack referenceStack=p[0];
 				//System.out.println("makestackop #chan "+op.getNumberChannels());
@@ -95,10 +92,11 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 					
 					//Set up each slice
 					int currentSliceIndex=0;
-					for(Map.Entry<EvDecimal, EvImage> pe:referenceStack.entrySet())
+					for(int az=0;az<referenceStack.getDepth();az++)
+					//for(Map.Entry<EvDecimal, EvImage> pe:referenceStack.entrySet())
 						{
 						EvImage newim=new EvImage();
-						newstack.put(pe.getKey(), newim);
+						newstack.putInt(az, newim);
 						
 						//Collect slice from each input stack
 						EvImage[] imlist=new EvImage[p.length];
@@ -109,15 +107,15 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 							if(imlist[currentInputChannel]==null)
 								{
 								System.out.println("BAD! null values in imlist!");
-								System.out.println("ci "+currentInputChannel+" "+pe.getKey()+" "+cit.keySet());
+								System.out.println("ci "+currentInputChannel+" "+az+" "+cit.keySet());
 								}
 							currentInputChannel++;
 							}
 						
 						//Memoize multiple returns
-						Memoize<EvPixels[]> maybe=mems.get(pe.getKey());
+						Memoize<EvPixels[]> maybe=mems.get(az);
 						if(maybe==null)
-							mems.put(pe.getKey(),maybe=new MemoizeExecSlice(imlist, op));
+							mems.put(az,maybe=new MemoizeExecSlice(imlist, op));
 						
 						final Memoize<EvPixels[]> m=maybe;
 						final int thisAc=currentReturnChannel;
