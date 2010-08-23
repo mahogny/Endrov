@@ -34,7 +34,7 @@ public class ParticleMeasurePerimeter implements ParticleMeasure.MeasureProperty
 		
 		int[][] arrIDs=stackMask.getReadOnlyArraysInt();
 
-		int d=arrIDs.length;
+		//int d=arrIDs.length;
 		for(int az=0;az<stackValue.getDepth();az++)
 			{
 			int[] arrID=arrIDs[az];//stackValue.getInt(az).getPixels().convertToInt(true).getArrayInt();

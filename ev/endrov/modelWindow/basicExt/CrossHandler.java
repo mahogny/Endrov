@@ -33,7 +33,7 @@ public class CrossHandler
 		{
 		public Vector3d v;
 		public CrossListener listener;
-		public int color;
+		//public int selectColorID;
 		}
 
 	/**
@@ -96,7 +96,6 @@ public class CrossHandler
 			int col3=view.reserveSelectColor(crossListener);
 			if(crossListStartId==null)
 				crossListStartId=col1;
-//			float size=crossSizeFactor*(float)ModelWindowGrid.getGridSize(w);
 			float size=crossSizeFactor*(float)w.view.getRepresentativeScale();
 			
 			gl.glPushMatrix();
@@ -112,7 +111,7 @@ public class CrossHandler
 			gl.glEnd();
 			gl.glLineWidth(1);
 			gl.glPopMatrix();
-			c.color=col1;
+			//c.selectColorID=col1;
 			}
 		gl.glPopAttrib();
 		}	

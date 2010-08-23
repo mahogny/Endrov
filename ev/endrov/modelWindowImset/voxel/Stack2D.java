@@ -134,22 +134,23 @@ public class Stack2D extends StackInterface
 			EvStack stack=chsel.ch.imageLoader.get(cframe);
 			int skipcount=0;
 			if(stack!=null)
-				for(EvDecimal i:stack.keySet())
+				for(int az=0;az<stack.getDepth();az++)
+				//for(EvDecimal az:stack.keySet())
 					{
 					if(stopBuildThread)
 						return false;
 					skipcount++;
 					if(skipcount>=skipForward)
 						{
-						final int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.getDepth());
+						final int progressSlices=(az*1000/(channels.size()*stack.getDepth()));//az.multiply(1000).intValue()/(channels.size()*stack.getDepth());
 						final int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
 
 						skipcount=0;
-						EvImage evim=stack.get(i);
+						EvImage evim=stack.getInt(az);
 						//if(!chsel.filterSeq.isIdentity())
 						//	evim=chsel.filterSeq.applyReturnImage(stack, evim);
-						Tuple<TextureRenderer,OneSlice> proc=processImage(stack, evim, i, chsel);
+						Tuple<TextureRenderer,OneSlice> proc=processImage(stack, evim, az, chsel);
 						procList.add(proc);
 						}
 					}
@@ -162,7 +163,7 @@ public class Stack2D extends StackInterface
 	
 	
 
-	public Tuple<TextureRenderer,OneSlice> processImage(EvStack stack, EvImage evim, EvDecimal z, VoxelExtension.ChannelSelection chsel)
+	public Tuple<TextureRenderer,OneSlice> processImage(EvStack stack, EvImage evim, int az, VoxelExtension.ChannelSelection chsel)
 		{
 		EvPixels p=evim.getPixels();
 		BufferedImage bim=p.quickReadOnlyAWT();
@@ -172,7 +173,7 @@ public class Stack2D extends StackInterface
 		os.h=p.getHeight();
 		os.resX=stack.getResbinX();//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
 		os.resY=stack.getResbinY();//stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
-		os.z=z/*.divide(resZ)*/.doubleValue();
+		os.z=stack.resZ.doubleValue()*az;
 		os.color=chsel.color;
 
 		int bw=suitablePower2(os.w);

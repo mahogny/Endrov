@@ -598,7 +598,7 @@ public class CompareAll
 		
 		///////////////// Compare each two recordings //////////////////////////////
 
-		numThread=4;
+		numThread=2;
 		System.out.println("for comparison, Will use #threads  "+numThread);
 
 		System.out.println("Calculate pair-wise statistics");
@@ -745,12 +745,13 @@ public class CompareAll
 					System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
 					e.printStackTrace();
 					}
+				//System.gc();
+				//System.out.println("total mem "+Runtime.getRuntime().totalMemory());
+
 				}
 			else
 				System.out.println("Already compared "+key);
 
-			System.gc();
-			System.out.println("total mem "+Runtime.getRuntime().totalMemory());
 			
 			return null;
 			}

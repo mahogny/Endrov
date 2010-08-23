@@ -29,7 +29,7 @@ public class RenderComparison
 	{
 
 	
-	
+	final double restDistance=200;
 
 	public static void main(String[] args)
 		{
@@ -39,7 +39,7 @@ public class RenderComparison
 		final Map<Tuple<File,File>, ColocCoefficients> comparison;
 		comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileAP);
 		
-		final double restDistance=200;
+		
 		
 		
 		

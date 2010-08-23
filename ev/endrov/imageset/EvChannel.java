@@ -45,7 +45,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	/**
 	 * Get access to an image
 	 */
-	public EvImage getImageLoader(EvDecimal frame, EvDecimal z)
+	/*public EvImage getImageLoader(EvDecimal frame, EvDecimal z)
 		{
 		try
 			{
@@ -55,7 +55,20 @@ public class EvChannel extends EvObject implements AnyEvImage
 			{
 			return null;
 			}
-		}
+		}*/
+
+	/*
+	public EvImage getImageLoaderInt(EvDecimal frame, int z)
+		{
+		try
+			{
+			return imageLoader.get(frame).getInt(z);
+			}
+		catch (Exception e)
+			{
+			return null;
+			}
+		}*/
 
 	/**
 	 * Get the first stack. Convenience method; meant mainly to be used when the
@@ -67,7 +80,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 		}
 
 	/**
-	 * Get access to a frame
+	 * Get a frame, create if needed. Should only be used if the content of the frame will be deleted, or otherwise ensure that data is correct
 	 */
 	public EvStack getCreateFrame(EvDecimal frame)
 		{
@@ -88,6 +101,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	/**
 	 * Get or create an image
 	 */
+	/*
 	public EvImage createImageLoader(EvDecimal frame, EvDecimal z)
 		{
 		EvImage im = getImageLoader(frame, z);
@@ -99,11 +113,12 @@ public class EvChannel extends EvObject implements AnyEvImage
 			setImage(frame, z, im);
 			return im;
 			}
-		}
+		}*/
 
 	/**
 	 * Set image
 	 */
+	/*
 	public void setImage(EvDecimal frame, EvDecimal z, EvImage im)
 		{
 		EvStack frames = imageLoader.get(frame);
@@ -113,7 +128,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 			imageLoader.put(frame, frames);
 			}
 		frames.put(z, im);
-		}
+		}*/
 
 	/****************************************************************************************/
 	/******************************* Find frames/z ******************************************/
@@ -179,6 +194,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 * @return Same z if frame does not exist or no slices exist, otherwise the
 	 *         closest z
 	 */
+	/*
 	public EvDecimal closestZ(EvDecimal frame, EvDecimal z)
 		{
 		EvStack slices = imageLoader.get(frame);
@@ -186,7 +202,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 			return z;
 		else
 			return slices.closestZ(z);
-		}
+		}*/
 
 	/**
 	 * Find the closest slice above given a slice in a frame
@@ -198,6 +214,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 * @return Same z if frame does not exist or no slices exist, otherwise the
 	 *         closest z above
 	 */
+	/*
 	public EvDecimal closestZAbove(EvDecimal frame, EvDecimal z)
 		{
 		EvStack slices = imageLoader.get(frame);
@@ -205,7 +222,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 			return z;
 		else
 			return slices.closestZAbove(z);
-		}
+		}*/
 
 	/**
 	 * Find the closest slice below given a slice in a frame
@@ -217,6 +234,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 * @return Same z if frame does not exist or no slices exist, otherwise the
 	 *         closest z below
 	 */
+	/*
 	public EvDecimal closestZBelow(EvDecimal frame, EvDecimal z)
 		{
 		EvStack slices = imageLoader.get(frame);
@@ -224,7 +242,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 			return z;
 		else
 			return slices.closestZBelow(z);
-		}
+		}*/
 
 	/****************************************************************************************/
 	/************************** Channel Meta data *******************************************/

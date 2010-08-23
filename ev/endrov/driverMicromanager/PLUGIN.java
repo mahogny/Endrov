@@ -4,7 +4,6 @@
  * for the full text and how to cite.
  */
 package endrov.driverMicromanager;
-import endrov.ev.EV;
 import endrov.ev.PluginDef;
 
 public class PLUGIN extends PluginDef

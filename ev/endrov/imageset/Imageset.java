@@ -130,6 +130,7 @@ public class Imageset extends EvObject
 	/**
 	 * Get access to an image
 	 */
+	/*
 	public EvImage getImageLoader(String channel, EvDecimal frame, EvDecimal z)
 		{
 		EvChannel chim=getChannel(channel);
@@ -137,7 +138,7 @@ public class Imageset extends EvObject
 			return chim.getImageLoader(frame, z);
 		else
 			return null;
-		}
+		}*/
 
 
 	/** Additions to the object-specific menu */

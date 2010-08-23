@@ -91,15 +91,6 @@ public class ModelWindowScreenshot implements ModelWindowExtension
 			}
 		
 		
-		
-		/**
-		 * View setting: display grid?
-		 */
-		public void setShowGrid(boolean b)
-			{
-			miScreenshot.setSelected(b);
-			}
-			
 			
 		public Collection<Double> adjustScale(){return Collections.emptySet();}
 		public Collection<Vector3d> autoCenterMid(){return Collections.emptySet();}

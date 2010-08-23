@@ -32,7 +32,7 @@ public abstract class EvOpStack1 extends EvOpGeneral
 		EvStack stack=new EvStack();
 		stack.put(EvDecimal.ZERO, im);
 		stack=exec1(stack);
-		return stack.get(EvDecimal.ZERO).getPixels();
+		return stack.getInt(0).getPixels();
 		}
 	
 	public EvPixels[] exec(EvPixels... p)

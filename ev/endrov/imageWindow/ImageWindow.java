@@ -562,13 +562,15 @@ public class ImageWindow extends BasicWindow
 				EvDecimal frame=frameControl.getFrame();
 				EvDecimal z=frameControl.getZ();
 				frame=ch.closestFrame(frame);
-				z=ch.closestZ(frame, z);
 				
 				EvStack stack=ch.imageLoader.get(frame);
 				if(stack==null)
 					pi.setImage(stack,null);
 				else
-					pi.setImage(stack,stack.get(z));
+					{
+					int closestZ=stack.closestZ(z.doubleValue());
+					pi.setImage(stack,stack.getInt(closestZ));
+					}
 				imagePanel.images.add(pi);
 				}
 			}
@@ -658,9 +660,8 @@ public class ImageWindow extends BasicWindow
 				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
 				if(ch.imageLoader.get(curFrame).getDepth()>0)
 					{
-					EvDecimal firstSlice=ch.imageLoader.get(curFrame).firstZ();
-					EvDecimal lastSlice=ch.imageLoader.get(curFrame).lastZ();
-					frameControl.setZ(ch.closestZ(curFrame, firstSlice.add(lastSlice).divide(2)));
+					EvStack stack=ch.imageLoader.get(curFrame);
+					frameControl.setZ(stack.resZ.multiply(stack.getDepth()).divide(2));
 					updateImagePanel();
 					}
 				}

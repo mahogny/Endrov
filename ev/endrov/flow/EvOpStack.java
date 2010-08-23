@@ -38,7 +38,7 @@ public abstract class EvOpStack extends EvOpGeneral
 		stack=exec(stack);
 		EvPixels[] ret=new EvPixels[stack.length];
 		for(int ac=0;ac<ret.length;ac++)
-			ret[ac]=stack[ac].get(EvDecimal.ZERO).getPixels();
+			ret[ac]=stack[ac].getInt(0).getPixels();
 		return ret;
 		}
 	
@@ -98,8 +98,9 @@ public abstract class EvOpStack extends EvOpGeneral
 			//Currently operates on common subset of channels
 			for(Map.Entry<EvDecimal, EvStack> channelEntry:refChannel.imageLoader.entrySet())
 				{
-				final EvStack curReturnStack=new EvStack();
 				final EvStack curInputStack=channelEntry.getValue();
+				final EvStack curReturnStack=new EvStack();
+				curReturnStack.getMetaFrom(curInputStack);
 				curReturnChan.imageLoader.put(channelEntry.getKey(), curReturnStack);
 				
 				//TODO register lazy operation
@@ -119,27 +120,31 @@ public abstract class EvOpStack extends EvOpGeneral
 				//only fix is if the laziness is added directly at the source.
 				
 				final int finalCurReturnChanIndex=curOutputChanIndex;
-				for(final Map.Entry<EvDecimal, EvImage> stackEntry:curInputStack.entrySet())
+				
+				for(int az=0;az<curInputStack.getDepth();az++)
+//				for(final Map.Entry<EvDecimal, EvImage> stackEntry:curInputStack.entrySet())
 					{
 					EvImage newim=new EvImage();
-					curReturnStack.put(stackEntry.getKey(), newim);
+					//curReturnStack.put(stackEntry.getKey(), newim);
+					curReturnStack.putInt(az, newim);
 					
 					curReturnStack.getMetaFrom(curInputStack); 
 					//TODO This design makes it impossible to generate resolution lazily
 					//TODO in particular, crop will not work nicely
 					
-					final EvDecimal z=stackEntry.getKey();
-						
+					//final EvDecimal z=stackEntry.getKey();
+					final int z=az;	
+					
 					newim.io=new EvIOImage(){public EvPixels loadJavaImage(){
 					try
 						{
 						EvStack[] chans=ms.get();
 						if(finalCurReturnChanIndex>=chans.length)
 							throw new RuntimeException("Trying to use index "+finalCurReturnChanIndex+" but there are only "+chans.length+" entries in chans");
-						EvStack chan=chans[finalCurReturnChanIndex];
-						if(chan==null)
+						EvStack stack=chans[finalCurReturnChanIndex];
+						if(stack==null)
 							throw new RuntimeException("EvOp programming error: got null stack");
-						EvImage evim=chan.get(z);
+						EvImage evim=stack.getInt(z);
 						if(evim==null)
 							throw new RuntimeException("There is no image for this z: "+z);
 						return evim.getPixels();
