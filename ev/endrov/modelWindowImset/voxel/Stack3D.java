@@ -45,7 +45,7 @@ public class Stack3D extends StackInterface
 		{
 		public int w, h, d; //size in pixels
 		//need starting position
-		public double resX,resY;//,resZ; //resolution should maybe disappear?
+		//public double resX,resY;//,resZ; //resolution should maybe disappear?
 		public Texture3D tex; //could be multiple textures, interleaved
 		public Color color;
 		public double realw, realh, reald; //size [um]
@@ -141,7 +141,8 @@ public class Stack3D extends StackInterface
 
 			int skipcount=0;
 			if(stack!=null)
-				for(EvDecimal i:stack.keySet())
+				for(int az=0;az<stack.getDepth();az++)
+				//for(EvDecimal i:stack.keySet())
 					{
 					if(stopBuildThread) //Allow to just stop thread if needed
 						return false;
@@ -149,12 +150,12 @@ public class Stack3D extends StackInterface
 					if(skipcount>=skipForward)
 						{
 						skipcount=0;
-						int progressSlices=i.multiply(1000).intValue()/(channels.size()*stack.getDepth());
+						int progressSlices=az*1000/(channels.size()*stack.getDepth());//az.multiply(1000).intValue()/(channels.size()*stack.getDepth());
 						int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
 
 						//Apply filter if needed
-						EvImage evim=stack.get(i);
+						EvImage evim=stack.getInt(az);
 						//if(!chsel.filterSeq.isIdentity())
 						//	evim=chsel.filterSeq.applyReturnImage(stack, evim);
 						
@@ -170,7 +171,8 @@ public class Stack3D extends StackInterface
 							os.w=p.getWidth();
 							os.h=p.getHeight();
 							os.d=ceilPower2(stack.getDepth());
-
+							
+/*
 							int bw=suitablePower2(os.w);
 							os.resX/=os.w/(double)bw;
 							os.w=bw;
@@ -180,15 +182,16 @@ public class Stack3D extends StackInterface
 
 							os.resX=stack.getResbinX();//stack.resX/evim.getResX()/evim.getBinning(); //[px/um]
 							os.resY=stack.getResbinY();//evim.getResY()/evim.getBinning();
-
+*/
 							os.color=chsel.color;
 							texture.allocate(os.w, os.h, os.d);
 
 							//real size
-							os.realw=os.w/os.resX;
-							os.realh=os.h/os.resY;								
-							int slicespan=(stack.lastZ().subtract(stack.firstZ()).add(1).intValue()); //TODO bd problem, total redo
-							os.reald=(os.d*(double)slicespan/(double)stack.getDepth());///chsel.im.meta.resZ;
+							os.realw=stack.resX*stack.getWidth();//os.w/os.resX;
+							os.realh=stack.resY*stack.getHeight();//os.h/os.resY;								
+							os.reald=stack.resZ.doubleValue()*stack.getDepth();
+							//int slicespan=(stack.lastZ().subtract(stack.firstZ()).add(1).intValue()); //TODO bd problem, total redo
+							//os.reald=(os.d*(double)slicespan/(double)stack.getDepth());///chsel.im.meta.resZ;
 							}
 
 
@@ -773,6 +776,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Round to best 2^
 	 */
+	/*
 	private static int suitablePower2(int s)
 		{
 		//An option to restrict max texture size would be good
@@ -784,7 +788,7 @@ public class Stack3D extends StackInterface
 		else if(s>12) return 16;
 		else if(s>6) return 8;
 		else return 4;
-		}
+		}*/
 	
 	/**
 	 * Ceil to nearest 2^

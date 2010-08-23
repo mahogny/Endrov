@@ -29,7 +29,7 @@ public class FrivolousCell
 	private FrivolousComplexArray[] immobile_arrays, mobile_arrays;
 	public FrivolousDiffusion[] diffusers;
 	private FrivolousSettingsNew settings;
-	private int w, h;
+	private int w;//, h;
 	private FrivolousFourier fft;
 	private FrivolousPSF psf;
 	private boolean needNewPSF=true; 

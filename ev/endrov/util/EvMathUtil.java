@@ -249,14 +249,14 @@ public class EvMathUtil
 	/**
 	 * Clamp value within limits i.e. return value, changed to closest limit if outside
 	 */
-	public static double clamp(double percentile, double min, double max)
+	public static double clamp(double value, double min, double max)
 		{
-		if(percentile<min)
+		if(value<min)
 			return min;
-		else if(percentile>max)
+		else if(value>max)
 			return max;
 		else
-			return percentile;
+			return value;
 		}
 	
 	

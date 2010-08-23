@@ -118,8 +118,11 @@ public final class MakeMovieThread extends BatchThread
 					{
 					EvChannel ch=rec.getChannel(cName.name);
 					EvDecimal frame=ch.closestFrame(curframe);
-					EvDecimal tz=ch.closestZ(frame, z);
-					EvImage imload=ch.getImageLoader(frame, tz);
+					EvStack stack=ch.getFrame(frame);
+					int tz=stack.closestZ(z.doubleValue());
+					EvImage imload=stack.getInt(tz);
+					//EvDecimal tz=ch.closestZ(frame, z);
+					//EvImage imload=ch.getImageLoader(frame, tz);
 					if(imload==null)
 						{
 						batchError("Failure: Could not collect EvImage for ch:"+cName.name+" f:"+frame+" z:"+tz);

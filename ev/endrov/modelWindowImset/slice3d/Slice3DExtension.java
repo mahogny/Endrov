@@ -191,17 +191,14 @@ public class Slice3DExtension implements ModelWindowExtension
 					{
 					EvChannel ch=im.getChannel(channelName);
 					EvDecimal cframe=ch.closestFrame(getFrame());
-					EvDecimal zplane=new EvDecimal((Integer)zplaneSpinner.getModel().getValue());
+					int zplane=(Integer)zplaneSpinner.getModel().getValue();
 
 					//Create surface if it wasn't there before
 					if(slice.needBuild(cframe))
 						slice.build(gl, cframe, im, ch, zplane);
 					
 					//Finally render
-					EvDecimal z=EvDecimal.ZERO;
-					if(!zProject.isSelected())
-						z=zplane;
-					slice.render(gl,colorCombo.getColor(), z);
+					slice.render(gl,colorCombo.getColor(), zProject.isSelected());
 					}
 				}
 			

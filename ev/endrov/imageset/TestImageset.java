@@ -26,8 +26,8 @@ public class TestImageset
 		
 		//This is a bisarre case, swapping two images
 		//most difficult to handle
-		EvImage im1=chan.imageLoader.get(new EvDecimal("00025010")).get(new EvDecimal("0"));
-		EvImage im2=chan.imageLoader.get(new EvDecimal("00026690")).get(new EvDecimal("0"));
+		EvImage im1=chan.imageLoader.get(new EvDecimal("00025010")).getInt(0);
+		EvImage im2=chan.imageLoader.get(new EvDecimal("00026690")).getInt(0);
 		chan.imageLoader.get(new EvDecimal("00025010")).put(new EvDecimal("1"),im2);
 		chan.imageLoader.get(new EvDecimal("00026690")).put(new EvDecimal("1"),im1);
 		im1.isDirty=true;

@@ -31,6 +31,7 @@ public class Slice3D
 	private double resX,resY/*,resZ*/;
 	private Texture tex;      
 	private boolean rebuild;
+	private double worldZ;
 	
 	
 	/**
@@ -71,7 +72,7 @@ public class Slice3D
 	/**
 	 * Load stack into memory. Need GL context, forced by parameter.
 	 */
-	public void build(GL gl,EvDecimal frame, Imageset im, EvChannel ch, EvDecimal zplane)
+	public void build(GL gl,EvDecimal frame, Imageset im, EvChannel ch, int zplane)
 		{
 		if(needBuild(frame))
 			{
@@ -80,13 +81,17 @@ public class Slice3D
 			rebuild=false;
 
 			EvDecimal cframe=ch.closestFrame(frame);
-			zplane=ch.closestZ(cframe, zplane);
-
+			
 			lastframe=frame;
 
 			//Load image
 			EvStack stack=ch.imageLoader.get(cframe);
-			EvImage evim=stack.get(zplane);
+			if(zplane<0)
+				zplane=0;
+			if(zplane>stack.getDepth())
+				zplane=stack.getDepth();
+			worldZ=zplane*stack.resZ.doubleValue();
+			EvImage evim=stack.getInt(zplane);
 			EvPixels p=evim.getPixels();
 			w=p.getWidth();
 			h=p.getHeight();
@@ -145,12 +150,14 @@ public class Slice3D
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL glin, Color color, EvDecimal zplane)
+	public void render(GL glin, Color color, boolean project)
 		{
 		GL2 gl=glin.getGL2();
 		if(isBuilt())
 			{
-			double z=zplane.doubleValue();
+			double z=worldZ;
+			if(project)
+				z=0;
 			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS); //bother to refine?
 			
 			gl.glDisable(GL2.GL_CULL_FACE);
@@ -167,7 +174,7 @@ public class Slice3D
 			gl.glBegin(GL2.GL_QUADS);
 			gl.glColor3d(color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0);
 			
-			gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, z); //check
+			gl.glTexCoord2f(tc.left(), tc.top());	   gl.glVertex3d(0, 0, z);
 			gl.glTexCoord2f(tc.right(),tc.top());    gl.glVertex3d(w, 0, z);
 			gl.glTexCoord2f(tc.right(),tc.bottom()); gl.glVertex3d(w, h, z);
 			gl.glTexCoord2f(tc.left(), tc.bottom()); gl.glVertex3d(0, h, z);

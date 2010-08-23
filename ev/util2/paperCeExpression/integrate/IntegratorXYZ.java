@@ -15,7 +15,6 @@ import javax.vecmath.Vector3d;
 import util2.paperCeExpression.integrate.IntExp.Integrator;
 import endrov.coordinateSystem.CoordinateSystem;
 import endrov.imageset.EvChannel;
-import endrov.imageset.EvImage;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
@@ -109,80 +108,84 @@ public class IntegratorXYZ implements Integrator
 		sliceExp = new double[numSubDiv][numSubDiv][numSubDiv];
 		sliceVol = new int[numSubDiv][numSubDiv][numSubDiv];
 		}
-
-	public void integrateImage(IntExp integrator)
+	
+	/**
+	 * Calculate index map lazily
+	 */
+	private void ensureIndMapCalculated(IntExp integrator)
 		{
-		integrator.ensureImageLoaded();
-
 		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
 		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
 		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
-
-		// Calculate index map lazily
-		EvImage indX = chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ);
-		EvPixels pX;
-		EvPixels pY;
-		EvPixels pZ;
-		if(indX==null)
+		
+		if(chIndexX.getFrame(EvDecimal.ZERO)==null)
 			{
-			//System.out.println("XYZ setting up index channels");
-			indX = chIndexX.createImageLoader(EvDecimal.ZERO, integrator.curZ);
-			EvImage indY = chIndexY.createImageLoader(EvDecimal.ZERO,	integrator.curZ);
-			EvImage indZ = chIndexZ.createImageLoader(EvDecimal.ZERO,	integrator.curZ);
 			int w = integrator.pixels.getWidth();
 			int h = integrator.pixels.getHeight();
-			indX.setPixelsReference(pX = new EvPixels(EvPixelsType.INT, w, h));
-			indY.setPixelsReference(pY = new EvPixels(EvPixelsType.INT, w, h));
-			indZ.setPixelsReference(pZ = new EvPixels(EvPixelsType.INT, w, h));
-
-			//Set resolution
-			EvStack stackIndX=chIndexX.imageLoader.get(EvDecimal.ZERO);
-			EvStack stackIndY=chIndexY.imageLoader.get(EvDecimal.ZERO);
-			EvStack stackIndZ=chIndexZ.imageLoader.get(EvDecimal.ZERO);
-			stackIndX.resX=stackIndX.resY=1;
-			stackIndY.resX=stackIndY.resY=1;
-			stackIndZ.resX=stackIndZ.resY=1;
-
-			int[] lineX = pX.getArrayInt();
-			int[] lineY = pY.getArrayInt();
-			int[] lineZ = pZ.getArrayInt();
-
-			// Calculate indices
-			for(int ay = 0; ay<integrator.pixels.getHeight(); ay++)
+			int d = integrator.stack.getDepth();
+			
+			EvStack stackIndexX=chIndexX.getCreateFrame(EvDecimal.ZERO);
+			stackIndexX.allocate(w, h, d, EvPixelsType.INT, integrator.stack);
+			EvStack stackIndexY=chIndexY.getCreateFrame(EvDecimal.ZERO);
+			stackIndexY.allocate(w, h, d, EvPixelsType.INT, integrator.stack);
+			EvStack stackIndexZ=chIndexZ.getCreateFrame(EvDecimal.ZERO);
+			stackIndexZ.allocate(w, h, d, EvPixelsType.INT, integrator.stack);
+			
+			for(int az=0;az<integrator.stack.getDepth();az++)
 				{
-				for(int ax = 0; ax<integrator.pixels.getWidth(); ax++)
+				EvPixels pX=stackIndexX.getInt(az).getPixels();
+				EvPixels pY=stackIndexX.getInt(az).getPixels();
+				EvPixels pZ=stackIndexX.getInt(az).getPixels();
+
+				int[] lineX = pX.getArrayInt();
+				int[] lineY = pY.getArrayInt();
+				int[] lineZ = pZ.getArrayInt();
+
+				// Calculate indices
+				for(int ay = 0; ay<integrator.pixels.getHeight(); ay++)
 					{
-					// Convert to world coordinates
-					Vector3d pos = new Vector3d(integrator.stack.transformImageWorldX(ax),
-							integrator.stack.transformImageWorldY(ay), integrator.curZ.doubleValue());
-
-					Vector3d insys = cs.transformToWorld(pos);
-
-					int cx = (int) ((insys.x+0.5)*numSubDiv);
-					int cy = (int) ((insys.y+0.5)*numSubDiv);
-					int cz = (int) ((insys.z+0.5)*numSubDiv);
-
-					int index = pX.getPixelIndex(ax, ay);
-					if (cx>=0 && cy>=0 && cz>=0 && 
-							cx<numSubDiv && cy<numSubDiv && cz<numSubDiv)
+					for(int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 						{
-						lineX[index] = cx;
-						lineY[index] = cy;
-						lineZ[index] = cz;
+						// Convert to world coordinates
+						Vector3d pos = new Vector3d(integrator.stack.transformImageWorldX(ax),
+								integrator.stack.transformImageWorldY(ay), integrator.curZ.doubleValue());
+
+						Vector3d insys = cs.transformToWorld(pos);
+
+						int cx = (int) ((insys.x+0.5)*numSubDiv);
+						int cy = (int) ((insys.y+0.5)*numSubDiv);
+						int cz = (int) ((insys.z+0.5)*numSubDiv);
+
+						int index = pX.getPixelIndex(ax, ay);
+						if (cx>=0 && cy>=0 && cz>=0 && 
+								cx<numSubDiv && cy<numSubDiv && cz<numSubDiv)
+							{
+							lineX[index] = cx;
+							lineY[index] = cy;
+							lineZ[index] = cz;
+							}
+						else
+							lineX[index] = -1;
 						}
-					else
-						lineX[index] = -1;
 					}
 				}
+			
 
 			}
-		else
-			{
-			//Load precalculated index
-			pX = chIndexX.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
-			pY = chIndexY.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
-			pZ = chIndexZ.getImageLoader(EvDecimal.ZERO, integrator.curZ).getPixels();
-			}
+		}
+
+	public void integrateImage(IntExp integrator)
+		{
+		ensureIndMapCalculated(integrator);
+		integrator.ensureImageLoaded();
+
+		//Load precalculated index
+		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
+		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
+		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
+		EvPixels pX = chIndexX.getFrame(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
+		EvPixels pY = chIndexY.getFrame(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
+		EvPixels pZ = chIndexZ.getFrame(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
 
 		// Integrate this area
 		int[] lineX = pX.getArrayInt();

@@ -51,6 +51,7 @@ public class IntExp
 
 	public static NucLineage refLin = null;
 	public EvDecimal frame;
+	public int curZint;
 	public EvDecimal curZ;
 	public EvStack stack;
 	public EvImage im;
@@ -447,6 +448,7 @@ public class IntExp
 				EvImage[] imArr = stack.getImages();
 				for (int az = 0; az<imArr.length; az++)
 					{
+					curZint = az;
 					curZ = new EvDecimal(stack.transformImageWorldZ(az));
 					// Load images lazily (for AP not really needed)
 					im = imArr[az];

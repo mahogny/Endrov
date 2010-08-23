@@ -15,6 +15,7 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import endrov.util.EvDecimal;
+import endrov.util.EvMathUtil;
 import endrov.util.Tuple;
 
 /**
@@ -25,7 +26,10 @@ import endrov.util.Tuple;
  */
 public class EvStack implements AnyEvImage
 	{
-	private TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
+	/**
+	 * TODO should not be public
+	 */
+	public TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
 	
 	/**
 	 * Resolution [um/px]
@@ -191,14 +195,20 @@ public class EvStack implements AnyEvImage
 	
 	//TODO lazy generation of the stack
 	
-
+	public int closestZ(double worldZ)
+		{
+		int closestZ=(int)EvMathUtil.clamp((worldZ-dispZ.doubleValue())/resZ.doubleValue(),0,getDepth()-1);
+		return closestZ;
+		}
+	
 	/**
 	 * Get one image plane
 	 */
+	/*
 	public EvImage get(EvDecimal z)
 		{
 		return loaders.get(z);
-		}
+		}*/
 	
 	public EvImage getInt(int z)
 		{
@@ -242,6 +252,7 @@ public class EvStack implements AnyEvImage
 	 * @param z Z we wish to match
 	 * @return Same z if frame does not exist or no slices exist, otherwise the closest z
 	 */
+	/*
 	public EvDecimal closestZ(EvDecimal z)
 		{
 		TreeMap<EvDecimal, EvImage> slices=loaders;
@@ -266,7 +277,7 @@ public class EvStack implements AnyEvImage
 					return beforekey;
 				}
 			}
-		}
+		}*/
 
 	
 	/**
@@ -316,20 +327,20 @@ public class EvStack implements AnyEvImage
 	/**
 	 * First (lowest) value of Z, or null
 	 */
-	public EvDecimal firstZ()
+	/*public EvDecimal firstZ()
 		{
 		return loaders.firstKey();
-		}
+		}*/
 	
 	 
 
 	/**
 	 * Last (largest) value of Z, or null
 	 */
-	public EvDecimal lastZ()
+	/*public EvDecimal lastZ()
 		{
 		return loaders.lastKey();
-		}
+		}*/
 
 	/**
 	 * Z's. This set can be modified and changes will be reflected.

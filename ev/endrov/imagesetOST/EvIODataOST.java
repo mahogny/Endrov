@@ -392,8 +392,11 @@ public class EvIODataOST implements EvIOData
 							//Detailed check of which images are still there
 							for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ime.getValue().diskImageLoader33.entrySet())
 								for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
-									if(ch.getImageLoader(fe.getKey(),se.getKey())==null)
+									{
+									EvStack stack=ch.getFrame(fe.getKey());
+									if(stack.loaders.get(se.getKey())==null)
 										toDelete.add(se.getValue());
+									}
 							}
 						else
 							{

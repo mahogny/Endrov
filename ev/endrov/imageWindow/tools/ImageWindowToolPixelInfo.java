@@ -64,7 +64,7 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 			EvDecimal slice=w.frameControl.getModelZ();
 			frame=c.closestFrame(frame);
 			EvStack stack=c.imageLoader.get(frame);
-			slice=stack.closestZ(slice);
+			int closestZ=stack.closestZ(slice.doubleValue());
 			
 			Vector2d mpos=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			Vector2d ppos=stack.transformWorldImage(mpos);
@@ -73,7 +73,7 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 			
 			ConsoleWindow.openConsole();
 			
-			EvImage image=stack.get(slice);
+			EvImage image=stack.getInt(closestZ);
 			if(image!=null)
 				{
 				if(px<stack.getWidth() && py<stack.getHeight() && px>=0 && py>=0)

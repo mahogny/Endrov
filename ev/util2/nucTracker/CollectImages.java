@@ -19,6 +19,7 @@ import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.nuc.NucLineage;
 import endrov.util.EvDecimal;
+import endrov.util.EvMathUtil;
 
 
 public class CollectImages
@@ -115,9 +116,10 @@ public class CollectImages
 								NucLineage.NucPos pos=e.getValue();
 								
 								frame=ost.getChannel(channelName).closestFrame(frame);
-								EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));
 								EvStack stack=ost.getChannel(channelName).imageLoader.get(frame);
-								EvImage im=stack.get(z);//ost.getChannel(channelName).getImageLoader(frame, z);
+								//EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));
+								int closestZ=stack.closestZ(pos.z);
+								EvImage im=stack.getInt(closestZ);//ost.getChannel(channelName).getImageLoader(frame, z);
 								
 								int midx=(int)stack.transformWorldImageX(pos.x);
 								int midy=(int)stack.transformWorldImageY(pos.y);

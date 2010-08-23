@@ -132,7 +132,7 @@ public class FrivolousPSFDiffraction extends FrivolousPSF
 		float[] output = new float[1024*1024];
 		FrivolousFourier.shiftQuadrants(w, h, pixels, 1024, 1024, output);
 		
-		long curTime2=System.currentTimeMillis();
+		//long curTime2=System.currentTimeMillis();
 		//System.out.println(curTime2-curTime);
 		
 		return output;

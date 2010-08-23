@@ -359,12 +359,13 @@ public class IsosurfaceExtension implements ModelWindowExtension
 						final int numSlices=stack.getDepth();
 						int curslice=0;
 						if(stack!=null)
-							for(final EvDecimal i:stack.keySet())
+							for(int az=0;az<stack.getDepth();az++)
+							//for(final EvDecimal i:stack.keySet())
 								{
 								if(shouldStop()) return;
-								pm.set(i.multiply(totalPartLoading).intValue()/numSlices);
+								pm.set(az*totalPartLoading/numSlices);
 
-								EvImage evim=stack.get(i);
+								EvImage evim=stack.getInt(az);
 								BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
 
 								//Blur the image
