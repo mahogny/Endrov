@@ -5,8 +5,6 @@
  */
 package endrov.imageset;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -15,8 +13,6 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import endrov.util.EvDecimal;
-import endrov.util.EvMathUtil;
-import endrov.util.Tuple;
 
 /**
  * One stack of images. Corresponds to one frame in one channel.
@@ -50,49 +46,23 @@ public class EvStack implements AnyEvImage
 	 */
 	public EvDecimal dispZ=EvDecimal.ZERO;
 
-	/**
-	 * Get combined resolution and binning. [um/px]
-	 */
-	public EvDecimal getResbinZinverted()
-		{
-		if(resZ==null)
-			{
-			//This is a temporary hack until we have moved completely to a new file format
-			if(loaders.size()>=2)
-				{
-				Iterator<EvDecimal> f=loaders.keySet().iterator();
-				EvDecimal z1=f.next();
-				EvDecimal z2=f.next();
-				resZ=z2.subtract(z1);
-				dispZ=z1;
-				}
-			else
-				{
-				resZ=EvDecimal.ONE;
-				System.out.println("Warning: getting resolution but there are no image planes to calculate it from");
-				}
-			}
-		
-		
-		return resZ;
-		}
 	
 	public double transformImageWorldX(double c){return (c+dispX)*resX;}
 	public double transformImageWorldY(double c){return (c+dispY)*resY;}			
-	public double transformImageWorldZ(double c){return c*getResbinZinverted().doubleValue()+dispZ.doubleValue();}
+	public double transformImageWorldZ(double c){return c*resZ.doubleValue()+dispZ.doubleValue();}
 	
 	
 	public double transformWorldImageX(double c){return (c/resX-dispX);}
 	public double transformWorldImageY(double c){return (c/resY-dispY);}
-	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/getResbinZinverted().doubleValue();}
+	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/resZ.doubleValue();}
 	
 	public double scaleImageWorldX(double c){return c*resX;}
 	public double scaleImageWorldY(double c){return c*resY;}
-	public double scaleImageWorldZ(double c){return c*getResbinZinverted().doubleValue();}
+	public double scaleImageWorldZ(double c){return c*resZ.doubleValue();}
 	
 	public double scaleWorldImageX(double c){return c/resX;}
 	public double scaleWorldImageY(double c){return c/resY;}
-	public double scaleWorldImageZ(double c){return c/getResbinZinverted().doubleValue();}
+	public double scaleWorldImageZ(double c){return c/resZ.doubleValue();}
 	
 	
 	public Vector2d transformImageWorld(Vector2d v)
@@ -123,7 +93,7 @@ public class EvStack implements AnyEvImage
 		{
 		resX=o.resX;
 		resY=o.resY;
-		resZ=o.getResbinZinverted();
+		resZ=o.resZ;
 		dispX=o.dispX;
 		dispY=o.dispY;
 		dispZ=o.dispZ;
@@ -148,7 +118,7 @@ public class EvStack implements AnyEvImage
 			{
 			resX=ref.resX;
 			resY=ref.resY;
-			resZ=ref.getResbinZinverted();
+			resZ=ref.resZ;
 			dispX=ref.dispX;
 			dispY=ref.dispY;
 			dispZ=ref.dispZ;
@@ -164,13 +134,27 @@ public class EvStack implements AnyEvImage
 			}
 		}
 	
+	/**
+	 * Remove all evimage - doubtful if this method should stay
+	 */
+	public void clearStack()
+		{
+		loaders.clear();
+		}
+	
 	
 	//TODO lazy generation of the stack
 	
-	public int closestZ(double worldZ)
+	public int closestZint(double worldZ)
 		{
+		EvDecimal wc=closestZ(new EvDecimal(worldZ));
+		int zi=(int)Math.round(wc.subtract(dispZ).divide(resZ).doubleValue());
+		return zi;
+		/*
+		//This calculation is not really true yet. Use later
 		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-dispZ.doubleValue())/resZ.doubleValue()),0,getDepth()-1);
 		return closestZ;
+		*/
 		}
 	
 	
@@ -180,6 +164,18 @@ public class EvStack implements AnyEvImage
 	 */
 	public EvImage getInt(int z)
 		{
+		/*
+		//// THIS CODE IS CORRECT! but it screws up a lot of code at the moment. convert all imagesets first
+		EvDecimal wz=resZ.multiply(z).add(dispZ);  //Note. I always find these multiplications scary. need to get rid of them
+		EvImage evim=loaders.get(wz);
+		if(evim==null)
+			throw new RuntimeException("Out of bounds: "+z+" (world z="+wz+")");
+		else
+			return evim;
+			*/
+			
+		//TODO THIS CODE IS WRONG!!! sort of.
+		//It does not work when slices are missing, but this should not be allowed in the future
 		int i=0;
 		for(EvImage evim:loaders.values())
 			{
@@ -190,12 +186,25 @@ public class EvStack implements AnyEvImage
 		throw new RuntimeException("Out of bounds");
 		}
 
+	public boolean hasInt(int z)
+		{
+		try
+			{
+			getInt(z);
+			return true;
+			}
+		catch (Exception e)
+			{
+			return false;
+			}
+		}
+	
 	/**
 	 * Set one image plane
 	 */
 	public void putInt(int z, EvImage im)
 		{
-		loaders.put(new EvDecimal(z).multiply(getResbinZinverted()).add(dispZ),im);
+		loaders.put(new EvDecimal(z).multiply(resZ).add(dispZ),im);
 		}
 
 	/**
@@ -212,7 +221,6 @@ public class EvStack implements AnyEvImage
 	 * @param z Z we wish to match
 	 * @return Same z if frame does not exist or no slices exist, otherwise the closest z
 	 */
-	/*
 	public EvDecimal closestZ(EvDecimal z)
 		{
 		TreeMap<EvDecimal, EvImage> slices=loaders;
@@ -237,7 +245,7 @@ public class EvStack implements AnyEvImage
 					return beforekey;
 				}
 			}
-		}*/
+		}
 
 	
 	/**
@@ -288,26 +296,13 @@ public class EvStack implements AnyEvImage
 	/**
 	 * Z's. This set can be modified and changes will be reflected.
 	 * It might not be modifiable in the future.
+	 * @deprecated
 	 */
 	public Set<EvDecimal> keySet()
 		{
 		return loaders.keySet();
 		}
 
-	/**
-	 * All image planes. This set can be modified and changes will be reflected.
-	 * It might not be modifiable in the future.
-	 */
-	public Set<Map.Entry<EvDecimal, EvImage>> entrySet()
-		{
-		return loaders.entrySet();
-		}
-
-	public Tuple<EvDecimal, EvImage> firstEntry()
-		{
-		EvDecimal k=loaders.firstKey();
-		return Tuple.make(k, loaders.get(k));
-		}
 	
 	/**
 	 * Get first (lowest) image in stack. Meant to be used when stack only contains one image (no z). 
@@ -324,7 +319,7 @@ public class EvStack implements AnyEvImage
 	 */
 	public int getWidth()
 		{
-		return firstEntry().snd().getPixels().getWidth();
+		return getFirstImage().getPixels().getWidth();
 		}
 	
 	/**
@@ -332,7 +327,7 @@ public class EvStack implements AnyEvImage
 	 */
 	public int getHeight()
 		{
-		return firstEntry().snd().getPixels().getHeight();
+		return getFirstImage().getPixels().getHeight();
 		}
 	
 

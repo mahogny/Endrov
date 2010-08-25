@@ -92,7 +92,7 @@ public class BatchMovie
 					//Get original image size
 					EvChannel ch=(EvChannel)imset.metaObject.get(name);
 					EvStack stack=ch.getFirstStack();
-					EvPixels p=stack.firstEntry().snd().getPixels();
+					EvPixels p=stack.getFirstImage().getPixels();
 					width=p.getWidth();
 					}
 	

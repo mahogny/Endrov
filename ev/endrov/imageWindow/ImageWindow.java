@@ -568,7 +568,7 @@ public class ImageWindow extends BasicWindow
 					pi.setImage(stack,null);
 				else
 					{
-					int closestZ=stack.closestZ(z.doubleValue());
+					int closestZ=stack.closestZint(z.doubleValue());
 					pi.setImage(stack,stack.getInt(closestZ));
 					}
 				imagePanel.images.add(pi);
@@ -687,7 +687,7 @@ public class ImageWindow extends BasicWindow
 					sb.append(
 							"ResX: "+stack.resX + " "+
 							"ResY: "+stack.resY + " "+
-							"ResZ: "+stack.getResbinZinverted() + " "+
+							"ResZ: "+stack.resZ + " "+
 							"DX: "+stack.dispX + " "+
 							"DY: "+stack.dispY + " "+
 							"DZ: "+stack.dispZ + " "+

@@ -443,7 +443,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 			{
 			EvStack fstack=getFirstStack();
 			
-			fstack.getResbinZinverted(); //TODO will not be needed later
+			//fstack.getResbinZinverted(); //TODO will not be needed later
 			
 			defaultResX=fstack.resX;
 			defaultResY=fstack.resY;
@@ -481,7 +481,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 			//Override default stack settings?
 			EvStack stack=imageLoader.get(frame);
-			stack.getResbinZinverted(); //TODO will not be needed later
+			//stack.getResbinZinverted(); //TODO will not be needed later
 			if(stack.resX!=defaultResX)
 				otherMeta.put("resX", ""+stack.resX);
 			else

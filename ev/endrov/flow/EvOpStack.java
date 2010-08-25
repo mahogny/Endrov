@@ -122,6 +122,7 @@ public abstract class EvOpStack extends EvOpGeneral
 				final int finalCurReturnChanIndex=curOutputChanIndex;
 				
 				for(int az=0;az<curInputStack.getDepth();az++)
+					if(curInputStack.hasInt(az))  //TODO should not be needed
 //				for(final Map.Entry<EvDecimal, EvImage> stackEntry:curInputStack.entrySet())
 					{
 					EvImage newim=new EvImage();
@@ -154,8 +155,6 @@ public abstract class EvOpStack extends EvOpGeneral
 						e.printStackTrace();
 						System.out.println("want to get z: "+z);
 						System.out.println("index "+finalCurReturnChanIndex);
-						System.out.println("Incoming z set "+curInputStack.keySet());
-						System.out.println(ms.get()[finalCurReturnChanIndex].keySet());
 						throw new RuntimeException("failed in lazy execution");
 						}
 					}};

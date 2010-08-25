@@ -121,7 +121,7 @@ public class CollectImages2
 								frame=ost.getChannel(channelName).closestFrame(frame);
 								//EvDecimal z=ost.getChannel(channelName).closestZ(frame, new EvDecimal(pos.z/**ost.meta.resZ*/));
 								EvStack stack=ost.getChannel(channelName).imageLoader.get(frame);
-								int closestZ=stack.closestZ(pos.z);
+								int closestZ=stack.closestZint(pos.z);
 								EvImage im=stack.getInt(closestZ);//ost.getChannel(channelName).getImageLoader(frame, z);
 								
 								int midx=(int)stack.transformWorldImageX(pos.x);

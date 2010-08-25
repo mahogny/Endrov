@@ -96,6 +96,7 @@ public class EvOpCropImage3D extends EvOpStack1
 		
 		//Crop images
 		for(int az=fromZ;az<toZ;az++)
+			if(stack.hasInt(az))  //TODO should not be needed
 			{
 			EvImage newim=new EvImage();
 			final int inZ=az; 
