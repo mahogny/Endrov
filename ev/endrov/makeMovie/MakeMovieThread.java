@@ -119,7 +119,7 @@ public final class MakeMovieThread extends BatchThread
 					EvChannel ch=rec.getChannel(cName.name);
 					EvDecimal frame=ch.closestFrame(curframe);
 					EvStack stack=ch.getFrame(frame);
-					int tz=stack.closestZ(z.doubleValue());
+					int tz=stack.closestZint(z.doubleValue());
 					EvImage imload=stack.getInt(tz);
 					//EvDecimal tz=ch.closestZ(frame, z);
 					//EvImage imload=ch.getImageLoader(frame, tz);

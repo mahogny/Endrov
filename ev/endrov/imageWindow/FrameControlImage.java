@@ -448,7 +448,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			frame=ch.closestFrame(frame);
 			EvStack stack=ch.getFrame(frame);
 			if(stack!=null)
-				z=stack.resZ.multiply(stack.closestZ(z.doubleValue())).add(stack.dispZ);
+				z=stack.resZ.multiply(stack.closestZint(z.doubleValue())).add(stack.dispZ);
 			}
 		removeChangeListener();
 		spinnerFrame.setValue(frame);
@@ -478,7 +478,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			EvChannel ch=getImageset().getChannel(channel);
 			frame=ch.closestFrame(frame);
 			EvStack stack=ch.getFrame(frame);
-			slicenum=stack.resZ.multiply(stack.closestZ(z.doubleValue()));
+			slicenum=stack.resZ.multiply(stack.closestZint(z.doubleValue()));
 			//slicenum=ch.closestZ(frame, slicenum);
 			}
 		removeChangeListener();

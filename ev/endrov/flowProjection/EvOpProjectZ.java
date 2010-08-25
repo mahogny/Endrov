@@ -44,7 +44,7 @@ public abstract class EvOpProjectZ extends EvOpStack1
 		EvStack out=new EvStack();
 		out.getMetaFrom(in);
 
-		EvImage proto=in.firstEntry().snd();
+		EvImage proto=in.getFirstImage();
 		EvPixels ptot=new EvPixels(EvPixelsType.INT,proto.getPixels().getWidth(),proto.getPixels().getHeight());
 		for(EvImage plane:in.getImages())
 			{

@@ -94,7 +94,7 @@ public class EvIODataOST implements EvIOData
 		 * An entry is not removed unless it is also deleted. By comparing this list to the dirty image list,
 		 * it is possible to figure out what files to delete. 
 		 */
-		public HashMap<EvDecimal,HashMap<EvDecimal,File>> diskImageLoader33=new HashMap<EvDecimal,HashMap<EvDecimal,File>>();
+		public HashMap<EvDecimal,HashMap<Integer,File>> diskImageLoader33=new HashMap<EvDecimal,HashMap<Integer,File>>();
 		
 		public File getDirectory()
 			{
@@ -219,25 +219,28 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * What is the current filename for an image?
 	 */
-	private File getCurrentFileFor33(EvChannel ch, EvDecimal frame, EvDecimal slice)
+	private File getCurrentFileFor33(EvChannel ch, EvDecimal frame, Integer slice)
 		{
-		HashMap<EvDecimal,HashMap<EvDecimal,File>> ce=mapBlobs.get(ch).diskImageLoader33;
+		HashMap<EvDecimal,HashMap<Integer,File>> ce=mapBlobs.get(ch).diskImageLoader33;
 		if(ce!=null)
 			{
-			HashMap<EvDecimal,File> fe=ce.get(frame);
+			HashMap<Integer,File> fe=ce.get(frame);
 			if(fe!=null)
 				return fe.get(slice);
 			}
 		return null;
 		}
+	
+	
 
 
 	/**
 	 * What should the filename be, given the compression?
 	 */
-	private File fileShouldBe(EvChannel ch, EvDecimal frame, EvDecimal z, EvDecimal resZ, EvDecimal dispZ)
+	private File fileShouldBe(EvChannel ch, EvDecimal frame, int z, EvDecimal resZ, EvDecimal dispZ)
 		{
-		int d=(int)Math.round(z.subtract(dispZ).divide(resZ).doubleValue());
+		int d=z;
+		//int d=(int)Math.round(z.subtract(dispZ).divide(resZ).doubleValue());
 		//TODO don't like the (int), can it all be done with evdecimal?
 		String zs="b"+EV.pad(d, 8);
 		
@@ -390,12 +393,22 @@ public class EvIODataOST implements EvIOData
 						if(contained)
 							{
 							//Detailed check of which images are still there
-							for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ime.getValue().diskImageLoader33.entrySet())
-								for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
+							for(Map.Entry<EvDecimal, HashMap<Integer,File>> fe:ime.getValue().diskImageLoader33.entrySet())
+								for(Map.Entry<Integer, File> se:fe.getValue().entrySet())
 									{
 									EvStack stack=ch.getFrame(fe.getKey());
-									if(stack.loaders.get(se.getKey())==null)
+									if(stack!=null)
+										{
+										//Check this slice
+										if(!stack.hasInt(se.getKey())) //This will throw an exception if it doesn't exist!
+										//if(stack.loaders.get(se.getKey())==null)
+											toDelete.add(se.getValue());
+										}
+									else
+										{
+										//Delete entire stack
 										toDelete.add(se.getValue());
+										}
 									}
 							}
 						else
@@ -404,8 +417,8 @@ public class EvIODataOST implements EvIOData
 							if(EV.debugMode)
 								System.out.println("Deleting entire imageset");
 							//for(Map.Entry<String,HashMap<EvDecimal,HashMap<EvDecimal,File>>> ce:ime.getValue().diskImageLoader.entrySet())
-								for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:ime.getValue().diskImageLoader33.entrySet())
-									for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
+								for(Map.Entry<EvDecimal, HashMap<Integer,File>> fe:ime.getValue().diskImageLoader33.entrySet())
+									for(Map.Entry<Integer, File> se:fe.getValue().entrySet())
 										toDelete.add(se.getValue());
 							}
 						}
@@ -422,21 +435,26 @@ public class EvIODataOST implements EvIOData
 				EvChannel ch=datae.getValue();
 
 					for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
-						for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
+						{
+						EvStack stack=fe.getValue();
+						for(int az=0;az<stack.getDepth();az++)
+						//for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
+							if(stack.hasInt(az))  //TODO should not be needed
 							{
-							EvStack stack=fe.getValue();
+							//EvStack stack=fe.getValue();
+							EvImage evim=stack.getInt(az);
 							
 							//Does the image belong to this IO?
-							EvIOImage oldio=ie.getValue().io;
+							EvIOImage oldio=evim.io;
 							boolean belongsToThisDatasetIO = oldio!=null && oldio instanceof SliceIO && ((SliceIO)oldio).ost==this;
 							//System.out.println("belongs to imageset "+belongsToThisDatasetIO);
 
 							//Where should new file be written?
-							File newFile=fileShouldBe(ch, fe.getKey(),ie.getKey(), stack.resZ, stack.dispZ);
+							File newFile=fileShouldBe(ch, fe.getKey(),az, stack.resZ, stack.dispZ);
 							
 							//Check if dirty
 							boolean dirty=!belongsToThisDatasetIO;
-							if(ie.getValue().modified())
+							if(evim.modified())
 								dirty=true;
 							if(!dirty)
 								{
@@ -454,8 +472,6 @@ public class EvIODataOST implements EvIOData
 							//If dirty, prepare it to be written
 							if(dirty)
 								{
-								EvImage evim=ie.getValue();
-								
 								//Mark all dirty. When they are not dirty they need not be written
 								evim.isDirty=true;
 
@@ -477,7 +493,7 @@ public class EvIODataOST implements EvIOData
 										ims.add(evim);
 										
 										if(!currentFile.equals(newFile))
-											toDelete.add(newFile);
+											toDelete.add(currentFile);
 										}
 									}
 								
@@ -495,6 +511,7 @@ public class EvIODataOST implements EvIOData
 								}
 							
 							}
+						}
 				}
 					
 			
@@ -550,19 +567,17 @@ public class EvIODataOST implements EvIOData
 					//Write image to disk. It might turn out in the last minute that the file format
 					//does not work because of non-8 bits; then change
 					File fToWrite=io.f;
-					
-					//BufferedImage bim=evim.getPixels().quickReadOnlyAWT();
 					fToWrite=EvCommonImageIO.saveImage(evim.getPixels(), io.f, imCompression.get(evim));
+					io.f=fToWrite;
 					
 					//Mark image as on disk, safe to unload
 					evim.ioIsNowOnDisk();
 //					evim.isDirty=false;
 	//				private SoftReference<EvPixels> cachedPixels=new SoftReference<EvPixels>(null);
 					
-					//Do not delete this image. Just in case some other operation got a strange idea
+					//Make sure to not delete this file
 					toDelete.remove(io.f);
 					
-					io.f=fToWrite;
 					}
 				}
 						
@@ -570,7 +585,7 @@ public class EvIODataOST implements EvIOData
 			System.out.println("Deleting files");
 			for(File f:toDelete)
 				{
-				if(EV.debugMode)
+				//if(EV.debugMode)
 					System.out.println("delete "+f);
 				f.delete();
 				}
@@ -610,9 +625,12 @@ public class EvIODataOST implements EvIOData
 					blob.diskImageLoader33.keySet().retainAll(ch.imageLoader.keySet());
 
 					//Delete slices
-					for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> framee:blob.diskImageLoader33.entrySet())
+					for(Map.Entry<EvDecimal, HashMap<Integer,File>> framee:blob.diskImageLoader33.entrySet())
 						{
-						framee.getValue().keySet().removeAll(ch.imageLoader.get(framee.getKey()).keySet());
+						EvStack stack=ch.imageLoader.get(framee.getKey());
+						//framee.getValue().keySet().removeAll(stack.keySet());
+						for(int az=0;az<stack.getDepth();az++)
+							framee.getValue().remove(az);
 						for(File f:framee.getValue().values())
 							{
 							if(EV.debugMode)
@@ -629,17 +647,20 @@ public class EvIODataOST implements EvIOData
 				DiskBlob blob=getCreateBlob(ch);
 				blob.diskImageLoader33.clear();
 				
-				HashMap<EvDecimal,HashMap<EvDecimal,File>> loaderFrames=new HashMap<EvDecimal, HashMap<EvDecimal,File>>();
+				HashMap<EvDecimal,HashMap<Integer,File>> loaderFrames=new HashMap<EvDecimal, HashMap<Integer,File>>();
 				blob.diskImageLoader33=loaderFrames;//.clear();//.put(ce.getKey(), loaderFrames);
 				for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
 					{
-					HashMap<EvDecimal,File> loaderSlices=new HashMap<EvDecimal, File>();
+					HashMap<Integer,File> loaderSlices=new HashMap<Integer, File>();
 					loaderFrames.put(fe.getKey(),loaderSlices);
-					for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
+					//for(Map.Entry<Integer, EvImage> ie:fe.getValue().entrySet())
+					for(int az=0;az<fe.getValue().getDepth();az++)
 						{
-						SliceIO sio=(SliceIO)ie.getValue().io;
+						EvImage evim=fe.getValue().getInt(az);
+						SliceIO sio=(SliceIO)evim.io;
 						sio.oldio=null;
-						loaderSlices.put(ie.getKey(), sio.f);
+//						loaderSlices.put(ie.getKey(), sio.f);
+						loaderSlices.put(az, sio.f);
 						}
 					}
 				}
@@ -689,7 +710,7 @@ public class EvIODataOST implements EvIOData
 				cb.fileIOStatus(0.3, "loading images...");
 				scanFiles33(d, cb);
 				cb.fileIOStatus(0.6, "conversion...");
-				convertSlicesToB(d);
+				//convertSlicesToB(d);
 				}
 			catch (FileNotFoundException e)
 				{
@@ -727,7 +748,7 @@ public class EvIODataOST implements EvIOData
 
 			//Update the list of images in the imageset object
 			//System.out.println("Got: "+blob.diskImageLoader33);
-			for(Map.Entry<EvDecimal, HashMap<EvDecimal,File>> fe:blob.diskImageLoader33.entrySet())
+			for(Map.Entry<EvDecimal, HashMap<Integer,File>> fe:blob.diskImageLoader33.entrySet())
 				{
 
 				Double useResX=channel.defaultResX;
@@ -778,12 +799,13 @@ public class EvIODataOST implements EvIOData
 				stack.dispY=useDispY;
 				stack.dispZ=useDispZ;
 				//stack.binning=channel.chBinning;
-				for(Map.Entry<EvDecimal, File> se:fe.getValue().entrySet())
+				for(Map.Entry<Integer, File> se:fe.getValue().entrySet())
 					{
 					EvImage evim=new EvImage();
 					evim.io=new SliceIO(this,getCurrentFileFor33(channel, fe.getKey(), se.getKey()));
 					//System.out.println("file: "+getCurrentFileFor33(channel, fe.getKey(), se.getKey()));
-					stack.loaders.put(se.getKey(),evim);
+					//stack.loaders.put(se.getKey(),evim);
+					stack.putInt(se.getKey(),evim);
 					}
 				}
 			}
@@ -815,7 +837,7 @@ public class EvIODataOST implements EvIOData
 				{
 				EvDecimal framenum=new EvDecimal(framedir.getName());
 				
-				HashMap<EvDecimal,File> loaderset=new HashMap<EvDecimal,File>();
+				HashMap<Integer,File> loaderset=new HashMap<Integer,File>();
 				blob.diskImageLoader33.put(framenum, loaderset);
 				File[] slicefiles=framedir.listFiles();
 				for(File f:slicefiles)
@@ -826,33 +848,9 @@ public class EvIODataOST implements EvIOData
 						partname=partname.substring(0,partname.lastIndexOf('.'));
 						try
 							{
-							
-							EvDecimal sliceZ;
-							if(partname.startsWith("b"))
-								{
-								//Need to calculate position
-								EvDecimal resZ=ch.defaultResZ;
-								EvDecimal dispZ=ch.defaultDispZ;
-								if(ch.metaFrame.containsKey(framenum))
-									{
-									String overrideResZ=ch.metaFrame.get(framenum).get("resZ");
-									if(overrideResZ!=null)
-										resZ=new EvDecimal(overrideResZ);
-									
-									String overrideDispZ=ch.metaFrame.get(framenum).get("DispZ");
-									if(overrideDispZ!=null)
-										dispZ=new EvDecimal(overrideDispZ);
-									}
-								
+							Integer z=Integer.parseInt(partname.substring(1));
 
-								sliceZ=new EvDecimal(partname.substring(1)).multiply(resZ).add(dispZ);
-								
-								//System.out.println("Found file "+partname);
-								}
-							else
-								sliceZ=new EvDecimal(partname);
-							
-							loaderset.put(sliceZ, f);
+							loaderset.put(z, f);
 							}
 						catch (NumberFormatException e)
 							{
@@ -881,7 +879,7 @@ public class EvIODataOST implements EvIOData
 	
 
 	
-	public static boolean loadDatabaseCacheMap33(EvChannel ch, HashMap<EvDecimal,HashMap<EvDecimal,File>> c, InputStream cachefile, File blobFile)
+	public static boolean loadDatabaseCacheMap33(EvChannel ch, HashMap<EvDecimal,HashMap<Integer,File>> c, InputStream cachefile, File blobFile)
 		{
 		try
 			{
@@ -905,7 +903,7 @@ public class EvIODataOST implements EvIOData
 					{
 					EvDecimal frame=new EvDecimal(in.readLine());
 					int numSlice=Integer.parseInt(in.readLine());
-					HashMap<EvDecimal,File> loaderset=new HashMap<EvDecimal, File>();
+					HashMap<Integer,File> loaderset=new HashMap<Integer, File>();
 					c.put(frame,loaderset);
 
 					//Generate name of frame directory, optimized. windows support?
@@ -928,41 +926,18 @@ public class EvIODataOST implements EvIOData
 							
 							StringBuffer imagefilename;
 							
-							EvDecimal slice;
-							if(s.startsWith("b"))
-								{
-								//Need to calculate position
-								EvDecimal resZ=ch.defaultResZ;
-								EvDecimal dispZ=ch.defaultDispZ;
-								if(ch.metaFrame.containsKey(frame))
-									{
-									String overrideZ=ch.metaFrame.get(frame).get("resZ");
-									if(overrideZ!=null)
-										resZ=new EvDecimal(overrideZ);
-									
-									String overrideDispZ=ch.metaFrame.get(frame).get("DispZ");
-									if(overrideDispZ!=null)
-										dispZ=new EvDecimal(overrideDispZ);
-									}
-								slice=new EvDecimal(s.substring(1)).multiply(resZ).add(dispZ);
-								
-								//Generate name of image file, optimized
-								imagefilename=new StringBuffer(framedirName);
-								imagefilename.append(s);
-								imagefilename.append(ext);
-								}
-							else
-								{
-								slice=new EvDecimal(s);
-								
-								//Generate name of image file, optimized
-								imagefilename=new StringBuffer(framedirName);
-								EV.pad(slice, 8, imagefilename); 
-								imagefilename.append(ext);
-								}
+
+							int z=Integer.parseInt(s.substring(1));
+
+							//Generate name of image file, optimized
+							imagefilename=new StringBuffer(framedirName);
+							imagefilename.append(s);
+							imagefilename.append(ext);
+
+
+							loaderset.put(z,new File(imagefilename.toString()));
 
 							
-							loaderset.put(slice,new File(imagefilename.toString()));
 							}
 						catch (Exception e)
 							{
@@ -1050,7 +1025,7 @@ public class EvIODataOST implements EvIOData
 						//w.write(""+diskFrame+"\n");
 						w.write(""+frame+"\n");
 						w.write(""+blob.diskImageLoader33.get(frame).size()+"\n");
-						for(Map.Entry<EvDecimal, File> fe:blob.diskImageLoader33.get(frame).entrySet())
+						for(Map.Entry<Integer, File> fe:blob.diskImageLoader33.get(frame).entrySet())
 							{
 							File imagefile=fe.getValue();
 							//System.out.println("want to write down "+fe.getValue());
@@ -1063,10 +1038,10 @@ public class EvIODataOST implements EvIOData
 								w.write("ext"+ext+"\n");
 								lastExt=ext;
 								}
-							if(filename.startsWith("b"))
+							//if(filename.startsWith("b"))
 								w.write(""+filename.substring(0,filename.length()-ext.length())+"\n");
-							else
-								w.write(""+fe.getKey()+"\n");
+							//else
+								//w.write(""+fe.getKey()+"\n");
 							}
 						}
 
@@ -1086,61 +1061,6 @@ public class EvIODataOST implements EvIOData
 	/******************************************************************************************************
 	 *                               Converters for upgrading                                             *
 	 *****************************************************************************************************/
-	
-	
-	public void convertSlicesToB(EvData data)
-		{
-		boolean changed=false;
-		for(EvChannel ch:data.getIdObjectsRecursive(EvChannel.class).values())
-			{
-			for(EvStack stack:ch.imageLoader.values())
-				{
-				for(Map.Entry<EvDecimal,EvImage> e:stack.entrySet())
-					{
-					EvImage evim=e.getValue();
-					SliceIO io=(SliceIO)evim.io;
-					
-					String curName=io.f.getName();
-					if(!curName.startsWith("b"))
-						{
-						EvDecimal d=e.getKey().subtract(stack.dispZ).divide(stack.resZ);
-						int v=(int)Math.round(d.doubleValue());
-//						String s="b"+EV.pad(d, 8);
-						String s="b"+EV.pad(v, 8);
-
-						File newFile;
-
-						if(curName.endsWith(".jpg") || curName.endsWith(".jpeg"))
-							newFile=new File(io.f.getParentFile(),s+".jpg");
-						else if(curName.endsWith(".png"))
-							newFile=new File(io.f.getParentFile(),s+".png");
-						else
-							{
-							System.out.println("AIIIIEEEEE");
-							newFile=null;
-							}
-		
-						if(newFile!=null)
-							{
-							if(!changed)
-								{								
-								invalidateDatabaseCache();
-								changed=true;
-								}
-							System.out.println(curName+"  "+io.f+"  ->  "+newFile);
-							io.f.renameTo(newFile);
-							io.f=newFile;
-							}
-						}
-					
-					
-					}
-				
-				}
-
-			}
-		}
-
 	
 	
 

@@ -100,16 +100,16 @@ public abstract class EvOpSlice extends EvOpGeneral //extends StackOp
 						
 						//Collect slice from each input stack
 						EvImage[] imlist=new EvImage[p.length];
-						int currentInputChannel=0;
-						for(EvStack cit:p)
+						
+						//for(EvStack cit:p)
+						for(int currentInputChannel=0;currentInputChannel<p.length;currentInputChannel++)
 							{
 							imlist[currentInputChannel]=inputStackImages[currentInputChannel][currentSliceIndex];
 							if(imlist[currentInputChannel]==null)
 								{
 								System.out.println("BAD! null values in imlist!");
-								System.out.println("ci "+currentInputChannel+" "+az+" "+cit.keySet());
+								System.out.println("ci "+currentInputChannel+" "+az);
 								}
-							currentInputChannel++;
 							}
 						
 						//Memoize multiple returns
