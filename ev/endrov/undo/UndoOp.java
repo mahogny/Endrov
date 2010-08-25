@@ -29,5 +29,5 @@ public interface UndoOp
 	/**
 	 * What is the name of the undo?
 	 */
-	public String undoName();
+	public String getOpName();
 	}

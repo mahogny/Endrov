@@ -14,7 +14,7 @@ package endrov.undo;
  */
 public abstract class UndoOpNone implements UndoOp
 	{
-	String name;
+	private String name;
 	public UndoOpNone(String s)
 		{
 		name=s;
@@ -26,8 +26,13 @@ public abstract class UndoOpNone implements UndoOp
 	public void undo()
 		{
 		}
-	public String undoName()
+	public String getOpName()
 		{
 		return name;
+		}
+	
+	public void execute()
+		{
+		EvUndo.executeAndAdd(this);
 		}
 	}

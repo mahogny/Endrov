@@ -270,12 +270,12 @@ public class NucModelExtension implements ModelWindowExtension
 			else if(e.getSource()==miPrintAngle)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
-				NucCommonUI.calcAngle(frame);
+				NucCommonUI.actionPrintAngle(frame);
 				}
 			else if(e.getSource()==miPrintPos)
 				{
 				EvDecimal frame=w.frameControl.getFrame();
-				NucCommonUI.actionShowPos(frame);
+				NucCommonUI.actionPrintPos(frame);
 				}
 			else if(e.getSource()==miPrintCountNucAtFrame)
 				{

@@ -5,10 +5,17 @@
  */
 package endrov.undo;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.DataMenuExtension;
 import endrov.data.EvData;
 import endrov.data.EvDataMenu;
@@ -34,8 +41,8 @@ public class EvUndo
 	{
 	static final long serialVersionUID=0;
 	
-	public static LinkedList<UndoOp> undoQueue=new LinkedList<UndoOp>();
-	public static LinkedList<UndoOp> redoQueue=new LinkedList<UndoOp>();
+	public static LinkedList<UndoOp> undoQueue=new LinkedList<UndoOp>(); //Last is last operation done
+	public static LinkedList<UndoOp> redoQueue=new LinkedList<UndoOp>(); //First operation is to be redone first
 
 	public UndoOp getLastUndo()
 		{
@@ -43,12 +50,15 @@ public class EvUndo
 		}
 	
 	/**
-	 * Add undo operation. An operation will not be added if it already is at the end of the list
+	 * Add undo operation and execute it
 	 */
-	public static void addUndo(UndoOp op)
+	public static void executeAndAdd(UndoOp op)
 		{
-		if(undoQueue.getLast()!=op)
-			undoQueue.add(op);
+		//if(undoQueue.getLast()!=op)
+		undoQueue.add(op);
+		op.redo();
+		while(undoQueue.size()>5)
+			undoQueue.removeFirst();
 		}
 	
 	
@@ -77,6 +87,48 @@ public class EvUndo
 				{
 				final JMenu miUndo=new JMenu("Undo");
 				addMetamenu(menu,miUndo);
+				
+				//System.out.println("----- building undo menu -----");
+				ArrayList<UndoOp> undoOpsReverse=new ArrayList<UndoOp>(undoQueue);
+				Collections.reverse(undoOpsReverse);
+				for(final UndoOp op:undoOpsReverse)
+					{
+					JMenuItem mi=new JMenuItem(op.getOpName()); 
+					miUndo.add(mi);
+					
+					mi.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							if(op.canUndo())
+								{
+								int state=JOptionPane.showConfirmDialog(null, "Experimental feature. really undo?", "Undo?", JOptionPane.YES_NO_OPTION);
+								if(state==JOptionPane.YES_OPTION)
+									{
+									op.undo();
+									redoQueue.addFirst(op);
+									BasicWindow.updateWindows();
+									}
+								}
+							else
+								BasicWindow.showInformativeDialog("This operation does not support undo");
+							}
+						});
+					
+					
+					}
+				
+				System.out.println("redos");
+				for(UndoOp op:redoQueue)
+					System.out.println(op.getOpName());
+				/*
+				System.out.println("----- building redo menu -----");
+				for(UndoOp op:redoQueue)
+					{
+					JMenuItem mi=new JMenuItem(op.getUndoName()); 
+					miUndo.add(mi);
+					}
+					*/
 				
 				}
 			public void buildOpen(JMenu menu)
