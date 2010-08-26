@@ -30,9 +30,9 @@ public class Voronoi
 		center=points;
 		
 		String platform;
-		if(endrov.ev.EV.isMac())
+		if(endrov.starter.EvSystemUtil.isMac())
 			platform="mac";
-		else if(endrov.ev.EV.isWindows())
+		else if(endrov.starter.EvSystemUtil.isWindows())
 			throw new Exception("QHULL Platform not supported");
 		else //assume linux?
 			platform="linux";

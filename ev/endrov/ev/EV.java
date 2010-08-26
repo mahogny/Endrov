@@ -17,6 +17,7 @@ import org.jdom.*;
 import org.jdom.input.*;
 import org.jdom.output.*;
 
+import endrov.starter.EvSystemUtil;
 import endrov.util.EvDecimal;
 
 /**
@@ -62,66 +63,6 @@ public class EV
 		}
 
 	/**
-	 * Directory where all user data normally is stored
-	 */
-	public static File getHomeDir()
-		{
-		if(isWindows())
-			return new File("C:\\");
-		else
-			{
-			String e=System.getenv("HOME");
-			if(e!=null)
-				return new File(e);
-			else
-				return new File("/");
-			}
-		}
-
-	
-	/**
-	 * Report which directory to store application specific configurations in
-	 * http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-	 */
-	private static File getGlobalConfigDir()
-		{
-		String e=System.getenv("XDG_CONFIG_HOME");
-		if(e==null)
-			{
-			//TODO Mac might have Libraries
-			if(isWindows())
-				return new File("C:\\config");
-			else if(isMac())
-				return new File(new File(getHomeDir(),"Library"),"Application Support");
-			else
-				return new File(getHomeDir(),".config");
-			}
-		else
-			return new File(e);
-		}
-
-	public static File getGlobalConfigEndrovDir()
-		{
-		return new File(getGlobalConfigDir(),"endrov");
-		}
-
-	/**
-	 * Get name of config file in case it is stored as an individual file
-	 */
-	private static File getConfigFileName()
-		{
-		return new File(getGlobalConfigEndrovDir(),"config.xml");
-		}
-
-	/**
-	 * Get name of log file
-	 */
-	public static File getLogFileName()
-		{
-		return new File(getGlobalConfigEndrovDir(),"log.txt");
-		}
-
-	/**
 	 * Load personal config file or load defaults if it does not exist
 	 */
 	public static void loadPersonalConfig()
@@ -137,7 +78,7 @@ public class EV
 			prefs.get("evdata", null);
 		if(s==null)
 			{
-			File configFile=getConfigFileName();
+			File configFile=EvSystemUtil.getPersonalConfigFileName();
 			if(configFile.exists())
 				{
 				s="";
@@ -201,7 +142,7 @@ public class EV
 		Preferences prefs = Preferences.userNodeForPackage(EV.class);
 		prefs.remove("evdata");
 		if(useHomedirConfig)
-			getConfigFileName().delete();
+			EvSystemUtil.getPersonalConfigFileName().delete();
 		}
 	
 	/**
@@ -233,8 +174,8 @@ public class EV
 			{
 			try
 				{
-				getConfigFileName().getParentFile().mkdirs();
-				BufferedWriter bufferedwriter = new BufferedWriter(new FileWriter(getConfigFileName()));
+				EvSystemUtil.getPersonalConfigFileName().getParentFile().mkdirs();
+				BufferedWriter bufferedwriter = new BufferedWriter(new FileWriter(EvSystemUtil.getPersonalConfigFileName()));
 				bufferedwriter.write(s);
 				bufferedwriter.close();
 				}
@@ -284,40 +225,6 @@ public class EV
 		{
 		for(PluginInfo pi:PluginInfo.getPluginList())
 			pi.load();
-		}
-	
-	/**
-	 * Check if the system is running a mac
-	 */
-	public static boolean isMac()
-		{
-		return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
-		}
-	
-	/**
-	 * Check if the system is running Windows
-	 */
-	public static boolean isWindows()
-		{
-		return System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1;
-		}
-
-	/**
-	 * Check if the system is running Linux
-	 */
-	public static boolean isLinux()
-		{
-		return System.getProperty("os.name").toUpperCase().indexOf("LINUX") != -1;
-		}
-
-	public static boolean isX86()
-		{
-		return System.getProperty("os.arch").contains("86");
-		}
-	
-	public static boolean isPPC()
-		{
-		return System.getProperty("os.arch").contains("ppc");
 		}
 	
 	public static String pad(EvDecimal d, int len)
@@ -417,9 +324,9 @@ public class EV
 		{
 		try
 			{
-			if(EV.isMac())
+			if(EvSystemUtil.isMac())
 				Runtime.getRuntime().exec(new String[]{"/usr/bin/open",f.getAbsolutePath()});
-			else if(EV.isLinux())
+			else if(EvSystemUtil.isLinux())
 				{
 				Runtime.getRuntime().exec(new String[]{"/usr/bin/xdg-open",f.getAbsolutePath()});
 				}
