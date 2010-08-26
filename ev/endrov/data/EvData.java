@@ -21,6 +21,7 @@ import org.jdom.input.SAXBuilder;
 import endrov.basicWindow.BasicWindow;
 import endrov.ev.EV;
 import endrov.ev.PersonalConfig;
+import endrov.starter.EvSystemUtil;
 
 /**
  * Root of container tree, handler of types
@@ -58,7 +59,7 @@ public class EvData extends EvContainer
 	/**
 	 * Remember last path used to load an imageset 
 	 */
-	private static File lastDataPath=EV.getHomeDir();
+	private static File lastDataPath=EvSystemUtil.getHomeDir();
 	
 	/**
 	 * Get last path used to open or save data
@@ -66,7 +67,7 @@ public class EvData extends EvContainer
 	public static File getLastDataPath()
 		{
 		if(lastDataPath==null)
-			return EV.getHomeDir();
+			return EvSystemUtil.getHomeDir();
 		else
 			return lastDataPath;
 		}

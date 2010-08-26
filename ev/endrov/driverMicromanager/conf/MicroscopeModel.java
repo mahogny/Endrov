@@ -36,7 +36,7 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import endrov.ev.EV;
+import endrov.starter.EvSystemUtil;
 import mmcorej.CMMCore;
 import mmcorej.Configuration;
 import mmcorej.MMCoreJ;
@@ -209,14 +209,14 @@ public class MicroscopeModel {
       
 File fu=new File(new File(new File("."),"libs"),"umanager_inc");
 pathList.add("/usr/lib/micro-manager");
-if(EV.isMac())
+if(EvSystemUtil.isMac())
 	{
-	if(EV.isPPC())
+	if(EvSystemUtil.isPPC())
 		pathList.add(new File(fu,"bin_mac/bin_ppc").getAbsolutePath());
 	else
 		pathList.add(new File(fu,"bin_mac/bin_x86").getAbsolutePath());
 	}
-if(EV.isWindows())
+if(EvSystemUtil.isWindows())
 	pathList.add(new File(fu,"bin_mac/bin_windows").getAbsolutePath());
       
       // Construct vector with libraries, but avoid adding the same library twice

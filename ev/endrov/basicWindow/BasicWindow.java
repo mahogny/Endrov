@@ -28,6 +28,7 @@ import endrov.ev.*;
 import endrov.keyBinding.JInputManager;
 import endrov.keyBinding.JinputListener;
 import endrov.keyBinding.KeyBinding;
+import endrov.starter.EvSystemUtil;
 
 import org.jdom.*;
 
@@ -586,7 +587,7 @@ public abstract class BasicWindow extends JPanel
 				else if (e.getSource()==miRegInfo)
 					EndrovRegistrationDialog.runDialogNoLock();
 				else if (e.getSource()==miOpenConfig)
-					EV.openExternal(EV.getGlobalConfigEndrovDir());
+					EV.openExternal(EvSystemUtil.getGlobalConfigEndrovDir());
 				else if (e.getSource()==miReportBug)
 					BrowserControl.displayURL("http://sourceforge.net/tracker/?group_id=199554&atid=969958");
 				}

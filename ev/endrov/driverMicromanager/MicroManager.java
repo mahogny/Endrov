@@ -16,8 +16,8 @@ import mmcorej.PropertyPair;
 import org.jdom.Element;
 
 import endrov.driverMicromanager.conf.ConfiguratorDlg;
-import endrov.ev.EV;
 import endrov.hardware.*;
+import endrov.starter.EvSystemUtil;
 
 /**
  * Micromanager hardware interface
@@ -42,7 +42,7 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			//core.enableStderrLog(true);
 			core.enableDebugLog(false);
 			
-			File fMMconfig1=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
+			File fMMconfig1=new File(EvSystemUtil.getGlobalConfigEndrovDir(),"MMConfig.cfg");
 			File fMMconfig=fMMconfig1;
 			fMMconfig.getParentFile().mkdirs();
 			if(!fMMconfig.exists())
@@ -50,7 +50,7 @@ public class MicroManager extends EvDeviceProvider implements EvDevice
 			if(!fMMconfig.exists())
 				{
 				System.out.println("No config file found ("+fMMconfig1+" nor "+fMMconfig+")");
-				configFile=new File(EV.getGlobalConfigEndrovDir(),"MMConfig.cfg");
+				configFile=new File(EvSystemUtil.getGlobalConfigEndrovDir(),"MMConfig.cfg");
 				configFile.createNewFile();
 				return;
 				}

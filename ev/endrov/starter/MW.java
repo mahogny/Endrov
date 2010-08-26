@@ -28,14 +28,14 @@ public class MW
 	public static void main(String[] args)
 		{
 		EvLog.listeners.add(new EvLogStdout());
-		EvLog.listeners.add(new EvLogFile(EV.getLogFileName()));
+		EvLog.listeners.add(new EvLogFile(EvSystemUtil.getLogFileName()));
 
 		//Log.listeners.add(new SwingLog());
 
 		//This is a hack over the plugin system. For some reason the application must
 		//be registered really early of DnD will fail if the application is not initially
 		//open.
-		if(EV.isMac())
+		if(EvSystemUtil.isMac())
 			{
 			try
 				{
