@@ -69,7 +69,7 @@ public class EvContainer
 	
 	
 	/** Flag if the metadata container itself has been modified */
-	private boolean coreMetadataModified=false;
+	public boolean coreMetadataModified=false;
 	
 	/**
 	 * This blobID is only valid *exactly after XML has been read*. This is because is really should
@@ -114,7 +114,6 @@ public class EvContainer
 	 */
 	public void setMetadataModified()
 		{
-//		setMetadataModified(true);
 		coreMetadataModified=true;
 		dateLastModify=new EvDecimal(System.currentTimeMillis());
 		}

@@ -16,7 +16,6 @@ import java.util.*;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.vecmath.Vector3d;
 import org.jdom.*;
 
@@ -55,6 +54,19 @@ public class NucLineage extends EvObject implements Cloneable
 		return EvSelection.getSelected(NucSel.class);
 		}
 	
+	/**
+	 * Make sure objects are not modified - at the moment there is no semantic difference compared to the other method
+	 * but this might change in the future. it guarantees that the selection set is really a copy and will not be modified
+	 * outside the scope
+	 */
+	public static HashSet<NucSel> getSelectedNucleiClone()
+		{
+		HashSet<NucSel> set=new HashSet<NucSel>();
+		for(NucSel s:EvSelection.getSelected(NucSel.class))
+			set.add(s.clone());
+		return set;
+		}
+		
 	public static final NucSel emptyHover=new NucSel(null,"");
 	public static NucSel currentHover=emptyHover;
 	
@@ -136,59 +148,6 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 		
 		
-	/**
-	 * Create parent-children relation based on selected nuclei
-	 */
-	public static void createParentChildSelected()
-		{
-		HashSet<NucSel> selectedNuclei=getSelectedNuclei();
-		if(selectedNuclei.isEmpty())
-			{
-			JOptionPane.showMessageDialog(null, "No nuclei selected");
-			return;
-			}
-		String parentName=null;
-		EvDecimal parentFrame=new EvDecimal(0);
-		NucLineage.Nuc parent=null;
-		NucLineage lin=selectedNuclei.iterator().next().fst();
-		//Decide which is the parent
-		for(NucSel childPair:selectedNuclei)
-			if(childPair.fst()==lin)
-				{
-				
-				String childName=childPair.snd();
-				NucLineage.Nuc n=lin.nuc.get(childName);
-				EvDecimal firstFrame=n.getFirstFrame();
-				if(parentName==null || firstFrame.less(parentFrame))
-					{
-					parentFrame=firstFrame;
-					parentName=childName;
-					parent=n;
-					}
-				}
-		boolean assignedChild=false;
-		if(parent==null)
-			JOptionPane.showMessageDialog(null, "Could not decide on a parent");
-		else
-			for(NucSel childPair:selectedNuclei)
-				if(childPair.fst()==lin)
-					{
-					String childName=childPair.snd();
-					if(!childName.equals(parentName))
-						{
-						NucLineage.Nuc n=lin.nuc.get(childName);
-						n.parent=parentName;
-						parent.child.add(childName);
-						EvLog.printLog("new PC, parent: "+parentName+"child: "+childName);
-						assignedChild=true;
-						}
-					}
-		if(!assignedChild)
-			JOptionPane.showMessageDialog(null, "Found no children to assign to parent");
-		lin.setMetadataModified();
-		}
-
-	
 	/******************************************************************************************************
 	 *                               Instance NucLineage                                                  *
 	 *****************************************************************************************************/
@@ -596,7 +555,8 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 	
 	/**
-	 * Merge nuclei
+	 * Merge nuclei. The source is removed, target stays and contains everything from the source
+	 * TODO also handle expression pattern?
 	 */	
 	public void mergeNuclei(String sourceName, String targetName)
 		{
@@ -604,11 +564,7 @@ public class NucLineage extends EvObject implements Cloneable
 		Nuc nt=nuc.get(targetName);
 		ns.overrideEnd=null;
 		nuc.remove(targetName);
-//		for(int frame:nt.pos.keySet())
-//			ns.pos.put(frame,nt.pos.get(frame));
 		ns.pos.putAll(nt.pos);
-//		for(String child:nt.child)
-//			ns.child.add(child);
 		ns.child.addAll(nt.child);
 		updateNameReference(targetName,sourceName);
 		ns.child.remove(sourceName);
@@ -651,12 +607,9 @@ public class NucLineage extends EvObject implements Cloneable
 				}
 			
 			NucSel oldref=new NucSel(this,oldName);
-			//if(selectedNuclei.contains(oldref))
 			if(EvSelection.isSelected(oldref))
 				{
-				//selectedNuclei.remove(oldref);
 				EvSelection.unselect(oldref);
-				//selectedNuclei.add(new NucPair(this,newName));
 				EvSelection.select(new NucSel(this,newName));
 				}
 			}
@@ -801,19 +754,30 @@ public class NucLineage extends EvObject implements Cloneable
 		/** Description of cell. null if none */
 		public String description=null;
 		
-		/** Make a deep copy */
-		public Object clone()
+		
+		@Override
+		public String toString()
+			{
+			return "parent "+parent+" children "+child;
+			}
+		
+		/**
+		 * Make a deep copy 
+		 */
+		public Nuc clone()
 			{
 			Nuc n=new Nuc();
 			n.child.addAll(child);
 			n.parent=parent;
-			n.overrideStart=overrideStart;
-			n.overrideEnd=overrideEnd;
-			n.fate=fate;
 			for(EvDecimal i:pos.keySet())
 				n.pos.put(i, new NucPos(pos.get(i)));
 			for(Map.Entry<String, NucExp> e:exp.entrySet())
-				n.exp.put(e.getKey(), (NucExp)e.getValue().clone());
+				n.exp.put(e.getKey(), e.getValue().clone());
+			n.overrideStart=overrideStart;
+			n.overrideEnd=overrideEnd;
+			n.fate=fate;
+			n.colorNuc=colorNuc;
+			n.description=description;
 			return n;
 			}
 		
@@ -875,13 +839,6 @@ public class NucLineage extends EvObject implements Cloneable
 					{
 					//Parent stop existing once there is a child
 					NucLineage.Nuc c=nuc.get(cName);
-					/*
-					if(c.pos.isEmpty())
-						System.out.println("Error: no positions for "+cName);
-					else 
-						*/
-//					if(cfirstFrame==null || cfirstFrame.greater(c.lastFrame())) //Changed 2008-02-09
-//						cfirstFrame=c.lastFrame();
 					EvDecimal thisFirstFrame=c.getFirstFrame();
 					if(thisFirstFrame!=null)
 						if(cfirstFrame==null || cfirstFrame.greater(thisFirstFrame))

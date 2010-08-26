@@ -54,11 +54,21 @@ public class EvUndo
 	 */
 	public static void executeAndAdd(UndoOp op)
 		{
-		//if(undoQueue.getLast()!=op)
 		undoQueue.add(op);
-		op.redo();
 		while(undoQueue.size()>5)
 			undoQueue.removeFirst();
+		op.redo();
+		}
+	
+	
+	/**
+	 * Add undo operation and replace the last one on the stack
+	 */
+	public static void executeAndReplaceLast(UndoOp op)
+		{
+		undoQueue.removeLast();
+		undoQueue.add(op);
+		op.redo(); //Takes care of updating the windows at the moment!
 		}
 	
 	
@@ -102,13 +112,13 @@ public class EvUndo
 							{
 							if(op.canUndo())
 								{
-								int state=JOptionPane.showConfirmDialog(null, "Experimental feature. really undo?", "Undo?", JOptionPane.YES_NO_OPTION);
-								if(state==JOptionPane.YES_OPTION)
-									{
+								//int state=JOptionPane.showConfirmDialog(null, "Experimental feature. really undo?", "Undo?", JOptionPane.YES_NO_OPTION);
+								//if(state==JOptionPane.YES_OPTION)
+									//{
 									op.undo();
 									redoQueue.addFirst(op);
 									BasicWindow.updateWindows();
-									}
+									//}
 								}
 							else
 								BasicWindow.showInformativeDialog("This operation does not support undo");
@@ -120,7 +130,7 @@ public class EvUndo
 				
 				System.out.println("redos");
 				for(UndoOp op:redoQueue)
-					System.out.println(op.getOpName());
+					System.out.println("redo: "+op.getOpName());
 				/*
 				System.out.println("----- building redo menu -----");
 				for(UndoOp op:redoQueue)
