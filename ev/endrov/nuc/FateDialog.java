@@ -11,7 +11,6 @@ import java.awt.event.*;
 import java.util.*;
 
 import endrov.basicWindow.BasicWindow;
-import endrov.util.Tuple;
 
 /**
  * Dialog to edit fate for a nucleus
@@ -29,7 +28,7 @@ public class FateDialog extends JDialog implements ActionListener
 	private final JButton bOk=new JButton("Ok");
 	private final JButton bCancel=new JButton("Cancel");
 	
-	public FateDialog(Frame owner, Tuple<NucLineage,String> sel)
+	public FateDialog(Frame owner, NucSel sel)
 		{
 		super(owner, "Set fate for "+sel.snd(), true);
 
@@ -73,10 +72,16 @@ public class FateDialog extends JDialog implements ActionListener
 		{
 		if(e.getSource()==bOk)
 			{
-			NucLineage.Nuc n=lin.nuc.get(nucName);
-			if(n!=null)
-				n.fate=(String)cFate.getSelectedItem();
-			BasicWindow.updateWindows();
+			new UndoOpReplaceSomeNuclei("Set fate")
+				{
+				public void redo()
+					{
+					NucLineage.Nuc n=lin.nuc.get(nucName);
+					if(n!=null)
+						n.fate=(String)cFate.getSelectedItem();
+					BasicWindow.updateWindows();
+					}
+				};
 			}
 		dispose();
 		}

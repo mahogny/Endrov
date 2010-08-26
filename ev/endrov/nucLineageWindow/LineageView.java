@@ -939,7 +939,10 @@ public class LineageView extends JPanel
 		if(r!=null)
 			r.clickRegion(e);
 		else if(SwingUtilities.isLeftMouseButton(e))
+			{
 			EvSelection.unselectAll();
+			BasicWindow.updateWindows();
+			}
 			//NucLineage.selectedNuclei.clear();
 		}
 

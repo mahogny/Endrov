@@ -164,6 +164,11 @@ public class PhylipStatistics
 		{
 		System.out.println("------------------------------- "+f);
 		
+		if(!f.exists())
+			{
+			System.out.println("No such file: "+f);
+			return;
+			}
 		Node root=parseFile(f);
 		keepOnlyGenename(root);
 		//System.out.println(n);

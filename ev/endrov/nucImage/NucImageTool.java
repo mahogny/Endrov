@@ -363,7 +363,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		else if(lin!=null && KeyBinding.get(NucLineage.KEY_SETPARENT).typed(e))
 			{
 			//Create parent-children relation
-			NucLineage.createParentChildSelected();
+			NucCommonUI.actionAssocParent();
 			BasicWindow.updateWindows();
 			}
 		}

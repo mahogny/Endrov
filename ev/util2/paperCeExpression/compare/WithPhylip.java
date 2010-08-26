@@ -34,6 +34,7 @@ public class WithPhylip
 	
 	public static void doFor(File comparisonFile, String base)
 		{
+		System.out.println("profile -------------------------   "+comparisonFile);
 		
 		//Load similarities
 		final Map<Tuple<File,File>, ColocCoefficients> comparison;

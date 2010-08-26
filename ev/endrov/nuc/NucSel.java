@@ -33,7 +33,7 @@ public class NucSel extends Tuple<NucLineage,String> implements EvSelectable
 	
 	public int hashCode()
 		{
-		//needed?
+		//needed? don't think so
 		return super.hashCode();
 		}
 	
@@ -45,5 +45,10 @@ public class NucSel extends Tuple<NucLineage,String> implements EvSelectable
 	public void setColor(EvColor c)
 		{
 		getNuc().colorNuc=c.getAWTColor();
+		}
+	
+	protected NucSel clone()
+		{
+		return new NucSel(fst(), snd());
 		}
 	}

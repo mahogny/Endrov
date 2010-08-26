@@ -15,9 +15,9 @@ package endrov.undo;
 public abstract class UndoOpBasic implements UndoOp
 	{
 	private String name;
-	public UndoOpBasic(String s)
+	public UndoOpBasic(String opName)
 		{
-		name=s;
+		name=opName;
 		}
 	public boolean canUndo()
 		{
