@@ -176,7 +176,7 @@ public class MakeStdWorm5
 //					System.out.println("> "+e.getKey()+" "+one.lifeStart+" "+frame+" -> "+newFrame+" // "+one.lifeEnd);
 					
 					NucLineage.NucPos pos=nuc.pos.get(frame);
-					newnuc.pos.put(newFrame, new NucLineage.NucPos(pos));
+					newnuc.pos.put(newFrame, pos.clone());
 					}
 				}
 			}

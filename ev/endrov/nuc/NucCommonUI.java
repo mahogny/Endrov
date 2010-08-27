@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,7 +33,8 @@ import endrov.consoleWindow.ConsoleWindow;
 import endrov.data.EvData;
 import endrov.data.EvSelection;
 import endrov.ev.EvLog;
-import endrov.undo.UndoOpBasic;
+import endrov.nuc.NucLineage.Nuc;
+import endrov.nuc.NucLineage.NucInterp;
 import endrov.util.EvDecimal;
 import endrov.util.EvGeomUtil;
 import endrov.util.Tuple;
@@ -62,8 +62,24 @@ public class NucCommonUI implements ActionListener
 	private JMenuItem miSelectAll=new JMenuItem("Select all in this lineage");
 	private JMenuItem miSelectAllSameName=new JMenuItem("Select all w/ the same name");
 
-	
 	private JComponent parentComponent;
+	
+	/**
+	 * Currently hidden nuclei. currently no sample. needed? 
+	 */
+	public static HashSet<NucSel> hiddenNuclei=new HashSet<NucSel>();
+	
+	/**
+	 * There is only one empty selection. This allows == for checking
+	 */
+	public static final NucSel emptyHover=new NucSel(null,"");
+	
+	/**
+	 * Currently hovered cell
+	 */
+	public static NucSel currentHover=NucCommonUI.emptyHover;
+	
+	
 	
 	public NucCommonUI(JComponent parent)
 		{
@@ -135,27 +151,27 @@ public class NucCommonUI implements ActionListener
 			actionSwapChildren();
 		else if(e.getSource()==miSetFate)
 			{
-			HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+			HashSet<NucSel> selectedNuclei=NucCommonUI.getSelectedNuclei();
 			if(selectedNuclei.size()==1)
 				new FateDialog(null, selectedNuclei.iterator().next());
 			else
 				JOptionPane.showMessageDialog(parentComponent, "Select 1 nucleus first");
 			}
 		else if(e.getSource()==miSetDesc)
-			actionSetDesc(NucLineage.getSelectedNuclei());
+			actionSetDesc(NucCommonUI.getSelectedNuclei());
 		else if(e.getSource()==miSetOverrideStartFrame)
-			actionSetStartFrame(NucLineage.getSelectedNuclei());
+			actionSetStartFrameDialog(NucCommonUI.getSelectedNuclei());
 		else if(e.getSource()==miSetOverrideEndFrame)
-			actionSetEndFrame(NucLineage.getSelectedNuclei());
+			actionSetEndFrameDialog(NucCommonUI.getSelectedNuclei());
 		else if(e.getSource()==miDeleteNucleus)
-			actionRemove(NucLineage.getSelectedNuclei());
+			actionRemove(NucCommonUI.getSelectedNuclei());
 		else if(e.getSource()==miSelectChildren)
 			{
 			actionRecursiveSelectChildren();
 			}
 		else if(e.getSource()==miSelectParents)
 			{
-			Set<NucSel> children=new HashSet<NucSel>(NucLineage.getSelectedNuclei());
+			Set<NucSel> children=new HashSet<NucSel>(NucCommonUI.getSelectedNuclei());
 			for(NucSel p:children)
 				actionSecursiveSelectParents(p.fst(), p.snd());
 			BasicWindow.updateWindows();
@@ -163,7 +179,7 @@ public class NucCommonUI implements ActionListener
 		else if(e.getSource()==miSelectAllSameName)
 			{
 			HashSet<String> names=new HashSet<String>();
-			for(NucSel p:NucLineage.getSelectedNuclei())
+			for(NucSel p:NucCommonUI.getSelectedNuclei())
 				names.add(p.snd());
 			for(EvData data:EvData.openedData)
 				for(NucLineage lin:data.getObjects(NucLineage.class))
@@ -182,11 +198,124 @@ public class NucCommonUI implements ActionListener
 	
 	
 	/**
+		 * Selection of nuclei by mouse and keyboard
+		 * @param nucPair Which nucleus, never null
+		 * @param shift True if shift-key held
+		 */
+		public static void mouseSelectNuc(NucSel nucPair, boolean shift)
+			{
+			String nucname=nucPair.snd();
+			//Shift-key used to select multiple
+			if(shift)
+				{
+				if(!nucname.equals(""))
+					{
+					if(EvSelection.isSelected(nucPair))
+						EvSelection.unselect(nucPair);
+					else
+						EvSelection.select(nucPair);
+					}
+				}
+			else
+				{
+				EvSelection.unselectAll();
+				if(!nucname.equals(""))
+					EvSelection.select(nucPair);
+				}
+			BasicWindow.updateWindows();
+			}
+
+	/**
+	 * Make sure objects are not modified - at the moment there is no semantic difference compared to the other method
+	 * but this might change in the future. it guarantees that the selection set is really a copy and will not be modified
+	 * outside the scope
+	 */
+	public static HashSet<NucSel> getSelectedNucleiClone()
+		{
+		HashSet<NucSel> set=new HashSet<NucSel>();
+		for(NucSel s:EvSelection.getSelected(NucSel.class))
+			if(s.fst().nuc.containsKey(s.snd()))
+				set.add(s.clone());
+		return set;
+		}
+
+	/**
+	 * Get selected nuclei. Also ensures that no invalid selections are included (nuclei that does not exist).
+	 * If a cell is hovered then 
+	 */
+	public static HashSet<NucSel> getSelectedNuclei()
+		{
+		HashSet<NucSel> sels=new HashSet<NucSel>();
+		/*if(currentHover!=emptyHover)
+			{
+			NucSel sel=currentHover;
+			if(sel.fst().nuc.containsKey(sel.snd()))
+				sels.add(sel);
+			}
+		else
+			{*/
+			for(NucSel sel:EvSelection.getSelected(NucSel.class))
+				if(sel.fst().nuc.containsKey(sel.snd()))
+					sels.add(sel);
+			//}
+		return sels;
+		}
+	
+	public static HashSet<NucSel> getSelectedOrHoveredNuclei()
+		{
+		HashSet<NucSel> sels=new HashSet<NucSel>();
+		if(currentHover!=emptyHover)
+			{
+			NucSel sel=currentHover;
+			if(sel.fst().nuc.containsKey(sel.snd()))
+				sels.add(sel);
+			}
+		else
+			{
+			for(NucSel sel:EvSelection.getSelected(NucSel.class))
+				if(sel.fst().nuc.containsKey(sel.snd()))
+					sels.add(sel);
+			}
+		return sels;
+		}
+	
+
+	/**
+	 * Divide a nucleus at the specified frame. Only works if the cell to divide has no children
+	 */
+	public static void actionDivideNuc(NucLineage lin, String parentName, EvDecimal frame)
+		{
+		lin.removePosAfter(parentName, frame, true);
+		Nuc n=lin.nuc.get(parentName);
+		if(n!=null && n.child.isEmpty())
+			{
+			String c1n=lin.getUniqueNucName();
+			Nuc c1=lin.getCreateNuc(c1n);
+			String c2n=lin.getUniqueNucName();
+			Nuc c2=lin.getCreateNuc(c2n);
+			n.child.add(c1n);
+			n.child.add(c2n);
+			c1.parent=parentName;
+			c2.parent=parentName;
+			
+			NucLineage.NucPos pos=n.pos.get(n.pos.lastKey());
+			NucLineage.NucPos c1p=pos.clone();
+			NucLineage.NucPos c2p=pos.clone();
+			c1p.x-=pos.r/2;
+			c2p.x+=pos.r/2;
+			c1.pos.put(frame, c1p);
+			c2.pos.put(frame, c2p);
+			}
+		lin.setMetadataModified();
+		BasicWindow.updateWindows();
+		}
+
+	/**
 	 * Unassociate parent 
 	 */
 	public static void actionUnassocParent()
 		{
-		final Collection<NucSel> sel=NucLineage.getSelectedNucleiClone();
+		final Collection<NucSel> sel=NucCommonUI.getSelectedNucleiClone();
 		
 		new UndoOpReplaceSomeNuclei("Unassociate parent")
 			{
@@ -199,8 +328,8 @@ public class NucCommonUI implements ActionListener
 						{
 						//Store away parent and child
 						NucLineage lin=childSel.fst();
-						keepNuc(lin, parentName);
-						keepNuc(lin, childSel.snd());
+						keep(lin, parentName);
+						keep(lin, childSel.snd());
 						
 						//Now modify both
 						lin.removeParentReference(childSel.snd());
@@ -216,7 +345,7 @@ public class NucCommonUI implements ActionListener
 	 */
 	public static void actionAssocParent()
 		{
-		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+		HashSet<NucSel> selectedNuclei=NucCommonUI.getSelectedNuclei();
 		if(selectedNuclei.size()>1)
 			{
 			String parentName=null;
@@ -263,11 +392,11 @@ public class NucCommonUI implements ActionListener
 						{
 						public void redo()
 							{
-							keepNuc(lin, fParentName);
+							keep(lin, fParentName);
 							for(String childName:childNames)
 								{
 								NucLineage.Nuc n=lin.nuc.get(childName);
-								keepNuc(lin, childName);
+								keep(lin, childName);
 								n.parent=fParentName;
 								lin.nuc.get(fParentName).child.add(childName);
 								}
@@ -288,7 +417,7 @@ public class NucCommonUI implements ActionListener
 	 */
 	public static void actionMergeNuclei()
 		{
-		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+		HashSet<NucSel> selectedNuclei=NucCommonUI.getSelectedNuclei();
 		if(selectedNuclei.size()==2)
 			{
 			Iterator<NucSel> nucit=selectedNuclei.iterator();
@@ -331,7 +460,7 @@ public class NucCommonUI implements ActionListener
 	 */
 	public static void actionSwapChildren()
 		{
-		LinkedList<Tuple<NucLineage,String>> selnucs=new LinkedList<Tuple<NucLineage,String>>(NucLineage.getSelectedNuclei());  //getSelected could return nuc that is hovered!!!!
+		LinkedList<Tuple<NucLineage,String>> selnucs=new LinkedList<Tuple<NucLineage,String>>(NucCommonUI.getSelectedNuclei());  //getSelected could return nuc that is hovered!!!!
 		if(selnucs.size()==1)
 			{
 			final NucLineage lin=selnucs.get(0).fst();
@@ -382,96 +511,86 @@ public class NucCommonUI implements ActionListener
 	/**
 	 * Set override end frame of nuclei
 	 */
-	public static void actionSetEndFrame(final Collection<NucSel> nucs)
+	public static void actionSetEndFrameDialog(Collection<NucSel> nucs)
 		{
 		if(!nucs.isEmpty())
 			{
 			final String sFrame=JOptionPane.showInputDialog("End frame, or empty for none");
 			if(sFrame!=null)
 				{
-				final EvDecimal frame=FrameControl.parseTime(sFrame);
-				new UndoOpBasic("Set end frame")
-					{
-					private HashMap<String, Tuple<NucLineage,NucLineage.Nuc>> oldnuc=new HashMap<String, Tuple<NucLineage,NucLineage.Nuc>>();  
-					public void redo()
-						{
-						for(NucSel nucPair:nucs)
-							{
-							NucLineage.Nuc n=nucPair.getNuc();
-							if(n!=null)
-								{
-								oldnuc.put(nucPair.snd(), Tuple.make(nucPair.fst(), n.clone()));
-								if(sFrame.equals(""))
-									n.overrideEnd=null;
-								else
-									{
-									n.overrideEnd=frame;
-									nucPair.fst().removePosAfter(NucLineage.currentHover.snd(), frame, false); 
-									}
-								}
-							}
-						BasicWindow.updateWindows();
-						}
-
-					public void undo()
-						{
-						for(String name:oldnuc.keySet())
-							{
-							NucLineage lin=oldnuc.get(name).fst();
-							lin.nuc.put(name, oldnuc.get(name).snd());
-							}
-						}
-					}.execute();
+				final EvDecimal frame;
+				if(sFrame.equals(""))
+					frame=null;
+				else
+					frame=FrameControl.parseTime(sFrame);
+				actionSetEndFrame(nucs, frame);
 				}
 			}
+		}
+	
+	public static void actionSetEndFrame(final Collection<NucSel> nucs, final EvDecimal frame)
+		{
+		new UndoOpReplaceSomeNuclei("Set end frame")
+			{
+			public void redo()
+				{
+				for(NucSel nucPair:nucs)
+					{
+					NucLineage.Nuc n=nucPair.getNuc();
+					if(n!=null)
+						{
+						keep(nucPair.fst(), nucPair.snd());
+						n.overrideEnd=frame;
+						if(frame!=null)
+							nucPair.fst().removePosAfter(NucCommonUI.currentHover.snd(), frame, false); 
+						}
+					}
+				BasicWindow.updateWindows();
+				}
+			}.execute();		
 		}
 
 	
 	/**
-	 * Set override start frame
+	 * Set override start frame of nuclei
 	 */
-	public static void actionSetStartFrame(final Collection<NucSel> nucs)
+	public static void actionSetStartFrameDialog(final Collection<NucSel> nucs)
 		{
 		if(!nucs.isEmpty())
 			{
 			final String sFrame=JOptionPane.showInputDialog("Start frame, or empty for none");
 			if(sFrame!=null)
 				{
-				final EvDecimal frame=FrameControl.parseTime(sFrame);
-				new UndoOpBasic("Set start frame")
-					{
-					private HashMap<String, Tuple<NucLineage,NucLineage.Nuc>> oldnuc=new HashMap<String, Tuple<NucLineage,NucLineage.Nuc>>();  
-					public void redo()
-						{
-						for(NucSel nucPair:nucs)
-							{
-							NucLineage.Nuc n=nucPair.getNuc();
-							if(n!=null)
-								{
-								oldnuc.put(nucPair.snd(), Tuple.make(nucPair.fst(), n.clone()));
-								if(sFrame.equals(""))
-									n.overrideStart=null;
-								else
-									{
-									n.overrideStart=frame;
-									nucPair.fst().removePosBefore(NucLineage.currentHover.snd(), frame, false);  
-									}
-								}
-							}
-						BasicWindow.updateWindows();
-						}
-
-					public void undo()
-						{
-						for(String name:oldnuc.keySet())
-							{
-							NucLineage lin=oldnuc.get(name).fst();
-							lin.nuc.put(name, oldnuc.get(name).snd());
-							}
-						}
-					}.execute();
+				final EvDecimal frame;
+				if(sFrame.equals(""))
+					frame=null;
+				else
+					frame=FrameControl.parseTime(sFrame);
+				actionSetStartFrame(nucs, frame);
 				}
 			}
+		}
+	
+	public static void actionSetStartFrame(final Collection<NucSel> nucs, final EvDecimal frame)
+		{
+		new UndoOpReplaceSomeNuclei("Set start frame")
+			{
+			public void redo()
+				{
+				for(NucSel nucPair:nucs)
+					{
+					NucLineage.Nuc n=nucPair.getNuc();
+					if(n!=null)
+						{
+						keep(nucPair.fst(), nucPair.snd());
+						n.overrideStart=frame;
+						if(frame!=null)
+							nucPair.fst().removePosBefore(NucCommonUI.currentHover.snd(), frame, false);  
+						}
+					}
+				BasicWindow.updateWindows();
+				}
+			}.execute();
 		}
 	
 		
@@ -498,11 +617,11 @@ public class NucCommonUI implements ActionListener
 							NucLineage lin=nucPair.fst();
 							
 							//Store away parent, this nucleus, and children
-							keepNuc(lin, nucPair.snd());
+							keep(lin, nucPair.snd());
 							if(thisNuc.parent!=null)
-								keepNuc(lin,thisNuc.parent);
+								keep(lin,thisNuc.parent);
 							for(String childName:thisNuc.child)
-								keepNuc(lin,childName);
+								keep(lin,childName);
 							
 							lin.removeNuc(nucPair.snd());
 							}
@@ -536,7 +655,7 @@ public class NucCommonUI implements ActionListener
 					{
 					public void redo()
 						{
-						keepNuc(lin, nucName);
+						keep(lin, nucName);
 						lin.nuc.get(nucName).description=fNewDesc;
 						}
 					}.execute();
@@ -569,7 +688,7 @@ public class NucCommonUI implements ActionListener
 	public static void actionRecursiveSelectChildren()
 		{
 		Set<NucSel> alreadySelected=new HashSet<NucSel>();
-		for(NucSel p:new HashSet<NucSel>(NucLineage.getSelectedNuclei()))
+		for(NucSel p:new HashSet<NucSel>(NucCommonUI.getSelectedNuclei()))
 			recursiveSelectChildren(p, alreadySelected);
 		BasicWindow.updateWindows();
 		}
@@ -611,7 +730,7 @@ public class NucCommonUI implements ActionListener
 	 */
 	public static void actionPrintPos(EvDecimal frame)
 		{
-		for(NucSel p:NucLineage.getSelectedNuclei())
+		for(NucSel p:NucCommonUI.getSelectedNuclei())
 			{
 			NucLineage.NucPos npos=p.getNuc().interpolatePos(frame).pos;
 			//Vector3d pos=p.fst().nuc.get(p.snd()).interpolatePos(frame).pos.getPosCopy();
@@ -628,7 +747,7 @@ public class NucCommonUI implements ActionListener
 	public static void actionPrintAngle(EvDecimal frame)
 		{
 		ConsoleWindow.openConsole();
-		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+		HashSet<NucSel> selectedNuclei=NucCommonUI.getSelectedNuclei();
 		if(selectedNuclei.size()==3)
 			{
 			Iterator<NucSel> it=selectedNuclei.iterator();
@@ -667,7 +786,7 @@ public class NucCommonUI implements ActionListener
 			{
 				public void actionPerformed(ActionEvent e)
 					{
-					for (NucSel p : NucLineage.getSelectedNuclei())
+					for (NucSel p : NucCommonUI.getSelectedNuclei())
 						p.getNuc().colorNuc = null;
 					BasicWindow.updateWindows();
 					}
@@ -684,7 +803,7 @@ public class NucCommonUI implements ActionListener
 					for (EvColor c : exclude)
 						colors.remove(c);
 					colors.remove(EvColor.black);
-					for (NucSel p : NucLineage.getSelectedNuclei())
+					for (NucSel p : NucCommonUI.getSelectedNuclei())
 						{
 						int pi = Math.abs(p.snd().hashCode())%colors.size();
 						p.getNuc().colorNuc = colors.get(pi).c;
@@ -710,7 +829,7 @@ public class NucCommonUI implements ActionListener
 				Color awtc=new Color(Integer.parseInt(sr),Integer.parseInt(sg),Integer.parseInt(sb));
 				EvColor c=new EvColor("Custom",awtc);
 				
-				for (NucSel p : NucLineage.getSelectedNuclei())
+				for (NucSel p : NucCommonUI.getSelectedNuclei())
 					p.getNuc().colorNuc = c.c;
 				BasicWindow.updateWindows();
 				}
@@ -721,7 +840,7 @@ public class NucCommonUI implements ActionListener
 		EvColor.addColorMenuEntries(m, new ColorMenuListener(){
 			public void setColor(EvColor c)
 				{
-				for (NucSel p : NucLineage.getSelectedNuclei())
+				for (NucSel p : NucCommonUI.getSelectedNuclei())
 					p.getNuc().colorNuc = c.c;
 				BasicWindow.updateWindows();
 				}
@@ -729,6 +848,34 @@ public class NucCommonUI implements ActionListener
 		
 		
 		return m;
+		}
+	
+	
+	/**
+	 * Return a copy of the position at a frame, interpolate if needed
+	 */
+	public static NucLineage.NucPos getOrInterpolatePosCopy(NucLineage lin, String name, EvDecimal frame)
+		{
+		NucLineage.Nuc n=lin.nuc.get(name);
+		if(n==null)
+			return null;
+		NucLineage.NucPos pos=n.pos.get(frame);
+		if(pos!=null)
+			return pos.clone();
+		else
+			{
+			NucInterp interp=n.interpolatePos(frame);
+			if(interp==null)
+				return null;
+			pos=new NucLineage.NucPos();
+			pos.x=interp.pos.x;
+			pos.y=interp.pos.y;
+			pos.z=interp.pos.z;
+			pos.r=interp.pos.r;
+			//Anything else here?
+			
+			}
+		return pos;
 		}
 
 	}

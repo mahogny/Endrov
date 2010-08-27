@@ -8,6 +8,7 @@ package endrov.starter;
 import endrov.basicWindow.*;
 import endrov.ev.*;
 import endrov.imageWindow.*;
+import endrov.util.RepeatingKeyEventsFixer;
 
 import java.lang.reflect.Method;
 
@@ -27,6 +28,9 @@ public class MW
 	 */
 	public static void main(String[] args)
 		{
+		//This reduces the effect of one VERY annoying swing bug
+		new RepeatingKeyEventsFixer().install();
+
 		EvLog.listeners.add(new EvLogStdout());
 		EvLog.listeners.add(new EvLogFile(EvSystemUtil.getLogFileName()));
 

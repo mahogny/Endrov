@@ -44,32 +44,6 @@ public class NucLineage extends EvObject implements Cloneable
 	
 	private static final String metaType="nuclineage";
 
-	/** Currently hidden nuclei. currently no sample. needed? */
-	public static HashSet<NucSel> hiddenNuclei=new HashSet<NucSel>();
-	/** Currently selected nuclei. currently no sample. needed? */
-	//public static HashSet<NucPair> selectedNuclei=new HashSet<NucPair>();
-	
-	public static HashSet<NucSel> getSelectedNuclei()
-		{
-		return EvSelection.getSelected(NucSel.class);
-		}
-	
-	/**
-	 * Make sure objects are not modified - at the moment there is no semantic difference compared to the other method
-	 * but this might change in the future. it guarantees that the selection set is really a copy and will not be modified
-	 * outside the scope
-	 */
-	public static HashSet<NucSel> getSelectedNucleiClone()
-		{
-		HashSet<NucSel> set=new HashSet<NucSel>();
-		for(NucSel s:EvSelection.getSelected(NucSel.class))
-			set.add(s.clone());
-		return set;
-		}
-		
-	public static final NucSel emptyHover=new NucSel(null,"");
-	public static NucSel currentHover=emptyHover;
-	
 	public static CellGrouping cellGroups=new CellGrouping();
 	
 	public static final int KEY_TRANSLATE=KeyBinding.register(new KeyBinding("Nuclei/Lineage","Translate",'z'));
@@ -84,37 +58,6 @@ public class NucLineage extends EvObject implements Cloneable
 	//A generalization would be nice
 	public static final String[] connectNuc=new String[]{"post","ant"};
 	
-	
-	/**
-	 * Selection of nuclei by mouse and keyboard
-	 * @param nucPair Which nucleus, never null
-	 * @param shift True if shift-key held
-	 */
-	public static void mouseSelectNuc(NucSel nucPair, boolean shift)
-		{
-		String nucname=nucPair.snd();
-		//Shift-key used to select multiple
-		if(shift)
-			{
-			if(!nucname.equals(""))
-				{
-				if(EvSelection.isSelected(nucPair))
-					EvSelection.unselect(nucPair);
-				else
-					EvSelection.select(nucPair);
-				}
-			}
-		else
-			{
-			EvSelection.unselectAll();
-//			selectedNuclei.clear();				
-			if(!nucname.equals(""))
-				EvSelection.select(nucPair);
-				//selectedNuclei.add(nucPair);
-			}
-		BasicWindow.updateWindows();
-		}
-
 	
 	/**
 	 * Get _one_ lineage object or null. Maybe remove/refine later 
@@ -397,36 +340,6 @@ public class NucLineage extends EvObject implements Cloneable
 
 	
 	/**
-	 * Divide a nucleus at the specified frame
-	 */
-	public void divide(String parentName, EvDecimal frame)
-		{
-		removePosAfter(parentName, frame, true);
-		Nuc n=nuc.get(parentName);
-		EvLog.printLog("divide:"+parentName);
-		if(n!=null)
-			{
-			String c1n=getUniqueNucName();
-			Nuc c1=getCreateNuc(c1n);
-			String c2n=getUniqueNucName();
-			Nuc c2=getCreateNuc(c2n);
-			n.child.add(c1n);
-			n.child.add(c2n);
-			c1.parent=parentName;
-			c2.parent=parentName;
-			
-			NucPos pos=n.pos.get(n.pos.lastKey());
-			NucPos c1p=new NucPos(pos);
-			NucPos c2p=new NucPos(pos);
-			c1p.x-=pos.r/2;
-			c2p.x+=pos.r/2;
-			c1.pos.put(frame, c1p);
-			c2.pos.put(frame, c2p);
-			}
-		setMetadataModified();
-		}
-
-	/**
 	 * Delete all positions after or equal to the current frame. If there are no more positions,
 	 * remove the nucleus as well
 	 */
@@ -659,12 +572,6 @@ public class NucLineage extends EvObject implements Cloneable
 		public double[] ovaloidAxisLength;
 		public Vector3d[] ovaloidAxisVec;
 		
-		public NucPos(){}
-		public NucPos(NucPos p)
-			{
-			setPosCopy(p.getPosCopy());
-			r=p.r;
-			}
 		public Vector3d getPosCopy()
 			{
 			return new Vector3d(x,y,z);
@@ -678,6 +585,26 @@ public class NucLineage extends EvObject implements Cloneable
 			x=v.x;
 			y=v.y;
 			z=v.z;
+			}
+		
+		public NucPos clone()
+			{
+			NucPos n=new NucPos();
+			n.x=x;
+			n.y=y;
+			n.z=z;
+			n.r=r;
+			if(ovaloidAxisLength!=null)
+				{
+				n.ovaloidAxisLength=new double[3];
+				n.ovaloidAxisVec=new Vector3d[3];
+				for(int i=0;i<3;i++)
+					{
+					n.ovaloidAxisLength[i]=ovaloidAxisLength[i];
+					n.ovaloidAxisVec[i]=new Vector3d(ovaloidAxisVec[i]);
+					}
+				}
+			return n;
 			}
 		}
 	
@@ -697,14 +624,11 @@ public class NucLineage extends EvObject implements Cloneable
 		public boolean isEnd;
 		public boolean hasParent;
 		
-		
 		public boolean isKeyFrame(EvDecimal frame)
 			{
-			//double vs int ==. probably a bad idea
 			if(frameBefore==null || frameAfter==null)
 				return false;
-			else return frameBefore.equals(frame) || frameAfter.equals(frame); //TODO bd
-//			else return frameBefore==frame || frameAfter==frame;
+			else return frameBefore.equals(frame) || frameAfter.equals(frame);
 			}
 		
 		public boolean isVisible()
@@ -770,7 +694,7 @@ public class NucLineage extends EvObject implements Cloneable
 			n.child.addAll(child);
 			n.parent=parent;
 			for(EvDecimal i:pos.keySet())
-				n.pos.put(i, new NucPos(pos.get(i)));
+				n.pos.put(i, pos.get(i).clone());
 			for(Map.Entry<String, NucExp> e:exp.entrySet())
 				n.exp.put(e.getKey(), e.getValue().clone());
 			n.overrideStart=overrideStart;
@@ -916,7 +840,7 @@ public class NucLineage extends EvObject implements Cloneable
 				else
 					return posToInterpol(frameAfter, frameBefore, frameAfter);
 				}
-			else if(frameAfter==null || frameBefore.equals(frameAfter)) //(int)frameBefore==(int)frameAfter) //bd
+			else if(frameAfter==null || frameBefore.equals(frameAfter)) 
 				{
 				NucInterp inter=posToInterpol(frameBefore, frameBefore, frameAfter);
 				if(overrideEnd!=null && overrideEnd.equals(frame))
@@ -927,39 +851,39 @@ public class NucLineage extends EvObject implements Cloneable
 				{
 				NucPos before=pos.get(frameBefore);
 				NucPos after=pos.get(frameAfter);
-				
+
 				EvDecimal tdiff=frameAfter.subtract(frameBefore);
-					double frac;
-					try
-						{
-						frac=frame.subtract(frameBefore).divide(tdiff).doubleValue();
-						}
-					catch (RuntimeException e)
-						{
-						//This can occur if tdiff is really small
-						return posToInterpol(frameAfter, frameBefore, frameAfter);
-						}
-					double frac1=1.0-frac;
-					
-					NucInterp inter=new NucInterp();
-					inter.pos=new NucPos();
-					inter.pos.x=before.x*frac1 + after.x*frac;
-					inter.pos.y=before.y*frac1 + after.y*frac;
-					inter.pos.z=before.z*frac1 + after.z*frac;
-					inter.pos.r=before.r*frac1 + after.r*frac;
-					inter.frameBefore=frameBefore;
-					inter.frameAfter=frameAfter;
-					inter.hasParent=parent!=null;
-					inter.colorNuc=colorNuc;
-					
-					//TODO interpolate?
-					inter.pos.ovaloidAxisLength=before.ovaloidAxisLength;
-					inter.pos.ovaloidAxisVec=before.ovaloidAxisVec;
-					
-					return inter;
+				double frac;
+				try
+					{
+					frac=frame.subtract(frameBefore).divide(tdiff).doubleValue();
+					}
+				catch (RuntimeException e)
+					{
+					//This can occur if tdiff is really small
+					return posToInterpol(frameAfter, frameBefore, frameAfter);
+					}
+				double frac1=1.0-frac;
+
+				NucInterp inter=new NucInterp();
+				inter.pos=new NucPos();
+				inter.pos.x=before.x*frac1 + after.x*frac;
+				inter.pos.y=before.y*frac1 + after.y*frac;
+				inter.pos.z=before.z*frac1 + after.z*frac;
+				inter.pos.r=before.r*frac1 + after.r*frac;
+				inter.frameBefore=frameBefore;
+				inter.frameAfter=frameAfter;
+				inter.hasParent=parent!=null;
+				inter.colorNuc=colorNuc;
+
+				//TODO interpolate?
+				inter.pos.ovaloidAxisLength=before.ovaloidAxisLength;
+				inter.pos.ovaloidAxisVec=before.ovaloidAxisVec;
+
+				return inter;
 				}
 			}
-		
+
 
 		
 		}

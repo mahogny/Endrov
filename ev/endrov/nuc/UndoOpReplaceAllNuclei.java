@@ -12,7 +12,7 @@ import endrov.util.EvDecimal;
  */
 abstract class UndoOpReplaceAllNuclei extends UndoOpBasic
 	{
-	private NucLineage savedlin;
+	private NucLineage linCopy;
 	private NucLineage lin;
 	private boolean metaWasModified;
 	private EvDecimal dateLastModify;
@@ -20,9 +20,10 @@ abstract class UndoOpReplaceAllNuclei extends UndoOpBasic
 	public UndoOpReplaceAllNuclei(String opname, NucLineage lin)
 		{
 		super(opname);
-		savedlin=new NucLineage();
+		linCopy=new NucLineage();
+		this.lin=lin;
 		for(String nucName:lin.nuc.keySet())
-			savedlin.nuc.put(nucName, lin.nuc.get(nucName).clone());
+			linCopy.nuc.put(nucName, lin.nuc.get(nucName).clone());
 		metaWasModified=lin.coreMetadataModified;
 		dateLastModify=lin.dateLastModify;
 		}
@@ -30,8 +31,8 @@ abstract class UndoOpReplaceAllNuclei extends UndoOpBasic
 	public void undo()
 		{
 		lin.nuc.clear();
-		for(String name:lin.nuc.keySet())
-			lin.nuc.put(name, savedlin.nuc.get(name).clone());
+		for(String name:linCopy.nuc.keySet())
+			lin.nuc.put(name, linCopy.nuc.get(name).clone());
 		lin.coreMetadataModified=metaWasModified;
 		lin.dateLastModify=dateLastModify;
 		BasicWindow.updateWindows();

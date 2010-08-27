@@ -12,10 +12,11 @@ import javax.vecmath.*;
 
 import endrov.basicWindow.*;
 import endrov.data.EvSelection;
-import endrov.ev.*;
 import endrov.imageWindow.*;
+import endrov.nuc.NucCommonUI;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucSel;
+import endrov.undo.UndoOpBasic;
 import endrov.util.EvDecimal;
 
 /**
@@ -30,8 +31,18 @@ public class NucImageRenderer implements ImageWindowRenderer
 	/** Interpolated nuclei */
 	public Map<NucSel, NucLineage.NucInterp> interpNuc=new HashMap<NucSel, NucLineage.NucInterp>();
 
-	/** Nuclei currently being moved */
-	public NucSel modifyingNucName=null;
+	/**
+	 * Nuclei currently being moved 
+	 */
+	NucSel modifyingNucSel=null;
+	
+	/**
+	 * Original position of modified nucleus.
+	 * Saving the entire nucleus is a bit overkill but it avoids some irritating corner cases
+	 * e.g. when a frame is changed as a nucleus is moved
+	 * 
+	 */
+	NucLineage.Nuc modifiedNuc=null;
 	
 	
 	public NucImageRenderer(ImageWindow w)
@@ -54,11 +65,11 @@ public class NucImageRenderer implements ImageWindowRenderer
 	public void draw(Graphics g)
 		{
 		//Update hover
-		NucSel lastHover=NucLineage.currentHover;			
+		NucSel lastHover=NucCommonUI.currentHover;			
 		if(w.mouseInWindow)
-			NucLineage.currentHover=new NucSel();
+			NucCommonUI.currentHover=NucCommonUI.emptyHover;
 	
-		EvDecimal currentFrame=w.getFrame();//frameControl.getFrame();
+		EvDecimal currentFrame=w.getFrame();
 		
 		interpNuc.clear();
 		for(NucLineage lin:getVisibleLineages())
@@ -72,7 +83,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			drawNuc(g,nucPair,nuc,currentFrame);
 			}
 
-		if(!lastHover.equals(NucLineage.currentHover))
+		if(!lastHover.equals(NucCommonUI.currentHover))
 			BasicWindow.updateWindows(w);
 		}
 	
@@ -87,8 +98,29 @@ public class NucImageRenderer implements ImageWindowRenderer
 	 */
 	public void commitModifyingNuc()
 		{
-		modifyingNucName=null;
-		BasicWindow.updateWindows();
+		System.out.println("commit!");
+		final NucLineage lin=modifyingNucSel.fst();
+		final String name=modifyingNucSel.snd();
+		final NucLineage.Nuc currentNuc=modifyingNucSel.getNuc().clone();
+		final NucLineage.Nuc lastNuc=modifiedNuc; 
+		
+		new UndoOpBasic("Modify keyframe for "+modifyingNucSel.snd())
+			{
+			public void redo()
+				{
+				lin.nuc.put(name, currentNuc);
+				BasicWindow.updateWindows();
+				}
+
+			public void undo()
+				{
+				lin.nuc.put(name, lastNuc);
+				BasicWindow.updateWindows();
+				}
+			}.execute();
+		
+		modifyingNucSel=null;
+		modifiedNuc=null;
 		}
 
 	
@@ -115,12 +147,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 	private void drawNuc(Graphics g, NucSel nucPair, NucLineage.NucInterp nuc, EvDecimal currentFrame)
 		{			
 		String nucName=nucPair.snd();
-		
-		if(nuc==null)
-			{
-			EvLog.printError("nuc==null", null);
-			return;
-			}
 		
 		//Z projection and visibility check
 		double sor=projectSphere(nuc.pos.r, nuc.pos.z);
@@ -206,10 +232,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 				
 				//Update hover
 				if(w.mouseInWindow && (w.mouseCurX-so.x)*(w.mouseCurX-so.x) + (w.mouseCurY-so.y)*(w.mouseCurY-so.y)<sor*sor)
-					NucLineage.currentHover=nucPair;
+					NucCommonUI.currentHover=nucPair;
 				
 				//Draw name of nucleus. maybe do this last
-				if(NucLineage.currentHover.equals(nucPair) || EvSelection.isSelected(nucPair))
+				if(NucCommonUI.currentHover.equals(nucPair) || EvSelection.isSelected(nucPair))
 					{
 					g.setColor(Color.RED);
 					g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
@@ -253,32 +279,46 @@ public class NucImageRenderer implements ImageWindowRenderer
 			return null;
 		else
 			{
-			EvDecimal framei=w.getFrame(); //frameControl.getFrame();
+			EvDecimal framei=w.getFrame();
 			if(n.pos.get(framei)==null)
 				{
 				NucLineage.NucInterp inter=n.interpolatePos(framei);
-				n.pos.put(framei, new NucLineage.NucPos(inter.pos));
-				//apoptotic info
+				n.pos.put(framei, inter.pos.clone());
 				}
 			return n.pos.get(framei);
 			}
 		}
+	
+	
+	
+/*
+	public void commitNewPos(NucPos pos)
+		{
+		NucLineage.Nuc n=getModifyingNuc();
+		if(n!=null)
+			{
+			EvDecimal framei=w.getFrame();
+			new NucImageTool.UndoOpNucleiEditKeyframe(getModifyingLineage(), modifyingNucName.snd(), framei, pos).execute();
+			}
+		}*/
 
-	/** Get modifying nucleus */
+	/**
+	 * Get modifying nucleus 
+	 */
 	public NucLineage.Nuc getModifyingNuc()
 		{
-		if(modifyingNucName==null)
+		if(modifyingNucSel==null)
 			return null;
 		else
-			return modifyingNucName.fst().getCreateNuc(modifyingNucName.snd());
+			return modifyingNucSel.fst().getCreateNuc(modifyingNucSel.snd());
 		}
 	
 	public NucLineage getModifyingLineage()
 		{
-		if(modifyingNucName==null)
+		if(modifyingNucSel==null)
 			return null;
 		else
-			return modifyingNucName.fst();
+			return modifyingNucSel.fst();
 		}
 
 	
@@ -298,5 +338,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 				}
 			});
 		}
+	
+	
 
 	}
