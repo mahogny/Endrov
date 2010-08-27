@@ -22,7 +22,9 @@ import endrov.basicWindow.icon.BasicIcon;
 import endrov.consoleWindow.*;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
-import endrov.ev.*;
+import endrov.ev.EV;
+import endrov.ev.EvLog;
+import endrov.ev.PersonalConfig;
 import endrov.imageWindow.ImageWindowView.ImagePanelImage;
 import endrov.imageWindow.tools.ImageWindowToolChannelDisp;
 import endrov.imageWindow.tools.ImageWindowToolEditImage;
@@ -143,13 +145,6 @@ public class ImageWindow extends BasicWindow
 		public final EvComboChannel comboChannel=new EvComboChannel(null,false);
 		public final JSlider sliderContrast=new JSlider(-10000,10000,0);
 		public final JSlider sliderBrightness=new JSlider(-200,200,0);
-		//public final JButton bFilterSequence=FilterSeq.createFilterSeqButton();
-
-		/*
-		public final FilterSeq filterSeq=new FilterSeq();
-		private SimpleObserver.Listener filterSeqObserver=new SimpleObserver.Listener()
-			{public void observerEvent(Object o){dataChangedEvent();}};
-		*/
 		
 		public ChannelWidget()
 			{
@@ -169,7 +164,6 @@ public class ImageWindow extends BasicWindow
 			JPanel left=new JPanel(new BorderLayout());
 			left.add(rSelect,BorderLayout.WEST);
 			left.add(comboChannel,BorderLayout.CENTER);
-		//	left.add(bFilterSequence,BorderLayout.EAST);
 			
 			add(left);
 			add(contrastPanel);
@@ -178,9 +172,6 @@ public class ImageWindow extends BasicWindow
 			sliderContrast.addChangeListener(this);
 			sliderBrightness.addChangeListener(this);
 			comboChannel.addActionListener(this);
-			//bFilterSequence.addActionListener(this);
-			
-			//filterSeq.observer.addWeakListener(filterSeqObserver);
 			}
 		
 		public void actionPerformed(ActionEvent e)
@@ -192,10 +183,6 @@ public class ImageWindow extends BasicWindow
 				frameControl.setAll(frameControl.getFrame(), frameControl.getZ());
 				updateImagePanel();
 				}
-/*			else if(e.getSource()==bFilterSequence)
-				{
-				new WindowFilterSeq(filterSeq);
-				}*/
 			else
 				updateImagePanel();
 			}
@@ -257,10 +244,7 @@ public class ImageWindow extends BasicWindow
 
 	//GUI components
 	private final SnapBackSlider sliderZoom2=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
-	//private final JSlider sliderRotate=new JSlider(JSlider.VERTICAL, -10000,10000,0); //2^n
 	private SnapBackSlider sliderRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
-
-	//private double camRotation=0;
 	
 	private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
 	
@@ -271,7 +255,6 @@ public class ImageWindow extends BasicWindow
 	private final JPanel channelPanel=new JPanel();
 
 	private final JMenu menuImageWindow=new JMenu("ImageWindow");
-	//public final JMenu menuImage=new JMenu("Image");
 	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
 	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
 	private final JMenuItem miReset=new JMenuItem("Reset view");
@@ -293,6 +276,7 @@ public class ImageWindow extends BasicWindow
 	/**
 	 * Make a new window at given location
 	 */
+	
 	public ImageWindow(Rectangle bounds)
 		{
 		for(ImageWindowRendererExtension e:imageWindowRendererExtensions)
@@ -301,21 +285,20 @@ public class ImageWindow extends BasicWindow
 			e.newImageWindow(this);
 				
 		imagePanel.setFocusable(true);
-		setFocusable(true);
-		addKeyListener(this);
+//		setFocusable(true);  //really useful?
+//		addKeyListener(this);  //really useful?
 		
 		ChangeListener chListenerNoInvalidate=new ChangeListener()
 			{public void stateChanged(ChangeEvent e) {updateImagePanelNoInvalidate();}};
 		
 		//Attach listeners
-		imagePanel.addKeyListener(this);
+		imagePanel.addKeyListener(this);  //TODO
 		imagePanel.addMouseListener(this);
 		imagePanel.addMouseMotionListener(this);
 		imagePanel.addMouseWheelListener(this);
 		sliderZoom2.addSnapListener(new SnapChangeListener(){
 			public void slideChange(int change){zoom(change/50.0);}
 		});
-		//sliderRotate.addChangeListener(chListenerNoInvalidate);
 		miShowOverlay.addChangeListener(chListenerNoInvalidate);
 		bShow3colors.addActionListener(this);
 		
@@ -324,9 +307,8 @@ public class ImageWindow extends BasicWindow
 		public void slideChange(int change)
 			{
 			imagePanel.rotateCamera(change/200.0);
-			//ImageWindow.this.repaint();
 			}
-	});
+		});
 
 		
 		//Piece GUI together
@@ -364,7 +346,6 @@ public class ImageWindow extends BasicWindow
 		setShow3Color(bShow3colors.isSelected());
 		
 		addMenubar(menuImageWindow);
-		//addMenubar(menuImage);
 		buildMenu();
 		
 		attachDragAndDrop(imagePanel);
@@ -380,6 +361,9 @@ public class ImageWindow extends BasicWindow
 		setVisibleEvWindow(true);
 		updateImagePanel();
 		}
+	
+	
+
 
 	
 	public void setShow3Color(boolean b)
@@ -453,7 +437,8 @@ public class ImageWindow extends BasicWindow
 		for(ChannelWidget w:channelWidget)
 			if(w.rSelect.isSelected())
 				return w;
-		return null;
+		return channelWidget.firstElement();  //TODO added for debugging. but is null better?
+		//return null;
 		}
 	/** Get name of currently viewed channel */
 	public String getCurrentChannelName()
@@ -720,11 +705,10 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void keyPressed(KeyEvent e)
 		{
+//		System.out.println(e);
+//		EV.printStackTrace("kpress");
 		
-	//	if(!ScriptBinding.runScriptKey(e))
-			{
 		EvData data=getSelectedData();
-		//Imageset rec=getImageset();
 		if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
 			{
 			temporarilyHideMarkings=true;
@@ -750,27 +734,26 @@ public class ImageWindow extends BasicWindow
 			{
 			updateImagePanelNoInvalidate();
 			}
-		else
-			{
-			if(tool!=null)
-				tool.keyPressed(e);
-			}
-			}
+		else if(tool!=null)
+			tool.keyPressed(e);
+			
 		}
 	/**
 	 * Callback: Key has been released
 	 */
 	public void keyReleased(KeyEvent e)
 		{
+//		System.out.println(e);
+//		EV.printStackTrace("release");
 		if(!ScriptBinding.runScriptKey(e))
 			{
-		if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
-			{
-			temporarilyHideMarkings=false;
-			repaint();
-			}
-		else if(tool!=null)
-			tool.keyReleased(e);
+			if(KeyBinding.get(KEY_HIDE_MARKINGS).typed(e))
+				{
+				temporarilyHideMarkings=false;
+				repaint();
+				}
+			else if(tool!=null)
+				tool.keyReleased(e);
 			}
 		}
 	/**

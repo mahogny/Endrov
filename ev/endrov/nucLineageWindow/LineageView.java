@@ -365,7 +365,7 @@ public class LineageView extends JPanel
 	public void goToSelected()
 		{
 		LinState linstat=getLinState(currentLin);
-		HashSet<NucSel> selectedNuclei=NucLineage.getSelectedNuclei();
+		HashSet<NucSel> selectedNuclei=NucCommonUI.getSelectedNuclei();
 		Vector2d v=new Vector2d();
 		int cnt=0;
 		NucSel sel=selectedNuclei.iterator().next();
@@ -991,7 +991,7 @@ public class LineageView extends JPanel
 				//System.out.println("here "+nucname+"   "+SwingUtilities.isLeftMouseButton(e)+"  "+currentLin);
 				//long startTime=System.currentTimeMillis();
 				if(SwingUtilities.isLeftMouseButton(e))
-					NucLineage.mouseSelectNuc(new NucSel(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					NucCommonUI.mouseSelectNuc(new NucSel(currentLin, nucname), (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 				//System.out.println("time "+(System.currentTimeMillis()-startTime));
 				}
 			}

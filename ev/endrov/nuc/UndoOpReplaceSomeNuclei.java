@@ -11,10 +11,9 @@ import endrov.util.Tuple;
  * @author Johan Henriksson
  * 
  * TODO metadatamodified
- * TODO ensure clone really clones everything
  *
  */
-abstract class UndoOpReplaceSomeNuclei extends UndoOpBasic
+public abstract class UndoOpReplaceSomeNuclei extends UndoOpBasic
 	{
 	private HashMap<Tuple<NucLineage,String>, NucLineage.Nuc> oldnuc=new HashMap<Tuple<NucLineage,String>, NucLineage.Nuc>();
 	
@@ -26,25 +25,29 @@ abstract class UndoOpReplaceSomeNuclei extends UndoOpBasic
 	/**
 	 * Keep nucleus for later. Will only store the nuclei the first time this function is called
 	 */
-	public void keepNuc(NucLineage lin, String name)
+	public void keep(NucLineage lin, String name)
 		{
 		Tuple<NucLineage,String> key=Tuple.make(lin, name);
 		if(!oldnuc.containsKey(key))
-			oldnuc.put(key, lin.nuc.get(name));
+			{
+			NucLineage.Nuc n=lin.nuc.get(name);
+			if(n!=null)
+				oldnuc.put(key, n.clone());
+			else
+				oldnuc.put(key, null);
+			}
 		}
-/*
-	public boolean isKept(NucLineage lin, String name)
-		{
-		return oldnuc.containsKey(Tuple.make(lin, name));
-		}*/
 
 	public void undo()
 		{
 		for(Tuple<NucLineage,String> key:oldnuc.keySet())
 			{
-			System.out.println("Replacing "+key.snd());
 			NucLineage lin=key.fst();
-			lin.nuc.put(key.snd(), oldnuc.get(key).clone());
+			NucLineage.Nuc theoldnuc=oldnuc.get(key);
+			if(theoldnuc==null)
+				lin.nuc.remove(key.snd());
+			else
+				lin.nuc.put(key.snd(), theoldnuc.clone());
 			}
 		BasicWindow.updateWindows();
 		}

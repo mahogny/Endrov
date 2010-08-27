@@ -391,5 +391,20 @@ public class EV
 		};
 		}
 
+	/**
+	 * For debugging
+	 */
+	public static void printStackTrace(String msg)
+		{
+		try
+			{
+			throw new Exception("tracing: "+msg);
+			}
+		catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+
 	
 	}

@@ -223,7 +223,7 @@ public class NucModelExtension implements ModelWindowExtension
 					{
 					//Clicking a nucleus selects it
 					if(SwingUtilities.isLeftMouseButton(e))
-						NucLineage.mouseSelectNuc(NucLineage.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+						NucCommonUI.mouseSelectNuc(NucCommonUI.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
 					}
 				public boolean mouseDragged(MouseEvent e, int dx, int dy){return false;}
 				public void mouseEntered(MouseEvent e){}
@@ -258,13 +258,13 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			if(e.getSource()==miShowSelectedNuc)
 				{
-				for(endrov.nuc.NucSel p:NucLineage.getSelectedNuclei())
-					NucLineage.hiddenNuclei.remove(p);
+				for(endrov.nuc.NucSel p:NucCommonUI.getSelectedNuclei())
+					NucCommonUI.hiddenNuclei.remove(p);
 				}
 			else if(e.getSource()==miHideSelectedNuc)
 				{
-				for(endrov.nuc.NucSel p:NucLineage.getSelectedNuclei())
-					NucLineage.hiddenNuclei.add(p);
+				for(endrov.nuc.NucSel p:NucCommonUI.getSelectedNuclei())
+					NucCommonUI.hiddenNuclei.add(p);
 				}
 //			else if(e.getSource()==miSaveColorScheme)
 			else if(e.getSource()==miPrintAngle)
@@ -622,7 +622,7 @@ public class NucModelExtension implements ModelWindowExtension
 				}
 			
 			if(traceSel)
-				for(NucSel pair:NucLineage.getSelectedNuclei())
+				for(NucSel pair:NucCommonUI.getSelectedNuclei())
 					{
 					NucLineage.Nuc nuc=pair.getNuc();
 					renderTrace(gl,nuc, tracesSimple, colorForNuc(pair));
@@ -668,17 +668,17 @@ public class NucModelExtension implements ModelWindowExtension
 		public void hoverInit(int pixelid)
 			{
 			//Update hover
-			lastHover=NucLineage.currentHover;
-			NucLineage.currentHover=new NucSel();
+			lastHover=NucCommonUI.currentHover;
+			NucCommonUI.currentHover=new NucSel();
 			}
 		/** Called when nucleus hovered */
 		public void hover(int pixelid)
 			{
-			NucLineage.currentHover=selectColorMap.get(pixelid);
-			System.out.println("New hover: "+NucLineage.currentHover);
+			NucCommonUI.currentHover=selectColorMap.get(pixelid);
+			System.out.println("New hover: "+NucCommonUI.currentHover);
 			System.out.println("Last hover: "+lastHover);
 			//Propagate hover. Avoid infinite recursion.
-			if(!NucLineage.currentHover.equals(lastHover))
+			if(!NucCommonUI.currentHover.equals(lastHover))
 				{
 				System.out.println("nuc rerend");
 				BasicWindow.updateWindows(w);
@@ -783,7 +783,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    	
 			
 			
-	    if(NucLineage.hiddenNuclei.contains(nucPair))
+	    if(NucCommonUI.hiddenNuclei.contains(nucPair))
 	    	{
 		    if(EvSelection.isSelected(nucPair))
 		    	nucColor=new float[]{1,0,1};
@@ -907,7 +907,7 @@ public class NucModelExtension implements ModelWindowExtension
 
 			
 	    //Unrotate camera, then move a bit closer to the camera
-	    if(NucLineage.currentHover.equals(nucPair) 
+	    if(NucCommonUI.currentHover.equals(nucPair) 
 	    		|| miShowNamesAll.isSelected() 
 	    		|| (EvSelection.isSelected(nucPair) && miShowNamesSelected.isSelected()))
 	    	{
@@ -939,7 +939,7 @@ public class NucModelExtension implements ModelWindowExtension
 	    gl.glPushMatrix();
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
 	  	//If visible cell
-	    if(!NucLineage.hiddenNuclei.contains(nucPair))
+	    if(!NucCommonUI.hiddenNuclei.contains(nucPair))
 	    	{
 	    	double showRadius=nuc.pos.r*nucMagnification;
 	    	drawSelectSphere(gl, showRadius);

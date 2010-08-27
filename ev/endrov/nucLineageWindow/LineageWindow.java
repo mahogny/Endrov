@@ -587,12 +587,12 @@ public class LineageWindow extends BasicWindow
 			miSetStartFrame.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{NucCommonUI.actionSetStartFrame(Collections.singleton(new NucSel(getLineage(),nucName)));}
+					{NucCommonUI.actionSetStartFrameDialog(Collections.singleton(new NucSel(getLineage(),nucName)));}
 				});
 			miSetEndFrame.addActionListener(new ActionListener()
 				{
 				public void actionPerformed(ActionEvent e)
-					{NucCommonUI.actionSetEndFrame(Collections.singleton(new NucSel(getLineage(),nucName)));}
+					{NucCommonUI.actionSetEndFrameDialog(Collections.singleton(new NucSel(getLineage(),nucName)));}
 				});
 			miRename.addActionListener(new ActionListener()
 				{
