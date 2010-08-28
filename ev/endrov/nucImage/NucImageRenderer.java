@@ -44,7 +44,19 @@ public class NucImageRenderer implements ImageWindowRenderer
 	 */
 	NucLineage.Nuc modifiedNuc=null;
 	
+	/**
+	 * The nuclei might not be modified yet; then it should not be commited because this causes
+	 * a useless undo item to be created
+	 */
 	boolean hasReallyModified;
+
+	/**
+	 * If there are icons (buttons) for interacting with a nuclei, which nucleus and where are they? 
+	 */
+	NucSel iconsForNuc=null;
+	Rectangle rectIconCenterZ=null;
+	Rectangle rectIconChangeRadius=null;
+
 	
 	public NucImageRenderer(ImageWindow w)
 		{
@@ -60,9 +72,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 		}
 	
 
-	Rectangle rectIconCenterZ=null;
-	Rectangle rectIconChangeRadius=null;
-	NucSel iconsForNuc=null;
 	
 	/**
 	 * Render nuclei
@@ -108,6 +117,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	 */
 	public void commitModifyingNuc()
 		{
+		//Only commit if something has changed
 		if(hasReallyModified)
 			{
 			hasReallyModified=false;
@@ -116,7 +126,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 			final NucLineage.Nuc currentNuc=modifyingNucSel.getNuc().clone();
 			final NucLineage.Nuc lastNuc=modifiedNuc; 
 	
-			
 			new UndoOpBasic("Modify keyframe for "+modifyingNucSel.snd())
 				{
 				public void redo()
@@ -148,7 +157,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 			for(int i=0;i<nuc.pos.ovaloidAxisLength.length;i++)
 				{
 				double len=w.scaleW2s(nuc.pos.ovaloidAxisLength[i]);
-				//double len=w.scaleW2s(1);
 				Vector3d v=nuc.pos.ovaloidAxisVec[i];
 				g.drawLine((int)(so.x), (int)(so.y), (int)(so.x+v.x*len), (int)(so.y+v.y*len));
 				}
@@ -277,7 +285,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 			if(isVisible)
 				{
 				Vector2d so=w.transformPointW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
-				int iconSize=19;
+				int iconSize=20;
 
 				g.setColor(Color.WHITE);
 
@@ -286,14 +294,22 @@ public class NucImageRenderer implements ImageWindowRenderer
 				int iconRy=(int)(so.y+sor/Math.sqrt(2));
 				g.drawRect(iconRx, iconRy, iconSize, iconSize);
 				g.drawOval(iconRx+2, iconRy+2, iconSize-4, iconSize-4);
+				int mx=iconRx+iconSize/2;
+				g.drawLine(mx, iconRy+4, mx, iconRy+iconSize-4);
+				g.drawLine(mx, iconRy+4, mx+2, iconRy+4+2);
+				g.drawLine(mx, iconRy+4, mx-2, iconRy+4+2);
+				g.drawLine(mx, iconRy+iconSize-4, mx+2, iconRy+iconSize-4-2);
+				g.drawLine(mx, iconRy+iconSize-4, mx-2, iconRy+iconSize-4-2);
+				
 				rectIconChangeRadius=new Rectangle(iconRx, iconRy, iconSize, iconSize);
+				
 				
 				//Set Z icon
 				int iconCx=(int)(so.x+sor/Math.sqrt(2));
 				int iconCy=(int)(so.y+sor/Math.sqrt(2));
 				g.drawRect(iconCx, iconCy, iconSize, iconSize);
 				g.drawOval(iconCx+4, iconCy+4, iconSize-8, iconSize-8);
-				g.drawLine(iconCx, iconCy+iconSize/2, iconCx+iconSize, iconCy+iconSize/2);
+				g.drawLine(iconCx+2, iconCy+iconSize/2-2, iconCx+iconSize-2, iconCy+iconSize/2-2);
 				rectIconCenterZ=new Rectangle(iconCx, iconCy, iconSize, iconSize);
 				
 				iconsForNuc=sel;
@@ -343,18 +359,6 @@ public class NucImageRenderer implements ImageWindowRenderer
 		}
 	
 	
-	
-/*
-	public void commitNewPos(NucPos pos)
-		{
-		NucLineage.Nuc n=getModifyingNuc();
-		if(n!=null)
-			{
-			EvDecimal framei=w.getFrame();
-			new NucImageTool.UndoOpNucleiEditKeyframe(getModifyingLineage(), modifyingNucName.snd(), framei, pos).execute();
-			}
-		}*/
-
 	/**
 	 * Get modifying nucleus 
 	 */
