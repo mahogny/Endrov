@@ -8,14 +8,22 @@ import endrov.util.EvDecimal;
  * Restore lineage by copying all old coordinates. Inefficient but always works
  * @author Johan Henriksson
  * 
- * TODO metadatamodified
+ * TODO metadatamodified. change it! create a redo2?
  */
-abstract class UndoOpReplaceAllNuclei extends UndoOpBasic
+public abstract class UndoOpReplaceAllNuclei extends UndoOpBasic
 	{
 	private NucLineage linCopy;
 	private NucLineage lin;
 	private boolean metaWasModified;
-	private EvDecimal dateLastModify;
+	private EvDecimal dateLastModify;	
+	private EvDecimal newDateLastModify=new EvDecimal(System.currentTimeMillis());
+	
+	public void modifyObjects()
+		{
+		lin.setMetadataModified();
+		lin.dateLastModify=newDateLastModify;
+		}
+	
 	
 	public UndoOpReplaceAllNuclei(String opname, NucLineage lin)
 		{
