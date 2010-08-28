@@ -44,6 +44,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 	 */
 	NucLineage.Nuc modifiedNuc=null;
 	
+	boolean hasReallyModified;
 	
 	public NucImageRenderer(ImageWindow w)
 		{
@@ -59,11 +60,20 @@ public class NucImageRenderer implements ImageWindowRenderer
 		}
 	
 
+	Rectangle rectIconCenterZ=null;
+	Rectangle rectIconChangeRadius=null;
+	NucSel iconsForNuc=null;
+	
 	/**
 	 * Render nuclei
 	 */
 	public void draw(Graphics g)
 		{
+		rectIconCenterZ=null;
+		rectIconChangeRadius=null;
+		iconsForNuc=null;
+		
+		
 		//Update hover
 		NucSel lastHover=NucCommonUI.currentHover;			
 		if(w.mouseInWindow)
@@ -98,27 +108,31 @@ public class NucImageRenderer implements ImageWindowRenderer
 	 */
 	public void commitModifyingNuc()
 		{
-		System.out.println("commit!");
-		final NucLineage lin=modifyingNucSel.fst();
-		final String name=modifyingNucSel.snd();
-		final NucLineage.Nuc currentNuc=modifyingNucSel.getNuc().clone();
-		final NucLineage.Nuc lastNuc=modifiedNuc; 
-		
-		new UndoOpBasic("Modify keyframe for "+modifyingNucSel.snd())
+		if(hasReallyModified)
 			{
-			public void redo()
+			hasReallyModified=false;
+			final NucLineage lin=modifyingNucSel.fst();
+			final String name=modifyingNucSel.snd();
+			final NucLineage.Nuc currentNuc=modifyingNucSel.getNuc().clone();
+			final NucLineage.Nuc lastNuc=modifiedNuc; 
+	
+			
+			new UndoOpBasic("Modify keyframe for "+modifyingNucSel.snd())
 				{
-				lin.nuc.put(name, currentNuc);
-				BasicWindow.updateWindows();
-				}
+				public void redo()
+					{
+					lin.nuc.put(name, currentNuc);
+					BasicWindow.updateWindows();
+					}
+	
+				public void undo()
+					{
+					lin.nuc.put(name, lastNuc);
+					BasicWindow.updateWindows();
+					}
+				}.execute();
+			}
 
-			public void undo()
-				{
-				lin.nuc.put(name, lastNuc);
-				BasicWindow.updateWindows();
-				}
-			}.execute();
-		
 		modifyingNucSel=null;
 		modifiedNuc=null;
 		}
@@ -144,27 +158,26 @@ public class NucImageRenderer implements ImageWindowRenderer
 	/**
 	 * Draw a single nucleus
 	 */
-	private void drawNuc(Graphics g, NucSel nucPair, NucLineage.NucInterp nuc, EvDecimal currentFrame)
+	private void drawNuc(Graphics g, NucSel sel, NucLineage.NucInterp nuc, EvDecimal currentFrame)
 		{			
-		String nucName=nucPair.snd();
-		
+		String nucName=sel.snd();
+
 		//Z projection and visibility check
 		double sor=projectSphere(nuc.pos.r, nuc.pos.z);
+		boolean isVisible=false;
 		if(sor>=0)
 			{
 			//Coordinate transformation
 			Vector2d so=w.transformPointW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
 			
-			
-
 			//Draw division lines
 			g.setColor(Color.YELLOW);
-			EvDecimal lastFrame=nucPair.getNuc().pos.lastKey();//getLastFrame();
+			EvDecimal lastFrame=sel.getNuc().pos.lastKey();
 			if(lastFrame!=null && lastFrame.lessEqual(currentFrame))
 				{
-				for(String child:nucPair.getNuc().child)
+				for(String child:sel.getNuc().child)
 					{
-					NucLineage.Nuc nchild=nucPair.fst().nuc.get(child);
+					NucLineage.Nuc nchild=sel.fst().nuc.get(child);
 					if(!nchild.pos.isEmpty())
 						{
 						EvDecimal firstFrame=nchild.pos.firstKey();
@@ -178,17 +191,15 @@ public class NucImageRenderer implements ImageWindowRenderer
 					}
 				}
 			
-			
 			//Pick color of nucleus
 			Color nucColor;
-			if(EvSelection.isSelected(nucPair))
+			if(EvSelection.isSelected(sel))
 				nucColor=Color.RED;
 			else
 				nucColor=Color.BLUE;
 			
 			//Draw the nucleus and check if it is visible
 			g.setColor(nucColor);
-			boolean isVisible=false;
 			if(nuc.frameBefore==null)
 				{
 				if(!nuc.hasParent)
@@ -197,7 +208,7 @@ public class NucImageRenderer implements ImageWindowRenderer
 					for(int i=0;i<360/2;i+=2)
 						g.drawArc((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor), i*20, 20);
 					isVisible=true;
-					drawAxis(g, nucPair, nuc, so);
+					drawAxis(g, sel, nuc, so);
 					}
 				}
 			else
@@ -205,11 +216,8 @@ public class NucImageRenderer implements ImageWindowRenderer
 				//Normal nucleus
 				g.drawOval((int)(so.x-sor),(int)(so.y-sor),(int)(2*sor),(int)(2*sor));
 				isVisible=true;
-				drawAxis(g, nucPair, nuc, so);
+				drawAxis(g, sel, nuc, so);
 				}
-			
-
-
 			
 			//If it is visible then draw more things
 			if(isVisible)
@@ -232,10 +240,10 @@ public class NucImageRenderer implements ImageWindowRenderer
 				
 				//Update hover
 				if(w.mouseInWindow && (w.mouseCurX-so.x)*(w.mouseCurX-so.x) + (w.mouseCurY-so.y)*(w.mouseCurY-so.y)<sor*sor)
-					NucCommonUI.currentHover=nucPair;
+					NucCommonUI.currentHover=sel;
 				
 				//Draw name of nucleus. maybe do this last
-				if(NucCommonUI.currentHover.equals(nucPair) || EvSelection.isSelected(nucPair))
+				if(NucCommonUI.currentHover.equals(sel) || EvSelection.isSelected(sel))
 					{
 					g.setColor(Color.RED);
 					g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
@@ -245,7 +253,52 @@ public class NucImageRenderer implements ImageWindowRenderer
 					}
 				}
 			}
+		else
+			sor=0;
 
+		
+		
+
+		
+		//Draw tool icons if this nucleus is selected (and only for one of them) and it is visible
+		if(EvSelection.isSelected(sel) && iconsForNuc==null)
+			{
+
+			//Duplicated code; bad but improves performance. Rewrite in a better way later
+			if(nuc.frameBefore==null)
+				{
+				if(!nuc.hasParent)
+					isVisible=true;
+				}
+			else
+				isVisible=true;
+
+			
+			if(isVisible)
+				{
+				Vector2d so=w.transformPointW2S(new Vector2d(nuc.pos.x,nuc.pos.y));
+				int iconSize=19;
+
+				g.setColor(Color.WHITE);
+
+				//Change radius icon
+				int iconRx=(int)(so.x-sor/Math.sqrt(2)-iconSize);
+				int iconRy=(int)(so.y+sor/Math.sqrt(2));
+				g.drawRect(iconRx, iconRy, iconSize, iconSize);
+				g.drawOval(iconRx+2, iconRy+2, iconSize-4, iconSize-4);
+				rectIconChangeRadius=new Rectangle(iconRx, iconRy, iconSize, iconSize);
+				
+				//Set Z icon
+				int iconCx=(int)(so.x+sor/Math.sqrt(2));
+				int iconCy=(int)(so.y+sor/Math.sqrt(2));
+				g.drawRect(iconCx, iconCy, iconSize, iconSize);
+				g.drawOval(iconCx+4, iconCy+4, iconSize-8, iconSize-8);
+				g.drawLine(iconCx, iconCy+iconSize/2, iconCx+iconSize, iconCy+iconSize/2);
+				rectIconCenterZ=new Rectangle(iconCx, iconCy, iconSize, iconSize);
+				
+				iconsForNuc=sel;
+				}
+			}
 		}
 	
 	
