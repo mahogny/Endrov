@@ -198,13 +198,15 @@ public class EvContainer
 	/**
 	 * Put a meta object into the collection
 	 */
-	public int addMetaObject(EvObject o)
+	public String addMetaObject(EvObject o)
 		{
 		int i=1;
 		while(metaObject.get(Integer.toString(i))!=null)
 			i++;
-		metaObject.put(Integer.toString(i), o);
-		return i;
+		String id=Integer.toString(i);
+		metaObject.put(id, o);
+		return id;
+//		return i;
 		}
 	
 	/**

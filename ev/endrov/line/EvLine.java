@@ -175,7 +175,10 @@ public class EvLine extends EvObject implements Cloneable
 			{
 			public void newImageWindow(ImageWindow w)
 				{
-				w.addImageWindowTool(new ToolMakeLine(w));
+				EvLineImageRenderer r=new EvLineImageRenderer(w);
+				w.addImageWindowTool(new ToolMakeLine(w,r));
+				w.addImageWindowRenderer(r);
+				//w.addImageWindowTool(new ToolMakeLine(w));
 				}
 			});
 
