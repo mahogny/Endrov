@@ -11,7 +11,6 @@ import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-//import java.util.Collection;
 
 import javax.vecmath.*;
 import javax.swing.*;

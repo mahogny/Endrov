@@ -21,6 +21,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.imageWindow.*;
 import endrov.line.EvLine.Pos3dt;
+import endrov.undo.UndoOpBasic;
 import endrov.util.EvDecimal;
 
 /**
@@ -31,6 +32,7 @@ import endrov.util.EvDecimal;
 public class ToolMakeLine implements ImageWindowTool
 	{
 	private final ImageWindow w;
+	private final EvLineImageRenderer r;
 	
 	public static final int SINGLESEGMENT=0;
 	public static final int MULTISEGMENT=1;
@@ -40,18 +42,13 @@ public class ToolMakeLine implements ImageWindowTool
 	private boolean mouseHasMoved=true;
 	private boolean editing;
 	
-	private class Hover
-		{
-		EvLine ob;
-		int i;
-		boolean isAdded=false;
-		}
 	
-	private Hover activeAnnot=null;
 	
-	public ToolMakeLine(ImageWindow w)
+	
+	public ToolMakeLine(ImageWindow w, EvLineImageRenderer r)
 		{
 		this.w=w;
+		this.r=r;
 		}
 	
 	private void setMode(int toolMode)
@@ -91,19 +88,6 @@ public class ToolMakeLine implements ImageWindowTool
 		miFree.addActionListener(list);
 		
 		return menu;
-		
-		
-		
-		/*
-		JCheckBoxMenuItem mi=new JCheckBoxMenuItem("Lines");
-		mi.setSelected(w.getTool()==this);
-		final ImageWindowTool This=this;
-		mi.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){w.setTool(This);}
-		});
-		
-		return mi;
-		*/
 		}
 	
 	
@@ -112,6 +96,8 @@ public class ToolMakeLine implements ImageWindowTool
 		EvLineImageRenderer r=w.getRendererClass(EvLineImageRenderer.class);
 		return r.getVisible();
 		}
+	
+	
 	
 	
 	private void renameObjectDialog(EvContainer data, String obId)
@@ -140,17 +126,18 @@ public class ToolMakeLine implements ImageWindowTool
 	
 	private void lineIsDone()
 		{
-		if(activeAnnot!=null)
+		if(r.activeAnnot!=null)
 			{
 			EvContainer data=w.getRootObject();
-			renameObjectDialog(data, activeAnnot.ob);
-			activeAnnot=null;
+			renameObjectDialog(data, r.activeAnnot.ob);
+			r.activeAnnot=null;
 			}
+		BasicWindow.updateWindows();
 		}
 	
-	private Hover getHoverAnnot(MouseEvent e)
+	private EvLineImageRenderer.Hover getHoverAnnot(MouseEvent e)
 		{
-		EvDecimal curFrame=w.frameControl.getFrame();
+		EvDecimal curFrame=w.getFrame();
 		Collection<EvLine> ann=getAnnots();
 		EvLine closest=null;
 		int closesti=0;
@@ -172,7 +159,7 @@ public class ToolMakeLine implements ImageWindowTool
 		double sdist=w.scaleW2s(Math.sqrt(cdist));
 		if(closest!=null && sdist<ImageWindow.snapDistance)
 			{
-			Hover h=new Hover();
+			EvLineImageRenderer.Hover h=new EvLineImageRenderer.Hover();
 			h.ob=closest;
 			h.i=closesti;
 			h.isAdded=true;
@@ -186,78 +173,111 @@ public class ToolMakeLine implements ImageWindowTool
 	private void makeFirstPoint(MouseEvent e)
 		{
 		//Start dragging
-		Hover a=getHoverAnnot(e);
+		EvLineImageRenderer.Hover a=getHoverAnnot(e);
 		if(a==null)
 			{
+			//Create a new line
 			EvLine line=new EvLine();
-			//w.getImageset().addMetaObject(line);
+			line.setMetadataModified();
 			
 			Pos3dt pos=new Pos3dt();
 			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 			pos.v.x=v.x;
 			pos.v.y=v.y;
-			pos.v.z=w.frameControl.getModelZ().doubleValue();
-//			w.s2wz(w.frameControl.getZ()).doubleValue();
-			pos.frame=w.frameControl.getFrame();
+			pos.v.z=w.getZ().doubleValue();
+			pos.frame=w.getFrame();
 			
 			line.pos.add(pos);
 			line.pos.add(new Pos3dt(pos));
 			
-			a=new Hover();
+			a=new EvLineImageRenderer.Hover();
 			a.ob=line;
 			a.i=1;
 			
-			BasicWindow.updateWindows();
 			editing=false;
-			a.ob.setMetadataModified();
+			BasicWindow.updateWindows();
 			}
 		else
 			{
+			//Modify an existing line
 			printDistances(a.ob);
 			editing=true;
 			}
-		activeAnnot=a;
+		r.activeAnnot=a;
 		}
+	
+	/**
+	 * Add a new point to the segment
+	 */
 	private void makeNextPoint()
 		{
 		if(editing)
-			activeAnnot=null;
+			r.activeAnnot=null;
 		else
 			{
 			if(mouseHasMoved)
-	//		if(activeAnnot.ob.pos.get(activeAnnot.i).equals(activeAnnot.ob.pos.get(activeAnnot.i-1)))
 				{
-				Pos3dt newpos=new Pos3dt(activeAnnot.ob.pos.get(activeAnnot.i));
-				activeAnnot.ob.pos.add(newpos);
-				activeAnnot.i++;
-//				activeAnnot.ob.pos.remove(activeAnnot.i);
-	//			activeAnnot=null;
-				activeAnnot.ob.setMetadataModified();
+				Pos3dt newpos=new Pos3dt(r.activeAnnot.ob.pos.get(r.activeAnnot.i));
+				r.activeAnnot.ob.pos.add(newpos);
+				r.activeAnnot.i++;
+				r.activeAnnot.ob.setMetadataModified();
 				}
-//			else
 			}
 		w.updateImagePanel(); //more than this. emit. 
-//		BasicWindow.updateWindows(); //caused mouse exit all the time?
 		}
+	
+	private static class UndoOpAddObject extends UndoOpBasic
+		{
+		private EvContainer container;
+		/**
+		 * How safe is it to point to the original object? Quite safe, if other undo operations
+		 * modify it back to the original state
+		 */
+		private EvObject newOb;
+		private String id;
+		public UndoOpAddObject(String opName, EvObject newOb, EvContainer container)
+			{
+			super(opName);
+			this.newOb=newOb;
+			this.container=container;
+			}
+
+		public void redo()
+			{
+			id=container.addMetaObject(newOb);
+			}
+
+		public void undo()
+			{
+			container.metaObject.remove(id);
+			}
+		
+		}
+	
+	
+	/**
+	 * Update position of last point
+	 */
 	private void moveLastPoint(MouseEvent e)
 		{
-		if(activeAnnot!=null)
+		if(r.activeAnnot!=null)
 			{
-			activeAnnot.ob.setMetadataModified();
+			r.activeAnnot.ob.setMetadataModified();
 			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
-			activeAnnot.ob.pos.get(activeAnnot.i).v.x=v.x;
-			activeAnnot.ob.pos.get(activeAnnot.i).v.y=v.y;
-			activeAnnot.ob.pos.get(activeAnnot.i).v.z=w.frameControl.getModelZ().doubleValue();
-			//w.s2wz(w.frameControl.getZ()).doubleValue(); 
+			r.activeAnnot.ob.pos.get(r.activeAnnot.i).v.x=v.x;
+			r.activeAnnot.ob.pos.get(r.activeAnnot.i).v.y=v.y;
+			r.activeAnnot.ob.pos.get(r.activeAnnot.i).v.z=w.getZ().doubleValue();
 	
-			EvDecimal curFrame=w.frameControl.getFrame();
-			for(Pos3dt a:activeAnnot.ob.pos)
+			EvDecimal curFrame=w.getFrame();
+			for(Pos3dt a:r.activeAnnot.ob.pos)
 				a.frame=curFrame;
 			
-			if(!activeAnnot.isAdded)
+			if(!r.activeAnnot.isAdded)
 				{
-				w.getRootObject().addMetaObject(activeAnnot.ob);
-				activeAnnot.isAdded=true;
+				//new UndoOpAddObject("Add line", activeAnnot.ob, w.getRootObject());  TODO
+				//Move and commit at end instead
+				w.getRootObject().addMetaObject(r.activeAnnot.ob);
+				r.activeAnnot.isAdded=true;
 				}
 			
 			w.updateImagePanel(); //more than this. emit
@@ -291,7 +311,7 @@ public class ToolMakeLine implements ImageWindowTool
 			{
 			if(SwingUtilities.isLeftMouseButton(e))
 				{
-				if(activeAnnot==null)
+				if(r.activeAnnot==null)
 					{
 					makeFirstPoint(e);
 					moveLastPoint(e);
@@ -300,7 +320,6 @@ public class ToolMakeLine implements ImageWindowTool
 					makeNextPoint();
 				else
 					lineIsDone();
-//					activeAnnot=null;
 				}
 			}
 		mouseHasMoved=false;			
@@ -309,11 +328,11 @@ public class ToolMakeLine implements ImageWindowTool
 		{
 		if(toolMode==SINGLESEGMENT)
 			moveLastPoint(e);
-		else if(toolMode==FREEHAND && !editing && activeAnnot!=null)
+		else if(toolMode==FREEHAND && !editing && r.activeAnnot!=null)
 			{
 			mouseHasMoved=true;
 			moveLastPoint(e);
-			EvLine line=activeAnnot.ob;
+			EvLine line=r.activeAnnot.ob;
 			if(line.pos.size()>=2)
 				{
 				Pos3dt a=new Pos3dt(line.pos.get(line.pos.size()-1));
@@ -327,13 +346,10 @@ public class ToolMakeLine implements ImageWindowTool
 	public void mouseReleased(MouseEvent e)
 		{
 		if(toolMode==SINGLESEGMENT || toolMode==FREEHAND)
-			if(SwingUtilities.isLeftMouseButton(e) && activeAnnot!=null)
+			if(SwingUtilities.isLeftMouseButton(e) && r.activeAnnot!=null)
 				{
-				System.out.println("released");
-				printDistances(activeAnnot.ob);
+				printDistances(r.activeAnnot.ob);
 				lineIsDone();
-//				activeAnnot=null;
-				BasicWindow.updateWindows();
 				}
 		}
 	public void mouseMoved(MouseEvent e, int dx, int dy)
@@ -352,17 +368,14 @@ public class ToolMakeLine implements ImageWindowTool
 
 	public void mouseExited(MouseEvent e)
 		{
-		//hack: confirm that it really is outside
-//		if(e.getX()<0 || e.getY()<0 || e.getX()>=w.
-		if(activeAnnot!=null)
+		if(r.activeAnnot!=null)
 			{
 			EvContainer data=w.getRootObject();
 			if(data!=null)
-				data.removeMetaObjectByValue(activeAnnot.ob);
+				data.removeMetaObjectByValue(r.activeAnnot.ob);
 			System.out.println("mouse exited "+e.getX()+" "+e.getY());
-			activeAnnot=null;
+			r.activeAnnot=null;
 			BasicWindow.updateWindows();
-//			w.updateImagePanel();
 			}
 		}
 

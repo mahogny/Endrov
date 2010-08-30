@@ -7,6 +7,7 @@ package endrov.line;
 
 import java.awt.*;
 import java.util.*;
+
 import javax.vecmath.*;
 
 import endrov.imageWindow.*;
@@ -22,11 +23,23 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 		this.w=w;
 		}
 
+	static class Hover
+		{
+		EvLine ob;
+		int i;
+		boolean isAdded=false;
+		}
+
+	Hover activeAnnot=null;
 	
 	public Collection<EvLine> getVisible()
 		{
 		//TODO: pick out
-		return w.getRootObject().getObjects(EvLine.class);
+		Set<EvLine> lines=new HashSet<EvLine>();
+		lines.addAll(w.getRootObject().getObjects(EvLine.class));
+		if(activeAnnot!=null)
+			lines.add(activeAnnot.ob);
+		return lines;
 		}
 	
 	/**
@@ -50,7 +63,6 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 					}
 				}
 			EvDecimal curZ=w.getZ();
-//			w.s2wz(w.frameControl.getZ().doubleValue()); 
 			for(int i=0;i<ann.pos.size();i++)
 				if(ann.pos.get(i).frame.equals(curFrame))
 					{
@@ -59,9 +71,9 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 					int midy=(int)pos.y;
 					
 					//Factor out this code if needed in other places
-					if(ann.pos.get(i).v.z<curZ.doubleValue()) //TODO bd bad compare
+					if(ann.pos.get(i).v.z<curZ.doubleValue())
 						g.drawOval(midx-4, midy-4, 8, 8);
-					else if(ann.pos.get(i).v.z>curZ.doubleValue()) //TODO bd bad compare
+					else if(ann.pos.get(i).v.z>curZ.doubleValue()) 
 						g.drawOval(midx-3, midy-3, 6, 6);
 					else
 						{
