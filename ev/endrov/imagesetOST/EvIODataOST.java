@@ -1174,36 +1174,39 @@ public class EvIODataOST implements EvIOData
 	
 	public static void main(String[] args)
 		{
+		EV.loadPlugins();
+		/*
 		File root=new File("/Volumes/TBU_extra03/test/");
 		File f2=new File(root,"TB2111_P700_100130_stack3.ost");
 		
 		//TODO do an experiment first!!!!
-		fix1(f2);
+		fix1(f2);*/
 		
-		/*
+		
 		for(File f:new File("/Volumes/TBU_extra03/ost3dgood").listFiles())
 			if(f.getName().endsWith(".ost"))
 				fix1(f);
 		for(File f:new File("/Volumes/TBU_extra03/ost4dgood").listFiles())
 			if(f.getName().endsWith(".ost"))
 				fix1(f);
-		for(File f:new File("/Volumes/TBU_extra03/daemon/output").listFiles())
+		for(File f:new File("/Volumes/TBU_extra03/tosort").listFiles())
 			if(f.getName().endsWith(".ost"))
 				fix1(f);
-		*/
 		
+		
+		System.exit(0);
 		}
 	
 	/**
 	 * Only for use within TBU
 	 */
 	public static void fix1(File ostfile)
-		{
-	
-		//Something forgotten TODO...
-		
+		{		
+		if(new File(ostfile,"converted.txt").exists())
+			return;
 		try
 			{
+			System.out.println(ostfile);
 			EvData data=EvData.loadFile(ostfile);
 			EvIODataOST io=(EvIODataOST)data.io;
 			
@@ -1214,10 +1217,10 @@ public class EvIODataOST implements EvIOData
 				EvChannel ch=(EvChannel)data.getChild(new EvPath("im",channelName));
 				File chblob=new File(ostfile, "blob-ch"+channelName);
 				
-				if(ch==null)
+				if(ch==null || !chblob.exists())
 					continue;
 				
-				ch.defaultResZ=new EvDecimal("3");
+				ch.defaultResZ=new EvDecimal(3);
 				ch.defaultDispZ=new EvDecimal(1);
 				for(EvDecimal frame:ch.imageLoader.keySet())
 					{
@@ -1226,26 +1229,28 @@ public class EvIODataOST implements EvIOData
 					stack.dispZ=ch.defaultDispZ;
 					}
 				for(File framedir:chblob.listFiles())
-					{
-					for(int oldz=0;oldz<=22;oldz++)
+					if(framedir.isDirectory())
 						{
-						File oldfile=new File(framedir, "b"+EV.pad(oldz*3-1, 8)+".png");
-						File newfile=new File(framedir, "b"+EV.pad(oldz, 8)+".png");
-						oldfile.renameTo(newfile);
-						System.out.println(oldfile+"   ->   "+newfile);
+						for(int oldz=0;oldz<=22;oldz++)
+							{
+							File oldfile=new File(framedir, "b"+EV.pad(oldz*3+2, 8)+".png");
+							File newfile=new File(framedir, "b"+EV.pad(oldz, 8)+".png");
+							oldfile.renameTo(newfile);
+//							System.out.println(oldfile+"   ->   "+newfile);
+							}
 						}
-					}
 				
 				//Delete cache
 				File cacheFile=new File(chblob,"imagecache.txt");
 				if(cacheFile.exists())
 					cacheFile.delete();
-				
-				//Store metadata
-				io.saveMetaDataOnly(data, null);
 				}
 
+			//Store metadata
+			io.saveMetaDataOnly(data, null);
 			
+			new File(ostfile,"converted.txt").createNewFile();
+
 			}
 		catch (IOException e)
 			{
