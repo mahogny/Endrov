@@ -20,7 +20,7 @@ public class ShellImageRenderer implements ImageWindowRenderer
 	{
 	private ImageWindowInterface w;
 	
-	public Shell currentShell=null;
+	public Shell hoverShell=null;
 	
 	public ShellImageRenderer(ImageWindowInterface w)
 		{
