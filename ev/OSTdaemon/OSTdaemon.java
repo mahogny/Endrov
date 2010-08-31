@@ -674,14 +674,17 @@ public class OSTdaemon extends Thread
 
 			System.out.println("storing slices");
 			//Convert slices
+			int newz=0;
 			int numz=slices.size();
 			for(int i=0;i<numz;i++)
 				{
 				BufferedImage im=slices.get(i);
 				if(!(skipBlackSlices && isBlackSlice(im)) && !(skipWhiteSlices && isWhiteSlice(im)))
 					{				
-					File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, i);
+					//File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, i);
+					File toFile = outputImageName(argImageset, argChannel, getOutputFormat(argChannel), argFrame, newz); //Skip counting black or white frames!!
 					saveImage(im, toFile, getCompressionLevel(argChannel)/100.0f);
+					newz++;
 					}
 				else
 					System.out.println("Skipping slice "+i);

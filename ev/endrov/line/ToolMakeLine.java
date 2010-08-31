@@ -9,14 +9,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Vector;
 
 import javax.vecmath.*;
 import javax.swing.*;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
-import endrov.data.EvObject;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.imageWindow.*;
@@ -93,13 +92,14 @@ public class ToolMakeLine implements ImageWindowTool
 	
 	private Collection<EvLine> getAnnots()
 		{
-		EvLineImageRenderer r=w.getRendererClass(EvLineImageRenderer.class);
+//		EvLineImageRenderer r=w.getRendererClass(EvLineImageRenderer.class);
 		return r.getVisible();
 		}
 	
 	
 	
 	
+	/*
 	private void renameObjectDialog(EvContainer data, String obId)
 		{
 		String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Rename object", 
@@ -112,8 +112,9 @@ public class ToolMakeLine implements ImageWindowTool
 				data.metaObject.put(newId, ob);
 			BasicWindow.updateWindows();
 			}
-		}
+		}*/
 	
+	/*
 	private void renameObjectDialog(EvContainer data, EvObject obVal)
 		{
 		String key=null;
@@ -122,14 +123,56 @@ public class ToolMakeLine implements ImageWindowTool
 				key=e.getKey();
 		if(key!=null)
 			renameObjectDialog(data, key);
-		}
+		}*/
 	
 	private void lineIsDone()
 		{
 		if(r.activeAnnot!=null)
 			{
-			EvContainer data=w.getRootObject();
+/*			EvContainer data=w.getRootObject();
 			renameObjectDialog(data, r.activeAnnot.ob);
+			r.activeAnnot=null;*/
+			
+			
+			
+			if(r.activeAnnot.replaces==null)//r.activeAnnot.id==null )//!r.activeAnnot.isAdded  )
+				{
+				String newId=(String)JOptionPane.showInputDialog(null, "Name:", EV.programName+" Name of object", JOptionPane.QUESTION_MESSAGE, null, null, w.getRootObject().getFreeChildName());
+				if(newId!=null)
+					new UndoOpPutObject("Add line", r.activeAnnot.ob, w.getRootObject(), newId).execute();
+				
+				//Move and commit at end instead
+				/*w.getRootObject().addMetaObject(r.activeAnnot.ob);
+				r.activeAnnot.isAdded=true;*/
+				}
+			else
+				{
+				//EvContainer data=w.getRootObject();
+				//renameObjectDialog(data, r.activeAnnot.ob);
+				
+				final EvLine replaces=r.activeAnnot.replaces;
+				final EvLine newOb=r.activeAnnot.ob;
+				
+				new UndoOpBasic("Edit line")
+					{
+					public Vector<Pos3dt> pos=new Vector<Pos3dt>();
+					public void undo()
+						{
+						replaces.pos=pos;
+						BasicWindow.updateWindows();
+						}
+					
+					public void redo()
+						{
+						pos=replaces.clone().pos;
+						System.out.println("orig list "+pos);
+						replaces.pos=newOb.pos; //Need cloning?
+						BasicWindow.updateWindows();
+						}
+					}.execute();
+				
+				}
+				
 			r.activeAnnot=null;
 			}
 		BasicWindow.updateWindows();
@@ -196,14 +239,23 @@ public class ToolMakeLine implements ImageWindowTool
 			
 			editing=false;
 			BasicWindow.updateWindows();
+			r.activeAnnot=a;
 			}
 		else
 			{
 			//Modify an existing line
 			printDistances(a.ob);
 			editing=true;
+
+			r.activeAnnot=new EvLineImageRenderer.Hover();
+			r.activeAnnot.i=a.i;
+			r.activeAnnot.isAdded=true;
+			r.activeAnnot.ob=a.ob.clone();
+			r.activeAnnot.replaces=a.ob;
+			
+			System.out.println("mod "+r.activeAnnot.ob+"   "+r.activeAnnot.replaces);
+			System.out.println("list now "+r.activeAnnot.ob.pos);
 			}
-		r.activeAnnot=a;
 		}
 	
 	/**
@@ -225,36 +277,7 @@ public class ToolMakeLine implements ImageWindowTool
 			}
 		w.updateImagePanel(); //more than this. emit. 
 		}
-	
-	private static class UndoOpAddObject extends UndoOpBasic
-		{
-		private EvContainer container;
-		/**
-		 * How safe is it to point to the original object? Quite safe, if other undo operations
-		 * modify it back to the original state
-		 */
-		private EvObject newOb;
-		private String id;
-		public UndoOpAddObject(String opName, EvObject newOb, EvContainer container)
-			{
-			super(opName);
-			this.newOb=newOb;
-			this.container=container;
-			}
 
-		public void redo()
-			{
-			id=container.addMetaObject(newOb);
-			}
-
-		public void undo()
-			{
-			container.metaObject.remove(id);
-			}
-		
-		}
-	
-	
 	/**
 	 * Update position of last point
 	 */
@@ -272,13 +295,6 @@ public class ToolMakeLine implements ImageWindowTool
 			for(Pos3dt a:r.activeAnnot.ob.pos)
 				a.frame=curFrame;
 			
-			if(!r.activeAnnot.isAdded)
-				{
-				//new UndoOpAddObject("Add line", activeAnnot.ob, w.getRootObject());  TODO
-				//Move and commit at end instead
-				w.getRootObject().addMetaObject(r.activeAnnot.ob);
-				r.activeAnnot.isAdded=true;
-				}
 			
 			w.updateImagePanel(); //more than this. emit
 			}
