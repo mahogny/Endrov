@@ -25,7 +25,7 @@ import endrov.util.EvDecimal;
  * Meta object: Line 
  * @author Johan Henriksson
  */
-public class EvLine extends EvObject implements Cloneable
+public class EvLine extends EvObject 
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *
@@ -47,6 +47,7 @@ public class EvLine extends EvObject implements Cloneable
 	/******************************************************************************************************
 	 *                               Instance NucLineage                                                  *
 	 *****************************************************************************************************/
+	
 	
 	public static class Pos3dt
 		{
@@ -71,10 +72,34 @@ public class EvLine extends EvObject implements Cloneable
 			this.frame=frame;
 			}
 
+		public Pos3dt clone()
+			{
+			Pos3dt p=new Pos3dt();
+			p.v=new Vector3d(v);
+			p.frame=frame;
+			return p;
+			}
+		
+		@Override
+		public String toString()
+			{
+			return "("+v+","+frame+")";
+			}
 		}
 	
 	/** Positions, in space and time (w) */
 	public Vector<Pos3dt> pos=new Vector<Pos3dt>();
+	
+	
+
+	
+	public EvLine clone()
+		{
+		EvLine l=new EvLine();
+		for(Pos3dt p:pos)
+			l.pos.add(p);
+		return l;
+		}
 	
 	/**
 	 * Calculate length of each segment

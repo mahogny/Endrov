@@ -17,20 +17,25 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 	{
 	public ImageWindowInterface w;
 	
+
+	static class Hover
+		{
+		EvLine ob;
+		EvLine replaces;
+		int i;
+		boolean isAdded=false;
+		//String id;
+		}
+
+	Hover activeAnnot=null;
 	
 	public EvLineImageRenderer(ImageWindowInterface w)
 		{
 		this.w=w;
 		}
 
-	static class Hover
-		{
-		EvLine ob;
-		int i;
-		boolean isAdded=false;
-		}
-
-	Hover activeAnnot=null;
+	
+	
 	
 	public Collection<EvLine> getVisible()
 		{
@@ -38,7 +43,10 @@ public class EvLineImageRenderer implements ImageWindowRenderer
 		Set<EvLine> lines=new HashSet<EvLine>();
 		lines.addAll(w.getRootObject().getObjects(EvLine.class));
 		if(activeAnnot!=null)
+			{
 			lines.add(activeAnnot.ob);
+			lines.remove(activeAnnot.replaces);
+			}
 		return lines;
 		}
 	

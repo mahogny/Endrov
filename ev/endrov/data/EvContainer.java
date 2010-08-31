@@ -51,7 +51,11 @@ public class EvContainer
 		{
 		EvContainer c=this;
 		for(String s:path.path)
+			{
 			c=c.getChild(s);
+			if(c==null)
+				return null; //Or throw an exception?
+			}
 		return c;
 		}
 	
@@ -200,14 +204,20 @@ public class EvContainer
 	 */
 	public String addMetaObject(EvObject o)
 		{
+		String id=getFreeChildName();
+		metaObject.put(id, o);
+		return id;
+		}
+	
+	public String getFreeChildName()
+		{
 		int i=1;
 		while(metaObject.get(Integer.toString(i))!=null)
 			i++;
 		String id=Integer.toString(i);
-		metaObject.put(id, o);
 		return id;
-//		return i;
 		}
+	
 	
 	/**
 	 * Remove an object via the pointer

@@ -1063,6 +1063,204 @@ public class EvIODataOST implements EvIOData
 	 *****************************************************************************************************/
 	
 	
+	/**
+	 * In the past there was no z-resolution. This should be fixed! Assume there is an ok z-resolution.
+	 * now there should be a plane for each z 0,1,2,3,4,5.... ints. recalculate planes, rename files.
+	 * 
+	 * so, this is actually done for old converted recordings!!! but not for new images from the microscope =)(/&%¤)(/&%¤!!!!
+	 * 
+	 * currently ostdaemon gets stacks where some images are blank; these are not to be included.
+	 * 
+	 * proper way from applescript: write resZ for each stack (ci...) and dispz based on skipslices. OSTdaemon can then
+	 * ignore counting blank slices.  ACTUALLY. no need to write for each stack. skipslices is for the entire channel!!!!
+	 * should be easy to change
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	/*
+	public void fixOnePlaneForEachInt()
+		{
+		
+		//Check directory 
+		
+		
+		EvStack oldStack=new EvStack(); //TODO
+		
+		DiskBlob blob=null;
+		
+		//Figure out plane distance
+		
+		
+		EvChannel ch=null;
+		
+		frameok: for(EvDecimal frame:ch.imageLoader.keySet())
+			{
+			
+
+			
+			if(oldStack.loaders.size()>1)
+				{
+				Iterator<EvDecimal> itz=oldStack.loaders.keySet().iterator();
+				EvDecimal z0=itz.next();
+				EvDecimal z1=itz.next();
+				
+				EvStack newStack=new EvStack();
+				newStack.resX=oldStack.resX;
+				newStack.resY=oldStack.resY;
+				newStack.dispX=oldStack.dispX;
+				newStack.dispY=oldStack.dispY;
+				newStack.resZ=z1.subtract(z0);
+				newStack.dispZ=z0;
+
+				
+				if(oldStack.resZ.equals(newStack.resZ) && oldStack.dispZ.equals(newStack.dispZ))
+					{
+					//This stack is fine!!
+					continue frameok;
+					}
+				
+
+				//Prepend temp_ to all names - No name collisions in later rename
+				for(int i:new LinkedList<Integer>(blob.diskImageLoader33.get(frame).keySet()))
+					{
+					File oldfile=blob.diskImageLoader33.get(frame).get(i);
+					File newfile=new File(oldfile.getParentFile(),"temp_"+oldfile.getName());
+					oldfile.renameTo(newfile);
+					blob.diskImageLoader33.get(frame).put(i, newfile);
+					}
+				
+
+				
+				int zi=0;
+				for(EvDecimal oldz:oldStack.loaders.keySet())
+					{
+					newStack.putInt(zi,oldStack.loaders.get(oldz));
+					
+					Map<Integer,File> oldfilemap=blob.diskImageLoader33.get(frame);
+					HashMap<Integer,File> newfilemap=new HashMap<Integer, File>();
+					
+					EvFileUtil.fileEnding(oldfilemap.get(oldz))
+					
+					newfilemap=new 
+					
+					
+					//Rename file!!!
+					//public HashMap<EvDecimal,HashMap<Integer,File>> diskImageLoader33=new HashMap<EvDecimal,HashMap<Integer,File>>();
+					
+					
+					
+					zi++;
+					}
+				
+				
+				
+				
+				
+				}
+			
+			
+			}
+		
+		
+		
+		
+		
+		}
+	*/
+	
+	
+	public static void main(String[] args)
+		{
+		File root=new File("/Volumes/TBU_extra03/test/");
+		File f2=new File(root,"TB2111_P700_100130_stack3.ost");
+		
+		//TODO do an experiment first!!!!
+		fix1(f2);
+		
+		/*
+		for(File f:new File("/Volumes/TBU_extra03/ost3dgood").listFiles())
+			if(f.getName().endsWith(".ost"))
+				fix1(f);
+		for(File f:new File("/Volumes/TBU_extra03/ost4dgood").listFiles())
+			if(f.getName().endsWith(".ost"))
+				fix1(f);
+		for(File f:new File("/Volumes/TBU_extra03/daemon/output").listFiles())
+			if(f.getName().endsWith(".ost"))
+				fix1(f);
+		*/
+		
+		}
+	
+	/**
+	 * Only for use within TBU
+	 */
+	public static void fix1(File ostfile)
+		{
+	
+		//Something forgotten TODO...
+		
+		try
+			{
+			EvData data=EvData.loadFile(ostfile);
+			EvIODataOST io=(EvIODataOST)data.io;
+			
+			for(String channelName:new String[]{"GFP","RFP"})
+				{
+
+				//Set new resolution
+				EvChannel ch=(EvChannel)data.getChild(new EvPath("im",channelName));
+				File chblob=new File(ostfile, "blob-ch"+channelName);
+				
+				if(ch==null)
+					continue;
+				
+				ch.defaultResZ=new EvDecimal("3");
+				ch.defaultDispZ=new EvDecimal(1);
+				for(EvDecimal frame:ch.imageLoader.keySet())
+					{
+					EvStack stack=ch.imageLoader.get(frame);
+					stack.resZ=ch.defaultResZ;
+					stack.dispZ=ch.defaultDispZ;
+					}
+				for(File framedir:chblob.listFiles())
+					{
+					for(int oldz=0;oldz<=22;oldz++)
+						{
+						File oldfile=new File(framedir, "b"+EV.pad(oldz*3-1, 8)+".png");
+						File newfile=new File(framedir, "b"+EV.pad(oldz, 8)+".png");
+						oldfile.renameTo(newfile);
+						System.out.println(oldfile+"   ->   "+newfile);
+						}
+					}
+				
+				//Delete cache
+				File cacheFile=new File(chblob,"imagecache.txt");
+				if(cacheFile.exists())
+					cacheFile.delete();
+				
+				//Store metadata
+				io.saveMetaDataOnly(data, null);
+				}
+
+			
+			}
+		catch (IOException e)
+			{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+		
+		
+		
+		
+		
+		}
+	
+	
+	
 
 	/******************************************************************************************************
 	 * Plugin declaration
