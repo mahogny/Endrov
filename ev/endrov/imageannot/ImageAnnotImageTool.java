@@ -7,13 +7,15 @@ package endrov.imageannot;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Collection;
+import java.util.Map;
 
 import javax.vecmath.*;
 import javax.swing.*;
 
 import endrov.data.*;
 import endrov.imageWindow.*;
+import endrov.undo.UndoOpPutObject;
+import endrov.util.Tuple;
 
 /**
  * Create and edit image annotation.
@@ -25,7 +27,6 @@ public class ImageAnnotImageTool implements ImageWindowTool
 	private final ImageWindow w;
 	private final ImageAnnotImageRenderer r;
 	
-	private ImageAnnot activeAnnot=null;
 	
 	public ImageAnnotImageTool(ImageWindow w, ImageAnnotImageRenderer r)
 		{
@@ -33,10 +34,6 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		this.r=r;
 		}
 	
-	/*
-	public boolean isToggleable(){return true;}
-	public String toolCaption(){return "Annotate Image";}
-	public boolean enabled(){return true;}*/
 
 	public JMenuItem getMenuItem()
 		{
@@ -50,30 +47,27 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		}
 	
 	
-	private Collection<ImageAnnot> getAnnots()
+	private Tuple<String,ImageAnnot> getHoverAnnot(MouseEvent e)
 		{
-		return r.getVisible();
-		}
-	
-	
-	private ImageAnnot getHoverAnnot(MouseEvent e)
-		{
-		Collection<ImageAnnot> ann=getAnnots();
+		Map<String,ImageAnnot> ann=r.getVisible();
 		ImageAnnot closest=null;
+		String closestName=null;
 		double cdist=0;
 		Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
-		for(ImageAnnot a:ann)
+		for(Map.Entry<String,ImageAnnot> ae:ann.entrySet())
 			{
+			ImageAnnot a=ae.getValue();
 			double dist=(a.pos.x-v.x)*(a.pos.x-v.x) + (a.pos.y-v.y)*(a.pos.y-v.y);
 			if(cdist>dist || closest==null)
 				{
 				cdist=dist;
 				closest=a;
+				closestName=ae.getKey();
 				}
 			}
 		double sdist=w.scaleW2s(cdist);
-		if(sdist<5*5)
-			return closest;
+		if(sdist<5*5 && closest!=null)
+			return Tuple.make(closestName,closest);
 		else
 			return null;
 		}
@@ -84,35 +78,57 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		EvContainer data=w.getRootObject();
 		if(data!=null)
 			{
-			ImageAnnot a=getHoverAnnot(e);
+			Tuple<String,ImageAnnot> ae=getHoverAnnot(e);
 			if(SwingUtilities.isLeftMouseButton(e))
 				{
-				if(a==null)
+				if(ae==null)
 					{
-					//Create
-					a=new ImageAnnot();
-					setPos(a,e);
-					data.addMetaObject(a);
+					//Create new
+					String newtext=JOptionPane.showInputDialog(null, "Enter text");
+					if(newtext!=null && !newtext.equals(""))
+						{
+						ImageAnnot a=new ImageAnnot();
+						setPos(a,e);
+						a.text=newtext;
+						new UndoOpPutObject("Create annotation", a, data, data.getFreeChildName()).execute();
+						}
 					}
-				//Edit text
-				String newtext=JOptionPane.showInputDialog(null, "Enter text", a.text);
-				if(newtext!=null)
-					a.text=newtext;
-				if(a.text.equals(""))
-					data.removeMetaObjectByValue(a);
-				w.updateImagePanel();
+				else
+					{
+					//Rename
+					ImageAnnot a=ae.snd();
+					String newtext=JOptionPane.showInputDialog(null, "Enter text", a.text);
+					if(newtext!=null)
+						{
+						if(a.text.equals(""))
+							{
+							//Delete
+							new UndoOpPutObject("Delete annotation", null, data, ae.fst()).execute();
+							}
+						else
+							{
+							//Rename
+							a=a.clone();
+							a.text=newtext;
+							new UndoOpPutObject("Set annotation text", a, data, ae.fst()).execute();
+							setActiveAnnot(null);
+							}
+						}
+					
+					}
 				}
+			
 			}
 		}
 	
 	public void mouseDragged(MouseEvent e, int dx, int dy)
 		{
-		if(activeAnnot!=null)
+		if(getActiveAnnot()!=null)
 			{
 			Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
-			activeAnnot.pos.x=v.x;
-			activeAnnot.pos.y=v.y;
-			w.updateImagePanel(); //more than this. emit
+			r.activeAnnotNew.pos.x=v.x;
+			r.activeAnnotNew.pos.y=v.y;
+			w.updateImagePanel(); 
 			}
 		}
 	
@@ -121,18 +137,18 @@ public class ImageAnnotImageTool implements ImageWindowTool
 		if(SwingUtilities.isLeftMouseButton(e))
 			{
 			//Start dragging
-			ImageAnnot a=getHoverAnnot(e);
-			activeAnnot=a;
+			Tuple<String,ImageAnnot> a=getHoverAnnot(e);
+			setActiveAnnot(a);
 			}
 		}
 
 	public void mouseReleased(MouseEvent e)
 		{
-		if(SwingUtilities.isLeftMouseButton(e) && activeAnnot!=null)
+		if(SwingUtilities.isLeftMouseButton(e) && getActiveAnnot()!=null)
 			{
-			setPos(activeAnnot,e);
-			activeAnnot=null;
-			w.updateImagePanel();
+			if(!r.activeAnnot.snd().equals(r.activeAnnotNew))
+				new UndoOpPutObject("Move annotation", r.activeAnnotNew, w.getRootObject(), getActiveAnnot().fst()).execute();
+			setActiveAnnot(null);
 			}
 		}
 
@@ -151,16 +167,32 @@ public class ImageAnnotImageTool implements ImageWindowTool
 
 	public void mouseExited(MouseEvent e)
 		{
-		if(activeAnnot!=null)
+		if(getActiveAnnot()!=null)
 			{
 			EvContainer data=w.getRootObject();
 			if(data!=null)
-				data.removeMetaObjectByValue(activeAnnot);
-			activeAnnot=null;
+				new UndoOpPutObject("Delete annotation", null, data, getActiveAnnot().fst()).execute();
+			setActiveAnnot(null);
 			w.updateImagePanel();
 			}
 		}
 
 	
 	public void deselected() {}
+
+
+	private void setActiveAnnot(Tuple<String,ImageAnnot> activeAnnot)
+		{
+		r.activeAnnot = activeAnnot;
+		if(activeAnnot==null)
+			r.activeAnnotNew=null;
+		else
+			r.activeAnnotNew=activeAnnot.snd().clone();
+		}
+
+
+	private Tuple<String,ImageAnnot> getActiveAnnot()
+		{
+		return r.activeAnnot;
+		}
 	}

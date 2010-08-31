@@ -57,11 +57,10 @@ public class ShellImageTool implements ImageWindowTool
 	
 	private Shell getCurrentShell(ImageWindow w)
 		{		
-		return getRenderer(w).currentShell;
-//		return r.currentShell;
+		return getRenderer(w).hoverShell;
 		}
 	
-	private double square(double x)
+	private static double square(double x)
 		{
 		return x*x;
 		}
@@ -77,12 +76,7 @@ public class ShellImageTool implements ImageWindowTool
 		
 		double wx=v.x;
 		double wy=v.y;
-//		double wx=w.s2wx(mx);
-	//	double wy=w.s2wy(my);
-		
-		
-		double wz=w.frameControl.getModelZ().doubleValue();
-		//w.s2wz(w.frameControl.getZ());
+		double wz=w.getZ().doubleValue();
 		
 		for(EvObject ob:w.getRootObject().metaObject.values())
 			if(ob instanceof Shell)
@@ -90,13 +84,12 @@ public class ShellImageTool implements ImageWindowTool
 				Shell shell=(Shell)ob;
 				if(square(wx-shell.midx)+square(wy-shell.midy)+square(wz-shell.midz)<square((shell.major+shell.minor)/2.0))
 					{
-					r.currentShell=shell;
-//					System.out.println("found shell");
+					r.hoverShell=shell;
 					return;
 					}
 				}
 		if(acceptNull)
-			r.currentShell=null;
+			r.hoverShell=null;
 		}
 
 	
@@ -123,8 +116,6 @@ public class ShellImageTool implements ImageWindowTool
 				shell.major+=dv.dot(majora);
 				shell.minor+=dv.dot(minora);
 				
-//				shell.major+=w.scaleS2w(dx);
-	//			shell.minor+=w.scaleS2w(dy);
 				if(shell.major<0) shell.major=0;
 				if(shell.minor<0) shell.minor=0;
 				w.updateImagePanel();
@@ -152,14 +143,11 @@ public class ShellImageTool implements ImageWindowTool
 
 					shell.midx=v.x;
 					shell.midy=v.y;
-//					shell.midx=w.s2wx(e.getX());
-	//				shell.midy=w.s2wy(e.getY());
-					shell.midz=w.frameControl.getModelZ().doubleValue();
-					//w.s2wz(w.frameControl.getZ());
+					shell.midz=w.getZ().doubleValue();
 					shell.major=w.scaleS2w(80);
 					shell.minor=w.scaleS2w(50);
 					w.getRootObject().addMetaObject(shell);
-					r.currentShell=shell;
+					r.hoverShell=shell;
 					w.updateImagePanel();
 					}
 				}
@@ -174,7 +162,6 @@ public class ShellImageTool implements ImageWindowTool
 	
 	public void mouseMoved(MouseEvent e, int dx, int dy)
 		{
-		//ShellImageRenderer r=getRenderer(w);
 		updateCurrentShell(e.getX(), e.getY(),false);
 		Shell shell=getCurrentShell(w);
 		if(shell!=null)
@@ -208,8 +195,7 @@ public class ShellImageTool implements ImageWindowTool
 		if(KeyBinding.get(Shell.KEY_SETZ).typed(e) && shell!=null)
 			{
 			//Bring shell to this Z
-			shell.midz=w.frameControl.getModelZ().doubleValue();
-			//w.s2wz(w.frameControl.getZ());
+			shell.midz=w.getZ().doubleValue();
 			BasicWindow.updateWindows();
 			}
 		}
@@ -230,13 +216,3 @@ public class ShellImageTool implements ImageWindowTool
 
 	}
 
-
-//TODO: run when tool selected?
-/*
-if(shell!=null && shell.exists())
-	{
-	shell.midx=s2wx(getWidth()/2);
-	shell.midy=s2wy(getHeight()/2);
-	shell.midz=s2wz(frameControl.getZ());
-	}
-	*/
