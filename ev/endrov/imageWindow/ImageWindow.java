@@ -554,6 +554,7 @@ public class ImageWindow extends BasicWindow
 				else
 					{
 					int closestZ=stack.closestZint(z.doubleValue());
+					System.out.println("----closest z: "+closestZ+"   "+stack.getDepth());
 					pi.setImage(stack,stack.getInt(closestZ));
 					}
 				imagePanel.images.add(pi);

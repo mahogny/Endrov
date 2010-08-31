@@ -8,6 +8,7 @@ package endrov.imageset;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
@@ -147,6 +148,7 @@ public class EvStack implements AnyEvImage
 	
 	public int closestZint(double worldZ)
 		{
+		System.out.println("resz "+resZ+"  dispz "+dispZ);
 		EvDecimal wc=closestZ(new EvDecimal(worldZ));
 		int zi=(int)Math.round(wc.subtract(dispZ).divide(resZ).doubleValue());
 		return zi;
@@ -156,6 +158,17 @@ public class EvStack implements AnyEvImage
 		return closestZ;
 		*/
 		}
+	
+	public Set<Integer> getZints()
+	{
+		TreeSet<Integer> zs=new TreeSet<Integer>();
+		for(EvDecimal d:loaders.keySet())
+		{
+			zs.add((int)Math.round(d.subtract(dispZ).divide(resZ).doubleValue()));
+		}
+		return zs;
+		
+	}
 	
 	
 	/**
@@ -183,7 +196,7 @@ public class EvStack implements AnyEvImage
 				return evim;
 			i++;
 			}
-		throw new RuntimeException("Out of bounds");
+		throw new RuntimeException("Out of bounds: "+z+" depth is "+getDepth());
 		}
 
 	public boolean hasInt(int z)
