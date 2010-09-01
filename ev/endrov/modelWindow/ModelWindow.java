@@ -17,6 +17,7 @@ import org.jdom.*;
 
 
 import endrov.basicWindow.*;
+import endrov.basicWindow.EvColor.ColorMenuListener;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.consoleWindow.*;
 import endrov.data.EvContainer;
@@ -82,10 +83,14 @@ public class ModelWindow extends BasicWindow
 	private final JPanel bottomPanel=new JPanel(new GridBagLayout());
 	private JPanel bottomMain=new JPanel(new GridBagLayout());
 	
-	private JProgressBar progress=new JProgressBar(0,1000);
-	
+	private JProgressBar progress=new JProgressBar(0,1000);	
 	public final ModelView view;
-	public final FrameControlModel frameControl;
+	private final FrameControlModel frameControl;
+	private SnapBackSlider barZoom=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
+	private SnapBackSlider barRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
+	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
+	public final CrossHandler crossHandler=new CrossHandler();
+	
 	private final EvComboObject metaCombo=new EvComboObject(new LinkedList<EvObject>(),true,false)
 		{
 		static final long serialVersionUID=0;
@@ -97,8 +102,7 @@ public class ModelWindow extends BasicWindow
 	private final JButton buttonCenter=new JButton("Center");
 	private final EvHidableSidePaneRight sidePanelSplitPane;
 	
-	public JMenu menuModel=new JMenu("ModelWindow");
-	
+	public JMenu menuModel=new JMenu("ModelWindow");	
 	private JMenu miView=new JMenu("Default views");
 	private JMenuItem miViewFront=new JMenuItem("Front");
 	private JMenuItem miViewBack=new JMenuItem("Back");
@@ -106,21 +110,12 @@ public class ModelWindow extends BasicWindow
 	private JMenuItem miViewBottom=new JMenuItem("Bottom");
 	private JMenuItem miViewLeft=new JMenuItem("Left");
 	private JMenuItem miViewRight=new JMenuItem("Right");
-
 	private JMenu miWindowState=new JMenu("Window State");
 	private JMenuItem miCopyState=new JMenuItem("Copy");
 	private JMenuItem miPasteState=new JMenuItem("Paste");
-
 	private JCheckBoxMenuItem miShowAxis=new JCheckBoxMenuItem("Show axis directions");
-
 	private JMenu miSetBGColor=makeSetBGColorMenu();
 
-	private SnapBackSlider barZoom=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
-	private SnapBackSlider barRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
-	
-	private ObjectDisplayList objectDisplayList=new ObjectDisplayList();
-	
-	public final CrossHandler crossHandler=new CrossHandler();
 	
 	
 	private List<ModelWindowMouseListener> modelWindowMouseListeners=new LinkedList<ModelWindowMouseListener>();
@@ -230,7 +225,6 @@ public class ModelWindow extends BasicWindow
 		
 		toolPanel.setMinimumSize(new Dimension(250,20));
 		toolPanel.setMaximumSize(new Dimension(250,20));
-//		updateToolPanels();
 
 		JPanel zoomrotPanel=new JPanel(new GridLayout(2,1));
 		zoomrotPanel.add(EvSwingUtil.layoutACB(new JLabel(BasicIcon.iconLabelZoom), barZoom, null));
@@ -285,27 +279,17 @@ public class ModelWindow extends BasicWindow
 	private JMenu makeSetBGColorMenu()
 		{
 		JMenu m=new JMenu("Set background color");
-		for(final EvColor c:EvColor.colorList)
+		EvColor.addColorMenuEntries(m, new ColorMenuListener()
 			{
-			JMenuItem mi=new JMenuItem(c.name);
-			mi.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e)
-					{
-					view.bgColor=c.c;
-					view.repaint();
-					}
+			public void setColor(EvColor c)
+				{
+				view.bgColor=c.c;
+				view.repaint();
+				}
 			});
-			m.add(mi);
-			}
 		return m;
 		}
 
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -557,15 +541,22 @@ public class ModelWindow extends BasicWindow
 		}
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-	 */
 	public void stateChanged(ChangeEvent e)
 		{
 		dataChangedEvent();
 		}
 
+	
+	public EvDecimal getFrame()
+		{
+		return frameControl.getFrame();
+		}
+	
+	
+	public void setFrame(EvDecimal frame)
+		{
+		frameControl.setFrame(frame);
+		}
 	
 	
 	/*

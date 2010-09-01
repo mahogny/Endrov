@@ -104,7 +104,7 @@ public class EvLineModelExtension implements ModelWindowExtension
 			gl.glColor3d(0, 1.0, 0);
 			if(ia.pos.size()>1)
 				{
-				EvDecimal curFrame=w.frameControl.getFrame();
+				EvDecimal curFrame=w.getFrame();
 				
 				//TODO bad bd comparison. double
 				if(ia.pos.get(0).frame.equals(curFrame) && ia.pos.size()>1)

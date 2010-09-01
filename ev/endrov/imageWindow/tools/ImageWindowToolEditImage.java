@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowTool;
+import endrov.undo.UndoOpNone;
 import endrov.util.EvDecimal;
 
 //either send down variables or add accessors to imagewindow
@@ -34,7 +35,6 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 
 	private final JMenuItem miRemoveChannel=new JMenuItem("Channel");
 	private final JMenuItem miRemoveFrame=new JMenuItem("Frame");
-	private final JMenuItem miRemoveSlice=new JMenuItem("Slice");
 
 	
 	public ImageWindowToolEditImage(final ImageWindow w)
@@ -48,13 +48,10 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 		BasicWindow.addMenuItemSorted(miRemove, miRemove);
 		BasicWindow.addMenuItemSorted(miRemove, miRemoveChannel);
 		BasicWindow.addMenuItemSorted(miRemove, miRemoveFrame);
-		BasicWindow.addMenuItemSorted(miRemove, miRemoveSlice);
-		
 
 		//Add listeners
 		miRemoveChannel.addActionListener(this);
 		miRemoveFrame.addActionListener(this);
-		miRemoveSlice.addActionListener(this);
 		
 		return miRemove;
 		}
@@ -62,42 +59,38 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 	public void actionPerformed(ActionEvent e)
 		{
 		
-		
-		
 		if(e.getSource()==miRemoveChannel)
 			{
-			String ch=w.getCurrentChannelName();
-			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+			final String ch=w.getCurrentChannelName();
+			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove (channel "+ch+")? This can not be undone","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				{
-				w.getImageset().removeChannel(ch);
-				BasicWindow.updateWindows();
+				new UndoOpNone("Remove channel")
+					{
+					public void redo()
+						{
+						w.getImageset().removeChannel(ch);
+						BasicWindow.updateWindows();
+						}
+					}.execute();
 				}
 			}
 		else if(e.getSource()==miRemoveFrame)
 			{ 
-			String ch=w.getCurrentChannelName();
-			EvDecimal frame=w.frameControl.getFrame();
+			final String ch=w.getCurrentChannelName();
+			final EvDecimal frame=w.frameControl.getFrame();
 			
-			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+", frame "+frame+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove (channel "+ch+", frame "+frame+")? This can not be undone","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				{
-				w.getImageset().getChannel(ch).imageLoader.remove(frame);
-				BasicWindow.updateWindows();
+				new UndoOpNone("Remove frame")
+					{
+					public void redo()
+						{
+						w.getImageset().getChannel(ch).imageLoader.remove(frame);
+						BasicWindow.updateWindows();
+						}
+					}.execute();
 				}
 			}
-		else if(e.getSource()==miRemoveSlice)
-			{
-			String ch=w.getCurrentChannelName();
-			EvDecimal frame=w.frameControl.getFrame();
-			EvDecimal z=w.frameControl.getZ();
-			
-			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove channel "+ch+", frame "+frame+", slice "+z+"?","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-				{
-				w.getImageset().getChannel(ch).imageLoader.get(frame).remove(z);
-				BasicWindow.updateWindows();
-				}
-			}
-		
-		
 		
 		}
 	

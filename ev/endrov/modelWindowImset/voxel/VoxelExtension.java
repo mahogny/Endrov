@@ -210,7 +210,7 @@ public class VoxelExtension implements ModelWindowExtension
 		
 		public EvDecimal getFrame()
 			{
-			return this.w.frameControl.getFrame();
+			return this.w.getFrame();
 			}
 
 		public void datachangedEvent()

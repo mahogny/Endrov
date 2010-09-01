@@ -41,7 +41,7 @@ public class Bookmark extends EvObject
 	 * Ask user to give the bookmark a name. Will give an error if data=null.
 	 * @return A bookmark to fill with data if dialog worked, otherwise null
 	 */
-	public static Bookmark addBookmarkDialog(JComponent w, EvContainer data)
+	public static String addBookmarkDialog(JComponent w, EvContainer data)
 		{
 		if(data==null)
 			BasicWindow.showErrorDialog("No container selected");
@@ -54,15 +54,20 @@ public class Bookmark extends EvObject
 					BasicWindow.showErrorDialog("Object with this name exists already");
 				else
 					{
+					return name;
+					/*
 					Bookmark b=new Bookmark();
 					data.metaObject.put(name, b);
-					return b;
+					return b;*/
 					}
 				}
 			}
 		return null;
 		}
 
+	
+	
+	
 	
 	/******************************************************************************************************
 	 *                               Instance                                                             *

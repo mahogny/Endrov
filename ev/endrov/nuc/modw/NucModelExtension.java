@@ -269,24 +269,24 @@ public class NucModelExtension implements ModelWindowExtension
 //			else if(e.getSource()==miSaveColorScheme)
 			else if(e.getSource()==miPrintAngle)
 				{
-				EvDecimal frame=w.frameControl.getFrame();
+				EvDecimal frame=w.getFrame();
 				NucCommonUI.actionPrintAngle(frame);
 				}
 			else if(e.getSource()==miPrintPos)
 				{
-				EvDecimal frame=w.frameControl.getFrame();
+				EvDecimal frame=w.getFrame();
 				NucCommonUI.actionPrintPos(frame);
 				}
 			else if(e.getSource()==miPrintCountNucAtFrame)
 				{
-				EvDecimal frame=w.frameControl.getFrame();
+				EvDecimal frame=w.getFrame();
 				//TODO replace with visible set
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
 					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
 				}
 			else if(e.getSource()==miPrintCountNucUpTo)
 				{
-				EvDecimal frame=w.frameControl.getFrame();
+				EvDecimal frame=w.getFrame();
 				//TODO replace with visible set
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
 					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucUpTo(frame));
@@ -315,7 +315,7 @@ public class NucModelExtension implements ModelWindowExtension
 				}
 			else if(e.getSource()==miSelectVisible)
 				{
-				EvDecimal frame=w.frameControl.getFrame();
+				EvDecimal frame=w.getFrame();
 				//TODO replace with visible set
 				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
 					{
@@ -359,7 +359,7 @@ public class NucModelExtension implements ModelWindowExtension
 
 			interpNuc.clear();
 			for(NucLineage lin:getLineages())
-				interpNuc.add(lin.getInterpNuc(w.frameControl.getFrame()));
+				interpNuc.add(lin.getInterpNuc(w.getFrame()));
 			}
 		
 		/**
@@ -459,7 +459,7 @@ public class NucModelExtension implements ModelWindowExtension
 			initDrawSphere(gl);
 			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 			
-			EvDecimal curFrame=w.frameControl.getFrame();
+			EvDecimal curFrame=w.getFrame();
 
 			boolean traceCur=miShowTraceAll.isSelected();
 			boolean traceSel=miShowTraceSel.isSelected();
@@ -960,7 +960,7 @@ public class NucModelExtension implements ModelWindowExtension
 			int num=0;
 			for(NucLineage lin:getLineages())
 				{
-				Map<NucSel, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				Map<NucSel, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.getFrame());
 				num+=interpNuc.size();
 				for(NucLineage.NucInterp nuc:interpNuc.values()) //what about non-existing ones?
 					{
@@ -991,7 +991,7 @@ public class NucModelExtension implements ModelWindowExtension
 			boolean any=false;
 			for(NucLineage lin:getLineages())
 				{
-				Map<NucSel, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.frameControl.getFrame());
+				Map<NucSel, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.getFrame());
 				any=true;
 				for(NucLineage.NucInterp nuc:interpNuc.values())
 					{
