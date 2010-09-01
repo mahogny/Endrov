@@ -114,8 +114,8 @@ public class ImageWindow extends BasicWindow
 					{
 					for(ImageWindowRenderer r:imageWindowRenderers)
 						r.draw(g);
-					if(tool!=null)
-						tool.paintComponent(g);
+					if(currentTool!=null)
+						currentTool.paintComponent(g);
 					}
 				else
 					EvLog.printError("Bad scale of image", null);
@@ -197,24 +197,24 @@ public class ImageWindow extends BasicWindow
 	/** Extension: Tool */
 	private final Vector<ImageWindowTool> imageWindowTools=new Vector<ImageWindowTool>();
 	/** Currently selected tool */
-	private ImageWindowTool tool;
+	private ImageWindowTool currentTool;
 
 	public void setTool(ImageWindowTool tool)
 		{
-		if(this.tool!=null)
-			this.tool.deselected();
-		this.tool=tool;  
+		if(this.currentTool!=null)
+			this.currentTool.deselected();
+		this.currentTool=tool;  
 		buildMenu();
 		}
 	
 	public void unsetTool()
 		{
-		tool=null;
+		currentTool=null;
 		}
 	
 	public ImageWindowTool getTool()
 		{
-		return tool;
+		return currentTool;
 		}
 	
 	
@@ -416,18 +416,29 @@ public class ImageWindow extends BasicWindow
 		menuImageWindow.add(miSliceInfo);
 		
 		menuImageWindow.addSeparator();
+		
+		//List all tools. None first, then the other tools in alphabetical order
 		menuImageWindow.add(miToolNone);
-		miToolNone.setSelected(tool==null);
-				
+		miToolNone.setSelected(currentTool==null);
+		List<JMenuItem> menuItems=new LinkedList<JMenuItem>();
 		for(final ImageWindowTool t:imageWindowTools)
-			if(t==null)
-				menuImageWindow.addSeparator();
-			else
-				menuImageWindow.add(t.getMenuItem());
-	
+			menuItems.add(t.getMenuItem());
+//			menuImageWindow.add(t.getMenuItem());
+		Collections.sort(menuItems, new Comparator<JMenuItem>(){
+			public int compare(JMenuItem arg0, JMenuItem arg1)
+				{
+				return arg0.getText().compareTo(arg1.getText());
+				}
+		});
+//		System.out.println(menuItems);
+		for(JMenuItem mi:menuItems)
+			menuImageWindow.add(mi);
+			
+		
+		
 		//List custom tool as well
-		if(!imageWindowTools.contains(tool) && !miToolNone.isSelected())
-			menuImageWindow.add(tool.getMenuItem());
+		if(!imageWindowTools.contains(currentTool) && !miToolNone.isSelected())
+			menuImageWindow.add(currentTool.getMenuItem());
 		
 		}
 	
@@ -735,8 +746,8 @@ public class ImageWindow extends BasicWindow
 			{
 			updateImagePanelNoInvalidate();
 			}
-		else if(tool!=null)
-			tool.keyPressed(e);
+		else if(currentTool!=null)
+			currentTool.keyPressed(e);
 			
 		}
 	/**
@@ -753,8 +764,8 @@ public class ImageWindow extends BasicWindow
 				temporarilyHideMarkings=false;
 				repaint();
 				}
-			else if(tool!=null)
-				tool.keyReleased(e);
+			else if(currentTool!=null)
+				currentTool.keyReleased(e);
 			}
 		}
 	/**
@@ -776,8 +787,8 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void mouseClicked(MouseEvent e)
 		{
-		if(tool!=null)
-			tool.mouseClicked(e,imagePanel);
+		if(currentTool!=null)
+			currentTool.mouseClicked(e,imagePanel);
 //		if(SwingUtilities.isRightMouseButton(e) || SwingUtilities.isMiddleMouseButton(e))
 		imagePanel.requestFocus();
 		}
@@ -787,8 +798,8 @@ public class ImageWindow extends BasicWindow
 	public void mousePressed(MouseEvent e)
 		{
 		imagePanel.requestFocus();
-		if(tool!=null)
-			tool.mousePressed(e);
+		if(currentTool!=null)
+			currentTool.mousePressed(e);
 		mouseLastDragX=e.getX();
 		mouseLastDragY=e.getY();
 		}
@@ -797,8 +808,8 @@ public class ImageWindow extends BasicWindow
 	 */
 	public void mouseReleased(MouseEvent e)
 		{
-		if(tool!=null)
-			tool.mouseReleased(e);
+		if(currentTool!=null)
+			currentTool.mouseReleased(e);
 		}
 	/**
 	 * Callback: Mouse pointer has entered window
@@ -813,8 +824,8 @@ public class ImageWindow extends BasicWindow
 	public void mouseExited(MouseEvent e)
 		{
 		mouseInWindow=false;
-		if(tool!=null)
-			tool.mouseExited(e);
+		if(currentTool!=null)
+			currentTool.mouseExited(e);
 		}
 	/**
 	 * Callback: Mouse moved
@@ -830,8 +841,8 @@ public class ImageWindow extends BasicWindow
 		mouseCurY=e.getY();
 		
 		//Handle tool specific feedback
-		if(tool!=null)
-			tool.mouseMoved(e,dx,dy);
+		if(currentTool!=null)
+			currentTool.mouseMoved(e,dx,dy);
 		
 		//Need to update currentHover so always repaint.
 		imagePanel.repaint();
@@ -852,8 +863,8 @@ public class ImageWindow extends BasicWindow
 			updateImagePanelNoInvalidate();
 			}
 
-		if(tool!=null)
-			tool.mouseDragged(e,dx,dy);
+		if(currentTool!=null)
+			currentTool.mouseDragged(e,dx,dy);
 		}
 	/**
 	 * Callback: Mouse scrolls

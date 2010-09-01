@@ -94,7 +94,7 @@ public class Slice3DExtension implements ModelWindowExtension
 		
 		private EvDecimal getFrame()
 			{
-			return this.w.frameControl.getFrame();
+			return this.w.getFrame();
 			}
 
 		

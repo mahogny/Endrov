@@ -122,7 +122,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 		
 		private EvDecimal getFrame()
 			{
-			return this.w.frameControl.getFrame();
+			return this.w.getFrame();
 			}
 
 		
