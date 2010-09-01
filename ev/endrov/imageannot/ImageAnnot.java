@@ -34,16 +34,6 @@ public class ImageAnnot extends EvObject implements Cloneable
 		}
 
 	
-	/*
-	public static Collection<ImageAnnot> getObjects(EvContainer meta)
-		{
-		if(meta==null)
-			return new Vector<ImageAnnot>();
-		else
-			return meta.getObjects(ImageAnnot.class);
-		}
-	*/
-	
 
 	
 	/******************************************************************************************************
@@ -55,6 +45,28 @@ public class ImageAnnot extends EvObject implements Cloneable
 	public int frame;
 	
 	
+	
+	public ImageAnnot clone()
+		{
+		ImageAnnot a=new ImageAnnot();
+		a.text=text;
+		a.pos=new Vector3d(pos);
+		a.frame=frame;
+		return a;
+		}
+	
+	
+	@Override
+	public boolean equals(Object obj)
+		{
+		if(obj instanceof ImageAnnot)
+			{
+			ImageAnnot a=(ImageAnnot)obj;
+			return a.text.equals(text) && a.pos.equals(pos) && a.frame==frame;
+			}
+		else
+			return false;
+		}
 	
 	/**
 	 * Description of this metatype 

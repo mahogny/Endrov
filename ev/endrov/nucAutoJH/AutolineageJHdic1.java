@@ -532,7 +532,7 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 				
 				Vector3d wpos=stackHis.transformImageWorld(new Vector3d(v.x,v.y,v.z));
 				
-				if(shell.isInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
+				if(shell.isPointInside(new ImVector3d(wpos.x,wpos.y,wpos.z)))
 					{
 					//double bestSigma=Multiscale.findFeatureScale(stackHis.getInt(v.z).getPixels(),sigmaHis1, v.x, v.y);
 //					double bestSigma=Multiscale.findFeatureScale2(stackHis.getInt(v.z).getPixels(), 

@@ -51,7 +51,6 @@ public class Shell extends EvObject
 	 */
 	public String saveMetadata(Element e)
 		{
-		//TODO NO! do not store straight in e
 		e.setAttribute("x", ""+midx);
 		e.setAttribute("y", ""+midy);
 		e.setAttribute("z", ""+midz);
@@ -88,10 +87,9 @@ public class Shell extends EvObject
 	/**
 	 * Projected down: check if inside
 	 */
-	public boolean isInside(ImVector2 pos)
+	public boolean isPointInside(ImVector2 pos)
 		{
 		ImVector2 dirvec=ImVector2.polar(major, angle);
-		//ImVector2 startpos=dirvec.add(new ImVector2(midx,midy));
 		dirvec=dirvec.normalize().mul(-1);
 
 		//Check if this is within ellipse boundary
@@ -102,14 +100,8 @@ public class Shell extends EvObject
 	/**
 	 * Projected down: check if inside
 	 */
-	public boolean isInside(ImVector3d pos)
+	public boolean isPointInside(ImVector3d pos)
 		{
-		//ImVector2 dirvec=ImVector2.polar(major, angle);
-		//ImVector2 startpos=dirvec.add(new ImVector2(midx,midy));
-		//dirvec=dirvec.normalize().mul(-1);
-
-		//ImVector2 foo=
-		
 		//Check if this is within ellipse boundary
 		ImVector2 foo=new ImVector2(pos.x,pos.y).sub(new ImVector2(midx, midy)).rotate(angle); //todo: angle?
 		ImVector3d elip=new ImVector3d(foo.x,foo.y,pos.z-midz);
@@ -143,6 +135,19 @@ public class Shell extends EvObject
 		}
 
 	
+	public Shell clone()
+		{
+		Shell s=new Shell();
+		s.major=major;
+		s.minor=minor;
+		s.midx=midx;
+		s.midy=midy;
+		s.midz=midz;
+		s.angle=angle;
+		s.angleinside=angleinside;
+		return s;
+		}
+	
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -154,9 +159,7 @@ public class Shell extends EvObject
 			{
 			public void newImageWindow(ImageWindow w)
 				{
-				//ShellImageRenderer r=new ShellImageRenderer(w);
 				w.addImageWindowTool(new ShellImageTool(w));
-				//w.addImageWindowRenderer(r);
 				}
 			});
 

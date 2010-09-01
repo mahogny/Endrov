@@ -21,6 +21,7 @@ import endrov.ev.EvLog;
 import endrov.imageWindow.*;
 import endrov.line.EvLine.Pos3dt;
 import endrov.undo.UndoOpBasic;
+import endrov.undo.UndoOpPutObject;
 import endrov.util.EvDecimal;
 
 /**
