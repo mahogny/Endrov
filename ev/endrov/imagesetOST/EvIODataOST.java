@@ -1182,16 +1182,18 @@ public class EvIODataOST implements EvIOData
 		//TODO do an experiment first!!!!
 		fix1(f2);*/
 		
-		
+		/*
 		for(File f:new File("/Volumes/TBU_extra03/ost3dgood").listFiles())
 			if(f.getName().endsWith(".ost"))
-				fix1(f);
+				fix1(f);*/
+		
 		for(File f:new File("/Volumes/TBU_extra03/ost4dgood").listFiles())
 			if(f.getName().endsWith(".ost"))
 				fix1(f);
 		for(File f:new File("/Volumes/TBU_extra03/tosort").listFiles())
 			if(f.getName().endsWith(".ost"))
 				fix1(f);
+				
 		
 		
 		System.exit(0);
@@ -1202,8 +1204,7 @@ public class EvIODataOST implements EvIOData
 	 */
 	public static void fix1(File ostfile)
 		{		
-		if(new File(ostfile,"converted.txt").exists())
-			return;
+		System.out.println("doing ----- "+ostfile);
 		try
 			{
 			System.out.println(ostfile);
@@ -1220,7 +1221,7 @@ public class EvIODataOST implements EvIOData
 				if(ch==null || !chblob.exists())
 					continue;
 				
-				ch.defaultResZ=new EvDecimal(3);
+				ch.defaultResZ=new EvDecimal(1.5);
 				ch.defaultDispZ=new EvDecimal(1);
 				for(EvDecimal frame:ch.imageLoader.keySet())
 					{
@@ -1228,17 +1229,22 @@ public class EvIODataOST implements EvIOData
 					stack.resZ=ch.defaultResZ;
 					stack.dispZ=ch.defaultDispZ;
 					}
-				for(File framedir:chblob.listFiles())
-					if(framedir.isDirectory())
-						{
-						for(int oldz=0;oldz<=22;oldz++)
+				
+				if(!new File(ostfile,"converted.txt").exists())
+				{
+					for(File framedir:chblob.listFiles())
+						if(framedir.isDirectory())
 							{
-							File oldfile=new File(framedir, "b"+EV.pad(oldz*3+2, 8)+".png");
-							File newfile=new File(framedir, "b"+EV.pad(oldz, 8)+".png");
-							oldfile.renameTo(newfile);
-//							System.out.println(oldfile+"   ->   "+newfile);
+							for(int oldz=0;oldz<=22;oldz++)
+								{
+								File oldfile=new File(framedir, "b"+EV.pad(oldz*3+2, 8)+".png");
+								File newfile=new File(framedir, "b"+EV.pad(oldz, 8)+".png");
+								oldfile.renameTo(newfile);
+//								System.out.println(oldfile+"   ->   "+newfile);
+								}
 							}
-						}
+					
+				}
 				
 				//Delete cache
 				File cacheFile=new File(chblob,"imagecache.txt");
@@ -1250,11 +1256,9 @@ public class EvIODataOST implements EvIOData
 			io.saveMetaDataOnly(data, null);
 			
 			new File(ostfile,"converted.txt").createNewFile();
-
 			}
 		catch (IOException e)
 			{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		
