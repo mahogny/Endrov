@@ -10,11 +10,15 @@ import java.util.*;
 import javax.vecmath.*;
 
 import endrov.imageWindow.*;
+import endrov.util.Tuple;
 
 public class ImageAnnotImageRenderer implements ImageWindowRenderer
 	{
 	public ImageWindowInterface w;
 	
+	Tuple<String,ImageAnnot> activeAnnot=null;
+	ImageAnnot activeAnnotNew=null;
+
 	
 	public ImageAnnotImageRenderer(ImageWindowInterface w)
 		{
@@ -22,9 +26,9 @@ public class ImageAnnotImageRenderer implements ImageWindowRenderer
 		}
 
 	
-	public Collection<ImageAnnot> getVisible()
+	public Map<String, ImageAnnot> getVisible()
 		{
-		return w.getRootObject().getIdObjects(ImageAnnot.class).values();
+		return w.getRootObject().getIdObjects(ImageAnnot.class);
 		}
 	
 
@@ -33,25 +37,18 @@ public class ImageAnnotImageRenderer implements ImageWindowRenderer
 	 */
 	public void draw(Graphics g)
 		{
-		for(ImageAnnot ann:getVisible())
+		for(ImageAnnot ann:getVisible().values())
 			{
+			if(activeAnnot!=null && ann==activeAnnot.snd())
+				ann=activeAnnotNew;
+				
 			//Coordinate transformation
 			Vector2d so=w.transformPointW2S(new Vector2d(ann.pos.x,ann.pos.y));
 
 			//Draw the nucleus
 			g.setColor(Color.RED);
-
 			g.drawOval((int)(so.x-5),(int)(so.y-5),(int)(2*5),(int)(2*5));
-
-
 			g.drawString(ann.text, (int)so.x-g.getFontMetrics().stringWidth(ann.text)/2, (int)so.y-2);
-			/*	int crossSize=5;
-				g.drawLine((int)so.x-crossSize, (int)so.y, (int)so.x+crossSize, (int)so.y);
-				g.drawLine((int)so.x, (int)so.y, (int)so.x, (int)so.y+crossSize);
-			 */
-
-
-			
 			}
 		}
 	

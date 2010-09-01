@@ -1,11 +1,11 @@
-package endrov.line;
+package endrov.undo;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvObject;
-import endrov.undo.UndoOpBasic;
 
 /**
- * Adding or replacing an object in a container
+ * Adding, replacing or deleting an object in a container
  * 
  * @author Johan Henriksson
  *
@@ -31,8 +31,11 @@ public class UndoOpPutObject extends UndoOpBasic
 	public void redo()
 		{
 		oldOb=container.metaObject.get(id);
-		container.metaObject.put(id, newOb);
-		//id=container.addMetaObject(newOb);
+		if(newOb==null)
+			container.metaObject.remove(id);
+		else
+			container.metaObject.put(id, newOb);
+		BasicWindow.updateWindows();
 		}
 
 	public void undo()
