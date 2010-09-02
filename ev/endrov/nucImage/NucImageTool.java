@@ -254,8 +254,9 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 					{
 					//Also select?
 					holdTranslateMouse=true;
-					NucCommonUI.mouseSelectNuc(NucCommonUI.currentHover, false);
-					System.out.println("Select!!");
+					NucCommonUI.mouseSelectNuc(NucCommonUI.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					//NucCommonUI.mouseSelectNuc(NucCommonUI.currentHover, false);
+					//System.out.println("Select!!");
 					startModifying(NucCommonUI.currentHover);
 					}
 				ignoreLeftClick=true;
