@@ -11,6 +11,9 @@ import java.awt.*;
 
 import javax.swing.*;
 import javax.vecmath.Vector2d;
+
+
+import endrov.basicWindow.EvColor;
 import endrov.ev.*;
 //import endrov.filterBasic.ContrastBrightnessOp;
 import endrov.imageset.*;
@@ -40,6 +43,153 @@ public class ImageWindowView extends JPanel
 			r.dataChangedEvent();
 		}
 
+	private static final byte clampByte(int i)
+		{
+		if(i > 255)
+			return -1; //really correct? why -1????
+		if(i < 0)
+			return 0;
+		else
+			return (byte)i;
+		}
+	
+	private static final byte clampShort(int i)
+		{
+		if(i > 65535)
+			return -1; //really correct?
+		if(i < 0)
+			return 0;
+		else
+			return (byte)i;
+		}
+	
+	static EvPixels applyOrig(EvPixels a, double contrast, double brightness)
+		{
+		if(a.getType()==EvPixelsType.AWT)
+			{
+			BufferedImage src=a.getAWT();
+			
+			int numBits=src.getSampleModel().getSampleSize(0);
+			LookupOp f;
+			
+			if(numBits==8)
+				{
+				byte[] b=new byte[256];
+				for(int i=0;i<256;i++)
+					b[i]=clampByte((int)(i*contrast+brightness));     //Centralize contrast* maybe?
+				ByteLookupTable table=new ByteLookupTable(0,b);
+				f=new LookupOp(table,null);
+				}
+			else if(numBits==16)
+				{
+				short[] b=new short[65536];
+				for(int i=0;i<65536;i++)
+					b[i]=clampShort((int)(i*contrast+brightness));     //Centralize contrast* maybe?
+				ShortLookupTable table=new ShortLookupTable(0,b);
+				f=new LookupOp(table,null);
+				
+				}
+			else
+				f=null;
+			
+			WritableRaster wr = Raster.createWritableRaster(src.getSampleModel(),new Point(0,0));
+			BufferedImage bufo = new BufferedImage(src.getColorModel(),wr,true,new Hashtable<Object,Object>());
+			f.filter(src,bufo);
+			
+			return new EvPixels(bufo);
+			}
+		else
+			{
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			double[] aPixels=a.getArrayDouble();
+			double[] outPixels=out.getArrayDouble();
+			
+			for(int i=0;i<aPixels.length;i++)
+				{
+				double c=aPixels[i]*contrast+brightness;
+				if(c>255) c=255;
+				else if(c<0) c=0;
+				outPixels[i]=c;
+				}
+			
+			return out;
+			}
+		}
+
+	
+	
+	/**
+	 * Map from one color to a weight of colors, for fast additive rendering
+	 */
+	/*static BufferedImage apply(EvPixels a, double contrast, double brightness, double weight1, double weight2, double weight3)
+		{*/
+		/*if(a.getType()==EvPixelsType.AWT)
+			{
+			BufferedImage src=a.getAWT();
+			
+			int numBits=src.getSampleModel().getSampleSize(0);
+			LookupOp f;
+			
+			if(numBits==8)
+				{
+				byte[] b=new byte[256];
+				for(int i=0;i<256;i++)
+					b[i]=clampByte((int)(i*contrast+brightness));     //Centralize contrast* maybe?
+				ByteLookupTable table=new ByteLookupTable(0,b);
+				f=new LookupOp(table,null);
+				}
+			else if(numBits==16)
+				{
+				short[] b=new short[65536];
+				for(int i=0;i<65536;i++)
+					b[i]=clampShort((int)(i*contrast+brightness));     //Centralize contrast* maybe?
+				ShortLookupTable table=new ShortLookupTable(0,b);
+				f=new LookupOp(table,null);
+				
+				}
+			else
+				f=null;
+			
+			WritableRaster wr = Raster.createWritableRaster(src.getSampleModel(),new Point(0,0));
+			BufferedImage bufo = new BufferedImage(src.getColorModel(),wr,true,new Hashtable<Object,Object>());
+			f.filter(src,bufo);
+			
+			return new EvPixels(bufo);
+			}
+		else*/
+	/*
+			{
+			a=a.getReadOnly(EvPixelsType.DOUBLE);
+			
+			//Keep an optimized integer case?
+			
+			int w=a.getWidth();
+			int h=a.getHeight();
+			EvPixels out=new EvPixels(a.getType(),w,h);
+			double[] aPixels=a.getArrayDouble();
+			double[] outPixels=out.getArrayDouble();
+			
+			for(int i=0;i<aPixels.length;i++)
+				{
+				double c=aPixels[i]*contrast+brightness;
+				if(c>255) c=255;
+				else if(c<0) c=0;
+				outPixels[i]=c;
+				}
+
+			p.awt=new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
+			p.awt.getRaster().setPixels(0, 0, w, h, arrayI);
+
+			return out;
+			}
+		}
+
+	*/
+	
 	
 	/**
 	 * One image to be drawn in the panel
@@ -51,6 +201,77 @@ public class ImageWindowView extends JPanel
 		public double contrast=1;
 		public double brightness=0;
 		private BufferedImage bufi=null;
+		EvColor color;
+		
+		
+		
+		
+		public BufferedImage apply(EvPixels p)
+			{
+			double contrastR=contrast*color.getRedDouble();
+			double contrastG=contrast*color.getGreenDouble();
+			double contrastB=contrast*color.getBlueDouble();
+			
+			if(1==1)
+				{
+				
+				int w=p.getWidth();
+				int h=p.getHeight();
+				double[] aPixels=p.convertToDouble(true).getArrayDouble();
+				BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
+
+				byte[] outarr=new byte[w*h*3];
+				//DataBufferByte out=new DataBufferByte(w*h*3);
+				//double[]
+				
+				for(int i=0;i<aPixels.length;i++)
+					{
+					//double c=aPixels[i]*contrast+brightness;
+					byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
+					byte g=clampByte((int)(aPixels[i]*contrastG+brightness));
+					byte r=clampByte((int)(aPixels[i]*contrastR+brightness));
+					//System.out.println(b);
+					/*if(c>255) c=255;
+					else if(c<0) c=0;*/
+					outarr[i*3+0]=b;
+					outarr[i*3+1]=g;
+					outarr[i*3+2]=r;
+					//out.
+					}
+
+				//bufi.getRaster().setPixels(0, 0, w, h, arrayI);
+				
+				//DataBufferByte out=new DataBufferByte(outarr, w*h*3);
+				buf.getRaster().setDataElements(0, 0, w, h, outarr);
+				//bufi.getRaster().set
+				
+				return buf;
+				
+				}
+			else
+				{
+			//This works for grayscale!
+				BufferedImage buf=EvOpImageMapScreen.apply(p, contrast, brightness).quickReadOnlyAWT();
+				return buf;
+				}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			}
+		
+		
+		
+		
+		
+		
 		
 		public void setImage(EvStack stack, EvImage image)
 			{
@@ -87,19 +308,9 @@ public class ImageWindowView extends JPanel
 					//Load image if this has not already been done
 					if(bufi==null)
 						{
-						/*
-						bufi=image.getPixels().quickReadOnlyAWT();
-						if(bufi==null)
-							throw new Exception("Got null image from I/O");
-						
-						ContrastBrightnessOp bcfilter=new ContrastBrightnessOp(contrast,brightness);
-						
-						WritableRaster wr = Raster.createWritableRaster(bufi.getSampleModel(),new Point(0,0));
-						BufferedImage bufo = new BufferedImage(bufi.getColorModel(),wr,true,new Hashtable<Object,Object>());
-						bcfilter.filter(bufi,bufo);
-						bufi=bufo;*/
-
-						bufi=EvOpImageMapScreen.apply(image.getPixels(), contrast, brightness).quickReadOnlyAWT();
+						EvPixels p=image.getPixels();
+						//bufi=EvOpImageMapScreen.apply(p, contrast, brightness).quickReadOnlyAWT();
+						bufi=apply(p);
 						}
 					}
 				}
@@ -231,17 +442,181 @@ public class ImageWindowView extends JPanel
 		}
 	
 	
-	//Temporary drawing surfaces. Creation seems rather expensive so these are cached
-	private BufferedImage temporaryTotal=null;
-	private BufferedImage temporaryPart=null;
+	private static class AddCompositeContext implements CompositeContext
+		{
+	
+		ColorModel srcColorModel;
+		ColorModel dstColorModel;
+	
+		int ALPHA = 0xFF000000; // alpha mask
+		int MASK7Bit = 0xFEFEFF; // mask for additive/subtractive shading
+	
+		public AddCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel) 
+			{
+			this.srcColorModel = srcColorModel;
+			this.dstColorModel = dstColorModel;
+			}
+	
+		int add(int color1, int color2) 
+			{
+			int pixel = (color1 & MASK7Bit) + (color2 & MASK7Bit);
+			int overflow = pixel & 0x1010100;
+			overflow = overflow - (overflow >> 8);
+			return ALPHA | overflow | pixel;
+			}
+	
+	
+		public void compose(Raster src, Raster dstIn, WritableRaster dstOut)
+			{
+			Rectangle srcRect = src.getBounds();
+			Rectangle dstInRect = dstIn.getBounds();
+			Rectangle dstOutRect = dstOut.getBounds();
+			int x = 0, y = 0;
+			int w = Math.min(Math.min(srcRect.width, dstOutRect.width), dstInRect.width);
+			int h = Math.min(Math.min(srcRect.height, dstOutRect.height), dstInRect.height);
+			Object srcPix = null, dstPix = null;
+			for (y = 0; y < h; y++)
+				for (x = 0; x < w; x++) 
+					{
+					srcPix = src.getDataElements(x + srcRect.x, y + srcRect.y, srcPix);
+					dstPix = dstIn.getDataElements(x + dstInRect.x, y + dstInRect.y, dstPix);
+					int sp = srcColorModel.getRGB(srcPix);
+					int dp = dstColorModel.getRGB(dstPix);
+					int rp = add(sp,dp);
+					dstOut.setDataElements(x + dstOutRect.x, y + dstOutRect.y, dstColorModel.getDataElements(rp, null));
+					}
+			}
+	
+		public void dispose()
+			{
+			}
+	
+		}
+		
+	/*
+	
+	private static class MyAddCompositeContext implements CompositeContext
+	{
+	
+	ColorModel srcColorModel;
+	ColorModel dstColorModel;
+
+	int ALPHA = 0xFF000000; // alpha mask
+	int MASK7Bit = 0xFEFEFF; // mask for additive/subtractive shading
+
+	final double wr;
+	final double wg;
+	final double wb;
+	
+	public MyAddCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel, double wr, double wg, double wb) 
+		{
+		this.srcColorModel = srcColorModel;
+		this.dstColorModel = dstColorModel;
+		this.wr=wr;
+		this.wg=wg;
+		this.wb=wb;
+		}
+
+	int add(int color1, int color2) 
+		{
+		int pixel = (color1 & MASK7Bit) + (color2 & MASK7Bit);
+		int overflow = pixel & 0x1010100;
+		overflow = overflow - (overflow >> 8);
+		return ALPHA | overflow | pixel;
+		}
+
+
+	public void compose(Raster src, Raster dstIn, WritableRaster dstOut)
+		{
+		Rectangle srcRect = src.getBounds();
+		Rectangle dstInRect = dstIn.getBounds();
+		Rectangle dstOutRect = dstOut.getBounds();
+		int x = 0, y = 0;
+		int w = Math.min(Math.min(srcRect.width, dstOutRect.width), dstInRect.width);
+		int h = Math.min(Math.min(srcRect.height, dstOutRect.height), dstInRect.height);
+		Object srcPix = null, dstPix = null;
+		for (y = 0; y < h; y++)
+			for (x = 0; x < w; x++) 
+				{
+				srcPix = src.getDataElements(x + srcRect.x, y + srcRect.y, srcPix);
+				dstPix = dstIn.getDataElements(x + dstInRect.x, y + dstInRect.y, dstPix);
+				int sp = srcColorModel.getRGB(srcPix);
+				//int dp = dstColorModel.getRGB(dstPix);
+				int dp = dstColorModel.getRed(dstPix);
+				
+				int np = ((int)(wr*dp))<<16 + ((int)(wg*dp))<<8 + ((int)(wb*dp));
+				
+				int rp = add(sp,np);
+				//int rp = add(sp,dp);
+				dstOut.setDataElements(x + dstOutRect.x, y + dstOutRect.y, dstColorModel.getDataElements(rp, null));
+				}
+		}
+
+	public void dispose()
+		{
+		}
+
+	}
+*/
 	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
+	/*
 	public void paintComponent(Graphics g)
 		{
 		loadImage();
+		
+		if(images.size()>0)
+			{
+			if(images.get(0).color.equals(Color.WHITE))
+				{
+				//Special case
+				
+				}
+			g.setColor(Color.BLACK);
+			g.fillRect(0,0,getWidth(),getHeight());
+			
+			
+			images.get(0).paintComponent(g, this);
+			}
+		//Draw overlay additive
+		Graphics2D g2d=(Graphics2D)g;
+		g2d.setComposite(AlphaComposite.Src);
+		g2d.setComposite(
+				new Composite(){
+				public CompositeContext createContext(
+						ColorModel srcColorModel, 
+						ColorModel dstColorModel, 
+						RenderingHints arg2) 
+					{
+					return new AddCompositeContext(srcColorModel,dstColorModel);
+					}
+				}				
+		);
+//		for(int i=1;i<images.size();i++)
+			{
+			//g2d.setColor(images.get(i).color.getAWTColor());
+			g2d.setColor(Color.red);
+			g2d.fillRect(50,50,100,100);
+
+			}
+		
+		
+		
+		
+		
+		}*/
+	
+	
+	/*
+	public void paintComponent(Graphics g)
+		{
+		loadImage();
+	
+		
+		
 		if(images.size()==1)
 			{
 			g.setColor(Color.BLACK);
@@ -252,12 +627,17 @@ public class ImageWindowView extends JPanel
 			{
 			if(temporaryTotal==null || temporaryTotal.getWidth()!=getWidth() || temporaryTotal.getHeight()!=getHeight())
 				temporaryTotal=new BufferedImage(getWidth(), getHeight(),BufferedImage.TYPE_INT_RGB);
+			
+			//TODO. handle colors!!!!!!
+
 			if(images.size()<3)
 				{
 				Graphics temporaryTotalG=temporaryTotal.createGraphics();
 				temporaryTotalG.setColor(Color.BLACK);
 				temporaryTotalG.fillRect(0,0,getWidth(),getHeight());
 				}
+			
+			
 			int s[]=null;
 			for(int i=0;i<3 && i<images.size();i++)
 				{
@@ -283,7 +663,60 @@ public class ImageWindowView extends JPanel
 		
 		
 		
+		}*/
+
+	
+
+	public void paintComponent(Graphics g)
+		{
+		BufferedImage bim=new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D g2d=(Graphics2D)bim.getGraphics();
+
+		loadImage();
+
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(0,0,getWidth(),getHeight());
+
+		for(int i=0;i<images.size();i++)
+			{
+			if(i==0)
+				{
+				images.get(0).paintComponent(g2d, this);
+				}
+			else
+				{
+				
+				
+				
+				//Draw overlay additive
+				g2d.setComposite(AlphaComposite.Src);
+				g2d.setComposite(
+						new Composite(){
+						public CompositeContext createContext(
+								ColorModel srcColorModel, 
+								ColorModel dstColorModel, 
+								RenderingHints arg2) 
+							{
+							return new AddCompositeContext(srcColorModel,dstColorModel);
+							}
+						}
+				);
+
+				ImagePanelImage im=images.get(i);
+				//Graphics2D g2=(Graphics2D)temporaryPart.getGraphics();
+				im.paintComponent(g2d, this);
+
+				
+				}
+			
+			
+			}
+		
+		g.drawImage(bim, 0,0, null);
+		
 		}
+	
+	
 
 	/**
 	 * Pan by a certain ammount

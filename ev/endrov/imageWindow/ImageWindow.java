@@ -34,6 +34,7 @@ import endrov.imageset.*;
 import endrov.keyBinding.*;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
+import endrov.util.JImageButton;
 import endrov.util.SnapBackSlider;
 import endrov.util.SnapBackSlider.SnapChangeListener;
 
@@ -62,11 +63,23 @@ public class ImageWindow extends BasicWindow
 
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
-	private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
+	//private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
 	
 	
 	public static int snapDistance=10;
 	
+	
+
+	private static EvColor[] channelColorList=new EvColor[]{
+			EvColor.red,
+			EvColor.magenta,
+			EvColor.yellow,
+			EvColor.white,
+			EvColor.green,
+			EvColor.cyan,
+			EvColor.blue
+	};
+
 	/**
 	 * Store down settings for window into personal config file
 	 */
@@ -98,6 +111,52 @@ public class ImageWindow extends BasicWindow
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
+	
+	
+
+	
+	/** Hide all markings for now; to quickly show without overlay */
+	private boolean temporarilyHideMarkings=false;
+
+	/** Keep track of last imageset for re-centering purposes */
+	private Imageset lastImagesetRecenter=null;
+	
+	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
+	private int mouseLastDragX=0, mouseLastDragY=0;
+	/** Last coordinate of the mouse pointer. Used to detect moving distance. For event technical reasons,
+	 * this requires a separate set of variables than dragging (or so it seems) */
+	private int mouseLastX=0, mouseLastY=0;
+	/** Current mouse coordinate. Used for repainting. */
+	public int mouseCurX=0, mouseCurY=0;
+	/** Flag if the mouse cursor currently is in the window */
+	public boolean mouseInWindow=false;
+
+	//private boolean show3color=true;
+
+	//GUI components
+	private final SnapBackSlider sliderZoom2=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
+	private SnapBackSlider sliderRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
+	
+	//private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
+	private final JImageButton bAddChannel=new JImageButton(BasicIcon.iconAdd, "Add a channel");
+	
+	private final ButtonGroup rChannelGroup=new ButtonGroup();
+	private final Vector<ChannelWidget> channelWidget=new Vector<ChannelWidget>();
+	public final FrameControlImage frameControl=new FrameControlImage(this);
+	
+	private final JPanel channelPanel=new JPanel();
+
+	private final JMenu menuImageWindow=new JMenu("ImageWindow");
+	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
+	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
+	private final JMenuItem miReset=new JMenuItem("Reset view");
+	private final JMenuItem miMiddleSlice=new JMenuItem("Go to middle slice");
+	private final JMenuItem miSliceInfo=new JMenuItem("Get slice info");
+	private final JCheckBoxMenuItem miShowOverlay=new JCheckBoxMenuItem("Show overlay",true);
+
+	private final JPanel bottomPanelFirstRow=new JPanel(new BorderLayout());
+
+	
 	
 	/**
 	 * The image panel extended with more graphics
@@ -133,7 +192,8 @@ public class ImageWindow extends BasicWindow
 		imagePanel.paintComponent(g);
 		return bi;
 		}
-		
+
+	
 	/**
 	 * One row of channel settings in the GUI
 	 */
@@ -145,6 +205,8 @@ public class ImageWindow extends BasicWindow
 		public final EvComboChannel comboChannel=new EvComboChannel(null,false);
 		public final JSlider sliderContrast=new JSlider(-10000,10000,0);
 		public final JSlider sliderBrightness=new JSlider(-200,200,0);
+		public final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
+		public final JImageButton bRemoveChannel=new JImageButton(BasicIcon.iconRemove,"Remove channel");
 		
 		public ChannelWidget()
 			{
@@ -160,28 +222,47 @@ public class ImageWindow extends BasicWindow
 			brightnessPanel.add(new JLabel(iconLabelBrightness), BorderLayout.WEST);
 			brightnessPanel.add(sliderBrightness,BorderLayout.CENTER);
 
-
-			JPanel left=new JPanel(new BorderLayout());
-			left.add(rSelect,BorderLayout.WEST);
-			left.add(comboChannel,BorderLayout.CENTER);
-			
-			add(left);
+			add(EvSwingUtil.layoutLCR(
+					rSelect, 
+					EvSwingUtil.layoutLCR(
+							comboColor,
+							comboChannel,
+							null),
+					null));
 			add(contrastPanel);
-			add(brightnessPanel);
+			add(EvSwingUtil.layoutLCR(
+					null,
+					brightnessPanel,
+					bRemoveChannel));
 
+			comboColor.addActionListener(this);
 			sliderContrast.addChangeListener(this);
 			sliderBrightness.addChangeListener(this);
 			comboChannel.addActionListener(this);
+			bRemoveChannel.addActionListener(this);
 			}
 		
 		public void actionPerformed(ActionEvent e)
 			{
-			frameControl.setChannel(getImageset(), getCurrentChannelName());
-			
 			if(e.getSource()==comboChannel)
 				{
+				frameControl.setChannel(getImageset(), getCurrentChannelName()); //has been moved here
 				frameControl.setAll(frameControl.getFrame(), frameControl.getZ());
 				updateImagePanel();
+				}
+			else if(e.getSource()==comboColor)
+				updateImagePanel();
+			else if(e.getSource()==bRemoveChannel)
+				{
+				if(channelWidget.size()>1)
+					{
+					channelWidget.remove(this);
+					rChannelGroup.remove(this.rSelect);
+					if(rSelect.isSelected())
+						channelWidget.get(0).rSelect.setSelected(true);
+					buildChannelPanel();
+					updateImagePanel();
+					}
 				}
 			else
 				updateImagePanel();
@@ -223,48 +304,6 @@ public class ImageWindow extends BasicWindow
 		imageWindowTools.add(tool);
 		}
 	
-	
-	/** Hide all markings for now; to quickly show without overlay */
-	private boolean temporarilyHideMarkings=false;
-
-	/** Keep track of last imageset for re-centering purposes */
-	private Imageset lastImagesetRecenter=null;
-	
-	/** Last coordinate of the mouse pointer. Used to detect dragging distance. */
-	private int mouseLastDragX=0, mouseLastDragY=0;
-	/** Last coordinate of the mouse pointer. Used to detect moving distance. For event technical reasons,
-	 * this requires a separate set of variables than dragging (or so it seems) */
-	private int mouseLastX=0, mouseLastY=0;
-	/** Current mouse coordinate. Used for repainting. */
-	public int mouseCurX=0, mouseCurY=0;
-	/** Flag if the mouse cursor currently is in the window */
-	public boolean mouseInWindow=false;
-
-	private boolean show3color=true;
-
-	//GUI components
-	private final SnapBackSlider sliderZoom2=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
-	private SnapBackSlider sliderRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
-	
-	private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
-	
-	private final ButtonGroup rChannelGroup=new ButtonGroup();
-	private final Vector<ChannelWidget> channelWidget=new Vector<ChannelWidget>();
-	public final FrameControlImage frameControl=new FrameControlImage(this);
-	
-	private final JPanel channelPanel=new JPanel();
-
-	private final JMenu menuImageWindow=new JMenu("ImageWindow");
-	private final JCheckBoxMenuItem miToolNone=new JCheckBoxMenuItem("No tool");
-	private final JMenuItem miZoomToFit=new JMenuItem("Zoom to fit");
-	private final JMenuItem miReset=new JMenuItem("Reset view");
-	private final JMenuItem miMiddleSlice=new JMenuItem("Go to middle slice");
-	private final JMenuItem miSliceInfo=new JMenuItem("Get slice info");
-	private final JCheckBoxMenuItem miShowOverlay=new JCheckBoxMenuItem("Show overlay",true);
-
-	private final JPanel bottomPanelFirstRow=new JPanel(new BorderLayout());
-
-	
 		
 	/**
 	 * Make new window at default location
@@ -300,7 +339,7 @@ public class ImageWindow extends BasicWindow
 			public void slideChange(int change){zoom(change/50.0);}
 		});
 		miShowOverlay.addChangeListener(chListenerNoInvalidate);
-		bShow3colors.addActionListener(this);
+		bAddChannel.addActionListener(this);
 		
 		
 		sliderRotate.addSnapListener(new SnapBackSlider.SnapChangeListener(){
@@ -313,17 +352,20 @@ public class ImageWindow extends BasicWindow
 		
 		//Piece GUI together
 		JPanel bottomRight=new JPanel(new GridLayout(1,2));
-		bottomRight.add(bShow3colors);
+		bottomRight.add(bAddChannel);
 		bottomPanelFirstRow.add(frameControl,BorderLayout.CENTER);
 		bottomPanelFirstRow.add(bottomRight,BorderLayout.EAST);
 
 		//Build list of channel widgets
-		for(int i=0;i<3;i++)
-			{
-			ChannelWidget chWidget=new ChannelWidget();
-			rChannelGroup.add(chWidget.rSelect);
-			channelWidget.add(chWidget);
-			}
+		ChannelWidget chWidget=new ChannelWidget();
+		rChannelGroup.add(chWidget.rSelect);
+		channelWidget.add(chWidget);
+		/*channelWidget.get(0).comboColor.setColor(EvColor.white); 
+		channelWidget.get(0).comboColor.setColor(EvColor.red);//TODO: this will tr
+		channelWidget.get(0).comboColor.setColor(EvColor.blue);*/
+//		channelWidget.get(1).comboColor.setColor();
+//		channelWidget.get(2).comboColor.setColor();
+		chWidget.rSelect.setSelected(true);
 		
 		JPanel zoomPanel=new JPanel(new BorderLayout());
 		zoomPanel.add(new JLabel(BasicIcon.iconLabelZoom), BorderLayout.NORTH);
@@ -343,7 +385,8 @@ public class ImageWindow extends BasicWindow
 		add(rightPanel,BorderLayout.EAST);
 
 		
-		setShow3Color(bShow3colors.isSelected());
+		//setShow3Color(bShow3colors.isSelected());
+		buildChannelPanel();
 		
 		addMenubar(menuImageWindow);
 		buildMenu();
@@ -362,34 +405,45 @@ public class ImageWindow extends BasicWindow
 		updateImagePanel();
 		}
 	
-	
+	public void addChannel()
+		{
+		ChannelWidget chWidget=new ChannelWidget();
+		rChannelGroup.add(chWidget.rSelect);
+		channelWidget.add(chWidget);
+		buildChannelPanel();
+		}
 
 
-	
+	/*
 	public void setShow3Color(boolean b)
 		{
 		channelWidget.get(0).rSelect.setSelected(true);
 		show3color=b;
 		buildChannelPanel();
-		}
+		}*/
 	
 	/**
 	 * Build list of channel widgets
 	 */
 	private void buildChannelPanel()
 		{
-		int numChannel;
+		/*int numChannel;
 		if(show3color)
 			numChannel=3;
 		else
-			numChannel=1;
+			numChannel=1;*/
 		channelPanel.removeAll();
-		channelPanel.setLayout(new GridLayout(1+numChannel,1,0,0));
+		//channelPanel.setLayout(new GridLayout(1+numChannel,1,0,0));
+		channelPanel.setLayout(new GridLayout(1+channelWidget.size(),1,0,0));
 		channelPanel.add(bottomPanelFirstRow);
-		for(int i=0;i<numChannel;i++)
-			channelPanel.add(channelWidget.get(i));
+		
+		
+		for(ChannelWidget w:channelWidget)
+			channelPanel.add(w);
+//		for(int i=0;i<numChannel;i++)
+	//		channelPanel.add(channelWidget.get(i));
 		channelPanel.setVisible(false);
-		channelPanel.setVisible(true);
+		channelPanel.setVisible(true);  //TODO invalidate or something
 		}
 	
 	
@@ -398,15 +452,12 @@ public class ImageWindow extends BasicWindow
 	 */
 	private void buildMenu()
 		{
-//		System.out.println("build menu");
-
 		EvSwingUtil.tearDownMenu(menuImageWindow);
 		miReset.addActionListener(this);
 		miMiddleSlice.addActionListener(this);
 		miZoomToFit.addActionListener(this);
 		miSliceInfo.addActionListener(this);
 		miToolNone.addActionListener(this);
-		
 		
 		//Window specific menu items
 		menuImageWindow.add(miReset);
@@ -423,19 +474,15 @@ public class ImageWindow extends BasicWindow
 		List<JMenuItem> menuItems=new LinkedList<JMenuItem>();
 		for(final ImageWindowTool t:imageWindowTools)
 			menuItems.add(t.getMenuItem());
-//			menuImageWindow.add(t.getMenuItem());
 		Collections.sort(menuItems, new Comparator<JMenuItem>(){
 			public int compare(JMenuItem arg0, JMenuItem arg1)
 				{
 				return arg0.getText().compareTo(arg1.getText());
 				}
 		});
-//		System.out.println(menuItems);
 		for(JMenuItem mi:menuItems)
 			menuImageWindow.add(mi);
 			
-		
-		
 		//List custom tool as well
 		if(!imageWindowTools.contains(currentTool) && !miToolNone.isSelected())
 			menuImageWindow.add(currentTool.getMenuItem());
@@ -449,7 +496,6 @@ public class ImageWindow extends BasicWindow
 			if(w.rSelect.isSelected())
 				return w;
 		return channelWidget.firstElement();  //TODO added for debugging. but is null better?
-		//return null;
 		}
 	/** Get name of currently viewed channel */
 	public String getCurrentChannelName()
@@ -539,21 +585,28 @@ public class ImageWindow extends BasicWindow
 		{
 		//Set images
 		imagePanel.images.clear();
-		int numChannel;
+//		int numChannel;
+		/*
 		if(show3color)
 			numChannel=3;
 		else
-			numChannel=1;
-		for(int i=0;i<numChannel;i++)
+			numChannel=1;*/
+		//TODO --------------------------------------------------------------------------------
+		
+		
+		for(int i=0;i<channelWidget.size();i++)
 			{
-			Imageset rec2=channelWidget.get(i).comboChannel.getImageset();
-			String chname=channelWidget.get(i).comboChannel.getChannel();
+			ChannelWidget cw=channelWidget.get(i);
+			
+			Imageset rec2=cw.comboChannel.getImageset();
+			String chname=cw.comboChannel.getChannel();
 			if(rec2!=null && chname!=null)
 				{
 				EvChannel ch=rec2.getChannel(chname);
 				ImageWindowView.ImagePanelImage pi=new ImageWindowView.ImagePanelImage();
-				pi.brightness=channelWidget.get(i).sliderBrightness.getValue();
-				pi.contrast=Math.pow(2,channelWidget.get(i).sliderContrast.getValue()/1000.0);
+				pi.brightness=cw.sliderBrightness.getValue();
+				pi.contrast=Math.pow(2,cw.sliderContrast.getValue()/1000.0);
+				pi.color=channelWidget.get(i).comboColor.getEvColor();
 				
 				EvDecimal frame=frameControl.getFrame();
 				EvDecimal z=frameControl.getZ();
@@ -700,9 +753,10 @@ public class ImageWindow extends BasicWindow
 			}
 		else if(e.getSource()==miToolNone)
 			setTool(null);
-		else if(e.getSource()==bShow3colors)
+		else if(e.getSource()==bAddChannel)
 			{
-			setShow3Color(bShow3colors.isSelected());
+			addChannel();
+//			setShow3Color(bShow3colors.isSelected());
 			updateImagePanel();
 			}
 		else

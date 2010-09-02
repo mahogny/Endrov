@@ -24,8 +24,15 @@ public class EvColor
 	{
 	public static EvColor black=new EvColor("Black",new Color(0,0,0));
 	public static EvColor white=new EvColor("White",new Color(255,255,255));
-	public static EvColor redMedium=new EvColor("Red/Medium",new Color(255,0,0));
+	public static EvColor red=new EvColor("Red",new Color(255,0,0));
+	public static EvColor magenta=new EvColor("Magenta",new Color(255,0,255));
+	public static EvColor yellow=new EvColor("Yellow",new Color(255,255,0));
+	public static EvColor green=new EvColor("Green",new Color(0,255,0));
+	public static EvColor cyan=new EvColor("Cyan",new Color(0,255,255));
+	public static EvColor blue=new EvColor("Blue",new Color(0,0,255));
 	
+	
+	public static EvColor redMedium=new EvColor("Red/Medium",new Color(255,0,0));
 	public static EvColor grayMedium=new EvColor("Gray/Medium",Color.GRAY);
 	
 	public static Color makeCol(double r, double g, double b, double mul)
@@ -33,6 +40,7 @@ public class EvColor
 		Color c=new Color((float)(r*mul),(float)(g*mul),(float)(b*mul));
 		return c;
 		}
+	
 	
 	public static EvColor[] colorList=new EvColor[]{
 			black,
