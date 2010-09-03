@@ -72,12 +72,12 @@ public class BookmarkImageWindowHook implements ImageWindowExtension
 							{
 							public void actionPerformed(ActionEvent e)
 								{
-								if(w.frameControl!=null)
-									{
-									w.frameControl.setFrame(m.frame);
-									if(m.z!=null)
-										w.frameControl.setZ(m.z);
-									}
+								//if(w.frameControl!=null)
+									//{
+								w.setFrame(m.frame);
+								if(m.z!=null)
+									w.setZ(m.z);
+									//}
 								w.repaint();
 								}
 							});

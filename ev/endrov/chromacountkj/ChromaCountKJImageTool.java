@@ -160,7 +160,7 @@ public class ChromaCountKJImageTool implements ImageWindowTool
 		Vector2d v=w.transformPointS2W(new Vector2d(e.getX(),e.getY()));
 		a.pos.x=v.x;
 		a.pos.y=v.y;
-		a.pos.z=w.frameControl.getZ().doubleValue();
+		a.pos.z=w.getZ().doubleValue();
 		}
 	
 	public void mouseMoved(MouseEvent e, int dx, int dy)

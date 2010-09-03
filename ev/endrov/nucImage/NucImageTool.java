@@ -310,7 +310,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 					final NucLineage.NucPos pos=new NucLineage.NucPos();
 					pos.x=(x1+x2)/2;
 					pos.y=(y1+y2)/2;
-					pos.z=w.frameControl.getZ().doubleValue();
+					pos.z=w.getZ().doubleValue();
 					pos.r=radius;
 					
 					new UndoOpReplaceSomeNuclei("Create "+nucName)
@@ -447,7 +447,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		NucLineage.NucPos pos=NucCommonUI.getOrInterpolatePosCopy(useNuc.fst(), useNuc.snd(), curFrame);
 		if(pos!=null)
 			{
-			pos.z=w.frameControl.getZ().doubleValue();
+			pos.z=w.getZ().doubleValue();
 			new NucImageTool.UndoOpNucleiEditKeyframe("Bring "+useNuc.snd()+" to z",useNuc.fst(), useNuc.snd(), curFrame, pos).execute();
 			}
 		}

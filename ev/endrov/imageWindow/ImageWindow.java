@@ -63,7 +63,6 @@ public class ImageWindow extends BasicWindow
 
 	private static ImageIcon iconLabelBrightness=new ImageIcon(FrameControlImage.class.getResource("labelBrightness.png"));
 	private static ImageIcon iconLabelContrast=new ImageIcon(FrameControlImage.class.getResource("labelContrast.png"));
-	//private static ImageIcon iconLabel3color=new ImageIcon(FrameControlImage.class.getResource("label3channel.png"));
 	
 	
 	public static int snapDistance=10;
@@ -131,18 +130,15 @@ public class ImageWindow extends BasicWindow
 	/** Flag if the mouse cursor currently is in the window */
 	public boolean mouseInWindow=false;
 
-	//private boolean show3color=true;
-
 	//GUI components
 	private final SnapBackSlider sliderZoom2=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);	
 	private SnapBackSlider sliderRotate=new SnapBackSlider(JScrollBar.VERTICAL,0,1000);
 	
-	//private final JToggleButton bShow3colors=new JToggleButton(iconLabel3color);
 	private final JImageButton bAddChannel=new JImageButton(BasicIcon.iconAdd, "Add a channel");
 	
 	private final ButtonGroup rChannelGroup=new ButtonGroup();
 	private final Vector<ChannelWidget> channelWidget=new Vector<ChannelWidget>();
-	public final FrameControlImage frameControl=new FrameControlImage(this);
+	private final FrameControlImage frameControl=new FrameControlImage(this);
 	
 	private final JPanel channelPanel=new JPanel();
 
@@ -360,11 +356,6 @@ public class ImageWindow extends BasicWindow
 		ChannelWidget chWidget=new ChannelWidget();
 		rChannelGroup.add(chWidget.rSelect);
 		channelWidget.add(chWidget);
-		/*channelWidget.get(0).comboColor.setColor(EvColor.white); 
-		channelWidget.get(0).comboColor.setColor(EvColor.red);//TODO: this will tr
-		channelWidget.get(0).comboColor.setColor(EvColor.blue);*/
-//		channelWidget.get(1).comboColor.setColor();
-//		channelWidget.get(2).comboColor.setColor();
 		chWidget.rSelect.setSelected(true);
 		
 		JPanel zoomPanel=new JPanel(new BorderLayout());
@@ -413,35 +404,17 @@ public class ImageWindow extends BasicWindow
 		buildChannelPanel();
 		}
 
-
-	/*
-	public void setShow3Color(boolean b)
-		{
-		channelWidget.get(0).rSelect.setSelected(true);
-		show3color=b;
-		buildChannelPanel();
-		}*/
-	
 	/**
 	 * Build list of channel widgets
 	 */
 	private void buildChannelPanel()
 		{
-		/*int numChannel;
-		if(show3color)
-			numChannel=3;
-		else
-			numChannel=1;*/
 		channelPanel.removeAll();
-		//channelPanel.setLayout(new GridLayout(1+numChannel,1,0,0));
 		channelPanel.setLayout(new GridLayout(1+channelWidget.size(),1,0,0));
 		channelPanel.add(bottomPanelFirstRow);
 		
-		
 		for(ChannelWidget w:channelWidget)
 			channelPanel.add(w);
-//		for(int i=0;i<numChannel;i++)
-	//		channelPanel.add(channelWidget.get(i));
 		channelPanel.setVisible(false);
 		channelPanel.setVisible(true);  //TODO invalidate or something
 		}
@@ -489,19 +462,25 @@ public class ImageWindow extends BasicWindow
 		
 		}
 	
-
-	public ChannelWidget getCurrentChannelWidget()
+	/**
+	 * Get currently selected channel
+	 */
+	private ChannelWidget getCurrentChannelWidget()
 		{
 		for(ChannelWidget w:channelWidget)
 			if(w.rSelect.isSelected())
 				return w;
-		return channelWidget.firstElement();  //TODO added for debugging. but is null better?
+		return channelWidget.firstElement();
 		}
-	/** Get name of currently viewed channel */
+	
+	/**
+	 * Get name of currently viewed channel
+	 */
 	public String getCurrentChannelName()
 		{
 		return getCurrentChannelWidget().comboChannel.getChannel();
 		}
+	
 	/** Get current channel or null */
 	public EvChannel getSelectedChannel()
 		{
@@ -511,12 +490,18 @@ public class ImageWindow extends BasicWindow
 		else
 			return null;
 		}
-	/** Get current metadata */
+	
+	/**
+	 * Get current metadata 
+	 */
 	public EvData getSelectedData()
 		{
 		return getCurrentChannelWidget().comboChannel.getData();
 		}
-	/** Get current imageset or an empty one */
+	
+	/** 
+	 * Get current imageset or an empty one 
+	 */
 	public Imageset getImageset()
 		{
 		Imageset im=getCurrentChannelWidget().comboChannel.getImageset();
@@ -585,15 +570,6 @@ public class ImageWindow extends BasicWindow
 		{
 		//Set images
 		imagePanel.images.clear();
-//		int numChannel;
-		/*
-		if(show3color)
-			numChannel=3;
-		else
-			numChannel=1;*/
-		//TODO --------------------------------------------------------------------------------
-		
-		
 		for(int i=0;i<channelWidget.size();i++)
 			{
 			ChannelWidget cw=channelWidget.get(i);
@@ -1101,6 +1077,18 @@ public class ImageWindow extends BasicWindow
 	public EvDecimal getZ()
 		{
 		return frameControl.getModelZ();
+		}
+
+
+	public void setFrame(EvDecimal frame)
+		{
+		frameControl.setFrame(frame);
+		}
+
+
+	public void setZ(EvDecimal z)
+		{
+		frameControl.setZ(z);
 		}
 	
 	}
