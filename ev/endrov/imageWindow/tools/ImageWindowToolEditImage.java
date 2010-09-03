@@ -77,7 +77,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 		else if(e.getSource()==miRemoveFrame)
 			{ 
 			final String ch=w.getCurrentChannelName();
-			final EvDecimal frame=w.frameControl.getFrame();
+			final EvDecimal frame=w.getFrame();
 			
 			if(JOptionPane.showConfirmDialog(null, "Do you really want to remove (channel "+ch+", frame "+frame+")? This can not be undone","EV",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 				{

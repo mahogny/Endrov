@@ -183,12 +183,6 @@ public abstract class EvOpStack extends EvOpGeneral
 		protected EvStack[] eval()
 			{
 			EvStack[] ret=op.exec(imlist);
-			//System.out.println("----- "+op.getClass());
-			/*for(EvStack s:ret)
-				{
-				System.out.println("one stack: "+s);
-				System.out.println(s.entrySet());
-				}*/
 			if(ret==null)
 				throw new RuntimeException("EvOp programming error (2): Stack operation returns null array of channels");
 

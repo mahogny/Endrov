@@ -60,8 +60,8 @@ public class ImageWindowToolPixelInfo implements ImageWindowTool
 			{
 
 			
-			EvDecimal frame=w.frameControl.getFrame();
-			EvDecimal slice=w.frameControl.getModelZ();
+			EvDecimal frame=w.getFrame();
+			EvDecimal slice=w.getZ();
 			frame=c.closestFrame(frame);
 			EvStack stack=c.imageLoader.get(frame);
 			int closestZ=stack.closestZint(slice.doubleValue());
