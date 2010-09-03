@@ -212,8 +212,8 @@ public class ImageWindowView extends JPanel
 			double contrastG=contrast*color.getGreenDouble();
 			double contrastB=contrast*color.getBlueDouble();
 			
-			if(1==1)
-				{
+			//if(1==1)
+				//{
 				
 				int w=p.getWidth();
 				int h=p.getHeight();
@@ -233,9 +233,9 @@ public class ImageWindowView extends JPanel
 					//System.out.println(b);
 					/*if(c>255) c=255;
 					else if(c<0) c=0;*/
-					outarr[i*3+0]=b;
+					outarr[i*3+0]=r;
 					outarr[i*3+1]=g;
-					outarr[i*3+2]=r;
+					outarr[i*3+2]=b;
 					//out.
 					}
 
@@ -247,13 +247,14 @@ public class ImageWindowView extends JPanel
 				
 				return buf;
 				
-				}
+			//	}
+				/*
 			else
 				{
 			//This works for grayscale!
 				BufferedImage buf=EvOpImageMapScreen.apply(p, contrast, brightness).quickReadOnlyAWT();
 				return buf;
-				}
+				}*/
 			
 			
 			
