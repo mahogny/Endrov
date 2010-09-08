@@ -147,8 +147,9 @@ public class IntegratorXYZ implements Integrator
 					for(int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 						{
 						// Convert to world coordinates
-						Vector3d pos = new Vector3d(integrator.stack.transformImageWorldX(ax),
-								integrator.stack.transformImageWorldY(ay), integrator.curZ.doubleValue());
+						Vector3d pos = integrator.stack.transformImageWorld(new Vector3d(ax,ay,integrator.curZint));
+//						Vector3d pos = new Vector3d(integrator.stack.transformImageWorldX(ax),
+//								integrator.stack.transformImageWorldY(ay), integrator.curZ.doubleValue());
 
 						Vector3d insys = cs.transformToWorld(pos);
 

@@ -398,7 +398,8 @@ public class ImageWindowView extends JPanel
 		//Problem: should now be stack specific! currently ignores binning as stated above
 		public static Vector2d transformI2S(ImageWindowView p, EvStack stack, Vector2d u)
 			{
-			return p.transformPointW2S(new Vector2d(stack.transformImageWorldX(u.x),stack.transformImageWorldY(u.y)));
+			return p.transformPointW2S(stack.transformImageWorld(new Vector2d(u.x,u.y)));
+			//return p.transformPointW2S(new Vector2d(stack.transformImageWorldX(u.x),stack.transformImageWorldY(u.y)));
 			}
 		
 		
@@ -407,8 +408,9 @@ public class ImageWindowView extends JPanel
 		//Problem: should now be stack specific!
 		public static Vector2d transformS2I(ImageWindowView p, EvStack stack, Vector2d u)
 			{
-			Vector2d v=p.transformPointS2W(u);
-			return new Vector2d(stack.transformWorldImageX(v.x),stack.transformWorldImageY(v.y));
+			return stack.transformWorldImage(p.transformPointS2W(u));
+			//Vector2d v=p.transformPointS2W(u);
+			//return new Vector2d(stack.transformWorldImageX(v.x),stack.transformWorldImageY(v.y));
 			}
 		
 		

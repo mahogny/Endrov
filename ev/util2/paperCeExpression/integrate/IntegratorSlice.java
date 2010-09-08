@@ -14,6 +14,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.vecmath.Vector2d;
+import javax.vecmath.Vector3d;
+
 import cern.colt.list.tint.IntArrayList;
 
 import util2.paperCeExpression.integrate.IntExp.Integrator;
@@ -119,9 +122,9 @@ public abstract class IntegratorSlice implements Integrator
 		// Calculate distance mask lazily. Assumes shell does not move over time.
 		EvPixels lenMap;
 		double[] lenMapArr;
-		if (distanceMap.containsKey(integrator.curZ))
+		if (distanceMap.containsKey(integrator.curZint))
 			{
-			lenMap = distanceMap.get(integrator.curZ);
+			lenMap = distanceMap.get(integrator.curZint);
 			lenMapArr = lenMap.getArrayDouble();
 			}
 		else
@@ -134,18 +137,23 @@ public abstract class IntegratorSlice implements Integrator
 			ImVector2 shellPos2=new ImVector2(shell.midx, shell.midy);
 			double invShellMajor2=1.0/(shell.major*shell.major);
 			double invShellMinor2=1.0/(shell.minor*shell.minor);
-			double curZ=integrator.curZ.doubleValue();
+			//double curZ=integrator.curZ.doubleValue();
 			
 			// Calculate distances
 			for (int ay = 0; ay<integrator.pixels.getHeight(); ay++)
 				{
 				int lineIndex = lenMap.getRowIndex(ay);
-				double worldAY=integrator.stack.transformImageWorldY(ay);
 				for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 					{
-					double worldAX=integrator.stack.transformImageWorldX(ax);
-					final ImVector2 pos2 = new ImVector2(worldAX,worldAY);
-					final ImVector3d pos3 = new ImVector3d(pos2.x,pos2.y,curZ);
+					//double worldAX=integrator.stack.transformImageWorldX(ax);
+					//double worldAY=integrator.stack.transformImageWorldY(ay);
+					
+					Vector3d pos2prim = integrator.stack.transformImageWorld(new Vector3d(ax,ay,integrator.curZint));
+					final ImVector2 pos2 = new ImVector2(pos2prim.x,pos2prim.y);//new ImVector2(worldAX,worldAY);
+					
+					//final ImVector2 pos2 = new ImVector2(worldAX,worldAY);
+					final ImVector3d pos3 = new ImVector3d(pos2prim.x,pos2prim.y,pos2prim.z);
+//					final ImVector3d pos3 = new ImVector3d(pos2.x,pos2.y,curZ);
 	
 					// Check if this is within ellipse boundary
 					final ImVector2 elip = pos2.sub(shellPos2).rotate(shell.angle); // TODO angle? what?

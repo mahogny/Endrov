@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Vector3d;
+
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvIOImage;
 import endrov.imageset.EvImage;
@@ -105,9 +107,9 @@ public class EvOpVoroniNuc
 				};
 			
 			//Lazily do all planes 
-			for(int az=0;az<oldstack.getDepth();az++)
+			for(int taz=0;taz<oldstack.getDepth();taz++)
 				{
-				final int faz=az;
+				final int az=taz;
 				EvImage evim=new EvImage();
 				evim.io=new EvIOImage()
 					{
@@ -119,22 +121,24 @@ public class EvOpVoroniNuc
 
 						if(!list.isEmpty()) //Id for nothing is 0, so just do not process if empty
 							{
-							double wz=newstack.transformImageWorldZ(faz);
 							for(int ay=0;ay<h;ay++)
 								{
-								double wy=newstack.transformImageWorldY(ay);
 								for(int ax=0;ax<w;ax++)
 									{
-									double wx=newstack.transformImageWorldX(ax);
+									Vector3d ww=newstack.transformImageWorld(new Vector3d(ax,ay,az));
+									
+									/*double wx=newstack.transformImageWorldX(ax);
+									double wy=newstack.transformImageWorldY(ay);
+									double wz=newstack.transformImageWorldZ(az);*/
 									PointList closestId=null;
 									double closestDist=0;
 									
 									//Some gridding may speed up this plenty
 									for(PointList c:list)
 										{
-										double dx=c.x-wx;
-										double dy=c.y-wy;
-										double dz=c.z-wz;
+										double dx=c.x-ww.x;
+										double dy=c.y-ww.y;
+										double dz=c.z-ww.z;
 										double dist2=dx*dx+dy*dy+dz*dz;
 										if(dist2<closestDist)
 											{
@@ -151,7 +155,7 @@ public class EvOpVoroniNuc
 						return p;
 						}
 					};
-				newstack.putInt(az, evim);
+				newstack.putInt(taz, evim);
 				}
 			
 			}
