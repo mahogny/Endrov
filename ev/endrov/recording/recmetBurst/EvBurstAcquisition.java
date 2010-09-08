@@ -218,7 +218,7 @@ public class EvBurstAcquisition extends EvObject
 									//TODO resolution
 									stack.resX=1;
 									stack.resY=1;
-									stack.resZ=new EvDecimal(1);
+									stack.resZ=1;
 									
 									//TODO offset from stage?
 									

@@ -152,7 +152,7 @@ public class EvIODataBD implements EvIOData
 					
 					stack.resX=1;
 					stack.resY=1;
-					stack.resZ=EvDecimal.ONE;
+					stack.resZ=1;
 					
 					}
 				

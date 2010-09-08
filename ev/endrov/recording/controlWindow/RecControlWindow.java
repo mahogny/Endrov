@@ -416,7 +416,7 @@ public class RecControlWindow extends BasicWindow
 						//TODO
 						stack.resX=1;
 						stack.resY=1;
-						stack.resZ=new EvDecimal(1);
+						stack.resZ=1;
 						
 						//TODO RGB support
 						

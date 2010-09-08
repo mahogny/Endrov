@@ -189,7 +189,7 @@ public class Stack3D extends StackInterface
 							//real size
 							os.realw=stack.resX*stack.getWidth();//os.w/os.resX;
 							os.realh=stack.resY*stack.getHeight();//os.h/os.resY;								
-							os.reald=stack.resZ.doubleValue()*stack.getDepth();
+							os.reald=stack.resZ*stack.getDepth();
 							//int slicespan=(stack.lastZ().subtract(stack.firstZ()).add(1).intValue()); //TODO bd problem, total redo
 							//os.reald=(os.d*(double)slicespan/(double)stack.getDepth());///chsel.im.meta.resZ;
 							}

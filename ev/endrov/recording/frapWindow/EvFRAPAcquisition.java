@@ -228,10 +228,10 @@ public class EvFRAPAcquisition extends EvAcquisition
 			EvStack stack=ch.getCreateFrame(curFrame);
 			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
-			stack.resZ=EvDecimal.ONE;
+			stack.resZ=1;
 			
-			stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;
-			stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
+			stack.dispX=-RecordingResource.getCurrentStageX();
+			stack.dispY=-RecordingResource.getCurrentStageY();
 			
 			stack.putInt(0, evim);
 			}

@@ -96,11 +96,11 @@ public class EvOpCalcFRAP
 		double sum=0;
 		for(int z=0;z<in.getDepth();z++)
 			{
-			EvDecimal zpos=in.resZ.multiply(z);
+			//EvDecimal zpos=in.resZ.multiply(z);
 
 			//System.out.println("doing z "+z+"  "+zpos+"   --  "+frame+"   ch:"+channel);
 			EvImage evim=in.getInt(z);
-			LineIterator it=roi.getLineIterator(in, evim, channel, frame, zpos);
+			LineIterator it=roi.getLineIterator(in, evim, channel, frame, in.transformImageWorldZ(z));
 			while(it.next())
 				{
 				double[] arr=evim.getPixels().convertToDouble(true).getArrayDouble();

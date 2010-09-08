@@ -90,7 +90,7 @@ public class Slice3D
 				zplane=0;
 			if(zplane>stack.getDepth())
 				zplane=stack.getDepth();
-			worldZ=zplane*stack.resZ.doubleValue();
+			worldZ=zplane*stack.resZ;
 			EvImage evim=stack.getInt(zplane);
 			EvPixels p=evim.getPixels();
 			w=p.getWidth();
