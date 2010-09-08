@@ -36,7 +36,7 @@ import endrov.util.Tuple;
 public class OldIntegratorAP implements Integrator
 	{
 	private int numSubDiv;
-	private HashMap<EvDecimal, EvPixels> distanceMap = new HashMap<EvDecimal, EvPixels>();
+	private HashMap<Integer, EvPixels> distanceMap = new HashMap<Integer, EvPixels>();
 	private Shell shell;
 	private double[] sliceExp; //Must be double for values to fit
 	private int[] sliceVol;
@@ -107,9 +107,9 @@ public class OldIntegratorAP implements Integrator
 		// Calculate distance mask lazily. Assumes shell does not move over time.
 		EvPixels lenMap;
 		double[] lenMapArr;
-		if (distanceMap.containsKey(integrator.curZ))
+		if (distanceMap.containsKey(integrator.curZint))
 			{
-			lenMap = distanceMap.get(integrator.curZ);
+			lenMap = distanceMap.get(integrator.curZint);
 			lenMapArr = lenMap.getArrayDouble();
 			}
 		else

@@ -6,6 +6,8 @@
 package endrov.imageset;
 
 import java.util.ArrayList;
+
+import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
@@ -38,11 +40,29 @@ public class EvStack implements AnyEvImage
 	public double dispX;
 	public double dispZ;
 
+	/**
+	 * Rotation of stack. Rotation is applied AFTER displacement.
+	 * For speed, matrices in both directions are stored.
+	 */
+	private Matrix3d rotationToStack=new Matrix3d(
+			1,0,0,
+			0,1,0,
+			0,0,1
+			);
+	private Matrix3d rotationToWorld=new Matrix3d(
+			1,0,0,
+			0,1,0,
+			0,0,1
+			);
+	
+	
+	
+	
 	public double transformImageWorldX(double c){return c*resX+dispX;}
 	public double transformImageWorldY(double c){return c*resY+dispY;}			
 	public double transformImageWorldZ(double c){return c*resZ+dispZ;}	
 	
-	public double transformWorldImageX(double c){return (c/dispX)/resX;}
+	public double transformWorldImageX(double c){return (c-dispX)/resX;}
 	public double transformWorldImageY(double c){return (c-dispY)/resY;}
 	public double transformWorldImageZ(double c){return (c-dispZ)/resZ;}
 
@@ -56,14 +76,14 @@ public class EvStack implements AnyEvImage
 		return new Vector2d(transformImageWorldX(v.x),transformImageWorldY(v.y));
 		}
 	
-	public Vector3d transformImageWorld(Vector3d v)
-		{
-		return new Vector3d(transformImageWorldX(v.x),transformImageWorldY(v.y),transformImageWorldZ(v.z));
-		}
-
 	public Vector2d transformWorldImage(Vector2d v)
 		{
 		return new Vector2d(transformWorldImageX(v.x),transformWorldImageY(v.y));
+		}
+	
+	public Vector3d transformImageWorld(Vector3d v)
+		{
+		return new Vector3d(transformImageWorldX(v.x),transformImageWorldY(v.y), transformImageWorldZ(v.z));
 		}
 
 	public Vector3d transformWorldImage(Vector3d v)

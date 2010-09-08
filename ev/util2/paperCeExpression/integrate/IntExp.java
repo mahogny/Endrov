@@ -52,7 +52,7 @@ public class IntExp
 	public static NucLineage refLin = null;
 	public EvDecimal frame;
 	public int curZint;
-	public EvDecimal curZ;
+	//public EvDecimal curZ;
 	public EvStack stack;
 	public EvImage im;
 	public EvPixels pixels;
@@ -449,7 +449,7 @@ public class IntExp
 				for (int az = 0; az<imArr.length; az++)
 					{
 					curZint = az;
-					curZ = new EvDecimal(stack.transformImageWorldZ(az));
+//					curZ = new EvDecimal(stack.transformImageWorldZ(az));
 					// Load images lazily (for AP not really needed)
 					im = imArr[az];
 					pixels = null;

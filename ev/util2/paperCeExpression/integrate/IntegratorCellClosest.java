@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import util2.paperCeExpression.integrate.IntExp.Integrator;
@@ -40,7 +41,7 @@ public class IntegratorCellClosest implements Integrator
 	private Map<NucSel, NucLineage.NucInterp> inter;
 	private Map<EvDecimal, Double> bg;
 
-	private HashMap<EvDecimal, EvPixels> distanceMap = new HashMap<EvDecimal, EvPixels>();
+	private HashMap<Integer, EvPixels> distanceMap = new HashMap<Integer, EvPixels>();
 	private Shell shell;
 
 	private EvDecimal linStart, linEnd;
@@ -117,9 +118,9 @@ public class IntegratorCellClosest implements Integrator
 			// Calculate distance mask lazily
 			EvPixels lenMap;
 			double[] lenMapArr;
-			if (distanceMap.containsKey(integrator.curZ))
+			if (distanceMap.containsKey(integrator.curZint))
 				{
-				lenMap = distanceMap.get(integrator.curZ);
+				lenMap = distanceMap.get(integrator.curZint);
 				lenMapArr = lenMap.getArrayDouble();
 				}
 			else
@@ -138,8 +139,9 @@ public class IntegratorCellClosest implements Integrator
 					for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 						{
 						// Convert to world coordinates
-						ImVector2 pos = new ImVector2(integrator.stack.transformImageWorldX(ax),
-								integrator.stack.transformImageWorldY(ay));
+						Vector2d pos2 = integrator.stack.transformImageWorld(new Vector2d(ax,ay));
+						ImVector2 pos = new ImVector2(pos2.x, pos2.y);
+						//ImVector2 pos = new ImVector2(integrator.stack.transformImageWorldX(ax), integrator.stack.transformImageWorldY(ay));
 		
 						// Check if this is within ellipse boundary
 						ImVector2 elip = pos.sub(new ImVector2(shell.midx, shell.midy))
@@ -167,8 +169,8 @@ public class IntegratorCellClosest implements Integrator
 						{
 						int thisExp=integrator.pixelsLine[i];
 
-						Vector3d thisPosWorld=integrator.stack.transformImageWorld(new Vector3d(x,y,0));
-						thisPosWorld.z=integrator.curZ.doubleValue();
+						Vector3d thisPosWorld=integrator.stack.transformImageWorld(new Vector3d(x,y,integrator.curZint));
+						//thisPosWorld.z=integrator.curZ.doubleValue();
 						
 						String closestNuc=null;
 						double closestDistance=0;
