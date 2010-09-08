@@ -173,9 +173,10 @@ public class BoxROI extends ROI
 	/**
 	 * Get slices that at least are partially selected
 	 */
-	public Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame)
+	/*
+	public Set<Integer> getSlice(Imageset rec, String channel, EvDecimal frame)
 		{
-		TreeSet<EvDecimal> c=new TreeSet<EvDecimal>();
+		TreeSet<Integer> c=new TreeSet<Integer>();
 		EvChannel ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
@@ -186,12 +187,12 @@ public class BoxROI extends ROI
 						c.add(f);
 			}
 		return c;
-		}
+		}*/
 	
 	
 	
 
-	public boolean imageInRange(String channel, EvDecimal frame, EvDecimal z)
+	public boolean imageInRange(String channel, EvDecimal frame, double z)
 		{
 		//System.out.println("inrange "+regionChannels.channelInRange(channel) +"  "+regionFrames.inRange(frame) +"   "+ regionZ.inRange(z));
 		
@@ -201,7 +202,7 @@ public class BoxROI extends ROI
 	/**
 	 * Get iterator over one image
 	 */
-	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final EvDecimal z)
+	public LineIterator getLineIterator(EvStack stack, EvImage im, final String channel, final EvDecimal frame, final double z)
 		{
 		if(imageInRange(channel, frame, z))
 			{
@@ -261,7 +262,7 @@ public class BoxROI extends ROI
 	
 	@Override
 	public boolean pointInRange(String channel,
-			EvDecimal frame, double x, double y, EvDecimal z)
+			EvDecimal frame, double x, double y, double z)
 		{
 		if(imageInRange(channel, frame, z))
 			{

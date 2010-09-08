@@ -20,6 +20,7 @@ import endrov.imageset.EvChannel;
 import endrov.imageset.EvStack;
 import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
+import endrov.util.EvMathUtil;
 import endrov.util.EvSwingUtil;
 
 
@@ -395,7 +396,12 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			{
 			EvStack stack=ch.getFrame(getFrame());
 			if(stack!=null)
-				return stack.closestZBelow(getZ());
+				{
+				double nextZ=Math.round(stack.transformWorldImageZ(getZ().doubleValue())-1);
+				if(nextZ<0)
+					nextZ=0;
+				return new EvDecimal(stack.transformImageWorldZ(nextZ));
+				}
 			else
 				return null;
 			}
@@ -417,7 +423,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			{
 			EvStack stack=ch.getFrame(getFrame());
 			if(stack!=null)
-				return stack.closestZAbove(getZ());
+				{
+				double nextZ=Math.round(stack.transformWorldImageZ(getZ().doubleValue())+1);
+				if(nextZ>stack.getDepth()-1)
+					nextZ=stack.getDepth()-1;
+				return new EvDecimal(stack.transformImageWorldZ(nextZ));
+//				return stack.closestZAbove(getZ());
+				}
 			else
 				return null;
 			}
@@ -448,7 +460,11 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			frame=ch.closestFrame(frame);
 			EvStack stack=ch.getFrame(frame);
 			if(stack!=null)
-				z=stack.resZ.multiply(stack.closestZint(z.doubleValue())).add(stack.dispZ);
+				{
+				double curz=Math.round(stack.transformWorldImageZ(z.doubleValue()));
+				z=new EvDecimal(stack.transformImageWorldZ(curz));
+//				z=stack.resZ.multiply(stack.closestZint(z.doubleValue())).add(stack.dispZ);
+				}
 			}
 		removeChangeListener();
 		spinnerFrame.setValue(frame);
@@ -478,7 +494,11 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			EvChannel ch=getImageset().getChannel(channel);
 			frame=ch.closestFrame(frame);
 			EvStack stack=ch.getFrame(frame);
-			slicenum=stack.resZ.multiply(stack.closestZint(z.doubleValue()));
+			
+			slicenum=new EvDecimal(stack.transformImageWorldZ(
+			EvMathUtil.clamp(Math.round(stack.transformWorldImageZ(z.doubleValue())), 0, stack.getDepth()-1)
+					));
+//			slicenum=stack.resZ.multiply(stack.closestZint(z.doubleValue()));
 			//slicenum=ch.closestZ(frame, slicenum);
 			}
 		removeChangeListener();

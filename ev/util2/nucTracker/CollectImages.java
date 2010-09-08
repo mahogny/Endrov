@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Vector3d;
 
 import endrov.data.*;
 import endrov.ev.*;
@@ -122,7 +123,7 @@ public class CollectImages
 								
 								int midx=(int)stack.transformWorldImageX(pos.x);
 								int midy=(int)stack.transformWorldImageY(pos.y);
-								int r=(int)stack.scaleWorldImageX(pos.r);
+								int r=(int)stack.scaleWorldImage(new Vector3d(pos.r,0,0)).x; //hack
 //								int rr=r+20;
 								int rr=(int)(r*2);
 	

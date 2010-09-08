@@ -233,7 +233,7 @@ public abstract class ROI extends EvObject
 	/**
 	 * Get which slices might be relevant
 	 */
-	public abstract Set<EvDecimal> getSlice(Imageset rec, String channel, EvDecimal frame);
+	//public abstract Set<Integer> getSlice(Imageset rec, String channel, EvDecimal frame);
 
 	/**
 	 * Get handles for resizing ROI
@@ -259,17 +259,17 @@ public abstract class ROI extends EvObject
 	/**
 	 * Check if an image might be relevant?
 	 */
-	public abstract boolean imageInRange(String channel, EvDecimal frame, EvDecimal z);
+	public abstract boolean imageInRange(String channel, EvDecimal frame, double z);
 	
 	/**
 	 * Get iterator over ROI
 	 */
-	public abstract LineIterator getLineIterator(EvStack stack, EvImage im, String channel, EvDecimal frame, EvDecimal z);
+	public abstract LineIterator getLineIterator(EvStack stack, EvImage im, String channel, EvDecimal frame, double z);
 	
 	/**
 	 * Check if a given point (world coordinates) is in a ROI
 	 */
-	public abstract boolean pointInRange(String channel, EvDecimal frame, double x, double y, EvDecimal z);
+	public abstract boolean pointInRange(String channel, EvDecimal frame, double x, double y, double z);
 	
 	
 	/******************************************************************************************************
@@ -285,6 +285,10 @@ public abstract class ROI extends EvObject
 		public boolean inRange(EvDecimal x)
 			{
 			return all || (x.greaterEqual(start) && x.less(end));
+			}
+		public boolean inRange(double x)
+			{
+			return inRange(new EvDecimal(x));
 			}
 		public void set(EvDecimal start, EvDecimal end)
 			{

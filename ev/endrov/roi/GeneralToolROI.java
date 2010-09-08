@@ -42,7 +42,7 @@ public class GeneralToolROI implements GeneralTool//implements ImageWindowTool
 		Vector2d v=new Vector2d(e.getX(), e.getY());
 		v=w.transformPointS2W(v);
 		
-		EvDecimal z=w.getZ();
+		double z=w.getZ().doubleValue();
 		EvDecimal frame=w.getFrame();
 		String channel=w.getCurrentChannelName();
 		

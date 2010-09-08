@@ -282,7 +282,7 @@ public class EvIODataBioformats implements EvIOData
 						stack=ch.getCreateFrame(frame);
 						stack.resX=resX;
 						stack.resY=resY;
-						stack.resZ=new EvDecimal(resZ);
+						stack.resZ=resZ;
 						
 						/*Double stagePosX=retrieve.getPlanePositionX(imageIndex, planeIndex);
 						Double stagePosY=retrieve.getPlanePositionY(imageIndex, planeIndex);

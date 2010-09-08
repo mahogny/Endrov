@@ -687,7 +687,7 @@ public class ImageWindow extends BasicWindow
 				if(ch.imageLoader.get(curFrame).getDepth()>0)
 					{
 					EvStack stack=ch.imageLoader.get(curFrame);
-					frameControl.setZ(stack.resZ.multiply(stack.getDepth()).divide(2));
+					frameControl.setZ(new EvDecimal(stack.transformImageWorldZ(stack.getDepth()/2)));
 					updateImagePanel();
 					}
 				}

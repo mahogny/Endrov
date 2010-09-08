@@ -167,16 +167,15 @@ public class RecordingResource
 		double res=getCurrentTotalMagnification(scanner);
 		stack.resX=res;
 		stack.resY=res;
-
-		stack.resZ=EvDecimal.ONE;
+		stack.resZ=1;
 		
 		String channel="foo";
 		EvDecimal frame=EvDecimal.ZERO;
-		EvDecimal z=EvDecimal.ZERO;
+		double z=0;
 		
 		//TODO how to offset?
-		stack.dispX=-stageX/res;
-		stack.dispY=-stageY/res;
+		stack.dispX=-stageX;
+		stack.dispY=-stageY;
 
 		//Fill bitmap ROI
 		LineIterator it=roi.getLineIterator(stack, image, channel, frame, z);

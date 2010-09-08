@@ -48,9 +48,9 @@ public class EvOpCropImage3D extends EvOpStack1
 		{
 		int fromX=0;
 		int fromY=0;
+		int fromZ=0;
 		int toX=stack.getWidth();
 		int toY=stack.getHeight();
-		int fromZ=0;
 		int toZ=stack.getDepth();
 	
 		if(!roi.regionX.all)
@@ -75,8 +75,6 @@ public class EvOpCropImage3D extends EvOpStack1
 			if(toZ>rEnd) toZ=rEnd;
 			}
 
-
-//		System.out.println("zzzzzzz "+fromX+"  "+toX+"      "+fromY+"  "+toY+"  "+fromZ+"  "+toZ);
 		return crop(stack, fromX,toX,  fromY,toY, fromZ,toZ);
 		}
 	
@@ -90,13 +88,13 @@ public class EvOpCropImage3D extends EvOpStack1
 
 		//Add offset
 		stackOut.getMetaFrom(stack);
-		stackOut.dispX+=fromX;
-		stackOut.dispY+=fromY;
-		stackOut.dispZ=stackOut.dispZ.add(stackOut.resZ.multiply(fromZ));
+		stackOut.dispX=stack.dispX+fromX*stack.resX;
+		stackOut.dispY=stack.dispY+fromY*stack.resY;
+		stackOut.dispZ=stack.dispZ+fromZ*stack.resZ;
 		
 		//Crop images
 		for(int az=fromZ;az<toZ;az++)
-			if(stack.hasInt(az))  //TODO should not be needed
+			//if(stack.hasInt(az))  //TODO should not be needed
 			{
 			EvImage newim=new EvImage();
 			final int inZ=az; 

@@ -237,7 +237,7 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * What should the filename be, given the compression?
 	 */
-	private File fileShouldBe(EvChannel ch, EvDecimal frame, int z, EvDecimal resZ, EvDecimal dispZ)
+	private File fileShouldBe(EvChannel ch, EvDecimal frame, int z)
 		{
 		int d=z;
 		//int d=(int)Math.round(z.subtract(dispZ).divide(resZ).doubleValue());
@@ -450,7 +450,7 @@ public class EvIODataOST implements EvIOData
 							//System.out.println("belongs to imageset "+belongsToThisDatasetIO);
 
 							//Where should new file be written?
-							File newFile=fileShouldBe(ch, fe.getKey(),az, stack.resZ, stack.dispZ);
+							File newFile=fileShouldBe(ch, fe.getKey(),az);
 							
 							//Check if dirty
 							boolean dirty=!belongsToThisDatasetIO;
@@ -753,7 +753,7 @@ public class EvIODataOST implements EvIOData
 
 				Double useResX=channel.defaultResX;
 				Double useResY=channel.defaultResY;
-				EvDecimal useResZ=channel.defaultResZ;
+				Double useResZ=channel.defaultResZ;
 
 					
 				
@@ -767,12 +767,12 @@ public class EvIODataOST implements EvIOData
 				if(frameKeys.containsKey("resY"))
 					useResY=Double.parseDouble(frameKeys.get("resY"));
 				if(frameKeys.containsKey("resZ"))
-					useResZ=new EvDecimal(frameKeys.get("resZ"));
+					useResZ=Double.parseDouble(frameKeys.get("resZ"));
 
 				//Default displacement
 				double useDispX=channel.defaultDispX;
 				double useDispY=channel.defaultDispY;
-				EvDecimal useDispZ=channel.defaultDispZ;
+				double useDispZ=channel.defaultDispZ;
 
 				//Override for each stack
 				if(frameKeys.containsKey("dispX"))
@@ -780,7 +780,7 @@ public class EvIODataOST implements EvIOData
 				if(frameKeys.containsKey("dispY"))
 					useDispY=Double.parseDouble(frameKeys.get("dispY"));
 				if(frameKeys.containsKey("dispZ"))
-					useDispZ=new EvDecimal(frameKeys.get("dispZ"));
+					useDispZ=Double.parseDouble(frameKeys.get("dispZ"));
 
 				EvStack stack=new EvStack();
 				channel.imageLoader.put(fe.getKey(),stack);
@@ -1221,8 +1221,8 @@ public class EvIODataOST implements EvIOData
 				if(ch==null || !chblob.exists())
 					continue;
 				
-				ch.defaultResZ=new EvDecimal(1.5);
-				ch.defaultDispZ=new EvDecimal(1);
+				ch.defaultResZ=1.5;
+				ch.defaultDispZ=1;
 				for(EvDecimal frame:ch.imageLoader.keySet())
 					{
 					EvStack stack=ch.imageLoader.get(frame);

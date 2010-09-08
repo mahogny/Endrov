@@ -65,8 +65,9 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
 					{
 					EvStack stack=frames.getValue();
-					stack.dispX+=stack.scaleWorldImageX(diff.x); 
-					stack.dispY+=stack.scaleWorldImageY(diff.y); 
+					//Vector3d d=stack.scaleWorldImage(new Vector3d(diff.x,diff.y,0));
+					stack.dispX+=diff.x;
+					stack.dispY+=diff.y;
 					c.defaultDispX=stack.dispX;
 					c.defaultDispY=stack.dispY;
 					}

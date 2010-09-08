@@ -5,8 +5,6 @@
  */
 package endrov.imageset;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import endrov.util.EvDecimal;
 
@@ -76,7 +74,7 @@ public class StackHacks
 	/**
 	 * Set spatial resolution
 	 */
-	public static void setResXYZ(EvChannel ch, double resX, double resY, EvDecimal resZ)
+	public static void setResXYZ(EvChannel ch, double resX, double resY, double resZ)
 		{
 		for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
 			{
@@ -87,12 +85,14 @@ public class StackHacks
 			//TODO stack.resZ=resZ;
 
 			//Below will not be needed in the future once the loader is an array!!!
-			List<EvImage> images=new ArrayList<EvImage>();
+			/*
+			 List<EvImage> images=new ArrayList<EvImage>();
 			for(EvImage im:stack.getImages())
 				images.add(im);
 			stack.clearStack();
 			for(int i=0;i<images.size();i++)
 				stack.putInt(i, images.get(i));
+				*/
 			}
 		}
 	

@@ -132,10 +132,10 @@ public class EvMultidimAcquisition extends EvAcquisition
 
 					stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 					stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
-					stack.resZ=dz.multiply(currentChannel.zInc);
-					stack.dispX=-RecordingResource.getCurrentStageX()/stack.resX;   //always do this?
-					stack.dispY=-RecordingResource.getCurrentStageY()/stack.resY;
-					stack.dispZ=dz.multiply(currentChannel.z0); //scary!!!
+					stack.resZ=dz.multiply(currentChannel.zInc).doubleValue();
+					stack.dispX=-RecordingResource.getCurrentStageX();   //always do this?
+					stack.dispY=-RecordingResource.getCurrentStageY();
+					stack.dispZ=dz.multiply(currentChannel.z0).doubleValue(); //scary!!!
 					
 					
 					int zpos=(currentZCount-currentChannel.z0)/currentChannel.zInc;

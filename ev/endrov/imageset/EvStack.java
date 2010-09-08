@@ -5,15 +5,11 @@
  */
 package endrov.imageset;
 
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import java.util.ArrayList;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
-import endrov.util.EvDecimal;
+import endrov.util.EvMathUtil;
 
 /**
  * One stack of images. Corresponds to one frame in one channel.
@@ -24,48 +20,37 @@ import endrov.util.EvDecimal;
 public class EvStack implements AnyEvImage
 	{
 	/**
-	 * TODO should not be public
+	 * All the images
 	 */
-	public TreeMap<EvDecimal, EvImage> loaders=new TreeMap<EvDecimal, EvImage>();
+	private ArrayList<EvImage> loaders=new ArrayList<EvImage>();
 	
 	/**
 	 * Resolution [um/px]
 	 */
-	public double resX, resY;
-	/**
-	 * Resolution [um/px]. Do not use this variable directly
-	 */
-	public EvDecimal resZ;
+	public double resX;
+	public double resY;
+	public double resZ;
 	
-	/**
-	 * Displacement [pixels]
-	 */
-	public double dispX, dispY;
-
 	/**
 	 * Displacement [um]
 	 */
-	public EvDecimal dispZ=EvDecimal.ZERO;
+	public double dispY;
+	public double dispX;
+	public double dispZ;
 
+	public double transformImageWorldX(double c){return c*resX+dispX;}
+	public double transformImageWorldY(double c){return c*resY+dispY;}			
+	public double transformImageWorldZ(double c){return c*resZ+dispZ;}	
 	
-	public double transformImageWorldX(double c){return (c+dispX)*resX;}
-	public double transformImageWorldY(double c){return (c+dispY)*resY;}			
-	public double transformImageWorldZ(double c){return c*resZ.doubleValue()+dispZ.doubleValue();}
-	
-	
-	public double transformWorldImageX(double c){return (c/resX-dispX);}
-	public double transformWorldImageY(double c){return (c/resY-dispY);}
-	public double transformWorldImageZ(double c){return (c-dispZ.doubleValue())/resZ.doubleValue();}
-	
-	public double scaleImageWorldX(double c){return c*resX;}
-	public double scaleImageWorldY(double c){return c*resY;}
-	public double scaleImageWorldZ(double c){return c*resZ.doubleValue();}
-	
-	public double scaleWorldImageX(double c){return c/resX;}
-	public double scaleWorldImageY(double c){return c/resY;}
-	public double scaleWorldImageZ(double c){return c/resZ.doubleValue();}
-	
-	
+	public double transformWorldImageX(double c){return (c/dispX)/resX;}
+	public double transformWorldImageY(double c){return (c-dispY)/resY;}
+	public double transformWorldImageZ(double c){return (c-dispZ)/resZ;}
+
+	public Vector3d scaleWorldImage(Vector3d v)
+		{
+		return new Vector3d(v.x/resZ, v.y/resZ, v.z/resZ);
+		}
+
 	public Vector2d transformImageWorld(Vector2d v)
 		{
 		return new Vector2d(transformImageWorldX(v.x),transformImageWorldY(v.y));
@@ -110,10 +95,7 @@ public class EvStack implements AnyEvImage
 			{
 			resX=1;
 			resY=1;
-			resZ=EvDecimal.ONE;
-			dispX=0;
-			dispY=0;
-			dispZ=EvDecimal.ZERO;
+			resZ=1;
 			}
 		else
 			{
@@ -131,7 +113,8 @@ public class EvStack implements AnyEvImage
 			{
 			EvImage evim=new EvImage();
 			evim.setPixelsReference(new EvPixels(type,w,h));
-			putInt(i, evim);
+			loaders.add(evim);
+//			putInt(i, evim);
 			}
 		}
 	
@@ -148,27 +131,28 @@ public class EvStack implements AnyEvImage
 	
 	public int closestZint(double worldZ)
 		{
+		/*
 		System.out.println("resz "+resZ+"  dispz "+dispZ);
 		EvDecimal wc=closestZ(new EvDecimal(worldZ));
 		int zi=(int)Math.round(wc.subtract(dispZ).divide(resZ).doubleValue());
 		return zi;
-		/*
-		//This calculation is not really true yet. Use later
-		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-dispZ.doubleValue())/resZ.doubleValue()),0,getDepth()-1);
-		return closestZ;
 		*/
+		
+		//This calculation is not really true yet. Use later
+		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-dispZ)/resZ),0,getDepth()-1);
+		return closestZ;
+		
 		}
 	
+	/*
 	public Set<Integer> getZints()
-	{
+		{
 		TreeSet<Integer> zs=new TreeSet<Integer>();
 		for(EvDecimal d:loaders.keySet())
-		{
 			zs.add((int)Math.round(d.subtract(dispZ).divide(resZ).doubleValue()));
-		}
 		return zs;
 		
-	}
+		}*/
 	
 	
 	/**
@@ -177,6 +161,8 @@ public class EvStack implements AnyEvImage
 	 */
 	public EvImage getInt(int z)
 		{
+		return loaders.get(z);
+		
 		/*
 		//// THIS CODE IS CORRECT! but it screws up a lot of code at the moment. convert all imagesets first
 		EvDecimal wz=resZ.multiply(z).add(dispZ);  //Note. I always find these multiplications scary. need to get rid of them
@@ -186,7 +172,8 @@ public class EvStack implements AnyEvImage
 		else
 			return evim;
 			*/
-			
+		
+		/*
 		//TODO THIS CODE IS WRONG!!! sort of.
 		//It does not work when slices are missing, but this should not be allowed in the future
 		int i=0;
@@ -196,7 +183,9 @@ public class EvStack implements AnyEvImage
 				return evim;
 			i++;
 			}
+			
 		throw new RuntimeException("Out of bounds: "+z+" depth is "+getDepth());
+		*/
 		}
 
 	public boolean hasInt(int z)
@@ -217,23 +206,30 @@ public class EvStack implements AnyEvImage
 	 */
 	public void putInt(int z, EvImage im)
 		{
-		loaders.put(new EvDecimal(z).multiply(resZ).add(dispZ),im);
+		while(loaders.size()<=z) //Ensure there are placeholders
+			loaders.add(null);
+		loaders.set(z,im);
+		
+//		loaders.put(z,im);
+//		loaders.put(new EvDecimal(z).multiply(resZ).add(dispZ),im);
 		}
 
 	/**
 	 * Remove one image plane
 	 */
+	/*
 	public void remove(EvDecimal z)
 		{
 		loaders.remove(z);
 		}
-
+*/
 	
 	/**
 	 * Find the closest slice given a frame and slice
 	 * @param z Z we wish to match
 	 * @return Same z if frame does not exist or no slices exist, otherwise the closest z
 	 */
+	/*
 	public EvDecimal closestZ(EvDecimal z)
 		{
 		TreeMap<EvDecimal, EvImage> slices=loaders;
@@ -258,7 +254,7 @@ public class EvStack implements AnyEvImage
 					return beforekey;
 				}
 			}
-		}
+		}*/
 
 	
 	/**
@@ -266,6 +262,7 @@ public class EvStack implements AnyEvImage
 	 * @param z Z we wish to match
 	 * @return Same z if frame does not exist or no slices exist, otherwise the closest z above
 	 */
+	/*
 	public EvDecimal closestZAbove(EvDecimal z)
 		{
 		TreeMap<EvDecimal,EvImage> slices=loaders;
@@ -282,7 +279,7 @@ public class EvStack implements AnyEvImage
 			else
 				return after.firstKey();
 			}
-		}
+		}*/
 	
 	
 	/**
@@ -290,6 +287,7 @@ public class EvStack implements AnyEvImage
 	 * @param z Z we wish to match
 	 * @return Same z if frame does not exist or no slices exist, otherwise the closest z below
 	 */
+	/*
 	public EvDecimal closestZBelow(EvDecimal z)
 		{
 		TreeMap<EvDecimal, EvImage> slices=loaders;
@@ -303,7 +301,7 @@ public class EvStack implements AnyEvImage
 			else
 				return before.lastKey();
 			}
-		}		
+		}		*/
 	
 
 	/**
@@ -311,10 +309,11 @@ public class EvStack implements AnyEvImage
 	 * It might not be modifiable in the future.
 	 * @deprecated
 	 */
+	/*
 	public Set<EvDecimal> keySet()
 		{
 		return loaders.keySet();
-		}
+		}*/
 
 	
 	/**
@@ -322,7 +321,8 @@ public class EvStack implements AnyEvImage
 	 */
 	public EvImage getFirstImage()
 		{
-		return loaders.get(loaders.firstKey());
+		return loaders.get(0);
+//		return loaders.get(loaders.firstKey());
 		}
 	
 	
@@ -360,7 +360,8 @@ public class EvStack implements AnyEvImage
 		{
 		EvPixels[] arr=new EvPixels[loaders.size()];
 		int i=0;
-		for(EvImage evim:loaders.values())
+		for(EvImage evim:loaders)
+//		for(EvImage evim:loaders.values())
 			arr[i++]=evim.getPixels();
 		return arr;
 		}
@@ -372,7 +373,8 @@ public class EvStack implements AnyEvImage
 		{
 		EvImage[] arr=new EvImage[loaders.size()];
 		int i=0;
-		for(EvImage evim:loaders.values())
+		for(EvImage evim:loaders)
+//		for(EvImage evim:loaders.values())
 			arr[i++]=evim;
 		return arr;
 		}
@@ -437,7 +439,7 @@ public class EvStack implements AnyEvImage
 		{
 		resX=1;
 		resY=1;
-		resZ=EvDecimal.ONE;
+		resZ=1;
 		}
 	
 	/**
@@ -456,6 +458,44 @@ public class EvStack implements AnyEvImage
 			im.getPixels();
 //			im.forceEvaluation();
 		}
+	
+	
+	/*
+	public void setDispXpx(double dispX)
+		{
+			this.dispX = dispX;
+		}
+	public double getDispXpx()
+		{
+			return dispX;
+		}
+	public void setDispYpx(double dispY)
+		{
+			this.dispY = dispY;
+		}
+	public double getDispYpx()
+		{
+			return dispY;
+		}
+	*/
+	
+/*
+	public void setDispXum(double dispX)
+		{
+			this.dispX = dispX;
+		}
+	public double getDispXum()
+		{
+			return dispX;
+		}
+	public void setDispYum(double dispY)
+		{
+			this.dispY = dispY;
+		}
+	public double getDispYum()
+		{
+			return dispY;
+		}*/
 	
 	/*
 	@Override

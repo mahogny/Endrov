@@ -37,7 +37,7 @@ public class SequenceImageset implements EvIOData
 	private File basedir;
 	private double resX=1;
 	private double resY=1;
-	private EvDecimal spacingZ=EvDecimal.ONE;
+	private double resZ=1;
 	
 	private String fileConvention="";
 	private String channelList="";
@@ -172,7 +172,7 @@ public class SequenceImageset implements EvIOData
 				channelList=eChannels.getText();
 				resX=Double.parseDouble(eResX.getText());
 				resY=Double.parseDouble(eResY.getText());
-				spacingZ=new EvDecimal(eSpacingZ.getText());
+				resZ=Double.parseDouble(eSpacingZ.getText());
 				buildDatabase(data);
 				eLog.setText(rebuildLog);
 				}
@@ -337,13 +337,9 @@ public class SequenceImageset implements EvIOData
 					else
 						{
 						EvStack stack=new EvStack();
-						//TODO metadata?
-						stack.dispX=0;
-						stack.dispY=0;
-						//stack.binning=1;
 						stack.resX=resX; 
 						stack.resY=resY; 
-						stack.resZ=spacingZ;
+						stack.resZ=resZ;
 						for(int i=0;i<numSlices;i+=skipSlices)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
 							{

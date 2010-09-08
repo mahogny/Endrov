@@ -251,12 +251,11 @@ public class EvChannel extends EvObject implements AnyEvImage
 	/** Binning, a scale factor from the microscope */
 	public int chBinning = 1;
 
-	/** Displacement */
-	public double defaultDispX = 0, defaultDispY = 0;
-	public EvDecimal defaultDispZ = new EvDecimal(0);
+	/** Displacement um */
+	public double defaultDispX = 0, defaultDispY = 0, defaultDispZ = 0;
 
-	public Double defaultResX = null, defaultResY = null;
-	public EvDecimal defaultResZ = null;
+	/** Resolution um/px */
+	public Double defaultResX = null, defaultResY = null, defaultResZ = null;
 
 	/** Comppression 0-100, 100=lossless, what compression to apply to new images */
 	public int compression = 100;
@@ -363,8 +362,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 					if (resZ==null)
 						return;
 
-					StackHacks.setResXYZ(EvChannel.this, Double.parseDouble(resX), Double
-							.parseDouble(resY), new EvDecimal(resZ));
+					StackHacks.setResXYZ(EvChannel.this, Double.parseDouble(resX), Double.parseDouble(resY), Double.parseDouble(resZ));
 					BasicWindow.updateWindows();
 					}
 			});
@@ -399,21 +397,32 @@ public class EvChannel extends EvObject implements AnyEvImage
 			{
 			Element i = (Element) oi;
 
+			Double defaultDispXpx=null;
+			Double defaultDispYpx=null;
+			
 			try
 				{
 				if (i.getName().equals("dispX"))
-					defaultDispX = Double.parseDouble(i.getValue());
+					defaultDispXpx = Double.parseDouble(i.getValue());
 				else if (i.getName().equals("dispY"))
+					defaultDispYpx = Double.parseDouble(i.getValue());
+				
+				else if (i.getName().equals("dispXum"))
+					defaultDispX = Double.parseDouble(i.getValue());
+				else if (i.getName().equals("dispYum"))
 					defaultDispY = Double.parseDouble(i.getValue());
+				
 				else if (i.getName().equals("dispZ"))
-					defaultDispZ = new EvDecimal(i.getValue());
+					defaultDispZ = Double.parseDouble(i.getValue());
 				
 				else if (i.getName().equals("resX"))
 					defaultResX = Double.parseDouble(i.getValue());
 				else if (i.getName().equals("resY"))
 					defaultResY = Double.parseDouble(i.getValue());
+				
+				
 				else if (i.getName().equals("resZ"))
-					defaultResZ = new EvDecimal(i.getValue());
+					defaultResZ = Double.parseDouble(i.getValue());
 
 				else if (i.getName().equals("binning"))
 					chBinning = Integer.parseInt(i.getValue());
@@ -430,6 +439,14 @@ public class EvChannel extends EvObject implements AnyEvImage
 				{
 				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
+			
+			//Convert old displacement into um
+			if(defaultDispXpx!=null)
+				defaultDispX=defaultDispXpx*defaultResX;
+			if(defaultDispYpx!=null)
+				defaultDispY=defaultDispYpx*defaultResY;
+			
+			
 			}
 		
 		
@@ -438,12 +455,14 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 	public String saveMetadata(Element e)
 		{
+		//For conversion!
+		metaOther.remove("dispX");
+		metaOther.remove("dispY");
+		
 		//Retrieve default stack settings
 		if(!imageLoader.isEmpty())
 			{
 			EvStack fstack=getFirstStack();
-			
-			//fstack.getResbinZinverted(); //TODO will not be needed later
 			
 			defaultResX=fstack.resX;
 			defaultResY=fstack.resY;
@@ -457,9 +476,9 @@ public class EvChannel extends EvObject implements AnyEvImage
 			metaOther.put("resY", ""+defaultResY);
 			metaOther.put("resZ", ""+defaultResZ);
 			
-			metaOther.put("dispX", ""+defaultDispX);
-			metaOther.put("dispY", ""+defaultDispY);
-			metaOther.put("dispZ", ""+defaultDispZ);
+			metaOther.put("dispXum", ""+defaultDispX);
+			metaOther.put("dispYum", ""+defaultDispY);
+			metaOther.put("dispZum", ""+defaultDispZ);
 			
 			}
 
@@ -490,20 +509,22 @@ public class EvChannel extends EvObject implements AnyEvImage
 				otherMeta.put("resY", ""+stack.resY);
 			else
 				otherMeta.remove("resY");
-			if(!stack.resZ.equals(defaultResZ))
+			if(stack.resZ!=defaultResZ)
 				otherMeta.put("resZ", ""+stack.resZ);
 			else
 				otherMeta.remove("resZ");
 			
 			if(stack.dispX!=defaultDispX)
-				otherMeta.put("dispX", ""+stack.dispX);
+				otherMeta.put("dispXum", ""+stack.dispX);
 			else
-				otherMeta.remove("dispX");
+				otherMeta.remove("dispXum");
+			
 			if(stack.dispY!=defaultDispY)
-				otherMeta.put("dispY", ""+stack.dispY);
+				otherMeta.put("dispYum", ""+stack.dispY);
 			else
-				otherMeta.remove("dispY");
-			if(!stack.dispZ.equals(defaultDispZ))
+				otherMeta.remove("dispYum");
+			
+			if(stack.dispZ!=defaultDispZ)
 				otherMeta.put("dispZ", ""+stack.dispZ);
 			else
 				otherMeta.remove("dispZ");

@@ -62,14 +62,14 @@ public class ImageRendererROI implements ImageWindowRenderer
 			if(ob instanceof ROI)
 				drawROI(w, g, (ROI)ob, frame, z, channel);*/
 		
-		recursiveDraw(g, frame, z, channel, w.getRootObject());
+		recursiveDraw(g, frame, z.doubleValue(), channel, w.getRootObject());
 		
 		if(alsoDrawROI!=null)
-			drawROI(w, g, alsoDrawROI, "", frame, z, channel);
+			drawROI(w, g, alsoDrawROI, "", frame, z.doubleValue(), channel);
 		}
 	
 	
-	private void recursiveDraw(Graphics g, EvDecimal frame, EvDecimal z, String channel, EvContainer con)
+	private void recursiveDraw(Graphics g, EvDecimal frame, double z, String channel, EvContainer con)
 		{
 		for(Map.Entry<String, EvObject> e:con.metaObject.entrySet())
 			{
@@ -86,7 +86,7 @@ public class ImageRendererROI implements ImageWindowRenderer
 
 	
 	
-	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast, String roiName, EvDecimal frame, EvDecimal z, String channel)
+	private void drawROI(WSTransformer w, Graphics g, ROI roiUncast, String roiName, EvDecimal frame, double z, String channel)
 		{
 		if(roiUncast.imageInRange(channel, frame, z))
 			{

@@ -134,13 +134,9 @@ public class EvIODataOME implements EvIOData
 			for(int frame=0;frame<numframe;frame++)
 				{
 				EvStack stack=new EvStack();
-				//stack.binning=1;
+				//TODO ome metadata
 				stack.resX=1;
 				stack.resY=1;
-				stack.dispX=0;
-				stack.dispY=0;
-				//TODO ome metadata
-				//TODO bd real resolution					
 				for(int z=0;z<numz;z++)
 					{
 					EvImage evim=new EvImage();

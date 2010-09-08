@@ -43,7 +43,7 @@ public class EvOpSumIntensityROI
 		double sum=0;
 		for(int z=0;z<in.getDepth();z++)
 			{
-			EvDecimal zpos=in.resZ.multiply(z);
+			double zpos=in.transformImageWorldZ(z);//in.resZ*z;
 			EvImage evim=in.getInt(z);
 			LineIterator it=roi.getLineIterator(in, evim, channel, frame, zpos);
 			while(it.next())
