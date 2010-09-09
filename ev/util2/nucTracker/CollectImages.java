@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import endrov.data.*;
@@ -121,8 +122,9 @@ public class CollectImages
 								int closestZ=stack.closestZint(pos.z);
 								EvImage im=stack.getInt(closestZ);//ost.getChannel(channelName).getImageLoader(frame, z);
 								
-								int midx=(int)stack.transformWorldImageX(pos.x);
-								int midy=(int)stack.transformWorldImageY(pos.y);
+								Vector2d mid=stack.transformWorldImage(new Vector2d(pos.x, pos.y));
+								int midx=(int)mid.x;//stack.transformWorldImageX(pos.x);
+								int midy=(int)mid.y;//stack.transformWorldImageY(pos.y);
 								int r=(int)stack.scaleWorldImage(new Vector3d(pos.r,0,0)).x; //hack
 //								int rr=r+20;
 								int rr=(int)(r*2);

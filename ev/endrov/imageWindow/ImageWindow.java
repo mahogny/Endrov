@@ -710,13 +710,14 @@ public class ImageWindow extends BasicWindow
 					
 					EvStack stack=im.getStack();
 					
+					Vector3d disp=stack.getDisplacement();
 					sb.append(
 							"ResX: "+stack.resX + " "+
 							"ResY: "+stack.resY + " "+
 							"ResZ: "+stack.resZ + " "+
-							"DX: "+stack.dispX + " "+
-							"DY: "+stack.dispY + " "+
-							"DZ: "+stack.dispZ + " "+
+							"DX: "+disp.x + " "+
+							"DY: "+disp.y + " "+
+							"DZ: "+disp.z + " "+
 							"Width(px): "+pixels.getWidth()+" "+
 							"Height(px): "+pixels.getHeight()
 							);

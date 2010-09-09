@@ -8,6 +8,8 @@ package endrov.imagesetOST;
 import java.io.*;
 import java.util.*;
 
+import javax.vecmath.Vector3d;
+
 import org.jdom.*;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -769,18 +771,19 @@ public class EvIODataOST implements EvIOData
 				if(frameKeys.containsKey("resZ"))
 					useResZ=Double.parseDouble(frameKeys.get("resZ"));
 
-				//Default displacement
-				double useDispX=channel.defaultDispX;
+				//Make a copy of default displacement
+				Vector3d useDisp=new Vector3d(channel.defaultDisp);
+/*				double useDispX=channel.defaultDispX;
 				double useDispY=channel.defaultDispY;
-				double useDispZ=channel.defaultDispZ;
+				double useDispZ=channel.defaultDispZ;*/
 
 				//Override for each stack
 				if(frameKeys.containsKey("dispX"))
-					useDispX=Double.parseDouble(frameKeys.get("dispX"));
+					useDisp.x=-Double.parseDouble(frameKeys.get("dispX"));
 				if(frameKeys.containsKey("dispY"))
-					useDispY=Double.parseDouble(frameKeys.get("dispY"));
+					useDisp.y=-Double.parseDouble(frameKeys.get("dispY"));
 				if(frameKeys.containsKey("dispZ"))
-					useDispZ=Double.parseDouble(frameKeys.get("dispZ"));
+					useDisp.z=-Double.parseDouble(frameKeys.get("dispZ"));
 
 				EvStack stack=new EvStack();
 				channel.imageLoader.put(fe.getKey(),stack);
@@ -795,9 +798,7 @@ public class EvIODataOST implements EvIOData
 				stack.resX=useResX;
 				stack.resY=useResY;
 				stack.resZ=useResZ;
-				stack.dispX=useDispX;
-				stack.dispY=useDispY;
-				stack.dispZ=useDispZ;
+				stack.setDisplacement(useDisp);
 				//stack.binning=channel.chBinning;
 				for(Map.Entry<Integer, File> se:fe.getValue().entrySet())
 					{
@@ -1222,12 +1223,12 @@ public class EvIODataOST implements EvIOData
 					continue;
 				
 				ch.defaultResZ=1.5;
-				ch.defaultDispZ=1;
+				ch.defaultDisp.z=1;
 				for(EvDecimal frame:ch.imageLoader.keySet())
 					{
 					EvStack stack=ch.imageLoader.get(frame);
 					stack.resZ=ch.defaultResZ;
-					stack.dispZ=ch.defaultDispZ;
+					// stack.dispZ=ch.defaultDispZ; //need to be replaced to run again
 					}
 				
 				if(!new File(ostfile,"converted.txt").exists())

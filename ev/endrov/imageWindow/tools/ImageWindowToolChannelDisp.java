@@ -17,6 +17,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.vecmath.Vector2d;
+import javax.vecmath.Vector3d;
 
 import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
@@ -66,10 +67,14 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 					{
 					EvStack stack=frames.getValue();
 					//Vector3d d=stack.scaleWorldImage(new Vector3d(diff.x,diff.y,0));
-					stack.dispX+=diff.x;
-					stack.dispY+=diff.y;
-					c.defaultDispX=stack.dispX;
-					c.defaultDispY=stack.dispY;
+					
+					Vector3d disp=stack.getDisplacement();
+					disp.sub(new Vector3d(diff.x, diff.y, 0));
+					stack.setDisplacement(disp);
+//					stack.dispX+=diff.x;
+//					stack.dispY+=diff.y;
+					
+					//TODO handle rotation of stacks?
 					}
 				
 				BasicWindow.updateWindows();

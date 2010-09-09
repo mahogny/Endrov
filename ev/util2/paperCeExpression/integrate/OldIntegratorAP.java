@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.vecmath.Vector2d;
+
 import cern.colt.list.tint.IntArrayList;
 
 import util2.paperCeExpression.integrate.IntExp.Integrator;
@@ -127,10 +129,12 @@ public class OldIntegratorAP implements Integrator
 				int lineIndex = lenMap.getRowIndex(ay);
 				for (int ax = 0; ax<integrator.pixels.getWidth(); ax++)
 					{
+					Vector2d p=integrator.stack.transformImageWorld(new Vector2d(ax,ay));
+					
 					// Convert to world coordinates
-					ImVector2 pos = new ImVector2(
-							integrator.stack.transformImageWorldX(ax),
-							integrator.stack.transformImageWorldY(ay));
+					ImVector2 pos = new ImVector2(p.x,p.y);
+							//integrator.stack.transformImageWorldX(ax),
+							//integrator.stack.transformImageWorldY(ay));
 	
 					// Check if this is within ellipse boundary
 					ImVector2 elip = pos.sub(new ImVector2(shell.midx, shell.midy)).rotate(shell.angle); // TODO angle? what?

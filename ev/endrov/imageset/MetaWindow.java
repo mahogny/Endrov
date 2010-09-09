@@ -165,8 +165,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 			for(ChannelTab t:channels)
 				{
 				EvChannel cm=rec.getChannel(t.channelName);
-				t.iDispX.setText(""+cm.defaultDispX);
-				t.iDispY.setText(""+cm.defaultDispY);			
+				t.iDispX.setText(""+cm.defaultDisp.x);
+				t.iDispY.setText(""+cm.defaultDisp.y);			
 				t.iBinning.setText(""+cm.chBinning);
 				t.iCompression.setText(""+cm.compression);
 				t.iOther.setText(cm.metaOther.get("evother"));
@@ -389,8 +389,8 @@ public class MetaWindow extends BasicWindow implements ActionListener, DocumentL
 					{
 					EvChannel ch=rec.getChannel(t.channelName);
 					
-					ch.defaultDispX=Double.parseDouble(t.iDispX.getText());
-					ch.defaultDispY=Double.parseDouble(t.iDispY.getText());
+					ch.defaultDisp.x=Double.parseDouble(t.iDispX.getText());
+					ch.defaultDisp.y=Double.parseDouble(t.iDispY.getText());
 					ch.chBinning=Integer.parseInt(t.iBinning.getText());
 					ch.compression=Integer.parseInt(t.iCompression.getText());
 					ch.metaOther.put("evother",t.iOther.getText());

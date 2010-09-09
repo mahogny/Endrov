@@ -3,6 +3,7 @@ package endrov.recording.recmetMultidim;
 import java.util.Iterator;
 
 import javax.swing.JMenu;
+import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
@@ -133,10 +134,12 @@ public class EvMultidimAcquisition extends EvAcquisition
 					stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 					stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 					stack.resZ=dz.multiply(currentChannel.zInc).doubleValue();
-					stack.dispX=-RecordingResource.getCurrentStageX();   //always do this?
-					stack.dispY=-RecordingResource.getCurrentStageY();
-					stack.dispZ=dz.multiply(currentChannel.z0).doubleValue(); //scary!!!
 					
+					stack.setDisplacement(new Vector3d(
+							RecordingResource.getCurrentStageX(),  //Always do this?
+							RecordingResource.getCurrentStageY(),
+							dz.multiply(currentChannel.z0).doubleValue() //scary!!!
+							));
 					
 					int zpos=(currentZCount-currentChannel.z0)/currentChannel.zInc;
 					

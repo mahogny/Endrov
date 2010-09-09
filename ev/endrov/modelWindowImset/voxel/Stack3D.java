@@ -153,13 +153,9 @@ public class Stack3D extends StackInterface
 						int progressSlices=az*1000/(channels.size()*stack.getDepth());//az.multiply(1000).intValue()/(channels.size()*stack.getDepth());
 						int progressChan=1000*curchannum/channels.size();
 						pm.set(progressSlices+progressChan);
-
-						//Apply filter if needed
-						EvImage evim=stack.getInt(az);
-						//if(!chsel.filterSeq.isIdentity())
-						//	evim=chsel.filterSeq.applyReturnImage(stack, evim);
 						
 						//Get image for this plane
+						EvImage evim=stack.getInt(az);
 						EvPixels p=evim.getPixels();
 						BufferedImage bim=p.quickReadOnlyAWT();
 
@@ -172,26 +168,13 @@ public class Stack3D extends StackInterface
 							os.h=p.getHeight();
 							os.d=ceilPower2(stack.getDepth());
 							
-/*
-							int bw=suitablePower2(os.w);
-							os.resX/=os.w/(double)bw;
-							os.w=bw;
-							int bh=suitablePower2(os.h);
-							os.resY/=os.h/(double)bh;
-							os.h=bh;
-
-							os.resX=stack.getResbinX();//stack.resX/evim.getResX()/evim.getBinning(); //[px/um]
-							os.resY=stack.getResbinY();//evim.getResY()/evim.getBinning();
-*/
 							os.color=chsel.color;
 							texture.allocate(os.w, os.h, os.d);
 
 							//real size
-							os.realw=stack.resX*stack.getWidth();//os.w/os.resX;
-							os.realh=stack.resY*stack.getHeight();//os.h/os.resY;								
+							os.realw=stack.resX*stack.getWidth();
+							os.realh=stack.resY*stack.getHeight();
 							os.reald=stack.resZ*stack.getDepth();
-							//int slicespan=(stack.lastZ().subtract(stack.firstZ()).add(1).intValue()); //TODO bd problem, total redo
-							//os.reald=(os.d*(double)slicespan/(double)stack.getDepth());///chsel.im.meta.resZ;
 							}
 
 

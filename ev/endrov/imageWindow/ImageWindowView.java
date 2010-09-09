@@ -368,7 +368,7 @@ public class ImageWindowView extends JPanel
 				g2.translate(-trans.x,-trans.y);
 				
 				//Reference area. This is what the transform decides on; the image above should be in it
-				/*
+				
 				g2.setColor(Color.GREEN); //No displacement
 				//actually already displaced. red is double-displaced
 				Vector2d u1=transformI2S(p,stack,new Vector2d(0,0));
@@ -377,15 +377,18 @@ public class ImageWindowView extends JPanel
 				Vector2d u4=transformI2S(p,stack,new Vector2d(bufi.getWidth(),bufi.getHeight()));
 				g2.drawLine((int)u1.x, (int)u1.y, (int)u2.x, (int)u2.y);
 				g2.drawLine((int)u3.x, (int)u3.y, (int)u4.x, (int)u4.y);
-
-				g2.setColor(Color.RED); //with displacement
-				Vector2d v1=transformI2S(p,stack,new Vector2d(stack.dispX,stack.dispY));
-				Vector2d v2=transformI2S(p,stack,new Vector2d(bufi.getWidth()+stack.dispX,stack.dispY));
-				Vector2d v3=transformI2S(p,stack,new Vector2d(0,bufi.getHeight()+stack.dispY));
-				Vector2d v4=transformI2S(p,stack,new Vector2d(bufi.getWidth()+stack.dispX,bufi.getHeight()+stack.dispY));
+	
+				
+				Vector2d v1=p.transformPointW2S(new Vector2d(0,0));
+				Vector2d v2=p.transformPointW2S(new Vector2d(100,0));
+				Vector2d v3=p.transformPointW2S(new Vector2d(0,100));
+				
+				g2.setColor(Color.RED);
 				g2.drawLine((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y);
-				g2.drawLine((int)v3.x, (int)v3.y, (int)v4.x, (int)v4.y);
-				*/
+				g2.drawLine((int)v1.x, (int)v1.y, (int)v3.x, (int)v3.y);
+				
+//				stack.cs.transformToWorld(v)
+
 
 				} 
 			}

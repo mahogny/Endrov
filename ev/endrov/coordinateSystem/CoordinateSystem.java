@@ -17,6 +17,9 @@ import org.jdom.*;
 
 /**
  * Coordinate system
+ * 
+ * For T*R*p, global displacement will always be on the right side in the 4d matrix 
+ * 
  * @author Johan Henriksson
  *
  */
@@ -32,23 +35,29 @@ public class CoordinateSystem extends EvObject
 	/******************************************************************************************************
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
+
 	
-	public Vector3d midpoint=new Vector3d(0,0,0);
-	/**
-	 * Base vectors relative to midpoint
-	 */
-	public final Vector3d[] base=new Vector3d[]{new Vector3d(1,0,0), new Vector3d(0,1,0), new Vector3d(0,0,1)};
-	
-	
-	private Matrix4d cachedToSystem, cachedToWorld=new Matrix4d();
+	private Matrix4d toSystem=new Matrix4d();
+	private Matrix4d toWorld=new Matrix4d();
 	
 	public CoordinateSystem()
 		{
-		updateCachedMatrices();
+		toSystem.setIdentity();
+		toWorld.setIdentity();
 		}
 	
 	/**
-	 * Get transformation matrix from current basis to basis of this system
+	 * Set matrices. Only copies the reference, not the content!
+	 */
+	public void setFromMatrices(Matrix4d toSystem, Matrix4d toWorld)
+		{
+		this.toSystem=toSystem;
+		this.toWorld=toWorld;
+		}
+	
+	
+	/**
+	 * Set transformation matrix from current basis to basis of this system
 	 * 
 	 * e_i' is this basis, e_i is current basis:
 	 * e_i' = sum_j basis_i_j e_j 
@@ -57,7 +66,7 @@ public class CoordinateSystem extends EvObject
 	 * 
 	 * The one changing the bases is responsible for calling this function
 	 */
-	public void updateCachedMatrices()
+	public void setMidBases(Vector3d midpoint, Vector3d[] base)
 		{
 		Matrix4d m=new Matrix4d();
 		m.m00=base[0].x;
@@ -71,37 +80,53 @@ public class CoordinateSystem extends EvObject
 		m.m02=base[2].x;
 		m.m12=base[2].y;
 		m.m22=base[2].z;
-		
-		m.m33=1;
-		Matrix4d mt=new Matrix4d();
-		mt.setIdentity();
-		mt.setTranslation(midpoint);
-		mt.mul(m);
 
-		cachedToSystem=mt;
+		m.m03=midpoint.x;
+		m.m13=midpoint.y;
+		m.m23=midpoint.z;
+
+		m.m33=1;
+		
+		toWorld=m;
+//		toSystem=m;
+		
 		//System.out.println(cachedFromSystem);
 		try
 			{
-			cachedToWorld.invert(cachedToSystem);
+			toSystem.invert(toWorld);
+			//toWorld.invert(toSystem);
 			}
 		catch (Exception e)
 			{
 			e.printStackTrace();
-			cachedToWorld.setIdentity(); //Safe choice, will at least stop things from crashing
+			toWorld.setIdentity(); //Safe choice, will at least stop things from crashing
 			}
 		}
-
+	
 	/*
-	 * Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Logic error: imax < 0
-	at javax.vecmath.Matrix4d.luDecomposition(Matrix4d.java:2133)
-	at javax.vecmath.Matrix4d.invertGeneral(Matrix4d.java:1992)
-	at javax.vecmath.Matrix4d.invert(Matrix4d.java:1943)
-	at endrov.coordinateSystem.CoordinateSystem.updateCachedMatrices(CoordinateSystem.java:83)
-	 */
+	Matrix4d mt=new Matrix4d();
+	mt.setIdentity();
+	mt.setTranslation(midpoint);
+	mt.mul(m);
+	cachedToSystem=mt;
+	*/
+	
+	public Vector3d getOrigo()
+		{
+		return new Vector3d(toWorld.m03, toWorld.m13, toWorld.m23);
+		}
+	
+	public Vector3d[] getBases()
+		{
+		return new Vector3d[]{
+				new Vector3d(toWorld.m00, toWorld.m10, toWorld.m20),
+				new Vector3d(toWorld.m01, toWorld.m11, toWorld.m21),
+				new Vector3d(toWorld.m02, toWorld.m12, toWorld.m22)
+				};
+		}
 	
 	
-	//TODO quite sure it is possible to apply everything but translation
-	//TODO make new function
+	
 	
 	public String getMetaTypeDesc()
 		{
@@ -113,6 +138,9 @@ public class CoordinateSystem extends EvObject
 	 */
 	public String saveMetadata(Element e)
 		{
+		Vector3d midpoint=getOrigo();
+		Vector3d[] base=getBases();
+		
 		Element mide=new Element("midpoint");
 		mide.setAttribute("x",""+midpoint.x);
 		mide.setAttribute("y",""+midpoint.y);
@@ -133,6 +161,8 @@ public class CoordinateSystem extends EvObject
 		{
 		try
 			{
+			Vector3d midpoint=new Vector3d();
+			Vector3d[] base=new Vector3d[3];
 			for(Object o:e.getChildren())
 				{
 				Element c=(Element)o;
@@ -153,12 +183,14 @@ public class CoordinateSystem extends EvObject
 					midpoint=v;
 					}
 				}
+			setMidBases(midpoint, base);
+//			updateCachedMatrices();
 			}
 		catch (DataConversionException e1)
 			{
 			e1.printStackTrace();
 			}
-		updateCachedMatrices();
+		//updateCachedMatrices();
 		}
 
 
@@ -171,7 +203,7 @@ public class CoordinateSystem extends EvObject
 	 */
 	public Matrix4d getTransformToWorld()
 		{
-		return cachedToWorld;
+		return toWorld;
 		}
 	
 	/**
@@ -179,7 +211,7 @@ public class CoordinateSystem extends EvObject
 	 */
 	public Matrix4d getTransformToSystem()
 		{
-		return cachedToSystem;
+		return toSystem;
 		}
 	
 	/**
@@ -190,7 +222,7 @@ public class CoordinateSystem extends EvObject
 	public Vector3d transformToSystem(Vector3d v)
 		{
 		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
-		cachedToSystem.transform(w);
+		toSystem.transform(w);
 		return new Vector3d(w.x,w.y,w.z);
 		}
 
@@ -202,7 +234,7 @@ public class CoordinateSystem extends EvObject
 	public Vector3d transformToWorld(Vector3d v)
 		{
 		Vector4d w=new Vector4d(v.x,v.y,v.z,1);
-		cachedToWorld.transform(w);
+		toWorld.transform(w);
 		return new Vector3d(w.x,w.y,w.z);
 		}
 
@@ -211,9 +243,15 @@ public class CoordinateSystem extends EvObject
 		
 		CoordinateSystem cs=new CoordinateSystem();
 		
-		Vector3d v=new Vector3d(1,0,0);
+		cs.setMidBases(new Vector3d(1,2,3), new Vector3d[]{
+				new Vector3d(1,0,0),
+				new Vector3d(0,1,0),
+				new Vector3d(0,0,1)});
 		
-		Vector3d w=cs.transformToWorld(v);
+		//Vector3d v=;
+		
+		Vector3d w=cs.transformToWorld(new Vector3d(0,0,0));
+//		Vector3d w=cs.transformToWorld(new Vector3d(1,2,3));
 		System.out.println(w);
 		
 		}
@@ -238,15 +276,29 @@ public class CoordinateSystem extends EvObject
 		v2prim.normalize();
 		v2prim.scale(len2);
 		
-		base[0]=v1prim;
+		setMidBases(mid, new Vector3d[]{
+			v1prim,
+			v2prim,
+			v3
+		});
+		
+/*		base[0]=v1prim;
 		base[1]=v2prim;
 		base[2]=v3;
 		
 		midpoint.set(mid);
 		
-		updateCachedMatrices();
+		updateCachedMatrices();*/
 		}
 
+	public CoordinateSystem clone()
+		{
+		CoordinateSystem cs=new CoordinateSystem();
+		cs.toSystem.set(toSystem);
+		cs.toWorld.set(toWorld);
+		return cs;
+		}
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
