@@ -104,19 +104,6 @@ public class Stack2D extends StackInterface
 		texSlices=null;
 		}
 	
-	/*
-	public void setLastFrame(EvDecimal frame)
-		{
-		lastframe=frame;
-		}
-
-	
-	public boolean needSettings(EvDecimal frame)
-		{
-		return lastframe==null || !frame.equals(lastframe);// || !isBuilt();
-		}
-	
-	*/
 	
 	public boolean newCreate(ProgressMeter pm, EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel2, ModelWindow w)
 		{
@@ -127,15 +114,12 @@ public class Stack2D extends StackInterface
 		for(VoxelExtension.ChannelSelection chsel:channels)
 			{
 			EvDecimal cframe=chsel.ch.closestFrame(frame);
-			//Common resolution for all channels
-			//resZ=chsel.im.meta.resZ;
 
 			//For every Z
 			EvStack stack=chsel.ch.imageLoader.get(cframe);
 			int skipcount=0;
 			if(stack!=null)
 				for(int az=0;az<stack.getDepth();az++)
-				//for(EvDecimal az:stack.keySet())
 					{
 					if(stopBuildThread)
 						return false;
@@ -148,8 +132,6 @@ public class Stack2D extends StackInterface
 
 						skipcount=0;
 						EvImage evim=stack.getInt(az);
-						//if(!chsel.filterSeq.isIdentity())
-						//	evim=chsel.filterSeq.applyReturnImage(stack, evim);
 						Tuple<TextureRenderer,OneSlice> proc=processImage(stack, evim, az, chsel);
 						procList.add(proc);
 						}
@@ -171,16 +153,16 @@ public class Stack2D extends StackInterface
 		
 		os.w=p.getWidth();
 		os.h=p.getHeight();
-		os.resX=1.0/stack.resX;//stack.resX/stack.binning;//evim.getResX()/evim.getBinning(); //px/um
-		os.resY=1.0/stack.resY;//stack.resY/stack.binning;//evim.getResY()/evim.getBinning();
+		os.resX=stack.resX;
+		os.resY=stack.resY;
 		os.z=stack.resZ*az;
 		os.color=chsel.color;
 
 		int bw=suitablePower2(os.w);
-		os.resX/=os.w/(double)bw;
+		os.resX*=os.w/(double)bw;
 		os.w=bw;
 		int bh=suitablePower2(os.h);
-		os.resY/=os.h/(double)bh;
+		os.resY*=os.h/(double)bh;
 		os.h=bh;
 
 		//Load bitmap, scale down
@@ -258,8 +240,8 @@ public class Stack2D extends StackInterface
 			if(drawEdges && !texSlices.isEmpty())
 				{
 				OneSlice os=texSlices.get(texSlices.lastKey()).lastElement();
-				double w=os.w/os.resX;
-				double h=os.h/os.resY;
+				double w=os.w*os.resX;
+				double h=os.h*os.resY;
 				double d=os.z;
 				renderEdge(gl, w, h, d);
 				}
@@ -338,8 +320,8 @@ public class Stack2D extends StackInterface
 			//For all planes
 			for(final OneSlice os:osv)
 				{
-				final double w=os.w/os.resX;
-				final double h=os.h/os.resY;
+				final double w=os.w*os.resX;
+				final double h=os.h*os.resY;
 				
 				TransparentRender renderer=new TransparentRender(){public void render(GL glin)
 					{
@@ -376,7 +358,7 @@ public class Stack2D extends StackInterface
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
 			OneSlice os=texSlices.get(texSlices.firstKey()).get(0);
-			double width=os.w/os.resX;
+			double width=os.w*os.resX;
 			
 			return Collections.singleton(width);
 			}

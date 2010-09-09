@@ -7,10 +7,11 @@ package endrov.imageset;
 
 import java.util.ArrayList;
 
-import javax.vecmath.Matrix3d;
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
+import endrov.coordinateSystem.CoordinateSystem;
 import endrov.util.EvMathUtil;
 
 /**
@@ -32,49 +33,73 @@ public class EvStack implements AnyEvImage
 	public double resX;
 	public double resY;
 	public double resZ;
+
+	/**
+	 * Coordinate system for displacing and rotating the stack
+	 */
+	public CoordinateSystem cs=new CoordinateSystem();
+	
+	
 	
 	/**
 	 * Displacement [um]
 	 */
-	public double dispY;
-	public double dispX;
-	public double dispZ;
+//	public double dispX;
+//	public double dispY;
+//	public double dispZ;
 
 	/**
-	 * Rotation of stack. Rotation is applied AFTER displacement.
-	 * For speed, matrices in both directions are stored.
+	 * Get displacement [um]
+	 * Adding displacement takes a local coordinate to a world coordinate
 	 */
-	private Matrix3d rotationToStack=new Matrix3d(
-			1,0,0,
-			0,1,0,
-			0,0,1
-			);
-	private Matrix3d rotationToWorld=new Matrix3d(
-			1,0,0,
-			0,1,0,
-			0,0,1
-			);
+	public Vector3d getDisplacement()
+		{
+		Matrix4d m=cs.getTransformToWorld();
+		return new Vector3d(m.m03, m.m13, m.m23);
+		}
+	
+	/**
+	 * Set displacement [um]
+	 */
+	public void setDisplacement(Vector3d disp)
+		{
+		Matrix4d m=new Matrix4d(cs.getTransformToWorld()); 
+		m.m03=disp.x;
+		m.m13=disp.y;
+		m.m23=disp.z;
+		System.out.println(m);
+		Matrix4d toSystem=new Matrix4d();
+		toSystem.invert(m);
+		cs.setFromMatrices(toSystem, m);
+		}
 	
 	
+	public double oldGetDispX(){return cs.getTransformToSystem().m03;}
+	public double oldGetDispY(){return cs.getTransformToSystem().m13;}
+	public double oldGetDispZ(){return cs.getTransformToSystem().m23;}
+
 	
+	public double transformImageWorldX(double c){return c*resX+oldGetDispX();} //TODO: I think this is wrong
+	public double transformImageWorldY(double c){return c*resY+oldGetDispY();}			
+	public double transformImageWorldZ(double c){return c*resZ+oldGetDispZ();}	
 	
-	public double transformImageWorldX(double c){return c*resX+dispX;}
-	public double transformImageWorldY(double c){return c*resY+dispY;}			
-	public double transformImageWorldZ(double c){return c*resZ+dispZ;}	
-	
-	public double transformWorldImageX(double c){return (c-dispX)/resX;}
-	public double transformWorldImageY(double c){return (c-dispY)/resY;}
-	public double transformWorldImageZ(double c){return (c-dispZ)/resZ;}
+	public double transformWorldImageX(double c){return (c-oldGetDispX())/resX;}
+	public double transformWorldImageY(double c){return (c-oldGetDispY())/resY;}
+	public double transformWorldImageZ(double c){return (c-oldGetDispZ())/resZ;}
 
 	public Vector3d scaleWorldImage(Vector3d v)
 		{
-		return new Vector3d(v.x/resZ, v.y/resZ, v.z/resZ);
+		return new Vector3d(v.x/resX, v.y/resY, v.z/resZ);
 		}
 
+	//TODO!!!! below must be equivalent with above
+	
+	
 	public Vector2d transformImageWorld(Vector2d v)
 		{
 		return new Vector2d(transformImageWorldX(v.x),transformImageWorldY(v.y));
 		}
+	
 	
 	public Vector2d transformWorldImage(Vector2d v)
 		{
@@ -83,12 +108,15 @@ public class EvStack implements AnyEvImage
 	
 	public Vector3d transformImageWorld(Vector3d v)
 		{
-		return new Vector3d(transformImageWorldX(v.x),transformImageWorldY(v.y), transformImageWorldZ(v.z));
+		return cs.transformToWorld(new Vector3d(v.x*resX, v.y*resY, v.z*resZ));
+//		return new Vector3d(transformImageWorldX(v.x),transformImageWorldY(v.y), transformImageWorldZ(v.z));
 		}
 
 	public Vector3d transformWorldImage(Vector3d v)
 		{
-		return new Vector3d(transformWorldImageX(v.x),transformWorldImageY(v.y), transformWorldImageZ(v.z));
+		Vector3d vv=cs.transformToSystem(v);
+		return new Vector3d(vv.x/resX, vv.y/resY, vv.z/resZ);
+//		return new Vector3d(transformWorldImageX(v.x),transformWorldImageY(v.y), transformWorldImageZ(v.z));
 		}
 	
 	
@@ -100,9 +128,7 @@ public class EvStack implements AnyEvImage
 		resX=o.resX;
 		resY=o.resY;
 		resZ=o.resZ;
-		dispX=o.dispX;
-		dispY=o.dispY;
-		dispZ=o.dispZ;
+		cs=o.cs.clone();
 		}
 	
 	/**
@@ -122,9 +148,10 @@ public class EvStack implements AnyEvImage
 			resX=ref.resX;
 			resY=ref.resY;
 			resZ=ref.resZ;
-			dispX=ref.dispX;
+			cs=ref.cs.clone();
+			/*dispX=ref.dispX;
 			dispY=ref.dispY;
-			dispZ=ref.dispZ;
+			dispZ=ref.dispZ;*/
 			}
 		
 		//Remove old images. Add up new image planes
@@ -158,8 +185,10 @@ public class EvStack implements AnyEvImage
 		return zi;
 		*/
 		
+		//double dispZ=cs.getTransformToSystem().m23;
+		
 		//This calculation is not really true yet. Use later
-		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-dispZ)/resZ),0,getDepth()-1);
+		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-oldGetDispZ())/resZ),0,getDepth()-1);
 		return closestZ;
 		
 		}

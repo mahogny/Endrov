@@ -3,6 +3,7 @@ package endrov.recording.frapWindow;
 import java.util.Iterator;
 
 import javax.swing.JMenu;
+import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
@@ -230,8 +231,10 @@ public class EvFRAPAcquisition extends EvAcquisition
 			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resZ=1;
 			
-			stack.dispX=-RecordingResource.getCurrentStageX();
-			stack.dispY=-RecordingResource.getCurrentStageY();
+			stack.setDisplacement(new Vector3d(
+					RecordingResource.getCurrentStageX(),
+					RecordingResource.getCurrentStageY(),
+					0));
 			
 			stack.putInt(0, evim);
 			}

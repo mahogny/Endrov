@@ -8,6 +8,8 @@ package endrov.recording;
 
 import java.util.Map;
 
+import javax.vecmath.Vector3d;
+
 import endrov.data.EvData;
 import endrov.hardware.EvDevicePath;
 import endrov.hardware.EvHardware;
@@ -174,8 +176,7 @@ public class RecordingResource
 		double z=0;
 		
 		//TODO how to offset?
-		stack.dispX=-stageX;
-		stack.dispY=-stageY;
+		stack.setDisplacement(new Vector3d(stageX, stageY, 0));
 
 		//Fill bitmap ROI
 		LineIterator it=roi.getLineIterator(stack, image, channel, frame, z);

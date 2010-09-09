@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
@@ -98,38 +99,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 		return imageLoader.get(frame);
 		}
 
-	/**
-	 * Get or create an image
-	 */
-	/*
-	public EvImage createImageLoader(EvDecimal frame, EvDecimal z)
-		{
-		EvImage im = getImageLoader(frame, z);
-		if (im!=null)
-			return im;
-		else
-			{
-			im = new EvImage();
-			setImage(frame, z, im);
-			return im;
-			}
-		}*/
-
-	/**
-	 * Set image
-	 */
-	/*
-	public void setImage(EvDecimal frame, EvDecimal z, EvImage im)
-		{
-		EvStack frames = imageLoader.get(frame);
-		if (frames==null)
-			{
-			frames = new EvStack();
-			imageLoader.put(frame, frames);
-			}
-		frames.put(z, im);
-		}*/
-
 	/****************************************************************************************/
 	/******************************* Find frames/z ******************************************/
 	/****************************************************************************************/
@@ -184,65 +153,6 @@ public class EvChannel extends EvObject implements AnyEvImage
 			return after.firstKey();
 		}
 
-	/**
-	 * Find the closest slice given a frame and slice
-	 * 
-	 * @param frame
-	 *          Which frame to search
-	 * @param z
-	 *          Z we wish to match
-	 * @return Same z if frame does not exist or no slices exist, otherwise the
-	 *         closest z
-	 */
-	/*
-	public EvDecimal closestZ(EvDecimal frame, EvDecimal z)
-		{
-		EvStack slices = imageLoader.get(frame);
-		if (slices==null)
-			return z;
-		else
-			return slices.closestZ(z);
-		}*/
-
-	/**
-	 * Find the closest slice above given a slice in a frame
-	 * 
-	 * @param frame
-	 *          Which frame to search
-	 * @param z
-	 *          Z we wish to match
-	 * @return Same z if frame does not exist or no slices exist, otherwise the
-	 *         closest z above
-	 */
-	/*
-	public EvDecimal closestZAbove(EvDecimal frame, EvDecimal z)
-		{
-		EvStack slices = imageLoader.get(frame);
-		if (slices==null)
-			return z;
-		else
-			return slices.closestZAbove(z);
-		}*/
-
-	/**
-	 * Find the closest slice below given a slice in a frame
-	 * 
-	 * @param frame
-	 *          Which frame to search
-	 * @param z
-	 *          Z we wish to match
-	 * @return Same z if frame does not exist or no slices exist, otherwise the
-	 *         closest z below
-	 */
-	/*
-	public EvDecimal closestZBelow(EvDecimal frame, EvDecimal z)
-		{
-		EvStack slices = imageLoader.get(frame);
-		if (slices==null)
-			return z;
-		else
-			return slices.closestZBelow(z);
-		}*/
 
 	/****************************************************************************************/
 	/************************** Channel Meta data *******************************************/
@@ -252,7 +162,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 	public int chBinning = 1;
 
 	/** Displacement um */
-	public double defaultDispX = 0, defaultDispY = 0, defaultDispZ = 0;
+	public Vector3d defaultDisp=new Vector3d();
+	//public double defaultDispX = 0, defaultDispY = 0, defaultDispZ = 0;
 
 	/** Resolution um/px */
 	public Double defaultResX = null, defaultResY = null, defaultResZ = null;
@@ -397,6 +308,9 @@ public class EvChannel extends EvObject implements AnyEvImage
 			{
 			Element i = (Element) oi;
 
+			double defaultDispX=0;
+			double defaultDispY=0;
+			double defaultDispZ=0;
 			Double defaultDispXpx=null;
 			Double defaultDispYpx=null;
 			
@@ -446,7 +360,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 			if(defaultDispYpx!=null)
 				defaultDispY=defaultDispYpx*defaultResY;
 			
-			
+			//Set disp vector
+			defaultDisp=new Vector3d(-defaultDispX, -defaultDispY, -defaultDispZ);
 			}
 		
 		
@@ -468,17 +383,20 @@ public class EvChannel extends EvObject implements AnyEvImage
 			defaultResY=fstack.resY;
 			defaultResZ=fstack.resZ;
 
-			defaultDispX=fstack.dispX;
-			defaultDispY=fstack.dispY;
-			defaultDispZ=fstack.dispZ;
+			defaultDisp=fstack.getDisplacement();
+/*			Vector3d sDisp=fstack.getDisplacement();
+			defaultDispX=sDisp.x;
+			defaultDispY=sDisp.y;
+			defaultDispZ=sDisp.z;
+			*/
 
 			metaOther.put("resX", ""+defaultResX);
 			metaOther.put("resY", ""+defaultResY);
 			metaOther.put("resZ", ""+defaultResZ);
 			
-			metaOther.put("dispXum", ""+defaultDispX);
-			metaOther.put("dispYum", ""+defaultDispY);
-			metaOther.put("dispZum", ""+defaultDispZ);
+			metaOther.put("dispXum", ""+-defaultDisp.x);
+			metaOther.put("dispYum", ""+-defaultDisp.y);
+			metaOther.put("dispZum", ""+-defaultDisp.z);
 			
 			}
 
@@ -498,8 +416,10 @@ public class EvChannel extends EvObject implements AnyEvImage
 				}
 			
 
+
 			//Override default stack settings?
 			EvStack stack=imageLoader.get(frame);
+			Vector3d sDisp=stack.getDisplacement();
 			//stack.getResbinZinverted(); //TODO will not be needed later
 			if(stack.resX!=defaultResX)
 				otherMeta.put("resX", ""+stack.resX);
@@ -514,18 +434,18 @@ public class EvChannel extends EvObject implements AnyEvImage
 			else
 				otherMeta.remove("resZ");
 			
-			if(stack.dispX!=defaultDispX)
-				otherMeta.put("dispXum", ""+stack.dispX);
+			if(sDisp.x!=defaultDisp.x)
+				otherMeta.put("dispXum", ""+-sDisp.x);
 			else
 				otherMeta.remove("dispXum");
 			
-			if(stack.dispY!=defaultDispY)
-				otherMeta.put("dispYum", ""+stack.dispY);
+			if(sDisp.y!=defaultDisp.y)
+				otherMeta.put("dispYum", ""+-sDisp.y);
 			else
 				otherMeta.remove("dispYum");
 			
-			if(stack.dispZ!=defaultDispZ)
-				otherMeta.put("dispZ", ""+stack.dispZ);
+			if(sDisp.z!=defaultDisp.z)
+				otherMeta.put("dispZ", ""+-sDisp.z);
 			else
 				otherMeta.remove("dispZ");
 			
