@@ -14,6 +14,7 @@ import java.nio.*;
 
 import javax.media.opengl.*;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
@@ -35,7 +36,7 @@ import endrov.util.EvDecimal;
 /**
  * A panel for displaying the model
  */
-public class ModelView extends GLCanvas
+public class ModelView extends GLJPanel //GLCanvas
 	{
 	public static final long serialVersionUID=0;
 	

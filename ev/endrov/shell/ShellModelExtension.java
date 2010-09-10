@@ -49,6 +49,8 @@ public class ShellModelExtension implements ModelWindowExtension
 		
 		public Collection<Vector3d> autoCenterMid()
 			{
+			if(1==1)
+				return Collections.emptySet();
 			List<Vector3d> col=new LinkedList<Vector3d>();
 			for(Shell s:w.getVisibleObjects(Shell.class))
 				col.add(new Vector3d(s.midx,s.midy,s.midz));
@@ -69,15 +71,11 @@ public class ShellModelExtension implements ModelWindowExtension
 			{
 			}
 		
-		/*
-		public Collection<Shell> getVisibleShell()
-			{
-			return w.getVisibleObjects(Shell.class);
-			}
-		*/
 		
 		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
+			if(1==1) return;
+			
 			GL2 gl=glin.getGL2();
 			for(Shell shell:w.getVisibleObjects(Shell.class))
 				{

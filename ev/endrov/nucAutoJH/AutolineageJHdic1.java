@@ -558,14 +558,16 @@ public class AutolineageJHdic1 extends LineageAlgorithmDef
 							new Vector3d(eigvec.getQuick(1, 0),eigvec.getQuick(1, 1),0),
 							new Vector3d(0,0,0)};
 
+					
 					Candidate cand=new Candidate();
+					Vector3d onev=stackHis.transformWorldImage(new Vector3d(cand.wpos.x,cand.wpos.y,cand.wpos.z));
 					cand.id=nextCandidateID++;
 					cand.wpos=wpos;
 					cand.bestSigma=bestSigma;
 					cand.eigval=eigvalv;
 					cand.eigvec=eigvecv;
 					cand.intensity=Multiscale.convolveGaussPoint2D(stackHis.getInt(v.z).getPixels(), 
-							bestSigma, bestSigma, stackHis.transformWorldImageX(cand.wpos.x), stackHis.transformWorldImageY(cand.wpos.y)); 
+							bestSigma, bestSigma, onev.x,onev.y); 
 					//Found bug! the random intensities explained
 					candlist.add(cand);
 					}
