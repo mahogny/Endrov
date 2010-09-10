@@ -26,6 +26,7 @@ import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.keyBinding.*;
 import endrov.modelWindow.basicExt.CrossHandler;
+import endrov.starter.EvSystemUtil;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.EvXmlUtil;
@@ -52,14 +53,12 @@ public class ModelWindow extends BasicWindow
 	 *                               Instance                                                             *
 	 *****************************************************************************************************/
 
-	
 	private void setPersonalConfig(Element e)
 		{
 		try
 			{
 			Rectangle r=BasicWindow.getXMLbounds(e);
 			setBoundsEvWindow(r);
-			
 			frameControl.setGroup(e.getAttribute("group").getIntValue());
 			
 			for(ModelWindowHook hook:modelWindowHooks)
@@ -252,6 +251,7 @@ public class ModelWindow extends BasicWindow
 		
 		setLayout(new BorderLayout());
 		add(sidePanelSplitPane,BorderLayout.CENTER);
+		//add(view,BorderLayout.CENTER);
 		add(bottomPanel,BorderLayout.SOUTH);
 		add(zoomrotPanel,BorderLayout.EAST);
 		
@@ -262,15 +262,17 @@ public class ModelWindow extends BasicWindow
 		
 		//Window overall things
 		setTitleEvWindow("Model Window");
-		packEvWindow();
+		packEvWindow();                       // problem causer if GLcanvas!!!!
+		setBoundsEvWindow(bounds);			// problem causer!!!
+
 		setVisibleEvWindow(true);
-		setBoundsEvWindow(bounds);
+		
 		attachDragAndDrop(this);
 		view.autoCenter();
 		view.renderAxisArrows=miShowAxis.isSelected();
-		
 		//TODO dangerous, might be called before constructed
 		attachJinputListener(this);
+		
 		}
 	
 	
@@ -298,6 +300,8 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void updateToolPanels()
 		{
+		//EV.printStackTrace("test");
+
 		System.out.println("updating tool panels");
 		sidePanelItems.clear();
 		bottomPanelItems.clear();
@@ -318,7 +322,7 @@ public class ModelWindow extends BasicWindow
 			}
 		GridBagConstraints cg=new GridBagConstraints();	cg.gridy=counta;	cg.fill=GridBagConstraints.HORIZONTAL;	cg.weightx=1;
 		sidePanel.add(objectDisplayList,cg);
-		
+
 		//Assemble bottom panel
 		int countb=0;
 		bottomPanel.removeAll();
@@ -565,6 +569,7 @@ public class ModelWindow extends BasicWindow
 	 */
 	public void dataChangedEvent()
 		{
+		
 		metaCombo.updateList();
 		objectDisplayList.setData(metaCombo.getSelectedObject());
 		objectDisplayList.updateList();
@@ -576,6 +581,7 @@ public class ModelWindow extends BasicWindow
 			view.repaint(); //TODO modw repaint
 			//System.out.println("repainting");
 			}
+			
 		}
 
 	/**

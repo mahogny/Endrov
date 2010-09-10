@@ -1003,7 +1003,6 @@ public class NucLineage extends EvObject implements Cloneable
 	public static void initPlugin() {}
 	static
 		{
-		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
 		EvData.supportedMetadataFormats.put(metaType,NucLineage.class);
 		
 		try

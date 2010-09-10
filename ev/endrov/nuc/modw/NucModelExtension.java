@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.*;
 
 import javax.media.opengl.*;
@@ -21,6 +22,7 @@ import org.jdom.Element;
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvColor;
 import endrov.basicWindow.EvColor.ColorMenuListener;
+import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.data.EvSelection;
@@ -1038,6 +1040,17 @@ public class NucModelExtension implements ModelWindowExtension
 			}
 		
 		};
+		
+		
+	/******************************************************************************************************
+	 * Plugin declaration
+	 *****************************************************************************************************/
+	public static void initPlugin() {}
+	static
+		{
+		ModelWindow.modelWindowExtensions.add(new NucModelExtension());
+		}
+
 	}
 
 

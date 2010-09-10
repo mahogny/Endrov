@@ -6,6 +6,7 @@
 package endrov.nuc;
 import endrov.ev.PluginDef;
 import endrov.nuc.ccm.CellContactMap;
+import endrov.nuc.modw.NucModelExtension;
 
 public class PLUGIN extends PluginDef
 	{
@@ -39,6 +40,7 @@ public class PLUGIN extends PluginDef
 		return new Class[]{
 				NucLineage.class,
 				CellContactMap.class,
+				NucModelExtension.class
 				};
 		}
 	
