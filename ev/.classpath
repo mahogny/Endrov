@@ -94,5 +94,6 @@
 	<classpathentry kind="lib" path="libs/jogl_inc/newt.x11.jar"/>
 	<classpathentry kind="lib" path="libs/jogg-0.0.17.jar"/>
 	<classpathentry kind="lib" path="libs/jorbis-0.0.17.jar"/>
+	<classpathentry kind="lib" path="libs/swingx-1.6.1.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
