@@ -304,15 +304,16 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 	public void loadMetadata(Element e)
 		{
+		double defaultDispX=0;
+		double defaultDispY=0;
+		double defaultDispZ=0;
+		Double defaultDispXpx=null;
+		Double defaultDispYpx=null;
+		
 		for (Object oi : e.getChildren())
 			{
 			Element i = (Element) oi;
 
-			double defaultDispX=0;
-			double defaultDispY=0;
-			double defaultDispZ=0;
-			Double defaultDispXpx=null;
-			Double defaultDispYpx=null;
 			
 			try
 				{
@@ -351,21 +352,21 @@ public class EvChannel extends EvObject implements AnyEvImage
 				}
 			catch (NumberFormatException e1)
 				{
+				e1.printStackTrace();
 				EvLog.printError("Parse error, gracefully ignoring and resuming", e1);
 				}
 			
-			//Convert old displacement into um
-			if(defaultDispXpx!=null)
-				defaultDispX=defaultDispXpx*defaultResX;
-			if(defaultDispYpx!=null)
-				defaultDispY=defaultDispYpx*defaultResY;
-			
-			//Set disp vector
-			defaultDisp=new Vector3d(-defaultDispX, -defaultDispY, -defaultDispZ);
 			}
 		
-		
 
+		//Convert old displacement into um
+		if(defaultDispXpx!=null)
+			defaultDispX=defaultDispXpx*defaultResX;
+		if(defaultDispYpx!=null)
+			defaultDispY=defaultDispYpx*defaultResY;
+		
+		//Set disp vector
+		defaultDisp=new Vector3d(-defaultDispX, -defaultDispY, -defaultDispZ);
 		}
 
 	public String saveMetadata(Element e)
