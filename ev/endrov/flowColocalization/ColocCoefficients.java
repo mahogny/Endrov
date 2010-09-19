@@ -31,7 +31,22 @@ public class ColocCoefficients
 	public double sumXminusY2;
 	public double sumXcoloc, sumYcoloc;
 	public int n;
+
 	
+	/**
+	 * Compare several pixels
+	 */
+	public void add(int[] arrX, int[] arrY)
+		{
+		if(arrX.length!=arrY.length)
+			throw new RuntimeException("coloc arrays have different length");
+		for(int i=0;i<arrX.length;i++)
+			{
+			int x=arrX[i];
+			int y=arrY[i];
+			add(x,y);
+			}
+		}
 	
 	/**
 	 * Compare several pixels
