@@ -67,7 +67,6 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			addIsolevel.addActionListener(this);
 			}
 		
-		
 		public Collection<Double> adjustScale()
 			{
 			return Collections.emptySet();
@@ -76,11 +75,10 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			{
 			return Collections.emptySet();
 			}
-		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+		public double autoCenterRadius(Vector3d mid)
 			{
-			return Collections.emptySet();
-			}
-		public boolean canRender(EvObject ob){return false;}
+			return 0;
+			}		public boolean canRender(EvObject ob){return false;}
 		public void readPersonalConfig(Element e){}
 		public void savePersonalConfig(Element e){}
 		public void datachangedEvent(){}

@@ -503,16 +503,21 @@ public class ModelView extends GLJPanel //GLCanvas
 		mid.scale(1.0/center.size());
 
 		//Figure out required distance
+		
+//		return Collections.singleton((Double)maxr/Math.sin(FOV));
+
+		
 		double dist=0;
 		for(ModelWindowHook h:window.modelWindowHooks)
 			{
-			for(Double newDist:h.autoCenterRadius(mid,FOV))
-				if(dist<newDist)
-					dist=newDist;
+			double nrad=h.autoCenterRadius(mid);
+			if(nrad>dist)
+				dist=nrad;
 			}
 		//Avoid divison by zero at least
 		if(dist==0)
 			dist=1;
+		dist/=Math.sin(FOV);
 
 		//Set camera
 		camera.center.x=mid.x;

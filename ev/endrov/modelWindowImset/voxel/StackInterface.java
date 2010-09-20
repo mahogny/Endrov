@@ -31,7 +31,7 @@ public abstract class StackInterface
 	
 	public abstract Collection<Double> adjustScale(ModelWindow w);
 	public abstract Collection<Vector3d> autoCenterMid();
-	public abstract Double autoCenterRadius(Vector3d mid, double FOV);
+	public abstract double autoCenterRadius(Vector3d mid);
 	
 //	public abstract void startBuildThread(EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w);
 

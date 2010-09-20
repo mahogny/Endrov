@@ -77,6 +77,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			return iso;
 			}
 		
+		
 		public Collection<Double> adjustScale()
 			{
 			List<Double> scale=new LinkedList<Double>();
@@ -91,12 +92,16 @@ public class IsosurfaceExtension implements ModelWindowExtension
 				scale.add(s.autoCenterMid());
 			return scale;
 			}
-		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+		public double autoCenterRadius(Vector3d mid)
 			{
-			List<Double> scale=new LinkedList<Double>();
+			double r=0;
 			for(IsosurfaceRenderer s:getSurfaces())
-				scale.add(s.autoCenterRadius(mid, FOV));
-			return scale;
+				{
+				double nr=s.autoCenterRadius(mid);
+				if(nr>r)
+					r=nr;
+				}
+			return r;
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}

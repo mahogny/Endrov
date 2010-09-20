@@ -52,6 +52,7 @@ public class Slice3DExtension implements ModelWindowExtension
 			}
 		
 		
+ 		
 		public Collection<Double> adjustScale()
 			{
 			List<Double> col=new LinkedList<Double>();
@@ -63,12 +64,16 @@ public class Slice3DExtension implements ModelWindowExtension
 			{
 			return Collections.emptySet();
 			}
-		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+		public double autoCenterRadius(Vector3d mid)
 			{
-			List<Double> col=new LinkedList<Double>();
+			double r=0;
 			for(ToolIsolayer ti:isolayers)
-				col.addAll(ti.slice.autoCenterRadius(mid, FOV));
-			return col;
+				{
+				double nr=ti.slice.autoCenterRadius(mid);
+				if(nr>r)
+					r=nr;
+				}
+			return r;
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}

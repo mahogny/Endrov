@@ -151,9 +151,9 @@ public class ImageAnnotModelExtension implements ModelWindowExtension
 		/**
 		 * Given a middle position, figure out radius required to fit objects
 		 */
-		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+		public double autoCenterRadius(Vector3d mid)
 			{
-			return Collections.emptySet();
+			return 0;
 			}
 		
 		public EvDecimal getFirstFrame(){return null;}

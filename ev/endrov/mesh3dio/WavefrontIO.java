@@ -93,6 +93,8 @@ public class WavefrontIO implements EvIOData
 				}
 			else if(line.startsWith("v "))
 				{
+				System.out.println("vertex!!!");
+				
 				//Vertex
 				StringTokenizer st=new StringTokenizer(line," ");
 				st.nextElement();
@@ -144,6 +146,13 @@ public class WavefrontIO implements EvIOData
 				
 			}
 		
+		//Linked lists to array lists, faster allocation
+		mesh.vertex.addAll(vertex);
+		mesh.normal.addAll(normal);
+		mesh.texcoord.addAll(texcoord);
+		
+		//Ignore the previous normals! Just recalculate. Or should this be done optionally somehow?
+		mesh.calcNormals();
 		
 		return mesh;
 		}
@@ -189,11 +198,11 @@ public class WavefrontIO implements EvIOData
 			throw new Exception("File does not exist");
 		
 		Mesh3D m=readFile(file);
+		//Mesh3D m=Mesh3D.generateTestModel();
 		d.metaObject.put("model", m);
 		}
 	
 	
-
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
@@ -220,7 +229,7 @@ public class WavefrontIO implements EvIOData
 			public EvData load(String file, EvData.FileIOStatusCallback cb) throws Exception
 				{
 				EvData d=new EvData();
-				d.io=new EvIODataBD(d, new File(file));
+				d.io=new WavefrontIO(d, new File(file));
 				return d;
 				}
 			public Integer saveSupports(String file){return null;}

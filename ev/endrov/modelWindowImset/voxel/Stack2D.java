@@ -387,7 +387,7 @@ public class Stack2D extends StackInterface
 	/**
 	 * Given a middle position, figure out radius required to fit objects
 	 */
-	public Double autoCenterRadius(Vector3d mid, double FOV)
+	public double autoCenterRadius(Vector3d mid)
 		{
 		if(texSlices!=null && !texSlices.isEmpty())
 			{
@@ -400,12 +400,10 @@ public class Stack2D extends StackInterface
 			double dy=Math.max(Math.abs(0-mid.y), Math.abs(height-mid.y));
 			double dz=Math.max(Math.abs(0-mid.z), Math.abs(depth-mid.z));
 			double d=Math.sqrt(dx*dx+dy*dy+dz*dz);
-			
-			//Find how far away the camera has to be. really have FOV in here?
-			return d/Math.sin(FOV);
+			return d;
 			}
 		else
-			return null;
+			return 0;
 		}
 	
 	

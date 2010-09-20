@@ -199,7 +199,7 @@ public class Slice3D
 	/**
 	 * Given a middle position, figure out radius required to fit objects
 	 */
-	public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+	public double autoCenterRadius(Vector3d mid)
 		{
 		if(tex!=null)
 			{
@@ -212,13 +212,10 @@ public class Slice3D
 			for(double d:list)
 				if(d>max)
 					max=d;
-			
-			//Find how far away the camera has to be. really have FOV in here?
-			return Collections.singleton(max/Math.sin(FOV));
+			return max;
 			}
 		else
-			return Collections.emptySet();
-///			return null;
+			return 0;
 		}
 	
 	
