@@ -59,9 +59,9 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 		{
 		return Collections.emptySet();
 		}
-	public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+	public double autoCenterRadius(Vector3d mid)
 		{
-		return Collections.emptySet();
+		return 0;
 		}
 	public boolean canRender(EvObject ob)
 		{

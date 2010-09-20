@@ -35,7 +35,9 @@ public class PLUGIN extends PluginDef
 	
 	public Class<?>[] getInitClasses()
 		{
-		return new Class[]{Mesh3D.class};
+		return new Class[]{
+				Mesh3D.class,
+				Mesh3dModelExtension.class};
 		}
 	
 	public boolean isDefaultEnabled(){return true;};

@@ -49,16 +49,19 @@ public class ShellModelExtension implements ModelWindowExtension
 		
 		public Collection<Vector3d> autoCenterMid()
 			{
+			return Collections.emptySet();
+			/*
 			if(1==1)
 				return Collections.emptySet();
 			List<Vector3d> col=new LinkedList<Vector3d>();
 			for(Shell s:w.getVisibleObjects(Shell.class))
 				col.add(new Vector3d(s.midx,s.midy,s.midz));
 			return col;
+			*/
 			}
-		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+		public double autoCenterRadius(Vector3d mid)
 			{
-			return Collections.emptySet();
+			return 0; //TODO
 			}
 		
 		

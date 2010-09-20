@@ -168,7 +168,7 @@ public class VoxelExtension implements ModelWindowExtension
 			return currentStack;
 			}
 		
-		
+
 		public Collection<Double> adjustScale()
 			{
 			StackInterface s=getCurrentStack();
@@ -176,7 +176,8 @@ public class VoxelExtension implements ModelWindowExtension
 				return s.adjustScale(w);
 			else
 				return Collections.emptySet();
-			}
+			}	
+
 		public Collection<Vector3d> autoCenterMid()
 			{
 			StackInterface s=getCurrentStack();
@@ -185,16 +186,15 @@ public class VoxelExtension implements ModelWindowExtension
 			else
 				return Collections.emptySet();
 			}
-		public Collection<Double> autoCenterRadius(Vector3d mid, double FOV)
+		public double autoCenterRadius(Vector3d mid)
 			{
 			StackInterface s=getCurrentStack();
 			if(s!=null)
 				{
-				Double r=s.autoCenterRadius(mid, FOV);
-				if(r!=null)
-					return Collections.singleton(r);
+				double r=s.autoCenterRadius(mid);
+				return r;
 				}
-			return Collections.emptySet();
+			return 0;
 			}
 		public boolean canRender(EvObject ob){return false;}
 		public void displayInit(GL gl){}

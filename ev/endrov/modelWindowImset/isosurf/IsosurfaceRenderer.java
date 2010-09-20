@@ -91,7 +91,7 @@ public class IsosurfaceRenderer
 	/**
 	 * Given a middle position, figure out radius required to fit objects
 	 */
-	public Double autoCenterRadius(Vector3d mid, double FOV)
+	public double autoCenterRadius(Vector3d mid)
 		{
 		double[] list={Math.abs(minX-mid.x),Math.abs(minY-mid.y),Math.abs(minZ-mid.z),
 				Math.abs(maxX-mid.x), Math.abs(maxY-mid.y), Math.abs(maxZ-mid.z)};
@@ -99,8 +99,7 @@ public class IsosurfaceRenderer
 		for(double d:list)
 			if(d>max)
 				max=d;
-		//Find how far away the camera has to be. really have FOV in here?
-		return max/Math.sin(FOV);
+		return max;
 		}
 	
 	
