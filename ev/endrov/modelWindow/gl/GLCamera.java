@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.modelWindow;
+package endrov.modelWindow.gl;
 
 import javax.vecmath.*;
 import javax.media.opengl.*;
@@ -14,7 +14,7 @@ import endrov.util.EvXmlUtil;
 
 //Vector3D vs javax.vecmath.....? part of javax.media.*
 
-public class Camera
+public class GLCamera
 	{
 	/** Camera position */
 	public Vector3d pos=new Vector3d(0.0,2.0,-15.0);
@@ -27,12 +27,12 @@ public class Camera
 	
 	
 	
-	public Camera()
+	public GLCamera()
 		{
 		mat.setIdentity();
 		}
 	
-	public Camera(Camera cam)
+	public GLCamera(GLCamera cam)
 		{
 		pos.set(cam.pos);
 		center.set(cam.center);

@@ -15,8 +15,11 @@ import org.jdom.Element;
 
 import com.sun.opengl.util.BufferUtil;
 
+import endrov.basicWindow.EvColor;
 import endrov.data.EvObject;
 import endrov.modelWindow.*;
+import endrov.modelWindow.gl.GLMaterial;
+import endrov.modelWindow.gl.GLMeshVBO;
 import endrov.util.*;
 
 
@@ -82,7 +85,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			{
 			}
 		
-		private Map<Mesh3D, MeshVBO> vbos=new HashMap<Mesh3D, MeshVBO>();
+		private Map<Mesh3D, GLMeshVBO> vbos=new HashMap<Mesh3D, GLMeshVBO>();
 
 		/**
 		 * Render graphics
@@ -93,14 +96,15 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 			
 //			EvDecimal curFrame=w.getFrame();
-
-			
 			Collection<Mesh3D> meshs=getMeshs();
 			
 			//Delete VBOs no longer in use
 			for(Mesh3D oldmesh:new LinkedList<Mesh3D>(vbos.keySet()))
 				if(!meshs.contains(oldmesh))
+					{
 					vbos.get(oldmesh).destroy(gl);
+					vbos.remove(oldmesh);
+					}
 
 			//TODO what about meshs that have changed?
 			
@@ -108,101 +112,41 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			for(Mesh3D mesh:meshs)
 				{
 				//Upload to card if needed
-				MeshVBO vbo=vbos.get(mesh);
+				GLMeshVBO vbo=vbos.get(mesh);
 				if(vbo==null)
 					vbos.put(mesh, vbo=buildVBO(gl, mesh));
-				vbo.render(gl);
+				
+				GLMaterial material=mesh.material;
+				if(material==null)
+					{
+        	EvColor color=new EvColor("foo",1,1,1,1);
+	        float diff=0.7f;
+	        float ambient=0.3f;
+	        float spec=0.8f;
+					material=new GLMaterial(
+							new float[]{(float)color.getRedDouble()*diff, (float)color.getGreenDouble()*diff, (float)color.getBlueDouble()*diff},
+							new float[]{(float)color.getRedDouble()*spec, (float)color.getGreenDouble()*spec, (float)color.getBlueDouble()*spec},
+							new float[]{(float)color.getRedDouble()*ambient, (float)color.getGreenDouble()*ambient, (float)color.getBlueDouble()*ambient},
+							80);
+					}
+				vbo.render(gl, material);
+				
 				}
 			
 			gl.glPopAttrib();
 			}
 
 		
-		
-		
-		/**
-		 * Mesh that has been prepared for efficient rendering
-		 * 
-		 * @author Johan Henriksson
-		 *
-		 */
-		private static class MeshVBO
+		private static GLMeshVBO buildVBO(GL gl, Mesh3D mesh)
 			{
-			public int vertVBO;
-			public int normVBO;
-			public int texVBO;
-			public int vertexCount;
-			
-			public FloatBuffer vertices;
-			public FloatBuffer norms;
-			public FloatBuffer tex;
-			
-			public void render(GL2 gl)
-				{
-        gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-        gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
-        gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);  
-
-        if(vertices!=null)
-        	{
-        	//Use vertex arrays
-        	vertices.rewind();
-        	tex.rewind();
-        	norms.rewind();
-          gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertices); 
-          gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, tex); 
-          gl.glNormalPointer(GL.GL_FLOAT, 0, norms);
-        	}
-        else
-        	{
-        	//Use VBO
-          gl.glBindBuffer(GL.GL_ARRAY_BUFFER, texVBO);
-          gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);    
-          gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertVBO);
-          gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);    
-          gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normVBO);
-          gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
-        	}
-
-	      gl.glEnable(GL2.GL_LIGHTING);
-				gl.glEnable(GL2.GL_CULL_FACE);
-				gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE, new float[]{0.5f,0.5f,0.5f}, 0);
-
-        gl.glColor3f(1.0f, 1.0f, 1.0f);
-//        gl.glDrawArrays(GL.GL_LINES, 0, vertexCount);  
-        gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
-
-  			gl.glDisable(GL2.GL_CULL_FACE);
-  			gl.glDisable(GL2.GL_LIGHTING);
-
-        gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);  
-        gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
-        gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-        
-				}
-			
-			public void destroy(GL2 gl)
-				{
-				gl.glDeleteBuffers(3, new int[]{vertVBO, normVBO, texVBO}, 0);
-				}
-			
-			}
-		
-		
-		private static MeshVBO buildVBO(GL gl, Mesh3D mesh)
-			{
-			MeshVBO vbo=new MeshVBO();
+			GLMeshVBO vbo=new GLMeshVBO();
 
 			int vertexCount=mesh.faces.size()*3;
 
       FloatBuffer vertices=BufferUtil.newFloatBuffer(vertexCount*3);
       FloatBuffer norms=BufferUtil.newFloatBuffer(vertexCount*3);
       FloatBuffer tex=BufferUtil.newFloatBuffer(vertexCount*2);
-      /*float[] avert=vertices.array();
-      float[] anorms=norms.array();
-      float[] atex=tex.array();*/
 
-      //int arrayIndex=0;
 			for(int fi=0;fi<mesh.faces.size();fi++)
 				{
 				Mesh3D.Face f=mesh.faces.get(fi);
@@ -212,20 +156,13 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 	      	vertices.put((float)vert.x);
 	      	vertices.put((float)vert.y);
 	      	vertices.put((float)vert.z);
-	      	/*
-	      	avert[arrayIndex*3+0]=(float)vert.x;
-	      	avert[arrayIndex*3+1]=(float)vert.y;
-	      	avert[arrayIndex*3+2]=(float)vert.z;*/      	
 					
 	      	if(f.texcoord!=null)
 	      		{
 		      	Vector3d t=mesh.texcoord.get(f.texcoord[vi]);
 		      	tex.put((float)t.x);
 		      	tex.put((float)t.y);
-		      	/*
-		      	atex[arrayIndex*2+0]=(float)t.x;
-		      	atex[arrayIndex*2+1]=(float)t.y;*/
-		      	//3d texture support?
+		      	//TODO 3d texture support?
 	      		}
 	      	else
 	      		{
@@ -239,11 +176,6 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 		      	norms.put((float)n.x);
 		      	norms.put((float)n.y);
 		      	norms.put((float)n.z);
-		      	/*
-		      	anorms[arrayIndex*3+0]=(float)n.x;
-		      	anorms[arrayIndex*3+1]=(float)n.y;
-		      	anorms[arrayIndex*3+2]=(float)n.z;
-		      	*/
 	      		}
 	      	else
 	      		{
@@ -251,12 +183,13 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 	      		norms.put(0);
 	      		norms.put(0);
 	      		}
-	      	
-	      	//arrayIndex++;
 					}
 				}
 			
-			if(true)
+			
+			boolean extensionOK = gl.isExtensionAvailable("GL_ARB_vertex_buffer_object");
+
+			if(extensionOK)
 				{
       	vertices.rewind();
       	tex.rewind();
@@ -378,8 +311,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 					if(maxr2<r2)
 						maxr2=r2;
 					}
-			double maxr=Math.sqrt(maxr2);
-			return maxr;
+			return Math.sqrt(maxr2);
 			}
 		
 		

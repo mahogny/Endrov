@@ -4,19 +4,22 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.vecmath.Vector3d;
 
+import endrov.basicWindow.EvColor;
 import endrov.data.EvData;
 import endrov.data.EvDataSupport;
 import endrov.data.EvIOData;
 import endrov.data.RecentReference;
 import endrov.data.EvData.FileIOStatusCallback;
-import endrov.imagesetBD.EvIODataBD;
 import endrov.mesh3d.Mesh3D;
+import endrov.modelWindow.gl.GLMaterial;
 import endrov.util.Tuple;
 
 /**
@@ -29,20 +32,24 @@ public class WavefrontIO implements EvIOData
 	{
 	
 	
-	public static Mesh3D readFile(File f) throws IOException
+	public static Map<String,Mesh3D> readFile(File f) throws IOException
 		{
 		//All indices in this file format start from 1. Therefore subtract by 1
-		Mesh3D mesh=new Mesh3D();
+		//Mesh3D mesh=new Mesh3D();
 		BufferedReader br=new BufferedReader(new FileReader(f));
 		
 		List<Vector3d> vertex=new LinkedList<Vector3d>();
 		List<Vector3d> normal=new LinkedList<Vector3d>();
 		List<Vector3d> texcoord=new LinkedList<Vector3d>();
 		
-		String currentGroup=null;
+		String currentGroup="model";
 		Integer currentSmooth=null;
 		
 		//Set<Mesh3D.Face> groupFaces=new HashSet<Mesh3D.Face>(); 
+		
+		Map<String,Mesh3D> meshes=new HashMap<String, Mesh3D>(); 
+		Mesh3D currentMesh=null;
+		
 		
 		
 		String line;
@@ -85,11 +92,15 @@ public class WavefrontIO implements EvIOData
 				if(hasN)
 					face.normal=faceN;
 				
-				face.group=currentGroup;
 				face.smooth=currentSmooth;
 				
+				if(currentMesh==null)
+					{
+					currentMesh=new Mesh3D();
+					meshes.put(currentGroup, currentMesh);
+					}
+				currentMesh.faces.add(face);
 				
-				mesh.faces.add(face);
 				}
 			else if(line.startsWith("v "))
 				{
@@ -107,6 +118,7 @@ public class WavefrontIO implements EvIOData
 				{
 				//Group
 				currentGroup=line.substring(2);
+				currentMesh=null;
 				}
 			else if(line.startsWith("vt "))
 				{
@@ -147,14 +159,33 @@ public class WavefrontIO implements EvIOData
 			}
 		
 		//Linked lists to array lists, faster allocation
-		mesh.vertex.addAll(vertex);
-		mesh.normal.addAll(normal);
-		mesh.texcoord.addAll(texcoord);
+		for(Mesh3D m:meshes.values())
+			{
+			m.vertex.addAll(vertex);
+			m.normal.addAll(normal);
+			m.texcoord.addAll(texcoord);
+			
+			//Ignore the previous normals! Just recalculate. Or should this be done optionally somehow?
+			m.calcNormals();
+			
+			//TODO prune vertices not used for the group
+			
+			
+			//TODO temp?
+			EvColor color=EvColor.colorList[(int)Math.floor(Math.random()*EvColor.colorList.length)];
+      float diff=0.7f;
+      float ambient=0.3f;
+      float spec=0.8f;
+			m.material=new GLMaterial(
+					new float[]{(float)color.getRedDouble()*diff, (float)color.getGreenDouble()*diff, (float)color.getBlueDouble()*diff},
+					new float[]{(float)color.getRedDouble()*spec, (float)color.getGreenDouble()*spec, (float)color.getBlueDouble()*spec},
+					new float[]{(float)color.getRedDouble()*ambient, (float)color.getGreenDouble()*ambient, (float)color.getBlueDouble()*ambient},
+					80);
+
+			}
 		
-		//Ignore the previous normals! Just recalculate. Or should this be done optionally somehow?
-		mesh.calcNormals();
 		
-		return mesh;
+		return meshes;
 		}
 
 	
@@ -197,9 +228,17 @@ public class WavefrontIO implements EvIOData
 		if(!basedir.exists())
 			throw new Exception("File does not exist");
 		
-		Mesh3D m=readFile(file);
+		//Mesh3D m=readFile(file);
+		
+		Map<String,Mesh3D> m=readFile(file);
+
+		for(Map.Entry<String, Mesh3D> e:m.entrySet())
+			d.metaObject.put(e.getKey(), e.getValue());
+
+		
+		
 		//Mesh3D m=Mesh3D.generateTestModel();
-		d.metaObject.put("model", m);
+//		d.metaObject.put("model", m);
 		}
 	
 	

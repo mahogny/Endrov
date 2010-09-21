@@ -988,11 +988,9 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			//Calculate maximum radius
 			double maxr=0;
-			boolean any=false;
 			for(NucLineage lin:getLineages())
 				{
 				Map<NucSel, NucLineage.NucInterp> interpNuc=lin.getInterpNuc(w.getFrame());
-				any=true;
 				for(NucLineage.NucInterp nuc:interpNuc.values())
 					{
 					double dx=nuc.pos.x-mid.x;

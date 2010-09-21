@@ -12,11 +12,11 @@ import javax.media.opengl.GL2;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.EvChannel;
-import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
+import endrov.modelWindow.gl.GLCamera;
 
 /**
  * General interface to any stack renderer
@@ -45,7 +45,7 @@ public abstract class StackInterface
 	//Stacks are created once, rendered a few times, disposed
 	public abstract boolean newCreate(ProgressMeter pm, EvDecimal frame, HashMap<EvChannel, VoxelExtension.ChannelSelection> chsel,ModelWindow w);
 	public abstract void loadGL(GL gl);
-	public abstract void render(GL gl,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors);
+	public abstract void render(GL gl,List<TransparentRender> transparentRenderers, GLCamera cam, boolean solidColor, boolean drawEdges, boolean mixColors);
 	public abstract void clean(GL gl);
 
 	protected boolean stopBuildThread=false;

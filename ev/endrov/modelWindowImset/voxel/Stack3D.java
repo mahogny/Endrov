@@ -15,11 +15,11 @@ import javax.media.opengl.*;
 import javax.vecmath.Vector3d;
 
 import endrov.imageset.*;
-import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
-import endrov.modelWindow.Shader;
 import endrov.modelWindow.TransparentRender;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
+import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.GLShader;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
@@ -429,7 +429,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render the place through one voxel stack given plane
 	 */
-	private void renderPlane(GL2 gl, Camera cam, VoxelStack os, Plane p)
+	private void renderPlane(GL2 gl, GLCamera cam, VoxelStack os, Plane p)
 		{
 		Vector3d[] points=new Vector3d[]{
 				intersectPlane1(p, os), intersectPlane2(p, os), intersectPlane4(p, os), intersectPlane3(p, os),
@@ -616,7 +616,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, boolean solidColor, boolean drawEdges, boolean mixColors)
 		{
 		GL2 gl=glin.getGL2();
 
@@ -633,7 +633,7 @@ public class Stack3D extends StackInterface
 	/**
 	 * TODO move to voxext?
 	 */
-	private Shader shader3d=null;
+	private GLShader shader3d=null;
 	
 	
 	public abstract class Stack3DRenderState implements TransparentRender.RenderState{}
@@ -641,11 +641,11 @@ public class Stack3D extends StackInterface
 	/**
 	 * Render all planes through a voxel stack
 	 */
-	private void renderVoxelStack(GL2 gl,List<TransparentRender> transparentRenderers, final Camera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors)
+	private void renderVoxelStack(GL2 gl,List<TransparentRender> transparentRenderers, final GLCamera cam, final VoxelStack os, final boolean solidColor, final boolean mixColors)
 		{
 		//Load shader
 		if(shader3d==null)
-			shader3d=new Shader(gl,Stack3D.class.getResource("3dvert.glsl"),Stack3D.class.getResource("3dfrag.glsl"));
+			shader3d=new GLShader(gl,Stack3D.class.getResource("3dvert.glsl"),Stack3D.class.getResource("3dfrag.glsl"));
 		
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.transformedVector(0, 0, 1);
