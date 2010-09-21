@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.modelWindow;
+package endrov.modelWindow.gl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +18,8 @@ import javax.media.opengl.GL2;
 
 import com.sun.opengl.util.BufferUtil;
 
+import endrov.modelWindow.ModelView;
+
 //www.typhoonlabs.com/tutorials/glsl/Chapter_5.pdf
 
 /**
@@ -25,7 +27,7 @@ import com.sun.opengl.util.BufferUtil;
  * 
  * @author Johan Henriksson
  */
-public class Shader
+public class GLShader
 	{
 	private Integer idf;
 	private Integer idv;
@@ -49,7 +51,7 @@ public class Shader
 	 * Create a shader. srcv and srcf can be null.
 	 * use .class.getResource(...) to obtain URL.
 	 */
-	public Shader(GL glin, URL srcv, URL srcf)
+	public GLShader(GL glin, URL srcv, URL srcf)
 		{
 		GL2 gl=glin.getGL2();
 		try

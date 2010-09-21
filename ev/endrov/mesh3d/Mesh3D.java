@@ -13,6 +13,7 @@ import org.jdom.Element;
 
 import endrov.data.EvData;
 import endrov.data.EvObject;
+import endrov.modelWindow.gl.GLMaterial;
 import endrov.nuc.NucLineage;
 
 /**
@@ -31,7 +32,23 @@ public class Mesh3D extends EvObject
 	private static final String metaType="mesh3d";
 
 
-	
+
+	public static Mesh3D generateTestModel()	
+		{
+		Mesh3D m=new Mesh3D();
+		Face f=new Face();
+		f.vertex=new int[3];
+		f.vertex[0]=0;
+		f.vertex[1]=1;
+		f.vertex[2]=2;
+		m.faces.add(f);
+		
+		m.vertex.add(new Vector3d(0,0,0));
+		m.vertex.add(new Vector3d(0,1,0));
+		m.vertex.add(new Vector3d(1,0,0));
+		return m;
+		}
+
 
 	/******************************************************************************************************
 	 *                               Instance                                                             *
@@ -45,7 +62,7 @@ public class Mesh3D extends EvObject
 		public int normal[];
 		
 		public Integer smooth;
-		public String group; //Note. Same string, must be possible to compare with ==
+//		public String group; //Note. Same string, must be possible to compare with ==
 		}
 	
 	public List<Face> faces=new LinkedList<Face>();
@@ -53,6 +70,7 @@ public class Mesh3D extends EvObject
 	public List<Vector3d> texcoord=new ArrayList<Vector3d>();
 	public List<Vector3d> normal=new ArrayList<Vector3d>();
 	
+	public GLMaterial material;
 	
 	public void calcNormals()
 		{
@@ -72,7 +90,7 @@ public class Mesh3D extends EvObject
 			v02.sub(v0);
 			
 			Vector3d cross=new Vector3d();
-			cross.cross(v01, v02);
+			cross.cross(v01, v02);  //TODO which one?
 			cross.normalize();
 			
 			fnormal.put(f,cross);
@@ -111,22 +129,6 @@ public class Mesh3D extends EvObject
 		}
 	
 	
-	public static Mesh3D generateTestModel()	
-	{
-	Mesh3D m=new Mesh3D();
-	Face f=new Face();
-	f.vertex=new int[3];
-	f.vertex[0]=0;
-	f.vertex[1]=1;
-	f.vertex[2]=2;
-	m.faces.add(f);
-	
-	m.vertex.add(new Vector3d(0,0,0));
-	m.vertex.add(new Vector3d(0,1,0));
-	m.vertex.add(new Vector3d(1,0,0));
-	return m;
-	}
-
 
 	/******************************************************************************************************
 	 * Plugin declaration

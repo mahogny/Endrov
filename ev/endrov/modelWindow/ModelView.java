@@ -13,7 +13,6 @@ import java.awt.Font;
 import java.nio.*;
 
 import javax.media.opengl.*;
-import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Matrix3d;
@@ -24,6 +23,7 @@ import com.sun.opengl.util.awt.TextRenderer;
 import endrov.coordinateSystem.CoordinateSystem;
 import endrov.ev.*;
 import endrov.modelWindow.TransparentRender.RenderState;
+import endrov.modelWindow.gl.GLCamera;
 import endrov.util.EvDecimal;
 
 
@@ -67,7 +67,7 @@ public class ModelView extends GLJPanel //GLCanvas
 	private ModelWindow window;
 
 	/** Camera coordinates */
-	public Camera camera=new Camera();
+	public GLCamera camera=new GLCamera();
 	private final double FOV=45.0/180.0*Math.PI;	
 	/** Current frame */
 	public EvDecimal frame=EvDecimal.ZERO;
@@ -282,8 +282,8 @@ public class ModelView extends GLJPanel //GLCanvas
 			checkerr(gl); //TODO upon start getting this
 			
 			 //Set light to follow camera
-			float light_position[] = { 1.0f, 1.0f, 1.0f, 0.0f };
-			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position,0); //have no idea what 0 does
+			float light_position[] = new float[]{ 1.0f, 1.0f, 1.0f, 0.0f };
+			gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position,0);
 	    ModelView.setupLight(gl);
 			
 			//Get camera into position
@@ -851,10 +851,13 @@ public class ModelView extends GLJPanel //GLCanvas
 		}
 	public static void setupLight(GL2 gl)
 		{
-		float lightDiffuse[]=new float[]{1,1,1};
-		float lightAmbient[] = { lightDiffuse[0]*0.3f, lightDiffuse[1]*0.3f, lightDiffuse[2]*0.3f, 0.0f };
+		float lightAmbient[] = { 0.2f, 0.2f, 0.2f, 0.0f };
+		float lightDiffuse[]=new float[]{0.8f,0.8f,0.8f};
+		float lightSpecular[]=new float[]{0.5f,0.5f,0.5f};
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, lightAmbient, 0);   
-		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, lightDiffuse, 0);   
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, lightDiffuse, 0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, lightSpecular, 0);
+		gl.glShadeModel(GL2.GL_SMOOTH);
 		gl.glEnable(GL2.GL_LIGHT0);
 		}
 

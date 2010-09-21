@@ -17,13 +17,13 @@ import com.sun.opengl.util.awt.TextureRenderer;
 import com.sun.opengl.util.texture.*;
 
 import endrov.imageset.*;
-import endrov.modelWindow.Camera;
 import endrov.modelWindow.ModelWindow;
-import endrov.modelWindow.Shader;
 import endrov.modelWindow.TransparentRender;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
+import endrov.modelWindow.gl.GLCamera;
+import endrov.modelWindow.gl.GLShader;
 
 //if one ever wish to build it in the background:
 //GLContext glc=view.getContext();
@@ -227,7 +227,7 @@ public class Stack2D extends StackInterface
 	/**
 	 * Render entire stack
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, final boolean solidColor, final boolean drawEdges, final boolean mixColors)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, final boolean solidColor, final boolean drawEdges, final boolean mixColors)
 		{
 		GL2 gl=glin.getGL2();
 		if(isBuilt())
@@ -302,13 +302,13 @@ public class Stack2D extends StackInterface
 	/**
 	 * TODO move to voxext?
 	 */
-	private Shader shader2d=null;
+	private GLShader shader2d=null;
 	
 	
 	/**
 	 * Render list of slices
 	 */
-	public void render(GL glin,List<TransparentRender> transparentRenderers, Camera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
+	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
 		{
 		//Get direction of camera as vector, and z-position
 		Vector3d camv=cam.transformedVector(0, 0, 1);
