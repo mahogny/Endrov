@@ -92,8 +92,9 @@ public class WavefrontIO implements EvIOData
 				if(hasN)
 					face.normal=faceN;
 				
-				face.smooth=currentSmooth;
+				face.smoothGroup=currentSmooth;
 				
+				//Get or create a mesh
 				if(currentMesh==null)
 					{
 					currentMesh=new Mesh3D();
@@ -104,8 +105,6 @@ public class WavefrontIO implements EvIOData
 				}
 			else if(line.startsWith("v "))
 				{
-				System.out.println("vertex!!!");
-				
 				//Vertex
 				StringTokenizer st=new StringTokenizer(line," ");
 				st.nextElement();
@@ -157,6 +156,7 @@ public class WavefrontIO implements EvIOData
 				
 				
 			}
+
 		
 		//Linked lists to array lists, faster allocation
 		for(Mesh3D m:meshes.values())
@@ -164,6 +164,10 @@ public class WavefrontIO implements EvIOData
 			m.vertex.addAll(vertex);
 			m.normal.addAll(normal);
 			m.texcoord.addAll(texcoord);
+
+			
+			//Doubtful if it should be done
+			m.makeAllFacesSmooth();
 			
 			//Ignore the previous normals! Just recalculate. Or should this be done optionally somehow?
 			m.calcNormals();
@@ -183,8 +187,7 @@ public class WavefrontIO implements EvIOData
 					80);
 
 			}
-		
-		
+				
 		return meshes;
 		}
 

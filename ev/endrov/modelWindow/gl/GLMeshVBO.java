@@ -13,16 +13,20 @@ import javax.media.opengl.GL2;
  */
 public class GLMeshVBO
 	{
+	public boolean drawNormals=false;
+	
+	public boolean drawSolid=true;
+	
+	public boolean useVBO=false;
 	public int vertVBO;
-	public int normVBO;
+	public int normalsVBO;
 	public int texVBO;
 	public int vertexCount;
-	
 	public FloatBuffer vertices;
-	public FloatBuffer norms;
+	public FloatBuffer normals;
 	public FloatBuffer tex;
 	
-	public boolean hasVBO;
+	
 	
 	public void render(GL2 gl, GLMaterial material)
 		{
@@ -30,15 +34,15 @@ public class GLMeshVBO
 		gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
 		gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);  
 	
-		if(vertices!=null)
+		if(!useVBO/*vertices!=null*/)
 			{
 			//Use vertex arrays
 			vertices.rewind();
 			tex.rewind();
-			norms.rewind();
+			normals.rewind();
 			gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertices); 
 			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, tex); 
-			gl.glNormalPointer(GL.GL_FLOAT, 0, norms);
+			gl.glNormalPointer(GL.GL_FLOAT, 0, normals);
 			}
 		else
 			{
@@ -47,7 +51,7 @@ public class GLMeshVBO
 			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);    
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertVBO);
 			gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);    
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normVBO);
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalsVBO);
 			gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
 			}
 	
@@ -56,8 +60,18 @@ public class GLMeshVBO
 	
 		material.set(gl);
 		
-		//        gl.glDrawArrays(GL.GL_LINES, 0, vertexCount);  
-		gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
+		if(drawSolid)
+			{
+			gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertexCount);  
+			}
+		else
+			{
+			for(int i=0;i<vertexCount;i+=3)
+				gl.glDrawArrays(GL.GL_LINE_LOOP, i, 3);
+			
+			}
+		
+		
 	
 		gl.glDisable(GL2.GL_CULL_FACE);
 		gl.glDisable(GL2.GL_LIGHTING);
@@ -66,11 +80,33 @@ public class GLMeshVBO
 		gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
 		gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 	
+		//Draw normals
+		if(drawNormals)
+			{
+			normals.rewind();
+			vertices.rewind();
+			gl.glColor3f(1.0f, 1.0f, 1.0f);
+			gl.glBegin(GL.GL_LINES);
+			for(int i=0;i<vertexCount;i++)
+				{
+				float x=vertices.get();
+				float y=vertices.get();
+				float z=vertices.get();
+				float nx=normals.get();
+				float ny=normals.get();
+				float nz=normals.get();
+				
+				gl.glVertex3f(x, y, z);
+				gl.glVertex3f(x+nx, y+ny, z+nz);
+				}
+			gl.glEnd();
+			}
+		
 		}
 	
 	public void destroy(GL2 gl)
 		{
-		gl.glDeleteBuffers(3, new int[]{vertVBO, normVBO, texVBO}, 0);
+		gl.glDeleteBuffers(3, new int[]{vertVBO, normalsVBO, texVBO}, 0);
 		}
 	
 	}

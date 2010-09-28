@@ -23,8 +23,6 @@ import endrov.basicWindow.BasicWindow;
 import endrov.data.*;
 import endrov.ev.*;
 import endrov.keyBinding.KeyBinding;
-import endrov.modelWindow.ModelWindow;
-import endrov.nuc.modw.NucModelExtension;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
 import endrov.util.EvXmlUtil;

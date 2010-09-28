@@ -144,7 +144,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			int vertexCount=mesh.faces.size()*3;
 
       FloatBuffer vertices=BufferUtil.newFloatBuffer(vertexCount*3);
-      FloatBuffer norms=BufferUtil.newFloatBuffer(vertexCount*3);
+      FloatBuffer normals=BufferUtil.newFloatBuffer(vertexCount*3);
       FloatBuffer tex=BufferUtil.newFloatBuffer(vertexCount*2);
 
 			for(int fi=0;fi<mesh.faces.size();fi++)
@@ -173,15 +173,15 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 	      	if(f.normal!=null)
 	      		{
 		      	Vector3d n=mesh.normal.get(f.normal[vi]);
-		      	norms.put((float)n.x);
-		      	norms.put((float)n.y);
-		      	norms.put((float)n.z);
+		      	normals.put((float)n.x);
+		      	normals.put((float)n.y);
+		      	normals.put((float)n.z);
 	      		}
 	      	else
 	      		{
-	      		norms.put(0);
-	      		norms.put(0);
-	      		norms.put(0);
+	      		normals.put(0);
+	      		normals.put(0);
+	      		normals.put(0);
 	      		}
 					}
 				}
@@ -193,7 +193,7 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 				{
       	vertices.rewind();
       	tex.rewind();
-      	norms.rewind();
+      	normals.rewind();
       	
 	      int[] VBOVertices = new int[1];  
 	      gl.glGenBuffers(1, VBOVertices, 0);  
@@ -212,15 +212,29 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 	      
 	      vbo.vertVBO=VBOVertices[0];
 	      vbo.texVBO=VBOTexCoords[0];
-	      vbo.normVBO=VBONormals[0];
+	      vbo.normalsVBO=VBONormals[0];
+	      vbo.useVBO=true;
 				}
 			else
 				{
 	      vbo.vertices=vertices;
-	      vbo.norms=norms;
+	      vbo.normals=normals;
 	      vbo.tex=tex;
+
+	      vbo.useVBO=false;
 				}
-      
+
+			/*
+      vbo.vertices=vertices;
+      vbo.normals=normals;
+      vbo.tex=tex;
+      */
+			
+      vbo.vertices=vertices;
+      vbo.normals=normals;
+      vbo.tex=tex;
+
+			
       vbo.vertexCount=vertexCount;
       return vbo;
 			}
