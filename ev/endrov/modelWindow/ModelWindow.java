@@ -26,7 +26,6 @@ import endrov.data.EvObject;
 import endrov.ev.*;
 import endrov.keyBinding.*;
 import endrov.modelWindow.basicExt.CrossHandler;
-import endrov.starter.EvSystemUtil;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.EvXmlUtil;

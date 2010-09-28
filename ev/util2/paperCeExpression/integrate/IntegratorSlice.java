@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import cern.colt.list.tint.IntArrayList;

@@ -10,8 +10,6 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import endrov.data.EvPath;
-
 public class DataBrowserTree extends JTree
 	{
 	private static final long serialVersionUID = 1L;
