@@ -1,8 +1,3 @@
-/***
- * Copyright (C) 2010 Johan Henriksson
- * This code is under the Endrov / BSD license. See www.endrov.net
- * for the full text and how to cite.
- */
 package endrov.roi.newer;
 
 import java.util.ArrayList;
@@ -24,14 +19,10 @@ public class PolygonROI
 	 */
 	public ArrayList<Vector2d> contour=new ArrayList<Vector2d>(); 
 	
-	
-	
-	
 	public static class Tessellation
 		{
 		int[][] tris;
-		//Array of triples
-		
+		//Array of triples	
 		}
 	
 	private Tessellation userTessellation=null;
@@ -65,8 +56,9 @@ public class PolygonROI
 
 	/**
 	 * Get tesselation, calculate if needed
+	 * @throws TriangulationException 
 	 */
-	public Tessellation getTessellation()
+	public Tessellation getTessellation() throws TriangulationException
 		{
 		if(userTessellation!=null)
 			return userTessellation;

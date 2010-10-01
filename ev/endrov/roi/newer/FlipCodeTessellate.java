@@ -1,8 +1,3 @@
-/***
- * Copyright (C) 2010 Johan Henriksson
- * This code is under the Endrov / BSD license. See www.endrov.net
- * for the full text and how to cite.
- */
 /**
  * Taken and converted from
  * http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
@@ -102,8 +97,9 @@ public class FlipCodeTessellate
 	/**
 	 * Tessellate. O(n^2) or O(n^3) for this simple implementation I believe.
 	 * Linear time algorithms exist.
+	 * @throws TriangulationException 
 	 */
-	public static List<int[]> process(List<Vector2d> contour)
+	public static List<int[]> process(List<Vector2d> contour) throws TriangulationException
 		{
 		// allocate and initialize list of Vertices in polygon
 		int numVertices = contour.size();
@@ -130,7 +126,8 @@ public class FlipCodeTessellate
 			{
 			/* if we loop, it is probably a non-simple polygon */
 			if (0 >= (count--))
-				throw new RuntimeException("Triangulate: ERROR - probable bad polygon!");
+				throw new TriangulationException("Triangulate: ERROR - probable bad polygon!");
+				//throw new RuntimeException("Triangulate: ERROR - probable bad polygon!");
 			
 			/* three consecutive vertices in current polygon, <u,v,w> */
 			int u = v  ; 
