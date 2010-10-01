@@ -89,6 +89,7 @@ public class LineageView extends JPanel
 		public final static int typeColorIntensity=1;
 		public final static int typeColorIntensityDiff=2;
 		public final static int typeTimeDev=3;
+		public final static int typeLineThickness=4;
 		
 		public EvColor color;
 		
@@ -589,7 +590,7 @@ public class LineageView extends JPanel
 		//Add scalebars
 		for(final ExpRenderSetting expsetting:listExpRenderSettings)
 			if(expsetting.scale1!=null)
-				if(expsetting.type==ExpRenderSetting.typeGraphOnTop)
+				if(expsetting.type==ExpRenderSetting.typeGraphOnTop || expsetting.type==ExpRenderSetting.typeLineThickness)
 					{
 					ScaleBar sb=new ScaleBar();
 					sb.name=expsetting.expname1;
@@ -796,12 +797,45 @@ public class LineageView extends JPanel
 			if(nucexp!=null && !nucexp.level.isEmpty())
 				{
 
-
-
-
 				if(expsetting.type==ExpRenderSetting.typeGraphOnTop)
 					{
-					//System.out.println("here "+expsetting.scale1);
+					//TODO bounds
+					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2)
+						{
+						public void paint(Graphics g, double width, double height, Camera cam)
+							{
+							int thisMidY=cam.toScreenY(thisInternal.centerY);
+
+							double scale=cam.scaleWorldDistY(expsetting.scale1);
+							g.setColor(expsetting.color.getAWTColor());
+							boolean hasLastCoord=false;
+							int lastX=0, lastYAbove=0;
+							for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
+								{
+								int yAbove=(int)(-ve.getValue()*scale+thisMidY);
+								//int yBelow=(int)(+ve.getValue()*scale+thisMidY);
+								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
+								if(hasLastCoord)
+									{
+									if(showExpLine)
+										g.drawLine(lastX, lastYAbove, x, yAbove);
+									if(showExpSolid)
+										g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{thisMidY,lastYAbove,yAbove,thisMidY}, 4);
+									}
+								if(showExpDot)
+									g.drawRect(x-expDotSize, yAbove-expDotSize, 2*expDotSize, 2*expDotSize);
+								hasLastCoord=true;
+								lastX=x;
+								lastYAbove=yAbove;
+								}
+
+
+							}
+						};
+					thisDrawNode.addSubNode(drawExpNode);
+					}
+				else if(expsetting.type==ExpRenderSetting.typeLineThickness)
+					{
 					
 					//TODO bounds
 					HierarchicalPainter.DrawNode drawExpNode=new HierarchicalPainter.DrawNode(x1,y1,x2,y2)
@@ -809,29 +843,23 @@ public class LineageView extends JPanel
 						public void paint(Graphics g, double width, double height, Camera cam)
 							{
 							int thisMidY=cam.toScreenY(thisInternal.centerY);
-							//int thisStartX=cam.toScreenX(thisInternal.startX);
-							//int thisEndX=cam.toScreenX(thisInternal.endX);
 
 							double scale=cam.scaleWorldDistY(expsetting.scale1);
-							g.setColor(expsetting.color.getAWTColor());
+							g.setColor(Color.BLACK);
 							boolean hasLastCoord=false;
-							int lastX=0, lastY=0;
+							int lastX=0, lastYAbove=0, lastYBelow=0;
 							for(Map.Entry<EvDecimal, Double> ve:nucexp.level.entrySet())
 								{
-								int y=(int)(-ve.getValue()*scale+thisMidY);
+								int dy=(int)Math.round(ve.getValue()*scale);
+								int yAbove=-dy+thisMidY;
+								int yBelow=+dy+thisMidY;
 								int x=linstate.cam.toScreenX(ve.getKey().doubleValue());
 								if(hasLastCoord)
-									{
-									if(showExpLine)
-										g.drawLine(lastX, lastY, x, y);
-									if(showExpSolid)
-										g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{thisMidY,lastY,y,thisMidY}, 4);
-									}
-								if(showExpDot)
-									g.drawRect(x-expDotSize, y-expDotSize, 2*expDotSize, 2*expDotSize);
+									g.fillPolygon(new int[]{lastX,lastX,x,x}, new int[]{lastYBelow,lastYAbove,yAbove,yBelow}, 4);
 								hasLastCoord=true;
 								lastX=x;
-								lastY=y;
+								lastYAbove=yAbove;
+								lastYBelow=yBelow;
 								}
 
 

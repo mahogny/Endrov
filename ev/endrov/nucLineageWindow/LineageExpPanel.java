@@ -54,6 +54,7 @@ public class LineageExpPanel extends JPanel
 	public static final ImageIcon iconAddExpRenderIntensity=new ImageIcon(LineageExpPanel.class.getResource("jhAddIntensity.png"));
 	public static final ImageIcon iconAddExpRenderIntensityDiff=new ImageIcon(LineageExpPanel.class.getResource("jhAddIntensityDiff.png"));
 	public static final ImageIcon iconAddExpRenderTimeDev=new ImageIcon(LineageExpPanel.class.getResource("jhAddTimeDiff.png"));
+	public static final ImageIcon iconAddExpRenderThickness=new ImageIcon(LineageExpPanel.class.getResource("jhAddExpThickness.png"));
 	
 	private final TreeSet<String> currentAvailableExp=new TreeSet<String>();
 	private final LinkedList<RenderEntry> listRenderers=new LinkedList<RenderEntry>();
@@ -294,6 +295,13 @@ public class LineageExpPanel extends JPanel
 				secondLine.add(cExp1);
 				cRenderType.setToolTipText("Show single-valued expression as time deviation");
 				}
+			else if(type==LineageView.ExpRenderSetting.typeLineThickness)
+				{
+				secondLine=new JPanel(new GridLayout(2,1));
+				secondLine.add(cExp1);
+				secondLine.add(snapContrast);
+				cRenderType.setToolTipText("Show single-valued expression as line thickness");
+				}
 			else
 				System.out.println("type wtf");
 			
@@ -456,6 +464,8 @@ public class LineageExpPanel extends JPanel
 					setIcon(iconAddExpRenderIntensityDiff);
 				else if(type==LineageView.ExpRenderSetting.typeTimeDev)
 					setIcon(iconAddExpRenderTimeDev);
+				else if(type==LineageView.ExpRenderSetting.typeLineThickness)
+					setIcon(iconAddExpRenderThickness);
 				else
 					setIcon(null);
 				setText("");
@@ -471,7 +481,7 @@ public class LineageExpPanel extends JPanel
 		 */
 		public ComboRenderType()
 			{
-			super(new Vector<Integer>(Arrays.asList(0,1,2,3)));
+			super(new Vector<Integer>(Arrays.asList(0,1,2,3,4)));
 			setRenderer(new CustomRenderer());	
 			}
 		
