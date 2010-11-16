@@ -18,7 +18,7 @@ import endrov.makeMovie.EvMovieMakerFactory;
  */
 public class EncodeFFMPEG
 	{
-	public static File program=new File("/usr/bin/ffmpeg");
+	public static File program=null;
 	
 	public static Vector<String> formats=new Vector<String>(); 
 	
@@ -31,7 +31,14 @@ public class EncodeFFMPEG
 	public static void initPlugin()	{}
 	static
 		{
-		if(program.exists())
+		File programLinux=new File("/usr/bin/ffmpeg");
+		File programMacPorts=new File("/opt/local/bin/ffmpeg");
+		if(programLinux.exists())
+			program=programLinux;
+		if(programMacPorts.exists())
+			program=programMacPorts;
+		
+		if(program!=null)
 			EvMovieMakerFactory.makers.add(new EvMovieMakerFactory()
 			{
 				public EvMovieMaker getInstance(File path, int w, int h, String quality) throws Exception
