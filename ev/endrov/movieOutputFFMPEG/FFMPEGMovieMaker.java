@@ -28,9 +28,12 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 
 	private File tempFile;
 
+	private String quality;
+	
 	public FFMPEGMovieMaker(File path, int w, int h, String quality)
 		{
 		this.path=path;
+		this.quality=quality;
 		try
 			{
 			tempFile=File.createTempFile("ev_ffmpeg", "");
@@ -49,20 +52,35 @@ public class FFMPEGMovieMaker implements EvMovieMaker
 		File thisFile=new File(tempFile,curframe+".png");
 		curframe++;
 
+		if(im.getWidth()%2==1 || im.getHeight()%2==1)
+			{
+			//Must be divisible by 2 or there will be problems later
+			BufferedImage newBim=new BufferedImage((im.getWidth()/2)*2, (im.getHeight()/2)*2, BufferedImage.TYPE_3BYTE_BGR);
+			newBim.getGraphics().drawImage(im, 0,0,null);
+			im=newBim;
+			}
+		
 		ImageIO.write(im, "png", thisFile);
 		System.out.println(thisFile);
 		}
 
 	public void done() throws Exception
 		{
-		File output=new File(path.toString()+".avi");
+		File output;
+		
+		output=new File(path.toString()+".avi");
+		
 		output.delete();
 		System.out.println("Output to "+output);
 		//System.out.println(""+tempFile);
 		
 		//ffv1 is FFMPEGs lossless format
 		
-		runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","ffv1",output.toString());
+		if(quality.equals(EncodeFFMPEG.formatFLV1))	
+			runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","ffv1",output.toString());
+		else if(quality.equals(EncodeFFMPEG.formatHighQualMp4))
+			runUntilQuit(EncodeFFMPEG.program.toString(),"-i",tempFile+"/"+"%d.png","-vcodec","mpeg4","-b","7000k",output.toString());
+		
 		// ffmpeg -i %08d.png out.mpg
 		// ffmpeg -i %08d.png out.avi
 		
