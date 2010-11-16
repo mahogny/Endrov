@@ -195,6 +195,8 @@ public class EvIODataBioformats implements EvIOData
 		if(metaFile.exists())
 			d.loadXmlMetadata(metaFile);
 
+		System.out.println("#series "+imageReader.getSeriesCount());
+		
 		HashSet<String> usedImsetNames=new HashSet<String>();
 		for(int seriesIndex=0;seriesIndex<imageReader.getSeriesCount();seriesIndex++)
 			{
@@ -229,6 +231,9 @@ public class EvIODataBioformats implements EvIOData
 				imset.metaObject.remove(s);
 				}
 
+			
+			System.out.println("image count "+retrieve.getImageCount());
+			
 			//For all images (an image can have channels and planes)
 			for(int imageIndex=0;imageIndex<retrieve.getImageCount();imageIndex++)
 				{
@@ -242,12 +247,20 @@ public class EvIODataBioformats implements EvIOData
 				if(resZ==null || resZ==0) resZ=1.0;
 
 				int planeCount=retrieve.getPlaneCount(imageIndex);
+				System.out.println("#planes "+planeCount);
+				/*if(planeCount==0)
+					planeCount=1;*/
+				
 				for(int planeIndex=0;planeIndex<planeCount;planeIndex++)
 					{
+					
+					//retrieve.getChannel
+					
 					NonNegativeInteger c=retrieve.getPlaneTheC(imageIndex, planeIndex);
 					NonNegativeInteger framenum=retrieve.getPlaneTheT(imageIndex, planeIndex);
 					NonNegativeInteger z=retrieve.getPlaneTheZ(imageIndex, planeIndex);
 
+					System.out.println("plane c "+c+" frame "+framenum+"  z "+z);
 					
 					//Calculate which frame this is. Note that we only consider the time of the first plane!
 					EvDecimal frame=null;

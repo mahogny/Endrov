@@ -22,6 +22,9 @@ public class EncodeFFMPEG
 	
 	public static Vector<String> formats=new Vector<String>(); 
 	
+	public static final String formatFLV1="Lossless FLV1";
+	public static final String formatHighQualMp4="High-quality MPEG4";
+	
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/
@@ -53,13 +56,14 @@ public class EncodeFFMPEG
 
 				public String getDefaultQuality()
 					{
-					return "Default";
+					return formatHighQualMp4;
 					}
 				
 				
 			});
 		
-		formats.add("Default");
+		formats.add(formatHighQualMp4);
+		formats.add(formatFLV1);
 		//formats.add("mpeg4");
 		//formats.add("ffv1");
 		}
