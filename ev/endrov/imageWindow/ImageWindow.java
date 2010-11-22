@@ -181,12 +181,23 @@ public class ImageWindow extends BasicWindow
 	/**
 	 * Acquire a screenshot
 	 */	
-	public BufferedImage getScreenshot()
+	public BufferedImage getScreenshotOverlay()
 		{
 		BufferedImage bi = new BufferedImage(imagePanel.getWidth(),imagePanel.getHeight(),BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = bi.createGraphics();
 		imagePanel.paintComponent(g);
 		return bi;
+		}
+	
+	public BufferedImage getScreenshotOriginal()
+		{
+		if(!imagePanel.images.isEmpty())
+			{
+			EvImage im=imagePanel.images.get(0).getImage();
+			return im.getPixels().quickReadOnlyAWT();
+			}
+		else
+			return null;
 		}
 
 	
