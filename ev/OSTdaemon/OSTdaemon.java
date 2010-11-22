@@ -627,24 +627,25 @@ public class OSTdaemon extends Thread
 				newlist.add(im);
 		imlist=newlist;
 			
-		//
 		Iterator<BufferedImage> it=imlist.iterator();
 		BufferedImage fim=it.next();
 		
 		int height = fim.getHeight();
 		int width = fim.getWidth();
 		BufferedImage maxim = fim.getSubimage(0,0, width, height);
+		WritableRaster maxRaster=maxim.getRaster();
 		
 		while(it.hasNext())
 			{
 			BufferedImage im=it.next();
-			Raster imr=im.getRaster();
-			WritableRaster maxr=maxim.getRaster();
+			Raster imRaster=im.getRaster();
 			for(int ay=0;ay<height;ay++)
 				for(int ax=0;ax<width;ax++)
 					{
-					double s=imr.getSampleDouble(ax, ay, 0);
-					maxr.setSample(ax, ay, 0, s);
+					double s=imRaster.getSampleDouble(ax, ay, 0);
+					double lastSample=maxRaster.getSampleDouble(ax, ay, 0);
+					if(s>lastSample)
+						maxRaster.setSample(ax, ay, 0, s);
 					}
 			}
 		return maxim;
