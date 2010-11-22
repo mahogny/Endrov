@@ -24,6 +24,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.basicWindow.FrameControl;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.util.EvFileUtil;
@@ -79,6 +80,10 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 		FileDialog fd=new FileDialog((Frame)null, "Save screenshot", FileDialog.SAVE);
 		if(lastFile!=null)
 			fd.setDirectory(lastFile);
+		
+		//Suggest location
+		fd.setFile(FrameControl.formatTime(w.getFrame())+"-"+w.getZ());
+		
 //			fd.setFile();
 	
 		fd.setVisible(true);
