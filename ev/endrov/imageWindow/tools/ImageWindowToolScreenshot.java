@@ -6,6 +6,8 @@
 package endrov.imageWindow.tools;
 
 import java.awt.Component;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,9 +16,10 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -56,12 +59,14 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 		return m;
 		}
 	
+	private static String lastFile=null;
+	
 	public void actionPerformed(ActionEvent arg0)
 		{
-		BufferedImage image;
+		Map<String,BufferedImage> image=new HashMap<String, BufferedImage>();
 		if(arg0.getSource()==miOverlay)
 			{
-			image=w.getScreenshotOverlay();
+			image.put("overlay",w.getScreenshotOverlay());
 			}
 		else
 			{
@@ -70,22 +75,43 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 				BasicWindow.showErrorDialog("No picture to store!");
 			}
 		
-		//Choose location and store
-		JFileChooser fc=new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		int ret=fc.showSaveDialog(w);
-		if(ret==JFileChooser.APPROVE_OPTION)
+		//Choose location
+		FileDialog fd=new FileDialog((Frame)null, "Save screenshot", FileDialog.SAVE);
+		if(lastFile!=null)
+			fd.setDirectory(lastFile);
+//			fd.setFile();
+	
+		fd.setVisible(true);
+		String thisFile=fd.getFile();
+		if(thisFile!=null)
 			{
-			File f=fc.getSelectedFile();
-			try
+			lastFile=fd.getDirectory();
+			
+/*
+			JFileChooser fc=new JFileChooser();
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int ret=fc.showSaveDialog(w);
+			if(ret==JFileChooser.APPROVE_OPTION)
 				{
-				ImageIO.write(image, "png", EvFileUtil.makeFileEnding(f, ".png"));
-				}
-			catch (IOException e2)
-				{
-				e2.printStackTrace();
-				}
+				File f=fc.getSelectedFile();*/
+				try
+					{
+					for(String chname:image.keySet())
+						{
+						File f=new File(fd.getDirectory(),fd.getFile()+"-"+chname);
+						ImageIO.write(image.get(chname), "png", EvFileUtil.makeFileEnding(f, ".png"));
+						}
+					}
+				catch (IOException e2)
+					{
+					e2.printStackTrace();
+					}
+				//}
+			
 			}
+		
+		
+		
 
 		}
 	
