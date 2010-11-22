@@ -189,12 +189,25 @@ public class ImageWindow extends BasicWindow
 		return bi;
 		}
 	
-	public BufferedImage getScreenshotOriginal()
+	public Map<String,BufferedImage> getScreenshotOriginal()
 		{
+		HashMap<String,BufferedImage> bims=new HashMap<String, BufferedImage>(); 
 		if(!imagePanel.images.isEmpty())
 			{
-			EvImage im=imagePanel.images.get(0).getImage();
-			return im.getPixels().quickReadOnlyAWT();
+			//BufferedImage[] bims=new BufferedImage[imagePanel.images.size()];
+//			for(int i=0;i<bims.length;i++)
+//				bims[i]=imagePanel.images.get(0).getImage().getPixels().quickReadOnlyAWT();
+			
+			for(int i=0;i<channelWidget.size();i++)
+				{
+				String chname=channelWidget.get(i).getChannelName();
+				BufferedImage im=imagePanel.images.get(i).getImage().getPixels().quickReadOnlyAWT();
+				bims.put(chname, im);
+				}
+			
+//			EvImage im=imagePanel.images.get(0).getImage();
+	//		return im.getPixels().quickReadOnlyAWT();
+			return bims;
 			}
 		else
 			return null;
@@ -279,6 +292,11 @@ public class ImageWindow extends BasicWindow
 			{
 			updateImagePanel();
 			}	
+		
+		public String getChannelName()
+			{
+			return comboChannel.getChannel();
+			}
 		}	
 
 		
