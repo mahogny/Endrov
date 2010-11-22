@@ -17,8 +17,10 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import endrov.basicWindow.BasicWindow;
 import endrov.imageWindow.ImageWindow;
 import endrov.imageWindow.ImageWindowTool;
 import endrov.util.EvFileUtil;
@@ -31,7 +33,9 @@ import endrov.util.EvFileUtil;
  */
 public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListener
 	{
-	JMenuItem mi=new JMenuItem("Screenshot");
+	JMenu m=new JMenu("Screenshot");
+	JMenuItem miOverlay=new JMenuItem("As shown with overlay");
+	JMenuItem miOrig=new JMenuItem("Get original data");
 
 	private final ImageWindow w;
 	
@@ -42,18 +46,33 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 	
 	public JMenuItem getMenuItem()
 		{
-		mi.removeActionListener(this);
-		mi.addActionListener(this);
-		return mi;
+		m.removeAll();
+		m.add(miOverlay);
+		m.add(miOrig);
+		miOverlay.removeActionListener(this);
+		miOverlay.addActionListener(this);
+		miOrig.removeActionListener(this);
+		miOrig.addActionListener(this);
+		return m;
 		}
 	
 	public void actionPerformed(ActionEvent arg0)
 		{
-		BufferedImage image=w.getScreenshot();
+		BufferedImage image;
+		if(arg0.getSource()==miOverlay)
+			{
+			image=w.getScreenshotOverlay();
+			}
+		else
+			{
+			image=w.getScreenshotOriginal();
+			if(image==null)
+				BasicWindow.showErrorDialog("No picture to store!");
+			}
 		
+		//Choose location and store
 		JFileChooser fc=new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
 		int ret=fc.showSaveDialog(w);
 		if(ret==JFileChooser.APPROVE_OPTION)
 			{
@@ -67,6 +86,7 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 				e2.printStackTrace();
 				}
 			}
+
 		}
 	
 	public void deselected(){}
