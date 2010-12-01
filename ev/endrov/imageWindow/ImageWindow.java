@@ -194,10 +194,6 @@ public class ImageWindow extends BasicWindow
 		HashMap<String,BufferedImage> bims=new HashMap<String, BufferedImage>(); 
 		if(!imagePanel.images.isEmpty())
 			{
-			//BufferedImage[] bims=new BufferedImage[imagePanel.images.size()];
-//			for(int i=0;i<bims.length;i++)
-//				bims[i]=imagePanel.images.get(0).getImage().getPixels().quickReadOnlyAWT();
-			
 			for(int i=0;i<channelWidget.size();i++)
 				{
 				String chname=channelWidget.get(i).getChannelName();
@@ -205,8 +201,6 @@ public class ImageWindow extends BasicWindow
 				bims.put(chname, im);
 				}
 			
-//			EvImage im=imagePanel.images.get(0).getImage();
-	//		return im.getPixels().quickReadOnlyAWT();
 			return bims;
 			}
 		else

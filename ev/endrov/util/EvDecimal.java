@@ -114,18 +114,18 @@ public class EvDecimal extends Number implements Comparable<EvDecimal>, Serializ
 			return new Tuple<EvDecimal, EvDecimal>(new EvDecimal(pair[0]),new EvDecimal(pair[1]));
 		}
 	
-	public EvDecimal divide(EvDecimal val)
+	public EvDecimal divide(EvDecimal val) throws ArithmeticException
 		{
-		try
-			{
+//		try
+//			{
 			return new EvDecimal(dec.divide(val.dec,MathContext.DECIMAL64));
-			}
+/*			}
 		catch (RuntimeException e)
 			{
 			e.printStackTrace();
 			System.out.println(dec+"   /divison by zero/   "+val.dec);
 			throw e;
-			}
+			}*/
 		}
 	public EvDecimal divide(double val)
 		{
