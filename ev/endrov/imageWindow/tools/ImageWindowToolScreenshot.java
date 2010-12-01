@@ -83,22 +83,12 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 		
 		//Suggest location
 		fd.setFile(FrameControl.formatTime(w.getFrame())+"-"+w.getZ());
-		
-//			fd.setFile();
 	
 		fd.setVisible(true);
 		String thisFile=fd.getFile();
 		if(thisFile!=null)
 			{
 			lastFile=fd.getDirectory();
-			
-/*
-			JFileChooser fc=new JFileChooser();
-			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			int ret=fc.showSaveDialog(w);
-			if(ret==JFileChooser.APPROVE_OPTION)
-				{
-				File f=fc.getSelectedFile();*/
 				try
 					{
 					for(String chname:image.keySet())
@@ -111,7 +101,6 @@ public class ImageWindowToolScreenshot implements ImageWindowTool, ActionListene
 					{
 					e2.printStackTrace();
 					}
-				//}
 			
 			}
 		

@@ -854,12 +854,17 @@ public class NucLineage extends EvObject implements Cloneable
 				double frac;
 				try
 					{
+					tdiff=new EvDecimal(0);
 					frac=frame.subtract(frameBefore).divide(tdiff).doubleValue();
 					}
-				catch (RuntimeException e)
+				catch (ArithmeticException e)
 					{
 					//This can occur if tdiff is really small
 					return posToInterpol(frameAfter, frameBefore, frameAfter);
+					/*NucInterp inter=posToInterpol(frameBefore, frameBefore, frameAfter);
+					if(overrideEnd!=null && overrideEnd.equals(frame))
+						inter.isEnd=true;
+					return inter;*/
 					}
 				double frac1=1.0-frac;
 

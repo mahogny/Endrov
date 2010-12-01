@@ -389,9 +389,11 @@ public class NucModelExtension implements ModelWindowExtension
 			if(!nuc.pos.isEmpty())
 				{
 				gl.glLineWidth(traceWidth);
-				float colR=(float)traceColor.getRedDouble();
-				float colG=(float)traceColor.getGreenDouble();
-				float colB=(float)traceColor.getBlueDouble();
+				
+				Color thisTraceColor=getTraceColor(nuc);
+				float colR=(float)thisTraceColor.getRed()/255.0f;
+				float colG=(float)thisTraceColor.getGreen()/255.0f;
+				float colB=(float)thisTraceColor.getBlue()/255.0f;
 				gl.glColor3d(colR,colG,colB);
 //				gl.glColor3d(1, 1, 1);
 				if(simple)
@@ -439,14 +441,22 @@ public class NucModelExtension implements ModelWindowExtension
 				}
 			}
 		
-		private Color colorForNuc(NucSel pair)
+		private Color colorForNuc(NucLineage.Nuc nuc)
 			{
 			Color col=null;
 			if(traceColor!=null)
 				col=traceColor.c;
 			if(col==null)
-				col=NucLineage.representativeColor(pair.getNuc().colorNuc);
+				col=NucLineage.representativeColor(nuc.colorNuc);
 			return col;
+			}
+		
+		public Color getTraceColor(NucLineage.Nuc nuc)
+			{
+			if(traceColor!=null)
+				return traceColor.getAWTColor();
+			else
+				return colorForNuc(nuc);
 			}
 		
 		/**
@@ -597,7 +607,7 @@ public class NucModelExtension implements ModelWindowExtension
 					
 					if(traceCur && !traceSel && inter.get(nucPair).isVisible())
 						{
-						Color col=colorForNuc(nucPair);
+						Color col=colorForNuc(nucPair.getNuc());
 						renderTrace(gl,nucPair.getNuc(), tracesSimple, col);
 						}
 					
@@ -625,7 +635,7 @@ public class NucModelExtension implements ModelWindowExtension
 				for(NucSel pair:NucCommonUI.getSelectedNuclei())
 					{
 					NucLineage.Nuc nuc=pair.getNuc();
-					renderTrace(gl,nuc, tracesSimple, colorForNuc(pair));
+					renderTrace(gl,nuc, tracesSimple, colorForNuc(pair.getNuc()));
 					}
 			
 			//Cell divisions
