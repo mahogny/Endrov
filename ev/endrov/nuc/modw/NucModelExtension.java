@@ -820,6 +820,35 @@ public class NucModelExtension implements ModelWindowExtension
 
 
 		
+
+		private void invokeDrawListHidden(GL2 gl)
+			{
+			//gl.glCallList(displayListHiddenSphere);
+			GLU glu=new GLU();
+			GLUquadric q=glu.gluNewQuadric();
+			glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
+			glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
+			glu.gluDeleteQuadric(q);
+			}
+		
+		private void invokeDrawListVisible(GL2 gl)
+			{
+//  	gl.glCallList(displayListVisibleSphere);
+			GLU glu=new GLU();
+			GLUquadric q=glu.gluNewQuadric();
+			glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
+			glu.gluDeleteQuadric(q);
+			}
+
+		private void invokeDrawListSelect(GL2 gl)
+			{
+    	//gl.glCallList(displayListSelectSphere);
+			//select sphere
+			GLU glu=new GLU();
+			GLUquadric q=glu.gluNewQuadric();
+			glu.gluSphere(q,1.0,NUC_SELECT_DIV,NUC_SELECT_DIV);
+			glu.gluDeleteQuadric(q);
+  		}
 		
 		/**
 		 * Generate vertex lists for spheres
@@ -827,39 +856,34 @@ public class NucModelExtension implements ModelWindowExtension
 		private void initDrawSphere(GL2 gl)
 			{
 			/*
-			}
-			if(!madeDisplayLists)
-				{
-				madeDisplayLists=true;*/
-				GLU glu=new GLU();
-				GLUquadric q=glu.gluNewQuadric();
-				
-				displayListVisibleSphere = gl.glGenLists(1);
-				gl.glNewList(displayListVisibleSphere, GL2.GL_COMPILE);
-				glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
-				//drawSphereSolid(gl, 1.0, NUC_SHOW_DIV,NUC_SHOW_DIV);
-				gl.glEndList();
-				
-				displayListSelectSphere = gl.glGenLists(1);
-				gl.glNewList(displayListSelectSphere, GL2.GL_COMPILE);
-				glu.gluSphere(q,1.0,NUC_SELECT_DIV,NUC_SELECT_DIV);
-				gl.glEndList();
+			GLU glu=new GLU();
+			GLUquadric q=glu.gluNewQuadric();
 
-				glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
-				
-				displayListHiddenSphere = gl.glGenLists(1);
-				gl.glNewList(displayListHiddenSphere, GL2.GL_COMPILE);
-				glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
-				gl.glEndList();
-				
-				glu.gluDeleteQuadric(q);
-			//	}
+			displayListVisibleSphere = gl.glGenLists(1);
+			gl.glNewList(displayListVisibleSphere, GL2.GL_COMPILE);
+			glu.gluSphere(q,1.0,NUC_SHOW_DIV,NUC_SHOW_DIV);
+			//drawSphereSolid(gl, 1.0, NUC_SHOW_DIV,NUC_SHOW_DIV);
+			gl.glEndList();
+
+			displayListSelectSphere = gl.glGenLists(1);
+			gl.glNewList(displayListSelectSphere, GL2.GL_COMPILE);
+			glu.gluSphere(q,1.0,NUC_SELECT_DIV,NUC_SELECT_DIV);
+			gl.glEndList();
+
+			glu.gluQuadricDrawStyle(q, GLU.GLU_LINE);
+
+			displayListHiddenSphere = gl.glGenLists(1);
+			gl.glNewList(displayListHiddenSphere, GL2.GL_COMPILE);
+			glu.gluSphere(q,1.0,NUC_HIDE_DIV,NUC_HIDE_DIV);
+			gl.glEndList();
+
+			glu.gluDeleteQuadric(q);
+			*/
 			}
 
-		//private boolean madeDisplayLists=false;
-		private int displayListVisibleSphere;
+/*		private int displayListVisibleSphere;
 		private int displayListHiddenSphere;
-		private int displayListSelectSphere;
+		private int displayListSelectSphere;*/
 		
 		
 		private void drawVisibleSphere(GL2 gl, double r, boolean selected, float colR, float colG, float colB)
@@ -874,7 +898,8 @@ public class NucModelExtension implements ModelWindowExtension
 				gl.glPolygonMode(GL2.GL_BACK, GL2.GL_LINE);
 				gl.glCullFace(GL2.GL_FRONT);
 				gl.glDepthFunc(GL2.GL_LEQUAL);
-	    	gl.glCallList(displayListVisibleSphere);
+				invokeDrawListVisible(gl);
+	    	
 				gl.glCullFace(GL2.GL_BACK);
 				gl.glDepthFunc(GL2.GL_LESS);
 				gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
@@ -884,8 +909,9 @@ public class NucModelExtension implements ModelWindowExtension
       gl.glEnable(GL2.GL_LIGHTING);
     	gl.glColor3d(1,1,1);
     	gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE, new float[]{colR,colG,colB}, 0);
-//    	gl.glColor3d(colR,colG,colB);
-    	gl.glCallList(displayListVisibleSphere);
+			invokeDrawListVisible(gl);
+    		
+    	
       gl.glDisable(GL2.GL_LIGHTING);
 
     	gl.glScaled(ir,ir,ir);
@@ -894,7 +920,7 @@ public class NucModelExtension implements ModelWindowExtension
 			{
     	double ir=1.0/r;
 			gl.glScaled(r,r,r);
-    	gl.glCallList(displayListHiddenSphere);
+			invokeDrawListHidden(gl);
     	gl.glScaled(ir,ir,ir);
 			}
 		
@@ -902,7 +928,7 @@ public class NucModelExtension implements ModelWindowExtension
 			{
     	double ir=1.0/r;
 			gl.glScaled(r,r,r);
-    	gl.glCallList(displayListSelectSphere);
+			invokeDrawListSelect(gl);
     	gl.glScaled(ir,ir,ir);
 			}
 		
