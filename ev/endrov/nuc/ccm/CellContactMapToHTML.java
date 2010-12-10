@@ -48,8 +48,8 @@ public class CellContactMapToHTML
 		if(ov==null || ov.isEmpty())
 			return neighOverlaps;
 		//NucLineage.Nuc thisNuc=ccm.lin.nuc.get(nucName);
-		EvDecimal firstFrame=ccm.nucInfo.get(nucName).firstFrame;
-		EvDecimal lastFrame=ccm.nucInfo.get(nucName).lastFrame;
+		EvDecimal firstFrame=ccm.cellInfo.get(nucName).firstFrame;
+		EvDecimal lastFrame=ccm.cellInfo.get(nucName).lastFrame;
 		//This could be a potential fix for the last-frame-is-not-in-contact problem.
 		//Problem is, it does so by ignoring the last part which has other problems.
 		//EvDecimal lastFrame=thisNuc.pos.lastKey();
@@ -92,7 +92,7 @@ public class CellContactMapToHTML
 	
 	
 	/**
-	 * Generate HTML representation, place in given directory
+	 * For a set of cell contact maps, generate HTML representation. Place in given directory
 	 */
 	public static void generateHTML(Map<String,CellContactMap> orderedCCM, File targetdirTree)
 		{
@@ -115,7 +115,7 @@ public class CellContactMapToHTML
 			//Which nuclei are covered, in total?
 			TreeSet<String> nucNames=new TreeSet<String>();
 			for(CellContactMap e:orderedCCM.values())
-				nucNames.addAll(e.nucInfo.keySet());
+				nucNames.addAll(e.cellInfo.keySet());
 			
 			/////// HTML files for all contacts
 			if(targetdirTree.exists())
@@ -255,7 +255,7 @@ public class CellContactMapToHTML
 	
 	private static boolean isAnnotated(CellContactMap lin, String nucName)
 		{
-		return lin.nucInfo.containsKey(nucName);
+		return lin.cellInfo.containsKey(nucName);
 		}
 	
 
@@ -283,7 +283,7 @@ public class CellContactMapToHTML
 		if(len!=0)
 			imgcode.append(getOverlapImage(len,current));
 
-		//Safe version
+		//Safe version, but generates tons of images = slow
 		//for(boolean b:neighOverlaps)
 		//	imgcode.append("<img src=\""+(b ? 'n' : 'a')+"_bar.png\">");
 		return imgcode.toString();
