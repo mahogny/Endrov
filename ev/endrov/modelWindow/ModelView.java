@@ -144,12 +144,17 @@ public class ModelView extends GLJPanel //GLCanvas
 		}
 	
 	private GLEventListener glEventListener=new GLEventListener()
-		{
+		{		
+		HashSet<ModelWindowHook> hasInited=new HashSet<ModelWindowHook>();
+		
+		
 		/**
 		 * Called once when OpenGL is inititalized
 		 */
 		public void init(GLAutoDrawable drawable)
 			{
+			hasInited.clear();
+			
 			//Get debug info
 			if(EV.debugMode)
 				drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
@@ -293,6 +298,14 @@ public class ModelView extends GLJPanel //GLCanvas
 			
 			checkerr(gl);
 			
+			//(Re-)Init OpenGL if needed. Resizing window sometimes causes a need to re-init 
+			for(ModelWindowHook h:window.modelWindowHooks)
+				if(!hasInited.contains(h))
+					{
+					h.initOpenGL(gl);
+					hasInited.add(h);
+					}
+
 			//Prepare render extensions
 			for(ModelWindowHook h:window.modelWindowHooks)
 				h.displayInit(gl);

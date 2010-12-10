@@ -93,6 +93,11 @@ public class ModelWindowGrid implements ModelWindowExtension
 			return 0;
 			}
 		public boolean canRender(EvObject ob){return false;}
+		
+		public void initOpenGL(GL gl)
+			{
+			}
+		
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}
 		public void fillModelWindowMenus(){}

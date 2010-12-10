@@ -350,6 +350,12 @@ public class NucModelExtension implements ModelWindowExtension
 			return v;
 			}
 		
+		public void initOpenGL(GL gl)
+			{
+			initDrawSphere(gl.getGL2());
+			}
+
+		
 		/**
 		 * Prepare for rendering
 		 */
@@ -466,7 +472,7 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			GL2 gl=glin.getGL2();
 
-			initDrawSphere(gl);
+			//initDrawSphere(gl);
 			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 			
 			EvDecimal curFrame=w.getFrame();
@@ -820,9 +826,11 @@ public class NucModelExtension implements ModelWindowExtension
 		 */
 		private void initDrawSphere(GL2 gl)
 			{
+			/*
+			}
 			if(!madeDisplayLists)
 				{
-				madeDisplayLists=true;
+				madeDisplayLists=true;*/
 				GLU glu=new GLU();
 				GLUquadric q=glu.gluNewQuadric();
 				
@@ -845,9 +853,10 @@ public class NucModelExtension implements ModelWindowExtension
 				gl.glEndList();
 				
 				glu.gluDeleteQuadric(q);
-				}
+			//	}
 			}
-		private boolean madeDisplayLists=false;
+
+		//private boolean madeDisplayLists=false;
 		private int displayListVisibleSphere;
 		private int displayListHiddenSphere;
 		private int displayListSelectSphere;

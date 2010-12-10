@@ -71,6 +71,11 @@ public class Mesh3dModelExtension implements ModelWindowExtension
 			return v;
 			}
 		
+		public void initOpenGL(GL gl)
+			{
+			}
+
+		
 		/**
 		 * Prepare for rendering
 		 */
