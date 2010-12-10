@@ -101,6 +101,9 @@ public class BookmarkModelWindowHook implements ModelWindowHook, ActionListener
 		
 		
 		}
+	public void initOpenGL(GL gl)
+		{
+		}
 	public void displayFinal(GL gl, List<TransparentRender> transparentRenderers)
 		{
 		}

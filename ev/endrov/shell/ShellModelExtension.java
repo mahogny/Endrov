@@ -70,6 +70,12 @@ public class ShellModelExtension implements ModelWindowExtension
 			return Collections.emptySet();
 			}
 		
+		
+		public void initOpenGL(GL gl)
+			{
+			}
+
+		
 		public void displayInit(GL gl)
 			{
 			}
@@ -77,8 +83,6 @@ public class ShellModelExtension implements ModelWindowExtension
 		
 		public void displayFinal(GL glin,List<TransparentRender> transparentRenderers)
 			{
-			if(1==1) return;
-			
 			GL2 gl=glin.getGL2();
 			for(Shell shell:w.getVisibleObjects(Shell.class))
 				{

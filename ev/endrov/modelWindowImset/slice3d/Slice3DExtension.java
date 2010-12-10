@@ -76,6 +76,11 @@ public class Slice3DExtension implements ModelWindowExtension
 			return r;
 			}
 		public boolean canRender(EvObject ob){return false;}
+		
+		public void initOpenGL(GL gl)
+			{
+			}
+		
 		public void displayInit(GL gl){}
 		public void displaySelect(GL gl){}
 		public void readPersonalConfig(Element e){}

@@ -64,6 +64,10 @@ public class EvLineModelExtension implements ModelWindowExtension
 		
 		public void select(int pixelid){}
 		
+		public void initOpenGL(GL gl)
+			{
+			}
+
 		/**
 		 * Prepare for rendering
 		 */

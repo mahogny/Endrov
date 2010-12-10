@@ -67,6 +67,10 @@ public class ChromaCountKJModelExtension implements ModelWindowExtension
 			return v;
 			}
 	
+		public void initOpenGL(GL gl)
+			{
+			}
+
 		/**
 		 * Prepare for rendering
 		 */

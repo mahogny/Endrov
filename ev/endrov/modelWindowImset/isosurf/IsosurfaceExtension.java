@@ -130,6 +130,10 @@ public class IsosurfaceExtension implements ModelWindowExtension
 			return this.w.getFrame();
 			}
 
+		public void initOpenGL(GL gl)
+			{
+			}
+
 		
 		
 		public void displayFinal(GL gl,List<TransparentRender> transparentRenderers)

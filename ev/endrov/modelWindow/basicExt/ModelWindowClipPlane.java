@@ -103,6 +103,10 @@ public class ModelWindowClipPlane implements ModelWindowExtension
 			}
 		
 		
+		public void initOpenGL(GL gl)
+			{
+			}
+
 		
 		
 		public void displayInit(GL glin)
