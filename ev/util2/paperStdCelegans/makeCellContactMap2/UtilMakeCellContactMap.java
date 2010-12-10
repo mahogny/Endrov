@@ -1,9 +1,10 @@
+package util2.paperStdCelegans.makeCellContactMap2;
+
 /***
  * Copyright (C) 2010 Johan Henriksson
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperStdCelegans.makeCellContactMap2;
 
 import java.io.*;
 import java.text.NumberFormat;
@@ -14,9 +15,9 @@ import util2.ConnectImserv;
 import endrov.data.EvData;
 import endrov.ev.*;
 import endrov.imageset.Imageset;
-import endrov.imagesetImserv.EvImserv;
 import endrov.neighmap.NeighMap;
 import endrov.nuc.NucLineage;
+import endrov.nuc.ccm.MakeCellContactMap;
 import endrov.util.*;
 
 //stdcelegans vs celegans2008.2?
@@ -143,22 +144,20 @@ public class UtilMakeCellContactMap
 			System.out.println("Connecting");
 			String url=ConnectImserv.url;
 			String query="not trash and CCM";
-			EvImserv.EvImservSession session=EvImserv.getSession(new EvImserv.ImservURL(url));
-			String[] imsets=session.conn.imserv.getDataKeys(query);
 			//TODO make a getDataKeysWithTrash, exclude by default?
 			System.out.println("Loading imsets");
 			
 			TreeMap<String, NucLineage> lins=new TreeMap<String, NucLineage>();
 			
-			for(String s:imsets)
+			for(String s:new String[]{"1.ost","2.ost"})
 				{
 				System.out.println("loading "+s);
-				EvData data=EvData.loadFile(url+s);
+				EvData data=EvData.loadFile(new File(s));
 				Imageset im=data.getObjects(Imageset.class).iterator().next();
 				
 				lins.put(data.getMetadataName(), im.getObjects(NucLineage.class).iterator().next());
 				}
-			NucLineage reflin=EvImserv.getImageset(url+"celegans2008.2").getObjects(NucLineage.class).iterator().next();
+			NucLineage reflin=EvData.loadFile(new File("celegans2008.2.ost")).getObjects(NucLineage.class).iterator().next();
 			//////////
 
 			final TreeSet<String> nucNames=new TreeSet<String>(reflin.nuc.keySet());
