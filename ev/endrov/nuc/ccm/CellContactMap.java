@@ -26,7 +26,8 @@ import endrov.util.EvDecimal;
 
 
 /**
- * General cell contact maps
+ * General cell contact map
+ * 
  * @author Johan Henriksson
  *
  */
@@ -34,47 +35,38 @@ public class CellContactMap extends EvObject
 	{
 	private static final String metaType="ccm";
 	
+	/**
+	 * Further information about one nucleus 
+	 */
+	public static class CellInfo
+		{
+		public EvDecimal firstFrame;
+		public EvDecimal lastFrame;
+		}
 	
-	//nuc -> nuc -> frames
+	//Map: cell -> cell -> frames they coexist
 	public Map<String,Map<String,SortedSet<EvDecimal>>> contactsf=new TreeMap<String, Map<String,SortedSet<EvDecimal>>>();
 
+	//Which frames have been evaluated
 	public TreeSet<EvDecimal> framesTested=new TreeSet<EvDecimal>();
-	public Map<String, NucInfo> nucInfo=new HashMap<String, NucInfo>();
 	
-	public static class NucInfo
-		{
-		public EvDecimal firstFrame, lastFrame;
-		}
+	//Cell metadata
+	public Map<String, CellInfo> cellInfo=new HashMap<String, CellInfo>();
 	
-	public NucInfo getCreateInfo(String name)
+	/**
+	 * Get container for cell metadata
+	 */
+	public CellInfo getCreateInfo(String name)
 		{
-		NucInfo info=nucInfo.get(name);
+		CellInfo info=cellInfo.get(name);
 		if(info==null)
-			nucInfo.put(name,info=new NucInfo());
+			cellInfo.put(name,info=new CellInfo());
 		return info;
 		}
-	
+
 	/**
-	 * Add to life length
+	 * For two cells, add frame with contact a <-> b
 	 */
-	/*
-	public void addLifelen(String a)
-		{
-		NucInfo info=nucInfo.get(a);
-		info.lifeLen++;*/
-		/*
-		Integer len=lifelen.get(a);
-		if(len==null)
-			len=0;
-		len++;
-		lifelen.put(a,len);
-		*/
-//		}
-	
-	/**
-	 * Add frame with contact a <-> b
-	 */
-	
 	public void addFrame(String a, String b, EvDecimal f)
 		{
 		addFrame1(a, b, f);
@@ -85,7 +77,6 @@ public class CellContactMap extends EvObject
 	/**
 	 * Add frame with contact a -> b(?)
 	 */
-	
 	private void addFrame1(String a, String b, EvDecimal f)
 		{
 		Map<String,SortedSet<EvDecimal>> na=contactsf.get(a);
@@ -113,7 +104,9 @@ public class CellContactMap extends EvObject
 
 
 
-
+	/**
+	 * List of decimals -> Generate String
+	 */
 	private static StringBuffer decimalToString(Collection<EvDecimal> framesTested)
 		{
 		StringBuffer sbTested=new StringBuffer();
@@ -128,7 +121,10 @@ public class CellContactMap extends EvObject
 			}
 		return sbTested;
 		}
-	
+
+	/**
+	 * Parse string of decimals
+	 */
 	private static List<EvDecimal> stringToDecimal(String s)
 		{
 		LinkedList<EvDecimal> list=new LinkedList<EvDecimal>();
@@ -149,10 +145,10 @@ public class CellContactMap extends EvObject
 			
 			if(sub.getName().equals("tf"))
 				framesTested.addAll(stringToDecimal(sub.getText()));
-			else //"nuc"
+			else //name is "nuc"
 				{
 				String nucName=sub.getAttributeValue("name");
-				NucInfo info=getCreateInfo(nucName);
+				CellInfo info=getCreateInfo(nucName);
 				info.firstFrame=new EvDecimal(sub.getAttributeValue("firstFrame"));
 				info.lastFrame=new EvDecimal(sub.getAttributeValue("lastFrame"));
 
@@ -181,17 +177,17 @@ public class CellContactMap extends EvObject
 			}
 		
 		//Must make sure contactsf is filled up
-		for(String nucName:nucInfo.keySet())
+		for(String cellNameA:cellInfo.keySet())
 			{
-			for(String otherName:nucInfo.keySet())
+			for(String cellNameB:cellInfo.keySet())
 				{
-				Map<String,SortedSet<EvDecimal>> thisContacts=contactsf.get(nucName);
-				if(thisContacts.get(otherName)==null)
+				Map<String,SortedSet<EvDecimal>> thisContacts=contactsf.get(cellNameA);
+				if(thisContacts.get(cellNameB)==null)
 					{
-					Map<String,SortedSet<EvDecimal>> otherContacts=contactsf.get(otherName);
+					Map<String,SortedSet<EvDecimal>> otherContacts=contactsf.get(cellNameB);
 					SortedSet<EvDecimal> frames=new TreeSet<EvDecimal>();
-					thisContacts.put(otherName, frames);
-					otherContacts.put(nucName, frames);
+					thisContacts.put(cellNameB, frames);
+					otherContacts.put(cellNameA, frames);
 					}
 				}
 			}
@@ -205,15 +201,15 @@ public class CellContactMap extends EvObject
 		elTestedFrame.setText(decimalToString(framesTested).toString());
 		e.addContent(elTestedFrame);
 		
-		for(String nucName:nucInfo.keySet())
+		for(String nucName:cellInfo.keySet())
 			{
-			NucInfo info=nucInfo.get(nucName);
+			CellInfo info=cellInfo.get(nucName);
 			
-			Element elNuc=new Element("nuc");
-			e.addContent(elNuc);
-			elNuc.setAttribute("name",nucName);
-			elNuc.setAttribute("firstFrame",info.firstFrame.toString());
-			elNuc.setAttribute("lastFrame",info.lastFrame.toString());
+			Element elCell=new Element("nuc");
+			e.addContent(elCell);
+			elCell.setAttribute("name",nucName);
+			elCell.setAttribute("firstFrame",info.firstFrame.toString());
+			elCell.setAttribute("lastFrame",info.lastFrame.toString());
 			
 			for(Map.Entry<String, SortedSet<EvDecimal>> entry:contactsf.get(nucName).entrySet())
 				{
@@ -223,7 +219,7 @@ public class CellContactMap extends EvObject
 					Element elContact=new Element("contact");
 					elContact.setAttribute("name",otherName);
 					elContact.setText(decimalToString(entry.getValue()).toString());
-					elNuc.addContent(elContact);
+					elCell.addContent(elContact);
 					}
 				}
 			
