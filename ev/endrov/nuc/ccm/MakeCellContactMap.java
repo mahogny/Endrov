@@ -6,7 +6,7 @@
 /**
  * 
  */
-package util2.paperStdCelegans.makeCellContactMap2;
+package endrov.nuc.ccm;
 
 import java.util.*;
 
@@ -201,7 +201,8 @@ public class MakeCellContactMap
 	
 	
 	/**
-	 * Note that it will loop <= to endFrame. One-frame neighlist can be obtained by giving startframe=endframe
+	 * Calculate cell contact map from a lineage, from startFrames <= f <= endFrame.
+	 * Contacts for one frame can be obtained by letting startframe=endframe.
 	 */
 	public static NeighMap calculateCellMap(NucLineage lin, TreeSet<String> nucNames,
 			EvDecimal startFrame, EvDecimal endFrame, EvDecimal frameInc)
