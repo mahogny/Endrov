@@ -30,7 +30,7 @@ public class SnapBackSlider extends JSlider implements ChangeListener
 	
 	public interface SnapChangeListener
 		{
-		public void slideChange(int change);
+		public void slideChange(SnapBackSlider source, int change);
 		}
 
 	private List<SnapChangeListener> listeners=new LinkedList<SnapChangeListener>();
@@ -60,7 +60,7 @@ public class SnapBackSlider extends JSlider implements ChangeListener
 		int c=getValue()-lastValue;
 		lastValue=getValue();
 		for(SnapChangeListener list:listeners)
-			list.slideChange(c);
+			list.slideChange(this, c);
 		}
 
 	private void snapback()

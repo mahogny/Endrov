@@ -16,14 +16,18 @@ import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListDataListener;
 
 import endrov.basicWindow.EvComboColor;
 import endrov.basicWindow.icon.BasicIcon;
+import endrov.modelWindow.ModelWindow;
+import endrov.nuc.NucLineage;
 import endrov.util.EvSwingUtil;
 import endrov.util.SnapBackSlider;
+import endrov.util.Tuple;
 
 /**
  * Expression pattern settings
@@ -49,31 +53,52 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, SnapB
 	private final JComboBox cExp1=new JComboBox(cm1);
 
 	private final SnapBackSlider snapContrast=new SnapBackSlider(SnapBackSlider.HORIZONTAL,-10000,10000);
+	private final SnapBackSlider snapBrightness=new SnapBackSlider(SnapBackSlider.HORIZONTAL,-10000,10000);
+
+	public double colR, colG, colB;
 
 	/**
 	 * Scaling of expression. If null then calculate
 	 */
 	public Double scale1;
-
-	
-	
+	public double add1;
+	// final color = signal*scale1 + add1
 	
 	public ModwPanelExpPattern(NucModelExtension.NucModelWindowHook hook)
 		{
+		JLabel labelC=new JLabel("C: ");
+		JLabel labelB=new JLabel("B: ");
+		labelC.setToolTipText("Contrast");
+		labelB.setToolTipText("Brightness");
+		
 		this.hook=hook;
 		colorCombo.addActionListener(this);
 		bDelete.addActionListener(this);
 		snapContrast.addSnapListener(this);
-		setLayout(new GridLayout(2,1));
+		snapBrightness.addSnapListener(this);
+		cExp1.addActionListener(this);
+		
+		setLayout(new GridLayout(3,1));
 		add(EvSwingUtil.layoutLCR(null, cExp1, colorCombo));
-		add(EvSwingUtil.layoutLCR(null, snapContrast, bDelete));
+		add(EvSwingUtil.layoutLCR(labelC, snapContrast, bDelete));
+		add(EvSwingUtil.layoutLCR(labelB, snapBrightness, null));
+		
 		updateColor();
 		}
 	
-	public void slideChange(int change)
+	public void slideChange(SnapBackSlider source, int change)
 		{
-		scale1*=Math.exp(change/5000.0);
-		hook.w.view.repaint();
+		//Shouldn't happen but better than nothing
+		if(scale1==null)
+			adjustExpPatternScale(hook.w, this);
+		if(scale1!=null)
+			{
+			if(source==snapContrast)
+				scale1*=Math.exp(change/5000.0);
+			else
+				add1+=change*scale1/5000.0;
+			hook.w.view.repaint();
+			}
 		}
 	
 	
@@ -150,8 +175,8 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, SnapB
 		{
 		if(e.getSource()==colorCombo)
 			{
-			hook.w.view.repaint();
 			updateColor();
+			hook.w.view.repaint();
 			}
 		else
 			{
@@ -169,6 +194,23 @@ public class ModwPanelExpPattern extends JPanel implements ActionListener, SnapB
 		return (String)cExp1.getSelectedItem();
 		}
 	
-	public double colR, colG, colB;
+	public static void adjustExpPatternScale(ModelWindow w, ModwPanelExpPattern panel)
+		{
+		//Find lineage with this expression pattern
+		String expName=panel.getSelectedExp();
+		for(NucLineage lin:NucLineage.getLineages(w.getSelectedData()))
+			if(lin.getAllExpNames().contains(expName))
+				{
+				Tuple<Double,Double> maxMin1=lin.getMaxMinExpLevel(expName);
+				if(maxMin1!=null)
+					{
+					double absmax=Math.max(Math.abs(maxMin1.fst()), Math.abs(maxMin1.snd()));
+					panel.scale1=1.0/absmax;
+					panel.add1=0;
+					}
+				break;
+				}
+		}
+
 	
 	}

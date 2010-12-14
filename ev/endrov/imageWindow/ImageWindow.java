@@ -355,14 +355,14 @@ public class ImageWindow extends BasicWindow
 		imagePanel.addMouseMotionListener(this);
 		imagePanel.addMouseWheelListener(this);
 		sliderZoom2.addSnapListener(new SnapChangeListener(){
-			public void slideChange(int change){zoom(change/50.0);}
+			public void slideChange(SnapBackSlider source, int change){zoom(change/50.0);}
 		});
 		miShowOverlay.addChangeListener(chListenerNoInvalidate);
 		bAddChannel.addActionListener(this);
 		
 		
 		sliderRotate.addSnapListener(new SnapBackSlider.SnapChangeListener(){
-		public void slideChange(int change)
+		public void slideChange(SnapBackSlider source, int change)
 			{
 			imagePanel.rotateCamera(change/200.0);
 			}

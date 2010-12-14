@@ -230,14 +230,14 @@ public class ModelWindow extends BasicWindow
 
 		
 		barZoom.addSnapListener(new SnapBackSlider.SnapChangeListener(){
-			public void slideChange(int change)
+			public void slideChange(SnapBackSlider source, int change)
 				{
 				view.pan(0,0,change*5,false);
 				view.repaint();
 				}
 		});
 		barRotate.addSnapListener(new SnapBackSlider.SnapChangeListener(){
-			public void slideChange(int change)
+			public void slideChange(SnapBackSlider source, int change)
 				{
 				view.camera.rotateCamera(0, 0, change/200.0);
 				view.repaint();
