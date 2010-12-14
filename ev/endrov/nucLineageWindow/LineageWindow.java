@@ -190,8 +190,8 @@ public class LineageWindow extends BasicWindow
 		
 
 
-		sliderZoomX.addSnapListener(new SnapChangeListener(){public void slideChange(int change){zoomX(change);repaint();}});
-		sliderZoomY.addSnapListener(new SnapChangeListener(){public void slideChange(int change){zoomY(change);repaint();}});
+		sliderZoomX.addSnapListener(new SnapChangeListener(){public void slideChange(SnapBackSlider source, int change){zoomX(change);repaint();}});
+		sliderZoomY.addSnapListener(new SnapChangeListener(){public void slideChange(SnapBackSlider source, int change){zoomY(change);repaint();}});
 		
 		ButtonGroup expGroup=new ButtonGroup();
 		expGroup.add(miShowExpLine);

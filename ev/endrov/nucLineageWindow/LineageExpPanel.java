@@ -406,7 +406,7 @@ public class LineageExpPanel extends JPanel
 			updateLinView();
 			}
 		
-		public void slideChange(int change)
+		public void slideChange(SnapBackSlider source, int change)
 			{
 			exp.scale1*=Math.exp(change/5000.0);
 			//System.out.println("new scale "+exp.scale1);

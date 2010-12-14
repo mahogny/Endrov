@@ -465,6 +465,7 @@ public class NucModelExtension implements ModelWindowExtension
 				return colorForNuc(nuc);
 			}
 		
+		
 		/**
 		 * Render graphics
 		 */
@@ -485,22 +486,7 @@ public class NucModelExtension implements ModelWindowExtension
 			//Set suitable scaling for expression patterns
 			for(ModwPanelExpPattern panel:expsettings)
 				if(panel.scale1==null)
-					{
-					//Find lineage with this expression pattern
-					String expName=panel.getSelectedExp();
-					for(NucLineage lin:NucLineage.getLineages(w.getSelectedData()))
-						if(lin.getAllExpNames().contains(expName))
-							{
-							Tuple<Double,Double> maxMin1=lin.getMaxMinExpLevel(expName);
-							if(maxMin1!=null)
-								{
-								double absmax=Math.max(Math.abs(maxMin1.fst()), Math.abs(maxMin1.snd()));
-								panel.scale1=1.0/absmax;
-								}
-							break;
-							}
-					
-					}
+					ModwPanelExpPattern.adjustExpPatternScale(w, panel);
 			
 			//Update list of expression patterns
 			Set<String> v=new TreeSet<String>();
@@ -739,6 +725,14 @@ public class NucModelExtension implements ModelWindowExtension
 			}
 
 		
+		private double clamp0(double x)
+			{
+			if(x<0)
+				return 0;
+			else
+				return x;
+			}
+		
 		/**
 		 * Render body of one nucleus
 		 */
@@ -773,9 +767,10 @@ public class NucModelExtension implements ModelWindowExtension
 	    			{
 	    			double level=n.interpolateLevel(curFrame);
 	    			double scale=panel.scale1;
-	    			nucColor[0]+=(float)panel.colR*level*scale;
-	    			nucColor[1]+=(float)panel.colG*level*scale;
-	    			nucColor[2]+=(float)panel.colB*level*scale;
+	    			double add=panel.add1;
+	    			nucColor[0]+=(float)panel.colR*(clamp0(level*scale+add));
+	    			nucColor[1]+=(float)panel.colG*(clamp0(level*scale+add));
+	    			nucColor[2]+=(float)panel.colB*(clamp0(level*scale+add));
 	    			//System.out.println("here"+level+" ");
 	    			}
 	    		else
