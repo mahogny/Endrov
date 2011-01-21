@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import util2.paperCeExpression.integrate.IntExp;
-import util2.paperCeExpression.integrate.IntExpFileUtil;
 
 import endrov.data.EvData;
 import endrov.data.EvPath;
@@ -46,26 +46,26 @@ public class AssembleSingleCell
 	
 	public static String getExpName(File in)
 		{
-		return IntExpFileUtil.getGeneName(in)+"_"+in.getName();
+		return PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
 		}
 	
 	public static void main(String[] args)
 		{
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
-		new IntExpFileUtil(); //Get password right away so it doesn't stop later
+		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 	
 		Set<String> argsSet=new HashSet<String>();
 		for(String s:args)
 			argsSet.add(s);
 	
 		//Find recordings to compare
-		Set<File> datas=IntExpFileUtil.getAnnotated(); 
+		Set<File> datas=PaperCeExpressionUtil.getAnnotated(); 
 		//Set<File> datas=IntExpFileUtil.getTestSet();
 	
 		//Use only test set?
 		if(argsSet.contains("test"))
-			datas=IntExpFileUtil.getTestSet();
+			datas=PaperCeExpressionUtil.getTestSet();
 	
 		//Use only calculated recordings?
 		if(argsSet.contains("onlycalculated"))
@@ -93,7 +93,7 @@ public class AssembleSingleCell
 				EvData dataFile=EvData.loadFile(in);
 				NucLineage recLin=getSingleCellLin(dataFile);
 
-				String totExpName=IntExpFileUtil.getGeneName(in)+"_"+in.getName();
+				String totExpName=PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
 				String recExpName=CompareAll.expName;
 
 				if(recLin==null)

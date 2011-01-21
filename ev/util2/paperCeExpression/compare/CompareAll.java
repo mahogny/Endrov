@@ -28,8 +28,8 @@ import javax.imageio.ImageIO;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import util2.paperCeExpression.integrate.IntExp;
-import util2.paperCeExpression.integrate.IntExpFileUtil;
 
 import endrov.data.EvContainer;
 import endrov.data.EvData;
@@ -502,7 +502,7 @@ public class CompareAll
 		{
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
-		new IntExpFileUtil(); //Get password right away so it doesn't stop later
+		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 		
 		//Do things in parallel. Not too many CPUs, case memory issues
 		int numThread=EvParallel.numThread;
@@ -516,12 +516,12 @@ public class CompareAll
 			argsSet.add(s);
 		
 		//Find recordings to compare
-		Set<File> datas=IntExpFileUtil.getAnnotated(); 
+		Set<File> datas=PaperCeExpressionUtil.getAnnotated(); 
 		//Set<File> datas=IntExpFileUtil.getTestSet();
 		
 		//Use only test set?
 		if(argsSet.contains("test"))
-			datas=IntExpFileUtil.getTestSet();
+			datas=PaperCeExpressionUtil.getTestSet();
 		
 		//Use only calculated recordings?
 		if(argsSet.contains("onlycalculated"))
@@ -901,7 +901,7 @@ public class CompareAll
 			Map<String, File> titleMap=new TreeMap<String, File>(); 
 			//Map<Tuple<String,String>,ColocCoefficients> map=new HashMap<Tuple<String,String>, ColocCoefficients>();
 			for(File d:datas)
-				titleMap.put(IntExpFileUtil.getGeneName(d)+" ("+d.getName()+")",d);
+				titleMap.put(PaperCeExpressionUtil.getGeneName(d)+" ("+d.getName()+")",d);
 				//titles.add(CompareSQL.getGeneName(d));
 			//for(Tuple<File,File> t:comparison.keySet())
 				//map.put(t, comparison.get(t));

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import util2.paperCeExpression.integrate.IntExpFileUtil;
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
 import endrov.data.EvData;
 import endrov.ev.EV;
@@ -37,14 +37,14 @@ public class CompareSingleCell
 		{
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
-		new IntExpFileUtil(); //Get password right away so it doesn't stop later
+		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 	
 		Set<String> argsSet=new HashSet<String>();
 		for(String s:args)
 			argsSet.add(s);
 	
 		//Find recordings to compare
-		Set<File> datas=IntExpFileUtil.getAnnotated(); 
+		Set<File> datas=PaperCeExpressionUtil.getAnnotated(); 
 		//Set<File> datas=IntExpFileUtil.getTestSet();
 
 		System.out.println(datas);

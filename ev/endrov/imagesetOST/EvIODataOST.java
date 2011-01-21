@@ -713,6 +713,7 @@ public class EvIODataOST implements EvIOData
 				scanFiles33(d, cb);
 				cb.fileIOStatus(0.6, "conversion...");
 				//convertSlicesToB(d);
+				
 				}
 			catch (FileNotFoundException e)
 				{
@@ -786,7 +787,6 @@ public class EvIODataOST implements EvIOData
 					useDisp.z=-Double.parseDouble(frameKeys.get("dispZ"));
 
 				EvStack stack=new EvStack();
-				channel.imageLoader.put(fe.getKey(),stack);
 				if(useResX==null)
 					{
 					System.out.println("!!!!! Resolution problem for "+blob.currentDir+" frame "+fe.getKey());
@@ -808,6 +808,10 @@ public class EvIODataOST implements EvIOData
 					//stack.loaders.put(se.getKey(),evim);
 					stack.putInt(se.getKey(),evim);
 					}
+
+				//This avoids problems with some old recordings
+				if(stack.getDepth()!=0)
+					channel.imageLoader.put(fe.getKey(),stack);
 				}
 			}
 

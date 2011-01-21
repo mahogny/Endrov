@@ -2,7 +2,7 @@ package util2.paperCeExpression.compare;
 
 import java.io.File;
 
-import util2.paperCeExpression.integrate.IntExpFileUtil;
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import endrov.data.EvData;
 import endrov.ev.EV;
 import endrov.ev.EvLog;
@@ -15,7 +15,7 @@ public class DebugMakeGraph
 		{
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
-		new IntExpFileUtil(); //Get password right away so it doesn't stop later
+		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 
 		for(String s:args)
 			{

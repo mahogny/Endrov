@@ -120,6 +120,8 @@ public final class MakeMovieThread extends BatchThread
 					EvDecimal frame=ch.closestFrame(curframe);
 					EvStack stack=ch.getFrame(frame);
 					int tz=stack.closestZint(z.doubleValue());
+					if(tz<0)
+						System.out.println("Error for channel "+cName.name+"   "+stack.getDepth()+"  "+z+"   "+stack.oldGetDispZ()+"   "+stack.resZ);
 					EvImage imload=stack.getInt(tz);
 					//EvDecimal tz=ch.closestZ(frame, z);
 					//EvImage imload=ch.getImageLoader(frame, tz);

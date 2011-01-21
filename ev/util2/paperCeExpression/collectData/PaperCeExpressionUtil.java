@@ -1,4 +1,4 @@
-package util2.paperCeExpression.integrate;
+package util2.paperCeExpression.collectData;
 
 import java.io.File;
 import java.sql.*;
@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
+
+import util2.paperCeExpression.integrate.ExpUtil;
 
 
 
@@ -23,14 +25,15 @@ import endrov.util.Tuple;
 
 
 
-public class IntExpFileUtil
+public class PaperCeExpressionUtil
 	{
 	public static Connection conn=null;
 
 	static
 	{
 	String pass=JOptionPane.showInputDialog("Password?");
-	if(!connectPostgres("//pompeii.biosci.ki.se/mahogny", "postgres", pass))
+	if(!connectPostgres("//localhost/tbudev3", "tbudev3", pass))
+//	if(!connectPostgres("//pompeii.biosci.ki.se/mahogny", "postgres", pass))
 		{
 		System.out.println("-------- failed to connect");
 		System.exit(1);
@@ -245,7 +248,7 @@ public class IntExpFileUtil
 			argsSet.add(s);
 		
 		//Find recordings to compare
-		Set<File> datas=IntExpFileUtil.getAnnotated();
+		Set<File> datas=PaperCeExpressionUtil.getAnnotated();
 		System.out.println(datas);
 		
 		for(File f:datas)

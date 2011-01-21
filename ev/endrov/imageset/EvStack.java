@@ -67,7 +67,7 @@ public class EvStack implements AnyEvImage
 		m.m03=disp.x;
 		m.m13=disp.y;
 		m.m23=disp.z;
-		System.out.println(m);
+		//System.out.println(m);
 		Matrix4d toSystem=new Matrix4d();
 		toSystem.invert(m);
 		cs.setFromMatrices(toSystem, m);
@@ -189,8 +189,11 @@ public class EvStack implements AnyEvImage
 		
 		//This calculation is not really true yet. Use later
 		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-oldGetDispZ())/resZ),0,getDepth()-1);
-		return closestZ;
 		
+		if(closestZ<0)
+			System.out.println("Strange closestz "+closestZ+"  "+oldGetDispZ()+" "+resZ+"   "+getDepth());
+		
+		return closestZ;
 		}
 	
 	/*

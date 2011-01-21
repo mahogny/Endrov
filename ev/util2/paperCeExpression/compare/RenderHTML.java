@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import util2.paperCeExpression.integrate.IntExpFileUtil;
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
 
 import endrov.util.EvFileUtil;
@@ -180,8 +180,8 @@ public class RenderHTML
 		Collections.sort(sortedDatas, new Comparator<File>(){
 			public int compare(File o1, File o2)
 				{
-				String n1=IntExpFileUtil.getGeneName(o1);
-				String n2=IntExpFileUtil.getGeneName(o2);
+				String n1=PaperCeExpressionUtil.getGeneName(o1);
+				String n2=PaperCeExpressionUtil.getGeneName(o2);
 				return n1.compareTo(n2);
 				}
 			});
@@ -191,7 +191,7 @@ public class RenderHTML
 		StringBuffer sbXYZims=new StringBuffer();
 		for(File f:sortedDatas)
 			{
-			String strainName=IntExpFileUtil.getGeneName(f);
+			String strainName=PaperCeExpressionUtil.getGeneName(f);
 			
 			String recStringAPT=templateRecSliceTime
 			.replace("STRAIN", strainName)

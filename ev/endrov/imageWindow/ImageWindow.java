@@ -267,19 +267,22 @@ public class ImageWindow extends BasicWindow
 			else if(e.getSource()==comboColor)
 				updateImagePanel();
 			else if(e.getSource()==bRemoveChannel)
-				{
-				if(channelWidget.size()>1)
-					{
-					channelWidget.remove(this);
-					rChannelGroup.remove(this.rSelect);
-					if(rSelect.isSelected())
-						channelWidget.get(0).rSelect.setSelected(true);
-					buildChannelPanel();
-					updateImagePanel();
-					}
-				}
+				removeChannel();
 			else
 				updateImagePanel();
+			}
+		
+		public void removeChannel()
+			{
+			if(channelWidget.size()>1)
+				{
+				channelWidget.remove(this);
+				rChannelGroup.remove(this.rSelect);
+				if(rSelect.isSelected())
+					channelWidget.get(0).rSelect.setSelected(true);
+				buildChannelPanel();
+				updateImagePanel();
+				}
 			}
 		
 		public void stateChanged(ChangeEvent e)

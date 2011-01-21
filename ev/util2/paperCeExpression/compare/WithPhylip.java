@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import util2.paperCeExpression.integrate.IntExpFileUtil;
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
 import endrov.ev.EV;
 import endrov.ev.EvLog;
@@ -42,7 +42,7 @@ public class WithPhylip
 		//comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileT);
 
 		//Find out which files there are
-		Set<File> datas=IntExpFileUtil.getAnnotated();//new TreeSet<File>();//.getAnnotated();
+		Set<File> datas=PaperCeExpressionUtil.getAnnotated();//new TreeSet<File>();//.getAnnotated();
 		/*
 		for(Tuple<File,File> t:comparison.keySet())
 			IntExpFileUtil.getAnnotated()
@@ -70,7 +70,7 @@ public class WithPhylip
 			nameMap.put(fa,tempName);
 			countName++;
 			
-			String newName=IntExpFileUtil.getGeneName(fa)+" "+fa.getName();
+			String newName=PaperCeExpressionUtil.getGeneName(fa)+" "+fa.getName();
 			
 			sbSed.append(" | sed 's/"+tempName+"/"+newName+"/'");
 			}
@@ -152,7 +152,7 @@ public class WithPhylip
 		{
 		EvLog.listeners.add(new EvLogStdout());
 		EV.loadPlugins();
-		new IntExpFileUtil(); //Get password right away so it doesn't stop later
+		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 		
 		doFor(CompareAll.cachedValuesFileT,"t");
 		doFor(CompareAll.cachedValuesFileAP,"apt");
