@@ -95,5 +95,6 @@
 	<classpathentry kind="lib" path="libs/swingx-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/capi.jar"/>
 	<classpathentry kind="lib" path="libs/ome_inc/omero_client.jar"/>
+	<classpathentry kind="lib" path="libs/gnujpdf.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

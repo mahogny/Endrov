@@ -31,6 +31,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import endrov.basicWindow.EvComboColor;
@@ -92,7 +93,7 @@ public class LineageExpPanel extends JPanel
 	/**
 	 * Put all renderers in the GUI, remove old
 	 */
-	private void placeAllRenderers()
+	public void placeAllRenderers()
 		{
 		panelAllRenderers.removeAll();
 		JPanel p=new JPanel(new GridLayout(listRenderers.size(),1));
@@ -112,6 +113,7 @@ public class LineageExpPanel extends JPanel
 		{
 		//Check if anything is different. Otherwise don't update
 		//Untested
+		boolean needUpdateView=false;
 		if(!currentAvailableExp.equals(exps))
 			{
 			currentAvailableExp.clear();
@@ -119,7 +121,11 @@ public class LineageExpPanel extends JPanel
 			for(RenderEntry e:listRenderers)
 				e.setAvailableExpressionsUpdate();
 			revalidate();
+			needUpdateView=true;
 			}
+		
+		if(needUpdateView)
+			updateLinView();
 
 /*		
 		if(currentAvailableExp.containsAll(exps))
@@ -155,6 +161,7 @@ public class LineageExpPanel extends JPanel
 		for(RenderEntry e:listRenderers)
 			list.add(e.exp);
 		view.setExpRenderSettings(list);
+		System.out.println("Setting lin view exp settings "+list);
 		}
 	
 	/**
@@ -205,13 +212,26 @@ public class LineageExpPanel extends JPanel
 				{
 				listener.remove(arg);
 				}
+			
+			public void contentChanged()
+				{
+				if(selectedExp==null || !avail.contains(selectedExp))
+					{
+					if(avail.isEmpty())
+						selectedExp="";
+					else
+						selectedExp=avail.get(0);
+					}
+				for(ListDataListener l:listener)
+					l.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0,0));
+				}
 			}
 		
 		/**
 		 * Handle list of expressions
 		 */
-		private ComboBoxModel cm1=new CustomComboModel();
-		private ComboBoxModel cm2=new CustomComboModel();
+		private CustomComboModel cm1=new CustomComboModel();
+		private CustomComboModel cm2=new CustomComboModel();
 		
 		
 		public ComboRenderType cRenderType=new ComboRenderType();
@@ -325,12 +345,15 @@ public class LineageExpPanel extends JPanel
 			{
 			avail.clear();
 			avail.addAll(currentAvailableExp);
+			cm1.contentChanged();
+			cm2.contentChanged();
+			/*
 			cExp1.setModel(cm1);
 			cExp2.setModel(cm2);
 			cExp1.removeActionListener(this);
 			cExp1.addActionListener(this);
 			cExp2.removeActionListener(this);
-			cExp2.addActionListener(this);
+			cExp2.addActionListener(this);*/
 			revalidate();
 			}
 		

@@ -80,6 +80,9 @@ public class EvIODataBioformats implements EvIOData
 			OMEXMLService service = factory.getInstance(OMEXMLService.class);
 			retrieve=service.createOMEXMLMetadata(null, null);
 			imageReader.setMetadataStore(retrieve);
+
+			System.out.println("bioformats set id "+basedir);
+			imageReader.setId(basedir.getAbsolutePath());
 			}
 		catch (DependencyException de) 
 			{
@@ -89,9 +92,12 @@ public class EvIODataBioformats implements EvIOData
 			{
 			throw new FormatException(se);
 			}
+		catch (loci.formats.FormatException fe)
+			{
+			System.out.println("Screwed up file? "+basedir);
+			throw fe;
+			}
 		
-		System.out.println("bioformats set id "+basedir);
-		imageReader.setId(basedir.getAbsolutePath());
 		System.out.println("bioformats adding channel separator");
 		imageReader=new ChannelSeparator(imageReader);
 		

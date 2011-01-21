@@ -33,10 +33,13 @@ public class BatchMovie
 		{
 		//File outfile=new File(file.getParent(),file.getName()+".mov");
 		//File outfile=new File(file.getParent(),file.getName()); //file ending added automatically
-		File outfile=new File(new File(file,"data"),"thumbnail"); //file ending added automatically
-		File outfile2=new File(new File(file,"data"),"thumbnail.avi");
+		File outfile=new File(new File(file,"data"),"thumbnailMPEG4"); //file ending added automatically
+		File outfile2=new File(new File(file,"data"),"thumbnailMPEG4.avi");
 		if(outfile2.exists())
+			{
+			System.out.println("Skipping "+file);
 			return;
+			}
 		
 		System.out.println("Doing imageset "+file.getPath());
 		EvData ost=EvData.loadFile(file);
@@ -49,6 +52,7 @@ public class BatchMovie
 		else
 			{
 			//EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("QT: h.264 (MPEG-4)");
+			//EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("Mencoder");
 			EvMovieMakerFactory factory=EvMovieMakerFactory.getFactory("Mencoder");
 			if(factory==null)
 				{
@@ -58,7 +62,8 @@ public class BatchMovie
 				return;
 				}
 			//String quality="Maximum";
-			String quality="Default";
+			//String quality="Default";
+			String quality="High-quality MPEG4";
 	
 	
 	

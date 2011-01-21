@@ -96,6 +96,12 @@ public class LineageView extends JPanel
 		public int type;
 		public String expname1="", expname2="";
 		public Double scale1; //If null, then calculate
+		
+		@Override
+		public String toString()
+			{
+			return "Exprendersettings "+color+" "+type+" expname1: "+expname1+" expname2: "+expname2+" "+scale1;
+			}
 		}
 		
 	

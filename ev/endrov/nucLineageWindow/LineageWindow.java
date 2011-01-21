@@ -328,9 +328,16 @@ public class LineageWindow extends BasicWindow
 			view.foldAll();
 		else if(e.getSource()==objectCombo)
 			{
-			System.out.println("objectcombo");
+			
+			dataChangedEvent();
+			/*
+			//System.out.println("objectcombo");
 			view.currentLin=getLineage();
+			
+			expPanel.placeAllRenderers();
+			
 			repaint();
+			*/
 			}
 		else if(e.getSource()==miShowExpDot)
 			{
@@ -671,6 +678,7 @@ public class LineageWindow extends BasicWindow
 //			view.currentFrame=frameControl.getFrame();
 		view.currentLin=getLineage();
 		expPanel.setAvailableExpressions(view.collectExpNames());
+		expPanel.placeAllRenderers();
 		repaint();
 		}
 	

@@ -13,9 +13,9 @@ import java.util.Set;
 
 import javax.swing.JFrame;
 
+import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import util2.paperCeExpression.compare.CompareAll;
 import util2.paperCeExpression.integrate.ExpUtil;
-import util2.paperCeExpression.integrate.IntExpFileUtil;
 
 
 import endrov.flowColocalization.ColocCoefficients;
@@ -34,7 +34,7 @@ public class RenderComparison
 	public static void main(String[] args)
 		{
 		
-		Set<File> datas=IntExpFileUtil.getAnnotated();
+		Set<File> datas=PaperCeExpressionUtil.getAnnotated();
 
 		final Map<Tuple<File,File>, ColocCoefficients> comparison;
 		comparison=CompareAll.loadCache(datas, CompareAll.cachedValuesFileAP);
