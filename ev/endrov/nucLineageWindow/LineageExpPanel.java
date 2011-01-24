@@ -161,7 +161,7 @@ public class LineageExpPanel extends JPanel
 		for(RenderEntry e:listRenderers)
 			list.add(e.exp);
 		view.setExpRenderSettings(list);
-		System.out.println("Setting lin view exp settings "+list);
+		//System.out.println("Setting lin view exp settings "+list);
 		}
 	
 	/**
@@ -189,6 +189,8 @@ public class LineageExpPanel extends JPanel
 			public void setSelectedItem(Object anItem)
 				{
 				selectedExp=(String)anItem;
+				for(ListDataListener l:listener)
+					l.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED,0,0));
 				}
 	
 			private LinkedList<ListDataListener> listener=new LinkedList<ListDataListener>();
@@ -275,6 +277,15 @@ public class LineageExpPanel extends JPanel
 			setAvailableExpressionsUpdate();
 			placeExpComponents();
 			updateExp();
+			
+			bUp.addActionListener(this);
+			bDown.addActionListener(this);
+			bRemoveRenderer.addActionListener(this);
+			cRenderType.addActionListener(this);
+			snapContrast.addSnapListener(this);
+			cColor.addActionListener(this);
+			cExp1.addActionListener(this);
+			cExp2.addActionListener(this);
 			}
 		
 		/**
@@ -326,12 +337,6 @@ public class LineageExpPanel extends JPanel
 				System.out.println("type wtf");
 			
 			
-			bUp.addActionListener(this);
-			bDown.addActionListener(this);
-			bRemoveRenderer.addActionListener(this);
-			cRenderType.addActionListener(this);
-			snapContrast.addSnapListener(this);
-			cColor.addActionListener(this);
 			
 			if(secondLine!=null)
 				add(secondLine,BorderLayout.CENTER);
@@ -405,7 +410,7 @@ public class LineageExpPanel extends JPanel
 				removeRenderer();
 			else if(e.getSource()==cExp1 || e.getSource()==cExp2)
 				{
-				System.out.println("here");
+				//System.out.println("here");
 				exp.scale1=null; //Re-scale
 				updateExp();
 				}
