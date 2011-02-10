@@ -27,7 +27,7 @@ import endrov.util.EvDecimal;
  */
 public class EV
 	{
-	public static final String website="http://www.endrov.net/index.php/";
+	public static final String website="http://www.endrov.net/index.php?title=";
 	public static final boolean debugMode=false;
 	public static final String programName="EV";
 	public static boolean confirmQuit=true;

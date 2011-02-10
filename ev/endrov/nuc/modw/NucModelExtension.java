@@ -74,6 +74,13 @@ public class NucModelExtension implements ModelWindowExtension
 		public JRadioButtonMenuItem miShowNamesAll=new JRadioButtonMenuItem("All");
 		public ButtonGroup mShowNamesGroup=new ButtonGroup();
 		
+		public JMenu mShowExp=new JMenu("Show expression as");
+		public JRadioButtonMenuItem miShowExpColorMod=new JRadioButtonMenuItem("Colored nuclei");
+		public JRadioButtonMenuItem miShowExpColorAND=new JRadioButtonMenuItem("Colored nuclei AND");
+		public JRadioButtonMenuItem miShowExpMarkerColor=new JRadioButtonMenuItem("Colored markers",true);
+		public JRadioButtonMenuItem miShowExpMarkerSize=new JRadioButtonMenuItem("Marker size",true);
+		public ButtonGroup mShowExpGroup=new ButtonGroup();
+		
 		public JMenuItem miShowSelectedNuc=new JMenuItem("Nuclei: Unhide selected"); 
 		public JMenuItem miHideSelectedNuc=new JMenuItem("Nuclei: Hide selected"); 
 
@@ -100,8 +107,17 @@ public class NucModelExtension implements ModelWindowExtension
 
 		public JMenuItem miSelectVisible=new JMenuItem("Select visible nuclei"); 
 
-		
+
+		/**
+		 * How to show expression patterns
+		 */
+		public static enum ShowExp {CellColor, MarkerColor, MarkerSize, CellColorAND};
+		public ShowExp showExpAs=ShowExp.MarkerColor;
+
 //		public EvColor traceColor=EvColor.redMedium;
+		/**
+		 * Color of the movement trace of nuclei
+		 */
 		public EvColor traceColor=null;
 		
 		//public JCheckBoxMenuItem miShowSmallNuclei=new JCheckBoxMenuItem("Nuclei 50% size"); 
@@ -154,6 +170,15 @@ public class NucModelExtension implements ModelWindowExtension
 			mShowNamesGroup.add(miShowNamesSelected);
 			mShowNamesGroup.add(miShowNamesAll);
 
+			mShowExp.add(miShowExpColorMod);
+			mShowExp.add(miShowExpColorAND);
+			mShowExp.add(miShowExpMarkerColor);
+			mShowExp.add(miShowExpMarkerSize);
+			mShowExpGroup.add(miShowExpColorMod);
+			mShowExpGroup.add(miShowExpColorAND);
+			mShowExpGroup.add(miShowExpMarkerColor);
+			mShowExpGroup.add(miShowExpMarkerSize);
+			
 			mShowNucSize.add(miShowNucSize0);
 			mShowNucSize.add(miShowNucSize25);
 			mShowNucSize.add(miShowNucSize50);
@@ -164,6 +189,7 @@ public class NucModelExtension implements ModelWindowExtension
 
 			//miNuc.add(NucCommonUI.makeSetColorMenu());
 			miNuc.add(mShowNames);
+			miNuc.add(mShowExp);
 			miNuc.add(mShowNucSize);
 			miNuc.add(mShowTrace);
 			miNuc.add(mTraceColor);
@@ -196,6 +222,10 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowNamesNone.addActionListener(this);
 			miShowNamesSelected.addActionListener(this);
 			miShowNamesAll.addActionListener(this);
+			miShowExpColorMod.addActionListener(this);
+			miShowExpColorAND.addActionListener(this);
+			miShowExpMarkerColor.addActionListener(this);
+			miShowExpMarkerSize.addActionListener(this);
 			miShowSelectedNuc.addActionListener(this);
 			miHideSelectedNuc.addActionListener(this);
 			miShowTraceSel.addActionListener(this);
@@ -331,9 +361,26 @@ public class NucModelExtension implements ModelWindowExtension
 				expsettings.add(p);
 				w.updateToolPanels();
 				}
+			else if(e.getSource()==miShowExpColorMod)
+				{
+				showExpAs=ShowExp.CellColor;
+				}
+			else if(e.getSource()==miShowExpColorAND)
+				{
+				showExpAs=ShowExp.CellColorAND;
+				}
+			else if(e.getSource()==miShowExpMarkerColor)
+				{
+				showExpAs=ShowExp.MarkerColor;
+				}
+			else if(e.getSource()==miShowExpMarkerSize)
+				{
+				showExpAs=ShowExp.MarkerSize;
+				}
 			
 			w.view.repaint(); //TODO modw repaint
 			}
+		
 		
 		public boolean canRender(EvObject ob)
 			{
@@ -618,9 +665,10 @@ public class NucModelExtension implements ModelWindowExtension
 								}
 					}
 			
-				//Render nuclei text
+				//Render nuclei text etc
+				gl.glDisable(GL2.GL_LIGHTING);
 				for(NucSel nucPair:inter.keySet())
-					renderNucLabel(gl,transparentRenderers,nucPair, inter.get(nucPair));
+					renderNucOverlay(gl,transparentRenderers,nucPair, inter.get(nucPair), curFrame);
 				}
 			
 			if(traceSel)
@@ -733,6 +781,14 @@ public class NucModelExtension implements ModelWindowExtension
 				return x;
 			}
 		
+		private double clamp1(double x)
+			{
+			if(x>1)
+				return 1;
+			else
+				return x;
+			}
+		
 		/**
 		 * Render body of one nucleus
 		 */
@@ -741,6 +797,7 @@ public class NucModelExtension implements ModelWindowExtension
 			//Visibility rule
 			if(!nuc.isVisible())
 				return;
+
 			
 			gl.glEnable(GL2.GL_CULL_FACE);
 
@@ -750,34 +807,80 @@ public class NucModelExtension implements ModelWindowExtension
 			//Move to cell center = local coordinate
 	    gl.glTranslated(nuc.pos.x,nuc.pos.y,nuc.pos.z);
 
+	    
+    	//System.out.println("bla "+nuc.pos.x+ nuc.pos.y+ nuc.pos.z+ " "+nuc.pos.r);
+	    
 	    double showRadius=nuc.pos.r*nucMagnification;
 
 	    //Decide color based on if the nucleus is selected
 	    Color repColor=NucLineage.representativeColor(nuc.colorNuc);
 			float nucColor[];
-			if(!expsettings.isEmpty())
+			if(!expsettings.isEmpty() && (showExpAs==ShowExp.CellColor || showExpAs==ShowExp.CellColorAND))
 				{
 				//Add color from expression patterns
-				nucColor=new float[]{0.1f,0.1f,0.1f};
-	    	for(ModwPanelExpPattern panel:expsettings)
-	    		{
-	    		String expName=panel.getSelectedExp();
-	    		NucExp n=nucPair.getNuc().exp.get(expName);
-	    		if(n!=null && !n.level.isEmpty())
-	    			{
-	    			double level=n.interpolateLevel(curFrame);
-	    			double scale=panel.scale1;
-	    			double add=panel.add1;
-	    			nucColor[0]+=(float)panel.colR*(clamp0(level*scale+add));
-	    			nucColor[1]+=(float)panel.colG*(clamp0(level*scale+add));
-	    			nucColor[2]+=(float)panel.colB*(clamp0(level*scale+add));
-	    			//System.out.println("here"+level+" ");
-	    			}
-	    		else
-	    			{
-	    			System.out.println("no "+expName);
-	    			}
-	    		}
+				if(showExpAs==ShowExp.CellColor)
+					{
+					nucColor=new float[]{0.1f,0.1f,0.1f};
+					for(ModwPanelExpPattern panel:expsettings)
+		    		{
+		    		String expName=panel.getSelectedExp();
+		    		NucExp n=nucPair.getNuc().exp.get(expName);
+		    		if(n!=null && !n.level.isEmpty())
+		    			{
+		    			double level=n.interpolateLevel(curFrame);
+		    			double scale=panel.scale1;
+		    			double add=panel.add1;
+
+		    			nucColor[0]+=(float)panel.colR*(clamp0(level*scale+add));
+		    			nucColor[1]+=(float)panel.colG*(clamp0(level*scale+add));
+		    			nucColor[2]+=(float)panel.colB*(clamp0(level*scale+add));
+
+		    			//System.out.println("here"+level+" ");
+		    			}
+		    		else
+		    			{
+		    			System.out.println("no exp like \""+expName+"\"");
+		    			}
+		    		}
+					
+					}
+				else //if(showExpAs==ShowExp.CellColorAND)
+					{
+					double totLevel=1;
+					
+					for(ModwPanelExpPattern panel:expsettings)
+		    		{
+		    		String expName=panel.getSelectedExp();
+		    		NucExp n=nucPair.getNuc().exp.get(expName);
+		    		if(n!=null && !n.level.isEmpty())
+		    			{
+		    			double level=n.interpolateLevel(curFrame);
+		    			double scale=panel.scale1;
+		    			double add=panel.add1;
+
+		    			totLevel*=clamp0(level*scale+add);
+		    			/*
+		    			nucColor[0]*=(float)panel.colR*(clamp0(level*scale+add));
+		    			nucColor[1]*=(float)panel.colG*(clamp0(level*scale+add));
+		    			nucColor[2]*=(float)panel.colB*(clamp0(level*scale+add));*/
+
+		    			//System.out.println("here"+level+" ");
+		    			}
+		    		else
+		    			{
+		    			System.out.println("no exp like \""+expName+"\"");
+		    			}
+		    		}
+					//Use color from first expression
+					nucColor=new float[]{
+							(float)(totLevel*expsettings.get(0).colR),
+							(float)(totLevel*expsettings.get(0).colG),
+							(float)(totLevel*expsettings.get(0).colB)
+							};					
+					}
+				
+				
+	    	
 	    	for(int i=0;i<3;i++)
 	    		if(nucColor[i]>1f)
 	    			nucColor[i]=1f;
@@ -792,7 +895,7 @@ public class NucModelExtension implements ModelWindowExtension
 //			float lightAmbient[] = { nucColor[0]*0.3f, nucColor[1]*0.3f, nucColor[2]*0.3f, 0.0f };
 //    gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, nucColor, 0);   
 	    	
-			
+
 			
 	    if(NucCommonUI.hiddenNuclei.contains(nucPair))
 	    	{
@@ -883,7 +986,8 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		private void drawVisibleSphere(GL2 gl, double r, boolean selected, float colR, float colG, float colB)
 			{
-    	double ir=1.0/r;
+    	//double ir=1.0/r;
+    	gl.glPushMatrix();
 			gl.glScaled(r,r,r);
 			
 			if(selected)
@@ -909,7 +1013,8 @@ public class NucModelExtension implements ModelWindowExtension
     	
       gl.glDisable(GL2.GL_LIGHTING);
 
-    	gl.glScaled(ir,ir,ir);
+    	//gl.glScaled(ir,ir,ir);
+    	gl.glPopMatrix();
 			}
 		private void drawHiddenSphere(GL2 gl, double r)
 			{
@@ -929,11 +1034,11 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		
 		/**
-		 * Render labe of one nucleus
+		 * Render label of one nucleus. Also render exp pattern
 		 */
-		private void renderNucLabel(GL2 gl, List<TransparentRender> transparentRenderers, NucSel nucPair, NucLineage.NucInterp nuc)
+		private void renderNucOverlay(GL2 gl, List<TransparentRender> transparentRenderers, NucSel nucPair, NucLineage.NucInterp nuc, EvDecimal curFrame)
 			{
-			//Visibility rule
+			//Visibility rule. TODO. needed?
 			if(nuc.frameBefore==null)
 				return;
 
@@ -946,10 +1051,14 @@ public class NucModelExtension implements ModelWindowExtension
       gl.glScalef(-1,-1,-1); //remove later
 
 			
+      boolean shouldDrawText=NucCommonUI.currentHover.equals(nucPair) 
+  		|| miShowNamesAll.isSelected() 
+  		|| (EvSelection.isSelected(nucPair) && miShowNamesSelected.isSelected());
+      
+      boolean shouldDrawExp=!expsettings.isEmpty() && !(showExpAs==ShowExp.CellColor || showExpAs==ShowExp.CellColorAND);
+
 	    //Unrotate camera, then move a bit closer to the camera
-	    if(NucCommonUI.currentHover.equals(nucPair) 
-	    		|| miShowNamesAll.isSelected() 
-	    		|| (EvSelection.isSelected(nucPair) && miShowNamesSelected.isSelected()))
+	    if(shouldDrawText || shouldDrawExp)
 	    	{
 	    	w.view.camera.unrotateGL(gl);
 	    
@@ -958,8 +1067,90 @@ public class NucModelExtension implements ModelWindowExtension
 	    	//it would look better if it was toward the camera *center*
 	    	//also consider setting size such that it does not vary with distance
 	    	//3d text at all? overlay rendering should be faster
-				String nucName=nucPair.snd();
-	    	w.view.renderString(gl, transparentRenderers, (float)(0.005*nuc.pos.r), nucName);
+	    	double textScaleFactor=0.005*nuc.pos.r;
+	    	double displacement=-textScaleFactor*50;
+	    	if(!(shouldDrawExp && shouldDrawText))
+	    		displacement=0;
+	    	if(shouldDrawText)
+	    		{
+					String nucName=nucPair.snd();
+    			gl.glTranslated(0, -displacement, 0);
+		    	w.view.renderString(gl, transparentRenderers, (float)textScaleFactor, nucName);
+    			gl.glTranslated(0, +displacement, 0);
+	    		}
+	    	
+	    	if(shouldDrawExp)
+	    		{
+    			gl.glTranslated(0, displacement, 0);
+	    		
+    			double s=50*textScaleFactor;
+
+    			int numExp=expsettings.size();
+    			for(int curExp=0;curExp<expsettings.size();curExp++)
+  	    	//for(ModwPanelExpPattern panel:expsettings)
+  	    		{
+  	    		ModwPanelExpPattern panel=expsettings.get(curExp);
+  	    		
+  	    		String expName=panel.getSelectedExp();
+  	    		NucExp n=nucPair.getNuc().exp.get(expName);
+  	    		if(n!=null && !n.level.isEmpty())
+  	    			{
+  	    			double level=n.interpolateLevel(curFrame);
+  	    			double scale=panel.scale1;
+  	    			double add=panel.add1;
+  	    			
+  	    			if(showExpAs==ShowExp.MarkerColor)
+  	    				{
+    	    			gl.glColor3f(
+    	  	    			(float)clamp1(panel.colR*(clamp0(level*scale+add))),
+    	  	    			(float)clamp1(panel.colG*(clamp0(level*scale+add))),
+    	  	    			(float)clamp1(panel.colB*(clamp0(level*scale+add)))
+      	    			);
+      	    			
+    	    			double part=2*s/numExp;
+    			    	//gl.glColor3d(1, 0, 0);
+    			    	gl.glBegin(GL2.GL_QUADS);
+    			    	gl.glVertex2d(-s+curExp*part, -s);
+    			    	gl.glVertex2d(-s+(curExp+1)*part, -s);
+    			    	gl.glVertex2d(-s+(curExp+1)*part,  s);
+    			    	gl.glVertex2d(-s+curExp*part,  s);
+    			    	gl.glEnd();
+  	    				}
+  	    			else if(showExpAs==ShowExp.MarkerSize)
+  	    				{
+  	    				gl.glColor3d(panel.colR, panel.colG, panel.colB);
+      	    			
+    	    			double part=2*s/numExp;
+    	    			double peak=2*s*(level*scale+add);
+    			    	gl.glBegin(GL2.GL_TRIANGLES);
+    			    	if(peak>0)
+    			    		{
+      			    	gl.glVertex2d(-s+curExp*part, -s);
+      			    	gl.glVertex2d(-s+(curExp+1)*part, -s);
+    			    		}
+    			    	else
+    			    		{
+      			    	gl.glVertex2d(-s+(curExp+1)*part, -s);
+      			    	gl.glVertex2d(-s+curExp*part, -s);
+    			    		}
+    			    	gl.glVertex2d(-s+(curExp+0.5)*part,  -s+peak);
+    			    	gl.glEnd();
+  	    				}
+  	    			
+  	    			
+  	    			//System.out.println("here"+level+" ");
+  	    			}
+  	    		else
+  	    			{
+  	    			System.out.println("no exp like \""+expName+"\"");
+  	    			}
+  	    		}
+
+  
+    			
+	    		}
+	    	
+	    	
 	    	}
 	    
 	    //Go back to world coordinates

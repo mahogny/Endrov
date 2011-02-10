@@ -120,19 +120,35 @@ public class BatchMovie
 		if(arg.length==0)
 			{
 			arg=new String[]{
-					"/Volumes/TBU_main06/ost4dgood/",
+					//"/Volumes/TBU_main06/ost4dgood/",
+					"/pimai/TBU_main01b/ost4dgood/",
+					//"/pimai/TBU_main01b/daemon/output/",
 					};
 			for(String s:arg)
 				for(File file:(new File(s)).listFiles())
 					if(!file.getName().startsWith(".") && !file.getName().contains("celegans"))
-						makeMovie(file);
+						try
+							{
+							makeMovie(file);
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
 			
 			
 			}
 		else
 			{
 			for(String s:arg)
-				makeMovie(new File(s));
+				try
+					{
+					makeMovie(new File(s));
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
 			}
 		/*
 					if(!file.getName().endsWith(".mov"))
