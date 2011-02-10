@@ -290,13 +290,6 @@ public class SequenceImageset implements EvIOData
 					}
 				else if(firstChar==')')
 					return;
-				else if(firstChar=='n')
-					{
-					//Number of slices
-					stringpos++;
-					numSlices=parseInt();
-					build(imset,toplevel);
-					}
 				else if(firstChar=='s')
 					{
 					//Stack of images
@@ -304,6 +297,7 @@ public class SequenceImageset implements EvIOData
 
 					int channelNum=0;
 					int skipSlices=1;
+					int skipFirstSlices=0;
 					int frameForward=0;
 
 					while(stringpos<fileConvention.length())// && fileConvention.charAt(stringpos)!=',' && fileConvention.charAt(stringpos)!=')')
@@ -321,10 +315,22 @@ public class SequenceImageset implements EvIOData
 							stringpos++;
 							skipSlices=parseInt();
 							}
+						else if(paramchar=='f')
+							{
+							stringpos++;
+							skipFirstSlices=parseInt();
+							}
 						else if(paramchar=='i')
 							{
 							stringpos++;
 							frameForward=parseInt();
+							}
+						else if(firstChar=='n')
+							{
+							//Number of slices
+							stringpos++;
+							numSlices=parseInt();
+							build(imset,toplevel);
 							}
 						else
 							break; //Cannot identify more parameters
@@ -340,7 +346,8 @@ public class SequenceImageset implements EvIOData
 						stack.resX=resX; 
 						stack.resY=resY; 
 						stack.resZ=resZ;
-						for(int i=0;i<numSlices;i+=skipSlices)
+						int outi=0;
+						for(int i=skipFirstSlices;i<numSlices;i+=skipSlices, outi++)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));
 							{
 							EvImage evim=new EvImage();
@@ -348,7 +355,7 @@ public class SequenceImageset implements EvIOData
 							evim.io=new BasicSliceIO(f,i);
 							//TODO is this the way to go? only works with TIFF stacks
 							
-							stack.putInt(i, evim); 
+							stack.putInt(outi, evim); 
 							}
 						
 						EvChannel ch=imset.getCreateChannel(channelName);

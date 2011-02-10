@@ -191,7 +191,11 @@ public class EvStack implements AnyEvImage
 		int closestZ=(int)EvMathUtil.clamp(Math.round((worldZ-oldGetDispZ())/resZ),0,getDepth()-1);
 		
 		if(closestZ<0)
-			System.out.println("Strange closestz "+closestZ+"  "+oldGetDispZ()+" "+resZ+"   "+getDepth());
+			{
+			System.out.println("Strange closestz "+closestZ+"  oldgetdispz "+oldGetDispZ()+" resz "+resZ+"   getDepth "+getDepth());
+			System.out.println(this);
+			System.out.println(loaders);
+			}
 		
 		return closestZ;
 		}
@@ -262,6 +266,8 @@ public class EvStack implements AnyEvImage
 			loaders.add(null);
 		loaders.set(z,im);
 		
+		
+		System.out.println("loaders "+loaders);
 //		loaders.put(z,im);
 //		loaders.put(new EvDecimal(z).multiply(resZ).add(dispZ),im);
 		}
@@ -559,6 +565,11 @@ public class EvStack implements AnyEvImage
 		}
 */	
 	
-	
+
+	@Override
+	public String toString()
+		{
+		return "stack "+super.toString()+"  "+loaders;
+		}
 	
 	}
