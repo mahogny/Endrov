@@ -333,11 +333,11 @@ public class NamebasedImageset implements EvIOData
 
 				//Get a place to put EVimage. Create holders if needed
 				EvChannel ch=im.getCreateChannel(channelName);
-				EvStack stack=ch.imageLoader.get(new EvDecimal(frame));
+				EvStack stack=ch.getStack(new EvDecimal(frame));
 				if(stack==null)
 					{
 					stack=new EvStack();
-					ch.imageLoader.put(new EvDecimal(frame), stack);
+					ch.putStack(new EvDecimal(frame), stack);
 					}
 				
 				//Plug EVimage

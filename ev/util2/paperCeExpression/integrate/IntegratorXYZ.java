@@ -118,18 +118,24 @@ public class IntegratorXYZ implements Integrator
 		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
 		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
 		
-		if(chIndexX.getFrame(EvDecimal.ZERO)==null)
+		if(chIndexX.getStack(EvDecimal.ZERO)==null)
 			{
 			int w = integrator.pixels.getWidth();
 			int h = integrator.pixels.getHeight();
 			int d = integrator.stack.getDepth();
 			
-			EvStack stackIndexX=chIndexX.getCreateFrame(EvDecimal.ZERO);
+			EvStack stackIndexX=new EvStack();//.getCreateFrame(EvDecimal.ZERO);
+			EvStack stackIndexY=new EvStack();//chIndexY.getCreateFrame(EvDecimal.ZERO);
+			EvStack stackIndexZ=new EvStack();//chIndexZ.getCreateFrame(EvDecimal.ZERO);
+			
 			stackIndexX.allocate(w, h, d, EvPixelsType.INT, integrator.stack);
-			EvStack stackIndexY=chIndexY.getCreateFrame(EvDecimal.ZERO);
 			stackIndexY.allocate(w, h, d, EvPixelsType.INT, integrator.stack);
-			EvStack stackIndexZ=chIndexZ.getCreateFrame(EvDecimal.ZERO);
 			stackIndexZ.allocate(w, h, d, EvPixelsType.INT, integrator.stack);
+			
+			
+			chIndexX.putStack(EvDecimal.ZERO, stackIndexX);
+			chIndexY.putStack(EvDecimal.ZERO, stackIndexY);
+			chIndexZ.putStack(EvDecimal.ZERO, stackIndexZ);
 			
 			for(int az=0;az<integrator.stack.getDepth();az++)
 				{
@@ -184,9 +190,9 @@ public class IntegratorXYZ implements Integrator
 		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
 		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
 		EvChannel chIndexZ = integrator.imset.getCreateChannel("indZ");
-		EvPixels pX = chIndexX.getFrame(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
-		EvPixels pY = chIndexY.getFrame(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
-		EvPixels pZ = chIndexZ.getFrame(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
+		EvPixels pX = chIndexX.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
+		EvPixels pY = chIndexY.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
+		EvPixels pZ = chIndexZ.getStack(EvDecimal.ZERO).getInt(integrator.curZint).getPixels();
 
 		// Integrate this area
 		int[] lineX = pX.getArrayInt();
@@ -253,11 +259,14 @@ public class IntegratorXYZ implements Integrator
 					ExpUtil.normalizeSignal(vvv, sigMax, sigMin, 255);
 		
 		// Store expression as a new channel
-		EvChannel chanxyz = integrator.imset.getCreateChannel("XYZ");
-		chanxyz.imageLoader.clear();
+		EvChannel chanxyz = new EvChannel();//.imset.getCreateChannel("XYZ");
+		//chanxyz.imageLoader.clear();
+		integrator.imset.metaObject.put("XYZ", chanxyz);
+		
 		for (EvDecimal frame : new LinkedList<EvDecimal>(expMap.keySet()))
 			{
-			EvStack stack = chanxyz.getCreateFrame(frame);
+			EvStack stack = new EvStack();//.getCreateFrame(frame);
+			chanxyz.putStack(frame, stack);
 			stack.allocate(numSubDiv, numSubDiv, numSubDiv, EvPixelsType.DOUBLE, null);
 			stack.resX = stack.resY = 16; //Arbitrary
 			

@@ -280,14 +280,14 @@ public abstract class IntegratorSlice implements Integrator
 		for (int i = 0; i<numSubDiv; i++)
 			{
 			NucLineage.Nuc nuc = lin.getCreateNuc("_slice"+i);
-			nuc.overrideStart = integrator.ch.imageLoader.firstKey();
-			nuc.overrideEnd = integrator.ch.imageLoader.lastKey();
+			nuc.overrideStart = integrator.ch.getFirstFrame();
+			nuc.overrideEnd = integrator.ch.getLastFrame();
 			}
 		
 		//For AP: calculate how to correct exposure
 		if (correctedExposure==null)
 			correctedExposure = ExpUtil.calculateCorrectExposureChange20100709(
-					integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(integrator.ch.imageLoader.keySet()), bg);
+					integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(integrator.ch.getFrames()), bg);
 		this.correctedExposure=correctedExposure;
 
 		//Correct for exposure changes
@@ -324,7 +324,7 @@ public abstract class IntegratorSlice implements Integrator
 			{
 			StringBuffer outf = new StringBuffer();
 	
-			here: for (EvDecimal frame : ch.imageLoader.keySet())
+			here: for (EvDecimal frame : ch.getFrames())
 				{
 				outf.append(""+frame+"\t");
 				for (int i = 0; i<numSubDiv; i++)

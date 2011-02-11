@@ -157,7 +157,7 @@ public class EllipseROI extends ROI
 		EvChannel ch=rec.getChannel(channel);
 		if(ch!=null)
 			{
-			for(EvDecimal f:ch.imageLoader.keySet())
+			for(EvDecimal f:ch.getFrames())
 				if(regionFrames.inRange(f))
 					c.add(f);
 			}

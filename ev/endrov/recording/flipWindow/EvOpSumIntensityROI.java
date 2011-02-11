@@ -28,9 +28,9 @@ public class EvOpSumIntensityROI
 		recoveryCurve=new TreeMap<Double, Double>();
 		
 		//Collect curve
-		for(EvDecimal f:ch.imageLoader.keySet())
+		for(EvDecimal f:ch.getFrames())
 			{
-			double sum=levelFromStack(ch.imageLoader.get(f), roi, "foo", f);
+			double sum=levelFromStack(ch.getStack(f), roi, "foo", f);
 			recoveryCurve.put(f.doubleValue(), sum);
 			}
 		}

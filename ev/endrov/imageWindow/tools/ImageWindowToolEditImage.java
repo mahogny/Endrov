@@ -85,7 +85,7 @@ public class ImageWindowToolEditImage implements ImageWindowTool, ActionListener
 					{
 					public void redo()
 						{
-						w.getImageset().getChannel(ch).imageLoader.remove(frame);
+						w.getImageset().getChannel(ch).removeStack(frame);
 						BasicWindow.updateWindows();
 						}
 					}.execute();

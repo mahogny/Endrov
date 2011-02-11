@@ -416,10 +416,10 @@ public class IntExp
 	public void doProfile(Integrator... ints)
 		{
 		// For all frames
-		System.out.println("num frames: "+ch.imageLoader.size());
+		System.out.println("num frames: "+ch.getFrames().size());
 
-		EvDecimal firstframe = ch.imageLoader.firstKey();
-		EvDecimal lastFrame = ch.imageLoader.lastKey();
+		EvDecimal firstframe = ch.getFirstFrame();
+		EvDecimal lastFrame = ch.getLastFrame();
 	
 		//lastFrame=new EvDecimal("14400");  ///temp!!!
 		
@@ -433,7 +433,7 @@ public class IntExp
 			}
 		
 		
-		for (EvDecimal frame : ch.imageLoader.keySet())
+		for (EvDecimal frame : ch.getFrames())
 			if(frame.lessEqual(lastFrame))
 				{
 				this.frame = frame;
@@ -444,7 +444,7 @@ public class IntExp
 					i.integrateStackStart(this);
 	
 				// For all z
-				stack = ch.imageLoader.get(frame);
+				stack = ch.getStack(frame);
 				EvImage[] imArr = stack.getImages();
 				for (int az = 0; az<imArr.length; az++)
 					{

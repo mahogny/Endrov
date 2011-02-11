@@ -21,6 +21,7 @@ import endrov.flowBasic.convert.FlowUnitConvertToVector2i;
 import endrov.flowBasic.convert.FlowUnitConvertToVector3i;
 import endrov.flowBasic.convert.FlowUnitWrapInChannel;
 import endrov.flowBasic.db.FlowUnitConnectSQL;
+import endrov.flowBasic.images.FlowUnitCastPixelType;
 import endrov.flowBasic.images.FlowUnitChannelDim2D;
 import endrov.flowBasic.images.FlowUnitChannelDim3D;
 import endrov.flowBasic.images.FlowUnitCropImage;
@@ -93,6 +94,7 @@ public class PLUGIN extends PluginDef
 				FlowUnitChannelDim2D.class,
 				FlowUnitChannelDim3D.class,
 				FlowUnitCropImage.class,
+				FlowUnitCastPixelType.class,
 
 				//Logic
 				FlowUnitAnd.class,FlowUnitOr.class,FlowUnitXor.class,FlowUnitNot.class,

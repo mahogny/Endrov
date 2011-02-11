@@ -359,7 +359,7 @@ public class SequenceImageset implements EvIOData
 							}
 						
 						EvChannel ch=imset.getCreateChannel(channelName);
-						ch.imageLoader.put(new EvDecimal(frame), stack);
+						ch.putStack(new EvDecimal(frame), stack);
 						rebuildLog+=f.getName()+" Ch: "+channelName+ " Fr: "+frame+" #slcs: "+numSlices+" skip: "+skipSlices+"\n";
 						}
 					frame+=frameForward;

@@ -116,7 +116,7 @@ public class Stack2D extends StackInterface
 			EvDecimal cframe=chsel.ch.closestFrame(frame);
 
 			//For every Z
-			EvStack stack=chsel.ch.imageLoader.get(cframe);
+			EvStack stack=chsel.ch.getStack(cframe);
 			int skipcount=0;
 			if(stack!=null)
 				for(int az=0;az<stack.getDepth();az++)

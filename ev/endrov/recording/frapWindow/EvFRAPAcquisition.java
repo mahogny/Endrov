@@ -226,7 +226,8 @@ public class EvFRAPAcquisition extends EvAcquisition
 			EvImage evim=new EvImage(camIm.getPixels()[0]);
 			
 			EvChannel ch=imset.getCreateChannel("ch");
-			EvStack stack=ch.getCreateFrame(curFrame);
+			EvStack stack=new EvStack();//.getCreateFrame(curFrame);
+			ch.putStack(curFrame, stack);
 			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 			stack.resZ=1;

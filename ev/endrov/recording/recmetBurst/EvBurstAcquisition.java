@@ -206,8 +206,9 @@ public class EvBurstAcquisition extends EvObject
 							if(camIm!=null)
 								{
 								EvChannel ch=(EvChannel)imset.getChild(channelName);
-								EvStack stack=ch.getCreateFrame(curFrame);
-
+								EvStack stack=new EvStack();//.getCreateFrame(curFrame);
+								ch.putStack(curFrame, stack);
+								
 								if(isRGB)
 									{
 									//TODO
@@ -229,7 +230,7 @@ public class EvBurstAcquisition extends EvObject
 									System.out.println(camIm.getPixels());
 									System.out.println(camIm.getNumComponents());
 									
-									ch.getCreateFrame(curFrame).putInt(0, evim);
+									stack.putInt(0, evim);
 									}
 									
 									

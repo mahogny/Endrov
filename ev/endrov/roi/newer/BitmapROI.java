@@ -81,7 +81,7 @@ public class BitmapROI extends ROI
 	@Override
 	public boolean imageInRange(String channel, EvDecimal frame, double z)
 		{
-		if(bitmap.imageLoader.containsKey(frame))
+		if(bitmap.getFrames().contains(frame))
 			{
 			return true;
 			
@@ -102,7 +102,7 @@ public class BitmapROI extends ROI
 	@Override
 	public Set<EvDecimal> getFrames(Imageset rec, String channel)
 		{
-		return bitmap.imageLoader.keySet();
+		return bitmap.getFrames();
 		}
 
 

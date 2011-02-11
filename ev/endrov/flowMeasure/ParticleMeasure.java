@@ -216,9 +216,9 @@ public class ParticleMeasure extends EvObject
 	public ParticleMeasure(EvStack stackValue, EvStack stackMask, List<String> use)
 		{
 		EvChannel chValue=new EvChannel();
-		chValue.imageLoader.put(EvDecimal.ZERO, stackValue);
+		chValue.putStack(EvDecimal.ZERO, stackValue);
 		EvChannel chMask=new EvChannel();
-		chMask.imageLoader.put(EvDecimal.ZERO, stackMask);
+		chMask.putStack(EvDecimal.ZERO, stackMask);
 		prepareEvaluate(chValue, chMask, use);
 		}
 	
@@ -246,13 +246,15 @@ public class ParticleMeasure extends EvObject
 			columns.addAll(measures.get(s).getColumns());
 
 		//Lazily evaluate stacks
-		for(Map.Entry<EvDecimal, EvStack> e:chValue.imageLoader.entrySet())
+		//for(Map.Entry<EvDecimal, EvStack> e:chValue.imageLoader.entrySet())
+		for(final EvDecimal frame:chValue.getFrames())
 			{
 			FrameInfo info=new FrameInfo();
-			final EvDecimal frame=e.getKey();
+			//final EvDecimal frame=e.getKey();
+			EvStack thestack=chValue.getStack(frame);
 			
 			//final EvStack stackValue=e.getValue();
-			final WeakReference<EvStack> weakStackValue=new WeakReference<EvStack>(e.getValue());
+			final WeakReference<EvStack> weakStackValue=new WeakReference<EvStack>(thestack);
 			final WeakReference<EvChannel> weakChMask=new WeakReference<EvChannel>(chMask);
 			final WeakReference<FrameInfo> weakInfo=new WeakReference<FrameInfo>(info);
 			
@@ -260,7 +262,7 @@ public class ParticleMeasure extends EvObject
 				public void calc()
 					{
 					for(String s:useMeasures)
-						measures.get(s).analyze(weakStackValue.get(), weakChMask.get().getFrame(frame),weakInfo.get());
+						measures.get(s).analyze(weakStackValue.get(), weakChMask.get().getStack(frame),weakInfo.get());
 					}
 				};
 			

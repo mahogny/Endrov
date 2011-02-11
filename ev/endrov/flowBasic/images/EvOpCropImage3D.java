@@ -22,6 +22,11 @@ import endrov.util.Memoize;
  * TODO a resampling is equivalent to a crop, but more general and does not suffer from rotation problems!!!!
  * 
  * 
+ * TODO BUG
+ * in evopstack, output is pre-generated to be of same dimension in z. this causes huge problems!
+ * 
+ * 
+ * 
  * @author Johan Henriksson
  *
  */
@@ -91,8 +96,13 @@ public class EvOpCropImage3D extends EvOpStack1
 		{
 		EvStack stackOut=new EvStack();
 
-		//Add offset
-		stackOut.getMetaFrom(stack);
+		//Add offset etc
+		stackOut.getMetaFrom(stack); 
+		//Remove all loaders, since the number of slices can be different
+		stackOut.clearStack();
+		
+		System.out.println("-------------- crop 3d ------------ "+fromX+"  "+toX+"   "+fromY+"  "+toY+"    "+fromZ+"   "+toZ);
+		
 		
 		Vector3d disp=stack.getDisplacement();
 		disp.add(new Vector3d(
@@ -111,13 +121,17 @@ public class EvOpCropImage3D extends EvOpStack1
 			final Memoize<EvPixels> m=new Memoize<EvPixels>(){
 				protected EvPixels eval()
 					{
+					System.out.println("---------- crop eval "+inZ);
 					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(stack.getInt(inZ).getPixels());
 					}
 				};
 			newim.io=new EvIOImage(){public EvPixels loadJavaImage(){return m.get();}};
 			newim.registerLazyOp(m);
-			stackOut.putInt(az-fromZ, newim);
+			int outZindex=az-fromZ;
+			stackOut.putInt(outZindex, newim);
 			}
+		
+		System.out.println("Depth "+stackOut.getDepth());
 		
 		return stackOut;
 		}

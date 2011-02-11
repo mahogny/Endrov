@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Map;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
@@ -63,9 +62,10 @@ public class ImageWindowToolChannelDisp implements ImageWindowTool
 			
 			if(c!=null)
 				{
-				for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
+				//for(Map.Entry<EvDecimal, EvStack> frames:c.imageLoader.entrySet())
+				for(EvDecimal framesF:c.getFrames())
 					{
-					EvStack stack=frames.getValue();
+					EvStack stack=c.getStack(framesF);
 					//Vector3d d=stack.scaleWorldImage(new Vector3d(diff.x,diff.y,0));
 					
 					Vector3d disp=stack.getDisplacement();

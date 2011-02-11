@@ -135,7 +135,7 @@ public class Stack3D extends StackInterface
 			{
 			//For every Z
 			EvDecimal cframe=chsel.ch.closestFrame(frame);
-			EvStack stack=chsel.ch.imageLoader.get(cframe);
+			EvStack stack=chsel.ch.getStack(cframe);
 			Texture3D texture=new Texture3D();
 			VoxelStack os=null;
 

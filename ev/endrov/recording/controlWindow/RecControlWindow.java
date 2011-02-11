@@ -410,7 +410,8 @@ public class RecControlWindow extends BasicWindow
 						RecordingResource.soundCameraSnap.start();
 						
 						EvChannel ch=imset.getCreateChannel(tChannel.getText());
-						EvStack stack=ch.getCreateFrame(new EvDecimal(0));
+						EvStack stack=new EvStack();//.getCreateFrame(new EvDecimal(0));
+						ch.putStack(new EvDecimal(0), stack);
 						CameraImage cim=hw.snap();
 						
 						//TODO

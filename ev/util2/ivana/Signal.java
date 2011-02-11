@@ -27,7 +27,7 @@ public class Signal
 		if(data==null)
 			System.out.println("No such file");
 		EvChannel im=data.getIdObjectsRecursive(EvChannel.class).values().iterator().next();
-		EvImage evim=im.imageLoader.values().iterator().next().getFirstImage();
+		EvImage evim=im.getFirstStack().getFirstImage();
 		EvPixels pixels=evim.getPixels().getReadOnly(EvPixelsType.DOUBLE);
 		return pixels;
 		}
