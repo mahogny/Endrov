@@ -3,8 +3,6 @@ package endrov.skeletonization;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import endrov.worms.skeleton.SkeletonTransform;
-
 /**
  * Thinning algorithm for skeletonization. Based on T.Y. Zhang and C.Y. Suen 
  * thinning algorithm

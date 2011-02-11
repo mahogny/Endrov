@@ -1,23 +1,12 @@
 package endrov.worms.skeleton;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Vector;
-
 import endrov.imageset.EvPixels;
-import endrov.imageset.EvPixelsType;
 import endrov.skeletonization.Thinning;
 import endrov.util.Vector2i;
 import endrov.worms.WormPixelMatcher;
-import endrov.worms.WormShape;
 import endrov.worms.paths.WormPathTracking;
-import endrov.worms.paths.WormPathUtils;
-
-import java.util.Hashtable;
 
 /**
  * Abstract definition for a morphological skeleton based on distance
@@ -383,7 +372,6 @@ public abstract class SkeletonTransform
 		int previous;
 		int move;
 		Vector2i next;
-		int len;
 		int[] neigh;
 		int pIndex = -1;
 		ArrayList<Integer> newBases = new ArrayList<Integer>(basePoints.size());
