@@ -8,6 +8,7 @@ package endrov.imageset;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -24,6 +25,8 @@ import endrov.data.EvObject;
 import endrov.ev.EvLog;
 import endrov.util.EvDecimal;
 import endrov.util.EvListUtil;
+import endrov.util.Memoize;
+import endrov.util.MemoizeImmediate;
 
 /**
  * Images for one channel
@@ -41,35 +44,52 @@ public class EvChannel extends EvObject implements AnyEvImage
 	/****************************************************************************************/
 
 	/** Image loaders */
-	public TreeMap<EvDecimal, EvStack> imageLoader = new TreeMap<EvDecimal, EvStack>();
+	private TreeMap<EvDecimal, Memoize<EvStack>> imageLoader = new TreeMap<EvDecimal, Memoize<EvStack>>();
+	
+	
+	public EvDecimal getFirstFrame()
+		{
+		return imageLoader.firstKey(); 
+		}
+	
+	public EvDecimal getLastFrame()
+		{
+		return imageLoader.lastKey();
+		}
+	
+	public Set<EvDecimal> getFrames()
+		{
+		return imageLoader.keySet();
+		}
+	
+	
+	
+	public EvStack getStack(EvDecimal frame)
+		{
+		return imageLoader.get(frame).get();
+		}
+	
+	public void putStack(EvDecimal frame, EvStack stack)
+		{
+		imageLoader.put(frame, new MemoizeImmediate<EvStack>(stack));
+		}
+	
+	public void removeStack(EvDecimal frame)
+		{
+		imageLoader.remove(frame);
+		}
+	
 
 	/**
-	 * Get access to an image
+	 * Use with care
 	 */
-	/*public EvImage getImageLoader(EvDecimal frame, EvDecimal z)
+	public void __clearputStacksFrom(EvChannel ch)
 		{
-		try
-			{
-			return imageLoader.get(frame).get(z);
-			}
-		catch (Exception e)
-			{
-			return null;
-			}
-		}*/
-
-	/*
-	public EvImage getImageLoaderInt(EvDecimal frame, int z)
-		{
-		try
-			{
-			return imageLoader.get(frame).getInt(z);
-			}
-		catch (Exception e)
-			{
-			return null;
-			}
-		}*/
+		imageLoader.clear();
+		imageLoader.putAll(ch.imageLoader);
+		}
+	
+	
 
 	/**
 	 * Get the first stack. Convenience method; meant mainly to be used when the
@@ -77,27 +97,9 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 */
 	public EvStack getFirstStack()
 		{
-		return imageLoader.values().iterator().next();
+		return imageLoader.values().iterator().next().get();
 		}
 
-	/**
-	 * Get a frame, create if needed. Should only be used if the content of the frame will be deleted, or otherwise ensure that data is correct
-	 */
-	public EvStack getCreateFrame(EvDecimal frame)
-		{
-		EvStack f = imageLoader.get(frame);
-		if (f==null)
-			imageLoader.put(frame, f = new EvStack());
-		return f;
-		}
-
-	/**
-	 * Get a frame
-	 */
-	public EvStack getFrame(EvDecimal frame)
-		{
-		return imageLoader.get(frame);
-		}
 
 	/****************************************************************************************/
 	/******************************* Find frames/z ******************************************/
@@ -125,7 +127,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 */
 	public EvDecimal closestFrameBefore(EvDecimal frame)
 		{
-		SortedMap<EvDecimal, EvStack> before = imageLoader.headMap(frame);
+		SortedMap<EvDecimal, Memoize<EvStack>> before = imageLoader.headMap(frame);
 		if (before.size()==0)
 			return frame;
 		else
@@ -143,7 +145,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	public EvDecimal closestFrameAfter(EvDecimal frame)
 		{
 		// Can be made faster by iterator
-		SortedMap<EvDecimal, EvStack> after = new TreeMap<EvDecimal, EvStack>(
+		SortedMap<EvDecimal, Memoize<EvStack>> after = new TreeMap<EvDecimal, Memoize<EvStack>>(
 				imageLoader.tailMap(frame));
 		after.remove(frame);
 
@@ -419,7 +421,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 
 			//Override default stack settings?
-			EvStack stack=imageLoader.get(frame);
+			EvStack stack=getStack(frame);
 			Vector3d sDisp=stack.getDisplacement();
 			//stack.getResbinZinverted(); //TODO will not be needed later
 			if(stack.resX!=defaultResX)

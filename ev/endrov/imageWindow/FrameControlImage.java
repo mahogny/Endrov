@@ -338,13 +338,13 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 	public void goFirstFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).imageLoader.firstKey());
+			setFrame(getImageset().getChannel(channel).getFirstFrame());
 		}
 
 	public void goLastFrame()
 		{
 		if(channel!=null && getImageset().getChannel(channel)!=null)
-			setFrame(getImageset().getChannel(channel).imageLoader.lastKey());
+			setFrame(getImageset().getChannel(channel).getLastFrame());
 		}
 
 	/**
@@ -394,7 +394,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		EvChannel ch=getImageset().getChannel(channel);
 		if(ch!=null)
 			{
-			EvStack stack=ch.getFrame(getFrame());
+			EvStack stack=ch.getStack(getFrame());
 			if(stack!=null)
 				{
 				double nextZ=Math.round(stack.transformWorldImageZ(getZ().doubleValue())-1);
@@ -421,7 +421,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		EvChannel ch=getImageset().getChannel(channel);
 		if(ch!=null)
 			{
-			EvStack stack=ch.getFrame(getFrame());
+			EvStack stack=ch.getStack(getFrame());
 			if(stack!=null)
 				{
 				double nextZ=Math.round(stack.transformWorldImageZ(getZ().doubleValue())+1);
@@ -458,7 +458,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 		if(ch!=null)
 			{
 			frame=ch.closestFrame(frame);
-			EvStack stack=ch.getFrame(frame);
+			EvStack stack=ch.getStack(frame);
 			if(stack!=null)
 				{
 				double curz=Math.round(stack.transformWorldImageZ(z.doubleValue()));
@@ -493,7 +493,7 @@ public class FrameControlImage extends JPanel implements ActionListener, ChangeL
 			{
 			EvChannel ch=getImageset().getChannel(channel);
 			frame=ch.closestFrame(frame);
-			EvStack stack=ch.getFrame(frame);
+			EvStack stack=ch.getStack(frame);
 			
 			slicenum=new EvDecimal(stack.transformImageWorldZ(
 			EvMathUtil.clamp(Math.round(stack.transformWorldImageZ(z.doubleValue())), 0, stack.getDepth()-1)

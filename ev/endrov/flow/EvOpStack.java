@@ -5,7 +5,6 @@
  */
 package endrov.flow;
 
-import java.util.Map;
 
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvIOImage;
@@ -96,12 +95,14 @@ public abstract class EvOpStack extends EvOpGeneral
 			//How to combine channels? if A & B, B not exist, make B black?
 			
 			//Currently operates on common subset of channels
-			for(Map.Entry<EvDecimal, EvStack> channelEntry:refChannel.imageLoader.entrySet())
+			//for(Map.Entry<EvDecimal, EvStack> channelEntry:refChannel.imageLoader.entrySet())
+			for(EvDecimal channelEntryFrame:refChannel.getFrames())
 				{
-				final EvStack curInputStack=channelEntry.getValue();
+				
+				final EvStack curInputStack=refChannel.getStack(channelEntryFrame);
 				final EvStack curReturnStack=new EvStack();
 				curReturnStack.getMetaFrom(curInputStack);
-				curReturnChan.imageLoader.put(channelEntry.getKey(), curReturnStack);
+				curReturnChan.putStack(channelEntryFrame, curReturnStack);
 				
 				//TODO register lazy operation
 				
@@ -109,9 +110,11 @@ public abstract class EvOpStack extends EvOpGeneral
 				int ci=0;
 				for(EvChannel cit:ch)
 					{
-					imlist[ci]=cit.imageLoader.get(channelEntry.getKey());
+					imlist[ci]=cit.getStack(channelEntryFrame);
 					ci++;
 					}
+				
+
 				
 				final Memoize<EvStack[]> ms=new MemoizeExecStack(imlist, op);
 				
@@ -119,8 +122,12 @@ public abstract class EvOpStack extends EvOpGeneral
 				//TODO without lazy stacks, prior stacks are forced to be evaluated.
 				//only fix is if the laziness is added directly at the source.
 				
+				///////////////
+				/////////////// TODO adding lazy stacks!!!!!!!!!!!!!!!!
+				
 				final int finalCurReturnChanIndex=curOutputChanIndex;
 				
+
 				for(int az=0;az<curInputStack.getDepth();az++)
 					if(curInputStack.hasInt(az))  //TODO should not be needed
 //				for(final Map.Entry<EvDecimal, EvImage> stackEntry:curInputStack.entrySet())
@@ -161,6 +168,7 @@ public abstract class EvOpStack extends EvOpGeneral
 					
 					newim.registerLazyOp(ms);		
 					}
+				
 				}
 //			System.out.println("here2 "+curReturnChan.imageLoader);
 			}

@@ -129,8 +129,9 @@ public class EvMultidimAcquisition extends EvAcquisition
 
 					//Get a stack, fill in metadata
 					EvChannel ch=imset.getCreateChannel("ch");
-					EvStack stack=ch.getCreateFrame(currentFrame);
-
+					EvStack stack=new EvStack();//.getCreateFrame(currentFrame);
+					ch.putStack(currentFrame, stack);
+					
 					stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
 					stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
 					stack.resZ=dz.multiply(currentChannel.zInc).doubleValue();

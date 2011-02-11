@@ -38,7 +38,7 @@ public class FindWithoutExpTimes
 			boolean hasExpTime=true;
 			boolean missingFrames=false;
 			boolean butHasImsetMeta=true;
-			for(EvDecimal frame:ch.imageLoader.keySet())
+			for(EvDecimal frame:ch.getFrames())
 				if(ch.metaFrame.get(frame)==null)
 					{
 					missingFrames=true;

@@ -85,7 +85,7 @@ public class Slice3D
 			lastframe=frame;
 
 			//Load image
-			EvStack stack=ch.imageLoader.get(cframe);
+			EvStack stack=ch.getStack(cframe);
 			if(zplane<0)
 				zplane=0;
 			if(zplane>stack.getDepth())

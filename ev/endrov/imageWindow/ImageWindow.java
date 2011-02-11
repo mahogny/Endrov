@@ -614,15 +614,23 @@ public class ImageWindow extends BasicWindow
 				EvDecimal z=frameControl.getZ();
 				frame=ch.closestFrame(frame);
 				
-				EvStack stack=ch.imageLoader.get(frame);
+				EvStack stack=ch.getStack(frame);
 				if(stack==null)
 					pi.setImage(stack,null);
 				else
 					{
 					int closestZ=stack.closestZint(z.doubleValue());
-					System.out.println("----closest z: "+closestZ+"   "+stack.getDepth());
+					System.out.println("----closest z: "+closestZ+"   depth:"+stack.getDepth());
 					if(closestZ!=-1)
-						pi.setImage(stack,stack.getInt(closestZ));
+						{
+						EvImage evim=stack.getInt(closestZ);
+						if(evim!=null)
+							pi.setImage(stack,evim);
+						else
+							{
+							System.out.println("Image was null. ch:"+chname);
+							}
+						}
 					else
 						System.out.println("--For ch:"+chname);
 					}
@@ -713,9 +721,9 @@ public class ImageWindow extends BasicWindow
 			if(ch!=null)
 				{
 				EvDecimal curFrame=ch.closestFrame(frameControl.getFrame());
-				if(ch.imageLoader.get(curFrame).getDepth()>0)
+				if(ch.getStack(curFrame).getDepth()>0)
 					{
-					EvStack stack=ch.imageLoader.get(curFrame);
+					EvStack stack=ch.getStack(curFrame);
 					frameControl.setZ(new EvDecimal(stack.transformImageWorldZ(stack.getDepth()/2)));
 					updateImagePanel();
 					}

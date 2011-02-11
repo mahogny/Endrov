@@ -398,7 +398,7 @@ public class EvIODataOST implements EvIOData
 							for(Map.Entry<EvDecimal, HashMap<Integer,File>> fe:ime.getValue().diskImageLoader33.entrySet())
 								for(Map.Entry<Integer, File> se:fe.getValue().entrySet())
 									{
-									EvStack stack=ch.getFrame(fe.getKey());
+									EvStack stack=ch.getStack(fe.getKey());
 									if(stack!=null)
 										{
 										//Check this slice
@@ -436,9 +436,10 @@ public class EvIODataOST implements EvIOData
 				{
 				EvChannel ch=datae.getValue();
 
-					for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
+//					for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
+					for(EvDecimal feFrame:ch.getFrames())
 						{
-						EvStack stack=fe.getValue();
+						EvStack stack=ch.getStack(feFrame);
 						for(int az=0;az<stack.getDepth();az++)
 						//for(Map.Entry<EvDecimal, EvImage> ie:fe.getValue().entrySet())
 							if(stack.hasInt(az))  //TODO should not be needed
@@ -452,7 +453,7 @@ public class EvIODataOST implements EvIOData
 							//System.out.println("belongs to imageset "+belongsToThisDatasetIO);
 
 							//Where should new file be written?
-							File newFile=fileShouldBe(ch, fe.getKey(),az);
+							File newFile=fileShouldBe(ch, feFrame,az);
 							
 							//Check if dirty
 							boolean dirty=!belongsToThisDatasetIO;
@@ -615,7 +616,7 @@ public class EvIODataOST implements EvIOData
 
 					//Delete entire frames
 					HashSet<EvDecimal> removeFrame=new HashSet<EvDecimal>(blob.diskImageLoader33.keySet());
-					removeFrame.removeAll(ch.imageLoader.keySet());
+					removeFrame.removeAll(ch.getFrames());
 					for(EvDecimal frame:removeFrame)
 						{
 						File f=buildFramePath(chanPath, frame);
@@ -624,12 +625,12 @@ public class EvIODataOST implements EvIOData
 						if(f.exists())
 							EvFileUtil.deleteRecursive(f);
 						}
-					blob.diskImageLoader33.keySet().retainAll(ch.imageLoader.keySet());
+					blob.diskImageLoader33.keySet().retainAll(ch.getFrames());
 
 					//Delete slices
 					for(Map.Entry<EvDecimal, HashMap<Integer,File>> framee:blob.diskImageLoader33.entrySet())
 						{
-						EvStack stack=ch.imageLoader.get(framee.getKey());
+						EvStack stack=ch.getStack(framee.getKey());
 						//framee.getValue().keySet().removeAll(stack.keySet());
 						for(int az=0;az<stack.getDepth();az++)
 							framee.getValue().remove(az);
@@ -651,14 +652,16 @@ public class EvIODataOST implements EvIOData
 				
 				HashMap<EvDecimal,HashMap<Integer,File>> loaderFrames=new HashMap<EvDecimal, HashMap<Integer,File>>();
 				blob.diskImageLoader33=loaderFrames;//.clear();//.put(ce.getKey(), loaderFrames);
-				for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
+				//for(Map.Entry<EvDecimal, EvStack> fe:ch.imageLoader.entrySet())
+				for(EvDecimal feFrame:ch.getFrames())
 					{
+					EvStack feStack=ch.getStack(feFrame);
 					HashMap<Integer,File> loaderSlices=new HashMap<Integer, File>();
-					loaderFrames.put(fe.getKey(),loaderSlices);
+					loaderFrames.put(feFrame,loaderSlices);
 					//for(Map.Entry<Integer, EvImage> ie:fe.getValue().entrySet())
-					for(int az=0;az<fe.getValue().getDepth();az++)
+					for(int az=0;az<feStack.getDepth();az++)
 						{
-						EvImage evim=fe.getValue().getInt(az);
+						EvImage evim=feStack.getInt(az);
 						SliceIO sio=(SliceIO)evim.io;
 						sio.oldio=null;
 //						loaderSlices.put(ie.getKey(), sio.f);
@@ -811,7 +814,7 @@ public class EvIODataOST implements EvIOData
 
 				//This avoids problems with some old recordings
 				if(stack.getDepth()!=0)
-					channel.imageLoader.put(fe.getKey(),stack);
+					channel.putStack(fe.getKey(),stack);
 				}
 			}
 
@@ -1228,9 +1231,9 @@ public class EvIODataOST implements EvIOData
 				
 				ch.defaultResZ=1.5;
 				ch.defaultDisp.z=1;
-				for(EvDecimal frame:ch.imageLoader.keySet())
+				for(EvDecimal frame:ch.getFrames())
 					{
-					EvStack stack=ch.imageLoader.get(frame);
+					EvStack stack=ch.getStack(frame);
 					stack.resZ=ch.defaultResZ;
 					// stack.dispZ=ch.defaultDispZ; //need to be replaced to run again
 					}

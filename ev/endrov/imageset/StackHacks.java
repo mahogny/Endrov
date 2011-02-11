@@ -5,7 +5,6 @@
  */
 package endrov.imageset;
 
-import java.util.Map;
 import endrov.util.EvDecimal;
 
 /**
@@ -34,21 +33,22 @@ public class StackHacks
 		EvChannel newch=new EvChannel();
 		
 		int si=0;
-		for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+		//for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+		for(EvDecimal frame:ch.getFrames())
 			{
 			//EvDecimal frame=se.getKey();
 			int zi=0;
-			EvStack stack=se.getValue();
+			EvStack stack=ch.getStack(frame);//se.getValue();
 			for(int az=0;az<stack.getDepth();az++)
 			//for(Map.Entry<EvDecimal, EvImage> ze:stack.entrySet())
 				{
 				EvImage evim=stack.getInt(az);
 				//EvDecimal z=ze.getKey();
-				EvStack newStack=newch.imageLoader.get(new EvDecimal(zi));
+				EvStack newStack=newch.getStack(new EvDecimal(zi));
 				if(newStack==null)
 					{
-					newch.imageLoader.put(new EvDecimal(zi),newStack=new EvStack());
-					newStack.getMetaFrom(se.getValue());
+					newch.putStack(new EvDecimal(zi),newStack=new EvStack());
+					newStack.getMetaFrom(stack);
 					}
 				newStack.putInt(si, evim);
 				zi++;
@@ -56,8 +56,9 @@ public class StackHacks
 			si++;
 			}
 		
-		ch.imageLoader.clear();
-		ch.imageLoader.putAll(newch.imageLoader);
+		replaceLoaders(newch, ch);
+//		ch.imageLoader.clear();
+	//	ch.imageLoader.putAll(newch.imageLoader);
 		}
 
 	
@@ -66,8 +67,9 @@ public class StackHacks
 	 */
 	public static void replaceLoaders(EvChannel srcch, EvChannel destch)
 		{
-		destch.imageLoader.clear();
-		destch.imageLoader.putAll(srcch.imageLoader);
+		destch.__clearputStacksFrom(srcch);
+//		destch.imageLoader.clear();
+//		destch.imageLoader.putAll(srcch.imageLoader);
 		}
 	
 	
@@ -76,9 +78,11 @@ public class StackHacks
 	 */
 	public static void setResXYZ(EvChannel ch, double resX, double resY, double resZ)
 		{
-		for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+		//for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+		for(EvDecimal frame:ch.getFrames())
 			{
-			EvStack stack=se.getValue();
+			EvStack stack=ch.getStack(frame);
+			//EvStack stack=se.getValue();
 			stack.resX=resX;
 			stack.resY=resY;
 			stack.resZ=resZ;
@@ -104,15 +108,17 @@ public class StackHacks
 		EvChannel newch=new EvChannel();
 		
 		EvDecimal time=EvDecimal.ZERO;
-		for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+		//for(Map.Entry<EvDecimal, EvStack> se:ch.imageLoader.entrySet())
+		for(EvDecimal frame:ch.getFrames())
 			{
-			EvStack stack=se.getValue();
-			newch.imageLoader.put(time, stack);
+			EvStack stack=ch.getStack(frame);//se.getValue();
+			newch.putStack(time, stack);
 			time=time.add(dt);
 			}
 		
-		ch.imageLoader.clear();
-		ch.imageLoader.putAll(newch.imageLoader);
+		replaceLoaders(newch, ch);
+//		ch.imageLoader.clear();
+//		ch.imageLoader.putAll(newch.imageLoader);
 		}
 	
 	

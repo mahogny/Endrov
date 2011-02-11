@@ -86,7 +86,7 @@ public class BatchMovie
 			//Add channels that should be in the movie. Figure out best width (original width)
 			int width=336;
 			for(String name:new String[]{"DIC","GFPmax","RFPmax"})
-				if(imset.metaObject.containsKey(name) && !((EvChannel)imset.metaObject.get(name)).imageLoader.isEmpty())
+				if(imset.metaObject.containsKey(name) && !((EvChannel)imset.metaObject.get(name)).getFrames().isEmpty())
 					{
 					String desc="<channel/>";
 					if(name.equals("DIC"))

@@ -68,12 +68,12 @@ public class EvOpVoroniNuc
 		{
 		EvChannel chout=new EvChannel();
 		
-		for(final EvDecimal frame:ch.imageLoader.keySet())
+		for(final EvDecimal frame:ch.getFrames())
 			{
-			EvStack oldstack=ch.imageLoader.get(frame);
+			EvStack oldstack=ch.getStack(frame);
 			final EvStack newstack=new EvStack(); 
 			newstack.getMetaFrom(oldstack);
-			chout.imageLoader.put(frame, newstack);
+			chout.putStack(frame, newstack);
 			
 			final int w=oldstack.getWidth();
 			final int h=oldstack.getHeight();

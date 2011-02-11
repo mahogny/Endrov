@@ -209,7 +209,7 @@ public class CompareAll
 	
 	public static double channelAverageDt(EvChannel chan)
 		{
-		return chan.imageLoader.lastKey().subtract(chan.imageLoader.firstKey()).doubleValue()/chan.imageLoader.size();
+		return chan.getLastFrame().subtract(chan.getFirstFrame()).doubleValue()/chan.getFrames().size();
 		}
 	
 	
@@ -254,19 +254,19 @@ public class CompareAll
 			EvDecimal frameA=ftA.mapTime2Frame(new EvDecimal(time));
 			EvDecimal frameB=ftB.mapTime2Frame(new EvDecimal(time));
 			
-			if(chanA.imageLoader.isEmpty())
+			if(chanA.getFrames().isEmpty())
 				throw new RuntimeException("No images in channel from A");
-			if(chanB.imageLoader.isEmpty())
+			if(chanB.getFrames().isEmpty())
 				throw new RuntimeException("No images in channel from B");
 			
 			//If outside range, do not bother with this time point
-			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.lastKey()) ||
-					frameB.less(chanB.imageLoader.firstKey()) || frameB.greater(chanB.imageLoader.lastKey()))
+			if(frameA.less(chanA.getFirstFrame()) || frameA.greater(chanA.getLastFrame()) ||
+					frameB.less(chanB.getFirstFrame()) || frameB.greater(chanB.getLastFrame()))
 				continue;
 			
 			//Use closest frame in each
-			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
-			EvStack stackB=chanB.imageLoader.get(chanB.closestFrame(frameB));
+			EvStack stackA=chanA.getStack(chanA.closestFrame(frameA));
+			EvStack stackB=chanB.getStack(chanB.closestFrame(frameB));
 
 			//Compare each slice. Same number of slices since it has been normalized
 			if(stackA.getDepth()!=stackB.getDepth())
@@ -365,11 +365,11 @@ public class CompareAll
 			EvDecimal frameA=ftA.mapTime2Frame(modelTime);
 			
 			//If outside range, stop calculating
-			if(frameA.less(chanA.imageLoader.firstKey()) || frameA.greater(chanA.imageLoader.lastKey()))
+			if(frameA.less(chanA.getFirstFrame()) || frameA.greater(chanA.getLastFrame()))
 				continue;
 			
 			//Use closest frame
-			EvStack stackA=chanA.imageLoader.get(chanA.closestFrame(frameA));
+			EvStack stackA=chanA.getStack(chanA.closestFrame(frameA));
 
 			//Compare each slice. Same number of slices since it has been normalized
 			int numz=stackA.getDepth();

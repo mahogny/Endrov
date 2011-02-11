@@ -359,12 +359,12 @@ public class IsosurfaceExtension implements ModelWindowExtension
 
 					float ptScalarField[]=null;
 					EvChannel chan=im.getChannel(channelName);
-					if(chan!=null && chan.imageLoader.containsKey(cframe))
+					if(chan!=null && chan.getFrames().contains(cframe))
 						{
 						//double resZ=im.meta.resZ;
 
 						
-						EvStack stack=im.getChannel(channelName).imageLoader.get(cframe);
+						EvStack stack=im.getChannel(channelName).getStack(cframe);
 						final int numSlices=stack.getDepth();
 						int curslice=0;
 						if(stack!=null)

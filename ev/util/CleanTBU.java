@@ -36,7 +36,7 @@ public class CleanTBU
 			for(Map.Entry<EvPath, EvChannel> e:data.getIdObjectsRecursive(EvChannel.class).entrySet())
 				{
 				EvChannel ch=e.getValue();
-				if(ch.imageLoader.isEmpty() && ch.metaObject.isEmpty())
+				if(ch.getFrames().isEmpty() && ch.metaObject.isEmpty())
 					{
 					System.out.println("Would delete "+e.getKey());
 					EvContainer cont=e.getKey().getParent().getContainer(data);

@@ -295,10 +295,11 @@ public class EvIODataBioformats implements EvIOData
 						ch.dateCreate=parseBFDate(creationDate);
 
 					//Populate stack metadata
-					EvStack stack=ch.imageLoader.get(frame);
+					EvStack stack=ch.getStack(frame);
 					if(stack==null)
 						{
-						stack=ch.getCreateFrame(frame);
+						stack=new EvStack();//.getCreateFrame(frame);
+						ch.putStack(frame, stack);
 						stack.resX=resX;
 						stack.resY=resY;
 						stack.resZ=resZ;

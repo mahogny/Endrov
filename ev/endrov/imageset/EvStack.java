@@ -267,7 +267,7 @@ public class EvStack implements AnyEvImage
 		loaders.set(z,im);
 		
 		
-		System.out.println("loaders "+loaders);
+//		System.out.println("loaders "+loaders);
 //		loaders.put(z,im);
 //		loaders.put(new EvDecimal(z).multiply(resZ).add(dispZ),im);
 		}

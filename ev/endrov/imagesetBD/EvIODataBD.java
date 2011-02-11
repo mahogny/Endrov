@@ -136,7 +136,8 @@ public class EvIODataBD implements EvIOData
 					{
 					EvChannel ch=imset.getCreateChannel(dyeName);
 					
-					EvStack stack=ch.getCreateFrame(new EvDecimal(0));
+					EvStack stack=new EvStack();//.getCreateFrame(new EvDecimal(0));
+					ch.putStack(new EvDecimal(0), stack);
 					EvImage evim=new EvImage();
 					
 					final File fname=new File(f,dyeName+" - n"+EV.pad(0, 6)+".tif");

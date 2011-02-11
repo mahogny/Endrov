@@ -80,13 +80,13 @@ public class FlowUnitWrapInChannel extends FlowUnitBasic
 			stack.setTrivialResolution();
 			stack.putInt(0, new EvImage((EvPixels)in));
 			EvChannel chan=new EvChannel();
-			chan.imageLoader.put(new EvDecimal(0), stack);
+			chan.putStack(new EvDecimal(0), stack);
 			lastOutput.put("out", chan);
 			}
 		else if(in instanceof EvStack)
 			{
 			EvChannel chan=new EvChannel();
-			chan.imageLoader.put(new EvDecimal(0), (EvStack)in);
+			chan.putStack(new EvDecimal(0), (EvStack)in);
 			lastOutput.put("out", chan);
 			}
 		else if(in instanceof EvChannel)

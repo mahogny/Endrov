@@ -1059,7 +1059,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 			if(channelHis!=null && shell!=null && lin !=null)
 				{
 				//Start from this frame (if it exists) or the first frame after
-				if(channelHis.getFrame(frame)==null)
+				if(channelHis.getStack(frame)==null)
 					frame=channelHis.closestFrameAfter(frame);
 
 				//Check if there is a keyframe before this one
@@ -1069,7 +1069,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 				
 				System.out.println("cur frame "+frame);
 				
-				final EvStack stackHis=channelHis.getFrame(frame);
+				final EvStack stackHis=channelHis.getStack(frame);
 				resXY=stackHis.resX;
 
 				//Read parameters from the GUI

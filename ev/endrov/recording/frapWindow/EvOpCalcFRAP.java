@@ -35,17 +35,17 @@ public class EvOpCalcFRAP
 		//Collect curve
 		initialConcentration=0;
 		int framesBeforeCount=0;
-		for(EvDecimal f:ch.imageLoader.keySet())
+		for(EvDecimal f:ch.getFrames())
 			if(f.doubleValue()<=before.doubleValue())
 				{
-				double sum=levelFromStack(ch.imageLoader.get(f), roi, channelName, f);
+				double sum=levelFromStack(ch.getStack(f), roi, channelName, f);
 				initialConcentration+=sum;
 				framesBeforeCount++;
 				startOfCurve.put(f.doubleValue(), sum);
 				}
 			else if(f.doubleValue()>after.doubleValue())
 				{
-				double sum=levelFromStack(ch.imageLoader.get(f), roi, channelName, f);
+				double sum=levelFromStack(ch.getStack(f), roi, channelName, f);
 				endOfCurve.put(f.doubleValue(), sum);
 				}
 		initialConcentration/=framesBeforeCount;
