@@ -1,8 +1,6 @@
 package endrov.worms.skeleton;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import endrov.imageset.EvPixels;
 import endrov.util.Vector2i;
 import endrov.worms.WormPixelMatcher;

@@ -10,7 +10,6 @@ public class EuclideanTransform extends DistanceTransform
 	private IntPair r[];
 	private int width;
 	private int height;
-	private int[] forwardArray;
 	private EvPixels backwardScanImage;
 	private int[] backwardArray;
 	
@@ -21,7 +20,6 @@ public class EuclideanTransform extends DistanceTransform
 		this.width = binaryImage.getWidth();
 		this.height = binaryImage.getHeight();
 		
-		forwardArray = new int[width*height];
 		backwardScanImage = new EvPixels(EvPixelsType.INT,width,height);
 		backwardArray = backwardScanImage.getArrayInt();
 		
