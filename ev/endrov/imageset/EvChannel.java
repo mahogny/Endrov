@@ -329,7 +329,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 				else if (i.getName().equals("dispYum"))
 					defaultDispY = Double.parseDouble(i.getValue());
 				
-				else if (i.getName().equals("dispZ"))
+				else if (i.getName().equals("dispZ") || i.getName().equals("dispZum"))
 					defaultDispZ = Double.parseDouble(i.getValue());
 				
 				else if (i.getName().equals("resX"))
