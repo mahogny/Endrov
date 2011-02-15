@@ -199,6 +199,27 @@ public class EvDataMenu implements BasicWindowExtension
 					obmenu.add(miSetAuthor);
 					JMenuItem miGetMetainfo=new JMenuItem("Get metainfo");
 					obmenu.add(miGetMetainfo);
+					
+					if(ob.isGeneratedData)
+						{
+						JMenuItem miSetEditable=new JMenuItem("Store permanently");
+						obmenu.add(miSetEditable);
+						miSetEditable.addActionListener(new ActionListener()
+							{
+							public void actionPerformed(ActionEvent e)
+								{
+								int answer=JOptionPane.showConfirmDialog(null, "Do you really want to store this object permanently?", EV.programName, JOptionPane.YES_NO_OPTION);
+								if(answer==JOptionPane.YES_OPTION)
+									{
+									ob.isGeneratedData=false;
+									BasicWindow.updateWindows();
+									}
+								}
+							});
+						
+						}
+					
+					
 					JMenu miMoveOb=buildMoveMenu(thisMeta, obId);
 					obmenu.add(miMoveOb);
 					

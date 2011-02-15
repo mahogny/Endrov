@@ -101,7 +101,7 @@ public class EvOpCropImage3D extends EvOpStack1
 		//Remove all loaders, since the number of slices can be different
 		stackOut.clearStack();
 		
-		System.out.println("-------------- crop 3d ------------ "+fromX+"  "+toX+"   "+fromY+"  "+toY+"    "+fromZ+"   "+toZ);
+//		System.out.println("-------------- crop 3d ------------ "+fromX+"  "+toX+"   "+fromY+"  "+toY+"    "+fromZ+"   "+toZ);
 		
 		
 		Vector3d disp=stack.getDisplacement();
@@ -121,7 +121,7 @@ public class EvOpCropImage3D extends EvOpStack1
 			final Memoize<EvPixels> m=new Memoize<EvPixels>(){
 				protected EvPixels eval()
 					{
-					System.out.println("---------- crop eval "+inZ);
+//					System.out.println("---------- crop eval "+inZ);
 					return new EvOpCropImage2D(fromX, toX, fromY, toY).exec1(stack.getInt(inZ).getPixels());
 					}
 				};
