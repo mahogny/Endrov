@@ -466,23 +466,97 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 	
 	/**
-	 * Merge nuclei. The source is removed, target stays and contains everything from the source
+	 * Merge nuclei. The target is removed, source stays and contains everything from the target
 	 * TODO also handle expression pattern?
 	 */	
 	public void mergeNuclei(String sourceName, String targetName)
 		{
 		Nuc ns=nuc.get(sourceName);
 		Nuc nt=nuc.get(targetName);
-		ns.overrideEnd=null;
+		
+		//Use one of the parents
+		String theParentName=ns.parent;
+		if(nt.parent!=null)
+			theParentName=nt.parent;
+
+		//Get all children
+		Set<String> theChildren=new HashSet<String>();
+		theChildren.addAll(ns.child);
+		theChildren.addAll(nt.child);
+
+		//Unlink everything
+		removeParentReference(sourceName);
+		removeParentReference(targetName);
+		for(String childName:theChildren)
+			removeParentReference(childName);
+		
+		//Remove nuclei, add new nucleus with the best name
+		String newName=sourceName;
+		if(sourceName.startsWith(":"))
+			newName=targetName;
+		nuc.remove(sourceName);
 		nuc.remove(targetName);
+		nuc.put(newName,ns);
+
+		//Pull in coordinates
+		ns.overrideEnd=null;
 		ns.pos.putAll(nt.pos);
-		ns.child.addAll(nt.child);
-		updateNameReference(targetName,sourceName);
-		ns.child.remove(sourceName);
+		
+		//Associate parent - the are no children so this is always safe
+		if(theParentName!=null)
+			{
+			ns.parent=theParentName;
+			nuc.get(theParentName).child.add(newName);
+			}
+		
+		//Associate children - this can cause loops, should be checked!
+		for(String childName:theChildren)
+			associateParentChildCheckNoLoop(newName, childName);
+			/*{
+			nuc.get(childName).parent=newName;
+			ns.child.add(childName);
+			}*/
+		
+		
+//		ns.child.addAll(nt.child);
+	//	updateNameReference(targetName,sourceName);
+	//	ns.child.remove(sourceName);
 		setMetadataModified();
 		}
 
 	
+	public void associateParentChildCheckNoLoop(String parent, String child)
+		{
+		if(nuc.get(child).parent!=null)
+			{
+			System.out.println("Parent already exists, not associating");
+			}
+		else
+			{
+			HashSet<String> visited=new HashSet<String>();
+			visited.add(parent);
+			if(!checkForLoops(visited, child))
+				{
+				//Safe to add
+				nuc.get(parent).child.add(child);
+				nuc.get(child).parent=parent;
+				}
+			else
+				System.out.println("Loop detected, not associating");
+			}
+		}
+	
+	private boolean checkForLoops(Set<String> visited, String current)
+		{
+		Nuc n=nuc.get(current);
+		if(visited.contains(current))
+			return true;
+		visited.add(current);
+		for(String child:n.child)
+			if(checkForLoops(visited, child))
+				return true;
+		return false;
+		}
 	
 	
 	/**
@@ -831,6 +905,9 @@ public class NucLineage extends EvObject implements Cloneable
 
 			EvDecimal frameBefore=getPosFrameBefore(frame);
 			EvDecimal frameAfter=getPosFrameAfter(frame);
+			
+			System.out.println("interpol  "+frameBefore+"  "+frameAfter);
+			
 			if(frameBefore==null)
 				{
 				if(frameAfter==null)
@@ -854,7 +931,6 @@ public class NucLineage extends EvObject implements Cloneable
 				double frac;
 				try
 					{
-					tdiff=new EvDecimal(0);
 					frac=frame.subtract(frameBefore).divide(tdiff).doubleValue();
 					}
 				catch (ArithmeticException e)
