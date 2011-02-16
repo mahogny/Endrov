@@ -395,10 +395,13 @@ public class NucCommonUI implements ActionListener
 							keep(lin, fParentName);
 							for(String childName:childNames)
 								{
-								NucLineage.Nuc n=lin.nuc.get(childName);
+								//NucLineage.Nuc n=lin.nuc.get(childName);
 								keep(lin, childName);
+								
+								lin.associateParentChildCheckNoLoop(fParentName, childName);
+								/*
 								n.parent=fParentName;
-								lin.nuc.get(fParentName).child.add(childName);
+								lin.nuc.get(fParentName).child.add(childName);*/
 								}
 							lin.setMetadataModified();
 							}
