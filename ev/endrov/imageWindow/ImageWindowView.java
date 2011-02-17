@@ -369,6 +369,8 @@ public class ImageWindowView extends JPanel
 				
 				//Reference area. This is what the transform decides on; the image above should be in it
 				
+				/*
+				
 				g2.setColor(Color.GREEN); //No displacement
 				//actually already displaced. red is double-displaced
 				Vector2d u1=transformI2S(p,stack,new Vector2d(0,0));
@@ -385,8 +387,9 @@ public class ImageWindowView extends JPanel
 				
 				g2.setColor(Color.RED);
 				g2.drawLine((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y);
-				g2.drawLine((int)v1.x, (int)v1.y, (int)v3.x, (int)v3.y);
+				g2.drawLine((int)v1.x, (int)v1.y, (int)v3.x, (int)v3.y); 
 				
+				*/
 //				stack.cs.transformToWorld(v)
 
 

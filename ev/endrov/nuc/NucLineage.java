@@ -906,8 +906,6 @@ public class NucLineage extends EvObject implements Cloneable
 			EvDecimal frameBefore=getPosFrameBefore(frame);
 			EvDecimal frameAfter=getPosFrameAfter(frame);
 			
-			System.out.println("interpol  "+frameBefore+"  "+frameAfter);
-			
 			if(frameBefore==null)
 				{
 				if(frameAfter==null)
