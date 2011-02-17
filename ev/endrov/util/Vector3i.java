@@ -41,6 +41,13 @@ public class Vector3i
 		return x^y^z;
 		}
 	
+	public void subtract(Vector3i v)
+		{
+		v.x-=v.x;
+		v.y-=v.y;
+		v.z-=v.z;
+		}
+	
 	
 	
 	}

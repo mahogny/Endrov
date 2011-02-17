@@ -12,7 +12,7 @@ import java.awt.image.RasterOp;*/
 import java.io.*;
 import java.util.*;
 
-import ome.xml.model.primitives.NonNegativeInteger;
+import ome.xml.model.primitives.PositiveInteger;
 
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
@@ -101,7 +101,9 @@ public class EvIODataBioformats implements EvIOData
 		System.out.println("bioformats adding channel separator");
 		imageReader=new ChannelSeparator(imageReader);
 		
-		
+		/*DimensionSwapper sw=new DimensionSwapper(imageReader);
+		sw.swapDimensions("XYZTC");
+		imageReader=sw;*/
 		
 		System.out.println("bioformats building database");
 		buildDatabase(d);
@@ -238,91 +240,94 @@ public class EvIODataBioformats implements EvIOData
 				}
 
 			
-			System.out.println("image count "+retrieve.getImageCount());
 			
-			//For all images (an image can have channels and planes)
-			for(int imageIndex=0;imageIndex<retrieve.getImageCount();imageIndex++)
+			PositiveInteger sizeT=retrieve.getPixelsSizeT(seriesIndex);
+			PositiveInteger sizeZ=retrieve.getPixelsSizeZ(seriesIndex);
+			PositiveInteger sizeC=retrieve.getPixelsSizeC(seriesIndex);
+			//int sizeX=retrieve.getPixelsSizeX(seriesIndex).getValue();
+			//int sizeY=retrieve.getPixelsSizeY(seriesIndex).getValue();
+			
+			
+			for(int curC=0;curC<sizeC.getValue();curC++)
 				{
-				//Read resolution
-				//Note: values are optional!!!
-				Double resX=retrieve.getPixelsPhysicalSizeX(imageIndex); //[um/px]
-				Double resY=retrieve.getPixelsPhysicalSizeY(imageIndex); //[um/px]
-				Double resZ=retrieve.getPixelsPhysicalSizeZ(imageIndex); //[um/px]
-				if(resX==null || resX==0) resX=1.0;
-				if(resY==null || resY==0) resY=1.0;
-				if(resZ==null || resZ==0) resZ=1.0;
-
-				int planeCount=retrieve.getPlaneCount(imageIndex);
-				System.out.println("#planes "+planeCount);
-				/*if(planeCount==0)
-					planeCount=1;*/
+				//EvChannel ch=new EvChannel();
+				EvChannel ch=imset.getCreateChannel("ch"+curC);
 				
-				for(int planeIndex=0;planeIndex<planeCount;planeIndex++)
+				
+				
+				for(int curT=0;curT<sizeT.getValue();curT++)
 					{
 					
-					//retrieve.getChannel
+					int imageIndexFirstPlane=imageReader.getIndex(0, curC, curT);
 					
-					NonNegativeInteger c=retrieve.getPlaneTheC(imageIndex, planeIndex);
-					NonNegativeInteger framenum=retrieve.getPlaneTheT(imageIndex, planeIndex);
-					NonNegativeInteger z=retrieve.getPlaneTheZ(imageIndex, planeIndex);
+					System.out.println("index "+imageIndexFirstPlane);
+					
+					//Read resolution
+					//Note: values are optional!!!
+					/*
+					Double resX=retrieve.getPixelsPhysicalSizeX(imageIndexFirstPlane); //[um/px]
+					Double resY=retrieve.getPixelsPhysicalSizeY(imageIndexFirstPlane); //[um/px]
+					Double resZ=retrieve.getPixelsPhysicalSizeZ(imageIndexFirstPlane); //[um/px]*/
+					
+					Double resX=retrieve.getPixelsPhysicalSizeX(0); //[um/px]
+					Double resY=retrieve.getPixelsPhysicalSizeY(0); //[um/px]
+					Double resZ=retrieve.getPixelsPhysicalSizeZ(0); //[um/px]
 
-					System.out.println("plane c "+c+" frame "+framenum+"  z "+z);
+					System.out.println("Detected resolution: "+resX+"    "+resY+"   "+resZ);
+					
+					if(resX==null || resX==0) resX=1.0;
+					if(resY==null || resY==0) resY=1.0;
+					if(resZ==null || resZ==0) resZ=1.0;
 					
 					//Calculate which frame this is. Note that we only consider the time of the first plane!
 					EvDecimal frame=null;
-					Double timeIncrement=retrieve.getPixelsTimeIncrement(imageIndex);   //TODO ?????
+					//Double timeIncrement=retrieve.getPixelsTimeIncrement(imageIndexFirstPlane);   
+					Double timeIncrement=retrieve.getPixelsTimeIncrement(0);
 					if(timeIncrement!=null)
 						//Time increment [s] is optional
-						frame=new EvDecimal(framenum.getValue()*timeIncrement);
+						frame=new EvDecimal(curT*timeIncrement);
 					else
 						{
-						//Time since beginning of experiment [s] is optional
-						Double deltaT=retrieve.getPlaneDeltaT(imageIndex, 0);
-						if(deltaT!=null)
-							frame=new EvDecimal(deltaT);
-						else
-							frame=new EvDecimal(framenum.getValue());
-						}
-					
-					//int numChannel=retrieve.getChannelCount(imageIndex);
-					//System.out.println("# channel "+numChannel);
-					
-					//TODO channel metadata
-					EvChannel ch=imset.getCreateChannel("ch"+c);
-					
-					String creationDate = retrieve.getImageAcquiredDate(0);  //TODO. per-image data, throwing away data here!
-					if(creationDate!=null)
-						ch.dateCreate=parseBFDate(creationDate);
-
-					//Populate stack metadata
-					EvStack stack=ch.getStack(frame);
-					if(stack==null)
-						{
-						stack=new EvStack();//.getCreateFrame(frame);
-						ch.putStack(frame, stack);
-						stack.resX=resX;
-						stack.resY=resY;
-						stack.resZ=resZ;
+						frame=new EvDecimal(curT);
 						
-						/*Double stagePosX=retrieve.getPlanePositionX(imageIndex, planeIndex);
-						Double stagePosY=retrieve.getPlanePositionY(imageIndex, planeIndex);
-						Double stagePosZ=retrieve.getPlanePositionZ(imageIndex, planeIndex);*/
+						//Time since beginning of experiment [s] is optional
+						//Double deltaT=retrieve.getPlaneDeltaT(imageIndexFirstPlane, 0);
+						try
+							{
+							Double deltaT=retrieve.getPlaneDeltaT(0, 0);
+							if(deltaT!=null)
+								frame=new EvDecimal(deltaT);
+							}
+						catch (Exception e)
+							{
+							System.out.println("Failed to call getPlaneDeltaT");
+							}
+						}
+					
+
+					//Create stack
+					EvStack stack=new EvStack();
+					ch.putStack(frame, stack);
+					stack.resX=resX;
+					stack.resY=resY;
+					stack.resZ=resZ;
+					
+					//Fill stack with planes
+					for(int curZ=0;curZ<sizeZ.getValue();curZ++)
+						{
+						EvImage evim=new EvImage();
+						evim.io=new BioformatsSliceIO(imageReader, imageReader.getIndex(curZ, curC, curT), basedir, false);
+						stack.putInt(curZ, evim);
 						}
 					
 					
-					EvImage evim=new EvImage();
-					evim.io=new BioformatsSliceIO(imageReader, imageReader.getIndex(z.getValue(), c.getValue(), framenum.getValue()), basedir, false);
-					stack.putInt(z.getValue(), evim);
-					
-					//Optional, [s]. Note: per-plane. Data thrown away!
-					Double expTime=retrieve.getPlaneExposureTime(imageIndex, planeIndex); 
-					if(expTime!=null)
-						ch.setFrameMeta(frame, "exposure",""+(expTime*1000));
-					
+		
 					}
 				
 				
+				
 				}
+			
 			}
 		
 		// http://hudson.openmicroscopy.org.uk/job/LOCI/javadoc/
