@@ -8,6 +8,7 @@ package endrov.nucImage;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -111,6 +112,44 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 
 		menu.add(new JSeparator());
 		
+		JMenuItem miNewEvent=new JMenuItem("Set event");
+		menu.add(miNewEvent);
+		miNewEvent.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				final Collection<NucSel> sel=NucCommonUI.getSelectedNucleiClone();
+				if(sel.size()!=1)
+					BasicWindow.showErrorDialog("Select 1 nucleus");
+				else
+					{
+					final NucSel theSel=sel.iterator().next();
+					final EvDecimal frame=w.getFrame();
+					String currentEventName=theSel.getNuc().events.get(frame);
+					if(currentEventName==null)
+						currentEventName="";
+					final String answer=JOptionPane.showInputDialog(null, "Event name", currentEventName);
+					if(answer!=null)
+						{
+						new UndoOpReplaceSomeNuclei("Set event")
+							{
+							public void redo()
+								{
+								keep(theSel.fst(), theSel.snd());
+								if(answer.equals(""))
+									theSel.getNuc().events.remove(frame);
+								else
+									theSel.getNuc().events.put(frame, answer);
+								BasicWindow.updateWindows();
+								}
+							}.execute();
+						}
+					}
+				}
+			});
+		
+		menu.add(new JSeparator());
+
 		EvContainer ims=w.getRootObject();
 		final WeakReference<EvContainer> wims=new WeakReference<EvContainer>(ims);
 		if(ims!=null)
@@ -121,7 +160,8 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 				miEdit.setSelected(editingLin.get()==e.getValue());
 				miEdit.addActionListener(this);
 				menu.add(miEdit);
-				}
+				}		
+		
 		JMenuItem miNew=new JMenuItem("New lineage");
 		final NucImageTool This=this;
 		miNew.addActionListener(new ActionListener(){
@@ -465,7 +505,6 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 			g.drawOval((int)(omid.x-or),(int)(omid.y-or),(int)(or*2),(int)(or*2));
 			}
 		}
-
 	
 	public void keyReleased(KeyEvent e)
 		{

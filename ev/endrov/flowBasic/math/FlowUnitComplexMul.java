@@ -21,7 +21,7 @@ import endrov.imageset.AnyEvImage;
  */
 public class FlowUnitComplexMul extends FlowUnitMathBinCompexOp
 	{
-	private static final String metaType="mul";
+	private static final String metaType="mulComplex";
 	
 	public FlowUnitComplexMul()
 		{
