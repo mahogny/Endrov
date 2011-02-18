@@ -56,7 +56,8 @@ public class LineageView extends JPanel
 	//public double expScale=1;
 	
 	public boolean showFrameLines=true;
-	public boolean showKeyFrames=true;	
+	public boolean showKeyFrames=true;
+	public boolean showEvents=true;
 	public boolean showExpLine=true;
 	public boolean showExpSolid=true;
 	public boolean showExpDot=true;
@@ -67,7 +68,7 @@ public class LineageView extends JPanel
 	
 	public boolean getShowKeyFrames(){return showKeyFrames;}
 	public boolean getShowLabel(){return showLabel;}
-	
+	public boolean getShowEvents(){return showEvents;};
 	/**
 	 * Get width and height of the screen, taking rotation into account
 	 */
@@ -142,8 +143,6 @@ public class LineageView extends JPanel
 		public HierarchicalPainter.Camera cam=new HierarchicalPainter.Camera();
 		public TreeMap<String, NucState> nucInternal=new TreeMap<String, NucState>();
 		
-
-		
 		public LinState(NucLineage lin)
 			{
 			cam.zoomX=1.0/60;
@@ -160,7 +159,13 @@ public class LineageView extends JPanel
 			layoutAllTrees(lin, this, hpainter, wh.fst(), wh.snd());
 			HierarchicalPainter.BoundingBox bb=hpainter.getTotalBoundingBox();
 			if(bb!=null)
+				{
+				if(bb.x1==bb.x2)
+					bb=new HierarchicalPainter.BoundingBox(bb.x1-20, bb.y1, bb.x2+20, bb.y2);
+				if(bb.y1==bb.y2)
+					bb=new HierarchicalPainter.BoundingBox(bb.x1, bb.y1-20, bb.x2, bb.y2+20);
 				cam.showArea(bb, wh.fst(),wh.snd());
+				}
 			else
 				System.out.println("No content to zoom at");
 			}
@@ -373,21 +378,26 @@ public class LineageView extends JPanel
 		{
 		LinState linstat=getLinState(currentLin);
 		HashSet<NucSel> selectedNuclei=NucCommonUI.getSelectedNuclei();
-		Vector2d v=new Vector2d();
-		int cnt=0;
-		NucSel sel=selectedNuclei.iterator().next();
-		if(sel.fst()==currentLin)
+		if(!selectedNuclei.isEmpty())
 			{
-			NucLineage.Nuc nuc=sel.getNuc();
-			EvDecimal frame=nuc.getLastFrame();
-			v.add(new Vector2d(frame.doubleValue(),linstat.getNucState(sel.snd()).centerY));
-			cnt++;
+			Vector2d v=new Vector2d();
+			int cnt=0;
+			NucSel sel=selectedNuclei.iterator().next();
+			if(sel.fst()==currentLin)
+				{
+				NucLineage.Nuc nuc=sel.getNuc();
+				EvDecimal frame=nuc.getLastFrame();
+				v.add(new Vector2d(frame.doubleValue(),linstat.getNucState(sel.snd()).centerY));
+				cnt++;
+				}
+			if(cnt>0)
+				{
+				v.scale(1.0/cnt);
+				linstat.goToPosition(v.x, v.y);
+				}
 			}
-		if(cnt>0)
-			{
-			v.scale(1.0/cnt);
-			linstat.goToPosition(v.x, v.y);
-			}
+		else
+			BasicWindow.showErrorDialog("No nuclei selected");
 		}
 	
 	/**
@@ -759,6 +769,18 @@ public class LineageView extends JPanel
 						drawKeyFrame(g, cam.toScreenX(frame.doubleValue()), thisMidY, nucsel.snd(), frame);
 					}
 
+				if(getShowEvents())
+					{
+					g.setColor(new Color(0,128,0));
+					for(EvDecimal frame:nuc.events.keySet())
+						{
+						int posX=cam.toScreenX(frame.doubleValue());
+						g.drawLine(posX, thisMidY, posX, thisMidY+10);
+						g.drawString(nuc.events.get(frame), posX, thisMidY+20);
+						}
+					}
+				
+				
 				//Lines to children
 				if(thisInternal.isExpanded && !nuc.child.isEmpty())
 					{

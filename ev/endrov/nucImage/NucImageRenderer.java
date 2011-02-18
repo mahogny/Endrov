@@ -253,8 +253,13 @@ public class NucImageRenderer implements ImageWindowRenderer
 				//Draw name of nucleus. maybe do this last
 				if(NucCommonUI.currentHover.equals(sel) || EvSelection.isSelected(sel))
 					{
+					String showString=nucName;
+					String eventName=sel.getNuc().events.get(currentFrame);
+					if(eventName!=null)
+						showString+=" ("+eventName+")";
+					
 					g.setColor(Color.RED);
-					g.drawString(nucName, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
+					g.drawString(showString, (int)so.x-g.getFontMetrics().stringWidth(nucName)/2, (int)so.y-2);
 					int crossSize=5;
 					g.drawLine((int)so.x-crossSize, (int)so.y, (int)so.x+crossSize, (int)so.y);
 					g.drawLine((int)so.x, (int)so.y, (int)so.x, (int)so.y+crossSize);

@@ -45,6 +45,7 @@ public class LineageWindow extends BasicWindow
 	public static final ImageIcon iconShowSelected=new ImageIcon(LineageWindow.class.getResource("jhToSelected.png"));
 	public static final ImageIcon iconZoomAll=new ImageIcon(LineageWindow.class.getResource("jhZoomAll.png"));
 	public static final ImageIcon iconShowKeyFrames=new ImageIcon(LineageWindow.class.getResource("jhShowKeyFrames.png"));
+	public static final ImageIcon iconShowEvents=new ImageIcon(LineageWindow.class.getResource("jhShowEvents.png"));
 	public static final ImageIcon iconShowLabel=new ImageIcon(LineageWindow.class.getResource("jhShowLabel.png"));
 	public static final ImageIcon iconShowFrameLines=new ImageIcon(LineageWindow.class.getResource("jhShowFrameLines.png"));
 	public static final ImageIcon iconShowVerticalTree=new ImageIcon(LineageWindow.class.getResource("jhShowVerticalTree.png"));
@@ -62,6 +63,7 @@ public class LineageWindow extends BasicWindow
 	//private JButton buttonSelectByName=new JImageButton(iconSelectByName,"Select by name of cell, or tissue. Regular expression possible");
 	private JToggleButton buttonShowFrameLines=new JImageToggleButton(iconShowFrameLines,"Show frame lines",true);
 	private JToggleButton buttonShowKeyFrames=new JImageToggleButton(iconShowKeyFrames,"Show key frames");
+	private JToggleButton buttonShowEvents=new JImageToggleButton(iconShowEvents,"Show events");
 	private JToggleButton buttonShowLabels=new JImageToggleButton(iconShowLabel,"Show labels",true);
 	private JToggleButton buttonShowVerticalTree=new JImageToggleButton(iconShowVerticalTree,"Show vertical tree");
 	private LineageView view=new LineageView();
@@ -185,6 +187,7 @@ public class LineageWindow extends BasicWindow
 		buttonZoomAll.addActionListener(this);
 		buttonShowFrameLines.addActionListener(this);
 		buttonShowKeyFrames.addActionListener(this);
+		buttonShowEvents.addActionListener(this);
 		buttonShowLabels.addActionListener(this);
 		buttonShowVerticalTree.addActionListener(this);
 		
@@ -198,9 +201,6 @@ public class LineageWindow extends BasicWindow
 		expGroup.add(miShowExpSolid);
 		expGroup.add(miShowExpNone);
 		updateShowExp();
-		
-		
-
 		
 		
 		sidePanelSplitPane=new EvHidableSidePaneRight(EvSwingUtil.layoutLCR(null, view, sliderZoomY), expPanel, true);
@@ -236,7 +236,7 @@ public class LineageWindow extends BasicWindow
 		c.gridx++;
 		bottomUpper.add(EvSwingUtil.layoutEvenHorizontal(
 				buttonGoToRoot, buttonGoToSelected, buttonZoomAll,
-				buttonShowVerticalTree, buttonShowFrameLines, buttonShowKeyFrames, buttonShowLabels
+				buttonShowVerticalTree, buttonShowFrameLines, buttonShowKeyFrames, buttonShowEvents, buttonShowLabels
 				),c);
 		c.gridx++;
 		
@@ -296,6 +296,7 @@ public class LineageWindow extends BasicWindow
 		{
 		view.showFrameLines=buttonShowFrameLines.isSelected();
 		view.showKeyFrames=buttonShowKeyFrames.isSelected();
+		view.showEvents=buttonShowEvents.isSelected();
 		view.showLabel=buttonShowLabels.isSelected();
 		view.showHorizontalTree=!buttonShowVerticalTree.isSelected();
 		}
@@ -316,7 +317,7 @@ public class LineageWindow extends BasicWindow
 			{
 			view.saveToDisk();
 			}*/
-		else if(e.getSource()==buttonShowFrameLines || e.getSource()==buttonShowKeyFrames || 
+		else if(e.getSource()==buttonShowFrameLines || e.getSource()==buttonShowKeyFrames || e.getSource()==buttonShowEvents ||  
 				e.getSource()==buttonShowLabels || e.getSource()==buttonShowVerticalTree)
 			{
 			copyShowSettings();

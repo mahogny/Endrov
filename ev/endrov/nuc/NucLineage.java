@@ -227,6 +227,15 @@ public class NucLineage extends EvObject implements Cloneable
 				pose.setAttribute("r", ""+pos.r);
 				}
 
+			for(EvDecimal frame:n.events.keySet())
+				{
+				String eventName=n.events.get(frame);
+				Element evente=new Element("event");
+				nuce.addContent(evente);
+				evente.setAttribute("f", ""+frame);
+				evente.setAttribute("n", ""+eventName);
+				}
+			
 			for(String child:n.child)
 				{
 				Element childe=new Element("child");
@@ -281,6 +290,12 @@ public class NucLineage extends EvObject implements Cloneable
 						pos.setPosCopy(new Vector3d(posx,posy,posz));
 						pos.r=posr;
 						n.pos.put(frame, pos);
+						}
+					else if(pose.getName().equals("event"))
+						{
+						EvDecimal frame=new EvDecimal(pose.getAttribute("f").getValue());
+						String eventName=pose.getAttributeValue("n");
+						n.events.put(frame, eventName);
 						}
 					else if(pose.getName().equals("child"))
 						{
@@ -737,7 +752,8 @@ public class NucLineage extends EvObject implements Cloneable
 		public final SortedMap<String, NucExp> exp=new TreeMap<String, NucExp>();
 		/** Color for nuc */
 		public java.awt.Color colorNuc=null; //Not stored to disk, but kept here so the color is the same in all windows
-
+		/** Events */
+		public SortedMap<EvDecimal, String> events=new TreeMap<EvDecimal, String>();
 		
 		//idea: reserve x,y,z,r as special keywords, use expression system for all interpol?
 		
