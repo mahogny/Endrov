@@ -67,20 +67,64 @@ public class MakeCellContactMap
 		nmap.getCreateListFor(a, b).add(new NeighMap.Interval(start,endFrame));
 		}
 	
-	
-	public void calcneigh(TreeSet<String> nucNames, EvDecimal startFrame, EvDecimal endFrame, EvDecimal frameInc)
+	/**
+	 * Calculate neighbours for one frame. Adds nuclei at a distance to avoid some really nonbiological contacts. These are also returned (starts with :::) 
+	 */
+	public static NucVoronoi calcneighOneFrame(Set<String> nucNames, Map<NucSel, NucLineage.NucInterp> inter, boolean selfContact) throws Exception
 		{
+		//Eliminate cells not in official list or invisible
+		Map<NucSel, NucLineage.NucInterp> interclean=new HashMap<NucSel, NucLineage.NucInterp>();
+		for(Map.Entry<NucSel, NucLineage.NucInterp> e:inter.entrySet())
+			if(e.getValue().isVisible() && nucNames.contains(e.getKey().snd()))
+				interclean.put(e.getKey(), e.getValue());
+		inter=interclean;
+		
+		//Add false nuclei at distance to make voronoi calc possible
+		if(!inter.isEmpty())
+			{
+			double r=3000; //300 is about the embryo. embryo is not centered in reality.
+			
+			NucLineage.NucInterp i1=new NucLineage.NucInterp();
+			i1.pos=new NucLineage.NucPos();
+			i1.frameBefore=EvDecimal.ZERO;
+			i1.pos.x=r;
+
+			NucLineage.NucInterp i2=new NucLineage.NucInterp();
+			i2.pos=new NucLineage.NucPos();
+			i2.frameBefore=EvDecimal.ZERO;
+			i2.pos.x=-r;
+
+			NucLineage.NucInterp i3=new NucLineage.NucInterp();
+			i3.pos=new NucLineage.NucPos();
+			i3.frameBefore=EvDecimal.ZERO;
+			i3.pos.y=-r;
+
+			NucLineage.NucInterp i4=new NucLineage.NucInterp();
+			i4.pos=new NucLineage.NucPos();
+			i4.frameBefore=EvDecimal.ZERO;
+			i4.pos.y=-r;
+
+			inter.put(new NucSel(null,":::1"), i1);
+			inter.put(new NucSel(null,":::2"), i2);
+			inter.put(new NucSel(null,":::3"), i3);
+			inter.put(new NucSel(null,":::4"), i4);
+			}
+		
+//			System.out.println("# inter "+inter.size());
+		
+		//Get neighbours
+		return new NucVoronoi(inter,selfContact);
+		}
+	
+	public void calcneigh(Set<String> nucNames, EvDecimal startFrame, EvDecimal endFrame, EvDecimal frameInc)
+		{
+		//Defaults
 		if(startFrame==null)
 			startFrame=lin.firstFrameOfLineage().fst();
 		if(endFrame==null)
 			endFrame=lin.lastFrameOfLineage().fst();
-		
-		
 		if(frameInc==null)
-			{
-			System.out.println("AIIIEEEE?");
-			frameInc=new EvDecimal(1); //TODO what to do?
-			}
+			frameInc=new EvDecimal(1);
 
 		nmap.validity=new NeighMap.Interval(startFrame,endFrame);
 		
@@ -93,7 +137,6 @@ public class MakeCellContactMap
 
 		
 		//Prepare different indexing
-		
 		for(String n:nucNames)
 			{
 			Map<String,EvDecimal> u=new HashMap<String,EvDecimal>();
@@ -113,11 +156,6 @@ public class MakeCellContactMap
 		for(EvDecimal curframe=startFrame;curframe.lessEqual(endFrame);curframe=curframe.add(frameInc))
 			{
 			numframes++;
-			/////////////////////////////
-//                                  				if(numframes>200)					break;
-                                				////////////////////
-                
-			
 			
 			//interpolate
 			Map<NucSel, NucLineage.NucInterp> inter=lin.getInterpNuc(curframe);
@@ -125,13 +163,13 @@ public class MakeCellContactMap
 				System.out.println(curframe);
 			try
 				{
+				nvor=calcneighOneFrame(nucNames, inter, true);
+				/*
 				//Eliminate cells not in official list or invisible
 				Map<NucSel, NucLineage.NucInterp> interclean=new HashMap<NucSel, NucLineage.NucInterp>();
-				//int numRealNuc=interclean.size();
 				for(Map.Entry<NucSel, NucLineage.NucInterp> e:inter.entrySet())
 					if(e.getValue().isVisible() && nucNames.contains(e.getKey().snd()))
 						interclean.put(e.getKey(), e.getValue());
-				//int numcleancell=interclean.size();
 				inter=interclean;
 				
 				//Add false nuclei at distance to make voronoi calc possible
@@ -167,8 +205,10 @@ public class MakeCellContactMap
 				
 //					System.out.println("# inter "+inter.size());
 				
-				//Get neighbours
 				nvor=new NucVoronoi(inter,true);
+				
+				*/
+				//Get neighbours
 				fcontacts.put(curframe, nvor);
 				//TODO if parent neigh at this frame, remove child?
 				
@@ -204,7 +244,7 @@ public class MakeCellContactMap
 	 * Calculate cell contact map from a lineage, from startFrames <= f <= endFrame.
 	 * Contacts for one frame can be obtained by letting startframe=endframe.
 	 */
-	public static NeighMap calculateCellMap(NucLineage lin, TreeSet<String> nucNames,
+	public static NeighMap calculateCellMap(NucLineage lin, Set<String> nucNames,
 			EvDecimal startFrame, EvDecimal endFrame, EvDecimal frameInc)
 		{
 		MakeCellContactMap cm=new MakeCellContactMap();

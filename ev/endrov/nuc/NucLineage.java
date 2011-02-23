@@ -895,7 +895,7 @@ public class NucLineage extends EvObject implements Cloneable
 		
 		
 		/**
-		 * Interpolate frame information
+		 * Interpolate frame information. If the nucleus does not exist at this time then null will be returned
 		 */
 		public NucInterp interpolatePos(EvDecimal frame)
 			{

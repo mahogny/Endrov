@@ -1,4 +1,4 @@
-#Prepare the app for release. Run from ./
+#Prepare the app for release. Run from ./ (the util directory)
 
 if [ `test -e makerelease.sh` ]; then exit -1; fi
 
@@ -46,3 +46,6 @@ echo ""
 
 #delete
 rm -Rf $name
+
+cd ev
+java util.debian.Main ../$name.zip
