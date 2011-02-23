@@ -35,31 +35,31 @@ public class Voronoi
 		else if(endrov.starter.EvSystemUtil.isWindows())
 			throw new Exception("QHULL Platform not supported");
 		else //assume linux?
+			{
 			platform="linux";
+			}
 		
 		//File dir=new File(Voronoi.class.getResource(".").getFile());
 		File dir=EvFileUtil.getFileFromURL(Voronoi.class.getResource(".").toURI().toURL());
 		
 		File executable=new File(new File(dir,"bin_"+platform),"qvoronoi");
 		
+		File sysExecutable=new File("/usr/bin/qvoronoi");
+		if(sysExecutable.exists())
+			executable=sysExecutable;
+		
 		//String execString=executable.toString();
 		//execString="."+File.separator+"qhull"+File.separator+"bin_"+platform+File.separator+"qvoronoi";
 		
 		// /usr/bin/qvoronoi
 		
-		int nump=points.length;
+		//int nump=points.length;
 		//might need to replace / for \ on windows
 		//Process process = Runtime.getRuntime().exec(execString,"o"});
     Process process = Runtime.getRuntime().exec(executable.toString()+" o");
     
     PrintWriter pw=new PrintWriter(process.getOutputStream());
-    //PrintWriter pw=new PrintWriter(System.out);
-    pw.println("3");
-    pw.println(Integer.toString(nump));
-    for(Vector3d p:points)
-    	pw.println("\t"+p.x+"\t"+p.y+"\t"+p.z);
-    pw.flush();
-    pw.close();
+    vectors2pw(pw, points);
     
     BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
     
@@ -74,7 +74,15 @@ public class Voronoi
     System.out.println("---err");*/
     /////////////
     
-    int outNumDim=Integer.parseInt(br.readLine());
+    String firstLine=br.readLine();
+    if(firstLine==null)
+    	{
+    	System.out.println("--- output to qvoronoi ---");
+    	vectors2pw(new PrintWriter(System.out), points);
+    	System.out.println("---- end output ---");
+    	throw new Exception("No input back");
+    	}
+    int outNumDim=Integer.parseInt(firstLine);
     if(outNumDim!=3)
     	throw new Exception("Returned dim!=3");
     
@@ -107,6 +115,16 @@ public class Voronoi
     		fa[i]=simplexv.get(i);
     	vsimplex.add(fa);
     	}
+		}
+	
+	private static void vectors2pw(PrintWriter pw, Vector3d[] points)
+		{
+    pw.println("3");
+    pw.println(Integer.toString(points.length));
+    for(Vector3d p:points)
+    	pw.println("\t"+p.x+"\t"+p.y+"\t"+p.z);
+    pw.flush();
+    pw.close();
 		}
 	
 

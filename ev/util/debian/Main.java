@@ -8,6 +8,8 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import endrov.util.EvFileUtil;
+
 /**
  * Take all-platform release and turn into .deb
  * 
@@ -49,6 +51,11 @@ public class Main
 			File zip=new File("../ev081225.zip");
 			if(args.length==1)
 				zip=new File(args[0]);
+			else
+				{
+				System.out.println("Argument: zip-file of release");
+				System.exit(1);
+				}
 			
 			
 			
@@ -123,12 +130,18 @@ public class Main
 			pkgs.add(new DebPackage("libservlet2.3-java",new String[]{"servlet-2.3.jar"},new String[]{"servlet.jar"})); //2.4 also exists
 			pkgs.add(new DebPackage("libxalan2-java",new String[]{"xalan2.jar"},new String[]{"xalan.jar","xerces.jar","xml-apis.jar"}));
 			pkgs.add(new DebPackage("libjdom1-java",new String[]{"jdom1.jar"},new String[]{"jdom.jar"})); //any overlap here?
-			pkgs.add(new DebPackage("libjogl-java",new String[]{"jogl.jar","gluegen-rt.jar"},new String[]{"gluegen-rt.jar","jogl.jar","libgluegen-rt.so","libjogl_awt.so","libjogl_cg.so","libjogl.so"}));
 			pkgs.add(new DebPackage("libjfreechart-java",new String[]{"jfreechart.jar"},new String[]{"jfreechart-1.0.5.jar"}));
 			pkgs.add(new DebPackage("libjakarta-poi-java",new String[]{"jakarta-poi-contrib.jar","jakarta-poi.jar","jakarta-poi-scratchpad.jar"},new String[]{"poi-contrib-3.0.1-FINAL-20070705.jar","poi-3.0.1-FINAL-20070705.jar","poi-scratchpad-3.0.1-FINAL-20070705.jar"}));
 			pkgs.add(new DebPackage("libjaxen-java",new String[]{"jaxen.jar"},new String[]{"jaxen-core.jar","jaxen-jdom.jar","saxpath.jar"}));
-			pkgs.add(new DebPackage("libjinput-java",new String[]{"jinput.jar"},new String[]{"libjinput-linux.so","jinput.jar","jinput-test.jar"}));
+			
+			
+			//jogl2 must get into the repos!
+			//pkgs.add(new DebPackage("libjogl-java",new String[]{"jogl.jar","gluegen-rt.jar"},new String[]{"gluegen-rt.jar","jogl.jar","libgluegen-rt.so","libjogl_awt.so","libjogl_cg.so","libjogl.so"}));
+			
+			//the system jutils seems to clash badly with the one needed by jogl2, hence jinput has to go for now
+			//pkgs.add(DebPackage.recommends("libjinput-java",new String[]{"jinput.jar"},new String[]{"libjinput-linux.so","jinput.jar","jinput-test.jar"}));
 
+			pkgs.add(new DebPackage("qhull-bin",new String[]{},new String[]{}));
 			
 			pkgs.add(DebPackage.recommends("micromanager",new String[]{},new String[]{"umanager_inc"})); //rely on inc-file to add jar files
 

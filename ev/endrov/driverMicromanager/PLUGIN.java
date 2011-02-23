@@ -23,8 +23,9 @@ public class PLUGIN extends PluginDef
 		try
 			{
 			Class.forName("mmcorej.CMMCore");
+			return true;
 //			return EV.isLinux() || EV.isMac();
-			return false;
+//			return false;
 			}
 		catch (ClassNotFoundException e)
 			{

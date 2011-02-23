@@ -698,16 +698,24 @@ public class ExpUtil
 		NucLineage stdlin=stdcelegans.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
 
 		//Time normalization
-		FrameTime ftRef=CompareAll.buildFrametime(IntExp.refLin);
+		//FrameTime ftRef=CompareAll.buildFrametime(IntExp.refLin);
+		FrameTime ftRef=CompareAll.buildFrametime(reflin);
 		FrameTime ftStd=CompareAll.buildFrametime(stdlin);
 		
 		//Coordinate transform
 		CoordinateSystem csStd=ExpUtil.singlecellCSfromLin(stdlin);
 		CoordinateSystem csRef=ExpUtil.singlecellCSfromLin(reflin);
-		Matrix4d mStd=csStd.getTransformToWorld();
-		Matrix4d mRef=csRef.getTransformToSystem();
+		Matrix4d mStd=csStd.getTransformToSystem();   //This should put std into the origo, more or less
+		Matrix4d mRef=csRef.getTransformToWorld();    //The inverse of putting ref in the origo
+//		Matrix4d mStd=csStd.getTransformToWorld();
+//		Matrix4d mRef=csRef.getTransformToSystem();
 		Matrix4d transform=new Matrix4d();
 		transform.mul(mRef, mStd);
+		
+		//// temp
+//		transform.set(mStd);
+		
+		//// temp
 		
 		//For all nuclei
 		for(NucLineage.Nuc n:stdlin.nuc.values())

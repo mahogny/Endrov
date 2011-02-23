@@ -75,7 +75,7 @@ public class NucVoronoi
 				neigh.remove(pair.fst());
 				neigh.remove(pair.snd());
 				
-				//Check angles
+				//Check angles. The COPAN thing in the c.e model paper.
 				for(int i:neigh)
 					{
 					double angle=EvGeomUtil.midAngle(vor.center[pair.fst()], vor.center[i], vor.center[pair.snd()]);

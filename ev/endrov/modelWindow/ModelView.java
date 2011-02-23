@@ -46,7 +46,10 @@ public class ModelView extends GLJPanel //GLCanvas
 
 	static
 	{
-	caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+	System.out.println("Default gl profile "+GLProfile.getDefault());
+	GLProfile prof=GLProfile.get(GLProfile.GL2);
+	
+	caps = new GLCapabilities(prof);
   caps.setAlphaBits(8);
 	}
 	
