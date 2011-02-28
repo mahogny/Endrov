@@ -220,7 +220,7 @@ public class VoxelExtension implements ModelWindowExtension
 
 		public void datachangedEvent()
 			{
-			System.out.println("voxel datachanged event");
+			//System.out.println("voxel datachanged event");
 			EvContainer data=w.getSelectedData();
 			Imageset im=data instanceof Imageset ? (Imageset)data : new Imageset();
 			
@@ -281,7 +281,7 @@ public class VoxelExtension implements ModelWindowExtension
 						Imageset im=oc.channelCombo.getImagesetNotNull();
 //					System.out.println("im: "+im);
 //					System.out.println("im2: "+oc.channelCombo.getChannel());
-						String channelName=oc.channelCombo.getChannel();
+						String channelName=oc.channelCombo.getChannelName();
 						if(channelName!=null)
 							{
 							EvChannel chim=im.getChannel(channelName);
@@ -390,7 +390,7 @@ public class VoxelExtension implements ModelWindowExtension
 				
 				System.out.println("new stack (changed)");
 	
-				EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelCombo.getChannel());
+				EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelCombo.getChannelName());
 				lastChannelImages=new WeakReference<EvChannel>(images);
 				
 				System.out.println("voxel repaint");
@@ -402,7 +402,7 @@ public class VoxelExtension implements ModelWindowExtension
 			 */
 			public void checkStackChanged()
 				{
-				String channelName=channelCombo.getChannel();
+				String channelName=channelCombo.getChannelName();
 				if(channelName!=null)
 					{
 					EvChannel images=channelCombo.getImagesetNotNull().getChannel(channelName);

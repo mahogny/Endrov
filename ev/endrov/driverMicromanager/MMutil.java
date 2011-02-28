@@ -74,20 +74,46 @@ public class MMutil
 
 		int bpp=(int)core.getBytesPerPixel();
 		int numComponent=(int)core.getNumberOfComponents();
+		int bitdepth=(int)core.getImageBitDepth(); //How many bits of dynamic range are to be expected from the camera. This value should be used only as a guideline - it does not guarante that image buffer will contain only values from the returned dynamic range.
+
+		//System.out.println("bpp "+bpp+"   #comp "+numComponent+"    bitdepth "+bitdepth);
 		
-		//bug workaround???
+		//Micromanager supports pixels packed in a special way
 		String p=core.getProperty(device, "PixelType");
 		if(p.equals("32bitRGB"))
 			numComponent=3;
+		//Might want to handle this in a totally different way
 		
 		core.snapImage();
 
 		Object arr;
 		if(core.getNumberOfComponents()==1)
+			{
 			arr=core.getImage();//core.getLastImage();//;
+
+			//If it is a 16-bit image then it must be casted to 32-bit to handle signedness
+			if(bpp==2 && bitdepth==16)
+				{
+				short[] oldarr=(short[])arr;
+				int[] newarr=new int[oldarr.length];
+				for(int i=0;i<oldarr.length;i++)
+					{
+					int v=oldarr[i];
+					if(v<0)
+						v+=32768*2;
+					newarr[i]=v;
+					}
+				arr=newarr;
+				bpp=4;
+				}
+			
+			}
 		else
 			arr=core.getRGB32Image();
-		
+
+		if(bpp!=1)
+			System.out.println("Got camera bpp "+bpp);
+
 		CameraImage im=new CameraImage(
 				(int)core.getImageWidth(),
 				(int)core.getImageHeight(),

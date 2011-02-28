@@ -36,7 +36,7 @@ import endrov.util.SnapBackSlider.SnapChangeListener;
  * @author Johan Henriksson
  */
 public class LineageWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, TimedDataWindow
 	{
 	static final long serialVersionUID=0;
 	
@@ -241,7 +241,7 @@ public class LineageWindow extends BasicWindow
 		c.gridx++;
 		
 		addMenubar(menuLineage);
-		new NucCommonUI(this).addToMenu(menuLineage, true);
+		new NucCommonUI(this, this).addToMenu(menuLineage, true);
 		menuLineage.addSeparator();
 		menuLineage.add(miExportImage);
 		menuLineage.addSeparator();
@@ -690,6 +690,18 @@ public class LineageWindow extends BasicWindow
 	public void freeResources(){}
 
 
+	
+	public EvDecimal getFrame()
+		{
+		System.out.println("Frame: "+view.getFrame());
+		return view.getFrame();
+		}
+
+	public EvContainer getSelectedData()
+		{
+		return objectCombo.getSelectObjectParent();
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration
@@ -716,5 +728,7 @@ public class LineageWindow extends BasicWindow
 			public void savePersonalConfig(Element e){}
 			});
 		}
+	
+	
 
 	}

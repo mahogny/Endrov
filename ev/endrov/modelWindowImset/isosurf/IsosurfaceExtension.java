@@ -256,7 +256,7 @@ public class IsosurfaceExtension implements ModelWindowExtension
 					im=new Imageset();
 				
 				//Get channel
-				String channelName=chanCombo.getChannel();
+				String channelName=chanCombo.getChannelName();
 				if(channelName!=null)
 					{
 					EvChannel ch=im.getChannel(channelName);

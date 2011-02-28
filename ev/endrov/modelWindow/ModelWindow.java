@@ -38,7 +38,7 @@ import endrov.util.SnapBackSlider;
  * @author Johan Henriksson
  */
 public class ModelWindow extends BasicWindow
-		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener, JinputListener
+		implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, ChangeListener, JinputListener, TimedDataWindow
 	{
 	/******************************************************************************************************
 	 *                               Static                                                               *

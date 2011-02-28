@@ -331,7 +331,7 @@ public class EvComboChannel extends JPanel implements ActionListener
 	/**
 	 * Get selected channel or null
 	 */
-	public String getChannel()
+	public String getChannelName()
 		{
 		ComboItem ci=(ComboItem)combo.getSelectedItem();
 		if(ci==null)
@@ -340,6 +340,17 @@ public class EvComboChannel extends JPanel implements ActionListener
 			return ci.channelName;
 		}
 
+	public EvChannel getChannel()
+		{
+		ComboItem ci=(ComboItem)combo.getSelectedItem();
+		if(ci==null)
+			return null;
+		else
+			{
+			return ((Imageset)ci.getCon()).getChannel(ci.channelName);
+			}
+		}
+	
 	
 	public EvPath getSelectedObjectPath()
 		{

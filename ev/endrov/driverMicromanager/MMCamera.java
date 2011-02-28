@@ -114,6 +114,11 @@ public class MMCamera /*extends MMDeviceAdapter*/ implements HWCamera
 		{
 		try
 			{
+//			mm.core.set
+			//core.set
+//			int bpp=(int)core.getBytesPerPixel();
+	//		int numComponent=(int)core.getNumberOfComponents();
+
 			mm.core.setExposure(expTime.doubleValue());
 			return MMutil.snap(mm.core, mmDeviceName);
 			}

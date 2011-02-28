@@ -44,7 +44,7 @@ import endrov.util.SnapBackSlider.SnapChangeListener;
  * @author Johan Henriksson
  */
 public class ImageWindow extends BasicWindow 
-			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener,
+			implements ActionListener, MouseListener, MouseMotionListener, KeyListener, ChangeListener, MouseWheelListener, TimedDataWindow, 
 			ImageWindowInterface
 	{	
 	/******************************************************************************************************
@@ -153,6 +153,11 @@ public class ImageWindow extends BasicWindow
 	private final JPanel bottomPanelFirstRow=new JPanel(new BorderLayout());
 
 	
+	public List<ChannelWidget> getChannels()
+		{
+		return channelWidget;
+		}
+	
 	
 	/**
 	 * The image panel extended with more graphics
@@ -211,16 +216,18 @@ public class ImageWindow extends BasicWindow
 	/**
 	 * One row of channel settings in the GUI
 	 */
-	private class ChannelWidget extends JPanel implements ActionListener, ChangeListener
+	public class ChannelWidget extends JPanel implements ActionListener, ChangeListener
 		{
 		static final long serialVersionUID=0;
 		
-		public final JRadioButton rSelect=new JRadioButton();
-		public final EvComboChannel comboChannel=new EvComboChannel(null,false);
-		public final JSlider sliderContrast=new JSlider(-10000,10000,0);
-		public final JSlider sliderBrightness=new JSlider(-200,200,0);
-		public final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
-		public final JImageButton bRemoveChannel=new JImageButton(BasicIcon.iconRemove,"Remove channel");
+		private final JRadioButton rSelect=new JRadioButton();
+		private final EvComboChannel comboChannel=new EvComboChannel(null,false);
+		private final JSlider sliderContrast=new JSlider(-10000,10000,0);
+		private final JSlider sliderBrightness=new JSlider(-200,200,0);
+		private final EvComboColor comboColor=new EvComboColor(false, channelColorList, EvColor.white);
+		private final JImageButton bRemoveChannel=new JImageButton(BasicIcon.iconRemove,"Remove channel");
+		
+		
 		
 		public ChannelWidget()
 			{
@@ -267,23 +274,23 @@ public class ImageWindow extends BasicWindow
 			else if(e.getSource()==comboColor)
 				updateImagePanel();
 			else if(e.getSource()==bRemoveChannel)
-				removeChannel();
+				removeChannel(this);
 			else
 				updateImagePanel();
 			}
 		
-		public void removeChannel()
+
+		public double getContrast()
 			{
-			if(channelWidget.size()>1)
-				{
-				channelWidget.remove(this);
-				rChannelGroup.remove(this.rSelect);
-				if(rSelect.isSelected())
-					channelWidget.get(0).rSelect.setSelected(true);
-				buildChannelPanel();
-				updateImagePanel();
-				}
+			return Math.pow(2,sliderContrast.getValue()/1000.0);
 			}
+		
+		public double getBrightness()
+			{
+			return sliderBrightness.getValue();
+			}
+		
+		
 		
 		public void stateChanged(ChangeEvent e)
 			{
@@ -292,8 +299,22 @@ public class ImageWindow extends BasicWindow
 		
 		public String getChannelName()
 			{
-			return comboChannel.getChannel();
+			return comboChannel.getChannelName();
 			}
+		
+		/**
+		 * Get channel, or null in case it fails (data outdated, or similar)
+		 */
+		public EvChannel getChannel()
+			{
+			Imageset rec2=comboChannel.getImageset();
+			String chname=comboChannel.getChannelName();
+			if(rec2!=null && chname!=null)
+				return rec2.getChannel(chname);
+			else
+				return null;
+			}
+		
 		}	
 
 		
@@ -421,13 +442,32 @@ public class ImageWindow extends BasicWindow
 		setVisibleEvWindow(true);
 		updateImagePanel();
 		}
-	
+
+	/**
+	 * Add channel
+	 */
 	public void addChannel()
 		{
 		ChannelWidget chWidget=new ChannelWidget();
 		rChannelGroup.add(chWidget.rSelect);
 		channelWidget.add(chWidget);
 		buildChannelPanel();
+		}
+
+	/**
+	 * Remove channel
+	 */
+	public void removeChannel(ChannelWidget chan)
+		{
+		if(channelWidget.size()>1)
+			{
+			channelWidget.remove(chan);
+			rChannelGroup.remove(chan.rSelect);
+			if(chan.rSelect.isSelected())
+				channelWidget.get(0).rSelect.setSelected(true);
+			buildChannelPanel();
+			updateImagePanel();
+			}
 		}
 
 	/**
@@ -504,7 +544,7 @@ public class ImageWindow extends BasicWindow
 	 */
 	public String getCurrentChannelName()
 		{
-		return getCurrentChannelWidget().comboChannel.getChannel();
+		return getCurrentChannelWidget().comboChannel.getChannelName();
 		}
 	
 	/** Get current channel or null */
@@ -599,16 +639,20 @@ public class ImageWindow extends BasicWindow
 		for(int i=0;i<channelWidget.size();i++)
 			{
 			ChannelWidget cw=channelWidget.get(i);
+
+			EvChannel ch=cw.getChannel();
 			
-			Imageset rec2=cw.comboChannel.getImageset();
-			String chname=cw.comboChannel.getChannel();
-			if(rec2!=null && chname!=null)
+			
+			//Imageset rec2=cw.comboChannel.getImageset();
+			//String chname=cw.comboChannel.getChannelName();
+			if(ch!=null)
+			//if(rec2!=null && chname!=null)
 				{
-				EvChannel ch=rec2.getChannel(chname);
+				//EvChannel ch=rec2.getChannel(chname);
 				ImageWindowView.ImagePanelImage pi=new ImageWindowView.ImagePanelImage();
-				pi.brightness=cw.sliderBrightness.getValue();
-				pi.contrast=Math.pow(2,cw.sliderContrast.getValue()/1000.0);
-				pi.color=channelWidget.get(i).comboColor.getEvColor();
+				pi.brightness=cw.getBrightness();//cw.sliderBrightness.getValue();
+				pi.contrast=cw.getContrast();//Math.pow(2,cw.sliderContrast.getValue()/1000.0);
+				pi.color=cw.comboColor.getEvColor();
 				
 				EvDecimal frame=frameControl.getFrame();
 				EvDecimal z=frameControl.getZ();
@@ -628,11 +672,11 @@ public class ImageWindow extends BasicWindow
 							pi.setImage(stack,evim);
 						else
 							{
-							System.out.println("Image was null. ch:"+chname);
+							System.out.println("Image was null. ch:"+cw.getChannelName());
 							}
 						}
 					else
-						System.out.println("--For ch:"+chname);
+						System.out.println("--For ch:"+cw.getChannelName());
 					}
 				imagePanel.images.add(pi);
 				}

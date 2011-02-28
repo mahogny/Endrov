@@ -22,10 +22,9 @@ import endrov.util.EvDecimal;
  */
 public final class MakeMovieThread extends BatchThread 
 	{
-	private final Imageset rec;
+	//private final Imageset rec;
 	
 	private final EvDecimal startFrame, endFrame;
-	private final EvDecimal z;
 
 	private final int oneW;
 	private final java.util.List<MovieChannel> channels;
@@ -35,24 +34,24 @@ public final class MakeMovieThread extends BatchThread
 	
 	public static class MovieChannel
 		{
-		public final String name;
-		//public final FilterSeq fs;
-		public final MovieDescString desc;
-		public MovieChannel(String name,/* FilterSeq fs,*/ String desc)
+		public String name;
+		public EvChannel chan;
+		public MovieDescString desc;
+		public EvDecimal z;
+		public MovieChannel(String name, EvChannel chan,  String desc, EvDecimal z)
 			{
 			this.name=name;
-			//this.fs=fs;
+			this.chan=chan;
 			this.desc=new MovieDescString(desc);
+			this.z=z;
 			}
 		}
 	
-	public MakeMovieThread(Imageset rec, EvDecimal startFrame, EvDecimal endFrame, EvDecimal z, List<MovieChannel> channelNames, int oneW, String quality, File movieFile,
-			EvMovieMakerFactory mf)
+	public MakeMovieThread(EvDecimal startFrame, EvDecimal endFrame, List<MovieChannel> channelNames, int oneW, EvMovieMakerFactory mf, String quality,
+			File movieFile)
 		{
-		this.rec=rec;
 		this.startFrame=startFrame;
 		this.endFrame=endFrame;
-		this.z=z;
 		this.channels=channelNames;
 		this.oneW=oneW;
 		inputQuality=quality;
@@ -78,27 +77,12 @@ public final class MakeMovieThread extends BatchThread
 			//Check that channel list is ok
 			if(channels.isEmpty())
 				throw new Exception("Missing channels");
-			for(MovieChannel s:channels)
-				if(rec.getChannel(s.name)==null)
-					throw new Exception("Missing channels");
-			
-			
-			//System.out.println(" "+moviePath);
-			
-			/*
-			 * strange behaviour
-			if(moviePath.exists())
-				{
-				batchLog("Skipping. Movie already exists");
-				batchDone();
-				return;
-				}*/
 
 			//Quicktime movie to be made
 			EvMovieMaker movieMaker=null;
 			
 			//For all frames
-			EvDecimal curframe=rec.getChannel(channels.get(0).name).closestFrame(startFrame);
+			EvDecimal curframe=channels.get(0).chan/*rec.getChannel(channels.get(0).name)*/.closestFrame(startFrame);
 			while(curframe.lessEqual(endFrame))
 				{
 				//Check for premature stop
@@ -114,20 +98,20 @@ public final class MakeMovieThread extends BatchThread
 				//Fetch all images
 				Vector<MovieChannelImage> mc=new Vector<MovieChannelImage>();
 				boolean allImloadOk=true;
-				for(MovieChannel cName:channels)
+				for(MovieChannel movieChan:channels)
 					{
-					EvChannel ch=rec.getChannel(cName.name);
+					EvChannel ch=movieChan.chan;//rec.getChannel(cName.name);
 					EvDecimal frame=ch.closestFrame(curframe);
 					EvStack stack=ch.getStack(frame);
-					int tz=stack.closestZint(z.doubleValue());
+					int tz=stack.closestZint(movieChan.z.doubleValue());
 					if(tz<0)
-						System.out.println("Error for channel "+cName.name+"   "+stack.getDepth()+"  "+z+"   "+stack.oldGetDispZ()+"   "+stack.resZ);
+						System.out.println("Error for channel "+movieChan.name+"   "+stack.getDepth()+"  "+movieChan.z+"   "+stack.oldGetDispZ()+"   "+stack.resZ);
 					EvImage imload=stack.getInt(tz);
 					//EvDecimal tz=ch.closestZ(frame, z);
 					//EvImage imload=ch.getImageLoader(frame, tz);
 					if(imload==null)
 						{
-						batchError("Failure: Could not collect EvImage for ch:"+cName.name+" f:"+frame+" z:"+tz);
+						batchError("Failure: Could not collect EvImage for ch:"+movieChan.name+" f:"+frame+" z:"+tz);
 						allImloadOk=false;
 						}
 					else
@@ -137,11 +121,11 @@ public final class MakeMovieThread extends BatchThread
 						BufferedImage ji=imload.getPixels().quickReadOnlyAWT();
 						if(ji==null)
 							{
-							batchError("Failure: Could not collect EvPixels for ch:"+cName.name+" f:"+frame+" z:"+tz);
+							batchError("Failure: Could not collect EvPixels for ch:"+movieChan.name+" f:"+frame+" z:"+tz);
 							allImloadOk=false;
 							}
 						else
-							mc.add(new MovieChannelImage(ji, cName.name));
+							mc.add(new MovieChannelImage(ji, movieChan.name));
 						}
 					}
 				if(allImloadOk)
@@ -158,7 +142,7 @@ public final class MakeMovieThread extends BatchThread
 					}
 
 				//Go to next frame. End if there are no more frames.
-				EvDecimal newcurframe=rec.getChannel(channels.get(0).name).closestFrameAfter(curframe);
+				EvDecimal newcurframe=channels.get(0).chan/*rec.getChannel(channels.get(0).name)*/.closestFrameAfter(curframe);
 				if(newcurframe.equals(curframe))
 					break;
 				curframe=newcurframe;
@@ -224,7 +208,7 @@ public final class MakeMovieThread extends BatchThread
 			
 			g.setColor(Color.WHITE);
 			
-			g.drawString(channels.get(i).desc.decode(rec, channels.get(i).name,frame), oneW*i, h-1);
+			g.drawString(channels.get(i).desc.decode(channels.get(i).name,frame), oneW*i, h-1);
 			/*
 			if(i==0)
 				g.drawString(ch.name+" ("+frame+")", oneW*i, h-1);

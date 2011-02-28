@@ -85,13 +85,14 @@ public class BatchMovie
 
 			//Add channels that should be in the movie. Figure out best width (original width)
 			int width=336;
+			EvDecimal z=new EvDecimal(17);
 			for(String name:new String[]{"DIC","GFPmax","RFPmax"})
 				if(imset.metaObject.containsKey(name) && !((EvChannel)imset.metaObject.get(name)).getFrames().isEmpty())
 					{
 					String desc="<channel/>";
 					if(name.equals("DIC"))
 						desc="<channel/> (<frame/>)";
-					channelNames.add(new MakeMovieThread.MovieChannel(name,desc));
+					channelNames.add(new MakeMovieThread.MovieChannel(name,(EvChannel)imset.metaObject.get(name), desc,z));
 	
 					System.out.println(name);
 					//Get original image size
@@ -103,8 +104,8 @@ public class BatchMovie
 	
 			System.out.println("Now making movie");
 	
-			BatchThread c=new MakeMovieThread(imset, EvDecimal.ZERO, new EvDecimal("1000000"), new EvDecimal(17), 
-					channelNames, width, quality, outfile, factory);
+			BatchThread c=new MakeMovieThread(EvDecimal.ZERO, new EvDecimal("1000000"), 
+					channelNames, width, factory, quality, outfile);
 	
 			new CompleteBatch(c); 
 			System.out.println("Movie done");
