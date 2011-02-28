@@ -12,6 +12,10 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
@@ -96,7 +100,7 @@ public final class MakeMovieThread extends BatchThread
 				batchLog(""+curframe);
 
 				//Fetch all images
-				Vector<MovieChannelImage> mc=new Vector<MovieChannelImage>();
+				LinkedList<MovieChannelImage> mc=new LinkedList<MovieChannelImage>();
 				boolean allImloadOk=true;
 				for(MovieChannel movieChan:channels)
 					{
@@ -125,7 +129,7 @@ public final class MakeMovieThread extends BatchThread
 							allImloadOk=false;
 							}
 						else
-							mc.add(new MovieChannelImage(ji, movieChan.name));
+							mc.add(new MovieChannelImage(ji));
 						}
 					}
 				if(allImloadOk)
@@ -167,12 +171,11 @@ public final class MakeMovieThread extends BatchThread
 	
 	private class MovieChannelImage
 		{
-		public BufferedImage im;
-		//public String name;
+		public final BufferedImage im;
 		public double scale;
-		public MovieChannelImage(BufferedImage im, String name)
+		public MovieChannelImage(BufferedImage im)
 			{
-			this.im=im; //this.name=name; 
+			this.im=im;
 			}
 		}
 
@@ -180,7 +183,7 @@ public final class MakeMovieThread extends BatchThread
 	/**
 	 * Put channels together
 	 */
-	private BufferedImage combine(Vector<MovieChannelImage> mc, EvDecimal frame)
+	private BufferedImage combine(List<MovieChannelImage> mc, EvDecimal frame)
 		{
 		int h=0;
 		for(MovieChannelImage ch:mc)
@@ -195,7 +198,7 @@ public final class MakeMovieThread extends BatchThread
 		int fontH=20;
 		h+=fontH+2;
 
-		BufferedImage c=new BufferedImage(oneW*mc.size(),h,BufferedImage.TYPE_BYTE_GRAY);
+		BufferedImage c=new BufferedImage(oneW*mc.size(),h,BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D g=(Graphics2D)c.getGraphics();
 		for(int i=0;i<mc.size();i++)
 			{
@@ -209,12 +212,17 @@ public final class MakeMovieThread extends BatchThread
 			g.setColor(Color.WHITE);
 			
 			g.drawString(channels.get(i).desc.decode(channels.get(i).name,frame), oneW*i, h-1);
+
+			
 			/*
 			if(i==0)
 				g.drawString(ch.name+" ("+frame+")", oneW*i, h-1);
 			else
 				g.drawString(ch.name, oneW*i, h-1);*/
 			}
+		
+
+
 		
 		return c;
 		}

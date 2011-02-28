@@ -279,7 +279,11 @@ public class ImageWindow extends BasicWindow
 				updateImagePanel();
 			}
 		
-
+		public void stateChanged(ChangeEvent e)
+			{
+			updateImagePanel();
+			}	
+		
 		public double getContrast()
 			{
 			return Math.pow(2,sliderContrast.getValue()/1000.0);
@@ -290,12 +294,10 @@ public class ImageWindow extends BasicWindow
 			return sliderBrightness.getValue();
 			}
 		
-		
-		
-		public void stateChanged(ChangeEvent e)
+		public EvColor getColor()
 			{
-			updateImagePanel();
-			}	
+			return comboColor.getEvColor();
+			}
 		
 		public String getChannelName()
 			{
@@ -652,7 +654,7 @@ public class ImageWindow extends BasicWindow
 				ImageWindowView.ImagePanelImage pi=new ImageWindowView.ImagePanelImage();
 				pi.brightness=cw.getBrightness();//cw.sliderBrightness.getValue();
 				pi.contrast=cw.getContrast();//Math.pow(2,cw.sliderContrast.getValue()/1000.0);
-				pi.color=cw.comboColor.getEvColor();
+				pi.color=cw.getColor();
 				
 				EvDecimal frame=frameControl.getFrame();
 				EvDecimal z=frameControl.getZ();

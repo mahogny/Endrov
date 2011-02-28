@@ -213,13 +213,16 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 		}
 	
 
-	private static class EvOpContrastBrightness extends EvOpSlice1
+	/**
+	 * This is not a proper evop - it returns a colored image
+	 */
+	private static class SpecialOpContrastBrightness extends EvOpSlice1
 		{
 		private final double contrast;
 		private final double brightness;
 		private final EvColor color;
 		
-		public EvOpContrastBrightness(double contrast, double brightness, EvColor color)
+		public SpecialOpContrastBrightness(double contrast, double brightness, EvColor color)
 			{
 			this.contrast=contrast;
 			this.brightness=brightness;
@@ -243,32 +246,34 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 			EvPixels p=parr[0];
 			
 			if(contrast==1 && brightness==0 && color.equals(EvColor.white))
-				return p; 
-
-			double contrastR=contrast*color.getRedDouble();
-			double contrastG=contrast*color.getGreenDouble();
-			double contrastB=contrast*color.getBlueDouble();
-
-			int w=p.getWidth();
-			int h=p.getHeight();
-			double[] aPixels=p.convertToDouble(true).getArrayDouble();
-			BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
-
-			byte[] outarr=new byte[w*h*3];
-
-			for(int i=0;i<aPixels.length;i++)
+				return p;
+			else
 				{
-				byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
-				byte g=clampByte((int)(aPixels[i]*contrastG+brightness));
-				byte r=clampByte((int)(aPixels[i]*contrastR+brightness));
-				outarr[i*3+0]=r;
-				outarr[i*3+1]=g;
-				outarr[i*3+2]=b;
+				double contrastR=contrast*color.getRedDouble();
+				double contrastG=contrast*color.getGreenDouble();
+				double contrastB=contrast*color.getBlueDouble();
+
+				int w=p.getWidth();
+				int h=p.getHeight();
+				double[] aPixels=p.convertToDouble(true).getArrayDouble();
+				BufferedImage buf=new BufferedImage(w,h,BufferedImage.TYPE_3BYTE_BGR);
+
+				byte[] outarr=new byte[w*h*3];
+
+				for(int i=0;i<aPixels.length;i++)
+					{
+					byte b=clampByte((int)(aPixels[i]*contrastB+brightness));
+					byte g=clampByte((int)(aPixels[i]*contrastG+brightness));
+					byte r=clampByte((int)(aPixels[i]*contrastR+brightness));
+					outarr[i*3+0]=r;
+					outarr[i*3+1]=g;
+					outarr[i*3+2]=b;
+					}
+
+				buf.getRaster().setDataElements(0, 0, w, h, outarr);
+				
+				return new EvPixels(buf);
 				}
-
-			buf.getRaster().setDataElements(0, 0, w, h, outarr);
-
-			return new EvPixels(buf);
 			}
 		}
 	
@@ -290,10 +295,12 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 					EvChannel ch=chw.getChannel();
 					if(ch==null)
 						continue;
-					ch=new EvOpContrastBrightness(chw.getContrast(),chw.getBrightness(),EvColor.white).exec1(ch);
+					ch=new SpecialOpContrastBrightness(chw.getContrast(),chw.getBrightness(),chw.getColor()).exec1(ch);
 					
 					//Add channel to list
 					channelNames.add(new MakeMovieThread.MovieChannel(chw.getChannelName(), ch, "", imw.getZ()));
+
+					//TODO gotcha - uses settings when window was opened - cannot change later!!!
 					}
 				}
 		
