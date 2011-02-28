@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JComponent;
@@ -28,9 +29,11 @@ import javax.vecmath.Vector3d;
 import endrov.basicWindow.BasicWindow;
 import endrov.basicWindow.EvColor;
 import endrov.basicWindow.FrameControl;
+import endrov.basicWindow.TimedDataWindow;
 import endrov.basicWindow.EvColor.ColorMenuListener;
 import endrov.consoleWindow.ConsoleWindow;
 import endrov.data.EvData;
+import endrov.data.EvPath;
 import endrov.data.EvSelection;
 import endrov.ev.EvLog;
 import endrov.nuc.NucLineage.Nuc;
@@ -62,7 +65,13 @@ public class NucCommonUI implements ActionListener
 	private JMenuItem miSelectAll=new JMenuItem("Select all in this lineage");
 	private JMenuItem miSelectAllSameName=new JMenuItem("Select all w/ the same name");
 
-	private JComponent parentComponent;
+	public JMenuItem miPrintAngle=new JMenuItem("Print angles");  
+	public JMenuItem miPrintPos=new JMenuItem("Print positions");  
+	public JMenuItem miPrintCountNucAtFrame=new JMenuItem("Print nuclei count in frame");  
+	public JMenuItem miPrintCountNucUpTo=new JMenuItem("Print nuclei count up to frame");  
+
+	private final JComponent parentComponent;
+	private final TimedDataWindow fc;
 	
 	/**
 	 * Currently hidden nuclei. currently no sample. needed? 
@@ -81,9 +90,10 @@ public class NucCommonUI implements ActionListener
 	
 	
 	
-	public NucCommonUI(JComponent parent)
+	public NucCommonUI(JComponent parent, TimedDataWindow fc)
 		{
 		this.parentComponent=parent;
+		this.fc=fc;
 		}
 	
 	public void addToMenu(JComponent menuLineage, boolean addAccel)
@@ -93,6 +103,10 @@ public class NucCommonUI implements ActionListener
 		miMergeNuclei.addActionListener(this);
 		miAssocParent.addActionListener(this);
 		miUnassocParent.addActionListener(this);
+		miPrintAngle.addActionListener(this);
+		miPrintPos.addActionListener(this);
+		miPrintCountNucAtFrame.addActionListener(this);
+		miPrintCountNucUpTo.addActionListener(this);
 		miSwapChildren.addActionListener(this);
 		miSetFate.addActionListener(this);
 		miSetDesc.addActionListener(this);
@@ -103,6 +117,8 @@ public class NucCommonUI implements ActionListener
 		miSelectParents.addActionListener(this);
 		miSelectAll.addActionListener(this);
 		miSelectAllSameName.addActionListener(this);
+
+		
 
 		
 		menuLineage.add(miSelectChildren);
@@ -123,6 +139,13 @@ public class NucCommonUI implements ActionListener
 		menuLineage.add(miSwapChildren);
 		menuLineage.add(miUnassocParent);
 		//menuLineage.addSeparator();
+		menuLineage.add(miPrintAngle);
+		menuLineage.add(miPrintPos);
+		menuLineage.add(miPrintCountNucAtFrame);
+		menuLineage.add(miPrintCountNucUpTo);
+		
+		
+
 
 		if(addAccel)
 			{
@@ -147,6 +170,30 @@ public class NucCommonUI implements ActionListener
 			actionAssocParent();
 		else if(e.getSource()==miUnassocParent)
 			actionUnassocParent();
+		else if(e.getSource()==miPrintAngle)
+			{
+			EvDecimal frame=fc.getFrame();
+			NucCommonUI.actionPrintAngle(frame);
+			}
+		else if(e.getSource()==miPrintPos)
+			{
+			EvDecimal frame=fc.getFrame();
+			NucCommonUI.actionPrintPos(frame);
+			}
+		else if(e.getSource()==miPrintCountNucAtFrame)
+			{
+			EvDecimal frame=fc.getFrame();
+			//TODO replace with visible set
+			for(Map.Entry<EvPath, NucLineage> entry:fc.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
+				EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
+			}
+		else if(e.getSource()==miPrintCountNucUpTo)
+			{
+			EvDecimal frame=fc.getFrame();
+			//TODO replace with visible set
+			for(Map.Entry<EvPath, NucLineage> entry:fc.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
+				EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucUpTo(frame));
+			}
 		else if(e.getSource()==miSwapChildren)
 			actionSwapChildren();
 		else if(e.getSource()==miSetFate)

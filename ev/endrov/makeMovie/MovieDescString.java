@@ -11,7 +11,6 @@ import org.jdom.Element;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 
-import endrov.imageset.Imageset;
 import endrov.util.EvDecimal;
 
 /**
@@ -48,7 +47,7 @@ public class MovieDescString
 	/**
 	 * Decode string
 	 */
-	public String decode(Imageset ost, String currentChannel, EvDecimal currentFrame)
+	public String decode(/*Imageset ost, */String currentChannel, EvDecimal currentFrame)
 		{
 		StringBuffer sb=new StringBuffer();
     try 

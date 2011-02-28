@@ -201,7 +201,7 @@ public class ImageWindowView extends JPanel
 		public double contrast=1;
 		public double brightness=0;
 		private BufferedImage bufi=null;
-		EvColor color;
+		public EvColor color;
 		
 		
 		

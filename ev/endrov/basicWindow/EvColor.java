@@ -150,5 +150,17 @@ public class EvColor
 		
 		
 		}
+
+	@Override
+	public boolean equals(Object obj)
+		{
+		if(obj instanceof EvColor)
+			{
+			EvColor oc=(EvColor)obj;
+			return oc.c.equals(c);
+			}
+		else
+			return false;
+		}
 	
 	}

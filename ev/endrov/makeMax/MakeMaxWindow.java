@@ -128,14 +128,14 @@ public class MakeMaxWindow extends BasicWindow implements ActionListener
 		{
 		if(e.getSource()==bStart)
 			{
-			if(channelCombo.getChannel()==null)
+			if(channelCombo.getChannelName()==null)
 				{
 				JOptionPane.showMessageDialog(null, "No channel/imageset selected");
 				}
 			else
 				{
 				CalcThread thread=new CalcThread(channelCombo.getImageset(), 
-						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannel());
+						(Integer)spinnerStart.getValue(), (Integer)spinnerEnd.getValue(), channelCombo.getChannelName());
 
 				new BatchWindow(thread);
 				}

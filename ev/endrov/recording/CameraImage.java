@@ -54,11 +54,14 @@ public class CameraImage
 			
 			if(numComponents==1)
 				{
-				if(bytesPerPixel==1)
+				if(pixels instanceof byte[])
+				//if(bytesPerPixel==1)
 					return new EvPixels[]{EvPixels.createFromUByte(w, h, (byte[])pixels)};
-				else if(bytesPerPixel==2)
+				else if(pixels instanceof short[])
+				//else if(bytesPerPixel==2)
 					return new EvPixels[]{EvPixels.createFromShort(w, h, (short[])pixels)};
-				else if(bytesPerPixel==4)
+				else if(pixels instanceof int[])
+				//else if(bytesPerPixel==4)
 					return new EvPixels[]{EvPixels.createFromInt(w, h, (int[])pixels)};
 				}
 			else
@@ -67,7 +70,8 @@ public class CameraImage
 				
 				if(bytesPerPixel==4)
 					{
-					if(numComponents==3)
+					//Always delivered as a packed int?
+					if(numComponents==3)   //always 3?
 						{
 						int[] p=(int[])pixels;
 						int[] r=new int[p.length];

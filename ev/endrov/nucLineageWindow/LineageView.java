@@ -350,8 +350,9 @@ public class LineageView extends JPanel
 		{
 		NucLineage lin=getLineage();
 		LinState linstate=getLinState(lin);
-		linstate.cam.toWorldX(getRotatedWidthHeight().fst()/2);
-		return EvDecimal.ZERO;
+		double worldx=linstate.cam.toWorldX(getRotatedWidthHeight().fst()/2);
+		return new EvDecimal(worldx);
+//		return EvDecimal.ZERO;
 		}
 	
 
@@ -1097,7 +1098,7 @@ public class LineageView extends JPanel
 	/////////////////////////////////////////////////////////////////////////////////////
 	
 
-	private static class ScaleBar
+	public static class ScaleBar
 		{
 		public String name;
 		public String unit;

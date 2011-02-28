@@ -15,6 +15,9 @@ gitaddall:
 	endrov/*/*/*/*.java \
 	util/*.java \
 	util/*/*.java \
+	util2/*/*.java \
+	util2/*/*/*.java \
+	util2/*/*/*/*.java \
 	endrov/*/*.png \
 	endrov/*/*/*.png \
 	endrov/*/*.txt \

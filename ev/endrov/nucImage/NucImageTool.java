@@ -108,7 +108,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 	
 	private void fillMenu(JComponent menu)
 		{
-		new NucCommonUI(w).addToMenu(menu, false);
+		new NucCommonUI(w, w).addToMenu(menu, false);
 
 		menu.add(new JSeparator());
 		

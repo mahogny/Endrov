@@ -74,6 +74,7 @@ public class Main
 			File dUsrBin=new File(dUsr,"bin");
 			File dShareApplications=new File(dShare,"applications");
 			File dEtcBash=new File(dEtc,"bash_completion.d");
+			File dRes=new File("util/debian");
 			
 			File fUsrBinEndrov=new File(dUsrBin,"endrov");
 			File fIcon=new File(dSharePixmaps,"endrov.xpm");
@@ -104,7 +105,9 @@ public class Main
 			proc.waitFor();
 			System.out.println("unzip done");
 
-			File dRes=new File("util/debian");
+			
+			
+			
 			
 			System.out.println("Moving into place");
 			dZipTemp.listFiles()[0].renameTo(dEndrov);
@@ -118,6 +121,13 @@ public class Main
 			setExec(fUsrBinEndrov);
 			//fUsrEndrov.setExecutable(true);
 			
+			System.out.println("Cleaning out windows/mac specific files");
+			for(File f:dEndrov.listFiles())
+				if(f.getName().startsWith("libmmgr_dal") || f.getName().endsWith(".jnilib") || f.getName().endsWith(".dll") || f.getName().startsWith("hs_err"))
+					f.delete();
+			
+			
+			System.out.println("Set up package dependencies");
 			//Packages
 			//maybe do pattern match instead?
 			List<DebPackage> pkgs=new LinkedList<DebPackage>();

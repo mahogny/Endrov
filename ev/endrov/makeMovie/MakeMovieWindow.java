@@ -229,10 +229,14 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 					BasicWindow.showErrorDialog("No data selected");
 				else
 					{
+					EvDecimal z=new EvDecimal((Integer)spinnerZ.getValue());
+					
 					Vector<MakeMovieThread.MovieChannel> channelNames=new Vector<MakeMovieThread.MovieChannel>();
 					for(int i=0;i<channelCombo.size();i++)
 						if(channelCombo.get(i).getChannel()!=null)
-							channelNames.add(new MakeMovieThread.MovieChannel(channelCombo.get(i).getChannel(), /*filterSeq.get(i),*/ chanDesc.get(i).getText()));
+							{
+							channelNames.add(new MakeMovieThread.MovieChannel(channelCombo.get(i).getChannelName(), channelCombo.get(i).getChannel(),/*filterSeq.get(i),*/ chanDesc.get(i).getText(),z));
+							}
 					if(channelNames.isEmpty())
 						{
 						showErrorDialog("No channel selected");
@@ -257,9 +261,9 @@ public class MakeMovieWindow extends BasicWindow implements ActionListener
 							lastpart+="_"+channelNames.get(i).name;
 						File moviePath=new File(outdir,lastpart);
 						
-						BatchThread thread=new MakeMovieThread(getCurrentImageset(), 
-								spinnerStart.getDecimalValue(), spinnerEnd.getDecimalValue(), new EvDecimal((Integer)spinnerZ.getValue()), channelNames, (Integer)spinnerW.getValue(),
-								(String)qualityCombo.getSelectedItem(),moviePath, (EvMovieMakerFactory)codecCombo.getSelectedItem());
+						BatchThread thread=new MakeMovieThread( 
+								spinnerStart.getDecimalValue(), spinnerEnd.getDecimalValue(), channelNames, (Integer)spinnerW.getValue(),
+								(EvMovieMakerFactory)codecCombo.getSelectedItem(),(String)qualityCombo.getSelectedItem(), moviePath);
 						new BatchWindow(thread);
 						}
 					}

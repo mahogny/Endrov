@@ -25,16 +25,23 @@ public class MakeMovieBasic implements BasicWindowExtension
 		}
 	private class Hook implements BasicWindowHook, ActionListener
 		{
+		JMenuItem miMakeMovie=new JMenuItem("Make Movie");
+		JMenuItem miMakeMovieImw=new JMenuItem("Make Movie from image windows");
+		
 		public void createMenus(BasicWindow w)
 			{
-			JMenuItem mi=new JMenuItem("Make Movie");
-			mi.addActionListener(this);
-			w.addMenuBatch(mi);
+			miMakeMovie.addActionListener(this);
+			miMakeMovieImw.addActionListener(this);
+			w.addMenuBatch(miMakeMovie);
+			w.addMenuBatch(miMakeMovieImw);
 			}
 		
 		public void actionPerformed(ActionEvent e) 
 			{
-			new MakeMovieWindow();
+			if(e.getSource()==miMakeMovie)
+				new MakeMovieWindow();
+			else if(e.getSource()==miMakeMovieImw)
+				MakeMovieWindowNew.createDialogFromImageWindows();
 			}
 		
 		public void buildMenu(BasicWindow w){}

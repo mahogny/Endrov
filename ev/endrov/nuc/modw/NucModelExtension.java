@@ -114,23 +114,15 @@ public class NucModelExtension implements ModelWindowExtension
 		public static enum ShowExp {CellColor, MarkerColor, MarkerSize, CellColorAND};
 		public ShowExp showExpAs=ShowExp.MarkerColor;
 
-//		public EvColor traceColor=EvColor.redMedium;
 		/**
 		 * Color of the movement trace of nuclei
 		 */
 		public EvColor traceColor=null;
-		
-		//public JCheckBoxMenuItem miShowSmallNuclei=new JCheckBoxMenuItem("Nuclei 50% size"); 
 
 		public JCheckBoxMenuItem miShowDiv=new JCheckBoxMenuItem("Show division lines", true); 
 
 		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false);
 		
-		public JMenuItem miPrintAngle=new JMenuItem("Print angles");  
-		public JMenuItem miPrintPos=new JMenuItem("Print positions");  
-
-		public JMenuItem miPrintCountNucAtFrame=new JMenuItem("Print nuclei count in frame");  
-		public JMenuItem miPrintCountNucUpTo=new JMenuItem("Print nuclei count up to frame");  
 
 		
 		Vector<ModwPanelExpPattern> expsettings=new Vector<ModwPanelExpPattern>();
@@ -202,15 +194,11 @@ public class NucModelExtension implements ModelWindowExtension
 			
 			miNuc.add(miShowDiv);
 			miNuc.add(miShowDelaunay);
-			miNuc.add(miPrintAngle);
-			miNuc.add(miPrintPos);
-			miNuc.add(miPrintCountNucAtFrame);
-			miNuc.add(miPrintCountNucUpTo);
 			
 			miNuc.add(miSelectVisible);
 			
 			miNuc.addSeparator();
-			new NucCommonUI(w).addToMenu(miNuc, false);
+			new NucCommonUI(w, w).addToMenu(miNuc, false);
 
 			
 			w.menuModel.add(miNuc);
@@ -232,10 +220,6 @@ public class NucModelExtension implements ModelWindowExtension
 			miShowTraceAll.addActionListener(this);
 			miShowDiv.addActionListener(this);
 			miShowDelaunay.addActionListener(this);
-			miPrintAngle.addActionListener(this);
-			miPrintPos.addActionListener(this);
-			miPrintCountNucAtFrame.addActionListener(this);
-			miPrintCountNucUpTo.addActionListener(this);
 			miShowNucSize0.addActionListener(this);
 			miShowNucSize25.addActionListener(this);
 			miShowNucSize50.addActionListener(this);
@@ -295,31 +279,6 @@ public class NucModelExtension implements ModelWindowExtension
 				{
 				for(endrov.nuc.NucSel p:NucCommonUI.getSelectedNuclei())
 					NucCommonUI.hiddenNuclei.add(p);
-				}
-//			else if(e.getSource()==miSaveColorScheme)
-			else if(e.getSource()==miPrintAngle)
-				{
-				EvDecimal frame=w.getFrame();
-				NucCommonUI.actionPrintAngle(frame);
-				}
-			else if(e.getSource()==miPrintPos)
-				{
-				EvDecimal frame=w.getFrame();
-				NucCommonUI.actionPrintPos(frame);
-				}
-			else if(e.getSource()==miPrintCountNucAtFrame)
-				{
-				EvDecimal frame=w.getFrame();
-				//TODO replace with visible set
-				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
-					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucAtFrame(frame));
-				}
-			else if(e.getSource()==miPrintCountNucUpTo)
-				{
-				EvDecimal frame=w.getFrame();
-				//TODO replace with visible set
-				for(Map.Entry<EvPath, NucLineage> entry:w.getSelectedData().getIdObjectsRecursive(NucLineage.class).entrySet())
-					EvLog.printLog(entry.getKey().toString()+" numberOfNuclei: "+entry.getValue().countNucUpTo(frame));
 				}
 			else if(e.getSource()==miShowNucSize0)
 				nucMagnification=0;
