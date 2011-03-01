@@ -5,6 +5,7 @@
  */
 package endrov.frameTime;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,6 +14,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import endrov.basicWindow.FrameControl;
 import endrov.util.EvDecimal;
@@ -22,11 +25,12 @@ import endrov.util.EvDecimal;
  * Editor for EvDecimal spinners 
  * @author Johan Henriksson
  */	
-public class EvFrameEditor extends JTextField
+public class EvFrameEditor extends JTextField implements DocumentListener
 	{
 	static final long serialVersionUID=0;
 	private FrameTime currentFrameTime=null;
 	private final SpinnerModel sm;
+	private final Color normalColor;
 	
 	
 	ActionListener alist=new ActionListener()
@@ -36,6 +40,7 @@ public class EvFrameEditor extends JTextField
 			getModel().removeChangeListener(cl);
 			String newText=FrameControl.formatTime(FrameControl.parseTime(getText()));
 			setText(newText);
+			setHighLight(false);
 			getModel().setValue(getFrame());
 			addActionListener(this);
 			getModel().addChangeListener(cl);
@@ -49,13 +54,17 @@ public class EvFrameEditor extends JTextField
 			{
 			//System.out.println("state changed");
 			setFrame((EvDecimal)getModel().getValue());
+			setHighLight(false);
 			}
 		};
 	
+		
 	public EvFrameEditor(final JSpinner sp)
 		{
+		normalColor=getBackground();
 		sm=sp.getModel();
 		addActionListener(alist);
+		getDocument().addDocumentListener(this);
 		getModel().addChangeListener(cl);
 		setFrame((EvDecimal)sp.getModel().getValue());
 		}
@@ -80,6 +89,7 @@ public class EvFrameEditor extends JTextField
 			{
 			newSetText(d);
 			}
+		setBackground(normalColor);
 		}
 
 	private void newSetText(EvDecimal d)
@@ -123,4 +133,15 @@ public class EvFrameEditor extends JTextField
 		System.out.println("setframetime "+ft);
 		}
 	
+	
+	private void setHighLight(boolean state)
+		{
+		Color c=state ? new Color(219,219,112) : normalColor;
+		setBackground(c);
+		setBackground(c);
+		}
+	
+	public void changedUpdate(DocumentEvent e){setHighLight(true);}
+	public void insertUpdate(DocumentEvent e){setHighLight(true);}
+	public void removeUpdate(DocumentEvent e){setHighLight(true);}
 	}
