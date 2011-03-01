@@ -19,12 +19,15 @@ public class SpinnerSimpleEvFrame extends JSpinner
 	{
 	private static final long serialVersionUID = 1L;
 
+//	public Color normalColor;
+	
 	public SpinnerSimpleEvFrame()
 		{
+	//	normalColor=getBackground();
 		setModel(new EvDecimalSpinnerModel());
 		setEditor(new EvFrameEditor(this));
-		
 		}
+	
 	
 	public EvDecimal getDecimalValue()
 		{
