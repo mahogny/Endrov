@@ -12,10 +12,6 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
 import endrov.ev.*;
 import endrov.imageset.*;
 import endrov.util.EvDecimal;
