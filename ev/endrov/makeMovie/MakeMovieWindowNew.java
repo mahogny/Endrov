@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 import javax.swing.*;
 
@@ -282,27 +284,32 @@ public class MakeMovieWindowNew extends BasicWindow implements ActionListener
 	 */
 	public static void createDialogFromImageWindows()
 		{
+		Map<Integer, ImageWindow> imwindows=new TreeMap<Integer, ImageWindow>();
 		List<MakeMovieThread.MovieChannel> channelNames=new ArrayList<MakeMovieThread.MovieChannel>();
 		EvData data=null;
 		for(BasicWindow w:BasicWindow.windowManager.getAllWindows())
 			if(w instanceof ImageWindow)
-				{
-				ImageWindow imw=(ImageWindow)w;
-				data=imw.getSelectedData();
-				for(ImageWindow.ChannelWidget chw:imw.getChannels())
-					{
-					//Transform channel using C/B
-					EvChannel ch=chw.getChannel();
-					if(ch==null)
-						continue;
-					ch=new SpecialOpContrastBrightness(chw.getContrast(),chw.getBrightness(),chw.getColor()).exec1(ch);
-					
-					//Add channel to list
-					channelNames.add(new MakeMovieThread.MovieChannel(chw.getChannelName(), ch, "", imw.getZ()));
+				imwindows.put(w.windowInstance, (ImageWindow)w);
 
-					//TODO gotcha - uses settings when window was opened - cannot change later!!!
-					}
+		for(ImageWindow w:imwindows.values())
+		//for(BasicWindow w:BasicWindow.windowManager.getAllWindows())
+			{
+//			ImageWindow imw=(ImageWindow)w;
+			data=w.getSelectedData();
+			for(ImageWindow.ChannelWidget chw:w.getChannels())
+				{
+				//Transform channel using C/B
+				EvChannel ch=chw.getChannel();
+				if(ch==null)
+					continue;
+				ch=new SpecialOpContrastBrightness(chw.getContrast(),chw.getBrightness(),chw.getColor()).exec1(ch);
+				
+				//Add channel to list
+				channelNames.add(new MakeMovieThread.MovieChannel(chw.getChannelName(), ch, "", w.getZ()));
+
+				//TODO gotcha - uses settings when window was opened - cannot change later!!!
 				}
+			}
 		
 		if(channelNames.isEmpty())
 			BasicWindow.showErrorDialog("You need to have some channels in image windows open");
