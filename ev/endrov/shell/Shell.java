@@ -117,7 +117,7 @@ public class Shell extends EvObject
 		}
 	
 	/** Additions to the object-specific menu */
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 	
@@ -148,6 +148,12 @@ public class Shell extends EvObject
 		return s;
 		}
 	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

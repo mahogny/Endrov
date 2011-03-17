@@ -12,6 +12,7 @@ import javax.swing.*;
 import org.jdom.*;
 
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
@@ -317,7 +318,13 @@ public class EllipseROI extends ROI
 		{
 		return new Vector<ROI>();
 		}
-	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

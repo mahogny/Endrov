@@ -11,6 +11,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.EvLog;
@@ -251,7 +252,7 @@ public class Flow extends EvObject
 		return "Flow";
 		}
 
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -286,6 +287,13 @@ public class Flow extends EvObject
 		{
 		units.addAll(other.units);
 		conns.addAll(other.conns);
+		}
+
+	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
 		}
 
 	/******************************************************************************************************

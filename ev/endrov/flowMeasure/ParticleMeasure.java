@@ -25,6 +25,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.flow.FlowType;
@@ -311,7 +312,7 @@ public class ParticleMeasure extends EvObject
 	
 	
 	@Override
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -543,6 +544,11 @@ public class ParticleMeasure extends EvObject
 	
 	
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 	
 	
 	

@@ -179,7 +179,7 @@ public abstract class ROI extends EvObject
 	/**
 	 * Add options for ROI metaobject to metaobject menu
 	 */
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		JMenuItem miEdit=new JMenuItem("Edit");
 		menu.add(miEdit);

@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import org.jdom.Element;
 
+import endrov.data.EvObject;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvImage;
 import endrov.imageset.EvStack;
@@ -122,6 +123,12 @@ public class BitmapROI extends ROI
 		{
 		// TODO Auto-generated method stub
 		return false;
+		}
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
 		}
 
 	}

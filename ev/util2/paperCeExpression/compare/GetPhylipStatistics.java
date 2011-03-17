@@ -22,7 +22,7 @@ import endrov.util.EvFileUtil;
  *
  */
 
-public class PhylipStatistics
+public class GetPhylipStatistics
 	{
 	public static class Node
 		{

@@ -22,7 +22,7 @@ import endrov.flowColocalization.ColocCoefficients;
 import endrov.util.EvFileUtil;
 import endrov.util.Tuple;
 
-public class WithPhylip
+public class RunPhylip
 	{
 
 	/*

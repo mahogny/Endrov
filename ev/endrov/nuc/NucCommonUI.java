@@ -32,9 +32,11 @@ import endrov.basicWindow.FrameControl;
 import endrov.basicWindow.TimedDataWindow;
 import endrov.basicWindow.EvColor.ColorMenuListener;
 import endrov.consoleWindow.ConsoleWindow;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvPath;
 import endrov.data.EvSelection;
+import endrov.data.GuiEvDataIO;
 import endrov.ev.EvLog;
 import endrov.nuc.NucLineage.Nuc;
 import endrov.nuc.NucLineage.NucInterp;
@@ -70,6 +72,8 @@ public class NucCommonUI implements ActionListener
 	public JMenuItem miPrintCountNucAtFrame=new JMenuItem("Print nuclei count in frame");  
 	public JMenuItem miPrintCountNucUpTo=new JMenuItem("Print nuclei count up to frame");  
 
+	private JMenuItem miIntegrate=new JMenuItem("Integrate expression");
+	
 	private final JComponent parentComponent;
 	private final TimedDataWindow fc;
 	
@@ -118,8 +122,9 @@ public class NucCommonUI implements ActionListener
 		miSelectAll.addActionListener(this);
 		miSelectAllSameName.addActionListener(this);
 
+		miIntegrate.addActionListener(this);
+		//miMapModel.addActionListener(this);
 		
-
 		
 		menuLineage.add(miSelectChildren);
 		menuLineage.add(miSelectParents);
@@ -144,6 +149,8 @@ public class NucCommonUI implements ActionListener
 		menuLineage.add(miPrintCountNucAtFrame);
 		menuLineage.add(miPrintCountNucUpTo);
 		
+		menuLineage.add(miIntegrate);
+		//menuLineage.add(miMapModel);
 		
 
 
@@ -240,6 +247,14 @@ public class NucCommonUI implements ActionListener
 			NucRenameDialog.run(EvSelection.getSelected(NucSel.class), null);
 			BasicWindow.updateWindows();
 			}
+		else if(e.getSource()==miIntegrate)
+			{
+			new NucDialogIntegrate();
+			}
+		/*else if(e.getSource()==miMapModel)
+			{
+			mapModel();
+			}*/
 			
 		}
 	
@@ -901,6 +916,7 @@ public class NucCommonUI implements ActionListener
 		}
 	
 	
+	
 	/**
 	 * Return a copy of the position at a frame, interpolate if needed
 	 */
@@ -927,5 +943,28 @@ public class NucCommonUI implements ActionListener
 			}
 		return pos;
 		}
+	
+	
+	/**
+	 * Map the c.elegans model onto this lineage
+	 */
+	public static void mapModel(EvContainer con, NucLineage lin)
+		{
+		EvData modelData=GuiEvDataIO.loadFileDialog("Choose c.elegans model");
+		if(modelData!=null)
+			{
+			Iterator<NucLineage> lins=modelData.getIdObjectsRecursive(NucLineage.class).values().iterator();
+			if(lins.hasNext())
+				{
+				NucLineage modelLin=lins.next();
+				NucLineage mappedLin=NucRemapUtil.mapModelToRec(lin, modelLin);
+				con.metaObject.put("estcell", mappedLin);
+				BasicWindow.updateWindows();
+				}
+			else
+				BasicWindow.showErrorDialog("No lineage in file");
+			}
+		}
+
 
 	}

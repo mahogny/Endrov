@@ -3,13 +3,14 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperCeExpression.integrate;
+package endrov.nuc.integrate;
 
 import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
 import endrov.nuc.NucLineage;
+import endrov.nuc.NucRemapUtil;
 import endrov.util.EvDecimal;
 import endrov.util.ImVector2;
 import endrov.util.ImVector3d;
@@ -24,9 +25,9 @@ public class IntegratorSliceLR extends IntegratorSlice
 
 	Vector3d axis;
 	
-	public IntegratorSliceLR(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
+	public IntegratorSliceLR(IntegrateExp integrator, int numSubDiv, Map<EvDecimal, Double> bg)
 		{
-		super(integrator, newLinName, numSubDiv, bg);
+		super(integrator, numSubDiv, bg);
 		}
 	
 	//Normalized with inverse length of axis 
@@ -51,7 +52,7 @@ public class IntegratorSliceLR extends IntegratorSlice
 		//NucLineage.Nuc nucABp = refLin.nuc.get("ABp");
 		NucLineage.Nuc nucEMS = refLin.nuc.get("EMS");
 
-		Vector3d posABp=ExpUtil.getLastPosABp(refLin);
+		Vector3d posABp=NucRemapUtil.getLastPosABp(refLin);
 		
 		if (posABp==null||nucEMS==null||nucEMS.pos.isEmpty())
 			{

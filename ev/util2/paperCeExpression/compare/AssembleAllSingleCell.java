@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import util2.paperCeExpression.IntegrateAllExp;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
-import util2.paperCeExpression.integrate.IntExp;
 
 import endrov.data.EvData;
 import endrov.data.EvPath;
@@ -22,6 +22,7 @@ import endrov.ev.EvLogStdout;
 import endrov.frameTime.FrameTime;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
+import endrov.nuc.NucRemapUtil;
 import endrov.util.EvDecimal;
 
 /**
@@ -29,7 +30,7 @@ import endrov.util.EvDecimal;
  * @author Johan Henriksson
  *
  */
-public class AssembleSingleCell
+public class AssembleAllSingleCell
 	{
 	public final static File cachedValuesFileT=new File(CompareAll.outputBaseDir,"comparisonSS.xml");
 
@@ -74,57 +75,6 @@ public class AssembleSingleCell
 	public static String getExpName(File in)
 		{
 		return PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
-		}
-	
-	
-	public static void assembleSingleCellLin(NucLineage recLin, NucLineage totLin, File in, String totExpName)
-		{
-		
-		if(recLin==null)
-			{
-			System.out.println("Not done!!!!!!           "+in);
-			return;
-//			continue;
-			}
-		
-		String recExpName=CompareAll.expName;
-		
-		//For all nuclei
-		for(Map.Entry<String, NucLineage.Nuc> recNucE:recLin.nuc.entrySet())
-			{
-			NucLineage.Nuc recNuc=recNucE.getValue();
-			NucLineage.Nuc totNuc=totLin.nuc.get(recNucE.getKey());
-			
-			//Do this nucleus if it exists in the reference
-			if(totNuc!=null && !recNuc.pos.isEmpty() && !totNuc.pos.isEmpty())
-				{
-				NucExp totExp=totNuc.getCreateExp(totExpName);
-				totExp.level.clear(); //Not needed at the moment since it is assembled "de novo"
-
-				//Prepare to remap time on local cell level. Note that if a cell is the last cell then remapping can be tricky. this is not considered here.
-				EvDecimal recFirstFrame=recNuc.getFirstFrame();
-				EvDecimal recLastFrame=recNuc.getLastFrame();
-				if(recLastFrame==null)
-					recLastFrame=recNuc.pos.lastKey();
-				EvDecimal recDiff=recLastFrame.subtract(recFirstFrame);
-				
-				EvDecimal totFirstFrame=totNuc.getFirstFrame();
-				EvDecimal totLastFrame=totNuc.getLastFrame();
-				if(totLastFrame==null)
-					totLastFrame=totNuc.pos.lastKey();
-				EvDecimal totDiff=totLastFrame.subtract(totFirstFrame);
-				
-				//Transfer levels. Remap time
-				NucExp recExp=recNuc.exp.get(recExpName);
-				if(recExp!=null)
-					for(Map.Entry<EvDecimal, Double> e:recExp.level.entrySet())
-						{
-						EvDecimal totFrame=(e.getKey().subtract(recFirstFrame).multiply(totDiff).divide(recDiff)).add(totFirstFrame);
-						totExp.level.put(totFrame, e.getValue());
-						}
-				}
-			}
-		
 		}
 	
 	
@@ -193,7 +143,7 @@ public class AssembleSingleCell
 			System.out.println("---- only calculated");
 			Set<File> datas2=new HashSet<File>();
 			for(File f:datas)
-				if(IntExp.isDone(f))
+				if(IntegrateAllExp.isDone(f))
 					datas2.add(f);
 			datas=datas2;
 			}
@@ -215,15 +165,18 @@ public class AssembleSingleCell
 				EvData dataFile=EvData.loadFile(in);
 				NucLineage inLinSingleCell=getSingleCellLin(dataFile);
 
-				String totExpName=PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
-				//Do if not done. do single-cell
-				assembleSingleCellLin(inLinSingleCell, totLinSingleCell, in, totExpName);
+				String toExpName=PaperCeExpressionUtil.getGeneName(in)+"_"+in.getName();
+				//Do if not done: do single-cell
+				if(inLinSingleCell!=null)
+					NucRemapUtil.mapExpression(inLinSingleCell, totLinSingleCell, CompareAll.expName, toExpName);
+				else
+					System.out.println("Not done!!!!!!           "+in);
 				
 				//Do the rest
 				NucLineage inLinAPT=getInLinAPT(dataFile);
 				NucLineage inLinT=getInLinT(dataFile);
-				assembleAPT("apt", inLinAPT, inLinSingleCell, totLinSingleCell, totLinAPT, in, totExpName);
-				assembleAPT("t", inLinT, inLinSingleCell, totLinSingleCell, totLinT, in, totExpName);
+				assembleAPT("apt", inLinAPT, inLinSingleCell, totLinSingleCell, totLinAPT, in, toExpName);
+				assembleAPT("t", inLinT, inLinSingleCell, totLinSingleCell, totLinT, in, toExpName);
 				}
 			}
 		

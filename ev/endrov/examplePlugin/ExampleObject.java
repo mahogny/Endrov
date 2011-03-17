@@ -9,6 +9,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 
@@ -42,7 +43,7 @@ public class ExampleObject extends EvObject
 	// Extending data menu
 	
 	@Override
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -72,6 +73,13 @@ public class ExampleObject extends EvObject
 		e.addContent(someData);
 		
 		return metaType; //Minimum requirement
+		}
+
+	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
 		}
 
 	/******************************************************************************************************

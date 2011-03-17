@@ -34,7 +34,7 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 
 
 	/** Additions to the object-specific menu */
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -97,7 +97,14 @@ public class ChromaCountKJ extends EvObject implements Cloneable
 		catch (DataConversionException e1){e1.printStackTrace();}
 		}
 
+
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 	
 	/******************************************************************************************************
 	 * Plugin declaration

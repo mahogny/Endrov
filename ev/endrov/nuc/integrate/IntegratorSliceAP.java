@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperCeExpression.integrate;
+package endrov.nuc.integrate;
 
 import java.util.Map;
 
@@ -19,9 +19,9 @@ import endrov.util.ImVector3d;
 public class IntegratorSliceAP extends IntegratorSlice 
 	{
 
-	public IntegratorSliceAP(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
+	public IntegratorSliceAP(IntegrateExp integrator, /*String newLinName,*/ int numSubDiv, Map<EvDecimal, Double> bg)
 		{
-		super(integrator, newLinName, numSubDiv, bg);
+		super(integrator, /*newLinName,*/ numSubDiv, bg);
 		}
 	
 	//Normalized with inverse length of axis 

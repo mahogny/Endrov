@@ -25,14 +25,6 @@ import endrov.basicWindow.icon.BasicIcon;
  */
 public abstract class EvObject extends EvContainer
 	{
-	//TODO new serializer
-	//TODO new serializer
-	// EvData.extensions.put(metaType,new ImagesetMetaObjectExtension());
-  //if the class is a bean then Extension is not needed, rather give
-	//the .class and create a new method here.
-	
-	
-	
 	/** Serialize object */
 	public abstract String saveMetadata(Element e);
 	
@@ -42,9 +34,42 @@ public abstract class EvObject extends EvContainer
 	/** Human readable name */
 	public abstract String getMetaTypeDesc();
 	
-	/** Attach menu entries specific for this type of object */
-	public abstract void buildMetamenu(JMenu menu);
+	/** Attach menu entries specific for this type of object 
+	 * @param parentObject TODO*/
+	public abstract void buildMetamenu(JMenu menu, EvContainer parentObject);
 	
+	/** Get a deep copy of the object, not including children */
+	public abstract EvObject cloneEvObject();
+
+	
+	
+	
+	/**
+	 * This is the simplest way of cloning an object. It works if the object need not maintain any special pointers which cannot be serialized.
+	 * Use it as the standard method of serializing, unless performance is a problem.
+	 */
+	protected EvObject cloneUsingSerialize()
+		{
+		try
+			{
+			Element root=new Element("ost");
+			saveMetadata(root);
+			EvObject newObject=this.getClass().newInstance();
+			newObject.loadMetadata(root);
+			return newObject;
+			}
+		catch (InstantiationException e)
+			{
+			e.printStackTrace();
+			}
+		catch (IllegalAccessException e)
+			{
+			e.printStackTrace();
+			}
+		System.out.println("This should be impossible");
+		return null; //Should never happen
+		}
+
 	
 	/**
 	 * Generic icon. Objects should override with a more specific icon.
@@ -57,18 +82,13 @@ public abstract class EvObject extends EvContainer
 	/**
 	 * Make a deep copy of the object - uses the serialization mechanism to do so
 	 */
-	public EvObject cloneBySerialize()
+	public EvObject cloneEvObjectRecursive()
 		{
-		Element root=new Element("ost");
-		
-		EvGroupObject tempOb=new EvGroupObject();
-		
-		tempOb.addMetaObject(this);
-		tempOb.recursiveSaveMetadata(root);
-		EvGroupObject newOb=new EvGroupObject();
-		newOb.recursiveLoadMetadata(root);
-
-		return newOb.metaObject.values().iterator().next();
+		EvObject copyRoot=cloneEvObject();
+		for(String name:metaObject.keySet())
+			copyRoot.metaObject.put(name, metaObject.get(name).cloneEvObject());		
+		return copyRoot;
 		}
 	
+
 	}

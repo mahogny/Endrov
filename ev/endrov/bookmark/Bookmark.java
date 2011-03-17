@@ -122,7 +122,7 @@ public class Bookmark extends EvObject
 		}
 
 
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		/*
 		JMenuItem miGoto=new JMenuItem("Go to");
@@ -137,6 +137,13 @@ public class Bookmark extends EvObject
 		});*/
 		//GOTO
 		
+		}
+
+	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
 		}
 
 	

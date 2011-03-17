@@ -75,7 +75,7 @@ public class FrameTime extends EvObject
 		}
 
 
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -193,7 +193,13 @@ public class FrameTime extends EvObject
 		//TODO emit changed
 		}
 
-	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

@@ -39,7 +39,13 @@ public class CustomObject extends EvObject
 		xml=e;
 		}
 	
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
+		}
+	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
 		}
 	}

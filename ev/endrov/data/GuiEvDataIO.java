@@ -133,10 +133,12 @@ public class GuiEvDataIO
 	/**
 	 * Load file by open dialog
 	 */
-	public static String showLoadDialog()
+	public static String showLoadDialog(String customtitle)
 		{
 		JFileChooser fc=new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		if(customtitle!=null)
+			fc.setDialogTitle(customtitle);
 		
 		fc.setFileFilter(new javax.swing.filechooser.FileFilter()
 			{
@@ -171,7 +173,15 @@ public class GuiEvDataIO
 	 */
 	public static EvData loadFileDialog()
 		{
-		String file=showLoadDialog();
+		return loadFileDialog(null);
+		}
+		
+	/**
+	 * Load file, select with a dialog
+	 */
+	public static EvData loadFileDialog(String customTitle)
+		{
+		String file=showLoadDialog(customTitle);
 		if(file!=null)
 			return loadFile(file);
 		else

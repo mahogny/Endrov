@@ -15,6 +15,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.util.EvDecimal;
@@ -107,7 +108,7 @@ public class NeighMap extends EvObject
 		return list;
 		}
 	
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 	
@@ -190,6 +191,11 @@ public class NeighMap extends EvObject
 	
 	
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 	
 	
 	/******************************************************************************************************

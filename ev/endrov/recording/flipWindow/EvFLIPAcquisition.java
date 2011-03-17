@@ -8,7 +8,9 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.data.EvPath;
 import endrov.flow.Flow;
 import endrov.flow.FlowConn;
@@ -110,13 +112,13 @@ public class EvFLIPAcquisition extends EvAcquisition
 								break;
 								}
 
-						ROI copyRoiBleach=(ROI)roiBleach.cloneBySerialize();
+						ROI copyRoiBleach=(ROI)roiBleach.cloneEvObjectRecursive();
 						imset.metaObject.put("roiBleach",copyRoiBleach);
 
 						////// Build flow to analyze this experiment
 						if(roiObserve!=null)
 							{
-							ROI copyRoiObserve=(ROI)roiObserve.cloneBySerialize();
+							ROI copyRoiObserve=(ROI)roiObserve.cloneEvObjectRecursive();
 							
 							Flow flow=new Flow();
 							
@@ -314,7 +316,7 @@ public class EvFLIPAcquisition extends EvAcquisition
 
 
 	@Override
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -353,7 +355,13 @@ public class EvFLIPAcquisition extends EvAcquisition
 		return metaType;
 		}
 	
-	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

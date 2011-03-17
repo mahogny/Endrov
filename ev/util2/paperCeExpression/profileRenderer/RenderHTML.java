@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperCeExpression.compare;
+package util2.paperCeExpression.profileRenderer;
 
 import java.io.BufferedReader;
 import java.io.File;

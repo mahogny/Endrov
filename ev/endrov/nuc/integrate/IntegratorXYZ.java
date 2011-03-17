@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperCeExpression.integrate;
+package endrov.nuc.integrate;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,13 +12,14 @@ import java.util.TreeMap;
 
 import javax.vecmath.Vector3d;
 
-import util2.paperCeExpression.integrate.IntExp.Integrator;
 import endrov.coordinateSystem.CoordinateSystem;
 import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.imageset.EvStack;
 import endrov.nuc.NucLineage;
+import endrov.nuc.NucRemapUtil;
+import endrov.nuc.integrate.IntegrateExp.Integrator;
 import endrov.util.EvDecimal;
 import endrov.util.Tuple;
 
@@ -39,7 +40,7 @@ public class IntegratorXYZ implements Integrator
 	private CoordinateSystem cs;
 	private Map<EvDecimal,double[][][]> expMap=new HashMap<EvDecimal, double[][][]>(); //z y x
 	
-	public IntegratorXYZ(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
+	public IntegratorXYZ(IntegrateExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
 		this.bg = bg;
@@ -60,8 +61,8 @@ public class IntegratorXYZ implements Integrator
 		NucLineage.Nuc nucP2 = refLin.nuc.get("P2'");
 		NucLineage.Nuc nucEMS = refLin.nuc.get("EMS");
 
-		Vector3d posABp = ExpUtil.getLastPosABp(refLin);
-		Vector3d posABa = ExpUtil.getLastPosABa(refLin);
+		Vector3d posABp = NucRemapUtil.getLastPosABp(refLin);
+		Vector3d posABa = NucRemapUtil.getLastPosABa(refLin);
 
 		if (nucP2==null||posABa==null||posABp==null||nucEMS==null
 				||nucP2.pos.isEmpty()
@@ -102,7 +103,7 @@ public class IntegratorXYZ implements Integrator
 		return true;
 		}
 
-	public void integrateStackStart(IntExp integrator)
+	public void integrateStackStart(IntegrateExp integrator)
 		{
 		// Zero out arrays
 		sliceExp = new double[numSubDiv][numSubDiv][numSubDiv];
@@ -112,7 +113,7 @@ public class IntegratorXYZ implements Integrator
 	/**
 	 * Calculate index map lazily
 	 */
-	private void ensureIndMapCalculated(IntExp integrator)
+	private void ensureIndMapCalculated(IntegrateExp integrator)
 		{
 		EvChannel chIndexX = integrator.imset.getCreateChannel("indX");
 		EvChannel chIndexY = integrator.imset.getCreateChannel("indY");
@@ -181,7 +182,7 @@ public class IntegratorXYZ implements Integrator
 			}
 		}
 
-	public void integrateImage(IntExp integrator)
+	public void integrateImage(IntegrateExp integrator)
 		{
 		ensureIndMapCalculated(integrator);
 		integrator.ensureImageLoaded();
@@ -215,7 +216,7 @@ public class IntegratorXYZ implements Integrator
 	/**
 	 * One stack processed
 	 */
-	public void integrateStackDone(IntExp integrator)
+	public void integrateStackDone(IntegrateExp integrator)
 		{
 		double[][][] out=new double[numSubDiv][numSubDiv][numSubDiv];
 		
@@ -241,7 +242,7 @@ public class IntegratorXYZ implements Integrator
 	/**
 	 * All frames processed
 	 */
-	public void done(IntExp integrator, TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
+	public void done(IntegrateExp integrator, TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
 		for(Map.Entry<EvDecimal, double[][][]> e:expMap.entrySet())
 			for(double[][] vv:e.getValue())
