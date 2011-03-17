@@ -29,7 +29,7 @@ public class ImageAnnot extends EvObject implements Cloneable
 
 
 	/** Additions to the object-specific menu */
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -109,6 +109,11 @@ public class ImageAnnot extends EvObject implements Cloneable
 	
 	
 
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 	
 	/******************************************************************************************************
 	 * Plugin declaration

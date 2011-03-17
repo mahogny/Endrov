@@ -1088,6 +1088,11 @@ public class NucLineage extends EvObject implements Cloneable
 
 	
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 	
 
 	/******************************************************************************************************
@@ -1109,12 +1114,15 @@ public class NucLineage extends EvObject implements Cloneable
 		}
 
 	/** Additions to the object-specific menu */
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, final EvContainer parentObject)
 		{
 		JMenuItem miSaveColorScheme=new JMenuItem("Save color scheme"); 
 		JMenuItem miLoadColorScheme=new JMenuItem("Load color scheme"); 
 		menu.add(miSaveColorScheme);
 		menu.add(miLoadColorScheme);
+		
+		JMenuItem miIntegrate=new JMenuItem("Integrate expression");
+		menu.add(miIntegrate);
 		
 		final NucLineage nthis=this;
 		miSaveColorScheme.addActionListener(new ActionListener(){
@@ -1127,6 +1135,33 @@ public class NucLineage extends EvObject implements Cloneable
 				BasicWindow.updateWindows(); //TODO emit object update
 				}
 		});
+		miIntegrate.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				NucDialogIntegrate dia=new NucDialogIntegrate();
+				dia.comboLin.setSelectedObject(NucLineage.this);
+				}
+			});
+		
+		JMenuItem miMapModel=new JMenuItem("Map ce model");
+		menu.add(miMapModel);
+		miMapModel.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				NucCommonUI.mapModel(parentObject, NucLineage.this);
+				}
+		});
+		
+		JMenuItem miMapExpression=new JMenuItem("Map expression to here");
+		menu.add(miMapExpression);
+		miMapExpression.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+				{
+				new NucDialogMapExp(NucLineage.this);
+				}
+		});
+		
 		
 		}
 

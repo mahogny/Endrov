@@ -142,7 +142,7 @@ public class Imageset extends EvObject
 
 
 	/** Additions to the object-specific menu */
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -291,6 +291,11 @@ public class Imageset extends EvObject
 
 	
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 	
 
 	/******************************************************************************************************

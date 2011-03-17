@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperCeExpression.integrate;
+package endrov.nuc.integrate;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,13 +18,11 @@ import javax.vecmath.Vector3d;
 
 import cern.colt.list.tint.IntArrayList;
 
-import util2.paperCeExpression.integrate.IntExp.Integrator;
-import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
-import endrov.imageset.Imageset;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
+import endrov.nuc.integrate.IntegrateExp.Integrator;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.EvFileUtil;
@@ -45,7 +43,7 @@ public abstract class IntegratorSlice implements Integrator
 	private double[] sliceExp; //Must be double for values to fit
 	private int[] sliceVol;
 	private NucLineage lin = new NucLineage();
-	private String newLinName;
+	//private String newLinName;
 	
 	public Map<EvDecimal, Double> bg;
 	public TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure;
@@ -60,10 +58,10 @@ public abstract class IntegratorSlice implements Integrator
 	
 	
 	
-	public IntegratorSlice(IntExp integrator, String newLinName, int numSubDiv, Map<EvDecimal, Double> bg)
+	public IntegratorSlice(IntegrateExp integrator, /*String newLinName,*/ int numSubDiv, Map<EvDecimal, Double> bg)
 		{
 		this.numSubDiv = numSubDiv;
-		this.newLinName = newLinName;
+//		this.newLinName = newLinName;
 		
 		//Use pre-calculated value for BG
 		if (bg!=null)
@@ -78,21 +76,20 @@ public abstract class IntegratorSlice implements Integrator
 			}
 	
 		// TODO need to group lineage and shell. introduce a new object?
-		integrator.imset.metaObject.put(newLinName, lin);
+//		integrator.imset.metaObject.put(newLinName, lin);
 		// imset.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+		
 		Collection<Shell> shells=integrator.imset.getIdObjectsRecursive(Shell.class).values();
 		if(shells.isEmpty())
 			throw new RuntimeException("No shell found");
 		shell = shells.iterator().next();
-	
-		integrator.imset.metaObject.put(newLinName, lin);
 	
 		// Virtual nuc for AP
 		for (int i = 0; i<numSubDiv; i++)
 			lin.getCreateNuc("_slice"+i);
 		}
 	
-	public void integrateStackStart(IntExp integrator)
+	public void integrateStackStart(IntegrateExp integrator)
 		{
 		curBgInside.clear();
 		curBgOutside.clear();
@@ -114,7 +111,7 @@ public abstract class IntegratorSlice implements Integrator
 		}
 	
 	
-	public void integrateImage(IntExp integrator)
+	public void integrateImage(IntegrateExp integrator)
 		{
 		integrator.ensureImageLoaded();
 		
@@ -232,7 +229,7 @@ public abstract class IntegratorSlice implements Integrator
 		return (double)sum/cnt;
 		}
 	
-	public void integrateStackDone(IntExp integrator)
+	public void integrateStackDone(IntegrateExp integrator)
 		{
 		// Store background if this integrator is responsible for calculating it
 		if (updateBG)
@@ -274,7 +271,7 @@ public abstract class IntegratorSlice implements Integrator
 	
 		}
 	
-	public void done(IntExp integrator,	TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
+	public NucLineage done(IntegrateExp integrator, TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
 		// Set override start and end times
 		for (int i = 0; i<numSubDiv; i++)
@@ -287,7 +284,7 @@ public abstract class IntegratorSlice implements Integrator
 		//For AP: calculate how to correct exposure
 		if (correctedExposure==null)
 			correctedExposure = ExpUtil.calculateCorrectExposureChange20100709(
-					integrator.imset, lin, integrator.expName, integrator.channelName, new TreeSet<EvDecimal>(integrator.ch.getFrames()), bg);
+					integrator.imset, integrator.ch, lin, integrator.expName, new TreeSet<EvDecimal>(integrator.ch.getFrames()), bg);
 		this.correctedExposure=correctedExposure;
 
 		//Correct for exposure changes
@@ -306,25 +303,27 @@ public abstract class IntegratorSlice implements Integrator
 		ExpUtil.normalizeSignal(lin, integrator.expName, sigMax, sigMin, 1);
 	//	System.out.println("-----------new signal min: "+numSubDiv+"   "+ExpUtil.getSignalMin(lin, integrator.expName));
 	
+		
 		/*
 		System.out.println();
 		System.out.println("final exp: "+lin.getCreateNuc("_slice0").exp.get(integrator.expName).level.values());
 */
+		return lin;
 		}
 	
 	/**
 	 * Store profile as array on disk
 	 */
-	public void profileForGnuplot(IntExp integrator, File file)
+	public void profileForGnuplot(IntegrateExp integrator, File file)
 		{
-		Imageset imset = integrator.data.getObjects(Imageset.class).get(0);
-		EvChannel ch = imset.getChannel(integrator.channelName);
-		NucLineage lin = (NucLineage) imset.metaObject.get(newLinName);
+		//Imageset imset = integrator.imset;//data.getObjects(Imageset.class).get(0);
+		//EvChannel ch = integrator.ch;//imset.getChannel(integrator.channelName);
+		//NucLineage lin = (NucLineage) imset.metaObject.get(newLinName);
 		try
 			{
 			StringBuffer outf = new StringBuffer();
 	
-			here: for (EvDecimal frame : ch.getFrames())
+			here: for (EvDecimal frame : integrator.ch.getFrames())
 				{
 				outf.append(""+frame+"\t");
 				for (int i = 0; i<numSubDiv; i++)

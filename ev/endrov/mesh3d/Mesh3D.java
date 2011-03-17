@@ -11,6 +11,7 @@ import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.modelWindow.gl.GLMaterial;
@@ -205,7 +206,7 @@ public class Mesh3D extends EvObject
 		}
 	
 	@Override
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 	@Override
@@ -225,7 +226,13 @@ public class Mesh3D extends EvObject
 		return null;
 		}
 	
-	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 
 	/******************************************************************************************************
 	 * Plugin declaration

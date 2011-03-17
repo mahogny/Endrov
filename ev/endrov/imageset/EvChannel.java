@@ -20,6 +20,7 @@ import javax.vecmath.Vector3d;
 import org.jdom.Element;
 
 import endrov.basicWindow.BasicWindow;
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.ev.EvLog;
@@ -242,7 +243,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 	/**
 	 * Additional menu items for channel object
 	 */
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		JMenuItem miSwapTZ = new JMenuItem("Swap TZ-dimension");
 		miSwapTZ.addActionListener(new ActionListener()
@@ -496,6 +497,12 @@ public class EvChannel extends EvObject implements AnyEvImage
 		}
 
 	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		throw new RuntimeException("Cannot clone channels - not implemented");
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

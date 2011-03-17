@@ -10,6 +10,7 @@ import org.jdom.Element;
 import endrov.basicWindow.BasicWindow;
 import endrov.data.EvContainer;
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.flowBasic.math.EvOpImageAddImage;
 import endrov.flowBasic.math.EvOpImageDivScalar;
 import endrov.hardware.EvHardware;
@@ -497,7 +498,7 @@ public class EvMultidimAcquisition extends EvAcquisition
 
 
 	@Override
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -534,7 +535,14 @@ public class EvMultidimAcquisition extends EvAcquisition
 		*/
 		return metaType;
 		}
+
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 	
 	/******************************************************************************************************
 	 * Plugin declaration

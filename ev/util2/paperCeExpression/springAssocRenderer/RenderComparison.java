@@ -15,10 +15,10 @@ import javax.swing.JFrame;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 import util2.paperCeExpression.compare.CompareAll;
-import util2.paperCeExpression.integrate.ExpUtil;
 
 
 import endrov.flowColocalization.ColocCoefficients;
+import endrov.nuc.integrate.ExpUtil;
 import endrov.springGraph.Graph;
 import endrov.springGraph.GraphPanel;
 import endrov.springGraph.SimpleGraphRenderer;

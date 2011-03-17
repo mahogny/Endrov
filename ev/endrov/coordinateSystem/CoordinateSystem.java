@@ -194,7 +194,7 @@ public class CoordinateSystem extends EvObject
 		}
 
 
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -298,7 +298,14 @@ public class CoordinateSystem extends EvObject
 		cs.toWorld.set(toWorld);
 		return cs;
 		}
+
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

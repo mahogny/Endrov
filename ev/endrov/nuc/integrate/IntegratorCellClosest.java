@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package util2.paperCeExpression.integrate;
+package endrov.nuc.integrate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,13 +12,13 @@ import java.util.TreeMap;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
-import util2.paperCeExpression.integrate.IntExp.Integrator;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucSel;
 import endrov.nuc.NucLineage.Nuc;
+import endrov.nuc.integrate.IntegrateExp.Integrator;
 import endrov.shell.Shell;
 import endrov.util.EvDecimal;
 import endrov.util.ImVector2;
@@ -46,7 +46,7 @@ public class IntegratorCellClosest implements Integrator
 
 	private EvDecimal linStart, linEnd;
 	
-	public IntegratorCellClosest(IntExp integrator, NucLineage lin,	Map<EvDecimal, Double> bg)
+	public IntegratorCellClosest(IntegrateExp integrator, NucLineage lin,	Map<EvDecimal, Double> bg)
 		{
 		this.lin = lin;
 		this.bg = bg;
@@ -85,7 +85,7 @@ public class IntegratorCellClosest implements Integrator
 
 	
 	
-	public void integrateStackStart(IntExp integrator)
+	public void integrateStackStart(IntegrateExp integrator)
 		{
 		nucSumExp = new HashMap<String, Double>();
 		nucVol = new HashMap<String, Integer>();
@@ -101,7 +101,7 @@ public class IntegratorCellClosest implements Integrator
 		}
 
 	
-	private boolean includeFrame(IntExp integrator)
+	private boolean includeFrame(IntegrateExp integrator)
 		{
 		return linStart!=null && integrator.frame.greaterEqual(linStart) && integrator.frame.lessEqual(linEnd);
 		}
@@ -110,7 +110,7 @@ public class IntegratorCellClosest implements Integrator
 	/**
 	 * Integrate one plane
 	 */
-	public void integrateImage(IntExp integrator)
+	public void integrateImage(IntegrateExp integrator)
 		{
 		if(includeFrame(integrator))
 			{
@@ -207,7 +207,7 @@ public class IntegratorCellClosest implements Integrator
 	/**
 	 * Done integrating one stack
 	 */
-	public void integrateStackDone(IntExp integrator)
+	public void integrateStackDone(IntegrateExp integrator)
 		{
 		if(includeFrame(integrator))
 			{
@@ -243,7 +243,7 @@ public class IntegratorCellClosest implements Integrator
 	/**
 	 * Done with all stacks
 	 */
-	public void done(IntExp integrator,	TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
+	public void done(IntegrateExp integrator,	TreeMap<EvDecimal, Tuple<Double, Double>> correctedExposure)
 		{
 
 		// Use prior correction on this expression as well

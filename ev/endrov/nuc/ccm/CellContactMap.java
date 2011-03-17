@@ -20,6 +20,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvData;
 import endrov.data.EvObject;
 import endrov.util.EvDecimal;
@@ -91,7 +92,7 @@ public class CellContactMap extends EvObject
 
 
 	@Override
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -227,6 +228,12 @@ public class CellContactMap extends EvObject
 		return metaType;
 		}
 	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

@@ -15,6 +15,8 @@ import javax.swing.*;
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
 import endrov.ev.EV;
+import endrov.imageset.EvChannel;
+import endrov.imageset.Imageset;
 import endrov.util.EvSwingUtil;
 
 /**
@@ -25,6 +27,12 @@ import endrov.util.EvSwingUtil;
 public class EvDataMenu implements BasicWindowExtension
 	{
 	public static Vector<DataMenuExtension> extensions=new Vector<DataMenuExtension>();
+
+
+	private interface RecurseHierarchyAction
+		{
+		public void buildMenu(JMenu menu, final EvContainer root);
+		}
 	
 	public void newBasicWindow(BasicWindow w)
 		{
@@ -76,7 +84,7 @@ public class EvDataMenu implements BasicWindowExtension
 				}
 			else if(e.getSource()==miOpenFile)
 				{
-				EvData data=GuiEvDataIO.loadFileDialog();
+				EvData data=GuiEvDataIO.loadFileDialog(null);
 				EvData.registerOpenedData(data);
 /*				new Thread(){
 					public void run()
@@ -117,12 +125,13 @@ public class EvDataMenu implements BasicWindowExtension
 			}
 		
 		
+
 		/**
-		 * Build Move Object menu
+		 * Build X Object menu
 		 */
-		private JMenu buildMoveMenu(EvContainer moveObRoot, String moveObName)
+		private JMenu buildXMenu(String menuName, EvContainer moveObRoot, String moveObName, RecurseHierarchyAction cb)
 			{
-			JMenu miMoveOb=new JMenu("Move");
+			JMenu miMoveOb=new JMenu(menuName);
 
 			//All metadata
 			for(final EvData thisMeta:EvData.openedData)
@@ -130,36 +139,17 @@ public class EvDataMenu implements BasicWindowExtension
 				JMenu menuMetadata=new JMenu(thisMeta.getMetadataName());
 				miMoveOb.add(menuMetadata);
 				//All objects
-				recurseBuildMove(menuMetadata,moveObRoot, moveObName, thisMeta);
+				recurseBuildX(menuMetadata,moveObRoot, moveObName, thisMeta, cb);
 				}
-			
 			return miMoveOb;
 			}
 		/**
 		 * Build Move Object menu, helper
 		 */
-		private void recurseBuildMove(JMenu menu, final EvContainer moveObRoot, final String moveObName, final EvContainer root)
+		private void recurseBuildX(JMenu menu, final EvContainer moveObRoot, final String moveObName, final EvContainer root, RecurseHierarchyAction cb)
 			{
-			JMenuItem miHere=new JMenuItem(">>Here<<");
-			menu.add(miHere);
-			
-			
-			miHere.addActionListener(new ActionListener()
-				{
-				public void actionPerformed(ActionEvent e)
-					{
-					EvObject toMove=moveObRoot.metaObject.get(moveObName);
-					if(toMove!=null)
-						{
-						moveObRoot.metaObject.remove(moveObName);
-						root.metaObject.put(moveObName,toMove); //Danger. what about overlapping name?
-						BasicWindow.updateWindows();
-						}
-					}
-				});
+			cb.buildMenu(menu, root);
 
-
-			//Subobjects
 			EvObject objectToMove=moveObRoot.getMetaObject(moveObName);
 			for(Map.Entry<String, EvObject> me:root.metaObject.entrySet())
 				{
@@ -169,12 +159,91 @@ public class EvDataMenu implements BasicWindowExtension
 					{
 					JMenu miSub=new JMenu(obId);
 					menu.add(miSub);
-					recurseBuildMove(miSub, moveObRoot, moveObName, ob);
+					recurseBuildX(miSub, moveObRoot, moveObName, ob, cb);
 					}
 				}
 			}
 		
+		
+		/**
+		 * Build Move Object menu
+		 */
+		private JMenu buildMoveMenu(final EvContainer moveObRoot, final String moveObName)
+			{
+			return buildXMenu("Move to", moveObRoot, moveObName, new RecurseHierarchyAction()
+				{
+				public void buildMenu(JMenu menu, final EvContainer root)
+					{
+					JMenuItem miHere=new JMenuItem(">>Here<<");
+					menu.add(miHere);
+					miHere.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							EvObject toMove=moveObRoot.metaObject.get(moveObName);
+							if(toMove!=null)
+								{
+								moveObRoot.metaObject.remove(moveObName);
+								root.metaObject.put(moveObName,toMove); //Danger. what about overlapping name?
+								BasicWindow.updateWindows();
+								}
+							}
+						});
+					}
+				});
+			}
 
+		/**
+		 * Build Copy Object menu
+		 */
+		private JMenu buildCopyMenu(final EvContainer moveObRoot, final String moveObName)
+			{
+			return buildXMenu("Copy to", moveObRoot, moveObName, new RecurseHierarchyAction()
+				{
+				public void buildMenu(JMenu menu, final EvContainer root)
+					{
+					JMenuItem miHere=new JMenuItem(">>Here<<");
+					menu.add(miHere);
+					
+					miHere.addActionListener(new ActionListener()
+						{
+						public void actionPerformed(ActionEvent e)
+							{
+							EvObject toCopy=moveObRoot.metaObject.get(moveObName);
+							if(toCopy!=null)
+								{
+								if(toCopy instanceof Imageset || toCopy instanceof EvChannel)
+									BasicWindow.showErrorDialog("This type of object cannot be copied yet");
+								else
+									{
+									String newName=(String)JOptionPane.showInputDialog(null,"Name of new object", "Name?", JOptionPane.PLAIN_MESSAGE, null, null, moveObName);
+									if(newName!=null)
+										{
+										if(root.metaObject.containsKey(newName))
+											BasicWindow.showErrorDialog("An object with this name already exists");
+										else
+											{
+											try
+												{
+												EvObject theCopy=toCopy.cloneEvObjectRecursive();
+												root.metaObject.put(newName,theCopy);
+												BasicWindow.updateWindows();
+												}
+											catch (Exception e1)
+												{
+												BasicWindow.showErrorDialog("Failed to copy: "+e1.getMessage());
+												}
+											}
+										}
+									}
+								}
+							}
+						});
+					}
+				});
+			}
+		
+		
 		/**
 		 * Build menus for all subobjects in data menu
 		 */
@@ -223,7 +292,10 @@ public class EvDataMenu implements BasicWindowExtension
 					JMenu miMoveOb=buildMoveMenu(thisMeta, obId);
 					obmenu.add(miMoveOb);
 					
-					ob.buildMetamenu(obmenu);
+					JMenu miCopyOb=buildCopyMenu(thisMeta, obId);
+					obmenu.add(miCopyOb);
+					
+					ob.buildMetamenu(obmenu, thisMeta);
 
 					attachSubObjectMenus(obmenu, ob);
 

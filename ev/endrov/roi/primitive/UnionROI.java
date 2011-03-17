@@ -11,6 +11,7 @@ import javax.swing.*;
 import org.jdom.*;
 
 import endrov.data.EvData;
+import endrov.data.EvObject;
 import endrov.imageset.*;
 import endrov.roi.*;
 import endrov.util.EvDecimal;
@@ -288,6 +289,11 @@ public class UnionROI extends CompoundROI
 	public void initPlacement(String chan, EvDecimal frame, EvDecimal z){}
 	
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 
 	/******************************************************************************************************
 	 * Plugin declaration

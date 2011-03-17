@@ -26,11 +26,12 @@ import endrov.util.EvParallel;
 import endrov.util.Tuple;
 
 /**
- * Pairwise comparison of recordings
+ * Pairwise comparison of expressions in summary lineage. Currently tied to the caching system; could disconnect and make more general, then available in GUI
+ * 
  * @author Johan Henriksson
  *
  */
-public class CompareSingleCell
+public class CompareAssembledSingleCell
 	{
 
 	public static void main(String[] args)
@@ -59,6 +60,8 @@ public class CompareSingleCell
 		
 		final EvDecimal dt=new EvDecimal("20"); //[s]
 
+		
+		
 		int numThread=8;
 		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
 		public Object func(Tuple<File,File> key)
@@ -67,8 +70,8 @@ public class CompareSingleCell
 			File inb=key.snd();
 			
 			System.out.println("----- "+ina+"           vs         "+inb);
-			String expA=AssembleSingleCell.getExpName(ina);
-			String expB=AssembleSingleCell.getExpName(inb);
+			String expA=AssembleAllSingleCell.getExpName(ina);
+			String expB=AssembleAllSingleCell.getExpName(inb);
 			
 			ColocCoefficients coeff=new ColocCoefficients();
 			for(NucLineage.Nuc nuc:totLin.nuc.values())

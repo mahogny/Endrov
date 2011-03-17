@@ -294,7 +294,7 @@ public class EvBurstAcquisition extends EvObject
 
 
 	@Override
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -330,7 +330,13 @@ public class EvBurstAcquisition extends EvObject
 		return metaType;
 		}
 	
-	
+
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
+
 	/******************************************************************************************************
 	 * Plugin declaration
 	 *****************************************************************************************************/

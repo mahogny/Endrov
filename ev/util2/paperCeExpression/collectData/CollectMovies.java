@@ -9,7 +9,7 @@ import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.util.EvFileUtil;
 
-public class MakeMovies
+public class CollectMovies
 	{
 
 	/**

@@ -13,7 +13,7 @@ import endrov.util.EvDecimal;
 
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
 
-public class FindWithoutExpTimes
+public class FindRecsWithoutExpTimes
 	{
 
 	

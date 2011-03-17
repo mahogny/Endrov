@@ -28,8 +28,9 @@ import javax.imageio.ImageIO;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import util2.paperCeExpression.IntegrateAllExp;
 import util2.paperCeExpression.collectData.PaperCeExpressionUtil;
-import util2.paperCeExpression.integrate.IntExp;
+import util2.paperCeExpression.profileRenderer.RenderHTML;
 
 import endrov.data.EvContainer;
 import endrov.data.EvData;
@@ -426,7 +427,7 @@ public class CompareAll
 	
 	public static boolean ensureCalculated(File f)
 		{
-		return IntExp.doOne(f,false);   //Does not force recalculation
+		return IntegrateAllExp.doOne(f,false);   //Does not force recalculation
 		}
 	
 	public static Map<Tuple<File,File>, ColocCoefficients> loadCache(Set<File> datas, File cachedValuesFile)
@@ -498,292 +499,6 @@ public class CompareAll
 		return chanNameA;
 		}
 	
-	public static void main(String[] args)
-		{
-		EvLog.listeners.add(new EvLogStdout());
-		EV.loadPlugins();
-		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
-		
-		//Do things in parallel. Not too many CPUs, case memory issues
-		int numThread=EvParallel.numThread;
-//		numThread=1;   ///////////////4 seems optimal
-		numThread=4;
-		System.out.println("Will use #threads  "+numThread);
-
-		
-		Set<String> argsSet=new HashSet<String>();
-		for(String s:args)
-			argsSet.add(s);
-		
-		//Find recordings to compare
-		Set<File> datas=PaperCeExpressionUtil.getAnnotated(); 
-		//Set<File> datas=IntExpFileUtil.getTestSet();
-		
-		//Use only test set?
-		if(argsSet.contains("test"))
-			datas=PaperCeExpressionUtil.getTestSet();
-		
-		//Use only calculated recordings?
-		if(argsSet.contains("onlycalculated"))
-			{
-			System.out.println("---- only calculated");
-			Set<File> datas2=new TreeSet<File>();
-			for(File f:datas)
-				if(IntExp.isDone(f))
-					datas2.add(f);
-			datas=datas2;
-			}
-		
-		System.out.println(datas);
-		System.out.println("Number of annotated strains: "+datas.size());
-
-		//Read past calculated values from disk 
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonT;
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonAP;
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonDV;
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonLR;
-		final Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ;
-		if(!argsSet.contains("nocache"))
-			{
-			comparisonT=loadCache(datas, cachedValuesFileT);
-			comparisonAP=loadCache(datas, cachedValuesFileAP);
-			comparisonDV=loadCache(datas, cachedValuesFileDV);
-			comparisonLR=loadCache(datas, cachedValuesFileLR);
-			comparisonXYZ=loadCache(datas, cachedValuesFileXYZ);
-			}
-		else
-			{
-			comparisonT=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-			comparisonAP=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-			comparisonDV=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-			comparisonLR=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-			comparisonXYZ=new TreeMap<Tuple<File,File>, ColocCoefficients>();
-			}
-
-		//Quick listing what must be calculated
-		for(File f:datas)
-			if(!IntExp.isDone(f))
-				System.out.println("---- need to do: "+f);
-
-		
-		numThread=4;
-		System.out.println("for integration, Will use #threads  "+numThread);
-
-		///////////////// Integrate signal in each recording //////////////
-		EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
-			public Object func(File in)
-				{
-				//System.out.println("starting      "+in);
-				try
-					{
-					boolean needGraph=!IntExp.isDone(in);
-					if(ensureCalculated(in) && needGraph)
-						{
-						EvData data=EvData.loadFile(in);
-						String chanName=getChanFor(data);
-						doGraphsFor(in, data, chanName);
-						}
-					//System.out.println("ending        "+in);
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-				return null;
-				}
-		});
-		
-		final Object comparisonLock=new Object();
-		
-		
-		///////////////// Compare each two recordings //////////////////////////////
-
-		numThread=2;
-		System.out.println("for comparison, Will use #threads  "+numThread);
-
-		System.out.println("Calculate pair-wise statistics");
-		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
-		public Object func(Tuple<File,File> key)
-			{
-			File fa=key.fst();
-			File fb=key.snd();
-			boolean containsKey;
-			synchronized(comparisonLock)
-				{
-				containsKey=comparisonT.containsKey(key) && comparisonAP.containsKey(key) && comparisonXYZ.containsKey(key);
-				//what about the other ones?
-				}
-
-			//Check if cached calculation does not exist
-			if(!containsKey)
-				{
-				try
-					{
-
-
-					System.out.println("doing "+fa+"   "+fb+"    "+new Date());
-
-					boolean calculatedA=IntExp.isDone(fa);
-					boolean calculatedB=IntExp.isDone(fb);
-
-					if(!calculatedA)
-						System.out.println("Not calculated, there must be a problem: "+fa);
-					if(!calculatedB)
-						System.out.println("Not calculated, there must be a problem: "+fb);
-
-					if(calculatedA && calculatedB)
-						{
-						System.out.println("Calculating "+key);
-
-						//May not load one dataset twice at the same time. Can cause problems with cache files!!!!!! (probably minor ones)
-						EvData dataA;
-						EvData dataB;
-						System.out.println("loading "+fa+"   "+fb);
-						synchronized (fa)
-							{
-							dataA=EvData.loadFile(fa);
-							}
-						synchronized (fb)
-							{
-							dataB=EvData.loadFile(fb);
-							}
-						System.out.println("done loading "+fa+"   "+fb);
-
-						Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
-						Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
-
-						String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
-						String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
-
-						System.out.println("Comparing: "+key);
-
-						//Slices: T
-						try
-							{
-							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeffT=colocSliceTime(imtA, imtB);
-							synchronized (comparisonLock)
-								{
-								comparisonT.put(Tuple.make(fa,fb), coeffT);
-								}
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//Slices: AP
-						try
-							{
-							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
-							synchronized (comparisonLock)
-								{
-								comparisonAP.put(Tuple.make(fa,fb), coeff);
-								}
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//Slices: DV
-						try
-							{
-							double[][] imapA=apToArray(dataA, "DV"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, "DV"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
-							synchronized (comparisonLock)
-								{
-								comparisonDV.put(Tuple.make(fa,fb), coeff);
-								}
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//Slices: LR
-						try
-							{
-							double[][] imapA=apToArray(dataA, "LR"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, "LR"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
-							synchronized (comparisonLock)
-								{
-								comparisonLR.put(Tuple.make(fa,fb), coeff);
-								}
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//Slices: XYZ
-						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
-						synchronized (comparisonLock)
-							{
-							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
-							}
-
-						//Store down this value too
-						synchronized (comparisonLock)
-							{
-							storeCache(comparisonT, cachedValuesFileT);
-							storeCache(comparisonAP, cachedValuesFileAP);
-							storeCache(comparisonDV, cachedValuesFileDV);
-							storeCache(comparisonLR, cachedValuesFileLR);
-							storeCache(comparisonXYZ, cachedValuesFileXYZ);
-							}
-						}
-
-					}
-				catch (Exception e)
-					{
-					System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
-					e.printStackTrace();
-					}
-				//System.gc();
-				//System.out.println("total mem "+Runtime.getRuntime().totalMemory());
-
-				}
-			else
-				System.out.println("Already compared "+key);
-
-			
-			return null;
-			}
-		});
-		
-			
-		
-		
-		if(true)
-			{
-			try
-				{
-				RenderHTML.makeSummaryHTML(new File(outputBaseDir,"exphtml"), datas);
-				}
-			catch (IOException e)
-				{
-				e.printStackTrace();
-				}
-			}
-	
-		File intStatsDir=new File(outputBaseDir,"intstats");
-		intStatsDir.mkdirs();
-		writeHTMLfromFiles(datas, comparisonT, intStatsDir,"T");
-		writeHTMLfromFiles(datas, comparisonAP, intStatsDir,"AP");
-		writeHTMLfromFiles(datas, comparisonXYZ, intStatsDir,"XYZ");
-		
-		
-		
-		
-		System.exit(0);
-		}
-
 	
 	public static void doGraphsFor(File in, EvData data, String chanName)
 		{
@@ -1007,6 +722,307 @@ public class CompareAll
 
 		}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	public static void main(String[] args)
+		{
+		EvLog.listeners.add(new EvLogStdout());
+		EV.loadPlugins();
+		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
+		
+		//Do things in parallel. Not too many CPUs, case memory issues
+		int numThread=EvParallel.numThread;
+//		numThread=1;   ///////////////4 seems optimal
+		numThread=4;
+		System.out.println("Will use #threads  "+numThread);
+
+		
+		Set<String> argsSet=new HashSet<String>();
+		for(String s:args)
+			argsSet.add(s);
+		
+		//Find recordings to compare
+		Set<File> datas=PaperCeExpressionUtil.getAnnotated(); 
+		//Set<File> datas=IntExpFileUtil.getTestSet();
+		
+		//Use only test set?
+		if(argsSet.contains("test"))
+			datas=PaperCeExpressionUtil.getTestSet();
+		
+		//Use only calculated recordings?
+		if(argsSet.contains("onlycalculated"))
+			{
+			System.out.println("---- only calculated");
+			Set<File> datas2=new TreeSet<File>();
+			for(File f:datas)
+				if(IntegrateAllExp.isDone(f))
+					datas2.add(f);
+			datas=datas2;
+			}
+		
+		System.out.println(datas);
+		System.out.println("Number of annotated strains: "+datas.size());
+
+		//Read past calculated values from disk 
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonT;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonAP;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonDV;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonLR;
+		final Map<Tuple<File,File>, ColocCoefficients> comparisonXYZ;
+		if(!argsSet.contains("nocache"))
+			{
+			comparisonT=loadCache(datas, cachedValuesFileT);
+			comparisonAP=loadCache(datas, cachedValuesFileAP);
+			comparisonDV=loadCache(datas, cachedValuesFileDV);
+			comparisonLR=loadCache(datas, cachedValuesFileLR);
+			comparisonXYZ=loadCache(datas, cachedValuesFileXYZ);
+			}
+		else
+			{
+			comparisonT=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonAP=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonDV=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonLR=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			comparisonXYZ=new TreeMap<Tuple<File,File>, ColocCoefficients>();
+			}
+
+		//Quick listing what must be calculated
+		for(File f:datas)
+			if(!IntegrateAllExp.isDone(f))
+				System.out.println("---- need to do: "+f);
+
+		
+		numThread=4;
+		System.out.println("for integration, Will use #threads  "+numThread);
+
+		///////////////// Integrate signal in each recording //////////////
+		EvParallel.map(numThread,new LinkedList<File>(datas), new EvParallel.FuncAB<File,Object>(){
+			public Object func(File in)
+				{
+				//System.out.println("starting      "+in);
+				try
+					{
+					boolean needGraph=!IntegrateAllExp.isDone(in);
+					if(ensureCalculated(in) && needGraph)
+						{
+						EvData data=EvData.loadFile(in);
+						String chanName=getChanFor(data);
+						doGraphsFor(in, data, chanName);
+						}
+					//System.out.println("ending        "+in);
+					}
+				catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+				return null;
+				}
+		});
+		
+		final Object comparisonLock=new Object();
+		
+		
+		///////////////// Compare each two recordings //////////////////////////////
+
+		numThread=2;
+		System.out.println("for comparison, Will use #threads  "+numThread);
+
+		System.out.println("Calculate pair-wise statistics");
+		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
+		public Object func(Tuple<File,File> key)
+			{
+			File fa=key.fst();
+			File fb=key.snd();
+			boolean containsKey;
+			synchronized(comparisonLock)
+				{
+				containsKey=comparisonT.containsKey(key) && comparisonAP.containsKey(key) && comparisonXYZ.containsKey(key);
+				//what about the other ones?
+				}
+
+			//Check if cached calculation does not exist
+			if(!containsKey)
+				{
+				try
+					{
+
+
+					System.out.println("doing "+fa+"   "+fb+"    "+new Date());
+
+					boolean calculatedA=IntegrateAllExp.isDone(fa);
+					boolean calculatedB=IntegrateAllExp.isDone(fb);
+
+					if(!calculatedA)
+						System.out.println("Not calculated, there must be a problem: "+fa);
+					if(!calculatedB)
+						System.out.println("Not calculated, there must be a problem: "+fb);
+
+					if(calculatedA && calculatedB)
+						{
+						System.out.println("Calculating "+key);
+
+						//May not load one dataset twice at the same time. Can cause problems with cache files!!!!!! (probably minor ones)
+						EvData dataA;
+						EvData dataB;
+						System.out.println("loading "+fa+"   "+fb);
+						synchronized (fa)
+							{
+							dataA=EvData.loadFile(fa);
+							}
+						synchronized (fb)
+							{
+							dataB=EvData.loadFile(fb);
+							}
+						System.out.println("done loading "+fa+"   "+fb);
+
+						Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
+						Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
+
+						String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
+						String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
+
+						System.out.println("Comparing: "+key);
+
+						//Slices: T
+						try
+							{
+							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeffT=colocSliceTime(imtA, imtB);
+							synchronized (comparisonLock)
+								{
+								comparisonT.put(Tuple.make(fa,fb), coeffT);
+								}
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+
+						//Slices: AP
+						try
+							{
+							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+							synchronized (comparisonLock)
+								{
+								comparisonAP.put(Tuple.make(fa,fb), coeff);
+								}
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+
+						//Slices: DV
+						try
+							{
+							double[][] imapA=apToArray(dataA, "DV"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, "DV"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+							synchronized (comparisonLock)
+								{
+								comparisonDV.put(Tuple.make(fa,fb), coeff);
+								}
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+
+						//Slices: LR
+						try
+							{
+							double[][] imapA=apToArray(dataA, "LR"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+							double[][] imapB=apToArray(dataB, "LR"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+							synchronized (comparisonLock)
+								{
+								comparisonLR.put(Tuple.make(fa,fb), coeff);
+								}
+							}
+						catch (Exception e)
+							{
+							e.printStackTrace();
+							}
+
+						//Slices: XYZ
+						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
+						synchronized (comparisonLock)
+							{
+							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
+							}
+
+						//Store down this value too
+						synchronized (comparisonLock)
+							{
+							storeCache(comparisonT, cachedValuesFileT);
+							storeCache(comparisonAP, cachedValuesFileAP);
+							storeCache(comparisonDV, cachedValuesFileDV);
+							storeCache(comparisonLR, cachedValuesFileLR);
+							storeCache(comparisonXYZ, cachedValuesFileXYZ);
+							}
+						}
+
+					}
+				catch (Exception e)
+					{
+					System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
+					e.printStackTrace();
+					}
+				//System.gc();
+				//System.out.println("total mem "+Runtime.getRuntime().totalMemory());
+
+				}
+			else
+				System.out.println("Already compared "+key);
+
+			
+			return null;
+			}
+		});
+		
+			
+		
+		
+		if(true)
+			{
+			try
+				{
+				RenderHTML.makeSummaryHTML(new File(outputBaseDir,"exphtml"), datas);
+				}
+			catch (IOException e)
+				{
+				e.printStackTrace();
+				}
+			}
+	
+		File intStatsDir=new File(outputBaseDir,"intstats");
+		intStatsDir.mkdirs();
+		writeHTMLfromFiles(datas, comparisonT, intStatsDir,"T");
+		writeHTMLfromFiles(datas, comparisonAP, intStatsDir,"AP");
+		writeHTMLfromFiles(datas, comparisonXYZ, intStatsDir,"XYZ");
+		
+		
+		
+		
+		System.exit(0);
+		}
+
 	
 	
 	

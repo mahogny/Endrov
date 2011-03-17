@@ -5,7 +5,8 @@ import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
-import util2.paperCeExpression.integrate.ExpUtil;
+import util2.paperCeExpression.IntegrateAllExp;
+
 
 import endrov.data.EvData;
 import endrov.data.EvPath;
@@ -13,6 +14,7 @@ import endrov.ev.EV;
 import endrov.ev.EvLog;
 import endrov.ev.EvLogStdout;
 import endrov.nuc.NucLineage;
+import endrov.nuc.NucRemapUtil;
 import endrov.nuc.NucSel;
 import endrov.nuc.NucVoronoi;
 import endrov.nuc.NucLineage.NucInterp;
@@ -57,7 +59,7 @@ public class TestSingleCellPrecision
 		NucLineage refLin=getManualAnnot(data);
 		
 		
-		NucLineage approxLin=ExpUtil.mapModelToRec(refLin);
+		NucLineage approxLin=NucRemapUtil.mapModelToRec(refLin, IntegrateAllExp.loadModel());
 		
 		EvDecimal firstFrame=refLin.firstFrameOfLineage().fst();
 		EvDecimal lastFrame=refLin.lastFrameOfLineage().fst();

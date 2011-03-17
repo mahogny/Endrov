@@ -12,6 +12,7 @@ import javax.swing.JMenu;
 
 import org.jdom.Element;
 
+import endrov.data.EvContainer;
 import endrov.data.EvObject;
 import endrov.hardware.EvDevicePath;
 
@@ -45,7 +46,7 @@ public class LightPath extends EvObject
 		}
 
 
-	public void buildMetamenu(JMenu menu)
+	public void buildMetamenu(JMenu menu, EvContainer parentObject)
 		{
 		}
 
@@ -68,6 +69,11 @@ public class LightPath extends EvObject
 		}
 	
 	
+	@Override
+	public EvObject cloneEvObject()
+		{
+		return cloneUsingSerialize();
+		}
 	
 	
 	
