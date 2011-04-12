@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -37,8 +38,9 @@ public class NucDialogIntegrate extends BasicWindow implements ActionListener
 	public EvComboChannel comboChannel=new EvComboChannel(null, false);
 	public EvComboObjectOne<NucLineage> comboLin=new EvComboObjectOne<NucLineage>(new NucLineage(), false, false);
 	public JTextField tfExpName=new JTextField("exp");
-	private JLabel lStatus=new JLabel("");
+	public JCheckBox cbUseRadius=new JCheckBox();
 	
+	private JLabel lStatus=new JLabel("");
 	private JButton bIntegrate=new JButton("Start");
 	
 	public NucDialogIntegrate()
@@ -49,14 +51,16 @@ public class NucDialogIntegrate extends BasicWindow implements ActionListener
 				new JLabel("Channel: "), comboChannel,
 				new JLabel("Lineage: "), comboLin,
 				new JLabel("Exp name: "), tfExpName,
+				new JLabel("Integrate only within cell radius: "), cbUseRadius,
 				new JLabel("Status: "), lStatus
 				), BorderLayout.CENTER);
 		
 		add(bIntegrate, BorderLayout.SOUTH);
 		
 		bIntegrate.addActionListener(this);
+		cbUseRadius.addActionListener(this);
 		
-		setTitleEvWindow("Integreate expression");
+		setTitleEvWindow("Integrate expression");
 		packEvWindow();
 		setVisibleEvWindow(true);
 		}
@@ -112,8 +116,10 @@ public class NucDialogIntegrate extends BasicWindow implements ActionListener
 			Imageset imset=comboChannel.getImageset();
 			EvChannel ch=comboChannel.getChannel();
 			
+			boolean useCellRadius=cbUseRadius.isSelected();
+			
 			//This writes exp immediately - it is not totally thread safe
-			IntegrateExp.integrateSingleCell(lin, imset, ch, tfExpName.getText(),	this);
+			IntegrateExp.integrateSingleCell(lin, imset, ch, tfExpName.getText(),	this, useCellRadius);
 			if(!stop){}
 			NucDialogIntegrate.this.currentCallback=null;
 			if(!lStatus.getText().contains("Error"))

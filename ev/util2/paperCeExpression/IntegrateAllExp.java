@@ -179,7 +179,7 @@ public class IntegrateAllExp
 				{
 				if (channelName.equals("RFP"))
 					{
-					intC = new IntegratorCellClosest(integrator, IntegrateExp.refLin, intAP.bg);
+					intC = new IntegratorCellClosest(integrator, IntegrateExp.refLin, intAP.bg, false);
 					integrators.add(intC);
 					}
 				else
@@ -191,7 +191,7 @@ public class IntegrateAllExp
 					//Imageset imset=data.getIdObjectsRecursive(Imageset.class).values().iterator().next();
 					imset.metaObject.put("estcell", newlin);
 					
-					intC = new IntegratorCellClosest(integrator, newlin, intAP.bg);
+					intC = new IntegratorCellClosest(integrator, newlin, intAP.bg, false);
 					integrators.add(intC);
 					}
 				}

@@ -11,7 +11,7 @@ pathoutput /Volumes/TBU_extra03/daemon/output/
 #pathoutput /Volumes/TBU_iomega_700GB/daemon/output
 
 setmax GFP RFP NR RFPFIXED
-compression DIC 90 
+#compression DIC 90 
 ostversion 2
 skipblackslices 1
 skipwhiteslices 1
