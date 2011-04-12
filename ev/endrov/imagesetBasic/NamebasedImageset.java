@@ -11,6 +11,7 @@ import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import endrov.basicWindow.*;
 import endrov.basicWindow.icon.BasicIcon;
@@ -174,7 +175,7 @@ public class NamebasedImageset implements EvIOData
 				resZ=Double.parseDouble(eSpacingZ.getText());
 				NamebasedDatabaseBuilder b=new NamebasedDatabaseBuilder();
 				b.run(data);
-				eLog.setText(b.rebuildLog);
+				eLog.setText(b.rebuildLog.toString());
 				BasicWindow.updateWindows();
 				}
 			}
@@ -194,15 +195,16 @@ public class NamebasedImageset implements EvIOData
 		{
 		File[] fileList;
 		int currentFile=0;
-		private String rebuildLog="";
+		private StringBuffer rebuildLog=new StringBuffer();
 		
+		private int countFilesAdded=0;
 		
 		public void run(EvData data)
 			{
 			Vector<String> channelVector=new Vector<String>();
 			try
 				{
-				rebuildLog="";				
+//				rebuildLog="";				
 				
 				File dir=basedir;
 				fileList=dir.listFiles();
@@ -222,7 +224,16 @@ public class NamebasedImageset implements EvIOData
 					im=new Imageset();
 					data.metaObject.put("im", im);
 					}
+
 				
+				//Remove all channels
+				for(String s:im.getChannels().keySet())
+					im.metaObject.remove(s);
+				//Create new channels
+/*				for(String cname:channelVector)
+					im.getCreateChannel(cname);*/
+				
+/*				
 				//Create channels, remove unneeded (for rebuild)
 				for(String s:im.getChannels().keySet())
 					{
@@ -232,6 +243,7 @@ public class NamebasedImageset implements EvIOData
 				//im.channelImages.keySet().retainAll(channelVector);
 				for(String cname:channelVector)
 					im.getCreateChannel(cname);
+					*/
 				/*
 				//Clear up old database
 				List<String> channelsToRemove=new LinkedList<String>(); 
@@ -253,17 +265,19 @@ public class NamebasedImageset implements EvIOData
 				File f;
 				while((f=nextFile())!=null)
 					buildAddFile(im,f,channelVector);
+				
 				}
 			catch (Exception e)
 				{
-				JOptionPane.showMessageDialog(null,e.getMessage());
+				JOptionPane.showMessageDialog(null,"Error rebuilding: "+e.getMessage());
 				e.printStackTrace();
 				}
+			
+			rebuildLog.append("Total images indentified: "+countFilesAdded);
 			}
 	
-		private void buildAddFile(Imageset im, File f, Vector<String> channelVector) throws Exception
+		private void buildAddFile(Imageset im, File f, List<String> channelVector) throws Exception
 			{
-			
 			String filename=f.getName();
 			int i=0;
 			int j=0;
@@ -285,7 +299,7 @@ public class NamebasedImageset implements EvIOData
 						String params=parseInt(filename.substring(j));
 						if(params.equals(""))
 							{
-							rebuildLog+="Not matching "+filename+" Missing parameter "+type+", filename pos"+j+"\n";
+							rebuildLog.append("Not matching "+filename+" Missing parameter "+type+", filename pos"+j+"\n");
 //							JOptionPane.showMessageDialog(null, "Not matching "+filename+" Missing parameter "+type+", filename pos"+j);
 							return;
 							}
@@ -303,7 +317,7 @@ public class NamebasedImageset implements EvIOData
 								;
 							else
 								{
-								rebuildLog+="Unknown parameter: "+type+"\n";
+								rebuildLog.append("Unknown parameter: "+type+"\n");
 //								JOptionPane.showMessageDialog(null, "Unknown parameter: "+type);
 								return;
 								}
@@ -317,7 +331,7 @@ public class NamebasedImageset implements EvIOData
 					}
 				else
 					{
-					rebuildLog+="Not matching: "+filename+" rulepos "+i+" namepos "+j+"\n";
+					rebuildLog.append("Not matching: "+filename+" rulepos "+i+" namepos "+j+"\n");
 //					JOptionPane.showMessageDialog(null, "Not matching: "+filename+" rulepos "+i+" namepos "+j);
 					return;
 					}
@@ -333,6 +347,7 @@ public class NamebasedImageset implements EvIOData
 
 				//Get a place to put EVimage. Create holders if needed
 				EvChannel ch=im.getCreateChannel(channelName);
+				System.out.println(ch);
 				EvStack stack=ch.getStack(new EvDecimal(frame));
 				if(stack==null)
 					{
@@ -345,17 +360,18 @@ public class NamebasedImageset implements EvIOData
 				stack.resX=resX; 
 				stack.resY=resY;
 				stack.resZ=resZ;
-				
 				evim.io=new BasicSliceIO(f);
 				
-				stack.putInt(slice, evim); 
+				stack.putInt(slice, evim);
+				
 				String newLogEntry=filename+" Ch: "+channelName+ " Fr: "+frame+" Sl: "+slice+"\n";
 				System.out.println(newLogEntry);
-				rebuildLog+=newLogEntry;
+				rebuildLog.append(newLogEntry);
+				countFilesAdded++;
 				}
 			else
 				{
-				rebuildLog+="Not matching: "+filename+" Premature end of filename\n";
+				rebuildLog.append("Not matching: "+filename+" Premature end of filename\n");
 //				JOptionPane.showMessageDialog(null, "Not matching: "+filename+" Premature end of filename");
 				}
 

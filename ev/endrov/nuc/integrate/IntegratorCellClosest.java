@@ -8,6 +8,7 @@ package endrov.nuc.integrate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
@@ -41,15 +42,22 @@ public class IntegratorCellClosest implements Integrator
 	private Map<NucSel, NucLineage.NucInterp> inter;
 	private Map<EvDecimal, Double> bg;
 
-	private HashMap<Integer, EvPixels> distanceMap = new HashMap<Integer, EvPixels>();
+	private HashMap<Integer, EvPixels> shellDistanceMap = new HashMap<Integer, EvPixels>();
 	private Shell shell;
 
 	private EvDecimal linStart, linEnd;
 	
-	public IntegratorCellClosest(IntegrateExp integrator, NucLineage lin,	Map<EvDecimal, Double> bg)
+	private boolean useNucleiRadius;
+	private boolean subtractCytoplasmaBackground=false;
+	
+	private Map<String,Double> nucSumBG=new HashMap<String, Double>();
+	private Map<String,Integer> nucVolBG=new HashMap<String, Integer>();
+	
+	public IntegratorCellClosest(IntegrateExp integrator, NucLineage lin,	Map<EvDecimal, Double> bg, boolean useNucleiRadius)
 		{
 		this.lin = lin;
 		this.bg = bg;
+		this.useNucleiRadius=useNucleiRadius;
 		shell = integrator.imset.getIdObjectsRecursive(Shell.class).values().iterator().next();
 		
 		ExpUtil.clearExp(lin, integrator.expName);
@@ -91,12 +99,18 @@ public class IntegratorCellClosest implements Integrator
 		nucVol = new HashMap<String, Integer>();
 		inter = lin.getInterpNuc(integrator.frame);
 
+		nucSumBG = new HashMap<String, Double>();
+		nucVolBG = new HashMap<String, Integer>();
+		
 		//Fill in 0's directly, removes need for if's later
 		for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
 			if(e.getValue().isVisible())
 				{
 				nucSumExp.put(e.getKey().snd(), 0.0);
 				nucVol.put(e.getKey().snd(), 0);
+				
+				nucSumBG.put(e.getKey().snd(), 0.0);
+				nucVolBG.put(e.getKey().snd(), 0);
 				}
 		}
 
@@ -118,9 +132,9 @@ public class IntegratorCellClosest implements Integrator
 			// Calculate distance mask lazily
 			EvPixels lenMap;
 			double[] lenMapArr;
-			if (distanceMap.containsKey(integrator.curZint))
+			if (shellDistanceMap.containsKey(integrator.curZint))
 				{
-				lenMap = distanceMap.get(integrator.curZint);
+				lenMap = shellDistanceMap.get(integrator.curZint);
 				lenMapArr = lenMap.getArrayDouble();
 				}
 			else
@@ -172,9 +186,14 @@ public class IntegratorCellClosest implements Integrator
 						Vector3d thisPosWorld=integrator.stack.transformImageWorld(new Vector3d(x,y,integrator.curZint));
 						//thisPosWorld.z=integrator.curZ.doubleValue();
 						
+						//if(useNucleiRadius)
+						//{
+						//Use voronoi approximation
 						String closestNuc=null;
 						double closestDistance=0;
-						
+
+						boolean isInBg=false;
+
 						//Find closest nucleus
 						for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
 							{
@@ -189,14 +208,98 @@ public class IntegratorCellClosest implements Integrator
 									{
 									closestDistance=dist2;
 									closestNuc=e.getKey().snd();
+									isInBg=useNucleiRadius && dx*dx+dy*dy>pos.r*pos.r; //2D
+									//nisInBg=dx*dx+dy*dy+dz*dz>pos.r*pos.r; //3D
 									}
 								}
 							}
 
 						// Sum up volume and area
-						nucVol.put(closestNuc, nucVol.get(closestNuc)+1);
-						nucSumExp.put(closestNuc, nucSumExp.get(closestNuc)+thisExp);
+						if(isInBg)
+							{
+							nucVolBG.put(closestNuc, nucVolBG.get(closestNuc)+1);
+							nucSumBG.put(closestNuc, nucSumBG.get(closestNuc)+thisExp);
+							}
+						else
+							{
+							nucVol.put(closestNuc, nucVol.get(closestNuc)+1);
+							nucSumExp.put(closestNuc, nucSumExp.get(closestNuc)+thisExp);
+							}
 						}
+
+
+
+							/*
+							{
+							boolean usedPixel=false;
+							//Integrate only what is inside the nuclei
+							for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
+								{
+								if(e.getValue().isVisible() && considerCell(e.getKey().snd()))
+									{
+									NucLineage.NucPos pos = e.getValue().pos;
+									double dx=thisPosWorld.x-pos.x;
+									double dy=thisPosWorld.y-pos.y;
+									double dz=thisPosWorld.z-pos.z;
+									double dist2=dx*dx+dy*dy+dz*dz;
+									
+									if(dist2<pos.r*pos.r)
+										{
+										// Sum up volume and area
+										String nucName=e.getKey().snd();
+										nucVol.put(nucName, nucVol.get(nucName)+1);
+										nucSumExp.put(nucName, nucSumExp.get(nucName)+thisExp);
+										usedPixel=true;
+										}
+									
+									else if(dist2<pos.r*pos.r*1.5*1.5)
+										{
+										//It has to be far away enough to be considered background
+										usedPixel=true;
+										}
+										
+									}
+								}
+							
+							if(!usedPixel)
+								{
+								//This pixel can be considered background!
+								sumBgAroundCells+=thisExp;
+								countBgAroundCells++;
+								}
+								
+							}*/
+						/*else
+							{
+							//Use voronoi approximation
+							String closestNuc=null;
+							double closestDistance=0;
+													
+							//Find closest nucleus
+							for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
+								{
+								if(e.getValue().isVisible() && considerCell(e.getKey().snd()))
+									{
+									NucLineage.NucPos pos = e.getValue().pos;
+									double dx=thisPosWorld.x-pos.x;
+									double dy=thisPosWorld.y-pos.y;
+									double dz=thisPosWorld.z-pos.z;
+									double dist2=dx*dx+dy*dy+dz*dz;
+									if(closestNuc==null || dist2<closestDistance)
+										{
+										closestDistance=dist2;
+										closestNuc=e.getKey().snd();
+										}
+									}
+								}
+
+							// Sum up volume and area
+							nucVol.put(closestNuc, nucVol.get(closestNuc)+1);
+							nucSumExp.put(closestNuc, nucSumExp.get(closestNuc)+thisExp);
+							}
+						
+						
+						}*/
 					}
 				}
 			
@@ -212,6 +315,14 @@ public class IntegratorCellClosest implements Integrator
 		if(includeFrame(integrator))
 			{
 			double curBg=bg.get(integrator.frame);
+
+			/*
+			//Correction for this integrator only - using cell plasma for background
+			double curBg=0;
+			double frameCellCorrection=sumBgAroundCells/countBgAroundCells;
+			curBg+=frameCellCorrection;
+			System.out.println("correction "+frameCellCorrection);
+			*/
 			
 			// Store value in XML
 			for (String nucName : nucSumExp.keySet())
@@ -229,9 +340,28 @@ public class IntegratorCellClosest implements Integrator
 					
 					if (lastFrame.greaterEqual(integrator.frame) && firstFrame.lessEqual(integrator.frame))
 						{
-						double avg = nucSumExp.get(nucName)/vol-curBg;
-						NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
-						exp.level.put(integrator.frame, avg);
+						
+						
+						if(subtractCytoplasmaBackground && useNucleiRadius)
+							{
+							int thisVol=nucVolBG.get(nucName);
+							double thisSum=nucSumBG.get(nucName);
+							if(thisVol!=0)
+								{
+								double thisCellBg=thisSum/thisVol;
+								
+								double avg = nucSumExp.get(nucName)/vol-thisCellBg;
+								NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
+								exp.level.put(integrator.frame, avg);
+								}
+							}
+						else
+							{
+							double avg = nucSumExp.get(nucName)/vol-curBg;
+							NucExp exp = lin.nuc.get(nucName).getCreateExp(integrator.expName);
+							exp.level.put(integrator.frame, avg);
+							}
+
 						}
 					}
 				
@@ -240,6 +370,43 @@ public class IntegratorCellClosest implements Integrator
 			}
 		}
 
+	
+	public static void assumeLeastExpressionIsBackground(NucLineage lin, String expName)
+		{
+		TreeSet<EvDecimal> frames=new TreeSet<EvDecimal>();
+		for(NucLineage.Nuc n:lin.nuc.values())
+			{
+			NucExp exp=n.exp.get(expName);
+			if(exp!=null)
+				frames.addAll(n.exp.get(expName).level.keySet());
+			}
+		
+		for(EvDecimal frame:frames)
+			{
+			Double lowestLevel=null;
+			for(NucLineage.Nuc n:lin.nuc.values())
+				{
+				NucExp exp=n.exp.get(expName);
+				if(exp!=null)
+					{
+					Double thisLevel=n.exp.get(expName).level.get(frame);
+					if(thisLevel!=null && (lowestLevel==null || thisLevel<lowestLevel))
+						lowestLevel=thisLevel;
+					}
+				}
+			for(NucLineage.Nuc n:lin.nuc.values())
+				{
+				NucExp exp=n.exp.get(expName);
+				if(exp!=null)
+					{
+					Double thisLevel=n.exp.get(expName).level.get(frame);
+					if(thisLevel!=null)
+						n.exp.get(expName).level.put(frame, thisLevel-lowestLevel);
+					}
+				}
+			}
+		}
+	
 	/**
 	 * Done with all stacks
 	 */
@@ -252,8 +419,14 @@ public class IntegratorCellClosest implements Integrator
 			System.out.println("max==null, there is no signal!");
 		else
 			{
-			ExpUtil.normalizeSignal(lin, integrator.expName, max1, 0, 1);
+			//Check: it was in the other order before!!! might affect generated data
 			ExpUtil.correctExposureChange(correctedExposure, lin, integrator.expName);
+			ExpUtil.normalizeSignal(lin, integrator.expName, max1, 0, 1);
+			
+			
+			//This should only be enabled if the user knows this is fine!
+			if(false)
+				assumeLeastExpressionIsBackground(lin, integrator.expName);
 			}
 
 		}

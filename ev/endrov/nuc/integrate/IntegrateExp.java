@@ -161,7 +161,7 @@ public class IntegrateExp
 	/**
 	 * Integrate single-cell for one recording
 	 */
-	public static void integrateSingleCell(NucLineage lin, Imageset imset, EvChannel ch, String expName, IntegratorCallback cb)
+	public static void integrateSingleCell(NucLineage lin, Imageset imset, EvChannel ch, String expName, IntegratorCallback cb, boolean useNucleiRadius)
 		{
 		int numSubDiv = 20;
 	
@@ -179,7 +179,7 @@ public class IntegrateExp
 		integrators.add(intAP);
 	
 		// Cell level expression if there is a lineage
-		IntegratorCellClosest intC = new IntegratorCellClosest(integrator, lin, intAP.bg);
+		IntegratorCellClosest intC = new IntegratorCellClosest(integrator, lin, intAP.bg, useNucleiRadius);
 		integrators.add(intC);
 	
 		// Run integrators

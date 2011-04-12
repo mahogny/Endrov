@@ -67,7 +67,11 @@ public class EvChannel extends EvObject implements AnyEvImage
 	
 	public EvStack getStack(EvDecimal frame)
 		{
-		return imageLoader.get(frame).get();
+		Memoize<EvStack> stack=imageLoader.get(frame);
+		if(stack==null)
+			return null;
+		else
+			return stack.get();
 		}
 	
 	public void putStack(EvDecimal frame, EvStack stack)
@@ -98,7 +102,11 @@ public class EvChannel extends EvObject implements AnyEvImage
 	 */
 	public EvStack getFirstStack()
 		{
-		return imageLoader.values().iterator().next().get();
+		Memoize<EvStack> stack=imageLoader.values().iterator().next();
+		if(stack==null)
+			return null;
+		else
+			return stack.get();
 		}
 
 
