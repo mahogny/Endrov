@@ -5,6 +5,7 @@
  */
 package endrov.nuc.integrate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,8 +14,10 @@ import java.util.TreeSet;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
+import endrov.imageset.EvChannel;
 import endrov.imageset.EvPixels;
 import endrov.imageset.EvPixelsType;
+import endrov.imageset.EvStack;
 import endrov.nuc.NucExp;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucSel;
@@ -146,7 +149,7 @@ public class IntegratorCellClosest implements Integrator
 				ImVector2 startpos = dirvec.add(new ImVector2(shell.midx, shell.midy));
 				dirvec = dirvec.normalize().mul(-1);
 		
-				// Calculate distances
+				// Calculate distances with shell
 				for (int ay = 0; ay<integrator.pixels.getHeight(); ay++)
 					{
 					int lineIndex = lenMap.getRowIndex(ay);
@@ -171,6 +174,9 @@ public class IntegratorCellClosest implements Integrator
 					}
 				}
 		
+			HashMap<String, Integer> nucMap=new HashMap<String, Integer>();
+			
+			
 			// Integrate this area. Go through all pixels and find nucleus, O(w h d #nuc)
 			for (int y = 0; y<integrator.pixels.getHeight(); y++)
 				{
@@ -213,6 +219,7 @@ public class IntegratorCellClosest implements Integrator
 									}
 								}
 							}
+						
 
 						// Sum up volume and area
 						if(isInBg)
@@ -225,6 +232,38 @@ public class IntegratorCellClosest implements Integrator
 							nucVol.put(closestNuc, nucVol.get(closestNuc)+1);
 							nucSumExp.put(closestNuc, nucSumExp.get(closestNuc)+thisExp);
 							}
+						
+
+						//For debugging: identify pixels
+						/*
+						if(integrator.frame.lessEqual(new EvDecimal(2*3600+10*60)))
+							{
+							if(nucMap.isEmpty())
+								{
+								int nucMapIndex=0;
+								for (Map.Entry<NucSel, NucLineage.NucInterp> e : inter.entrySet())
+									if(e.getValue().isVisible() && considerCell(e.getKey().snd()))
+										nucMap.put(e.getKey().snd(), nucMapIndex++);
+								}
+							//System.out.println("ID for frame "+integrator.frame);
+							
+							EvChannel ch=integrator.imset.getCreateChannel("pixid");
+							int w=integrator.pixels.getWidth();
+							int h=integrator.pixels.getHeight();
+							EvStack st=ch.getStack(integrator.frame);
+							if(st==null)
+								{
+								st=new EvStack();
+								st.allocate(w, h, integrator.stack.getDepth(), EvPixelsType.INT, integrator.stack);
+								ch.putStack(integrator.frame, st);
+								}
+
+							EvPixels p=st.getInt(integrator.curZint).getPixels();
+							//p.getArrayInt()[w*y+x]=closestNuc.hashCode();
+							p.getArrayInt()[w*y+x]=nucMap.get(closestNuc);
+							}
+							*/
+						
 						}
 
 

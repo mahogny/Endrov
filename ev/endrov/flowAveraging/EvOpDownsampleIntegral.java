@@ -39,8 +39,11 @@ public class EvOpDownsampleIntegral extends EvOpStack1
 		
 		EvStack out=new EvStack();
 		out.getMetaFrom(in);
-		out.resX*=scaleX; //not quite
-		out.resY*=scaleY;
+		out.setRes(
+				in.getRes().x*scaleX,
+				in.getRes().y*scaleY,
+				in.getRes().z
+				);
 		
 		//TODO
 		

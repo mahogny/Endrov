@@ -230,10 +230,11 @@ public class EvFRAPAcquisition extends EvAcquisition
 			EvChannel ch=imset.getCreateChannel("ch");
 			EvStack stack=new EvStack();//.getCreateFrame(curFrame);
 			ch.putStack(curFrame, stack);
-			stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
-			stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
-			stack.resZ=1;
-			
+			stack.setRes(
+					RecordingResource.getCurrentTotalMagnification(cam),
+					RecordingResource.getCurrentTotalMagnification(cam),
+					1
+				);
 			stack.setDisplacement(new Vector3d(
 					RecordingResource.getCurrentStageX(),
 					RecordingResource.getCurrentStageY(),

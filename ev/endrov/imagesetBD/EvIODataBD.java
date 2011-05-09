@@ -150,10 +150,7 @@ public class EvIODataBD implements EvIOData
 						};
 					stack.putInt(0, evim);
 					
-					
-					stack.resX=1;
-					stack.resY=1;
-					stack.resZ=1;
+					stack.setRes(1,1,1);
 					
 					}
 				

@@ -1070,7 +1070,7 @@ public class AutolineageJHhis1 extends LineageAlgorithmDef
 				System.out.println("cur frame "+frame);
 				
 				final EvStack stackHis=channelHis.getStack(frame);
-				resXY=stackHis.resX;
+				//resXY=stackHis.resX;
 
 				//Read parameters from the GUI
 				double expectRadius=Double.parseDouble(inpRadiusExpectedMax.getText());

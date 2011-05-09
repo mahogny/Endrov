@@ -83,9 +83,7 @@ public class StackHacks
 			{
 			EvStack stack=ch.getStack(frame);
 			//EvStack stack=se.getValue();
-			stack.resX=resX;
-			stack.resY=resY;
-			stack.resZ=resZ;
+			stack.setRes(resX, resY, resZ);
 			//TODO stack.resZ=resZ;
 
 			//Below will not be needed in the future once the loader is an array!!!

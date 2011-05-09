@@ -415,9 +415,7 @@ public class RecControlWindow extends BasicWindow
 						CameraImage cim=hw.snap();
 						
 						//TODO
-						stack.resX=1;
-						stack.resY=1;
-						stack.resZ=1;
+						stack.setRes(1,1,1);
 						
 						//TODO RGB support
 						

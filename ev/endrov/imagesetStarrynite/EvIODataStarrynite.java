@@ -175,9 +175,7 @@ public class EvIODataStarrynite implements EvIOData
 					if(s==null)
 						ch.putStack(time, s=new EvStack());
 					
-					s.resY=s.resX=xy_res;
-					s.resZ=z_res;
-					//s.binning=1;
+					s.setRes(xy_res, xy_res, z_res);
 					
 					EvImage evim=new EvImage();
 					evim.io=new BasicSliceIO(f);

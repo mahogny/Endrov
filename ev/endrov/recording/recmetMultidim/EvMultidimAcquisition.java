@@ -133,10 +133,11 @@ public class EvMultidimAcquisition extends EvAcquisition
 					EvStack stack=new EvStack();//.getCreateFrame(currentFrame);
 					ch.putStack(currentFrame, stack);
 					
-					stack.resX=RecordingResource.getCurrentTotalMagnification(cam);
-					stack.resY=RecordingResource.getCurrentTotalMagnification(cam);
-					stack.resZ=dz.multiply(currentChannel.zInc).doubleValue();
-					
+					stack.setRes(
+						RecordingResource.getCurrentTotalMagnification(cam),
+						RecordingResource.getCurrentTotalMagnification(cam),
+						dz.multiply(currentChannel.zInc).doubleValue()
+					);
 					stack.setDisplacement(new Vector3d(
 							RecordingResource.getCurrentStageX(),  //Always do this?
 							RecordingResource.getCurrentStageY(),

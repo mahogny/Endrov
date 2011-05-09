@@ -308,9 +308,7 @@ public class EvIODataBioformats implements EvIOData
 					//Create stack
 					EvStack stack=new EvStack();
 					ch.putStack(frame, stack);
-					stack.resX=resX;
-					stack.resY=resY;
-					stack.resZ=resZ;
+					stack.setRes(resX,resY,resZ);
 					
 					//Fill stack with planes
 					for(int curZ=0;curZ<sizeZ.getValue();curZ++)

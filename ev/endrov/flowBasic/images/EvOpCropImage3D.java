@@ -105,10 +105,11 @@ public class EvOpCropImage3D extends EvOpStack1
 		
 		
 		Vector3d disp=stack.getDisplacement();
+		Vector3d res=stack.getRes();
 		disp.add(new Vector3d(
-				fromX*stack.resX,
-				fromY*stack.resY,   //TODO this is wrong. will not work if stack is rotated!
-				fromZ*stack.resZ
+				fromX*res.x,
+				fromY*res.y,   //TODO this is wrong. will not work if stack is rotated!
+				fromZ*res.z
 				));
 		stackOut.setDisplacement(disp);
 		

@@ -172,9 +172,10 @@ public class Stack3D extends StackInterface
 							texture.allocate(os.w, os.h, os.d);
 
 							//real size
-							os.realw=stack.resX*stack.getWidth();
-							os.realh=stack.resY*stack.getHeight();
-							os.reald=stack.resZ*stack.getDepth();
+							//TODO support rotated stacks
+							os.realw=stack.getRes().x*stack.getWidth();
+							os.realh=stack.getRes().y*stack.getHeight();
+							os.reald=stack.getRes().z*stack.getDepth();
 							}
 
 

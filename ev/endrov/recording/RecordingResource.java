@@ -167,9 +167,7 @@ public class RecordingResource
 		EvStack stack=new EvStack();
 
 		double res=getCurrentTotalMagnification(scanner);
-		stack.resX=res;
-		stack.resY=res;
-		stack.resZ=1;
+		stack.setRes(res,res,1);
 		
 		String channel="foo";
 		EvDecimal frame=EvDecimal.ZERO;
