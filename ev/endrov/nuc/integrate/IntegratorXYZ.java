@@ -95,7 +95,7 @@ public class IntegratorXYZ implements Integrator
 		mid.add(posP2);
 		mid.scale(0.25);
 
-		// Create coordinate system. Enlarge by 20%
+		// Create coordinate system. Enlarge
 		cs = new CoordinateSystem();
 		double scale = 1.35;
 		cs.setFromTwoVectors(v1, v2, v1.length()*scale, v2.length()*scale, v2.length()*scale, mid);
@@ -269,7 +269,7 @@ public class IntegratorXYZ implements Integrator
 			EvStack stack = new EvStack();//.getCreateFrame(frame);
 			chanxyz.putStack(frame, stack);
 			stack.allocate(numSubDiv, numSubDiv, numSubDiv, EvPixelsType.DOUBLE, null);
-			stack.resX = stack.resY = 16; //Arbitrary
+			stack.setRes(16,16,1); //Arbitrary
 			
 			for (int az = 0; az<numSubDiv; az++)
 				{

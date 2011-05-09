@@ -34,6 +34,31 @@ public class EvStack implements AnyEvImage
 	public double resY;
 	public double resZ;
 
+	/*
+	public double getResX()
+		{
+		return 
+		}*/
+	
+	public void setRes(double resX, double resY, double resZ)
+		{
+		this.resX=resX;
+		this.resY=resY;
+		this.resZ=resZ;
+
+		//Update CS as well
+/*		Matrix4d m=cs.getTransformToWorld();
+		//Actually, matrix supposed to be 1 along diagonal for now - these values are not used. matrix is only for displacement
+		m.m00=resX;
+		m.m11=resY;
+		m.m22=resZ;*/
+		}
+	
+	public Vector3d getRes()
+		{
+		return new Vector3d(resX, resY, resZ);
+		}
+	
 	/**
 	 * Coordinate system for displacing and rotating the stack
 	 */
@@ -63,20 +88,19 @@ public class EvStack implements AnyEvImage
 	 */
 	public void setDisplacement(Vector3d disp)
 		{
-		Matrix4d m=new Matrix4d(cs.getTransformToWorld()); 
+		Matrix4d m=new Matrix4d(cs.getTransformToSystem()); 
 		m.m03=disp.x;
 		m.m13=disp.y;
 		m.m23=disp.z;
 		//System.out.println(m);
-		Matrix4d toSystem=new Matrix4d();
-		toSystem.invert(m);
-		cs.setFromMatrices(toSystem, m);
+		Matrix4d toWorld=new Matrix4d();
+		toWorld.invert(m);
+		cs.setFromMatrices(m, toWorld);
 		}
 	
-	
-	public double oldGetDispX(){return cs.getTransformToSystem().m03;}
-	public double oldGetDispY(){return cs.getTransformToSystem().m13;}
-	public double oldGetDispZ(){return cs.getTransformToSystem().m23;}
+	public double oldGetDispX(){return cs.getTransformToWorld().m03;}
+	public double oldGetDispY(){return cs.getTransformToWorld().m13;}
+	public double oldGetDispZ(){return cs.getTransformToWorld().m23;}
 
 	
 	public double transformImageWorldX(double c){return c*resX+oldGetDispX();} //TODO: I think this is wrong
@@ -108,16 +132,26 @@ public class EvStack implements AnyEvImage
 	
 	public Vector3d transformImageWorld(Vector3d v)
 		{
-		return cs.transformToWorld(new Vector3d(v.x*resX, v.y*resY, v.z*resZ));
-//		return new Vector3d(transformImageWorldX(v.x),transformImageWorldY(v.y), transformImageWorldZ(v.z));
+		return cs.transformToWorld(new Vector3d(v.x*resX, v.y*resY, v.z*resZ));   //Note ToSystem. this is because of the format of the matrix
 		}
-
 	public Vector3d transformWorldImage(Vector3d v)
 		{
 		Vector3d vv=cs.transformToSystem(v);
 		return new Vector3d(vv.x/resX, vv.y/resY, vv.z/resZ);
-//		return new Vector3d(transformWorldImageX(v.x),transformWorldImageY(v.y), transformWorldImageZ(v.z));
 		}
+	
+	public static void main(String[] args)
+		{
+		//Test of transforms!!
+		
+		EvStack st=new EvStack();
+		st.setRes(2,1,3);
+		st.setDisplacement(new Vector3d(1,2,3));
+		Vector3d v=new Vector3d(5,6,7);
+		
+		System.out.println(st.transformWorldImage(v)+"    vs    "+st.transformWorldImageX(v.x)+"   "+st.transformWorldImageY(v.y)+"    "+st.transformWorldImageZ(v.z));
+		}
+
 	
 	
 	/**

@@ -343,9 +343,7 @@ public class SequenceImageset implements EvIOData
 					else
 						{
 						EvStack stack=new EvStack();
-						stack.resX=resX; 
-						stack.resY=resY; 
-						stack.resZ=resZ;
+						stack.setRes(resX,resY,resZ);
 						int outi=0;
 						for(int i=skipFirstSlices;i<numSlices;i+=skipSlices, outi++)
 //							loaders.put(i, new EvImageJubio(f.getAbsolutePath(),i));

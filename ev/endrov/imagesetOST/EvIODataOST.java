@@ -797,10 +797,7 @@ public class EvIODataOST implements EvIOData
 					useResY=1.0;
 					}
 				
-				
-				stack.resX=useResX;
-				stack.resY=useResY;
-				stack.resZ=useResZ;
+				stack.setRes(useResX, useResY, useResZ);
 				stack.setDisplacement(useDisp);
 				//stack.binning=channel.chBinning;
 				for(Map.Entry<Integer, File> se:fe.getValue().entrySet())
@@ -1195,13 +1192,14 @@ public class EvIODataOST implements EvIOData
 			if(f.getName().endsWith(".ost"))
 				fix1(f);*/
 		
+		/*
 		for(File f:new File("/Volumes/TBU_extra03/ost4dgood").listFiles())
 			if(f.getName().endsWith(".ost"))
 				fix1(f);
 		for(File f:new File("/Volumes/TBU_extra03/tosort").listFiles())
 			if(f.getName().endsWith(".ost"))
 				fix1(f);
-				
+				*/
 		
 		
 		System.exit(0);
@@ -1210,6 +1208,7 @@ public class EvIODataOST implements EvIOData
 	/**
 	 * Only for use within TBU
 	 */
+	/*
 	public static void fix1(File ostfile)
 		{		
 		System.out.println("doing ----- "+ostfile);
@@ -1275,7 +1274,7 @@ public class EvIODataOST implements EvIOData
 		
 		
 		}
-	
+	*/
 	
 	
 

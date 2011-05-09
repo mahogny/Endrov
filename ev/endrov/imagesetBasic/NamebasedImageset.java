@@ -357,9 +357,7 @@ public class NamebasedImageset implements EvIOData
 				
 				//Plug EVimage
 				EvImage evim=new EvImage();
-				stack.resX=resX; 
-				stack.resY=resY;
-				stack.resZ=resZ;
+				stack.setRes(resX,resY,resZ);
 				evim.io=new BasicSliceIO(f);
 				
 				stack.putInt(slice, evim);

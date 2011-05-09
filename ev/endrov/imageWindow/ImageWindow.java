@@ -795,9 +795,8 @@ public class ImageWindow extends BasicWindow
 					
 					Vector3d disp=stack.getDisplacement();
 					sb.append(
-							"ResX: "+stack.resX + " "+
-							"ResY: "+stack.resY + " "+
-							"ResZ: "+stack.resZ + " "+
+							"ResX: "+stack.getRes().x + " "+
+							"ResY: "+stack.getRes().y + " "+
 							"DX: "+disp.x + " "+
 							"DY: "+disp.y + " "+
 							"DZ: "+disp.z + " "+

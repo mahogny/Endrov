@@ -382,6 +382,8 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 	public String saveMetadata(Element e)
 		{
+		Vector3d vecDefaultRes=new Vector3d();
+		
 		//For conversion!
 		metaOther.remove("dispX");
 		metaOther.remove("dispY");
@@ -391,9 +393,15 @@ public class EvChannel extends EvObject implements AnyEvImage
 			{
 			EvStack fstack=getFirstStack();
 			
+			
+			vecDefaultRes=fstack.getRes();
+			defaultResX=vecDefaultRes.x;
+			defaultResY=vecDefaultRes.y;
+			defaultResZ=vecDefaultRes.z;
+			/*
 			defaultResX=fstack.resX;
 			defaultResY=fstack.resY;
-			defaultResZ=fstack.resZ;
+			defaultResZ=fstack.resZ;*/
 
 			defaultDisp=fstack.getDisplacement();
 /*			Vector3d sDisp=fstack.getDisplacement();
@@ -431,8 +439,21 @@ public class EvChannel extends EvObject implements AnyEvImage
 
 			//Override default stack settings?
 			EvStack stack=getStack(frame);
-			Vector3d sDisp=stack.getDisplacement();
-			//stack.getResbinZinverted(); //TODO will not be needed later
+			
+			if(!vecDefaultRes.equals(stack.getRes()))
+				{
+				otherMeta.put("resX", ""+stack.getRes().x);
+				otherMeta.put("resX", ""+stack.getRes().y);
+				otherMeta.put("resX", ""+stack.getRes().z);
+				}
+			else
+				{
+				otherMeta.remove("resX");
+				otherMeta.remove("resY");
+				otherMeta.remove("resZ");
+				}
+			
+			/*
 			if(stack.resX!=defaultResX)
 				otherMeta.put("resX", ""+stack.resX);
 			else
@@ -445,7 +466,21 @@ public class EvChannel extends EvObject implements AnyEvImage
 				otherMeta.put("resZ", ""+stack.resZ);
 			else
 				otherMeta.remove("resZ");
-			
+				*/
+			Vector3d sDisp=stack.getDisplacement();
+			if(!sDisp.equals(defaultDisp))
+				{
+				otherMeta.put("dispXum", ""+-sDisp.x);
+				otherMeta.put("dispYum", ""+-sDisp.y);
+				otherMeta.put("dispZ", ""+-sDisp.z);
+				}
+			else
+				{
+				otherMeta.remove("dispXum");
+				otherMeta.remove("dispYum");
+				otherMeta.remove("dispZ");
+				}
+			/*
 			if(sDisp.x!=defaultDisp.x)
 				otherMeta.put("dispXum", ""+-sDisp.x);
 			else
@@ -460,7 +495,7 @@ public class EvChannel extends EvObject implements AnyEvImage
 				otherMeta.put("dispZ", ""+-sDisp.z);
 			else
 				otherMeta.remove("dispZ");
-			
+			*/
 			
 			if(!otherMeta.isEmpty())
 				{

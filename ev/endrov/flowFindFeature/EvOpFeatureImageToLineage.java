@@ -63,9 +63,9 @@ public class EvOpFeatureImageToLineage
 			//int[][] featurePixels=stFeatures.getReadOnlyArraysInt();
 			
 			int w=stFeatures.getWidth();
-			double resX=stFeatures.resX;
-			double resY=stFeatures.resY;
-			double resZ=stFeatures.resZ;
+			double resX=stFeatures.getRes().x;
+			double resY=stFeatures.getRes().y;
+			double resZ=stFeatures.getRes().z;
 
 			System.out.println("Finding features");
 			//Find list of points
