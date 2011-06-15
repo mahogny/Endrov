@@ -116,16 +116,15 @@ public abstract class IntegratorSlice implements Integrator
 		integrator.ensureImageLoaded();
 		
 		// Calculate distance mask lazily. Assumes shell does not move over time.
-		EvPixels lenMap;
 		double[] lenMapArr;
 		if (distanceMap.containsKey(integrator.curZint))
 			{
-			lenMap = distanceMap.get(integrator.curZint);
+			EvPixels lenMap = distanceMap.get(integrator.curZint);
 			lenMapArr = lenMap.getArrayDouble();
 			}
 		else
 			{
-			lenMap = new EvPixels(EvPixelsType.DOUBLE, integrator.pixels.getWidth(), integrator.pixels.getHeight());
+			EvPixels lenMap = new EvPixels(EvPixelsType.DOUBLE, integrator.pixels.getWidth(), integrator.pixels.getHeight());
 			lenMapArr = lenMap.getArrayDouble();
 	
 			ImVector3d dirvec = getDirVec();
@@ -167,7 +166,7 @@ public abstract class IntegratorSlice implements Integrator
 				}
 			}
 	
-		// Integrate area, separate into AP slices and background
+		// Integrate area, separate into slices and background
 		//TODO: have we really really checked that this is done properly?
 		for (int y = 0; y<integrator.pixels.getHeight(); y++)
 			{
@@ -264,7 +263,7 @@ public abstract class IntegratorSlice implements Integrator
 			exp.level.put(integrator.frame, avg);
 			
 			if(Double.isInfinite(avg) || Double.isNaN(avg))
-				System.out.println("Slice inf or nan, frame: "+integrator.frame+"    "+getClass().getSimpleName());
+				System.out.println("Slice inf or nan, frame: "+integrator.frame+"    "+getClass().getSimpleName()+"   vol: "+sliceVol[i]+"    bg: "+bg.get(integrator.frame)+"    slice: "+i);
 //			System.out.println(" "+avg);
 			}
 //		System.out.println();

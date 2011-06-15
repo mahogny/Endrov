@@ -67,7 +67,7 @@ public class BatchMovie
 	
 	
 	
-			List<MakeMovieThread.MovieChannel> channelNames=new LinkedList<MakeMovieThread.MovieChannel>();
+			List<MakeMovieThread.MovieChannel> channelList=new LinkedList<MakeMovieThread.MovieChannel>();
 	
 			//Get the imageset
 			if(ost.getIdObjectsRecursive(Imageset.class).isEmpty())
@@ -92,7 +92,7 @@ public class BatchMovie
 					String desc="<channel/>";
 					if(name.equals("DIC"))
 						desc="<channel/> (<frame/>)";
-					channelNames.add(new MakeMovieThread.MovieChannel(name,(EvChannel)imset.metaObject.get(name), desc,z));
+					channelList.add(new MakeMovieThread.MovieChannel(name,(EvChannel)imset.metaObject.get(name), desc,z));
 	
 					System.out.println(name);
 					//Get original image size
@@ -105,7 +105,7 @@ public class BatchMovie
 			System.out.println("Now making movie");
 	
 			BatchThread c=new MakeMovieThread(EvDecimal.ZERO, new EvDecimal("1000000"), 
-					channelNames, width, factory, quality, outfile);
+					channelList, width, factory, quality, outfile);
 	
 			new CompleteBatch(c); 
 			System.out.println("Movie done");
@@ -121,7 +121,7 @@ public class BatchMovie
 		if(arg.length==0)
 			{
 			arg=new String[]{
-					//"/Volumes/TBU_main06/ost4dgood/",
+					"/Volumes/TBU_main06/ost4dgood/",
 					"/pimai/TBU_main01b/ost4dgood/",
 					//"/pimai/TBU_main01b/daemon/output/",
 					};
