@@ -236,10 +236,15 @@ public class CompareAll
 		EvChannel chanA=(EvChannel)imsetA.getChild(chanNameA); 
 		EvChannel chanB=(EvChannel)imsetB.getChild(chanNameB);
 
-		if(chanA==null || chanB==null)
+		//Bad data survival
+		if(chanA==null)
 			{
-			//Bad data survival
-			System.out.println("!!!!! missing channels");
+			System.out.println("!!!!! missing channel in A: "+chanNameA);
+			return new ColocCoefficients();
+			}
+		if(chanB==null)
+			{
+			System.out.println("!!!!! missing channel in B: "+chanNameB);
 			return new ColocCoefficients();
 			}
 		
@@ -368,14 +373,17 @@ public class CompareAll
 			//If outside range, stop calculating
 			if(frameA.less(chanA.getFirstFrame()) || frameA.greater(chanA.getLastFrame()))
 				continue;
-			
+						
 			//Use closest frame
-			EvStack stackA=chanA.getStack(chanA.closestFrame(frameA));
+			EvDecimal closestFrameA=chanA.closestFrame(frameA);
+			EvStack stackA=chanA.getStack(closestFrameA);
+
+			System.out.println("doing frame "+closestFrameA);
 
 			//Compare each slice. Same number of slices since it has been normalized
 			int numz=stackA.getDepth();
 			if(numz!=xyzSize)
-				System.out.println("---------------------------------------------------------------- wtf. numz "+numz);
+				System.out.println("---------------------------------------------------------------- wtf. numz "+numz+"  should be "+xyzSize+"  for frame: "+closestFrameA+"  channameA "+chanNameA);
 			for(int cz=0;cz<xyzSize;cz++)
 				{
 				EvPixels p=stackA.getInt(cz).getPixels().convertToDouble(true);
@@ -508,7 +516,8 @@ public class CompareAll
 			{
 			File outputFileXYZimageA=new File(new File(in,"data"),"expXYZ.png");
 			if(!outputFileXYZimageA.exists())
-				fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, chanName);
+				//fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, chanName);
+				fancyGraphXYZ(data, coordLineageFor(data), outputFileXYZimageA, "XYZ");
 			}
 		catch (IOException e1)
 			{
@@ -743,6 +752,13 @@ public class CompareAll
 		EV.loadPlugins();
 		new PaperCeExpressionUtil(); //Get password right away so it doesn't stop later
 		
+		
+		/// temp
+//		doGraphsFor(new File("/Volumes/TBU_main06/ost4dgood/ceh37_030306.ost"), EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/ceh37_030306.ost")), "XYZ");
+//		System.exit(0);
+		/// temp
+		
+		
 		//Do things in parallel. Not too many CPUs, case memory issues
 		int numThread=EvParallel.numThread;
 //		numThread=1;   ///////////////4 seems optimal
@@ -799,6 +815,11 @@ public class CompareAll
 			comparisonXYZ=new TreeMap<Tuple<File,File>, ColocCoefficients>();
 			}
 
+		if(argsSet.contains("cleanunused"))
+			{
+			//TODO!!!!
+			}
+		
 		//Quick listing what must be calculated
 		for(File f:datas)
 			if(!IntegrateAllExp.isDone(f))
@@ -818,6 +839,7 @@ public class CompareAll
 					boolean needGraph=!IntegrateAllExp.isDone(in);
 					if(ensureCalculated(in) && needGraph)
 						{
+						System.out.println("Doing graph for "+in);
 						EvData data=EvData.loadFile(in);
 						String chanName=getChanFor(data);
 						doGraphsFor(in, data, chanName);
@@ -837,164 +859,169 @@ public class CompareAll
 		
 		///////////////// Compare each two recordings //////////////////////////////
 
-		numThread=2;
-		System.out.println("for comparison, Will use #threads  "+numThread);
-
-		System.out.println("Calculate pair-wise statistics");
-		EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
-		public Object func(Tuple<File,File> key)
+		if(!argsSet.contains("nocomparison"))
 			{
-			File fa=key.fst();
-			File fb=key.snd();
-			boolean containsKey;
-			synchronized(comparisonLock)
-				{
-				containsKey=comparisonT.containsKey(key) && comparisonAP.containsKey(key) && comparisonXYZ.containsKey(key);
-				//what about the other ones?
-				}
 
-			//Check if cached calculation does not exist
-			if(!containsKey)
+			numThread=2;
+			System.out.println("for comparison, Will use #threads  "+numThread);
+
+			System.out.println("Calculate pair-wise statistics");
+			EvParallel.map_(numThread,new LinkedList<Tuple<File,File>>(EvListUtil.productSet(datas, datas)), new EvParallel.FuncAB<Tuple<File,File>,Object>(){
+			public Object func(Tuple<File,File> key)
 				{
-				try
+				File fa=key.fst();
+				File fb=key.snd();
+				boolean containsKey;
+				synchronized(comparisonLock)
 					{
+					containsKey=comparisonT.containsKey(key) && comparisonAP.containsKey(key) && comparisonXYZ.containsKey(key);
+					//what about the other ones?
+					}
 
-
-					System.out.println("doing "+fa+"   "+fb+"    "+new Date());
-
-					boolean calculatedA=IntegrateAllExp.isDone(fa);
-					boolean calculatedB=IntegrateAllExp.isDone(fb);
-
-					if(!calculatedA)
-						System.out.println("Not calculated, there must be a problem: "+fa);
-					if(!calculatedB)
-						System.out.println("Not calculated, there must be a problem: "+fb);
-
-					if(calculatedA && calculatedB)
+				//Check if cached calculation does not exist
+				if(!containsKey)
+					{
+					try
 						{
-						System.out.println("Calculating "+key);
 
-						//May not load one dataset twice at the same time. Can cause problems with cache files!!!!!! (probably minor ones)
-						EvData dataA;
-						EvData dataB;
-						System.out.println("loading "+fa+"   "+fb);
-						synchronized (fa)
+
+						System.out.println("doing "+fa+"   "+fb+"    "+new Date());
+
+						boolean calculatedA=IntegrateAllExp.isDone(fa);
+						boolean calculatedB=IntegrateAllExp.isDone(fb);
+
+						if(!calculatedA)
+							System.out.println("Not calculated, there must be a problem: "+fa);
+						if(!calculatedB)
+							System.out.println("Not calculated, there must be a problem: "+fb);
+
+						if(calculatedA && calculatedB)
 							{
-							dataA=EvData.loadFile(fa);
-							}
-						synchronized (fb)
-							{
-							dataB=EvData.loadFile(fb);
-							}
-						System.out.println("done loading "+fa+"   "+fb);
+							System.out.println("Calculating "+key);
 
-						Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
-						Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
+							//May not load one dataset twice at the same time. Can cause problems with cache files!!!!!! (probably minor ones)
+							EvData dataA;
+							EvData dataB;
+							System.out.println("loading "+fa+"   "+fb);
+							synchronized (fa)
+								{
+								dataA=EvData.loadFile(fa);
+								}
+							synchronized (fb)
+								{
+								dataB=EvData.loadFile(fb);
+								}
+							System.out.println("done loading "+fa+"   "+fb);
 
-						String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
-						String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
+							Imageset imsetA = dataA.getObjects(Imageset.class).get(0);
+							Imageset imsetB = dataB.getObjects(Imageset.class).get(0);
 
-						System.out.println("Comparing: "+key);
+							String chanNameA=imsetA.getChild("GFP")!=null ? "GFP" : "RFP";
+							String chanNameB=imsetB.getChild("GFP")!=null ? "GFP" : "RFP";
 
-						//Slices: T
-						try
-							{
-							double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeffT=colocSliceTime(imtA, imtB);
+							System.out.println("Comparing: "+key);
+
+							//Slices: T
+							try
+								{
+								double[][] imtA=apToArray(dataA, "AP"+1+"-"+chanNameA, expName, coordLineageFor(dataA));
+								double[][] imtB=apToArray(dataB, "AP"+1+"-"+chanNameB, expName, coordLineageFor(dataB));
+								ColocCoefficients coeffT=colocSliceTime(imtA, imtB);
+								synchronized (comparisonLock)
+									{
+									comparisonT.put(Tuple.make(fa,fb), coeffT);
+									}
+								}
+							catch (Exception e)
+								{
+								e.printStackTrace();
+								}
+
+							//Slices: AP
+							try
+								{
+								double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+								double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+								ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+								synchronized (comparisonLock)
+									{
+									comparisonAP.put(Tuple.make(fa,fb), coeff);
+									}
+								}
+							catch (Exception e)
+								{
+								e.printStackTrace();
+								}
+
+							//Slices: DV
+							try
+								{
+								double[][] imapA=apToArray(dataA, "DV"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+								double[][] imapB=apToArray(dataB, "DV"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+								ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+								synchronized (comparisonLock)
+									{
+									comparisonDV.put(Tuple.make(fa,fb), coeff);
+									}
+								}
+							catch (Exception e)
+								{
+								e.printStackTrace();
+								}
+
+							//Slices: LR
+							try
+								{
+								double[][] imapA=apToArray(dataA, "LR"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
+								double[][] imapB=apToArray(dataB, "LR"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
+								ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+								synchronized (comparisonLock)
+									{
+									comparisonLR.put(Tuple.make(fa,fb), coeff);
+									}
+								}
+							catch (Exception e)
+								{
+								e.printStackTrace();
+								}
+
+							//Slices: XYZ
+							ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
 							synchronized (comparisonLock)
 								{
-								comparisonT.put(Tuple.make(fa,fb), coeffT);
+								comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
 								}
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
 
-						//Slices: AP
-						try
-							{
-							double[][] imapA=apToArray(dataA, "AP"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, "AP"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
+							//Store down this value too
 							synchronized (comparisonLock)
 								{
-								comparisonAP.put(Tuple.make(fa,fb), coeff);
+								storeCache(comparisonT, cachedValuesFileT);
+								storeCache(comparisonAP, cachedValuesFileAP);
+								storeCache(comparisonDV, cachedValuesFileDV);
+								storeCache(comparisonLR, cachedValuesFileLR);
+								storeCache(comparisonXYZ, cachedValuesFileXYZ);
 								}
 							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
 
-						//Slices: DV
-						try
-							{
-							double[][] imapA=apToArray(dataA, "DV"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, "DV"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
-							synchronized (comparisonLock)
-								{
-								comparisonDV.put(Tuple.make(fa,fb), coeff);
-								}
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//Slices: LR
-						try
-							{
-							double[][] imapA=apToArray(dataA, "LR"+20+"-"+chanNameA, expName, coordLineageFor(dataA));
-							double[][] imapB=apToArray(dataB, "LR"+20+"-"+chanNameB, expName, coordLineageFor(dataB));
-							ColocCoefficients coeff=colocSliceTime(imapA, imapB);
-							synchronized (comparisonLock)
-								{
-								comparisonLR.put(Tuple.make(fa,fb), coeff);
-								}
-							}
-						catch (Exception e)
-							{
-							e.printStackTrace();
-							}
-
-						//Slices: XYZ
-						ColocCoefficients coeffXYZ=colocXYZ(dataA, dataB, coordLineageFor(dataA), coordLineageFor(dataB), "XYZ","XYZ");
-						synchronized (comparisonLock)
-							{
-							comparisonXYZ.put(Tuple.make(fa,fb), coeffXYZ);   ///////////////// symmetry?
-							}
-
-						//Store down this value too
-						synchronized (comparisonLock)
-							{
-							storeCache(comparisonT, cachedValuesFileT);
-							storeCache(comparisonAP, cachedValuesFileAP);
-							storeCache(comparisonDV, cachedValuesFileDV);
-							storeCache(comparisonLR, cachedValuesFileLR);
-							storeCache(comparisonXYZ, cachedValuesFileXYZ);
-							}
 						}
+					catch (Exception e)
+						{
+						System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
+						e.printStackTrace();
+						}
+					//System.gc();
+					//System.out.println("total mem "+Runtime.getRuntime().totalMemory());
 
 					}
-				catch (Exception e)
-					{
-					System.out.println("Exception for "+fa+" "+fb+"   "+e.getMessage());
-					e.printStackTrace();
-					}
-				//System.gc();
-				//System.out.println("total mem "+Runtime.getRuntime().totalMemory());
+				else
+					System.out.println("Already compared "+key);
 
+				
+				return null;
 				}
-			else
-				System.out.println("Already compared "+key);
-
+			});
 			
-			return null;
 			}
-		});
 		
 			
 		
@@ -1003,6 +1030,7 @@ public class CompareAll
 			{
 			try
 				{
+				System.out.println("Making summary HTML");
 				RenderHTML.makeSummaryHTML(new File(outputBaseDir,"exphtml"), datas);
 				}
 			catch (IOException e)

@@ -48,7 +48,7 @@ public final class CalcThread extends BatchThread
 			//Get channel to process
 			EvChannel chfrom=rec.getChannel(channel);
 			if(chfrom==null)
-				throw new Exception("Missing channel");
+				throw new Exception("Missing channel: "+channel);
 			
 			//Get channel to write
 			String maxChannel=channel+"max";

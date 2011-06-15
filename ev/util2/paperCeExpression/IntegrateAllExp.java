@@ -221,7 +221,7 @@ public class IntegrateAllExp
 			// Wrap up, store in OST
 			// Use common correction factors for exposure
 			NucLineage getLinAP=intAP.done(integrator, null);
-			imset.metaObject.put(newLinNameT, getLinAP);
+			imset.metaObject.put(newLinNameAP, getLinAP);
 						
 			NucLineage getLinT=intT.done(integrator, intAP.correctedExposure);
 			imset.metaObject.put(newLinNameT, getLinT);
@@ -272,122 +272,122 @@ public class IntegrateAllExp
 		}
 
 	public static void storeCorrection(File f, TreeMap<EvDecimal, Tuple<Double, Double>> correction, Map<EvDecimal, Double> bg)
-	{
-	File tw = new File(new File(f, "data"), "expcorr.txt");
-	StringBuffer bf = new StringBuffer();
-	for (Map.Entry<EvDecimal, Tuple<Double, Double>> e : correction.entrySet())
-		bf.append(e.getKey()+"\t"+e.getValue().fst()+"\t"+e.getValue().snd()+"\t"+bg.get(e.getKey())+"\n");
-	try
 		{
-		EvFileUtil.writeFile(tw, bf.toString());
+		File tw = new File(new File(f, "data"), "expcorr.txt");
+		StringBuffer bf = new StringBuffer();
+		for (Map.Entry<EvDecimal, Tuple<Double, Double>> e : correction.entrySet())
+			bf.append(e.getKey()+"\t"+e.getValue().fst()+"\t"+e.getValue().snd()+"\t"+bg.get(e.getKey())+"\n");
+		try
+			{
+			EvFileUtil.writeFile(tw, bf.toString());
+			}
+		catch (IOException e1)
+			{
+			e1.printStackTrace();
+			}
 		}
-	catch (IOException e1)
-		{
-		e1.printStackTrace();
-		}
-	}
 
 	public static String linForAP(int numSubDiv, String channelName)
-	{
-	return "AP"+numSubDiv+"-"+channelName;
-	}
+		{
+		return "AP"+numSubDiv+"-"+channelName;
+		}
 
 	public static String linForLR(int numSubDiv, String channelName)
-	{
-	return "LR"+numSubDiv+"-"+channelName;
-	}
+		{
+		return "LR"+numSubDiv+"-"+channelName;
+		}
 
 	public static String linForDV(int numSubDiv, String channelName)
-	{
-	return "DV"+numSubDiv+"-"+channelName;
-	}
+		{
+		return "DV"+numSubDiv+"-"+channelName;
+		}
 
 	public static NucLineage getRefLin(EvData data)
-	{
-	Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
-	for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
-		if (!e.getKey().getLeafName().startsWith("AP") && !e.getKey().getLeafName().startsWith("LR") && !e.getKey().getLeafName().startsWith("DV") && !e.getKey().getLeafName().startsWith("estcell"))
-			{
-			System.out.println("found lineage "+e.getKey());
-			return e.getValue();
-			}
-	return null;
-	}
+		{
+		Map<EvPath, NucLineage> lins = data.getIdObjectsRecursive(NucLineage.class);
+		for (Map.Entry<EvPath, NucLineage> e : lins.entrySet())
+			if (!e.getKey().getLeafName().startsWith("AP") && !e.getKey().getLeafName().startsWith("LR") && !e.getKey().getLeafName().startsWith("DV") && !e.getKey().getLeafName().startsWith("estcell"))
+				{
+				System.out.println("found lineage "+e.getKey());
+				return e.getValue();
+				}
+		return null;
+		}
 
 	public static File fileForAP(EvData data, int numSubDiv, String channelName)
-	{
-	File datadir = data.io.datadir();
-	return new File(datadir, "AP"+numSubDiv+"-"+channelName+"c");
-	}
+		{
+		File datadir = data.io.datadir();
+		return new File(datadir, "AP"+numSubDiv+"-"+channelName+"c");
+		}
 
 	public static File fileForLR(EvData data, int numSubDiv, String channelName)
-	{
-	File datadir = data.io.datadir();
-	return new File(datadir, "LR"+numSubDiv+"-"+channelName+"c");
-	}
+		{
+		File datadir = data.io.datadir();
+		return new File(datadir, "LR"+numSubDiv+"-"+channelName+"c");
+		}
 
 	public static File fileForDV(EvData data, int numSubDiv, String channelName)
-	{
-	File datadir = data.io.datadir();
-	return new File(datadir, "DV"+numSubDiv+"-"+channelName+"c");
-	}
+		{
+		File datadir = data.io.datadir();
+		return new File(datadir, "DV"+numSubDiv+"-"+channelName+"c");
+		}
 
 	public static void main(String arg[])
-	{
-	EvLog.listeners.add(new EvLogStdout());
-	EV.loadPlugins();
-	
-	if (arg.length>0)
 		{
-		doOne(new File(arg[0]), true);
+		EvLog.listeners.add(new EvLogStdout());
+		EV.loadPlugins();
+		
+		if (arg.length>0)
+			{
+			doOne(new File(arg[0]), true);
+			}
+		else
+			{
+			List<File> list = new ArrayList<File>();
+			for (File parent : new File[]
+				{ new File("/Volumes/TBU_main06/ost4dgood"), })
+				for (File f : parent.listFiles())
+					if (f.getName().endsWith(".ost"))
+						list.add(f);
+		
+			// Cheap concurrency
+			Collections.shuffle(list);
+		
+			for (File f : list)
+				if (new File(f, "tagDone4d.txt").exists())
+					{
+					try
+						{
+						doOne(f, false); // Force recalc
+						}
+					catch (Exception e)
+						{
+						e.printStackTrace();
+						}
+		
+					try
+						{
+						Thread.sleep(2000);
+						}
+					catch (InterruptedException e)
+						{
+						}
+		
+					System.gc();
+					}
+				else
+					System.out.println("Skipping: "+f);
+		
+			}
+		
+		System.exit(0);
 		}
-	else
-		{
-		List<File> list = new ArrayList<File>();
-		for (File parent : new File[]
-			{ new File("/Volumes/TBU_main06/ost4dgood"), })
-			for (File f : parent.listFiles())
-				if (f.getName().endsWith(".ost"))
-					list.add(f);
-	
-		// Cheap concurrency
-		Collections.shuffle(list);
-	
-		for (File f : list)
-			if (new File(f, "tagDone4d.txt").exists())
-				{
-				try
-					{
-					doOne(f, false); // Force recalc
-					}
-				catch (Exception e)
-					{
-					e.printStackTrace();
-					}
-	
-				try
-					{
-					Thread.sleep(2000);
-					}
-				catch (InterruptedException e)
-					{
-					}
-	
-				System.gc();
-				}
-			else
-				System.out.println("Skipping: "+f);
-	
-		}
-	
-	System.exit(0);
-	}
 
 	public static NucLineage loadModel()
-	{
-	EvData stdcelegans=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
-	NucLineage stdlin=stdcelegans.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
-	return stdlin;
-	}
-
+		{
+		EvData stdcelegans=EvData.loadFile(new File("/Volumes/TBU_main06/ost4dgood/celegans2008.2.ost"));
+		NucLineage stdlin=stdcelegans.getIdObjectsRecursive(NucLineage.class).values().iterator().next();
+		return stdlin;
+		}
+	
 	}

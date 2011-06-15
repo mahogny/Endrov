@@ -27,7 +27,11 @@ public class RunPhylip
 
 	/*
 	 * 
-	 *  /usr/lib/phylip/bin/kitsch
+	 *  For the file of interest, run
+	 *  /usr/lib/phylip/bin/kitsch infile
+	 * 
+	 *  then sh fix.sh
+	 *  Then use a viewer to render the tree
 	 * 
 	 */
 	
