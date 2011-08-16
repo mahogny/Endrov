@@ -7,7 +7,7 @@ package endrov.modelWindowImset;
 import endrov.ev.PluginDef;
 import endrov.modelWindowImset.isosurf.IsosurfaceExtension;
 import endrov.modelWindowImset.slice3d.Slice3DExtension;
-import endrov.modelWindowImset.voxel.VoxelExtension;
+import endrov.modelWindowImset.voxelNew.VoxelExtension;
 
 public class PLUGIN extends PluginDef
 	{
