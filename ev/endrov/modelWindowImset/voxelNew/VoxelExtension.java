@@ -289,13 +289,10 @@ public class VoxelExtension implements ModelWindowExtension
 						}
 
 					//Build set of channels in Swing loop. Then there is no need to worry about strange GUI interaction
-						//TODO 
 					final List<StackRendererInterface.ChannelSelection> chsel=new ArrayList<StackRendererInterface.ChannelSelection>(); 
 					for(ToolIsolayer oc:isolayers)
 						{
 						Imageset im=oc.channelCombo.getImagesetNotNull();
-//					System.out.println("im: "+im);
-//					System.out.println("im2: "+oc.channelCombo.getChannel());
 						String channelName=oc.channelCombo.getChannelName();
 						if(channelName!=null)
 							{
@@ -307,17 +304,6 @@ public class VoxelExtension implements ModelWindowExtension
 								sel.im=im;
 								sel.ch=chim;
 								sel.prop=oc.prop;
-								/*
-								//sel.filterSeq=oc.filterSeq;
-								Color origCol=oc.colorCombo.getColor();
-								sel.prop.color=oc.colorCombo.getColor();
-								sel.prop.brightness=oc.brightness;
-								sel.prop.contrast=oc.contrast;
-								*/
-								/*new Color(
-										sel.color.getRed()+origCol.getRed(),
-										sel.color.getGreen()+origCol.getGreen(),
-										sel.color.getBlue()+origCol.getBlue());*/
 								}
 							}
 						}
@@ -329,7 +315,7 @@ public class VoxelExtension implements ModelWindowExtension
 						System.out.println(chsel);
 						System.out.println(chsel);
 						
-						System.out.println("New stack ----- "+chsel);
+						System.out.println("New stack to build ----- "+chsel);
 						if(miRender3dTexture.isSelected()) 
 							loadingStackRenderer=new Stack3D(); 
 						else
@@ -429,6 +415,10 @@ public class VoxelExtension implements ModelWindowExtension
 				bDelete.addActionListener(this);
 				colorCombo.addActionListener(this);
 				
+				sliderContrast.addSnapListener(this);
+				sliderBrightness.addSnapListener(this);
+				
+				//Initial property values
 				prop.color=colorCombo.getColor();
 				prop.contrast=1;
 				prop.brightness=0;
@@ -484,7 +474,10 @@ public class VoxelExtension implements ModelWindowExtension
 			public void actionPerformed(ActionEvent e)
 				{
 				if(e.getSource()==colorCombo)
+					{
+					prop.color=colorCombo.getColor();
 					w.view.repaint();
+					}
 				else if(e.getSource()==bDelete)
 					{
 					stopLoadingStack();
@@ -503,7 +496,7 @@ public class VoxelExtension implements ModelWindowExtension
 				{
 				if(source==sliderBrightness)
 					{
-					prop.brightness+=change/100.0;
+					prop.brightness+=prop.contrast*change/10000.0;
 					}
 				else if(source==sliderContrast)
 					{

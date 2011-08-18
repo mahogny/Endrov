@@ -797,6 +797,7 @@ public class ImageWindow extends BasicWindow
 					sb.append(
 							"ResX: "+stack.getRes().x + " "+
 							"ResY: "+stack.getRes().y + " "+
+							"ResZ: "+stack.getRes().z + " "+
 							"DX: "+disp.x + " "+
 							"DY: "+disp.y + " "+
 							"DZ: "+disp.z + " "+

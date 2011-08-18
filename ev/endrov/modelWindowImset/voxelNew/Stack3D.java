@@ -46,13 +46,11 @@ public class Stack3D extends StackRendererInterface
 		{
 		public int w, h, d; //size in pixels
 		//need starting position
-		//public double resX,resY;//,resZ; //resolution should maybe disappear?
 		public Texture3D tex; //could be multiple textures, interleaved
-//		public Color color;
 		public double realw, realh, reald; //size [um]
 		
 		public boolean needLoadGL=false;
-		StackRendererInterface.ChanProp prop;
+		public StackRendererInterface.ChanProp prop;
 		}
 	
 	/**
@@ -456,7 +454,9 @@ public class Stack3D extends StackRendererInterface
 			//Auto-generated special cases. Can be removed, the default will handle everything.
 			//22ms average time -> 0 to 2 average time
 			case 0: points=new Vector3d[]{}; break;
+			case 2: points=new Vector3d[]{}; break;
 			case 4: points=new Vector3d[]{}; break;
+			case 8: points=new Vector3d[]{}; break;
 			case 15: points=new Vector3d[]{points[0],points[1],points[2],points[3]}; break;
 			case 32: points=new Vector3d[]{}; break;
 			case 34: points=new Vector3d[]{}; break;
@@ -467,6 +467,7 @@ public class Stack3D extends StackRendererInterface
 			case 66: points=new Vector3d[]{}; break;
 			case 68: points=new Vector3d[]{}; break;
 			case 128: points=new Vector3d[]{}; break;
+			case 136: points=new Vector3d[]{}; break;
 			case 195: points=new Vector3d[]{points[0],points[1],points[6],points[7]}; break;
 			case 204: points=new Vector3d[]{points[7],points[6],points[2],points[3]}; break;
 			case 240: points=new Vector3d[]{points[4],points[7],points[6],points[5]}; break;
@@ -477,6 +478,8 @@ public class Stack3D extends StackRendererInterface
 			case 466: points=new Vector3d[]{points[8],points[1],points[6],points[7],points[4]}; break;
 			case 481: points=new Vector3d[]{points[7],points[0],points[8],points[5],points[6]}; break;
 			case 512: points=new Vector3d[]{}; break;
+			case 514: points=new Vector3d[]{}; break;
+			case 576: points=new Vector3d[]{}; break;
 			case 578: points=new Vector3d[]{points[9],points[1],points[6]}; break;
 			case 589: points=new Vector3d[]{points[0],points[9],points[6],points[2],points[3]}; break;
 			case 625: points=new Vector3d[]{points[4],points[0],points[9],points[6],points[5]}; break;
@@ -634,9 +637,7 @@ public class Stack3D extends StackRendererInterface
 
 		//Draw voxels
 		for(VoxelStack os:texSlices)
-			{
 			renderVoxelStack(gl, transparentRenderers, cam, os, solidColor, mixColors);
-			}
 		}
 	
 	/**
@@ -665,9 +666,15 @@ public class Stack3D extends StackRendererInterface
 		Vector3d camv=cam.transformedVector(0, 0, 1);
 		double camz=cam.pos.dot(camv);
 		
+		//Find out settings
+		final float contrast=(float)os.prop.contrast;
+		final float brightness=(float)os.prop.brightness;
+		
 		Stack3DRenderState renderstate=new Stack3DRenderState(){
-			public void activate(GL gl)
+			public void activate(GL gl1)
 				{
+				GL2 gl=gl1.getGL2();
+
 //			gl.glPushAttrib(GL2.GL_ALL_ATTRIB_BITS);
 				if(!solidColor)
 					{
@@ -678,12 +685,17 @@ public class Stack3D extends StackRendererInterface
 					}
 				gl.glDepthMask(false);
 				gl.glDisable(GL2.GL_CULL_FACE);
-				gl.glEnable(GL2.GL_TEXTURE_3D);
+				gl.glEnable(GL2.GL_TEXTURE_3D);   //Not needed with a vertex program!!!
 				gl.glEnable(GL2.GL_BLEND);
 					//int texUnit=0;  //NEW
 					//gl.glActiveTexture(GL2.GL_TEXTURE0 + texUnit); //NEW
 				os.tex.bind(gl);
 				shader3d.use(gl);
+				
+				int posContrast=shader3d.getUniformLocation(gl, "contrast");
+				int posBrightness=shader3d.getUniformLocation(gl, "brightness");
+				gl.glUniform1f(posContrast, contrast);
+				gl.glUniform1f(posBrightness, brightness);
 				}
 			public boolean optimizedSwitch(GL gl, TransparentRender.RenderState currentState)
 				{
@@ -753,6 +765,7 @@ public class Stack3D extends StackRendererInterface
 				}
 			}
 		if(drawDirectly) renderstate.deactivate(gl);
+		
 		
 		//Print new discovered cases
 		for(String s:newcases.values())
