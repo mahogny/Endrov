@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -67,6 +69,8 @@ public class GLShader
 				idf=gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
 				uploadURL(gl, idf, srcf,"f");
 				}
+			if(srcv==null && srcf==null)
+				throw new RuntimeException("Tried to create shaded with neither vertex nor fragment program");
 			
 			ModelView.checkerr(gl);
 			prog = gl.glCreateProgram();
@@ -86,25 +90,7 @@ public class GLShader
 			e.printStackTrace();
 			}
 		}
-	/*
-	private void checkerr(GL gl, String pos)
-		{
-		int errcode=gl.glGetError();
-		if(errcode!=GL2.GL_NO_ERROR)
-			{
-			try
-				{
-				throw new Exception("GL error: "+new GLU().gluErrorString(errcode));
-				}
-			catch (Exception e)
-				{
-				//System.out.println("GL error: "+new GLU().gluErrorString(errcode));
-				e.printStackTrace();
-				}
-//			System.out.println("error ("+pos+") "+new GLU().gluErrorString(errcode));
-			}
-		}
-	*/
+
 	
   private void checkLogInfo(GL glin, int obj, String type)
   	{
@@ -130,21 +116,15 @@ public class GLShader
 	public void use(GL glin)
 		{
 		GL2 gl=glin.getGL2();
-//		int scaleLoc=gl.glGetUniformLocation(prog, "scale");
-//		gl.glUniform1f(scaleLoc, 1);
 
-
-//		gl.glEnable(GL2.GL_VERTEX_PROGRAM_ARB);
 		ModelView.checkerr(gl);
-//		gl.glEnable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		ModelView.checkerr(gl);
-		gl.glUseProgram(prog);
+		gl.glUseProgram(prog); 	// http://www.opengl.org/sdk/docs/man/xhtml/glUseProgram.xml
 		ModelView.checkerr(gl);
 		
 		//before bind
 		int texUnit=0;
-//		gl.glActiveTexture(GL2.GL_TEXTURE0 + texUnit);
-		
+//		gl.glActiveTexture(GL2.GL_TEXTURE0 + texUnit);		
 		
 		ModelView.checkerr(gl);
 		
@@ -152,18 +132,13 @@ public class GLShader
 		ModelView.checkerr(gl);
 		gl.glUniform1i(texLoc, texUnit);
 
-		
 		ModelView.checkerr(gl);
-
-		
 		}
 	
 	public void stopUse(GL glin)
 		{
 		GL2 gl=glin.getGL2();
-//		gl.glDisable(GL2.GL_VERTEX_PROGRAM_ARB);
 		ModelView.checkerr(gl);
-//		gl.glDisable(GL2.GL_FRAGMENT_PROGRAM_ARB);
 		ModelView.checkerr(gl);
 		gl.glUseProgram(0);
 		ModelView.checkerr(gl);
@@ -175,6 +150,43 @@ public class GLShader
 		if(idv!=null)	{gl.glDetachShader(prog, idv); gl.glDeleteShader(idv);}
 		if(idf!=null)	{gl.glDetachShader(prog, idf); gl.glDeleteShader(idf);}
 		gl.glDeleteProgram(prog);
+		}
+
+	/**
+	 * Get the uniform variable names
+	 */
+	public Collection<String> getUniformNames(GL2 glin)
+		{
+		LinkedList<String> uniforms=new LinkedList<String>();
+		IntBuffer total=IntBuffer.allocate(1);
+		glin.glGetProgramiv( prog, GL2.GL_ACTIVE_UNIFORMS, total); 
+		for(int i=0; i<total.get(0); ++i)
+			{
+			IntBuffer name_len=IntBuffer.allocate(1);
+			IntBuffer num=IntBuffer.allocate(1);
+			IntBuffer type=IntBuffer.allocate(1);
+			ByteBuffer oneName=ByteBuffer.allocate(100);
+			glin.glGetActiveUniform( prog, i, 100-1, name_len, num, type, oneName );
+			String oneNameS="";
+			oneName.rewind();
+			while(oneName.hasRemaining())
+				oneNameS=oneNameS+(char)oneName.get();
+
+			uniforms.add(oneNameS);
+			}
+		return uniforms;
+		}
+	
+	/**
+	 * Get the OpenGL ID of a uniform variable
+	 */
+	public int getUniformLocation(GL2 glin, String name)
+		{
+		int id=glin.glGetUniformLocation(prog, name);
+		if(id==-1)
+			throw new RuntimeException("Cannot find uniform: "+name+", These are the uniforms: "+getUniformNames(glin));
+		else
+			return id;
 		}
 	
 	}
