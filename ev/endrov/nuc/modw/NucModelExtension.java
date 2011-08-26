@@ -14,6 +14,7 @@ import java.util.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.swing.*;
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
@@ -32,6 +33,7 @@ import endrov.nuc.NucLineage;
 import endrov.nuc.NucSel;
 import endrov.nuc.NucVoronoi;
 import endrov.nuc.NucLineage.NucInterp;
+import endrov.nuc.NucLineage.NucPos;
 import endrov.util.*;
 
 
@@ -134,7 +136,7 @@ public class NucModelExtension implements ModelWindowExtension
 			traceColor=c;
 			}
 		
-		public NucModelWindowHook(ModelWindow w)
+		public NucModelWindowHook(final ModelWindow w)
 			{
 			this.w=w;
 			
@@ -235,11 +237,61 @@ public class NucModelExtension implements ModelWindowExtension
 			w.addModelWindowMouseListener(new ModelWindowMouseListener(){
 				public void mouseClicked(MouseEvent e)
 					{
-					//Clicking a nucleus selects it
+					//Left-clicking a nucleus selects it
 					if(SwingUtilities.isLeftMouseButton(e))
 						NucCommonUI.mouseSelectNuc(NucCommonUI.currentHover, (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK)!=0);
+					else if(SwingUtilities.isRightMouseButton(e))
+						{
+						if(NucCommonUI.currentHover!=NucCommonUI.emptyHover)
+							{
+							//Popup menu
+							JPopupMenu menu=new JPopupMenu();
+							new NucCommonUI(w, w).addToMenu(menu, false);
+							w.createPopupMenu(menu, e);
+							}
+						}
 					}
-				public boolean mouseDragged(MouseEvent e, int dx, int dy){return false;}
+				public boolean mouseDragged(MouseEvent e, int dx, int dy)
+					{
+					if(NucCommonUI.currentHover!=NucCommonUI.emptyHover)
+						{
+						//TODO this must be undoable!!!!
+						
+						
+						
+						//Get nuc coordinate
+						NucLineage.Nuc nuc=NucCommonUI.currentHover.getNuc();
+						NucLineage.NucInterp interp=nuc.interpolatePos(w.getFrame());
+						
+						Vector3d pos=interp.pos.getPosCopy();
+						
+						Vector3d tpos=w.view.camera.transformedVector(pos);
+						
+						//From this, get z coordinate
+						Matrix4d mProj=w.view.getProjectionMatrix();
+						
+						//Not quite - need projection matrix !!!!
+						Vector3d tposTo=new Vector3d(tpos.x+dx,tpos.y+dy,tpos.z);
+						
+						//Calculate projected movement in space
+						w.view.camera.u
+						
+						
+						
+						NucLineage.NucPos nucPos=interp.pos.clone();
+						nucPos.x+=0; //TODO
+						
+						
+						
+						System.out.println("move "+dx+" "+dy+"    "+tpos);
+						
+						
+						
+						return true;
+						}
+					else
+						return false;
+					}
 				public void mouseEntered(MouseEvent e){}
 				public void mouseExited(MouseEvent e){}
 				public void mouseMoved(MouseEvent e){}

@@ -64,17 +64,17 @@ public class GLCamera
 	
 	public Vector3d transformedVector(double x, double y, double z)
 		{
-		Vector3d v=new Vector3d();
-		Vector3d vfront=new Vector3d(0,0,z);
-		Vector3d vup=new Vector3d(0,y,0);
-		Vector3d vright=new Vector3d(x,0,0);
-		mat.transform(vfront);
-		mat.transform(vup);
-		mat.transform(vright);
-		v.add(vfront);
-		v.add(vup);
-		v.add(vright);
+		Vector3d v=new Vector3d(x,y,z);
+		mat.transform(v);
 		return v;
+		}
+	
+	
+	public Vector3d transformedVector(Vector3d v)
+		{
+		Vector3d v2=new Vector3d(v);
+		mat.transform(v2);
+		return v2;
 		}
 	
 	/**
@@ -83,16 +83,6 @@ public class GLCamera
 	public void moveCamera(double x, double y, double z)
 		{
 		pos.add(transformedVector(x, y, z));
-		/*
-		Vector3d vfront=new Vector3d(0,0,z);
-		Vector3d vup=new Vector3d(0,y,0);
-		Vector3d vright=new Vector3d(x,0,0);
-		mat.transform(vfront);
-		mat.transform(vup);
-		mat.transform(vright);
-		pos.add(vfront);
-		pos.add(vup);
-		pos.add(vright);*/
 		}
 	
 	/**

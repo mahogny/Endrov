@@ -16,6 +16,7 @@ import javax.media.opengl.*;
 import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.*;
 import javax.vecmath.Matrix3d;
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 
 import com.sun.opengl.util.awt.TextRenderer;
@@ -146,6 +147,17 @@ public class ModelView extends GLJPanel //GLCanvas
 		System.out.println("force enabled");
 		}
 	
+	public Matrix4d projectionMatrix=new Matrix4d();
+	private void setProjectMatrix(Matrix4d m)
+		{
+		projectionMatrix=m;
+		}
+	public Matrix4d getProjectionMatrix()
+		{
+		return projectionMatrix;
+		}
+	
+	
 	private GLEventListener glEventListener=new GLEventListener()
 		{		
 		HashSet<ModelWindowHook> hasInited=new HashSet<ModelWindowHook>();
@@ -245,11 +257,25 @@ public class ModelView extends GLJPanel //GLCanvas
 			gl.glLoadIdentity();
 			GLU glu=new GLU();
 			glu.gluPerspective(FOV*180.0/Math.PI,(float)width/(float)height,0.1,30000);
+			setProjectMatrix(getGluProjectionMatrix(FOV*180.0/Math.PI,(float)width/(float)height,0.1,30000));
 			
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glLoadIdentity();
 			}
 		
+
+		
+		public Matrix4d getGluProjectionMatrix(double fovy, double aspect, double zNear, double zFar)
+			{
+			double f=1.0/Math.tan(fovy/2);
+			Matrix4d m=new Matrix4d();
+			m.m00=f/aspect;
+			m.m11=f;
+			m.m22=(zFar+zNear)/(zNear-zFar);
+			m.m23=2*zFar*zNear/(zNear-zFar);
+			m.m32=-1;
+			return m;
+			}
 		
 		
 		/**
