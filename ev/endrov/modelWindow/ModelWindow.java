@@ -796,6 +796,10 @@ public class ModelWindow extends BasicWindow
 		}
 
 	
+	public void createPopupMenu(JPopupMenu menu, MouseEvent e)
+		{
+		menu.show(this, e.getX(), e.getY());
+		}
 	
 
 	/******************************************************************************************************
@@ -823,5 +827,6 @@ public class ModelWindow extends BasicWindow
 			public void savePersonalConfig(Element e){}
 			});
 		}
+
 	
 	}
