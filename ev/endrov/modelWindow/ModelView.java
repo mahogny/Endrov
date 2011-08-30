@@ -606,7 +606,7 @@ public class ModelView extends GLJPanel //GLCanvas
 		{
 		if(moveCenter)
 			{
-			Vector3d v=camera.transformedVector(dx*panspeed, dy*panspeed, dz*panspeed);
+			Vector3d v=camera.rotateVector(dx*panspeed, dy*panspeed, dz*panspeed);
 			camera.pos.add(v);
 			camera.center.add(v);
 			}
@@ -906,7 +906,25 @@ public class ModelView extends GLJPanel //GLCanvas
 	//http://www.felixgers.de/teaching/jogl/imagingProg.html
 
 
-	
+	public Vector3d getMouseMoveVector(int dx, int dy, Vector3d point)
+		{
+		Vector3d nucPosCamera=camera.transformPoint(point);
+		return getMouseMoveVector(dx,dy,nucPosCamera.z);
+		}
+	/**
+	 * Get the vector associated with the mouse moving along the screen
+	 */
+	public Vector3d getMouseMoveVector(int dx, int dy, double z)
+		{
+		Matrix4d mProj=getProjectionMatrix();
+		double a=mProj.m00;
+		double b=mProj.m11;
+		Vector3d moveVecCamera=new Vector3d(
+				-dx*a/z,
+				dy*b/z,
+				0);
+		return camera.rotateVector(moveVecCamera);
+		}
 	}
 
 

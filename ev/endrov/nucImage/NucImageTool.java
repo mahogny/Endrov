@@ -24,9 +24,8 @@ import endrov.keyBinding.KeyBinding;
 import endrov.nuc.NucLineage;
 import endrov.nuc.NucCommonUI;
 import endrov.nuc.NucSel;
+import endrov.nuc.UndoOpNucleiEditKeyframe;
 import endrov.nuc.UndoOpReplaceSomeNuclei;
-import endrov.nuc.NucLineage.NucPos;
-import endrov.undo.UndoOpBasic;
 import endrov.util.EvDecimal;
 
 /**
@@ -45,51 +44,6 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 
 	private final ImageWindow w;
 	private final NucImageRenderer r;
-	
-	/**
-	 * Undo operation for only changing one keyframe
-	 * @author Johan Henriksson
-	 */
-	
-	public static class UndoOpNucleiEditKeyframe extends UndoOpBasic
-		{
-		private NucLineage lin;
-		private String name;
-		private EvDecimal frame;
-		private NucPos pos;
-		private NucPos newPos;
-		public UndoOpNucleiEditKeyframe(String opname, NucLineage lin, String name, EvDecimal frame, NucPos newPos)
-			{
-			super(opname);
-			this.frame=frame;
-			this.lin=lin;
-			this.name=name;
-			this.newPos=newPos;
-			NucLineage.Nuc nuc=lin.nuc.get(name);
-			if(nuc.pos.containsKey(frame))
-				pos=nuc.pos.get(frame).clone();
-			}
-	
-		public void redo()
-			{
-			NucLineage.Nuc nuc=lin.nuc.get(name);
-			nuc.pos.put(frame, newPos);
-			BasicWindow.updateWindows();  //this is a problem! w.updateImagePanel works well
-			}
-		
-		public void undo()
-			{
-			if(pos==null)
-				lin.nuc.get(name).pos.remove(frame);
-			else
-				lin.nuc.get(name).pos.put(frame,pos.clone());
-			BasicWindow.updateWindows();
-			}
-		
-		}
-	
-	
-	
 	
 	private WeakReference<NucLineage> editingLin=new WeakReference<NucLineage>(null);
 	private void setEditLin(NucLineage lin)
@@ -488,7 +442,7 @@ public class NucImageTool implements ImageWindowTool, ActionListener
 		if(pos!=null)
 			{
 			pos.z=w.getZ().doubleValue();
-			new NucImageTool.UndoOpNucleiEditKeyframe("Bring "+useNuc.snd()+" to z",useNuc.fst(), useNuc.snd(), curFrame, pos).execute();
+			new UndoOpNucleiEditKeyframe("Bring "+useNuc.snd()+" to z",useNuc.fst(), useNuc.snd(), curFrame, pos).execute();
 			}
 		}
 

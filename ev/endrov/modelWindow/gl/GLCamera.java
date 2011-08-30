@@ -12,7 +12,6 @@ import org.jdom.Element;
 
 import endrov.util.EvXmlUtil;
 
-//Vector3D vs javax.vecmath.....? part of javax.media.*
 
 public class GLCamera
 	{
@@ -62,19 +61,33 @@ public class GLCamera
 		EvXmlUtil.element2matrix(emat, mat);
 		}
 	
-	public Vector3d transformedVector(double x, double y, double z)
+	public Vector3d rotateVector(double x, double y, double z)
 		{
 		Vector3d v=new Vector3d(x,y,z);
 		mat.transform(v);
 		return v;
 		}
 	
-	
-	public Vector3d transformedVector(Vector3d v)
+	/**
+	 * 
+	 */
+	public Vector3d rotateVector(Vector3d v)
 		{
 		Vector3d v2=new Vector3d(v);
 		mat.transform(v2);
 		return v2;
+		}
+	
+	/** 
+	 * 
+	 */
+	public Vector3d unrotateVector(Vector3d v)
+		{
+		Matrix3d inv=new Matrix3d();	
+		inv.invert(mat);
+		Vector3d u=new Vector3d(v);		
+		inv.transform(u);
+		return u;
 		}
 	
 	/**
@@ -82,7 +95,7 @@ public class GLCamera
 	 */
 	public void moveCamera(double x, double y, double z)
 		{
-		pos.add(transformedVector(x, y, z));
+		pos.add(rotateVector(x, y, z));
 		}
 	
 	/**
@@ -158,13 +171,15 @@ public class GLCamera
 	/**
 	 * Transform a point world coord to cam coord
 	 */
-	private Vector3d transformPoint(Vector3d v)
+	public Vector3d transformPoint(Vector3d v)
 		{
 		Matrix3d inv=new Matrix3d();	inv.invert(mat);
 		Vector3d u=new Vector3d(v);		u.sub(pos);
 		inv.transform(u);
 		return u;
 		}
+	
+	
 
 	/**
 	 * Rotate camera around center
@@ -188,4 +203,8 @@ public class GLCamera
 		mat.transform(frontv);
 		pos.add(frontv, center);
 		}
+
+	
+
+
 	}
