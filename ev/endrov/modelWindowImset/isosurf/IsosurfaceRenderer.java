@@ -253,7 +253,7 @@ public class IsosurfaceRenderer
 				int numi=indb.remaining();
 
 				//Get direction of camera as vector, and z-position
-				Vector3d camv=cam.transformedVector(0, 0, 1);
+				Vector3d camv=cam.rotateVector(0, 0, 1);
 				double camz=cam.pos.dot(camv);
 
 				//Pregenerate data

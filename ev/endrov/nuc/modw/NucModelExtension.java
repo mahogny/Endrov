@@ -14,7 +14,6 @@ import java.util.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import javax.swing.*;
-import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 
 import org.jdom.Element;
@@ -33,7 +32,7 @@ import endrov.nuc.NucLineage;
 import endrov.nuc.NucSel;
 import endrov.nuc.NucVoronoi;
 import endrov.nuc.NucLineage.NucInterp;
-import endrov.nuc.NucLineage.NucPos;
+import endrov.undo.UndoOpBasic;
 import endrov.util.*;
 
 
@@ -67,9 +66,6 @@ public class NucModelExtension implements ModelWindowExtension
 		
 		public double nucMagnification=1;
 		
-	//	public JCheckBoxMenuItem miShowAllNucNames=new JCheckBoxMenuItem("Names: Show all");
-//		public JCheckBoxMenuItem miShowSelectedNucNames=new JCheckBoxMenuItem("Names: Show for selected");
-
 		public JMenu mShowNames=new JMenu("Show names");
 		public JRadioButtonMenuItem miShowNamesNone=new JRadioButtonMenuItem("None",true);
 		public JRadioButtonMenuItem miShowNamesSelected=new JRadioButtonMenuItem("Selected");
@@ -125,11 +121,59 @@ public class NucModelExtension implements ModelWindowExtension
 
 		public JCheckBoxMenuItem miShowDelaunay=new JCheckBoxMenuItem("Show delaunay neighbours", false);
 		
-
 		
 		Vector<ModwPanelExpPattern> expsettings=new Vector<ModwPanelExpPattern>();
 		private JButton bAddExpPattern=new JButton("Add exp.pattern");
 
+		//For modifying nuclei
+		private NucLineage.Nuc currentOrigNuc=null;
+		private NucSel currentModifying=null;
+		private boolean hasReallyModified=false;
+		private ModState modifyingState=null;
+		
+		private enum ModState
+			{
+			Dragging, Resizing
+			}
+		
+		/**
+		 * Currently modified nucleus is finalized. Commit changes.
+		 * 
+		 * Only for dragging at the moment
+		 */
+		public void commitModifyingNuc()
+			{
+			
+			//Only commit if something has changed
+			if(hasReallyModified)
+				{
+				hasReallyModified=false;
+				final NucLineage lin=currentModifying.fst();
+				final String name=currentModifying.snd();
+				final NucLineage.Nuc currentNuc=currentModifying.getNuc().clone();
+				final NucLineage.Nuc lastNuc=currentOrigNuc; 
+		
+				new UndoOpBasic("Modify keyframe for "+currentModifying.snd())
+					{
+					public void redo()
+						{
+						lin.nuc.put(name, currentNuc);
+						BasicWindow.updateWindows();
+						}
+		
+					public void undo()
+						{
+						lin.nuc.put(name, lastNuc);
+						BasicWindow.updateWindows();
+						}
+					}.execute();
+				}
+
+			hasReallyModified=false;
+			currentModifying=null;
+			currentOrigNuc=null;
+			modifyingState=null;
+			}
 		
 		private void setTraceColor(EvColor c)
 			{
@@ -207,8 +251,6 @@ public class NucModelExtension implements ModelWindowExtension
 
 			
 			
-	//		miSaveColorScheme.addActionListener(this);
-		//	miLoadColorScheme.addActionListener(this);
 			miShowNamesNone.addActionListener(this);
 			miShowNamesSelected.addActionListener(this);
 			miShowNamesAll.addActionListener(this);
@@ -251,41 +293,44 @@ public class NucModelExtension implements ModelWindowExtension
 							}
 						}
 					}
+				
+				
 				public boolean mouseDragged(MouseEvent e, int dx, int dy)
 					{
-					if(NucCommonUI.currentHover!=NucCommonUI.emptyHover)
+					if(modifyingState==ModState.Dragging)
 						{
-						//TODO this must be undoable!!!!
-						
-						
+						hasReallyModified=true;
 						
 						//Get nuc coordinate
-						NucLineage.Nuc nuc=NucCommonUI.currentHover.getNuc();
-						NucLineage.NucInterp interp=nuc.interpolatePos(w.getFrame());
+						EvDecimal curFrame=w.getFrame();
+						NucLineage.Nuc nuc=currentModifying.getNuc();
+						NucLineage.NucInterp interp=nuc.interpolatePos(curFrame);
 						
-						Vector3d pos=interp.pos.getPosCopy();
+						//Find movement vector
+						Vector3d moveVecWorld=w.view.getMouseMoveVector(dx, dy, interp.pos.getPosCopy());
 						
-						Vector3d tpos=w.view.camera.transformedVector(pos);
-						
-						//From this, get z coordinate
-						Matrix4d mProj=w.view.getProjectionMatrix();
-						
-						//Not quite - need projection matrix !!!!
-						Vector3d tposTo=new Vector3d(tpos.x+dx,tpos.y+dy,tpos.z);
-						
-						//Calculate projected movement in space
-						w.view.camera.u
-						
-						
-						
+						//Move nucleus
 						NucLineage.NucPos nucPos=interp.pos.clone();
-						nucPos.x+=0; //TODO
+						nucPos.x+=moveVecWorld.x;
+						nucPos.y+=moveVecWorld.y;
+						nucPos.z+=moveVecWorld.z;
+						nuc.pos.put(curFrame, nucPos);
 						
+						return true;
+						}
+					else if(modifyingState==ModState.Resizing)
+						{
+						hasReallyModified=true;
 						
-						
-						System.out.println("move "+dx+" "+dy+"    "+tpos);
-						
-						
+						//Get nuc
+						EvDecimal curFrame=w.getFrame();
+						NucLineage.Nuc nuc=currentModifying.getNuc();
+						NucLineage.NucInterp interp=nuc.interpolatePos(curFrame);
+
+						//Resize nucleus
+						NucLineage.NucPos nucPos=interp.pos.clone();
+						nucPos.r*=Math.exp(dy*0.01);
+						nuc.pos.put(curFrame, nucPos);
 						
 						return true;
 						}
@@ -295,8 +340,35 @@ public class NucModelExtension implements ModelWindowExtension
 				public void mouseEntered(MouseEvent e){}
 				public void mouseExited(MouseEvent e){}
 				public void mouseMoved(MouseEvent e){}
-				public void mousePressed(MouseEvent e){}
-				public void mouseReleased(MouseEvent e){}
+				
+				
+				public void mousePressed(MouseEvent e)
+					{
+					if(NucCommonUI.currentHover!=NucCommonUI.emptyHover && NucCommonUI.currentHover!=null)
+						{
+						if(SwingUtilities.isLeftMouseButton(e))
+							{
+							//Start dragging
+							currentModifying=NucCommonUI.currentHover;
+							currentOrigNuc=currentModifying.getNuc().clone();
+							hasReallyModified=false;
+							modifyingState=ModState.Dragging;
+							}
+						else if(SwingUtilities.isRightMouseButton(e))
+							{
+							//Start resizing
+							currentModifying=NucCommonUI.currentHover;
+							currentOrigNuc=currentModifying.getNuc().clone();
+							hasReallyModified=false;
+							modifyingState=ModState.Resizing;
+							}
+
+						}
+					}
+				public void mouseReleased(MouseEvent e)
+					{
+					commitModifyingNuc();
+					}
 			});
 			}
 		
@@ -730,14 +802,14 @@ public class NucModelExtension implements ModelWindowExtension
 			{
 			//Update hover
 			lastHover=NucCommonUI.currentHover;
-			NucCommonUI.currentHover=new NucSel();
+			NucCommonUI.currentHover=NucCommonUI.emptyHover;
 			}
 		/** Called when nucleus hovered */
 		public void hover(int pixelid)
 			{
 			NucCommonUI.currentHover=selectColorMap.get(pixelid);
-			System.out.println("New hover: "+NucCommonUI.currentHover);
-			System.out.println("Last hover: "+lastHover);
+			//System.out.println("New hover: "+NucCommonUI.currentHover);
+			//System.out.println("Last hover: "+lastHover);
 			//Propagate hover. Avoid infinite recursion.
 			if(!NucCommonUI.currentHover.equals(lastHover))
 				{

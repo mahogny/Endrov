@@ -39,7 +39,12 @@ public class NucSel extends Tuple<NucLineage,String> implements EvSelectable
 	
 	public NucLineage.Nuc getNuc()
 		{
-		return fst().nuc.get(snd());
+		if(fst()==null)
+			throw new RuntimeException("null nucleus");
+		else if(snd()==null)
+			throw new RuntimeException("null nuc name");
+		else
+			return fst().nuc.get(snd());
 		}
 
 	public void setColor(EvColor c)

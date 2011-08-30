@@ -649,7 +649,7 @@ public class Stack3D extends StackInterface
 			shader3d=new GLShader(gl,Stack3D.class.getResource("3dvert.glsl"),Stack3D.class.getResource("3dfrag.glsl"));
 		
 		//Get direction of camera as vector, and z-position
-		Vector3d camv=cam.transformedVector(0, 0, 1);
+		Vector3d camv=cam.rotateVector(0, 0, 1);
 		double camz=cam.pos.dot(camv);
 		
 		Stack3DRenderState renderstate=new Stack3DRenderState(){

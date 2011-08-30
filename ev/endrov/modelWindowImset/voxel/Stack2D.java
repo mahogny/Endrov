@@ -311,7 +311,7 @@ public class Stack2D extends StackInterface
 	public void render(GL glin,List<TransparentRender> transparentRenderers, GLCamera cam, TransparentRender.RenderState renderstate, LinkedList<Vector<OneSlice>> list)
 		{
 		//Get direction of camera as vector, and z-position
-		Vector3d camv=cam.transformedVector(0, 0, 1);
+		Vector3d camv=cam.rotateVector(0, 0, 1);
 		double camz=cam.pos.dot(camv);
 		
 		//For all stacks
