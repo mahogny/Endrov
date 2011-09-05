@@ -55,15 +55,13 @@ public class EvImage
 	//to permanently force evaluation such as when the source will become unavailable.
 	
 	
-	/** memory lock counter */
-	private int locks=0;
-	
 	/** Image this image shadows */
 	private EvImage shadowedImage=null;
 	/** Images shadowing this image */
 	private WeakHashMap<EvImage, Object> shadowedBy=new WeakHashMap<EvImage, Object>(1,1.0f);
 	/** Pending lazy operations */
-	private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>(1,1.0f);
+	//private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>(1,1.0f);
+	private WeakHashMap<Memoize<?>, Object> pendingLazy=new WeakHashMap<Memoize<?>, Object>();
 		
 	/** 
 	 * Connection to I/O. Allows lazy reading by postponing load operation. Also allows lazy generation by putting a generator as a loader.
@@ -197,28 +195,6 @@ public class EvImage
 	
 	
 	
-	
-	/**
-	 * Ensure that data is in memory. This does NOT guarantee thread safety. Lock on the evimage object for this.
-	 */
-	public void lock()
-		{
-		locks++;
-		//TODO ensure memory is in memory
-		}
-	
-	/**
-	 * Undo lock
-	 */
-	public void unlock()
-		{
-		locks--;
-		}
-	
-	public boolean isLocked()
-		{
-		return locks!=0;
-		}
 	
 	
 	

@@ -154,6 +154,28 @@ public class EvPixels implements AnyEvImage
 	public static final int TYPES_ANY = TYPE_UBYTE | TYPE_SHORT | TYPE_INT | TYPE_FLOAT | TYPE_DOUBLE | TYPE_AWT;
 	public static final int TYPES_ANYBUTAWT = TYPE_UBYTE | TYPE_SHORT | TYPE_INT | TYPE_FLOAT | TYPE_DOUBLE;
 	
+
+	/**
+	 * Get the approximate memory usage of this pixel
+	 */
+	public int getMemoryUsage()
+		{
+		if(arrayB!=null)
+			return arrayB.length;
+		else if(arrayS!=null)
+			return arrayS.length*2;
+		else if(arrayI!=null)
+			return arrayI.length*4;
+		else if(arrayF!=null)
+			return arrayF.length*4;
+		else if(arrayD!=null)
+			return arrayD.length*8;
+		else if(awt!=null)
+			return awt.getWidth()*awt.getHeight(); //Approx
+		return 0;
+		}
+	
+	
 	/**
 	 * Constructing an empty pixelset, shouldn't really be possible outside
 	 */
