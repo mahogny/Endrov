@@ -3,7 +3,7 @@
  * This code is under the Endrov / BSD license. See www.endrov.net
  * for the full text and how to cite.
  */
-package endrov.modelWindowImset.voxelNew;
+package endrov.modelWindowImset.voxel;
 
 
 import java.awt.*;
@@ -29,7 +29,7 @@ import endrov.data.*;
 import endrov.imageset.*;
 import endrov.modelWindow.*;
 import endrov.modelWindow.ModelWindow.ProgressMeter;
-import endrov.modelWindowImset.voxelNew.StackRendererInterface.ChanProp;
+import endrov.modelWindowImset.voxel.StackRendererInterface.ChanProp;
 import endrov.util.EvDecimal;
 import endrov.util.EvSwingUtil;
 import endrov.util.ProgressHandle;

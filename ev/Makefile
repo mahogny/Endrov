@@ -22,6 +22,7 @@ gitaddall:
 	endrov/*/*/*.png \
 	endrov/*/*.txt \
 	endrov/*/*/*.txt \
+	endrov/*/*/*.glsl
 
 backup:
 	###!!!! FROM TO
